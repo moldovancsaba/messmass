@@ -7,18 +7,49 @@ import type { CellConfiguration } from './layoutGrammar';
 
 /**
  * WHAT: Calculate LayoutV2 block height from aspect ratio
- * WHY: LayoutV2 contract specifies fixed 4:1 aspect ratio
- * HOW: blockHeight = blockWidth / 4
+ * WHY: LayoutV2 contract supports variable aspect ratios (4:1 to 4:10) for TEXT-AREA/TABLE blocks
+ * HOW: blockHeight = blockWidth / aspectRatioDivisor
  * 
  * @param blockWidth - Block width in pixels
- * @returns Block height in pixels (4:1 aspect ratio)
+ * @param blockAspectRatio - Optional aspect ratio override (e.g., "4:6" for 4:6 ratio)
+ * @returns Block height in pixels
  */
-export function calculateLayoutV2BlockHeight(blockWidth: number): number {
+export function calculateLayoutV2BlockHeight(
+  blockWidth: number,
+  blockAspectRatio?: string
+): number {
   if (blockWidth <= 0) {
     console.warn('[LayoutV2] Invalid block width:', blockWidth);
     return 300; // Fallback to reasonable default
   }
-  return blockWidth / 4;
+  
+  // WHAT: Default to 4:1 aspect ratio if not specified
+  // WHY: Maintain backward compatibility
+  if (!blockAspectRatio) {
+    return blockWidth / 4;
+  }
+  
+  // WHAT: Parse aspect ratio string (e.g., "4:6" -> width:height = 4:6)
+  // WHY: Support variable aspect ratios for TEXT-AREA/TABLE blocks
+  // HOW: Extract width and height from "width:height" format
+  const aspectRatioMatch = blockAspectRatio.match(/^(\d+):(\d+)$/);
+  if (!aspectRatioMatch) {
+    console.warn('[LayoutV2] Invalid aspect ratio format:', blockAspectRatio, '- using default 4:1');
+    return blockWidth / 4;
+  }
+  
+  const aspectWidth = parseInt(aspectRatioMatch[1], 10);
+  const aspectHeight = parseInt(aspectRatioMatch[2], 10);
+  
+  if (aspectWidth <= 0 || aspectHeight <= 0) {
+    console.warn('[LayoutV2] Invalid aspect ratio values:', blockAspectRatio, '- using default 4:1');
+    return blockWidth / 4;
+  }
+  
+  // WHAT: Calculate height from aspect ratio
+  // WHY: blockHeight = blockWidth × (aspectHeight / aspectWidth)
+  // HOW: For 4:6 ratio: height = width × (6/4) = width × 1.5
+  return (blockWidth * aspectHeight) / aspectWidth;
 }
 
 /**
@@ -88,17 +119,87 @@ export function calculateLayoutV2GridColumns(
 }
 
 /**
+ * WHAT: Validate aspect ratio override is allowed for block content
+ * WHY: R-LAYOUT-02.1 - Override only allowed when block contains TEXT-AREA or TABLE items
+ * HOW: Check if all charts are TEXT or TABLE type
+ * 
+ * @param charts - Array of charts with type property
+ * @returns Validation result
+ */
+export function validateAspectRatioOverride(
+  charts: Array<{ type?: string }>
+): { valid: boolean; error?: string } {
+  if (charts.length === 0) {
+    return { valid: false, error: 'Cannot apply aspect ratio override to empty block' };
+  }
+  
+  // WHAT: Check if all charts are TEXT or TABLE type
+  // WHY: Override only allowed for TEXT-AREA/TABLE blocks
+  const allowedTypes = ['text', 'table'];
+  const allAllowed = charts.every(chart => {
+    const chartType = chart.type?.toLowerCase();
+    return chartType && allowedTypes.includes(chartType);
+  });
+  
+  if (!allAllowed) {
+    const invalidTypes = charts
+      .map(c => c.type?.toLowerCase())
+      .filter(t => t && !allowedTypes.includes(t));
+    return {
+      valid: false,
+      error: `Aspect ratio override only allowed for TEXT-AREA/TABLE blocks. Found invalid types: ${invalidTypes.join(', ')}`
+    };
+  }
+  
+  return { valid: true };
+}
+
+/**
+ * WHAT: Validate aspect ratio is within supported range (4:1 to 4:10)
+ * WHY: R-LAYOUT-02.1 - Constrain aspect ratio to reasonable limits
+ * HOW: Parse and check aspect ratio values
+ * 
+ * @param blockAspectRatio - Aspect ratio string (e.g., "4:6")
+ * @returns Validation result
+ */
+export function validateAspectRatioRange(
+  blockAspectRatio: string
+): { valid: boolean; error?: string } {
+  const aspectRatioMatch = blockAspectRatio.match(/^(\d+):(\d+)$/);
+  if (!aspectRatioMatch) {
+    return { valid: false, error: `Invalid aspect ratio format: ${blockAspectRatio}. Expected format: "width:height"` };
+  }
+  
+  const aspectWidth = parseInt(aspectRatioMatch[1], 10);
+  const aspectHeight = parseInt(aspectRatioMatch[2], 10);
+  
+  // WHAT: Validate aspect ratio is 4:1 to 4:10
+  // WHY: Constrain to reasonable range for TEXT-AREA/TABLE blocks
+  if (aspectWidth !== 4) {
+    return { valid: false, error: `Aspect ratio width must be 4. Got: ${aspectWidth}` };
+  }
+  
+  if (aspectHeight < 1 || aspectHeight > 10) {
+    return { valid: false, error: `Aspect ratio height must be between 1 and 10. Got: ${aspectHeight}` };
+  }
+  
+  return { valid: true };
+}
+
+/**
  * WHAT: Calculate LayoutV2 block dimensions and validate capacity
  * WHY: Ensure block complies with LayoutV2 contract before rendering
  * HOW: Validate capacity, calculate height from aspect ratio, allocate widths
  * 
- * @param charts - Array of charts with width property
+ * @param charts - Array of charts with width and optional type property
  * @param blockWidth - Block width in pixels
+ * @param blockAspectRatio - Optional aspect ratio override (e.g., "4:6")
  * @returns Block dimensions and validation result
  */
 export function calculateLayoutV2BlockDimensions(
-  charts: Array<{ width: number }>,
-  blockWidth: number
+  charts: Array<{ width: number; type?: string }>,
+  blockWidth: number,
+  blockAspectRatio?: string
 ): {
   valid: boolean;
   error?: string;
@@ -121,8 +222,42 @@ export function calculateLayoutV2BlockDimensions(
     };
   }
   
-  // WHAT: Calculate block height from 4:1 aspect ratio
-  // WHY: LayoutV2 contract specifies fixed aspect ratio
+  // WHAT: Validate aspect ratio override if provided
+  // WHY: R-LAYOUT-02.1 - Override only allowed for TEXT-AREA/TABLE blocks
+  if (blockAspectRatio) {
+    // WHAT: Validate aspect ratio range (4:1 to 4:10)
+    const rangeValidation = validateAspectRatioRange(blockAspectRatio);
+    if (!rangeValidation.valid) {
+      console.warn('[LayoutV2] Invalid aspect ratio range:', rangeValidation.error, '- using default 4:1');
+      // Fall through to default 4:1
+    } else {
+      // WHAT: Validate override is allowed for block content
+      const overrideValidation = validateAspectRatioOverride(charts);
+      if (!overrideValidation.valid) {
+        console.warn('[LayoutV2] Aspect ratio override not allowed:', overrideValidation.error, '- using default 4:1');
+        // Fall through to default 4:1
+      } else {
+        // WHAT: Use custom aspect ratio
+        const blockHeight = calculateLayoutV2BlockHeight(blockWidth, blockAspectRatio);
+        const gridColumns = calculateLayoutV2GridColumns(charts);
+        const itemWidths = charts.map((chart, idx) => ({
+          chartIndex: idx,
+          width: calculateLayoutV2ItemWidth(chart.width || 1, capacityValidation.totalUnits, blockWidth)
+        }));
+        
+        return {
+          valid: true,
+          blockHeight,
+          totalUnits: capacityValidation.totalUnits,
+          gridColumns,
+          itemWidths
+        };
+      }
+    }
+  }
+  
+  // WHAT: Calculate block height from default 4:1 aspect ratio
+  // WHY: Default behavior unchanged when not specified
   const blockHeight = calculateLayoutV2BlockHeight(blockWidth);
   
   // WHAT: Calculate grid columns for deterministic packing

@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import ReportChart from '@/app/report/[slug]/ReportChart';
 import { ChartConfiguration, ChartCalculationResult, HeroBlockSettings, BlockAlignmentSettings } from '@/lib/chartConfigTypes';
@@ -35,7 +35,52 @@ interface BlockChart {
   chartId: string;
   width: number;
   order: number;
+  unitSize?: LayoutUnit;
+  aspectRatio?: LayoutAspectRatio;
 }
+
+type LayoutUnit = 1 | 2;
+type LayoutAspectRatio = '1:1' | '2:1' | '16:9' | '9:16';
+type LayoutItemType = 'kpi' | 'pie' | 'bar' | 'text' | 'table' | 'image';
+
+const LAYOUT_V2_ALLOWED_ASPECT_RATIOS: Record<LayoutItemType, LayoutAspectRatio[]> = {
+  kpi: ['1:1'],
+  pie: ['1:1'],
+  bar: ['1:1', '2:1'],
+  text: ['1:1', '2:1'],
+  table: ['1:1', '2:1'],
+  image: ['1:1', '16:9', '9:16']
+};
+
+const LAYOUT_V2_ALLOWED_UNIT_SIZES: Record<LayoutItemType, LayoutUnit[]> = {
+  kpi: [1],
+  pie: [1],
+  bar: [1, 2],
+  text: [1, 2],
+  table: [1, 2],
+  image: [1, 2]
+};
+
+const DEFAULT_ASPECT_RATIO: Record<LayoutItemType, LayoutAspectRatio> = {
+  kpi: '1:1',
+  pie: '1:1',
+  bar: '1:1',
+  text: '1:1',
+  table: '1:1',
+  image: '1:1'
+};
+
+const ASPECT_RATIO_UNIT_MAP: Record<LayoutAspectRatio, LayoutUnit> = {
+  '1:1': 1,
+  '2:1': 2,
+  '16:9': 2,
+  '9:16': 1
+};
+
+const normalizeUnitSize = (value?: number): LayoutUnit => {
+  if (value === 2) return 2;
+  return 1;
+};
 
 // Available chart type for chart assignment
 interface AvailableChart {
@@ -136,6 +181,114 @@ export default function VisualizationPage() {
     showTitle: true // NEW: Default to showing title
   });
 
+  const chartConfigMap = useMemo(() => {
+    const map = new Map<string, ChartConfiguration>();
+    chartConfigs.forEach(config => {
+      map.set(config.chartId, config);
+    });
+    return map;
+  }, [chartConfigs]);
+
+  const resolveChartType = useCallback((chartId: string): LayoutItemType => {
+    const chartType = chartConfigMap.get(chartId)?.type;
+    if (chartType === 'kpi' || chartType === 'pie' || chartType === 'bar' || chartType === 'text' || chartType === 'table' || chartType === 'image') {
+      return chartType;
+    }
+    return 'kpi';
+  }, [chartConfigMap]);
+
+  const normalizeChartLayout = useCallback((chart: BlockChart): BlockChart => {
+    const chartType = resolveChartType(chart.chartId);
+    const allowedAspects = LAYOUT_V2_ALLOWED_ASPECT_RATIOS[chartType] || ['1:1'];
+    const allowedUnits = LAYOUT_V2_ALLOWED_UNIT_SIZES[chartType] || [1];
+
+    const configAspectRatio = chartConfigMap.get(chart.chartId)?.aspectRatio;
+    const configAspect = (configAspectRatio && ['1:1', '16:9', '9:16'].includes(configAspectRatio))
+      ? (configAspectRatio as LayoutAspectRatio)
+      : undefined;
+
+    let aspectRatio = chart.aspectRatio || configAspect || DEFAULT_ASPECT_RATIO[chartType];
+    if (!allowedAspects.includes(aspectRatio)) {
+      aspectRatio = allowedAspects[0];
+    }
+
+    let unitSize = normalizeUnitSize(chart.unitSize ?? chart.width ?? ASPECT_RATIO_UNIT_MAP[aspectRatio]);
+    if (!allowedUnits.includes(unitSize)) {
+      unitSize = allowedUnits[0];
+    }
+
+    if (chartType === 'image') {
+      if (unitSize === 2 && aspectRatio !== '16:9') {
+        aspectRatio = '16:9';
+      }
+      if (unitSize === 1 && aspectRatio === '16:9') {
+        aspectRatio = '1:1';
+      }
+    } else if (chartType === 'bar' || chartType === 'text' || chartType === 'table') {
+      if (unitSize === 2 && aspectRatio !== '2:1') {
+        aspectRatio = '2:1';
+      }
+      if (unitSize === 1 && aspectRatio === '2:1') {
+        aspectRatio = '1:1';
+      }
+    } else {
+      aspectRatio = '1:1';
+      unitSize = 1;
+    }
+
+    return {
+      ...chart,
+      unitSize,
+      width: unitSize,
+      aspectRatio
+    };
+  }, [chartConfigMap, resolveChartType]);
+
+  const normalizeBlockForLayoutV2 = useCallback((block: DataVisualizationBlock): DataVisualizationBlock => {
+    return {
+      ...block,
+      charts: block.charts.map(chart => normalizeChartLayout(chart))
+    };
+  }, [normalizeChartLayout]);
+
+  const getBlockUnitTotal = useCallback((block: DataVisualizationBlock): number => {
+    return block.charts.reduce((total, chart) => total + normalizeUnitSize(chart.unitSize ?? chart.width), 0);
+  }, []);
+
+  const validateLayoutV2Block = useCallback((block: DataVisualizationBlock): { valid: boolean; error?: string } => {
+    const normalizedBlock = normalizeBlockForLayoutV2(block);
+    const totalUnits = getBlockUnitTotal(normalizedBlock);
+    if (totalUnits > 4) {
+      return {
+        valid: false,
+        error: `Block "${block.name}" exceeds 4-unit capacity (current total: ${totalUnits}).`
+      };
+    }
+
+    for (const chart of normalizedBlock.charts) {
+      const chartType = resolveChartType(chart.chartId);
+      const allowedAspects = LAYOUT_V2_ALLOWED_ASPECT_RATIOS[chartType] || ['1:1'];
+      const allowedUnits = LAYOUT_V2_ALLOWED_UNIT_SIZES[chartType] || [1];
+      const unitSize = normalizeUnitSize(chart.unitSize ?? chart.width);
+
+      if (!allowedUnits.includes(unitSize)) {
+        return {
+          valid: false,
+          error: `Chart "${chart.chartId}" uses invalid unit size (${unitSize}) for ${chartType}.`
+        };
+      }
+
+      if (chart.aspectRatio && !allowedAspects.includes(chart.aspectRatio)) {
+        return {
+          valid: false,
+          error: `Chart "${chart.chartId}" uses invalid aspect ratio (${chart.aspectRatio}) for ${chartType}.`
+        };
+      }
+    }
+
+    return { valid: true };
+  }, [getBlockUnitTotal, normalizeBlockForLayoutV2, resolveChartType]);
+
   // WHAT: Helper to show status messages
   // WHY: Replace all alert() calls with smooth, auto-dismissing messages
   const showMessage = useCallback((type: 'success' | 'error' | 'info', text: string) => {
@@ -183,7 +336,7 @@ export default function VisualizationPage() {
               return (aRef?.order || 0) - (bRef?.order || 0);
             });
           console.log('📋 Loaded template blocks:', templateBlocks.length);
-          setDataBlocks(templateBlocks);
+          setDataBlocks(templateBlocks.map(normalizeBlockForLayoutV2));
         }
       } else {
         console.log('📋 No data blocks configured for this template');
@@ -222,7 +375,7 @@ export default function VisualizationPage() {
     } finally {
       setLoading(false);
     }
-  }, [templates]);
+  }, [templates, normalizeBlockForLayoutV2]);
 
   // WHAT: Load blocks and grid for selected template
   // WHY: Each template has its own visualization config

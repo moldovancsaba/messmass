@@ -17,7 +17,8 @@ import { validateCriticalCSSVariable, CRITICAL_CSS_VARIABLES } from '@/lib/layou
 import { 
   calculateLayoutV2BlockHeight, 
   validateLayoutV2BlockCapacity,
-  calculateLayoutV2GridColumns
+  calculateLayoutV2GridColumns,
+  calculateLayoutV2BlockDimensions
 } from '@/lib/layoutV2BlockCalculator';
 
 /**
@@ -190,9 +191,10 @@ interface ResponsiveRowProps {
   charts?: Map<string, Chart> | null; // A-R-13: Chart configs for validation
   rowIndex: number;
   unifiedTextFontSize: number | null;
+  blockAspectRatio?: string; // R-LAYOUT-02.1: Optional block aspect ratio override (e.g., "4:6")
 }
 
-function ResponsiveRow({ rowCharts, chartResults, charts, rowIndex, unifiedTextFontSize }: ResponsiveRowProps) {
+function ResponsiveRow({ rowCharts, chartResults, charts, rowIndex, unifiedTextFontSize, blockAspectRatio }: ResponsiveRowProps) {
   const rowRef = useRef<HTMLDivElement>(null);
   // WHAT: Initialize state with design tokens instead of hardcoded values
   // WHY: No hardcoded sizes - all values must come from design system
@@ -223,27 +225,35 @@ function ResponsiveRow({ rowCharts, chartResults, charts, rowIndex, unifiedTextF
         console.log(`[ResponsiveRow ${rowIndex}] Width changed:`, width, 'Charts:', rowCharts.length);
         setRowWidth(width || 1200);
         
-        // WHAT: R-LAYOUT-01.2 - Use LayoutV2 block height calculation (4:1 aspect ratio)
-        // WHY: LayoutV2 contract specifies fixed 4:1 aspect ratio, no label-based height assumptions
-        // HOW: Calculate height from aspect ratio: blockHeight = blockWidth / 4
+        // WHAT: R-LAYOUT-02.1 - Use LayoutV2 block dimensions calculation with optional aspect ratio override
+        // WHY: Support variable block aspect ratios (4:1 to 4:10) for TEXT-AREA/TABLE blocks
+        // HOW: Use calculateLayoutV2BlockDimensions which handles validation and aspect ratio override
         
-        // WHAT: Validate block capacity (4 units max)
-        // WHY: LayoutV2 contract requires sum(itemUnits) ≤ 4
-        const capacityValidation = validateLayoutV2BlockCapacity(rowCharts);
-        if (!capacityValidation.valid) {
-          console.error(`[LayoutV2 ResponsiveRow ${rowIndex}] ${capacityValidation.error}`);
-          // WHAT: Still calculate height for fallback rendering
+        // WHAT: Build charts array with type information for validation
+        // WHY: R-LAYOUT-02.1 - Need chart types to validate aspect ratio override is allowed
+        const chartsWithTypes = rowCharts.map(chart => {
+          const result = chartResults.get(chart.chartId);
+          return {
+            width: chart.width,
+            type: result?.type
+          };
+        });
+        
+        // WHAT: Calculate LayoutV2 block dimensions with optional aspect ratio override
+        // WHY: R-LAYOUT-02.1 - Support variable aspect ratios while maintaining validation
+        const dimensions = calculateLayoutV2BlockDimensions(chartsWithTypes, width, blockAspectRatio);
+        
+        if (!dimensions.valid) {
+          console.error(`[LayoutV2 ResponsiveRow ${rowIndex}] ${dimensions.error}`);
+          // WHAT: Still use calculated height for fallback rendering
           // WHY: Don't break rendering, but log error for Admin to fix
-          const fallbackHeight = calculateLayoutV2BlockHeight(width);
-          setRowHeight(fallbackHeight);
+          setRowHeight(dimensions.blockHeight);
           return;
         }
         
-        // WHAT: Calculate LayoutV2 block height from 4:1 aspect ratio
-        // WHY: LayoutV2 contract: blockHeight = blockWidth / 4
-        // HOW: Deterministic calculation, no label-based assumptions
-        const height = calculateLayoutV2BlockHeight(width);
-        console.log(`[LayoutV2 ResponsiveRow ${rowIndex}] Height calculated:`, height, 'from width:', width, 'aspect ratio: 4:1');
+        const height = dimensions.blockHeight;
+        const aspectRatioUsed = blockAspectRatio || '4:1';
+        console.log(`[LayoutV2 ResponsiveRow ${rowIndex}] Height calculated:`, height, 'from width:', width, 'aspect ratio:', aspectRatioUsed);
         
         setRowHeight(height);
         
@@ -616,6 +626,7 @@ function ReportBlock({ block, chartResults, charts, gridSettings }: ReportBlockP
           charts={charts} // A-R-13: Pass chart configs for validation
           rowIndex={rowIndex}
           unifiedTextFontSize={unifiedTextFontSize}
+          blockAspectRatio={block.blockAspectRatio} // R-LAYOUT-02.1: Optional block aspect ratio override
         />
       ))}
     </div>
