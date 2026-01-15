@@ -15,6 +15,12 @@ import type { CellConfiguration } from '@/lib/layoutGrammar';
 import { useUnifiedTextFontSize } from '@/hooks/useUnifiedTextFontSize';
 import { calculateBlockFontSizeForBarCharts } from '@/lib/barChartFontSizeCalculator';
 import { validateCriticalCSSVariable, validateHeightResolution, CRITICAL_CSS_VARIABLES } from '@/lib/layoutGrammarRuntimeEnforcement';
+import { 
+  calculateLayoutV2BlockHeight, 
+  validateLayoutV2BlockCapacity,
+  calculateLayoutV2GridColumns,
+  calculateLayoutV2BlockDimensions
+} from '@/lib/layoutV2BlockCalculator';
 
 /**
  * WHAT: Check if a chart result has valid displayable data (v11.48.0)
@@ -219,61 +225,27 @@ function ResponsiveRow({ rowCharts, chartResults, charts, rowIndex, unifiedTextF
         console.log(`[ResponsiveRow ${rowIndex}] Width changed:`, width, 'Charts:', rowCharts.length);
         setRowWidth(width || 1200);
         
-        // WHAT: Immediately recalculate height based on new width
-        // WHY: Only include cells with valid data (v11.48.0)
-        // WHAT: Include contentMetadata for BAR charts to ensure accurate height calculation
-        const cells: CellConfiguration[] = rowCharts
-          .flatMap(chart => {
-            const result = chartResults.get(chart.chartId);
-            // WHAT: Skip cells with no valid data in height calculation
-            // WHY: Empty cells should not affect row height
-            if (!hasValidChartData(result) || !result) return [];
-            
-            // WHAT: Build contentMetadata for BAR charts (row count) and PIE charts (legend item count)
-            // WHY: Layout Grammar requires accurate height calculation based on actual content requirements
-            const contentMetadata: Record<string, unknown> = {};
-            if (result.type === 'bar' && result.elements) {
-              contentMetadata.barCount = result.elements.length;
-            }
-            if (result.type === 'pie' && result.elements) {
-              // WHAT: P1 1.7 - Include legend item count for PIE chart height calculation
-              // WHY: Legend growth (30% → 50%) may compress pie chart below minimum readable size
-              // HOW: Pass legend item count to height calculator to account for legend growth
-              contentMetadata.legendItemCount = result.elements.length;
-            }
-            
-            return [{
-              chartId: chart.chartId,
-              cellWidth: (chart.width || 1) as 1 | 2,
-              bodyType: result.type as any,
-              aspectRatio: result.aspectRatio,
-              title: result.title,
-              subtitle: undefined,
-              contentMetadata: Object.keys(contentMetadata).length > 0 ? contentMetadata : undefined
-            }];
-          });
+        // WHAT: R-LAYOUT-01.2 - Use LayoutV2 block height calculation (4:1 aspect ratio)
+        // WHY: LayoutV2 contract specifies fixed 4:1 aspect ratio, no label-based height assumptions
+        // HOW: Calculate height from aspect ratio: blockHeight = blockWidth / 4
         
-        // WHAT: Use resolveBlockHeightWithDetails to account for BAR chart row requirements
-        // WHY: Layout Grammar requires accurate height calculation that accounts for actual content
-        // HOW: Pass cells with contentMetadata to enhanced height resolver
-        const heightResolution = resolveBlockHeightWithDetails({
-          blockId: `row-${rowIndex}`,
-          cells,
-          blockWidth: width,
-          blockAspectRatio: undefined,
-          maxAllowedHeight: undefined
-        });
-        const height = heightResolution.heightPx;
-        console.log(`[ResponsiveRow ${rowIndex}] Height recalculated:`, height, 'from width:', width);
+        // WHAT: Validate block capacity (4 units max)
+        // WHY: LayoutV2 contract requires sum(itemUnits) ≤ 4
+        const capacityValidation = validateLayoutV2BlockCapacity(rowCharts);
+        if (!capacityValidation.valid) {
+          console.error(`[LayoutV2 ResponsiveRow ${rowIndex}] ${capacityValidation.error}`);
+          // WHAT: Still calculate height for fallback rendering
+          // WHY: Don't break rendering, but log error for Admin to fix
+          const fallbackHeight = calculateLayoutV2BlockHeight(width);
+          setRowHeight(fallbackHeight);
+          return;
+        }
         
-        // WHAT: Validate height resolution with runtime enforcement (A-05)
-        // WHY: Fail-fast in production if height resolution fails
-        // HOW: Use validateHeightResolution which throws in production, warns in dev
-        validateHeightResolution(heightResolution, {
-          rowIndex,
-          blockWidth: width,
-          cellsCount: cells.length
-        });
+        // WHAT: Calculate LayoutV2 block height from 4:1 aspect ratio
+        // WHY: LayoutV2 contract: blockHeight = blockWidth / 4
+        // HOW: Deterministic calculation, no label-based assumptions
+        const height = calculateLayoutV2BlockHeight(width);
+        console.log(`[LayoutV2 ResponsiveRow ${rowIndex}] Height calculated:`, height, 'from width:', width, 'aspect ratio: 4:1');
         
         setRowHeight(height);
         
@@ -321,9 +293,10 @@ function ResponsiveRow({ rowCharts, chartResults, charts, rowIndex, unifiedTextF
     }
   }, [rowHeight, rowIndex]);
   
-  // WHAT: Calculate grid columns from chart widths (sum of units)
-  // WHY: Layout Grammar - grid = sum of units (e.g., [1,2,1] → "1fr 2fr 1fr")
-  const gridColumns = calculateGridColumns(rowCharts);
+  // WHAT: R-LAYOUT-01.2 - Use LayoutV2 grid column calculation
+  // WHY: LayoutV2 contract requires unit-based width allocation for deterministic packing
+  // HOW: Convert chart widths to fr units (e.g., [2,1,1] → "2fr 1fr 1fr")
+  const gridColumns = calculateLayoutV2GridColumns(rowCharts);
   
   return (
     <div 

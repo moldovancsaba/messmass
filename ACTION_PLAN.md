@@ -31,23 +31,23 @@ It translates audit findings and residual risks into concrete, trackable actions
 
 **Owner:** Tribeca (Reporting)
 
-### R-LAYOUT-01.1: LayoutV2 Renderer Contract (Block + Item + Unit Rules)
+### R-LAYOUT-01.2: Implement LayoutV2 Block + Unit Packing Renderer
 
 **Priority:** High  
 **Status:** ACTIVE  
-**Dependency:** None
+**Dependency:** R-LAYOUT-01.1 (DONE)
 
 **Description:**
-Define the LayoutV2 renderer contract specifying block aspect ratio (4:1), block capacity (4 units), item unit rules, deterministic packing rules, fit policies, and renderer input shape expectations.
+Implement LayoutV2 renderer with deterministic 4-unit packing into 4:1 blocks, responsive scaling, and no label-based height assumptions. Replace current renderer logic with LayoutV2 contract-compliant implementation.
 
 **Deliverables:**
-- Contract document at `docs/design/REPORT_LAYOUT_V2_CONTRACT.md`
-- Block aspect ratio: fixed 4:1
-- Block capacity: fixed 4 units
-- Item unit rules documented (Images: 16:9 = 2 units, 1:1 = 1 unit, 9:16 = 1 unit; Texts/charts: 1:1 = 1 unit, 2:1 = 2 units)
-- Deterministic packing rules (no ambiguity, same input => same layout)
-- Fit policies (text/charts never overflow inside their allocated unit slot)
-- Renderer input shape expectations (what Reporting will consume from Admin)
+- LayoutV2 renderer integration in `app/report/[slug]/ReportContent.tsx`
+- Deterministic 4-unit packing (sum of chart units ≤ 4 per block)
+- Block aspect ratio enforcement (4:1, height = width / 4)
+- Unit-based width allocation (itemWidth = (itemUnits / totalUnits) × blockWidth)
+- Responsive scaling across viewports
+- No label-based height assumptions (use measured heights)
+- Tests for deterministic packing fixtures
 
 **Owner:** Tribeca
 
@@ -880,25 +880,28 @@ Admin: A-UI-CLEAN-01, A-UI-15, ADM-RM-09, A-UI-LAYOUT-01.1
 ---
 
 ## 3. Execution Queue (Dependency-Ordered)
-1. A-03.4
-2. A-03
-3. A-05
-4. A-UI-12
-5. A-UI-13
-6. A-UI-01
-7. A-UI-10
-8. A-UI-11
-9. A-UI-14
-10. ADM-RM-02
-11. ADM-RM-10
-12. ADM-RM-07
-13. ADM-RM-08
-14. ADM-RM-04
-15. ADM-RM-06
-16. ADM-RM-11
-17. ADM-RM-12
-18. ADM-RM-13
-19. X-01
+1. R-LAYOUT-01.2
+2. R-LAYOUT-01.3
+3. R-LAYOUT-01.4
+4. A-03.4
+5. A-03
+6. A-05
+7. A-UI-12
+8. A-UI-13
+9. A-UI-01
+10. A-UI-10
+11. A-UI-11
+12. A-UI-14
+13. ADM-RM-02
+14. ADM-RM-10
+15. ADM-RM-07
+16. ADM-RM-08
+17. ADM-RM-04
+18. ADM-RM-06
+19. ADM-RM-11
+20. ADM-RM-12
+21. ADM-RM-13
+22. X-01
 
 ---
 
@@ -1015,22 +1018,14 @@ Admin: A-UI-CLEAN-01, A-UI-15, ADM-RM-09, A-UI-LAYOUT-01.1
 ---
 
 ## 8. STATE MEMORY (Current Only)
-**2026-01-15T12:45:00.000Z**
+**2026-01-15T13:02:00.000Z**
 - **AGENT:** Tribeca
 - **DOMAIN:** Reporting
-- **CURRENT TASK ID:** R-LAYOUT-01.1 – LayoutV2 Renderer Contract (Block + Item + Unit Rules)
-- **STATUS:** DONE
-- **LAST COMMIT(S):** `c442e29c7` - R-LAYOUT-01.1: LayoutV2 Renderer Contract - Block + Item + Unit Rules
+- **CURRENT TASK ID:** R-LAYOUT-01.2 – Implement LayoutV2 Block + Unit Packing Renderer
+- **STATUS:** ACTIVE
+- **LAST COMMIT(S):** `c442e29c7` - R-LAYOUT-01.1: LayoutV2 Renderer Contract, `775f76c43` - R-LAYOUT-01.1: Update ACTION_PLAN.md STATE MEMORY
 - **CURRENT BLOCKERS:** None
-- **NEXT EXPECTED OUTPUT:** Awaiting Architect assignment
-- **DELIVERABLES:**
-  - docs/design/REPORT_LAYOUT_V2_CONTRACT.md created with complete specifications
-  - Block aspect ratio: fixed 4:1 documented
-  - Block capacity: fixed 4 units documented
-  - Item unit rules: Images (16:9=2, 1:1=1, 9:16=1), Texts/charts (1:1=1, 2:1=2) documented
-  - Deterministic packing rules (same input => same layout) specified
-  - Fit policies (text/charts never overflow) specified
-  - Renderer input shape expectations (Admin -> Reporting contract) documented
+- **NEXT EXPECTED OUTPUT:** app/report/[slug]/ReportContent.tsx (LayoutV2 renderer integration) + tests
 
 **2026-01-15T10:23:47.000Z**
 - **AGENT:** Katja
