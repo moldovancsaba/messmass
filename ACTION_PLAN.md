@@ -1,8 +1,8 @@
 # ACTION_PLAN.md
 
-**Version:** 1.3.1  
+**Version:** 1.3.2  
 **Created:** 2026-01-12T00:09:33.679Z  
-**Last Updated (UTC):** 2026-01-15T13:40:00.000Z  
+**Last Updated (UTC):** 2026-01-15T15:00:00.000Z  
 **Status:** Active  
 **Canonical:** Yes  
 **Owner:** Chappie (The Architect)  
@@ -54,8 +54,9 @@
 
 2.2 LayoutV2 delivery order:
 - Reporting Contract + Admin Schema are prerequisites (DONE).
-- Reporting renderer implementation is prerequisite for Admin authoring integration (DONE).
-- Admin must be able to author LayoutV2 templates before we can validate end-to-end flows.
+- Reporting renderer implementation + regression alignment are prerequisites for Admin authoring integration (DONE).
+- Reporting supports variable blockAspectRatio for TEXT-AREA/TABLE (4:1–4:10) (DONE).
+- Admin authoring of LayoutV2 incl. optional blockAspectRatio is required before end-to-end validation.
 
 ---
 
@@ -64,12 +65,11 @@
 3.1 Priority is determined by technological dependency and risk containment.
 
 3.2 Queue (highest priority first):
-1) ADMIN: A-UI-LAYOUT-01.2 (Admin LayoutV2 authoring output in Visualization Editor)
-2) REPORTING: R-LAYOUT-01.3 (LayoutV2 end-to-end rendering alignment and regression pass)
-3) CROSS: X-LAYOUT-01 (Contract conformance fixtures: Admin output -> Reporting input)
-4) REPORTING: A-05 (Layout Grammar runtime enforcement guardrails)
-5) ADMIN: A-UI-12 (Report template model and selection rules)
-6) ADMIN: A-UI-13 (Style model and assignment rules)
+1) REPORTING: R-LAYOUT-01.3 (LayoutV2 end-to-end rendering alignment and regression pass)
+2) CROSS: X-LAYOUT-01 (Contract conformance fixtures: Admin output -> Reporting input)
+3) REPORTING: A-05 (Layout Grammar runtime enforcement guardrails)
+4) ADMIN: A-UI-12 (Report template model and selection rules)
+5) ADMIN: A-UI-13 (Style model and assignment rules)
 
 ---
 
@@ -77,23 +77,10 @@
 
 Owner: Tribeca (Reporting)
 
-### R-LAYOUT-01.3: LayoutV2 End-to-End Rendering Alignment (Regression Pass)
-
-- [ ] Align LayoutV2 renderer behaviour against real report data and all chart types
-  - Status: ASSIGNED
-  - Priority: High
-  - Dependencies: R-LAYOUT-01.2 (DONE)
-  - Owner: Tribeca
-  - Deliverables:
-    - Confirm LayoutV2 layout works for TEXT, KPI, BAR, PIE, TABLE, IMAGE (no overflow, no clipping)
-    - Remove any remaining legacy height-assumption paths if any still exist in Reporting runtime
-    - Add regression fixtures using representative report inputs
-    - Extend tests: __tests__/layoutV2-packing.test.ts to cover multi-block and mixed chart-type layouts
-
 ### A-05: Layout Grammar Runtime Enforcement
 
 - [ ] Define and implement correct runtime behaviour for missing critical CSS variables without production crashes
-  - Status: OPEN
+  - Status: ASSIGNED
   - Priority: Medium
   - Dependencies: Admin foundations (A-UI-LAYOUT-01.2, A-UI-12, A-UI-13)
   - Owner: Tribeca
@@ -109,8 +96,8 @@ Owner: Katja (Admin)
 
 ### A-UI-LAYOUT-01.2: Implement Admin LayoutV2 Template Builder Output (Visualization Editor)
 
-- [ ] Update the Admin report template editor to support LayoutV2 items with explicit unit size (1 or 2 units) and explicit aspect ratio per item type
-  - Status: ASSIGNED
+- [x] Update the Admin report template editor to support LayoutV2 items with explicit unit size (1 or 2 units) and explicit aspect ratio per item type
+  - Status: DONE
   - Priority: High
   - Dependencies: A-UI-LAYOUT-01.1 (DONE), docs/design/REPORT_LAYOUT_V2_CONTRACT.md, docs/design/ADMIN_LAYOUT_V2_SCHEMA.md
   - Owner: Katja
@@ -152,7 +139,7 @@ Owner: Katja (Admin)
 - [ ] Create shared fixtures that validate Admin LayoutV2 output matches Reporting LayoutV2 renderer input
   - Status: OPEN
   - Priority: High
-  - Dependencies: A-UI-LAYOUT-01.2, R-LAYOUT-01.3
+  - Dependencies: A-UI-12, A-UI-13, A-UI-LAYOUT-02.1, A-05
   - Owner: Chappie
   - Deliverables:
     - Minimal fixture templates (1-unit, 2-unit, mixed, max-capacity 4-unit)
@@ -174,6 +161,7 @@ Reporting:
 
 Admin:
 - A-UI-LAYOUT-01.1 (Schema)
+- A-UI-LAYOUT-01.2 (LayoutV2 authoring output)
 - ADM-RM-09 (Variable system enhancement)
 - A-UI-15 (End user guide)
 - A-UI-CLEAN-01 (Plan cleanup)
@@ -182,21 +170,7 @@ Admin:
 
 ---
 
-## 8. Critical Documentation Files (Must Keep Updated)
-
-**Top 5 Most Important .md Files Requiring Regular Updates:**
-
-1. **ACTION_PLAN.md** (this file) - Single source of truth for task tracking, agent state, and execution queue; update on every task assignment/completion
-2. **RELEASE_NOTES.md** - Versioned changelog of all delivered features; update on every release with version number and changes
-3. **docs/design/LAYOUT_GRAMMAR.md** - Core Layout Grammar specification; update when Layout Grammar rules change or new chart types added
-4. **docs/design/REPORT_LAYOUT_V2_CONTRACT.md** - LayoutV2 renderer contract between Admin and Reporting; update when LayoutV2 contract changes (aspect ratios, unit rules, packing rules)
-5. **README.md** - Project overview and documentation index; update version number (match package.json), last updated date, and feature list when major changes occur
-
-**Note:** These files are canonical or high-visibility and must be kept synchronized with code changes to prevent documentation drift.
-
----
-
-## 9. STATE MEMORY (Current Only)
+## 8. STATE MEMORY (Current Only)
 
  2026-01-15T14:18:00.000Z
 - AGENT: Tribeca
@@ -214,11 +188,11 @@ Admin:
   - Default behavior unchanged (4:1 when not specified)
   - Maintains deterministic layout guarantees
 
-2026-01-15T13:55:00.000Z
+2026-01-15T14:49:06.000Z
 - AGENT: Katja
 - DOMAIN: Admin
 - CURRENT TASK ID: A-UI-LAYOUT-01.2
-- STATUS: ACTIVE
-- LAST COMMIT(S): 3043f7be4, fda5cf521
+- STATUS: DONE
+- LAST COMMIT(S): 71e92e9fb - A-UI-LAYOUT-01.2: LayoutV2 authoring output
 - CURRENT BLOCKERS: None
-- NEXT EXPECTED OUTPUT: Admin Visualization Editor emits LayoutV2-compatible templates with validation + migration note + operator docs
+- NEXT EXPECTED OUTPUT: Awaiting Architect assignment
