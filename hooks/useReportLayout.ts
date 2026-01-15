@@ -20,6 +20,7 @@ export interface ReportBlock {
     width: number;
     order: number;
   }>;
+  blockAspectRatio?: string; // R-LAYOUT-02.1: Optional block aspect ratio override (e.g., "4:6")
 }
 
 /**
