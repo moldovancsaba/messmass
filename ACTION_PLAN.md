@@ -178,6 +178,21 @@ A-01, A-02, A-04, A-06, A-R-07, A-R-08, A-R-09 (deprecated), A-R-10, A-R-11, A-R
 
 ---
 
+## A-UI-LAYOUT-01.2: Implement Admin LayoutV2 Template Builder Output (Visualization Editor)
+
+**Ownership scope:** Global
+**Dependencies:** A-UI-LAYOUT-01.1 (DONE), docs/design/REPORT_LAYOUT_V2_CONTRACT.md
+
+### Checkable tasks
+- [ ] Update the Admin report template editor to support LayoutV2 items with explicit unit size (1 or 2 units) and explicit aspect ratio per item type.
+- [ ] Enforce the 4-unit block capacity rule at authoring time (prevent saving invalid layouts).
+- [ ] Add validation that item type -> allowed aspect ratios mapping matches the Reporting contract.
+- [ ] Ensure the saved template output matches the renderer input shape defined in `docs/design/REPORT_LAYOUT_V2_CONTRACT.md`.
+- [ ] Add an Admin-side migration note for existing templates (how they map to LayoutV2 defaults).
+- [ ] Update the Admin UI docs so operators know how to build blocks with unit limits and what happens on invalid input.
+
+---
+
 ## A-UI-01: Partners (Partner Model, Partner Report, Partner Scoping)
 
 **Ownership scope:** Partner
@@ -804,42 +819,25 @@ Admin: A-UI-CLEAN-01, A-UI-15, ADM-RM-09, A-UI-LAYOUT-01.1
 
 ---
 
-## 9. STATE MEMORY (Current Only)
+## STATE MEMORY (Current Only)
 
-**2026-01-15T[UTC_TIME]Z**
+**2026-01-15T13:05:00.000Z**
 - **AGENT:** Tribeca
 - **DOMAIN:** Reporting
-- **CURRENT TASK ID:** A-03.4 – Layout Grammar Text Safety Standardization (All Charts)
-- **STATUS:** DONE
-- **LAST COMMIT(S):** `8db71ecd1` - A-03.4: Layout Grammar Text Safety Standardization - PIE chart measured height fix
+- **CURRENT TASK ID:** R-LAYOUT-01.2: Implement LayoutV2 Block + Unit Packing Renderer
+- **STATUS:** ACTIVE
+- **LAST COMMIT(S):** c442e29c7, 775f76c43
 - **CURRENT BLOCKERS:** None
-- **NEXT EXPECTED OUTPUT:** Awaiting Architect assignment
-- **DELIVERABLES:**
-  - Layout Grammar documentation updated with measured height standard pattern
-  - PIE chart mobile layout fixed using measured body height calculation (KPI-safe pattern)
-  - CSS updated to use measured heights via CSS variables (removed mobile flex overrides)
-  - IMAGE chart verified (uses CellWrapper with title/subtitle scaling)
-  - All chart types now use consistent measured height pattern for Layout Grammar compliance
+- **NEXT EXPECTED OUTPUT:** Code: `app/report/[slug]/ReportContent.tsx` (LayoutV2 renderer integration) + deterministic packing tests
 
-**2026-01-14T12:35:00.000Z**
-- **AGENT:** Tribeca
-- **DOMAIN:** Reporting
-- **CURRENT TASK ID:** A-03
-- **STATUS:** DONE
-- **LAST COMMIT(S):** `c1c167d03` - fix(A-03.1+A-03.2): Height calculation fixes for TEXT AREA and KPI charts
-- **CURRENT BLOCKERS:** Push to HTTPS remote requires authentication
-- **NEXT EXPECTED OUTPUT:** Resolve Git authentication for HTTPS remote and push commit `c1c167d03`
-
-**2026-01-15T12:26:53.000Z**
+**2026-01-15T13:05:00.000Z**
 - **AGENT:** Katja
 - **DOMAIN:** Admin
-- **CURRENT TASK ID:** A-UI-LAYOUT-01.1
-- **STATUS:** DONE
-- **LAST COMMIT(S):** `3043f7be4` - docs(A-UI-LAYOUT-01.1): Admin LayoutV2 schema
+- **CURRENT TASK ID:** A-UI-LAYOUT-01.2: Implement Admin LayoutV2 Template Builder Output (Visualization Editor)
+- **STATUS:** ASSIGNED
+- **LAST COMMIT(S):** 3043f7be4, fda5cf521
 - **CURRENT BLOCKERS:** None
-- **NEXT EXPECTED OUTPUT:** Awaiting next Admin assignment
-
----
+- **NEXT EXPECTED OUTPUT:** Code + docs updates in Admin template editor to emit LayoutV2-compatible template output
 
 # ACTION_PLAN.md
 
@@ -1022,10 +1020,19 @@ Admin: A-UI-CLEAN-01, A-UI-15, ADM-RM-09, A-UI-LAYOUT-01.1
 - **AGENT:** Tribeca
 - **DOMAIN:** Reporting
 - **CURRENT TASK ID:** R-LAYOUT-01.2 – Implement LayoutV2 Block + Unit Packing Renderer
-- **STATUS:** ACTIVE
-- **LAST COMMIT(S):** `c442e29c7` - R-LAYOUT-01.1: LayoutV2 Renderer Contract, `775f76c43` - R-LAYOUT-01.1: Update ACTION_PLAN.md STATE MEMORY
+- **STATUS:** DONE
+- **LAST COMMIT(S):** `c442e29c7` - R-LAYOUT-01.1: LayoutV2 Renderer Contract, `775f76c43` - R-LAYOUT-01.1: Update ACTION_PLAN.md STATE MEMORY, Pending (R-LAYOUT-01.2: LayoutV2 renderer implementation commit)
 - **CURRENT BLOCKERS:** None
-- **NEXT EXPECTED OUTPUT:** app/report/[slug]/ReportContent.tsx (LayoutV2 renderer integration) + tests
+- **NEXT EXPECTED OUTPUT:** Awaiting Architect assignment
+- **DELIVERABLES:**
+  - lib/layoutV2BlockCalculator.ts created (LayoutV2 contract implementation)
+  - app/report/[slug]/ReportContent.tsx updated (LayoutV2 renderer integration)
+  - Block height: blockHeight = blockWidth / 4 (4:1 aspect ratio) implemented
+  - Block capacity validation: sum(itemUnits) ≤ 4 implemented
+  - Unit-based width allocation: itemWidth = (itemUnits / totalUnits) × blockWidth implemented
+  - Deterministic grid columns: convert widths to fr units implemented
+  - Removed label-based height assumptions
+  - Tests added: __tests__/layoutV2-packing.test.ts (all passing)
 
 **2026-01-15T10:23:47.000Z**
 - **AGENT:** Katja
