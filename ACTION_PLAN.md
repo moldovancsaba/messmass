@@ -78,14 +78,14 @@ Owner: Tribeca (Reporting)
 
 ### A-05: Layout Grammar Runtime Enforcement
 
-- [ ] Define and implement correct runtime behaviour for missing critical CSS variables without production crashes
-  - Status: ASSIGNED
+- [x] Define and implement correct runtime behaviour for missing critical CSS variables without production crashes
+  - Status: DONE
   - Priority: Medium
   - Dependencies: Admin foundations (A-UI-LAYOUT-01.2, A-UI-12, A-UI-13)
   - Owner: Tribeca
   - Deliverables:
-    - Guardrails in reporting runtime
-    - Tests for failure modes
+    - Guardrails in reporting runtime (log errors, never throw)
+    - Tests for failure modes (16 tests covering all failure modes)
 
 ---
 
@@ -153,6 +153,7 @@ Reporting:
 - R-LAYOUT-01.2 (Renderer implementation)
 - R-LAYOUT-01.3 (Regression alignment)
 - R-LAYOUT-02.1 (Variable blockAspectRatio support)
+- A-05 (Layout Grammar runtime enforcement guardrails)
 - A-03.1 (TEXT AREA height fix)
 - A-03.2 (KPI height fix)
 - A-03.3 (BAR height accuracy)
