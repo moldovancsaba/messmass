@@ -22,7 +22,7 @@ import styles from './ReportChart.module.css';
 import { parseMarkdown } from '@/lib/markdownUtils';
 import { parseTableMarkdown } from '@/lib/tableMarkdownUtils';
 import { sanitizeHTML } from '@/lib/sanitize';
-import { validateCriticalCSSVariable, CRITICAL_CSS_VARIABLES } from '@/lib/layoutGrammarRuntimeEnforcement';
+import { safeValidate, validateCriticalCSSVariable, CRITICAL_CSS_VARIABLES } from '@/lib/layoutGrammarRuntimeEnforcement';
 import { getUserFriendlyErrorMessage } from '@/lib/chartErrorTypes';
 import { validateChartData, formatValidationIssue } from '@/lib/export/chartValidation';
 import type { Chart } from '@/lib/report-calculator';
@@ -1214,28 +1214,25 @@ function BarChart({ result, className }: { result: ChartResult; className?: stri
           }
           
           // WHAT: Validate critical CSS variables with runtime enforcement (A-05)
-          // WHY: Fail-fast in production for critical violations
-          // HOW: Use validateCriticalCSSVariable which throws in production, warns in dev
-          // NOTE: Wrapped in try-catch to prevent validation errors from crashing component rendering
-          try {
-            validateCriticalCSSVariable(
+          // WHY: Log violations for monitoring without crashing the report
+          // HOW: Use safeValidate wrapper to ensure errors are caught and logged
+          safeValidate(
+            () => validateCriticalCSSVariable(
               chartContainer,
               CRITICAL_CSS_VARIABLES.CHART_BODY_HEIGHT,
               { chartId: result.chartId, chartType: 'bar', containerHeight }
+            ),
+            `[BarChart ${result.chartId}] CSS variable validation failed for --chart-body-height`
             );
-          } catch (error) {
-            console.error('[BarChart] CSS variable validation error:', error);
-          }
           
-          try {
-            validateCriticalCSSVariable(
+          safeValidate(
+            () => validateCriticalCSSVariable(
               chartContainer,
               CRITICAL_CSS_VARIABLES.BLOCK_HEIGHT,
               { chartId: result.chartId, chartType: 'bar' }
+            ),
+            `[BarChart ${result.chartId}] CSS variable validation failed for --block-height`
             );
-          } catch (error) {
-            console.error('[BarChart] CSS variable validation error:', error);
-          }
         } catch (error) {
           console.error('[BarChart] Unexpected error during height validation:', error);
         }
@@ -1604,36 +1601,29 @@ function TextChart({ result, unifiedTextFontSize, className }: { result: ChartRe
           }
           
           // WHAT: Validate critical CSS variables with runtime enforcement (A-05)
-          // WHY: Fail-fast in production for critical violations
-          // HOW: Use validateCriticalCSSVariable which throws in production, warns in dev
-          // NOTE: Wrapped in try-catch to prevent validation errors from crashing component rendering
-          try {
-            validateCriticalCSSVariable(
+          // WHY: Log violations for monitoring without crashing the report
+          // HOW: Use safeValidate wrapper to ensure errors are caught and logged
+          safeValidate(
+            () => validateCriticalCSSVariable(
               textChartRef.current,
               CRITICAL_CSS_VARIABLES.TEXT_CONTENT_HEIGHT,
               { chartId: result.chartId, chartType: 'text', containerHeight: textChartRef.current?.offsetHeight || 0 }
-            );
-          } catch (error) {
-            // WHAT: Log validation error but don't crash component
-            // WHY: Validation failures should be logged but not break user experience
-            console.error('[TextChart] CSS variable validation error:', error);
-          }
+            ),
+            `[TextChart ${result.chartId}] CSS variable validation failed for --text-content-height`
+          );
           
           // WHAT: Check --block-height on row element (where it's set) instead of chart element
           // WHY: CSS variable is set on row, chart inherits it but getComputedStyle may not return inherited value
           // HOW: Validate on row element if found, otherwise fall back to chart element
           const blockHeightElement = rowElement || textChartRef.current;
-          try {
-            validateCriticalCSSVariable(
+          safeValidate(
+            () => validateCriticalCSSVariable(
               blockHeightElement,
               CRITICAL_CSS_VARIABLES.BLOCK_HEIGHT,
               { chartId: result.chartId, chartType: 'text', checkedOnRow: !!rowElement }
-            );
-          } catch (error) {
-            // WHAT: Log validation error but don't crash component
-            // WHY: Validation failures should be logged but not break user experience
-            console.error('[TextChart] CSS variable validation error:', error);
-          }
+            ),
+            `[TextChart ${result.chartId}] CSS variable validation failed for --block-height`
+          );
         } catch (error) {
           // WHAT: Catch any unexpected errors during validation
           // WHY: Prevent validation logic from crashing component rendering
@@ -1949,43 +1939,38 @@ function TableChart({ result, className }: { result: ChartResult; className?: st
           }
           
           // WHAT: Validate critical CSS variables with runtime enforcement (A-05)
-          // WHY: Fail-fast in production for critical violations
-          // HOW: Use validateCriticalCSSVariable which throws in production, warns in dev
-          // NOTE: Wrapped in try-catch to prevent validation errors from crashing component rendering
-          // NOTE: Delay validation slightly to ensure height calculation has completed
-          try {
-            validateCriticalCSSVariable(
+          // WHY: Log violations for monitoring without crashing the report
+          // HOW: Use safeValidate wrapper to ensure errors are caught and logged
+          safeValidate(
+            () => validateCriticalCSSVariable(
               tableContentRef.current,
               CRITICAL_CSS_VARIABLES.TEXT_CONTENT_HEIGHT,
               { chartId: result.chartId, chartType: 'table' }
+            ),
+            `[TableChart ${result.chartId}] CSS variable validation failed for --text-content-height`
             );
-          } catch (error) {
-            console.error('[TableChart] CSS variable validation error:', error);
-          }
           
-          try {
-            validateCriticalCSSVariable(
+          safeValidate(
+            () => validateCriticalCSSVariable(
               chartContainer,
               CRITICAL_CSS_VARIABLES.CHART_BODY_HEIGHT,
               { chartId: result.chartId, chartType: 'table' }
-            );
-          } catch (error) {
-            console.error('[TableChart] CSS variable validation error:', error);
-          }
+            ),
+            `[TableChart ${result.chartId}] CSS variable validation failed for --chart-body-height`
+          );
           
           // WHAT: Check --block-height on row element (where it's set) instead of chart element
           // WHY: CSS variable is set on row, chart inherits it but getComputedStyle may not return inherited value
           // HOW: Validate on row element if found, otherwise fall back to chart container
           const blockHeightElement = rowElement || chartContainer;
-          try {
-            validateCriticalCSSVariable(
+          safeValidate(
+            () => validateCriticalCSSVariable(
               blockHeightElement,
               CRITICAL_CSS_VARIABLES.BLOCK_HEIGHT,
               { chartId: result.chartId, chartType: 'table', checkedOnRow: !!rowElement }
+            ),
+            `[TableChart ${result.chartId}] CSS variable validation failed for --block-height`
             );
-          } catch (error) {
-            console.error('[TableChart] CSS variable validation error:', error);
-          }
         } catch (error) {
           console.error('[TableChart] Unexpected error during height validation:', error);
         }

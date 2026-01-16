@@ -65,11 +65,10 @@
 3.1 Priority is determined by technological dependency and risk containment.
 
 3.2 Queue (highest priority first):
-1) ADMIN: A-UI-12 (Report template model and selection rules)
-2) ADMIN: A-UI-13 (Style model and assignment rules)
-3) ADMIN: A-UI-LAYOUT-02.1 (Variable blockAspectRatio authoring for TEXT-AREA/TABLE)
-4) REPORTING: A-05 (Layout Grammar runtime enforcement guardrails)
-5) CROSS: X-LAYOUT-01 (Contract conformance fixtures: Admin output -> Reporting input)
+1) ADMIN: A-UI-13 (Style model and assignment rules)
+2) ADMIN: A-UI-LAYOUT-02.1 (Variable blockAspectRatio authoring for TEXT-AREA/TABLE)
+3) REPORTING: A-05 (Layout Grammar runtime enforcement guardrails)
+4) CROSS: X-LAYOUT-01 (Contract conformance fixtures: Admin output -> Reporting input)
 
 ---
 
@@ -110,8 +109,8 @@ Owner: Katja (Admin)
 
 ### A-UI-12: Reporting (Report Structures)
 
-- [ ] Define report template model, data blocks, and selection rules (global -> partner -> event)
-  - Status: OPEN
+- [x] Define report template model, data blocks, and selection rules (global -> partner -> event)
+  - Status: DONE
   - Priority: Medium
   - Dependencies: None
   - Owner: Katja
@@ -164,6 +163,7 @@ Reporting:
 Admin:
 - A-UI-LAYOUT-01.1 (Schema)
 - A-UI-LAYOUT-01.2 (LayoutV2 authoring output)
+- A-UI-12 (Report template model + selection rules)
 - ADM-RM-09 (Variable system enhancement)
 - A-UI-15 (End user guide)
 - A-UI-CLEAN-01 (Plan cleanup)
@@ -183,11 +183,11 @@ Admin:
 - CURRENT BLOCKERS: None
 - NEXT EXPECTED OUTPUT: Runtime guardrails + tests + STATE MEMORY update
 
-2026-01-15T15:00:00.000Z
+2026-01-16T11:13:59.000Z
 - AGENT: Katja
 - DOMAIN: Admin
 - CURRENT TASK ID: A-UI-12
-- STATUS: ASSIGNED
+- STATUS: DONE
 - LAST COMMIT(S): 71e92e9fb
 - CURRENT BLOCKERS: None
-- NEXT EXPECTED OUTPUT: A-UI-12 docs + model mapping + STATE MEMORY update
+- NEXT EXPECTED OUTPUT: Awaiting Architect assignment

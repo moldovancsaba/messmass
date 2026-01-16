@@ -13,7 +13,7 @@ import { calculateSyncedFontSizes } from '@/lib/fontSyncCalculator';
 import type { CellConfiguration } from '@/lib/layoutGrammar';
 import { useUnifiedTextFontSize } from '@/hooks/useUnifiedTextFontSize';
 import { calculateBlockFontSizeForBarCharts } from '@/lib/barChartFontSizeCalculator';
-import { validateCriticalCSSVariable, CRITICAL_CSS_VARIABLES } from '@/lib/layoutGrammarRuntimeEnforcement';
+import { safeValidate, validateCriticalCSSVariable, CRITICAL_CSS_VARIABLES } from '@/lib/layoutGrammarRuntimeEnforcement';
 import { 
   calculateLayoutV2BlockHeight, 
   validateLayoutV2BlockCapacity,
@@ -280,23 +280,29 @@ function ResponsiveRow({ rowCharts, chartResults, charts, rowIndex, unifiedTextF
     };
   }, [rowCharts, chartResults, rowIndex]); // Re-run if charts change
   
-  // WHAT: Runtime validation for CSS variables (P1 1.4 Phase 1 + A-05: Runtime Enforcement)
-  // WHY: Warn if height CSS variables are not set, enforce in production
-  // HOW: Check computed styles after CSS variables are applied, enforce in production
+  // WHAT: Runtime validation for CSS variables (A-05: Runtime Enforcement)
+  // WHY: Log violations for monitoring without crashing the report
+  // HOW: Use safeValidate wrapper to catch any errors, log violations with context
   useEffect(() => {
     if (rowRef.current && typeof window !== 'undefined') {
-      // WHAT: Validate critical CSS variables with runtime enforcement
-      // WHY: A-05 requires fail-fast behavior in production for critical violations
-      // HOW: Use validateCriticalCSSVariable which throws in production, warns in dev
-      validateCriticalCSSVariable(
-        rowRef.current,
-        CRITICAL_CSS_VARIABLES.ROW_HEIGHT,
-        { rowIndex, calculatedHeight: rowHeight, type: 'row' }
+      // WHAT: Validate critical CSS variables with runtime enforcement (A-05)
+      // WHY: Log violations for monitoring but don't crash the report
+      // HOW: Use safeValidate wrapper to ensure errors are caught and logged
+      safeValidate(
+        () => validateCriticalCSSVariable(
+          rowRef.current,
+          CRITICAL_CSS_VARIABLES.ROW_HEIGHT,
+          { rowIndex, calculatedHeight: rowHeight, type: 'row' }
+        ),
+        `[ResponsiveRow ${rowIndex}] CSS variable validation failed for --row-height`
       );
-      validateCriticalCSSVariable(
-        rowRef.current,
-        CRITICAL_CSS_VARIABLES.BLOCK_HEIGHT,
-        { rowIndex, calculatedHeight: rowHeight, type: 'row' }
+      safeValidate(
+        () => validateCriticalCSSVariable(
+          rowRef.current,
+          CRITICAL_CSS_VARIABLES.BLOCK_HEIGHT,
+          { rowIndex, calculatedHeight: rowHeight, type: 'row' }
+        ),
+        `[ResponsiveRow ${rowIndex}] CSS variable validation failed for --block-height`
       );
     }
   }, [rowHeight, rowIndex]);
