@@ -1085,14 +1085,13 @@
 }
 
 .CellWrapper_bodyZone__ps_rO .pieLegend {
-  /* WHAT: Preferred 30% height, can grow if needed - Layout Grammar: no scrolling */
-  /* WHY: Maintain preferred legend size when inside CellWrapper (3:4:3 ratio), but allow growth */
-  flex: 1 1 30% !important; /* Prefer 30%, but can grow if content exceeds (no scrolling) */
-  /* WHAT: Removed max-height and overflow-y - Layout Grammar: content must fit without scrolling */
-  display: flex;
-  flex-direction: column;
+  /* WHAT: Grid row 3 - fixed 30% proportion (CSS Grid layout) */
+  /* WHY: CSS Grid ensures fixed proportion, no flex competition or overflow */
+  display: flex !important;
+  flex-direction: column !important;
   justify-content: flex-start !important; /* WHAT: Changed from center to flex-start to prevent clipping in constrained blocks */
-  overflow: visible !important; /* WHAT: Changed from hidden to visible - Layout Grammar: content must be visible, container grows to fit */
+  overflow: visible !important; /* WHAT: Layout Grammar: content must be visible */
+  min-height: 0 !important; /* CRITICAL: Allow grid row to shrink if needed */
   box-sizing: border-box;
 }
 
