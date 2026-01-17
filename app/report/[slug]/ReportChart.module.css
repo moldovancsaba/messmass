@@ -1196,12 +1196,14 @@
     width: 100% !important;
   }
   .pieTitleRow {
-    /* WHAT: Grid row 1 - fixed 30% proportion */
+    /* WHAT: Grid row 1 - fixed 30% proportion, fills full grid row height */
     display: flex !important;
     align-items: center !important;
     justify-content: center !important;
+    height: 100% !important; /* CRITICAL: Fill full grid row height */
     min-height: 0 !important; /* Allow grid row to shrink if needed */
     overflow: hidden !important; /* Prevent overflow */
+    box-sizing: border-box !important;
   }
   .pieChartContainer {
     /* WHAT: Grid row 2 - fixed 40% proportion */
@@ -1227,19 +1229,20 @@
     object-fit: contain !important; /* Ensure it fits within constraints */
   }
   
-  /* WHAT: Pie legend - same behavior as desktop on mobile - Layout Grammar: no scrolling */
-  /* WHY: Consistent sizing across all viewports, prevent collapse, content must fit */
-  /* HOW: Maintain flex basis with max-height constraint (P1 1.4 Phase 3: removed min-height for deterministic behavior) */
+  /* WHAT: Pie legend - Grid row 3 (30% of cell) - CSS Grid layout */
+  /* WHY: CSS Grid ensures fixed 30% proportion, prevents overflow */
+  /* HOW: Grid row with flex column for legend items, fills allocated space */
   .pieLegend {
-    flex: 0 0 auto !important; /* Let legend size to content */
-    width: 100% !important;
-    max-height: 50% !important; /* Allow growth but bound it */
-    max-width: 100% !important;
-    justify-content: flex-start !important; /* WHAT: Changed from center to flex-start to prevent clipping in constrained blocks */
-    overflow: visible !important; /* WHAT: Changed from hidden to visible - Layout Grammar: content must be visible, container grows to fit */
-    /* WHAT: Removed max-height and overflow-y - Layout Grammar: content must fit without scrolling */
+    /* WHAT: Grid row 3 - fixed 30% proportion, fills full grid row height */
     display: flex !important;
     flex-direction: column !important;
+    width: 100% !important;
+    height: 100% !important; /* CRITICAL: Fill full grid row 3 height */
+    min-height: 0 !important; /* Allow grid row to shrink if needed */
+    overflow: visible !important; /* WHAT: Layout Grammar: content must be visible */
+    justify-content: flex-start !important; /* Align legend items to start */
+    align-items: stretch !important;
+    box-sizing: border-box !important;
   }
   
   /* WHAT: Image charts respect aspect ratio on mobile
