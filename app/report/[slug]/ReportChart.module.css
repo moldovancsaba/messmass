@@ -207,23 +207,31 @@
 
 /* Pie Chart - Uses base .chart structure */
 
-/* Container grid for title (40%), pie (40%), legend (20%) */
+/* Container grid for title, pie, legend - CSS Grid layout (table-style) */
 .pieGrid {
+  /* WHAT: CSS Grid layout (same as KPI charts) to prevent overflow on mobile */
+  /* WHY: Fixed proportions ensure content stays within frame, no overflow */
+  /* HOW: Use grid-template-rows with fixed proportions (3fr:4fr:3fr = 30%:40%:30%) */
   height: 100%;
   width: 100%;
-  display: flex;
-  flex-direction: column;
+  display: grid;
+  grid-template-rows: 3fr 4fr 3fr; /* Title (30%) : Pie (40%) : Legend (30%) */
+  gap: 0;
   align-items: stretch;
-  justify-content: flex-start;
+  justify-items: stretch;
 }
 
-/* Title row: 40% of cell, vertically centered */
+/* Title row: Grid row 1 (30% of cell), vertically centered */
 .pieTitleRow {
-  flex: 0 0 30%; /* 3:4:3 → title 30% */
+  /* WHAT: Grid row 1 - fixed 30% proportion */
+  /* WHY: CSS Grid ensures fixed proportion, no flex competition */
+  /* HOW: Grid row with flex centering for content */
   display: flex;
   align-items: center;
   justify-content: center;
   padding: var(--mm-space-1) var(--mm-space-2);
+  min-height: 0; /* CRITICAL: Allow grid row to shrink if needed */
+  overflow: hidden; /* Prevent overflow */
 }
 
 .pieTitleText {
@@ -1178,18 +1186,28 @@
     container-type: size; /* Ensure container queries work on mobile */
   }
   
-  /* WHAT: A-03.4 - PIE chart uses measured body height on mobile (same as desktop) */
-  /* WHY: KPI-safe pattern - guaranteed height, no competing flex containers */
-  /* HOW: JavaScript calculates bodyHeight and sets --chart-body-height CSS variable */
+  /* WHAT: PIE chart uses CSS Grid layout on mobile (same as desktop, same as KPI charts) */
+  /* WHY: Table-style layout ensures fixed proportions, prevents overflow */
+  /* HOW: CSS Grid with grid-template-rows: 3fr 4fr 3fr ensures content stays within frame */
+  .pieGrid {
+    display: grid !important; /* WHAT: CSS Grid layout (table-style) */
+    grid-template-rows: 3fr 4fr 3fr !important; /* Title (30%) : Pie (40%) : Legend (30%) */
+    height: 100% !important;
+    width: 100% !important;
+  }
   .pieTitleRow {
-    flex: 0 0 auto !important; /* Let title size to content */
+    /* WHAT: Grid row 1 - fixed 30% proportion */
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    min-height: 0 !important; /* Allow grid row to shrink if needed */
+    overflow: hidden !important; /* Prevent overflow */
   }
   .pieChartContainer {
-    /* WHAT: Use measured body height (set by JavaScript) */
-    /* WHY: Guaranteed height prevents chart container from competing with title/legend */
-    height: var(--chart-body-height, 40%) !important; /* WHAT: Use measured height, fallback to 40% */
+    /* WHAT: Grid row 2 - fixed 40% proportion */
+    height: 100% !important; /* Fill grid row 2 */
     width: 100% !important;
-    min-height: 0 !important; /* Allow flex shrinking if needed */
+    min-height: 0 !important; /* Allow grid row to shrink if needed */
     position: relative !important;
     overflow: visible !important; /* WHAT: P1 1.6 - Layout Grammar: no clipping on content layers, Chart.js canvas must be fully visible */
     display: flex !important;
