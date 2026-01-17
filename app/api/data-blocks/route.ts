@@ -11,7 +11,13 @@ const MONGODB_DB = config.dbName;
 interface DataVisualizationBlock {
   _id?: string;
   name: string;
-  charts: Array<{ chartId: string; width: number; order: number }>;
+  charts: Array<{
+    chartId: string;
+    width: number;
+    order: number;
+    unitSize?: 1 | 2;
+    aspectRatio?: '1:1' | '2:1' | '16:9' | '9:16';
+  }>;
   order: number;
   isActive: boolean;
   showTitle?: boolean;

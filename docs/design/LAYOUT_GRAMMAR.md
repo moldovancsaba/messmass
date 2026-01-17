@@ -1,11 +1,11 @@
 # Layout Grammar
 Status: Active
-Last Updated: 2026-01-11T22:28:38.000Z
+Last Updated: 2026-01-15T14:18:00.000Z
 Canonical: No
 Owner: Architecture
 
-**Version:** 1.0.1  
-**Last Updated: 2026-01-11T22:28:38.000Z
+**Version:** 1.0.2  
+**Last Updated:** 2026-01-15T14:18:00.000Z
 **Status:** Active
 
 ---
@@ -60,6 +60,28 @@ Block height is resolved using a 4-priority algorithm:
 - All elements in a block share the same base font size (`--block-base-font-size`)
 - Exception: KPI values scale independently (explicit exemption)
 - Typography scales proportionally to available space
+
+### 5.1. Measured Height Standard (Text Safety)
+**Standard Pattern for All Chart Types:**
+All chart types must use measured height calculation to ensure text fits without overflow:
+
+1. **Measure Container Height:** Use refs to measure actual rendered container height (`offsetHeight`)
+2. **Calculate Allocated Space:** Based on fixed ratios (e.g., KPI: 4fr:3fr:3fr = 40%:30%:30%)
+3. **Measure Actual Content Height:** Use `offsetHeight` to measure actual rendered content
+4. **Reduce Font Size if Needed:** If `actualHeight > availableHeight`, calculate proportional font size reduction
+5. **Apply with `!important`:** Use `style.setProperty('font-size', value, 'important')` to override CSS clamp() rules
+6. **Dynamic Updates:** Use `ResizeObserver` + `MutationObserver` for responsive updates
+
+**Why This Works:**
+- Guaranteed height allocation (no competing flex containers)
+- Measured actual vs. allocated space (deterministic)
+- Font size reduction prevents overflow (Layout Grammar compliance)
+- Works across all viewports (desktop + mobile)
+
+**Anti-Pattern (Avoid):**
+- ❌ Competing flex containers with `flex: 0 0 auto` on mobile
+- ❌ Fixed flex percentages without measured heights
+- ❌ CSS-only solutions that don't account for actual content height
 
 ### 6. Element-Specific Contracts
 

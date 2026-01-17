@@ -1,9 +1,9 @@
 # AUDIT_ACTION_PLAN.md
 
-**Version:** 1.1.6  
+**Version:** 1.1.7  
 **Created:** 2026-01-12T00:09:33.679Z  
 **Last Reviewed:** 2026-01-12T10:05:00.000Z  
-**Last Updated:** 2026-01-12T10:05:00.000Z  
+**Last Updated:** 2026-01-12T13:18:36.000Z  
 **Status:** Active  
 **Canonical:** Yes  
 **Owner:** Architecture  
@@ -404,7 +404,7 @@ No performance optimizations were applied beyond what was necessary for correctn
 
 **Document Status:** Active executable action plan. Items trackable and actionable.
 
-**Last Verified:** 2026-01-12T02:05:00.000Z
+**Last Verified:** 2026-01-13T18:30:00.000Z
 
 
 
@@ -413,243 +413,8 @@ No performance optimizations were applied beyond what was necessary for correctn
 
 ## ADMIN UI REFACTOR PROGRAM (Actionable Breakdown)
 
-**Status:** PLANNED  
+**Status:** Moved to `ACTION_PLAN.md` (canonical for Admin roadmap state).  
 **Owner:** Architecture (Chappie)  
-**Execution:** Documentation + Engineering (Katja + Tribeca)  
+**Execution:** Documentation + Engineering (Katja + Tribeca)
 
-### Objectives
-- Unify the Admin UI into one coherent system (layout, components, patterns).
-- Remove hardcoded styling and fragmented modal/form/table patterns.
-- Reduce partner-level vs global configuration noise by defining a single ownership model.
-- Produce an executable action plan equivalent in quality to the Reports audit program.
-
-### Non-Goals
-- No new product features.
-- No conceptual redesign of the product.
-- No polish work that does not remove technical or product debt.
-
----
-
-## A-UI-00: Admin Capability Map and Ownership Model
-
-**Goal:** Build a precise map of what exists in Admin, how it connects to Reports, and what is global vs partner-scoped.
-
-### Deliverables
-- `docs/audits/admin-ui/ADMIN_UI_CAPABILITY_MAP.md`
-- `docs/audits/admin-ui/ADMIN_UI_OWNERSHIP_MODEL.md`
-- `docs/audits/admin-ui/ADMIN_UI_GLOSSARY.md`
-
-### Action Checklist
-- [ ] Inventory Admin navigation routes and pages (real paths, not labels).
-- [ ] For each area below, document:
-  - [ ] Purpose (what problem it solves)
-  - [ ] Primary entities (what it creates/edits)
-  - [ ] Inputs (manual, imports, third party)
-  - [ ] Outputs (which reports/insights it drives)
-  - [ ] Ownership scope (Global, Partner, Event, User)
-  - [ ] Permissions (who can use it)
-  - [ ] Known inconsistencies and duplicate flows
-- [ ] Produce a single “Ownership Model” table defining what MUST be global vs partner-scoped.
-- [ ] Flag candidates for removal or merge (duplications, unused areas, inconsistent patterns).
-
----
-
-## A-UI-01: Partners (Partner Model, Partner Report, Partner Scoping)
-
-### What to document
-- [ ] What a Partner is (business meaning and data model fields).
-- [ ] How we create and manage Partners.
-- [ ] What a “Partner Report” is and how it differs from global reports.
-- [ ] Current scoping: partner-level KYC, partner-level Algorithms, partner-level Reporting, partner-level Styles.
-
-### Debt and noise to resolve
-- [ ] Identify where partner-specific configuration is duplicated across multiple screens.
-- [ ] Identify where global configuration leaks into partner screens (or the opposite).
-- [ ] Decide one clean ownership model:
-  - [ ] Which settings are Global only
-  - [ ] Which settings are Partner overrides
-  - [ ] Which settings are Event-scoped
-
-### Outputs
-- [ ] Proposed “Partner Admin” information architecture (IA) with minimal pages.
-- [ ] List of pages to merge/remove after ownership model is enforced.
-
----
-
-## A-UI-02: Events (Creation, Lifecycle, Connection to Reports)
-
-### What to document
-- [ ] Definition of Event (business and technical).
-- [ ] Event creation workflow and required fields.
-- [ ] Event lifecycle states and where they are set.
-- [ ] How Events connect to Partners.
-- [ ] How Events connect to KYC, Algorithms, Clicker Manager inputs, and final Reports.
-
-### Outputs
-- [ ] Event data flow diagram (inputs to outputs).
-- [ ] Checklist of event-level admin tasks (what must be done per event).
-
----
-
-## A-UI-03: Filters (Purpose, Where Used, Which Reports Depend on Them)
-
-### What to document
-- [ ] What Filters represent (taxonomy, segmentation, analytics dimensions).
-- [ ] Where filters are created/edited.
-- [ ] Which reports use filters and how.
-- [ ] Whether filters are global or partner/event scoped.
-
-### Outputs
-- [ ] A “Filter usage matrix” mapping Filters to Reports and Insights.
-
----
-
-## A-UI-04: Users (User Types, Permissions, Authentication)
-
-### What to document
-- [ ] User types and roles (exact list).
-- [ ] Which pages each role can access.
-- [ ] Authentication method(s) and how admin access is granted.
-- [ ] How partner association is handled for users.
-
-### Outputs
-- [ ] Role-permission table.
-- [ ] Authentication and onboarding flow description.
-
----
-
-## A-UI-05: Insights (What They Are, How They Are Generated)
-
-### What to document
-- [ ] What “Insights” are (entities, dashboards, outputs).
-- [ ] Which underlying data they depend on (KYC, Events, Clicker inputs).
-- [ ] Where and how Insights are configured.
-
----
-
-## A-UI-06: KYC (Source of Algorithms and Reports)
-
-**Priority:** CRITICAL
-
-### What to document
-- [ ] Exact meaning of KYC in this system (it is not generic banking KYC).
-- [ ] What data KYC collects and stores.
-- [ ] How KYC drives Algorithms.
-- [ ] How KYC drives Reports.
-- [ ] KYC ownership and scope: global vs partner vs event.
-
-### Noise and inconsistency to resolve
-- [ ] Identify where KYC exists in multiple places (duplicate editors, duplicate fields).
-- [ ] Identify mismatches between partner-level KYC and global KYC.
-- [ ] Decide single source of truth and override rules.
-
-### Outputs
-- [ ] KYC canonical model definition.
-- [ ] KYC to Algorithms mapping list.
-- [ ] KYC to Report templates mapping list.
-
----
-
-## A-UI-07: Algorithms (Chart Creator)
-
-### What to document
-- [ ] What an Algorithm is (entity definition).
-- [ ] How algorithms are created and edited.
-- [ ] How algorithms are associated to Partners and Events.
-- [ ] Which algorithm outputs feed Reports.
-
-### Noise to resolve
-- [ ] Partner-level algorithms vs global algorithms ownership model.
-- [ ] Duplicate algorithm editors or inconsistent UI flows.
-
----
-
-## A-UI-08: Clicker Manager (Manual Data Input UI)
-
-### What to document
-- [ ] What data is manually entered.
-- [ ] Where it goes (storage, entity).
-- [ ] How it affects Reports and Insights.
-- [ ] Validation rules and permissions.
-
----
-
-## A-UI-09: Bitly Manager (Third-Party Info Collection)
-
-### What to document
-- [ ] Why Bitly exists in the system.
-- [ ] What is stored (links, clicks, metadata).
-- [ ] How it connects to events, hashtags, reports.
-
----
-
-## A-UI-10: Hashtag Manager (Hashtags and Reports)
-
-### What to document
-- [ ] Hashtag entity definition.
-- [ ] Hashtag creation and assignment rules.
-- [ ] How hashtags are used in reporting.
-- [ ] Scope: global vs partner/event.
-
----
-
-## A-UI-11: Category Manager (Purpose and Scope)
-
-### What to document
-- [ ] What categories classify (partners, events, hashtags, or reports).
-- [ ] Where categories are used in UI and in reporting.
-
----
-
-## A-UI-12: Reporting (Report Structures)
-
-### What to document
-- [ ] How to build individual report structures.
-- [ ] What is reusable vs per partner vs per event.
-- [ ] How report templates are selected and rendered.
-
----
-
-## A-UI-13: Style Editor (Report Themes)
-
-### What to document
-- [ ] Theme model.
-- [ ] How themes are created and applied.
-- [ ] Scope: global vs partner vs event.
-
----
-
-## A-UI-14: Cache Management (Seeing Updates)
-
-### What to document
-- [ ] Why cache management is needed.
-- [ ] Which caches exist (browser, CDN, app cache).
-- [ ] What steps support teams should take to see updates.
-
----
-
-## A-UI-15: User Guide (messmass.com Operations)
-
-### What to document
-- [ ] How users work with messmass.com.
-- [ ] What admin workflows support user workflows.
-- [ ] Where the official user guidance lives.
-
----
-
-## Consolidation and Simplification Review (Mandatory)
-
-**Goal:** Identify duplicates, remove noise, and enforce a clean scope model.
-
-### Action Checklist
-- [ ] Produce a “Duplication and Noise” list with concrete examples (page names, sections, duplicated forms).
-- [ ] Propose merges/removals, with justification (what disappears, what stays).
-- [ ] Produce a final proposed Admin IA (navigation structure) aligned to the ownership model.
-- [ ] List inconsistencies to fix (partner vs global settings, KYC placement, algorithm ownership, reporting ownership, style ownership).
-
----
-
-## Execution Notes
-- This is documentation-first. No code refactor begins until A-UI-00 through A-UI-06 documentation is complete and reviewed.
-- All outputs must use repo-relative links.
-- No new pages are proposed until duplicates and ownership are clarified.
+Admin UI refactor scope, A-UI task checklists, IA proposal, duplication register, and execution notes now live in `ACTION_PLAN.md`. This section is intentionally removed to prevent duplicate or contradictory status tracking.

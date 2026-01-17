@@ -111,6 +111,7 @@ export default function PartnerReportPage() {
     entity: partner ? { ...partner, createdAt: (partner as any).createdAt, updatedAt: (partner as any).updatedAt } : null,
     stats: stats || null,
     chartResults,
+    charts: partnerData?.charts?.map(chart => ({ chartId: chart.chartId, order: chart.order })), // A-R-10 Phase 2: Pass charts for ordering
     filenamePrefix: 'partner_report',
     reportType: 'Partner Report'
   });

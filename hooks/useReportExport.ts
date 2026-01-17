@@ -34,6 +34,9 @@ export interface UseReportExportOptions {
   /** Chart calculation results */
   chartResults: Map<string, any> | null;
   
+  /** Optional: Chart configurations for ordering (A-R-10 Phase 2) */
+  charts?: Array<{ chartId: string; order: number }>;
+  
   /** Optional: Custom filename prefix (default: entity name) */
   filenamePrefix?: string;
   
@@ -86,6 +89,7 @@ export function useReportExport(options: UseReportExportOptions): UseReportExpor
     entity, 
     stats, 
     chartResults, 
+    charts,
     filenamePrefix,
     reportType = 'Report'
   } = options;
@@ -120,6 +124,11 @@ export function useReportExport(options: UseReportExportOptions): UseReportExpor
       // Extract name for export
       const entityName = entity.name || entity.eventName || 'Report';
       
+      // Build chartOrderMap from charts array (A-R-10 Phase 2)
+      const chartOrderMap = charts 
+        ? new Map(charts.map(chart => [chart.chartId, chart.order]))
+        : undefined;
+
       await exportReportToCSV(
         {
           eventName: entityName,
@@ -129,7 +138,8 @@ export function useReportExport(options: UseReportExportOptions): UseReportExpor
           _id: entity._id
         },
         stats,
-        chartResults
+        chartResults,
+        { chartOrderMap }
       );
       
       console.log('✅ CSV export completed successfully');
@@ -138,7 +148,7 @@ export function useReportExport(options: UseReportExportOptions): UseReportExpor
       const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
       alert(`Failed to export CSV: ${errorMessage}\n\nPlease check the browser console for details and try again.`);
     }
-  }, [entity, stats, chartResults, reportType]);
+  }, [entity, stats, chartResults, charts, reportType]);
 
   // WHAT: PDF export handler
   // WHY: Generate A4 portrait PDF with hero on every page and no block breaks

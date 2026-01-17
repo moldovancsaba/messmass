@@ -1,0 +1,142 @@
+name,type,default,scope,defined_in,consumed_by
+bitlyClicksFromDirect,number,0,Admin+Reporting,variables_metadata (MongoDB) via /api/variables-config,Bitly sync/analytics + Reporting formulas
+bitlyClicksByCountry,number,0,Admin+Reporting,variables_metadata (MongoDB) via /api/variables-config,Bitly sync/analytics + Reporting formulas
+bitlyClicksByCountryAT,number,0,Admin+Reporting,variables_metadata (MongoDB) via /api/variables-config,Bitly sync/analytics + Reporting formulas
+bitlyClicksByCountryCA,number,0,Admin+Reporting,variables_metadata (MongoDB) via /api/variables-config,Bitly sync/analytics + Reporting formulas
+bitlyClicksByCountryCH,number,0,Admin+Reporting,variables_metadata (MongoDB) via /api/variables-config,Bitly sync/analytics + Reporting formulas
+bitlyClicksByCountryDE,number,0,Admin+Reporting,variables_metadata (MongoDB) via /api/variables-config,Bitly sync/analytics + Reporting formulas
+bitlyClicksByCountryDK,number,0,Admin+Reporting,variables_metadata (MongoDB) via /api/variables-config,Bitly sync/analytics + Reporting formulas
+bitlyClicksByCountryEG,number,0,Admin+Reporting,variables_metadata (MongoDB) via /api/variables-config,Bitly sync/analytics + Reporting formulas
+bitlyClicksByCountryES,number,0,Admin+Reporting,variables_metadata (MongoDB) via /api/variables-config,Bitly sync/analytics + Reporting formulas
+bitlyClicksByCountryFR,number,0,Admin+Reporting,variables_metadata (MongoDB) via /api/variables-config,Bitly sync/analytics + Reporting formulas
+bitlyClicksByCountryGB,number,0,Admin+Reporting,variables_metadata (MongoDB) via /api/variables-config,Bitly sync/analytics + Reporting formulas
+bitlyClicksByCountryGR,number,0,Admin+Reporting,variables_metadata (MongoDB) via /api/variables-config,Bitly sync/analytics + Reporting formulas
+bitlyClicksByCountryHR,number,0,Admin+Reporting,variables_metadata (MongoDB) via /api/variables-config,Bitly sync/analytics + Reporting formulas
+bitlyClicksByCountryHU,number,0,Admin+Reporting,variables_metadata (MongoDB) via /api/variables-config,Bitly sync/analytics + Reporting formulas
+bitlyClicksByCountryIE,number,0,Admin+Reporting,variables_metadata (MongoDB) via /api/variables-config,Bitly sync/analytics + Reporting formulas
+bitlyClicksByCountryIT,number,0,Admin+Reporting,variables_metadata (MongoDB) via /api/variables-config,Bitly sync/analytics + Reporting formulas
+bitlyClicksByCountryMK,number,0,Admin+Reporting,variables_metadata (MongoDB) via /api/variables-config,Bitly sync/analytics + Reporting formulas
+bitlyClicksByCountryNL,number,0,Admin+Reporting,variables_metadata (MongoDB) via /api/variables-config,Bitly sync/analytics + Reporting formulas
+bitlyClicksByCountryNO,number,0,Admin+Reporting,variables_metadata (MongoDB) via /api/variables-config,Bitly sync/analytics + Reporting formulas
+bitlyClicksByCountryPL,number,0,Admin+Reporting,variables_metadata (MongoDB) via /api/variables-config,Bitly sync/analytics + Reporting formulas
+bitlyClicksByCountryPT,number,0,Admin+Reporting,variables_metadata (MongoDB) via /api/variables-config,Bitly sync/analytics + Reporting formulas
+bitlyClicksByCountryRO,number,0,Admin+Reporting,variables_metadata (MongoDB) via /api/variables-config,Bitly sync/analytics + Reporting formulas
+bitlyClicksByCountryRS,number,0,Admin+Reporting,variables_metadata (MongoDB) via /api/variables-config,Bitly sync/analytics + Reporting formulas
+bitlyClicksByCountryRU,number,0,Admin+Reporting,variables_metadata (MongoDB) via /api/variables-config,Bitly sync/analytics + Reporting formulas
+bitlyClicksByCountrySE,number,0,Admin+Reporting,variables_metadata (MongoDB) via /api/variables-config,Bitly sync/analytics + Reporting formulas
+bitlyClicksByCountrySI,number,0,Admin+Reporting,variables_metadata (MongoDB) via /api/variables-config,Bitly sync/analytics + Reporting formulas
+bitlyClicksByCountrySK,number,0,Admin+Reporting,variables_metadata (MongoDB) via /api/variables-config,Bitly sync/analytics + Reporting formulas
+bitlyClicksByCountryUS,number,0,Admin+Reporting,variables_metadata (MongoDB) via /api/variables-config,Bitly sync/analytics + Reporting formulas
+bitlyClicksByCountrynull,number,0,Admin+Reporting,variables_metadata (MongoDB) via /api/variables-config,Bitly sync/analytics + Reporting formulas
+bitlyClicksFromFacebook,number,0,Admin+Reporting,variables_metadata (MongoDB) via /api/variables-config,Bitly sync/analytics + Reporting formulas
+bitlyClicksFromFacebookMobile,number,0,Admin+Reporting,variables_metadata (MongoDB) via /api/variables-config,Bitly sync/analytics + Reporting formulas
+bitlyClicksFromGoogle,number,0,Admin+Reporting,variables_metadata (MongoDB) via /api/variables-config,Bitly sync/analytics + Reporting formulas
+bitlyClicksFromInstagram,number,0,Admin+Reporting,variables_metadata (MongoDB) via /api/variables-config,Bitly sync/analytics + Reporting formulas
+bitlyClicksFromInstagramApp,number,0,Admin+Reporting,variables_metadata (MongoDB) via /api/variables-config,Bitly sync/analytics + Reporting formulas
+bitlyClicksFromLinkedIn,number,0,Admin+Reporting,variables_metadata (MongoDB) via /api/variables-config,Bitly sync/analytics + Reporting formulas
+bitlyClicksFromQRCode,number,0,Admin+Reporting,variables_metadata (MongoDB) via /api/variables-config,Bitly sync/analytics + Reporting formulas
+bitlyClicksFromTwitter,number,0,Admin+Reporting,variables_metadata (MongoDB) via /api/variables-config,Bitly sync/analytics + Reporting formulas
+bitlyCountryCount,number,0,Admin+Reporting,variables_metadata (MongoDB) via /api/variables-config,Bitly sync/analytics + Reporting formulas
+bitlyCountry1,number,0,Admin+Reporting,variables_metadata (MongoDB) via /api/variables-config,Bitly sync/analytics + Reporting formulas
+bitlyCountry1Clicks,number,0,Admin+Reporting,variables_metadata (MongoDB) via /api/variables-config,Bitly sync/analytics + Reporting formulas
+bitlyCountry2,number,0,Admin+Reporting,variables_metadata (MongoDB) via /api/variables-config,Bitly sync/analytics + Reporting formulas
+bitlyCountry2Clicks,number,0,Admin+Reporting,variables_metadata (MongoDB) via /api/variables-config,Bitly sync/analytics + Reporting formulas
+bitlyCountry3,number,0,Admin+Reporting,variables_metadata (MongoDB) via /api/variables-config,Bitly sync/analytics + Reporting formulas
+bitlyCountry3Clicks,number,0,Admin+Reporting,variables_metadata (MongoDB) via /api/variables-config,Bitly sync/analytics + Reporting formulas
+bitlyCountry4,number,0,Admin+Reporting,variables_metadata (MongoDB) via /api/variables-config,Bitly sync/analytics + Reporting formulas
+bitlyCountry4Clicks,number,0,Admin+Reporting,variables_metadata (MongoDB) via /api/variables-config,Bitly sync/analytics + Reporting formulas
+bitlyCountry5,number,0,Admin+Reporting,variables_metadata (MongoDB) via /api/variables-config,Bitly sync/analytics + Reporting formulas
+bitlyCountry5Clicks,number,0,Admin+Reporting,variables_metadata (MongoDB) via /api/variables-config,Bitly sync/analytics + Reporting formulas
+bitlyTopCountry,number,0,Admin+Reporting,variables_metadata (MongoDB) via /api/variables-config,Bitly sync/analytics + Reporting formulas
+bitlyTotalClicks,number,0,Admin+Reporting,variables_metadata (MongoDB) via /api/variables-config,Bitly sync/analytics + Reporting formulas
+bitlyUniqueClicks,number,0,Admin+Reporting,variables_metadata (MongoDB) via /api/variables-config,Bitly sync/analytics + Reporting formulas
+boomer,number,0,Admin+Reporting,variables_metadata (MongoDB) via /api/variables-config,Admin clicker/manual + Reporting formulas
+female,number,0,Admin+Reporting,variables_metadata (MongoDB) via /api/variables-config,Admin clicker/manual + Reporting formulas
+genAlpha,number,0,Admin+Reporting,variables_metadata (MongoDB) via /api/variables-config,Admin clicker/manual + Reporting formulas
+genX,number,0,Admin+Reporting,variables_metadata (MongoDB) via /api/variables-config,Admin clicker/manual + Reporting formulas
+genYZ,number,0,Admin+Reporting,variables_metadata (MongoDB) via /api/variables-config,Admin clicker/manual + Reporting formulas
+male,number,0,Admin+Reporting,variables_metadata (MongoDB) via /api/variables-config,Admin clicker/manual + Reporting formulas
+eventAttendees,number,0,Admin+Reporting,variables_metadata (MongoDB) via /api/variables-config,Admin clicker/manual + Reporting formulas
+eventResultHome,number,0,Admin+Reporting,variables_metadata (MongoDB) via /api/variables-config,Admin clicker/manual + Reporting formulas
+eventTicketPurchases,number,0,Admin+Reporting,variables_metadata (MongoDB) via /api/variables-config,Admin clicker/manual + Reporting formulas
+eventResultVisitor,number,0,Admin+Reporting,variables_metadata (MongoDB) via /api/variables-config,Admin clicker/manual + Reporting formulas
+remoteFans,number,0,Admin+Reporting,variables_metadata (MongoDB) via /api/variables-config,Admin clicker/manual + Reporting formulas
+stadium,number,0,Admin+Reporting,variables_metadata (MongoDB) via /api/variables-config,Admin clicker/manual + Reporting formulas
+totalFans,number,0,Admin+Reporting,variables_metadata (MongoDB) via /api/variables-config,Admin clicker/manual + Reporting formulas
+hashtags,text,empty-string,Admin+Reporting,variables_metadata (MongoDB) via /api/variables-config,Admin hashtag editors + Reporting metadata
+allImages,number,0,Admin+Reporting,variables_metadata (MongoDB) via /api/variables-config,Admin clicker/manual + Reporting formulas
+approvedImages,number,0,Admin+Reporting,variables_metadata (MongoDB) via /api/variables-config,Admin clicker/manual + Reporting formulas
+hostessImages,number,0,Admin+Reporting,variables_metadata (MongoDB) via /api/variables-config,Admin clicker/manual + Reporting formulas
+rejectedImages,number,0,Admin+Reporting,variables_metadata (MongoDB) via /api/variables-config,Admin clicker/manual + Reporting formulas
+remoteImages,number,0,Admin+Reporting,variables_metadata (MongoDB) via /api/variables-config,Admin clicker/manual + Reporting formulas
+selfies,number,0,Admin+Reporting,variables_metadata (MongoDB) via /api/variables-config,Admin clicker/manual + Reporting formulas
+indoor,number,0,Admin+Reporting,variables_metadata (MongoDB) via /api/variables-config,Admin clicker/manual + Reporting formulas
+outdoor,number,0,Admin+Reporting,variables_metadata (MongoDB) via /api/variables-config,Admin clicker/manual + Reporting formulas
+baseballCap,number,0,Admin+Reporting,variables_metadata (MongoDB) via /api/variables-config,Admin clicker/manual + Reporting formulas
+flags,number,0,Admin+Reporting,variables_metadata (MongoDB) via /api/variables-config,Admin clicker/manual + Reporting formulas
+jersey,number,0,Admin+Reporting,variables_metadata (MongoDB) via /api/variables-config,Admin clicker/manual + Reporting formulas
+merched,number,0,Admin+Reporting,variables_metadata (MongoDB) via /api/variables-config,Admin clicker/manual + Reporting formulas
+other,number,0,Admin+Reporting,variables_metadata (MongoDB) via /api/variables-config,Admin clicker/manual + Reporting formulas
+scarf,number,0,Admin+Reporting,variables_metadata (MongoDB) via /api/variables-config,Admin clicker/manual + Reporting formulas
+stats.directUrl,count,0,Admin+Reporting,variables_metadata (MongoDB) via /api/variables-config,Admin clicker/manual + Reporting formulas
+marketingOptin,number,0,Admin+Reporting,variables_metadata (MongoDB) via /api/variables-config,Admin clicker/manual + Reporting formulas
+newUsersAdded,number,0,Admin+Reporting,variables_metadata (MongoDB) via /api/variables-config,Admin clicker/manual + Reporting formulas
+specialMerch,number,0,Admin+Reporting,variables_metadata (MongoDB) via /api/variables-config,Admin clicker/manual + Reporting formulas
+uniqueUsers,number,0,Admin+Reporting,variables_metadata (MongoDB) via /api/variables-config,Admin clicker/manual + Reporting formulas
+ventAndroid,number,0,Admin+Reporting,variables_metadata (MongoDB) via /api/variables-config,Admin clicker/manual + Reporting formulas
+ventCtaEmail,number,0,Admin+Reporting,variables_metadata (MongoDB) via /api/variables-config,Admin clicker/manual + Reporting formulas
+ventCtaPopup,number,0,Admin+Reporting,variables_metadata (MongoDB) via /api/variables-config,Admin clicker/manual + Reporting formulas
+ventFacebook,number,0,Admin+Reporting,variables_metadata (MongoDB) via /api/variables-config,Admin clicker/manual + Reporting formulas
+ventGoogle,number,0,Admin+Reporting,variables_metadata (MongoDB) via /api/variables-config,Admin clicker/manual + Reporting formulas
+ventInstagram,number,0,Admin+Reporting,variables_metadata (MongoDB) via /api/variables-config,Admin clicker/manual + Reporting formulas
+ventIos,number,0,Admin+Reporting,variables_metadata (MongoDB) via /api/variables-config,Admin clicker/manual + Reporting formulas
+ventQr,number,0,Admin+Reporting,variables_metadata (MongoDB) via /api/variables-config,Admin clicker/manual + Reporting formulas
+ventUrl,texthyper,empty-string,Admin+Reporting,variables_metadata (MongoDB) via /api/variables-config,Admin clicker/manual + Reporting formulas
+stats.qrscanIphone,count,0,Admin+Reporting,variables_metadata (MongoDB) via /api/variables-config,Admin clicker/manual + Reporting formulas (QR visits)
+stats.qrscanAndroid,count,0,Admin+Reporting,variables_metadata (MongoDB) via /api/variables-config,Admin clicker/manual + Reporting formulas (QR visits)
+stats.reportImage1,text,empty-string,Admin+Reporting,variables_metadata (MongoDB) via /api/variables-config,Admin Report Content Manager + Reporting text/image/table charts
+stats.reportImage2,text,empty-string,Admin+Reporting,variables_metadata (MongoDB) via /api/variables-config,Admin Report Content Manager + Reporting text/image/table charts
+stats.reportImage3,text,empty-string,Admin+Reporting,variables_metadata (MongoDB) via /api/variables-config,Admin Report Content Manager + Reporting text/image/table charts
+stats.reportImage4,text,empty-string,Admin+Reporting,variables_metadata (MongoDB) via /api/variables-config,Admin Report Content Manager + Reporting text/image/table charts
+stats.reportImage5,text,empty-string,Admin+Reporting,variables_metadata (MongoDB) via /api/variables-config,Admin Report Content Manager + Reporting text/image/table charts
+stats.reportImage6,text,empty-string,Admin+Reporting,variables_metadata (MongoDB) via /api/variables-config,Admin Report Content Manager + Reporting text/image/table charts
+stats.reportImage7,text,empty-string,Admin+Reporting,variables_metadata (MongoDB) via /api/variables-config,Admin Report Content Manager + Reporting text/image/table charts
+stats.reportImage8,text,empty-string,Admin+Reporting,variables_metadata (MongoDB) via /api/variables-config,Admin Report Content Manager + Reporting text/image/table charts
+stats.reportImage9,text,empty-string,Admin+Reporting,variables_metadata (MongoDB) via /api/variables-config,Admin Report Content Manager + Reporting text/image/table charts
+stats.reportImage10,text,empty-string,Admin+Reporting,variables_metadata (MongoDB) via /api/variables-config,Admin Report Content Manager + Reporting text/image/table charts
+stats.reportImage11,text,empty-string,Admin+Reporting,variables_metadata (MongoDB) via /api/variables-config,Admin Report Content Manager + Reporting text/image/table charts
+stats.reportImage12,text,empty-string,Admin+Reporting,variables_metadata (MongoDB) via /api/variables-config,Admin Report Content Manager + Reporting text/image/table charts
+stats.reportImage13,text,empty-string,Admin+Reporting,variables_metadata (MongoDB) via /api/variables-config,Admin Report Content Manager + Reporting text/image/table charts
+stats.reportImage14,text,empty-string,Admin+Reporting,variables_metadata (MongoDB) via /api/variables-config,Admin Report Content Manager + Reporting text/image/table charts
+stats.reportImage15,text,empty-string,Admin+Reporting,variables_metadata (MongoDB) via /api/variables-config,Admin Report Content Manager + Reporting text/image/table charts
+stats.reportImage16,text,empty-string,Admin+Reporting,variables_metadata (MongoDB) via /api/variables-config,Admin Report Content Manager + Reporting text/image/table charts
+stats.reportImage17,text,empty-string,Admin+Reporting,variables_metadata (MongoDB) via /api/variables-config,Admin Report Content Manager + Reporting text/image/table charts
+stats.reportImage18,text,empty-string,Admin+Reporting,variables_metadata (MongoDB) via /api/variables-config,Admin Report Content Manager + Reporting text/image/table charts
+stats.reportImage19,text,empty-string,Admin+Reporting,variables_metadata (MongoDB) via /api/variables-config,Admin Report Content Manager + Reporting text/image/table charts
+stats.reportImage20,text,empty-string,Admin+Reporting,variables_metadata (MongoDB) via /api/variables-config,Admin Report Content Manager + Reporting text/image/table charts
+stats.reportText1,text,empty-string,Admin+Reporting,variables_metadata (MongoDB) via /api/variables-config,Admin Report Content Manager + Reporting text/image/table charts
+stats.reportText2,text,empty-string,Admin+Reporting,variables_metadata (MongoDB) via /api/variables-config,Admin Report Content Manager + Reporting text/image/table charts
+stats.reportText3,text,empty-string,Admin+Reporting,variables_metadata (MongoDB) via /api/variables-config,Admin Report Content Manager + Reporting text/image/table charts
+stats.reportText4,text,empty-string,Admin+Reporting,variables_metadata (MongoDB) via /api/variables-config,Admin Report Content Manager + Reporting text/image/table charts
+stats.reportText5,text,empty-string,Admin+Reporting,variables_metadata (MongoDB) via /api/variables-config,Admin Report Content Manager + Reporting text/image/table charts
+stats.reportText6,text,empty-string,Admin+Reporting,variables_metadata (MongoDB) via /api/variables-config,Admin Report Content Manager + Reporting text/image/table charts
+stats.reportText7,text,empty-string,Admin+Reporting,variables_metadata (MongoDB) via /api/variables-config,Admin Report Content Manager + Reporting text/image/table charts
+stats.reportText8,text,empty-string,Admin+Reporting,variables_metadata (MongoDB) via /api/variables-config,Admin Report Content Manager + Reporting text/image/table charts
+stats.reportText9,text,empty-string,Admin+Reporting,variables_metadata (MongoDB) via /api/variables-config,Admin Report Content Manager + Reporting text/image/table charts
+stats.reportText10,text,empty-string,Admin+Reporting,variables_metadata (MongoDB) via /api/variables-config,Admin Report Content Manager + Reporting text/image/table charts
+stats.reportText11,text,empty-string,Admin+Reporting,variables_metadata (MongoDB) via /api/variables-config,Admin Report Content Manager + Reporting text/image/table charts
+stats.reportText12,text,empty-string,Admin+Reporting,variables_metadata (MongoDB) via /api/variables-config,Admin Report Content Manager + Reporting text/image/table charts
+stats.reportText13,text,empty-string,Admin+Reporting,variables_metadata (MongoDB) via /api/variables-config,Admin Report Content Manager + Reporting text/image/table charts
+stats.reportText14,text,empty-string,Admin+Reporting,variables_metadata (MongoDB) via /api/variables-config,Admin Report Content Manager + Reporting text/image/table charts
+stats.reportText15,text,empty-string,Admin+Reporting,variables_metadata (MongoDB) via /api/variables-config,Admin Report Content Manager + Reporting text/image/table charts
+stats.reportText16,text,empty-string,Admin+Reporting,variables_metadata (MongoDB) via /api/variables-config,Admin Report Content Manager + Reporting text/image/table charts
+stats.reportText17,text,empty-string,Admin+Reporting,variables_metadata (MongoDB) via /api/variables-config,Admin Report Content Manager + Reporting text/image/table charts
+stats.reportText18,text,empty-string,Admin+Reporting,variables_metadata (MongoDB) via /api/variables-config,Admin Report Content Manager + Reporting text/image/table charts
+stats.reportText19,text,empty-string,Admin+Reporting,variables_metadata (MongoDB) via /api/variables-config,Admin Report Content Manager + Reporting text/image/table charts
+stats.reportText20,text,empty-string,Admin+Reporting,variables_metadata (MongoDB) via /api/variables-config,Admin Report Content Manager + Reporting text/image/table charts
+visitFacebook,number,0,Admin+Reporting,variables_metadata (MongoDB) via /api/variables-config,Admin clicker/manual + Reporting formulas
+visitInstagram,number,0,Admin+Reporting,variables_metadata (MongoDB) via /api/variables-config,Admin clicker/manual + Reporting formulas
+visitTiktok,number,0,Admin+Reporting,variables_metadata (MongoDB) via /api/variables-config,Admin clicker/manual + Reporting formulas
+visitTrustpilot,number,0,Admin+Reporting,variables_metadata (MongoDB) via /api/variables-config,Admin clicker/manual + Reporting formulas
+visitX,number,0,Admin+Reporting,variables_metadata (MongoDB) via /api/variables-config,Admin clicker/manual + Reporting formulas
+visitYoutube,number,0,Admin+Reporting,variables_metadata (MongoDB) via /api/variables-config,Admin clicker/manual + Reporting formulas

@@ -20,6 +20,7 @@ export interface ReportBlock {
     width: number;
     order: number;
   }>;
+  blockAspectRatio?: string; // R-LAYOUT-02.1: Optional block aspect ratio override (e.g., "4:6")
 }
 
 /**
@@ -143,6 +144,7 @@ export function useReportLayout(options: UseReportLayoutOptions): UseReportLayou
                   width: Number(c.width ?? 1),
                   order: Number(c.order ?? 0),
                 })),
+                blockAspectRatio: b.blockAspectRatio || b.overrides?.blockAspectRatio, // R-LAYOUT-02.1: Optional aspect ratio override
               })),
             },
             heroSettings: template.heroSettings ?? { showEmoji: true, showDateInfo: true, showExportOptions: true },
@@ -189,6 +191,7 @@ export function useReportLayout(options: UseReportLayoutOptions): UseReportLayou
                   width: Number(c.width ?? 1),
                   order: Number(c.order ?? 0),
                 })),
+                blockAspectRatio: b.blockAspectRatio || b.overrides?.blockAspectRatio, // R-LAYOUT-02.1: Optional aspect ratio override
               })),
             },
             heroSettings: template.heroSettings ?? { showEmoji: true, showDateInfo: true, showExportOptions: true },

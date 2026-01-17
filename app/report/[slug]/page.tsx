@@ -15,6 +15,7 @@ import { useReportExport } from '@/hooks/useReportExport';
 import { ReportCalculator } from '@/lib/report-calculator';
 import type { Chart } from '@/lib/report-calculator';
 import { ensureDerivedMetrics } from '@/lib/dataValidator';
+import { validateTemplateCompatibility, formatCompatibilityIssue, type CompatibilityResult } from '@/lib/templateCompatibilityValidator';
 import styles from '@/app/styles/report-page.module.css'; // WHAT: Shared stylesheet (Phase 3)
 
 /**
@@ -157,6 +158,52 @@ export default function ReportPage() {
     fetchCharts();
   }, [blocks]);
 
+  // A-R-12: Validate template compatibility with available data
+  const compatibilityResult = useMemo<CompatibilityResult | null>(() => {
+    if (!report || !charts || charts.length === 0 || !stats) {
+      return null;
+    }
+
+    // Extract chart IDs from template blocks
+    const blockChartIds = blocks.flatMap(block => 
+      block.charts.map(c => c.chartId)
+    );
+
+    // Enrich stats with derived metrics (same as chart calculation)
+    const enrichedStats = ensureDerivedMetrics(stats);
+
+    // Validate template compatibility
+    return validateTemplateCompatibility(
+      report as any, // Report type matches ReportTemplate structure
+      charts,
+      enrichedStats as any,
+      'project', // Event reports use 'project' entity type
+      blockChartIds
+    );
+  }, [report, charts, stats, blocks]);
+
+  // A-R-12: Log template compatibility issues to console (not displayed in UI for client-facing reports)
+  useEffect(() => {
+    if (compatibilityResult && compatibilityResult.issues.length > 0) {
+      const errorIssues = compatibilityResult.issues.filter(issue => issue.severity === 'error');
+      const warningIssues = compatibilityResult.issues.filter(issue => issue.severity === 'warning');
+      
+      if (errorIssues.length > 0) {
+        console.warn('[ReportPage] Template Compatibility Issues:', {
+          totalErrors: errorIssues.length,
+          totalWarnings: warningIssues.length,
+          errors: errorIssues.map(issue => formatCompatibilityIssue(issue)),
+          summary: compatibilityResult.summary
+        });
+      } else if (warningIssues.length > 0) {
+        console.info('[ReportPage] Template Compatibility Warnings:', {
+          totalWarnings: warningIssues.length,
+          warnings: warningIssues.map(issue => formatCompatibilityIssue(issue))
+        });
+      }
+    }
+  }, [compatibilityResult]);
+
   // Calculate chart results using ReportCalculator
   const chartResults = useMemo(() => {
     if (!stats || !charts || charts.length === 0) {
@@ -273,6 +320,7 @@ export default function ReportPage() {
     entity: project ? { ...project, createdAt: reportData?.project?.createdAt, updatedAt: reportData?.project?.updatedAt } : null,
     stats: stats || null,
     chartResults,
+    charts: charts?.map(chart => ({ chartId: chart.chartId, order: chart.order })), // A-R-10 Phase 2: Pass charts for ordering
     reportType: 'Event Report'
   });
 
@@ -349,6 +397,7 @@ export default function ReportPage() {
           <ReportContent 
             blocks={blocks}
             chartResults={chartResults}
+            charts={charts ? new Map(charts.map(c => [c.chartId, c])) : null} // A-R-13: Pass chart configs for validation
             gridSettings={gridSettings}
           />
         </div>

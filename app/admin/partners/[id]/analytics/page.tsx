@@ -15,7 +15,7 @@
  * - Trends: Time-series charts for key metrics
  * - Comparisons: Season-over-season, home vs away
  * 
- * Version: 11.39.0
+ * Version: 11.55.1
  * Created: 2025-12-20T20:10:00.000Z (UTC)
  */
 

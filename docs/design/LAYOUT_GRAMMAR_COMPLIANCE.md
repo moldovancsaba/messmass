@@ -12,7 +12,7 @@ Owner: Architecture
 
 ## Executive Summary
 
-All recent development (v11.46.1) is **100% aligned** with the Layout Grammar specification. The implementation enforces structural fit rules that guarantee all content is visible without scrolling, truncation, or clipping.
+All development up to v11.46.2 is **100% aligned** with the Layout Grammar specification. The implementation enforces structural fit rules that guarantee all content is visible without scrolling, truncation, or clipping.
 
 ---
 
@@ -157,7 +157,7 @@ All recent development (v11.46.1) is **100% aligned** with the Layout Grammar sp
 
 **Status:** ✅ **100% COMPLIANT**
 
-All recent development (v11.46.1) is fully aligned with the Layout Grammar specification. The implementation enforces:
+All development up to v11.46.2 is fully aligned with the Layout Grammar specification. The implementation enforces:
 - No scrolling
 - No truncation
 - No clipping
@@ -174,5 +174,5 @@ All recent development (v11.46.1) is fully aligned with the Layout Grammar speci
 ---
 
 *Layout Grammar Compliance Report*  
-*Version 11.46.1 | 2026-01-02 | Tribeca*
+*Version 11.46.2 | 2026-01-02 | Tribeca*
 
