@@ -310,20 +310,22 @@
   color: var(--chartLabelColor);
 }
 
-/* Pie Chart Container for Chart.js - Uses measured body height */
+/* Pie Chart Container for Chart.js - Grid row 2 (40% of cell) */
 .pieChartContainer {
-  /* WHAT: A-03.4 - Uses measured body height via --chart-body-height CSS variable */
-  /* WHY: Guaranteed height (not competing flex) - KPI-safe pattern */
-  /* HOW: JavaScript calculates bodyHeight = containerHeight - titleHeight - legendHeight, sets CSS variable */
-  height: var(--chart-body-height, 40%); /* WHAT: Use measured height, fallback to 40% for initial render */
+  /* WHAT: Grid row 2 - fixed 40% proportion (CSS Grid layout), fills full grid row height */
+  /* WHY: CSS Grid ensures fixed proportion, no flex competition or overflow */
+  /* HOW: Grid row with flex centering for Chart.js canvas, fills allocated space */
+  /* NOTE: --chart-body-height is still calculated for canvas sizing, but container uses grid row */
+  height: 100% !important; /* CRITICAL: Fill full grid row 2 height (40% of pieGrid) */
   width: 100%;
-  min-height: 0; /* WHAT: Allow flex shrinking if needed */
+  min-height: 0; /* CRITICAL: Allow grid row to shrink if needed */
   position: relative;
   display: flex;
   align-items: center;
   justify-content: center;
   container-type: size;
   overflow: visible; /* WHAT: P1 1.6 - Layout Grammar: no clipping on content layers, Chart.js canvas must be fully visible */
+  box-sizing: border-box;
 }
 
 /* Custom Pie Legend - Grid row 3 (30% of cell) */
