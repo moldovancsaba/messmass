@@ -212,26 +212,29 @@
   /* WHAT: CSS Grid layout (same as KPI charts) to prevent overflow on mobile */
   /* WHY: Fixed proportions ensure content stays within frame, no overflow */
   /* HOW: Use grid-template-rows with fixed proportions (3fr:4fr:3fr = 30%:40%:30%) */
-  height: 100%;
+  height: 100% !important; /* CRITICAL: Fill full height of parent */
   width: 100%;
   display: grid;
-  grid-template-rows: 3fr 4fr 3fr; /* Title (30%) : Pie (40%) : Legend (30%) */
+  grid-template-rows: 3fr 4fr 3fr; /* Title (30%) : Pie (40%) : Legend (30%) - FIXED PROPORTIONS */
   gap: 0;
   align-items: stretch;
   justify-items: stretch;
+  min-height: 0; /* CRITICAL: Allow grid to shrink if needed */
 }
 
 /* Title row: Grid row 1 (30% of cell), vertically centered */
 .pieTitleRow {
-  /* WHAT: Grid row 1 - fixed 30% proportion */
+  /* WHAT: Grid row 1 - fixed 30% proportion, fills full grid row height */
   /* WHY: CSS Grid ensures fixed proportion, no flex competition */
-  /* HOW: Grid row with flex centering for content */
+  /* HOW: Grid row with flex centering for content, fills allocated space */
   display: flex;
   align-items: center;
   justify-content: center;
   padding: var(--mm-space-1) var(--mm-space-2);
+  height: 100%; /* CRITICAL: Fill full grid row height */
   min-height: 0; /* CRITICAL: Allow grid row to shrink if needed */
   overflow: hidden; /* Prevent overflow */
+  box-sizing: border-box;
 }
 
 .pieTitleText {
@@ -325,15 +328,16 @@
 
 /* Custom Pie Legend - Grid row 3 (30% of cell) */
 .pieLegend {
-  /* WHAT: Grid row 3 - fixed 30% proportion (CSS Grid layout) */
+  /* WHAT: Grid row 3 - fixed 30% proportion (CSS Grid layout), fills full grid row height */
   /* WHY: CSS Grid ensures fixed proportion, no flex competition or overflow */
-  /* HOW: Grid row with flex column for legend items */
+  /* HOW: Grid row with flex column for legend items, fills allocated space */
   display: flex;
   flex-direction: column;
   justify-content: flex-start; /* WHAT: Changed from center to flex-start to prevent clipping in constrained blocks */
   align-items: center;
   gap: clamp(0.125rem, 1cqh, var(--mm-space-1)); /* WHAT: Responsive gap - smaller in constrained spaces */
   width: 100%;
+  height: 100% !important; /* CRITICAL: Fill full grid row 3 height (30% of pieGrid) */
   min-height: 0; /* CRITICAL: Allow grid row to shrink if needed */
   container-type: size;
   overflow: visible; /* WHAT: Layout Grammar: content must be visible */
