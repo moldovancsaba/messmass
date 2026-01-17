@@ -323,23 +323,20 @@
   overflow: visible; /* WHAT: P1 1.6 - Layout Grammar: no clipping on content layers, Chart.js canvas must be fully visible */
 }
 
-/* Custom Pie Legend - 30% of body height */
+/* Custom Pie Legend - Grid row 3 (30% of cell) */
 .pieLegend {
-  /* WHAT: 30% of body height for legend items */
-  /* WHY: Bottom section of 30:40:30 ratio (title:pie:legend = 3:4:3) */
-  /* HOW: Flex basis for preferred height, can grow if content exceeds - Layout Grammar: no scrolling */
-  flex: 1 1 30%; /* 3:4:3 → legend prefers 30%, but can grow if needed (no scrolling) */
+  /* WHAT: Grid row 3 - fixed 30% proportion (CSS Grid layout) */
+  /* WHY: CSS Grid ensures fixed proportion, no flex competition or overflow */
+  /* HOW: Grid row with flex column for legend items */
   display: flex;
   flex-direction: column;
   justify-content: flex-start; /* WHAT: Changed from center to flex-start to prevent clipping in constrained blocks */
   align-items: center;
   gap: clamp(0.125rem, 1cqh, var(--mm-space-1)); /* WHAT: Responsive gap - smaller in constrained spaces */
   width: 100%;
+  min-height: 0; /* CRITICAL: Allow grid row to shrink if needed */
   container-type: size;
-  max-height: 50%; /* WHAT: P1 1.4 Phase 3 - allow growth but bound it to prevent unbounded expansion */
-  /* WHAT: Removed max-height and overflow-y - Layout Grammar: content must fit without scrolling */
-  /* WHY: If legend items exceed preferred 30%, container grows to fit (no scrolling) */
-  overflow: visible; /* WHAT: Changed from hidden to visible - Layout Grammar: content must be visible, container grows to fit */
+  overflow: visible; /* WHAT: Layout Grammar: content must be visible */
   padding: clamp(0.125rem, 1cqh, var(--mm-space-1)); /* WHAT: Responsive padding - smaller in constrained spaces */
   box-sizing: border-box;
 }
