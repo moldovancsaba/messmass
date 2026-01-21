@@ -154,6 +154,23 @@ export async function DELETE(req: NextRequest) {
     const db = await getDb()
     const url = new URL(req.url)
     const clickerSetIdParam = url.searchParams.get('clickerSetId')
+    const groupOrderParam = url.searchParams.get('groupOrder')
+
+    // Delete single group (scoped to clicker set)
+    if (groupOrderParam) {
+      const groupOrder = parseInt(groupOrderParam, 10)
+      if (Number.isNaN(groupOrder)) {
+        return NextResponse.json({ success: false, error: 'Invalid groupOrder' }, { status: 400 })
+      }
+      const defaultSet = await ensureDefaultClickerSet(db)
+      const clickerSetId = clickerSetIdParam && ObjectId.isValid(clickerSetIdParam)
+        ? new ObjectId(clickerSetIdParam)
+        : (defaultSet?._id as ObjectId)
+      const result = await db.collection(COLLECTION).deleteOne({ groupOrder, clickerSetId })
+      return NextResponse.json({ success: true, deletedCount: result.deletedCount })
+    }
+
+    // Delete all groups for a set (or all legacy)
     if (clickerSetIdParam && ObjectId.isValid(clickerSetIdParam)) {
       await db.collection(COLLECTION).deleteMany({ clickerSetId: new ObjectId(clickerSetIdParam) })
     } else {

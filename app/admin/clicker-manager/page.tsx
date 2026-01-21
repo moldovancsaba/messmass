@@ -126,12 +126,14 @@ export default function ClickerManagerPage() {
   };
 
   const deleteGroup = async (groupOrder: number) => {
-    if (!confirm(`Delete group ${groupOrder}?`)) return;
+    if (!confirm(`Delete group ${groupOrder} from this clicker set? This cannot be undone.`)) return;
     try {
       setSaving(true);
-      // Note: Current API doesn't support deleting individual groups, only all
-      // For now, we'll just reload - in production you'd want a DELETE endpoint with groupOrder
-      await loadData();
+      const qs = new URLSearchParams();
+      qs.set('groupOrder', String(groupOrder));
+      if (selectedSetId) qs.set('clickerSetId', selectedSetId);
+      await apiDelete(`/api/variables-groups?${qs.toString()}`);
+      await loadData(selectedSetId);
     } finally {
       setSaving(false);
     }
@@ -422,6 +424,13 @@ export default function ClickerManagerPage() {
                     >
                       <MaterialIcon name="edit" variant="outlined" className={styles.iconInline} />
                       Edit
+                    </button>
+                    <button
+                      className="btn btn-small btn-danger"
+                      onClick={() => deleteGroup(group.groupOrder)}
+                    >
+                      <MaterialIcon name="delete" variant="outlined" className={styles.iconInline} />
+                      Delete
                     </button>
                   </div>
                 </div>
