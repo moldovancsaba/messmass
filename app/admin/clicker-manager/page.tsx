@@ -5,6 +5,7 @@ import UnifiedAdminHeroWithSearch from '@/components/UnifiedAdminHeroWithSearch'
 import ColoredCard from '@/components/ColoredCard';
 import FormModal from '@/components/modals/FormModal';
 import ConfirmDialog from '@/components/modals/ConfirmDialog';
+import UnifiedTextInput from '@/components/UnifiedTextInput';
 import { apiPost, apiPut, apiDelete } from '@/lib/apiClient';
 import MaterialIcon from '@/components/MaterialIcon';
 import styles from './page.module.css';
@@ -54,6 +55,9 @@ export default function ClickerManagerPage() {
   const [loadingSets, setLoadingSets] = useState(true);
   const [pendingDeleteGroupOrder, setPendingDeleteGroupOrder] = useState<number | null>(null);
   const [confirmDeleteAllOpen, setConfirmDeleteAllOpen] = useState(false);
+  const [newSetModalOpen, setNewSetModalOpen] = useState(false);
+  const [renameSetModalOpen, setRenameSetModalOpen] = useState(false);
+  const [setNameInput, setSetNameInput] = useState('');
 
   const loadClickerSets = async (): Promise<string | null> => {
     setLoadingSets(true);
@@ -64,14 +68,17 @@ export default function ClickerManagerPage() {
       if (data?.success && Array.isArray(data.sets)) {
         setClickerSets(data.sets);
         const currentDefault = data.sets.find((s: ClickerSet) => s.isDefault);
-        if (!selectedSetId) {
+        const stored = typeof window !== 'undefined' ? localStorage.getItem('clickerManager.selectedSetId') : null;
+        const preferred = selectedSetId || (stored || undefined);
+        if (preferred && data.sets.find((s: ClickerSet) => s._id === preferred)) {
+          chosenId = preferred;
+          setSelectedSetId(chosenId);
+        } else if (!preferred) {
           chosenId = currentDefault?._id || data.sets[0]?._id || null;
           setSelectedSetId(chosenId);
-        } else if (!data.sets.find((s: ClickerSet) => s._id === selectedSetId)) {
+        } else if (preferred && !data.sets.find((s: ClickerSet) => s._id === preferred)) {
           chosenId = currentDefault?._id || data.sets[0]?._id || null;
           setSelectedSetId(chosenId);
-        } else {
-          chosenId = selectedSetId;
         }
       }
     } catch (e) {
@@ -209,21 +216,9 @@ export default function ClickerManagerPage() {
               <button
                 className="btn btn-small btn-primary"
                 disabled={loadingSets}
-                onClick={async () => {
-                  const name = prompt('Name for new clicker set?');
-                  if (!name) return;
-                  setSaving(true);
-                  try {
-                    const clone = confirm('Clone current set layout into the new set?');
-                    const res = await apiPost('/api/clicker-sets', { name, cloneFromId: clone ? selectedSetId : undefined });
-                    if (res?.success && res.set?._id) {
-                      await loadClickerSets();
-                      setSelectedSetId(res.set._id);
-                      await loadData(res.set._id);
-                    }
-                  } finally {
-                    setSaving(false);
-                  }
+                onClick={() => {
+                  setSetNameInput('');
+                  setNewSetModalOpen(true);
                 }}
               >
                 ➕ New Set
@@ -231,17 +226,11 @@ export default function ClickerManagerPage() {
               <button
                 className="btn btn-small btn-secondary"
                 disabled={loadingSets || !selectedSetId}
-                onClick={async () => {
+                onClick={() => {
                   if (!selectedSetId) return;
-                  const name = prompt('Rename clicker set to:', clickerSets.find(s => s._id === selectedSetId)?.name || '');
-                  if (!name) return;
-                  setSaving(true);
-                  try {
-                    await apiPut('/api/clicker-sets', { clickerSetId: selectedSetId, name });
-                    await loadClickerSets();
-                  } finally {
-                    setSaving(false);
-                  }
+                  const current = clickerSets.find(s => s._id === selectedSetId)?.name || '';
+                  setSetNameInput(current);
+                  setRenameSetModalOpen(true);
                 }}
               >
                 ✏️ Rename
@@ -291,6 +280,9 @@ export default function ClickerManagerPage() {
               onChange={async (e) => {
                 const id = e.target.value || null;
                 setSelectedSetId(id);
+                if (typeof window !== 'undefined') {
+                  localStorage.setItem('clickerManager.selectedSetId', id || '');
+                }
                 await loadData(id);
               }}
             >
@@ -524,6 +516,73 @@ export default function ClickerManagerPage() {
         cancelText="Cancel"
         variant="danger"
       />
+
+      {/* New Clicker Set Modal */}
+      <FormModal
+        isOpen={newSetModalOpen}
+        onClose={() => setNewSetModalOpen(false)}
+        onSubmit={async () => {
+          if (!setNameInput.trim()) return;
+          setSaving(true);
+          try {
+            const res = await apiPost('/api/clicker-sets', { name: setNameInput.trim(), cloneFromId: selectedSetId });
+            if (res?.success && res.set?._id) {
+              await loadClickerSets();
+              setSelectedSetId(res.set._id);
+              if (typeof window !== 'undefined') {
+                localStorage.setItem('clickerManager.selectedSetId', res.set._id);
+              }
+              await loadData(res.set._id);
+              setNewSetModalOpen(false);
+            }
+          } finally {
+            setSaving(false);
+          }
+        }}
+        title="➕ New Clicker Set"
+        submitText="Create Set"
+        cancelText="Cancel"
+        size="md"
+      >
+        <UnifiedTextInput
+          label="Set Name"
+          value={setNameInput}
+          onSave={(val) => setSetNameInput(val)}
+          placeholder="e.g., Partner A Clicker"
+        />
+        <p className="form-hint mt-2">Optionally clones the currently selected set’s groups.</p>
+      </FormModal>
+
+      {/* Rename Clicker Set Modal */}
+      <FormModal
+        isOpen={renameSetModalOpen}
+        onClose={() => setRenameSetModalOpen(false)}
+        onSubmit={async () => {
+          if (!selectedSetId || !setNameInput.trim()) return;
+          setSaving(true);
+          try {
+            await apiPut('/api/clicker-sets', { clickerSetId: selectedSetId, name: setNameInput.trim() });
+            await loadClickerSets();
+            if (typeof window !== 'undefined') {
+              localStorage.setItem('clickerManager.selectedSetId', selectedSetId);
+            }
+            setRenameSetModalOpen(false);
+          } finally {
+            setSaving(false);
+          }
+        }}
+        title="✏️ Rename Clicker Set"
+        submitText="Rename"
+        cancelText="Cancel"
+        size="md"
+      >
+        <UnifiedTextInput
+          label="New Name"
+          value={setNameInput}
+          onSave={(val) => setSetNameInput(val)}
+          placeholder="Enter new name"
+        />
+      </FormModal>
     </div>
   );
 }
