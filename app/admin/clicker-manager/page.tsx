@@ -58,6 +58,7 @@ export default function ClickerManagerPage() {
   const [newSetModalOpen, setNewSetModalOpen] = useState(false);
   const [renameSetModalOpen, setRenameSetModalOpen] = useState(false);
   const [setNameInput, setSetNameInput] = useState('');
+  const [cloneCurrentSet, setCloneCurrentSet] = useState(false);
 
   const loadClickerSets = async (): Promise<string | null> => {
     setLoadingSets(true);
@@ -521,12 +522,15 @@ export default function ClickerManagerPage() {
       {/* New Clicker Set Modal */}
       <FormModal
         isOpen={newSetModalOpen}
-        onClose={() => setNewSetModalOpen(false)}
+        onClose={() => {
+          setNewSetModalOpen(false);
+          setCloneCurrentSet(false);
+        }}
         onSubmit={async () => {
           if (!setNameInput.trim()) return;
           setSaving(true);
           try {
-            const res = await apiPost('/api/clicker-sets', { name: setNameInput.trim(), cloneFromId: selectedSetId });
+            const res = await apiPost('/api/clicker-sets', { name: setNameInput.trim(), cloneFromId: cloneCurrentSet ? selectedSetId : undefined });
             if (res?.success && res.set?._id) {
               await loadClickerSets();
               setSelectedSetId(res.set._id);
@@ -535,6 +539,7 @@ export default function ClickerManagerPage() {
               }
               await loadData(res.set._id);
               setNewSetModalOpen(false);
+              setCloneCurrentSet(false);
             }
           } finally {
             setSaving(false);
@@ -551,7 +556,19 @@ export default function ClickerManagerPage() {
           onSave={(val) => setSetNameInput(val)}
           placeholder="e.g., Partner A Clicker"
         />
-        <p className="form-hint mt-2">Optionally clones the currently selected set’s groups.</p>
+        <div className="mt-3 flex items-center gap-2">
+          <input
+            id="clone-current-set"
+            type="checkbox"
+            className="form-checkbox"
+            checked={cloneCurrentSet}
+            onChange={(e) => setCloneCurrentSet(e.target.checked)}
+          />
+          <label htmlFor="clone-current-set" className="text-sm">
+            Clone groups from currently selected set
+          </label>
+        </div>
+        <p className="form-hint mt-2">New sets start empty by default. Check to copy groups from the currently selected set.</p>
       </FormModal>
 
       {/* Rename Clicker Set Modal */}

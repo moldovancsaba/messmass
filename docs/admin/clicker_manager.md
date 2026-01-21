@@ -21,7 +21,7 @@ Add partner-aware “clicker sets” so each partner (and their events) can use 
 
 ## Desired UX (anchor to Report Template selector)
 - A selector card at the top of Clicker Manager: dropdown of clicker sets, star on default, usage count, SaveStatus pill, actions (New, Duplicate, Rename/Delete) similar to the Visualization page template selector.
-- Creating a new set can start empty or “Clone current”.
+- Creating a new set starts empty by default; optional “Clone current” toggle copies the currently selected set.
 - Editing groups works exactly as today but is scoped to the selected set.
 - Default set = existing layout migrated intact; cannot be deleted while in use.
 - Partner Add/Edit modals get a “Clicker Set” dropdown beside Style/Report Template with a “Use Default Clicker” option.
