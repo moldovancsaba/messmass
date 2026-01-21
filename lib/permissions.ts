@@ -50,21 +50,35 @@ export const MENU_PERMISSIONS: Record<string, UserRole[]> = {
 /**
  * WHAT: Check if user role can access a menu item
  * WHY: Reusable utility for sidebar filtering
+ * NOTE: In SSO systems, 'admin' role is treated as highest privilege (equivalent to superadmin)
  */
 export function canAccessMenuItem(userRole: UserRole | undefined, menuLabel: string): boolean {
   if (!userRole) return false;
+  
+  // WHAT: SSO systems use 'admin' as highest privilege (no superadmin)
+  // WHY: Treat 'admin' role as equivalent to 'superadmin' for menu access
+  // HOW: Map 'admin' to superadmin for permission checks
+  const effectiveRole: UserRole = userRole === 'admin' ? 'superadmin' : userRole;
+  
   const allowedRoles = MENU_PERMISSIONS[menuLabel];
   if (!allowedRoles) return false;
-  return allowedRoles.includes(userRole);
+  return allowedRoles.includes(effectiveRole);
 }
 
 /**
  * WHAT: Check if user role has minimum required privilege level
  * WHY: Generic permission check for role hierarchy
+ * NOTE: In SSO systems, 'admin' role is treated as highest privilege (equivalent to superadmin)
  */
 export function hasMinimumRole(userRole: UserRole | undefined, requiredRole: UserRole): boolean {
   if (!userRole) return false;
-  const userLevel = ROLE_HIERARCHY[userRole];
+  
+  // WHAT: SSO systems use 'admin' as highest privilege (no superadmin)
+  // WHY: Treat 'admin' role as equivalent to 'superadmin' for access control
+  // HOW: Map 'admin' to superadmin level for permission checks
+  const effectiveRole: UserRole = userRole === 'admin' ? 'superadmin' : userRole;
+  
+  const userLevel = ROLE_HIERARCHY[effectiveRole];
   const requiredLevel = ROLE_HIERARCHY[requiredRole];
   return userLevel >= requiredLevel;
 }
