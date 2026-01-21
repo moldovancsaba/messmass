@@ -19,7 +19,7 @@ interface VariableGroupDoc {
   visibleInManual?: boolean
   createdAt?: string
   updatedAt?: string
-  clickerSetId?: ObjectId // NEW: scope to clicker set
+  clickerSetId?: any // allow ObjectId or string to match caller payload
 }
 
 const COLLECTION = 'variablesGroups'
@@ -40,25 +40,33 @@ async function ensureDefaultClickerSet(db: any) {
   return def
 }
 
+function normalizeClickerSetId(input: any, fallback: any = null) {
+  if (input === undefined || input === null || input === '') return fallback
+  if (typeof input === 'string' && ObjectId.isValid(input)) return new ObjectId(input)
+  return input // accept string ids to avoid unintended fallback
+}
+
 export async function GET(req: NextRequest) {
   try {
     const db = await getDb()
     const url = new URL(req.url)
     const clickerSetIdParam = url.searchParams.get('clickerSetId')
 
-    const defaultSet = await ensureDefaultClickerSet(db)
-    const hasExplicitSet = clickerSetIdParam && ObjectId.isValid(clickerSetIdParam)
-    const clickerSetFilter = hasExplicitSet
-      ? new ObjectId(clickerSetIdParam as string)
+  const defaultSet = await ensureDefaultClickerSet(db)
+  const hasExplicitSet = clickerSetIdParam !== null
+  const clickerSetFilter = hasExplicitSet
+      ? normalizeClickerSetId(clickerSetIdParam)
       : (defaultSet?._id as ObjectId)
 
     // Backfill legacy groups (no clickerSetId) into default set
-    const missingCount = await db.collection(COLLECTION).countDocuments({ clickerSetId: { $exists: false } })
-    if (missingCount > 0 && defaultSet?._id) {
-      await db.collection(COLLECTION).updateMany(
-        { clickerSetId: { $exists: false } },
-        { $set: { clickerSetId: defaultSet._id } }
-      )
+    if (!hasExplicitSet) {
+      const missingCount = await db.collection(COLLECTION).countDocuments({ clickerSetId: { $exists: false } })
+      if (missingCount > 0 && defaultSet?._id) {
+        await db.collection(COLLECTION).updateMany(
+          { clickerSetId: { $exists: false } },
+          { $set: { clickerSetId: defaultSet._id } }
+        )
+      }
     }
 
     const groups = await db.collection<VariableGroupDoc>(COLLECTION)
@@ -87,11 +95,12 @@ export async function POST(req: NextRequest) {
     const db = await getDb()
     const body = await req.json()
     const now = new Date().toISOString()
-  const defaultSet = await ensureDefaultClickerSet(db)
-  const hasExplicitSet = body?.clickerSetId && ObjectId.isValid(body.clickerSetId)
-  const clickerSetId: ObjectId | null = hasExplicitSet
-      ? new ObjectId(body.clickerSetId)
-      : (defaultSet?._id as ObjectId | null)
+    const defaultSet = await ensureDefaultClickerSet(db)
+    const clickerSetId = normalizeClickerSetId(body?.clickerSetId, defaultSet?._id as ObjectId)
+    const clickerSetExists = clickerSetId ? await db.collection(CLICKER_SETS_COLLECTION).findOne({ _id: clickerSetId }) : null
+    if (!clickerSetExists) {
+      return NextResponse.json({ success: false, error: 'clickerSetId does not exist' }, { status: 400 })
+    }
 
     if (body?.seedDefault) {
       // Seed per-clicker-set defaults (no cross-set coupling)
