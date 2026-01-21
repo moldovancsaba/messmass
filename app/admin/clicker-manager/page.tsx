@@ -4,6 +4,7 @@ import React, { useEffect, useState } from 'react';
 import UnifiedAdminHeroWithSearch from '@/components/UnifiedAdminHeroWithSearch';
 import ColoredCard from '@/components/ColoredCard';
 import FormModal from '@/components/modals/FormModal';
+import ConfirmDialog from '@/components/modals/ConfirmDialog';
 import { apiPost, apiPut, apiDelete } from '@/lib/apiClient';
 import MaterialIcon from '@/components/MaterialIcon';
 import styles from './page.module.css';
@@ -51,6 +52,8 @@ export default function ClickerManagerPage() {
   const [clickerSets, setClickerSets] = useState<ClickerSet[]>([]);
   const [selectedSetId, setSelectedSetId] = useState<string | null>(null);
   const [loadingSets, setLoadingSets] = useState(true);
+  const [pendingDeleteGroupOrder, setPendingDeleteGroupOrder] = useState<number | null>(null);
+  const [confirmDeleteAllOpen, setConfirmDeleteAllOpen] = useState(false);
 
   const loadClickerSets = async (): Promise<string | null> => {
     setLoadingSets(true);
@@ -125,22 +128,22 @@ export default function ClickerManagerPage() {
     }
   };
 
-  const deleteGroup = async (groupOrder: number) => {
-    if (!confirm(`Delete group ${groupOrder} from this clicker set? This cannot be undone.`)) return;
+  const deleteGroupConfirmed = async () => {
+    if (pendingDeleteGroupOrder === null) return;
     try {
       setSaving(true);
       const qs = new URLSearchParams();
-      qs.set('groupOrder', String(groupOrder));
+      qs.set('groupOrder', String(pendingDeleteGroupOrder));
       if (selectedSetId) qs.set('clickerSetId', selectedSetId);
       await apiDelete(`/api/variables-groups?${qs.toString()}`);
       await loadData(selectedSetId);
     } finally {
       setSaving(false);
+      setPendingDeleteGroupOrder(null);
     }
   };
 
   const deleteAllGroups = async () => {
-    if (!confirm('Delete ALL variable groups? This will reset the clicker layout.')) return;
     try {
       setSaving(true);
       const url = selectedSetId ? `/api/variables-groups?clickerSetId=${selectedSetId}` : '/api/variables-groups';
@@ -190,7 +193,7 @@ export default function ClickerManagerPage() {
             }, variant: 'secondary', icon: '📦' },
           { label: 'Refresh Variables', onClick: refreshVariables, variant: 'info', disabled: saving, icon: '🔄' },
           { label: 'Seed Defaults', onClick: seedDefaults, variant: 'secondary', disabled: saving },
-          { label: 'Delete All', onClick: deleteAllGroups, variant: 'danger', disabled: saving },
+          { label: 'Delete All', onClick: () => setConfirmDeleteAllOpen(true), variant: 'danger', disabled: saving },
         ]}
       />
 
@@ -418,21 +421,21 @@ export default function ClickerManagerPage() {
                   </div>
 
                   <div className="flex flex-col gap-2">
-                    <button
-                      className="btn btn-small btn-primary"
-                      onClick={() => setEditingGroup(group)}
-                    >
-                      <MaterialIcon name="edit" variant="outlined" className={styles.iconInline} />
-                      Edit
-                    </button>
-                    <button
-                      className="btn btn-small btn-danger"
-                      onClick={() => deleteGroup(group.groupOrder)}
-                    >
-                      <MaterialIcon name="delete" variant="outlined" className={styles.iconInline} />
-                      Delete
-                    </button>
-                  </div>
+                  <button
+                    className="btn btn-small btn-primary"
+                    onClick={() => setEditingGroup(group)}
+                  >
+                    <MaterialIcon name="edit" variant="outlined" className={styles.iconInline} />
+                    Edit
+                  </button>
+                  <button
+                    className="btn btn-small btn-danger"
+                    onClick={() => setPendingDeleteGroupOrder(group.groupOrder)}
+                  >
+                    <MaterialIcon name="delete" variant="outlined" className={styles.iconInline} />
+                    Delete
+                  </button>
+                </div>
                 </div>
               </ColoredCard>
             );
@@ -497,6 +500,30 @@ export default function ClickerManagerPage() {
           />
         </FormModal>
       )}
+
+      {/* Confirm Delete Group */}
+      <ConfirmDialog
+        isOpen={pendingDeleteGroupOrder !== null}
+        onClose={() => setPendingDeleteGroupOrder(null)}
+        onConfirm={deleteGroupConfirmed}
+        title="Delete Group"
+        message={`Delete group ${pendingDeleteGroupOrder ?? ''} from this clicker set? This cannot be undone.`}
+        confirmText="Delete"
+        cancelText="Cancel"
+        variant="danger"
+      />
+
+      {/* Confirm Delete All Groups in Set */}
+      <ConfirmDialog
+        isOpen={confirmDeleteAllOpen}
+        onClose={() => setConfirmDeleteAllOpen(false)}
+        onConfirm={deleteAllGroups}
+        title="Delete All Groups"
+        message="Delete all variable groups in this clicker set? This will reset the clicker layout for this set only."
+        confirmText="Delete All"
+        cancelText="Cancel"
+        variant="danger"
+      />
     </div>
   );
 }
