@@ -111,10 +111,14 @@ export interface Partner {
   // WHAT: Page style ID reference for partner report styling
   // WHY: Allow custom visual themes for partner report pages (fonts, colors, gradients)
   styleId?: ObjectId;
-  
+
   // WHAT: Report template ID reference for partner report layout
   // WHY: Define which visualization blocks and charts to show on partner reports
   reportTemplateId?: ObjectId;
+
+  // WHAT: Clicker set ID reference for partner-specific clicker layout
+  // WHY: Select which clicker layout (variable groups) the partner uses by default
+  clickerSetId?: ObjectId;
   
   // WHAT: Google Sheets URL for partner's event data sync
   // WHY: Store link to partner-created Google Sheet for bidirectional event sync
@@ -172,6 +176,7 @@ export interface CreatePartnerInput {
   sportsDb?: Partner['sportsDb']; // Use same type as Partner interface
   styleId?: string | null; // Page style ID for partner report styling
   reportTemplateId?: string | null; // Report template ID for partner default
+  clickerSetId?: string | null; // Clicker set ID for partner default
   googleSheetsUrl?: string; // Google Sheets URL for event data sync
 }
 
@@ -190,6 +195,7 @@ export interface UpdatePartnerInput {
   sportsDb?: Partner['sportsDb']; // Use same type as Partner interface
   styleId?: string | null; // Page style ID for partner report styling
   reportTemplateId?: string | null; // Report template ID for partner default
+  clickerSetId?: string | null; // Clicker set ID for partner default
   googleSheetsUrl?: string; // Google Sheets URL for event data sync
 }
 
@@ -201,6 +207,7 @@ export interface PartnerResponse extends Omit<Partner, '_id' | 'bitlyLinkIds' | 
   _id: string;
   styleId?: string; // Page style ID as string for client
   reportTemplateId?: string; // Report template ID as string for client
+  clickerSetId?: string; // Clicker set ID as string for client
   bitlyLinks?: Array<{
     _id: string;
     bitlink: string;

@@ -40,6 +40,8 @@ interface Project {
   eventDate: string;
   hashtags?: string[];
   categorizedHashtags?: { [categoryName: string]: string[] };
+  partner1?: { _id: string; name: string; emoji: string; logoUrl?: string; clickerSetId?: string };
+  partner2?: { _id: string; name: string; emoji: string; logoUrl?: string; clickerSetId?: string };
   stats: {
     remoteImages: number;
     hostessImages: number;
@@ -283,23 +285,36 @@ export default function EditorDashboard({ project: initialProject }: EditorDashb
   const totalImages = project.stats.remoteImages + project.stats.hostessImages + project.stats.selfies;
   // Groups
   const [groups, setGroups] = useState<{ groupOrder: number; chartId?: string; titleOverride?: string; variables?: string[]; specialType?: 'report-content'; visibleInClicker?: boolean; visibleInManual?: boolean }[]>([])
+  const [clickerSetFallback, setClickerSetFallback] = useState(false)
   const [charts, setCharts] = useState<any[]>([])
 
   useEffect(() => {
     (async () => {
       try {
-        const res = await fetch('/api/variables-groups', { cache: 'no-store' })
-        const data = await res.json()
+        const partnerClickerSetId = project.partner1?.clickerSetId || project.partner2?.clickerSetId;
+        const url = partnerClickerSetId ? `/api/variables-groups?clickerSetId=${partnerClickerSetId}` : '/api/variables-groups';
+        const res = await fetch(url, { cache: 'no-store' });
+        const data = await res.json();
         if (data?.success && Array.isArray(data.groups)) {
           console.log('✅ Loaded groups:', data.groups.length, 'groups');
           if (data.groups.length > 0) {
             console.log('Sample group variables:', data.groups[0].variables?.slice(0, 5));
           }
-          // WHAT: Store all groups (filtering happens in render based on edit mode)
-          // WHY: Groups have visibleInClicker and visibleInManual flags
-          setGroups(data.groups)
+          if (partnerClickerSetId && data.groups.length === 0) {
+            // Fallback to default set
+            const resDefault = await fetch('/api/variables-groups', { cache: 'no-store' });
+            const defaultData = await resDefault.json();
+            if (defaultData?.success && Array.isArray(defaultData.groups)) {
+              setGroups(defaultData.groups);
+              setClickerSetFallback(true);
+            }
+          } else {
+            setGroups(data.groups);
+            setClickerSetFallback(false);
+          }
         } else {
           console.warn('⚠️ No groups found or failed to load');
+          setClickerSetFallback(false);
         }
       } catch (e) {
         console.error('❌ Failed to load groups:', e);
@@ -310,7 +325,7 @@ export default function EditorDashboard({ project: initialProject }: EditorDashb
         if (data2?.success && Array.isArray(data2.configurations)) setCharts(data2.configurations)
       } catch {}
     })()
-  }, [])
+  }, [project.partner1?.clickerSetId, project.partner2?.clickerSetId])
   const remoteFansCalc = (project.stats.remoteFans ?? (project.stats.indoor + project.stats.outdoor));
   const totalFans = remoteFansCalc + project.stats.stadium;
   const totalGender = project.stats.female + project.stats.male;
@@ -520,6 +535,12 @@ export default function EditorDashboard({ project: initialProject }: EditorDashb
           </div>
         </div>
       </div>
+
+      {clickerSetFallback && (
+        <div className="alert alert-warning mt-3">
+          Using default clicker layout because the partner’s assigned clicker set is missing. Please update the partner’s clicker set in Admin.
+        </div>
+      )}
 
       <div className="content-grid">
         {/* WHAT: Switch rendering based on edit mode */}

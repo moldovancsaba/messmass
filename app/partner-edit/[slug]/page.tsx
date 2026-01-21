@@ -16,6 +16,7 @@ interface Partner {
   categorizedHashtags?: { [categoryName: string]: string[] };
   styleId?: string;
   reportTemplateId?: string;
+  clickerSetId?: string;
   createdAt: string;
   updatedAt: string;
   // WHAT: Partner-level stats for text and image content only

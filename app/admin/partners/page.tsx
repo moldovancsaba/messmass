@@ -39,6 +39,7 @@ export default function PartnersAdminPageUnified() {
   const [allBitlyLinks, setAllBitlyLinks] = useState<BitlyLinkOption[]>([]);
   const [availableTemplates, setAvailableTemplates] = useState<{ _id: string; name: string; type: string }[]>([]);
   const [availableStyles, setAvailableStyles] = useState<{ _id: string; name: string }[]>([]);
+  const [availableClickerSets, setAvailableClickerSets] = useState<{ _id: string; name: string; isDefault?: boolean }[]>([]);
   const [loading, setLoading] = useState(true);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
   const [error, setError] = useState('');
@@ -66,6 +67,7 @@ export default function PartnersAdminPageUnified() {
     bitlyLinkIds: [] as string[],
     styleId: '' as string | null,
     reportTemplateId: '' as string | null,
+    clickerSetId: '' as string | null,
     sportsDb: undefined as any,
     logoUrl: undefined as string | undefined
   });
@@ -88,6 +90,7 @@ export default function PartnersAdminPageUnified() {
     sportsDb: undefined as any,
     styleId: '' as string | null,
     reportTemplateId: '' as string | null,
+    clickerSetId: '' as string | null,
     googleSheetsUrl: '' as string | undefined
   });
   const [isUpdatingPartner, setIsUpdatingPartner] = useState(false);
@@ -236,6 +239,19 @@ export default function PartnersAdminPageUnified() {
           }
         } catch (e) {
           console.error('Failed to load report styles', e);
+        }
+      })();
+
+      // Load clicker sets
+      (async () => {
+        try {
+          const res = await fetch('/api/clicker-sets');
+          const data = await res.json();
+          if (data.success) {
+            setAvailableClickerSets(data.sets);
+          }
+        } catch (e) {
+          console.error('Failed to load clicker sets', e);
         }
       })();
     }
@@ -511,6 +527,7 @@ export default function PartnersAdminPageUnified() {
       sportsDb: partner.sportsDb,
       styleId: partner.styleId || '',
       reportTemplateId: partner.reportTemplateId || '',
+      clickerSetId: (partner as any).clickerSetId || '',
       googleSheetsUrl: partner.googleSheetsUrl || ''
     });
     setSportsDbSearch('');
@@ -768,7 +785,7 @@ export default function PartnersAdminPageUnified() {
             💡 Report color theme (26-color system) for partner report page
           </p>
         </div>
-        
+
         <div className="form-group mb-4">
           <label className="form-label-block">Report Template</label>
           <select 
@@ -784,6 +801,23 @@ export default function PartnersAdminPageUnified() {
           <p className="form-hint">
             💡 All events from this partner will use this template by default
           </p>
+        </div>
+
+        <div className="form-group mb-4">
+          <label className="form-label-block">Clicker Set</label>
+          <select
+            className="form-input"
+            value={newPartnerData.clickerSetId || ''}
+            onChange={(e) => setNewPartnerData(prev => ({ ...prev, clickerSetId: e.target.value || null }))}
+          >
+            <option value="">— Use Default Clicker —</option>
+            {availableClickerSets.map(set => (
+              <option key={set._id} value={set._id}>
+                {set.isDefault ? '⭐ ' : ''}{set.name}
+              </option>
+            ))}
+          </select>
+          <p className="form-hint">Select which clicker layout this partner should use by default.</p>
         </div>
       </FormModal>
       
@@ -935,6 +969,23 @@ export default function PartnersAdminPageUnified() {
           <p className="form-hint">
             💡 All events from this partner will use this template by default
           </p>
+        </div>
+
+        <div className="form-group mb-4">
+          <label className="form-label-block">Clicker Set</label>
+          <select
+            className="form-input"
+            value={editPartnerData.clickerSetId || ''}
+            onChange={(e) => setEditPartnerData(prev => ({ ...prev, clickerSetId: e.target.value || null }))}
+          >
+            <option value="">— Use Default Clicker —</option>
+            {availableClickerSets.map(set => (
+              <option key={set._id} value={set._id}>
+                {set.isDefault ? '⭐ ' : ''}{set.name}
+              </option>
+            ))}
+          </select>
+          <p className="form-hint">Select which clicker layout this partner should use by default.</p>
         </div>
 
         {/* Google Sheets Integration (inline in Edit modal) */}

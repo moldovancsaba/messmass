@@ -23,6 +23,7 @@ interface VariableGroup {
   visibleInManual?: boolean;
   createdAt?: string;
   updatedAt?: string;
+  clickerSetId?: string;
 }
 
 interface Variable {
@@ -33,6 +34,13 @@ interface Variable {
   flags: { visibleInClicker: boolean; editableInManual: boolean };
 }
 
+interface ClickerSet {
+  _id: string;
+  name: string;
+  isDefault?: boolean;
+  usage?: { partnerCount: number };
+}
+
 export default function ClickerManagerPage() {
   const [groups, setGroups] = useState<VariableGroup[]>([]);
   const [variables, setVariables] = useState<Variable[]>([]);
@@ -40,12 +48,44 @@ export default function ClickerManagerPage() {
   const [saving, setSaving] = useState(false);
   const [editingGroup, setEditingGroup] = useState<VariableGroup | null>(null);
   const [createOpen, setCreateOpen] = useState(false);
+  const [clickerSets, setClickerSets] = useState<ClickerSet[]>([]);
+  const [selectedSetId, setSelectedSetId] = useState<string | null>(null);
+  const [loadingSets, setLoadingSets] = useState(true);
 
-  const loadData = async () => {
+  const loadClickerSets = async (): Promise<string | null> => {
+    setLoadingSets(true);
+    let chosenId: string | null = selectedSetId;
+    try {
+      const res = await fetch('/api/clicker-sets', { cache: 'no-store' });
+      const data = await res.json();
+      if (data?.success && Array.isArray(data.sets)) {
+        setClickerSets(data.sets);
+        const currentDefault = data.sets.find((s: ClickerSet) => s.isDefault);
+        if (!selectedSetId) {
+          chosenId = currentDefault?._id || data.sets[0]?._id || null;
+          setSelectedSetId(chosenId);
+        } else if (!data.sets.find((s: ClickerSet) => s._id === selectedSetId)) {
+          chosenId = currentDefault?._id || data.sets[0]?._id || null;
+          setSelectedSetId(chosenId);
+        } else {
+          chosenId = selectedSetId;
+        }
+      }
+    } catch (e) {
+      console.error('❌ Failed to load clicker sets:', e);
+    } finally {
+      setLoadingSets(false);
+    }
+    return chosenId;
+  };
+
+  const loadData = async (targetSetId?: string | null) => {
     setLoading(true);
     try {
-      // Load variable groups
-      const groupsRes = await fetch('/api/variables-groups', { cache: 'no-store' });
+      const activeSetId = targetSetId || selectedSetId;
+      // Load variable groups scoped to clicker set
+      const groupsUrl = activeSetId ? `/api/variables-groups?clickerSetId=${activeSetId}` : '/api/variables-groups';
+      const groupsRes = await fetch(groupsUrl, { cache: 'no-store' });
       const groupsData = await groupsRes.json();
       if (groupsData?.success) {
         setGroups(groupsData.groups || []);
@@ -65,15 +105,18 @@ export default function ClickerManagerPage() {
   };
 
   useEffect(() => {
-    loadData();
+    (async () => {
+      const setId = await loadClickerSets();
+      await loadData(setId);
+    })();
   }, []);
 
   const seedDefaults = async () => {
     try {
       setSaving(true);
-      const data = await apiPost('/api/variables-groups', { seedDefault: true });
+      const data = await apiPost('/api/variables-groups', { seedDefault: true, clickerSetId: selectedSetId });
       if (data?.success) {
-        await loadData();
+        await loadData(selectedSetId);
       }
     } catch (e) {
       console.error('❌ Failed to seed defaults:', e);
@@ -98,8 +141,9 @@ export default function ClickerManagerPage() {
     if (!confirm('Delete ALL variable groups? This will reset the clicker layout.')) return;
     try {
       setSaving(true);
-      await apiDelete('/api/variables-groups');
-      await loadData();
+      const url = selectedSetId ? `/api/variables-groups?clickerSetId=${selectedSetId}` : '/api/variables-groups';
+      await apiDelete(url); // scoped delete when set selected
+      await loadData(selectedSetId);
     } finally {
       setSaving(false);
     }
@@ -111,7 +155,7 @@ export default function ClickerManagerPage() {
       // WHAT: Force invalidate cache and reload
       // WHY: User added variable in KYC but it's not showing due to cache
       await apiPut('/api/variables-config?action=invalidateCache', {});
-      await loadData();
+      await loadData(selectedSetId);
     } finally {
       setSaving(false);
     }
@@ -136,9 +180,10 @@ export default function ClickerManagerPage() {
                     specialType: 'report-content',
                     visibleInClicker: true,
                     visibleInManual: true,
+                    clickerSetId: selectedSetId || undefined,
                   }
                 });
-                await loadData();
+                await loadData(selectedSetId);
               } finally { setSaving(false); }
             }, variant: 'secondary', icon: '📦' },
           { label: 'Refresh Variables', onClick: refreshVariables, variant: 'info', disabled: saving, icon: '🔄' },
@@ -146,6 +191,116 @@ export default function ClickerManagerPage() {
           { label: 'Delete All', onClick: deleteAllGroups, variant: 'danger', disabled: saving },
         ]}
       />
+
+      {/* Clicker Set Selector (mirrors report template selector UX) */}
+      <ColoredCard accentColor="#3b82f6" hoverable={false}>
+        <div className="flex flex-col gap-3">
+          <div className="flex items-center justify-between flex-wrap gap-2">
+            <div>
+              <h3 className="mt-0 mb-1">🎮 Clicker Set</h3>
+              <p className="text-sm text-gray-600 mb-0">Select which clicker layout to edit (partner-assignable)</p>
+            </div>
+            <div className="flex gap-2 flex-wrap">
+              <button
+                className="btn btn-small btn-primary"
+                disabled={loadingSets}
+                onClick={async () => {
+                  const name = prompt('Name for new clicker set?');
+                  if (!name) return;
+                  setSaving(true);
+                  try {
+                    const clone = confirm('Clone current set layout into the new set?');
+                    const res = await apiPost('/api/clicker-sets', { name, cloneFromId: clone ? selectedSetId : undefined });
+                    if (res?.success && res.set?._id) {
+                      await loadClickerSets();
+                      setSelectedSetId(res.set._id);
+                      await loadData(res.set._id);
+                    }
+                  } finally {
+                    setSaving(false);
+                  }
+                }}
+              >
+                ➕ New Set
+              </button>
+              <button
+                className="btn btn-small btn-secondary"
+                disabled={loadingSets || !selectedSetId}
+                onClick={async () => {
+                  if (!selectedSetId) return;
+                  const name = prompt('Rename clicker set to:', clickerSets.find(s => s._id === selectedSetId)?.name || '');
+                  if (!name) return;
+                  setSaving(true);
+                  try {
+                    await apiPut('/api/clicker-sets', { clickerSetId: selectedSetId, name });
+                    await loadClickerSets();
+                  } finally {
+                    setSaving(false);
+                  }
+                }}
+              >
+                ✏️ Rename
+              </button>
+              <button
+                className="btn btn-small btn-secondary"
+                disabled={loadingSets || !selectedSetId}
+                onClick={async () => {
+                  if (!selectedSetId) return;
+                  setSaving(true);
+                  try {
+                    await apiPut('/api/clicker-sets', { clickerSetId: selectedSetId, isDefault: true });
+                    await loadClickerSets();
+                  } finally {
+                    setSaving(false);
+                  }
+                }}
+              >
+                ⭐ Make Default
+              </button>
+              <button
+                className="btn btn-small btn-danger"
+                disabled={loadingSets || !selectedSetId || clickerSets.find(s => s._id === selectedSetId)?.isDefault}
+              onClick={async () => {
+                if (!selectedSetId) return;
+                const name = clickerSets.find(s => s._id === selectedSetId)?.name || 'this set';
+                if (!confirm(`Delete ${name}? This cannot be undone.`)) return;
+                setSaving(true);
+                try {
+                  await apiDelete(`/api/clicker-sets?clickerSetId=${selectedSetId}`);
+                  const newId = await loadClickerSets();
+                  setSelectedSetId(newId);
+                  await loadData(newId);
+                } finally {
+                  setSaving(false);
+                }
+              }}
+            >
+                🗑️ Delete
+              </button>
+            </div>
+          </div>
+          <div className="flex items-center gap-3 flex-wrap">
+            <select
+              className="form-input"
+              value={selectedSetId || ''}
+              onChange={async (e) => {
+                const id = e.target.value || null;
+                setSelectedSetId(id);
+                await loadData(id);
+              }}
+            >
+              {clickerSets.map((set) => (
+                <option key={set._id} value={set._id}>
+                  {set.isDefault ? '⭐ ' : ''}{set.name} {set.usage?.partnerCount ? `(${set.usage.partnerCount} partners)` : ''}
+                </option>
+              ))}
+            </select>
+            {clickerSets.find((s) => s._id === selectedSetId)?.isDefault && (
+              <span className="badge badge-success">Default</span>
+            )}
+          </div>
+        </div>
+      </ColoredCard>
 
       {loading && (
         <ColoredCard accentColor="#6366f1" hoverable={false} className="text-center">
@@ -207,6 +362,7 @@ export default function ClickerManagerPage() {
                                 group: {
                                   ...group,
                                   visibleInClicker: e.target.checked,
+                                  clickerSetId: selectedSetId || undefined,
                                 },
                               });
                               await loadData();
@@ -229,6 +385,7 @@ export default function ClickerManagerPage() {
                                 group: {
                                   ...group,
                                   visibleInManual: e.target.checked,
+                                  clickerSetId: selectedSetId || undefined,
                                 },
                               });
                               await loadData();
@@ -291,10 +448,11 @@ export default function ClickerManagerPage() {
           <GroupForm
             group={editingGroup}
             variables={variables}
+            clickerSetId={selectedSetId}
             onClose={() => setEditingGroup(null)}
             onSaved={async () => {
               setEditingGroup(null);
-              await loadData();
+              await loadData(selectedSetId);
             }}
           />
         </FormModal>
@@ -318,12 +476,14 @@ export default function ClickerManagerPage() {
             group={{
               groupOrder: Math.max(0, ...groups.map((g) => g.groupOrder)) + 1,
               variables: [],
+              clickerSetId: selectedSetId || undefined,
             }}
             variables={variables}
+            clickerSetId={selectedSetId}
             onClose={() => setCreateOpen(false)}
             onSaved={async () => {
               setCreateOpen(false);
-              await loadData();
+              await loadData(selectedSetId);
             }}
           />
         </FormModal>
@@ -335,11 +495,13 @@ export default function ClickerManagerPage() {
 function GroupForm({
   group,
   variables,
+  clickerSetId,
   onClose,
   onSaved,
 }: {
   group: VariableGroup;
   variables: Variable[];
+  clickerSetId: string | null;
   onClose: () => void;
   onSaved: () => void;
 }) {
@@ -410,6 +572,7 @@ function GroupForm({
           variables: form.specialType ? undefined : form.variables,
           visibleInClicker: form.visibleInClicker,
           visibleInManual: form.visibleInManual,
+          clickerSetId: clickerSetId || undefined,
         },
       });
 

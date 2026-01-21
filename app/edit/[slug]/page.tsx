@@ -14,6 +14,8 @@ interface Project {
   hashtags?: string[];
   categorizedHashtags?: { [categoryName: string]: string[] };
   styleIdEnhanced?: string; // Reference to page_styles_enhanced collection
+  partner1?: { _id: string; name: string; emoji: string; logoUrl?: string; clickerSetId?: string };
+  partner2?: { _id: string; name: string; emoji: string; logoUrl?: string; clickerSetId?: string };
   // WHAT: Flexible stats object to support all variables including new ones
   // WHY: Variables are dynamic and managed in database (variables_metadata)
   // HOW: Use index signature to allow any numeric stat field
