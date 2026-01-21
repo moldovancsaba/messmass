@@ -87,13 +87,17 @@ export async function POST(req: NextRequest) {
     const db = await getDb()
     const body = await req.json()
     const now = new Date().toISOString()
-    const defaultSet = await ensureDefaultClickerSet(db)
-    const clickerSetId: ObjectId = (body?.clickerSetId && ObjectId.isValid(body.clickerSetId))
+  const defaultSet = await ensureDefaultClickerSet(db)
+  const hasExplicitSet = body?.clickerSetId && ObjectId.isValid(body.clickerSetId)
+  const clickerSetId: ObjectId | null = hasExplicitSet
       ? new ObjectId(body.clickerSetId)
-      : (defaultSet._id as ObjectId)
+      : (defaultSet?._id as ObjectId | null)
 
     if (body?.seedDefault) {
       // Seed per-clicker-set defaults (no cross-set coupling)
+      if (!clickerSetId) {
+        return NextResponse.json({ success: false, error: 'clickerSetId is required to seed defaults' }, { status: 400 })
+      }
       const existingCount = await db.collection(COLLECTION).countDocuments({ clickerSetId })
       if (existingCount === 0) {
         const seed: VariableGroupDoc[] = [
@@ -116,6 +120,9 @@ export async function POST(req: NextRequest) {
     const group = body?.group as VariableGroupDoc
     if (!group || typeof group.groupOrder !== 'number') {
       return NextResponse.json({ success: false, error: 'Invalid group payload' }, { status: 400 })
+    }
+    if (!clickerSetId) {
+      return NextResponse.json({ success: false, error: 'clickerSetId is required' }, { status: 400 })
     }
 
     // Validation: either a special group OR a variables array

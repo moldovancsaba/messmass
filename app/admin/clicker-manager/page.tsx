@@ -69,7 +69,8 @@ export default function ClickerManagerPage() {
         setClickerSets(data.sets);
         const currentDefault = data.sets.find((s: ClickerSet) => s.isDefault);
         const stored = typeof window !== 'undefined' ? localStorage.getItem('clickerManager.selectedSetId') : null;
-        const preferred = selectedSetId || (stored || undefined);
+        const storedClean = stored && stored.trim().length > 0 ? stored : null;
+        const preferred = selectedSetId || storedClean || undefined;
         if (preferred && data.sets.find((s: ClickerSet) => s._id === preferred)) {
           chosenId = preferred;
           setSelectedSetId(chosenId);
