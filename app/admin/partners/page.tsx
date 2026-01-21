@@ -354,6 +354,7 @@ export default function PartnersAdminPageUnified() {
           bitlyLinkIds: [],
           styleId: '',
           reportTemplateId: '',
+          clickerSetId: '',
           sportsDb: undefined,
           logoUrl: undefined
         });

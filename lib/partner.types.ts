@@ -203,7 +203,7 @@ export interface UpdatePartnerInput {
  * WHAT: Partner response with populated Bitly links
  * WHY: Return full link details to client for display
  */
-export interface PartnerResponse extends Omit<Partner, '_id' | 'bitlyLinkIds' | 'styleId' | 'reportTemplateId'> {
+export interface PartnerResponse extends Omit<Partner, '_id' | 'bitlyLinkIds' | 'styleId' | 'reportTemplateId' | 'clickerSetId'> {
   _id: string;
   styleId?: string; // Page style ID as string for client
   reportTemplateId?: string; // Report template ID as string for client
