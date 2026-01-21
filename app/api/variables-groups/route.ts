@@ -93,8 +93,8 @@ export async function POST(req: NextRequest) {
       : (defaultSet._id as ObjectId)
 
     if (body?.seedDefault) {
-      // Seed per your specification
-      const existingCount = await db.collection(COLLECTION).countDocuments({})
+      // Seed per-clicker-set defaults (no cross-set coupling)
+      const existingCount = await db.collection(COLLECTION).countDocuments({ clickerSetId })
       if (existingCount === 0) {
         const seed: VariableGroupDoc[] = [
           { groupOrder: 1, chartId: 'all-images-taken', titleOverride: undefined, variables: ['remoteImages','hostessImages','selfies'], visibleInClicker: true, visibleInManual: true, createdAt: now, updatedAt: now, clickerSetId },
