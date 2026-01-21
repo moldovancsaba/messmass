@@ -1,8 +1,25 @@
 # MessMass Release Notes
 Status: Active
-Last Updated: 2026-01-16T11:30:00.000Z
+Last Updated: 2026-01-21T15:40:00.000Z
 Canonical: No
 Owner: Operations
+
+## [v11.55.2] — 2026-01-21T15:40:00.000Z
+
+### Summary
+🎮 **CLICKER MANAGER RELIABILITY PATCH**: Fixed scope leaks that sent new groups to the Default set, made clicker-set selection sticky, and ensured APIs accept explicit set IDs end-to-end.
+
+### What Was Fixed
+- **Scoped payloads**: Admin UI now sends `clickerSetId` at the API root for every group create/update/toggle; saves are blocked unless a set is selected.
+- **API hardening**: `/api/variables-groups` accepts `clickerSetId` from the body or nested group payloads and filters groups by either string or ObjectId, preventing cross-set bleed.
+- **Cloning correctness**: `/api/clicker-sets` clones groups across sets even when legacy groups stored ObjectIds; cloned groups are written with string `clickerSetId`.
+- **Cleanup/backfill**: Backfill script converts legacy ObjectId `clickerSetId` values to strings for both variable groups and partners, keeping lookups deterministic.
+
+### Testing
+- ✅ `npm run build -- --no-lint` (Next.js + type check)
+
+### Version
+v11.55.1 → v11.55.2 (PATCH — clicker manager stabilization)
 
 ## [v11.55.1] — 2026-01-16T11:30:00.000Z
 

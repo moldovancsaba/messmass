@@ -1,5 +1,5 @@
 # Clicker Manager — Partner Clicker Sets
-Status: Draft  
+Status: Active  
 Last Updated: 2026-01-21  
 Owner: Admin UX (Katja)  
 Canonical: No  
@@ -8,16 +8,17 @@ Canonical: No
 Add partner-aware “clicker sets” so each partner (and their events) can use a tailored clicker layout while retaining the existing global layout as the default/fallback. The Clicker Manager UX should mirror the Report Template selector pattern used in `app/admin/visualization/page.tsx`.
 
 ## Current State (2026-01-21)
-- Single global clicker layout stored in `variablesGroups` collection; no notion of sets.
-- `/admin/clicker-manager` edits the one layout (seed defaults, edit groups, visibility).
-- `/api/variables-groups` has no scoping; EditorDashboard fetches it blindly.
-- Partners have `styleId` and `reportTemplateId`, but no clicker assignment.
+- Clicker sets are persisted in `clickerSets` with `isDefault` flag; new sets start empty (optional clone of current).
+- `/admin/clicker-manager` has a selector card, persists selection in `localStorage`, and scopes all group CRUD to the chosen set.
+- `/api/variables-groups` requires `clickerSetId` and filters by either string or legacy ObjectId; seeding happens per selected set.
+- Partners have an optional `clickerSetId`; Partner edit UI shows a dropdown beside Style/Report Template. Null/absent means default.
+- EditorDashboard requests groups with the partner’s `clickerSetId`; if missing/invalid, it falls back to the default set and surfaces a non-blocking warning.
+- Backfill script converts legacy ObjectId `clickerSetId` values to strings for deterministic matching.
 
-## Problem
-- Admins cannot experiment with or ship partner-specific clicker layouts.
-- Any change is global and risks breaking existing events.
-- Partner edit UI cannot select a clicker layout, unlike style/template dropdowns.
-- No safe fallback handling if a layout is missing or partially defined.
+## Known Gaps / Next Steps
+- Usage guardrails on delete (block when partners are attached) are still minimal; we show usage counts but allow deletion after confirmation.
+- Telemetry/analytics on set usage and editor fallback events are not wired.
+- Automated regression tests for the selector and CRUD flows are still pending.
 
 ## Desired UX (anchor to Report Template selector)
 - A selector card at the top of Clicker Manager: dropdown of clicker sets, star on default, usage count, SaveStatus pill, actions (New, Duplicate, Rename/Delete) similar to the Visualization page template selector.
@@ -35,7 +36,7 @@ Add partner-aware “clicker sets” so each partner (and their events) can use 
 5. As an editor using `/edit/[slug]`, I see the clicker layout chosen for that partner; if unavailable, I automatically fall back to the default without losing access.
 6. As an admin, I can see which partners use a clicker set before deleting it (guardrails).
 
-## Functional Requirements
+## Functional Behavior
 - **Clicker Set entity**: `name`, `slug/id`, `isDefault`, `createdAt/updatedAt`, `usageCount` (computed), `notes` (optional).
 - **Scoped groups**: `variablesGroups` entries are tied to `clickerSetId`; queries must filter by set.
 - **Default preservation**: migrate existing groups into a “Default Clicker” set; mark as `isDefault = true`.
@@ -44,15 +45,14 @@ Add partner-aware “clicker sets” so each partner (and their events) can use 
   - `GET /api/clicker-sets` (list, include usage counts)
   - `POST /api/clicker-sets` (create/clone), `PUT` (rename/default), `DELETE` (with safety checks)
   - `GET/POST /api/variables-groups?clickerSetId=` scoped
-  - `POST /api/variables-groups` accepts `clickerSetId`; seed respects current set.
-- **Editor resolution**: `/api/projects/edit/[slug]` returns `clickerSetId` (from partner or explicit on event if added later); EditorDashboard fetches groups with that id, else default.
-- **Validation**: disallow deleting default set; block deletion when `usageCount > 0` unless forced with an explicit flag (future).
+  - `POST /api/variables-groups` accepts `clickerSetId` at the request root; seed respects current set.
+- **Editor resolution**: `/api/projects/edit/[slug]` returns `clickerSetId` (from partner); EditorDashboard fetches groups with that id, else default with banner.
+- **Validation**: default set cannot be deleted; other sets can be deleted after confirmation (usage counts shown).
 
 ## Data Model & Migration
-- New collection: `clickerSets`.
-- Update `variablesGroups` to include `clickerSetId` (ObjectId/string). Migration: set all existing docs to the default set id.
-- Update `partners` schema + API to store `clickerSetId`.
-- Backfill: for existing partners, leave `clickerSetId = null` (implicitly default).
+- Collection: `clickerSets` (ObjectId `_id`); `variablesGroups.clickerSetId` stored as stringified `_id`.
+- Legacy groups with missing or ObjectId `clickerSetId` are converted to strings and defaulted to the default set.
+- Partners store `clickerSetId` as ObjectId in Mongo but are exposed as strings via the API; backfill sets missing values to `null` (default).
 
 ## UI Changes
 - **Clicker Manager**: add selector card (dropdown + actions) modeled on Visualization template selector; fetch sets once; load groups per selection; show SaveStatusIndicator.

@@ -51,32 +51,45 @@ export async function GET(req: NextRequest) {
   try {
     const db = await getDb()
     const url = new URL(req.url)
-  const clickerSetIdParam = url.searchParams.get('clickerSetId')
+    const clickerSetIdParam = url.searchParams.get('clickerSetId')
 
-  const defaultSet = await ensureDefaultClickerSet(db)
-  const hasExplicitSet = clickerSetIdParam !== null && clickerSetIdParam.trim().length > 0
-  const clickerSetFilterStr = hasExplicitSet
+    const defaultSet = await ensureDefaultClickerSet(db)
+    const hasExplicitSet = clickerSetIdParam !== null && clickerSetIdParam.trim().length > 0
+    const clickerSetFilterStr = hasExplicitSet
       ? normalizeClickerSetIdToString(clickerSetIdParam)
       : String(defaultSet?._id)
 
-  if (!clickerSetFilterStr) {
-    return NextResponse.json({ success: false, error: 'clickerSetId is required' }, { status: 400 })
-  }
-
-  // Backfill legacy groups (no clickerSetId) into default set
-  if (!hasExplicitSet) {
-    const missingCount = await db.collection(COLLECTION).countDocuments({ clickerSetId: { $exists: false } })
-    if (missingCount > 0 && defaultSet?._id) {
-      await db.collection(COLLECTION).updateMany(
-        { clickerSetId: { $exists: false } },
-        { $set: { clickerSetId: String(defaultSet._id) } }
-      )
+    if (!clickerSetFilterStr) {
+      return NextResponse.json({ success: false, error: 'clickerSetId is required' }, { status: 400 })
     }
-  }
+
+    const clickerSetFilterObjId = ObjectId.isValid(clickerSetFilterStr) ? new ObjectId(clickerSetFilterStr) : null
+
+    // Backfill legacy groups (no clickerSetId) into default set
+    if (!hasExplicitSet) {
+      const missingCount = await db.collection(COLLECTION).countDocuments({ clickerSetId: { $exists: false } })
+      if (missingCount > 0 && defaultSet?._id) {
+        await db.collection(COLLECTION).updateMany(
+          { clickerSetId: { $exists: false } },
+          { $set: { clickerSetId: String(defaultSet._id) } }
+        )
+      }
+    }
 
     const matchFilter = hasExplicitSet
-      ? { clickerSetId: clickerSetFilterStr }
-      : { $or: [ { clickerSetId: String(defaultSet?._id) }, { clickerSetId: { $exists: false } } ] }
+      ? {
+          $or: [
+            { clickerSetId: clickerSetFilterStr },
+            ...(clickerSetFilterObjId ? [{ clickerSetId: clickerSetFilterObjId }] : []),
+          ],
+        }
+      : {
+          $or: [
+            { clickerSetId: String(defaultSet?._id) },
+            { clickerSetId: defaultSet?._id },
+            { clickerSetId: { $exists: false } },
+          ],
+        }
 
     const groups = await db.collection<VariableGroupDoc>(COLLECTION)
       .find(matchFilter)
@@ -95,7 +108,7 @@ export async function POST(req: NextRequest) {
     const db = await getDb()
     const body = await req.json()
     const now = new Date().toISOString()
-    const clickerSetIdStr = normalizeClickerSetIdToString(body?.clickerSetId)
+    const clickerSetIdStr = normalizeClickerSetIdToString(body?.clickerSetId ?? body?.group?.clickerSetId)
     if (!clickerSetIdStr) {
       return NextResponse.json({ success: false, error: 'clickerSetId is required' }, { status: 400 })
     }

@@ -27,7 +27,9 @@ async function ensureDefaultSet(db: any): Promise<ClickerSetDoc> {
 }
 
 async function getUsageCount(db: any, clickerSetId: ObjectId) {
-  const partnerCount = await db.collection(PARTNERS_COLLECTION).countDocuments({ clickerSetId });
+  const partnerCount = await db.collection(PARTNERS_COLLECTION).countDocuments({
+    $or: [{ clickerSetId }, { clickerSetId: clickerSetId.toString() }],
+  });
   return { partnerCount };
 }
 
@@ -70,12 +72,14 @@ export async function POST(req: NextRequest) {
     // Optional clone of variable groups
     if (cloneFromId && ObjectId.isValid(cloneFromId)) {
       const sourceId = new ObjectId(cloneFromId);
-      const groups = await db.collection(GROUPS_COLLECTION).find({ clickerSetId: sourceId }).toArray();
+      const groups = await db.collection(GROUPS_COLLECTION).find({
+        $or: [{ clickerSetId: sourceId }, { clickerSetId: sourceId.toString() }],
+      }).toArray();
       if (groups.length > 0) {
         const cloned = groups.map((g: any) => ({
           ...g,
           _id: undefined,
-          clickerSetId: newId,
+          clickerSetId: newId.toString(),
           createdAt: now,
           updatedAt: now,
         }));
@@ -136,7 +140,9 @@ export async function DELETE(req: NextRequest) {
     }
     await db.collection(SETS_COLLECTION).deleteOne({ _id: id });
     // Optionally also delete groups for this set
-    await db.collection(GROUPS_COLLECTION).deleteMany({ clickerSetId: id });
+    await db.collection(GROUPS_COLLECTION).deleteMany({
+      $or: [{ clickerSetId: id }, { clickerSetId: clickerSetId }],
+    });
     return NextResponse.json({ success: true });
   } catch (e) {
     console.error('❌ clicker-sets DELETE failed', e);

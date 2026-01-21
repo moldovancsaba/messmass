@@ -1,10 +1,12 @@
 # MessMass Architecture Documentation
 Status: Active
-Last Updated: 2026-01-16T11:30:00.000Z
+Last Updated: 2026-01-21T15:40:00.000Z
 Canonical: No
 Owner: Architecture
 
-Version: 11.55.1
+Version: 11.55.2
+
+**Recent Update (2026-01-21):** Clicker Manager now treats `clickerSetId` as a required, stringified identifier end-to-end. All variable group CRUD calls must pass `clickerSetId` at the request root; APIs accept both string and legacy ObjectId values for backward compatibility but persist strings to prevent cross-set leakage.
 
 ## 🔍 MANDATORY: Implementation Standards
 

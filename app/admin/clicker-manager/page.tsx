@@ -188,13 +188,13 @@ export default function ClickerManagerPage() {
               try {
                 const maxOrder = Math.max(0, ...groups.map(g => g.groupOrder));
                 await apiPost('/api/variables-groups', {
+                  clickerSetId: selectedSetId,
                   group: {
                     groupOrder: maxOrder + 1,
                     titleOverride: '📦 Report Content',
                     specialType: 'report-content',
                     visibleInClicker: true,
                     visibleInManual: true,
-                    clickerSetId: selectedSetId || undefined,
                   }
                 });
                 await loadData(selectedSetId);
@@ -359,10 +359,10 @@ export default function ClickerManagerPage() {
                             setSaving(true);
                             try {
                               await apiPost('/api/variables-groups', {
+                                clickerSetId: selectedSetId,
                                 group: {
                                   ...group,
                                   visibleInClicker: e.target.checked,
-                                  clickerSetId: selectedSetId || undefined,
                                 },
                               });
                               await loadData();
@@ -382,10 +382,10 @@ export default function ClickerManagerPage() {
                             setSaving(true);
                             try {
                               await apiPost('/api/variables-groups', {
+                                clickerSetId: selectedSetId,
                                 group: {
                                   ...group,
                                   visibleInManual: e.target.checked,
-                                  clickerSetId: selectedSetId || undefined,
                                 },
                               });
                               await loadData();
@@ -682,6 +682,7 @@ function GroupForm({
     try {
       setForm((prev) => ({ ...prev, saving: true, error: null }));
       const data = await apiPost('/api/variables-groups', {
+        clickerSetId,
         group: {
           groupOrder: form.groupOrder,
           chartId: form.chartId || undefined,
@@ -690,7 +691,6 @@ function GroupForm({
           variables: form.specialType ? undefined : form.variables,
           visibleInClicker: form.visibleInClicker,
           visibleInManual: form.visibleInManual,
-          clickerSetId,
         },
       });
 

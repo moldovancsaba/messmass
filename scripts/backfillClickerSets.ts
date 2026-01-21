@@ -37,21 +37,40 @@ async function main() {
   }
 
   const defaultId = defaultSet?._id as ObjectId;
+  const defaultIdStr = defaultId.toString();
 
   // 2) Backfill variable groups
   const variablesGroups = db.collection('variablesGroups');
+  const vgConverted = await variablesGroups.updateMany(
+    { clickerSetId: { $type: 'objectId' } },
+    [
+      {
+        $set: { clickerSetId: { $toString: '$clickerSetId' } },
+      },
+    ]
+  );
   const vgResult = await variablesGroups.updateMany(
     { $or: [{ clickerSetId: { $exists: false } }, { clickerSetId: null }] },
-    { $set: { clickerSetId: defaultId } }
+    { $set: { clickerSetId: defaultIdStr } }
   );
+  console.log(`Variable groups converted: modified ${vgConverted.modifiedCount}`);
   console.log(`Variable groups backfilled: matched ${vgResult.matchedCount}, modified ${vgResult.modifiedCount}`);
 
   // 3) Backfill partners (explicit null for clarity; default means use default set)
   const partners = db.collection('partners');
+  const partnerConvert = await partners.updateMany(
+    { clickerSetId: { $type: 'objectId' } },
+    [
+      {
+        $set: { clickerSetId: { $toString: '$clickerSetId' } },
+      },
+    ]
+  );
   const partnerResult = await partners.updateMany(
     { clickerSetId: { $exists: false } },
     { $set: { clickerSetId: null } }
   );
+  console.log(`Partners converted: modified ${partnerConvert.modifiedCount}`);
   console.log(`Partners backfilled: matched ${partnerResult.matchedCount}, modified ${partnerResult.modifiedCount}`);
 
   console.log('✅ Backfill complete.');
@@ -62,4 +81,3 @@ main().catch((err) => {
   console.error('❌ Backfill failed', err);
   process.exit(1);
 });
-
