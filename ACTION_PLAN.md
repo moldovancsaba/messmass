@@ -1,8 +1,8 @@
 # ACTION_PLAN.md
 
-**Version:** 1.3.2  
+**Version:** 1.3.3  
 **Created:** 2026-01-12T00:09:33.679Z  
-**Last Updated (UTC):** 2026-01-15T15:00:00.000Z  
+**Last Updated (UTC):** 2026-01-16T11:30:00.000Z  
 **Status:** Active  
 **Canonical:** Yes  
 **Owner:** Chappie (The Architect)  
@@ -67,8 +67,7 @@
 3.2 Queue (highest priority first):
 1) ADMIN: A-UI-13 (Style model and assignment rules)
 2) ADMIN: A-UI-LAYOUT-02.1 (Variable blockAspectRatio authoring for TEXT-AREA/TABLE)
-3) REPORTING: A-05 (Layout Grammar runtime enforcement guardrails)
-4) CROSS: X-LAYOUT-01 (Contract conformance fixtures: Admin output -> Reporting input)
+3) CROSS: X-LAYOUT-01 (Contract conformance fixtures: Admin output -> Reporting input)
 
 ---
 
@@ -76,16 +75,7 @@
 
 Owner: Tribeca (Reporting)
 
-### A-05: Layout Grammar Runtime Enforcement
-
-- [x] Define and implement correct runtime behaviour for missing critical CSS variables without production crashes
-  - Status: DONE
-  - Priority: Medium
-  - Dependencies: Admin foundations (A-UI-LAYOUT-01.2, A-UI-12, A-UI-13)
-  - Owner: Tribeca
-  - Deliverables:
-    - Guardrails in reporting runtime (log errors, never throw)
-    - Tests for failure modes (16 tests covering all failure modes)
+*No open action items. All Reporting tasks complete.*
 
 ---
 
@@ -138,7 +128,7 @@ Owner: Katja (Admin)
 - [ ] Create shared fixtures that validate Admin LayoutV2 output matches Reporting LayoutV2 renderer input
   - Status: OPEN
   - Priority: High
-  - Dependencies: A-UI-12, A-UI-13, A-UI-LAYOUT-02.1, A-05
+  - Dependencies: A-UI-12 (DONE), A-UI-13, A-UI-LAYOUT-02.1, A-05 (DONE)
   - Owner: Chappie
   - Deliverables:
     - Minimal fixture templates (1-unit, 2-unit, mixed, max-capacity 4-unit)
@@ -175,20 +165,20 @@ Admin:
 
 ## 8. STATE MEMORY (Current Only)
 
- 2026-01-15T15:00:00.000Z
+2026-01-16T11:30:00.000Z
 - AGENT: Tribeca
 - DOMAIN: Reporting
 - CURRENT TASK ID: A-05
-- STATUS: ASSIGNED
-- LAST COMMIT(S): 95f4056ba
-- CURRENT BLOCKERS: None
-- NEXT EXPECTED OUTPUT: Runtime guardrails + tests + STATE MEMORY update
-
-2026-01-16T11:13:59.000Z
-- AGENT: Katja
-- DOMAIN: Admin
-- CURRENT TASK ID: A-UI-12
 - STATUS: DONE
-- LAST COMMIT(S): 71e92e9fb
+- LAST COMMIT(S): 6d1f735b5, 4e8ed6412, 529d995fc
 - CURRENT BLOCKERS: None
 - NEXT EXPECTED OUTPUT: Awaiting Architect assignment
+
+2026-01-16T11:30:00.000Z
+- AGENT: Katja
+- DOMAIN: Admin
+- CURRENT TASK ID: A-UI-13
+- STATUS: ASSIGNED
+- LAST COMMIT(S): 71e92e9fb
+- CURRENT BLOCKERS: None
+- NEXT EXPECTED OUTPUT: Style model + assignment rules docs + STATE MEMORY update
