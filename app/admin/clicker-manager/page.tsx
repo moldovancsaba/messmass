@@ -180,7 +180,7 @@ export default function ClickerManagerPage() {
         subtitle="Configure variable groups and ordering for Editor clicker UI"
         backLink="/admin"
         actionButtons={[
-          { label: 'New Group', onClick: () => setCreateOpen(true), variant: 'primary', icon: '➕' },
+          { label: 'New Group', onClick: () => setCreateOpen(true), variant: 'primary', icon: '➕', disabled: !selectedSetId },
           { label: 'Add Report Content', onClick: async () => {
               setSaving(true);
               try {
@@ -651,6 +651,10 @@ function GroupForm({
   };
 
   const handleSave = async () => {
+    if (!clickerSetId) {
+      setForm((prev) => ({ ...prev, error: 'Select a clicker set before saving.' }));
+      return;
+    }
     if (!form.specialType && form.variables.length === 0) {
       setForm((prev) => ({ ...prev, error: 'Group must have at least one variable' }));
       return;
@@ -667,7 +671,7 @@ function GroupForm({
           variables: form.specialType ? undefined : form.variables,
           visibleInClicker: form.visibleInClicker,
           visibleInManual: form.visibleInManual,
-          clickerSetId: clickerSetId || undefined,
+          clickerSetId,
         },
       });
 
