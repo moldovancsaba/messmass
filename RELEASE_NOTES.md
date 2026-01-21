@@ -1,8 +1,104 @@
 # MessMass Release Notes
 Status: Active
-Last Updated: 2026-01-15T14:18:00.000Z
+Last Updated: 2026-01-16T11:30:00.000Z
 Canonical: No
 Owner: Operations
+
+## [v11.55.1] — 2026-01-16T11:30:00.000Z
+
+### Summary
+📊 **LAYOUTV2 ENHANCEMENTS + PIE CHART MOBILE FIX**: Completed A-05 runtime enforcement, R-LAYOUT-02.1 variable block aspect ratio support, and fixed PIE chart mobile overflow with CSS Grid layout.
+
+### What Was Accomplished
+
+#### A-05: Layout Grammar Runtime Enforcement ✅
+**WHAT**: Production-safe runtime guardrails for Layout Grammar violations  
+**WHY**: Prevent critical violations from reaching production while preserving development workflow  
+**HOW**: Implemented `safeValidate()` wrapper with error boundary protection
+
+**Features:**
+- Critical CSS variable validation (--row-height, --block-height, --chart-body-height, --text-content-height)
+- Height resolution validation with graceful degradation
+- Element fit validation
+- Environment-aware enforcement (warnings in dev, errors logged in prod)
+- 16 comprehensive tests covering all failure modes
+
+**Implementation:**
+- `lib/layoutGrammarRuntimeEnforcement.ts` - Core enforcement module
+- `app/report/[slug]/ReportContent.tsx` - Row-level validation
+- `app/report/[slug]/ReportChart.tsx` - Chart-level validation
+- All validation calls use `safeValidate()` for crash prevention
+
+#### R-LAYOUT-02.1: Variable Block Aspect Ratio Support ✅
+**WHAT**: Optional block aspect ratio override for TEXT-AREA/TABLE blocks (4:1 to 4:10)  
+**WHY**: Allow taller blocks for text-heavy content while maintaining deterministic layout  
+**HOW**: Extended LayoutV2 renderer with optional `blockAspectRatio` parameter
+
+**Features:**
+- Supported range: 4:1 to 4:10 (e.g., 4:6, 4:10)
+- Validation: TEXT-AREA/TABLE blocks only, rejects mixed types
+- Fallback to default 4:1 for invalid configurations
+- Deterministic layout guarantees maintained
+
+**Implementation:**
+- `lib/layoutV2BlockCalculator.ts` - Aspect ratio validation and calculation
+- `app/report/[slug]/ReportContent.tsx` - Passes `blockAspectRatio` to calculator
+- `hooks/useReportLayout.ts` - Extracts `blockAspectRatio` from template data
+- `docs/design/REPORT_LAYOUT_V2_CONTRACT.md` - Contract updated (v1.1.0)
+- 28 comprehensive tests covering all scenarios
+
+#### PIE Chart Mobile Layout Fix ✅
+**WHAT**: Fixed PIE chart mobile overflow using CSS Grid layout with fixed proportions  
+**WHY**: Prevent content overflow on mobile viewports (same fix as KPI charts)  
+**HOW**: Migrated from flexbox to CSS Grid with `grid-template-rows: 3fr 4fr 3fr`
+
+**Features:**
+- CSS Grid layout with fixed proportions (30%:40%:30%)
+- All grid rows fill full height (`height: 100%`)
+- Fixed proportions prevent overflow on mobile
+- Consistent behavior across desktop and mobile
+
+**Layout Structure:**
+- `.pieGrid`: `grid-template-rows: 3fr 4fr 3fr` (30%:40%:30%)
+- `.pieTitleRow`: Grid row 1 (30%) - fills full grid row height
+- `.pieChartContainer`: Grid row 2 (40%) - fills full grid row height
+- `.pieLegend`: Grid row 3 (30%) - fills full grid row height
+
+**Implementation:**
+- `app/report/[slug]/ReportChart.module.css` - CSS Grid layout for PIE charts
+- Mobile CSS updated to match desktop behavior
+- All fragments now fill their allocated space permanently
+
+### Technical Details
+
+**Files Modified:**
+- `lib/layoutGrammarRuntimeEnforcement.ts` - New runtime enforcement module
+- `lib/layoutV2BlockCalculator.ts` - Extended with aspect ratio support
+- `app/report/[slug]/ReportContent.tsx` - Integrated `safeValidate()` and `blockAspectRatio`
+- `app/report/[slug]/ReportChart.tsx` - Integrated `safeValidate()` for all validations
+- `hooks/useReportLayout.ts` - Extracts `blockAspectRatio` from template data
+- `app/report/[slug]/ReportChart.module.css` - PIE chart CSS Grid layout
+
+**Tests Added:**
+- `__tests__/layout-grammar-runtime-enforcement.test.ts` - 16 tests
+- `__tests__/layoutV2-variable-aspect-ratio.test.ts` - 28 tests
+
+**Documentation Updated:**
+- `docs/design/REPORT_LAYOUT_V2_CONTRACT.md` - v1.1.0 (variable aspect ratio)
+- `docs/design/LAYOUT_GRAMMAR.md` - v1.0.2 (runtime enforcement)
+- `ACTION_PLAN.md` - v1.3.3 (A-05 and R-LAYOUT-02.1 marked complete)
+
+### Testing
+- ✅ All tests pass (44 new tests)
+- ✅ Build passes
+- ✅ TypeScript checks pass
+- ✅ Linting passes
+- ✅ PIE charts display correctly on mobile with fixed proportions
+
+### Version
+v11.55.0 to v11.55.1 (MINOR - LayoutV2 enhancements + PIE fix)
+
+---
 
 ## [v11.45.7] — 2025-12-28T23:22:31.000Z
 

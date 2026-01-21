@@ -1,12 +1,12 @@
 # Report Layout System (Spec v2.0)
 Status: Active
-Last Updated: 2026-01-11T22:28:38.000Z
+Last Updated: 2026-01-16T11:30:00.000Z
 Canonical: No
 Owner: Architecture
 
-**Version:** 11.47.1  
-**Last Updated: 2026-01-11T22:28:38.000Z
-**Status:** Complete (Phase 1: 2025-12-19, Phase 2: 2025-12-25, Phase 3: 2025-12-25, Phase 4: 2026-01-02, Phase 5: 2026-01-02)
+**Version:** 11.55.1  
+**Last Updated: 2026-01-16T11:30:00.000Z
+**Status:** Complete (Phase 1: 2025-12-19, Phase 2: 2025-12-25, Phase 3: 2025-12-25, Phase 4: 2026-01-02, Phase 5: 2026-01-02, Phase 6: 2026-01-15-16)
 
 ## Overview
 
@@ -52,10 +52,13 @@ Each cell is divided vertically:
 ## Chart Types
 
 ### PIE
-- **Layout Structure:** 3 vertical sections (30:40:30 ratio)
-  - **Top (30%):** Title zone (centered, max 2 lines)
-  - **Middle (40%):** Pie chart (Chart.js Doughnut)
-  - **Bottom (30%):** Legends (centered horizontally, vertically centered in space)
+- **Layout Structure:** CSS Grid layout with fixed proportions (30:40:30 ratio)
+  - **Grid Container:** `.pieGrid` uses `display: grid` with `grid-template-rows: 3fr 4fr 3fr`
+  - **Top (30%):** `.pieTitleRow` - Title zone (centered, max 2 lines), fills full grid row height
+  - **Middle (40%):** `.pieChartContainer` - Pie chart (Chart.js Doughnut), fills full grid row height
+  - **Bottom (30%):** `.pieLegend` - Legends (centered horizontally), fills full grid row height
+- **Fixed Proportions:** All grid rows use `height: 100%` to fill allocated space permanently
+- **Mobile Compatibility:** Same CSS Grid layout on mobile prevents overflow (same fix as KPI charts)
 - **Legend Alignment:** Centered horizontally (not left-aligned)
 - **Legend Items:** Centered within legend container, auto-width (not full-width)
 

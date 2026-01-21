@@ -277,17 +277,18 @@ export default function ClickerManagerPage() {
           </div>
           <div className="flex items-center gap-3 flex-wrap">
             <select
-              className="form-input"
-              value={selectedSetId || ''}
-              onChange={async (e) => {
-                const id = e.target.value || null;
-                setSelectedSetId(id);
-                if (typeof window !== 'undefined') {
-                  localStorage.setItem('clickerManager.selectedSetId', id || '');
-                }
-                await loadData(id);
-              }}
-            >
+            className="form-input"
+            value={selectedSetId || ''}
+            onChange={async (e) => {
+              const id = e.target.value || null;
+              setSelectedSetId(id);
+              if (typeof window !== 'undefined') {
+                if (id) localStorage.setItem('clickerManager.selectedSetId', id);
+                else localStorage.removeItem('clickerManager.selectedSetId');
+              }
+              await loadData(id);
+            }}
+          >
               {clickerSets.map((set) => (
                 <option key={set._id} value={set._id}>
                   {set.isDefault ? '⭐ ' : ''}{set.name} {set.usage?.partnerCount ? `(${set.usage.partnerCount} partners)` : ''}

@@ -1,6 +1,6 @@
 # ROADMAP.md
 **Status:** Active  
-**Last Updated:** 2026-01-13T18:30:00.000Z  
+**Last Updated:** 2026-01-16T11:30:00.000Z  
 **Canonical:** Yes  
 **Owner:** Product + Engineering  
 **Reference:** [AUDIT_ACTION_PLAN.md](AUDIT_ACTION_PLAN.md), [IMPLEMENTATION_COMPLETE.md](IMPLEMENTATION_COMPLETE.md), [docs/audits/COMPREHENSIVE_SYSTEM_AUDIT_PLAN_2026.md](docs/audits/COMPREHENSIVE_SYSTEM_AUDIT_PLAN_2026.md)  
@@ -80,6 +80,54 @@
 - ✅ Prevented pie chart compression below minimum readable size when legend grows
 
 **Impact:** PIE charts with many legend items (>5) now have sufficient height to prevent compression.
+
+---
+
+### Layout Grammar Runtime Enforcement (A-05)
+**Status:** ✅ DONE + VERIFIED  
+**Completed:** 2026-01-15  
+**Evidence:** `docs/audits/investigations/A-05-runtime-enforcement.md`, `lib/layoutGrammarRuntimeEnforcement.ts`
+
+**Completed Work:**
+- ✅ Production-safe runtime guardrails for critical CSS variable validation
+- ✅ Height resolution validation with graceful degradation
+- ✅ Element fit validation
+- ✅ `safeValidate()` wrapper prevents crashes (error boundary protection)
+- ✅ 16 comprehensive tests covering all failure modes
+- ✅ Integration in `ReportContent.tsx` and `ReportChart.tsx`
+
+**Impact:** Layout Grammar violations are logged without crashing the application. Production guardrails prevent critical violations from reaching users while preserving development workflow.
+
+---
+
+### Variable Block Aspect Ratio Support (R-LAYOUT-02.1)
+**Status:** ✅ DONE + VERIFIED  
+**Completed:** 2026-01-15  
+**Evidence:** `lib/layoutV2BlockCalculator.ts`, `docs/design/REPORT_LAYOUT_V2_CONTRACT.md` (v1.1.0)
+
+**Completed Work:**
+- ✅ Optional `blockAspectRatio` parameter (4:1 to 4:10 range)
+- ✅ Validation: TEXT-AREA/TABLE blocks only, rejects mixed types
+- ✅ Fallback to default 4:1 for invalid configurations
+- ✅ Deterministic layout guarantees maintained
+- ✅ 28 comprehensive tests covering all scenarios
+
+**Impact:** TEXT-AREA and TABLE blocks can now use taller aspect ratios (up to 4:10) for text-heavy content while maintaining deterministic layout guarantees.
+
+---
+
+### PIE Chart Mobile Layout Fix
+**Status:** ✅ DONE + VERIFIED  
+**Completed:** 2026-01-16  
+**Evidence:** `app/report/[slug]/ReportChart.module.css`
+
+**Completed Work:**
+- ✅ CSS Grid layout with fixed proportions (30%:40%:30%)
+- ✅ All grid rows fill full height (`height: 100%`)
+- ✅ Fixed proportions prevent overflow on mobile
+- ✅ Consistent behavior across desktop and mobile
+
+**Impact:** PIE charts now use the same CSS Grid (table-style) layout as KPI charts. Fixed proportions (30%:40%:30%) keep content within the frame on mobile and prevent overflow.
 
 ---
 
@@ -734,8 +782,7 @@
 
 **Medium Priority:**
 1. Layout Grammar Migration Tooling (from audit residual risks)
-2. Layout Grammar Runtime Enforcement (from audit residual risks)
-3. Height Calculation Accuracy Improvements (from audit residual risks)
+2. Height Calculation Accuracy Improvements (from audit residual risks)
 4. Bitly Search Enhancements
 5. Bitly Analytics Export & Reporting
 6. Variable System Enhancement
