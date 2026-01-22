@@ -6,6 +6,56 @@
 
 import type { ChartResult } from '@/lib/report-calculator';
 import type { ProjectStats } from '@/lib/report-calculator';
+import { hasValidChartData } from './chartValidation';
+
+/**
+ * WHAT: Format chart value for CSV export (A-R-15)
+ * WHY: Align CSV formatting with rendered report formatting
+ * HOW: Apply prefix, suffix, and decimal formatting from ChartResult.formatting
+ * 
+ * @param value - The value to format (number, string, or undefined)
+ * @param formatting - Formatting options from chart configuration
+ * @returns Formatted string matching rendered report
+ */
+function formatValueForCSV(
+  value: number | string | undefined,
+  formatting?: { rounded?: boolean; prefix?: string; suffix?: string; decimals?: number }
+): string {
+  // WHAT: Handle NA and undefined values
+  // WHY: Preserve NA values as-is, don't format missing data
+  if (value === undefined || value === 'NA') return 'NA';
+  
+  // WHAT: Preserve string values as-is
+  // WHY: Text/image URLs should not be formatted
+  if (typeof value === 'string') return value;
+  
+  // WHAT: Determine decimal places from formatting
+  // WHY: Support both new (rounded) and legacy (decimals) formatting
+  let decimals = 0;
+  if (formatting) {
+    if (formatting.rounded !== undefined) {
+      // WHAT: New format - rounded flag determines decimals
+      // WHY: rounded=true → whole numbers (0 decimals), rounded=false → 2 decimals
+      decimals = formatting.rounded ? 0 : 2;
+    } else if (formatting.decimals !== undefined) {
+      // WHAT: Legacy format - use decimals field directly
+      // WHY: Backward compatibility with old chart configurations
+      decimals = formatting.decimals;
+    }
+  }
+  
+  // WHAT: Apply prefix and suffix
+  // WHY: Match rendered report formatting (€, $, %, etc.)
+  const { prefix = '', suffix = '' } = formatting || {};
+  
+  // WHAT: Format number with specified decimals (no thousands separators for CSV compatibility)
+  // WHY: CSV should be easily parseable by analysis tools (Excel, Google Sheets)
+  // NOTE: Rendered report may use toLocaleString() for thousands separators, but CSV uses toFixed()
+  // for better compatibility with data analysis tools
+  const formattedNumber = value.toFixed(decimals);
+  
+  return `${prefix}${formattedNumber}${suffix}`;
+}
 
 /**
  * WHAT: Project metadata for CSV export
@@ -29,6 +79,8 @@ export interface CSVExportOptions {
   includeStats?: boolean;
   includeChartResults?: boolean;
   includeReportContent?: boolean;
+  /** Optional map of chartId -> order for sorting charts to match rendered report */
+  chartOrderMap?: Map<string, number>;
 }
 
 /**
@@ -111,25 +163,50 @@ export async function exportReportToCSV(
     // WHAT: Section 3 - Chart Algorithm Results
     // WHY: Include all calculated chart values from formulas
     // HOW: Process each chart result based on type (KPI, BAR, PIE, etc.)
+    // NOTE (A-R-10): Filter by hasValidChartData() to match rendered report, sort by order field
     if (includeChartResults && chartResults.size > 0) {
-      const sortedCharts = Array.from(chartResults.values())
-        .sort((a, b) => a.chartId.localeCompare(b.chartId));
+      // WHAT: Filter charts to match rendered report (A-R-10 Phase 2)
+      // WHY: CSV export should only include charts that would be rendered
+      // HOW: Use hasValidChartData() to filter out empty/invalid charts
+      const validCharts = Array.from(chartResults.values())
+        .filter(result => hasValidChartData(result));
+
+      // WHAT: Sort charts by order field to match rendered report (A-R-10 Phase 2)
+      // WHY: CSV export order should match rendered report order
+      // HOW: Use chartOrderMap if available, fall back to chartId alphabetical
+      const { chartOrderMap } = options;
+      const sortedCharts = validCharts.sort((a, b) => {
+        if (chartOrderMap) {
+          const orderA = chartOrderMap.get(a.chartId) ?? Infinity;
+          const orderB = chartOrderMap.get(b.chartId) ?? Infinity;
+          if (orderA !== orderB) {
+            return orderA - orderB;
+          }
+        }
+        // Fallback to alphabetical by chartId if order not available
+        return a.chartId.localeCompare(b.chartId);
+      });
 
       for (const result of sortedCharts) {
         // WHAT: Handle different chart types appropriately
         switch (result.type) {
           case 'kpi':
-            // WHAT: Single value charts
-            rows.push(`${esc('Algorithm Results')},${esc(result.title)},${esc(result.kpiValue ?? 'N/A')}`);
+            // WHAT: Single value charts - apply formatting to match rendered report (A-R-15)
+            // WHY: CSV values should match what users see in the report
+            const formattedKPI = formatValueForCSV(result.kpiValue, result.formatting);
+            rows.push(`${esc('Algorithm Results')},${esc(result.title)},${esc(formattedKPI)}`);
             break;
 
           case 'bar':
           case 'pie':
-            // WHAT: Multi-element charts - export each element
+            // WHAT: Multi-element charts - export each element with formatting (A-R-15)
+            // WHY: CSV values should match what users see in the report
             if (result.elements && result.elements.length > 0) {
               for (const element of result.elements) {
                 const label = `${result.title} - ${element.label}`;
-                rows.push(`${esc('Algorithm Results')},${esc(label)},${esc(element.value)}`);
+                // WHAT: Apply formatting to element value to match rendered report
+                const formattedElementValue = formatValueForCSV(element.value, result.formatting);
+                rows.push(`${esc('Algorithm Results')},${esc(label)},${esc(formattedElementValue)}`);
               }
             }
             break;
@@ -146,7 +223,10 @@ export async function exportReportToCSV(
 
           case 'value':
             // WHAT: VALUE type is composite (KPI + BAR), skip to avoid duplication
-            // WHY: VALUE charts render their components separately
+            // WHY: VALUE charts render their components separately (KPI + BAR are exported separately)
+            // NOTE (A-R-10 Phase 2): This skip is intentional and documented. VALUE charts are composite
+            // and their components (KPI and BAR) are already exported separately, so including the VALUE
+            // chart itself would create duplicate entries in the CSV export.
             break;
 
           default:

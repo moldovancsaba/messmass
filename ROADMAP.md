@@ -1,9 +1,10 @@
 # ROADMAP.md
 **Status:** Active  
-**Last Updated:** 2026-01-12T11:33:14.000Z  
+**Last Updated:** 2026-01-16T16:00:00.000Z  
 **Canonical:** Yes  
 **Owner:** Product + Engineering  
-**Reference:** [AUDIT_ACTION_PLAN.md](AUDIT_ACTION_PLAN.md), [IMPLEMENTATION_COMPLETE.md](IMPLEMENTATION_COMPLETE.md), [docs/audits/COMPREHENSIVE_SYSTEM_AUDIT_PLAN_2026.md](docs/audits/COMPREHENSIVE_SYSTEM_AUDIT_PLAN_2026.md)
+**Reference:** [AUDIT_ACTION_PLAN.md](AUDIT_ACTION_PLAN.md), [IMPLEMENTATION_COMPLETE.md](IMPLEMENTATION_COMPLETE.md), [docs/audits/COMPREHENSIVE_SYSTEM_AUDIT_PLAN_2026.md](docs/audits/COMPREHENSIVE_SYSTEM_AUDIT_PLAN_2026.md)  
+**Admin Roadmap Status:** Canonical Admin roadmap tracking lives in [ACTION_PLAN.md](ACTION_PLAN.md).
 
 ---
 
@@ -79,6 +80,54 @@
 - ✅ Prevented pie chart compression below minimum readable size when legend grows
 
 **Impact:** PIE charts with many legend items (>5) now have sufficient height to prevent compression.
+
+---
+
+### Layout Grammar Runtime Enforcement (A-05)
+**Status:** ✅ DONE + VERIFIED  
+**Completed:** 2026-01-15  
+**Evidence:** `docs/audits/investigations/A-05-runtime-enforcement.md`, `lib/layoutGrammarRuntimeEnforcement.ts`
+
+**Completed Work:**
+- ✅ Production-safe runtime guardrails for critical CSS variable validation
+- ✅ Height resolution validation with graceful degradation
+- ✅ Element fit validation
+- ✅ `safeValidate()` wrapper prevents crashes (error boundary protection)
+- ✅ 16 comprehensive tests covering all failure modes
+- ✅ Integration in `ReportContent.tsx` and `ReportChart.tsx`
+
+**Impact:** Layout Grammar violations are logged without crashing the application. Production guardrails prevent critical violations from reaching users while preserving development workflow.
+
+---
+
+### Variable Block Aspect Ratio Support (R-LAYOUT-02.1)
+**Status:** ✅ DONE + VERIFIED  
+**Completed:** 2026-01-15  
+**Evidence:** `lib/layoutV2BlockCalculator.ts`, `docs/design/REPORT_LAYOUT_V2_CONTRACT.md` (v1.1.0)
+
+**Completed Work:**
+- ✅ Optional `blockAspectRatio` parameter (4:1 to 4:10 range)
+- ✅ Validation: TEXT-AREA/TABLE blocks only, rejects mixed types
+- ✅ Fallback to default 4:1 for invalid configurations
+- ✅ Deterministic layout guarantees maintained
+- ✅ 28 comprehensive tests covering all scenarios
+
+**Impact:** TEXT-AREA and TABLE blocks can now use taller aspect ratios (up to 4:10) for text-heavy content while maintaining deterministic layout guarantees.
+
+---
+
+### PIE Chart Mobile Layout Fix
+**Status:** ✅ DONE + VERIFIED  
+**Completed:** 2026-01-16  
+**Evidence:** `app/report/[slug]/ReportChart.module.css`
+
+**Completed Work:**
+- ✅ CSS Grid layout with fixed proportions (30%:40%:30%)
+- ✅ All grid rows fill full height (`height: 100%`)
+- ✅ Fixed proportions prevent overflow on mobile
+- ✅ Consistent behavior across desktop and mobile
+
+**Impact:** PIE charts now use the same CSS Grid (table-style) layout as KPI charts. Fixed proportions (30%:40%:30%) keep content within the frame on mobile and prevent overflow.
 
 ---
 
@@ -202,20 +251,18 @@
 
 ### Layout Grammar Runtime Enforcement
 **Priority:** Medium  
-**Status:** Future  
+**Status:** ✅ DONE (2026-01-15)  
 **Dependencies:** Runtime validation (exists)  
-**Source:** `IMPLEMENTATION_COMPLETE.md` (Residual Risks)
+**Source:** A-05 task (ACTION_PLAN.md)
 
-**Technical Intent:**
-- Block rendering if critical CSS variables are missing (currently only console warnings)
-- Fail-fast behavior for Layout Grammar violations
-- Production guardrails for height calculation failures
+**Completed Work:**
+- ✅ Production-safe runtime guardrails implemented
+- ✅ `safeValidate()` wrapper prevents crashes
+- ✅ Critical CSS variable validation
+- ✅ Height resolution and element fit validation
+- ✅ 16 comprehensive tests
 
-**Trigger:** Production incidents or reliability requirements
-
-**Non-Goals:**
-- Console warnings are sufficient for development
-- This is production hardening, not correctness
+**Impact:** Layout Grammar violations are logged without crashing. Production guardrails prevent critical violations from reaching users.
 
 ---
 
@@ -235,6 +282,36 @@
 **Non-Goals:**
 - Correctness was prioritized over performance in audit
 - This is optimization, not correctness
+
+---
+
+### Reporting System Hardening (A-R-07 through A-R-13)
+**Priority:** Medium to Low  
+**Status:** ✅ COMPLETE  
+**Completed:** 2026-01-13  
+**Source:** `ACTION_PLAN.md` (Reporting Roadmap Items)
+
+**Completed Work:**
+- ✅ **A-R-07:** Export Correctness & Validation - Pre-export readiness validation, deterministic error handling
+  - Evidence: `docs/audits/investigations/A-R-07-export-correctness.md`
+  - Commit: `03ae7a80a`
+- ✅ **A-R-08:** Render Determinism Guarantees - Investigation of render order stability and timing dependencies
+  - Evidence: `docs/audits/investigations/A-R-08-render-determinism.md`
+  - Commit: `4350215b5`
+- ✅ **A-R-10:** Export Format Consistency - CSV/PDF parity with rendered report (Phase 1: Investigation, Phase 2: Remediation)
+  - Evidence: `docs/audits/investigations/A-R-10-export-parity-investigation.md`
+  - Commits: Phase 1 and Phase 2 completion commits
+- ✅ **A-R-11:** Formula Calculation Error Handling & Recovery - Structured error reporting, user-visible errors, graceful degradation
+  - Evidence: `docs/audits/investigations/A-R-11-formula-error-handling.md`
+  - Commit: `a4c11e36c`
+- ✅ **A-R-12:** Report Template Compatibility Validation - Template compatibility validator, runtime validation, user-visible warnings
+  - Evidence: `docs/audits/investigations/A-R-12-template-compatibility.md`
+  - Commit: `8662f0bbf`
+- ✅ **A-R-13:** Chart Data Validation & Error Boundaries - Comprehensive data validation, React error boundaries, graceful degradation
+  - Evidence: `docs/audits/investigations/A-R-13-chart-data-validation.md`
+  - Commit: `adcea2138`
+
+**Impact:** Reporting system now has comprehensive error handling, validation, and graceful degradation. Export formats match rendered reports. Template compatibility is validated at runtime.
 
 ---
 
@@ -703,8 +780,7 @@
 
 **Medium Priority:**
 1. Layout Grammar Migration Tooling (from audit residual risks)
-2. Layout Grammar Runtime Enforcement (from audit residual risks)
-3. Height Calculation Accuracy Improvements (from audit residual risks)
+2. Height Calculation Accuracy Improvements (from audit residual risks)
 4. Bitly Search Enhancements
 5. Bitly Analytics Export & Reporting
 6. Variable System Enhancement

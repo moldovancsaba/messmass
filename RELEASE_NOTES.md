@@ -1,8 +1,183 @@
 # MessMass Release Notes
 Status: Active
-Last Updated: 2026-01-11T23:27:27.000Z
+Last Updated: 2026-01-16T16:00:00.000Z
 Canonical: No
 Owner: Operations
+
+## [v11.55.3] — 2026-01-16T16:00:00.000Z
+
+### Summary
+🔧 **PARTNER EDIT LINKS + CLICKER MANAGER UX FIXES**: Fixed partner edit/report links to use `_id` instead of `viewSlug`, and replaced chart algorithm text input with searchable dropdown in clicker manager.
+
+### What Was Fixed
+
+#### Partner Edit/Report Links Fix ✅
+**WHAT**: Partner edit and report buttons now use `partner._id` (ObjectId) instead of `viewSlug`  
+**WHY**: `viewSlug` may be human-readable (insecure) and fails validation; `_id` is always valid ObjectId format  
+**HOW**: Updated `lib/adapters/partnersAdapter.tsx` to use `partner._id || partner.viewSlug` for both buttons
+
+**Features:**
+- "Edit Stats" button uses `_id` for reliable partner editing
+- "Report" button uses `_id` for reliable partner report access
+- Falls back to `viewSlug` if `_id` is missing (backward compatibility)
+- No more "Invalid partner ID format - secure UUID required" errors
+
+**Implementation:**
+- `lib/adapters/partnersAdapter.tsx` - Both buttons now use `partner._id` as primary identifier
+- API route `/api/partners/edit/[slug]` already accepts ObjectId format
+- All partner edit links now work regardless of `viewSlug` format
+
+#### Clicker Manager Chart Algorithm Selection Fix ✅
+**WHAT**: Replaced chart algorithm text input with searchable dropdown showing all available charts  
+**WHY**: Users couldn't select algorithms like "gender-distribution", "szerencse-gender", "tippmixpro-gender-distribution" without knowing exact spelling  
+**HOW**: Added chart loading from `/api/chart-config` and replaced text input with searchable dropdown
+
+**Features:**
+- Dropdown shows all available chart algorithms (active and inactive)
+- Search functionality filters by chartId, title, or type
+- Visual indicators (✅/❌) show active/inactive status
+- Displays chart title, chartId, and type in dropdown options
+- Option to clear selection ("-- No Chart Algorithm --")
+
+**Implementation:**
+- `app/admin/clicker-manager/page.tsx` - Added `AvailableChart` interface and chart loading
+- `useEffect` hook loads charts from `/api/chart-config` on mount
+- Searchable dropdown with filtering and sorting
+- All chart algorithms now discoverable and selectable
+
+### Technical Details
+
+**Files Modified:**
+- `lib/adapters/partnersAdapter.tsx` - Partner edit/report buttons use `_id`
+- `app/admin/clicker-manager/page.tsx` - Chart algorithm dropdown with search
+
+**Commits:**
+- `b02cc54cc` - fix(partners): use _id instead of viewSlug for edit/report links
+- `141cdbca2` - fix(partners): also use _id for Report button link
+- `8b852ec40` - fix(clicker-manager): replace chartId text input with searchable dropdown
+
+### Testing
+- ✅ Partner edit links work for all partners (regardless of viewSlug format)
+- ✅ Partner report links work for all partners
+- ✅ Chart algorithm dropdown shows all available charts
+- ✅ Chart search filters correctly by chartId, title, or type
+- ✅ `npm run build` (Next.js + type check)
+
+### Version
+v11.55.2 → v11.55.3 (PATCH — partner links + clicker manager UX)
+
+## [v11.55.2] — 2026-01-21T15:40:00.000Z
+
+### Summary
+🎮 **CLICKER MANAGER RELIABILITY PATCH**: Fixed scope leaks that sent new groups to the Default set, made clicker-set selection sticky, and ensured APIs accept explicit set IDs end-to-end.
+
+### What Was Fixed
+- **Scoped payloads**: Admin UI now sends `clickerSetId` at the API root for every group create/update/toggle; saves are blocked unless a set is selected.
+- **API hardening**: `/api/variables-groups` accepts `clickerSetId` from the body or nested group payloads and filters groups by either string or ObjectId, preventing cross-set bleed.
+- **Cloning correctness**: `/api/clicker-sets` clones groups across sets even when legacy groups stored ObjectIds; cloned groups are written with string `clickerSetId`.
+- **Cleanup/backfill**: Backfill script converts legacy ObjectId `clickerSetId` values to strings for both variable groups and partners, keeping lookups deterministic.
+
+### Testing
+- ✅ `npm run build -- --no-lint` (Next.js + type check)
+
+### Version
+v11.55.1 → v11.55.2 (PATCH — clicker manager stabilization)
+
+## [v11.55.1] — 2026-01-16T11:30:00.000Z
+
+### Summary
+📊 **LAYOUTV2 ENHANCEMENTS + PIE CHART MOBILE FIX**: Completed A-05 runtime enforcement, R-LAYOUT-02.1 variable block aspect ratio support, and fixed PIE chart mobile overflow with CSS Grid layout.
+
+### What Was Accomplished
+
+#### A-05: Layout Grammar Runtime Enforcement ✅
+**WHAT**: Production-safe runtime guardrails for Layout Grammar violations  
+**WHY**: Prevent critical violations from reaching production while preserving development workflow  
+**HOW**: Implemented `safeValidate()` wrapper with error boundary protection
+
+**Features:**
+- Critical CSS variable validation (--row-height, --block-height, --chart-body-height, --text-content-height)
+- Height resolution validation with graceful degradation
+- Element fit validation
+- Environment-aware enforcement (warnings in dev, errors logged in prod)
+- 16 comprehensive tests covering all failure modes
+
+**Implementation:**
+- `lib/layoutGrammarRuntimeEnforcement.ts` - Core enforcement module
+- `app/report/[slug]/ReportContent.tsx` - Row-level validation
+- `app/report/[slug]/ReportChart.tsx` - Chart-level validation
+- All validation calls use `safeValidate()` for crash prevention
+
+#### R-LAYOUT-02.1: Variable Block Aspect Ratio Support ✅
+**WHAT**: Optional block aspect ratio override for TEXT-AREA/TABLE blocks (4:1 to 4:10)  
+**WHY**: Allow taller blocks for text-heavy content while maintaining deterministic layout  
+**HOW**: Extended LayoutV2 renderer with optional `blockAspectRatio` parameter
+
+**Features:**
+- Supported range: 4:1 to 4:10 (e.g., 4:6, 4:10)
+- Validation: TEXT-AREA/TABLE blocks only, rejects mixed types
+- Fallback to default 4:1 for invalid configurations
+- Deterministic layout guarantees maintained
+
+**Implementation:**
+- `lib/layoutV2BlockCalculator.ts` - Aspect ratio validation and calculation
+- `app/report/[slug]/ReportContent.tsx` - Passes `blockAspectRatio` to calculator
+- `hooks/useReportLayout.ts` - Extracts `blockAspectRatio` from template data
+- `docs/design/REPORT_LAYOUT_V2_CONTRACT.md` - Contract updated (v1.1.0)
+- 28 comprehensive tests covering all scenarios
+
+#### PIE Chart Mobile Layout Fix ✅
+**WHAT**: Fixed PIE chart mobile overflow using CSS Grid layout with fixed proportions  
+**WHY**: Prevent content overflow on mobile viewports (same fix as KPI charts)  
+**HOW**: Migrated from flexbox to CSS Grid with `grid-template-rows: 3fr 4fr 3fr`
+
+**Features:**
+- CSS Grid layout with fixed proportions (30%:40%:30%)
+- All grid rows fill full height (`height: 100%`)
+- Fixed proportions prevent overflow on mobile
+- Consistent behavior across desktop and mobile
+
+**Layout Structure:**
+- `.pieGrid`: `grid-template-rows: 3fr 4fr 3fr` (30%:40%:30%)
+- `.pieTitleRow`: Grid row 1 (30%) - fills full grid row height
+- `.pieChartContainer`: Grid row 2 (40%) - fills full grid row height
+- `.pieLegend`: Grid row 3 (30%) - fills full grid row height
+
+**Implementation:**
+- `app/report/[slug]/ReportChart.module.css` - CSS Grid layout for PIE charts
+- Mobile CSS updated to match desktop behavior
+- All fragments now fill their allocated space permanently
+
+### Technical Details
+
+**Files Modified:**
+- `lib/layoutGrammarRuntimeEnforcement.ts` - New runtime enforcement module
+- `lib/layoutV2BlockCalculator.ts` - Extended with aspect ratio support
+- `app/report/[slug]/ReportContent.tsx` - Integrated `safeValidate()` and `blockAspectRatio`
+- `app/report/[slug]/ReportChart.tsx` - Integrated `safeValidate()` for all validations
+- `hooks/useReportLayout.ts` - Extracts `blockAspectRatio` from template data
+- `app/report/[slug]/ReportChart.module.css` - PIE chart CSS Grid layout
+
+**Tests Added:**
+- `__tests__/layout-grammar-runtime-enforcement.test.ts` - 16 tests
+- `__tests__/layoutV2-variable-aspect-ratio.test.ts` - 28 tests
+
+**Documentation Updated:**
+- `docs/design/REPORT_LAYOUT_V2_CONTRACT.md` - v1.1.0 (variable aspect ratio)
+- `docs/design/LAYOUT_GRAMMAR.md` - v1.0.2 (runtime enforcement)
+- `ACTION_PLAN.md` - v1.3.3 (A-05 and R-LAYOUT-02.1 marked complete)
+
+### Testing
+- ✅ All tests pass (44 new tests)
+- ✅ Build passes
+- ✅ TypeScript checks pass
+- ✅ Linting passes
+- ✅ PIE charts display correctly on mobile with fixed proportions
+
+### Version
+v11.55.0 to v11.55.1 (MINOR - LayoutV2 enhancements + PIE fix)
+
+---
 
 ## [v11.45.7] — 2025-12-28T23:22:31.000Z
 
@@ -358,6 +533,42 @@ getSheetRange('Events', 2) // → 'Events!A2:EK10000' (correct!)
 `11.44.0` → `11.45.0` (PATCH - Bug fixes)
 
 Co-Authored-By: Warp <agent@warp.dev>
+
+---
+
+## [v11.55.1] — 2026-01-13T18:05:00.000Z
+
+### Summary
+🛡️ **REPORTING RUNTIME STABILITY HOTFIX**: Fixed production crashes in Reporting caused by TEXT chart formula evaluation and strict Layout Grammar CSS variable validation.
+
+### Bug Fixes
+
+#### TEXT Chart Plain Text Handling ✅
+**Problem**: Plain text values (e.g., `"Sampletextcontent15"`) were being sent through the formula evaluation engine, which tried to parse them as formulas. In production, this triggered CSP violations and could crash Reporting when `expr-eval` attempted to interpret arbitrary strings as expressions.
+
+**Solution**:
+- Detect non-formula TEXT content and short‑circuit evaluation.
+- Treat plain strings as literal text and bypass `expr-eval` entirely.
+- Preserve existing behavior for real formulas (e.g., `"[stats.var1] / [stats.var2]"`).
+
+**Impact**:
+- TEXT charts with literal copy can no longer crash the report via formula parsing.
+- CSP errors from `expr-eval` on plain text are eliminated.
+
+#### Layout Grammar CSS Variable Validation Try/Catch ✅
+**Problem**: Layout Grammar runtime validation read required CSS variables (such as `--block-height`) directly from chart elements. In some production sequences (initial render, resize, or transient DOM states), these variables were temporarily missing or only present on ancestor nodes, causing validation to throw and crash chart rendering.
+
+**Solution**:
+- Adjusted `--block-height` validation to read from the parent row element, which is the authoritative owner of the variable.
+- Wrapped critical CSS variable validation calls in `try/catch` so that validation failures are logged but never crash the report.
+- Applied the hardened validation path to TEXT, BAR, and TABLE chart types.
+
+**Impact**:
+- Layout Grammar validation can no longer crash Reporting when CSS variables are temporarily missing.
+- Users see stable charts even during transient layout changes; issues are surfaced via console warnings instead of runtime errors.
+
+### Version
+`11.55.0` → `11.55.1` (PATCH - Reporting runtime crash fixes)
 
 ---
 

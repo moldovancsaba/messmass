@@ -86,22 +86,15 @@ export function validateCriticalCSSVariable(
       ...context
     };
 
-    if (isProduction()) {
-      // WHAT: Production: throw error to block rendering
-      // WHY: Critical violations must not reach production
-      // HOW: Throw error with context for debugging
-      throw new Error(`${message}. Context: ${JSON.stringify(fullContext)}`);
-    } else {
-      // WHAT: Development: log warning
-      // WHY: Warnings are sufficient for development workflow
-      // HOW: Console warning with context
-      console.warn(`[Layout Grammar Runtime] ${message}`, fullContext);
-      return {
-        isCritical: false, // Not critical in dev (warnings only)
-        message,
-        context: fullContext
-      };
-    }
+    // WHAT: A-05 - Log error in all environments, never throw (prevent production crashes)
+    // WHY: Graceful degradation - log violations for monitoring but don't crash the report
+    // HOW: Use console.error for visibility, return isCritical flag for monitoring
+    console.error(`[Layout Grammar Runtime] ${message}`, fullContext);
+    return {
+      isCritical: true, // Mark as critical for monitoring/alerting
+      message,
+      context: fullContext
+    };
   }
 
   return {
@@ -145,22 +138,15 @@ export function validateHeightResolution(
       ...context
     };
 
-    if (isProduction()) {
-      // WHAT: Production: throw error to block rendering
-      // WHY: Structural failures must not reach production
-      // HOW: Throw error with context for debugging
-      throw new Error(`${message}. Context: ${JSON.stringify(fullContext)}`);
-    } else {
-      // WHAT: Development: log warning
-      // WHY: Warnings are sufficient for development workflow
-      // HOW: Console warning with context
-      console.warn(`[Layout Grammar Runtime] ${message}`, fullContext);
-      return {
-        isCritical: false, // Not critical in dev (warnings only)
-        message,
-        context: fullContext
-      };
-    }
+    // WHAT: A-05 - Log error in all environments, never throw (prevent production crashes)
+    // WHY: Graceful degradation - log violations for monitoring but don't crash the report
+    // HOW: Use console.error for visibility, return isCritical flag for monitoring
+    console.error(`[Layout Grammar Runtime] ${message}`, fullContext);
+    return {
+      isCritical: true, // Mark as critical for monitoring/alerting
+      message,
+      context: fullContext
+    };
   }
 
   return {
@@ -197,22 +183,15 @@ export function validateElementFit(
       ...context
     };
 
-    if (isProduction()) {
-      // WHAT: Production: throw error to block rendering
-      // WHY: Fit failures must not reach production
-      // HOW: Throw error with context for debugging
-      throw new Error(`${message}. Context: ${JSON.stringify(fullContext)}`);
-    } else {
-      // WHAT: Development: log warning
-      // WHY: Warnings are sufficient for development workflow
-      // HOW: Console warning with context
-      console.warn(`[Layout Grammar Runtime] ${message}`, fullContext);
-      return {
-        isCritical: false, // Not critical in dev (warnings only)
-        message,
-        context: fullContext
-      };
-    }
+    // WHAT: A-05 - Log error in all environments, never throw (prevent production crashes)
+    // WHY: Graceful degradation - log violations for monitoring but don't crash the report
+    // HOW: Use console.error for visibility, return isCritical flag for monitoring
+    console.error(`[Layout Grammar Runtime] ${message}`, fullContext);
+    return {
+      isCritical: true, // Mark as critical for monitoring/alerting
+      message,
+      context: fullContext
+    };
   }
 
   return {

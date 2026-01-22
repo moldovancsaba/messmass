@@ -40,7 +40,9 @@ export async function GET(
       viewSlug: project.viewSlug,
       editSlug: project.editSlug,
       createdAt: project.createdAt,
-      updatedAt: project.updatedAt
+      updatedAt: project.updatedAt,
+      partner1: (project as any).partner1 || undefined,
+      partner2: (project as any).partner2 || undefined,
     };
 
     return NextResponse.json({

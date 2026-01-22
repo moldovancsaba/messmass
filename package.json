@@ -1,6 +1,6 @@
 {
   "name": "messmass",
-  "version": "11.46.1",
+  "version": "11.55.1",
   "description": "Enterprise-grade event analytics platform with comprehensive partner management, intelligent link tracking, automated event creation (Sports Match Builder), and advanced real-time statistics dashboard for sports organizations, venues, brands, and event managers",
   "keywords": [
     "event-statistics",
@@ -105,6 +105,7 @@
     "diagnose:clicker": "tsx -r dotenv/config scripts/diagnose-clicker.ts dotenv_config_path=.env.local",
     "fix:clicker-groups": "tsx -r dotenv/config scripts/fix-clicker-groups-prefix.ts dotenv_config_path=.env.local",
     "align:clicker": "tsx -r dotenv/config scripts/alignClickerManagerToKyc.ts dotenv_config_path=.env.local",
+    "backfill:clicker-sets": "tsx -r dotenv/config scripts/backfillClickerSets.ts dotenv_config_path=.env.local",
     "groups:add-report-content": "tsx -r dotenv/config scripts/addReportContentGroup.ts dotenv_config_path=.env.local",
     "fix:enable-manual-mode": "tsx -r dotenv/config scripts/enableManualModeForAllVariables.ts dotenv_config_path=.env.local",
     "export:partners": "tsx -r dotenv/config scripts/exportPartners.ts dotenv_config_path=.env.local",

@@ -3,7 +3,7 @@
 **Date:** 2026-01-12T10:20:00.000Z  
 **Status:** Investigation Complete  
 **Investigator:** Tribeca  
-**Reference:** `AUDIT_ACTION_PLAN.md` ADMIN UI REFACTOR PROGRAM
+**Reference:** `ACTION_PLAN.md` ADMIN UI REFACTOR PROGRAM (canonical roadmap)
 
 ---
 

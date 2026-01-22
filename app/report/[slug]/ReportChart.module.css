@@ -135,6 +135,7 @@
   /* WHY: Middle row of 4fr-3fr-3fr grid */
   /* HOW: Flex centering for responsive value scaling, fully vertically centered */
   /* P1 2.5.1: Increased scaling from min(18cqh, 20cqw) to min(30cqh, 25cqw), max from 5rem to 6rem */
+  /* A-03.2: Enhanced to prevent value clipping */
   display: flex;
   align-items: center;
   justify-content: center;
@@ -146,10 +147,17 @@
   line-height: 0.85;
   text-align: center;
   letter-spacing: -0.04em;
-  /* WHAT: Allow wrapping instead of truncation - Layout Grammar: no truncation on content */
+  /* WHAT: A-03.2 - Allow wrapping instead of truncation - Layout Grammar: no truncation on content */
   /* WHY: Content must fit through wrapping/reflow, not truncation */
-  word-wrap: break-word;
-  overflow-wrap: break-word;
+  /* HOW: Enhanced wrapping properties to ensure multi-line values fit */
+  word-wrap: break-word !important;
+  overflow-wrap: break-word !important;
+  hyphens: auto !important; /* A-03.2: Allow hyphenation for better value fitting */
+  /* WHAT: A-03.2 - Ensure value fits within row height */
+  /* WHY: Multi-line values must be fully visible, not clipped */
+  /* HOW: Use min-height: 0 to allow flex shrinking, overflow: hidden to prevent overflow */
+  min-height: 0 !important; /* CRITICAL: Allow flex shrinking to fit content */
+  overflow: hidden !important; /* A-03.2: Prevent overflow - content must wrap to fit (Layout Grammar) */
   container-type: size;
 }
 
@@ -158,6 +166,7 @@
   /* WHY: Grid row 3 = bottom 30% of cell */
   /* HOW: Flex with center alignment - fully vertically centered */
   /* P1 2.5.1: Increased scaling from 8cqh to 15cqh, max from 1.125rem to 1.5rem */
+  /* A-03.2: Enhanced to prevent title clipping */
   display: flex;
   align-items: center;
   justify-content: center;
@@ -170,9 +179,18 @@
   font-weight: var(--mm-font-weight-medium);
   color: var(--chartLabelColor);
   line-height: 1.1;
-  word-break: break-word;
-  hyphens: none;
-  overflow: hidden;
+  /* WHAT: A-03.2 - Enhanced wrapping to ensure title fits */
+  /* WHY: Title must fit within allocated row height (clamped to 2 lines per Layout Grammar) */
+  /* HOW: Enhanced wrapping properties */
+  word-break: break-word !important;
+  word-wrap: break-word !important;
+  overflow-wrap: break-word !important;
+  hyphens: auto !important; /* A-03.2: Allow hyphenation for better title fitting */
+  /* WHAT: A-03.2 - Ensure title fits within row height */
+  /* WHY: Title is clamped to 2 lines per Layout Grammar, but must fit within allocated height */
+  /* HOW: Use min-height: 0 to allow flex shrinking, overflow: hidden to prevent overflow */
+  min-height: 0 !important; /* CRITICAL: Allow flex shrinking to fit content */
+  overflow: hidden !important; /* A-03.2: Prevent overflow - title must clamp to 2 lines (Layout Grammar) */
 }
 
 .kpi .kpiTitle > * {
@@ -189,23 +207,34 @@
 
 /* Pie Chart - Uses base .chart structure */
 
-/* Container grid for title (40%), pie (40%), legend (20%) */
+/* Container grid for title, pie, legend - CSS Grid layout (table-style) */
 .pieGrid {
-  height: 100%;
+  /* WHAT: CSS Grid layout (same as KPI charts) to prevent overflow on mobile */
+  /* WHY: Fixed proportions ensure content stays within frame, no overflow */
+  /* HOW: Use grid-template-rows with fixed proportions (3fr:4fr:3fr = 30%:40%:30%) */
+  height: 100% !important; /* CRITICAL: Fill full height of parent */
   width: 100%;
-  display: flex;
-  flex-direction: column;
+  display: grid;
+  grid-template-rows: 3fr 4fr 3fr; /* Title (30%) : Pie (40%) : Legend (30%) - FIXED PROPORTIONS */
+  gap: 0;
   align-items: stretch;
-  justify-content: flex-start;
+  justify-items: stretch;
+  min-height: 0; /* CRITICAL: Allow grid to shrink if needed */
 }
 
-/* Title row: 40% of cell, vertically centered */
+/* Title row: Grid row 1 (30% of cell), vertically centered */
 .pieTitleRow {
-  flex: 0 0 30%; /* 3:4:3 → title 30% */
+  /* WHAT: Grid row 1 - fixed 30% proportion, fills full grid row height */
+  /* WHY: CSS Grid ensures fixed proportion, no flex competition */
+  /* HOW: Grid row with flex centering for content, fills allocated space */
   display: flex;
   align-items: center;
   justify-content: center;
   padding: var(--mm-space-1) var(--mm-space-2);
+  height: 100%; /* CRITICAL: Fill full grid row height */
+  min-height: 0; /* CRITICAL: Allow grid row to shrink if needed */
+  overflow: hidden; /* Prevent overflow */
+  box-sizing: border-box;
 }
 
 .pieTitleText {
@@ -281,39 +310,39 @@
   color: var(--chartLabelColor);
 }
 
-/* Pie Chart Container for Chart.js - 40% of pieGrid height */
+/* Pie Chart Container for Chart.js - Grid row 2 (40% of cell) */
 .pieChartContainer {
-  /* WHAT: 40% of pieGrid height for pie chart */
-  /* WHY: Middle section of 30:40:30 ratio (title:pie:legend = 3:4:3) */
-  /* HOW: Flex basis for fixed height proportion (P1 1.4 Phase 3: removed min-height, added max-height for deterministic behavior) */
-  flex: 0 0 40%; /* 3:4:3 → pie 40% */
+  /* WHAT: Grid row 2 - fixed 40% proportion (CSS Grid layout), fills full grid row height */
+  /* WHY: CSS Grid ensures fixed proportion, no flex competition or overflow */
+  /* HOW: Grid row with flex centering for Chart.js canvas, fills allocated space */
+  /* NOTE: --chart-body-height is still calculated for canvas sizing, but container uses grid row */
+  height: 100% !important; /* CRITICAL: Fill full grid row 2 height (40% of pieGrid) */
   width: 100%;
-  max-height: 40%; /* WHAT: P1 1.4 Phase 3 - prevent unbounded growth, bound to flex ratio */
+  min-height: 0; /* CRITICAL: Allow grid row to shrink if needed */
   position: relative;
   display: flex;
   align-items: center;
   justify-content: center;
   container-type: size;
   overflow: visible; /* WHAT: P1 1.6 - Layout Grammar: no clipping on content layers, Chart.js canvas must be fully visible */
+  box-sizing: border-box;
 }
 
-/* Custom Pie Legend - 30% of body height */
+/* Custom Pie Legend - Grid row 3 (30% of cell) */
 .pieLegend {
-  /* WHAT: 30% of body height for legend items */
-  /* WHY: Bottom section of 30:40:30 ratio (title:pie:legend = 3:4:3) */
-  /* HOW: Flex basis for preferred height, can grow if content exceeds - Layout Grammar: no scrolling */
-  flex: 1 1 30%; /* 3:4:3 → legend prefers 30%, but can grow if needed (no scrolling) */
+  /* WHAT: Grid row 3 - fixed 30% proportion (CSS Grid layout), fills full grid row height */
+  /* WHY: CSS Grid ensures fixed proportion, no flex competition or overflow */
+  /* HOW: Grid row with flex column for legend items, fills allocated space */
   display: flex;
   flex-direction: column;
   justify-content: flex-start; /* WHAT: Changed from center to flex-start to prevent clipping in constrained blocks */
   align-items: center;
   gap: clamp(0.125rem, 1cqh, var(--mm-space-1)); /* WHAT: Responsive gap - smaller in constrained spaces */
   width: 100%;
+  height: 100% !important; /* CRITICAL: Fill full grid row 3 height (30% of pieGrid) */
+  min-height: 0; /* CRITICAL: Allow grid row to shrink if needed */
   container-type: size;
-  max-height: 50%; /* WHAT: P1 1.4 Phase 3 - allow growth but bound it to prevent unbounded expansion */
-  /* WHAT: Removed max-height and overflow-y - Layout Grammar: content must fit without scrolling */
-  /* WHY: If legend items exceed preferred 30%, container grows to fit (no scrolling) */
-  overflow: visible; /* WHAT: Changed from hidden to visible - Layout Grammar: content must be visible, container grows to fit */
+  overflow: visible; /* WHAT: Layout Grammar: content must be visible */
   padding: clamp(0.125rem, 1cqh, var(--mm-space-1)); /* WHAT: Responsive padding - smaller in constrained spaces */
   box-sizing: border-box;
 }
@@ -418,7 +447,12 @@
   /* WHAT: Table row - naturally expands to fit content */
   /* WHY: Table rows automatically expand to fit tallest cell content */
   /* HOW: Standard table row, no special CSS needed for row expansion */
+  /* A-03.3: Enhanced to ensure rows accommodate measured label heights */
   vertical-align: top; /* WHAT: Align content to top of row */
+  /* WHAT: A-03.3 - Ensure row height accommodates measured label heights */
+  /* WHY: Row height must accommodate actual rendered label height (not fixed assumptions) */
+  /* HOW: Table rows naturally expand, but we ensure no clipping */
+  min-height: 0 !important; /* CRITICAL: Allow natural expansion */
 }
 
 .barLabel {
@@ -426,20 +460,27 @@
   /* WHY: Table cells naturally expand row height when content wraps (Layout Grammar: no clipping) */
   /* HOW: Standard table cell with natural text wrapping, right-aligned, no forced line limits */
   /* WHAT: P1 1.5 Phase 2 - Use block-level typography instead of independent scaling */
+  /* A-03.3: Enhanced to prevent label clipping with measured layout logic */
   font-size: var(--block-base-font-size);
   color: var(--chartLabelColor);
   font-weight: var(--mm-font-weight-medium);
   text-align: right;
-  white-space: normal; /* WHAT: Allow natural wrapping */
-  overflow-wrap: anywhere; /* WHAT: Break words if needed to prevent overflow */
-  word-break: break-word; /* WHAT: Break long words if needed */
+  white-space: normal !important; /* WHAT: Allow natural wrapping */
+  overflow-wrap: anywhere !important; /* WHAT: Break words if needed to prevent overflow */
+  word-break: break-word !important; /* WHAT: Break long words if needed */
+  hyphens: auto !important; /* A-03.3: Allow hyphenation for better label fitting */
   line-height: 1.2; /* WHAT: Comfortable line-height for readability */
   padding-right: var(--mm-space-2);
   padding-left: var(--mm-space-1);
   width: 40%; /* WHAT: Generous label column width - 40% of table width for full label visibility */
   vertical-align: top; /* WHAT: Align to top of row */
   box-sizing: border-box;
-  /* WHAT: Removed line-clamp - let labels wrap naturally to fit available space */
+  /* WHAT: A-03.3 - Ensure labels fit without clipping */
+  /* WHY: Labels must wrap to fit within allocated row height (Layout Grammar) */
+  /* HOW: Use min-height: 0 to allow natural expansion, overflow: visible to prevent clipping */
+  min-height: 0 !important; /* CRITICAL: Allow natural expansion */
+  overflow: visible !important; /* A-03.3: Prevent clipping - labels must be visible */
+  /* WHAT: Removed line-clamp - let labels wrap naturally to fit available space (max 2 lines enforced by font size calculation) */
 }
 
 .barTrackCell {
@@ -543,6 +584,7 @@
   /* WHAT: Content container - fills remaining space after title, centers content vertically and horizontally */
   /* WHY: Separate block-level div that cannot be inline, must fill available space and center content */
   /* P1 1.4 Phase 4: Explicit height instead of flex: 1 */
+  /* A-03.1: Enhanced to prevent content clipping */
   display: flex !important; /* CRITICAL: Use flexbox for vertical centering */
   align-items: center !important; /* CRITICAL: Center content vertically */
   justify-content: center !important; /* CRITICAL: Center content horizontally */
@@ -550,6 +592,11 @@
   height: var(--text-content-height, var(--mm-block-height-default)); /* WHAT: P1 1.4 Phase 4 - explicit height from calculation, fallback to design token */
   padding: var(--mm-space-2) !important;
   box-sizing: border-box !important;
+  /* WHAT: A-03.1 - Ensure content fits without clipping */
+  /* WHY: Multi-line text must be fully visible within the wrapper */
+  /* HOW: Use min-height: 0 to allow flex shrinking, ensure content wraps to fit */
+  min-height: 0 !important; /* CRITICAL: Allow flex shrinking to fit content */
+  overflow: hidden !important; /* A-03.1: Prevent overflow - content must wrap to fit (Layout Grammar) */
   /* CRITICAL: Force block display - cannot be inline */
   clear: both !important;
   float: none !important;
@@ -564,6 +611,7 @@
   /* WHY: Markdown elements (p, h1, etc.) must stack vertically, fill space, and be centered */
   /* HOW: Use flexbox to fill space and center content, block display for children to stack */
   /* P1 1.4 Phase 4: Explicit height instead of min-height: 0 */
+  /* A-03.1: Enhanced to prevent multi-line text clipping */
   display: flex !important; /* CRITICAL: Use flexbox to fill space and center content */
   flex-direction: column !important; /* CRITICAL: Stack children vertically */
   align-items: center !important; /* CRITICAL: Center content horizontally */
@@ -572,8 +620,14 @@
   max-width: 100% !important;
   height: 100% !important; /* CRITICAL: Fill parent height completely (parent has explicit height from Phase 4) */
   max-height: 100% !important; /* CRITICAL: Don't exceed parent height */
+  /* WHAT: A-03.1 - Ensure content fits without clipping */
+  /* WHY: Multi-line text and tables must be fully visible, not clipped */
+  /* HOW: Use min-height: 0 to allow flex shrinking, dynamic font size reduction for tables */
+  min-height: 0 !important; /* CRITICAL: Allow flex shrinking to fit content */
+  overflow: hidden !important; /* A-03.1: Prevent overflow - content must fit through font size reduction (Layout Grammar) */
   /* WHAT: P1 1.5 Phase 2 - Use block-level typography instead of unified-text-font-size (Option B) */
   /* WHY: Align text chart typography with block typography for true unification */
+  /* A-03.1: Font size may be reduced dynamically via inline style if content exceeds space */
   font-size: var(--block-base-font-size) !important;
   font-weight: var(--mm-font-weight-semibold);
   color: var(--textColor);
@@ -581,11 +635,13 @@
   box-sizing: border-box;
   /* CRITICAL: Center the entire block of content */
   text-align: center !important;
-  /* CRITICAL: No scrolling, no clipping - Layout Grammar compliance (content must fit through wrapping/reflow) */
-  /* WHAT: Content must fit through structural change (wrapping, reflow), not clipping */
-  /* WHY: Layout Grammar: no clipping on content layers */
+  /* CRITICAL: No scrolling, no clipping - Layout Grammar compliance (content must fit through wrapping/reflow/font reduction) */
+  /* WHAT: Content must fit through structural change (wrapping, reflow, font size reduction), not clipping */
+  /* WHY: Layout Grammar: no clipping on content layers, no scrolling */
+  /* A-03.1: Enhanced wrapping for text, dynamic font size reduction for tables */
   word-wrap: break-word !important;
   overflow-wrap: break-word !important;
+  hyphens: auto !important; /* A-03.1: Allow hyphenation for better text fitting */
   /* CRITICAL: Enable container queries for responsive scaling (fallback) */
   container-type: size !important;
 }
@@ -743,6 +799,7 @@
   font-size: inherit !important;
   /* CRITICAL: Preserve line breaks but allow wrapping (not pre-wrap which breaks bold) */
   white-space: normal !important; /* Allow normal wrapping, markdown handles line breaks */
+  overflow: hidden !important; /* A-03.1: Prevent overflow - content must fit through font size reduction (Layout Grammar) */
 }
 
 .textMarkdown > * {
@@ -752,6 +809,33 @@
   box-sizing: border-box !important;
   text-align: center !important; /* Center each block */
   font-size: 1em !important; /* CRITICAL: Same size for all elements */
+}
+
+/* A-03.1 FIX: Table styling in text markdown - tables need special handling */
+.textMarkdown table {
+  width: 100% !important;
+  max-width: 100% !important;
+  border-collapse: collapse !important;
+  margin: 0.5em 0 !important;
+  display: table !important; /* CRITICAL: Tables must be display: table */
+  text-align: left !important; /* Tables read better left-aligned */
+  font-size: 0.9em !important; /* Slightly smaller font for tables to fit more rows */
+}
+
+.textMarkdown table thead {
+  background: var(--chartTitleColor, var(--mm-gray-100)) !important;
+  font-weight: var(--mm-font-weight-semibold) !important;
+}
+
+.textMarkdown table th,
+.textMarkdown table td {
+  padding: var(--mm-space-2) var(--mm-space-3) !important;
+  border: 1px solid var(--chartBorder, var(--mm-gray-200)) !important;
+  text-align: left !important;
+}
+
+.textMarkdown table th {
+  border-bottom: 2px solid var(--chartBorder, var(--mm-gray-300)) !important;
 }
 
 /* WHAT: Remove duplicate h1 definition - already defined above with proper sizing */
@@ -1007,14 +1091,13 @@
 }
 
 .CellWrapper_bodyZone__ps_rO .pieLegend {
-  /* WHAT: Preferred 30% height, can grow if needed - Layout Grammar: no scrolling */
-  /* WHY: Maintain preferred legend size when inside CellWrapper (3:4:3 ratio), but allow growth */
-  flex: 1 1 30% !important; /* Prefer 30%, but can grow if content exceeds (no scrolling) */
-  /* WHAT: Removed max-height and overflow-y - Layout Grammar: content must fit without scrolling */
-  display: flex;
-  flex-direction: column;
+  /* WHAT: Grid row 3 - fixed 30% proportion (CSS Grid layout) */
+  /* WHY: CSS Grid ensures fixed proportion, no flex competition or overflow */
+  display: flex !important;
+  flex-direction: column !important;
   justify-content: flex-start !important; /* WHAT: Changed from center to flex-start to prevent clipping in constrained blocks */
-  overflow: visible !important; /* WHAT: Changed from hidden to visible - Layout Grammar: content must be visible, container grows to fit */
+  overflow: visible !important; /* WHAT: Layout Grammar: content must be visible */
+  min-height: 0 !important; /* CRITICAL: Allow grid row to shrink if needed */
   box-sizing: border-box;
 }
 
@@ -1058,6 +1141,42 @@
   /* WHAT: Charts must scale to fit their container on mobile
    * WHY: Prevent overflow - charts must behave same as desktop (scale and fit)
    * HOW: Maintain flexbox fill behavior, ensure container queries work properly */
+/* A-R-11: Error Placeholder Styles */
+.chartError {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: var(--mm-space-6);
+  text-align: center;
+  color: var(--mm-color-text-secondary, #666);
+  background: var(--chartBackground, #fff);
+  border: 2px dashed var(--mm-color-border, #ddd);
+  border-radius: var(--mm-radius-lg);
+  min-height: 120px;
+}
+
+.chartErrorIcon {
+  font-size: 2rem;
+  color: var(--mm-color-error, #dc3545);
+  margin-bottom: var(--mm-space-3);
+}
+
+.chartErrorTitle {
+  font-size: var(--mm-font-size-md, 1rem);
+  font-weight: var(--mm-font-weight-semibold, 600);
+  margin-bottom: var(--mm-space-2);
+  color: var(--mm-color-text, #333);
+}
+
+.chartErrorMessage {
+  font-size: var(--mm-font-size-sm, 0.875rem);
+  color: var(--mm-color-text-secondary, #666);
+  line-height: 1.5;
+  max-width: 100%;
+  word-wrap: break-word;
+}
+
   .chart:not(.image) {
     width: 100% !important;
     height: 100% !important; /* CRITICAL: Fill parent container */
@@ -1069,14 +1188,30 @@
     container-type: size; /* Ensure container queries work on mobile */
   }
   
-  /* WHAT: Pie chart container - same behavior as desktop on mobile
-   * WHY: Consistent sizing across all viewports, prevent collapse
-   * HOW: Maintain flex basis with max-height constraint (P1 1.4 Phase 3: removed min-height for deterministic behavior) */
-  .pieChartContainer {
-    flex: 0 0 40% !important; /* Same as desktop - 40% of pieGrid (3:4:3 ratio) */
+  /* WHAT: PIE chart uses CSS Grid layout on mobile (same as desktop, same as KPI charts) */
+  /* WHY: Table-style layout ensures fixed proportions, prevents overflow */
+  /* HOW: CSS Grid with grid-template-rows: 3fr 4fr 3fr ensures content stays within frame */
+  .pieGrid {
+    display: grid !important; /* WHAT: CSS Grid layout (table-style) */
+    grid-template-rows: 3fr 4fr 3fr !important; /* Title (30%) : Pie (40%) : Legend (30%) */
+    height: 100% !important;
     width: 100% !important;
-    max-height: 40% !important; /* WHAT: P1 1.4 Phase 3 - prevent unbounded growth, bound to flex ratio */
-    max-width: 100% !important;
+  }
+  .pieTitleRow {
+    /* WHAT: Grid row 1 - fixed 30% proportion, fills full grid row height */
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    height: 100% !important; /* CRITICAL: Fill full grid row height */
+    min-height: 0 !important; /* Allow grid row to shrink if needed */
+    overflow: hidden !important; /* Prevent overflow */
+    box-sizing: border-box !important;
+  }
+  .pieChartContainer {
+    /* WHAT: Grid row 2 - fixed 40% proportion */
+    height: 100% !important; /* Fill grid row 2 */
+    width: 100% !important;
+    min-height: 0 !important; /* Allow grid row to shrink if needed */
     position: relative !important;
     overflow: visible !important; /* WHAT: P1 1.6 - Layout Grammar: no clipping on content layers, Chart.js canvas must be fully visible */
     display: flex !important;
@@ -1088,27 +1223,28 @@
    * WHY: Canvas must fit within container on both desktop and mobile
    * HOW: Use percentage-based sizing with max constraints */
   .pieChartContainer canvas {
-    width: 90% !important; /* Fill 90% of container width */
-    height: 90% !important; /* Fill 90% of container height */
+    width: 100% !important; /* Fill container width */
+    height: 100% !important; /* Fill container height */
     max-width: 100% !important;
     max-height: 100% !important;
     aspect-ratio: 1 !important; /* Maintain circular shape */
     object-fit: contain !important; /* Ensure it fits within constraints */
   }
   
-  /* WHAT: Pie legend - same behavior as desktop on mobile - Layout Grammar: no scrolling */
-  /* WHY: Consistent sizing across all viewports, prevent collapse, content must fit */
-  /* HOW: Maintain flex basis with max-height constraint (P1 1.4 Phase 3: removed min-height for deterministic behavior) */
+  /* WHAT: Pie legend - Grid row 3 (30% of cell) - CSS Grid layout */
+  /* WHY: CSS Grid ensures fixed 30% proportion, prevents overflow */
+  /* HOW: Grid row with flex column for legend items, fills allocated space */
   .pieLegend {
-    flex: 1 1 20% !important; /* Prefer 20%, but can grow if content exceeds (no scrolling) */
-    width: 100% !important;
-    max-height: 50% !important; /* WHAT: P1 1.4 Phase 3 - allow growth but bound it to prevent unbounded expansion */
-    max-width: 100% !important;
-    justify-content: flex-start !important; /* WHAT: Changed from center to flex-start to prevent clipping in constrained blocks */
-    overflow: visible !important; /* WHAT: Changed from hidden to visible - Layout Grammar: content must be visible, container grows to fit */
-    /* WHAT: Removed max-height and overflow-y - Layout Grammar: content must fit without scrolling */
+    /* WHAT: Grid row 3 - fixed 30% proportion, fills full grid row height */
     display: flex !important;
     flex-direction: column !important;
+    width: 100% !important;
+    height: 100% !important; /* CRITICAL: Fill full grid row 3 height */
+    min-height: 0 !important; /* Allow grid row to shrink if needed */
+    overflow: visible !important; /* WHAT: Layout Grammar: content must be visible */
+    justify-content: flex-start !important; /* Align legend items to start */
+    align-items: stretch !important;
+    box-sizing: border-box !important;
   }
   
   /* WHAT: Image charts respect aspect ratio on mobile

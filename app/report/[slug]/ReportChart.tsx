@@ -17,11 +17,15 @@ import type { ChartResult } from '@/lib/report-calculator';
 import { preventPhraseBreaks } from '@/lib/chartLabelUtils';
 import MaterialIcon from '@/components/MaterialIcon';
 import CellWrapper from '@/components/CellWrapper';
+import { ChartErrorBoundary } from '@/components/ChartErrorBoundary';
 import styles from './ReportChart.module.css';
 import { parseMarkdown } from '@/lib/markdownUtils';
 import { parseTableMarkdown } from '@/lib/tableMarkdownUtils';
 import { sanitizeHTML } from '@/lib/sanitize';
-import { validateCriticalCSSVariable, CRITICAL_CSS_VARIABLES } from '@/lib/layoutGrammarRuntimeEnforcement';
+import { safeValidate, validateCriticalCSSVariable, CRITICAL_CSS_VARIABLES } from '@/lib/layoutGrammarRuntimeEnforcement';
+import { getUserFriendlyErrorMessage } from '@/lib/chartErrorTypes';
+import { validateChartData, formatValidationIssue } from '@/lib/export/chartValidation';
+import type { Chart } from '@/lib/report-calculator';
 
 // Register Chart.js components for pie charts
 ChartJS.register(ArcElement, Tooltip, Legend);
@@ -80,6 +84,9 @@ interface ReportChartProps {
   /** Chart result from ReportCalculator */
   result: ChartResult;
   
+  /** Optional chart configuration (for type matching validation) */
+  chart?: Chart | null;
+  
   /** Optional width override (grid units) */
   width?: number;
   
@@ -110,11 +117,52 @@ interface ReportChartProps {
  * - IMAGE: Aspect ratio-aware image display
  * - VALUE: Composite (KPI + BAR) - renders both components
  */
-export default function ReportChart({ result, width, blockHeight, unifiedTextFontSize, className }: ReportChartProps) {
+export default function ReportChart({ result, chart, width, blockHeight, unifiedTextFontSize, className }: ReportChartProps) {
+  // WHAT: A-R-11 - Check for calculation errors first
+  // WHY: Display error messages to users instead of hiding charts
+  // HOW: Show error placeholder if chartError or error exists
+  const hasError = !!(result.chartError || result.error);
+  
+  if (hasError) {
+    return (
+      <CellWrapper className={className}>
+        <div className={`${styles.chart} ${styles.chartError}`}>
+          <MaterialIcon name="error_outline" className={styles.chartErrorIcon} />
+          <div className={styles.chartErrorTitle}>{result.title || 'Chart Error'}</div>
+          <div className={styles.chartErrorMessage}>
+            {result.chartError
+              ? getUserFriendlyErrorMessage(result.chartError)
+              : result.error || 'Chart calculation failed'}
+          </div>
+        </div>
+      </CellWrapper>
+    );
+  }
+
+  // A-R-13: Validate chart data structure and values
+  const dataValidation = validateChartData(result, chart || null);
+  if (!dataValidation.valid) {
+    const errorIssues = dataValidation.issues.filter(i => i.severity === 'error');
+    if (errorIssues.length > 0) {
+      // Display first error issue
+      return (
+        <CellWrapper className={className}>
+          <div className={`${styles.chart} ${styles.chartError}`}>
+            <MaterialIcon name="error_outline" className={styles.chartErrorIcon} />
+            <div className={styles.chartErrorTitle}>{result.title || 'Chart Error'}</div>
+            <div className={styles.chartErrorMessage}>
+              {formatValidationIssue(errorIssues[0])}
+            </div>
+          </div>
+        </CellWrapper>
+      );
+    }
+  }
+
   // WHAT: Check if chart has valid displayable data
   // WHY: Don't render placeholders for empty/NA values
   // HOW: Type-specific validation matching ReportCalculator.hasValidData()
-  const hasData = !result.error && (() => {
+  const hasData = (() => {
     switch (result.type) {
       case 'text':
         return typeof result.kpiValue === 'string' && result.kpiValue.length > 0 && result.kpiValue !== 'NA';
@@ -145,38 +193,41 @@ export default function ReportChart({ result, width, blockHeight, unifiedTextFon
   // WHAT: Hide cells with no data (v11.48.0)
   // WHY: Clean reports - only show charts with actual data
   // HOW: Return null instead of placeholder when no data
+  // NOTE: A-R-11 - Errors are shown above, empty data is still hidden
   if (!hasData) {
     return null;
   }
 
+  // A-R-13: Wrap chart rendering in error boundary to catch rendering errors
+  const ChartContent = () => {
   // Render based on chart type
-  // WHAT: blockHeight prop removed - now centrally managed via --block-height CSS custom property on row
-  // WHY: Eliminates per-chart inline styles, better maintainability
+    // WHAT: blockHeight prop removed - now centrally managed via --block-height CSS custom property on row
+    // WHY: Eliminates per-chart inline styles, better maintainability
   switch (result.type) {
     case 'kpi':
-      return <KPIChart result={result} className={className} />;
+        return <KPIChart result={result} className={className} />;
     
     case 'pie':
-      return <PieChart result={result} className={className} />;
+        return <PieChart result={result} className={className} />;
     
     case 'bar':
-      return <BarChart result={result} className={className} />;
+        return <BarChart result={result} className={className} />;
     
     case 'text':
-      return <TextChart result={result} unifiedTextFontSize={unifiedTextFontSize} className={className} />;
+        return <TextChart result={result} unifiedTextFontSize={unifiedTextFontSize} className={className} />;
     
     case 'image':
-      return <ImageChart result={result} className={className} />;
+        return <ImageChart result={result} className={className} />;
     
     case 'table':
-      return <TableChart result={result} className={className} />;
+        return <TableChart result={result} className={className} />;
     
     case 'value':
       // VALUE charts render KPI + BAR together
       return (
         <div className={`${styles.valueComposite} ${className || ''}`}>
-          <KPIChart result={result} className={className} />
-          <BarChart result={result} />
+            <KPIChart result={result} className={className} />
+            <BarChart result={result} />
         </div>
       );
     
@@ -187,6 +238,28 @@ export default function ReportChart({ result, width, blockHeight, unifiedTextFon
         </div>
       );
   }
+  };
+
+  // Wrap in error boundary for graceful degradation
+  return (
+    <ChartErrorBoundary
+      chartId={result.chartId}
+      chartTitle={result.title}
+      fallback={
+        <CellWrapper className={className}>
+          <div className={`${styles.chart} ${styles.chartError}`}>
+            <MaterialIcon name="error_outline" className={styles.chartErrorIcon} />
+            <div className={styles.chartErrorTitle}>{result.title || 'Chart Error'}</div>
+            <div className={styles.chartErrorMessage}>
+              Chart rendering failed. Please refresh the page or contact support if the issue persists.
+            </div>
+          </div>
+        </CellWrapper>
+      }
+    >
+      <ChartContent />
+    </ChartErrorBoundary>
+  );
 }
 
 
@@ -194,6 +267,7 @@ export default function ReportChart({ result, width, blockHeight, unifiedTextFon
  * KPI Chart - 3-row grid layout with CSS-only auto-sizing
  * Icon (30%) → Value (40%) → Label (30%, CSS clamp + text wrap)
  * UPDATED: Uses CellWrapper for Report Layout Spec v2.0
+ * A-03.2: Enhanced height calculation to prevent value/label clipping
  */
 function KPIChart({ result, className }: { result: ChartResult; className?: string }) {
   const formattedValue = formatValue(result.kpiValue, result.formatting);
@@ -208,11 +282,212 @@ function KPIChart({ result, className }: { result: ChartResult; className?: stri
   // WHY: Some charts may want to hide titles per Spec v2.0
   const showTitle = result.showTitle !== false;
   
+  // WHAT: A-03.2 - Refs for height calculation to prevent clipping
+  // WHY: Need to measure actual content height in value and title rows
+  // HOW: Use refs to access DOM elements for measurement
+  const kpiChartRef = useRef<HTMLDivElement>(null);
+  const kpiValueRowRef = useRef<HTMLDivElement>(null);
+  const kpiTitleRef = useRef<HTMLDivElement>(null);
+  
+  // WHAT: A-03.2 - Measure and validate KPI row heights to prevent clipping
+  // WHY: Value and title rows must accommodate their content without clipping
+  // HOW: Measure actual content height and verify it fits within allocated row height
+  useEffect(() => {
+    if (kpiChartRef.current && typeof window !== 'undefined') {
+      const measureAndValidate = () => {
+        const containerHeight = kpiChartRef.current?.offsetHeight || 0;
+        if (containerHeight <= 0) return;
+        
+        // WHAT: Calculate allocated row heights based on grid proportions (4fr:3fr:3fr)
+        // WHY: Grid rows are allocated: Icon 40% (4fr/10fr), Value 30% (3fr/10fr), Title 30% (3fr/10fr)
+        // HOW: Calculate based on grid template rows: 4fr 3fr 3fr = 10fr total
+        const iconRowHeight = containerHeight * 0.4; // 4fr / 10fr = 40%
+        const valueRowHeight = containerHeight * 0.3; // 3fr / 10fr = 30%
+        const titleRowHeight = containerHeight * 0.3; // 3fr / 10fr = 30%
+        
+        // WHAT: A-03.2 - Measure actual content height in value row
+        // WHY: Value might wrap to multiple lines and exceed allocated height
+        // HOW: Use offsetHeight (actual rendered height) to check if wrapped content fits
+        if (kpiValueRowRef.current) {
+          const valueElement = kpiValueRowRef.current;
+          // WHAT: Use offsetHeight instead of scrollHeight for values
+          // WHY: offsetHeight shows the actual rendered height after wrapping, scrollHeight includes all content
+          // HOW: If content wraps properly, offsetHeight should match available height
+          const actualValueHeight = valueElement.offsetHeight;
+          
+          // WHAT: Account for padding in value row (if any)
+          // WHY: Padding reduces available space for content
+          const computedStyle = window.getComputedStyle(valueElement);
+          const paddingTop = parseFloat(computedStyle.paddingTop) || 0;
+          const paddingBottom = parseFloat(computedStyle.paddingBottom) || 0;
+          const availableValueHeight = valueRowHeight - paddingTop - paddingBottom;
+          
+          // WHAT: If actual rendered height exceeds available space, reduce font size to fit
+          // WHY: Value must fit within allocated space per Layout Grammar
+          // HOW: If value exceeds space, dynamically reduce font size proportionally
+          // NOTE: Use small tolerance (2px) to account for rounding and sub-pixel rendering differences
+          const tolerance = 2; // 2px tolerance for rounding and sub-pixel rendering
+          if (actualValueHeight > availableValueHeight + tolerance && availableValueHeight > 0) {
+            // WHAT: Calculate required font size to fit value in available space
+            // WHY: Value must fit within allocated space, so we need to reduce font size
+            // HOW: Scale font size proportionally: newFontSize = currentFontSize × (availableHeight / actualHeight)
+            const currentFontSize = parseFloat(computedStyle.fontSize) || 16;
+            const lineHeight = parseFloat(computedStyle.lineHeight) || 1.2;
+            
+            // WHAT: Calculate scale factor based on available vs actual height
+            // WHY: Need to reduce font size proportionally to fit content
+            // HOW: Scale factor = availableHeight / actualHeight (with safety margin)
+            const safetyMargin = 0.95; // 5% safety margin to ensure content fits
+            const scaleFactor = (availableValueHeight / actualValueHeight) * safetyMargin;
+            const newFontSize = currentFontSize * scaleFactor;
+            
+            // WHAT: Apply reduced font size if it's significantly different
+            // WHY: Only apply if reduction is meaningful (more than 5% difference)
+            // HOW: Set inline style with reduced font size and !important to override CSS clamp()
+            if (scaleFactor < 0.95 && newFontSize > 8) { // Minimum font size of 8px for readability
+              // WHAT: Use setProperty with !important flag to override CSS clamp() rule
+              // WHY: CSS clamp() with container queries might override inline style
+              // HOW: Use setProperty with important flag
+              valueElement.style.setProperty('font-size', `${newFontSize}px`, 'important');
+              console.warn(
+                `[KPIChart A-03.2] Value rendered height (${actualValueHeight}px) exceeds available space (${availableValueHeight}px). ` +
+                `Reduced font size from ${currentFontSize}px to ${newFontSize.toFixed(2)}px to fit. ` +
+                `Container: ${containerHeight}px, Value row allocated: ${valueRowHeight}px. Chart ID: ${result.chartId}`
+              );
+            } else if (scaleFactor < 0.95) {
+              // WHAT: Font size would be too small, log warning
+              // WHY: Content can't fit even with minimum readable font size
+              // HOW: Log warning for investigation
+              console.warn(
+                `[KPIChart A-03.2] Value rendered height (${actualValueHeight}px) exceeds available space (${availableValueHeight}px). ` +
+                `Cannot reduce font size further (would be ${newFontSize.toFixed(2)}px, minimum is 8px). ` +
+                `Container: ${containerHeight}px, Value row allocated: ${valueRowHeight}px. Chart ID: ${result.chartId}`
+              );
+            }
+          }
+        }
+        
+        // WHAT: A-03.2 - Measure actual content height in title row
+        // WHY: Title might wrap to multiple lines and exceed allocated height
+        // HOW: Use offsetHeight (actual rendered height) since title is clamped to 2 lines with -webkit-line-clamp
+        if (showTitle && kpiTitleRef.current) {
+          const titleElement = kpiTitleRef.current;
+          const titleSpan = titleElement.querySelector('span');
+          if (titleSpan) {
+            // WHAT: Use offsetHeight instead of scrollHeight for titles
+            // WHY: Titles use -webkit-line-clamp: 2, so offsetHeight shows the actual clamped height
+            // HOW: scrollHeight includes all content, but offsetHeight shows what's actually rendered
+            const actualTitleHeight = titleSpan.offsetHeight;
+            
+            // WHAT: Account for padding in title row
+            // WHY: Padding reduces available space for content
+            const computedStyle = window.getComputedStyle(titleElement);
+            const paddingTop = parseFloat(computedStyle.paddingTop) || 0;
+            const paddingBottom = parseFloat(computedStyle.paddingBottom) || 0;
+            const availableTitleHeight = titleRowHeight - paddingTop - paddingBottom;
+            
+            // WHAT: If actual rendered height exceeds available space, reduce font size to fit
+            // WHY: Title is clamped to 2 lines per Layout Grammar, but must fit within allocated space
+            // HOW: If title exceeds space, dynamically reduce font size to ensure 2 lines fit
+            // NOTE: Use small tolerance (2px) to account for rounding and sub-pixel rendering
+            const tolerance = 2; // 2px tolerance for rounding and sub-pixel rendering
+            if (actualTitleHeight > availableTitleHeight + tolerance && availableTitleHeight > 0) {
+              // WHAT: Calculate required font size to fit 2 lines in available space
+              // WHY: Title must fit within allocated space, so we need to reduce font size
+              // HOW: availableHeight = 2 lines × fontSize × lineHeight, so fontSize = availableHeight / (2 × lineHeight)
+              const lineHeight = 1.1; // From CSS: .kpi .kpiTitle { line-height: 1.1; }
+              const padding = 16; // 2 × var(--mm-space-2)
+              const availableForText = availableTitleHeight - padding;
+              const maxFontSizeForTwoLines = availableForText / (2 * lineHeight);
+              
+              // WHAT: Get current font size and reduce if needed
+              // WHY: Need to ensure title fits within allocated space
+              // HOW: Apply reduced font size via inline style with !important to override CSS variable
+              const spanComputedStyle = window.getComputedStyle(titleSpan);
+              const currentFontSize = parseFloat(spanComputedStyle.fontSize) || 16;
+              
+              // WHAT: Calculate scale factor based on available vs actual height
+              // WHY: Need to reduce font size proportionally to fit content
+              // HOW: Scale factor = availableHeight / actualHeight (with safety margin)
+              const safetyMargin = 0.95; // 5% safety margin to ensure content fits
+              const scaleFactor = (availableTitleHeight / actualTitleHeight) * safetyMargin;
+              const newFontSize = currentFontSize * scaleFactor;
+              
+              // WHAT: Apply reduced font size if it's significantly different
+              // WHY: Only apply if reduction is meaningful (more than 5% difference)
+              // HOW: Use setProperty with !important flag to override CSS variable (--block-base-font-size)
+              if (scaleFactor < 0.95 && newFontSize > 8) { // Minimum font size of 8px for readability
+                titleSpan.style.setProperty('font-size', `${newFontSize}px`, 'important');
+                console.warn(
+                  `[KPIChart A-03.2] Title rendered height (${actualTitleHeight}px) exceeds available space (${availableTitleHeight}px). ` +
+                  `Reduced font size from ${currentFontSize}px to ${newFontSize.toFixed(2)}px to fit. ` +
+                  `Container: ${containerHeight}px, Title row allocated: ${titleRowHeight}px. Chart ID: ${result.chartId}`
+                );
+              } else if (scaleFactor < 0.95) {
+                // WHAT: Font size would be too small, log warning
+                // WHY: Content can't fit even with minimum readable font size
+                // HOW: Log warning for investigation
+                console.warn(
+                  `[KPIChart A-03.2] Title rendered height (${actualTitleHeight}px) exceeds available space (${availableTitleHeight}px). ` +
+                  `Cannot reduce font size further (would be ${newFontSize.toFixed(2)}px, minimum is 8px). ` +
+                  `Container: ${containerHeight}px, Title row allocated: ${titleRowHeight}px. Chart ID: ${result.chartId}`
+                );
+              }
+            }
+          }
+        }
+      };
+      
+      // WHAT: Measure after initial render and on resize
+      // WHY: Heights may change on resize or content changes
+      // A-03.2: Also measure after content changes
+      measureAndValidate();
+      
+      // WHAT: Use requestAnimationFrame to ensure DOM is fully rendered before measuring
+      // WHY: Content might not be fully rendered on initial mount
+      // HOW: Delay measurement slightly to allow content to render
+      const timeoutId = setTimeout(measureAndValidate, 0);
+      
+      const resizeObserver = new ResizeObserver(() => {
+        // WHAT: Debounce resize measurements to avoid excessive calculations
+        // WHY: Resize events can fire rapidly
+        // HOW: Use requestAnimationFrame to batch measurements
+        requestAnimationFrame(measureAndValidate);
+      });
+      
+      if (kpiChartRef.current) {
+        resizeObserver.observe(kpiChartRef.current);
+      }
+      
+      // WHAT: Observe content changes to remeasure when content updates
+      // WHY: Content height changes when value or title changes
+      // HOW: Use MutationObserver to detect content changes
+      const mutationObserver = new MutationObserver(() => {
+        requestAnimationFrame(measureAndValidate);
+      });
+      
+      if (kpiChartRef.current) {
+        mutationObserver.observe(kpiChartRef.current, {
+          childList: true,
+          subtree: true,
+          characterData: true
+        });
+      }
+      
+      return () => {
+        clearTimeout(timeoutId);
+        resizeObserver.disconnect();
+        mutationObserver.disconnect();
+      };
+    }
+  }, [showTitle, result.kpiValue, result.title, result.chartId]);
+  
   // WHAT: KPI uses 3fr-4fr-3fr grid (Icon:Value:Title = 30%:40%:30%)
   // WHY: Maintains proportional distribution with full blockHeight
   // HOW: CellWrapper unnecessary - grid handles all layout
   return (
     <div 
+      ref={kpiChartRef}
       className={`${styles.chart} ${styles.kpi} report-chart ${className || ''}`}
       // WHAT: blockHeight now centrally managed at row level via --block-height CSS custom property
       // WHY: Eliminated per-chart inline style - height comes from parent row container
@@ -226,11 +501,11 @@ function KPIChart({ result, className }: { result: ChartResult; className?: stri
           />
         )}
       </div>
-      <div className={styles.kpiValueRow}>{formattedValue}</div>
+      <div ref={kpiValueRowRef} className={styles.kpiValueRow}>{formattedValue}</div>
       {/* WHAT: Title is 3rd grid row directly in KPI grid */}
       {/* WHY: Maintains exact 3fr-4fr-3fr proportions across full cell height */}
       {showTitle && (
-        <div className={styles.kpiTitle}>
+        <div ref={kpiTitleRef} className={styles.kpiTitle}>
           <span>{protectedTitle}</span>
         </div>
       )}
@@ -245,6 +520,10 @@ function KPIChart({ result, className }: { result: ChartResult; className?: stri
 function PieChart({ result, className }: { result: ChartResult; className?: string }) {
   const chartRef = useRef<ChartJS<'doughnut'>>(null);
   const containerRef = useRef<HTMLDivElement>(null);
+  const pieLegendRef = useRef<HTMLDivElement>(null);
+  const pieTitleRowRef = useRef<HTMLDivElement>(null);
+  const pieGridRef = useRef<HTMLDivElement>(null);
+  const pieChartContainerRef = useRef<HTMLDivElement>(null);
   
   if (!result.elements || result.elements.length === 0) {
     return <div className={styles.chart}>No pie data</div>;
@@ -256,6 +535,260 @@ function PieChart({ result, className }: { result: ChartResult; className?: stri
   // WHAT: Check if percentages should be shown (default: true for backward compatibility)
   // WHY: v11.38.0 - Allow hiding percentages in pie chart legends
   const showPercentages = result.showPercentages !== false;
+  
+  // WHAT: A-03.4 - Calculate and set measured body height for pie chart container
+  // WHY: Replace competing flex containers with guaranteed height (KPI-safe pattern)
+  // HOW: Measure container height, subtract title and legend heights, set --chart-body-height CSS variable
+  useEffect(() => {
+    if (pieGridRef.current && pieChartContainerRef.current && typeof window !== 'undefined') {
+      const measureAndSetBodyHeight = () => {
+        try {
+          const pieGrid = pieGridRef.current;
+          const pieChartContainer = pieChartContainerRef.current;
+          if (!pieGrid || !pieChartContainer) return;
+          
+          // WHAT: Get container height from offsetHeight (actual rendered height)
+          // WHY: Container height is set via --block-height from row
+          const containerHeight = pieGrid.offsetHeight;
+          if (containerHeight <= 0) return;
+          
+          // WHAT: Measure title height if shown
+          // WHY: Subtract title height from container to get body height
+          let titleHeight = 0;
+          if (showTitle && pieTitleRowRef.current) {
+            titleHeight = pieTitleRowRef.current.offsetHeight;
+          }
+          
+          // WHAT: Measure legend height
+          // WHY: Subtract legend height from container to get body height
+          let legendHeight = 0;
+          if (pieLegendRef.current) {
+            legendHeight = pieLegendRef.current.offsetHeight;
+          }
+          
+          // WHAT: Calculate body height: container - title - legend
+          // WHY: Chart container must have guaranteed height (not competing flex)
+          const bodyHeight = containerHeight - titleHeight - legendHeight;
+          
+          // WHAT: Set CSS custom property on chart container
+          // WHY: CSS uses this variable to set explicit height (guaranteed, not flex-dependent)
+          // HOW: Use setProperty to set --chart-body-height
+          if (bodyHeight > 0) {
+            pieChartContainer.style.setProperty('--chart-body-height', `${bodyHeight}px`);
+          }
+        } catch (error) {
+          console.error('[PieChart] Unexpected error during body height calculation:', error);
+        }
+      };
+      
+      // WHAT: Measure after initial render and on resize
+      // WHY: Heights may change on resize or content changes
+      measureAndSetBodyHeight();
+      const timeoutId = setTimeout(measureAndSetBodyHeight, 100);
+      
+      const resizeObserver = new ResizeObserver(() => {
+        requestAnimationFrame(measureAndSetBodyHeight);
+      });
+      
+      if (pieGridRef.current) {
+        resizeObserver.observe(pieGridRef.current);
+      }
+      
+      const mutationObserver = new MutationObserver(() => {
+        requestAnimationFrame(measureAndSetBodyHeight);
+      });
+      
+      if (pieGridRef.current) {
+        mutationObserver.observe(pieGridRef.current, {
+          childList: true,
+          subtree: true,
+          attributes: true,
+          attributeFilter: ['style', 'class']
+        });
+      }
+      
+      return () => {
+        clearTimeout(timeoutId);
+        resizeObserver.disconnect();
+        mutationObserver.disconnect();
+      };
+    }
+  }, [showTitle, result.elements, result.chartId]);
+  
+  // WHAT: Measure and reduce font size for PIE chart titles if they exceed available space
+  // WHY: Titles must fit within allocated space per Layout Grammar
+  // HOW: Measure title height and reduce font size if content exceeds space
+  useEffect(() => {
+    if (showTitle && pieTitleRowRef.current && typeof window !== 'undefined') {
+      const measureAndReduceFontSize = () => {
+        try {
+          const titleRow = pieTitleRowRef.current;
+          const titleElement = titleRow?.querySelector(`.${styles.pieTitleText}`) as HTMLElement;
+          if (!titleRow || !titleElement) return;
+
+          const rowHeight = titleRow.offsetHeight;
+          if (rowHeight <= 0) return;
+
+          const actualTitleHeight = titleElement.offsetHeight;
+          const computedStyle = window.getComputedStyle(titleRow);
+          const paddingTop = parseFloat(computedStyle.paddingTop) || 0;
+          const paddingBottom = parseFloat(computedStyle.paddingBottom) || 0;
+          const availableTitleHeight = rowHeight - paddingTop - paddingBottom;
+
+          const tolerance = 2;
+          if (actualTitleHeight > availableTitleHeight + tolerance && availableTitleHeight > 0) {
+            const titleComputedStyle = window.getComputedStyle(titleElement);
+            const currentFontSize = parseFloat(titleComputedStyle.fontSize) || 16;
+            const lineHeight = parseFloat(titleComputedStyle.lineHeight) || 1.2;
+
+            const safetyMargin = 0.95;
+            const scaleFactor = (availableTitleHeight / actualTitleHeight) * safetyMargin;
+            const newFontSize = currentFontSize * scaleFactor;
+
+            if (scaleFactor < 0.95 && newFontSize > 8) {
+              titleElement.style.setProperty('font-size', `${newFontSize}px`, 'important');
+            }
+          }
+        } catch (error) {
+          console.error('[PieChart] Unexpected error during title font size reduction:', error);
+        }
+      };
+
+      measureAndReduceFontSize();
+      const timeoutId = setTimeout(measureAndReduceFontSize, 100);
+
+      const resizeObserver = new ResizeObserver(() => {
+        requestAnimationFrame(measureAndReduceFontSize);
+      });
+
+      if (pieTitleRowRef.current) {
+        resizeObserver.observe(pieTitleRowRef.current);
+      }
+
+      const mutationObserver = new MutationObserver(() => {
+        requestAnimationFrame(measureAndReduceFontSize);
+      });
+
+      if (pieTitleRowRef.current) {
+        mutationObserver.observe(pieTitleRowRef.current, {
+          childList: true,
+          subtree: true,
+          characterData: true
+        });
+      }
+
+      return () => {
+        clearTimeout(timeoutId);
+        resizeObserver.disconnect();
+        mutationObserver.disconnect();
+      };
+    }
+  }, [showTitle, result.title, result.chartId]);
+  
+  // WHAT: Measure and reduce font size for PIE legends if they exceed available space
+  // WHY: Legends must fit within allocated space per Layout Grammar
+  // HOW: Measure legend container height and reduce font size if content exceeds space
+  useEffect(() => {
+    if (pieLegendRef.current && typeof window !== 'undefined') {
+      const measureAndReduceFontSize = () => {
+        try {
+          // WHAT: Get legend container height
+          // WHY: Need to check if legend items fit within allocated space
+          const legendContainer = pieLegendRef.current;
+          if (!legendContainer) return;
+          
+          const containerHeight = legendContainer.offsetHeight;
+          if (containerHeight <= 0) return;
+          
+          // WHAT: Get all legend text elements
+          // WHY: Need to measure each legend item's height
+          const legendTextElements = legendContainer.querySelectorAll(`.${styles.pieLegendText}`) as NodeListOf<HTMLElement>;
+          if (!legendTextElements || legendTextElements.length === 0) return;
+          
+          // WHAT: Calculate available height per legend item
+          // WHY: Each legend item should fit within available space
+          // HOW: Divide container height by number of items, account for gaps and padding
+          const legendItemCount = legendTextElements.length;
+          const computedStyle = window.getComputedStyle(legendContainer);
+          const gap = parseFloat(computedStyle.gap) || 8; // Default gap from CSS
+          const paddingTop = parseFloat(computedStyle.paddingTop) || 0;
+          const paddingBottom = parseFloat(computedStyle.paddingBottom) || 0;
+          const totalGaps = gap * (legendItemCount - 1);
+          const availableHeightPerItem = (containerHeight - paddingTop - paddingBottom - totalGaps) / legendItemCount;
+          
+          legendTextElements.forEach((legendText, idx) => {
+            // WHAT: Measure actual legend text height
+            // WHY: Need to check if text exceeds available space
+            const actualHeight = legendText.offsetHeight;
+            
+            // WHAT: Get computed styles for padding
+            const textComputedStyle = window.getComputedStyle(legendText);
+            const textPaddingTop = parseFloat(textComputedStyle.paddingTop) || 0;
+            const textPaddingBottom = parseFloat(textComputedStyle.paddingBottom) || 0;
+            const availableTextHeight = availableHeightPerItem - textPaddingTop - textPaddingBottom;
+            
+            // WHAT: If text exceeds available space, reduce font size
+            // WHY: Layout Grammar: content must fit without clipping
+            const tolerance = 2; // 2px tolerance
+            if (actualHeight > availableTextHeight + tolerance && availableTextHeight > 0) {
+              // WHAT: Calculate required font size to fit text in available space
+              const currentFontSize = parseFloat(textComputedStyle.fontSize) || 16;
+              const lineHeight = parseFloat(textComputedStyle.lineHeight) || 1.2;
+              
+              // WHAT: Calculate scale factor
+              const safetyMargin = 0.95; // 5% safety margin
+              const scaleFactor = (availableTextHeight / actualHeight) * safetyMargin;
+              const newFontSize = currentFontSize * scaleFactor;
+              
+              // WHAT: Apply reduced font size if meaningful
+              if (scaleFactor < 0.95 && newFontSize > 8) {
+                legendText.style.setProperty('font-size', `${newFontSize}px`, 'important');
+                const labelText = result.elements?.[idx]?.label || 'unknown';
+                console.warn(
+                  `[PieChart] Legend ${idx + 1} height (${actualHeight}px) exceeds available space (${availableTextHeight}px). ` +
+                  `Reduced font size from ${currentFontSize}px to ${newFontSize.toFixed(2)}px to fit. ` +
+                  `Container: ${containerHeight}px, Available per item: ${availableHeightPerItem}px. Chart ID: ${result.chartId}, Label: "${labelText}"`
+                );
+              }
+            }
+          });
+        } catch (error) {
+          console.error('[PieChart] Unexpected error during legend font size reduction:', error);
+        }
+      };
+      
+      // WHAT: Measure after initial render and on resize
+      measureAndReduceFontSize();
+      
+      const timeoutId = setTimeout(measureAndReduceFontSize, 100);
+      
+      const resizeObserver = new ResizeObserver(() => {
+        requestAnimationFrame(measureAndReduceFontSize);
+      });
+      
+      if (pieLegendRef.current) {
+        resizeObserver.observe(pieLegendRef.current);
+      }
+      
+      const mutationObserver = new MutationObserver(() => {
+        requestAnimationFrame(measureAndReduceFontSize);
+      });
+      
+      if (pieLegendRef.current) {
+        mutationObserver.observe(pieLegendRef.current, {
+          childList: true,
+          subtree: true,
+          characterData: true
+        });
+      }
+      
+      return () => {
+        clearTimeout(timeoutId);
+        resizeObserver.disconnect();
+        mutationObserver.disconnect();
+      };
+    }
+  }, [result.elements, result.chartId, showPercentages]);
   
   const total = result.elements.reduce((sum, el) => sum + (typeof el.value === 'number' ? el.value : 0), 0);
   
@@ -366,26 +899,28 @@ function PieChart({ result, className }: { result: ChartResult; className?: stri
 
   return (
     <div 
+      ref={containerRef}
       className={`${styles.chart} ${styles.pie} report-chart ${className || ''}`}
       // WHAT: blockHeight now centrally managed at row level via --block-height CSS custom property
       // WHY: Eliminated per-chart inline style - height comes from parent row container
     >
-      <div className={styles.pieGrid}>
+      <div ref={pieGridRef} className={styles.pieGrid}>
         {/* WHAT: Title at top */}
         {/* WHY: User requirement - title should be first section */}
         {showTitle && (
-          <div className={styles.pieTitleRow}>
+          <div ref={pieTitleRowRef} className={styles.pieTitleRow}>
             <h3 className={styles.pieTitleText}>{result.title}</h3>
           </div>
         )}
         {/* WHAT: Pie chart in middle */}
         {/* WHY: User requirement - pie chart should be middle section */}
-        <div className={styles.pieChartContainer}>
+        {/* A-03.4: Uses measured body height via --chart-body-height CSS variable */}
+        <div ref={pieChartContainerRef} className={styles.pieChartContainer}>
           <Doughnut ref={chartRef} data={chartData} options={options} />
         </div>
         {/* WHAT: Legends at bottom center */}
         {/* WHY: User requirement - legends should be bottom section, centered */}
-        <div className={styles.pieLegend}>
+        <div ref={pieLegendRef} className={styles.pieLegend}>
           {result.elements.map((element, idx) => {
             const numValue = typeof element.value === 'number' ? element.value : 0;
             // WHAT: Format percentage based on rounded setting
@@ -488,6 +1023,162 @@ function BarChart({ result, className }: { result: ChartResult; className?: stri
     }
   }, [showTitle, result.title, result.elements]);
   
+  // WHAT: A-03.3 - Measure and validate BAR chart label heights to prevent clipping
+  // WHY: Replace fixed label height assumptions with measured layout logic based on real rendered content
+  // HOW: Measure actual label heights after rendering and validate they fit within allocated row height
+  useEffect(() => {
+    if (!result.elements || result.elements.length === 0) return;
+    if (chartBodyRef.current && typeof window !== 'undefined') {
+      const chartContainer = chartBodyRef.current.closest('[class*="cellWrapper"]') as HTMLElement;
+      if (!chartContainer) return;
+      
+      const measureAndValidateLabels = () => {
+        try {
+          // WHAT: Get chart body height from CSS variable or actual height
+          // WHY: Need body height to calculate available row height
+          // HOW: Read --chart-body-height or use actual body height
+          const bodyHeight = chartBodyRef.current?.offsetHeight || 0;
+          if (bodyHeight <= 0) return;
+          
+          // WHAT: Get chart body padding (var(--mm-space-2) = 8px × 2 = 16px)
+          // WHY: Padding reduces available space for rows
+          const chartBodyPadding = 16; // 2 × var(--mm-space-2)
+          
+          // WHAT: Get row spacing (border-spacing: 0 var(--mm-space-2) = 8px)
+          // WHY: Spacing between rows reduces available space
+          const rowSpacing = 8; // var(--mm-space-2)
+          
+          // WHAT: Calculate available height per row
+          // WHY: Each row needs space for label + bar track + spacing
+          // HOW: (bodyHeight - padding) / barCount - spacing per gap
+          const barCount = result.elements?.length || 0;
+          if (barCount === 0) return; // Early return if no bars
+          const availableHeightPerRow = (bodyHeight - chartBodyPadding) / barCount - rowSpacing;
+          
+          // WHAT: A-03.3 - Measure actual label heights for each row
+          // WHY: Replace fixed assumptions with measured layout logic
+          // HOW: Measure scrollHeight of each label cell to get actual rendered height
+          const labelCells = chartBodyRef.current?.querySelectorAll('[class*="barLabel"]') as NodeListOf<HTMLElement>;
+          if (!labelCells || labelCells.length === 0) return;
+          
+          labelCells.forEach((labelCell, idx) => {
+            // WHAT: Measure actual label height (scrollHeight includes all wrapped lines)
+            // WHY: scrollHeight gives actual content height including wrapped lines
+            // HOW: Use scrollHeight to get full label height
+            const actualLabelHeight = labelCell.scrollHeight;
+            
+            // WHAT: Get computed styles to account for padding
+            // WHY: Padding reduces available space for content
+            // HOW: Read padding from computed styles
+            const computedStyle = window.getComputedStyle(labelCell);
+            const paddingTop = parseFloat(computedStyle.paddingTop) || 0;
+            const paddingBottom = parseFloat(computedStyle.paddingBottom) || 0;
+            const availableLabelHeight = availableHeightPerRow - paddingTop - paddingBottom;
+            
+            // WHAT: If label exceeds available space, reduce font size to fit
+            // WHY: Layout Grammar: content must fit without clipping
+            // HOW: Calculate maximum font size that fits and apply it dynamically
+            if (actualLabelHeight > availableLabelHeight && availableLabelHeight > 0) {
+              // WHAT: Calculate required font size to fit label in available space
+              // WHY: Label must fit within allocated space per Layout Grammar
+              // HOW: Scale font size proportionally: newFontSize = currentFontSize × (availableHeight / actualHeight)
+              const currentFontSize = parseFloat(computedStyle.fontSize) || 16;
+              const lineHeight = parseFloat(computedStyle.lineHeight) || 1.2;
+              
+              // WHAT: Calculate scale factor based on available vs actual height
+              // WHY: Need to reduce font size proportionally to fit content
+              // HOW: Scale factor = availableHeight / actualHeight (with safety margin)
+              const safetyMargin = 0.95; // 5% safety margin to ensure content fits
+              const scaleFactor = (availableLabelHeight / actualLabelHeight) * safetyMargin;
+              const newFontSize = currentFontSize * scaleFactor;
+              
+              // WHAT: Apply reduced font size if it's significantly different
+              // WHY: Only apply if reduction is meaningful (more than 5% difference)
+              // HOW: Set inline style with reduced font size
+              if (scaleFactor < 0.95 && newFontSize > 8) { // Minimum font size of 8px for readability
+                labelCell.style.fontSize = `${newFontSize}px`;
+                const labelText = result.elements?.[idx]?.label || 'unknown';
+                console.warn(
+                  `[BarChart A-03.3] Label ${idx + 1} height (${actualLabelHeight}px) exceeds available space (${availableLabelHeight}px). ` +
+                  `Reduced font size from ${currentFontSize}px to ${newFontSize.toFixed(2)}px to fit. ` +
+                  `Body: ${bodyHeight}px, Available per row: ${availableHeightPerRow}px. Chart ID: ${result.chartId}, Label: "${labelText}"`
+                );
+              } else if (scaleFactor < 0.95) {
+                // WHAT: Font size would be too small, log warning
+                // WHY: Content can't fit even with minimum readable font size
+                // HOW: Log warning for investigation
+                const labelText = result.elements?.[idx]?.label || 'unknown';
+                console.warn(
+                  `[BarChart A-03.3] Label ${idx + 1} height (${actualLabelHeight}px) exceeds available space (${availableLabelHeight}px). ` +
+                  `Cannot reduce font size further (would be ${newFontSize.toFixed(2)}px, minimum is 8px). ` +
+                  `Body: ${bodyHeight}px, Available per row: ${availableHeightPerRow}px. Chart ID: ${result.chartId}, Label: "${labelText}"`
+                );
+              }
+            }
+            
+            // WHAT: Validate row height (max of label height and bar track height)
+            // WHY: Row height is determined by tallest element (label or bar track)
+            // HOW: Bar track has minimum 20px height (Layout Grammar), row height = max(labelHeight, 20px)
+            const minBarTrackHeight = 20; // Layout Grammar minimum
+            const requiredRowHeight = Math.max(actualLabelHeight + paddingTop + paddingBottom, minBarTrackHeight);
+            
+            if (requiredRowHeight > availableHeightPerRow && availableHeightPerRow > 0) {
+              console.warn(
+                `[BarChart A-03.3] Row ${idx + 1} requires ${requiredRowHeight}px but only ${availableHeightPerRow}px available. ` +
+                `Label height: ${actualLabelHeight}px, Bar track min: ${minBarTrackHeight}px. ` +
+                `Chart ID: ${result.chartId}`
+              );
+            }
+          });
+        } catch (error) {
+          console.error('[BarChart A-03.3] Unexpected error during label height measurement:', error);
+        }
+      };
+      
+      // WHAT: Measure after initial render and on resize
+      // WHY: Heights may change on resize or content changes
+      // A-03.3: Also measure after content changes
+      measureAndValidateLabels();
+      
+      // WHAT: Use requestAnimationFrame to ensure DOM is fully rendered before measuring
+      // WHY: Labels might not be fully rendered on initial mount
+      // HOW: Delay measurement slightly to allow labels to render
+      const timeoutId = setTimeout(measureAndValidateLabels, 0);
+      
+      const resizeObserver = new ResizeObserver(() => {
+        // WHAT: Debounce resize measurements to avoid excessive calculations
+        // WHY: Resize events can fire rapidly
+        // HOW: Use requestAnimationFrame to batch measurements
+        requestAnimationFrame(measureAndValidateLabels);
+      });
+      
+      if (chartBodyRef.current) {
+        resizeObserver.observe(chartBodyRef.current);
+      }
+      
+      // WHAT: Observe content changes to remeasure when labels update
+      // WHY: Label heights change when content or font size changes
+      // HOW: Use MutationObserver to detect content changes
+      const mutationObserver = new MutationObserver(() => {
+        requestAnimationFrame(measureAndValidateLabels);
+      });
+      
+      if (chartBodyRef.current) {
+        mutationObserver.observe(chartBodyRef.current, {
+          childList: true,
+          subtree: true,
+          characterData: true
+        });
+      }
+      
+      return () => {
+        clearTimeout(timeoutId);
+        resizeObserver.disconnect();
+        mutationObserver.disconnect();
+      };
+    }
+  }, [result.chartId, result.elements]);
+  
   // WHAT: Runtime validation for CSS variables (P1 1.4 Phase 5 + A-05: Runtime Enforcement)
   // WHY: Ensure all height values are explicit and traceable, enforce in production
   // HOW: Check computed styles after CSS variables are applied, enforce in production
@@ -498,29 +1189,100 @@ function BarChart({ result, className }: { result: ChartResult; className?: stri
       if (!chartContainer) return;
       
       const validateHeight = () => {
-        // WHAT: Validate critical CSS variables with runtime enforcement (A-05)
-        // WHY: Fail-fast in production for critical violations
-        // HOW: Use validateCriticalCSSVariable which throws in production, warns in dev
-        validateCriticalCSSVariable(
-          chartContainer,
-          CRITICAL_CSS_VARIABLES.CHART_BODY_HEIGHT,
-          { chartId: result.chartId, chartType: 'bar', containerHeight: chartContainer.offsetHeight }
-        );
-        validateCriticalCSSVariable(
-          chartContainer,
-          CRITICAL_CSS_VARIABLES.BLOCK_HEIGHT,
-          { chartId: result.chartId, chartType: 'bar' }
-        );
+        try {
+          // WHAT: Skip validation if container height is 0 (not yet rendered)
+          // WHY: Validation should only run after container is properly rendered
+          // HOW: Check containerHeight before validating
+          const containerHeight = chartContainer.offsetHeight;
+          if (containerHeight === 0) {
+            // WHAT: Container not yet rendered, skip validation
+            // WHY: CSS variables won't be set until container has height
+            // HOW: Return early, validation will retry on next resize
+            return;
+          }
+          
+          // WHAT: Check if --chart-body-height is set before validating
+          // WHY: Height calculation useEffect must complete before validation
+          // HOW: Read CSS variable and skip if not set yet
+          const computedStyle = window.getComputedStyle(chartContainer);
+          const chartBodyHeight = computedStyle.getPropertyValue('--chart-body-height').trim();
+          if (!chartBodyHeight || chartBodyHeight === '') {
+            // WHAT: CSS variable not set yet, skip validation
+            // WHY: Height calculation hasn't completed
+            // HOW: Return early, validation will retry on next resize
+            return;
+          }
+          
+          // WHAT: Validate critical CSS variables with runtime enforcement (A-05)
+          // WHY: Log violations for monitoring without crashing the report
+          // HOW: Use safeValidate wrapper to ensure errors are caught and logged
+          safeValidate(
+            () => validateCriticalCSSVariable(
+              chartContainer,
+              CRITICAL_CSS_VARIABLES.CHART_BODY_HEIGHT,
+              { chartId: result.chartId, chartType: 'bar', containerHeight }
+            ),
+            `[BarChart ${result.chartId}] CSS variable validation failed for --chart-body-height`
+            );
+          
+          safeValidate(
+            () => validateCriticalCSSVariable(
+              chartContainer,
+              CRITICAL_CSS_VARIABLES.BLOCK_HEIGHT,
+              { chartId: result.chartId, chartType: 'bar' }
+            ),
+            `[BarChart ${result.chartId}] CSS variable validation failed for --block-height`
+            );
+        } catch (error) {
+          console.error('[BarChart] Unexpected error during height validation:', error);
+        }
       };
       
       // WHAT: Validate after initial render and on resize
       // WHY: Heights may change on resize or content changes
-      validateHeight();
+      // HOW: Delay validation to ensure height calculation has completed
+      // NOTE: Use setTimeout to delay validation after height calculation useEffect
+      // Multiple attempts to handle timing variations
+      let timeoutIds: NodeJS.Timeout[] = [];
       
-      const resizeObserver = new ResizeObserver(validateHeight);
+      const attemptValidation = (attempt = 0) => {
+        if (attempt < 5) { // Try up to 5 times with increasing delays
+          const delay = 50 + (attempt * 50); // 50ms, 100ms, 150ms, 200ms, 250ms
+          const timeoutId = setTimeout(() => {
+            requestAnimationFrame(() => {
+              const containerHeight = chartContainer.offsetHeight;
+              const computedStyle = window.getComputedStyle(chartContainer);
+              const chartBodyHeight = computedStyle.getPropertyValue('--chart-body-height').trim();
+              
+              if (containerHeight > 0 && chartBodyHeight) {
+                // WHAT: Container is ready and CSS variable is set, validate
+      validateHeight();
+              } else {
+                // WHAT: Not ready yet, try again
+                attemptValidation(attempt + 1);
+              }
+            });
+          }, delay);
+          
+          timeoutIds.push(timeoutId);
+        } else {
+          // WHAT: Final attempt - validate even if not perfect (for error reporting)
+          validateHeight();
+        }
+      };
+      
+      attemptValidation(0);
+      
+      const resizeObserver = new ResizeObserver(() => {
+        // WHAT: Debounce resize validation to avoid excessive checks
+        // WHY: Resize events can fire rapidly
+        // HOW: Use requestAnimationFrame to batch validation
+        requestAnimationFrame(validateHeight);
+      });
       resizeObserver.observe(chartContainer);
       
       return () => {
+        timeoutIds.forEach(id => clearTimeout(id));
         resizeObserver.disconnect();
       };
     }
@@ -567,12 +1329,12 @@ function BarChart({ result, className }: { result: ChartResult; className?: stri
       <div ref={chartBodyRef} className={styles.chartBody}>
         <table className={styles.barTable}>
           <tbody className={styles.barElements}>
-          {result.elements.map((element, idx) => {
-            const numValue = typeof element.value === 'number' ? element.value : 0;
-            const widthPercent = maxValue > 0 ? (numValue / maxValue) * 100 : 0;
-            const protectedLabel = preventPhraseBreaks(element.label);
-            
-            return (
+        {result.elements.map((element, idx) => {
+          const numValue = typeof element.value === 'number' ? element.value : 0;
+          const widthPercent = maxValue > 0 ? (numValue / maxValue) * 100 : 0;
+          const protectedLabel = preventPhraseBreaks(element.label);
+          
+          return (
               <tr key={idx} className={styles.barRow}>
                 <td className={styles.barLabel}>{protectedLabel}</td>
                 <td className={styles.barTrackCell}>
@@ -582,18 +1344,18 @@ function BarChart({ result, className }: { result: ChartResult; className?: stri
                     // WHY: Width is computed percentage, color from chart theme - cannot use static CSS
                     // HOW: Set CSS custom properties on parent, consumed by .barFill
                     // eslint-disable-next-line react/forbid-dom-props
-                    style={{ 
+                  style={{ 
                       '--bar-width': `${widthPercent}%`,
                       '--bar-color': barColors[idx % barColors.length]
                     } as React.CSSProperties}
                   >
                     <div className={styles.barFill} />
-                  </div>
+              </div>
                 </td>
                 <td className={styles.barValue}>{formatValue(element.value, result.formatting)}</td>
               </tr>
-            );
-          })}
+          );
+        })}
           </tbody>
         </table>
       </div>
@@ -621,10 +1383,12 @@ function TextChart({ result, unifiedTextFontSize, className }: { result: ChartRe
   // HOW: Measure actual heights and set CSS custom property
   const textChartRef = useRef<HTMLDivElement>(null);
   const textContentWrapperRef = useRef<HTMLDivElement>(null);
+  const textTitleWrapperRef = useRef<HTMLDivElement>(null);
   
   // WHAT: Calculate and set text content height explicitly (P1 1.4 Phase 4)
   // WHY: Replace implicit height behavior with explicit height for deterministic behavior
   // HOW: Measure container and title heights, calculate content height, set CSS custom property
+  // A-03.1: Enhanced to measure actual content height and ensure no clipping
   useEffect(() => {
     if (textChartRef.current && textContentWrapperRef.current && typeof window !== 'undefined') {
       const measureAndSetHeight = () => {
@@ -643,7 +1407,62 @@ function TextChart({ result, unifiedTextFontSize, className }: { result: ChartRe
         
         // WHAT: Calculate text content height: container - title
         // WHY: Explicit height calculation instead of flex growth
-        const contentHeight = containerHeight - titleHeight;
+        let contentHeight = containerHeight - titleHeight;
+        
+        // WHAT: A-03.1 - Measure actual rendered content height to prevent clipping
+        // WHY: Multi-line text might exceed calculated height, causing clipping
+        // HOW: Measure the actual scrollHeight of content wrapper and ensure container accommodates it
+        const contentElement = textContentWrapperRef.current?.querySelector('[class*="textContent"]') as HTMLElement;
+        if (contentElement) {
+          // WHAT: Get actual content height (including all lines)
+          // WHY: scrollHeight includes all content even if it overflows
+          const actualContentHeight = contentElement.scrollHeight;
+          
+          // WHAT: Account for padding in content wrapper (var(--mm-space-2) = 8px top + 8px bottom = 16px)
+          // WHY: Padding reduces available space for content
+          const contentWrapperPadding = 16; // 2 × var(--mm-space-2)
+          const availableContentHeight = contentHeight - contentWrapperPadding;
+          
+          // WHAT: If actual content exceeds available space, reduce font size to fit
+          // WHY: Layout Grammar: content must fit without scrolling or clipping
+          // HOW: Calculate maximum font size that fits the content and apply it dynamically
+          if (actualContentHeight > availableContentHeight && availableContentHeight > 0) {
+            // WHAT: Calculate required font size to fit content in available space
+            // WHY: Content must fit within allocated space per Layout Grammar
+            // HOW: Scale font size proportionally: newFontSize = currentFontSize × (availableHeight / actualHeight)
+            const computedStyle = window.getComputedStyle(contentElement);
+            const currentFontSize = parseFloat(computedStyle.fontSize) || 16;
+            const lineHeight = parseFloat(computedStyle.lineHeight) || 1.3;
+            
+            // WHAT: Calculate scale factor based on available vs actual height
+            // WHY: Need to reduce font size proportionally to fit content
+            // HOW: Scale factor = availableHeight / actualHeight (with safety margin)
+            const safetyMargin = 0.95; // 5% safety margin to ensure content fits
+            const scaleFactor = (availableContentHeight / actualContentHeight) * safetyMargin;
+            const newFontSize = currentFontSize * scaleFactor;
+            
+            // WHAT: Apply reduced font size if it's significantly different
+            // WHY: Only apply if reduction is meaningful (more than 5% difference)
+            // HOW: Set inline style with reduced font size
+            if (scaleFactor < 0.95 && newFontSize > 8) { // Minimum font size of 8px for readability
+              contentElement.style.fontSize = `${newFontSize}px`;
+              console.warn(
+                `[TextChart A-03.1] Content height (${actualContentHeight}px) exceeds available space (${availableContentHeight}px). ` +
+                `Reduced font size from ${currentFontSize}px to ${newFontSize.toFixed(2)}px to fit. ` +
+                `Container: ${containerHeight}px, Title: ${titleHeight}px, Content wrapper: ${contentHeight}px. Chart ID: ${result.chartId}`
+              );
+            } else if (scaleFactor < 0.95) {
+              // WHAT: Font size would be too small, log warning
+              // WHY: Content can't fit even with minimum readable font size
+              // HOW: Log warning for investigation
+              console.warn(
+                `[TextChart A-03.1] Content height (${actualContentHeight}px) exceeds available space (${availableContentHeight}px). ` +
+                `Cannot reduce font size further (would be ${newFontSize.toFixed(2)}px, minimum is 8px). ` +
+                `Container: ${containerHeight}px, Title: ${titleHeight}px, Content wrapper: ${contentHeight}px. Chart ID: ${result.chartId}`
+              );
+            }
+          }
+        }
         
         // WHAT: Set CSS custom property for text content height on chart container
         // WHY: P1 1.4 Phase 4 - explicit height cascade
@@ -654,18 +1473,117 @@ function TextChart({ result, unifiedTextFontSize, className }: { result: ChartRe
       
       // WHAT: Measure after initial render and on resize
       // WHY: Heights may change on resize or content changes
+      // A-03.1: Also measure after content changes (useMutationObserver or delay)
       measureAndSetHeight();
       
-      const resizeObserver = new ResizeObserver(measureAndSetHeight);
+      // WHAT: Use requestAnimationFrame to ensure DOM is fully rendered before measuring
+      // WHY: Content might not be fully rendered on initial mount
+      // HOW: Delay measurement slightly to allow content to render
+      const timeoutId = setTimeout(measureAndSetHeight, 0);
+      
+      const resizeObserver = new ResizeObserver(() => {
+        // WHAT: Debounce resize measurements to avoid excessive calculations
+        // WHY: Resize events can fire rapidly
+        // HOW: Use requestAnimationFrame to batch measurements
+        requestAnimationFrame(measureAndSetHeight);
+      });
+      
       if (textChartRef.current) {
         resizeObserver.observe(textChartRef.current);
       }
       
+      // WHAT: Observe content changes to remeasure when content updates
+      // WHY: Content height changes when markdown content changes
+      // HOW: Use MutationObserver to detect content changes
+      const mutationObserver = new MutationObserver(() => {
+        requestAnimationFrame(measureAndSetHeight);
+      });
+      
+      if (textContentWrapperRef.current) {
+        mutationObserver.observe(textContentWrapperRef.current, {
+          childList: true,
+          subtree: true,
+          characterData: true
+        });
+      }
+      
       return () => {
+        clearTimeout(timeoutId);
         resizeObserver.disconnect();
+        mutationObserver.disconnect();
       };
     }
-  }, [showTitle, result.title]);
+  }, [showTitle, result.title, result.kpiValue, result.chartId]);
+  
+  // WHAT: Measure and reduce font size for TEXT chart titles if they exceed available space
+  // WHY: Titles must fit within allocated space per Layout Grammar
+  // HOW: Measure title height and reduce font size if content exceeds space
+  useEffect(() => {
+    if (showTitle && textTitleWrapperRef.current && typeof window !== 'undefined') {
+      const measureAndReduceFontSize = () => {
+        try {
+          const titleWrapper = textTitleWrapperRef.current;
+          const titleElement = titleWrapper?.querySelector(`.${styles.textTitleText}`) as HTMLElement;
+          if (!titleWrapper || !titleElement) return;
+
+          const wrapperHeight = titleWrapper.offsetHeight;
+          if (wrapperHeight <= 0) return;
+
+          const actualTitleHeight = titleElement.offsetHeight;
+          const computedStyle = window.getComputedStyle(titleWrapper);
+          const paddingTop = parseFloat(computedStyle.paddingTop) || 0;
+          const paddingBottom = parseFloat(computedStyle.paddingBottom) || 0;
+          const availableTitleHeight = wrapperHeight - paddingTop - paddingBottom;
+
+          const tolerance = 2;
+          if (actualTitleHeight > availableTitleHeight + tolerance && availableTitleHeight > 0) {
+            const titleComputedStyle = window.getComputedStyle(titleElement);
+            const currentFontSize = parseFloat(titleComputedStyle.fontSize) || 16;
+            const lineHeight = parseFloat(titleComputedStyle.lineHeight) || 1.25;
+
+            const safetyMargin = 0.95;
+            const scaleFactor = (availableTitleHeight / actualTitleHeight) * safetyMargin;
+            const newFontSize = currentFontSize * scaleFactor;
+
+            if (scaleFactor < 0.95 && newFontSize > 8) {
+              titleElement.style.setProperty('font-size', `${newFontSize}px`, 'important');
+            }
+          }
+        } catch (error) {
+          console.error('[TextChart] Unexpected error during title font size reduction:', error);
+        }
+      };
+
+      measureAndReduceFontSize();
+      const timeoutId = setTimeout(measureAndReduceFontSize, 100);
+
+      const resizeObserver = new ResizeObserver(() => {
+        requestAnimationFrame(measureAndReduceFontSize);
+      });
+
+      if (textTitleWrapperRef.current) {
+        resizeObserver.observe(textTitleWrapperRef.current);
+      }
+
+      const mutationObserver = new MutationObserver(() => {
+        requestAnimationFrame(measureAndReduceFontSize);
+      });
+
+      if (textTitleWrapperRef.current) {
+        mutationObserver.observe(textTitleWrapperRef.current, {
+          childList: true,
+          subtree: true,
+          characterData: true
+        });
+      }
+
+      return () => {
+        clearTimeout(timeoutId);
+        resizeObserver.disconnect();
+        mutationObserver.disconnect();
+      };
+    }
+  }, [showTitle, result.title, result.chartId]);
   
   // WHAT: Runtime validation for CSS variables (P1 1.4 Phase 5)
   // WHY: Ensure all height values are explicit and traceable
@@ -673,19 +1591,44 @@ function TextChart({ result, unifiedTextFontSize, className }: { result: ChartRe
   useEffect(() => {
     if (textChartRef.current && typeof window !== 'undefined') {
       const validateHeight = () => {
-        // WHAT: Validate critical CSS variables with runtime enforcement (A-05)
-        // WHY: Fail-fast in production for critical violations
-        // HOW: Use validateCriticalCSSVariable which throws in production, warns in dev
-        validateCriticalCSSVariable(
-          textChartRef.current,
-          CRITICAL_CSS_VARIABLES.TEXT_CONTENT_HEIGHT,
-          { chartId: result.chartId, chartType: 'text', containerHeight: textChartRef.current?.offsetHeight || 0 }
-        );
-        validateCriticalCSSVariable(
-          textChartRef.current,
-          CRITICAL_CSS_VARIABLES.BLOCK_HEIGHT,
-          { chartId: result.chartId, chartType: 'text' }
-        );
+        try {
+          // WHAT: Find parent row element that sets --block-height
+          // WHY: --block-height is set on the row, not the chart element
+          // HOW: Traverse up the DOM tree to find the row element
+          let rowElement: HTMLElement | null = textChartRef.current?.parentElement || null;
+          while (rowElement && !rowElement.classList.contains('report-content')) {
+            rowElement = rowElement.parentElement;
+          }
+          
+          // WHAT: Validate critical CSS variables with runtime enforcement (A-05)
+          // WHY: Log violations for monitoring without crashing the report
+          // HOW: Use safeValidate wrapper to ensure errors are caught and logged
+          safeValidate(
+            () => validateCriticalCSSVariable(
+              textChartRef.current,
+              CRITICAL_CSS_VARIABLES.TEXT_CONTENT_HEIGHT,
+              { chartId: result.chartId, chartType: 'text', containerHeight: textChartRef.current?.offsetHeight || 0 }
+            ),
+            `[TextChart ${result.chartId}] CSS variable validation failed for --text-content-height`
+          );
+          
+          // WHAT: Check --block-height on row element (where it's set) instead of chart element
+          // WHY: CSS variable is set on row, chart inherits it but getComputedStyle may not return inherited value
+          // HOW: Validate on row element if found, otherwise fall back to chart element
+          const blockHeightElement = rowElement || textChartRef.current;
+          safeValidate(
+            () => validateCriticalCSSVariable(
+              blockHeightElement,
+              CRITICAL_CSS_VARIABLES.BLOCK_HEIGHT,
+              { chartId: result.chartId, chartType: 'text', checkedOnRow: !!rowElement }
+            ),
+            `[TextChart ${result.chartId}] CSS variable validation failed for --block-height`
+          );
+        } catch (error) {
+          // WHAT: Catch any unexpected errors during validation
+          // WHY: Prevent validation logic from crashing component rendering
+          console.error('[TextChart] Unexpected error during height validation:', error);
+        }
       };
       
       // WHAT: Validate after initial render and on resize
@@ -711,7 +1654,7 @@ function TextChart({ result, unifiedTextFontSize, className }: { result: ChartRe
       // WHAT: blockHeight removed - now centrally managed via --block-height CSS custom property on row
     >
       {showTitle && (
-        <div className={styles.textTitleWrapper}>
+        <div ref={textTitleWrapperRef} className={styles.textTitleWrapper}>
           <h3 className={styles.textTitleText}>{result.title}</h3>
         </div>
       )}
@@ -747,19 +1690,73 @@ function TableChart({ result, className }: { result: ChartResult; className?: st
   // WHAT: Check if title should be shown (default: true for backward compatibility)
   const showTitle = result.showTitle !== false;
   
-  // WHAT: Ref for table content to calculate height (P1 1.4 Phase 4)
-  // WHY: Table content is inside CellWrapper body zone, which has --chart-body-height from Phase 2
-  // HOW: Use --chart-body-height directly or calculate from it
+  // WHAT: Ref for table content to calculate height (P1 1.4 Phase 2 + Phase 4)
+  // WHY: Need to calculate body zone height and table content height explicitly
+  // HOW: Measure container and header heights, calculate body height, set CSS custom properties
   const tableContentRef = useRef<HTMLDivElement>(null);
+  
+  // WHAT: Calculate and set body zone height explicitly (P1 1.4 Phase 2)
+  // WHY: Replace flex: 1 with explicit height for deterministic behavior
+  // HOW: Measure container and header heights, calculate body height, set CSS custom property
+  useEffect(() => {
+    if (tableContentRef.current && typeof window !== 'undefined') {
+      // WHAT: Find parent CellWrapper container (chart container)
+      // WHY: CSS variable must be set on chart container per solution document
+      const chartContainer = tableContentRef.current.closest('[class*="cellWrapper"]') as HTMLElement;
+      if (!chartContainer) return;
+      
+      const measureAndSetHeight = () => {
+        // WHAT: Get container height from offsetHeight (actual rendered height)
+        // WHY: Container height is set via --block-height from row
+        const containerHeight = chartContainer.offsetHeight;
+        
+        // WHAT: Find title and subtitle zones within CellWrapper
+        // WHY: Subtract header heights from container to get body height
+        const titleZone = chartContainer.querySelector('[class*="titleZone"]') as HTMLElement;
+        const subtitleZone = chartContainer.querySelector('[class*="subtitleZone"]') as HTMLElement;
+        
+        let titleHeight = 0;
+        let subtitleHeight = 0;
+        
+        if (titleZone) {
+          titleHeight = titleZone.offsetHeight;
+        }
+        if (subtitleZone) {
+          subtitleHeight = subtitleZone.offsetHeight;
+        }
+        
+        // WHAT: Calculate body zone height: container - title - subtitle
+        // WHY: Explicit height calculation instead of flex growth
+        const bodyHeight = containerHeight - titleHeight - subtitleHeight;
+        
+        // WHAT: Set CSS custom property for body zone height on chart container
+        // WHY: P1 1.4 Phase 2 - explicit height cascade
+        if (bodyHeight > 0) {
+          chartContainer.style.setProperty('--chart-body-height', `${bodyHeight}px`);
+        }
+      };
+      
+      // WHAT: Measure after initial render and on resize
+      // WHY: Heights may change on resize or content changes
+      measureAndSetHeight();
+      
+      const resizeObserver = new ResizeObserver(measureAndSetHeight);
+      resizeObserver.observe(chartContainer);
+      
+      return () => {
+        resizeObserver.disconnect();
+      };
+    }
+  }, [showTitle, result.title]);
   
   // WHAT: Calculate and set table content height explicitly (P1 1.4 Phase 4)
   // WHY: Replace implicit height behavior with explicit height for deterministic behavior
-  // HOW: Use --chart-body-height from CellWrapper body zone (already set in Phase 2)
+  // HOW: Use --chart-body-height from chart container (set in Phase 2 above)
   useEffect(() => {
     if (tableContentRef.current && typeof window !== 'undefined') {
       const measureAndSetHeight = () => {
         // WHAT: Find parent CellWrapper container (chart container)
-        // WHY: CSS variable --chart-body-height is set on CellWrapper from Phase 2
+        // WHY: CSS variable --chart-body-height is set on chart container from Phase 2
         const chartContainer = tableContentRef.current?.closest('[class*="cellWrapper"]') as HTMLElement;
         if (!chartContainer) return;
         
@@ -772,6 +1769,28 @@ function TableChart({ result, className }: { result: ChartResult; className?: st
         // WHY: Table content fills the body zone, so height should match body zone height
         if (bodyHeightValue && tableContentRef.current) {
           tableContentRef.current.style.setProperty('--text-content-height', bodyHeightValue);
+        } else if (tableContentRef.current) {
+          // WHAT: Fallback: calculate from actual container height if CSS variable not set yet
+          // WHY: CSS variable might not be set on initial render
+          // HOW: Use actual container height minus title/subtitle
+          const containerHeight = chartContainer.offsetHeight;
+          const titleZone = chartContainer.querySelector('[class*="titleZone"]') as HTMLElement;
+          const subtitleZone = chartContainer.querySelector('[class*="subtitleZone"]') as HTMLElement;
+          
+          let titleHeight = 0;
+          let subtitleHeight = 0;
+          
+          if (titleZone) {
+            titleHeight = titleZone.offsetHeight;
+          }
+          if (subtitleZone) {
+            subtitleHeight = subtitleZone.offsetHeight;
+          }
+          
+          const bodyHeight = containerHeight - titleHeight - subtitleHeight;
+          if (bodyHeight > 0) {
+            tableContentRef.current.style.setProperty('--text-content-height', `${bodyHeight}px`);
+          }
         }
       };
       
@@ -779,16 +1798,120 @@ function TableChart({ result, className }: { result: ChartResult; className?: st
       // WHY: Heights may change on resize or content changes
       measureAndSetHeight();
       
-      const resizeObserver = new ResizeObserver(measureAndSetHeight);
+      // WHAT: Use requestAnimationFrame to ensure DOM is fully rendered before measuring
+      // WHY: Heights might not be fully calculated on initial mount
+      // HOW: Delay measurement slightly to allow heights to be set
+      const timeoutId = setTimeout(measureAndSetHeight, 0);
+      
+      const resizeObserver = new ResizeObserver(() => {
+        // WHAT: Debounce resize measurements to avoid excessive calculations
+        // WHY: Resize events can fire rapidly
+        // HOW: Use requestAnimationFrame to batch measurements
+        requestAnimationFrame(measureAndSetHeight);
+      });
+      
       if (tableContentRef.current) {
         resizeObserver.observe(tableContentRef.current);
       }
       
       return () => {
+        clearTimeout(timeoutId);
         resizeObserver.disconnect();
       };
     }
   }, [showTitle, result.title]);
+  
+  // WHAT: Measure and reduce font size for TABLE content if it exceeds available space
+  // WHY: Table content must fit within allocated space per Layout Grammar
+  // HOW: Measure table content height and reduce font size if content exceeds space
+  useEffect(() => {
+    if (tableContentRef.current && typeof window !== 'undefined') {
+      const measureAndReduceFontSize = () => {
+        try {
+          // WHAT: Get table content element
+          const tableContent = tableContentRef.current;
+          if (!tableContent) return;
+          
+          // WHAT: Get available height from CSS variable
+          const computedStyle = window.getComputedStyle(tableContent);
+          const contentHeightValue = computedStyle.getPropertyValue('--text-content-height').trim();
+          if (!contentHeightValue) return;
+          
+          const availableHeight = parseFloat(contentHeightValue);
+          if (availableHeight <= 0) return;
+          
+          // WHAT: Find table element inside markdown content
+          const tableElement = tableContent.querySelector('table');
+          if (!tableElement) return;
+          
+          // WHAT: Measure actual table height
+          const actualTableHeight = tableElement.offsetHeight;
+          
+          // WHAT: Account for padding in table content
+          const paddingTop = parseFloat(computedStyle.paddingTop) || 0;
+          const paddingBottom = parseFloat(computedStyle.paddingBottom) || 0;
+          const availableTableHeight = availableHeight - paddingTop - paddingBottom;
+          
+          // WHAT: If table exceeds available space, reduce font size
+          // WHY: Layout Grammar: content must fit without clipping
+          const tolerance = 2; // 2px tolerance
+          if (actualTableHeight > availableTableHeight + tolerance && availableTableHeight > 0) {
+            // WHAT: Calculate required font size to fit table in available space
+            const tableComputedStyle = window.getComputedStyle(tableElement);
+            const currentFontSize = parseFloat(tableComputedStyle.fontSize) || 16;
+            
+            // WHAT: Calculate scale factor
+            const safetyMargin = 0.95; // 5% safety margin
+            const scaleFactor = (availableTableHeight / actualTableHeight) * safetyMargin;
+            const newFontSize = currentFontSize * scaleFactor;
+            
+            // WHAT: Apply reduced font size if meaningful
+            if (scaleFactor < 0.95 && newFontSize > 8) {
+              tableElement.style.setProperty('font-size', `${newFontSize}px`, 'important');
+              console.warn(
+                `[TableChart] Table height (${actualTableHeight}px) exceeds available space (${availableTableHeight}px). ` +
+                `Reduced font size from ${currentFontSize}px to ${newFontSize.toFixed(2)}px to fit. ` +
+                `Container: ${availableHeight}px. Chart ID: ${result.chartId}`
+              );
+            }
+          }
+        } catch (error) {
+          console.error('[TableChart] Unexpected error during font size reduction:', error);
+        }
+      };
+      
+      // WHAT: Measure after initial render and on resize
+      measureAndReduceFontSize();
+      
+      const timeoutId = setTimeout(measureAndReduceFontSize, 100);
+      
+      const resizeObserver = new ResizeObserver(() => {
+        requestAnimationFrame(measureAndReduceFontSize);
+      });
+      
+      if (tableContentRef.current) {
+        resizeObserver.observe(tableContentRef.current);
+      }
+      
+      const mutationObserver = new MutationObserver(() => {
+        requestAnimationFrame(measureAndReduceFontSize);
+      });
+      
+      if (tableContentRef.current) {
+        mutationObserver.observe(tableContentRef.current, {
+          childList: true,
+          subtree: true,
+          characterData: true
+        });
+      }
+      
+      return () => {
+        clearTimeout(timeoutId);
+        resizeObserver.disconnect();
+        mutationObserver.disconnect();
+      };
+    }
+  }, [result.kpiValue, result.chartId, showTitle, result.title]);
   
   // WHAT: Runtime validation for CSS variables (P1 1.4 Phase 5)
   // WHY: Ensure all height values are explicit and traceable
@@ -799,31 +1922,72 @@ function TableChart({ result, className }: { result: ChartResult; className?: st
       if (!chartContainer) return;
       
       const validateHeight = () => {
-        // WHAT: Validate critical CSS variables with runtime enforcement (A-05)
-        // WHY: Fail-fast in production for critical violations
-        // HOW: Use validateCriticalCSSVariable which throws in production, warns in dev
-        validateCriticalCSSVariable(
-          tableContentRef.current,
-          CRITICAL_CSS_VARIABLES.TEXT_CONTENT_HEIGHT,
-          { chartId: result.chartId, chartType: 'table' }
-        );
-        validateCriticalCSSVariable(
-          chartContainer,
-          CRITICAL_CSS_VARIABLES.CHART_BODY_HEIGHT,
-          { chartId: result.chartId, chartType: 'table' }
-        );
-        validateCriticalCSSVariable(
-          chartContainer,
-          CRITICAL_CSS_VARIABLES.BLOCK_HEIGHT,
-          { chartId: result.chartId, chartType: 'table' }
-        );
+        try {
+          // WHAT: Find parent row element that sets --block-height
+          // WHY: --block-height is set on the row, not the chart element
+          // HOW: Traverse up the DOM tree to find the row element
+          let rowElement: HTMLElement | null = chartContainer.parentElement;
+          while (rowElement && !rowElement.classList.contains('report-content')) {
+            // Check if this element has --block-height or --row-height set
+            const computedStyle = getComputedStyle(rowElement);
+            const blockHeight = computedStyle.getPropertyValue('--block-height').trim();
+            const rowHeight = computedStyle.getPropertyValue('--row-height').trim();
+            if (blockHeight || rowHeight) {
+              break; // Found the row element
+            }
+            rowElement = rowElement.parentElement;
+          }
+          
+          // WHAT: Validate critical CSS variables with runtime enforcement (A-05)
+          // WHY: Log violations for monitoring without crashing the report
+          // HOW: Use safeValidate wrapper to ensure errors are caught and logged
+          safeValidate(
+            () => validateCriticalCSSVariable(
+              tableContentRef.current,
+              CRITICAL_CSS_VARIABLES.TEXT_CONTENT_HEIGHT,
+              { chartId: result.chartId, chartType: 'table' }
+            ),
+            `[TableChart ${result.chartId}] CSS variable validation failed for --text-content-height`
+            );
+          
+          safeValidate(
+            () => validateCriticalCSSVariable(
+              chartContainer,
+              CRITICAL_CSS_VARIABLES.CHART_BODY_HEIGHT,
+              { chartId: result.chartId, chartType: 'table' }
+            ),
+            `[TableChart ${result.chartId}] CSS variable validation failed for --chart-body-height`
+          );
+          
+          // WHAT: Check --block-height on row element (where it's set) instead of chart element
+          // WHY: CSS variable is set on row, chart inherits it but getComputedStyle may not return inherited value
+          // HOW: Validate on row element if found, otherwise fall back to chart container
+          const blockHeightElement = rowElement || chartContainer;
+          safeValidate(
+            () => validateCriticalCSSVariable(
+              blockHeightElement,
+              CRITICAL_CSS_VARIABLES.BLOCK_HEIGHT,
+              { chartId: result.chartId, chartType: 'table', checkedOnRow: !!rowElement }
+            ),
+            `[TableChart ${result.chartId}] CSS variable validation failed for --block-height`
+            );
+        } catch (error) {
+          console.error('[TableChart] Unexpected error during height validation:', error);
+        }
       };
       
       // WHAT: Validate after initial render and on resize
       // WHY: Heights may change on resize or content changes
-      validateHeight();
+      // NOTE: Delay validation to ensure height calculation has completed first
+      const timeoutId = setTimeout(validateHeight, 100); // Delay 100ms to allow height calculation to complete
       
-      const resizeObserver = new ResizeObserver(validateHeight);
+      const resizeObserver = new ResizeObserver(() => {
+        // WHAT: Debounce resize validation to avoid excessive checks
+        // WHY: Resize events can fire rapidly
+        // HOW: Use requestAnimationFrame to batch validation
+        requestAnimationFrame(validateHeight);
+      });
+      
       if (tableContentRef.current) {
         resizeObserver.observe(tableContentRef.current);
       }
@@ -832,6 +1996,7 @@ function TableChart({ result, className }: { result: ChartResult; className?: st
       }
       
       return () => {
+        clearTimeout(timeoutId);
         resizeObserver.disconnect();
       };
     }

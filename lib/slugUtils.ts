@@ -240,7 +240,8 @@ export async function findProjectByViewSlug(viewSlug: string): Promise<Project |
           _id: partner1._id.toString(),
           name: partner1.name,
           emoji: partner1.emoji,
-          logoUrl: partner1.logoUrl
+          logoUrl: partner1.logoUrl,
+          clickerSetId: partner1.clickerSetId ? partner1.clickerSetId.toString() : undefined,
         };
       }
     }
@@ -253,7 +254,8 @@ export async function findProjectByViewSlug(viewSlug: string): Promise<Project |
           _id: partner2._id.toString(),
           name: partner2.name,
           emoji: partner2.emoji,
-          logoUrl: partner2.logoUrl
+          logoUrl: partner2.logoUrl,
+          clickerSetId: partner2.clickerSetId ? partner2.clickerSetId.toString() : undefined,
         };
       }
     }
@@ -337,7 +339,10 @@ export async function findProjectByEditSlug(editSlug: string): Promise<Project |
           _id: partner1._id.toString(),
           name: partner1.name,
           emoji: partner1.emoji,
-          logoUrl: partner1.logoUrl
+          logoUrl: partner1.logoUrl,
+          clickerSetId: partner1.clickerSetId
+            ? partner1.clickerSetId.toString()
+            : undefined,
         };
       }
     }
@@ -350,7 +355,10 @@ export async function findProjectByEditSlug(editSlug: string): Promise<Project |
           _id: partner2._id.toString(),
           name: partner2.name,
           emoji: partner2.emoji,
-          logoUrl: partner2.logoUrl
+          logoUrl: partner2.logoUrl,
+          clickerSetId: partner2.clickerSetId
+            ? partner2.clickerSetId.toString()
+            : undefined,
         };
       }
     }

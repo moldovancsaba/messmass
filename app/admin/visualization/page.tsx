@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import ReportChart from '@/app/report/[slug]/ReportChart';
 import { ChartConfiguration, ChartCalculationResult, HeroBlockSettings, BlockAlignmentSettings } from '@/lib/chartConfigTypes';
@@ -25,6 +25,8 @@ interface DataVisualizationBlock {
   order: number;
   isActive: boolean;
   showTitle?: boolean;
+  blockAspectRatio?: string; // R-LAYOUT-02.1: Optional block aspect ratio override (e.g., "4:6")
+  tableHeightMultiplier?: number; // Table height control: height = blockWidth × multiplier (0.1 to 5.0)
   createdAt?: string;
   updatedAt?: string;
 }
@@ -35,7 +37,61 @@ interface BlockChart {
   chartId: string;
   width: number;
   order: number;
+  unitSize?: LayoutUnit;
+  aspectRatio?: LayoutAspectRatio;
 }
+
+type LayoutUnit = 1 | 2;
+type LayoutAspectRatio = '1:1' | '2:1' | '16:9' | '9:16';
+type LayoutItemType = 'kpi' | 'pie' | 'bar' | 'text' | 'table' | 'image';
+
+const LAYOUT_V2_ALLOWED_ASPECT_RATIOS: Record<LayoutItemType, LayoutAspectRatio[]> = {
+  kpi: ['1:1'],
+  pie: ['1:1'],
+  bar: ['1:1', '2:1'],
+  text: ['1:1', '2:1'],
+  table: ['1:1', '2:1'],
+  image: ['1:1', '16:9', '9:16']
+};
+
+const LAYOUT_V2_ALLOWED_UNIT_SIZES: Record<LayoutItemType, LayoutUnit[]> = {
+  kpi: [1],
+  pie: [1],
+  bar: [1, 2],
+  text: [1, 2],
+  table: [1, 2],
+  image: [1, 2]
+};
+
+const DEFAULT_ASPECT_RATIO: Record<LayoutItemType, LayoutAspectRatio> = {
+  kpi: '1:1',
+  pie: '1:1',
+  bar: '1:1',
+  text: '1:1',
+  table: '1:1',
+  image: '1:1'
+};
+
+const ASPECT_RATIO_UNIT_MAP: Record<LayoutAspectRatio, LayoutUnit> = {
+  '1:1': 1,
+  '2:1': 2,
+  '16:9': 2,
+  '9:16': 1
+};
+
+const ASPECT_RATIO_LABELS: Record<LayoutAspectRatio, string> = {
+  '1:1': '1:1 (square)',
+  '2:1': '2:1 (wide)',
+  '16:9': '16:9 (landscape)',
+  '9:16': '9:16 (portrait)'
+};
+
+const normalizeUnitSize = (value?: number): LayoutUnit => {
+  if (typeof value === 'number' && Number.isFinite(value)) {
+    return value >= 2 ? 2 : 1;
+  }
+  return 1;
+};
 
 // Available chart type for chart assignment
 interface AvailableChart {
@@ -136,6 +192,153 @@ export default function VisualizationPage() {
     showTitle: true // NEW: Default to showing title
   });
 
+  const chartConfigMap = useMemo(() => {
+    const map = new Map<string, ChartConfiguration>();
+    chartConfigs.forEach(config => {
+      map.set(config.chartId, config);
+    });
+    return map;
+  }, [chartConfigs]);
+
+  const availableChartTypeMap = useMemo(() => {
+    const map = new Map<string, LayoutItemType>();
+    availableCharts.forEach(chart => {
+      const chartType = chart.type;
+      if (chartType === 'kpi' || chartType === 'pie' || chartType === 'bar' || chartType === 'text' || chartType === 'table' || chartType === 'image') {
+        map.set(chart.chartId, chartType);
+      }
+    });
+    return map;
+  }, [availableCharts]);
+
+  const resolveChartType = useCallback((chartId: string): LayoutItemType => {
+    const chartType = availableChartTypeMap.get(chartId) || chartConfigMap.get(chartId)?.type;
+    if (chartType === 'kpi' || chartType === 'pie' || chartType === 'bar' || chartType === 'text' || chartType === 'table' || chartType === 'image') {
+      return chartType;
+    }
+    return 'kpi';
+  }, [availableChartTypeMap, chartConfigMap]);
+
+  const normalizeChartLayout = useCallback((chart: BlockChart): BlockChart => {
+    const chartType = resolveChartType(chart.chartId);
+    const allowedAspects = LAYOUT_V2_ALLOWED_ASPECT_RATIOS[chartType] || ['1:1'];
+    const allowedUnits = LAYOUT_V2_ALLOWED_UNIT_SIZES[chartType] || [1];
+
+    const configAspectRatio = chartConfigMap.get(chart.chartId)?.aspectRatio;
+    const configAspect = (configAspectRatio && ['1:1', '2:1', '16:9', '9:16'].includes(configAspectRatio))
+      ? (configAspectRatio as LayoutAspectRatio)
+      : undefined;
+
+    let aspectRatio = chart.aspectRatio || configAspect || DEFAULT_ASPECT_RATIO[chartType];
+    if (!allowedAspects.includes(aspectRatio)) {
+      aspectRatio = allowedAspects[0];
+    }
+
+    let unitSize = normalizeUnitSize(chart.unitSize ?? chart.width ?? ASPECT_RATIO_UNIT_MAP[aspectRatio]);
+    if (!allowedUnits.includes(unitSize)) {
+      unitSize = allowedUnits[0];
+    }
+
+    if (chartType === 'image') {
+      if (unitSize === 2 && aspectRatio !== '16:9') {
+        aspectRatio = '16:9';
+      }
+      if (unitSize === 1 && aspectRatio === '16:9') {
+        aspectRatio = '1:1';
+      }
+    } else if (chartType === 'bar' || chartType === 'text' || chartType === 'table') {
+      if (unitSize === 2 && aspectRatio !== '2:1') {
+        aspectRatio = '2:1';
+      }
+      if (unitSize === 1 && aspectRatio === '2:1') {
+        aspectRatio = '1:1';
+      }
+    } else {
+      aspectRatio = '1:1';
+      unitSize = 1;
+    }
+
+    return {
+      ...chart,
+      unitSize,
+      width: unitSize,
+      aspectRatio
+    };
+  }, [chartConfigMap, resolveChartType]);
+
+  const normalizeBlockForLayoutV2 = useCallback((block: DataVisualizationBlock): DataVisualizationBlock => {
+    return {
+      ...block,
+      charts: block.charts.map(chart => normalizeChartLayout(chart))
+    };
+  }, [normalizeChartLayout]);
+
+  const getBlockUnitTotal = useCallback((block: DataVisualizationBlock): number => {
+    return block.charts.reduce((total, chart) => total + normalizeUnitSize(chart.unitSize ?? chart.width), 0);
+  }, []);
+
+  const validateLayoutV2Block = useCallback((block: DataVisualizationBlock): { valid: boolean; error?: string } => {
+    const normalizedBlock = normalizeBlockForLayoutV2(block);
+    const totalUnits = getBlockUnitTotal(normalizedBlock);
+    if (totalUnits > 4) {
+      return {
+        valid: false,
+        error: `Block "${block.name}" exceeds 4-unit capacity (current total: ${totalUnits}).`
+      };
+    }
+
+    for (const chart of block.charts) {
+      const chartType = resolveChartType(chart.chartId);
+      const allowedAspects = LAYOUT_V2_ALLOWED_ASPECT_RATIOS[chartType] || ['1:1'];
+      const allowedUnits = LAYOUT_V2_ALLOWED_UNIT_SIZES[chartType] || [1];
+
+      if (chart.unitSize !== undefined) {
+        const unitSize = normalizeUnitSize(chart.unitSize);
+        if (!allowedUnits.includes(unitSize)) {
+          return {
+            valid: false,
+            error: `Chart "${chart.chartId}" uses invalid unit size (${unitSize}) for ${chartType}.`
+          };
+        }
+      }
+
+      if (chart.aspectRatio && !allowedAspects.includes(chart.aspectRatio)) {
+        return {
+          valid: false,
+          error: `Chart "${chart.chartId}" uses invalid aspect ratio (${chart.aspectRatio}) for ${chartType}.`
+        };
+      }
+    }
+
+    return { valid: true };
+  }, [getBlockUnitTotal, normalizeBlockForLayoutV2, resolveChartType]);
+
+  const getChartDefaultLayout = useCallback((chartId: string): Pick<BlockChart, 'unitSize' | 'aspectRatio' | 'width'> => {
+    const chartType = resolveChartType(chartId);
+    const allowedAspects = LAYOUT_V2_ALLOWED_ASPECT_RATIOS[chartType] || ['1:1'];
+    const allowedUnits = LAYOUT_V2_ALLOWED_UNIT_SIZES[chartType] || [1];
+
+    const configAspectRatio = chartConfigMap.get(chartId)?.aspectRatio;
+    let aspectRatio = (configAspectRatio && ['1:1', '2:1', '16:9', '9:16'].includes(configAspectRatio))
+      ? (configAspectRatio as LayoutAspectRatio)
+      : DEFAULT_ASPECT_RATIO[chartType];
+
+    if (!allowedAspects.includes(aspectRatio)) {
+      aspectRatio = allowedAspects[0];
+    }
+
+    let unitSize = ASPECT_RATIO_UNIT_MAP[aspectRatio];
+    if (!allowedUnits.includes(unitSize)) {
+      unitSize = allowedUnits[0];
+    }
+
+    return {
+      unitSize,
+      width: unitSize,
+      aspectRatio
+    };
+  }, [chartConfigMap, resolveChartType]);
+
   // WHAT: Helper to show status messages
   // WHY: Replace all alert() calls with smooth, auto-dismissing messages
   const showMessage = useCallback((type: 'success' | 'error' | 'info', text: string) => {
@@ -183,7 +386,7 @@ export default function VisualizationPage() {
               return (aRef?.order || 0) - (bRef?.order || 0);
             });
           console.log('📋 Loaded template blocks:', templateBlocks.length);
-          setDataBlocks(templateBlocks);
+          setDataBlocks(templateBlocks.map(normalizeBlockForLayoutV2));
         }
       } else {
         console.log('📋 No data blocks configured for this template');
@@ -222,7 +425,7 @@ export default function VisualizationPage() {
     } finally {
       setLoading(false);
     }
-  }, [templates]);
+  }, [templates, normalizeBlockForLayoutV2]);
 
   // WHAT: Load blocks and grid for selected template
   // WHY: Each template has its own visualization config
@@ -457,18 +660,12 @@ export default function VisualizationPage() {
   const convertBlockToEditorInput = useCallback((block: DataVisualizationBlock): EditorBlockInput | null => {
     if (!block._id) return null;
     
-    // WHAT: Build chart map from chartConfigs for type lookup
-    // WHY: Need chart type (bar, pie, etc.) for validation
-    const chartMap = new Map<string, ChartConfiguration>();
-    chartConfigs.forEach(config => {
-      chartMap.set(config.chartId, config);
-    });
-    
     // WHAT: Convert block charts to EditorBlockInput cells
     // WHY: Validation API expects cells with elementType, width, and contentMetadata
     const cells = block.charts.map(chartRef => {
-      const chartConfig = chartMap.get(chartRef.chartId);
-      const chartType = chartConfig?.type || 'kpi';
+      const chartConfig = chartConfigMap.get(chartRef.chartId);
+      const chartType = resolveChartType(chartRef.chartId);
+      const unitSize = normalizeUnitSize(chartRef.unitSize ?? chartRef.width);
       
       // WHAT: Extract content metadata from preview results or chart config
       // WHY: Validation needs barCount, legendItemCount, etc. for accurate height calculation
@@ -489,9 +686,9 @@ export default function VisualizationPage() {
       return {
         chartId: chartRef.chartId,
         elementType: chartType as 'text' | 'table' | 'pie' | 'bar' | 'kpi' | 'image',
-        width: chartRef.width,
+        width: unitSize,
         contentMetadata: Object.keys(contentMetadata).length > 0 ? contentMetadata : undefined,
-        imageMode: chartConfig?.type === 'image' ? ('setIntrinsic' as 'cover' | 'setIntrinsic') : undefined
+        imageMode: chartType === 'image' ? ('setIntrinsic' as 'cover' | 'setIntrinsic') : undefined
       };
     });
     
@@ -503,7 +700,7 @@ export default function VisualizationPage() {
       blockAspectRatio: undefined,
       maxAllowedHeight: undefined
     };
-  }, [chartConfigs, previewResults]);
+  }, [chartConfigMap, previewResults, resolveChartType]);
   
   // WHAT: Validate block for Layout Grammar compliance before save
   // WHY: Prevent invalid configurations (scrolling, truncation, clipping) from being saved
@@ -582,9 +779,21 @@ export default function VisualizationPage() {
       return;
     }
     
+    const normalizedBlock = normalizeBlockForLayoutV2(block);
+
+    // WHAT: LayoutV2 validation (capacity + allowed layout values)
+    // WHY: Prevent invalid LayoutV2 blocks from being saved
+    const layoutV2Validation = validateLayoutV2Block(normalizedBlock);
+    if (!layoutV2Validation.valid) {
+      setBlockSaveStatus('error');
+      showMessage('error', layoutV2Validation.error || 'LayoutV2 validation failed');
+      setTimeout(() => setBlockSaveStatus('idle'), 3000);
+      return;
+    }
+
     // WHAT: Layout Grammar validation before save
     // WHY: Prevent invalid configurations (scrolling, truncation, clipping) from being saved
-    const validation = validateBlockBeforeSave(block);
+    const validation = validateBlockBeforeSave(normalizedBlock);
     if (!validation.isValid) {
       setBlockSaveStatus('error');
       showMessage('error', validation.errorMessage || 'Block validation failed');
@@ -597,7 +806,7 @@ export default function VisualizationPage() {
     try {
       // WHAT: Update block via API
       // WHY: Persist block changes to database
-      const data = await apiPut('/api/data-blocks', block);
+      const data = await apiPut('/api/data-blocks', normalizedBlock);
       
       if (!data.success) {
         throw new Error(data.error || 'Failed to update block');
@@ -605,7 +814,7 @@ export default function VisualizationPage() {
       
       // WHAT: Update local state and save template config
       // WHY: Keep UI in sync and persist template changes
-      const updatedBlocks = dataBlocks.map(b => b._id === block._id ? block : b);
+      const updatedBlocks = dataBlocks.map(b => b._id === block._id ? normalizedBlock : b);
       setDataBlocks(updatedBlocks);
       
       const templateSaved = await saveTemplateConfig(updatedBlocks);
@@ -672,18 +881,31 @@ export default function VisualizationPage() {
       return;
     }
     
+    const normalizedBlockForm = {
+      ...blockForm,
+      charts: blockForm.charts.map(chart => normalizeChartLayout(chart))
+    };
+
     // WHAT: Layout Grammar validation before save
     // WHY: Prevent invalid configurations (scrolling, truncation, clipping) from being saved
     // HOW: Convert blockForm to DataVisualizationBlock format for validation
     const blockForValidation: DataVisualizationBlock = {
       _id: 'temp', // Temporary ID for validation
-      name: blockForm.name,
-      charts: blockForm.charts,
-      order: blockForm.order,
-      isActive: blockForm.isActive,
-      showTitle: blockForm.showTitle
+      name: normalizedBlockForm.name,
+      charts: normalizedBlockForm.charts,
+      order: normalizedBlockForm.order,
+      isActive: normalizedBlockForm.isActive,
+      showTitle: normalizedBlockForm.showTitle
     };
-    
+
+    const layoutV2Validation = validateLayoutV2Block(blockForValidation);
+    if (!layoutV2Validation.valid) {
+      setBlockSaveStatus('error');
+      showMessage('error', layoutV2Validation.error || 'LayoutV2 validation failed');
+      setTimeout(() => setBlockSaveStatus('idle'), 3000);
+      return;
+    }
+
     const validation = validateBlockBeforeSave(blockForValidation);
     if (!validation.isValid) {
       setBlockSaveStatus('error');
@@ -697,7 +919,7 @@ export default function VisualizationPage() {
     try {
       // WHAT: Step 1: Create block via API
       // WHY: Block must exist before adding to template
-      const data = await apiPost('/api/data-blocks', blockForm);
+      const data = await apiPost('/api/data-blocks', normalizedBlockForm);
       
       if (!data.success) {
         throw new Error(data.error || 'Failed to create block');
@@ -811,12 +1033,13 @@ export default function VisualizationPage() {
   const addChartToBlock = (block: DataVisualizationBlock, chartId: string) => {
     const chart = availableCharts.find(c => c.chartId === chartId);
     if (!chart) return;
-    
-    const newChart: BlockChart = {
+
+    const defaultLayout = getChartDefaultLayout(chartId);
+    const newChart: BlockChart = normalizeChartLayout({
       chartId,
-      width: 1,
-      order: block.charts.length
-    };
+      order: block.charts.length,
+      ...defaultLayout
+    });
     
     const updatedBlock = {
       ...block,
@@ -858,7 +1081,12 @@ export default function VisualizationPage() {
     // WHAT: Clamp width to 1 or 2 units (Spec v2.0)
     // WHY: Deterministic layout requires simplified unit system
     // HOW: Accept user input but clamp to [1, 2] range
-    updatedCharts[chartIndex] = { ...updatedCharts[chartIndex], width: Math.min(Math.max(newWidth, 1), 2) };
+    const unitSize = normalizeUnitSize(newWidth);
+    updatedCharts[chartIndex] = normalizeChartLayout({
+      ...updatedCharts[chartIndex],
+      unitSize,
+      width: unitSize
+    });
     
     const updatedBlock = {
       ...block,
@@ -867,6 +1095,24 @@ export default function VisualizationPage() {
     
     handleUpdateBlock(updatedBlock);
     // No need to recalc data; width change affects only layout span, preview already computed
+  };
+
+  const updateChartAspectRatio = (block: DataVisualizationBlock, chartIndex: number, aspectRatio: LayoutAspectRatio) => {
+    const updatedCharts = [...block.charts];
+    const unitSize = ASPECT_RATIO_UNIT_MAP[aspectRatio];
+    updatedCharts[chartIndex] = normalizeChartLayout({
+      ...updatedCharts[chartIndex],
+      aspectRatio,
+      unitSize,
+      width: unitSize
+    });
+
+    const updatedBlock = {
+      ...block,
+      charts: updatedCharts
+    };
+
+    handleUpdateBlock(updatedBlock);
   };
   
   const resetBlockForm = () => {
@@ -1646,7 +1892,7 @@ export default function VisualizationPage() {
             </div>
           </div>
           <p className="info-note">
-            Preview below uses the same responsive grid as stats pages. A width=2 chart spans two columns within the block; columns per block are capped at 2 on tablet and up to 6 on desktop.
+            Preview below uses the same responsive grid as stats pages. A unit size=2 chart spans two columns within the block; LayoutV2 blocks are capped at 4 units total.
           </p>
         </div>
         
@@ -1817,12 +2063,13 @@ export default function VisualizationPage() {
                           .sort((a, b) => a.order - b.order)
                           .map((chart) => {
                             const result = previewResults[chart.chartId];
+                            const unitSize = normalizeUnitSize(chart.unitSize ?? chart.width);
                             if (!result) return null;
                             return (
                               <div key={`${block._id}-${chart.chartId}`} className={vizStyles.chartItem}>
                                 <ReportChart 
                                   result={result} 
-                                  width={chart.width}
+                                  width={unitSize}
                                   className={vizStyles.unifiedChartItem}
                                 />
                               </div>
@@ -1840,7 +2087,7 @@ export default function VisualizationPage() {
                         .charts-grid-${block._id || 'preview'} { 
                           grid-template-columns: ${block.charts
                             .sort((a, b) => a.order - b.order)
-                            .map(c => `${Math.max(1, c.width || 1)}fr`)
+                            .map(c => `${normalizeUnitSize(c.unitSize ?? c.width)}fr`)
                             .join(' ')} !important;
                           justify-items: stretch !important;
                           align-items: start;
@@ -1896,6 +2143,12 @@ export default function VisualizationPage() {
                     <div className="chart-controls-grid">
                     {block.charts.map((chart, index) => {
                       const chartConfig = availableCharts.find(c => c.chartId === chart.chartId);
+                      const chartType = resolveChartType(chart.chartId);
+                      const normalizedChart = normalizeChartLayout(chart);
+                      const unitSize = normalizedChart.unitSize ?? normalizeUnitSize(chart.unitSize ?? chart.width);
+                      const aspectRatio = normalizedChart.aspectRatio ?? DEFAULT_ASPECT_RATIO[chartType];
+                      const allowedUnits = LAYOUT_V2_ALLOWED_UNIT_SIZES[chartType] || [1];
+                      const allowedAspects = LAYOUT_V2_ALLOWED_ASPECT_RATIOS[chartType] || ['1:1'];
                       return (
                         <div key={`${chart.chartId}-${index}`} className="chart-control-item">
                           <div className="chart-info">
@@ -1905,10 +2158,10 @@ export default function VisualizationPage() {
                                 {chartConfig?.title || chart.chartId}
                               </div>
                               <div className="chart-meta">
-                                Width: {chart.width} unit{chart.width > 1 ? 's' : ''} • Order: {chart.order}
+                                Unit size: {unitSize} unit{unitSize > 1 ? 's' : ''} • Aspect: {aspectRatio} • Order: {chart.order}
                                 <br />
                                 <span className="chart-sub-meta">
-                                  Preview updates instantly to reflect unit width and block columns
+                                  Preview updates instantly to reflect unit size and aspect ratio
                                 </span>
                               </div>
                             </div>
@@ -1920,16 +2173,33 @@ export default function VisualizationPage() {
                                 HOW: Image aspect ratios drive row height, not unit counts
                                 MIGRATION: Values >2 auto-clamped to 2 on save */}
                             <select
-                              value={Math.min(chart.width, 2)}
+                              value={unitSize}
                               onChange={(e) => {
                                 // WHAT: Parse immediately for dropdowns (not text input)
                                 // WHY: Dropdown selections are intentional, no typing involved
                                 updateChartWidth(block, index, parseFloat(e.target.value));
                               }}
                               className="chart-select"
+                              disabled={allowedUnits.length === 1}
                             >
-                              <option value={1}>Width: 1 unit (compact)</option>
-                              <option value={2}>Width: 2 units (detailed)</option>
+                              {allowedUnits.map(unit => (
+                                <option key={unit} value={unit}>
+                                  Unit size: {unit} unit{unit > 1 ? 's' : ''}
+                                </option>
+                              ))}
+                            </select>
+
+                            <select
+                              value={aspectRatio}
+                              onChange={(e) => updateChartAspectRatio(block, index, e.target.value as LayoutAspectRatio)}
+                              className="chart-select"
+                              disabled={allowedAspects.length === 1}
+                            >
+                              {allowedAspects.map(ratio => (
+                                <option key={ratio} value={ratio}>
+                                  Aspect: {ASPECT_RATIO_LABELS[ratio]}
+                                </option>
+                              ))}
                             </select>
                             
                             <button
@@ -1943,6 +2213,55 @@ export default function VisualizationPage() {
                       );
                     })}
                   </div>
+
+                  {/* WHAT: Table Height Multiplier Control (for TABLE-only blocks) */}
+                  {/* WHY: Allow setting table height as multiplier of block width (height = blockWidth × multiplier) */}
+                  {/* HOW: Only show for blocks containing exclusively TABLE charts */}
+                  {(() => {
+                    const allTables = block.charts.every(chart => {
+                      const chartType = resolveChartType(chart.chartId);
+                      return chartType === 'table';
+                    });
+                    
+                    if (!allTables || block.charts.length === 0) return null;
+                    
+                    return (
+                      <div style={{ marginTop: '1rem', padding: '1rem', border: '1px solid #ddd', borderRadius: '4px' }}>
+                        <h4 style={{ marginTop: 0, marginBottom: '0.5rem' }}>Table Height Control</h4>
+                        <div style={{ marginBottom: '0.5rem' }}>
+                          <label htmlFor={`table-height-multiplier-${block._id}`} style={{ display: 'block', marginBottom: '0.25rem' }}>
+                            Height Multiplier:
+                            <input
+                              id={`table-height-multiplier-${block._id}`}
+                              type="number"
+                              min="0.1"
+                              max="5.0"
+                              step="0.1"
+                              value={block.tableHeightMultiplier ?? 0.25}
+                              onChange={(e) => {
+                                const multiplier = parseFloat(e.target.value) || 0.25;
+                                const updatedBlock = {
+                                  ...block,
+                                  tableHeightMultiplier: multiplier,
+                                  // Clear blockAspectRatio if tableHeightMultiplier is set
+                                  blockAspectRatio: multiplier !== 0.25 ? undefined : block.blockAspectRatio
+                                };
+                                handleUpdateBlock(updatedBlock);
+                              }}
+                              style={{ marginLeft: '0.5rem', padding: '0.25rem', width: '80px' }}
+                            />
+                          </label>
+                          <small style={{ display: 'block', color: '#666', fontSize: '0.875rem', marginTop: '0.25rem' }}>
+                            Height = Block Width × {block.tableHeightMultiplier ?? 0.25}
+                            <br />
+                            Example: 1200px width × 1.5 = 1800px height
+                            <br />
+                            Range: 0.1 to 5.0 (default: 0.25 = 4:1 aspect ratio)
+                          </small>
+                        </div>
+                      </div>
+                    );
+                  })()}
 
                   {/* Add Chart to Block */}
                   {/* WHAT: Separate regular charts, report images, and report texts for better UX */}
@@ -2120,7 +2439,7 @@ export default function VisualizationPage() {
                 
               </div>
               <p className="info-note">
-                💡 Grid columns auto-calculated from chart widths (e.g., widths 2+2+3 = &ldquo;2fr 2fr 3fr&rdquo; grid).<br/>
+                💡 Grid columns auto-calculated from unit sizes (e.g., units 2+1+1 = &ldquo;2fr 1fr 1fr&rdquo; grid).<br/>
                 Tablet: auto-wrap at 300px min-width | Mobile: single column
               </p>
               

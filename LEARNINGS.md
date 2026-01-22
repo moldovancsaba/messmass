@@ -1,8 +1,36 @@
 # MessMass Development Learnings
 Status: Active
-Last Updated: 2026-01-11T23:27:27.000Z
+Last Updated: 2026-01-16T16:00:00.000Z
 Canonical: No
 Owner: Architecture
+
+## [v11.55.3] - 2026-01-16T16:00:00.000Z — PARTNER LINKS + CLICKER MANAGER UX
+
+### Context
+Two UX issues were blocking users: partner edit links failing with "Invalid partner ID format" errors, and inability to select chart algorithms in clicker manager without knowing exact spelling.
+
+### Problem 1: Partner Edit Links
+**Issue**: Partner edit/report buttons used `partner.viewSlug`, which could be human-readable (e.g., "szerencsejtk-zrt") and fails API validation that requires ObjectId or UUID v4 format.
+
+**Root Cause**: Partners created with human-readable `viewSlug` values don't match secure UUID/ObjectId validation in `/api/partners/edit/[slug]`.
+
+**Solution**: Use `partner._id` (ObjectId) as primary identifier, fallback to `viewSlug` if `_id` missing. ObjectId is always valid and passes validation.
+
+**Key Learning**: When dealing with multiple identifier formats (ObjectId, UUID v4, human-readable), always prefer the most reliable format (ObjectId) for internal operations, even if other formats exist for backward compatibility.
+
+### Problem 2: Chart Algorithm Selection
+**Issue**: Clicker manager Chart ID field was plain text input requiring manual typing of exact `chartId`. Users couldn't discover or select algorithms like "gender-distribution", "szerencse-gender", "tippmixpro-gender-distribution".
+
+**Root Cause**: No way to browse available charts; required exact knowledge of chartId spelling.
+
+**Solution**: Replace text input with searchable dropdown that:
+- Loads all charts from `/api/chart-config` on mount
+- Shows chart title, chartId, and type in dropdown
+- Provides search filtering by chartId, title, or type
+- Visual indicators (✅/❌) for active/inactive status
+- Sorted with active charts first, then by title
+
+**Key Learning**: For fields that reference other entities (charts, templates, etc.), always provide a selection UI rather than free-text input. This prevents typos, improves discoverability, and ensures data integrity.
 
 ## [v11.55.0] - 2025-12-26T14:40:00.000Z — GOOGLE SHEETS: Bidirectional Sync Strategy
 

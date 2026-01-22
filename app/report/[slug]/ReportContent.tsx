@@ -6,15 +6,20 @@
 
 import React, { useMemo, useRef, useState, useEffect } from 'react';
 import type { ReportBlock, GridSettings } from '@/hooks/useReportLayout';
-import type { ChartResult } from '@/lib/report-calculator';
+import type { ChartResult, Chart } from '@/lib/report-calculator';
 import ReportChart from './ReportChart';
 import styles from './ReportContent.module.css';
-import { resolveBlockHeightWithDetails } from '@/lib/blockHeightCalculator';
 import { calculateSyncedFontSizes } from '@/lib/fontSyncCalculator';
 import type { CellConfiguration } from '@/lib/layoutGrammar';
 import { useUnifiedTextFontSize } from '@/hooks/useUnifiedTextFontSize';
 import { calculateBlockFontSizeForBarCharts } from '@/lib/barChartFontSizeCalculator';
-import { validateCriticalCSSVariable, validateHeightResolution, CRITICAL_CSS_VARIABLES } from '@/lib/layoutGrammarRuntimeEnforcement';
+import { safeValidate, validateCriticalCSSVariable, CRITICAL_CSS_VARIABLES } from '@/lib/layoutGrammarRuntimeEnforcement';
+import { 
+  calculateLayoutV2BlockHeight, 
+  validateLayoutV2BlockCapacity,
+  calculateLayoutV2GridColumns,
+  calculateLayoutV2BlockDimensions
+} from '@/lib/layoutV2BlockCalculator';
 
 /**
  * WHAT: Check if a chart result has valid displayable data (v11.48.0)
@@ -22,7 +27,8 @@ import { validateCriticalCSSVariable, validateHeightResolution, CRITICAL_CSS_VAR
  * HOW: Type-specific validation matching ReportChart.hasData logic
  */
 function hasValidChartData(result: ChartResult | undefined): boolean {
-  if (!result || result.error) return false;
+  // A-R-11: Check both error (legacy) and chartError (new structured error)
+  if (!result || result.error || result.chartError) return false;
   
   switch (result.type) {
     case 'text':
@@ -61,6 +67,9 @@ interface ReportContentProps {
   /** Calculated chart results from ReportCalculator */
   chartResults: Map<string, ChartResult>;
   
+  /** Chart configurations map (chartId -> Chart) - optional for A-R-13 validation */
+  charts?: Map<string, Chart> | null;
+  
   /** Grid settings for responsive layout */
   gridSettings: GridSettings;
   
@@ -83,6 +92,7 @@ interface ReportContentProps {
 export default function ReportContent({ 
   blocks, 
   chartResults, 
+  charts, // A-R-13: Chart configs for validation
   gridSettings,
   className 
 }: ReportContentProps) {
@@ -120,6 +130,7 @@ export default function ReportContent({
           key={block.id}
           block={block}
           chartResults={chartResults}
+          charts={charts} // A-R-13: Pass chart configs for validation
           gridSettings={gridSettings}
         />
       ))}
@@ -133,6 +144,7 @@ export default function ReportContent({
 interface ReportBlockProps {
   block: ReportBlock;
   chartResults: Map<string, ChartResult>;
+  charts?: Map<string, Chart> | null; // A-R-13: Chart configs for validation
   gridSettings: GridSettings;
 }
 
@@ -174,15 +186,16 @@ function calculateGridColumns(charts: Array<{ width: number }>): string {
  * WHY: Each row must calculate its own height based on actual width
  */
 interface ResponsiveRowProps {
-  rowCharts: Array<{ chartId: string; width: number; order: number }>;
+  rowCharts: Array<{ chartId: string; width: number }>;
   chartResults: Map<string, ChartResult>;
+  charts?: Map<string, Chart> | null; // A-R-13: Chart configs for validation
   rowIndex: number;
-  unifiedTextFontSize?: number | null;
-  // WHAT: P1 1.5 Phase 3 - Removed blockTitleFontSize and blockSubtitleFontSize props
-  // WHY: CSS now uses --block-base-font-size and --block-subtitle-font-size directly (Phase 2)
+  unifiedTextFontSize: number | null;
+  blockAspectRatio?: string; // R-LAYOUT-02.1: Optional block aspect ratio override (e.g., "4:6")
+  tableHeightMultiplier?: number; // Table height control: height = blockWidth × multiplier (0.1 to 5.0)
 }
 
-function ResponsiveRow({ rowCharts, chartResults, rowIndex, unifiedTextFontSize }: ResponsiveRowProps) {
+function ResponsiveRow({ rowCharts, chartResults, charts, rowIndex, unifiedTextFontSize, blockAspectRatio, tableHeightMultiplier }: ResponsiveRowProps) {
   const rowRef = useRef<HTMLDivElement>(null);
   // WHAT: Initialize state with design tokens instead of hardcoded values
   // WHY: No hardcoded sizes - all values must come from design system
@@ -213,61 +226,35 @@ function ResponsiveRow({ rowCharts, chartResults, rowIndex, unifiedTextFontSize 
         console.log(`[ResponsiveRow ${rowIndex}] Width changed:`, width, 'Charts:', rowCharts.length);
         setRowWidth(width || 1200);
         
-        // WHAT: Immediately recalculate height based on new width
-        // WHY: Only include cells with valid data (v11.48.0)
-        // WHAT: Include contentMetadata for BAR charts to ensure accurate height calculation
-        const cells: CellConfiguration[] = rowCharts
-          .flatMap(chart => {
-            const result = chartResults.get(chart.chartId);
-            // WHAT: Skip cells with no valid data in height calculation
-            // WHY: Empty cells should not affect row height
-            if (!hasValidChartData(result) || !result) return [];
-            
-            // WHAT: Build contentMetadata for BAR charts (row count) and PIE charts (legend item count)
-            // WHY: Layout Grammar requires accurate height calculation based on actual content requirements
-            const contentMetadata: Record<string, unknown> = {};
-            if (result.type === 'bar' && result.elements) {
-              contentMetadata.barCount = result.elements.length;
-            }
-            if (result.type === 'pie' && result.elements) {
-              // WHAT: P1 1.7 - Include legend item count for PIE chart height calculation
-              // WHY: Legend growth (30% → 50%) may compress pie chart below minimum readable size
-              // HOW: Pass legend item count to height calculator to account for legend growth
-              contentMetadata.legendItemCount = result.elements.length;
-            }
-            
-            return [{
-              chartId: chart.chartId,
-              cellWidth: (chart.width || 1) as 1 | 2,
-              bodyType: result.type as any,
-              aspectRatio: result.aspectRatio,
-              title: result.title,
-              subtitle: undefined,
-              contentMetadata: Object.keys(contentMetadata).length > 0 ? contentMetadata : undefined
-            }];
-          });
+        // WHAT: R-LAYOUT-02.1 - Use LayoutV2 block dimensions calculation with optional aspect ratio override
+        // WHY: Support variable block aspect ratios (4:1 to 4:10) for TEXT-AREA/TABLE blocks
+        // HOW: Use calculateLayoutV2BlockDimensions which handles validation and aspect ratio override
         
-        // WHAT: Use resolveBlockHeightWithDetails to account for BAR chart row requirements
-        // WHY: Layout Grammar requires accurate height calculation that accounts for actual content
-        // HOW: Pass cells with contentMetadata to enhanced height resolver
-        const heightResolution = resolveBlockHeightWithDetails({
-          blockId: `row-${rowIndex}`,
-          cells,
-          blockWidth: width,
-          blockAspectRatio: undefined,
-          maxAllowedHeight: undefined
+        // WHAT: Build charts array with type information for validation
+        // WHY: R-LAYOUT-02.1 - Need chart types to validate aspect ratio override is allowed
+        const chartsWithTypes = rowCharts.map(chart => {
+          const result = chartResults.get(chart.chartId);
+          return {
+            width: chart.width,
+            type: result?.type
+          };
         });
-        const height = heightResolution.heightPx;
-        console.log(`[ResponsiveRow ${rowIndex}] Height recalculated:`, height, 'from width:', width);
         
-        // WHAT: Validate height resolution with runtime enforcement (A-05)
-        // WHY: Fail-fast in production if height resolution fails
-        // HOW: Use validateHeightResolution which throws in production, warns in dev
-        validateHeightResolution(heightResolution, {
-          rowIndex,
-          blockWidth: width,
-          cellsCount: cells.length
-        });
+        // WHAT: Calculate LayoutV2 block dimensions with optional aspect ratio override or table height multiplier
+        // WHY: R-LAYOUT-02.1 - Support variable aspect ratios, or table height multiplier for TABLE-only blocks
+        const dimensions = calculateLayoutV2BlockDimensions(chartsWithTypes, width, blockAspectRatio, tableHeightMultiplier);
+        
+        if (!dimensions.valid) {
+          console.error(`[LayoutV2 ResponsiveRow ${rowIndex}] ${dimensions.error}`);
+          // WHAT: Still use calculated height for fallback rendering
+          // WHY: Don't break rendering, but log error for Admin to fix
+          setRowHeight(dimensions.blockHeight);
+          return;
+        }
+        
+        const height = dimensions.blockHeight;
+        const aspectRatioUsed = blockAspectRatio || '4:1';
+        console.log(`[LayoutV2 ResponsiveRow ${rowIndex}] Height calculated:`, height, 'from width:', width, 'aspect ratio:', aspectRatioUsed);
         
         setRowHeight(height);
         
@@ -294,30 +281,37 @@ function ResponsiveRow({ rowCharts, chartResults, rowIndex, unifiedTextFontSize 
     };
   }, [rowCharts, chartResults, rowIndex]); // Re-run if charts change
   
-  // WHAT: Runtime validation for CSS variables (P1 1.4 Phase 1 + A-05: Runtime Enforcement)
-  // WHY: Warn if height CSS variables are not set, enforce in production
-  // HOW: Check computed styles after CSS variables are applied, enforce in production
+  // WHAT: Runtime validation for CSS variables (A-05: Runtime Enforcement)
+  // WHY: Log violations for monitoring without crashing the report
+  // HOW: Use safeValidate wrapper to catch any errors, log violations with context
   useEffect(() => {
     if (rowRef.current && typeof window !== 'undefined') {
-      // WHAT: Validate critical CSS variables with runtime enforcement
-      // WHY: A-05 requires fail-fast behavior in production for critical violations
-      // HOW: Use validateCriticalCSSVariable which throws in production, warns in dev
-      validateCriticalCSSVariable(
+      // WHAT: Validate critical CSS variables with runtime enforcement (A-05)
+      // WHY: Log violations for monitoring but don't crash the report
+      // HOW: Use safeValidate wrapper to ensure errors are caught and logged
+      safeValidate(
+        () => validateCriticalCSSVariable(
         rowRef.current,
         CRITICAL_CSS_VARIABLES.ROW_HEIGHT,
         { rowIndex, calculatedHeight: rowHeight, type: 'row' }
+        ),
+        `[ResponsiveRow ${rowIndex}] CSS variable validation failed for --row-height`
       );
-      validateCriticalCSSVariable(
+      safeValidate(
+        () => validateCriticalCSSVariable(
         rowRef.current,
         CRITICAL_CSS_VARIABLES.BLOCK_HEIGHT,
         { rowIndex, calculatedHeight: rowHeight, type: 'row' }
+        ),
+        `[ResponsiveRow ${rowIndex}] CSS variable validation failed for --block-height`
       );
     }
   }, [rowHeight, rowIndex]);
   
-  // WHAT: Calculate grid columns from chart widths (sum of units)
-  // WHY: Layout Grammar - grid = sum of units (e.g., [1,2,1] → "1fr 2fr 1fr")
-  const gridColumns = calculateGridColumns(rowCharts);
+  // WHAT: R-LAYOUT-01.2 - Use LayoutV2 grid column calculation
+  // WHY: LayoutV2 contract requires unit-based width allocation for deterministic packing
+  // HOW: Convert chart widths to fr units (e.g., [2,1,1] → "2fr 1fr 1fr")
+  const gridColumns = calculateLayoutV2GridColumns(rowCharts);
   
   return (
     <div 
@@ -362,6 +356,7 @@ function ResponsiveRow({ rowCharts, chartResults, rowIndex, unifiedTextFontSize 
           >
             <ReportChart 
               result={result} 
+              chart={charts?.get(chart.chartId) || null} // A-R-13: Pass chart config for validation
               width={chart.width}
               // WHAT: blockHeight prop removed - now centrally managed via --block-height CSS custom property on row
               // WHY: Eliminates per-chart inline styles, better maintainability
@@ -376,7 +371,7 @@ function ResponsiveRow({ rowCharts, chartResults, rowIndex, unifiedTextFontSize 
   );
 }
 
-function ReportBlock({ block, chartResults, gridSettings }: ReportBlockProps) {
+function ReportBlock({ block, chartResults, charts, gridSettings }: ReportBlockProps) {
   // WHAT: Calculate unified font-size for all text charts in this block
   // WHY: All text charts should use the same font-size, fitting the largest content
   // HOW: Use hook to measure containers and calculate optimal size
@@ -635,8 +630,11 @@ function ReportBlock({ block, chartResults, gridSettings }: ReportBlockProps) {
           key={`row-${rowIndex}`}
           rowCharts={rowCharts}
           chartResults={chartResults}
+          charts={charts} // A-R-13: Pass chart configs for validation
           rowIndex={rowIndex}
           unifiedTextFontSize={unifiedTextFontSize}
+          blockAspectRatio={block.blockAspectRatio} // R-LAYOUT-02.1: Optional block aspect ratio override
+          tableHeightMultiplier={block.tableHeightMultiplier} // Table height control: height = blockWidth × multiplier
         />
       ))}
     </div>
