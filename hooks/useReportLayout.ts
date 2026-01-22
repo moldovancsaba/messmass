@@ -21,6 +21,7 @@ export interface ReportBlock {
     order: number;
   }>;
   blockAspectRatio?: string; // R-LAYOUT-02.1: Optional block aspect ratio override (e.g., "4:6")
+  tableHeightMultiplier?: number; // Table height control: height = blockWidth × multiplier (0.1 to 5.0)
 }
 
 /**
@@ -145,6 +146,7 @@ export function useReportLayout(options: UseReportLayoutOptions): UseReportLayou
                   order: Number(c.order ?? 0),
                 })),
                 blockAspectRatio: b.blockAspectRatio || b.overrides?.blockAspectRatio, // R-LAYOUT-02.1: Optional aspect ratio override
+                tableHeightMultiplier: b.tableHeightMultiplier || b.overrides?.tableHeightMultiplier, // Table height control
               })),
             },
             heroSettings: template.heroSettings ?? { showEmoji: true, showDateInfo: true, showExportOptions: true },
@@ -192,6 +194,7 @@ export function useReportLayout(options: UseReportLayoutOptions): UseReportLayou
                   order: Number(c.order ?? 0),
                 })),
                 blockAspectRatio: b.blockAspectRatio || b.overrides?.blockAspectRatio, // R-LAYOUT-02.1: Optional aspect ratio override
+                tableHeightMultiplier: b.tableHeightMultiplier || b.overrides?.tableHeightMultiplier, // Table height control
               })),
             },
             heroSettings: template.heroSettings ?? { showEmoji: true, showDateInfo: true, showExportOptions: true },

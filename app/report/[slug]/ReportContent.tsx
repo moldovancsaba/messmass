@@ -192,9 +192,10 @@ interface ResponsiveRowProps {
   rowIndex: number;
   unifiedTextFontSize: number | null;
   blockAspectRatio?: string; // R-LAYOUT-02.1: Optional block aspect ratio override (e.g., "4:6")
+  tableHeightMultiplier?: number; // Table height control: height = blockWidth × multiplier (0.1 to 5.0)
 }
 
-function ResponsiveRow({ rowCharts, chartResults, charts, rowIndex, unifiedTextFontSize, blockAspectRatio }: ResponsiveRowProps) {
+function ResponsiveRow({ rowCharts, chartResults, charts, rowIndex, unifiedTextFontSize, blockAspectRatio, tableHeightMultiplier }: ResponsiveRowProps) {
   const rowRef = useRef<HTMLDivElement>(null);
   // WHAT: Initialize state with design tokens instead of hardcoded values
   // WHY: No hardcoded sizes - all values must come from design system
@@ -239,9 +240,9 @@ function ResponsiveRow({ rowCharts, chartResults, charts, rowIndex, unifiedTextF
           };
         });
         
-        // WHAT: Calculate LayoutV2 block dimensions with optional aspect ratio override
-        // WHY: R-LAYOUT-02.1 - Support variable aspect ratios while maintaining validation
-        const dimensions = calculateLayoutV2BlockDimensions(chartsWithTypes, width, blockAspectRatio);
+        // WHAT: Calculate LayoutV2 block dimensions with optional aspect ratio override or table height multiplier
+        // WHY: R-LAYOUT-02.1 - Support variable aspect ratios, or table height multiplier for TABLE-only blocks
+        const dimensions = calculateLayoutV2BlockDimensions(chartsWithTypes, width, blockAspectRatio, tableHeightMultiplier);
         
         if (!dimensions.valid) {
           console.error(`[LayoutV2 ResponsiveRow ${rowIndex}] ${dimensions.error}`);
@@ -290,17 +291,17 @@ function ResponsiveRow({ rowCharts, chartResults, charts, rowIndex, unifiedTextF
       // HOW: Use safeValidate wrapper to ensure errors are caught and logged
       safeValidate(
         () => validateCriticalCSSVariable(
-          rowRef.current,
-          CRITICAL_CSS_VARIABLES.ROW_HEIGHT,
-          { rowIndex, calculatedHeight: rowHeight, type: 'row' }
+        rowRef.current,
+        CRITICAL_CSS_VARIABLES.ROW_HEIGHT,
+        { rowIndex, calculatedHeight: rowHeight, type: 'row' }
         ),
         `[ResponsiveRow ${rowIndex}] CSS variable validation failed for --row-height`
       );
       safeValidate(
         () => validateCriticalCSSVariable(
-          rowRef.current,
-          CRITICAL_CSS_VARIABLES.BLOCK_HEIGHT,
-          { rowIndex, calculatedHeight: rowHeight, type: 'row' }
+        rowRef.current,
+        CRITICAL_CSS_VARIABLES.BLOCK_HEIGHT,
+        { rowIndex, calculatedHeight: rowHeight, type: 'row' }
         ),
         `[ResponsiveRow ${rowIndex}] CSS variable validation failed for --block-height`
       );
@@ -633,6 +634,7 @@ function ReportBlock({ block, chartResults, charts, gridSettings }: ReportBlockP
           rowIndex={rowIndex}
           unifiedTextFontSize={unifiedTextFontSize}
           blockAspectRatio={block.blockAspectRatio} // R-LAYOUT-02.1: Optional block aspect ratio override
+          tableHeightMultiplier={block.tableHeightMultiplier} // Table height control: height = blockWidth × multiplier
         />
       ))}
     </div>

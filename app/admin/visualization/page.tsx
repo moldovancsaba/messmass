@@ -25,6 +25,8 @@ interface DataVisualizationBlock {
   order: number;
   isActive: boolean;
   showTitle?: boolean;
+  blockAspectRatio?: string; // R-LAYOUT-02.1: Optional block aspect ratio override (e.g., "4:6")
+  tableHeightMultiplier?: number; // Table height control: height = blockWidth × multiplier (0.1 to 5.0)
   createdAt?: string;
   updatedAt?: string;
 }
@@ -2211,6 +2213,55 @@ export default function VisualizationPage() {
                       );
                     })}
                   </div>
+
+                  {/* WHAT: Table Height Multiplier Control (for TABLE-only blocks) */}
+                  {/* WHY: Allow setting table height as multiplier of block width (height = blockWidth × multiplier) */}
+                  {/* HOW: Only show for blocks containing exclusively TABLE charts */}
+                  {(() => {
+                    const allTables = block.charts.every(chart => {
+                      const chartType = resolveChartType(chart.chartId);
+                      return chartType === 'table';
+                    });
+                    
+                    if (!allTables || block.charts.length === 0) return null;
+                    
+                    return (
+                      <div style={{ marginTop: '1rem', padding: '1rem', border: '1px solid #ddd', borderRadius: '4px' }}>
+                        <h4 style={{ marginTop: 0, marginBottom: '0.5rem' }}>Table Height Control</h4>
+                        <div style={{ marginBottom: '0.5rem' }}>
+                          <label htmlFor={`table-height-multiplier-${block._id}`} style={{ display: 'block', marginBottom: '0.25rem' }}>
+                            Height Multiplier:
+                            <input
+                              id={`table-height-multiplier-${block._id}`}
+                              type="number"
+                              min="0.1"
+                              max="5.0"
+                              step="0.1"
+                              value={block.tableHeightMultiplier ?? 0.25}
+                              onChange={(e) => {
+                                const multiplier = parseFloat(e.target.value) || 0.25;
+                                const updatedBlock = {
+                                  ...block,
+                                  tableHeightMultiplier: multiplier,
+                                  // Clear blockAspectRatio if tableHeightMultiplier is set
+                                  blockAspectRatio: multiplier !== 0.25 ? undefined : block.blockAspectRatio
+                                };
+                                handleUpdateBlock(updatedBlock);
+                              }}
+                              style={{ marginLeft: '0.5rem', padding: '0.25rem', width: '80px' }}
+                            />
+                          </label>
+                          <small style={{ display: 'block', color: '#666', fontSize: '0.875rem', marginTop: '0.25rem' }}>
+                            Height = Block Width × {block.tableHeightMultiplier ?? 0.25}
+                            <br />
+                            Example: 1200px width × 1.5 = 1800px height
+                            <br />
+                            Range: 0.1 to 5.0 (default: 0.25 = 4:1 aspect ratio)
+                          </small>
+                        </div>
+                      </div>
+                    );
+                  })()}
 
                   {/* Add Chart to Block */}
                   {/* WHAT: Separate regular charts, report images, and report texts for better UX */}

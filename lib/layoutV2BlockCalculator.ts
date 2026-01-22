@@ -6,50 +6,62 @@
 import type { CellConfiguration } from './layoutGrammar';
 
 /**
- * WHAT: Calculate LayoutV2 block height from aspect ratio
+ * WHAT: Calculate LayoutV2 block height from aspect ratio or table height multiplier
  * WHY: LayoutV2 contract supports variable aspect ratios (4:1 to 4:10) for TEXT-AREA/TABLE blocks
- * HOW: blockHeight = blockWidth / aspectRatioDivisor
+ *      Also supports table height multiplier for TABLE-only blocks (height = blockWidth × multiplier)
+ * HOW: Priority: tableHeightMultiplier > blockAspectRatio > default 4:1
  * 
  * @param blockWidth - Block width in pixels
  * @param blockAspectRatio - Optional aspect ratio override (e.g., "4:6" for 4:6 ratio)
+ * @param tableHeightMultiplier - Optional table height multiplier (e.g., 1.5 for height = width × 1.5)
  * @returns Block height in pixels
  */
 export function calculateLayoutV2BlockHeight(
   blockWidth: number,
-  blockAspectRatio?: string
+  blockAspectRatio?: string,
+  tableHeightMultiplier?: number
 ): number {
   if (blockWidth <= 0) {
     console.warn('[LayoutV2] Invalid block width:', blockWidth);
     return 300; // Fallback to reasonable default
   }
   
+  // WHAT: Priority 1: tableHeightMultiplier (if provided)
+  // WHY: Table height multiplier takes precedence over aspect ratio
+  // HOW: height = blockWidth × multiplier (clamped to 0.1-5.0 range)
+  if (tableHeightMultiplier !== undefined) {
+    const multiplier = Math.max(0.1, Math.min(5.0, tableHeightMultiplier));
+    return blockWidth * multiplier;
+  }
+  
+  // WHAT: Priority 2: blockAspectRatio (if provided)
+  // WHY: Support variable aspect ratios for TEXT-AREA/TABLE blocks
+  if (blockAspectRatio) {
+    // WHAT: Parse aspect ratio string (e.g., "4:6" -> width:height = 4:6)
+    // HOW: Extract width and height from "width:height" format
+    const aspectRatioMatch = blockAspectRatio.match(/^(\d+):(\d+)$/);
+    if (!aspectRatioMatch) {
+      console.warn('[LayoutV2] Invalid aspect ratio format:', blockAspectRatio, '- using default 4:1');
+      return blockWidth / 4;
+    }
+    
+    const aspectWidth = parseInt(aspectRatioMatch[1], 10);
+    const aspectHeight = parseInt(aspectRatioMatch[2], 10);
+    
+    if (aspectWidth <= 0 || aspectHeight <= 0) {
+      console.warn('[LayoutV2] Invalid aspect ratio values:', blockAspectRatio, '- using default 4:1');
+      return blockWidth / 4;
+    }
+    
+    // WHAT: Calculate height from aspect ratio
+    // WHY: blockHeight = blockWidth × (aspectHeight / aspectWidth)
+    // HOW: For 4:6 ratio: height = width × (6/4) = width × 1.5
+    return (blockWidth * aspectHeight) / aspectWidth;
+  }
+  
   // WHAT: Default to 4:1 aspect ratio if not specified
   // WHY: Maintain backward compatibility
-  if (!blockAspectRatio) {
-    return blockWidth / 4;
-  }
-  
-  // WHAT: Parse aspect ratio string (e.g., "4:6" -> width:height = 4:6)
-  // WHY: Support variable aspect ratios for TEXT-AREA/TABLE blocks
-  // HOW: Extract width and height from "width:height" format
-  const aspectRatioMatch = blockAspectRatio.match(/^(\d+):(\d+)$/);
-  if (!aspectRatioMatch) {
-    console.warn('[LayoutV2] Invalid aspect ratio format:', blockAspectRatio, '- using default 4:1');
-    return blockWidth / 4;
-  }
-  
-  const aspectWidth = parseInt(aspectRatioMatch[1], 10);
-  const aspectHeight = parseInt(aspectRatioMatch[2], 10);
-  
-  if (aspectWidth <= 0 || aspectHeight <= 0) {
-    console.warn('[LayoutV2] Invalid aspect ratio values:', blockAspectRatio, '- using default 4:1');
-    return blockWidth / 4;
-  }
-  
-  // WHAT: Calculate height from aspect ratio
-  // WHY: blockHeight = blockWidth × (aspectHeight / aspectWidth)
-  // HOW: For 4:6 ratio: height = width × (6/4) = width × 1.5
-  return (blockWidth * aspectHeight) / aspectWidth;
+  return blockWidth / 4;
 }
 
 /**
@@ -187,19 +199,63 @@ export function validateAspectRatioRange(
 }
 
 /**
+ * WHAT: Validate table height multiplier configuration
+ * WHY: Table height multiplier only allowed for TABLE-only blocks, cannot use with blockAspectRatio
+ * HOW: Check block content types, check for conflicts, validate range
+ * 
+ * @param block - Block configuration with charts and optional tableHeightMultiplier/blockAspectRatio
+ * @returns Validation result
+ */
+export function validateTableHeightMultiplier(
+  block: { charts: Array<{ type?: string }>; tableHeightMultiplier?: number; blockAspectRatio?: string }
+): { valid: boolean; error?: string } {
+  // Rule 1: Only allowed for TABLE-only blocks
+  const allTables = block.charts.every(c => c.type?.toLowerCase() === 'table');
+  if (block.tableHeightMultiplier !== undefined && !allTables) {
+    return {
+      valid: false,
+      error: 'tableHeightMultiplier only allowed for TABLE-only blocks'
+    };
+  }
+  
+  // Rule 2: Cannot use both blockAspectRatio and tableHeightMultiplier
+  if (block.tableHeightMultiplier !== undefined && block.blockAspectRatio) {
+    return {
+      valid: false,
+      error: 'Cannot use both blockAspectRatio and tableHeightMultiplier'
+    };
+  }
+  
+  // Rule 3: Range validation (0.1 to 5.0)
+  if (block.tableHeightMultiplier !== undefined) {
+    const multiplier = block.tableHeightMultiplier;
+    if (multiplier < 0.1 || multiplier > 5.0) {
+      return {
+        valid: false,
+        error: `tableHeightMultiplier must be between 0.1 and 5.0. Got: ${multiplier}`
+      };
+    }
+  }
+  
+  return { valid: true };
+}
+
+/**
  * WHAT: Calculate LayoutV2 block dimensions and validate capacity
  * WHY: Ensure block complies with LayoutV2 contract before rendering
- * HOW: Validate capacity, calculate height from aspect ratio, allocate widths
+ * HOW: Validate capacity, calculate height from aspect ratio or table multiplier, allocate widths
  * 
  * @param charts - Array of charts with width and optional type property
  * @param blockWidth - Block width in pixels
  * @param blockAspectRatio - Optional aspect ratio override (e.g., "4:6")
+ * @param tableHeightMultiplier - Optional table height multiplier (e.g., 1.5 for height = width × 1.5)
  * @returns Block dimensions and validation result
  */
 export function calculateLayoutV2BlockDimensions(
   charts: Array<{ width: number; type?: string }>,
   blockWidth: number,
-  blockAspectRatio?: string
+  blockAspectRatio?: string,
+  tableHeightMultiplier?: number
 ): {
   valid: boolean;
   error?: string;
@@ -220,6 +276,36 @@ export function calculateLayoutV2BlockDimensions(
       gridColumns: calculateLayoutV2GridColumns(charts),
       itemWidths: charts.map((_, idx) => ({ chartIndex: idx, width: 0 }))
     };
+  }
+  
+  // WHAT: Validate table height multiplier if provided
+  // WHY: Table height multiplier only allowed for TABLE-only blocks, cannot use with blockAspectRatio
+  if (tableHeightMultiplier !== undefined) {
+    const multiplierValidation = validateTableHeightMultiplier({
+      charts,
+      tableHeightMultiplier,
+      blockAspectRatio
+    });
+    if (!multiplierValidation.valid) {
+      console.warn('[LayoutV2] Invalid table height multiplier:', multiplierValidation.error, '- using default 4:1');
+      // Fall through to default 4:1
+    } else {
+      // WHAT: Use table height multiplier (takes precedence over blockAspectRatio)
+      const blockHeight = calculateLayoutV2BlockHeight(blockWidth, undefined, tableHeightMultiplier);
+      const gridColumns = calculateLayoutV2GridColumns(charts);
+      const itemWidths = charts.map((chart, idx) => ({
+        chartIndex: idx,
+        width: calculateLayoutV2ItemWidth(chart.width || 1, capacityValidation.totalUnits, blockWidth)
+      }));
+      
+      return {
+        valid: true,
+        blockHeight,
+        totalUnits: capacityValidation.totalUnits,
+        gridColumns,
+        itemWidths
+      };
+    }
   }
   
   // WHAT: Validate aspect ratio override if provided

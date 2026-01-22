@@ -21,6 +21,8 @@ interface DataVisualizationBlock {
   order: number;
   isActive: boolean;
   showTitle?: boolean;
+  blockAspectRatio?: string; // R-LAYOUT-02.1: Optional block aspect ratio override (e.g., "4:6")
+  tableHeightMultiplier?: number; // Table height control: height = blockWidth × multiplier (0.1 to 5.0)
   createdAt?: string;
   updatedAt?: string;
 }
@@ -104,7 +106,7 @@ export async function POST(request: NextRequest) {
 export async function PUT(request: NextRequest) {
   try {
     const body = await request.json();
-    const { _id, name, charts, order, isActive, showTitle } = body;
+    const { _id, name, charts, order, isActive, showTitle, blockAspectRatio, tableHeightMultiplier } = body;
 
     if (!_id || !name) {
       return NextResponse.json(
@@ -117,7 +119,7 @@ export async function PUT(request: NextRequest) {
     const db = client.db(MONGODB_DB);
     const collection = db.collection('data_blocks');
 
-    const updateData = {
+    const updateData: any = {
       name,
       charts: charts || [],
       order: order || 0,
@@ -125,6 +127,16 @@ export async function PUT(request: NextRequest) {
       showTitle: showTitle !== false,
       updatedAt: new Date().toISOString()
     };
+    
+    // WHAT: Include blockAspectRatio if provided (R-LAYOUT-02.1)
+    if (blockAspectRatio !== undefined) {
+      updateData.blockAspectRatio = blockAspectRatio;
+    }
+    
+    // WHAT: Include tableHeightMultiplier if provided (Table height control)
+    if (tableHeightMultiplier !== undefined) {
+      updateData.tableHeightMultiplier = tableHeightMultiplier;
+    }
 
     const result = await collection.updateOne(
       { _id: new ObjectId(_id) },
