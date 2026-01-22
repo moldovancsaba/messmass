@@ -1,12 +1,16 @@
 # MessMass Architecture Documentation
 Status: Active
-Last Updated: 2026-01-21T15:40:00.000Z
+Last Updated: 2026-01-16T16:00:00.000Z
 Canonical: No
 Owner: Architecture
 
-Version: 11.55.2
+Version: 11.55.3
 
-**Recent Update (2026-01-21):** Clicker Manager now treats `clickerSetId` as a required, stringified identifier end-to-end. All variable group CRUD calls must pass `clickerSetId` at the request root; APIs accept both string and legacy ObjectId values for backward compatibility but persist strings to prevent cross-set leakage.
+**Recent Update (2026-01-16):** 
+- **Partner Links**: Partner edit/report buttons now use `partner._id` (ObjectId) instead of `viewSlug` for reliable access. This fixes "Invalid partner ID format" errors when `viewSlug` is human-readable.
+- **Clicker Manager UX**: Chart algorithm selection replaced text input with searchable dropdown showing all available charts. Users can now discover and select algorithms like "gender-distribution", "szerencse-gender", etc. without manual typing.
+
+**Previous Update (2026-01-21):** Clicker Manager now treats `clickerSetId` as a required, stringified identifier end-to-end. All variable group CRUD calls must pass `clickerSetId` at the request root; APIs accept both string and legacy ObjectId values for backward compatibility but persist strings to prevent cross-set leakage.
 
 ## 🔍 MANDATORY: Implementation Standards
 

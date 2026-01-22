@@ -1,8 +1,70 @@
 # MessMass Release Notes
 Status: Active
-Last Updated: 2026-01-21T15:40:00.000Z
+Last Updated: 2026-01-16T16:00:00.000Z
 Canonical: No
 Owner: Operations
+
+## [v11.55.3] — 2026-01-16T16:00:00.000Z
+
+### Summary
+🔧 **PARTNER EDIT LINKS + CLICKER MANAGER UX FIXES**: Fixed partner edit/report links to use `_id` instead of `viewSlug`, and replaced chart algorithm text input with searchable dropdown in clicker manager.
+
+### What Was Fixed
+
+#### Partner Edit/Report Links Fix ✅
+**WHAT**: Partner edit and report buttons now use `partner._id` (ObjectId) instead of `viewSlug`  
+**WHY**: `viewSlug` may be human-readable (insecure) and fails validation; `_id` is always valid ObjectId format  
+**HOW**: Updated `lib/adapters/partnersAdapter.tsx` to use `partner._id || partner.viewSlug` for both buttons
+
+**Features:**
+- "Edit Stats" button uses `_id` for reliable partner editing
+- "Report" button uses `_id` for reliable partner report access
+- Falls back to `viewSlug` if `_id` is missing (backward compatibility)
+- No more "Invalid partner ID format - secure UUID required" errors
+
+**Implementation:**
+- `lib/adapters/partnersAdapter.tsx` - Both buttons now use `partner._id` as primary identifier
+- API route `/api/partners/edit/[slug]` already accepts ObjectId format
+- All partner edit links now work regardless of `viewSlug` format
+
+#### Clicker Manager Chart Algorithm Selection Fix ✅
+**WHAT**: Replaced chart algorithm text input with searchable dropdown showing all available charts  
+**WHY**: Users couldn't select algorithms like "gender-distribution", "szerencse-gender", "tippmixpro-gender-distribution" without knowing exact spelling  
+**HOW**: Added chart loading from `/api/chart-config` and replaced text input with searchable dropdown
+
+**Features:**
+- Dropdown shows all available chart algorithms (active and inactive)
+- Search functionality filters by chartId, title, or type
+- Visual indicators (✅/❌) show active/inactive status
+- Displays chart title, chartId, and type in dropdown options
+- Option to clear selection ("-- No Chart Algorithm --")
+
+**Implementation:**
+- `app/admin/clicker-manager/page.tsx` - Added `AvailableChart` interface and chart loading
+- `useEffect` hook loads charts from `/api/chart-config` on mount
+- Searchable dropdown with filtering and sorting
+- All chart algorithms now discoverable and selectable
+
+### Technical Details
+
+**Files Modified:**
+- `lib/adapters/partnersAdapter.tsx` - Partner edit/report buttons use `_id`
+- `app/admin/clicker-manager/page.tsx` - Chart algorithm dropdown with search
+
+**Commits:**
+- `b02cc54cc` - fix(partners): use _id instead of viewSlug for edit/report links
+- `141cdbca2` - fix(partners): also use _id for Report button link
+- `8b852ec40` - fix(clicker-manager): replace chartId text input with searchable dropdown
+
+### Testing
+- ✅ Partner edit links work for all partners (regardless of viewSlug format)
+- ✅ Partner report links work for all partners
+- ✅ Chart algorithm dropdown shows all available charts
+- ✅ Chart search filters correctly by chartId, title, or type
+- ✅ `npm run build` (Next.js + type check)
+
+### Version
+v11.55.2 → v11.55.3 (PATCH — partner links + clicker manager UX)
 
 ## [v11.55.2] — 2026-01-21T15:40:00.000Z
 
