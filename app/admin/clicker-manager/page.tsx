@@ -606,6 +606,14 @@ export default function ClickerManagerPage() {
   );
 }
 
+interface AvailableChart {
+  chartId: string;
+  title: string;
+  type: string;
+  emoji?: string;
+  isActive: boolean;
+}
+
 function GroupForm({
   group,
   variables,
@@ -632,6 +640,39 @@ function GroupForm({
   });
 
   const [search, setSearch] = useState('');
+  const [availableCharts, setAvailableCharts] = useState<AvailableChart[]>([]);
+  const [loadingCharts, setLoadingCharts] = useState(true);
+  const [chartSearchTerm, setChartSearchTerm] = useState('');
+
+  // WHAT: Load all available chart algorithms on mount
+  // WHY: User needs to select from existing charts, not type manually
+  // HOW: Fetch from /api/chart-config endpoint (all charts, not just active)
+  useEffect(() => {
+    const loadCharts = async () => {
+      try {
+        setLoadingCharts(true);
+        const response = await fetch('/api/chart-config?limit=1000', { cache: 'no-store' });
+        const data = await response.json();
+        if (data?.success && Array.isArray(data.configurations)) {
+          // WHAT: Map to simplified format with chartId, title, type
+          // WHY: Only need these fields for dropdown selection
+          const charts: AvailableChart[] = data.configurations.map((config: any) => ({
+            chartId: config.chartId,
+            title: config.title,
+            type: config.type,
+            emoji: config.emoji,
+            isActive: config.isActive,
+          }));
+          setAvailableCharts(charts);
+        }
+      } catch (error) {
+        console.error('❌ Failed to load charts:', error);
+      } finally {
+        setLoadingCharts(false);
+      }
+    };
+    loadCharts();
+  }, []);
 
   const availableVars = variables.filter(
     (v) =>
@@ -722,13 +763,60 @@ function GroupForm({
         </div>
         {(!form.specialType) && (
           <div>
-            <label className="form-label-block">Chart ID (optional)</label>
-            <input
-              className="form-input"
-              value={form.chartId}
-              onChange={(e) => setForm({ ...form, chartId: e.target.value })}
-              placeholder="e.g. all-images-taken"
-            />
+            <label className="form-label-block">Chart Algorithm (optional)</label>
+            {loadingCharts ? (
+              <div className="form-input text-gray-500">Loading charts...</div>
+            ) : (
+              <>
+                <input
+                  type="text"
+                  className="form-input mb-2"
+                  placeholder="Search charts by name or ID..."
+                  value={chartSearchTerm}
+                  onChange={(e) => setChartSearchTerm(e.target.value)}
+                />
+                <select
+                  className="form-input"
+                  value={form.chartId}
+                  onChange={(e) => setForm({ ...form, chartId: e.target.value })}
+                >
+                  <option value="">-- No Chart Algorithm --</option>
+                  {availableCharts
+                    .filter((chart) => {
+                      if (!chartSearchTerm) return true;
+                      const term = chartSearchTerm.toLowerCase();
+                      return (
+                        chart.chartId.toLowerCase().includes(term) ||
+                        chart.title.toLowerCase().includes(term) ||
+                        chart.type.toLowerCase().includes(term)
+                      );
+                    })
+                    .sort((a, b) => {
+                      // Sort: active first, then by title
+                      if (a.isActive !== b.isActive) return a.isActive ? -1 : 1;
+                      return a.title.localeCompare(b.title);
+                    })
+                    .map((chart) => (
+                      <option key={chart.chartId} value={chart.chartId}>
+                        {chart.isActive ? '✅' : '❌'} {chart.title} ({chart.chartId}) [{chart.type}]
+                      </option>
+                    ))}
+                </select>
+                {chartSearchTerm && (
+                  <p className="text-xs text-gray-500 mt-1">
+                    {availableCharts.filter((chart) => {
+                      const term = chartSearchTerm.toLowerCase();
+                      return (
+                        chart.chartId.toLowerCase().includes(term) ||
+                        chart.title.toLowerCase().includes(term) ||
+                        chart.type.toLowerCase().includes(term)
+                      );
+                    }).length}{' '}
+                    chart(s) found
+                  </p>
+                )}
+              </>
+            )}
           </div>
         )}
         <div>
