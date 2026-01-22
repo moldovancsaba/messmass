@@ -1,9 +1,9 @@
 # Report Layout V2 Renderer Contract
 
 **Status:** Active  
-**Version:** 1.1.0  
+**Version:** 1.2.0  
 **Created:** 2026-01-15T12:45:00.000Z  
-**Last Updated:** 2026-01-15T14:18:00.000Z  
+**Last Updated:** 2026-01-16T16:45:00.000Z  
 **Canonical:** Yes  
 **Owner:** Architecture (Chappie)  
 **Audience:** Engineering (Reporting + Admin)
@@ -27,7 +27,14 @@ This document defines the **contract** between Admin (template configuration) an
   - **Override Allowed Only For:** Blocks containing TEXT or TABLE chart types exclusively
   - **Validation:** Rejects mixed types (e.g., TEXT + KPI) with fallback to default 4:1
   - **Formula:** `blockHeight = blockWidth × (aspectHeight / aspectWidth)`
-- **Example:** If block width is 1200px, default height is 300px (4:1), or 1800px with 4:6 override
+- **Table Height Multiplier:** Optional height multiplier for TABLE-only blocks
+  - **Supported Range:** 0.1 to 5.0 (e.g., 0.5, 1.5, 2.0)
+  - **Override Allowed Only For:** Blocks containing TABLE chart types exclusively
+  - **Validation:** Rejects mixed types, cannot use with `blockAspectRatio` simultaneously
+  - **Formula:** `blockHeight = blockWidth × multiplier`
+  - **Priority:** Takes precedence over `blockAspectRatio` if both are specified
+  - **Example:** If block width is 1200px, multiplier 1.5 = 1800px height
+- **Example:** If block width is 1200px, default height is 300px (4:1), or 1800px with 4:6 override or 1.5 multiplier
 
 ### Block Capacity
 - **Fixed:** 4 units maximum per block
@@ -170,6 +177,8 @@ interface ReportBlock {
   id: string;
   order: number;  // Determines vertical order in report
   charts: ReportBlockChart[];
+  blockAspectRatio?: string;        // Optional: "4:6" (aspect ratio format)
+  tableHeightMultiplier?: number;    // Optional: 1.5 (height = blockWidth × multiplier)
 }
 
 interface ReportBlockChart {
