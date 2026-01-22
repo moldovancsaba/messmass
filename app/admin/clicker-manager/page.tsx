@@ -646,25 +646,51 @@ function GroupForm({
 
   // WHAT: Load all available chart algorithms on mount
   // WHY: User needs to select from existing charts, not type manually
-  // HOW: Fetch from /api/chart-config endpoint (all charts, not just active)
+  // HOW: Fetch ALL charts from /api/chart-config by paginating through all pages
+  // NOTE: API has max limit of 100, so we need to fetch multiple pages
   useEffect(() => {
     const loadCharts = async () => {
       try {
         setLoadingCharts(true);
-        const response = await fetch('/api/chart-config?limit=1000', { cache: 'no-store' });
-        const data = await response.json();
-        if (data?.success && Array.isArray(data.configurations)) {
-          // WHAT: Map to simplified format with chartId, title, type
-          // WHY: Only need these fields for dropdown selection
-          const charts: AvailableChart[] = data.configurations.map((config: any) => ({
-            chartId: config.chartId,
-            title: config.title,
-            type: config.type,
-            emoji: config.emoji,
-            isActive: config.isActive,
-          }));
-          setAvailableCharts(charts);
+        const allCharts: AvailableChart[] = [];
+        let offset = 0;
+        const limit = 100; // API max limit
+        let hasMore = true;
+
+        // WHAT: Fetch all charts by paginating through all pages
+        // WHY: API limit is 100, but we need ALL charts for dropdown
+        // HOW: Keep fetching until nextOffset is null
+        while (hasMore) {
+          const response = await fetch(`/api/chart-config?limit=${limit}&offset=${offset}`, { cache: 'no-store' });
+          const data = await response.json();
+          
+          if (data?.success && Array.isArray(data.configurations)) {
+            // WHAT: Map to simplified format with chartId, title, type
+            // WHY: Only need these fields for dropdown selection
+            const charts: AvailableChart[] = data.configurations.map((config: any) => ({
+              chartId: config.chartId,
+              title: config.title,
+              type: config.type,
+              emoji: config.emoji,
+              isActive: config.isActive,
+            }));
+            allCharts.push(...charts);
+            
+            // WHAT: Check if there are more pages
+            // WHY: Continue fetching until all charts are loaded
+            const nextOffset = data.pagination?.nextOffset;
+            if (nextOffset === null || nextOffset === undefined) {
+              hasMore = false;
+            } else {
+              offset = nextOffset;
+            }
+          } else {
+            hasMore = false;
+          }
         }
+
+        console.log(`✅ Loaded ${allCharts.length} chart algorithms for dropdown`);
+        setAvailableCharts(allCharts);
       } catch (error) {
         console.error('❌ Failed to load charts:', error);
       } finally {
@@ -768,7 +794,7 @@ function GroupForm({
               <div className="form-input text-gray-500">Loading charts...</div>
             ) : (
               <>
-                <input
+            <input
                   type="text"
                   className="form-input mb-2"
                   placeholder="Search charts by name or ID..."
@@ -776,9 +802,9 @@ function GroupForm({
                   onChange={(e) => setChartSearchTerm(e.target.value)}
                 />
                 <select
-                  className="form-input"
-                  value={form.chartId}
-                  onChange={(e) => setForm({ ...form, chartId: e.target.value })}
+              className="form-input"
+              value={form.chartId}
+              onChange={(e) => setForm({ ...form, chartId: e.target.value })}
                 >
                   <option value="">-- No Chart Algorithm --</option>
                   {availableCharts
