@@ -20,6 +20,7 @@ interface Partner {
   styleId?: string;
   reportTemplateId?: string;
   clickerSetId?: string;
+  showEventsList?: boolean; // WHAT: Controls visibility of events list on partner report page
   createdAt: string;
   updatedAt: string;
   // WHAT: Partner-level stats for content editing only
@@ -59,7 +60,8 @@ export default function PartnerEditorDashboard({ partner: initialPartner }: Part
         categorizedHashtags: partner.categorizedHashtags,
         stats: updatedStats || partner.stats,
         styleId: partner.styleId,
-        reportTemplateId: partner.reportTemplateId
+        reportTemplateId: partner.reportTemplateId,
+        showEventsList: partner.showEventsList
       });
 
       // WHAT: Handle successful save response
@@ -75,6 +77,43 @@ export default function PartnerEditorDashboard({ partner: initialPartner }: Part
     } catch (error) {
       // WHAT: Handle network or CSRF token errors
       // WHY: Show error state to user if save fails
+      console.error('Failed to save partner:', error);
+      setSaveStatus('error');
+      setTimeout(() => setSaveStatus('idle'), 3000);
+    }
+  };
+
+  // WHAT: Handle showEventsList toggle
+  // WHY: Allow partners to control whether events list appears on their report page
+  const handleShowEventsListToggle = async (checked: boolean) => {
+    const updatedPartner = { ...partner, showEventsList: checked };
+    setPartner(updatedPartner);
+    
+    // Save immediately
+    setSaveStatus('saving');
+    try {
+      const result = await apiPut('/api/partners', {
+        partnerId: partner._id,
+        name: partner.name,
+        emoji: partner.emoji,
+        logoUrl: partner.logoUrl,
+        hashtags: partner.hashtags,
+        categorizedHashtags: partner.categorizedHashtags,
+        stats: partner.stats,
+        styleId: partner.styleId,
+        reportTemplateId: partner.reportTemplateId,
+        showEventsList: checked
+      });
+
+      if (result.success) {
+        setSaveStatus('saved');
+        setTimeout(() => setSaveStatus('idle'), 2000);
+      } else {
+        console.error('Save failed:', result.error || 'Unknown error');
+        setSaveStatus('error');
+        setTimeout(() => setSaveStatus('idle'), 3000);
+      }
+    } catch (error) {
       console.error('Failed to save partner:', error);
       setSaveStatus('error');
       setTimeout(() => setSaveStatus('idle'), 3000);
@@ -183,6 +222,26 @@ export default function PartnerEditorDashboard({ partner: initialPartner }: Part
                 />
               </div>
             )}
+            
+            {/* WHAT: Events List Visibility Control */}
+            {/* WHY: Allow partners to control whether events list appears on their report page */}
+            <div className="border-t border-gray-200 pt-3">
+              <div className="flex items-center gap-3">
+                <input
+                  type="checkbox"
+                  id="showEventsList"
+                  checked={partner.showEventsList ?? true}
+                  onChange={(e) => handleShowEventsListToggle(e.target.checked)}
+                  className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 focus:ring-2"
+                />
+                <label htmlFor="showEventsList" className="text-sm font-medium text-gray-700">
+                  Show Events List on Report Page
+                </label>
+              </div>
+              <p className="text-xs text-gray-500 mt-1 ml-7">
+                Controls whether "{partner.name} Events (X)" section appears at the bottom of the partner report page
+              </p>
+            </div>
             
             <div className="text-xs text-gray-500 space-y-1">
               <p>Created: {new Date(partner.createdAt).toLocaleDateString()}</p>

@@ -35,6 +35,7 @@ interface Event {
 interface PartnerEventsListProps {
   events: Event[];
   partnerName: string;
+  showEventsList?: boolean; // WHAT: Controls whether to show the events list
 }
 
 /**
@@ -48,9 +49,12 @@ interface PartnerEventsListProps {
  * - Quick stats summary (images, fans)
  * - Links to individual event reports
  * - Responsive grid layout
+ * - Optional visibility control via showEventsList prop
  */
-export default function PartnerEventsList({ events, partnerName }: PartnerEventsListProps) {
-  if (!events || events.length === 0) {
+export default function PartnerEventsList({ events, partnerName, showEventsList = true }: PartnerEventsListProps) {
+  // WHAT: Respect showEventsList setting
+  // WHY: Partners can control whether events list appears on their report page
+  if (!showEventsList || !events || events.length === 0) {
     return null;
   }
 
