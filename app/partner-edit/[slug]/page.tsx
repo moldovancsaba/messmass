@@ -17,6 +17,7 @@ interface Partner {
   styleId?: string;
   reportTemplateId?: string;
   clickerSetId?: string;
+  showEventsList?: boolean; // WHAT: Controls visibility of events list on partner report page
   createdAt: string;
   updatedAt: string;
   // WHAT: Partner-level stats for text and image content only

@@ -170,6 +170,7 @@ export interface PartnerReportData {
     _id: string;
     name: string;
     emoji?: string;
+    showEventsList?: boolean; // WHAT: Controls visibility of events list on partner report page
     stats?: Record<string, number | string>;
   };
   events: Array<{

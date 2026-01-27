@@ -216,7 +216,11 @@ export default function PartnerReportPage() {
 
         {/* Related Events List - Shows all events for this partner */}
         {events.length > 0 && (
-          <PartnerEventsList events={events} partnerName={partner.name} />
+          <PartnerEventsList 
+            events={events} 
+            partnerName={partner.name}
+            showEventsList={partner.showEventsList}
+          />
         )}
       </div>
     </div>

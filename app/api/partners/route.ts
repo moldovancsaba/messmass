@@ -62,6 +62,7 @@ const db = client.db(config.dbName);
       clickerSetId: partner.clickerSetId?.toString(),
       googleSheetsUrl: partner.googleSheetsUrl,
       viewSlug: partner.viewSlug,
+      showEventsList: partner.showEventsList ?? true, // Default to true for backward compatibility
       createdAt: partner.createdAt,
       updatedAt: partner.updatedAt
     }));
@@ -91,7 +92,7 @@ const db = client.db(config.dbName);
 export async function PUT(request: NextRequest) {
   try {
     const body = await request.json();
-    const { partnerId, name, emoji, logoUrl, hashtags, categorizedHashtags, stats, styleId, reportTemplateId, googleSheetsUrl, clickerSetId } = body;
+    const { partnerId, name, emoji, logoUrl, hashtags, categorizedHashtags, stats, styleId, reportTemplateId, googleSheetsUrl, clickerSetId, showEventsList } = body;
 
     if (!partnerId) {
       return NextResponse.json(
@@ -119,6 +120,7 @@ const db = client.db(config.dbName);
     if (reportTemplateId !== undefined) updateData.reportTemplateId = reportTemplateId ? new ObjectId(reportTemplateId) : null;
     if (clickerSetId !== undefined) updateData.clickerSetId = clickerSetId ? new ObjectId(clickerSetId) : null;
     if (googleSheetsUrl !== undefined) updateData.googleSheetsUrl = googleSheetsUrl || null;
+    if (showEventsList !== undefined) updateData.showEventsList = showEventsList;
 
     // WHAT: Update partner document
     // WHY: Persist partner-level content changes
