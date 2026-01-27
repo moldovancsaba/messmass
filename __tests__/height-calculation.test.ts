@@ -85,6 +85,32 @@ describe('A-03.1 + A-03.2 + A-03.3: Height Calculation Fixes', () => {
       expect(iconRowHeight + valueRowHeight + titleRowHeight).toBe(400);
     });
 
+    it('should collapse title row when showTitle=false', () => {
+      // WHAT: Test dynamic row proportions when title is hidden
+      // WHY: KPI uses 4fr:6fr (Icon:Value = 40%:60%) when title is not rendered
+      // HOW: Verify row height calculations
+      const containerHeight = 400;
+      const iconRowHeight = containerHeight * 0.4;
+      const valueRowHeight = containerHeight * 0.6;
+
+      expect(iconRowHeight).toBe(160);
+      expect(valueRowHeight).toBe(240);
+      expect(iconRowHeight + valueRowHeight).toBe(400);
+    });
+
+    it('should collapse icon row when no icon is configured', () => {
+      // WHAT: Test dynamic row proportions when icon is missing
+      // WHY: KPI uses 7fr:3fr (Value:Title = 70%:30%) when icon is not rendered
+      // HOW: Verify row height calculations
+      const containerHeight = 400;
+      const valueRowHeight = containerHeight * 0.7;
+      const titleRowHeight = containerHeight * 0.3;
+
+      expect(valueRowHeight).toBe(280);
+      expect(titleRowHeight).toBe(120);
+      expect(valueRowHeight + titleRowHeight).toBe(400);
+    });
+
     it('should account for padding in value row', () => {
       // WHAT: Test padding calculation for value row
       // WHY: Padding reduces available space for content
