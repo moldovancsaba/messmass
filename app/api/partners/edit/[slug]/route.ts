@@ -78,6 +78,7 @@ const db = client.db(config.dbName);
       reportTemplateId: partner.reportTemplateId ? partner.reportTemplateId.toString() : undefined,
       showEventsList: partner.showEventsList ?? true, // Default to true for backward compatibility
       showEventsListTitle: partner.showEventsListTitle ?? true, // Default to true for backward compatibility
+      showEventsListDetails: partner.showEventsListDetails ?? true, // Default to true for backward compatibility
       createdAt: partner.createdAt,
       updatedAt: partner.updatedAt,
       // WHAT: Partner stats for content editing (reportText*, reportImage*)
