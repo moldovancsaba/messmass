@@ -220,6 +220,7 @@ export default function PartnerReportPage() {
             events={events} 
             partnerName={partner.name}
             showEventsList={partner.showEventsList}
+            showEventsListTitle={partner.showEventsListTitle}
           />
         )}
       </div>
