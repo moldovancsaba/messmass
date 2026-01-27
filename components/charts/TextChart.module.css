@@ -82,11 +82,11 @@
   color: var(--mm-gray-800);
   margin: 0;
   padding: 0;
-  /* WHAT: Proper word wrapping without breaking words */
-  /* WHY: Words must stay intact, only wrap at word boundaries */
+  /* WHAT: Proper word wrapping without breaking words unless absolutely necessary */
+  /* WHY: Words must stay intact, only wrap at word boundaries, no ellipsis allowed */
   word-wrap: normal;
   word-break: normal;
-  overflow-wrap: normal;
+  overflow-wrap: break-word; /* Allow breaking if absolutely necessary */
   hyphens: none;
   white-space: normal;
   text-align: center;
@@ -99,13 +99,18 @@
   /* WHY: Make any font size updates visually smooth */
   transition: font-size 0.2s ease-out;
   
+  /* WHAT: Remove any text overflow ellipsis behavior */
+  /* WHY: Text must be fully visible, no "..." truncation allowed */
+  overflow: visible;
+  text-overflow: clip; /* Clip instead of ellipsis */
+  
   /* WHAT: Maximum text scaling with proper word wrapping
    * WHY: JavaScript calculates largest font size that fits with natural line breaks
    * HOW: Dynamic font-size set via inline style with clamp() bounds */
-  /* CONSTRAINT: 1.5x max ratio (0.75rem → 1.125rem = 12px → 18px) for visual consistency */
+  /* CONSTRAINT: Better bounds for readability and performance */
   
   /* Default fallback - will be overridden by JavaScript calculation */
-  font-size: clamp(0.75rem, 4cqh, 1.125rem);
+  font-size: clamp(0.75rem, 4cqh, 6rem);
   
   /* WHAT: Ensure text is vertically centered within its container */
   /* WHY: Text should be in the middle of the available space */
