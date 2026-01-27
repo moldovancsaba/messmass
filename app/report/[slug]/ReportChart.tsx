@@ -281,6 +281,10 @@ function KPIChart({ result, className }: { result: ChartResult; className?: stri
   // WHAT: Check if title should be shown in KPI grid (default: true)
   // WHY: Some charts may want to hide titles per Spec v2.0
   const showTitle = result.showTitle !== false;
+
+  // WHAT: Check if icon is configured
+  // WHY: KPI should not reserve an empty icon row when no icon exists
+  const hasIcon = !!result.icon;
   
   // WHAT: A-03.2 - Refs for height calculation to prevent clipping
   // WHY: Need to measure actual content height in value and title rows
@@ -298,12 +302,14 @@ function KPIChart({ result, className }: { result: ChartResult; className?: stri
         const containerHeight = kpiChartRef.current?.offsetHeight || 0;
         if (containerHeight <= 0) return;
         
-        // WHAT: Calculate allocated row heights based on grid proportions (4fr:3fr:3fr)
-        // WHY: Grid rows are allocated: Icon 40% (4fr/10fr), Value 30% (3fr/10fr), Title 30% (3fr/10fr)
-        // HOW: Calculate based on grid template rows: 4fr 3fr 3fr = 10fr total
-        const iconRowHeight = containerHeight * 0.4; // 4fr / 10fr = 40%
-        const valueRowHeight = containerHeight * 0.3; // 3fr / 10fr = 30%
-        const titleRowHeight = containerHeight * 0.3; // 3fr / 10fr = 30%
+        // WHAT: Calculate allocated row heights based on grid proportions
+        // WHY: KPI layout changes when title/icon are hidden
+        // HOW: Match the CSS grid-template-rows variants in ReportChart.module.css
+        const iconRowHeight = hasIcon ? (containerHeight * 0.4) : 0;
+        const valueRowHeight = hasIcon
+          ? (showTitle ? (containerHeight * 0.3) : (containerHeight * 0.6))
+          : (showTitle ? (containerHeight * 0.7) : containerHeight);
+        const titleRowHeight = showTitle ? (containerHeight * 0.3) : 0;
         
         // WHAT: A-03.2 - Measure actual content height in value row
         // WHY: Value might wrap to multiple lines and exceed allocated height
@@ -480,27 +486,27 @@ function KPIChart({ result, className }: { result: ChartResult; className?: stri
         mutationObserver.disconnect();
       };
     }
-  }, [showTitle, result.kpiValue, result.title, result.chartId]);
+  }, [showTitle, hasIcon, result.kpiValue, result.title, result.chartId]);
   
-  // WHAT: KPI uses 3fr-4fr-3fr grid (Icon:Value:Title = 30%:40%:30%)
-  // WHY: Maintains proportional distribution with full blockHeight
-  // HOW: CellWrapper unnecessary - grid handles all layout
+  // WHAT: KPI uses internal CSS grid for deterministic layout
+  // WHY: Avoids reserving space for hidden sections (title/icon)
+  // HOW: CSS classes switch grid rows based on visible sections
   return (
     <div 
       ref={kpiChartRef}
-      className={`${styles.chart} ${styles.kpi} report-chart ${className || ''}`}
+      className={`${styles.chart} ${styles.kpi} ${!hasIcon ? (showTitle ? styles.kpiNoIcon : styles.kpiOnlyValue) : (!showTitle ? styles.kpiNoTitle : '')} report-chart ${className || ''}`}
       // WHAT: blockHeight now centrally managed at row level via --block-height CSS custom property
       // WHY: Eliminated per-chart inline style - height comes from parent row container
     >
-      <div className={styles.kpiIconRow}>
-        {result.icon && (
+      {hasIcon && (
+        <div className={styles.kpiIconRow}>
           <MaterialIcon 
-            name={result.icon} 
+            name={result.icon as string} 
             variant={iconVariant}
             className={styles.kpiIcon}
           />
-        )}
-      </div>
+        </div>
+      )}
       <div ref={kpiValueRowRef} className={styles.kpiValueRow}>{formattedValue}</div>
       {/* WHAT: Title is 3rd grid row directly in KPI grid */}
       {/* WHY: Maintains exact 3fr-4fr-3fr proportions across full cell height */}
@@ -904,7 +910,10 @@ function PieChart({ result, className }: { result: ChartResult; className?: stri
       // WHAT: blockHeight now centrally managed at row level via --block-height CSS custom property
       // WHY: Eliminated per-chart inline style - height comes from parent row container
     >
-      <div ref={pieGridRef} className={styles.pieGrid}>
+      <div
+        ref={pieGridRef}
+        className={`${styles.pieGrid} ${!showTitle ? styles.pieGridNoTitle : ''}`}
+      >
         {/* WHAT: Title at top */}
         {/* WHY: User requirement - title should be first section */}
         {showTitle && (
