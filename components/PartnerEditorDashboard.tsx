@@ -22,6 +22,7 @@ interface Partner {
   clickerSetId?: string;
   showEventsList?: boolean; // WHAT: Controls visibility of events list on partner report page
   showEventsListTitle?: boolean; // WHAT: Controls visibility of events list title on partner report page
+  showEventsListDetails?: boolean; // WHAT: Controls whether event cards show detailed info or just titles
   createdAt: string;
   updatedAt: string;
   // WHAT: Partner-level stats for content editing only
@@ -63,7 +64,8 @@ export default function PartnerEditorDashboard({ partner: initialPartner }: Part
         styleId: partner.styleId,
         reportTemplateId: partner.reportTemplateId,
         showEventsList: partner.showEventsList,
-        showEventsListTitle: partner.showEventsListTitle
+        showEventsListTitle: partner.showEventsListTitle,
+        showEventsListDetails: partner.showEventsListDetails
       });
 
       // WHAT: Handle successful save response
@@ -79,6 +81,45 @@ export default function PartnerEditorDashboard({ partner: initialPartner }: Part
     } catch (error) {
       // WHAT: Handle network or CSRF token errors
       // WHY: Show error state to user if save fails
+      console.error('Failed to save partner:', error);
+      setSaveStatus('error');
+      setTimeout(() => setSaveStatus('idle'), 3000);
+    }
+  };
+
+  // WHAT: Handle showEventsListDetails toggle
+  // WHY: Allow partners to control whether event cards show detailed info or just titles
+  const handleShowEventsListDetailsToggle = async (checked: boolean) => {
+    const updatedPartner = { ...partner, showEventsListDetails: checked };
+    setPartner(updatedPartner);
+    
+    // Save immediately
+    setSaveStatus('saving');
+    try {
+      const result = await apiPut('/api/partners', {
+        partnerId: partner._id,
+        name: partner.name,
+        emoji: partner.emoji,
+        logoUrl: partner.logoUrl,
+        hashtags: partner.hashtags,
+        categorizedHashtags: partner.categorizedHashtags,
+        stats: partner.stats,
+        styleId: partner.styleId,
+        reportTemplateId: partner.reportTemplateId,
+        showEventsList: partner.showEventsList,
+        showEventsListTitle: partner.showEventsListTitle,
+        showEventsListDetails: checked
+      });
+
+      if (result.success) {
+        setSaveStatus('saved');
+        setTimeout(() => setSaveStatus('idle'), 2000);
+      } else {
+        console.error('Save failed:', result.error || 'Unknown error');
+        setSaveStatus('error');
+        setTimeout(() => setSaveStatus('idle'), 3000);
+      }
+    } catch (error) {
       console.error('Failed to save partner:', error);
       setSaveStatus('error');
       setTimeout(() => setSaveStatus('idle'), 3000);
@@ -105,7 +146,8 @@ export default function PartnerEditorDashboard({ partner: initialPartner }: Part
         styleId: partner.styleId,
         reportTemplateId: partner.reportTemplateId,
         showEventsList: partner.showEventsList,
-        showEventsListTitle: checked
+        showEventsListTitle: checked,
+        showEventsListDetails: partner.showEventsListDetails
       });
 
       if (result.success) {
@@ -143,7 +185,8 @@ export default function PartnerEditorDashboard({ partner: initialPartner }: Part
         styleId: partner.styleId,
         reportTemplateId: partner.reportTemplateId,
         showEventsList: checked,
-        showEventsListTitle: partner.showEventsListTitle
+        showEventsListTitle: partner.showEventsListTitle,
+        showEventsListDetails: partner.showEventsListDetails
       });
 
       if (result.success) {
@@ -285,7 +328,7 @@ export default function PartnerEditorDashboard({ partner: initialPartner }: Part
               
               {/* WHAT: Events List Title Visibility Control */}
               {/* WHY: Allow partners to show events list but hide the title */}
-              <div className="flex items-center gap-3">
+              <div className="flex items-center gap-3 mb-3">
                 <input
                   type="checkbox"
                   id="showEventsListTitle"
@@ -298,8 +341,27 @@ export default function PartnerEditorDashboard({ partner: initialPartner }: Part
                   Show Events List TITLE on Report Page
                 </label>
               </div>
-              <p className="text-xs text-gray-500 mt-1 ml-7">
+              <p className="text-xs text-gray-500 mb-3 ml-7">
                 Controls whether the title "{partner.name} Events (X)" appears above the events list (only applies when events list is shown)
+              </p>
+              
+              {/* WHAT: Events List Details Visibility Control */}
+              {/* WHY: Allow partners to show events list with minimal or detailed cards */}
+              <div className="flex items-center gap-3">
+                <input
+                  type="checkbox"
+                  id="showEventsListDetails"
+                  checked={partner.showEventsListDetails ?? true}
+                  onChange={(e) => handleShowEventsListDetailsToggle(e.target.checked)}
+                  disabled={!(partner.showEventsList ?? true)} // Disable if events list is hidden
+                  className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 focus:ring-2 disabled:opacity-50"
+                />
+                <label htmlFor="showEventsListDetails" className={`text-sm font-medium ${!(partner.showEventsList ?? true) ? 'text-gray-400' : 'text-gray-700'}`}>
+                  Show Event Card DETAILS on Report Page
+                </label>
+              </div>
+              <p className="text-xs text-gray-500 mt-1 ml-7">
+                Controls whether event cards show detailed info (date, stats, "View Report" button) or just the event title (only applies when events list is shown)
               </p>
             </div>
             

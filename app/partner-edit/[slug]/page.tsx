@@ -19,6 +19,7 @@ interface Partner {
   clickerSetId?: string;
   showEventsList?: boolean; // WHAT: Controls visibility of events list on partner report page
   showEventsListTitle?: boolean; // WHAT: Controls visibility of events list title on partner report page
+  showEventsListDetails?: boolean; // WHAT: Controls whether event cards show detailed info or just titles
   createdAt: string;
   updatedAt: string;
   // WHAT: Partner-level stats for text and image content only

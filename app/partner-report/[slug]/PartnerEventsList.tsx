@@ -37,6 +37,7 @@ interface PartnerEventsListProps {
   partnerName: string;
   showEventsList?: boolean; // WHAT: Controls whether to show the events list
   showEventsListTitle?: boolean; // WHAT: Controls whether to show the events list title
+  showEventsListDetails?: boolean; // WHAT: Controls whether event cards show detailed info or just titles
 }
 
 /**
@@ -52,8 +53,9 @@ interface PartnerEventsListProps {
  * - Responsive grid layout
  * - Optional visibility control via showEventsList prop
  * - Optional title visibility control via showEventsListTitle prop
+ * - Optional details visibility control via showEventsListDetails prop
  */
-export default function PartnerEventsList({ events, partnerName, showEventsList = true, showEventsListTitle = true }: PartnerEventsListProps) {
+export default function PartnerEventsList({ events, partnerName, showEventsList = true, showEventsListTitle = true, showEventsListDetails = true }: PartnerEventsListProps) {
   // WHAT: Respect showEventsList setting
   // WHY: Partners can control whether events list appears on their report page
   if (!showEventsList || !events || events.length === 0) {
@@ -74,7 +76,7 @@ export default function PartnerEventsList({ events, partnerName, showEventsList 
         {events
           .filter(event => event.viewSlug) // Only show events with public slugs
           .map((event) => (
-            <EventCard key={event._id} event={event} />
+            <EventCard key={event._id} event={event} showDetails={showEventsListDetails} />
           ))}
       </div>
     </div>
@@ -84,7 +86,7 @@ export default function PartnerEventsList({ events, partnerName, showEventsList 
 /**
  * Single event card
  */
-function EventCard({ event }: { event: Event }) {
+function EventCard({ event, showDetails = true }: { event: Event; showDetails?: boolean }) {
   // Calculate totals
   const totalImages = (event.stats?.remoteImages || 0) + 
                      (event.stats?.hostessImages || 0) + 
@@ -108,27 +110,34 @@ function EventCard({ event }: { event: Event }) {
     >
       <div className={styles.eventHeader}>
         <h3 className={styles.eventName}>{event.eventName}</h3>
-        <p className={styles.eventDate}>{formattedDate}</p>
+        {/* WHAT: Conditionally show date based on showDetails */}
+        {showDetails && <p className={styles.eventDate}>{formattedDate}</p>}
       </div>
       
-      <div className={styles.eventStats}>
-        <div className={styles.stat}>
-          <span className={styles.statIcon}>📸</span>
-          <span className={styles.statValue}>{totalImages}</span>
-          <span className={styles.statLabel}>Images</span>
+      {/* WHAT: Conditionally show stats based on showDetails */}
+      {showDetails && (
+        <div className={styles.eventStats}>
+          <div className={styles.stat}>
+            <span className={styles.statIcon}>📸</span>
+            <span className={styles.statValue}>{totalImages}</span>
+            <span className={styles.statLabel}>Images</span>
+          </div>
+          
+          <div className={styles.stat}>
+            <span className={styles.statIcon}>👥</span>
+            <span className={styles.statValue}>{totalFans}</span>
+            <span className={styles.statLabel}>Fans</span>
+          </div>
         </div>
-        
-        <div className={styles.stat}>
-          <span className={styles.statIcon}>👥</span>
-          <span className={styles.statValue}>{totalFans}</span>
-          <span className={styles.statLabel}>Fans</span>
-        </div>
-      </div>
+      )}
       
-      <div className={styles.eventAction}>
-        <span className={styles.actionText}>View Report</span>
-        <span className={styles.actionArrow}>→</span>
-      </div>
+      {/* WHAT: Conditionally show action button based on showDetails */}
+      {showDetails && (
+        <div className={styles.eventAction}>
+          <span className={styles.actionText}>View Report</span>
+          <span className={styles.actionArrow}>→</span>
+        </div>
+      )}
     </Link>
   );
 }
