@@ -127,6 +127,7 @@ const db = client.db(config.dbName);
         styleId: partner.styleId ? partner.styleId.toString() : undefined,
         reportTemplateId: partner.reportTemplateId ? partner.reportTemplateId.toString() : undefined,
         showEventsList: partner.showEventsList ?? true, // Default to true for backward compatibility
+        showEventsListTitle: partner.showEventsListTitle ?? true, // Default to true for backward compatibility
         createdAt: partner.createdAt,
         updatedAt: partner.updatedAt,
         // WHAT: Include partner-level stats (reportText*, reportImage*) for chart display

@@ -36,6 +36,7 @@ interface PartnerEventsListProps {
   events: Event[];
   partnerName: string;
   showEventsList?: boolean; // WHAT: Controls whether to show the events list
+  showEventsListTitle?: boolean; // WHAT: Controls whether to show the events list title
 }
 
 /**
@@ -50,8 +51,9 @@ interface PartnerEventsListProps {
  * - Links to individual event reports
  * - Responsive grid layout
  * - Optional visibility control via showEventsList prop
+ * - Optional title visibility control via showEventsListTitle prop
  */
-export default function PartnerEventsList({ events, partnerName, showEventsList = true }: PartnerEventsListProps) {
+export default function PartnerEventsList({ events, partnerName, showEventsList = true, showEventsListTitle = true }: PartnerEventsListProps) {
   // WHAT: Respect showEventsList setting
   // WHY: Partners can control whether events list appears on their report page
   if (!showEventsList || !events || events.length === 0) {
@@ -60,9 +62,13 @@ export default function PartnerEventsList({ events, partnerName, showEventsList 
 
   return (
     <div className={styles.eventsSection}>
-      <h2 className={styles.title}>
-        {partnerName} Events ({events.length})
-      </h2>
+      {/* WHAT: Conditionally render title based on showEventsListTitle */}
+      {/* WHY: Partners can show events list but hide the title */}
+      {showEventsListTitle && (
+        <h2 className={styles.title}>
+          {partnerName} Events ({events.length})
+        </h2>
+      )}
       
       <div className={styles.eventsGrid}>
         {events
