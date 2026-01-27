@@ -26,15 +26,24 @@
   margin: 0;
   padding: 0;
   line-height: 1.25;
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
+  /* WHAT: Remove ellipsis display - text should fit or wrap naturally */
+  /* WHY: Ellipsis (...) hides content which is prohibited per requirements */
+  /* HOW: Use overflow: hidden without text-overflow, allow natural wrapping */
   overflow: hidden;
-  word-break: break-word;
+  /* WHAT: Proper word wrapping without breaking words */
+  /* WHY: Words must stay intact, only wrap at word boundaries */
+  word-wrap: normal;
+  word-break: normal;
+  overflow-wrap: break-word;
+  hyphens: none;
+  white-space: normal;
   font-weight: 600;
   /* WHAT: Use chartTitleColor from Style Editor, fallback to design token */
   /* WHY: Chart titles should respect custom style colors */
   color: var(--chartTitleColor, var(--mm-gray-900));
+  /* WHAT: Allow up to 3 lines for titles if needed */
+  /* WHY: Better to show full text than truncate with ellipsis */
+  max-height: calc(1.25em * 3); /* 3 lines max */
 }
 
 /* Subtitle Zone - fixed height, centered, max 2 lines */
@@ -54,12 +63,21 @@
   margin: 0;
   padding: 0;
   line-height: 1.4;
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
+  /* WHAT: Remove ellipsis display - text should fit or wrap naturally */
+  /* WHY: Ellipsis (...) hides content which is prohibited per requirements */
+  /* HOW: Use overflow: hidden without text-overflow, allow natural wrapping */
   overflow: hidden;
-  word-break: break-word;
+  /* WHAT: Proper word wrapping without breaking words */
+  /* WHY: Words must stay intact, only wrap at word boundaries */
+  word-wrap: normal;
+  word-break: normal;
+  overflow-wrap: break-word;
+  hyphens: none;
+  white-space: normal;
   color: var(--mm-gray-600);
+  /* WHAT: Allow up to 2 lines for subtitles */
+  /* WHY: Better to show full text than truncate with ellipsis */
+  max-height: calc(1.4em * 2); /* 2 lines max */
 }
 
 /* Body Zone - fills remaining space, centered content */

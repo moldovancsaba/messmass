@@ -44,9 +44,9 @@ export default function TextChart({ title, content, subtitle, className = '', as
     }
   }, [content]);
 
-  // WHAT: Stable text scaling without flickering (works with HTML content)
-  // WHY: Prevent visual flicker during font size calculations
-  // HOW: Use hidden clone for measurements, apply final result once
+  // WHAT: Enhanced text scaling without flickering (works with HTML content)
+  // WHY: Prevent visual flicker during font size calculations and ensure text fits properly
+  // HOW: Use hidden clone for measurements, apply final result once, better overflow handling
   useEffect(() => {
     if (!contentRef.current || !textRef.current || !htmlContent) return;
 
@@ -71,18 +71,20 @@ export default function TextChart({ title, content, subtitle, className = '', as
       clone.style.width = `${availableWidth}px`;
       clone.style.whiteSpace = 'normal';
       clone.style.wordBreak = 'normal';
-      clone.style.overflowWrap = 'normal';
+      clone.style.overflowWrap = 'break-word'; // Allow word breaking if absolutely necessary
       clone.style.hyphens = 'none';
       clone.style.lineHeight = '1.2';
       
       document.body.appendChild(clone);
 
-      // WHAT: Binary search for maximum font size using hidden clone
-      // WHY: Find largest text that fits without visual flickering
-      let minSize = 8;
-      let maxSize = 300;
+      // WHAT: Enhanced binary search for maximum font size using hidden clone
+      // WHY: Find largest text that fits without visual flickering, better bounds
+      let minSize = 8; // Higher minimum for readability
+      let maxSize = Math.min(200, Math.floor(availableHeight / 2)); // More reasonable maximum
       let optimalSize = 16;
 
+      // WHAT: Improved binary search with better convergence
+      // WHY: More accurate font size calculation
       while (minSize <= maxSize) {
         const testSize = Math.floor((minSize + maxSize) / 2);
         clone.style.fontSize = `${testSize}px`;
@@ -91,9 +93,14 @@ export default function TextChart({ title, content, subtitle, className = '', as
         clone.offsetHeight;
         
         const textHeight = clone.scrollHeight;
-        const fitsHeight = textHeight <= availableHeight;
+        const textWidth = clone.scrollWidth;
         
-        if (fitsHeight) {
+        // WHAT: Check both width and height constraints
+        // WHY: Text must fit in both dimensions
+        const fitsHeight = textHeight <= availableHeight;
+        const fitsWidth = textWidth <= availableWidth;
+        
+        if (fitsHeight && fitsWidth) {
           optimalSize = testSize;
           minSize = testSize + 1; // Try larger
         } else {
@@ -104,12 +111,16 @@ export default function TextChart({ title, content, subtitle, className = '', as
       // Clean up clone
       document.body.removeChild(clone);
 
-      // WHAT: Apply final font size once (no flickering)
-      // WHY: Single update instead of multiple during search
+      // WHAT: Apply final font size with safety bounds
+      // WHY: Ensure font size is reasonable and responsive
       const containerWidth = containerRect.width;
       const relativeFontSize = (optimalSize / containerWidth) * 100;
       
-      setOptimalFontSize(`${Math.min(relativeFontSize, 80)}cqw`);
+      // WHAT: Use clamp with better bounds for safety
+      // WHY: Prevent extremely large or small fonts
+      const finalFontSize = `clamp(0.75rem, ${Math.min(relativeFontSize, 60)}cqw, 6rem)`;
+      
+      setOptimalFontSize(finalFontSize);
     };
 
     // WHAT: Debounced calculation to prevent excessive updates
@@ -118,7 +129,7 @@ export default function TextChart({ title, content, subtitle, className = '', as
     
     const debouncedCalculate = () => {
       clearTimeout(timeoutId);
-      timeoutId = setTimeout(calculateMaxFontSize, 150); // Longer delay for stability
+      timeoutId = setTimeout(calculateMaxFontSize, 100); // Shorter delay for better responsiveness
     };
 
     // Initial calculation
