@@ -217,7 +217,7 @@ export default function PartnerEditorDashboard({ partner: initialPartner }: Part
         <div className="admin-header-content">
           <div className="admin-branding">
             <h1 className="admin-title">
-              {partner.emoji} {partner.name}
+              {partner.showEmoji !== false ? partner.emoji : ''} {partner.name}
             </h1>
             <p className="admin-subtitle">
               Partner Content Editor - Report Text & Images
@@ -288,7 +288,7 @@ export default function PartnerEditorDashboard({ partner: initialPartner }: Part
           <h2 className="section-title">🏢 Partner Information</h2>
           <div className="space-y-3">
             <div className="flex items-center gap-3">
-              <span className="text-2xl">{partner.emoji}</span>
+              <span className="text-2xl">{partner.showEmoji !== false ? partner.emoji : ''}</span>
               <div>
                 <h3 className="font-semibold text-gray-900">{partner.name}</h3>
                 <p className="text-sm text-gray-600">Partner ID: {partner._id}</p>

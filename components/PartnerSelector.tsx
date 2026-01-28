@@ -148,7 +148,7 @@ export default function PartnerSelector({
     return (
       <div className={styles.chipContainer}>
         <div className={`${styles.partnerChip} ${disabled ? styles.disabled : ''}`}>
-          <span className={styles.chipEmoji}>{selectedPartner.emoji}</span>
+          <span className={styles.chipEmoji}>{selectedPartner.showEmoji !== false ? selectedPartner.emoji : ''}</span>
           <span className={styles.chipLabel}>
             {selectedPartner.name}
           </span>
@@ -200,7 +200,7 @@ export default function PartnerSelector({
               onClick={(e) => handleSelectPartner(e, partner._id)}
               onMouseEnter={() => setFocusedIndex(index)}
             >
-              <span className={styles.partnerEmoji}>{partner.emoji}</span>
+              <span className={styles.partnerEmoji}>{partner.showEmoji !== false ? partner.emoji : ''}</span>
               <span className={styles.partnerName}>{partner.name}</span>
             </div>
           ))}

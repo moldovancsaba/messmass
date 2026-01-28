@@ -1,4 +1,4 @@
-# MESSMASS
+# AMANOBA
 
 ## AGENT RULES BY SULTAN
 
@@ -260,7 +260,15 @@ TEAM:
 **Last Known Working Commit**: `f20c34a` - "feat: surface certification state in catalog and course detail pages"  
 **Status**: ✅ WORKING - System restored to stable baseline
 
-### Authentication System 
+### Authentication System (CRITICAL - DO NOT MODIFY)
+
+**Working Configuration** (f20c34a):
+- `app/api/auth/[...nextauth]/route.ts`: Simple export - `export const { GET, POST } = handlers;` (NO CORS wrapping)
+- `next.config.ts`: Headers apply to ALL routes including `/api/` (source: '/:path*')
+- `public/service-worker.js`: Version 2.0.0 with networkFirstStrategy for APIs (DO NOT disable)
+- `auth.ts`: Complex JWT callback with database refresh on every request (DO NOT simplify)
+- `middleware.ts`: Simple `export default auth((req) => { ... })` pattern (DO NOT restructure)
+- `app/components/session-provider.tsx`: Simple wrapper, no extra props (DO NOT add basePath/refetchInterval)
 
 **⚠️ CRITICAL WARNING**: All attempts to "improve" or "fix" these files broke the system. The working version is simple. Keep it simple.
 
@@ -274,9 +282,19 @@ TEAM:
 
 ### Tech Stack Constraints
 
+- **Next.js**: 15.5.2 (App Router) - DO NOT upgrade without approval
+- **Node.js**: >= 20.0.0 (LTS only)
+- **MongoDB**: Atlas with Mongoose 8.18.0
+- **No deprecated packages** - all dependencies must be security-audited
+- **Build must be**: warning-free, error-free, deprecated-free
 
 ### Known Issues & Solutions
 
+1. **CORS/Access Control Errors**: Root cause unknown. Working version (f20c34a) has no special handling. DO NOT add CORS wrappers to NextAuth route handler.
+
+2. **SSO Nonce Errors**: Fixed in SSO server (not Amanoba code). If occurs, clear browser cache.
+
+3. **Service Worker**: Version 2.0.0 works correctly. DO NOT disable fetch interception.
 
 ### Development Workflow
 
@@ -297,4 +315,4 @@ TEAM:
 ---
 
 **Last Updated**: 2026-01-25  
-**Current Work**: 
+**Current Work**: Google Analytics Consent Mode v2 & Course Progress Fix (✅ COMPLETE)

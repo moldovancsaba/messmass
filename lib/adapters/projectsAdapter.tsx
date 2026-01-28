@@ -35,7 +35,7 @@ export const projectsAdapter: AdminPageAdapter<ProjectDTO> = {
           return (
             <div>
               <div className="flex items-center gap-2">
-                {project.partner1 && (
+                {project.partner1 && project.partner1.showEmoji !== false && (
                   <span className="text-3xl shrink-0">
                     {project.partner1.emoji}
                   </span>

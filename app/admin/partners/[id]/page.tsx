@@ -187,7 +187,7 @@ export default function PartnerDetailPage({
         <div className="flex items-start justify-between">
           <div>
             <h1 className="section-title">
-              {partner.emoji} {partner.name}
+              {partner.showEmoji !== false ? partner.emoji : ''} {partner.name}
             </h1>
             <p className="text-sm text-gray-600 mt-1">Partner ID: {partner._id}</p>
           </div>

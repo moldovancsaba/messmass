@@ -200,7 +200,7 @@ export default function PartnerKYCDataPage() {
         </button>
         
         <div className={styles.partnerHero}>
-          {partner.emoji && <span className={styles.partnerEmoji}>{partner.emoji}</span>}
+          {partner.emoji && partner.showEmoji !== false && <span className={styles.partnerEmoji}>{partner.emoji}</span>}
           <h1 className={styles.pageTitle}>
             {partner.name}
           </h1>

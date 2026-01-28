@@ -12,6 +12,7 @@ export interface Partner {
   _id: ObjectId;
   name: string; // Partner name (e.g., "FC Barcelona", "UEFA", "Camp Nou")
   emoji: string; // Partner emoji for visual identification (e.g., "⚽", "🏟️")
+  showEmoji?: boolean; // WHAT: Optional flag to control emoji visibility (default: true)
   
   // WHAT: Hashtag associations (unified system)
   // WHY: Partners can be tagged and filtered like projects
@@ -169,6 +170,7 @@ export interface Partner {
 export interface CreatePartnerInput {
   name: string;
   emoji: string;
+  showEmoji?: boolean; // WHAT: Optional flag to control emoji visibility (default: true)
   hashtags?: string[];
   categorizedHashtags?: { [categoryName: string]: string[] };
   bitlyLinkIds?: string[]; // String IDs from client
@@ -188,6 +190,7 @@ export interface UpdatePartnerInput {
   partnerId: string;
   name?: string;
   emoji?: string;
+  showEmoji?: boolean; // WHAT: Optional flag to control emoji visibility
   hashtags?: string[];
   categorizedHashtags?: { [categoryName: string]: string[] };
   bitlyLinkIds?: string[];

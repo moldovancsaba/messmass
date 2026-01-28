@@ -62,6 +62,7 @@ export default function PartnersAdminPageUnified() {
   const [newPartnerData, setNewPartnerData] = useState({
     name: '',
     emoji: '',
+    showEmoji: true, // WHAT: Default to showing emoji
     hashtags: [] as string[],
     categorizedHashtags: {} as { [categoryName: string]: string[] },
     bitlyLinkIds: [] as string[],
@@ -83,6 +84,7 @@ export default function PartnersAdminPageUnified() {
   const [editPartnerData, setEditPartnerData] = useState({
     name: '',
     emoji: '',
+    showEmoji: true, // WHAT: Default to showing emoji
     hashtags: [] as string[],
     categorizedHashtags: {} as { [categoryName: string]: string[] },
     bitlyLinkIds: [] as string[],
@@ -521,6 +523,7 @@ export default function PartnersAdminPageUnified() {
     setEditPartnerData({
       name: partner.name,
       emoji: partner.emoji,
+      showEmoji: partner.showEmoji ?? true, // WHAT: Default to true if not set
       hashtags: partner.hashtags || [],
       categorizedHashtags: partner.categorizedHashtags || {},
       bitlyLinkIds: partner.bitlyLinks?.map(link => link._id) || [],
@@ -723,6 +726,21 @@ export default function PartnersAdminPageUnified() {
         </div>
         
         <div className="form-group mb-4">
+          <label className="form-label-block">
+            <input
+              type="checkbox"
+              checked={newPartnerData.showEmoji}
+              onChange={(e) => setNewPartnerData(prev => ({ ...prev, showEmoji: e.target.checked }))}
+              className="mr-2"
+            />
+            Show emoji in reports and displays
+          </label>
+          <p className="form-hint">
+            💡 Uncheck to hide the emoji while keeping it stored for future use
+          </p>
+        </div>
+        
+        <div className="form-group mb-4">
           <label className="form-label-block">TheSportsDB</label>
           <TheSportsDBSearch
             linkedTeam={newPartnerData.sportsDb}
@@ -874,6 +892,21 @@ export default function PartnersAdminPageUnified() {
             value={editPartnerData.emoji}
             onChange={(emoji) => setEditPartnerData(prev => ({ ...prev, emoji }))}
           />
+        </div>
+        
+        <div className="form-group mb-4">
+          <label className="form-label-block">
+            <input
+              type="checkbox"
+              checked={editPartnerData.showEmoji}
+              onChange={(e) => setEditPartnerData(prev => ({ ...prev, showEmoji: e.target.checked }))}
+              className="mr-2"
+            />
+            Show emoji in reports and displays
+          </label>
+          <p className="form-hint">
+            💡 Uncheck to hide the emoji while keeping it stored for future use
+          </p>
         </div>
         
         <div className="form-group mb-4">
