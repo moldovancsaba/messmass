@@ -1,4 +1,4 @@
-# AMANOBA
+# MESSMASS
 
 ## AGENT RULES BY SULTAN
 
@@ -130,40 +130,15 @@ TEAM:
 
 ## 📋 Current Feature/Bug Document
 
-**Active Work**: ✅ **COMPLETE** - `docs/2026-01-24_COURSE_LANGUAGE_SEPARATION_COMPLETE.md`
+**Active Work**:
 
-**Status**: ✅ **100% COURSE LANGUAGE SEPARATION DELIVERED - COMPLETE**
-**Priority**: P0 (Critical for localization requirement)  
-**Completed**: 2026-01-25  
+**Status**: 
+
+**Priority**:
+
 **Current Progress**:
-- ✅ **19 COMMITS DELIVERED**: Complete course language separation + navigation fixes
-- ✅ **770+ TRANSLATIONS ADDED**: 70 keys × 11 languages
-- ✅ **6 CORE PAGES FIXED**: Course detail, day, quiz, final exam, discovery, layout
-- ✅ **ALL NAVIGATION LINKS FIXED**: Quiz, day navigation, back links all use course language
-- ✅ **LANGUAGE EXTRACTION OPTIMIZED**: Extract from courseId immediately, no timing issues
-- ✅ **ARCHITECTURE: OPTION 2 ACTIVE**: Any URL locale works, UI always uses course language
-- ✅ **BUILD VERIFIED**: Zero errors, no TypeScript issues, production-ready
-- ✅ **DOCUMENTATION COMPLETE**: Feature document, release notes, task list all updated
-- ✅ **ALL BUGS FIXED**: No more mixed languages, hardcoded English, wrong translations, or URL locale changes
-- **Status**: ✅ COMPLETE - Ready to resume Quiz Quality Enhancement work
-
-**Lessons Seeded**:
-1. Day 1: Introduction to Productivity
-2. Day 2: Time Audit & Accountability
-3. Day 3: Priority Alignment
-4. Day 4: Capacity Planning
-5. Day 5: Measurement & Metrics
-6. Day 6: Daily Rituals
-7. Day 7: Daily/Weekly Systems
-8. Day 8: Context Switching Cost
-9. Day 9: Delegation vs Elimination
-10. Day 10: Energy Management
-11. Day 11: Goal Setting & OKRs
 
 **Related Files**:
-- `scripts/seed-productivity-lesson-*.ts` - Individual lesson seed scripts
-- `scripts/check-productivity-course.ts` - Course verification tool
-- `i18n.ts` - Updated with all 11 target languages
 
 ---
 
@@ -195,27 +170,20 @@ TEAM:
 
 | Location | Document Name | Summary |
 |----------|---------------|---------|
-| `/docs/2026-01-23_ADMIN_UI_IMPROVEMENTS.md` | Admin UI Improvements | Current active feature: Remove deprecated docs menu, add logout button, rename Players to Users, show actual user name. Includes implementation details and testing checklist. |
-| `/docs/FEATURES_SINCE_F20C34A_COMPLETE_DOCUMENTATION.md` | Features Since f20c34a | Complete documentation of all features added since working commit f20c34a. Includes certification system, short courses, SSO problems, and comparison to working version. Reference for redevelopment. |
+| | | |
+
 
 ### SSO & Authentication
 
 | Location | Document Name | Summary |
 |----------|---------------|---------|
-| `/docs/enable_sso.md` | Enable SSO | SSO integration setup guide. Environment variables, configuration steps, and verification procedures. |
-| `/docs/SSO_IMPLEMENTATION_DETAILS.md` | SSO Implementation Details | Complete technical documentation of SSO integration. Token validation, role extraction, callback flow, and error handling. |
-| `/docs/SSO_TROUBLESHOOTING.md` | SSO Troubleshooting | Common SSO issues and solutions. Empty page errors, redirect URI mismatches, nonce errors, and debugging steps. |
-| `/docs/SSO_NONCE_FIX_INSTRUCTIONS.md` | SSO Nonce Fix | Specific fix for invalid_nonce errors. Root cause analysis, diagnostic steps, and solution implementation. |
-| `/docs/SSO_CLIENT_SIDE_INSTRUCTIONS.md` | SSO Client Side | Client-side SSO integration guide. Expected flow, common issues, and security checklist. |
-| `/docs/SSO_ENVIRONMENT_VARIABLES.md` | SSO Environment Variables | Complete list of SSO-related environment variables. Required vs optional, example values, and configuration notes. |
+| | | |
 
-### Course & Content
+### Content
 
 | Location | Document Name | Summary |
 |----------|---------------|---------|
-| `/docs/certificate_dev_plan.md` | Certificate Development Plan | Certification system development plan. Final exam, certificate issuance, verification, and rendering. |
-| `/docs/certification_final_exam_plan.md` | Certification Final Exam Plan | Detailed plan for final certification exam feature. Business rules, question pool, scoring, and certificate issuance. |
-| `/docs/course_ideas/` | Course Ideas | Blueprints and plans for future courses. Includes GEO Shopify course, B2B sales, and other course concepts. |
+| | | |
 
 ### Development Guides
 
@@ -225,13 +193,11 @@ TEAM:
 | `/docs/NAMING_GUIDE.md` | Naming Guide | Comprehensive naming conventions for files, components, functions, and variables. Ensures consistency across codebase. |
 | `/docs/DESIGN_UPDATE.md` | Design Update | Design system updates and UI guidelines. CTA yellow exclusivity rule, color tokens, and component styling standards. |
 
-### Migration & Setup
+### Setup
 
 | Location | Document Name | Summary |
 |----------|---------------|---------|
 | `/docs/I18N_SETUP.md` | i18n Setup | Internationalization setup guide. Locale configuration, translation structure, and language switching implementation. |
-| `/docs/I18N_MIGRATION_SUMMARY.md` | i18n Migration Summary | Summary of internationalization migration. Changes made, files updated, and translation structure. |
-| `/docs/MIGRATION_COMPLETE.md` | Migration Complete | Completion status of major migrations. Database migrations, code refactoring, and system updates. |
 
 ### Analysis & Planning
 
@@ -245,10 +211,8 @@ TEAM:
 
 | Location | Document Name | Summary |
 |----------|---------------|---------|
-| `/docs/PHASE_1_COMPLETE.md` | Phase 1 Complete | Completion documentation for Phase 1 of development. Foundation work, data models, and initial setup. |
-| `/docs/PHASE_2_3_COMPLETE.md` | Phase 2 & 3 Complete | Completion documentation for Phases 2 and 3. Course builder, admin tools, and email automation. |
-| `/docs/TRANSFORMATION_PLAN.md` | Transformation Plan | Original plan for transforming from game platform to learning platform. Vision, milestones, and implementation strategy. |
 | `/docs/NEXT_PHASES.md` | Next Phases | Planned future phases of development. Upcoming features, priorities, and timeline estimates. |
+
 
 ---
 
@@ -256,19 +220,14 @@ TEAM:
 
 ### Critical System State
 
-**Current Version**: Restored to working baseline `f20c34a`  
-**Last Known Working Commit**: `f20c34a` - "feat: surface certification state in catalog and course detail pages"  
-**Status**: ✅ WORKING - System restored to stable baseline
+**Current Version**:
+  
+**Last Known Working Commit**: 
 
-### Authentication System (CRITICAL - DO NOT MODIFY)
+**Status**:
 
-**Working Configuration** (f20c34a):
-- `app/api/auth/[...nextauth]/route.ts`: Simple export - `export const { GET, POST } = handlers;` (NO CORS wrapping)
-- `next.config.ts`: Headers apply to ALL routes including `/api/` (source: '/:path*')
-- `public/service-worker.js`: Version 2.0.0 with networkFirstStrategy for APIs (DO NOT disable)
-- `auth.ts`: Complex JWT callback with database refresh on every request (DO NOT simplify)
-- `middleware.ts`: Simple `export default auth((req) => { ... })` pattern (DO NOT restructure)
-- `app/components/session-provider.tsx`: Simple wrapper, no extra props (DO NOT add basePath/refetchInterval)
+
+### Authentication System 
 
 **⚠️ CRITICAL WARNING**: All attempts to "improve" or "fix" these files broke the system. The working version is simple. Keep it simple.
 
@@ -282,19 +241,9 @@ TEAM:
 
 ### Tech Stack Constraints
 
-- **Next.js**: 15.5.2 (App Router) - DO NOT upgrade without approval
-- **Node.js**: >= 20.0.0 (LTS only)
-- **MongoDB**: Atlas with Mongoose 8.18.0
-- **No deprecated packages** - all dependencies must be security-audited
-- **Build must be**: warning-free, error-free, deprecated-free
 
 ### Known Issues & Solutions
 
-1. **CORS/Access Control Errors**: Root cause unknown. Working version (f20c34a) has no special handling. DO NOT add CORS wrappers to NextAuth route handler.
-
-2. **SSO Nonce Errors**: Fixed in SSO server (not Amanoba code). If occurs, clear browser cache.
-
-3. **Service Worker**: Version 2.0.0 works correctly. DO NOT disable fetch interception.
 
 ### Development Workflow
 
@@ -314,5 +263,6 @@ TEAM:
 
 ---
 
-**Last Updated**: 2026-01-25  
-**Current Work**: Google Analytics Consent Mode v2 & Course Progress Fix (✅ COMPLETE)
+**Last Updated**:
+
+**Current Work**: 
