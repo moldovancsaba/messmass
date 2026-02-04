@@ -16,6 +16,7 @@ import { ReportCalculator } from '@/lib/report-calculator';
 import type { Chart } from '@/lib/report-calculator';
 import { ensureDerivedMetrics } from '@/lib/dataValidator';
 import { validateTemplateCompatibility, formatCompatibilityIssue, type CompatibilityResult } from '@/lib/templateCompatibilityValidator';
+import { debug, info, warn, error as logError } from '@/lib/logger';
 import styles from '@/app/styles/report-page.module.css'; // WHAT: Shared stylesheet (Phase 3)
 
 /**
@@ -94,7 +95,7 @@ export default function ReportPage() {
 
         // Fetch chart configurations from public admin source (chart_configurations)
         // Then filter to those actually used by the template (maintain order)
-        console.log(`[ReportPage] Fetching ${chartIds.length} chart configurations...`);
+        debug(`[ReportPage] Fetching ${chartIds.length} chart configurations...`);
         const response = await fetch('/api/chart-config/public', {
           cache: 'no-store', // WHAT: Ensure fresh data on each load
           headers: {
@@ -102,7 +103,7 @@ export default function ReportPage() {
           },
         });
         
-        console.log(`[ReportPage] Chart fetch response:`, {
+        debug(`[ReportPage] Chart fetch response:`, {
           status: response.status,
           statusText: response.statusText,
           ok: response.ok,
@@ -111,17 +112,17 @@ export default function ReportPage() {
         
         if (!response.ok) {
           const errorText = await response.text();
-          console.error(`[ReportPage] Chart fetch failed:`, {
+          logError('[ReportPage] Chart fetch failed', {
             status: response.status,
             statusText: response.statusText,
             error: errorText.substring(0, 200)
-          });
+          }, new Error(`Failed to fetch charts: ${response.status} ${response.statusText}`));
           throw new Error(`Failed to fetch charts: ${response.status} ${response.statusText}`);
         }
         
         const data = await response.json();
 
-        console.log(`[ReportPage] Chart fetch data:`, {
+        debug(`[ReportPage] Chart fetch data:`, {
           success: data.success,
           configurationsCount: data.configurations?.length || 0,
           requestedCount: chartIds.length
@@ -140,7 +141,7 @@ export default function ReportPage() {
           .map(id => byId[id])
           .filter(Boolean);
 
-        console.log(`[ReportPage] Chart matching:`, {
+        debug(`[ReportPage] Chart matching:`, {
           requested: chartIds.length,
           found: ordered.length,
           missing: chartIds.filter(id => !byId[id])
@@ -148,7 +149,7 @@ export default function ReportPage() {
 
         setCharts(ordered as any);
       } catch (err) {
-        console.error('❌ Failed to fetch charts:', err);
+        logError('❌ Failed to fetch charts:', undefined, err instanceof Error ? err : new Error(String(err)));
         setChartsError(err instanceof Error ? err.message : 'Failed to load charts');
       } finally {
         setChartsLoading(false);
@@ -189,14 +190,14 @@ export default function ReportPage() {
       const warningIssues = compatibilityResult.issues.filter(issue => issue.severity === 'warning');
       
       if (errorIssues.length > 0) {
-        console.warn('[ReportPage] Template Compatibility Issues:', {
+        warn('[ReportPage] Template Compatibility Issues:', {
           totalErrors: errorIssues.length,
           totalWarnings: warningIssues.length,
           errors: errorIssues.map(issue => formatCompatibilityIssue(issue)),
           summary: compatibilityResult.summary
         });
       } else if (warningIssues.length > 0) {
-        console.info('[ReportPage] Template Compatibility Warnings:', {
+        info('[ReportPage] Template Compatibility Warnings:', {
           totalWarnings: warningIssues.length,
           warnings: warningIssues.map(issue => formatCompatibilityIssue(issue))
         });
@@ -207,7 +208,7 @@ export default function ReportPage() {
   // Calculate chart results using ReportCalculator
   const chartResults = useMemo(() => {
     if (!stats || !charts || charts.length === 0) {
-      console.warn('[ReportPage] Missing data for chart calculation:', {
+      warn('[ReportPage] Missing data for chart calculation:', {
         hasStats: !!stats,
         hasCharts: !!charts,
         chartsCount: charts?.length || 0,
@@ -219,7 +220,7 @@ export default function ReportPage() {
 
     // WHAT: Log stats availability for debugging
     // WHY: Need to see if required stats fields are present
-    console.log(`[ReportPage] Stats available:`, {
+    debug(`[ReportPage] Stats available:`, {
       totalKeys: Object.keys(stats).length,
       sampleKeys: Object.keys(stats).slice(0, 20),
       hasTotalFans: 'totalFans' in stats,
@@ -232,7 +233,7 @@ export default function ReportPage() {
     // HOW: ensureDerivedMetrics adds missing derived fields based on base metrics
     const enrichedStats = ensureDerivedMetrics(stats);
     
-    console.log(`[ReportPage] Stats after enrichment:`, {
+    debug(`[ReportPage] Stats after enrichment:`, {
       totalKeys: Object.keys(enrichedStats).length,
       hasTotalFans: 'totalFans' in enrichedStats,
       hasAllImages: 'allImages' in enrichedStats,
@@ -249,7 +250,7 @@ export default function ReportPage() {
     const calculator = new ReportCalculator(charts, enrichedStats as any);
     const results = new Map();
 
-    console.log(`[ReportPage] Calculating ${charts.length} charts...`);
+    debug(`[ReportPage] Calculating ${charts.length} charts...`);
     let calculatedCount = 0;
     let errorCount = 0;
     let emptyCount = 0;
@@ -259,10 +260,10 @@ export default function ReportPage() {
       if (result) {
         if (result.error) {
           errorCount++;
-          console.error(`[ReportPage] Chart calculation error for ${chart.chartId}:`, result.error);
+          logError(`[ReportPage] Chart calculation error for ${chart.chartId}:`, undefined, new Error(String(result.error)));
         } else if (result.type === 'kpi' && (result.kpiValue === undefined || result.kpiValue === 'NA')) {
           emptyCount++;
-          console.warn(`[ReportPage] Empty KPI chart: ${chart.chartId}`, {
+          warn(`[ReportPage] Empty KPI chart: ${chart.chartId}`, {
             value: result.kpiValue,
             formula: chart.formula,
             hasError: !!result.error,
@@ -270,7 +271,7 @@ export default function ReportPage() {
           });
         } else if ((result.type === 'pie' || result.type === 'bar') && (!result.elements || result.elements.length === 0)) {
           emptyCount++;
-          console.warn(`[ReportPage] Empty ${result.type} chart: ${chart.chartId}`, {
+          warn(`[ReportPage] Empty ${result.type} chart: ${chart.chartId}`, {
             elementsCount: result.elements?.length || 0,
             formula: chart.formula,
             elementsFormulas: chart.elements?.map((e: any) => e.formula) || []
@@ -281,7 +282,7 @@ export default function ReportPage() {
           );
           if (total === 0) {
             emptyCount++;
-            console.warn(`[ReportPage] Empty ${result.type} chart (total=0): ${chart.chartId}`, {
+            warn(`[ReportPage] Empty ${result.type} chart (total=0): ${chart.chartId}`, {
               elements: result.elements.map((el: any) => ({
                 label: el.label,
                 value: el.value,
@@ -297,11 +298,11 @@ export default function ReportPage() {
         }
         results.set(chart.chartId, result);
       } else {
-        console.warn(`[ReportPage] Chart calculation returned null for: ${chart.chartId}`);
+        warn(`[ReportPage] Chart calculation returned null for: ${chart.chartId}`);
       }
     }
 
-    console.log(`[ReportPage] Chart calculation complete:`, {
+    debug(`[ReportPage] Chart calculation complete:`, {
       total: charts.length,
       calculated: calculatedCount,
       errors: errorCount,

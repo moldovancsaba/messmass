@@ -97,12 +97,14 @@ export interface ProjectDTO {
     _id: string;
     name: string;
     emoji: string;
+    showEmoji?: boolean;
     logoUrl?: string;
   } | null;
   partner2?: {
     _id: string;
     name: string;
     emoji: string;
+    showEmoji?: boolean;
     logoUrl?: string;
   } | null;
   stats: {

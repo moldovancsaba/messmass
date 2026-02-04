@@ -702,7 +702,7 @@ export default function QuickAddPage() {
                   <div className={styles.previewRow}>
                     {/* Standalone emoji */}
                     <span className={styles.previewEmoji}>
-                      {matchPreview.partner1.emoji}
+                      {matchPreview.partner1.showEmoji !== false ? matchPreview.partner1.emoji : ''}
                     </span>
                     
                     {/* Partner 1 (Home Team) logo */}
@@ -801,10 +801,10 @@ export default function QuickAddPage() {
                   </h4>
                   <ul className="list-none p-0 m-0">
                     <li className="mb-2 text-sm text-gray-600">
-                      <strong>Home Team:</strong> {matchPreview.partner1.emoji} {matchPreview.partner1.name}
+                      <strong>Home Team:</strong> {matchPreview.partner1.showEmoji !== false ? matchPreview.partner1.emoji : ''} {matchPreview.partner1.name}
                     </li>
                     <li className="mb-2 text-sm text-gray-600">
-                      <strong>Away Team:</strong> {matchPreview.partner2.emoji} {matchPreview.partner2.name}
+                      <strong>Away Team:</strong> {matchPreview.partner2.showEmoji !== false ? matchPreview.partner2.emoji : ''} {matchPreview.partner2.name}
                     </li>
                   </ul>
                 </div>

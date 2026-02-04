@@ -11,6 +11,7 @@ import NextImage from 'next/image';
 interface Partner {
   name: string;
   emoji: string;
+  showEmoji?: boolean;
   logoUrl?: string;
 }
 
@@ -150,7 +151,7 @@ export default function ResourceLoader({
           )}
           
           {/* WHAT: Partner emoji fallback */}
-          {!partner?.logoUrl && partner?.emoji && (
+          {!partner?.logoUrl && partner?.emoji && (partner?.showEmoji !== false) && (
             <div className={styles.emojiWrapper}>
               <span className={styles.emoji}>{partner.emoji}</span>
             </div>

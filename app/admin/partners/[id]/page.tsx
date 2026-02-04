@@ -19,7 +19,7 @@
  * Created: 2025-12-26T14:18:00.000Z (UTC)
  */
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAdminAuth } from '@/hooks/useAdminAuth';
 import GoogleSheetsConnectModal from '@/components/GoogleSheetsConnectModal';
@@ -30,6 +30,7 @@ interface PartnerData {
   _id: string;
   name: string;
   emoji: string;
+  showEmoji?: boolean;
   googleSheetConfig?: {
     enabled: boolean;
     sheetId: string;
@@ -50,6 +51,7 @@ export default function PartnerDetailPage({
   const [error, setError] = useState('');
   const [isConnected, setIsConnected] = useState(false);
   const [showConnectModal, setShowConnectModal] = useState(false);
+  const [statusRefreshKey, setStatusRefreshKey] = useState(0);
 
   // Unwrap params
   useEffect(() => {
@@ -58,39 +60,39 @@ export default function PartnerDetailPage({
     });
   }, [params]);
 
-  // Fetch partner data
-  useEffect(() => {
+  const fetchPartner = useCallback(async () => {
     if (!partnerId) return;
 
-    const fetchPartner = async () => {
-      try {
-        setLoading(true);
-        setError('');
+    try {
+      setLoading(true);
+      setError('');
 
-        const response = await fetch(`/api/partners/${partnerId}`);
+      const response = await fetch(`/api/partners/${partnerId}`);
 
-        if (!response.ok) {
-          throw new Error('Failed to fetch partner');
-        }
-
-        const data = await response.json();
-
-        if (!data.success) {
-          throw new Error(data.error || 'Failed to load partner');
-        }
-
-        setPartner(data.partner);
-        setIsConnected(!!data.partner.googleSheetConfig?.enabled);
-      } catch (err) {
-        console.error('Error fetching partner:', err);
-        setError(err instanceof Error ? err.message : 'An error occurred');
-      } finally {
-        setLoading(false);
+      if (!response.ok) {
+        throw new Error('Failed to fetch partner');
       }
-    };
 
-    fetchPartner();
+      const data = await response.json();
+
+      if (!data.success) {
+        throw new Error(data.error || 'Failed to load partner');
+      }
+
+      setPartner(data.partner);
+      setIsConnected(!!data.partner.googleSheetConfig?.enabled);
+    } catch (err) {
+      console.error('Error fetching partner:', err);
+      setError(err instanceof Error ? err.message : 'An error occurred');
+    } finally {
+      setLoading(false);
+    }
   }, [partnerId]);
+
+  // Fetch partner data
+  useEffect(() => {
+    fetchPartner();
+  }, [fetchPartner]);
 
   // Auth check
   if (authLoading) {
@@ -151,12 +153,8 @@ export default function PartnerDetailPage({
 
       if (data.success) {
         setIsConnected(false);
-        // Reload partner data to reflect changes
-        const refreshResponse = await fetch(`/api/partners/${partnerId}`);
-        const refreshData = await refreshResponse.json();
-        if (refreshData.success) {
-          setPartner(refreshData.partner);
-        }
+        await fetchPartner();
+        setStatusRefreshKey((prev) => prev + 1);
       }
     } catch (err) {
       console.error('Error disconnecting:', err);
@@ -167,17 +165,18 @@ export default function PartnerDetailPage({
   const handleConnectSuccess = async () => {
     setIsConnected(true);
     setShowConnectModal(false);
-    
-    // Reload partner data to reflect new connection
-    try {
-      const response = await fetch(`/api/partners/${partnerId}`);
-      const data = await response.json();
-      if (data.success) {
-        setPartner(data.partner);
-      }
-    } catch (err) {
-      console.error('Error reloading partner data:', err);
-    }
+
+    await fetchPartner();
+    setStatusRefreshKey((prev) => prev + 1);
+  };
+
+  const handleSyncComplete = async (
+    type: 'pull' | 'push',
+    summary: { eventsCreated?: number; eventsUpdated?: number; rowsCreated?: number; rowsUpdated?: number }
+  ) => {
+    console.log(`${type} complete:`, summary);
+    await fetchPartner();
+    setStatusRefreshKey((prev) => prev + 1);
   };
 
   return (
@@ -187,7 +186,7 @@ export default function PartnerDetailPage({
         <div className="flex items-start justify-between">
           <div>
             <h1 className="section-title">
-              {partner.emoji} {partner.name}
+              {partner.showEmoji !== false ? partner.emoji : ''} {partner.name}
             </h1>
             <p className="text-sm text-gray-600 mt-1">Partner ID: {partner._id}</p>
           </div>
@@ -210,6 +209,7 @@ export default function PartnerDetailPage({
             <GoogleSheetsSyncStatus
               partnerId={partnerId}
               onDisconnect={handleDisconnect}
+              refreshKey={statusRefreshKey}
             />
           )}
 
@@ -218,9 +218,7 @@ export default function PartnerDetailPage({
             <GoogleSheetsSyncButtons
               partnerId={partnerId}
               isConnected={isConnected}
-              onSyncComplete={(type, summary) => {
-                console.log(`${type} complete:`, summary);
-              }}
+              onSyncComplete={handleSyncComplete}
               onError={(error) => {
                 console.error('Sync error:', error);
               }}
@@ -249,8 +247,10 @@ export default function PartnerDetailPage({
         isOpen={showConnectModal}
         onClose={() => setShowConnectModal(false)}
         onSuccess={handleConnectSuccess}
-        partnerId={partnerId}
-        partnerName={partner.name}
+        connectEndpoint={`/api/partners/${partnerId}/google-sheet/connect`}
+        targetName={partner.name}
+        targetLabel="partner event data sync"
+        templateContext="events"
       />
 
       {/* Additional Partner Sections */}

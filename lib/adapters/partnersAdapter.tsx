@@ -36,7 +36,7 @@ export const partnersAdapter: AdminPageAdapter<PartnerResponse> = {
         width: '60px',
         className: 'text-center',
         render: (partner) => (
-          <span className="text-2xl">{partner.emoji}</span>
+          <span className="text-2xl">{partner.showEmoji !== false ? partner.emoji : ''}</span>
         ),
       },
       {

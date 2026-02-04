@@ -38,12 +38,14 @@ interface Project {
     name: string;
     emoji: string;
     logoUrl?: string;
+    showEmoji?: boolean;
   } | null;
   partner2?: {
     _id: string;
     name: string;
     emoji: string;
     logoUrl?: string;
+    showEmoji?: boolean;
   } | null;
   stats: {
     remoteImages: number;
@@ -700,7 +702,7 @@ export default function ProjectsPageClient({ user }: ProjectsPageClientProps) {
                          * WHY: Match partner management style, show team logos for Sports Match projects */}
                         <div className={partnerStyles.partnerRow}>
                           {/* WHAT: Standalone emoji matching partner management size */}
-                          {project.partner1 && (
+                          {project.partner1 && project.partner1.showEmoji !== false && (
                             <span className={partnerStyles.partnerEmoji}>
                               {project.partner1.emoji}
                             </span>

@@ -196,7 +196,7 @@ export default function PartnerReportPage() {
         <div id="report-hero">
           <ReportHero 
             project={partnerAsProject}
-            emoji={heroSettings?.showEmoji !== false ? partner.emoji : undefined} // WHAT: Respect heroSettings.showEmoji
+            emoji={heroSettings?.showEmoji !== false && partner.showEmoji !== false ? partner.emoji : undefined} // WHAT: Respect both heroSettings.showEmoji and partner.showEmoji
             partnerLogo={(partner as any).logoUrl} // WHAT: Show partner logo if available
             showDate={false} // Partners don't have single date
             showExport={heroSettings?.showExportOptions ?? true}

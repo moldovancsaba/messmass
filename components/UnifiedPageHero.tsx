@@ -11,6 +11,7 @@ interface Partner {
   _id: string;
   name: string;
   emoji: string;
+  showEmoji?: boolean;
   logoUrl?: string;
 }
 
@@ -82,7 +83,7 @@ export default function UnifiedPageHero({
                WHY: single-partner-spotlight shows icon left, logo right; dual-partners shows full partner left */}
           {layoutMode === 'single-partner-spotlight' ? (
             /* WHAT: Single partner spotlight mode - icon on left (optional) */
-            !hidePartnerEmoji && partner1?.emoji && (heroSettings?.showEmoji !== false) ? (
+            !hidePartnerEmoji && partner1?.emoji && (partner1?.showEmoji !== false) && (heroSettings?.showEmoji !== false) ? (
               <div className={styles.partnerIconOnly}>
                 <div className={styles.partnerEmojiLarge} title={partner1.name}>
                   {partner1.emoji}
@@ -104,7 +105,7 @@ export default function UnifiedPageHero({
                     unoptimized
                   />
                 ) : (
-                  (heroSettings?.showEmoji !== false) && (
+                  (heroSettings?.showEmoji !== false) && (partner1?.showEmoji !== false) && (
                     <div className={styles.partnerEmoji} title={partner1.name}>
                       {partner1.emoji}
                     </div>
@@ -229,7 +230,7 @@ export default function UnifiedPageHero({
                   />
                 ) : (
                   <div className={styles.partnerEmoji} title={partner2.name}>
-                    {partner2.emoji}
+                    {partner2.showEmoji !== false ? partner2.emoji : ''}
                   </div>
                 )}
                 <div className={styles.partnerName}>{partner2.name}</div>
