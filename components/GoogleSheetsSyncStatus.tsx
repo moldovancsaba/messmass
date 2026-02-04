@@ -49,11 +49,13 @@ interface GoogleSheetStatus {
 interface GoogleSheetsSyncStatusProps {
   partnerId: string;
   onDisconnect?: () => void;
+  refreshKey?: number;
 }
 
 export default function GoogleSheetsSyncStatus({
   partnerId,
-  onDisconnect
+  onDisconnect,
+  refreshKey
 }: GoogleSheetsSyncStatusProps) {
   const [status, setStatus] = useState<GoogleSheetStatus | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -96,6 +98,11 @@ export default function GoogleSheetsSyncStatus({
   useEffect(() => {
     fetchStatus();
   }, [fetchStatus]);
+
+  useEffect(() => {
+    if (refreshKey === undefined) return;
+    fetchStatus();
+  }, [refreshKey, fetchStatus]);
 
   if (isLoading) {
     return (

@@ -11,6 +11,7 @@ interface Partner {
   _id: string;
   name: string;
   emoji: string;
+  showEmoji?: boolean;
   logoUrl?: string;
 }
 

@@ -38,12 +38,14 @@ interface Project {
     name: string;
     emoji: string;
     logoUrl?: string;
+    showEmoji?: boolean;
   } | null;
   partner2?: {
     _id: string;
     name: string;
     emoji: string;
     logoUrl?: string;
+    showEmoji?: boolean;
   } | null;
   stats: {
     remoteImages: number;

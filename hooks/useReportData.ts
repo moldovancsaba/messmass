@@ -170,6 +170,7 @@ export interface PartnerReportData {
     _id: string;
     name: string;
     emoji?: string;
+    showEmoji?: boolean;
     showEventsList?: boolean; // WHAT: Controls visibility of events list on partner report page
     showEventsListTitle?: boolean; // WHAT: Controls visibility of events list title on partner report page
     showEventsListDetails?: boolean; // WHAT: Controls whether event cards show detailed info or just titles

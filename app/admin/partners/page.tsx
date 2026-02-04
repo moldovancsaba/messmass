@@ -351,6 +351,7 @@ export default function PartnersAdminPageUnified() {
         setNewPartnerData({
           name: '',
           emoji: '',
+          showEmoji: true,
           hashtags: [],
           categorizedHashtags: {},
           bitlyLinkIds: [],

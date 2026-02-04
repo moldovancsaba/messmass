@@ -14,6 +14,7 @@ interface Partner {
   _id: string;
   name: string;
   emoji: string;
+  showEmoji?: boolean;
   logoUrl?: string;
   hashtags?: string[];
   categorizedHashtags?: { [categoryName: string]: string[] };
@@ -323,7 +324,7 @@ export default function PartnerEditorDashboard({ partner: initialPartner }: Part
                 </label>
               </div>
               <p className="text-xs text-gray-500 mb-3 ml-7">
-                Controls whether "{partner.name} Events (X)" section appears at the bottom of the partner report page
+                Controls whether &quot;{partner.name} Events (X)&quot; section appears at the bottom of the partner report page
               </p>
               
               {/* WHAT: Events List Title Visibility Control */}
@@ -342,7 +343,7 @@ export default function PartnerEditorDashboard({ partner: initialPartner }: Part
                 </label>
               </div>
               <p className="text-xs text-gray-500 mb-3 ml-7">
-                Controls whether the title "{partner.name} Events (X)" appears above the events list (only applies when events list is shown)
+                Controls whether the title &quot;{partner.name} Events (X)&quot; appears above the events list (only applies when events list is shown)
               </p>
               
               {/* WHAT: Events List Details Visibility Control */}
@@ -361,7 +362,7 @@ export default function PartnerEditorDashboard({ partner: initialPartner }: Part
                 </label>
               </div>
               <p className="text-xs text-gray-500 mt-1 ml-7">
-                Controls whether event cards show detailed info (date, stats, "View Report" button) or just the event title (only applies when events list is shown)
+                Controls whether event cards show detailed info (date, stats, &quot;View Report&quot; button) or just the event title (only applies when events list is shown)
               </p>
             </div>
             

@@ -23,6 +23,7 @@ interface PartnerData {
   name: string;
   emoji: string;
   logoUrl?: string;
+  showEmoji?: boolean;
 }
 
 interface EventSummary {

@@ -531,9 +531,7 @@ function PieChart({ result, className }: { result: ChartResult; className?: stri
   const pieGridRef = useRef<HTMLDivElement>(null);
   const pieChartContainerRef = useRef<HTMLDivElement>(null);
   
-  if (!result.elements || result.elements.length === 0) {
-    return <div className={styles.chart}>No pie data</div>;
-  }
+  const hasElements = Array.isArray(result.elements) && result.elements.length > 0;
 
   // WHAT: Check if title should be shown (default: true for backward compatibility)
   const showTitle = result.showTitle !== false;
@@ -546,8 +544,11 @@ function PieChart({ result, className }: { result: ChartResult; className?: stri
   // WHY: Replace competing flex containers with guaranteed height (KPI-safe pattern)
   // HOW: Measure container height, subtract title and legend heights, set --chart-body-height CSS variable
   useEffect(() => {
-    if (pieGridRef.current && pieChartContainerRef.current && typeof window !== 'undefined') {
-      const measureAndSetBodyHeight = () => {
+    if (!hasElements || !pieGridRef.current || !pieChartContainerRef.current || typeof window === 'undefined') {
+      return;
+    }
+
+    const measureAndSetBodyHeight = () => {
         try {
           const pieGrid = pieGridRef.current;
           const pieChartContainer = pieChartContainerRef.current;
@@ -618,15 +619,16 @@ function PieChart({ result, className }: { result: ChartResult; className?: stri
         resizeObserver.disconnect();
         mutationObserver.disconnect();
       };
-    }
-  }, [showTitle, result.elements, result.chartId]);
+  }, [hasElements, showTitle, result.chartId]);
   
   // WHAT: Measure and reduce font size for PIE chart titles if they exceed available space
   // WHY: Titles must fit within allocated space per Layout Grammar
   // HOW: Measure title height and reduce font size if content exceeds space
   useEffect(() => {
-    if (showTitle && pieTitleRowRef.current && typeof window !== 'undefined') {
-      const measureAndReduceFontSize = () => {
+    if (!hasElements || !showTitle || !pieTitleRowRef.current || typeof window === 'undefined') {
+      return;
+    }
+    const measureAndReduceFontSize = () => {
         try {
           const titleRow = pieTitleRowRef.current;
           const titleElement = titleRow?.querySelector(`.${styles.pieTitleText}`) as HTMLElement;
@@ -688,15 +690,16 @@ function PieChart({ result, className }: { result: ChartResult; className?: stri
         resizeObserver.disconnect();
         mutationObserver.disconnect();
       };
-    }
-  }, [showTitle, result.title, result.chartId]);
+  }, [hasElements, showTitle, result.title, result.chartId]);
   
   // WHAT: Measure and reduce font size for PIE legends if they exceed available space
   // WHY: Legends must fit within allocated space per Layout Grammar
   // HOW: Measure legend container height and reduce font size if content exceeds space
   useEffect(() => {
-    if (pieLegendRef.current && typeof window !== 'undefined') {
-      const measureAndReduceFontSize = () => {
+    if (!hasElements || !pieLegendRef.current || typeof window === 'undefined') {
+      return;
+    }
+    const measureAndReduceFontSize = () => {
         try {
           // WHAT: Get legend container height
           // WHY: Need to check if legend items fit within allocated space
@@ -793,10 +796,14 @@ function PieChart({ result, className }: { result: ChartResult; className?: stri
         resizeObserver.disconnect();
         mutationObserver.disconnect();
       };
-    }
-  }, [result.elements, result.chartId, showPercentages]);
+  }, [hasElements, result.chartId, showPercentages]);
+
+  if (!hasElements) {
+    return <div className={styles.chart}>No pie data</div>;
+  }
   
-  const total = result.elements.reduce((sum, el) => sum + (typeof el.value === 'number' ? el.value : 0), 0);
+  const elements = result.elements ?? [];
+  const total = elements.reduce((sum, el) => sum + (typeof el.value === 'number' ? el.value : 0), 0);
   
   // WHAT: Read individual pie slice colors from CSS variables
   // WHY: Use custom style colors for each pie slice (granular control)
@@ -840,11 +847,11 @@ function PieChart({ result, className }: { result: ChartResult; className?: stri
   // WHAT: Force theme colors to override any element.color
   // WHY: Style must overwrite each and every color (user requirement)
   const chartData = {
-    labels: result.elements.map(el => el.label),
+    labels: elements.map(el => el.label),
     datasets: [{
       label: result.title,
-      data: result.elements.map(el => typeof el.value === 'number' ? el.value : 0),
-      backgroundColor: result.elements.map((el, idx) => 
+      data: elements.map(el => typeof el.value === 'number' ? el.value : 0),
+      backgroundColor: elements.map((_, idx) => 
         pieColors[idx % pieColors.length]
       ),
       // WHAT: Use pieBorderColor from Style Editor, fallback to first pie color
@@ -930,7 +937,7 @@ function PieChart({ result, className }: { result: ChartResult; className?: stri
         {/* WHAT: Legends at bottom center */}
         {/* WHY: User requirement - legends should be bottom section, centered */}
         <div ref={pieLegendRef} className={styles.pieLegend}>
-          {result.elements.map((element, idx) => {
+          {elements.map((element, idx) => {
             const numValue = typeof element.value === 'number' ? element.value : 0;
             // WHAT: Format percentage based on rounded setting
             // WHY: Respect formatting.rounded flag for decimal places

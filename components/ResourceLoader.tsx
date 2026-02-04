@@ -11,6 +11,7 @@ import NextImage from 'next/image';
 interface Partner {
   name: string;
   emoji: string;
+  showEmoji?: boolean;
   logoUrl?: string;
 }
 
