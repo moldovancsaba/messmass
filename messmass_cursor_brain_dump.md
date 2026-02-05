@@ -43,9 +43,10 @@
 1. **This file** – you are here.
 2. **`agent_working_loop_canonical_operating_document.md`** – agent rules (Sultan), rollback plan requirement, documentation = code, memory refresh.
 3. **`docs/operations/ACTION_PLAN.md`** – execution queue, open tasks, STATE MEMORY.
-4. **`docs/operations/ROADMAP.md`** – roadmap; no DONE lists (those go in release notes).
-5. **`docs/brain_dump.md`** – docs tree layout, canonical entrypoints, where things live under `docs/`.
-6. **`docs/releases/`** – completed work and release notes.
+4. **`docs/operations/FLAWS_AND_ERRORS_TASKLIST.md`** – actionable task list to eliminate flaws and errors.
+5. **`docs/operations/ROADMAP.md`** – roadmap; no DONE lists (those go in release notes).
+6. **`docs/brain_dump.md`** – docs tree layout, canonical entrypoints, where things live under `docs/`.
+7. **`docs/releases/`** – completed work and release notes.
 
 ---
 

@@ -793,7 +793,7 @@
   font-size: 0.8rem;
 }
 
-/* Table Overflow */
+/* Table Overflow — Admin only; do not use in report routes (Layout Grammar: no scroll/overflow on report content). */
 .table-overflow-hidden {
   overflow: hidden;
 }
