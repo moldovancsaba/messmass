@@ -247,10 +247,8 @@ export default function PartnerDetailPage({
         isOpen={showConnectModal}
         onClose={() => setShowConnectModal(false)}
         onSuccess={handleConnectSuccess}
-        connectEndpoint={`/api/partners/${partnerId}/google-sheet/connect`}
-        targetName={partner.name}
-        targetLabel="partner event data sync"
-        templateContext="events"
+        partnerId={partnerId}
+        partnerName={partner.name}
       />
 
       {/* Additional Partner Sections */}
