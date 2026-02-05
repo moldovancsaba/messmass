@@ -15,7 +15,7 @@
 | Item | Value |
 |------|--------|
 | **Active branch** | `preview` (deploy preview; merge to `main` via PR) |
-| **Last commit (preview)** | Filter report fix: match projects with categorized hashtags (`category:value`) |
+| **Last commit (preview)** | Layout Grammar remediation: no clipping on content layers (overflow → visible) |
 | **Main** | Protected; all changes via PR. Preview is the integration branch. |
 
 *Update "Last commit" when you push new work.*
