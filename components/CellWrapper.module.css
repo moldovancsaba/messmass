@@ -89,7 +89,7 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  overflow: hidden;
+  overflow: visible; /* Layout Grammar: no clipping on content layers; height resolution ensures fit */
   width: 100%;
   box-sizing: border-box;
   min-height: 0; /* CRITICAL: Allow flex item to shrink below content size */

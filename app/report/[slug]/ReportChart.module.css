@@ -20,7 +20,7 @@
   border-radius: var(--mm-radius-lg);
   box-shadow: var(--mm-shadow-sm);
   padding: 0; /* WHAT: Remove padding, add to header/body instead */
-  overflow: hidden; /* WHAT: Prevent content overflow */
+  overflow: visible; /* WHAT: Layout Grammar - no clipping on content layers; height resolution ensures fit */
   box-sizing: border-box !important;
   /* Enable container queries for inner scaling (width + height) */
   container-type: size;
@@ -174,10 +174,10 @@
   overflow-wrap: break-word !important;
   hyphens: auto !important; /* A-03.2: Allow hyphenation for better value fitting */
   /* WHAT: A-03.2 - Ensure value fits within row height */
-  /* WHY: Multi-line values must be fully visible, not clipped */
-  /* HOW: Use min-height: 0 to allow flex shrinking, overflow: hidden to prevent overflow */
+  /* WHY: Multi-line values must be fully visible, not clipped (Layout Grammar) */
+  /* HOW: Use min-height: 0 to allow flex shrinking; overflow: visible so content is never clipped */
   min-height: 0 !important; /* CRITICAL: Allow flex shrinking to fit content */
-  overflow: hidden !important; /* A-03.2: Prevent overflow - content must wrap to fit (Layout Grammar) */
+  overflow: visible !important; /* Layout Grammar: no clipping on content; fit via font scaling/wrap */
   container-type: size;
 }
 
@@ -620,10 +620,10 @@
   padding: var(--mm-space-2) !important;
   box-sizing: border-box !important;
   /* WHAT: A-03.1 - Ensure content fits without clipping */
-  /* WHY: Multi-line text must be fully visible within the wrapper */
-  /* HOW: Use min-height: 0 to allow flex shrinking, ensure content wraps to fit */
+  /* WHY: Multi-line text must be fully visible (Layout Grammar: no clipping on content layers) */
+  /* HOW: min-height: 0 for flex shrink; overflow: visible so content is never clipped; fit via wrap/font scaling */
   min-height: 0 !important; /* CRITICAL: Allow flex shrinking to fit content */
-  overflow: hidden !important; /* A-03.1: Prevent overflow - content must wrap to fit (Layout Grammar) */
+  overflow: visible !important; /* Layout Grammar: no clipping - content fits via height resolution and font scaling */
   /* CRITICAL: Force block display - cannot be inline */
   clear: both !important;
   float: none !important;
@@ -648,10 +648,10 @@
   height: 100% !important; /* CRITICAL: Fill parent height completely (parent has explicit height from Phase 4) */
   max-height: 100% !important; /* CRITICAL: Don't exceed parent height */
   /* WHAT: A-03.1 - Ensure content fits without clipping */
-  /* WHY: Multi-line text and tables must be fully visible, not clipped */
-  /* HOW: Use min-height: 0 to allow flex shrinking, dynamic font size reduction for tables */
+  /* WHY: Multi-line text and tables must be fully visible (Layout Grammar: no clipping on content layers) */
+  /* HOW: min-height: 0 for flex shrink; overflow: visible; fit via font size reduction and wrapping */
   min-height: 0 !important; /* CRITICAL: Allow flex shrinking to fit content */
-  overflow: hidden !important; /* A-03.1: Prevent overflow - content must fit through font size reduction (Layout Grammar) */
+  overflow: visible !important; /* Layout Grammar: no clipping - content fits via height resolution and font scaling */
   /* WHAT: P1 1.5 Phase 2 - Use block-level typography instead of unified-text-font-size (Option B) */
   /* WHY: Align text chart typography with block typography for true unification */
   /* A-03.1: Font size may be reduced dynamically via inline style if content exceeds space */
@@ -826,7 +826,7 @@
   font-size: inherit !important;
   /* CRITICAL: Preserve line breaks but allow wrapping (not pre-wrap which breaks bold) */
   white-space: normal !important; /* Allow normal wrapping, markdown handles line breaks */
-  overflow: hidden !important; /* A-03.1: Prevent overflow - content must fit through font size reduction (Layout Grammar) */
+  overflow: visible !important; /* Layout Grammar: no clipping on content - fit via font scaling and wrap */
 }
 
 .textMarkdown > * {
@@ -894,10 +894,10 @@
   background: var(--mm-gray-100) !important;
   border-radius: var(--mm-radius-sm) !important;
   /* WHAT: Wrap long lines instead of scrolling - Layout Grammar compliance */
-  /* WHY: Content must fit without scrolling */
+  /* WHY: Content must fit without scrolling; no clipping on content layers */
   white-space: pre-wrap !important; /* Wrap long lines */
   word-break: break-all !important; /* Break long words if needed */
-  overflow: hidden !important; /* No scrolling allowed */
+  overflow: visible !important; /* Layout Grammar: no clipping - fit via wrap and block height */
   width: 100% !important;
   box-sizing: border-box !important;
   text-align: left !important; /* WHAT: Code blocks left-aligned for readability */
@@ -1210,7 +1210,7 @@
     min-height: 250px !important; /* Minimum readable size */
     max-width: 100% !important;
     flex: 1 1 auto !important; /* Allow flex filling */
-    overflow: hidden !important; /* Prevent content overflow */
+    overflow: visible !important; /* Layout Grammar: no clipping on content layers */
     box-sizing: border-box !important;
     container-type: size; /* Ensure container queries work on mobile */
   }
@@ -1231,7 +1231,7 @@
     justify-content: center !important;
     height: 100% !important; /* CRITICAL: Fill full grid row height */
     min-height: 0 !important; /* Allow grid row to shrink if needed */
-    overflow: hidden !important; /* Prevent overflow */
+    overflow: visible !important; /* Layout Grammar: no clipping on content layers */
     box-sizing: border-box !important;
   }
   .pieChartContainer {
