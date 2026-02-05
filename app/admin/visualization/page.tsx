@@ -2214,6 +2214,51 @@ export default function VisualizationPage() {
                     })}
                   </div>
 
+                  {/* WHAT: Block Aspect Ratio (A-UI-LAYOUT-02.1) – TEXT/TABLE-only blocks, 4:1 to 4:10 */}
+                  {/* WHY: LayoutV2 allows variable block aspect ratio for text/table blocks */}
+                  {/* HOW: Only show when block contains exclusively TEXT or exclusively TABLE charts; width=4 enforced by block capacity */}
+                  {(() => {
+                    const allText = block.charts.length > 0 && block.charts.every(chart => resolveChartType(chart.chartId) === 'text');
+                    const allTable = block.charts.length > 0 && block.charts.every(chart => resolveChartType(chart.chartId) === 'table');
+                    const totalUnits = block.charts.reduce((sum, c) => sum + (normalizeUnitSize(c.unitSize ?? c.width)), 0);
+                    const canSetBlockAspectRatio = (allText || allTable) && totalUnits <= 4;
+                    if (!canSetBlockAspectRatio) return null;
+                    const BLOCK_ASPECT_OPTIONS = [
+                      { value: '', label: 'Default (4:1)' },
+                      ...([2, 3, 4, 5, 6, 7, 8, 9, 10].map(n => ({ value: `4:${n}`, label: `4:${n}` })))
+                    ];
+                    return (
+                      <div className={vizStyles.blockAspectRatioCard}>
+                        <h4 className={vizStyles.blockAspectRatioTitle}>Block Aspect Ratio</h4>
+                        <div className={vizStyles.blockAspectRatioControls}>
+                          <label htmlFor={`block-aspect-${block._id}`} className={vizStyles.blockAspectRatioLabel}>
+                            Aspect ratio (width:height):
+                            <select
+                              id={`block-aspect-${block._id}`}
+                              value={block.blockAspectRatio ?? ''}
+                              onChange={(e) => {
+                                const val = e.target.value;
+                                const updatedBlock = {
+                                  ...block,
+                                  blockAspectRatio: val ? val : undefined
+                                };
+                                handleUpdateBlock(updatedBlock);
+                              }}
+                              className={vizStyles.blockAspectRatioSelect}
+                            >
+                              {BLOCK_ASPECT_OPTIONS.map(opt => (
+                                <option key={opt.value || 'default'} value={opt.value}>{opt.label}</option>
+                              ))}
+                            </select>
+                          </label>
+                          <small className={vizStyles.blockAspectRatioHelper}>
+                            Allowed only for TEXT-only or TABLE-only blocks. Range 4:1 to 4:10. For TABLE blocks, Table Height Multiplier (below) takes priority if set.
+                          </small>
+                        </div>
+                      </div>
+                    );
+                  })()}
+
                   {/* WHAT: Table Height Multiplier Control (for TABLE-only blocks) */}
                   {/* WHY: Allow setting table height as multiplier of block width (height = blockWidth × multiplier) */}
                   {/* HOW: Only show for blocks containing exclusively TABLE charts */}
@@ -2226,10 +2271,10 @@ export default function VisualizationPage() {
                     if (!allTables || block.charts.length === 0) return null;
                     
                     return (
-                      <div style={{ marginTop: '1rem', padding: '1rem', border: '1px solid #ddd', borderRadius: '4px' }}>
-                        <h4 style={{ marginTop: 0, marginBottom: '0.5rem' }}>Table Height Control</h4>
-                        <div style={{ marginBottom: '0.5rem' }}>
-                          <label htmlFor={`table-height-multiplier-${block._id}`} style={{ display: 'block', marginBottom: '0.25rem' }}>
+                      <div className={vizStyles.tableHeightCard}>
+                        <h4 className={vizStyles.tableHeightTitle}>Table Height Control</h4>
+                        <div className={vizStyles.tableHeightControls}>
+                          <label htmlFor={`table-height-multiplier-${block._id}`} className={vizStyles.tableHeightLabel}>
                             Height Multiplier:
                             <input
                               id={`table-height-multiplier-${block._id}`}
@@ -2248,10 +2293,10 @@ export default function VisualizationPage() {
                                 };
                                 handleUpdateBlock(updatedBlock);
                               }}
-                              style={{ marginLeft: '0.5rem', padding: '0.25rem', width: '80px' }}
+                              className={vizStyles.tableHeightInput}
                             />
                           </label>
-                          <small style={{ display: 'block', color: '#666', fontSize: '0.875rem', marginTop: '0.25rem' }}>
+                          <small className={vizStyles.tableHeightHelper}>
                             Height = Block Width × {block.tableHeightMultiplier ?? 0.25}
                             <br />
                             Example: 1200px width × 1.5 = 1800px height

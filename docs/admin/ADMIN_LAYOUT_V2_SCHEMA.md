@@ -30,6 +30,8 @@ interface LayoutBlock {
   id: string;
   order: number;           // vertical order in report
   items: LayoutItem[];
+  // Optional: block-level aspect ratio override (A-UI-LAYOUT-02.1). Allowed only for TEXT-only or TABLE-only blocks.
+  blockAspectRatio?: string;  // e.g. "4:6"; range 4:1 to 4:10
 }
 
 interface LayoutItem {

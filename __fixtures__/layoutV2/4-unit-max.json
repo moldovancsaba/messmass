@@ -1,0 +1,14 @@
+[
+  {
+    "id": "block-4unit",
+    "title": "Four KPIs",
+    "showTitle": true,
+    "order": 0,
+    "charts": [
+      { "chartId": "kpi-1", "width": 1, "order": 0 },
+      { "chartId": "kpi-2", "width": 1, "order": 1 },
+      { "chartId": "kpi-3", "width": 1, "order": 2 },
+      { "chartId": "kpi-4", "width": 1, "order": 3 }
+    ]
+  }
+]

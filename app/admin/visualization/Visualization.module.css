@@ -351,6 +351,101 @@
   text-align: center;
 }
 
+/* WHAT: Block aspect ratio card (TEXT/TABLE blocks, LayoutV2) */
+.blockAspectRatioCard {
+  margin-top: var(--mm-space-4);
+  padding: var(--mm-space-4);
+  border: 1px solid var(--mm-gray-200);
+  border-radius: var(--mm-radius-lg);
+  background: var(--mm-white);
+}
+
+.blockAspectRatioTitle {
+  margin: 0;
+  margin-bottom: var(--mm-space-2);
+  font-size: var(--mm-font-size-lg);
+  font-weight: 600;
+  color: var(--mm-gray-900);
+}
+
+.blockAspectRatioControls {
+  display: flex;
+  flex-direction: column;
+  gap: var(--mm-space-2);
+}
+
+.blockAspectRatioLabel {
+  display: flex;
+  align-items: center;
+  gap: var(--mm-space-2);
+  font-size: var(--mm-font-size-sm);
+  color: var(--mm-gray-700);
+}
+
+.blockAspectRatioSelect {
+  margin-left: var(--mm-space-2);
+  padding: var(--mm-space-2);
+  min-width: 120px;
+  border: 1px solid var(--mm-gray-300);
+  border-radius: var(--mm-radius-md);
+  background: var(--mm-gray-50);
+}
+
+.blockAspectRatioHelper {
+  display: block;
+  font-size: 0.875rem;
+  color: var(--mm-gray-600);
+  margin-top: var(--mm-space-1);
+}
+
+/* WHAT: Table height control card */
+.tableHeightCard {
+  margin-top: var(--mm-space-4);
+  padding: var(--mm-space-4);
+  border: 1px solid var(--mm-gray-200);
+  border-radius: var(--mm-radius-lg);
+  background: var(--mm-white);
+}
+
+.tableHeightTitle {
+  margin: 0;
+  margin-bottom: var(--mm-space-2);
+  font-size: var(--mm-font-size-lg);
+  font-weight: 600;
+  color: var(--mm-gray-900);
+}
+
+.tableHeightControls {
+  display: flex;
+  flex-direction: column;
+  gap: var(--mm-space-2);
+}
+
+.tableHeightLabel {
+  display: flex;
+  align-items: center;
+  gap: var(--mm-space-2);
+  font-size: var(--mm-font-size-sm);
+  color: var(--mm-gray-700);
+}
+
+.tableHeightInput {
+  margin-left: var(--mm-space-2);
+  padding: var(--mm-space-2);
+  width: 80px;
+  border: 1px solid var(--mm-gray-300);
+  border-radius: var(--mm-radius-md);
+  background: var(--mm-gray-50);
+}
+
+.tableHeightHelper {
+  display: block;
+  font-size: 0.875rem;
+  color: var(--mm-gray-500);
+  margin-top: var(--mm-space-1);
+  line-height: 1.4;
+}
+
 /* Report text card button */
 .reportTextCard {
   border: 2px solid var(--mm-gray-300);

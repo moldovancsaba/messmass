@@ -1,0 +1,11 @@
+[
+  {
+    "id": "block-2unit",
+    "title": "Wide Chart",
+    "showTitle": true,
+    "order": 0,
+    "charts": [
+      { "chartId": "bar-demographics", "width": 2, "order": 0 }
+    ]
+  }
+]

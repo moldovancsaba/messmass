@@ -1,6 +1,7 @@
 /* WHAT: Report Styles List Page
  * WHY: Manage all report styles - view, create, edit, delete
- * HOW: Fetch from API, display in grid, navigate to editor */
+ * HOW: Fetch from API, display in grid, navigate to editor
+ * Model & assignment: docs/admin/STYLE_MODEL_AND_ASSIGNMENT_RULES.md (global → partner → event → filter) */
 
 'use client';
 

@@ -1,0 +1,11 @@
+[
+  {
+    "id": "block-1unit",
+    "title": "Single KPI",
+    "showTitle": true,
+    "order": 0,
+    "charts": [
+      { "chartId": "kpi-attendees", "width": 1, "order": 0 }
+    ]
+  }
+]
