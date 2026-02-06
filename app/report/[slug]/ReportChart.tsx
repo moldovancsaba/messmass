@@ -1710,7 +1710,26 @@ function TableChart({ result, className }: { result: ChartResult; className?: st
   // WHY: Need to calculate body zone height and table content height explicitly
   // HOW: Measure container and header heights, calculate body height, set CSS custom properties
   const tableContentRef = useRef<HTMLDivElement>(null);
-  
+
+  // WHAT: Insert break opportunities after - # @ _ / | \ so words don't break mid-token but can break at these chars
+  // WHY: User requirement: allow wrapping at separators (e.g. "AV19#H", "event_name") without breaking normal words
+  // HOW: After table HTML is set, walk td/th text nodes and insert U+200B (zero-width space) after each allowed char
+  useEffect(() => {
+    if (!tableContentRef.current || !html) return;
+    const table = tableContentRef.current.querySelector('table');
+    if (!table) return;
+    const breakAfterChars = /([-#@_/|\\])/g;
+    const zeroWidthSpace = '\u200B';
+    const process = (node: Node) => {
+      if (node.nodeType === Node.TEXT_NODE && node.textContent) {
+        node.textContent = node.textContent.replace(breakAfterChars, `$1${zeroWidthSpace}`);
+      } else if (node.nodeType === Node.ELEMENT_NODE) {
+        node.childNodes.forEach(process);
+      }
+    };
+    table.querySelectorAll('th, td').forEach((cell) => cell.childNodes.forEach(process));
+  }, [html]);
+
   // WHAT: Content-driven row height - measure table content and set row height so card fits table
   // WHY: User requirement: see all rows (e.g. 10); card height should fit table, not clip it
   // HOW: Measure table scrollHeight + title/subtitle, find row element, set --block-height and --row-height

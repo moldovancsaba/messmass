@@ -1023,7 +1023,7 @@
   border-bottom: 2px solid var(--chartBorder, var(--mm-gray-300));
   color: var(--chartValueColor, var(--mm-gray-900));
   overflow-wrap: normal;
-  word-break: normal; /* WHAT: Do not break words; wrap only at spaces so "Fehérvár" stays on one line */
+  word-break: normal; /* WHAT: Wrap at spaces only; break also at - # @ _ / | \ (injected in TS as U+200B) */
   box-sizing: border-box;
 }
 
@@ -1032,7 +1032,7 @@
   border-bottom: 1px solid var(--chartBorder, var(--mm-gray-200));
   color: var(--chartValueColor, var(--mm-gray-900));
   overflow-wrap: normal;
-  word-break: normal; /* WHAT: Do not break words; wrap only at spaces */
+  word-break: normal; /* WHAT: Wrap at spaces; break also at - # @ _ / | \ (injected in TS) */
   box-sizing: border-box;
 }
 
