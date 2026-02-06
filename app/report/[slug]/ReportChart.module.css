@@ -989,16 +989,28 @@
 }
 
 /* WHAT: Table uses full card width; columns share space so all columns visible */
+/* WHY: No overflow - scale font with container width so words fit without breaking */
 .tableMarkdown table {
   width: 100%;
   max-width: 100%;
   border-collapse: collapse;
   border-spacing: 0;
   margin: 0;
-  font-size: var(--block-base-font-size);
+  font-size: clamp(8px, 2.5cqw, var(--block-base-font-size)); /* WHAT: Shrink on narrow cards so content fits, no overflow */
   table-layout: fixed; /* WHAT: Columns share width, no horizontal overflow */
   box-sizing: border-box;
 }
+
+/* WHAT: Give text-heavy columns more width so words fit without breaking or overflow */
+.tableMarkdown table th:nth-child(1),
+.tableMarkdown table td:nth-child(1) { width: 22%; } /* Esemény neve */
+.tableMarkdown table th:nth-child(2),
+.tableMarkdown table td:nth-child(2) { width: 10%; } /* Dátum */
+.tableMarkdown table th:nth-child(3),
+.tableMarkdown table td:nth-child(3) { width: 20%; } /* Partner neve */
+.tableMarkdown table th:nth-child(4),
+.tableMarkdown table td:nth-child(4) { width: 14%; } /* Esemény helyszín */
+/* Columns 5+ share remaining 34% via table-layout: fixed */
 
 .tableMarkdown table thead {
   background: var(--chartTitleColor, var(--mm-gray-100));
@@ -1010,8 +1022,8 @@
   text-align: left;
   border-bottom: 2px solid var(--chartBorder, var(--mm-gray-300));
   color: var(--chartValueColor, var(--mm-gray-900));
-  overflow-wrap: break-word;
-  word-break: break-word;
+  overflow-wrap: normal;
+  word-break: normal; /* WHAT: Do not break words; wrap only at spaces so "Fehérvár" stays on one line */
   box-sizing: border-box;
 }
 
@@ -1019,8 +1031,8 @@
   padding: var(--mm-space-3) var(--mm-space-4);
   border-bottom: 1px solid var(--chartBorder, var(--mm-gray-200));
   color: var(--chartValueColor, var(--mm-gray-900));
-  overflow-wrap: break-word;
-  word-break: break-word;
+  overflow-wrap: normal;
+  word-break: normal; /* WHAT: Do not break words; wrap only at spaces */
   box-sizing: border-box;
 }
 
