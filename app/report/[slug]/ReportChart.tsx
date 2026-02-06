@@ -1874,6 +1874,52 @@ function TableChart({ result, className }: { result: ChartResult; className?: st
     }
   }, [showTitle, result.title]);
   
+  // WHAT: Reduce table font size when any cell has horizontal overflow (e.g. header overlap)
+  // WHY: Many columns or long headers can overlap; no overflow accepted
+  // HOW: Clear font-size, then stepwise reduce until no th/td has scrollWidth > clientWidth, min 8px
+  useEffect(() => {
+    if (!tableContentRef.current || !html || typeof window === 'undefined') return;
+    const table = tableContentRef.current.querySelector('table');
+    if (!table) return;
+
+    const MIN_FONT_PX = 8;
+    const STEP = 0.9;
+
+    const runReduceFontIfHorizontalOverflow = () => {
+      table.style.removeProperty('font-size');
+      requestAnimationFrame(() => {
+        const checkOverflow = (): boolean => {
+          const cells = table.querySelectorAll('th, td');
+          for (let i = 0; i < cells.length; i++) {
+            const el = cells[i] as HTMLElement;
+            if (el.scrollWidth > el.clientWidth) return true;
+          }
+          return false;
+        };
+
+        const step = () => {
+          const current = parseFloat(getComputedStyle(table).fontSize) || 16;
+          if (!checkOverflow()) return;
+          if (current <= MIN_FONT_PX) return;
+          const next = Math.max(MIN_FONT_PX, current * STEP);
+          table.style.setProperty('font-size', `${next}px`, 'important');
+          requestAnimationFrame(step);
+        };
+
+        step();
+      });
+    };
+
+    runReduceFontIfHorizontalOverflow();
+    const t = setTimeout(runReduceFontIfHorizontalOverflow, 150);
+    const ro = new ResizeObserver(() => runReduceFontIfHorizontalOverflow);
+    ro.observe(table);
+    return () => {
+      clearTimeout(t);
+      ro.disconnect();
+    };
+  }, [html]);
+
   // WHAT: Measure and reduce font size for TABLE content if it exceeds available space
   // WHY: Table content must fit within allocated space per Layout Grammar
   // HOW: Measure table content height and reduce font size if content exceeds space
