@@ -1,4 +1,9 @@
 # Debugging Admin Access Issues
+Status: Active
+Last Updated: 2026-02-05T00:00:00.000Z
+Canonical: Yes
+Owner: Admin
+
 
 ## Quick Diagnosis Steps
 

@@ -34,7 +34,7 @@
 2. Reporting / Admin / Cross-System action sections: currently no other open items.
 
 **Roadmap (future work, not task list):**  
-`docs/operations/ROADMAP.md` — completed/DONE items are not listed there; see `docs/releases/` for those.
+`docs/operations/ROADMAP.md` — completed/DONE items are not listed there; see `docs/archive/_archive/releases/` for those.
 
 ---
 
@@ -42,11 +42,10 @@
 
 1. **This file** – you are here.
 2. **`agent_working_loop_canonical_operating_document.md`** – agent rules (Sultan), rollback plan requirement, documentation = code, memory refresh.
-3. **`docs/operations/ACTION_PLAN.md`** – execution queue, open tasks, STATE MEMORY.
-4. **`docs/operations/FLAWS_AND_ERRORS_TASKLIST.md`** – actionable task list to eliminate flaws and errors.
-5. **`docs/operations/ROADMAP.md`** – roadmap; no DONE lists (those go in release notes).
-6. **`docs/brain_dump.md`** – docs tree layout, canonical entrypoints, where things live under `docs/`.
-7. **`docs/releases/`** – completed work and release notes.
+3. **`docs/operations/ACTION_PLAN.md`** – single execution queue, open tasks, pre-release checks, STATE MEMORY (no separate task lists).
+4. **`docs/operations/ROADMAP.md`** – roadmap; no DONE lists (those go in release notes).
+5. **`docs/brain_dump.md`** – docs tree layout, canonical entrypoints, where things live under `docs/`.
+6. **`docs/archive/_archive/releases/`** – completed work and release notes.
 
 ---
 
@@ -55,7 +54,7 @@
 - **Filter-based reports** were showing “No Data Found – No projects found with this filter combination.”  
   **Fix:** API `GET /api/hashtags/filter-by-slug/[slug]` now matches projects when the filter hashtag is stored as plain (e.g. `football`) and the project has it only under a category (e.g. `sport:football`). Helper `projectHasFilterHashtag` does exact match or `category:value` suffix match.  
   **Commit:** `fix: filter reports match projects with categorized hashtags (category:value)` (on `preview`).
-- **Policy:** Completed/DONE items are not listed in ACTION_PLAN or ROADMAP; they live only in release notes (`docs/releases/`).
+- **Policy:** Completed/DONE items are not listed in ACTION_PLAN or ROADMAP; they live only in release notes (`docs/archive/_archive/releases/`).
 - **GoogleSheetsConnectModal:** Partner detail page uses `partnerId` + `partnerName` (not `connectEndpoint`/`targetName`/etc.) so Vercel build and modal contract stay aligned.
 
 - **Layout Grammar remediation (2026-02-05):** Report-rendering fixes delivered: `.chart`, text chart wrappers, `.bodyZone`, TextChart `.content`, `.kpiValueRow`, `.textMarkdown pre`, mobile chart/pie title → `overflow: visible`. Audit doc updated; build passes. See `docs/audits/investigations/LAYOUT_GRAMMAR_AUDIT_2026-02-05.md`.

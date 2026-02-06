@@ -1,0 +1,18 @@
+# Coding Standards (Always Applied)
+
+This rule file exists to prevent single-point patching and to keep fixes systemic.
+
+## Fix the Class, Not the Instance (No Single-Point Patching)
+
+Context: A user reports one visible bug (e.g. unreadable text in a single input). Treat that report as an example of a class of issues, not proof the problem is isolated.
+
+Protocol:
+1. Infer the root cause and the pattern/class.
+2. Search the codebase for all instances of that pattern (same component, same context, same anti-pattern).
+3. Fix all instances of the class, OR clearly document what’s in scope vs. what remains (with follow-ups).
+4. Do not claim “done” after a one-point patch when the issue is clearly systemic.
+
+Reference:
+- `docs/CODING_STANDARDS.md` (canonical coding standards)
+- `docs/operations/LEARNINGS.md` (incident + rationale)
+

@@ -42,8 +42,9 @@ Owner: Architecture
 1. **Document Impact**: List ALL affected pages/components
 2. **Update Once**: Modify only the canonical implementation
 3. **Test Propagation**: Verify changes across ALL usages
-4. **Version Bump**: Follow semantic versioning (PATCH for fixes, MINOR for features)
-5. **Document Changes**: Update RELEASE_NOTES.md with module impact
+4. **Fix The Class, Not The Instance**: If the bug is a pattern/symptom, search for all similar instances and fix the whole class (or document scope + follow-ups). Do not claim "done" after a one-point patch for a systemic issue. (See `docs/operations/LEARNINGS.md`.)
+5. **Version Bump**: Follow semantic versioning (PATCH for fixes, MINOR for features)
+6. **Document Changes**: Update RELEASE_NOTES.md with module impact
 
 **Example - Updating FormModal:**
 ```
@@ -86,6 +87,28 @@ grep -r "FormModal\|ColoredCard\|UnifiedHashtagInput" REUSABLE_COMPONENTS_INVENT
 - Use modules exactly as documented in inventory
 - Propose improvements to central modules (not workarounds)
 - Document module dependencies in task planning
+
+---
+
+## Fix The Class, Not The Instance (No Single-Point Patching)
+
+### Context
+A user can report a single visible bug (e.g. unreadable/invisible text in one specific input). Treat that report as an example of a *class* of issues, not proof the problem is isolated.
+
+Single-point patching is unprofessional because:
+- the same pattern likely exists elsewhere,
+- users must report each instance,
+- it creates “duct-tape” fixes instead of systemic correctness.
+
+### Protocol (4 Steps)
+For any bug or UI/design issue:
+1. Infer the root cause and the pattern/class (e.g. “inputs on dark shell without tokens”).
+2. Search the codebase for all instances of that pattern (same component type/context/anti-pattern).
+3. Fix all instances of the class, **or** explicitly document what’s in scope vs. what remains (with follow-ups).
+4. Only claim “done” when the class is addressed (or when the remaining scope is clearly documented).
+
+### Rule Of Thumb
+One reported example ⇒ assume there are more ⇒ find and fix the whole class (or document the rest), then say done.
 
 ---
 

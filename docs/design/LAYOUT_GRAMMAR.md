@@ -1,7 +1,7 @@
 # Layout Grammar
 Status: Active
 Last Updated: 2026-01-15T14:18:00.000Z
-Canonical: No
+Canonical: Yes
 Owner: Architecture
 
 **Version:** 1.0.2  
@@ -350,4 +350,3 @@ Layout Grammar forbids:
 - ❌ Clipping (`overflow: hidden` on content layers)
 - ❌ Bypassing validation
 - ❌ Data loss in aggregation
-

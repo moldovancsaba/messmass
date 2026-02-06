@@ -1711,57 +1711,75 @@ function TableChart({ result, className }: { result: ChartResult; className?: st
   // HOW: Measure container and header heights, calculate body height, set CSS custom properties
   const tableContentRef = useRef<HTMLDivElement>(null);
   
-  // WHAT: Calculate and set body zone height explicitly (P1 1.4 Phase 2)
-  // WHY: Replace flex: 1 with explicit height for deterministic behavior
-  // HOW: Measure container and header heights, calculate body height, set CSS custom property
+  // WHAT: Content-driven row height - measure table content and set row height so card fits table
+  // WHY: User requirement: see all rows (e.g. 10); card height should fit table, not clip it
+  // HOW: Measure table scrollHeight + title/subtitle, find row element, set --block-height and --row-height
+  useEffect(() => {
+    if (!tableContentRef.current || typeof window === 'undefined' || !html) return;
+    const chartContainer = tableContentRef.current.closest('[class*="cellWrapper"]') as HTMLElement;
+    if (!chartContainer) return;
+
+    const applyContentDrivenHeight = () => {
+      const tableEl = tableContentRef.current?.querySelector('table');
+      if (!tableEl) return;
+      const titleZone = chartContainer.querySelector('[class*="titleZone"]') as HTMLElement;
+      const subtitleZone = chartContainer.querySelector('[class*="subtitleZone"]') as HTMLElement;
+      const titleHeight = titleZone?.offsetHeight ?? 0;
+      const subtitleHeight = subtitleZone?.offsetHeight ?? 0;
+      const tableFullHeight = tableEl.scrollHeight;
+      const tableContentPadding = 0;
+      const requiredHeight = titleHeight + subtitleHeight + tableFullHeight + tableContentPadding;
+      const minHeight = 200;
+      const heightPx = Math.max(minHeight, Math.ceil(requiredHeight));
+
+      let rowEl: HTMLElement | null = chartContainer.parentElement;
+      while (rowEl) {
+        const blockHeight = rowEl.style.getPropertyValue('--block-height');
+        if (blockHeight) break;
+        rowEl = rowEl.parentElement;
+      }
+      if (rowEl) {
+        rowEl.style.setProperty('--block-height', `${heightPx}px`);
+        rowEl.style.setProperty('--row-height', `${heightPx}px`);
+      }
+    };
+
+    applyContentDrivenHeight();
+    const t1 = setTimeout(applyContentDrivenHeight, 0);
+    const t2 = setTimeout(applyContentDrivenHeight, 100);
+    const ro = new ResizeObserver(() => requestAnimationFrame(applyContentDrivenHeight));
+    ro.observe(chartContainer);
+    if (tableContentRef.current) ro.observe(tableContentRef.current);
+    return () => {
+      clearTimeout(t1);
+      clearTimeout(t2);
+      ro.disconnect();
+    };
+  }, [html, showTitle, result.title]);
+
+  // WHAT: Set body zone height from container (after row height may have been updated by content-driven effect)
   useEffect(() => {
     if (tableContentRef.current && typeof window !== 'undefined') {
-      // WHAT: Find parent CellWrapper container (chart container)
-      // WHY: CSS variable must be set on chart container per solution document
       const chartContainer = tableContentRef.current.closest('[class*="cellWrapper"]') as HTMLElement;
       if (!chartContainer) return;
-      
+
       const measureAndSetHeight = () => {
-        // WHAT: Get container height from offsetHeight (actual rendered height)
-        // WHY: Container height is set via --block-height from row
         const containerHeight = chartContainer.offsetHeight;
-        
-        // WHAT: Find title and subtitle zones within CellWrapper
-        // WHY: Subtract header heights from container to get body height
         const titleZone = chartContainer.querySelector('[class*="titleZone"]') as HTMLElement;
         const subtitleZone = chartContainer.querySelector('[class*="subtitleZone"]') as HTMLElement;
-        
-        let titleHeight = 0;
-        let subtitleHeight = 0;
-        
-        if (titleZone) {
-          titleHeight = titleZone.offsetHeight;
-        }
-        if (subtitleZone) {
-          subtitleHeight = subtitleZone.offsetHeight;
-        }
-        
-        // WHAT: Calculate body zone height: container - title - subtitle
-        // WHY: Explicit height calculation instead of flex growth
+        let titleHeight = 0, subtitleHeight = 0;
+        if (titleZone) titleHeight = titleZone.offsetHeight;
+        if (subtitleZone) subtitleHeight = subtitleZone.offsetHeight;
         const bodyHeight = containerHeight - titleHeight - subtitleHeight;
-        
-        // WHAT: Set CSS custom property for body zone height on chart container
-        // WHY: P1 1.4 Phase 2 - explicit height cascade
         if (bodyHeight > 0) {
           chartContainer.style.setProperty('--chart-body-height', `${bodyHeight}px`);
         }
       };
-      
-      // WHAT: Measure after initial render and on resize
-      // WHY: Heights may change on resize or content changes
+
       measureAndSetHeight();
-      
       const resizeObserver = new ResizeObserver(measureAndSetHeight);
       resizeObserver.observe(chartContainer);
-      
-      return () => {
-        resizeObserver.disconnect();
-      };
+      return () => resizeObserver.disconnect();
     }
   }, [showTitle, result.title]);
   

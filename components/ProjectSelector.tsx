@@ -146,7 +146,7 @@ export default function ProjectSelector({
     return (
       <div className={styles.chipContainer}>
         <div className={`${styles.projectChip} ${disabled ? styles.disabled : ''}`}>
-          <span className={styles.chipLabel}>
+          <span className={styles.chipLabel} title={selectedProject.eventName}>
             {selectedProject.eventName}
           </span>
           {!disabled && (

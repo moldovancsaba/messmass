@@ -1,13 +1,13 @@
-# AUDIT_ACTION_PLAN.md
+# Audit Action Plan
+Status: Active
+Last Updated: 2026-01-12T13:18:36.000Z
+Canonical: Yes
+Owner: Architecture
 
-**Version:** 1.1.7  
-**Created:** 2026-01-12T00:09:33.679Z  
-**Last Reviewed:** 2026-01-12T10:05:00.000Z  
-**Last Updated:** 2026-01-12T13:18:36.000Z  
-**Status:** Active  
-**Canonical:** Yes  
-**Owner:** Architecture  
-**Audience:** Engineering + Product
+Version: 1.1.7
+Created: 2026-01-12T00:09:33.679Z
+Last Reviewed: 2026-01-12T10:05:00.000Z
+Audience: Engineering + Product
 
 ---
 
@@ -172,7 +172,7 @@ BAR chart height calculation uses estimated label height (40px for 2-line max) a
 - ✅ Enhanced height calculation logic: `lib/elementFitValidator.ts` - Improved `validateBarElementFit()` and `validatePieElementFit()`
 - ✅ BAR chart improvements: Estimates font size based on available space, calculates label height using actual metrics (fontSize × lineHeight × 2)
 - ✅ PIE chart improvements: Estimates font size and legend item height, accounts for item count and label lengths
-- ✅ Documentation: `docs/audits/investigations/A-03-height-calculation-improvements.md` - Before/after comparison
+- ✅ Documentation: `docs/archive/_archive/investigations/INVESTIGATIONS_PACK_2026.md#a-03-height-calculation-improvements` - Before/after comparison
 - ✅ Commit: Height calculation accuracy improvements with documentation
 - ✅ Local gate passed: Build, TypeScript, and linting all pass
 
@@ -224,7 +224,7 @@ Block-level typography uses `calculateSyncedFontSizes()` which may not account f
 - ✅ Enhanced `calculateSyncedFontSizes()`: Variable character width multiplier, very long title handling, extreme aspect ratio handling (very narrow < 400px, very wide > 2000px)
 - ✅ Improved BAR chart font size algorithm: Variable character width multiplier, improved label width calculation (accounts for cell padding)
 - ✅ Regression harness created: `__tests__/typography-edge-cases.test.ts` with 7 test cases covering all edge cases
-- ✅ Documentation: `docs/audits/investigations/A-04-typography-scaling-edge-cases.md` - Complete implementation summary and verification
+- ✅ Documentation: `docs/archive/_archive/investigations/INVESTIGATIONS_PACK_2026.md#a-04-typography-scaling-edge-cases` - Complete implementation summary and verification
 - ✅ All tests passing: 7/7 test cases pass, no regressions introduced
 - ✅ Local gate passed: Build, TypeScript, and linting all pass
 
@@ -280,7 +280,7 @@ Runtime validation provides console warnings but does not block rendering if CSS
 - ✅ Height resolution validation: Validates structural failures and split requirements
 - ✅ Element fit validation: Validates element fit failures
 - ✅ Production guardrails: Integrated into `ReportContent.tsx` and `ReportChart.tsx`
-- ✅ Documentation: `docs/audits/investigations/A-05-runtime-enforcement.md` - Enforcement rules and safeguards
+- ✅ Documentation: `docs/archive/_archive/investigations/INVESTIGATIONS_PACK_2026.md#a-05-runtime-enforcement` - Enforcement rules and safeguards
 - ✅ Commit: Runtime enforcement implementation with documentation
 - ✅ Local gate passed: Build, TypeScript, and linting all pass
 
@@ -351,7 +351,7 @@ No performance optimizations were applied beyond what was necessary for correctn
 - [ ] Confirm correctness and Layout Grammar enforcement intact
 
 **PHASE 5 — Documentation & Closure**
-- [ ] Create `docs/audits/investigations/A-06-performance-optimization-pass.md`
+- [ ] Create `docs/archive/_archive/investigations/INVESTIGATIONS_PACK_2026.md#a-06-performance-optimization-pass`
 - [ ] Document baseline, bottlenecks, changes, and results
 - [ ] Update A-06 status to DONE in this document
 - [ ] Add closure evidence links

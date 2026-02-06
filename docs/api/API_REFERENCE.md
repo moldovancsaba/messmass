@@ -1,14 +1,14 @@
 # 📡 API Reference
 Status: Active
 Last Updated: 2026-01-11T22:45:21.000Z
-Canonical: No
-Owner: Architecture
+Canonical: Yes
+Owner: Backend
 
 **Version:** 11.25.3  
 **Last Updated:** 2026-01-11T22:45:21.000Z (UTC)  
 **Status:** Production
 
-Quick API reference for MessMass v6.0.0. See detailed guides for complete schemas and examples.
+Quick API reference for MessMass. See detailed guides for complete schemas and examples.
 
 ---
 
@@ -25,7 +25,7 @@ All admin endpoints require session authentication via HTTP-only cookie.
 **Login**: `POST /api/admin/login`  
 **Logout**: `DELETE /api/admin/login`
 
-**See**: [AUTHENTICATION_AND_ACCESS.md](../features/AUTHENTICATION.md) for details
+**See**: [AUTHENTICATION.md](../features/AUTHENTICATION.md) for details
 
 ---
 
@@ -51,7 +51,7 @@ Delete project.
 
 **Query**: `projectId`
 
-**See**: [USER_GUIDE.md (archived)](../archive/2025/deprecated-guides/USER_GUIDE.md#project-management) for usage examples
+**See**: [USER_GUIDE (archived)](../archive/_archive/deprecated-guides-2025/LEGACY_GUIDES_PACK.md#legacy-user_guide) for usage examples
 
 ---
 
@@ -132,7 +132,7 @@ Fetch variable groups for Editor layout.
 ### POST /api/variables-groups
 Create/update groups.
 
-**See**: [ADMIN_VARIABLES_SYSTEM.md (archived)](../archive/2025/deprecated-guides/ADMIN_VARIABLES_SYSTEM.md#api-reference) for details
+**See**: [VARIABLE_SYSTEM_HISTORY.md](../archive/2025/deprecated-guides/VARIABLE_SYSTEM_HISTORY.md) for background and migration context
 
 ---
 
@@ -211,7 +211,7 @@ All API endpoints return JSON with consistent structure:
 - `project-update`: Metadata changed
 - `heartbeat`: Keep-alive
 
-**See**: [ARCHITECTURE.md](../../ARCHITECTURE.md) for WebSocket details
+**See**: [ARCHITECTURE.md](../ARCHITECTURE.md) for WebSocket details
 
 ---
 
@@ -237,13 +237,13 @@ Returns: `{ projects: [...], totalMatched: 150, nextOffset: 60 }`
 
 ## For Complete Documentation
 
-- **Projects**: [USER_GUIDE.md (archived)](../archive/2025/deprecated-guides/USER_GUIDE.md)
+- **Projects**: [USER_GUIDE (archived)](../archive/_archive/deprecated-guides-2025/LEGACY_GUIDES_PACK.md#legacy-user_guide)
 - **Partners**: [PARTNERS_SYSTEM_GUIDE.md](../features/PARTNERS_SYSTEM_GUIDE.md)
 - **Bitly**: [BITLY_INTEGRATION_GUIDE.md](../features/BITLY_INTEGRATION_GUIDE.md)
-- **Quick Add**: [QUICK_ADD_GUIDE.md (archived)](../archive/2025/deprecated-guides/QUICK_ADD_GUIDE.md)
+- **Quick Add**: [QUICK_ADD_GUIDE (archived)](../archive/_archive/deprecated-guides-2025/LEGACY_GUIDES_PACK.md#legacy-quick_add_guide)
 - **Hashtags**: [HASHTAG_SYSTEM.md](../features/HASHTAG_SYSTEM.md)
-- **Variables**: [ADMIN_VARIABLES_SYSTEM.md (archived)](../archive/2025/deprecated-guides/ADMIN_VARIABLES_SYSTEM.md)
-- **Auth**: [AUTHENTICATION_AND_ACCESS.md](../features/AUTHENTICATION.md)
+- **Variables**: [VARIABLE_SYSTEM_HISTORY.md](../archive/2025/deprecated-guides/VARIABLE_SYSTEM_HISTORY.md)
+- **Auth**: [AUTHENTICATION.md](../features/AUTHENTICATION.md)
 
 ---
 

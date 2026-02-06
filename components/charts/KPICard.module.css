@@ -17,7 +17,7 @@
   padding: var(--mm-space-6);
   transition: all 0.2s ease;
   position: relative;
-  overflow: hidden;
+  overflow: hidden; /* Layout Grammar: decorative - card border-radius */
 }
 
 .kpiCard:hover {

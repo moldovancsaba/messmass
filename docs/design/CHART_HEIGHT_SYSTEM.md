@@ -1,7 +1,7 @@
 # Chart Block Height System
 Status: Active
 Last Updated: 2026-01-11T22:28:38.000Z
-Canonical: No
+Canonical: Yes
 Owner: Architecture
 
 ## Overview

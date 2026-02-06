@@ -142,15 +142,19 @@
 
 .notificationText {
   /* WHAT: Main notification text (user + action)
-   * WHY: Primary information about the activity */
+   * WHY: Primary information about the activity; allow 2 lines, full text on hover via title */
   font-size: var(--mm-font-size-sm);
   color: var(--mm-gray-900);
   line-height: 1.4;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
 }
 
 .notificationProject {
   /* WHAT: Project name
-   * WHY: Shows which project was affected */
+   * WHY: Shows which project was affected; full name on hover via title */
   font-size: var(--mm-font-size-sm);
   color: var(--mm-gray-700);
   font-weight: var(--mm-font-weight-medium);

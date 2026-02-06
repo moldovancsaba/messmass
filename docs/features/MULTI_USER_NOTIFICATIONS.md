@@ -2,7 +2,7 @@
 Status: Active
 Last Updated: 2026-01-11T23:51:17.000Z
 Canonical: Yes
-Owner: Architecture
+Owner: Product
 
 ## System Overview and Data Flow
 - `components/TopHeader.tsx` renders the notification bell and badge.
@@ -39,4 +39,4 @@ Owner: Architecture
 
 ## Related Documents
 - [AUDIT_EVIDENCE_INDEX.md](../audits/AUDIT_EVIDENCE_INDEX.md)
-- [IMPLEMENTATION_COMPLETE.md](../../IMPLEMENTATION_COMPLETE.md)
+- [IMPLEMENTATION_COMPLETE.md](../operations/IMPLEMENTATION_COMPLETE.md)

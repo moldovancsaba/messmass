@@ -72,6 +72,6 @@ Evidence: `lib/users.ts`
 
 7 References (Non-Canonical)
 - Embedded help content: `app/admin/help/page.tsx`
-- Capability map reference: `docs/audits/admin-ui/ADMIN_UI_CAPABILITY_MAP.md`
-- Execution readiness: `docs/audits/admin-ui/ADMIN_UI_EXECUTION_READINESS.md`
+- Capability map reference: `docs/archive/_archive/audits/ADMIN_UI_AUDITS_PACK.md#admin-ui-capability-map`
+- Execution readiness: `docs/archive/_archive/audits/ADMIN_UI_AUDITS_PACK.md#admin-ui-execution-readiness`
 - Archived legacy guide (do not use as source of truth): `docs/archive/2025/deprecated-guides/USER_GUIDE.md`

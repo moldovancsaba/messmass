@@ -1,8 +1,8 @@
 # MessMass Authentication & Access Control System
 Status: Active
 Last Updated: 2026-01-11T22:28:38.000Z
-Canonical: No
-Owner: Product
+Canonical: Yes
+Owner: Security
 
 **Version:** 11.25.1  
 **Last Updated:** 2026-01-11T22:28:38.000Z (UTC)  

@@ -1,5 +1,5 @@
 # Layout Grammar Compliance Report
-Status: Active
+Status: Reference
 Last Updated: 2026-01-11T22:28:38.000Z
 Canonical: No
 Owner: Architecture
@@ -175,4 +175,3 @@ All development up to v11.46.2 is fully aligned with the Layout Grammar specific
 
 *Layout Grammar Compliance Report*  
 *Version 11.46.2 | 2026-01-02 | Tribeca*
-

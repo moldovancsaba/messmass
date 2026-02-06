@@ -1,4 +1,9 @@
 # Audit Remediation Progress Tracker
+Status: Active
+Last Updated: 2026-01-02
+Canonical: No
+Owner: Audit
+
 
 **Last Updated:** 2026-01-02  
 **Overall Status:** IN PROGRESS  
@@ -257,7 +262,7 @@ Phase E — Reporting
   - **Verification:**
     - ✅ Verification script created (`scripts/verify-production-flags.ts`)
     - ✅ Startup validation will fail if flags missing (P0 feature flag enforcement)
-    - ✅ Documentation created (`docs/audits/P0.1-PRODUCTION-FLAGS-SETUP.md`)
+    - ✅ Documentation created (`docs/archive/_archive/audits/AUDITS_MISC_PACK.md#p0-1-production-flags-setup`)
     - ⚠️ **Manual action required:** Set flags in Vercel Production environment
     - ⚠️ **Verification pending:** Production startup verification after flags are set
 - [x] Enforce startup validation for required flags (`b5ce1f70d`)
@@ -317,7 +322,7 @@ Phase E — Reporting
     - ✅ All raw `fetch()` calls replaced with `apiPost()`, `apiPut()`, `apiDelete()`, `apiRequest()`
     - ✅ Build passes
     - ✅ No CSRF errors in production
-  - **Documentation:** `docs/audits/investigations/P0-csrf-comprehensive-fix.md`
+  - **Documentation:** `docs/archive/_archive/investigations/INVESTIGATIONS_PACK_2026.md#p0-csrf-comprehensive-fix`
 - [ ] Remove console logs + prevent reintroduction
 - [ ] Lock down CORS
 - [ ] Add account lockout policy

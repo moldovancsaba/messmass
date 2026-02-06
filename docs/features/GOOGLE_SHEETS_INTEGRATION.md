@@ -1,12 +1,12 @@
 # Google Sheets Integration - Feature Guide (v12.0.0)
 Status: Active
-Last Updated: 2026-01-11T22:28:38.000Z
-Canonical: No
+Last Updated: 2026-02-05T20:53:25.000Z
+Canonical: Yes
 Owner: Product
 
-**Status**: Phase 1 Foundation Complete ✅  
-**Next**: Phase 2 Implementation (Partner-Level Sync)  
-**Target**: v12.1.0 - Production Ready
+**Status**: Phase 2 Delivered ✅ (Partner-level sync + UI refresh reliability)  
+**Next**: Phase 3 Hardening + validation (deployment checklist signoff)  
+**Target**: v12.1.x - Production Ready
 
 ---
 
@@ -33,7 +33,7 @@ Owner: Product
 **WHY**: Enable partners to manage events in spreadsheets (familiar tool, bulk editing, formulas)  
 **HOW**: Service account authentication + partner-level sheet connections + UUID-based row matching
 
-### Key Features (Phase 1-6)
+### Key Features (Phase 1-2)
 
 - ✅ **Partner-Level Sheets**: One sheet per partner, multiple event rows
 - ✅ **Manual Sync Buttons**: "Pull Data" and "Push Data" on partner and event pages
@@ -43,6 +43,7 @@ Owner: Product
 - ✅ **Conflict Detection**: Compare timestamps, show confirmation modal
 - ✅ **Hardcoded Mapping**: 42 columns (A-AP) map to MessMass fields
 - ✅ **Backward Compatible**: Existing events and partners unchanged
+- ✅ **Phase 2 UI Reliability**: Partner detail status card and partner metadata refresh after connect/disconnect/pull/push so the UI never shows stale sync state.
 
 ### Future Roadmap
 
@@ -634,35 +635,31 @@ npm run test:google-sheets
 - [x] Documentation
 
 ### Phase 2: Partner-Level Sync (v12.1.0)
-- [ ] Connect/disconnect API endpoints
-- [ ] Pull all events API
-- [ ] Push all events API
-- [ ] Admin UI (Partner Detail page)
-- [ ] Testing and debugging
+- [x] Connect/disconnect API endpoints
+- [x] Pull all events API
+- [x] Push all events API
+- [x] Admin UI (Partner Detail page)
+- [x] Phase 2 reliability: status card + partner metadata refresh after connect/disconnect/pull/push
 
 ### Phase 3: Event-Level Sync (v12.2.0)
-- [ ] Pull single event API
-- [ ] Push single event API
-- [ ] Event Editor UI (sync buttons)
-- [ ] Testing and debugging
+- [x] Pull single event API
+- [x] Push single event API
+- [x] Event Editor UI (sync buttons)
 
 ### Phase 4: Conflict Detection (v12.3.0)
-- [ ] Timestamp comparison logic
-- [ ] Confirmation modal component
-- [ ] Conflict resolution workflow
-- [ ] Testing and debugging
+- [x] Timestamp comparison logic
+- [x] Confirmation modal component
+- [x] Conflict resolution workflow
 
 ### Phase 5: Automated Daily Sync (v12.4.0)
-- [ ] Cron job API endpoint
-- [ ] Vercel cron configuration
-- [ ] Logging and error notifications
-- [ ] Testing and monitoring
+- [x] Cron job API endpoint
+- [x] Vercel cron configuration
+- [x] Logging and error notifications
 
 ### Phase 6: Polish & Production (v12.5.0)
-- [ ] Error handling edge cases
-- [ ] Download template button
-- [ ] User documentation
-- [ ] Production deployment
+- [ ] Error handling edge cases (make failures user-visible and actionable)
+- [ ] Monitoring + alerting for scheduled sync failures
+- [ ] Production rollout + deployment checklist signoff
 
 ### Phase 7: Column Mapping Editor (Q1 2026)
 - [ ] Visual mapping UI
@@ -677,6 +674,5 @@ npm run test:google-sheets
 
 ---
 
-**Version**: 12.0.2 (Phase 1 Complete)  
-**Last Updated**: 2026-01-11T22:28:38.000Z  
-**Status**: Foundation Complete - Ready for Phase 2 🚀
+**Version**: 12.1.x (Phase 2 Delivered)  
+**Status**: Phase 2 Delivered; production hardening in progress

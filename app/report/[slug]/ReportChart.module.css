@@ -214,13 +214,13 @@
 }
 
 .kpi .kpiTitle > * {
-  /* WHAT: Inner content wrapper for text truncation */
+  /* WHAT: Inner content wrapper - title 2-line clamp (Layout Grammar: allowed for title/subtitle) */
   /* WHY: Allows flex centering while maintaining line clamp */
   /* HOW: Use -webkit-box for line clamping inside flex container */
   display: -webkit-box;
   -webkit-box-orient: vertical;
-  -webkit-line-clamp: 2;
-  overflow: hidden;
+  -webkit-line-clamp: 2; /* Layout Grammar: title 2-line clamp */
+  overflow: hidden; /* Layout Grammar: title 2-line clamp */
   text-align: center;
   width: 100%;
 }
@@ -260,7 +260,7 @@
   padding: var(--mm-space-1) var(--mm-space-2);
   height: 100%; /* CRITICAL: Fill full grid row height */
   min-height: 0; /* CRITICAL: Allow grid row to shrink if needed */
-  overflow: hidden; /* Prevent overflow */
+  overflow: hidden; /* Layout Grammar: title row - title 2-line clamp */
   box-sizing: border-box;
 }
 
@@ -521,7 +521,7 @@
 }
 
 .barTrack {
-  /* WHAT: Bar track visualization - fills available space in table cell */
+  /* WHAT: Bar track visualization - fills available space in table cell (Layout Grammar: decorative clipping) */
   /* WHY: Track fills available space between label and value, must maintain readable thickness */
   /* HOW: 100% width of table cell, minimum height constraint, centered vertically */
   background: var(--chartNoDataBackground);
@@ -529,7 +529,7 @@
   min-height: clamp(1.2rem, 22cqh, 1.44rem); /* WHAT: Prevent bar collapse under vertical constraint */
   width: 100%; /* CRITICAL: Fills entire table cell */
   border-radius: calc(clamp(1.2rem, 22cqh, 1.44rem) / 2);
-  overflow: hidden;
+  overflow: hidden; /* Layout Grammar: decorative - bar track shape only, fill is content and fully visible */
   /* WHAT: Table cell vertical-align handles centering, no align-self needed */
 }
 
@@ -600,8 +600,8 @@
   line-height: 1.25 !important;
   display: -webkit-box !important;
   -webkit-box-orient: vertical !important;
-  -webkit-line-clamp: 2 !important;
-  overflow: hidden !important;
+  -webkit-line-clamp: 2 !important; /* Layout Grammar: title 2-line clamp */
+  overflow: hidden !important; /* Layout Grammar: title 2-line clamp */
   word-break: break-word !important;
   width: 100% !important;
   box-sizing: border-box !important;
@@ -957,39 +957,47 @@
   text-align: inherit !important;
 }
 
-/* Table Chart - Markdown table display */
+/* Table Chart - Native card: table fills card, card curves table corners */
 .table {
+  /* WHAT: Table chart is the card - no extra inner card; table starts at card edge */
   background: var(--chartBackground) !important;
   border-radius: var(--mm-radius-lg);
-}
-
-.tableContent {
-  width: 100%;
-  height: var(--text-content-height, var(--mm-block-height-default)); /* WHAT: P1 1.4 Phase 4 - explicit height from calculation (uses --chart-body-height from Phase 2), fallback to design token */
-  /* WHAT: No clipping - Layout Grammar: content must fit through wrapping/reflow */
-  /* WHY: Layout Grammar: no clipping on content layers */
-  padding: var(--mm-space-4);
+  box-shadow: var(--mm-shadow-sm);
+  overflow: hidden; /* WHAT: Clip table to card rounded corners */
+  padding: 0;
   display: flex;
   flex-direction: column;
+  width: 100%;
+}
+
+/* WHAT: Table content fills card; height set from content or --text-content-height */
+.tableContent {
+  width: 100%;
+  min-height: 0;
+  height: var(--text-content-height, auto); /* WHAT: Prefer content-driven height when set by TableChart */
+  padding: 0;
+  display: block;
+  overflow: visible;
 }
 
 .tableMarkdown {
   width: 100%;
-  height: 100%; /* WHAT: Fill parent tableContent height (explicit height from Phase 4) */
-  /* WHAT: No clipping - Layout Grammar: content must fit through wrapping/reflow */
-  /* WHY: Layout Grammar: no clipping on content layers */
-  display: flex;
-  flex-direction: column;
+  min-height: 0;
+  height: 100%;
+  display: block;
+  overflow: visible;
 }
 
+/* WHAT: Table uses full card width; columns share space so all columns visible */
 .tableMarkdown table {
   width: 100%;
+  max-width: 100%;
   border-collapse: collapse;
   border-spacing: 0;
   margin: 0;
-  /* WHAT: P1 1.5 Phase 2 - Use block-level typography instead of independent scaling */
   font-size: var(--block-base-font-size);
-  table-layout: auto;
+  table-layout: fixed; /* WHAT: Columns share width, no horizontal overflow */
+  box-sizing: border-box;
 }
 
 .tableMarkdown table thead {
@@ -1002,12 +1010,36 @@
   text-align: left;
   border-bottom: 2px solid var(--chartBorder, var(--mm-gray-300));
   color: var(--chartValueColor, var(--mm-gray-900));
+  overflow-wrap: break-word;
+  word-break: break-word;
+  box-sizing: border-box;
 }
 
 .tableMarkdown table td {
   padding: var(--mm-space-3) var(--mm-space-4);
   border-bottom: 1px solid var(--chartBorder, var(--mm-gray-200));
   color: var(--chartValueColor, var(--mm-gray-900));
+  overflow-wrap: break-word;
+  word-break: break-word;
+  box-sizing: border-box;
+}
+
+/* WHAT: Round top corners of table to match card (first row) */
+.tableMarkdown table thead tr:first-child th:first-child {
+  border-top-left-radius: var(--mm-radius-lg);
+}
+
+.tableMarkdown table thead tr:first-child th:last-child {
+  border-top-right-radius: var(--mm-radius-lg);
+}
+
+/* WHAT: Round bottom corners of table to match card (last row) */
+.tableMarkdown table tbody tr:last-child td:first-child {
+  border-bottom-left-radius: var(--mm-radius-lg);
+}
+
+.tableMarkdown table tbody tr:last-child td:last-child {
+  border-bottom-right-radius: var(--mm-radius-lg);
 }
 
 .tableMarkdown table tbody tr:hover {
@@ -1043,7 +1075,7 @@
   background: var(--chartBackground) !important;
   border-radius: var(--mm-radius-lg); /* Rounded corners for image container */
   box-shadow: var(--mm-shadow-sm);
-  overflow: hidden !important; /* Clip image to rounded corners */
+  overflow: hidden !important; /* Layout Grammar: decorative - clip image to rounded corners */
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1284,7 +1316,7 @@
     max-width: 100% !important;
     display: flex !important;
     flex-direction: column !important;
-    overflow: hidden !important;
+    overflow: hidden !important; /* Layout Grammar: decorative - image container rounded corners */
   }
   
   /* WHAT: Aspect ratio classes for image containers on mobile */

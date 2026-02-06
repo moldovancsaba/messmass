@@ -1,7 +1,7 @@
 # Report Layout System (Spec v2.0)
 Status: Active
 Last Updated: 2026-01-16T11:30:00.000Z
-Canonical: No
+Canonical: Yes
 Owner: Architecture
 
 **Version:** 11.55.1  

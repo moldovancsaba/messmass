@@ -1,6 +1,6 @@
 # Operations Action Plan
 Status: Active
-Last Updated: 2026-01-16T11:30:00.000Z
+Last Updated: 2026-02-04
 Canonical: Yes
 Owner: Operations
 
@@ -20,8 +20,7 @@ Owner: Operations
 4. Reporting System (action items)  
 5. Admin System (action items)  
 6. Cross-System (action items)  
-7. Completed Items (reference only)  
-8. STATE MEMORY (current only)
+7. STATE MEMORY (current only)
 
 ---
 
@@ -41,7 +40,7 @@ Owner: Operations
 
 1.4 DONE rule:
 - When a task is DONE, remove it from Sections 3 to 6.
-- Keep only a short reference in Section 7.
+- Do not list completed or DONE items in this file or on the Roadmap; they belong in release notes (docs/archive/_archive/releases/).
 
 ---
 
@@ -53,12 +52,12 @@ Owner: Operations
 - Variables
 - Layout schema (LayoutV2)
 
-2.2 LayoutV2 delivery order:
-- Reporting Contract + Admin Schema are prerequisites (DONE).
-- Reporting renderer implementation + regression alignment are prerequisites for Admin authoring integration (DONE).
-- Reporting supports variable blockAspectRatio for TEXT-AREA/TABLE (4:1–4:10) (DONE).
-- Admin authoring of LayoutV2 incl. optional blockAspectRatio (A-UI-LAYOUT-02.1) (DONE).
-- Contract conformance fixtures (X-LAYOUT-01) (DONE).
+2.2 LayoutV2 delivery order (dependency order only):
+- Reporting Contract + Admin Schema are prerequisites.
+- Reporting renderer implementation + regression alignment are prerequisites for Admin authoring integration.
+- Reporting supports variable blockAspectRatio for TEXT-AREA/TABLE (4:1–4:10).
+- Admin authoring of LayoutV2 incl. optional blockAspectRatio (A-UI-LAYOUT-02.1).
+- Contract conformance fixtures (X-LAYOUT-01).
 
 ---
 
@@ -80,6 +79,14 @@ Owner: Operations
     - `docs/2026-02-04_GOOGLE_SHEETS_PARTNER_SYNC.md` (implementation notes)
     - `docs/operations/DEPLOYMENT_CHECKLIST.md` (rollout validation)
 
+3.3 **Pre-release checks (run every release):**
+- [ ] Build: `npm run build`
+- [ ] Layout Grammar guardrail: `npx tsx scripts/check-layout-grammar-guardrail.ts`
+- [ ] Type-check: `npm run type-check` (or `tsc --noEmit`)
+- [ ] Lint: `npm run lint` (if not skipped in CI)
+
+3.4 **Flaws / errors reference:** Layout Grammar audit and report defects → `docs/audits/investigations/LAYOUT_GRAMMAR_AUDIT_2026-02-05.md` (or `_archive` if moved). Rollout validation → [DEPLOYMENT_CHECKLIST.md](DEPLOYMENT_CHECKLIST.md).
+
 ---
 
 ## 4. Reporting System (Action Items)
@@ -94,18 +101,7 @@ Owner: Tribeca (Reporting)
 
 Owner: Katja (Admin)
 
-### A-UI-12: Reporting (Report Structures)
-
-- [x] Define report template model, data blocks, and selection rules (global -> partner -> event)
-  - Status: DONE
-  - Priority: Medium
-  - Dependencies: None
-  - Owner: Katja
-  - Deliverables:
-    - Doc updates: app/admin/visualization/page.tsx model mapping
-    - Selection rule documentation
-
-*No other open Admin action items.*
+*No open action items.*
 
 ---
 
@@ -115,39 +111,7 @@ Owner: Katja (Admin)
 
 ---
 
-## 7. Completed Items (Reference Only)
-
-Reporting:
-- R-LAYOUT-01.1 (Contract)
-- R-LAYOUT-01.2 (Renderer implementation)
-- R-LAYOUT-01.3 (Regression alignment)
-- R-LAYOUT-02.1 (Variable blockAspectRatio support)
-- A-05 (Layout Grammar runtime enforcement guardrails)
-- A-03.1 (TEXT AREA height fix)
-- A-03.2 (KPI height fix)
-- A-03.3 (BAR height accuracy)
-- A-R-19 (Reporting release preflight)
-- Build Fix (b5bb08ad5)
-- Chart Crash Fix (bd104e9c3)
-
-Admin:
-- A-UI-LAYOUT-01.1 (Schema)
-- A-UI-LAYOUT-01.2 (LayoutV2 authoring output)
-- A-UI-12 (Report template model + selection rules)
-- A-UI-13 (Style model and assignment rules – docs/admin/STYLE_MODEL_AND_ASSIGNMENT_RULES.md, app/admin/styles/page.tsx)
-- A-UI-LAYOUT-02.1 (Variable blockAspectRatio authoring at block level – validation, persist, operator docs)
-- ADM-RM-09 (Variable system enhancement)
-- A-UI-15 (End user guide)
-- A-UI-CLEAN-01 (Plan cleanup)
-
-Cross:
-- X-LAYOUT-01 (Contract conformance fixtures – __fixtures__/layoutV2/, VALIDATION_CHECKLIST.md, validate-fixtures.js)
-
----
-
----
-
-## 8. STATE MEMORY (Current Only)
+## 7. STATE MEMORY (Current Only)
 
 2026-02-04
 - AGENT: Tribeca
@@ -161,8 +125,8 @@ Cross:
 2026-02-04
 - AGENT: Katja
 - DOMAIN: Admin
-- CURRENT TASK ID: A-UI-13, A-UI-LAYOUT-02.1
+- CURRENT TASK ID: (none)
 - STATUS: DONE
-- LAST COMMIT(S): (delivered this session)
+- LAST COMMIT(S): (see repo)
 - CURRENT BLOCKERS: None
 - NEXT EXPECTED OUTPUT: Awaiting next queue items

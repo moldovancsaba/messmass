@@ -72,12 +72,21 @@ Documentation system:
 
 Due to lack of persistent memory, you must regularly realign your working context by:
 
+	0.	Read **messmass_cursor_brain_dump.md** (project root) first — it restores current branch, last delivery, priorities, and pointers so you can continue work after a context reset. Update that file when you complete work or change focus.
 	1.	Re-reading ALL relevant documentation
 	2.	Scanning the ENTIRE codebase, not just random or cached parts
 	3.	Synchronizing your mental model of architecture, logic, flow, and rules
 	4.	Immediately updating documents after any code change
 	5.	❗ If anything is not 100% clear, ask me.
 Never assume. Never proceed on uncertainty.
+
+🧩 FIX THE CLASS, NOT THE INSTANCE (NO SINGLE-POINT PATCHING)
+
+If a user reports one visible bug or UI/design issue, treat it as an example of a systemic class of problems:
+1) infer the pattern/root cause,
+2) search the codebase for all instances of that pattern,
+3) fix all instances (or clearly document what remains + follow-ups),
+4) do not claim “done” after changing a single occurrence when the issue is clearly systemic.
 
 🛡️ STACK & DEPENDENCY DISCIPLINE
 
@@ -148,23 +157,22 @@ TEAM:
 
 | Location | Document Name | Summary |
 |----------|---------------|---------|
-| `/docs/TASKLIST.md` | Task List | Complete list of active tasks, completed work, and upcoming features. Updated daily during development. Contains priority-ordered tasks with status tracking. |
-| `/docs/ROADMAP.md` | Roadmap | Strategic vision and future plans for the platform. Includes tech debt, upcoming milestones, and long-term goals. Updated when new features are planned. |
+| `/docs/index.md` | Docs Index (Start Here) | Canonical curated entrypoint. Use this to find the current source of truth for any topic. |
+| `/docs/messmass_codex_brain_dump.md` | Codex Brain Dump | Quick repo refresher (what moved, what is canonical, what is archived). Keep updated during refactors. |
+| `/docs/operations/ACTION_PLAN.md` | Action Plan | Single executable TODO + execution state memory (ops queue, priorities, blockers). |
+| `/docs/operations/ROADMAP.md` | Roadmap | Strategic direction and upcoming milestones (high-level). |
 | `/docs/ARCHITECTURE.md` | Architecture | Complete system architecture documentation. Covers tech stack, data models, API structure, authentication flow, and component organization. Essential for understanding system design. |
-| `/docs/RELEASE_NOTES.md` | Release Notes | Changelog of all completed work in reverse chronological order. Documents bug fixes, features, and improvements for each version. Updated with every release. |
-| `/docs/LEARNINGS.md` | Learnings | Knowledge base of issues faced, solutions implemented, and best practices discovered. Categorized by topic (architecture, database, API, etc.). Prevents repeated mistakes. |
-| `/docs/TECH_STACK.md` | Tech Stack | Complete list of all dependencies with versions. Frontend, backend, deployment, and development tools. Updated when dependencies change. |
-| `/docs/STATUS.md` | Current Status | High-level project status summary. Current phase, completed work, and active initiatives. Quick reference for project state. |
-| `/docs/PRODUCTION_STATUS.md` | Production Status | Production deployment status and known issues. Environment checks, database state, and deployment verification. Updated after deployments. |
+| `/docs/operations/RELEASE_NOTES.md` | Release Notes | Changelog of completed work in reverse chronological order. Updated with every release. |
+| `/docs/operations/LEARNINGS.md` | Learnings | Knowledge base of issues, fixes, and policies (prevents repeating mistakes). |
+| `/docs/CODING_STANDARDS.md` | Coding Standards | Engineering rules and enforcement (includes “Fix the class, not the instance”). |
 
 ### Setup & Deployment
 
 | Location | Document Name | Summary |
 |----------|---------------|---------|
-| `/docs/ENVIRONMENT_SETUP.md` | Environment Setup | Complete guide for setting up development and production environments. Includes prerequisites, MongoDB setup, environment variables, and local development instructions. |
-| `/docs/DEPLOYMENT.md` | Deployment Guide | Production deployment procedures for Vercel. Includes pre-deployment checklist, environment configuration, database seeding, cron jobs, and post-deployment verification. |
-| `/docs/VERCEL_DEPLOYMENT.md` | Vercel Deployment | Specific Vercel deployment instructions. Domain configuration, environment variables, build settings, and troubleshooting. |
-| `/docs/STRIPE_VERCEL_SETUP.md` | Stripe Vercel Setup | Stripe payment integration setup for Vercel. Webhook configuration, environment variables, and testing procedures. |
+| `/README.md` | Project README | Local dev, deployment notes, and high-level system overview. |
+| `/docs/operations/DEPLOYMENT_CHECKLIST.md` | Deployment Checklist | Pre-deploy and post-deploy verification + rollback steps. |
+| `/docs/operations/WARP.md` | WARP | Operational notes / updates history. |
 
 ### Feature Documents (Date-Based Format)
 
@@ -247,9 +255,9 @@ TEAM:
 
 ### Development Workflow
 
-1. **Before starting**: Read relevant documentation, check TASKLIST.md
+1. **Before starting**: Start at `/docs/index.md`, then check `/docs/operations/ACTION_PLAN.md`
 2. **During work**: Update feature document in `/docs` as you go
-3. **Before commit**: Update TASKLIST.md, RELEASE_NOTES.md, ARCHITECTURE.md if needed
+3. **Before commit**: Update `/docs/operations/RELEASE_NOTES.md` and `/docs/ARCHITECTURE.md` if needed
 4. **After commit**: Verify build passes, no warnings/errors
 
 ### File Locations
@@ -257,9 +265,9 @@ TEAM:
 - **All documentation**: `/docs/` folder
 - **Feature documents**: `/docs/YYYY-MM-DD_FEATURE.md`
 - **README**: Project root (`/README.md`)
-- **Task list**: `/docs/TASKLIST.md`
+- **Execution state (tasks)**: `/docs/operations/ACTION_PLAN.md`
 - **Architecture**: `/docs/ARCHITECTURE.md`
-- **Release notes**: `/docs/RELEASE_NOTES.md`
+- **Release notes**: `/docs/operations/RELEASE_NOTES.md`
 
 ---
 

@@ -3,6 +3,7 @@ Status: Active
 Version: 1.0.0
 Created: 2026-01-16T11:09:32.000Z
 Last Updated: 2026-01-16T11:09:32.000Z
+Canonical: Yes
 Owner: Admin (Katja)
 Audience: Admin operators, developers
 

@@ -1,4 +1,9 @@
 # Audit Execution Playbook 2026
+Status: Active
+Last Updated: 2026-02-05T19:41:25.000Z
+Canonical: No
+Owner: Audit
+
 
 **Version:** 1.0.0  
 **Created:** 2026-01-03  
@@ -90,6 +95,9 @@ wc -l docs/audits/investigations/P0-layout-grammar-violations-overflow.txt
 **Create investigation document:**
 
 **Location:** `docs/audits/investigations/[TASK-ID]-[SHORT-NAME].md`
+
+When an investigation workstream is DONE + VERIFIED, consolidate the closed investigation docs into the archived pack:
+- `docs/archive/_archive/investigations/INVESTIGATIONS_PACK_2026.md`
 
 **Template:**
 ```markdown

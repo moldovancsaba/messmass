@@ -1,7 +1,7 @@
 # 🔗 Bitly Integration Technical Guide
 Status: Active
 Last Updated: 2026-01-11T22:45:21.000Z
-Canonical: No
+Canonical: Yes
 Owner: Product
 
 **Version:** 11.25.3  
@@ -13,7 +13,7 @@ Complete technical documentation for the MessMass Bitly integration system with 
 ---
 
 See [PARTNERS_SYSTEM_GUIDE.md](PARTNERS_SYSTEM_GUIDE.md) for partner-based Bitly link inheritance.  
-See [QUICK_ADD_GUIDE.md (archived)](../archive/2025/deprecated-guides/QUICK_ADD_GUIDE.md) for Sports Match Builder Bitly integration.
+See [QUICK_ADD_GUIDE (archived)](../archive/_archive/deprecated-guides-2025/LEGACY_GUIDES_PACK.md#legacy-quick_add_guide) for Sports Match Builder Bitly integration.
 
 ---
 

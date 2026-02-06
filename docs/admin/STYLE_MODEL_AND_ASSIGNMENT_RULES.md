@@ -1,9 +1,11 @@
 # Style Model and Assignment Rules
-**Status:** Active  
-**Version:** 1.0.0  
-**Last Updated:** 2026-02-04  
-**Owner:** Admin (Katja)  
-**Audience:** Product + Engineering
+Status: Active
+Last Updated: 2026-02-04T00:00:00.000Z
+Canonical: Yes
+Owner: Admin (Katja)
+
+Version: 1.0.0
+Audience: Product + Engineering
 
 ---
 
@@ -46,29 +48,29 @@ Style resolution follows a **priority order**. The first non-null value wins.
 
 ### 3.1 Resolution Order (Highest to Lowest)
 
-1. **Event / project level** – `project.styleIdEnhanced`  
-   - Used when viewing a **single event report** (e.g. `/report/[slug]` for a project).  
+1. **Event / project level** – `project.styleIdEnhanced`
+   - Used when viewing a **single event report** (e.g. `/report/[slug]` for a project).
    - Overrides partner and template defaults for that event.
 
-2. **Partner level** – `partner.styleId`  
-   - Used when viewing a **partner report** or when the event does not set `styleIdEnhanced`.  
+2. **Partner level** – `partner.styleId`
+   - Used when viewing a **partner report** or when the event does not set `styleIdEnhanced`.
    - Applies to all events under that partner unless overridden at event level.
 
-3. **Template level** – `report_template.styleId`  
-   - Default style attached to the report template.  
+3. **Template level** – `report_template.styleId`
+   - Default style attached to the report template.
    - Used when neither project nor partner specifies a style.
 
-4. **Filter / hashtag level**  
-   - Filter and hashtag report types resolve template (and thus style) via their own identifier; they do not add a new style tier.  
+4. **Filter / hashtag level**
+   - Filter and hashtag report types resolve template (and thus style) via their own identifier; they do not add a new style tier.
    - Style for filter/hashtag reports comes from the resolved template’s style (or partner/project if applicable when that resolution path is used).
 
 ### 3.2 Where Resolution Happens
 
-- **API:** `app/api/report-config/[identifier]/route.ts`  
-  - Resolves template and then applies style hierarchy:  
-    - For **project**: `project.styleIdEnhanced || partner.styleId || template.styleId`  
-    - For **partner**: `partner.styleId || template.styleId`  
-    - For **hashtag/filter**: template’s style (template may reference partner/project where relevant).
+- **API:** `app/api/report-config/[identifier]/route.ts`
+  - Resolves template and then applies style hierarchy:
+    - For **project**: `project.styleIdEnhanced || partner.styleId || template.styleId`
+    - For **partner**: `partner.styleId || template.styleId`
+    - For **hashtag/filter**: template’s style (template may reference partner/project where relevant when that resolution path is used).
 
 ### 3.3 Summary Table
 
@@ -87,3 +89,4 @@ Style resolution follows a **priority order**. The first non-null value wins.
 - Style application in Reporting: `hooks/useReportStyle.ts`, report page components
 - Admin styles list: `app/admin/styles/page.tsx`
 - Admin style editor: `app/admin/styles/[id]/page.tsx`
+

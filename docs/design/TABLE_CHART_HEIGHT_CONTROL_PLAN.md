@@ -1,12 +1,12 @@
 # Table Chart Height Control - Implementation Plan
+Status: Planning
+Last Updated: 2026-01-16T16:30:00.000Z
+Canonical: Yes
+Owner: Architecture
 
-**Status:** Planning  
-**Version:** 1.0.0  
-**Created:** 2026-01-16T16:30:00.000Z  
-**Last Updated:** 2026-01-16T16:30:00.000Z  
-**Canonical:** Yes  
-**Owner:** Architecture (Chappie)  
-**Audience:** Engineering (Reporting + Admin)
+Version: 1.0.0
+Created: 2026-01-16T16:30:00.000Z
+Audience: Engineering (Reporting + Admin)
 
 ---
 

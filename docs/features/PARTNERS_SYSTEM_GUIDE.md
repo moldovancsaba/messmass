@@ -1,7 +1,7 @@
 # 🤝 Partners System Technical Guide
 Status: Active
 Last Updated: 2026-01-11T22:28:38.000Z
-Canonical: No
+Canonical: Yes
 Owner: Product
 
 **Version:** 11.25.1  
@@ -106,6 +106,7 @@ Partners are stored in a dedicated MongoDB collection with the following structu
 | `_id` | ObjectId | Auto | MongoDB primary key |
 | `name` | String | Yes | Partner name (e.g., "Manchester United") |
 | `emoji` | String | No | Single emoji character (e.g., "⚽") |
+| `showEmoji` | Boolean | No | Whether emoji should be shown in reports/UI. Default: `true` (treat missing as enabled). |
 | `hashtags` | String[] | No | Array of plain hashtags (no # prefix) |
 | `categorizedHashtags` | Object | No | Map of category names to array of values |
 | `bitlyLinkIds` | ObjectId[] | No | Array of Bitly link document IDs |
@@ -191,6 +192,7 @@ export interface Partner {
   _id: ObjectId;                                    // MongoDB primary key
   name: string;                                     // Partner name (e.g., "FC Barcelona")
   emoji?: string;                                   // Optional single emoji (e.g., "⚽")
+  showEmoji?: boolean;                              // Optional; treat missing as true (backward compatible)
   hashtags?: string[];                              // Traditional hashtags (no # prefix)
   categorizedHashtags?: { [category: string]: string[] };  // Category-based hashtags
   bitlyLinkIds?: ObjectId[];                        // Array of Bitly link IDs
@@ -215,6 +217,7 @@ export interface PartnerWithLinks extends Omit<Partner, 'bitlyLinkIds'> {
 export interface CreatePartnerInput {
   name: string;                                     // Required: Partner name
   emoji?: string;                                   // Optional: Single emoji
+  showEmoji?: boolean;                              // Optional; default true if omitted
   hashtags?: string[];                              // Optional: Traditional hashtags
   categorizedHashtags?: { [category: string]: string[] };  // Optional: Categorized hashtags
   bitlyLinkIds?: string[];                          // Optional: Bitly link IDs (as strings for JSON)
@@ -227,6 +230,7 @@ export interface UpdatePartnerInput {
   _id: string;                                      // Required: Partner ID to update
   name?: string;                                    // Optional: New partner name
   emoji?: string;                                   // Optional: New emoji
+  showEmoji?: boolean;                              // Optional; explicitly false hides emoji
   hashtags?: string[];                              // Optional: New hashtags array
   categorizedHashtags?: { [category: string]: string[] };  // Optional: New categorized hashtags
   bitlyLinkIds?: string[];                          // Optional: New Bitly link IDs
@@ -568,6 +572,7 @@ curl -X DELETE \
 - Pagination (Load 20 more)
 - Add/Edit modals with form validation
 - Delete confirmation dialogs
+- Emoji visibility control: `showEmoji` checkbox to hide/show emoji across reports and UI (default: shown; missing value treated as enabled).
 
 **Component Architecture**:
 

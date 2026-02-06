@@ -1,7 +1,7 @@
 # MessMass Design System
 Status: Active
 Last Updated: 2026-01-11T22:45:21.000Z
-Canonical: No
+Canonical: Yes
 Owner: Architecture
 
 **Version**: 11.40.4  
@@ -310,7 +310,7 @@ Sizes: `.btn-{small,large}`
 
 ### Cards
 
-**ONLY USE ColoredCard Component** (see [CARD_SYSTEM.md (archived)](../archive/2025/deprecated-guides/CARD_SYSTEM.md)):
+**ONLY USE ColoredCard Component** (see [CARD_SYSTEM (archived)](../archive/_archive/deprecated-guides-2025/LEGACY_GUIDES_PACK.md#legacy-card_system)):
 ```tsx
 <ColoredCard>Content</ColoredCard>
 ```
@@ -331,7 +331,7 @@ Sizes: `.btn-{small,large}`
 - Tablet: 80px icon rail
 - Mobile: Overlay drawer
 
-See [ADMIN_LAYOUT_SYSTEM.md (archived)](../archive/2025/deprecated-guides/ADMIN_LAYOUT_SYSTEM.md)
+See [ADMIN_LAYOUT_SYSTEM (archived)](../archive/_archive/deprecated-guides-2025/LEGACY_GUIDES_PACK.md#legacy-admin_layout_system)
 
 ---
 
@@ -424,10 +424,10 @@ Navigate to `/admin/design` for a complete, interactive design system reference 
 ## 📖 Related Docs
 
 - **[/admin/design](../../app/admin/design/page.tsx)** — Interactive Design System Manager (NEW)
-- [CARD_SYSTEM.md (archived)](../archive/2025/deprecated-guides/CARD_SYSTEM.md) — ColoredCard component
-- [ADMIN_LAYOUT_SYSTEM.md (archived)](../archive/2025/deprecated-guides/ADMIN_LAYOUT_SYSTEM.md) — Admin layout
-- [ADMIN_VARIABLES_SYSTEM.md (archived)](../archive/2025/deprecated-guides/ADMIN_VARIABLES_SYSTEM.md) — Variables system
-- [ARCHITECTURE.md](../../ARCHITECTURE.md) — System architecture
+- [CARD_SYSTEM (archived)](../archive/_archive/deprecated-guides-2025/LEGACY_GUIDES_PACK.md#legacy-card_system) — ColoredCard component
+- [ADMIN_LAYOUT_SYSTEM (archived)](../archive/_archive/deprecated-guides-2025/LEGACY_GUIDES_PACK.md#legacy-admin_layout_system) — Admin layout
+- [ADMIN_VARIABLES_SYSTEM.md (archived)](../archive/_archive/legacy-variable-system/ADMIN_VARIABLES_SYSTEM.md) — Variables system
+- [ARCHITECTURE.md](../ARCHITECTURE.md) — System architecture
 
 ---
 

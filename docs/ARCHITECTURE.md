@@ -1,6 +1,6 @@
 # MessMass Architecture Documentation
 Status: Active
-Last Updated: 2026-01-16T16:00:00.000Z
+Last Updated: 2026-02-05T19:29:57.000Z
 Canonical: No
 Owner: Architecture
 
@@ -1880,7 +1880,7 @@ return (
 The Admin Layout & Navigation System provides a comprehensive, responsive layout framework for all MessMass admin pages. It features a collapsible sidebar navigation, top header with user info and notifications, and adaptive behavior across desktop, tablet, and mobile devices.
 
 **Status**: Stable, Production-Ready  
-**Documentation**: See [ADMIN_LAYOUT_SYSTEM.md (archived)](docs/archive/2025/deprecated-guides/ADMIN_LAYOUT_SYSTEM.md) for complete documentation  
+**Documentation**: See [ADMIN_LAYOUT_SYSTEM (archived)](archive/_archive/deprecated-guides-2025/LEGACY_GUIDES_PACK.md#legacy-admin_layout_system) for complete documentation  
 **Code Review**: See [CODE_REVIEW_FINDINGS_ADMIN_LAYOUT.md](CODE_REVIEW_FINDINGS_ADMIN_LAYOUT.md)
 
 ### Key Components
@@ -1996,7 +1996,7 @@ See ROADMAP.md for planned improvements:
 4. Persist sidebar state with localStorage (Low priority)
 5. Implement focus trap in mobile overlay (Low priority)
 
-For complete documentation, usage examples, troubleshooting, and technical details, see [ADMIN_LAYOUT_SYSTEM.md (archived)](docs/archive/2025/deprecated-guides/ADMIN_LAYOUT_SYSTEM.md).
+For complete documentation, usage examples, troubleshooting, and technical details, see [ADMIN_LAYOUT_SYSTEM (archived)](archive/_archive/deprecated-guides-2025/LEGACY_GUIDES_PACK.md#legacy-admin_layout_system).
 
 ---
 
@@ -2494,7 +2494,7 @@ await fetch('/api/page-styles-enhanced/set-global', {
 The Security Enhancements system provides comprehensive API protection through rate limiting, CSRF protection, and centralized logging. These layers work together to protect against abuse, ensure request authenticity, and provide operational visibility.
 
 **Status**: Production-Ready  
-**Documentation**: See [SECURITY_ENHANCEMENTS.md](docs/SECURITY_ENHANCEMENTS.md) and [SECURITY_MIGRATION_GUIDE.md](docs/SECURITY_MIGRATION_GUIDE.md)
+**Documentation**: See [security-enhancements.md](security/security-enhancements.md) and [security-migration-guide.md](security/security-migration-guide.md)
 
 ### Key Components
 
@@ -2649,7 +2649,7 @@ export async function apiRequest<T>(url: string, options: RequestInit): Promise<
 
 ### Migration Guide
 
-See [SECURITY_MIGRATION_GUIDE.md](docs/SECURITY_MIGRATION_GUIDE.md) for step-by-step migration instructions, including:
+See [security-migration-guide.md](security/security-migration-guide.md) for step-by-step migration instructions, including:
 - Replacing `fetch()` calls with `apiClient`
 - Adding logging to API routes
 - Testing security features
@@ -2672,7 +2672,7 @@ See [SECURITY_MIGRATION_GUIDE.md](docs/SECURITY_MIGRATION_GUIDE.md) for step-by-
 - ✅ In-memory caching for performance (5-minute TTL)
 
 **Status**: Production-Ready  
-**Documentation**: See [VARIABLES_DATABASE_SCHEMA.md (archived)](docs/archive/2025/deprecated-guides/VARIABLES_DATABASE_SCHEMA.md) and [ADMIN_VARIABLES_SYSTEM.md (archived)](docs/archive/2025/deprecated-guides/ADMIN_VARIABLES_SYSTEM.md)
+**Documentation**: See [VARIABLES_DATABASE_SCHEMA.md (archived)](archive/_archive/legacy-variable-system/VARIABLES_DATABASE_SCHEMA.md) and [ADMIN_VARIABLES_SYSTEM.md (archived)](archive/_archive/legacy-variable-system/ADMIN_VARIABLES_SYSTEM.md)
 
 ### Core Principles
 
@@ -4068,7 +4068,7 @@ See ROADMAP.md for planned improvements:
 4. Export/import variable configurations
 5. Variable usage analytics (which variables are edited most)
 
-For complete documentation, API reference, usage patterns, and technical decisions, see [ADMIN_VARIABLES_SYSTEM.md (archived)](docs/archive/2025/deprecated-guides/ADMIN_VARIABLES_SYSTEM.md).
+For complete documentation, API reference, usage patterns, and technical decisions, see [ADMIN_VARIABLES_SYSTEM.md (archived)](archive/_archive/legacy-variable-system/ADMIN_VARIABLES_SYSTEM.md).
 
 ---
 

@@ -1,6 +1,6 @@
 # Admin Layout Code Review Findings
 Status: Active
-Last Updated: 2026-01-11T23:51:17.000Z
+Last Updated: 2026-02-05T19:29:57.000Z
 Canonical: Yes
 Owner: Architecture
 
@@ -73,4 +73,4 @@ Owner: Architecture
 
 ## Related Documents
 - [AUDIT_EVIDENCE_INDEX.md](docs/audits/AUDIT_EVIDENCE_INDEX.md)
-- [IMPLEMENTATION_COMPLETE.md](IMPLEMENTATION_COMPLETE.md)
+- [operations/IMPLEMENTATION_COMPLETE.md](operations/IMPLEMENTATION_COMPLETE.md)
