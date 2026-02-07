@@ -210,7 +210,7 @@
   padding: var(--mm-space-4) var(--mm-space-6);
   border-radius: var(--mm-radius-lg);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-  z-index: 1000;
+  z-index: var(--z-dropdown);
   animation: slideIn 0.3s ease;
   font-size: var(--mm-font-size-base);
   font-weight: 500;

@@ -419,7 +419,7 @@ export default function FormulaEditor({
           border: 1px solid var(--color-gray-300);
           border-radius: 0.5rem;
           box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
-          z-index: 1000;
+          z-index: var(--z-dropdown);
           max-height: 400px;
           display: flex;
           flex-direction: column;

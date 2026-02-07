@@ -132,7 +132,7 @@ export default function RoleDropdown({
       
       {isOpen && !disabled && !changing && (
         <div
-          className="role-dropdown-menu"
+          className="role-dropdown-menu z-dropdown"
           style={{ // eslint-disable-line react/forbid-dom-props
             position: 'absolute',
             top: '100%',
@@ -142,7 +142,6 @@ export default function RoleDropdown({
             border: '1px solid var(--mm-gray-200)',
             borderRadius: 'var(--mm-radius-md)',
             boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
-            zIndex: 1000,
             minWidth: '140px',
           }}
         >

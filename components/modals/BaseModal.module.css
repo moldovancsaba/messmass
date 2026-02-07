@@ -21,37 +21,29 @@
   right: 0;
   bottom: 0;
   
-  /* Semi-transparent dark background */
-  background-color: rgba(0, 0, 0, 0.5);
+  /* Semi-transparent dark background (OPS-STYLE-01: theme token) */
+  background-color: var(--mm-modal-overlay-bg);
   
   /* Center modal */
   display: flex;
   align-items: center;
   justify-content: center;
   
-  /* Z-index from design system (to be added to theme.css) */
-  z-index: var(--mm-z-modal, 1000);
+  z-index: var(--mm-z-modal);
   
-  /* Padding for mobile */
-  padding: 1rem;
+  padding: var(--mm-modal-padding);
   
   /* Smooth fade-in animation */
   animation: fadeIn 0.2s ease-out;
 }
 
-/* Modal container - White card */
+/* Modal container - White card (OPS-STYLE-01: theme tokens) */
 .modal {
-  background: white;
-  border-radius: 16px;
-  
-  /* Professional shadow */
-  box-shadow: 
-    0 20px 25px -5px rgba(0, 0, 0, 0.1), 
-    0 10px 10px -5px rgba(0, 0, 0, 0.04);
-  
-  /* Responsive constraints */
+  background: var(--mm-modal-content-bg);
+  border-radius: var(--mm-modal-border-radius);
+  box-shadow: var(--mm-modal-shadow);
   width: 100%;
-  max-height: 90vh;
+  max-height: var(--mm-modal-max-height);
   overflow-y: auto;
   
   /* Position for close button */
@@ -61,21 +53,21 @@
   animation: scaleIn 0.2s ease-out;
 }
 
-/* Size Variants */
+/* Size Variants (theme tokens) */
 .modal-sm {
-  max-width: 400px;
+  max-width: var(--mm-modal-max-width-sm);
 }
 
 .modal-md {
-  max-width: 600px;
+  max-width: var(--mm-modal-max-width-md);
 }
 
 .modal-lg {
-  max-width: 800px;
+  max-width: var(--mm-modal-max-width-lg);
 }
 
 .modal-xl {
-  max-width: 1200px;
+  max-width: var(--mm-modal-max-width-xl);
 }
 
 .modal-full {
@@ -103,8 +95,7 @@
   cursor: pointer;
   transition: color 0.15s ease, transform 0.15s ease;
   
-  /* Z-index to stay above content */
-  z-index: 10;
+  z-index: var(--mm-z-modal-close);
   
   /* Circular clickable area */
   width: 2.5rem;
@@ -173,19 +164,18 @@
 /* Mobile responsiveness */
 @media (max-width: 640px) {
   .overlay {
-    padding: 0.5rem;
+    padding: var(--mm-modal-padding-mobile);
   }
   
   .modal {
-    max-height: 95vh;
+    max-height: var(--mm-modal-max-height-mobile);
   }
   
   .closeButton {
-    top: 0.5rem;
-    right: 0.5rem;
+    top: var(--mm-modal-padding-mobile);
+    right: var(--mm-modal-padding-mobile);
   }
   
-  /* All modals become full-width on mobile */
   .modal-sm,
   .modal-md,
   .modal-lg,

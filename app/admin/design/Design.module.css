@@ -245,7 +245,7 @@
   border-radius: var(--mm-radius-lg);
   font-weight: var(--mm-font-weight-medium);
   box-shadow: var(--mm-shadow-lg);
-  z-index: 1000;
+  z-index: var(--z-dropdown);
   animation: slideIn 0.3s ease-out;
 }
 
