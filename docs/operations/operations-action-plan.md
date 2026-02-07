@@ -138,26 +138,13 @@ Owner: Operations
   - References:
     - `docs/operations/operations-roadmap.md` (Advanced Analytics & Insights Platform, Milestones)
 
-- [ ] OPS-LAYOUT-01: Layout Grammar editor integration
-  - Status: PLANNED
-  - Priority: High
-  - Owner: Reporting / Editor
-  - Deliverables:
-    - [ ] Integrate Layout Grammar validation into editor save flow (block invalid configs before save)
-    - [ ] Add real-time validation feedback in editor UI (warnings/errors for scrolling, truncation, clipping)
-    - [ ] Document which configurations are blocked and error messages
-    - [ ] (Optional) Add pre-save or CI guardrail for layout violations
-  - References:
-    - `docs/operations/operations-roadmap.md` (Layout Grammar Editor Integration)
-    - `docs/operations/operations-implementation-complete.md` (Explicit Non-Goals)
-
 3.3 **Pre-release checks (run every release):**
 - [ ] Build: `npm run build`
 - [ ] Layout Grammar guardrail: `npx tsx scripts/check-layout-grammar-guardrail.ts`
 - [ ] Type-check: `npm run type-check` (or `tsc --noEmit`)
 - [ ] Lint: `npm run lint` (if not skipped in CI)
 
-3.4 **Flaws / errors reference:** Layout Grammar audit and report defects (archived pack) → `docs/archive/_archive/investigations/archive-investigations-pack-2026.md#layout-grammar-audit-2026-02-05`. Rollout validation → [operations-deployment-checklist.md](operations-deployment-checklist.md). Google Sheets E2E → [ops-google-sheets-deployment-checklist.md](ops-google-sheets-deployment-checklist.md). Style system (OPS-STYLE-01 done) → [STYLE_SYSTEM_PHASE5_AUDIT.md](STYLE_SYSTEM_PHASE5_AUDIT.md), [ATLAS_THEME_INJECTION_PLAN.md](ATLAS_THEME_INJECTION_PLAN.md). Admin UI width/hero (OPS-ADMIN-02 done) → [ADMIN_UI_WIDTH_AND_HERO.md](ADMIN_UI_WIDTH_AND_HERO.md). Admin layout tokens + a11y (OPS-ADMIN-01 done) → theme tokens, skip link, aria-current, focus trap, aria-live, persisted collapse; see archived [admin-layout-code-review-findings-2026-02-05.md](../archive/_archive/admin/admin-layout-code-review-findings-2026-02-05.md). Variables hygiene (OPS-VAR-01 done) → [VARIABLES_HYGIENE_OPS_VAR_01.md](VARIABLES_HYGIENE_OPS_VAR_01.md) (inventory script + KYC legacy filter). Code injection audit (OPS-SEC-02 done) → [SEC02_CODE_INJECTION_AUDIT.md](SEC02_CODE_INJECTION_AUDIT.md); formula tests: `__tests__/formula-engine-production-like.test.ts`; guardrail: expr-eval approved with removal path documented. Operational hardening (OPS-SEC-03) → [SEC03_OPERATIONAL_HARDENING.md](SEC03_OPERATIONAL_HARDENING.md) (console guardrail + CORS/lockout/roles/audit plan).
+3.4 **Flaws / errors reference:** Layout Grammar audit and report defects (archived pack) → `docs/archive/_archive/investigations/archive-investigations-pack-2026.md#layout-grammar-audit-2026-02-05`. Rollout validation → [operations-deployment-checklist.md](operations-deployment-checklist.md). Google Sheets E2E → [ops-google-sheets-deployment-checklist.md](ops-google-sheets-deployment-checklist.md). Style system (OPS-STYLE-01 done) → [STYLE_SYSTEM_PHASE5_AUDIT.md](STYLE_SYSTEM_PHASE5_AUDIT.md), [ATLAS_THEME_INJECTION_PLAN.md](ATLAS_THEME_INJECTION_PLAN.md). Admin UI width/hero (OPS-ADMIN-02 done) → [ADMIN_UI_WIDTH_AND_HERO.md](ADMIN_UI_WIDTH_AND_HERO.md). Admin layout tokens + a11y (OPS-ADMIN-01 done) → theme tokens, skip link, aria-current, focus trap, aria-live, persisted collapse; see archived [admin-layout-code-review-findings-2026-02-05.md](../archive/_archive/admin/admin-layout-code-review-findings-2026-02-05.md). Variables hygiene (OPS-VAR-01 done) → [VARIABLES_HYGIENE_OPS_VAR_01.md](VARIABLES_HYGIENE_OPS_VAR_01.md) (inventory script + KYC legacy filter). Code injection audit (OPS-SEC-02 done) → [SEC02_CODE_INJECTION_AUDIT.md](SEC02_CODE_INJECTION_AUDIT.md); formula tests: `__tests__/formula-engine-production-like.test.ts`; guardrail: expr-eval approved with removal path documented. Operational hardening (OPS-SEC-03) → [SEC03_OPERATIONAL_HARDENING.md](SEC03_OPERATIONAL_HARDENING.md) (console guardrail + CORS/lockout/roles/audit plan). Layout Grammar editor (OPS-LAYOUT-01) → validation in save flow + real-time "Layout check" in block modal; blocked configs → [LAYOUT_GRAMMAR_EDITOR_BLOCKED_CONFIGS.md](LAYOUT_GRAMMAR_EDITOR_BLOCKED_CONFIGS.md).
 
 ---
 
