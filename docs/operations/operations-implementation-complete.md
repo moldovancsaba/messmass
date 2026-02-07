@@ -1,12 +1,12 @@
 # Implementation Complete
 Status: Active
-Last Updated: 2026-01-12T00:16:23.000Z
+Last Updated: 2026-02-06T13:13:16.000Z
 Canonical: Yes
 Owner: Operations
 
 **Version:** 1.0.2  
 **Created:** 2026-01-12T14:27:10.000Z  
-**Reference:** [docs/AUDIT_ACTION_PLAN.md](docs/AUDIT_ACTION_PLAN.md), [docs/audits/COMPREHENSIVE_SYSTEM_AUDIT_PLAN_2026.md](docs/audits/COMPREHENSIVE_SYSTEM_AUDIT_PLAN_2026.md)
+**Reference:** [docs/archive/_archive/audits/comprehensive-system-audit-plan-2026.md](docs/archive/_archive/audits/comprehensive-system-audit-plan-2026.md)
 
 ---
 
@@ -18,8 +18,8 @@ This document serves as the single canonical closure record for all completed an
 
 **Traceability:** Every claim in this document is traceable to:
 - Commit hashes in the repository
-- Investigation and implementation documents in [docs/audits/AUDIT_EVIDENCE_INDEX.md](docs/audits/AUDIT_EVIDENCE_INDEX.md)
-- The audit plan tracker in `docs/audits/COMPREHENSIVE_SYSTEM_AUDIT_PLAN_2026.md`
+- Investigation and implementation documents in [docs/audits/audits-audit-evidence-index.md](docs/audits/audits-audit-evidence-index.md)
+- The audit plan tracker in `docs/archive/_archive/audits/comprehensive-system-audit-plan-2026.md`
 
 ---
 
@@ -28,7 +28,7 @@ This document serves as the single canonical closure record for all completed an
 ### P0 1.1: No Scrolling Verification
 
 **Status:** ✅ DONE + VERIFIED  
-**Investigation:** [docs/audits/AUDIT_EVIDENCE_INDEX.md](docs/audits/AUDIT_EVIDENCE_INDEX.md)  
+**Investigation:** [docs/audits/audits-audit-evidence-index.md](docs/audits/audits-audit-evidence-index.md)  
 **Commit:** `d8eacd430` - "fix(layout-grammar): Remove overflow scrolling from PIE legends and code blocks"  
 **Preview URL:** `https://messmass-git-preview-2026-01-02-agentic-coordination-narimato.vercel.app`  
 **Preview Verification:** ✅ Complete - All 4 fixes verified, CSS changes confirmed, deployment successful
@@ -41,15 +41,15 @@ This document serves as the single canonical closure record for all completed an
 - `app/report/[slug]/ReportChart.module.css`
 
 **Evidence:**
-- Investigation document: [docs/audits/AUDIT_EVIDENCE_INDEX.md](docs/audits/AUDIT_EVIDENCE_INDEX.md)
-- Audit plan tracker: `docs/audits/COMPREHENSIVE_SYSTEM_AUDIT_PLAN_2026.md` (lines 791-799)
+- Investigation document: [docs/audits/audits-audit-evidence-index.md](docs/audits/audits-audit-evidence-index.md)
+- Audit plan tracker: `docs/archive/_archive/audits/comprehensive-system-audit-plan-2026.md` (lines 791-799)
 
 ---
 
 ### P0 1.2: No Truncation Verification
 
 **Status:** ✅ DONE + VERIFIED  
-**Investigation:** [docs/audits/AUDIT_EVIDENCE_INDEX.md](docs/audits/AUDIT_EVIDENCE_INDEX.md)  
+**Investigation:** [docs/audits/audits-audit-evidence-index.md](docs/audits/audits-audit-evidence-index.md)  
 **Commit:** `da4645f75` (included in `5dd8e1b1`)  
 **Preview URL:** `https://messmass-git-preview-2026-01-02-agentic-coordination-narimato.vercel.app`  
 **Preview Verification:** ✅ Complete - All 4 fixes verified, content wraps instead of truncating
@@ -63,15 +63,15 @@ This document serves as the single canonical closure record for all completed an
 - `app/report/[slug]/ReportChart.module.css`
 
 **Evidence:**
-- Investigation document: [docs/audits/AUDIT_EVIDENCE_INDEX.md](docs/audits/AUDIT_EVIDENCE_INDEX.md)
-- Audit plan tracker: `docs/audits/COMPREHENSIVE_SYSTEM_AUDIT_PLAN_2026.md` (lines 800-806)
+- Investigation document: [docs/audits/audits-audit-evidence-index.md](docs/audits/audits-audit-evidence-index.md)
+- Audit plan tracker: `docs/archive/_archive/audits/comprehensive-system-audit-plan-2026.md` (lines 800-806)
 
 ---
 
 ### P0 1.3: No Clipping Verification
 
 **Status:** ✅ DONE + VERIFIED  
-**Investigation:** [docs/audits/AUDIT_EVIDENCE_INDEX.md](docs/audits/AUDIT_EVIDENCE_INDEX.md)  
+**Investigation:** [docs/audits/audits-audit-evidence-index.md](docs/audits/audits-audit-evidence-index.md)  
 **Commit:** `da4645f75` (included in `5dd8e1b1`)  
 **Preview URL:** `https://messmass-git-preview-2026-01-02-agentic-coordination-narimato.vercel.app`  
 **Preview Verification:** ✅ Complete - All 2 fixes verified, content visible through reflow without clipping
@@ -84,22 +84,22 @@ This document serves as the single canonical closure record for all completed an
 - `app/report/[slug]/ReportChart.module.css`
 
 **Evidence:**
-- Investigation document: [docs/audits/AUDIT_EVIDENCE_INDEX.md](docs/audits/AUDIT_EVIDENCE_INDEX.md)
-- Audit plan tracker: `docs/audits/COMPREHENSIVE_SYSTEM_AUDIT_PLAN_2026.md` (lines 807-813)
+- Investigation document: [docs/audits/audits-audit-evidence-index.md](docs/audits/audits-audit-evidence-index.md)
+- Audit plan tracker: `docs/archive/_archive/audits/comprehensive-system-audit-plan-2026.md` (lines 807-813)
 
 ---
 
 ### P1 1.4: Deterministic Height Resolution
 
 **Status:** ✅ DONE + VERIFIED  
-**Investigation:** [docs/audits/AUDIT_EVIDENCE_INDEX.md](docs/audits/AUDIT_EVIDENCE_INDEX.md)  
-**Solution Design:** [docs/audits/AUDIT_EVIDENCE_INDEX.md](docs/audits/AUDIT_EVIDENCE_INDEX.md)  
+**Investigation:** [docs/audits/audits-audit-evidence-index.md](docs/audits/audits-audit-evidence-index.md)  
+**Solution Design:** [docs/audits/audits-audit-evidence-index.md](docs/audits/audits-audit-evidence-index.md)  
 **Implementation Documents:**
-- Phase 1: [docs/audits/AUDIT_EVIDENCE_INDEX.md](docs/audits/AUDIT_EVIDENCE_INDEX.md)
-- Phase 2: [docs/audits/AUDIT_EVIDENCE_INDEX.md](docs/audits/AUDIT_EVIDENCE_INDEX.md)
-- Phase 3: [docs/audits/AUDIT_EVIDENCE_INDEX.md](docs/audits/AUDIT_EVIDENCE_INDEX.md)
-- Phase 4: [docs/audits/AUDIT_EVIDENCE_INDEX.md](docs/audits/AUDIT_EVIDENCE_INDEX.md)
-- Phase 5: [docs/audits/AUDIT_EVIDENCE_INDEX.md](docs/audits/AUDIT_EVIDENCE_INDEX.md)
+- Phase 1: [docs/audits/audits-audit-evidence-index.md](docs/audits/audits-audit-evidence-index.md)
+- Phase 2: [docs/audits/audits-audit-evidence-index.md](docs/audits/audits-audit-evidence-index.md)
+- Phase 3: [docs/audits/audits-audit-evidence-index.md](docs/audits/audits-audit-evidence-index.md)
+- Phase 4: [docs/audits/audits-audit-evidence-index.md](docs/audits/audits-audit-evidence-index.md)
+- Phase 5: [docs/audits/audits-audit-evidence-index.md](docs/audits/audits-audit-evidence-index.md)
 
 **Commits:**
 - Phase 1: `257fed9ac`, `15d76b326`, `df3ef2df0`
@@ -131,17 +131,17 @@ This document serves as the single canonical closure record for all completed an
 - `components/CellWrapper.tsx`
 
 **Evidence:**
-- Investigation document: [docs/audits/AUDIT_EVIDENCE_INDEX.md](docs/audits/AUDIT_EVIDENCE_INDEX.md)
-- Solution design: [docs/audits/AUDIT_EVIDENCE_INDEX.md](docs/audits/AUDIT_EVIDENCE_INDEX.md)
-- Audit plan tracker: `docs/audits/COMPREHENSIVE_SYSTEM_AUDIT_PLAN_2026.md` (lines 814-832)
+- Investigation document: [docs/audits/audits-audit-evidence-index.md](docs/audits/audits-audit-evidence-index.md)
+- Solution design: [docs/audits/audits-audit-evidence-index.md](docs/audits/audits-audit-evidence-index.md)
+- Audit plan tracker: `docs/archive/_archive/audits/comprehensive-system-audit-plan-2026.md` (lines 814-832)
 
 ---
 
 ### P1 1.5: Unified Typography
 
 **Status:** ✅ DONE + VERIFIED  
-**Investigation:** [docs/audits/AUDIT_EVIDENCE_INDEX.md](docs/audits/AUDIT_EVIDENCE_INDEX.md)  
-**Solution Design:** [docs/audits/AUDIT_EVIDENCE_INDEX.md](docs/audits/AUDIT_EVIDENCE_INDEX.md)  
+**Investigation:** [docs/audits/audits-audit-evidence-index.md](docs/audits/audits-audit-evidence-index.md)  
+**Solution Design:** [docs/audits/audits-audit-evidence-index.md](docs/audits/audits-audit-evidence-index.md)  
 **Commits:**
 - Phase 1: `fafe7e891`, `6341f78c8`
 - Phase 2: `e69a28d4f`
@@ -172,17 +172,17 @@ This document serves as the single canonical closure record for all completed an
 - `lib/barChartFontSizeCalculator.ts` (new file)
 
 **Evidence:**
-- Investigation document: [docs/audits/AUDIT_EVIDENCE_INDEX.md](docs/audits/AUDIT_EVIDENCE_INDEX.md)
-- Solution design: [docs/audits/AUDIT_EVIDENCE_INDEX.md](docs/audits/AUDIT_EVIDENCE_INDEX.md)
-- BAR chart investigation: [docs/audits/AUDIT_EVIDENCE_INDEX.md](docs/audits/AUDIT_EVIDENCE_INDEX.md)
-- Audit plan tracker: `docs/audits/COMPREHENSIVE_SYSTEM_AUDIT_PLAN_2026.md` (lines 833-845)
+- Investigation document: [docs/audits/audits-audit-evidence-index.md](docs/audits/audits-audit-evidence-index.md)
+- Solution design: [docs/audits/audits-audit-evidence-index.md](docs/audits/audits-audit-evidence-index.md)
+- BAR chart investigation: [docs/audits/audits-audit-evidence-index.md](docs/audits/audits-audit-evidence-index.md)
+- Audit plan tracker: `docs/archive/_archive/audits/comprehensive-system-audit-plan-2026.md` (lines 833-845)
 
 ---
 
 ### P1 1.6: PIE + DONUT Chart Layout Grammar Compliance Audit
 
 **Status:** ✅ DONE + VERIFIED  
-**Investigation:** [docs/audits/AUDIT_EVIDENCE_INDEX.md](docs/audits/AUDIT_EVIDENCE_INDEX.md)  
+**Investigation:** [docs/audits/audits-audit-evidence-index.md](docs/audits/audits-audit-evidence-index.md)  
 **Commits:** `fd040559a` (investigation), `72859a15b` (remediation)  
 **Preview URL:** `https://messmass-git-preview-2026-01-02-agentic-coordination-narimato.vercel.app/`  
 **Preview Verification:** Verdict: CLIPPING = YES (preventive fix applied). Code analysis revealed `overflow: hidden` violates Layout Grammar rule for content layers. Remediation applied before visual verification.
@@ -201,15 +201,15 @@ This document serves as the single canonical closure record for all completed an
 - `app/report/[slug]/ReportChart.module.css`
 
 **Evidence:**
-- Investigation document: [docs/audits/AUDIT_EVIDENCE_INDEX.md](docs/audits/AUDIT_EVIDENCE_INDEX.md)
-- Audit plan tracker: `docs/audits/COMPREHENSIVE_SYSTEM_AUDIT_PLAN_2026.md` (lines 846-860)
+- Investigation document: [docs/audits/audits-audit-evidence-index.md](docs/audits/audits-audit-evidence-index.md)
+- Audit plan tracker: `docs/archive/_archive/audits/comprehensive-system-audit-plan-2026.md` (lines 846-860)
 
 ---
 
 ### P1 1.7: TABLE & LEGEND DENSITY STRESS AUDIT
 
 **Status:** ✅ DONE + VERIFIED  
-**Investigation:** [docs/audits/AUDIT_EVIDENCE_INDEX.md](docs/audits/AUDIT_EVIDENCE_INDEX.md)  
+**Investigation:** [docs/audits/audits-audit-evidence-index.md](docs/audits/audits-audit-evidence-index.md)  
 **Commits:** `1ef0372cf` (investigation), `ae374d37a` (remediation)  
 **Preview URL:** `https://messmass-git-preview-2026-01-02-agentic-coordination-narimato.vercel.app/`  
 **Preview Verification:** Verdict: COMPRESSION = YES (code analysis indicated risk, remediation applied). Enhanced `validatePieElementFit()` to calculate required height based on legend item count, added PIE chart height adjustment to `resolveBlockHeightWithDetails()`, added `legendItemCount` to `contentMetadata` for PIE charts.
@@ -226,8 +226,8 @@ This document serves as the single canonical closure record for all completed an
 - `app/report/[slug]/ReportContent.tsx`
 
 **Evidence:**
-- Investigation document: [docs/audits/AUDIT_EVIDENCE_INDEX.md](docs/audits/AUDIT_EVIDENCE_INDEX.md)
-- Audit plan tracker: `docs/audits/COMPREHENSIVE_SYSTEM_AUDIT_PLAN_2026.md` (lines 861-870)
+- Investigation document: [docs/audits/audits-audit-evidence-index.md](docs/audits/audits-audit-evidence-index.md)
+- Audit plan tracker: `docs/archive/_archive/audits/comprehensive-system-audit-plan-2026.md` (lines 861-870)
 
 ---
 
@@ -251,8 +251,8 @@ This document serves as the single canonical closure record for all completed an
 **Impact:** All chart heights are now explicitly calculated and traceable. No implicit height behavior remains.
 
 **Evidence:**
-- Solution design: [docs/audits/AUDIT_EVIDENCE_INDEX.md](docs/audits/AUDIT_EVIDENCE_INDEX.md)
-- Implementation documents: [docs/audits/AUDIT_EVIDENCE_INDEX.md](docs/audits/AUDIT_EVIDENCE_INDEX.md) through [docs/audits/AUDIT_EVIDENCE_INDEX.md](docs/audits/AUDIT_EVIDENCE_INDEX.md)
+- Solution design: [docs/audits/audits-audit-evidence-index.md](docs/audits/audits-audit-evidence-index.md)
+- Implementation documents: [docs/audits/audits-audit-evidence-index.md](docs/audits/audits-audit-evidence-index.md) through [docs/audits/audits-audit-evidence-index.md](docs/audits/audits-audit-evidence-index.md)
 
 ---
 
@@ -271,8 +271,8 @@ This document serves as the single canonical closure record for all completed an
 **Impact:** All content is now fully visible. Layout Grammar rules are enforced structurally, not cosmetically.
 
 **Evidence:**
-- Investigation documents: [docs/audits/AUDIT_EVIDENCE_INDEX.md](docs/audits/AUDIT_EVIDENCE_INDEX.md), [docs/audits/AUDIT_EVIDENCE_INDEX.md](docs/audits/AUDIT_EVIDENCE_INDEX.md), [docs/audits/AUDIT_EVIDENCE_INDEX.md](docs/audits/AUDIT_EVIDENCE_INDEX.md), [docs/audits/AUDIT_EVIDENCE_INDEX.md](docs/audits/AUDIT_EVIDENCE_INDEX.md), [docs/audits/AUDIT_EVIDENCE_INDEX.md](docs/audits/AUDIT_EVIDENCE_INDEX.md)
-- Layout Grammar specification: `docs/design/LAYOUT_GRAMMAR.md`
+- Investigation documents: [docs/audits/audits-audit-evidence-index.md](docs/audits/audits-audit-evidence-index.md), [docs/audits/audits-audit-evidence-index.md](docs/audits/audits-audit-evidence-index.md), [docs/audits/audits-audit-evidence-index.md](docs/audits/audits-audit-evidence-index.md), [docs/audits/audits-audit-evidence-index.md](docs/audits/audits-audit-evidence-index.md), [docs/audits/audits-audit-evidence-index.md](docs/audits/audits-audit-evidence-index.md)
+- Layout Grammar specification: `docs/design/design-layout-grammar.md`
 
 ---
 
@@ -296,8 +296,8 @@ This document serves as the single canonical closure record for all completed an
 **Impact:** All typography within a block is now unified. Font sizes are consistent and predictable.
 
 **Evidence:**
-- Investigation document: [docs/audits/AUDIT_EVIDENCE_INDEX.md](docs/audits/AUDIT_EVIDENCE_INDEX.md)
-- Solution design: [docs/audits/AUDIT_EVIDENCE_INDEX.md](docs/audits/AUDIT_EVIDENCE_INDEX.md)
+- Investigation document: [docs/audits/audits-audit-evidence-index.md](docs/audits/audits-audit-evidence-index.md)
+- Solution design: [docs/audits/audits-audit-evidence-index.md](docs/audits/audits-audit-evidence-index.md)
 - BAR chart font size calculator: `lib/barChartFontSizeCalculator.ts`
 
 ---
@@ -327,26 +327,26 @@ This document serves as the single canonical closure record for all completed an
 ### Documentation Files
 
 **Investigation Documents:**
-- [docs/audits/AUDIT_EVIDENCE_INDEX.md](docs/audits/AUDIT_EVIDENCE_INDEX.md)
-- [docs/audits/AUDIT_EVIDENCE_INDEX.md](docs/audits/AUDIT_EVIDENCE_INDEX.md)
-- [docs/audits/AUDIT_EVIDENCE_INDEX.md](docs/audits/AUDIT_EVIDENCE_INDEX.md)
-- [docs/audits/AUDIT_EVIDENCE_INDEX.md](docs/audits/AUDIT_EVIDENCE_INDEX.md)
-- [docs/audits/AUDIT_EVIDENCE_INDEX.md](docs/audits/AUDIT_EVIDENCE_INDEX.md)
-- [docs/audits/AUDIT_EVIDENCE_INDEX.md](docs/audits/AUDIT_EVIDENCE_INDEX.md)
-- [docs/audits/AUDIT_EVIDENCE_INDEX.md](docs/audits/AUDIT_EVIDENCE_INDEX.md)
-- [docs/audits/AUDIT_EVIDENCE_INDEX.md](docs/audits/AUDIT_EVIDENCE_INDEX.md)
-- [docs/audits/AUDIT_EVIDENCE_INDEX.md](docs/audits/AUDIT_EVIDENCE_INDEX.md)
-- [docs/audits/AUDIT_EVIDENCE_INDEX.md](docs/audits/AUDIT_EVIDENCE_INDEX.md)
-- [docs/audits/AUDIT_EVIDENCE_INDEX.md](docs/audits/AUDIT_EVIDENCE_INDEX.md)
-- [docs/audits/AUDIT_EVIDENCE_INDEX.md](docs/audits/AUDIT_EVIDENCE_INDEX.md)
-- [docs/audits/AUDIT_EVIDENCE_INDEX.md](docs/audits/AUDIT_EVIDENCE_INDEX.md)
-- [docs/audits/AUDIT_EVIDENCE_INDEX.md](docs/audits/AUDIT_EVIDENCE_INDEX.md)
-- [docs/audits/AUDIT_EVIDENCE_INDEX.md](docs/audits/AUDIT_EVIDENCE_INDEX.md)
+- [docs/audits/audits-audit-evidence-index.md](docs/audits/audits-audit-evidence-index.md)
+- [docs/audits/audits-audit-evidence-index.md](docs/audits/audits-audit-evidence-index.md)
+- [docs/audits/audits-audit-evidence-index.md](docs/audits/audits-audit-evidence-index.md)
+- [docs/audits/audits-audit-evidence-index.md](docs/audits/audits-audit-evidence-index.md)
+- [docs/audits/audits-audit-evidence-index.md](docs/audits/audits-audit-evidence-index.md)
+- [docs/audits/audits-audit-evidence-index.md](docs/audits/audits-audit-evidence-index.md)
+- [docs/audits/audits-audit-evidence-index.md](docs/audits/audits-audit-evidence-index.md)
+- [docs/audits/audits-audit-evidence-index.md](docs/audits/audits-audit-evidence-index.md)
+- [docs/audits/audits-audit-evidence-index.md](docs/audits/audits-audit-evidence-index.md)
+- [docs/audits/audits-audit-evidence-index.md](docs/audits/audits-audit-evidence-index.md)
+- [docs/audits/audits-audit-evidence-index.md](docs/audits/audits-audit-evidence-index.md)
+- [docs/audits/audits-audit-evidence-index.md](docs/audits/audits-audit-evidence-index.md)
+- [docs/audits/audits-audit-evidence-index.md](docs/audits/audits-audit-evidence-index.md)
+- [docs/audits/audits-audit-evidence-index.md](docs/audits/audits-audit-evidence-index.md)
+- [docs/audits/audits-audit-evidence-index.md](docs/audits/audits-audit-evidence-index.md)
 
 **Canonical Documents:**
-- `docs/audits/COMPREHENSIVE_SYSTEM_AUDIT_PLAN_2026.md` - Audit plan tracker with all evidence
-- `docs/design/LAYOUT_GRAMMAR.md` - Layout Grammar specification
-- `docs/design/LAYOUT_GRAMMAR_COMPLIANCE.md` - Layout Grammar compliance documentation
+- `docs/archive/_archive/audits/comprehensive-system-audit-plan-2026.md` - Audit plan tracker with all evidence
+- `docs/design/design-layout-grammar.md` - Layout Grammar specification
+- `docs/design/design-layout-grammar-compliance.md` - Layout Grammar compliance documentation
 
 ---
 
@@ -397,7 +397,7 @@ This document serves as the single canonical closure record for all completed an
 - ✅ TABLE Charts: PASS (all checks)
 - ✅ PIE Legends (>5 items): PASS (remediated)
 
-**Evidence:** All verification evidence is recorded in the audit plan tracker: `docs/audits/COMPREHENSIVE_SYSTEM_AUDIT_PLAN_2026.md`
+**Evidence:** All verification evidence is recorded in the audit plan tracker: `docs/archive/_archive/audits/comprehensive-system-audit-plan-2026.md`
 
 ---
 
@@ -434,19 +434,19 @@ The following are explicitly **not** part of the completed work:
 
 ### Layout Grammar
 
-- **Specification:** `docs/design/LAYOUT_GRAMMAR.md`
-- **Compliance Documentation:** `docs/design/LAYOUT_GRAMMAR_COMPLIANCE.md`
+- **Specification:** `docs/design/design-layout-grammar.md`
+- **Compliance Documentation:** `docs/design/design-layout-grammar-compliance.md`
 
 ### Audit Documentation
 
-- **Audit Plan:** `docs/audits/COMPREHENSIVE_SYSTEM_AUDIT_PLAN_2026.md` (single source of truth for all audit items, status, and evidence)
-- **Investigation Documents:** [docs/audits/AUDIT_EVIDENCE_INDEX.md](docs/audits/AUDIT_EVIDENCE_INDEX.md) (all investigation and implementation documents)
+- **Audit Plan:** `docs/archive/_archive/audits/comprehensive-system-audit-plan-2026.md` (single source of truth for all audit items, status, and evidence)
+- **Investigation Documents:** [docs/audits/audits-audit-evidence-index.md](docs/audits/audits-audit-evidence-index.md) (all investigation and implementation documents)
 
 ### Implementation Documents
 
-- **P1 1.4 Solution Design:** [docs/audits/AUDIT_EVIDENCE_INDEX.md](docs/audits/AUDIT_EVIDENCE_INDEX.md)
-- **P1 1.5 Solution Design:** [docs/audits/AUDIT_EVIDENCE_INDEX.md](docs/audits/AUDIT_EVIDENCE_INDEX.md)
-- **P1 1.4 Phase Implementation Documents:** [docs/audits/AUDIT_EVIDENCE_INDEX.md](docs/audits/AUDIT_EVIDENCE_INDEX.md) through [docs/audits/AUDIT_EVIDENCE_INDEX.md](docs/audits/AUDIT_EVIDENCE_INDEX.md)
+- **P1 1.4 Solution Design:** [docs/audits/audits-audit-evidence-index.md](docs/audits/audits-audit-evidence-index.md)
+- **P1 1.5 Solution Design:** [docs/audits/audits-audit-evidence-index.md](docs/audits/audits-audit-evidence-index.md)
+- **P1 1.4 Phase Implementation Documents:** [docs/audits/audits-audit-evidence-index.md](docs/audits/audits-audit-evidence-index.md) through [docs/audits/audits-audit-evidence-index.md](docs/audits/audits-audit-evidence-index.md)
 
 ---
 

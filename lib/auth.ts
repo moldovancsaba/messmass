@@ -3,7 +3,7 @@
 // WHY: Introduce multiple users with email+password while preserving simple cookie session model
 
 import { cookies } from 'next/headers'
-import { findUserById } from './users'
+import { findUserById, type UserRole } from './users'
 import { validateSessionToken, type SessionTokenData } from './sessionTokens'
 import { debug, warn } from './logger'
 
@@ -11,7 +11,7 @@ export interface AdminUser {
   id: string
   name: string
   email: string
-  role: 'guest' | 'user' | 'admin' | 'superadmin' | 'api' // WHAT: Support 4-tier role hierarchy + legacy 'api'
+  role: UserRole
   permissions: string[]
   // WHAT: API access fields (v10.6.0+)
   // WHY: Track API key usage and status for external integrations

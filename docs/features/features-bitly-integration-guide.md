@@ -12,8 +12,8 @@ Complete technical documentation for the MessMass Bitly integration system with 
 
 ---
 
-See [PARTNERS_SYSTEM_GUIDE.md](PARTNERS_SYSTEM_GUIDE.md) for partner-based Bitly link inheritance.  
-See [QUICK_ADD_GUIDE (archived)](../archive/_archive/deprecated-guides-2025/LEGACY_GUIDES_PACK.md#legacy-quick_add_guide) for Sports Match Builder Bitly integration.
+See [PARTNERS_SYSTEM_GUIDE.md](features-partners-system-guide.md) for partner-based Bitly link inheritance.  
+See [QUICK_ADD_GUIDE (archived)](../archive/_archive/deprecated-guides-2025/archive-legacy-guides-pack.md#legacy-quick_add_guide) for Sports Match Builder Bitly integration.
 
 ---
 
@@ -141,7 +141,7 @@ Manually trigger date range and cache refresh for a link.
 
 When creating events via Sports Match Builder, Bitly links from Partner 1 (home team) are automatically associated with the generated event.
 
-**See**: [PARTNERS_SYSTEM_GUIDE.md](PARTNERS_SYSTEM_GUIDE.md) for detailed partner integration.
+**See**: [PARTNERS_SYSTEM_GUIDE.md](features-partners-system-guide.md) for detailed partner integration.
 
 ---
 

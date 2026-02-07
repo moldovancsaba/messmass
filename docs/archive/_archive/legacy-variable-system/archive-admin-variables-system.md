@@ -816,12 +816,12 @@ If migration fails:
 
 ## Related Documentation
 
-- [[VARIABLE_SYSTEM_HISTORY.md](docs/archive/2025/deprecated-guides/VARIABLE_SYSTEM_HISTORY.md#migration-path)](./[VARIABLE_SYSTEM_HISTORY.md](docs/archive/2025/deprecated-guides/VARIABLE_SYSTEM_HISTORY.md#migration-path)) — Complete migration guide
-- [SINGLE_REFERENCE_SYSTEM](../deprecated-guides-2025/LEGACY_GUIDES_PACK.md#legacy-single_reference_system) — Single source of truth with `stats.` prefix
-- [[VARIABLE_SYSTEM_HISTORY.md](docs/archive/2025/deprecated-guides/VARIABLE_SYSTEM_HISTORY.md#database-schema)](./[VARIABLE_SYSTEM_HISTORY.md](docs/archive/2025/deprecated-guides/VARIABLE_SYSTEM_HISTORY.md#database-schema)) — MongoDB schema for `variables_metadata`
-- [DATABASE_FIELD_NAMING](../deprecated-guides-2025/LEGACY_GUIDES_PACK.md#legacy-database_field_naming) — Naming conventions
-- [ARCHITECTURE.md](../../../ARCHITECTURE.md) — System-wide architecture overview
-- [operations/WARP.md](../../../operations/WARP.md) — Development quick reference
+- [[VARIABLE_SYSTEM_HISTORY.md](docs/archive/2025/deprecated-guides/archive-variable-system-history.md#migration-path)](./[VARIABLE_SYSTEM_HISTORY.md](docs/archive/2025/deprecated-guides/archive-variable-system-history.md#migration-path)) — Complete migration guide
+- [SINGLE_REFERENCE_SYSTEM](../deprecated-guides-2025/archive-legacy-guides-pack.md#legacy-single_reference_system) — Single source of truth with `stats.` prefix
+- [[VARIABLE_SYSTEM_HISTORY.md](docs/archive/2025/deprecated-guides/archive-variable-system-history.md#database-schema)](./[VARIABLE_SYSTEM_HISTORY.md](docs/archive/2025/deprecated-guides/archive-variable-system-history.md#database-schema)) — MongoDB schema for `variables_metadata`
+- [DATABASE_FIELD_NAMING](../deprecated-guides-2025/archive-legacy-guides-pack.md#legacy-database_field_naming) — Naming conventions
+- [ARCHITECTURE.md](../../../architecture.md) — System-wide architecture overview
+- [operations/ops-warp.md](../../../operations/ops-warp.md) — Development quick reference
 
 ---
 

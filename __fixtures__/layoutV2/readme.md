@@ -3,8 +3,8 @@
 **Purpose:** Minimal fixture templates that represent Admin LayoutV2 output and validate against Reporting LayoutV2 renderer input contract.
 
 **References:**
-- Contract: `docs/design/REPORT_LAYOUT_V2_CONTRACT.md`
-- Admin schema: `docs/admin/ADMIN_LAYOUT_V2_SCHEMA.md`
+- Contract: `docs/design/design-report-layout-v2-contract.md`
+- Admin schema: `docs/admin/admin-layout-v2-schema.md`
 - Validation checklist: `VALIDATION_CHECKLIST.md`
 
 ## Fixture Files

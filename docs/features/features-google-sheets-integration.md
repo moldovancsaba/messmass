@@ -5,8 +5,9 @@ Canonical: Yes
 Owner: Product
 
 **Status**: Phase 2 Delivered ✅ (Partner-level sync + UI refresh reliability)  
-**Next**: Phase 3 Hardening + validation (deployment checklist signoff)  
-**Target**: v12.1.x - Production Ready
+**Next**: Phase 6 polish; E2E validation checklist available  
+**Target**: v12.1.x - Production Ready  
+**Rollout checklist**: [ops-google-sheets-deployment-checklist.md](../operations/ops-google-sheets-deployment-checklist.md) (staging + production)
 
 ---
 
@@ -548,17 +549,17 @@ Authorization: Bearer <CRON_SECRET>
 ### Manual Testing
 
 **Checklist**:
-- [ ] Connect sheet (valid Sheet ID)
-- [ ] Disconnect sheet
-- [ ] Pull events (empty sheet)
-- [ ] Pull events (with data)
-- [ ] Push events (new events)
-- [ ] Push events (existing rows)
-- [ ] Conflict modal (MessMass newer)
-- [ ] Conflict modal (Sheet newer)
-- [ ] Event-level pull
-- [ ] Event-level push
-- [ ] Daily cron job
+- Connect sheet (valid Sheet ID)
+- Disconnect sheet
+- Pull events (empty sheet)
+- Pull events (with data)
+- Push events (new events)
+- Push events (existing rows)
+- Conflict modal (MessMass newer)
+- Conflict modal (Sheet newer)
+- Event-level pull
+- Event-level push
+- Daily cron job
 
 ### Automated Testing
 
@@ -657,20 +658,20 @@ npm run test:google-sheets
 - [x] Logging and error notifications
 
 ### Phase 6: Polish & Production (v12.5.0)
-- [ ] Error handling edge cases (make failures user-visible and actionable)
-- [ ] Monitoring + alerting for scheduled sync failures
-- [ ] Production rollout + deployment checklist signoff
+- Error handling edge cases (make failures user-visible and actionable)
+- Monitoring + alerting for scheduled sync failures
+- DONE: Production rollout + E2E checklist: [ops-google-sheets-deployment-checklist.md](../operations/ops-google-sheets-deployment-checklist.md)
 
 ### Phase 7: Column Mapping Editor (Q1 2026)
-- [ ] Visual mapping UI
-- [ ] Custom column definitions
-- [ ] Validation and testing
+- Visual mapping UI
+- Custom column definitions
+- Validation and testing
 
 ### Phase 8: Advanced Sync (Q2 2026)
-- [ ] Field-level sync
-- [ ] Hashtag sync
-- [ ] Custom variables sync
-- [ ] Webhook triggers
+- Field-level sync
+- Hashtag sync
+- Custom variables sync
+- Webhook triggers
 
 ---
 

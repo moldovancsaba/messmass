@@ -99,8 +99,8 @@ def main() -> None:
         out.append(f'| {src} | {link} | {resolved} |')
     out.append('')
 
-    Path('docs/_meta/DOCS_LINK_CHECK.md').write_text('\n'.join(out) + '\n', encoding='utf-8')
-    print('wrote docs/_meta/DOCS_LINK_CHECK.md')
+    Path('docs/_meta/meta-docs-link-check.md').write_text('\n'.join(out) + '\n', encoding='utf-8')
+    print('wrote docs/_meta/meta-docs-link-check.md')
 
 
 if __name__ == '__main__':

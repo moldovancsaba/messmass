@@ -33,5 +33,5 @@ Owner: Operations
 3. Rollback is simply a revert of `ReportChart.module.css` and `ReportChart.tsx` if a regression occurs.
 
 ## Reference Materials
-- Historical execution notes (archived): `docs/archive/_archive/charts/CHART_ALIGNMENT_HISTORY.md`.
+- Historical execution notes (archived): `docs/archive/_archive/charts/archive-chart-alignment-history.md`.
 - Architecture deep dive cited in the deployment checklist: `CHART_ALIGNMENT_FIXES_v12.md` (add link once revived).

@@ -296,6 +296,15 @@ export function logAuthFailure(email: string, reason: string, ip?: string): void
   });
 }
 
+/** OPS-SEC-03: Log when login is rejected due to account lockout (no PII beyond identifier for audit). */
+export function logAuthLockout(identifier: string, ip?: string): void {
+  warn('Login rejected – account locked', {
+    identifier,
+    ip,
+    tags: ['auth', 'security', 'lockout'],
+  });
+}
+
 export function logAuthorizationDenied(userId: string, resource: string, action: string): void {
   warn('Authorization denied', {
     userId,

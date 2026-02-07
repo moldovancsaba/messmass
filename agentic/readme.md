@@ -123,7 +123,7 @@ This provides:
 
 ### Starting Work
 
-1. Read `/agentic/README.md` (this file)
+1. Read `/agentic/readme.md` (this file)
 2. Read your charter in `/charters/`
 3. Read `/operating-rules/execution-playbook.md`
 4. Check `/status/next-actions.md` for priorities
@@ -186,7 +186,7 @@ This pattern is used by:
 ## Getting Started
 
 **Minimal viable structure (now):**
-- ✅ `agentic/README.md` (this file)
+- ✅ `agentic/readme.md` (this file)
 - ✅ `agentic/operating-rules/execution-playbook.md`
 - ✅ `agentic/operating-rules/delivery-loop.md`
 

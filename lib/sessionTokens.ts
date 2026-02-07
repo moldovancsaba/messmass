@@ -5,6 +5,7 @@
 
 import jwt from 'jsonwebtoken';
 import { FEATURE_FLAGS } from './featureFlags';
+import { type UserRole, USER_ROLES } from './users';
 
 /**
  * Session Token Data Structure
@@ -15,7 +16,7 @@ export interface SessionTokenData {
   token: string;           // Random token string (for legacy compatibility)
   expiresAt: string;       // ISO 8601 expiration timestamp
   userId: string;         // User ID (ObjectId string)
-  role: 'guest' | 'user' | 'admin' | 'superadmin' | 'api';
+  role: UserRole;
 }
 
 /**
@@ -79,11 +80,12 @@ export function validateJWTSessionToken(jwtToken: string): SessionTokenData | nu
     
     // WHAT: Reconstruct SessionTokenData from JWT payload
     // WHY: Maintain consistent interface across token formats
+    const role = decoded.role as UserRole | undefined;
     return {
       token: decoded.token || '',
       expiresAt: decoded.expiresAt || decoded.exp,
       userId: decoded.userId || decoded.sub || '',
-      role: decoded.role || 'guest',
+      role: role && USER_ROLES.includes(role) ? role : 'guest',
     };
   } catch (error) {
     // WHAT: JWT verification failed (invalid signature, expired, malformed)

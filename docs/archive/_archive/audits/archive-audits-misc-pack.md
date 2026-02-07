@@ -6,25 +6,25 @@ Owner: Audit
 
 This pack consolidates audit write-ups that are not used as day-to-day sources of truth.
 Active audit entrypoints remain under `docs/audits/` (plan, playbook, remediation status, evidence index).
-Action items should live in `docs/operations/ACTION_PLAN.md` (not in archived audit docs).
+Action items should live in `docs/operations/operations-action-plan.md` (not in archived audit docs).
 
 ## Table Of Contents
-- [00_EXEC_SUMMARY](#00-exec-summary) (source: `docs/archive/_archive/audits/AUDITS_MISC_PACK.md#00-exec-summary`)
-- [07_PLAIN_ENGLISH_PAPER](#07-plain-english-paper) (source: `docs/archive/_archive/audits/AUDITS_MISC_PACK.md#07-plain-english-paper`)
-- [AUDIT_PRIORITIZED_ACTION_PLAN_2026](#audit-prioritized-action-plan-2026) (source: `docs/archive/_archive/audits/AUDITS_MISC_PACK.md#audit-prioritized-action-plan-2026`)
-- [COMPREHENSIVE_TECH_AUDIT_REPORT](#comprehensive-tech-audit-report) (source: `docs/archive/_archive/audits/AUDITS_MISC_PACK.md#comprehensive-tech-audit-report`)
-- [MONGODB_FIELD_NAMING_VERIFICATION](#mongodb-field-naming-verification) (source: `docs/archive/_archive/audits/AUDITS_MISC_PACK.md#mongodb-field-naming-verification`)
-- [NAMING_AUDIT_REPORT](#naming-audit-report) (source: `docs/archive/_archive/audits/AUDITS_MISC_PACK.md#naming-audit-report`)
-- [NAMING_CONSISTENCY_FULL_AUDIT](#naming-consistency-full-audit) (source: `docs/archive/_archive/audits/AUDITS_MISC_PACK.md#naming-consistency-full-audit`)
-- [OPERATING_LOOP_ANALYSIS](#operating-loop-analysis) (source: `docs/archive/_archive/audits/AUDITS_MISC_PACK.md#operating-loop-analysis`)
-- [P0.1-PRODUCTION-FLAGS-SETUP](#p0-1-production-flags-setup) (source: `docs/archive/_archive/audits/AUDITS_MISC_PACK.md#p0-1-production-flags-setup`)
-- [REPORT_DESIGN_SYSTEM](#report-design-system) (source: `docs/archive/_archive/audits/AUDITS_MISC_PACK.md#report-design-system`)
-- [SYSTEM_AUDIT_2025](#system-audit-2025) (source: `docs/archive/_archive/audits/AUDITS_MISC_PACK.md#system-audit-2025`)
+- [00_EXEC_SUMMARY](#00-exec-summary) (source: `docs/archive/_archive/audits/archive-audits-misc-pack.md#00-exec-summary`)
+- [07_PLAIN_ENGLISH_PAPER](#07-plain-english-paper) (source: `docs/archive/_archive/audits/archive-audits-misc-pack.md#07-plain-english-paper`)
+- [AUDIT_PRIORITIZED_ACTION_PLAN_2026](#audit-prioritized-action-plan-2026) (source: `docs/archive/_archive/audits/archive-audits-misc-pack.md#audit-prioritized-action-plan-2026`)
+- [COMPREHENSIVE_TECH_AUDIT_REPORT](#comprehensive-tech-audit-report) (source: `docs/archive/_archive/audits/archive-audits-misc-pack.md#comprehensive-tech-audit-report`)
+- [MONGODB_FIELD_NAMING_VERIFICATION](#mongodb-field-naming-verification) (source: `docs/archive/_archive/audits/archive-audits-misc-pack.md#mongodb-field-naming-verification`)
+- [NAMING_AUDIT_REPORT](#naming-audit-report) (source: `docs/archive/_archive/audits/archive-audits-misc-pack.md#naming-audit-report`)
+- [NAMING_CONSISTENCY_FULL_AUDIT](#naming-consistency-full-audit) (source: `docs/archive/_archive/audits/archive-audits-misc-pack.md#naming-consistency-full-audit`)
+- [OPERATING_LOOP_ANALYSIS](#operating-loop-analysis) (source: `docs/archive/_archive/audits/archive-audits-misc-pack.md#operating-loop-analysis`)
+- [P0.1-PRODUCTION-FLAGS-SETUP](#p0-1-production-flags-setup) (source: `docs/archive/_archive/audits/archive-audits-misc-pack.md#p0-1-production-flags-setup`)
+- [REPORT_DESIGN_SYSTEM](#report-design-system) (source: `docs/archive/_archive/audits/archive-audits-misc-pack.md#report-design-system`)
+- [SYSTEM_AUDIT_2025](#system-audit-2025) (source: `docs/archive/_archive/audits/archive-audits-misc-pack.md#system-audit-2025`)
 
 ## 00_EXEC_SUMMARY
 <a id="00-exec-summary"></a>
 
-- Source: `docs/archive/_archive/audits/AUDITS_MISC_PACK.md#00-exec-summary`
+- Source: `docs/archive/_archive/audits/archive-audits-misc-pack.md#00-exec-summary`
 
 ```markdown
 # MessMass Technology Audit - Executive Summary
@@ -358,7 +358,7 @@ This audit includes the following documents (all in `docs/audit/`):
 ## 07_PLAIN_ENGLISH_PAPER
 <a id="07-plain-english-paper"></a>
 
-- Source: `docs/archive/_archive/audits/AUDITS_MISC_PACK.md#07-plain-english-paper`
+- Source: `docs/archive/_archive/audits/archive-audits-misc-pack.md#07-plain-english-paper`
 
 ```markdown
 # MessMass: Partner KYC & Event Analytics System
@@ -1265,7 +1265,7 @@ MessMass is a **comprehensive event analytics platform** that solves critical bu
 ## AUDIT_PRIORITIZED_ACTION_PLAN_2026
 <a id="audit-prioritized-action-plan-2026"></a>
 
-- Source: `docs/archive/_archive/audits/AUDITS_MISC_PACK.md#audit-prioritized-action-plan-2026`
+- Source: `docs/archive/_archive/audits/archive-audits-misc-pack.md#audit-prioritized-action-plan-2026`
 
 ```markdown
 # Audit Prioritized Action Plan 2026
@@ -1279,7 +1279,7 @@ Owner: Audit
 **Created:** 2026-01-03  
 **Owner:** Tribeca  
 **Status:** Ready for Execution  
-**Reference:** `COMPREHENSIVE_SYSTEM_AUDIT_PLAN_2026.md`
+**Reference:** `comprehensive-system-audit-plan-2026.md`
 
 ---
 
@@ -1375,7 +1375,7 @@ This document provides a prioritized, actionable execution plan for the Comprehe
   - Document usage guidelines
 
 **Deliverables:**
-- `docs/conventions/VARIABLE_DICTIONARY.md`
+- `docs/conventions/conventions-variable-dictionary.md`
 - Variable naming standards documented
 - Usage guidelines created
 
@@ -1663,7 +1663,7 @@ PAST:
 ## COMPREHENSIVE_TECH_AUDIT_REPORT
 <a id="comprehensive-tech-audit-report"></a>
 
-- Source: `docs/archive/_archive/audits/AUDITS_MISC_PACK.md#comprehensive-tech-audit-report`
+- Source: `docs/archive/_archive/audits/archive-audits-misc-pack.md#comprehensive-tech-audit-report`
 
 ```markdown
 # 🔴 BRUTAL & DETAILED TECH AUDIT: MessMass v11.46.1
@@ -2305,7 +2305,7 @@ This is a **competent codebase with professional aspirations but amateur securit
 ## MONGODB_FIELD_NAMING_VERIFICATION
 <a id="mongodb-field-naming-verification"></a>
 
-- Source: `docs/archive/_archive/audits/AUDITS_MISC_PACK.md#mongodb-field-naming-verification`
+- Source: `docs/archive/_archive/audits/archive-audits-misc-pack.md#mongodb-field-naming-verification`
 
 ```markdown
 # MongoDB Field Naming Verification Report
@@ -2577,7 +2577,7 @@ If you find ANY place where code uses different names than MongoDB, **THAT is a 
 ## NAMING_AUDIT_REPORT
 <a id="naming-audit-report"></a>
 
-- Source: `docs/archive/_archive/audits/AUDITS_MISC_PACK.md#naming-audit-report`
+- Source: `docs/archive/_archive/audits/archive-audits-misc-pack.md#naming-audit-report`
 
 ```markdown
 # MessMass Naming Inconsistency Audit Report
@@ -2869,7 +2869,7 @@ After fixes are applied:
 ## NAMING_CONSISTENCY_FULL_AUDIT
 <a id="naming-consistency-full-audit"></a>
 
-- Source: `docs/archive/_archive/audits/AUDITS_MISC_PACK.md#naming-consistency-full-audit`
+- Source: `docs/archive/_archive/audits/archive-audits-misc-pack.md#naming-consistency-full-audit`
 
 ```markdown
 # MessMass Complete Naming Consistency Audit
@@ -3225,7 +3225,7 @@ module.exports = {
 ## OPERATING_LOOP_ANALYSIS
 <a id="operating-loop-analysis"></a>
 
-- Source: `docs/archive/_archive/audits/AUDITS_MISC_PACK.md#operating-loop-analysis`
+- Source: `docs/archive/_archive/audits/archive-audits-misc-pack.md#operating-loop-analysis`
 
 ```markdown
 # MessMass Project Analysis: Agent Working Loop Compliance
@@ -3236,7 +3236,7 @@ Owner: Audit
 
 
 **Date:** 2026-01-02T20:05:46.000Z  
-**Reference:** `/Users/moldovancsaba/Projects/agent_working_loop_canonical_operating_document.md`
+**Reference:** `/Users/moldovancsaba/Projects/agent-working-loop-canonical-operating-document.md`
 
 ---
 
@@ -3528,7 +3528,7 @@ The system is working when:
 ## P0.1-PRODUCTION-FLAGS-SETUP
 <a id="p0-1-production-flags-setup"></a>
 
-- Source: `docs/archive/_archive/audits/AUDITS_MISC_PACK.md#p0-1-production-flags-setup`
+- Source: `docs/archive/_archive/audits/archive-audits-misc-pack.md#p0-1-production-flags-setup`
 
 ```markdown
 # P0.1: Enable & Verify Security Flags in Production
@@ -3606,7 +3606,7 @@ If issues occur, flags can be disabled via Vercel environment variables:
 ## REPORT_DESIGN_SYSTEM
 <a id="report-design-system"></a>
 
-- Source: `docs/archive/_archive/audits/AUDITS_MISC_PACK.md#report-design-system`
+- Source: `docs/archive/_archive/audits/archive-audits-misc-pack.md#report-design-system`
 
 ```markdown
 # Report Design System
@@ -3959,7 +3959,7 @@ This document MUST be updated when:
 ## SYSTEM_AUDIT_2025
 <a id="system-audit-2025"></a>
 
-- Source: `docs/archive/_archive/audits/AUDITS_MISC_PACK.md#system-audit-2025`
+- Source: `docs/archive/_archive/audits/archive-audits-misc-pack.md#system-audit-2025`
 
 ```markdown
 # Technical Audit: Reporting System

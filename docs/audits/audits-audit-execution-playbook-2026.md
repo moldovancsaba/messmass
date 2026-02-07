@@ -9,7 +9,7 @@ Owner: Audit
 **Created:** 2026-01-03  
 **Owner:** Tribeca (Execution Agent)  
 **Status:** Active  
-**Reference:** `COMPREHENSIVE_SYSTEM_AUDIT_PLAN_2026.md`
+**Reference:** `docs/archive/_archive/audits/comprehensive-system-audit-plan-2026.md` (archived)
 
 ---
 
@@ -97,7 +97,7 @@ wc -l docs/audits/investigations/P0-layout-grammar-violations-overflow.txt
 **Location:** `docs/audits/investigations/[TASK-ID]-[SHORT-NAME].md`
 
 When an investigation workstream is DONE + VERIFIED, consolidate the closed investigation docs into the archived pack:
-- `docs/archive/_archive/investigations/INVESTIGATIONS_PACK_2026.md`
+- `docs/archive/_archive/investigations/archive-investigations-pack-2026.md`
 
 **Template:**
 ```markdown
@@ -476,7 +476,7 @@ PAST:
 
 1. **Use Layout Grammar spec as reference:**
    - `docs/LAYOUT_GRAMMAR.md`
-   - `docs/design/LAYOUT_GRAMMAR_COMPLIANCE.md`
+   - `docs/design/design-layout-grammar-compliance.md`
 
 2. **Scan patterns:**
    ```bash
@@ -515,7 +515,7 @@ PAST:
    ```
 
 3. **Reference existing conventions:**
-   - `docs/conventions/NAMING_CONVENTIONS.md` (if exists)
+   - `docs/conventions/conventions-naming-conventions.md` (if exists)
    - `CODING_STANDARDS.md`
    - Existing variable usage patterns
 

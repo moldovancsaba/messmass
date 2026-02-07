@@ -72,7 +72,7 @@ Documentation system:
 
 Due to lack of persistent memory, you must regularly realign your working context by:
 
-	0.	Read **messmass_cursor_brain_dump.md** (project root) first — it restores current branch, last delivery, priorities, and pointers so you can continue work after a context reset. Update that file when you complete work or change focus.
+	0.	Read **docs/messmass-codex-brain-dump.md** first — it restores doc structure, canonical entrypoints, and the operating rules to continue work after a context reset. Update it only when doc structure/entrypoints change (execution state belongs in `docs/operations/operations-action-plan.md`).
 	1.	Re-reading ALL relevant documentation
 	2.	Scanning the ENTIRE codebase, not just random or cached parts
 	3.	Synchronizing your mental model of architecture, logic, flow, and rules
@@ -158,20 +158,20 @@ TEAM:
 | Location | Document Name | Summary |
 |----------|---------------|---------|
 | `/docs/index.md` | Docs Index (Start Here) | Canonical curated entrypoint. Use this to find the current source of truth for any topic. |
-| `/docs/messmass_codex_brain_dump.md` | Codex Brain Dump | Quick repo refresher (what moved, what is canonical, what is archived). Keep updated during refactors. |
-| `/docs/operations/ACTION_PLAN.md` | Action Plan | Single executable TODO + execution state memory (ops queue, priorities, blockers). |
-| `/docs/operations/ROADMAP.md` | Roadmap | Strategic direction and upcoming milestones (high-level). |
-| `/docs/ARCHITECTURE.md` | Architecture | Complete system architecture documentation. Covers tech stack, data models, API structure, authentication flow, and component organization. Essential for understanding system design. |
-| `/docs/operations/RELEASE_NOTES.md` | Release Notes | Changelog of completed work in reverse chronological order. Updated with every release. |
-| `/docs/operations/LEARNINGS.md` | Learnings | Knowledge base of issues, fixes, and policies (prevents repeating mistakes). |
-| `/docs/CODING_STANDARDS.md` | Coding Standards | Engineering rules and enforcement (includes “Fix the class, not the instance”). |
+| `/docs/messmass-codex-brain-dump.md` | Codex Brain Dump | Quick repo refresher (what moved, what is canonical, what is archived). Keep updated during refactors. |
+| `/docs/operations/operations-action-plan.md` | Action Plan | Single executable TODO + execution state memory (ops queue, priorities, blockers). |
+| `/docs/operations/operations-roadmap.md` | Roadmap | Strategic direction and upcoming milestones (high-level). |
+| `/docs/architecture.md` | Architecture | Complete system architecture documentation. Covers tech stack, data models, API structure, authentication flow, and component organization. Essential for understanding system design. |
+| `/docs/operations/operations-release-notes.md` | Release Notes | Changelog of completed work in reverse chronological order. Updated with every release. |
+| `/docs/operations/operations-learnings.md` | Learnings | Knowledge base of issues, fixes, and policies (prevents repeating mistakes). |
+| `/docs/coding-standards.md` | Coding Standards | Engineering rules and enforcement (includes “Fix the class, not the instance”). |
 
 ### Setup & Deployment
 
 | Location | Document Name | Summary |
 |----------|---------------|---------|
 | `/README.md` | Project README | Local dev, deployment notes, and high-level system overview. |
-| `/docs/operations/DEPLOYMENT_CHECKLIST.md` | Deployment Checklist | Pre-deploy and post-deploy verification + rollback steps. |
+| `/docs/operations/operations-deployment-checklist.md` | Deployment Checklist | Pre-deploy and post-deploy verification + rollback steps. |
 | `/docs/operations/WARP.md` | WARP | Operational notes / updates history. |
 
 ### Feature Documents (Date-Based Format)
@@ -255,9 +255,9 @@ TEAM:
 
 ### Development Workflow
 
-1. **Before starting**: Start at `/docs/index.md`, then check `/docs/operations/ACTION_PLAN.md`
+1. **Before starting**: Start at `/docs/index.md`, then check `/docs/operations/operations-action-plan.md`
 2. **During work**: Update feature document in `/docs` as you go
-3. **Before commit**: Update `/docs/operations/RELEASE_NOTES.md` and `/docs/ARCHITECTURE.md` if needed
+3. **Before commit**: Update `/docs/operations/operations-release-notes.md` and `/docs/architecture.md` if needed
 4. **After commit**: Verify build passes, no warnings/errors
 
 ### File Locations
@@ -265,9 +265,9 @@ TEAM:
 - **All documentation**: `/docs/` folder
 - **Feature documents**: `/docs/YYYY-MM-DD_FEATURE.md`
 - **README**: Project root (`/README.md`)
-- **Execution state (tasks)**: `/docs/operations/ACTION_PLAN.md`
-- **Architecture**: `/docs/ARCHITECTURE.md`
-- **Release notes**: `/docs/operations/RELEASE_NOTES.md`
+- **Execution state (tasks)**: `/docs/operations/operations-action-plan.md`
+- **Architecture**: `/docs/architecture.md`
+- **Release notes**: `/docs/operations/operations-release-notes.md`
 
 ---
 

@@ -5,28 +5,28 @@ Canonical: No
 Owner: Audit
 
 This pack consolidates Admin UI audit artifacts for traceability.
-Canonical Admin workflows live under `docs/admin/` and execution state under `docs/operations/ACTION_PLAN.md`.
+Canonical Admin workflows live under `docs/admin/` and execution state under `docs/operations/operations-action-plan.md`.
 
 ## Table Of Contents
-- [A-UI-00-admin-ui-technical-audit](#a-ui-00-admin-ui-technical-audit) (source: `docs/archive/_archive/audits/ADMIN_UI_AUDITS_PACK.md#a-ui-00-admin-ui-technical-audit`)
-- [ADMIN_UI_ALGORITHMS_MODEL](#admin-ui-algorithms-model) (source: `docs/archive/_archive/audits/ADMIN_UI_AUDITS_PACK.md#admin-ui-algorithms-model`)
-- [ADMIN_UI_BITLY_FLOWS](#admin-ui-bitly-flows) (source: `docs/archive/_archive/audits/ADMIN_UI_AUDITS_PACK.md#admin-ui-bitly-flows`)
-- [ADMIN_UI_BITLY_MODEL](#admin-ui-bitly-model) (source: `docs/archive/_archive/audits/ADMIN_UI_AUDITS_PACK.md#admin-ui-bitly-model`)
-- [ADMIN_UI_CAPABILITY_MAP](#admin-ui-capability-map) (source: `docs/archive/_archive/audits/ADMIN_UI_AUDITS_PACK.md#admin-ui-capability-map`)
-- [ADMIN_UI_CONSOLIDATION_PLAN](#admin-ui-consolidation-plan) (source: `docs/archive/_archive/audits/ADMIN_UI_AUDITS_PACK.md#admin-ui-consolidation-plan`)
-- [ADMIN_UI_EXECUTION_READINESS](#admin-ui-execution-readiness) (source: `docs/archive/_archive/audits/ADMIN_UI_AUDITS_PACK.md#admin-ui-execution-readiness`)
-- [ADMIN_UI_FINAL_IA](#admin-ui-final-ia) (source: `docs/archive/_archive/audits/ADMIN_UI_AUDITS_PACK.md#admin-ui-final-ia`)
-- [ADMIN_UI_GLOSSARY](#admin-ui-glossary) (source: `docs/archive/_archive/audits/ADMIN_UI_AUDITS_PACK.md#admin-ui-glossary`)
-- [ADMIN_UI_INSIGHTS_MODEL](#admin-ui-insights-model) (source: `docs/archive/_archive/audits/ADMIN_UI_AUDITS_PACK.md#admin-ui-insights-model`)
-- [ADMIN_UI_KYC_MODEL](#admin-ui-kyc-model) (source: `docs/archive/_archive/audits/ADMIN_UI_AUDITS_PACK.md#admin-ui-kyc-model`)
-- [ADMIN_UI_OWNERSHIP_MODEL](#admin-ui-ownership-model) (source: `docs/archive/_archive/audits/ADMIN_UI_AUDITS_PACK.md#admin-ui-ownership-model`)
-- [ADMIN_UI_REPORTING_CONTRACT](#admin-ui-reporting-contract) (source: `docs/archive/_archive/audits/ADMIN_UI_AUDITS_PACK.md#admin-ui-reporting-contract`)
-- [ADMIN_UI_ROLES_PERMISSIONS](#admin-ui-roles-permissions) (source: `docs/archive/_archive/audits/ADMIN_UI_AUDITS_PACK.md#admin-ui-roles-permissions`)
+- [A-UI-00-admin-ui-technical-audit](#a-ui-00-admin-ui-technical-audit) (source: `docs/archive/_archive/audits/archive-admin-ui-audits-pack.md#a-ui-00-admin-ui-technical-audit`)
+- [ADMIN_UI_ALGORITHMS_MODEL](#admin-ui-algorithms-model) (source: `docs/archive/_archive/audits/archive-admin-ui-audits-pack.md#admin-ui-algorithms-model`)
+- [ADMIN_UI_BITLY_FLOWS](#admin-ui-bitly-flows) (source: `docs/archive/_archive/audits/archive-admin-ui-audits-pack.md#admin-ui-bitly-flows`)
+- [ADMIN_UI_BITLY_MODEL](#admin-ui-bitly-model) (source: `docs/archive/_archive/audits/archive-admin-ui-audits-pack.md#admin-ui-bitly-model`)
+- [ADMIN_UI_CAPABILITY_MAP](#admin-ui-capability-map) (source: `docs/archive/_archive/audits/archive-admin-ui-audits-pack.md#admin-ui-capability-map`)
+- [ADMIN_UI_CONSOLIDATION_PLAN](#admin-ui-consolidation-plan) (source: `docs/archive/_archive/audits/archive-admin-ui-audits-pack.md#admin-ui-consolidation-plan`)
+- [ADMIN_UI_EXECUTION_READINESS](#admin-ui-execution-readiness) (source: `docs/archive/_archive/audits/archive-admin-ui-audits-pack.md#admin-ui-execution-readiness`)
+- [ADMIN_UI_FINAL_IA](#admin-ui-final-ia) (source: `docs/archive/_archive/audits/archive-admin-ui-audits-pack.md#admin-ui-final-ia`)
+- [ADMIN_UI_GLOSSARY](#admin-ui-glossary) (source: `docs/archive/_archive/audits/archive-admin-ui-audits-pack.md#admin-ui-glossary`)
+- [ADMIN_UI_INSIGHTS_MODEL](#admin-ui-insights-model) (source: `docs/archive/_archive/audits/archive-admin-ui-audits-pack.md#admin-ui-insights-model`)
+- [ADMIN_UI_KYC_MODEL](#admin-ui-kyc-model) (source: `docs/archive/_archive/audits/archive-admin-ui-audits-pack.md#admin-ui-kyc-model`)
+- [ADMIN_UI_OWNERSHIP_MODEL](#admin-ui-ownership-model) (source: `docs/archive/_archive/audits/archive-admin-ui-audits-pack.md#admin-ui-ownership-model`)
+- [ADMIN_UI_REPORTING_CONTRACT](#admin-ui-reporting-contract) (source: `docs/archive/_archive/audits/archive-admin-ui-audits-pack.md#admin-ui-reporting-contract`)
+- [ADMIN_UI_ROLES_PERMISSIONS](#admin-ui-roles-permissions) (source: `docs/archive/_archive/audits/archive-admin-ui-audits-pack.md#admin-ui-roles-permissions`)
 
 ## A-UI-00-admin-ui-technical-audit
 <a id="a-ui-00-admin-ui-technical-audit"></a>
 
-- Source: `docs/archive/_archive/audits/ADMIN_UI_AUDITS_PACK.md#a-ui-00-admin-ui-technical-audit`
+- Source: `docs/archive/_archive/audits/archive-admin-ui-audits-pack.md#a-ui-00-admin-ui-technical-audit`
 
 ```markdown
 # A-UI-00: Admin UI Technical Audit
@@ -612,7 +612,7 @@ This section lists files that will be modified during remediation (for reference
 ## ADMIN_UI_ALGORITHMS_MODEL
 <a id="admin-ui-algorithms-model"></a>
 
-- Source: `docs/archive/_archive/audits/ADMIN_UI_AUDITS_PACK.md#admin-ui-algorithms-model`
+- Source: `docs/archive/_archive/audits/archive-admin-ui-audits-pack.md#admin-ui-algorithms-model`
 
 ```markdown
 # Admin UI Algorithms (Chart Creator) Model
@@ -711,7 +711,7 @@ Owner: Audit
 ## ADMIN_UI_BITLY_FLOWS
 <a id="admin-ui-bitly-flows"></a>
 
-- Source: `docs/archive/_archive/audits/ADMIN_UI_AUDITS_PACK.md#admin-ui-bitly-flows`
+- Source: `docs/archive/_archive/audits/archive-admin-ui-audits-pack.md#admin-ui-bitly-flows`
 
 ```markdown
 # Admin UI Bitly Flows
@@ -771,7 +771,7 @@ Owner: Audit
 ## ADMIN_UI_BITLY_MODEL
 <a id="admin-ui-bitly-model"></a>
 
-- Source: `docs/archive/_archive/audits/ADMIN_UI_AUDITS_PACK.md#admin-ui-bitly-model`
+- Source: `docs/archive/_archive/audits/archive-admin-ui-audits-pack.md#admin-ui-bitly-model`
 
 ```markdown
 # Admin UI Bitly Model
@@ -830,7 +830,7 @@ Owner: Audit
 
 7 Outputs and Downstream Dependencies
 - [x] Project-level Bitly metrics are exposed via /api/bitly/project-metrics/[projectId]. Evidence: [app/api/bitly/project-metrics/[projectId]/route.ts](app/api/bitly/project-metrics/[projectId]/route.ts), [components/BitlyLinksEditor.tsx](components/BitlyLinksEditor.tsx).
-- [x] Bitly stats enrich project.stats fields used by KYC variables. Evidence: [lib/bitlyStatsEnricher.ts](lib/bitlyStatsEnricher.ts), [docs/conventions/VARIABLE_DICTIONARY.md](docs/conventions/VARIABLE_DICTIONARY.md).
+- [x] Bitly stats enrich project.stats fields used by KYC variables. Evidence: [lib/bitlyStatsEnricher.ts](lib/bitlyStatsEnricher.ts), [docs/conventions/conventions-variable-dictionary.md](docs/conventions/conventions-variable-dictionary.md).
 
 8 Known Inconsistencies and Gaps
 - [x] Legacy projectId field exists on bitly_links, but current association flow uses bitly_project_links. Evidence: [lib/bitly-db.types.ts](lib/bitly-db.types.ts), [app/api/bitly/links/route.ts](app/api/bitly/links/route.ts).
@@ -842,14 +842,14 @@ Owner: Audit
 - [x] Partner association is exposed in both /admin/bitly and /admin/partners. Evidence: [app/admin/bitly/page.tsx](app/admin/bitly/page.tsx), [app/admin/partners/page.tsx](app/admin/partners/page.tsx), [operations/ACTION_PLAN.md](../../operations/ACTION_PLAN.md).
 
 10 Connected Dependencies
-- [x] Bitly variables are categorized under KYC Variable Dictionary (Bitly metrics). Evidence: [docs/conventions/VARIABLE_DICTIONARY.md](docs/conventions/VARIABLE_DICTIONARY.md).
+- [x] Bitly variables are categorized under KYC Variable Dictionary (Bitly metrics). Evidence: [docs/conventions/conventions-variable-dictionary.md](docs/conventions/conventions-variable-dictionary.md).
 - [x] Route protection requires admin for /admin/bitly. Evidence: [lib/routeProtection.ts](lib/routeProtection.ts).
 ```
 
 ## ADMIN_UI_CAPABILITY_MAP
 <a id="admin-ui-capability-map"></a>
 
-- Source: `docs/archive/_archive/audits/ADMIN_UI_AUDITS_PACK.md#admin-ui-capability-map`
+- Source: `docs/archive/_archive/audits/archive-admin-ui-audits-pack.md#admin-ui-capability-map`
 
 ```markdown
 # Admin UI Capability Map
@@ -1447,7 +1447,7 @@ Owner: Audit
 ## ADMIN_UI_CONSOLIDATION_PLAN
 <a id="admin-ui-consolidation-plan"></a>
 
-- Source: `docs/archive/_archive/audits/ADMIN_UI_AUDITS_PACK.md#admin-ui-consolidation-plan`
+- Source: `docs/archive/_archive/audits/archive-admin-ui-audits-pack.md#admin-ui-consolidation-plan`
 
 ```markdown
 # Admin UI Consolidation Plan
@@ -1461,52 +1461,52 @@ Owner: Audit
 - [ ] Provide execution-ready direction without introducing new features or redesign.
 
 2 Inputs
-- [x] Capability inventory and duplication register: [docs/archive/_archive/audits/ADMIN_UI_AUDITS_PACK.md#admin-ui-capability-map](docs/archive/_archive/audits/ADMIN_UI_AUDITS_PACK.md#admin-ui-capability-map)
-- [x] Ownership rules and scopes: [docs/archive/_archive/audits/ADMIN_UI_AUDITS_PACK.md#admin-ui-ownership-model](docs/archive/_archive/audits/ADMIN_UI_AUDITS_PACK.md#admin-ui-ownership-model)
-- [x] Terminology alignment: [docs/archive/_archive/audits/ADMIN_UI_AUDITS_PACK.md#admin-ui-glossary](docs/archive/_archive/audits/ADMIN_UI_AUDITS_PACK.md#admin-ui-glossary)
+- [x] Capability inventory and duplication register: [docs/archive/_archive/audits/archive-admin-ui-audits-pack.md#admin-ui-capability-map](docs/archive/_archive/audits/archive-admin-ui-audits-pack.md#admin-ui-capability-map)
+- [x] Ownership rules and scopes: [docs/archive/_archive/audits/archive-admin-ui-audits-pack.md#admin-ui-ownership-model](docs/archive/_archive/audits/archive-admin-ui-audits-pack.md#admin-ui-ownership-model)
+- [x] Terminology alignment: [docs/archive/_archive/audits/archive-admin-ui-audits-pack.md#admin-ui-glossary](docs/archive/_archive/audits/archive-admin-ui-audits-pack.md#admin-ui-glossary)
 
 2.1 Traceability to A-UI-01 → A-UI-15 Outputs
 | Task ID | Output reference | Notes |
 | --- | --- | --- |
-| [ ] A-UI-01 Partners | [ ] [docs/archive/_archive/audits/ADMIN_UI_AUDITS_PACK.md#admin-ui-capability-map](docs/archive/_archive/audits/ADMIN_UI_AUDITS_PACK.md#admin-ui-capability-map) | [ ] Partners routes and duplication references. |
-| [x] A-UI-02 Events | [x] [docs/archive/_archive/audits/ADMIN_UI_AUDITS_PACK.md#admin-ui-capability-map](docs/archive/_archive/audits/ADMIN_UI_AUDITS_PACK.md#admin-ui-capability-map) | [x] Events routes, overrides, and duplication references. |
-| [x] A-UI-03 Filters | [x] [docs/archive/_archive/audits/ADMIN_UI_AUDITS_PACK.md#admin-ui-capability-map](docs/archive/_archive/audits/ADMIN_UI_AUDITS_PACK.md#admin-ui-capability-map) | [x] Filter routes and report-style dependencies. |
-| [x] A-UI-04 Users | [x] [docs/archive/_archive/audits/ADMIN_UI_AUDITS_PACK.md#admin-ui-capability-map](docs/archive/_archive/audits/ADMIN_UI_AUDITS_PACK.md#admin-ui-capability-map) | [x] User management ownership scope. |
-| [x] A-UI-05 Insights | [x] [docs/archive/_archive/audits/ADMIN_UI_AUDITS_PACK.md#admin-ui-capability-map](docs/archive/_archive/audits/ADMIN_UI_AUDITS_PACK.md#admin-ui-capability-map) | [x] Insights routes overlap with analytics insights. |
-| [x] A-UI-06 KYC | [x] [docs/archive/_archive/audits/ADMIN_UI_AUDITS_PACK.md#admin-ui-capability-map](docs/archive/_archive/audits/ADMIN_UI_AUDITS_PACK.md#admin-ui-capability-map) | [x] KYC variables, algorithms, and clicker dependencies. |
-| [x] A-UI-07 Algorithms | [x] [docs/archive/_archive/audits/ADMIN_UI_AUDITS_PACK.md#admin-ui-capability-map](docs/archive/_archive/audits/ADMIN_UI_AUDITS_PACK.md#admin-ui-capability-map) | [x] Chart algorithms scope and dependencies. |
-| [x] A-UI-08 Admin -> Reporting Contract | [x] [docs/archive/_archive/audits/ADMIN_UI_AUDITS_PACK.md#admin-ui-reporting-contract](docs/archive/_archive/audits/ADMIN_UI_AUDITS_PACK.md#admin-ui-reporting-contract) | [x] Contract boundary documented; non-IA consolidation dependency. |
-| [x] A-UI-09 Bitly Manager | [x] [docs/archive/_archive/audits/ADMIN_UI_AUDITS_PACK.md#admin-ui-capability-map](docs/archive/_archive/audits/ADMIN_UI_AUDITS_PACK.md#admin-ui-capability-map) | [x] Bitly link ownership and associations. |
-| [ ] A-UI-10 Hashtag Manager | [ ] [docs/archive/_archive/audits/ADMIN_UI_AUDITS_PACK.md#admin-ui-capability-map](docs/archive/_archive/audits/ADMIN_UI_AUDITS_PACK.md#admin-ui-capability-map) | [ ] Hashtag editing and duplication with categories. |
-| [ ] A-UI-11 Category Manager | [ ] [docs/archive/_archive/audits/ADMIN_UI_AUDITS_PACK.md#admin-ui-capability-map](docs/archive/_archive/audits/ADMIN_UI_AUDITS_PACK.md#admin-ui-capability-map) | [ ] Category ownership and duplication with hashtags. |
-| [ ] A-UI-12 Reporting | [ ] [docs/archive/_archive/audits/ADMIN_UI_AUDITS_PACK.md#admin-ui-capability-map](docs/archive/_archive/audits/ADMIN_UI_AUDITS_PACK.md#admin-ui-capability-map) | [ ] Report template ownership and assignments. |
-| [ ] A-UI-13 Style Library | [ ] [docs/archive/_archive/audits/ADMIN_UI_AUDITS_PACK.md#admin-ui-capability-map](docs/archive/_archive/audits/ADMIN_UI_AUDITS_PACK.md#admin-ui-capability-map) | [ ] Report style ownership and assignments. |
-| [ ] A-UI-14 Cache Management | [ ] [docs/archive/_archive/audits/ADMIN_UI_AUDITS_PACK.md#admin-ui-capability-map](docs/archive/_archive/audits/ADMIN_UI_AUDITS_PACK.md#admin-ui-capability-map) | [ ] Cache control scope. |
-| [ ] A-UI-15 User Guide | [ ] [docs/archive/_archive/audits/ADMIN_UI_AUDITS_PACK.md#admin-ui-capability-map](docs/archive/_archive/audits/ADMIN_UI_AUDITS_PACK.md#admin-ui-capability-map) | [ ] Guide scope and missing artifact blocker. |
+| [ ] A-UI-01 Partners | [ ] [docs/archive/_archive/audits/archive-admin-ui-audits-pack.md#admin-ui-capability-map](docs/archive/_archive/audits/archive-admin-ui-audits-pack.md#admin-ui-capability-map) | [ ] Partners routes and duplication references. |
+| [x] A-UI-02 Events | [x] [docs/archive/_archive/audits/archive-admin-ui-audits-pack.md#admin-ui-capability-map](docs/archive/_archive/audits/archive-admin-ui-audits-pack.md#admin-ui-capability-map) | [x] Events routes, overrides, and duplication references. |
+| [x] A-UI-03 Filters | [x] [docs/archive/_archive/audits/archive-admin-ui-audits-pack.md#admin-ui-capability-map](docs/archive/_archive/audits/archive-admin-ui-audits-pack.md#admin-ui-capability-map) | [x] Filter routes and report-style dependencies. |
+| [x] A-UI-04 Users | [x] [docs/archive/_archive/audits/archive-admin-ui-audits-pack.md#admin-ui-capability-map](docs/archive/_archive/audits/archive-admin-ui-audits-pack.md#admin-ui-capability-map) | [x] User management ownership scope. |
+| [x] A-UI-05 Insights | [x] [docs/archive/_archive/audits/archive-admin-ui-audits-pack.md#admin-ui-capability-map](docs/archive/_archive/audits/archive-admin-ui-audits-pack.md#admin-ui-capability-map) | [x] Insights routes overlap with analytics insights. |
+| [x] A-UI-06 KYC | [x] [docs/archive/_archive/audits/archive-admin-ui-audits-pack.md#admin-ui-capability-map](docs/archive/_archive/audits/archive-admin-ui-audits-pack.md#admin-ui-capability-map) | [x] KYC variables, algorithms, and clicker dependencies. |
+| [x] A-UI-07 Algorithms | [x] [docs/archive/_archive/audits/archive-admin-ui-audits-pack.md#admin-ui-capability-map](docs/archive/_archive/audits/archive-admin-ui-audits-pack.md#admin-ui-capability-map) | [x] Chart algorithms scope and dependencies. |
+| [x] A-UI-08 Admin -> Reporting Contract | [x] [docs/archive/_archive/audits/archive-admin-ui-audits-pack.md#admin-ui-reporting-contract](docs/archive/_archive/audits/archive-admin-ui-audits-pack.md#admin-ui-reporting-contract) | [x] Contract boundary documented; non-IA consolidation dependency. |
+| [x] A-UI-09 Bitly Manager | [x] [docs/archive/_archive/audits/archive-admin-ui-audits-pack.md#admin-ui-capability-map](docs/archive/_archive/audits/archive-admin-ui-audits-pack.md#admin-ui-capability-map) | [x] Bitly link ownership and associations. |
+| [ ] A-UI-10 Hashtag Manager | [ ] [docs/archive/_archive/audits/archive-admin-ui-audits-pack.md#admin-ui-capability-map](docs/archive/_archive/audits/archive-admin-ui-audits-pack.md#admin-ui-capability-map) | [ ] Hashtag editing and duplication with categories. |
+| [ ] A-UI-11 Category Manager | [ ] [docs/archive/_archive/audits/archive-admin-ui-audits-pack.md#admin-ui-capability-map](docs/archive/_archive/audits/archive-admin-ui-audits-pack.md#admin-ui-capability-map) | [ ] Category ownership and duplication with hashtags. |
+| [ ] A-UI-12 Reporting | [ ] [docs/archive/_archive/audits/archive-admin-ui-audits-pack.md#admin-ui-capability-map](docs/archive/_archive/audits/archive-admin-ui-audits-pack.md#admin-ui-capability-map) | [ ] Report template ownership and assignments. |
+| [ ] A-UI-13 Style Library | [ ] [docs/archive/_archive/audits/archive-admin-ui-audits-pack.md#admin-ui-capability-map](docs/archive/_archive/audits/archive-admin-ui-audits-pack.md#admin-ui-capability-map) | [ ] Report style ownership and assignments. |
+| [ ] A-UI-14 Cache Management | [ ] [docs/archive/_archive/audits/archive-admin-ui-audits-pack.md#admin-ui-capability-map](docs/archive/_archive/audits/archive-admin-ui-audits-pack.md#admin-ui-capability-map) | [ ] Cache control scope. |
+| [ ] A-UI-15 User Guide | [ ] [docs/archive/_archive/audits/archive-admin-ui-audits-pack.md#admin-ui-capability-map](docs/archive/_archive/audits/archive-admin-ui-audits-pack.md#admin-ui-capability-map) | [ ] Guide scope and missing artifact blocker. |
 
 3 Consolidation & Removal Plan
 | Item | Action | Current location | Target location | Rationale | Risk | Evidence |
 | --- | --- | --- | --- | --- | --- | --- |
-| [ ] Legacy dashboard | [ ] MERGE | [ ] /admin/dashboard | [ ] /admin | [ ] Duplicate dashboard metrics and entrypoint. | [ ] Existing bookmarks and workflows. | [ ] [docs/archive/_archive/audits/ADMIN_UI_AUDITS_PACK.md#admin-ui-capability-map](docs/archive/_archive/audits/ADMIN_UI_AUDITS_PACK.md#admin-ui-capability-map) |
-| [ ] Insights dashboard duplication | [ ] MERGE | [ ] /admin/insights | [ ] /admin/analytics/insights | [ ] Single insights surface reduces drift. | [ ] Users relying on /admin/insights. | [ ] [docs/archive/_archive/audits/ADMIN_UI_AUDITS_PACK.md#admin-ui-capability-map](docs/archive/_archive/audits/ADMIN_UI_AUDITS_PACK.md#admin-ui-capability-map) |
-| [ ] Projects legacy route | [ ] REMOVE | [ ] /admin/projects | [ ] /admin/events | [ ] Legacy redirect route; not part of final IA. | [ ] External links if redirect removed. | [ ] [docs/archive/_archive/audits/ADMIN_UI_AUDITS_PACK.md#admin-ui-capability-map](docs/archive/_archive/audits/ADMIN_UI_AUDITS_PACK.md#admin-ui-capability-map) |
-| [ ] Partner/Event assignment controls (templates, styles, hashtags) | [ ] MERGE | [ ] /admin/partners + /admin/events | [ ] Shared assignment component used by both pages | [ ] Reduce duplicated assignment flows. | [ ] Incorrect override behavior if unified incorrectly. | [ ] [docs/archive/_archive/audits/ADMIN_UI_AUDITS_PACK.md#admin-ui-capability-map](docs/archive/_archive/audits/ADMIN_UI_AUDITS_PACK.md#admin-ui-capability-map) |
-| [ ] Hashtag search and pagination | [ ] MERGE | [ ] /admin/filter + /admin/hashtags | [ ] Shared hashtag search component/hook | [ ] Single search behavior across admin views. | [ ] Regressions in filter UX. | [ ] [docs/archive/_archive/audits/ADMIN_UI_AUDITS_PACK.md#admin-ui-capability-map](docs/archive/_archive/audits/ADMIN_UI_AUDITS_PACK.md#admin-ui-capability-map) |
-| [ ] Variable definitions (KYC) | [ ] MERGE | [ ] /admin/kyc + /admin/charts + /admin/clicker-manager | [ ] /admin/kyc as sole edit surface; other pages read-only for variables | [ ] Enforce global single source of truth. | [ ] Algorithm editing may require variable updates. | [ ] [docs/archive/_archive/audits/ADMIN_UI_AUDITS_PACK.md#admin-ui-ownership-model](docs/archive/_archive/audits/ADMIN_UI_AUDITS_PACK.md#admin-ui-ownership-model) |
-| [ ] Bitly association controls | [ ] MERGE | [ ] /admin/partners (bitly assignments) | [ ] /admin/bitly | [ ] Centralize link association ownership. | [ ] Partner workflow disruption. | [ ] [docs/archive/_archive/audits/ADMIN_UI_AUDITS_PACK.md#admin-ui-capability-map](docs/archive/_archive/audits/ADMIN_UI_AUDITS_PACK.md#admin-ui-capability-map) |
-| [ ] Hashtag metadata management | [ ] MERGE | [ ] /admin/hashtags + /admin/categories | [ ] /admin/hashtags | [ ] Single hashtag metadata surface. | [ ] Category-only workflows may be affected. | [ ] [docs/archive/_archive/audits/ADMIN_UI_AUDITS_PACK.md#admin-ui-capability-map](docs/archive/_archive/audits/ADMIN_UI_AUDITS_PACK.md#admin-ui-capability-map) |
-| [ ] Report style assignment controls | [ ] MERGE | [ ] /admin/partners + /admin/events + /admin/filter | [ ] Shared style assignment component used by all relevant pages | [ ] Ensure consistent override rules. | [ ] Incorrect style inheritance. | [ ] [docs/archive/_archive/audits/ADMIN_UI_AUDITS_PACK.md#admin-ui-ownership-model](docs/archive/_archive/audits/ADMIN_UI_AUDITS_PACK.md#admin-ui-ownership-model) |
-| [ ] Report template assignment controls | [ ] MERGE | [ ] /admin/partners + /admin/events | [ ] Shared template assignment component used by both pages | [ ] Ensure consistent override rules. | [ ] Incorrect template inheritance. | [ ] [docs/archive/_archive/audits/ADMIN_UI_AUDITS_PACK.md#admin-ui-ownership-model](docs/archive/_archive/audits/ADMIN_UI_AUDITS_PACK.md#admin-ui-ownership-model) |
-| [ ] Filter analytics duplication | [ ] REMOVE | [ ] /admin/dashboard (filter tab) | [ ] /admin/filter | [ ] Single filter surface reduces drift. | [ ] Legacy dashboard dependency. | [ ] [docs/archive/_archive/audits/ADMIN_UI_AUDITS_PACK.md#admin-ui-capability-map](docs/archive/_archive/audits/ADMIN_UI_AUDITS_PACK.md#admin-ui-capability-map) |
-| [ ] KYC variables library | [ ] FREEZE | [ ] /admin/kyc | [ ] /admin/kyc | [ ] Canonical global variable definitions. | [ ] None if ownership model enforced. | [ ] [docs/archive/_archive/audits/ADMIN_UI_AUDITS_PACK.md#admin-ui-ownership-model](docs/archive/_archive/audits/ADMIN_UI_AUDITS_PACK.md#admin-ui-ownership-model) |
-| [ ] Report templates library | [ ] FREEZE | [ ] /admin/visualization | [ ] /admin/visualization | [ ] Canonical report template definitions. | [ ] None if assignment controls consolidated. | [ ] [docs/archive/_archive/audits/ADMIN_UI_AUDITS_PACK.md#admin-ui-ownership-model](docs/archive/_archive/audits/ADMIN_UI_AUDITS_PACK.md#admin-ui-ownership-model) |
-| [ ] Report styles library | [ ] FREEZE | [ ] /admin/styles | [ ] /admin/styles | [ ] Canonical report style definitions. | [ ] None if assignment controls consolidated. | [ ] [docs/archive/_archive/audits/ADMIN_UI_AUDITS_PACK.md#admin-ui-ownership-model](docs/archive/_archive/audits/ADMIN_UI_AUDITS_PACK.md#admin-ui-ownership-model) |
+| [ ] Legacy dashboard | [ ] MERGE | [ ] /admin/dashboard | [ ] /admin | [ ] Duplicate dashboard metrics and entrypoint. | [ ] Existing bookmarks and workflows. | [ ] [docs/archive/_archive/audits/archive-admin-ui-audits-pack.md#admin-ui-capability-map](docs/archive/_archive/audits/archive-admin-ui-audits-pack.md#admin-ui-capability-map) |
+| [ ] Insights dashboard duplication | [ ] MERGE | [ ] /admin/insights | [ ] /admin/analytics/insights | [ ] Single insights surface reduces drift. | [ ] Users relying on /admin/insights. | [ ] [docs/archive/_archive/audits/archive-admin-ui-audits-pack.md#admin-ui-capability-map](docs/archive/_archive/audits/archive-admin-ui-audits-pack.md#admin-ui-capability-map) |
+| [ ] Projects legacy route | [ ] REMOVE | [ ] /admin/projects | [ ] /admin/events | [ ] Legacy redirect route; not part of final IA. | [ ] External links if redirect removed. | [ ] [docs/archive/_archive/audits/archive-admin-ui-audits-pack.md#admin-ui-capability-map](docs/archive/_archive/audits/archive-admin-ui-audits-pack.md#admin-ui-capability-map) |
+| [ ] Partner/Event assignment controls (templates, styles, hashtags) | [ ] MERGE | [ ] /admin/partners + /admin/events | [ ] Shared assignment component used by both pages | [ ] Reduce duplicated assignment flows. | [ ] Incorrect override behavior if unified incorrectly. | [ ] [docs/archive/_archive/audits/archive-admin-ui-audits-pack.md#admin-ui-capability-map](docs/archive/_archive/audits/archive-admin-ui-audits-pack.md#admin-ui-capability-map) |
+| [ ] Hashtag search and pagination | [ ] MERGE | [ ] /admin/filter + /admin/hashtags | [ ] Shared hashtag search component/hook | [ ] Single search behavior across admin views. | [ ] Regressions in filter UX. | [ ] [docs/archive/_archive/audits/archive-admin-ui-audits-pack.md#admin-ui-capability-map](docs/archive/_archive/audits/archive-admin-ui-audits-pack.md#admin-ui-capability-map) |
+| [ ] Variable definitions (KYC) | [ ] MERGE | [ ] /admin/kyc + /admin/charts + /admin/clicker-manager | [ ] /admin/kyc as sole edit surface; other pages read-only for variables | [ ] Enforce global single source of truth. | [ ] Algorithm editing may require variable updates. | [ ] [docs/archive/_archive/audits/archive-admin-ui-audits-pack.md#admin-ui-ownership-model](docs/archive/_archive/audits/archive-admin-ui-audits-pack.md#admin-ui-ownership-model) |
+| [ ] Bitly association controls | [ ] MERGE | [ ] /admin/partners (bitly assignments) | [ ] /admin/bitly | [ ] Centralize link association ownership. | [ ] Partner workflow disruption. | [ ] [docs/archive/_archive/audits/archive-admin-ui-audits-pack.md#admin-ui-capability-map](docs/archive/_archive/audits/archive-admin-ui-audits-pack.md#admin-ui-capability-map) |
+| [ ] Hashtag metadata management | [ ] MERGE | [ ] /admin/hashtags + /admin/categories | [ ] /admin/hashtags | [ ] Single hashtag metadata surface. | [ ] Category-only workflows may be affected. | [ ] [docs/archive/_archive/audits/archive-admin-ui-audits-pack.md#admin-ui-capability-map](docs/archive/_archive/audits/archive-admin-ui-audits-pack.md#admin-ui-capability-map) |
+| [ ] Report style assignment controls | [ ] MERGE | [ ] /admin/partners + /admin/events + /admin/filter | [ ] Shared style assignment component used by all relevant pages | [ ] Ensure consistent override rules. | [ ] Incorrect style inheritance. | [ ] [docs/archive/_archive/audits/archive-admin-ui-audits-pack.md#admin-ui-ownership-model](docs/archive/_archive/audits/archive-admin-ui-audits-pack.md#admin-ui-ownership-model) |
+| [ ] Report template assignment controls | [ ] MERGE | [ ] /admin/partners + /admin/events | [ ] Shared template assignment component used by both pages | [ ] Ensure consistent override rules. | [ ] Incorrect template inheritance. | [ ] [docs/archive/_archive/audits/archive-admin-ui-audits-pack.md#admin-ui-ownership-model](docs/archive/_archive/audits/archive-admin-ui-audits-pack.md#admin-ui-ownership-model) |
+| [ ] Filter analytics duplication | [ ] REMOVE | [ ] /admin/dashboard (filter tab) | [ ] /admin/filter | [ ] Single filter surface reduces drift. | [ ] Legacy dashboard dependency. | [ ] [docs/archive/_archive/audits/archive-admin-ui-audits-pack.md#admin-ui-capability-map](docs/archive/_archive/audits/archive-admin-ui-audits-pack.md#admin-ui-capability-map) |
+| [ ] KYC variables library | [ ] FREEZE | [ ] /admin/kyc | [ ] /admin/kyc | [ ] Canonical global variable definitions. | [ ] None if ownership model enforced. | [ ] [docs/archive/_archive/audits/archive-admin-ui-audits-pack.md#admin-ui-ownership-model](docs/archive/_archive/audits/archive-admin-ui-audits-pack.md#admin-ui-ownership-model) |
+| [ ] Report templates library | [ ] FREEZE | [ ] /admin/visualization | [ ] /admin/visualization | [ ] Canonical report template definitions. | [ ] None if assignment controls consolidated. | [ ] [docs/archive/_archive/audits/archive-admin-ui-audits-pack.md#admin-ui-ownership-model](docs/archive/_archive/audits/archive-admin-ui-audits-pack.md#admin-ui-ownership-model) |
+| [ ] Report styles library | [ ] FREEZE | [ ] /admin/styles | [ ] /admin/styles | [ ] Canonical report style definitions. | [ ] None if assignment controls consolidated. | [ ] [docs/archive/_archive/audits/archive-admin-ui-audits-pack.md#admin-ui-ownership-model](docs/archive/_archive/audits/archive-admin-ui-audits-pack.md#admin-ui-ownership-model) |
 ```
 
 ## ADMIN_UI_EXECUTION_READINESS
 <a id="admin-ui-execution-readiness"></a>
 
-- Source: `docs/archive/_archive/audits/ADMIN_UI_AUDITS_PACK.md#admin-ui-execution-readiness`
+- Source: `docs/archive/_archive/audits/archive-admin-ui-audits-pack.md#admin-ui-execution-readiness`
 
 ```markdown
 # Admin UI Execution Readiness
@@ -1520,70 +1520,70 @@ Owner: Audit
 - [ ] Provide clear can-start / cannot-start flags per Admin area.
 
 2 Inputs
-- [x] Consolidation plan: [docs/archive/_archive/audits/ADMIN_UI_AUDITS_PACK.md#admin-ui-consolidation-plan](docs/archive/_archive/audits/ADMIN_UI_AUDITS_PACK.md#admin-ui-consolidation-plan)
-- [x] Final IA: [docs/archive/_archive/audits/ADMIN_UI_AUDITS_PACK.md#admin-ui-final-ia](docs/archive/_archive/audits/ADMIN_UI_AUDITS_PACK.md#admin-ui-final-ia)
-- [x] Capability map and duplication register: [docs/archive/_archive/audits/ADMIN_UI_AUDITS_PACK.md#admin-ui-capability-map](docs/archive/_archive/audits/ADMIN_UI_AUDITS_PACK.md#admin-ui-capability-map)
-- [x] Ownership rules: [docs/archive/_archive/audits/ADMIN_UI_AUDITS_PACK.md#admin-ui-ownership-model](docs/archive/_archive/audits/ADMIN_UI_AUDITS_PACK.md#admin-ui-ownership-model)
-- [x] Glossary alignment: [docs/archive/_archive/audits/ADMIN_UI_AUDITS_PACK.md#admin-ui-glossary](docs/archive/_archive/audits/ADMIN_UI_AUDITS_PACK.md#admin-ui-glossary)
+- [x] Consolidation plan: [docs/archive/_archive/audits/archive-admin-ui-audits-pack.md#admin-ui-consolidation-plan](docs/archive/_archive/audits/archive-admin-ui-audits-pack.md#admin-ui-consolidation-plan)
+- [x] Final IA: [docs/archive/_archive/audits/archive-admin-ui-audits-pack.md#admin-ui-final-ia](docs/archive/_archive/audits/archive-admin-ui-audits-pack.md#admin-ui-final-ia)
+- [x] Capability map and duplication register: [docs/archive/_archive/audits/archive-admin-ui-audits-pack.md#admin-ui-capability-map](docs/archive/_archive/audits/archive-admin-ui-audits-pack.md#admin-ui-capability-map)
+- [x] Ownership rules: [docs/archive/_archive/audits/archive-admin-ui-audits-pack.md#admin-ui-ownership-model](docs/archive/_archive/audits/archive-admin-ui-audits-pack.md#admin-ui-ownership-model)
+- [x] Glossary alignment: [docs/archive/_archive/audits/archive-admin-ui-audits-pack.md#admin-ui-glossary](docs/archive/_archive/audits/archive-admin-ui-audits-pack.md#admin-ui-glossary)
 
 2.1 Traceability to A-UI-01 → A-UI-15 Outputs
 | Task ID | Output reference | Notes |
 | --- | --- | --- |
-| [ ] A-UI-01 Partners | [ ] [docs/archive/_archive/audits/ADMIN_UI_AUDITS_PACK.md#admin-ui-capability-map](docs/archive/_archive/audits/ADMIN_UI_AUDITS_PACK.md#admin-ui-capability-map) | [ ] Partner scope and assignments. |
-| [x] A-UI-02 Events | [x] [docs/archive/_archive/audits/ADMIN_UI_AUDITS_PACK.md#admin-ui-capability-map](docs/archive/_archive/audits/ADMIN_UI_AUDITS_PACK.md#admin-ui-capability-map) | [x] Event scope and overrides. |
-| [x] A-UI-03 Filters | [x] [docs/archive/_archive/audits/ADMIN_UI_AUDITS_PACK.md#admin-ui-capability-map](docs/archive/_archive/audits/ADMIN_UI_AUDITS_PACK.md#admin-ui-capability-map) | [x] Filter dependencies on styles. |
-| [x] A-UI-04 Users | [x] [docs/archive/_archive/audits/ADMIN_UI_AUDITS_PACK.md#admin-ui-capability-map](docs/archive/_archive/audits/ADMIN_UI_AUDITS_PACK.md#admin-ui-capability-map) | [x] User/role scope. |
-| [x] A-UI-05 Insights | [x] [docs/archive/_archive/audits/ADMIN_UI_AUDITS_PACK.md#admin-ui-capability-map](docs/archive/_archive/audits/ADMIN_UI_AUDITS_PACK.md#admin-ui-capability-map) | [x] Insights consolidation target. |
-| [x] A-UI-06 KYC | [x] [docs/archive/_archive/audits/ADMIN_UI_AUDITS_PACK.md#admin-ui-capability-map](docs/archive/_archive/audits/ADMIN_UI_AUDITS_PACK.md#admin-ui-capability-map) | [x] KYC + clicker dependency on algorithms and reports. |
-| [x] A-UI-07 Algorithms | [x] [docs/archive/_archive/audits/ADMIN_UI_AUDITS_PACK.md#admin-ui-capability-map](docs/archive/_archive/audits/ADMIN_UI_AUDITS_PACK.md#admin-ui-capability-map) | [x] Algorithms dependency on KYC. |
-| [x] A-UI-08 Admin -> Reporting Contract | [x] [docs/archive/_archive/audits/ADMIN_UI_AUDITS_PACK.md#admin-ui-reporting-contract](docs/archive/_archive/audits/ADMIN_UI_AUDITS_PACK.md#admin-ui-reporting-contract) | [x] Contract boundary; non-UI dependency for refactor readiness. |
-| [x] A-UI-09 Bitly Manager | [x] [docs/archive/_archive/audits/ADMIN_UI_AUDITS_PACK.md#admin-ui-capability-map](docs/archive/_archive/audits/ADMIN_UI_AUDITS_PACK.md#admin-ui-capability-map) | [x] Bitly association consolidation. |
-| [ ] A-UI-10 Hashtag Manager | [ ] [docs/archive/_archive/audits/ADMIN_UI_AUDITS_PACK.md#admin-ui-capability-map](docs/archive/_archive/audits/ADMIN_UI_AUDITS_PACK.md#admin-ui-capability-map) | [ ] Hashtag metadata consolidation. |
-| [ ] A-UI-11 Category Manager | [ ] [docs/archive/_archive/audits/ADMIN_UI_AUDITS_PACK.md#admin-ui-capability-map](docs/archive/_archive/audits/ADMIN_UI_AUDITS_PACK.md#admin-ui-capability-map) | [ ] Category merge into hashtags. |
-| [ ] A-UI-12 Reporting | [ ] [docs/archive/_archive/audits/ADMIN_UI_AUDITS_PACK.md#admin-ui-capability-map](docs/archive/_archive/audits/ADMIN_UI_AUDITS_PACK.md#admin-ui-capability-map) | [ ] Report templates ownership. |
-| [ ] A-UI-13 Style Library | [ ] [docs/archive/_archive/audits/ADMIN_UI_AUDITS_PACK.md#admin-ui-capability-map](docs/archive/_archive/audits/ADMIN_UI_AUDITS_PACK.md#admin-ui-capability-map) | [ ] Style ownership and assignments. |
-| [ ] A-UI-14 Cache Management | [ ] [docs/archive/_archive/audits/ADMIN_UI_AUDITS_PACK.md#admin-ui-capability-map](docs/archive/_archive/audits/ADMIN_UI_AUDITS_PACK.md#admin-ui-capability-map) | [ ] Cache scope unaffected. |
-| [ ] A-UI-15 User Guide | [ ] [docs/archive/_archive/audits/ADMIN_UI_AUDITS_PACK.md#admin-ui-capability-map](docs/archive/_archive/audits/ADMIN_UI_AUDITS_PACK.md#admin-ui-capability-map) | [ ] Guide blocker noted (missing END_USER_GUIDE.md). |
+| [ ] A-UI-01 Partners | [ ] [docs/archive/_archive/audits/archive-admin-ui-audits-pack.md#admin-ui-capability-map](docs/archive/_archive/audits/archive-admin-ui-audits-pack.md#admin-ui-capability-map) | [ ] Partner scope and assignments. |
+| [x] A-UI-02 Events | [x] [docs/archive/_archive/audits/archive-admin-ui-audits-pack.md#admin-ui-capability-map](docs/archive/_archive/audits/archive-admin-ui-audits-pack.md#admin-ui-capability-map) | [x] Event scope and overrides. |
+| [x] A-UI-03 Filters | [x] [docs/archive/_archive/audits/archive-admin-ui-audits-pack.md#admin-ui-capability-map](docs/archive/_archive/audits/archive-admin-ui-audits-pack.md#admin-ui-capability-map) | [x] Filter dependencies on styles. |
+| [x] A-UI-04 Users | [x] [docs/archive/_archive/audits/archive-admin-ui-audits-pack.md#admin-ui-capability-map](docs/archive/_archive/audits/archive-admin-ui-audits-pack.md#admin-ui-capability-map) | [x] User/role scope. |
+| [x] A-UI-05 Insights | [x] [docs/archive/_archive/audits/archive-admin-ui-audits-pack.md#admin-ui-capability-map](docs/archive/_archive/audits/archive-admin-ui-audits-pack.md#admin-ui-capability-map) | [x] Insights consolidation target. |
+| [x] A-UI-06 KYC | [x] [docs/archive/_archive/audits/archive-admin-ui-audits-pack.md#admin-ui-capability-map](docs/archive/_archive/audits/archive-admin-ui-audits-pack.md#admin-ui-capability-map) | [x] KYC + clicker dependency on algorithms and reports. |
+| [x] A-UI-07 Algorithms | [x] [docs/archive/_archive/audits/archive-admin-ui-audits-pack.md#admin-ui-capability-map](docs/archive/_archive/audits/archive-admin-ui-audits-pack.md#admin-ui-capability-map) | [x] Algorithms dependency on KYC. |
+| [x] A-UI-08 Admin -> Reporting Contract | [x] [docs/archive/_archive/audits/archive-admin-ui-audits-pack.md#admin-ui-reporting-contract](docs/archive/_archive/audits/archive-admin-ui-audits-pack.md#admin-ui-reporting-contract) | [x] Contract boundary; non-UI dependency for refactor readiness. |
+| [x] A-UI-09 Bitly Manager | [x] [docs/archive/_archive/audits/archive-admin-ui-audits-pack.md#admin-ui-capability-map](docs/archive/_archive/audits/archive-admin-ui-audits-pack.md#admin-ui-capability-map) | [x] Bitly association consolidation. |
+| [ ] A-UI-10 Hashtag Manager | [ ] [docs/archive/_archive/audits/archive-admin-ui-audits-pack.md#admin-ui-capability-map](docs/archive/_archive/audits/archive-admin-ui-audits-pack.md#admin-ui-capability-map) | [ ] Hashtag metadata consolidation. |
+| [ ] A-UI-11 Category Manager | [ ] [docs/archive/_archive/audits/archive-admin-ui-audits-pack.md#admin-ui-capability-map](docs/archive/_archive/audits/archive-admin-ui-audits-pack.md#admin-ui-capability-map) | [ ] Category merge into hashtags. |
+| [ ] A-UI-12 Reporting | [ ] [docs/archive/_archive/audits/archive-admin-ui-audits-pack.md#admin-ui-capability-map](docs/archive/_archive/audits/archive-admin-ui-audits-pack.md#admin-ui-capability-map) | [ ] Report templates ownership. |
+| [ ] A-UI-13 Style Library | [ ] [docs/archive/_archive/audits/archive-admin-ui-audits-pack.md#admin-ui-capability-map](docs/archive/_archive/audits/archive-admin-ui-audits-pack.md#admin-ui-capability-map) | [ ] Style ownership and assignments. |
+| [ ] A-UI-14 Cache Management | [ ] [docs/archive/_archive/audits/archive-admin-ui-audits-pack.md#admin-ui-capability-map](docs/archive/_archive/audits/archive-admin-ui-audits-pack.md#admin-ui-capability-map) | [ ] Cache scope unaffected. |
+| [ ] A-UI-15 User Guide | [ ] [docs/archive/_archive/audits/archive-admin-ui-audits-pack.md#admin-ui-capability-map](docs/archive/_archive/audits/archive-admin-ui-audits-pack.md#admin-ui-capability-map) | [ ] Guide blocker noted (missing END_USER_GUIDE.md). |
 
 3 Preconditions (Must Be Verified Before Refactor)
-- [ ] Consolidation plan approved and locked: [docs/archive/_archive/audits/ADMIN_UI_AUDITS_PACK.md#admin-ui-consolidation-plan](docs/archive/_archive/audits/ADMIN_UI_AUDITS_PACK.md#admin-ui-consolidation-plan)
-- [ ] Final IA approved and locked: [docs/archive/_archive/audits/ADMIN_UI_AUDITS_PACK.md#admin-ui-final-ia](docs/archive/_archive/audits/ADMIN_UI_AUDITS_PACK.md#admin-ui-final-ia)
-- [ ] Ownership model verified with stakeholders: [docs/archive/_archive/audits/ADMIN_UI_AUDITS_PACK.md#admin-ui-ownership-model](docs/archive/_archive/audits/ADMIN_UI_AUDITS_PACK.md#admin-ui-ownership-model)
-- [ ] Duplication register validated: [docs/archive/_archive/audits/ADMIN_UI_AUDITS_PACK.md#admin-ui-capability-map](docs/archive/_archive/audits/ADMIN_UI_AUDITS_PACK.md#admin-ui-capability-map)
-- [ ] Blocker logged and accepted (END_USER_GUIDE.md missing): [docs/archive/_archive/audits/ADMIN_UI_AUDITS_PACK.md#admin-ui-capability-map](docs/archive/_archive/audits/ADMIN_UI_AUDITS_PACK.md#admin-ui-capability-map)
-- [ ] Navigation changes agreed with Admin stakeholders: [docs/archive/_archive/audits/ADMIN_UI_AUDITS_PACK.md#admin-ui-final-ia](docs/archive/_archive/audits/ADMIN_UI_AUDITS_PACK.md#admin-ui-final-ia)
+- [ ] Consolidation plan approved and locked: [docs/archive/_archive/audits/archive-admin-ui-audits-pack.md#admin-ui-consolidation-plan](docs/archive/_archive/audits/archive-admin-ui-audits-pack.md#admin-ui-consolidation-plan)
+- [ ] Final IA approved and locked: [docs/archive/_archive/audits/archive-admin-ui-audits-pack.md#admin-ui-final-ia](docs/archive/_archive/audits/archive-admin-ui-audits-pack.md#admin-ui-final-ia)
+- [ ] Ownership model verified with stakeholders: [docs/archive/_archive/audits/archive-admin-ui-audits-pack.md#admin-ui-ownership-model](docs/archive/_archive/audits/archive-admin-ui-audits-pack.md#admin-ui-ownership-model)
+- [ ] Duplication register validated: [docs/archive/_archive/audits/archive-admin-ui-audits-pack.md#admin-ui-capability-map](docs/archive/_archive/audits/archive-admin-ui-audits-pack.md#admin-ui-capability-map)
+- [ ] Blocker logged and accepted (END_USER_GUIDE.md missing): [docs/archive/_archive/audits/archive-admin-ui-audits-pack.md#admin-ui-capability-map](docs/archive/_archive/audits/archive-admin-ui-audits-pack.md#admin-ui-capability-map)
+- [ ] Navigation changes agreed with Admin stakeholders: [docs/archive/_archive/audits/archive-admin-ui-audits-pack.md#admin-ui-final-ia](docs/archive/_archive/audits/archive-admin-ui-audits-pack.md#admin-ui-final-ia)
 
 4 Dependency Map (KYC, Algorithms, Reporting, Styles)
 | Dependency | From | To | Type | Notes | Evidence |
 | --- | --- | --- | --- | --- | --- |
-| [ ] Variables config dependency | [ ] /admin/kyc | [ ] /admin/charts | [ ] Data definition | [ ] Algorithms consume KYC variables-config. | [ ] [docs/archive/_archive/audits/ADMIN_UI_AUDITS_PACK.md#admin-ui-capability-map](docs/archive/_archive/audits/ADMIN_UI_AUDITS_PACK.md#admin-ui-capability-map) |
-| [ ] Variables config dependency | [ ] /admin/kyc | [ ] /admin/visualization | [ ] Data definition | [ ] Report templates rely on chart configs using variables-config. | [ ] [docs/archive/_archive/audits/ADMIN_UI_AUDITS_PACK.md#admin-ui-capability-map](docs/archive/_archive/audits/ADMIN_UI_AUDITS_PACK.md#admin-ui-capability-map) |
-| [ ] Chart configs dependency | [ ] /admin/charts | [ ] /admin/visualization | [ ] Library reference | [ ] Templates reference chart configs. | [ ] [docs/archive/_archive/audits/ADMIN_UI_AUDITS_PACK.md#admin-ui-capability-map](docs/archive/_archive/audits/ADMIN_UI_AUDITS_PACK.md#admin-ui-capability-map) |
-| [ ] Styles dependency | [ ] /admin/styles | [ ] /admin/partners + /admin/events + /admin/filter | [ ] Assignment | [ ] Styles assigned at partner/event/filter scopes. | [ ] [docs/archive/_archive/audits/ADMIN_UI_AUDITS_PACK.md#admin-ui-ownership-model](docs/archive/_archive/audits/ADMIN_UI_AUDITS_PACK.md#admin-ui-ownership-model) |
-| [ ] Template dependency | [ ] /admin/visualization | [ ] /admin/partners + /admin/events | [ ] Assignment | [ ] Templates assigned at partner/event scopes. | [ ] [docs/archive/_archive/audits/ADMIN_UI_AUDITS_PACK.md#admin-ui-ownership-model](docs/archive/_archive/audits/ADMIN_UI_AUDITS_PACK.md#admin-ui-ownership-model) |
+| [ ] Variables config dependency | [ ] /admin/kyc | [ ] /admin/charts | [ ] Data definition | [ ] Algorithms consume KYC variables-config. | [ ] [docs/archive/_archive/audits/archive-admin-ui-audits-pack.md#admin-ui-capability-map](docs/archive/_archive/audits/archive-admin-ui-audits-pack.md#admin-ui-capability-map) |
+| [ ] Variables config dependency | [ ] /admin/kyc | [ ] /admin/visualization | [ ] Data definition | [ ] Report templates rely on chart configs using variables-config. | [ ] [docs/archive/_archive/audits/archive-admin-ui-audits-pack.md#admin-ui-capability-map](docs/archive/_archive/audits/archive-admin-ui-audits-pack.md#admin-ui-capability-map) |
+| [ ] Chart configs dependency | [ ] /admin/charts | [ ] /admin/visualization | [ ] Library reference | [ ] Templates reference chart configs. | [ ] [docs/archive/_archive/audits/archive-admin-ui-audits-pack.md#admin-ui-capability-map](docs/archive/_archive/audits/archive-admin-ui-audits-pack.md#admin-ui-capability-map) |
+| [ ] Styles dependency | [ ] /admin/styles | [ ] /admin/partners + /admin/events + /admin/filter | [ ] Assignment | [ ] Styles assigned at partner/event/filter scopes. | [ ] [docs/archive/_archive/audits/archive-admin-ui-audits-pack.md#admin-ui-ownership-model](docs/archive/_archive/audits/archive-admin-ui-audits-pack.md#admin-ui-ownership-model) |
+| [ ] Template dependency | [ ] /admin/visualization | [ ] /admin/partners + /admin/events | [ ] Assignment | [ ] Templates assigned at partner/event scopes. | [ ] [docs/archive/_archive/audits/archive-admin-ui-audits-pack.md#admin-ui-ownership-model](docs/archive/_archive/audits/archive-admin-ui-audits-pack.md#admin-ui-ownership-model) |
 
 5 Execution Readiness Flags
 | Area | Can start | Cannot start | Blocking reason | Evidence |
 | --- | --- | --- | --- | --- |
-| [ ] Partners | [ ] Yes | [ ] No | [ ] Pending consolidation approval. | [ ] [docs/archive/_archive/audits/ADMIN_UI_AUDITS_PACK.md#admin-ui-consolidation-plan](docs/archive/_archive/audits/ADMIN_UI_AUDITS_PACK.md#admin-ui-consolidation-plan) |
-| [ ] Events | [ ] Yes | [ ] No | [ ] Pending consolidation approval. | [ ] [docs/archive/_archive/audits/ADMIN_UI_AUDITS_PACK.md#admin-ui-consolidation-plan](docs/archive/_archive/audits/ADMIN_UI_AUDITS_PACK.md#admin-ui-consolidation-plan) |
-| [ ] Filters | [ ] Yes | [ ] No | [ ] Pending IA approval. | [ ] [docs/archive/_archive/audits/ADMIN_UI_AUDITS_PACK.md#admin-ui-final-ia](docs/archive/_archive/audits/ADMIN_UI_AUDITS_PACK.md#admin-ui-final-ia) |
-| [ ] Insights (Analytics) | [ ] Yes | [ ] No | [ ] Pending merge decision approval. | [ ] [docs/archive/_archive/audits/ADMIN_UI_AUDITS_PACK.md#admin-ui-consolidation-plan](docs/archive/_archive/audits/ADMIN_UI_AUDITS_PACK.md#admin-ui-consolidation-plan) |
-| [ ] KYC Variables | [ ] Yes | [ ] No | [ ] Ownership model sign-off required. | [ ] [docs/archive/_archive/audits/ADMIN_UI_AUDITS_PACK.md#admin-ui-ownership-model](docs/archive/_archive/audits/ADMIN_UI_AUDITS_PACK.md#admin-ui-ownership-model) |
-| [ ] Algorithms | [ ] Yes | [ ] No | [ ] KYC dependency confirmation required. | [ ] [docs/archive/_archive/audits/ADMIN_UI_AUDITS_PACK.md#admin-ui-capability-map](docs/archive/_archive/audits/ADMIN_UI_AUDITS_PACK.md#admin-ui-capability-map) |
-| [ ] Reporting Templates | [ ] Yes | [ ] No | [ ] Template assignment consolidation approval required. | [ ] [docs/archive/_archive/audits/ADMIN_UI_AUDITS_PACK.md#admin-ui-consolidation-plan](docs/archive/_archive/audits/ADMIN_UI_AUDITS_PACK.md#admin-ui-consolidation-plan) |
-| [ ] Styles | [ ] Yes | [ ] No | [ ] Style assignment consolidation approval required. | [ ] [docs/archive/_archive/audits/ADMIN_UI_AUDITS_PACK.md#admin-ui-consolidation-plan](docs/archive/_archive/audits/ADMIN_UI_AUDITS_PACK.md#admin-ui-consolidation-plan) |
-| [ ] Hashtags & Categories | [ ] Yes | [ ] No | [ ] Merge decision approval required. | [ ] [docs/archive/_archive/audits/ADMIN_UI_AUDITS_PACK.md#admin-ui-consolidation-plan](docs/archive/_archive/audits/ADMIN_UI_AUDITS_PACK.md#admin-ui-consolidation-plan) |
-| [ ] Bitly Manager | [ ] Yes | [ ] No | [ ] Association consolidation approval required. | [ ] [docs/archive/_archive/audits/ADMIN_UI_AUDITS_PACK.md#admin-ui-consolidation-plan](docs/archive/_archive/audits/ADMIN_UI_AUDITS_PACK.md#admin-ui-consolidation-plan) |
-| [ ] Users & Roles | [ ] Yes | [ ] No | [ ] No dependency conflicts noted. | [ ] [docs/archive/_archive/audits/ADMIN_UI_AUDITS_PACK.md#admin-ui-capability-map](docs/archive/_archive/audits/ADMIN_UI_AUDITS_PACK.md#admin-ui-capability-map) |
-| [ ] Cache Management | [ ] Yes | [ ] No | [ ] No dependency conflicts noted. | [ ] [docs/archive/_archive/audits/ADMIN_UI_AUDITS_PACK.md#admin-ui-capability-map](docs/archive/_archive/audits/ADMIN_UI_AUDITS_PACK.md#admin-ui-capability-map) |
-| [ ] User Guide | [ ] Yes | [ ] No | [ ] Missing END_USER_GUIDE.md logged as blocker. | [ ] [docs/archive/_archive/audits/ADMIN_UI_AUDITS_PACK.md#admin-ui-capability-map](docs/archive/_archive/audits/ADMIN_UI_AUDITS_PACK.md#admin-ui-capability-map) |
+| [ ] Partners | [ ] Yes | [ ] No | [ ] Pending consolidation approval. | [ ] [docs/archive/_archive/audits/archive-admin-ui-audits-pack.md#admin-ui-consolidation-plan](docs/archive/_archive/audits/archive-admin-ui-audits-pack.md#admin-ui-consolidation-plan) |
+| [ ] Events | [ ] Yes | [ ] No | [ ] Pending consolidation approval. | [ ] [docs/archive/_archive/audits/archive-admin-ui-audits-pack.md#admin-ui-consolidation-plan](docs/archive/_archive/audits/archive-admin-ui-audits-pack.md#admin-ui-consolidation-plan) |
+| [ ] Filters | [ ] Yes | [ ] No | [ ] Pending IA approval. | [ ] [docs/archive/_archive/audits/archive-admin-ui-audits-pack.md#admin-ui-final-ia](docs/archive/_archive/audits/archive-admin-ui-audits-pack.md#admin-ui-final-ia) |
+| [ ] Insights (Analytics) | [ ] Yes | [ ] No | [ ] Pending merge decision approval. | [ ] [docs/archive/_archive/audits/archive-admin-ui-audits-pack.md#admin-ui-consolidation-plan](docs/archive/_archive/audits/archive-admin-ui-audits-pack.md#admin-ui-consolidation-plan) |
+| [ ] KYC Variables | [ ] Yes | [ ] No | [ ] Ownership model sign-off required. | [ ] [docs/archive/_archive/audits/archive-admin-ui-audits-pack.md#admin-ui-ownership-model](docs/archive/_archive/audits/archive-admin-ui-audits-pack.md#admin-ui-ownership-model) |
+| [ ] Algorithms | [ ] Yes | [ ] No | [ ] KYC dependency confirmation required. | [ ] [docs/archive/_archive/audits/archive-admin-ui-audits-pack.md#admin-ui-capability-map](docs/archive/_archive/audits/archive-admin-ui-audits-pack.md#admin-ui-capability-map) |
+| [ ] Reporting Templates | [ ] Yes | [ ] No | [ ] Template assignment consolidation approval required. | [ ] [docs/archive/_archive/audits/archive-admin-ui-audits-pack.md#admin-ui-consolidation-plan](docs/archive/_archive/audits/archive-admin-ui-audits-pack.md#admin-ui-consolidation-plan) |
+| [ ] Styles | [ ] Yes | [ ] No | [ ] Style assignment consolidation approval required. | [ ] [docs/archive/_archive/audits/archive-admin-ui-audits-pack.md#admin-ui-consolidation-plan](docs/archive/_archive/audits/archive-admin-ui-audits-pack.md#admin-ui-consolidation-plan) |
+| [ ] Hashtags & Categories | [ ] Yes | [ ] No | [ ] Merge decision approval required. | [ ] [docs/archive/_archive/audits/archive-admin-ui-audits-pack.md#admin-ui-consolidation-plan](docs/archive/_archive/audits/archive-admin-ui-audits-pack.md#admin-ui-consolidation-plan) |
+| [ ] Bitly Manager | [ ] Yes | [ ] No | [ ] Association consolidation approval required. | [ ] [docs/archive/_archive/audits/archive-admin-ui-audits-pack.md#admin-ui-consolidation-plan](docs/archive/_archive/audits/archive-admin-ui-audits-pack.md#admin-ui-consolidation-plan) |
+| [ ] Users & Roles | [ ] Yes | [ ] No | [ ] No dependency conflicts noted. | [ ] [docs/archive/_archive/audits/archive-admin-ui-audits-pack.md#admin-ui-capability-map](docs/archive/_archive/audits/archive-admin-ui-audits-pack.md#admin-ui-capability-map) |
+| [ ] Cache Management | [ ] Yes | [ ] No | [ ] No dependency conflicts noted. | [ ] [docs/archive/_archive/audits/archive-admin-ui-audits-pack.md#admin-ui-capability-map](docs/archive/_archive/audits/archive-admin-ui-audits-pack.md#admin-ui-capability-map) |
+| [ ] User Guide | [ ] Yes | [ ] No | [ ] Missing END_USER_GUIDE.md logged as blocker. | [ ] [docs/archive/_archive/audits/archive-admin-ui-audits-pack.md#admin-ui-capability-map](docs/archive/_archive/audits/archive-admin-ui-audits-pack.md#admin-ui-capability-map) |
 ```
 
 ## ADMIN_UI_FINAL_IA
 <a id="admin-ui-final-ia"></a>
 
-- Source: `docs/archive/_archive/audits/ADMIN_UI_AUDITS_PACK.md#admin-ui-final-ia`
+- Source: `docs/archive/_archive/audits/archive-admin-ui-audits-pack.md#admin-ui-final-ia`
 
 ```markdown
 # Admin UI Final IA
@@ -1597,75 +1597,75 @@ Owner: Audit
 - [ ] Highlight merged and removed sections without introducing new features.
 
 2 Inputs
-- [x] Consolidation decisions: [docs/archive/_archive/audits/ADMIN_UI_AUDITS_PACK.md#admin-ui-consolidation-plan](docs/archive/_archive/audits/ADMIN_UI_AUDITS_PACK.md#admin-ui-consolidation-plan)
-- [x] Capability inventory: [docs/archive/_archive/audits/ADMIN_UI_AUDITS_PACK.md#admin-ui-capability-map](docs/archive/_archive/audits/ADMIN_UI_AUDITS_PACK.md#admin-ui-capability-map)
-- [x] Ownership model: [docs/archive/_archive/audits/ADMIN_UI_AUDITS_PACK.md#admin-ui-ownership-model](docs/archive/_archive/audits/ADMIN_UI_AUDITS_PACK.md#admin-ui-ownership-model)
-- [x] Terminology: [docs/archive/_archive/audits/ADMIN_UI_AUDITS_PACK.md#admin-ui-glossary](docs/archive/_archive/audits/ADMIN_UI_AUDITS_PACK.md#admin-ui-glossary)
+- [x] Consolidation decisions: [docs/archive/_archive/audits/archive-admin-ui-audits-pack.md#admin-ui-consolidation-plan](docs/archive/_archive/audits/archive-admin-ui-audits-pack.md#admin-ui-consolidation-plan)
+- [x] Capability inventory: [docs/archive/_archive/audits/archive-admin-ui-audits-pack.md#admin-ui-capability-map](docs/archive/_archive/audits/archive-admin-ui-audits-pack.md#admin-ui-capability-map)
+- [x] Ownership model: [docs/archive/_archive/audits/archive-admin-ui-audits-pack.md#admin-ui-ownership-model](docs/archive/_archive/audits/archive-admin-ui-audits-pack.md#admin-ui-ownership-model)
+- [x] Terminology: [docs/archive/_archive/audits/archive-admin-ui-audits-pack.md#admin-ui-glossary](docs/archive/_archive/audits/archive-admin-ui-audits-pack.md#admin-ui-glossary)
 
 2.1 Traceability to A-UI-01 → A-UI-15 Outputs
 | Task ID | Output reference | Notes |
 | --- | --- | --- |
-| [ ] A-UI-01 Partners | [ ] [docs/archive/_archive/audits/ADMIN_UI_AUDITS_PACK.md#admin-ui-capability-map](docs/archive/_archive/audits/ADMIN_UI_AUDITS_PACK.md#admin-ui-capability-map) | [ ] Partners navigation placement. |
-| [x] A-UI-02 Events | [x] [docs/archive/_archive/audits/ADMIN_UI_AUDITS_PACK.md#admin-ui-capability-map](docs/archive/_archive/audits/ADMIN_UI_AUDITS_PACK.md#admin-ui-capability-map) | [x] Events navigation placement. |
-| [x] A-UI-03 Filters | [x] [docs/archive/_archive/audits/ADMIN_UI_AUDITS_PACK.md#admin-ui-capability-map](docs/archive/_archive/audits/ADMIN_UI_AUDITS_PACK.md#admin-ui-capability-map) | [x] Filter navigation placement. |
-| [x] A-UI-04 Users | [x] [docs/archive/_archive/audits/ADMIN_UI_AUDITS_PACK.md#admin-ui-capability-map](docs/archive/_archive/audits/ADMIN_UI_AUDITS_PACK.md#admin-ui-capability-map) | [x] Users navigation placement. |
-| [x] A-UI-05 Insights | [x] [docs/archive/_archive/audits/ADMIN_UI_AUDITS_PACK.md#admin-ui-capability-map](docs/archive/_archive/audits/ADMIN_UI_AUDITS_PACK.md#admin-ui-capability-map) | [x] Insights merged into analytics insights. |
-| [x] A-UI-06 KYC | [x] [docs/archive/_archive/audits/ADMIN_UI_AUDITS_PACK.md#admin-ui-capability-map](docs/archive/_archive/audits/ADMIN_UI_AUDITS_PACK.md#admin-ui-capability-map) | [x] KYC + clicker navigation placement. |
-| [x] A-UI-07 Algorithms | [x] [docs/archive/_archive/audits/ADMIN_UI_AUDITS_PACK.md#admin-ui-capability-map](docs/archive/_archive/audits/ADMIN_UI_AUDITS_PACK.md#admin-ui-capability-map) | [x] Algorithms navigation placement. |
-| [x] A-UI-08 Admin -> Reporting Contract | [x] [docs/archive/_archive/audits/ADMIN_UI_AUDITS_PACK.md#admin-ui-reporting-contract](docs/archive/_archive/audits/ADMIN_UI_AUDITS_PACK.md#admin-ui-reporting-contract) | [x] Contract boundary; non-navigation artifact. |
-| [x] A-UI-09 Bitly Manager | [x] [docs/archive/_archive/audits/ADMIN_UI_AUDITS_PACK.md#admin-ui-capability-map](docs/archive/_archive/audits/ADMIN_UI_AUDITS_PACK.md#admin-ui-capability-map) | [x] Bitly Manager placement. |
-| [ ] A-UI-10 Hashtag Manager | [ ] [docs/archive/_archive/audits/ADMIN_UI_AUDITS_PACK.md#admin-ui-capability-map](docs/archive/_archive/audits/ADMIN_UI_AUDITS_PACK.md#admin-ui-capability-map) | [ ] Hashtag Manager placement. |
-| [ ] A-UI-11 Category Manager | [ ] [docs/archive/_archive/audits/ADMIN_UI_AUDITS_PACK.md#admin-ui-capability-map](docs/archive/_archive/audits/ADMIN_UI_AUDITS_PACK.md#admin-ui-capability-map) | [ ] Categories merged into Hashtags. |
-| [ ] A-UI-12 Reporting | [ ] [docs/archive/_archive/audits/ADMIN_UI_AUDITS_PACK.md#admin-ui-capability-map](docs/archive/_archive/audits/ADMIN_UI_AUDITS_PACK.md#admin-ui-capability-map) | [ ] Reporting placement. |
-| [ ] A-UI-13 Style Library | [ ] [docs/archive/_archive/audits/ADMIN_UI_AUDITS_PACK.md#admin-ui-capability-map](docs/archive/_archive/audits/ADMIN_UI_AUDITS_PACK.md#admin-ui-capability-map) | [ ] Styles placement. |
-| [ ] A-UI-14 Cache Management | [ ] [docs/archive/_archive/audits/ADMIN_UI_AUDITS_PACK.md#admin-ui-capability-map](docs/archive/_archive/audits/ADMIN_UI_AUDITS_PACK.md#admin-ui-capability-map) | [ ] Cache placement. |
-| [ ] A-UI-15 User Guide | [ ] [docs/archive/_archive/audits/ADMIN_UI_AUDITS_PACK.md#admin-ui-capability-map](docs/archive/_archive/audits/ADMIN_UI_AUDITS_PACK.md#admin-ui-capability-map) | [ ] Help placement. |
+| [ ] A-UI-01 Partners | [ ] [docs/archive/_archive/audits/archive-admin-ui-audits-pack.md#admin-ui-capability-map](docs/archive/_archive/audits/archive-admin-ui-audits-pack.md#admin-ui-capability-map) | [ ] Partners navigation placement. |
+| [x] A-UI-02 Events | [x] [docs/archive/_archive/audits/archive-admin-ui-audits-pack.md#admin-ui-capability-map](docs/archive/_archive/audits/archive-admin-ui-audits-pack.md#admin-ui-capability-map) | [x] Events navigation placement. |
+| [x] A-UI-03 Filters | [x] [docs/archive/_archive/audits/archive-admin-ui-audits-pack.md#admin-ui-capability-map](docs/archive/_archive/audits/archive-admin-ui-audits-pack.md#admin-ui-capability-map) | [x] Filter navigation placement. |
+| [x] A-UI-04 Users | [x] [docs/archive/_archive/audits/archive-admin-ui-audits-pack.md#admin-ui-capability-map](docs/archive/_archive/audits/archive-admin-ui-audits-pack.md#admin-ui-capability-map) | [x] Users navigation placement. |
+| [x] A-UI-05 Insights | [x] [docs/archive/_archive/audits/archive-admin-ui-audits-pack.md#admin-ui-capability-map](docs/archive/_archive/audits/archive-admin-ui-audits-pack.md#admin-ui-capability-map) | [x] Insights merged into analytics insights. |
+| [x] A-UI-06 KYC | [x] [docs/archive/_archive/audits/archive-admin-ui-audits-pack.md#admin-ui-capability-map](docs/archive/_archive/audits/archive-admin-ui-audits-pack.md#admin-ui-capability-map) | [x] KYC + clicker navigation placement. |
+| [x] A-UI-07 Algorithms | [x] [docs/archive/_archive/audits/archive-admin-ui-audits-pack.md#admin-ui-capability-map](docs/archive/_archive/audits/archive-admin-ui-audits-pack.md#admin-ui-capability-map) | [x] Algorithms navigation placement. |
+| [x] A-UI-08 Admin -> Reporting Contract | [x] [docs/archive/_archive/audits/archive-admin-ui-audits-pack.md#admin-ui-reporting-contract](docs/archive/_archive/audits/archive-admin-ui-audits-pack.md#admin-ui-reporting-contract) | [x] Contract boundary; non-navigation artifact. |
+| [x] A-UI-09 Bitly Manager | [x] [docs/archive/_archive/audits/archive-admin-ui-audits-pack.md#admin-ui-capability-map](docs/archive/_archive/audits/archive-admin-ui-audits-pack.md#admin-ui-capability-map) | [x] Bitly Manager placement. |
+| [ ] A-UI-10 Hashtag Manager | [ ] [docs/archive/_archive/audits/archive-admin-ui-audits-pack.md#admin-ui-capability-map](docs/archive/_archive/audits/archive-admin-ui-audits-pack.md#admin-ui-capability-map) | [ ] Hashtag Manager placement. |
+| [ ] A-UI-11 Category Manager | [ ] [docs/archive/_archive/audits/archive-admin-ui-audits-pack.md#admin-ui-capability-map](docs/archive/_archive/audits/archive-admin-ui-audits-pack.md#admin-ui-capability-map) | [ ] Categories merged into Hashtags. |
+| [ ] A-UI-12 Reporting | [ ] [docs/archive/_archive/audits/archive-admin-ui-audits-pack.md#admin-ui-capability-map](docs/archive/_archive/audits/archive-admin-ui-audits-pack.md#admin-ui-capability-map) | [ ] Reporting placement. |
+| [ ] A-UI-13 Style Library | [ ] [docs/archive/_archive/audits/archive-admin-ui-audits-pack.md#admin-ui-capability-map](docs/archive/_archive/audits/archive-admin-ui-audits-pack.md#admin-ui-capability-map) | [ ] Styles placement. |
+| [ ] A-UI-14 Cache Management | [ ] [docs/archive/_archive/audits/archive-admin-ui-audits-pack.md#admin-ui-capability-map](docs/archive/_archive/audits/archive-admin-ui-audits-pack.md#admin-ui-capability-map) | [ ] Cache placement. |
+| [ ] A-UI-15 User Guide | [ ] [docs/archive/_archive/audits/archive-admin-ui-audits-pack.md#admin-ui-capability-map](docs/archive/_archive/audits/archive-admin-ui-audits-pack.md#admin-ui-capability-map) | [ ] Help placement. |
 
 3 Final Admin Navigation (Proposed)
 | Group | Item | Route | Ownership scope | Action | Source reference |
 | --- | --- | --- | --- | --- | --- |
-| [ ] Partner & Event Ops | [ ] Partners | [ ] /admin/partners | [ ] Partner | [ ] KEEP | [ ] [docs/archive/_archive/audits/ADMIN_UI_AUDITS_PACK.md#admin-ui-capability-map](docs/archive/_archive/audits/ADMIN_UI_AUDITS_PACK.md#admin-ui-capability-map) |
-| [ ] Partner & Event Ops | [ ] Events | [ ] /admin/events | [ ] Event | [ ] KEEP | [ ] [docs/archive/_archive/audits/ADMIN_UI_AUDITS_PACK.md#admin-ui-capability-map](docs/archive/_archive/audits/ADMIN_UI_AUDITS_PACK.md#admin-ui-capability-map) |
-| [ ] Partner & Event Ops | [ ] Project-Partners | [ ] /admin/project-partners | [ ] Event | [ ] KEEP | [ ] [docs/archive/_archive/audits/ADMIN_UI_AUDITS_PACK.md#admin-ui-capability-map](docs/archive/_archive/audits/ADMIN_UI_AUDITS_PACK.md#admin-ui-capability-map) |
-| [ ] Partner & Event Ops | [ ] Quick Add | [ ] /admin/quick-add | [ ] Event | [ ] KEEP | [ ] [docs/archive/_archive/audits/ADMIN_UI_AUDITS_PACK.md#admin-ui-capability-map](docs/archive/_archive/audits/ADMIN_UI_AUDITS_PACK.md#admin-ui-capability-map) |
-| [ ] Analytics & Insights | [ ] Executive Analytics | [ ] /admin/analytics/executive | [ ] Global | [ ] KEEP | [ ] [docs/archive/_archive/audits/ADMIN_UI_AUDITS_PACK.md#admin-ui-capability-map](docs/archive/_archive/audits/ADMIN_UI_AUDITS_PACK.md#admin-ui-capability-map) |
-| [ ] Analytics & Insights | [ ] Insights | [ ] /admin/analytics/insights | [ ] Global | [ ] KEEP | [ ] [docs/archive/_archive/audits/ADMIN_UI_AUDITS_PACK.md#admin-ui-capability-map](docs/archive/_archive/audits/ADMIN_UI_AUDITS_PACK.md#admin-ui-capability-map) |
-| [ ] Analytics & Insights | [ ] Filter | [ ] /admin/filter | [ ] Event | [ ] KEEP | [ ] [docs/archive/_archive/audits/ADMIN_UI_AUDITS_PACK.md#admin-ui-capability-map](docs/archive/_archive/audits/ADMIN_UI_AUDITS_PACK.md#admin-ui-capability-map) |
-| [ ] Global Libraries | [ ] KYC Variables | [ ] /admin/kyc | [ ] Global | [ ] KEEP | [ ] [docs/archive/_archive/audits/ADMIN_UI_AUDITS_PACK.md#admin-ui-ownership-model](docs/archive/_archive/audits/ADMIN_UI_AUDITS_PACK.md#admin-ui-ownership-model) |
-| [ ] Global Libraries | [ ] Clicker Manager | [ ] /admin/clicker-manager | [ ] Global | [ ] KEEP | [ ] [docs/archive/_archive/audits/ADMIN_UI_AUDITS_PACK.md#admin-ui-capability-map](docs/archive/_archive/audits/ADMIN_UI_AUDITS_PACK.md#admin-ui-capability-map) |
-| [ ] Global Libraries | [ ] Algorithms | [ ] /admin/charts | [ ] Global | [ ] KEEP | [ ] [docs/archive/_archive/audits/ADMIN_UI_AUDITS_PACK.md#admin-ui-ownership-model](docs/archive/_archive/audits/ADMIN_UI_AUDITS_PACK.md#admin-ui-ownership-model) |
-| [ ] Global Libraries | [ ] Reporting Templates | [ ] /admin/visualization | [ ] Global | [ ] KEEP | [ ] [docs/archive/_archive/audits/ADMIN_UI_AUDITS_PACK.md#admin-ui-ownership-model](docs/archive/_archive/audits/ADMIN_UI_AUDITS_PACK.md#admin-ui-ownership-model) |
-| [ ] Global Libraries | [ ] Styles | [ ] /admin/styles | [ ] Global | [ ] KEEP | [ ] [docs/archive/_archive/audits/ADMIN_UI_AUDITS_PACK.md#admin-ui-ownership-model](docs/archive/_archive/audits/ADMIN_UI_AUDITS_PACK.md#admin-ui-ownership-model) |
-| [ ] Global Libraries | [ ] Content Library | [ ] /admin/content-library | [ ] Global | [ ] KEEP | [ ] [docs/archive/_archive/audits/ADMIN_UI_AUDITS_PACK.md#admin-ui-capability-map](docs/archive/_archive/audits/ADMIN_UI_AUDITS_PACK.md#admin-ui-capability-map) |
-| [ ] Link & Tag Management | [ ] Bitly Manager | [ ] /admin/bitly | [ ] Global | [ ] KEEP | [ ] [docs/archive/_archive/audits/ADMIN_UI_AUDITS_PACK.md#admin-ui-capability-map](docs/archive/_archive/audits/ADMIN_UI_AUDITS_PACK.md#admin-ui-capability-map) |
-| [ ] Link & Tag Management | [ ] Hashtags | [ ] /admin/hashtags | [ ] Global | [ ] KEEP | [ ] [docs/archive/_archive/audits/ADMIN_UI_AUDITS_PACK.md#admin-ui-capability-map](docs/archive/_archive/audits/ADMIN_UI_AUDITS_PACK.md#admin-ui-capability-map) |
-| [ ] System & Access | [ ] Admin Users | [ ] /admin/users | [ ] User | [ ] KEEP | [ ] [docs/archive/_archive/audits/ADMIN_UI_AUDITS_PACK.md#admin-ui-capability-map](docs/archive/_archive/audits/ADMIN_UI_AUDITS_PACK.md#admin-ui-capability-map) |
-| [ ] System & Access | [ ] Cache Management | [ ] /admin/cache | [ ] Global | [ ] KEEP | [ ] [docs/archive/_archive/audits/ADMIN_UI_AUDITS_PACK.md#admin-ui-capability-map](docs/archive/_archive/audits/ADMIN_UI_AUDITS_PACK.md#admin-ui-capability-map) |
-| [ ] System & Access | [ ] Admin Design | [ ] /admin/design | [ ] Global | [ ] KEEP | [ ] [docs/archive/_archive/audits/ADMIN_UI_AUDITS_PACK.md#admin-ui-capability-map](docs/archive/_archive/audits/ADMIN_UI_AUDITS_PACK.md#admin-ui-capability-map) |
-| [ ] System & Access | [ ] Help / User Guide | [ ] /admin/help | [ ] Global | [ ] KEEP | [ ] [docs/archive/_archive/audits/ADMIN_UI_AUDITS_PACK.md#admin-ui-capability-map](docs/archive/_archive/audits/ADMIN_UI_AUDITS_PACK.md#admin-ui-capability-map) |
+| [ ] Partner & Event Ops | [ ] Partners | [ ] /admin/partners | [ ] Partner | [ ] KEEP | [ ] [docs/archive/_archive/audits/archive-admin-ui-audits-pack.md#admin-ui-capability-map](docs/archive/_archive/audits/archive-admin-ui-audits-pack.md#admin-ui-capability-map) |
+| [ ] Partner & Event Ops | [ ] Events | [ ] /admin/events | [ ] Event | [ ] KEEP | [ ] [docs/archive/_archive/audits/archive-admin-ui-audits-pack.md#admin-ui-capability-map](docs/archive/_archive/audits/archive-admin-ui-audits-pack.md#admin-ui-capability-map) |
+| [ ] Partner & Event Ops | [ ] Project-Partners | [ ] /admin/project-partners | [ ] Event | [ ] KEEP | [ ] [docs/archive/_archive/audits/archive-admin-ui-audits-pack.md#admin-ui-capability-map](docs/archive/_archive/audits/archive-admin-ui-audits-pack.md#admin-ui-capability-map) |
+| [ ] Partner & Event Ops | [ ] Quick Add | [ ] /admin/quick-add | [ ] Event | [ ] KEEP | [ ] [docs/archive/_archive/audits/archive-admin-ui-audits-pack.md#admin-ui-capability-map](docs/archive/_archive/audits/archive-admin-ui-audits-pack.md#admin-ui-capability-map) |
+| [ ] Analytics & Insights | [ ] Executive Analytics | [ ] /admin/analytics/executive | [ ] Global | [ ] KEEP | [ ] [docs/archive/_archive/audits/archive-admin-ui-audits-pack.md#admin-ui-capability-map](docs/archive/_archive/audits/archive-admin-ui-audits-pack.md#admin-ui-capability-map) |
+| [ ] Analytics & Insights | [ ] Insights | [ ] /admin/analytics/insights | [ ] Global | [ ] KEEP | [ ] [docs/archive/_archive/audits/archive-admin-ui-audits-pack.md#admin-ui-capability-map](docs/archive/_archive/audits/archive-admin-ui-audits-pack.md#admin-ui-capability-map) |
+| [ ] Analytics & Insights | [ ] Filter | [ ] /admin/filter | [ ] Event | [ ] KEEP | [ ] [docs/archive/_archive/audits/archive-admin-ui-audits-pack.md#admin-ui-capability-map](docs/archive/_archive/audits/archive-admin-ui-audits-pack.md#admin-ui-capability-map) |
+| [ ] Global Libraries | [ ] KYC Variables | [ ] /admin/kyc | [ ] Global | [ ] KEEP | [ ] [docs/archive/_archive/audits/archive-admin-ui-audits-pack.md#admin-ui-ownership-model](docs/archive/_archive/audits/archive-admin-ui-audits-pack.md#admin-ui-ownership-model) |
+| [ ] Global Libraries | [ ] Clicker Manager | [ ] /admin/clicker-manager | [ ] Global | [ ] KEEP | [ ] [docs/archive/_archive/audits/archive-admin-ui-audits-pack.md#admin-ui-capability-map](docs/archive/_archive/audits/archive-admin-ui-audits-pack.md#admin-ui-capability-map) |
+| [ ] Global Libraries | [ ] Algorithms | [ ] /admin/charts | [ ] Global | [ ] KEEP | [ ] [docs/archive/_archive/audits/archive-admin-ui-audits-pack.md#admin-ui-ownership-model](docs/archive/_archive/audits/archive-admin-ui-audits-pack.md#admin-ui-ownership-model) |
+| [ ] Global Libraries | [ ] Reporting Templates | [ ] /admin/visualization | [ ] Global | [ ] KEEP | [ ] [docs/archive/_archive/audits/archive-admin-ui-audits-pack.md#admin-ui-ownership-model](docs/archive/_archive/audits/archive-admin-ui-audits-pack.md#admin-ui-ownership-model) |
+| [ ] Global Libraries | [ ] Styles | [ ] /admin/styles | [ ] Global | [ ] KEEP | [ ] [docs/archive/_archive/audits/archive-admin-ui-audits-pack.md#admin-ui-ownership-model](docs/archive/_archive/audits/archive-admin-ui-audits-pack.md#admin-ui-ownership-model) |
+| [ ] Global Libraries | [ ] Content Library | [ ] /admin/content-library | [ ] Global | [ ] KEEP | [ ] [docs/archive/_archive/audits/archive-admin-ui-audits-pack.md#admin-ui-capability-map](docs/archive/_archive/audits/archive-admin-ui-audits-pack.md#admin-ui-capability-map) |
+| [ ] Link & Tag Management | [ ] Bitly Manager | [ ] /admin/bitly | [ ] Global | [ ] KEEP | [ ] [docs/archive/_archive/audits/archive-admin-ui-audits-pack.md#admin-ui-capability-map](docs/archive/_archive/audits/archive-admin-ui-audits-pack.md#admin-ui-capability-map) |
+| [ ] Link & Tag Management | [ ] Hashtags | [ ] /admin/hashtags | [ ] Global | [ ] KEEP | [ ] [docs/archive/_archive/audits/archive-admin-ui-audits-pack.md#admin-ui-capability-map](docs/archive/_archive/audits/archive-admin-ui-audits-pack.md#admin-ui-capability-map) |
+| [ ] System & Access | [ ] Admin Users | [ ] /admin/users | [ ] User | [ ] KEEP | [ ] [docs/archive/_archive/audits/archive-admin-ui-audits-pack.md#admin-ui-capability-map](docs/archive/_archive/audits/archive-admin-ui-audits-pack.md#admin-ui-capability-map) |
+| [ ] System & Access | [ ] Cache Management | [ ] /admin/cache | [ ] Global | [ ] KEEP | [ ] [docs/archive/_archive/audits/archive-admin-ui-audits-pack.md#admin-ui-capability-map](docs/archive/_archive/audits/archive-admin-ui-audits-pack.md#admin-ui-capability-map) |
+| [ ] System & Access | [ ] Admin Design | [ ] /admin/design | [ ] Global | [ ] KEEP | [ ] [docs/archive/_archive/audits/archive-admin-ui-audits-pack.md#admin-ui-capability-map](docs/archive/_archive/audits/archive-admin-ui-audits-pack.md#admin-ui-capability-map) |
+| [ ] System & Access | [ ] Help / User Guide | [ ] /admin/help | [ ] Global | [ ] KEEP | [ ] [docs/archive/_archive/audits/archive-admin-ui-audits-pack.md#admin-ui-capability-map](docs/archive/_archive/audits/archive-admin-ui-audits-pack.md#admin-ui-capability-map) |
 
 4 Removed or Merged From Navigation
 | Item | Route | Action | Target | Evidence |
 | --- | --- | --- | --- | --- |
-| [ ] Legacy Dashboard | [ ] /admin/dashboard | [ ] MERGED | [ ] /admin | [ ] [docs/archive/_archive/audits/ADMIN_UI_AUDITS_PACK.md#admin-ui-consolidation-plan](docs/archive/_archive/audits/ADMIN_UI_AUDITS_PACK.md#admin-ui-consolidation-plan) |
-| [ ] Insights (legacy) | [ ] /admin/insights | [ ] MERGED | [ ] /admin/analytics/insights | [ ] [docs/archive/_archive/audits/ADMIN_UI_AUDITS_PACK.md#admin-ui-consolidation-plan](docs/archive/_archive/audits/ADMIN_UI_AUDITS_PACK.md#admin-ui-consolidation-plan) |
-| [ ] Categories | [ ] /admin/categories | [ ] MERGED | [ ] /admin/hashtags | [ ] [docs/archive/_archive/audits/ADMIN_UI_AUDITS_PACK.md#admin-ui-consolidation-plan](docs/archive/_archive/audits/ADMIN_UI_AUDITS_PACK.md#admin-ui-consolidation-plan) |
-| [ ] Projects (legacy) | [ ] /admin/projects | [ ] REMOVED | [ ] /admin/events | [ ] [docs/archive/_archive/audits/ADMIN_UI_AUDITS_PACK.md#admin-ui-consolidation-plan](docs/archive/_archive/audits/ADMIN_UI_AUDITS_PACK.md#admin-ui-consolidation-plan) |
+| [ ] Legacy Dashboard | [ ] /admin/dashboard | [ ] MERGED | [ ] /admin | [ ] [docs/archive/_archive/audits/archive-admin-ui-audits-pack.md#admin-ui-consolidation-plan](docs/archive/_archive/audits/archive-admin-ui-audits-pack.md#admin-ui-consolidation-plan) |
+| [ ] Insights (legacy) | [ ] /admin/insights | [ ] MERGED | [ ] /admin/analytics/insights | [ ] [docs/archive/_archive/audits/archive-admin-ui-audits-pack.md#admin-ui-consolidation-plan](docs/archive/_archive/audits/archive-admin-ui-audits-pack.md#admin-ui-consolidation-plan) |
+| [ ] Categories | [ ] /admin/categories | [ ] MERGED | [ ] /admin/hashtags | [ ] [docs/archive/_archive/audits/archive-admin-ui-audits-pack.md#admin-ui-consolidation-plan](docs/archive/_archive/audits/archive-admin-ui-audits-pack.md#admin-ui-consolidation-plan) |
+| [ ] Projects (legacy) | [ ] /admin/projects | [ ] REMOVED | [ ] /admin/events | [ ] [docs/archive/_archive/audits/archive-admin-ui-audits-pack.md#admin-ui-consolidation-plan](docs/archive/_archive/audits/archive-admin-ui-audits-pack.md#admin-ui-consolidation-plan) |
 
 5 System and Legacy Routes (Not in Navigation)
 | Item | Route | Reason | Evidence |
 | --- | --- | --- | --- |
-| [ ] Admin Login | [ ] /admin/login | [ ] Pre-auth route. | [ ] [docs/archive/_archive/audits/ADMIN_UI_AUDITS_PACK.md#admin-ui-capability-map](docs/archive/_archive/audits/ADMIN_UI_AUDITS_PACK.md#admin-ui-capability-map) |
-| [ ] Admin Register | [ ] /admin/register | [ ] Pre-auth route. | [ ] [docs/archive/_archive/audits/ADMIN_UI_AUDITS_PACK.md#admin-ui-capability-map](docs/archive/_archive/audits/ADMIN_UI_AUDITS_PACK.md#admin-ui-capability-map) |
-| [ ] Clear Session | [ ] /admin/clear-session | [ ] Support route for auth recovery. | [ ] [docs/archive/_archive/audits/ADMIN_UI_AUDITS_PACK.md#admin-ui-capability-map](docs/archive/_archive/audits/ADMIN_UI_AUDITS_PACK.md#admin-ui-capability-map) |
-| [ ] Cookie Test | [ ] /admin/cookie-test | [ ] Debug route; keep out of IA. | [ ] [docs/archive/_archive/audits/ADMIN_UI_AUDITS_PACK.md#admin-ui-capability-map](docs/archive/_archive/audits/ADMIN_UI_AUDITS_PACK.md#admin-ui-capability-map) |
-| [ ] Unauthorized | [ ] /admin/unauthorized | [ ] Error route. | [ ] [docs/archive/_archive/audits/ADMIN_UI_AUDITS_PACK.md#admin-ui-capability-map](docs/archive/_archive/audits/ADMIN_UI_AUDITS_PACK.md#admin-ui-capability-map) |
+| [ ] Admin Login | [ ] /admin/login | [ ] Pre-auth route. | [ ] [docs/archive/_archive/audits/archive-admin-ui-audits-pack.md#admin-ui-capability-map](docs/archive/_archive/audits/archive-admin-ui-audits-pack.md#admin-ui-capability-map) |
+| [ ] Admin Register | [ ] /admin/register | [ ] Pre-auth route. | [ ] [docs/archive/_archive/audits/archive-admin-ui-audits-pack.md#admin-ui-capability-map](docs/archive/_archive/audits/archive-admin-ui-audits-pack.md#admin-ui-capability-map) |
+| [ ] Clear Session | [ ] /admin/clear-session | [ ] Support route for auth recovery. | [ ] [docs/archive/_archive/audits/archive-admin-ui-audits-pack.md#admin-ui-capability-map](docs/archive/_archive/audits/archive-admin-ui-audits-pack.md#admin-ui-capability-map) |
+| [ ] Cookie Test | [ ] /admin/cookie-test | [ ] Debug route; keep out of IA. | [ ] [docs/archive/_archive/audits/archive-admin-ui-audits-pack.md#admin-ui-capability-map](docs/archive/_archive/audits/archive-admin-ui-audits-pack.md#admin-ui-capability-map) |
+| [ ] Unauthorized | [ ] /admin/unauthorized | [ ] Error route. | [ ] [docs/archive/_archive/audits/archive-admin-ui-audits-pack.md#admin-ui-capability-map](docs/archive/_archive/audits/archive-admin-ui-audits-pack.md#admin-ui-capability-map) |
 ```
 
 ## ADMIN_UI_GLOSSARY
 <a id="admin-ui-glossary"></a>
 
-- Source: `docs/archive/_archive/audits/ADMIN_UI_AUDITS_PACK.md#admin-ui-glossary`
+- Source: `docs/archive/_archive/audits/archive-admin-ui-audits-pack.md#admin-ui-glossary`
 
 ```markdown
 # Admin UI Glossary
@@ -1694,7 +1694,7 @@ Owner: Audit
 
 1.5 Global Scope
 - [x] Definition: System-wide configuration applied when no partner or event overrides exist.
-- [x] Code references: [docs/archive/_archive/audits/ADMIN_UI_AUDITS_PACK.md#admin-ui-ownership-model](docs/archive/_archive/audits/ADMIN_UI_AUDITS_PACK.md#admin-ui-ownership-model)
+- [x] Code references: [docs/archive/_archive/audits/archive-admin-ui-audits-pack.md#admin-ui-ownership-model](docs/archive/_archive/audits/archive-admin-ui-audits-pack.md#admin-ui-ownership-model)
 
 1.6 Partner Scope
 - [x] Definition: Partner-specific data or overrides used as defaults for that partner.
@@ -1828,7 +1828,7 @@ Owner: Audit
 ## ADMIN_UI_INSIGHTS_MODEL
 <a id="admin-ui-insights-model"></a>
 
-- Source: `docs/archive/_archive/audits/ADMIN_UI_AUDITS_PACK.md#admin-ui-insights-model`
+- Source: `docs/archive/_archive/audits/archive-admin-ui-audits-pack.md#admin-ui-insights-model`
 
 ```markdown
 # Admin UI Insights Model
@@ -1876,8 +1876,8 @@ Owner: Audit
 
 7 Duplication Resolution (C-02)
 - [x] Canonical Insights surface: `/admin/analytics/insights` (Phase 3 dashboard).
-- [x] Deprecate or redirect `/admin/insights` to `/admin/analytics/insights` per consolidation plan. Evidence: [docs/archive/_archive/audits/ADMIN_UI_AUDITS_PACK.md#admin-ui-consolidation-plan](docs/archive/_archive/audits/ADMIN_UI_AUDITS_PACK.md#admin-ui-consolidation-plan).
-- [x] Align the canonical surface to a single API and schema (choose analytics-insights or insightsEngine; do not mix). Evidence: [docs/archive/_archive/audits/ADMIN_UI_AUDITS_PACK.md#admin-ui-consolidation-plan](docs/archive/_archive/audits/ADMIN_UI_AUDITS_PACK.md#admin-ui-consolidation-plan), [app/admin/analytics/insights/page.tsx](app/admin/analytics/insights/page.tsx).
+- [x] Deprecate or redirect `/admin/insights` to `/admin/analytics/insights` per consolidation plan. Evidence: [docs/archive/_archive/audits/archive-admin-ui-audits-pack.md#admin-ui-consolidation-plan](docs/archive/_archive/audits/archive-admin-ui-audits-pack.md#admin-ui-consolidation-plan).
+- [x] Align the canonical surface to a single API and schema (choose analytics-insights or insightsEngine; do not mix). Evidence: [docs/archive/_archive/audits/archive-admin-ui-audits-pack.md#admin-ui-consolidation-plan](docs/archive/_archive/audits/archive-admin-ui-audits-pack.md#admin-ui-consolidation-plan), [app/admin/analytics/insights/page.tsx](app/admin/analytics/insights/page.tsx).
 
 8 Downstream Consumers
 - [x] Admin analytics dashboards consume insights directly (/admin/insights, /admin/analytics/insights, /admin/analytics/executive). Evidence: [app/admin/insights/page.tsx](app/admin/insights/page.tsx), [app/admin/analytics/insights/page.tsx](app/admin/analytics/insights/page.tsx), [app/admin/analytics/executive/page.tsx](app/admin/analytics/executive/page.tsx).
@@ -1899,7 +1899,7 @@ Owner: Audit
 ## ADMIN_UI_KYC_MODEL
 <a id="admin-ui-kyc-model"></a>
 
-- Source: `docs/archive/_archive/audits/ADMIN_UI_AUDITS_PACK.md#admin-ui-kyc-model`
+- Source: `docs/archive/_archive/audits/archive-admin-ui-audits-pack.md#admin-ui-kyc-model`
 
 ```markdown
 # Admin UI KYC Model
@@ -1936,7 +1936,7 @@ Owner: Audit
 - [x] Cache: 5-minute in-memory cache; invalidate after create/update/delete. Evidence: [app/api/variables-config/route.ts](app/api/variables-config/route.ts), [app/admin/kyc/page.tsx](app/admin/kyc/page.tsx), [app/admin/clicker-manager/page.tsx](app/admin/clicker-manager/page.tsx).
 
 5 Ownership Rules and Overrides
-- [x] Ownership is global-only; there are no partner or event overrides for variable definitions. Evidence: [docs/archive/_archive/audits/ADMIN_UI_AUDITS_PACK.md#admin-ui-ownership-model](docs/archive/_archive/audits/ADMIN_UI_AUDITS_PACK.md#admin-ui-ownership-model).
+- [x] Ownership is global-only; there are no partner or event overrides for variable definitions. Evidence: [docs/archive/_archive/audits/archive-admin-ui-audits-pack.md#admin-ui-ownership-model](docs/archive/_archive/audits/archive-admin-ui-audits-pack.md#admin-ui-ownership-model).
 - [x] Partner/event KYC pages are read-only data views, not definition editors. Evidence: [app/admin/partners/[id]/kyc-data/page.tsx](app/admin/partners/[id]/kyc-data/page.tsx), [app/admin/events/[id]/kyc-data/page.tsx](app/admin/events/[id]/kyc-data/page.tsx).
 - [x] Override paths: None identified in code; all variable definitions resolve from `/api/variables-config`. Evidence: [app/admin/kyc/page.tsx](app/admin/kyc/page.tsx), [components/ChartAlgorithmManager.tsx](components/ChartAlgorithmManager.tsx), [app/admin/clicker-manager/page.tsx](app/admin/clicker-manager/page.tsx).
 
@@ -1955,7 +1955,7 @@ Owner: Audit
 - [x] Reporting templates cannot resolve chart configs if variables are missing. Evidence: [app/admin/visualization/page.tsx](app/admin/visualization/page.tsx), [lib/formulaEngine.ts](lib/formulaEngine.ts).
 
 8 Duplication Candidates
-- [x] C-10: Partner and event KYC data views are parallel read-only surfaces; no overrides permitted. Evidence: [operations/ACTION_PLAN.md](../../operations/ACTION_PLAN.md), [docs/archive/_archive/audits/ADMIN_UI_AUDITS_PACK.md#admin-ui-capability-map](docs/archive/_archive/audits/ADMIN_UI_AUDITS_PACK.md#admin-ui-capability-map).
+- [x] C-10: Partner and event KYC data views are parallel read-only surfaces; no overrides permitted. Evidence: [operations/ACTION_PLAN.md](../../operations/ACTION_PLAN.md), [docs/archive/_archive/audits/archive-admin-ui-audits-pack.md#admin-ui-capability-map](docs/archive/_archive/audits/archive-admin-ui-audits-pack.md#admin-ui-capability-map).
 
 9 Admin Constraints (Do This / Do Not Do This)
 - [x] Do: Edit variables only in `/admin/kyc` and via `/api/variables-config`.
@@ -1973,7 +1973,7 @@ Owner: Audit
 ## ADMIN_UI_OWNERSHIP_MODEL
 <a id="admin-ui-ownership-model"></a>
 
-- Source: `docs/archive/_archive/audits/ADMIN_UI_AUDITS_PACK.md#admin-ui-ownership-model`
+- Source: `docs/archive/_archive/audits/archive-admin-ui-audits-pack.md#admin-ui-ownership-model`
 
 ```markdown
 # Admin UI Ownership Model
@@ -2008,7 +2008,7 @@ Owner: Audit
 ## ADMIN_UI_REPORTING_CONTRACT
 <a id="admin-ui-reporting-contract"></a>
 
-- Source: `docs/archive/_archive/audits/ADMIN_UI_AUDITS_PACK.md#admin-ui-reporting-contract`
+- Source: `docs/archive/_archive/audits/archive-admin-ui-audits-pack.md#admin-ui-reporting-contract`
 
 ```markdown
 # Admin UI to Reporting Contract
@@ -2034,7 +2034,7 @@ Owner: Audit
 | [x] KYC Variables | /admin/kyc -> /api/variables-config | Formula tokens in charts | Variable names must match stats fields. | [app/api/variables-config/route.ts](app/api/variables-config/route.ts), [lib/formulaEngine.ts](lib/formulaEngine.ts) |
 | [x] Algorithms (Chart Configs) | /admin/charts -> /api/chart-config | /api/chart-config/public | Charts render from Admin configs. | [app/admin/charts/page.tsx](app/admin/charts/page.tsx), [app/api/chart-config/public/route.ts](app/api/chart-config/public/route.ts), [lib/report-calculator.ts](lib/report-calculator.ts) |
 | [x] Report Templates + Blocks | /admin/visualization -> /api/report-templates + /api/data-blocks | /api/report-config | Templates select charts and layout. | [app/admin/visualization/page.tsx](app/admin/visualization/page.tsx), [app/api/report-templates/route.ts](app/api/report-templates/route.ts), [app/api/report-config/[identifier]/route.ts](app/api/report-config/[identifier]/route.ts) |
-| [x] Insights | /admin/insights (Admin only) | None observed | Not part of Reporting contract. | [docs/archive/_archive/audits/ADMIN_UI_AUDITS_PACK.md#admin-ui-insights-model](docs/archive/_archive/audits/ADMIN_UI_AUDITS_PACK.md#admin-ui-insights-model), [app/report/[slug]/page.tsx](app/report/[slug]/page.tsx) |
+| [x] Insights | /admin/insights (Admin only) | None observed | Not part of Reporting contract. | [docs/archive/_archive/audits/archive-admin-ui-audits-pack.md#admin-ui-insights-model](docs/archive/_archive/audits/archive-admin-ui-audits-pack.md#admin-ui-insights-model), [app/report/[slug]/page.tsx](app/report/[slug]/page.tsx) |
 
 4 Events / Projects Contract
 - [x] Required identifiers: project _id and viewSlug (report URL). Evidence: [app/api/projects/stats/[slug]/route.ts](app/api/projects/stats/[slug]/route.ts), [app/report/[slug]/page.tsx](app/report/[slug]/page.tsx).
@@ -2048,7 +2048,7 @@ Owner: Audit
   - [x] createdAt/updatedAt for export metadata. Evidence: [app/api/projects/stats/[slug]/route.ts](app/api/projects/stats/[slug]/route.ts), [app/report/[slug]/page.tsx](app/report/[slug]/page.tsx).
 
 5 KYC Variables Contract
-- [x] Source of truth is /api/variables-config (variables_metadata). Evidence: [app/api/variables-config/route.ts](app/api/variables-config/route.ts), [docs/archive/_archive/audits/ADMIN_UI_AUDITS_PACK.md#admin-ui-kyc-model](docs/archive/_archive/audits/ADMIN_UI_AUDITS_PACK.md#admin-ui-kyc-model).
+- [x] Source of truth is /api/variables-config (variables_metadata). Evidence: [app/api/variables-config/route.ts](app/api/variables-config/route.ts), [docs/archive/_archive/audits/archive-admin-ui-audits-pack.md#admin-ui-kyc-model](docs/archive/_archive/audits/archive-admin-ui-audits-pack.md#admin-ui-kyc-model).
 - [x] Required variable fields (Admin-owned metadata):
   - [x] name (maps directly to stats field, no stats. prefix). Evidence: [app/api/variables-config/route.ts](app/api/variables-config/route.ts), [lib/formulaEngine.ts](lib/formulaEngine.ts).
   - [x] type, category, label/alias for Admin visibility. Evidence: [app/api/variables-config/route.ts](app/api/variables-config/route.ts).
@@ -2081,7 +2081,7 @@ Owner: Audit
 - [x] Template resolution hierarchy is project -> partner -> default -> hardcoded. Evidence: [app/api/report-config/[identifier]/route.ts](app/api/report-config/[identifier]/route.ts), [lib/reportTemplateTypes.ts](lib/reportTemplateTypes.ts).
 
 8 Insights Contract
-- [x] Insights are Admin-only; Reporting does not fetch insights in report rendering. Evidence: [docs/archive/_archive/audits/ADMIN_UI_AUDITS_PACK.md#admin-ui-insights-model](docs/archive/_archive/audits/ADMIN_UI_AUDITS_PACK.md#admin-ui-insights-model), [app/report/[slug]/page.tsx](app/report/[slug]/page.tsx).
+- [x] Insights are Admin-only; Reporting does not fetch insights in report rendering. Evidence: [docs/archive/_archive/audits/archive-admin-ui-audits-pack.md#admin-ui-insights-model](docs/archive/_archive/audits/archive-admin-ui-audits-pack.md#admin-ui-insights-model), [app/report/[slug]/page.tsx](app/report/[slug]/page.tsx).
 
 9 Compatibility Expectations (No Version Field)
 - [x] No explicit versioning exists; compatibility is enforced by stable identifiers and field presence. Evidence: [lib/reportTemplateTypes.ts](lib/reportTemplateTypes.ts), [lib/chartConfigTypes.ts](lib/chartConfigTypes.ts).
@@ -2104,7 +2104,7 @@ Owner: Audit
 ## ADMIN_UI_ROLES_PERMISSIONS
 <a id="admin-ui-roles-permissions"></a>
 
-- Source: `docs/archive/_archive/audits/ADMIN_UI_AUDITS_PACK.md#admin-ui-roles-permissions`
+- Source: `docs/archive/_archive/audits/archive-admin-ui-audits-pack.md#admin-ui-roles-permissions`
 
 ```markdown
 # Admin UI Roles and Permissions

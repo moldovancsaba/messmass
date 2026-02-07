@@ -58,35 +58,35 @@ Owner: Product
 ### Style System Hardening - Phase 3-5
 - **Priority:** HIGH
 - **Status:** Phase 2 complete (51% reduction), 83 styles remaining
-- **Next:** See docs/operations/ROADMAP.md for detailed plan
+- **Next:** See docs/operations/operations-roadmap.md for detailed plan
 
 ### Search & Paging Unification
 - **Priority:** HIGH
 - **Target:** All admin pages (Hashtags, Categories, Charts, Users)
-- **Status:** See docs/operations/ROADMAP.md
+- **Status:** See docs/operations/operations-roadmap.md
 
 ### Admin Layout Documentation
 - **Priority:** MEDIUM
 - **Status:** Planning phase
-- **Details:** See docs/operations/ROADMAP.md
+- **Details:** See docs/operations/operations-roadmap.md
 
 ### Bitly Search Enhancements
 - **Priority:** MEDIUM
 - **Dependencies:** Bitly many-to-many system (v6.0.0)
-- **Status:** See docs/operations/ROADMAP.md
+- **Status:** See docs/operations/operations-roadmap.md
 
 ---
 
 ## 📝 Notes
 
-- **Completed tasks:** Moved to docs/operations/RELEASE_NOTES.md immediately
-- **Planned features:** Detailed in docs/operations/ROADMAP.md
+- **Completed tasks:** Moved to docs/operations/operations-release-notes.md immediately
+- **Planned features:** Detailed in docs/operations/operations-roadmap.md
 - **Timestamp format:** ISO 8601 (YYYY-MM-DDTHH:MM:SS.sssZ)
 - **Testing:** MVP factory approach (manual testing only)
 - **Comments:** All code requires functional + strategic comments
 
 ---
 
-**For completed tasks, see:** docs/operations/RELEASE_NOTES.md  
-**For future plans, see:** docs/operations/ROADMAP.md  
+**For completed tasks, see:** docs/operations/operations-release-notes.md  
+**For future plans, see:** docs/operations/operations-roadmap.md  
 **Last Review:** 2025-12-25T10:05:00.000Z

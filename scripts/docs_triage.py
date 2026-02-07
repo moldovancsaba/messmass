@@ -170,8 +170,8 @@ def main() -> None:
         out.append(f'| {score:.2f} | {a} | {b} |')
     out.append('')
 
-    Path('docs/_meta/DOCS_TRIAGE.md').write_text('\n'.join(out) + '\n', encoding='utf-8')
-    print('wrote docs/_meta/DOCS_TRIAGE.md')
+    Path('docs/_meta/meta-docs-triage.md').write_text('\n'.join(out) + '\n', encoding='utf-8')
+    print('wrote docs/_meta/meta-docs-triage.md')
 
 
 if __name__ == '__main__':

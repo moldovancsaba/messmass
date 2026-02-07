@@ -10,7 +10,7 @@ Owner: Admin (Katja)
 - Map core Admin workflows to UI paths for consistent support and onboarding.
 
 2 Canonical Source and Delivery Approach
-- Canonical source: `docs/admin/END_USER_GUIDE.md` (this document).
+- Canonical source: `docs/admin/admin-end-user-guide.md` (this document).
 - Delivery approach: Doc-driven.
 - Admin Help page (`/admin/help`) should render content from this document.
 - Until the Help page is wired to this doc, keep the embedded help content in sync with this file.
@@ -65,13 +65,13 @@ Evidence: `lib/users.ts`
   - Changes to templates, styles, variables, or content assets.
   - Support incidents tied to stale data or permissions.
 - Update steps:
-  1) Update `docs/admin/END_USER_GUIDE.md`.
+  1) Update `docs/admin/admin-end-user-guide.md`.
   2) Sync `/admin/help` content to match this document.
-  3) Log state change in `ACTION_PLAN.md` (A-UI-15).
+  3) Log state change in `docs/operations/operations-action-plan.md` (A-UI-15).
   4) Notify Architect when updates affect workflow or scope.
 
 7 References (Non-Canonical)
 - Embedded help content: `app/admin/help/page.tsx`
-- Capability map reference: `docs/archive/_archive/audits/ADMIN_UI_AUDITS_PACK.md#admin-ui-capability-map`
-- Execution readiness: `docs/archive/_archive/audits/ADMIN_UI_AUDITS_PACK.md#admin-ui-execution-readiness`
+- Capability map reference: `docs/archive/_archive/audits/archive-admin-ui-audits-pack.md#admin-ui-capability-map`
+- Execution readiness: `docs/archive/_archive/audits/archive-admin-ui-audits-pack.md#admin-ui-execution-readiness`
 - Archived legacy guide (do not use as source of truth): `docs/archive/2025/deprecated-guides/USER_GUIDE.md`

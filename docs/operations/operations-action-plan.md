@@ -67,22 +67,6 @@ Owner: Operations
 
 3.2 Queue (highest priority first):
 
-- [ ] OPS-INT-01: Google Sheets Partner Sync - Phase 2 hardening
-  - Status: IN PROGRESS
-  - Priority: High
-  - Owner: Integrations
-  - Deliverables:
-    - [ ] End-to-end testing & validation (staging + production checklist)
-    - [ ] Schema/backward-compat checks (partners/projects with and without Google Sheet fields)
-    - [ ] Confirm UUID uniqueness / duplicate detection behavior
-    - [ ] (Optional) Create/verify MongoDB indexes for Google Sheets fields (sparse indexes)
-    - [ ] Phase 2.5: Auto-provisioning via Drive API (optional follow-up)
-  - References:
-    - `docs/features/features-google-sheets-integration.md` (canonical feature guide)
-    - `docs/archive/_archive/features/archive-delivered-one-offs-pack-2026.md#2026-02-04-google-sheets-partner-sync` (delivered notes; archived)
-    - `docs/operations/ops-google-sheets-deployment-checklist.md` (E2E validation checklist)
-    - `docs/archive/_archive/migrations/GOOGLE_SHEETS_SCHEMA_UPDATE.md` (historical schema notes; archived)
-
 - [ ] OPS-SEC-01: Production security flag enablement + verification (P0 gate)
   - Status: PLANNED
   - Priority: High
@@ -97,19 +81,6 @@ Owner: Operations
     - [ ] Smoke test key rendering surfaces (rich text / markdown / report rendering)
   - References:
     - `docs/security/security-overview.md` (canonical)
-    - `docs/archive/_archive/audits/AUDIT_REMEDIATION_STATUS.md` (historical tracker; archived)
-
-- [ ] OPS-SEC-03: Operational hardening (P0/P1)
-  - Status: PLANNED
-  - Priority: Medium
-  - Owner: Operations / Security
-  - Deliverables:
-    - [ ] Console log removal: remove/replace legacy `console.log` usage; add guardrail to prevent new occurrences
-    - [ ] CORS lockdown: replace permissive config with explicit allowlist (prod + preview)
-    - [ ] Account lockout policy (5 failed attempts -> 15 min lock; no user-existence leaks)
-    - [ ] Role naming standardization (single canonical enum/source; migrate usage)
-    - [ ] Add audit logging for auth-sensitive events (login fail/lock/unlock)
-  - References:
     - `docs/archive/_archive/audits/AUDIT_REMEDIATION_STATUS.md` (historical tracker; archived)
 
 - [ ] OPS-SEC-04: Security & reliability follow-ups (P1/P2)
@@ -144,7 +115,7 @@ Owner: Operations
 - [ ] Type-check: `npm run type-check` (or `tsc --noEmit`)
 - [ ] Lint: `npm run lint` (if not skipped in CI)
 
-3.4 **Flaws / errors reference:** Layout Grammar audit and report defects (archived pack) → `docs/archive/_archive/investigations/archive-investigations-pack-2026.md#layout-grammar-audit-2026-02-05`. Rollout validation → [operations-deployment-checklist.md](operations-deployment-checklist.md). Google Sheets E2E → [ops-google-sheets-deployment-checklist.md](ops-google-sheets-deployment-checklist.md). Style system (OPS-STYLE-01 done) → [STYLE_SYSTEM_PHASE5_AUDIT.md](STYLE_SYSTEM_PHASE5_AUDIT.md), [ATLAS_THEME_INJECTION_PLAN.md](ATLAS_THEME_INJECTION_PLAN.md). Admin UI width/hero (OPS-ADMIN-02 done) → [ADMIN_UI_WIDTH_AND_HERO.md](ADMIN_UI_WIDTH_AND_HERO.md). Admin layout tokens + a11y (OPS-ADMIN-01 done) → theme tokens, skip link, aria-current, focus trap, aria-live, persisted collapse; see archived [admin-layout-code-review-findings-2026-02-05.md](../archive/_archive/admin/admin-layout-code-review-findings-2026-02-05.md). Variables hygiene (OPS-VAR-01 done) → [VARIABLES_HYGIENE_OPS_VAR_01.md](VARIABLES_HYGIENE_OPS_VAR_01.md) (inventory script + KYC legacy filter). Code injection audit (OPS-SEC-02 done) → [SEC02_CODE_INJECTION_AUDIT.md](SEC02_CODE_INJECTION_AUDIT.md); formula tests: `__tests__/formula-engine-production-like.test.ts`; guardrail: expr-eval approved with removal path documented. Operational hardening (OPS-SEC-03) → [SEC03_OPERATIONAL_HARDENING.md](SEC03_OPERATIONAL_HARDENING.md) (console guardrail + CORS/lockout/roles/audit plan). Layout Grammar editor (OPS-LAYOUT-01) → validation in save flow + real-time "Layout check" in block modal; blocked configs → [LAYOUT_GRAMMAR_EDITOR_BLOCKED_CONFIGS.md](LAYOUT_GRAMMAR_EDITOR_BLOCKED_CONFIGS.md). Google Sheets (OPS-INT-01) → [ops-google-sheets-deployment-checklist.md](ops-google-sheets-deployment-checklist.md); schema check script: `npm run check:google-sheets-schema`.
+3.4 **Flaws / errors reference:** Layout Grammar audit and report defects (archived pack) → `docs/archive/_archive/investigations/archive-investigations-pack-2026.md#layout-grammar-audit-2026-02-05`. Rollout validation → [operations-deployment-checklist.md](operations-deployment-checklist.md). Google Sheets E2E → [ops-google-sheets-deployment-checklist.md](ops-google-sheets-deployment-checklist.md). Style system (OPS-STYLE-01 done) → [style-system-phase-5-audit.md](style-system-phase-5-audit.md), [atlas-theme-injection-plan.md](atlas-theme-injection-plan.md). Admin UI width/hero (OPS-ADMIN-02 done) → [admin-ui-width-and-hero.md](admin-ui-width-and-hero.md). Admin layout tokens + a11y (OPS-ADMIN-01 done) → theme tokens, skip link, aria-current, focus trap, aria-live, persisted collapse; see archived [admin-layout-code-review-findings-2026-02-05.md](../archive/_archive/admin/admin-layout-code-review-findings-2026-02-05.md). Variables hygiene (OPS-VAR-01 done) → [variables-hygiene-ops-var-01.md](variables-hygiene-ops-var-01.md) (inventory script + KYC legacy filter). Code injection audit (OPS-SEC-02 done) → [sec-02-code-injection-audit.md](sec-02-code-injection-audit.md); formula tests: `__tests__/formula-engine-production-like.test.ts`; guardrail: expr-eval approved with removal path documented. Operational hardening (OPS-SEC-03) → [sec-03-operational-hardening.md](sec-03-operational-hardening.md) (console guardrail + CORS/lockout/roles/audit plan). Layout Grammar editor (OPS-LAYOUT-01) → validation in save flow + real-time "Layout check" in block modal; blocked configs → [layout-grammar-editor-blocked-configs.md](layout-grammar-editor-blocked-configs.md). Google Sheets (OPS-INT-01) → [ops-google-sheets-deployment-checklist.md](ops-google-sheets-deployment-checklist.md); schema check script: `npm run check:google-sheets-schema`.
 
 ---
 

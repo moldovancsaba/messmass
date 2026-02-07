@@ -203,6 +203,7 @@ function getRoleConfig(role: UserRole): { bg: string; color: string; icon: strin
     user: { bg: '#dbeafe', color: '#1e40af', icon: '👥', label: 'User' },
     admin: { bg: '#d1fae5', color: '#065f46', icon: '🔧', label: 'Admin' },
     superadmin: { bg: '#ede9fe', color: '#5b21b6', icon: '⚡', label: 'Superadmin' },
+    api: { bg: '#fef3c7', color: '#b45309', icon: '🔑', label: 'API' },
   };
   return configs[role] || configs.guest;
 }

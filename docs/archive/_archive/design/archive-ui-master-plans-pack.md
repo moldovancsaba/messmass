@@ -8,9 +8,9 @@ This pack preserves historical planning/tracking documents that previously lived
 They are archived to avoid duplicate or misleading sources now that the canonical UI/design rules live under `docs/design/` and execution lives under `docs/operations/`.
 
 Canonical replacements:
-- Spec: `docs/design/DESIGN_SYSTEM.md`, `docs/design/LAYOUT_GRAMMAR.md`, `docs/design/LAYOUT_SYSTEM.md`
-- Compliance evidence: `docs/design/LAYOUT_GRAMMAR_COMPLIANCE.md`
-- Delivery/closure: `docs/operations/IMPLEMENTATION_COMPLETE.md`, `docs/operations/RELEASE_NOTES.md`
+- Spec: `docs/design/design-system.md`, `docs/design/design-layout-grammar.md`, `docs/design/design-layout-system.md`
+- Compliance evidence: `docs/design/design-layout-grammar-compliance.md`
+- Delivery/closure: `docs/operations/operations-implementation-complete.md`, `docs/operations/operations-release-notes.md`
 
 ## Table Of Contents
 - [UNIFIED_DESIGN_SYSTEM_MASTER_PLAN](#unified-design-system-master-plan) (source: `docs/UNIFIED_DESIGN_SYSTEM_MASTER_PLAN.md`)
@@ -22,6 +22,19 @@ Canonical replacements:
 <a id="unified-design-system-master-plan"></a>
 
 - Source: `docs/UNIFIED_DESIGN_SYSTEM_MASTER_PLAN.md`
+
+<!--
+HEADER-PARSE-BARRIER
+This pack embeds historical source documents that include their own metadata headers.
+Our inventory script (`scripts/docs_inventory.py`) only reads the first 30 lines of a file.
+Keep embedded source blocks below this barrier so the pack's own header is what gets indexed.
+-->
+
+
+
+
+
+
 
 ```markdown
 # Unified Design System & Layout Grammar Master Plan
@@ -547,7 +560,7 @@ All charts follow this structure:
 
 ### 6.1 Existing Systems to Preserve
 
-1. **Report Layout Spec v2.0** (`docs/design/LAYOUT_SYSTEM.md`)
+1. **Report Layout Spec v2.0** (`docs/design/design-layout-system.md`)
    - Block-based layout system
    - Cell width model (1-unit, 2-unit)
    - Cell structure (Title/Subtitle/Body zones)
@@ -1099,7 +1112,7 @@ DONE
 - `DESIGN_SYSTEM_PLAN.md` - Detailed design system specification
 - `LAYOUT_GRAMMAR_IMPLEMENTATION_PLAN.md` - Detailed implementation tasks
 - `COMPREHENSIVE_CRITICAL_AUDIT.md` - Security audit findings
-- `CTO_REMEDIATION_PLAN.md` - Zero-downtime migration strategy
+- `docs/archive/_archive/security/CTO_REMEDIATION_PLAN.md` - Zero-downtime migration strategy (archived)
 ```
 
 ## DESIGN_SYSTEM_PLAN
@@ -2008,7 +2021,7 @@ Owner: Operations
 **⚠️ SECURITY & AUDIT COMPLIANCE:** This plan incorporates findings from:
 - COMPREHENSIVE_CRITICAL_AUDIT.md (412+ vulnerabilities)
 - SECURITY_TEAM_REVIEW.md (10 critical security issues)
-- CTO_REMEDIATION_PLAN.md (zero-downtime migration strategy)
+- docs/archive/_archive/security/CTO_REMEDIATION_PLAN.md (zero-downtime migration strategy; archived)
 - SYSTEM_AUDIT_2025.md (architectural issues)
 
 ---
@@ -2051,7 +2064,7 @@ This document provides a detailed, actionable plan to refactor/rebuild the MessM
 
 ### Existing Systems to Preserve
 
-1. **Report Layout Spec v2.0** (`docs/design/LAYOUT_SYSTEM.md`)
+1. **Report Layout Spec v2.0** (`docs/design/design-layout-system.md`)
    - Block-based layout system
    - Cell width model (1-unit, 2-unit)
    - Cell structure (Title/Subtitle/Body zones)
@@ -2932,7 +2945,7 @@ export interface ValidationError {
 
 **Files:**
 - `DESIGN_SYSTEM_PLAN.md` (update)
-- `docs/design/LAYOUT_SYSTEM.md` (update)
+- `docs/design/design-layout-system.md` (update)
 - Create `docs/LAYOUT_GRAMMAR.md` (new)
 
 **What:**
@@ -3604,7 +3617,7 @@ A change is “done” only when it is:
   - `line-clamp`, `-webkit-line-clamp`
   - `overflow: hidden` on content layers (allowed only on decorative/mask layers)
 - [x] Add whitelist mechanism for decorative-only clipping (explicit comment required)
-- [x] Document guardrail rules in `docs/design/LAYOUT_GRAMMAR.md`
+- [x] Document guardrail rules in `docs/design/design-layout-grammar.md`
 - [x] Verify CI fails when a forbidden pattern is introduced (GitHub Actions evidence captured on PR `test/ci-guardrail-test`)
 - **Status:** ✅ **COMPLETE** (2025-12-29T21:45:35+01:00)
 - **Commit:** `4dc0f0d` (2025-12-29T21:45:35+01:00) - feat(phase0): CI Guardrail complete - Task 0.7
@@ -4188,7 +4201,7 @@ Current focus:
 **2025-12-31T14:57:12+01:00 - Audit Intake: Governed External Audit Processing**
 - **Changed:** Created `docs/audits/AUDIT_INTAKE.md` to govern how external audit findings are processed and integrated into MessMass work. Audit report (`COMPREHENSIVE_TECH_AUDIT_REPORT.md`, commit `2be98cd`) is archived as reference-only. Intake document includes triage table (ACCEPTED/REJECTED/DEFERRED) with governance rules: audit does not override Global DoD, DoD Profiles, Layout Grammar policy, Dependency Guardrail, or Continuous Audit Policy. ACCEPTED items limited to Top 5 highest leverage items, each must map to guardrail/test/doc change or tracked task. DoD Profile: Infrastructure & Operations (CRITICAL). Status: Proposed (awaiting review and triage).
 - **PR:** [To be created] - Audit archive + intake (governed; non-blocking)
-- **Files:** `docs/archive/_archive/audits/AUDITS_MISC_PACK.md#comprehensive-tech-audit-report` (reference only), `docs/audits/AUDIT_INTAKE.md` (governance)
+- **Files:** `docs/archive/_archive/audits/archive-audits-misc-pack.md#comprehensive-tech-audit-report` (reference only), `docs/audits/AUDIT_INTAKE.md` (governance)
 - **Impact:** External audits are now governed and cannot override existing policies. Only explicitly ACCEPTED items become work.
 - **Commits:** `e5011ab` - docs(audit): Create audit intake decision document (governed)
 - **Signature:** — Cursora
@@ -4492,4 +4505,3 @@ Current focus:
 ### Notes from Sultan
 - (Add notes here when Sultan provides guidance or decisions)
 ```
-

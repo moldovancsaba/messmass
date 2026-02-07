@@ -1,8 +1,11 @@
 # Reporting Release Candidate
 Status: Archived
-Last Updated: 2026-01-13T15:30:30.000Z
+Last Updated: 2026-02-06T15:05:00Z
 Canonical: No
 Owner: Release
+
+## Archive Note (2026-02-06)
+This is a historical release checklist. It is archived and not an executable backlog. Current execution tracking lives in `docs/operations/operations-action-plan.md`.
 
 **Release Candidate ID:** RC-2026-01-13  
 **Reporting Build Version:** v11.55.1  
@@ -37,7 +40,7 @@ Owner: Release
 - Documentation of render order stability
 
 **Files Changed:**
-- `docs/archive/_archive/investigations/INVESTIGATIONS_PACK_2026.md#a-r-08-render-determinism` (new)
+- `docs/archive/_archive/investigations/archive-investigations-pack-2026.md#a-r-08-render-determinism` (new)
 
 **Commit:** `4350215b5`
 
@@ -143,7 +146,7 @@ Owner: Release
 - Evidence links to all investigation docs and test files
 
 **Files Changed:**
-- `docs/archive/_archive/investigations/INVESTIGATIONS_PACK_2026.md#a-r-16-reporting-release-verification-pack` (new)
+- `docs/archive/_archive/investigations/archive-investigations-pack-2026.md#a-r-16-reporting-release-verification-pack` (new)
 - `ACTION_PLAN.md`
 
 **Commits:** `8b0568a99`, `053cd04a3`, `09792a912`, `3a020628e`
@@ -253,38 +256,38 @@ Owner: Release
 ## Release Checklist
 
 ### Pre-Release
-- [ ] All unit tests pass (`npm test`)
-- [ ] Manual smoke checklist completed (7 checklists from A-R-16)
-- [ ] Verification pack reviewed
-- [ ] All commits from A-R-07 through A-R-16 included
-- [ ] No uncommitted changes in Reporting system files
+- All unit tests pass (`npm test`)
+- Manual smoke checklist completed (7 checklists from A-R-16)
+- Verification pack reviewed
+- All commits from A-R-07 through A-R-16 included
+- No uncommitted changes in Reporting system files
 
 ### Release
-- [ ] Deploy to staging environment
-- [ ] Run manual smoke checklist on staging
-- [ ] Verify no critical failures (see Rollback Signals)
-- [ ] Verify no warning signals (investigate if present)
-- [ ] Deploy to production
+- Deploy to staging environment
+- Run manual smoke checklist on staging
+- Verify no critical failures (see Rollback Signals)
+- Verify no warning signals (investigate if present)
+- Deploy to production
 
 ### Post-Release
-- [ ] Monitor error logs for uncaught errors
-- [ ] Monitor user feedback for issues
-- [ ] Monitor export success rates
-- [ ] Monitor report rendering performance
+- Monitor error logs for uncaught errors
+- Monitor user feedback for issues
+- Monitor export success rates
+- Monitor report rendering performance
 
 ---
 
 ## Evidence Links
 
 ### Investigation Documents
-- A-R-07: `docs/archive/_archive/investigations/INVESTIGATIONS_PACK_2026.md#a-r-07-export-correctness`
-- A-R-08: `docs/archive/_archive/investigations/INVESTIGATIONS_PACK_2026.md#a-r-08-render-determinism`
-- A-R-10: `docs/archive/_archive/investigations/INVESTIGATIONS_PACK_2026.md#a-r-10-export-parity-investigation`
-- A-R-11: `docs/archive/_archive/investigations/INVESTIGATIONS_PACK_2026.md#a-r-11-formula-error-handling`
-- A-R-12: `docs/archive/_archive/investigations/INVESTIGATIONS_PACK_2026.md#a-r-12-template-compatibility`
-- A-R-13: `docs/archive/_archive/investigations/INVESTIGATIONS_PACK_2026.md#a-r-13-chart-data-validation`
-- A-R-15: `docs/archive/_archive/investigations/INVESTIGATIONS_PACK_2026.md#a-r-15-csv-formatting-alignment`
-- A-R-16: `docs/archive/_archive/investigations/INVESTIGATIONS_PACK_2026.md#a-r-16-reporting-release-verification-pack`
+- A-R-07: `docs/archive/_archive/investigations/archive-investigations-pack-2026.md#a-r-07-export-correctness`
+- A-R-08: `docs/archive/_archive/investigations/archive-investigations-pack-2026.md#a-r-08-render-determinism`
+- A-R-10: `docs/archive/_archive/investigations/archive-investigations-pack-2026.md#a-r-10-export-parity-investigation`
+- A-R-11: `docs/archive/_archive/investigations/archive-investigations-pack-2026.md#a-r-11-formula-error-handling`
+- A-R-12: `docs/archive/_archive/investigations/archive-investigations-pack-2026.md#a-r-12-template-compatibility`
+- A-R-13: `docs/archive/_archive/investigations/archive-investigations-pack-2026.md#a-r-13-chart-data-validation`
+- A-R-15: `docs/archive/_archive/investigations/archive-investigations-pack-2026.md#a-r-15-csv-formatting-alignment`
+- A-R-16: `docs/archive/_archive/investigations/archive-investigations-pack-2026.md#a-r-16-reporting-release-verification-pack`
 
 ### Test Files
 - `__tests__/export-validation.test.ts`

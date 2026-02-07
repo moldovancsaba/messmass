@@ -25,7 +25,7 @@ For any bug or UI/design issue:
 4. Only claim “done” when the class is addressed (or when the remaining scope is clearly documented).
 
 ### Where This Rule Lives
-- `docs/CODING_STANDARDS.md` (section: “Fix The Class, Not The Instance”)
+- `docs/coding-standards.md` (section: “Fix The Class, Not The Instance”)
 - `coding-standards.mdc` (always-applied reminder for tooling/agents)
 
 ## [v11.55.3] - 2026-01-16T16:00:00.000Z — PARTNER LINKS + CLICKER MANAGER UX
@@ -316,7 +316,7 @@ grep -r "Math.max.*onChange" .
 - `components/TextareaField.tsx` - Textarea with blur-based save
 
 **Documentation:**
-- `docs/components/UNIFIED_INPUT_SYSTEM.md` - Complete system guide
+- `docs/components/components-unified-input-system.md` - Complete system guide
 
 ## [v11.54.5] - 2025-12-25T10:44:20.000Z — EXPORTS: Make Failures User-Visible + Validate Before Export
 
@@ -332,7 +332,7 @@ Exports must be treated like a user-facing workflow:
 ### Canonicalization Note
 Historical export debugging notes were archived into `docs/archive/_archive/fixes/FIXES_PACK_2025-12.md` so the active tree doesn’t carry ad-hoc fix docs.
 - `docs/fixes/NUMERIC_INPUT_CONSISTENCY_FIX.md` - Fix documentation
-- `docs/guides/FORM_INPUT_MIGRATION_GUIDE.md` - Migration guide
+- `docs/guides/guides-form-input-migration-guide.md` - Migration guide
 
 ### ESLint Rule (Future Enhancement)
 ```javascript
@@ -894,9 +894,9 @@ npm run build && npm run lint
 
 ### Related Documentation
 
-- **docs/operations/RELEASE_NOTES.md (v11.40.0)**: Complete technical breakdown
-- **docs/operations/ROADMAP.md**: Phase 3-5 planning (remaining 83 styles)
-- **docs/operations/ACTION_PLAN.md**: Next priorities and execution queue (single source; no separate tasklist)
+- **docs/operations/operations-release-notes.md (v11.40.0)**: Complete technical breakdown
+- **docs/operations/operations-roadmap.md**: Phase 3-5 planning (remaining 83 styles)
+- **docs/operations/operations-action-plan.md**: Next priorities and execution queue (single source; no separate tasklist)
 - **CODING_STANDARDS.md**: Inline style prohibition rule
 - **DESIGN_SYSTEM.md**: Design token catalog
 
@@ -1554,7 +1554,7 @@ const saved = displayName; // "   TITLE   "
 
 **Documentation**:
 - `CODING_STANDARDS.md` - Added "Avoid .trim() Unless Absolutely Necessary" section
-- `docs/operations/LEARNINGS.md` - This entry
+- `docs/operations/operations-learnings.md` - This entry
 
 **Future Verification**:
 ```bash
@@ -2578,7 +2578,7 @@ Backend / Frontend / Process
 - Delete or archive `DESIGN_VALUE_CHART_ARCHITECTURE.md`
 - Remove VALUE chart references from `docs/operations/WARP.md`
 - Update `ARCHITECTURE.md` to remove VALUE chart system description
-- Clean up `docs/operations/RELEASE_NOTES.md` VALUE chart entries (historical, can remain for context)
+- Clean up `docs/operations/operations-release-notes.md` VALUE chart entries (historical, can remain for context)
 
 **Key Technical Decisions**:
 
@@ -2775,7 +2775,7 @@ Backend / Frontend / Process
   - app/edit/[slug]/page.tsx (lines 300-330)
 - Declared custom hashtag components forbidden with rejection consequence
 
-**Phase 8: Variables System Documentation ([VARIABLE_SYSTEM_HISTORY.md](docs/archive/2025/deprecated-guides/VARIABLE_SYSTEM_HISTORY.md#overview))**
+**Phase 8: Variables System Documentation ([VARIABLE_SYSTEM_HISTORY.md](docs/archive/2025/deprecated-guides/archive-variable-system-history.md#overview))**
 - Directed developers to reuse existing patterns in variable management UI
 - Provided extensive reference files:
   - app/admin/kyc/page.tsx (lines 1-800) - KYC management UI
@@ -2855,7 +2855,7 @@ Backend / Frontend / Process
 5. **MODAL_SYSTEM.md** (added 180 lines) - FormModal enforcement
 6. **CARD_SYSTEM.md** (added 150 lines) - ColoredCard standardization
 7. **HASHTAG_SYSTEM.md** (added 120 lines) - UnifiedHashtagInput usage
-8. **[VARIABLE_SYSTEM_HISTORY.md](docs/archive/2025/deprecated-guides/VARIABLE_SYSTEM_HISTORY.md#overview)** (added 200 lines) - Variables system reference
+8. **[VARIABLE_SYSTEM_HISTORY.md](docs/archive/2025/deprecated-guides/archive-variable-system-history.md#overview)** (added 200 lines) - Variables system reference
 
 **Total Documentation Added**: ~1,600 lines of concrete examples, rules, and verification
 
@@ -3416,7 +3416,7 @@ export function generateGradientCSS(background: BackgroundStyle): string {
 
 **Documentation** (2):
 3. `CODING_STANDARDS.md` - Added exception for PageStyle dynamic gradients
-4. `docs/operations/LEARNINGS.md` - Documented this fix (this entry)
+4. `docs/operations/operations-learnings.md` - Documented this fix (this entry)
 
 ---
 
@@ -3599,7 +3599,7 @@ npm run seed:visitor-kyc
 
 **Modified Files** (2):
 - `package.json` - Added `seed:visitor-kyc` npm command
-- `docs/operations/LEARNINGS.md` - Documented fix (this entry)
+- `docs/operations/operations-learnings.md` - Documented fix (this entry)
 
 ---
 
@@ -3709,7 +3709,7 @@ npm run seed:visitor-kyc
 ### Implementation Phases
 
 **Phase 1: Database Schema Design**
-- Created `[VARIABLE_SYSTEM_HISTORY.md](docs/archive/2025/deprecated-guides/VARIABLE_SYSTEM_HISTORY.md#database-schema)` with complete MongoDB schema
+- Created `[VARIABLE_SYSTEM_HISTORY.md](docs/archive/2025/deprecated-guides/archive-variable-system-history.md#database-schema)` with complete MongoDB schema
 - Defined `VariableMetadata` interface with all required fields
 - Designed indexing strategy (name unique, category, flags, isSystem)
 - Established system vs custom variable distinction
@@ -3750,7 +3750,7 @@ npm run seed:visitor-kyc
 
 **Phase 7: Documentation Overhaul**
 - Updated `ARCHITECTURE.md` with Version 7.0.0 section
-- Created `[VARIABLE_SYSTEM_HISTORY.md](docs/archive/2025/deprecated-guides/VARIABLE_SYSTEM_HISTORY.md#migration-path)` (742 lines) - comprehensive migration guide
+- Created `[VARIABLE_SYSTEM_HISTORY.md](docs/archive/2025/deprecated-guides/archive-variable-system-history.md#migration-path)` (742 lines) - comprehensive migration guide
 - Updated version history in key documents
 - Created Single Reference System rules documentation
 
@@ -3895,7 +3895,7 @@ const value = project.stats[normalizeKey("stats.female")];  // strips prefix
 - Cache invalidation on mutations: Always fresh data
 
 **6. Documentation is Part of the Deliverable**
-- Created 742-line migration guide (`[VARIABLE_SYSTEM_HISTORY.md](docs/archive/2025/deprecated-guides/VARIABLE_SYSTEM_HISTORY.md#migration-path)`)
+- Created 742-line migration guide (`[VARIABLE_SYSTEM_HISTORY.md](docs/archive/2025/deprecated-guides/archive-variable-system-history.md#migration-path)`)
 - Updated all architecture docs
 - Included troubleshooting section
 - Future developers (including us) will benefit immensely
@@ -3952,8 +3952,8 @@ curl http://localhost:3000/api/variables-config
 
 **New Files** (3):
 - `scripts/seedVariablesFromRegistry.ts` (194 lines) - Seeding script
-- `[VARIABLE_SYSTEM_HISTORY.md](docs/archive/2025/deprecated-guides/VARIABLE_SYSTEM_HISTORY.md#database-schema)` (288 lines) - Schema documentation
-- `[VARIABLE_SYSTEM_HISTORY.md](docs/archive/2025/deprecated-guides/VARIABLE_SYSTEM_HISTORY.md#migration-path)` (742 lines) - Complete migration guide
+- `[VARIABLE_SYSTEM_HISTORY.md](docs/archive/2025/deprecated-guides/archive-variable-system-history.md#database-schema)` (288 lines) - Schema documentation
+- `[VARIABLE_SYSTEM_HISTORY.md](docs/archive/2025/deprecated-guides/archive-variable-system-history.md#migration-path)` (742 lines) - Complete migration guide
 
 **Modified Files** (7):
 - `lib/variablesRegistry.ts` - Updated to use `stats.` prefix
@@ -3981,7 +3981,7 @@ curl http://localhost:3000/api/variables-config
 - [x] Test chart formulas
 - [x] Update all documentation
 - [x] Create migration guide
-- [x] Add docs/operations/LEARNINGS.md entry
+- [x] Add docs/operations/operations-learnings.md entry
 
 ---
 
@@ -4200,8 +4200,8 @@ User reported on production (https://www.messmass.com):
 - `package.json` - Added migration command
 
 **Documentation Updated**:
-- docs/operations/RELEASE_NOTES.md - Full migration details with results
-- docs/operations/LEARNINGS.md - This entry with root cause analysis
+- docs/operations/operations-release-notes.md - Full migration details with results
+- docs/operations/operations-learnings.md - This entry with root cause analysis
 - Migration script - Inline comments and usage instructions
 
 **Result**: Unified design system with clean, consistent naming and fully functional project style assignments. User can now select "stat view" style in project edit form and see it applied on public stats pages.
@@ -4411,7 +4411,7 @@ User reported on production (https://www.messmass.com):
 
 6. **Documentation During Development**:
    - Wrote comprehensive ARCHITECTURE.md section (480 lines)
-   - Created docs/operations/RELEASE_NOTES.md entry with migration guide
+   - Created docs/operations/operations-release-notes.md entry with migration guide
    - Updated docs/operations/WARP.md with integration instructions
    - **Lesson**: Document as you build, not after (context is fresh)
 
@@ -4434,7 +4434,7 @@ User reported on production (https://www.messmass.com):
 3. **No User Input in CSS**: Admins trusted; no arbitrary user CSS injection
 4. **Future Enhancement**: Validate gradient syntax to prevent malicious CSS
 
-**Future Enhancements** (See docs/operations/ROADMAP.md):
+**Future Enhancements** (See docs/operations/operations-roadmap.md):
 
 1. **Gradient Builder UI**: Visual gradient editor instead of CSS string input
 2. **Theme Import/Export**: JSON export/import for sharing themes
@@ -4673,7 +4673,7 @@ export function setCsrfTokenCookie(response: NextResponse, token: string): NextR
 - **FIXED**: `lib/csrf.ts` (line 149: `httpOnly: false`)
 - **UPDATED**: [docs/security/security-enhancements.md](docs/security/security-enhancements.md) (corrected HttpOnly claims)
 - **CREATED**: `scripts/test-csrf-fix.sh` (CSRF validation test)
-- **UPDATED**: `docs/operations/LEARNINGS.md` (this entry)
+- **UPDATED**: `docs/operations/operations-learnings.md` (this entry)
 - **UPDATED**: `package.json` (version bump to 6.32.0)
 - **UPDATED**: `docs/operations/WARP.md` (documented CSRF fix)
 
@@ -4887,8 +4887,8 @@ When investigating "broken" features:
 **Files Modified** (v6.31.0):
 - **DELETED**: `app/api/analytics/insights/[eventId]/route.ts` (83 lines)
 - **UPDATED**: `package.json` (version bump)
-- **UPDATED**: `docs/operations/RELEASE_NOTES.md` (change log)
-- **UPDATED**: `docs/operations/LEARNINGS.md` (this entry)
+- **UPDATED**: `docs/operations/operations-release-notes.md` (change log)
+- **UPDATED**: `docs/operations/operations-learnings.md` (this entry)
 
 **Key Metrics**:
 - **Diagnosis Time**: ~30 minutes (after exhaustive auth code review)
@@ -5258,8 +5258,8 @@ This pattern should be applied to ALL admin pages with search:
 - ⏳ `/admin/hashtags` - Future candidate
 
 **Documentation Updates**:
-- Added to docs/operations/RELEASE_NOTES.md (v5.57.1)
-- Pattern documented in this docs/operations/LEARNINGS.md entry
+- Added to docs/operations/operations-release-notes.md (v5.57.1)
+- Pattern documented in this docs/operations/operations-learnings.md entry
 - Code comments added explaining why `isSearching` exists
 - AdminHero enhanced with `onSearchKeyDown` prop for Enter key prevention
 

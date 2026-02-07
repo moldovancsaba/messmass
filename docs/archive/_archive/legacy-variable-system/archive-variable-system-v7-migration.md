@@ -587,13 +587,13 @@ All documentation files have been updated to reflect the new system:
 2. ⏳ **docs/operations/WARP.md** - Developer guide, seeding commands
 3. ⏳ **README.md** - Project overview, key features
 4. ⏳ **USER_GUIDE.md** - User-facing documentation
-5. ⏳ **docs/operations/LEARNINGS.md** - Migration lessons learned
-6. ⏳ **[VARIABLE_SYSTEM_HISTORY.md](docs/archive/2025/deprecated-guides/VARIABLE_SYSTEM_HISTORY.md#overview)** - Complete system guide
+5. ⏳ **docs/operations/operations-learnings.md** - Migration lessons learned
+6. ⏳ **[VARIABLE_SYSTEM_HISTORY.md](docs/archive/2025/deprecated-guides/archive-variable-system-history.md#overview)** - Complete system guide
 7. ✅ **SINGLE_REFERENCE_SYSTEM.md** - Naming conventions
 8. ⏳ **DATABASE_FIELD_NAMING.md** - Field naming rules
-9. ✅ **[VARIABLE_SYSTEM_HISTORY.md](docs/archive/2025/deprecated-guides/VARIABLE_SYSTEM_HISTORY.md#database-schema)** - MongoDB schema
+9. ✅ **[VARIABLE_SYSTEM_HISTORY.md](docs/archive/2025/deprecated-guides/archive-variable-system-history.md#database-schema)** - MongoDB schema
 10. ⏳ **API_REFERENCE.md** - API endpoints
-11. ⏳ **docs/operations/RELEASE_NOTES.md** - Version 7.0.0 entry
+11. ⏳ **docs/operations/operations-release-notes.md** - Version 7.0.0 entry
 
 ### Migration Notes for Each Document
 
@@ -612,12 +612,12 @@ All documentation files have been updated to reflect the new system:
 - Explain aliases vs database paths
 - Screenshots of KYC UI
 
-**docs/operations/LEARNINGS.md**:
+**docs/operations/operations-learnings.md**:
 - Add entry: "Migration to Database-First Variables"
 - Document challenges faced
 - Record solutions and patterns
 
-**[VARIABLE_SYSTEM_HISTORY.md](docs/archive/2025/deprecated-guides/VARIABLE_SYSTEM_HISTORY.md#overview)**:
+**[VARIABLE_SYSTEM_HISTORY.md](docs/archive/2025/deprecated-guides/archive-variable-system-history.md#overview)**:
 - Complete rewrite
 - Document `variables_metadata` schema
 - Explain system vs custom variables
@@ -638,7 +638,7 @@ All documentation files have been updated to reflect the new system:
 - New response format with `isSystem` and `alias`
 - POST/PUT/DELETE operations
 
-**docs/operations/RELEASE_NOTES.md**:
+**docs/operations/operations-release-notes.md**:
 - Add Version 7.0.0 entry
 - Mark as MAJOR BREAKING CHANGE
 - Document migration steps
@@ -707,10 +707,10 @@ All documentation files have been updated to reflect the new system:
 
 ### Documentation
 
-- [[VARIABLE_SYSTEM_HISTORY.md](docs/archive/2025/deprecated-guides/VARIABLE_SYSTEM_HISTORY.md#database-schema)](./[VARIABLE_SYSTEM_HISTORY.md](docs/archive/2025/deprecated-guides/VARIABLE_SYSTEM_HISTORY.md#database-schema)) - Complete schema reference
-- [[VARIABLE_SYSTEM_HISTORY.md](docs/archive/2025/deprecated-guides/VARIABLE_SYSTEM_HISTORY.md#overview)](./[VARIABLE_SYSTEM_HISTORY.md](docs/archive/2025/deprecated-guides/VARIABLE_SYSTEM_HISTORY.md#overview)) - Admin system guide
-- [SINGLE_REFERENCE_SYSTEM](../deprecated-guides-2025/LEGACY_GUIDES_PACK.md#legacy-single_reference_system) - Naming conventions
-- [ARCHITECTURE.md](../../../ARCHITECTURE.md) - Full system architecture
+- [[VARIABLE_SYSTEM_HISTORY.md](docs/archive/2025/deprecated-guides/archive-variable-system-history.md#database-schema)](./[VARIABLE_SYSTEM_HISTORY.md](docs/archive/2025/deprecated-guides/archive-variable-system-history.md#database-schema)) - Complete schema reference
+- [[VARIABLE_SYSTEM_HISTORY.md](docs/archive/2025/deprecated-guides/archive-variable-system-history.md#overview)](./[VARIABLE_SYSTEM_HISTORY.md](docs/archive/2025/deprecated-guides/archive-variable-system-history.md#overview)) - Admin system guide
+- [SINGLE_REFERENCE_SYSTEM](../deprecated-guides-2025/archive-legacy-guides-pack.md#legacy-single_reference_system) - Naming conventions
+- [ARCHITECTURE.md](../../../architecture.md) - Full system architecture
 
 ### Commands
 

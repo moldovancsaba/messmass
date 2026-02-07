@@ -427,11 +427,11 @@ const remoteImagesVar = variable.find(v => v.name === 'remoteImages');
    - Update `order` if needed for new category
 
 **Migration Checklist:**
-- [ ] Update variable metadata in MongoDB
-- [ ] Update all formulas in chart configurations
-- [ ] Update all report templates
-- [ ] Verify chart calculations still work
-- [ ] Update documentation
+- Update variable metadata in MongoDB
+- Update all formulas in chart configurations
+- Update all report templates
+- Verify chart calculations still work
+- Update documentation
 
 ### Deprecation Process
 
@@ -554,7 +554,7 @@ const remoteImagesVar = variable.find(v => v.name === 'remoteImages');
 
 ## Related Documentation
 
-- **Variable Naming Conventions:** `docs/conventions/NAMING_CONVENTIONS.md`
+- **Variable Naming Conventions:** `docs/conventions/conventions-naming-conventions.md`
 - **Variable Management Guide:** `docs/conventions/VARIABLE_MANAGEMENT_GUIDE.md` (to be created)
 - **Formula Engine:** `lib/formulaEngine.ts`
 - **Variables API:** `app/api/variables-config/route.ts`
@@ -566,7 +566,7 @@ const remoteImagesVar = variable.find(v => v.name === 'remoteImages');
 
 **Last Updated:** 2026-01-11T22:28:38.000Z  
 **Next Review:** After P0 2.2 Variable Naming Consistency Audit  
-**Version History:** See git history for `docs/conventions/VARIABLE_DICTIONARY.md`
+**Version History:** See git history for `docs/conventions/conventions-variable-dictionary.md`
 
 ---
 

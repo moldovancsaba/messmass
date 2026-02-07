@@ -556,7 +556,7 @@ return (
 
 ---
 
-## Key Learnings from docs/operations/LEARNINGS.md
+## Key Learnings from docs/operations/operations-learnings.md
 
 ### MongoDB Regex Bug (v10.1.0)
 ```typescript
@@ -597,14 +597,14 @@ return (
 - `CODING_STANDARDS.md` - Mandatory coding rules (11.25.0)
 - `DESIGN_SYSTEM.md` - Design tokens and components (9.1.0)
 - `docs/operations/WARP.md` - AI development guidelines (1,209 lines)
-- `docs/operations/LEARNINGS.md` - Development lessons learned (6,195 lines)
+- `docs/operations/operations-learnings.md` - Development lessons learned (6,195 lines)
 - `USER_GUIDE.md` - Complete user documentation (1,655 lines)
 
 **Reference:**
 - `REUSABLE_COMPONENTS_INVENTORY.md` - 210+ module catalog
 - `QUICK_REFERENCE.md` - Single Reference System guide
-- `docs/operations/ROADMAP.md` - Future enhancements and milestones
-- `docs/operations/TASKLIST.md` - Active and planned tasks
+- `docs/operations/operations-roadmap.md` - Future enhancements and milestones
+- `docs/operations/operations-action-plan.md` - Single executable queue (current work)
 
 **Specs:**
 - `.kiro/specs/analytics-dashboard.md` - Analytics features
@@ -620,14 +620,14 @@ return (
 
 ### Pre-Commit Checklist
 
-- [ ] Version incremented in `package.json` and `VERSION.md`
-- [ ] Searched existing implementations before creating new code
-- [ ] Used design tokens exclusively (no hardcoded values)
-- [ ] Used FormModal for modals, ColoredCard for cards
-- [ ] Added WHAT/WHY comments to all code
-- [ ] Ran `npm run build` successfully
-- [ ] Ran `npm run type-check` successfully
-- [ ] Updated docs/operations/RELEASE_NOTES.md with changes
+- Version incremented in `package.json` and `VERSION.md`
+- Searched existing implementations before creating new code
+- Used design tokens exclusively (no hardcoded values)
+- Used FormModal for modals, ColoredCard for cards
+- Added WHAT/WHY comments to all code
+- Ran `npm run build` successfully
+- Ran `npm run type-check` successfully
+- Updated docs/operations/operations-release-notes.md with changes
 
 ### Verification Commands
 

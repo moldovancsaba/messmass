@@ -54,5 +54,5 @@ Audience: Operators, Support
 - After any edit, blocks save with explicit unitSize and aspectRatio.
 
 9 References
-- docs/admin/ADMIN_LAYOUT_V2_SCHEMA.md
-- docs/design/REPORT_LAYOUT_V2_CONTRACT.md
+- docs/admin/admin-layout-v2-schema.md
+- docs/design/design-report-layout-v2-contract.md

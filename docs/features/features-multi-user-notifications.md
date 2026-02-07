@@ -38,5 +38,5 @@ Owner: Product
 - Screen readers not announcing updates: no `aria-live` region is defined for the badge.
 
 ## Related Documents
-- [AUDIT_EVIDENCE_INDEX.md](../audits/AUDIT_EVIDENCE_INDEX.md)
-- [IMPLEMENTATION_COMPLETE.md](../operations/IMPLEMENTATION_COMPLETE.md)
+- [AUDIT_EVIDENCE_INDEX.md](../audits/audits-audit-evidence-index.md)
+- [IMPLEMENTATION_COMPLETE.md](../operations/operations-implementation-complete.md)

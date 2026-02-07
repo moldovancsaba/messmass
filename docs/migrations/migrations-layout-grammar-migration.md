@@ -15,7 +15,7 @@ Owner: Engineering
 
 The Layout Grammar Migration Tool provides automated analysis and migration capabilities for legacy reports to ensure Layout Grammar compliance. It validates all report templates and data blocks, generates detailed validation reports, and can apply automated fixes where possible.
 
-**Source:** A-02: Layout Grammar Migration Tooling (AUDIT_ACTION_PLAN.md)
+**Source:** A-02: Layout Grammar Migration Tooling (archive/_archive/audits/AUDIT_ACTION_PLAN_2026-01-12.md)
 
 ---
 
@@ -210,7 +210,7 @@ If blocks reference charts that don't exist:
 
 ## Related Documentation
 
-- `AUDIT_ACTION_PLAN.md` - A-02: Layout Grammar Migration Tooling
+- `archive/_archive/audits/AUDIT_ACTION_PLAN_2026-01-12.md` - A-02: Layout Grammar Migration Tooling
 - `lib/editorValidationAPI.ts` - Validation API used by the tool
 - `scripts/check-layout-grammar-guardrail.ts` - CSS pattern checker
 

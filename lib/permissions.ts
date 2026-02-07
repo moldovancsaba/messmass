@@ -8,11 +8,12 @@ import type { UserRole } from './users';
 /**
  * WHAT: Role hierarchy definition
  * WHY: Define privilege levels for access control checks
- * HIERARCHY: guest < user < admin < superadmin
+ * HIERARCHY: guest < user | api < admin < superadmin (api treated like user for level)
  */
 export const ROLE_HIERARCHY: Record<UserRole, number> = {
   guest: 0,
   user: 1,
+  api: 1,
   admin: 2,
   superadmin: 3,
 };
@@ -93,6 +94,7 @@ export function getRoleDisplayName(role: UserRole): string {
     user: 'User',
     admin: 'Admin',
     superadmin: 'Superadmin',
+    api: 'API',
   };
   return displayNames[role] || role;
 }
@@ -107,6 +109,7 @@ export function getRoleBadgeColor(role: UserRole): string {
     user: '#3b82f6',       // Blue - standard access
     admin: '#10b981',      // Green - elevated access
     superadmin: '#8b5cf6', // Purple - full access
+    api: '#f59e0b',        // Amber - API key access
   };
   return colors[role] || '#6b7280';
 }

@@ -856,7 +856,7 @@ Once you confirm **all 18 legacy variables** are no longer referenced by any cha
 **Files to Update:**
 ```
 lib/chartCalculator.ts        - Remove legacy fallback code
-docs/ARCHITECTURE.md          - Remove reportImage/reportText mentions
+docs/architecture.md          - Remove reportImage/reportText mentions
 docs/WARP.md                  - Remove legacy pattern examples
 LEARNINGS.md                  - Archive legacy system notes
 ```

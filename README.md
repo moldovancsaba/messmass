@@ -106,30 +106,30 @@ SPORTSDB_BASE_URL=https://www.thesportsdb.com/api/v1/json
 
 | Document | Description |
 |----------|-------------|
-| `docs/design/DESIGN_SYSTEM.md` | 🎨 Design tokens, utility classes, UI patterns (authoritative) |
+| `docs/design/design-system.md` | 🎨 Design tokens, utility classes, UI patterns (authoritative) |
 
 #### Features & Systems
 
 | Document | Description |
 |----------|-------------|
-| `docs/features/HASHTAG_SYSTEM.md` | 🏷️ Unified hashtag system with category colors |
-| `docs/features/PARTNERS_SYSTEM_GUIDE.md` | 🤝 Partner management system documentation |
-| `docs/features/AUTHENTICATION.md` | 🔐 Complete auth system: admin, page passwords, security |
-| `docs/features/BITLY_INTEGRATION_GUIDE.md` | 🔗 Bitly API integration, analytics, many-to-many associations |
+| `docs/features/features-hashtag-system.md` | 🏷️ Unified hashtag system with category colors |
+| `docs/features/features-partners-system-guide.md` | 🤝 Partner management system documentation |
+| `docs/features/features-authentication.md` | 🔐 Complete auth system: admin, page passwords, security |
+| `docs/features/features-bitly-integration-guide.md` | 🔗 Bitly API integration, analytics, many-to-many associations |
 
 #### API Documentation
 
 | Document | Description |
 |----------|-------------|
-| `docs/api/API_REFERENCE.md` | 📡 Complete API endpoint reference |
-| `docs/api/API_PUBLIC.md` | 🌐 Public API: Bearer auth, rate limits, examples |
+| `docs/api/api-reference.md` | 📡 Complete API endpoint reference |
+| `docs/api/api-public.md` | 🌐 Public API: Bearer auth, rate limits, examples |
 
 #### Components & Conventions
 
 | Document | Description |
 |----------|-------------|
-| `docs/components/REUSABLE_COMPONENTS_INVENTORY.md` | 🧩 Reusable component library inventory |
-| `docs/conventions/NAMING_CONVENTIONS.md` | 📝 Complete naming guide: MongoDB, roles, variables |
+| `docs/components/components-reusable-components-inventory.md` | 🧩 Reusable component library inventory |
+| `docs/conventions/conventions-naming-conventions.md` | 📝 Complete naming guide: MongoDB, roles, variables |
 
 #### Recent Audits & Reports
 
@@ -154,7 +154,7 @@ Historical documentation preserved for reference:
 - **Development Setup**: WARP.md → Quick Start Commands
 - **System Architecture**: ARCHITECTURE.md → Complete technical overview
 - **Code Standards**: CODING_STANDARDS.md → **Read before coding**
-- **Design Tokens**: `docs/design/DESIGN_SYSTEM.md` → CSS variables & utilities
+- **Design Tokens**: `docs/design/design-system.md` → CSS variables & utilities
 - **API Integration**: `docs/api/` directory → API reference & public docs
 - **Feature Guides**: `docs/features/` directory → Specific systems
 - **Recent Changes**: RELEASE_NOTES.md → Versioned changelog
@@ -162,8 +162,8 @@ Historical documentation preserved for reference:
 **By Role**:
 - **AI Agent**: WARP.md (required) + CODING_STANDARDS.md (mandatory)
 - **New Developer**: README.md → ARCHITECTURE.md → CODING_STANDARDS.md
-- **API Consumer**: `docs/api/API_PUBLIC.md` → Bearer token setup
-- **Designer**: `docs/design/DESIGN_SYSTEM.md` → Design tokens
+- **API Consumer**: `docs/api/api-public.md` → Bearer token setup
+- **Designer**: `docs/design/design-system.md` → Design tokens
 - **Project Manager**: TASKLIST.md + ROADMAP.md → Current & future work
 
 ### Public Resources

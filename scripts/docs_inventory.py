@@ -102,8 +102,8 @@ def main() -> None:
     out.append('## Archives (`docs/archive/**`)')
     out.extend(table(archive))
 
-    Path('docs/_meta/DOCS_INVENTORY.md').write_text('\n'.join(out) + '\n', encoding='utf-8')
-    print('wrote docs/_meta/DOCS_INVENTORY.md with', len(rows), 'rows')
+    Path('docs/_meta/meta-docs-inventory.md').write_text('\n'.join(out) + '\n', encoding='utf-8')
+    print('wrote docs/_meta/meta-docs-inventory.md with', len(rows), 'rows')
 
 
 if __name__ == '__main__':

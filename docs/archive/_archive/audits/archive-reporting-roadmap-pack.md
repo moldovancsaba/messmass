@@ -5,15 +5,35 @@ Canonical: No
 Owner: Audit
 
 This pack preserves historical reporting roadmap proposals that were produced as audit artifacts.
-Current roadmap and tasks should be tracked in `docs/operations/ROADMAP.md` and `docs/operations/ACTION_PLAN.md`.
+Current roadmap and tasks should be tracked in `docs/operations/operations-roadmap.md` and `docs/operations/operations-action-plan.md`.
 
 ## Table Of Contents
-- [A-R-ROADMAP-PROPOSAL-2026-01-12](#a-r-roadmap-proposal-2026-01-12) (source: `docs/archive/_archive/audits/REPORTING_ROADMAP_PACK.md#a-r-roadmap-proposal-2026-01-12`)
+- [A-R-ROADMAP-PROPOSAL-2026-01-12](#a-r-roadmap-proposal-2026-01-12) (source: `docs/archive/_archive/audits/archive-reporting-roadmap-pack.md#a-r-roadmap-proposal-2026-01-12`)
 
 ## A-R-ROADMAP-PROPOSAL-2026-01-12
 <a id="a-r-roadmap-proposal-2026-01-12"></a>
 
-- Source: `docs/archive/_archive/audits/REPORTING_ROADMAP_PACK.md#a-r-roadmap-proposal-2026-01-12`
+- Source: `docs/archive/_archive/audits/archive-reporting-roadmap-pack.md#a-r-roadmap-proposal-2026-01-12`
+
+<!--
+HEADER-PARSE-BARRIER
+This pack embeds historical source documents that include their own metadata headers.
+Our inventory script (`scripts/docs_inventory.py`) only reads the first 30 lines of a file.
+Keep embedded source blocks below this barrier so the pack's own header is what gets indexed.
+-->
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 ```markdown
 # Next Reporting Roadmap Slice
@@ -26,7 +46,7 @@ Owner: Audit
 **Date:** 2026-01-12T10:50:00.000Z  
 **Status:** PROPOSAL  
 **Owner:** Tribeca (Reporting)  
-**Reference:** [AUDIT_ACTION_PLAN.md](../../AUDIT_ACTION_PLAN.md), [A-BASELINE-VERIFICATION-2026-01-12](../../archive/_archive/investigations/INVESTIGATIONS_PACK_2026.md#a-baseline-verification-2026-01-12)
+**Reference:** [archive/_archive/audits/AUDIT_ACTION_PLAN_2026-01-12.md](../../archive/_archive/audits/AUDIT_ACTION_PLAN_2026-01-12.md), [A-BASELINE-VERIFICATION-2026-01-12](../../archive/_archive/investigations/INVESTIGATIONS_PACK_2026.md#a-baseline-verification-2026-01-12)
 
 ---
 
@@ -72,7 +92,7 @@ Export functionality (CSV, PDF) exists but has known issues:
   - `app/report/[slug]/page.tsx` - Export readiness checks
 - **New files:**
   - `lib/export/exportValidator.ts` - Export validation utilities
-  - `docs/archive/_archive/investigations/INVESTIGATIONS_PACK_2026.md#a-r-07-export-correctness` - Investigation doc
+  - `docs/archive/_archive/investigations/archive-investigations-pack-2026.md#a-r-07-export-correctness` - Investigation doc
 
 **Done Criteria:**
 - ✅ Export handlers validate data readiness before export
@@ -115,7 +135,7 @@ Layout Grammar ensures deterministic layout, but other sources of non-determinis
   - `lib/chartDataCalculator.ts` - Data calculation order
   - `lib/fontSyncCalculator.ts` - Font calculation determinism
 - **New files:**
-  - `docs/archive/_archive/investigations/INVESTIGATIONS_PACK_2026.md#a-r-08-render-determinism` - Investigation doc
+  - `docs/archive/_archive/investigations/archive-investigations-pack-2026.md#a-r-08-render-determinism` - Investigation doc
   - `__tests__/render-determinism.test.ts` - Determinism test harness
 
 **Done Criteria:**
@@ -280,4 +300,3 @@ CSV and PDF exports may not match rendered report:
 **Prepared By:** Tribeca  
 **Date:** 2026-01-12T10:50:00.000Z
 ```
-

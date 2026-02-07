@@ -88,3 +88,7 @@ layout 3.tsx
 # Local WARP configuration (contains sensitive tokens)
 WARP.md
 .google-service-account.json
+
+# Generated operational artifacts (do not commit)
+docs/operations/variables-inventory/*
+!docs/operations/variables-inventory/.gitkeep

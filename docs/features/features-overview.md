@@ -8,12 +8,12 @@ Owner: Product
 This folder contains feature-level “how it works” documentation (APIs, data model, admin workflows, and operational notes) for major subsystems.
 
 ## Canonical Feature Guides
-- `docs/features/AUTHENTICATION.md` - Authentication, roles, sessions, and page-password access.
-- `docs/features/PARTNERS_SYSTEM_GUIDE.md` - Partner model, UI flows, and partner-related APIs.
-- `docs/features/BITLY_INTEGRATION_GUIDE.md` - Bitly integration architecture, endpoints, and operational runbook.
-- `docs/features/GOOGLE_SHEETS_INTEGRATION.md` - Google Sheets integration, auth, sync behavior, and troubleshooting.
-- `docs/features/HASHTAG_SYSTEM.md` - Hashtag and categorized-hashtag system behavior and APIs.
-- `docs/features/MULTI_USER_NOTIFICATIONS.md` - Notification behavior for multi-user workflows.
+- `docs/features/features-authentication.md` - Authentication, roles, sessions, and page-password access.
+- `docs/features/features-partners-system-guide.md` - Partner model, UI flows, and partner-related APIs.
+- `docs/features/features-bitly-integration-guide.md` - Bitly integration architecture, endpoints, and operational runbook.
+- `docs/features/features-google-sheets-integration.md` - Google Sheets integration, auth, sync behavior, and troubleshooting.
+- `docs/features/features-hashtag-system.md` - Hashtag and categorized-hashtag system behavior and APIs.
+- `docs/features/features-multi-user-notifications.md` - Notification behavior for multi-user workflows.
 
 ## How To Use This Folder
 - Start here when you’re debugging or extending a subsystem.

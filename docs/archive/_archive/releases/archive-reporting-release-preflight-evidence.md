@@ -89,7 +89,7 @@ npm test -- __tests__/export-validation.test.ts __tests__/export-parity.test.ts 
 **Checklist Item:** Review A-R-16 verification pack document
 
 **Execution:**
-- Document location: `docs/archive/_archive/investigations/INVESTIGATIONS_PACK_2026.md#a-r-16-reporting-release-verification-pack`
+- Document location: `docs/archive/_archive/investigations/archive-investigations-pack-2026.md#a-r-16-reporting-release-verification-pack`
 - Review completed: 2026-01-13T15:36:10.000Z
 
 **Result:** ✅ **PASS**

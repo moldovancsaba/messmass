@@ -124,5 +124,5 @@ Canonical logic: app/api/report-config/[identifier]/route.ts
 - If no database default exists, the system uses the hardcoded fallback.
 
 8 References
-- docs/admin/ADMIN_LAYOUT_V2_SCHEMA.md
-- docs/admin/ADMIN_LAYOUT_V2_TEMPLATE_BUILDER.md
+- docs/admin/admin-layout-v2-schema.md
+- docs/admin/admin-layout-v2-template-builder.md

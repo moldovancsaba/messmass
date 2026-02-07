@@ -59,5 +59,5 @@ Owner: Security
 - This document does not include independent runtime testing results.
 
 ## Related Documents
-- [AUDIT_EVIDENCE_INDEX.md](../audits/AUDIT_EVIDENCE_INDEX.md)
+- [AUDIT_EVIDENCE_INDEX.md](../audits/audits-audit-evidence-index.md)
 - [docs/security/security-migration-guide.md](docs/security/security-migration-guide.md)

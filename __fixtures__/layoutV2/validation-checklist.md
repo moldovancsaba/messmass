@@ -52,6 +52,6 @@ Or use the Jest test: `__tests__/layoutV2-fixtures-validation.test.ts` (if added
 
 ## 5. References
 
-- `docs/design/REPORT_LAYOUT_V2_CONTRACT.md`
-- `docs/admin/ADMIN_LAYOUT_V2_SCHEMA.md`
+- `docs/design/design-report-layout-v2-contract.md`
+- `docs/admin/admin-layout-v2-schema.md`
 - `lib/layoutV2BlockCalculator.ts` (validateLayoutV2BlockCapacity, validateAspectRatioRange, validateAspectRatioOverride)

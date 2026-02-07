@@ -5,7 +5,7 @@ Canonical: No
 Owner: Security
 
 This file consolidates historical security audits, phase completion notes, and review documents to reduce file count.
-Do not treat this as a source of truth for current behavior. Start at `docs/security/SECURITY_OVERVIEW.md` and follow canonical security docs.
+Do not treat this as a source of truth for current behavior. Start at `docs/security/security-overview.md` and follow canonical security docs.
 
 ## Contents
 - [security-audit-2026-01-02.md — MessMass Security Audit Report](#sec-security-audit-2026-01-02)
@@ -22,6 +22,19 @@ Do not treat this as a source of truth for current behavior. Start at `docs/secu
 
 ## security-audit-2026-01-02.md — MessMass Security Audit Report
 <a id="sec-security-audit-2026-01-02"></a>
+
+<!--
+HEADER-PARSE-BARRIER
+This pack embeds historical source documents that include their own metadata headers.
+Our inventory script (`scripts/docs_inventory.py`) only reads the first 30 lines of a file.
+Keep embedded source blocks below this barrier so the pack's own header is what gets indexed.
+-->
+
+
+
+
+
+
 
 ```markdown
 # MessMass Security Audit Report
@@ -86,8 +99,8 @@ This audit identified **8 critical security weaknesses** and **3 medium-priority
 **Status**: ⚠️ **MANUAL ACTION REQUIRED**
 - **Files with High-Risk Exposure**:
   - `scripts/debug-chart-collections.js` line 4: **Full MongoDB URI with credentials** (e.g., `mongodb+srv://moldovancsaba:j8HxxytTjrtJXskz@...`)
-  - `docs/operations/RELEASE_NOTES.md` lines 7365–7367: Example Bitly tokens and GUIDs
-  - `docs/operations/LEARNINGS.md` lines 5328–5330: Bitly credentials
+  - `docs/operations/operations-release-notes.md` lines 7365–7367: Example Bitly tokens and GUIDs
+  - `docs/operations/operations-learnings.md` lines 5328–5330: Bitly credentials
   - `scripts/test-cookie-flow.sh` line 6: Hardcoded password hash
   - Many `scripts/*.ts|js` files: References to `process.env.MONGODB_URI`, `BITLY_ACCESS_TOKEN`, `GOOGLE_SHEETS_PRIVATE_KEY`
 
@@ -161,7 +174,7 @@ This audit identified **8 critical security weaknesses** and **3 medium-priority
 ---
 
 ### 10. **Secrets in Documentation & Examples** 🟡
-**Files**: `.env.example`, `README.md`, [docs/archive/_archive/security/SECURITY_ARCHIVE_PACK.md#sec-security-team-review](docs/archive/_archive/security/SECURITY_ARCHIVE_PACK.md#sec-security-team-review), migration guides  
+**Files**: `.env.example`, `README.md`, [docs/archive/_archive/security/archive-security-archive-pack.md#sec-security-team-review](docs/archive/_archive/security/archive-security-archive-pack.md#sec-security-team-review), migration guides  
 - **Action**: Sanitize all example credentials before commit; use placeholders
 
 ---
@@ -643,7 +656,7 @@ db.collection('partners').findOne({ name: { $eq: req.query.name } })
 
 ### 14. **Secrets Are in Git History** 🔴
 - `scripts/debug-chart-collections.js`: Live MongoDB URI
-- `docs/operations/RELEASE_NOTES.md`, `docs/operations/LEARNINGS.md`: Bitly credentials, org IDs
+- `docs/operations/operations-release-notes.md`, `docs/operations/operations-learnings.md`: Bitly credentials, org IDs
 - No evidence of:
   - Pre-commit hooks to detect secrets
   - `.gitignore` enforcement
@@ -969,7 +982,7 @@ const decoded = jwt.verify(token, SECRET);
 - `components/ChartBuilderText.tsx:69` - `dangerouslySetInnerHTML={{ __html: parseMarkdown(currentText) }}`
 - `components/charts/TextChart.tsx:181` - `dangerouslySetInnerHTML={{ __html: htmlContent }}`
 - `lib/shareables/components/CodeViewer.tsx:313,320` - Multiple instances
-- `docs/operations/LEARNINGS.md:3406` - `dangerouslySetInnerHTML` usage
+- `docs/operations/operations-learnings.md:3406` - `dangerouslySetInnerHTML` usage
 
 **What's Wrong:**
 - **6+ instances** of `dangerouslySetInnerHTML` without proper sanitization
@@ -1087,7 +1100,7 @@ export async function findUserByPassword(password: string): Promise<UserDoc | nu
 
 ### 1.7 URL ENUMERATION VULNERABILITIES ⚠️ **HIGH**
 
-**Location:** `docs/operations/LEARNINGS.md:307-368` (Documented vulnerability)
+**Location:** `docs/operations/operations-learnings.md:307-368` (Documented vulnerability)
 
 **What Was Found:**
 - System previously accepted guessable slugs: `/partner-report/szerencsejtk-zrt`
@@ -1109,7 +1122,7 @@ export async function findUserByPassword(password: string): Promise<UserDoc | nu
 
 ### 1.8 ROLE NAMING INCONSISTENCIES - ACCESS CONTROL BYPASS ⚠️ **CRITICAL**
 
-**Location:** `docs/archive/_archive/audits/AUDITS_MISC_PACK.md#naming-audit-report` (22 instances found)
+**Location:** `docs/archive/_archive/audits/archive-audits-misc-pack.md#naming-audit-report` (22 instances found)
 
 **What Was Found:**
 - System uses THREE different role formats:
@@ -1166,7 +1179,7 @@ if (origin) {
 
 ### 1.10 CSRF PROTECTION WAS BROKEN FOR MONTHS ⚠️ **CRITICAL**
 
-**Location:** `docs/operations/LEARNINGS.md:4419-4455` (Documented failure)
+**Location:** `docs/operations/operations-learnings.md:4419-4455` (Documented failure)
 
 **What Happened:**
 - CSRF protection implemented with HttpOnly cookies
@@ -1520,7 +1533,7 @@ Owner: Security
 
 **Review Date:** 2025-12-29T00:00:00.000Z (UTC)  
 **Reviewer:** Security Team  
-**Audit Reference:** [docs/archive/_archive/security/SECURITY_ARCHIVE_PACK.md#sec-comprehensive-critical-audit](docs/archive/_archive/security/SECURITY_ARCHIVE_PACK.md#sec-comprehensive-critical-audit)  
+**Audit Reference:** [docs/archive/_archive/security/archive-security-archive-pack.md#sec-comprehensive-critical-audit](docs/archive/_archive/security/archive-security-archive-pack.md#sec-comprehensive-critical-audit)  
 **Status:** 🔴 **REQUIRES IMMEDIATE ACTION**
 
 ---
@@ -2302,7 +2315,7 @@ If issues arise, instant rollback is available:
 ### New Files:
 - `lib/featureFlags.ts` - Feature flag system
 - `scripts/migrate-passwords-to-bcrypt.ts` - Migration script
-- [docs/archive/_archive/security/SECURITY_ARCHIVE_PACK.md#sec-phase1-password-security-complete](docs/archive/_archive/security/SECURITY_ARCHIVE_PACK.md#sec-phase1-password-security-complete) - This document
+- [docs/archive/_archive/security/archive-security-archive-pack.md#sec-phase1-password-security-complete](docs/archive/_archive/security/archive-security-archive-pack.md#sec-phase1-password-security-complete) - This document
 
 ### Modified Files:
 - `lib/users.ts` - Password hashing utilities, UserDoc interface
@@ -2571,7 +2584,7 @@ node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"
 
 ### New Files:
 - `lib/sessionTokens.ts` - Session token utilities with dual-format support
-- [docs/archive/_archive/security/SECURITY_ARCHIVE_PACK.md#sec-phase2-session-security-complete](docs/archive/_archive/security/SECURITY_ARCHIVE_PACK.md#sec-phase2-session-security-complete) - This document
+- [docs/archive/_archive/security/archive-security-archive-pack.md#sec-phase2-session-security-complete](docs/archive/_archive/security/archive-security-archive-pack.md#sec-phase2-session-security-complete) - This document
 
 ### Modified Files:
 - `app/api/admin/login/route.ts` - JWT token generation, format indicator
@@ -2848,9 +2861,9 @@ if (FEATURE_FLAGS.USE_SANITIZED_HTML) {
 
 ## Related Documentation
 
-- `docs/operations/CTO_REMEDIATION_PLAN.md` - Full remediation plan
-- `docs/archive/_archive/security/SECURITY_ARCHIVE_PACK.md#sec-security-team-review` - Security audit findings
-- [docs/archive/_archive/security/SECURITY_ARCHIVE_PACK.md#sec-comprehensive-critical-audit](docs/archive/_archive/security/SECURITY_ARCHIVE_PACK.md#sec-comprehensive-critical-audit) - Detailed audit report
+- `docs/archive/_archive/security/CTO_REMEDIATION_PLAN.md` - Full remediation plan (archived)
+- `docs/archive/_archive/security/archive-security-archive-pack.md#sec-security-team-review` - Security audit findings
+- [docs/archive/_archive/security/archive-security-archive-pack.md#sec-comprehensive-critical-audit](docs/archive/_archive/security/archive-security-archive-pack.md#sec-comprehensive-critical-audit) - Detailed audit report
 - `lib/featureFlags.ts` - Feature flag definitions
 - `lib/sanitize.ts` - Sanitization implementation
 
@@ -3089,9 +3102,9 @@ if (FEATURE_FLAGS.USE_SAFE_FORMULA_PARSER) {
 
 ## Related Documentation
 
-- `docs/operations/CTO_REMEDIATION_PLAN.md` - Full remediation plan
-- `docs/archive/_archive/security/SECURITY_ARCHIVE_PACK.md#sec-security-team-review` - Security audit findings
-- [docs/archive/_archive/security/SECURITY_ARCHIVE_PACK.md#sec-comprehensive-critical-audit](docs/archive/_archive/security/SECURITY_ARCHIVE_PACK.md#sec-comprehensive-critical-audit) - Detailed audit report
+- `docs/archive/_archive/security/CTO_REMEDIATION_PLAN.md` - Full remediation plan (archived)
+- `docs/archive/_archive/security/archive-security-archive-pack.md#sec-security-team-review` - Security audit findings
+- [docs/archive/_archive/security/archive-security-archive-pack.md#sec-comprehensive-critical-audit](docs/archive/_archive/security/archive-security-archive-pack.md#sec-comprehensive-critical-audit) - Detailed audit report
 - `lib/featureFlags.ts` - Feature flag definitions
 - `lib/formulaEngine.ts` - Formula evaluation implementation
 

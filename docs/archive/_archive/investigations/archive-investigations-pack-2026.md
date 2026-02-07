@@ -91,7 +91,7 @@ Owner: Audit
 
 Improve accuracy of height calculations for BAR charts and PIE charts by accounting for actual font metrics and wrapping behavior instead of using hardcoded estimates.
 
-**Source:** A-03: Height Calculation Accuracy Improvements (AUDIT_ACTION_PLAN.md)
+**Source:** A-03: Height Calculation Accuracy Improvements (archive/_archive/audits/AUDIT_ACTION_PLAN_2026-01-12.md)
 
 ---
 
@@ -187,7 +187,7 @@ Improve accuracy of height calculations for BAR charts and PIE charts by account
 ## Related Files
 
 - `lib/elementFitValidator.ts` - Height calculation improvements
-- `AUDIT_ACTION_PLAN.md` - A-03 task definition
+- `archive/_archive/audits/AUDIT_ACTION_PLAN_2026-01-12.md` - A-03 task definition
 
 ---
 
@@ -210,7 +210,7 @@ Owner: Audit
 **Date:** 2026-01-12T07:28:00.000Z  
 **Status:** Implementation Complete  
 **Investigator:** Tribeca  
-**Reference:** `AUDIT_ACTION_PLAN.md` A-04
+**Reference:** `archive/_archive/audits/AUDIT_ACTION_PLAN_2026-01-12.md` A-04
 
 ---
 
@@ -438,7 +438,7 @@ Owner: Audit
 
 Implement production-only fail-fast behavior for critical Layout Grammar violations to prevent violations from reaching production while preserving development workflow (warnings only).
 
-**Source:** A-05: Layout Grammar Runtime Enforcement (AUDIT_ACTION_PLAN.md)
+**Source:** A-05: Layout Grammar Runtime Enforcement (archive/_archive/audits/AUDIT_ACTION_PLAN_2026-01-12.md)
 
 ---
 
@@ -607,7 +607,7 @@ const result = safeValidate(
 - `lib/layoutGrammarRuntimeEnforcement.ts` - Enforcement module
 - `app/report/[slug]/ReportContent.tsx` - Row-level validation
 - `app/report/[slug]/ReportChart.tsx` - Chart-level validation
-- `AUDIT_ACTION_PLAN.md` - A-05 task definition
+- `archive/_archive/audits/AUDIT_ACTION_PLAN_2026-01-12.md` - A-05 task definition
 
 ---
 
@@ -649,7 +649,7 @@ Owner: Audit
 **Date:** 2026-01-12T10:05:00.000Z  
 **Status:** Implementation Complete  
 **Investigator:** Tribeca  
-**Reference:** `AUDIT_ACTION_PLAN.md` A-06
+**Reference:** `archive/_archive/audits/AUDIT_ACTION_PLAN_2026-01-12.md` A-06
 
 ---
 
@@ -922,7 +922,7 @@ All A-01 through A-06 implementations are present and functional. Runtime behavi
 - ✅ Migration script exists and is executable
 - ✅ Supports dry-run, apply, backup/restore modes
 - ✅ Uses `validateBlockForEditor()` for validation
-- ✅ Documentation exists: `docs/migrations/LAYOUT_GRAMMAR_MIGRATION.md`
+- ✅ Documentation exists: `docs/migrations/migrations-layout-grammar-migration.md`
 - ✅ npm script: `npm run migrate:layout-grammar`
 
 **Runtime Behavior:** Migration tooling is ready for batch report analysis and remediation.
@@ -4851,7 +4851,7 @@ Owner: Architecture
 **Status:** Remediated (report rendering)  
 **Date:** 2026-02-05  
 **Scope:** Report rendering (Layout Grammar strict) + Admin/global UI (design consistency)  
-**Reference:** [docs/design/LAYOUT_GRAMMAR.md](../../design/LAYOUT_GRAMMAR.md)
+**Reference:** [docs/design/design-layout-grammar.md](../../design/LAYOUT_GRAMMAR.md)
 
 **Remediation (2026-02-05):** Report-rendering defects §2.1–2.5 and §7 (fix order 1–6) were fixed: `.chart` root, `.textContentWrapper`, `.textContent`, `.textMarkdown`, `.textMarkdown pre`, `.kpiValueRow`, `.bodyZone` (CellWrapper), TextChart `.content`, and mobile `.chart:not(.image)` / `.pieTitleRow` now use `overflow: visible` so content is never clipped. Bar track (532), image (1046), and mobile `.image` (1287) left as-is (decorative/rounded-corners). Build passes.
 
@@ -5330,7 +5330,7 @@ PIE legend containers are **CONTENT LAYERS**, not decorative. They contain user-
 **Files Changed:** 3 files, 468 insertions(+), 135 deletions(-)
 - `app/report/[slug]/ReportChart.module.css` (all 4 fixes)
 - `docs/audits/investigations/P0-1.1-no-scrolling-verification.md` (investigation report)
-- `docs/audits/COMPREHENSIVE_SYSTEM_AUDIT_PLAN_2026.md` (Agentic Chat Log)
+- `docs/archive/_archive/audits/comprehensive-system-audit-plan-2026.md` (Agentic Chat Log)
 
 **Push Command:**
 ```bash
@@ -6824,7 +6824,7 @@ grep -r "var(--mm-[token-name])" app/ components/
 
 ## 10. References
 
-- **Design System:** `docs/design/DESIGN_SYSTEM.md`
+- **Design System:** `docs/design/design-system.md`
 - **Theme Tokens:** `app/styles/theme.css`
 - **Coding Standards:** `CODING_STANDARDS.md`
 - **Hardcoded Values Inventory:** `docs/audits/hardcoded-values-inventory.csv`
@@ -7075,7 +7075,7 @@ After preview verification:
 
 - **Governing Rule:** `docs/audits/investigations/P0-3.3-design-tokens-style-ownership.md`
 - **Theme Tokens:** `app/styles/theme.css`
-- **Audit Plan:** `docs/audits/COMPREHENSIVE_SYSTEM_AUDIT_PLAN_2026.md`
+- **Audit Plan:** `docs/archive/_archive/audits/comprehensive-system-audit-plan-2026.md`
 ```
 
 ## P0-centralized-styling
@@ -7485,7 +7485,7 @@ Owner: Audit
 ---
 
 **After verification, update:**
-- `docs/audits/AUDIT_REMEDIATION_STATUS.md` line 276
+- `docs/archive/_archive/audits/AUDIT_REMEDIATION_STATUS.md` line 276
 - Mark as ✅ COMPLETE if verified, or document issues if not
 ```
 
@@ -8082,7 +8082,7 @@ Owner: Audit
 
 **Documentation Discrepancy:**
 - ⚠️ Docs mention CSS variables (`--mm-title-size`, `--mm-subtitle-size`) but code uses inline styles with dynamic `fontSize` props
-- **Action Required:** Update `docs/design/LAYOUT_SYSTEM.md` line 176 to reflect actual implementation (inline styles, not CSS variables)
+- **Action Required:** Update `docs/design/design-layout-system.md` line 176 to reflect actual implementation (inline styles, not CSS variables)
 
 ---
 
@@ -8211,7 +8211,7 @@ Owner: Audit
 ## Required Actions
 
 ### 1. Documentation Update
-- [ ] Update `docs/design/LAYOUT_SYSTEM.md` line 176 to reflect actual implementation:
+- [ ] Update `docs/design/design-layout-system.md` line 176 to reflect actual implementation:
   - Change: "CSS variables injected (`--mm-title-size`, `--mm-subtitle-size`, `--mm-kpi-size`)"
   - To: "Inline styles with dynamic `fontSize` props passed from `calculateSyncedFontSizes()`"
 
@@ -9125,7 +9125,7 @@ Chart Content (explicit height from parent, no flex growth)
 ## References
 
 - Investigation Document: `docs/audits/investigations/P1-1.4-deterministic-height-resolution.md`
-- Layout Grammar Spec: `docs/design/LAYOUT_GRAMMAR.md`
+- Layout Grammar Spec: `docs/design/design-layout-grammar.md`
 - Block Height Calculator: `lib/blockHeightCalculator.ts`
 - Design Tokens: `app/styles/theme.css`
 ```
@@ -9473,8 +9473,8 @@ height: var(--block-height, var(--row-height, 100%));
 - `app/report/[slug]/ReportContent.module.css` - Row styles
 - `app/report/[slug]/ReportChart.module.css` - Chart container and content styles
 - `components/CellWrapper.tsx` - Cell wrapper component (not used in reports)
-- `docs/design/LAYOUT_GRAMMAR.md` - Layout Grammar specification
-- `docs/design/LAYOUT_SYSTEM.md` - Layout system documentation
+- `docs/design/design-layout-grammar.md` - Layout Grammar specification
+- `docs/design/design-layout-system.md` - Layout system documentation
 ```
 
 ## P1-1.4-phase1-implementation
@@ -12971,7 +12971,7 @@ Owner: Audit
 **Date:** 2026-01-10T13:15:36.757Z  
 **Status:** Investigation Complete  
 **Investigator:** Tribeca  
-**Reference:** `COMPREHENSIVE_SYSTEM_AUDIT_PLAN_2026.md` Section 1.5
+**Reference:** `comprehensive-system-audit-plan-2026.md` Section 1.5
 
 ---
 
@@ -13389,7 +13389,7 @@ Owner: Audit
 **Date:** 2026-01-11T23:02:00.000Z  
 **Status:** Investigation Complete  
 **Investigator:** Tribeca  
-**Reference:** `COMPREHENSIVE_SYSTEM_AUDIT_PLAN_2026.md` Section P1 1.6
+**Reference:** `comprehensive-system-audit-plan-2026.md` Section P1 1.6
 
 ---
 
@@ -13673,8 +13673,8 @@ Validate PIE and DONUT charts for Layout Grammar compliance:
 - `app/report/[slug]/ReportChart.module.css` (PIE chart styles, lines 193-363, 1074-1112)
 - `lib/blockHeightCalculator.ts` (height calculation, line 79)
 - `lib/elementFitValidator.ts` (PIE validation, lines 95-122)
-- `docs/design/LAYOUT_GRAMMAR.md` (PIE element contract, lines 71-74)
-- `docs/design/LAYOUT_GRAMMAR_COMPLIANCE.md` (clipping rules, lines 40-43)
+- `docs/design/design-layout-grammar.md` (PIE element contract, lines 71-74)
+- `docs/design/design-layout-grammar-compliance.md` (clipping rules, lines 40-43)
 
 ---
 
@@ -13698,7 +13698,7 @@ Owner: Audit
 **Date:** 2026-01-11T23:15:00.000Z  
 **Status:** Investigation Complete  
 **Investigator:** Tribeca  
-**Reference:** `COMPREHENSIVE_SYSTEM_AUDIT_PLAN_2026.md` Section P1 1.7
+**Reference:** `comprehensive-system-audit-plan-2026.md` Section P1 1.7
 
 ---
 
@@ -14111,7 +14111,7 @@ When PIE chart has many legend items (>5) or long labels, the legend container m
 - `app/report/[slug]/ReportChart.tsx` (TableChart component, lines 751-881; PieChart component, lines 244-420)
 - `app/report/[slug]/ReportChart.module.css` (TABLE chart styles, lines 849-920; PIE legend styles, lines 300-363)
 - `lib/blockHeightCalculator.ts` (height calculation, line 79)
-- `docs/design/LAYOUT_GRAMMAR.md` (element-specific contracts, lines 70-78)
+- `docs/design/design-layout-grammar.md` (element-specific contracts, lines 70-78)
 
 ---
 
@@ -14516,7 +14516,7 @@ Owner: Audit
 **Date:** 2026-01-09T10:28:09.300Z  
 **Status:** Investigation Complete  
 **Auditor:** Tribeca  
-**Reference:** `docs/conventions/VARIABLE_DICTIONARY.md`
+**Reference:** `docs/conventions/conventions-variable-dictionary.md`
 
 ---
 
@@ -14732,7 +14732,7 @@ After migration, verify:
 
 ## Related Files
 
-- **Variable Dictionary:** `docs/conventions/VARIABLE_DICTIONARY.md`
+- **Variable Dictionary:** `docs/conventions/conventions-variable-dictionary.md`
 - **Audit Script:** `scripts/audit-variable-naming.ts`
 - **Violations JSON:** `docs/archive/_archive/audits/P1-2.2-variable-naming-violations.json`
 - **Migration Script:** `scripts/remove-stats-prefix-everywhere.ts`
@@ -15577,17 +15577,17 @@ Last Updated: 2026-02-05T19:29:57.000Z
 Canonical: No
 Owner: Audit
 
-1. 2026-01-11T22:47:16.000Z - CODE_REVIEW_FINDINGS_ADMIN_LAYOUT.md
-1.1 Resolution: Missing file (no candidates found)
+1. 2026-01-11T22:47:16.000Z - docs/archive/_archive/admin/admin-layout-code-review-findings-2026-02-05.md
+1.1 Resolution: Archived at `docs/archive/_archive/admin/admin-layout-code-review-findings-2026-02-05.md` (moved during docs shrink; follow-up work tracked in `docs/operations/operations-action-plan.md` as `OPS-ADMIN-01`)
 1.2 Inbound references (markdown)
-1.2.1 ARCHITECTURE.md  -  **Code Review**: See CODE_REVIEW_FINDINGS_ADMIN_LAYOUT.md (TODO: unresolved target)
-1.2.2 docs/archive/2025/deprecated-guides/ADMIN_LAYOUT_SYSTEM.md  -  **Code Review**: See CODE_REVIEW_FINDINGS_ADMIN_LAYOUT.md (TODO: unresolved target)
-1.2.3 docs/archive/2025/deprecated-guides/ADMIN_LAYOUT_SYSTEM.md  -  See CODE_REVIEW_FINDINGS_ADMIN_LAYOUT.md (TODO: unresolved target) for:
-1.2.4 docs/archive/2025/deprecated-guides/ADMIN_LAYOUT_SYSTEM.md  -  **Full technical debt analysis**: See CODE_REVIEW_FINDINGS_ADMIN_LAYOUT.md (TODO: unresolved target)
-1.2.5 docs/archive/2025/deprecated-guides/ADMIN_LAYOUT_SYSTEM.md  -  **CODE_REVIEW_FINDINGS_ADMIN_LAYOUT.md (TODO: unresolved target)** - Detailed code review and technical debt
-1.2.6 RELEASE_NOTES.md  -  - **CREATED**: `CODE_REVIEW_FINDINGS_ADMIN_LAYOUT.md` (362 lines) - Detailed code review and technical debt analysis
-1.2.7 RELEASE_NOTES.md  -  2. **CODE_REVIEW_FINDINGS_ADMIN_LAYOUT.md**
-1.2.8 RELEASE_NOTES.md  -  - `CODE_REVIEW_FINDINGS_ADMIN_LAYOUT.md`: CREATED (362 lines)
+1.2.1 ARCHITECTURE.md  -  **Code Review (Archived)**: See admin-layout-code-review-findings-2026-02-05.md
+1.2.2 docs/archive/2025/deprecated-guides/ADMIN_LAYOUT_SYSTEM.md  -  **Code Review (Archived)**: See admin-layout-code-review-findings-2026-02-05.md
+1.2.3 docs/archive/2025/deprecated-guides/ADMIN_LAYOUT_SYSTEM.md  -  See admin-layout-code-review-findings-2026-02-05.md for:
+1.2.4 docs/archive/2025/deprecated-guides/ADMIN_LAYOUT_SYSTEM.md  -  **Full technical debt analysis**: See admin-layout-code-review-findings-2026-02-05.md
+1.2.5 docs/archive/2025/deprecated-guides/ADMIN_LAYOUT_SYSTEM.md  -  **admin-layout-code-review-findings-2026-02-05.md** - Detailed code review and technical debt
+1.2.6 RELEASE_NOTES.md  -  - **CREATED**: `admin-layout-code-review-findings-2026-02-05.md` (archived) - Detailed code review and technical debt analysis
+1.2.7 RELEASE_NOTES.md  -  2. **admin-layout-code-review-findings-2026-02-05.md**
+1.2.8 RELEASE_NOTES.md  -  - `admin-layout-code-review-findings-2026-02-05.md`: CREATED (archived)
 
 2. 2026-01-11T22:47:16.000Z - SECURITY_ENHANCEMENTS.md
 2.1 Resolution: Missing file (no candidates found)
@@ -15639,14 +15639,14 @@ Owner: Audit
 6. 2026-01-11T22:47:16.000Z - url (placeholder target)
 6.1 Resolution: Missing file (placeholder value, no candidates found)
 6.2 Inbound references (markdown)
-6.2.1 docs/design/REPORT_TEXT_SIZING_PLAN.md  -  Links: `text (TODO: unresolved target)`
+6.2.1 docs/archive/_archive/design/REPORT_TEXT_SIZING_PLAN.md  -  Links: `text (TODO: unresolved target)`
 6.2.2 docs/archive/2025/deprecated-guides/MARKDOWN_TEXT_FEATURE.md  -  Links: `text (TODO: unresolved target)`
 6.2.3 docs/archive/2025/deprecated-guides/MARKDOWN_TEXT_FEATURE.md  -  Link: `text (TODO: unresolved target)`
 
 7. 2026-01-11T22:47:16.000Z - IMPLEMENTATION_COMPLETE.md (ambiguous target)
 7.1 Candidates found
 7.1.1 IMPLEMENTATION_COMPLETE.md (repo root)
-7.1.2 docs/archive/2025/IMPLEMENTATION_REPORTS_PACK.md (archived)
+7.1.2 docs/archive/2025/archive-implementation-reports-pack.md (archived)
 7.2 Proposed link edits (pending canonical decision)
 7.2.1 docs/archive/2025/deprecated-guides/QUICK_REFERENCE.md  -  [IMPLEMENTATION_COMPLETE.md](../../operations/IMPLEMENTATION_COMPLETE.md)
 7.2.1.1 If root is canonical: ../../../../IMPLEMENTATION_COMPLETE.md
@@ -15724,15 +15724,14 @@ git push origin --delete preview
 **Status:** ✅ Ready to push (no conflicts)
 
 **Files in Commit:**
-- `agentic/README.md`
+- `agentic/readme.md`
 - `agentic/operating-rules/execution-playbook.md`
 - `agentic/operating-rules/delivery-loop.md`
 - `docs/audits/investigations/P0-charts-verification-checklist.md`
-- `docs/audits/AUDIT_REMEDIATION_STATUS.md`
+- `docs/archive/_archive/audits/AUDIT_REMEDIATION_STATUS.md`
 
 ---
 
 **Last Updated:** 2026-01-02  
 **Next Action:** Sultan to execute push command above
 ```
-

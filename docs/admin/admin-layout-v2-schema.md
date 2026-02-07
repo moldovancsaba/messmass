@@ -127,5 +127,5 @@ Admin must prevent saving invalid layouts:
   - UI should block save and show errors (UI constraints to be added later).
 
 9 References
-- Reporting contract: `docs/design/REPORT_LAYOUT_V2_CONTRACT.md`
+- Reporting contract: `docs/design/design-report-layout-v2-contract.md`
 - Admin report templates: `/admin/visualization` (template editor)

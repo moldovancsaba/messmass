@@ -846,7 +846,7 @@ curl "http://localhost:3000/api/report-config/PROJECT_SLUG?type=project"
 - `<AdminLayout>`: Admin page wrapper with Sidebar + TopHeader (see ADMIN_LAYOUT_SYSTEM.md)
 
 ### Design System
-- All design tokens documented in [DESIGN_SYSTEM.md](docs/design/DESIGN_SYSTEM.md)
+- All design tokens documented in [DESIGN_SYSTEM.md](docs/design/design-system.md)
 - TailAdmin V2 flat design (no glass-morphism)
 - **ALL CSS card classes REMOVED**: `.glass-card`, `.content-surface`, `.section-card`, `.admin-card`
 - **ONLY USE**: `<ColoredCard>` component for all card UI
@@ -1678,7 +1678,7 @@ For production issues:
 2. Check authentication status
 3. Verify MongoDB connection
 4. Review notification counts and recent entries
-5. See detailed troubleshooting guide in [MULTI_USER_NOTIFICATIONS.md](docs/features/MULTI_USER_NOTIFICATIONS.md)
+5. See detailed troubleshooting guide in [MULTI_USER_NOTIFICATIONS.md](docs/features/features-multi-user-notifications.md)
 
 ---
 
@@ -1880,8 +1880,8 @@ return (
 The Admin Layout & Navigation System provides a comprehensive, responsive layout framework for all MessMass admin pages. It features a collapsible sidebar navigation, top header with user info and notifications, and adaptive behavior across desktop, tablet, and mobile devices.
 
 **Status**: Stable, Production-Ready  
-**Documentation**: See [ADMIN_LAYOUT_SYSTEM (archived)](archive/_archive/deprecated-guides-2025/LEGACY_GUIDES_PACK.md#legacy-admin_layout_system) for complete documentation  
-**Code Review**: See [CODE_REVIEW_FINDINGS_ADMIN_LAYOUT.md](CODE_REVIEW_FINDINGS_ADMIN_LAYOUT.md)
+**Documentation**: See [ADMIN_LAYOUT_SYSTEM (archived)](archive/_archive/deprecated-guides-2025/archive-legacy-guides-pack.md#legacy-admin_layout_system) for complete documentation  
+**Code Review (Archived)**: See [admin-layout-code-review-findings-2026-02-05.md](archive/_archive/admin/admin-layout-code-review-findings-2026-02-05.md)
 
 ### Key Components
 
@@ -1996,7 +1996,7 @@ See ROADMAP.md for planned improvements:
 4. Persist sidebar state with localStorage (Low priority)
 5. Implement focus trap in mobile overlay (Low priority)
 
-For complete documentation, usage examples, troubleshooting, and technical details, see [ADMIN_LAYOUT_SYSTEM (archived)](archive/_archive/deprecated-guides-2025/LEGACY_GUIDES_PACK.md#legacy-admin_layout_system).
+For complete documentation, usage examples, troubleshooting, and technical details, see [ADMIN_LAYOUT_SYSTEM (archived)](archive/_archive/deprecated-guides-2025/archive-legacy-guides-pack.md#legacy-admin_layout_system).
 
 ---
 
@@ -2672,7 +2672,7 @@ See [security-migration-guide.md](security/security-migration-guide.md) for step
 - ✅ In-memory caching for performance (5-minute TTL)
 
 **Status**: Production-Ready  
-**Documentation**: See [VARIABLES_DATABASE_SCHEMA.md (archived)](archive/_archive/legacy-variable-system/VARIABLES_DATABASE_SCHEMA.md) and [ADMIN_VARIABLES_SYSTEM.md (archived)](archive/_archive/legacy-variable-system/ADMIN_VARIABLES_SYSTEM.md)
+**Documentation**: See [VARIABLES_DATABASE_SCHEMA.md (archived)](archive/_archive/legacy-variable-system/archive-variables-database-schema.md) and [ADMIN_VARIABLES_SYSTEM.md (archived)](archive/_archive/legacy-variable-system/archive-admin-variables-system.md)
 
 ### Core Principles
 
@@ -3335,10 +3335,10 @@ const value = evaluateFormula(element.formula, stats, paramValues, manualValues)
 - ✅ 3 Bitly charts created in MongoDB Atlas
 
 **Manual Testing Required**:
-- [ ] Value chart displays parameterized values correctly
-- [ ] Bitly charts render when Bitly data present
-- [ ] Charts show "NA" gracefully when data missing
-- [ ] Parameter editing via MongoDB updates chart values
+- Value chart displays parameterized values correctly
+- Bitly charts render when Bitly data present
+- Charts show "NA" gracefully when data missing
+- Parameter editing via MongoDB updates chart values
 
 ### Future Enhancements
 
@@ -3622,11 +3622,11 @@ db.chart_configurations.updateMany(
 - ✅ All chart types render correctly
 
 **Manual Testing**:
-- [ ] Create VALUE chart with dual formatting
-- [ ] Verify KPI and bars use separate formatting
-- [ ] Test prefix/suffix combinations (€, $, %, pts)
-- [ ] Test rounded vs. 2-decimal modes
-- [ ] Verify 5-element requirement blocks save with <5 or >5 elements
+- Create VALUE chart with dual formatting
+- Verify KPI and bars use separate formatting
+- Test prefix/suffix combinations (€, $, %, pts)
+- Test rounded vs. 2-decimal modes
+- Verify 5-element requirement blocks save with <5 or >5 elements
 
 ### Future Enhancements
 
@@ -4000,13 +4000,13 @@ if (config.type === 'image') {
 - ✅ PDF export quality matches UI rendering
 
 **Manual Testing Checklist**:
-- [ ] Create IMAGE chart with 16:9 aspect ratio
-- [ ] Create IMAGE chart with 9:16 aspect ratio
-- [ ] Create IMAGE chart with 1:1 aspect ratio
-- [ ] Verify consistent row heights in mixed-ratio grids
-- [ ] Export page to PDF and verify image cropping
-- [ ] Test on mobile (portrait) and desktop (landscape)
-- [ ] Verify hover effects work on background-image
+- Create IMAGE chart with 16:9 aspect ratio
+- Create IMAGE chart with 9:16 aspect ratio
+- Create IMAGE chart with 1:1 aspect ratio
+- Verify consistent row heights in mixed-ratio grids
+- Export page to PDF and verify image cropping
+- Test on mobile (portrait) and desktop (landscape)
+- Verify hover effects work on background-image
 
 ### Future Enhancements
 
@@ -4068,7 +4068,7 @@ See ROADMAP.md for planned improvements:
 4. Export/import variable configurations
 5. Variable usage analytics (which variables are edited most)
 
-For complete documentation, API reference, usage patterns, and technical decisions, see [ADMIN_VARIABLES_SYSTEM.md (archived)](archive/_archive/legacy-variable-system/ADMIN_VARIABLES_SYSTEM.md).
+For complete documentation, API reference, usage patterns, and technical decisions, see [ADMIN_VARIABLES_SYSTEM.md (archived)](archive/_archive/legacy-variable-system/archive-admin-variables-system.md).
 
 ---
 

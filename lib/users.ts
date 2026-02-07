@@ -12,10 +12,13 @@ import { FEATURE_FLAGS } from './featureFlags'
 // WHY: OWASP recommends minimum 12 rounds for production (balance between security and performance)
 const BCRYPT_SALT_ROUNDS = 12
 
-// WHAT: Four-tier role hierarchy for granular access control
-// WHY: Support guest registration, user promotion, admin operations, and superadmin management
-// ROLES: guest (docs only) → user (basic access) → admin (content mgmt) → superadmin (system admin)
-export type UserRole = 'guest' | 'user' | 'admin' | 'superadmin'
+// WHAT: Canonical role set for the app (OPS-SEC-03: single source of truth)
+// WHY: Support guest registration, user promotion, admin/API operations, and superadmin management
+// ROLES: guest (docs only) → user (basic access) → admin (content mgmt) → superadmin (system admin) | api (API-key users)
+export type UserRole = 'guest' | 'user' | 'admin' | 'superadmin' | 'api'
+
+/** All valid roles; use for validation and dropdowns. */
+export const USER_ROLES: UserRole[] = ['guest', 'user', 'admin', 'superadmin', 'api']
 
 export interface UserDoc {
   _id?: ObjectId

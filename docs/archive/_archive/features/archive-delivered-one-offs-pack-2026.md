@@ -8,9 +8,9 @@ This pack preserves one-off delivered feature summaries that were previously kep
 We archive these to keep the active tree focused on canonical guides + operations workflow.
 
 Canonical replacements:
-- Google Sheets: `docs/features/GOOGLE_SHEETS_INTEGRATION.md`
-- Partners: `docs/features/PARTNERS_SYSTEM_GUIDE.md`
-- Release log: `docs/operations/RELEASE_NOTES.md`
+- Google Sheets: `docs/features/features-google-sheets-integration.md`
+- Partners: `docs/features/features-partners-system-guide.md`
+- Release log: `docs/operations/operations-release-notes.md`
 
 ## Table Of Contents
 - [2026-02-04_GOOGLE_SHEETS_PARTNER_SYNC](#2026-02-04-google-sheets-partner-sync) (source: `docs/2026-02-04_GOOGLE_SHEETS_PARTNER_SYNC.md`)
@@ -20,6 +20,22 @@ Canonical replacements:
 <a id="2026-02-04-google-sheets-partner-sync"></a>
 
 - Source: `docs/2026-02-04_GOOGLE_SHEETS_PARTNER_SYNC.md`
+
+<!--
+HEADER-PARSE-BARRIER
+This pack embeds historical source documents that include their own metadata headers.
+Our inventory script (`scripts/docs_inventory.py`) only reads the first 30 lines of a file.
+Keep embedded source blocks below this barrier so the pack's own header is what gets indexed.
+-->
+
+
+
+
+
+
+
+
+
 
 ```markdown
 # Google Sheets Partner Sync — Phase 2 Deliverable
@@ -238,4 +254,3 @@ For existing installations, no migration is required as:
 - Existing partners will continue showing emoji (showEmoji !== false)
 - New partners default to showing emoji (showEmoji: true)
 ```
-

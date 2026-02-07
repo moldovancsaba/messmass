@@ -221,9 +221,9 @@ After deployment, verify:
 
 **For team members**:
 - See `CHART_ALIGNMENT_FIXES_v12.md` for complete architectural explanation
-- See `docs/charts/CHART_ALIGNMENT_SUMMARY.md` for the canonical architecture/testing checklist
-- See `docs/archive/_archive/charts/CHART_ALIGNMENT_HISTORY.md` for historical notes
-- See `docs/archive/_archive/charts/CHART_ALIGNMENT_HISTORY.md` (Appendix C) for pixel-level KPI calculations (archived)
+- See `docs/charts/charts-chart-alignment-summary.md` for the canonical architecture/testing checklist
+- See `docs/archive/_archive/charts/archive-chart-alignment-history.md` for historical notes
+- See `docs/archive/_archive/charts/archive-chart-alignment-history.md` (Appendix C) for pixel-level KPI calculations (archived)
 
 **For future development**:
 - All charts now use CSS Grid + Container Queries architecture
@@ -261,5 +261,5 @@ All tests pass, documentation complete, no known issues.
 
 Questions about the changes? See documentation files:
 1. `CHART_ALIGNMENT_FIXES_v12.md` - Architecture & principles
-2. `docs/charts/CHARTS_OVERVIEW.md` - Where the canonical chart docs live
-3. `docs/archive/_archive/charts/CHART_ALIGNMENT_HISTORY.md` - Historical notes (exec + change notes + appendices)
+2. `docs/charts/charts-overview.md` - Where the canonical chart docs live
+3. `docs/archive/_archive/charts/archive-chart-alignment-history.md` - Historical notes (exec + change notes + appendices)

@@ -162,6 +162,7 @@ function getRoleBadgeColor(role: UserRole): string {
     user: '#3b82f6',       // Blue
     admin: '#10b981',      // Green
     superadmin: '#8b5cf6', // Purple
+    api: '#f59e0b',       // Amber
   };
   return colors[role] || '#6b7280';
 }

@@ -4,7 +4,7 @@ Last Updated: 2026-02-04T05:00:00.000Z
 Canonical: Yes
 Owner: Architecture
 
-This document consolidates the key learnings, decisions, and reference points that previously lived in `docs/archive/_archive/legacy-variable-system/ADMIN_VARIABLES_SYSTEM.md`, `docs/archive/_archive/legacy-variable-system/VARIABLE_SYSTEM_V7_MIGRATION.md`, and `docs/archive/_archive/legacy-variable-system/VARIABLES_DATABASE_SCHEMA.md`. Use this single source when you need to understand the database-first variables platform or migrate it in the future.
+This document consolidates the key learnings, decisions, and reference points that previously lived in `docs/archive/_archive/legacy-variable-system/archive-admin-variables-system.md`, `docs/archive/_archive/legacy-variable-system/archive-variable-system-v7-migration.md`, and `docs/archive/_archive/legacy-variable-system/archive-variables-database-schema.md`. Use this single source when you need to understand the database-first variables platform or migrate it in the future.
 
 ## Overview
 - MongoDB now holds every variable definition in `variables_metadata`, seeded from `lib/variablesConfig.ts`.
@@ -41,6 +41,6 @@ This document consolidates the key learnings, decisions, and reference points th
 - Variable groups (`variableGroup` documents) allow grouping charts together, controlling order, and referencing default chart IDs.
 
 ## Reference Materials
-1. `docs/archive/_archive/legacy-variable-system/ADMIN_VARIABLES_SYSTEM.md` — original implementation guide (kept for legal trace).
-2. `docs/archive/_archive/legacy-variable-system/VARIABLE_SYSTEM_V7_MIGRATION.md` — step-by-step migration notes for v6 → v7.
-3. `docs/archive/_archive/legacy-variable-system/VARIABLES_DATABASE_SCHEMA.md` — detailed MongoDB schema that was in use until 2026.
+1. `docs/archive/_archive/legacy-variable-system/archive-admin-variables-system.md` — original implementation guide (kept for legal trace).
+2. `docs/archive/_archive/legacy-variable-system/archive-variable-system-v7-migration.md` — step-by-step migration notes for v6 → v7.
+3. `docs/archive/_archive/legacy-variable-system/archive-variables-database-schema.md` — detailed MongoDB schema that was in use until 2026.

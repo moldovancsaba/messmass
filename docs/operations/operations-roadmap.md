@@ -1,11 +1,11 @@
 # Operations Roadmap
 Status: Active
-Last Updated: 2026-02-04
+Last Updated: 2026-02-06
 Canonical: Yes
 Owner: Product + Engineering
 
-**Reference:** [docs/AUDIT_ACTION_PLAN.md](docs/AUDIT_ACTION_PLAN.md), [docs/operations/IMPLEMENTATION_COMPLETE.md](docs/operations/IMPLEMENTATION_COMPLETE.md), [docs/audits/COMPREHENSIVE_SYSTEM_AUDIT_PLAN_2026.md](docs/audits/COMPREHENSIVE_SYSTEM_AUDIT_PLAN_2026.md)  
-**Admin Roadmap Status:** Canonical Admin roadmap tracking lives in [docs/operations/ACTION_PLAN.md](docs/operations/ACTION_PLAN.md).
+**Reference:** [docs/operations/operations-implementation-complete.md](docs/operations/operations-implementation-complete.md), [docs/archive/_archive/audits/comprehensive-system-audit-plan-2026.md](docs/archive/_archive/audits/comprehensive-system-audit-plan-2026.md)  
+**Admin Roadmap Status:** Canonical Admin roadmap tracking lives in [docs/operations/operations-action-plan.md](docs/operations/operations-action-plan.md).
 
 ---
 
@@ -21,7 +21,7 @@ Completed and DONE items are not listed here. See release notes in **`docs/archi
 **Priority:** High  
 **Status:** Future  
 **Dependencies:** Layout Grammar validation logic (exists), Editor UI  
-**Source:** `docs/operations/IMPLEMENTATION_COMPLETE.md` (Explicit Non-Goals)
+**Source:** `docs/operations/operations-implementation-complete.md` (Explicit Non-Goals)
 
 **Technical Intent:**
 - Integrate Layout Grammar validation into editor UI
@@ -40,7 +40,7 @@ Completed and DONE items are not listed here. See release notes in **`docs/archi
 **Priority:** Medium  
 **Status:** Future  
 **Dependencies:** None  
-**Source:** `docs/operations/IMPLEMENTATION_COMPLETE.md` (Residual Risks)
+**Source:** `docs/operations/operations-implementation-complete.md` (Residual Risks)
 
 **Technical Intent:**
 - Refine BAR chart height calculation (currently uses estimated 40px label height)
@@ -55,11 +55,27 @@ Completed and DONE items are not listed here. See release notes in **`docs/archi
 
 ---
 
+### Table Chart Height Control (Per-Block / Per-Chart)
+**Priority:** Low  
+**Status:** Future  
+**Dependencies:** LayoutV2 contract changes + editor UI changes + renderer changes  
+**Source:** `docs/archive/_archive/design/TABLE_CHART_HEIGHT_CONTROL_PLAN.md` (archived design plan)
+
+**Intent:**
+- Provide more granular height control for TABLE charts beyond block-level `blockAspectRatio`.
+- Support “table height = blockWidth × multiplier” style ergonomics for cases with many rows or dense content.
+
+**Notes:**
+- Any implementation must stay aligned with Layout Grammar invariants (no scrolling, no clipping, determinism).
+- If editor UI cannot support this cleanly, keep it as a TABLE-only block enhancement first.
+
+---
+
 ### Performance Optimization Pass
 **Priority:** Low  
 **Status:** Future  
 **Dependencies:** None  
-**Source:** `docs/operations/IMPLEMENTATION_COMPLETE.md` (Explicit Non-Goals)
+**Source:** `docs/operations/operations-implementation-complete.md` (Explicit Non-Goals)
 
 **Technical Intent:**
 - Performance optimizations beyond correctness requirements
@@ -73,6 +89,20 @@ Completed and DONE items are not listed here. See release notes in **`docs/archi
 - This is optimization, not correctness
 
 ---
+
+---
+
+### Audit Automation & Guardrails
+**Priority:** Medium
+**Status:** Future
+**Dependencies:** None
+**Source:** `docs/archive/_archive/audits/comprehensive-system-audit-plan-2026.md` (archived audit plan)
+
+Convert "audit should be done" items into durable tooling/guardrails:
+- ESLint rules: hardcoded colors; inline styles (allow computed token-driven only); design token usage
+- Pre-commit hook (or CI check) for Layout Grammar violations (only if approved as delivery-infra work)
+- Automated audit script (repeatable scanning + reporting)
+- Audit schedule agreed and documented
 
 ## 🚀 Next Engineering Phase (New Work, Not Audit)
 
@@ -238,11 +268,32 @@ Completed and DONE items are not listed here. See release notes in **`docs/archi
 ### Report Content Slots Management
 **Priority:** High  
 **Status:** Active  
-**Next:** Optional markdown rendering presets for reportTextN; multi-ratio preview helper for images  
+**Next:** Optional markdown rendering presets for reportTextN; multi-ratio preview helper for images
+
+Future (captured as roadmap; detailed historical plan archived):
+- Report text sizing + markdown enhancements (GFM support + fill-space text sizing): `docs/archive/_archive/design/REPORT_TEXT_SIZING_PLAN.md`
 
 *(Delivered scope: see release notes in `docs/archive/_archive/releases/`.)*
 
 ---
+
+### Variables System Enhancements (Admin + Reporting)
+**Priority:** Medium
+**Status:** Future
+**Dependencies:** None (Stage 1), then staged migration plan
+**Source:** `docs/archive/_archive/admin/ADMIN_UI_VARIABLE_SYSTEM_ENHANCEMENT.md` (staged plan; action items tracked in ACTION_PLAN/ROADMAP)
+
+**Stage 2 (Type and naming normalization):**
+- Normalize `variables_metadata.type` values to a stable enum (`count`, `numeric`, `text`, etc.).
+- Add a compatibility layer that accepts both legacy and normalized type strings.
+
+**Stage 3 (Deprecation and alias support):**
+- Introduce explicit alias mapping for legacy names (instead of ad-hoc `stats.` handling).
+- Add deprecation flags + warnings for planned removals.
+
+**Stage 4 (Contracted versioning):**
+- Add variable schema versioning + change log.
+- Tie compatibility checks to versioned variable sets.
 
 ### Style System Hardening (Phase 4-6)
 **Priority:** High  
@@ -491,11 +542,21 @@ Completed and DONE items are not listed here. See release notes in **`docs/archi
 - Reorder blocks with drag-and-drop
 - Audit and simplify unused admin features
 
+### Report Template Management (Rename / Copy / Delete)
+**Priority:** Low  
+**Status:** Future  
+**Dependencies:** Admin Visualization Manager surface (`/admin/visualization`)  
+**Source:** `docs/archive/_archive/design/TEMPLATE_MANAGEMENT_PLAN_2026-01-02.md` (archived plan)
+
+**Technical Intent:**
+- Add operator-safe template rename/copy/delete flows with confirmation and “in use” protection.
+- Keep UX aligned with existing modal primitives (FormModal/BaseModal/ConfirmDialog) and API client helpers.
+
 ### Variable Management Guide (P2 2.3)
 **Priority:** Low  
 **Status:** Future  
 **Dependencies:** Variable Dictionary (P0 2.1)  
-**Source:** `docs/audits/COMPREHENSIVE_SYSTEM_AUDIT_PLAN_2026.md` (Phase 2)
+**Source:** `docs/archive/_archive/audits/comprehensive-system-audit-plan-2026.md` (Phase 2)
 
 **Technical Intent:**
 - Create comprehensive guide for variable management

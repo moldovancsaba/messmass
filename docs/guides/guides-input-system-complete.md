@@ -31,9 +31,9 @@ This document provides a complete overview of the unified input system, all docu
 
 ### 3. **Created Comprehensive Documentation** (4 documents)
 - ✅ `LEARNINGS.md` - Historical learning entry
-- ✅ `docs/components/UNIFIED_INPUT_SYSTEM.md` - Complete system guide
+- ✅ `docs/components/components-unified-input-system.md` - Complete system guide
 - ✅ `docs/fixes/NUMERIC_INPUT_CONSISTENCY_FIX.md` - Fix documentation
-- ✅ `docs/guides/FORM_INPUT_MIGRATION_GUIDE.md` - Migration guide
+- ✅ `docs/guides/guides-form-input-migration-guide.md` - Migration guide
 
 ### 4. **Created Validation Tools**
 - ✅ `scripts/validate-input-patterns.sh` - Automated validation script
@@ -47,13 +47,13 @@ This document provides a complete overview of the unified input system, all docu
 | Document | Purpose | When to Use |
 |----------|---------|-------------|
 | `LEARNINGS.md` (v11.54.3 entry) | Historical record of the problem and solution | Understanding why this pattern exists |
-| `docs/components/UNIFIED_INPUT_SYSTEM.md` | Complete technical guide to unified components | Deep dive into architecture |
+| `docs/components/components-unified-input-system.md` | Complete technical guide to unified components | Deep dive into architecture |
 | `docs/fixes/NUMERIC_INPUT_CONSISTENCY_FIX.md` | What was fixed and how | Reference for the fix implementation |
 
 ### For Implementation
 | Document | Purpose | When to Use |
 |----------|---------|-------------|
-| `docs/guides/FORM_INPUT_MIGRATION_GUIDE.md` | Step-by-step migration guide | Creating new forms or fixing old ones |
+| `docs/guides/guides-form-input-migration-guide.md` | Step-by-step migration guide | Creating new forms or fixing old ones |
 | Component files | Source code | Importing and using components |
 
 ---
@@ -95,9 +95,9 @@ import TextareaField from '@/components/TextareaField';
 ```
 
 **Step 3: Test**
-- [ ] Can delete "0" without immediate reset
-- [ ] Values save on blur (click out or Tab)
-- [ ] No interruptions while typing
+- Can delete "0" without immediate reset
+- Values save on blur (click out or Tab)
+- No interruptions while typing
 
 ---
 
@@ -266,9 +266,9 @@ Need an input?
 
 ### Documentation
 - `/LEARNINGS.md`
-- `/docs/components/UNIFIED_INPUT_SYSTEM.md`
+- `/docs/components/components-unified-input-system.md`
 - `/docs/fixes/NUMERIC_INPUT_CONSISTENCY_FIX.md`
-- `/docs/guides/FORM_INPUT_MIGRATION_GUIDE.md`
+- `/docs/guides/guides-form-input-migration-guide.md`
 
 ### Validation
 - `/scripts/validate-input-patterns.sh`
@@ -279,12 +279,12 @@ Need an input?
 ## ✅ Checklist for Future
 
 When creating any form:
-- [ ] Read migration guide first
-- [ ] Use unified components
-- [ ] Test deletion behavior
-- [ ] Run validation script
-- [ ] Document any exceptions
-- [ ] Update this guide if needed
+- Read migration guide first
+- Use unified components
+- Test deletion behavior
+- Run validation script
+- Document any exceptions
+- Update this guide if needed
 
 ---
 

@@ -40,5 +40,5 @@ Owner: Security
 - Roll back middleware changes as a last resort for production recovery.
 
 ## Related Documents
-- [docs/operations/IMPLEMENTATION_COMPLETE.md](../operations/IMPLEMENTATION_COMPLETE.md)
+- [docs/operations/operations-implementation-complete.md](../operations/operations-implementation-complete.md)
 - [docs/security/security-enhancements.md](docs/security/security-enhancements.md)

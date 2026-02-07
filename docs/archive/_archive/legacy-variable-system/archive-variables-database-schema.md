@@ -1,8 +1,11 @@
 # Variables Database Schema
 Status: Archived
-Last Updated: 2026-01-11T22:28:38.000Z
+Last Updated: 2026-02-06T15:05:00Z
 Canonical: No
 Owner: Architecture
+
+## Archive Note (2026-02-06)
+This is historical material from the legacy variable-system workstream. Do not execute any embedded checklists from this document. Current variable work is tracked in `docs/operations/operations-action-plan.md` and `docs/operations/operations-roadmap.md`.
 
 **Version**: 1.0.2  
 **Date**: 2025-10-28  
@@ -271,21 +274,21 @@ async function seedVariables() {
 
 ## 📝 Migration Checklist
 
-- [ ] Create `variables_metadata` collection
-- [ ] Add indexes
-- [ ] Create seeding script
-- [ ] Run seeding script in development
-- [ ] Verify all 150+ variables seeded correctly
-- [ ] Update `/api/variables-config` to read from DB
-- [ ] Add caching layer
-- [ ] Update all consumers (KYC, charts, clicker)
-- [ ] Remove `lib/variablesRegistry.ts`
-- [ ] Test in development
-- [ ] Run migration in staging
-- [ ] Backup production database
-- [ ] Run migration in production
-- [ ] Verify production functionality
-- [ ] Update documentation
+- Create `variables_metadata` collection
+- Add indexes
+- Create seeding script
+- Run seeding script in development
+- Verify all 150+ variables seeded correctly
+- Update `/api/variables-config` to read from DB
+- Add caching layer
+- Update all consumers (KYC, charts, clicker)
+- Remove `lib/variablesRegistry.ts`
+- Test in development
+- Run migration in staging
+- Backup production database
+- Run migration in production
+- Verify production functionality
+- Update documentation
 
 ---
 

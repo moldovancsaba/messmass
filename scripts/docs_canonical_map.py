@@ -103,8 +103,8 @@ def main() -> None:
         ))
     out.append('')
 
-    Path('docs/_meta/CANONICAL_MAP.md').write_text('\n'.join(out) + '\n', encoding='utf-8')
-    print('wrote docs/_meta/CANONICAL_MAP.md')
+    Path('docs/_meta/meta-canonical-map.md').write_text('\n'.join(out) + '\n', encoding='utf-8')
+    print('wrote docs/_meta/meta-canonical-map.md')
 
 
 if __name__ == '__main__':

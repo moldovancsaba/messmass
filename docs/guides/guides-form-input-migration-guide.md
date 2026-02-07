@@ -104,12 +104,12 @@ import TextareaField from '@/components/TextareaField';
 
 ### Step 4: Test Editing Behavior
 
-- [ ] Click on input field
-- [ ] Type normally - no interruptions?
-- [ ] Delete all text/numbers - allows empty?
-- [ ] Tab or click out - value saved?
-- [ ] Invalid value entered - clamped correctly?
-- [ ] Try edge cases (negative, huge numbers, special chars)
+- Click on input field
+- Type normally - no interruptions?
+- Delete all text/numbers - allows empty?
+- Tab or click out - value saved?
+- Invalid value entered - clamped correctly?
+- Try edge cases (negative, huge numbers, special chars)
 
 ---
 
@@ -572,7 +572,7 @@ function useNumericInput(
 
 ## 📚 Related Documentation
 
-- **`docs/components/UNIFIED_INPUT_SYSTEM.md`** - Complete unified system guide
+- **`docs/components/components-unified-input-system.md`** - Complete unified system guide
 - **`docs/fixes/NUMERIC_INPUT_CONSISTENCY_FIX.md`** - Fix documentation
 - **`LEARNINGS.md`** - Historical context and lessons learned
 - **`CODING_STANDARDS.md`** - General coding standards

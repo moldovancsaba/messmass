@@ -69,7 +69,7 @@ Owner: Architecture
 ### MERGE - Duplicate Topics (45 files → 10 merged)
 
 #### Audit Reports (12 files → 1)
-**Target:** `docs/archive/_archive/audits/AUDITS_MISC_PACK.md#system-audit-2025`
+**Target:** `docs/archive/_archive/audits/archive-audits-misc-pack.md#system-audit-2025`
 
 - AUDIT_CHART_SYSTEM.md
 - DATABASE_AUDIT_FINDINGS.md
@@ -85,7 +85,7 @@ Owner: Architecture
 - TECH_AUDIT_REPORTING_SYSTEM.md
 
 #### Naming/Conventions (3 files → 1)
-**Target:** `docs/conventions/NAMING_CONVENTIONS.md`
+**Target:** `docs/conventions/conventions-naming-conventions.md`
 
 - DATABASE_FIELD_NAMING.md
 - MONGODB_FIELD_NAMING_VERIFICATION.md
@@ -293,12 +293,12 @@ messmass/
 4. Clean TASKLIST.md (only active tasks)
 
 ### Phase 4: Merge Duplicate Documentation
-1. Merge audit reports → docs/archive/_archive/audits/AUDITS_MISC_PACK.md#system-audit-2025
+1. Merge audit reports → docs/archive/_archive/audits/archive-audits-misc-pack.md#system-audit-2025
 2. Merge admin system docs → docs/features/ADMIN_SYSTEM.md
 3. Merge modal docs → docs/components/MODAL_SYSTEM.md
 4. Merge image layout docs → docs/features/IMAGE_LAYOUT.md
 5. Merge API access docs → docs/features/API_ACCESS_SYSTEM.md
-6. Merge naming docs → docs/conventions/NAMING_CONVENTIONS.md
+6. Merge naming docs → docs/conventions/conventions-naming-conventions.md
 7. Merge typography docs → docs/design/TYPOGRAPHY.md
 8. Merge migration docs → docs/migrations/MIGRATION_HISTORY.md
 9. Merge variables docs → docs/features/VARIABLES_SYSTEM.md
@@ -347,9 +347,9 @@ messmass/
 ```markdown
 ## Q1 2025
 ### High Priority
-- [ ] Feature name - Description
+- Feature name - Description
 ### Medium Priority
-- [ ] Feature name - Description
+- Feature name - Description
 ```
 
 ### For TASKLIST.md
@@ -612,7 +612,7 @@ Resume later with clear roadmap.
 6. ✅ **ROADMAP.md** - Organized by strategic initiatives and milestones
 7. ✅ **TASKLIST.md** - Cleaned to only active tasks
 8. ✅ **CODING_STANDARDS.md** - Current with all standards
-9. ✅ **docs/conventions/NAMING_CONVENTIONS.md** - Merged 3 files (513 lines)
+9. ✅ **docs/conventions/conventions-naming-conventions.md** - Merged 3 files (513 lines)
 10. ✅ **Archived 38+ files** - Preserved in `docs/archive/2025/`
 
 ### Impact
@@ -761,7 +761,7 @@ docs/
 **Impact:** Consistency enforcement  
 **Status:** ✅ Current with all conventions
 
-### 9. docs/conventions/NAMING_CONVENTIONS.md
+### 9. docs/conventions/conventions-naming-conventions.md
 **What:** Merged 3 files (513 lines comprehensive guide)  
 **Impact:** Single source of truth for naming  
 **Status:** ✅ Includes MongoDB, roles, variables

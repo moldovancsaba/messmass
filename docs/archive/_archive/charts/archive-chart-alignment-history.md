@@ -9,7 +9,7 @@ This document consolidates the historical chart-alignment artifacts that used to
 - `FIX_SUMMARY_EXECUTIVE.md` (executive summary)
 
 Prefer the canonical active summary first:
-- `docs/charts/CHART_ALIGNMENT_SUMMARY.md`
+- `docs/charts/charts-chart-alignment-summary.md`
 
 ---
 
@@ -557,13 +557,13 @@ All principles documented in `CHART_ALIGNMENT_FIXES_v12.md` for future reference
    - Browser support
    - Rollback plan
 
-3. **`docs/archive/_archive/charts/CHART_ALIGNMENT_HISTORY.md`** (Appendix C) - KPI chart pixel-level analysis (archived)
+3. **`docs/archive/_archive/charts/archive-chart-alignment-history.md`** (Appendix C) - KPI chart pixel-level analysis (archived)
    - Pixel-level calculations for 435×445 cells
    - Exact positioning for all elements
    - Alignment mechanisms explained
    - Font size calculations
 
-4. **`docs/operations/DEPLOYMENT_CHECKLIST.md`** (260 lines)
+4. **`docs/operations/operations-deployment-checklist.md`** (260 lines)
    - Pre-deployment verification
    - Manual testing checklist
    - Post-deployment validation
@@ -597,7 +597,7 @@ git push origin main
 ### To Learn More
 - See `CHART_ALIGNMENT_FIXES_v12.md` for architectural deep-dive
 - See [CHANGES_SUMMARY.md](#a-changes_summarymd-original) for code-level details
-- See `docs/archive/_archive/charts/CHART_ALIGNMENT_HISTORY.md` (Appendix C) for pixel calculations (archived)
+- See `docs/archive/_archive/charts/archive-chart-alignment-history.md` (Appendix C) for pixel calculations (archived)
 
 ---
 

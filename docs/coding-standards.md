@@ -42,7 +42,7 @@ Owner: Architecture
 1. **Document Impact**: List ALL affected pages/components
 2. **Update Once**: Modify only the canonical implementation
 3. **Test Propagation**: Verify changes across ALL usages
-4. **Fix The Class, Not The Instance**: If the bug is a pattern/symptom, search for all similar instances and fix the whole class (or document scope + follow-ups). Do not claim "done" after a one-point patch for a systemic issue. (See `docs/operations/LEARNINGS.md`.)
+4. **Fix The Class, Not The Instance**: If the bug is a pattern/symptom, search for all similar instances and fix the whole class (or document scope + follow-ups). Do not claim "done" after a one-point patch for a systemic issue. (See `docs/operations/operations-learnings.md`.)
 5. **Version Bump**: Follow semantic versioning (PATCH for fixes, MINOR for features)
 6. **Document Changes**: Update RELEASE_NOTES.md with module impact
 
@@ -375,13 +375,13 @@ import ColoredCard from '@/components/ColoredCard';
 
 Before submitting any code, verify:
 
-- [ ] **Searched** for existing similar components
-- [ ] **Identified** reference file to copy from
-- [ ] **Matched** exact class name structure (`.header`, `.body`, etc.)
-- [ ] **Used** design tokens for ALL colors, spacing, typography
-- [ ] **Copied** responsive breakpoints from reference
-- [ ] **Verified** no hardcoded values (run: `grep -r "#[0-9a-f]\{6\}\|[0-9]\+px" *.css`)
-- [ ] **Tested** mobile responsiveness matches reference
+- **Searched** for existing similar components
+- **Identified** reference file to copy from
+- **Matched** exact class name structure (`.header`, `.body`, etc.)
+- **Used** design tokens for ALL colors, spacing, typography
+- **Copied** responsive breakpoints from reference
+- **Verified** no hardcoded values (run: `grep -r "#[0-9a-f]\{6\}\|[0-9]\+px" *.css`)
+- **Tested** mobile responsiveness matches reference
 
 ---
 
@@ -470,12 +470,12 @@ Defined in: `app/styles/theme.css`
 
 ### Component Styling Checklist
 
-- [ ] Create a `.module.css` file alongside your component
-- [ ] Import and use the CSS module in your component
-- [ ] Use CSS variables for theme values
-- [ ] Use dynamic CSS variables for prop-based values
-- [ ] Add comments explaining "WHAT" and "WHY" for complex styles
-- [ ] Never use the `style` prop on DOM elements
+- Create a `.module.css` file alongside your component
+- Import and use the CSS module in your component
+- Use CSS variables for theme values
+- Use dynamic CSS variables for prop-based values
+- Add comments explaining "WHAT" and "WHY" for complex styles
+- Never use the `style` prop on DOM elements
 
 ---
 
