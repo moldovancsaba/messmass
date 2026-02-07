@@ -29,11 +29,10 @@
 }
 
 .mainContent {
-  /* What: Main content area
-     Why: Grows to fill space, proper spacing */
+  /* What: Main content area (OPS-ADMIN-02: uses token + .content-surface for --content-bg) */
   flex: 1;
   padding: var(--mm-space-8);
-  max-width: 1600px;
+  max-width: var(--mm-admin-content-max-width);
   width: 100%;
   margin: 0 auto;
 }
@@ -57,11 +56,11 @@
 
 .footerContent {
   /* What: Footer content layout
-     Why: Flex layout for text and version */
+     Why: Flex layout for text and version; OPS-ADMIN-02: align with content width */
   display: flex;
   justify-content: space-between;
   align-items: center;
-  max-width: 1600px;
+  max-width: var(--mm-admin-content-max-width);
   margin: 0 auto;
   gap: var(--mm-space-4);
   flex-wrap: wrap;

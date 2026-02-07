@@ -26,10 +26,21 @@
   padding: var(--space-8);
 }
 
+/* WHAT: Standard page wrapper; OPS-ADMIN-02: inside .content-surface uses --mm-admin-content-max-width */
 .page-container {
   max-width: 1200px;
   margin: 0 auto;
   padding: var(--space-6);
+}
+
+/* WHAT: Admin main content surface – background and width token (OPS-ADMIN-02) */
+.content-surface {
+  background: var(--content-bg);
+}
+
+/* WHAT: Widen .page-container when inside admin content surface to match main content width */
+.content-surface .page-container {
+  max-width: var(--mm-admin-content-max-width);
 }
 
 .content-wrapper {

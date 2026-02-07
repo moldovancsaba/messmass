@@ -188,25 +188,13 @@ Owner: Operations
     - `docs/operations/operations-roadmap.md` (Layout Grammar Editor Integration)
     - `docs/operations/operations-implementation-complete.md` (Explicit Non-Goals)
 
-- [ ] OPS-ADMIN-02: Admin UI consistency
-  - Status: PLANNED
-  - Priority: High
-  - Owner: Admin UX / Frontend
-  - Deliverables:
-    - [ ] Standardize Admin HERO (single source, consistent background/width across all admin pages)
-    - [ ] Introduce and adopt `.content-surface` with `--content-bg` for main content areas
-    - [ ] Widen narrow admin pages to match main content width
-    - [ ] Document Admin UI width/hero usage and sync implementation
-  - References:
-    - `docs/operations/operations-roadmap.md` (Admin UI Consistency)
-
 3.3 **Pre-release checks (run every release):**
 - [ ] Build: `npm run build`
 - [ ] Layout Grammar guardrail: `npx tsx scripts/check-layout-grammar-guardrail.ts`
 - [ ] Type-check: `npm run type-check` (or `tsc --noEmit`)
 - [ ] Lint: `npm run lint` (if not skipped in CI)
 
-3.4 **Flaws / errors reference:** Layout Grammar audit and report defects (archived pack) → `docs/archive/_archive/investigations/archive-investigations-pack-2026.md#layout-grammar-audit-2026-02-05`. Rollout validation → [operations-deployment-checklist.md](operations-deployment-checklist.md). Google Sheets E2E → [ops-google-sheets-deployment-checklist.md](ops-google-sheets-deployment-checklist.md). Style system (OPS-STYLE-01 done) → [STYLE_SYSTEM_PHASE5_AUDIT.md](STYLE_SYSTEM_PHASE5_AUDIT.md), [ATLAS_THEME_INJECTION_PLAN.md](ATLAS_THEME_INJECTION_PLAN.md).
+3.4 **Flaws / errors reference:** Layout Grammar audit and report defects (archived pack) → `docs/archive/_archive/investigations/archive-investigations-pack-2026.md#layout-grammar-audit-2026-02-05`. Rollout validation → [operations-deployment-checklist.md](operations-deployment-checklist.md). Google Sheets E2E → [ops-google-sheets-deployment-checklist.md](ops-google-sheets-deployment-checklist.md). Style system (OPS-STYLE-01 done) → [STYLE_SYSTEM_PHASE5_AUDIT.md](STYLE_SYSTEM_PHASE5_AUDIT.md), [ATLAS_THEME_INJECTION_PLAN.md](ATLAS_THEME_INJECTION_PLAN.md). Admin UI width/hero (OPS-ADMIN-02 done) → [ADMIN_UI_WIDTH_AND_HERO.md](ADMIN_UI_WIDTH_AND_HERO.md).
 
 ---
 

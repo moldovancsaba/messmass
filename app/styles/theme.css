@@ -440,6 +440,14 @@
   --mm-modal-shadow: var(--mm-shadow-xl);
 
   /* ========================================
+     ADMIN CONTENT SURFACE (OPS-ADMIN-02)
+  ======================================== */
+  /* WHAT: Default background for main content areas; overridable by admin layout style */
+  --content-bg: var(--mm-gray-50);
+  /* WHAT: Max width for admin main content and inner page-container; single source for consistency */
+  --mm-admin-content-max-width: 1600px;
+
+  /* ========================================
      BREAKPOINTS (for reference in CSS)
   ======================================== */
   

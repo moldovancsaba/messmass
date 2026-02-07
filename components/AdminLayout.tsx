@@ -43,7 +43,7 @@ export default function AdminLayout({ children, user }: AdminLayoutProps) {
         
         {/* What: Main content area
            Why: Page-specific content renders here */}
-        <main className={styles.mainContent}>
+        <main className={`${styles.mainContent} content-surface`}>
           {children}
         </main>
         
