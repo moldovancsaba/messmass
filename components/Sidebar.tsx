@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { usePathname } from 'next/navigation';
@@ -10,6 +10,8 @@ import { useSidebar } from '@/contexts/SidebarContext';
 import MaterialIcon from '@/components/MaterialIcon';
 import { canAccessMenuItem } from '@/lib/permissions';
 import type { UserRole } from '@/lib/users';
+
+const FOCUSABLE_SELECTOR = 'a[href], button:not([disabled]), [tabindex]:not([tabindex="-1"])';
 
 /* What: Navigation item structure
    Why: Type-safe navigation configuration with Material Icons */
@@ -145,12 +147,39 @@ export default function Sidebar() {
     } else {
       document.body.style.overflow = '';
     }
-    
-    return () => {
-      document.body.style.overflow = '';
-    };
+    return () => { document.body.style.overflow = ''; };
   }, [isMobileOpen]);
-  
+
+  /* OPS-ADMIN-01: Focus trap when mobile drawer is open – keep focus inside sidebar */
+  const sidebarRef = useRef<HTMLElement | null>(null);
+  useEffect(() => {
+    if (!isMobileOpen) return;
+    const el = document.getElementById('sidebar');
+    sidebarRef.current = el;
+    const focusables = el ? Array.from(el.querySelectorAll<HTMLElement>(FOCUSABLE_SELECTOR)) : [];
+    const first = focusables[0];
+    const last = focusables[focusables.length - 1];
+    if (first) first.focus();
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key !== 'Tab') return;
+      const target = document.activeElement as HTMLElement | null;
+      if (!el?.contains(target)) return;
+      if (e.shiftKey) {
+        if (target === first) {
+          e.preventDefault();
+          last?.focus();
+        }
+      } else {
+        if (target === last) {
+          e.preventDefault();
+          first?.focus();
+        }
+      }
+    };
+    document.addEventListener('keydown', handleKeyDown);
+    return () => document.removeEventListener('keydown', handleKeyDown);
+  }, [isMobileOpen]);
+
   return (
     <>
       {/* What: Mobile hamburger button
@@ -241,7 +270,8 @@ export default function Sidebar() {
                       <Link
                         href={item.path}
                         className={`${styles.navLink} ${isActive(item.path) ? styles.active : ''}`}
-                        title={isCollapsed ? item.label : ''}
+                        title={isCollapsed ? item.label : undefined}
+                        aria-current={isActive(item.path) ? 'page' : undefined}
                       >
                         <span className={styles.navIcon}>
                           <MaterialIcon

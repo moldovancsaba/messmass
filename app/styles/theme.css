@@ -448,6 +448,16 @@
   --mm-admin-content-max-width: 1600px;
 
   /* ========================================
+     ADMIN LAYOUT – SIDEBAR & BREAKPOINTS (OPS-ADMIN-01)
+  ======================================== */
+  /* WHAT: Sidebar widths; consumed by Sidebar, AdminLayout, TopHeader */
+  --mm-sidebar-width: 280px;
+  --mm-sidebar-width-collapsed: 80px;
+  /* WHAT: Admin responsive breakpoints; use in JS or document when duplicating in @media (CSS cannot use var() in media conditions) */
+  --mm-breakpoint-tablet: 768px;
+  --mm-breakpoint-desktop: 1280px;
+
+  /* ========================================
      BREAKPOINTS (for reference in CSS)
   ======================================== */
   

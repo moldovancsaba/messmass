@@ -9,6 +9,28 @@
   background: var(--mm-gray-50);
 }
 
+/* OPS-ADMIN-01: Skip link – visually hidden until focused (WCAG 2.4.1) */
+.skipToContent {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 9999;
+  padding: var(--mm-space-3) var(--mm-space-4);
+  background: var(--mm-white);
+  color: var(--mm-gray-900);
+  font-weight: var(--mm-font-weight-medium);
+  text-decoration: none;
+  border: 2px solid var(--mm-border-color-focus);
+  border-radius: var(--mm-radius-md);
+  margin: var(--mm-space-2);
+  clip-path: inset(50%);
+  overflow: hidden;
+}
+.skipToContent:focus {
+  clip-path: none;
+  outline: none;
+}
+
 .mainWrapper {
   /* What: Content wrapper that accounts for sidebar
      Why: Flexbox layout for header, content, footer */
@@ -16,16 +38,14 @@
   display: flex;
   flex-direction: column;
   min-height: 100vh;
-  /* What: Left margin accounts for fixed sidebar
-     Why: Content doesn't hide behind sidebar on desktop */
-  margin-left: 280px;
+  /* What: Left margin accounts for fixed sidebar (OPS-ADMIN-01: token) */
+  margin-left: var(--mm-sidebar-width);
   transition: margin-left 0.3s ease;
 }
 
-/* WHAT: Collapsed state - adjust margin when sidebar collapses to 80px
- * WHY: Main content expands to fill available screen width */
+/* WHAT: Collapsed state (OPS-ADMIN-01: token) */
 .mainWrapper.collapsed {
-  margin-left: 80px;
+  margin-left: var(--mm-sidebar-width-collapsed);
 }
 
 .mainContent {
@@ -84,21 +104,17 @@
 
 /* ===== Responsive Behavior ===== */
 
-/* What: Desktop with collapsed sidebar
-   Why: Adjust margin when sidebar is collapsed */
+/* What: Desktop (OPS-ADMIN-01: match --mm-breakpoint-desktop) */
 @media (min-width: 1280px) {
   .mainWrapper {
-    margin-left: 280px; /* Full sidebar width */
+    margin-left: var(--mm-sidebar-width);
   }
-  
-  /* Note: Collapsed state is handled by JavaScript adding class to sidebar */
 }
 
-/* What: Tablet behavior (768-1279px)
-   Why: Sidebar auto-collapses to 80px width */
+/* What: Tablet – sidebar auto-collapsed (OPS-ADMIN-01: match --mm-breakpoint-*) */
 @media (min-width: 768px) and (max-width: 1279px) {
   .mainWrapper {
-    margin-left: 80px; /* Collapsed sidebar width */
+    margin-left: var(--mm-sidebar-width-collapsed);
   }
   
   .mainContent {

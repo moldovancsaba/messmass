@@ -66,13 +66,12 @@
 
 /* ===== Main Sidebar ===== */
 .sidebar {
-  /* What: Fixed sidebar with flat design
-     Why: TailAdmin V2 aesthetic - clean white background, subtle border */
+  /* What: Fixed sidebar with flat design (OPS-ADMIN-01: token) */
   position: fixed;
   left: 0;
   top: 0;
   bottom: 0;
-  width: 280px;
+  width: var(--mm-sidebar-width);
   background: var(--mm-white);
   border-right: 1px solid var(--mm-border-color-default);
   display: flex;
@@ -81,10 +80,9 @@
   transition: width 0.3s ease, transform 0.3s ease;
 }
 
-/* What: Collapsed state for tablet/desktop
-   Why: Maximize content area, show only icons */
+/* What: Collapsed state for tablet/desktop (OPS-ADMIN-01: token) */
 .sidebar.collapsed {
-  width: 80px;
+  width: var(--mm-sidebar-width-collapsed);
 }
 
 /* ===== Sidebar Header ===== */
@@ -141,12 +139,11 @@
 }
 
 .collapseToggle {
-  /* WHAT: Collapse/expand button EXACTLY at sidebar right edge
-     WHY: Must move with sidebar collapse/expand */
+  /* WHAT: Collapse/expand button EXACTLY at sidebar right edge (OPS-ADMIN-01: token) */
   position: fixed;
   top: var(--mm-space-6);
-  left: 280px; /* Full sidebar width - button ON the edge */
-  z-index: calc(var(--z-fixed) + 5); /* Above sidebar */
+  left: var(--mm-sidebar-width);
+  z-index: calc(var(--z-fixed) + 5);
   background: var(--mm-white);
   border: 1px solid var(--mm-border-color-default);
   border-radius: var(--mm-radius-md);
@@ -156,7 +153,7 @@
   font-size: var(--mm-font-size-lg);
   line-height: 1;
   box-shadow: var(--mm-shadow-md);
-  transition: left 0.3s ease; /* Same duration as sidebar width transition */
+  transition: left 0.3s ease;
   width: 32px;
   height: 32px;
   display: flex;
@@ -164,10 +161,9 @@
   justify-content: center;
 }
 
-/* WHAT: Button moves to collapsed sidebar edge
-   WHY: Controlled by JS class, not CSS sibling selector */
+/* WHAT: Button moves to collapsed sidebar edge (OPS-ADMIN-01: token) */
 .collapseToggleCollapsed {
-  left: 80px; /* Collapsed sidebar width */
+  left: var(--mm-sidebar-width-collapsed);
 }
 
 .collapseToggle:hover {
@@ -357,11 +353,10 @@
 
 /* ===== Responsive Behavior ===== */
 
-/* What: Tablet behavior (768-1279px) - auto-collapse sidebar
-   Why: Save horizontal space on medium screens */
+/* What: Tablet behavior (768-1279px) - auto-collapse sidebar (OPS-ADMIN-01: match --mm-breakpoint-* in theme) */
 @media (min-width: 768px) and (max-width: 1279px) {
   .sidebar {
-    width: 80px;
+    width: var(--mm-sidebar-width-collapsed);
   }
   
   .sidebar .sectionTitle,
@@ -382,8 +377,7 @@
   }
 }
 
-/* What: Mobile behavior (<768px) - drawer overlay
-   Why: Maximize screen space on small devices */
+/* What: Mobile behavior (<768px) - drawer overlay (OPS-ADMIN-01: match --mm-breakpoint-tablet) */
 @media (max-width: 767px) {
   .mobileToggle {
     display: block;
@@ -391,7 +385,7 @@
   
   .sidebar {
     transform: translateX(-100%);
-    width: 280px;
+    width: var(--mm-sidebar-width);
     box-shadow: none;
   }
   
@@ -412,14 +406,13 @@
   }
 }
 
-/* What: Desktop behavior (≥1280px) - full sidebar
-   Why: Plenty of horizontal space for full navigation */
+/* What: Desktop behavior (≥1280px) - full sidebar (OPS-ADMIN-01: match --mm-breakpoint-desktop) */
 @media (min-width: 1280px) {
   .sidebar {
-    width: 280px;
+    width: var(--mm-sidebar-width);
   }
   
   .sidebar.collapsed {
-    width: 80px;
+    width: var(--mm-sidebar-width-collapsed);
   }
 }

@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import NotificationPanel from './NotificationPanel';
 import styles from './TopHeader.module.css';
@@ -22,18 +22,29 @@ export default function TopHeader({ user }: TopHeaderProps) {
   const router = useRouter();
   const [showNotifications, setShowNotifications] = useState(false);
   const [unreadCount, setUnreadCount] = useState(0);
-  
+  const prevUnreadRef = useRef<number | null>(null);
+
   /* What: Fetch unread notification count on mount and periodically
      Why: Display badge with current unread count */
   useEffect(() => {
-    // Only fetch if user is present (authenticated context)
     if (!user) return;
     fetchUnreadCount();
-    
-    // Poll every 30 seconds for new notifications
     const interval = setInterval(fetchUnreadCount, 30000);
     return () => clearInterval(interval);
   }, [user]);
+
+  /* OPS-ADMIN-01: Announce badge updates to screen readers (aria-live) */
+  useEffect(() => {
+    if (prevUnreadRef.current !== null && prevUnreadRef.current !== unreadCount) {
+      const liveEl = document.getElementById('notifications-live');
+      if (liveEl) {
+        liveEl.textContent = unreadCount === 0
+          ? 'No unread notifications'
+          : `${unreadCount} unread notification${unreadCount === 1 ? '' : 's'}`;
+      }
+    }
+    prevUnreadRef.current = unreadCount;
+  }, [unreadCount]);
   
   /* What: Fetch unread notification count from API
      Why: Update badge without opening the panel */
@@ -95,11 +106,18 @@ export default function TopHeader({ user }: TopHeaderProps) {
           {/* What: Active notifications bell with badge and dropdown panel
              Why: Display project activity notifications in real-time */}
           <div className={styles.notificationsBell}>
+            <span
+              id="notifications-live"
+              role="status"
+              aria-live="polite"
+              aria-atomic="true"
+              className="sr-only"
+            />
             <button
               className={styles.notificationButton}
               onClick={handleBellClick}
               title="View notifications"
-              aria-label="Notifications"
+              aria-label={unreadCount > 0 ? `Notifications, ${unreadCount} unread` : 'Notifications'}
             >
               <span className={styles.notificationIcon}>🔔</span>
               {unreadCount > 0 && (

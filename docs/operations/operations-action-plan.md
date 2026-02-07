@@ -109,22 +109,6 @@ Owner: Operations
   - References:
     - `docs/archive/_archive/admin/ADMIN_UI_VARIABLE_SYSTEM_ENHANCEMENT.md` (staged plan; archived)
 
-- [ ] OPS-ADMIN-01: Admin layout tokenization + accessibility hardening
-  - Status: PLANNED
-  - Priority: Low
-  - Owner: Admin UX / Frontend
-  - Deliverables:
-    - [ ] Replace hard-coded sidebar widths with theme tokens (`--mm-sidebar-width`, `--mm-sidebar-width-collapsed`)
-    - [ ] Replace hard-coded breakpoints with theme tokens (`--mm-breakpoint-tablet`, `--mm-breakpoint-desktop`) or documented constants
-    - [ ] Add tooltips/labels for collapsed sidebar icons
-    - [ ] Add skip-to-content link with visible focus styling
-    - [ ] Add `aria-current="page"` to active navigation items
-    - [ ] Persist sidebar collapse state (SSR-safe storage guards)
-    - [ ] Add focus trap behavior for mobile overlay drawer
-    - [ ] Add `aria-live` announcement for notification badge updates
-  - References:
-    - `docs/archive/_archive/admin/admin-layout-code-review-findings-2026-02-05.md` (historical findings; archived)
-
 - [ ] OPS-SEC-02: Code injection hardening follow-ups (P1)
   - Status: PLANNED
   - Priority: Medium
@@ -194,7 +178,7 @@ Owner: Operations
 - [ ] Type-check: `npm run type-check` (or `tsc --noEmit`)
 - [ ] Lint: `npm run lint` (if not skipped in CI)
 
-3.4 **Flaws / errors reference:** Layout Grammar audit and report defects (archived pack) → `docs/archive/_archive/investigations/archive-investigations-pack-2026.md#layout-grammar-audit-2026-02-05`. Rollout validation → [operations-deployment-checklist.md](operations-deployment-checklist.md). Google Sheets E2E → [ops-google-sheets-deployment-checklist.md](ops-google-sheets-deployment-checklist.md). Style system (OPS-STYLE-01 done) → [STYLE_SYSTEM_PHASE5_AUDIT.md](STYLE_SYSTEM_PHASE5_AUDIT.md), [ATLAS_THEME_INJECTION_PLAN.md](ATLAS_THEME_INJECTION_PLAN.md). Admin UI width/hero (OPS-ADMIN-02 done) → [ADMIN_UI_WIDTH_AND_HERO.md](ADMIN_UI_WIDTH_AND_HERO.md).
+3.4 **Flaws / errors reference:** Layout Grammar audit and report defects (archived pack) → `docs/archive/_archive/investigations/archive-investigations-pack-2026.md#layout-grammar-audit-2026-02-05`. Rollout validation → [operations-deployment-checklist.md](operations-deployment-checklist.md). Google Sheets E2E → [ops-google-sheets-deployment-checklist.md](ops-google-sheets-deployment-checklist.md). Style system (OPS-STYLE-01 done) → [STYLE_SYSTEM_PHASE5_AUDIT.md](STYLE_SYSTEM_PHASE5_AUDIT.md), [ATLAS_THEME_INJECTION_PLAN.md](ATLAS_THEME_INJECTION_PLAN.md). Admin UI width/hero (OPS-ADMIN-02 done) → [ADMIN_UI_WIDTH_AND_HERO.md](ADMIN_UI_WIDTH_AND_HERO.md). Admin layout tokens + a11y (OPS-ADMIN-01 done) → theme tokens, skip link, aria-current, focus trap, aria-live, persisted collapse; see archived [admin-layout-code-review-findings-2026-02-05.md](../archive/_archive/admin/admin-layout-code-review-findings-2026-02-05.md).
 
 ---
 
