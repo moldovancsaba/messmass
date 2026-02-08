@@ -19,9 +19,8 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import { ObjectId } from 'mongodb';
-import clientPromise from '@/lib/mongodb';
 import { testConnection } from '@/lib/googleSheets/client';
-import config from '@/lib/config';
+import { connectPartnerToSheet } from '@/lib/googleSheets/partnerSheetOps';
 import { error as logError, debug as logDebug } from '@/lib/logger';
 
 interface ConnectRequest {
@@ -83,64 +82,13 @@ export async function POST(
       );
     }
 
-    // Get service account email from environment
-    const serviceAccountEmail = process.env.GOOGLE_SHEETS_SERVICE_ACCOUNT_EMAIL;
-    if (!serviceAccountEmail) {
-      return NextResponse.json(
-        { success: false, error: 'Service account email not configured' },
-        { status: 500 }
-      );
-    }
-
-    // Prepare Google Sheets configuration
-    const googleSheetConfig = {
-      enabled: true,
+    // Persist config + initialize stats (uses actual data-row count; avoids gridProperties rowCount confusion).
+    const { config: googleSheetConfig, stats: googleSheetStats } = await connectPartnerToSheet({
+      partnerId: id,
       sheetId,
       sheetName,
-      serviceAccountEmail,
-      uuidColumn: 'A',
-      headerRow: 1,
-      dataStartRow: 2,
-      lastSyncAt: null,
-      lastSyncStatus: 'connected' as const,
-      lastSyncError: null,
-      syncMode,
-      columnMap: null // Use default column map
-    };
-
-    // Initialize Google Sheets statistics
-    const googleSheetStats = {
-      totalEvents: connectionTest.rowCount || 0,
-      lastPullAt: null,
-      lastPushAt: null,
-      pullCount: 0,
-      pushCount: 0,
-      eventsCreated: 0,
-      eventsUpdated: 0
-    };
-
-    // Update partner in database
-    const client = await clientPromise;
-    const db = client.db(config.dbName);
-    const partnersCollection = db.collection('partners');
-    
-    const result = await partnersCollection.updateOne(
-      { _id: new ObjectId(id) },
-      {
-        $set: {
-          googleSheetConfig,
-          googleSheetStats,
-          updatedAt: new Date().toISOString()
-        }
-      }
-    );
-
-    if (result.matchedCount === 0) {
-      return NextResponse.json(
-        { success: false, error: 'Partner not found' },
-        { status: 404 }
-      );
-    }
+      syncMode
+    });
 
     return NextResponse.json({
       success: true,

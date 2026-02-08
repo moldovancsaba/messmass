@@ -1,8 +1,26 @@
 # MessMass Release Notes
 Status: Active
-Last Updated: 2026-02-05T16:00:00.000Z
+Last Updated: 2026-02-08T00:00:00.000Z
 Canonical: No
 Owner: Operations
+
+## [Unreleased] — 2026-02-08
+
+### Summary
+- 📄 **GOOGLE SHEETS PHASE 2.5 AUTO-PROVISIONING**: Admin can create + setup + connect a new partner sheet in one step.
+- 📐 **REPORT LAYOUT SPEC v2.0**: Marked as delivered; roadmap now tracks only remaining follow-ups.
+
+### What Was Added / Changed
+
+#### Google Sheets: Provision + Connect ✅
+**WHAT**: Added `/api/partners/[id]/google-sheet/provision` and wired Admin Partners UI to provision and connect a sheet automatically (new partner checkbox + edit modal button).  
+**WHY**: Phase 2.5 acceptance: auto-create sheets for new partners; remove manual “create sheet first” requirement.  
+**HOW**: Create spreadsheet via Sheets API (Drive scope), then reuse shared setup/connect helpers.
+
+#### Google Sheets: Stats/Health Accuracy ✅
+**WHAT**: Initialize/compare `totalEvents` using actual populated data rows (not gridProperties rowCount capacity).  
+**WHY**: Avoid misleading “1000/10000 events” when a sheet is mostly empty.  
+**HOW**: Added `lib/googleSheets/metrics.ts` and updated connect + status health check.
 
 ## [v11.55.5] — 2026-02-05T16:00:00.000Z
 

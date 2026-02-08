@@ -1,6 +1,6 @@
 # Canonical Map
 Status: Active
-Last Updated: 2026-02-07T16:46:03Z
+Last Updated: 2026-02-08T11:07:51Z
 Canonical: Yes
 Owner: Documentation
 
@@ -15,10 +15,10 @@ This is the current classification of the documentation set. Use it to prune, me
 ## Table
 | Kind | Path | Title | Status | Canonical | Owner | Last Updated | Note |
 |---:|---|---|---:|---:|---|---|---|
-| generated | docs/_meta/meta-canonical-map.md | Canonical Map | Active | Yes | Documentation | 2026-02-06T17:09:34Z | Auto-generated inventory/triage artifacts. Do not edit by hand. |
-| generated | docs/_meta/meta-docs-inventory.md | Docs Inventory | Active | Yes | Documentation | 2026-02-07T16:46:03Z | Auto-generated inventory/triage artifacts. Do not edit by hand. |
-| generated | docs/_meta/meta-docs-link-check.md | Docs Link Check | Active | Yes | Documentation | 2026-02-06T17:10:11Z | Auto-generated inventory/triage artifacts. Do not edit by hand. |
-| generated | docs/_meta/meta-docs-triage.md | Docs Triage | Active | Yes | Documentation | 2026-02-07T16:46:03Z | Auto-generated inventory/triage artifacts. Do not edit by hand. |
+| generated | docs/_meta/meta-canonical-map.md | Canonical Map | Active | Yes | Documentation | 2026-02-07T16:46:03Z | Auto-generated inventory/triage artifacts. Do not edit by hand. |
+| generated | docs/_meta/meta-docs-inventory.md | Docs Inventory | Active | Yes | Documentation | 2026-02-08T11:07:50Z | Auto-generated inventory/triage artifacts. Do not edit by hand. |
+| generated | docs/_meta/meta-docs-link-check.md | Docs Link Check | Active | Yes | Documentation | 2026-02-07T16:46:03Z | Auto-generated inventory/triage artifacts. Do not edit by hand. |
+| generated | docs/_meta/meta-docs-triage.md | Docs Triage | Active | Yes | Documentation | 2026-02-08T11:07:51Z | Auto-generated inventory/triage artifacts. Do not edit by hand. |
 | reference | docs/admin/admin-clicker-manager.md | Clicker Manager — Partner Clicker Sets | Active | No | Admin UX (Katja) | 2026-01-21 | Reference-only doc; keep if still used, otherwise archive. |
 | canonical | docs/admin/admin-end-user-guide.md | END USER GUIDE (Admin Operations) | Complete | Yes | Admin (Katja) | 2026-01-14T13:38:00.000Z | Primary source of truth for this topic. |
 | canonical | docs/admin/admin-layout-v2-schema.md | Admin LayoutV2 Schema (Layout Configuration) | Active | Yes | Admin (Katja) | 2026-01-15T14:46:42.000Z | Primary source of truth for this topic. |
@@ -86,7 +86,7 @@ This is the current classification of the documentation set. Use it to prune, me
 | canonical | docs/documentation-governance.md | Documentation Governance | Active | Yes | Documentation | 2026-02-05T21:07:42.000Z | Primary source of truth for this topic. |
 | canonical | docs/features/features-authentication.md | MessMass Authentication & Access Control System | Active | Yes | Security | 2026-01-11T22:28:38.000Z | Primary source of truth for this topic. |
 | canonical | docs/features/features-bitly-integration-guide.md | 🔗 Bitly Integration Technical Guide | Active | Yes | Product | 2026-01-11T22:45:21.000Z | Primary source of truth for this topic. |
-| canonical | docs/features/features-google-sheets-integration.md | Google Sheets Integration - Feature Guide (v12.0.0) | Active | Yes | Product | 2026-02-05T20:53:25.000Z | Primary source of truth for this topic. |
+| canonical | docs/features/features-google-sheets-integration.md | Google Sheets Integration - Feature Guide (v12.0.0) | Active | Yes | Product | 2026-02-08T00:00:00.000Z | Primary source of truth for this topic. |
 | canonical | docs/features/features-hashtag-system.md | MessMass Unified Hashtag System Documentation | Active | Yes | Product | 2026-01-11T22:28:38.000Z | Primary source of truth for this topic. |
 | canonical | docs/features/features-multi-user-notifications.md | Multi-User Notifications | Active | Yes | Product | 2026-01-11T23:51:17.000Z | Primary source of truth for this topic. |
 | canonical | docs/features/features-overview.md | Features Overview | Active | Yes | Product | 2026-02-05T00:00:00.000Z | Primary source of truth for this topic. |
@@ -104,9 +104,9 @@ This is the current classification of the documentation set. Use it to prune, me
 | reference | docs/operations/operations-deployment-checklist.md | Chart Alignment Fixes - Deployment Checklist | Active | No | Operations | 2026-01-11T22:28:38.000Z | Reference-only doc; keep if still used, otherwise archive. |
 | canonical | docs/operations/operations-implementation-complete.md | Implementation Complete | Active | Yes | Operations | 2026-02-06T13:13:16.000Z | Primary source of truth for this topic. |
 | reference | docs/operations/operations-learnings.md | MessMass Development Learnings | Active | No | Architecture | 2026-02-05T21:01:23.000Z | Reference-only doc; keep if still used, otherwise archive. |
-| reference | docs/operations/operations-release-notes.md | MessMass Release Notes | Active | No | Operations | 2026-02-05T16:00:00.000Z | Reference-only doc; keep if still used, otherwise archive. |
-| canonical | docs/operations/operations-roadmap.md | Operations Roadmap | Active | Yes | Product + Engineering | 2026-02-06 | Primary source of truth for this topic. |
-| canonical | docs/operations/ops-google-sheets-deployment-checklist.md | Google Sheets Partner Sync – Deployment & E2E Validation Checklist | Active | Yes | Operations / Integrations | 2026-02-06 | Primary source of truth for this topic. |
+| reference | docs/operations/operations-release-notes.md | MessMass Release Notes | Active | No | Operations | 2026-02-08T00:00:00.000Z | Reference-only doc; keep if still used, otherwise archive. |
+| canonical | docs/operations/operations-roadmap.md | Operations Roadmap | Active | Yes | Product + Engineering | 2026-02-08 | Primary source of truth for this topic. |
+| canonical | docs/operations/ops-google-sheets-deployment-checklist.md | Google Sheets Partner Sync – Deployment & E2E Validation Checklist | Active | Yes | Operations / Integrations | 2026-02-08 | Primary source of truth for this topic. |
 | reference | docs/operations/ops-warp.md | WARP Guidance | Active | No | Architecture | 2026-01-11T22:28:38.000Z | Reference-only doc; keep if still used, otherwise archive. |
 | canonical | docs/operations/sec-02-code-injection-audit.md | OPS-SEC-02: Code injection hardening – audit | Active | Yes | Security / Reporting | 2026-02-06 | Primary source of truth for this topic. |
 | canonical | docs/operations/sec-03-operational-hardening.md | OPS-SEC-03: Operational hardening | Done (lockout, audit, role naming implemented) | Yes | Operations / Security | 2026-02-06 | Primary source of truth for this topic. |

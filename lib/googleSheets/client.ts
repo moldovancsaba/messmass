@@ -9,6 +9,7 @@ import type { sheets_v4 } from 'googleapis';
 import * as fs from 'fs';
 import * as path from 'path';
 import { getSheetRange } from './columnMap';
+import { debug as logDebug, error as logError } from '@/lib/logger';
 
 /**
  * WHAT: Initialize Google Sheets API client
@@ -207,7 +208,11 @@ export async function testConnection(sheetId: string): Promise<{
       headerLabels
     };
   } catch (error: unknown) {
-    console.error('Google Sheets connection test failed:', error);
+    logError(
+      'Google Sheets connection test failed',
+      { context: 'google-sheets-test-connection', sheetId },
+      error instanceof Error ? error : new Error(String(error))
+    );
     return {
       success: false,
       error: error instanceof Error ? error.message : 'Unknown error'
@@ -234,11 +239,7 @@ export async function readSheetRows(
     const sheets = createSheetsClient();
     const range = getSheetRange(sheetName, startRow);
     
-    // DEBUG: Log the exact range being used
-    console.log(`[readSheetRows] Using range: "${range}"`);
-    console.log(`[readSheetRows] sheetId: "${sheetId}"`);
-    console.log(`[readSheetRows] sheetName: "${sheetName}"`);
-    console.log(`[readSheetRows] startRow: ${startRow}`);
+    logDebug('readSheetRows range', { context: 'google-sheets-read', sheetId, sheetName, range, startRow });
     
     const response = await sheets.spreadsheets.values.get({
       spreadsheetId: sheetId,
@@ -247,8 +248,11 @@ export async function readSheetRows(
 
     return (response.data.values as unknown[][]) || [];
   } catch (error: unknown) {
-    console.error('Failed to read sheet rows:', error);
-    console.error('Full error object:', JSON.stringify(error, null, 2));
+    logError(
+      'Failed to read sheet rows',
+      { context: 'google-sheets-read', sheetId, sheetName, startRow },
+      error instanceof Error ? error : new Error(String(error))
+    );
     throw new Error(
       `Failed to read sheet: ${error instanceof Error ? error.message : 'Unknown error'}`
     );
@@ -277,7 +281,11 @@ export async function readSheetRow(
     const rows = (response.data.values as unknown[][]) || [];
     return rows.length > 0 ? rows[0] : null;
   } catch (error: unknown) {
-    console.error(`Failed to read sheet row ${rowNumber}:`, error);
+    logError(
+      `Failed to read sheet row ${rowNumber}`,
+      { context: 'google-sheets-read-row', sheetId, sheetName, rowNumber },
+      error instanceof Error ? error : new Error(String(error))
+    );
     throw new Error(
       `Failed to read row: ${error instanceof Error ? error.message : 'Unknown error'}`
     );
@@ -313,7 +321,11 @@ export async function writeSheetRows(
       }
     });
   } catch (error: unknown) {
-    console.error('Failed to write sheet rows:', error);
+    logError(
+      'Failed to write sheet rows',
+      { context: 'google-sheets-write', sheetId, sheetName, startRow, rowCount: rows.length },
+      error instanceof Error ? error : new Error(String(error))
+    );
     throw new Error(
       `Failed to write rows: ${error instanceof Error ? error.message : 'Unknown error'}`
     );

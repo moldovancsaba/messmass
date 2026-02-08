@@ -21,6 +21,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { ObjectId } from 'mongodb';
 import clientPromise from '@/lib/mongodb';
 import { testConnection } from '@/lib/googleSheets/client';
+import { countSheetDataRows } from '@/lib/googleSheets/metrics';
 import config from '@/lib/config';
 import { error as logError } from '@/lib/logger';
 
@@ -105,22 +106,26 @@ export async function GET(
           );
           
           if (healthCheck.success) {
+            const dataRowCount = googleSheetConfig.sheetId
+              ? await countSheetDataRows({ sheetId: googleSheetConfig.sheetId, sheetName: googleSheetConfig.sheetName, startRow: 2 })
+              : 0;
+
             response.healthCheck = {
               status: 'healthy',
               sheetAccessible: true,
               sheetExists: true,
               rowCount: healthCheck.rowCount,
+              dataRowCount,
               columnCount: healthCheck.columnCount,
               lastChecked: new Date().toISOString(),
               headerLabels: healthCheck.headerLabels || ['Unknown']
             };
 
             // If sheet has fewer rows than expected, flag it
-            const rowCount = healthCheck.rowCount || 0;
-            if (rowCount < response.stats.totalEvents) {
+            if (dataRowCount < response.stats.totalEvents) {
               response.healthCheck.status = 'warning';
               response.healthCheck.warning = 
-                `Sheet has ${rowCount} rows but database expects ${response.stats.totalEvents} events`;
+                `Sheet has ${dataRowCount} data rows but database expects ${response.stats.totalEvents} events`;
             }
           } else {
             response.healthCheck = {

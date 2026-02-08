@@ -1,6 +1,6 @@
 # Google Sheets Integration - Feature Guide (v12.0.0)
 Status: Active
-Last Updated: 2026-02-05T20:53:25.000Z
+Last Updated: 2026-02-08T00:00:00.000Z
 Canonical: Yes
 Owner: Product
 
@@ -56,6 +56,13 @@ Owner: Product
 ---
 
 ## User Journey
+
+### Step 0: Auto-Provision a Partner Sheet (Phase 2.5)
+
+1. Go to `/admin/partners/[id]` (Partner Detail page) or open the Partner Edit modal.
+2. Click **"🆕 Create & Connect New Google Sheet"**.
+3. MessMass creates a new spreadsheet, writes headers, populates existing events (if any), prefixes the partner UUID in the sheet title, and connects the partner to the sheet.
+4. Open the returned sheet URL and share it with the partner's editors (service account already has access).
 
 ### Step 1: Setup Google Sheet Connection (Superadmin)
 

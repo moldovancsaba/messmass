@@ -1,6 +1,6 @@
 # Google Sheets Partner Sync – Deployment & E2E Validation Checklist
 Status: Active  
-Last Updated: 2026-02-06  
+Last Updated: 2026-02-08  
 Canonical: Yes  
 Owner: Operations / Integrations
 
@@ -64,6 +64,7 @@ Execute on staging environment with a real partner and test sheet.
 
 | Step | Action | Expected |
 |------|--------|----------|
+| 0 | (Phase 2.5) Click "🆕 Create & Connect New Google Sheet" | Sheet is created, headers written, partner connected; URL is stored on partner |
 | 1 | Go to `/admin/partners/[id]` | Partner detail loads |
 | 2 | Click "⚙️ Google Sheets Settings" | Connect modal opens |
 | 3 | Enter Sheet ID, tab name (e.g. "Events"), sync mode | Form accepts input |

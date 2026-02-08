@@ -1,6 +1,6 @@
 # Operations Roadmap
 Status: Active
-Last Updated: 2026-02-06
+Last Updated: 2026-02-08
 Canonical: Yes
 Owner: Product + Engineering
 
@@ -127,7 +127,7 @@ Convert "audit should be done" items into durable tooling/guardrails:
 
 ### Google Sheets Integration (Q4 2025)
 **Priority:** High
-**Status:** Active — Phase 2.5 testing and rollout
+**Status:** Active — Phase 2.5 delivered; Phase 3 future
 **Dependencies:** Google Cloud Service Account, Google Drive API
 
 **Vision:** Enable bidirectional synchronization between MessMass events and Google Sheets for partners who prefer spreadsheet-based workflows.
@@ -139,11 +139,11 @@ Convert "audit should be done" items into durable tooling/guardrails:
 - Real-time status monitoring and health checks
 
 **Implementation Phases:**
-1. **Phase 2.5:** Auto-provisioning & Drive Integration — ⏳ Planned
+1. **Phase 2.5:** Auto-provisioning & Drive Integration — ✅ Delivered
 2. **Phase 3:** Event-Level Granular Sync — 🔮 Future
 
-**Acceptance Criteria (remaining):**
-- ⬜ Auto-create sheets for new partners
+**Acceptance Criteria (Phase 2.5):**
+- ✅ Auto-create sheets for new partners (Admin can provision + connect in one step)
 
 *(Delivered phases and criteria: see release notes in `docs/archive/_archive/releases/`.)*
 
@@ -251,17 +251,6 @@ Convert "audit should be done" items into durable tooling/guardrails:
 - ✅ Filter system supports multi-event queries
 - ✅ Performance: < 500ms page load for pre-aggregated data
 - ✅ Mobile-responsive design
-
----
-
-### Report Layout & Rendering Specification v2.0
-**Priority:** High  
-**Status:** Active  
-**Dependencies:** UnifiedDataVisualization, DynamicChart, chart types (PIE/BAR/KPI/TEXT/IMAGE)  
-**Goals:** 1/2-unit width system, block-level font sync, image-driven row height, no overflow  
-**Next:** Integrate CellWrapper (3-zone), push blockHeight into chart components, admin enforcement of width ≤ 2  
-
-*(Delivered phases: see release notes in `docs/archive/_archive/releases/`.)*
 
 ---
 
