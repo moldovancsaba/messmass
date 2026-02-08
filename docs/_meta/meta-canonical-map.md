@@ -1,6 +1,6 @@
 # Canonical Map
 Status: Active
-Last Updated: 2026-02-08T11:07:51Z
+Last Updated: 2026-02-08T11:27:00Z
 Canonical: Yes
 Owner: Documentation
 
@@ -15,10 +15,10 @@ This is the current classification of the documentation set. Use it to prune, me
 ## Table
 | Kind | Path | Title | Status | Canonical | Owner | Last Updated | Note |
 |---:|---|---|---:|---:|---|---|---|
-| generated | docs/_meta/meta-canonical-map.md | Canonical Map | Active | Yes | Documentation | 2026-02-07T16:46:03Z | Auto-generated inventory/triage artifacts. Do not edit by hand. |
-| generated | docs/_meta/meta-docs-inventory.md | Docs Inventory | Active | Yes | Documentation | 2026-02-08T11:07:50Z | Auto-generated inventory/triage artifacts. Do not edit by hand. |
-| generated | docs/_meta/meta-docs-link-check.md | Docs Link Check | Active | Yes | Documentation | 2026-02-07T16:46:03Z | Auto-generated inventory/triage artifacts. Do not edit by hand. |
-| generated | docs/_meta/meta-docs-triage.md | Docs Triage | Active | Yes | Documentation | 2026-02-08T11:07:51Z | Auto-generated inventory/triage artifacts. Do not edit by hand. |
+| generated | docs/_meta/meta-canonical-map.md | Canonical Map | Active | Yes | Documentation | 2026-02-08T11:07:51Z | Auto-generated inventory/triage artifacts. Do not edit by hand. |
+| generated | docs/_meta/meta-docs-inventory.md | Docs Inventory | Active | Yes | Documentation | 2026-02-08T11:27:00Z | Auto-generated inventory/triage artifacts. Do not edit by hand. |
+| generated | docs/_meta/meta-docs-link-check.md | Docs Link Check | Active | Yes | Documentation | 2026-02-08T11:07:51Z | Auto-generated inventory/triage artifacts. Do not edit by hand. |
+| generated | docs/_meta/meta-docs-triage.md | Docs Triage | Active | Yes | Documentation | 2026-02-08T11:27:00Z | Auto-generated inventory/triage artifacts. Do not edit by hand. |
 | reference | docs/admin/admin-clicker-manager.md | Clicker Manager — Partner Clicker Sets | Active | No | Admin UX (Katja) | 2026-01-21 | Reference-only doc; keep if still used, otherwise archive. |
 | canonical | docs/admin/admin-end-user-guide.md | END USER GUIDE (Admin Operations) | Complete | Yes | Admin (Katja) | 2026-01-14T13:38:00.000Z | Primary source of truth for this topic. |
 | canonical | docs/admin/admin-layout-v2-schema.md | Admin LayoutV2 Schema (Layout Configuration) | Active | Yes | Admin (Katja) | 2026-01-15T14:46:42.000Z | Primary source of truth for this topic. |

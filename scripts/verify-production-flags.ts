@@ -24,6 +24,7 @@ function verifyProductionFlags(): {
   allEnabled: boolean;
   missingFlags: Array<{ envVar: string; name: string }>;
   enabledFlags: Array<{ envVar: string; name: string }>;
+  missingRequirements: string[];
 } {
   const nodeEnv = process.env.NODE_ENV || 'development';
   const isProduction = nodeEnv === 'production';
@@ -36,11 +37,13 @@ function verifyProductionFlags(): {
       allEnabled: false,
       missingFlags: [],
       enabledFlags: [],
+      missingRequirements: [],
     };
   }
 
   const missingFlags: Array<{ envVar: string; name: string }> = [];
   const enabledFlags: Array<{ envVar: string; name: string }> = [];
+  const missingRequirements: string[] = [];
 
   for (const { envVar, name } of REQUIRED_FLAGS) {
     const value = process.env[envVar];
@@ -53,10 +56,21 @@ function verifyProductionFlags(): {
     }
   }
 
+  // JWT sessions require a strong secret in production, otherwise runtime will throw.
+  if (process.env.ENABLE_JWT_SESSIONS === 'true') {
+    const secret = process.env.JWT_SECRET || '';
+    if (!secret) {
+      missingRequirements.push('JWT_SECRET is required when ENABLE_JWT_SESSIONS=true');
+    } else if (secret.length < 32) {
+      missingRequirements.push('JWT_SECRET must be at least 32 characters when ENABLE_JWT_SESSIONS=true');
+    }
+  }
+
   return {
-    allEnabled: missingFlags.length === 0,
+    allEnabled: missingFlags.length === 0 && missingRequirements.length === 0,
     missingFlags,
     enabledFlags,
+    missingRequirements,
   };
 }
 
@@ -74,9 +88,17 @@ if (result.allEnabled) {
   console.log('\n✅ Production security configuration is correct.');
   process.exit(0);
 } else {
-  console.log('❌ Missing required security feature flags:\n');
-  for (const { envVar, name } of result.missingFlags) {
-    console.log(`   ✗ ${name} (${envVar})`);
+  if (result.missingFlags.length > 0) {
+    console.log('❌ Missing required security feature flags:\n');
+    for (const { envVar, name } of result.missingFlags) {
+      console.log(`   ✗ ${name} (${envVar})`);
+    }
+  }
+  if (result.missingRequirements.length > 0) {
+    console.log('\n❌ Missing required production requirements:\n');
+    for (const req of result.missingRequirements) {
+      console.log(`   ✗ ${req}`);
+    }
   }
   if (result.enabledFlags.length > 0) {
     console.log('\n✅ Enabled flags:');
@@ -90,8 +112,10 @@ if (result.allEnabled) {
   for (const { envVar } of result.missingFlags) {
     console.log(`   ${envVar}=true`);
   }
+  if (result.missingRequirements.length > 0) {
+    console.log('\n2. Fix the missing requirements listed above.');
+  }
   console.log('\n2. Redeploy the application');
   console.log('\n3. Run this script again to verify');
   process.exit(1);
 }
-

@@ -123,7 +123,9 @@
     "migrate:assign-default-partner": "tsx -r dotenv/config scripts/assignDefaultPartnerToOrphanedEvents.ts dotenv_config_path=.env.local",
     "sheets:create-partner-sheets": "tsx -r dotenv/config scripts/createPartnerSheets.ts dotenv_config_path=.env.local",
     "sheets:setup-szerencsejatok": "tsx -r dotenv/config scripts/setupSzerencsejatek.ts dotenv_config_path=.env.local",
-    "migrate:layout-grammar": "tsx -r dotenv/config scripts/migrate-layout-grammar.ts dotenv_config_path=.env.local"
+    "migrate:layout-grammar": "tsx -r dotenv/config scripts/migrate-layout-grammar.ts dotenv_config_path=.env.local",
+    "security:verify-production-flags": "NODE_ENV=production tsx scripts/verify-production-flags.ts",
+    "security:check-users-password-hash": "tsx -r dotenv/config scripts/check-users-password-hash.ts dotenv_config_path=.env.local"
   },
   "dependencies": {
     "@types/nodemailer": "^7.0.4",
