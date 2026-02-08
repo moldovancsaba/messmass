@@ -85,6 +85,10 @@ export function sanitizeHTML(
     const regex = new RegExp(`<${tag}\\b[^<]*(?:(?!<\\/${tag}>)<[^<]*)*<\\/${tag}>`, 'gi');
     sanitized = sanitized.replace(regex, '');
   });
+
+  // Remove dangerous URL protocols in common attributes (server fallback only).
+  // DOMPurify handles this on the client; this keeps server output safe if rendered.
+  sanitized = sanitized.replace(/\s(href|src)\s*=\s*["']\s*(javascript:|data:|vbscript:)[^"']*["']/gi, '');
   
   return sanitized;
 }
@@ -109,4 +113,3 @@ export function sanitizeMarkdownHTML(dirty: string): string {
     allowAttributes: ['href', 'title', 'class'] // class for code blocks (future syntax highlighting)
   });
 }
-

@@ -75,6 +75,7 @@ Owner: Operations
     - [ ] Confirm all environments updated with rotated secrets (local/dev/preview/prod)
     - [ ] Enable production flag: `ENABLE_BCRYPT_AUTH=true`
     - [ ] Verify all users have `passwordHash` present (or document explicit exception). Script: `npm run security:check-users-password-hash -- --strict`
+    - [ ] If needed, migrate legacy login users (skips apiKeyEnabled users): `npm run security:migrate-users-to-password-hash -- --dry-run`, then re-run without `--dry-run`
     - [ ] Enable production flag: `ENABLE_JWT_SESSIONS=true`
     - [ ] Ensure `JWT_SECRET` is set in production and is >= 32 chars (required when `ENABLE_JWT_SESSIONS=true`)
     - [ ] Define legacy token deprecation monitoring plan (measure usage)

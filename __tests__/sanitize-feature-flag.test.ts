@@ -15,13 +15,15 @@ describe('sanitizeHTML feature flag', () => {
     process.env.ENABLE_HTML_SANITIZATION = 'true';
     const { sanitizeHTML } = await import('../lib/sanitize');
 
-    const dirty = '<p onclick="alert(1)">Safe</p><script>alert(1)</script><img src=x onerror=alert(2) />';
+    const dirty =
+      '<p onclick="alert(1)">Safe</p><script>alert(1)</script><img src=x onerror=alert(2) />' +
+      '<a href="javascript:alert(3)">bad</a>';
     const sanitized = sanitizeHTML(dirty);
 
     expect(sanitized).toContain('<p');
     expect(sanitized).toContain('Safe');
     expect(sanitized).not.toContain('<script');
     expect(sanitized).not.toMatch(/on\w+=/i);
+    expect(sanitized).not.toContain('javascript:');
   });
 });
-
