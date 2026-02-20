@@ -4,6 +4,23 @@ Last Updated: 2026-02-05T21:01:23.000Z
 Canonical: No
 Owner: Architecture
 
+## [v11.55.6] - 2026-02-10T00:00:00.000Z — Production 500s (Edge runtime crypto crash)
+
+### Context
+Homepage (`/`) returned 500 with `MIDDLEWARE_INVOCATION_FAILED` in production. Logs showed: *The edge runtime does not support Node.js 'crypto' module*.
+
+### Root Cause
+`middleware.ts` imported `lib/sessionTokens` (JWT + Node `crypto`), which is incompatible with Edge runtime.
+
+### Fix
+- Removed session token validation from edge middleware.
+- Kept full validation in server-side auth (`lib/auth.ts`).
+- Deployed hotfix to production; root `/` returns 200.
+
+### Follow-up
+- Add server-side redirect guard in `app/admin/layout.tsx` for unauthenticated access.
+- Avoid Node-only modules in Edge middleware; document as rule for security middleware.
+
 ## [vDOCS] - 2026-02-05T00:00:00.000Z — Fix The Class, Not The Instance (No Single-Point Patching)
 
 ### Context

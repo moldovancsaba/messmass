@@ -4,6 +4,8 @@ Last Updated: 2026-02-08
 Canonical: Yes
 Owner: Product + Engineering
 
+**Source of truth:** Project planning and execution now live on the [MVP Factory Board](https://github.com/users/moldovancsaba/projects/1). This file is reference only. Roadmap = Status **Roadmap**; Backlog = not yet broken down; Ready = actionable. Product = **messmass**.
+
 **Reference:** [docs/operations/operations-implementation-complete.md](docs/operations/operations-implementation-complete.md), [docs/archive/_archive/audits/comprehensive-system-audit-plan-2026.md](docs/archive/_archive/audits/comprehensive-system-audit-plan-2026.md)  
 **Admin Roadmap Status:** Canonical Admin roadmap tracking lives in [docs/operations/operations-action-plan.md](docs/operations/operations-action-plan.md).
 

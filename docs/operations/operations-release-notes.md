@@ -1,6 +1,6 @@
 # MessMass Release Notes
 Status: Active
-Last Updated: 2026-02-08T00:00:00.000Z
+Last Updated: 2026-02-09T00:00:00.000Z
 Canonical: No
 Owner: Operations
 
@@ -9,8 +9,29 @@ Owner: Operations
 ### Summary
 - 📄 **GOOGLE SHEETS PHASE 2.5 AUTO-PROVISIONING**: Admin can create + setup + connect a new partner sheet in one step.
 - 📐 **REPORT LAYOUT SPEC v2.0**: Marked as delivered; roadmap now tracks only remaining follow-ups.
+- 🔐 **PROD SECURITY FLAGS ENABLED**: ENABLE_BCRYPT_AUTH, ENABLE_JWT_SESSIONS, ENABLE_HTML_SANITIZATION set in production; login users migrated to bcrypt hashes.
+- 🎯 **STYLE HARDENING PHASE 4**: Removed modal overlay inline positioning; BaseModal now relies on CSS tokens.
+- 🛠️ **PROD HOTFIX**: Middleware edge runtime crash fixed (removed Node `crypto` dependency from edge bundle).
 
 ### What Was Added / Changed
+
+#### Security: Production flags + password hash migration ✅
+**WHAT**: Enabled production security feature flags and migrated legacy login users to `passwordHash`.  
+**WHY**: Required to enforce bcrypt auth, JWT sessions, and HTML sanitization in production.  
+**HOW**: Set Vercel prod envs (`ENABLE_BCRYPT_AUTH`, `ENABLE_JWT_SESSIONS`, `ENABLE_HTML_SANITIZATION`, `JWT_SECRET`), redeployed, ran `scripts/migrate-users-to-password-hash.ts`, and verified flags with `scripts/verify-production-flags.ts`.
+
+**Notes:**
+- `apiKeyEnabled` users keep plaintext `password` (API keys) by design; login plaintext count is 0.
+
+#### Style hardening: Modal overlay positioning ✅
+**WHAT**: Removed inline modal overlay positioning in `BaseModal` and rely on CSS module tokens.  
+**WHY**: Phase 4 requires modal/dialog positioning to be controlled by CSS tokens, not inline styles.  
+**HOW**: Dropped `zIndex` inline style path; overlay uses `BaseModal.module.css` `--mm-z-modal` token.
+
+#### Production hotfix: Middleware edge runtime crash ✅
+**WHAT**: Removed session token validation from edge middleware to eliminate Node.js `crypto` usage in the Edge runtime.  
+**WHY**: Production root `/` was failing with `MIDDLEWARE_INVOCATION_FAILED` due to Edge runtime not supporting Node `crypto`.  
+**HOW**: Middleware now only checks presence of `admin-session` cookie; full validation remains in server-side auth (`lib/auth.ts`).
 
 #### Google Sheets: Provision + Connect ✅
 **WHAT**: Added `/api/partners/[id]/google-sheet/provision` and wired Admin Partners UI to provision and connect a sheet automatically (new partner checkbox + edit modal button).  
@@ -21,6 +42,12 @@ Owner: Operations
 **WHAT**: Initialize/compare `totalEvents` using actual populated data rows (not gridProperties rowCount capacity).  
 **WHY**: Avoid misleading “1000/10000 events” when a sheet is mostly empty.  
 **HOW**: Added `lib/googleSheets/metrics.ts` and updated connect + status health check.
+
+### Testing
+- ✅ `NODE_ENV=production npm run security:verify-production-flags`
+- ✅ `NODE_ENV=production npx tsx -r dotenv/config scripts/migrate-users-to-password-hash.ts dotenv_config_path=.env.production.local`
+- ✅ `NODE_ENV=production npx tsx -r dotenv/config scripts/check-users-password-hash.ts dotenv_config_path=.env.production.local --strict` (fails only for `apiKeyEnabled` exception)
+- ⚠️ Manual smoke test (admin login, share page, rich text/markdown rendering) pending
 
 ## [v11.55.5] — 2026-02-05T16:00:00.000Z
 

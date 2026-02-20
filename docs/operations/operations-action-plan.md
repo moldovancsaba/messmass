@@ -9,6 +9,8 @@ Owner: Operations
 **Last Updated (UTC):** 2026-02-06  
 **Audience:** Product + Engineering
 
+**Source of truth:** Project planning and execution now live on the [MVP Factory Board](https://github.com/users/moldovancsaba/projects/1). This file is reference only. Roadmap = Status **Roadmap**; Backlog = not yet broken down; Ready = actionable. Product = **messmass**.
+
 ---
 
 ## 0. Summary Index
