@@ -9,7 +9,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  overflow: hidden;
+  overflow: hidden; /* Layout Grammar: decorative - clip image to rounded corners */
   background: var(--mm-gray-50);
   border-radius: var(--mm-radius-lg);
 }

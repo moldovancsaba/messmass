@@ -250,10 +250,16 @@ export default function NotificationPanel({ isOpen, onClose }: NotificationPanel
               >
                 <div className={styles.notificationIcon}>{activity.icon}</div>
                 <div className={styles.notificationContent}>
-                  <div className={styles.notificationText}>
+                  <div
+                    className={styles.notificationText}
+                    title={`${notification.user} ${activity.label}`}
+                  >
                     <strong>{notification.user}</strong> {activity.label}
                   </div>
-                  <div className={styles.notificationProject}>
+                  <div
+                    className={styles.notificationProject}
+                    title={notification.projectName ?? undefined}
+                  >
                     {notification.projectName}
                   </div>
                   <div className={styles.notificationTime}>

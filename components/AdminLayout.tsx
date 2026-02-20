@@ -30,20 +30,16 @@ export default function AdminLayout({ children, user }: AdminLayoutProps) {
   
   return (
     <div className={styles.adminLayout}>
-      {/* What: Fixed sidebar navigation
-         Why: Persistent navigation across all admin pages */}
+      {/* OPS-ADMIN-01: Skip to main content for keyboard/screen reader users (WCAG 2.4.1) */}
+      <a href="#main-content" className={styles.skipToContent}>
+        Skip to main content
+      </a>
       <Sidebar />
       
-      {/* What: Main content wrapper with dynamic margin based on sidebar state
-         Why: Content expands to fill available width when sidebar collapses */}
       <div className={`${styles.mainWrapper} ${isCollapsed ? styles.collapsed : ''}`}>
-        {/* What: Top header with user info
-           Why: Consistent header across admin pages */}
         <TopHeader user={user} />
         
-        {/* What: Main content area
-           Why: Page-specific content renders here */}
-        <main className={styles.mainContent}>
+        <main id="main-content" className={`${styles.mainContent} content-surface`} tabIndex={-1}>
           {children}
         </main>
         

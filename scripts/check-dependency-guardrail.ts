@@ -41,9 +41,9 @@ const APPROVED_RUNTIME_DEPS = new Set([
   'server-only',
   'typescript',
   'uuid',
-  'expr-eval', // WHAT: Used conditionally with restricted operators in formulaEngine.ts
-  // WHY: Safe parser for mathematical expressions when FEATURE_FLAGS.USE_SAFE_FORMULA_PARSER enabled
-  // HOW: Only arithmetic operators allowed, no code execution
+  'expr-eval', // OPS-SEC-02: Formula parser in lib/formulaEngine.ts (restricted operators only; no code execution).
+  // Removal: would require internal safe evaluator and removal of Function() fallbacks; then remove from package.json and allowlist.
+  // See docs/operations/SEC02_CODE_INJECTION_AUDIT.md
   // Add other approved deps as needed
 ]);
 
@@ -82,9 +82,7 @@ const APPROVED_DEV_DEPS = new Set([
 
 // Forbidden packages (security/architectural violations)
 const FORBIDDEN_PACKAGES = new Set([
-  // NOTE: expr-eval is conditionally used with restricted operators in formulaEngine.ts
-  // It's used when FEATURE_FLAGS.USE_SAFE_FORMULA_PARSER is enabled with only safe math operators
-  // 'expr-eval', // Moved to APPROVED_RUNTIME_DEPS with restricted usage
+  // expr-eval: approved in APPROVED_RUNTIME_DEPS for formula use only; see SEC02_CODE_INJECTION_AUDIT.md
   'mongoose', // Not in approved stack (using native MongoDB driver)
   'socket.io', // Not in approved stack (using ws)
 ]);

@@ -8,9 +8,6 @@ import { rateLimitMiddleware, getRateLimitConfig } from '@/lib/rateLimit';
 import { csrfProtectionMiddleware, setCsrfTokenCookie, generateCsrfToken } from '@/lib/csrf';
 import { logRequestEnd, logRateLimitExceeded, logCsrfViolation, warn } from '@/lib/logger';
 import { buildCorsHeaders } from '@/lib/cors';
-import { canAccessRoute, getUnauthorizedRedirect } from '@/lib/routeProtection';
-import { validateSessionToken } from '@/lib/sessionTokens';
-import type { UserRole } from '@/lib/users';
 
 // WHAT: Main middleware function (runs on every request)
 // WHY: Apply security controls before request reaches route handlers
@@ -28,35 +25,10 @@ export async function middleware(request: NextRequest) {
     // WHAT: Step 1 - Check authentication (user has valid session)
     // WHY: Protect admin routes from unauthorized access
     const adminSession = request.cookies.get('admin-session');
-    const sessionFormat = request.cookies.get('session-format')?.value as 'jwt' | 'legacy' | undefined;
     
     if (!adminSession?.value) {
       warn('Unauthenticated admin access attempt', { pathname });
       return NextResponse.redirect(new URL('/admin/login', request.url));
-    }
-    
-    // WHAT: Step 2 - Validate session token (supports both JWT and Base64)
-    // WHY: Zero-downtime migration - supports both token formats
-    // HOW: Uses unified validation that auto-detects format or uses format hint
-    const tokenData = validateSessionToken(adminSession.value, sessionFormat);
-    
-    if (!tokenData) {
-      warn('Invalid or expired session token', { pathname, format: sessionFormat });
-      return NextResponse.redirect(new URL('/admin/login', request.url));
-    }
-    
-    // WHAT: Normalize role (historical tokens may use 'super-admin')
-    // WHY: Backward compatibility with old token format
-    const roleRaw = tokenData.role as string;
-    const normalizedRole = roleRaw === 'super-admin' ? 'superadmin' : roleRaw;
-    const userRole = normalizedRole as UserRole;
-    
-    // WHAT: Step 3 - Check role-based authorization
-    // WHY: Enforce permission hierarchy (guest < user < admin < superadmin)
-    if (!canAccessRoute(userRole, pathname)) {
-      console.warn(`⚠️  Insufficient permissions: ${userRole} attempted ${pathname}`);
-      const redirectPath = getUnauthorizedRedirect(userRole);
-      return NextResponse.redirect(new URL(redirectPath, request.url));
     }
   }
   

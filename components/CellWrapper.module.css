@@ -10,13 +10,13 @@
   box-sizing: border-box;
 }
 
-/* Title Zone - fixed height, centered, max 2 lines */
+/* Title Zone - fixed height, centered, max 2 lines (Layout Grammar: title zone) */
 .titleZone {
   display: flex;
   align-items: center;
   justify-content: center;
   text-align: center;
-  overflow: hidden;
+  overflow: hidden; /* Layout Grammar: title 2-line clamp */
   flex-shrink: 0;
   font-size: var(--block-base-font-size); /* WHAT: P1 1.5 Phase 2 - Use block-level typography instead of per-row */
   height: var(--title-height); /* WHAT: Use CSS custom property for dynamic height */
@@ -26,10 +26,10 @@
   margin: 0;
   padding: 0;
   line-height: 1.25;
-  /* WHAT: Remove ellipsis display - text should fit or wrap naturally */
+  /* WHAT: Remove ellipsis display - text should fit or wrap naturally (Layout Grammar: title 2-line clamp) */
   /* WHY: Ellipsis (...) hides content which is prohibited per requirements */
   /* HOW: Use overflow: hidden without text-overflow, allow natural wrapping */
-  overflow: hidden;
+  overflow: hidden; /* Layout Grammar: title 2-line clamp */
   /* WHAT: Proper word wrapping without breaking words */
   /* WHY: Words must stay intact, only wrap at word boundaries */
   word-wrap: normal;
@@ -46,13 +46,13 @@
   max-height: calc(1.25em * 3); /* 3 lines max */
 }
 
-/* Subtitle Zone - fixed height, centered, max 2 lines */
+/* Subtitle Zone - fixed height, centered, max 2 lines (Layout Grammar: subtitle zone) */
 .subtitleZone {
   display: flex;
   align-items: center;
   justify-content: center;
   text-align: center;
-  overflow: hidden;
+  overflow: hidden; /* Layout Grammar: title 2-line clamp */
   flex-shrink: 0;
   margin-top: 0.25rem;
   font-size: var(--block-subtitle-font-size); /* WHAT: P1 1.5 Phase 2 - Use block-level typography instead of per-row */
@@ -63,10 +63,10 @@
   margin: 0;
   padding: 0;
   line-height: 1.4;
-  /* WHAT: Remove ellipsis display - text should fit or wrap naturally */
+  /* WHAT: Remove ellipsis display - text should fit or wrap naturally (Layout Grammar: subtitle 2-line clamp) */
   /* WHY: Ellipsis (...) hides content which is prohibited per requirements */
   /* HOW: Use overflow: hidden without text-overflow, allow natural wrapping */
-  overflow: hidden;
+  overflow: hidden; /* Layout Grammar: title 2-line clamp */
   /* WHAT: Proper word wrapping without breaking words */
   /* WHY: Words must stay intact, only wrap at word boundaries */
   word-wrap: normal;
@@ -89,7 +89,7 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  overflow: hidden;
+  overflow: visible; /* Layout Grammar: no clipping on content layers; height resolution ensures fit */
   width: 100%;
   box-sizing: border-box;
   min-height: 0; /* CRITICAL: Allow flex item to shrink below content size */

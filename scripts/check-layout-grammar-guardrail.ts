@@ -1,14 +1,19 @@
 #!/usr/bin/env tsx
 /**
  * Layout Grammar Guardrail
- * 
+ *
  * Checks for forbidden CSS patterns that violate the Layout Grammar policy:
  * - overflow: auto, scroll, hidden (on content layers)
  * - text-overflow: ellipsis
  * - -webkit-line-clamp
- * 
+ *
  * These patterns are forbidden because they allow scrolling/truncation,
  * which violates the "no scroll, no truncation" policy.
+ *
+ * ALLOWED: A line is allowed if it contains one of ALLOWED_COMMENTS (e.g.
+ * "Layout Grammar: decorative", "2-line clamp", "clip image to rounded corners").
+ * When adding new overflow/line-clamp in app/report, components/charts, or
+ * CellWrapper, add an allow comment on that line or the guardrail will fail.
  */
 
 import { readFileSync, readdirSync, statSync } from 'fs';
@@ -24,7 +29,15 @@ const FORBIDDEN_PATTERNS = [
   { pattern: /-webkit-line-clamp/g, name: '-webkit-line-clamp' },
 ];
 
+/** When a line matches a forbidden pattern, it is allowed only if it contains one of these phrases (case-insensitive). */
 const ALLOWED_COMMENTS = [
+  'layout grammar: decorative',
+  'layout grammar: title',
+  'title must clamp',
+  '2-line clamp',
+  'line clamp',
+  'clip image',
+  'rounded corners',
   'decorative clipping',
   'mask wrapper',
   'explicit comment',

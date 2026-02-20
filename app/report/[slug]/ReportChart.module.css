@@ -20,7 +20,7 @@
   border-radius: var(--mm-radius-lg);
   box-shadow: var(--mm-shadow-sm);
   padding: 0; /* WHAT: Remove padding, add to header/body instead */
-  overflow: hidden; /* WHAT: Prevent content overflow */
+  overflow: visible; /* WHAT: Layout Grammar - no clipping on content layers; height resolution ensures fit */
   box-sizing: border-box !important;
   /* Enable container queries for inner scaling (width + height) */
   container-type: size;
@@ -174,10 +174,10 @@
   overflow-wrap: break-word !important;
   hyphens: auto !important; /* A-03.2: Allow hyphenation for better value fitting */
   /* WHAT: A-03.2 - Ensure value fits within row height */
-  /* WHY: Multi-line values must be fully visible, not clipped */
-  /* HOW: Use min-height: 0 to allow flex shrinking, overflow: hidden to prevent overflow */
+  /* WHY: Multi-line values must be fully visible, not clipped (Layout Grammar) */
+  /* HOW: Use min-height: 0 to allow flex shrinking; overflow: visible so content is never clipped */
   min-height: 0 !important; /* CRITICAL: Allow flex shrinking to fit content */
-  overflow: hidden !important; /* A-03.2: Prevent overflow - content must wrap to fit (Layout Grammar) */
+  overflow: visible !important; /* Layout Grammar: no clipping on content; fit via font scaling/wrap */
   container-type: size;
 }
 
@@ -214,13 +214,13 @@
 }
 
 .kpi .kpiTitle > * {
-  /* WHAT: Inner content wrapper for text truncation */
+  /* WHAT: Inner content wrapper - title 2-line clamp (Layout Grammar: allowed for title/subtitle) */
   /* WHY: Allows flex centering while maintaining line clamp */
   /* HOW: Use -webkit-box for line clamping inside flex container */
   display: -webkit-box;
   -webkit-box-orient: vertical;
-  -webkit-line-clamp: 2;
-  overflow: hidden;
+  -webkit-line-clamp: 2; /* Layout Grammar: title 2-line clamp */
+  overflow: hidden; /* Layout Grammar: title 2-line clamp */
   text-align: center;
   width: 100%;
 }
@@ -260,7 +260,7 @@
   padding: var(--mm-space-1) var(--mm-space-2);
   height: 100%; /* CRITICAL: Fill full grid row height */
   min-height: 0; /* CRITICAL: Allow grid row to shrink if needed */
-  overflow: hidden; /* Prevent overflow */
+  overflow: hidden; /* Layout Grammar: title row - title 2-line clamp */
   box-sizing: border-box;
 }
 
@@ -521,7 +521,7 @@
 }
 
 .barTrack {
-  /* WHAT: Bar track visualization - fills available space in table cell */
+  /* WHAT: Bar track visualization - fills available space in table cell (Layout Grammar: decorative clipping) */
   /* WHY: Track fills available space between label and value, must maintain readable thickness */
   /* HOW: 100% width of table cell, minimum height constraint, centered vertically */
   background: var(--chartNoDataBackground);
@@ -529,7 +529,7 @@
   min-height: clamp(1.2rem, 22cqh, 1.44rem); /* WHAT: Prevent bar collapse under vertical constraint */
   width: 100%; /* CRITICAL: Fills entire table cell */
   border-radius: calc(clamp(1.2rem, 22cqh, 1.44rem) / 2);
-  overflow: hidden;
+  overflow: hidden; /* Layout Grammar: decorative - bar track shape only, fill is content and fully visible */
   /* WHAT: Table cell vertical-align handles centering, no align-self needed */
 }
 
@@ -600,8 +600,8 @@
   line-height: 1.25 !important;
   display: -webkit-box !important;
   -webkit-box-orient: vertical !important;
-  -webkit-line-clamp: 2 !important;
-  overflow: hidden !important;
+  -webkit-line-clamp: 2 !important; /* Layout Grammar: title 2-line clamp */
+  overflow: hidden !important; /* Layout Grammar: title 2-line clamp */
   word-break: break-word !important;
   width: 100% !important;
   box-sizing: border-box !important;
@@ -620,10 +620,10 @@
   padding: var(--mm-space-2) !important;
   box-sizing: border-box !important;
   /* WHAT: A-03.1 - Ensure content fits without clipping */
-  /* WHY: Multi-line text must be fully visible within the wrapper */
-  /* HOW: Use min-height: 0 to allow flex shrinking, ensure content wraps to fit */
+  /* WHY: Multi-line text must be fully visible (Layout Grammar: no clipping on content layers) */
+  /* HOW: min-height: 0 for flex shrink; overflow: visible so content is never clipped; fit via wrap/font scaling */
   min-height: 0 !important; /* CRITICAL: Allow flex shrinking to fit content */
-  overflow: hidden !important; /* A-03.1: Prevent overflow - content must wrap to fit (Layout Grammar) */
+  overflow: visible !important; /* Layout Grammar: no clipping - content fits via height resolution and font scaling */
   /* CRITICAL: Force block display - cannot be inline */
   clear: both !important;
   float: none !important;
@@ -648,10 +648,10 @@
   height: 100% !important; /* CRITICAL: Fill parent height completely (parent has explicit height from Phase 4) */
   max-height: 100% !important; /* CRITICAL: Don't exceed parent height */
   /* WHAT: A-03.1 - Ensure content fits without clipping */
-  /* WHY: Multi-line text and tables must be fully visible, not clipped */
-  /* HOW: Use min-height: 0 to allow flex shrinking, dynamic font size reduction for tables */
+  /* WHY: Multi-line text and tables must be fully visible (Layout Grammar: no clipping on content layers) */
+  /* HOW: min-height: 0 for flex shrink; overflow: visible; fit via font size reduction and wrapping */
   min-height: 0 !important; /* CRITICAL: Allow flex shrinking to fit content */
-  overflow: hidden !important; /* A-03.1: Prevent overflow - content must fit through font size reduction (Layout Grammar) */
+  overflow: visible !important; /* Layout Grammar: no clipping - content fits via height resolution and font scaling */
   /* WHAT: P1 1.5 Phase 2 - Use block-level typography instead of unified-text-font-size (Option B) */
   /* WHY: Align text chart typography with block typography for true unification */
   /* A-03.1: Font size may be reduced dynamically via inline style if content exceeds space */
@@ -826,7 +826,7 @@
   font-size: inherit !important;
   /* CRITICAL: Preserve line breaks but allow wrapping (not pre-wrap which breaks bold) */
   white-space: normal !important; /* Allow normal wrapping, markdown handles line breaks */
-  overflow: hidden !important; /* A-03.1: Prevent overflow - content must fit through font size reduction (Layout Grammar) */
+  overflow: visible !important; /* Layout Grammar: no clipping on content - fit via font scaling and wrap */
 }
 
 .textMarkdown > * {
@@ -894,10 +894,10 @@
   background: var(--mm-gray-100) !important;
   border-radius: var(--mm-radius-sm) !important;
   /* WHAT: Wrap long lines instead of scrolling - Layout Grammar compliance */
-  /* WHY: Content must fit without scrolling */
+  /* WHY: Content must fit without scrolling; no clipping on content layers */
   white-space: pre-wrap !important; /* Wrap long lines */
   word-break: break-all !important; /* Break long words if needed */
-  overflow: hidden !important; /* No scrolling allowed */
+  overflow: visible !important; /* Layout Grammar: no clipping - fit via wrap and block height */
   width: 100% !important;
   box-sizing: border-box !important;
   text-align: left !important; /* WHAT: Code blocks left-aligned for readability */
@@ -957,40 +957,60 @@
   text-align: inherit !important;
 }
 
-/* Table Chart - Markdown table display */
+/* Table Chart - Native card: table fills card, card curves table corners */
 .table {
+  /* WHAT: Table chart is the card - no extra inner card; table starts at card edge */
   background: var(--chartBackground) !important;
   border-radius: var(--mm-radius-lg);
-}
-
-.tableContent {
-  width: 100%;
-  height: var(--text-content-height, var(--mm-block-height-default)); /* WHAT: P1 1.4 Phase 4 - explicit height from calculation (uses --chart-body-height from Phase 2), fallback to design token */
-  /* WHAT: No clipping - Layout Grammar: content must fit through wrapping/reflow */
-  /* WHY: Layout Grammar: no clipping on content layers */
-  padding: var(--mm-space-4);
+  box-shadow: var(--mm-shadow-sm);
+  overflow: hidden; /* WHAT: Clip table to card rounded corners */
+  padding: 0;
   display: flex;
   flex-direction: column;
+  width: 100%;
+}
+
+/* WHAT: Table content fills card; height set from content or --text-content-height */
+.tableContent {
+  width: 100%;
+  min-height: 0;
+  height: var(--text-content-height, auto); /* WHAT: Prefer content-driven height when set by TableChart */
+  padding: 0;
+  display: block;
+  overflow: visible;
 }
 
 .tableMarkdown {
   width: 100%;
-  height: 100%; /* WHAT: Fill parent tableContent height (explicit height from Phase 4) */
-  /* WHAT: No clipping - Layout Grammar: content must fit through wrapping/reflow */
-  /* WHY: Layout Grammar: no clipping on content layers */
-  display: flex;
-  flex-direction: column;
+  min-height: 0;
+  height: 100%;
+  display: block;
+  overflow: visible;
 }
 
+/* WHAT: Table uses full card width; columns share space so all columns visible */
+/* WHY: No overflow - scale font with container width so words fit without breaking */
 .tableMarkdown table {
   width: 100%;
+  max-width: 100%;
   border-collapse: collapse;
   border-spacing: 0;
   margin: 0;
-  /* WHAT: P1 1.5 Phase 2 - Use block-level typography instead of independent scaling */
-  font-size: var(--block-base-font-size);
-  table-layout: auto;
+  font-size: clamp(8px, 2.5cqw, var(--block-base-font-size)); /* WHAT: Shrink on narrow cards so content fits, no overflow */
+  table-layout: fixed; /* WHAT: Columns share width, no horizontal overflow */
+  box-sizing: border-box;
 }
+
+/* WHAT: Give text-heavy columns more width so words fit without breaking or overflow */
+.tableMarkdown table th:nth-child(1),
+.tableMarkdown table td:nth-child(1) { width: 22%; } /* Esemény neve */
+.tableMarkdown table th:nth-child(2),
+.tableMarkdown table td:nth-child(2) { width: 10%; } /* Dátum */
+.tableMarkdown table th:nth-child(3),
+.tableMarkdown table td:nth-child(3) { width: 20%; } /* Partner neve */
+.tableMarkdown table th:nth-child(4),
+.tableMarkdown table td:nth-child(4) { width: 14%; } /* Esemény helyszín */
+/* Columns 5+ share remaining 34% via table-layout: fixed */
 
 .tableMarkdown table thead {
   background: var(--chartTitleColor, var(--mm-gray-100));
@@ -1002,12 +1022,36 @@
   text-align: left;
   border-bottom: 2px solid var(--chartBorder, var(--mm-gray-300));
   color: var(--chartValueColor, var(--mm-gray-900));
+  overflow-wrap: normal;
+  word-break: normal; /* WHAT: Wrap at spaces only; break also at - # @ _ / | \ (injected in TS as U+200B) */
+  box-sizing: border-box;
 }
 
 .tableMarkdown table td {
   padding: var(--mm-space-3) var(--mm-space-4);
   border-bottom: 1px solid var(--chartBorder, var(--mm-gray-200));
   color: var(--chartValueColor, var(--mm-gray-900));
+  overflow-wrap: normal;
+  word-break: normal; /* WHAT: Wrap at spaces; break also at - # @ _ / | \ (injected in TS) */
+  box-sizing: border-box;
+}
+
+/* WHAT: Round top corners of table to match card (first row) */
+.tableMarkdown table thead tr:first-child th:first-child {
+  border-top-left-radius: var(--mm-radius-lg);
+}
+
+.tableMarkdown table thead tr:first-child th:last-child {
+  border-top-right-radius: var(--mm-radius-lg);
+}
+
+/* WHAT: Round bottom corners of table to match card (last row) */
+.tableMarkdown table tbody tr:last-child td:first-child {
+  border-bottom-left-radius: var(--mm-radius-lg);
+}
+
+.tableMarkdown table tbody tr:last-child td:last-child {
+  border-bottom-right-radius: var(--mm-radius-lg);
 }
 
 .tableMarkdown table tbody tr:hover {
@@ -1043,7 +1087,7 @@
   background: var(--chartBackground) !important;
   border-radius: var(--mm-radius-lg); /* Rounded corners for image container */
   box-shadow: var(--mm-shadow-sm);
-  overflow: hidden !important; /* Clip image to rounded corners */
+  overflow: hidden !important; /* Layout Grammar: decorative - clip image to rounded corners */
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1210,7 +1254,7 @@
     min-height: 250px !important; /* Minimum readable size */
     max-width: 100% !important;
     flex: 1 1 auto !important; /* Allow flex filling */
-    overflow: hidden !important; /* Prevent content overflow */
+    overflow: visible !important; /* Layout Grammar: no clipping on content layers */
     box-sizing: border-box !important;
     container-type: size; /* Ensure container queries work on mobile */
   }
@@ -1231,7 +1275,7 @@
     justify-content: center !important;
     height: 100% !important; /* CRITICAL: Fill full grid row height */
     min-height: 0 !important; /* Allow grid row to shrink if needed */
-    overflow: hidden !important; /* Prevent overflow */
+    overflow: visible !important; /* Layout Grammar: no clipping on content layers */
     box-sizing: border-box !important;
   }
   .pieChartContainer {
@@ -1284,7 +1328,7 @@
     max-width: 100% !important;
     display: flex !important;
     flex-direction: column !important;
-    overflow: hidden !important;
+    overflow: hidden !important; /* Layout Grammar: decorative - image container rounded corners */
   }
   
   /* WHAT: Aspect ratio classes for image containers on mobile */

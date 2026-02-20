@@ -7,11 +7,12 @@ export const runtime = 'nodejs'
 import { NextRequest, NextResponse } from 'next/server'
 import { cookies } from 'next/headers'
 import crypto from 'crypto'
-import { findUserByEmail, updateUserLastLogin, verifyPassword, updateUserPasswordHash, hashPassword } from '@/lib/users'
+import { findUserByEmail, updateUserLastLogin, verifyPassword, updateUserPasswordHash, hashPassword, type UserRole } from '@/lib/users'
 import { FEATURE_FLAGS } from '@/lib/featureFlags'
 import { env } from '@/lib/config'
-import { logAuthSuccess, logAuthFailure, error as logError } from '@/lib/logger'
+import { logAuthSuccess, logAuthFailure, logAuthLockout, error as logError } from '@/lib/logger'
 import { generateSessionToken, type SessionTokenData } from '@/lib/sessionTokens'
+import { isLockedOut, recordFailedAttempt, clearLockout } from '@/lib/authLockout'
 
 // Legacy env-based admin password has been removed. Authentication is fully DB-backed.
 
@@ -29,6 +30,13 @@ export async function POST(request: NextRequest) {
     }
 
     const email = emailRaw.toLowerCase()
+
+    // OPS-SEC-03: Account lockout – same 401 message for locked and invalid (no user-existence leak)
+    if (await isLockedOut(email)) {
+      await new Promise((r) => setTimeout(r, 800))
+      logAuthLockout(email, request.headers.get('x-forwarded-for') || undefined)
+      return NextResponse.json({ error: 'Invalid credentials' }, { status: 401 })
+    }
 
     // Try to find user in DB (with alias support for 'admin' -> 'admin@messmass.com')
     let user = await findUserByEmail(email)
@@ -76,16 +84,13 @@ export async function POST(request: NextRequest) {
     }
 
     if (!isValid) {
-      // WHAT: Brute force protection delay
-      // WHY: Prevent rapid password guessing attacks
       await new Promise((r) => setTimeout(r, 800))
-      
-      // WHAT: Log authentication failure (no PII - email is logged but redacted by logger)
-      // WHY: Security monitoring and audit trail
+      await recordFailedAttempt(email)
       logAuthFailure(email, 'Invalid password', request.headers.get('x-forwarded-for') || undefined)
-      
       return NextResponse.json({ error: 'Invalid credentials' }, { status: 401 })
     }
+
+    await clearLockout(email)
 
     // WHAT: Update lastLogin timestamp for successful login
     // WHY: Track when users last accessed the system
@@ -107,8 +112,7 @@ export async function POST(request: NextRequest) {
       token,
       expiresAt: expiresAt.toISOString(),
       userId: user?._id?.toString() || 'admin',
-      // Normalize role to canonical set used across app ('guest'|'user'|'admin'|'superadmin'|'api')
-      role: (user?.role || 'superadmin') as 'guest' | 'user' | 'admin' | 'superadmin' | 'api'
+      role: (user?.role || 'superadmin') as UserRole
     }
 
     // WHAT: Generate token based on feature flag (JWT or Base64)

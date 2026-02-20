@@ -762,6 +762,13 @@ export default function VisualizationPage() {
       };
     }
   }, [convertBlockToEditorInput]);
+
+  // OPS-LAYOUT-01: Real-time Layout Grammar validation feedback in block edit modal
+  const liveBlockValidation = useMemo(() => {
+    if (!editingBlock?._id) return null;
+    const normalized = normalizeBlockForLayoutV2(editingBlock);
+    return validateBlockBeforeSave(normalized);
+  }, [editingBlock, normalizeBlockForLayoutV2, validateBlockBeforeSave]);
   
   // WHAT: Update block with save status tracking and auto-save support
   // WHY: Provide visual feedback, support onBlur auto-save pattern
@@ -2487,6 +2494,16 @@ export default function VisualizationPage() {
                 💡 Grid columns auto-calculated from unit sizes (e.g., units 2+1+1 = &ldquo;2fr 1fr 1fr&rdquo; grid).<br/>
                 Tablet: auto-wrap at 300px min-width | Mobile: single column
               </p>
+
+              {/* OPS-LAYOUT-01: Real-time Layout Grammar validation (scrolling, truncation, clipping) */}
+              {liveBlockValidation && (
+                <div className={liveBlockValidation.isValid ? vizStyles.layoutCheckOk : vizStyles.layoutCheckError}>
+                  <strong>Layout check:</strong>{' '}
+                  {liveBlockValidation.isValid
+                    ? '✓ OK – block can be saved'
+                    : liveBlockValidation.errorMessage || 'Block has layout issues that must be fixed before save'}
+                </div>
+              )}
               
               <div>
                 <label className="flex-row checkbox-label">

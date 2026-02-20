@@ -210,7 +210,7 @@
   padding: var(--mm-space-4) var(--mm-space-6);
   border-radius: var(--mm-radius-lg);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-  z-index: 1000;
+  z-index: var(--z-dropdown);
   animation: slideIn 0.3s ease;
   font-size: var(--mm-font-size-base);
   font-weight: 500;
@@ -226,6 +226,27 @@
   background: var(--mm-red-50);
   color: var(--mm-red-900);
   border: 1px solid var(--mm-red-200);
+}
+
+/* OPS-LAYOUT-01: Layout Grammar real-time validation feedback in block edit modal */
+.layoutCheckOk {
+  margin-top: var(--mm-space-4);
+  padding: var(--mm-space-3);
+  border-radius: var(--mm-radius-md);
+  border: 1px solid var(--mm-gray-200);
+  background: var(--mm-gray-50);
+  color: var(--mm-gray-800);
+  font-size: var(--mm-font-size-sm);
+}
+
+.layoutCheckError {
+  margin-top: var(--mm-space-4);
+  padding: var(--mm-space-3);
+  border-radius: var(--mm-radius-md);
+  background: var(--mm-red-50);
+  color: var(--mm-red-900);
+  border: 1px solid var(--mm-red-200);
+  font-size: var(--mm-font-size-sm);
 }
 
 @keyframes slideIn {

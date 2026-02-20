@@ -56,9 +56,6 @@ export interface BaseModalProps {
   
   /** ID of element describing the modal */
   ariaDescribedBy?: string;
-  
-  /** Z-index for modal (defaults to CSS variable) */
-  zIndex?: number;
 }
 
 export default function BaseModal({
@@ -72,7 +69,6 @@ export default function BaseModal({
   className = '',
   ariaLabel,
   ariaDescribedBy,
-  zIndex,
 }: BaseModalProps) {
   // Store element that triggered modal for focus restoration
   const triggerElementRef = useRef<HTMLElement | null>(null);
@@ -134,15 +130,10 @@ export default function BaseModal({
   // Combine classes
   const modalClasses = `${styles.modal} ${sizeClass} ${className}`;
   
-  // Apply custom z-index if provided
-  const overlayStyle = zIndex ? { zIndex } : undefined;
-  
   return (
     <div 
       className={styles.overlay}
       onClick={handleOverlayClick}
-      // eslint-disable-next-line react/forbid-dom-props
-      style={overlayStyle}
       aria-modal="true"
       role="dialog"
       aria-label={ariaLabel}

@@ -112,7 +112,7 @@ describe('A-R-13: Chart Data Validation', () => {
 
       const validation = validateChartData(result, mockChart);
       expect(validation.valid).toBe(false);
-      expect(validation.issues.some(i => i.type === 'INVALID_VALUE' && i.context?.value === NaN)).toBe(true);
+      expect(validation.issues.some(i => i.type === 'INVALID_VALUE' && Number.isNaN(i.context?.value))).toBe(true);
     });
 
     it('should detect Infinity in KPI value', () => {

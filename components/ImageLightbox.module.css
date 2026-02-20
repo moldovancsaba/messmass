@@ -14,8 +14,8 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 9999;
-  padding: 1rem;
+  z-index: var(--mm-z-lightbox);
+  padding: var(--mm-modal-padding);
 }
 
 /* WHAT: Modal container for image - adapted from SharePopup
@@ -45,7 +45,7 @@
   padding: 0.5rem 1rem;
   border-radius: 8px;
   transition: all 0.2s ease;
-  z-index: 10;
+  z-index: var(--mm-z-modal-close);
 }
 
 .closeBtn:hover {

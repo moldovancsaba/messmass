@@ -132,7 +132,7 @@ export default function RoleDropdown({
       
       {isOpen && !disabled && !changing && (
         <div
-          className="role-dropdown-menu"
+          className="role-dropdown-menu z-dropdown"
           style={{ // eslint-disable-line react/forbid-dom-props
             position: 'absolute',
             top: '100%',
@@ -142,7 +142,6 @@ export default function RoleDropdown({
             border: '1px solid var(--mm-gray-200)',
             borderRadius: 'var(--mm-radius-md)',
             boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
-            zIndex: 1000,
             minWidth: '140px',
           }}
         >
@@ -204,6 +203,7 @@ function getRoleConfig(role: UserRole): { bg: string; color: string; icon: strin
     user: { bg: '#dbeafe', color: '#1e40af', icon: '👥', label: 'User' },
     admin: { bg: '#d1fae5', color: '#065f46', icon: '🔧', label: 'Admin' },
     superadmin: { bg: '#ede9fe', color: '#5b21b6', icon: '⚡', label: 'Superadmin' },
+    api: { bg: '#fef3c7', color: '#b45309', icon: '🔑', label: 'API' },
   };
   return configs[role] || configs.guest;
 }

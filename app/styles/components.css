@@ -748,7 +748,7 @@ textarea::placeholder {
   right: 0;
   bottom: 0;
   cursor: nw-resize;
-  z-index: 9999;
+  z-index: var(--mm-z-lightbox);
   background: transparent;
 }
 
@@ -946,7 +946,7 @@ textarea::placeholder {
   border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 12px;
   box-shadow: var(--shadow-lg);
-  z-index: 1000;
+  z-index: var(--z-dropdown);
   max-height: 200px;
   overflow-y: auto;
   margin-top: var(--spacing-xs);

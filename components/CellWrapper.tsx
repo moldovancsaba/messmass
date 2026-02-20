@@ -80,9 +80,10 @@ export default function CellWrapper({
             if (scaleFactor < 0.95 && newFontSize >= minFontSize) {
               titleElement.style.setProperty('font-size', `${Math.max(minFontSize, newFontSize)}px`, 'important');
               
-              // WHAT: Log when font size reduction occurs for debugging
-              // WHY: Help identify problematic titles that need attention
-              console.log(`[CellWrapper] Title font reduced: "${title}" from ${currentFontSize}px to ${Math.max(minFontSize, newFontSize)}px`);
+              // Keep this as warn (not log) to avoid noisy console.log in production.
+              console.warn(
+                `[CellWrapper] Title font reduced: "${title}" from ${currentFontSize}px to ${Math.max(minFontSize, newFontSize)}px`
+              );
             }
           }
         } catch (error) {

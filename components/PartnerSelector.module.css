@@ -47,7 +47,7 @@
   border: 1px solid var(--mm-border-color-default);
   border-radius: var(--mm-radius-md);
   box-shadow: var(--mm-shadow-lg);
-  z-index: 1000;
+  z-index: var(--z-dropdown);
 }
 
 /* WHAT: Individual partner item in dropdown

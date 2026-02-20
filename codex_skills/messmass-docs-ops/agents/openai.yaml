@@ -1,0 +1,5 @@
+interface:
+  display_name: "Messmass Docs & Ops"
+  short_description: "Update Messmass runbooks & docs"
+  default_prompt: "Use $messmass-docs-ops to update Messmass documentation and keep docs/_meta inventories consistent."
+

@@ -205,8 +205,8 @@ async function auditVariableNaming() {
     // Write violations to JSON for investigation report
     const fs = require('fs');
     const violationsJson = JSON.stringify(violations, null, 2);
-    fs.writeFileSync('docs/audits/investigations/P1-2.2-variable-naming-violations.json', violationsJson);
-    console.log(`\n✅ Violations exported to: docs/audits/investigations/P1-2.2-variable-naming-violations.json`);
+    fs.writeFileSync('docs/archive/_archive/audits/P1-2.2-variable-naming-violations.json', violationsJson);
+    console.log(`\n✅ Violations exported to: docs/archive/_archive/audits/P1-2.2-variable-naming-violations.json`);
 
   } catch (error) {
     console.error('❌ Audit failed:', error);

@@ -42,6 +42,7 @@ module.exports = {
     // WHY: Maintain code quality and consistency
     "react-hooks/exhaustive-deps": "warn",
     "@next/next/no-img-element": "error", // Use Next.js Image component
-    "no-console": ["warn", { "allow": ["warn", "error", "log"] }]
+    // OPS-SEC-03: Prefer lib/logger; disallow console.log to prevent new occurrences (allow warn/error only)
+    "no-console": ["warn", { "allow": ["warn", "error"] }]
   }
 };

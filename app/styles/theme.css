@@ -418,6 +418,44 @@
   /* Modal system z-index tokens (unified modal system v8.24.0+) */
   --mm-z-modal: var(--z-modal);
   --mm-z-modal-overlay: var(--z-modal-backdrop);
+  /* WHAT: Above modal content, below overlay (close button, inner chrome) */
+  --mm-z-modal-close: 10;
+  /* WHAT: Fullscreen lightbox / overlay above all (OPS-STYLE-01 Phase 4) */
+  --mm-z-lightbox: 9999;
+
+  /* ========================================
+     MODAL / DIALOG POSITIONING & LAYOUT (OPS-STYLE-01 Phase 4)
+  ======================================== */
+  --mm-modal-overlay-bg: rgba(0, 0, 0, 0.5);
+  --mm-modal-padding: 1rem;
+  --mm-modal-padding-mobile: 0.5rem;
+  --mm-modal-max-width-sm: 400px;
+  --mm-modal-max-width-md: 600px;
+  --mm-modal-max-width-lg: 800px;
+  --mm-modal-max-width-xl: 1200px;
+  --mm-modal-max-height: 90vh;
+  --mm-modal-max-height-mobile: 95vh;
+  --mm-modal-content-bg: var(--mm-white);
+  --mm-modal-border-radius: var(--mm-radius-xl);
+  --mm-modal-shadow: var(--mm-shadow-xl);
+
+  /* ========================================
+     ADMIN CONTENT SURFACE (OPS-ADMIN-02)
+  ======================================== */
+  /* WHAT: Default background for main content areas; overridable by admin layout style */
+  --content-bg: var(--mm-gray-50);
+  /* WHAT: Max width for admin main content and inner page-container; single source for consistency */
+  --mm-admin-content-max-width: 1600px;
+
+  /* ========================================
+     ADMIN LAYOUT – SIDEBAR & BREAKPOINTS (OPS-ADMIN-01)
+  ======================================== */
+  /* WHAT: Sidebar widths; consumed by Sidebar, AdminLayout, TopHeader */
+  --mm-sidebar-width: 280px;
+  --mm-sidebar-width-collapsed: 80px;
+  /* WHAT: Admin responsive breakpoints; use in JS or document when duplicating in @media (CSS cannot use var() in media conditions) */
+  --mm-breakpoint-tablet: 768px;
+  --mm-breakpoint-desktop: 1280px;
 
   /* ========================================
      BREAKPOINTS (for reference in CSS)

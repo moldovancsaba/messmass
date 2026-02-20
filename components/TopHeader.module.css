@@ -247,21 +247,19 @@
   }
 }
 
-/* What: Add left margin for sidebar on desktop and reduce width accordingly
-   Why: Account for fixed sidebar width while maintaining full viewport coverage */
+/* What: Account for fixed sidebar (OPS-ADMIN-01: token) */
 @media (min-width: 768px) {
   .topHeader {
-    margin-left: 280px; /* Full sidebar width */
-    width: calc(100% - 280px); /* Subtract sidebar width from full width */
+    margin-left: var(--mm-sidebar-width);
+    width: calc(100% - var(--mm-sidebar-width));
   }
 }
 
-/* What: Adjust for collapsed sidebar on tablet
-   Why: Match collapsed sidebar width */
+/* What: Collapsed sidebar on tablet (OPS-ADMIN-01: token) */
 @media (min-width: 768px) and (max-width: 1279px) {
   .topHeader {
-    margin-left: 80px; /* Collapsed sidebar width */
-    width: calc(100% - 80px); /* Subtract sidebar width from full width */
+    margin-left: var(--mm-sidebar-width-collapsed);
+    width: calc(100% - var(--mm-sidebar-width-collapsed));
   }
 }
 

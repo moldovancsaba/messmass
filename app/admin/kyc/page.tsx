@@ -51,6 +51,7 @@ export default function KycVariablesPage() {
   // WHY: Allow narrowing KYC list by data origin and grouping tags
   const [sourceFilter, setSourceFilter] = useState<{ manual: boolean; system: boolean; derived: boolean; text: boolean }>({ manual: true, system: true, derived: true, text: true });
   const [flagFilter, setFlagFilter] = useState<{ clicker: boolean; manual: boolean }>({ clicker: false, manual: false });
+  const [legacyOnly, setLegacyOnly] = useState(false); // WHAT: OPS-VAR-01 – filter to legacy stats. schema (isSystem) only; warn-only
   const [selectedCategories, setSelectedCategories] = useState<Set<string>>(new Set());
 
   const load = async () => {
@@ -102,11 +103,13 @@ export default function KycVariablesPage() {
       // Flags filter (if enabled)
       if (flagFilter.clicker && !v.flags?.visibleInClicker) return false;
       if (flagFilter.manual && !v.flags?.editableInManual) return false;
+      // Legacy (stats. schema) filter – OPS-VAR-01: show only isSystem variables when enabled
+      if (legacyOnly && !v.isSystem) return false;
       // Category tags filter (if any selected)
       if (selectedCategories.size > 0 && !selectedCategories.has(v.category)) return false;
       return true;
     });
-  }, [variables, search, sourceFilter, flagFilter, selectedCategories]);
+  }, [variables, search, sourceFilter, flagFilter, legacyOnly, selectedCategories]);
 
   return (
     <div className="page-container">
@@ -163,6 +166,14 @@ export default function KycVariablesPage() {
                 </div>
               </div>
               <div>
+                <label className="form-label">Legacy (stats. schema)</label>
+                <label className="flex items-center gap-2">
+                  <input type="checkbox" checked={legacyOnly} onChange={(e) => setLegacyOnly(e.target.checked)} />
+                  <span className="text-sm">Show only legacy stats. fields</span>
+                </label>
+                <p className="text-xs text-gray-500 mt-1">Warn-only: filters to system variables (stats schema). No behavior change.</p>
+              </div>
+              <div>
                 <label className="form-label">Tags (Categories)</label>
                 <div className="flex flex-wrap gap-2">
                   {categories.map(cat => {
@@ -212,6 +223,9 @@ export default function KycVariablesPage() {
                       )}
                       {v.flags?.editableInManual && (
                         <span className="badge badge-warning">manual</span>
+                      )}
+                      {v.isSystem && (
+                        <span className="badge badge-warning" title="Legacy stats. schema field – do not rename or remove without migration">Legacy stats.</span>
                       )}
                     </div>
                     {v.description && (

@@ -70,7 +70,8 @@ export default function PartnersAdminPageUnified() {
     reportTemplateId: '' as string | null,
     clickerSetId: '' as string | null,
     sportsDb: undefined as any,
-    logoUrl: undefined as string | undefined
+    logoUrl: undefined as string | undefined,
+    autoProvisionGoogleSheet: false
   });
   const [isCreatingPartner, setIsCreatingPartner] = useState(false);
   
@@ -343,10 +344,28 @@ export default function PartnersAdminPageUnified() {
     
     try {
       setIsCreatingPartner(true);
-      const data = await apiPost('/api/partners', newPartnerData);
+      const { autoProvisionGoogleSheet, ...createPayload } = newPartnerData as any;
+      const data = await apiPost('/api/partners', createPayload);
       
       if (data.success) {
         setSuccessMessage(`✓ Partner "${newPartnerData.name}" created successfully!`);
+
+        // Phase 2.5: Optional auto-provisioning (create + setup + connect)
+        if (autoProvisionGoogleSheet && data?.partner?._id) {
+          try {
+            const provision = await apiPost(`/api/partners/${data.partner._id}/google-sheet/provision`, { syncMode: 'manual' });
+            if (provision?.success && provision?.sheetUrl) {
+              alert(
+                `✅ Google Sheet created + connected!\n\nURL: ${provision.sheetUrl}\n\nNext: open the sheet and share it with the partner's editors (service account already has access).`
+              );
+            } else {
+              alert(`⚠️ Partner created, but sheet provisioning failed: ${provision?.error || 'Unknown error'}`);
+            }
+          } catch (e) {
+            alert(`⚠️ Partner created, but sheet provisioning failed: ${e instanceof Error ? e.message : 'Unknown error'}`);
+          }
+        }
+
         setShowAddForm(false);
         setNewPartnerData({
           name: '',
@@ -359,7 +378,8 @@ export default function PartnersAdminPageUnified() {
           reportTemplateId: '',
           clickerSetId: '',
           sportsDb: undefined,
-          logoUrl: undefined
+          logoUrl: undefined,
+          autoProvisionGoogleSheet: false
         });
         loadPartners();
       } else {
@@ -839,6 +859,21 @@ export default function PartnersAdminPageUnified() {
           </select>
           <p className="form-hint">Select which clicker layout this partner should use by default.</p>
         </div>
+
+        <div className="form-group mb-2">
+          <label className="form-label-block">
+            <input
+              type="checkbox"
+              checked={newPartnerData.autoProvisionGoogleSheet}
+              onChange={(e) => setNewPartnerData(prev => ({ ...prev, autoProvisionGoogleSheet: e.target.checked }))}
+              className="mr-2"
+            />
+            Auto-create + connect Google Sheet for this partner
+          </label>
+          <p className="form-hint">
+            💡 Phase 2.5: Creates a new sheet, writes headers, and connects it automatically. You still need to share the sheet with the partner&apos;s editors.
+          </p>
+        </div>
       </FormModal>
       
       {/* Share Partner Report Modal */}
@@ -1037,6 +1072,37 @@ export default function PartnersAdminPageUnified() {
             placeholder="https://docs.google.com/spreadsheets/d/... or just the Sheet ID"
           />
           <p className="form-hint">Store the canonical sheet URL here for reference and auto-connect.</p>
+
+          <button
+            type="button"
+            className="btn btn-secondary"
+            onClick={async (event) => {
+              try {
+                // Show loading state
+                const btn = event?.target as HTMLButtonElement;
+                const originalText = btn?.textContent || '';
+                if (btn) btn.textContent = '⏳ Creating...';
+                if (btn) btn.disabled = true;
+
+                const data = await apiPost(`/api/partners/${(editingPartner as any)?._id}/google-sheet/provision`, { syncMode: 'manual' });
+                if (!data.success) {
+                  alert(data.error || 'Provision failed');
+                  return;
+                }
+
+                setEditPartnerData(prev => ({ ...prev, googleSheetsUrl: data.sheetUrl }));
+                alert(`✅ Created + connected Google Sheet:\n\n${data.sheetUrl}\n\nNext: open the sheet and share it with the partner's editors.`);
+              } catch (e) {
+                alert('Provision failed: ' + (e instanceof Error ? e.message : 'Unknown error'));
+              } finally {
+                const btn = event?.target as HTMLButtonElement;
+                if (btn) btn.disabled = false;
+                if (btn) btn.textContent = '🆕 Create & Connect New Google Sheet';
+              }
+            }}
+          >
+            🆕 Create & Connect New Google Sheet
+          </button>
         </div>
 
         {/* Inline Connect + Pull/Push */}
@@ -1062,7 +1128,6 @@ export default function PartnersAdminPageUnified() {
                 
                 try {
                   // Step 1: Auto-setup the sheet (rename Sheet1, add columns, populate data, prefix UUID)
-                  console.log('🔧 Setting up Google Sheet for partner:', (editingPartner as any)?._id);
                   // WHAT: Use apiPost() for automatic CSRF token handling
                   // WHY: Production middleware requires X-CSRF-Token header for POST requests
                   const setupData = await apiPost(`/api/partners/${(editingPartner as any)?._id}/google-sheet/setup`, { sheetId });

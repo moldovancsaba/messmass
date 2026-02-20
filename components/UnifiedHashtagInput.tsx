@@ -537,7 +537,7 @@ export default function UnifiedHashtagInput({
           border: 1px solid rgba(229, 231, 235, 0.8);
           border-radius: 8px;
           box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-          z-index: 1000;
+          z-index: var(--z-dropdown);
           max-height: 300px;
           overflow-y: auto;
           margin-top: 4px;

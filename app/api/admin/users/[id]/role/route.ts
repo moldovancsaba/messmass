@@ -5,7 +5,7 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import { getAdminUser } from '@/lib/auth';
-import { findUserById, getUsersCollection } from '@/lib/users';
+import { findUserById, getUsersCollection, USER_ROLES } from '@/lib/users';
 import { ObjectId } from 'mongodb';
 import type { UserRole } from '@/lib/users';
 import { error as logError, info as logInfo } from '@/lib/logger';
@@ -44,8 +44,8 @@ export async function PUT(
     const body = await request.json();
     const { newRole } = body as { newRole: UserRole };
     
-    // WHAT: Validate new role
-    const validRoles: UserRole[] = ['guest', 'user', 'admin', 'superadmin'];
+    // WHAT: Validate new role (allow all canonical roles except 'api' for UI role changes; api is set via local-users)
+    const validRoles: UserRole[] = USER_ROLES.filter((r) => r !== 'api');
     if (!newRole || !validRoles.includes(newRole)) {
       return NextResponse.json(
         { success: false, error: 'Invalid role specified' },

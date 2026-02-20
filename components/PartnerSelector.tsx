@@ -150,7 +150,7 @@ export default function PartnerSelector({
       <div className={styles.chipContainer}>
         <div className={`${styles.partnerChip} ${disabled ? styles.disabled : ''}`}>
           <span className={styles.chipEmoji}>{selectedPartner.showEmoji !== false ? selectedPartner.emoji : ''}</span>
-          <span className={styles.chipLabel}>
+          <span className={styles.chipLabel} title={selectedPartner.name}>
             {selectedPartner.name}
           </span>
           {!disabled && (

@@ -59,7 +59,7 @@
   align-items: center !important;
   justify-content: center !important;
   text-align: center !important;
-  overflow: hidden !important;
+  overflow: visible !important; /* Layout Grammar: no clipping on content; fit via measured height and font scaling */
   box-sizing: border-box !important;
   /* WHAT: KILL ALL MIN-HEIGHT CONSTRAINTS */
   min-height: 0 !important;

@@ -1,6 +1,7 @@
 // lib/cors.ts
-// WHAT: Centralized CORS utilities
+// WHAT: Centralized CORS utilities (OPS-SEC-03: explicit allowlist)
 // WHY: Enable secure cross-origin requests (with credentials) for allowed origins only
+// HOW: Set ALLOWED_ORIGINS in prod/preview (e.g. https://messmass.com,https://preview.messmass.com); when unset, only localhost is allowed.
 
 import { NextRequest, NextResponse } from 'next/server';
 
