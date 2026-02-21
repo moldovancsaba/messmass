@@ -68,7 +68,7 @@ export async function GET() {
 
     const configs = await chartConfigs.find({ chartId: { $in: chartIds } }).toArray();
     const configById = new Map((configs as any[]).map((c) => [c.chartId, c]));
-    const orderedConfigs = chartIds.map((id) => configById.get(id)).filter(Boolean) as ChartConfiguration[];
+    const orderedConfigs = chartIds.map((id: string) => configById.get(id)).filter(Boolean) as ChartConfiguration[];
 
     const stats = ensureDerivedMetrics(project.stats || {}) as Record<string, number | string | undefined>;
     const chartResults = orderedConfigs.map((config) => {
