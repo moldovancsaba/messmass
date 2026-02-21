@@ -53,6 +53,7 @@ Owner: Documentation
 ## API
 - [api-public.md](api/api-public.md) — Public, bearer-token API documentation (partners/events read APIs).
 - [api-reference.md](api/api-reference.md) — Quick reference for admin/internal APIs and pointers to deeper feature guides.
+- [api-analytics.md](api/api-analytics.md) — Analytics aggregates and compare API (OPS-ANALYTICS-01 Phase 1).
 
 ## Audit, Legacy, and Generated Meta
 - `docs/audits/` — Active audit entrypoints (start at `docs/audits/audits-readme.md`).

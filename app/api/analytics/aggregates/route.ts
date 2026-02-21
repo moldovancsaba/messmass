@@ -79,7 +79,7 @@ export async function GET(request: NextRequest) {
     
     // Connect to database
     const client = await clientPromise;
-const db: Db = client.db(config.dbName);
+    const db: Db = client.db(config.dbName);
     const aggregatesCollection: Collection<TimeAggregatedMetrics> = db.collection('analytics_aggregates');
     
     // Build MongoDB query

@@ -54,7 +54,7 @@ export async function GET(request: NextRequest) {
     
     // Connect to database
     const client = await clientPromise;
-const db: Db = client.db(config.dbName);
+    const db: Db = client.db(config.dbName);
     const analyticsCollection: Collection<PartnerAnalytics> = db.collection('partner_analytics');
     
     // Build query

@@ -52,13 +52,22 @@ Owner: Product / Engineering
 
 ## 3. Phase 1 backlog (dependencies documented)
 
-- [ ] **P1-1** Verify and run `scripts/setupAnalyticsIndexes.ts` in all environments; confirm query plans for `analytics_aggregates` and `partner_analytics` for 1-year range stay under 500ms.
-- [ ] **P1-2** Add **partner-to-partner** compare: e.g. `GET /api/analytics/compare/partners?partnerIds=id1,id2&period=30d` returning aggregated metrics per partner and deltas/rankings (reuse `partner_analytics` or aggregates filtered by partner).
-- [ ] **P1-3** Add **period-to-period** compare: e.g. `GET /api/analytics/compare/periods?partnerId=...&periodA=2025-01&periodB=2025-02` or reuse/formalize executive metrics period comparison.
-- [ ] **P1-4** Document public API contract for aggregates + compare (auth, rate limits, query params, response shape) in `docs/api/` or existing api-reference.
-- [ ] **P1-5** Ensure cron `analytics-aggregation` is scheduled (e.g. Vercel Cron) and job metadata in `aggregation_jobs` is monitored for failures.
+- [ ] **P1-1** Verify and run `scripts/setupAnalyticsIndexes.ts` in all environments; confirm query plans for `analytics_aggregates` and `partner_analytics` for 1-year range stay under 500ms. **Command:** `npx ts-node scripts/setupAnalyticsIndexes.ts` (requires MONGODB_URI in .env.local). Script creates indexes and logs expectations: single event &lt;100ms, time-series 1y &lt;500ms, partner &lt;200ms, comparison &lt;300ms.
+- [x] **P1-2** Add **partner-to-partner** compare: `GET /api/analytics/compare/partners?partnerIds=id1,id2` — implemented in `app/api/analytics/compare/partners/route.ts`.
+- [x] **P1-3** Add **period-to-period** compare: `GET /api/analytics/compare/periods?periodA=2025-01&periodB=2025-02&bucket=monthly&partnerId=optional` — implemented in `app/api/analytics/compare/periods/route.ts`.
+- [x] **P1-4** Document public API contract for aggregates + compare in `docs/api/api-analytics.md` (auth, rate limits, query params, response shape).
+- [x] **P1-5** Cron schedule and monitoring documented in Section 3b below.
 
 **Dependencies:** Current v8.x data models, Bitly many-to-many, Partners system (all in place). No new collections required for P1-2/P1-3 if reusing existing aggregates.
+
+---
+
+## 3b. Cron schedule and monitoring (P1-5)
+
+- **Cron endpoint:** `POST /api/cron/analytics-aggregation`. Auth: `Bearer CRON_SECRET` or admin session. Query: `?force=true` for full re-aggregation.
+- **Schedule:** Run daily (e.g. 02:00 UTC). In Vercel: add to `vercel.json` under `crons` or use external scheduler (e.g. cron-job.org) calling the endpoint with `CRON_SECRET`.
+- **Job metadata:** Stored in `aggregation_jobs` collection. Fields: jobType, status, startedAt, completedAt, durationMs, recordsProcessed, recordsCreated, recordsUpdated, errors. Monitor for `status: 'failed'` and `errors.length > 0`; alert on consecutive failures.
+- **Indexes:** `aggregation_logs` has `startTime`, `status`, `jobType + startTime` (see `scripts/setupAnalyticsIndexes.ts`). Use for "last 7 days of jobs" and failure count queries.
 
 ---
 
