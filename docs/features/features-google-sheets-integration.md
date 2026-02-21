@@ -4,7 +4,7 @@ Last Updated: 2026-02-08T00:00:00.000Z
 Canonical: Yes
 Owner: Product
 
-**Status**: Phase 2 Delivered ✅ (Partner-level sync + UI refresh reliability)  
+**Status**: Phase 3 Delivered ✅ (Event-level sync + editor UI)  
 **Next**: Phase 6 polish; E2E validation checklist available  
 **Target**: v12.1.x - Production Ready  
 **Rollout checklist**: [ops-google-sheets-deployment-checklist.md](../operations/ops-google-sheets-deployment-checklist.md) (staging + production)
@@ -45,6 +45,13 @@ Owner: Product
 - ✅ **Hardcoded Mapping**: 42 columns (A-AP) map to MessMass fields
 - ✅ **Backward Compatible**: Existing events and partners unchanged
 - ✅ **Phase 2 UI Reliability**: Partner detail status card and partner metadata refresh after connect/disconnect/pull/push so the UI never shows stale sync state.
+
+### Phase 3 (Event-level sync)
+
+- ✅ **Event-level pull:** `POST /api/partners/[id]/google-sheet/pull` accepts `eventId`; only the sheet row matching that event’s `googleSheetUuid` is applied.
+- ✅ **Event-level push:** Already supported via `eventId` in push body.
+- ✅ **Editor UI:** On `/edit/[slug]`, when the event has `partnerId` and `googleSheetUuid` and the partner’s sheet is connected, “Pull from Sheet” and “Push to Sheet” are shown.
+- ✅ **Sync health/status:** `GET /api/partners/[id]/google-sheet/status?checkHealth=true` returns connection and optional health check (row count, accessibility). Formula columns are preserved on push (data columns updated; formula cells left unchanged where applicable).
 
 ### Future Roadmap
 

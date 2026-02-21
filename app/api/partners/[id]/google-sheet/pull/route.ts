@@ -24,6 +24,8 @@ import { error as logError } from '@/lib/logger';
 
 interface PullRequest {
   dryRun?: boolean;
+  /** When set, pull only this event (by ID); event must have googleSheetUuid and belong to this partner. */
+  eventId?: string;
 }
 
 export async function POST(
@@ -45,7 +47,7 @@ export async function POST(
 
     // Parse request body
     const body: PullRequest = await request.json();
-    const { dryRun = false } = body;
+    const { dryRun = false, eventId } = body;
 
     // Get database connection
     const client = await clientPromise;
@@ -203,12 +205,39 @@ export async function POST(
       }
     };
 
+    // Event-level pull: resolve event's googleSheetUuid when eventId provided
+    let eventUuid: string | undefined;
+    if (eventId && ObjectId.isValid(eventId)) {
+      const eventDoc = await projectsCollection.findOne({
+        _id: new ObjectId(eventId),
+        $or: [
+          { partnerId: new ObjectId(id) },
+          { 'partnerContext.partnerId': new ObjectId(id) },
+          { partner1Id: new ObjectId(id) }
+        ]
+      });
+      if (!eventDoc) {
+        return NextResponse.json(
+          { success: false, error: 'Event not found or not associated with this partner' },
+          { status: 404 }
+        );
+      }
+      if (!eventDoc.googleSheetUuid) {
+        return NextResponse.json(
+          { success: false, error: 'Event is not linked to a sheet row (no googleSheetUuid)' },
+          { status: 400 }
+        );
+      }
+      eventUuid = eventDoc.googleSheetUuid;
+    }
+
     // Execute the pull operation
     const result = await pullEventsFromSheet(sheetId, sheetName, dbAccess, {
       dryRun,
       partnerId: id,
       config: googleSheetConfig,
-      // Additional context for the operations
+      eventId,
+      eventUuid,
       context: {
         timestamp: new Date().toISOString(),
         operation: 'pull',

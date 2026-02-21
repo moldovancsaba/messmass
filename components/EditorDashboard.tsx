@@ -42,6 +42,8 @@ interface Project {
   categorizedHashtags?: { [categoryName: string]: string[] };
   partner1?: { _id: string; name: string; emoji: string; logoUrl?: string; clickerSetId?: string };
   partner2?: { _id: string; name: string; emoji: string; logoUrl?: string; clickerSetId?: string };
+  googleSheetUuid?: string;
+  partnerId?: string;
   stats: {
     remoteImages: number;
     hostessImages: number;
@@ -106,6 +108,12 @@ export default function EditorDashboard({ project: initialProject }: EditorDashb
   const [varsConfig, setVarsConfig] = useState<VariableWithFlags[]>([]);
   const [varsLoading, setVarsLoading] = useState<boolean>(false);
 
+  // Google Sheets event-level sync (Phase 3)
+  const [sheetSyncConnected, setSheetSyncConnected] = useState<boolean | null>(null);
+  const [sheetSyncLoading, setSheetSyncLoading] = useState(false);
+  const [sheetSyncMessage, setSheetSyncMessage] = useState('');
+  const [sheetSyncOperation, setSheetSyncOperation] = useState<'idle' | 'pull' | 'push'>('idle');
+
   // Update project when initialProject changes
   useEffect(() => {
     setProject(initialProject);
@@ -136,6 +144,75 @@ export default function EditorDashboard({ project: initialProject }: EditorDashb
     })();
     return () => { mounted = false };
   }, []);
+
+  // Fetch Google Sheet connection status when event is sheet-linked
+  useEffect(() => {
+    const pid = project.partnerId || (project as any).partnerId;
+    if (!pid || !project.googleSheetUuid) {
+      setSheetSyncConnected(null);
+      return;
+    }
+    let mounted = true;
+    (async () => {
+      try {
+        const res = await fetch(`/api/partners/${pid}/google-sheet/status`, { cache: 'no-store' });
+        const data = await res.json();
+        if (mounted && data?.connected === true) setSheetSyncConnected(true);
+        else if (mounted) setSheetSyncConnected(false);
+      } catch {
+        if (mounted) setSheetSyncConnected(false);
+      }
+    })();
+    return () => { mounted = false };
+  }, [project.partnerId, project.googleSheetUuid]);
+
+  const handleSheetPull = async () => {
+    const pid = project.partnerId || (project as any).partnerId;
+    if (!pid || !project._id) return;
+    setSheetSyncOperation('pull');
+    setSheetSyncMessage('');
+    try {
+      const res = await fetch(`/api/partners/${pid}/google-sheet/pull`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ eventId: project._id }),
+      });
+      const data = await res.json();
+      if (data.success) {
+        setSheetSyncMessage('Pulled from sheet. Refresh the page to see updates.');
+      } else {
+        setSheetSyncMessage(data.error || 'Pull failed');
+      }
+    } catch (e) {
+      setSheetSyncMessage(e instanceof Error ? e.message : 'Pull failed');
+    } finally {
+      setSheetSyncOperation('idle');
+    }
+  };
+
+  const handleSheetPush = async () => {
+    const pid = project.partnerId || (project as any).partnerId;
+    if (!pid || !project._id) return;
+    setSheetSyncOperation('push');
+    setSheetSyncMessage('');
+    try {
+      const res = await fetch(`/api/partners/${pid}/google-sheet/push`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ eventId: project._id }),
+      });
+      const data = await res.json();
+      if (data.success) {
+        setSheetSyncMessage('Pushed to sheet.');
+      } else {
+        setSheetSyncMessage(data.error || 'Push failed');
+      }
+    } catch (e) {
+      setSheetSyncMessage(e instanceof Error ? e.message : 'Push failed');
+    } finally {
+      setSheetSyncOperation('idle');
+    }
+  };
 
   // WHAT: Auto-save function with CSRF token support
   // WHY: Persist stats changes to database immediately after user action
@@ -517,6 +594,27 @@ export default function EditorDashboard({ project: initialProject }: EditorDashb
                 {editMode === 'manual' && '✏️ Manual'}
                 {editMode === 'builder' && '🏗️ Builder'}
               </button>
+              {sheetSyncConnected === true && (
+                <div className="mt-2">
+                  <button
+                    type="button"
+                    onClick={handleSheetPull}
+                    disabled={sheetSyncOperation !== 'idle'}
+                    className="btn btn-small btn-secondary btn-full"
+                  >
+                    {sheetSyncOperation === 'pull' ? '…' : '⬇️'} Pull from Sheet
+                  </button>
+                  <button
+                    type="button"
+                    onClick={handleSheetPush}
+                    disabled={sheetSyncOperation !== 'idle'}
+                    className="btn btn-small btn-secondary btn-full mt-1"
+                  >
+                    {sheetSyncOperation === 'push' ? '…' : '⬆️'} Push to Sheet
+                  </button>
+                  {sheetSyncMessage && <p className="text-sm mt-1" style={{ color: 'var(--mm-gray-600)' }}>{sheetSyncMessage}</p>}
+                </div>
+              )}
               
               {/* Save Button - visible for Manual & Builder modes */}
               {(editMode === 'manual' || editMode === 'builder') && (

@@ -145,14 +145,23 @@ export async function pullEventsFromSheet(
       return summary;
     }
     
+    // Event-level pull: only process the row matching eventUuid
+    let eventsToProcessSource = events.map((event, i) => ({ event, rowIndex: i + dataStartRow }));
+    if (options.eventUuid) {
+      eventsToProcessSource = eventsToProcessSource.filter(
+        ({ event }) => event.googleSheetUuid === options.eventUuid
+      );
+      if (eventsToProcessSource.length === 0) {
+        summary.errors.push({ row: 0, error: `No sheet row found for event UUID ${options.eventUuid}` });
+        return summary;
+      }
+    }
+
     // Pre-process events to ensure UUIDs
     const eventsToProcess = [];
     const uuidsToFetch = [];
     
-    for (let i = 0; i < events.length; i++) {
-      const event = events[i];
-      const rowIndex = i + dataStartRow;
-      
+    for (const { event, rowIndex } of eventsToProcessSource) {
       let uuid = event.googleSheetUuid;
       
       if (!uuid) {

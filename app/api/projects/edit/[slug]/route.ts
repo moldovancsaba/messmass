@@ -30,6 +30,7 @@ export async function GET(
     logInfo('Found project for editing', { context: 'projects/edit/[slug]', eventName: project.eventName });
 
     // Format project data for editor access (includes all information for editing)
+    const proj = project as any;
     const editableProject = {
       _id: project._id,
       eventName: project.eventName,
@@ -41,8 +42,10 @@ export async function GET(
       editSlug: project.editSlug,
       createdAt: project.createdAt,
       updatedAt: project.updatedAt,
-      partner1: (project as any).partner1 || undefined,
-      partner2: (project as any).partner2 || undefined,
+      partner1: proj.partner1 || undefined,
+      partner2: proj.partner2 || undefined,
+      googleSheetUuid: proj.googleSheetUuid || undefined,
+      partnerId: proj.partnerContext?.partnerId?.toString?.() || proj.partner1Id?.toString?.() || proj.partner1?._id || undefined,
     };
 
     return NextResponse.json({

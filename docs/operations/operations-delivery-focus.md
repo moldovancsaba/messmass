@@ -28,6 +28,9 @@ Owner: Product
 
 ## Recently completed
 
+- [#45](https://github.com/moldovancsaba/mvp-factory-control/issues/45) Google Sheets Phase 3 Event-Level Sync — **Done**. Event-level pull (eventId in pull API), editor UI Pull/Push on /edit/[slug], status/health unchanged; docs updated.
+- [#57](https://github.com/moldovancsaba/mvp-factory-control/issues/57) Analytics Phase 1 milestone — **Done** (closure; delivered via #38). Evidence on issue.
+- [#58](https://github.com/moldovancsaba/mvp-factory-control/issues/58) Analytics Phase 2 milestone — **Done** (closure; delivered via #38). Evidence on issue.
 - [#39](https://github.com/moldovancsaba/mvp-factory-control/issues/39) Layout Grammar Editor Integration — **Done**. Edit Block modal: Update Block button disabled when layout check fails; realtime Layout check + save blocking already in place (OPS-LAYOUT-01). Runtime validation unchanged.
 - [#46](https://github.com/moldovancsaba/mvp-factory-control/issues/46) SSO Integration with DoneIsBetter (Q1 2026) — **Done**. lib/ssoClient, /api/auth/sso/login, callback, config; dashboard requires SSO when SSO_BASE_URL set; login page SSO entry; coexists with existing users. Evidence: [comment](https://github.com/moldovancsaba/mvp-factory-control/issues/46#issuecomment-3938458755).
 - **P1-1 (OPS-ANALYTICS-01):** Analytics indexes run in dev (2026-02-21) — `npm run analytics:setup-indexes`; all collections verified. Run in preview/production when ready.
@@ -36,4 +39,4 @@ Owner: Product
 
 ## In progress
 
-- None. Next: move a Ready item and execute (e.g. [#57](https://github.com/moldovancsaba/mvp-factory-control/issues/57) / [#58](https://github.com/moldovancsaba/mvp-factory-control/issues/58) milestone closure, [#45](https://github.com/moldovancsaba/mvp-factory-control/issues/45) Google Sheets Phase 3).
+- None. Next: pick a Ready item from the board (e.g. [#59](https://github.com/moldovancsaba/mvp-factory-control/issues/59) Analytics Phase 3 Dashboards, [#47](https://github.com/moldovancsaba/mvp-factory-control/issues/47), [#48](https://github.com/moldovancsaba/mvp-factory-control/issues/48)).

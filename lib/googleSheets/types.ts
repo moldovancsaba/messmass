@@ -209,6 +209,10 @@ export interface PullOptions {
   dryRun?: boolean;
   partnerId: string;
   config: GoogleSheetConfig; // Pass full config from DB
+  /** When set, only process the sheet row matching this event's UUID (event-level pull). */
+  eventId?: string;
+  /** When set with eventId, only process this row UUID. */
+  eventUuid?: string;
   context?: {
     timestamp: string;
     operation: string;
