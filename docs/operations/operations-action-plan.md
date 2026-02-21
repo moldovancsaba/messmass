@@ -101,16 +101,15 @@ Owner: Operations
     - `docs/archive/_archive/audits/AUDIT_REMEDIATION_STATUS.md` (historical tracker; archived)
 
 - [ ] OPS-ANALYTICS-01: Advanced Analytics & Insights (Q1–Q2 2026)
-  - Status: PLANNED
+  - Status: IN PROGRESS (board: In Progress)
   - Priority: High
   - Owner: Product / Engineering
   - Deliverables:
-    - [ ] Design and implement analytics aggregation tables (time-bucketed, partner-level; <500ms query target)
-    - [ ] Build comparative analytics API (event-to-event, partner-to-partner, period-to-period)
-    - [ ] Implement insights/trend detection service (rule-based anomaly and trend detection)
-    - [ ] Create dashboard views (executive, marketing, operations, partner)
-    - [ ] Add white-label report generation (PDF with branding, report templates)
+    - [x] Design and scope: aggregation tables + comparative API + sequencing — see `docs/operations/ops-analytics-01-design.md`
+    - [ ] Phase 1 backlog: P1-1 index verification, P1-2 partner-to-partner compare, P1-3 period-to-period compare, P1-4 API docs, P1-5 cron monitoring
+    - [ ] Phase 2+: Insights engine, dashboards, white-label (after Phase 1)
   - References:
+    - `docs/operations/ops-analytics-01-design.md` (design + Phase 1 backlog)
     - `docs/operations/operations-roadmap.md` (Advanced Analytics & Insights Platform, Milestones)
 
 3.3 **Pre-release checks (run every release):**

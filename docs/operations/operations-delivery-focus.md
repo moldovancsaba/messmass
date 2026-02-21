@@ -26,6 +26,6 @@ Owner: Product
 
 - [#71](https://github.com/moldovancsaba/mvp-factory-control/issues/71) Style hardening Phase 4: modal/dialog positioning extraction — **Done** (2026-02-21). Evidence: [comment](https://github.com/moldovancsaba/mvp-factory-control/issues/71#issuecomment-3938421863).
 
-## Ready for execution
+## In progress
 
-- [#38](https://github.com/moldovancsaba/mvp-factory-control/issues/38) OPS-ANALYTICS-01: Advanced Analytics & Insights (Q1–Q2 2026) — **Status: Ready** (set 2026-02-21). Next: assign Agent, execute per Executable Prompt Package, then move to In Progress → Done.
+- [#38](https://github.com/moldovancsaba/mvp-factory-control/issues/38) OPS-ANALYTICS-01: Advanced Analytics & Insights (Q1–Q2 2026) — **Status: In Progress**. Design + Phase 1 plan: [ops-analytics-01-design.md](ops-analytics-01-design.md). Next: execute P1-1–P1-5 (index verification, partner/period compare APIs, API docs, cron monitoring).
