@@ -1,0 +1,77 @@
+/* WHAT: Shared layout for legal pages (Privacy, Terms)
+   WHY: Consistent reading experience and back navigation */
+
+.wrapper {
+  min-height: 100vh;
+  background: var(--mm-gray-50);
+  padding: var(--mm-space-8) var(--mm-space-6);
+}
+
+.inner {
+  max-width: 42rem;
+  margin: 0 auto;
+}
+
+.back {
+  display: inline-block;
+  font-size: var(--mm-font-size-sm);
+  color: var(--mm-color-primary-600);
+  text-decoration: none;
+  margin-bottom: var(--mm-space-6);
+}
+
+.back:hover {
+  text-decoration: underline;
+}
+
+.title {
+  font-size: var(--mm-font-size-2xl);
+  font-weight: var(--mm-font-weight-bold);
+  color: var(--mm-gray-900);
+  margin-bottom: var(--mm-space-2);
+}
+
+.updated {
+  font-size: var(--mm-font-size-sm);
+  color: var(--mm-gray-500);
+  margin-bottom: var(--mm-space-8);
+}
+
+.content {
+  font-size: var(--mm-font-size-base);
+  line-height: var(--mm-line-height-lg);
+  color: var(--mm-gray-700);
+}
+
+.content section {
+  margin-bottom: var(--mm-space-8);
+}
+
+.content h2 {
+  font-size: var(--mm-font-size-lg);
+  font-weight: var(--mm-font-weight-semibold);
+  color: var(--mm-gray-900);
+  margin-bottom: var(--mm-space-3);
+}
+
+.content p {
+  margin-bottom: var(--mm-space-4);
+}
+
+.content ul {
+  margin-bottom: var(--mm-space-4);
+  padding-left: var(--mm-space-6);
+}
+
+.content li {
+  margin-bottom: var(--mm-space-2);
+}
+
+.content a {
+  color: var(--mm-color-primary-600);
+  text-decoration: none;
+}
+
+.content a:hover {
+  text-decoration: underline;
+}

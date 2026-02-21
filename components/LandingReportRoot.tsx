@@ -215,6 +215,60 @@ export default function LandingReportRoot() {
         </div>
       </section>
 
+      <section id="pricing" className={styles.section}>
+        <div className={styles.sectionInner}>
+          <h2 className={styles.sectionTitle}>Pricing</h2>
+          <div className={styles.pricingGrid}>
+            <div className={styles.pricingCard}>
+              <h3 className={styles.pricingCardTitle}>Welcome</h3>
+              <p className={styles.pricingCardPrice}>Free <span className={styles.pricingCardPriceSub}>forever</span></p>
+              <ul className={styles.pricingCardFeatures}>
+                <li>1 personal profile</li>
+                <li>1 public site</li>
+                <li>10 public reports</li>
+                <li>Basic KYC Dataset</li>
+              </ul>
+              <p className={styles.pricingCardNote}>(POC required)</p>
+              <div className={styles.pricingCardCta}>
+                <Link href="/#contact" className="btn btn-secondary">Contact us</Link>
+              </div>
+            </div>
+            <div className={`${styles.pricingCard} ${styles.pricingCardFeatured}`}>
+              <h3 className={styles.pricingCardTitle}>Business</h3>
+              <p className={styles.pricingCardPrice}>$99 <span className={styles.pricingCardPriceSub}>USD / month</span></p>
+              <ul className={styles.pricingCardFeatures}>
+                <li>Everything in Welcome +</li>
+                <li>1 organisation profile</li>
+                <li>1 private site</li>
+                <li>Unlimited public sites</li>
+                <li>10 private reports</li>
+                <li>Unlimited public reports</li>
+                <li>Advanced KYC Dataset</li>
+              </ul>
+              <p className={styles.pricingCardNote}>(Consultancy required)</p>
+              <div className={styles.pricingCardCta}>
+                <Link href="/#contact" className="btn btn-primary">Contact us</Link>
+              </div>
+            </div>
+            <div className={styles.pricingCard}>
+              <h3 className={styles.pricingCardTitle}>Organisation</h3>
+              <p className={styles.pricingCardPrice}>Custom</p>
+              <ul className={styles.pricingCardFeatures}>
+                <li>Everything in Business +</li>
+                <li>1 organisation profile</li>
+                <li>Unlimited private sites</li>
+                <li>Unlimited private reports</li>
+                <li>Unlimited KYC Dataset</li>
+              </ul>
+              <p className={styles.pricingCardNote}>(Training required)</p>
+              <div className={styles.pricingCardCta}>
+                <Link href="/#contact" className="btn btn-secondary">Contact us</Link>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
       <ContactForm />
 
       <footer className={styles.footer}>
@@ -226,6 +280,10 @@ export default function LandingReportRoot() {
           <h2 className={styles.footerTitle}>{footerTitle}</h2>
           <Link href="/admin/login" className="btn btn-primary">Start using the system</Link>
           <p className={styles.footerSite}>messmass.com</p>
+          <nav className={styles.footerLegal} aria-label="Legal">
+            <Link href="/privacy">Privacy Policy</Link>
+            <Link href="/terms">Terms &amp; Conditions</Link>
+          </nav>
         </div>
       </footer>
     </div>
