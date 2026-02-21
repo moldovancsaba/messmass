@@ -14,3 +14,5 @@
 **Dev:** `npm run dev` (Next on 3001), WebSocket in `server/` on 7654. Env: `.env.local` (MongoDB, WS URL, ADMIN_PASSWORD, Bitly, etc.).
 
 **Product SSOT:** Version = `package.json`; doc entry = README + `docs/index.md`; execution state = `docs/operations/operations-action-plan.md`; canonical map = `docs/_meta/meta-canonical-map.md`. Governance: `docs/documentation-governance.md` (Product SSOT section added 2026-02-21).
+
+**Delivery focus:** Top 5 board issues (value + priority): #44, #57, #58, #59, #46. Next: move one to Ready (e.g. #38 or #57), execute, then Done. See `docs/operations/operations-delivery-focus.md`. Board = source of truth.

@@ -11,6 +11,7 @@ Owner: Documentation
 
 ## Operations & Delivery
 - [operations-action-plan.md](operations/operations-action-plan.md) — Tactical queue for ops, sprint goals, and blockers.
+- [operations-delivery-focus.md](operations/operations-delivery-focus.md) — Top 5 value/priority board issues and recommended next delivery step.
 - [operations-roadmap.md](operations/operations-roadmap.md) — Quarterly roadmap with targets, risks, and dependencies.
 - [operations-deployment-checklist.md](operations/operations-deployment-checklist.md) — Pre/post deployment validation, smoke tests, and rollbacks.
 - [operations-implementation-complete.md](operations/operations-implementation-complete.md) — Summary of finished implementation work and evidence of completion.
