@@ -37,15 +37,12 @@ export default function LandingKPIChart({
       className={styles.wrapper}
       style={
         {
-          '--block-height': '200px',
+          '--block-height': 'clamp(160px, 42vw, 220px)',
           '--chartBackground': 'var(--mm-white)',
           '--chartValueColor': 'var(--mm-gray-900)',
           '--chartLabelColor': 'var(--mm-gray-600)',
           '--kpiIconColor': accentColor,
-          /* WHAT: Match report page block typography (ReportContent sets these in px)
-             WHY: Landing cards use ReportChart.module.css which uses --block-base-font-size */
-          '--block-base-font-size': '16px',
-          '--block-subtitle-font-size': '14px',
+          /* Typography set in LandingKPIChart.module.css via container queries for responsivity */
           borderLeftColor: accentColor,
         } as React.CSSProperties
       }

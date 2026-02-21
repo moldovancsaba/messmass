@@ -1,0 +1,253 @@
+'use client';
+
+/**
+ * WHAT: Main page (messmass.com) driven by the same report as /report/[slug]
+ * WHY: Style and content are exactly editable from the report — no copies; uses ReportContent + same APIs
+ * HOW: Same pipeline as report page: useReportData(slug), useReportLayoutForProject(slug), useReportStyle,
+ *      chart-config public API, ReportCalculator; render landing chrome + ReportContent + pricing/footer
+ */
+
+import React, { useEffect, useMemo, useState } from 'react';
+import Link from 'next/link';
+import Image from 'next/image';
+import { ReportCalculator } from '@/lib/report-calculator';
+import type { Chart } from '@/lib/report-calculator';
+import { ensureDerivedMetrics } from '@/lib/dataValidator';
+import { useReportData } from '@/hooks/useReportData';
+import { useReportLayoutForProject } from '@/hooks/useReportLayout';
+import { useReportStyle } from '@/hooks/useReportStyle';
+import ReportContent from '@/app/report/[slug]/ReportContent';
+import ContactForm from '@/components/ContactForm';
+import { LANDING_REPORT_SLUG } from '@/lib/landingReportSlug';
+import styles from '@/app/page.module.css';
+import reportPageStyles from '@/app/styles/report-page.module.css';
+
+export default function LandingPage() {
+  const slug = LANDING_REPORT_SLUG;
+
+  const { data: reportData, loading: dataLoading, error: dataError } = useReportData(slug);
+  const project = reportData?.project;
+  const stats = project?.stats;
+
+  const {
+    report,
+    blocks,
+    gridSettings,
+    loading: layoutLoading,
+    error: layoutError,
+  } = useReportLayoutForProject(slug);
+
+  const { loading: styleLoading } = useReportStyle({
+    styleId: report?.styleId ? String(report.styleId) : null,
+    enabled: !!report,
+  });
+
+  const [charts, setCharts] = useState<Chart[]>([]);
+  const [chartsLoading, setChartsLoading] = useState(false);
+  const [chartsError, setChartsError] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!blocks || blocks.length === 0) return;
+    const chartIds = Array.from(
+      new Set(blocks.flatMap((block) => block.charts.map((c) => c.chartId)))
+    );
+    if (chartIds.length === 0) {
+      setCharts([]);
+      return;
+    }
+    let cancelled = false;
+    (async () => {
+      setChartsLoading(true);
+      setChartsError(null);
+      try {
+        const response = await fetch('/api/chart-config/public', { cache: 'no-store' });
+        const data = await response.json();
+        if (cancelled) return;
+        if (!response.ok || !data.success) {
+          throw new Error(data.error || 'Failed to fetch charts');
+        }
+        const byId: Record<string, unknown> = {};
+        for (const cfg of (data.configurations as any[]) || []) {
+          byId[(cfg as { chartId: string }).chartId] = cfg;
+        }
+        const ordered = chartIds.map((id) => byId[id]).filter(Boolean) as Chart[];
+        setCharts(ordered);
+      } catch (err) {
+        if (!cancelled) {
+          setChartsError(err instanceof Error ? err.message : 'Failed to load charts');
+        }
+      } finally {
+        if (!cancelled) setChartsLoading(false);
+      }
+    })();
+    return () => { cancelled = true; };
+  }, [blocks]);
+
+  const chartResults = useMemo(() => {
+    if (!stats || !charts || charts.length === 0) return new Map();
+    const enrichedStats = ensureDerivedMetrics(stats);
+    const calculator = new ReportCalculator(charts, enrichedStats as any);
+    const results = new Map();
+    for (const chart of charts) {
+      const result = calculator.calculateChart(chart.chartId);
+      if (result) results.set(chart.chartId, result);
+    }
+    return results;
+  }, [stats, charts]);
+
+  const loading = dataLoading || layoutLoading || chartsLoading || styleLoading;
+  const error = dataError || layoutError || chartsError;
+
+  const rawFooter = stats && (stats as Record<string, unknown>).reportTextFooterTitle;
+  const footerTitle =
+    typeof rawFooter === 'string' ? rawFooter : "Let's build the era of sovereign enterprise AI together.";
+
+  if (loading) {
+    return (
+      <div className={styles.landing}>
+        <div className={reportPageStyles.loading} style={{ minHeight: '50vh' }}>
+          <div className={reportPageStyles.loadingSpinner} />
+          <p className={reportPageStyles.loadingText}>Loading...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className={styles.landing}>
+        <div className={reportPageStyles.error} style={{ minHeight: '50vh' }}>
+          <span className={reportPageStyles.errorIcon}>⚠️</span>
+          <h2 className={reportPageStyles.errorTitle}>Failed to load</h2>
+          <p className={reportPageStyles.errorText}>{error}</p>
+          <Link href="/" className="btn btn-primary">Reload</Link>
+        </div>
+      </div>
+    );
+  }
+
+  if (!report || !project) {
+    return (
+      <div className={styles.landing}>
+        <div className={reportPageStyles.error} style={{ minHeight: '50vh' }}>
+          <span className={reportPageStyles.errorIcon}>📊</span>
+          <h2 className={reportPageStyles.errorTitle}>Report not configured</h2>
+          <p className={reportPageStyles.errorText}>
+            Set NEXT_PUBLIC_LANDING_REPORT_SLUG to a project viewSlug (e.g. from /report/[slug]).
+          </p>
+          <Link href="/admin/login" className="btn btn-primary">Go to Dashboard</Link>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className={styles.landing}>
+      <header className={styles.hero}>
+        <div className={styles.heroInner}>
+          <div className={styles.heroBrand}>
+            <Image src="/messmass-logo-white.png" alt="" width={160} height={48} priority />
+            <span className={styles.heroSiteName}>MessMass</span>
+          </div>
+          <p className={styles.heroLabel}>
+            {(stats as Record<string, unknown>)?.['reportTextHeroLabel'] as string || 'Sovereign Decision Intelligence'}
+          </p>
+          <h1 className={styles.heroTitle}>
+            {(stats as Record<string, unknown>)?.['reportTextHeroTitle'] as string || 'Data Privacy and Agentic AI without compromises.'}
+          </h1>
+          <p className={styles.heroSub}>
+            {(stats as Record<string, unknown>)?.['reportTextHeroSub'] as string ||
+              'The platform that restores the freedom and security of decision-making to data-driven companies.'}
+          </p>
+          <div className={styles.heroCtas}>
+            <Link href="/admin/login" className="btn btn-primary">Go to Dashboard</Link>
+            <a href="#report-content" className="btn btn-outline-light">See how it works</a>
+          </div>
+        </div>
+      </header>
+
+      <section id="report-content" className={reportPageStyles.page} aria-label="Report content">
+        <div className={reportPageStyles.container}>
+          <ReportContent
+            blocks={blocks}
+            chartResults={chartResults}
+            charts={charts?.length ? new Map(charts.map((c) => [c.chartId, c])) : null}
+            gridSettings={gridSettings}
+          />
+        </div>
+      </section>
+
+      <section id="pricing" className={styles.section}>
+        <div className={styles.sectionInner}>
+          <h2 className={styles.sectionTitle}>Pricing</h2>
+          <div className={styles.pricingGrid}>
+            <div className={styles.pricingCard}>
+              <h3 className={styles.pricingCardTitle}>Welcome</h3>
+              <p className={styles.pricingCardPrice}>Free <span className={styles.pricingCardPriceSub}>forever</span></p>
+              <ul className={styles.pricingCardFeatures}>
+                <li>1 personal profile</li>
+                <li>1 public site</li>
+                <li>10 public reports</li>
+                <li>Basic KYC Dataset</li>
+              </ul>
+              <p className={styles.pricingCardNote}>(POC required)</p>
+              <div className={styles.pricingCardCta}>
+                <Link href="/#contact" className="btn btn-secondary">Contact us</Link>
+              </div>
+            </div>
+            <div className={`${styles.pricingCard} ${styles.pricingCardFeatured}`}>
+              <h3 className={styles.pricingCardTitle}>Business</h3>
+              <p className={styles.pricingCardPrice}>$99 <span className={styles.pricingCardPriceSub}>USD / month</span></p>
+              <ul className={styles.pricingCardFeatures}>
+                <li>Everything in Welcome +</li>
+                <li>1 organisation profile</li>
+                <li>1 private site</li>
+                <li>Unlimited public sites</li>
+                <li>10 private reports</li>
+                <li>Unlimited public reports</li>
+                <li>Advanced KYC Dataset</li>
+              </ul>
+              <p className={styles.pricingCardNote}>(Consultancy required)</p>
+              <div className={styles.pricingCardCta}>
+                <Link href="/#contact" className="btn btn-primary">Contact us</Link>
+              </div>
+            </div>
+            <div className={styles.pricingCard}>
+              <h3 className={styles.pricingCardTitle}>Organisation</h3>
+              <p className={styles.pricingCardPrice}>Custom</p>
+              <ul className={styles.pricingCardFeatures}>
+                <li>Everything in Business +</li>
+                <li>1 organisation profile</li>
+                <li>Unlimited private sites</li>
+                <li>Unlimited private reports</li>
+                <li>Unlimited KYC Dataset</li>
+              </ul>
+              <p className={styles.pricingCardNote}>(Training required)</p>
+              <div className={styles.pricingCardCta}>
+                <Link href="/#contact" className="btn btn-secondary">Contact us</Link>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <ContactForm />
+
+      <footer className={styles.footer}>
+        <div className={styles.footerInner}>
+          <div className={styles.footerBrand}>
+            <Image src="/messmass-logo-white.png" alt="" width={120} height={36} />
+            <span className={styles.footerSiteName}>MessMass</span>
+          </div>
+          <h2 className={styles.footerTitle}>{footerTitle}</h2>
+          <Link href="/admin/login" className="btn btn-primary">Start using the system</Link>
+          <p className={styles.footerSite}>messmass.com</p>
+          <nav className={styles.footerLegal} aria-label="Legal">
+            <Link href="/privacy">Privacy Policy</Link>
+            <Link href="/terms">Terms &amp; Conditions</Link>
+          </nav>
+        </div>
+      </footer>
+    </div>
+  );
+}

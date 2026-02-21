@@ -1,11 +1,11 @@
 import type { Metadata } from 'next';
-import LandingReportRoot from '@/components/LandingReportRoot';
+import LandingPage from '@/components/LandingPage';
 
 /**
- * WHAT: Sales-oriented landing page for messmass.com (from pitch deck 2026-02-22)
- * WHY: Convert visitors with pitch-deck messaging; drive dashboard sign-in
- * HOW: LandingReportRoot fetches event + style + sections from /api/landing-report;
- *      all texts from event stats (report texts); all valuechain cards from report; style from messmass.com style.
+ * WHAT: Main page (messmass.com) — same report as /report/[slug] for content and style
+ * WHY: Style and content editable only in the report; no copies; uses ReportContent + same APIs
+ * HOW: LandingPage uses useReportData(slug), useReportLayoutForProject(slug), useReportStyle,
+ *      /api/chart-config/public, ReportCalculator; slug from NEXT_PUBLIC_LANDING_REPORT_SLUG.
  */
 export const metadata: Metadata = {
   title: 'MessMass — Sovereign Decision Intelligence',
@@ -19,5 +19,5 @@ export const dynamic = 'force-dynamic';
 export const revalidate = 0;
 
 export default function HomePage() {
-  return <LandingReportRoot />;
+  return <LandingPage />;
 }
