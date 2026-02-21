@@ -181,6 +181,47 @@ export async function sendDailySyncSummaryEmail(params: {
   }
 }
 
+const CONTACT_TO = 'sales@messmass.com';
+
+/**
+ * WHAT: Send contact form submission to sales
+ * WHY: Landing page contact form delivers leads to sales@messmass.com
+ */
+export async function sendContactFormEmail(params: {
+  name: string;
+  email: string;
+  message: string;
+}): Promise<boolean> {
+  try {
+    const transporter = createTransporter();
+    const from = EMAIL_CONFIG.from || params.email;
+
+    await transporter.sendMail({
+      from,
+      to: CONTACT_TO,
+      replyTo: params.email,
+      subject: `[messmass.com Contact] From ${params.name}`,
+      text: `Name: ${params.name}\nEmail: ${params.email}\n\nMessage:\n${params.message}`,
+      html: `
+        <h2>Contact form submission</h2>
+        <p><strong>Name:</strong> ${params.name}</p>
+        <p><strong>Email:</strong> <a href="mailto:${params.email}">${params.email}</a></p>
+        <hr>
+        <p><strong>Message:</strong></p>
+        <p style="white-space: pre-wrap;">${params.message.replace(/</g, '&lt;').replace(/>/g, '&gt;')}</p>
+        <hr>
+        <p><small>Sent from messmass.com contact form at ${new Date().toISOString()}</small></p>
+      `
+    });
+
+    console.log(`Contact form email sent to ${CONTACT_TO} from ${params.email}`);
+    return true;
+  } catch (error) {
+    console.error('Failed to send contact form email:', error);
+    return false;
+  }
+}
+
 /**
  * WHAT: Test email configuration
  * WHY: Verify SMTP credentials work before production

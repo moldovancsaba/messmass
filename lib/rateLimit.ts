@@ -54,6 +54,13 @@ export const RATE_LIMITS = {
     maxRequests: 60,            // 60 requests per minute
     message: 'Rate limit exceeded. Please try again shortly.',
   },
+
+  // Contact form - strict to prevent spam and abuse (public, unauthenticated)
+  CONTACT: {
+    windowMs: 15 * 60 * 1000,   // 15 minutes
+    maxRequests: 5,             // 5 submissions per 15 min per IP
+    message: 'Too many contact form submissions. Please try again later.',
+  },
 } as const;
 
 // WHAT: Clean up expired entries from memory store
@@ -221,6 +228,11 @@ export function getRateLimitConfig(request: NextRequest): RateLimitConfig {
   // EXCEPTION: Logout (DELETE) uses normal write limits, not auth limits
   if ((pathname.startsWith('/api/admin/login') || pathname.startsWith('/api/auth')) && method !== 'DELETE') {
     return RATE_LIMITS.AUTH;
+  }
+
+  // WHAT: Contact form - strict to prevent spam/DDoS (public endpoint)
+  if (pathname === '/api/contact' && method === 'POST') {
+    return RATE_LIMITS.CONTACT;
   }
   
   // WHAT: Public stats pages - generous limits

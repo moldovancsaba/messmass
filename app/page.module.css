@@ -1,6 +1,27 @@
 /* WHAT: Sales-oriented landing page for messmass.com (pitch deck 2026-02-22)
    WHY: Convert with pitch messaging; drive dashboard sign-in
-   HOW: Layout grammar + unified style system (ColoredCard, .btn, KPI-style cards, design tokens) */
+   HOW: Layout grammar + unified style system (ColoredCard, .btn, KPI-style cards, design tokens)
+   All values use theme tokens or local landing variables below (no fragmented hardcodes). */
+
+/* ----- Landing-specific tokens (single source for hero/footer and layout) ----- */
+.landing {
+  --landing-hero-bg-start: #0f172a;
+  --landing-hero-bg-mid: #1e293b;
+  --landing-hero-bg-end: #0f172a;
+  --landing-hero-text: #f8fafc;
+  --landing-hero-text-muted: #cbd5e1;
+  --landing-hero-border: #475569;
+  --landing-hero-border-hover: #94a3b8;
+  --landing-hero-text-hover: #f1f5f9;
+  --landing-hero-inner-max: 720px;
+  --landing-section-inner-max: 900px;
+  --landing-footer-inner-max: 560px;
+  --landing-diff-max: 640px;
+  --landing-cta-max: 17.5rem;
+  --landing-card-min: 200px;
+  --landing-card-min-wide: 240px;
+  --landing-breakpoint-md: 768px;
+}
 
 .landing {
   min-height: 100vh;
@@ -9,16 +30,26 @@
 
 /* ----- Hero ----- */
 .hero {
-  background: linear-gradient(160deg, #0f172a 0%, #1e293b 50%, #0f172a 100%);
-  color: #f8fafc;
-  padding: clamp(4rem, 10vw, 8rem) var(--mm-space-6);
+  background: linear-gradient(160deg, var(--landing-hero-bg-start) 0%, var(--landing-hero-bg-mid) 50%, var(--landing-hero-bg-end) 100%);
+  color: var(--landing-hero-text);
+  padding: clamp(var(--mm-space-16), 10vw, var(--mm-space-24)) var(--mm-space-6);
   text-align: center;
   position: relative;
 }
 
 .heroInner {
-  max-width: 720px;
+  max-width: var(--landing-hero-inner-max);
   margin: 0 auto;
+}
+
+.heroLogo {
+  margin-bottom: var(--mm-space-6);
+}
+
+.heroLogo img {
+  height: auto;
+  width: auto;
+  max-width: 100%;
 }
 
 .heroLabel {
@@ -41,7 +72,7 @@
 .heroSub {
   font-size: var(--mm-font-size-lg);
   line-height: var(--mm-line-height-lg);
-  color: #cbd5e1;
+  color: var(--landing-hero-text-muted);
   margin-bottom: var(--mm-space-8);
 }
 
@@ -56,18 +87,18 @@
 /* Outline button on dark hero (extends global .btn) */
 .btn-outline-light {
   background: transparent !important;
-  color: #e2e8f0 !important;
-  border: 1px solid #475569 !important;
+  color: var(--landing-hero-text-muted) !important;
+  border: 1px solid var(--landing-hero-border) !important;
 }
 .btn-outline-light:hover {
-  border-color: #94a3b8 !important;
-  color: #f1f5f9 !important;
+  border-color: var(--landing-hero-border-hover) !important;
+  color: var(--landing-hero-text-hover) !important;
 }
 
 /* ----- Sections ----- */
 .section,
 .sectionAlt {
-  padding: clamp(3rem, 8vw, 5rem) var(--mm-space-6);
+  padding: clamp(var(--mm-space-12), 8vw, var(--mm-space-20)) var(--mm-space-6);
 }
 
 .section {
@@ -79,7 +110,7 @@
 }
 
 .sectionInner {
-  max-width: 900px;
+  max-width: var(--landing-section-inner-max);
   margin: 0 auto;
 }
 
@@ -107,32 +138,11 @@
   margin-bottom: var(--mm-space-6);
 }
 
-.pillList {
-  list-style: none;
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--mm-space-4);
-  justify-content: center;
-  margin: 0;
-  padding: 0;
-}
-
-.pillList li {
-  display: flex;
-  align-items: center;
-  gap: var(--mm-space-2);
-  font-size: var(--mm-font-size-sm);
-  color: var(--mm-gray-600);
-}
-
-.pill {
-  display: inline-block;
-  padding: 0.25rem 0.75rem;
-  background: var(--mm-color-primary-100);
-  color: var(--mm-color-primary-700);
-  border-radius: 9999px;
-  font-weight: var(--mm-font-weight-semibold);
-  font-size: var(--mm-font-size-xs);
+.beliefGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(var(--landing-card-min), 1fr));
+  gap: var(--mm-space-5);
+  margin-top: var(--mm-space-6);
 }
 
 /* Problem — KPI-style cards (layout grammar: same as KPICard) */
@@ -146,46 +156,9 @@
 
 .problemGrid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(var(--landing-card-min-wide), 1fr));
   gap: var(--mm-space-5);
   margin-top: var(--mm-space-6);
-}
-
-/* KPI-style card content (matches components/charts/KPICard.module.css) */
-.kpiCardContent {
-  display: flex;
-  flex-direction: column;
-  gap: var(--mm-space-4);
-}
-
-.kpiCardHeader {
-  display: flex;
-  align-items: center;
-  gap: var(--mm-space-2);
-}
-
-.kpiCardIcon {
-  font-size: 1.5rem;
-  line-height: 1;
-  color: var(--mm-gray-600);
-}
-
-.kpiCardTitle {
-  font-size: var(--mm-font-size-sm);
-  font-weight: var(--mm-font-weight-semibold);
-  color: var(--mm-gray-600);
-  text-transform: uppercase;
-  letter-spacing: var(--mm-letter-spacing-wide);
-  margin: 0;
-  line-height: var(--mm-line-height-sm);
-}
-
-.kpiCardValue {
-  font-size: var(--mm-font-size-base);
-  font-weight: var(--mm-font-weight-normal);
-  color: var(--mm-gray-900);
-  line-height: var(--mm-line-height-md);
-  margin: 0;
 }
 
 /* Solution */
@@ -217,14 +190,14 @@
 
 .highlightNum {
   flex-shrink: 0;
-  width: 2rem;
-  height: 2rem;
+  width: var(--mm-space-8);
+  height: var(--mm-space-8);
   display: flex;
   align-items: center;
   justify-content: center;
   background: var(--mm-color-secondary-500);
   color: var(--mm-white);
-  border-radius: 50%;
+  border-radius: var(--mm-radius-full);
   font-weight: var(--mm-font-weight-bold);
   font-size: var(--mm-font-size-sm);
 }
@@ -238,7 +211,7 @@
 /* Product — same KPI-style cards */
 .productGrid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(var(--landing-card-min), 1fr));
   gap: var(--mm-space-5);
   margin-top: var(--mm-space-4);
 }
@@ -249,36 +222,47 @@
   color: var(--mm-gray-700);
   line-height: var(--mm-line-height-lg);
   text-align: center;
-  max-width: 640px;
+  max-width: var(--landing-diff-max);
   margin: 0 auto;
 }
 
 /* Footer CTA */
 .footer {
-  background: linear-gradient(160deg, #0f172a 0%, #1e293b 100%);
-  color: #f8fafc;
-  padding: clamp(4rem, 10vw, 6rem) var(--mm-space-6);
+  background: linear-gradient(160deg, var(--landing-hero-bg-start) 0%, var(--landing-hero-bg-mid) 100%);
+  color: var(--landing-hero-text);
+  padding: clamp(var(--mm-space-16), 10vw, var(--mm-space-24)) var(--mm-space-6);
   text-align: center;
 }
 
 .footerInner {
-  max-width: 560px;
+  max-width: var(--landing-footer-inner-max);
   margin: 0 auto;
+}
+
+.footerLogo {
+  margin-bottom: var(--mm-space-4);
+}
+
+.footerLogo img {
+  height: auto;
+  width: auto;
+  max-width: 100%;
 }
 
 .footerTitle {
   font-size: clamp(var(--mm-font-size-xl), 3vw, var(--mm-font-size-2xl));
   font-weight: var(--mm-font-weight-bold);
-  line-height: 1.35;
+  line-height: var(--mm-line-height-md);
   margin-bottom: var(--mm-space-6);
 }
 
 .footerSite {
   margin-top: var(--mm-space-6);
   font-size: var(--mm-font-size-sm);
-  color: #94a3b8;
+  color: var(--landing-hero-border-hover);
 }
 
+/* Note: max-width must be a literal (CSS does not allow var() in media queries). Value matches --landing-breakpoint-md. */
 @media (max-width: 768px) {
   .hero,
   .section,
@@ -293,13 +277,12 @@
 
   .heroCtas .btn {
     width: 100%;
-    max-width: 280px;
+    max-width: var(--landing-cta-max);
     text-align: center;
   }
 
-  .pillList {
-    flex-direction: column;
-    align-items: center;
+  .beliefGrid {
+    grid-template-columns: 1fr;
   }
 
   .productGrid {

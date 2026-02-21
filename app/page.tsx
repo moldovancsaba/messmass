@@ -1,7 +1,9 @@
 import Link from 'next/link';
+import Image from 'next/image';
 import type { Metadata } from 'next';
 import ColoredCard from '@/components/ColoredCard';
-import MaterialIcon from '@/components/MaterialIcon';
+import LandingKPIChart from '@/components/LandingKPIChart';
+import ContactForm from '@/components/ContactForm';
 import styles from './page.module.css';
 
 /**
@@ -26,6 +28,9 @@ export default function HomePage() {
       {/* Hero */}
       <header className={styles.hero}>
         <div className={styles.heroInner}>
+          <div className={styles.heroLogo}>
+            <Image src="/messmass-logo-white.png" alt="MessMass" width={160} height={48} priority />
+          </div>
           <p className={styles.heroLabel}>Sovereign Decision Intelligence</p>
           <h1 className={styles.heroTitle}>
             Data Privacy and Agentic AI without compromises.
@@ -54,11 +59,26 @@ export default function HomePage() {
           <p className={styles.beliefBody}>
             No company should hand over sensitive data to the cloud to be smart—or give up the power of AI to stay compliant. We believe in <strong>decision sovereignty</strong>: your data stays with you, and the AI comes to it.
           </p>
-          <ul className={styles.pillList}>
-            <li><span className={styles.pill}>Private</span> Strictly proprietary</li>
-            <li><span className={styles.pill}>Actionable</span> Ready for immediate action</li>
-            <li><span className={styles.pill}>Secure</span> 100% safe</li>
-          </ul>
+          <div className={styles.beliefGrid}>
+            <LandingKPIChart
+              title="Private"
+              value="Strictly proprietary."
+              icon="lock"
+              accentColor="var(--mm-color-primary-500)"
+            />
+            <LandingKPIChart
+              title="Actionable"
+              value="Ready for immediate action."
+              icon="bolt"
+              accentColor="var(--mm-color-secondary-500)"
+            />
+            <LandingKPIChart
+              title="Secure"
+              value="100% safe."
+              icon="shield"
+              accentColor="var(--mm-success)"
+            />
+          </div>
         </div>
       </section>
 
@@ -70,33 +90,24 @@ export default function HomePage() {
             Teams are paralyzed. We have data, but we lack the courage to use the tools that could interpret it.
           </p>
           <div className={styles.problemGrid}>
-            <ColoredCard accentColor="var(--mm-color-primary-500)" hoverable={false}>
-              <div className={styles.kpiCardContent}>
-                <div className={styles.kpiCardHeader}>
-                  <MaterialIcon name="trending_up" className={styles.kpiCardIcon} />
-                  <h3 className={styles.kpiCardTitle}>Insight → Action gap</h3>
-                </div>
-                <p className={styles.kpiCardValue}>Data abundance, but processing is often manual and slow.</p>
-              </div>
-            </ColoredCard>
-            <ColoredCard accentColor="var(--mm-warning)" hoverable={false}>
-              <div className={styles.kpiCardContent}>
-                <div className={styles.kpiCardHeader}>
-                  <MaterialIcon name="gpp_bad" className={styles.kpiCardIcon} />
-                  <h3 className={styles.kpiCardTitle}>Compliance fear</h3>
-                </div>
-                <p className={styles.kpiCardValue}>PII and KYC data cannot go to public cloud AIs (e.g. ChatGPT).</p>
-              </div>
-            </ColoredCard>
-            <ColoredCard accentColor="var(--mm-info)" hoverable={false}>
-              <div className={styles.kpiCardContent}>
-                <div className={styles.kpiCardHeader}>
-                  <MaterialIcon name="campaign" className={styles.kpiCardIcon} />
-                  <h3 className={styles.kpiCardTitle}>The reality</h3>
-                </div>
-                <p className={styles.kpiCardValue}>If employees use cloud models secretly, that&apos;s a breach. If management bans it, growth slows.</p>
-              </div>
-            </ColoredCard>
+            <LandingKPIChart
+              title="Insight → Action gap"
+              value="Data abundance, but processing is often manual and slow."
+              icon="trending_up"
+              accentColor="var(--mm-color-primary-500)"
+            />
+            <LandingKPIChart
+              title="Compliance fear"
+              value="PII and KYC data cannot go to public cloud AIs (e.g. ChatGPT)."
+              icon="gpp_bad"
+              accentColor="var(--mm-warning)"
+            />
+            <LandingKPIChart
+              title="The reality"
+              value="If employees use cloud models secretly, that's a breach. If management bans it, growth slows."
+              icon="campaign"
+              accentColor="var(--mm-info)"
+            />
           </div>
         </div>
       </section>
@@ -133,30 +144,26 @@ export default function HomePage() {
         <div className={styles.sectionInner}>
           <h2 className={styles.sectionTitle}>The messmass platform</h2>
           <div className={styles.productGrid}>
-            <ColoredCard accentColor="var(--mm-color-primary-500)" hoverable={false}>
-              <div className={styles.kpiCardContent}>
-                <h3 className={styles.kpiCardTitle}>1. Ingest &amp; process</h3>
-                <p className={styles.kpiCardValue}>Automated data ingestion and cleaning.</p>
-              </div>
-            </ColoredCard>
-            <ColoredCard accentColor="var(--mm-color-primary-500)" hoverable={false}>
-              <div className={styles.kpiCardContent}>
-                <h3 className={styles.kpiCardTitle}>2. Interpret</h3>
-                <p className={styles.kpiCardValue}>Trends and anomalies powered by a local AI engine.</p>
-              </div>
-            </ColoredCard>
-            <ColoredCard accentColor="var(--mm-color-primary-500)" hoverable={false}>
-              <div className={styles.kpiCardContent}>
-                <h3 className={styles.kpiCardTitle}>3. Act</h3>
-                <p className={styles.kpiCardValue}>Decision points, personas, playbooks, and task delegation.</p>
-              </div>
-            </ColoredCard>
-            <ColoredCard accentColor="var(--mm-color-primary-500)" hoverable={false}>
-              <div className={styles.kpiCardContent}>
-                <h3 className={styles.kpiCardTitle}>4. Governance</h3>
-                <p className={styles.kpiCardValue}>100% auditability and access control. Every byte stays where it belongs.</p>
-              </div>
-            </ColoredCard>
+            <LandingKPIChart
+              title="1. Ingest & process"
+              value="Automated data ingestion and cleaning."
+              accentColor="var(--mm-color-primary-500)"
+            />
+            <LandingKPIChart
+              title="2. Interpret"
+              value="Trends and anomalies powered by a local AI engine."
+              accentColor="var(--mm-color-primary-500)"
+            />
+            <LandingKPIChart
+              title="3. Act"
+              value="Decision points, personas, playbooks, and task delegation."
+              accentColor="var(--mm-color-primary-500)"
+            />
+            <LandingKPIChart
+              title="4. Governance"
+              value="100% auditability and access control. Every byte stays where it belongs."
+              accentColor="var(--mm-color-primary-500)"
+            />
           </div>
         </div>
       </section>
@@ -171,9 +178,15 @@ export default function HomePage() {
         </div>
       </section>
 
+      {/* Contact */}
+      <ContactForm />
+
       {/* Final CTA */}
       <footer className={styles.footer}>
         <div className={styles.footerInner}>
+          <div className={styles.footerLogo}>
+            <Image src="/messmass-logo-white.png" alt="MessMass" width={120} height={36} />
+          </div>
           <h2 className={styles.footerTitle}>
             Let&apos;s build the era of sovereign enterprise AI together.
           </h2>

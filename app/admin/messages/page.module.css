@@ -1,0 +1,55 @@
+.loading,
+.empty {
+  padding: var(--mm-space-6);
+  color: var(--mm-gray-600);
+}
+
+.tableWrap {
+  overflow-x: auto;
+  margin-top: var(--mm-space-4);
+  border-radius: var(--mm-radius-lg);
+  border: 1px solid var(--mm-gray-200);
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--mm-font-size-sm);
+}
+
+.table th,
+.table td {
+  padding: var(--mm-space-3) var(--mm-space-4);
+  text-align: left;
+  border-bottom: 1px solid var(--mm-gray-200);
+}
+
+.table th {
+  background: var(--mm-gray-50);
+  font-weight: var(--mm-font-weight-semibold);
+  color: var(--mm-gray-700);
+}
+
+.table tbody tr:hover {
+  background: var(--mm-gray-50);
+}
+
+.cellDate {
+  white-space: nowrap;
+  color: var(--mm-gray-600);
+}
+
+.cellMessage {
+  max-width: 20rem;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.emailLink {
+  color: var(--mm-color-primary-600);
+  text-decoration: none;
+}
+
+.emailLink:hover {
+  text-decoration: underline;
+}

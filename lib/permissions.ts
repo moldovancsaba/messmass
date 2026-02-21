@@ -26,6 +26,7 @@ export const ROLE_HIERARCHY: Record<UserRole, number> = {
 export const MENU_PERMISSIONS: Record<string, UserRole[]> = {
   // WHAT: Help section - accessible to all authenticated users
   'User Guide': ['guest', 'user', 'admin', 'superadmin'],
+  'Messages': ['admin', 'superadmin'],
   
   // WHAT: Core features - user level and above
   'Partners': ['user', 'admin', 'superadmin'],

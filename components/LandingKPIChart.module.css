@@ -1,0 +1,13 @@
+/* WHAT: Wrapper for LandingKPIChart — matches report block card (left accent + fill)
+   WHY: Reporting KPI lives in a block with height; landing needs same card look with accent */
+
+.wrapper {
+  background: var(--mm-white);
+  border: 1px solid var(--mm-border-color-default);
+  border-left-width: 4px;
+  border-left-style: solid;
+  border-radius: var(--mm-radius-lg);
+  box-shadow: var(--mm-shadow-sm);
+  overflow: hidden;
+  height: var(--block-height, 200px);
+}

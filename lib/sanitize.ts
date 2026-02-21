@@ -113,3 +113,21 @@ export function sanitizeMarkdownHTML(dirty: string): string {
     allowAttributes: ['href', 'title', 'class'] // class for code blocks (future syntax highlighting)
   });
 }
+
+/**
+ * WHAT: Sanitize plain-text input (e.g. contact form fields) to prevent injection and abuse
+ * WHY: Strip control chars, null bytes, and optionally enforce max length before storage
+ * HOW: Keep only printable + newline/tab, then truncate
+ * @param input - Raw string (will be coerced to string)
+ * @param maxLength - Optional max length; truncates if provided
+ */
+export function sanitizePlainText(input: unknown, maxLength?: number): string {
+  if (input == null) return '';
+  let s = String(input).trim();
+  // Strip control characters (0x00-0x1F) except \n (0x0A), \r (0x0D), \t (0x09)
+  s = s.replace(/[\x00-\x08\x0B\x0C\x0E-\x1F]/g, '');
+  if (maxLength != null && maxLength > 0 && s.length > maxLength) {
+    s = s.slice(0, maxLength);
+  }
+  return s;
+}
