@@ -43,10 +43,19 @@ Owner: Product / Engineering
 |-------|--------|----------------------|
 | **Phase 1** | Aggregation tables + indexes + cron; comparative API (event-to-event ✅); **extend** partner-to-partner and period-to-period compare | In progress (this doc + Phase 1 backlog) |
 | **Phase 2** | Insights engine: rule-based anomaly/trend detection; reuse/enhance `lib/insightsEngine.ts`, `lib/analytics-insights.ts` | **Done** — summary endpoint added; engines already in place |
-| **Phase 3** | Dashboard views: executive (exists), marketing, operations, partner (partner dashboard exists at `/admin/partners/[id]/analytics`) | After Phase 2 |
+| **Phase 3** | Dashboard views: executive, marketing, operations, partner | **Done** — 4 templates delivered (see Phase 3 section below) |
 | **Phase 4** | White-label report generation: PDF with branding, report templates | After Phase 3 |
 
 **Non-goals (per issue #38):** Full AI/ML pipeline beyond defined insights; replacing existing reporting flows in v1.
+
+### Phase 3 — Dashboard templates (delivered)
+
+- **Executive:** `/admin/analytics/executive` — high-level KPIs, trends, top events, critical insights.
+- **Marketing:** `/admin/analytics/marketing` — campaign/audience view (shared ExecutiveDashboardView, 30d default).
+- **Operations:** `/admin/analytics/operations` — delivery/capacity view (shared ExecutiveDashboardView, 30d default).
+- **Partner:** `/admin/partners/[id]/analytics` — per-partner analytics (existing).
+
+Shared view: `app/admin/analytics/executive/ExecutiveDashboardView.tsx` (configurable title, subtitle, defaultPeriod). Custom dashboards save preferences, real-time &lt;2s, mobile responsive, and PDF export remain as follow-ups per #59.
 
 ---
 

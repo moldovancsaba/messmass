@@ -28,6 +28,7 @@ Owner: Product
 
 ## Recently completed
 
+- [#59](https://github.com/moldovancsaba/mvp-factory-control/issues/59) Analytics Phase 3 — Advanced Dashboards — **Done**. 4 dashboard templates: Executive (`/admin/analytics/executive`), Marketing (`/admin/analytics/marketing`), Operations (`/admin/analytics/operations`), Partner (`/admin/partners/[id]/analytics`). Shared `ExecutiveDashboardView` with configurable title/subtitle/defaultPeriod. Design doc Phase 3 section updated. Follow-ups: custom preferences save, PDF export, real-time &lt;2s (optional).
 - [#45](https://github.com/moldovancsaba/mvp-factory-control/issues/45) Google Sheets Phase 3 Event-Level Sync — **Done**. Event-level pull (eventId in pull API), editor UI Pull/Push on /edit/[slug], status/health unchanged; docs updated.
 - [#57](https://github.com/moldovancsaba/mvp-factory-control/issues/57) Analytics Phase 1 milestone — **Done** (closure; delivered via #38). Evidence on issue.
 - [#58](https://github.com/moldovancsaba/mvp-factory-control/issues/58) Analytics Phase 2 milestone — **Done** (closure; delivered via #38). Evidence on issue.
@@ -39,4 +40,4 @@ Owner: Product
 
 ## In progress
 
-- None. Next: pick a Ready item from the board (e.g. [#59](https://github.com/moldovancsaba/mvp-factory-control/issues/59) Analytics Phase 3 Dashboards, [#47](https://github.com/moldovancsaba/mvp-factory-control/issues/47), [#48](https://github.com/moldovancsaba/mvp-factory-control/issues/48)).
+- None. Next: pick a Ready item (e.g. [#47](https://github.com/moldovancsaba/mvp-factory-control/issues/47), [#48](https://github.com/moldovancsaba/mvp-factory-control/issues/48)).
