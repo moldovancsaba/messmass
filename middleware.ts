@@ -41,6 +41,23 @@ export async function middleware(request: NextRequest) {
       }
     }
   }
+
+  // WHAT: #47 — SSO-authenticated dashboard routes (partner, hashtag, filter analytics)
+  // WHY: Extended report access requires SSO when SSO_BASE_URL is set
+  if (pathname.startsWith('/dashboard')) {
+    const adminSession = request.cookies.get('admin-session');
+    if (!adminSession?.value) {
+      warn('Unauthenticated dashboard access attempt', { pathname });
+      return NextResponse.redirect(new URL('/admin/login', request.url));
+    }
+    const ssoBaseUrl = process.env.SSO_BASE_URL?.trim();
+    if (ssoBaseUrl) {
+      const authSource = request.cookies.get('auth-source')?.value;
+      if (authSource !== 'sso') {
+        return NextResponse.redirect(new URL('/admin/login?reason=sso_required', request.url));
+      }
+    }
+  }
   
   // WHAT: 1. Apply rate limiting
   // WHY: Prevent DDoS and brute-force attacks
@@ -140,6 +157,8 @@ export const config = {
     // WHAT: Public report pages (rate limiting applies)
     '/report/:path*',
     '/partner-report/:path*',
+    // WHAT: #47 — SSO dashboard routes
+    '/dashboard/:path*',
     
     // WHAT: Exclude static files and assets
     '/((?!_next/static|_next/image|favicon.ico|.*\\.png|.*\\.jpg|.*\\.jpeg|.*\\.gif|.*\\.svg|.*\\.ico).*)',
