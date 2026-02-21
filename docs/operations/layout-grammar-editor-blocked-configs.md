@@ -7,7 +7,7 @@ Owner: Reporting / Editor
 
 ## 1. Where validation runs
 
-- **Editor:** Admin → Visualization Manager → Edit Data Block. Before save, the block is validated via `validateBlockForEditor` (see `lib/editorValidationAPI.ts`). Save is **blocked** when `publishBlocked === true` or when `requiredActions` is non-empty (treated as must-fix before save).
+- **Editor:** Admin → Visualization Manager → Edit Data Block. Before save, the block is validated via `validateBlockForEditor` (see `lib/editorValidationAPI.ts`). Save is **blocked** when `publishBlocked === true` or when `requiredActions` is non-empty (treated as must-fix before save). The **Update Block** button is disabled when the layout check fails (#39 Layout Grammar Editor Integration).
 - **Real-time feedback:** In the block edit modal, a "Layout check" line shows either "✓ OK – block can be saved" or the error/warning message so users see issues before clicking Update Block.
 
 ## 2. Configurations that block save

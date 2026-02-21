@@ -2455,6 +2455,8 @@ export default function VisualizationPage() {
           title={`Edit Data Block: ${editingBlock.name}`}
           submitText="Update Block"
           size="lg"
+          disableSubmit={liveBlockValidation != null && !liveBlockValidation.isValid}
+          saveStatus={blockSaveStatus}
         >
             <div className="form-section">
               <div className="form-row">
