@@ -4,6 +4,7 @@ import type { Metadata } from 'next';
 import ColoredCard from '@/components/ColoredCard';
 import LandingKPIChart from '@/components/LandingKPIChart';
 import ContactForm from '@/components/ContactForm';
+import LandingValueChainSection from '@/components/LandingValueChainSection';
 import styles from './page.module.css';
 
 /**
@@ -60,26 +61,7 @@ export default function HomePage() {
           <p className={styles.beliefBody}>
             No company should hand over sensitive data to the cloud to be smart—or give up the power of AI to stay compliant. We believe in <strong>decision sovereignty</strong>: your data stays with you, and the AI comes to it.
           </p>
-          <div className={styles.beliefGrid}>
-            <LandingKPIChart
-              title="Private"
-              value="Strictly proprietary."
-              icon="lock"
-              accentColor="var(--mm-color-primary-500)"
-            />
-            <LandingKPIChart
-              title="Actionable"
-              value="Ready for immediate action."
-              icon="bolt"
-              accentColor="var(--mm-color-secondary-500)"
-            />
-            <LandingKPIChart
-              title="Secure"
-              value="100% safe."
-              icon="shield"
-              accentColor="var(--mm-success)"
-            />
-          </div>
+          <LandingValueChainSection gridClassName={styles.beliefGrid} />
         </div>
       </section>
 
