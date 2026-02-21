@@ -17,7 +17,7 @@ export async function middleware(request: NextRequest) {
   
   // WHAT: 0. Check admin authentication and authorization (CRITICAL SECURITY)
   // WHY: Prevent unauthorized/insufficient access to ALL admin pages
-  // EXCEPTION: /admin/login, /admin/register, and /admin/clear-session are public
+  // EXCEPTION: /admin/login, /admin/register, /admin/clear-session are public
   const publicAdminRoutes = ['/admin/login', '/admin/register', '/admin/clear-session'];
   const isPublicRoute = publicAdminRoutes.some(route => pathname.startsWith(route));
   
@@ -29,6 +29,16 @@ export async function middleware(request: NextRequest) {
     if (!adminSession?.value) {
       warn('Unauthenticated admin access attempt', { pathname });
       return NextResponse.redirect(new URL('/admin/login', request.url));
+    }
+
+    // WHAT: Step 2 - When SSO is configured, /admin/dashboard requires SSO session (#46)
+    // WHY: Acceptance criteria — dashboard routes require SSO; other admin supports fallback
+    const ssoBaseUrl = process.env.SSO_BASE_URL?.trim();
+    if (ssoBaseUrl && pathname.startsWith('/admin/dashboard')) {
+      const authSource = request.cookies.get('auth-source')?.value;
+      if (authSource !== 'sso') {
+        return NextResponse.redirect(new URL('/admin/login?reason=sso_required', request.url));
+      }
     }
   }
   

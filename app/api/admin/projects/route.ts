@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { error as logError, info as logInfo } from '@/lib/logger';
 import { MongoClient, ObjectId } from 'mongodb';
 import config from '@/lib/config';
+import { validateSSOSession, type SSOUser } from '@/lib/ssoClient';
 
 const MONGODB_URI = config.mongodbUri;
 const MONGODB_DB = config.dbName;
@@ -28,36 +29,6 @@ async function connectToDatabase() {
   }
 }
 
-// Verify SSO token with the external service
-async function verifySSO(token: string) {
-  try {
-    const response = await fetch(`${config.ssoBaseUrl}/api/validate`, {
-      headers: {
-        'Authorization': `Bearer ${token}`,
-        'Content-Type': 'application/json'
-      }
-    });
-
-    if (!response.ok) {
-      return null;
-    }
-
-    const userData = await response.json();
-    return userData.user;
-  } catch (error) {
-    logError('SSO verification failed', { context: 'admin/projects' }, error instanceof Error ? error : new Error(String(error)));
-    return null;
-  }
-}
-
-// User interface for SSO validation
-interface SSOUser {
-  name: string;
-  email: string;
-  role: string;
-  id?: string;
-}
-
 // Check if user has admin privileges
 function isAdmin(user: SSOUser | null): boolean {
   return user !== null && (user.role === 'admin' || user.role === 'superadmin');
@@ -76,7 +47,7 @@ export async function GET(request: NextRequest) {
     }
 
     const token = authHeader.substring(7);
-    const user = await verifySSO(token);
+    const user = await validateSSOSession(token);
 
     if (!user) {
       return NextResponse.json(
@@ -151,7 +122,7 @@ export async function POST(request: NextRequest) {
     }
 
     const token = authHeader.substring(7);
-    const user = await verifySSO(token);
+    const user = await validateSSOSession(token);
 
     if (!user) {
       return NextResponse.json(

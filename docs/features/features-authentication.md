@@ -41,6 +41,11 @@ MessMass implements a **zero-trust, dual-layer authentication system** for enter
 - Edge and Node.js runtime compatibility
 - Graceful error handling and recovery
 
+✅ **DoneIsBetter SSO (optional, #46)**
+- When `SSO_BASE_URL` is set: `/admin/dashboard` requires SSO session; other `/admin` routes support SSO or local password.
+- Login page shows "Sign in with DoneIsBetter"; callback at `/api/auth/sso/callback` validates token and sets `admin-session` + `auth-source=sso`.
+- Page-password and share URLs unchanged.
+
 ---
 
 ## Quick Start

@@ -28,10 +28,11 @@ Owner: Product
 
 ## Recently completed
 
+- [#46](https://github.com/moldovancsaba/mvp-factory-control/issues/46) SSO Integration with DoneIsBetter (Q1 2026) — **Done**. lib/ssoClient, /api/auth/sso/login, callback, config; dashboard requires SSO when SSO_BASE_URL set; login page SSO entry; coexists with existing users. Evidence: [comment](https://github.com/moldovancsaba/mvp-factory-control/issues/46#issuecomment-3938458755).
 - **P1-1 (OPS-ANALYTICS-01):** Analytics indexes run in dev (2026-02-21) — `npm run analytics:setup-indexes`; all collections verified. Run in preview/production when ready.
 - [#38](https://github.com/moldovancsaba/mvp-factory-control/issues/38) OPS-ANALYTICS-01: Advanced Analytics & Insights (Q1–Q2 2026) — **Done** (2026-02-21). Phase 1: compare/partners, compare/periods, [api-analytics.md](../api/api-analytics.md), cron/monitoring. Phase 2: `GET /api/analytics/insights/summary`. Evidence comment posted on issue.
 - [#71](https://github.com/moldovancsaba/mvp-factory-control/issues/71) Style hardening Phase 4: modal/dialog positioning extraction — **Done** (2026-02-21). Evidence: [comment](https://github.com/moldovancsaba/mvp-factory-control/issues/71#issuecomment-3938421863).
 
 ## In progress
 
-- None. Next: move a Ready item from the board and execute (e.g. [#57](https://github.com/moldovancsaba/mvp-factory-control/issues/57), [#58](https://github.com/moldovancsaba/mvp-factory-control/issues/58), or [#46](https://github.com/moldovancsaba/mvp-factory-control/issues/46)).
+- None. Next: move a Ready item and execute (e.g. [#57](https://github.com/moldovancsaba/mvp-factory-control/issues/57) / [#58](https://github.com/moldovancsaba/mvp-factory-control/issues/58) milestone closure, [#45](https://github.com/moldovancsaba/mvp-factory-control/issues/45) Google Sheets Phase 3, [#39](https://github.com/moldovancsaba/mvp-factory-control/issues/39) Layout Grammar Editor).

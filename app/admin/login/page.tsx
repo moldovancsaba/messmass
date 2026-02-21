@@ -13,17 +13,23 @@ export default function AdminLogin() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
   const [checkingAuth, setCheckingAuth] = useState(true)
+  const [ssoEnabled, setSsoEnabled] = useState(false)
 
-  // Check if already authenticated
+  // Check if already authenticated and SSO config
   useEffect(() => {
     const checkAuth = async () => {
       try {
-        const response = await fetch('/api/admin/auth')
-        const data = await response.json()
-        if (response.ok && data.user) {
+        const [authRes, ssoRes] = await Promise.all([
+          fetch('/api/admin/auth'),
+          fetch('/api/auth/sso/config'),
+        ])
+        const authData = await authRes.json()
+        if (authRes.ok && authData.user) {
           router.push('/admin')
           return
         }
+        const ssoData = await ssoRes.json().catch(() => ({}))
+        setSsoEnabled(Boolean(ssoData?.ssoEnabled))
       } catch {
         // ignore
       }
@@ -31,6 +37,25 @@ export default function AdminLogin() {
     }
     checkAuth()
   }, [router])
+
+  // Read URL params for SSO redirect reasons and errors
+  useEffect(() => {
+    if (typeof window === 'undefined') return
+    const params = new URLSearchParams(window.location.search)
+    const reason = params.get('reason')
+    const err = params.get('error')
+    if (reason === 'sso_required') {
+      setError('Dashboard requires Sign in with DoneIsBetter when SSO is enabled.')
+    } else if (err === 'no_account') {
+      setError('No MessMass account for this identity. Use email/password or contact an admin.')
+    } else if (err === 'invalid_sso') {
+      setError('SSO session invalid or expired. Try again or sign in with email/password.')
+    } else if (err === 'missing_token') {
+      setError('SSO did not return a token. Try again or sign in with email/password.')
+    } else if (err === 'sso_not_configured') {
+      setError('SSO is not configured.')
+    }
+  }, [])
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -70,9 +95,25 @@ export default function AdminLogin() {
             MessMass Admin
           </h1>
           <p className="subtitle login-subtitle">
-            Sign in with email and password to access the dashboard
+            {ssoEnabled ? 'Sign in with DoneIsBetter or email/password' : 'Sign in with email and password to access the dashboard'}
           </p>
         </div>
+
+        {/* SSO entry when configured (#46) */}
+        {ssoEnabled && (
+          <div className="form-group" style={{ marginBottom: '1rem' }}>
+            <a
+              href="/api/auth/sso/login"
+              className="btn btn-secondary w-full"
+              style={{ display: 'block', textAlign: 'center' }}
+            >
+              Sign in with DoneIsBetter
+            </a>
+            <p style={{ marginTop: '0.5rem', fontSize: 'var(--mm-font-size-sm)', color: 'var(--mm-gray-600)' }}>
+              Required for Dashboard access
+            </p>
+          </div>
+        )}
 
         {/* Login Form */}
         <form onSubmit={handleLogin} className="login-form">

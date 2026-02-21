@@ -1,39 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 
 import config from '@/lib/config';
+import { validateSSOSession, type SSOUser } from '@/lib/ssoClient';
 import { error as logError, info as logInfo } from '@/lib/logger';
-
-// Verify SSO token with the external service
-async function verifySSO(token: string) {
-  try {
-    // WHAT: Use centralized SSO base URL from config to avoid hard-coded strings.
-    // WHY: Centralization eases environment changes and prevents drift across routes.
-    const response = await fetch(`${config.ssoBaseUrl}/api/validate`, {
-      headers: {
-        'Authorization': `Bearer ${token}`,
-        'Content-Type': 'application/json'
-      }
-    });
-
-    if (!response.ok) {
-      return null;
-    }
-
-    const userData = await response.json();
-    return userData.user;
-  } catch (error) {
-    logError('SSO verification failed', { context: 'admin/users' }, error instanceof Error ? error : new Error(String(error)));
-    return null;
-  }
-}
-
-// User interface for SSO validation
-interface SSOUser {
-  name: string;
-  email: string;
-  role: string;
-  id?: string;
-}
 
 // Check if user has admin privileges
 function isAdmin(user: SSOUser | null): boolean {
@@ -75,7 +44,7 @@ export async function GET(request: NextRequest) {
     }
 
     const token = authHeader.substring(7);
-    const user = await verifySSO(token);
+    const user = await validateSSOSession(token);
 
     if (!user) {
       return NextResponse.json(
@@ -132,7 +101,7 @@ export async function PUT(request: NextRequest) {
     }
 
     const token = authHeader.substring(7);
-    const user = await verifySSO(token);
+    const user = await validateSSOSession(token);
 
     if (!user) {
       return NextResponse.json(

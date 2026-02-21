@@ -15,4 +15,4 @@
 
 **Product SSOT:** Version = `package.json`; doc entry = README + `docs/index.md`; execution state = `docs/operations/operations-action-plan.md`; canonical map = `docs/_meta/meta-canonical-map.md`. Governance: `docs/documentation-governance.md` (Product SSOT section added 2026-02-21).
 
-**Delivery focus:** Top 5 board issues (value + priority): #44, #57, #58, #59, #46. #71 Done, #38 Done (2026-02-21 — OPS-ANALYTICS-01 Phase 1 + Phase 2). See `docs/operations/operations-delivery-focus.md`. Board = source of truth.
+**Delivery focus:** Top 5 board issues: #44, #57, #58, #59, #46. #71 Done, #38 Done, #46 Done (SSO DoneIsBetter, 2026-02-21). See `docs/operations/operations-delivery-focus.md`. Board = source of truth.

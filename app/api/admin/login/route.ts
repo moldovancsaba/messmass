@@ -174,6 +174,17 @@ export async function POST(request: NextRequest) {
       })
     }
 
+    // WHAT: Mark session as local (not SSO) for #46 dashboard SSO requirement
+    // WHY: /admin/dashboard requires auth-source=sso when SSO is configured
+    response.cookies.set('auth-source', 'local', {
+      httpOnly: false,
+      secure: isProduction,
+      sameSite: 'lax',
+      maxAge: 7 * 24 * 60 * 60,
+      path: '/',
+      domain,
+    })
+
     // Cookie set successfully - no logging needed (already logged auth success)
 
     // CORS: Echo allowed origin and credentials for cross-origin admin consoles
@@ -212,6 +223,8 @@ export async function DELETE(request: NextRequest) {
     // WHY: Invalidate user session on logout
     cookieStore.delete('admin-session')
     
+    cookieStore.delete('auth-source')
+
     // Also set explicit deletion response cookie
     const response = NextResponse.json({ success: true, message: 'Logged out successfully' })
     response.cookies.set('admin-session', '', {
@@ -222,7 +235,15 @@ export async function DELETE(request: NextRequest) {
       path: '/',
       domain,
     })
-    
+    response.cookies.set('auth-source', '', {
+      httpOnly: false,
+      secure: isProduction,
+      sameSite: 'lax',
+      maxAge: 0,
+      path: '/',
+      domain,
+    })
+
     return response
   } catch (error) {
     // WHAT: Log logout error (logger redacts sensitive data)
