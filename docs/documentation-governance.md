@@ -1,8 +1,15 @@
 # Documentation Governance
 Status: Active
-Last Updated: 2026-02-05T21:07:42.000Z
+Last Updated: 2026-02-21T00:00:00.000Z
 Canonical: Yes
 Owner: Documentation
+
+## Product SSOT (Single Source of Truth)
+
+- **Product version:** `package.json` → `version` (e.g. `11.55.1`). All docs and UI that display version must match this.
+- **Product summary & entry:** `README.md` (overview, quick start, doc index) and `docs/index.md` (full canonical doc map). No duplicate root-level WARP/ARCHITECTURE/CODING_STANDARDS etc.; those live under `docs/` and are linked from README and `docs/index.md`.
+- **Execution state:** `docs/operations/operations-action-plan.md` (single task/execution queue; no separate TASKLIST).
+- **Canonical doc list:** `docs/_meta/meta-canonical-map.md` (generated). Regenerate after doc moves/renames.
 
 ## Purpose
 Keep documentation consistent, up-to-date, and safe to rely on by enforcing:

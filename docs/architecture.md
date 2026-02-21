@@ -4,7 +4,7 @@ Last Updated: 2026-02-05T19:29:57.000Z
 Canonical: No
 Owner: Architecture
 
-Version: 11.55.3
+Version: 11.55.1
 
 **Recent Update (2026-01-16):** 
 - **Partner Links**: Partner edit/report buttons now use `partner._id` (ObjectId) instead of `viewSlug` for reliable access. This fixes "Invalid partner ID format" errors when `viewSlug` is human-readable.

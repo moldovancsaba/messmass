@@ -1,13 +1,13 @@
 # MessMass
 Status: Active
-Last Updated: 2026-01-16T16:00:00.000Z
+Last Updated: 2026-02-21T00:00:00.000Z
 Canonical: No
 Owner: Product
 
 **A comprehensive real-time collaborative event statistics dashboard with advanced partner management, intelligent link tracking, and custom theming engine.**
 
-**Version**: v11.55.3
-**Last Updated**: 2026-01-16T16:00:00.000Z
+**Version**: v11.55.1
+**Last Updated**: 2026-02-21T00:00:00.000Z
 - **Website**: https://messmass.doneisbetter.com
 - **Status**: Production-Ready — Full-featured event management platform with partner ecosystem, automated fixture suggestions, and dynamic theming
 
@@ -39,7 +39,7 @@ npm install
 # Seed variable metadata (first-time setup)
 npm run seed:variables
 
-# Start Next.js development server (port 5000)
+# Start Next.js development server (port 3001)
 npm run dev
 
 # Start WebSocket server (port 7654) - in separate terminal
@@ -88,17 +88,19 @@ SPORTSDB_BASE_URL=https://www.thesportsdb.com/api/v1/json
 
 ## Documentation Index
 
-### 📘 Core Documentation (Root Level)
+**Single source of truth for docs:** [docs/index.md](docs/index.md) — curated canonical entrypoint. All paths below live under `docs/`.
 
-| Document | Description | Last Updated |
-|----------|-------------|-------------|
-| **WARP.md** | 🤖 AI Development Rules & Protocols - Required reading for AI agents | 2025-12-22 |
-| **ARCHITECTURE.md** | 🏗️ System Architecture - Complete technical overview | 2025-12-22 |
-| **CODING_STANDARDS.md** | ✅ **MANDATORY** - Coding rules, inline style prohibition | 2025-12-22 |
-| **RELEASE_NOTES.md** | 📋 Versioned Changelog - All delivered features | 2025-12-22 |
-| **TASKLIST.md** | ✅ Active Tasks - Current work items only | 2025-12-22 |
-| **ROADMAP.md** | 🗺️ Future Plans - Undelivered features & milestones | 2025-12-22 |
-| **LEARNINGS.md** | 🧠 Historical Decisions - Lessons learned | 2025-12-22 |
+### 📘 Core (under `docs/`)
+
+| Document | Description |
+|----------|-------------|
+| [docs/architecture.md](docs/architecture.md) | 🏗️ System architecture and technical overview |
+| [docs/coding-standards.md](docs/coding-standards.md) | ✅ **MANDATORY** — Coding rules, inline style prohibition |
+| [docs/operations/ops-warp.md](docs/operations/ops-warp.md) | 🤖 AI/dev rules, quick start, naming (WARP) |
+| [docs/operations/operations-action-plan.md](docs/operations/operations-action-plan.md) | ✅ Active tasks and execution queue |
+| [docs/operations/operations-roadmap.md](docs/operations/operations-roadmap.md) | 🗺️ Roadmap and future plans |
+| [docs/operations/operations-release-notes.md](docs/operations/operations-release-notes.md) | 📋 Versioned changelog |
+| [docs/operations/operations-learnings.md](docs/operations/operations-learnings.md) | 🧠 Historical decisions and learnings |
 
 ### 📁 Organized Documentation (`docs/` Directory)
 
