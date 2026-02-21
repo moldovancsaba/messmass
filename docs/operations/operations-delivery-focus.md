@@ -28,4 +28,4 @@ Owner: Product
 
 ## In progress
 
-- [#38](https://github.com/moldovancsaba/mvp-factory-control/issues/38) OPS-ANALYTICS-01: Advanced Analytics & Insights (Q1–Q2 2026) — **Status: In Progress**. Design + Phase 1 plan: [ops-analytics-01-design.md](ops-analytics-01-design.md). Next: execute P1-1–P1-5 (index verification, partner/period compare APIs, API docs, cron monitoring).
+- [#38](https://github.com/moldovancsaba/mvp-factory-control/issues/38) OPS-ANALYTICS-01: Advanced Analytics & Insights (Q1–Q2 2026) — **Status: In Progress**. Phase 1 implemented: compare/partners, compare/periods, [api-analytics.md](../api/api-analytics.md), cron/monitoring in design doc. P1-1 remains: run `setupAnalyticsIndexes.ts` per environment. Next: review → Done or Phase 2 (insights engine).
