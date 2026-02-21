@@ -49,15 +49,20 @@ export default function LandingValueChainSection({ gridClassName }: { gridClassN
   const content =
     chartResults && chartResults.length > 0 ? (
       <>
-        {chartResults.map((r, i) => (
-          <LandingKPIChart
-            key={r.chartId}
-            title={r.title}
-            value={typeof r.kpiValue === 'string' || typeof r.kpiValue === 'number' ? String(r.kpiValue) : ''}
-            icon={r.icon}
-            accentColor={ACCENT_COLORS[i % ACCENT_COLORS.length]}
-          />
-        ))}
+        {chartResults.map((r, i) => {
+          const el = r.type === 'valuechain' && Array.isArray(r.elements) && r.elements.length >= 2 ? r.elements : null;
+          const title = el ? (typeof el[0].value === 'string' ? el[0].value : '') : r.title;
+          const value = el ? (typeof el[1].value === 'string' ? el[1].value : '') : (typeof r.kpiValue === 'string' || typeof r.kpiValue === 'number' ? String(r.kpiValue) : '');
+          return (
+            <LandingKPIChart
+              key={r.chartId}
+              title={title}
+              value={value}
+              icon={r.icon}
+              accentColor={ACCENT_COLORS[i % ACCENT_COLORS.length]}
+            />
+          );
+        })}
       </>
     ) : (
       <>

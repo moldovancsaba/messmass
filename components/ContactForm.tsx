@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
+import { apiPost } from '@/lib/apiClient';
 import styles from './ContactForm.module.css';
 
 export default function ContactForm() {
@@ -15,24 +16,14 @@ export default function ContactForm() {
     setStatus('sending');
     setErrorMessage('');
     try {
-      const res = await fetch('/api/contact', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name, email, message }),
-      });
-      const data = await res.json();
-      if (!res.ok) {
-        setStatus('error');
-        setErrorMessage(data.error || 'Something went wrong.');
-        return;
-      }
+      await apiPost('/api/contact', { name, email, message });
       setStatus('success');
       setName('');
       setEmail('');
       setMessage('');
-    } catch {
+    } catch (err) {
       setStatus('error');
-      setErrorMessage('Network error. Please try again.');
+      setErrorMessage(err instanceof Error ? err.message : 'Something went wrong. Please try again.');
     }
   }
 

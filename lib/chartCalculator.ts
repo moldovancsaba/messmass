@@ -222,6 +222,34 @@ export function calculateChart(
     }
   });
   
+  // WHAT: ValueChain charts display icon + 2 text fields (title + description from stats)
+  // WHY: evaluateFormula returns NA or number for [reportTextN]; we need string resolution like text charts
+  if (configuration.type === 'valuechain' && elements.length >= 2) {
+    for (let i = 0; i < 2; i++) {
+      const formula = configuration.elements[i]?.formula?.trim();
+      const current = elements[i].value;
+      if (formula && (current === 'NA' || typeof current === 'number')) {
+        let resolved: string | undefined;
+        const bracketMatch = formula.match(/^\[([a-zA-Z0-9_]+)\]$/);
+        if (bracketMatch) {
+          const fieldName = bracketMatch[1];
+          const v = (stats as any)[fieldName];
+          resolved = v !== undefined && v !== null ? String(v) : undefined;
+        } else if (formula.startsWith('stats.')) {
+          const fieldName = formula.substring(6);
+          const v = (stats as any)[fieldName] ?? (stats as any)[formula];
+          resolved = v !== undefined && v !== null ? String(v) : undefined;
+        } else if (/^[a-zA-Z][a-zA-Z0-9_]*$/.test(formula)) {
+          const v = (stats as any)[formula];
+          resolved = v !== undefined && v !== null ? String(v) : undefined;
+        }
+        if (resolved !== undefined) {
+          (elements[i] as { value: number | string | 'NA' }).value = resolved;
+        }
+      }
+    }
+  }
+  
   // Calculate total for bar charts or kpiValue for KPI charts
   let total: number | 'NA' | undefined;
   let kpiValue: number | 'NA' | undefined;
@@ -791,6 +819,9 @@ export function validateChartWithStats(
     errors.push('KPI charts must have exactly 1 element');
   }
   
+  if (configuration.type === 'valuechain' && configuration.elements.length !== 2) {
+    errors.push('ValueChain charts must have exactly 2 elements (title + description)');
+  }
   
   // Check for potential issues with zero values in pie charts
   if (configuration.type === 'pie') {

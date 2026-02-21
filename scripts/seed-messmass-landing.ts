@@ -120,33 +120,37 @@ async function main() {
     }
     const styleId = (style as any)._id;
 
-    // 4. Chart configurations: KPI (ValueChain) — Private, Actionable, Secure
+    // 4. Chart configurations: ValueChain (icon + 2 text fields) — Private, Actionable, Secure
     const chartConfigs = db.collection('chart_configurations');
     const valueChainCharts = [
-      { chartId: 'kpi-valuechain-private', title: 'Private', icon: 'lock', formula: 'reportText1', color: '#3b82f6' },
-      { chartId: 'kpi-valuechain-actionable', title: 'Actionable', icon: 'bolt', formula: 'reportText2', color: '#10b981' },
-      { chartId: 'kpi-valuechain-secure', title: 'Secure', icon: 'shield', formula: 'reportText3', color: '#22c55e' },
+      { chartId: 'kpi-valuechain-private', title: 'Private', icon: 'lock', textA: 'reportText1', textB: 'reportText2', color: '#3b82f6' },
+      { chartId: 'kpi-valuechain-actionable', title: 'Actionable', icon: 'bolt', textA: 'reportText3', textB: 'reportText4', color: '#10b981' },
+      { chartId: 'kpi-valuechain-secure', title: 'Secure', icon: 'shield', textA: 'reportText5', textB: 'reportText6', color: '#22c55e' },
     ];
     for (const v of valueChainCharts) {
       const existing = await chartConfigs.findOne({ chartId: v.chartId });
+      const payload = {
+        chartId: v.chartId,
+        title: v.title,
+        type: 'valuechain',
+        formula: '', // valuechain uses elements[].formula only
+        order: valueChainCharts.indexOf(v),
+        isActive: true,
+        icon: v.icon,
+        iconVariant: 'outlined',
+        elements: [
+          { id: '1', label: 'Title', formula: `[${v.textA}]`, color: v.color },
+          { id: '2', label: 'Description', formula: `[${v.textB}]`, color: v.color },
+        ],
+        createdAt: now,
+        updatedAt: now,
+      };
       if (!existing) {
-        await chartConfigs.insertOne({
-          chartId: v.chartId,
-          title: v.title,
-          type: 'kpi',
-          order: valueChainCharts.indexOf(v),
-          isActive: true,
-          icon: v.icon,
-          iconVariant: 'outlined',
-          elements: [
-            { id: '1', label: v.title, formula: `[${v.formula}]`, color: v.color },
-          ],
-          createdAt: now,
-          updatedAt: now,
-        });
+        await chartConfigs.insertOne(payload);
         console.log('✅ Created chart config:', v.chartId);
       } else {
-        console.log('✓ Chart config exists:', v.chartId);
+        await chartConfigs.updateOne({ chartId: v.chartId }, { $set: { ...payload, updatedAt: now } });
+        console.log('✓ Chart config updated:', v.chartId);
       }
     }
 
@@ -252,9 +256,12 @@ async function main() {
       flags: 0,
       baseballCap: 0,
       other: 0,
-      reportText1: 'Strictly proprietary.',
-      reportText2: 'Ready for immediate action.',
-      reportText3: '100% safe.',
+      reportText1: 'Private',
+      reportText2: 'Strictly proprietary.',
+      reportText3: 'Actionable',
+      reportText4: 'Ready for immediate action.',
+      reportText5: 'Secure',
+      reportText6: '100% safe.',
     };
     if (!project) {
       const { v4: uuidv4 } = await import('uuid');
@@ -283,6 +290,9 @@ async function main() {
         reportText1: currentStats.reportText1 ?? defaultStats.reportText1,
         reportText2: currentStats.reportText2 ?? defaultStats.reportText2,
         reportText3: currentStats.reportText3 ?? defaultStats.reportText3,
+        reportText4: currentStats.reportText4 ?? defaultStats.reportText4,
+        reportText5: currentStats.reportText5 ?? defaultStats.reportText5,
+        reportText6: currentStats.reportText6 ?? defaultStats.reportText6,
       };
       await projects.updateOne(
         { _id: (project as any)._id },
@@ -301,7 +311,7 @@ async function main() {
 
     console.log('\n✅ Seed complete. Landing project viewSlug:', (project as any).viewSlug);
     console.log('  Use this slug in report URL: /report/' + (project as any).viewSlug);
-    console.log('  Edit event stats in admin Events to change KPI text (reportText1, reportText2, reportText3).');
+    console.log('  Edit event stats in admin Events to change value chain text (reportText1..6: title + description per card).');
   } finally {
     await client.close();
   }

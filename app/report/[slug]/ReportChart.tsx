@@ -185,6 +185,15 @@ export default function ReportChart({ result, chart, width, blockHeight, unified
         );
         return total > 0;
       
+      case 'valuechain': {
+        const el = result.elements;
+        if (!el || el.length < 2) return false;
+        return (
+          (typeof el[0]?.value === 'string' && el[0].value.length > 0) ||
+          (typeof el[1]?.value === 'string' && el[1].value.length > 0)
+        );
+      }
+      
       default:
         return false;
     }
@@ -230,6 +239,9 @@ export default function ReportChart({ result, chart, width, blockHeight, unified
             <BarChart result={result} />
         </div>
       );
+    
+    case 'valuechain':
+      return <ValueChainChart result={result} className={className} />;
     
     default:
       return (
@@ -515,6 +527,39 @@ function KPIChart({ result, className }: { result: ChartResult; className?: stri
           <span>{protectedTitle}</span>
         </div>
       )}
+    </div>
+  );
+}
+
+/**
+ * ValueChain Chart - Icon + 2 text lines (title/highlight + description)
+ * Same layout as KPI: icon row, then first text, then second text
+ */
+function ValueChainChart({ result, className }: { result: ChartResult; className?: string }) {
+  const textA = (result.elements?.[0]?.value != null ? String(result.elements[0].value) : '').trim();
+  const textB = (result.elements?.[1]?.value != null ? String(result.elements[1].value) : '').trim();
+  const iconVariant = result.iconVariant || 'outlined';
+  const hasIcon = !!result.icon;
+
+  return (
+    <div
+      className={`${styles.chart} ${styles.kpi} ${!hasIcon ? (textB ? styles.kpiNoIcon : styles.kpiOnlyValue) : (!textB ? styles.kpiNoTitle : '')} report-chart ${className || ''}`}
+    >
+      {hasIcon && (
+        <div className={styles.kpiIconRow}>
+          <MaterialIcon
+            name={result.icon as string}
+            variant={iconVariant}
+            className={styles.kpiIcon}
+          />
+        </div>
+      )}
+      <div className={styles.kpiValueRow}>{textA || '\u00A0'}</div>
+      {textB ? (
+        <div className={styles.kpiTitle}>
+          <span>{preventPhraseBreaks(textB)}</span>
+        </div>
+      ) : null}
     </div>
   );
 }

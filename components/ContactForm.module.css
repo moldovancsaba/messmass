@@ -1,6 +1,9 @@
+/* WHAT: Force light form controls so browser dark mode doesn’t override
+   WHY: color-scheme: dark makes textarea dark + global text color stays dark = unreadable */
 .contact {
   padding: clamp(var(--mm-space-12), 8vw, var(--mm-space-20)) var(--mm-space-6);
   background: var(--mm-white);
+  color-scheme: light;
 }
 
 .contactInner {
@@ -45,11 +48,20 @@
   border-radius: var(--mm-radius-md);
   font-size: var(--mm-font-size-base);
   font-family: inherit;
+  /* WHAT: Explicit light field styling from design system (no hardcodes)
+     WHY: Avoid browser dark form control + global dark text = black on black
+     Use !important so global/browser dark styles cannot override in this section */
+  background: var(--mm-white) !important;
+  color: var(--mm-gray-900) !important;
 }
 
 .textarea {
   resize: vertical;
   min-height: 6rem;
+  /* WHAT: Prevent browser from painting native dark textarea inner
+     WHY: Some browsers (e.g. with color-scheme) still override despite background */
+  -webkit-appearance: none;
+  appearance: none;
 }
 
 .input:focus,
@@ -71,8 +83,13 @@
 }
 
 .feedbackError {
-  color: var(--mm-error, #dc2626);
+  color: var(--mm-error);
   font-size: var(--mm-font-size-sm);
+}
+
+.input::placeholder,
+.textarea::placeholder {
+  color: var(--mm-gray-400);
 }
 
 .form .btn {

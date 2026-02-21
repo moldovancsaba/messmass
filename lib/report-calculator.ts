@@ -13,7 +13,7 @@ import { createChartError, getUserFriendlyErrorMessage } from './chartErrorTypes
 export interface Chart {
   chartId: string;
   title: string;
-  type: 'kpi' | 'pie' | 'bar' | 'text' | 'image' | 'value' | 'table';
+  type: 'kpi' | 'pie' | 'bar' | 'text' | 'image' | 'value' | 'table' | 'valuechain';
   formula: string;
   icon?: string; // Optional - not all charts have icons
   iconVariant?: 'outlined' | 'rounded'; // Material Icons variant
@@ -146,6 +146,8 @@ export class ReportCalculator {
           return this.calculateMultiElement(chart);
         case 'text':
           return this.calculateText(chart);
+        case 'valuechain':
+          return this.calculateValueChain(chart);
         case 'image':
           return this.calculateImage(chart);
         case 'table':
@@ -433,6 +435,43 @@ export class ReportCalculator {
       icon: chart.icon,
       iconVariant: chart.iconVariant,
       kpiValue: typeof value === 'string' && value !== 'NA' ? value : '',
+      showTitle: chart.showTitle
+    };
+  }
+
+  /**
+   * WHAT: Calculate valuechain chart (icon + 2 text fields: title/highlight + description)
+   * WHY: Landing value chain cards need icon, title line, and description line from stats
+   * HOW: Resolve each of the first 2 elements' formulas as strings (same as text chart)
+   */
+  private calculateValueChain(chart: Chart): ChartResult {
+    const elements = (chart.elements || []).slice(0, 2).map((el, i) => {
+      const formula = el.formula?.trim() || '';
+      let value: string = '';
+      const bracketMatch = formula.match(/^\[([a-zA-Z0-9_]+)\]$/);
+      const simpleVarMatch = formula.match(/^(?:stats\.)?([a-zA-Z0-9_]+)$/);
+      if (bracketMatch) {
+        const fieldName = bracketMatch[1];
+        const v = this.stats[fieldName];
+        value = v !== undefined && v !== null ? String(v) : '';
+      } else if (simpleVarMatch) {
+        const fieldName = simpleVarMatch[1];
+        const v = this.stats[fieldName];
+        value = v !== undefined && v !== null ? String(v) : '';
+      }
+      return {
+        label: el.label || '',
+        value,
+        color: el.color
+      };
+    });
+    return {
+      chartId: chart.chartId,
+      type: 'valuechain',
+      title: chart.title,
+      icon: chart.icon,
+      iconVariant: chart.iconVariant,
+      elements,
       showTitle: chart.showTitle
     };
   }
