@@ -102,6 +102,36 @@ Period-to-period comparison. **Added:** OPS-ANALYTICS-01 P1-3.
 
 ---
 
+## Insights (Phase 2)
+
+Rule-based anomaly/trend detection via `lib/insightsEngine.ts` and `lib/analytics-insights.ts`.
+
+### GET /api/analytics/insights/summary
+
+Counts only (for dashboards). **Auth:** Admin.
+
+| Param     | Type   | Description |
+|-----------|--------|-------------|
+| partnerId | string | Optional — filter to partner's events |
+| period    | string | `7d` \| `30d` \| `90d` (default: 30d) |
+| maxEvents | number | Max events to analyze (default: 50, max: 100) |
+
+**Response:** `{ success, data: { totalInsights, criticalCount, highCount, mediumCount, lowCount, byCategory, eventsAnalyzed, period, partnerId }, metadata: { queryTimeMs }, timestamp }`
+
+### GET /api/analytics/insights
+
+Global insights across recent events (full insight bodies). **Auth:** Admin. Query: `type`, `severity`, `limit`, `since`. See main insights route for details.
+
+### GET /api/analytics/insights/partners/[partnerId]
+
+Partner-level insights. **Auth:** Admin.
+
+### GET /api/analytics/executive/insights
+
+Executive aggregated insights (priority filter, period). Query: `priority`, `limit`, `period`. Rate-limited.
+
+---
+
 ## Cron (aggregation job)
 
 - **Endpoint:** `POST /api/cron/analytics-aggregation`

@@ -42,7 +42,7 @@ Owner: Product / Engineering
 | Phase | Scope | Status / sequencing |
 |-------|--------|----------------------|
 | **Phase 1** | Aggregation tables + indexes + cron; comparative API (event-to-event ✅); **extend** partner-to-partner and period-to-period compare | In progress (this doc + Phase 1 backlog) |
-| **Phase 2** | Insights engine: rule-based anomaly/trend detection; reuse/enhance `lib/insightsEngine.ts`, `lib/analytics-insights.ts` | After Phase 1 |
+| **Phase 2** | Insights engine: rule-based anomaly/trend detection; reuse/enhance `lib/insightsEngine.ts`, `lib/analytics-insights.ts` | **Done** — summary endpoint added; engines already in place |
 | **Phase 3** | Dashboard views: executive (exists), marketing, operations, partner (partner dashboard exists at `/admin/partners/[id]/analytics`) | After Phase 2 |
 | **Phase 4** | White-label report generation: PDF with branding, report templates | After Phase 3 |
 
@@ -52,13 +52,20 @@ Owner: Product / Engineering
 
 ## 3. Phase 1 backlog (dependencies documented)
 
-- [ ] **P1-1** Verify and run `scripts/setupAnalyticsIndexes.ts` in all environments; confirm query plans for `analytics_aggregates` and `partner_analytics` for 1-year range stay under 500ms. **Command:** `npx ts-node scripts/setupAnalyticsIndexes.ts` (requires MONGODB_URI in .env.local). Script creates indexes and logs expectations: single event &lt;100ms, time-series 1y &lt;500ms, partner &lt;200ms, comparison &lt;300ms.
+- [x] **P1-1** Verify and run `scripts/setupAnalyticsIndexes.ts` in all environments; confirm query plans for `analytics_aggregates` and `partner_analytics` for 1-year range stay under 500ms. **Command:** `npm run analytics:setup-indexes` (or `npx tsx scripts/setupAnalyticsIndexes.ts` with .env.local). **Done (dev 2026-02-21):** Indexes created and verified; run in preview/production when ready.
 - [x] **P1-2** Add **partner-to-partner** compare: `GET /api/analytics/compare/partners?partnerIds=id1,id2` — implemented in `app/api/analytics/compare/partners/route.ts`.
 - [x] **P1-3** Add **period-to-period** compare: `GET /api/analytics/compare/periods?periodA=2025-01&periodB=2025-02&bucket=monthly&partnerId=optional` — implemented in `app/api/analytics/compare/periods/route.ts`.
 - [x] **P1-4** Document public API contract for aggregates + compare in `docs/api/api-analytics.md` (auth, rate limits, query params, response shape).
 - [x] **P1-5** Cron schedule and monitoring documented in Section 3b below.
 
 **Dependencies:** Current v8.x data models, Bitly many-to-many, Partners system (all in place). No new collections required for P1-2/P1-3 if reusing existing aggregates.
+
+---
+
+## 3a. Phase 2 — Insights engine (done)
+
+- **Existing:** `lib/insightsEngine.ts` (anomaly, trend, benchmark, risk, opportunity; `generateEventInsights`), `lib/analytics-insights.ts` (per-event and partner `generateInsights` / `generatePartnerInsights`). Executive dashboard uses `GET /api/analytics/executive/insights` (priority filter, period 7d/30d/90d). Partner insights: `GET /api/analytics/insights/partners/[partnerId]`.
+- **Added:** `GET /api/analytics/insights/summary` — returns counts only (totalInsights, criticalCount, highCount, mediumCount, lowCount, byCategory, eventsAnalyzed). Query params: `partnerId` (optional), `period` (7d|30d|90d), `maxEvents` (default 50, max 100). Auth: admin. Target: <500ms. Enables dashboards to show “5 critical, 12 high” without loading full insight bodies.
 
 ---
 

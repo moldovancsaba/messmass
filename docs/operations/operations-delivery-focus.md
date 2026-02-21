@@ -6,7 +6,9 @@ Owner: Product
 
 **Source of truth:** [MVP Factory Board](https://github.com/users/moldovancsaba/projects/1) (Product = messmass). Issues live in [mvp-factory-control](https://github.com/moldovancsaba/mvp-factory-control).
 
-## Top 5 value & high-priority (from board)
+## Top 5 value & high-priority (from board, Product = messmass)
+
+*Reconsidered 2026-02-21 after #38 Done and P1-1 (indexes) run in dev.*
 
 | Priority | Status  | Issue | Title |
 |----------|---------|-------|--------|
@@ -16,6 +18,8 @@ Owner: Product
 | P0 | Roadmap | [#59](https://github.com/moldovancsaba/mvp-factory-control/issues/59) | Milestone: Analytics Platform Phase 3 — Advanced Dashboards (Q2 2026) |
 | P1 | Roadmap | [#46](https://github.com/moldovancsaba/mvp-factory-control/issues/46) | SSO Integration with DoneIsBetter (Q1 2026) |
 
+**Note:** #38 (OPS-ANALYTICS-01) is Done; it delivered Phase 1 compare APIs + Phase 2 insights summary, so #57 and #58 have partial delivery. Next executable options: **#46** (SSO), **#57** / **#58** (formal milestone closure or follow-up), **#45** (Google Sheets Phase 3), **#39** (Layout Grammar Editor).
+
 ## Recommended next delivery step
 
 1. **Move one item to Ready:** In [MVP Factory Board](https://github.com/users/moldovancsaba/projects/1), set **Status = Ready** for the issue you want to execute next (e.g. [#38 OPS-ANALYTICS-01](https://github.com/moldovancsaba/mvp-factory-control/issues/38) or Phase 1 [#57](https://github.com/moldovancsaba/mvp-factory-control/issues/57)), and ensure the issue body has a valid [Executable Prompt Package](https://github.com/moldovancsaba/mvp-factory-control/blob/main/docs/EXECUTABLE_PROMPT_PACKAGE.md).
@@ -24,8 +28,10 @@ Owner: Product
 
 ## Recently completed
 
+- **P1-1 (OPS-ANALYTICS-01):** Analytics indexes run in dev (2026-02-21) — `npm run analytics:setup-indexes`; all collections verified. Run in preview/production when ready.
+- [#38](https://github.com/moldovancsaba/mvp-factory-control/issues/38) OPS-ANALYTICS-01: Advanced Analytics & Insights (Q1–Q2 2026) — **Done** (2026-02-21). Phase 1: compare/partners, compare/periods, [api-analytics.md](../api/api-analytics.md), cron/monitoring. Phase 2: `GET /api/analytics/insights/summary`. Evidence comment posted on issue.
 - [#71](https://github.com/moldovancsaba/mvp-factory-control/issues/71) Style hardening Phase 4: modal/dialog positioning extraction — **Done** (2026-02-21). Evidence: [comment](https://github.com/moldovancsaba/mvp-factory-control/issues/71#issuecomment-3938421863).
 
 ## In progress
 
-- [#38](https://github.com/moldovancsaba/mvp-factory-control/issues/38) OPS-ANALYTICS-01: Advanced Analytics & Insights (Q1–Q2 2026) — **Status: In Progress**. Phase 1 implemented: compare/partners, compare/periods, [api-analytics.md](../api/api-analytics.md), cron/monitoring in design doc. P1-1 remains: run `setupAnalyticsIndexes.ts` per environment. Next: review → Done or Phase 2 (insights engine).
+- None. Next: move a Ready item from the board and execute (e.g. [#57](https://github.com/moldovancsaba/mvp-factory-control/issues/57), [#58](https://github.com/moldovancsaba/mvp-factory-control/issues/58), or [#46](https://github.com/moldovancsaba/mvp-factory-control/issues/46)).
