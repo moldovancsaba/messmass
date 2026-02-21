@@ -42,14 +42,25 @@
   margin: 0 auto;
 }
 
-.heroLogo {
+.heroBrand {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--mm-space-3);
   margin-bottom: var(--mm-space-6);
 }
 
-.heroLogo img {
+.heroBrand img {
   height: auto;
   width: auto;
   max-width: 100%;
+}
+
+.heroSiteName {
+  font-size: var(--mm-font-size-xl);
+  font-weight: var(--mm-font-weight-bold);
+  letter-spacing: var(--mm-letter-spacing-tight);
+  color: var(--landing-hero-text);
 }
 
 .heroLabel {
@@ -239,14 +250,24 @@
   margin: 0 auto;
 }
 
-.footerLogo {
+.footerBrand {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--mm-space-2);
   margin-bottom: var(--mm-space-4);
 }
 
-.footerLogo img {
+.footerBrand img {
   height: auto;
   width: auto;
   max-width: 100%;
+}
+
+.footerSiteName {
+  font-size: var(--mm-font-size-lg);
+  font-weight: var(--mm-font-weight-bold);
+  color: var(--landing-hero-text);
 }
 
 .footerTitle {

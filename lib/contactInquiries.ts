@@ -15,6 +15,15 @@ export interface ContactInquiry {
   createdAt: string;
 }
 
+/** MongoDB document shape for contact_inquiries collection */
+interface ContactInquiryDoc {
+  _id: ObjectId;
+  name: string;
+  email: string;
+  message: string;
+  createdAt: string;
+}
+
 export async function createContactInquiry(params: {
   name: string;
   email: string;
@@ -35,10 +44,9 @@ export async function createContactInquiry(params: {
 
 export async function listContactInquiries(): Promise<ContactInquiry[]> {
   const db = await getDb();
-  const col = db.collection(COLLECTION);
-  const cursor = col.find({}).sort({ createdAt: -1 });
-  const docs = await cursor.toArray();
-  return docs.map((d: { _id: ObjectId; name: string; email: string; message: string; createdAt: string }) => ({
+  const col = db.collection<ContactInquiryDoc>(COLLECTION);
+  const docs = await col.find({}).sort({ createdAt: -1 }).toArray();
+  return docs.map((d) => ({
     _id: String(d._id),
     name: d.name,
     email: d.email,

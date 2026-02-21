@@ -28,8 +28,9 @@ export default function HomePage() {
       {/* Hero */}
       <header className={styles.hero}>
         <div className={styles.heroInner}>
-          <div className={styles.heroLogo}>
-            <Image src="/messmass-logo-white.png" alt="MessMass" width={160} height={48} priority />
+          <div className={styles.heroBrand}>
+            <Image src="/messmass-logo-white.png" alt="" width={160} height={48} priority />
+            <span className={styles.heroSiteName}>MessMass</span>
           </div>
           <p className={styles.heroLabel}>Sovereign Decision Intelligence</p>
           <h1 className={styles.heroTitle}>
@@ -95,18 +96,21 @@ export default function HomePage() {
               value="Data abundance, but processing is often manual and slow."
               icon="trending_up"
               accentColor="var(--mm-color-primary-500)"
+              titleUppercase
             />
             <LandingKPIChart
               title="Compliance fear"
               value="PII and KYC data cannot go to public cloud AIs (e.g. ChatGPT)."
               icon="gpp_bad"
               accentColor="var(--mm-warning)"
+              titleUppercase
             />
             <LandingKPIChart
               title="The reality"
               value="If employees use cloud models secretly, that's a breach. If management bans it, growth slows."
               icon="campaign"
               accentColor="var(--mm-info)"
+              titleUppercase
             />
           </div>
         </div>
@@ -184,8 +188,9 @@ export default function HomePage() {
       {/* Final CTA */}
       <footer className={styles.footer}>
         <div className={styles.footerInner}>
-          <div className={styles.footerLogo}>
-            <Image src="/messmass-logo-white.png" alt="MessMass" width={120} height={36} />
+          <div className={styles.footerBrand}>
+            <Image src="/messmass-logo-white.png" alt="" width={120} height={36} />
+            <span className={styles.footerSiteName}>MessMass</span>
           </div>
           <h2 className={styles.footerTitle}>
             Let&apos;s build the era of sovereign enterprise AI together.

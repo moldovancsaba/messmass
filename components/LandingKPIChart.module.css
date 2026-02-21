@@ -11,3 +11,8 @@
   overflow: hidden;
   height: var(--block-height, 200px);
 }
+
+.titleUppercase {
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+}

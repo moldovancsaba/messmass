@@ -16,6 +16,8 @@ export interface LandingKPIChartProps {
   icon?: string;
   /** CSS color for icon and optional left accent (e.g. var(--mm-color-primary-500)) */
   accentColor?: string;
+  /** Show title in uppercase (e.g. for problem section KPI cards) */
+  titleUppercase?: boolean;
 }
 
 export default function LandingKPIChart({
@@ -23,6 +25,7 @@ export default function LandingKPIChart({
   value,
   icon,
   accentColor = 'var(--mm-color-primary-500)',
+  titleUppercase = false,
 }: LandingKPIChartProps) {
   const hasIcon = !!icon;
   const chartClass = hasIcon
@@ -51,7 +54,7 @@ export default function LandingKPIChart({
           </div>
         )}
         <div className={reportChartStyles.kpiValueRow}>{value}</div>
-        <div className={reportChartStyles.kpiTitle}>
+        <div className={`${reportChartStyles.kpiTitle} ${titleUppercase ? styles.titleUppercase : ''}`}>
           <span>{title}</span>
         </div>
       </div>
