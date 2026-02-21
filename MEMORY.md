@@ -15,4 +15,4 @@
 
 **Product SSOT:** Version = `package.json`; doc entry = README + `docs/index.md`; execution state = `docs/operations/operations-action-plan.md`; canonical map = `docs/_meta/meta-canonical-map.md`. Governance: `docs/documentation-governance.md` (Product SSOT section added 2026-02-21).
 
-**Delivery focus:** Top 5 board issues (value + priority): #44, #57, #58, #59, #46. Next: move one to Ready (e.g. #38 or #57), execute, then Done. See `docs/operations/operations-delivery-focus.md`. Board = source of truth.
+**Delivery focus:** Top 5 board issues (value + priority): #44, #57, #58, #59, #46. #71 Done (2026-02-21). #38 set to Ready for execution. See `docs/operations/operations-delivery-focus.md`. Board = source of truth.

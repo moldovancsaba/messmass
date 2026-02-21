@@ -22,6 +22,10 @@ Owner: Product
 2. **Execute:** Agent or dev picks the Ready card, runs implementation, updates board fields and posts evidence in the issue.
 3. **Close:** Move Status to Done and document in release notes as needed.
 
-## In progress / review
+## Recently completed
 
-- [#71](https://github.com/moldovancsaba/mvp-factory-control/issues/71) Style hardening Phase 4: modal/dialog positioning extraction — **Status: Review** (complete review and move to Done if accepted).
+- [#71](https://github.com/moldovancsaba/mvp-factory-control/issues/71) Style hardening Phase 4: modal/dialog positioning extraction — **Done** (2026-02-21). Evidence: [comment](https://github.com/moldovancsaba/mvp-factory-control/issues/71#issuecomment-3938421863).
+
+## Ready for execution
+
+- [#38](https://github.com/moldovancsaba/mvp-factory-control/issues/38) OPS-ANALYTICS-01: Advanced Analytics & Insights (Q1–Q2 2026) — **Status: Ready** (set 2026-02-21). Next: assign Agent, execute per Executable Prompt Package, then move to In Progress → Done.
