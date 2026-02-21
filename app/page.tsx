@@ -1,10 +1,13 @@
 import Link from 'next/link';
 import type { Metadata } from 'next';
+import ColoredCard from '@/components/ColoredCard';
+import MaterialIcon from '@/components/MaterialIcon';
 import styles from './page.module.css';
 
 /**
  * WHAT: Sales-oriented landing page for messmass.com (from pitch deck 2026-02-22)
  * WHY: Convert visitors with pitch-deck messaging; drive dashboard sign-in
+ * HOW: Uses layout grammar and unified style system (ColoredCard, .btn, KPI-style cards, MaterialIcon, design tokens)
  */
 export const metadata: Metadata = {
   title: 'MessMass — Sovereign Decision Intelligence',
@@ -31,10 +34,10 @@ export default function HomePage() {
             The platform that restores the freedom and security of decision-making to data-driven companies—and opens the door for those who want to become one.
           </p>
           <div className={styles.heroCtas}>
-            <Link href="/admin/login" className={styles.ctaPrimary}>
+            <Link href="/admin/login" className="btn btn-primary">
               Go to Dashboard
             </Link>
-            <a href="#solution" className={styles.ctaSecondary}>
+            <a href="#solution" className="btn btn-outline-light">
               See how it works
             </a>
           </div>
@@ -59,7 +62,7 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Problem */}
+      {/* Problem — KPI-style cards (layout grammar) */}
       <section className={styles.sectionAlt}>
         <div className={styles.sectionInner}>
           <h2 className={styles.sectionTitle}>The cost of decision paralysis</h2>
@@ -67,21 +70,33 @@ export default function HomePage() {
             Teams are paralyzed. We have data, but we lack the courage to use the tools that could interpret it.
           </p>
           <div className={styles.problemGrid}>
-            <div className={styles.problemCard}>
-              <span className={styles.problemIcon}>↗</span>
-              <h3>Insight → Action gap</h3>
-              <p>Data abundance, but processing is often manual and slow.</p>
-            </div>
-            <div className={styles.problemCard}>
-              <span className={styles.problemIcon}>⚠</span>
-              <h3>Compliance fear</h3>
-              <p>PII and KYC data cannot go to public cloud AIs (e.g. ChatGPT).</p>
-            </div>
-            <div className={styles.problemCard}>
-              <span className={styles.problemIcon}>◉</span>
-              <h3>The reality</h3>
-              <p>If employees use cloud models secretly, that&apos;s a breach. If management bans it, growth slows.</p>
-            </div>
+            <ColoredCard accentColor="var(--mm-color-primary-500)" hoverable={false}>
+              <div className={styles.kpiCardContent}>
+                <div className={styles.kpiCardHeader}>
+                  <MaterialIcon name="trending_up" className={styles.kpiCardIcon} />
+                  <h3 className={styles.kpiCardTitle}>Insight → Action gap</h3>
+                </div>
+                <p className={styles.kpiCardValue}>Data abundance, but processing is often manual and slow.</p>
+              </div>
+            </ColoredCard>
+            <ColoredCard accentColor="var(--mm-warning)" hoverable={false}>
+              <div className={styles.kpiCardContent}>
+                <div className={styles.kpiCardHeader}>
+                  <MaterialIcon name="gpp_bad" className={styles.kpiCardIcon} />
+                  <h3 className={styles.kpiCardTitle}>Compliance fear</h3>
+                </div>
+                <p className={styles.kpiCardValue}>PII and KYC data cannot go to public cloud AIs (e.g. ChatGPT).</p>
+              </div>
+            </ColoredCard>
+            <ColoredCard accentColor="var(--mm-info)" hoverable={false}>
+              <div className={styles.kpiCardContent}>
+                <div className={styles.kpiCardHeader}>
+                  <MaterialIcon name="campaign" className={styles.kpiCardIcon} />
+                  <h3 className={styles.kpiCardTitle}>The reality</h3>
+                </div>
+                <p className={styles.kpiCardValue}>If employees use cloud models secretly, that&apos;s a breach. If management bans it, growth slows.</p>
+              </div>
+            </ColoredCard>
           </div>
         </div>
       </section>
@@ -97,75 +112,51 @@ export default function HomePage() {
             We bring local AI agents directly into your secure infrastructure. The data doesn&apos;t move; the intelligence runs locally. Proactive decision-making processes, not passive dashboards—without the compliance nightmare.
           </p>
           <div className={styles.solutionHighlights}>
-            <div className={styles.highlight}>
-              <span className={styles.highlightNum}>1</span>
-              <span>Local-first: physically isolated (offline/boxed) models perform the analysis.</span>
-            </div>
-            <div className={styles.highlight}>
-              <span className={styles.highlightNum}>2</span>
-              <span>Automated workflow: users get proactive decision-making, not passive dashboards.</span>
-            </div>
+            <ColoredCard accentColor="var(--mm-color-secondary-500)" hoverable={false}>
+              <div className={styles.highlightRow}>
+                <span className={styles.highlightNum}>1</span>
+                <span>Local-first: physically isolated (offline/boxed) models perform the analysis.</span>
+              </div>
+            </ColoredCard>
+            <ColoredCard accentColor="var(--mm-color-secondary-500)" hoverable={false}>
+              <div className={styles.highlightRow}>
+                <span className={styles.highlightNum}>2</span>
+                <span>Automated workflow: users get proactive decision-making, not passive dashboards.</span>
+              </div>
+            </ColoredCard>
           </div>
         </div>
       </section>
 
-      {/* Product */}
+      {/* Product — KPI-style cards */}
       <section className={styles.sectionAlt}>
         <div className={styles.sectionInner}>
           <h2 className={styles.sectionTitle}>The messmass platform</h2>
           <div className={styles.productGrid}>
-            <div className={styles.productCard}>
-              <h3>1. Ingest &amp; process</h3>
-              <p>Automated data ingestion and cleaning.</p>
-            </div>
-            <div className={styles.productCard}>
-              <h3>2. Interpret</h3>
-              <p>Trends and anomalies powered by a local AI engine.</p>
-            </div>
-            <div className={styles.productCard}>
-              <h3>3. Act</h3>
-              <p>Decision points, personas, playbooks, and task delegation.</p>
-            </div>
-            <div className={styles.productCard}>
-              <h3>4. Governance</h3>
-              <p>100% auditability and access control. Every byte stays where it belongs.</p>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Traction */}
-      <section className={styles.section}>
-        <div className={styles.sectionInner}>
-          <h2 className={styles.sectionTitle}>Validated foundations, live</h2>
-          <p className={styles.tractionLead}>
-            The messmass data processing engine has been running live. Service-to-product is working.
-          </p>
-          <div className={styles.tractionGrid}>
-            <div className={styles.tractionItem}>
-              <span className={styles.tractionValue}>3</span>
-              <span className={styles.tractionLabel}>paying clients</span>
-            </div>
-            <div className={styles.tractionItem}>
-              <span className={styles.tractionValue}>$5k</span>
-              <span className={styles.tractionLabel}>P.O.C. revenue</span>
-            </div>
-            <div className={styles.tractionItem}>
-              <span className={styles.tractionValue}>7</span>
-              <span className={styles.tractionLabel}>avg data sources per client</span>
-            </div>
-            <div className={styles.tractionItem}>
-              <span className={styles.tractionValue}>300+</span>
-              <span className={styles.tractionLabel}>managed data types</span>
-            </div>
-            <div className={styles.tractionItem}>
-              <span className={styles.tractionValue}>1,000+</span>
-              <span className={styles.tractionLabel}>automated decision points</span>
-            </div>
-            <div className={styles.tractionItem}>
-              <span className={styles.tractionValue}>100+</span>
-              <span className={styles.tractionLabel}>AI-generated micro-personas</span>
-            </div>
+            <ColoredCard accentColor="var(--mm-color-primary-500)" hoverable={false}>
+              <div className={styles.kpiCardContent}>
+                <h3 className={styles.kpiCardTitle}>1. Ingest &amp; process</h3>
+                <p className={styles.kpiCardValue}>Automated data ingestion and cleaning.</p>
+              </div>
+            </ColoredCard>
+            <ColoredCard accentColor="var(--mm-color-primary-500)" hoverable={false}>
+              <div className={styles.kpiCardContent}>
+                <h3 className={styles.kpiCardTitle}>2. Interpret</h3>
+                <p className={styles.kpiCardValue}>Trends and anomalies powered by a local AI engine.</p>
+              </div>
+            </ColoredCard>
+            <ColoredCard accentColor="var(--mm-color-primary-500)" hoverable={false}>
+              <div className={styles.kpiCardContent}>
+                <h3 className={styles.kpiCardTitle}>3. Act</h3>
+                <p className={styles.kpiCardValue}>Decision points, personas, playbooks, and task delegation.</p>
+              </div>
+            </ColoredCard>
+            <ColoredCard accentColor="var(--mm-color-primary-500)" hoverable={false}>
+              <div className={styles.kpiCardContent}>
+                <h3 className={styles.kpiCardTitle}>4. Governance</h3>
+                <p className={styles.kpiCardValue}>100% auditability and access control. Every byte stays where it belongs.</p>
+              </div>
+            </ColoredCard>
           </div>
         </div>
       </section>
@@ -186,7 +177,7 @@ export default function HomePage() {
           <h2 className={styles.footerTitle}>
             Let&apos;s build the era of sovereign enterprise AI together.
           </h2>
-          <Link href="/admin/login" className={styles.ctaPrimary}>
+          <Link href="/admin/login" className="btn btn-primary">
             Start using the system
           </Link>
           <p className={styles.footerSite}>messmass.com</p>

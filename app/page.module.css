@@ -1,5 +1,6 @@
 /* WHAT: Sales-oriented landing page for messmass.com (pitch deck 2026-02-22)
-   WHY: Convert with pitch messaging; drive dashboard sign-in */
+   WHY: Convert with pitch messaging; drive dashboard sign-in
+   HOW: Layout grammar + unified style system (ColoredCard, .btn, KPI-style cards, design tokens) */
 
 .landing {
   min-height: 100vh;
@@ -21,25 +22,25 @@
 }
 
 .heroLabel {
-  font-size: 0.875rem;
-  font-weight: 600;
-  letter-spacing: 0.08em;
+  font-size: var(--mm-font-size-sm);
+  font-weight: var(--mm-font-weight-semibold);
+  letter-spacing: var(--mm-letter-spacing-wide);
   text-transform: uppercase;
   color: var(--mm-color-primary-300);
   margin-bottom: var(--mm-space-4);
 }
 
 .heroTitle {
-  font-size: clamp(1.75rem, 4vw, 2.5rem);
-  font-weight: 700;
-  line-height: 1.25;
+  font-size: clamp(var(--mm-font-size-2xl), 4vw, var(--mm-font-size-4xl));
+  font-weight: var(--mm-font-weight-bold);
+  line-height: var(--mm-line-height-sm);
   margin-bottom: var(--mm-space-5);
-  letter-spacing: -0.02em;
+  letter-spacing: var(--mm-letter-spacing-tight);
 }
 
 .heroSub {
-  font-size: 1.125rem;
-  line-height: 1.6;
+  font-size: var(--mm-font-size-lg);
+  line-height: var(--mm-line-height-lg);
   color: #cbd5e1;
   margin-bottom: var(--mm-space-8);
 }
@@ -52,40 +53,15 @@
   align-items: center;
 }
 
-.ctaPrimary {
-  display: inline-block;
-  padding: var(--mm-space-4) var(--mm-space-8);
-  background: var(--mm-color-secondary-500);
-  color: var(--mm-white);
-  text-decoration: none;
-  border-radius: var(--mm-radius-lg);
-  font-size: 1.0625rem;
-  font-weight: 600;
-  transition: background 0.2s, transform 0.2s, box-shadow 0.2s;
-  box-shadow: 0 4px 14px rgba(16, 185, 129, 0.35);
+/* Outline button on dark hero (extends global .btn) */
+.btn-outline-light {
+  background: transparent !important;
+  color: #e2e8f0 !important;
+  border: 1px solid #475569 !important;
 }
-
-.ctaPrimary:hover {
-  background: var(--mm-color-secondary-600);
-  transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(16, 185, 129, 0.4);
-}
-
-.ctaSecondary {
-  display: inline-block;
-  padding: var(--mm-space-4) var(--mm-space-6);
-  color: #e2e8f0;
-  text-decoration: none;
-  border: 1px solid #475569;
-  border-radius: var(--mm-radius-lg);
-  font-size: 1rem;
-  font-weight: 500;
-  transition: border-color 0.2s, color 0.2s;
-}
-
-.ctaSecondary:hover {
-  border-color: #94a3b8;
-  color: #f1f5f9;
+.btn-outline-light:hover {
+  border-color: #94a3b8 !important;
+  color: #f1f5f9 !important;
 }
 
 /* ----- Sections ----- */
@@ -108,8 +84,8 @@
 }
 
 .sectionTitle {
-  font-size: 1.5rem;
-  font-weight: 700;
+  font-size: var(--mm-font-size-2xl);
+  font-weight: var(--mm-font-weight-bold);
   color: var(--mm-gray-900);
   margin-bottom: var(--mm-space-6);
   text-align: center;
@@ -117,16 +93,17 @@
 
 /* Belief */
 .beliefLead {
-  font-size: 1.375rem;
-  font-weight: 600;
+  font-size: var(--mm-font-size-xl);
+  font-weight: var(--mm-font-weight-semibold);
   color: var(--mm-gray-900);
   margin-bottom: var(--mm-space-4);
-  line-height: 1.4;
+  line-height: var(--mm-line-height-md);
 }
 
 .beliefBody {
+  font-size: var(--mm-font-size-base);
   color: var(--mm-gray-600);
-  line-height: 1.65;
+  line-height: var(--mm-line-height-lg);
   margin-bottom: var(--mm-space-6);
 }
 
@@ -144,7 +121,7 @@
   display: flex;
   align-items: center;
   gap: var(--mm-space-2);
-  font-size: 0.9375rem;
+  font-size: var(--mm-font-size-sm);
   color: var(--mm-gray-600);
 }
 
@@ -154,17 +131,17 @@
   background: var(--mm-color-primary-100);
   color: var(--mm-color-primary-700);
   border-radius: 9999px;
-  font-weight: 600;
-  font-size: 0.8125rem;
+  font-weight: var(--mm-font-weight-semibold);
+  font-size: var(--mm-font-size-xs);
 }
 
-/* Problem */
+/* Problem — KPI-style cards (layout grammar: same as KPICard) */
 .problemLead {
-  font-size: 1.25rem;
+  font-size: var(--mm-font-size-lg);
   color: var(--mm-gray-700);
   margin-bottom: var(--mm-space-6);
   text-align: center;
-  line-height: 1.5;
+  line-height: var(--mm-line-height-md);
 }
 
 .problemGrid {
@@ -174,46 +151,55 @@
   margin-top: var(--mm-space-6);
 }
 
-.problemCard {
-  background: var(--mm-white);
-  padding: var(--mm-space-5);
-  border-radius: var(--mm-radius-lg);
-  border: 1px solid var(--mm-gray-200);
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+/* KPI-style card content (matches components/charts/KPICard.module.css) */
+.kpiCardContent {
+  display: flex;
+  flex-direction: column;
+  gap: var(--mm-space-4);
 }
 
-.problemCard h3 {
-  font-size: 1rem;
-  font-weight: 600;
-  color: var(--mm-gray-900);
-  margin-bottom: var(--mm-space-2);
+.kpiCardHeader {
+  display: flex;
+  align-items: center;
+  gap: var(--mm-space-2);
 }
 
-.problemCard p {
-  font-size: 0.9375rem;
-  color: var(--mm-gray-600);
-  line-height: 1.5;
-  margin: 0;
-}
-
-.problemIcon {
-  display: block;
+.kpiCardIcon {
   font-size: 1.5rem;
-  margin-bottom: var(--mm-space-2);
-  opacity: 0.9;
+  line-height: 1;
+  color: var(--mm-gray-600);
+}
+
+.kpiCardTitle {
+  font-size: var(--mm-font-size-sm);
+  font-weight: var(--mm-font-weight-semibold);
+  color: var(--mm-gray-600);
+  text-transform: uppercase;
+  letter-spacing: var(--mm-letter-spacing-wide);
+  margin: 0;
+  line-height: var(--mm-line-height-sm);
+}
+
+.kpiCardValue {
+  font-size: var(--mm-font-size-base);
+  font-weight: var(--mm-font-weight-normal);
+  color: var(--mm-gray-900);
+  line-height: var(--mm-line-height-md);
+  margin: 0;
 }
 
 /* Solution */
 .solutionLead {
-  font-size: 1.25rem;
+  font-size: var(--mm-font-size-lg);
   color: var(--mm-gray-800);
   margin-bottom: var(--mm-space-4);
-  line-height: 1.5;
+  line-height: var(--mm-line-height-md);
 }
 
 .solutionBody {
+  font-size: var(--mm-font-size-base);
   color: var(--mm-gray-600);
-  line-height: 1.65;
+  line-height: var(--mm-line-height-lg);
   margin-bottom: var(--mm-space-6);
 }
 
@@ -223,14 +209,10 @@
   gap: var(--mm-space-4);
 }
 
-.highlight {
+.highlightRow {
   display: flex;
   align-items: flex-start;
   gap: var(--mm-space-4);
-  padding: var(--mm-space-4);
-  background: var(--mm-gray-50);
-  border-radius: var(--mm-radius-lg);
-  border-left: 4px solid var(--mm-color-secondary-500);
 }
 
 .highlightNum {
@@ -243,16 +225,17 @@
   background: var(--mm-color-secondary-500);
   color: var(--mm-white);
   border-radius: 50%;
-  font-weight: 700;
-  font-size: 0.9375rem;
+  font-weight: var(--mm-font-weight-bold);
+  font-size: var(--mm-font-size-sm);
 }
 
-.highlight span:last-child {
+.highlightRow span:last-child {
+  font-size: var(--mm-font-size-base);
   color: var(--mm-gray-700);
-  line-height: 1.5;
+  line-height: var(--mm-line-height-md);
 }
 
-/* Product */
+/* Product — same KPI-style cards */
 .productGrid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
@@ -260,69 +243,11 @@
   margin-top: var(--mm-space-4);
 }
 
-.productCard {
-  padding: var(--mm-space-5);
-  background: var(--mm-white);
-  border-radius: var(--mm-radius-lg);
-  border: 1px solid var(--mm-gray-200);
-}
-
-.productCard h3 {
-  font-size: 1rem;
-  font-weight: 600;
-  color: var(--mm-gray-900);
-  margin-bottom: var(--mm-space-2);
-}
-
-.productCard p {
-  font-size: 0.9375rem;
-  color: var(--mm-gray-600);
-  line-height: 1.5;
-  margin: 0;
-}
-
-/* Traction */
-.tractionLead {
-  text-align: center;
-  color: var(--mm-gray-600);
-  margin-bottom: var(--mm-space-6);
-  line-height: 1.5;
-}
-
-.tractionGrid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-  gap: var(--mm-space-5);
-  margin-top: var(--mm-space-4);
-}
-
-.tractionItem {
-  text-align: center;
-  padding: var(--mm-space-4);
-  background: var(--mm-white);
-  border-radius: var(--mm-radius-lg);
-  border: 1px solid var(--mm-gray-200);
-}
-
-.tractionValue {
-  display: block;
-  font-size: 1.75rem;
-  font-weight: 700;
-  color: var(--mm-color-primary-600);
-  margin-bottom: var(--mm-space-1);
-}
-
-.tractionLabel {
-  font-size: 0.8125rem;
-  color: var(--mm-gray-600);
-  line-height: 1.3;
-}
-
 /* Differentiator */
 .diffLead {
-  font-size: 1.125rem;
+  font-size: var(--mm-font-size-lg);
   color: var(--mm-gray-700);
-  line-height: 1.6;
+  line-height: var(--mm-line-height-lg);
   text-align: center;
   max-width: 640px;
   margin: 0 auto;
@@ -342,15 +267,15 @@
 }
 
 .footerTitle {
-  font-size: clamp(1.375rem, 3vw, 1.75rem);
-  font-weight: 700;
+  font-size: clamp(var(--mm-font-size-xl), 3vw, var(--mm-font-size-2xl));
+  font-weight: var(--mm-font-weight-bold);
   line-height: 1.35;
   margin-bottom: var(--mm-space-6);
 }
 
 .footerSite {
   margin-top: var(--mm-space-6);
-  font-size: 0.9375rem;
+  font-size: var(--mm-font-size-sm);
   color: #94a3b8;
 }
 
@@ -366,8 +291,7 @@
     flex-direction: column;
   }
 
-  .ctaPrimary,
-  .ctaSecondary {
+  .heroCtas .btn {
     width: 100%;
     max-width: 280px;
     text-align: center;
@@ -380,9 +304,5 @@
 
   .productGrid {
     grid-template-columns: 1fr;
-  }
-
-  .tractionGrid {
-    grid-template-columns: repeat(2, 1fr);
   }
 }
