@@ -1,81 +1,388 @@
-/* WHAT: Public landing page styles
- * WHY: Simple welcome page without authentication
- */
+/* WHAT: Sales-oriented landing page for messmass.com (pitch deck 2026-02-22)
+   WHY: Convert with pitch messaging; drive dashboard sign-in */
 
-.container {
+.landing {
   min-height: 100vh;
   background: var(--mm-gray-50);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: var(--mm-space-8) var(--mm-space-4);
 }
 
-.content {
-  background: var(--mm-white);
-  padding: var(--mm-space-12);
-  border-radius: var(--mm-radius-xl);
-  box-shadow: var(--mm-shadow-lg);
+/* ----- Hero ----- */
+.hero {
+  background: linear-gradient(160deg, #0f172a 0%, #1e293b 50%, #0f172a 100%);
+  color: #f8fafc;
+  padding: clamp(4rem, 10vw, 8rem) var(--mm-space-6);
   text-align: center;
-  max-width: 600px;
-  animation: fadeInUp 0.6s ease-out;
+  position: relative;
 }
 
-@keyframes fadeInUp {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+.heroInner {
+  max-width: 720px;
+  margin: 0 auto;
 }
 
-.title {
-  color: var(--mm-color-primary-700);
-  font-size: var(--mm-font-size-5xl);
-  margin: 0 0 var(--mm-space-4) 0;
-  font-weight: var(--mm-font-weight-bold);
-  line-height: 1.2;
+.heroLabel {
+  font-size: 0.875rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--mm-color-primary-300);
+  margin-bottom: var(--mm-space-4);
 }
 
-.subtitle {
-  color: var(--mm-gray-600);
-  font-size: var(--mm-font-size-xl);
-  margin: 0 0 var(--mm-space-8) 0;
+.heroTitle {
+  font-size: clamp(1.75rem, 4vw, 2.5rem);
+  font-weight: 700;
+  line-height: 1.25;
+  margin-bottom: var(--mm-space-5);
+  letter-spacing: -0.02em;
 }
 
-.button {
+.heroSub {
+  font-size: 1.125rem;
+  line-height: 1.6;
+  color: #cbd5e1;
+  margin-bottom: var(--mm-space-8);
+}
+
+.heroCtas {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--mm-space-4);
+  justify-content: center;
+  align-items: center;
+}
+
+.ctaPrimary {
   display: inline-block;
   padding: var(--mm-space-4) var(--mm-space-8);
-  background: var(--mm-color-primary-600);
+  background: var(--mm-color-secondary-500);
   color: var(--mm-white);
   text-decoration: none;
   border-radius: var(--mm-radius-lg);
-  font-size: var(--mm-font-size-lg);
-  font-weight: var(--mm-font-weight-semibold);
-  transition: all var(--transition-fast);
-  box-shadow: var(--mm-shadow-md);
+  font-size: 1.0625rem;
+  font-weight: 600;
+  transition: background 0.2s, transform 0.2s, box-shadow 0.2s;
+  box-shadow: 0 4px 14px rgba(16, 185, 129, 0.35);
 }
 
-.button:hover {
-  background: var(--mm-color-primary-700);
+.ctaPrimary:hover {
+  background: var(--mm-color-secondary-600);
   transform: translateY(-2px);
-  box-shadow: var(--mm-shadow-lg);
+  box-shadow: 0 6px 20px rgba(16, 185, 129, 0.4);
 }
 
+.ctaSecondary {
+  display: inline-block;
+  padding: var(--mm-space-4) var(--mm-space-6);
+  color: #e2e8f0;
+  text-decoration: none;
+  border: 1px solid #475569;
+  border-radius: var(--mm-radius-lg);
+  font-size: 1rem;
+  font-weight: 500;
+  transition: border-color 0.2s, color 0.2s;
+}
+
+.ctaSecondary:hover {
+  border-color: #94a3b8;
+  color: #f1f5f9;
+}
+
+/* ----- Sections ----- */
+.section,
+.sectionAlt {
+  padding: clamp(3rem, 8vw, 5rem) var(--mm-space-6);
+}
+
+.section {
+  background: var(--mm-white);
+}
+
+.sectionAlt {
+  background: var(--mm-gray-50);
+}
+
+.sectionInner {
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.sectionTitle {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--mm-gray-900);
+  margin-bottom: var(--mm-space-6);
+  text-align: center;
+}
+
+/* Belief */
+.beliefLead {
+  font-size: 1.375rem;
+  font-weight: 600;
+  color: var(--mm-gray-900);
+  margin-bottom: var(--mm-space-4);
+  line-height: 1.4;
+}
+
+.beliefBody {
+  color: var(--mm-gray-600);
+  line-height: 1.65;
+  margin-bottom: var(--mm-space-6);
+}
+
+.pillList {
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--mm-space-4);
+  justify-content: center;
+  margin: 0;
+  padding: 0;
+}
+
+.pillList li {
+  display: flex;
+  align-items: center;
+  gap: var(--mm-space-2);
+  font-size: 0.9375rem;
+  color: var(--mm-gray-600);
+}
+
+.pill {
+  display: inline-block;
+  padding: 0.25rem 0.75rem;
+  background: var(--mm-color-primary-100);
+  color: var(--mm-color-primary-700);
+  border-radius: 9999px;
+  font-weight: 600;
+  font-size: 0.8125rem;
+}
+
+/* Problem */
+.problemLead {
+  font-size: 1.25rem;
+  color: var(--mm-gray-700);
+  margin-bottom: var(--mm-space-6);
+  text-align: center;
+  line-height: 1.5;
+}
+
+.problemGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: var(--mm-space-5);
+  margin-top: var(--mm-space-6);
+}
+
+.problemCard {
+  background: var(--mm-white);
+  padding: var(--mm-space-5);
+  border-radius: var(--mm-radius-lg);
+  border: 1px solid var(--mm-gray-200);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.problemCard h3 {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--mm-gray-900);
+  margin-bottom: var(--mm-space-2);
+}
+
+.problemCard p {
+  font-size: 0.9375rem;
+  color: var(--mm-gray-600);
+  line-height: 1.5;
+  margin: 0;
+}
+
+.problemIcon {
+  display: block;
+  font-size: 1.5rem;
+  margin-bottom: var(--mm-space-2);
+  opacity: 0.9;
+}
+
+/* Solution */
+.solutionLead {
+  font-size: 1.25rem;
+  color: var(--mm-gray-800);
+  margin-bottom: var(--mm-space-4);
+  line-height: 1.5;
+}
+
+.solutionBody {
+  color: var(--mm-gray-600);
+  line-height: 1.65;
+  margin-bottom: var(--mm-space-6);
+}
+
+.solutionHighlights {
+  display: flex;
+  flex-direction: column;
+  gap: var(--mm-space-4);
+}
+
+.highlight {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--mm-space-4);
+  padding: var(--mm-space-4);
+  background: var(--mm-gray-50);
+  border-radius: var(--mm-radius-lg);
+  border-left: 4px solid var(--mm-color-secondary-500);
+}
+
+.highlightNum {
+  flex-shrink: 0;
+  width: 2rem;
+  height: 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--mm-color-secondary-500);
+  color: var(--mm-white);
+  border-radius: 50%;
+  font-weight: 700;
+  font-size: 0.9375rem;
+}
+
+.highlight span:last-child {
+  color: var(--mm-gray-700);
+  line-height: 1.5;
+}
+
+/* Product */
+.productGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: var(--mm-space-5);
+  margin-top: var(--mm-space-4);
+}
+
+.productCard {
+  padding: var(--mm-space-5);
+  background: var(--mm-white);
+  border-radius: var(--mm-radius-lg);
+  border: 1px solid var(--mm-gray-200);
+}
+
+.productCard h3 {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--mm-gray-900);
+  margin-bottom: var(--mm-space-2);
+}
+
+.productCard p {
+  font-size: 0.9375rem;
+  color: var(--mm-gray-600);
+  line-height: 1.5;
+  margin: 0;
+}
+
+/* Traction */
+.tractionLead {
+  text-align: center;
+  color: var(--mm-gray-600);
+  margin-bottom: var(--mm-space-6);
+  line-height: 1.5;
+}
+
+.tractionGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: var(--mm-space-5);
+  margin-top: var(--mm-space-4);
+}
+
+.tractionItem {
+  text-align: center;
+  padding: var(--mm-space-4);
+  background: var(--mm-white);
+  border-radius: var(--mm-radius-lg);
+  border: 1px solid var(--mm-gray-200);
+}
+
+.tractionValue {
+  display: block;
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: var(--mm-color-primary-600);
+  margin-bottom: var(--mm-space-1);
+}
+
+.tractionLabel {
+  font-size: 0.8125rem;
+  color: var(--mm-gray-600);
+  line-height: 1.3;
+}
+
+/* Differentiator */
+.diffLead {
+  font-size: 1.125rem;
+  color: var(--mm-gray-700);
+  line-height: 1.6;
+  text-align: center;
+  max-width: 640px;
+  margin: 0 auto;
+}
+
+/* Footer CTA */
+.footer {
+  background: linear-gradient(160deg, #0f172a 0%, #1e293b 100%);
+  color: #f8fafc;
+  padding: clamp(4rem, 10vw, 6rem) var(--mm-space-6);
+  text-align: center;
+}
+
+.footerInner {
+  max-width: 560px;
+  margin: 0 auto;
+}
+
+.footerTitle {
+  font-size: clamp(1.375rem, 3vw, 1.75rem);
+  font-weight: 700;
+  line-height: 1.35;
+  margin-bottom: var(--mm-space-6);
+}
+
+.footerSite {
+  margin-top: var(--mm-space-6);
+  font-size: 0.9375rem;
+  color: #94a3b8;
+}
 
 @media (max-width: 768px) {
-  .content {
-    padding: var(--mm-space-8);
+  .hero,
+  .section,
+  .sectionAlt {
+    padding-left: var(--mm-space-4);
+    padding-right: var(--mm-space-4);
   }
-  
-  .title {
-    font-size: var(--mm-font-size-3xl);
+
+  .heroCtas {
+    flex-direction: column;
   }
-  
-  .subtitle {
-    font-size: var(--mm-font-size-lg);
+
+  .ctaPrimary,
+  .ctaSecondary {
+    width: 100%;
+    max-width: 280px;
+    text-align: center;
+  }
+
+  .pillList {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .productGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .tractionGrid {
+    grid-template-columns: repeat(2, 1fr);
   }
 }
