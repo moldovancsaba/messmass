@@ -61,36 +61,58 @@ export async function GET() {
     );
     const blocks = await dataBlocks.find({ _id: { $in: blockIds } }).toArray();
     const blockMap = new Map(blocks.map((b: any) => [b._id.toString(), b]));
-    const chartIds = template.dataBlocks.flatMap((ref: any) => {
+
+    const stats = ensureDerivedMetrics(project.stats || {}) as Record<string, number | string | undefined>;
+    const allChartIds = template.dataBlocks.flatMap((ref: any) => {
       const block = blockMap.get(ref.blockId?.toString?.() ?? ref.blockId);
       return (block?.charts || []).map((c: any) => c.chartId);
     });
-
-    const configs = await chartConfigs.find({ chartId: { $in: chartIds } }).toArray();
+    const configs = await chartConfigs.find({ chartId: { $in: allChartIds } }).toArray();
     const configById = new Map((configs as any[]).map((c) => [c.chartId, c]));
-    const orderedConfigs = chartIds.map((id: string) => configById.get(id)).filter(Boolean) as ChartConfiguration[];
 
-    const stats = ensureDerivedMetrics(project.stats || {}) as Record<string, number | string | undefined>;
-    const chartResults = orderedConfigs.map((config) => {
-      const result = calculateChartSafe(config, stats);
-      return {
-        chartId: result.chartId,
-        type: result.type,
-        title: result.title,
-        icon: result.icon,
-        iconVariant: result.iconVariant,
-        kpiValue: result.kpiValue,
-        elements: result.elements,
-        showTitle: result.showTitle,
-      };
-    });
+    const blockNameToSection: Record<string, 'coreBelief' | 'problem' | 'product'> = {
+      'Landing Value Chain': 'coreBelief',
+      'Landing Problem': 'problem',
+      'Landing Product': 'product',
+    };
+    const sections: { coreBelief: any[]; problem: any[]; product: any[] } = {
+      coreBelief: [],
+      problem: [],
+      product: [],
+    };
+
+    for (const ref of template.dataBlocks) {
+      const block = blockMap.get(ref.blockId?.toString?.() ?? ref.blockId);
+      const blockName = block?.name ?? '';
+      const sectionKey = blockNameToSection[blockName];
+      const blockChartIds = (block?.charts || []).map((c: any) => c.chartId);
+      for (const id of blockChartIds) {
+        const config = configById.get(id) as ChartConfiguration | undefined;
+        if (!config) continue;
+        const result = calculateChartSafe(config, stats);
+        const item = {
+          chartId: result.chartId,
+          type: result.type,
+          title: result.title,
+          icon: result.icon,
+          iconVariant: result.iconVariant,
+          kpiValue: result.kpiValue,
+          elements: result.elements,
+          showTitle: result.showTitle,
+        };
+        if (sectionKey) sections[sectionKey].push(item);
+      }
+    }
+
+    const chartResults = sections.coreBelief.concat(sections.problem).concat(sections.product);
 
     const styleId = project.styleIdEnhanced || template.styleId;
-    let style = null;
+    let styleDoc: any = null;
     if (styleId) {
       const sid = typeof styleId === 'string' && ObjectId.isValid(styleId) ? new ObjectId(styleId) : styleId;
-      style = await reportStyles.findOne({ _id: sid });
+      styleDoc = await reportStyles.findOne({ _id: sid });
     }
+    const style = styleDoc ? serializeStyle(styleDoc) : null;
 
     return NextResponse.json({
       success: true,
@@ -108,8 +130,9 @@ export async function GET() {
         }),
         gridSettings: template.gridSettings,
       },
-      style: style ? { _id: (style as any)._id?.toString(), name: (style as any).name } : null,
+      style,
       chartResults,
+      sections,
     });
   } catch (err) {
     console.error('[landing-report]', err);
@@ -128,5 +151,15 @@ function serializeProject(project: any) {
     viewSlug: project.viewSlug,
     stats: project.stats,
     partner1Id: project.partner1Id?.toString(),
+  };
+}
+
+function serializeStyle(doc: any) {
+  if (!doc) return null;
+  const { _id, createdAt, updatedAt, ...rest } = doc;
+  return {
+    _id: _id?.toString(),
+    name: rest.name,
+    ...rest,
   };
 }

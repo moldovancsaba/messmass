@@ -120,21 +120,33 @@ async function main() {
     }
     const styleId = (style as any)._id;
 
-    // 4. Chart configurations: ValueChain (icon + 2 text fields) — Private, Actionable, Secure
+    // 4. Chart configurations: ValueChain (icon + 2 text fields)
     const chartConfigs = db.collection('chart_configurations');
     const valueChainCharts = [
       { chartId: 'kpi-valuechain-private', title: 'Private', icon: 'lock', textA: 'reportText1', textB: 'reportText2', color: '#3b82f6' },
       { chartId: 'kpi-valuechain-actionable', title: 'Actionable', icon: 'bolt', textA: 'reportText3', textB: 'reportText4', color: '#10b981' },
       { chartId: 'kpi-valuechain-secure', title: 'Secure', icon: 'shield', textA: 'reportText5', textB: 'reportText6', color: '#22c55e' },
     ];
-    for (const v of valueChainCharts) {
+    const problemCharts = [
+      { chartId: 'kpi-valuechain-problem1', title: 'Insight → Action gap', icon: 'trending_up', textA: 'reportText7', textB: 'reportText8', color: '#3b82f6' },
+      { chartId: 'kpi-valuechain-problem2', title: 'Compliance fear', icon: 'gpp_bad', textA: 'reportText9', textB: 'reportText10', color: '#f59e0b' },
+      { chartId: 'kpi-valuechain-problem3', title: 'The reality', icon: 'campaign', textA: 'reportText11', textB: 'reportText12', color: '#3b82f6' },
+    ];
+    const productCharts = [
+      { chartId: 'kpi-valuechain-product1', title: '1. Ingest & process', icon: 'upload', textA: 'reportText13', textB: 'reportText14', color: '#3b82f6' },
+      { chartId: 'kpi-valuechain-product2', title: '2. Interpret', icon: 'insights', textA: 'reportText15', textB: 'reportText16', color: '#3b82f6' },
+      { chartId: 'kpi-valuechain-product3', title: '3. Act', icon: 'touch_app', textA: 'reportText17', textB: 'reportText18', color: '#3b82f6' },
+      { chartId: 'kpi-valuechain-product4', title: '4. Governance', icon: 'admin_panel_settings', textA: 'reportText19', textB: 'reportText20', color: '#3b82f6' },
+    ];
+    const allValueChainCharts = [...valueChainCharts, ...problemCharts, ...productCharts];
+    for (const v of allValueChainCharts) {
       const existing = await chartConfigs.findOne({ chartId: v.chartId });
       const payload = {
         chartId: v.chartId,
         title: v.title,
         type: 'valuechain',
-        formula: '', // valuechain uses elements[].formula only
-        order: valueChainCharts.indexOf(v),
+        formula: '',
+        order: allValueChainCharts.indexOf(v),
         isActive: true,
         icon: v.icon,
         iconVariant: 'outlined',
@@ -154,36 +166,78 @@ async function main() {
       }
     }
 
-    // 5. Data block "Landing Value Chain"
+    // 5. Data blocks: Landing Value Chain, Landing Problem, Landing Product
     const dataBlocks = db.collection('data_blocks');
-    const blockCharts = valueChainCharts.map((v, i) => ({
-      chartId: v.chartId,
-      width: 1,
-      order: i,
-    }));
-    let dataBlock = await dataBlocks.findOne({ name: 'Landing Value Chain' });
-    if (!dataBlock) {
+    const block1Charts = valueChainCharts.map((v, i) => ({ chartId: v.chartId, width: 1, order: i }));
+    let dataBlock1 = await dataBlocks.findOne({ name: 'Landing Value Chain' });
+    if (!dataBlock1) {
       const res = await dataBlocks.insertOne({
         name: 'Landing Value Chain',
         showTitle: false,
         isActive: true,
-        charts: blockCharts,
+        charts: block1Charts,
         createdAt: now,
         updatedAt: now,
       });
-      dataBlock = await dataBlocks.findOne({ _id: res.insertedId });
+      dataBlock1 = await dataBlocks.findOne({ _id: res.insertedId });
       console.log('✅ Created data block: Landing Value Chain');
     } else {
       await dataBlocks.updateOne(
-        { _id: (dataBlock as any)._id },
-        { $set: { charts: blockCharts, updatedAt: now } }
+        { _id: (dataBlock1 as any)._id },
+        { $set: { charts: block1Charts, updatedAt: now } }
       );
-      console.log('✓ Data block exists, updated charts: Landing Value Chain');
     }
-    const blockId = (dataBlock as any)._id;
+    const blockId1 = (dataBlock1 as any)._id;
 
-    // 6. Report template "messmass.com"
+    const block2Charts = problemCharts.map((v, i) => ({ chartId: v.chartId, width: 1, order: i }));
+    let dataBlock2 = await dataBlocks.findOne({ name: 'Landing Problem' });
+    if (!dataBlock2) {
+      const res = await dataBlocks.insertOne({
+        name: 'Landing Problem',
+        showTitle: false,
+        isActive: true,
+        charts: block2Charts,
+        createdAt: now,
+        updatedAt: now,
+      });
+      dataBlock2 = await dataBlocks.findOne({ _id: res.insertedId });
+      console.log('✅ Created data block: Landing Problem');
+    } else {
+      await dataBlocks.updateOne(
+        { _id: (dataBlock2 as any)._id },
+        { $set: { charts: block2Charts, updatedAt: now } }
+      );
+    }
+    const blockId2 = (dataBlock2 as any)._id;
+
+    const block3Charts = productCharts.map((v, i) => ({ chartId: v.chartId, width: 1, order: i }));
+    let dataBlock3 = await dataBlocks.findOne({ name: 'Landing Product' });
+    if (!dataBlock3) {
+      const res = await dataBlocks.insertOne({
+        name: 'Landing Product',
+        showTitle: false,
+        isActive: true,
+        charts: block3Charts,
+        createdAt: now,
+        updatedAt: now,
+      });
+      dataBlock3 = await dataBlocks.findOne({ _id: res.insertedId });
+      console.log('✅ Created data block: Landing Product');
+    } else {
+      await dataBlocks.updateOne(
+        { _id: (dataBlock3 as any)._id },
+        { $set: { charts: block3Charts, updatedAt: now } }
+      );
+    }
+    const blockId3 = (dataBlock3 as any)._id;
+
+    // 6. Report template "messmass.com" — 3 blocks: Value Chain, Problem, Product
     const templates = db.collection('report_templates');
+    const dataBlocksRef = [
+      { blockId: blockId1, order: 0 },
+      { blockId: blockId2, order: 1 },
+      { blockId: blockId3, order: 2 },
+    ];
     let template = await templates.findOne({ name: LANDING_TEMPLATE_NAME });
     if (!template) {
       const res = await templates.insertOne({
@@ -192,7 +246,7 @@ async function main() {
         type: 'event',
         isDefault: false,
         styleId,
-        dataBlocks: [{ blockId, order: 0 }],
+        dataBlocks: dataBlocksRef,
         gridSettings: { desktopUnits: 6, tabletUnits: 3, mobileUnits: 2 },
         createdAt: now,
         updatedAt: now,
@@ -200,24 +254,11 @@ async function main() {
       template = await templates.findOne({ _id: res.insertedId });
       console.log('✅ Created report template:', LANDING_TEMPLATE_NAME);
     } else {
-      const hasBlock = (template as any).dataBlocks?.some(
-        (ref: any) => ref.blockId?.toString() === blockId.toString()
+      await templates.updateOne(
+        { _id: (template as any)._id },
+        { $set: { dataBlocks: dataBlocksRef, styleId: (template as any).styleId || styleId, updatedAt: now } }
       );
-      if (!hasBlock) {
-        await templates.updateOne(
-          { _id: (template as any)._id },
-          {
-            $set: {
-              dataBlocks: [{ blockId, order: 0 }],
-              styleId: (template as any).styleId || styleId,
-              updatedAt: now,
-            },
-          }
-        );
-        console.log('✓ Template exists, linked data block:', LANDING_TEMPLATE_NAME);
-      } else {
-        console.log('✓ Template exists:', LANDING_TEMPLATE_NAME);
-      }
+      console.log('✓ Template exists, updated data blocks:', LANDING_TEMPLATE_NAME);
     }
     const templateId = (template as any)._id;
 
@@ -262,6 +303,35 @@ async function main() {
       reportText4: 'Ready for immediate action.',
       reportText5: 'Secure',
       reportText6: '100% safe.',
+      reportText7: 'Insight → Action gap',
+      reportText8: 'Data abundance, but processing is often manual and slow.',
+      reportText9: 'Compliance fear',
+      reportText10: 'PII and KYC data cannot go to public cloud AIs (e.g. ChatGPT).',
+      reportText11: 'The reality',
+      reportText12: "If employees use cloud models secretly, that's a breach. If management bans it, growth slows.",
+      reportText13: '1. Ingest & process',
+      reportText14: 'Automated data ingestion and cleaning.',
+      reportText15: '2. Interpret',
+      reportText16: 'Trends and anomalies powered by a local AI engine.',
+      reportText17: '3. Act',
+      reportText18: 'Decision points, personas, playbooks, and task delegation.',
+      reportText19: '4. Governance',
+      reportText20: '100% auditability and access control. Every byte stays where it belongs.',
+      reportTextHeroLabel: 'Sovereign Decision Intelligence',
+      reportTextHeroTitle: 'Data Privacy and Agentic AI without compromises.',
+      reportTextHeroSub: 'The platform that restores the freedom and security of decision-making to data-driven companies—and opens the door for those who want to become one.',
+      reportTextSectionCoreTitle: 'Our core belief',
+      reportTextBeliefLead: "You shouldn't have to choose between intelligence and security.",
+      reportTextBeliefBody: 'No company should hand over sensitive data to the cloud to be smart—or give up the power of AI to stay compliant. We believe in decision sovereignty: your data stays with you, and the AI comes to it.',
+      reportTextProblemTitle: 'The cost of decision paralysis',
+      reportTextProblemLead: 'Teams are paralyzed. We have data, but we lack the courage to use the tools that could interpret it.',
+      reportTextSolutionTitle: 'The solution: local-first agentic AI',
+      reportTextSolutionLead: 'We flip the logic: **the AI goes to the data, not the data to the AI.**',
+      reportTextSolutionBody: 'We bring local AI agents directly into your secure infrastructure. The data doesn\'t move; the intelligence runs locally. Proactive decision-making processes, not passive dashboards—without the compliance nightmare.',
+      reportTextProductTitle: 'The messmass platform',
+      reportTextDiffTitle: 'Why messmass',
+      reportTextDiffLead: 'BI tools are secure but passive. Cloud AI is proactive but no DPO will allow PII. **messmass is the only player that brings proactive AI with physical hardware isolation.**',
+      reportTextFooterTitle: "Let's build the era of sovereign enterprise AI together.",
     };
     if (!project) {
       const { v4: uuidv4 } = await import('uuid');
@@ -285,15 +355,12 @@ async function main() {
       console.log('✅ Created event:', LANDING_EVENT_NAME, 'viewSlug:', (project as any).viewSlug);
     } else {
       const currentStats = (project as any).stats || {};
-      const mergedStats = {
-        ...currentStats,
-        reportText1: currentStats.reportText1 ?? defaultStats.reportText1,
-        reportText2: currentStats.reportText2 ?? defaultStats.reportText2,
-        reportText3: currentStats.reportText3 ?? defaultStats.reportText3,
-        reportText4: currentStats.reportText4 ?? defaultStats.reportText4,
-        reportText5: currentStats.reportText5 ?? defaultStats.reportText5,
-        reportText6: currentStats.reportText6 ?? defaultStats.reportText6,
-      };
+      const mergedStats = { ...currentStats };
+      for (const key of Object.keys(defaultStats)) {
+        if (key.startsWith('reportText') && (mergedStats[key] === undefined || mergedStats[key] === null || mergedStats[key] === '')) {
+          mergedStats[key] = defaultStats[key];
+        }
+      }
       await projects.updateOne(
         { _id: (project as any)._id },
         {
@@ -311,7 +378,7 @@ async function main() {
 
     console.log('\n✅ Seed complete. Landing project viewSlug:', (project as any).viewSlug);
     console.log('  Use this slug in report URL: /report/' + (project as any).viewSlug);
-    console.log('  Edit event stats in admin Events to change value chain text (reportText1..6: title + description per card).');
+    console.log('  Edit event stats in admin Events to change all landing text (reportText1..20 + reportTextHero*, reportTextSection*, etc.).');
   } finally {
     await client.close();
   }
