@@ -5,7 +5,6 @@
  */
 
 import { NextResponse } from 'next/server';
-import { ObjectId } from 'mongodb';
 import { getAdminUser } from '@/lib/auth';
 import { hasMinimumRole } from '@/lib/permissions';
 import { getDb } from '@/lib/db';
@@ -38,6 +37,11 @@ function serializeChartResult(r: ChartResult | null): Record<string, unknown> {
   return out;
 }
 
+function getBaseUrl(): string {
+  if (process.env.VERCEL_URL) return `https://${process.env.VERCEL_URL}`;
+  return process.env.NEXT_PUBLIC_APP_URL || 'http://127.0.0.1:3001';
+}
+
 export async function POST() {
   try {
     const user = await getAdminUser();
@@ -54,59 +58,27 @@ export async function POST() {
       );
     }
 
-    const db = await getDb();
-    const templatesCol = db.collection('report_templates');
-    const dataBlocksCol = db.collection('data_blocks');
-    const chartConfigsCol = db.collection('chart_configurations');
-
-    let template: any = null;
-    const projectDoc = project as any;
-    if (projectDoc.reportTemplateId) {
-      const tid = ObjectId.isValid(projectDoc.reportTemplateId)
-        ? new ObjectId(projectDoc.reportTemplateId)
-        : projectDoc.reportTemplateId;
-      template = await templatesCol.findOne({ _id: tid });
-    }
-    if (!template && projectDoc.partner1?._id) {
-      const partnerId = projectDoc.partner1._id;
-      const partner = await db.collection('partners').findOne({
-        _id: typeof partnerId === 'string' ? new ObjectId(partnerId) : partnerId,
-      });
-      if (partner?.reportTemplateId) {
-        const tid = typeof partner.reportTemplateId === 'string' ? new ObjectId(partner.reportTemplateId) : partner.reportTemplateId;
-        template = await templatesCol.findOne({ _id: tid });
-      }
-    }
-
-    if (!template?.dataBlocks?.length) {
+    // Use the same report-config API as the report page so template + blocks match exactly
+    const baseUrl = getBaseUrl();
+    const configRes = await fetch(
+      `${baseUrl}/api/report-config/${encodeURIComponent(slug)}?type=project`,
+      { cache: 'no-store' }
+    );
+    const configData = await configRes.json();
+    if (!configData.success || !configData.template?.dataBlocks?.length) {
       return NextResponse.json(
-        { success: false, error: 'No report template or blocks found for this project' },
+        {
+          success: false,
+          error: configData.error || 'No report template or blocks found. Resolve report first at /report/' + slug,
+        },
         { status: 400 }
       );
     }
+    const template = configData.template as any;
+    const populatedDataBlocks = template.dataBlocks;
 
-    const blockIds = template.dataBlocks.map((ref: any) =>
-      typeof ref.blockId === 'string' && ObjectId.isValid(ref.blockId) ? new ObjectId(ref.blockId) : ref.blockId
-    );
-    const blocks = await dataBlocksCol.find({ _id: { $in: blockIds } }).toArray();
-    // Match report-config: use ref.blockId.toString() so ObjectId or string both work
-    const populatedDataBlocks = template.dataBlocks
-      .map((ref: any) => {
-        const blockId = typeof ref.blockId?.toString === 'function' ? ref.blockId.toString() : String(ref.blockId ?? '');
-        const block = blocks.find((b: any) => b._id.toString() === blockId);
-        if (!block) return null;
-        return {
-          _id: block._id.toString(),
-          name: block.name,
-          showTitle: block.showTitle ?? true,
-          order: ref.order ?? 0,
-          charts: block.charts || [],
-          blockAspectRatio: block.blockAspectRatio ?? ref.overrides?.blockAspectRatio,
-          tableHeightMultiplier: block.tableHeightMultiplier ?? ref.overrides?.tableHeightMultiplier,
-        };
-      })
-      .filter(Boolean);
-
+    const db = await getDb();
+    const chartConfigsCol = db.collection('chart_configurations');
     const allChartIds = populatedDataBlocks.flatMap((b: any) => (b.charts || []).map((c: any) => c.chartId));
     const configs = await chartConfigsCol.find({ chartId: { $in: allChartIds } }).toArray();
     const chartsForCalc: Chart[] = (configs as any[]).map((c) => ({

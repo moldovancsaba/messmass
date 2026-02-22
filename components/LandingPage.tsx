@@ -132,12 +132,23 @@ function LandingPageStatic({
       </header>
       <section id="report-content" className={reportPageStyles.page} aria-label="Report content">
         <div className={reportPageStyles.container}>
-          <ReportContent
-            blocks={blocks}
-            chartResults={chartResults as unknown as Map<string, import('@/lib/report-calculator').ChartResult>}
-            charts={null}
-            gridSettings={gridSettings}
-          />
+          {blocks.length === 0 ? (
+            <div className={reportPageStyles.error} style={{ minHeight: '40vh', padding: 'var(--mm-space-8)' }}>
+              <span className={reportPageStyles.errorIcon}>📊</span>
+              <h2 className={reportPageStyles.errorTitle}>No static content yet</h2>
+              <p className={reportPageStyles.errorText}>
+                Go to <strong>Admin → Main page</strong>, choose an event report, then click <strong>Update static content</strong>.
+              </p>
+              <Link href="/admin/mainpage" className="btn btn-primary">Open Main page settings</Link>
+            </div>
+          ) : (
+            <ReportContent
+              blocks={blocks}
+              chartResults={chartResults as unknown as Map<string, import('@/lib/report-calculator').ChartResult>}
+              charts={null}
+              gridSettings={gridSettings}
+            />
+          )}
         </div>
       </section>
       <PricingAndFooter footerTitle={footerTitle} />
