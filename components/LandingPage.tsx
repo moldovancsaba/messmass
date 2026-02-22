@@ -19,6 +19,7 @@ import ReportContent from '@/app/report/[slug]/ReportContent';
 import ContactForm from '@/components/ContactForm';
 import { LANDING_REPORT_SLUG } from '@/lib/landingReportSlug';
 import type { StaticLandingSnapshot } from '@/lib/landingSettings';
+import { replaceEmDashes } from '@/lib/contentFormat';
 import styles from '@/app/page.module.css';
 import reportPageStyles from '@/app/styles/report-page.module.css';
 
@@ -105,11 +106,11 @@ function LandingPageStatic({
   version?: string | null;
 }) {
   const stats = snapshot.projectStats as Record<string, unknown> | undefined;
-  const heroLabel = (stats?.reportTextHeroLabel as string) || 'Sovereign Decision Intelligence';
-  const heroTitle = (stats?.reportTextHeroTitle as string) || 'Agentic AI that reads and understands your data at scale, and delivers actionable dashboards—without compromising privacy.';
-  const heroSub = (stats?.reportTextHeroSub as string) || 'The platform that restores the freedom and security of decision-making to data-driven companies.';
+  const heroLabel = replaceEmDashes((stats?.reportTextHeroLabel as string) || 'Sovereign Decision Intelligence');
+  const heroTitle = replaceEmDashes((stats?.reportTextHeroTitle as string) || 'Agentic AI that reads and understands your data at scale, and delivers actionable dashboards without compromising privacy.');
+  const heroSub = replaceEmDashes((stats?.reportTextHeroSub as string) || 'The platform that restores the freedom and security of decision-making to data-driven companies.');
   const rawFooter = stats?.reportTextFooterTitle;
-  const footerTitle = typeof rawFooter === 'string' ? rawFooter : "Let's build the era of sovereign enterprise AI together.";
+  const footerTitle = replaceEmDashes(typeof rawFooter === 'string' ? rawFooter : "Let's build the era of sovereign enterprise AI together.");
 
   const blocks = useMemo(() => {
     const list = Array.isArray(snapshot.blocks) ? snapshot.blocks : [];
@@ -413,13 +414,14 @@ function LandingPageLive({ slug, version }: { slug: string; version?: string | n
   const error = dataError || layoutError || chartsError;
 
   const rawFooter = stats && (stats as Record<string, unknown>).reportTextFooterTitle;
-  const footerTitle =
-    typeof rawFooter === 'string' ? rawFooter : "Let's build the era of sovereign enterprise AI together.";
+  const footerTitle = replaceEmDashes(
+    typeof rawFooter === 'string' ? rawFooter : "Let's build the era of sovereign enterprise AI together."
+  );
 
-  const heroLabel = (stats as Record<string, unknown>)?.['reportTextHeroLabel'] as string || 'Sovereign Decision Intelligence';
-  const heroTitle = (stats as Record<string, unknown>)?.['reportTextHeroTitle'] as string || 'Agentic AI that reads and understands your data at scale, and delivers actionable dashboards—without compromising privacy.';
-  const heroSub = (stats as Record<string, unknown>)?.['reportTextHeroSub'] as string ||
-    'The platform that restores the freedom and security of decision-making to data-driven companies.';
+  const heroLabel = replaceEmDashes((stats as Record<string, unknown>)?.['reportTextHeroLabel'] as string || 'Sovereign Decision Intelligence');
+  const heroTitle = replaceEmDashes((stats as Record<string, unknown>)?.['reportTextHeroTitle'] as string || 'Agentic AI that reads and understands your data at scale, and delivers actionable dashboards without compromising privacy.');
+  const heroSub = replaceEmDashes((stats as Record<string, unknown>)?.['reportTextHeroSub'] as string ||
+    'The platform that restores the freedom and security of decision-making to data-driven companies.');
 
   function renderReportSection() {
     if (loadTimedOut) {

@@ -15,6 +15,7 @@ import {
 } from 'chart.js';
 import type { ChartResult } from '@/lib/report-calculator';
 import { preventPhraseBreaks } from '@/lib/chartLabelUtils';
+import { replaceEmDashes } from '@/lib/contentFormat';
 import MaterialIcon from '@/components/MaterialIcon';
 import CellWrapper from '@/components/CellWrapper';
 import { ChartErrorBoundary } from '@/components/ChartErrorBoundary';
@@ -101,6 +102,9 @@ interface ReportChartProps {
   
   /** Optional CSS class for container */
   className?: string;
+
+  /** When true (e.g. static landing), KPI value row gets 40% height so description copy doesn't truncate */
+  allowNA?: boolean;
 }
 
 /**
@@ -117,7 +121,7 @@ interface ReportChartProps {
  * - IMAGE: Aspect ratio-aware image display
  * - VALUE: Composite (KPI + BAR) - renders both components
  */
-export default function ReportChart({ result, chart, width, blockHeight, unifiedTextFontSize, className }: ReportChartProps) {
+export default function ReportChart({ result, chart, width, blockHeight, unifiedTextFontSize, className, allowNA = false }: ReportChartProps) {
   // WHAT: A-R-11 - Check for calculation errors first
   // WHY: Display error messages to users instead of hiding charts
   // HOW: Show error placeholder if chartError or error exists
@@ -214,7 +218,7 @@ export default function ReportChart({ result, chart, width, blockHeight, unified
     // WHY: Eliminates per-chart inline styles, better maintainability
   switch (result.type) {
     case 'kpi':
-        return <KPIChart result={result} className={className} />;
+        return <KPIChart result={result} className={className} allowNA={allowNA} />;
     
     case 'pie':
         return <PieChart result={result} className={className} />;
@@ -235,7 +239,7 @@ export default function ReportChart({ result, chart, width, blockHeight, unified
       // VALUE charts render KPI + BAR together
       return (
         <div className={`${styles.valueComposite} ${className || ''}`}>
-            <KPIChart result={result} className={className} />
+            <KPIChart result={result} className={className} allowNA={allowNA} />
             <BarChart result={result} />
         </div>
       );
@@ -281,9 +285,9 @@ export default function ReportChart({ result, chart, width, blockHeight, unified
  * UPDATED: Uses CellWrapper for Report Layout Spec v2.0
  * A-03.2: Enhanced height calculation to prevent value/label clipping
  */
-function KPIChart({ result, className }: { result: ChartResult; className?: string }) {
-  const formattedValue = formatValue(result.kpiValue, result.formatting);
-  const protectedTitle = preventPhraseBreaks(result.title);
+function KPIChart({ result, className, allowNA = false }: { result: ChartResult; className?: string; allowNA?: boolean }) {
+  const formattedValue = replaceEmDashes(formatValue(result.kpiValue, result.formatting));
+  const protectedTitle = preventPhraseBreaks(replaceEmDashes(result.title || ''));
   
   // WHAT: Use Material Icon with variant from chart config
   // WHY: Match admin UI and support all 2000+ Material Icons
@@ -317,11 +321,13 @@ function KPIChart({ result, className }: { result: ChartResult; className?: stri
         // WHAT: Calculate allocated row heights based on grid proportions
         // WHY: KPI layout changes when title/icon are hidden
         // HOW: Match the CSS grid-template-rows variants in ReportChart.module.css
+        const valueRowFraction = allowNA ? 0.4 : 0.3;
+        const titleRowFraction = 0.3;
         const iconRowHeight = hasIcon ? (containerHeight * 0.4) : 0;
         const valueRowHeight = hasIcon
-          ? (showTitle ? (containerHeight * 0.3) : (containerHeight * 0.6))
+          ? (showTitle ? (containerHeight * valueRowFraction) : (containerHeight * 0.6))
           : (showTitle ? (containerHeight * 0.7) : containerHeight);
-        const titleRowHeight = showTitle ? (containerHeight * 0.3) : 0;
+        const titleRowHeight = showTitle ? (containerHeight * titleRowFraction) : 0;
         
         // WHAT: A-03.2 - Measure actual content height in value row
         // WHY: Value might wrap to multiple lines and exceed allocated height
@@ -498,7 +504,7 @@ function KPIChart({ result, className }: { result: ChartResult; className?: stri
         mutationObserver.disconnect();
       };
     }
-  }, [showTitle, hasIcon, result.kpiValue, result.title, result.chartId]);
+  }, [showTitle, hasIcon, result.kpiValue, result.title, result.chartId, allowNA]);
   
   // WHAT: KPI uses internal CSS grid for deterministic layout
   // WHY: Avoids reserving space for hidden sections (title/icon)

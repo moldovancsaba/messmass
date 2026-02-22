@@ -374,6 +374,7 @@ function ResponsiveRow({ rowCharts, chartResults, charts, rowIndex, unifiedTextF
               // WHAT: P1 1.5 Phase 3 - Removed titleFontSize and subtitleFontSize props
               // WHY: CSS now uses --block-base-font-size and --block-subtitle-font-size directly (Phase 2)
               unifiedTextFontSize={unifiedTextFontSize}
+              allowNA={allowNA}
             />
           </div>
         );
@@ -544,9 +545,11 @@ function ReportBlock({ block, chartResults, charts, gridSettings, allowNA = fals
       let finalFontSize = barChartFontSize !== null
         ? Math.min(syncedFonts.titlePx, barChartFontSize)
         : syncedFonts.titlePx;
-      // WHAT: When allowNA (static landing), cap to strict report-page sizing so cards don't overflow
-      // WHY: Landing uses same ReportContent but wider context can produce oversized fonts
-      if (allowNA && finalFontSize > MAX_BLOCK_FONT_PX) {
+      // WHAT: When allowNA (static landing), force title to 32px so wrapper's large title isn't overridden by calculation
+      // WHY: Block sets --block-base-font-size; a smaller calculated value would override the wrapper's 32px
+      if (allowNA) {
+        finalFontSize = MAX_BLOCK_FONT_PX;
+      } else if (finalFontSize > MAX_BLOCK_FONT_PX) {
         finalFontSize = MAX_BLOCK_FONT_PX;
       }
       const subtitlePx = allowNA

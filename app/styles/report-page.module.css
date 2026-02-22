@@ -97,6 +97,13 @@
   min-height: 0;
 }
 
+/* WHAT: Give KPI description row more vertical space on landing so card copy doesn't truncate
+ * WHY: Default 4fr 3fr 3fr gives value row 30%; 3fr 4fr 3fr gives 40% so 2–3 line descriptions fit
+ * HOW: Override grid on KPI chart container when inside landing wrapper */
+.landingReportWrap :global([class*="kpi"]) {
+  grid-template-rows: 3fr 4fr 3fr;
+}
+
 /* Responsive Adjustments */
 @media (max-width: 768px) {
   .page {

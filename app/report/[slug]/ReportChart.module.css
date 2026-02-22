@@ -161,7 +161,8 @@
   justify-content: center;
   width: 100%;
   height: 100%;
-  font-size: clamp(1.25rem, min(30cqh, 25cqw), var(--landing-max-font, 6rem)); /* --landing-max-font caps on main page */
+  /* When --landing-max-font is set (e.g. 13px), cap at that size; otherwise use clamp (min 1.25rem, max 6rem) */
+  font-size: var(--landing-value-font, clamp(1.25rem, min(30cqh, 25cqw), 6rem));
   font-weight: var(--mm-font-weight-bold);
   color: var(--chartValueColor);
   line-height: 0.85;

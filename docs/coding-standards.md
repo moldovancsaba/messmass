@@ -190,11 +190,27 @@ const slug = project.slug;
 - PDF exports must preserve aspect ratios
 - Respects original content proportions
 
-**Global Standard:** 
+**Global Standard:**
 - Web: `object-fit: cover` in `app/styles/components.css`
 - PDF Export: Aspect ratio preservation in `lib/export/pdf.ts`
 
 **Key Principle:** Crop if needed, never distort.
+
+### Never Use Em Dashes in Content
+
+**Rule:** Do **not** use em dashes (—, U+2014) in user-facing content. Use spaces and hyphens ( - ) or rephrase instead.
+
+**Why:**
+- Consistency with plain typography and accessibility
+- Avoids encoding/display issues across platforms and fonts
+- Matches content style used in FAQ, marketing copy, and UI strings
+
+**Examples:**
+- ❌ "All outcomes—reports, documents—remain under your control."
+- ✅ "All outcomes - reports, documents - remain under your control."
+- ✅ "All outcomes (reports, documents) remain under your control."
+
+**Applies to:** UI strings, FAQ text, landing copy, error messages, and any user-visible content. Code comments and internal docs may use em dashes if desired.
 
 ---
 
