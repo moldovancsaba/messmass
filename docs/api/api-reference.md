@@ -4,7 +4,7 @@ Last Updated: 2026-01-11T22:45:21.000Z
 Canonical: Yes
 Owner: Backend
 
-**Version:** 11.56.6  
+**Version:** 11.56.7  
 **Last Updated:** 2026-02-21T00:00:00.000Z (UTC)  
 **Status:** Production
 
@@ -271,6 +271,6 @@ Returns: `{ projects: [...], totalMatched: 150, nextOffset: 60 }`
 
 ---
 
-**MessMass API Reference 11.56.6**  
+**MessMass API Reference 11.56.7**  
 **Last Updated: 2026-02-21T00:00:00.000Z (UTC)**  
 **© 2025 MessMass Platform**

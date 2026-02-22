@@ -54,6 +54,12 @@
   background: transparent !important; /* WHAT: Force transparent - only chart cards visible */
 }
 
+/* WHAT: Static landing (allowNA) - contain overflow so card text never spills into adjacent cards */
+.blockLanding {
+  overflow: hidden;
+  min-height: 0;
+}
+
 .blockTitle {
   font-size: var(--mm-font-size-2xl);
   font-weight: var(--mm-font-weight-bold);

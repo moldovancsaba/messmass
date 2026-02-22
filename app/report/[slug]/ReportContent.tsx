@@ -436,8 +436,11 @@ function ReportBlock({ block, chartResults, charts, gridSettings, allowNA = fals
   // WHAT: Block-level typography calculation (P1 1.5 Phase 1)
   // WHY: All typography elements in a block should use unified font size
   // HOW: Collect all cells from all rows, calculate once per block, set CSS custom property
-  const [blockBaseFontSize, setBlockBaseFontSize] = useState<number | null>(null);
-  const [blockSubtitleFontSize, setBlockSubtitleFontSize] = useState<number | null>(null);
+  // When allowNA (static landing), cap from first paint so cards never render oversized (avoids overlap)
+  const MAX_BLOCK_FONT_PX = 22;
+  const MAX_SUBTITLE_FONT_PX = 16;
+  const [blockBaseFontSize, setBlockBaseFontSize] = useState<number | null>(allowNA ? MAX_BLOCK_FONT_PX : null);
+  const [blockSubtitleFontSize, setBlockSubtitleFontSize] = useState<number | null>(allowNA ? MAX_SUBTITLE_FONT_PX : null);
   
   // WHAT: Calculate block-level typography when block width is known
   // WHY: Font size calculation needs block width (not row width)
@@ -543,8 +546,6 @@ function ReportBlock({ block, chartResults, charts, gridSettings, allowNA = fals
         : syncedFonts.titlePx;
       // WHAT: When allowNA (static landing), cap to strict report-page sizing so cards don't overflow
       // WHY: Landing uses same ReportContent but wider context can produce oversized fonts
-      const MAX_BLOCK_FONT_PX = 22;
-      const MAX_SUBTITLE_FONT_PX = 16;
       if (allowNA && finalFontSize > MAX_BLOCK_FONT_PX) {
         finalFontSize = MAX_BLOCK_FONT_PX;
       }
@@ -631,7 +632,7 @@ function ReportBlock({ block, chartResults, charts, gridSettings, allowNA = fals
   return (
     <div 
       ref={blockRef}
-      className={styles.block} 
+      className={allowNA ? `${styles.block} ${styles.blockLanding}` : styles.block}
       data-pdf-block="true"
       // WHAT: Apply unified typography as CSS custom properties (P1 1.5 Phase 1)
       // WHY: Block-level typography unification - all elements inherit from block
