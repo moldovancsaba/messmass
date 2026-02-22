@@ -1,0 +1,17 @@
+---
+description: After every deliverable code change, run Release Steps (version, docs, build, commit, push). No exceptions.
+alwaysApply: true
+---
+
+# Delivery loop — run every time
+
+After **every** deliverable code change (fix or feature), you **must** run the **Release Steps** in order. Do not skip. Do not wait for the user to ask.
+
+**Canonical checklist:** `docs/operations/operations-release-steps.md`
+
+1. **Version update** — Bump in `package.json` (PATCH for fixes, MINOR for features); update README and any docs that show version.
+2. **Documentation** — Update feature/API docs you touched; add RELEASE_NOTES entry if the project uses it.
+3. **Test local build** — `npm run type-check` and `npm run build` must pass.
+4. **Commit and push** — Commit with a clear message (e.g. `v11.56.X: description`); push to a non-protected branch (e.g. `preview` or `release/v11.56.X`). If `main` is protected, push to a branch and tell the user to open a PR.
+
+Treat these steps as part of "done" for any code change you deliver.

@@ -198,9 +198,10 @@ interface ResponsiveRowProps {
   unifiedTextFontSize: number | null;
   blockAspectRatio?: string; // R-LAYOUT-02.1: Optional block aspect ratio override (e.g., "4:6")
   tableHeightMultiplier?: number; // Table height control: height = blockWidth × multiplier (0.1 to 5.0)
+  allowNA?: boolean; // When true (e.g. static landing), show charts even with NA/empty data
 }
 
-function ResponsiveRow({ rowCharts, chartResults, charts, rowIndex, unifiedTextFontSize, blockAspectRatio, tableHeightMultiplier }: ResponsiveRowProps) {
+function ResponsiveRow({ rowCharts, chartResults, charts, rowIndex, unifiedTextFontSize, blockAspectRatio, tableHeightMultiplier, allowNA = false }: ResponsiveRowProps) {
   const rowRef = useRef<HTMLDivElement>(null);
   // WHAT: Initialize state with design tokens instead of hardcoded values
   // WHY: No hardcoded sizes - all values must come from design system
@@ -238,7 +239,7 @@ function ResponsiveRow({ rowCharts, chartResults, charts, rowIndex, unifiedTextF
         // WHAT: Build charts array with type information for validation
         // WHY: R-LAYOUT-02.1 - Need chart types to validate aspect ratio override is allowed
         const chartsWithTypes = rowCharts.map(chart => {
-          const result = chartResults.get(chart.chartId);
+          const result = chartResults.get(String(chart.chartId));
           return {
             width: chart.width,
             type: result?.type
@@ -336,24 +337,29 @@ function ResponsiveRow({ rowCharts, chartResults, charts, rowIndex, unifiedTextF
       } as React.CSSProperties}
     >
       {rowCharts.map(chart => {
-        const result = chartResults.get(chart.chartId);
-        // WHAT: Skip charts with no valid data (v11.48.0)
-        // WHY: ReportChart returns null for empty data, don't render container
-        if (!hasValidChartData(result) || !result) {
-          console.log(`[ResponsiveRow ${rowIndex}] Filtering out chart ${chart.chartId}:`, {
-            hasResult: !!result,
-            isValid: result ? hasValidChartData(result) : false,
-            type: result?.type,
-            kpiValue: result?.kpiValue,
-            elementsCount: result?.elements?.length
-          });
+        const result = chartResults.get(String(chart.chartId));
+        // WHAT: Skip charts with no valid data (v11.48.0); when allowNA (static landing), show if result exists and no error
+        const skip = allowNA
+          ? !result || !!result.error || !!result.chartError
+          : !hasValidChartData(result) || !result;
+        if (skip) {
+          if (!allowNA || !result) {
+            console.log(`[ResponsiveRow ${rowIndex}] Filtering out chart ${chart.chartId}:`, {
+              hasResult: !!result,
+              isValid: result ? hasValidChartData(result) : false,
+              type: result?.type,
+              kpiValue: result?.kpiValue,
+              elementsCount: result?.elements?.length
+            });
+          }
           return null;
         }
         
         // WHAT: Force remount when dimensions change significantly
         // WHY: Container queries cache container size, need remount for single full-width charts
         const dimensionKey = `${chart.chartId}-${Math.round(rowWidth / 100)}-${Math.round(rowHeight / 100)}`;
-        
+        if (!result) return null;
+
         return (
           <div 
             key={dimensionKey}
@@ -389,7 +395,7 @@ function ReportBlock({ block, chartResults, charts, gridSettings, allowNA = fals
   // WHAT: Filter out charts with no data (v11.48.0); when allowNA (static landing), show any result without error
   // WHY: Hide empty cells in live reports; on static landing show structure even if values are NA
   const validCharts = sortedCharts.filter(chart => {
-    const result = chartResults.get(chart.chartId);
+    const result = chartResults.get(String(chart.chartId));
     const isValid = allowNA
       ? !!(result && !result.error && !result.chartError)
       : hasValidChartData(result);
@@ -450,7 +456,7 @@ function ReportBlock({ block, chartResults, charts, gridSettings, allowNA = fals
       // HOW: Iterate through validCharts and create CellConfiguration for each
       const allCells: CellConfiguration[] = validCharts
         .map(chart => {
-          const result = chartResults.get(chart.chartId);
+          const result = chartResults.get(String(chart.chartId));
           const includeForTypography = allowNA
             ? result && !result.error && !result.chartError
             : result && hasValidChartData(result);
@@ -483,7 +489,7 @@ function ReportBlock({ block, chartResults, charts, gridSettings, allowNA = fals
       // HOW: Calculate max font size where 2-line labels fit in available row height
       const barCharts = validCharts
         .map(chart => {
-          const result = chartResults.get(chart.chartId);
+          const result = chartResults.get(String(chart.chartId));
           if (!result || result.type !== 'bar' || !result.elements) return null;
           return {
             chartId: chart.chartId,
@@ -575,15 +581,15 @@ function ReportBlock({ block, chartResults, charts, gridSettings, allowNA = fals
       totalCharts: sortedCharts.length,
       validCharts: validCharts.length,
       missingCharts: sortedCharts
-        .filter(c => !chartResults.has(c.chartId))
+        .filter(c => !chartResults.has(String(c.chartId)))
         .map(c => c.chartId),
       invalidCharts: sortedCharts
         .filter(c => {
-          const result = chartResults.get(c.chartId);
+          const result = chartResults.get(String(c.chartId));
           return result && !hasValidChartData(result);
         })
         .map(c => {
-          const result = chartResults.get(c.chartId);
+          const result = chartResults.get(String(c.chartId));
           return {
             chartId: c.chartId,
             type: result?.type,
@@ -644,6 +650,7 @@ function ReportBlock({ block, chartResults, charts, gridSettings, allowNA = fals
           unifiedTextFontSize={unifiedTextFontSize}
           blockAspectRatio={block.blockAspectRatio} // R-LAYOUT-02.1: Optional block aspect ratio override
           tableHeightMultiplier={block.tableHeightMultiplier} // Table height control: height = blockWidth × multiplier
+          allowNA={allowNA}
         />
       ))}
     </div>

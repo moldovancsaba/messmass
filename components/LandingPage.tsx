@@ -108,7 +108,14 @@ function LandingPageStatic({
 
   const blocks = useMemo(() => {
     const list = Array.isArray(snapshot.blocks) ? snapshot.blocks : [];
-    return list.map((b) => ({ ...b, id: b.id || String(b.order) }));
+    return list.map((b) => ({
+      ...b,
+      id: typeof b.id === 'string' ? b.id : String(b.id ?? b.order ?? ''),
+      charts: (b.charts || []).map((c) => ({
+        ...c,
+        chartId: typeof c.chartId === 'string' ? c.chartId : String(c.chartId),
+      })),
+    }));
   }, [snapshot.blocks]);
   const chartResults = useMemo(() => {
     const m = new Map<string, Record<string, unknown>>();

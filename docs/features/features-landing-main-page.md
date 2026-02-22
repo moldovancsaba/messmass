@@ -1,6 +1,6 @@
 # Landing / Main Page (messmass.com)
 Status: Active
-Last Updated: 2026-02-21T00:00:00.000Z (v11.56.3 server-side snapshot)
+Last Updated: 2026-02-21T00:00:00.000Z (v11.56.4 chartId + allowNA)
 Canonical: Yes
 Owner: Product
 
@@ -43,7 +43,7 @@ Owner: Product
 - **Document ID:** `landingPage` (`lib/landingSettings.ts`).
 - **Fields:** `landingReportSlug`, `staticSnapshot` (blocks, chartResults, gridSettings, style, projectStats), `generatedAt`, `updatedAt`.
 
-### Main page (v11.56.3: server-side snapshot)
+### Main page (v11.56.3 → v11.56.4: server-side snapshot, chartId + allowNA)
 - **Server** (`app/page.tsx`): Async page calls `getLandingSettings()`, normalizes snapshot (block ids to strings, `chartResults` array), passes `initialStaticPayload` to `LandingPage`.
 - **Client** (`components/LandingPage.tsx`): If `initialStaticPayload` is set, uses it for first paint (no client fetch). Otherwise fetches `GET /api/landing-static` and then renders static or live.
 - If `staticSnapshot` is present: **LandingPageStatic** (hero from `projectStats`, report section via **ReportContent** with snapshot blocks/chartResults, `allowNA={true}`, then **PricingAndFooter**).
@@ -52,11 +52,12 @@ Owner: Product
 ### CSRF
 - All state-changing admin calls (PUT landing-settings, POST landing-static-generate) must use **apiPut** / **apiPost** from `lib/apiClient` so the `X-CSRF-Token` header is sent. Raw `fetch()` will result in "CSRF token invalid or missing".
 
-## Static snapshot generation (v11.56.1 → v11.56.3)
+## Static snapshot generation (v11.56.1 → v11.56.4)
 - Block resolution in landing-static-generate matches report-config; block IDs saved as **strings** (`b._id.toString()` when needed) so they survive MongoDB round-trip.
 - Chart results are serialized via `serializeChartResult()`; snapshot is stored with string block ids.
 - **v11.56.2:** Generate API read-back returns `verified` / `readBackBlocks`; admin message clarifies "this site" vs same-origin.
-- **v11.56.3:** Snapshot is loaded **on the server** in `app/page.tsx` and passed as `initialStaticPayload` so the main page does not depend on a client fetch; `normalizeSnapshot()` ensures block ids and `chartResults` are client-safe. ReportContent/ReportBlock: when `allowNA` is true, typography `allCells` includes charts without error (not only `hasValidChartData`) so block font size is set and static blocks render correctly.
+- **v11.56.3:** Snapshot is loaded **on the server** in `app/page.tsx` and passed as `initialStaticPayload`; `normalizeSnapshot()` ensures block ids and `chartResults` are client-safe. ReportContent/ReportBlock: when `allowNA` is true, typography `allCells` includes charts without error so block font size is set.
+- **v11.56.4:** Chart lookup and static report section fix: all `chartId` values normalized to strings (server `normalizeSnapshot()`, client blocks useMemo, generate API); all `chartResults.get`/`has` use `String(chartId)` in ReportContent/ReportBlock/ResponsiveRow. ResponsiveRow receives `allowNA` and when true shows charts without error (no `hasValidChartData` filter), so the three blocks render between hero and pricing.
 
 ## HTML vs JSON (avoid "Unexpected token '<'" errors)
 - Generate API: when calling report-config, only parses response as JSON if `Content-Type` is `application/json`; if the response is HTML (e.g. error page) or fetch fails, falls back to inline template/block resolution from the DB.

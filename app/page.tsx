@@ -19,18 +19,24 @@ export const metadata: Metadata = {
 export const dynamic = 'force-dynamic';
 export const revalidate = 0;
 
-/** Ensure snapshot is JSON-serializable and block ids are strings (MongoDB may return ObjectId) */
+/** Ensure snapshot is JSON-serializable; block ids and all chartIds are strings for reliable client lookup */
 function normalizeSnapshot(snap: StaticLandingSnapshot | undefined): StaticLandingSnapshot | null {
   if (!snap?.blocks?.length) return null;
   const blocks = snap.blocks.map((b) => ({
     ...b,
     id: typeof b.id === 'string' ? b.id : String((b as any).id ?? b.order ?? ''),
+    charts: (b.charts || []).map((c: { chartId: string; width: number; order: number }) => ({
+      ...c,
+      chartId: typeof c.chartId === 'string' ? c.chartId : String(c.chartId),
+    })),
   }));
-  return {
-    ...snap,
-    blocks,
-    chartResults: Array.isArray(snap.chartResults) ? snap.chartResults : [],
-  };
+  const chartResults = Array.isArray(snap.chartResults)
+    ? snap.chartResults.map((e) => ({
+        chartId: typeof e.chartId === 'string' ? e.chartId : String(e.chartId),
+        result: e.result,
+      }))
+    : [];
+  return { ...snap, blocks, chartResults };
 }
 
 export default async function HomePage() {
