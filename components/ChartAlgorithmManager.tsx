@@ -1130,13 +1130,15 @@ function ChartConfigurationEditor({ config, availableVariables, onSave, onUpdate
                   // Always adjust to exact required element count
                   if (formData.elements.length !== requiredCount) {
                     const elementColors = ['#3b82f6', '#10b981', '#f59e0b', '#8b5cf6', '#ef4444'];
+                    const valuechainLabels = ['Title', 'Description'];
                     newElements = [];
                     
                     // Create exactly the required number of elements
                     for (let i = 0; i < requiredCount; i++) {
+                      const label = newType === 'valuechain' ? valuechainLabels[i] : (i < formData.elements.length ? formData.elements[i].label : '');
                       newElements.push({
                         id: `element${i + 1}`,
-                        label: i < formData.elements.length ? formData.elements[i].label : '',
+                        label,
                         formula: i < formData.elements.length ? formData.elements[i].formula : '',
                         color: elementColors[i] || '#6b7280',
                         description: i < formData.elements.length ? formData.elements[i].description : ''
@@ -1463,8 +1465,15 @@ function ChartConfigurationEditor({ config, availableVariables, onSave, onUpdate
 
           <div className="form-group">
             <label className="form-label">Elements (Required: {getRequiredElementCount(formData.type)})</label>
+            {formData.type === 'valuechain' && (
+              <div className={styles.valuechainIntro}>
+                <strong>Icon</strong> (above) + <strong>Element 1</strong> = visible title, <strong>Element 2</strong> = visible description. Labels are fixed.
+              </div>
+            )}
             {formData.elements.map((element, index) => {
               const validation = formulaValidation[index];
+              const isValuechain = formData.type === 'valuechain';
+              const valuechainLabel = index === 0 ? 'Title' : 'Description';
               return (
                 <div key={element.id} className="element-editor">
                   <div className="element-header">
@@ -1474,13 +1483,14 @@ function ChartConfigurationEditor({ config, availableVariables, onSave, onUpdate
                       {formData.type === 'text' && <span className="chart-type-info">📝 Text Content</span>}
                       {formData.type === 'image' && <span className="chart-type-info">🖼️ Image URL</span>}
                       {formData.type === 'table' && <span className="chart-type-info">📋 Markdown Table</span>}
-                      {formData.type === 'valuechain' && <span className="chart-type-info">🔗 {index === 0 ? 'Title' : 'Description'}</span>}
+                      {isValuechain && <span className="chart-type-info">🔗 Label (FIXED): {valuechainLabel}</span>}
                       {formData.type === 'pie' && <span className="chart-type-info">🥧 {index === 0 ? 'Segment 1' : 'Segment 2'}</span>}
                       {formData.type === 'bar' && <span className="chart-type-info">📊 Bar {index + 1}</span>}
                     </div>
                   </div>
                   
                   <div className="element-fields">
+                    {!isValuechain && (
                     <div className="field-group">
                       <label className="field-label">Label</label>
                       <input
@@ -1491,9 +1501,16 @@ function ChartConfigurationEditor({ config, availableVariables, onSave, onUpdate
                         className="form-input"
                       />
                     </div>
+                    )}
+                    {isValuechain && (
+                    <div className="field-group">
+                      <label className="field-label">Label (FIXED)</label>
+                      <div className={styles.formInputReadonly}>{valuechainLabel}</div>
+                    </div>
+                    )}
                     
                     <div className="field-group">
-                      <label className="field-label">Formula</label>
+                      <label className="field-label">{isValuechain ? `Formula (visible ${valuechainLabel.toLowerCase()})` : 'Formula'}</label>
                       <div className="formula-field-container">
                         <input
                           type="text"
@@ -1526,6 +1543,7 @@ function ChartConfigurationEditor({ config, availableVariables, onSave, onUpdate
                       )}
                     </div>
                     
+                    {!isValuechain && (
                     <div className="field-group">
                       <label className="field-label">Color</label>
                       <input
@@ -1535,6 +1553,7 @@ function ChartConfigurationEditor({ config, availableVariables, onSave, onUpdate
                         className="color-input"
                       />
                     </div>
+                    )}
                   </div>
                 </div>
               );
@@ -1546,6 +1565,7 @@ function ChartConfigurationEditor({ config, availableVariables, onSave, onUpdate
                 {formData.type === 'kpi' && '📈 KPI charts require exactly 1 element'}
                 {formData.type === 'text' && '📝 Text charts require exactly 1 element (use [reportText1-10])'}
                 {formData.type === 'image' && '🖼️ Image charts require exactly 1 element (use [reportImage1-10])'}
+                {formData.type === 'valuechain' && '🔗 Value Chain: 2 elements (Title formula + Description formula)'}
                 {formData.type === 'pie' && '🥧 Pie charts require exactly 2 elements'}
                 {formData.type === 'bar' && '📊 Bar charts require exactly 5 elements'}
               </div>

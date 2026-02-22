@@ -535,31 +535,88 @@ function KPIChart({ result, className, allowNA = false }: { result: ChartResult;
 }
 
 /**
- * ValueChain Chart - Icon + 2 text lines (title/highlight + description)
- * Same layout as KPI: icon row, then first text, then second text
+ * ValueChain Chart - Icon (32px) + Title row (32px) + Description row (16px)
+ * Dynamic sizing with shrink-to-fit so content fits without truncation
  */
 function ValueChainChart({ result, className }: { result: ChartResult; className?: string }) {
-  const textA = (result.elements?.[0]?.value != null ? String(result.elements[0].value) : '').trim();
-  const textB = (result.elements?.[1]?.value != null ? String(result.elements[1].value) : '').trim();
+  const textA = replaceEmDashes((result.elements?.[0]?.value != null ? String(result.elements[0].value) : '').trim());
+  const textB = replaceEmDashes((result.elements?.[1]?.value != null ? String(result.elements[1].value) : '').trim());
   const iconVariant = result.iconVariant || 'outlined';
   const hasIcon = !!result.icon;
 
+  const containerRef = useRef<HTMLDivElement>(null);
+  const titleRowRef = useRef<HTMLDivElement>(null);
+  const descRowRef = useRef<HTMLDivElement>(null);
+
+  // Shrink-to-fit: reduce font size if title or description overflows allocated row height
+  useEffect(() => {
+    if (!containerRef.current || typeof window === 'undefined') return;
+    const run = () => {
+      const container = containerRef.current;
+      if (!container) return;
+      const totalHeight = container.offsetHeight;
+      if (totalHeight <= 0) return;
+      // Grid 3fr 3fr 4fr => title 30%, desc 40%
+      const titleAllocated = totalHeight * 0.3;
+      const descAllocated = totalHeight * 0.4;
+      const tolerance = 2;
+
+      if (titleRowRef.current && textA) {
+        const el = titleRowRef.current;
+        const actual = el.offsetHeight;
+        const style = window.getComputedStyle(el);
+        const paddingV = parseFloat(style.paddingTop) + parseFloat(style.paddingBottom) || 0;
+        const available = titleAllocated - paddingV;
+        if (actual > available + tolerance && available > 0) {
+          const currentFont = parseFloat(style.fontSize) || 32;
+          const lineH = parseFloat(style.lineHeight) || 1.2;
+          const scale = (available / actual) * 0.95;
+          const newFont = Math.max(10, currentFont * scale);
+          el.style.setProperty('font-size', `${newFont}px`, 'important');
+        }
+      }
+      if (descRowRef.current && textB) {
+        const el = descRowRef.current;
+        const actual = el.offsetHeight;
+        const style = window.getComputedStyle(el);
+        const paddingV = parseFloat(style.paddingTop) + parseFloat(style.paddingBottom) || 0;
+        const available = descAllocated - paddingV;
+        if (actual > available + tolerance && available > 0) {
+          const currentFont = parseFloat(style.fontSize) || 16;
+          const scale = (available / actual) * 0.95;
+          const newFont = Math.max(9, currentFont * scale);
+          el.style.setProperty('font-size', `${newFont}px`, 'important');
+        }
+      }
+    };
+    run();
+    const t = setTimeout(run, 0);
+    const ro = new ResizeObserver(() => requestAnimationFrame(run));
+    ro.observe(containerRef.current);
+    return () => {
+      clearTimeout(t);
+      ro.disconnect();
+    };
+  }, [textA, textB]);
+
+  const gridClass = !hasIcon ? (textB ? styles.valuechainNoIcon : styles.valuechainOnlyTitle) : (!textB ? styles.valuechainNoDesc : '');
   return (
     <div
-      className={`${styles.chart} ${styles.kpi} ${!hasIcon ? (textB ? styles.kpiNoIcon : styles.kpiOnlyValue) : (!textB ? styles.kpiNoTitle : '')} report-chart ${className || ''}`}
+      ref={containerRef}
+      className={`${styles.chart} ${styles.valuechain} ${gridClass} report-chart ${className || ''}`}
     >
       {hasIcon && (
-        <div className={styles.kpiIconRow}>
+        <div className={styles.valuechainIconRow}>
           <MaterialIcon
             name={result.icon as string}
             variant={iconVariant}
-            className={styles.kpiIcon}
+            className={styles.valuechainIcon}
           />
         </div>
       )}
-      <div className={styles.kpiValueRow}>{textA || '\u00A0'}</div>
+      <div ref={titleRowRef} className={styles.valuechainTitleRow}>{textA || '\u00A0'}</div>
       {textB ? (
-        <div className={styles.kpiTitle}>
+        <div ref={descRowRef} className={styles.valuechainDescRow}>
           <span>{preventPhraseBreaks(textB)}</span>
         </div>
       ) : null}
