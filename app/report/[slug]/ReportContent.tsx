@@ -451,8 +451,11 @@ function ReportBlock({ block, chartResults, charts, gridSettings, allowNA = fals
       const allCells: CellConfiguration[] = validCharts
         .map(chart => {
           const result = chartResults.get(chart.chartId);
-          if (!result || !hasValidChartData(result)) return null;
-          
+          const includeForTypography = allowNA
+            ? result && !result.error && !result.chartError
+            : result && hasValidChartData(result);
+          if (!includeForTypography || !result) return null;
+
           return {
             chartId: chart.chartId,
             cellWidth: (chart.width || 1) as 1 | 2,
@@ -564,7 +567,7 @@ function ReportBlock({ block, chartResults, charts, gridSettings, allowNA = fals
       resizeObserver.disconnect();
       window.removeEventListener('resize', measureAndCalculate);
     };
-  }, [validCharts, chartResults, block.title]);
+  }, [validCharts, chartResults, block.title, allowNA]);
   
   // DEBUG: Log filtering
   if (sortedCharts.length !== validCharts.length) {

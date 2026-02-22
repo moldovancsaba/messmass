@@ -3,7 +3,7 @@
 /**
  * WHAT: Main page (messmass.com) — static snapshot (from admin "Update") or live report
  * WHY: Admin can choose report and generate static content so the site does not hit DB on each visit
- * HOW: Fetch /api/landing-static; if staticSnapshot exists render it; else use live pipeline (useReportData, etc.)
+ * HOW: Snapshot is loaded on server (initialStaticPayload); client uses it for first paint. No client fetch required for static path.
  */
 
 import React, { useEffect, useMemo, useState } from 'react';
@@ -30,12 +30,18 @@ interface LandingStaticPayload {
   generatedAt: string | null;
 }
 
-export default function LandingPage() {
-  const [staticPayload, setStaticPayload] = useState<LandingStaticPayload | null>(null);
-  const [landingSlugFromApi, setLandingSlugFromApi] = useState<string | null>(null);
-  const [staticChecked, setStaticChecked] = useState(false);
+interface LandingPageProps {
+  /** When set, server already loaded snapshot; use for first paint so no client fetch needed */
+  initialStaticPayload?: LandingStaticPayload | null;
+}
+
+export default function LandingPage({ initialStaticPayload = null }: LandingPageProps) {
+  const [staticPayload, setStaticPayload] = useState<LandingStaticPayload | null>(initialStaticPayload ?? null);
+  const [landingSlugFromApi, setLandingSlugFromApi] = useState<string | null>(initialStaticPayload?.landingReportSlug ?? null);
+  const [staticChecked, setStaticChecked] = useState(!!initialStaticPayload);
 
   useEffect(() => {
+    if (initialStaticPayload) return;
     let cancelled = false;
     fetch('/api/landing-static', { cache: 'no-store' })
       .then(async (r) => {
@@ -59,7 +65,7 @@ export default function LandingPage() {
       })
       .finally(() => { if (!cancelled) setStaticChecked(true); });
     return () => { cancelled = true; };
-  }, []);
+  }, [initialStaticPayload]);
 
   if (!staticChecked) {
     return (

@@ -1,11 +1,12 @@
 import type { Metadata } from 'next';
 import LandingPage from '@/components/LandingPage';
+import { getLandingSettings } from '@/lib/landingSettings';
+import type { StaticLandingSnapshot } from '@/lib/landingSettings';
 
 /**
  * WHAT: Main page (messmass.com) — same report as /report/[slug] for content and style
  * WHY: Style and content editable only in the report; no copies; uses ReportContent + same APIs
- * HOW: LandingPage uses useReportData(slug), useReportLayoutForProject(slug), useReportStyle,
- *      /api/chart-config/public, ReportCalculator; slug from NEXT_PUBLIC_LANDING_REPORT_SLUG.
+ * HOW: Snapshot loaded on server so first paint has static content; no client fetch required.
  */
 export const metadata: Metadata = {
   title: 'MessMass — Sovereign Decision Intelligence',
@@ -18,6 +19,31 @@ export const metadata: Metadata = {
 export const dynamic = 'force-dynamic';
 export const revalidate = 0;
 
-export default function HomePage() {
-  return <LandingPage />;
+/** Ensure snapshot is JSON-serializable and block ids are strings (MongoDB may return ObjectId) */
+function normalizeSnapshot(snap: StaticLandingSnapshot | undefined): StaticLandingSnapshot | null {
+  if (!snap?.blocks?.length) return null;
+  const blocks = snap.blocks.map((b) => ({
+    ...b,
+    id: typeof b.id === 'string' ? b.id : String((b as any).id ?? b.order ?? ''),
+  }));
+  return {
+    ...snap,
+    blocks,
+    chartResults: Array.isArray(snap.chartResults) ? snap.chartResults : [],
+  };
+}
+
+export default async function HomePage() {
+  const settings = await getLandingSettings();
+  const snapshot = normalizeSnapshot(settings?.staticSnapshot);
+  const initialStaticPayload =
+    snapshot != null
+      ? {
+          staticSnapshot: snapshot,
+          landingReportSlug: settings?.landingReportSlug ?? '',
+          generatedAt: settings?.generatedAt ?? null,
+        }
+      : null;
+
+  return <LandingPage initialStaticPayload={initialStaticPayload} />;
 }

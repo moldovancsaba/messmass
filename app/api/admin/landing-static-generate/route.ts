@@ -172,7 +172,7 @@ export async function POST() {
     }
 
     const blocksForSnapshot: StaticLandingSnapshot['blocks'] = populatedDataBlocks.map((b: any) => ({
-      id: b._id,
+      id: typeof b._id === 'string' ? b._id : (b._id?.toString?.() ?? String(b.order ?? '')),
       title: b.name ?? 'Untitled Block',
       showTitle: b.showTitle !== false,
       order: Number(b.order ?? 0),
