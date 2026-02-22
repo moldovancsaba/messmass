@@ -81,6 +81,7 @@ export async function GET(request: NextRequest) {
       _id: project._id.toString(),
       eventName: project.eventName,
       eventDate: project.eventDate,
+      viewSlug: (project as any).viewSlug ?? null,
       stats: project.stats,
       createdAt: project.createdAt,
       updatedAt: project.updatedAt,

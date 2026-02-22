@@ -80,13 +80,16 @@ async function connectToDatabase() {
   }
 
   try {
-    const client = new MongoClient(MONGODB_URI);
+    const client = new MongoClient(MONGODB_URI, {
+      serverSelectionTimeoutMS: 10000,
+      connectTimeoutMS: 10000,
+    });
     await client.connect();
     await client.db(MONGODB_DB).admin().ping();
     cachedClient = client;
     return client;
   } catch (error) {
-    console.error('❌ Failed to connect to MongoDB Atlas:', error);
+    console.error('❌ Failed to connect to MongoDB:', error);
     throw error;
   }
 }

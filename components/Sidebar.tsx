@@ -107,6 +107,7 @@ export default function Sidebar() {
       title: 'Help',
       items: [
         { label: 'User Guide', path: '/admin/help', icon: 'menu_book' },
+        { label: 'Main page', path: '/admin/mainpage', icon: 'home' },
         { label: 'Messages', path: '/admin/messages', icon: 'mail' },
       ],
     },
