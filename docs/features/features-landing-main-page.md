@@ -1,6 +1,6 @@
 # Landing / Main Page (messmass.com)
 Status: Active
-Last Updated: 2026-02-21T00:00:00.000Z (v11.56.1 static snapshot fix)
+Last Updated: 2026-02-21T00:00:00.000Z (v11.56.2 read-back verification + message)
 Canonical: Yes
 Owner: Product
 
@@ -33,7 +33,7 @@ Owner: Product
 |--------|----------|-------------|
 | GET | `/api/admin/landing-settings` | Returns `{ success, settings: { landingReportSlug, generatedAt? } }`. |
 | PUT | `/api/admin/landing-settings` | Body: `{ landingReportSlug: string }`. Updates the selected report slug. **Requires CSRF token** (use `apiPut` from `lib/apiClient`). |
-| POST | `/api/admin/landing-static-generate` | Generates static snapshot from current landing report and saves it. Returns `{ success, generatedAt?, blocksCount? }`. **Requires CSRF token** (use `apiPost`). |
+| POST | `/api/admin/landing-static-generate` | Generates static snapshot from current landing report and saves it. Returns `{ success, generatedAt?, blocksCount?, verified?, readBackBlocks? }`. After save, reads back from DB to verify persistence; admin message reflects "verified" or prompts to open main page on same site. **Requires CSRF token** (use `apiPost`). |
 | GET | `/api/admin/landing-projects` | Returns `{ success, projects: [{ _id, eventName, viewSlug, eventDate? }] }` for the report dropdown (only projects with `viewSlug`). |
 
 ## Integration
@@ -51,10 +51,10 @@ Owner: Product
 ### CSRF
 - All state-changing admin calls (PUT landing-settings, POST landing-static-generate) must use **apiPut** / **apiPost** from `lib/apiClient` so the `X-CSRF-Token` header is sent. Raw `fetch()` will result in "CSRF token invalid or missing".
 
-## Static snapshot generation (v11.56.1)
+## Static snapshot generation (v11.56.1 → v11.56.2)
 - Block resolution in landing-static-generate matches report-config: block IDs use `ref.blockId.toString()` and blocks are found with `b._id.toString() === blockId` so both ObjectId and string IDs work.
 - Chart results are serialized to plain JSON-safe objects via `serializeChartResult()` so they survive MongoDB and API round-trip; the client always receives valid `type`, `kpiValue`, `elements`, etc.
-- If the main page still shows an empty section after generating, regenerate once (Admin → Main page → Update static content) to apply the fix.
+- **v11.56.2:** After saving, the generate API reads back settings and returns `verified` (blocks + chartResults persisted) and `readBackBlocks`. Admin success message: if verified, "This site will use it until you update again"; otherwise prompts to open the main page on the **same site** (same URL origin), since the snapshot is stored per-deployment (preview vs production).
 
 ## HTML vs JSON (avoid "Unexpected token '<'" errors)
 - Generate API: when calling report-config, only parses response as JSON if `Content-Type` is `application/json`; if the response is HTML (e.g. error page) or fetch fails, falls back to inline template/block resolution from the DB.

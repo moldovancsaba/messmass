@@ -204,10 +204,18 @@ export async function POST() {
       projectStats: project.stats as Record<string, unknown>,
     });
 
+    // Read-back: verify snapshot was persisted (same DB/env)
+    const readBack = await getLandingSettings();
+    const snap = readBack?.staticSnapshot;
+    const readBackBlocks = snap?.blocks?.length ?? 0;
+    const verified = readBackBlocks === blocksForSnapshot.length && Array.isArray(snap?.chartResults);
+
     return NextResponse.json({
       success: true,
       generatedAt: new Date().toISOString(),
       blocksCount: blocksForSnapshot.length,
+      verified,
+      readBackBlocks,
     });
   } catch (err) {
     console.error('[landing-static-generate]', err);

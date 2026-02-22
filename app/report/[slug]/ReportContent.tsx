@@ -75,6 +75,8 @@ interface ReportContentProps {
   
   /** Optional CSS class for container */
   className?: string;
+  /** When true (e.g. static landing), show charts even with NA/empty data so structure is visible */
+  allowNA?: boolean;
 }
 
 /**
@@ -94,7 +96,8 @@ export default function ReportContent({
   chartResults, 
   charts, // A-R-13: Chart configs for validation
   gridSettings,
-  className 
+  className,
+  allowNA = false,
 }: ReportContentProps) {
   
   // WHAT: Debug logging for chartResults
@@ -132,6 +135,7 @@ export default function ReportContent({
           chartResults={chartResults}
           charts={charts} // A-R-13: Pass chart configs for validation
           gridSettings={gridSettings}
+          allowNA={allowNA}
         />
       ))}
     </div>
@@ -146,6 +150,7 @@ interface ReportBlockProps {
   chartResults: Map<string, ChartResult>;
   charts?: Map<string, Chart> | null; // A-R-13: Chart configs for validation
   gridSettings: GridSettings;
+  allowNA?: boolean;
 }
 
 /**
@@ -371,7 +376,7 @@ function ResponsiveRow({ rowCharts, chartResults, charts, rowIndex, unifiedTextF
   );
 }
 
-function ReportBlock({ block, chartResults, charts, gridSettings }: ReportBlockProps) {
+function ReportBlock({ block, chartResults, charts, gridSettings, allowNA = false }: ReportBlockProps) {
   // WHAT: Calculate unified font-size for all text charts in this block
   // WHY: All text charts should use the same font-size, fitting the largest content
   // HOW: Use hook to measure containers and calculate optimal size
@@ -381,12 +386,13 @@ function ReportBlock({ block, chartResults, charts, gridSettings }: ReportBlockP
   // Sort charts by order
   const sortedCharts = [...block.charts].sort((a, b) => a.order - b.order);
   
-  // WHAT: Filter out charts with no data (v11.48.0)
-  // WHY: Hide empty cells and exclude from grid calculations
-  // HOW: Check both existence and valid data using hasValidChartData
+  // WHAT: Filter out charts with no data (v11.48.0); when allowNA (static landing), show any result without error
+  // WHY: Hide empty cells in live reports; on static landing show structure even if values are NA
   const validCharts = sortedCharts.filter(chart => {
     const result = chartResults.get(chart.chartId);
-    const isValid = hasValidChartData(result);
+    const isValid = allowNA
+      ? !!(result && !result.error && !result.chartError)
+      : hasValidChartData(result);
     if (!isValid && result) {
       // WHAT: Detailed logging for invalid chart data
       // WHY: Need to see full chart result to diagnose why charts are filtered

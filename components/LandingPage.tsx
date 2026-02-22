@@ -121,24 +121,6 @@ function LandingPageStatic({
     [snapshot.gridSettings]
   );
 
-  const hasAnyValidChartData = useMemo(() => {
-    if (chartResults.size === 0) return false;
-    for (const result of chartResults.values()) {
-      const r = result as Record<string, unknown>;
-      if (r.error || r.chartError) continue;
-      const type = r.type as string;
-      const kpiVal = r.kpiValue;
-      if (type === 'kpi' && kpiVal !== undefined && kpiVal !== null && kpiVal !== 'NA') return true;
-      if ((type === 'text' || type === 'image' || type === 'table') && typeof kpiVal === 'string' && kpiVal.length > 0 && kpiVal !== 'NA') return true;
-      const el = r.elements as Array<{ value?: number }> | undefined;
-      if ((type === 'pie' || type === 'bar' || type === 'value') && el?.length) {
-        const total = el.reduce((s, e) => s + (typeof e.value === 'number' ? e.value : 0), 0);
-        if (total > 0) return true;
-      }
-    }
-    return false;
-  }, [chartResults]);
-
   return (
     <div className={styles.landing}>
       <header className={styles.hero}>
@@ -167,13 +149,12 @@ function LandingPageStatic({
               </p>
               <Link href="/admin/mainpage" className="btn btn-primary">Open Main page settings</Link>
             </div>
-          ) : chartResults.size === 0 || !hasAnyValidChartData ? (
+          ) : chartResults.size === 0 ? (
             <div className={reportPageStyles.error} style={{ minHeight: '40vh', padding: 'var(--mm-space-8)' }}>
               <span className={reportPageStyles.errorIcon}>📈</span>
               <h2 className={reportPageStyles.errorTitle}>Chart data missing</h2>
               <p className={reportPageStyles.errorText}>
                 The snapshot has blocks but no chart data. In <strong>Admin → Main page</strong> click <strong>Update static content</strong> again.
-                Use an event report that has a template with charts and real data (not all NA).
               </p>
               <Link href="/admin/mainpage" className="btn btn-primary">Open Main page settings</Link>
             </div>
@@ -183,6 +164,7 @@ function LandingPageStatic({
               chartResults={chartResults as unknown as Map<string, import('@/lib/report-calculator').ChartResult>}
               charts={null}
               gridSettings={gridSettings}
+              allowNA={true}
             />
           )}
         </div>

@@ -80,15 +80,22 @@ export default function AdminMainpagePage() {
     setGenerating(true);
     setMessage(null);
     try {
-      const data = await apiPost<{ success: boolean; generatedAt?: string; blocksCount?: number; error?: string }>(
-        '/api/admin/landing-static-generate'
-      );
+      const data = await apiPost<{
+        success: boolean;
+        generatedAt?: string;
+        blocksCount?: number;
+        verified?: boolean;
+        readBackBlocks?: number;
+        error?: string;
+      }>('/api/admin/landing-static-generate');
       if (data.success) {
         setSettings((s) => (s ? { ...s, generatedAt: data.generatedAt } : null));
-        setMessage({
-          type: 'success',
-          text: `Static content generated (${data.blocksCount ?? 0} blocks). messmass.com will use this until you update again.`,
-        });
+        const n = data.blocksCount ?? 0;
+        const verified = data.verified === true;
+        const text = verified
+          ? `Static content generated (${n} blocks) and verified. This site will use it until you update again.`
+          : `Static content saved (${n} blocks). If the main page does not update, open the main page on this same site (same URL origin).`;
+        setMessage({ type: 'success', text });
       } else {
         setMessage({ type: 'error', text: data.error || 'Failed to generate' });
       }
