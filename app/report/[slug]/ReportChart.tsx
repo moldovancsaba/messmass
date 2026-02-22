@@ -329,10 +329,9 @@ function KPIChart({ result, className, allowNA = false }: { result: ChartResult;
           : (showTitle ? (containerHeight * 0.7) : containerHeight);
         const titleRowHeight = showTitle ? (containerHeight * titleRowFraction) : 0;
         
-        // WHAT: A-03.2 - Measure actual content height in value row
-        // WHY: Value might wrap to multiple lines and exceed allocated height
-        // HOW: Use offsetHeight (actual rendered height) to check if wrapped content fits
-        if (kpiValueRowRef.current) {
+        // WHAT: A-03.2 - Measure actual content height in value row (skip when allowNA: landing uses fixed 13px)
+        // WHY: On landing we force 13px and 40% row height; no shrink so copy isn't over-truncated
+        if (kpiValueRowRef.current && !allowNA) {
           const valueElement = kpiValueRowRef.current;
           // WHAT: Use offsetHeight instead of scrollHeight for values
           // WHY: offsetHeight shows the actual rendered height after wrapping, scrollHeight includes all content
@@ -391,10 +390,8 @@ function KPIChart({ result, className, allowNA = false }: { result: ChartResult;
           }
         }
         
-        // WHAT: A-03.2 - Measure actual content height in title row
-        // WHY: Title might wrap to multiple lines and exceed allocated height
-        // HOW: Use offsetHeight (actual rendered height) since title is clamped to 2 lines with -webkit-line-clamp
-        if (showTitle && kpiTitleRef.current) {
+        // WHAT: A-03.2 - Measure actual content height in title row (skip when allowNA: landing uses fixed 32px)
+        if (showTitle && kpiTitleRef.current && !allowNA) {
           const titleElement = kpiTitleRef.current;
           const titleSpan = titleElement.querySelector('span');
           if (titleSpan) {

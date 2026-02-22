@@ -104,6 +104,20 @@
   grid-template-rows: 3fr 4fr 3fr;
 }
 
+/* WHAT: Force KPI description (value) row to 13px on landing so copy is readable and not truncated
+ * WHY: Variable cascade or clamp can win; explicit rule guarantees correct size
+ * HOW: Target value row by class; no hyphenation to avoid mid-word breaks (e.g. Ana-lysts) */
+/* WHAT: KPI label (title) row - consistent 32px on landing */
+.landingReportWrap :global([class*="kpiTitle"]) {
+  font-size: 32px !important;
+}
+
+.landingReportWrap :global([class*="kpiValueRow"]) {
+  font-size: 13px !important;
+  line-height: 1.35;
+  hyphens: none;
+}
+
 /* Responsive Adjustments */
 @media (max-width: 768px) {
   .page {
