@@ -4,6 +4,39 @@
    All values use theme tokens or local landing variables below (no fragmented hardcodes). */
 
 /* ----- Landing-specific tokens (single source for hero/footer and layout) ----- */
+/* WHAT: Single container for ALL sections (design spec)
+   WHY: Cohesive width and horizontal padding across hero, value, problem, how-it-works, pricing, FAQ, footer */
+.landing .mmContainer {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding-left: 24px;
+  padding-right: 24px;
+}
+@media (min-width: 768px) {
+  .landing .mmContainer {
+    padding-left: 32px;
+    padding-right: 32px;
+  }
+}
+@media (min-width: 1024px) {
+  .landing .mmContainer {
+    padding-left: 48px;
+    padding-right: 48px;
+  }
+}
+
+/* WHAT: Section vertical rhythm (design spec) */
+.landing .mmSection {
+  padding-top: 56px;
+  padding-bottom: 56px;
+}
+@media (min-width: 1024px) {
+  .landing .mmSection {
+    padding-top: 80px;
+    padding-bottom: 80px;
+  }
+}
+
 .landing {
   --landing-hero-bg-start: #0f172a;
   --landing-hero-bg-mid: #1e293b;
@@ -14,9 +47,9 @@
   --landing-hero-border-hover: #94a3b8;
   --landing-hero-text-hover: #f1f5f9;
   --landing-hero-inner-max: 720px;
-  --landing-section-inner-max: 900px;
-  --landing-footer-inner-max: 560px;
-  --landing-diff-max: 640px;
+  --landing-section-inner-max: 1200px;
+  --landing-footer-inner-max: 1200px;
+  --landing-diff-max: 65ch;
   --landing-cta-max: 17.5rem;
   --landing-card-min: 200px;
   --landing-card-min-wide: 240px;
@@ -32,14 +65,43 @@
 .hero {
   background: linear-gradient(160deg, var(--landing-hero-bg-start) 0%, var(--landing-hero-bg-mid) 50%, var(--landing-hero-bg-end) 100%);
   color: var(--landing-hero-text);
-  padding: clamp(var(--mm-space-16), 10vw, var(--mm-space-24)) var(--mm-space-6);
+  padding-top: clamp(56px, 10vw, 80px);
+  padding-bottom: clamp(56px, 10vw, 80px);
+  padding-left: 24px;
+  padding-right: 24px;
   text-align: center;
   position: relative;
 }
+@media (min-width: 768px) {
+  .landing .hero {
+    padding-left: 32px;
+    padding-right: 32px;
+  }
+}
+@media (min-width: 1024px) {
+  .landing .hero {
+    padding-left: 48px;
+    padding-right: 48px;
+  }
+}
 
 .heroInner {
-  max-width: var(--landing-hero-inner-max);
+  max-width: 1200px;
   margin: 0 auto;
+  padding-left: 24px;
+  padding-right: 24px;
+}
+@media (min-width: 768px) {
+  .landing .heroInner {
+    padding-left: 32px;
+    padding-right: 32px;
+  }
+}
+@media (min-width: 1024px) {
+  .landing .heroInner {
+    padding-left: 48px;
+    padding-right: 48px;
+  }
 }
 
 .heroBrand {
@@ -95,6 +157,16 @@
   align-items: center;
 }
 
+.heroMicrocopy {
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--landing-hero-text-muted);
+  margin-top: var(--mm-space-6);
+  max-width: 65ch;
+  margin-left: auto;
+  margin-right: auto;
+}
+
 /* Outline button on dark hero (extends global .btn) */
 .btn-outline-light {
   background: transparent !important;
@@ -109,7 +181,26 @@
 /* ----- Sections ----- */
 .section,
 .sectionAlt {
-  padding: clamp(var(--mm-space-12), 8vw, var(--mm-space-20)) var(--mm-space-6);
+  padding-top: 56px;
+  padding-bottom: 56px;
+  padding-left: 24px;
+  padding-right: 24px;
+}
+@media (min-width: 768px) {
+  .landing .section,
+  .landing .sectionAlt {
+    padding-left: 32px;
+    padding-right: 32px;
+  }
+}
+@media (min-width: 1024px) {
+  .landing .section,
+  .landing .sectionAlt {
+    padding-top: 80px;
+    padding-bottom: 80px;
+    padding-left: 48px;
+    padding-right: 48px;
+  }
 }
 
 .section {
@@ -121,9 +212,74 @@
 }
 
 .sectionInner {
-  max-width: var(--landing-section-inner-max);
+  max-width: 1200px;
   margin: 0 auto;
   text-align: center;
+}
+
+/* WHAT: Typography scale (design spec) — H1 48/36, H2 32/26, H3 20/18, body 18/16, small 14/13 */
+.landing .heroTitle {
+  font-size: 36px;
+  font-weight: 700;
+  line-height: 1.1;
+}
+@media (min-width: 1024px) {
+  .landing .heroTitle {
+    font-size: 48px;
+  }
+}
+
+.landing .sectionTitle {
+  font-size: 26px;
+  font-weight: 700;
+  line-height: 1.2;
+  color: var(--mm-gray-900);
+  margin-bottom: var(--mm-space-6);
+  text-align: center;
+}
+@media (min-width: 1024px) {
+  .landing .sectionTitle {
+    font-size: 32px;
+  }
+}
+
+.landing .sectionSubtitle,
+.landing .cardTitle {
+  font-size: 18px;
+  font-weight: 600;
+  line-height: 1.3;
+}
+@media (min-width: 1024px) {
+  .landing .sectionSubtitle,
+.landing .cardTitle {
+    font-size: 20px;
+  }
+}
+
+.landing .sectionBody,
+.landing .cardBody {
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 1.7;
+  max-width: 65ch;
+  margin-left: auto;
+  margin-right: auto;
+}
+@media (min-width: 1024px) {
+  .landing .sectionBody,
+.landing .cardBody {
+    font-size: 18px;
+  }
+}
+
+.landing .sectionSmall {
+  font-size: 13px;
+  line-height: 1.5;
+}
+@media (min-width: 1024px) {
+  .landing .sectionSmall {
+    font-size: 14px;
+  }
 }
 
 .sectionTitle {
@@ -132,6 +288,86 @@
   color: var(--mm-gray-900);
   margin-bottom: var(--mm-space-6);
   text-align: center;
+}
+
+/* WHAT: Unified card (value, how-it-works, pricing) — border, radius 14px, padding 24/32, icon 24px */
+.landing .valueCard,
+.landing .howCard,
+.landing .pricingCard {
+  border: 1px solid var(--mm-gray-200);
+  border-radius: 14px;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  height: 100%;
+  box-sizing: border-box;
+}
+@media (min-width: 1024px) {
+  .landing .valueCard,
+  .landing .howCard,
+  .landing .pricingCard {
+    padding: 32px;
+  }
+}
+.landing .valueCardIcon,
+.landing .howCardIcon {
+  width: 24px;
+  height: 24px;
+  font-size: 24px !important;
+  margin-bottom: 8px;
+  color: var(--mm-color-primary-600);
+}
+.landing .valueCardTitle,
+.landing .howCardTitle {
+  font-size: 18px;
+  font-weight: 600;
+  line-height: 1.3;
+  margin-bottom: 12px;
+  color: var(--mm-gray-900);
+}
+@media (min-width: 1024px) {
+  .landing .valueCardTitle,
+  .landing .howCardTitle {
+    font-size: 20px;
+  }
+}
+.landing .valueCardBody,
+.landing .howCardBody {
+  font-size: 16px;
+  line-height: 1.7;
+  color: var(--mm-gray-700);
+  margin: 0;
+}
+@media (min-width: 1024px) {
+  .landing .valueCardBody,
+  .landing .howCardBody {
+    font-size: 18px;
+  }
+}
+.landing .valueCardGrid,
+.landing .howCardGrid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--mm-space-5);
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+@media (min-width: 768px) {
+  .landing .valueCardGrid,
+  .landing .howCardGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+@media (min-width: 1024px) {
+  .landing .valueCardGrid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+  .landing .howCardGrid {
+    grid-template-columns: repeat(4, 1fr);
+  }
 }
 
 /* Belief */
@@ -157,6 +393,89 @@
   grid-template-columns: repeat(auto-fit, minmax(var(--landing-card-min), 1fr));
   gap: var(--mm-space-5);
   margin-top: var(--mm-space-6);
+}
+
+/* Problem — list + closing line */
+.problemList {
+  list-style: none;
+  padding: 0;
+  margin: 0 auto var(--mm-space-6);
+  max-width: 65ch;
+  text-align: left;
+}
+.problemList li {
+  font-size: 16px;
+  line-height: 1.7;
+  color: var(--mm-gray-700);
+  padding: var(--mm-space-2) 0;
+  padding-left: var(--mm-space-6);
+  position: relative;
+}
+.problemList li::before {
+  content: '—';
+  position: absolute;
+  left: 0;
+  color: var(--mm-color-primary-500);
+}
+@media (min-width: 1024px) {
+  .problemList li {
+    font-size: 18px;
+  }
+}
+.problemClosing {
+  font-size: 16px;
+  font-weight: 500;
+  line-height: 1.7;
+  color: var(--mm-gray-800);
+  max-width: 65ch;
+  margin: 0 auto;
+}
+@media (min-width: 1024px) {
+  .problemClosing {
+    font-size: 18px;
+  }
+}
+.howOutcome {
+  font-size: 16px;
+  font-weight: 500;
+  line-height: 1.7;
+  color: var(--mm-gray-800);
+  margin-top: var(--mm-space-6);
+  max-width: 65ch;
+  margin-left: auto;
+  margin-right: auto;
+}
+@media (min-width: 1024px) {
+  .howOutcome {
+    font-size: 18px;
+  }
+}
+.whatYouGetList {
+  list-style: none;
+  padding: 0;
+  margin: 0 auto;
+  max-width: 65ch;
+  text-align: left;
+}
+.whatYouGetList li {
+  font-size: 16px;
+  line-height: 1.7;
+  color: var(--mm-gray-700);
+  padding: var(--mm-space-2) 0;
+  padding-left: var(--mm-space-6);
+  position: relative;
+}
+.whatYouGetList li::before {
+  content: '✓';
+  position: absolute;
+  left: 0;
+  color: var(--mm-color-primary-500);
+  font-weight: bold;
+}
+@media (min-width: 1024px) {
+  .whatYouGetList li {
+    font-size: 18px;
+  }
 }
 
 /* Problem — KPI-style cards (layout grammar: same as KPICard) */
@@ -277,6 +596,13 @@
   margin-bottom: var(--mm-space-2);
 }
 
+.pricingCardSubhead {
+  font-size: var(--mm-font-size-sm);
+  color: var(--mm-gray-600);
+  margin-bottom: var(--mm-space-4);
+  font-weight: var(--mm-font-weight-normal);
+}
+
 .pricingCardPrice {
   font-size: var(--mm-font-size-2xl);
   font-weight: var(--mm-font-weight-bold);
@@ -366,13 +692,42 @@
 .footer {
   background: linear-gradient(160deg, var(--landing-hero-bg-start) 0%, var(--landing-hero-bg-mid) 100%);
   color: var(--landing-hero-text);
-  padding: clamp(var(--mm-space-16), 10vw, var(--mm-space-24)) var(--mm-space-6);
+  padding-top: clamp(56px, 10vw, 80px);
+  padding-bottom: clamp(56px, 10vw, 80px);
+  padding-left: 24px;
+  padding-right: 24px;
   text-align: center;
+}
+@media (min-width: 768px) {
+  .landing .footer {
+    padding-left: 32px;
+    padding-right: 32px;
+  }
+}
+@media (min-width: 1024px) {
+  .landing .footer {
+    padding-left: 48px;
+    padding-right: 48px;
+  }
 }
 
 .footerInner {
-  max-width: var(--landing-footer-inner-max);
+  max-width: 1200px;
   margin: 0 auto;
+  padding-left: 24px;
+  padding-right: 24px;
+}
+@media (min-width: 768px) {
+  .landing .footerInner {
+    padding-left: 32px;
+    padding-right: 32px;
+  }
+}
+@media (min-width: 1024px) {
+  .landing .footerInner {
+    padding-left: 48px;
+    padding-right: 48px;
+  }
 }
 
 .footerBrand {

@@ -17,6 +17,7 @@ import { useReportLayoutForProject } from '@/hooks/useReportLayout';
 import { useReportStyle } from '@/hooks/useReportStyle';
 import ReportContent from '@/app/report/[slug]/ReportContent';
 import ContactForm from '@/components/ContactForm';
+import MaterialIcon from '@/components/MaterialIcon';
 import { LANDING_REPORT_SLUG } from '@/lib/landingReportSlug';
 import type { StaticLandingSnapshot } from '@/lib/landingSettings';
 import { replaceEmDashes } from '@/lib/contentFormat';
@@ -106,9 +107,6 @@ function LandingPageStatic({
   version?: string | null;
 }) {
   const stats = snapshot.projectStats as Record<string, unknown> | undefined;
-  const heroLabel = replaceEmDashes((stats?.reportTextHeroLabel as string) || 'Sovereign Decision Intelligence');
-  const heroTitle = replaceEmDashes((stats?.reportTextHeroTitle as string) || 'Agentic AI that reads and understands your data at scale, and delivers actionable dashboards without compromising privacy.');
-  const heroSub = replaceEmDashes((stats?.reportTextHeroSub as string) || 'The platform that restores the freedom and security of decision-making to data-driven companies.');
   const rawFooter = stats?.reportTextFooterTitle;
   const footerTitle = replaceEmDashes(typeof rawFooter === 'string' ? rawFooter : "Let's build the era of sovereign enterprise AI together.");
 
@@ -142,47 +140,133 @@ function LandingPageStatic({
 
   return (
     <div className={styles.landing}>
+      {/* Hero — conversion copy */}
       <header className={styles.hero}>
         <div className={styles.heroInner}>
           <div className={styles.heroBrand}>
             <Image src="/messmass-logo-white.png" alt="" width={160} height={48} priority />
             <span className={styles.heroSiteName}>MessMass</span>
           </div>
-          <p className={styles.heroLabel}>{heroLabel}</p>
-          <h1 className={styles.heroTitle}>{heroTitle}</h1>
-          <p className={styles.heroSub}>{heroSub}</p>
+          <h1 className={styles.heroTitle}>Sovereign Decision Intelligence for Regulated Data</h1>
+          <p className={styles.heroSub}>
+            Private, governed AI workflows that turn KYC/PII-heavy datasets into decisions and actions, without sending data to public cloud models.
+          </p>
           <div className={styles.heroCtas}>
             <Link href="/admin/login" className="btn btn-primary">Go to Dashboard</Link>
-            <a href="#report-content" className="btn btn-outline-light">See how it works</a>
+            <a href="#how-it-works" className="btn btn-outline-light">See how it works</a>
           </div>
+          <p className={styles.heroMicrocopy}>
+            Built for teams handling KYC, onboarding, fraud, compliance, and sensitive customer intelligence.
+          </p>
         </div>
       </header>
-      <section id="report-content" className={reportPageStyles.page} aria-label="Report content">
-        <div className={reportPageStyles.container}>
-          {blocks.length === 0 ? (
-            <div className={reportPageStyles.error} style={{ minHeight: '40vh', padding: 'var(--mm-space-8)' }}>
-              <span className={reportPageStyles.errorIcon}>📊</span>
-              <h2 className={reportPageStyles.errorTitle}>No static content yet</h2>
-              <p className={reportPageStyles.errorText}>
-                Go to <strong>Admin → Main page</strong>, choose an event report, then click <strong>Update static content</strong>.
+
+      {/* Value cards — static conversion copy */}
+      <section className={`${styles.section} ${styles.sectionAlt}`} aria-label="Value propositions">
+        <div className={styles.sectionInner}>
+          <div className={styles.valueCardGrid}>
+            <div className={styles.valueCard}>
+              <MaterialIcon name="lock" variant="outlined" className={styles.valueCardIcon} />
+              <h3 className={styles.valueCardTitle}>Private by default</h3>
+              <p className={styles.valueCardBody}>
+                Your data stays in your environment. No third-party model exposure. No accidental leakage via &quot;shadow AI&quot;.
               </p>
-              <Link href="/admin/mainpage" className="btn btn-primary">Open Main page settings</Link>
             </div>
-          ) : chartResults.size === 0 ? (
-            <div className={reportPageStyles.error} style={{ minHeight: '40vh', padding: 'var(--mm-space-8)' }}>
-              <span className={reportPageStyles.errorIcon}>📈</span>
-              <h2 className={reportPageStyles.errorTitle}>Chart data missing</h2>
-              <p className={reportPageStyles.errorText}>
-                The snapshot has blocks but no chart data. In <strong>Admin → Main page</strong> click <strong>Update static content</strong> again.
+            <div className={styles.valueCard}>
+              <MaterialIcon name="bolt" variant="outlined" className={styles.valueCardIcon} />
+              <h3 className={styles.valueCardTitle}>Controlled access</h3>
+              <p className={styles.valueCardBody}>
+                Roles, permissions, and approvals so only the right people (and agents) can access sensitive fields.
               </p>
-              <Link href="/admin/mainpage" className="btn btn-primary">Open Main page settings</Link>
             </div>
-          ) : (
+            <div className={styles.valueCard}>
+              <MaterialIcon name="shield" variant="outlined" className={styles.valueCardIcon} />
+              <h3 className={styles.valueCardTitle}>Auditable decisions</h3>
+              <p className={styles.valueCardBody}>
+                Every query, action, and output is logged, so you can prove who did what, when, and why.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Problem */}
+      <section className={styles.section} aria-label="The problem">
+        <div className={styles.sectionInner}>
+          <h2 className={styles.sectionTitle}>The problem</h2>
+          <ul className={styles.problemList}>
+            <li>Data is abundant. Decisions are slow: analysts spend hours cleaning, checking, and summarising.</li>
+            <li>Public AI is a compliance risk: KYC/PII cannot be pasted into consumer models safely.</li>
+            <li>Bans kill velocity: blocking AI reduces risk, but slows growth and operational responsiveness.</li>
+          </ul>
+          <p className={styles.problemClosing}>
+            MessMass runs agentic workflows locally with governance built in, so teams move fast and stay compliant.
+          </p>
+        </div>
+      </section>
+
+      {/* How it works */}
+      <section id="how-it-works" className={`${styles.section} ${styles.sectionAlt}`} aria-label="How it works">
+        <div className={styles.sectionInner}>
+          <h2 className={styles.sectionTitle}>How it works</h2>
+          <div className={styles.howCardGrid}>
+            <div className={styles.howCard}>
+              <MaterialIcon name="upload" variant="outlined" className={styles.howCardIcon} />
+              <h3 className={styles.howCardTitle}>Ingest</h3>
+              <p className={styles.howCardBody}>
+                Connect sources and ingest data continuously. Clean, dedupe, and standardise automatically.
+              </p>
+            </div>
+            <div className={styles.howCard}>
+              <MaterialIcon name="insights" variant="outlined" className={styles.howCardIcon} />
+              <h3 className={styles.howCardTitle}>Know</h3>
+              <p className={styles.howCardBody}>
+                Local AI surfaces trends, anomalies, and risk signals grounded in your datasets.
+              </p>
+            </div>
+            <div className={styles.howCard}>
+              <MaterialIcon name="touch_app" variant="outlined" className={styles.howCardIcon} />
+              <h3 className={styles.howCardTitle}>Act</h3>
+              <p className={styles.howCardBody}>
+                Turn insights into workflows: decision points, personas, playbooks, and delegated tasks.
+              </p>
+            </div>
+            <div className={styles.howCard}>
+              <MaterialIcon name="admin_panel_settings" variant="outlined" className={styles.howCardIcon} />
+              <h3 className={styles.howCardTitle}>Govern</h3>
+              <p className={styles.howCardBody}>
+                Full audit trail, access control, and policy enforcement—so every byte stays where it belongs.
+              </p>
+            </div>
+          </div>
+          <p className={styles.howOutcome}>
+            From raw KYC to action-ready decisions in minutes, not days.
+          </p>
+        </div>
+      </section>
+
+      {/* What you get */}
+      <section className={styles.section} aria-label="What you get">
+        <div className={styles.sectionInner}>
+          <h2 className={styles.sectionTitle}>What you get out of the box</h2>
+          <ul className={styles.whatYouGetList}>
+            <li>Sovereign AI workspace for sensitive decision-making</li>
+            <li>KYC-ready data model and starter datasets</li>
+            <li>Playbooks and personas for repeatable investigations and reviews</li>
+            <li>Evidence-grade audit logs for compliance and security teams</li>
+            <li>Operational dashboard showing system health and activity</li>
+          </ul>
+        </div>
+      </section>
+
+      {/* Optional report block (when snapshot has blocks) — anchor for "See how it works" if we keep report */}
+      {blocks.length > 0 && chartResults.size > 0 && (
+        <section id="report-content" className={reportPageStyles.page} aria-label="Report content">
+          <div className={styles.mmContainer}>
             <div
               className={reportPageStyles.landingReportWrap}
               style={
                 {
-                  /* Title = 32px; Description (KPI value row) = 13px; icon = 32px. Value row uses --landing-value-font so clamp is not used. */
                   '--block-base-font-size': '32px',
                   '--block-subtitle-font-size': '13px',
                   '--landing-max-font': '13px',
@@ -199,9 +283,10 @@ function LandingPageStatic({
                 allowNA={true}
               />
             </div>
-          )}
-        </div>
-      </section>
+          </div>
+        </section>
+      )}
+
       <PricingAndFooter footerTitle={footerTitle} version={version} />
     </div>
   );
@@ -217,30 +302,30 @@ function PricingAndFooter({ footerTitle, version }: { footerTitle: string; versi
             <div className={styles.pricingCard}>
               <h3 className={styles.pricingCardTitle}>Welcome</h3>
               <p className={styles.pricingCardPrice}>Free <span className={styles.pricingCardPriceSub}>forever</span></p>
+              <p className={styles.pricingCardSubhead}>For individuals testing sovereign workflows</p>
               <ul className={styles.pricingCardFeatures}>
                 <li>1 personal profile</li>
-                <li>1 public site</li>
+                <li>1 public workspace</li>
                 <li>10 public reports</li>
-                <li>Basic KYC Dataset</li>
+                <li>Basic KYC dataset (POC required)</li>
               </ul>
-              <p className={styles.pricingCardNote}>(POC required)</p>
               <div className={styles.pricingCardCta}>
-                <Link href="/#contact" className="btn btn-secondary">Contact us</Link>
+                <Link href="/#contact" className="btn btn-secondary">Start free</Link>
               </div>
             </div>
             <div className={`${styles.pricingCard} ${styles.pricingCardFeatured}`}>
               <h3 className={styles.pricingCardTitle}>Business</h3>
               <p className={styles.pricingCardPrice}>$99 <span className={styles.pricingCardPriceSub}>USD / month</span></p>
+              <p className={styles.pricingCardSubhead}>For teams shipping decisions with private AI</p>
               <ul className={styles.pricingCardFeatures}>
-                <li>Everything in Welcome +</li>
+                <li>Everything in Welcome, plus:</li>
                 <li>1 organisation profile</li>
-                <li>1 private site</li>
-                <li>Unlimited public sites</li>
+                <li>1 private workspace</li>
+                <li>Unlimited public workspaces</li>
                 <li>10 private reports</li>
                 <li>Unlimited public reports</li>
-                <li>Advanced KYC Dataset</li>
+                <li>Advanced KYC dataset (Consultancy required)</li>
               </ul>
-              <p className={styles.pricingCardNote}>(Consultancy required)</p>
               <div className={styles.pricingCardCta}>
                 <Link href="/#contact" className="btn btn-primary">Contact us</Link>
               </div>
@@ -248,14 +333,13 @@ function PricingAndFooter({ footerTitle, version }: { footerTitle: string; versi
             <div className={styles.pricingCard}>
               <h3 className={styles.pricingCardTitle}>Organisation</h3>
               <p className={styles.pricingCardPrice}>Custom</p>
+              <p className={styles.pricingCardSubhead}>For regulated environments and scaled governance</p>
               <ul className={styles.pricingCardFeatures}>
-                <li>Everything in Business +</li>
-                <li>1 organisation profile</li>
-                <li>Unlimited private sites</li>
+                <li>Everything in Business, plus:</li>
+                <li>Unlimited private workspaces</li>
                 <li>Unlimited private reports</li>
-                <li>Unlimited KYC Dataset</li>
+                <li>Unlimited KYC datasets (Training required)</li>
               </ul>
-              <p className={styles.pricingCardNote}>(Training required)</p>
               <div className={styles.pricingCardCta}>
                 <Link href="/#contact" className="btn btn-secondary">Contact us</Link>
               </div>
@@ -265,42 +349,30 @@ function PricingAndFooter({ footerTitle, version }: { footerTitle: string; versi
       </section>
       <section id="faq" className={styles.sectionAlt} aria-label="Frequently asked questions">
         <div className={styles.sectionInner}>
-          <h2 className={styles.sectionTitle}>Frequently asked questions</h2>
+          <h2 className={styles.sectionTitle}>FAQ</h2>
           <dl className={styles.faqList}>
             <div className={styles.faqItem}>
               <dt className={styles.faqQuestion}>Does any data leave our environment?</dt>
               <dd className={styles.faqAnswer}>
-                No, never. Raw data is only ingested into your environment and is never read out of your system by us. All outcomes - reports, documents, and insights - remain under your control. You decide what to share and with whom.
+                Under our architecture, data processing occurs within your controlled environment. You decide what, if anything, is exported.
               </dd>
             </div>
             <div className={styles.faqItem}>
               <dt className={styles.faqQuestion}>Do you train models on customer data?</dt>
               <dd className={styles.faqAnswer}>
-                No, never. You train your model inside our system, and you are the only one who can use it. We do not use your data to train shared or third-party models.
+                No. Customer data is not used to train public models.
               </dd>
             </div>
             <div className={styles.faqItem}>
-              <dt className={styles.faqQuestion}>What deployment options exist (local / VPC / on-prem)?</dt>
+              <dt className={styles.faqQuestion}>What gets audited?</dt>
               <dd className={styles.faqAnswer}>
-                We offer three deployment types: a free tier that runs in the cloud, Business runs in our VPC, and Organisation is deployed on-premise in your infrastructure for maximum control.
+                Queries, access events, agent actions, and outputs, so activity can be reviewed and traced.
               </dd>
             </div>
             <div className={styles.faqItem}>
-              <dt className={styles.faqQuestion}>How do audit logs work and what&apos;s recorded?</dt>
+              <dt className={styles.faqQuestion}>Who is this for?</dt>
               <dd className={styles.faqAnswer}>
-                We provide an immutable, chronological record of every action taken within the platform—who did what, when, and how. For on-premise deployments, we have no access to your logs; they stay entirely in your environment.
-              </dd>
-            </div>
-            <div className={styles.faqItem}>
-              <dt className={styles.faqQuestion}>Can we control which datasets an agent can access?</dt>
-              <dd className={styles.faqAnswer}>
-                Yes. During the POC we work with you to fine-tune the ecosystem and access rules so that agents only see the datasets you allow, in line with your requirements.
-              </dd>
-            </div>
-            <div className={styles.faqItem}>
-              <dt className={styles.faqQuestion}>How long to get value? (typical POC timeline)</dt>
-              <dd className={styles.faqAnswer}>
-                The system starts reporting as soon as the first ingestion is in place; value grows with the quantity and quality of data you feed it. Based on our experience, even the first reports deliver real value for our partners.
+                Teams working with KYC/PII-heavy workflows: onboarding, compliance, fraud, and customer intelligence.
               </dd>
             </div>
           </dl>
