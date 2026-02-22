@@ -181,11 +181,12 @@ function LandingPageStatic({
               className={reportPageStyles.landingReportWrap}
               style={
                 {
-                  /* Title (e.g. "Private by default") = 32px; Description (value row text) = 13px */
+                  /* Title = 32px; Description (KPI value row) = 13px; icon = 32px. Value row uses --landing-value-font so clamp is not used. */
                   '--block-base-font-size': '32px',
                   '--block-subtitle-font-size': '13px',
                   '--landing-max-font': '13px',
                   '--landing-max-icon-font': '32px',
+                  '--landing-value-font': '13px',
                 } as React.CSSProperties
               }
             >
@@ -268,7 +269,7 @@ function PricingAndFooter({ footerTitle, version }: { footerTitle: string; versi
             <div className={styles.faqItem}>
               <dt className={styles.faqQuestion}>Does any data leave our environment?</dt>
               <dd className={styles.faqAnswer}>
-                No, never. Raw data is only ingested into your environment and is never read out of your system by us. All outcomes—reports, documents, and insights—remain under your control. You decide what to share and with whom.
+                No, never. Raw data is only ingested into your environment and is never read out of your system by us. All outcomes - reports, documents, and insights - remain under your control. You decide what to share and with whom.
               </dd>
             </div>
             <div className={styles.faqItem}>
@@ -280,7 +281,7 @@ function PricingAndFooter({ footerTitle, version }: { footerTitle: string; versi
             <div className={styles.faqItem}>
               <dt className={styles.faqQuestion}>What deployment options exist (local / VPC / on-prem)?</dt>
               <dd className={styles.faqAnswer}>
-                We offer three deployment types: a free tier that runs in the cloud, Business runs in your own VPC, and Organisation is deployed on-premise in your infrastructure for maximum control.
+                We offer three deployment types: a free tier that runs in the cloud, Business runs in our VPC, and Organisation is deployed on-premise in your infrastructure for maximum control.
               </dd>
             </div>
             <div className={styles.faqItem}>
