@@ -538,9 +538,19 @@ function ReportBlock({ block, chartResults, charts, gridSettings, allowNA = fals
       // WHAT: Use minimum of title font size and BAR chart font size
       // WHY: Block-level typography must work for all elements (titles and BAR labels)
       // HOW: Take minimum to ensure all content fits
-      const finalFontSize = barChartFontSize !== null
+      let finalFontSize = barChartFontSize !== null
         ? Math.min(syncedFonts.titlePx, barChartFontSize)
         : syncedFonts.titlePx;
+      // WHAT: When allowNA (static landing), cap to strict report-page sizing so cards don't overflow
+      // WHY: Landing uses same ReportContent but wider context can produce oversized fonts
+      const MAX_BLOCK_FONT_PX = 22;
+      const MAX_SUBTITLE_FONT_PX = 16;
+      if (allowNA && finalFontSize > MAX_BLOCK_FONT_PX) {
+        finalFontSize = MAX_BLOCK_FONT_PX;
+      }
+      const subtitlePx = allowNA
+        ? Math.min(syncedFonts.subtitlePx, MAX_SUBTITLE_FONT_PX)
+        : syncedFonts.subtitlePx;
       
       console.log(`[ReportBlock] Block-level typography calculated:`, {
         blockTitle: block.title || 'Untitled',
@@ -549,13 +559,13 @@ function ReportBlock({ block, chartResults, charts, gridSettings, allowNA = fals
         titlePx: syncedFonts.titlePx,
         barChartFontSize,
         finalFontSize,
-        subtitlePx: syncedFonts.subtitlePx,
+        subtitlePx,
         cellsCount: allCells.length,
         barChartsCount: barCharts.length
       });
       
       setBlockBaseFontSize(finalFontSize);
-      setBlockSubtitleFontSize(syncedFonts.subtitlePx);
+      setBlockSubtitleFontSize(subtitlePx);
     };
     
     measureAndCalculate(); // Initial calculation

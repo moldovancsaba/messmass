@@ -6,7 +6,7 @@ Owner: Product
 
 **A comprehensive real-time collaborative event statistics dashboard with advanced partner management, intelligent link tracking, and custom theming engine.**
 
-**Version**: v11.56.4
+**Version**: v11.56.5
 **Last Updated**: 2026-02-21T00:00:00.000Z
 - **Website**: https://messmass.doneisbetter.com
 - **Status**: Production-Ready — Full-featured event management platform with partner ecosystem, automated fixture suggestions, and dynamic theming
