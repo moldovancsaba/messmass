@@ -140,7 +140,7 @@
   /* WHAT: Material Icons scale by font-size, 85% of icon row */
   /* WHY: Visual impact - large icon dominates top 40% */
   /* HOW: Container query on .kpiIconRow; --landing-max-font caps size on main page */
-  font-size: clamp(2.5rem, 85cqh, var(--landing-max-font, 7rem)) !important; /* 85% of icon row height */
+  font-size: clamp(2.5rem, 85cqh, var(--landing-max-icon-font, var(--landing-max-font, 7rem))) !important; /* 85% of icon row height; --landing-max-icon-font for main page */
   height: auto !important;
   width: auto !important;
   color: var(--kpiIconColor) !important;

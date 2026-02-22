@@ -181,9 +181,10 @@ function LandingPageStatic({
               className={reportPageStyles.landingReportWrap}
               style={
                 {
-                  '--block-base-font-size': '16px',
+                  '--block-base-font-size': '32px',
                   '--block-subtitle-font-size': '13px',
                   '--landing-max-font': '16px',
+                  '--landing-max-icon-font': '32px',
                 } as React.CSSProperties
               }
             >

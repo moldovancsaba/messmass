@@ -436,8 +436,8 @@ function ReportBlock({ block, chartResults, charts, gridSettings, allowNA = fals
   // WHAT: Block-level typography calculation (P1 1.5 Phase 1)
   // WHY: All typography elements in a block should use unified font size
   // HOW: Collect all cells from all rows, calculate once per block, set CSS custom property
-  // When allowNA (static landing), cap from first paint so cards never render oversized (avoids overlap)
-  const MAX_BLOCK_FONT_PX = 16;
+  // When allowNA (static landing), cap from first paint; titles/icon use wrapper vars (32px on main page), block cap is fallback
+  const MAX_BLOCK_FONT_PX = 32;
   const MAX_SUBTITLE_FONT_PX = 13;
   const [blockBaseFontSize, setBlockBaseFontSize] = useState<number | null>(allowNA ? MAX_BLOCK_FONT_PX : null);
   const [blockSubtitleFontSize, setBlockSubtitleFontSize] = useState<number | null>(allowNA ? MAX_SUBTITLE_FONT_PX : null);
