@@ -134,7 +134,7 @@ function LandingPageStatic({
         <div className={reportPageStyles.container}>
           <ReportContent
             blocks={blocks}
-            chartResults={chartResults as Map<string, import('@/lib/report-calculator').ChartResult>}
+            chartResults={chartResults as unknown as Map<string, import('@/lib/report-calculator').ChartResult>}
             charts={null}
             gridSettings={gridSettings}
           />
