@@ -177,13 +177,24 @@ function LandingPageStatic({
               <Link href="/admin/mainpage" className="btn btn-primary">Open Main page settings</Link>
             </div>
           ) : (
-            <ReportContent
-              blocks={blocks}
-              chartResults={chartResults as unknown as Map<string, import('@/lib/report-calculator').ChartResult>}
-              charts={null}
-              gridSettings={gridSettings}
-              allowNA={true}
-            />
+            <div
+              className={reportPageStyles.landingReportWrap}
+              style={
+                {
+                  '--block-base-font-size': '16px',
+                  '--block-subtitle-font-size': '13px',
+                  '--landing-max-font': '16px',
+                } as React.CSSProperties
+              }
+            >
+              <ReportContent
+                blocks={blocks}
+                chartResults={chartResults as unknown as Map<string, import('@/lib/report-calculator').ChartResult>}
+                charts={null}
+                gridSettings={gridSettings}
+                allowNA={true}
+              />
+            </div>
           )}
         </div>
       </section>

@@ -139,8 +139,8 @@
 .kpiIcon {
   /* WHAT: Material Icons scale by font-size, 85% of icon row */
   /* WHY: Visual impact - large icon dominates top 40% */
-  /* HOW: Container query on .kpiIconRow, vertically centered */
-  font-size: clamp(2.5rem, 85cqh, 7rem) !important; /* 85% of icon row height */
+  /* HOW: Container query on .kpiIconRow; --landing-max-font caps size on main page */
+  font-size: clamp(2.5rem, 85cqh, var(--landing-max-font, 7rem)) !important; /* 85% of icon row height */
   height: auto !important;
   width: auto !important;
   color: var(--kpiIconColor) !important;
@@ -161,7 +161,7 @@
   justify-content: center;
   width: 100%;
   height: 100%;
-  font-size: clamp(1.25rem, min(30cqh, 25cqw), 6rem); /* INCREASED: 18cqh→30cqh, 20cqw→25cqw, 5rem→6rem */
+  font-size: clamp(1.25rem, min(30cqh, 25cqw), var(--landing-max-font, 6rem)); /* --landing-max-font caps on main page */
   font-weight: var(--mm-font-weight-bold);
   color: var(--chartValueColor);
   line-height: 0.85;

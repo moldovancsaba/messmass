@@ -91,6 +91,12 @@
   margin: 0;
 }
 
+/* WHAT: Landing main page report section - strict font cap via CSS variables set inline */
+.landingReportWrap {
+  overflow: hidden;
+  min-height: 0;
+}
+
 /* Responsive Adjustments */
 @media (max-width: 768px) {
   .page {

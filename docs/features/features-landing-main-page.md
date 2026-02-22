@@ -61,6 +61,7 @@ Owner: Product
 - **v11.56.5:** Landing report cards follow strict sizing: when `allowNA` (static landing), block base font is capped at 22px and subtitle at 16px so cards match report-page typography and don’t overflow.
 - **v11.56.6:** Generate API saves all `chartId` values as strings in blocks and chartResults for reliable client lookup; main page footer shows app version (from `package.json`) next to Privacy Policy and Terms & Conditions.
 - **v11.56.7:** Landing report cards: font cap (22px/16px) applied from first paint when using static snapshot (`allowNA`), and block gets overflow containment (`.blockLanding`) so card text cannot overlap adjacent cards.
+- **v11.56.8:** Stricter landing font cap: wrapper sets `--block-base-font-size: 16px`, `--block-subtitle-font-size: 13px`, `--landing-max-font: 16px`; KPI icon and value use `var(--landing-max-font)` in clamps so container-query scaling cannot exceed cap; block cap lowered to 16px/13px when `allowNA`.
 
 ## HTML vs JSON (avoid "Unexpected token '<'" errors)
 - Generate API: when calling report-config, only parses response as JSON if `Content-Type` is `application/json`; if the response is HTML (e.g. error page) or fetch fails, falls back to inline template/block resolution from the DB.
