@@ -56,6 +56,10 @@ Owner: Product
 - Chart results are serialized to plain JSON-safe objects via `serializeChartResult()` so they survive MongoDB and API round-trip; the client always receives valid `type`, `kpiValue`, `elements`, etc.
 - If the main page still shows an empty section after generating, regenerate once (Admin → Main page → Update static content) to apply the fix.
 
+## HTML vs JSON (avoid "Unexpected token '<'" errors)
+- Generate API: when calling report-config, only parses response as JSON if `Content-Type` is `application/json`; if the response is HTML (e.g. error page) or fetch fails, falls back to inline template/block resolution from the DB.
+- Main page client: when fetching `/api/landing-static`, only parses as JSON when response is `application/json` and catches parse errors; otherwise treats as no snapshot and continues without crashing.
+
 ## References
 - `lib/landingSettings.ts` – types, get/set helpers, default slug
 - `app/admin/mainpage/page.tsx` – admin UI (report selector, Save, Update static content)

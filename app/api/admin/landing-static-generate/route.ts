@@ -5,6 +5,7 @@
  */
 
 import { NextResponse } from 'next/server';
+import { ObjectId } from 'mongodb';
 import { getAdminUser } from '@/lib/auth';
 import { hasMinimumRole } from '@/lib/permissions';
 import { getDb } from '@/lib/db';
@@ -58,24 +59,89 @@ export async function POST() {
       );
     }
 
-    // Use the same report-config API as the report page so template + blocks match exactly
+    // Prefer report-config API so template + blocks match the report page; fallback to inline resolution if fetch returns HTML or fails
+    let template: any = null;
+    let populatedDataBlocks: any[] = [];
     const baseUrl = getBaseUrl();
-    const configRes = await fetch(
-      `${baseUrl}/api/report-config/${encodeURIComponent(slug)}?type=project`,
-      { cache: 'no-store' }
-    );
-    const configData = await configRes.json();
-    if (!configData.success || !configData.template?.dataBlocks?.length) {
+    try {
+      const configRes = await fetch(
+        `${baseUrl}/api/report-config/${encodeURIComponent(slug)}?type=project`,
+        { cache: 'no-store' }
+      );
+      const contentType = configRes.headers.get('content-type') || '';
+      if (configRes.ok && contentType.includes('application/json')) {
+        const configData = await configRes.json();
+        if (configData.success && configData.template?.dataBlocks?.length) {
+          template = configData.template;
+          populatedDataBlocks = template.dataBlocks;
+        }
+      } else {
+        const text = await configRes.text();
+        if (text.trimStart().startsWith('<')) {
+          console.warn('[landing-static-generate] report-config returned HTML (wrong URL or error page), using inline resolution');
+        }
+      }
+    } catch (e) {
+      console.warn('[landing-static-generate] report-config fetch failed, using inline resolution:', e);
+    }
+
+    if (!template?.dataBlocks?.length) {
+      // Inline resolution when report-config fetch returned HTML or failed
+      const db = await getDb();
+      const templatesCol = db.collection('report_templates');
+      const dataBlocksCol = db.collection('data_blocks');
+      const projectDoc = project as any;
+      if (projectDoc.reportTemplateId) {
+        const tid = ObjectId.isValid(projectDoc.reportTemplateId)
+          ? new ObjectId(projectDoc.reportTemplateId)
+          : projectDoc.reportTemplateId;
+        template = await templatesCol.findOne({ _id: tid });
+      }
+      if (!template?.dataBlocks?.length && projectDoc.partner1?._id) {
+        const partnerId = typeof projectDoc.partner1._id === 'string' ? new ObjectId(projectDoc.partner1._id) : projectDoc.partner1._id;
+        const partner = await db.collection('partners').findOne({ _id: partnerId });
+        if (partner?.reportTemplateId) {
+          const tid = ObjectId.isValid(partner.reportTemplateId) ? new ObjectId(partner.reportTemplateId) : partner.reportTemplateId;
+          template = await templatesCol.findOne({ _id: tid });
+        }
+      }
+      if (!template?.dataBlocks?.length) {
+        return NextResponse.json(
+          { success: false, error: 'No report template or blocks found for this project' },
+          { status: 400 }
+        );
+      }
+      const blockIds = template.dataBlocks.map((ref: any) =>
+        typeof ref.blockId === 'string' && ObjectId.isValid(ref.blockId) ? new ObjectId(ref.blockId) : ref.blockId
+      );
+      const blocks = await dataBlocksCol.find({ _id: { $in: blockIds } }).toArray();
+      const blockMap = new Map(blocks.map((b: any) => [b._id.toString(), b]));
+      populatedDataBlocks = template.dataBlocks
+        .map((ref: any) => {
+          const blockId = typeof ref.blockId?.toString === 'function' ? ref.blockId.toString() : String(ref.blockId ?? '');
+          const block = blockMap.get(blockId);
+          if (!block) return null;
+          return {
+            _id: block._id.toString(),
+            name: block.name,
+            showTitle: block.showTitle ?? true,
+            order: ref.order ?? 0,
+            charts: block.charts || [],
+            blockAspectRatio: block.blockAspectRatio ?? ref.overrides?.blockAspectRatio,
+            tableHeightMultiplier: block.tableHeightMultiplier ?? ref.overrides?.tableHeightMultiplier,
+          };
+        })
+        .filter(Boolean);
+    } else {
+      populatedDataBlocks = template.dataBlocks;
+    }
+
+    if (!populatedDataBlocks.length) {
       return NextResponse.json(
-        {
-          success: false,
-          error: configData.error || 'No report template or blocks found. Resolve report first at /report/' + slug,
-        },
+        { success: false, error: 'No report template or blocks found for this project' },
         { status: 400 }
       );
     }
-    const template = configData.template as any;
-    const populatedDataBlocks = template.dataBlocks;
 
     const db = await getDb();
     const chartConfigsCol = db.collection('chart_configurations');

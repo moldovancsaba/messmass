@@ -16,6 +16,10 @@ Owner: Operations
 **WHY**: Block lookup in landing-static-generate didn’t match report-config (ObjectId/string handling), and chart results weren’t serialized for MongoDB/API round-trip, so blocks or chart data could be missing or invalid.  
 **HOW**: In `app/api/admin/landing-static-generate/route.ts`: block resolution now uses `ref.blockId.toString()` and `blocks.find(b => b._id.toString() === blockId)` (same as report-config). Added `serializeChartResult()` to store plain JSON-safe chart results (chartId, type, title, kpiValue, elements, etc.). In `components/LandingPage.tsx`: `LandingPageStatic` now defaults `snapshot.blocks` and `snapshot.chartResults` to arrays when missing and normalizes `gridSettings` with numeric fallbacks.
 
+#### "Unexpected token '<'" when response is HTML
+**WHAT**: Generate or main page could receive HTML (error page) and call `.json()`, throwing.  
+**HOW**: Generate only parses report-config response as JSON when Content-Type is application/json; else inline resolution. Main page only parses landing-static when content-type is JSON and catches parse errors.
+
 ### Testing
 - Regenerate static content (Admin → Main page → Update static content), then load `/` and confirm report blocks and charts render.
 

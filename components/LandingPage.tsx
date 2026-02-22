@@ -38,9 +38,17 @@ export default function LandingPage() {
   useEffect(() => {
     let cancelled = false;
     fetch('/api/landing-static', { cache: 'no-store' })
-      .then((r) => r.json())
+      .then(async (r) => {
+        const ct = r.headers.get('content-type') || '';
+        if (!ct.includes('application/json')) return { success: false };
+        try {
+          return await r.json();
+        } catch {
+          return { success: false };
+        }
+      })
       .then((d) => {
-        if (cancelled || !d.success) return;
+        if (cancelled || !d?.success) return;
         setLandingSlugFromApi(d.landingReportSlug || null);
         if (d.staticSnapshot)
           setStaticPayload({
