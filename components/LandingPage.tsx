@@ -106,7 +106,7 @@ function LandingPageStatic({
 }) {
   const stats = snapshot.projectStats as Record<string, unknown> | undefined;
   const heroLabel = (stats?.reportTextHeroLabel as string) || 'Sovereign Decision Intelligence';
-  const heroTitle = (stats?.reportTextHeroTitle as string) || 'Data Privacy and Agentic AI without compromises.';
+  const heroTitle = (stats?.reportTextHeroTitle as string) || 'Agentic AI that reads and understands your data at scale, and delivers actionable dashboards—without compromising privacy.';
   const heroSub = (stats?.reportTextHeroSub as string) || 'The platform that restores the freedom and security of decision-making to data-driven companies.';
   const rawFooter = stats?.reportTextFooterTitle;
   const footerTitle = typeof rawFooter === 'string' ? rawFooter : "Let's build the era of sovereign enterprise AI together.";
@@ -181,9 +181,10 @@ function LandingPageStatic({
               className={reportPageStyles.landingReportWrap}
               style={
                 {
+                  /* Title (e.g. "Private by default") = 32px; Description (value row text) = 13px */
                   '--block-base-font-size': '32px',
                   '--block-subtitle-font-size': '13px',
-                  '--landing-max-font': '16px',
+                  '--landing-max-font': '13px',
                   '--landing-max-icon-font': '32px',
                 } as React.CSSProperties
               }
@@ -258,6 +259,49 @@ function PricingAndFooter({ footerTitle, version }: { footerTitle: string; versi
               </div>
             </div>
           </div>
+        </div>
+      </section>
+      <section id="faq" className={styles.sectionAlt} aria-label="Frequently asked questions">
+        <div className={styles.sectionInner}>
+          <h2 className={styles.sectionTitle}>Frequently asked questions</h2>
+          <dl className={styles.faqList}>
+            <div className={styles.faqItem}>
+              <dt className={styles.faqQuestion}>Does any data leave our environment?</dt>
+              <dd className={styles.faqAnswer}>
+                No, never. Raw data is only ingested into your environment and is never read out of your system by us. All outcomes—reports, documents, and insights—remain under your control. You decide what to share and with whom.
+              </dd>
+            </div>
+            <div className={styles.faqItem}>
+              <dt className={styles.faqQuestion}>Do you train models on customer data?</dt>
+              <dd className={styles.faqAnswer}>
+                No, never. You train your model inside our system, and you are the only one who can use it. We do not use your data to train shared or third-party models.
+              </dd>
+            </div>
+            <div className={styles.faqItem}>
+              <dt className={styles.faqQuestion}>What deployment options exist (local / VPC / on-prem)?</dt>
+              <dd className={styles.faqAnswer}>
+                We offer three deployment types: a free tier that runs in the cloud, Business runs in your own VPC, and Organisation is deployed on-premise in your infrastructure for maximum control.
+              </dd>
+            </div>
+            <div className={styles.faqItem}>
+              <dt className={styles.faqQuestion}>How do audit logs work and what&apos;s recorded?</dt>
+              <dd className={styles.faqAnswer}>
+                We provide an immutable, chronological record of every action taken within the platform—who did what, when, and how. For on-premise deployments, we have no access to your logs; they stay entirely in your environment.
+              </dd>
+            </div>
+            <div className={styles.faqItem}>
+              <dt className={styles.faqQuestion}>Can we control which datasets an agent can access?</dt>
+              <dd className={styles.faqAnswer}>
+                Yes. During the POC we work with you to fine-tune the ecosystem and access rules so that agents only see the datasets you allow, in line with your requirements.
+              </dd>
+            </div>
+            <div className={styles.faqItem}>
+              <dt className={styles.faqQuestion}>How long to get value? (typical POC timeline)</dt>
+              <dd className={styles.faqAnswer}>
+                The system starts reporting as soon as the first ingestion is in place; value grows with the quantity and quality of data you feed it. Based on our experience, even the first reports deliver real value for our partners.
+              </dd>
+            </div>
+          </dl>
         </div>
       </section>
       <ContactForm />
@@ -372,7 +416,7 @@ function LandingPageLive({ slug, version }: { slug: string; version?: string | n
     typeof rawFooter === 'string' ? rawFooter : "Let's build the era of sovereign enterprise AI together.";
 
   const heroLabel = (stats as Record<string, unknown>)?.['reportTextHeroLabel'] as string || 'Sovereign Decision Intelligence';
-  const heroTitle = (stats as Record<string, unknown>)?.['reportTextHeroTitle'] as string || 'Data Privacy and Agentic AI without compromises.';
+  const heroTitle = (stats as Record<string, unknown>)?.['reportTextHeroTitle'] as string || 'Agentic AI that reads and understands your data at scale, and delivers actionable dashboards—without compromising privacy.';
   const heroSub = (stats as Record<string, unknown>)?.['reportTextHeroSub'] as string ||
     'The platform that restores the freedom and security of decision-making to data-driven companies.';
 

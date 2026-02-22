@@ -325,6 +325,43 @@
   margin-top: auto;
 }
 
+/* FAQ */
+.faqList {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  max-width: 640px;
+  margin-left: auto;
+  margin-right: auto;
+  text-align: left;
+}
+
+.faqItem {
+  margin-bottom: var(--mm-space-6);
+  padding-bottom: var(--mm-space-6);
+  border-bottom: 1px solid var(--mm-gray-200);
+}
+
+.faqItem:last-child {
+  margin-bottom: 0;
+  padding-bottom: 0;
+  border-bottom: none;
+}
+
+.faqQuestion {
+  font-size: var(--mm-font-size-lg);
+  font-weight: var(--mm-font-weight-semibold);
+  color: var(--mm-gray-900);
+  margin: 0 0 var(--mm-space-2) 0;
+}
+
+.faqAnswer {
+  font-size: var(--mm-font-size-base);
+  color: var(--mm-gray-600);
+  line-height: var(--mm-line-height-lg);
+  margin: 0;
+}
+
 /* Footer CTA */
 .footer {
   background: linear-gradient(160deg, var(--landing-hero-bg-start) 0%, var(--landing-hero-bg-mid) 100%);
