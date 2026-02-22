@@ -177,7 +177,7 @@ export async function POST() {
       showTitle: b.showTitle !== false,
       order: Number(b.order ?? 0),
       charts: (b.charts || []).map((c: any) => ({
-        chartId: c.chartId,
+        chartId: typeof c.chartId === 'string' ? c.chartId : String(c.chartId ?? ''),
         width: Number(c.width ?? 1),
         order: Number(c.order ?? 0),
       })),
@@ -185,9 +185,9 @@ export async function POST() {
       tableHeightMultiplier: b.tableHeightMultiplier,
     }));
 
-    // Serialize chart results to plain JSON-safe objects so they survive MongoDB + API round-trip
+    // Serialize chart results to plain JSON-safe objects; chartId as string for reliable client lookup
     const chartResultsArray = Array.from(chartResultsMap.entries()).map(([chartId, result]) => ({
-      chartId,
+      chartId: typeof chartId === 'string' ? chartId : String(chartId),
       result: serializeChartResult(result),
     }));
 

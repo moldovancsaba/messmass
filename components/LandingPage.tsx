@@ -33,9 +33,11 @@ interface LandingStaticPayload {
 interface LandingPageProps {
   /** When set, server already loaded snapshot; use for first paint so no client fetch needed */
   initialStaticPayload?: LandingStaticPayload | null;
+  /** App version shown in footer (e.g. from package.json) */
+  version?: string | null;
 }
 
-export default function LandingPage({ initialStaticPayload = null }: LandingPageProps) {
+export default function LandingPage({ initialStaticPayload = null, version = null }: LandingPageProps) {
   const [staticPayload, setStaticPayload] = useState<LandingStaticPayload | null>(initialStaticPayload ?? null);
   const [landingSlugFromApi, setLandingSlugFromApi] = useState<string | null>(initialStaticPayload?.landingReportSlug ?? null);
   const [staticChecked, setStaticChecked] = useState(!!initialStaticPayload);
@@ -83,21 +85,24 @@ export default function LandingPage({ initialStaticPayload = null }: LandingPage
       <LandingPageStatic
         snapshot={staticPayload.staticSnapshot}
         generatedAt={staticPayload.generatedAt}
+        version={version}
       />
     );
   }
 
   return (
-    <LandingPageLive slug={landingSlugFromApi ?? LANDING_REPORT_SLUG} />
+    <LandingPageLive slug={landingSlugFromApi ?? LANDING_REPORT_SLUG} version={version} />
   );
 }
 
 function LandingPageStatic({
   snapshot,
   generatedAt,
+  version,
 }: {
   snapshot: StaticLandingSnapshot;
   generatedAt: string | null;
+  version?: string | null;
 }) {
   const stats = snapshot.projectStats as Record<string, unknown> | undefined;
   const heroLabel = (stats?.reportTextHeroLabel as string) || 'Sovereign Decision Intelligence';
@@ -182,12 +187,12 @@ function LandingPageStatic({
           )}
         </div>
       </section>
-      <PricingAndFooter footerTitle={footerTitle} />
+      <PricingAndFooter footerTitle={footerTitle} version={version} />
     </div>
   );
 }
 
-function PricingAndFooter({ footerTitle }: { footerTitle: string }) {
+function PricingAndFooter({ footerTitle, version }: { footerTitle: string; version?: string | null }) {
   return (
     <>
       <section id="pricing" className={styles.section}>
@@ -256,6 +261,7 @@ function PricingAndFooter({ footerTitle }: { footerTitle: string }) {
           <nav className={styles.footerLegal} aria-label="Legal">
             <Link href="/privacy">Privacy Policy</Link>
             <Link href="/terms">Terms &amp; Conditions</Link>
+            {version ? <span className={styles.footerVersion} aria-label="App version">v{version}</span> : null}
           </nav>
         </div>
       </footer>
@@ -263,7 +269,7 @@ function PricingAndFooter({ footerTitle }: { footerTitle: string }) {
   );
 }
 
-function LandingPageLive({ slug }: { slug: string }) {
+function LandingPageLive({ slug, version }: { slug: string; version?: string | null }) {
 
   const { data: reportData, loading: dataLoading, error: dataError } = useReportData(slug);
   const project = reportData?.project;
@@ -436,7 +442,7 @@ function LandingPageLive({ slug }: { slug: string }) {
         </div>
       </section>
 
-      <PricingAndFooter footerTitle={footerTitle} />
+      <PricingAndFooter footerTitle={footerTitle} version={version} />
     </div>
   );
 }

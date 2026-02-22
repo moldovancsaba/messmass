@@ -1,6 +1,6 @@
 # Landing / Main Page (messmass.com)
 Status: Active
-Last Updated: 2026-02-21T00:00:00.000Z (v11.56.5 landing font cap)
+Last Updated: 2026-02-21T00:00:00.000Z (v11.56.6 footer version + generate hardening)
 Canonical: Yes
 Owner: Product
 
@@ -59,6 +59,7 @@ Owner: Product
 - **v11.56.3:** Snapshot is loaded **on the server** in `app/page.tsx` and passed as `initialStaticPayload`; `normalizeSnapshot()` ensures block ids and `chartResults` are client-safe. ReportContent/ReportBlock: when `allowNA` is true, typography `allCells` includes charts without error so block font size is set.
 - **v11.56.4:** Chart lookup and static report section fix: all `chartId` values normalized to strings; ResponsiveRow receives `allowNA` so the three blocks render between hero and pricing.
 - **v11.56.5:** Landing report cards follow strict sizing: when `allowNA` (static landing), block base font is capped at 22px and subtitle at 16px so cards match report-page typography and don’t overflow.
+- **v11.56.6:** Generate API saves all `chartId` values as strings in blocks and chartResults for reliable client lookup; main page footer shows app version (from `package.json`) next to Privacy Policy and Terms & Conditions.
 
 ## HTML vs JSON (avoid "Unexpected token '<'" errors)
 - Generate API: when calling report-config, only parses response as JSON if `Content-Type` is `application/json`; if the response is HTML (e.g. error page) or fetch fails, falls back to inline template/block resolution from the DB.

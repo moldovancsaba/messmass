@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import LandingPage from '@/components/LandingPage';
 import { getLandingSettings } from '@/lib/landingSettings';
 import type { StaticLandingSnapshot } from '@/lib/landingSettings';
+import packageJson from '../package.json';
 
 /**
  * WHAT: Main page (messmass.com) — same report as /report/[slug] for content and style
@@ -51,5 +52,5 @@ export default async function HomePage() {
         }
       : null;
 
-  return <LandingPage initialStaticPayload={initialStaticPayload} />;
+  return <LandingPage initialStaticPayload={initialStaticPayload} version={packageJson.version} />;
 }

@@ -390,6 +390,11 @@
   text-decoration: underline;
 }
 
+.footerVersion {
+  font-size: var(--mm-font-size-sm);
+  color: var(--landing-hero-border-hover);
+}
+
 /* Note: max-width must be a literal (CSS does not allow var() in media queries). Value matches --landing-breakpoint-md. */
 @media (max-width: 768px) {
   .hero,
