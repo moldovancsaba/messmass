@@ -16,3 +16,5 @@
 **Product SSOT:** Version = `package.json`; doc entry = README + `docs/index.md`; execution state = `docs/operations/operations-action-plan.md`; canonical map = `docs/_meta/meta-canonical-map.md`. Governance: `docs/documentation-governance.md` (Product SSOT section added 2026-02-21).
 
 **Delivery focus:** Top 5 board issues: #44, #57, #58, #59, #46. #71 Done, #38 Done, #46 Done (SSO DoneIsBetter, 2026-02-21). See `docs/operations/operations-delivery-focus.md`. Board = source of truth.
+
+**Agent habit:** After completing code changes that are ready to test, always commit and push to the preview/feature branch (e.g. landing-kpi-emdash) without being asked. Do not wait for the user to say "commit and push."
