@@ -1,8 +1,38 @@
 # MessMass Release Notes
 Status: Active
-Last Updated: 2026-02-09T00:00:00.000Z
+Last Updated: 2026-02-21T00:00:00.000Z
 Canonical: No
 Owner: Operations
+
+## [v11.56.0] — 2026-02-21T00:00:00.000Z
+
+### Summary
+🏠 **MAIN PAGE ADMIN + STATIC LANDING**: Admin can choose which report drives the main page (messmass.com) and generate static content so the site serves a snapshot without live DB/report pipeline. Main page nav item and CSRF-safe save/generate.
+
+### What Was Added
+
+#### Main page admin UI and nav ✅
+**WHAT**: Added **Main page** to the admin sidebar (Help section, between User Guide and Messages). Page at `/admin/mainpage` lets admins select the event report that drives the content between hero and pricing on the main site, and an **Update static content** button generates a static snapshot.  
+**WHY**: Control which report is shown on messmass.com and optionally freeze it as static for performance and stability.  
+**HOW**: New nav item in `components/Sidebar.tsx`, `MENU_PERMISSIONS['Main page']` in `lib/permissions.ts`, and `app/admin/mainpage/page.tsx` with report dropdown, Save, and Update static content. All state-changing requests use `apiPut`/`apiPost` from `lib/apiClient` for CSRF token handling.
+
+#### Landing settings and static snapshot ✅
+**WHAT**: Landing page settings stored in `settings` collection (`_id: 'landingPage'`): `landingReportSlug`, optional `staticSnapshot` (blocks, chartResults, gridSettings, style, projectStats), `generatedAt`. Public main page fetches `/api/landing-static`; if a snapshot exists it renders static content, else live report for the configured slug.  
+**WHY**: messmass.com can always show static content when desired, avoiding live DB/charts on each load.  
+**HOW**: `lib/landingSettings.ts` (get/set helpers), GET/PUT `/api/admin/landing-settings`, POST `/api/admin/landing-static-generate`, GET `/api/admin/landing-projects`, GET `/api/landing-static`. `components/LandingPage.tsx` routes to `LandingPageStatic` or `LandingPageLive(slug)` and uses shared `PricingAndFooter`.
+
+#### Documentation and version ✅
+**WHAT**: New feature doc `docs/features/features-landing-main-page.md` (APIs, integration, CSRF). Admin end-user guide and API reference updated; version set to 11.56.0.  
+**WHY**: Single place for Main page behavior and proper integration (CSRF, apiClient).  
+**HOW**: Feature doc covers admin UI, all four APIs, settings storage, LandingPage flow, and CSRF requirement. Release notes, admin workflow map, api-reference, and features-overview updated.
+
+### Testing
+- ⚠️ Manual: Admin → Main page, select report, Save (no CSRF error), Update static content; load `/` and confirm static or live content and slug source.
+
+### Version
+v11.55.1 → v11.56.0 (MINOR — Main page admin + static landing)
+
+---
 
 ## [Unreleased] — 2026-02-08
 

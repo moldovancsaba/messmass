@@ -1,6 +1,6 @@
 # Features Overview
 Status: Active
-Last Updated: 2026-02-05T00:00:00.000Z
+Last Updated: 2026-02-21T00:00:00.000Z
 Canonical: Yes
 Owner: Product
 
@@ -14,6 +14,7 @@ This folder contains feature-level “how it works” documentation (APIs, data 
 - `docs/features/features-google-sheets-integration.md` - Google Sheets integration, auth, sync behavior, and troubleshooting.
 - `docs/features/features-hashtag-system.md` - Hashtag and categorized-hashtag system behavior and APIs.
 - `docs/features/features-multi-user-notifications.md` - Notification behavior for multi-user workflows.
+- `docs/features/features-landing-main-page.md` - Main page (messmass.com) report selection, static snapshot, APIs, and integration.
 
 ## How To Use This Folder
 - Start here when you’re debugging or extending a subsystem.

@@ -218,7 +218,7 @@ export default function Page() {
 #### Sidebar
 **File**: `components/Sidebar.tsx`  
 **CSS**: `components/Sidebar.module.css`  
-**Usage**: Admin navigation (automatic in AdminLayout)
+**Usage**: Admin navigation (automatic in AdminLayout). Help section includes User Guide, **Main page** (landing report selector and static content generation), and Messages.
 
 ---
 

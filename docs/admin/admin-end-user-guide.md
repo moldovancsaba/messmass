@@ -1,6 +1,6 @@
 # END USER GUIDE (Admin Operations)
 Status: Complete
-Last Updated: 2026-01-14T13:38:00.000Z
+Last Updated: 2026-02-21T00:00:00.000Z
 Canonical: Yes
 Owner: Admin (Katja)
 
@@ -41,6 +41,7 @@ Evidence: `lib/users.ts`
 | Categories | `/admin/categories` | Category definitions |
 | Cache management | `/admin/cache` | Cache invalidation actions |
 | User management | `/admin/users` | Role changes and user access |
+| Main page (landing report) | `/admin/mainpage` | Choose report for messmass.com; generate static content |
 | Help and guide | `/admin/help` | User guide display |
 
 5 Guide Sections (Content Outline)
@@ -55,6 +56,7 @@ Evidence: `lib/users.ts`
 - Hashtags and Categories: tagging and filtering usage.
 - Exports: CSV/PDF usage and troubleshooting.
 - Cache Management: when to invalidate and what to expect after.
+- Main page: choose which event report drives the main site (messmass.com), save selection, and use **Update static content** so the site serves a static snapshot until the next update. See `docs/features/features-landing-main-page.md`.
 - Troubleshooting: auth issues, missing data, stale output, permissions.
 
 6 Update and Ownership Process

@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useAdminAuth } from '@/hooks/useAdminAuth';
+import { apiPut, apiPost } from '@/lib/apiClient';
 import AdminHero from '@/components/AdminHero';
 import adminStyles from '@/app/styles/admin-pages.module.css';
 import styles from './page.module.css';
@@ -59,12 +60,9 @@ export default function AdminMainpagePage() {
     setSaving(true);
     setMessage(null);
     try {
-      const res = await fetch('/api/admin/landing-settings', {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ landingReportSlug: selectedSlug.trim() }),
+      const data = await apiPut<{ success: boolean; error?: string }>('/api/admin/landing-settings', {
+        landingReportSlug: selectedSlug.trim(),
       });
-      const data = await res.json();
       if (data.success) {
         setSettings((s) => (s ? { ...s, landingReportSlug: selectedSlug.trim() } : { landingReportSlug: selectedSlug.trim() }));
         setMessage({ type: 'success', text: 'Landing report saved.' });
@@ -72,7 +70,7 @@ export default function AdminMainpagePage() {
         setMessage({ type: 'error', text: data.error || 'Failed to save' });
       }
     } catch (e) {
-      setMessage({ type: 'error', text: 'Failed to save' });
+      setMessage({ type: 'error', text: e instanceof Error ? e.message : 'Failed to save' });
     } finally {
       setSaving(false);
     }
@@ -82,8 +80,9 @@ export default function AdminMainpagePage() {
     setGenerating(true);
     setMessage(null);
     try {
-      const res = await fetch('/api/admin/landing-static-generate', { method: 'POST' });
-      const data = await res.json();
+      const data = await apiPost<{ success: boolean; generatedAt?: string; blocksCount?: number; error?: string }>(
+        '/api/admin/landing-static-generate'
+      );
       if (data.success) {
         setSettings((s) => (s ? { ...s, generatedAt: data.generatedAt } : null));
         setMessage({
@@ -94,7 +93,7 @@ export default function AdminMainpagePage() {
         setMessage({ type: 'error', text: data.error || 'Failed to generate' });
       }
     } catch (e) {
-      setMessage({ type: 'error', text: 'Failed to generate static content' });
+      setMessage({ type: 'error', text: e instanceof Error ? e.message : 'Failed to generate static content' });
     } finally {
       setGenerating(false);
     }
