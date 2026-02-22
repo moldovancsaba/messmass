@@ -92,12 +92,26 @@ function LandingPageStatic({
   const rawFooter = stats?.reportTextFooterTitle;
   const footerTitle = typeof rawFooter === 'string' ? rawFooter : "Let's build the era of sovereign enterprise AI together.";
 
-  const blocks = useMemo(() => snapshot.blocks.map((b) => ({ ...b, id: b.id })), [snapshot.blocks]);
+  const blocks = useMemo(() => {
+    const list = Array.isArray(snapshot.blocks) ? snapshot.blocks : [];
+    return list.map((b) => ({ ...b, id: b.id || String(b.order) }));
+  }, [snapshot.blocks]);
   const chartResults = useMemo(() => {
-    const m = new Map();
-    for (const { chartId, result } of snapshot.chartResults) m.set(chartId, result);
+    const m = new Map<string, Record<string, unknown>>();
+    const list = Array.isArray(snapshot.chartResults) ? snapshot.chartResults : [];
+    for (const entry of list) {
+      if (entry?.chartId != null && entry.result != null) m.set(String(entry.chartId), entry.result as Record<string, unknown>);
+    }
     return m;
   }, [snapshot.chartResults]);
+  const gridSettings = useMemo(
+    () => ({
+      desktop: Number(snapshot.gridSettings?.desktop) || 3,
+      tablet: Number(snapshot.gridSettings?.tablet) || 2,
+      mobile: Number(snapshot.gridSettings?.mobile) || 1,
+    }),
+    [snapshot.gridSettings]
+  );
 
   return (
     <div className={styles.landing}>
@@ -120,9 +134,9 @@ function LandingPageStatic({
         <div className={reportPageStyles.container}>
           <ReportContent
             blocks={blocks}
-            chartResults={chartResults}
+            chartResults={chartResults as Map<string, import('@/lib/report-calculator').ChartResult>}
             charts={null}
-            gridSettings={snapshot.gridSettings}
+            gridSettings={gridSettings}
           />
         </div>
       </section>

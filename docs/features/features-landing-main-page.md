@@ -1,6 +1,6 @@
 # Landing / Main Page (messmass.com)
 Status: Active
-Last Updated: 2026-02-21T00:00:00.000Z
+Last Updated: 2026-02-21T00:00:00.000Z (v11.56.1 static snapshot fix)
 Canonical: Yes
 Owner: Product
 
@@ -50,6 +50,11 @@ Owner: Product
 
 ### CSRF
 - All state-changing admin calls (PUT landing-settings, POST landing-static-generate) must use **apiPut** / **apiPost** from `lib/apiClient` so the `X-CSRF-Token` header is sent. Raw `fetch()` will result in "CSRF token invalid or missing".
+
+## Static snapshot generation (v11.56.1)
+- Block resolution in landing-static-generate matches report-config: block IDs use `ref.blockId.toString()` and blocks are found with `b._id.toString() === blockId` so both ObjectId and string IDs work.
+- Chart results are serialized to plain JSON-safe objects via `serializeChartResult()` so they survive MongoDB and API round-trip; the client always receives valid `type`, `kpiValue`, `elements`, etc.
+- If the main page still shows an empty section after generating, regenerate once (Admin → Main page → Update static content) to apply the fix.
 
 ## References
 - `lib/landingSettings.ts` – types, get/set helpers, default slug

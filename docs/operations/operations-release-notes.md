@@ -4,6 +4,26 @@ Last Updated: 2026-02-21T00:00:00.000Z
 Canonical: No
 Owner: Operations
 
+## [v11.56.1] — 2026-02-21T00:00:00.000Z
+
+### Summary
+🐛 **LANDING STATIC CONTENT FIX**: Static snapshot now renders on the main page instead of an empty section. Block resolution aligned with report-config; chart results stored as JSON-safe objects; client hardened for partial snapshot data.
+
+### What Was Fixed
+
+#### Static content empty on main page ✅
+**WHAT**: After generating static content in Admin → Main page, the main site showed an empty report section.  
+**WHY**: Block lookup in landing-static-generate didn’t match report-config (ObjectId/string handling), and chart results weren’t serialized for MongoDB/API round-trip, so blocks or chart data could be missing or invalid.  
+**HOW**: In `app/api/admin/landing-static-generate/route.ts`: block resolution now uses `ref.blockId.toString()` and `blocks.find(b => b._id.toString() === blockId)` (same as report-config). Added `serializeChartResult()` to store plain JSON-safe chart results (chartId, type, title, kpiValue, elements, etc.). In `components/LandingPage.tsx`: `LandingPageStatic` now defaults `snapshot.blocks` and `snapshot.chartResults` to arrays when missing and normalizes `gridSettings` with numeric fallbacks.
+
+### Testing
+- Regenerate static content (Admin → Main page → Update static content), then load `/` and confirm report blocks and charts render.
+
+### Version
+v11.56.0 → v11.56.1 (PATCH — landing static content display)
+
+---
+
 ## [v11.56.0] — 2026-02-21T00:00:00.000Z
 
 ### Summary

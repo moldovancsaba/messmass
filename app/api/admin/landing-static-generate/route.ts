@@ -15,6 +15,28 @@ import { ensureDerivedMetrics } from '@/lib/dataValidator';
 import { ReportCalculator } from '@/lib/report-calculator';
 import type { Chart } from '@/lib/report-calculator';
 import type { StaticLandingSnapshot } from '@/lib/landingSettings';
+import type { ChartResult } from '@/lib/report-calculator';
+
+/** Serialize ChartResult to a plain object that survives JSON/MongoDB round-trip */
+function serializeChartResult(r: ChartResult | null): Record<string, unknown> {
+  if (!r) return {};
+  const out: Record<string, unknown> = {
+    chartId: r.chartId,
+    type: r.type,
+    title: r.title,
+    kpiValue: r.kpiValue,
+  };
+  if (r.icon !== undefined) out.icon = r.icon;
+  if (r.iconVariant !== undefined) out.iconVariant = r.iconVariant;
+  if (r.elements !== undefined) out.elements = JSON.parse(JSON.stringify(r.elements));
+  if (r.formatting !== undefined) out.formatting = r.formatting;
+  if (r.aspectRatio !== undefined) out.aspectRatio = r.aspectRatio;
+  if (r.showTitle !== undefined) out.showTitle = r.showTitle;
+  if (r.showPercentages !== undefined) out.showPercentages = r.showPercentages;
+  if (r.error !== undefined) out.error = r.error;
+  if (r.chartError !== undefined) out.chartError = r.chartError;
+  return out;
+}
 
 export async function POST() {
   try {
@@ -67,11 +89,11 @@ export async function POST() {
       typeof ref.blockId === 'string' && ObjectId.isValid(ref.blockId) ? new ObjectId(ref.blockId) : ref.blockId
     );
     const blocks = await dataBlocksCol.find({ _id: { $in: blockIds } }).toArray();
-    const blockMap = new Map(blocks.map((b: any) => [b._id.toString(), b]));
-
+    // Match report-config: use ref.blockId.toString() so ObjectId or string both work
     const populatedDataBlocks = template.dataBlocks
       .map((ref: any) => {
-        const block = blockMap.get(ref.blockId?.toString?.() ?? ref.blockId);
+        const blockId = typeof ref.blockId?.toString === 'function' ? ref.blockId.toString() : String(ref.blockId ?? '');
+        const block = blocks.find((b: any) => b._id.toString() === blockId);
         if (!block) return null;
         return {
           _id: block._id.toString(),
@@ -125,9 +147,10 @@ export async function POST() {
       tableHeightMultiplier: b.tableHeightMultiplier,
     }));
 
+    // Serialize chart results to plain JSON-safe objects so they survive MongoDB + API round-trip
     const chartResultsArray = Array.from(chartResultsMap.entries()).map(([chartId, result]) => ({
       chartId,
-      result: result as Record<string, unknown>,
+      result: serializeChartResult(result),
     }));
 
     const gridSettings = {
