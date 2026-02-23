@@ -70,7 +70,7 @@ Build is **error-free**. Lint is not run during `next build` (Next.js skips it b
 
 ## 5. Documentation vs Code
 
-- **Version:** `package.json` → `11.58.0`; README and docs that display version are aligned.
+- **Version:** `package.json` → `11.59.0`; README and docs that display version are aligned.
 - **DEVELOPER-CONDUCT:** New file matches current Product Owner mandate; linked from index and README.
 - **Doc governance:** [documentation-governance.md](../documentation-governance.md) and [docs/index.md](../index.md) reflect the canonical doc layout and Core Resources.
 

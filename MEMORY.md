@@ -4,7 +4,8 @@
 **Live:** https://messmass.doneisbetter.com  
 **Stack:** Next.js, MongoDB, WebSocket server (port 7654), Vercel + Railway/Heroku.
 
-**Recent focus (as of 2025-02-21):**
+**Recent focus (as of 2026-02-21):**
+- Style editor preview: bar/pie colors via CSS vars; inject on change + after fetch so preview updates immediately. Value Chain block and Landing page section in style editor preview (v11.59.0).
 - OPS-SEC: user password migration tooling, sanitize hardening, production flags, passwordHash checks.
 - Google Sheets Phase 2.5: auto-provision, docs.
 - Docs refactor and operational hardening (OPS-SEC-03).

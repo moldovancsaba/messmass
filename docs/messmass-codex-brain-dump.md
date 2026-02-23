@@ -1,10 +1,13 @@
 # Brain Dump
 Status: Active
-Last Updated: 2026-02-06T15:12:00Z
+Last Updated: 2026-02-21
 Canonical: Yes
 Owner: Documentation
 
 **Purpose:** quick-reference notes that capture the state of this repo and how the docs/ tree is organized after today's refactor.
+
+## Style editor & preview (v11.59.0)
+- Style editor (Admin → Styles → [id]) injects style on every field change and after fetch so preview updates immediately. Bar/pie in report and preview use CSS variables (`--barColor1`…`--barColor5`, `--pieColor1`/`--pieColor2`) so colors stay in sync. ReportStylePreview includes Value Chain block and Landing page section. See `docs/release-notes-11.59.0.md`, `docs/features/features-landing-main-page.md`.
 
 ## Top-Level Structure
 - `docs/index.md` is the canonical curated entrypoint (core resources, operations, security, charts, design, features, admin, API, and legacy/meta).

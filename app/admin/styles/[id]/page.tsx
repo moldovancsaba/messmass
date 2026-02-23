@@ -51,10 +51,9 @@ export default function StyleEditorPage() {
         throw new Error(data.error || 'Failed to fetch style');
       }
       
-      // WHAT: Merge fetched style with DEFAULT_STYLE
-      // WHY: Ensures all color fields exist (backward compatibility with old styles)
-      // HOW: Spread DEFAULT_STYLE first, then override with fetched values
-      setStyle({ ...DEFAULT_STYLE, ...data.style });
+      const merged = { ...DEFAULT_STYLE, ...data.style };
+      setStyle(merged);
+      injectStyleAsCSS(merged);
     } catch (err) {
       console.error('Failed to fetch style:', err);
       setError(err instanceof Error ? err.message : 'Failed to load style');
@@ -70,9 +69,19 @@ export default function StyleEditorPage() {
     }
   }, [isNew, fetchStyle]);
 
+  // WHAT: Inject current style into document whenever it changes so Live Preview and CSS var consumers update
+  // WHY: Preview and report bars use var(--barColor1) etc.; without this, edits don't show until save/reload
+  useEffect(() => {
+    injectStyleAsCSS(style);
+    return () => removeStyleCSS();
+  }, [style]);
+
   const handleChange = (field: keyof ReportStyle, value: string) => {
-    setStyle(prev => ({ ...prev, [field]: value }));
-    setSaveStatus(''); // Clear status on change
+    const next = { ...style, [field]: value };
+    setStyle(next);
+    setSaveStatus('');
+    // WHAT: Inject immediately so preview and any getComputedStyle readers see new values on same paint
+    injectStyleAsCSS(next);
   };
 
   const handleSave = async () => {

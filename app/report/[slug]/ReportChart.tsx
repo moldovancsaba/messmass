@@ -1039,22 +1039,19 @@ function PieChart({ result, className }: { result: ChartResult; className?: stri
           {elements.map((element, idx) => {
             const numValue = typeof element.value === 'number' ? element.value : 0;
             // WHAT: Format percentage based on rounded setting
-            // WHY: Respect formatting.rounded flag for decimal places
             const decimals = getDecimalsFromFormatting(result.formatting);
             const percentage = total > 0 ? ((numValue / total) * 100).toFixed(decimals) : '0';
-            const color = pieColors[idx % pieColors.length];
             const protectedLabel = preventPhraseBreaks(element.label);
+            // WHAT: Use CSS var refs so legend dots update when report style loads or changes
+            const pieColorVar = `var(--pieColor${(idx % 2) + 1})`;
             return (
               <div 
                 key={idx} 
                 className={styles.pieLegendItem}
-                // WHAT: Dynamic pie legend dot color from chart data
-                // WHY: Colors come from chart calculation, cannot use static CSS classes
-                // HOW: Set CSS custom properties on parent, consumed by .pieLegendDot
                 // eslint-disable-next-line react/forbid-dom-props
-                  style={{ 
-                  '--dot-color': color,
-                  '--dot-border-color': pieColors[0]
+                style={{
+                  '--dot-color': pieColorVar,
+                  '--dot-border-color': 'var(--pieColor1)'
                 } as React.CSSProperties}
               >
                 <div className={styles.pieLegendDot} />
@@ -1408,30 +1405,10 @@ function BarChart({ result, className }: { result: ChartResult; className?: stri
     return <div className={styles.chart}>No bar data</div>;
   }
   
-  // WHAT: Read individual bar colors from CSS variables
-  // WHY: Use custom style colors for each bar (granular control)
-  // HOW: getComputedStyle reads --barColor1-5 from Style editor, fallback to design tokens only
-  const getBarColors = () => {
-    const root = document.documentElement;
-    const cs = getComputedStyle(root);
-    // WHAT: No hardcoded colors - only CSS variables from Style editor or design tokens
-    // WHY: All colors must come from Style editor or design system, no hardcoded fallbacks
-    const primary = cs.getPropertyValue('--mm-color-primary-500').trim();
-    const secondary = cs.getPropertyValue('--mm-color-secondary-500').trim();
-    const success = cs.getPropertyValue('--mm-success').trim() || cs.getPropertyValue('--mm-color-secondary-500').trim();
-    const warning = cs.getPropertyValue('--mm-warning').trim();
-    const error = cs.getPropertyValue('--mm-error').trim();
-    return [
-      cs.getPropertyValue('--barColor1').trim() || primary,
-      cs.getPropertyValue('--barColor2').trim() || secondary,
-      cs.getPropertyValue('--barColor3').trim() || success,
-      cs.getPropertyValue('--barColor4').trim() || warning,
-      cs.getPropertyValue('--barColor5').trim() || error,
-    ];
-  };
-  
-  const barColors = getBarColors();
+  // WHAT: Use CSS variable references so bar colors always reflect the current report style
+  // WHY: Style is injected asynchronously; passing var(--barColor1) etc. lets the browser resolve when style loads
   const maxValue = Math.max(...result.elements.map(el => typeof el.value === 'number' ? el.value : 0));
+  const barColorVar = (idx: number) => `var(--barColor${(idx % 5) + 1})`;
 
   return (
     <CellWrapper
@@ -1455,13 +1432,11 @@ function BarChart({ result, className }: { result: ChartResult; className?: stri
                 <td className={styles.barTrackCell}>
                   <div 
                     className={styles.barTrack}
-                    // WHAT: Dynamic bar fill width and color from chart calculation
-                    // WHY: Width is computed percentage, color from chart theme - cannot use static CSS
-                    // HOW: Set CSS custom properties on parent, consumed by .barFill
+                    // WHAT: Bar width and color; color is CSS var reference so style editor and report style apply
                     // eslint-disable-next-line react/forbid-dom-props
-                  style={{ 
+                    style={{ 
                       '--bar-width': `${widthPercent}%`,
-                      '--bar-color': barColors[idx % barColors.length]
+                      '--bar-color': barColorVar(idx)
                     } as React.CSSProperties}
                   >
                     <div className={styles.barFill} />
