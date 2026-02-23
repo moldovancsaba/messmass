@@ -5,6 +5,7 @@ Canonical: Yes
 Owner: Documentation
 
 ## Core Resources
+- [DEVELOPER-CONDUCT.md](DEVELOPER-CONDUCT.md) — Product Owner mandate: AI developer conduct, documentation = code, stack discipline, build quality. Non-negotiable.
 - [architecture.md](architecture.md) — Platform architecture, dependency layout, and service-level diagrams.
 - [coding-standards.md](coding-standards.md) — Code style, naming conventions, and documentation expectations.
 - [documentation-governance.md](documentation-governance.md) — Rules for canonical docs, deprecation, and required metadata.

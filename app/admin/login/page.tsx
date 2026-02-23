@@ -5,6 +5,7 @@ import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import ColoredCard from '@/components/ColoredCard'
 import Image from 'next/image'
+import styles from './page.module.css'
 
 export default function AdminLogin() {
   const router = useRouter()
@@ -101,15 +102,14 @@ export default function AdminLogin() {
 
         {/* SSO entry when configured (#46) */}
         {ssoEnabled && (
-          <div className="form-group" style={{ marginBottom: '1rem' }}>
+          <div className={`form-group ${styles.ssoBlock}`}>
             <a
               href="/api/auth/sso/login"
-              className="btn btn-secondary w-full"
-              style={{ display: 'block', textAlign: 'center' }}
+              className={`btn btn-secondary w-full ${styles.ssoButton}`}
             >
               Sign in with DoneIsBetter
             </a>
-            <p style={{ marginTop: '0.5rem', fontSize: 'var(--mm-font-size-sm)', color: 'var(--mm-gray-600)' }}>
+            <p className={styles.ssoMicrocopy}>
               Required for Dashboard access
             </p>
           </div>

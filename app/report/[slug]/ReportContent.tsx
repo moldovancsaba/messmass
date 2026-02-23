@@ -52,6 +52,10 @@ function hasValidChartData(result: ChartResult | undefined): boolean {
       );
       return total > 0;
     
+    case 'valuechain':
+      // Show valuechain whenever it has the required structure (2 elements); content can be empty
+      return !!(result.elements && result.elements.length >= 2);
+    
     default:
       return false;
   }
@@ -77,6 +81,8 @@ interface ReportContentProps {
   className?: string;
   /** When true (e.g. static landing), show charts even with NA/empty data so structure is visible */
   allowNA?: boolean;
+  /** When false (e.g. landing), hide block titles so only event statistic charts are shown */
+  showBlockTitles?: boolean;
 }
 
 /**
@@ -98,6 +104,7 @@ export default function ReportContent({
   gridSettings,
   className,
   allowNA = false,
+  showBlockTitles = true,
 }: ReportContentProps) {
   
   // WHAT: Debug logging for chartResults
@@ -136,6 +143,7 @@ export default function ReportContent({
           charts={charts} // A-R-13: Pass chart configs for validation
           gridSettings={gridSettings}
           allowNA={allowNA}
+          showBlockTitles={showBlockTitles}
         />
       ))}
     </div>
@@ -151,6 +159,7 @@ interface ReportBlockProps {
   charts?: Map<string, Chart> | null; // A-R-13: Chart configs for validation
   gridSettings: GridSettings;
   allowNA?: boolean;
+  showBlockTitles?: boolean;
 }
 
 /**
@@ -383,7 +392,7 @@ function ResponsiveRow({ rowCharts, chartResults, charts, rowIndex, unifiedTextF
   );
 }
 
-function ReportBlock({ block, chartResults, charts, gridSettings, allowNA = false }: ReportBlockProps) {
+function ReportBlock({ block, chartResults, charts, gridSettings, allowNA = false, showBlockTitles = true }: ReportBlockProps) {
   // WHAT: Calculate unified font-size for all text charts in this block
   // WHY: All text charts should use the same font-size, fitting the largest content
   // HOW: Use hook to measure containers and calculate optimal size
@@ -647,7 +656,7 @@ function ReportBlock({ block, chartResults, charts, gridSettings, allowNA = fals
         ...(blockSubtitleFontSize ? { '--block-subtitle-font-size': `${blockSubtitleFontSize}px` } : {})
       } as React.CSSProperties}
     >
-      {block.showTitle && block.title && (
+      {showBlockTitles && block.showTitle && block.title && (
         <h2 className={styles.blockTitle}>{block.title}</h2>
       )}
       

@@ -189,14 +189,9 @@ export default function ReportChart({ result, chart, width, blockHeight, unified
         );
         return total > 0;
       
-      case 'valuechain': {
-        const el = result.elements;
-        if (!el || el.length < 2) return false;
-        return (
-          (typeof el[0]?.value === 'string' && el[0].value.length > 0) ||
-          (typeof el[1]?.value === 'string' && el[1].value.length > 0)
-        );
-      }
+      case 'valuechain':
+        // Always show valuechain when it has icon + 2 elements (title + description); content can be empty
+        return !!(result.elements && result.elements.length >= 2);
       
       default:
         return false;

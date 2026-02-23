@@ -94,6 +94,7 @@ SPORTSDB_BASE_URL=https://www.thesportsdb.com/api/v1/json
 
 | Document | Description |
 |----------|-------------|
+| [docs/DEVELOPER-CONDUCT.md](docs/DEVELOPER-CONDUCT.md) | ✅ **MANDATORY** — Product Owner mandate: conduct, documentation = code, stack discipline, build quality |
 | [docs/architecture.md](docs/architecture.md) | 🏗️ System architecture and technical overview |
 | [docs/coding-standards.md](docs/coding-standards.md) | ✅ **MANDATORY** — Coding rules, inline style prohibition |
 | [docs/operations/ops-warp.md](docs/operations/ops-warp.md) | 🤖 AI/dev rules, quick start, naming (WARP) |

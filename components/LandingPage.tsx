@@ -17,7 +17,6 @@ import { useReportLayoutForProject } from '@/hooks/useReportLayout';
 import { useReportStyle } from '@/hooks/useReportStyle';
 import ReportContent from '@/app/report/[slug]/ReportContent';
 import ContactForm from '@/components/ContactForm';
-import MaterialIcon from '@/components/MaterialIcon';
 import { LANDING_REPORT_SLUG } from '@/lib/landingReportSlug';
 import type { StaticLandingSnapshot } from '@/lib/landingSettings';
 import { replaceEmDashes } from '@/lib/contentFormat';
@@ -161,107 +160,9 @@ function LandingPageStatic({
         </div>
       </header>
 
-      {/* Value cards — static conversion copy */}
-      <section className={`${styles.section} ${styles.sectionAlt}`} aria-label="Value propositions">
-        <div className={styles.sectionInner}>
-          <div className={styles.valueCardGrid}>
-            <div className={styles.valueCard}>
-              <MaterialIcon name="lock" variant="outlined" className={styles.valueCardIcon} />
-              <h3 className={styles.valueCardTitle}>Private by default</h3>
-              <p className={styles.valueCardBody}>
-                Your data stays in your environment. No third-party model exposure. No accidental leakage via &quot;shadow AI&quot;.
-              </p>
-            </div>
-            <div className={styles.valueCard}>
-              <MaterialIcon name="bolt" variant="outlined" className={styles.valueCardIcon} />
-              <h3 className={styles.valueCardTitle}>Controlled access</h3>
-              <p className={styles.valueCardBody}>
-                Roles, permissions, and approvals so only the right people (and agents) can access sensitive fields.
-              </p>
-            </div>
-            <div className={styles.valueCard}>
-              <MaterialIcon name="shield" variant="outlined" className={styles.valueCardIcon} />
-              <h3 className={styles.valueCardTitle}>Auditable decisions</h3>
-              <p className={styles.valueCardBody}>
-                Every query, action, and output is logged, so you can prove who did what, when, and why.
-              </p>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Problem */}
-      <section className={styles.section} aria-label="The problem">
-        <div className={styles.sectionInner}>
-          <h2 className={styles.sectionTitle}>The problem</h2>
-          <ul className={styles.problemList}>
-            <li>Data is abundant. Decisions are slow: analysts spend hours cleaning, checking, and summarising.</li>
-            <li>Public AI is a compliance risk: KYC/PII cannot be pasted into consumer models safely.</li>
-            <li>Bans kill velocity: blocking AI reduces risk, but slows growth and operational responsiveness.</li>
-          </ul>
-          <p className={styles.problemClosing}>
-            MessMass runs agentic workflows locally with governance built in, so teams move fast and stay compliant.
-          </p>
-        </div>
-      </section>
-
-      {/* How it works */}
-      <section id="how-it-works" className={`${styles.section} ${styles.sectionAlt}`} aria-label="How it works">
-        <div className={styles.sectionInner}>
-          <h2 className={styles.sectionTitle}>How it works</h2>
-          <div className={styles.howCardGrid}>
-            <div className={styles.howCard}>
-              <MaterialIcon name="upload" variant="outlined" className={styles.howCardIcon} />
-              <h3 className={styles.howCardTitle}>Ingest</h3>
-              <p className={styles.howCardBody}>
-                Connect sources and ingest data continuously. Clean, dedupe, and standardise automatically.
-              </p>
-            </div>
-            <div className={styles.howCard}>
-              <MaterialIcon name="insights" variant="outlined" className={styles.howCardIcon} />
-              <h3 className={styles.howCardTitle}>Know</h3>
-              <p className={styles.howCardBody}>
-                Local AI surfaces trends, anomalies, and risk signals grounded in your datasets.
-              </p>
-            </div>
-            <div className={styles.howCard}>
-              <MaterialIcon name="touch_app" variant="outlined" className={styles.howCardIcon} />
-              <h3 className={styles.howCardTitle}>Act</h3>
-              <p className={styles.howCardBody}>
-                Turn insights into workflows: decision points, personas, playbooks, and delegated tasks.
-              </p>
-            </div>
-            <div className={styles.howCard}>
-              <MaterialIcon name="admin_panel_settings" variant="outlined" className={styles.howCardIcon} />
-              <h3 className={styles.howCardTitle}>Govern</h3>
-              <p className={styles.howCardBody}>
-                Full audit trail, access control, and policy enforcement—so every byte stays where it belongs.
-              </p>
-            </div>
-          </div>
-          <p className={styles.howOutcome}>
-            From raw KYC to action-ready decisions in minutes, not days.
-          </p>
-        </div>
-      </section>
-
-      {/* What you get */}
-      <section className={styles.section} aria-label="What you get">
-        <div className={styles.sectionInner}>
-          <h2 className={styles.sectionTitle}>What you get out of the box</h2>
-          <ul className={styles.whatYouGetList}>
-            <li>Sovereign AI workspace for sensitive decision-making</li>
-            <li>KYC-ready data model and starter datasets</li>
-            <li>Playbooks and personas for repeatable investigations and reviews</li>
-            <li>Evidence-grade audit logs for compliance and security teams</li>
-            <li>Operational dashboard showing system health and activity</li>
-          </ul>
-        </div>
-      </section>
-
-      {/* Optional report block (when snapshot has blocks) — anchor for "See how it works" if we keep report */}
+      {/* Report content — single source from report at messmass.com/report/[slug]; manage content there */}
       {blocks.length > 0 && chartResults.size > 0 && (
-        <section id="report-content" className={reportPageStyles.page} aria-label="Report content">
+        <section id="how-it-works" className={reportPageStyles.page} aria-label="Report content">
           <div className={styles.mmContainer}>
             <div
               className={reportPageStyles.landingReportWrap}
@@ -281,6 +182,7 @@ function LandingPageStatic({
                 charts={null}
                 gridSettings={gridSettings}
                 allowNA={true}
+                showBlockTitles={false}
               />
             </div>
           </div>
