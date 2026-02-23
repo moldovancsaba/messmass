@@ -20,14 +20,27 @@
    HOW: .page sets font-family, children inherit automatically
    NOTE: Removed universal selector to avoid overriding Material Icons inline styles */
 
-/* Content Container */
+/* Content Container — Phase 4: same width/padding as landing (--mm-content-*) */
 .container {
-  max-width: 1600px; /* WHAT: Unified width for better chart layout (was 1200px in partner reports) */
+  max-width: var(--mm-content-max-width);
   margin: 0 auto;
-  width: 90%; /* WHAT: 5% margin on each side (desktop) */
-  padding: 0;
+  width: 100%;
+  padding-left: var(--mm-content-padding-x);
+  padding-right: var(--mm-content-padding-x);
   box-sizing: border-box !important;
-  background: transparent !important; /* WHAT: Force transparent - no white rectangle */
+  background: transparent !important;
+}
+@media (min-width: 768px) {
+  .container {
+    padding-left: var(--mm-content-padding-x-md);
+    padding-right: var(--mm-content-padding-x-md);
+  }
+}
+@media (min-width: 1024px) {
+  .container {
+    padding-left: var(--mm-content-padding-x-lg);
+    padding-right: var(--mm-content-padding-x-lg);
+  }
 }
 
 /* Loading State */
@@ -104,18 +117,48 @@
   grid-template-rows: 3fr 4fr 3fr;
 }
 
-/* WHAT: Force KPI description (value) row to 13px on landing so copy is readable and not truncated
- * WHY: Variable cascade or clamp can win; explicit rule guarantees correct size
- * HOW: Target value row by class; no hyphenation to avoid mid-word breaks (e.g. Ana-lysts) */
-/* WHAT: KPI label (title) row - consistent 32px on landing */
+/* WHAT: Landing report text scales with card size — no overflow, no ellipsis
+ * WHY: User requirement: text fully responsive and resizing to fit space
+ * HOW: Container-query font-size (cqw) + allow wrap (no line-clamp), row overflow hidden so no spill */
 .landingReportWrap :global([class*="kpiTitle"]) {
-  font-size: 32px !important;
+  font-size: clamp(14px, 4cqw, 32px) !important;
+  overflow: hidden !important;
+  min-height: 0;
 }
-
+.landingReportWrap :global([class*="kpiTitle"]) * {
+  display: block !important;
+  -webkit-line-clamp: unset !important;
+  overflow: visible !important;
+  white-space: normal !important;
+}
 .landingReportWrap :global([class*="kpiValueRow"]) {
-  font-size: 13px !important;
+  font-size: clamp(10px, 2.5cqw, 14px) !important;
   line-height: 1.35;
   hyphens: none;
+  overflow: hidden !important;
+  min-height: 0;
+  -webkit-line-clamp: unset !important;
+}
+.landingReportWrap :global([class*="valuechainTitleRow"]) {
+  font-size: clamp(14px, 4cqw, 32px) !important;
+  overflow: hidden !important;
+  min-height: 0;
+}
+.landingReportWrap :global([class*="valuechainDescRow"]) {
+  font-size: clamp(10px, 2.5cqw, 16px) !important;
+  overflow: hidden !important;
+  min-height: 0;
+}
+.landingReportWrap :global([class*="valuechainDescRow"]) > * {
+  -webkit-line-clamp: unset !important;
+  overflow: visible !important;
+  display: block !important;
+}
+
+/* WHAT: Block titles on landing use same Pacifico as "messmass" and section headings */
+.landingReportWrap :global([class*="blockTitle"]) {
+  font-family: var(--font-pacifico) !important;
+  font-weight: 400;
 }
 
 /* Responsive Adjustments */

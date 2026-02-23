@@ -2,7 +2,7 @@
 
 **Goal:** Unify the main page (messmass.com) with web UI standards, consistent block widths and implementation, and the existing report design language (responsiveness/scale). Use the [report style system](https://www.messmass.com/admin/styles/6999bbd2680bbfd7dec08b1e) as the single source of visual language; extend the global UI library only where elements are missing so future landing variants stay consistent.
 
-**Implementation status:** Phases 1–3 delivered. Epic and phase issues tracked on [MVP Factory Board](https://github.com/users/moldovancsaba/projects/1) (mvp-factory-control #248, #249–#253).
+**Implementation status:** Phases 1–5 delivered. Epic and phase issues tracked on [MVP Factory Board](https://github.com/users/moldovancsaba/projects/1) (mvp-factory-control #248, #249–#253).
 
 ---
 
@@ -132,7 +132,23 @@
 
 ---
 
-## 6. Success Criteria
+## 6. Shared UI primitives (Phase 5)
+
+After the refactor, landing and report share these; use them for any new landing or style variant so the UI stays unified.
+
+| Primitive | Where | Use |
+|-----------|--------|-----|
+| **Content width** | `theme.css`: `--mm-content-max-width`, `--mm-content-padding-x`, `-x-md`, `-x-lg` | One column for all sections; report `.container` and landing `.mmContainer` / `.heroInner` / `.sectionInner` / `.footerInner` use these. |
+| **Section vertical rhythm** | Landing: `.mmSection` or `.section` / `.sectionAlt` (56/80px padding) | Use `--mm-space-*` or the same padding scale for new sections. |
+| **Card surface** | Report style: `--chartBackground`, `--chartBorder` | Chart cards and landing cards (pricing, value, how-it-works); theme fallbacks: `--mm-white`, `--mm-gray-200`. |
+| **Section heading color** | Report style: `--chartTitleColor` | Section titles (Pricing, Faq, Get in touch); fallback `--mm-gray-900`. |
+| **Typography scale** | `theme.css`: `--mm-font-size-*`, `--mm-font-weight-*`, `--mm-line-height-*` | Body, labels, small text; report style adds `--reportFontFamily`, `--chartLabelColor`, `--chartValueColor`, `--textColor` when applied. |
+
+**Adding a new primitive:** Define it in `theme.css` (global) or in the report style schema if it is style-specific; then use it in both landing and report so one change updates both.
+
+---
+
+## 7. Success Criteria
 
 - All main page blocks (hero, report block, pricing, FAQ, contact, footer) use the same content width and the same horizontal padding rules.
 - The report style selected for the landing report (e.g. [admin/styles/6999bbd2680bbfd7dec08b1e](https://www.messmass.com/admin/styles/6999bbd2680bbfd7dec08b1e)) drives the main page (colors, font, card surfaces) for both static and live landing.
@@ -141,7 +157,7 @@
 
 ---
 
-## 7. References
+## 8. References
 
 - Report style system: `lib/reportStyleTypes.ts` (26 colors, `injectStyleAsCSS`), `hooks/useReportStyle.ts`
 - Report page layout: `app/styles/report-page.module.css`, `app/report/[slug]/page.tsx`, `app/report/[slug]/ReportContent.tsx`
