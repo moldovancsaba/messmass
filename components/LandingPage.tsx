@@ -105,6 +105,9 @@ function LandingPageStatic({
   generatedAt: string | null;
   version?: string | null;
 }) {
+  // Phase 2: apply same report style as report page so admin style (e.g. /admin/styles/6999bbd2680bbfd7dec08b1e) drives landing
+  useReportStyle({ styleId: snapshot.styleId ?? null, enabled: !!snapshot.styleId });
+
   const stats = snapshot.projectStats as Record<string, unknown> | undefined;
   const rawFooter = stats?.reportTextFooterTitle;
   const footerTitle = replaceEmDashes(typeof rawFooter === 'string' ? rawFooter : "Let's build the era of sovereign enterprise AI together.");
@@ -144,7 +147,7 @@ function LandingPageStatic({
         <div className={styles.heroInner}>
           <div className={styles.heroBrand}>
             <Image src="/messmass-logo-white.png" alt="" width={160} height={48} priority />
-            <span className={styles.heroSiteName}>MessMass</span>
+            <span className={styles.heroSiteName}>messmass</span>
           </div>
           <h1 className={styles.heroTitle}>Sovereign Decision Intelligence for Regulated Data</h1>
           <p className={styles.heroSub}>
@@ -171,7 +174,7 @@ function LandingPageStatic({
                   '--block-base-font-size': '32px',
                   '--block-subtitle-font-size': '13px',
                   '--landing-max-font': '13px',
-                  '--landing-max-icon-font': '32px',
+                  '--landing-max-icon-font': '64px',
                   '--landing-value-font': '13px',
                 } as React.CSSProperties
               }
@@ -250,7 +253,7 @@ function PricingAndFooter({ footerTitle, version }: { footerTitle: string; versi
       </section>
       <section id="faq" className={styles.sectionAlt} aria-label="Frequently asked questions">
         <div className={styles.sectionInner}>
-          <h2 className={styles.sectionTitle}>FAQ</h2>
+          <h2 className={styles.sectionTitle}>Faq</h2>
           <dl className={styles.faqList}>
             <div className={styles.faqItem}>
               <dt className={styles.faqQuestion}>Does any data leave our environment?</dt>
@@ -284,7 +287,7 @@ function PricingAndFooter({ footerTitle, version }: { footerTitle: string; versi
         <div className={styles.footerInner}>
           <div className={styles.footerBrand}>
             <Image src="/messmass-logo-white.png" alt="" width={120} height={36} />
-            <span className={styles.footerSiteName}>MessMass</span>
+            <span className={styles.footerSiteName}>messmass</span>
           </div>
           <h2 className={styles.footerTitle}>{footerTitle}</h2>
           <Link href="/admin/login" className="btn btn-primary">Start using the system</Link>
@@ -456,7 +459,7 @@ function LandingPageLive({ slug, version }: { slug: string; version?: string | n
         <div className={styles.heroInner}>
           <div className={styles.heroBrand}>
             <Image src="/messmass-logo-white.png" alt="" width={160} height={48} priority />
-            <span className={styles.heroSiteName}>MessMass</span>
+            <span className={styles.heroSiteName}>messmass</span>
           </div>
           <p className={styles.heroLabel}>{heroLabel}</p>
           <h1 className={styles.heroTitle}>{heroTitle}</h1>

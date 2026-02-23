@@ -41,7 +41,7 @@ Owner: Product
 ### Settings storage
 - **Collection:** `settings`
 - **Document ID:** `landingPage` (`lib/landingSettings.ts`).
-- **Fields:** `landingReportSlug`, `staticSnapshot` (blocks, chartResults, gridSettings, style, projectStats), `generatedAt`, `updatedAt`.
+- **Fields:** `landingReportSlug`, `staticSnapshot` (blocks, chartResults, gridSettings, styleId?, style?, projectStats), `generatedAt`, `updatedAt`. **styleId** (report style ObjectId string) is set when generating the snapshot so the main page uses the same report style as the report (see refactor plan).
 
 ### Main page (v11.56.3 → v11.56.4: server-side snapshot, chartId + allowNA)
 - **Server** (`app/page.tsx`): Async page calls `getLandingSettings()`, normalizes snapshot (block ids to strings, `chartResults` array), passes `initialStaticPayload` to `LandingPage`.
@@ -64,6 +64,7 @@ Owner: Product
 - **v11.56.9:** Value Chain chart type supported in API and UI; landing KPI sizing fixes (13px/32px forced, shrink-to-fit disabled on landing).
 - **v11.56.8:** Stricter landing font cap: wrapper sets `--block-base-font-size: 16px`, `--block-subtitle-font-size: 13px`, `--landing-max-font: 16px`; KPI icon and value use `var(--landing-max-font)` in clamps so container-query scaling cannot exceed cap; block cap lowered to 16px/13px when `allowNA`.
 - **v11.57.0:** Block titles on the main page follow the report setup: LandingPageStatic does not pass `showBlockTitles`, so ReportContent uses default `true`; each block's `showTitle` and `title` from the snapshot are respected (same behaviour as `/report/[slug]`). Admin → Visualization "show title" per block controls visibility.
+- **Landing UI refactor (Phases 1–3):** Single content width via theme tokens (`--mm-content-max-width`, `--mm-content-padding-x`); hero, sections, report block, footer use one container pattern. Static snapshot includes `styleId`; LandingPageStatic calls `useReportStyle(snapshot.styleId)` so the report style (e.g. admin/styles/:id) drives the main page. Cards and section headings use `--chartBackground`, `--chartBorder`, `--chartTitleColor`. See `docs/landing-main-page-ui-refactor-plan.md` and MVP Factory Board #248.
 
 ## HTML vs JSON (avoid "Unexpected token '<'" errors)
 - Generate API: when calling report-config, only parses response as JSON if `Content-Type` is `application/json`; if the response is HTML (e.g. error page) or fetch fails, falls back to inline template/block resolution from the DB.

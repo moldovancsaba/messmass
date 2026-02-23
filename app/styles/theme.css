@@ -274,6 +274,17 @@
   --mm-subtitle-font-size-default: 14px; /* Default subtitle font size (fail-safe) */
 
   /* ========================================
+     CONTENT WIDTH - Landing & report shared
+  ======================================== */
+  /* WHAT: Single content column width and horizontal padding for landing and report
+     WHY: One layout contract so hero, sections, report block, pricing, FAQ, footer align
+     HOW: Use --mm-content-max-width and --mm-content-padding-x in one container class */
+  --mm-content-max-width: 1200px;
+  --mm-content-padding-x: 24px;
+  --mm-content-padding-x-md: 32px;   /* 768px+ */
+  --mm-content-padding-x-lg: 48px;   /* 1024px+ */
+
+  /* ========================================
      SPACING - Modern 8px Grid System
   ======================================== */
   

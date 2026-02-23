@@ -197,10 +197,15 @@ export async function POST() {
       mobile: template.gridSettings?.mobileUnits ?? 1,
     };
 
+    // Resolve styleId so static landing uses same report style (Phase 2 refactor; order matches report-config: project > template)
+    const rawStyleId = (project as { styleIdEnhanced?: string | ObjectId } | null)?.styleIdEnhanced ?? (template as { styleId?: string | ObjectId } | null)?.styleId;
+    const styleId = rawStyleId != null ? (typeof rawStyleId === 'string' ? rawStyleId : String(rawStyleId)) : null;
+
     await setLandingStaticSnapshot({
       blocks: blocksForSnapshot,
       chartResults: chartResultsArray,
       gridSettings,
+      styleId: styleId ?? undefined,
       projectStats: project.stats as Record<string, unknown>,
     });
 

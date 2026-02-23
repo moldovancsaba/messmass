@@ -3,25 +3,36 @@
    HOW: Layout grammar + unified style system (ColoredCard, .btn, KPI-style cards, design tokens)
    All values use theme tokens or local landing variables below (no fragmented hardcodes). */
 
-/* ----- Landing-specific tokens (single source for hero/footer and layout) ----- */
-/* WHAT: Single container for ALL sections (design spec)
-   WHY: Cohesive width and horizontal padding across hero, value, problem, how-it-works, pricing, FAQ, footer */
-.landing .mmContainer {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding-left: 24px;
-  padding-right: 24px;
+/* ----- Landing: single content width (uses theme --mm-content-*) ----- */
+/* WHAT: One container pattern for hero, report block, pricing, FAQ, contact, footer
+   WHY: Phase 1 refactor – single layout contract (see docs/landing-main-page-ui-refactor-plan.md) */
+.landing .mmContainer,
+.landing .heroInner,
+.landing .sectionInner,
+.landing .footerInner {
+  max-width: var(--mm-content-max-width);
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: var(--mm-content-padding-x);
+  padding-right: var(--mm-content-padding-x);
+  box-sizing: border-box;
 }
 @media (min-width: 768px) {
-  .landing .mmContainer {
-    padding-left: 32px;
-    padding-right: 32px;
+  .landing .mmContainer,
+  .landing .heroInner,
+  .landing .sectionInner,
+  .landing .footerInner {
+    padding-left: var(--mm-content-padding-x-md);
+    padding-right: var(--mm-content-padding-x-md);
   }
 }
 @media (min-width: 1024px) {
-  .landing .mmContainer {
-    padding-left: 48px;
-    padding-right: 48px;
+  .landing .mmContainer,
+  .landing .heroInner,
+  .landing .sectionInner,
+  .landing .footerInner {
+    padding-left: var(--mm-content-padding-x-lg);
+    padding-right: var(--mm-content-padding-x-lg);
   }
 }
 
@@ -67,42 +78,10 @@
   color: var(--landing-hero-text);
   padding-top: clamp(56px, 10vw, 80px);
   padding-bottom: clamp(56px, 10vw, 80px);
-  padding-left: 24px;
-  padding-right: 24px;
   text-align: center;
   position: relative;
 }
-@media (min-width: 768px) {
-  .landing .hero {
-    padding-left: 32px;
-    padding-right: 32px;
-  }
-}
-@media (min-width: 1024px) {
-  .landing .hero {
-    padding-left: 48px;
-    padding-right: 48px;
-  }
-}
-
-.heroInner {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding-left: 24px;
-  padding-right: 24px;
-}
-@media (min-width: 768px) {
-  .landing .heroInner {
-    padding-left: 32px;
-    padding-right: 32px;
-  }
-}
-@media (min-width: 1024px) {
-  .landing .heroInner {
-    padding-left: 48px;
-    padding-right: 48px;
-  }
-}
+/* heroInner uses shared container (mmContainer/heroInner/sectionInner) above */
 
 .heroBrand {
   display: flex;
@@ -118,10 +97,13 @@
   max-width: 100%;
 }
 
+/* WHAT: Match admin mainpage (Sidebar) branding: lowercase "messmass" in Pacifico
+ * WHY: Same writing and font everywhere on landing as /admin/mainpage */
 .heroSiteName {
-  font-size: var(--mm-font-size-xl);
-  font-weight: var(--mm-font-weight-bold);
-  letter-spacing: var(--mm-letter-spacing-tight);
+  font-family: var(--font-pacifico);
+  font-size: 1.5rem;
+  font-weight: 400;
+  letter-spacing: 0.5px;
   color: var(--landing-hero-text);
 }
 
@@ -183,23 +165,12 @@
 .sectionAlt {
   padding-top: 56px;
   padding-bottom: 56px;
-  padding-left: 24px;
-  padding-right: 24px;
-}
-@media (min-width: 768px) {
-  .landing .section,
-  .landing .sectionAlt {
-    padding-left: 32px;
-    padding-right: 32px;
-  }
 }
 @media (min-width: 1024px) {
   .landing .section,
   .landing .sectionAlt {
     padding-top: 80px;
     padding-bottom: 80px;
-    padding-left: 48px;
-    padding-right: 48px;
   }
 }
 
@@ -212,10 +183,9 @@
 }
 
 .sectionInner {
-  max-width: 1200px;
-  margin: 0 auto;
   text-align: center;
 }
+/* sectionInner width/padding from shared container above */
 
 /* WHAT: Typography scale (design spec) — H1 48/36, H2 32/26, H3 20/18, body 18/16, small 14/13 */
 .landing .heroTitle {
@@ -229,11 +199,13 @@
   }
 }
 
+/* WHAT: Section headings (Pricing, FAQ) — Pacifico + report style color so admin style drives landing */
 .landing .sectionTitle {
+  font-family: var(--font-pacifico);
   font-size: 26px;
-  font-weight: 700;
+  font-weight: 400;
   line-height: 1.2;
-  color: var(--mm-gray-900);
+  color: var(--chartTitleColor, var(--mm-gray-900));
   margin-bottom: var(--mm-space-6);
   text-align: center;
 }
@@ -290,11 +262,12 @@
   text-align: center;
 }
 
-/* WHAT: Unified card (value, how-it-works, pricing) — border, radius 14px, padding 24/32, icon 24px */
+/* WHAT: Unified card — report style vars so admin style drives landing (Phase 3) */
 .landing .valueCard,
 .landing .howCard,
 .landing .pricingCard {
-  border: 1px solid var(--mm-gray-200);
+  background: var(--chartBackground, var(--mm-white));
+  border: 1px solid var(--chartBorder, var(--mm-gray-200));
   border-radius: 14px;
   padding: 24px;
   display: flex;
@@ -313,9 +286,9 @@
 }
 .landing .valueCardIcon,
 .landing .howCardIcon {
-  width: 24px;
-  height: 24px;
-  font-size: 24px !important;
+  width: 48px;
+  height: 48px;
+  font-size: 48px !important;
   margin-bottom: 8px;
   color: var(--mm-color-primary-600);
 }
@@ -574,8 +547,8 @@
 }
 
 .pricingCard {
-  background: var(--mm-white);
-  border: 1px solid var(--mm-gray-200);
+  background: var(--chartBackground, var(--mm-white));
+  border: 1px solid var(--chartBorder, var(--mm-gray-200));
   border-radius: var(--mm-radius-lg);
   padding: var(--mm-space-6);
   display: flex;
@@ -694,41 +667,9 @@
   color: var(--landing-hero-text);
   padding-top: clamp(56px, 10vw, 80px);
   padding-bottom: clamp(56px, 10vw, 80px);
-  padding-left: 24px;
-  padding-right: 24px;
   text-align: center;
 }
-@media (min-width: 768px) {
-  .landing .footer {
-    padding-left: 32px;
-    padding-right: 32px;
-  }
-}
-@media (min-width: 1024px) {
-  .landing .footer {
-    padding-left: 48px;
-    padding-right: 48px;
-  }
-}
-
-.footerInner {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding-left: 24px;
-  padding-right: 24px;
-}
-@media (min-width: 768px) {
-  .landing .footerInner {
-    padding-left: 32px;
-    padding-right: 32px;
-  }
-}
-@media (min-width: 1024px) {
-  .landing .footerInner {
-    padding-left: 48px;
-    padding-right: 48px;
-  }
-}
+/* footerInner uses shared container above */
 
 .footerBrand {
   display: flex;
@@ -744,9 +685,12 @@
   max-width: 100%;
 }
 
+/* WHAT: Match admin branding: same Pacifico as hero and admin sidebar */
 .footerSiteName {
-  font-size: var(--mm-font-size-lg);
-  font-weight: var(--mm-font-weight-bold);
+  font-family: var(--font-pacifico);
+  font-size: 1.5rem;
+  font-weight: 400;
+  letter-spacing: 0.5px;
   color: var(--landing-hero-text);
 }
 

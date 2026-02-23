@@ -25,6 +25,8 @@ export interface StaticLandingSnapshot {
   }>;
   chartResults: Array<{ chartId: string; result: Record<string, unknown> }>;
   gridSettings: { desktop: number; tablet: number; mobile: number };
+  /** Report style id (MongoDB ObjectId string) so landing uses same 26-color style as report. Applied via useReportStyle(snapshot.styleId). */
+  styleId?: string | null;
   style?: Record<string, string> | null;
   projectStats?: Record<string, unknown>;
 }
