@@ -17,8 +17,8 @@
   
   /* UNIFIED NAMING: --chartBackground matches database property */
   background: var(--chartBackground) !important;
-  border-radius: var(--mm-radius-lg);
-  box-shadow: var(--mm-shadow-sm);
+  border-radius: var(--cardBorderRadius, var(--mm-radius-lg));
+  box-shadow: var(--cardShadow, var(--mm-shadow-sm));
   padding: 0; /* WHAT: Remove padding, add to header/body instead */
   overflow: visible; /* WHAT: Layout Grammar - no clipping on content layers; height resolution ensures fit */
   box-sizing: border-box !important;

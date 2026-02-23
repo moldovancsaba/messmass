@@ -104,10 +104,15 @@
   margin: 0;
 }
 
-/* WHAT: Landing main page report section - strict font cap via CSS variables set inline */
+/* WHAT: Landing main page report section — all from theme (no inline style) */
 .landingReportWrap {
   overflow: hidden;
   min-height: 0;
+  --block-base-font-size: var(--landingBlockBaseFontSize, var(--mm-landing-block-base-font-size));
+  --block-subtitle-font-size: var(--landingBlockSubtitleFontSize, var(--mm-landing-block-subtitle-font-size));
+  --landing-max-font: var(--mm-landing-max-font);
+  --landing-max-icon-font: var(--landingMaxIconFont, var(--mm-landing-max-icon-font));
+  --landing-value-font: var(--mm-landing-value-font);
 }
 
 /* WHAT: Give KPI description row more vertical space on landing so card copy doesn't truncate
@@ -121,7 +126,7 @@
  * WHY: User requirement: text fully responsive and resizing to fit space
  * HOW: Container-query font-size (cqw) + allow wrap (no line-clamp), row overflow hidden so no spill */
 .landingReportWrap :global([class*="kpiTitle"]) {
-  font-size: clamp(14px, 4cqw, 32px) !important;
+  font-size: clamp(var(--landingBlockSubtitleFontSize, var(--mm-landing-block-subtitle-font-size)), 4cqw, var(--landingBlockBaseFontSize, var(--mm-landing-block-base-font-size))) !important;
   overflow: hidden !important;
   min-height: 0;
 }
@@ -132,7 +137,7 @@
   white-space: normal !important;
 }
 .landingReportWrap :global([class*="kpiValueRow"]) {
-  font-size: clamp(10px, 2.5cqw, 14px) !important;
+  font-size: clamp(var(--mm-font-size-xs), 2.5cqw, var(--mm-font-size-sm)) !important;
   line-height: 1.35;
   hyphens: none;
   overflow: hidden !important;
@@ -140,12 +145,12 @@
   -webkit-line-clamp: unset !important;
 }
 .landingReportWrap :global([class*="valuechainTitleRow"]) {
-  font-size: clamp(14px, 4cqw, 32px) !important;
+  font-size: clamp(var(--mm-font-size-sm), 4cqw, var(--landingBlockBaseFontSize, var(--mm-landing-block-base-font-size))) !important;
   overflow: hidden !important;
   min-height: 0;
 }
 .landingReportWrap :global([class*="valuechainDescRow"]) {
-  font-size: clamp(10px, 2.5cqw, 16px) !important;
+  font-size: clamp(var(--mm-font-size-xs), 2.5cqw, var(--mm-font-size-base)) !important;
   overflow: hidden !important;
   min-height: 0;
 }
@@ -158,7 +163,7 @@
 /* WHAT: Block titles on landing use same Pacifico as "messmass" and section headings */
 .landingReportWrap :global([class*="blockTitle"]) {
   font-family: var(--font-pacifico) !important;
-  font-weight: 400;
+  font-weight: var(--mm-font-weight-normal);
 }
 
 /* Responsive Adjustments */

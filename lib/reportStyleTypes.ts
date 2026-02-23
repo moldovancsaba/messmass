@@ -1,14 +1,14 @@
 /* WHAT: TypeScript types for Report Style Editor system
- * WHY: Simple, effective style management with 26 color properties
+ * WHY: Single place to control report + landing colors (35 color properties)
  * HOW: MongoDB-compatible schema with hex color validation */
 
 import { getFontFamilyCSS } from './fontUtils';
 
 /**
- * Report Style - Complete color configuration for report pages
- * 
- * WHAT: 26 color properties matching CSS variables exactly
- * WHY: Simple 1:1 mapping between MongoDB fields and CSS variables
+ * Report Style - Complete color configuration for report and landing pages
+ *
+ * WHAT: Report colors (26) + Landing colors (9) matching CSS variables exactly
+ * WHY: Style editor drives both report and landing; when a style is applied, landing uses these if set
  * HOW: All fields use 8-character hex codes (#RRGGBBAA) for transparency support
  */
 export interface ReportStyle {
@@ -59,7 +59,34 @@ export interface ReportStyle {
   chartErrorText: string;               // Error text
   chartTooltipBackground: string;       // Tooltip background
   chartTooltipText: string;             // Tooltip text
-  
+
+  // Landing page (main site hero, footer, CTA) — when set, overrides theme on landing
+  landingHeroBgStart: string;          // Hero gradient start
+  landingHeroBgMid: string;            // Hero gradient mid
+  landingHeroBgEnd: string;            // Hero gradient end
+  landingHeroText: string;             // Hero headline/text
+  landingHeroTextMuted: string;        // Hero subtitle/muted
+  landingHeroBorder: string;           // Hero CTA border (e.g. outline button)
+  landingHeroBorderHover: string;     // Hero CTA border hover
+  landingHeroTextHover: string;        // Hero CTA text hover
+  landingPageBg: string;               // Main landing page background
+
+  // Optional dimension/length values — when set, override theme on landing & report
+  sectionPaddingY?: string;            // e.g. "3.5rem" — section vertical padding
+  sectionPaddingYLg?: string;          // e.g. "5rem" — section padding large screens
+  heroPaddingYMin?: string;            // e.g. "3.5rem" — hero padding clamp min
+  heroPaddingYMax?: string;            // e.g. "5rem" — hero padding clamp max
+  landingCardMin?: string;             // e.g. "12.5rem" — card grid min width
+  landingCardMinWide?: string;          // e.g. "15rem" — card grid min wide
+  landingFaqMaxWidth?: string;         // e.g. "40rem" — FAQ list max width
+  landingDiffMax?: string;             // e.g. "65ch" — paragraph max width
+  landingIconSize?: string;            // e.g. "3rem" — value/how card icon size
+  cardBorderRadius?: string;           // e.g. "0.75rem" — card corner radius
+  cardShadow?: string;                 // e.g. "0 1px 3px 0 rgba(0,0,0,0.05)" — card shadow
+  landingBlockBaseFontSize?: string;   // e.g. "2rem" — report block title on landing
+  landingBlockSubtitleFontSize?: string; // e.g. "0.8125rem" — report block value on landing
+  landingMaxIconFont?: string;         // e.g. "4rem" — KPI/value chain icon on landing
+
   createdAt?: string;                   // ISO 8601 timestamp
   updatedAt?: string;                   // ISO 8601 timestamp
 }
@@ -120,6 +147,52 @@ export const COLOR_FIELDS: ColorFieldDefinition[] = [
   { key: 'chartErrorText', label: 'Error Text', category: 'Chart States', description: 'Error message color' },
   { key: 'chartTooltipBackground', label: 'Tooltip Background', category: 'Chart States', description: 'Chart.js tooltip background' },
   { key: 'chartTooltipText', label: 'Tooltip Text', category: 'Chart States', description: 'Tooltip text color' },
+
+  // Landing page (messmass.com hero, footer, CTA)
+  { key: 'landingHeroBgStart', label: 'Landing hero gradient start', category: 'Landing', description: 'Hero background gradient start' },
+  { key: 'landingHeroBgMid', label: 'Landing hero gradient mid', category: 'Landing', description: 'Hero background gradient middle' },
+  { key: 'landingHeroBgEnd', label: 'Landing hero gradient end', category: 'Landing', description: 'Hero background gradient end' },
+  { key: 'landingHeroText', label: 'Landing hero text', category: 'Landing', description: 'Hero headline and primary text' },
+  { key: 'landingHeroTextMuted', label: 'Landing hero muted text', category: 'Landing', description: 'Hero subtitle and secondary text' },
+  { key: 'landingHeroBorder', label: 'Landing hero CTA border', category: 'Landing', description: 'Outline button border on hero' },
+  { key: 'landingHeroBorderHover', label: 'Landing hero CTA border hover', category: 'Landing', description: 'Outline button border on hover' },
+  { key: 'landingHeroTextHover', label: 'Landing hero CTA text hover', category: 'Landing', description: 'Outline button text on hover' },
+  { key: 'landingPageBg', label: 'Landing page background', category: 'Landing', description: 'Main landing page background' },
+];
+
+/**
+ * Dimension/length fields — optional; when set they override theme on landing and report
+ * WHAT: Spacing, font size, radius, shadow — editable in style editor
+ * WHY: Single place to control layout and surfaces from the style editor
+ */
+export interface DimensionFieldDefinition {
+  key: keyof Pick<ReportStyle,
+    'sectionPaddingY' | 'sectionPaddingYLg' | 'heroPaddingYMin' | 'heroPaddingYMax' |
+    'landingCardMin' | 'landingCardMinWide' | 'landingFaqMaxWidth' | 'landingDiffMax' |
+    'landingIconSize' | 'cardBorderRadius' | 'cardShadow' |
+    'landingBlockBaseFontSize' | 'landingBlockSubtitleFontSize' | 'landingMaxIconFont'>;
+  label: string;
+  category: string;
+  description: string;
+  default: string;
+  placeholder?: string;
+}
+
+export const DIMENSION_FIELDS: DimensionFieldDefinition[] = [
+  { key: 'sectionPaddingY', label: 'Section padding (vertical)', category: 'Landing dimensions', description: 'Section top/bottom padding', default: '3.5rem', placeholder: 'e.g. 3.5rem' },
+  { key: 'sectionPaddingYLg', label: 'Section padding large screens', category: 'Landing dimensions', description: 'Section padding at 1024px+', default: '5rem', placeholder: 'e.g. 5rem' },
+  { key: 'heroPaddingYMin', label: 'Hero padding min', category: 'Landing dimensions', description: 'Hero vertical padding (clamp min)', default: '3.5rem', placeholder: 'e.g. 3.5rem' },
+  { key: 'heroPaddingYMax', label: 'Hero padding max', category: 'Landing dimensions', description: 'Hero vertical padding (clamp max)', default: '5rem', placeholder: 'e.g. 5rem' },
+  { key: 'landingCardMin', label: 'Landing card min width', category: 'Landing dimensions', description: 'Min width for card grid cells', default: '12.5rem', placeholder: 'e.g. 12.5rem' },
+  { key: 'landingCardMinWide', label: 'Landing card min wide', category: 'Landing dimensions', description: 'Min width for wider card grids', default: '15rem', placeholder: 'e.g. 15rem' },
+  { key: 'landingFaqMaxWidth', label: 'FAQ max width', category: 'Landing dimensions', description: 'Max width of FAQ list', default: '40rem', placeholder: 'e.g. 40rem' },
+  { key: 'landingDiffMax', label: 'Paragraph max width', category: 'Landing dimensions', description: 'Max width for body paragraphs (ch)', default: '65ch', placeholder: 'e.g. 65ch' },
+  { key: 'landingIconSize', label: 'Landing card icon size', category: 'Landing dimensions', description: 'Value/how card icon size', default: '3rem', placeholder: 'e.g. 3rem' },
+  { key: 'cardBorderRadius', label: 'Card border radius', category: 'Surfaces', description: 'Border radius for cards (landing & report)', default: '0.75rem', placeholder: 'e.g. 0.75rem' },
+  { key: 'cardShadow', label: 'Card shadow', category: 'Surfaces', description: 'Box shadow for cards', default: '0 1px 3px 0 rgba(0,0,0,0.05)', placeholder: 'e.g. 0 1px 3px 0 rgba(0,0,0,0.05)' },
+  { key: 'landingBlockBaseFontSize', label: 'Landing block title size', category: 'Landing typography', description: 'Report block title on landing', default: '2rem', placeholder: 'e.g. 2rem' },
+  { key: 'landingBlockSubtitleFontSize', label: 'Landing block value size', category: 'Landing typography', description: 'Report block value/description on landing', default: '0.8125rem', placeholder: 'e.g. 0.8125rem' },
+  { key: 'landingMaxIconFont', label: 'Landing block icon size', category: 'Landing typography', description: 'KPI/value chain icon on landing', default: '4rem', placeholder: 'e.g. 4rem' },
 ];
 
 /**
@@ -172,6 +245,33 @@ export const DEFAULT_STYLE: Omit<ReportStyle, '_id' | 'createdAt' | 'updatedAt'>
   chartErrorText: '#991b1bff',
   chartTooltipBackground: '#1f2937f2',
   chartTooltipText: '#ffffffff',
+
+  // Landing (defaults match theme.css --mm-landing-hero-*)
+  landingHeroBgStart: '#0f172aff',
+  landingHeroBgMid: '#1e293bff',
+  landingHeroBgEnd: '#0f172aff',
+  landingHeroText: '#f8fafcff',
+  landingHeroTextMuted: '#cbd5e1ff',
+  landingHeroBorder: '#475569ff',
+  landingHeroBorderHover: '#94a3b8ff',
+  landingHeroTextHover: '#f1f5f9ff',
+  landingPageBg: '#f8fafcff',
+
+  // Dimension defaults (match theme; optional so old styles still load)
+  sectionPaddingY: '3.5rem',
+  sectionPaddingYLg: '5rem',
+  heroPaddingYMin: '3.5rem',
+  heroPaddingYMax: '5rem',
+  landingCardMin: '12.5rem',
+  landingCardMinWide: '15rem',
+  landingFaqMaxWidth: '40rem',
+  landingDiffMax: '65ch',
+  landingIconSize: '3rem',
+  cardBorderRadius: '0.75rem',
+  cardShadow: '0 1px 3px 0 rgba(0,0,0,0.05)',
+  landingBlockBaseFontSize: '2rem',
+  landingBlockSubtitleFontSize: '0.8125rem',
+  landingMaxIconFont: '4rem',
 };
 
 /**
@@ -282,6 +382,14 @@ export function injectStyleAsCSS(style: ReportStyle): void {
       root.style.setProperty(`--${field.key}`, normalizeHexColor(value));
     }
   }
+
+  // Inject dimension fields when set (override theme on landing/report)
+  for (const field of DIMENSION_FIELDS) {
+    const value = style[field.key];
+    if (value && String(value).trim()) {
+      root.style.setProperty(`--${field.key}`, String(value).trim());
+    }
+  }
 }
 
 /**
@@ -296,6 +404,9 @@ export function removeStyleCSS(): void {
   root.style.removeProperty('--reportFontFamily');
   
   for (const field of COLOR_FIELDS) {
+    root.style.removeProperty(`--${field.key}`);
+  }
+  for (const field of DIMENSION_FIELDS) {
     root.style.removeProperty(`--${field.key}`);
   }
 }

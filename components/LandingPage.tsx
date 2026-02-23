@@ -73,7 +73,7 @@ export default function LandingPage({ initialStaticPayload = null, version = nul
   if (!staticChecked) {
     return (
       <div className={styles.landing}>
-        <div className={reportPageStyles.loading} style={{ minHeight: '50vh' }}>
+        <div className={`${reportPageStyles.loading} ${styles.landingLoadingRoot}`}>
           <div className={reportPageStyles.loadingSpinner} />
           <p className={reportPageStyles.loadingText}>Loading…</p>
         </div>
@@ -167,18 +167,7 @@ function LandingPageStatic({
       {blocks.length > 0 && chartResults.size > 0 && (
         <section id="how-it-works" className={reportPageStyles.page} aria-label="Report content">
           <div className={styles.mmContainer}>
-            <div
-              className={reportPageStyles.landingReportWrap}
-              style={
-                {
-                  '--block-base-font-size': '32px',
-                  '--block-subtitle-font-size': '13px',
-                  '--landing-max-font': '13px',
-                  '--landing-max-icon-font': '64px',
-                  '--landing-value-font': '13px',
-                } as React.CSSProperties
-              }
-            >
+            <div className={reportPageStyles.landingReportWrap}>
               <ReportContent
                 blocks={blocks}
                 chartResults={chartResults as unknown as Map<string, import('@/lib/report-calculator').ChartResult>}
@@ -402,7 +391,7 @@ function LandingPageLive({ slug, version }: { slug: string; version?: string | n
   function renderReportSection() {
     if (loadTimedOut) {
       return (
-        <div className={reportPageStyles.error} style={{ minHeight: '40vh', padding: 'var(--mm-space-8)' }}>
+        <div className={`${reportPageStyles.error} ${styles.landingErrorRoot}`}>
           <span className={reportPageStyles.errorIcon}>⏱️</span>
           <h2 className={reportPageStyles.errorTitle}>Report load timed out</h2>
           <p className={reportPageStyles.errorText}>
@@ -415,7 +404,7 @@ function LandingPageLive({ slug, version }: { slug: string; version?: string | n
     }
     if (loading) {
       return (
-        <div className={reportPageStyles.loading} style={{ minHeight: '40vh' }}>
+        <div className={`${reportPageStyles.loading} ${styles.landingLoadingRoot}`}>
           <div className={reportPageStyles.loadingSpinner} />
           <p className={reportPageStyles.loadingText}>Loading report content…</p>
         </div>
@@ -423,7 +412,7 @@ function LandingPageLive({ slug, version }: { slug: string; version?: string | n
     }
     if (error) {
       return (
-        <div className={reportPageStyles.error} style={{ minHeight: '40vh', padding: 'var(--mm-space-8)' }}>
+        <div className={`${reportPageStyles.error} ${styles.landingErrorRoot}`}>
           <span className={reportPageStyles.errorIcon}>⚠️</span>
           <h2 className={reportPageStyles.errorTitle}>Failed to load report</h2>
           <p className={reportPageStyles.errorText}>{error}</p>
@@ -433,7 +422,7 @@ function LandingPageLive({ slug, version }: { slug: string; version?: string | n
     }
     if (!report || !project) {
       return (
-        <div className={reportPageStyles.error} style={{ minHeight: '40vh', padding: 'var(--mm-space-8)' }}>
+        <div className={`${reportPageStyles.error} ${styles.landingErrorRoot}`}>
           <span className={reportPageStyles.errorIcon}>📊</span>
           <h2 className={reportPageStyles.errorTitle}>Report not configured</h2>
           <p className={reportPageStyles.errorText}>

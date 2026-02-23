@@ -4,7 +4,7 @@ Last Updated: 2026-01-11T22:28:38.000Z
 Canonical: No
 Owner: Architecture
 
-**Version:** 11.57.0  
+**Version:** 11.58.0  
 **Last Updated:** 2026-02-21T00:00:00.000Z (UTC)
 
 ---
@@ -109,6 +109,21 @@ For any bug or UI/design issue:
 
 ### Rule Of Thumb
 One reported example ⇒ assume there are more ⇒ find and fix the whole class (or document the rest), then say done.
+
+---
+
+## 🎨 Landing and public page styling
+
+**Rule:** Every element on the landing page (and any future landing or public pages) must use **global CSS design tokens only**. No in-code hardcoded style values.
+
+**Required:**
+- **CSS:** Use only `var(--mm-*)`, `var(--chart*)`, or other theme/report-style variables in `app/page.module.css` and landing-related CSS. No literal `px`, `rem`, or hex colors in landing styles.
+- **Tokens:** Define new values in `app/styles/theme.css` (e.g. under "LANDING" or "CONTENT WIDTH") and reference them from landing CSS. Single source of truth.
+- **Components:** No inline `style={{ ... }}` on landing components. Use CSS classes that reference the same tokens (e.g. `min-height: var(--mm-loading-min-height)` in a class).
+
+**Media queries:** Breakpoint values (e.g. `768px`, `1024px`) may remain as literals in `@media` (CSS does not allow `var()` in media conditions). Prefer matching theme breakpoints (`--breakpoint-md`, `--breakpoint-lg`) and document the mapping in comments.
+
+**Reference:** `docs/landing-main-page-ui-refactor-plan.md`, §6 Shared UI primitives; theme tokens in `app/styles/theme.css`.
 
 ---
 

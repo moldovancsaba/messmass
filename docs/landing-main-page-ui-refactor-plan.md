@@ -146,6 +146,10 @@ After the refactor, landing and report share these; use them for any new landing
 
 **Adding a new primitive:** Define it in `theme.css` (global) or in the report style schema if it is style-specific; then use it in both landing and report so one change updates both.
 
+**No hardcoded values:** Landing (and all future landing pages) must use only global CSS tokens—no literal `px`/`rem`/hex in landing CSS and no inline `style` in landing components. See `docs/coding-standards.md` § Landing and public page styling.
+
+**Style editor dimensions (v11.58.0):** Spacing, radius, shadow, and landing typography are editable in Admin → Styles → [style] under "Dimensions & surfaces". Fields (e.g. `sectionPaddingY`, `cardBorderRadius`, `landingBlockBaseFontSize`) are stored with the style and injected as CSS variables; landing and report chart cards use them with theme fallbacks. See `lib/reportStyleTypes.ts` (DIMENSION_FIELDS).
+
 ---
 
 ## 7. Success Criteria

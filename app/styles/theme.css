@@ -285,6 +285,37 @@
   --mm-content-padding-x-lg: 48px;   /* 1024px+ */
 
   /* ========================================
+     LANDING - Section, hero, cards (no hardcodes in page.module.css)
+  ======================================== */
+  /* WHAT: Single source for all landing layout and visuals; use var() only in landing CSS
+     WHY: No in-code hardcoded values; future landing pages use same tokens */
+  --mm-section-padding-y: 3.5rem;     /* 56px - section vertical rhythm */
+  --mm-section-padding-y-lg: 5rem;    /* 80px - 1024px+ */
+  --mm-hero-padding-y-min: 3.5rem;   /* 56px - hero clamp min */
+  --mm-hero-padding-y-max: 5rem;      /* 80px - hero clamp max */
+  --mm-landing-hero-bg-start: #0f172a;
+  --mm-landing-hero-bg-mid: #1e293b;
+  --mm-landing-hero-bg-end: #0f172a;
+  --mm-landing-hero-text: #f8fafc;
+  --mm-landing-hero-text-muted: #cbd5e1;
+  --mm-landing-hero-border: #475569;
+  --mm-landing-hero-border-hover: #94a3b8;
+  --mm-landing-hero-text-hover: #f1f5f9;
+  --mm-landing-card-min: 12.5rem;     /* 200px - card grid min width */
+  --mm-landing-card-min-wide: 15rem;  /* 240px */
+  --mm-landing-faq-max-width: 40rem;  /* 640px */
+  --mm-landing-diff-max: 65ch;
+  --mm-loading-min-height: 50vh;
+  --mm-error-min-height: 40vh;
+  --mm-landing-icon-size: 3rem;       /* 48px - value/how card icon */
+  /* Landing report block (chart titles/values on main page) */
+  --mm-landing-block-base-font-size: 2rem;   /* 32px */
+  --mm-landing-block-subtitle-font-size: 0.8125rem; /* 13px */
+  --mm-landing-max-font: 0.8125rem;
+  --mm-landing-max-icon-font: 4rem;   /* 64px */
+  --mm-landing-value-font: 0.8125rem;
+
+  /* ========================================
      SPACING - Modern 8px Grid System
   ======================================== */
   
