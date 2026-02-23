@@ -260,7 +260,7 @@
 }
 
 .valuechainIcon {
-  font-size: 32px !important;
+  font-size: 64px !important;
   height: auto !important;
   width: auto !important;
   color: var(--kpiIconColor) !important;
@@ -310,12 +310,11 @@
 }
 
 .valuechainDescRow > * {
-  display: -webkit-box;
-  -webkit-box-orient: vertical;
-  -webkit-line-clamp: 4;
-  overflow: hidden;
+  display: block;
   text-align: center;
   width: 100%;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
 }
 
 /* Pie Chart - Uses base .chart structure */
