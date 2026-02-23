@@ -19,6 +19,9 @@
 
 ## Fixed Bugs
 
+- **Landing block titles follow report setup (v11.57.0)**  
+  Main page (messmass.com) now respects each block's "show title" setting from the report template: block titles are shown when the snapshot has `block.showTitle` true and a title, and hidden when unchecked. Same behaviour as `/report/[slug]`. LandingPageStatic does not pass `showBlockTitles`, so ReportContent uses default `true` and per-block visibility is driven by Admin → Visualization.
+
 - **Landing layout and content**  
   - Inconsistent section widths and inner max-widths replaced with a single 1200px container and responsive horizontal padding (24/32/48px).  
   - Placeholder or DB-driven marketing copy replaced with fixed, professional sales copy; no “100% safe” or absolute security claims.  

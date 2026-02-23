@@ -81,7 +81,7 @@ interface ReportContentProps {
   className?: string;
   /** When true (e.g. static landing), show charts even with NA/empty data so structure is visible */
   allowNA?: boolean;
-  /** When false (e.g. landing), hide block titles so only event statistic charts are shown */
+  /** When true (default), block titles follow each block's showTitle from the report template; when false, all block titles are hidden. Landing omits this prop so default applies and report setup is respected. */
   showBlockTitles?: boolean;
 }
 

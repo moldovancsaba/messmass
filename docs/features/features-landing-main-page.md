@@ -1,6 +1,6 @@
 # Landing / Main Page (messmass.com)
 Status: Active
-Last Updated: 2026-02-21T00:00:00.000Z (v11.56.6 footer version + generate hardening)
+Last Updated: 2026-02-23
 Canonical: Yes
 Owner: Product
 
@@ -63,6 +63,7 @@ Owner: Product
 - **v11.56.7:** Landing report cards: font cap (22px/16px) applied from first paint when using static snapshot (`allowNA`), and block gets overflow containment (`.blockLanding`) so card text cannot overlap adjacent cards.
 - **v11.56.9:** Value Chain chart type supported in API and UI; landing KPI sizing fixes (13px/32px forced, shrink-to-fit disabled on landing).
 - **v11.56.8:** Stricter landing font cap: wrapper sets `--block-base-font-size: 16px`, `--block-subtitle-font-size: 13px`, `--landing-max-font: 16px`; KPI icon and value use `var(--landing-max-font)` in clamps so container-query scaling cannot exceed cap; block cap lowered to 16px/13px when `allowNA`.
+- **v11.57.0:** Block titles on the main page follow the report setup: LandingPageStatic does not pass `showBlockTitles`, so ReportContent uses default `true`; each block's `showTitle` and `title` from the snapshot are respected (same behaviour as `/report/[slug]`). Admin → Visualization "show title" per block controls visibility.
 
 ## HTML vs JSON (avoid "Unexpected token '<'" errors)
 - Generate API: when calling report-config, only parses response as JSON if `Content-Type` is `application/json`; if the response is HTML (e.g. error page) or fetch fails, falls back to inline template/block resolution from the DB.
