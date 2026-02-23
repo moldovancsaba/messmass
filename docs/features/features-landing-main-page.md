@@ -46,7 +46,7 @@ Owner: Product
 ### Main page (v11.56.3 → v11.56.4: server-side snapshot, chartId + allowNA)
 - **Server** (`app/page.tsx`): Async page calls `getLandingSettings()`, normalizes snapshot (block ids to strings, `chartResults` array), passes `initialStaticPayload` to `LandingPage`.
 - **Client** (`components/LandingPage.tsx`): If `initialStaticPayload` is set, uses it for first paint (no client fetch). Otherwise fetches `GET /api/landing-static` and then renders static or live.
-- If `staticSnapshot` is present: **LandingPageStatic** (hero from `projectStats`, report section via **ReportContent** with snapshot blocks/chartResults, `allowNA={true}`, then **PricingAndFooter**).
+- If `staticSnapshot` is present: **LandingPageStatic** (hero from `projectStats`, report section via **ReportContent** with snapshot blocks/chartResults, `allowNA={true}`, then **PricingAndFooter**). **Block titles** on the main page follow the report setup: each block's `showTitle` and `title` from the snapshot are respected (if checked to show in Admin → Visualization, the title is shown; if unchecked, it is hidden). Same logic as `/report/[slug]`.
 - Else: **LandingPageLive(slug)** with live pipeline.
 
 ### CSRF

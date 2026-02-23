@@ -182,7 +182,6 @@ function LandingPageStatic({
                 charts={null}
                 gridSettings={gridSettings}
                 allowNA={true}
-                showBlockTitles={false}
               />
             </div>
           </div>
