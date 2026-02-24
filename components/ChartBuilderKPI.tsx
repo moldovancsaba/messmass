@@ -70,37 +70,18 @@ export default function ChartBuilderKPI({ chart, stats, onSave }: ChartBuilderKP
           <h3 className="chart-builder-title">{chart.title}</h3>
         </div>
       </div>
-
-      {variables.length === 0 ? (
-        <p className="chart-builder-hint">No variables in formula (e.g. [varName]). Add variables in Visualization Manager.</p>
-      ) : variables.length === 1 ? (
-        <>
-          <div className="chart-builder-field">
-            <label className="chart-builder-label" htmlFor={`kpi-${chart.chartId}-single`}>
-              {chart.elements[0]?.label || `[${variables[0]}]`}
-            </label>
-            <input
-              id={`kpi-${chart.chartId}-single`}
-              type="number"
-              value={tempValues[variables[0]] ?? '0'}
-              onChange={(e) => setTempValues((prev) => ({ ...prev, [variables[0]]: e.target.value }))}
-              onBlur={() => handleBlur(variables[0])}
-              min="0"
-              className="form-input chart-builder-input"
-              placeholder="0"
-              aria-label={`Value for ${variables[0]}`}
-            />
-          </div>
-          <p className="chart-builder-hint">Variable: [{variables[0]}]</p>
-        </>
-      ) : (
-        <>
-          <div className="chart-builder-inputs">
+      <div className="chart-builder-card-body">
+        <p className="chart-builder-card-id">{chart.chartId}</p>
+        {variables.length === 0 ? (
+          <p className="chart-builder-hint">No variables in formula (e.g. [varName]). Add variables in Visualization Manager.</p>
+        ) : (
+          <>
             {variables.map((key) => (
-              <div key={key} className="chart-builder-bar-row">
-                <label className="chart-builder-bar-label" htmlFor={`kpi-${chart.chartId}-${key}`}>
-                  [{key}]
-                </label>
+              <div key={key} className="chart-builder-variable-row">
+                <div className="chart-builder-variable-meta">
+                  {chart.elements[0]?.label && variables.length === 1 ? chart.elements[0].label : key}
+                  <span className="chart-builder-registry-name">[{key}]</span>
+                </div>
                 <input
                   id={`kpi-${chart.chartId}-${key}`}
                   type="number"
@@ -108,19 +89,16 @@ export default function ChartBuilderKPI({ chart, stats, onSave }: ChartBuilderKP
                   onChange={(e) => setTempValues((prev) => ({ ...prev, [key]: e.target.value }))}
                   onBlur={() => handleBlur(key)}
                   min="0"
-                  step="any"
-                  className="form-input chart-builder-bar-input"
+                  step={variables.length > 1 ? 'any' : undefined}
+                  className="form-input chart-builder-input"
                   placeholder="0"
                   aria-label={`Value for ${key}`}
                 />
               </div>
             ))}
-          </div>
-          <p className="chart-builder-hint">
-            Formula: {formula}. Each value feeds the total.
-          </p>
-        </>
-      )}
+          </>
+        )}
+      </div>
     </div>
   );
 }

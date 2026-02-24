@@ -74,7 +74,10 @@ export default function ChartBuilderImage({ chart, stats, onSave }: ChartBuilder
             <h3 className="chart-builder-title">{chart.title}</h3>
           </div>
         </div>
-        <p className="chart-builder-hint">No variables in formula. Add variables (e.g. [reportImage1]) in Visualization Manager, or use a title like &quot;Report Image 3&quot; to bind to [reportImage3].</p>
+        <div className="chart-builder-card-body">
+          <p className="chart-builder-card-id">{chart.chartId}</p>
+          <p className="chart-builder-hint">No variables in formula. Add variables (e.g. [reportImage1]) in Visualization Manager, or use a title like &quot;Report Image 3&quot; to bind to [reportImage3].</p>
+        </div>
       </div>
     );
   }
@@ -89,14 +92,14 @@ export default function ChartBuilderImage({ chart, stats, onSave }: ChartBuilder
           <h3 className="chart-builder-title">{chart.title}</h3>
         </div>
       </div>
-      <div className="chart-builder-inputs">
-        {variables.map((key) => (
-          <ImageBlock key={key} variableKey={key} stats={stats} onSave={onSave} />
-        ))}
+      <div className="chart-builder-card-body">
+        <p className="chart-builder-card-id">{chart.chartId}</p>
+        <div className="chart-builder-inputs">
+          {variables.map((key) => (
+            <ImageBlock key={key} variableKey={key} stats={stats} onSave={onSave} />
+          ))}
+        </div>
       </div>
-      <p className="chart-builder-hint">
-        Image chart • {variables.length} variable(s). Each value feeds the report.
-      </p>
     </div>
   );
 }
@@ -115,8 +118,11 @@ function ImageBlock({
 
   if (useUploader) {
     return (
-      <div className="chart-builder-bar-row chart-builder-image-block">
-        <label className="chart-builder-bar-label">[{variableKey}]</label>
+      <div className="chart-builder-variable-row chart-builder-image-block">
+        <div className="chart-builder-variable-meta">
+          {variableKey}
+          <span className="chart-builder-registry-name">[{variableKey}]</span>
+        </div>
         <div className="chart-builder-image-upload-wrap">
           <ImageUploader label="" value={value} onChange={(url) => onSave(variableKey, url || '')} maxSizeMB={10} />
           {value && (
@@ -137,17 +143,18 @@ function ImageBlock({
   const [temp, setTemp] = useState(value);
   useEffect(() => setTemp(value), [value]);
   return (
-    <div className="chart-builder-bar-row">
-      <label className="chart-builder-bar-label" htmlFor={`img-${variableKey}`}>
-        [{variableKey}]
-      </label>
+    <div className="chart-builder-variable-row">
+      <div className="chart-builder-variable-meta">
+        {variableKey}
+        <span className="chart-builder-registry-name">[{variableKey}]</span>
+      </div>
       <input
         id={`img-${variableKey}`}
         type="text"
         value={temp}
         onChange={(e) => setTemp(e.target.value)}
         onBlur={() => { if (temp !== value) onSave(variableKey, temp); }}
-        className="form-input chart-builder-bar-input"
+        className="form-input chart-builder-input"
         placeholder="URL or value"
         aria-label={`Value for ${variableKey}`}
       />

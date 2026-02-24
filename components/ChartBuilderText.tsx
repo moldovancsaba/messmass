@@ -7,7 +7,7 @@
 import { useState, useEffect, useMemo } from 'react';
 import TextareaField from './TextareaField';
 import MaterialIcon from './MaterialIcon';
-import { parseMarkdown, getMarkdownHint, isMarkdown } from '@/lib/markdownUtils';
+import { parseMarkdown, isMarkdown } from '@/lib/markdownUtils';
 import { sanitizeHTML } from '@/lib/sanitize';
 import { extractVariablesFromFormula } from '@/lib/formulaEngine';
 
@@ -57,7 +57,10 @@ export default function ChartBuilderText({ chart, stats, onSave }: ChartBuilderT
             <h3 className="chart-builder-title">{chart.title}</h3>
           </div>
         </div>
-        <p className="chart-builder-hint">No variables in formula. Add variables (e.g. [reportText1]) in Visualization Manager.</p>
+        <div className="chart-builder-card-body">
+          <p className="chart-builder-card-id">{chart.chartId}</p>
+          <p className="chart-builder-hint">No variables in formula. Add variables (e.g. [reportText1]) in Visualization Manager.</p>
+        </div>
       </div>
     );
   }
@@ -72,17 +75,14 @@ export default function ChartBuilderText({ chart, stats, onSave }: ChartBuilderT
           <h3 className="chart-builder-title">{chart.title}</h3>
         </div>
       </div>
-      <div className="chart-builder-inputs">
-        {variables.map((key) => (
-          <TextBlock key={key} variableKey={key} stats={stats} onSave={onSave} onPreviewToggle={(k) => setPreviewKey((p) => (p === k ? null : k))} isPreview={previewKey === key} />
-        ))}
+      <div className="chart-builder-card-body">
+        <p className="chart-builder-card-id">{chart.chartId}</p>
+        <div className="chart-builder-inputs">
+          {variables.map((key) => (
+            <TextBlock key={key} variableKey={key} stats={stats} onSave={onSave} onPreviewToggle={(k) => setPreviewKey((p) => (p === k ? null : k))} isPreview={previewKey === key} />
+          ))}
+        </div>
       </div>
-      <p className="chart-builder-hint" style={{ marginTop: '0.5rem', fontSize: '0.75rem', color: 'var(--mm-gray-500)' }}>
-        {getMarkdownHint()}
-      </p>
-      <p className="chart-builder-hint" style={{ marginTop: '0.25rem', fontSize: '0.75rem', color: 'var(--mm-gray-500)' }}>
-        Text chart • {variables.length} variable(s). Each value feeds the report.
-      </p>
     </div>
   );
 }
@@ -103,9 +103,12 @@ function TextBlock({
   const value = (stats[variableKey] ?? '') as string;
   const hasMarkdown = isMarkdown(value);
   return (
-    <div className="chart-builder-text-block">
+    <div className="chart-builder-variable-row chart-builder-text-block">
       <div className="chart-builder-text-block-header">
-        <label className="chart-builder-bar-label">[{variableKey}]</label>
+        <div className="chart-builder-variable-meta">
+          {variableKey}
+          <span className="chart-builder-registry-name">[{variableKey}]</span>
+        </div>
         {value && hasMarkdown && (
           <button type="button" onClick={() => onPreviewToggle(variableKey)} className="chart-builder-toggle" title={isPreview ? 'Edit' : 'Preview'}>
             {isPreview ? '✏️ Edit' : '👁️ Preview'}

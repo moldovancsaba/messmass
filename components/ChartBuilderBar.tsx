@@ -82,7 +82,10 @@ export default function ChartBuilderBar({ chart, stats, onSave }: ChartBuilderBa
             <h3 className="chart-builder-title">{chart.title}</h3>
           </div>
         </div>
-        <p className="chart-builder-hint">No variables in bar formulas. Add variables (e.g. [varName]) in Visualization Manager.</p>
+        <div className="chart-builder-card-body">
+          <p className="chart-builder-card-id">{chart.chartId}</p>
+          <p className="chart-builder-hint">No variables in bar formulas. Add variables (e.g. [varName]) in Visualization Manager.</p>
+        </div>
       </div>
     );
   }
@@ -97,30 +100,31 @@ export default function ChartBuilderBar({ chart, stats, onSave }: ChartBuilderBa
           <h3 className="chart-builder-title">{chart.title}</h3>
         </div>
       </div>
-      <div className="chart-builder-inputs">
-        {variables.map((key) => (
-          <div key={key} className="chart-builder-bar-row">
-            <label className="chart-builder-bar-label" htmlFor={`bar-${chart.chartId}-${key}`}>
-              [{key}]
-            </label>
-            <input
-              id={`bar-${chart.chartId}-${key}`}
-              type="number"
-              value={tempValues[key] ?? '0'}
-              onChange={(e) => setTempValues((prev) => ({ ...prev, [key]: e.target.value }))}
-              onBlur={() => handleBlur(key)}
-              min="0"
-              step="any"
-              className="form-input chart-builder-bar-input"
-              placeholder="0"
-              aria-label={`Value for ${key}`}
-            />
-          </div>
-        ))}
+      <div className="chart-builder-card-body">
+        <p className="chart-builder-card-id">{chart.chartId}</p>
+        <div className="chart-builder-inputs">
+          {variables.map((key) => (
+            <div key={key} className="chart-builder-variable-row">
+              <div className="chart-builder-variable-meta">
+                {key}
+                <span className="chart-builder-registry-name">[{key}]</span>
+              </div>
+              <input
+                id={`bar-${chart.chartId}-${key}`}
+                type="number"
+                value={tempValues[key] ?? '0'}
+                onChange={(e) => setTempValues((prev) => ({ ...prev, [key]: e.target.value }))}
+                onBlur={() => handleBlur(key)}
+                min="0"
+                step="any"
+                className="form-input chart-builder-input"
+                placeholder="0"
+                aria-label={`Value for ${key}`}
+              />
+            </div>
+          ))}
+        </div>
       </div>
-      <p className="chart-builder-hint">
-        Bar chart • {elements.length} segment(s) • {variables.length} variable(s). Each value feeds the formulas.
-      </p>
     </div>
   );
 }

@@ -1414,19 +1414,20 @@ textarea::placeholder {
   font-size: var(--mm-font-size-sm);
 }
 
-/* WHAT: Ensure all chart builders fill their grid column width */
-/* WHY: Prevent charts from being pushed to left side of their allocated space */
+/* WHAT: Grid cell for each chart card - must allow shrink so content never overflows */
+/* WHY: Grid items default to min-width: auto; min-width: 0 lets the card stay within the column */
 .builder-chart-wrapper {
   width: 100%;
-  min-width: 100%;
+  min-width: 0;
   max-width: 100%;
   display: flex;
   flex-direction: column;
+  overflow: hidden;
 }
 
 .builder-chart-wrapper > * {
   width: 100% !important;
-  min-width: 100% !important;
+  min-width: 0 !important;
   max-width: 100% !important;
   box-sizing: border-box !important;
 }
@@ -1434,7 +1435,7 @@ textarea::placeholder {
 /* WHAT: Force inner elements of chart builders to use full width */
 /* WHY: Chart builders have hardcoded inline widths that need override */
 .builder-chart-wrapper input[type="number"] {
-  min-width: 80px;
+  min-width: 0;
   max-width: 100%;
 }
 
@@ -1456,6 +1457,48 @@ textarea::placeholder {
 .chart-builder-valuechain,
 .chart-builder-table {
   overflow: hidden;
+  min-width: 0;
+  max-width: 100%;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+/* WHAT: Card body wraps all content below header so inputs never overflow */
+.chart-builder-card-body {
+  min-width: 0;
+  max-width: 100%;
+  overflow: hidden;
+  width: 100%;
+}
+
+/* WHAT: Unified variable row - label + registry name on one line, input on next */
+.chart-builder-variable-meta {
+  font-size: var(--mm-font-size-sm);
+  color: var(--mm-gray-600);
+  margin-bottom: var(--mm-space-1);
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.chart-builder-variable-meta .chart-builder-registry-name {
+  font-family: var(--mm-font-mono, monospace);
+  color: var(--mm-gray-500);
+  margin-left: var(--mm-space-1);
+}
+
+.chart-builder-variable-row {
+  margin-bottom: var(--mm-space-4);
+  min-width: 0;
+  overflow: hidden;
+}
+
+.chart-builder-variable-row .form-input,
+.chart-builder-variable-row input,
+.chart-builder-variable-row textarea {
+  width: 100%;
+  max-width: 100%;
   min-width: 0;
   box-sizing: border-box;
 }
@@ -1522,8 +1565,23 @@ textarea::placeholder {
   white-space: nowrap;
 }
 
+.chart-builder-card-id {
+  font-size: var(--mm-font-size-xs);
+  color: var(--mm-gray-500);
+  margin: 0 0 var(--mm-space-3);
+  font-family: var(--mm-font-mono, monospace);
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 .chart-builder-field {
   margin-bottom: var(--mm-space-2);
+  min-width: 0;
+  max-width: 100%;
+  overflow: hidden;
+  width: 100%;
 }
 
 .chart-builder-label {
