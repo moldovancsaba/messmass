@@ -1446,6 +1446,39 @@ textarea::placeholder {
    CHART BUILDER COMPONENT STYLES
 ======================================== */
 
+/* WHAT: Contain all chart builder cards so content never overflows the card
+   WHY: Inputs, labels, and titles must stay within card boundaries */
+.chart-builder-kpi,
+.chart-builder-bar,
+.chart-builder-pie,
+.chart-builder-image,
+.chart-builder-text,
+.chart-builder-valuechain,
+.chart-builder-table {
+  overflow: hidden;
+  min-width: 0;
+  box-sizing: border-box;
+}
+
+/* WHAT: Keep all form controls inside card bounds */
+.chart-builder-kpi .form-input,
+.chart-builder-bar .form-input,
+.chart-builder-pie .form-input,
+.chart-builder-image .form-input,
+.chart-builder-text .form-input,
+.chart-builder-valuechain .form-input,
+.chart-builder-table .form-input,
+.chart-builder-kpi textarea,
+.chart-builder-bar textarea,
+.chart-builder-pie textarea,
+.chart-builder-image textarea,
+.chart-builder-text textarea,
+.chart-builder-valuechain textarea,
+.chart-builder-table textarea {
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
 /* KPI Chart Builder */
 .chart-builder-kpi {
   padding: var(--mm-space-6);
@@ -1461,16 +1494,21 @@ textarea::placeholder {
   align-items: center;
   justify-content: space-between;
   gap: var(--mm-space-2);
+  min-width: 0;
+  overflow: hidden;
 }
 
 .chart-builder-title-row {
   display: flex;
   align-items: center;
   gap: var(--mm-space-2);
+  min-width: 0;
+  overflow: hidden;
 }
 
 .chart-builder-icon {
   font-size: var(--mm-font-size-xl);
+  flex-shrink: 0;
 }
 
 .chart-builder-title {
@@ -1478,6 +1516,10 @@ textarea::placeholder {
   font-weight: var(--mm-font-weight-semibold);
   color: var(--mm-gray-900);
   margin: 0;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .chart-builder-field {
@@ -1493,16 +1535,21 @@ textarea::placeholder {
 
 .chart-builder-input {
   width: 100%;
+  max-width: 100%;
   padding: var(--mm-space-3);
   font-size: var(--mm-font-size-lg);
   font-weight: var(--mm-font-weight-semibold);
   text-align: center;
+  box-sizing: border-box;
 }
 
 .chart-builder-hint {
   font-size: var(--mm-font-size-xs);
   color: var(--mm-gray-400);
   margin-top: var(--mm-space-2);
+  min-width: 0;
+  overflow-wrap: break-word;
+  word-break: break-word;
 }
 
 /* BAR Chart Builder */
@@ -1518,12 +1565,15 @@ textarea::placeholder {
   display: flex;
   flex-direction: column;
   gap: var(--mm-space-3);
+  min-width: 0;
+  overflow: hidden;
 }
 
 .chart-builder-bar-row {
   display: flex;
   align-items: center;
   gap: var(--mm-space-3);
+  min-width: 0;
 }
 
 .chart-builder-color-dot {
@@ -1535,15 +1585,22 @@ textarea::placeholder {
 
 .chart-builder-bar-input {
   width: 100px;
+  min-width: 0;
+  max-width: 100%;
   padding: var(--mm-space-2);
   text-align: center;
   flex-shrink: 0;
+  box-sizing: border-box;
 }
 
 .chart-builder-bar-label {
   font-size: var(--mm-font-size-sm);
   color: var(--mm-gray-700);
   flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 /* PIE Chart Builder */
@@ -1564,6 +1621,8 @@ textarea::placeholder {
   font-size: var(--mm-font-size-sm);
   font-weight: var(--mm-font-weight-medium);
   color: var(--mm-gray-700);
+  min-width: 0;
+  overflow: hidden;
 }
 
 /* IMAGE Chart Builder */
@@ -1584,6 +1643,8 @@ textarea::placeholder {
 .chart-builder-image-block {
   flex-direction: column;
   align-items: stretch;
+  min-width: 0;
+  overflow: hidden;
 }
 
 .chart-builder-image-block .chart-builder-bar-label {
@@ -1593,6 +1654,13 @@ textarea::placeholder {
 .chart-builder-image-upload-wrap {
   flex: 1;
   min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--mm-space-2);
+}
+
+.chart-builder-image-remove {
+  align-self: flex-start;
 }
 
 /* TEXT Chart Builder */
@@ -1615,6 +1683,8 @@ textarea::placeholder {
   flex-direction: column;
   gap: var(--mm-space-2);
   align-items: stretch;
+  min-width: 0;
+  overflow: hidden;
 }
 
 .chart-builder-text-block-header {
@@ -1626,6 +1696,9 @@ textarea::placeholder {
 
 .chart-builder-preview-inline {
   min-height: 80px;
+  min-width: 0;
+  max-width: 100%;
+  overflow: auto;
 }
 
 /* VALUE CHAIN Chart Builder - card style */
@@ -1655,11 +1728,16 @@ textarea::placeholder {
   background: var(--mm-gray-50);
   border-radius: var(--mm-radius-md);
   border: 1px solid var(--mm-gray-200);
+  min-width: 0;
 }
 
 .chart-builder-valuechain .chart-builder-bar-label {
-  min-width: 120px;
+  min-width: 0;
+  max-width: 100%;
   font-size: var(--mm-font-size-sm);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
   font-weight: var(--mm-font-weight-medium);
   color: var(--mm-gray-700);
 }
@@ -1668,6 +1746,7 @@ textarea::placeholder {
   flex: 1;
   min-width: 0;
   max-width: 100%;
+  box-sizing: border-box;
 }
 
 /* TABLE Chart Builder - card style */

@@ -1,10 +1,16 @@
 # Brain Dump
 Status: Active
-Last Updated: 2026-02-21
+Last Updated: 2026-02-24
 Canonical: Yes
 Owner: Documentation
 
 **Purpose:** quick-reference notes that capture the state of this repo and how the docs/ tree is organized after today's refactor.
+
+## Builder mode (clicker) — one input per variable
+- Event edit page (e.g. `/edit/[slug]`) has **Builder** mode: it loads the report template and chart configs, then renders a builder per chart. **Every chart type** now parses the chart algorithm (element formulas), extracts variables via `extractVariablesFromFormula()` (from `lib/formulaEngine`), deduplicates, and shows **one input per variable** so users can fill all data in the Builder.
+- **Chart types:** KPI (multi-var formulas), Bar (all vars from all bar elements), Pie (same), Text (one textarea per var), Table (one textarea per var), Image (reportImage* → ImageUploader, others → text), Value chain (one input per var). Only stats-style variables get inputs (tokens with `:` e.g. PARAM/MEDIA are skipped).
+- **Components:** `components/ChartBuilderKPI.tsx`, `ChartBuilderBar.tsx`, `ChartBuilderPie.tsx`, `ChartBuilderText.tsx`, `ChartBuilderTable.tsx`, `ChartBuilderImage.tsx`, `ChartBuilderValueChain.tsx`. Builder container: `components/BuilderMode.tsx`. Plan: `docs/plan-builder-mode-variable-inputs.md`. Feature doc: `docs/features/features-reporting-builder.md`.
+- **Project board:** When Builder/clicker work is delivered, update [MVP Factory Board](https://github.com/users/moldovancsaba/projects/1) — if an issue exists for it (mvp-factory-control), move to **Done** and post evidence. See `docs/operations/operations-delivery-focus.md` and STATE MEMORY in `docs/operations/operations-action-plan.md`.
 
 ## Style editor & preview (v11.59.0)
 - Style editor (Admin → Styles → [id]) injects style on every field change and after fetch so preview updates immediately. Bar/pie in report and preview use CSS variables (`--barColor1`…`--barColor5`, `--pieColor1`/`--pieColor2`) so colors stay in sync. ReportStylePreview includes Value Chain block and Landing page section. See `docs/release-notes-11.59.0.md`, `docs/features/features-landing-main-page.md`.

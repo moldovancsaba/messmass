@@ -1,52 +1,56 @@
 # Next Agent Prompt (Handover)
 
-**Generated:** 2026-02-21  
-**Context:** Style editor preview refresh (v11.59.0) delivered; board/docs/version/build/commit/push requested.
+**Generated:** 2026-02-24  
+**Context:** Builder mode (clicker) completed: all chart types show one input per variable from formulas. All documentation and project board instructions updated.
 
 ---
 
 ## What to read first
 
-1. **docs/messmass-codex-brain-dump.md** — doc structure and style-editor/preview note (v11.59.0).
-2. **MEMORY.md** — recent focus (style editor preview, OPS-SEC, delivery focus).
+1. **docs/messmass-codex-brain-dump.md** — doc structure, style-editor (v11.59.0), and **Builder mode / clicker** section.
+2. **MEMORY.md** — recent focus and delivery.
 3. **docs/operations/operations-action-plan.md** — execution queue and STATE MEMORY.
-4. **docs/release-notes-11.59.0.md** — what shipped in this version.
+4. **docs/plan-builder-mode-variable-inputs.md** — Builder mode plan (Phase 1–2 done; optional Phase 3–4).
 
 ---
 
-## What was done (ready for next agent)
+## What was done (current session)
 
-- **Version:** Bumped to **11.59.0** in `package.json`, README, `docs/coding-standards.md`, `docs/api/api-reference.md`, `docs/audits/audit-developer-conduct-and-build-2026-02-21.md`.
-- **Docs:** `docs/release-notes-11.59.0.md` created; `docs/features/features-landing-main-page.md` and `docs/landing-main-page-ui-refactor-plan.md` updated with v11.59.0.
-- **Memory:** `MEMORY.md` (recent focus), `docs/messmass-codex-brain-dump.md` (Last Updated + Style editor & preview section), `memory/2026-02-21.md` (v11.59.0 completion note).
-- **Handover:** This file (`docs/NEXT_AGENT_PROMPT.md`).
-- **GitHub project board:** Update MVP Factory Board (project 1, repo mvp-factory-control) — move/close cards for style-editor preview fixes and landing preview if corresponding issues exist; otherwise no change.
-- **Build:** Run `npm run build`; fix any failures before commit.
-- **Commit & push:** Commit all changes with a clear message (e.g. "v11.59.0: style editor preview refresh, Value Chain + Landing preview, docs, handover") and push to **preview** branch.
+- **Builder mode (clicker):** All chart types now inspect the chart algorithm (element formulas), extract variables via `extractVariablesFromFormula()`, deduplicate, and show **one input per variable** so users can fill all data in the Builder.
+  - **KPI:** Multi-variable formulas (e.g. `[a]+[b]+[c]`) → one number input per variable.
+  - **Bar:** All variables from every bar element → e.g. 5 bars × 2–3 vars = 10–15 inputs per card.
+  - **Pie:** Same pattern; one input per variable + sum of inputs.
+  - **Text:** All variables from all elements → one textarea per variable (with markdown preview).
+  - **Table:** Same → one textarea per variable (with table preview).
+  - **Image:** All variables; `reportImage*` → ImageUploader, others → text input (save on blur).
+  - **Value chain:** Already done earlier; one input per variable (number or text).
+- **Fixes included:** Text chart empty fix (stats key from `[reportText21]`), card style + MaterialIcon for all builders, formula→statsKey for `[varName]` and `stats.varName` everywhere.
+- **Committed & pushed** to `landing-overhaul` and **preview** (commit: Builder: all chart types show one input per variable from formulas).
+- **Documentation:** Release notes (11.59.0 §4 Builder mode), `docs/features/features-reporting-builder.md`, features-overview, MEMORY.md, operations-delivery-focus, operations-action-plan (STATE MEMORY + project board), brain-dump.
+- **Project board:** [MVP Factory Board](https://github.com/users/moldovancsaba/projects/1) — if an issue exists for Builder/clicker variable inputs (mvp-factory-control repo), move it to **Done** and post evidence. See `docs/operations/operations-delivery-focus.md` (Recently completed) and `docs/operations/operations-action-plan.md` (STATE MEMORY).
+- **Handover:** This file and brain-dump/STATE MEMORY updated.
 
 ---
 
-## What to run first
+## What to run first (if continuing)
 
 1. `npm run build` — confirm green.
-2. `git status --short` — confirm all intended files are staged.
-3. Commit and push to `preview`.
+2. `git status --short` — check for any uncommitted changes.
+3. Push to **preview** if needed: `git push origin landing-overhaul:preview`.
 
 ---
 
 ## What to avoid
 
-- Do not bump version again for this same delivery (already 11.59.0).
-- Do not duplicate release notes or feature doc entries.
+- Do not revert the “one input per variable” behavior; it is the intended Builder UX for filling all chart data.
+- Value chain and table builders use shared CSS (e.g. `.chart-builder-text-block`); keep styles in `app/styles/components.css`.
 
 ---
 
 ## Definition of done for this handover
 
-- [x] Version 11.59.0 set everywhere
-- [x] Release notes and feature docs updated
-- [x] MEMORY.md, brain-dump, memory/2026-02-21.md updated
-- [x] Handover doc (this file) created
-- [ ] GitHub project board updated (if issues exist for style-editor/landing preview)
-- [ ] `npm run build` passed
-- [ ] Changes committed and pushed to **preview**
+- [x] Builder: all chart types (KPI, Bar, Pie, Text, Table, Image, Value chain) show one input per variable.
+- [x] Handover doc (this file) updated.
+- [x] Brain-dump and STATE MEMORY updated.
+- [x] Changes committed and pushed to **preview**.
+- [ ] **Project board:** If a Builder/clicker issue exists on MVP Factory Board, move to Done and post evidence (optional; human or agent with board access).

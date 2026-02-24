@@ -1,6 +1,6 @@
 # Features Overview
 Status: Active
-Last Updated: 2026-02-21T00:00:00.000Z
+Last Updated: 2026-02-24
 Canonical: Yes
 Owner: Product
 
@@ -15,6 +15,7 @@ This folder contains feature-level “how it works” documentation (APIs, data 
 - `docs/features/features-hashtag-system.md` - Hashtag and categorized-hashtag system behavior and APIs.
 - `docs/features/features-multi-user-notifications.md` - Notification behavior for multi-user workflows.
 - `docs/features/features-landing-main-page.md` - Main page (messmass.com) report selection, static snapshot, APIs, and integration.
+- `docs/features/features-reporting-builder.md` - Reporting & Builder mode (clicker): variable inputs per chart type on `/edit/[slug]`.
 
 ## How To Use This Folder
 - Start here when you’re debugging or extending a subsystem.

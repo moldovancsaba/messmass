@@ -1,13 +1,15 @@
 # Release Notes — v11.59.0
 
-**Date:** 2026-02-21  
-**Focus:** Style editor preview refresh (bar/pie colors), inject-on-change, Value Chain + Landing preview in style editor.
+**Date:** 2026-02-21 (style editor); 2026-02-24 (Builder mode)  
+**Focus:** Style editor preview refresh (bar/pie colors), inject-on-change, Value Chain + Landing preview; Builder mode (clicker) variable inputs for all chart types.
 
 ---
 
 ## Summary
 
 The style editor (Admin → Styles → [style]) preview now updates **immediately** when any style field changes. Bar and pie chart colors in the report and in the preview use CSS variables so they stay in sync with the edited style. The style editor preview also includes a **Value Chain** block and a **Landing page** section so admins can see how the style looks on the main page without leaving the editor.
+
+**Builder mode (clicker):** On the event edit page (`/edit/[slug]`), Builder mode now shows **one input per variable** for every chart type. Variables are extracted from each chart’s element formulas via `extractVariablesFromFormula()` (stats-only; PARAM/MEDIA-style tokens skipped), deduplicated, and rendered as inputs so users can fill all data that feeds the report. Value chain is supported; text chart empty-input bug fixed; card-style layout and Material Icons applied across all chart builders.
 
 ---
 
@@ -36,6 +38,16 @@ The style editor (Admin → Styles → [style]) preview now updates **immediatel
 - **Report bar:** `app/report/[slug]/ReportChart.tsx` — bar track uses `--bar-color: var(--barColorN)`; pie legend uses `--dot-color` / `--dot-border-color` with `var(--pieColorN)`.
 - **Preview component:** `components/ReportStylePreview.tsx` — Value Chain block; Landing preview block; pie legend uses CSS vars.
 - **Preview CSS:** `components/ReportStylePreview.module.css` — value chain and landing preview classes using theme/style variables.
+
+---
+
+## 4. Builder mode (clicker) — variable inputs (2026-02-24)
+
+- **All chart types** (KPI, Bar, Pie, Text, Table, Image, Value chain) now derive variables from element formulas, deduplicate, and show **one input per variable** in the Builder card.
+- **Value chain** is supported (no more "Unknown chart type: valuechain"); dedicated `ChartBuilderValueChain` with number/textarea per variable.
+- **Text/Table/Image:** One textarea or uploader per variable; text chart shows current content and is editable; table and image builders use the same variable-extraction pattern.
+- **Card style and icons:** All builders use consistent card layout and Material Icons in the header.
+- **Technical:** `lib/formulaEngine.ts` — `extractVariablesFromFormula()`; components: `BuilderMode.tsx`, `ChartBuilderKPI`, `ChartBuilderBar`, `ChartBuilderPie`, `ChartBuilderText`, `ChartBuilderTable`, `ChartBuilderImage`, `ChartBuilderValueChain`. Plan: `docs/plan-builder-mode-variable-inputs.md`.
 
 ---
 

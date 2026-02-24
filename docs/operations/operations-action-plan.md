@@ -146,10 +146,14 @@ Owner: Katja (Admin)
 
 ## 7. STATE MEMORY (Current Only)
 
+2026-02-24
+- CONTEXT: Builder mode (clicker) — all chart types (KPI, Bar, Pie, Text, Table, Image, Value chain) now show one input per variable extracted from element formulas. Uses `extractVariablesFromFormula()` from `lib/formulaEngine`; stats-only vars; deduplicated across elements. Committed and pushed to `landing-overhaul` and preview. Handover doc, brain-dump, release notes, features docs, delivery-focus, and MEMORY updated.
+- PROJECT BOARD: Update [MVP Factory Board](https://github.com/users/moldovancsaba/projects/1) — if an issue exists for Builder mode / clicker variable inputs (e.g. mvp-factory-control), move it to **Done** and post evidence (e.g. link to `docs/release-notes-11.59.0.md` or commit).
+- NEXT: None pending for this delivery. Future: optional Phase 3–4 in `docs/plan-builder-mode-variable-inputs.md` (shared variable-input component, KPI/Bar/Pie multi-var already done).
+
 2026-02-21
 - CONTEXT: Style editor preview refresh (v11.59.0) — bar/pie CSS vars, inject on change + after fetch, Value Chain + Landing in preview. Version 11.59.0; release notes, feature docs, MEMORY, brain-dump, handover doc updated.
-- PENDING: GitHub project board update (style-editor/landing preview cards if any); npm run build; commit and push to preview.
-- NEXT: Run build, commit, push to preview; optionally update board.
+- Completed: build, commit, push to preview.
 
 2026-02-04
 - AGENT: Tribeca

@@ -42,6 +42,7 @@ Owner: Documentation
 - [features/BITLY_INTEGRATION_GUIDE.md](features/features-bitly-integration-guide.md) — Bitly integration architecture, endpoints, and operations.
 - [features/GOOGLE_SHEETS_INTEGRATION.md](features/features-google-sheets-integration.md) — Google Sheets integration, auth, sync behavior, and troubleshooting.
 - [features/HASHTAG_SYSTEM.md](features/features-hashtag-system.md) — Hashtag system behavior and APIs.
+- [features/features-reporting-builder.md](features/features-reporting-builder.md) — Reporting & Builder mode (clicker): variable inputs per chart on `/edit/[slug]`.
 
 ## Admin & Templates
 - [admin-end-user-guide.md](admin/admin-end-user-guide.md) — Canonical operator guide for Admin workflows and UI paths.

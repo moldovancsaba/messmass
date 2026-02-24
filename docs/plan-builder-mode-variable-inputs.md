@@ -1,7 +1,7 @@
 # Plan: Builder Mode — Variable Inputs from Report Layout
 
-**Status:** Phase 1–2 implemented (2026-02-21)  
-**Last Updated:** 2026-02-21  
+**Status:** Phase 1–2 implemented; all chart types show one input per variable (2026-02-24).  
+**Last Updated:** 2026-02-24  
 **Context:** Event edit page (e.g. https://www.messmass.com/edit/91cab2ec-98a5-4c54-8c31-48057408b2b0) — Builder mode should show **variable inputs** that feed each chart, not only chart placeholders. Value Chain charts currently show "⚠️ Unknown chart type: valuechain" and charts with formulas like `[newUsersAdded] / [uniqueUsers] * 100` need **one input per variable** (e.g. `newUsersAdded`, `uniqueUsers`).
 
 ---
