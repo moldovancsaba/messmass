@@ -1,17 +1,12 @@
-// WHAT: Chart Builder for PIE charts - 2 numeric inputs with labels and colors
-// WHY: Allow inline editing of pie chart segments in Builder mode
-// HOW: Render 2 inputs based on chart elements, extract stats keys, auto-save on blur
+// WHAT: Chart Builder for PIE charts - one input per variable used in any slice's formula
+// WHY: Each slice formula can reference multiple variables; we show all variables (deduplicated)
+// HOW: Extract variables from every element's formula, deduplicate, show one input per variable
 
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import MaterialIcon from './MaterialIcon';
-
-function formulaToStatsKey(formula: string): string {
-  const t = (formula || '').trim();
-  const m = t.match(/^\[([^\]]+)\]$/);
-  return m ? m[1] : t.replace(/^stats\./, '').trim();
-}
+import { extractVariablesFromFormula } from '@/lib/formulaEngine';
 
 interface ChartBuilderPieProps {
   chart: {
@@ -24,51 +19,77 @@ interface ChartBuilderPieProps {
   onSave: (key: string, value: number | string) => void;
 }
 
+function getStatsVariablesFromElements(elements: Array<{ formula: string }>): string[] {
+  const seen = new Set<string>();
+  const list: string[] = [];
+  for (const el of elements) {
+    if (!el.formula?.trim()) continue;
+    const vars = extractVariablesFromFormula(el.formula);
+    for (const v of vars) {
+      if (v.includes(':')) continue;
+      if (seen.has(v)) continue;
+      seen.add(v);
+      list.push(v);
+    }
+  }
+  return list;
+}
+
 export default function ChartBuilderPie({ chart, stats, onSave }: ChartBuilderPieProps) {
-  // WHAT: Parse elements (exactly 2 for pie charts)
   const elements = chart.elements.slice(0, 2);
-  
-  // WHAT: State for each input field (store as string to allow deletion)
-  // WHY: Prevents aggressive parsing that resets empty values immediately
+  const variables = useMemo(
+    () => getStatsVariablesFromElements(elements),
+    [chart.chartId, elements.map((e) => e.formula).join('|')]
+  );
+
   const [tempValues, setTempValues] = useState<Record<string, string>>(() => {
     const initial: Record<string, string> = {};
-    elements.forEach((el) => {
-      const statsKey = formulaToStatsKey(el.formula);
-      initial[statsKey] = (stats[statsKey] || 0).toString();
+    variables.forEach((key) => {
+      const val = stats[key];
+      initial[key] = val !== undefined && val !== null ? String(val) : '0';
     });
     return initial;
   });
-  
-  // WHAT: Sync temp values when stats change externally
+
   useEffect(() => {
-    const updated: Record<string, string> = {};
-    elements.forEach((el) => {
-      const statsKey = formulaToStatsKey(el.formula);
-      updated[statsKey] = (stats[statsKey] || 0).toString();
+    const next: Record<string, string> = {};
+    variables.forEach((key) => {
+      const val = stats[key];
+      next[key] = val !== undefined && val !== null ? String(val) : '0';
     });
-    setTempValues(updated);
-  }, [stats, elements]);
-  
-  // WHAT: Save individual field on blur
-  const handleBlur = (statsKey: string) => {
-    const newValue = Math.max(0, parseInt(tempValues[statsKey] || '0') || 0);
-    const currentValue = stats[statsKey] || 0;
-    if (newValue !== currentValue) {
-      onSave(statsKey, newValue);
+    setTempValues((prev) => ({ ...prev, ...next }));
+  }, [stats, chart.chartId, variables]);
+
+  const handleBlur = (key: string) => {
+    const raw = tempValues[key] ?? '0';
+    const num = raw === '' ? 0 : Math.max(0, parseFloat(raw) || 0);
+    const current = stats[key];
+    const currentNum = typeof current === 'number' ? current : parseFloat(String(current));
+    if (Number.isNaN(currentNum) || num !== currentNum) {
+      onSave(key, num);
     }
   };
-  
-  // WHAT: Calculate percentages for visual feedback (parse strings to numbers)
-  const total = Object.values(tempValues).reduce((sum, val) => sum + (parseInt(val) || 0), 0);
-  const percentages = Object.entries(tempValues).reduce((acc, [key, val]) => {
-    const numVal = parseInt(val) || 0;
-    acc[key] = total > 0 ? Math.round((numVal / total) * 100) : 0;
-    return acc;
-  }, {} as Record<string, number>);
-  
+
+  const total = variables.reduce((sum, key) => sum + (parseFloat(tempValues[key] || '0') || 0), 0);
+
+  if (variables.length === 0) {
+    return (
+      <div className="chart-builder-pie">
+        <div className="chart-builder-header">
+          <div className="chart-builder-title-row">
+            {chart.icon && (
+              <MaterialIcon name={chart.icon} variant="outlined" className="chart-builder-icon" />
+            )}
+            <h3 className="chart-builder-title">{chart.title}</h3>
+          </div>
+        </div>
+        <p className="chart-builder-hint">No variables in pie formulas. Add variables (e.g. [varName]) in Visualization Manager.</p>
+      </div>
+    );
+  }
+
   return (
     <div className="chart-builder-pie">
-      {/* Chart title with icon */}
       <div className="chart-builder-header">
         <div className="chart-builder-title-row">
           {chart.icon && (
@@ -77,60 +98,33 @@ export default function ChartBuilderPie({ chart, stats, onSave }: ChartBuilderPi
           <h3 className="chart-builder-title">{chart.title}</h3>
         </div>
       </div>
-      
-      {/* Input fields for each pie segment */}
       <div className="chart-builder-inputs">
-        {elements.map((el, idx) => {
-          const statsKey = el.formula.replace(/^stats\./, '').trim();
-          const percentage = percentages[statsKey] || 0;
-          
-          return (
-            <div key={idx} className="chart-builder-field chart-builder-field-wrapper">
-              {/* Label with color indicator */}
-              <div className="chart-builder-bar-row">
-                {el.color && (
-                  // WHAT: Dynamic color indicator from chart configuration
-                  // WHY: Color is data-driven from chart.elements[].color
-                  <div className="chart-builder-color-dot" style={{ backgroundColor: el.color }} /> // eslint-disable-line react/forbid-dom-props
-                )}
-                <label className="chart-builder-bar-label">
-                  {el.label || statsKey}
-                </label>
-                <span className="chart-builder-percentage">
-                  {percentage}%
-                </span>
-              </div>
-              
-              {/* Input field */}
-              <input
-                type="number"
-                value={tempValues[statsKey] ?? '0'}
-                onChange={(e) => setTempValues(prev => ({
-                  ...prev,
-                  [statsKey]: e.target.value
-                }))}
-                onBlur={() => handleBlur(statsKey)}
-                min="0"
-                className="form-input chart-builder-input"
-              />
-            </div>
-          );
-        })}
+        {variables.map((key) => (
+          <div key={key} className="chart-builder-bar-row">
+            <label className="chart-builder-bar-label" htmlFor={`pie-${chart.chartId}-${key}`}>
+              [{key}]
+            </label>
+            <input
+              id={`pie-${chart.chartId}-${key}`}
+              type="number"
+              value={tempValues[key] ?? '0'}
+              onChange={(e) => setTempValues((prev) => ({ ...prev, [key]: e.target.value }))}
+              onBlur={() => handleBlur(key)}
+              min="0"
+              step="any"
+              className="form-input chart-builder-bar-input"
+              placeholder="0"
+              aria-label={`Value for ${key}`}
+            />
+          </div>
+        ))}
       </div>
-      
-      {/* Total display */}
       <div className="chart-builder-pie-total chart-builder-total-row">
-        <span>
-          Total
-        </span>
-        <span className="chart-builder-total-value">
-          {total}
-        </span>
+        <span>Sum of inputs</span>
+        <span className="chart-builder-total-value">{total}</span>
       </div>
-      
-      {/* Chart type hint */}
       <p className="chart-builder-hint">
-        Pie Chart • {elements.length} segments
+        Pie chart • {elements.length} slice(s) • {variables.length} variable(s). Each value feeds the formulas.
       </p>
     </div>
   );

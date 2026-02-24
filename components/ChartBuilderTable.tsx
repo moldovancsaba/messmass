@@ -1,20 +1,15 @@
-// WHAT: Chart Builder for TABLE charts - textarea with markdown table preview
-// WHY: Allow inline table editing with markdown table preview in Builder mode
-// HOW: TextareaField for editing, markdown table preview toggle, reuse existing components
+// WHAT: Chart Builder for TABLE charts - one input per variable from all element formulas
+// WHY: Fill all data in Builder; formulas can reference one or more reportTable* (or other) variables
+// HOW: Extract variables from all elements, dedupe, one textarea per variable with [varName] label
 
 'use client';
 
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import TextareaField from './TextareaField';
 import MaterialIcon from './MaterialIcon';
 import { parseTableMarkdown } from '@/lib/tableMarkdownUtils';
 import { sanitizeHTML } from '@/lib/sanitize';
-
-function formulaToStatsKey(formula: string): string {
-  const t = (formula || '').trim();
-  const m = t.match(/^\[([^\]]+)\]$/);
-  return m ? m[1] : t.replace(/^stats\./, '').trim();
-}
+import { extractVariablesFromFormula } from '@/lib/formulaEngine';
 
 interface ChartBuilderTableProps {
   chart: {
@@ -27,82 +22,110 @@ interface ChartBuilderTableProps {
   onSave: (key: string, value: number | string) => void;
 }
 
+function getStatsVariablesFromElements(elements: Array<{ formula: string }>): string[] {
+  const seen = new Set<string>();
+  const list: string[] = [];
+  for (const el of elements) {
+    if (!el.formula?.trim()) continue;
+    const vars = extractVariablesFromFormula(el.formula);
+    for (const v of vars) {
+      if (v.includes(':')) continue;
+      if (seen.has(v)) continue;
+      seen.add(v);
+      list.push(v);
+    }
+  }
+  return list;
+}
+
+const TABLE_PLACEHOLDER = 'Paste markdown table...\n\n| Col A | Col B |\n|-------|-------|\n| 1     | 2     |';
+
 export default function ChartBuilderTable({ chart, stats, onSave }: ChartBuilderTableProps) {
-  // WHAT: Extract the variable key from formula (e.g., "stats.reportTable1" → "reportTable1")
-  // WHY: Need to know which stats field to read/write
-  const statsKey = formulaToStatsKey(chart.elements[0]?.formula || '');
-  const currentTable = (stats[statsKey] ?? '') as string;
-  
-  // WHAT: Preview mode state (edit vs preview)
-  // WHY: Let users see formatted markdown table output before saving
-  const [isPreview, setIsPreview] = useState(false);
-  
+  const variables = useMemo(
+    () => getStatsVariablesFromElements(chart.elements || []),
+    [chart.chartId, chart.elements?.map((e) => e.formula).join('|') ?? '']
+  );
+  const [previewKey, setPreviewKey] = useState<string | null>(null);
+
+  if (variables.length === 0) {
+    return (
+      <div className="chart-builder-table">
+        <div className="chart-builder-header">
+          <div className="chart-builder-title-row">
+            {chart.icon && (
+              <MaterialIcon name={chart.icon} variant="outlined" className="chart-builder-icon" />
+            )}
+            <h3 className="chart-builder-title">{chart.title}</h3>
+          </div>
+        </div>
+        <p className="chart-builder-hint">No variables in formula. Add variables (e.g. [reportTable1]) in Visualization Manager.</p>
+      </div>
+    );
+  }
+
   return (
     <div className="chart-builder-table">
-      {/* Chart title with icon and preview toggle */}
       <div className="chart-builder-header">
         <div className="chart-builder-title-row">
           {chart.icon && (
             <MaterialIcon name={chart.icon} variant="outlined" className="chart-builder-icon" />
           )}
-          <h3 className="chart-builder-title">
-            {chart.title}
-          </h3>
+          <h3 className="chart-builder-title">{chart.title}</h3>
         </div>
-        
-        {/* WHAT: Preview toggle button */}
-        {/* WHY: Allow users to see formatted table output */}
-        {currentTable && (
-          <button
-            type="button"
-            onClick={() => setIsPreview(!isPreview)}
-            className="chart-builder-toggle"
-            title={isPreview ? 'Edit markdown' : 'Preview formatted table'}
-          >
+      </div>
+      <div className="chart-builder-inputs">
+        {variables.map((key) => (
+          <TableBlock
+            key={key}
+            variableKey={key}
+            stats={stats}
+            onSave={onSave}
+            onPreviewToggle={(k) => setPreviewKey((p) => (p === k ? null : k))}
+            isPreview={previewKey === key}
+          />
+        ))}
+      </div>
+      <p className="chart-builder-hint" style={{ marginTop: '0.5rem', fontSize: '0.75rem' }}>
+        💡 Use pipes (|) for columns, dashes (---) for header separator.
+      </p>
+      <p className="chart-builder-hint" style={{ marginTop: '0.25rem', fontSize: '0.75rem', color: 'var(--mm-gray-500)' }}>
+        Table chart • {variables.length} variable(s). Each value feeds the report.
+      </p>
+    </div>
+  );
+}
+
+function TableBlock({
+  variableKey,
+  stats,
+  onSave,
+  onPreviewToggle,
+  isPreview,
+}: {
+  variableKey: string;
+  stats: Record<string, any>;
+  onSave: (key: string, value: number | string) => void;
+  onPreviewToggle: (key: string) => void;
+  isPreview: boolean;
+}) {
+  const value = (stats[variableKey] ?? '') as string;
+  return (
+    <div className="chart-builder-text-block">
+      <div className="chart-builder-text-block-header">
+        <label className="chart-builder-bar-label">[{variableKey}]</label>
+        {value && (
+          <button type="button" onClick={() => onPreviewToggle(variableKey)} className="chart-builder-toggle" title={isPreview ? 'Edit' : 'Preview table'}>
             {isPreview ? '✏️ Edit' : '👁️ Preview'}
           </button>
         )}
       </div>
-      
-      {/* WHAT: Show either textarea (edit mode) or preview (preview mode) */}
       {isPreview ? (
-        <div className="chart-builder-preview">
-          {/* WHAT: Render markdown table preview with same styles as TableChart */}
-          {/* WHY: Show users how table will appear in final report */}
-          <div 
-            className="chart-builder-preview-content"
-            dangerouslySetInnerHTML={{ __html: sanitizeHTML(parseTableMarkdown(currentTable)) }}
-          />
+        <div className="chart-builder-preview chart-builder-preview-inline">
+          <div className="chart-builder-preview-content" dangerouslySetInnerHTML={{ __html: sanitizeHTML(parseTableMarkdown(value)) }} />
         </div>
       ) : (
-        <>
-          {/* Textarea field for editing markdown table */}
-          <TextareaField
-            label=""
-            value={currentTable}
-            onSave={(table) => onSave(statsKey, table)}
-            rows={12}
-            placeholder="Paste markdown table here...&#10;&#10;Example:&#10;| Header 1 | Header 2 | Header 3 |&#10;|---------|---------|---------|&#10;| Cell 1  | Cell 2  | Cell 3  |&#10;| Cell 4  | Cell 5  | Cell 6  |"
-          />
-          
-          {/* WHAT: Markdown table syntax hint */}
-          {/* WHY: Guide users on table formatting */}
-          {/* eslint-disable-next-line react/forbid-dom-props */}
-          <p className="chart-builder-hint" style={{ marginTop: '0.5rem' }}>
-            💡 Markdown table syntax: Use pipes (|) to separate columns, dashes (---) for header separator
-          </p>
-          {/* eslint-disable-next-line react/forbid-dom-props */}
-          <p className="chart-builder-hint" style={{ marginTop: '0.25rem', fontSize: '0.75rem' }}>
-            Alignment: Use :--- for left, ---: for right, :---: for center alignment
-          </p>
-        </>
+        <TextareaField label="" value={value} onSave={(text) => onSave(variableKey, text)} rows={8} placeholder={TABLE_PLACEHOLDER} />
       )}
-      
-      {/* Variable hint */}
-      {/* eslint-disable-next-line react/forbid-dom-props */}
-      <p className="chart-builder-hint" style={{ marginTop: '0.5rem', fontSize: '0.75rem', color: 'var(--mm-gray-500)' }}>
-        Variable: {statsKey}
-      </p>
     </div>
   );
 }
