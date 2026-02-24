@@ -5,6 +5,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import MaterialIcon from './MaterialIcon';
 
 interface ChartBuilderKPIProps {
   chart: {
@@ -17,12 +18,16 @@ interface ChartBuilderKPIProps {
   onSave: (key: string, value: number | string) => void;
 }
 
+function formulaToStatsKey(formula: string): string {
+  const t = (formula || '').trim();
+  const m = t.match(/^\[([^\]]+)\]$/);
+  return m ? m[1] : t.replace(/^stats\./, '').trim();
+}
+
 export default function ChartBuilderKPI({ chart, stats, onSave }: ChartBuilderKPIProps) {
-  // WHAT: Extract the variable key from formula (e.g., "stats.remoteImages" → "remoteImages")
-  // WHY: Need to know which stats field to read/write
   const formula = chart.elements[0]?.formula || '';
-  const statsKey = formula.replace(/^stats\./, '').trim();
-  const currentValue = stats[statsKey] || 0;
+  const statsKey = formulaToStatsKey(formula);
+  const currentValue = stats[statsKey] ?? 0;
   
   // WHAT: Store as string to allow deletion without aggressive parsing
   // WHY: Prevents resetting empty string to 0 immediately on keystroke
@@ -46,10 +51,14 @@ export default function ChartBuilderKPI({ chart, stats, onSave }: ChartBuilderKP
     <div className="chart-builder-kpi">
       {/* Chart title with icon */}
       <div className="chart-builder-header">
-        {chart.icon && <span className="chart-builder-icon">{chart.icon}</span>}
-        <h3 className="chart-builder-title">
-          {chart.title}
-        </h3>
+        <div className="chart-builder-title-row">
+          {chart.icon && (
+            <MaterialIcon name={chart.icon} variant="outlined" className="chart-builder-icon" />
+          )}
+          <h3 className="chart-builder-title">
+            {chart.title}
+          </h3>
+        </div>
       </div>
       
       {/* Single input field */}

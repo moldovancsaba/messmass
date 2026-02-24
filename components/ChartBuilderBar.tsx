@@ -5,6 +5,13 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import MaterialIcon from './MaterialIcon';
+
+function formulaToStatsKey(formula: string): string {
+  const t = (formula || '').trim();
+  const m = t.match(/^\[([^\]]+)\]$/);
+  return m ? m[1] : t.replace(/^stats\./, '').trim();
+}
 
 interface ChartBuilderBarProps {
   chart: {
@@ -26,7 +33,7 @@ export default function ChartBuilderBar({ chart, stats, onSave }: ChartBuilderBa
   const [tempValues, setTempValues] = useState<Record<string, string>>(() => {
     const initial: Record<string, string> = {};
     elements.forEach((el) => {
-      const statsKey = el.formula.replace(/^stats\./, '').trim();
+      const statsKey = formulaToStatsKey(el.formula);
       initial[statsKey] = (stats[statsKey] || 0).toString();
     });
     return initial;
@@ -36,7 +43,7 @@ export default function ChartBuilderBar({ chart, stats, onSave }: ChartBuilderBa
   useEffect(() => {
     const updated: Record<string, string> = {};
     elements.forEach((el) => {
-      const statsKey = el.formula.replace(/^stats\./, '').trim();
+      const statsKey = formulaToStatsKey(el.formula);
       updated[statsKey] = (stats[statsKey] || 0).toString();
     });
     setTempValues(updated);
@@ -55,16 +62,18 @@ export default function ChartBuilderBar({ chart, stats, onSave }: ChartBuilderBa
     <div className="chart-builder-bar">
       {/* Chart title with icon */}
       <div className="chart-builder-header">
-        {chart.icon && <span className="chart-builder-icon">{chart.icon}</span>}
-        <h3 className="chart-builder-title">
-          {chart.title}
-        </h3>
+        <div className="chart-builder-title-row">
+          {chart.icon && (
+            <MaterialIcon name={chart.icon} variant="outlined" className="chart-builder-icon" />
+          )}
+          <h3 className="chart-builder-title">{chart.title}</h3>
+        </div>
       </div>
       
       {/* Input fields for each bar segment */}
       <div className="chart-builder-inputs">
         {elements.map((el, idx) => {
-          const statsKey = el.formula.replace(/^stats\./, '').trim();
+          const statsKey = formulaToStatsKey(el.formula);
           
           return (
             <div key={idx} className="chart-builder-bar-row">

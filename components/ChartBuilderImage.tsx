@@ -5,6 +5,13 @@
 'use client';
 
 import ImageUploader from './ImageUploader';
+import MaterialIcon from './MaterialIcon';
+
+function formulaToStatsKey(formula: string): string {
+  const t = (formula || '').trim();
+  const m = t.match(/^\[([^\]]+)\]$/);
+  return m ? m[1] : t.replace(/^stats\./, '').trim();
+}
 
 interface ChartBuilderImageProps {
   chart: {
@@ -20,18 +27,18 @@ interface ChartBuilderImageProps {
 export default function ChartBuilderImage({ chart, stats, onSave }: ChartBuilderImageProps) {
   // WHAT: Extract the variable key from formula (e.g., "stats.reportImage3" → "reportImage3")
   // WHY: Need to know which stats field to read/write
-  const formula = chart.elements[0]?.formula || '';
-  const statsKey = formula.replace(/^stats\./, '').trim();
-  const currentImageUrl = stats[statsKey] || '';
+  const statsKey = formulaToStatsKey(chart.elements[0]?.formula || '');
+  const currentImageUrl = (stats[statsKey] ?? '') as string;
   
   return (
     <div className="chart-builder-image">
-      {/* Chart title with icon */}
       <div className="chart-builder-header">
-        {chart.icon && <span className="chart-builder-icon">{chart.icon}</span>}
-        <h3 className="chart-builder-title">
-          {chart.title}
-        </h3>
+        <div className="chart-builder-title-row">
+          {chart.icon && (
+            <MaterialIcon name={chart.icon} variant="outlined" className="chart-builder-icon" />
+          )}
+          <h3 className="chart-builder-title">{chart.title}</h3>
+        </div>
       </div>
       
       {/* Image uploader */}

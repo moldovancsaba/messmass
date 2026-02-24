@@ -6,6 +6,7 @@
 
 import { useState } from 'react';
 import TextareaField from './TextareaField';
+import MaterialIcon from './MaterialIcon';
 import { parseMarkdown, getMarkdownHint, isMarkdown } from '@/lib/markdownUtils';
 import { sanitizeHTML } from '@/lib/sanitize';
 
@@ -20,12 +21,18 @@ interface ChartBuilderTextProps {
   onSave: (key: string, value: number | string) => void;
 }
 
+// WHAT: Resolve stats key from formula whether it's [reportText21] or stats.reportText21
+function getStatsKeyFromFormula(formula: string): string {
+  const trimmed = (formula || '').trim();
+  const bracketMatch = trimmed.match(/^\[([^\]]+)\]$/);
+  if (bracketMatch) return bracketMatch[1];
+  return trimmed.replace(/^stats\./, '').trim();
+}
+
 export default function ChartBuilderText({ chart, stats, onSave }: ChartBuilderTextProps) {
-  // WHAT: Extract the variable key from formula (e.g., "stats.reportText5" → "reportText5")
-  // WHY: Need to know which stats field to read/write
   const formula = chart.elements[0]?.formula || '';
-  const statsKey = formula.replace(/^stats\./, '').trim();
-  const currentText = stats[statsKey] || '';
+  const statsKey = getStatsKeyFromFormula(formula);
+  const currentText = (stats[statsKey] ?? '') as string;
   
   // WHAT: Preview mode state (edit vs preview)
   // WHY: Let users see formatted markdown output before saving
@@ -40,7 +47,9 @@ export default function ChartBuilderText({ chart, stats, onSave }: ChartBuilderT
       {/* Chart title with icon and preview toggle */}
       <div className="chart-builder-header">
         <div className="chart-builder-title-row">
-          {chart.icon && <span className="chart-builder-icon">{chart.icon}</span>}
+          {chart.icon && (
+            <MaterialIcon name={chart.icon} variant="outlined" className="chart-builder-icon" />
+          )}
           <h3 className="chart-builder-title">
             {chart.title}
           </h3>

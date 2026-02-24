@@ -6,8 +6,15 @@
 
 import { useState } from 'react';
 import TextareaField from './TextareaField';
+import MaterialIcon from './MaterialIcon';
 import { parseTableMarkdown } from '@/lib/tableMarkdownUtils';
 import { sanitizeHTML } from '@/lib/sanitize';
+
+function formulaToStatsKey(formula: string): string {
+  const t = (formula || '').trim();
+  const m = t.match(/^\[([^\]]+)\]$/);
+  return m ? m[1] : t.replace(/^stats\./, '').trim();
+}
 
 interface ChartBuilderTableProps {
   chart: {
@@ -23,9 +30,8 @@ interface ChartBuilderTableProps {
 export default function ChartBuilderTable({ chart, stats, onSave }: ChartBuilderTableProps) {
   // WHAT: Extract the variable key from formula (e.g., "stats.reportTable1" → "reportTable1")
   // WHY: Need to know which stats field to read/write
-  const formula = chart.elements[0]?.formula || '';
-  const statsKey = formula.replace(/^stats\./, '').trim();
-  const currentTable = stats[statsKey] || '';
+  const statsKey = formulaToStatsKey(chart.elements[0]?.formula || '');
+  const currentTable = (stats[statsKey] ?? '') as string;
   
   // WHAT: Preview mode state (edit vs preview)
   // WHY: Let users see formatted markdown table output before saving
@@ -36,7 +42,9 @@ export default function ChartBuilderTable({ chart, stats, onSave }: ChartBuilder
       {/* Chart title with icon and preview toggle */}
       <div className="chart-builder-header">
         <div className="chart-builder-title-row">
-          {chart.icon && <span className="chart-builder-icon">{chart.icon}</span>}
+          {chart.icon && (
+            <MaterialIcon name={chart.icon} variant="outlined" className="chart-builder-icon" />
+          )}
           <h3 className="chart-builder-title">
             {chart.title}
           </h3>

@@ -1584,6 +1584,66 @@ textarea::placeholder {
   box-shadow: var(--mm-shadow-sm);
 }
 
+/* VALUE CHAIN Chart Builder - card style */
+.chart-builder-valuechain {
+  padding: var(--mm-space-6);
+  background: var(--mm-white);
+  border-radius: var(--mm-radius-lg);
+  border: 2px solid var(--mm-color-primary-500, #6366f1);
+  box-shadow: var(--mm-shadow-sm);
+}
+
+.chart-builder-valuechain .chart-builder-header {
+  margin-bottom: var(--mm-space-4);
+}
+
+.chart-builder-valuechain .chart-builder-inputs {
+  display: flex;
+  flex-direction: column;
+  gap: var(--mm-space-3);
+}
+
+.chart-builder-valuechain .chart-builder-bar-row {
+  display: flex;
+  align-items: center;
+  gap: var(--mm-space-3);
+  padding: var(--mm-space-2) var(--mm-space-3);
+  background: var(--mm-gray-50);
+  border-radius: var(--mm-radius-md);
+  border: 1px solid var(--mm-gray-200);
+}
+
+.chart-builder-valuechain .chart-builder-bar-label {
+  min-width: 120px;
+  font-size: var(--mm-font-size-sm);
+  font-weight: var(--mm-font-weight-medium);
+  color: var(--mm-gray-700);
+}
+
+.chart-builder-valuechain .chart-builder-bar-input {
+  flex: 1;
+  min-width: 0;
+  max-width: 100%;
+}
+
+/* TABLE Chart Builder - card style */
+.chart-builder-table {
+  padding: var(--mm-space-6);
+  background: var(--mm-white);
+  border-radius: var(--mm-radius-lg);
+  border: 2px solid var(--mm-color-warning, #f59e0b);
+  box-shadow: var(--mm-shadow-sm);
+}
+
+/* WHAT: Icon in chart builders - support both emoji and MaterialIcon */
+.chart-builder-header .chart-builder-icon {
+  font-size: 1.25rem;
+  width: 1.25rem;
+  height: 1.25rem;
+  flex-shrink: 0;
+  color: currentColor;
+}
+
 /* WHAT: Preview toggle button for markdown editing */
 /* WHY: Switch between edit and preview modes */
 .chart-builder-toggle {

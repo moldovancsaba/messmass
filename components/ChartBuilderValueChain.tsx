@@ -6,6 +6,7 @@
 
 import { useState, useEffect, useMemo } from 'react';
 import { extractVariablesFromFormula } from '@/lib/formulaEngine';
+import MaterialIcon from './MaterialIcon';
 
 interface ChartBuilderValueChainProps {
   chart: {
@@ -82,8 +83,12 @@ export default function ChartBuilderValueChain({ chart, stats, onSave }: ChartBu
     return (
       <div className="chart-builder-valuechain">
         <div className="chart-builder-header">
-          {chart.icon && <span className="chart-builder-icon">{chart.icon}</span>}
-          <h3 className="chart-builder-title">{chart.title}</h3>
+          <div className="chart-builder-title-row">
+            {chart.icon && (
+              <MaterialIcon name={chart.icon} variant="outlined" className="chart-builder-icon" />
+            )}
+            <h3 className="chart-builder-title">{chart.title}</h3>
+          </div>
         </div>
         <p className="chart-builder-hint">No variables in formulas (e.g. [varName]). Add variables in Visualization Manager.</p>
       </div>
@@ -93,8 +98,12 @@ export default function ChartBuilderValueChain({ chart, stats, onSave }: ChartBu
   return (
     <div className="chart-builder-valuechain">
       <div className="chart-builder-header">
-        {chart.icon && <span className="chart-builder-icon">{chart.icon}</span>}
-        <h3 className="chart-builder-title">{chart.title}</h3>
+        <div className="chart-builder-title-row">
+          {chart.icon && (
+            <MaterialIcon name={chart.icon} variant="outlined" className="chart-builder-icon" />
+          )}
+          <h3 className="chart-builder-title">{chart.title}</h3>
+        </div>
       </div>
       <div className="chart-builder-inputs">
         {variables.map((key) => {
