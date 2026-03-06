@@ -172,13 +172,28 @@ function getTotalFans(stats?: Event['stats']): number {
     return 0;
   }
 
-  if (typeof stats.totalFans === 'number') {
-    return stats.totalFans;
+  const totalFans = toFiniteNumber(stats.totalFans);
+  if (totalFans !== null) {
+    return totalFans;
   }
 
-  const remoteFans = typeof stats.remoteFans === 'number'
-    ? stats.remoteFans
+  const remoteFans = toFiniteNumber(stats.remoteFans);
+  const derivedRemoteFans = remoteFans !== null
+    ? remoteFans
     : Number(stats.indoor || 0) + Number(stats.outdoor || 0);
 
-  return remoteFans + Number(stats.stadium || 0);
+  return derivedRemoteFans + Number(stats.stadium || 0);
+}
+
+function toFiniteNumber(value: unknown): number | null {
+  if (typeof value === 'number' && Number.isFinite(value)) {
+    return value;
+  }
+
+  if (typeof value === 'string' && value.trim() !== '') {
+    const parsed = Number(value);
+    return Number.isFinite(parsed) ? parsed : null;
+  }
+
+  return null;
 }

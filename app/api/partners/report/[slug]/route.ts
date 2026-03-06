@@ -144,6 +144,7 @@ const db = client.db(config.dbName);
       events: events.map(event => {
         const rawStats = event.stats || {};
         const derivedStats = addDerivedMetrics(rawStats);
+        const storedTotalFans = toFiniteNumber((rawStats as Record<string, unknown>).totalFans);
         return {
           _id: event._id.toString(),
           eventName: event.eventName,
@@ -155,7 +156,7 @@ const db = client.db(config.dbName);
           updatedAt: event.updatedAt,
           stats: {
             ...derivedStats,
-            totalFans: typeof rawStats.totalFans === 'number' ? rawStats.totalFans : derivedStats.totalFans,
+            totalFans: storedTotalFans ?? derivedStats.totalFans,
           }
         };
       }),
@@ -171,4 +172,17 @@ const db = client.db(config.dbName);
       { status: 500 }
     );
   }
+}
+
+function toFiniteNumber(value: unknown): number | null {
+  if (typeof value === 'number' && Number.isFinite(value)) {
+    return value;
+  }
+
+  if (typeof value === 'string' && value.trim() !== '') {
+    const parsed = Number(value);
+    return Number.isFinite(parsed) ? parsed : null;
+  }
+
+  return null;
 }
