@@ -114,7 +114,8 @@ export interface ProjectDTO {
     indoor: number;
     outdoor: number;
     stadium: number;
-    remoteFans?: number;
+    remoteFans?: number | string;
+    totalFans?: number | string;
     female: number;
     male: number;
     genAlpha: number;
@@ -128,7 +129,7 @@ export interface ProjectDTO {
     baseballCap: number;
     other: number;
     eventAttendees?: number;
-    [key: string]: number | undefined; // Allow dynamic stats
+    [key: string]: number | string | undefined; // Allow dynamic stats including stored numeric strings
   };
   viewSlug?: string;
   editSlug?: string;

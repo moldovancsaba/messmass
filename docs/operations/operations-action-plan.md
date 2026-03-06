@@ -1,10 +1,10 @@
 # Operations Action Plan
 Status: Active
-Last Updated: 2026-02-05
+Last Updated: 2026-03-06
 Canonical: Yes
 Owner: Operations
 
-**Version:** 1.3.5  
+**Version:** 1.3.6  
 **Created:** 2026-01-12T00:09:33.679Z  
 **Last Updated (UTC):** 2026-02-06  
 **Audience:** Product + Engineering
@@ -145,6 +145,14 @@ Owner: Katja (Admin)
 ---
 
 ## 7. STATE MEMORY (Current Only)
+
+2026-03-06
+- CONTEXT: New production bugs now tracked under:
+  - `mvp-factory-control#349` admin event surfaces must use stored `[totalFans]` consistently
+  - `mvp-factory-control#348` partner admin card-view report-edit action must match list view
+- BOARD: `#348` and `#349` are active on Project 1 and carry the current hotfix work.
+- CODE: `getStoredOrDerivedTotalFans(...)` was introduced for admin fan displays and `/api/projects` fan sorting; partner card-view report-edit action is being aligned to `_id || viewSlug`.
+- NEXT: finish validation, bump to `11.60.2`, sync release docs, post SSOT evidence, push, then continue with the next tracked delivery item.
 
 2026-03-06
 - CONTEXT: Production hotfix tracking split into two SSOT bug cards:

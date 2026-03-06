@@ -9,6 +9,7 @@ import { AdminPageAdapter } from '../adminDataAdapters';
 import { ProjectDTO } from '../types/api';
 import ColoredHashtagBubble from '@/components/ColoredHashtagBubble';
 import { apiDelete } from '@/lib/apiClient';
+import { getStoredOrDerivedTotalFans } from '@/lib/totalFans';
 
 /**
  * WHAT: Complete adapter configuration for Projects page
@@ -130,7 +131,7 @@ export const projectsAdapter: AdminPageAdapter<ProjectDTO> = {
         width: '100px',
         sortable: true,
         render: (project) => {
-          const total = (project.stats.stadium || 0) + (project.stats.remoteFans || 0);
+          const total = getStoredOrDerivedTotalFans(project.stats);
           return <span>{total.toLocaleString()}</span>;
         },
       },
@@ -273,7 +274,7 @@ export const projectsAdapter: AdminPageAdapter<ProjectDTO> = {
         label: 'Total Fans',
         icon: '👥',
         render: (project) => {
-          const total = (project.stats.stadium || 0) + (project.stats.remoteFans || 0);
+          const total = getStoredOrDerivedTotalFans(project.stats);
           return total.toLocaleString();
         },
       },

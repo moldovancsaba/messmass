@@ -1,6 +1,6 @@
 # Canonical Map
 Status: Active
-Last Updated: 2026-03-06T09:59:35Z
+Last Updated: 2026-03-06T11:50:05Z
 Canonical: Yes
 Owner: Documentation
 
@@ -10,19 +10,21 @@ This is the current classification of the documentation set. Use it to prune, me
 - archive: 34
 - canonical: 48
 - generated: 4
-- reference: 33
+- reference: 35
 
 ## Table
 | Kind | Path | Title | Status | Canonical | Owner | Last Updated | Note |
 |---:|---|---|---:|---:|---|---|---|
+| reference | docs/2026-03-06_ADMIN_TOTALFANS_PARTNER_CARD_EDIT_HOTFIX.md | Admin Total Fans + Partner Card Edit Hotfix | Active | No | Engineering | 2026-03-06T00:00:00.000Z | Reference-only doc; keep if still used, otherwise archive. |
+| reference | docs/2026-03-06_PARTNER_REPORT_DELETE_HOTFIX.md | Partner Report and Delete Project Hotfix | Active | No | Engineering | 2026-03-06T00:00:00.000Z | Reference-only doc; keep if still used, otherwise archive. |
 | canonical | docs/DEVELOPER-CONDUCT.md | Developer Conduct & Product Owner Mandate | Active | Yes | Product | 2026-02-21 | Primary source of truth for this topic. |
 | reference | docs/HANDOVER.md | MessMass Developer Handover |  |  |  |  | Reference-only doc; keep if still used, otherwise archive. |
 | reference | docs/NEXT_AGENT_PROMPT.md | Next Agent Prompt (Handover) |  |  |  |  | Reference-only doc; keep if still used, otherwise archive. |
 | reference | docs/PROJECT_MANAGEMENT.md | Project Management & SSOT Guidelines |  |  |  |  | Reference-only doc; keep if still used, otherwise archive. |
-| generated | docs/_meta/meta-canonical-map.md | Canonical Map | Active | Yes | Documentation | 2026-02-08T11:35:10Z | Auto-generated inventory/triage artifacts. Do not edit by hand. |
-| generated | docs/_meta/meta-docs-inventory.md | Docs Inventory | Active | Yes | Documentation | 2026-03-06T09:59:35Z | Auto-generated inventory/triage artifacts. Do not edit by hand. |
-| generated | docs/_meta/meta-docs-link-check.md | Docs Link Check | Active | Yes | Documentation | 2026-03-06T09:59:35Z | Auto-generated inventory/triage artifacts. Do not edit by hand. |
-| generated | docs/_meta/meta-docs-triage.md | Docs Triage | Active | Yes | Documentation | 2026-03-06T09:59:35Z | Auto-generated inventory/triage artifacts. Do not edit by hand. |
+| generated | docs/_meta/meta-canonical-map.md | Canonical Map | Active | Yes | Documentation | 2026-03-06T09:59:35Z | Auto-generated inventory/triage artifacts. Do not edit by hand. |
+| generated | docs/_meta/meta-docs-inventory.md | Docs Inventory | Active | Yes | Documentation | 2026-03-06T11:50:04Z | Auto-generated inventory/triage artifacts. Do not edit by hand. |
+| generated | docs/_meta/meta-docs-link-check.md | Docs Link Check | Active | Yes | Documentation | 2026-03-06T11:50:05Z | Auto-generated inventory/triage artifacts. Do not edit by hand. |
+| generated | docs/_meta/meta-docs-triage.md | Docs Triage | Active | Yes | Documentation | 2026-03-06T11:50:05Z | Auto-generated inventory/triage artifacts. Do not edit by hand. |
 | reference | docs/admin/admin-clicker-manager.md | Clicker Manager — Partner Clicker Sets | Active | No | Admin UX (Katja) | 2026-01-21 | Reference-only doc; keep if still used, otherwise archive. |
 | canonical | docs/admin/admin-end-user-guide.md | END USER GUIDE (Admin Operations) | Complete | Yes | Admin (Katja) | 2026-02-21T00:00:00.000Z | Primary source of truth for this topic. |
 | canonical | docs/admin/admin-layout-v2-schema.md | Admin LayoutV2 Schema (Layout Configuration) | Active | Yes | Admin (Katja) | 2026-01-15T14:46:42.000Z | Primary source of truth for this topic. |
@@ -102,7 +104,7 @@ This is the current classification of the documentation set. Use it to prune, me
 | canonical | docs/features/features-reporting-builder.md | Reporting & Builder Mode (Clicker) | Active | Yes | Product | 2026-02-24 | Primary source of truth for this topic. |
 | reference | docs/guides/guides-form-input-migration-guide.md | Form Input Migration Guide | Active | No | Product | 2026-01-11T22:28:38.000Z | Reference-only doc; keep if still used, otherwise archive. |
 | reference | docs/guides/guides-input-system-complete.md | Complete Input System Documentation & Validation | Active | No | Product | 2026-01-11T22:28:38.000Z | Reference-only doc; keep if still used, otherwise archive. |
-| canonical | docs/index.md | Documentation Index | Active | Yes | Documentation | 2026-02-21T00:00:00.000Z | Primary source of truth for this topic. |
+| canonical | docs/index.md | Documentation Index | Active | Yes | Documentation | 2026-03-06T00:00:00.000Z | Primary source of truth for this topic. |
 | reference | docs/landing-main-page-ui-refactor-plan.md | Landing / Main Page UI Refactor Plan |  |  |  |  | Reference-only doc; keep if still used, otherwise archive. |
 | reference | docs/landing-overhaul-plan.md | Landing Page Visual + Content Overhaul — Implementation Plan |  |  |  |  | Reference-only doc; keep if still used, otherwise archive. |
 | canonical | docs/messmass-codex-brain-dump.md | Brain Dump | Active | Yes | Documentation | 2026-03-06 | Primary source of truth for this topic. |
@@ -110,7 +112,7 @@ This is the current classification of the documentation set. Use it to prune, me
 | canonical | docs/operations/admin-ui-width-and-hero.md | Admin UI: Width and Hero Usage | Active | Yes | Admin / Frontend | 2026-03-06 | Primary source of truth for this topic. |
 | canonical | docs/operations/atlas-theme-injection-plan.md | Atlas-Managed Theme Injection Plan (OPS-STYLE-01 Phase 6) | Planning | Yes | Frontend / Design | 2026-02-06 | Primary source of truth for this topic. |
 | canonical | docs/operations/layout-grammar-editor-blocked-configs.md | Layout Grammar – blocked configurations and editor messages (OPS-LAYOUT-01) | Active | Yes | Reporting / Editor | 2026-02-06 | Primary source of truth for this topic. |
-| canonical | docs/operations/operations-action-plan.md | Operations Action Plan | Active | Yes | Operations | 2026-02-05 | Primary source of truth for this topic. |
+| canonical | docs/operations/operations-action-plan.md | Operations Action Plan | Active | Yes | Operations | 2026-03-06 | Primary source of truth for this topic. |
 | reference | docs/operations/operations-agent-names.md | AGENT_NAMES | Active | No | Operations | 2026-01-11T22:28:38.000Z | Reference-only doc; keep if still used, otherwise archive. |
 | reference | docs/operations/operations-delivery-focus.md | Delivery Focus (MessMass) | Active | No | Product | 2026-02-24 | Reference-only doc; keep if still used, otherwise archive. |
 | reference | docs/operations/operations-deployment-checklist.md | Chart Alignment Fixes - Deployment Checklist | Active | No | Operations | 2026-01-11T22:28:38.000Z | Reference-only doc; keep if still used, otherwise archive. |

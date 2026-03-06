@@ -8,6 +8,7 @@ import HashtagInput from '@/components/HashtagInput';
 import ColoredHashtagBubble from '@/components/ColoredHashtagBubble';
 import UnifiedAdminHeroWithSearch from '@/components/UnifiedAdminHeroWithSearch';
 import ColoredCard from '@/components/ColoredCard';
+import { getStoredOrDerivedTotalFans } from '@/lib/totalFans';
 
 interface Project {
   _id: string;
@@ -141,7 +142,7 @@ export default function DashboardPage() {
       return {
         totalProjects: totals.totalProjects + 1,
         totalImages: totals.totalImages + (stats.remoteImages + stats.hostessImages + stats.selfies),
-        totalFans: totals.totalFans + (stats.indoor + stats.outdoor + stats.stadium),
+        totalFans: totals.totalFans + getStoredOrDerivedTotalFans(stats),
         totalAttendees: totals.totalAttendees + (stats.eventAttendees || 0),
         genderDistribution: {
           male: totals.genderDistribution.male + stats.male,
@@ -284,7 +285,7 @@ export default function DashboardPage() {
                   </div>
                   <div className="project-stats">
                     <div>📸 {(project.stats.remoteImages + project.stats.hostessImages + project.stats.selfies).toLocaleString()}</div>
-                    <div>👥 {(project.stats.indoor + project.stats.outdoor + project.stats.stadium).toLocaleString()}</div>
+                    <div>👥 {getStoredOrDerivedTotalFans(project.stats).toLocaleString()}</div>
                   </div>
                 </div>
               ))}
@@ -489,7 +490,7 @@ export default function DashboardPage() {
                       </div>
                       <div className="project-stats">
                         <div>📸 {(project.stats.remoteImages + project.stats.hostessImages + project.stats.selfies).toLocaleString()}</div>
-                        <div>👥 {(project.stats.indoor + project.stats.outdoor + project.stats.stadium).toLocaleString()}</div>
+                        <div>👥 {getStoredOrDerivedTotalFans(project.stats).toLocaleString()}</div>
                         <div>🎫 {(project.stats.eventAttendees || 0).toLocaleString()}</div>
                       </div>
                     </div>

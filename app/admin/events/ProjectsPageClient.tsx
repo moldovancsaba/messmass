@@ -19,6 +19,7 @@ import {
 } from '@/lib/hashtagCategoryUtils';
 import partnerStyles from './PartnerLogos.module.css';
 import { apiPost, apiPut, apiDelete } from '@/lib/apiClient';
+import { getStoredOrDerivedTotalFans } from '@/lib/totalFans';
 // WHAT: Server-driven sorting implementation for full-dataset ordering
 // WHY: Clicking table headers must sort ALL projects, not just the visible page.
 // This replaces client-only sorting with backend sort & offset pagination in search/sort modes.
@@ -694,7 +695,7 @@ export default function ProjectsPageClient({ user }: ProjectsPageClientProps) {
                 </tr>
               ) : (
                 filteredAndSortedProjects.map((project) => {
-                  const fans = project.stats.indoor + project.stats.outdoor + project.stats.stadium;
+                  const fans = getStoredOrDerivedTotalFans(project.stats);
                   const images = project.stats.remoteImages + project.stats.hostessImages + project.stats.selfies;
                   const attendees = project.stats.eventAttendees || 0;
                   

@@ -1,13 +1,13 @@
 # Docs Triage
 Status: Active
-Last Updated: 2026-03-06T09:59:35Z
+Last Updated: 2026-03-06T11:50:05Z
 Canonical: Yes
 Owner: Documentation
 
 This report highlights actionable doc-cleanup work: missing metadata, suspicious titles, and potential near-duplicates in the ACTIVE docs tree.
 
 ## Counts
-- Active Markdown files: 85
+- Active Markdown files: 87
 - Archived Markdown files: 34
 - Active files missing header metadata fields: 10
 - Active files with suspicious titles: 0
@@ -22,7 +22,7 @@ This report highlights actionable doc-cleanup work: missing metadata, suspicious
 ## Active Files Missing Metadata
 | Path | Title | Missing | Lines |
 |---|---|---|---:|
-| docs/HANDOVER.md | MessMass Developer Handover | status, last_updated, canonical, owner | 141 |
+| docs/HANDOVER.md | MessMass Developer Handover | status, last_updated, canonical, owner | 214 |
 | docs/NEXT_AGENT_PROMPT.md | Next Agent Prompt (Handover) | status, last_updated, canonical, owner | 53 |
 | docs/PROJECT_MANAGEMENT.md | Project Management & SSOT Guidelines | status, last_updated, canonical, owner | 79 |
 | docs/audits/system-audit-plan-2026.md |  | status, last_updated, canonical, owner | 117 |

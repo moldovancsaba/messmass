@@ -4,6 +4,36 @@ Last Updated: 2026-03-06T00:00:00.000Z
 Canonical: No
 Owner: Operations
 
+## [v11.60.2] — 2026-03-06T00:00:00.000Z
+
+### Summary
+🐛 **ADMIN TOTAL FANS + PARTNER CARD-VIEW EDIT HOTFIXES**: Admin event surfaces now use the stored `totalFans` value consistently, and the partner admin card-view report editor now follows the same working path as list view.
+
+### What Was Fixed
+
+#### Admin Total Fans consistency ✅
+**WHAT**: Admin event list/card/table/dashboard/filter surfaces now prefer stored `stats.totalFans` instead of recomputing a different number.  
+**WHY**: Production events can have authoritative `totalFans` values that differ from legacy fallback calculations, which caused admin mismatches against the event and partner reports.  
+**HOW**: Added `getStoredOrDerivedTotalFans(...)` in `lib/projectStatsUtils.ts`, updated admin renderers in `lib/adapters/projectsAdapter.tsx`, `app/admin/events/ProjectsPageClient.tsx`, `app/admin/dashboard/page.tsx`, and `app/admin/filter/page.tsx`, and aligned `/api/projects` sorting to prefer `stats.totalFans`.
+
+#### Partner page card-view report editor ✅
+**WHAT**: Partner admin card-view `Edit Stats` now opens the partner editor reliably, matching list view.  
+**WHY**: Card view still depended on `viewSlug`, while list view already used the safer `_id || viewSlug` path.  
+**HOW**: Updated `lib/adapters/partnersAdapter.tsx` and `app/admin/partners/page.tsx` so both list and card view use the same `_id || viewSlug` fallback for partner report-edit actions.
+
+### Testing
+- ✅ `npm run build`
+- ✅ `npm run type-check`
+- ✅ `npm run lint`
+- ✅ `npm run version:verify`
+- ✅ `python3 scripts/docs_inventory.py`
+- ✅ `python3 scripts/docs_triage.py`
+- ✅ `python3 scripts/docs_link_check.py`
+- ✅ `python3 scripts/docs_canonical_map.py`
+
+### Version
+v11.60.1 → v11.60.2 (PATCH — admin total-fans consistency + partner card-view edit fix)
+
 ## [v11.60.1] — 2026-03-06T00:00:00.000Z
 
 ### Summary

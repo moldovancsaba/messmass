@@ -214,10 +214,38 @@ export async function GET(request: NextRequest) {
             ]
           },
           _fans: {
-            $add: [
-              { $ifNull: ["$stats.indoor", 0] },
-              { $ifNull: ["$stats.outdoor", 0] },
-              { $ifNull: ["$stats.stadium", 0] }
+            $ifNull: [
+              {
+                $convert: {
+                  input: "$stats.totalFans",
+                  to: "double",
+                  onError: null,
+                  onNull: null
+                }
+              },
+              {
+                $add: [
+                  {
+                    $ifNull: [
+                      {
+                        $convert: {
+                          input: "$stats.remoteFans",
+                          to: "double",
+                          onError: null,
+                          onNull: null
+                        }
+                      },
+                      {
+                        $add: [
+                          { $ifNull: ["$stats.indoor", 0] },
+                          { $ifNull: ["$stats.outdoor", 0] }
+                        ]
+                      }
+                    ]
+                  },
+                  { $ifNull: ["$stats.stadium", 0] }
+                ]
+              }
             ]
           },
           _attendees: { $ifNull: ["$stats.eventAttendees", 0] }

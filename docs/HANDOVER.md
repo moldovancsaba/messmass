@@ -2,7 +2,7 @@
 
 This file is onboarding plus operational context for the next agent. Keep it accurate when behavior, process, or current delivery state changes.
 
-**Last Updated:** 2026-03-06 (admin UI consistency documented under issue #56; production hotfixes tracked under #345 and #346)
+**Last Updated:** 2026-03-06 (admin UI consistency documented under issue #56; production hotfixes tracked under #345, #346, #348, and #349)
 
 ## SSOT (Work Tracking)
 - Board: <https://github.com/users/moldovancsaba/projects/1>
@@ -15,9 +15,9 @@ This file is onboarding plus operational context for the next agent. Keep it acc
 
 ## Current Repo Truth
 - Active branch: `landing-overhaul`
-- Last known HEAD during this update: `31978dfd6`
+- Last known HEAD during this update: `d464ab33f`
 - Working tree is already dirty in unrelated files (`MEMORY.md`, `docs/NEXT_AGENT_PROMPT.md`, `docs/messmass-codex-brain-dump.md`, `docs/operations/operations-action-plan.md`, `memory/2026-02-24.md`, plus deleted `USER.md` and `agent-working-loop-canonical-operating-document.md`, and untracked `READMEDEV.md`).
-- Most recent documented code delivery: partner report total-fans hotfix and delete-project production fix on `landing-overhaul`, tracked under `mvp-factory-control#345` and `mvp-factory-control#346`.
+- Most recent documented code delivery: partner report/delete-project hotfixes plus admin `totalFans` consistency and partner card-view report-edit fixes on `landing-overhaul`, tracked under `mvp-factory-control#345`, `#346`, `#348`, and `#349`.
 
 ## Current Priorities
 - Board-derived priority reference: [operations-delivery-focus.md](/Users/moldovancsaba/Projects/messmass/docs/operations/operations-delivery-focus.md)
@@ -49,6 +49,43 @@ This file is onboarding plus operational context for the next agent. Keep it acc
 - Style editor preview updates immediately for bar/pie CSS vars and includes Value Chain and Landing page sections.
 
 ## Handover Log
+
+## 2026-03-06 13:10:00 CET - Codex Agent
+- Branch: `landing-overhaul`
+- Base commit: `d464ab33f`
+- Objective: Fix admin `totalFans` drift across event surfaces and align partner admin card-view report-edit behavior with the working list-view path.
+
+### What changed
+- Created SSOT bug cards `#348` and `#349` in `moldovancsaba/mvp-factory-control`, attached them to Project 1, and moved both into active tracked delivery.
+- Added `getStoredOrDerivedTotalFans(...)` in `lib/projectStatsUtils.ts` so admin surfaces prefer stored `stats.totalFans` and only derive from legacy fields when that value is absent.
+- Updated admin Total Fans surfaces:
+  - `lib/adapters/projectsAdapter.tsx`
+  - `app/admin/events/ProjectsPageClient.tsx`
+  - `app/admin/dashboard/page.tsx`
+  - `app/admin/filter/page.tsx`
+  - `/api/projects` total-fans sort path
+- Fixed partner admin card-view `Edit Stats` so it uses `_id || viewSlug`, matching the working list-view path.
+- Added a dedicated hotfix note at `docs/2026-03-06_ADMIN_TOTALFANS_PARTNER_CARD_EDIT_HOTFIX.md`.
+- Prepared the repo for patch version `11.60.2`.
+
+### Validation
+- Planned and required for closure:
+  - `npm run build`
+  - `npm run type-check`
+  - `npm run lint`
+  - `npm run version:verify`
+  - `python3 scripts/docs_inventory.py`
+  - `python3 scripts/docs_triage.py`
+  - `python3 scripts/docs_link_check.py`
+  - `python3 scripts/docs_canonical_map.py`
+
+### Known issues / risks
+- Existing unrelated working-tree changes still predate this work and remain untouched.
+
+### Immediate next actions
+1. Run the full validation gate set for the new hotfix.
+2. Post evidence to SSOT cards `#348` and `#349`.
+3. Commit, push, and continue with the next tracked delivery item without stopping.
 
 ## 2026-03-06 12:15:00 CET - Codex Agent
 - Branch: `landing-overhaul`

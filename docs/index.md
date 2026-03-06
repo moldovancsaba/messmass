@@ -1,6 +1,6 @@
 # Documentation Index
 Status: Active
-Last Updated: 2026-02-21T00:00:00.000Z
+Last Updated: 2026-03-06T00:00:00.000Z
 Canonical: Yes
 Owner: Documentation
 
@@ -39,6 +39,7 @@ Owner: Documentation
 
 ## Features
 - [features-overview.md](features/features-overview.md) — Canonical entrypoint for subsystem feature docs.
+- [2026-03-06_ADMIN_TOTALFANS_PARTNER_CARD_EDIT_HOTFIX.md](2026-03-06_ADMIN_TOTALFANS_PARTNER_CARD_EDIT_HOTFIX.md) — Production hotfix notes for admin `totalFans` consistency and partner card-view report-edit actions.
 - [2026-03-06_PARTNER_REPORT_DELETE_HOTFIX.md](2026-03-06_PARTNER_REPORT_DELETE_HOTFIX.md) — Production hotfix notes for partner report total-fans cards and admin delete-project failure handling.
 - [features/AUTHENTICATION.md](features/features-authentication.md) — Authentication, roles, sessions, and page-password access.
 - [features/PARTNERS_SYSTEM_GUIDE.md](features/features-partners-system-guide.md) — Partner model, UI flows, and partner-related APIs.

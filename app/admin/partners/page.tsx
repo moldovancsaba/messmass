@@ -602,6 +602,19 @@ export default function PartnersAdminPageUnified() {
               }
             };
           }
+          if (action.label === 'Edit Stats') {
+            return {
+              ...action,
+              handler: (partner: PartnerResponse) => {
+                const partnerId = partner._id || partner.viewSlug;
+                if (partnerId) {
+                  window.open(`/partner-edit/${partnerId}`, '_blank');
+                } else {
+                  alert('Partner ID is missing. Please refresh the page and try again.');
+                }
+              }
+            };
+          }
           // WHAT: Return unchanged action for other buttons (KYC Data, etc.)
           // WHY: Preserve adapter-defined handlers
           return action;
@@ -631,6 +644,19 @@ export default function PartnersAdminPageUnified() {
                 // HOW: Use partner._id (MongoDB ObjectId) instead of viewSlug for secure UUID-based URLs
                 setSharePartnerId(partner._id);
                 setSharePopupOpen(true);
+              }
+            };
+          }
+          if (action.label === 'Edit Stats') {
+            return {
+              ...action,
+              handler: (partner: PartnerResponse) => {
+                const partnerId = partner._id || partner.viewSlug;
+                if (partnerId) {
+                  window.open(`/partner-edit/${partnerId}`, '_blank');
+                } else {
+                  alert('Partner ID is missing. Please refresh the page and try again.');
+                }
               }
             };
           }

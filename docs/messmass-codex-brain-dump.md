@@ -18,10 +18,12 @@ Owner: Documentation
 - Touched routes in this delivery: `/admin/dashboard`, `/admin/styles`, `/admin/insights`, `/admin/content-library`, `/admin/mainpage`, `/admin/messages`, `/admin/help`, `/admin/events`.
 - Styling hygiene for touched scope: no inline style objects remain in those routes; the help page guest access notice moved into CSS modules, event action icons use CSS classes, and styles color swatches now render through SVG instead of React `style` props.
 
-## Production hotfixes (issues #345 and #346)
+## Production hotfixes (issues #345, #346, #348, #349)
 - Partner report related-event cards now display Total Fans Engaged from a derived total-fans path instead of undercounting legacy events that only store `indoor` / `outdoor`.
 - The partner-report API enriches returned event stats with `addDerivedMetrics(...)`, while the client card component still has a client-safe fallback that derives `totalFans` without importing server-only modules.
 - Project delete actions now use the shared CSRF-safe `apiDelete(...)` path in both the shared projects adapter and the admin events page, and surfaced errors are no longer collapsed into a generic failure string.
+- Admin event surfaces now use `getStoredOrDerivedTotalFans(...)` so list view, card view, dashboard summaries, filter pages, and event sorting prefer stored `stats.totalFans` and only derive when the stored value is absent.
+- Partner admin card-view `Edit Stats` is now aligned with list view and opens `/partner-edit/[id]` using `_id || viewSlug`, removing the card-only dependency on `viewSlug`.
 
 ## Style editor & preview (v11.59.0)
 - Style editor (Admin → Styles → [id]) injects style on every field change and after fetch so preview updates immediately. Bar/pie in report and preview use CSS variables (`--barColor1`…`--barColor5`, `--pieColor1`/`--pieColor2`) so colors stay in sync. ReportStylePreview includes Value Chain block and Landing page section. See `docs/release-notes-11.59.0.md`, `docs/features/features-landing-main-page.md`.

@@ -287,10 +287,11 @@ export const partnersAdapter: AdminPageAdapter<PartnerResponse> = {
         handler: (partner) => {
           // WHAT: Open partner report page in new tab
           // WHY: Allow viewing shareable partner profile with events
-          if (partner.viewSlug) {
-            window.open(`/partner-report/${partner.viewSlug}`, '_blank');
+          const partnerId = partner._id || partner.viewSlug;
+          if (partnerId) {
+            window.open(`/partner-report/${partnerId}`, '_blank');
           } else {
-            alert('Partner does not have a viewSlug. Please edit and save the partner to generate one.');
+            alert('Partner ID is missing. Please refresh the page and try again.');
           }
         },
       },
@@ -301,10 +302,11 @@ export const partnersAdapter: AdminPageAdapter<PartnerResponse> = {
         handler: (partner) => {
           // WHAT: Open partner content editor for text and image editing
           // WHY: Allow editing partner-level content (reportText*, reportImage*) separate from event data
-          if (partner.viewSlug) {
-            window.open(`/partner-edit/${partner.viewSlug}`, '_blank');
+          const partnerId = partner._id || partner.viewSlug;
+          if (partnerId) {
+            window.open(`/partner-edit/${partnerId}`, '_blank');
           } else {
-            alert('Partner does not have a viewSlug. Please edit and save the partner to generate one.');
+            alert('Partner ID is missing. Please refresh the page and try again.');
           }
         },
       },
