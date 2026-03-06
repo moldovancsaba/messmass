@@ -4,7 +4,7 @@ Last Updated: 2026-02-05
 Canonical: Yes
 Owner: Operations
 
-**Version:** 1.3.4  
+**Version:** 1.3.5  
 **Created:** 2026-01-12T00:09:33.679Z  
 **Last Updated (UTC):** 2026-02-06  
 **Audience:** Product + Engineering
@@ -146,10 +146,18 @@ Owner: Katja (Admin)
 
 ## 7. STATE MEMORY (Current Only)
 
+2026-03-06
+- CONTEXT: Production hotfix tracking split into two SSOT bug cards:
+  - `mvp-factory-control#345` partner report related-event cards must show Total Fans Engaged
+  - `mvp-factory-control#346` production delete-project failure path
+- BOARD: `#345` is `In Progress (NOW)`; `#346` is `Ready (NEXT)`.
+- CODE: hotfix code is already on `landing-overhaul` (`31978dfd6`); remaining work is documentation/version alignment and full evidence capture.
+- NEXT: finish docs + version bump to `11.60.1`, run gates, post SSOT evidence, then continue with the next tracked item.
+
 2026-02-24
-- CONTEXT: Builder mode (clicker) — all chart types (KPI, Bar, Pie, Text, Table, Image, Value chain) now show one input per variable extracted from element formulas. Uses `extractVariablesFromFormula()` from `lib/formulaEngine`; stats-only vars; deduplicated across elements. Committed and pushed to `landing-overhaul` and preview. Handover doc, brain-dump, release notes, features docs, delivery-focus, and MEMORY updated.
-- PROJECT BOARD: Update [MVP Factory Board](https://github.com/users/moldovancsaba/projects/1) — if an issue exists for Builder mode / clicker variable inputs (e.g. mvp-factory-control), move it to **Done** and post evidence (e.g. link to `docs/release-notes-11.59.0.md` or commit).
-- NEXT: None pending for this delivery. Future: optional Phase 3–4 in `docs/plan-builder-mode-variable-inputs.md` (shared variable-input component, KPI/Bar/Pie multi-var already done).
+- CONTEXT: Builder mode (clicker) — all chart types show one input per variable from formulas; valuechain supported; image/table infer from title or chartId when formula empty; overflow fix (card-body, min-width: 0, builder-chart-wrapper); unified card layout (title → chartId → label + [registry name] → input) applied to all builders. Committed and pushed to `landing-overhaul` and **preview**. Build passed. Handover doc, brain-dump, release notes, features docs, delivery-focus, and MEMORY updated.
+- PROJECT BOARD: Evidence posted on mvp-factory-control [#49](https://github.com/moldovancsaba/mvp-factory-control/issues/49#issuecomment-3957698585) (Variables System Enhancements). No dedicated Builder card on MVP Factory Board to move.
+- NEXT: None pending for this delivery. Future: optional Phase 3–4 in `docs/plan-builder-mode-variable-inputs.md` (shared variable-input component).
 
 2026-02-21
 - CONTEXT: Style editor preview refresh (v11.59.0) — bar/pie CSS vars, inject on change + after fetch, Value Chain + Landing in preview. Version 11.59.0; release notes, feature docs, MEMORY, brain-dump, handover doc updated.

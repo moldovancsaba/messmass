@@ -6,6 +6,8 @@ Owner: Documentation
 
 ## Core Resources
 - [DEVELOPER-CONDUCT.md](DEVELOPER-CONDUCT.md) — Product Owner mandate: AI developer conduct, documentation = code, stack discipline, build quality. Non-negotiable.
+- [PROJECT_MANAGEMENT.md](PROJECT_MANAGEMENT.md) — SSOT board rules, required cadence, and delivery tracking process.
+- [HANDOVER.md](HANDOVER.md) — Current repo handover, active context, and dated agent log.
 - [architecture.md](architecture.md) — Platform architecture, dependency layout, and service-level diagrams.
 - [coding-standards.md](coding-standards.md) — Code style, naming conventions, and documentation expectations.
 - [documentation-governance.md](documentation-governance.md) — Rules for canonical docs, deprecation, and required metadata.
@@ -37,6 +39,7 @@ Owner: Documentation
 
 ## Features
 - [features-overview.md](features/features-overview.md) — Canonical entrypoint for subsystem feature docs.
+- [2026-03-06_PARTNER_REPORT_DELETE_HOTFIX.md](2026-03-06_PARTNER_REPORT_DELETE_HOTFIX.md) — Production hotfix notes for partner report total-fans cards and admin delete-project failure handling.
 - [features/AUTHENTICATION.md](features/features-authentication.md) — Authentication, roles, sessions, and page-password access.
 - [features/PARTNERS_SYSTEM_GUIDE.md](features/features-partners-system-guide.md) — Partner model, UI flows, and partner-related APIs.
 - [features/BITLY_INTEGRATION_GUIDE.md](features/features-bitly-integration-guide.md) — Bitly integration architecture, endpoints, and operations.

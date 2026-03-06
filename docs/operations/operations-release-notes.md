@@ -4,6 +4,31 @@ Last Updated: 2026-03-06T00:00:00.000Z
 Canonical: No
 Owner: Operations
 
+## [v11.60.1] — 2026-03-06T00:00:00.000Z
+
+### Summary
+🐛 **PRODUCTION HOTFIXES**: Partner report related-event cards now show Total Fans Engaged correctly for legacy event schemas, and admin project deletion now uses the CSRF-safe delete path with actionable error reporting.
+
+### What Was Fixed
+
+#### Partner report related-event card fans ✅
+**WHAT**: Related-event cards on partner reports now display the correct Total Fans Engaged value.  
+**WHY**: Historical events that only stored `indoor` / `outdoor` could be undercounted when cards relied only on `remoteFans`.  
+**HOW**: `app/api/partners/report/[slug]/route.ts` now enriches returned event stats with `addDerivedMetrics(...)`, and `app/partner-report/[slug]/PartnerEventsList.tsx` uses a client-safe total-fans derivation fallback so cards always render the correct total.
+
+#### Admin delete-project failure path ✅
+**WHAT**: Project deletion now uses the CSRF-safe API client and exposes the actual failure reason.  
+**WHY**: A production delete path bypassed the shared delete client and could fail under middleware while only showing the generic `Failed to delete project` message.  
+**HOW**: `lib/adapters/projectsAdapter.tsx` now uses `apiDelete(...)` instead of raw `fetch`, and `app/admin/events/ProjectsPageClient.tsx` now reports the returned or thrown error.
+
+### Testing
+- ✅ `npm run build`
+- ✅ `npm run type-check`
+- ⚠️ `npm run lint` — failed on pre-existing repo-wide issues outside this hotfix scope, including inline-style and hook-rule violations in `app/dashboard/filter/[filterSlug]/page.tsx`, `app/dashboard/hashtag/[hashtag]/page.tsx`, `app/dashboard/partner/[partnerId]/page.tsx`, `components/ChartBuilderImage.tsx`, `components/LandingKPIChart.tsx`, and `components/ReportStylePreview.tsx`
+
+### Version
+v11.60.0 → v11.60.1 (PATCH — production hotfixes)
+
 ## [v11.60.0] — 2026-03-06T00:00:00.000Z
 
 ### Summary
