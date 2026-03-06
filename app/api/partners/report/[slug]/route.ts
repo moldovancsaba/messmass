@@ -6,6 +6,7 @@ import clientPromise from '@/lib/mongodb';
 import { ObjectId } from 'mongodb';
 import config from '@/lib/config';
 import { error as logError } from '@/lib/logger';
+import { addDerivedMetrics } from '@/lib/projectStatsUtils';
 
 export const dynamic = 'force-dynamic';
 
@@ -149,7 +150,7 @@ const db = client.db(config.dbName);
         categorizedHashtags: event.categorizedHashtags || {},
         createdAt: event.createdAt,
         updatedAt: event.updatedAt,
-        stats: event.stats || {}
+        stats: addDerivedMetrics(event.stats || {})
       })),
       totalEvents: events.length
     });

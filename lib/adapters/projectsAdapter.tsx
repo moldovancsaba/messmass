@@ -8,6 +8,7 @@ import Image from 'next/image';
 import { AdminPageAdapter } from '../adminDataAdapters';
 import { ProjectDTO } from '../types/api';
 import ColoredHashtagBubble from '@/components/ColoredHashtagBubble';
+import { apiDelete } from '@/lib/apiClient';
 
 /**
  * WHAT: Complete adapter configuration for Projects page
@@ -236,18 +237,14 @@ export const projectsAdapter: AdminPageAdapter<ProjectDTO> = {
         handler: async (project) => {
           if (confirm(`Delete event "${project.eventName}"?`)) {
             try {
-              const response = await fetch(`/api/projects?projectId=${project._id}`, {
-                method: 'DELETE',
-                headers: { 'Content-Type': 'application/json' },
-              });
-              const result = await response.json();
+              const result = await apiDelete<{ success: boolean; error?: string }>(`/api/projects?projectId=${project._id}`);
               if (result.success) {
                 window.location.reload();
               } else {
-                alert('Failed to delete project');
+                alert(result.error || 'Failed to delete project');
               }
-            } catch (e) {
-              alert('Delete failed');
+            } catch (error) {
+              alert(error instanceof Error ? error.message : 'Delete failed');
             }
           }
         },

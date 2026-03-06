@@ -442,9 +442,12 @@ export default function ProjectsPageClient({ user }: ProjectsPageClientProps) {
 
       if (result.success) {
         setProjects(prev => prev.filter(p => p._id !== projectId));
+      } else {
+        alert(result.error || 'Failed to delete project');
       }
     } catch (error) {
       console.error('Failed to delete project:', error);
+      alert(error instanceof Error ? error.message : 'Failed to delete project');
     }
   };
 
