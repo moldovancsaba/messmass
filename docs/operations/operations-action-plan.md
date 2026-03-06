@@ -149,6 +149,12 @@ Owner: Katja (Admin)
 2026-03-06
 - CONTEXT: Style hardening Phase 5 continues under `mvp-factory-control#72`.
 - BOARD: `#72` remains `In Progress (NOW)`.
+- CODE: removed the inactive partners backup page `app/admin/partners/page_old_backup.tsx` and its orphaned stylesheet `app/admin/partners/PartnerManager.module.css`.
+- NEXT: run full gates for `11.60.7`, post SSOT evidence, then continue the duplication audit.
+
+2026-03-06
+- CONTEXT: Style hardening Phase 5 continues under `mvp-factory-control#72`.
+- BOARD: `#72` remains `In Progress (NOW)`.
 - CODE: removed dead unreferenced route module `app/api-docs/page.module.css`; `/api-docs` continues to use the shared admin help stylesheet.
 - NEXT: run full gates for `11.60.6`, post SSOT evidence, then continue the duplication audit.
 

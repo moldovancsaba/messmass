@@ -162,6 +162,32 @@ This file is onboarding plus operational context for the next agent. Keep it acc
 2. Post evidence to SSOT card `#72`.
 3. Commit, push, and continue with the next actionable duplication target if the card scope remains open.
 
+## 2026-03-06 15:25:00 CET - Codex Agent
+- Branch: `landing-overhaul`
+- Base commit: `1c0ea0c75`
+- Objective: Continue `#72` by removing dead backup artifacts from the active partners admin tree.
+
+### What changed
+- Removed dead inactive partners backup page:
+  - `app/admin/partners/page_old_backup.tsx`
+- Removed the orphaned stylesheet only imported by that backup page:
+  - `app/admin/partners/PartnerManager.module.css`
+- Prepared patch version `11.60.7` and release-note entry for this additional Phase 5 cleanup slice.
+
+### Validation
+- `npm run build` -> passed
+- `npm run type-check` -> passed
+- `npm run lint` -> passed (warnings only)
+- `npm run version:verify` -> passed
+
+### Known issues / risks
+- `#72` remains open because additional dead or duplicated style assets may still exist elsewhere in the app tree.
+
+### Immediate next actions
+1. Run validation gates for `11.60.7`.
+2. Post evidence to SSOT card `#72`.
+3. Commit, push, and continue with the next actionable duplication target if the card scope remains open.
+
 ## 2026-03-06 13:10:00 CET - Codex Agent
 - Branch: `landing-overhaul`
 - Base commit: `d464ab33f`
