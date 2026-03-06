@@ -136,6 +136,32 @@ This file is onboarding plus operational context for the next agent. Keep it acc
 2. Post evidence to SSOT card `#72`.
 3. Commit, push, and continue with the next actionable duplication target if the card scope remains open.
 
+## 2026-03-06 15:10:00 CET - Codex Agent
+- Branch: `landing-overhaul`
+- Base commit: `eaf767a50`
+- Objective: Continue `#72` by removing another dead route-local stylesheet with no live import path.
+
+### What changed
+- Removed dead unreferenced route module:
+  - `app/api-docs/page.module.css`
+- Confirmed the active API docs page continues to use:
+  - `app/admin/help/page.module.css`
+- Prepared patch version `11.60.6` and release-note entry for this additional Phase 5 cleanup slice.
+
+### Validation
+- `npm run build` -> passed
+- `npm run type-check` -> passed
+- `npm run lint` -> passed (warnings only)
+- `npm run version:verify` -> passed
+
+### Known issues / risks
+- `#72` remains open because more dead or duplicated CSS may still exist, but this slice is isolated to a single route module with no active imports.
+
+### Immediate next actions
+1. Run validation gates for `11.60.6`.
+2. Post evidence to SSOT card `#72`.
+3. Commit, push, and continue with the next actionable duplication target if the card scope remains open.
+
 ## 2026-03-06 13:10:00 CET - Codex Agent
 - Branch: `landing-overhaul`
 - Base commit: `d464ab33f`

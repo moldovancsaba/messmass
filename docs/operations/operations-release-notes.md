@@ -4,6 +4,27 @@ Last Updated: 2026-03-06T00:00:00.000Z
 Canonical: No
 Owner: Operations
 
+## [v11.60.6] — 2026-03-06T00:00:00.000Z
+
+### Summary
+🎨 **STYLE HARDENING PHASE 5**: Removed a dead API docs route stylesheet so the page relies on the already-shared help-page style surface.
+
+### What Was Fixed
+
+#### Dead API docs CSS module cleanup ✅
+**WHAT**: Removed `app/api-docs/page.module.css`.  
+**WHY**: The live API docs page already imports `app/admin/help/page.module.css`, so the local module had become dead code and a false second styling source.  
+**HOW**: Deleted `app/api-docs/page.module.css` after verifying `app/api-docs/page.tsx` has no import to the local module and already renders through the shared help-page stylesheet.
+
+### Testing
+- ✅ `npm run build`
+- ✅ `npm run type-check`
+- ✅ `npm run lint`
+- ✅ `npm run version:verify`
+
+### Version
+v11.60.5 → v11.60.6 (PATCH — style hardening phase 5 dead API docs module cleanup)
+
 ## [v11.60.5] — 2026-03-06T00:00:00.000Z
 
 ### Summary
