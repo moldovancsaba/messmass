@@ -141,17 +141,24 @@ const db = client.db(config.dbName);
       // WHY: Eliminates client-side computation, improves performance
       // HOW: Sum all numeric event stats + merge partner-level stats (reportText*, reportImage*)
       aggregatedStats,
-      events: events.map(event => ({
-        _id: event._id.toString(),
-        eventName: event.eventName,
-        eventDate: event.eventDate,
-        viewSlug: event.viewSlug,
-        hashtags: event.hashtags || [],
-        categorizedHashtags: event.categorizedHashtags || {},
-        createdAt: event.createdAt,
-        updatedAt: event.updatedAt,
-        stats: addDerivedMetrics(event.stats || {})
-      })),
+      events: events.map(event => {
+        const rawStats = event.stats || {};
+        const derivedStats = addDerivedMetrics(rawStats);
+        return {
+          _id: event._id.toString(),
+          eventName: event.eventName,
+          eventDate: event.eventDate,
+          viewSlug: event.viewSlug,
+          hashtags: event.hashtags || [],
+          categorizedHashtags: event.categorizedHashtags || {},
+          createdAt: event.createdAt,
+          updatedAt: event.updatedAt,
+          stats: {
+            ...derivedStats,
+            totalFans: typeof rawStats.totalFans === 'number' ? rawStats.totalFans : derivedStats.totalFans,
+          }
+        };
+      }),
       totalEvents: events.length
     });
   } catch (error) {
