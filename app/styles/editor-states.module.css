@@ -1,18 +1,16 @@
-/* Edit Page States Styles
-   WHAT: Loading and error state styles for project editor
-   WHY: Eliminates inline styles from page.tsx */
+/* Shared editor loading/error states
+   WHAT: Canonical state styles for event and partner editor pages
+   WHY: Prevent duplicate page-local CSS drift across equivalent editor shells */
 
-/* WHAT: Full-screen centered container
-   WHY: Consistent layout for loading/error states */
 .centerContainer {
   display: flex;
   align-items: center;
-  justifyContent: center;
+  justify-content: center;
   min-height: 100vh;
+  padding: var(--mm-space-4);
   background-color: var(--mm-gray-50);
 }
 
-/* WHAT: Centered container with column layout for error state */
 .centerContainerColumn {
   display: flex;
   flex-direction: column;
@@ -23,73 +21,66 @@
   background-color: var(--mm-gray-50);
 }
 
-/* WHAT: Card container for loading/auth messages
-   WHY: Clean, modern card with consistent design */
 .stateCard {
-  background: var(--mm-white);
-  border-radius: var(--mm-radius-lg);
-  box-shadow: var(--mm-shadow-lg);
-  padding: var(--mm-space-8);
-  text-align: center;
-}
-
-/* WHAT: Error card with red accent border */
-.errorCard {
-  background: var(--mm-white);
-  border-radius: var(--mm-radius-lg);
-  box-shadow: var(--mm-shadow-lg);
-  padding: var(--mm-space-8);
-  text-align: center;
-  max-width: 40rem;
   width: 100%;
-  border-top: 4px solid var(--mm-error);
+  max-width: 25rem;
+  padding: var(--mm-space-8);
+  text-align: center;
+  background: var(--mm-white);
+  border-radius: var(--mm-radius-lg);
+  box-shadow: var(--mm-shadow-lg);
 }
 
-/* WHAT: Loading/auth message text */
 .stateMessage {
   margin-top: var(--mm-space-4);
   color: var(--mm-gray-600);
   font-size: var(--mm-font-size-sm);
 }
 
-/* WHAT: Error heading */
+.errorCard {
+  width: 100%;
+  max-width: 40rem;
+  padding: var(--mm-space-8);
+  text-align: center;
+  background: var(--mm-white);
+  border-top: 4px solid var(--mm-error);
+  border-radius: var(--mm-radius-lg);
+  box-shadow: var(--mm-shadow-lg);
+}
+
 .errorHeading {
   margin: 0 0 var(--mm-space-4) 0;
+  color: var(--mm-error);
   font-size: var(--mm-font-size-2xl);
   font-weight: var(--mm-font-weight-bold);
-  color: var(--mm-error);
 }
 
-/* WHAT: Error message primary text */
 .errorTextPrimary {
   margin: var(--mm-space-2) 0;
-  font-size: var(--mm-font-size-lg);
   color: var(--mm-gray-700);
+  font-size: var(--mm-font-size-lg);
   line-height: var(--mm-line-height-md);
 }
 
-/* WHAT: Error message secondary text */
 .errorTextSecondary {
   margin: var(--mm-space-2) 0;
-  font-size: var(--mm-font-size-base);
   color: var(--mm-gray-600);
+  font-size: var(--mm-font-size-base);
   line-height: var(--mm-line-height-md);
 }
 
-/* WHAT: Close button for error state
-   WHY: Prominent action button with hover effects */
 .closeButton {
-  background: var(--mm-error);
-  border: none;
-  color: var(--mm-white);
+  margin-top: var(--mm-space-6);
   padding: var(--mm-space-3) var(--mm-space-6);
-  border-radius: var(--mm-radius-md);
-  cursor: pointer;
+  color: var(--mm-white);
   font-size: var(--mm-font-size-base);
   font-weight: var(--mm-font-weight-medium);
-  margin-top: var(--mm-space-6);
-  transition: all 0.2s ease;
+  cursor: pointer;
+  background: var(--mm-error);
+  border: none;
+  border-radius: var(--mm-radius-md);
   box-shadow: var(--mm-shadow-sm);
+  transition: all 0.2s ease;
 }
 
 .closeButton:hover {
