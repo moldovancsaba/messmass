@@ -114,6 +114,8 @@ function ImageBlock({
   onSave: (key: string, value: number | string) => void;
 }) {
   const value = (stats[variableKey] ?? '') as string;
+  const [temp, setTemp] = useState(value);
+  useEffect(() => setTemp(value), [value]);
   const useUploader = isReportImageVar(variableKey);
 
   if (useUploader) {
@@ -140,8 +142,6 @@ function ImageBlock({
     );
   }
 
-  const [temp, setTemp] = useState(value);
-  useEffect(() => setTemp(value), [value]);
   return (
     <div className="chart-builder-variable-row">
       <div className="chart-builder-variable-meta">

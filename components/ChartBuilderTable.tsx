@@ -109,7 +109,7 @@ export default function ChartBuilderTable({ chart, stats, onSave }: ChartBuilder
           ))}
         </div>
         {isFallback && (
-          <p className="chart-builder-hint" style={{ marginTop: '0.25rem', fontSize: '0.7rem', color: 'var(--mm-gray-500)' }}>
+          <p className="chart-builder-hint chart-builder-hint-subtle">
             Using [reportTable1]. To bind to another variable, use title &quot;Report Table 2&quot; or add [reportTable2] in Visualization Manager.
           </p>
         )}
@@ -155,4 +155,3 @@ function TableBlock({
     </div>
   );
 }
-

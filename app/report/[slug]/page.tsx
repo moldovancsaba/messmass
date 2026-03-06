@@ -353,7 +353,7 @@ export default function ReportPage() {
           <div className={styles.loadingSpinner} />
           <p className={styles.loadingText}>Loading report...</p>
           {loadingTimedOut && (
-            <p className={styles.loadingText} style={{ marginTop: 'var(--mm-space-4)', fontSize: 'var(--mm-font-size-sm)' }}>
+            <p className={`${styles.loadingText} ${styles.loadingNote}`}>
               Taking longer than usual. Check your connection or{' '}
               <button type="button" className="btn btn-secondary" onClick={() => window.location.reload()}>Retry</button>.
             </p>

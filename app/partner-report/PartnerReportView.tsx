@@ -80,7 +80,7 @@ export function PartnerReportView({ slug }: PartnerReportViewProps) {
           <span className={styles.errorIcon}>⚠️</span>
           <h2 className={styles.errorTitle}>Failed to Load Partner Report</h2>
           <p className={styles.errorText}>{error}</p>
-          <p className={styles.errorText} style={{ marginTop: '1rem', fontSize: '0.875rem', color: '#666' }}>
+          <p className={styles.errorMeta}>
             Partner: {slug}
           </p>
         </div>

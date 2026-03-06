@@ -126,13 +126,9 @@ function PieChartPreview() {
               const pieColorVar = `var(--pieColor${(idx % 2) + 1})`;
               return (
                 <div key={idx} className={styles.pieLegendItem}>
-                  <div
-                    className={styles.pieLegendDot}
-                    style={{
-                      backgroundColor: pieColorVar,
-                      border: `2px solid var(--pieColor1)`
-                    }}
-                  />
+                  <svg className={styles.pieLegendDotSvg} viewBox="0 0 12 12" aria-hidden="true">
+                    <circle cx="6" cy="6" r="4" fill={pieColorVar} stroke="var(--pieColor1)" strokeWidth="2" />
+                  </svg>
                   <span>{item.label}: {percentage}%</span>
                 </div>
               );

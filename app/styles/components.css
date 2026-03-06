@@ -1610,6 +1610,16 @@ textarea::placeholder {
   word-break: break-word;
 }
 
+.chart-builder-hint-subtle {
+  margin-top: 0.25rem;
+  font-size: 0.7rem;
+  color: var(--mm-gray-500);
+}
+
+.editor-dashboard-message {
+  color: var(--mm-gray-600);
+}
+
 /* BAR Chart Builder */
 .chart-builder-bar {
   padding: var(--mm-space-6);

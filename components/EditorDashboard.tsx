@@ -612,7 +612,7 @@ export default function EditorDashboard({ project: initialProject }: EditorDashb
                   >
                     {sheetSyncOperation === 'push' ? '…' : '⬆️'} Push to Sheet
                   </button>
-                  {sheetSyncMessage && <p className="text-sm mt-1" style={{ color: 'var(--mm-gray-600)' }}>{sheetSyncMessage}</p>}
+                  {sheetSyncMessage && <p className="text-sm mt-1 editor-dashboard-message">{sheetSyncMessage}</p>}
                 </div>
               )}
               

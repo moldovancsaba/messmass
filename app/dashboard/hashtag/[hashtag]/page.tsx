@@ -7,6 +7,7 @@
  */
 import { useParams, useRouter } from 'next/navigation';
 import { useEffect } from 'react';
+import styles from '@/app/styles/report-page.module.css';
 
 export default function DashboardHashtagPage() {
   const params = useParams();
@@ -21,7 +22,7 @@ export default function DashboardHashtagPage() {
   }, [filterSlug, router]);
 
   return (
-    <div style={{ padding: '2rem', textAlign: 'center' }}>
+    <div className={styles.dashboardLoadingWrap}>
       <p>Loading hashtag view…</p>
     </div>
   );
