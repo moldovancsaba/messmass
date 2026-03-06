@@ -4,6 +4,27 @@ Last Updated: 2026-03-06T00:00:00.000Z
 Canonical: No
 Owner: Operations
 
+## [v11.60.5] — 2026-03-06T00:00:00.000Z
+
+### Summary
+🎨 **STYLE HARDENING PHASE 5**: Removed three dead admin CSS modules that were no longer imported by the live category, event, or admin-shell code paths.
+
+### What Was Fixed
+
+#### Dead admin CSS module cleanup ✅
+**WHAT**: Removed `app/admin/admin.module.css`, `app/admin/categories/Categories.module.css`, and `app/admin/events/Projects.module.css`.  
+**WHY**: These files were legacy route-level modules with no active imports, so they created style drift risk and confused the real admin styling surface.  
+**HOW**: Deleted the three unreferenced modules after verifying the active admin pages already render through other canonical shells and stylesheets.
+
+### Testing
+- ✅ `npm run build`
+- ✅ `npm run type-check`
+- ✅ `npm run lint`
+- ✅ `npm run version:verify`
+
+### Version
+v11.60.4 → v11.60.5 (PATCH — style hardening phase 5 dead admin module cleanup)
+
 ## [v11.60.4] — 2026-03-06T00:00:00.000Z
 
 ### Summary

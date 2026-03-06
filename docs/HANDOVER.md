@@ -110,6 +110,32 @@ This file is onboarding plus operational context for the next agent. Keep it acc
 2. Post evidence to SSOT card `#72`.
 3. Commit, push, and continue with the next actionable duplication target if the card scope remains open.
 
+## 2026-03-06 14:55:00 CET - Codex Agent
+- Branch: `landing-overhaul`
+- Base commit: `43fd6308f`
+- Objective: Continue `#72` by removing additional dead admin CSS modules with no live imports.
+
+### What changed
+- Removed dead unreferenced admin modules:
+  - `app/admin/admin.module.css`
+  - `app/admin/categories/Categories.module.css`
+  - `app/admin/events/Projects.module.css`
+- Prepared patch version `11.60.5` and release-note entry for this additional Phase 5 cleanup slice.
+
+### Validation
+- `npm run build` -> passed
+- `npm run type-check` -> passed
+- `npm run lint` -> passed (warnings only)
+- `npm run version:verify` -> passed
+
+### Known issues / risks
+- `#72` remains open because additional style-system duplication may still exist outside these dead admin artifacts.
+
+### Immediate next actions
+1. Run validation gates for `11.60.5`.
+2. Post evidence to SSOT card `#72`.
+3. Commit, push, and continue with the next actionable duplication target if the card scope remains open.
+
 ## 2026-03-06 13:10:00 CET - Codex Agent
 - Branch: `landing-overhaul`
 - Base commit: `d464ab33f`
