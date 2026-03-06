@@ -1,8 +1,48 @@
 # MessMass Release Notes
 Status: Active
-Last Updated: 2026-02-21T00:00:00.000Z
+Last Updated: 2026-03-06T00:00:00.000Z
 Canonical: No
 Owner: Operations
+
+## [v11.60.0] — 2026-03-06T00:00:00.000Z
+
+### Summary
+🧭 **ADMIN UI CONSISTENCY**: Standardized the canonical admin hero across management pages, aligned touched routes to the shared admin content surface and width shell, removed inline styles from the touched scope, and synced the admin UI documentation to match the delivered standard.
+
+### What Was Changed
+
+#### Canonical hero standardization ✅
+**WHAT**: Migrated the targeted admin management pages to `UnifiedAdminHeroWithSearch` so titles, back links, actions, badges, and optional search live on one shared header path.  
+**WHY**: Admin pages had diverged between legacy `AdminHero` usage and newer unified patterns, which made the admin surface inconsistent and harder to maintain.  
+**HOW**: Extended `components/UnifiedAdminHeroWithSearch.tsx` with badge support and migrated `/admin/dashboard`, `/admin/styles`, `/admin/insights`, `/admin/content-library`, `/admin/mainpage`, `/admin/messages`, `/admin/help`, and `/admin/events` to the unified hero.
+
+#### Width and content-surface normalization ✅
+**WHAT**: Normalized the touched admin pages onto the shared `.page-container` outer shell inside `AdminLayout`'s `.content-surface`.  
+**WHY**: Several pages used page-local outer container widths, which made admin surfaces feel visually disconnected from the shared shell.  
+**HOW**: Removed page-level outer container width rules from the touched styles/insights/help pages and kept narrower widths only as inner readable wrappers where appropriate (for example, help content prose).
+
+#### Styling hygiene in touched scope ✅
+**WHAT**: Removed inline styles and hard-coded page-shell styling from the touched admin routes.  
+**WHY**: The delivery requirement for issue `#56` explicitly forbids in-code style elements in the touched scope.  
+**HOW**: Converted the help-page guest access message to CSS modules, moved event action icon spacing into CSS, rendered style color swatches via SVG instead of React `style` props, and replaced dashboard inline progress-bar widths with SVG geometry.
+
+#### Documentation and standards sync ✅
+**WHAT**: Updated the canonical admin hero/width guidance and handover docs to match the delivered standard.  
+**WHY**: The repo rulebook requires documentation to match the real system state; undocumented delivery is not done.  
+**HOW**: Updated `docs/operations/admin-ui-width-and-hero.md`, `docs/HANDOVER.md`, and `docs/messmass-codex-brain-dump.md` with the canonical hero path, width rules, touched routes, and exceptions.
+
+### Testing
+- ✅ `npm run build`
+- ✅ `npm run lint`
+- ✅ `npm run type-check`
+- ✅ `npm run version:verify`
+- ✅ `python3 scripts/docs_inventory.py`
+- ✅ `python3 scripts/docs_triage.py`
+- ✅ `python3 scripts/docs_link_check.py`
+- ✅ `python3 scripts/docs_canonical_map.py`
+
+### Version
+v11.59.0 → v11.60.0 (MINOR — admin UI consistency delivery)
 
 ## [v11.56.1] — 2026-02-21T00:00:00.000Z
 

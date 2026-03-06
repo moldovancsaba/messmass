@@ -701,12 +701,20 @@
   background: var(--mm-gray-200);
 }
 
+.progress-bar-svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
 .progress-bar-male {
   background: var(--mm-color-primary-500);
+  fill: var(--mm-color-primary-500);
 }
 
 .progress-bar-female {
   background: var(--mm-chart-pink);
+  fill: var(--mm-chart-pink);
 }
 
 /* Mini Metric Cards (Filter Tab) */

@@ -6,7 +6,7 @@
 // HOW: Search, filter, upload, edit, and delete assets with usage tracking
 
 import React, { useState, useEffect, useMemo } from 'react';
-import AdminHero from '@/components/AdminHero';
+import UnifiedAdminHeroWithSearch from '@/components/UnifiedAdminHeroWithSearch';
 import ColoredCard from '@/components/ColoredCard';
 import { FormModal } from '@/components/modals';
 import ImageUploadField from '@/components/ImageUploadField';
@@ -171,7 +171,7 @@ export default function ContentLibraryPage() {
   
   return (
     <div className="page-container">
-      <AdminHero
+      <UnifiedAdminHeroWithSearch
         title="📚 Content Library"
         subtitle="Define image and text variables for event-specific content"
         backLink="/admin"

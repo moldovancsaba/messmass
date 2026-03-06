@@ -7,7 +7,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import AdminHero from '@/components/AdminHero';
+import UnifiedAdminHeroWithSearch from '@/components/UnifiedAdminHeroWithSearch';
 import ColoredCard from '@/components/ColoredCard';
 import MaterialIcon from '@/components/MaterialIcon';
 import { ReportStyle } from '@/lib/reportStyleTypes';
@@ -83,8 +83,8 @@ export default function StylesListPage() {
 
   if (loading) {
     return (
-      <div className={styles.container}>
-        <AdminHero title="Report Styles" subtitle="Loading..." />
+      <div className="page-container">
+        <UnifiedAdminHeroWithSearch title="Report Styles" subtitle="Loading..." />
         <div className={styles.loading}>
           <div className={styles.spinner} />
           <p>Loading styles...</p>
@@ -95,8 +95,8 @@ export default function StylesListPage() {
 
   if (error) {
     return (
-      <div className={styles.container}>
-        <AdminHero title="Report Styles" subtitle="Error loading styles" />
+      <div className="page-container">
+        <UnifiedAdminHeroWithSearch title="Report Styles" subtitle="Error loading styles" />
         <ColoredCard accentColor="#ef4444">
           <div className={styles.error}>
             <MaterialIcon name="error" variant="outlined" />
@@ -111,26 +111,26 @@ export default function StylesListPage() {
   }
 
   return (
-    <div className={styles.container}>
-      <AdminHero 
+    <div className="page-container">
+      <UnifiedAdminHeroWithSearch
         title="Report Styles" 
         subtitle="Manage color themes for report pages"
+        actionButtons={[
+          {
+            label: 'Create New Style',
+            icon: 'add',
+            onClick: handleCreate,
+            variant: 'primary',
+          },
+        ]}
+        badges={[
+          {
+            text: `${stylesList.length} ${stylesList.length === 1 ? 'Style' : 'Styles'}`,
+            variant: 'primary',
+          },
+          ...(deleteStatus ? [{ text: deleteStatus, variant: 'success' as const }] : []),
+        ]}
       />
-
-      <div className={styles.header}>
-        <div className={styles.headerInfo}>
-          <p className={styles.count}>
-            {stylesList.length} {stylesList.length === 1 ? 'style' : 'styles'}
-          </p>
-          {deleteStatus && (
-            <span className={styles.deleteStatus}>{deleteStatus}</span>
-          )}
-        </div>
-        <button onClick={handleCreate} className={styles.createButton}>
-          <MaterialIcon name="add" variant="outlined" />
-          Create New Style
-        </button>
-      </div>
 
       {stylesList.length === 0 ? (
         <ColoredCard accentColor="#3b82f6">
@@ -208,9 +208,9 @@ export default function StylesListPage() {
 function ColorSwatch({ color, label }: { color: string; label: string }) {
   return (
     <div className={styles.swatch}>
-      {/* WHAT: Dynamic background color for color swatch - WHY: Color value comes from props, cannot use CSS classes */}
-      {/* eslint-disable-next-line react/forbid-dom-props */}
-      <div className={styles.swatchColor} style={{ backgroundColor: color }} />
+      <svg className={styles.swatchColor} viewBox="0 0 40 40" aria-label={`${label} color preview`}>
+        <rect width="40" height="40" rx="8" ry="8" fill={color} />
+      </svg>
       <span className={styles.swatchLabel}>{label}</span>
     </div>
   );

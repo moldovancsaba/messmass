@@ -1,39 +1,56 @@
 /* What: Styles for the admin help/user guide page
    Why: Clean, readable documentation layout using design tokens */
 
-.container {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: var(--mm-space-6);
-  background: var(--mm-gray-50);
-  min-height: 100vh;
-}
-
 .content {
   background: var(--mm-white);
   border-radius: var(--mm-radius-md);
   box-shadow: var(--mm-shadow-sm);
   padding: var(--mm-space-8);
+  max-width: 980px;
+  margin: 0 auto;
 }
 
-/* Header section with title and subtitle */
-.header {
+.guestBox {
+  padding: var(--mm-space-6);
   margin-bottom: var(--mm-space-8);
-  padding-bottom: var(--mm-space-6);
-  border-bottom: 2px solid var(--mm-gray-200);
+  background: var(--mm-info-light);
+  border: 2px solid var(--mm-color-primary-500);
+  border-radius: var(--mm-radius-lg);
 }
 
-.header h1 {
-  font-size: var(--mm-font-size-3xl);
-  font-weight: var(--mm-font-weight-bold);
-  color: var(--mm-gray-900);
+.guestHeading {
+  margin-top: 0;
   margin-bottom: var(--mm-space-3);
+  color: var(--mm-color-primary-800);
+  font-size: var(--mm-font-size-xl);
 }
 
-.subtitle {
-  font-size: var(--mm-font-size-lg);
-  color: var(--mm-gray-600);
-  margin: 0;
+.guestText {
+  margin-bottom: var(--mm-space-3);
+  color: var(--mm-color-primary-900);
+}
+
+.guestInnerBox {
+  padding: var(--mm-space-4);
+  background: var(--mm-white);
+  border-radius: var(--mm-radius-md);
+  border: 1px solid var(--mm-color-primary-300);
+}
+
+.guestInnerHeading {
+  margin-bottom: var(--mm-space-2);
+  font-weight: var(--mm-font-weight-semibold);
+  color: var(--mm-color-primary-800);
+}
+
+.guestList {
+  margin-bottom: 0;
+  padding-left: var(--mm-space-6);
+  color: var(--mm-color-primary-900);
+}
+
+.guestNestedList {
+  margin-top: var(--mm-space-1);
 }
 
 /* Table of contents navigation */
@@ -181,16 +198,8 @@
 
 /* Responsive adjustments */
 @media (max-width: 768px) {
-  .container {
-    padding: var(--mm-space-4);
-  }
-
   .content {
     padding: var(--mm-space-4);
-  }
-
-  .header h1 {
-    font-size: var(--mm-font-size-2xl);
   }
 
   .section h2 {

@@ -19,6 +19,11 @@ interface ActionButton {
   title?: string;
 }
 
+interface Badge {
+  text: string;
+  variant: 'primary' | 'secondary' | 'success' | 'warning' | 'danger';
+}
+
 interface UnifiedAdminHeroWithSearchProps {
   /** Page title */
   title: string;
@@ -36,6 +41,8 @@ interface UnifiedAdminHeroWithSearchProps {
   searchPlaceholder?: string;
   /** Optional action buttons */
   actionButtons?: ActionButton[];
+  /** Optional badges */
+  badges?: Badge[];
   /** Show view toggle */
   showViewToggle?: boolean;
   /** Current view mode */
@@ -71,6 +78,7 @@ export default function UnifiedAdminHeroWithSearch({
   onSearchChange,
   searchPlaceholder = 'Search...',
   actionButtons = [],
+  badges = [],
   showViewToggle = false,
   currentView = 'list',
   onViewChange,
@@ -106,6 +114,16 @@ export default function UnifiedAdminHeroWithSearch({
 
         {/* WHAT: Right section - View toggle, actions, back link */}
         <div className={styles.heroRight}>
+          {badges.length > 0 && (
+            <div className={styles.badgeContainer}>
+              {badges.map((badge, idx) => (
+                <span key={idx} className={`${styles.badge} ${styles[`badge${badge.variant.charAt(0).toUpperCase() + badge.variant.slice(1)}`]}`}>
+                  {badge.text}
+                </span>
+              ))}
+            </div>
+          )}
+
           {/* WHAT: View toggle for list/card switching */}
           {showViewToggle && onViewChange && (
             <div className={styles.viewToggleWrapper}>

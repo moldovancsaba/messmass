@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useAdminAuth } from '@/hooks/useAdminAuth';
 import { apiPut, apiPost } from '@/lib/apiClient';
-import AdminHero from '@/components/AdminHero';
+import UnifiedAdminHeroWithSearch from '@/components/UnifiedAdminHeroWithSearch';
 import adminStyles from '@/app/styles/admin-pages.module.css';
 import styles from './page.module.css';
 
@@ -112,9 +112,10 @@ export default function AdminMainpagePage() {
 
   return (
     <div className="page-container">
-      <AdminHero
+      <UnifiedAdminHeroWithSearch
         title="Main page"
         subtitle="Choose which report drives the main page (messmass.com) and generate static content"
+        backLink="/admin"
       />
       {message && (
         <div className={message.type === 'error' ? adminStyles.errorContainer : styles.successBox}>

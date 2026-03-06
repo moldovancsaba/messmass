@@ -31,7 +31,7 @@ export interface EditorBlockInput {
   blockId: string;
   cells: Array<{
     chartId: string;
-    elementType: 'text' | 'table' | 'pie' | 'bar' | 'kpi' | 'image';
+    elementType: 'text' | 'table' | 'pie' | 'bar' | 'kpi' | 'image' | 'valuechain';
     width?: number;
     contentMetadata?: Record<string, unknown>;
     imageMode?: 'cover' | 'setIntrinsic';
@@ -192,4 +192,3 @@ export function checkPublishValidity(
     blockedBlocks
   };
 }
-

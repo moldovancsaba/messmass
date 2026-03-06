@@ -8,7 +8,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import AdminHero from '@/components/AdminHero';
+import UnifiedAdminHeroWithSearch from '@/components/UnifiedAdminHeroWithSearch';
 import ColoredCard from '@/components/ColoredCard';
 import InsightCard from '@/components/InsightCard';
 import styles from './page.module.css';
@@ -100,8 +100,8 @@ export default function InsightsDashboard() {
   }, [typeFilter, severityFilter, limit]);
 
   return (
-    <div className={styles.container}>
-      <AdminHero
+    <div className="page-container">
+      <UnifiedAdminHeroWithSearch
         title="📊 Analytics Insights"
         subtitle="AI-powered insights and anomaly detection across your events"
         actionButtons={[

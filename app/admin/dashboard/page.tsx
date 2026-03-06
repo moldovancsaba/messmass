@@ -6,7 +6,7 @@ import Cookies from 'js-cookie';
 import { AdminUser } from '@/lib/auth';
 import HashtagInput from '@/components/HashtagInput';
 import ColoredHashtagBubble from '@/components/ColoredHashtagBubble';
-import AdminHero from '@/components/AdminHero';
+import UnifiedAdminHeroWithSearch from '@/components/UnifiedAdminHeroWithSearch';
 import ColoredCard from '@/components/ColoredCard';
 
 interface Project {
@@ -194,11 +194,14 @@ export default function DashboardPage() {
   }
 
   const aggregatedStats = calculateAggregatedStats();
+  const totalGenderCount = aggregatedStats.genderDistribution.male + aggregatedStats.genderDistribution.female;
+  const malePercent = totalGenderCount > 0 ? (aggregatedStats.genderDistribution.male / totalGenderCount) * 100 : 0;
+  const femalePercent = totalGenderCount > 0 ? (aggregatedStats.genderDistribution.female / totalGenderCount) * 100 : 0;
 
   return (
     <div className="page-container">
       {/* Header */}
-      <AdminHero
+      <UnifiedAdminHeroWithSearch
         title="📊 Dashboard"
         subtitle="Comprehensive dashboard with overview, success metrics, statistics, and filtering"
         backLink="/admin"
@@ -375,22 +378,10 @@ export default function DashboardPage() {
                   <span>Female: {aggregatedStats.genderDistribution.female.toLocaleString()}</span>
                 </div>
                 <div className="progress-bar-container">
-                  {/* WHAT: Dynamic width based on gender distribution percentage - WHY: Progress bar width must be calculated from data, cannot use CSS classes */}
-                  <div 
-                    className="progress-bar-male"
-                    // eslint-disable-next-line react/forbid-dom-props
-                    style={{
-                      width: `${(aggregatedStats.genderDistribution.male / (aggregatedStats.genderDistribution.male + aggregatedStats.genderDistribution.female)) * 100}%`
-                    }}
-                  />
-                  {/* WHAT: Dynamic width based on gender distribution percentage - WHY: Progress bar width must be calculated from data, cannot use CSS classes */}
-                  <div 
-                    className="progress-bar-female"
-                    // eslint-disable-next-line react/forbid-dom-props
-                    style={{
-                      width: `${(aggregatedStats.genderDistribution.female / (aggregatedStats.genderDistribution.male + aggregatedStats.genderDistribution.female)) * 100}%`
-                    }}
-                  />
+                  <svg viewBox="0 0 100 16" preserveAspectRatio="none" aria-label="Gender distribution bar" className="progress-bar-svg">
+                    <rect className="progress-bar-male" x="0" y="0" width={malePercent} height="16" rx="8" ry="8" />
+                    <rect className="progress-bar-female" x={malePercent} y="0" width={femalePercent} height="16" rx="8" ry="8" />
+                  </svg>
                 </div>
               </div>
             </div>

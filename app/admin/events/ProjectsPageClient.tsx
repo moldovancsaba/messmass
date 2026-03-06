@@ -7,7 +7,7 @@ import { AdminUser } from '@/lib/auth';
 import UnifiedHashtagInput from '@/components/UnifiedHashtagInput';
 import ColoredHashtagBubble from '@/components/ColoredHashtagBubble';
 import SharePopup from '@/components/SharePopup';
-import AdminHero from '@/components/AdminHero';
+import UnifiedAdminHeroWithSearch from '@/components/UnifiedAdminHeroWithSearch';
 import ColoredCard from '@/components/ColoredCard';
 import BitlyLinksEditor from '@/components/BitlyLinksEditor';
 import FormModal from '@/components/modals/FormModal';
@@ -595,7 +595,7 @@ export default function ProjectsPageClient({ user }: ProjectsPageClientProps) {
     <div className="page-container">
       {/* WHAT: AdminHero standardization for consistent header
           WHY: Unified design system across all admin pages */}
-      <AdminHero
+      <UnifiedAdminHeroWithSearch
         title="🍿 Manage Projects"
         subtitle="Manage all event projects, statistics, and sharing options"
         backLink="/admin"
@@ -860,7 +860,7 @@ export default function ProjectsPageClient({ user }: ProjectsPageClientProps) {
                               }
                             }}
                           >
-                            <MaterialIcon name="download" variant="outlined" style={{ fontSize: '1rem', marginRight: '0.25rem' }} />
+                            <MaterialIcon name="download" variant="outlined" className={partnerStyles.actionIcon} />
                             CSV
                           </button>
                           
@@ -875,7 +875,7 @@ export default function ProjectsPageClient({ user }: ProjectsPageClientProps) {
                               }}
                               title={`Share edit page for ${project.eventName} statistics`}
                             >
-                              <MaterialIcon name="bar_chart" variant="outlined" style={{ fontSize: '1rem', marginRight: '0.25rem' }} />
+                              <MaterialIcon name="bar_chart" variant="outlined" className={partnerStyles.actionIcon} />
                               Edit Stats
                             </button>
                           )}
@@ -889,7 +889,7 @@ export default function ProjectsPageClient({ user }: ProjectsPageClientProps) {
                             }}
                             title="Edit project name and date"
                           >
-                            <MaterialIcon name="edit" variant="outlined" style={{ fontSize: '1rem', marginRight: '0.25rem' }} />
+                            <MaterialIcon name="edit" variant="outlined" className={partnerStyles.actionIcon} />
                             Edit
                           </button>
                           
@@ -898,7 +898,7 @@ export default function ProjectsPageClient({ user }: ProjectsPageClientProps) {
                             className="btn btn-small btn-danger action-button"
                             onClick={() => deleteProject(project._id)}
                           >
-                            <MaterialIcon name="delete" variant="outlined" style={{ fontSize: '1rem', marginRight: '0.25rem' }} />
+                            <MaterialIcon name="delete" variant="outlined" className={partnerStyles.actionIcon} />
                             Delete
                           </button>
                         </div>
