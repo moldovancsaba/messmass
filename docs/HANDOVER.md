@@ -65,6 +65,9 @@ This file is onboarding plus operational context for the next agent. Keep it acc
 - Removed duplicated local CSS modules:
   - `app/edit/[slug]/page.module.css`
   - `app/partner-edit/[slug]/page.module.css`
+- Removed dead unreferenced CSS modules:
+  - `app/admin/bitly/bitly.module.css`
+  - `app/partner-report/[slug]/PartnerReport.module.css`
 - Prepared patch version `11.60.3` and release-note entry for the consolidation.
 
 ### Validation
@@ -74,7 +77,7 @@ This file is onboarding plus operational context for the next agent. Keep it acc
 - `npm run version:verify` -> pending until version artifacts are written for `11.60.3`
 
 ### Known issues / risks
-- Additional CSS duplication remains elsewhere in the repo; this delivery only consolidates the highest-value low-risk editor-state duplication.
+- Additional CSS duplication remains elsewhere in the repo; this delivery currently covers the shared editor-state duplication and a pair of dead unreferenced route-local CSS modules.
 
 ### Immediate next actions
 1. Write version artifacts for `11.60.3`.

@@ -7,7 +7,7 @@ Owner: Operations
 ## [v11.60.3] — 2026-03-06T00:00:00.000Z
 
 ### Summary
-🎨 **STYLE HARDENING PHASE 5**: Consolidated duplicated editor state CSS so event edit and partner edit now use one canonical loading/error stylesheet instead of separate drifting page-local modules.
+🎨 **STYLE HARDENING PHASE 5**: Consolidated duplicated editor state CSS and removed dead legacy CSS modules so equivalent admin/reporting surfaces rely on fewer drifting stylesheets.
 
 ### What Was Fixed
 
@@ -15,6 +15,11 @@ Owner: Operations
 **WHAT**: Event edit and partner edit pages now share one canonical CSS module for loading and error states.  
 **WHY**: Two page-local CSS modules existed for the same editor shell behavior, which created duplication and styling drift risk.  
 **HOW**: Added `app/styles/editor-states.module.css`, updated `app/edit/[slug]/page.tsx` and `app/partner-edit/[slug]/page.tsx` to import it, and removed the duplicated page-local CSS modules.
+
+#### Dead CSS module cleanup ✅
+**WHAT**: Removed unused CSS modules that were no longer imported by active code paths.  
+**WHY**: Dead route-local stylesheets increase style drift risk and make future consolidation harder because they look real but do nothing.  
+**HOW**: Deleted `app/admin/bitly/bitly.module.css` and `app/partner-report/[slug]/PartnerReport.module.css` after confirming the active pages already use other canonical stylesheets.
 
 ### Testing
 - ✅ `npm run build`
