@@ -84,6 +84,32 @@ This file is onboarding plus operational context for the next agent. Keep it acc
 2. Post evidence to SSOT card `#72`.
 3. Commit, push, and continue with the next actionable duplication target if the card scope remains open.
 
+## 2026-03-06 14:35:00 CET - Codex Agent
+- Branch: `landing-overhaul`
+- Base commit: `b9dcfabc1`
+- Objective: Continue `#72` by removing dead CSS artifacts that duplicate already-canonical shared style layers.
+
+### What changed
+- Removed dead unreferenced utility module:
+  - `app/styles/utilities.module.css`
+- Confirmed the canonical utility layer remains:
+  - `app/styles/utilities.css` imported by `app/globals.css`
+- Prepared patch version `11.60.4` and release-note entry for this additional Phase 5 cleanup slice.
+
+### Validation
+- `npm run build` -> passed
+- `npm run type-check` -> passed
+- `npm run lint` -> passed (warnings only)
+- `npm run version:verify` -> passed
+
+### Known issues / risks
+- `#72` still has remaining Phase 5 scope if more duplicate or dead CSS artifacts are found, but this slice is isolated to one unused utility module with no active imports.
+
+### Immediate next actions
+1. Run validation gates for `11.60.4`.
+2. Post evidence to SSOT card `#72`.
+3. Commit, push, and continue with the next actionable duplication target if the card scope remains open.
+
 ## 2026-03-06 13:10:00 CET - Codex Agent
 - Branch: `landing-overhaul`
 - Base commit: `d464ab33f`

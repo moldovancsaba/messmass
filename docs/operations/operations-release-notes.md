@@ -4,6 +4,27 @@ Last Updated: 2026-03-06T00:00:00.000Z
 Canonical: No
 Owner: Operations
 
+## [v11.60.4] — 2026-03-06T00:00:00.000Z
+
+### Summary
+🎨 **STYLE HARDENING PHASE 5**: Removed an unused duplicate utility CSS module so the shared utility layer has one canonical implementation.
+
+### What Was Fixed
+
+#### Dead utility CSS module cleanup ✅
+**WHAT**: Removed `app/styles/utilities.module.css`, which was not imported by any active code path.  
+**WHY**: The live utility layer already runs through `app/styles/utilities.css`; the stale module file created false duplication and audit noise.  
+**HOW**: Deleted `app/styles/utilities.module.css` after verifying there were no code imports and that docs/globals already point to `app/styles/utilities.css`.
+
+### Testing
+- ✅ `npm run build`
+- ✅ `npm run type-check`
+- ✅ `npm run lint`
+- ✅ `npm run version:verify`
+
+### Version
+v11.60.3 → v11.60.4 (PATCH — style hardening phase 5 dead utility module cleanup)
+
 ## [v11.60.3] — 2026-03-06T00:00:00.000Z
 
 ### Summary

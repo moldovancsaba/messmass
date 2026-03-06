@@ -147,6 +147,12 @@ Owner: Katja (Admin)
 ## 7. STATE MEMORY (Current Only)
 
 2026-03-06
+- CONTEXT: Style hardening Phase 5 continues under `mvp-factory-control#72`.
+- BOARD: `#72` remains `In Progress (NOW)`.
+- CODE: removed dead `app/styles/utilities.module.css` after confirming the canonical utility layer is `app/styles/utilities.css` via `app/globals.css`.
+- NEXT: run full gates for `11.60.4`, post SSOT evidence, then continue the duplication audit.
+
+2026-03-06
 - CONTEXT: Style hardening Phase 5 is active under `mvp-factory-control#72`.
 - BOARD: `#72` moved to `In Progress (NOW)`.
 - CODE: event and partner editor loading/error styles are consolidated into `app/styles/editor-states.module.css`; duplicated local page CSS modules were removed, and dead unreferenced CSS modules were deleted from `/admin/bitly` and `/partner-report`.
