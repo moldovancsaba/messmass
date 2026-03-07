@@ -241,6 +241,35 @@ This file is onboarding plus operational context for the next agent. Keep it acc
 2. Commit and push `11.60.10`.
 3. Continue with the next actionable duplication target if the card scope remains open.
 
+## 2026-03-07 10:35:00 CET - Codex Agent
+- Branch: `landing-overhaul`
+- Base commit: `8ac4a2d95`
+- Objective: Deliver SSOT issue `#354` by rebuilding the top-level README to the same quality bar as sibling product repos and syncing the related docs/versioning.
+
+### What changed
+- Rewrote `README.md` with:
+  - centered logo/title presentation
+  - badge row
+  - quick navigation links
+  - updated product overview and quick start
+  - current documentation map
+  - current delivery/SSOT discipline notes
+- Prepared patch version `11.60.11` and release-note entry for the README refresh slice.
+
+### Validation
+- `npm run build` -> passed
+- `npm run type-check` -> passed
+- `npm run lint` -> passed (warnings only)
+- `npm run version:verify` -> passed
+
+### Known issues / risks
+- README quality is now aligned with sibling repos, but the broader docs corpus still remains a continuing maintenance surface under active SSOT work.
+
+### Immediate next actions
+1. Post evidence to SSOT card `#354`.
+2. Commit and push `11.60.11`.
+3. Continue the queued work.
+
 ## 2026-03-07 09:05:00 CET - Codex Agent
 - Branch: `landing-overhaul`
 - Base commit: `fdc4af424`

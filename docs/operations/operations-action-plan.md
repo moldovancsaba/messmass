@@ -147,6 +147,12 @@ Owner: Katja (Admin)
 ## 7. STATE MEMORY (Current Only)
 
 2026-03-07
+- CONTEXT: README refresh tracked under `mvp-factory-control#354`.
+- BOARD: `#354` is the active docs slice being delivered alongside ongoing style-hardening work.
+- DOCS: rewrote the top-level README to align with the product-introduction standard used by sibling repos and synced it to current versioning and canonical doc entrypoints.
+- NEXT: run full gates for `11.60.11`, post SSOT evidence on `#354`, then continue the queued issue sequence.
+
+2026-03-07
 - CONTEXT: Style hardening Phase 5 continues under `mvp-factory-control#72`.
 - BOARD: `#72` remains `In Progress (NOW)`.
 - DOCS: updated current docs to stop referencing deleted CSS modules and removed stale hardcoded-values inventory rows for files already removed in prior cleanup slices.

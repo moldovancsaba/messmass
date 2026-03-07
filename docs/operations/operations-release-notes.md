@@ -4,6 +4,27 @@ Last Updated: 2026-03-06T00:00:00.000Z
 Canonical: No
 Owner: Operations
 
+## [v11.60.11] — 2026-03-07T00:00:00.000Z
+
+### Summary
+📘 **README REFRESH**: Rebuilt the top-level project README so MessMass now has a current product introduction, badge row, quick links, and a cleaner canonical docs map aligned with sibling project standards.
+
+### What Was Fixed
+
+#### README quality and accuracy refresh ✅
+**WHAT**: Rewrote `README.md` with a centered product header, badge row, quick navigation links, current product positioning, updated version, cleaner quick-start section, and a current documentation map.  
+**WHY**: The previous README was stale, carried the wrong version, and was materially below the presentation and product-introduction quality already used by sibling repos like `reply` and `hatori`.  
+**HOW**: Replaced the old README structure with a modern product-entrypoint format and synced it to the current documentation and release state.
+
+### Testing
+- ✅ `npm run build`
+- ✅ `npm run type-check`
+- ✅ `npm run lint`
+- ✅ `npm run version:verify`
+
+### Version
+v11.60.10 → v11.60.11 (PATCH — README refresh and docs entrypoint quality upgrade)
+
 ## [v11.60.10] — 2026-03-07T00:00:00.000Z
 
 ### Summary
