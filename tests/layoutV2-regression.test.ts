@@ -1,4 +1,4 @@
-// __tests__/layoutV2-regression.test.ts
+// tests/layoutV2-regression.test.ts
 // WHAT: Regression tests for LayoutV2 end-to-end rendering alignment
 // WHY: Ensure all chart types work correctly with LayoutV2, no overflow/clipping
 // HOW: Test fixtures with real report data structures, multi-block and mixed chart-type layouts

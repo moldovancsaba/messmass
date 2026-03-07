@@ -3998,7 +3998,7 @@ A change is “done” only when it is:
   - Ready for testing with real report data (requires MongoDB connection)
 
 ### Task 6.2: Create Validation Test Suite
-- [x] Create `__tests__/layout-grammar/layout-grammar.test.ts`
+- [x] Create `tests/layout-grammar/layout-grammar.test.ts`
 - [x] Test height resolution priorities (Priority 1-4)
 - [x] Test element fit validation (all element types)
 - [x] Test editor validation API (normalization, publish blocking)

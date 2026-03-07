@@ -136,7 +136,7 @@ Layout Grammar ensures deterministic layout, but other sources of non-determinis
   - `lib/fontSyncCalculator.ts` - Font calculation determinism
 - **New files:**
   - `docs/archive/_archive/investigations/archive-investigations-pack-2026.md#a-r-08-render-determinism` - Investigation doc
-  - `__tests__/render-determinism.test.ts` - Determinism test harness
+  - `tests/render-determinism.test.ts` - Determinism test harness
 
 **Done Criteria:**
 - ✅ Investigation document identifies all sources of non-determinism
@@ -218,7 +218,7 @@ CSV and PDF exports may not match rendered report:
   - `app/report/[slug]/page.tsx` - Rendered report data sources
 - **New files:**
   - `docs/audits/investigations/A-R-10-export-format-consistency.md` - Investigation doc
-  - `__tests__/export-consistency.test.ts` - Export consistency test harness
+  - `tests/export-consistency.test.ts` - Export consistency test harness
 
 **Done Criteria:**
 - ✅ Investigation document identifies format inconsistencies

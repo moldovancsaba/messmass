@@ -1,4 +1,4 @@
-// __tests__/export-parity.test.ts
+// tests/export-parity.test.ts
 // WHAT: Regression tests for A-R-10 Phase 2 - CSV export parity with rendered report
 // WHY: Ensure CSV export filtering and ordering match rendered report behavior
 // HOW: Test hasValidChartData filtering and order-based sorting

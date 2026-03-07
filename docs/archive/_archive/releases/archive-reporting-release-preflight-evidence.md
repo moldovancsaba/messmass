@@ -38,7 +38,7 @@ Owner: Release
 
 **Execution:**
 ```bash
-npm test -- __tests__/export-validation.test.ts __tests__/export-parity.test.ts __tests__/formula-error-handling.test.ts __tests__/template-compatibility.test.ts __tests__/chart-data-validation.test.ts __tests__/export-csv-formatting.test.ts
+npm test -- tests/export-validation.test.ts tests/export-parity.test.ts tests/formula-error-handling.test.ts tests/template-compatibility.test.ts tests/chart-data-validation.test.ts tests/export-csv-formatting.test.ts
 ```
 
 **Result:** ✅ **PASS** (All tests pass when run individually)

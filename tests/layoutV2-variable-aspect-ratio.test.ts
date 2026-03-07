@@ -1,4 +1,4 @@
-// __tests__/layoutV2-variable-aspect-ratio.test.ts
+// tests/layoutV2-variable-aspect-ratio.test.ts
 // WHAT: Regression tests for R-LAYOUT-02.1 - Variable Block Aspect Ratio support
 // WHY: Ensure aspect ratio override works correctly for TEXT-AREA/TABLE blocks
 // HOW: Test default 4:1, extended ratios (4:6, 4:10), and invalid combinations

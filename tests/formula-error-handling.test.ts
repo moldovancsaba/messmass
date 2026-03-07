@@ -1,4 +1,4 @@
-// __tests__/formula-error-handling.test.ts
+// tests/formula-error-handling.test.ts
 // WHAT: Regression tests for A-R-11 - Formula calculation error handling
 // WHY: Ensure errors are properly categorized, displayed, and handled gracefully
 // HOW: Test all error scenarios identified in investigation

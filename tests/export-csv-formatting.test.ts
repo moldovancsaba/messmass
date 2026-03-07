@@ -1,4 +1,4 @@
-// __tests__/export-csv-formatting.test.ts
+// tests/export-csv-formatting.test.ts
 // WHAT: Regression tests for A-R-15 - CSV export formatting alignment
 // WHY: Ensure CSV values match rendered report formatting
 // HOW: Test formatting application for KPI, BAR, and PIE charts
