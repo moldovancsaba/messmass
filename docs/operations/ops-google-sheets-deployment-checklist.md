@@ -50,7 +50,7 @@ npm run test:google-sheets
 npm run check:google-sheets-schema
 ```
 
-**UUID / duplicate behavior:** Column A in the sheet stores the MessMass event UUID. Pull uses UUID to match rows to events (update vs create). Duplicate UUIDs in the sheet: last row wins when matching; avoid duplicates. Uniqueness is not enforced in the sheet; application logic matches by UUID.
+**UUID / duplicate behavior:** Column A in the sheet stores the {messmass} event UUID. Pull uses UUID to match rows to events (update vs create). Duplicate UUIDs in the sheet: last row wins when matching; avoid duplicates. Uniqueness is not enforced in the sheet; application logic matches by UUID.
 
 Reference (archived schema note): `docs/archive/_archive/migrations/GOOGLE_SHEETS_SCHEMA_UPDATE.md`.
 
@@ -88,8 +88,8 @@ Execute on staging environment with a real partner and test sheet.
 |------|--------|----------|
 | 12 | Pull with empty sheet | No errors; 0 created, 0 updated |
 | 13 | Pull with new rows (no UUID in col A) | Events created; UUIDs written to sheet |
-| 14 | Conflict: MessMass newer, then Pull | Conflict modal; continue overwrites sheet data |
-| 15 | Conflict: Sheet newer, then Push | Conflict modal; continue overwrites MessMass data |
+| 14 | Conflict: {messmass} newer, then Pull | Conflict modal; continue overwrites sheet data |
+| 15 | Conflict: Sheet newer, then Push | Conflict modal; continue overwrites {messmass} data |
 
 ### Cron (if configured on staging)
 

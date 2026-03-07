@@ -10,7 +10,7 @@ Owner: Architecture
 
 ## Overview
 
-MessMass reports use a **deterministic block-based layout system** that ensures:
+{messmass} reports use a **deterministic block-based layout system** that ensures:
 - All cells in a row share the same height (no uneven rows)
 - Titles, subtitles, and KPI values use synchronized font sizes within blocks
 - Image aspect ratios are preserved while maintaining row height consistency
@@ -458,5 +458,5 @@ PDF export automatically matches screen layout:
 
 ---
 
-*MessMass Layout System Documentation*  
+*{messmass} Layout System Documentation*  
 *Version 11.47.0 | 2026-01-02 | Spec v2.0*

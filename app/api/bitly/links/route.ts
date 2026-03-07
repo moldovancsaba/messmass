@@ -1,5 +1,5 @@
 // app/api/bitly/links/route.ts
-// WHAT: API endpoints for managing Bitly link associations with MessMass projects
+// WHAT: API endpoints for managing Bitly link associations with {messmass} projects
 // WHY: Enables admins to connect Bitly URLs to events for analytics tracking
 // ENDPOINTS:
 //   POST - Associate a new Bitly link with a project
@@ -18,7 +18,7 @@ import { error as logError, info as logInfo } from '@/lib/logger';
 
 /**
  * POST /api/bitly/links
- * WHAT: Associate a Bitly link with a MessMass project
+ * WHAT: Associate a Bitly link with a {messmass} project
  * WHY: Enables tracking link performance within project analytics
  * 
  * AUTH: Admin only

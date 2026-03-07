@@ -14,7 +14,7 @@ const SHEET_NAME = 'Events';
 
 // Column headers matching your test sheet structure
 const SHEET_HEADERS = [
-  'MessMass UUID',
+  '{messmass} UUID',
   'Partner 1 (Home)',
   'Partner 2 (Away)',
   'Event Title (Custom)',

@@ -144,7 +144,7 @@ export default function UnauthorizedPage() {
         <div className="login-footer">
           <p className="login-footer-text">
             Need elevated permissions?<br />
-            Contact your MessMass administrator to upgrade your role.
+            Contact your {'{messmass}'} administrator to upgrade your role.
           </p>
         </div>
       </ColoredCard>

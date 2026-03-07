@@ -134,7 +134,7 @@ For each matched partner, the script fetches and stores:
 ### Console Output (Dry Run)
 
 ```
-🚀 MessMass Partner Enrichment Script
+🚀 {messmass} Partner Enrichment Script
 =====================================
 
 Mode: 🧪 DRY RUN (no changes)

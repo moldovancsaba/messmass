@@ -1,6 +1,6 @@
 # Project Management & SSOT Guidelines
 
-**Purpose:** This document defines how MessMass delivery work is tracked and how SSOT updates must happen.
+**Purpose:** This document defines how {messmass} delivery work is tracked and how SSOT updates must happen.
 **Audience:** Product Owner, agents, and developers working in this repo.
 
 ## 1. Safety & Hallucination Controls
@@ -17,12 +17,12 @@
 Rules:
 - If work is not on the board, it is not active delivery work.
 - Status is controlled by the board field, not by issue titles.
-- MessMass issues live in `mvp-factory-control`, not in this product repo.
+- {messmass} issues live in `mvp-factory-control`, not in this product repo.
 - Every delivery must map to one SSOT card and keep that card updated at start, milestone, blocker, and done states.
 - Local docs must reflect board truth immediately after material progress.
 
 ## 3. Mandatory Delivery SOP
-Use this process for every MessMass delivery:
+Use this process for every {messmass} delivery:
 
 1. Confirm the active issue exists in `mvp-factory-control`.
 2. Ensure it is attached to Project 1.
@@ -70,7 +70,7 @@ gh project item-list 1 --owner moldovancsaba --limit 500 --format json
 gh issue comment <ISSUE_NUMBER> --repo moldovancsaba/mvp-factory-control --body-file /tmp/ssot-note.md
 ```
 
-## 8. MessMass Canonical Delivery Docs
+## 8. {messmass} Canonical Delivery Docs
 - [index.md](/Users/moldovancsaba/Projects/messmass/docs/index.md) — canonical docs entrypoint
 - [messmass-codex-brain-dump.md](/Users/moldovancsaba/Projects/messmass/docs/messmass-codex-brain-dump.md) — quick repo refresher
 - [operations-action-plan.md](/Users/moldovancsaba/Projects/messmass/docs/operations/operations-action-plan.md) — execution queue and state memory

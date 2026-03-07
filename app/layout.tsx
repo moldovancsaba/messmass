@@ -35,7 +35,7 @@ const montserrat = Montserrat({
   display: 'swap',
 });
 
-/* What: Pacifico font for MessMass branding
+/* What: Pacifico font for {messmass} branding
    Why: User-requested font for logo text next to icon */
 const pacifico = Pacifico({
   subsets: ['latin'],
@@ -45,10 +45,10 @@ const pacifico = Pacifico({
 });
 
 export const metadata: Metadata = {
-  title: 'MessMass - Event Statistics Dashboard',
+  title: '{messmass} - Event Statistics Dashboard',
   description: 'Real-time collaborative event statistics tracking',
   keywords: ['Event Statistics', 'Real-time Collaboration', 'Dashboard', 'Next.js'],
-  authors: [{ name: 'MessMass Team' }],
+  authors: [{ name: '{messmass} Team' }],
   icons: {
     icon: `/favicon.png?v=${Date.now()}`,
     apple: `/favicon.png?v=${Date.now()}`,

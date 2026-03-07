@@ -7,7 +7,7 @@ import styles from './BaseModal.module.css';
 /**
  * BaseModal Component
  * 
- * Foundation for all modal dialogs in the MessMass application.
+ * Foundation for all modal dialogs in the {messmass} application.
  * Provides consistent behavior, accessibility, and styling across all modals.
  * 
  * Features:

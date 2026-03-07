@@ -1,5 +1,5 @@
 // lib/logger.ts
-// WHAT: Centralized structured logging system for MessMass
+// WHAT: Centralized structured logging system for {messmass}
 // WHY: Consistent logging format enables effective monitoring, debugging, and audit trails
 // HOW: Structured JSON logs with severity levels, context tracking, and external service integration
 

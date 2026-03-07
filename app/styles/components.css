@@ -1,4 +1,4 @@
-/* MessMass Design System - UI Components */
+/* {messmass} Design System - UI Components */
 /* Reusable component styles used across the application */
 
 /* ========================================
@@ -2247,7 +2247,7 @@ textarea::placeholder {
 }
 
 .login-logo-container {
-  /* What: Container for MessMass logo on login page
+  /* What: Container for {messmass} logo on login page
      Why: Center and size the logo appropriately */
   display: flex;
   justify-content: center;
@@ -2256,7 +2256,7 @@ textarea::placeholder {
 }
 
 .login-logo {
-  /* What: MessMass logo image styling
+  /* What: {messmass} logo image styling
      Why: Appropriate size for login page branding */
   height: 80px;
   width: auto;

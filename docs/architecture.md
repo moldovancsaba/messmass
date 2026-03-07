@@ -1,4 +1,4 @@
-# MessMass Architecture Documentation
+# {messmass} Architecture Documentation
 Status: Active
 Last Updated: 2026-02-05T19:29:57.000Z
 Canonical: No
@@ -85,7 +85,7 @@ import FormModal from '@/components/modals/FormModal';
 
 ### Module Management Philosophy
 
-**MessMass operates on a centralized module architecture where ALL reusable components, utilities, and styling systems are maintained as single-source-of-truth implementations.**
+**{messmass} operates on a centralized module architecture where ALL reusable components, utilities, and styling systems are maintained as single-source-of-truth implementations.**
 
 **Core Principle**: One implementation, many consumers.
 
@@ -264,7 +264,7 @@ export function LegacyModal() { ... }
 
 ## Project Overview
 
-MessMass is an enterprise-grade event analytics platform built with Next.js 15, TypeScript, and MongoDB Atlas, designed for sports organizations, venues, brands, and event managers. The platform provides comprehensive real-time statistics tracking, intelligent partner management, automated event creation workflows (Sports Match Builder), advanced Bitly link analytics with many-to-many event associations, parameterized KPI dashboards with marketing multipliers, Bitly enrichment charts, and a unified hashtag system with category-aware organization.
+{messmass} is an enterprise-grade event analytics platform built with Next.js 15, TypeScript, and MongoDB Atlas, designed for sports organizations, venues, brands, and event managers. The platform provides comprehensive real-time statistics tracking, intelligent partner management, automated event creation workflows (Sports Match Builder), advanced Bitly link analytics with many-to-many event associations, parameterized KPI dashboards with marketing multipliers, Bitly enrichment charts, and a unified hashtag system with category-aware organization.
 
 ## Version History
 
@@ -572,7 +572,7 @@ bitly_links (N) ----< (N) projects (via bitly_project_links junction)
 
 ### Overview
 
-The Template System provides hierarchical report visualization management across the MessMass platform. It enables customization of how data is displayed in event reports, partner reports, and global dashboards through a database-driven template and data block architecture.
+The Template System provides hierarchical report visualization management across the {messmass} platform. It enables customization of how data is displayed in event reports, partner reports, and global dashboards through a database-driven template and data block architecture.
 
 ### Key Features
 
@@ -1877,7 +1877,7 @@ return (
 
 ### Overview
 
-The Admin Layout & Navigation System provides a comprehensive, responsive layout framework for all MessMass admin pages. It features a collapsible sidebar navigation, top header with user info and notifications, and adaptive behavior across desktop, tablet, and mobile devices.
+The Admin Layout & Navigation System provides a comprehensive, responsive layout framework for all {messmass} admin pages. It features a collapsible sidebar navigation, top header with user info and notifications, and adaptive behavior across desktop, tablet, and mobile devices.
 
 **Status**: Stable, Production-Ready  
 **Documentation**: See [ADMIN_LAYOUT_SYSTEM (archived)](archive/_archive/deprecated-guides-2025/archive-legacy-guides-pack.md#legacy-admin_layout_system) for complete documentation  

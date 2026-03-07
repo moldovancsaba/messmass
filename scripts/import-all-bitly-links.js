@@ -1,5 +1,5 @@
 // scripts/import-all-bitly-links.js
-// WHAT: One-time bulk import of ALL Bitly links from group into MessMass database
+// WHAT: One-time bulk import of ALL Bitly links from group into {messmass} database
 // WHY: Initial setup to import hundreds/thousands of existing links at once
 // USAGE: node scripts/import-all-bitly-links.js
 
@@ -97,7 +97,7 @@ async function fetchAllBitlyLinks() {
 
 /**
  * WHAT: Import links into MongoDB database
- * WHY: Store links for MessMass project association and analytics
+ * WHY: Store links for {messmass} project association and analytics
  */
 async function importLinksToDatabase(links) {
   const client = new MongoClient(MONGODB_URI);

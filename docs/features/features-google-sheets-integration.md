@@ -30,7 +30,7 @@ Owner: Product
 
 ## Overview
 
-**WHAT**: Bidirectional sync between Google Sheets and MessMass events  
+**WHAT**: Bidirectional sync between Google Sheets and {messmass} events  
 **WHY**: Enable partners to manage events in spreadsheets (familiar tool, bulk editing, formulas)  
 **HOW**: Service account authentication + partner-level sheet connections + UUID-based row matching
 
@@ -39,10 +39,10 @@ Owner: Product
 - ✅ **Partner-Level Sheets**: One sheet per partner, multiple event rows
 - ✅ **Manual Sync Buttons**: "Pull Data" and "Push Data" on partner and event pages
 - ✅ **Automated Daily Sync**: 3:00 AM UTC cron job for all enabled partners
-- ✅ **UUID Tracking**: Column A stores MessMass UUID for row matching
+- ✅ **UUID Tracking**: Column A stores {messmass} UUID for row matching
 - ✅ **Event Type Detection**: Auto-generate event names based on partner columns
 - ✅ **Conflict Detection**: Compare timestamps, show confirmation modal
-- ✅ **Hardcoded Mapping**: 42 columns (A-AP) map to MessMass fields
+- ✅ **Hardcoded Mapping**: 42 columns (A-AP) map to {messmass} fields
 - ✅ **Backward Compatible**: Existing events and partners unchanged
 - ✅ **Phase 2 UI Reliability**: Partner detail status card and partner metadata refresh after connect/disconnect/pull/push so the UI never shows stale sync state.
 
@@ -68,7 +68,7 @@ Owner: Product
 
 1. Go to `/admin/partners/[id]` (Partner Detail page) or open the Partner Edit modal.
 2. Click **"🆕 Create & Connect New Google Sheet"**.
-3. MessMass creates a new spreadsheet, writes headers, populates existing events (if any), prefixes the partner UUID in the sheet title, and connects the partner to the sheet.
+3. {messmass} creates a new spreadsheet, writes headers, populates existing events (if any), prefixes the partner UUID in the sheet title, and connects the partner to the sheet.
 4. Open the returned sheet URL and share it with the partner's editors (service account already has access).
 
 ### Step 1: Setup Google Sheet Connection (Superadmin)
@@ -96,7 +96,7 @@ Owner: Product
 - Fill Partner 1 (column B): "FC Barcelona"
 - Fill Partner 2 (column C): "Real Madrid"
 - Fill Event Date (column F): "2025-01-15"
-- Leave column A empty (MessMass will generate UUID)
+- Leave column A empty ({messmass} will generate UUID)
 
 **Option B**: Single Partner Event (e.g., "FC Barcelona - Fan Fest 2025")
 - Fill Partner 1 (column B): "FC Barcelona"
@@ -107,7 +107,7 @@ Owner: Product
 - Fill Event Title (column D): "Summer Festival"
 - Fill Event Date (column F): "2025-06-20"
 
-### Step 4: Pull Data (Sheet → MessMass)
+### Step 4: Pull Data (Sheet → {messmass})
 
 **Partner-Level Pull**:
 1. Go to `/admin/partners/[id]`
@@ -122,13 +122,13 @@ Owner: Product
 3. Click button to pull latest data for this event only
 4. Conflict modal shows if data modified in both places
 
-### Step 5: Push Data (MessMass → Sheet)
+### Step 5: Push Data ({messmass} → Sheet)
 
 **Partner-Level Push**:
 1. Go to `/admin/partners/[id]`
 2. Click "⬆️ Push All Events" button
 3. System writes all partner events to sheet
-4. Rows updated with latest MessMass data
+4. Rows updated with latest {messmass} data
 5. Formulas preserved (e.g., `=J2+K2+L2` for All Images)
 
 **Event-Level Push**:
@@ -141,7 +141,7 @@ Owner: Product
 
 - **Schedule**: 3:00 AM UTC every day
 - **Scope**: All partners with `googleSheetConfig.enabled: true` and `syncMode: 'auto'`
-- **Action**: Pull all events from sheets (Sheet → MessMass)
+- **Action**: Pull all events from sheets (Sheet → {messmass})
 - **Logging**: Sync status and errors logged to `aggregation_logs` collection
 - **Notifications**: Superadmins notified of failures
 
@@ -153,7 +153,7 @@ Owner: Product
 
 ```
 ┌─────────────────────────────────────────────────┐
-│           MessMass Frontend (Next.js)           │
+│           {messmass} Frontend (Next.js)           │
 │  - Partner Admin UI                             │
 │  - Event Editor with Sync Buttons               │
 │  - Conflict Resolution Modals                   │
@@ -162,7 +162,7 @@ Owner: Product
                    │ API Requests
                    ▼
 ┌─────────────────────────────────────────────────┐
-│         MessMass Backend (Next.js API)          │
+│         {messmass} Backend (Next.js API)          │
 │  - Partner Sync API (/api/partners/[id]/...)   │
 │  - Project Sync API (/api/projects/[id]/...)   │
 │  - Cron Job (/api/cron/google-sheets-sync)     │
@@ -204,12 +204,12 @@ Owner: Product
 ### Data Flow (Push Operation)
 
 1. **User triggers push** (button click)
-2. **API endpoint** fetches MessMass events for partner
+2. **API endpoint** fetches {messmass} events for partner
 3. **Convert events to rows** using column map
 4. **Find existing rows** by UUID (column A)
 5. **Write or update rows** in sheet
 6. **Preserve formulas** for computed columns (All Images, Total Fans)
-7. **Update sync metadata** in MessMass and sheet
+7. **Update sync metadata** in {messmass} and sheet
 8. **Return result** with push status
 
 ---
@@ -294,7 +294,7 @@ Expected output:
 
 | Column | Field Path | Type | Description | Read-Only |
 |--------|------------|------|-------------|-----------|
-| **A** | `googleSheetUuid` | UUID | MessMass UUID | ✅ |
+| **A** | `googleSheetUuid` | UUID | {messmass} UUID | ✅ |
 | **B** | `partner1Name` | String | Partner 1 (Home) | ❌ |
 | **C** | `partner2Name` | String | Partner 2 (Away) | ❌ |
 | **D** | `eventTitle` | String | Event Title (Custom) | ❌ |
@@ -339,7 +339,7 @@ Expected output:
 
 ### Read-Only Columns
 
-**Column A (UUID)**: Auto-filled by MessMass on first sync  
+**Column A (UUID)**: Auto-filled by {messmass} on first sync  
 **Column E (Event Name)**: Auto-generated based on Partner 1/2/Title  
 **Column M (All Images)**: Formula `=J2+K2+L2`  
 **Column P (Total Fans)**: Formula `=N2+O2`  
@@ -351,7 +351,7 @@ Expected output:
 
 ## Sync Workflow
 
-### Pull Data (Sheet → MessMass)
+### Pull Data (Sheet → {messmass})
 
 **Trigger**: Manual button or daily cron  
 **Scope**: Partner-level (all events) or event-level (single event)
@@ -369,18 +369,18 @@ Expected output:
 3. Return summary: {created: 5, updated: 7, errors: []}
 
 **Conflict Handling**:
-- Compare `googleSheetModifiedAt` (MessMass) vs `lastModified` (Sheet column AN)
-- If MessMass newer: Show confirmation modal "Sheet data is older. Overwrite?"
+- Compare `googleSheetModifiedAt` ({messmass}) vs `lastModified` (Sheet column AN)
+- If {messmass} newer: Show confirmation modal "Sheet data is older. Overwrite?"
 - If Sheet newer: Pull without confirmation
 - If timestamps equal: Pull without confirmation
 
-### Push Data (MessMass → Sheet)
+### Push Data ({messmass} → Sheet)
 
 **Trigger**: Manual button only (no automatic push)  
 **Scope**: Partner-level (all events) or event-level (single event)
 
 **Algorithm**:
-1. Fetch all partner events from MessMass
+1. Fetch all partner events from {messmass}
 2. For each event:
    a. Convert event data to row array (42 cells)
    b. Find existing row by UUID (column A)
@@ -391,9 +391,9 @@ Expected output:
 3. Return summary: {updated: 10, created: 2, errors: []}
 
 **Conflict Handling**:
-- Compare `lastModified` (Sheet column AN) vs `googleSheetModifiedAt` (MessMass)
+- Compare `lastModified` (Sheet column AN) vs `googleSheetModifiedAt` ({messmass})
 - If Sheet newer: Show confirmation modal "Sheet data is newer. Overwrite?"
-- If MessMass newer: Push without confirmation
+- If {messmass} newer: Push without confirmation
 - If timestamps equal: Push without confirmation
 
 ---
@@ -451,7 +451,7 @@ function detectEventType(row: unknown[]): EventType {
 ### Timestamp Comparison
 
 **Fields**:
-- **MessMass**: `googleSheetModifiedAt` (ISO 8601)
+- **{messmass}**: `googleSheetModifiedAt` (ISO 8601)
 - **Sheet**: Column AN "Last Modified" (ISO 8601)
 
 **Logic**:
@@ -461,7 +461,7 @@ function hasConflict(messmassMod: string, sheetMod: string, direction: 'pull' | 
   const sheetDate = new Date(sheetMod);
   
   if (direction === 'pull') {
-    // Conflict if MessMass is newer (pulling would overwrite)
+    // Conflict if {messmass} is newer (pulling would overwrite)
     return messDate > sheetDate;
   } else {
     // Conflict if Sheet is newer (pushing would overwrite)
@@ -476,10 +476,10 @@ function hasConflict(messmassMod: string, sheetMod: string, direction: 'pull' | 
 
 **Message**:
 ```
-MessMass last modified: 2025-01-15 14:30:00 UTC
+{messmass} last modified: 2025-01-15 14:30:00 UTC
 Sheet last modified: 2025-01-15 10:00:00 UTC
 
-MessMass data is newer. Pulling from sheet will overwrite your changes.
+{messmass} data is newer. Pulling from sheet will overwrite your changes.
 
 Do you want to continue?
 ```
@@ -569,7 +569,7 @@ Authorization: Bearer <CRON_SECRET>
 - Pull events (with data)
 - Push events (new events)
 - Push events (existing rows)
-- Conflict modal (MessMass newer)
+- Conflict modal ({messmass} newer)
 - Conflict modal (Sheet newer)
 - Event-level pull
 - Event-level push
@@ -614,7 +614,7 @@ npm run test:google-sheets
 **Error**: "Event UUID not found in sheet"
 
 **Solution**:
-1. Ensure column A contains MessMass UUIDs
+1. Ensure column A contains {messmass} UUIDs
 2. Check if row was deleted in sheet
 3. Pull events again to regenerate UUIDs
 

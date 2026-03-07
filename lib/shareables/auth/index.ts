@@ -1,14 +1,14 @@
 // lib/shareables/auth/index.ts
-// Central export file for MessMass Authentication System
+// Central export file for {messmass} Authentication System
 
 import React from 'react'
 import type { AuthUser, UserRole, LoginResponse } from './types'
 import type { LoginFormProps } from './LoginForm'
 
 /**
- * MessMass Authentication System
+ * {messmass} Authentication System
  * 
- * A complete, reusable authentication system extracted from MessMass.
+ * A complete, reusable authentication system extracted from {messmass}.
  * Provides password-based authentication with session management,
  * React context provider, and beautiful UI components.
  * 

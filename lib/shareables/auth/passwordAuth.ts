@@ -1,5 +1,5 @@
 // lib/shareables/auth/passwordAuth.ts
-// Password validation and authentication utilities for MessMass Auth System
+// Password validation and authentication utilities for {messmass} Auth System
 
 import { AuthUser, LoginCredentials, LoginResponse, SessionTokenData, UserRole } from './types'
 
@@ -8,7 +8,7 @@ import { AuthUser, LoginCredentials, LoginResponse, SessionTokenData, UserRole }
  * 
  * This module provides utilities for password-based authentication,
  * session token generation, and validation. It's extracted from the
- * MessMass implementation to be reusable in other projects.
+ * {messmass} implementation to be reusable in other projects.
  * 
  * Key Features:
  * - Simple password validation

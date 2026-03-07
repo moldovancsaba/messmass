@@ -113,7 +113,7 @@ Convert "audit should be done" items into durable tooling/guardrails:
 **Status:** Planning  
 **Dependencies:** Current v8.x data models, Bitly many-to-many system, Partners system
 
-**Vision:** Transform MessMass from a data collection platform into an intelligent analytics service that provides actionable insights, predictive analytics, and strategic recommendations to clients.
+**Vision:** Transform {messmass} from a data collection platform into an intelligent analytics service that provides actionable insights, predictive analytics, and strategic recommendations to clients.
 
 **Core Objectives:**
 - Enable deep-dive analytics across events, partners, time periods, and demographics
@@ -132,7 +132,7 @@ Convert "audit should be done" items into durable tooling/guardrails:
 **Status:** Active — Phase 2.5 delivered; Phase 3 future
 **Dependencies:** Google Cloud Service Account, Google Drive API
 
-**Vision:** Enable bidirectional synchronization between MessMass events and Google Sheets for partners who prefer spreadsheet-based workflows.
+**Vision:** Enable bidirectional synchronization between {messmass} events and Google Sheets for partners who prefer spreadsheet-based workflows.
 
 **Core Objectives:**
 - Auto-provision Google Sheets for new partners (Phase 2.5)
@@ -585,5 +585,5 @@ Future (captured as roadmap; detailed historical plan archived):
 
 ---
 
-*MessMass Roadmap — Strategic Planning Document*  
+*{messmass} Roadmap — Strategic Planning Document*  
 *Completed/DONE work is not listed here; see release notes in `docs/archive/_archive/releases/`.*

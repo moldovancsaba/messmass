@@ -8,10 +8,10 @@ This file consolidates historical security audits, phase completion notes, and r
 Do not treat this as a source of truth for current behavior. Start at `docs/security/security-overview.md` and follow canonical security docs.
 
 ## Contents
-- [security-audit-2026-01-02.md — MessMass Security Audit Report](#sec-security-audit-2026-01-02)
+- [security-audit-2026-01-02.md — {messmass} Security Audit Report](#sec-security-audit-2026-01-02)
 - [security-eval-audit-2026-01-03.md — Security Audit: dynamic-eval usage (2026-01-03)](#sec-security-eval-audit-2026-01-03)
-- [hostile-security-audit.md — HOSTILE SECURITY AUDIT: MessMass](#sec-hostile-security-audit)
-- [comprehensive-critical-audit.md — 🔥🚨 CRITICAL SECURITY & OPERATIONAL AUDIT - MessMass Production System](#sec-comprehensive-critical-audit)
+- [hostile-security-audit.md — HOSTILE SECURITY AUDIT: {messmass}](#sec-hostile-security-audit)
+- [comprehensive-critical-audit.md — 🔥🚨 CRITICAL SECURITY & OPERATIONAL AUDIT - {messmass} Production System](#sec-comprehensive-critical-audit)
 - [security-team-review.md — Security Team Review & Remediation Plan](#sec-security-team-review)
 - [phase1-password-security-complete.md — Phase 1: Password Security Implementation - COMPLETE ✅](#sec-phase1-password-security-complete)
 - [phase2-session-security-complete.md — Phase 2: Session Security (JWT Migration) - COMPLETE ✅](#sec-phase2-session-security-complete)
@@ -20,7 +20,7 @@ Do not treat this as a source of truth for current behavior. Start at `docs/secu
 
 ---
 
-## security-audit-2026-01-02.md — MessMass Security Audit Report
+## security-audit-2026-01-02.md — {messmass} Security Audit Report
 <a id="sec-security-audit-2026-01-02"></a>
 
 <!--
@@ -37,7 +37,7 @@ Keep embedded source blocks below this barrier so the pack's own header is what 
 
 
 ```markdown
-# MessMass Security Audit Report
+# {messmass} Security Audit Report
 Status: Active
 Last Updated: 2026-01-11T22:28:38.000Z
 Canonical: No
@@ -343,11 +343,11 @@ If you want, I can produce a follow-up PR that:
 
 ---
 
-## hostile-security-audit.md — HOSTILE SECURITY AUDIT: MessMass
+## hostile-security-audit.md — HOSTILE SECURITY AUDIT: {messmass}
 <a id="sec-hostile-security-audit"></a>
 
 ```markdown
-# HOSTILE SECURITY AUDIT: MessMass
+# HOSTILE SECURITY AUDIT: {messmass}
 Status: Active
 Last Updated: 2026-01-11T22:28:38.000Z
 Canonical: No
@@ -780,11 +780,11 @@ If this system contains real user data or finances are attached, **do not accept
 
 ---
 
-## comprehensive-critical-audit.md — 🔥🚨 CRITICAL SECURITY & OPERATIONAL AUDIT - MessMass Production System
+## comprehensive-critical-audit.md — 🔥🚨 CRITICAL SECURITY & OPERATIONAL AUDIT - {messmass} Production System
 <a id="sec-comprehensive-critical-audit"></a>
 
 ```markdown
-# 🔥🚨 CRITICAL SECURITY & OPERATIONAL AUDIT - MessMass Production System
+# 🔥🚨 CRITICAL SECURITY & OPERATIONAL AUDIT - {messmass} Production System
 Status: Active
 Last Updated: 2026-01-11T22:28:38.000Z
 Canonical: No

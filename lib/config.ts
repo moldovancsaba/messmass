@@ -1,5 +1,5 @@
 // lib/config.ts
-// Centralized configuration and environment variables resolver for MessMass.
+// Centralized configuration and environment variables resolver for {messmass}.
 // WHAT: Provides a single, typed source of truth for env-driven values.
 // WHY: Prevents divergence (e.g., repeated MONGODB_DB fallbacks) and enforces
 //     consistent behavior across API routes, libraries, and pages.
@@ -108,7 +108,7 @@ function initializeConfig(): AppConfig {
     apiBaseUrl: getEnv('API_BASE_URL'),
     // Bitly API integration (server-only)
     // WHAT: Read Bitly credentials from environment variables
-    // WHY: Required for importing link analytics from Bitly into MessMass event projects
+    // WHY: Required for importing link analytics from Bitly into {messmass} event projects
     bitlyAccessToken: getEnv('BITLY_ACCESS_TOKEN'),
     bitlyOrganizationGuid: getEnv('BITLY_ORGANIZATION_GUID'),
     bitlyGroupGuid: getEnv('BITLY_GROUP_GUID'),

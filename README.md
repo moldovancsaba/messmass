@@ -1,18 +1,18 @@
-# MessMass
+# {messmass}
 Status: Active
 Last Updated: 2026-03-07T00:00:00.000Z
 Canonical: No
 Owner: Product
 
 <p align="center">
-  <img src="public/messmass-logo-black.png" alt="MessMass logo" width="160" />
+  <img src="public/messmass-logo-black.png" alt="{messmass} logo" width="160" />
 </p>
 
-<h1 align="center">MessMass</h1>
+<h1 align="center">{messmass}</h1>
 <p align="center"><strong>Enterprise event analytics, partner reporting, and admin operations for sports organizations, venues, and brands.</strong></p>
 
 <p align="center">
-  <img src="https://img.shields.io/badge/version-v11.60.10-2563EB?style=for-the-badge" alt="Version">
+  <img src="https://img.shields.io/badge/version-v11.60.13-2563EB?style=for-the-badge" alt="Version">
   <img src="https://img.shields.io/badge/platform-Web%20App-0F172A?style=for-the-badge" alt="Platform">
   <img src="https://img.shields.io/badge/stack-Next.js%20%7C%20MongoDB-0EA5E9?style=for-the-badge" alt="Stack">
 </p>
@@ -26,7 +26,7 @@ Owner: Product
 
 ## Product Overview
 
-`MessMass` is a production event intelligence platform built for live events and partner ecosystems. It combines real-time event stats, partner and project administration, Bitly analytics, report generation, and a configurable report-style system in one operational product.
+`{messmass}` is a production event intelligence platform built for live events and partner ecosystems. It combines real-time event stats, partner and project administration, Bitly analytics, report generation, and a configurable report-style system in one operational product.
 
 Core capabilities:
 - Real-time event statistics and dashboard workflows
@@ -39,7 +39,7 @@ Core capabilities:
 
 ## Why It Exists
 
-MessMass is designed to reduce operational friction around event reporting:
+{messmass} is designed to reduce operational friction around event reporting:
 - one admin surface for setup, delivery, and analysis
 - one data model for projects, partners, stats, and reports
 - one report pipeline for public pages, partner pages, and exports
@@ -96,7 +96,7 @@ npm run version:verify
 ```
 
 Current release version:
-- `v11.60.10`
+- `v11.60.13`
 
 Live product:
 - Website: [messmass.doneisbetter.com](https://messmass.doneisbetter.com)

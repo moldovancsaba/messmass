@@ -110,7 +110,7 @@ function highlightSyntax(code: string, language: string): string {
 }
 
 /**
- * MessMass CodeViewer Component
+ * {messmass} CodeViewer Component
  * 
  * A beautiful code viewer with syntax highlighting and interactive features.
  * Designed for component documentation and code examples.
@@ -349,10 +349,10 @@ export default function CodeViewer({
 /**
  * CodeViewer with Custom Theme
  * 
- * Pre-configured CodeViewer with MessMass branding.
+ * Pre-configured CodeViewer with {messmass} branding.
  */
-export function MessMassCodeViewer(props: Omit<CodeViewerProps, 'theme'>) {
-  // WHAT: MessMass branded version with dark theme
+export function BrandedCodeViewer(props: Omit<CodeViewerProps, 'theme'>) {
+  // WHAT: {messmass} branded version with dark theme
   // WHY: Provides consistent branding for documentation
   return (
     <CodeViewer

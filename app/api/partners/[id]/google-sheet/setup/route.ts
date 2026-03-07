@@ -1,7 +1,7 @@
 /**
  * Google Sheets Auto-Setup API Endpoint
  * 
- * WHAT: Automatically configure a blank Google Sheet for MessMass event sync
+ * WHAT: Automatically configure a blank Google Sheet for {messmass} event sync
  * WHY: User creates sheet → pastes URL → clicks Connect → everything else is automated
  * HOW: Rename Sheet1 → Events, add 300 columns, write headers, populate events, prefix UUID
  * 

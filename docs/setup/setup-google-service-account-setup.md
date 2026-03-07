@@ -34,7 +34,7 @@ Open: https://console.cloud.google.com
 2. Click **"Create Service Account"**
 3. **Service account details**:
    - Name: `messmass-sync`
-   - Description: `Service account for MessMass Google Sheets integration`
+   - Description: `Service account for {messmass} Google Sheets integration`
    - Click **"Create and Continue"**
 4. **Grant access** (optional):
    - Skip this step (no roles needed)

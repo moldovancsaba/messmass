@@ -25,7 +25,7 @@ Do not use as a source of truth for current behavior. Start at `docs/index.md` a
 - [FANMASS_INTEGRATION_GUIDE.md — Fanmass Integration Setup Guide](#legacy-fanmass_integration_guide)
 - [FIX_SUMMARY.md — Fix Summary: "marketing-value-kpi" Chart Not Visible](#legacy-fix_summary)
 - [IMAGE_LAYOUT_GUIDE.md — Image Layout Guide - Common Patterns](#legacy-image_layout_guide)
-- [IMAGE_LAYOUT_SETUP_GUIDE.md — MessMass Image Layout Setup Guide](#legacy-image_layout_setup_guide)
+- [IMAGE_LAYOUT_SETUP_GUIDE.md — {messmass} Image Layout Setup Guide](#legacy-image_layout_setup_guide)
 - [IMAGE_LAYOUT_SPECIFICATION.md — Image Layout & Aspect Ratio Management Specification](#legacy-image_layout_specification)
 - [MARKDOWN_CONSOLIDATION_PLAN.md — Markdown Files Consolidation Plan](#legacy-markdown_consolidation_plan)
 - [MARKDOWN_TEXT_FEATURE.md — Markdown Text Feature Documentation](#legacy-markdown_text_feature)
@@ -51,11 +51,11 @@ Do not use as a source of truth for current behavior. Start at `docs/index.md` a
 - [UNIFIED_ADMIN_RESPONSIVE_GUIDE.md — 🎯 Unified Admin Page - Responsive Design Guide](#legacy-unified_admin_responsive_guide)
 - [UNIFIED_ADMIN_SYSTEM_FINAL_SUMMARY.md — 🎯 Unified Admin View System - Final Summary](#legacy-unified_admin_system_final_summary)
 - [UNIFIED_ADMIN_VIEW_STATUS.md — 🎯 Unified Admin View System - Implementation Status](#legacy-unified_admin_view_status)
-- [USER_GUIDE.md — 📖 MessMass User Guide](#legacy-user_guide)
+- [USER_GUIDE.md — 📖 {messmass} User Guide](#legacy-user_guide)
 - [VARIABLE_NAMING_GUIDE.md — Variable Naming Guide](#legacy-variable_naming_guide)
 - [VERSION.md — VERSION](#legacy-version)
 - [WARP.DEV_AI_CONVERSATION.md — WARP.DEV AI Conversation Log](#legacy-warp.dev_ai_conversation)
-- [kiro.md — MessMass Project Summary for Kiro](#legacy-kiro)
+- [kiro.md — {messmass} Project Summary for Kiro](#legacy-kiro)
 
 ---
 
@@ -76,7 +76,7 @@ Do not use as a source of truth for current behavior. Start at `docs/index.md` a
 ## FANMASS_INTEGRATION_GUIDE.md — Fanmass Integration Setup Guide
 ## FIX_SUMMARY.md — Fix Summary: "marketing-value-kpi" Chart Not Visible
 ## IMAGE_LAYOUT_GUIDE.md — Image Layout Guide - Common Patterns
-## IMAGE_LAYOUT_SETUP_GUIDE.md — MessMass Image Layout Setup Guide
+## IMAGE_LAYOUT_SETUP_GUIDE.md — {messmass} Image Layout Setup Guide
 ## IMAGE_LAYOUT_SPECIFICATION.md — Image Layout & Aspect Ratio Management Specification
 ## MARKDOWN_CONSOLIDATION_PLAN.md — Markdown Files Consolidation Plan
 ## MARKDOWN_TEXT_FEATURE.md — Markdown Text Feature Documentation
@@ -102,14 +102,14 @@ Do not use as a source of truth for current behavior. Start at `docs/index.md` a
 ## UNIFIED_ADMIN_RESPONSIVE_GUIDE.md — 🎯 Unified Admin Page - Responsive Design Guide
 ## UNIFIED_ADMIN_SYSTEM_FINAL_SUMMARY.md — 🎯 Unified Admin View System - Final Summary
 ## UNIFIED_ADMIN_VIEW_STATUS.md — 🎯 Unified Admin View System - Implementation Status
-## USER_GUIDE.md — 📖 MessMass User Guide
+## USER_GUIDE.md — 📖 {messmass} User Guide
 ## VARIABLE_NAMING_GUIDE.md — Variable Naming Guide
 ## VERSION.md — VERSION
 ## WARP.DEV_AI_CONVERSATION.md — WARP.DEV AI Conversation Log
-## kiro.md — MessMass Project Summary for Kiro
+## kiro.md — {messmass} Project Summary for Kiro
 
 ```markdown
-# MessMass Project Summary for Kiro
+# {messmass} Project Summary for Kiro
 Status: Archived
 Last Updated: 2026-01-11T22:28:38.000Z
 Canonical: No
@@ -123,7 +123,7 @@ Owner: Architecture
 
 ## Project Overview
 
-MessMass is an enterprise-grade event statistics platform built with Next.js 15, TypeScript, and MongoDB Atlas. It provides real-time analytics, partner management, and intelligent link tracking for sports organizations, venues, brands, and event managers.
+{messmass} is an enterprise-grade event statistics platform built with Next.js 15, TypeScript, and MongoDB Atlas. It provides real-time analytics, partner management, and intelligent link tracking for sports organizations, venues, brands, and event managers.
 
 **Tech Stack:**
 - **Frontend:** Next.js 15.5.9 (App Router), React 18, TypeScript 5.6.3 (strict mode)
@@ -673,7 +673,7 @@ grep -r "\.trim()" --include="*.ts" --include="*.tsx" app/ components/ lib/
 
 ---
 
-*This summary is generated from the complete MessMass documentation suite. For detailed information, refer to the specific documentation files listed above.*
+*This summary is generated from the complete {messmass} documentation suite. For detailed information, refer to the specific documentation files listed above.*
 ```
 
 ---

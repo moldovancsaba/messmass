@@ -1,8 +1,29 @@
-# MessMass Release Notes
+# {messmass} Release Notes
 Status: Active
 Last Updated: 2026-03-06T00:00:00.000Z
 Canonical: No
 Owner: Operations
+
+## [v11.60.13] — 2026-03-07T00:00:00.000Z
+
+### Summary
+🏷️ **BRANDING RENAME**: Renamed the tracked product name from `MessMass` to `{messmass}` across code, docs, metadata, UI copy, and supporting assets.
+
+### What Was Fixed
+
+#### Product naming normalization ✅
+**WHAT**: Replaced exact tracked occurrences of `MessMass` with `{messmass}` across the repository.  
+**WHY**: The product needs to use one canonical branding form consistently across GitHub, UI text, metadata, APIs, scripts, and documentation.  
+**HOW**: Applied an exact-string tracked-file rename pass, then synced README, release metadata, and operational docs to the new branded form.
+
+### Testing
+- ✅ `npm run build`
+- ✅ `npm run type-check`
+- ✅ `npm run lint`
+- ✅ `npm run version:verify`
+
+### Version
+v11.60.12 → v11.60.13 (PATCH — repo-wide product branding rename)
 
 ## [v11.60.12] — 2026-03-07T00:00:00.000Z
 
@@ -13,7 +34,7 @@ Owner: Operations
 
 #### Runtime-only repository policy cleanup ✅
 **WHAT**: Updated `.gitignore` to exclude local-only directories and removed them from Git tracking without deleting local files.  
-**WHY**: These directories are not required to run, build, validate, or document MessMass, and they should not be part of the GitHub product source tree.  
+**WHY**: These directories are not required to run, build, validate, or document {messmass}, and they should not be part of the GitHub product source tree.  
 **HOW**: Ignored and untracked `.cursor/`, `.kiro/`, `agentic/`, `backups/`, `codex_skills/`, `memory/`, `temp/`, `.vscode/`, and `.swc/`.
 
 ### Testing
@@ -28,7 +49,7 @@ v11.60.11 → v11.60.12 (PATCH — runtime-only Git tracking cleanup)
 ## [v11.60.11] — 2026-03-07T00:00:00.000Z
 
 ### Summary
-📘 **README REFRESH**: Rebuilt the top-level project README so MessMass now has a current product introduction, badge row, quick links, and a cleaner canonical docs map aligned with sibling project standards.
+📘 **README REFRESH**: Rebuilt the top-level project README so {messmass} now has a current product introduction, badge row, quick links, and a cleaner canonical docs map aligned with sibling project standards.
 
 ### What Was Fixed
 
@@ -1022,13 +1043,13 @@ Co-Authored-By: Warp <agent@warp.dev>
 ## [v11.55.0] — 2025-12-26T14:40:00.000Z
 
 ### Summary
-📊 **GOOGLE SHEETS INTEGRATION - PARTNER SYNC**: Implemented bidirectional synchronization between MessMass events and Google Sheets at the partner level. Partners can now connect a sheet to pull/push event data, enabling spreadsheet-based workflows.
+📊 **GOOGLE SHEETS INTEGRATION - PARTNER SYNC**: Implemented bidirectional synchronization between {messmass} events and Google Sheets at the partner level. Partners can now connect a sheet to pull/push event data, enabling spreadsheet-based workflows.
 
 ### What Was Accomplished
 
 #### Partner-Level Synchronization ✅
-**WHAT**: A complete system for syncing event data between MessMass and Google Sheets.
-**WHY**: Enable partners who prefer spreadsheets to manage their event data externally while keeping MessMass as the source of truth for analytics.
+**WHAT**: A complete system for syncing event data between {messmass} and Google Sheets.
+**WHY**: Enable partners who prefer spreadsheets to manage their event data externally while keeping {messmass} as the source of truth for analytics.
 **HOW**: Bidirectional sync logic with UUID tracking, formula preservation, and dry-run capabilities.
 
 **Key Features**:
@@ -5051,7 +5072,7 @@ Reduce admin page maintenance burden and improve consistency:
   - Typography: `var(--mm-font-size-sm)`
   - Border radius: `var(--mm-radius-xl)`
   - Transitions: `var(--transition-base)`
-- 100% compliance with MessMass coding standards
+- 100% compliance with {messmass} coding standards
 
 ### Technical Details
 
@@ -6448,7 +6469,7 @@ The system had **two disconnected design systems** running in parallel:
 
 **Why**
 
-MessMass needed customizable theming to:
+{messmass} needed customizable theming to:
 - Allow different visual identities per client/project
 - Support branding requirements for white-label deployments
 - Provide dark mode and alternative color schemes
@@ -6787,7 +6808,7 @@ Validation
 
 ---
 
-# MessMass Release Notes
+# {messmass} Release Notes
 
 ## [v6.22.3] — 2025-10-18T09:11:58.000Z
 
@@ -7087,7 +7108,7 @@ The Bitly admin page had a critical UX issue where typing in the search field ca
 
 **Why This Major Release**
 
-Version 6.0.0 represents a significant milestone in MessMass evolution from a project statistics tracker to a comprehensive enterprise event analytics platform. The addition of the Partners Management System fundamentally changes the application architecture by introducing a partner ecosystem that enables:
+Version 6.0.0 represents a significant milestone in {messmass} evolution from a project statistics tracker to a comprehensive enterprise event analytics platform. The addition of the Partners Management System fundamentally changes the application architecture by introducing a partner ecosystem that enables:
 
 1. **Organizational Intelligence**: Partners (clubs, federations, venues, brands) are now first-class entities
 2. **Automated Workflows**: Sports Match Builder reduces event creation time from 5+ minutes to under 30 seconds
@@ -7745,7 +7766,7 @@ export default function PartnerSelector({
 ```
 
 **Created**: `components/PartnerSelector.module.css` — Component Styling
-- Uses MessMass design tokens (CSS variables)
+- Uses {messmass} design tokens (CSS variables)
 - Success color scheme for partner chips (green)
 - Matches ColoredHashtagBubble visual style
 - Responsive dropdown with max-height and scroll

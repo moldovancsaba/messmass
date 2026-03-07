@@ -1,8 +1,8 @@
 /**
  * Google Sheets Push Events API Endpoint
  * 
- * WHAT: Pushes MessMass events to Google Sheet and updates rows
- * WHY: Synchronize MessMass database with Google Sheets
+ * WHAT: Pushes {messmass} events to Google Sheet and updates rows
+ * WHY: Synchronize {messmass} database with Google Sheets
  * 
  * POST /api/partners/[id]/google-sheet/push
  * 

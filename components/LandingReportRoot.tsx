@@ -150,7 +150,7 @@ export default function LandingReportRoot() {
         <div className={styles.heroInner}>
           <div className={styles.heroBrand}>
             <Image src="/messmass-logo-white.png" alt="" width={160} height={48} priority />
-            <span className={styles.heroSiteName}>MessMass</span>
+            <span className={styles.heroSiteName}>{'{messmass}'}</span>
           </div>
           <p className={styles.heroLabel}>{heroLabel}</p>
           <h1 className={styles.heroTitle}>{heroTitle}</h1>
@@ -275,7 +275,7 @@ export default function LandingReportRoot() {
         <div className={styles.footerInner}>
           <div className={styles.footerBrand}>
             <Image src="/messmass-logo-white.png" alt="" width={120} height={36} />
-            <span className={styles.footerSiteName}>MessMass</span>
+            <span className={styles.footerSiteName}>{'{messmass}'}</span>
           </div>
           <h2 className={styles.footerTitle}>{footerTitle}</h2>
           <Link href="/admin/login" className="btn btn-primary">Start using the system</Link>

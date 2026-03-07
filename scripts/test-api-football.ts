@@ -1,6 +1,6 @@
 // WHAT: Test API-Football connection and explore team search
 // WHY: Verify API key works and demonstrate search capabilities
-// HOW: Test with real partner names from MessMass
+// HOW: Test with real partner names from {messmass}
 
 import { createApiFootballClient } from '@/lib/api-football';
 import * as dotenv from 'dotenv';

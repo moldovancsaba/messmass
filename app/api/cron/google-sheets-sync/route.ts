@@ -2,7 +2,7 @@
  * Google Sheets Cron Sync API Endpoint
  * 
  * WHAT: Automated background sync for all partners with Google Sheets enabled
- * WHY: Keep MessMass and Google Sheets in sync without manual intervention
+ * WHY: Keep {messmass} and Google Sheets in sync without manual intervention
  * HOW: Iterate through partners with syncMode='auto', pull events, log results
  * 
  * GET /api/cron/google-sheets-sync
@@ -174,7 +174,7 @@ export async function GET(request: NextRequest) {
             context: {
               timestamp: new Date().toISOString(),
               operation: 'cron-pull',
-              userAgent: 'MessMass-Cron'
+              userAgent: '{messmass}-Cron'
             }
           }
         );

@@ -8,17 +8,17 @@ This file consolidates historical material to reduce file count.
 Do not treat this as a source of truth for current behavior. Start at `docs/index.md` and follow canonical docs.
 
 ## Contents
-- [DOCUMENTATION_REFACTOR_PLAN.md — MessMass Documentation Refactoring Plan](#documentation-refactor-plan)
+- [DOCUMENTATION_REFACTOR_PLAN.md — {messmass} Documentation Refactoring Plan](#documentation-refactor-plan)
 - [DOCUMENTATION_REFACTOR_PROGRESS.md — Documentation Refactoring Progress Report](#documentation-refactor-progress)
 - [DOCUMENTATION_REFACTOR_COMPLETE.md — Documentation Refactoring - COMPLETE ✅](#documentation-refactor-complete)
 
 ---
 
-## DOCUMENTATION_REFACTOR_PLAN.md — MessMass Documentation Refactoring Plan
+## DOCUMENTATION_REFACTOR_PLAN.md — {messmass} Documentation Refactoring Plan
 <a id="documentation-refactor-plan"></a>
 
 ```markdown
-# MessMass Documentation Refactoring Plan
+# {messmass} Documentation Refactoring Plan
 Status: Archived
 Last Updated: 2026-01-11T22:28:38.000Z
 Canonical: No
@@ -649,7 +649,7 @@ Owner: Architecture
 
 ## 🎯 Mission Accomplished
 
-Successfully transformed MessMass documentation from a cluttered 103-file root directory into a clean, organized system with 11 core files and logical subdirectory structure.
+Successfully transformed {messmass} documentation from a cluttered 103-file root directory into a clean, organized system with 11 core files and logical subdirectory structure.
 
 ---
 

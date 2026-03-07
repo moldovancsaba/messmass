@@ -5,7 +5,7 @@ import clientPromise from '@/lib/mongodb';
 import config from '@/lib/config';
 
 /**
- * Page password types and interfaces for MessMass authentication system
+ * Page password types and interfaces for {messmass} authentication system
  */
 
 export type PageType = 'event-report' | 'partner-report' | 'edit' | 'partner-edit' | 'filter' | 'hashtag';

@@ -147,6 +147,12 @@ Owner: Katja (Admin)
 ## 7. STATE MEMORY (Current Only)
 
 2026-03-07
+- CONTEXT: Product branding rename tracked under `mvp-factory-control#356`.
+- BOARD: `#356` is the active branding slice being delivered.
+- BRANDING: exact tracked occurrences of `MessMass` were renamed to `{messmass}` across the repository, while lowercase identifiers and paths remain unchanged.
+- NEXT: run full gates for `11.60.13`, post SSOT evidence on `#356`, then continue the queued work.
+
+2026-03-07
 - CONTEXT: Repo hygiene cleanup tracked under `mvp-factory-control#355`.
 - BOARD: `#355` is the active ops slice being delivered.
 - OPS: tightened `.gitignore` and removed local-only tooling, backup, memory, and temp directories from Git tracking so GitHub contains only runtime-essential product files.

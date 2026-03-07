@@ -1,11 +1,11 @@
-# MEMORY.md — Long-term context (MessMass)
+# MEMORY.md — Long-term context ({messmass})
 
-**Project:** MessMass — enterprise event analytics platform (real-time stats, partners, Bitly, theming, Sports Match Builder).  
+**Project:** {messmass} — enterprise event analytics platform (real-time stats, partners, Bitly, theming, Sports Match Builder).  
 **Live:** https://messmass.doneisbetter.com  
 **Stack:** Next.js, MongoDB, WebSocket server (port 7654), Vercel + Railway/Heroku.
 
 **Recent focus (as of 2026-02-24):**
-- Builder mode (clicker): all chart types (KPI, Bar, Pie, Text, Table, Image, Value chain) show one input per variable from formulas; valuechain supported; card style + Material Icons; docs and project board updated.
+- Builder mode (clicker): all chart types show one input per variable from formulas; valuechain supported; image/table infer from title or chartId when formula empty; overflow fix; unified card layout (title → chartId → label + [name] → input). Build passed, pushed to preview, evidence on mvp-factory-control #49. Handover doc updated for next agent.
 - Style editor preview: bar/pie colors via CSS vars; inject on change + after fetch so preview updates immediately. Value Chain block and Landing page section in style editor preview (v11.59.0).
 - OPS-SEC: user password migration tooling, sanitize hardening, production flags, passwordHash checks.
 - Google Sheets Phase 2.5: auto-provision, docs.

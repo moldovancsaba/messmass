@@ -39,10 +39,10 @@ export interface GoogleSheetStats {
 
 /**
  * WHAT: Column mapping configuration
- * WHY: Define how sheet columns map to MessMass fields
+ * WHY: Define how sheet columns map to {messmass} fields
  */
 export interface SheetColumnDefinition {
-  field: string;                           // MessMass field path (e.g., "stats.remoteImages")
+  field: string;                           // {messmass} field path (e.g., "stats.remoteImages")
   type: 'uuid' | 'string' | 'number' | 'date' | 'timestamp' | 'status' | 'text';
   required?: boolean;                      // Is this field required?
   readOnly?: boolean;                      // Can users edit this field?
@@ -57,7 +57,7 @@ export type SheetColumnMap = Record<string, SheetColumnDefinition>;
  */
 export interface SheetRow {
   rowNumber: number;                       // Sheet row number (1-indexed)
-  A?: string;                              // MessMass UUID
+  A?: string;                              // {messmass} UUID
   B?: string;                              // Partner 1
   C?: string;                              // Partner 2
   D?: string;                              // Event Title

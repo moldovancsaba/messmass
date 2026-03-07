@@ -3,15 +3,15 @@ import Link from 'next/link';
 import styles from '../legal.module.css';
 
 export const metadata: Metadata = {
-  title: 'Privacy Policy — MessMass',
-  description: 'MessMass privacy policy. How we collect, use, and protect your data.',
+  title: 'Privacy Policy — {messmass}',
+  description: '{messmass} privacy policy. How we collect, use, and protect your data.',
 };
 
 export default function PrivacyPage() {
   return (
     <div className={styles.wrapper}>
       <div className={styles.inner}>
-        <Link href="/" className={styles.back}>← Back to MessMass</Link>
+        <Link href="/" className={styles.back}>← Back to {'{messmass}'}</Link>
         <h1 className={styles.title}>Privacy Policy</h1>
         <p className={styles.updated}>Last updated: February 2025</p>
 
@@ -19,7 +19,7 @@ export default function PrivacyPage() {
           <section>
             <h2>1. Introduction</h2>
             <p>
-              MessMass (&quot;we&quot;, &quot;our&quot;, or &quot;us&quot;) is committed to protecting your privacy.
+              {'{messmass}'} (&quot;we&quot;, &quot;our&quot;, or &quot;us&quot;) is committed to protecting your privacy.
               This Privacy Policy explains how we collect, use, disclose, and safeguard your information when you use
               our platform and services at messmass.com and related applications.
             </p>

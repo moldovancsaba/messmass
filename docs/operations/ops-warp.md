@@ -10,7 +10,7 @@ This file provides guidance to WARP (warp.dev) when working with code in this re
 
 ### MongoDB Field Names - camelCase (NON-NEGOTIABLE)
 
-**VERIFIED FACT:** MessMass MongoDB uses **camelCase** for ALL fields, NOT snake_case.
+**VERIFIED FACT:** {messmass} MongoDB uses **camelCase** for ALL fields, NOT snake_case.
 
 ```javascript
 // ✅ CORRECT: MongoDB fields (verified from database)
@@ -23,7 +23,7 @@ This file provides guidance to WARP (warp.dev) when working with code in this re
   reportTemplateId: ObjectId("..."),          // camelCase ✅
 }
 
-// ❌ WRONG: snake_case (NOT used in MessMass)
+// ❌ WRONG: snake_case (NOT used in {messmass})
 {
   created_at: "...",           // ❌ Does NOT exist
   categorized_hashtags: {...}, // ❌ Does NOT exist
@@ -287,7 +287,7 @@ npm run lint
 
 ## 🏭️ System Architecture
 
-**MessMass** is a real-time collaborative event statistics dashboard with:
+**{messmass}** is a real-time collaborative event statistics dashboard with:
 
 ### Frontend Architecture
 - **Next.js 15.5.9** with App Router (`/app` directory)
@@ -700,7 +700,7 @@ interface Insight {
 
 ### System Overview
 
-MessMass uses a **database-first variable management system** where all variables are stored in MongoDB and seeded on server initialization. Variables are accessed via the **Single Reference System** using the `stats.` prefix.
+{messmass} uses a **database-first variable management system** where all variables are stored in MongoDB and seeded on server initialization. Variables are accessed via the **Single Reference System** using the `stats.` prefix.
 
 ### Key Files
 - **`lib/variablesConfig.ts`** - System variables seed data (96 variables)

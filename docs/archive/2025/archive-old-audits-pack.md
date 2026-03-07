@@ -16,10 +16,10 @@ Do not treat this as a source of truth for current behavior. Start at `docs/inde
 - [EMPTY_COLLECTIONS_REPORT.md — Empty Collections Cleanup Report](#empty-collections-report)
 - [FRAGMENTATION_ANALYSIS_FINAL.md — Final Fragmentation Analysis](#fragmentation-analysis-final)
 - [ORPHANED_STYLES_REPORT.md — Orphaned Style References Report](#orphaned-styles-report)
-- [RELEASE_NOTES_v8.17.0.md — MessMass v8.17.0 Release Notes](#release-notes-v8-17-0)
+- [RELEASE_NOTES_v8.17.0.md — {messmass} v8.17.0 Release Notes](#release-notes-v8-17-0)
 - [RELEASE_NOTES_v8.24.0.md — Release Notes - v8.24.0](#release-notes-v8-24-0)
 - [RELEASE_v10.1.1.md — Release Notes v10.1.1](#release-v10-1-1)
-- [SYSTEM_AUDIT_FINDINGS.md — MessMass System Audit - Complete Data Flow Analysis](#system-audit-findings)
+- [SYSTEM_AUDIT_FINDINGS.md — {messmass} System Audit - Complete Data Flow Analysis](#system-audit-findings)
 
 ---
 
@@ -975,7 +975,7 @@ Owner: Audit
 
 ## Index Strategy
 
-This report documents all performance-critical indexes across the MessMass database.
+This report documents all performance-critical indexes across the {messmass} database.
 
 ### Design Principles
 
@@ -1408,7 +1408,7 @@ Owner: Audit
 
 ## Executive Summary
 
-The MessMass documentation suite has **significant inconsistencies** between the actual codebase (v11.29.0) and various documentation files. While the template system was recently enhanced and fixed, documentation was not updated to reflect current reality.
+The {messmass} documentation suite has **significant inconsistencies** between the actual codebase (v11.29.0) and various documentation files. While the template system was recently enhanced and fixed, documentation was not updated to reflect current reality.
 
 ### Critical Issues Found: 7
 ### High Priority Issues: 12
@@ -2118,7 +2118,7 @@ Owner: Audit
 
 ## Overview
 
-This report documents the cleanup of empty collections from the MessMass database.
+This report documents the cleanup of empty collections from the {messmass} database.
 
 ### Cleanup Strategy
 
@@ -2484,7 +2484,7 @@ Result: 45 documents returned → ✅ Data found
 
 **Database fragmentation: ELIMINATED**
 
-The MessMass database is now:
+The {messmass} database is now:
 - ✅ **Defragmented** - No duplicate collections
 - ✅ **Standardized** - Consistent snake_case naming
 - ✅ **Indexed** - Fast queries (10-400x improvement)
@@ -2727,11 +2727,11 @@ To avoid orphaned references in the future:
 
 ---
 
-## RELEASE_NOTES_v8.17.0.md — MessMass v8.17.0 Release Notes
+## RELEASE_NOTES_v8.17.0.md — {messmass} v8.17.0 Release Notes
 <a id="release-notes-v8-17-0"></a>
 
 ```markdown
-# MessMass v8.17.0 Release Notes
+# {messmass} v8.17.0 Release Notes
 Status: Archived
 Last Updated: 2026-01-11T22:28:38.000Z
 Canonical: No
@@ -2895,7 +2895,7 @@ Owner: Audit
 
 ### Overview
 
-Complete refactoring of modal/popup system across the MessMass admin interface, replacing 640+ lines of duplicated code with a professional, accessible, component-based architecture.
+Complete refactoring of modal/popup system across the {messmass} admin interface, replacing 640+ lines of duplicated code with a professional, accessible, component-based architecture.
 
 ### What Changed
 
@@ -3132,7 +3132,7 @@ See `MODAL_SYSTEM.md` for complete migration guide.
 
 ## 📦 Installation
 
-This version is included in MessMass v8.24.0+. No manual installation required.
+This version is included in {messmass} v8.24.0+. No manual installation required.
 
 ### Dependencies Added
 
@@ -3233,7 +3233,7 @@ Owner: Audit
 **What Was Missing**:
 - No button to access the statistics editor
 - Users couldn't click through to `/edit/[editSlug]` from the admin panel
-- Main purpose of MessMass was inaccessible from unified projects page
+- Main purpose of {messmass} was inaccessible from unified projects page
 
 **Fix Implemented**:
 - Added **"📊 Edit Stats"** button to both list and card views
@@ -3404,11 +3404,11 @@ These issues were identified but deferred to v10.2.0 (MINOR release):
 
 ---
 
-## SYSTEM_AUDIT_FINDINGS.md — MessMass System Audit - Complete Data Flow Analysis
+## SYSTEM_AUDIT_FINDINGS.md — {messmass} System Audit - Complete Data Flow Analysis
 <a id="system-audit-findings"></a>
 
 ```markdown
-# MessMass System Audit - Complete Data Flow Analysis
+# {messmass} System Audit - Complete Data Flow Analysis
 Status: Archived
 Last Updated: 2026-01-11T22:28:38.000Z
 Canonical: No

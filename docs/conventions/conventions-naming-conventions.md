@@ -1,4 +1,4 @@
-# MessMass Naming Conventions
+# {messmass} Naming Conventions
 Status: Active
 Last Updated: 2026-01-11T22:28:38.000Z
 Canonical: No
@@ -31,7 +31,7 @@ Owner: Architecture
 
 ### ✅ VERIFIED STANDARD: camelCase
 
-**CRITICAL:** MessMass MongoDB uses **camelCase** for ALL fields, NOT snake_case.
+**CRITICAL:** {messmass} MongoDB uses **camelCase** for ALL fields, NOT snake_case.
 
 ```javascript
 // ✅ CORRECT: Actual MongoDB schema (verified from backup)

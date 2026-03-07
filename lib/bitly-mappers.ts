@@ -17,7 +17,7 @@ import { extractCampaign } from './bitly';
 
 /**
  * WHAT: Convert ISO 8601 timestamp to include milliseconds if missing
- * WHY: MessMass standard requires millisecond precision (YYYY-MM-DDTHH:MM:SS.sssZ)
+ * WHY: {messmass} standard requires millisecond precision (YYYY-MM-DDTHH:MM:SS.sssZ)
  * 
  * EXAMPLES:
  * - "2025-01-13T09:00:00Z" → "2025-01-13T09:00:00.000Z"
@@ -52,7 +52,7 @@ function ensureFiniteNumber(value: number | undefined, defaultValue = 0): number
 
 /**
  * WHAT: Map Bitly link metadata to MongoDB document structure
- * WHY: Transforms Bitly API response into MessMass database schema
+ * WHY: Transforms Bitly API response into {messmass} database schema
  * 
  * USE CASE: Called when associating a new Bitly link with a project
  * 
@@ -83,7 +83,7 @@ export function mapBitlyLinkToDoc(
     long_url: bitlyLink.long_url,
     
     // WHAT: Use custom title if provided, fall back to Bitly title or generate from bitlink
-    // WHY: Allows admins to override Bitly's title for MessMass context
+    // WHY: Allows admins to override Bitly's title for {messmass} context
     title: customTitle || bitlyLink.title || bitlyLink.id,
     
     // WHAT: Store group GUID if available
@@ -94,7 +94,7 @@ export function mapBitlyLinkToDoc(
     campaign,
     
     // WHAT: Convert Bitly's created_at to ISO 8601 with milliseconds
-    // WHY: MessMass timestamp standard requires millisecond precision
+    // WHY: {messmass} timestamp standard requires millisecond precision
     bitly_created_at: ensureMilliseconds(bitlyLink.created_at),
     
     // WHAT: Initialize click summary with zero values

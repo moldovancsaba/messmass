@@ -38,8 +38,8 @@ export default function HelpPage() {
   return (
     <div className="page-container">
       <UnifiedAdminHeroWithSearch
-        title="📖 MessMass User Guide"
-        subtitle="Complete guide for using MessMass event statistics dashboard"
+        title="📖 {messmass} User Guide"
+        subtitle="Complete guide for using {messmass} event statistics dashboard"
         backLink="/admin"
       />
       <div className={styles.content}>
@@ -96,7 +96,7 @@ export default function HelpPage() {
           
           <h3>Accessing Your Event Dashboard</h3>
           <p>
-            MessMass provides different ways to access your event statistics:
+            {'{messmass}'} provides different ways to access your event statistics:
           </p>
           <ul>
             <li><strong>Admin Login:</strong> Full access to create, edit, and manage projects</li>
@@ -239,7 +239,7 @@ export default function HelpPage() {
           
           <h3>What is KYC Management?</h3>
           <p>
-            KYC Management (<code>/admin/kyc</code>) is the admin interface for configuring all variables (metrics) tracked in MessMass. It controls:
+            KYC Management (<code>/admin/kyc</code>) is the admin interface for configuring all variables (metrics) tracked in {'{messmass}'}. It controls:
           </p>
           <ul>
             <li>Which variables appear in the <strong>Clicker Mode</strong></li>
@@ -448,7 +448,7 @@ export default function HelpPage() {
           
           <h3>Overview</h3>
           <p>
-            MessMass provides two types of shareable reports:
+            {'{messmass}'} provides two types of shareable reports:
           </p>
           <ul>
             <li><strong>Event Reports:</strong> Individual event statistics and analytics</li>
@@ -636,7 +636,7 @@ export default function HelpPage() {
 
         <footer className={styles.footer}>
           <p>
-            <strong>MessMass Version 11.55.1</strong><br />
+            <strong>{'{messmass}'} Version 11.55.1</strong><br />
             Last Updated: 2025-11-06T19:33:00.000Z (UTC)
           </p>
           <p>

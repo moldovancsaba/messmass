@@ -3,15 +3,15 @@ import Link from 'next/link';
 import styles from '../legal.module.css';
 
 export const metadata: Metadata = {
-  title: 'Terms and Conditions — MessMass',
-  description: 'Terms and conditions of use for the MessMass platform.',
+  title: 'Terms and Conditions — {messmass}',
+  description: 'Terms and conditions of use for the {messmass} platform.',
 };
 
 export default function TermsPage() {
   return (
     <div className={styles.wrapper}>
       <div className={styles.inner}>
-        <Link href="/" className={styles.back}>← Back to MessMass</Link>
+        <Link href="/" className={styles.back}>← Back to {'{messmass}'}</Link>
         <h1 className={styles.title}>Terms and Conditions</h1>
         <p className={styles.updated}>Last updated: February 2025</p>
 
@@ -19,7 +19,7 @@ export default function TermsPage() {
           <section>
             <h2>1. Agreement to terms</h2>
             <p>
-              By accessing or using MessMass (&quot;the Platform&quot;), you agree to be bound by these Terms and Conditions.
+              By accessing or using {'{messmass}'} (&quot;the Platform&quot;), you agree to be bound by these Terms and Conditions.
               If you do not agree, do not use the Platform.
             </p>
           </section>
@@ -27,7 +27,7 @@ export default function TermsPage() {
           <section>
             <h2>2. Description of service</h2>
             <p>
-              MessMass provides sovereign decision intelligence: local-first, data-privacy-focused tools for analytics,
+              {'{messmass}'} provides sovereign decision intelligence: local-first, data-privacy-focused tools for analytics,
               reporting, and KYC-related workflows. Features and limits depend on your subscription tier (Welcome, Business,
               or Organisation).
             </p>
@@ -56,7 +56,7 @@ export default function TermsPage() {
           <section>
             <h2>5. Intellectual property</h2>
             <p>
-              MessMass and its branding, software, and documentation are owned by us or our licensors. You retain
+              {'{messmass}'} and its branding, software, and documentation are owned by us or our licensors. You retain
               ownership of the data and content you upload; you grant us the limited rights necessary to operate and
               provide the service.
             </p>

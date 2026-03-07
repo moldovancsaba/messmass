@@ -1,6 +1,6 @@
 // lib/partner.types.ts
 // WHAT: TypeScript interfaces for Partner entity
-// WHY: Type safety for partner management across MessMass platform
+// WHY: Type safety for partner management across {messmass} platform
 
 import { ObjectId } from 'mongodb';
 
@@ -134,7 +134,7 @@ export interface Partner {
   isDraft?: boolean;
   
   // WHAT: Google Sheets integration configuration (v12.0.0)
-  // WHY: Enable automated event sync from Google Sheets to MessMass
+  // WHY: Enable automated event sync from Google Sheets to {messmass}
   googleSheetConfig?: {
     enabled: boolean;                    // Is Google Sheets sync active?
     sheetId: string;                     // Google Sheet ID (from URL)

@@ -281,7 +281,7 @@ async function enrichPartners() {
     process.exit(1);
   }
   
-  console.log('🚀 MessMass Partner Enrichment Script');
+  console.log('🚀 {messmass} Partner Enrichment Script');
   console.log('=====================================\n');
   console.log(`Mode: ${isDryRun ? '🧪 DRY RUN (no changes)' : '💾 LIVE (will update database)'}`);
   console.log(`Force re-enrichment: ${isForce ? 'YES' : 'NO'}`);

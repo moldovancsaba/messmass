@@ -229,7 +229,7 @@ async function generateReport(
 
 ## Overview
 
-This report documents the cleanup of empty collections from the MessMass database.
+This report documents the cleanup of empty collections from the {messmass} database.
 
 ### Cleanup Strategy
 

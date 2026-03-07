@@ -8,7 +8,7 @@ Owner: Backend
 **Last Updated:** 2026-02-21T00:00:00.000Z (UTC)  
 **Status:** Production
 
-Quick API reference for MessMass. See detailed guides for complete schemas and examples.
+Quick API reference for {messmass}. See detailed guides for complete schemas and examples.
 
 ---
 
@@ -271,6 +271,6 @@ Returns: `{ projects: [...], totalMatched: 150, nextOffset: 60 }`
 
 ---
 
-**MessMass API Reference 11.59.0**  
+**{messmass} API Reference 11.59.0**  
 **Last Updated: 2026-02-21T00:00:00.000Z (UTC)**  
-**© 2025 MessMass Platform**
+**© 2025 {messmass} Platform**

@@ -77,7 +77,7 @@ export async function POST(request: NextRequest) {
         name: newUser.name,
         role: newUser.role,
       },
-      message: 'Registration successful! Welcome to MessMass.',
+      message: 'Registration successful! Welcome to {messmass}.',
     });
     
     response.cookies.set('admin-session', encodedSession, {

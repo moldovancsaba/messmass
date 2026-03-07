@@ -767,7 +767,7 @@ function HashtagFilterPageContent() {
 
       {/* Footer */}
       <div className={styles.footer}>
-        <p>Generated on {new Date().toLocaleDateString()} • MessMass Multi-Hashtag Filter</p>
+        <p>Generated on {new Date().toLocaleDateString()} • {'{messmass}'} Multi-Hashtag Filter</p>
       </div>
 
       {/* Share Popup */}

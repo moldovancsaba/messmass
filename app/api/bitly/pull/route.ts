@@ -1,5 +1,5 @@
 // app/api/bitly/pull/route.ts
-// WHAT: API endpoint to pull links from Bitly organization and import them into MessMass
+// WHAT: API endpoint to pull links from Bitly organization and import them into {messmass}
 // WHY: Enables bulk discovery and import of existing Bitly links for association with projects
 // ENDPOINT: POST /api/bitly/pull
 
@@ -14,7 +14,7 @@ import { info as logInfo } from '@/lib/logger';
 
 /**
  * POST /api/bitly/pull
- * WHAT: Fetch ALL links from Bitly group and import new ones into MessMass database
+ * WHAT: Fetch ALL links from Bitly group and import new ones into {messmass} database
  * WHY: Enables discovering all Bitly links without manually adding each one
  * 
  * AUTH: Admin only

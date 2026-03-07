@@ -1,4 +1,4 @@
-# MessMass Reusable Components & Styling System Inventory
+# {messmass} Reusable Components & Styling System Inventory
 Status: Active
 Last Updated: 2026-01-11T22:28:38.000Z
 Canonical: No

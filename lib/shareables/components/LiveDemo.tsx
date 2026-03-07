@@ -43,7 +43,7 @@ export interface LiveDemoProps {
 }
 
 /**
- * MessMass LiveDemo Component
+ * {messmass} LiveDemo Component
  * 
  * An interactive demonstration wrapper for showcasing components.
  * Provides a controlled environment with resizing, reset, and fullscreen capabilities.

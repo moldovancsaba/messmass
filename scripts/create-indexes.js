@@ -1,7 +1,7 @@
 /**
  * MongoDB Index Creation Script
  * 
- * WHAT: Creates optimized indexes for MessMass collections
+ * WHAT: Creates optimized indexes for {messmass} collections
  * WHY: Improves query performance for frequently accessed fields
  * 
  * This script analyzes the actual query patterns from the API routes and creates
@@ -186,7 +186,7 @@ async function analyzeIndexes(db, collectionName) {
  * Main execution
  */
 async function main() {
-  console.log('🚀 MessMass Database Index Optimization');
+  console.log('🚀 {messmass} Database Index Optimization');
   console.log('========================================\n');
   console.log(`📍 Database: ${MONGODB_DB}`);
 

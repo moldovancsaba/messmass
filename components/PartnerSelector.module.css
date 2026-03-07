@@ -1,6 +1,6 @@
 /* components/PartnerSelector.module.css */
 /* WHAT: Styles for PartnerSelector component
- * WHY: Consistent design with ProjectSelector and MessMass design tokens
+ * WHY: Consistent design with ProjectSelector and {messmass} design tokens
  * PATTERN: Matches ColoredHashtagBubble and UnifiedHashtagInput styling */
 
 /* WHAT: Container for input and dropdown positioning

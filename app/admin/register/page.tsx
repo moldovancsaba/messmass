@@ -95,13 +95,13 @@ export default function AdminRegister() {
         {/* Logo/Icon Section */}
         <div className="login-header">
           <div className="login-logo-container">
-            <Image src="/messmass-logo.png" alt="MessMass" className="login-logo" width={48} height={48} priority />
+            <Image src="/messmass-logo.png" alt="{messmass}" className="login-logo" width={48} height={48} priority />
           </div>
           <h1 className="title login-title">
             Create Your Account
           </h1>
           <p className="subtitle login-subtitle">
-            Register to access MessMass documentation and request elevated permissions
+            Register to access {'{messmass}'} documentation and request elevated permissions
           </p>
         </div>
 

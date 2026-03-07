@@ -83,7 +83,7 @@
 ## Step 6 — Content: static marketing sections + provided copy
 
 **Changes**: Replace report-driven middle (or add static sections before/after) with fixed marketing content:
-- **Hero**: Title “MessMass”, H1 “Sovereign Decision Intelligence for Regulated Data”, support text, CTAs “Go to Dashboard” / “See how it works”, microcopy under CTAs.
+- **Hero**: Title “{messmass}”, H1 “Sovereign Decision Intelligence for Regulated Data”, support text, CTAs “Go to Dashboard” / “See how it works”, microcopy under CTAs.
 - **Value cards** (static): Private by default, Controlled access, Auditable decisions (exact body copy from spec).
 - **Problem** (static): Heading “The problem”, 3 bullets + closing line.
 - **How it works** (static): Ingest, Know, Act, Govern + outcome line.

@@ -478,7 +478,7 @@ function parseArgs(): ScriptConfig {
  * WHY: Execute migration with error handling
  */
 async function main() {
-  console.log('\n🔍 MessMass Data Quality Migration Tool\n');
+  console.log('\n🔍 {messmass} Data Quality Migration Tool\n');
   
   // WHAT: Validate environment
   if (!MONGODB_URI) {

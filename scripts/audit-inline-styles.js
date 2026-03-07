@@ -1,5 +1,5 @@
 // scripts/audit-inline-styles.js
-// WHAT: Comprehensive audit of inline styles in MessMass codebase
+// WHAT: Comprehensive audit of inline styles in {messmass} codebase
 // WHY: Identify inline styles that should be extracted to CSS modules
 // HOW: Parse files, count style props, categorize as legitimate or extractable
 
