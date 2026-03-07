@@ -1,6 +1,6 @@
 # Documentation Index
 Status: Active
-Last Updated: 2026-03-06T00:00:00.000Z
+Last Updated: 2026-03-07T00:00:00.000Z
 Canonical: Yes
 Owner: Documentation
 
@@ -8,6 +8,7 @@ Owner: Documentation
 - [DEVELOPER-CONDUCT.md](DEVELOPER-CONDUCT.md) — Product Owner mandate: AI developer conduct, documentation = code, stack discipline, build quality. Non-negotiable.
 - [PROJECT_MANAGEMENT.md](PROJECT_MANAGEMENT.md) — SSOT board rules, required cadence, and delivery tracking process.
 - [HANDOVER.md](HANDOVER.md) — Current repo handover, active context, and dated agent log.
+- [root-structure.md](root-structure.md) — Canonical top-level repository structure and what is allowed at root.
 - [architecture.md](architecture.md) — Platform architecture, dependency layout, and service-level diagrams.
 - [coding-standards.md](coding-standards.md) — Code style, naming conventions, and documentation expectations.
 - [documentation-governance.md](documentation-governance.md) — Rules for canonical docs, deprecation, and required metadata.

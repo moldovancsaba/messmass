@@ -2,7 +2,7 @@
 
 This file is onboarding plus operational context for the next agent. Keep it accurate when behavior, process, or current delivery state changes.
 
-**Last Updated:** 2026-03-07 (test tree normalization tracked under issue #358; repo cleanup tracked under #357; branding rename tracked under #356; style hardening Phase 5 still active under #72)
+**Last Updated:** 2026-03-07 (root structure hardening tracked under issue #359; test tree normalization tracked under #358; repo cleanup tracked under #357; style hardening Phase 5 still active under #72)
 
 ## SSOT (Work Tracking)
 - Board: <https://github.com/users/moldovancsaba/projects/1>
@@ -16,9 +16,9 @@ This file is onboarding plus operational context for the next agent. Keep it acc
 ## Current Repo Truth
 - Active branch: `landing-overhaul`
 - Last known HEAD during this update: `cf81373ad`
-- Working tree includes the in-progress tracked move from `__tests__` / `__fixtures__` into `tests/` plus untracked local `READMEDEV.md`.
-- Most recent documented code delivery before this update: repo-root visibility cleanup under `mvp-factory-control#357`.
-- Current active delivery: test tree normalization under `mvp-factory-control#358`, with the larger style hardening Phase 5 stream still open under `mvp-factory-control#72`.
+- Working tree includes untracked local `READMEDEV.md`; canonical repo-root cleanup work is now tracked under `#359`.
+- Most recent documented code delivery before this update: test tree normalization under `mvp-factory-control#358`.
+- Current active delivery: root structure hardening under `mvp-factory-control#359`, with the larger style hardening Phase 5 stream still open under `mvp-factory-control#72`.
 
 ## Current Priorities
 - Board-derived priority reference: [operations-delivery-focus.md](/Users/moldovancsaba/Projects/messmass/docs/operations/operations-delivery-focus.md)
@@ -50,6 +50,48 @@ This file is onboarding plus operational context for the next agent. Keep it acc
 - Style editor preview updates immediately for bar/pie CSS vars and includes Value Chain and Landing page sections.
 
 ## Handover Log
+
+## 2026-03-07 13:10:00 CET - Codex Agent
+- Branch: `landing-overhaul`
+- Base commit: `96b36b037`
+- Objective: Deliver `mvp-factory-control#359` by auditing the project root, removing non-canonical root artifacts, tightening ignore rules, and documenting the canonical top-level structure.
+
+### What changed
+- Audited the root-level tracked files against runtime/build/test/deploy requirements.
+- Removed non-canonical root artifacts:
+  - `.ai-plan.json`
+  - `.dev-pid`
+  - `config.js`
+  - `index.html`
+  - `kyc-audit-report.json`
+  - `package-lock`
+  - `test-partner-emoji-visibility.js`
+  - `test-title-overflow-fix.js`
+- Tightened `.gitignore` for local/debug/generated root artifacts.
+- Added canonical root-structure policy doc:
+  - `docs/root-structure.md`
+- Updated:
+  - `README.md`
+  - `docs/index.md`
+  - `docs/operations/operations-release-notes.md`
+  - `docs/operations/operations-action-plan.md`
+- Prepared patch version `11.60.16` for the repository-structure cleanup.
+
+### Validation
+- Planned final gate set for this delivery:
+  - `npm run build`
+  - `npm run type-check`
+  - `npm run lint`
+  - `npm run version:verify`
+
+### Known issues / risks
+- The open PR path to `main` still remains PR-only under repository rules.
+- `READMEDEV.md` remains intentionally local-only and untracked.
+
+### Immediate next actions
+1. Run the final gates for `11.60.16`.
+2. Post evidence to SSOT card `#359`.
+3. Commit and push the root-structure cleanup onto `landing-overhaul`.
 
 ## 2026-03-07 12:35:00 CET - Codex Agent
 - Branch: `landing-overhaul`
