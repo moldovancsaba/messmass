@@ -282,8 +282,8 @@ export default function PartnerDetailPage({
         <div className="card card-md p-lg">
           <h3 className="font-semibold text-gray-900 mb-3">ℹ️ Integration Info</h3>
           <p className="text-xs text-gray-600 space-y-1">
-            <p>• Pull: Sync events from your Google Sheet into MessMass</p>
-            <p>• Push: Export MessMass events to your Google Sheet</p>
+            <p>• Pull: Sync events from your Google Sheet into {'{messmass}'}</p>
+            <p>• Push: Export {'{messmass}'} events to your Google Sheet</p>
             <p>• Manual: Control syncs with buttons (no automatic background jobs)</p>
           </p>
         </div>

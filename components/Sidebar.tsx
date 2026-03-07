@@ -235,7 +235,7 @@ export default function Sidebar() {
           <Link href="/admin" className={styles.logo}>
             {/* WHAT: Logo icon stays same size in both states
                 WHY: Visual consistency - only text hides on collapse */}
-            <Image src="/messmass-logo.png" alt="MessMass" className={styles.logoImage} width={32} height={32} priority />
+            <Image src="/messmass-logo.png" alt="{messmass}" className={styles.logoImage} width={32} height={32} priority />
             
             {/* WHAT: 'messmass' text in Pacifico font, only visible when expanded
                 WHY: User-requested branding with Google Font */}
@@ -306,7 +306,7 @@ export default function Sidebar() {
           {!isCollapsed && (
             <>
               <div className={styles.footerText}>
-                © 2025 MessMass. All rights reserved.
+                © 2025 {'{messmass}'}. All rights reserved.
               </div>
               <div className={styles.versionInfo}>
                 <span className={styles.versionLabel}>Version</span>

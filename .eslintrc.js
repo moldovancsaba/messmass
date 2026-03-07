@@ -1,4 +1,4 @@
-// WHAT: ESLint configuration for MessMass project
+// WHAT: ESLint configuration for {messmass} project
 // WHY: Enforce design system compliance and code quality standards
 // UPDATED: 2025-12-20 - Added rules from technical audit (TECH_AUDIT_REPORTING_SYSTEM.md)
 

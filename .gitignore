@@ -21,6 +21,8 @@ pnpm-debug.log*
 
 # IDE
 .vscode/
+.cursor/
+.kiro/
 
 # Dependencies
 node_modules/
@@ -52,6 +54,7 @@ build/
 
 # Vercel
 .vercel
+.swc/
 
 # TypeScript
 *.tsbuildinfo
@@ -59,6 +62,20 @@ build/
 # Temporary files
 .tmp/
 *.tmp
+temp/
+
+# Local-only operating context and backups
+memory/
+backups/
+agentic/
+codex_skills/
+MEMORY.md
+SOUL.md
+USER.md
+agent-working-loop-canonical-operating-document.md
+coding-standards.mdc
+.vercel-build-trigger
+.gitignore 2
 
 # Migration exports (may contain sensitive data)
 partners-export.json

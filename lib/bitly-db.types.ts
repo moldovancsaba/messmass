@@ -8,7 +8,7 @@ import type { BitlyCampaign } from './bitly.types';
 
 /**
  * WHAT: Bitly link document stored in MongoDB (bitly_links collection)
- * WHY: Associates Bitly shortened URLs with MessMass event projects and stores analytics snapshots
+ * WHY: Associates Bitly shortened URLs with {messmass} event projects and stores analytics snapshots
  * 
  * RELATIONSHIP: Many-to-One
  * - One project can have MANY Bitly links
@@ -17,7 +17,7 @@ import type { BitlyCampaign } from './bitly.types';
 export interface BitlyLinkDocument {
   _id: ObjectId;
   
-  // WHAT: Reference to parent MessMass project (optional for unassigned links)
+  // WHAT: Reference to parent {messmass} project (optional for unassigned links)
   // WHY: Enables filtering links by project and aggregating project-level analytics
   projectId: ObjectId | null;
   
@@ -33,7 +33,7 @@ export interface BitlyLinkDocument {
   group_guid?: string;
   
   // WHAT: User-defined tags from Bitly
-  // WHY: Enables additional categorization and filtering in MessMass
+  // WHY: Enables additional categorization and filtering in {messmass}
   tags: string[];
   
   // WHAT: UTM campaign parameters extracted from long_url

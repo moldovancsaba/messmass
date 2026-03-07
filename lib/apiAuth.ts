@@ -188,7 +188,7 @@ export async function requireAPIAuth(request: NextRequest): Promise<{
         { 
           status: 401,
           headers: {
-            'WWW-Authenticate': 'Bearer realm="MessMass API"',
+            'WWW-Authenticate': 'Bearer realm="{messmass} API"',
             'Vary': 'Authorization'
           }
         }
@@ -214,7 +214,7 @@ export async function requireAPIAuth(request: NextRequest): Promise<{
         { 
           status: 401,
           headers: {
-            'WWW-Authenticate': 'Bearer realm="MessMass API"'
+            'WWW-Authenticate': 'Bearer realm="{messmass} API"'
           }
         }
       )
@@ -236,7 +236,7 @@ export async function requireAPIAuth(request: NextRequest): Promise<{
         { 
           status: 401,
           headers: {
-            'WWW-Authenticate': 'Bearer realm="MessMass API", error="invalid_token"'
+            'WWW-Authenticate': 'Bearer realm="{messmass} API", error="invalid_token"'
           }
         }
       )
@@ -343,7 +343,7 @@ export async function requireAPIWriteAuth(request: NextRequest): Promise<{
         {
           status: 403,
           headers: {
-            'WWW-Authenticate': 'Bearer realm="MessMass API", error="insufficient_scope"'
+            'WWW-Authenticate': 'Bearer realm="{messmass} API", error="insufficient_scope"'
           }
         }
       )

@@ -228,7 +228,7 @@ Owner: Operations
 
 ## Overview
 
-This document describes the integration of **Content Asset Tokens** (`[MEDIA:slug]` and `[TEXT:slug]`) into the MessMass formula engine and chart calculation system. This enables charts to dynamically reference centrally managed images and text blocks from the Content Asset CMS.
+This document describes the integration of **Content Asset Tokens** (`[MEDIA:slug]` and `[TEXT:slug]`) into the {messmass} formula engine and chart calculation system. This enables charts to dynamically reference centrally managed images and text blocks from the Content Asset CMS.
 
 ---
 
@@ -2269,7 +2269,7 @@ npm run type-check
 - ✅ Strict mode: Enabled
 - ✅ Type safety: Maintained
 
-**Note:** Test file errors are expected and acceptable per MessMass AI rules (MVP factory approach - no tests allowed).
+**Note:** Test file errors are expected and acceptable per {messmass} AI rules (MVP factory approach - no tests allowed).
 
 ---
 
@@ -2394,7 +2394,7 @@ The following items are documented but deferred as lower priority:
 
 **All critical and high-priority documentation issues have been resolved.**
 
-The MessMass documentation is now:
+The {messmass} documentation is now:
 - ✅ Accurate and consistent across all files
 - ✅ Properly versioned (v11.29.0)
 - ✅ Using correct tech stack versions
@@ -3412,7 +3412,7 @@ Owner: Operations
 
 ## 📋 Summary
 
-Added **mandatory implementation standards** to MessMass documentation requiring developers and AI tools to:
+Added **mandatory implementation standards** to {messmass} documentation requiring developers and AI tools to:
 
 1. **Search existing implementations first** before creating new code
 2. **Use exact patterns** from reference files (FormModal, ColoredCard, etc.)
@@ -3542,7 +3542,7 @@ grep -r 'style={{' --include="*.tsx" components/ app/
 
 ## 🔗 Real Examples in Codebase
 
-All examples reference **actual files and line numbers** from the MessMass codebase:
+All examples reference **actual files and line numbers** from the {messmass} codebase:
 
 ### Modal Examples
 - `components/SharePopup.tsx` lines 110-127 (header/body structure)
@@ -3613,7 +3613,7 @@ Each updated document now includes:
 
 ---
 
-*This update establishes MessMass as having **strict, enforceable coding standards** with real examples and consequences for non-compliance.*
+*This update establishes {messmass} as having **strict, enforceable coding standards** with real examples and consequences for non-compliance.*
 ```
 
 ---

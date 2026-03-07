@@ -1,4 +1,4 @@
-# MessMass Authentication & Access Control System
+# {messmass} Authentication & Access Control System
 Status: Active
 Last Updated: 2026-01-11T22:28:38.000Z
 Canonical: Yes
@@ -13,7 +13,7 @@ Owner: Security
 
 ## Executive Summary
 
-MessMass implements a **zero-trust, dual-layer authentication system** for enterprise event analytics with granular access control:
+{messmass} implements a **zero-trust, dual-layer authentication system** for enterprise event analytics with granular access control:
 
 ### Key Features
 
@@ -1091,7 +1091,7 @@ if (process.env.NODE_ENV === 'development') {
 
 ## Conclusion
 
-The MessMass authentication system represents a **production-ready, enterprise-grade security implementation** with:
+The {messmass} authentication system represents a **production-ready, enterprise-grade security implementation** with:
 
 ✅ **Zero known security vulnerabilities**  
 ✅ **100% test coverage on critical auth flows**  

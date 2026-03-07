@@ -13,7 +13,7 @@ Owner: Architecture
 
 ## Purpose
 
-This document is the **single source of truth** for all variables in the MessMass system. It defines:
+This document is the **single source of truth** for all variables in the {messmass} system. It defines:
 - Variable naming standards
 - Variable categories and organization
 - Formula syntax and mathematical rules

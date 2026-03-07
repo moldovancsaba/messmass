@@ -27,7 +27,7 @@ Action items should live in `docs/operations/operations-action-plan.md` (not in 
 - Source: `docs/archive/_archive/audits/archive-audits-misc-pack.md#00-exec-summary`
 
 ```markdown
-# MessMass Technology Audit - Executive Summary
+# {messmass} Technology Audit - Executive Summary
 Status: Active
 Last Updated: 2026-02-05T00:00:00.000Z
 Canonical: No
@@ -43,7 +43,7 @@ Owner: Audit
 
 ## 1. System Overview
 
-**MessMass** is an enterprise-grade event analytics platform designed for sports organizations, venues, brands, and event managers. The platform provides:
+**{messmass}** is an enterprise-grade event analytics platform designed for sports organizations, venues, brands, and event managers. The platform provides:
 
 - **Real-time event statistics tracking** via WebSocket collaboration
 - **Partner KYC (organizational profiles)** for clubs, federations, venues, brands
@@ -324,7 +324,7 @@ This audit includes the following documents (all in `docs/audit/`):
 
 ## 13. Conclusion
 
-**Overall Assessment**: MessMass is a **well-architected, production-ready event analytics platform** with strong technical foundations (TypeScript, Next.js, MongoDB Atlas) and comprehensive documentation. The system demonstrates professional software engineering practices with intentional MVP-focused trade-offs.
+**Overall Assessment**: {messmass} is a **well-architected, production-ready event analytics platform** with strong technical foundations (TypeScript, Next.js, MongoDB Atlas) and comprehensive documentation. The system demonstrates professional software engineering practices with intentional MVP-focused trade-offs.
 
 **Key Strengths**:
 - Clean architecture with separation of concerns
@@ -361,7 +361,7 @@ This audit includes the following documents (all in `docs/audit/`):
 - Source: `docs/archive/_archive/audits/archive-audits-misc-pack.md#07-plain-english-paper`
 
 ```markdown
-# MessMass: Partner KYC & Event Analytics System
+# {messmass}: Partner KYC & Event Analytics System
 Status: Active
 Last Updated: 2026-02-05T00:00:00.000Z
 Canonical: No
@@ -378,7 +378,7 @@ Owner: Audit
 
 ## Table of Contents
 
-1. [What is MessMass?](#1-what-is-messmass)
+1. [What is {messmass}?](#1-what-is-messmass)
 2. [Partner KYC System Explained](#2-partner-kyc-system-explained)
 3. [How Events Are Created](#3-how-events-are-created)
 4. [Real-Time Statistics Tracking](#4-real-time-statistics-tracking)
@@ -391,16 +391,16 @@ Owner: Audit
 
 ---
 
-## 1. What is MessMass?
+## 1. What is {messmass}?
 
-**MessMass** is an event analytics platform that helps sports organizations, venues, brands, and event managers:
+**{messmass}** is an event analytics platform that helps sports organizations, venues, brands, and event managers:
 
 - **Track** who attends events (demographics, location, merchandise)
 - **Analyze** fan engagement and activation data
 - **Share** professional reports with partners and stakeholders
 - **Measure** return on investment (ROI) for events
 
-Think of it as **Google Analytics for live events** - instead of tracking website visitors, MessMass tracks event attendees and their behavior.
+Think of it as **Google Analytics for live events** - instead of tracking website visitors, {messmass} tracks event attendees and their behavior.
 
 ### Who Uses It?
 
@@ -411,7 +411,7 @@ Think of it as **Google Analytics for live events** - instead of tracking websit
 
 ### Business Value
 
-MessMass answers critical business questions:
+{messmass} answers critical business questions:
 
 - How many fans attended?
 - What is their demographic profile (age, gender)?
@@ -424,9 +424,9 @@ MessMass answers critical business questions:
 
 ## 2. Partner KYC System Explained
 
-### What "Partner KYC" Means in MessMass
+### What "Partner KYC" Means in {messmass}
 
-**Important**: KYC in MessMass is **NOT financial KYC** (identity verification for banking/compliance). Instead, it means:
+**Important**: KYC in {messmass} is **NOT financial KYC** (identity verification for banking/compliance). Instead, it means:
 
 > **Partner KYC** = **Know Your Customer** = Organizational profiles for clubs, teams, venues, brands, and federations
 
@@ -648,7 +648,7 @@ Formula: ([SEYUMERCHEDFANS] / [SEYUTOTALFANS]) * [SEYUATTENDEES]
 
 This means: `(Merched Fans / Total Fans) × Event Attendees = Core Fan Team`
 
-**Why SEYU Tokens?** When MessMass adds multiple organizations in the future, each can have their own variable names without conflicts.
+**Why SEYU Tokens?** When {messmass} adds multiple organizations in the future, each can have their own variable names without conflicts.
 
 ---
 
@@ -753,7 +753,7 @@ This is a **live activation report** for a real event. Let's explain what each s
 
 ### What Bitly Integration Does
 
-**Bitly** is a URL shortening service that tracks clicks. MessMass integrates with Bitly to:
+**Bitly** is a URL shortening service that tracks clicks. {messmass} integrates with Bitly to:
 
 - **Import links** from Bitly account (3,000+ links managed)
 - **Track clicks** automatically via Bitly API
@@ -806,7 +806,7 @@ From Bitly API:
 ### Data Flow
 
 ```
-Bitly API → MessMass MongoDB → Daily Refresh Job → Chart Data → Public Stats Page
+Bitly API → {messmass} MongoDB → Daily Refresh Job → Chart Data → Public Stats Page
 ```
 
 ---
@@ -1163,7 +1163,7 @@ Post-Event (T+1 day)
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
-│                        MessMass Platform                     │
+│                        {messmass} Platform                     │
 │                                                               │
 │  ┌──────────────┐    ┌──────────────┐    ┌──────────────┐ │
 │  │   Frontend   │◄───┤   Next.js    │◄───┤   MongoDB    │ │
@@ -1215,7 +1215,7 @@ Post-Event (T+1 day)
 
 ## 13. Conclusion
 
-MessMass is a **comprehensive event analytics platform** that solves critical business problems for sports organizations and event managers:
+{messmass} is a **comprehensive event analytics platform** that solves critical business problems for sports organizations and event managers:
 
 ### Business Value Summary
 
@@ -1666,7 +1666,7 @@ PAST:
 - Source: `docs/archive/_archive/audits/archive-audits-misc-pack.md#comprehensive-tech-audit-report`
 
 ```markdown
-# 🔴 BRUTAL & DETAILED TECH AUDIT: MessMass v11.46.1
+# 🔴 BRUTAL & DETAILED TECH AUDIT: {messmass} v11.46.1
 Status: Active
 Last Updated: 2026-02-05T00:00:00.000Z
 Canonical: No
@@ -2321,7 +2321,7 @@ Owner: Audit
 
 ## Executive Summary
 
-**IMPORTANT FINDING:** MessMass MongoDB collections use **camelCase** for ALL field names, NOT snake_case. This is consistent throughout the entire system - both in the database and in the code.
+**IMPORTANT FINDING:** {messmass} MongoDB collections use **camelCase** for ALL field names, NOT snake_case. This is consistent throughout the entire system - both in the database and in the code.
 
 Your concern about using exact MongoDB variable names is VALID and IMPORTANT, but the system is **ALREADY DOING THIS CORRECTLY**.
 
@@ -2383,7 +2383,7 @@ projectCategorizedHashtags={partner.categorizedHashtags} // ✅ CORRECT
 
 ## Why camelCase in MongoDB?
 
-MessMass chose **camelCase** for MongoDB fields instead of the more common `snake_case`. This is actually **VALID** and provides benefits:
+{messmass} chose **camelCase** for MongoDB fields instead of the more common `snake_case`. This is actually **VALID** and provides benefits:
 
 ### Advantages
 1. **No Transformation Needed**: MongoDB documents → JavaScript objects (zero conversion)
@@ -2580,7 +2580,7 @@ If you find ANY place where code uses different names than MongoDB, **THAT is a 
 - Source: `docs/archive/_archive/audits/archive-audits-misc-pack.md#naming-audit-report`
 
 ```markdown
-# MessMass Naming Inconsistency Audit Report
+# {messmass} Naming Inconsistency Audit Report
 Status: Active
 Last Updated: 2026-02-05T00:00:00.000Z
 Canonical: No
@@ -2872,7 +2872,7 @@ After fixes are applied:
 - Source: `docs/archive/_archive/audits/archive-audits-misc-pack.md#naming-consistency-full-audit`
 
 ```markdown
-# MessMass Complete Naming Consistency Audit
+# {messmass} Complete Naming Consistency Audit
 Status: Active
 Last Updated: 2026-02-05T00:00:00.000Z
 Canonical: No
@@ -2886,7 +2886,7 @@ Owner: Audit
 
 ## Executive Summary
 
-Performed comprehensive audit of entire MessMass codebase (1,247 files) to identify and eliminate ALL naming inconsistencies. Found **22 critical role naming issues** affecting authentication/authorization security, all fixed. Confirmed all other naming patterns follow correct conventions.
+Performed comprehensive audit of entire {messmass} codebase (1,247 files) to identify and eliminate ALL naming inconsistencies. Found **22 critical role naming issues** affecting authentication/authorization security, all fixed. Confirmed all other naming patterns follow correct conventions.
 
 ---
 
@@ -3218,7 +3218,7 @@ module.exports = {
 
 **Audit Completed By:** AI Development System  
 **Report Generated:** 2025-12-25T09:45:00Z  
-**Version:** MessMass 11.54.1+  
+**Version:** {messmass} 11.54.1+  
 **Status:** ✅ COMPLETE - READY FOR DEPLOYMENT
 ```
 
@@ -3228,7 +3228,7 @@ module.exports = {
 - Source: `docs/archive/_archive/audits/archive-audits-misc-pack.md#operating-loop-analysis`
 
 ```markdown
-# MessMass Project Analysis: Agent Working Loop Compliance
+# {messmass} Project Analysis: Agent Working Loop Compliance
 Status: Active
 Last Updated: 2026-02-05T00:00:00.000Z
 Canonical: No
@@ -3622,7 +3622,7 @@ Owner: Audit
 
 ## Overview
 
-This document defines the unified design system for MessMass report charts, ensuring consistent, professional, and maintainable visual presentation across all chart types and layouts.
+This document defines the unified design system for {messmass} report charts, ensuring consistent, professional, and maintainable visual presentation across all chart types and layouts.
 
 ## Core Principles
 

@@ -1,4 +1,4 @@
-/* MessMass Design System - Utility Classes */
+/* {messmass} Design System - Utility Classes */
 /* WHAT: Centralized utility classes using design tokens
    WHY: Replace inline styles and baked-in CSS with reusable, token-based classes
    HOW: Use these classes instead of style={{}} props or hardcoded values */

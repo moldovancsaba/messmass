@@ -106,7 +106,7 @@ function parseHungarianDate(dateStr: string): { isoDate: string; year: string; m
 }
 
 /* What: Parse spreadsheet row into project data
-   Why: Transform sheet format into MessMass project structure */
+   Why: Transform sheet format into {messmass} project structure */
 function parseSheetRow(rawData: string) {
   const parts = rawData.split('\t').map(p => p.trim());
   

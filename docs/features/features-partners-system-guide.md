@@ -8,7 +8,7 @@ Owner: Product
 **Last Updated:** 2026-01-11T22:28:38.000Z (UTC)  
 **Status:** Production
 
-Complete technical documentation for the MessMass Partners Management System.
+Complete technical documentation for the {messmass} Partners Management System.
 
 ---
 
@@ -1198,6 +1198,6 @@ mongorestore \
 
 ---
 
-**MessMass Partners System Version 6.0.0**  
+**{messmass} Partners System Version 6.0.0**  
 **Last Updated: 2025-01-21T11:14:00.000Z (UTC)**  
-**© 2025 MessMass Platform**
+**© 2025 {messmass} Platform**

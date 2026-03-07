@@ -1,8 +1,8 @@
 /**
  * Google Sheets Pull Events API Endpoint
  * 
- * WHAT: Pulls events from Google Sheet and creates/updates projects in MessMass
- * WHY: Synchronize sheet data with MessMass database
+ * WHAT: Pulls events from Google Sheet and creates/updates projects in {messmass}
+ * WHY: Synchronize sheet data with {messmass} database
  * 
  * POST /api/partners/[id]/google-sheet/pull
  * 

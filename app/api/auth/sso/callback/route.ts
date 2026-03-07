@@ -34,7 +34,7 @@ export async function GET(request: NextRequest) {
 
   const user = await findUserByEmail(ssoUser.email);
   if (!user) {
-    logError('SSO callback: no local user', { email: ssoUser.email }, new Error('No MessMass account'));
+    logError('SSO callback: no local user', { email: ssoUser.email }, new Error('No {messmass} account'));
     return NextResponse.redirect(new URL('/admin/login?error=no_account', request.url));
   }
 

@@ -8,7 +8,7 @@ Owner: Product
 **Last Updated:** 2026-01-11T22:45:21.000Z (UTC)  
 **Status:** Production
 
-Complete technical documentation for the MessMass Bitly integration system with many-to-many relationships, date range attribution, and analytics sync.
+Complete technical documentation for the {messmass} Bitly integration system with many-to-many relationships, date range attribution, and analytics sync.
 
 ---
 
@@ -19,7 +19,7 @@ See [QUICK_ADD_GUIDE (archived)](../archive/_archive/deprecated-guides-2025/arch
 
 ## Overview
 
-MessMass integrates with Bitly API v4 to provide comprehensive link analytics across events, supporting:
+{messmass} integrates with Bitly API v4 to provide comprehensive link analytics across events, supporting:
 
 - **Many-to-Many Relationships**: One link → multiple events, one event → multiple links
 - **Smart Date Attribution**: Automatic temporal data separation for shared links
@@ -197,6 +197,6 @@ async function getProjectBitlyMetrics(projectId: string) {
 
 ---
 
-**MessMass Bitly Integration Version 6.0.0**  
+**{messmass} Bitly Integration Version 6.0.0**  
 **Last Updated: 2025-01-21T11:14:00.000Z (UTC)**  
-**© 2025 MessMass Platform**
+**© 2025 {messmass} Platform**

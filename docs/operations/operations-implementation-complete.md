@@ -12,7 +12,7 @@ Owner: Operations
 
 ## Purpose
 
-This document serves as the single canonical closure record for all completed and verified audit work in the MessMass system. It provides a read-only summary of implemented changes, verification evidence, and traceability to commits and documentation.
+This document serves as the single canonical closure record for all completed and verified audit work in the {messmass} system. It provides a read-only summary of implemented changes, verification evidence, and traceability to commits and documentation.
 
 **Scope:** This document includes only DONE + VERIFIED audit items. It does not include future plans, speculation, or incomplete work.
 

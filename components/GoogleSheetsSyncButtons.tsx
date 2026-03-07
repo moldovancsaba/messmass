@@ -7,8 +7,8 @@
  * WHY: Allow partners to manually trigger sync operations
  * 
  * Features:
- * - Pull button to sync sheet → MessMass
- * - Push button to sync MessMass → sheet
+ * - Pull button to sync sheet → {messmass}
+ * - Push button to sync {messmass} → sheet
  * - Dry-run mode for previewing changes
  * - Loading and error states
  * - Real-time feedback with status messages
@@ -119,7 +119,7 @@ export default function GoogleSheetsSyncButtons({
           onClick={() => executeSyncOperation('pull', false)}
           disabled={isLoading}
           className="btn btn-primary flex items-center gap-2"
-          title="Pull events from Google Sheet into MessMass"
+          title="Pull events from Google Sheet into {messmass}"
         >
           <span>⬇️</span>
           <span>{isLoading && activeSync === 'pull' ? 'Pulling...' : 'Pull Events'}</span>
@@ -129,7 +129,7 @@ export default function GoogleSheetsSyncButtons({
           onClick={() => executeSyncOperation('push', false)}
           disabled={isLoading}
           className="btn btn-primary flex items-center gap-2"
-          title="Push MessMass events to Google Sheet"
+          title="Push {messmass} events to Google Sheet"
         >
           <span>⬆️</span>
           <span>{isLoading && activeSync === 'push' ? 'Pushing...' : 'Push Events'}</span>
@@ -174,10 +174,10 @@ export default function GoogleSheetsSyncButtons({
       {/* Help Text */}
       <div className="bg-gray-50 border border-gray-200 rounded-md p-3 text-xs text-gray-700">
         <p className="mb-2">
-          <strong>Pull:</strong> Import events from your Google Sheet into MessMass
+          <strong>Pull:</strong> Import events from your Google Sheet into {'{messmass}'}
         </p>
         <p>
-          <strong>Push:</strong> Export MessMass events to your Google Sheet
+          <strong>Push:</strong> Export {'{messmass}'} events to your Google Sheet
         </p>
       </div>
     </div>

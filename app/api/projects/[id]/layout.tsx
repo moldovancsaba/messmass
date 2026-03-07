@@ -5,10 +5,10 @@ import './globals.css';
 const inter = Inter({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
-  title: 'MessMass - Event Statistics Dashboard',
+  title: '{messmass} - Event Statistics Dashboard',
   description: 'Real-time collaborative event statistics tracking',
   keywords: ['Event Statistics', 'Real-time Collaboration', 'Dashboard', 'Next.js'],
-  authors: [{ name: 'MessMass Team' }],
+  authors: [{ name: '{messmass} Team' }],
 };
 
 export const viewport: Viewport = {

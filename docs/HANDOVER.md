@@ -1,4 +1,4 @@
-# MessMass Developer Handover
+# {messmass} Developer Handover
 
 This file is onboarding plus operational context for the next agent. Keep it accurate when behavior, process, or current delivery state changes.
 
@@ -8,7 +8,7 @@ This file is onboarding plus operational context for the next agent. Keep it acc
 - Board: <https://github.com/users/moldovancsaba/projects/1>
 - Issues repo: `moldovancsaba/mvp-factory-control`
 - Rules:
-  - Track MessMass delivery work only in `mvp-factory-control` and on Project 1.
+  - Track {messmass} delivery work only in `mvp-factory-control` and on Project 1.
   - Do not create or manage product work as local task files.
   - Use [PROJECT_MANAGEMENT.md](/Users/moldovancsaba/Projects/messmass/docs/PROJECT_MANAGEMENT.md) for the required SSOT cadence.
   - Update this handover doc whenever current truth changes materially.
@@ -270,6 +270,95 @@ This file is onboarding plus operational context for the next agent. Keep it acc
 2. Commit and push `11.60.11`.
 3. Continue the queued work.
 
+## 2026-03-07 11:10:00 CET - Codex Agent
+- Branch: `landing-overhaul`
+- Base commit: `ac364fd2b`
+- Objective: Deliver SSOT issue `#355` by moving the repo to a runtime-only Git tracking policy.
+
+### What changed
+- Updated `.gitignore` to exclude local-only directories:
+  - `.cursor/`
+  - `.kiro/`
+  - `.vscode/`
+  - `.swc/`
+  - `agentic/`
+  - `backups/`
+  - `codex_skills/`
+  - `memory/`
+  - `temp/`
+- Removed the already-tracked files in those directories from Git with `git rm --cached`, without deleting the local copies.
+- Prepared patch version `11.60.12` and release-note entry for the repository hygiene cleanup.
+
+### Validation
+- `npm run build` -> passed
+- `npm run type-check` -> passed
+- `npm run lint` -> passed (warnings only)
+- `npm run version:verify` -> passed
+
+### Known issues / risks
+- These directories will remain on local disk but are no longer part of the tracked source tree. Any future content inside them will stay local unless explicitly force-added.
+
+### Immediate next actions
+1. Post evidence to SSOT card `#355`.
+2. Commit and push the Git tracking cleanup.
+3. Continue the queued work.
+
+## 2026-03-07 11:40:00 CET - Codex Agent
+- Branch: `landing-overhaul`
+- Base commit: `9ff1f7281`
+- Objective: Deliver SSOT issue `#356` by renaming the tracked product name from `MessMass` to `{messmass}` everywhere in the repository.
+
+### What changed
+- Replaced exact tracked `MessMass` occurrences with `{messmass}` across code, docs, metadata, UI copy, styles, scripts, and assets.
+- Synced the README badge/version display to the new patch version.
+- Prepared patch version `11.60.13` and release-note entry for the branding normalization slice.
+
+### Validation
+- `npm run build` -> passed
+- `npm run type-check` -> passed
+- `npm run lint` -> passed (warnings only)
+- `npm run version:verify` -> passed
+
+### Known issues / risks
+- This was an exact-string rename pass. Lowercase `messmass` identifiers, paths, domains, and repo names were intentionally left unchanged.
+
+### Immediate next actions
+1. Post evidence to SSOT card `#356`.
+2. Commit and push the branding rename.
+3. Continue the queued work.
+
+## 2026-03-07 12:10:00 CET - Codex Agent
+- Branch: `landing-overhaul`
+- Base commit: `59988926b`
+- Objective: Deliver SSOT issue `#357` by removing the remaining root-level local-only artifacts from Git tracking and preparing the branch for `main`.
+
+### What changed
+- Updated `.gitignore` to exclude:
+  - `.vercel-build-trigger`
+  - `MEMORY.md`
+  - `SOUL.md`
+  - `USER.md`
+  - `agent-working-loop-canonical-operating-document.md`
+  - `coding-standards.mdc`
+  - `.gitignore 2`
+- Removed those files from Git tracking while keeping local copies.
+- Confirmed that `__tests__` and `__fixtures__/layoutV2` remain tracked because they are real validation assets.
+- Prepared patch version `11.60.14` and release-note entry for the final visibility cleanup slice.
+
+### Validation
+- `npm run build` -> passed
+- `npm run type-check` -> passed
+- `npm run lint` -> passed (warnings only)
+- `npm run version:verify` -> passed
+
+### Known issues / risks
+- The branch is clean for promotion after this slice, but pushing to `main` will still require an explicit Git step after validation.
+
+### Immediate next actions
+1. Post evidence to SSOT card `#357`.
+2. Commit, push, and promote the cleaned branch to `main`.
+3. Continue the queued work from `main`.
+
 ## 2026-03-07 09:05:00 CET - Codex Agent
 - Branch: `landing-overhaul`
 - Base commit: `fdc4af424`
@@ -373,10 +462,10 @@ This file is onboarding plus operational context for the next agent. Keep it acc
 ## 2026-03-06 10:23:04 CET - Codex Agent
 - Branch: `landing-overhaul`
 - Base commit: `747eb0a40`
-- Objective: Restore the missing MessMass `docs/PROJECT_MANAGEMENT.md` and `docs/HANDOVER.md` using the established structure from the sibling `reply` and `hatori` projects.
+- Objective: Restore the missing {messmass} `docs/PROJECT_MANAGEMENT.md` and `docs/HANDOVER.md` using the established structure from the sibling `reply` and `hatori` projects.
 
 ### What changed
-- Added `docs/PROJECT_MANAGEMENT.md` to define MessMass SSOT rules, board cadence, and manual GitHub CLI fallback commands.
+- Added `docs/PROJECT_MANAGEMENT.md` to define {messmass} SSOT rules, board cadence, and manual GitHub CLI fallback commands.
 - Added `docs/HANDOVER.md` to provide onboarding context, current repo truth, canonical doc links, and a dated handover log.
 - Updated the docs entrypoints to reference the newly restored files.
 
@@ -397,7 +486,7 @@ This file is onboarding plus operational context for the next agent. Keep it acc
 - Existing dirty files predate this change and were left untouched.
 
 ### Immediate next actions
-1. Confirm the active MessMass board card before any product implementation work.
+1. Confirm the active {messmass} board card before any product implementation work.
 2. Add a start note on that card using the cadence in `docs/PROJECT_MANAGEMENT.md`.
 3. Keep `docs/HANDOVER.md`, `docs/NEXT_AGENT_PROMPT.md`, and the board in sync after each meaningful milestone.
 

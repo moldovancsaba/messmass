@@ -1,6 +1,6 @@
 // lib/googleSheetsClient.ts
 // WHAT: Google Sheets API client for reading/writing event data to partner sheets
-// WHY: Enable bidirectional sync between MessMass and Google Sheets
+// WHY: Enable bidirectional sync between {messmass} and Google Sheets
 // USAGE: Import and use to append rows, read data, update cells
 
 import { google } from 'googleapis';
@@ -92,7 +92,7 @@ export async function appendRowToSheet(
 
 /**
  * WHAT: Read all data from a Google Sheet
- * WHY: Pull sheet data to sync back to MessMass
+ * WHY: Pull sheet data to sync back to {messmass}
  * @param sheetId - Google Sheet ID
  * @param range - Sheet range (default: "Events!A:Z")
  * @returns Array of rows or empty array on error

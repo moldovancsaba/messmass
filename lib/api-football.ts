@@ -220,7 +220,7 @@ export class ApiFootballClient {
 
   /**
    * WHAT: Search for teams by name
-   * WHY: Match MessMass partners to API-Football teams
+   * WHY: Match {messmass} partners to API-Football teams
    * @param name Team name to search for
    * @param country Optional country filter (e.g., 'Italy', 'Poland')
    */
@@ -248,7 +248,7 @@ export class ApiFootballClient {
 
   /**
    * WHAT: Get fixtures for a specific team
-   * WHY: Match MessMass events to official fixtures
+   * WHY: Match {messmass} events to official fixtures
    * @param teamId API-Football team ID
    * @param from Start date (YYYY-MM-DD)
    * @param to End date (YYYY-MM-DD)

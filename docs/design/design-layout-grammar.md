@@ -12,7 +12,7 @@ Owner: Architecture
 
 ## What Is Layout Grammar
 
-Layout Grammar is a deterministic layout system for MessMass report rendering. It enforces structural fit rules that guarantee all content is visible without scrolling, truncation, or clipping.
+Layout Grammar is a deterministic layout system for {messmass} report rendering. It enforces structural fit rules that guarantee all content is visible without scrolling, truncation, or clipping.
 
 **Core Principle:** Content must fit through structural change (reflow, aggregation, height increase, block split) or publishing is blocked. Scrolling and truncation are forbidden.
 

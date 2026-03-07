@@ -10,10 +10,10 @@ import packageJson from '../package.json';
  * HOW: Snapshot loaded on server so first paint has static content; no client fetch required.
  */
 export const metadata: Metadata = {
-  title: 'MessMass — Sovereign Decision Intelligence',
+  title: '{messmass} — Sovereign Decision Intelligence',
   description: 'Data privacy and agentic AI without compromises. Your data stays with you; the AI comes to it. Local-first decision intelligence for enterprises.',
   openGraph: {
-    title: 'MessMass — Sovereign Decision Intelligence',
+    title: '{messmass} — Sovereign Decision Intelligence',
     description: 'Data privacy and agentic AI without compromises. Local-first agentic AI for data-driven companies.',
   },
 };

@@ -294,7 +294,7 @@ export async function readSheetRow(
 
 /**
  * WHAT: Write multiple rows to sheet
- * WHY: Push events from MessMass to sheet
+ * WHY: Push events from {messmass} to sheet
  * HOW: Uses batchUpdate for efficient multi-row writes
  * 
  * @param sheetId - Google Sheet ID

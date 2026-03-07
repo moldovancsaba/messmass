@@ -1,4 +1,4 @@
-/* MessMass Design System - Theme Variables & Design Tokens */
+/* {messmass} Design System - Theme Variables & Design Tokens */
 /* TailAdmin V2-Inspired Modern Flat Design System */
 /* What: Complete design token system for 2025-2026 aesthetics */
 /* Why: Replace glass-morphism with clean, professional flat design comparable to TailAdmin */
@@ -393,7 +393,7 @@
   --radius-3xl: var(--mm-radius-2xl);
   --radius-full: var(--mm-radius-full);
   
-  /* MessMass Specific Radii - significantly flatter now */
+  /* {messmass} Specific Radii - significantly flatter now */
   --border-radius: var(--mm-radius-md);      /* Was 20px, now 8px */
   --border-radius-lg: var(--mm-radius-lg);   /* Was 25px, now 12px */
 
@@ -419,7 +419,7 @@
   --shadow-xl: var(--mm-shadow-xl);
   --shadow-2xl: var(--mm-shadow-2xl);
   
-  /* MessMass Custom Shadows - updated to be lighter */
+  /* {messmass} Custom Shadows - updated to be lighter */
   --shadow: var(--mm-shadow-md);      /* Was dramatic 0 8px 32px, now subtle */
   
   /* What: Blur effects - DEPRECATED for flat design

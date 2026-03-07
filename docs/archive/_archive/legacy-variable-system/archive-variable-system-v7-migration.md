@@ -13,7 +13,7 @@ Owner: Architecture
 
 ## 🎯 Executive Summary
 
-MessMass has migrated from a **code-based variable registry** to a **fully database-driven variable system** with **Single Reference naming convention** using absolute MongoDB paths.
+{messmass} has migrated from a **code-based variable registry** to a **fully database-driven variable system** with **Single Reference naming convention** using absolute MongoDB paths.
 
 ### Key Achievements
 

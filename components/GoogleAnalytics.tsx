@@ -1,6 +1,6 @@
 'use client';
 
-// Google Analytics component for MessMass
+// Google Analytics component for {messmass}
 // Handles client-side initialization of Google Analytics tracking
 // Uses the provided GA measurement ID: G-19NWMWNH18
 

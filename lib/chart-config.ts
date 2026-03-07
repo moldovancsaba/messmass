@@ -1,4 +1,4 @@
-// Chart Configuration System for MessMass
+// Chart Configuration System for {messmass}
 // Allows dynamic modification of chart calculation algorithms
 
 export interface ChartAlgorithm {

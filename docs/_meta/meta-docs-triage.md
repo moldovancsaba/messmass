@@ -22,7 +22,7 @@ This report highlights actionable doc-cleanup work: missing metadata, suspicious
 ## Active Files Missing Metadata
 | Path | Title | Missing | Lines |
 |---|---|---|---:|
-| docs/HANDOVER.md | MessMass Developer Handover | status, last_updated, canonical, owner | 214 |
+| docs/HANDOVER.md | {messmass} Developer Handover | status, last_updated, canonical, owner | 214 |
 | docs/NEXT_AGENT_PROMPT.md | Next Agent Prompt (Handover) | status, last_updated, canonical, owner | 53 |
 | docs/PROJECT_MANAGEMENT.md | Project Management & SSOT Guidelines | status, last_updated, canonical, owner | 79 |
 | docs/audits/system-audit-plan-2026.md |  | status, last_updated, canonical, owner | 117 |

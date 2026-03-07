@@ -17,7 +17,7 @@
  */
 
 /**
- * WHAT: Complete mapping of emojis used in MessMass to Material Icon names
+ * WHAT: Complete mapping of emojis used in {messmass} to Material Icon names
  * WHY: Database migration and backward compatibility during transition period
  * HOW: Key = Unicode emoji character, Value = Material Icon name from Google Fonts
  * 

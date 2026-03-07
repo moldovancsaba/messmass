@@ -1,5 +1,5 @@
 // lib/googleSheets/rowMapper.ts
-// WHAT: Bidirectional mapping between Google Sheet rows and MessMass events (v12.0.0)
+// WHAT: Bidirectional mapping between Google Sheet rows and {messmass} events (v12.0.0)
 // WHY: Convert sheet data to database format and vice versa
 // HOW: Use column map to transform values with type-specific parsing
 
@@ -31,7 +31,7 @@ function indexToColumnLetter(index: number): string {
 }
 
 /**
- * WHAT: Convert sheet row to MessMass event object
+ * WHAT: Convert sheet row to {messmass} event object
  * WHY: Create or update events from sheet data
  * HOW: Map each column (by index) to corresponding event field
  * 
@@ -55,7 +55,7 @@ export function rowToEvent(
   const detected = detectEventType(row);
   
   // WHAT: Initialize event object with stats sub-object
-  // WHY: Match MessMass Project schema (all variables in stats)
+  // WHY: Match {messmass} Project schema (all variables in stats)
   const event: any = {
     eventName: detected.eventName,
     stats: {},
@@ -73,7 +73,7 @@ export function rowToEvent(
     const value = row[colIndex];
     
     // WHAT: Skip read-only computed columns (formulas)
-    // WHY: These are calculated in MessMass, not imported
+    // WHY: These are calculated in {messmass}, not imported
     if (colDef.computed) {
       return;
     }
@@ -89,7 +89,7 @@ export function rowToEvent(
     const parsed = parseValue(value, colDef.type);
     
     // WHAT: Assign to stats sub-object or top-level
-    // WHY: Match MessMass schema (variables in stats, metadata at top level)
+    // WHY: Match {messmass} schema (variables in stats, metadata at top level)
     if (colDef.field.startsWith('stats.')) {
       const statsKey = colDef.field.replace('stats.', '');
       event.stats[statsKey] = parsed;
@@ -117,11 +117,11 @@ export function rowToEvent(
 }
 
 /**
- * WHAT: Convert MessMass event to sheet row array
+ * WHAT: Convert {messmass} event to sheet row array
  * WHY: Push event data back to sheet
  * HOW: Map event fields to row array positions using index-based map
  * 
- * @param event - MessMass event object
+ * @param event - {messmass} event object
  * @param columnMap - Index-based column mapping (columnIndex -> fieldDef)
  * @returns Array of cell values (size = max column index + 1)
  */
@@ -352,7 +352,7 @@ export function rowsToEvents(
  * WHY: Efficient processing for push operations
  * HOW: Map each event to row array
  * 
- * @param events - Array of MessMass events
+ * @param events - Array of {messmass} events
  * @param columnMap - Index-based column mapping (columnIndex -> fieldDef)
  * @returns Array of row arrays
  */

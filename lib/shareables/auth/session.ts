@@ -1,5 +1,5 @@
 // lib/shareables/auth/session.ts
-// Session management utilities for MessMass Authentication System
+// Session management utilities for {messmass} Authentication System
 
 import { AuthUser, AuthConfig, DEFAULT_AUTH_CONFIG } from './types'
 import { isValidSessionToken, getUserFromSession } from './passwordAuth'

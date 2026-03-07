@@ -149,7 +149,7 @@ export async function GET(
       response.info = {
         connectedAt: googleSheetConfig.updatedAt || 'Unknown',
         sheetUrl: `https://docs.google.com/spreadsheets/d/${googleSheetConfig.sheetId}`,
-        serviceName: 'MessMass Google Sheets Integration',
+        serviceName: '{messmass} Google Sheets Integration',
         serviceAccount: googleSheetConfig.serviceAccountEmail,
         uuidColumn: googleSheetConfig.uuidColumn || 'A',
         integrationVersion: 'v2.0'

@@ -2,8 +2,8 @@ import { Metadata } from 'next';
 import styles from '../admin/help/page.module.css';
 
 export const metadata: Metadata = {
-  title: 'API Documentation - MessMass',
-  description: 'Complete API documentation for MessMass integrations',
+  title: 'API Documentation - {messmass}',
+  description: 'Complete API documentation for {messmass} integrations',
 };
 
 export default function APIDocsPage() {
@@ -11,9 +11,9 @@ export default function APIDocsPage() {
     <div className={styles.container}>
       <div className={styles.content}>
         <header className={styles.header}>
-          <h1>📚 MessMass API Documentation</h1>
+          <h1>📚 {'{messmass}'} API Documentation</h1>
           <p className={styles.subtitle}>
-            Complete guide for integrating with MessMass APIs
+            Complete guide for integrating with {'{messmass}'} APIs
           </p>
         </header>
 
@@ -35,7 +35,7 @@ export default function APIDocsPage() {
           <h2>🌐 Overview</h2>
           
           <h3>Available APIs</h3>
-          <p>MessMass provides several API endpoints for different use cases:</p>
+          <p>{'{messmass}'} provides several API endpoints for different use cases:</p>
           <ul>
             <li><strong>Public API (Read):</strong> Retrieve event and partner data</li>
             <li><strong>Public API (Write):</strong> Inject external data (e.g., fan identification)</li>
@@ -68,7 +68,7 @@ export default function APIDocsPage() {
 
           <h3>Getting an API Token</h3>
           <ol>
-            <li>Contact your MessMass administrator</li>
+            <li>Contact your {'{messmass}'} administrator</li>
             <li>Admin creates an API user in <code>/admin/users</code></li>
             <li>Admin enables <code>apiKeyEnabled</code> flag</li>
             <li>The user password becomes your Bearer token</li>
@@ -165,7 +165,7 @@ export default function APIDocsPage() {
           
           <h3>Overview</h3>
           <p>
-            The Fanmass integration allows external fan identification services to inject enriched data back into MessMass events.
+            The Fanmass integration allows external fan identification services to inject enriched data back into {'{messmass}'} events.
           </p>
 
           <h3>Write Stats Data</h3>
@@ -276,7 +276,7 @@ export default function APIDocsPage() {
           
           <h3>Overview</h3>
           <p>
-            Webhooks allow you to receive real-time notifications when events are created or updated in MessMass.
+            Webhooks allow you to receive real-time notifications when events are created or updated in {'{messmass}'}.
           </p>
 
           <h3>Webhook Configuration</h3>
@@ -535,7 +535,7 @@ curl -X POST \\
 
         <footer className={styles.footer}>
           <p>
-            <strong>MessMass API Documentation</strong><br />
+            <strong>{'{messmass}'} API Documentation</strong><br />
             Last Updated: November 26, 2024
           </p>
           <p>

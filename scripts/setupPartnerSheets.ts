@@ -25,9 +25,9 @@ const PARTNER_CONFIGS = [
 const SHEET_NAME = 'Events';
 const MIN_COLUMNS = 100; // Secure at least 100 columns for future expansion
 
-// Column headers matching MessMass event structure
+// Column headers matching {messmass} event structure
 const SHEET_HEADERS = [
-  'MessMass UUID',
+  '{messmass} UUID',
   'Partner 1 (Home)',
   'Partner 2 (Away)',
   'Event Title (Custom)',
@@ -351,7 +351,7 @@ async function setupPartnerSheet(
 }
 
 async function main() {
-  console.log('🚀 MessMass Google Sheets Setup\n');
+  console.log('🚀 {messmass} Google Sheets Setup\n');
   console.log('━'.repeat(60));
 
   const clients = createClients();

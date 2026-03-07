@@ -2,7 +2,7 @@
  * Google Sheets Connect API Endpoint
  * 
  * WHAT: Connects a Google Sheet to a partner for event sync
- * WHY: Enable bidirectional sync between Google Sheets and MessMass
+ * WHY: Enable bidirectional sync between Google Sheets and {messmass}
  * 
  * POST /api/partners/[id]/google-sheet/connect
  * 

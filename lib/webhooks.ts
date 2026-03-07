@@ -1,6 +1,6 @@
 // lib/webhooks.ts
 // WHAT: Webhook management and delivery system
-// WHY: Allow external services to receive real-time notifications of MessMass events
+// WHY: Allow external services to receive real-time notifications of {messmass} events
 // HOW: Store webhook configurations, deliver payloads with retry logic, track statistics
 
 import { ObjectId } from 'mongodb';
@@ -309,7 +309,7 @@ export async function deliverWebhook(
         headers: {
           'Content-Type': 'application/json',
           'X-Webhook-Signature': signature,
-          'User-Agent': 'MessMass-Webhook/1.0'
+          'User-Agent': '{messmass}-Webhook/1.0'
         },
         body: JSON.stringify(payload),
         signal: controller.signal
@@ -412,7 +412,7 @@ export async function deliverWebhook(
 /**
  * triggerWebhooks
  * WHAT: Trigger all active webhooks for a specific event type
- * WHY: Notify external services of MessMass events
+ * WHY: Notify external services of {messmass} events
  * 
  * @param eventType - Type of event ('event.created' or 'event.updated')
  * @param eventData - Event data to include in payload

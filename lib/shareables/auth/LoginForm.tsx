@@ -46,10 +46,10 @@ export interface LoginFormProps {
 }
 
 /**
- * MessMass LoginForm Component
+ * {messmass} LoginForm Component
  * 
  * A beautiful, reusable login form with glass-morphism styling.
- * Extracted from MessMass admin login for use in other projects.
+ * Extracted from {messmass} admin login for use in other projects.
  * 
  * Features:
  * - Glass-morphism design with backdrop blur
@@ -290,7 +290,7 @@ export default function LoginForm({
         <div className={styles.footer}>
           <p className={styles.footerText}>
             Secure Authentication System<br />
-            Powered by MessMass Auth
+            Powered by {'{messmass}'} Auth
           </p>
         </div>
       </div>

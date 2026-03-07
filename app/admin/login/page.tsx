@@ -1,4 +1,4 @@
-// app/admin/login/page.tsx - Email + password login UI with existing MessMass styling
+// app/admin/login/page.tsx - Email + password login UI with existing {messmass} styling
 'use client'
 
 import { useState, useEffect } from 'react'
@@ -48,7 +48,7 @@ export default function AdminLogin() {
     if (reason === 'sso_required') {
       setError('Dashboard requires Sign in with DoneIsBetter when SSO is enabled.')
     } else if (err === 'no_account') {
-      setError('No MessMass account for this identity. Use email/password or contact an admin.')
+      setError('No {messmass} account for this identity. Use email/password or contact an admin.')
     } else if (err === 'invalid_sso') {
       setError('SSO session invalid or expired. Try again or sign in with email/password.')
     } else if (err === 'missing_token') {
@@ -90,10 +90,10 @@ export default function AdminLogin() {
         {/* Logo/Icon Section */}
         <div className="login-header">
           <div className="login-logo-container">
-            <Image src="/messmass-logo.png" alt="MessMass" className="login-logo" width={48} height={48} priority />
+            <Image src="/messmass-logo.png" alt="{messmass}" className="login-logo" width={48} height={48} priority />
           </div>
           <h1 className="title login-title">
-            MessMass Admin
+            {'{messmass}'} Admin
           </h1>
           <p className="subtitle login-subtitle">
             {ssoEnabled ? 'Sign in with DoneIsBetter or email/password' : 'Sign in with email and password to access the dashboard'}
@@ -204,14 +204,14 @@ export default function AdminLogin() {
             onClick={() => router.push('/')}
             className="btn btn-small btn-secondary"
           >
-            ← Back to MessMass
+            ← Back to {'{messmass}'}
           </button>
         </div>
 
         {/* Footer */}
         <div className="login-footer">
           <p className="login-footer-text">
-            MessMass Admin Panel<br />
+            {'{messmass}'} Admin Panel<br />
             Secure Access Required
           </p>
         </div>

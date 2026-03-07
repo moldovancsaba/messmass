@@ -1,6 +1,6 @@
 // lib/googleSheets/pushEvents.ts
-// WHAT: Push events from MessMass to Google Sheets (v12.0.0)
-// WHY: Sync database data to sheet (MessMass → Sheet direction)
+// WHAT: Push events from {messmass} to Google Sheets (v12.0.0)
+// WHY: Sync database data to sheet ({messmass} → Sheet direction)
 // HOW: Fetch events, map to rows, write/update in sheet
 
 import { Db, ObjectId } from 'mongodb';
@@ -12,7 +12,7 @@ import type { GoogleSheetConfig, PushSummary, PushDbAccess, PushOptions, PushSum
 
 /**
  * WHAT: Push all partner events to Google Sheet
- * WHY: Main entry point for partner-level sync (MessMass → Sheet)
+ * WHY: Main entry point for partner-level sync ({messmass} → Sheet)
  * HOW: Fetch events from database, map to rows, write to sheet
  * 
  * @param sheetId - Google Sheet ID

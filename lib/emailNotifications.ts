@@ -1,5 +1,5 @@
 // lib/emailNotifications.ts
-// WHAT: Email notification utility for MessMass (v12.0.0)
+// WHAT: Email notification utility for {messmass} (v12.0.0)
 // WHY: Send email alerts for Google Sheets sync events and errors
 // HOW: Uses SMTP via nodemailer with existing Gmail credentials
 
@@ -65,7 +65,7 @@ export async function sendSyncSuccessEmail(params: {
           <li>Events Updated: ${params.eventsUpdated}</li>
           <li>Total Changes: ${params.eventsCreated + params.eventsUpdated}</li>
         </ul>
-        <p><small>This is an automated message from MessMass.</small></p>
+        <p><small>This is an automated message from {messmass}.</small></p>
       `
     });
     
@@ -108,7 +108,7 @@ export async function sendSyncErrorEmail(params: {
           <li>Verify sheet ID is correct</li>
           <li>Review error message for details</li>
         </ul>
-        <p><small>This is an automated message from MessMass.</small></p>
+        <p><small>This is an automated message from {messmass}.</small></p>
       `
     });
     
@@ -169,7 +169,7 @@ export async function sendDailySyncSummaryEmail(params: {
         </ul>
         <hr>
         ${failuresList}
-        <p><small>This is an automated daily summary from MessMass.</small></p>
+        <p><small>This is an automated daily summary from {messmass}.</small></p>
       `
     });
     
@@ -233,10 +233,10 @@ export async function testEmailConfig(recipientEmail: string): Promise<boolean> 
     await transporter.sendMail({
       from: EMAIL_CONFIG.from,
       to: recipientEmail,
-      subject: '✅ MessMass Email Configuration Test',
+      subject: '✅ {messmass} Email Configuration Test',
       html: `
         <h2>Email Configuration Test</h2>
-        <p>This is a test email from MessMass to verify SMTP configuration.</p>
+        <p>This is a test email from {messmass} to verify SMTP configuration.</p>
         <p>If you received this email, your email notifications are working correctly!</p>
         <hr>
         <p><strong>Configuration:</strong></p>

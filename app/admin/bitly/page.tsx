@@ -1,6 +1,6 @@
 // app/admin/bitly/page.tsx
 // WHAT: Admin interface for managing Bitly link associations
-// WHY: Provides visual UI for connecting Bitly URLs to MessMass projects with proper design system compliance
+// WHY: Provides visual UI for connecting Bitly URLs to {messmass} projects with proper design system compliance
 // DESIGN SYSTEM: Uses AdminHero, modal pattern, and standardized table layout matching /admin/projects
 // USER WORKFLOW: AdminHero with action buttons → Table with inline actions → Modal forms
 
@@ -18,7 +18,7 @@ import styles from './page.module.css';
 import { apiPost, apiPut, apiDelete } from '@/lib/apiClient';
 
 // WHAT: Type definitions for links, projects, and partners
-// WHY: Maintains type safety for Bitly integration with MessMass events
+// WHY: Maintains type safety for Bitly integration with {messmass} events
 interface BitlyLink {
   _id: string;
   projectId: string | null;
@@ -798,7 +798,7 @@ export default function BitlyAdminPage() {
     <div className="page-container">
       <UnifiedAdminHeroWithSearch
         title="🔗 Bitly Link Management"
-        subtitle="Manage Bitly link associations, track click analytics, and connect shortened URLs to your MessMass events"
+        subtitle="Manage Bitly link associations, track click analytics, and connect shortened URLs to your {messmass} events"
         backLink="/admin"
         showSearch
         searchValue={searchTerm}
@@ -883,7 +883,7 @@ export default function BitlyAdminPage() {
               <div className="admin-empty-icon">🔗</div>
               <div className="admin-empty-title">No Bitly Links Yet</div>
               <div className="admin-empty-subtitle">
-                Click &quot;Add Link&quot; above to connect your first Bitly shortened URL to a MessMass event
+                Click &quot;Add Link&quot; above to connect your first Bitly shortened URL to a {'{messmass}'} event
               </div>
             </div>
           ) : (

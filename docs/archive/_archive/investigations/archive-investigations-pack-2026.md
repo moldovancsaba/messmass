@@ -6211,7 +6211,7 @@ Owner: Audit
 
 ## Executive Summary
 
-This document defines the design token strategy, style ownership rules, and migration boundaries for the MessMass system. It serves as the architectural foundation before remediation of 2,624 hardcoded values and 146 inline styles identified in P0 3.1 and P0 3.2 audits.
+This document defines the design token strategy, style ownership rules, and migration boundaries for the {messmass} system. It serves as the architectural foundation before remediation of 2,624 hardcoded values and 146 inline styles identified in P0 3.1 and P0 3.2 audits.
 
 **Purpose:** Establish clear rules for what becomes a token, where tokens live, who owns them, and how new tokens are introduced. This prevents style regressions and ensures long-term maintainability.
 
@@ -6296,7 +6296,7 @@ Design tokens are organized into the following categories:
 #### **Global Tokens: `app/styles/theme.css`**
 - **Location:** `app/styles/theme.css` (lines 1-450)
 - **Scope:** `:root` selector
-- **Prefix:** `--mm-*` for MessMass tokens
+- **Prefix:** `--mm-*` for {messmass} tokens
 - **Chart Prefix:** `--chart*` for chart-specific tokens
 - **Z-Index Prefix:** `--z-*` for z-index tokens
 - **Ownership:** Design System Team (Chappie/Tribeca)

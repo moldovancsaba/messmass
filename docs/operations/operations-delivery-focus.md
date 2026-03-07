@@ -1,4 +1,4 @@
-# Delivery Focus (MessMass)
+# Delivery Focus ({messmass})
 Status: Active
 Last Updated: 2026-02-24
 Canonical: No

@@ -67,7 +67,7 @@ export interface BitlyClickMetric {
  * Clicks timeseries response
  * REF: GET /v4/bitlinks/{bitlink}/clicks
  * WHAT: Time-based click data for trend analysis
- * WHY: Enables daily/weekly/monthly trend visualization in MessMass dashboards
+ * WHY: Enables daily/weekly/monthly trend visualization in {messmass} dashboards
  */
 export interface BitlyClicksTimeseries {
   link_clicks: BitlyClickMetric[]; // Array of click metrics over time
@@ -209,7 +209,7 @@ export interface BitlyRateLimitInfo {
 /**
  * UTM campaign parameters extracted from long_url
  * WHAT: Standard UTM tracking parameters for marketing attribution
- * WHY: Enables campaign performance tracking within MessMass analytics
+ * WHY: Enables campaign performance tracking within {messmass} analytics
  */
 export interface BitlyCampaign {
   utm_source?: string; // Campaign source (e.g., "facebook", "email")

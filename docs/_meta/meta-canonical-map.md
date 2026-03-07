@@ -18,7 +18,7 @@ This is the current classification of the documentation set. Use it to prune, me
 | reference | docs/2026-03-06_ADMIN_TOTALFANS_PARTNER_CARD_EDIT_HOTFIX.md | Admin Total Fans + Partner Card Edit Hotfix | Active | No | Engineering | 2026-03-06T00:00:00.000Z | Reference-only doc; keep if still used, otherwise archive. |
 | reference | docs/2026-03-06_PARTNER_REPORT_DELETE_HOTFIX.md | Partner Report and Delete Project Hotfix | Active | No | Engineering | 2026-03-06T00:00:00.000Z | Reference-only doc; keep if still used, otherwise archive. |
 | canonical | docs/DEVELOPER-CONDUCT.md | Developer Conduct & Product Owner Mandate | Active | Yes | Product | 2026-02-21 | Primary source of truth for this topic. |
-| reference | docs/HANDOVER.md | MessMass Developer Handover |  |  |  |  | Reference-only doc; keep if still used, otherwise archive. |
+| reference | docs/HANDOVER.md | {messmass} Developer Handover |  |  |  |  | Reference-only doc; keep if still used, otherwise archive. |
 | reference | docs/NEXT_AGENT_PROMPT.md | Next Agent Prompt (Handover) |  |  |  |  | Reference-only doc; keep if still used, otherwise archive. |
 | reference | docs/PROJECT_MANAGEMENT.md | Project Management & SSOT Guidelines |  |  |  |  | Reference-only doc; keep if still used, otherwise archive. |
 | generated | docs/_meta/meta-canonical-map.md | Canonical Map | Active | Yes | Documentation | 2026-03-06T09:59:35Z | Auto-generated inventory/triage artifacts. Do not edit by hand. |
@@ -32,9 +32,9 @@ This is the current classification of the documentation set. Use it to prune, me
 | canonical | docs/admin/admin-report-template-model.md | Admin Report Template Model and Selection Rules | Active | Yes | Admin (Katja) | 2026-01-16T11:09:32.000Z | Primary source of truth for this topic. |
 | canonical | docs/admin/admin-style-model-and-assignment-rules.md | Style Model and Assignment Rules | Active | Yes | Admin (Katja) | 2026-02-04T00:00:00.000Z | Primary source of truth for this topic. |
 | reference | docs/api/api-analytics.md | Analytics API (Aggregates & Compare) | Active | No | Backend | 2026-02-21 | Reference-only doc; keep if still used, otherwise archive. |
-| reference | docs/api/api-public.md | MessMass Public API Documentation | Active | No | Architecture | 2026-01-11T22:28:38.000Z | Reference-only doc; keep if still used, otherwise archive. |
+| reference | docs/api/api-public.md | {messmass} Public API Documentation | Active | No | Architecture | 2026-01-11T22:28:38.000Z | Reference-only doc; keep if still used, otherwise archive. |
 | canonical | docs/api/api-reference.md | 📡 API Reference | Active | Yes | Backend | 2026-01-11T22:45:21.000Z | Primary source of truth for this topic. |
-| reference | docs/architecture.md | MessMass Architecture Documentation | Active | No | Architecture | 2026-02-05T19:29:57.000Z | Reference-only doc; keep if still used, otherwise archive. |
+| reference | docs/architecture.md | {messmass} Architecture Documentation | Active | No | Architecture | 2026-02-05T19:29:57.000Z | Reference-only doc; keep if still used, otherwise archive. |
 | archive | docs/archive/2025/archive-documentation-refactor-pack.md | Documentation Refactor Pack (2025) | Archived | No | Architecture | 2026-01-11T22:28:38.000Z | Historical material. Not a source of truth; keep for traceability. |
 | archive | docs/archive/2025/archive-implementation-reports-pack.md | Implementation Reports Pack (2025) | Archived | No | Operations | 2026-01-11T22:28:38.000Z | Historical material. Not a source of truth; keep for traceability. |
 | archive | docs/archive/2025/archive-old-audits-pack.md | Old Audits Pack (2025) | Archived | No | Audit | 2026-01-11T22:28:38.000Z | Historical material. Not a source of truth; keep for traceability. |
@@ -78,10 +78,10 @@ This is the current classification of the documentation set. Use it to prune, me
 | canonical | docs/charts/charts-chart-alignment-summary.md | Chart Alignment & Layout Fixes (2026) | Active | Yes | Operations | 2026-02-04T03:00:00.000Z | Primary source of truth for this topic. |
 | canonical | docs/charts/charts-overview.md | Charts Overview | Active | Yes | Frontend | 2026-02-05T00:00:00.000Z | Primary source of truth for this topic. |
 | canonical | docs/charts/charts-table-chart-usage-guide.md | Table Chart Usage Guide | Active | Yes | Frontend | 2026-01-11T22:28:38.000Z | Primary source of truth for this topic. |
-| reference | docs/coding-standards.md | MessMass Coding Standards | Active | No | Architecture | 2026-01-11T22:28:38.000Z | Reference-only doc; keep if still used, otherwise archive. |
-| reference | docs/components/components-reusable-components-inventory.md | MessMass Reusable Components & Styling System Inventory | Active | No | Architecture | 2026-01-11T22:28:38.000Z | Reference-only doc; keep if still used, otherwise archive. |
+| reference | docs/coding-standards.md | {messmass} Coding Standards | Active | No | Architecture | 2026-01-11T22:28:38.000Z | Reference-only doc; keep if still used, otherwise archive. |
+| reference | docs/components/components-reusable-components-inventory.md | {messmass} Reusable Components & Styling System Inventory | Active | No | Architecture | 2026-01-11T22:28:38.000Z | Reference-only doc; keep if still used, otherwise archive. |
 | reference | docs/components/components-unified-input-system.md | Unified Input System | Active | No | Architecture | 2026-01-11T22:28:38.000Z | Reference-only doc; keep if still used, otherwise archive. |
-| reference | docs/conventions/conventions-naming-conventions.md | MessMass Naming Conventions | Active | No | Architecture | 2026-01-11T22:28:38.000Z | Reference-only doc; keep if still used, otherwise archive. |
+| reference | docs/conventions/conventions-naming-conventions.md | {messmass} Naming Conventions | Active | No | Architecture | 2026-01-11T22:28:38.000Z | Reference-only doc; keep if still used, otherwise archive. |
 | reference | docs/conventions/conventions-variable-dictionary.md | Variable Dictionary | Active | No | Architecture | 2026-01-11T22:28:38.000Z | Reference-only doc; keep if still used, otherwise archive. |
 | canonical | docs/debug-admin-access.md | Debugging Admin Access Issues | Active | Yes | Admin | 2026-02-05T00:00:00.000Z | Primary source of truth for this topic. |
 | canonical | docs/design/design-chart-height-system.md | Chart Block Height System | Active | Yes | Architecture | 2026-01-11T22:28:38.000Z | Primary source of truth for this topic. |
@@ -91,12 +91,12 @@ This is the current classification of the documentation set. Use it to prune, me
 | canonical | docs/design/design-layout-system.md | Report Layout System (Spec v2.0) | Active | Yes | Architecture | 2026-01-16T11:30:00.000Z | Primary source of truth for this topic. |
 | canonical | docs/design/design-overview.md | Design Overview | Active | Yes | Design / Architecture | 2026-02-05T00:00:00.000Z | Primary source of truth for this topic. |
 | canonical | docs/design/design-report-layout-v2-contract.md | Report Layout V2 Renderer Contract | Active | Yes | Architecture | 2026-01-16T16:45:00.000Z | Primary source of truth for this topic. |
-| canonical | docs/design/design-system.md | MessMass Design System | Active | Yes | Architecture | 2026-01-11T22:45:21.000Z | Primary source of truth for this topic. |
+| canonical | docs/design/design-system.md | {messmass} Design System | Active | Yes | Architecture | 2026-01-11T22:45:21.000Z | Primary source of truth for this topic. |
 | canonical | docs/documentation-governance.md | Documentation Governance | Active | Yes | Documentation | 2026-02-21T00:00:00.000Z | Primary source of truth for this topic. |
-| canonical | docs/features/features-authentication.md | MessMass Authentication & Access Control System | Active | Yes | Security | 2026-01-11T22:28:38.000Z | Primary source of truth for this topic. |
+| canonical | docs/features/features-authentication.md | {messmass} Authentication & Access Control System | Active | Yes | Security | 2026-01-11T22:28:38.000Z | Primary source of truth for this topic. |
 | canonical | docs/features/features-bitly-integration-guide.md | 🔗 Bitly Integration Technical Guide | Active | Yes | Product | 2026-01-11T22:45:21.000Z | Primary source of truth for this topic. |
 | canonical | docs/features/features-google-sheets-integration.md | Google Sheets Integration - Feature Guide (v12.0.0) | Active | Yes | Product | 2026-02-08T00:00:00.000Z | Primary source of truth for this topic. |
-| canonical | docs/features/features-hashtag-system.md | MessMass Unified Hashtag System Documentation | Active | Yes | Product | 2026-01-11T22:28:38.000Z | Primary source of truth for this topic. |
+| canonical | docs/features/features-hashtag-system.md | {messmass} Unified Hashtag System Documentation | Active | Yes | Product | 2026-01-11T22:28:38.000Z | Primary source of truth for this topic. |
 | canonical | docs/features/features-landing-main-page.md | Landing / Main Page (messmass.com) | Active | Yes | Product | 2026-02-21 | Primary source of truth for this topic. |
 | canonical | docs/features/features-multi-user-notifications.md | Multi-User Notifications | Active | Yes | Product | 2026-01-11T23:51:17.000Z | Primary source of truth for this topic. |
 | canonical | docs/features/features-overview.md | Features Overview | Active | Yes | Product | 2026-02-24 | Primary source of truth for this topic. |
@@ -114,11 +114,11 @@ This is the current classification of the documentation set. Use it to prune, me
 | canonical | docs/operations/layout-grammar-editor-blocked-configs.md | Layout Grammar – blocked configurations and editor messages (OPS-LAYOUT-01) | Active | Yes | Reporting / Editor | 2026-02-06 | Primary source of truth for this topic. |
 | canonical | docs/operations/operations-action-plan.md | Operations Action Plan | Active | Yes | Operations | 2026-03-06 | Primary source of truth for this topic. |
 | reference | docs/operations/operations-agent-names.md | AGENT_NAMES | Active | No | Operations | 2026-01-11T22:28:38.000Z | Reference-only doc; keep if still used, otherwise archive. |
-| reference | docs/operations/operations-delivery-focus.md | Delivery Focus (MessMass) | Active | No | Product | 2026-02-24 | Reference-only doc; keep if still used, otherwise archive. |
+| reference | docs/operations/operations-delivery-focus.md | Delivery Focus ({messmass}) | Active | No | Product | 2026-02-24 | Reference-only doc; keep if still used, otherwise archive. |
 | reference | docs/operations/operations-deployment-checklist.md | Chart Alignment Fixes - Deployment Checklist | Active | No | Operations | 2026-01-11T22:28:38.000Z | Reference-only doc; keep if still used, otherwise archive. |
 | canonical | docs/operations/operations-implementation-complete.md | Implementation Complete | Active | Yes | Operations | 2026-02-06T13:13:16.000Z | Primary source of truth for this topic. |
-| reference | docs/operations/operations-learnings.md | MessMass Development Learnings | Active | No | Architecture | 2026-02-05T21:01:23.000Z | Reference-only doc; keep if still used, otherwise archive. |
-| reference | docs/operations/operations-release-notes.md | MessMass Release Notes | Active | No | Operations | 2026-03-06T00:00:00.000Z | Reference-only doc; keep if still used, otherwise archive. |
+| reference | docs/operations/operations-learnings.md | {messmass} Development Learnings | Active | No | Architecture | 2026-02-05T21:01:23.000Z | Reference-only doc; keep if still used, otherwise archive. |
+| reference | docs/operations/operations-release-notes.md | {messmass} Release Notes | Active | No | Operations | 2026-03-06T00:00:00.000Z | Reference-only doc; keep if still used, otherwise archive. |
 | canonical | docs/operations/operations-release-steps.md | Release Steps (Every Deliverable Change) | Active | Yes | Product | 2026-02-21T00:00:00.000Z | Primary source of truth for this topic. |
 | canonical | docs/operations/operations-roadmap.md | Operations Roadmap | Active | Yes | Product + Engineering | 2026-02-08 | Primary source of truth for this topic. |
 | reference | docs/operations/ops-analytics-01-design.md | OPS-ANALYTICS-01: Advanced Analytics & Insights — Design & Phase 1 Plan | Active | No | Product / Engineering | 2026-02-21 | Reference-only doc; keep if still used, otherwise archive. |

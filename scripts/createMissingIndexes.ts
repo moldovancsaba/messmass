@@ -517,7 +517,7 @@ async function generateReport(results: IndexResult[], totalDuration: number, dry
 
 ## Index Strategy
 
-This report documents all performance-critical indexes across the MessMass database.
+This report documents all performance-critical indexes across the {messmass} database.
 
 ### Design Principles
 

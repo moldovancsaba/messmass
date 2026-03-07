@@ -663,7 +663,7 @@ function CreateAssetModal({
               className="form-input"
               value={form.title}
               onChange={(e) => setForm({ ...form, title: e.target.value })}
-              placeholder={form.isVariable ? "Event Photo 1" : "MessMass Logo"}
+              placeholder={form.isVariable ? "Event Photo 1" : "{messmass} Logo"}
             />
           </div>
           

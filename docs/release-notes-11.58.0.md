@@ -7,7 +7,7 @@
 
 ## Summary
 
-The MessMass style editor (Admin → Styles → [style]) now controls **all** landing page visuals: colors (hero, footer, page background) and dimensions (section/hero padding, card sizes, border radius, shadow, landing block typography). When a style is applied to the landing report (via static snapshot or live), the main page and report blocks use these values with theme fallbacks.
+The {messmass} style editor (Admin → Styles → [style]) now controls **all** landing page visuals: colors (hero, footer, page background) and dimensions (section/hero padding, card sizes, border radius, shadow, landing block typography). When a style is applied to the landing report (via static snapshot or live), the main page and report blocks use these values with theme fallbacks.
 
 ---
 

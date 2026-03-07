@@ -10,7 +10,7 @@ Owner: Architecture
 
 ## 📋 Overview
 
-MessMass uses a **unified input system** where ALL input fields across the application share the same blur-based auto-save behavior. This ensures a consistent, smooth user experience without aggressive keystroke-by-keystroke saving.
+{messmass} uses a **unified input system** where ALL input fields across the application share the same blur-based auto-save behavior. This ensures a consistent, smooth user experience without aggressive keystroke-by-keystroke saving.
 
 ## 🎯 Core Principle
 

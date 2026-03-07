@@ -1,4 +1,4 @@
-# MessMass Public API Documentation
+# {messmass} Public API Documentation
 Status: Active
 Last Updated: 2026-01-11T22:28:38.000Z
 Canonical: No
@@ -25,7 +25,7 @@ Owner: Architecture
 
 ## Overview
 
-The MessMass Public API provides read-only access to partner and event data for authorized third-party integrations. All endpoints use Bearer token authentication and return JSON responses with ISO 8601 timestamps.
+The {messmass} Public API provides read-only access to partner and event data for authorized third-party integrations. All endpoints use Bearer token authentication and return JSON responses with ISO 8601 timestamps.
 
 ### Key Features
 
@@ -42,9 +42,9 @@ The MessMass Public API provides read-only access to partner and event data for 
 
 ### Obtaining an API Key
 
-API keys are managed by MessMass administrators. To get access:
+API keys are managed by {messmass} administrators. To get access:
 
-1. **Request an API user account** from your MessMass administrator
+1. **Request an API user account** from your {messmass} administrator
 2. **Receive your API key** (32-character hexadecimal token)
 3. **Store securely** - Never commit API keys to version control
 
@@ -543,7 +543,7 @@ curl -H "Authorization: Bearer $API_KEY" \
 
 ### Step 1: Get API Access
 
-Contact your MessMass administrator to:
+Contact your {messmass} administrator to:
 1. Create an API user account
 2. Enable API access for your user
 3. Receive your 32-character API key
@@ -606,7 +606,7 @@ Check your admin dashboard for:
 
 ## Support
 
-**Questions?** Contact your MessMass administrator or technical support.
+**Questions?** Contact your {messmass} administrator or technical support.
 
 **Found a bug?** Report issues via your support channel.
 

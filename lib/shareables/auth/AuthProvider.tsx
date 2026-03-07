@@ -45,7 +45,7 @@ export interface AuthProviderProps {
 }
 
 /**
- * MessMass AuthProvider Component
+ * {messmass} AuthProvider Component
  * 
  * Provides authentication context to child components.
  * Handles session management, state persistence, and automatic session monitoring.

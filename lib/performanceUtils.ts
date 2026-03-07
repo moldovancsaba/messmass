@@ -1,5 +1,5 @@
 /**
- * Performance Utilities for MessMass
+ * Performance Utilities for {messmass}
  * 
  * WHAT: React optimization utilities for component memoization and rendering performance
  * WHY: Reduce unnecessary re-renders and improve application responsiveness

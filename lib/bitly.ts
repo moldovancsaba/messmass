@@ -1,6 +1,6 @@
 // lib/bitly.ts
 // WHAT: Bitly API v4 client with rate limiting, retry logic, and Growth tier optimizations
-// WHY: Provides resilient integration with Bitly for importing link analytics into MessMass
+// WHY: Provides resilient integration with Bitly for importing link analytics into {messmass}
 // REF: https://dev.bitly.com/api-reference/
 
 import config from './config';
@@ -220,7 +220,7 @@ export function normalizeBitlink(input: string): string {
 
 /**
  * WHAT: Extract UTM campaign parameters from a URL
- * WHY: Enables campaign attribution and performance tracking in MessMass analytics
+ * WHY: Enables campaign attribution and performance tracking in {messmass} analytics
  */
 export function extractCampaign(url: string): BitlyCampaign {
   try {
@@ -277,7 +277,7 @@ export async function getUserBitlinks(
 
 /**
  * WHAT: Fetch all bitlinks for a group/organization
- * WHY: Enables bulk discovery and association of links with MessMass projects
+ * WHY: Enables bulk discovery and association of links with {messmass} projects
  * REF: GET /v4/groups/{group_guid}/bitlinks
  * 
  * NOTE: Preferred method when /user/bitlinks returns 404. Requires BITLY_GROUP_GUID.
@@ -336,7 +336,7 @@ export async function getClicksSummary(
 
 /**
  * WHAT: Fetch click timeseries data for trend visualization
- * WHY: Enables daily/weekly/monthly click charts in MessMass dashboards
+ * WHY: Enables daily/weekly/monthly click charts in {messmass} dashboards
  * REF: GET /v4/bitlinks/{bitlink}/clicks
  */
 export async function getClicksSeries(

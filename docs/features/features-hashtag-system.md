@@ -1,4 +1,4 @@
-# MessMass Unified Hashtag System Documentation
+# {messmass} Unified Hashtag System Documentation
 Status: Active
 Last Updated: 2026-01-11T22:28:38.000Z
 Canonical: Yes
@@ -69,7 +69,7 @@ import ColoredHashtagBubble from '@/components/ColoredHashtagBubble';
 
 ## 🎯 Overview
 
-The MessMass project now features a **completely unified hashtag system** that provides consistent functionality, appearance, and behavior across the entire application. Every hashtag interaction uses the same components, API patterns, and design language.
+The {messmass} project now features a **completely unified hashtag system** that provides consistent functionality, appearance, and behavior across the entire application. Every hashtag interaction uses the same components, API patterns, and design language.
 
 ## 🏗️ System Architecture
 
@@ -185,7 +185,7 @@ const {
 ### Color System
 - **Category Colors**: Pulled from hashtag categories API
 - **Individual Hashtag Colors**: Custom colors from hashtag-colors API
-- **Default Color**: `#667eea` (MessMass brand color)
+- **Default Color**: `#667eea` ({messmass} brand color)
 - **Remove Buttons**: `#ef4444` with `#dc2626` hover state
 
 ### Interactive States
@@ -319,7 +319,7 @@ The unified system makes it easy to add new features:
 
 ## 🏆 Summary
 
-The MessMass hashtag system is now **completely unified** with:
+The {messmass} hashtag system is now **completely unified** with:
 
 - **Same beautiful design everywhere** 🎨
 - **Consistent remove (×) buttons** ❌  

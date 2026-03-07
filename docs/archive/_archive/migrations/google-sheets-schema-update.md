@@ -8,7 +8,7 @@ Owner: Operations
 This migration note is archived. Current rollout and validation work is tracked in `docs/operations/operations-action-plan.md` (`OPS-INT-01`) and executed via `docs/operations/ops-google-sheets-deployment-checklist.md` (canonical E2E checklist).
 
 **WHAT**: Schema changes required for Google Sheets sync feature  
-**WHY**: Enable bidirectional sync between Google Sheets and MessMass projects  
+**WHY**: Enable bidirectional sync between Google Sheets and {messmass} projects  
 **WHEN**: Phase 1 implementation (v12.0.0)
 
 ## Overview

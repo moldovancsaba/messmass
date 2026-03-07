@@ -12,7 +12,7 @@ export type IndexBasedColumnMap = Record<number, SheetColumnDefinition>;
 /**
  * WHAT: Standard field definitions with header name variations
  * WHY: Allow multiple header names to map to same field (case-insensitive matching)
- * HOW: Exact list of all supported fields in MessMass
+ * HOW: Exact list of all supported fields in {messmass}
  * EXPORTED: Used by columnMap.ts and other modules
  */
 export const FIELD_DEFINITIONS: Record<string, SheetColumnDefinition> = {
@@ -207,7 +207,7 @@ function headerToFieldName(header: string): string {
   // Handle formatted text headers (if any exist)
   // "Remote Images" → "remoteImages"
   // "Partner 1 (Home)" → "partner1Name"
-  if (header === 'MessMass UUID') return 'googleSheetUuid';
+  if (header === '{messmass} UUID') return 'googleSheetUuid';
   if (header === 'Partner 1 (Home)') return 'partner1Name';
   if (header === 'Partner 2 (Away)') return 'partner2Name';
   if (header === 'Event Title (Custom)') return 'eventTitle';

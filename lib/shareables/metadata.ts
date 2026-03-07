@@ -1,5 +1,5 @@
 // lib/shareables/metadata.ts
-// Component registry and metadata system for MessMass Shareables
+// Component registry and metadata system for {messmass} Shareables
 
 export interface ComponentMetadata {
   id: string                    // Unique component identifier
@@ -75,7 +75,7 @@ export type FileType =
 export const COMPONENT_REGISTRY: ComponentMetadata[] = [
   {
     id: 'messmass-auth-system',
-    name: 'MessMass Authentication System',
+    name: '{messmass} Authentication System',
     description: 'Complete password-based authentication system with glass-morphism login form, secure session management, and TypeScript support.',
     category: 'Authentication',
     version: '1.0.0',

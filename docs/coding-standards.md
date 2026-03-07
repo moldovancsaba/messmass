@@ -1,4 +1,4 @@
-# MessMass Coding Standards
+# {messmass} Coding Standards
 Status: Active
 Last Updated: 2026-01-11T22:28:38.000Z
 Canonical: No
@@ -13,7 +13,7 @@ Owner: Architecture
 
 ### Critical Principle: Single Source of Truth
 
-**ALL reusable components, utilities, and styling systems in MessMass are centrally managed.**
+**ALL reusable components, utilities, and styling systems in {messmass} are centrally managed.**
 
 **What This Means:**
 - We maintain ONE canonical implementation of each component/utility
@@ -818,4 +818,4 @@ grep -r "var(--mm-" --include="*.css" components/
 
 ---
 
-*This document is part of the MessMass technical standards and must be followed by all contributors, including AI development tools. Version 11.5.0 - Last Updated: 2025-11-12T16:34:00.000Z*
+*This document is part of the {messmass} technical standards and must be followed by all contributors, including AI development tools. Version 11.5.0 - Last Updated: 2025-11-12T16:34:00.000Z*

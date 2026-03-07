@@ -1,4 +1,4 @@
-# MessMass Development Learnings
+# {messmass} Development Learnings
 Status: Active
 Last Updated: 2026-02-05T21:01:23.000Z
 Canonical: No
@@ -4229,7 +4229,7 @@ User reported on production (https://www.messmass.com):
 
 **What**: Implemented a full-stack custom theming system allowing administrators to create, manage, and apply visual themes dynamically to project pages. System includes visual editor with live preview, background customization (solid/gradient), typography control, color schemes, global default management, and project assignment infrastructure.
 
-**Why**: MessMass needed customizable theming to support:
+**Why**: {messmass} needed customizable theming to support:
 - White-label deployments with different visual identities per client
 - Partner/client brand guideline compliance without code changes
 - Dark mode and alternative color schemes for different event types
@@ -6480,7 +6480,7 @@ interface Project {
 
 ### 15. Reusable Patterns Identified
 
-These patterns can be applied to future MessMass features:
+These patterns can be applied to future {messmass} features:
 
 1. **Dual Storage Pattern**: For any feature that extends existing data models
 2. **Utility-First Logic**: For complex business rules that span multiple components

@@ -1,6 +1,6 @@
 // lib/googleSheets/pullEvents.ts
-// WHAT: Pull events from Google Sheets to MessMass (v12.0.0)
-// WHY: Sync sheet data to database (Sheet → MessMass direction)
+// WHAT: Pull events from Google Sheets to {messmass} (v12.0.0)
+// WHY: Sync sheet data to database (Sheet → {messmass} direction)
 // HOW: Read rows, map to events, create/update in database
 
 import { Db, ObjectId } from 'mongodb';
@@ -13,8 +13,8 @@ import type { IndexBasedColumnMap } from './dynamicMapping';
 import type { GoogleSheetConfig, PullSummary, SyncDbAccess, PullOptions } from './types';
 
 /**
- * WHAT: Pull all events from Google Sheet to MessMass
- * WHY: Main entry point for partner-level sync (Sheet → MessMass)
+ * WHAT: Pull all events from Google Sheet to {messmass}
+ * WHY: Main entry point for partner-level sync (Sheet → {messmass})
  * HOW: Read sheet, map rows to events, create/update in database
  * 
  * @param sheetId - Google Sheet ID

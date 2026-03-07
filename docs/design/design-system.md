@@ -1,4 +1,4 @@
-# MessMass Design System
+# {messmass} Design System
 Status: Active
 Last Updated: 2026-01-11T22:45:21.000Z
 Canonical: Yes
@@ -228,7 +228,7 @@ grep -r "var(--mm-" --include="*.css" components/ | wc -l
 
 ## 📋 Overview
 
-MessMass uses a **modern, flat design system** inspired by TailAdmin V2. This is the **single source of truth** for all design tokens, utility classes, component patterns, and migration guidelines.
+{messmass} uses a **modern, flat design system** inspired by TailAdmin V2. This is the **single source of truth** for all design tokens, utility classes, component patterns, and migration guidelines.
 
 ### Design Philosophy
 

@@ -25,7 +25,7 @@ export default function AdminDashboard({ user, permissions }: AdminDashboardProp
       <ColoredCard>
         <div className={styles.heroSection}>
           <h1 className={`title ${styles.heroTitle}`}>
-            MessMass Admin
+            {'{messmass}'} Admin
           </h1>
           <p className={`subtitle ${styles.heroSubtitle}`}>
             Welcome back, {user.name}! Manage your projects and system settings.

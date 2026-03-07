@@ -1,5 +1,5 @@
 // lib/shareables/auth/types.ts
-// TypeScript interfaces and types for MessMass Authentication System
+// TypeScript interfaces and types for {messmass} Authentication System
 
 /**
  * Authentication User Interface

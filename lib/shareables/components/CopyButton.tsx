@@ -33,7 +33,7 @@ export interface CopyButtonProps {
 }
 
 /**
- * MessMass CopyButton Component
+ * {messmass} CopyButton Component
  * 
  * A beautiful, accessible copy button with visual feedback.
  * Integrates clipboard API with fallback support and error handling.

@@ -50,7 +50,7 @@ Owner: Architecture
 
 **⚠️ FINAL AUTHORITY - NO EXCEPTIONS**
 
-**The MessMass Structural Fit & Typography Enforcement Policy (Section 0) is the absolute, final authority for all layout decisions. It supersedes all other rules, guidelines, and patterns in this document. No scrolling, truncation, or overflow is permitted. Content must fit through structural change or height increase only.**
+**The {messmass} Structural Fit & Typography Enforcement Policy (Section 0) is the absolute, final authority for all layout decisions. It supersedes all other rules, guidelines, and patterns in this document. No scrolling, truncation, or overflow is permitted. Content must fit through structural change or height increase only.**
 
 ---
 
@@ -1133,19 +1133,19 @@ Owner: Architecture
 
 ## ⚠️ FINAL AUTHORITY - NO EXCEPTIONS
 
-**The MessMass Structural Fit & Typography Enforcement Policy (Section 0) is the absolute, final authority for all layout decisions. It supersedes all other rules, guidelines, and patterns in this document. No scrolling, truncation, or overflow is permitted. Content must fit through structural change or height increase only.**
+**The {messmass} Structural Fit & Typography Enforcement Policy (Section 0) is the absolute, final authority for all layout decisions. It supersedes all other rules, guidelines, and patterns in this document. No scrolling, truncation, or overflow is permitted. Content must fit through structural change or height increase only.**
 
 ---
 
 ## Executive Summary
 
-This document outlines a comprehensive design system for the MessMass report rendering system. Based on recent development experiences with text charts, font scaling, alignment, and markdown rendering, this plan establishes unified rules and patterns to ensure consistent, maintainable, and visually pleasing report layouts.
+This document outlines a comprehensive design system for the {messmass} report rendering system. Based on recent development experiences with text charts, font scaling, alignment, and markdown rendering, this plan establishes unified rules and patterns to ensure consistent, maintainable, and visually pleasing report layouts.
 
 **CRITICAL:** All implementations must comply with the Structural Fit & Typography Enforcement Policy (Section 0). This is not optional.
 
 ## Table of Contents
 
-0. **[MessMass Structural Fit & Typography Enforcement Policy](#0-messmass-structural-fit--typography-enforcement-policy)** ⚠️ **FINAL AUTHORITY**
+0. **[{messmass} Structural Fit & Typography Enforcement Policy](#0-messmass-structural-fit--typography-enforcement-policy)** ⚠️ **FINAL AUTHORITY**
 1. [Core Principles](#core-principles)
 2. [Recent Experiences & Lessons Learned](#recent-experiences--lessons-learned)
 3. [Chart Layout System](#chart-layout-system)
@@ -1157,7 +1157,7 @@ This document outlines a comprehensive design system for the MessMass report ren
 
 ---
 
-## 0. MessMass Structural Fit & Typography Enforcement Policy
+## 0. {messmass} Structural Fit & Typography Enforcement Policy
 
 **⚠️ FINAL AUTHORITY – NO EXCEPTIONS**
 
@@ -2028,7 +2028,7 @@ Owner: Operations
 
 ## Executive Summary
 
-This document provides a detailed, actionable plan to refactor/rebuild the MessMass report layout system into a proper "layout grammar" that enforces the Structural Fit & Typography Policy. The plan is broken down into phases, tasks, dependencies, and acceptance criteria.
+This document provides a detailed, actionable plan to refactor/rebuild the {messmass} report layout system into a proper "layout grammar" that enforces the Structural Fit & Typography Policy. The plan is broken down into phases, tasks, dependencies, and acceptance criteria.
 
 **Goal:** Transform the current ad-hoc layout system into a deterministic, predictable layout grammar where:
 - No scrolling or truncation is allowed
@@ -3502,7 +3502,7 @@ A change is “done” only when it is:
 **Status:** ✅ Complete
 
 ### GOV-1: Create Global Definition of Done + DoD Profiles
-- **Goal:** Create a system-wide Global DoD and domain-specific DoD Profiles so rules apply correctly across MessMass (reporting vs admin vs backend vs ingestion vs ops).
+- **Goal:** Create a system-wide Global DoD and domain-specific DoD Profiles so rules apply correctly across {messmass} (reporting vs admin vs backend vs ingestion vs ops).
 - **Deliverables:**
   - `docs/DEFINITION_OF_DONE.md` (new)
   - DoD Profiles included:
@@ -4199,7 +4199,7 @@ Current focus:
 - **Signature:** — Cursora
 
 **2025-12-31T14:57:12+01:00 - Audit Intake: Governed External Audit Processing**
-- **Changed:** Created `docs/audits/AUDIT_INTAKE.md` to govern how external audit findings are processed and integrated into MessMass work. Audit report (`COMPREHENSIVE_TECH_AUDIT_REPORT.md`, commit `2be98cd`) is archived as reference-only. Intake document includes triage table (ACCEPTED/REJECTED/DEFERRED) with governance rules: audit does not override Global DoD, DoD Profiles, Layout Grammar policy, Dependency Guardrail, or Continuous Audit Policy. ACCEPTED items limited to Top 5 highest leverage items, each must map to guardrail/test/doc change or tracked task. DoD Profile: Infrastructure & Operations (CRITICAL). Status: Proposed (awaiting review and triage).
+- **Changed:** Created `docs/audits/AUDIT_INTAKE.md` to govern how external audit findings are processed and integrated into {messmass} work. Audit report (`COMPREHENSIVE_TECH_AUDIT_REPORT.md`, commit `2be98cd`) is archived as reference-only. Intake document includes triage table (ACCEPTED/REJECTED/DEFERRED) with governance rules: audit does not override Global DoD, DoD Profiles, Layout Grammar policy, Dependency Guardrail, or Continuous Audit Policy. ACCEPTED items limited to Top 5 highest leverage items, each must map to guardrail/test/doc change or tracked task. DoD Profile: Infrastructure & Operations (CRITICAL). Status: Proposed (awaiting review and triage).
 - **PR:** [To be created] - Audit archive + intake (governed; non-blocking)
 - **Files:** `docs/archive/_archive/audits/archive-audits-misc-pack.md#comprehensive-tech-audit-report` (reference only), `docs/audits/AUDIT_INTAKE.md` (governance)
 - **Impact:** External audits are now governed and cannot override existing policies. Only explicitly ACCEPTED items become work.
@@ -4482,7 +4482,7 @@ Current focus:
 ### Notes from Chappie
 ```markdown
 **2025-12-29T22:00:19+01:00 - System Map Kickoff Notes (Big Picture Context)**
-- **MessMass positioning:** “little–big–data” sensemaking platform (heterogeneous sources: manual + API now; additional sources later).
+- **{messmass} positioning:** “little–big–data” sensemaking platform (heterogeneous sources: manual + API now; additional sources later).
 - **Why we’re narrow right now:** reporting/layout grammar is the *truth surface*; correctness here prevents downstream distrust and future migration tax.
 - **Roadmap width principle:** keep **vision wide** (ingestion → validation → semantics → reporting → sharing/governance) while keeping **execution narrow** (layout grammar + editor enforcement) until integration is stable.
 - **Cutover readiness (non-date-based):** production adoption of “2.0 behaviour” must be gated by deterministic height resolution + fit validation integrated + unified typography + migration/validation suite + safe rollback.
