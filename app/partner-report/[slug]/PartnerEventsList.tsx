@@ -24,8 +24,12 @@ interface Event {
     selfies?: number;
     female?: number;
     male?: number;
+    indoor?: number;
+    outdoor?: number;
     remoteFans?: number;
     stadium?: number;
+    totalFans?: number;
+    allImages?: number;
   };
 }
 
@@ -87,13 +91,8 @@ export default function PartnerEventsList({ events, partnerName, showEventsList 
  * Single event card
  */
 function EventCard({ event, showDetails = true }: { event: Event; showDetails?: boolean }) {
-  // Calculate totals
-  const totalImages = (event.stats?.remoteImages || 0) + 
-                     (event.stats?.hostessImages || 0) + 
-                     (event.stats?.selfies || 0);
-  
-  const totalFans = (event.stats?.remoteFans || 0) + 
-                   (event.stats?.stadium || 0);
+  const totalImages = getTotalImages(event.stats);
+  const totalFans = getTotalFans(event.stats);
   
   // Format date
   const formattedDate = formatDate(event.eventDate);
@@ -156,4 +155,45 @@ function formatDate(isoDate: string): string {
   } catch (error) {
     return isoDate;
   }
+}
+
+function getTotalImages(stats?: Event['stats']): number {
+  if (!stats) {
+    return 0;
+  }
+
+  return Number(stats.remoteImages || 0) +
+    Number(stats.hostessImages || 0) +
+    Number(stats.selfies || 0);
+}
+
+function getTotalFans(stats?: Event['stats']): number {
+  if (!stats) {
+    return 0;
+  }
+
+  const totalFans = toFiniteNumber(stats.totalFans);
+  if (totalFans !== null) {
+    return totalFans;
+  }
+
+  const remoteFans = toFiniteNumber(stats.remoteFans);
+  const derivedRemoteFans = remoteFans !== null
+    ? remoteFans
+    : Number(stats.indoor || 0) + Number(stats.outdoor || 0);
+
+  return derivedRemoteFans + Number(stats.stadium || 0);
+}
+
+function toFiniteNumber(value: unknown): number | null {
+  if (typeof value === 'number' && Number.isFinite(value)) {
+    return value;
+  }
+
+  if (typeof value === 'string' && value.trim() !== '') {
+    const parsed = Number(value);
+    return Number.isFinite(parsed) ? parsed : null;
+  }
+
+  return null;
 }

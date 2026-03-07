@@ -43,7 +43,7 @@ interface BlockChart {
 
 type LayoutUnit = 1 | 2;
 type LayoutAspectRatio = '1:1' | '2:1' | '16:9' | '9:16';
-type LayoutItemType = 'kpi' | 'pie' | 'bar' | 'text' | 'table' | 'image';
+type LayoutItemType = 'kpi' | 'pie' | 'bar' | 'text' | 'table' | 'image' | 'valuechain';
 
 const LAYOUT_V2_ALLOWED_ASPECT_RATIOS: Record<LayoutItemType, LayoutAspectRatio[]> = {
   kpi: ['1:1'],
@@ -51,7 +51,8 @@ const LAYOUT_V2_ALLOWED_ASPECT_RATIOS: Record<LayoutItemType, LayoutAspectRatio[
   bar: ['1:1', '2:1'],
   text: ['1:1', '2:1'],
   table: ['1:1', '2:1'],
-  image: ['1:1', '16:9', '9:16']
+  image: ['1:1', '16:9', '9:16'],
+  valuechain: ['1:1']
 };
 
 const LAYOUT_V2_ALLOWED_UNIT_SIZES: Record<LayoutItemType, LayoutUnit[]> = {
@@ -60,7 +61,8 @@ const LAYOUT_V2_ALLOWED_UNIT_SIZES: Record<LayoutItemType, LayoutUnit[]> = {
   bar: [1, 2],
   text: [1, 2],
   table: [1, 2],
-  image: [1, 2]
+  image: [1, 2],
+  valuechain: [1]
 };
 
 const DEFAULT_ASPECT_RATIO: Record<LayoutItemType, LayoutAspectRatio> = {
@@ -69,7 +71,8 @@ const DEFAULT_ASPECT_RATIO: Record<LayoutItemType, LayoutAspectRatio> = {
   bar: '1:1',
   text: '1:1',
   table: '1:1',
-  image: '1:1'
+  image: '1:1',
+  valuechain: '1:1'
 };
 
 const ASPECT_RATIO_UNIT_MAP: Record<LayoutAspectRatio, LayoutUnit> = {
@@ -204,7 +207,7 @@ export default function VisualizationPage() {
     const map = new Map<string, LayoutItemType>();
     availableCharts.forEach(chart => {
       const chartType = chart.type;
-      if (chartType === 'kpi' || chartType === 'pie' || chartType === 'bar' || chartType === 'text' || chartType === 'table' || chartType === 'image') {
+      if (chartType === 'kpi' || chartType === 'pie' || chartType === 'bar' || chartType === 'text' || chartType === 'table' || chartType === 'image' || chartType === 'valuechain') {
         map.set(chart.chartId, chartType);
       }
     });
@@ -213,7 +216,7 @@ export default function VisualizationPage() {
 
   const resolveChartType = useCallback((chartId: string): LayoutItemType => {
     const chartType = availableChartTypeMap.get(chartId) || chartConfigMap.get(chartId)?.type;
-    if (chartType === 'kpi' || chartType === 'pie' || chartType === 'bar' || chartType === 'text' || chartType === 'table' || chartType === 'image') {
+    if (chartType === 'kpi' || chartType === 'pie' || chartType === 'bar' || chartType === 'text' || chartType === 'table' || chartType === 'image' || chartType === 'valuechain') {
       return chartType;
     }
     return 'kpi';

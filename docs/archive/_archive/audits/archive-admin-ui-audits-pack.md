@@ -1881,7 +1881,7 @@ Owner: Audit
 
 8 Downstream Consumers
 - [x] Admin analytics dashboards consume insights directly (/admin/insights, /admin/analytics/insights, /admin/analytics/executive). Evidence: [app/admin/insights/page.tsx](app/admin/insights/page.tsx), [app/admin/analytics/insights/page.tsx](app/admin/analytics/insights/page.tsx), [app/admin/analytics/executive/page.tsx](app/admin/analytics/executive/page.tsx).
-- [x] Reporting consumption not observed in report UI code; insights appear Admin-only at present. Evidence: [app/report/[slug]/page.module.OLD.css](app/report/[slug]/page.module.OLD.css).
+- [x] Reporting consumption not observed in report UI code; insights appear Admin-only at present. Evidence: [app/report/[slug]/page.tsx](app/report/[slug]/page.tsx).
 
 9 Risks and Gaps
 - [x] `/api/analytics/insights/all` endpoint is referenced but not present; /admin/analytics/insights expects `data.insights` payload. Evidence: [app/admin/analytics/insights/page.tsx](app/admin/analytics/insights/page.tsx).
@@ -2169,4 +2169,3 @@ Owner: Audit
 - [x] Document intended access for each capability in the matrix before refactor changes.
 - [x] Resolve role mismatch (api role) in the role model before enforcing permissions more broadly.
 ```
-

@@ -5,12 +5,6 @@
  * WHY: Consistent layout and design for insights management
  */
 
-.container {
-  padding: var(--mm-space-6);
-  max-width: 1400px;
-  margin: 0 auto;
-}
-
 /* WHAT: Filters header */
 /* WHY: Clear title and description for filters section */
 .filtersHeader {

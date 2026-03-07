@@ -123,18 +123,12 @@ function PieChartPreview() {
           <div className={styles.pieLegend}>
             {sampleData.map((item, idx) => {
               const percentage = total > 0 ? ((item.value / total) * 100).toFixed(1) : '0.0';
-              const color = pieColors[idx % pieColors.length];
-              
+              const pieColorVar = `var(--pieColor${(idx % 2) + 1})`;
               return (
                 <div key={idx} className={styles.pieLegendItem}>
-                  <div 
-                    className={styles.pieLegendDot}
-                    // eslint-disable-next-line react/forbid-dom-props
-                    style={{ 
-                      backgroundColor: color,
-                      border: `2px solid ${pieColors[0]}` // WHAT: Use first pie color as border (matches real chart)
-                    }}
-                  />
+                  <svg className={styles.pieLegendDotSvg} viewBox="0 0 12 12" aria-hidden="true">
+                    <circle cx="6" cy="6" r="4" fill={pieColorVar} stroke="var(--pieColor1)" strokeWidth="2" />
+                  </svg>
                   <span>{item.label}: {percentage}%</span>
                 </div>
               );
@@ -231,6 +225,45 @@ export default function ReportStylePreview({ style }: ReportStylePreviewProps) {
               This is a sample text block showing how report text appears with the current style settings. Text charts use chartValueColor for body text.
             </p>
           </div>
+        </div>
+
+        {/* Value Chain Chart */}
+        <div className={styles.chart}>
+          <div className={styles.chartHeader}>
+            <div className={styles.chartTitle}>Value Chain</div>
+          </div>
+          <div className={styles.chartBody}>
+            <div className={styles.valuechainPreview}>
+              <MaterialIcon name="trending_up" variant="outlined" className={styles.valuechainIcon} />
+              <div className={styles.valuechainTitleRow}>Sample outcome</div>
+              <div className={styles.valuechainDescRow}>Description text using chart and style variables.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Landing page preview */}
+      <div className={styles.landingPreview}>
+        <div className={styles.landingPreviewTitle}>Landing page</div>
+        <div className={styles.landingHeroPreview}>
+          <span className={styles.landingHeroSiteName}>messmass</span>
+          <p className={styles.landingHeroSub}>Hero and CTA use landing style colors.</p>
+        </div>
+        <div className={styles.landingCardsRow}>
+          <div className={styles.landingCard}>
+            <MaterialIcon name="insights" variant="outlined" className={styles.landingCardIcon} />
+            <div className={styles.landingCardTitle}>Value card 1</div>
+            <div className={styles.landingCardBody}>Uses chartBackground, chartTitleColor.</div>
+          </div>
+          <div className={styles.landingCard}>
+            <MaterialIcon name="analytics" variant="outlined" className={styles.landingCardIcon} />
+            <div className={styles.landingCardTitle}>Value card 2</div>
+            <div className={styles.landingCardBody}>Same style tokens as report cards.</div>
+          </div>
+        </div>
+        <div className={styles.landingPricingCard}>
+          <div className={styles.landingPricingTitle}>Pricing</div>
+          <div className={styles.landingPricingBody}>Card uses chartBackground, cardBorderRadius, cardShadow.</div>
         </div>
       </div>
     </div>

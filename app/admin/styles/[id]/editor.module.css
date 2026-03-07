@@ -207,6 +207,28 @@
   gap: var(--mm-space-2);
 }
 
+.hint {
+  font-size: var(--mm-font-size-xs);
+  color: var(--mm-gray-500);
+  margin-top: var(--mm-space-1);
+}
+
+/* Dimension & surface fields */
+.dimensionFields {
+  padding: var(--mm-space-5);
+  border-top: 1px solid var(--mm-gray-200);
+  display: flex;
+  flex-direction: column;
+  gap: var(--mm-space-6);
+}
+
+.dimensionSectionTitle {
+  font-size: var(--mm-font-size-lg);
+  font-weight: var(--mm-font-weight-bold);
+  color: var(--mm-gray-900);
+  margin: 0 0 var(--mm-space-2) 0;
+}
+
 /* Loading State */
 .loading {
   display: flex;

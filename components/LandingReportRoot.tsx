@@ -98,7 +98,7 @@ export default function LandingReportRoot() {
   const sections = data?.sections ?? { coreBelief: [], problem: [], product: [] };
 
   const heroLabel = getStat(stats, 'reportTextHeroLabel', 'Sovereign Decision Intelligence');
-  const heroTitle = getStat(stats, 'reportTextHeroTitle', 'Data Privacy and Agentic AI without compromises.');
+  const heroTitle = getStat(stats, 'reportTextHeroTitle', 'Agentic AI that reads and understands your data at scale, and delivers actionable dashboards—without compromising privacy.');
   const heroSub = getStat(stats, 'reportTextHeroSub', 'The platform that restores the freedom and security of decision-making to data-driven companies—and opens the door for those who want to become one.');
   const sectionCoreTitle = getStat(stats, 'reportTextSectionCoreTitle', 'Our core belief');
   const beliefLead = getStat(stats, 'reportTextBeliefLead', "You shouldn't have to choose between intelligence and security.");

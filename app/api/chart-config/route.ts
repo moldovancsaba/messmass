@@ -124,10 +124,10 @@ function validateChartConfiguration(config: Partial<ChartConfiguration>): { isVa
     return { isValid: false, error: 'Missing required fields: chartId, title, or type' };
   }
   
-  // WHAT: Chart type validation including text/image/table
-  // WHY: Support new chart types for reportText*, reportImage*, and markdown tables
-  if (!['pie', 'bar', 'kpi', 'text', 'image', 'table'].includes(config.type)) {
-    return { isValid: false, error: 'Chart type must be "pie", "bar", "kpi", "text", "image", or "table"' };
+  // WHAT: Chart type validation including text/image/table/valuechain
+  // WHY: Support new chart types for reportText*, reportImage*, valuechain (icon + 2 text)
+  if (!['pie', 'bar', 'kpi', 'text', 'image', 'table', 'valuechain'].includes(config.type)) {
+    return { isValid: false, error: 'Chart type must be "pie", "bar", "kpi", "text", "image", "table", or "valuechain"' };
   }
   
   // Elements validation
@@ -163,7 +163,12 @@ function validateChartConfiguration(config: Partial<ChartConfiguration>): { isVa
   if (config.type === 'table' && config.elements.length !== 1) {
     return { isValid: false, error: 'Table charts must have exactly 1 element' };
   }
-  
+
+  // WHAT: Validate valuechain charts require exactly 2 elements (title + description)
+  if (config.type === 'valuechain' && config.elements.length !== 2) {
+    return { isValid: false, error: 'Value Chain charts must have exactly 2 elements (Title formula + Description formula)' };
+  }
+
   // WHAT: Validate element-level formatting if present
   // WHY: Ensure formatting objects have correct structure
   // FIXED: Check if element.formatting exists before validating, allow undefined

@@ -11,6 +11,7 @@ import ChartBuilderPie from './ChartBuilderPie';
 import ChartBuilderImage from './ChartBuilderImage';
 import ChartBuilderText from './ChartBuilderText';
 import ChartBuilderTable from './ChartBuilderTable';
+import ChartBuilderValueChain from './ChartBuilderValueChain';
 
 interface BuilderModeProps {
   projectId: string;
@@ -34,7 +35,7 @@ interface DataBlock {
 interface ChartConfig {
   chartId: string;
   title: string;
-  type: 'kpi' | 'bar' | 'pie' | 'image' | 'text' | 'table' | 'value';
+  type: 'kpi' | 'bar' | 'pie' | 'image' | 'text' | 'table' | 'value' | 'valuechain';
   icon: string;
   elements: Array<{
     formula: string;
@@ -196,6 +197,8 @@ export default function BuilderMode({ projectId, stats, onSave }: BuilderModePro
         // infer from aspect ratio embedded in elements (Image charts have 1 element)
         // Note: chart.elements[0].label/color may not include aspectRatio; default to 3
         return 3;
+      case 'valuechain':
+        return 2;
       default:
         return 3;
     }
@@ -306,6 +309,11 @@ export default function BuilderMode({ projectId, stats, onSave }: BuilderModePro
                       case 'table':
                         builderComponent = (
                           <ChartBuilderTable chart={chart} stats={stats} onSave={handleSave} />
+                        );
+                        break;
+                      case 'valuechain':
+                        builderComponent = (
+                          <ChartBuilderValueChain chart={chart} stats={stats} onSave={handleSave} />
                         );
                         break;
                       case 'value':

@@ -2,61 +2,6 @@
  * WHY: Clean grid layout with color previews
  * HOW: Design tokens with responsive grid */
 
-.container {
-  padding: var(--mm-space-6);
-  max-width: 1400px;
-  margin: 0 auto;
-}
-
-/* Header */
-.header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: var(--mm-space-6);
-  gap: var(--mm-space-4);
-}
-
-.headerInfo {
-  display: flex;
-  align-items: center;
-  gap: var(--mm-space-4);
-}
-
-.count {
-  font-size: var(--mm-font-size-base);
-  color: var(--mm-gray-600);
-  margin: 0;
-}
-
-.deleteStatus {
-  font-size: var(--mm-font-size-sm);
-  font-weight: var(--mm-font-weight-medium);
-  padding: var(--mm-space-2) var(--mm-space-3);
-  background: var(--mm-gray-100);
-  border-radius: var(--mm-radius-md);
-}
-
-.createButton {
-  display: flex;
-  align-items: center;
-  gap: var(--mm-space-2);
-  padding: var(--mm-space-3) var(--mm-space-5);
-  background: var(--mm-color-primary-500);
-  color: var(--mm-white);
-  border: none;
-  border-radius: var(--mm-radius-lg);
-  font-size: var(--mm-font-size-base);
-  font-weight: var(--mm-font-weight-semibold);
-  cursor: pointer;
-  transition: all var(--transition-fast);
-}
-
-.createButton:hover {
-  background: var(--mm-color-primary-600);
-  transform: translateY(-1px);
-}
-
 /* Grid Layout */
 .grid {
   display: grid;

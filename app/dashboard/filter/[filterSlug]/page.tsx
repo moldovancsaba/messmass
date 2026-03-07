@@ -98,7 +98,7 @@ export default function DashboardFilterPage() {
   if (isLoading) {
     return (
       <>
-        <div style={{ padding: '0.75rem 1rem', background: '#f8fafc', borderBottom: '1px solid #e2e8f0' }}>
+        <div className={styles.adminBackBar}>
           <Link href="/admin">← Back to Admin</Link>
         </div>
         <div className={styles.page}>
@@ -113,7 +113,7 @@ export default function DashboardFilterPage() {
   if (error) {
     return (
       <>
-        <div style={{ padding: '0.75rem 1rem', background: '#f8fafc', borderBottom: '1px solid #e2e8f0' }}>
+        <div className={styles.adminBackBar}>
           <Link href="/admin">← Back to Admin</Link>
         </div>
         <div className={styles.page}>
@@ -129,7 +129,7 @@ export default function DashboardFilterPage() {
   if (!reportData?.project) {
     return (
       <>
-        <div style={{ padding: '0.75rem 1rem', background: '#f8fafc', borderBottom: '1px solid #e2e8f0' }}>
+        <div className={styles.adminBackBar}>
           <Link href="/admin">← Back to Admin</Link>
         </div>
         <div className={styles.page}>
@@ -151,7 +151,7 @@ export default function DashboardFilterPage() {
 
   return (
     <>
-      <div style={{ padding: '0.75rem 1rem', background: '#f8fafc', borderBottom: '1px solid #e2e8f0' }}>
+      <div className={styles.adminBackBar}>
         <Link href="/admin">← Back to Admin</Link>
       </div>
       <div className={styles.page}>

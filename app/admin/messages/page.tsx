@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useAdminAuth } from '@/hooks/useAdminAuth';
-import AdminHero from '@/components/AdminHero';
+import UnifiedAdminHeroWithSearch from '@/components/UnifiedAdminHeroWithSearch';
 import type { ContactInquiry } from '@/lib/contactInquiries';
 import adminStyles from '@/app/styles/admin-pages.module.css';
 import styles from './page.module.css';
@@ -54,9 +54,10 @@ export default function AdminMessagesPage() {
 
   return (
     <div className="page-container">
-      <AdminHero
+      <UnifiedAdminHeroWithSearch
         title="Messages"
         subtitle="Contact form inquiries from the website"
+        backLink="/admin"
       />
       {error && (
         <div className={adminStyles.errorContainer}>

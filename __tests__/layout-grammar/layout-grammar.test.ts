@@ -464,7 +464,7 @@ describe('Layout Grammar Validation Suite', () => {
     });
 
     test('ChartBodyType includes all required types', () => {
-      const requiredTypes: ChartBodyType[] = ['pie', 'bar', 'kpi', 'text', 'image', 'table'];
+      const requiredTypes: ChartBodyType[] = ['pie', 'bar', 'kpi', 'text', 'image', 'table', 'valuechain'];
       
       requiredTypes.forEach(bodyType => {
         const cellConfig: CellConfiguration = {

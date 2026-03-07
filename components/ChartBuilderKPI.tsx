@@ -1,10 +1,12 @@
-// WHAT: Chart Builder for KPI charts - single numeric input
-// WHY: Allow inline editing of KPI values in Builder mode
-// HOW: Extract formula from chart config, resolve to stats key, provide input with auto-save
+// WHAT: Chart Builder for KPI charts - one or more numeric inputs from formula variables
+// WHY: Allow inline editing of KPI values in Builder mode; formulas like [a]+[b]+[c] need one input per variable
+// HOW: Extract variables from formula; single variable = one input, multiple = one input per variable with label
 
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
+import MaterialIcon from './MaterialIcon';
+import { extractVariablesFromFormula } from '@/lib/formulaEngine';
 
 interface ChartBuilderKPIProps {
   chart: {
@@ -17,60 +19,86 @@ interface ChartBuilderKPIProps {
   onSave: (key: string, value: number | string) => void;
 }
 
+// WHAT: Stats-only variable names from formula (skip PARAM:, MEDIA:, etc.)
+function getStatsVariablesFromFormula(formula: string): string[] {
+  const vars = extractVariablesFromFormula(formula || '');
+  return vars.filter((v) => !v.includes(':'));
+}
+
 export default function ChartBuilderKPI({ chart, stats, onSave }: ChartBuilderKPIProps) {
-  // WHAT: Extract the variable key from formula (e.g., "stats.remoteImages" → "remoteImages")
-  // WHY: Need to know which stats field to read/write
   const formula = chart.elements[0]?.formula || '';
-  const statsKey = formula.replace(/^stats\./, '').trim();
-  const currentValue = stats[statsKey] || 0;
-  
-  // WHAT: Store as string to allow deletion without aggressive parsing
-  // WHY: Prevents resetting empty string to 0 immediately on keystroke
-  const [tempValue, setTempValue] = useState<string>(currentValue.toString());
-  
-  // WHAT: Sync temp value when stats change externally
+  const variables = useMemo(
+    () => getStatsVariablesFromFormula(formula),
+    [formula]
+  );
+
+  const [tempValues, setTempValues] = useState<Record<string, string>>(() => {
+    const initial: Record<string, string> = {};
+    variables.forEach((key) => {
+      const val = stats[key];
+      initial[key] = val !== undefined && val !== null ? String(val) : '0';
+    });
+    return initial;
+  });
+
   useEffect(() => {
-    setTempValue(currentValue.toString());
-  }, [currentValue]);
-  
-  // WHAT: Save on blur with validation
-  // WHY: Auto-save behavior consistent with Manual mode
-  const handleBlur = () => {
-    const newValue = Math.max(0, parseInt(tempValue) || 0);
-    if (newValue !== currentValue) {
-      onSave(statsKey, newValue);
+    const next: Record<string, string> = {};
+    variables.forEach((key) => {
+      const val = stats[key];
+      next[key] = val !== undefined && val !== null ? String(val) : '0';
+    });
+    setTempValues((prev) => ({ ...prev, ...next }));
+  }, [stats, variables]);
+
+  const handleBlur = (key: string) => {
+    const raw = tempValues[key] ?? '0';
+    const num = raw === '' ? 0 : Math.max(0, parseFloat(raw) || 0);
+    const current = stats[key];
+    const currentNum = typeof current === 'number' ? current : parseFloat(String(current));
+    if (Number.isNaN(currentNum) || num !== currentNum) {
+      onSave(key, num);
     }
   };
-  
+
   return (
     <div className="chart-builder-kpi">
-      {/* Chart title with icon */}
       <div className="chart-builder-header">
-        {chart.icon && <span className="chart-builder-icon">{chart.icon}</span>}
-        <h3 className="chart-builder-title">
-          {chart.title}
-        </h3>
+        <div className="chart-builder-title-row">
+          {chart.icon && (
+            <MaterialIcon name={chart.icon} variant="outlined" className="chart-builder-icon" />
+          )}
+          <h3 className="chart-builder-title">{chart.title}</h3>
+        </div>
       </div>
-      
-      {/* Single input field */}
-      <div className="chart-builder-field">
-        <label className="chart-builder-label">
-          {chart.elements[0]?.label || 'Value'}
-        </label>
-        <input
-          type="number"
-          value={tempValue}
-          onChange={(e) => setTempValue(e.target.value)}
-          onBlur={handleBlur}
-          min="0"
-          className="form-input chart-builder-input"
-        />
+      <div className="chart-builder-card-body">
+        <p className="chart-builder-card-id">{chart.chartId}</p>
+        {variables.length === 0 ? (
+          <p className="chart-builder-hint">No variables in formula (e.g. [varName]). Add variables in Visualization Manager.</p>
+        ) : (
+          <>
+            {variables.map((key) => (
+              <div key={key} className="chart-builder-variable-row">
+                <div className="chart-builder-variable-meta">
+                  {chart.elements[0]?.label && variables.length === 1 ? chart.elements[0].label : key}
+                  <span className="chart-builder-registry-name">[{key}]</span>
+                </div>
+                <input
+                  id={`kpi-${chart.chartId}-${key}`}
+                  type="number"
+                  value={tempValues[key] ?? '0'}
+                  onChange={(e) => setTempValues((prev) => ({ ...prev, [key]: e.target.value }))}
+                  onBlur={() => handleBlur(key)}
+                  min="0"
+                  step={variables.length > 1 ? 'any' : undefined}
+                  className="form-input chart-builder-input"
+                  placeholder="0"
+                  aria-label={`Value for ${key}`}
+                />
+              </div>
+            ))}
+          </>
+        )}
       </div>
-      
-      {/* Formula hint */}
-      <p className="chart-builder-hint">
-        Variable: {statsKey}
-      </p>
     </div>
   );
 }

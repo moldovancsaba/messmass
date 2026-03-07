@@ -6,6 +6,7 @@ import clientPromise from '@/lib/mongodb';
 import { ObjectId } from 'mongodb';
 import config from '@/lib/config';
 import { error as logError } from '@/lib/logger';
+import { addDerivedMetrics } from '@/lib/projectStatsUtils';
 
 export const dynamic = 'force-dynamic';
 
@@ -140,17 +141,25 @@ const db = client.db(config.dbName);
       // WHY: Eliminates client-side computation, improves performance
       // HOW: Sum all numeric event stats + merge partner-level stats (reportText*, reportImage*)
       aggregatedStats,
-      events: events.map(event => ({
-        _id: event._id.toString(),
-        eventName: event.eventName,
-        eventDate: event.eventDate,
-        viewSlug: event.viewSlug,
-        hashtags: event.hashtags || [],
-        categorizedHashtags: event.categorizedHashtags || {},
-        createdAt: event.createdAt,
-        updatedAt: event.updatedAt,
-        stats: event.stats || {}
-      })),
+      events: events.map(event => {
+        const rawStats = event.stats || {};
+        const derivedStats = addDerivedMetrics(rawStats);
+        const storedTotalFans = toFiniteNumber((rawStats as Record<string, unknown>).totalFans);
+        return {
+          _id: event._id.toString(),
+          eventName: event.eventName,
+          eventDate: event.eventDate,
+          viewSlug: event.viewSlug,
+          hashtags: event.hashtags || [],
+          categorizedHashtags: event.categorizedHashtags || {},
+          createdAt: event.createdAt,
+          updatedAt: event.updatedAt,
+          stats: {
+            ...derivedStats,
+            totalFans: storedTotalFans ?? derivedStats.totalFans,
+          }
+        };
+      }),
       totalEvents: events.length
     });
   } catch (error) {
@@ -163,4 +172,17 @@ const db = client.db(config.dbName);
       { status: 500 }
     );
   }
+}
+
+function toFiniteNumber(value: unknown): number | null {
+  if (typeof value === 'number' && Number.isFinite(value)) {
+    return value;
+  }
+
+  if (typeof value === 'string' && value.trim() !== '') {
+    const parsed = Number(value);
+    return Number.isFinite(parsed) ? parsed : null;
+  }
+
+  return null;
 }

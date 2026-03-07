@@ -1,0 +1,17 @@
+/* WHAT: Login page layout; SSO block and microcopy spacing
+ * WHY: Avoid inline styles per coding-standards; keep layout in CSS
+ */
+.ssoBlock {
+  margin-bottom: 1rem;
+}
+
+.ssoButton {
+  display: block;
+  text-align: center;
+}
+
+.ssoMicrocopy {
+  margin-top: 0.5rem;
+  font-size: var(--mm-font-size-sm);
+  color: var(--mm-gray-600);
+}

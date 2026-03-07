@@ -4,7 +4,7 @@ Last Updated: 2026-01-11T22:28:38.000Z
 Canonical: No
 Owner: Architecture
 
-**Version:** 11.55.1  
+**Version:** 11.59.0  
 **Last Updated:** 2026-02-21T00:00:00.000Z (UTC)
 
 ---
@@ -112,6 +112,21 @@ One reported example ⇒ assume there are more ⇒ find and fix the whole class 
 
 ---
 
+## 🎨 Landing and public page styling
+
+**Rule:** Every element on the landing page (and any future landing or public pages) must use **global CSS design tokens only**. No in-code hardcoded style values.
+
+**Required:**
+- **CSS:** Use only `var(--mm-*)`, `var(--chart*)`, or other theme/report-style variables in `app/page.module.css` and landing-related CSS. No literal `px`, `rem`, or hex colors in landing styles.
+- **Tokens:** Define new values in `app/styles/theme.css` (e.g. under "LANDING" or "CONTENT WIDTH") and reference them from landing CSS. Single source of truth.
+- **Components:** No inline `style={{ ... }}` on landing components. Use CSS classes that reference the same tokens (e.g. `min-height: var(--mm-loading-min-height)` in a class).
+
+**Media queries:** Breakpoint values (e.g. `768px`, `1024px`) may remain as literals in `@media` (CSS does not allow `var()` in media conditions). Prefer matching theme breakpoints (`--breakpoint-md`, `--breakpoint-lg`) and document the mapping in comments.
+
+**Reference:** `docs/landing-main-page-ui-refactor-plan.md`, §6 Shared UI primitives; theme tokens in `app/styles/theme.css`.
+
+---
+
 ## 🚫 Prohibited Patterns
 
 ### Avoid .trim() Unless Absolutely Necessary
@@ -190,11 +205,27 @@ const slug = project.slug;
 - PDF exports must preserve aspect ratios
 - Respects original content proportions
 
-**Global Standard:** 
+**Global Standard:**
 - Web: `object-fit: cover` in `app/styles/components.css`
 - PDF Export: Aspect ratio preservation in `lib/export/pdf.ts`
 
 **Key Principle:** Crop if needed, never distort.
+
+### Never Use Em Dashes in Content
+
+**Rule:** Do **not** use em dashes (—, U+2014) in user-facing content. Use spaces and hyphens ( - ) or rephrase instead.
+
+**Why:**
+- Consistency with plain typography and accessibility
+- Avoids encoding/display issues across platforms and fonts
+- Matches content style used in FAQ, marketing copy, and UI strings
+
+**Examples:**
+- ❌ "All outcomes—reports, documents—remain under your control."
+- ✅ "All outcomes - reports, documents - remain under your control."
+- ✅ "All outcomes (reports, documents) remain under your control."
+
+**Applies to:** UI strings, FAQ text, landing copy, error messages, and any user-visible content. Code comments and internal docs may use em dashes if desired.
 
 ---
 

@@ -17,8 +17,8 @@
   
   /* UNIFIED NAMING: --chartBackground matches database property */
   background: var(--chartBackground) !important;
-  border-radius: var(--mm-radius-lg);
-  box-shadow: var(--mm-shadow-sm);
+  border-radius: var(--cardBorderRadius, var(--mm-radius-lg));
+  box-shadow: var(--cardShadow, var(--mm-shadow-sm));
   padding: 0; /* WHAT: Remove padding, add to header/body instead */
   overflow: visible; /* WHAT: Layout Grammar - no clipping on content layers; height resolution ensures fit */
   box-sizing: border-box !important;
@@ -139,8 +139,8 @@
 .kpiIcon {
   /* WHAT: Material Icons scale by font-size, 85% of icon row */
   /* WHY: Visual impact - large icon dominates top 40% */
-  /* HOW: Container query on .kpiIconRow, vertically centered */
-  font-size: clamp(2.5rem, 85cqh, 7rem) !important; /* 85% of icon row height */
+  /* HOW: Container query on .kpiIconRow; --landing-max-font caps size on main page */
+  font-size: clamp(2.5rem, 85cqh, var(--landing-max-icon-font, var(--landing-max-font, 7rem))) !important; /* 85% of icon row height; --landing-max-icon-font for main page */
   height: auto !important;
   width: auto !important;
   color: var(--kpiIconColor) !important;
@@ -161,7 +161,8 @@
   justify-content: center;
   width: 100%;
   height: 100%;
-  font-size: clamp(1.25rem, min(30cqh, 25cqw), 6rem); /* INCREASED: 18cqh→30cqh, 20cqw→25cqw, 5rem→6rem */
+  /* When --landing-max-font is set (e.g. 13px), cap at that size; otherwise use clamp (min 1.25rem, max 6rem) */
+  font-size: var(--landing-value-font, clamp(1.25rem, min(30cqh, 25cqw), 6rem));
   font-weight: var(--mm-font-weight-bold);
   color: var(--chartValueColor);
   line-height: 0.85;
@@ -223,6 +224,97 @@
   overflow: hidden; /* Layout Grammar: title 2-line clamp */
   text-align: center;
   width: 100%;
+}
+
+/* ValueChain Chart - Icon 32px, Title row 32px, Description row 16px; shrink-to-fit in JS */
+.valuechain {
+  height: var(--block-height, var(--row-height, var(--mm-block-height-default)));
+  display: grid;
+  grid-template-rows: 3fr 3fr 4fr; /* Icon (30%) : Title (30%) : Description (40%) */
+  gap: 0;
+  width: 100%;
+  box-sizing: border-box;
+  align-items: center;
+  justify-items: center;
+  container-type: size;
+}
+
+.valuechainNoIcon {
+  grid-template-rows: 4fr 6fr; /* Title (40%) : Description (60%) */
+}
+
+.valuechainNoDesc {
+  grid-template-rows: 4fr 6fr; /* Icon (40%) : Title (60%) */
+}
+
+.valuechainOnlyTitle {
+  grid-template-rows: 1fr;
+}
+
+.valuechainIconRow {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+}
+
+.valuechainIcon {
+  font-size: 64px !important;
+  height: auto !important;
+  width: auto !important;
+  color: var(--kpiIconColor) !important;
+  line-height: 1 !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+.valuechainTitleRow {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  padding: 0 var(--mm-space-2);
+  font-size: 32px;
+  font-weight: var(--mm-font-weight-bold);
+  color: var(--chartValueColor);
+  line-height: 1.2;
+  text-align: center;
+  word-wrap: break-word !important;
+  overflow-wrap: break-word !important;
+  min-height: 0 !important;
+  overflow: visible !important;
+  container-type: size;
+}
+
+.valuechainDescRow {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  padding: 0 var(--mm-space-2);
+  font-size: 16px;
+  font-weight: var(--mm-font-weight-medium);
+  color: var(--chartLabelColor);
+  line-height: 1.35;
+  text-align: center;
+  word-wrap: break-word !important;
+  overflow-wrap: break-word !important;
+  hyphens: none;
+  min-height: 0 !important;
+  overflow: visible !important;
+  container-type: size;
+}
+
+.valuechainDescRow > * {
+  display: block;
+  text-align: center;
+  width: 100%;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
 }
 
 /* Pie Chart - Uses base .chart structure */

@@ -3,44 +3,75 @@
    HOW: Layout grammar + unified style system (ColoredCard, .btn, KPI-style cards, design tokens)
    All values use theme tokens or local landing variables below (no fragmented hardcodes). */
 
-/* ----- Landing-specific tokens (single source for hero/footer and layout) ----- */
-.landing {
-  --landing-hero-bg-start: #0f172a;
-  --landing-hero-bg-mid: #1e293b;
-  --landing-hero-bg-end: #0f172a;
-  --landing-hero-text: #f8fafc;
-  --landing-hero-text-muted: #cbd5e1;
-  --landing-hero-border: #475569;
-  --landing-hero-border-hover: #94a3b8;
-  --landing-hero-text-hover: #f1f5f9;
-  --landing-hero-inner-max: 720px;
-  --landing-section-inner-max: 900px;
-  --landing-footer-inner-max: 560px;
-  --landing-diff-max: 640px;
-  --landing-cta-max: 17.5rem;
-  --landing-card-min: 200px;
-  --landing-card-min-wide: 240px;
-  --landing-breakpoint-md: 768px;
+/* ----- Landing: single content width (uses theme --mm-content-*) ----- */
+/* WHAT: One container pattern for hero, report block, pricing, FAQ, contact, footer
+   WHY: Phase 1 refactor – single layout contract (see docs/landing-main-page-ui-refactor-plan.md) */
+.landing .mmContainer,
+.landing .heroInner,
+.landing .sectionInner,
+.landing .footerInner {
+  max-width: var(--mm-content-max-width);
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: var(--mm-content-padding-x);
+  padding-right: var(--mm-content-padding-x);
+  box-sizing: border-box;
+}
+@media (min-width: 768px) {
+  .landing .mmContainer,
+  .landing .heroInner,
+  .landing .sectionInner,
+  .landing .footerInner {
+    padding-left: var(--mm-content-padding-x-md);
+    padding-right: var(--mm-content-padding-x-md);
+  }
+}
+@media (min-width: 1024px) {
+  .landing .mmContainer,
+  .landing .heroInner,
+  .landing .sectionInner,
+  .landing .footerInner {
+    padding-left: var(--mm-content-padding-x-lg);
+    padding-right: var(--mm-content-padding-x-lg);
+  }
+}
+
+/* WHAT: Section vertical rhythm — theme tokens only (no hardcodes) */
+.landing .mmSection {
+  padding-top: var(--sectionPaddingY, var(--mm-section-padding-y));
+  padding-bottom: var(--sectionPaddingY, var(--mm-section-padding-y));
+}
+@media (min-width: 1024px) {
+  .landing .mmSection {
+    padding-top: var(--sectionPaddingYLg, var(--mm-section-padding-y-lg));
+    padding-bottom: var(--sectionPaddingYLg, var(--mm-section-padding-y-lg));
+  }
 }
 
 .landing {
   min-height: 100vh;
-  background: var(--mm-gray-50);
+  background: var(--landingPageBg, var(--mm-gray-50));
 }
 
-/* ----- Hero ----- */
+/* Loading/error wrappers — theme tokens only (no inline style in TSX) */
+.landingLoadingRoot {
+  min-height: var(--mm-loading-min-height);
+}
+.landingErrorRoot {
+  min-height: var(--mm-error-min-height);
+  padding: var(--mm-space-8);
+}
+
+/* ----- Hero — theme tokens only ----- */
 .hero {
-  background: linear-gradient(160deg, var(--landing-hero-bg-start) 0%, var(--landing-hero-bg-mid) 50%, var(--landing-hero-bg-end) 100%);
-  color: var(--landing-hero-text);
-  padding: clamp(var(--mm-space-16), 10vw, var(--mm-space-24)) var(--mm-space-6);
+  background: linear-gradient(160deg, var(--landingHeroBgStart, var(--mm-landing-hero-bg-start)) 0%, var(--landingHeroBgMid, var(--mm-landing-hero-bg-mid)) 50%, var(--landingHeroBgEnd, var(--mm-landing-hero-bg-end)) 100%);
+  color: var(--landingHeroText, var(--mm-landing-hero-text));
+  padding-top: clamp(var(--heroPaddingYMin, var(--mm-hero-padding-y-min)), 10vw, var(--heroPaddingYMax, var(--mm-hero-padding-y-max)));
+  padding-bottom: clamp(var(--heroPaddingYMin, var(--mm-hero-padding-y-min)), 10vw, var(--heroPaddingYMax, var(--mm-hero-padding-y-max)));
   text-align: center;
   position: relative;
 }
-
-.heroInner {
-  max-width: var(--landing-hero-inner-max);
-  margin: 0 auto;
-}
+/* heroInner uses shared container (mmContainer/heroInner/sectionInner) above */
 
 .heroBrand {
   display: flex;
@@ -56,11 +87,14 @@
   max-width: 100%;
 }
 
+/* WHAT: Match admin mainpage (Sidebar) branding: lowercase "messmass" in Pacifico
+ * WHY: Same writing and font everywhere on landing as /admin/mainpage */
 .heroSiteName {
-  font-size: var(--mm-font-size-xl);
-  font-weight: var(--mm-font-weight-bold);
-  letter-spacing: var(--mm-letter-spacing-tight);
-  color: var(--landing-hero-text);
+  font-family: var(--font-pacifico);
+  font-size: var(--mm-font-size-2xl);
+  font-weight: var(--mm-font-weight-normal);
+  letter-spacing: var(--mm-letter-spacing-wide);
+  color: var(--landingHeroText, var(--mm-landing-hero-text));
 }
 
 .heroLabel {
@@ -83,7 +117,7 @@
 .heroSub {
   font-size: var(--mm-font-size-lg);
   line-height: var(--mm-line-height-lg);
-  color: var(--landing-hero-text-muted);
+  color: var(--landingHeroTextMuted, var(--mm-landing-hero-text-muted));
   margin-bottom: var(--mm-space-8);
 }
 
@@ -95,21 +129,39 @@
   align-items: center;
 }
 
+.heroMicrocopy {
+  font-size: var(--mm-font-size-sm);
+  line-height: var(--mm-line-height-md);
+  color: var(--landingHeroTextMuted, var(--mm-landing-hero-text-muted));
+  margin-top: var(--mm-space-6);
+  max-width: var(--landingDiffMax, var(--mm-landing-diff-max));
+  margin-left: auto;
+  margin-right: auto;
+}
+
 /* Outline button on dark hero (extends global .btn) */
 .btn-outline-light {
   background: transparent !important;
-  color: var(--landing-hero-text-muted) !important;
-  border: 1px solid var(--landing-hero-border) !important;
+  color: var(--landingHeroTextMuted, var(--mm-landing-hero-text-muted)) !important;
+  border: var(--mm-border-width-sm) solid var(--landingHeroBorder, var(--mm-landing-hero-border)) !important;
 }
 .btn-outline-light:hover {
-  border-color: var(--landing-hero-border-hover) !important;
-  color: var(--landing-hero-text-hover) !important;
+  border-color: var(--landingHeroBorderHover, var(--mm-landing-hero-border-hover)) !important;
+  color: var(--landingHeroTextHover, var(--mm-landing-hero-text-hover)) !important;
 }
 
-/* ----- Sections ----- */
+/* ----- Sections — theme tokens only ----- */
 .section,
 .sectionAlt {
-  padding: clamp(var(--mm-space-12), 8vw, var(--mm-space-20)) var(--mm-space-6);
+  padding-top: var(--sectionPaddingY, var(--mm-section-padding-y));
+  padding-bottom: var(--sectionPaddingY, var(--mm-section-padding-y));
+}
+@media (min-width: 1024px) {
+  .landing .section,
+  .landing .sectionAlt {
+    padding-top: var(--sectionPaddingYLg, var(--mm-section-padding-y-lg));
+    padding-bottom: var(--sectionPaddingYLg, var(--mm-section-padding-y-lg));
+  }
 }
 
 .section {
@@ -121,9 +173,75 @@
 }
 
 .sectionInner {
-  max-width: var(--landing-section-inner-max);
-  margin: 0 auto;
   text-align: center;
+}
+/* sectionInner width/padding from shared container above */
+
+/* WHAT: Typography — theme tokens only */
+.landing .heroTitle {
+  font-size: var(--mm-font-size-4xl);
+  font-weight: var(--mm-font-weight-bold);
+  line-height: var(--mm-line-height-sm);
+}
+@media (min-width: 1024px) {
+  .landing .heroTitle {
+    font-size: var(--text-5xl);
+  }
+}
+
+/* WHAT: Section headings (Pricing, FAQ) — Pacifico + report style color; theme tokens only */
+.landing .sectionTitle {
+  font-family: var(--font-pacifico);
+  font-size: var(--mm-font-size-2xl);
+  font-weight: var(--mm-font-weight-normal);
+  line-height: var(--mm-line-height-sm);
+  color: var(--chartTitleColor, var(--mm-gray-900));
+  margin-bottom: var(--mm-space-6);
+  text-align: center;
+}
+@media (min-width: 1024px) {
+  .landing .sectionTitle {
+    font-size: var(--mm-font-size-3xl);
+  }
+}
+
+.landing .sectionSubtitle,
+.landing .cardTitle {
+  font-size: var(--mm-font-size-lg);
+  font-weight: var(--mm-font-weight-semibold);
+  line-height: var(--mm-line-height-sm);
+}
+@media (min-width: 1024px) {
+  .landing .sectionSubtitle,
+.landing .cardTitle {
+    font-size: var(--mm-font-size-xl);
+  }
+}
+
+.landing .sectionBody,
+.landing .cardBody {
+  font-size: var(--mm-font-size-base);
+  font-weight: var(--mm-font-weight-normal);
+  line-height: var(--mm-line-height-lg);
+  max-width: var(--landingDiffMax, var(--mm-landing-diff-max));
+  margin-left: auto;
+  margin-right: auto;
+}
+@media (min-width: 1024px) {
+  .landing .sectionBody,
+.landing .cardBody {
+    font-size: var(--mm-font-size-lg);
+  }
+}
+
+.landing .sectionSmall {
+  font-size: var(--mm-font-size-sm);
+  line-height: var(--mm-line-height-md);
+}
+@media (min-width: 1024px) {
+  .landing .sectionSmall {
+    font-size: var(--mm-font-size-sm);
+  }
 }
 
 .sectionTitle {
@@ -132,6 +250,87 @@
   color: var(--mm-gray-900);
   margin-bottom: var(--mm-space-6);
   text-align: center;
+}
+
+/* WHAT: Same card look as event/report charts; theme tokens only */
+.landing .valueCard,
+.landing .howCard,
+.landing .pricingCard {
+  background: var(--chartBackground, var(--mm-white));
+  border-radius: var(--cardBorderRadius, var(--mm-radius-lg));
+  box-shadow: var(--cardShadow, var(--mm-shadow-sm));
+  padding: var(--mm-space-6);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  height: 100%;
+  box-sizing: border-box;
+}
+@media (min-width: 1024px) {
+  .landing .valueCard,
+  .landing .howCard,
+  .landing .pricingCard {
+    padding: var(--mm-space-8);
+  }
+}
+.landing .valueCardIcon,
+.landing .howCardIcon {
+  width: var(--landingIconSize, var(--mm-landing-icon-size));
+  height: var(--landingIconSize, var(--mm-landing-icon-size));
+  font-size: var(--landingIconSize, var(--mm-landing-icon-size)) !important;
+  margin-bottom: var(--mm-space-2);
+  color: var(--mm-color-primary-600);
+}
+.landing .valueCardTitle,
+.landing .howCardTitle {
+  font-size: var(--mm-font-size-lg);
+  font-weight: var(--mm-font-weight-semibold);
+  line-height: var(--mm-line-height-sm);
+  margin-bottom: var(--mm-space-3);
+  color: var(--mm-gray-900);
+}
+@media (min-width: 1024px) {
+  .landing .valueCardTitle,
+  .landing .howCardTitle {
+    font-size: var(--mm-font-size-xl);
+  }
+}
+.landing .valueCardBody,
+.landing .howCardBody {
+  font-size: var(--mm-font-size-base);
+  line-height: var(--mm-line-height-lg);
+  color: var(--mm-gray-700);
+  margin: 0;
+}
+@media (min-width: 1024px) {
+  .landing .valueCardBody,
+  .landing .howCardBody {
+    font-size: var(--mm-font-size-lg);
+  }
+}
+.landing .valueCardGrid,
+.landing .howCardGrid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--mm-space-5);
+  width: 100%;
+  max-width: var(--mm-content-max-width);
+  margin: 0 auto;
+}
+@media (min-width: 768px) {
+  .landing .valueCardGrid,
+  .landing .howCardGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+@media (min-width: 1024px) {
+  .landing .valueCardGrid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+  .landing .howCardGrid {
+    grid-template-columns: repeat(4, 1fr);
+  }
 }
 
 /* Belief */
@@ -154,9 +353,92 @@
 
 .beliefGrid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(var(--landing-card-min), 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(var(--landingCardMin, var(--mm-landing-card-min)), 1fr));
   gap: var(--mm-space-5);
   margin-top: var(--mm-space-6);
+}
+
+/* Problem — list + closing line */
+.problemList {
+  list-style: none;
+  padding: 0;
+  margin: 0 auto var(--mm-space-6);
+  max-width: var(--landingDiffMax, var(--mm-landing-diff-max));
+  text-align: left;
+}
+.problemList li {
+  font-size: var(--mm-font-size-base);
+  line-height: var(--mm-line-height-lg);
+  color: var(--mm-gray-700);
+  padding: var(--mm-space-2) 0;
+  padding-left: var(--mm-space-6);
+  position: relative;
+}
+.problemList li::before {
+  content: '—';
+  position: absolute;
+  left: 0;
+  color: var(--mm-color-primary-500);
+}
+@media (min-width: 1024px) {
+  .problemList li {
+    font-size: var(--mm-font-size-lg);
+  }
+}
+.problemClosing {
+  font-size: var(--mm-font-size-base);
+  font-weight: var(--mm-font-weight-medium);
+  line-height: var(--mm-line-height-lg);
+  color: var(--mm-gray-800);
+  max-width: var(--landingDiffMax, var(--mm-landing-diff-max));
+  margin: 0 auto;
+}
+@media (min-width: 1024px) {
+  .problemClosing {
+    font-size: var(--mm-font-size-lg);
+  }
+}
+.howOutcome {
+  font-size: var(--mm-font-size-base);
+  font-weight: var(--mm-font-weight-medium);
+  line-height: var(--mm-line-height-lg);
+  color: var(--mm-gray-800);
+  margin-top: var(--mm-space-6);
+  max-width: var(--landingDiffMax, var(--mm-landing-diff-max));
+  margin-left: auto;
+  margin-right: auto;
+}
+@media (min-width: 1024px) {
+  .howOutcome {
+    font-size: var(--mm-font-size-lg);
+  }
+}
+.whatYouGetList {
+  list-style: none;
+  padding: 0;
+  margin: 0 auto;
+  max-width: var(--landingDiffMax, var(--mm-landing-diff-max));
+  text-align: left;
+}
+.whatYouGetList li {
+  font-size: var(--mm-font-size-base);
+  line-height: var(--mm-line-height-lg);
+  color: var(--mm-gray-700);
+  padding: var(--mm-space-2) 0;
+  padding-left: var(--mm-space-6);
+  position: relative;
+}
+.whatYouGetList li::before {
+  content: '✓';
+  position: absolute;
+  left: 0;
+  color: var(--mm-color-primary-500);
+  font-weight: var(--mm-font-weight-bold);
+}
+@media (min-width: 1024px) {
+  .whatYouGetList li {
+    font-size: var(--mm-font-size-lg);
+  }
 }
 
 /* Problem — KPI-style cards (layout grammar: same as KPICard) */
@@ -170,7 +452,7 @@
 
 .problemGrid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(var(--landing-card-min-wide), 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(var(--landingCardMinWide, var(--mm-landing-card-min-wide)), 1fr));
   gap: var(--mm-space-5);
   margin-top: var(--mm-space-6);
 }
@@ -230,7 +512,7 @@
 /* Product — same KPI-style cards */
 .productGrid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(var(--landing-card-min), 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(var(--landingCardMin, var(--mm-landing-card-min)), 1fr));
   gap: var(--mm-space-5);
   margin-top: var(--mm-space-4);
 }
@@ -241,7 +523,7 @@
   color: var(--mm-gray-700);
   line-height: var(--mm-line-height-lg);
   text-align: center;
-  max-width: var(--landing-diff-max);
+  max-width: var(--landingDiffMax, var(--mm-landing-diff-max));
   margin: 0 auto;
 }
 
@@ -255,19 +537,17 @@
 }
 
 .pricingCard {
-  background: var(--mm-white);
-  border: 1px solid var(--mm-gray-200);
-  border-radius: var(--mm-radius-lg);
+  background: var(--chartBackground, var(--mm-white));
+  border-radius: var(--cardBorderRadius, var(--mm-radius-lg));
+  box-shadow: var(--cardShadow, var(--mm-shadow-sm));
   padding: var(--mm-space-6);
   display: flex;
   flex-direction: column;
   text-align: center;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
 }
 
 .pricingCardFeatured {
-  border-color: var(--mm-color-primary-500);
-  box-shadow: 0 4px 12px rgba(var(--mm-color-primary-rgb, 59, 130, 246), 0.15);
+  box-shadow: var(--mm-shadow-md), 0 0 0 var(--mm-border-width-md) var(--mm-color-primary-200);
 }
 
 .pricingCardTitle {
@@ -275,6 +555,13 @@
   font-weight: var(--mm-font-weight-bold);
   color: var(--mm-gray-900);
   margin-bottom: var(--mm-space-2);
+}
+
+.pricingCardSubhead {
+  font-size: var(--mm-font-size-sm);
+  color: var(--mm-gray-600);
+  margin-bottom: var(--mm-space-4);
+  font-weight: var(--mm-font-weight-normal);
 }
 
 .pricingCardPrice {
@@ -325,18 +612,52 @@
   margin-top: auto;
 }
 
-/* Footer CTA */
-.footer {
-  background: linear-gradient(160deg, var(--landing-hero-bg-start) 0%, var(--landing-hero-bg-mid) 100%);
-  color: var(--landing-hero-text);
-  padding: clamp(var(--mm-space-16), 10vw, var(--mm-space-24)) var(--mm-space-6);
-  text-align: center;
+/* FAQ — theme tokens only */
+.faqList {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  max-width: var(--landingFaqMaxWidth, var(--mm-landing-faq-max-width));
+  margin-left: auto;
+  margin-right: auto;
+  text-align: left;
 }
 
-.footerInner {
-  max-width: var(--landing-footer-inner-max);
-  margin: 0 auto;
+.faqItem {
+  margin-bottom: var(--mm-space-6);
+  padding-bottom: var(--mm-space-6);
+  border-bottom: var(--mm-border-width-sm) solid var(--mm-gray-200);
 }
+
+.faqItem:last-child {
+  margin-bottom: 0;
+  padding-bottom: 0;
+  border-bottom: none;
+}
+
+.faqQuestion {
+  font-size: var(--mm-font-size-lg);
+  font-weight: var(--mm-font-weight-semibold);
+  color: var(--mm-gray-900);
+  margin: 0 0 var(--mm-space-2) 0;
+}
+
+.faqAnswer {
+  font-size: var(--mm-font-size-base);
+  color: var(--mm-gray-600);
+  line-height: var(--mm-line-height-lg);
+  margin: 0;
+}
+
+/* Footer CTA — theme tokens only */
+.footer {
+  background: linear-gradient(160deg, var(--landingHeroBgStart, var(--mm-landing-hero-bg-start)) 0%, var(--landingHeroBgMid, var(--mm-landing-hero-bg-mid)) 100%);
+  color: var(--landingHeroText, var(--mm-landing-hero-text));
+  padding-top: clamp(var(--heroPaddingYMin, var(--mm-hero-padding-y-min)), 10vw, var(--heroPaddingYMax, var(--mm-hero-padding-y-max)));
+  padding-bottom: clamp(var(--heroPaddingYMin, var(--mm-hero-padding-y-min)), 10vw, var(--heroPaddingYMax, var(--mm-hero-padding-y-max)));
+  text-align: center;
+}
+/* footerInner uses shared container above */
 
 .footerBrand {
   display: flex;
@@ -352,10 +673,13 @@
   max-width: 100%;
 }
 
+/* WHAT: Match admin branding; theme tokens only */
 .footerSiteName {
-  font-size: var(--mm-font-size-lg);
-  font-weight: var(--mm-font-weight-bold);
-  color: var(--landing-hero-text);
+  font-family: var(--font-pacifico);
+  font-size: var(--mm-font-size-2xl);
+  font-weight: var(--mm-font-weight-normal);
+  letter-spacing: var(--mm-letter-spacing-wide);
+  color: var(--landingHeroText, var(--mm-landing-hero-text));
 }
 
 .footerTitle {
@@ -368,7 +692,7 @@
 .footerSite {
   margin-top: var(--mm-space-6);
   font-size: var(--mm-font-size-sm);
-  color: var(--landing-hero-border-hover);
+  color: var(--landingHeroBorderHover, var(--mm-landing-hero-border-hover));
 }
 
 .footerLegal {
@@ -388,6 +712,11 @@
 .footerLegal a:hover {
   color: var(--landing-hero-text);
   text-decoration: underline;
+}
+
+.footerVersion {
+  font-size: var(--mm-font-size-sm);
+  color: var(--landing-hero-border-hover);
 }
 
 /* Note: max-width must be a literal (CSS does not allow var() in media queries). Value matches --landing-breakpoint-md. */

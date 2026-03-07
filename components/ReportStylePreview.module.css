@@ -226,6 +226,12 @@
   box-sizing: border-box; /* Ensure border doesn't expand size */
 }
 
+.pieLegendDotSvg {
+  width: 12px;
+  height: 12px;
+  flex-shrink: 0;
+}
+
 .pieLegendItem span {
   font-size: var(--mm-font-size-xs);
   font-weight: var(--mm-font-weight-medium);
@@ -237,5 +243,113 @@
   font-size: var(--mm-font-size-sm);
   line-height: 1.6;
   color: var(--textColor);
+  margin: 0;
+}
+
+/* Value Chain preview */
+.valuechainPreview {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--mm-space-2);
+  text-align: center;
+}
+.valuechainIcon {
+  font-size: 28px !important;
+  color: var(--kpiIconColor) !important;
+  width: 28px !important;
+  height: 28px !important;
+}
+.valuechainTitleRow {
+  font-size: var(--mm-font-size-base);
+  font-weight: var(--mm-font-weight-semibold);
+  color: var(--chartTitleColor);
+}
+.valuechainDescRow {
+  font-size: var(--mm-font-size-xs);
+  color: var(--chartLabelColor);
+  line-height: 1.3;
+}
+
+/* Landing page preview */
+.landingPreview {
+  margin-top: var(--mm-space-6);
+  padding-top: var(--mm-space-4);
+  border-top: 2px solid var(--chartBorder);
+}
+.landingPreviewTitle {
+  font-size: var(--mm-font-size-sm);
+  font-weight: var(--mm-font-weight-bold);
+  color: var(--chartTitleColor);
+  margin-bottom: var(--mm-space-3);
+}
+.landingHeroPreview {
+  background: linear-gradient(160deg, var(--landingHeroBgStart, var(--mm-landing-hero-bg-start)) 0%, var(--landingHeroBgMid, var(--mm-landing-hero-bg-mid)) 50%, var(--landingHeroBgEnd, var(--mm-landing-hero-bg-end)) 100%);
+  color: var(--landingHeroText, var(--mm-landing-hero-text));
+  padding: var(--mm-space-4);
+  border-radius: var(--mm-radius-md);
+  margin-bottom: var(--mm-space-3);
+  text-align: center;
+}
+.landingHeroSiteName {
+  font-family: var(--font-pacifico, cursive);
+  font-size: var(--mm-font-size-xl);
+  font-weight: 400;
+  display: block;
+  margin-bottom: var(--mm-space-1);
+}
+.landingHeroSub {
+  font-size: var(--mm-font-size-xs);
+  color: var(--landingHeroTextMuted, var(--mm-landing-hero-text-muted));
+  margin: 0;
+}
+.landingCardsRow {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--mm-space-3);
+  margin-bottom: var(--mm-space-3);
+}
+.landingCard {
+  background: var(--chartBackground);
+  border-radius: var(--cardBorderRadius, var(--mm-radius-lg));
+  box-shadow: var(--cardShadow, var(--mm-shadow-sm));
+  padding: var(--mm-space-3);
+  text-align: center;
+}
+.landingCardIcon {
+  font-size: 24px !important;
+  color: var(--kpiIconColor) !important;
+  width: 24px !important;
+  height: 24px !important;
+  margin-bottom: var(--mm-space-2);
+}
+.landingCardTitle {
+  font-size: var(--mm-font-size-sm);
+  font-weight: var(--mm-font-weight-semibold);
+  color: var(--chartTitleColor);
+  margin-bottom: var(--mm-space-1);
+}
+.landingCardBody {
+  font-size: var(--mm-font-size-xs);
+  color: var(--chartLabelColor);
+  margin: 0;
+  line-height: 1.3;
+}
+.landingPricingCard {
+  background: var(--chartBackground);
+  border-radius: var(--cardBorderRadius, var(--mm-radius-lg));
+  box-shadow: var(--cardShadow, var(--mm-shadow-sm));
+  padding: var(--mm-space-3);
+  text-align: center;
+}
+.landingPricingTitle {
+  font-size: var(--mm-font-size-sm);
+  font-weight: var(--mm-font-weight-semibold);
+  color: var(--chartTitleColor);
+  margin-bottom: var(--mm-space-1);
+}
+.landingPricingBody {
+  font-size: var(--mm-font-size-xs);
+  color: var(--chartLabelColor);
   margin: 0;
 }

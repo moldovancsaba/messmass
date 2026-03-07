@@ -4,6 +4,12 @@
 
 .wrapper {
   background: var(--mm-white);
+  --block-height: clamp(160px, 42vw, 220px);
+  --chartBackground: var(--mm-white);
+  --chartValueColor: var(--mm-gray-900);
+  --chartLabelColor: var(--mm-gray-600);
+  --kpiIconColor: var(--mm-color-primary-500);
+  border-left-color: var(--mm-color-primary-500);
   border: 1px solid var(--mm-border-color-default);
   border-left-width: 4px;
   border-left-style: solid;
@@ -28,4 +34,29 @@
 .titleUppercase {
   text-transform: uppercase;
   letter-spacing: 0.02em;
+}
+
+.accentPrimary {
+  --kpiIconColor: var(--mm-color-primary-500);
+  border-left-color: var(--mm-color-primary-500);
+}
+
+.accentSecondary {
+  --kpiIconColor: var(--mm-color-secondary-500);
+  border-left-color: var(--mm-color-secondary-500);
+}
+
+.accentSuccess {
+  --kpiIconColor: var(--mm-success);
+  border-left-color: var(--mm-success);
+}
+
+.accentWarning {
+  --kpiIconColor: var(--mm-warning);
+  border-left-color: var(--mm-warning);
+}
+
+.accentInfo {
+  --kpiIconColor: var(--mm-info);
+  border-left-color: var(--mm-info);
 }

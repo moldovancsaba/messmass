@@ -5,7 +5,7 @@ import { useParams } from 'next/navigation';
 import EditorDashboard from '../../../components/EditorDashboard';
 import PagePasswordLogin, { isAuthenticated } from '@/components/PagePasswordLogin';
 import { useReportStyle } from '@/hooks/useReportStyle';
-import styles from './page.module.css';
+import styles from '@/app/styles/editor-states.module.css';
 
 interface Project {
   _id: string;

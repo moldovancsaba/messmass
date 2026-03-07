@@ -7,7 +7,7 @@ import { AdminUser } from '@/lib/auth';
 import UnifiedHashtagInput from '@/components/UnifiedHashtagInput';
 import ColoredHashtagBubble from '@/components/ColoredHashtagBubble';
 import SharePopup from '@/components/SharePopup';
-import AdminHero from '@/components/AdminHero';
+import UnifiedAdminHeroWithSearch from '@/components/UnifiedAdminHeroWithSearch';
 import ColoredCard from '@/components/ColoredCard';
 import BitlyLinksEditor from '@/components/BitlyLinksEditor';
 import FormModal from '@/components/modals/FormModal';
@@ -19,6 +19,7 @@ import {
 } from '@/lib/hashtagCategoryUtils';
 import partnerStyles from './PartnerLogos.module.css';
 import { apiPost, apiPut, apiDelete } from '@/lib/apiClient';
+import { getStoredOrDerivedTotalFans } from '@/lib/totalFans';
 // WHAT: Server-driven sorting implementation for full-dataset ordering
 // WHY: Clicking table headers must sort ALL projects, not just the visible page.
 // This replaces client-only sorting with backend sort & offset pagination in search/sort modes.
@@ -442,9 +443,12 @@ export default function ProjectsPageClient({ user }: ProjectsPageClientProps) {
 
       if (result.success) {
         setProjects(prev => prev.filter(p => p._id !== projectId));
+      } else {
+        alert(result.error || 'Failed to delete project');
       }
     } catch (error) {
       console.error('Failed to delete project:', error);
+      alert(error instanceof Error ? error.message : 'Failed to delete project');
     }
   };
 
@@ -595,7 +599,7 @@ export default function ProjectsPageClient({ user }: ProjectsPageClientProps) {
     <div className="page-container">
       {/* WHAT: AdminHero standardization for consistent header
           WHY: Unified design system across all admin pages */}
-      <AdminHero
+      <UnifiedAdminHeroWithSearch
         title="🍿 Manage Projects"
         subtitle="Manage all event projects, statistics, and sharing options"
         backLink="/admin"
@@ -691,7 +695,7 @@ export default function ProjectsPageClient({ user }: ProjectsPageClientProps) {
                 </tr>
               ) : (
                 filteredAndSortedProjects.map((project) => {
-                  const fans = project.stats.indoor + project.stats.outdoor + project.stats.stadium;
+                  const fans = getStoredOrDerivedTotalFans(project.stats);
                   const images = project.stats.remoteImages + project.stats.hostessImages + project.stats.selfies;
                   const attendees = project.stats.eventAttendees || 0;
                   
@@ -860,7 +864,7 @@ export default function ProjectsPageClient({ user }: ProjectsPageClientProps) {
                               }
                             }}
                           >
-                            <MaterialIcon name="download" variant="outlined" style={{ fontSize: '1rem', marginRight: '0.25rem' }} />
+                            <MaterialIcon name="download" variant="outlined" className={partnerStyles.actionIcon} />
                             CSV
                           </button>
                           
@@ -875,7 +879,7 @@ export default function ProjectsPageClient({ user }: ProjectsPageClientProps) {
                               }}
                               title={`Share edit page for ${project.eventName} statistics`}
                             >
-                              <MaterialIcon name="bar_chart" variant="outlined" style={{ fontSize: '1rem', marginRight: '0.25rem' }} />
+                              <MaterialIcon name="bar_chart" variant="outlined" className={partnerStyles.actionIcon} />
                               Edit Stats
                             </button>
                           )}
@@ -889,7 +893,7 @@ export default function ProjectsPageClient({ user }: ProjectsPageClientProps) {
                             }}
                             title="Edit project name and date"
                           >
-                            <MaterialIcon name="edit" variant="outlined" style={{ fontSize: '1rem', marginRight: '0.25rem' }} />
+                            <MaterialIcon name="edit" variant="outlined" className={partnerStyles.actionIcon} />
                             Edit
                           </button>
                           
@@ -898,7 +902,7 @@ export default function ProjectsPageClient({ user }: ProjectsPageClientProps) {
                             className="btn btn-small btn-danger action-button"
                             onClick={() => deleteProject(project._id)}
                           >
-                            <MaterialIcon name="delete" variant="outlined" style={{ fontSize: '1rem', marginRight: '0.25rem' }} />
+                            <MaterialIcon name="delete" variant="outlined" className={partnerStyles.actionIcon} />
                             Delete
                           </button>
                         </div>

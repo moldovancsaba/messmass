@@ -31,22 +31,10 @@ export default function LandingKPIChart({
   const chartClass = hasIcon
     ? `${reportChartStyles.chart} ${reportChartStyles.kpi}`
     : `${reportChartStyles.chart} ${reportChartStyles.kpi} ${reportChartStyles.kpiNoIcon}`;
+  const accentClass = getAccentClass(accentColor);
 
   return (
-    <div
-      className={styles.wrapper}
-      style={
-        {
-          '--block-height': 'clamp(160px, 42vw, 220px)',
-          '--chartBackground': 'var(--mm-white)',
-          '--chartValueColor': 'var(--mm-gray-900)',
-          '--chartLabelColor': 'var(--mm-gray-600)',
-          '--kpiIconColor': accentColor,
-          /* Typography set in LandingKPIChart.module.css via container queries for responsivity */
-          borderLeftColor: accentColor,
-        } as React.CSSProperties
-      }
-    >
+    <div className={`${styles.wrapper} ${accentClass}`}>
       <div className={chartClass}>
         {hasIcon && (
           <div className={reportChartStyles.kpiIconRow}>
@@ -60,4 +48,20 @@ export default function LandingKPIChart({
       </div>
     </div>
   );
+}
+
+function getAccentClass(accentColor: string): string {
+  switch (accentColor) {
+    case 'var(--mm-color-secondary-500)':
+      return styles.accentSecondary;
+    case 'var(--mm-success)':
+      return styles.accentSuccess;
+    case 'var(--mm-warning)':
+      return styles.accentWarning;
+    case 'var(--mm-info)':
+      return styles.accentInfo;
+    case 'var(--mm-color-primary-500)':
+    default:
+      return styles.accentPrimary;
+  }
 }

@@ -15,6 +15,7 @@ import {
 } from 'chart.js';
 import type { ChartResult } from '@/lib/report-calculator';
 import { preventPhraseBreaks } from '@/lib/chartLabelUtils';
+import { replaceEmDashes } from '@/lib/contentFormat';
 import MaterialIcon from '@/components/MaterialIcon';
 import CellWrapper from '@/components/CellWrapper';
 import { ChartErrorBoundary } from '@/components/ChartErrorBoundary';
@@ -101,6 +102,9 @@ interface ReportChartProps {
   
   /** Optional CSS class for container */
   className?: string;
+
+  /** When true (e.g. static landing), KPI value row gets 40% height so description copy doesn't truncate */
+  allowNA?: boolean;
 }
 
 /**
@@ -117,7 +121,7 @@ interface ReportChartProps {
  * - IMAGE: Aspect ratio-aware image display
  * - VALUE: Composite (KPI + BAR) - renders both components
  */
-export default function ReportChart({ result, chart, width, blockHeight, unifiedTextFontSize, className }: ReportChartProps) {
+export default function ReportChart({ result, chart, width, blockHeight, unifiedTextFontSize, className, allowNA = false }: ReportChartProps) {
   // WHAT: A-R-11 - Check for calculation errors first
   // WHY: Display error messages to users instead of hiding charts
   // HOW: Show error placeholder if chartError or error exists
@@ -185,14 +189,9 @@ export default function ReportChart({ result, chart, width, blockHeight, unified
         );
         return total > 0;
       
-      case 'valuechain': {
-        const el = result.elements;
-        if (!el || el.length < 2) return false;
-        return (
-          (typeof el[0]?.value === 'string' && el[0].value.length > 0) ||
-          (typeof el[1]?.value === 'string' && el[1].value.length > 0)
-        );
-      }
+      case 'valuechain':
+        // Always show valuechain when it has icon + 2 elements (title + description); content can be empty
+        return !!(result.elements && result.elements.length >= 2);
       
       default:
         return false;
@@ -214,7 +213,7 @@ export default function ReportChart({ result, chart, width, blockHeight, unified
     // WHY: Eliminates per-chart inline styles, better maintainability
   switch (result.type) {
     case 'kpi':
-        return <KPIChart result={result} className={className} />;
+        return <KPIChart result={result} className={className} allowNA={allowNA} />;
     
     case 'pie':
         return <PieChart result={result} className={className} />;
@@ -235,7 +234,7 @@ export default function ReportChart({ result, chart, width, blockHeight, unified
       // VALUE charts render KPI + BAR together
       return (
         <div className={`${styles.valueComposite} ${className || ''}`}>
-            <KPIChart result={result} className={className} />
+            <KPIChart result={result} className={className} allowNA={allowNA} />
             <BarChart result={result} />
         </div>
       );
@@ -281,9 +280,9 @@ export default function ReportChart({ result, chart, width, blockHeight, unified
  * UPDATED: Uses CellWrapper for Report Layout Spec v2.0
  * A-03.2: Enhanced height calculation to prevent value/label clipping
  */
-function KPIChart({ result, className }: { result: ChartResult; className?: string }) {
-  const formattedValue = formatValue(result.kpiValue, result.formatting);
-  const protectedTitle = preventPhraseBreaks(result.title);
+function KPIChart({ result, className, allowNA = false }: { result: ChartResult; className?: string; allowNA?: boolean }) {
+  const formattedValue = replaceEmDashes(formatValue(result.kpiValue, result.formatting));
+  const protectedTitle = preventPhraseBreaks(replaceEmDashes(result.title || ''));
   
   // WHAT: Use Material Icon with variant from chart config
   // WHY: Match admin UI and support all 2000+ Material Icons
@@ -317,15 +316,15 @@ function KPIChart({ result, className }: { result: ChartResult; className?: stri
         // WHAT: Calculate allocated row heights based on grid proportions
         // WHY: KPI layout changes when title/icon are hidden
         // HOW: Match the CSS grid-template-rows variants in ReportChart.module.css
+        const valueRowFraction = allowNA ? 0.4 : 0.3;
+        const titleRowFraction = 0.3;
         const iconRowHeight = hasIcon ? (containerHeight * 0.4) : 0;
         const valueRowHeight = hasIcon
-          ? (showTitle ? (containerHeight * 0.3) : (containerHeight * 0.6))
+          ? (showTitle ? (containerHeight * valueRowFraction) : (containerHeight * 0.6))
           : (showTitle ? (containerHeight * 0.7) : containerHeight);
-        const titleRowHeight = showTitle ? (containerHeight * 0.3) : 0;
+        const titleRowHeight = showTitle ? (containerHeight * titleRowFraction) : 0;
         
-        // WHAT: A-03.2 - Measure actual content height in value row
-        // WHY: Value might wrap to multiple lines and exceed allocated height
-        // HOW: Use offsetHeight (actual rendered height) to check if wrapped content fits
+        // WHAT: A-03.2 - Measure actual content height in value row; run on report and landing so text fits
         if (kpiValueRowRef.current) {
           const valueElement = kpiValueRowRef.current;
           // WHAT: Use offsetHeight instead of scrollHeight for values
@@ -385,12 +384,10 @@ function KPIChart({ result, className }: { result: ChartResult; className?: stri
           }
         }
         
-        // WHAT: A-03.2 - Measure actual content height in title row
-        // WHY: Title might wrap to multiple lines and exceed allocated height
-        // HOW: Use offsetHeight (actual rendered height) since title is clamped to 2 lines with -webkit-line-clamp
+        // WHAT: A-03.2 - Measure actual content height in title row; run on report and landing so text fits
         if (showTitle && kpiTitleRef.current) {
           const titleElement = kpiTitleRef.current;
-          const titleSpan = titleElement.querySelector('span');
+          const titleSpan = titleElement.querySelector('span') ?? titleElement;
           if (titleSpan) {
             // WHAT: Use offsetHeight instead of scrollHeight for titles
             // WHY: Titles use -webkit-line-clamp: 2, so offsetHeight shows the actual clamped height
@@ -498,7 +495,7 @@ function KPIChart({ result, className }: { result: ChartResult; className?: stri
         mutationObserver.disconnect();
       };
     }
-  }, [showTitle, hasIcon, result.kpiValue, result.title, result.chartId]);
+  }, [showTitle, hasIcon, result.kpiValue, result.title, result.chartId, allowNA]);
   
   // WHAT: KPI uses internal CSS grid for deterministic layout
   // WHY: Avoids reserving space for hidden sections (title/icon)
@@ -532,31 +529,88 @@ function KPIChart({ result, className }: { result: ChartResult; className?: stri
 }
 
 /**
- * ValueChain Chart - Icon + 2 text lines (title/highlight + description)
- * Same layout as KPI: icon row, then first text, then second text
+ * ValueChain Chart - Icon (32px) + Title row (32px) + Description row (16px)
+ * Dynamic sizing with shrink-to-fit so content fits without truncation
  */
 function ValueChainChart({ result, className }: { result: ChartResult; className?: string }) {
-  const textA = (result.elements?.[0]?.value != null ? String(result.elements[0].value) : '').trim();
-  const textB = (result.elements?.[1]?.value != null ? String(result.elements[1].value) : '').trim();
+  const textA = replaceEmDashes((result.elements?.[0]?.value != null ? String(result.elements[0].value) : '').trim());
+  const textB = replaceEmDashes((result.elements?.[1]?.value != null ? String(result.elements[1].value) : '').trim());
   const iconVariant = result.iconVariant || 'outlined';
   const hasIcon = !!result.icon;
 
+  const containerRef = useRef<HTMLDivElement>(null);
+  const titleRowRef = useRef<HTMLDivElement>(null);
+  const descRowRef = useRef<HTMLDivElement>(null);
+
+  // Shrink-to-fit: reduce font size if title or description overflows allocated row height
+  useEffect(() => {
+    if (!containerRef.current || typeof window === 'undefined') return;
+    const run = () => {
+      const container = containerRef.current;
+      if (!container) return;
+      const totalHeight = container.offsetHeight;
+      if (totalHeight <= 0) return;
+      // Grid 3fr 3fr 4fr => title 30%, desc 40%
+      const titleAllocated = totalHeight * 0.3;
+      const descAllocated = totalHeight * 0.4;
+      const tolerance = 2;
+
+      if (titleRowRef.current && textA) {
+        const el = titleRowRef.current;
+        const actual = el.offsetHeight;
+        const style = window.getComputedStyle(el);
+        const paddingV = parseFloat(style.paddingTop) + parseFloat(style.paddingBottom) || 0;
+        const available = titleAllocated - paddingV;
+        if (actual > available + tolerance && available > 0) {
+          const currentFont = parseFloat(style.fontSize) || 32;
+          const lineH = parseFloat(style.lineHeight) || 1.2;
+          const scale = (available / actual) * 0.95;
+          const newFont = Math.max(10, currentFont * scale);
+          el.style.setProperty('font-size', `${newFont}px`, 'important');
+        }
+      }
+      if (descRowRef.current && textB) {
+        const el = descRowRef.current;
+        const actual = el.offsetHeight;
+        const style = window.getComputedStyle(el);
+        const paddingV = parseFloat(style.paddingTop) + parseFloat(style.paddingBottom) || 0;
+        const available = descAllocated - paddingV;
+        if (actual > available + tolerance && available > 0) {
+          const currentFont = parseFloat(style.fontSize) || 16;
+          const scale = (available / actual) * 0.95;
+          const newFont = Math.max(9, currentFont * scale);
+          el.style.setProperty('font-size', `${newFont}px`, 'important');
+        }
+      }
+    };
+    run();
+    const t = setTimeout(run, 0);
+    const ro = new ResizeObserver(() => requestAnimationFrame(run));
+    ro.observe(containerRef.current);
+    return () => {
+      clearTimeout(t);
+      ro.disconnect();
+    };
+  }, [textA, textB]);
+
+  const gridClass = !hasIcon ? (textB ? styles.valuechainNoIcon : styles.valuechainOnlyTitle) : (!textB ? styles.valuechainNoDesc : '');
   return (
     <div
-      className={`${styles.chart} ${styles.kpi} ${!hasIcon ? (textB ? styles.kpiNoIcon : styles.kpiOnlyValue) : (!textB ? styles.kpiNoTitle : '')} report-chart ${className || ''}`}
+      ref={containerRef}
+      className={`${styles.chart} ${styles.valuechain} ${gridClass} report-chart ${className || ''}`}
     >
       {hasIcon && (
-        <div className={styles.kpiIconRow}>
+        <div className={styles.valuechainIconRow}>
           <MaterialIcon
             name={result.icon as string}
             variant={iconVariant}
-            className={styles.kpiIcon}
+            className={styles.valuechainIcon}
           />
         </div>
       )}
-      <div className={styles.kpiValueRow}>{textA || '\u00A0'}</div>
+      <div ref={titleRowRef} className={styles.valuechainTitleRow}>{textA || '\u00A0'}</div>
       {textB ? (
-        <div className={styles.kpiTitle}>
+        <div ref={descRowRef} className={styles.valuechainDescRow}>
           <span>{preventPhraseBreaks(textB)}</span>
         </div>
       ) : null}
@@ -985,22 +1039,19 @@ function PieChart({ result, className }: { result: ChartResult; className?: stri
           {elements.map((element, idx) => {
             const numValue = typeof element.value === 'number' ? element.value : 0;
             // WHAT: Format percentage based on rounded setting
-            // WHY: Respect formatting.rounded flag for decimal places
             const decimals = getDecimalsFromFormatting(result.formatting);
             const percentage = total > 0 ? ((numValue / total) * 100).toFixed(decimals) : '0';
-            const color = pieColors[idx % pieColors.length];
             const protectedLabel = preventPhraseBreaks(element.label);
+            // WHAT: Use CSS var refs so legend dots update when report style loads or changes
+            const pieColorVar = `var(--pieColor${(idx % 2) + 1})`;
             return (
               <div 
                 key={idx} 
                 className={styles.pieLegendItem}
-                // WHAT: Dynamic pie legend dot color from chart data
-                // WHY: Colors come from chart calculation, cannot use static CSS classes
-                // HOW: Set CSS custom properties on parent, consumed by .pieLegendDot
                 // eslint-disable-next-line react/forbid-dom-props
-                  style={{ 
-                  '--dot-color': color,
-                  '--dot-border-color': pieColors[0]
+                style={{
+                  '--dot-color': pieColorVar,
+                  '--dot-border-color': 'var(--pieColor1)'
                 } as React.CSSProperties}
               >
                 <div className={styles.pieLegendDot} />
@@ -1354,30 +1405,10 @@ function BarChart({ result, className }: { result: ChartResult; className?: stri
     return <div className={styles.chart}>No bar data</div>;
   }
   
-  // WHAT: Read individual bar colors from CSS variables
-  // WHY: Use custom style colors for each bar (granular control)
-  // HOW: getComputedStyle reads --barColor1-5 from Style editor, fallback to design tokens only
-  const getBarColors = () => {
-    const root = document.documentElement;
-    const cs = getComputedStyle(root);
-    // WHAT: No hardcoded colors - only CSS variables from Style editor or design tokens
-    // WHY: All colors must come from Style editor or design system, no hardcoded fallbacks
-    const primary = cs.getPropertyValue('--mm-color-primary-500').trim();
-    const secondary = cs.getPropertyValue('--mm-color-secondary-500').trim();
-    const success = cs.getPropertyValue('--mm-success').trim() || cs.getPropertyValue('--mm-color-secondary-500').trim();
-    const warning = cs.getPropertyValue('--mm-warning').trim();
-    const error = cs.getPropertyValue('--mm-error').trim();
-    return [
-      cs.getPropertyValue('--barColor1').trim() || primary,
-      cs.getPropertyValue('--barColor2').trim() || secondary,
-      cs.getPropertyValue('--barColor3').trim() || success,
-      cs.getPropertyValue('--barColor4').trim() || warning,
-      cs.getPropertyValue('--barColor5').trim() || error,
-    ];
-  };
-  
-  const barColors = getBarColors();
+  // WHAT: Use CSS variable references so bar colors always reflect the current report style
+  // WHY: Style is injected asynchronously; passing var(--barColor1) etc. lets the browser resolve when style loads
   const maxValue = Math.max(...result.elements.map(el => typeof el.value === 'number' ? el.value : 0));
+  const barColorVar = (idx: number) => `var(--barColor${(idx % 5) + 1})`;
 
   return (
     <CellWrapper
@@ -1401,13 +1432,11 @@ function BarChart({ result, className }: { result: ChartResult; className?: stri
                 <td className={styles.barTrackCell}>
                   <div 
                     className={styles.barTrack}
-                    // WHAT: Dynamic bar fill width and color from chart calculation
-                    // WHY: Width is computed percentage, color from chart theme - cannot use static CSS
-                    // HOW: Set CSS custom properties on parent, consumed by .barFill
+                    // WHAT: Bar width and color; color is CSS var reference so style editor and report style apply
                     // eslint-disable-next-line react/forbid-dom-props
-                  style={{ 
+                    style={{ 
                       '--bar-width': `${widthPercent}%`,
-                      '--bar-color': barColors[idx % barColors.length]
+                      '--bar-color': barColorVar(idx)
                     } as React.CSSProperties}
                   >
                     <div className={styles.barFill} />

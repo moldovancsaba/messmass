@@ -4,8 +4,8 @@ Last Updated: 2026-01-11T22:45:21.000Z
 Canonical: Yes
 Owner: Backend
 
-**Version:** 11.25.3  
-**Last Updated:** 2026-01-11T22:45:21.000Z (UTC)  
+**Version:** 11.59.0  
+**Last Updated:** 2026-02-21T00:00:00.000Z (UTC)  
 **Status:** Production
 
 Quick API reference for MessMass. See detailed guides for complete schemas and examples.
@@ -152,6 +152,29 @@ Delete category.
 
 ---
 
+## Landing / Main Page API
+
+Public main page and admin configuration for which report drives messmass.com and optional static snapshot.
+
+### GET /api/landing-static (public)
+Returns payload for the main page: `{ success, staticSnapshot?, generatedAt?, landingReportSlug }`. If `staticSnapshot` is set, the site renders static content; otherwise it uses `landingReportSlug` for the live report.
+
+### GET /api/admin/landing-settings (admin)
+Returns `{ success, settings: { landingReportSlug, generatedAt? } }`. Requires session + role `admin`.
+
+### PUT /api/admin/landing-settings (admin)
+Body: `{ landingReportSlug: string }`. Updates the selected report. Requires session, role `admin`, and **X-CSRF-Token** header (use `apiPut` from `lib/apiClient`).
+
+### POST /api/admin/landing-static-generate (admin)
+Generates static snapshot from current landing report and saves it. Returns `{ success, generatedAt?, blocksCount? }`. Requires session, role `admin`, and **X-CSRF-Token** header (use `apiPost`).
+
+### GET /api/admin/landing-projects (admin)
+Returns `{ success, projects: [{ _id, eventName, viewSlug, eventDate? }] }` for the report selector. Requires session + role `admin`.
+
+**See**: [features-landing-main-page.md](../features/features-landing-main-page.md) for integration and storage.
+
+---
+
 ## Response Format
 
 All API endpoints return JSON with consistent structure:
@@ -244,9 +267,10 @@ Returns: `{ projects: [...], totalMatched: 150, nextOffset: 60 }`
 - **Hashtags**: [HASHTAG_SYSTEM.md](../features/features-hashtag-system.md)
 - **Variables**: [VARIABLE_SYSTEM_HISTORY.md](../archive/2025/deprecated-guides/archive-variable-system-history.md)
 - **Auth**: [AUTHENTICATION.md](../features/features-authentication.md)
+- **Landing / Main page**: [features-landing-main-page.md](../features/features-landing-main-page.md)
 
 ---
 
-**MessMass API Reference Version 6.0.0**  
-**Last Updated: 2025-01-21T11:14:00.000Z (UTC)**  
+**MessMass API Reference 11.59.0**  
+**Last Updated: 2026-02-21T00:00:00.000Z (UTC)**  
 **© 2025 MessMass Platform**

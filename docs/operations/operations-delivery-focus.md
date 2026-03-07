@@ -1,10 +1,10 @@
 # Delivery Focus (MessMass)
 Status: Active
-Last Updated: 2026-02-21
+Last Updated: 2026-02-24
 Canonical: No
 Owner: Product
 
-**Source of truth:** [MVP Factory Board](https://github.com/users/moldovancsaba/projects/1) (Product = messmass). Issues live in [mvp-factory-control](https://github.com/moldovancsaba/mvp-factory-control).
+**Source of truth:** [MVP Factory Board](https://github.com/users/moldovancsaba/projects/1) (Product = messmass). Issues live in [mvp-factory-control](https://github.com/moldovancsaba/mvp-factory-control). **When a delivery is completed:** update the board (move the relevant issue to **Done**, post evidence link in the issue); update this doc and release notes.
 
 ## Top 5 value & high-priority (from board, Product = messmass)
 
@@ -28,6 +28,7 @@ Owner: Product
 
 ## Recently completed
 
+- **Builder mode (clicker) — variable inputs** (2026-02-24): All chart types on `/edit/[slug]` Builder show one input per variable from formulas (KPI, Bar, Pie, Text, Table, Image, Value chain). Value chain supported; text chart empty fix; card style + icons. See `docs/release-notes-11.59.0.md` (§4), `docs/features/features-reporting-builder.md`. **Project board:** If an issue exists for Builder/clicker variable inputs (e.g. in mvp-factory-control), move it to **Done** and post a short evidence comment.
 - [#47](https://github.com/moldovancsaba/mvp-factory-control/issues/47) Extended Report Page Access (SSO dashboards) — **Done**. Routes: `/dashboard/partner/[partnerId]`, `/dashboard/hashtag/[hashtag]`, `/dashboard/filter/[filterSlug]`; SSO required for all `/dashboard/*` when SSO_BASE_URL set; middleware protects; partner reuses PartnerReportView; filter uses pre-aggregated filter-by-slug API; hashtag redirects to filter. No replacement of public report pages.
 - [#59](https://github.com/moldovancsaba/mvp-factory-control/issues/59) Analytics Phase 3 — Advanced Dashboards — **Done**. 4 dashboard templates: Executive (`/admin/analytics/executive`), Marketing (`/admin/analytics/marketing`), Operations (`/admin/analytics/operations`), Partner (`/admin/partners/[id]/analytics`). Shared `ExecutiveDashboardView` with configurable title/subtitle/defaultPeriod. Design doc Phase 3 section updated. Follow-ups: custom preferences save, PDF export, real-time &lt;2s (optional).
 - [#45](https://github.com/moldovancsaba/mvp-factory-control/issues/45) Google Sheets Phase 3 Event-Level Sync — **Done**. Event-level pull (eventId in pull API), editor UI Pull/Push on /edit/[slug], status/health unchanged; docs updated.

@@ -1,8 +1,351 @@
 # MessMass Release Notes
 Status: Active
-Last Updated: 2026-02-09T00:00:00.000Z
+Last Updated: 2026-03-06T00:00:00.000Z
 Canonical: No
 Owner: Operations
+
+## [v11.60.11] — 2026-03-07T00:00:00.000Z
+
+### Summary
+📘 **README REFRESH**: Rebuilt the top-level project README so MessMass now has a current product introduction, badge row, quick links, and a cleaner canonical docs map aligned with sibling project standards.
+
+### What Was Fixed
+
+#### README quality and accuracy refresh ✅
+**WHAT**: Rewrote `README.md` with a centered product header, badge row, quick navigation links, current product positioning, updated version, cleaner quick-start section, and a current documentation map.  
+**WHY**: The previous README was stale, carried the wrong version, and was materially below the presentation and product-introduction quality already used by sibling repos like `reply` and `hatori`.  
+**HOW**: Replaced the old README structure with a modern product-entrypoint format and synced it to the current documentation and release state.
+
+### Testing
+- ✅ `npm run build`
+- ✅ `npm run type-check`
+- ✅ `npm run lint`
+- ✅ `npm run version:verify`
+
+### Version
+v11.60.10 → v11.60.11 (PATCH — README refresh and docs entrypoint quality upgrade)
+
+## [v11.60.10] — 2026-03-07T00:00:00.000Z
+
+### Summary
+🎨 **STYLE HARDENING PHASE 5**: Synced canonical documentation after prior CSS cleanup slices by removing references to deleted stylesheets and stale audit rows.
+
+### What Was Fixed
+
+#### Documentation truthfulness cleanup ✅
+**WHAT**: Updated the reusable-components inventory and architecture docs to point at the current shared stylesheets, and removed stale hardcoded-values audit rows for deleted `PartnerReport.module.css` and `partner-edit/[slug]/page.module.css` files.  
+**WHY**: Current docs were still naming CSS modules that no longer exist, which broke the rule that documentation must reflect the live source tree.  
+**HOW**: Replaced deleted-file references with `app/styles/report-page.module.css`, `app/styles/editor-states.module.css`, and `app/admin/bitly/page.module.css`, then removed obsolete CSV rows for deleted files.
+
+### Testing
+- ✅ `npm run build`
+- ✅ `npm run type-check`
+- ✅ `npm run lint`
+- ✅ `npm run version:verify`
+
+### Version
+v11.60.9 → v11.60.10 (PATCH — style hardening phase 5 documentation truth sync)
+
+## [v11.60.9] — 2026-03-07T00:00:00.000Z
+
+### Summary
+🎨 **STYLE HARDENING PHASE 5**: Removed legacy `.OLD.css` report artifacts from the active app tree and cleaned stale audit references to those files.
+
+### What Was Fixed
+
+#### Legacy report style artifact cleanup ✅
+**WHAT**: Removed `app/partner-report/[slug]/page.module.OLD.css` and `app/report/[slug]/page.module.OLD.css`, then updated the archive audit note and hardcoded-values inventory that still referenced the old partner-report file.  
+**WHY**: These files were not part of the live code path but still lived under `app/`, which made the source tree ambiguous and left stale audit evidence pointing at non-canonical assets.  
+**HOW**: Deleted both `.OLD.css` files after confirming they were not imported, replaced the archived report audit evidence with the live `page.tsx`, and removed the obsolete CSV rows for the deleted partner-report stylesheet.
+
+### Testing
+- ✅ `npm run build`
+- ✅ `npm run type-check`
+- ✅ `npm run lint`
+- ✅ `npm run version:verify`
+
+### Version
+v11.60.8 → v11.60.9 (PATCH — style hardening phase 5 old report stylesheet cleanup)
+
+## [v11.60.8] — 2026-03-07T00:00:00.000Z
+
+### Summary
+🎨 **STYLE HARDENING PHASE 5**: Removed three non-canonical backup files from the active app tree so only live route/style sources remain under `app/`.
+
+### What Was Fixed
+
+#### Dead backup file cleanup ✅
+**WHAT**: Removed `app/admin/design/Design.module.css.backup`, `app/api/projects/edit/[slug]/route.ts.backup`, and `app/api/public/events/[id]/stats/route.ts.bak`.  
+**WHY**: These were backup copies left inside the active source tree, which increased maintenance noise and made it harder to tell which route/style files were canonical.  
+**HOW**: Deleted the backup files after verifying the live counterparts remain in place and only one historical release-note entry still referenced the old design backup.
+
+### Testing
+- ✅ `npm run build`
+- ✅ `npm run type-check`
+- ✅ `npm run lint`
+- ✅ `npm run version:verify`
+
+### Version
+v11.60.7 → v11.60.8 (PATCH — style hardening phase 5 dead backup file cleanup)
+
+## [v11.60.7] — 2026-03-06T00:00:00.000Z
+
+### Summary
+🎨 **STYLE HARDENING PHASE 5**: Removed a dead partners admin backup page and its orphaned stylesheet from the active app tree.
+
+### What Was Fixed
+
+#### Dead partners backup artifact cleanup ✅
+**WHAT**: Removed `app/admin/partners/page_old_backup.tsx` and `app/admin/partners/PartnerManager.module.css`.  
+**WHY**: The backup page was not part of the live route tree and was the only remaining importer of the orphaned partner manager stylesheet. Keeping both files in the active app tree created false maintenance surface and style drift risk.  
+**HOW**: Deleted the inactive backup page and its stylesheet after verifying the live admin partners route is `app/admin/partners/page.tsx`.
+
+### Testing
+- ✅ `npm run build`
+- ✅ `npm run type-check`
+- ✅ `npm run lint`
+- ✅ `npm run version:verify`
+
+### Version
+v11.60.6 → v11.60.7 (PATCH — style hardening phase 5 dead partners backup cleanup)
+
+## [v11.60.6] — 2026-03-06T00:00:00.000Z
+
+### Summary
+🎨 **STYLE HARDENING PHASE 5**: Removed a dead API docs route stylesheet so the page relies on the already-shared help-page style surface.
+
+### What Was Fixed
+
+#### Dead API docs CSS module cleanup ✅
+**WHAT**: Removed `app/api-docs/page.module.css`.  
+**WHY**: The live API docs page already imports `app/admin/help/page.module.css`, so the local module had become dead code and a false second styling source.  
+**HOW**: Deleted `app/api-docs/page.module.css` after verifying `app/api-docs/page.tsx` has no import to the local module and already renders through the shared help-page stylesheet.
+
+### Testing
+- ✅ `npm run build`
+- ✅ `npm run type-check`
+- ✅ `npm run lint`
+- ✅ `npm run version:verify`
+
+### Version
+v11.60.5 → v11.60.6 (PATCH — style hardening phase 5 dead API docs module cleanup)
+
+## [v11.60.5] — 2026-03-06T00:00:00.000Z
+
+### Summary
+🎨 **STYLE HARDENING PHASE 5**: Removed three dead admin CSS modules that were no longer imported by the live category, event, or admin-shell code paths.
+
+### What Was Fixed
+
+#### Dead admin CSS module cleanup ✅
+**WHAT**: Removed `app/admin/admin.module.css`, `app/admin/categories/Categories.module.css`, and `app/admin/events/Projects.module.css`.  
+**WHY**: These files were legacy route-level modules with no active imports, so they created style drift risk and confused the real admin styling surface.  
+**HOW**: Deleted the three unreferenced modules after verifying the active admin pages already render through other canonical shells and stylesheets.
+
+### Testing
+- ✅ `npm run build`
+- ✅ `npm run type-check`
+- ✅ `npm run lint`
+- ✅ `npm run version:verify`
+
+### Version
+v11.60.4 → v11.60.5 (PATCH — style hardening phase 5 dead admin module cleanup)
+
+## [v11.60.4] — 2026-03-06T00:00:00.000Z
+
+### Summary
+🎨 **STYLE HARDENING PHASE 5**: Removed an unused duplicate utility CSS module so the shared utility layer has one canonical implementation.
+
+### What Was Fixed
+
+#### Dead utility CSS module cleanup ✅
+**WHAT**: Removed `app/styles/utilities.module.css`, which was not imported by any active code path.  
+**WHY**: The live utility layer already runs through `app/styles/utilities.css`; the stale module file created false duplication and audit noise.  
+**HOW**: Deleted `app/styles/utilities.module.css` after verifying there were no code imports and that docs/globals already point to `app/styles/utilities.css`.
+
+### Testing
+- ✅ `npm run build`
+- ✅ `npm run type-check`
+- ✅ `npm run lint`
+- ✅ `npm run version:verify`
+
+### Version
+v11.60.3 → v11.60.4 (PATCH — style hardening phase 5 dead utility module cleanup)
+
+## [v11.60.3] — 2026-03-06T00:00:00.000Z
+
+### Summary
+🎨 **STYLE HARDENING PHASE 5**: Consolidated duplicated editor state CSS and removed dead legacy CSS modules so equivalent admin/reporting surfaces rely on fewer drifting stylesheets.
+
+### What Was Fixed
+
+#### Shared editor state styles ✅
+**WHAT**: Event edit and partner edit pages now share one canonical CSS module for loading and error states.  
+**WHY**: Two page-local CSS modules existed for the same editor shell behavior, which created duplication and styling drift risk.  
+**HOW**: Added `app/styles/editor-states.module.css`, updated `app/edit/[slug]/page.tsx` and `app/partner-edit/[slug]/page.tsx` to import it, and removed the duplicated page-local CSS modules.
+
+#### Dead CSS module cleanup ✅
+**WHAT**: Removed unused CSS modules that were no longer imported by active code paths.  
+**WHY**: Dead route-local stylesheets increase style drift risk and make future consolidation harder because they look real but do nothing.  
+**HOW**: Deleted `app/admin/bitly/bitly.module.css` and `app/partner-report/[slug]/PartnerReport.module.css` after confirming the active pages already use other canonical stylesheets.
+
+### Testing
+- ✅ `npm run build`
+- ✅ `npm run type-check`
+- ✅ `npm run lint`
+- ✅ `npm run version:verify`
+
+### Version
+v11.60.2 → v11.60.3 (PATCH — style hardening phase 5 editor-state consolidation)
+
+## [v11.60.2] — 2026-03-06T00:00:00.000Z
+
+### Summary
+🐛 **ADMIN TOTAL FANS + PARTNER CARD-VIEW EDIT HOTFIXES**: Admin event surfaces now use the stored `totalFans` value consistently, and the partner admin card-view report editor now follows the same working path as list view.
+
+### What Was Fixed
+
+#### Admin Total Fans consistency ✅
+**WHAT**: Admin event list/card/table/dashboard/filter surfaces now prefer stored `stats.totalFans` instead of recomputing a different number.  
+**WHY**: Production events can have authoritative `totalFans` values that differ from legacy fallback calculations, which caused admin mismatches against the event and partner reports.  
+**HOW**: Added `getStoredOrDerivedTotalFans(...)` in `lib/projectStatsUtils.ts`, updated admin renderers in `lib/adapters/projectsAdapter.tsx`, `app/admin/events/ProjectsPageClient.tsx`, `app/admin/dashboard/page.tsx`, and `app/admin/filter/page.tsx`, and aligned `/api/projects` sorting to prefer `stats.totalFans`.
+
+#### Partner page card-view report editor ✅
+**WHAT**: Partner admin card-view `Edit Stats` now opens the partner editor reliably, matching list view.  
+**WHY**: Card view still depended on `viewSlug`, while list view already used the safer `_id || viewSlug` path.  
+**HOW**: Updated `lib/adapters/partnersAdapter.tsx` and `app/admin/partners/page.tsx` so both list and card view use the same `_id || viewSlug` fallback for partner report-edit actions.
+
+### Testing
+- ✅ `npm run build`
+- ✅ `npm run type-check`
+- ✅ `npm run lint`
+- ✅ `npm run version:verify`
+- ✅ `python3 scripts/docs_inventory.py`
+- ✅ `python3 scripts/docs_triage.py`
+- ✅ `python3 scripts/docs_link_check.py`
+- ✅ `python3 scripts/docs_canonical_map.py`
+
+### Version
+v11.60.1 → v11.60.2 (PATCH — admin total-fans consistency + partner card-view edit fix)
+
+## [v11.60.1] — 2026-03-06T00:00:00.000Z
+
+### Summary
+🐛 **PRODUCTION HOTFIXES**: Partner report related-event cards now show Total Fans Engaged correctly for legacy event schemas, and admin project deletion now uses the CSRF-safe delete path with actionable error reporting.
+
+### What Was Fixed
+
+#### Partner report related-event card fans ✅
+**WHAT**: Related-event cards on partner reports now display the correct Total Fans Engaged value.  
+**WHY**: Historical events that only stored `indoor` / `outdoor` could be undercounted when cards relied only on `remoteFans`.  
+**HOW**: `app/api/partners/report/[slug]/route.ts` now enriches returned event stats with `addDerivedMetrics(...)`, and `app/partner-report/[slug]/PartnerEventsList.tsx` uses a client-safe total-fans derivation fallback so cards always render the correct total.
+
+#### Admin delete-project failure path ✅
+**WHAT**: Project deletion now uses the CSRF-safe API client and exposes the actual failure reason.  
+**WHY**: A production delete path bypassed the shared delete client and could fail under middleware while only showing the generic `Failed to delete project` message.  
+**HOW**: `lib/adapters/projectsAdapter.tsx` now uses `apiDelete(...)` instead of raw `fetch`, and `app/admin/events/ProjectsPageClient.tsx` now reports the returned or thrown error.
+
+### Testing
+- ✅ `npm run build`
+- ✅ `npm run type-check`
+- ⚠️ `npm run lint` — failed on pre-existing repo-wide issues outside this hotfix scope, including inline-style and hook-rule violations in `app/dashboard/filter/[filterSlug]/page.tsx`, `app/dashboard/hashtag/[hashtag]/page.tsx`, `app/dashboard/partner/[partnerId]/page.tsx`, `components/ChartBuilderImage.tsx`, `components/LandingKPIChart.tsx`, and `components/ReportStylePreview.tsx`
+
+### Version
+v11.60.0 → v11.60.1 (PATCH — production hotfixes)
+
+## [v11.60.0] — 2026-03-06T00:00:00.000Z
+
+### Summary
+🧭 **ADMIN UI CONSISTENCY**: Standardized the canonical admin hero across management pages, aligned touched routes to the shared admin content surface and width shell, removed inline styles from the touched scope, and synced the admin UI documentation to match the delivered standard.
+
+### What Was Changed
+
+#### Canonical hero standardization ✅
+**WHAT**: Migrated the targeted admin management pages to `UnifiedAdminHeroWithSearch` so titles, back links, actions, badges, and optional search live on one shared header path.  
+**WHY**: Admin pages had diverged between legacy `AdminHero` usage and newer unified patterns, which made the admin surface inconsistent and harder to maintain.  
+**HOW**: Extended `components/UnifiedAdminHeroWithSearch.tsx` with badge support and migrated `/admin/dashboard`, `/admin/styles`, `/admin/insights`, `/admin/content-library`, `/admin/mainpage`, `/admin/messages`, `/admin/help`, and `/admin/events` to the unified hero.
+
+#### Width and content-surface normalization ✅
+**WHAT**: Normalized the touched admin pages onto the shared `.page-container` outer shell inside `AdminLayout`'s `.content-surface`.  
+**WHY**: Several pages used page-local outer container widths, which made admin surfaces feel visually disconnected from the shared shell.  
+**HOW**: Removed page-level outer container width rules from the touched styles/insights/help pages and kept narrower widths only as inner readable wrappers where appropriate (for example, help content prose).
+
+#### Styling hygiene in touched scope ✅
+**WHAT**: Removed inline styles and hard-coded page-shell styling from the touched admin routes.  
+**WHY**: The delivery requirement for issue `#56` explicitly forbids in-code style elements in the touched scope.  
+**HOW**: Converted the help-page guest access message to CSS modules, moved event action icon spacing into CSS, rendered style color swatches via SVG instead of React `style` props, and replaced dashboard inline progress-bar widths with SVG geometry.
+
+#### Documentation and standards sync ✅
+**WHAT**: Updated the canonical admin hero/width guidance and handover docs to match the delivered standard.  
+**WHY**: The repo rulebook requires documentation to match the real system state; undocumented delivery is not done.  
+**HOW**: Updated `docs/operations/admin-ui-width-and-hero.md`, `docs/HANDOVER.md`, and `docs/messmass-codex-brain-dump.md` with the canonical hero path, width rules, touched routes, and exceptions.
+
+### Testing
+- ✅ `npm run build`
+- ✅ `npm run lint`
+- ✅ `npm run type-check`
+- ✅ `npm run version:verify`
+- ✅ `python3 scripts/docs_inventory.py`
+- ✅ `python3 scripts/docs_triage.py`
+- ✅ `python3 scripts/docs_link_check.py`
+- ✅ `python3 scripts/docs_canonical_map.py`
+
+### Version
+v11.59.0 → v11.60.0 (MINOR — admin UI consistency delivery)
+
+## [v11.56.1] — 2026-02-21T00:00:00.000Z
+
+### Summary
+🐛 **LANDING STATIC CONTENT FIX**: Static snapshot now renders on the main page instead of an empty section. Block resolution aligned with report-config; chart results stored as JSON-safe objects; client hardened for partial snapshot data.
+
+### What Was Fixed
+
+#### Static content empty on main page ✅
+**WHAT**: After generating static content in Admin → Main page, the main site showed an empty report section.  
+**WHY**: Block lookup in landing-static-generate didn’t match report-config (ObjectId/string handling), and chart results weren’t serialized for MongoDB/API round-trip, so blocks or chart data could be missing or invalid.  
+**HOW**: In `app/api/admin/landing-static-generate/route.ts`: block resolution now uses `ref.blockId.toString()` and `blocks.find(b => b._id.toString() === blockId)` (same as report-config). Added `serializeChartResult()` to store plain JSON-safe chart results (chartId, type, title, kpiValue, elements, etc.). In `components/LandingPage.tsx`: `LandingPageStatic` now defaults `snapshot.blocks` and `snapshot.chartResults` to arrays when missing and normalizes `gridSettings` with numeric fallbacks.
+
+#### "Unexpected token '<'" when response is HTML
+**WHAT**: Generate or main page could receive HTML (error page) and call `.json()`, throwing.  
+**HOW**: Generate only parses report-config response as JSON when Content-Type is application/json; else inline resolution. Main page only parses landing-static when content-type is JSON and catches parse errors.
+
+### Testing
+- Regenerate static content (Admin → Main page → Update static content), then load `/` and confirm report blocks and charts render.
+
+### Version
+v11.56.0 → v11.56.1 (PATCH — landing static content display)
+
+---
+
+## [v11.56.0] — 2026-02-21T00:00:00.000Z
+
+### Summary
+🏠 **MAIN PAGE ADMIN + STATIC LANDING**: Admin can choose which report drives the main page (messmass.com) and generate static content so the site serves a snapshot without live DB/report pipeline. Main page nav item and CSRF-safe save/generate.
+
+### What Was Added
+
+#### Main page admin UI and nav ✅
+**WHAT**: Added **Main page** to the admin sidebar (Help section, between User Guide and Messages). Page at `/admin/mainpage` lets admins select the event report that drives the content between hero and pricing on the main site, and an **Update static content** button generates a static snapshot.  
+**WHY**: Control which report is shown on messmass.com and optionally freeze it as static for performance and stability.  
+**HOW**: New nav item in `components/Sidebar.tsx`, `MENU_PERMISSIONS['Main page']` in `lib/permissions.ts`, and `app/admin/mainpage/page.tsx` with report dropdown, Save, and Update static content. All state-changing requests use `apiPut`/`apiPost` from `lib/apiClient` for CSRF token handling.
+
+#### Landing settings and static snapshot ✅
+**WHAT**: Landing page settings stored in `settings` collection (`_id: 'landingPage'`): `landingReportSlug`, optional `staticSnapshot` (blocks, chartResults, gridSettings, style, projectStats), `generatedAt`. Public main page fetches `/api/landing-static`; if a snapshot exists it renders static content, else live report for the configured slug.  
+**WHY**: messmass.com can always show static content when desired, avoiding live DB/charts on each load.  
+**HOW**: `lib/landingSettings.ts` (get/set helpers), GET/PUT `/api/admin/landing-settings`, POST `/api/admin/landing-static-generate`, GET `/api/admin/landing-projects`, GET `/api/landing-static`. `components/LandingPage.tsx` routes to `LandingPageStatic` or `LandingPageLive(slug)` and uses shared `PricingAndFooter`.
+
+#### Documentation and version ✅
+**WHAT**: New feature doc `docs/features/features-landing-main-page.md` (APIs, integration, CSRF). Admin end-user guide and API reference updated; version set to 11.56.0.  
+**WHY**: Single place for Main page behavior and proper integration (CSRF, apiClient).  
+**HOW**: Feature doc covers admin UI, all four APIs, settings storage, LandingPage flow, and CSRF requirement. Release notes, admin workflow map, api-reference, and features-overview updated.
+
+### Testing
+- ⚠️ Manual: Admin → Main page, select report, Save (no CSRF error), Update static content; load `/` and confirm static or live content and slug source.
+
+### Version
+v11.55.1 → v11.56.0 (MINOR — Main page admin + static landing)
+
+---
 
 ## [Unreleased] — 2026-02-08
 
@@ -6216,7 +6559,7 @@ New Design System Manager provides:
 - REFACTORED: `app/admin/design/Design.module.css` (290 lines) - Enhanced styles
 - UPDATED: `DESIGN_SYSTEM.md` - Added Interactive Design System Manager section
 - UPDATED: `CARD_SYSTEM.md` - Added interactive reference link
-- BACKUP: `page.tsx.backup`, `Design.module.css.backup` - Original files preserved
+- BACKUP: legacy backup artifacts from this migration have since been removed during later style-hardening cleanup
 
 **Performance**
 - Page load: <2s with all tabs loaded

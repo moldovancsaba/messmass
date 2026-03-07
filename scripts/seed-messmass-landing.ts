@@ -318,7 +318,7 @@ async function main() {
       reportText19: '4. Governance',
       reportText20: '100% auditability and access control. Every byte stays where it belongs.',
       reportTextHeroLabel: 'Sovereign Decision Intelligence',
-      reportTextHeroTitle: 'Data Privacy and Agentic AI without compromises.',
+      reportTextHeroTitle: 'Agentic AI that reads and understands your data at scale, and delivers actionable dashboards—without compromising privacy.',
       reportTextHeroSub: 'The platform that restores the freedom and security of decision-making to data-driven companies—and opens the door for those who want to become one.',
       reportTextSectionCoreTitle: 'Our core belief',
       reportTextBeliefLead: "You shouldn't have to choose between intelligence and security.",

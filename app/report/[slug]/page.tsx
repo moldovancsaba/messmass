@@ -328,6 +328,18 @@ export default function ReportPage() {
   // Determine overall loading state
   const loading = dataLoading || layoutLoading || chartsLoading || styleLoading;
 
+  // WHAT: Loading timeout so user is not stuck on "Loading report..." (e.g. slow or failing API)
+  // WHY: Report page can hang if one of useReportData / useReportLayout / charts fetch never resolves
+  const [loadingTimedOut, setLoadingTimedOut] = useState(false);
+  useEffect(() => {
+    if (!loading) {
+      setLoadingTimedOut(false);
+      return;
+    }
+    const t = setTimeout(() => setLoadingTimedOut(true), 12000);
+    return () => clearTimeout(t);
+  }, [loading]);
+
   // WHAT: Determine overall error state (exclude styleError)
   // WHY: Style errors should not block report rendering (fallback handles it)
   // HOW: Only check critical errors that prevent data/layout from loading
@@ -340,6 +352,12 @@ export default function ReportPage() {
         <div className={styles.loading}>
           <div className={styles.loadingSpinner} />
           <p className={styles.loadingText}>Loading report...</p>
+          {loadingTimedOut && (
+            <p className={`${styles.loadingText} ${styles.loadingNote}`}>
+              Taking longer than usual. Check your connection or{' '}
+              <button type="button" className="btn btn-secondary" onClick={() => window.location.reload()}>Retry</button>.
+            </p>
+          )}
         </div>
       </div>
     );

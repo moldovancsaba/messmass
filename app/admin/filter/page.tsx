@@ -9,6 +9,7 @@ import SharePopup from '@/components/SharePopup';
 import UnifiedAdminHeroWithSearch from '@/components/UnifiedAdminHeroWithSearch';
 import ColoredCard from '@/components/ColoredCard';
 import { apiPost } from '@/lib/apiClient';
+import { getStoredOrDerivedTotalFans } from '@/lib/totalFans';
 
 interface ProjectStats {
   remoteImages: number;
@@ -329,7 +330,7 @@ function HashtagFilterPageContent() {
 
   // Calculate totals for display
   const totalImages = project ? project.stats.remoteImages + project.stats.hostessImages + project.stats.selfies : 0;
-  const totalFans = project ? project.stats.indoor + project.stats.outdoor + project.stats.stadium : 0;
+  const totalFans = project ? getStoredOrDerivedTotalFans(project.stats) : 0;
   const totalGender = project ? project.stats.female + project.stats.male : 0;
   const totalUnder40 = project ? project.stats.genAlpha + project.stats.genYZ : 0;
   const totalOver40 = project ? project.stats.genX + project.stats.boomer : 0;

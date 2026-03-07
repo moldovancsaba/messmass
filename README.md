@@ -1,458 +1,144 @@
 # MessMass
 Status: Active
-Last Updated: 2026-02-21T00:00:00.000Z
+Last Updated: 2026-03-07T00:00:00.000Z
 Canonical: No
 Owner: Product
 
-**A comprehensive real-time collaborative event statistics dashboard with advanced partner management, intelligent link tracking, and custom theming engine.**
+<p align="center">
+  <img src="public/messmass-logo-black.png" alt="MessMass logo" width="160" />
+</p>
 
-**Version**: v11.55.1
-**Last Updated**: 2026-02-21T00:00:00.000Z
-- **Website**: https://messmass.doneisbetter.com
-- **Status**: Production-Ready — Full-featured event management platform with partner ecosystem, automated fixture suggestions, and dynamic theming
+<h1 align="center">MessMass</h1>
+<p align="center"><strong>Enterprise event analytics, partner reporting, and admin operations for sports organizations, venues, and brands.</strong></p>
 
-## Overview
+<p align="center">
+  <img src="https://img.shields.io/badge/version-v11.60.10-2563EB?style=for-the-badge" alt="Version">
+  <img src="https://img.shields.io/badge/platform-Web%20App-0F172A?style=for-the-badge" alt="Platform">
+  <img src="https://img.shields.io/badge/stack-Next.js%20%7C%20MongoDB-0EA5E9?style=for-the-badge" alt="Stack">
+</p>
 
-MessMass is an enterprise-grade event analytics platform designed for sports organizations, venues, brands, and event managers. It provides real-time statistics tracking, intelligent partner management, automated event creation workflows, and comprehensive Bitly link analytics.
+<p align="center">
+  <a href="#product-overview">Product Overview</a> •
+  <a href="#quick-start">Quick Start</a> •
+  <a href="#operations-and-validation">Operations & Validation</a> •
+  <a href="#documentation-map">Documentation Map</a>
+</p>
 
-**Core Capabilities**:
-- 📊 Real-time event statistics with WebSocket collaboration
-- 🤝 Partner management system (clubs, federations, venues, brands)
-- ⚽ Automated fixture suggestions via TheSportsDB integration
-- ⚡ Sports Match Builder for rapid event creation
-- 🔗 Advanced Bitly integration with many-to-many event associations
-- 🎨 Page Styles System: Custom theming engine with live preview editor
-- 🎨 Professional TailAdmin V2 flat design (zero gradients)
-- **📈 Database-first variable system with 96 configurable metrics**
-- **🏷️ Unified hashtag system with category-aware organization**
-- **🔐 Zero-trust authentication with session-based admin access**
-- **🎛️ KYC Management with alias-based UI customization**
+## Product Overview
+
+`MessMass` is a production event intelligence platform built for live events and partner ecosystems. It combines real-time event stats, partner and project administration, Bitly analytics, report generation, and a configurable report-style system in one operational product.
+
+Core capabilities:
+- Real-time event statistics and dashboard workflows
+- Partner, project, and report management in a unified admin
+- Public and partner report surfaces with export flows
+- Bitly link analytics and attribution across events
+- Sports fixture enrichment and quick event creation workflows
+- Theme and report-style configuration for branded outputs
+- KYC and variable-driven data capture for custom reporting
+
+## Why It Exists
+
+MessMass is designed to reduce operational friction around event reporting:
+- one admin surface for setup, delivery, and analysis
+- one data model for projects, partners, stats, and reports
+- one report pipeline for public pages, partner pages, and exports
+- one documentation and SSOT workflow for ongoing delivery
 
 ## Quick Start
 
-### Development Environment
-
 ```bash
-# Install dependencies
 npm install
-
-# Seed variable metadata (first-time setup)
-npm run seed:variables
-
-# Start Next.js development server (port 3001)
 npm run dev
-
-# Start WebSocket server (port 7654) - in separate terminal
-cd server && npm start
 ```
 
-### Production Deployment
+Default local app:
+- App: `http://localhost:3001`
+
+Common first-run companion tasks:
 
 ```bash
-# Build for production
-npm run build
-
-# Validate TypeScript
-npm run type-check
-
-# Verify design system compliance
-npm run style:check
-
-# Deploy
-# - Next.js app → Vercel (automatic via GitHub)
-# - WebSocket server → Railway/Heroku (separate deployment)
+npm run seed:variables
 ```
 
-### Environment Variables Required
+If you use the websocket-backed real-time flow, start the companion server separately:
 
 ```bash
-# Database
+cd server
+npm start
+```
+
+## Environment
+
+Typical required variables:
+
+```bash
 MONGODB_URI=mongodb+srv://...
 MONGODB_DB=messmass
-
-# Real-time WebSocket
 NEXT_PUBLIC_WS_URL=wss://your-websocket-server.com
-
-# Authentication
 ADMIN_PASSWORD=your_secure_password
-
-# Bitly Integration (optional)
 BITLY_ACCESS_TOKEN=your_bitly_token
 BITLY_ORGANIZATION_GUID=your_org_guid
 BITLY_GROUP_GUID=your_group_guid
-
-# TheSportsDB Integration (v6.31.0+)
 SPORTSDB_API_KEY=your_api_key
 SPORTSDB_BASE_URL=https://www.thesportsdb.com/api/v1/json
 ```
 
-## Documentation Index
+## Operations and Validation
 
-**Single source of truth for docs:** [docs/index.md](docs/index.md) — curated canonical entrypoint. All paths below live under `docs/`.
-
-### 📘 Core (under `docs/`)
-
-| Document | Description |
-|----------|-------------|
-| [docs/architecture.md](docs/architecture.md) | 🏗️ System architecture and technical overview |
-| [docs/coding-standards.md](docs/coding-standards.md) | ✅ **MANDATORY** — Coding rules, inline style prohibition |
-| [docs/operations/ops-warp.md](docs/operations/ops-warp.md) | 🤖 AI/dev rules, quick start, naming (WARP) |
-| [docs/operations/operations-action-plan.md](docs/operations/operations-action-plan.md) | ✅ Active tasks and execution queue |
-| [docs/operations/operations-roadmap.md](docs/operations/operations-roadmap.md) | 🗺️ Roadmap and future plans |
-| [docs/operations/operations-release-notes.md](docs/operations/operations-release-notes.md) | 📋 Versioned changelog |
-| [docs/operations/operations-learnings.md](docs/operations/operations-learnings.md) | 🧠 Historical decisions and learnings |
-
-### 📁 Organized Documentation (`docs/` Directory)
-
-#### Architecture & Design
-
-| Document | Description |
-|----------|-------------|
-| `docs/design/design-system.md` | 🎨 Design tokens, utility classes, UI patterns (authoritative) |
-
-#### Features & Systems
-
-| Document | Description |
-|----------|-------------|
-| `docs/features/features-hashtag-system.md` | 🏷️ Unified hashtag system with category colors |
-| `docs/features/features-partners-system-guide.md` | 🤝 Partner management system documentation |
-| `docs/features/features-authentication.md` | 🔐 Complete auth system: admin, page passwords, security |
-| `docs/features/features-bitly-integration-guide.md` | 🔗 Bitly API integration, analytics, many-to-many associations |
-
-#### API Documentation
-
-| Document | Description |
-|----------|-------------|
-| `docs/api/api-reference.md` | 📡 Complete API endpoint reference |
-| `docs/api/api-public.md` | 🌐 Public API: Bearer auth, rate limits, examples |
-
-#### Components & Conventions
-
-| Document | Description |
-|----------|-------------|
-| `docs/components/components-reusable-components-inventory.md` | 🧩 Reusable component library inventory |
-| `docs/conventions/conventions-naming-conventions.md` | 📝 Complete naming guide: MongoDB, roles, variables |
-
-#### Recent Audits & Reports
-
-| Document | Description | Date |
-|----------|-------------|------|
-| `docs/audits/NAMING_AUDIT_REPORT.md` | 🔍 22 role naming fixes (superadmin consistency) | 2025-12-22 |
-| `docs/audits/NAMING_CONSISTENCY_FULL_AUDIT.md` | 📊 Complete system-wide naming audit | 2025-12-22 |
-| `docs/audits/MONGODB_FIELD_NAMING_VERIFICATION.md` | ✅ MongoDB camelCase verification | 2025-12-22 |
-| `docs/audits/SYSTEM_AUDIT_2025.md` | 🔎 Full system audit report | 2025-12-22 |
-
-### 📦 Archive (`docs/archive/2025/`)
-
-Historical documentation preserved for reference:
-- **`old-audits/`** - 9 legacy audit reports
-- **`implementation-reports/`** - 13 feature implementation reports
-- **`deprecated-guides/`** - 16 outdated migration/phase guides
-
-### 🔍 Finding Documentation
-
-**By Topic**:
-- **Getting Started**: README.md (this file) → Quick Start section
-- **Development Setup**: WARP.md → Quick Start Commands
-- **System Architecture**: ARCHITECTURE.md → Complete technical overview
-- **Code Standards**: CODING_STANDARDS.md → **Read before coding**
-- **Design Tokens**: `docs/design/design-system.md` → CSS variables & utilities
-- **API Integration**: `docs/api/` directory → API reference & public docs
-- **Feature Guides**: `docs/features/` directory → Specific systems
-- **Recent Changes**: RELEASE_NOTES.md → Versioned changelog
-
-**By Role**:
-- **AI Agent**: WARP.md (required) + CODING_STANDARDS.md (mandatory)
-- **New Developer**: README.md → ARCHITECTURE.md → CODING_STANDARDS.md
-- **API Consumer**: `docs/api/api-public.md` → Bearer token setup
-- **Designer**: `docs/design/design-system.md` → Design tokens
-- **Project Manager**: TASKLIST.md + ROADMAP.md → Current & future work
-
-### Public Resources
-
-- **GitHub Repository**: https://github.com/moldovancsaba/messmass
-- **Authentication Guide**: https://github.com/moldovancsaba/messmass/blob/main/AUTHENTICATION_AND_ACCESS.md
-- **Live Demo**: https://messmass.doneisbetter.com
-
-## Key Features
-
-### Partner & Event Management
-
-- **🤝 Partners Management System**
-  - Comprehensive partner database (clubs, federations, venues, brands)
-  - Partner profiles with emoji identifiers, hashtags, and Bitly links
-  - Searchable partner directory with pagination and sorting
-  - Reusable partner selector components with predictive search
-
-- **⚽ Automated Fixture Suggestions** (TheSportsDB Integration)
-  - Background fixture sync for all partners with `sportsDb.teamId`
-  - Suggested Fixtures tab in Quick Add with one-click draft creation
-  - Automatic partner matching and opponent creation (as draft when allowed)
-  - Enforces home partner existence rule for draft projects
-  - Links fixtures to projects with `sportsDbFixture` metadata
-
-- **⚡ Sports Match Builder** (Quick Add)
-  - Rapid event creation from partner selection
-  - Home/Away team selection with predictive search
-  - Automatic hashtag merging (home team location + both teams' hashtags)
-  - Bitly link inheritance from home team
-  - Event name auto-generation with emoji prefix
-
-- **📊 Event Statistics Dashboard**
-  - Real-time statistics tracking via WebSocket
-  - Clicker interface for rapid data entry
-  - Manual entry for detailed metrics
-  - Success Manager fields (attendees, ticket purchases, visit tracking)
-  - Comprehensive demographic tracking (age groups, gender)
-  - Merchandise tracking (jerseys, scarves, flags, caps)
-  - Location and image source metrics
-
-### Analytics & Tracking
-
-- **🔗 Bitly Integration**
-  - Many-to-many link-to-event associations
-  - Temporal boundaries for accurate attribution
-  - Auto-calculated date ranges (overlapping event handling)
-  - Click analytics with country-level tracking
-  - Referring domains and traffic source analysis
-  - Cached metrics with daily refresh jobs
-  - Bulk import from Bitly account (3000+ links)
-
-- **📈 Database-First Variable & KPI Management** (v7.0.0)
-  - **96 system variables** seeded from `lib/variablesConfig.ts`
-  - **Single Reference System** with `stats.` prefix for all code and formulas
-  - **Alias-based UI** - display labels editable in KYC Management without affecting database fields
-  - Base variables (images, fans, demographics, merchandise)
-  - Derived variables (total fans, all images, conversion rates)
-  - Custom variables (user-defined metrics, stored in MongoDB)
-  - SEYU reference tokens for chart formulas
-  - Visibility flags (clicker, manual entry)
-  - Variable groups with ordering and chart assignments
-
-### User Experience
-
-- **🎨 Page Styles System** (Custom Theming Engine - Unified `page_styles_enhanced`)
-  - Visual theme editor with live preview (split-screen modal)
-  - Background customization: solid colors or CSS gradients
-  - Typography control: font family, size, colors, weight
-  - Color schemes: primary, secondary, accent, success, warning, error
-  - Global default theme for system-wide consistency with dedicated edit button
-  - Project-specific style assignment via `styleIdEnhanced` field
-  - Dynamic CSS injection without page reload
-  - 5 professional themes included (Clean Light, Dark Mode, Sports Blue, Vibrant Gradient, Minimal Gray)
-  - White-label deployment support with per-client branding
-  - **Migrated** from deprecated `pageStyles` to unified `page_styles_enhanced` system (v6.44.0)
-
-- **🎨 Modern Flat Design System**
-  - TailAdmin V2 design language (zero gradients)
-  - Complete CSS variable system (`--mm-*` prefix)
-  - 30+ utility classes for consistent styling
-  - Responsive sidebar navigation
-  - Professional Chart.js charts with PNG/PDF export
-  - Google Fonts integration (Inter, Roboto, Poppins)
-
-- **🏷️ Unified Hashtag System**
-  - Category-aware hashtag organization
-  - Color-coded categories with visual consistency
-  - Predictive search with autocomplete
-  - Chip-based display with remove functionality
-  - Backward compatible with plain hashtags
-
-- **🔔 Multi-User Notifications**
-  - Real-time activity tracking
-  - Intelligent grouping (5-minute windows)
-  - Read/archive status per user
-  - Project-specific notifications
-  - Spam prevention via duplicate detection
-
-### Administration
-
-- **🔐 Security & Access Control**
-  - Session-based admin authentication
-  - HTTP-only cookies for security
-  - Password-protected public stats pages
-  - Zero-trust page access model
-  - Automatic session timeout
-
-- **🛠️ Admin Dashboard**
-  - Project management with pagination and search
-  - Partner management interface
-  - Bitly link management and sync
-  - Hashtag category color configuration
-  - Variable and metrics configuration
-  - Notification panel with filtering
-
-### Technical Features
-
-- **⚙️ Real-Time Collaboration**
-  - WebSocket server for live updates
-  - Project-based rooms for isolation
-  - Automatic reconnection with exponential backoff
-  - Heartbeat mechanism for connection health
-
-- **💾 Data Management**
-  - MongoDB Atlas for persistence
-  - Optimistic updates with server validation
-  - Automatic timestamp tracking (ISO 8601 with milliseconds)
-  - Data migration scripts for schema updates
-  - Infinite data retention (no rolling windows)
-
-- **🚀 Developer Experience**
-  - Next.js 15 with App Router
-  - TypeScript strict mode
-  - Reusable component library
-  - Comprehensive inline documentation
-  - Design system compliance validation (`npm run style:check`)
-  - Full type safety across codebase
-
-## Technology Stack
-
-### Frontend
-
-- **Framework**: Next.js 15.5.4 (App Router)
-- **Language**: TypeScript 5.6.3 (strict mode)
-- **UI Library**: React 18.3.1
-- **Styling**: CSS Modules + CSS Variables (`--mm-*` design tokens)
-- **Charts**: Chart.js 4.5.0 + react-chartjs-2 5.3.0
-- **Export**: html2canvas 1.4.1 + jsPDF 3.0.1
-- **Real-time**: WebSocket (ws 8.18.3)
-
-### Backend
-
-- **Database**: MongoDB Atlas 6.8.0
-- **API**: Next.js API Routes (REST)
-- **Authentication**: Session-based with HTTP-only cookies
-- **External APIs**: Bitly API v4
-
-### Development Tools
-
-- **Linting**: ESLint 8.57.0 with Next.js config
-- **Type Checking**: TypeScript Compiler
-- **Build Tool**: Next.js built-in (Turbopack in dev)
-- **Package Manager**: npm 8.0.0+
-
-### Infrastructure
-
-- **Hosting**: Vercel (Next.js app) + Railway/Heroku (WebSocket)
-- **Database**: MongoDB Atlas (cloud)
-- **CDN**: Vercel Edge Network
-- **Monitoring**: Built-in error handling and logging
-
-### Reusable Components & Hooks
-
-| Item | Purpose | Pattern |
-|-----------|---------|----------|
-| `PartnerSelector` | Partner selection with search | Chip-based selector |
-| `ProjectSelector` | Project selection with search | Chip-based selector |
-| `BitlyLinksSelector` | Multi-select Bitly links | Chip-based multi-select |
-| `UnifiedHashtagInput` | Hashtag input with categories | Predictive autocomplete |
-| `ColoredHashtagBubble` | Hashtag display | Category-colored chips |
-| `AdminHero` | Page header with actions | Standardized admin header |
-| `ColoredCard` | Content container | Accent border card |
-| `NotificationPanel` | Activity notifications | Slide-in panel |
-| `StatsCharts` | KPI visualizations | SVG pie + bar charts |
-| `useDebouncedValue` | Debounced value for search inputs | Centralized 300ms debounce |
-
-## Utility Classes (Quick Reference)
-
-The design system provides 30+ utility classes for consistent styling:
-
-### Layout & Containers
-
-- `.page-bg-gray` / `.page-bg-white` - Page backgrounds
-- `.loading-container` + `.loading-card` - Loading states
-- `.error-container` + `.error-card` - Error states
-- `.centered-flex` - Centered flexbox layout
-
-### Cards & Panels
-
-- `.card` / `.card-md` / `.card-lg` - Card variants
-- `.card-header` / `.card-body` / `.card-footer` - Card sections
-
-### Spacing
-
-- `.p-sm` / `.p-md` / `.p-lg` / `.p-xl` - Padding utilities
-- `.gap-sm` / `.gap-md` / `.gap-lg` - Gap utilities
-- `.mt-*` / `.mb-*` - Margin utilities
-
-### Flexbox
-
-- `.flex` / `.flex-col` - Flex containers
-- `.items-center` / `.justify-center` / `.justify-between` - Alignment
-
-### Width & Text
-
-- `.w-full` / `.max-w-*` - Width utilities
-- `.text-center` / `.text-left` / `.text-right` - Text alignment
-
-**Note**: All utilities use design tokens from `theme.css` (`--mm-*` variables). See `app/globals.css` for complete utility definitions.
-
-## Design System Validation
-
-MessMass enforces strict design system compliance:
+Core validation commands:
 
 ```bash
-# Check for design violations
-npm run style:check
+npm run build
+npm run type-check
+npm run lint
+npm run version:verify
 ```
 
-**Validation Rules**:
-- ❌ No CSS gradients allowed (TailAdmin V2 flat design)
-- ❌ No glass-morphism effects
-- ✅ Zero violations required before commits
-- ✅ Automated checking in CI/CD pipeline
+Current release version:
+- `v11.60.10`
 
-## Standards & Conventions
+Live product:
+- Website: [messmass.doneisbetter.com](https://messmass.doneisbetter.com)
+- Repository: [github.com/moldovancsaba/messmass](https://github.com/moldovancsaba/messmass)
 
-### Timestamps
+## Architecture Snapshot
 
-All timestamps throughout the application use **ISO 8601 format with milliseconds (UTC)**:
+Main system areas:
+- `app/admin/*` for internal operations, project management, partner workflows, style management, and analytics
+- `app/report/[slug]` and `app/partner-report/[slug]` for external report delivery
+- `app/api/*` for admin, public, analytics, report, partner, and project APIs
+- `lib/*` for adapters, analytics engines, data utilities, integrations, and shared business logic
+- `docs/*` for canonical product, engineering, operations, and audit documentation
 
-```
-YYYY-MM-DDTHH:MM:SS.sssZ
-Example: 2025-01-21T11:14:52.789Z
-```
+## Documentation Map
 
-This applies to:
-- Database records (`createdAt`, `updatedAt`)
-- API responses
-- WebSocket messages
-- Documentation timestamps
-- Notification timestamps
+Canonical entrypoints:
+- [docs/index.md](docs/index.md) — curated documentation entrypoint
+- [docs/PROJECT_MANAGEMENT.md](docs/PROJECT_MANAGEMENT.md) — SSOT and GitHub Project workflow
+- [docs/HANDOVER.md](docs/HANDOVER.md) — current repo truth and latest delivery state
+- [docs/architecture.md](docs/architecture.md) — technical architecture
+- [docs/coding-standards.md](docs/coding-standards.md) — code and styling rules
+- [docs/operations/operations-action-plan.md](docs/operations/operations-action-plan.md) — active execution queue
+- [docs/operations/operations-release-notes.md](docs/operations/operations-release-notes.md) — shipped version history
 
-### Naming Conventions
+Key system docs:
+- [docs/design/design-system.md](docs/design/design-system.md)
+- [docs/features/features-partners-system-guide.md](docs/features/features-partners-system-guide.md)
+- [docs/features/features-bitly-integration-guide.md](docs/features/features-bitly-integration-guide.md)
+- [docs/features/features-authentication.md](docs/features/features-authentication.md)
+- [docs/api/api-reference.md](docs/api/api-reference.md)
+- [docs/components/components-reusable-components-inventory.md](docs/components/components-reusable-components-inventory.md)
 
-- **Variables**: camelCase (`eventName`, `totalFans`)
-- **Components**: PascalCase (`PartnerSelector`, `AdminHero`)
-- **CSS Classes**: kebab-case (`.page-container`, `.btn-primary`)
-- **CSS Variables**: kebab-case with prefix (`--mm-color-primary-500`)
-- **API Routes**: kebab-case (`/api/partners`, `/api/bitly/links`)
-- **Database Collections**: snake_case (`projects`, `bitly_links`, `hashtag_categories`)
+## Delivery Rules
 
-### Code Documentation
+This repo is run with strict documentation and SSOT discipline:
+- not tracked on the GitHub Project board = not done
+- not documented = not done
+- release notes and handover must match the shipped state
+- validation evidence must exist for delivered changes
 
-All code includes comprehensive comments following the WHAT-WHY-HOW pattern:
+## Notes
 
-```typescript
-// WHAT: Brief description of what the code does
-// WHY: Explanation of why this approach was chosen
-// HOW: Implementation details (if complex)
-```
-
-## License
-
-**MIT License**
-
-Copyright (c) 2025 Csaba Moldovan
-
-Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-
----
-
-**MessMass v6.31.0** — Built with ❤️ by Csaba Moldovan
-**Repository**: https://github.com/moldovancsaba/messmass  
-**Contact**: moldovancsaba@gmail.com
+- The README is a product-level entrypoint, not the canonical full rulebook.
+- For active work, always follow [docs/PROJECT_MANAGEMENT.md](docs/PROJECT_MANAGEMENT.md) and [docs/HANDOVER.md](docs/HANDOVER.md).

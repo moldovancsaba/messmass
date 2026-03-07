@@ -1,10 +1,12 @@
-// WHAT: Chart Builder for BAR charts - 5 numeric inputs with labels
-// WHY: Allow inline editing of bar chart segments in Builder mode
-// HOW: Render 5 inputs based on chart elements, extract stats keys, auto-save on blur
+// WHAT: Chart Builder for BAR charts - one input per variable used in any bar's formula
+// WHY: Each bar can have 2–3 variables in its formula; we show all variables (e.g. 10–15 inputs for 5 bars)
+// HOW: Extract variables from every element's formula, deduplicate, show one input per variable with label
 
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
+import MaterialIcon from './MaterialIcon';
+import { extractVariablesFromFormula } from '@/lib/formulaEngine';
 
 interface ChartBuilderBarProps {
   chart: {
@@ -17,94 +19,112 @@ interface ChartBuilderBarProps {
   onSave: (key: string, value: number | string) => void;
 }
 
+// WHAT: Stats-only variable names from all bar elements' formulas, deduplicated
+function getStatsVariablesFromElements(elements: Array<{ formula: string }>): string[] {
+  const seen = new Set<string>();
+  const list: string[] = [];
+  for (const el of elements) {
+    if (!el.formula?.trim()) continue;
+    const vars = extractVariablesFromFormula(el.formula);
+    for (const v of vars) {
+      if (v.includes(':')) continue;
+      if (seen.has(v)) continue;
+      seen.add(v);
+      list.push(v);
+    }
+  }
+  return list;
+}
+
 export default function ChartBuilderBar({ chart, stats, onSave }: ChartBuilderBarProps) {
-  // WHAT: Parse all elements (max 5 for bar charts)
   const elements = chart.elements.slice(0, 5);
-  
-  // WHAT: State for each input field (store as string to allow deletion)
-  // WHY: Prevents aggressive parsing that resets empty values immediately
+  const variables = useMemo(
+    () => getStatsVariablesFromElements(elements),
+    [chart.chartId, elements.map((e) => e.formula).join('|')]
+  );
+
   const [tempValues, setTempValues] = useState<Record<string, string>>(() => {
     const initial: Record<string, string> = {};
-    elements.forEach((el) => {
-      const statsKey = el.formula.replace(/^stats\./, '').trim();
-      initial[statsKey] = (stats[statsKey] || 0).toString();
+    variables.forEach((key) => {
+      const val = stats[key];
+      initial[key] = val !== undefined && val !== null ? String(val) : '0';
     });
     return initial;
   });
-  
-  // WHAT: Sync temp values when stats change externally
+
   useEffect(() => {
-    const updated: Record<string, string> = {};
-    elements.forEach((el) => {
-      const statsKey = el.formula.replace(/^stats\./, '').trim();
-      updated[statsKey] = (stats[statsKey] || 0).toString();
+    const next: Record<string, string> = {};
+    variables.forEach((key) => {
+      const val = stats[key];
+      next[key] = val !== undefined && val !== null ? String(val) : '0';
     });
-    setTempValues(updated);
-  }, [stats, elements]);
-  
-  // WHAT: Save individual field on blur
-  const handleBlur = (statsKey: string) => {
-    const newValue = Math.max(0, parseInt(tempValues[statsKey] || '0') || 0);
-    const currentValue = stats[statsKey] || 0;
-    if (newValue !== currentValue) {
-      onSave(statsKey, newValue);
+    setTempValues((prev) => ({ ...prev, ...next }));
+  }, [stats, chart.chartId, variables]);
+
+  const handleBlur = (key: string) => {
+    const raw = tempValues[key] ?? '0';
+    const num = raw === '' ? 0 : Math.max(0, parseFloat(raw) || 0);
+    const current = stats[key];
+    const currentNum = typeof current === 'number' ? current : parseFloat(String(current));
+    if (Number.isNaN(currentNum) || num !== currentNum) {
+      onSave(key, num);
     }
   };
-  
+
+  if (variables.length === 0) {
+    return (
+      <div className="chart-builder-bar">
+        <div className="chart-builder-header">
+          <div className="chart-builder-title-row">
+            {chart.icon && (
+              <MaterialIcon name={chart.icon} variant="outlined" className="chart-builder-icon" />
+            )}
+            <h3 className="chart-builder-title">{chart.title}</h3>
+          </div>
+        </div>
+        <div className="chart-builder-card-body">
+          <p className="chart-builder-card-id">{chart.chartId}</p>
+          <p className="chart-builder-hint">No variables in bar formulas. Add variables (e.g. [varName]) in Visualization Manager.</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="chart-builder-bar">
-      {/* Chart title with icon */}
       <div className="chart-builder-header">
-        {chart.icon && <span className="chart-builder-icon">{chart.icon}</span>}
-        <h3 className="chart-builder-title">
-          {chart.title}
-        </h3>
+        <div className="chart-builder-title-row">
+          {chart.icon && (
+            <MaterialIcon name={chart.icon} variant="outlined" className="chart-builder-icon" />
+          )}
+          <h3 className="chart-builder-title">{chart.title}</h3>
+        </div>
       </div>
-      
-      {/* Input fields for each bar segment */}
-      <div className="chart-builder-inputs">
-        {elements.map((el, idx) => {
-          const statsKey = el.formula.replace(/^stats\./, '').trim();
-          
-          return (
-            <div key={idx} className="chart-builder-bar-row">
-              {/* Color indicator */}
-              {el.color && (
-                <div 
-                  className="chart-builder-color-dot"
-                  // WHAT: Dynamic color indicator from chart element color
-                  // WHY: Bar chart segments have unique colors defined in chart config
-                  // eslint-disable-next-line react/forbid-dom-props
-                  style={{ backgroundColor: el.color }}
-                />
-              )}
-              
-              {/* Input field */}
+      <div className="chart-builder-card-body">
+        <p className="chart-builder-card-id">{chart.chartId}</p>
+        <div className="chart-builder-inputs">
+          {variables.map((key) => (
+            <div key={key} className="chart-builder-variable-row">
+              <div className="chart-builder-variable-meta">
+                {key}
+                <span className="chart-builder-registry-name">[{key}]</span>
+              </div>
               <input
+                id={`bar-${chart.chartId}-${key}`}
                 type="number"
-                value={tempValues[statsKey] ?? '0'}
-                onChange={(e) => setTempValues(prev => ({
-                  ...prev,
-                  [statsKey]: e.target.value
-                }))}
-                onBlur={() => handleBlur(statsKey)}
+                value={tempValues[key] ?? '0'}
+                onChange={(e) => setTempValues((prev) => ({ ...prev, [key]: e.target.value }))}
+                onBlur={() => handleBlur(key)}
                 min="0"
-                className="form-input chart-builder-bar-input"
+                step="any"
+                className="form-input chart-builder-input"
+                placeholder="0"
+                aria-label={`Value for ${key}`}
               />
-              
-              {/* Label */}
-              <label className="chart-builder-bar-label">
-                {el.label || statsKey}
-              </label>
             </div>
-          );
-        })}
+          ))}
+        </div>
       </div>
-      
-      {/* Chart type hint */}
-      <p className="chart-builder-hint">
-        Bar Chart • {elements.length} segments
-      </p>
     </div>
   );
 }

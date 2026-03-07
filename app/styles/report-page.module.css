@@ -20,14 +20,27 @@
    HOW: .page sets font-family, children inherit automatically
    NOTE: Removed universal selector to avoid overriding Material Icons inline styles */
 
-/* Content Container */
+/* Content Container — Phase 4: same width/padding as landing (--mm-content-*) */
 .container {
-  max-width: 1600px; /* WHAT: Unified width for better chart layout (was 1200px in partner reports) */
+  max-width: var(--mm-content-max-width);
   margin: 0 auto;
-  width: 90%; /* WHAT: 5% margin on each side (desktop) */
-  padding: 0;
+  width: 100%;
+  padding-left: var(--mm-content-padding-x);
+  padding-right: var(--mm-content-padding-x);
   box-sizing: border-box !important;
-  background: transparent !important; /* WHAT: Force transparent - no white rectangle */
+  background: transparent !important;
+}
+@media (min-width: 768px) {
+  .container {
+    padding-left: var(--mm-content-padding-x-md);
+    padding-right: var(--mm-content-padding-x-md);
+  }
+}
+@media (min-width: 1024px) {
+  .container {
+    padding-left: var(--mm-content-padding-x-lg);
+    padding-right: var(--mm-content-padding-x-lg);
+  }
 }
 
 /* Loading State */
@@ -61,6 +74,11 @@
   font-weight: var(--mm-font-weight-medium);
 }
 
+.loadingNote {
+  margin-top: var(--mm-space-4);
+  font-size: var(--mm-font-size-sm);
+}
+
 /* Error State */
 .error {
   display: flex;
@@ -89,6 +107,85 @@
   color: var(--mm-gray-600);
   max-width: 500px;
   margin: 0;
+}
+
+.errorMeta {
+  margin-top: var(--mm-space-4);
+  font-size: var(--mm-font-size-sm);
+  color: var(--mm-gray-600);
+}
+
+.adminBackBar {
+  padding: 0.75rem 1rem;
+  background: #f8fafc;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.dashboardLoadingWrap {
+  padding: var(--mm-space-8);
+  text-align: center;
+}
+
+/* WHAT: Landing main page report section — all from theme (no inline style) */
+.landingReportWrap {
+  overflow: hidden;
+  min-height: 0;
+  --block-base-font-size: var(--landingBlockBaseFontSize, var(--mm-landing-block-base-font-size));
+  --block-subtitle-font-size: var(--landingBlockSubtitleFontSize, var(--mm-landing-block-subtitle-font-size));
+  --landing-max-font: var(--mm-landing-max-font);
+  --landing-max-icon-font: var(--landingMaxIconFont, var(--mm-landing-max-icon-font));
+  --landing-value-font: var(--mm-landing-value-font);
+}
+
+/* WHAT: Give KPI description row more vertical space on landing so card copy doesn't truncate
+ * WHY: Default 4fr 3fr 3fr gives value row 30%; 3fr 4fr 3fr gives 40% so 2–3 line descriptions fit
+ * HOW: Override grid on KPI chart container when inside landing wrapper */
+.landingReportWrap :global([class*="kpi"]) {
+  grid-template-rows: 3fr 4fr 3fr;
+}
+
+/* WHAT: Landing report text scales with card size — no overflow, no ellipsis
+ * WHY: User requirement: text fully responsive and resizing to fit space
+ * HOW: Container-query font-size (cqw) + allow wrap (no line-clamp), row overflow hidden so no spill */
+.landingReportWrap :global([class*="kpiTitle"]) {
+  font-size: clamp(var(--landingBlockSubtitleFontSize, var(--mm-landing-block-subtitle-font-size)), 4cqw, var(--landingBlockBaseFontSize, var(--mm-landing-block-base-font-size))) !important;
+  overflow: hidden !important;
+  min-height: 0;
+}
+.landingReportWrap :global([class*="kpiTitle"]) * {
+  display: block !important;
+  -webkit-line-clamp: unset !important;
+  overflow: visible !important;
+  white-space: normal !important;
+}
+.landingReportWrap :global([class*="kpiValueRow"]) {
+  font-size: clamp(var(--mm-font-size-xs), 2.5cqw, var(--mm-font-size-sm)) !important;
+  line-height: 1.35;
+  hyphens: none;
+  overflow: hidden !important;
+  min-height: 0;
+  -webkit-line-clamp: unset !important;
+}
+.landingReportWrap :global([class*="valuechainTitleRow"]) {
+  font-size: clamp(var(--mm-font-size-sm), 4cqw, var(--landingBlockBaseFontSize, var(--mm-landing-block-base-font-size))) !important;
+  overflow: hidden !important;
+  min-height: 0;
+}
+.landingReportWrap :global([class*="valuechainDescRow"]) {
+  font-size: clamp(var(--mm-font-size-xs), 2.5cqw, var(--mm-font-size-base)) !important;
+  overflow: hidden !important;
+  min-height: 0;
+}
+.landingReportWrap :global([class*="valuechainDescRow"]) > * {
+  -webkit-line-clamp: unset !important;
+  overflow: visible !important;
+  display: block !important;
+}
+
+/* WHAT: Block titles on landing use same Pacifico as "messmass" and section headings */
+.landingReportWrap :global([class*="blockTitle"]) {
+  font-family: var(--font-pacifico) !important;
+  font-weight: var(--mm-font-weight-normal);
 }
 
 /* Responsive Adjustments */

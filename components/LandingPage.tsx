@@ -1,10 +1,9 @@
 'use client';
 
 /**
- * WHAT: Main page (messmass.com) driven by the same report as /report/[slug]
- * WHY: Style and content are exactly editable from the report — no copies; uses ReportContent + same APIs
- * HOW: Same pipeline as report page: useReportData(slug), useReportLayoutForProject(slug), useReportStyle,
- *      chart-config public API, ReportCalculator; render landing chrome + ReportContent + pricing/footer
+ * WHAT: Main page (messmass.com) — static snapshot (from admin "Update") or live report
+ * WHY: Admin can choose report and generate static content so the site does not hit DB on each visit
+ * HOW: Snapshot is loaded on server (initialStaticPayload); client uses it for first paint. No client fetch required for static path.
  */
 
 import React, { useEffect, useMemo, useState } from 'react';
@@ -19,11 +18,281 @@ import { useReportStyle } from '@/hooks/useReportStyle';
 import ReportContent from '@/app/report/[slug]/ReportContent';
 import ContactForm from '@/components/ContactForm';
 import { LANDING_REPORT_SLUG } from '@/lib/landingReportSlug';
+import type { StaticLandingSnapshot } from '@/lib/landingSettings';
+import { replaceEmDashes } from '@/lib/contentFormat';
 import styles from '@/app/page.module.css';
 import reportPageStyles from '@/app/styles/report-page.module.css';
 
-export default function LandingPage() {
-  const slug = LANDING_REPORT_SLUG;
+const LOAD_TIMEOUT_MS = 12000;
+
+interface LandingStaticPayload {
+  staticSnapshot: StaticLandingSnapshot;
+  landingReportSlug: string;
+  generatedAt: string | null;
+}
+
+interface LandingPageProps {
+  /** When set, server already loaded snapshot; use for first paint so no client fetch needed */
+  initialStaticPayload?: LandingStaticPayload | null;
+  /** App version shown in footer (e.g. from package.json) */
+  version?: string | null;
+}
+
+export default function LandingPage({ initialStaticPayload = null, version = null }: LandingPageProps) {
+  const [staticPayload, setStaticPayload] = useState<LandingStaticPayload | null>(initialStaticPayload ?? null);
+  const [landingSlugFromApi, setLandingSlugFromApi] = useState<string | null>(initialStaticPayload?.landingReportSlug ?? null);
+  const [staticChecked, setStaticChecked] = useState(!!initialStaticPayload);
+
+  useEffect(() => {
+    if (initialStaticPayload) return;
+    let cancelled = false;
+    fetch('/api/landing-static', { cache: 'no-store' })
+      .then(async (r) => {
+        const ct = r.headers.get('content-type') || '';
+        if (!ct.includes('application/json')) return { success: false };
+        try {
+          return await r.json();
+        } catch {
+          return { success: false };
+        }
+      })
+      .then((d) => {
+        if (cancelled || !d?.success) return;
+        setLandingSlugFromApi(d.landingReportSlug || null);
+        if (d.staticSnapshot)
+          setStaticPayload({
+            staticSnapshot: d.staticSnapshot,
+            landingReportSlug: d.landingReportSlug || LANDING_REPORT_SLUG,
+            generatedAt: d.generatedAt ?? null,
+          });
+      })
+      .finally(() => { if (!cancelled) setStaticChecked(true); });
+    return () => { cancelled = true; };
+  }, [initialStaticPayload]);
+
+  if (!staticChecked) {
+    return (
+      <div className={styles.landing}>
+        <div className={`${reportPageStyles.loading} ${styles.landingLoadingRoot}`}>
+          <div className={reportPageStyles.loadingSpinner} />
+          <p className={reportPageStyles.loadingText}>Loading…</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (staticPayload?.staticSnapshot) {
+    return (
+      <LandingPageStatic
+        snapshot={staticPayload.staticSnapshot}
+        generatedAt={staticPayload.generatedAt}
+        version={version}
+      />
+    );
+  }
+
+  return (
+    <LandingPageLive slug={landingSlugFromApi ?? LANDING_REPORT_SLUG} version={version} />
+  );
+}
+
+function LandingPageStatic({
+  snapshot,
+  generatedAt,
+  version,
+}: {
+  snapshot: StaticLandingSnapshot;
+  generatedAt: string | null;
+  version?: string | null;
+}) {
+  // Phase 2: apply same report style as report page so admin style (e.g. /admin/styles/6999bbd2680bbfd7dec08b1e) drives landing
+  useReportStyle({ styleId: snapshot.styleId ?? null, enabled: !!snapshot.styleId });
+
+  const stats = snapshot.projectStats as Record<string, unknown> | undefined;
+  const rawFooter = stats?.reportTextFooterTitle;
+  const footerTitle = replaceEmDashes(typeof rawFooter === 'string' ? rawFooter : "Let's build the era of sovereign enterprise AI together.");
+
+  const blocks = useMemo(() => {
+    const list = Array.isArray(snapshot.blocks) ? snapshot.blocks : [];
+    return list.map((b) => ({
+      ...b,
+      id: typeof b.id === 'string' ? b.id : String(b.id ?? b.order ?? ''),
+      charts: (b.charts || []).map((c) => ({
+        ...c,
+        chartId: typeof c.chartId === 'string' ? c.chartId : String(c.chartId),
+      })),
+    }));
+  }, [snapshot.blocks]);
+  const chartResults = useMemo(() => {
+    const m = new Map<string, Record<string, unknown>>();
+    const list = Array.isArray(snapshot.chartResults) ? snapshot.chartResults : [];
+    for (const entry of list) {
+      if (entry?.chartId != null && entry.result != null) m.set(String(entry.chartId), entry.result as Record<string, unknown>);
+    }
+    return m;
+  }, [snapshot.chartResults]);
+  const gridSettings = useMemo(
+    () => ({
+      desktop: Number(snapshot.gridSettings?.desktop) || 3,
+      tablet: Number(snapshot.gridSettings?.tablet) || 2,
+      mobile: Number(snapshot.gridSettings?.mobile) || 1,
+    }),
+    [snapshot.gridSettings]
+  );
+
+  return (
+    <div className={styles.landing}>
+      {/* Hero — conversion copy */}
+      <header className={styles.hero}>
+        <div className={styles.heroInner}>
+          <div className={styles.heroBrand}>
+            <Image src="/messmass-logo-white.png" alt="" width={160} height={48} priority />
+            <span className={styles.heroSiteName}>messmass</span>
+          </div>
+          <h1 className={styles.heroTitle}>Sovereign Decision Intelligence for Regulated Data</h1>
+          <p className={styles.heroSub}>
+            Private, governed AI workflows that turn KYC/PII-heavy datasets into decisions and actions, without sending data to public cloud models.
+          </p>
+          <div className={styles.heroCtas}>
+            <Link href="/admin/login" className="btn btn-primary">Go to Dashboard</Link>
+            <a href="#how-it-works" className="btn btn-outline-light">See how it works</a>
+          </div>
+          <p className={styles.heroMicrocopy}>
+            Built for teams handling KYC, onboarding, fraud, compliance, and sensitive customer intelligence.
+          </p>
+        </div>
+      </header>
+
+      {/* Report content — single source from report at messmass.com/report/[slug]; manage content there */}
+      {blocks.length > 0 && chartResults.size > 0 && (
+        <section id="how-it-works" className={reportPageStyles.page} aria-label="Report content">
+          <div className={styles.mmContainer}>
+            <div className={reportPageStyles.landingReportWrap}>
+              <ReportContent
+                blocks={blocks}
+                chartResults={chartResults as unknown as Map<string, import('@/lib/report-calculator').ChartResult>}
+                charts={null}
+                gridSettings={gridSettings}
+                allowNA={true}
+              />
+            </div>
+          </div>
+        </section>
+      )}
+
+      <PricingAndFooter footerTitle={footerTitle} version={version} />
+    </div>
+  );
+}
+
+function PricingAndFooter({ footerTitle, version }: { footerTitle: string; version?: string | null }) {
+  return (
+    <>
+      <section id="pricing" className={styles.section}>
+        <div className={styles.sectionInner}>
+          <h2 className={styles.sectionTitle}>Pricing</h2>
+          <div className={styles.pricingGrid}>
+            <div className={styles.pricingCard}>
+              <h3 className={styles.pricingCardTitle}>Welcome</h3>
+              <p className={styles.pricingCardPrice}>Free <span className={styles.pricingCardPriceSub}>forever</span></p>
+              <p className={styles.pricingCardSubhead}>For individuals testing sovereign workflows</p>
+              <ul className={styles.pricingCardFeatures}>
+                <li>1 personal profile</li>
+                <li>1 public workspace</li>
+                <li>10 public reports</li>
+                <li>Basic KYC dataset (POC required)</li>
+              </ul>
+              <div className={styles.pricingCardCta}>
+                <Link href="/#contact" className="btn btn-secondary">Start free</Link>
+              </div>
+            </div>
+            <div className={`${styles.pricingCard} ${styles.pricingCardFeatured}`}>
+              <h3 className={styles.pricingCardTitle}>Business</h3>
+              <p className={styles.pricingCardPrice}>$99 <span className={styles.pricingCardPriceSub}>USD / month</span></p>
+              <p className={styles.pricingCardSubhead}>For teams shipping decisions with private AI</p>
+              <ul className={styles.pricingCardFeatures}>
+                <li>Everything in Welcome, plus:</li>
+                <li>1 organisation profile</li>
+                <li>1 private workspace</li>
+                <li>Unlimited public workspaces</li>
+                <li>10 private reports</li>
+                <li>Unlimited public reports</li>
+                <li>Advanced KYC dataset (Consultancy required)</li>
+              </ul>
+              <div className={styles.pricingCardCta}>
+                <Link href="/#contact" className="btn btn-primary">Contact us</Link>
+              </div>
+            </div>
+            <div className={styles.pricingCard}>
+              <h3 className={styles.pricingCardTitle}>Organisation</h3>
+              <p className={styles.pricingCardPrice}>Custom</p>
+              <p className={styles.pricingCardSubhead}>For regulated environments and scaled governance</p>
+              <ul className={styles.pricingCardFeatures}>
+                <li>Everything in Business, plus:</li>
+                <li>Unlimited private workspaces</li>
+                <li>Unlimited private reports</li>
+                <li>Unlimited KYC datasets (Training required)</li>
+              </ul>
+              <div className={styles.pricingCardCta}>
+                <Link href="/#contact" className="btn btn-secondary">Contact us</Link>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+      <section id="faq" className={styles.sectionAlt} aria-label="Frequently asked questions">
+        <div className={styles.sectionInner}>
+          <h2 className={styles.sectionTitle}>Faq</h2>
+          <dl className={styles.faqList}>
+            <div className={styles.faqItem}>
+              <dt className={styles.faqQuestion}>Does any data leave our environment?</dt>
+              <dd className={styles.faqAnswer}>
+                Under our architecture, data processing occurs within your controlled environment. You decide what, if anything, is exported.
+              </dd>
+            </div>
+            <div className={styles.faqItem}>
+              <dt className={styles.faqQuestion}>Do you train models on customer data?</dt>
+              <dd className={styles.faqAnswer}>
+                No. Customer data is not used to train public models.
+              </dd>
+            </div>
+            <div className={styles.faqItem}>
+              <dt className={styles.faqQuestion}>What gets audited?</dt>
+              <dd className={styles.faqAnswer}>
+                Queries, access events, agent actions, and outputs, so activity can be reviewed and traced.
+              </dd>
+            </div>
+            <div className={styles.faqItem}>
+              <dt className={styles.faqQuestion}>Who is this for?</dt>
+              <dd className={styles.faqAnswer}>
+                Teams working with KYC/PII-heavy workflows: onboarding, compliance, fraud, and customer intelligence.
+              </dd>
+            </div>
+          </dl>
+        </div>
+      </section>
+      <ContactForm />
+      <footer className={styles.footer}>
+        <div className={styles.footerInner}>
+          <div className={styles.footerBrand}>
+            <Image src="/messmass-logo-white.png" alt="" width={120} height={36} />
+            <span className={styles.footerSiteName}>messmass</span>
+          </div>
+          <h2 className={styles.footerTitle}>{footerTitle}</h2>
+          <Link href="/admin/login" className="btn btn-primary">Start using the system</Link>
+          <p className={styles.footerSite}>messmass.com</p>
+          <nav className={styles.footerLegal} aria-label="Legal">
+            <Link href="/privacy">Privacy Policy</Link>
+            <Link href="/terms">Terms &amp; Conditions</Link>
+            {version ? <span className={styles.footerVersion} aria-label="App version">v{version}</span> : null}
+          </nav>
+        </div>
+      </footer>
+    </>
+  );
+}
+
+function LandingPageLive({ slug, version }: { slug: string; version?: string | null }) {
 
   const { data: reportData, loading: dataLoading, error: dataError } = useReportData(slug);
   const project = reportData?.project;
@@ -45,6 +314,17 @@ export default function LandingPage() {
   const [charts, setCharts] = useState<Chart[]>([]);
   const [chartsLoading, setChartsLoading] = useState(false);
   const [chartsError, setChartsError] = useState<string | null>(null);
+  const [loadTimedOut, setLoadTimedOut] = useState(false);
+
+  useEffect(() => {
+    const loading = dataLoading || layoutLoading || chartsLoading || styleLoading;
+    if (!loading) {
+      setLoadTimedOut(false);
+      return;
+    }
+    const t = setTimeout(() => setLoadTimedOut(true), LOAD_TIMEOUT_MS);
+    return () => clearTimeout(t);
+  }, [dataLoading, layoutLoading, chartsLoading, styleLoading]);
 
   useEffect(() => {
     if (!blocks || blocks.length === 0) return;
@@ -99,45 +379,66 @@ export default function LandingPage() {
   const error = dataError || layoutError || chartsError;
 
   const rawFooter = stats && (stats as Record<string, unknown>).reportTextFooterTitle;
-  const footerTitle =
-    typeof rawFooter === 'string' ? rawFooter : "Let's build the era of sovereign enterprise AI together.";
+  const footerTitle = replaceEmDashes(
+    typeof rawFooter === 'string' ? rawFooter : "Let's build the era of sovereign enterprise AI together."
+  );
 
-  if (loading) {
-    return (
-      <div className={styles.landing}>
-        <div className={reportPageStyles.loading} style={{ minHeight: '50vh' }}>
-          <div className={reportPageStyles.loadingSpinner} />
-          <p className={reportPageStyles.loadingText}>Loading...</p>
+  const heroLabel = replaceEmDashes((stats as Record<string, unknown>)?.['reportTextHeroLabel'] as string || 'Sovereign Decision Intelligence');
+  const heroTitle = replaceEmDashes((stats as Record<string, unknown>)?.['reportTextHeroTitle'] as string || 'Agentic AI that reads and understands your data at scale, and delivers actionable dashboards without compromising privacy.');
+  const heroSub = replaceEmDashes((stats as Record<string, unknown>)?.['reportTextHeroSub'] as string ||
+    'The platform that restores the freedom and security of decision-making to data-driven companies.');
+
+  function renderReportSection() {
+    if (loadTimedOut) {
+      return (
+        <div className={`${reportPageStyles.error} ${styles.landingErrorRoot}`}>
+          <span className={reportPageStyles.errorIcon}>⏱️</span>
+          <h2 className={reportPageStyles.errorTitle}>Report load timed out</h2>
+          <p className={reportPageStyles.errorText}>
+            Check that <strong>MONGODB_URI</strong> is set in <code>.env.local</code> and MongoDB is reachable.
+            The landing project must exist with viewSlug: <code>{slug}</code>.
+          </p>
+          <Link href="/" className="btn btn-primary">Reload</Link>
         </div>
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className={styles.landing}>
-        <div className={reportPageStyles.error} style={{ minHeight: '50vh' }}>
+      );
+    }
+    if (loading) {
+      return (
+        <div className={`${reportPageStyles.loading} ${styles.landingLoadingRoot}`}>
+          <div className={reportPageStyles.loadingSpinner} />
+          <p className={reportPageStyles.loadingText}>Loading report content…</p>
+        </div>
+      );
+    }
+    if (error) {
+      return (
+        <div className={`${reportPageStyles.error} ${styles.landingErrorRoot}`}>
           <span className={reportPageStyles.errorIcon}>⚠️</span>
-          <h2 className={reportPageStyles.errorTitle}>Failed to load</h2>
+          <h2 className={reportPageStyles.errorTitle}>Failed to load report</h2>
           <p className={reportPageStyles.errorText}>{error}</p>
           <Link href="/" className="btn btn-primary">Reload</Link>
         </div>
-      </div>
-    );
-  }
-
-  if (!report || !project) {
-    return (
-      <div className={styles.landing}>
-        <div className={reportPageStyles.error} style={{ minHeight: '50vh' }}>
+      );
+    }
+    if (!report || !project) {
+      return (
+        <div className={`${reportPageStyles.error} ${styles.landingErrorRoot}`}>
           <span className={reportPageStyles.errorIcon}>📊</span>
           <h2 className={reportPageStyles.errorTitle}>Report not configured</h2>
           <p className={reportPageStyles.errorText}>
-            Set NEXT_PUBLIC_LANDING_REPORT_SLUG to a project viewSlug (e.g. from /report/[slug]).
+            Set NEXT_PUBLIC_LANDING_REPORT_SLUG to a project viewSlug. Current: <code>{slug}</code>
           </p>
           <Link href="/admin/login" className="btn btn-primary">Go to Dashboard</Link>
         </div>
-      </div>
+      );
+    }
+    return (
+      <ReportContent
+        blocks={blocks}
+        chartResults={chartResults}
+        charts={charts?.length ? new Map(charts.map((c) => [c.chartId, c])) : null}
+        gridSettings={gridSettings}
+      />
     );
   }
 
@@ -147,18 +448,11 @@ export default function LandingPage() {
         <div className={styles.heroInner}>
           <div className={styles.heroBrand}>
             <Image src="/messmass-logo-white.png" alt="" width={160} height={48} priority />
-            <span className={styles.heroSiteName}>MessMass</span>
+            <span className={styles.heroSiteName}>messmass</span>
           </div>
-          <p className={styles.heroLabel}>
-            {(stats as Record<string, unknown>)?.['reportTextHeroLabel'] as string || 'Sovereign Decision Intelligence'}
-          </p>
-          <h1 className={styles.heroTitle}>
-            {(stats as Record<string, unknown>)?.['reportTextHeroTitle'] as string || 'Data Privacy and Agentic AI without compromises.'}
-          </h1>
-          <p className={styles.heroSub}>
-            {(stats as Record<string, unknown>)?.['reportTextHeroSub'] as string ||
-              'The platform that restores the freedom and security of decision-making to data-driven companies.'}
-          </p>
+          <p className={styles.heroLabel}>{heroLabel}</p>
+          <h1 className={styles.heroTitle}>{heroTitle}</h1>
+          <p className={styles.heroSub}>{heroSub}</p>
           <div className={styles.heroCtas}>
             <Link href="/admin/login" className="btn btn-primary">Go to Dashboard</Link>
             <a href="#report-content" className="btn btn-outline-light">See how it works</a>
@@ -168,86 +462,11 @@ export default function LandingPage() {
 
       <section id="report-content" className={reportPageStyles.page} aria-label="Report content">
         <div className={reportPageStyles.container}>
-          <ReportContent
-            blocks={blocks}
-            chartResults={chartResults}
-            charts={charts?.length ? new Map(charts.map((c) => [c.chartId, c])) : null}
-            gridSettings={gridSettings}
-          />
+          {renderReportSection()}
         </div>
       </section>
 
-      <section id="pricing" className={styles.section}>
-        <div className={styles.sectionInner}>
-          <h2 className={styles.sectionTitle}>Pricing</h2>
-          <div className={styles.pricingGrid}>
-            <div className={styles.pricingCard}>
-              <h3 className={styles.pricingCardTitle}>Welcome</h3>
-              <p className={styles.pricingCardPrice}>Free <span className={styles.pricingCardPriceSub}>forever</span></p>
-              <ul className={styles.pricingCardFeatures}>
-                <li>1 personal profile</li>
-                <li>1 public site</li>
-                <li>10 public reports</li>
-                <li>Basic KYC Dataset</li>
-              </ul>
-              <p className={styles.pricingCardNote}>(POC required)</p>
-              <div className={styles.pricingCardCta}>
-                <Link href="/#contact" className="btn btn-secondary">Contact us</Link>
-              </div>
-            </div>
-            <div className={`${styles.pricingCard} ${styles.pricingCardFeatured}`}>
-              <h3 className={styles.pricingCardTitle}>Business</h3>
-              <p className={styles.pricingCardPrice}>$99 <span className={styles.pricingCardPriceSub}>USD / month</span></p>
-              <ul className={styles.pricingCardFeatures}>
-                <li>Everything in Welcome +</li>
-                <li>1 organisation profile</li>
-                <li>1 private site</li>
-                <li>Unlimited public sites</li>
-                <li>10 private reports</li>
-                <li>Unlimited public reports</li>
-                <li>Advanced KYC Dataset</li>
-              </ul>
-              <p className={styles.pricingCardNote}>(Consultancy required)</p>
-              <div className={styles.pricingCardCta}>
-                <Link href="/#contact" className="btn btn-primary">Contact us</Link>
-              </div>
-            </div>
-            <div className={styles.pricingCard}>
-              <h3 className={styles.pricingCardTitle}>Organisation</h3>
-              <p className={styles.pricingCardPrice}>Custom</p>
-              <ul className={styles.pricingCardFeatures}>
-                <li>Everything in Business +</li>
-                <li>1 organisation profile</li>
-                <li>Unlimited private sites</li>
-                <li>Unlimited private reports</li>
-                <li>Unlimited KYC Dataset</li>
-              </ul>
-              <p className={styles.pricingCardNote}>(Training required)</p>
-              <div className={styles.pricingCardCta}>
-                <Link href="/#contact" className="btn btn-secondary">Contact us</Link>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <ContactForm />
-
-      <footer className={styles.footer}>
-        <div className={styles.footerInner}>
-          <div className={styles.footerBrand}>
-            <Image src="/messmass-logo-white.png" alt="" width={120} height={36} />
-            <span className={styles.footerSiteName}>MessMass</span>
-          </div>
-          <h2 className={styles.footerTitle}>{footerTitle}</h2>
-          <Link href="/admin/login" className="btn btn-primary">Start using the system</Link>
-          <p className={styles.footerSite}>messmass.com</p>
-          <nav className={styles.footerLegal} aria-label="Legal">
-            <Link href="/privacy">Privacy Policy</Link>
-            <Link href="/terms">Terms &amp; Conditions</Link>
-          </nav>
-        </div>
-      </footer>
+      <PricingAndFooter footerTitle={footerTitle} version={version} />
     </div>
   );
 }

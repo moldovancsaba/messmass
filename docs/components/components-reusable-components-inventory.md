@@ -218,7 +218,7 @@ export default function Page() {
 #### Sidebar
 **File**: `components/Sidebar.tsx`  
 **CSS**: `components/Sidebar.module.css`  
-**Usage**: Admin navigation (automatic in AdminLayout)
+**Usage**: Admin navigation (automatic in AdminLayout). Help section includes User Guide, **Main page** (landing report selector and static content generation), and Messages.
 
 ---
 
@@ -502,16 +502,13 @@ Located in `lib/shareables/auth/`:
 ## 🎨 Page-Level CSS Modules
 
 ### Admin Pages
-- `app/admin/admin.module.css` - Admin layout styles
-- `app/admin/projects/Projects.module.css` - Project management
-- `app/admin/partners/PartnerManager.module.css` - Partner management
-- `app/admin/bitly/bitly.module.css` - Bitly integration
+- `app/admin/bitly/page.module.css` - Bitly integration
 - `app/admin/visualization/Visualization.module.css` - Chart management
 
 ### Public Pages
 - `app/stats/[slug]/stats.module.css` - Stats page
-- `app/edit/[slug]/page.module.css` - Editor page
-- `app/filter/[slug]/page.module.css` - Filter page
+- `app/styles/editor-states.module.css` - Shared event and partner editor loading/error states
+- `app/styles/report-page.module.css` - Shared filter, hashtag, dashboard, partner-report, and report page layout
 
 ---
 

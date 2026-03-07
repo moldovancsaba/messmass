@@ -15,6 +15,7 @@ import {
   ReportStyle, 
   DEFAULT_STYLE, 
   COLOR_FIELDS, 
+  DIMENSION_FIELDS,
   validateStyle,
   injectStyleAsCSS,
   removeStyleCSS
@@ -50,10 +51,9 @@ export default function StyleEditorPage() {
         throw new Error(data.error || 'Failed to fetch style');
       }
       
-      // WHAT: Merge fetched style with DEFAULT_STYLE
-      // WHY: Ensures all color fields exist (backward compatibility with old styles)
-      // HOW: Spread DEFAULT_STYLE first, then override with fetched values
-      setStyle({ ...DEFAULT_STYLE, ...data.style });
+      const merged = { ...DEFAULT_STYLE, ...data.style };
+      setStyle(merged);
+      injectStyleAsCSS(merged);
     } catch (err) {
       console.error('Failed to fetch style:', err);
       setError(err instanceof Error ? err.message : 'Failed to load style');
@@ -69,9 +69,19 @@ export default function StyleEditorPage() {
     }
   }, [isNew, fetchStyle]);
 
+  // WHAT: Inject current style into document whenever it changes so Live Preview and CSS var consumers update
+  // WHY: Preview and report bars use var(--barColor1) etc.; without this, edits don't show until save/reload
+  useEffect(() => {
+    injectStyleAsCSS(style);
+    return () => removeStyleCSS();
+  }, [style]);
+
   const handleChange = (field: keyof ReportStyle, value: string) => {
-    setStyle(prev => ({ ...prev, [field]: value }));
-    setSaveStatus(''); // Clear status on change
+    const next = { ...style, [field]: value };
+    setStyle(next);
+    setSaveStatus('');
+    // WHAT: Inject immediately so preview and any getComputedStyle readers see new values on same paint
+    injectStyleAsCSS(next);
   };
 
   const handleSave = async () => {
@@ -151,11 +161,18 @@ export default function StyleEditorPage() {
     );
   }
 
-  // Group fields by category
+  // Group color fields by category
   const categories = Array.from(new Set(COLOR_FIELDS.map(f => f.category)));
   const fieldsByCategory = categories.map(cat => ({
     category: cat,
     fields: COLOR_FIELDS.filter(f => f.category === cat)
+  }));
+
+  // Group dimension fields by category
+  const dimensionCategories = Array.from(new Set(DIMENSION_FIELDS.map(f => f.category)));
+  const dimensionsByCategory = dimensionCategories.map(cat => ({
+    category: cat,
+    fields: DIMENSION_FIELDS.filter(f => f.category === cat)
   }));
 
   return (
@@ -266,6 +283,36 @@ export default function StyleEditorPage() {
                       value={style[field.key] || '#000000ff'}
                       onChange={(value) => handleChange(field.key, value)}
                     />
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {/* Dimension & surface fields (spacing, radius, shadow, typography) */}
+          <div className={styles.dimensionFields}>
+            <h4 className={styles.dimensionSectionTitle}>Dimensions & surfaces</h4>
+            {dimensionsByCategory.map(({ category, fields }) => (
+              <div key={category} className={styles.category}>
+                <h4 className={styles.categoryTitle}>{category}</h4>
+                <div className={styles.categoryFields}>
+                  {fields.map(field => (
+                    <div key={field.key} className={styles.formGroup}>
+                      <label className={styles.label} htmlFor={`dim-${field.key}`}>
+                        {field.label}
+                      </label>
+                      <input
+                        id={`dim-${field.key}`}
+                        type="text"
+                        value={style[field.key] ?? field.default}
+                        onChange={(e) => handleChange(field.key, e.target.value)}
+                        placeholder={field.placeholder ?? field.default}
+                        className={styles.textInput}
+                      />
+                      {field.description && (
+                        <small className={styles.hint}>{field.description}</small>
+                      )}
+                    </div>
                   ))}
                 </div>
               </div>

@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Metadata } from 'next';
+import UnifiedAdminHeroWithSearch from '@/components/UnifiedAdminHeroWithSearch';
 import styles from './page.module.css';
 import type { UserRole } from '@/lib/users';
 
@@ -36,73 +36,36 @@ export default function HelpPage() {
   }, []);
   
   return (
-    <div className={styles.container}>
+    <div className="page-container">
+      <UnifiedAdminHeroWithSearch
+        title="📖 MessMass User Guide"
+        subtitle="Complete guide for using MessMass event statistics dashboard"
+        backLink="/admin"
+      />
       <div className={styles.content}>
-        <header className={styles.header}>
-          <h1>📖 MessMass User Guide</h1>
-          <p className={styles.subtitle}>
-            Complete guide for using MessMass event statistics dashboard
-          </p>
-        </header>
-        
+
         {/* WHAT: Welcome message for guest users
             WHY: Explain limited permissions and how to request elevation */}
         {!loading && userRole === 'guest' && (
-          <>
-            {/* WHAT: Inline styles for guest welcome box - WHY: Temporary styling for help content, no CSS module needed */}
-            {/* eslint-disable-next-line react/forbid-dom-props */}
-            <div style={{
-            padding: '1.5rem',
-            marginBottom: '2rem',
-            backgroundColor: '#dbeafe',
-            border: '2px solid #3b82f6',
-            borderRadius: 'var(--mm-radius-lg)',
-          }}>
-            {/* WHAT: Inline styles for welcome heading - WHY: Temporary styling for help content, no CSS module needed */}
-            {/* eslint-disable-next-line react/forbid-dom-props */}
-            <h2 style={{
-              marginTop: 0,
-              marginBottom: '0.75rem',
-              color: '#1e40af',
-              fontSize: '1.25rem',
-            }}>
+          <div className={styles.guestBox}>
+            <h2 className={styles.guestHeading}>
               👋 Welcome, {userName}!
             </h2>
-            {/* WHAT: Inline styles for help page text formatting - WHY: Temporary styling for help content, no CSS module needed */}
-            {/* eslint-disable-next-line react/forbid-dom-props */}
-            <p style={{ marginBottom: '0.75rem', color: '#1e3a8a' }}>
+            <p className={styles.guestText}>
               You&apos;re currently logged in as a <strong>Guest</strong>. This gives you access to documentation and help resources.
             </p>
-            {/* eslint-disable-next-line react/forbid-dom-props */}
-            <p style={{ marginBottom: '0.75rem', color: '#1e3a8a' }}>
+            <p className={styles.guestText}>
               <strong>🔒 Limited Access:</strong> As a guest, you can only view this User Guide page. To access other features like Events, Partners, and Filters, you&apos;ll need elevated permissions.
             </p>
-            {/* WHAT: Inline styles for help content box - WHY: Temporary styling for help content, no CSS module needed */}
-            {/* eslint-disable-next-line react/forbid-dom-props */}
-            <div style={{
-              padding: '1rem',
-              backgroundColor: '#ffffff',
-              borderRadius: 'var(--mm-radius-md)',
-              border: '1px solid #93c5fd',
-            }}>
-              {/* WHAT: Inline styles for permission request heading - WHY: Temporary styling for help content, no CSS module needed */}
-              {/* eslint-disable-next-line react/forbid-dom-props */}
-              <p style={{ marginBottom: '0.5rem', fontWeight: 600, color: '#1e40af' }}>
+            <div className={styles.guestInnerBox}>
+              <p className={styles.guestInnerHeading}>
                 ⬆️ How to Request Elevated Permissions:
               </p>
-              {/* WHAT: Inline styles for ordered list - WHY: Temporary styling for help content, no CSS module needed */}
-              {/* eslint-disable-next-line react/forbid-dom-props */}
-              <ol style={{
-                marginBottom: 0,
-                paddingLeft: '1.5rem',
-                color: '#1e3a8a',
-              }}>
+              <ol className={styles.guestList}>
                 <li>Contact a <strong>Superadmin</strong> in your organization</li>
                 <li>Provide your email: <strong>{userName.includes('@') ? userName : 'Check with admin'}</strong></li>
                 <li>Explain which role you need:
-                  {/* WHAT: Inline styles for nested list - WHY: Temporary styling for help content, no CSS module needed */}
-                  {/* eslint-disable-next-line react/forbid-dom-props */}
-                  <ul style={{ marginTop: '0.25rem' }}>
+                  <ul className={styles.guestNestedList}>
                     <li><strong>User:</strong> View and edit Events, Partners, Filters</li>
                     <li><strong>Admin:</strong> User access + KYC, Algorithms, Reporting, Styles</li>
                     <li><strong>Superadmin:</strong> Full system access including user management</li>
@@ -111,7 +74,6 @@ export default function HelpPage() {
               </ol>
             </div>
           </div>
-          </>
         )}
 
         <nav className={styles.toc}>

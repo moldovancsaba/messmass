@@ -521,7 +521,7 @@ import PartnerSelector from '@/components/PartnerSelector';
 
 **Files**:
 - `app/partner-report/[slug]/page.tsx` (294 lines) - Report page component
-- `app/partner-report/[slug]/page.module.css` (115 lines) - Report page styles
+- `app/styles/report-page.module.css` - Shared report page styles
 - `app/api/partners/report/[slug]/route.ts` (88 lines) - Report API endpoint
 - `lib/adapters/partnersAdapter.tsx` - Report button definition (lines 155-169, 239-250)
 

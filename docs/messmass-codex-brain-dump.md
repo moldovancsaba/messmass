@@ -1,13 +1,37 @@
 # Brain Dump
 Status: Active
-Last Updated: 2026-02-06T15:12:00Z
+Last Updated: 2026-03-06
 Canonical: Yes
 Owner: Documentation
 
 **Purpose:** quick-reference notes that capture the state of this repo and how the docs/ tree is organized after today's refactor.
 
+## Builder mode (clicker) — one input per variable + unified layout
+- Event edit page (e.g. `/edit/[slug]`) has **Builder** mode: it loads the report template and chart configs, then renders a builder per chart. **Every chart type** parses element formulas, extracts variables via `extractVariablesFromFormula()` (from `lib/formulaEngine`), deduplicates, and shows **one input per variable**. Image/table charts infer variable from title (e.g. "Report Image 3") or chartId when formula is empty; table fallback: `reportTable1`.
+- **Unified card layout:** Each card shows (1) title (2) chartId (3) per variable: label + [registry name] (4) input. CSS: `.chart-builder-card-body`, `.chart-builder-card-id`, `.chart-builder-variable-meta`, `.chart-builder-registry-name`, `.chart-builder-variable-row`. Overflow: `min-width: 0`, `overflow: hidden` on cards and `.builder-chart-wrapper` so inputs stay inside the card.
+- **Chart types:** KPI, Bar, Pie, Text, Table, Image, Value chain. Components: `ChartBuilderKPI.tsx` … `ChartBuilderValueChain.tsx`; container: `BuilderMode.tsx`. Plan: `docs/plan-builder-mode-variable-inputs.md`. Feature doc: `docs/features/features-reporting-builder.md`.
+- **Board evidence:** Builder delivery evidence posted on mvp-factory-control [#49](https://github.com/moldovancsaba/mvp-factory-control/issues/49#issuecomment-3957698585). Handover: `docs/NEXT_AGENT_PROMPT.md`.
+
+## Admin UI consistency (issue #56)
+- Admin management pages now use `UnifiedAdminHeroWithSearch` as the canonical hero path, including badges when a page needs status/count context. Legacy `AdminHero` remains exception-only for untouched detail/editor flows.
+- The shared admin shell remains: `AdminLayout` -> `.content-surface` -> `.page-container` -> page content. Outer page width is token-driven by `--mm-admin-content-max-width`; narrower widths are only allowed as inner readable wrappers.
+- Touched routes in this delivery: `/admin/dashboard`, `/admin/styles`, `/admin/insights`, `/admin/content-library`, `/admin/mainpage`, `/admin/messages`, `/admin/help`, `/admin/events`.
+- Styling hygiene for touched scope: no inline style objects remain in those routes; the help page guest access notice moved into CSS modules, event action icons use CSS classes, and styles color swatches now render through SVG instead of React `style` props.
+
+## Production hotfixes (issues #345, #346, #348, #349)
+- Partner report related-event cards now display Total Fans Engaged from a derived total-fans path instead of undercounting legacy events that only store `indoor` / `outdoor`.
+- The partner-report API enriches returned event stats with `addDerivedMetrics(...)`, while the client card component still has a client-safe fallback that derives `totalFans` without importing server-only modules.
+- Project delete actions now use the shared CSRF-safe `apiDelete(...)` path in both the shared projects adapter and the admin events page, and surfaced errors are no longer collapsed into a generic failure string.
+- Admin event surfaces now use `getStoredOrDerivedTotalFans(...)` so list view, card view, dashboard summaries, filter pages, and event sorting prefer stored `stats.totalFans` and only derive when the stored value is absent.
+- Partner admin card-view `Edit Stats` is now aligned with list view and opens `/partner-edit/[id]` using `_id || viewSlug`, removing the card-only dependency on `viewSlug`.
+
+## Style editor & preview (v11.59.0)
+- Style editor (Admin → Styles → [id]) injects style on every field change and after fetch so preview updates immediately. Bar/pie in report and preview use CSS variables (`--barColor1`…`--barColor5`, `--pieColor1`/`--pieColor2`) so colors stay in sync. ReportStylePreview includes Value Chain block and Landing page section. See `docs/release-notes-11.59.0.md`, `docs/features/features-landing-main-page.md`.
+
 ## Top-Level Structure
 - `docs/index.md` is the canonical curated entrypoint (core resources, operations, security, charts, design, features, admin, API, and legacy/meta).
+- `docs/PROJECT_MANAGEMENT.md` is the SSOT rulebook for board usage, card cadence, and issue hygiene.
+- `docs/HANDOVER.md` is the living handover log for current repo truth and next-agent continuity.
 - `docs/documentation-governance.md` defines the rules for canonical docs, required metadata, and the deprecation/redirect strategy.
 - Active operations docs live in `docs/operations/` (action plan, roadmap, deployment checklists, implementation closure evidence, learnings, and release notes). Execution state is only in `docs/operations/operations-action-plan.md`.
 - Security artifacts are consolidated under `docs/security/` (canonical docs). Security audits and phase-closure reports were moved under `docs/archive/_archive/security/` to reduce the risk of working from outdated sources.

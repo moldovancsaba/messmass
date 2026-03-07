@@ -5,7 +5,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import clientPromise from '@/lib/mongodb';
 import { ObjectId } from 'mongodb';
-import { ReportStyle, validateStyle, normalizeHexColor, COLOR_FIELDS } from '@/lib/reportStyleTypes';
+import { ReportStyle, validateStyle, normalizeHexColor, COLOR_FIELDS, DIMENSION_FIELDS, DEFAULT_STYLE } from '@/lib/reportStyleTypes';
 import { error as logError } from '@/lib/logger';
 
 const DB_NAME = process.env.MONGODB_DB || 'messmass';
@@ -56,17 +56,22 @@ export async function POST(request: NextRequest) {
       );
     }
     
-    // Normalize all hex colors
-    const normalizedStyle: Omit<ReportStyle, '_id'> = {
+    // Dimension fields (default from DEFAULT_STYLE when creating)
+    const dimensionEntries = DIMENSION_FIELDS.map(f => [
+      f.key,
+      String((body[f.key] ?? DEFAULT_STYLE[f.key] ?? '')).trim()
+    ]) as [string, string][];
+    const normalizedStyle = {
       name: body.name.trim(),
       description: body.description?.trim() || '',
-      fontFamily: body.fontFamily || 'Inter', // WHAT: Save selected font (v11.52.0)
+      fontFamily: body.fontFamily || 'Inter',
       ...Object.fromEntries(
         COLOR_FIELDS.map(field => [field.key, normalizeHexColor(body[field.key])])
-      ) as any,
+      ),
+      ...Object.fromEntries(dimensionEntries),
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString()
-    };
+    } as Omit<ReportStyle, '_id'>;
     
     const client = await clientPromise;
     const db = client.db(DB_NAME);
@@ -114,16 +119,21 @@ export async function PUT(request: NextRequest) {
       );
     }
     
-    // Normalize all hex colors
-    const normalizedStyle: Partial<ReportStyle> = {
+    // Dimension fields (from body; empty = use theme default)
+    const dimensionEntries = DIMENSION_FIELDS.map(f => [
+      f.key,
+      String((body[f.key] ?? '')).trim()
+    ]) as [string, string][];
+    const normalizedStyle = {
       name: body.name.trim(),
       description: body.description?.trim() || '',
-      fontFamily: body.fontFamily || 'Inter', // WHAT: Save selected font (v11.52.0)
+      fontFamily: body.fontFamily || 'Inter',
       ...Object.fromEntries(
         COLOR_FIELDS.map(field => [field.key, normalizeHexColor(body[field.key])])
-      ) as any,
+      ),
+      ...Object.fromEntries(dimensionEntries),
       updatedAt: new Date().toISOString()
-    };
+    } as Partial<ReportStyle>;
     
     const client = await clientPromise;
     const db = client.db(DB_NAME);

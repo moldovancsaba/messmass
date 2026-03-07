@@ -52,6 +52,10 @@ function hasValidChartData(result: ChartResult | undefined): boolean {
       );
       return total > 0;
     
+    case 'valuechain':
+      // Show valuechain whenever it has the required structure (2 elements); content can be empty
+      return !!(result.elements && result.elements.length >= 2);
+    
     default:
       return false;
   }
@@ -75,6 +79,10 @@ interface ReportContentProps {
   
   /** Optional CSS class for container */
   className?: string;
+  /** When true (e.g. static landing), show charts even with NA/empty data so structure is visible */
+  allowNA?: boolean;
+  /** When true (default), block titles follow each block's showTitle from the report template; when false, all block titles are hidden. Landing omits this prop so default applies and report setup is respected. */
+  showBlockTitles?: boolean;
 }
 
 /**
@@ -94,7 +102,9 @@ export default function ReportContent({
   chartResults, 
   charts, // A-R-13: Chart configs for validation
   gridSettings,
-  className 
+  className,
+  allowNA = false,
+  showBlockTitles = true,
 }: ReportContentProps) {
   
   // WHAT: Debug logging for chartResults
@@ -132,6 +142,8 @@ export default function ReportContent({
           chartResults={chartResults}
           charts={charts} // A-R-13: Pass chart configs for validation
           gridSettings={gridSettings}
+          allowNA={allowNA}
+          showBlockTitles={showBlockTitles}
         />
       ))}
     </div>
@@ -146,6 +158,8 @@ interface ReportBlockProps {
   chartResults: Map<string, ChartResult>;
   charts?: Map<string, Chart> | null; // A-R-13: Chart configs for validation
   gridSettings: GridSettings;
+  allowNA?: boolean;
+  showBlockTitles?: boolean;
 }
 
 /**
@@ -193,9 +207,10 @@ interface ResponsiveRowProps {
   unifiedTextFontSize: number | null;
   blockAspectRatio?: string; // R-LAYOUT-02.1: Optional block aspect ratio override (e.g., "4:6")
   tableHeightMultiplier?: number; // Table height control: height = blockWidth × multiplier (0.1 to 5.0)
+  allowNA?: boolean; // When true (e.g. static landing), show charts even with NA/empty data
 }
 
-function ResponsiveRow({ rowCharts, chartResults, charts, rowIndex, unifiedTextFontSize, blockAspectRatio, tableHeightMultiplier }: ResponsiveRowProps) {
+function ResponsiveRow({ rowCharts, chartResults, charts, rowIndex, unifiedTextFontSize, blockAspectRatio, tableHeightMultiplier, allowNA = false }: ResponsiveRowProps) {
   const rowRef = useRef<HTMLDivElement>(null);
   // WHAT: Initialize state with design tokens instead of hardcoded values
   // WHY: No hardcoded sizes - all values must come from design system
@@ -233,7 +248,7 @@ function ResponsiveRow({ rowCharts, chartResults, charts, rowIndex, unifiedTextF
         // WHAT: Build charts array with type information for validation
         // WHY: R-LAYOUT-02.1 - Need chart types to validate aspect ratio override is allowed
         const chartsWithTypes = rowCharts.map(chart => {
-          const result = chartResults.get(chart.chartId);
+          const result = chartResults.get(String(chart.chartId));
           return {
             width: chart.width,
             type: result?.type
@@ -331,24 +346,29 @@ function ResponsiveRow({ rowCharts, chartResults, charts, rowIndex, unifiedTextF
       } as React.CSSProperties}
     >
       {rowCharts.map(chart => {
-        const result = chartResults.get(chart.chartId);
-        // WHAT: Skip charts with no valid data (v11.48.0)
-        // WHY: ReportChart returns null for empty data, don't render container
-        if (!hasValidChartData(result) || !result) {
-          console.log(`[ResponsiveRow ${rowIndex}] Filtering out chart ${chart.chartId}:`, {
-            hasResult: !!result,
-            isValid: result ? hasValidChartData(result) : false,
-            type: result?.type,
-            kpiValue: result?.kpiValue,
-            elementsCount: result?.elements?.length
-          });
+        const result = chartResults.get(String(chart.chartId));
+        // WHAT: Skip charts with no valid data (v11.48.0); when allowNA (static landing), show if result exists and no error
+        const skip = allowNA
+          ? !result || !!result.error || !!result.chartError
+          : !hasValidChartData(result) || !result;
+        if (skip) {
+          if (!allowNA || !result) {
+            console.log(`[ResponsiveRow ${rowIndex}] Filtering out chart ${chart.chartId}:`, {
+              hasResult: !!result,
+              isValid: result ? hasValidChartData(result) : false,
+              type: result?.type,
+              kpiValue: result?.kpiValue,
+              elementsCount: result?.elements?.length
+            });
+          }
           return null;
         }
         
         // WHAT: Force remount when dimensions change significantly
         // WHY: Container queries cache container size, need remount for single full-width charts
         const dimensionKey = `${chart.chartId}-${Math.round(rowWidth / 100)}-${Math.round(rowHeight / 100)}`;
-        
+        if (!result) return null;
+
         return (
           <div 
             key={dimensionKey}
@@ -363,6 +383,7 @@ function ResponsiveRow({ rowCharts, chartResults, charts, rowIndex, unifiedTextF
               // WHAT: P1 1.5 Phase 3 - Removed titleFontSize and subtitleFontSize props
               // WHY: CSS now uses --block-base-font-size and --block-subtitle-font-size directly (Phase 2)
               unifiedTextFontSize={unifiedTextFontSize}
+              allowNA={allowNA}
             />
           </div>
         );
@@ -371,7 +392,7 @@ function ResponsiveRow({ rowCharts, chartResults, charts, rowIndex, unifiedTextF
   );
 }
 
-function ReportBlock({ block, chartResults, charts, gridSettings }: ReportBlockProps) {
+function ReportBlock({ block, chartResults, charts, gridSettings, allowNA = false, showBlockTitles = true }: ReportBlockProps) {
   // WHAT: Calculate unified font-size for all text charts in this block
   // WHY: All text charts should use the same font-size, fitting the largest content
   // HOW: Use hook to measure containers and calculate optimal size
@@ -381,12 +402,13 @@ function ReportBlock({ block, chartResults, charts, gridSettings }: ReportBlockP
   // Sort charts by order
   const sortedCharts = [...block.charts].sort((a, b) => a.order - b.order);
   
-  // WHAT: Filter out charts with no data (v11.48.0)
-  // WHY: Hide empty cells and exclude from grid calculations
-  // HOW: Check both existence and valid data using hasValidChartData
+  // WHAT: Filter out charts with no data (v11.48.0); when allowNA (static landing), show any result without error
+  // WHY: Hide empty cells in live reports; on static landing show structure even if values are NA
   const validCharts = sortedCharts.filter(chart => {
-    const result = chartResults.get(chart.chartId);
-    const isValid = hasValidChartData(result);
+    const result = chartResults.get(String(chart.chartId));
+    const isValid = allowNA
+      ? !!(result && !result.error && !result.chartError)
+      : hasValidChartData(result);
     if (!isValid && result) {
       // WHAT: Detailed logging for invalid chart data
       // WHY: Need to see full chart result to diagnose why charts are filtered
@@ -424,8 +446,11 @@ function ReportBlock({ block, chartResults, charts, gridSettings }: ReportBlockP
   // WHAT: Block-level typography calculation (P1 1.5 Phase 1)
   // WHY: All typography elements in a block should use unified font size
   // HOW: Collect all cells from all rows, calculate once per block, set CSS custom property
-  const [blockBaseFontSize, setBlockBaseFontSize] = useState<number | null>(null);
-  const [blockSubtitleFontSize, setBlockSubtitleFontSize] = useState<number | null>(null);
+  // When allowNA (static landing), cap from first paint; titles/icon use wrapper vars (32px on main page), block cap is fallback
+  const MAX_BLOCK_FONT_PX = 32;
+  const MAX_SUBTITLE_FONT_PX = 13;
+  const [blockBaseFontSize, setBlockBaseFontSize] = useState<number | null>(allowNA ? MAX_BLOCK_FONT_PX : null);
+  const [blockSubtitleFontSize, setBlockSubtitleFontSize] = useState<number | null>(allowNA ? MAX_SUBTITLE_FONT_PX : null);
   
   // WHAT: Calculate block-level typography when block width is known
   // WHY: Font size calculation needs block width (not row width)
@@ -444,9 +469,12 @@ function ReportBlock({ block, chartResults, charts, gridSettings }: ReportBlockP
       // HOW: Iterate through validCharts and create CellConfiguration for each
       const allCells: CellConfiguration[] = validCharts
         .map(chart => {
-          const result = chartResults.get(chart.chartId);
-          if (!result || !hasValidChartData(result)) return null;
-          
+          const result = chartResults.get(String(chart.chartId));
+          const includeForTypography = allowNA
+            ? result && !result.error && !result.chartError
+            : result && hasValidChartData(result);
+          if (!includeForTypography || !result) return null;
+
           return {
             chartId: chart.chartId,
             cellWidth: (chart.width || 1) as 1 | 2,
@@ -474,7 +502,7 @@ function ReportBlock({ block, chartResults, charts, gridSettings }: ReportBlockP
       // HOW: Calculate max font size where 2-line labels fit in available row height
       const barCharts = validCharts
         .map(chart => {
-          const result = chartResults.get(chart.chartId);
+          const result = chartResults.get(String(chart.chartId));
           if (!result || result.type !== 'bar' || !result.elements) return null;
           return {
             chartId: chart.chartId,
@@ -523,9 +551,19 @@ function ReportBlock({ block, chartResults, charts, gridSettings }: ReportBlockP
       // WHAT: Use minimum of title font size and BAR chart font size
       // WHY: Block-level typography must work for all elements (titles and BAR labels)
       // HOW: Take minimum to ensure all content fits
-      const finalFontSize = barChartFontSize !== null
+      let finalFontSize = barChartFontSize !== null
         ? Math.min(syncedFonts.titlePx, barChartFontSize)
         : syncedFonts.titlePx;
+      // WHAT: When allowNA (static landing), force title to 32px so wrapper's large title isn't overridden by calculation
+      // WHY: Block sets --block-base-font-size; a smaller calculated value would override the wrapper's 32px
+      if (allowNA) {
+        finalFontSize = MAX_BLOCK_FONT_PX;
+      } else if (finalFontSize > MAX_BLOCK_FONT_PX) {
+        finalFontSize = MAX_BLOCK_FONT_PX;
+      }
+      const subtitlePx = allowNA
+        ? Math.min(syncedFonts.subtitlePx, MAX_SUBTITLE_FONT_PX)
+        : syncedFonts.subtitlePx;
       
       console.log(`[ReportBlock] Block-level typography calculated:`, {
         blockTitle: block.title || 'Untitled',
@@ -534,13 +572,13 @@ function ReportBlock({ block, chartResults, charts, gridSettings }: ReportBlockP
         titlePx: syncedFonts.titlePx,
         barChartFontSize,
         finalFontSize,
-        subtitlePx: syncedFonts.subtitlePx,
+        subtitlePx,
         cellsCount: allCells.length,
         barChartsCount: barCharts.length
       });
       
       setBlockBaseFontSize(finalFontSize);
-      setBlockSubtitleFontSize(syncedFonts.subtitlePx);
+      setBlockSubtitleFontSize(subtitlePx);
     };
     
     measureAndCalculate(); // Initial calculation
@@ -558,7 +596,7 @@ function ReportBlock({ block, chartResults, charts, gridSettings }: ReportBlockP
       resizeObserver.disconnect();
       window.removeEventListener('resize', measureAndCalculate);
     };
-  }, [validCharts, chartResults, block.title]);
+  }, [validCharts, chartResults, block.title, allowNA]);
   
   // DEBUG: Log filtering
   if (sortedCharts.length !== validCharts.length) {
@@ -566,15 +604,15 @@ function ReportBlock({ block, chartResults, charts, gridSettings }: ReportBlockP
       totalCharts: sortedCharts.length,
       validCharts: validCharts.length,
       missingCharts: sortedCharts
-        .filter(c => !chartResults.has(c.chartId))
+        .filter(c => !chartResults.has(String(c.chartId)))
         .map(c => c.chartId),
       invalidCharts: sortedCharts
         .filter(c => {
-          const result = chartResults.get(c.chartId);
+          const result = chartResults.get(String(c.chartId));
           return result && !hasValidChartData(result);
         })
         .map(c => {
-          const result = chartResults.get(c.chartId);
+          const result = chartResults.get(String(c.chartId));
           return {
             chartId: c.chartId,
             type: result?.type,
@@ -606,7 +644,7 @@ function ReportBlock({ block, chartResults, charts, gridSettings }: ReportBlockP
   return (
     <div 
       ref={blockRef}
-      className={styles.block} 
+      className={allowNA ? `${styles.block} ${styles.blockLanding}` : styles.block}
       data-pdf-block="true"
       // WHAT: Apply unified typography as CSS custom properties (P1 1.5 Phase 1)
       // WHY: Block-level typography unification - all elements inherit from block
@@ -618,7 +656,7 @@ function ReportBlock({ block, chartResults, charts, gridSettings }: ReportBlockP
         ...(blockSubtitleFontSize ? { '--block-subtitle-font-size': `${blockSubtitleFontSize}px` } : {})
       } as React.CSSProperties}
     >
-      {block.showTitle && block.title && (
+      {showBlockTitles && block.showTitle && block.title && (
         <h2 className={styles.blockTitle}>{block.title}</h2>
       )}
       
@@ -635,6 +673,7 @@ function ReportBlock({ block, chartResults, charts, gridSettings }: ReportBlockP
           unifiedTextFontSize={unifiedTextFontSize}
           blockAspectRatio={block.blockAspectRatio} // R-LAYOUT-02.1: Optional block aspect ratio override
           tableHeightMultiplier={block.tableHeightMultiplier} // Table height control: height = blockWidth × multiplier
+          allowNA={allowNA}
         />
       ))}
     </div>
