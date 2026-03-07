@@ -147,6 +147,12 @@ Owner: Katja (Admin)
 ## 7. STATE MEMORY (Current Only)
 
 2026-03-07
+- CONTEXT: Repo hygiene cleanup tracked under `mvp-factory-control#355`.
+- BOARD: `#355` is the active ops slice being delivered.
+- OPS: tightened `.gitignore` and removed local-only tooling, backup, memory, and temp directories from Git tracking so GitHub contains only runtime-essential product files.
+- NEXT: run full gates for `11.60.12`, post SSOT evidence on `#355`, then continue the queued work.
+
+2026-03-07
 - CONTEXT: README refresh tracked under `mvp-factory-control#354`.
 - BOARD: `#354` is the active docs slice being delivered alongside ongoing style-hardening work.
 - DOCS: rewrote the top-level README to align with the product-introduction standard used by sibling repos and synced it to current versioning and canonical doc entrypoints.

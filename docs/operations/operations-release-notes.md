@@ -4,6 +4,27 @@ Last Updated: 2026-03-06T00:00:00.000Z
 Canonical: No
 Owner: Operations
 
+## [v11.60.12] — 2026-03-07T00:00:00.000Z
+
+### Summary
+🧹 **REPO HYGIENE**: Tightened Git tracking to runtime-essential product files by ignoring and untracking local-only tooling, backup, memory, and temp directories.
+
+### What Was Fixed
+
+#### Runtime-only repository policy cleanup ✅
+**WHAT**: Updated `.gitignore` to exclude local-only directories and removed them from Git tracking without deleting local files.  
+**WHY**: These directories are not required to run, build, validate, or document MessMass, and they should not be part of the GitHub product source tree.  
+**HOW**: Ignored and untracked `.cursor/`, `.kiro/`, `agentic/`, `backups/`, `codex_skills/`, `memory/`, `temp/`, `.vscode/`, and `.swc/`.
+
+### Testing
+- ✅ `npm run build`
+- ✅ `npm run type-check`
+- ✅ `npm run lint`
+- ✅ `npm run version:verify`
+
+### Version
+v11.60.11 → v11.60.12 (PATCH — runtime-only Git tracking cleanup)
+
 ## [v11.60.11] — 2026-03-07T00:00:00.000Z
 
 ### Summary

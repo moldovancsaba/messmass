@@ -270,6 +270,39 @@ This file is onboarding plus operational context for the next agent. Keep it acc
 2. Commit and push `11.60.11`.
 3. Continue the queued work.
 
+## 2026-03-07 11:10:00 CET - Codex Agent
+- Branch: `landing-overhaul`
+- Base commit: `ac364fd2b`
+- Objective: Deliver SSOT issue `#355` by moving the repo to a runtime-only Git tracking policy.
+
+### What changed
+- Updated `.gitignore` to exclude local-only directories:
+  - `.cursor/`
+  - `.kiro/`
+  - `.vscode/`
+  - `.swc/`
+  - `agentic/`
+  - `backups/`
+  - `codex_skills/`
+  - `memory/`
+  - `temp/`
+- Removed the already-tracked files in those directories from Git with `git rm --cached`, without deleting the local copies.
+- Prepared patch version `11.60.12` and release-note entry for the repository hygiene cleanup.
+
+### Validation
+- `npm run build` -> passed
+- `npm run type-check` -> passed
+- `npm run lint` -> passed (warnings only)
+- `npm run version:verify` -> passed
+
+### Known issues / risks
+- These directories will remain on local disk but are no longer part of the tracked source tree. Any future content inside them will stay local unless explicitly force-added.
+
+### Immediate next actions
+1. Post evidence to SSOT card `#355`.
+2. Commit and push the Git tracking cleanup.
+3. Continue the queued work.
+
 ## 2026-03-07 09:05:00 CET - Codex Agent
 - Branch: `landing-overhaul`
 - Base commit: `fdc4af424`
