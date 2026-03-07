@@ -4,6 +4,27 @@ Last Updated: 2026-03-06T00:00:00.000Z
 Canonical: No
 Owner: Operations
 
+## [v11.60.9] — 2026-03-07T00:00:00.000Z
+
+### Summary
+🎨 **STYLE HARDENING PHASE 5**: Removed legacy `.OLD.css` report artifacts from the active app tree and cleaned stale audit references to those files.
+
+### What Was Fixed
+
+#### Legacy report style artifact cleanup ✅
+**WHAT**: Removed `app/partner-report/[slug]/page.module.OLD.css` and `app/report/[slug]/page.module.OLD.css`, then updated the archive audit note and hardcoded-values inventory that still referenced the old partner-report file.  
+**WHY**: These files were not part of the live code path but still lived under `app/`, which made the source tree ambiguous and left stale audit evidence pointing at non-canonical assets.  
+**HOW**: Deleted both `.OLD.css` files after confirming they were not imported, replaced the archived report audit evidence with the live `page.tsx`, and removed the obsolete CSV rows for the deleted partner-report stylesheet.
+
+### Testing
+- ✅ `npm run build`
+- ✅ `npm run type-check`
+- ✅ `npm run lint`
+- ✅ `npm run version:verify`
+
+### Version
+v11.60.8 → v11.60.9 (PATCH — style hardening phase 5 old report stylesheet cleanup)
+
 ## [v11.60.8] — 2026-03-07T00:00:00.000Z
 
 ### Summary

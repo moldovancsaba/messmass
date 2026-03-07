@@ -188,6 +188,33 @@ This file is onboarding plus operational context for the next agent. Keep it acc
 2. Post evidence to SSOT card `#72`.
 3. Commit, push, and continue with the next actionable duplication target if the card scope remains open.
 
+## 2026-03-07 09:35:00 CET - Codex Agent
+- Branch: `landing-overhaul`
+- Base commit: `fef3937d7`
+- Objective: Continue `#72` by removing the remaining `.OLD.css` report artifacts and cleaning the stale audit/doc references to those files.
+
+### What changed
+- Removed dead legacy stylesheets:
+  - `app/partner-report/[slug]/page.module.OLD.css`
+  - `app/report/[slug]/page.module.OLD.css`
+- Updated the archived admin UI audit pack so the report evidence points at the live `app/report/[slug]/page.tsx` route instead of a deleted stylesheet.
+- Removed obsolete hardcoded-values inventory rows that referenced the deleted partner-report `.OLD.css` file.
+- Prepared patch version `11.60.9` and release-note entry for this additional Phase 5 cleanup slice.
+
+### Validation
+- `npm run build` -> passed
+- `npm run type-check` -> passed
+- `npm run lint` -> passed (warnings only)
+- `npm run version:verify` -> passed
+
+### Known issues / risks
+- `#72` remains open for any remaining duplicate or dead CSS artifacts outside this low-risk report cleanup slice.
+
+### Immediate next actions
+1. Post evidence to SSOT card `#72`.
+2. Commit and push `11.60.9`.
+3. Continue with the next actionable duplication target if the card scope remains open.
+
 ## 2026-03-07 09:05:00 CET - Codex Agent
 - Branch: `landing-overhaul`
 - Base commit: `fdc4af424`
