@@ -4,6 +4,27 @@ Last Updated: 2026-03-06T00:00:00.000Z
 Canonical: No
 Owner: Operations
 
+## [v11.60.14] — 2026-03-07T00:00:00.000Z
+
+### Summary
+🧹 **REPO VISIBILITY CLEANUP**: Removed the last root-level local-only artifacts from GitHub visibility and prepared the cleaned branch for promotion to `main`.
+
+### What Was Fixed
+
+#### Root-level GitHub noise cleanup ✅
+**WHAT**: Ignored and untracked `.vercel-build-trigger`, `MEMORY.md`, `SOUL.md`, `USER.md`, `agent-working-loop-canonical-operating-document.md`, `coding-standards.mdc`, and the duplicate `.gitignore 2`.  
+**WHY**: These files are not required to run, build, validate, or document the product and should not remain visible on GitHub.  
+**HOW**: Added them to `.gitignore`, removed them from Git tracking while keeping local copies, and kept real validation assets like `__tests__` and `__fixtures__/layoutV2`.
+
+### Testing
+- ✅ `npm run build`
+- ✅ `npm run type-check`
+- ✅ `npm run lint`
+- ✅ `npm run version:verify`
+
+### Version
+v11.60.13 → v11.60.14 (PATCH — final root-level GitHub visibility cleanup)
+
 ## [v11.60.13] — 2026-03-07T00:00:00.000Z
 
 ### Summary

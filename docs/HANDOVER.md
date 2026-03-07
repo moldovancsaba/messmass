@@ -327,6 +327,38 @@ This file is onboarding plus operational context for the next agent. Keep it acc
 2. Commit and push the branding rename.
 3. Continue the queued work.
 
+## 2026-03-07 12:10:00 CET - Codex Agent
+- Branch: `landing-overhaul`
+- Base commit: `59988926b`
+- Objective: Deliver SSOT issue `#357` by removing the remaining root-level local-only artifacts from Git tracking and preparing the branch for `main`.
+
+### What changed
+- Updated `.gitignore` to exclude:
+  - `.vercel-build-trigger`
+  - `MEMORY.md`
+  - `SOUL.md`
+  - `USER.md`
+  - `agent-working-loop-canonical-operating-document.md`
+  - `coding-standards.mdc`
+  - `.gitignore 2`
+- Removed those files from Git tracking while keeping local copies.
+- Confirmed that `__tests__` and `__fixtures__/layoutV2` remain tracked because they are real validation assets.
+- Prepared patch version `11.60.14` and release-note entry for the final visibility cleanup slice.
+
+### Validation
+- `npm run build` -> passed
+- `npm run type-check` -> passed
+- `npm run lint` -> passed (warnings only)
+- `npm run version:verify` -> passed
+
+### Known issues / risks
+- The branch is clean for promotion after this slice, but pushing to `main` will still require an explicit Git step after validation.
+
+### Immediate next actions
+1. Post evidence to SSOT card `#357`.
+2. Commit, push, and promote the cleaned branch to `main`.
+3. Continue the queued work from `main`.
+
 ## 2026-03-07 09:05:00 CET - Codex Agent
 - Branch: `landing-overhaul`
 - Base commit: `fdc4af424`

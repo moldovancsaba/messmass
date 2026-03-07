@@ -147,6 +147,12 @@ Owner: Katja (Admin)
 ## 7. STATE MEMORY (Current Only)
 
 2026-03-07
+- CONTEXT: Final repo visibility cleanup tracked under `mvp-factory-control#357`.
+- BOARD: `#357` is the active ops slice being delivered.
+- OPS: removed the last root-level local-only artifacts from Git tracking, kept real test assets, and prepared the branch for promotion to `main`.
+- NEXT: run full gates for `11.60.14`, post SSOT evidence on `#357`, then promote the cleaned branch into `main`.
+
+2026-03-07
 - CONTEXT: Product branding rename tracked under `mvp-factory-control#356`.
 - BOARD: `#356` is the active branding slice being delivered.
 - BRANDING: exact tracked occurrences of `MessMass` were renamed to `{messmass}` across the repository, while lowercase identifiers and paths remain unchanged.
