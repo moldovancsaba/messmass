@@ -188,6 +188,33 @@ This file is onboarding plus operational context for the next agent. Keep it acc
 2. Post evidence to SSOT card `#72`.
 3. Commit, push, and continue with the next actionable duplication target if the card scope remains open.
 
+## 2026-03-07 09:05:00 CET - Codex Agent
+- Branch: `landing-overhaul`
+- Base commit: `fdc4af424`
+- Objective: Continue `#72` by removing non-canonical backup files still living under the active `app/` source tree.
+
+### What changed
+- Removed dead backup files:
+  - `app/admin/design/Design.module.css.backup`
+  - `app/api/projects/edit/[slug]/route.ts.backup`
+  - `app/api/public/events/[id]/stats/route.ts.bak`
+- Updated the one historical release-note reference that still mentioned the old design backup artifact.
+- Prepared patch version `11.60.8` and release-note entry for this additional Phase 5 cleanup slice.
+
+### Validation
+- `npm run build` -> passed
+- `npm run type-check` -> passed
+- `npm run lint` -> passed (warnings only)
+- `npm run version:verify` -> passed
+
+### Known issues / risks
+- `#72` remains open because the remaining `.OLD.css` files still have audit/doc references and should be handled in a dedicated follow-up cleanup slice.
+
+### Immediate next actions
+1. Post evidence to SSOT card `#72`.
+2. Commit and push `11.60.8`.
+3. Continue with the next actionable duplication target if the card scope remains open.
+
 ## 2026-03-06 13:10:00 CET - Codex Agent
 - Branch: `landing-overhaul`
 - Base commit: `d464ab33f`

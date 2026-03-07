@@ -4,6 +4,27 @@ Last Updated: 2026-03-06T00:00:00.000Z
 Canonical: No
 Owner: Operations
 
+## [v11.60.8] — 2026-03-07T00:00:00.000Z
+
+### Summary
+🎨 **STYLE HARDENING PHASE 5**: Removed three non-canonical backup files from the active app tree so only live route/style sources remain under `app/`.
+
+### What Was Fixed
+
+#### Dead backup file cleanup ✅
+**WHAT**: Removed `app/admin/design/Design.module.css.backup`, `app/api/projects/edit/[slug]/route.ts.backup`, and `app/api/public/events/[id]/stats/route.ts.bak`.  
+**WHY**: These were backup copies left inside the active source tree, which increased maintenance noise and made it harder to tell which route/style files were canonical.  
+**HOW**: Deleted the backup files after verifying the live counterparts remain in place and only one historical release-note entry still referenced the old design backup.
+
+### Testing
+- ✅ `npm run build`
+- ✅ `npm run type-check`
+- ✅ `npm run lint`
+- ✅ `npm run version:verify`
+
+### Version
+v11.60.7 → v11.60.8 (PATCH — style hardening phase 5 dead backup file cleanup)
+
 ## [v11.60.7] — 2026-03-06T00:00:00.000Z
 
 ### Summary
@@ -6475,7 +6496,7 @@ New Design System Manager provides:
 - REFACTORED: `app/admin/design/Design.module.css` (290 lines) - Enhanced styles
 - UPDATED: `DESIGN_SYSTEM.md` - Added Interactive Design System Manager section
 - UPDATED: `CARD_SYSTEM.md` - Added interactive reference link
-- BACKUP: `page.tsx.backup`, `Design.module.css.backup` - Original files preserved
+- BACKUP: legacy backup artifacts from this migration have since been removed during later style-hardening cleanup
 
 **Performance**
 - Page load: <2s with all tabs loaded
