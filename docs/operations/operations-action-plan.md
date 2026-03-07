@@ -149,6 +149,12 @@ Owner: Katja (Admin)
 2026-03-07
 - CONTEXT: Style hardening Phase 5 continues under `mvp-factory-control#72`.
 - BOARD: `#72` remains `In Progress (NOW)`.
+- DOCS: updated current docs to stop referencing deleted CSS modules and removed stale hardcoded-values inventory rows for files already removed in prior cleanup slices.
+- NEXT: run full gates for `11.60.10`, post SSOT evidence, then continue the CSS duplication inventory for the next low-risk slice.
+
+2026-03-07
+- CONTEXT: Style hardening Phase 5 continues under `mvp-factory-control#72`.
+- BOARD: `#72` remains `In Progress (NOW)`.
 - CODE: removed `app/partner-report/[slug]/page.module.OLD.css` and `app/report/[slug]/page.module.OLD.css`, and cleaned the stale archive/audit references to the partner-report/report legacy stylesheets.
 - NEXT: run full gates for `11.60.9`, post SSOT evidence, then continue the CSS duplication inventory for the next low-risk slice.
 

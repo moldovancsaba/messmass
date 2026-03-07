@@ -215,6 +215,32 @@ This file is onboarding plus operational context for the next agent. Keep it acc
 2. Commit and push `11.60.9`.
 3. Continue with the next actionable duplication target if the card scope remains open.
 
+## 2026-03-07 10:05:00 CET - Codex Agent
+- Branch: `landing-overhaul`
+- Base commit: `63371a540`
+- Objective: Continue `#72` by removing stale current-doc references to deleted CSS modules and syncing the audit inventory with the cleaned source tree.
+
+### What changed
+- Updated current docs to reference live shared stylesheets instead of deleted CSS modules:
+  - `docs/components/components-reusable-components-inventory.md`
+  - `docs/architecture.md`
+- Removed obsolete `docs/audits/hardcoded-values-inventory.csv` rows that still referenced deleted `app/partner-report/[slug]/PartnerReport.module.css` and `app/partner-edit/[slug]/page.module.css`.
+- Prepared patch version `11.60.10` and release-note entry for this documentation-truth cleanup slice.
+
+### Validation
+- `npm run build` -> passed
+- `npm run type-check` -> passed
+- `npm run lint` -> passed (warnings only)
+- `npm run version:verify` -> passed
+
+### Known issues / risks
+- `#72` remains open for any remaining duplicate or dead style assets or stale documentation references outside this low-risk truth-sync slice.
+
+### Immediate next actions
+1. Post evidence to SSOT card `#72`.
+2. Commit and push `11.60.10`.
+3. Continue with the next actionable duplication target if the card scope remains open.
+
 ## 2026-03-07 09:05:00 CET - Codex Agent
 - Branch: `landing-overhaul`
 - Base commit: `fdc4af424`
