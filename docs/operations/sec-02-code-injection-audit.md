@@ -37,8 +37,8 @@ Owner: Security / Reporting
 
 ## 3. Formula evaluator tests
 
-- **Existing:** `__tests__/formula-error-handling.test.ts` – ReportCalculator error handling (chart errors, missing config, user-facing messages).
-- **Added (OPS-SEC-02):** `__tests__/formula-engine-production-like.test.ts` – Direct `evaluateFormula()` calls with production-like stats (many fields, zeros, division by zero, missing vars); captures NA and failure cases for regression.
+- **Existing:** `tests/formula-error-handling.test.ts` – ReportCalculator error handling (chart errors, missing config, user-facing messages).
+- **Added (OPS-SEC-02):** `tests/formula-engine-production-like.test.ts` – Direct `evaluateFormula()` calls with production-like stats (many fields, zeros, division by zero, missing vars); captures NA and failure cases for regression.
 
 ## 4. Dependency allowlist / guardrail
 

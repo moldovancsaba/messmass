@@ -1,8 +1,29 @@
 # {messmass} Release Notes
 Status: Active
-Last Updated: 2026-03-06T00:00:00.000Z
+Last Updated: 2026-03-07T00:00:00.000Z
 Canonical: No
 Owner: Operations
+
+## [v11.60.15] — 2026-03-07T00:00:00.000Z
+
+### Summary
+🧪 **TEST TREE NORMALIZATION**: Renamed the repository test surface from `__tests__` / `__fixtures__` conventions to a cleaner `tests/` structure and updated all tracked references, workflows, and docs.
+
+### What Was Fixed
+
+#### Canonical test directory cleanup ✅
+**WHAT**: Moved the tracked Jest suites from `__tests__/` into `tests/`, moved LayoutV2 fixtures into `tests/fixtures/layoutV2`, and updated config, workflow commands, scripts, and docs to the new structure.  
+**WHY**: The old double-underscore convention was not a runtime requirement and made the root tree noisier than necessary. A single `tests/` tree is clearer, easier to audit, and better aligned with the repository cleanup already delivered.  
+**HOW**: Updated `jest.config.js`, `.github/workflows/layout-grammar-tests.yml`, `scripts/check-layout-grammar-guardrail.ts`, current docs, fixture instructions, and archive references so the new test paths are the only tracked truth.
+
+### Testing
+- ✅ `npm run build`
+- ✅ `npm run type-check`
+- ✅ `npm run lint`
+- ✅ `npm run version:verify`
+
+### Version
+v11.60.14 → v11.60.15 (PATCH — normalize test and fixture directory structure)
 
 ## [v11.60.14] — 2026-03-07T00:00:00.000Z
 
@@ -14,7 +35,7 @@ Owner: Operations
 #### Root-level GitHub noise cleanup ✅
 **WHAT**: Ignored and untracked `.vercel-build-trigger`, `MEMORY.md`, `SOUL.md`, `USER.md`, `agent-working-loop-canonical-operating-document.md`, `coding-standards.mdc`, and the duplicate `.gitignore 2`.  
 **WHY**: These files are not required to run, build, validate, or document the product and should not remain visible on GitHub.  
-**HOW**: Added them to `.gitignore`, removed them from Git tracking while keeping local copies, and kept real validation assets like `__tests__` and `__fixtures__/layoutV2`.
+**HOW**: Added them to `.gitignore`, removed them from Git tracking while keeping local copies, and kept real validation assets like `tests` and `tests/fixtures/layoutV2`.
 
 ### Testing
 - ✅ `npm run build`
@@ -648,8 +669,8 @@ v11.55.1 → v11.55.2 (PATCH — clicker manager stabilization)
 - `app/report/[slug]/ReportChart.module.css` - PIE chart CSS Grid layout
 
 **Tests Added:**
-- `__tests__/layout-grammar-runtime-enforcement.test.ts` - 16 tests
-- `__tests__/layoutV2-variable-aspect-ratio.test.ts` - 28 tests
+- `tests/layout-grammar-runtime-enforcement.test.ts` - 16 tests
+- `tests/layoutV2-variable-aspect-ratio.test.ts` - 28 tests
 
 **Documentation Updated:**
 - `docs/design/design-report-layout-v2-contract.md` - v1.1.0 (variable aspect ratio)

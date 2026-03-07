@@ -1,4 +1,4 @@
-// __tests__/chart-data-validation.test.ts
+// tests/chart-data-validation.test.ts
 // WHAT: Regression tests for A-R-13 - Chart data validation and error boundaries
 // WHY: Ensure chart data is validated and rendering errors are handled gracefully
 // HOW: Test all validation scenarios identified in investigation

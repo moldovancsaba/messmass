@@ -43,10 +43,10 @@ For each **block** in the fixture/template:
 From repo root:
 
 ```bash
-node __fixtures__/layoutV2/validate-fixtures.js
+node tests/fixtures/layoutV2/validate-fixtures.js
 ```
 
-Or use the Jest test: `__tests__/layoutV2-fixtures-validation.test.ts` (if added).
+Or use the Jest test: `tests/layoutV2-fixtures-validation.test.ts` (if added).
 
 ---
 

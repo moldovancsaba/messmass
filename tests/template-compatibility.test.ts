@@ -1,4 +1,4 @@
-// __tests__/template-compatibility.test.ts
+// tests/template-compatibility.test.ts
 // WHAT: Regression tests for A-R-12 - Template compatibility validation
 // WHY: Ensure templates are validated for compatibility with available data
 // HOW: Test all compatibility scenarios identified in investigation

@@ -28,7 +28,7 @@ This is a historical release checklist. It is archived and not an executable bac
 **Files Changed:**
 - `lib/export/exportValidator.ts` (new)
 - `hooks/useReportExport.ts`
-- `__tests__/export-validation.test.ts` (new)
+- `tests/export-validation.test.ts` (new)
 
 **Commit:** `03ae7a80a`
 
@@ -56,7 +56,7 @@ This is a historical release checklist. It is archived and not an executable bac
 - `lib/export/chartValidation.ts` (new - extracted shared validation)
 - `lib/export/csv.ts`
 - `hooks/useReportExport.ts`
-- `__tests__/export-parity.test.ts` (new)
+- `tests/export-parity.test.ts` (new)
 
 **Commits:** Phase 1 and Phase 2 completion commits
 
@@ -74,7 +74,7 @@ This is a historical release checklist. It is archived and not an executable bac
 - `lib/report-calculator.ts`
 - `app/report/[slug]/ReportChart.tsx`
 - `app/report/[slug]/ReportContent.tsx`
-- `__tests__/formula-error-handling.test.ts` (new)
+- `tests/formula-error-handling.test.ts` (new)
 
 **Commit:** `a4c11e36c`
 
@@ -89,7 +89,7 @@ This is a historical release checklist. It is archived and not an executable bac
 **Files Changed:**
 - `lib/templateCompatibilityValidator.ts` (new)
 - `app/report/[slug]/page.tsx`
-- `__tests__/template-compatibility.test.ts` (new)
+- `tests/template-compatibility.test.ts` (new)
 
 **Commit:** `8662f0bbf`
 
@@ -106,7 +106,7 @@ This is a historical release checklist. It is archived and not an executable bac
 - `components/ChartErrorBoundary.tsx` (new)
 - `app/report/[slug]/ReportChart.tsx`
 - `app/report/[slug]/ReportContent.tsx`
-- `__tests__/chart-data-validation.test.ts` (new)
+- `tests/chart-data-validation.test.ts` (new)
 
 **Commit:** `adcea2138`
 
@@ -133,7 +133,7 @@ This is a historical release checklist. It is archived and not an executable bac
 
 **Files Changed:**
 - `lib/export/csv.ts`
-- `__tests__/export-csv-formatting.test.ts` (new)
+- `tests/export-csv-formatting.test.ts` (new)
 
 **Commit:** `def750c40`
 
@@ -290,12 +290,12 @@ This is a historical release checklist. It is archived and not an executable bac
 - A-R-16: `docs/archive/_archive/investigations/archive-investigations-pack-2026.md#a-r-16-reporting-release-verification-pack`
 
 ### Test Files
-- `__tests__/export-validation.test.ts`
-- `__tests__/export-parity.test.ts`
-- `__tests__/formula-error-handling.test.ts`
-- `__tests__/template-compatibility.test.ts`
-- `__tests__/chart-data-validation.test.ts`
-- `__tests__/export-csv-formatting.test.ts`
+- `tests/export-validation.test.ts`
+- `tests/export-parity.test.ts`
+- `tests/formula-error-handling.test.ts`
+- `tests/template-compatibility.test.ts`
+- `tests/chart-data-validation.test.ts`
+- `tests/export-csv-formatting.test.ts`
 
 ### Code Files
 - `lib/export/exportValidator.ts`

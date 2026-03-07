@@ -100,7 +100,7 @@ function scanDirectory(dir: string, extensions: string[] = ['.css', '.tsx', '.ts
 
     if (stat.isDirectory()) {
       // Skip node_modules, .next, and other build/dependency directories
-      if (['node_modules', '.next', 'out', '.git', 'dist', 'build', 'scripts', '__tests__'].includes(entry)) {
+      if (['node_modules', '.next', 'out', '.git', 'dist', 'build', 'scripts', 'tests'].includes(entry)) {
         continue;
       }
       // Only check Layout Grammar scope files
@@ -147,4 +147,3 @@ function main() {
 }
 
 main();
-

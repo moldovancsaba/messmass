@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 /**
  * X-LAYOUT-01: Validate LayoutV2 fixtures against schema + contract.
- * Run from repo root: node __fixtures__/layoutV2/validate-fixtures.js
+ * Run from repo root: node tests/fixtures/layoutV2/validate-fixtures.js
  */
 
 const fs = require('fs');

@@ -2,7 +2,7 @@
 
 This file is onboarding plus operational context for the next agent. Keep it accurate when behavior, process, or current delivery state changes.
 
-**Last Updated:** 2026-03-06 (admin UI consistency documented under issue #56; production hotfixes tracked under #345, #346, #348, and #349; style hardening Phase 5 active under #72)
+**Last Updated:** 2026-03-07 (test tree normalization tracked under issue #358; repo cleanup tracked under #357; branding rename tracked under #356; style hardening Phase 5 still active under #72)
 
 ## SSOT (Work Tracking)
 - Board: <https://github.com/users/moldovancsaba/projects/1>
@@ -15,10 +15,10 @@ This file is onboarding plus operational context for the next agent. Keep it acc
 
 ## Current Repo Truth
 - Active branch: `landing-overhaul`
-- Last known HEAD during this update: `d464ab33f`
-- Working tree is already dirty in unrelated files (`MEMORY.md`, `docs/NEXT_AGENT_PROMPT.md`, `docs/messmass-codex-brain-dump.md`, `docs/operations/operations-action-plan.md`, `memory/2026-02-24.md`, plus deleted `USER.md` and `agent-working-loop-canonical-operating-document.md`, and untracked `READMEDEV.md`).
-- Most recent documented code delivery: partner report/delete-project hotfixes plus admin `totalFans` consistency and partner card-view report-edit fixes on `landing-overhaul`, tracked under `mvp-factory-control#345`, `#346`, `#348`, and `#349`.
-- Current active delivery: style hardening Phase 5 CSS consolidation under `mvp-factory-control#72`.
+- Last known HEAD during this update: `cf81373ad`
+- Working tree includes the in-progress tracked move from `__tests__` / `__fixtures__` into `tests/` plus untracked local `READMEDEV.md`.
+- Most recent documented code delivery before this update: repo-root visibility cleanup under `mvp-factory-control#357`.
+- Current active delivery: test tree normalization under `mvp-factory-control#358`, with the larger style hardening Phase 5 stream still open under `mvp-factory-control#72`.
 
 ## Current Priorities
 - Board-derived priority reference: [operations-delivery-focus.md](/Users/moldovancsaba/Projects/messmass/docs/operations/operations-delivery-focus.md)
@@ -50,6 +50,40 @@ This file is onboarding plus operational context for the next agent. Keep it acc
 - Style editor preview updates immediately for bar/pie CSS vars and includes Value Chain and Landing page sections.
 
 ## Handover Log
+
+## 2026-03-07 12:35:00 CET - Codex Agent
+- Branch: `landing-overhaul`
+- Base commit: `cf81373ad`
+- Objective: Deliver `mvp-factory-control#358` by replacing the `__tests__` / `__fixtures__` conventions with a canonical `tests/` tree and updating every tracked reference that depends on those paths.
+
+### What changed
+- Moved tracked Jest suites from `__tests__/` into `tests/`.
+- Moved LayoutV2 fixtures from `__fixtures__/layoutV2` into `tests/fixtures/layoutV2`.
+- Updated:
+  - `jest.config.js`
+  - `.github/workflows/layout-grammar-tests.yml`
+  - `scripts/check-layout-grammar-guardrail.ts`
+  - fixture instructions and validation notes under `tests/fixtures/layoutV2`
+  - current docs and archived references that named the old paths
+- Prepared patch version `11.60.15` and release-note entry for the repository structure cleanup.
+
+### Validation
+- Planned final gate set for this delivery:
+  - `npm run build`
+  - `npm run type-check`
+  - `npm run lint`
+  - `npm run version:verify`
+  - `npm test -- tests/layout-grammar --passWithNoTests`
+
+### Known issues / risks
+- The branch still cannot go directly to `main`; repository rules require merge through PR `#56`.
+- `READMEDEV.md` remains an untracked local-only file and was not added to Git.
+- The renamed layout-grammar Jest command still exposes pre-existing assertion failures in `tests/layout-grammar-runtime-enforcement.test.ts`; those failures are not caused by the directory migration.
+
+### Immediate next actions
+1. Run the final gates for `11.60.15`.
+2. Post evidence to SSOT card `#358`.
+3. Commit and push the path migration onto `landing-overhaul` so PR `#56` reflects the cleanup.
 
 ## 2026-03-06 14:05:00 CET - Codex Agent
 - Branch: `landing-overhaul`
@@ -342,7 +376,7 @@ This file is onboarding plus operational context for the next agent. Keep it acc
   - `coding-standards.mdc`
   - `.gitignore 2`
 - Removed those files from Git tracking while keeping local copies.
-- Confirmed that `__tests__` and `__fixtures__/layoutV2` remain tracked because they are real validation assets.
+- Confirmed that `tests` and `tests/fixtures/layoutV2` remain tracked because they are real validation assets.
 - Prepared patch version `11.60.14` and release-note entry for the final visibility cleanup slice.
 
 ### Validation

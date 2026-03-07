@@ -1,4 +1,4 @@
-// __tests__/height-calculation.test.ts
+// tests/height-calculation.test.ts
 // WHAT: Tests for A-03.1 + A-03.2 + A-03.3 - Height calculation fixes for TEXT AREA, KPI, and BAR charts
 // WHY: Ensure height calculations prevent clipping of multi-line text, KPI values/labels, and BAR chart labels
 // HOW: Test height calculation logic and validation

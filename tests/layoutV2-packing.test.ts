@@ -1,4 +1,4 @@
-// __tests__/layoutV2-packing.test.ts
+// tests/layoutV2-packing.test.ts
 // WHAT: Tests for LayoutV2 deterministic block + unit packing
 // WHY: Ensure same input => same layout, 4:1 aspect ratio, 4-unit capacity
 // HOW: Test fixtures for various unit combinations

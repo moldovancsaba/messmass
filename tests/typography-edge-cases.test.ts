@@ -1,4 +1,4 @@
-// __tests__/typography-edge-cases.test.ts
+// tests/typography-edge-cases.test.ts
 // WHAT: Regression harness for typography scaling edge cases (A-04)
 // WHY: Verify edge cases are handled correctly (very long titles, extreme aspect ratios)
 // HOW: Test calculateSyncedFontSizes() and BAR chart font size calculator with worst-case examples

@@ -296,7 +296,7 @@ const labelWidth = (tableWidth * 0.4) - labelCellPadding;
 
 ## Regression Harness
 
-**File:** `__tests__/typography-edge-cases.test.ts`
+**File:** `tests/typography-edge-cases.test.ts`
 
 **Test Cases:**
 
@@ -386,7 +386,7 @@ const labelWidth = (tableWidth * 0.4) - labelCellPadding;
    - Enhanced `estimateLines()` with variable character width multiplier
    - Enhanced `calculateBlockFontSizeForBarCharts()` with improved label width calculation
 
-3. `__tests__/typography-edge-cases.test.ts` (new)
+3. `tests/typography-edge-cases.test.ts` (new)
    - Regression harness with 7 test cases
    - Covers all identified edge cases
 
@@ -624,7 +624,7 @@ const result = safeValidate(
 - ✅ Runtime guardrails in `lib/layoutGrammarRuntimeEnforcement.ts`
 - ✅ `safeValidate()` wrapper for error boundary protection
 - ✅ Integration in `ReportContent.tsx` and `ReportChart.tsx`
-- ✅ 16 comprehensive tests in `__tests__/layout-grammar-runtime-enforcement.test.ts`
+- ✅ 16 comprehensive tests in `tests/layout-grammar-runtime-enforcement.test.ts`
 - ✅ All validation calls use `safeValidate()` to prevent crashes
 
 **Impact:**
@@ -955,7 +955,7 @@ All A-01 through A-06 implementations are present and functional. Runtime behavi
 **Files:** 
 - `lib/fontSyncCalculator.ts`
 - `lib/barChartFontSizeCalculator.ts`
-- `__tests__/typography-edge-cases.test.ts`
+- `tests/typography-edge-cases.test.ts`
 
 **Verification:**
 - ✅ `calculateSyncedFontSizes()`: Variable character width multiplier (line 24)
@@ -1331,7 +1331,7 @@ export function verifyPDFConsistency(
 - `lib/export/exportValidator.ts` - Export validation utilities
 - `lib/export/exportConsistencyChecker.ts` - Export consistency verification
 - `docs/audits/investigations/A-R-07-export-correctness.md` - This document
-- `__tests__/export-validation.test.ts` - Export validation test suite
+- `tests/export-validation.test.ts` - Export validation test suite
 
 **Modified Files:**
 - `hooks/useReportExport.ts` - Add comprehensive validation
@@ -1369,7 +1369,7 @@ export function verifyPDFConsistency(
 - ✅ `hooks/useReportExport.ts` - Enhanced with validation layer
   - CSV export path: Pre-export validation with deterministic error messages
   - PDF export path: Pre-export validation with deterministic error messages
-- ✅ `__tests__/export-validation.test.ts` - Regression test suite
+- ✅ `tests/export-validation.test.ts` - Regression test suite
   - CSV readiness validation tests
   - PDF readiness validation tests
   - Chart coverage validation tests
@@ -2116,7 +2116,7 @@ Export formats (CSV, PDF) may not match the rendered report that users see:
 
 ### Test Coverage
 
-**File:** `__tests__/export-parity.test.ts` (new)
+**File:** `tests/export-parity.test.ts` (new)
 
 **Test Suites:**
 1. **hasValidChartData() filtering** - 11 test cases covering:
@@ -2157,7 +2157,7 @@ Export formats (CSV, PDF) may not match the rendered report that users see:
 - `hooks/useReportExport.ts`
 - `app/report/[slug]/page.tsx`
 - `app/partner-report/[slug]/page.tsx`
-- `__tests__/export-parity.test.ts` (new)
+- `tests/export-parity.test.ts` (new)
 - `docs/audits/investigations/A-R-10-export-parity-investigation.md` (this file)
 - `ACTION_PLAN.md`
 
@@ -2721,7 +2721,7 @@ if (result.error) {
   - Ensure errors are properly filtered
 
 **6. Test Coverage**
-- **File:** `__tests__/formula-error-handling.test.ts` (new)
+- **File:** `tests/formula-error-handling.test.ts` (new)
 - **Coverage:**
   - Error categorization (3 test cases)
   - Error message formatting (4 test cases)
@@ -2756,7 +2756,7 @@ if (result.error) {
 - `app/report/[slug]/ReportChart.tsx`
 - `app/report/[slug]/ReportChart.module.css`
 - `app/report/[slug]/ReportContent.tsx`
-- `__tests__/formula-error-handling.test.ts` (new)
+- `tests/formula-error-handling.test.ts` (new)
 - `docs/audits/investigations/A-R-11-formula-error-handling.md` (this file)
 - `ACTION_PLAN.md`
 
@@ -3169,7 +3169,7 @@ interface DataBlockReference {
   - Warning banner styled with yellow background and border
 
 **4. Test Coverage**
-- **File:** `__tests__/template-compatibility.test.ts` (new)
+- **File:** `tests/template-compatibility.test.ts` (new)
 - **Coverage:**
   - Missing chart config validation (2 test cases)
   - Missing variable validation (3 test cases)
@@ -3203,7 +3203,7 @@ interface DataBlockReference {
 **Files Modified:**
 - `lib/templateCompatibilityValidator.ts` (new)
 - `app/report/[slug]/page.tsx`
-- `__tests__/template-compatibility.test.ts` (new)
+- `tests/template-compatibility.test.ts` (new)
 - `docs/audits/investigations/A-R-12-template-compatibility.md` (this file)
 - `ACTION_PLAN.md`
 
@@ -3672,7 +3672,7 @@ if (!hasData) {
   - Added `charts` prop to `ReportContent`, `ReportBlock`, and `ResponsiveRow`
 
 **5. Test Coverage**
-- **File:** `__tests__/chart-data-validation.test.ts` (new)
+- **File:** `tests/chart-data-validation.test.ts` (new)
 - **Coverage:**
   - Structure validation (6 test cases)
   - Value type validation (6 test cases)
@@ -3709,7 +3709,7 @@ if (!hasData) {
 - `app/report/[slug]/ReportChart.tsx`
 - `app/report/[slug]/ReportContent.tsx`
 - `app/report/[slug]/page.tsx`
-- `__tests__/chart-data-validation.test.ts` (new)
+- `tests/chart-data-validation.test.ts` (new)
 - `docs/audits/investigations/A-R-13-chart-data-validation.md` (this file)
 - `ACTION_PLAN.md`
 
@@ -4052,7 +4052,7 @@ export interface ChartResult {
 6. Charts with NA values (should remain "NA")
 7. Charts without formatting (should use defaults)
 
-**File:** `__tests__/export-csv-formatting.test.ts` (new)
+**File:** `tests/export-csv-formatting.test.ts` (new)
 
 ---
 
@@ -4142,7 +4142,7 @@ export interface ChartResult {
   - Report Content: Text and image URLs (as-is)
 
 **5. Test Coverage**
-- **File:** `__tests__/export-csv-formatting.test.ts` (new)
+- **File:** `tests/export-csv-formatting.test.ts` (new)
 - **Coverage:**
   - KPI formatting (currency, percentage, rounded, legacy decimals, NA, defaults)
   - BAR formatting (percentage, currency, NA values)
@@ -4195,7 +4195,7 @@ export interface ChartResult {
 
 **Files Modified:**
 - `lib/export/csv.ts` (added formatting function and applied to chart values)
-- `__tests__/export-csv-formatting.test.ts` (new - 15 test cases)
+- `tests/export-csv-formatting.test.ts` (new - 15 test cases)
 - `docs/audits/investigations/A-R-15-csv-formatting-alignment.md` (this file)
 - `ACTION_PLAN.md`
 
@@ -4256,7 +4256,7 @@ This verification pack provides evidence-driven documentation for Reporting syst
 **Files Changed:**
 - `lib/export/exportValidator.ts` (new)
 - `hooks/useReportExport.ts`
-- `__tests__/export-validation.test.ts` (new)
+- `tests/export-validation.test.ts` (new)
 
 **Commit:** `03ae7a80a`
 
@@ -4292,7 +4292,7 @@ This verification pack provides evidence-driven documentation for Reporting syst
 - `lib/export/chartValidation.ts` (new - extracted shared validation)
 - `lib/export/csv.ts`
 - `hooks/useReportExport.ts`
-- `__tests__/export-parity.test.ts` (new)
+- `tests/export-parity.test.ts` (new)
 
 **Commits:** Phase 1 and Phase 2 completion commits
 
@@ -4315,7 +4315,7 @@ This verification pack provides evidence-driven documentation for Reporting syst
 - `lib/report-calculator.ts`
 - `app/report/[slug]/ReportChart.tsx`
 - `app/report/[slug]/ReportContent.tsx`
-- `__tests__/formula-error-handling.test.ts` (new)
+- `tests/formula-error-handling.test.ts` (new)
 
 **Commit:** `a4c11e36c`
 
@@ -4335,7 +4335,7 @@ This verification pack provides evidence-driven documentation for Reporting syst
 **Files Changed:**
 - `lib/templateCompatibilityValidator.ts` (new)
 - `app/report/[slug]/page.tsx`
-- `__tests__/template-compatibility.test.ts` (new)
+- `tests/template-compatibility.test.ts` (new)
 
 **Commit:** `8662f0bbf`
 
@@ -4357,7 +4357,7 @@ This verification pack provides evidence-driven documentation for Reporting syst
 - `components/ChartErrorBoundary.tsx` (new)
 - `app/report/[slug]/ReportChart.tsx`
 - `app/report/[slug]/ReportContent.tsx`
-- `__tests__/chart-data-validation.test.ts` (new)
+- `tests/chart-data-validation.test.ts` (new)
 
 **Commit:** `adcea2138`
 
@@ -4393,7 +4393,7 @@ This verification pack provides evidence-driven documentation for Reporting syst
 
 **Files Changed:**
 - `lib/export/csv.ts`
-- `__tests__/export-csv-formatting.test.ts` (new)
+- `tests/export-csv-formatting.test.ts` (new)
 
 **Commit:** `def750c40`
 
@@ -4708,23 +4708,23 @@ Although A-R-07 through A-R-15 completed the planned hardening work, two additio
 
 ### Unit Tests
 **Coverage:**
-- Export validation: `__tests__/export-validation.test.ts`
-- Export parity: `__tests__/export-parity.test.ts`
-- Formula error handling: `__tests__/formula-error-handling.test.ts`
-- Template compatibility: `__tests__/template-compatibility.test.ts`
-- Chart data validation: `__tests__/chart-data-validation.test.ts`
-- CSV formatting: `__tests__/export-csv-formatting.test.ts`
+- Export validation: `tests/export-validation.test.ts`
+- Export parity: `tests/export-parity.test.ts`
+- Formula error handling: `tests/formula-error-handling.test.ts`
+- Template compatibility: `tests/template-compatibility.test.ts`
+- Chart data validation: `tests/chart-data-validation.test.ts`
+- CSV formatting: `tests/export-csv-formatting.test.ts`
 
 **Total Test Cases:** 80+ test cases across all areas
 
 **Run Tests:**
 ```bash
-npm test -- __tests__/export-validation.test.ts
-npm test -- __tests__/export-parity.test.ts
-npm test -- __tests__/formula-error-handling.test.ts
-npm test -- __tests__/template-compatibility.test.ts
-npm test -- __tests__/chart-data-validation.test.ts
-npm test -- __tests__/export-csv-formatting.test.ts
+npm test -- tests/export-validation.test.ts
+npm test -- tests/export-parity.test.ts
+npm test -- tests/formula-error-handling.test.ts
+npm test -- tests/template-compatibility.test.ts
+npm test -- tests/chart-data-validation.test.ts
+npm test -- tests/export-csv-formatting.test.ts
 ```
 
 ---
@@ -4788,12 +4788,12 @@ npm test -- __tests__/export-csv-formatting.test.ts
 - A-R-15: `docs/audits/investigations/A-R-15-csv-formatting-alignment.md`
 
 ### Test Files
-- `__tests__/export-validation.test.ts`
-- `__tests__/export-parity.test.ts`
-- `__tests__/formula-error-handling.test.ts`
-- `__tests__/template-compatibility.test.ts`
-- `__tests__/chart-data-validation.test.ts`
-- `__tests__/export-csv-formatting.test.ts`
+- `tests/export-validation.test.ts`
+- `tests/export-parity.test.ts`
+- `tests/formula-error-handling.test.ts`
+- `tests/template-compatibility.test.ts`
+- `tests/chart-data-validation.test.ts`
+- `tests/export-csv-formatting.test.ts`
 
 ### Code Files
 - `lib/export/exportValidator.ts`
