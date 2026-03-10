@@ -28,9 +28,11 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    if (!['event-report', 'partner-report', 'edit', 'filter'].includes(pageType)) {
+    // WHAT: Allow all page types supported by lib/pagePassword (partner-edit, hashtag added per audit #368)
+    const allowedPageTypes = ['event-report', 'partner-report', 'edit', 'partner-edit', 'filter', 'hashtag'];
+    if (!allowedPageTypes.includes(pageType)) {
       return NextResponse.json(
-        { success: false, error: 'Invalid pageType. Must be event-report, partner-report, edit, or filter' },
+        { success: false, error: `Invalid pageType. Must be one of: ${allowedPageTypes.join(', ')}` },
         { status: 400 }
       );
     }
@@ -89,9 +91,11 @@ export async function PUT(request: NextRequest) {
       );
     }
 
-    if (!['event-report', 'partner-report', 'edit', 'filter'].includes(pageType)) {
+    // WHAT: Allow all page types supported by lib/pagePassword (partner-edit, hashtag added per audit #368)
+    const allowedPageTypes = ['event-report', 'partner-report', 'edit', 'partner-edit', 'filter', 'hashtag'];
+    if (!allowedPageTypes.includes(pageType)) {
       return NextResponse.json(
-        { success: false, error: 'Invalid pageType. Must be event-report, partner-report, edit, or filter' },
+        { success: false, error: `Invalid pageType. Must be one of: ${allowedPageTypes.join(', ')}` },
         { status: 400 }
       );
     }

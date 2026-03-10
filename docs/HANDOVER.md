@@ -2,7 +2,7 @@
 
 This file is onboarding plus operational context for the next agent. Keep it accurate when behavior, process, or current delivery state changes.
 
-**Last Updated:** 2026-03-07 (root structure hardening tracked under issue #359; test tree normalization tracked under #358; repo cleanup tracked under #357; style hardening Phase 5 still active under #72)
+**Last Updated:** 2026-03-10 (Audit #369 and #370 complete: core shared vs partner-facing list in audit doc; architecture.md updated with Core vs Partner resolution subsection)
 
 ## SSOT (Work Tracking)
 - Board: <https://github.com/users/moldovancsaba/projects/1>
@@ -50,6 +50,28 @@ This file is onboarding plus operational context for the next agent. Keep it acc
 - Style editor preview updates immediately for bar/pie CSS vars and includes Value Chain and Landing page sections.
 
 ## Handover Log
+
+## 2026-03-10 — Audit #367 (Core vs Partner): checklist and resolution map
+- **Objective:** Complete audit checklist (Section 5) and resolution map for issue #367.
+- **What changed:** Added Section 5A to \`docs/2026-03-09_AUDIT_CORE_VS_PARTNER_FUNCTIONS.md\`: checklist outcomes (Core/Partner/Mixed), resolution map (event report, partner report, event edit, partner edit), gap list. No code changes.
+- **SSOT:** Start note and milestone comment posted on mvp-factory-control#367.
+- **Next:** #367, #368, #369, #370 all have milestone deliverables. Move to Done when PO accepts. No further audit work pending unless PO requests.
+
+## 2026-03-10 — Audit #368 (Partner future-readiness): routes, auth, API surface
+- **Objective:** Deliver partner future-readiness artefacts for issue #368.
+- **What changed:** Added Section 5B to \`docs/2026-03-09_AUDIT_CORE_VS_PARTNER_FUNCTIONS.md\`: partner-facing routes and auth table; route-level admin-only vs partner-visible vs shared; API list (admin-only vs partner-callable); notes for subdomain/auth boundary. No code changes.
+- **Gap fixed:** \`/api/page-passwords\` allow list now includes \`partner-edit\` and \`hashtag\` in \`app/api/page-passwords/route.ts\` (POST and PUT).
+- **SSOT:** Start note and milestone comment posted on mvp-factory-control#368.
+
+## 2026-03-10 — Audit #369 (Core shared vs partner-facing module list)
+- **Objective:** Produce list of modules/routes/APIs for SOW and Client Variant fork boundaries (issue #369).
+- **What changed:** Added Section 5C to \`docs/2026-03-09_AUDIT_CORE_VS_PARTNER_FUNCTIONS.md\`: routes (admin-only, partner-facing, shared), API routes (admin-only, partner-callable, shared), lib/components (core shared vs partner-facing), fork boundary note.
+- **SSOT:** Start note and milestone comment posted on mvp-factory-control#369.
+
+## 2026-03-10 — Audit #370 (Documentation update — Core vs partner resolution)
+- **Objective:** Update architecture doc with Core vs partner resolution summary and pointer to audit (issue #370).
+- **What changed:** In \`docs/architecture.md\`, added subsection \`### Core vs Partner Resolution (2026-03-10)\` under Reporting System v12: resolution table (event report, partner report, event edit, partner edit × template, style, clicker set); implementation pointer; link to audit doc Sections 5A, 5B, 5C.
+- **SSOT:** Start note and milestone comment posted on mvp-factory-control#370.
 
 ## 2026-03-07 13:10:00 CET - Codex Agent
 - Branch: `landing-overhaul`
