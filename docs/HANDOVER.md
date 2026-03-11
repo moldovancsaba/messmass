@@ -18,7 +18,8 @@ This file is onboarding plus operational context for the next agent. Keep it acc
 - Last known HEAD during this update: `cf81373ad`
 - Working tree includes untracked local `READMEDEV.md`; canonical repo-root cleanup work is now tracked under `#359`.
 - Most recent documented code delivery before this update: test tree normalization under `mvp-factory-control#358`.
-- Current active delivery: root structure hardening under `mvp-factory-control#359`, with the larger style hardening Phase 5 stream still open under `mvp-factory-control#72`.
+- Current active delivery: root structure hardening under `mvp-factory-control#359` (Closed 2026-03-10), with the larger style hardening Phase 5 stream still open under `mvp-factory-control#72`.
+- Formally closed on SSOT board (2026-03-10): #354, #355, #356, #357, #358, #359.
 
 ## Current Priorities
 - Board-derived priority reference: [operations-delivery-focus.md](/Users/moldovancsaba/Projects/messmass/docs/operations/operations-delivery-focus.md)
@@ -50,6 +51,40 @@ This file is onboarding plus operational context for the next agent. Keep it acc
 - Style editor preview updates immediately for bar/pie CSS vars and includes Value Chain and Landing page sections.
 
 ## Handover Log
+
+## 2026-03-10 15:27 CET — Antigravity Agent — Commit + Audit #367–#370 closure
+
+- **Branch:** `landing-overhaul`
+- **Commit:** `1f0c290a0` — `fix(api): expand page-password allow-list + audit core-vs-partner docs (#367 #368 #369 #370)`
+- **Pushed:** `7eb3b7d4b..1f0c290a0` → `origin/landing-overhaul`
+
+### What changed
+- `app/api/page-passwords/route.ts`: added `partner-edit` and `hashtag` to `allowedPageTypes` in both POST and PUT handlers (audit #368 gap fix)
+- `docs/2026-03-09_AUDIT_CORE_VS_PARTNER_FUNCTIONS.md`: new file tracked — full audit plan with completed Sections 5A, 5B, 5C (issues #367, #368, #369)
+- `docs/architecture.md`: added `### Core vs Partner Resolution (2026-03-10)` subsection with resolution-order table and pointer to audit doc (issue #370)
+- `docs/HANDOVER.md`: appended prior session audit milestone entries
+
+### Quality gates
+- `npm run build` ✅ (exit 0)
+- `npm run type-check` ✅ (clean)
+- `npm run lint` ✅ (warnings only — pre-existing `console` statements, not introduced here)
+
+### SSOT
+- #367 ✅ Closed — Checklist & resolution map (Section 5A)
+- #368 ✅ Closed — Partner future-readiness artefacts + page-password allow-list gap fix (Section 5B)
+- #369 ✅ Closed — Core shared vs partner-facing module list (Section 5C)
+- #370 ✅ Closed — architecture.md Core vs Partner Resolution section
+
+### Current state
+- Branch `landing-overhaul` is clean (no uncommitted changes)
+- PR to `main` remains open at https://github.com/moldovancsaba/messmass/pull/56
+- `READMEDEV.md` remains intentionally local-only and untracked
+
+### Next actions (for next agent)
+1. Merge or update PR #56 (`landing-overhaul` → `main`) per repo merge policy
+2. Pick next open SSOT card (e.g. `#72` style hardening or `#66`) from the board
+
+---
 
 ## 2026-03-10 — Audit #367 (Core vs Partner): checklist and resolution map
 - **Objective:** Complete audit checklist (Section 5) and resolution map for issue #367.

@@ -43,8 +43,9 @@ export default function AdminUsersPageUnified() {
     isOpen: boolean;
     password: string;
     userEmail: string;
+    userId: string;
     title: string;
-  }>({ isOpen: false, password: '', userEmail: '', title: '' });
+  }>({ isOpen: false, password: '', userEmail: '', userId: '', title: '' });
   
   const [confirmModal, setConfirmModal] = useState<{
     isOpen: boolean;
@@ -142,6 +143,7 @@ export default function AdminUsersPageUnified() {
           isOpen: true,
           password: data.password,
           userEmail: userEmail,
+          userId: data.userId || 'new', // data.userId if available, or 'new'
           title: userRole === 'api' ? 'API Key Generated' : 'User Created Successfully'
         });
         await refreshUsers();
@@ -173,6 +175,7 @@ export default function AdminUsersPageUnified() {
               isOpen: true,
               password: data.password,
               userEmail: user.email,
+              userId: user.id || (user as any)._id,
               title: 'Password Regenerated'
             });
             await refreshUsers();
@@ -465,10 +468,11 @@ export default function AdminUsersPageUnified() {
       {/* Password Display Modal */}
       <PasswordModal
         isOpen={passwordModal.isOpen}
-        onClose={() => setPasswordModal({ isOpen: false, password: '', userEmail: '', title: '' })}
+        onClose={() => setPasswordModal({ isOpen: false, password: '', userEmail: '', userId: '', title: '' })}
         password={passwordModal.password}
         title={passwordModal.title}
         userEmail={passwordModal.userEmail}
+        userId={passwordModal.userId}
         subtitle="Copy this password and share it securely with the user"
       />
 
