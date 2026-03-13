@@ -24,30 +24,30 @@ export const ROLE_HIERARCHY: Record<UserRole, number> = {
  * FORMAT: { label: [allowed roles] }
  */
 export const MENU_PERMISSIONS: Record<string, UserRole[]> = {
-  // WHAT: Help section - accessible to all authenticated users
-  'User Guide': ['guest', 'user', 'admin', 'superadmin'],
-  'Main page': ['admin', 'superadmin'],
-  'Messages': ['admin', 'superadmin'],
-  
   // WHAT: Core features - user level and above
   'Partners': ['user', 'admin', 'superadmin'],
   'Events': ['user', 'admin', 'superadmin'],
   'Filters': ['user', 'admin', 'superadmin'],
   
   // WHAT: Management features - admin level and above
+  'Users': ['superadmin'],
+  'Insights': ['superadmin'],
   'KYC': ['admin', 'superadmin'],
   'Algorithms': ['admin', 'superadmin'],
   'Clicker Manager': ['admin', 'superadmin'],
   'Bitly Manager': ['admin', 'superadmin'],
-  'Reporting': ['admin', 'superadmin'],
-  'Style Editor': ['admin', 'superadmin'],
-  
-  // WHAT: System administration - superadmin only
   'Hashtag Manager': ['superadmin'],
   'Category Manager': ['superadmin'],
-  'Insights': ['superadmin'],
-  'Users': ['superadmin'],
+  
+  // WHAT: System features
+  'Reporting': ['admin', 'superadmin'],
+  'Style Editor': ['admin', 'superadmin'],
   'Cache Management': ['superadmin'],
+  
+  // WHAT: Help section
+  'User Guide': ['guest', 'user', 'admin', 'superadmin'],
+  'Main page': ['admin', 'superadmin'],
+  'Messages': ['admin', 'superadmin'],
 };
 
 /**
