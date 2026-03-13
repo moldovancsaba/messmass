@@ -1,4 +1,4 @@
-# Messmass v3 -- Security Model
+# {messmass} v3 -- Security Model
 
 Purpose: Protect data and ensure secure multi-organisation usage.
 

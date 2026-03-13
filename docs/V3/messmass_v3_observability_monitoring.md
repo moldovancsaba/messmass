@@ -1,4 +1,4 @@
-# Messmass v3 -- Observability & Monitoring
+# {messmass} v3 -- Observability & Monitoring
 
 Purpose: Ensure platform reliability and operational visibility.
 

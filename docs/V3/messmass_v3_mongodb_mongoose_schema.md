@@ -1,6 +1,6 @@
-# Messmass v3 -- MongoDB & Mongoose Schema Specification
+# {messmass} v3 -- MongoDB & Mongoose Schema Specification
 
-Purpose: Define the exact database schemas and indexes for the Messmass
+Purpose: Define the exact database schemas and indexes for the {messmass}
 v3 Activity Intelligence platform.
 
 This document is intended for backend developers implementing the system
@@ -12,7 +12,7 @@ with:
 -   Vercel
 
 The schemas below are designed to be **backwards compatible** with the
-existing Messmass v2 system.
+existing {messmass} v2 system.
 
 ------------------------------------------------------------------------
 

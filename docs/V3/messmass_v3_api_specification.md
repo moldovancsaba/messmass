@@ -1,9 +1,9 @@
-# Messmass v3 -- API Specification (Operational)
+# {messmass} v3 -- API Specification (Operational)
 
 **Status**: Version 3.1.0 Active
 **Last Updated**: 2026-03-13
 
-Purpose: Define the REST API contract for the Messmass v3 backend.
+Purpose: Define the REST API contract for the {messmass} v3 backend.
 
 Base path: `/api/v3`
 

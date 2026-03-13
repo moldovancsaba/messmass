@@ -536,7 +536,7 @@ curl -X POST \\
         <footer className={styles.footer}>
           <p>
             <strong>{'{messmass}'} API Documentation</strong><br />
-            Last Updated: November 26, 2024
+            Last Updated: March 13, 2026
           </p>
           <p>
             <strong>Additional Resources:</strong><br />

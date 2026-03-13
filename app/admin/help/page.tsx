@@ -604,7 +604,7 @@ export default function HelpPage() {
         <section id="v3-engine" className={styles.section}>
           <h2>🚀 V3 High-Performance Engine</h2>
           <p>
-            V11.61.0 introduces the <strong>Messmass V3 Alignment</strong>, a high-performance data engine designed for multi-tenant scalability.
+            V11.61.0 introduces the <strong>{'{messmass}'} V3 Alignment</strong>, a high-performance data engine designed for multi-tenant scalability.
           </p>
           <ul>
             <li><strong>Automated Sync:</strong> All edits to Events, Partners, and Stats are automatically mirrored to the V3 engine in real-time.</li>

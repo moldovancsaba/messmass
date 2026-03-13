@@ -1,16 +1,16 @@
-# Messmass v3 -- Activity Intelligence Platform
+# {messmass} v3 -- Activity Intelligence Platform
 
 Implementation & Migration Documentation
 
 Author: System Architecture Proposal\
 Purpose: Provide full documentation for the Dev Agent to implement the
-next version of Messmass safely.
+next version of {messmass} safely.
 
 ------------------------------------------------------------------------
 
 # 1. Objective
 
-Messmass must evolve from a **sports event reporting system** into a
+{messmass} must evolve from a **sports event reporting system** into a
 **general activity intelligence platform** capable of supporting
 multiple industries including:
 
@@ -458,7 +458,7 @@ Future Roadmap
 
 # 14. Expected Outcome
 
-Messmass becomes a **general purpose activity intelligence platform**
+{messmass} becomes a **general purpose activity intelligence platform**
 capable of tracking:
 
 -   sports leagues

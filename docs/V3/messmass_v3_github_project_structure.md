@@ -1,4 +1,4 @@
-# Messmass v3 GitHub Project Structure
+# {messmass} v3 GitHub Project Structure
 
 Purpose: Provide a structured delivery plan for development teams.
 

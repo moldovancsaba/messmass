@@ -1,4 +1,4 @@
-# Messmass v3 -- Example Data Models
+# {messmass} v3 -- Example Data Models
 
 Purpose: Demonstrate real-world system usage.
 
