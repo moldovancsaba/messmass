@@ -93,6 +93,7 @@ export function validateSecurityFeatureFlags(): void {
     { envVar: 'ENABLE_BCRYPT_AUTH', flag: FEATURE_FLAGS.USE_BCRYPT_AUTH, name: 'Password Security (bcrypt)' },
     { envVar: 'ENABLE_JWT_SESSIONS', flag: FEATURE_FLAGS.USE_JWT_SESSIONS, name: 'Session Security (JWT)' },
     { envVar: 'ENABLE_HTML_SANITIZATION', flag: FEATURE_FLAGS.USE_SANITIZED_HTML, name: 'XSS Protection (HTML sanitization)' },
+    { envVar: 'ENABLE_SAFE_FORMULA_PARSER', flag: FEATURE_FLAGS.USE_SAFE_FORMULA_PARSER, name: 'Formula Security (safe parser)' },
   ] as const;
 
   const missingFlags: Array<{ envVar: string; name: string }> = [];
