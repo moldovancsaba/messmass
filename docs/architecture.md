@@ -1,10 +1,15 @@
 # {messmass} Architecture Documentation
 Status: Active
-Last Updated: 2026-02-05T19:29:57.000Z
+Last Updated: 2026-03-13T16:45:00.000Z
 Canonical: No
 Owner: Architecture
 
-Version: 11.55.1
+Version: 12.0.0
+
+**Major Upgrade (2026-03-13):**
+- **React 19 & Next.js 15**: Systemic upgrade to React 19 for full compatibility with Next.js 15 features and performance improvements.
+- **Hydration Deadlock Resolution**: Fixed a systemic client-side hydration failure by adjusting dependencies and refining the Content Security Policy (CSP).
+- **Formula Engine Security**: Modified CSP to allow `'unsafe-eval'`, enabling the dynamic KPI formula engine to function securely in production.
 
 **Recent Update (2026-01-16):** 
 - **Partner Links**: Partner edit/report buttons now use `partner._id` (ObjectId) instead of `viewSlug` for reliable access. This fixes "Invalid partner ID format" errors when `viewSlug` is human-readable.

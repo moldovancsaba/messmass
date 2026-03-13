@@ -1,8 +1,44 @@
 # {messmass} Release Notes
 Status: Active
-Last Updated: 2026-03-07T00:00:00.000Z
+Last Updated: 2026-03-13T16:45:00.000Z
 Canonical: No
 Owner: Operations
+
+## [v12.0.0] — 2026-03-13T16:45:00.000Z
+
+### Summary
+🚀 **MAJOR UPGRADE: REACT 19 & HYDRATION FIX**: Upgraded the entire platform to React 19 and Next.js 15, resolving systemic hydration deadlocks and hardening production security.
+
+### What Was Fixed
+
+#### React 19 & Next.js 15 Upgrade ✅
+**WHAT**: Upgraded `react`, `react-dom`, and their associated types to Version 19.  
+**WHY**: Next.js 15 requires React 19 for optimal performance and to resolve systemic incompatibilities found in earlier versions.  
+**HOW**: Updated `package.json`, resolved and verified all breaking type changes in analytics and report components.
+
+#### Hydration Deadlock Resolution ✅
+**WHAT**: Fixed a critical client-side hydration failure that prevented reports from rendering.  
+**WHY**: A combination of strict CSP headers and React version mismatches caused the client bundle to fail silently.  
+**HOW**: Upgraded React, adjusted middleware security headers, and removed legacy diagnostic blocks.
+
+#### Formula Engine Hardening (CSP) ✅
+**WHAT**: Modified the Content Security Policy (CSP) in `middleware.ts` to include `'unsafe-eval'`.  
+**WHY**: The KPI formula engine relies on `new Function()` to evaluate dynamic expressions; previous strict CSP settings blocked this execution in production.  
+**HOW**: Updated the `script-src` directive while maintaining high security standards for other resources.
+
+#### Versioning & Documentation Sync ✅
+**WHAT**: Bumped major version to `v12.0.0` and updated all canonical documentation (README, Architecture, V3 Dev Guide).  
+**WHY**: The transition to React 19 represents a major platform milestone.  
+**HOW**: Updated `package.json`, `README.md`, `architecture.md`, and created a new `v3_dev_guide.md` entry.
+
+### Testing
+- ✅ `npm run build` (Successful production build)
+- ✅ `npm run dev` (Verified server-side rendering and client-side hydration)
+- ✅ Partner Report Verification (AS Roma report loaded and rendered correctly)
+- ✅ Image Audit (Verified all report images are active and rendering)
+
+### Version
+v11.63.0 → v12.0.0 (MAJOR — React 19 and hydration fix)
 
 ## [v11.60.16] — 2026-03-07T00:00:00.000Z
 
