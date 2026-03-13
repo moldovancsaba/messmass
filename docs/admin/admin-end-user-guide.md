@@ -1,6 +1,6 @@
 # END USER GUIDE (Admin Operations)
 Status: Complete
-Last Updated: 2026-02-21T00:00:00.000Z
+Last Updated: 2026-03-13T00:00:00.000Z
 Canonical: Yes
 Owner: Admin (Katja)
 
@@ -43,6 +43,7 @@ Evidence: `lib/users.ts`
 | User management | `/admin/users` | Role changes and user access |
 | Main page (landing report) | `/admin/mainpage` | Choose report for messmass.com; generate static content |
 | Help and guide | `/admin/help` | User guide display |
+| V3 Data Alignment | (Automated) | Mirrors all legacy edits to the V3 high-performance engine |
 
 5 Guide Sections (Content Outline)
 - Getting Started: login, roles, navigation, events list.
@@ -57,6 +58,7 @@ Evidence: `lib/users.ts`
 - Exports: CSV/PDF usage and troubleshooting.
 - Cache Management: when to invalidate and what to expect after.
 - Main page: choose which event report drives the main site (messmass.com), save selection, and use **Update static content** so the site serves a static snapshot until the next update. See `docs/features/features-landing-main-page.md`.
+- V3 High-Performance Engine: learn about the new multi-tenant data structures, participants mapping, and time-series KPI storage. See `docs/V3/messmass_v3_quickstart_guide.md`.
 - Troubleshooting: auth issues, missing data, stale output, permissions.
 
 6 Update and Ownership Process

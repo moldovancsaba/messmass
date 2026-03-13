@@ -5,6 +5,9 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { ObjectId } from 'mongodb';
 import { getDb } from '@/lib/db';
+import { syncProjectToV3Activity, syncPartnerToV3Entity } from '@/lib/v3/syncEngine';
+import { error as logError, info as logInfo } from '@/lib/logger';
+import { getAdminUser } from '@/lib/auth';
 
 /**
  * GET /api/admin/project-partners
@@ -135,6 +138,17 @@ export async function PUT(request: NextRequest) {
         success: false,
         error: 'Project not found'
       }, { status: 404 });
+    }
+
+    // WHAT: Sync to V3
+    // WHY: Ensure partner associations are reflected in V3 Activities
+    try {
+      const updatedProject = await projectsCollection.findOne({ _id: new ObjectId(projectId) });
+      if (updatedProject) {
+        await syncProjectToV3Activity(updatedProject);
+      }
+    } catch (err) {
+      logError('V3 Sync failed for project partners update', { context: 'admin/project-partners', projectId }, err as Error);
     }
 
     return NextResponse.json({

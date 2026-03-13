@@ -109,3 +109,11 @@ WARP.md
 # Generated operational artifacts (do not commit)
 docs/operations/variables-inventory/*
 !docs/operations/variables-inventory/.gitkeep
+
+# Root-level local/debug/generated artifacts
+.ai-plan.json
+.dev-pid
+kyc-audit-report.json
+package-lock
+test-partner-emoji-visibility.js
+test-title-overflow-fix.js

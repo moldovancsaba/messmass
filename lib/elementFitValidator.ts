@@ -13,6 +13,23 @@ import type { CellConfiguration, ElementFitValidation } from './layoutGrammar';
  * @param containerWidth - Available width in pixels
  * @returns Element fit validation result with required actions
  */
+
+/**
+ * WHAT: Estimate number of lines required for a string to fit in a given width
+ * WHY: Calculate accurate height requirements for labels and legends
+ * HOW: Use character-per-line estimation based on font size and container width
+ */
+function calculateRequiredLines(text: string, fontSize: number, availableWidth: number): number {
+  if (!text || availableWidth <= 0) return 0;
+  
+  // Average character width factor (conservative estimate for proportional fonts)
+  // 0.6 is a reasonable multiplier for "average" characters at most font sizes
+  const avgCharWidth = fontSize * 0.6;
+  const maxCharsPerLine = Math.max(1, Math.floor(availableWidth / avgCharWidth));
+  
+  return Math.ceil(text.length / maxCharsPerLine);
+}
+
 export function validateElementFit(
   cellConfig: CellConfiguration,
   containerHeight: number,
@@ -132,12 +149,25 @@ function validatePieElementFit(
   //      Font size is typically 12-18px for PIE charts (smaller than BAR due to legend space constraints)
   const estimatedFontSize = Math.max(10, Math.min(18, containerHeight / 25)); // Estimate: assume ~25px per legend item on average
   const lineHeight = 1.2; // From CSS: .pieLegendText { line-height: 1.2; }
-  // WHAT: Estimate lines per item based on item count
-  // WHY: More items → shorter labels on average → fewer wraps, but also more items total
-  // HOW: Use 1.2 lines average (most are 1 line, some wrap to 2 lines)
   const estimatedLinesPerItem = legendItemCount > 10 ? 1.1 : 1.3; // More items = shorter labels = fewer wraps
-  const estimatedItemHeight = estimatedFontSize * lineHeight * estimatedLinesPerItem;
-  const estimatedLegendHeight = legendItemCount * estimatedItemHeight;
+  
+  // WHAT: Refine legend height calculation using actual labels if available
+  // WHY: Accurate height prevents clipping in extreme content density (Issue #40)
+  const labels = (contentMetadata.legendLabels as string[]) || [];
+  let totalLineCount = 0;
+  
+  if (labels.length > 0) {
+    // We assume the legend uses ~30% of container width for labels
+    const availableLegendWidth = containerWidth * 0.3; 
+    for (const label of labels) {
+      totalLineCount += calculateRequiredLines(label, estimatedFontSize, availableLegendWidth);
+    }
+  } else {
+    totalLineCount = legendItemCount * estimatedLinesPerItem;
+  }
+
+  const estimatedItemHeight = estimatedFontSize * lineHeight; // height per line
+  const estimatedLegendHeight = totalLineCount * estimatedItemHeight;
   const legendVerticalPadding = 16; // .pieLegend has clamp(0.125rem, 1cqh, var(--mm-space-1)) which is ~8px top/bottom = 16px
   const totalEstimatedLegendHeight = estimatedLegendHeight + legendVerticalPadding;
   
@@ -248,10 +278,29 @@ function validateBarElementFit(
   //   Actual CSS: clamp(1.2rem, 22cqh, 1.44rem) ≈ 19.2-23px, use 20px minimum
   const minBarTrackHeight = 20; // Layout Grammar requirement
   
+  // WHAT: Refine BAR label height calculation with wrapping support (Issue #40)
+  // WHY: Prevent clipping when labels exceed available width
+  const labels = (contentMetadata.labels as string[]) || [];
+  const availableLabelWidth = containerWidth * 0.3; // assume ~30% allocated to labels in grid
+  
+  let totalLabelHeight = 0;
+  if (labels.length > 0) {
+    for (const label of labels) {
+      const lines = calculateRequiredLines(label, estimatedFontSize, availableLabelWidth);
+      // Caps to max 2 lines as per current CSS/Layout spec for BAR charts
+      const cappedLines = Math.min(2, lines);
+      totalLabelHeight += Math.max(minBarTrackHeight, cappedLines * estimatedFontSize * lineHeight);
+    }
+    // Divide back by count to get average for the perRowHeight logic below if we want to follow existing structure
+    // but better to just sum it all up.
+  }
+
   // Per-row height: label + bar track (labels and bars are in same row)
   // Row height = max(labelHeight, barHeight) since they're in table cells that align
   // In practice, label can be taller (2 lines), so row height = label height
-  const perRowHeight = Math.max(maxLabelHeight, minBarTrackHeight); // Use label height (40px)
+  const perRowHeight = labels.length > 0 
+    ? (totalLabelHeight / labels.length) 
+    : Math.max(estimatedFontSize * lineHeight * 2, minBarTrackHeight);
   
   // Total required height = padding + (rows × rowHeight) + (gaps × spacing)
   // Gaps = barCount - 1 (no spacing after last row)

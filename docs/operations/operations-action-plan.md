@@ -147,6 +147,12 @@ Owner: Katja (Admin)
 ## 7. STATE MEMORY (Current Only)
 
 2026-03-07
+- CONTEXT: Root structure hardening tracked under `mvp-factory-control#359`.
+- BOARD: `#359` is the active repository-structure cleanup slice being delivered.
+- OPS: audited the project root against runtime/build/test/deploy requirements, removed non-canonical root artifacts, tightened `.gitignore`, and added `docs/root-structure.md` as the canonical top-level structure policy.
+- NEXT: run full gates for `11.60.16`, post SSOT evidence on `#359`, then return to the queued work.
+
+2026-03-07
 - CONTEXT: Test tree normalization tracked under `mvp-factory-control#358`.
 - BOARD: `#358` is the active repository-structure slice being delivered.
 - OPS: moved the tracked suites from `__tests__/` into `tests/`, moved LayoutV2 fixtures into `tests/fixtures/layoutV2`, and updated config/workflow/doc references to the new canonical structure.

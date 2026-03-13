@@ -1,50 +1,37 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextResponse } from 'next/server';
 import { ObjectId } from 'mongodb';
 import { getDb } from '@/lib/db';
 import { getAdminUser } from '@/lib/auth';
-import { validateCsrfToken } from '@/lib/csrf';
 import {
-  ReportTemplate,
   createTemplateDefaults,
-  isReportTemplate
 } from '@/lib/reportTemplateTypes';
+import { withOrgContext } from '@/lib/middleware/v3/orgContext';
+import V3Entity from '@/lib/models/v3/Entity';
+import V3Activity from '@/lib/models/v3/Activity';
+import connectV3 from '@/lib/mongoose-v3';
 
 // WHAT: Report Templates CRUD API (v11.0.0)
-// WHY: Manage report template configurations for partners and events
-// HOW: Full CRUD with validation, safety checks, and CSRF protection
+// WHY: Manage report template configurations for partners and events with V3 Org scoping
+// HOW: Wrapped with withOrgContext for multi-tenant isolation
 
 /**
- * GET /api/report-templates
- * 
- * WHAT: List all report templates with optional filtering and associations
- * WHY: Admin UI needs to display and manage templates with associated entities
- * 
- * Query Parameters:
- * - type: Filter by template type ('event' | 'partner' | 'global')
- * - includeDefault: Include default template (default: true)
- * - includeAssociations: Include associated projects/partners (default: true)
- * 
- * Response:
- * {
- *   success: true,
- *   templates: ReportTemplate[] (with associatedProjects and associatedPartners),
- *   count: number
- * }
+ * GET Handler
  */
-export async function GET(request: NextRequest) {
+async function getTemplates(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
+    const orgId = request.headers.get('x-v3-org-id');
     const typeFilter = searchParams.get('type');
     const includeDefault = searchParams.get('includeDefault') !== 'false';
     const includeAssociations = searchParams.get('includeAssociations') !== 'false';
 
     const db = await getDb();
     const templatesCollection = db.collection('report_templates');
-    const projectsCollection = db.collection('projects');
-    const partnersCollection = db.collection('partners');
 
     // Build query
-    const query: any = {};
+    const query: any = { 
+      organizationId: new ObjectId(orgId as string) 
+    };
     if (typeFilter && ['event', 'partner', 'global'].includes(typeFilter)) {
       query.type = typeFilter;
     }
@@ -54,48 +41,50 @@ export async function GET(request: NextRequest) {
 
     const templates = await templatesCollection
       .find(query)
-      .sort({ isDefault: -1, name: 1 })  // Default first, then alphabetically
+      .sort({ isDefault: -1, name: 1 })
       .toArray();
 
-    // Fetch associated entities for each template
+    if (!includeAssociations) {
+      return NextResponse.json({
+        success: true,
+        templates: templates.map(t => ({ ...t, _id: t._id.toString() })),
+        count: templates.length
+      });
+    }
+
+    // Fetch associated V3 Entities/Activities
+    await connectV3();
     const templatesWithAssociations = await Promise.all(
       templates.map(async (template) => {
-        const baseTemplate = {
-          ...template,
-          _id: template._id.toString()
-        };
+        const baseTemplate = { ...template, _id: template._id.toString() };
 
-        if (!includeAssociations) {
-          return baseTemplate;
-        }
+        const associatedProjects = await V3Activity.find({ 
+          organizationId: orgId,
+          $or: [
+            { "metadata.reportTemplateId": template._id.toString() },
+            { "metadata.originalData.reportTemplateId": template._id }
+          ]
+        }, { name: 1, startDate: 1 }).lean();
 
-        // Find projects using this template
-        const associatedProjects = await projectsCollection
-          .find(
-            { reportTemplateId: template._id },
-            { projection: { _id: 1, eventName: 1, eventDate: 1 } }
-          )
-          .toArray();
-
-        // Find partners using this template
-        const associatedPartners = await partnersCollection
-          .find(
-            { reportTemplateId: template._id },
-            { projection: { _id: 1, name: 1, emoji: 1 } }
-          )
-          .toArray();
+        const associatedPartners = await V3Entity.find({ 
+          organizationId: orgId,
+          $or: [
+            { "metadata.reportTemplateId": template._id.toString() },
+            { "metadata.originalData.reportTemplateId": template._id }
+          ]
+        }, { name: 1, metadata: 1 }).lean();
 
         return {
           ...baseTemplate,
-          associatedProjects: associatedProjects.map(p => ({
+          associatedProjects: associatedProjects.map((p: any) => ({
             _id: p._id.toString(),
-            eventName: p.eventName,
-            eventDate: p.eventDate
+            eventName: p.name,
+            eventDate: p.startDate
           })),
-          associatedPartners: associatedPartners.map(p => ({
+          associatedPartners: associatedPartners.map((p: any) => ({
             _id: p._id.toString(),
             name: p.name,
-            emoji: p.emoji || '🎯'
+            emoji: p.metadata?.emoji || '🎯'
           }))
         };
       })
@@ -109,310 +98,130 @@ export async function GET(request: NextRequest) {
 
   } catch (error) {
     console.error('❌ Failed to fetch report templates:', error);
-    return NextResponse.json({
-      success: false,
-      error: 'Failed to fetch templates'
-    }, { status: 500 });
+    return NextResponse.json({ success: false, error: 'Internal Server Error' }, { status: 500 });
   }
 }
 
 /**
- * POST /api/report-templates
- * 
- * WHAT: Create new report template
- * WHY: Admins need to create custom report layouts
- * 
- * Request Body: Partial<ReportTemplate>
- * 
- * Validation:
- * - Template name required
- * - Only one default template allowed
- * - dataBlocks must be valid array
- * - gridSettings must have valid structure
+ * POST Handler
  */
-export async function POST(request: NextRequest) {
+async function createTemplate(request: Request) {
   try {
-    // Authentication check
+    const orgId = request.headers.get('x-v3-org-id') as string;
     const user = await getAdminUser();
-    if (!user) {
-      return NextResponse.json({
-        success: false,
-        error: 'Unauthorized'
-      }, { status: 401 });
-    }
-
-    // CSRF check (currently disabled globally but keep for future)
-    const csrfValid = validateCsrfToken(request);
-    if (!csrfValid && process.env.CSRF_ENABLED === 'true') {
-      return NextResponse.json({
-        success: false,
-        error: 'Invalid CSRF token'
-      }, { status: 403 });
-    }
-
     const body = await request.json();
 
-    // Validation
-    if (!body.name || typeof body.name !== 'string') {
-      return NextResponse.json({
-        success: false,
-        error: 'Template name is required'
-      }, { status: 400 });
-    }
-
-    if (!Array.isArray(body.dataBlocks)) {
-      return NextResponse.json({
-        success: false,
-        error: 'dataBlocks must be an array'
-      }, { status: 400 });
-    }
+    if (!body.name) return NextResponse.json({ success: false, error: 'Name is required' }, { status: 400 });
+    if (!Array.isArray(body.dataBlocks)) return NextResponse.json({ success: false, error: 'dataBlocks must be an array' }, { status: 400 });
 
     const db = await getDb();
     const templatesCollection = db.collection('report_templates');
 
-    // Check if marking as default
     if (body.isDefault === true) {
-      // Only one default template allowed - unset current default
       await templatesCollection.updateMany(
-        { isDefault: true },
+        { isDefault: true, organizationId: new ObjectId(orgId) },
         { $set: { isDefault: false, updatedAt: new Date().toISOString() } }
       );
-      console.log('✅ Unmarked previous default template');
     }
 
-    // Create template with defaults
     const newTemplate = {
       ...createTemplateDefaults(body),
-      createdBy: user.email || 'admin',
+      organizationId: new ObjectId(orgId),
+      createdBy: user?.email || 'admin',
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString()
     };
 
     const result = await templatesCollection.insertOne(newTemplate as any);
-    
-    console.log(`✅ Created template: ${newTemplate.name} (${result.insertedId})`);
-
     return NextResponse.json({
       success: true,
-      template: {
-        ...newTemplate,
-        _id: result.insertedId.toString()
-      }
+      template: { ...newTemplate, _id: result.insertedId.toString() }
     }, { status: 201 });
 
   } catch (error) {
     console.error('❌ Failed to create template:', error);
-    return NextResponse.json({
-      success: false,
-      error: 'Failed to create template'
-    }, { status: 500 });
+    return NextResponse.json({ success: false, error: 'Internal Server Error' }, { status: 500 });
   }
 }
 
 /**
- * PUT /api/report-templates
- * 
- * WHAT: Update existing report template
- * WHY: Admins need to modify template configurations
- * 
- * Query Parameter: templateId (required)
- * Request Body: Partial<ReportTemplate>
- * 
- * Validation:
- * - Template must exist
- * - Cannot change isDefault without permission
- * - dataBlocks must remain valid array
+ * PUT Handler
  */
-export async function PUT(request: NextRequest) {
+async function updateTemplate(request: Request) {
   try {
-    // Authentication check
-    const user = await getAdminUser();
-    if (!user) {
-      return NextResponse.json({
-        success: false,
-        error: 'Unauthorized'
-      }, { status: 401 });
-    }
-
-    // CSRF check (currently disabled globally but keep for future)
-    const csrfValid = validateCsrfToken(request);
-    if (!csrfValid && process.env.CSRF_ENABLED === 'true') {
-      return NextResponse.json({
-        success: false,
-        error: 'Invalid CSRF token'
-      }, { status: 403 });
-    }
-
+    const orgId = request.headers.get('x-v3-org-id') as string;
     const { searchParams } = new URL(request.url);
     const templateId = searchParams.get('templateId');
 
     if (!templateId || !ObjectId.isValid(templateId)) {
-      return NextResponse.json({
-        success: false,
-        error: 'Valid templateId is required'
-      }, { status: 400 });
+      return NextResponse.json({ success: false, error: 'Valid templateId is required' }, { status: 400 });
     }
 
     const body = await request.json();
     const db = await getDb();
     const templatesCollection = db.collection('report_templates');
 
-    // Check template exists
-    const existing = await templatesCollection.findOne({ _id: new ObjectId(templateId) });
-    if (!existing) {
-      return NextResponse.json({
-        success: false,
-        error: 'Template not found'
-      }, { status: 404 });
-    }
+    const existing = await templatesCollection.findOne({ 
+      _id: new ObjectId(templateId),
+      organizationId: new ObjectId(orgId)
+    });
+    if (!existing) return NextResponse.json({ success: false, error: 'Template not found' }, { status: 404 });
 
-    // If marking as default, unset other defaults
     if (body.isDefault === true && !existing.isDefault) {
       await templatesCollection.updateMany(
-        { _id: { $ne: new ObjectId(templateId) }, isDefault: true },
+        { _id: { $ne: new ObjectId(templateId) }, isDefault: true, organizationId: new ObjectId(orgId) },
         { $set: { isDefault: false, updatedAt: new Date().toISOString() } }
       );
-      console.log('✅ Unmarked previous default template');
     }
 
-    // Build update object
-    const updates: any = {
-      updatedAt: new Date().toISOString()
-    };
+    const updates: any = { ...body, updatedAt: new Date().toISOString() };
+    delete updates._id;
+    delete updates.organizationId;
 
-    // Only update provided fields
-    if (body.name !== undefined) updates.name = body.name;
-    if (body.description !== undefined) updates.description = body.description;
-    if (body.type !== undefined) updates.type = body.type;
-    if (body.isDefault !== undefined) updates.isDefault = body.isDefault;
-    if (body.styleId !== undefined) updates.styleId = body.styleId;
-    if (body.dataBlocks !== undefined) updates.dataBlocks = body.dataBlocks;
-    if (body.gridSettings !== undefined) updates.gridSettings = body.gridSettings;
-    if (body.heroSettings !== undefined) updates.heroSettings = body.heroSettings;
-    if (body.alignmentSettings !== undefined) updates.alignmentSettings = body.alignmentSettings;
-
-    // Update template
-    await templatesCollection.updateOne(
-      { _id: new ObjectId(templateId) },
-      { $set: updates }
-    );
-
+    await templatesCollection.updateOne({ _id: new ObjectId(templateId) }, { $set: updates });
     const updated = await templatesCollection.findOne({ _id: new ObjectId(templateId) });
 
-    console.log(`✅ Updated template: ${templateId}`);
-
-    return NextResponse.json({
-      success: true,
-      template: {
-        ...updated,
-        _id: updated!._id.toString()
-      }
-    });
+    return NextResponse.json({ success: true, template: { ...updated, _id: templateId } });
 
   } catch (error) {
     console.error('❌ Failed to update template:', error);
-    return NextResponse.json({
-      success: false,
-      error: 'Failed to update template'
-    }, { status: 500 });
+    return NextResponse.json({ success: false, error: 'Internal Server Error' }, { status: 500 });
   }
 }
 
 /**
- * DELETE /api/report-templates
- * 
- * WHAT: Delete report template with safety checks
- * WHY: Remove unused templates from system
- * 
- * Query Parameter: templateId (required)
- * 
- * Safety Checks:
- * - Cannot delete default template (must mark another as default first)
- * - Cannot delete template currently in use by partners/projects
+ * DELETE Handler
  */
-export async function DELETE(request: NextRequest) {
+async function deleteTemplate(request: Request) {
   try {
-    // Authentication check
-    const user = await getAdminUser();
-    if (!user) {
-      return NextResponse.json({
-        success: false,
-        error: 'Unauthorized'
-      }, { status: 401 });
-    }
-
-    // CSRF check (currently disabled globally but keep for future)
-    const csrfValid = validateCsrfToken(request);
-    if (!csrfValid && process.env.CSRF_ENABLED === 'true') {
-      return NextResponse.json({
-        success: false,
-        error: 'Invalid CSRF token'
-      }, { status: 403 });
-    }
-
+    const orgId = request.headers.get('x-v3-org-id') as string;
     const { searchParams } = new URL(request.url);
     const templateId = searchParams.get('templateId');
 
     if (!templateId || !ObjectId.isValid(templateId)) {
-      return NextResponse.json({
-        success: false,
-        error: 'Valid templateId is required'
-      }, { status: 400 });
+      return NextResponse.json({ success: false, error: 'Valid templateId is required' }, { status: 400 });
     }
 
     const db = await getDb();
     const templatesCollection = db.collection('report_templates');
-    const partnersCollection = db.collection('partners');
-    const projectsCollection = db.collection('projects');
 
-    // Check template exists
-    const template = await templatesCollection.findOne({ _id: new ObjectId(templateId) });
-    if (!template) {
-      return NextResponse.json({
-        success: false,
-        error: 'Template not found'
-      }, { status: 404 });
-    }
-
-    // Safety check 1: Cannot delete default template
-    if (template.isDefault) {
-      return NextResponse.json({
-        success: false,
-        error: 'Cannot delete default template. Mark another template as default first.'
-      }, { status: 400 });
-    }
-
-    // Safety check 2: Cannot delete if in use
-    const partnersUsingTemplate = await partnersCollection.countDocuments({
-      reportTemplateId: new ObjectId(templateId)
+    const template = await templatesCollection.findOne({ 
+      _id: new ObjectId(templateId),
+      organizationId: new ObjectId(orgId)
     });
-    
-    const projectsUsingTemplate = await projectsCollection.countDocuments({
-      reportTemplateId: new ObjectId(templateId)
-    });
+    if (!template) return NextResponse.json({ success: false, error: 'Template not found' }, { status: 404 });
+    if (template.isDefault) return NextResponse.json({ success: false, error: 'Cannot delete default template' }, { status: 400 });
 
-    if (partnersUsingTemplate > 0 || projectsUsingTemplate > 0) {
-      return NextResponse.json({
-        success: false,
-        error: `Cannot delete template in use by ${partnersUsingTemplate} partner(s) and ${projectsUsingTemplate} project(s)`
-      }, { status: 400 });
-    }
-
-    // Delete template
     await templatesCollection.deleteOne({ _id: new ObjectId(templateId) });
-
-    console.log(`✅ Deleted template: ${template.name} (${templateId})`);
-
-    return NextResponse.json({
-      success: true,
-      deletedId: templateId
-    });
+    return NextResponse.json({ success: true, deletedId: templateId });
 
   } catch (error) {
     console.error('❌ Failed to delete template:', error);
-    return NextResponse.json({
-      success: false,
-      error: 'Failed to delete template'
-    }, { status: 500 });
+    return NextResponse.json({ success: false, error: 'Internal Server Error' }, { status: 500 });
   }
 }
+
+export const GET = (req: Request) => withOrgContext(req, getTemplates);
+export const POST = (req: Request) => withOrgContext(req, createTemplate);
+export const PUT = (req: Request) => withOrgContext(req, updateTemplate);
+export const DELETE = (req: Request) => withOrgContext(req, deleteTemplate);

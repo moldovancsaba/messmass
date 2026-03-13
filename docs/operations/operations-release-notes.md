@@ -4,6 +4,27 @@ Last Updated: 2026-03-07T00:00:00.000Z
 Canonical: No
 Owner: Operations
 
+## [v11.60.16] — 2026-03-07T00:00:00.000Z
+
+### Summary
+🧹 **ROOT STRUCTURE HARDENING**: Audited the top-level repository structure, removed non-canonical root artifacts, and documented the canonical root policy for `{messmass}`.
+
+### What Was Fixed
+
+#### Top-level repository cleanup ✅
+**WHAT**: Removed root-level local/debug/generated artifacts that were not required for runtime, build, deployment, or shared validation, and added a canonical root-structure doc.  
+**WHY**: The project root had accumulated stray files like local process state, generated audit output, a duplicate npm lock artifact, one-off debug scripts, and a non-canonical static `index.html`, all of which made the repository noisier than industry-standard app structure.  
+**HOW**: Deleted `.ai-plan.json`, `.dev-pid`, `config.js`, `index.html`, `kyc-audit-report.json`, `package-lock`, `test-partner-emoji-visibility.js`, and `test-title-overflow-fix.js`; tightened `.gitignore`; added `docs/root-structure.md`; and updated the README/docs map to point at the new canonical structure policy.
+
+### Testing
+- ✅ `npm run build`
+- ✅ `npm run type-check`
+- ✅ `npm run lint`
+- ✅ `npm run version:verify`
+
+### Version
+v11.60.15 → v11.60.16 (PATCH — root structure audit and cleanup)
+
 ## [v11.60.15] — 2026-03-07T00:00:00.000Z
 
 ### Summary

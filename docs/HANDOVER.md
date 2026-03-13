@@ -2,7 +2,7 @@
 
 This file is onboarding plus operational context for the next agent. Keep it accurate when behavior, process, or current delivery state changes.
 
-**Last Updated:** 2026-03-07 (test tree normalization tracked under issue #358; repo cleanup tracked under #357; branding rename tracked under #356; style hardening Phase 5 still active under #72)
+**Last Updated:** 2026-03-10 (Audit #369 and #370 complete: core shared vs partner-facing list in audit doc; architecture.md updated with Core vs Partner resolution subsection)
 
 ## SSOT (Work Tracking)
 - Board: <https://github.com/users/moldovancsaba/projects/1>
@@ -16,9 +16,10 @@ This file is onboarding plus operational context for the next agent. Keep it acc
 ## Current Repo Truth
 - Active branch: `landing-overhaul`
 - Last known HEAD during this update: `cf81373ad`
-- Working tree includes the in-progress tracked move from `__tests__` / `__fixtures__` into `tests/` plus untracked local `READMEDEV.md`.
-- Most recent documented code delivery before this update: repo-root visibility cleanup under `mvp-factory-control#357`.
-- Current active delivery: test tree normalization under `mvp-factory-control#358`, with the larger style hardening Phase 5 stream still open under `mvp-factory-control#72`.
+- Working tree includes untracked local `READMEDEV.md`; canonical repo-root cleanup work is now tracked under `#359`.
+- Most recent documented code delivery before this update: test tree normalization under `mvp-factory-control#358`.
+- Current active delivery: root structure hardening under `mvp-factory-control#359` (Closed 2026-03-10), with the larger style hardening Phase 5 stream still open under `mvp-factory-control#72`.
+- Formally closed on SSOT board (2026-03-10): #354, #355, #356, #357, #358, #359.
 
 ## Current Priorities
 - Board-derived priority reference: [operations-delivery-focus.md](/Users/moldovancsaba/Projects/messmass/docs/operations/operations-delivery-focus.md)
@@ -50,6 +51,104 @@ This file is onboarding plus operational context for the next agent. Keep it acc
 - Style editor preview updates immediately for bar/pie CSS vars and includes Value Chain and Landing page sections.
 
 ## Handover Log
+
+## 2026-03-10 15:27 CET — Antigravity Agent — Commit + Audit #367–#370 closure
+
+- **Branch:** `landing-overhaul`
+- **Commit:** `1f0c290a0` — `fix(api): expand page-password allow-list + audit core-vs-partner docs (#367 #368 #369 #370)`
+- **Pushed:** `7eb3b7d4b..1f0c290a0` → `origin/landing-overhaul`
+
+### What changed
+- `app/api/page-passwords/route.ts`: added `partner-edit` and `hashtag` to `allowedPageTypes` in both POST and PUT handlers (audit #368 gap fix)
+- `docs/2026-03-09_AUDIT_CORE_VS_PARTNER_FUNCTIONS.md`: new file tracked — full audit plan with completed Sections 5A, 5B, 5C (issues #367, #368, #369)
+- `docs/architecture.md`: added `### Core vs Partner Resolution (2026-03-10)` subsection with resolution-order table and pointer to audit doc (issue #370)
+- `docs/HANDOVER.md`: appended prior session audit milestone entries
+
+### Quality gates
+- `npm run build` ✅ (exit 0)
+- `npm run type-check` ✅ (clean)
+- `npm run lint` ✅ (warnings only — pre-existing `console` statements, not introduced here)
+
+### SSOT
+- #367 ✅ Closed — Checklist & resolution map (Section 5A)
+- #368 ✅ Closed — Partner future-readiness artefacts + page-password allow-list gap fix (Section 5B)
+- #369 ✅ Closed — Core shared vs partner-facing module list (Section 5C)
+- #370 ✅ Closed — architecture.md Core vs Partner Resolution section
+
+### Current state
+- Branch `landing-overhaul` is clean (no uncommitted changes)
+- PR to `main` remains open at https://github.com/moldovancsaba/messmass/pull/56
+- `READMEDEV.md` remains intentionally local-only and untracked
+
+### Next actions (for next agent)
+1. Merge or update PR #56 (`landing-overhaul` → `main`) per repo merge policy
+2. Pick next open SSOT card (e.g. `#72` style hardening or `#66`) from the board
+
+---
+
+## 2026-03-10 — Audit #367 (Core vs Partner): checklist and resolution map
+- **Objective:** Complete audit checklist (Section 5) and resolution map for issue #367.
+- **What changed:** Added Section 5A to \`docs/2026-03-09_AUDIT_CORE_VS_PARTNER_FUNCTIONS.md\`: checklist outcomes (Core/Partner/Mixed), resolution map (event report, partner report, event edit, partner edit), gap list. No code changes.
+- **SSOT:** Start note and milestone comment posted on mvp-factory-control#367.
+- **Next:** #367, #368, #369, #370 all have milestone deliverables. Move to Done when PO accepts. No further audit work pending unless PO requests.
+
+## 2026-03-10 — Audit #368 (Partner future-readiness): routes, auth, API surface
+- **Objective:** Deliver partner future-readiness artefacts for issue #368.
+- **What changed:** Added Section 5B to \`docs/2026-03-09_AUDIT_CORE_VS_PARTNER_FUNCTIONS.md\`: partner-facing routes and auth table; route-level admin-only vs partner-visible vs shared; API list (admin-only vs partner-callable); notes for subdomain/auth boundary. No code changes.
+- **Gap fixed:** \`/api/page-passwords\` allow list now includes \`partner-edit\` and \`hashtag\` in \`app/api/page-passwords/route.ts\` (POST and PUT).
+- **SSOT:** Start note and milestone comment posted on mvp-factory-control#368.
+
+## 2026-03-10 — Audit #369 (Core shared vs partner-facing module list)
+- **Objective:** Produce list of modules/routes/APIs for SOW and Client Variant fork boundaries (issue #369).
+- **What changed:** Added Section 5C to \`docs/2026-03-09_AUDIT_CORE_VS_PARTNER_FUNCTIONS.md\`: routes (admin-only, partner-facing, shared), API routes (admin-only, partner-callable, shared), lib/components (core shared vs partner-facing), fork boundary note.
+- **SSOT:** Start note and milestone comment posted on mvp-factory-control#369.
+
+## 2026-03-10 — Audit #370 (Documentation update — Core vs partner resolution)
+- **Objective:** Update architecture doc with Core vs partner resolution summary and pointer to audit (issue #370).
+- **What changed:** In \`docs/architecture.md\`, added subsection \`### Core vs Partner Resolution (2026-03-10)\` under Reporting System v12: resolution table (event report, partner report, event edit, partner edit × template, style, clicker set); implementation pointer; link to audit doc Sections 5A, 5B, 5C.
+- **SSOT:** Start note and milestone comment posted on mvp-factory-control#370.
+
+## 2026-03-07 13:10:00 CET - Codex Agent
+- Branch: `landing-overhaul`
+- Base commit: `96b36b037`
+- Objective: Deliver `mvp-factory-control#359` by auditing the project root, removing non-canonical root artifacts, tightening ignore rules, and documenting the canonical top-level structure.
+
+### What changed
+- Audited the root-level tracked files against runtime/build/test/deploy requirements.
+- Removed non-canonical root artifacts:
+  - `.ai-plan.json`
+  - `.dev-pid`
+  - `config.js`
+  - `index.html`
+  - `kyc-audit-report.json`
+  - `package-lock`
+  - `test-partner-emoji-visibility.js`
+  - `test-title-overflow-fix.js`
+- Tightened `.gitignore` for local/debug/generated root artifacts.
+- Added canonical root-structure policy doc:
+  - `docs/root-structure.md`
+- Updated:
+  - `README.md`
+  - `docs/index.md`
+  - `docs/operations/operations-release-notes.md`
+  - `docs/operations/operations-action-plan.md`
+- Prepared patch version `11.60.16` for the repository-structure cleanup.
+
+### Validation
+- Planned final gate set for this delivery:
+  - `npm run build`
+  - `npm run type-check`
+  - `npm run lint`
+  - `npm run version:verify`
+
+### Known issues / risks
+- The open PR path to `main` still remains PR-only under repository rules.
+- `READMEDEV.md` remains intentionally local-only and untracked.
+
+### Immediate next actions
+1. Run the final gates for `11.60.16`.
+2. Post evidence to SSOT card `#359`.
+3. Commit and push the root-structure cleanup onto `landing-overhaul`.
 
 ## 2026-03-07 12:35:00 CET - Codex Agent
 - Branch: `landing-overhaul`

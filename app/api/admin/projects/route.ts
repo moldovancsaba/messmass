@@ -3,6 +3,7 @@ import { error as logError, info as logInfo } from '@/lib/logger';
 import { MongoClient, ObjectId } from 'mongodb';
 import config from '@/lib/config';
 import { validateSSOSession, type SSOUser } from '@/lib/ssoClient';
+import { syncProjectToV3Activity } from '@/lib/v3/syncEngine';
 
 const MONGODB_URI = config.mongodbUri;
 const MONGODB_DB = config.dbName;
@@ -169,6 +170,13 @@ export async function POST(request: NextRequest) {
 
     const result = await collection.insertOne(project);
     logInfo('Admin project created successfully', { context: 'admin/projects', projectId: result.insertedId.toString(), eventName, adminEmail: user.email });
+
+    // WHAT: Sync to V3
+    // WHY: Ensure new project is immediately visible in V3 Activities
+    // Non-blocking sync (fire and forget)
+    syncProjectToV3Activity({ ...project, _id: result.insertedId }).catch(err => {
+      logError('V3 Sync failed for new project', { context: 'admin/projects', projectId: result.insertedId }, err);
+    });
 
     return NextResponse.json({
       success: true,

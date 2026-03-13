@@ -6,6 +6,7 @@ import clientPromise from '@/lib/mongodb';
 import { ObjectId } from 'mongodb';
 import config from '@/lib/config';
 import { error as logError, info as logInfo } from '@/lib/logger';
+import { syncPartnerToV3Entity } from '@/lib/v3/syncEngine';
 
 export const dynamic = 'force-dynamic';
 
@@ -142,6 +143,17 @@ const db = client.db(config.dbName);
 
     logInfo('Partner updated successfully', { context: 'partners', partnerId });
 
+    // WHAT: Sync to V3
+    // WHY: Ensure V3 Entity is updated when legacy Partner is edited
+    try {
+      const updatedPartner = await db.collection('partners').findOne({ _id: new ObjectId(partnerId) });
+      if (updatedPartner) {
+        await syncPartnerToV3Entity(updatedPartner);
+      }
+    } catch (err) {
+      logError('V3 Sync failed after partner update', { context: 'partners', partnerId }, err as Error);
+    }
+
     return NextResponse.json({
       success: true,
       message: 'Partner updated successfully'
@@ -201,6 +213,12 @@ const db = client.db(config.dbName);
     const result = await db.collection('partners').insertOne(partnerData);
 
     logInfo('Partner created successfully', { context: 'partners', partnerId: result.insertedId.toString(), partnerName: name });
+
+    // WHAT: Sync to V3
+    // WHY: Ensure new partner is immediately available in V3
+    syncPartnerToV3Entity({ ...partnerData, _id: result.insertedId }).catch(err => {
+      logError('V3 Sync failed for new partner', { context: 'partners', partnerId: result.insertedId.toString() }, err);
+    });
 
     return NextResponse.json({
       success: true,

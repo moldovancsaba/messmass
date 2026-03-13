@@ -12,7 +12,7 @@ Owner: Product
 <p align="center"><strong>Enterprise event analytics, partner reporting, and admin operations for sports organizations, venues, and brands.</strong></p>
 
 <p align="center">
-  <img src="https://img.shields.io/badge/version-v11.60.13-2563EB?style=for-the-badge" alt="Version">
+  <img src="https://img.shields.io/badge/version-v11.60.16-2563EB?style=for-the-badge" alt="Version">
   <img src="https://img.shields.io/badge/platform-Web%20App-0F172A?style=for-the-badge" alt="Platform">
   <img src="https://img.shields.io/badge/stack-Next.js%20%7C%20MongoDB-0EA5E9?style=for-the-badge" alt="Stack">
 </p>
@@ -96,7 +96,7 @@ npm run version:verify
 ```
 
 Current release version:
-- `v11.60.13`
+- `v11.60.16`
 
 Live product:
 - Website: [messmass.doneisbetter.com](https://messmass.doneisbetter.com)
@@ -117,6 +117,7 @@ Canonical entrypoints:
 - [docs/index.md](docs/index.md) — curated documentation entrypoint
 - [docs/PROJECT_MANAGEMENT.md](docs/PROJECT_MANAGEMENT.md) — SSOT and GitHub Project workflow
 - [docs/HANDOVER.md](docs/HANDOVER.md) — current repo truth and latest delivery state
+- [docs/root-structure.md](docs/root-structure.md) — canonical top-level repository structure and root-file policy
 - [docs/architecture.md](docs/architecture.md) — technical architecture
 - [docs/coding-standards.md](docs/coding-standards.md) — code and styling rules
 - [docs/operations/operations-action-plan.md](docs/operations/operations-action-plan.md) — active execution queue

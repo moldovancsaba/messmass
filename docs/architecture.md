@@ -1508,6 +1508,19 @@ interface ReportTemplate {
 - **Aspect Ratios:** `lib/aspectRatioUtils.ts` JSDoc comments
 - **Coding Standards:** `CODING_STANDARDS.md` Component patterns
 
+### Core vs Partner Resolution (2026-03-10)
+
+Report template, style, and clicker set are resolved in a **project → partner → default** order. Partner-level assignment is supported; event-level overrides take precedence.
+
+| Surface | Template | Style | Clicker set |
+|---------|----------|-------|-------------|
+| Event report | project → partner → default | project → partner → template | N/A (view) |
+| Partner report | partner → default | partner → template | N/A (view) |
+| Event edit | project → partner → default | project → partner → template | partner.clickerSetId → default |
+| Partner edit | partner → default | partner.styleId | N/A (content only) |
+
+**Implementation:** `/api/report-config/[identifier]` (project/partner type); style in same resolution; variable groups via `clickerSetId` from partner. **Audit and full classification:** [docs/2026-03-09_AUDIT_CORE_VS_PARTNER_FUNCTIONS.md](2026-03-09_AUDIT_CORE_VS_PARTNER_FUNCTIONS.md) (Sections 5A, 5B, 5C).
+
 ---
 
 ## Visualization Grid System (Stats/Admin Parity)

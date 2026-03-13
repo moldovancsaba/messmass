@@ -1,28 +1,29 @@
 /* WHAT: CRUD API routes for Report Styles
- * WHY: Backend endpoints for style management
- * HOW: MongoDB operations with validation */
+ * WHY: Backend endpoints for style management with V3 Org scoping
+ * HOW: MongoDB operations with validation and Org scoping */
 
-import { NextRequest, NextResponse } from 'next/server';
+import { NextResponse } from 'next/server';
 import clientPromise from '@/lib/mongodb';
 import { ObjectId } from 'mongodb';
-import { ReportStyle, validateStyle, normalizeHexColor, COLOR_FIELDS, DIMENSION_FIELDS, DEFAULT_STYLE } from '@/lib/reportStyleTypes';
+import { validateStyle, normalizeHexColor, COLOR_FIELDS, DIMENSION_FIELDS, DEFAULT_STYLE, ReportStyle } from '@/lib/reportStyleTypes';
 import { error as logError } from '@/lib/logger';
+import { withOrgContext } from '@/lib/middleware/v3/orgContext';
 
 const DB_NAME = process.env.MONGODB_DB || 'messmass';
 const COLLECTION = 'report_styles';
 
 /**
- * GET /api/report-styles
- * Fetch all report styles
+ * GET Handler
  */
-export async function GET() {
+async function getStyles(request: Request) {
   try {
+    const orgId = request.headers.get('x-v3-org-id');
     const client = await clientPromise;
     const db = client.db(DB_NAME);
     
     const styles = await db
       .collection<ReportStyle>(COLLECTION)
-      .find({})
+      .find({ organizationId: new ObjectId(orgId as string) })
       .sort({ updatedAt: -1 })
       .toArray();
     
@@ -32,50 +33,39 @@ export async function GET() {
     });
   } catch (error) {
     logError('Failed to fetch report styles', { context: 'report-styles' }, error instanceof Error ? error : new Error(String(error)));
-    return NextResponse.json(
-      { success: false, error: 'Failed to fetch styles' },
-      { status: 500 }
-    );
+    return NextResponse.json({ success: false, error: 'Failed to fetch styles' }, { status: 500 });
   }
 }
 
 /**
- * POST /api/report-styles
- * Create new report style
+ * POST Handler
  */
-export async function POST(request: NextRequest) {
+async function createStyle(request: Request) {
   try {
+    const orgId = request.headers.get('x-v3-org-id');
     const body = await request.json();
     
-    // Validate style
     const validation = validateStyle(body);
-    if (!validation.valid) {
-      return NextResponse.json(
-        { success: false, error: validation.errors.join(', ') },
-        { status: 400 }
-      );
-    }
+    if (!validation.valid) return NextResponse.json({ success: false, error: validation.errors.join(', ') }, { status: 400 });
     
-    // Dimension fields (default from DEFAULT_STYLE when creating)
     const dimensionEntries = DIMENSION_FIELDS.map(f => [
       f.key,
       String((body[f.key] ?? DEFAULT_STYLE[f.key] ?? '')).trim()
     ]) as [string, string][];
-    const normalizedStyle = {
+
+    const normalizedStyle: any = {
       name: body.name.trim(),
       description: body.description?.trim() || '',
       fontFamily: body.fontFamily || 'Inter',
-      ...Object.fromEntries(
-        COLOR_FIELDS.map(field => [field.key, normalizeHexColor(body[field.key])])
-      ),
+      ...Object.fromEntries(COLOR_FIELDS.map(field => [field.key, normalizeHexColor(body[field.key])])),
       ...Object.fromEntries(dimensionEntries),
+      organizationId: new ObjectId(orgId as string),
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString()
-    } as Omit<ReportStyle, '_id'>;
+    };
     
     const client = await clientPromise;
     const db = client.db(DB_NAME);
-    
     const result = await db.collection(COLLECTION).insertOne(normalizedStyle);
     
     return NextResponse.json({
@@ -85,123 +75,77 @@ export async function POST(request: NextRequest) {
     });
   } catch (error) {
     logError('Failed to create report style', { context: 'report-styles' }, error instanceof Error ? error : new Error(String(error)));
-    return NextResponse.json(
-      { success: false, error: 'Failed to create style' },
-      { status: 500 }
-    );
+    return NextResponse.json({ success: false, error: 'Failed to create style' }, { status: 500 });
   }
 }
 
 /**
- * PUT /api/report-styles?id=...
- * Update existing report style
+ * PUT Handler
  */
-export async function PUT(request: NextRequest) {
+async function updateStyle(request: Request) {
   try {
+    const orgId = request.headers.get('x-v3-org-id');
     const { searchParams } = new URL(request.url);
     const id = searchParams.get('id');
     
-    if (!id || !ObjectId.isValid(id)) {
-      return NextResponse.json(
-        { success: false, error: 'Invalid style ID' },
-        { status: 400 }
-      );
-    }
+    if (!id || !ObjectId.isValid(id)) return NextResponse.json({ success: false, error: 'Invalid style ID' }, { status: 400 });
     
     const body = await request.json();
-    
-    // Validate style
     const validation = validateStyle(body);
-    if (!validation.valid) {
-      return NextResponse.json(
-        { success: false, error: validation.errors.join(', ') },
-        { status: 400 }
-      );
-    }
+    if (!validation.valid) return NextResponse.json({ success: false, error: validation.errors.join(', ') }, { status: 400 });
     
-    // Dimension fields (from body; empty = use theme default)
-    const dimensionEntries = DIMENSION_FIELDS.map(f => [
-      f.key,
-      String((body[f.key] ?? '')).trim()
-    ]) as [string, string][];
-    const normalizedStyle = {
+    const dimensionEntries = DIMENSION_FIELDS.map(f => [f.key, String((body[f.key] ?? '')).trim()]) as [string, string][];
+    const updates: any = {
       name: body.name.trim(),
       description: body.description?.trim() || '',
       fontFamily: body.fontFamily || 'Inter',
-      ...Object.fromEntries(
-        COLOR_FIELDS.map(field => [field.key, normalizeHexColor(body[field.key])])
-      ),
+      ...Object.fromEntries(COLOR_FIELDS.map(field => [field.key, normalizeHexColor(body[field.key])])),
       ...Object.fromEntries(dimensionEntries),
       updatedAt: new Date().toISOString()
-    } as Partial<ReportStyle>;
+    };
     
     const client = await clientPromise;
     const db = client.db(DB_NAME);
-    
     const result = await db.collection(COLLECTION).updateOne(
-      { _id: new ObjectId(id) },
-      { $set: normalizedStyle }
+      { _id: new ObjectId(id), organizationId: new ObjectId(orgId as string) },
+      { $set: updates }
     );
     
-    if (result.matchedCount === 0) {
-      return NextResponse.json(
-        { success: false, error: 'Style not found' },
-        { status: 404 }
-      );
-    }
-    
-    return NextResponse.json({
-      success: true,
-      style: { ...normalizedStyle, _id: id }
-    });
+    if (result.matchedCount === 0) return NextResponse.json({ success: false, error: 'Style not found' }, { status: 404 });
+    return NextResponse.json({ success: true, style: { ...updates, _id: id } });
   } catch (error) {
     logError('Failed to update report style', { context: 'report-styles' }, error instanceof Error ? error : new Error(String(error)));
-    return NextResponse.json(
-      { success: false, error: 'Failed to update style' },
-      { status: 500 }
-    );
+    return NextResponse.json({ success: false, error: 'Failed to update style' }, { status: 500 });
   }
 }
 
 /**
- * DELETE /api/report-styles?id=...
- * Delete report style
+ * DELETE Handler
  */
-export async function DELETE(request: NextRequest) {
+async function deleteStyle(request: Request) {
   try {
+    const orgId = request.headers.get('x-v3-org-id');
     const { searchParams } = new URL(request.url);
     const id = searchParams.get('id');
     
-    if (!id || !ObjectId.isValid(id)) {
-      return NextResponse.json(
-        { success: false, error: 'Invalid style ID' },
-        { status: 400 }
-      );
-    }
+    if (!id || !ObjectId.isValid(id)) return NextResponse.json({ success: false, error: 'Invalid style ID' }, { status: 400 });
     
     const client = await clientPromise;
     const db = client.db(DB_NAME);
-    
     const result = await db.collection(COLLECTION).deleteOne({
-      _id: new ObjectId(id)
+      _id: new ObjectId(id),
+      organizationId: new ObjectId(orgId as string)
     });
     
-    if (result.deletedCount === 0) {
-      return NextResponse.json(
-        { success: false, error: 'Style not found' },
-        { status: 404 }
-      );
-    }
-    
-    return NextResponse.json({
-      success: true,
-      message: 'Style deleted successfully'
-    });
+    if (result.deletedCount === 0) return NextResponse.json({ success: false, error: 'Style not found' }, { status: 404 });
+    return NextResponse.json({ success: true, message: 'Style deleted successfully' });
   } catch (error) {
     logError('Failed to delete report style', { context: 'report-styles' }, error instanceof Error ? error : new Error(String(error)));
-    return NextResponse.json(
-      { success: false, error: 'Failed to delete style' },
-      { status: 500 }
-    );
+    return NextResponse.json({ success: false, error: 'Failed to delete style' }, { status: 500 });
   }
 }
+
+export const GET = (req: Request) => withOrgContext(req, getStyles);
+export const POST = (req: Request) => withOrgContext(req, createStyle);
+export const PUT = (req: Request) => withOrgContext(req, updateStyle);
+export const DELETE = (req: Request) => withOrgContext(req, deleteStyle);
