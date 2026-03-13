@@ -85,6 +85,7 @@ export default function Sidebar() {
     {
       title: 'Management',
       items: [
+        { label: 'Organizations', path: '/admin/organizations', icon: 'business' },
         { label: 'Users', path: '/admin/users', icon: 'group' },
         { label: 'Insights', path: '/admin/insights', icon: 'lightbulb' },
         { label: 'KYC', path: '/admin/kyc', icon: 'lock' },
