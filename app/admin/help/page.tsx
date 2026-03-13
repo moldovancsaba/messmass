@@ -87,6 +87,7 @@ export default function HelpPage() {
             <li><a href="#exporting">Exporting Data</a></li>
             <li><a href="#metrics">Understanding Metrics</a></li>
             <li><a href="#hashtags">Hashtag System</a></li>
+            <li><a href="#v3-engine">V3 High-Performance Engine</a></li>
             <li><a href="#troubleshooting">Troubleshooting</a></li>
           </ul>
         </nav>
@@ -600,6 +601,22 @@ export default function HelpPage() {
           </ul>
         </section>
 
+        <section id="v3-engine" className={styles.section}>
+          <h2>🚀 V3 High-Performance Engine</h2>
+          <p>
+            V11.61.0 introduces the <strong>Messmass V3 Alignment</strong>, a high-performance data engine designed for multi-tenant scalability.
+          </p>
+          <ul>
+            <li><strong>Automated Sync:</strong> All edits to Events, Partners, and Stats are automatically mirrored to the V3 engine in real-time.</li>
+            <li><strong>Enriched Entities:</strong> High-fidelity metadata (logos, sports data) is now preserved for all organizations.</li>
+            <li><strong>Participant Mapping:</strong> Events now support multiple participants (e.g., Home vs. Away) with explicitly defined roles.</li>
+            <li><strong>Time-Series KPI:</strong> Every metric change is tracked with a precise timestamp for advanced trend analysis.</li>
+          </ul>
+          <p>
+            <em>Note: This engine operates in the background to ensure your data is ready for the upcoming V3 analytics dashboard.</em>
+          </p>
+        </section>
+
         <section id="troubleshooting" className={styles.section}>
           <h2>🔧 Troubleshooting</h2>
           
@@ -636,8 +653,8 @@ export default function HelpPage() {
 
         <footer className={styles.footer}>
           <p>
-            <strong>{'{messmass}'} Version 11.55.1</strong><br />
-            Last Updated: 2025-11-06T19:33:00.000Z (UTC)
+            <strong>{'{messmass}'} Version 11.61.0</strong><br />
+            Last Updated: 2026-03-13T10:00:00.000Z (UTC)
           </p>
           <p>
             <strong>Quick Links:</strong><br />

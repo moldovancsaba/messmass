@@ -20,6 +20,9 @@ Owner: Documentation
 - [operations-roadmap.md](operations/operations-roadmap.md) — Quarterly roadmap with targets, risks, and dependencies.
 - [operations-deployment-checklist.md](operations/operations-deployment-checklist.md) — Pre/post deployment validation, smoke tests, and rollbacks.
 - [operations-implementation-complete.md](operations/operations-implementation-complete.md) — Summary of finished implementation work and evidence of completion.
+- [V3/messmass_v3_api_specification.md](V3/messmass_v3_api_specification.md) — (Active) V3 REST API specification.
+- [V3/messmass_v3_migration_playbook.md](V3/messmass_v3_migration_playbook.md) — Migration execution and operational rules.
+- [V3/messmass_v3_quickstart_guide.md](V3/messmass_v3_quickstart_guide.md) — (NEW) Admin quickstart guide for V3 data management.
 
 ## Security
 - [security-overview.md](security/security-overview.md) — Canonical entrypoint and pointers to archived audits and phase closure docs.

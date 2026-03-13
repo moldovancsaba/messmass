@@ -1,6 +1,6 @@
 {
   "name": "messmass",
-  "version": "11.60.16",
+  "version": "11.61.0",
   "description": "Enterprise-grade event analytics platform with comprehensive partner management, intelligent link tracking, automated event creation (Sports Match Builder), and advanced real-time statistics dashboard for sports organizations, venues, brands, and event managers",
   "keywords": [
     "event-statistics",
@@ -124,12 +124,12 @@
     "migrate:assign-default-partner": "tsx -r dotenv/config scripts/assignDefaultPartnerToOrphanedEvents.ts dotenv_config_path=.env.local",
     "sheets:create-partner-sheets": "tsx -r dotenv/config scripts/createPartnerSheets.ts dotenv_config_path=.env.local",
     "sheets:setup-szerencsejatok": "tsx -r dotenv/config scripts/setupSzerencsejatek.ts dotenv_config_path=.env.local",
-    "migrate:layout-grammar": "tsx -r dotenv/config scripts/migrate-layout-grammar.ts dotenv_config_path=.env.local",
     "security:verify-production-flags": "NODE_ENV=production tsx scripts/verify-production-flags.ts",
     "security:check-users-password-hash": "tsx -r dotenv/config scripts/check-users-password-hash.ts dotenv_config_path=.env.local",
     "security:migrate-users-to-password-hash": "tsx -r dotenv/config scripts/migrate-users-to-password-hash.ts dotenv_config_path=.env.local"
   },
   "dependencies": {
+    "@types/mongoose": "^5.11.96",
     "@types/nodemailer": "^7.0.4",
     "bcryptjs": "^3.0.3",
     "chart.js": "^4.5.0",
@@ -145,6 +145,7 @@
     "lucide-react": "^0.562.0",
     "marked": "^16.4.1",
     "mongodb": "^6.8.0",
+    "mongoose": "^9.3.0",
     "next": "15.5.9",
     "nodemailer": "^7.0.12",
     "react": "^18.3.1",
