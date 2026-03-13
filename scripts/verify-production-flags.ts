@@ -18,6 +18,7 @@ const REQUIRED_FLAGS = [
   { envVar: 'ENABLE_BCRYPT_AUTH', name: 'Password Security (bcrypt)' },
   { envVar: 'ENABLE_JWT_SESSIONS', name: 'Session Security (JWT)' },
   { envVar: 'ENABLE_HTML_SANITIZATION', name: 'XSS Protection (HTML sanitization)' },
+  { envVar: 'ENABLE_SAFE_FORMULA_PARSER', name: 'Formula Security (safe parser)' },
 ] as const;
 
 function verifyProductionFlags(): {
