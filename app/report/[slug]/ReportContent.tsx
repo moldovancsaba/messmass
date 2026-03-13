@@ -397,7 +397,7 @@ function ReportBlock({ block, chartResults, charts, gridSettings, allowNA = fals
   // WHY: All text charts should use the same font-size, fitting the largest content
   // HOW: Use hook to measure containers and calculate optimal size
   // IMPORTANT: Hooks must be called before any early returns (React Rules of Hooks)
-  const blockRef = useRef<HTMLDivElement>(null);
+  const blockRef = useRef<HTMLDivElement>(null!);
   
   // Sort charts by order
   const sortedCharts = [...block.charts].sort((a, b) => a.order - b.order);

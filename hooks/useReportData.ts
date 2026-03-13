@@ -96,7 +96,6 @@ export function useReportData(slug: string | null): UseReportDataResult {
     setError(null);
 
     try {
-      console.log('[useReportData] Fetching report data for:', slug);
 
       // Step 1: Fetch project data
       const projectRes = await fetch(`/api/projects/stats/${slug}`, {
@@ -171,7 +170,6 @@ export function useReportData(slug: string | null): UseReportDataResult {
         source: reportData.source
       });
 
-      console.log('[useReportData] Data loaded successfully');
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Failed to load report data';
       console.error('[useReportData] Error:', errorMessage);
@@ -252,12 +250,11 @@ export function usePartnerReportData(slug: string | null) {
     setError(null);
 
     try {
-      console.log('[usePartnerReportData] Fetching partner report data for:', slug);
-
       // Step 1: Fetch partner and events
       const partnerRes = await fetch(`/api/partners/report/${slug}`, {
         cache: 'no-store'
       });
+
       const partnerData = await partnerRes.json();
 
       if (!partnerData.success) {
@@ -327,8 +324,6 @@ export function usePartnerReportData(slug: string | null) {
         source: reportData.source
       });
 
-      console.log('[usePartnerReportData] Data loaded successfully');
-      console.log('[usePartnerReportData] Aggregated stats keys:', Object.keys(partnerData.aggregatedStats || {}));
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Failed to load partner report data';
       console.error('[usePartnerReportData] Error:', errorMessage);

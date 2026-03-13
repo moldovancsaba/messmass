@@ -4,6 +4,7 @@
 // Handles client-side initialization of Google Analytics tracking
 // Uses the provided GA measurement ID: G-19NWMWNH18
 
+import { useEffect } from 'react';
 import Script from 'next/script';
 
 export default function GoogleAnalytics() {

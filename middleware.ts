@@ -111,7 +111,7 @@ export async function middleware(request: NextRequest) {
   // SECURITY: Phase 0 Task 0.1 - Secure Markdown Rendering
   const cspHeader = [
     "default-src 'self'",
-    "script-src 'self' 'unsafe-inline' https://www.googletagmanager.com https://vercel.live", // Allow Google Analytics and Vercel Live
+    "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.googletagmanager.com https://vercel.live", // Allow GA, Vercel, and Formula Engine (new Function)
     "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com", // Allow Material Icons stylesheet from Google Fonts
     "img-src 'self' data: https:", // Allow images from same origin, data URIs, and HTTPS
     "font-src 'self' data: https://fonts.gstatic.com https://vercel.live", // Allow Material Icons fonts from Google Fonts CDN and Vercel Live fonts
