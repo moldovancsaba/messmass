@@ -14,6 +14,8 @@ import FormModal from '@/components/modals/FormModal';
 import UnifiedTextInput from '@/components/UnifiedTextInput';
 import { apiPost, apiPatch, apiDelete } from '@/lib/apiClient';
 
+import ManageMembersModal from '@/components/ManageMembersModal';
+
 export default function OrganizationsAdminPage() {
   const { user, loading: authLoading } = useAdminAuth();
   const [organizations, setOrganizations] = useState<any[]>([]);
@@ -24,6 +26,7 @@ export default function OrganizationsAdminPage() {
   // Modal states
   const [showAddForm, setShowAddForm] = useState(false);
   const [showEditForm, setShowEditForm] = useState(false);
+  const [showMembersModal, setShowMembersModal] = useState(false);
   const [editingOrg, setEditingOrg] = useState<any>(null);
   
   const [formData, setFormData] = useState({
@@ -131,6 +134,11 @@ export default function OrganizationsAdminPage() {
     setShowEditForm(true);
   };
 
+  const openMembers = (org: any) => {
+    setEditingOrg(org);
+    setShowMembersModal(true);
+  };
+
   const adapterWithHandlers = useMemo(() => ({
     ...organizationsAdapter,
     listConfig: {
@@ -138,10 +146,20 @@ export default function OrganizationsAdminPage() {
       rowActions: organizationsAdapter.listConfig.rowActions?.map(action => {
         if (action.label === 'Edit') return { ...action, handler: openEdit };
         if (action.label === 'Delete') return { ...action, handler: handleDelete };
+        if (action.label === 'Members') return { ...action, handler: openMembers };
+        return action;
+      })
+    },
+    cardConfig: {
+      ...organizationsAdapter.cardConfig,
+      cardActions: organizationsAdapter.cardConfig.cardActions?.map(action => {
+        if (action.label === 'Edit') return { ...action, handler: openEdit };
+        if (action.label === 'Delete') return { ...action, handler: handleDelete };
+        if (action.label === 'Members') return { ...action, handler: openMembers };
         return action;
       })
     }
-  }), [handleDelete, openEdit]);
+  }), [handleDelete, openEdit, openMembers]);
 
   if (authLoading || loading) {
     return <div className="p-8">Loading...</div>;
@@ -235,6 +253,13 @@ export default function OrganizationsAdminPage() {
           </select>
         </div>
       </FormModal>
+
+      {/* Manage Members Modal */}
+      <ManageMembersModal
+        isOpen={showMembersModal}
+        onClose={() => setShowMembersModal(false)}
+        organization={editingOrg}
+      />
     </div>
   );
 }

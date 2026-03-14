@@ -71,6 +71,27 @@ export class V3ReportResolver {
     return this.getDefaultReport('partner');
   }
 
+  /**
+   * Resolves a report for a V3 Organization (Root)
+   * Hierarchy: Organization.metadata.reportId -> Default
+   */
+  static async resolveForOrganization(orgId: string) {
+    await connectV3();
+    
+    const V3Organization = (await import('@/lib/models/v3/Organization')).default;
+    const org = await V3Organization.findOne({ _id: orgId }).lean();
+    if (!org) throw new Error('Organization not found');
+
+    // 1. Check Organization metadata
+    if (org.metadata?.reportId) {
+      const report = await this.getReportById(org.metadata.reportId);
+      if (report) return { report, resolvedFrom: 'organization', source: org.name };
+    }
+
+    // 2. Fallback to System Default (V2 source - reuse partner report as base)
+    return this.getDefaultReport('partner');
+  }
+
   private static async getReportById(reportId: string) {
     const client = await clientPromise;
     const db = client.db(config.dbName);

@@ -66,6 +66,13 @@ You MUST completely read and obey `docs/coding-standards.md` and `docs/component
 
 ## Handover Log
 
+## 2026-03-14 — Phase 15: Deep Hierarchy & Activity Connectivity
+- **Objective:** Finalize the V3 organization hierarchy by connecting Partners to Organizations and enabling aggregated activity reporting.
+- **Member Management:** Created `ManageMembersModal` and `POST /api/admin/organizations/[id]/members` to allow superadmins to assign Partners to specific Organizations.
+- **Aggregated Reporting:** Implemented `OrganizationActivitiesList` (UI) and a specialized API endpoint to fetch all activities where an organization's members are participants or owners.
+- **Sync Stabilization:** Refined `syncEngine.ts` to respect manual organization assignments and automatically inherit organization context for legacy-mapped activities.
+- **Verification:** Verified that organization-level reports now aggregate metrics and list all member activities correctly.
+
 ## 2026-03-14 — UI Standards Enforcement (Organization Modal)
 - **Objective:** Rectify hardcoded Tailwind styling and raw HTML inputs in the Organization creation/edit modals.
 - **What changed:** Refactored `app/admin/organizations/page.tsx` to use `UnifiedTextInput` and `.form-input` classes instead of raw HTML inputs with ad-hoc `text-gray-*` and `border-gray-*` utility classes. Added explicit, assertive warning blocks to `HANDOVER.md` for future agents, demanding strict adherence to the global design token system.

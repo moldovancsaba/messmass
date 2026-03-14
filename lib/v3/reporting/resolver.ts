@@ -35,22 +35,29 @@ export class V3ReportingResolver {
 
   /**
    * aggregateMetric
-   * Sums a specific metric across an entity and all its descendants.
+   * Sums a specific metric across an entity (and its descendants) OR an entire organization.
    */
   static async aggregateMetric(
     organizationId: string, 
-    entityId: string, 
+    entityId: string | null, 
     metricKey: string,
     options: { startDate?: Date; endDate?: Date } = {}
   ) {
     await connectV3();
-    const entityIds = await this.getDescendantIds(entityId);
+    
+    let entityIds: string[] | null = null;
+    if (entityId) {
+      entityIds = await this.getDescendantIds(entityId);
+    }
 
     const match: any = {
       organizationId,
       metricKey,
-      entityId: { $in: entityIds }
     };
+
+    if (entityIds) {
+      match.entityId = { $in: entityIds };
+    }
 
     if (options.startDate || options.endDate) {
       match.timestamp = {};
@@ -66,7 +73,7 @@ export class V3ReportingResolver {
     return {
       entityId,
       metricKey,
-      descendantCount: entityIds.length - 1,
+      descendantCount: entityIds ? entityIds.length - 1 : 0,
       total: result[0]?.total || 0,
       count: result[0]?.count || 0
     };

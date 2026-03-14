@@ -344,3 +344,64 @@ export function usePartnerReportData(slug: string | null) {
     refresh: fetchData
   };
 }
+
+/**
+ * WHAT: Fetch report data for V3 organization
+ * WHY: High-level reports aggregating data across all organization entities
+ * HOW: Fetch from /api/v3/organizations/report/[id]
+ */
+export function useOrganizationReportData(id: string | null) {
+  const [data, setData] = useState<any | null>(null);
+  const [activities, setActivities] = useState<any[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
+
+  const fetchData = useCallback(async () => {
+    if (!id) {
+      setLoading(false);
+      return;
+    }
+
+    setLoading(true);
+    setError(null);
+
+    try {
+      const [reportRes, activitiesRes] = await Promise.all([
+        fetch(`/api/v3/organizations/report/${id}`, { cache: 'no-store' }),
+        fetch(`/api/v3/organizations/report/${id}/activities`, { cache: 'no-store' })
+      ]);
+
+      const [reportResult, activitiesResult] = await Promise.all([
+        reportRes.json(),
+        activitiesRes.json()
+      ]);
+
+      if (!reportResult.success) {
+        throw new Error(reportResult.error || 'Failed to load organization report');
+      }
+
+      setData(reportResult);
+      if (activitiesResult.success) {
+        setActivities(activitiesResult.activities);
+      }
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : 'Failed to load organization report data';
+      console.error('[useOrganizationReportData] Error:', errorMessage);
+      setError(errorMessage);
+    } finally {
+      setLoading(false);
+    }
+  }, [id]);
+
+  useEffect(() => {
+    fetchData();
+  }, [fetchData]);
+
+  return {
+    activities,
+    data,
+    loading,
+    error,
+    refresh: fetchData
+  };
+}

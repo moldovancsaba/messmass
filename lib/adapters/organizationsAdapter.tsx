@@ -84,6 +84,35 @@ export const organizationsAdapter: AdminPageAdapter<OrganizationDTO> = {
     ],
     rowActions: [
       {
+        label: 'Report',
+        icon: 'visibility',
+        variant: 'secondary',
+        handler: (org) => {
+          // WHAT: Open organization report page in new tab
+          // WHY: Allow viewing shareable organization profile with sub-entities
+          window.open(`/organization-report/${org._id}`, '_blank');
+        },
+        title: 'View organization report',
+      },
+      {
+        label: 'Edit Stats',
+        icon: 'bar_chart',
+        variant: 'primary',
+        handler: (org) => {
+          // WHAT: Open organization content editor
+          // WHY: Allow editing organization-level metadata
+          window.open(`/organization-edit/${org._id}`, '_blank');
+        },
+        title: 'Edit organization content',
+      },
+      {
+        label: 'Members',
+        icon: 'group',
+        variant: 'secondary',
+        handler: (org) => console.log('Manage members:', org._id),
+        title: 'Manage organization members',
+      },
+      {
         label: 'Edit',
         icon: 'edit',
         variant: 'secondary',
@@ -118,6 +147,22 @@ export const organizationsAdapter: AdminPageAdapter<OrganizationDTO> = {
       },
     ],
     cardActions: [
+      {
+        label: 'Report',
+        icon: 'visibility',
+        variant: 'secondary',
+        handler: (org) => {
+          window.open(`/organization-report/${org._id}`, '_blank');
+        },
+      },
+      {
+        label: 'Edit Stats',
+        icon: 'bar_chart',
+        variant: 'primary',
+        handler: (org) => {
+          window.open(`/organization-edit/${org._id}`, '_blank');
+        },
+      },
       {
         label: 'Edit',
         icon: 'edit',

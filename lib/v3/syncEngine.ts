@@ -22,11 +22,20 @@ export async function syncPartnerToV3Entity(v2Partner: any) {
     
     const partnerId = v2Partner._id.toString();
     
+    // WHAT: Check for existing entity to prevent overwriting manual org assignments
+    // WHY: Superadmins might have moved this partner to a specific V3 Organization
+    const existing = await V3Entity.findById(v2Partner._id).lean();
+    let orgIdToSet = new mongoose.Types.ObjectId(MASTER_ORG_ID);
+    
+    if (existing && existing.organizationId && existing.organizationId.toString() !== MASTER_ORG_ID) {
+      orgIdToSet = existing.organizationId;
+    }
+
     await V3Entity.findOneAndUpdate(
       { _id: v2Partner._id },
       {
         $set: {
-          organizationId: new mongoose.Types.ObjectId(MASTER_ORG_ID),
+          organizationId: orgIdToSet,
           name: v2Partner.name,
           metadata: {
             originalId: partnerId,
@@ -64,14 +73,24 @@ export async function syncProjectToV3Activity(v2Project: any) {
     await connectV3();
     
     const projectId = v2Project._id.toString();
-    const orgId = new mongoose.Types.ObjectId(MASTER_ORG_ID);
+    const defaultOrgId = new mongoose.Types.ObjectId(MASTER_ORG_ID);
+    let orgIdToSet = defaultOrgId;
+
+    // WHAT: Inherit organization from primary partner
+    // WHY: Activities belong to the organization of their owner entity
+    if (v2Project.partner1Id) {
+      const ownerEntity = await V3Entity.findById(v2Project.partner1Id).lean();
+      if (ownerEntity && ownerEntity.organizationId) {
+        orgIdToSet = ownerEntity.organizationId;
+      }
+    }
     
     // 1. Update Activity
     const activity = await V3Activity.findOneAndUpdate(
       { "metadata.originalId": projectId },
       {
         $set: {
-          organizationId: orgId,
+          organizationId: orgIdToSet,
           name: v2Project.eventName,
           startDate: v2Project.eventDate ? new Date(v2Project.eventDate) : new Date(),
           metadata: {
@@ -95,6 +114,9 @@ export async function syncProjectToV3Activity(v2Project: any) {
     if (!activity) return;
 
     // 2. Sync Participants (Partner 1 and 2)
+    // Use the SAME orgId as the activity for consistency
+    const activityOrgId = activity.organizationId;
+
     if (v2Project.partner1Id) {
       const p1IdString = v2Project.partner1Id.toString();
       if (mongoose.Types.ObjectId.isValid(p1IdString)) {
@@ -102,7 +124,7 @@ export async function syncProjectToV3Activity(v2Project: any) {
           { 
             activityId: activity._id, 
             entityId: new mongoose.Types.ObjectId(p1IdString),
-            organizationId: orgId 
+            organizationId: activityOrgId 
           },
           { $set: { role: 'primary_partner' } },
           { upsert: true }
@@ -117,7 +139,7 @@ export async function syncProjectToV3Activity(v2Project: any) {
           { 
             activityId: activity._id, 
             entityId: new mongoose.Types.ObjectId(p2IdString),
-            organizationId: orgId 
+            organizationId: activityOrgId 
           },
           { $set: { role: 'visitor' } },
           { upsert: true }
