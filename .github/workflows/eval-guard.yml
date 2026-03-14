@@ -2,9 +2,9 @@ name: Eval Guard
 
 on:
   push:
-    branches: [ main, master ]
+    branches: [ main, preview ]
   pull_request:
-    branches: [ main, master ]
+    branches: [ main, preview ]
 
 jobs:
   eval-guard:

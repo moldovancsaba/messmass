@@ -4,15 +4,13 @@ on:
   pull_request:
     branches:
       - main
-      - phase5/*
-      - phase6/*
-      - release/*
+      - preview
+      - preview
   push:
     branches:
       - main
-      - phase5/*
-      - phase6/*
-      - release/*
+      - preview
+      - preview
 
 jobs:
   date-placeholder-guardrail:
