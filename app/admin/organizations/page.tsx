@@ -11,6 +11,7 @@ import { useAdminAuth } from '@/hooks/useAdminAuth';
 import { organizationsAdapter } from '@/lib/adapters';
 import UnifiedAdminPage from '@/components/UnifiedAdminPage';
 import FormModal from '@/components/modals/FormModal';
+import UnifiedTextInput from '@/components/UnifiedTextInput';
 import { apiPost, apiPatch, apiDelete } from '@/lib/apiClient';
 
 export default function OrganizationsAdminPage() {
@@ -185,28 +186,20 @@ export default function OrganizationsAdminPage() {
         submitText="Create"
         isSubmitting={isSubmitting}
       >
-        <div className="space-y-4">
-          <div>
-            <label className="block text-sm font-medium text-gray-700">Name</label>
-            <input
-              type="text"
-              className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"
-              value={formData.name}
-              onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-              placeholder="e.g. Acme Corp"
-            />
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700">Slug</label>
-            <input
-              type="text"
-              className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"
-              value={formData.slug}
-              onChange={(e) => setFormData({ ...formData, slug: e.target.value.toLowerCase().replace(/\s+/g, '-') })}
-              placeholder="e.g. acme-corp"
-            />
-          </div>
-        </div>
+        <UnifiedTextInput
+          label="Name"
+          value={formData.name}
+          onSave={(val) => setFormData({ ...formData, name: val })}
+          placeholder="e.g. Acme Corp"
+          required={true}
+        />
+        <UnifiedTextInput
+          label="Slug"
+          value={formData.slug}
+          onSave={(val) => setFormData({ ...formData, slug: val.toLowerCase().replace(/\s+/g, '-') })}
+          placeholder="e.g. acme-corp"
+          required={true}
+        />
       </FormModal>
 
       {/* Edit Modal */}
@@ -218,36 +211,28 @@ export default function OrganizationsAdminPage() {
         submitText="Save Changes"
         isSubmitting={isSubmitting}
       >
-        <div className="space-y-4">
-          <div>
-            <label className="block text-sm font-medium text-gray-700">Name</label>
-            <input
-              type="text"
-              className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"
-              value={formData.name}
-              onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-            />
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700">Slug</label>
-            <input
-              type="text"
-              className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"
-              value={formData.slug}
-              onChange={(e) => setFormData({ ...formData, slug: e.target.value.toLowerCase().replace(/\s+/g, '-') })}
-            />
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700">Status</label>
-            <select
-              className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"
-              value={formData.status}
-              onChange={(e) => setFormData({ ...formData, status: e.target.value as 'active' | 'inactive' })}
-            >
-              <option value="active">Active</option>
-              <option value="inactive">Inactive</option>
-            </select>
-          </div>
+        <UnifiedTextInput
+          label="Name"
+          value={formData.name}
+          onSave={(val) => setFormData({ ...formData, name: val })}
+          required={true}
+        />
+        <UnifiedTextInput
+          label="Slug"
+          value={formData.slug}
+          onSave={(val) => setFormData({ ...formData, slug: val.toLowerCase().replace(/\s+/g, '-') })}
+          required={true}
+        />
+        <div className="form-group">
+          <label className="form-label-block">Status</label>
+          <select
+            className="form-input"
+            value={formData.status}
+            onChange={(e) => setFormData({ ...formData, status: e.target.value as 'active' | 'inactive' })}
+          >
+            <option value="active">Active</option>
+            <option value="inactive">Inactive</option>
+          </select>
         </div>
       </FormModal>
     </div>

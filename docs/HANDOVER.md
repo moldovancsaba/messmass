@@ -2,7 +2,21 @@
 
 This file is onboarding plus operational context for the next agent. Keep it accurate when behavior, process, or current delivery state changes.
 
-**Last Updated:** 2026-03-10 (Audit #369 and #370 complete: core shared vs partner-facing list in audit doc; architecture.md updated with Core vs Partner resolution subsection)
+**Last Updated:** 2026-03-14 (UI Standards strictly enforced for Organization Modals)
+
+## 🚨 CRITICAL MUST-READ FOR ALL AGENTS: STYLING & COMPONENTS 🚨
+
+**NEVER use hardcoded Tailwind utility classes (e.g., `text-gray-700`, `border-gray-300`, `p-4`, `shadow-sm`) or inline styles (`style={{...}}`) for standard UI components. The `{messmass}` architecture is strictly token-based and centralized.**
+
+You MUST completely read and obey `docs/coding-standards.md` and `docs/components/components-reusable-components-inventory.md` before writing ANY UI code.
+
+- **Modals:** MUST use `FormModal` or `BaseModal`. Do not build custom dialogs.
+- **Cards:** MUST use `ColoredCard`. Do not build custom containers.
+- **Form Inputs:** MUST use `UnifiedTextInput`, `UnifiedNumberInput`, etc. NEVER use raw HTML `<input>` for text/numbers.
+- **Form Layouts:** Standard form wrappers MUST use `.form-group`, `.form-label-block`, `.form-input` CSS classes, NOT Tailwind.
+- **Design Tokens:** All custom CSS MUST use `var(--mm-*)` design tokens from `app/styles/theme.css`.
+
+**Bypassing the centralized component and design token system is a severe structural violation and will result in immediate rejection by the product owner.**
 
 ## SSOT (Work Tracking)
 - Board: <https://github.com/users/moldovancsaba/projects/1>
@@ -51,6 +65,12 @@ This file is onboarding plus operational context for the next agent. Keep it acc
 - Style editor preview updates immediately for bar/pie CSS vars and includes Value Chain and Landing page sections.
 
 ## Handover Log
+
+## 2026-03-14 — UI Standards Enforcement (Organization Modal)
+- **Objective:** Rectify hardcoded Tailwind styling and raw HTML inputs in the Organization creation/edit modals.
+- **What changed:** Refactored `app/admin/organizations/page.tsx` to use `UnifiedTextInput` and `.form-input` classes instead of raw HTML inputs with ad-hoc `text-gray-*` and `border-gray-*` utility classes. Added explicit, assertive warning blocks to `HANDOVER.md` for future agents, demanding strict adherence to the global design token system.
+- **Validation:** Visual inspection and build passed; inputs correctly inherit `var(--mm-gray-*)` design tokens and form behaviors.
+- **Status:** Complete.
 
 ## 2026-03-10 15:27 CET — Antigravity Agent — Commit + Audit #367–#370 closure
 
