@@ -1,6 +1,6 @@
 # {messmass}
 Status: Active
-Last Updated: 2026-03-13T00:00:00.000Z
+Last Updated: 2026-03-14T21:00:00.000Z
 Canonical: No
 Owner: Product
 
@@ -12,7 +12,7 @@ Owner: Product
 <p align="center"><strong>Enterprise event analytics, partner reporting, and admin operations for sports organizations, venues, and brands.</strong></p>
 
 <p align="center">
-  <img src="https://img.shields.io/badge/version-v12.0.0-2563EB?style=for-the-badge" alt="Version">
+  <img src="https://img.shields.io/badge/version-v12.1.0-2563EB?style=for-the-badge" alt="Version">
   <img src="https://img.shields.io/badge/platform-Web%20App-0F172A?style=for-the-badge" alt="Platform">
   <img src="https://img.shields.io/badge/stack-Next.js%20%7C%20MongoDB-0EA5E9?style=for-the-badge" alt="Stack">
 </p>
@@ -29,6 +29,7 @@ Owner: Product
 `{messmass}` is a production event intelligence platform built for live events and partner ecosystems. It combines real-time event stats, partner and project administration, Bitly analytics, report generation, and a configurable report-style system in one operational product.
 
 Core capabilities:
+- **Multi-Tenant Organization Hierarchy**: Group partners under organizations for aggregated reporting.
 - Real-time event statistics and dashboard workflows
 - Partner, project, and report management in a unified admin
 - Public and partner report surfaces with export flows
@@ -96,7 +97,7 @@ npm run version:verify
 ```
 
 Current release version:
-- `v12.0.0` (React 19 Alignment)
+- `v12.1.0` (Organization Hierarchy & Reporting)
 
 Live product:
 - Website: [messmass.doneisbetter.com](https://messmass.doneisbetter.com)

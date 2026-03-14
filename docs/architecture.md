@@ -1,13 +1,18 @@
 # {messmass} Architecture Documentation
 Status: Active
-Last Updated: 2026-03-13T16:45:00.000Z
+Last Updated: 2026-03-14T21:00:00.000Z
 Canonical: No
 Owner: Architecture
 
-Version: 12.0.0
+Version: 12.1.0
 
-**Major Upgrade (2026-03-13):**
-- **React 19 & Next.js 15**: Systemic upgrade to React 19 for full compatibility with Next.js 15 features and performance improvements.
+**Major Upgrade (2026-03-14):**
+- **Organization Hierarchy & Multi-Tenancy**: Implemented the first wave of V3 multi-tenancy, allowing Partners (Entities) to be logically grouped under Organizations for aggregated activity reporting.
+- **Member Management**: Created the `ManageMembersModal` and associated API for bulk assignment of entities to organizations.
+- **Aggregated Activity API**: Developed a high-performance activity aggregation engine for organizations that rolls up metrics and activity lists from all member entities.
+
+**React 19 & Next.js 15 (2026-03-13):**
+- Systemic upgrade to React 19 for full compatibility with Next.js 15 features and performance improvements.
 - **Hydration Deadlock Resolution**: Fixed a systemic client-side hydration failure by adjusting dependencies and refining the Content Security Policy (CSP).
 - **Formula Engine Security**: Modified CSP to allow `'unsafe-eval'`, enabling the dynamic KPI formula engine to function securely in production.
 

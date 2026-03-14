@@ -4,6 +4,41 @@ Last Updated: 2026-03-13T16:45:00.000Z
 Canonical: No
 Owner: Operations
 
+## [v12.1.0] — 2026-03-14T21:00:00.000Z
+
+### Summary
+🏢 **ORGANIZATION HIERARCHY & MULTI-TENANCY**: Finalized the V3 organization hierarchy, enabling multi-tenant member management and aggregated reporting across deep entity structures.
+
+### What Was Added
+
+#### Organization Member Management ✅
+**WHAT**: Added a centralized "Members" management UI and API for organizations.  
+**WHY**: To allow superadmins to logically group existing Partners (Entities) under Organizations for top-level reporting.  
+**HOW**: Implemented `ManageMembersModal`, `OrganizationsAdminPage` extensions, and `POST /api/admin/organizations/[id]/members`.
+
+#### Aggregated Organization Reporting ✅
+**WHAT**: Implemented a comprehensive Organization Report view with multi-entity activity roll-ups.  
+**WHY**: Executives need a unified view of performance across all teams/partners in their organization.  
+**HOW**: Created `OrganizationReportView`, a specialized activity aggregation API (`/api/v3/organizations/report/[id]/activities`), and high-level metric resolvers.
+
+#### Sync Engine Hardening (V3 Alignment) ✅
+**WHAT**: Updated the V3 synchronization engine to support hierarchical data inheritance.  
+**WHY**: To ensure legacy data (V2) is correctly mapped to the new multi-tenant V3 hierarchy without manual intervention.  
+**HOW**: Refined `syncEngine.ts` to inherit `organizationId` from primary partners and respect manual organizational assignments.
+
+#### UI/UX Refinement ✅
+**WHAT**: Standardized organization creation/edit modals with `UnifiedTextInput` and global design tokens.  
+**WHY**: To ensure structural consistency and prevent "hardcoded" design drift in administrative interfaces.  
+**HOW**: Refactored `app/admin/organizations/page.tsx` and updated the developer handover guidelines.
+
+### Testing
+- ✅ Member assignment verified (Bulk assignment of partners to orgs).
+- ✅ Aggregated reporting verified (Metric sums and activity lists).
+- ✅ Sync integrity verified (Manual assignments preserved during V2 mirroring).
+
+### Version
+v12.0.0 → v12.1.0 (MINOR — Organization Hierarchy and Reporting)
+
 ## [v12.0.0] — 2026-03-13T16:45:00.000Z
 
 ### Summary

@@ -146,11 +146,11 @@ Owner: Katja (Admin)
 
 ## 7. STATE MEMORY (Current Only)
 
-2026-03-07
-- CONTEXT: Root structure hardening tracked under `mvp-factory-control#359`.
-- BOARD: `#359` is the active repository-structure cleanup slice being delivered.
-- OPS: audited the project root against runtime/build/test/deploy requirements, removed non-canonical root artifacts, tightened `.gitignore`, and added `docs/root-structure.md` as the canonical top-level structure policy.
-- NEXT: run full gates for `11.60.16`, post SSOT evidence on `#359`, then return to the queued work.
+2026-03-14
+- CONTEXT: Phase 15 (Organization Hierarchy & Activity Connectivity) delivered.
+- BOARD: `v12.1.0` milestone reached. Organization hierarchy, member management, and aggregated reporting are live.
+- OPS: Implemented `OrganizationReportView`, `ManageMembersModal`, and aggregated activity APIs. Unified V3 sync engine to respect hierarchical organization mapping.
+- NEXT: Monitor V3 performance during bulk data aggregation and prioritize any remaining V3 alignment gaps.
 
 2026-03-07
 - CONTEXT: Test tree normalization tracked under `mvp-factory-control#358`.
