@@ -1,11 +1,11 @@
 # 📡 API Reference
 Status: Active
-Last Updated: 2026-01-11T22:45:21.000Z
+Last Updated: 2026-03-14T22:00:00.000Z
 Canonical: Yes
 Owner: Backend
 
-**Version:** 11.59.0  
-**Last Updated:** 2026-02-21T00:00:00.000Z (UTC)  
+**Version:** 12.1.0  
+**Last Updated:** 2026-03-14T22:00:00.000Z (UTC)  
 **Status:** Production
 
 Quick API reference for {messmass}. See detailed guides for complete schemas and examples.
@@ -70,6 +70,25 @@ Update partner.
 Delete partner.
 
 **See**: [PARTNERS_SYSTEM_GUIDE.md](../features/features-partners-system-guide.md#api-reference) for complete details
+
+---
+
+## Organizations API (v12.1.0+)
+
+### GET /api/admin/organizations
+List organizations.
+
+### POST /api/admin/organizations
+Create organization. Body: `{ name, slug, description }`
+
+### GET /api/v3/organizations/report/[id]
+Get aggregated organization metrics (V3 core).
+
+### GET /api/v3/organizations/report/[id]/activities
+Get aggregated organization activity timeline (V3 core).
+
+### POST /api/admin/organizations/[id]/members
+Manage organization members (Partners). Body: `{ partnerIds: string[] }`
 
 ---
 
@@ -271,6 +290,6 @@ Returns: `{ projects: [...], totalMatched: 150, nextOffset: 60 }`
 
 ---
 
-**{messmass} API Reference 11.59.0**  
-**Last Updated: 2026-02-21T00:00:00.000Z (UTC)**  
-**© 2025 {messmass} Platform**
+**{messmass} API Reference 12.1.0**  
+**Last Updated: 2026-03-14T22:00:00.000Z (UTC)**  
+**© 2026 {messmass} Platform**

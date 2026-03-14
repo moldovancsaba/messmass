@@ -1,11 +1,11 @@
 # 🤝 Partners System Technical Guide
 Status: Active
-Last Updated: 2026-01-11T22:28:38.000Z
+Last Updated: 2026-03-14T22:00:00.000Z
 Canonical: Yes
 Owner: Product
 
-**Version:** 11.25.1  
-**Last Updated:** 2026-01-11T22:28:38.000Z (UTC)  
+**Version:** 12.1.0  
+**Last Updated:** 2026-03-14T22:00:00.000Z (UTC)  
 **Status:** Production
 
 Complete technical documentation for the {messmass} Partners Management System.
@@ -36,6 +36,7 @@ The Partners System enables management of organization entities (clubs, federati
 ### Key Features
 
 - **Partner CRUD**: Full create, read, update, delete operations
+- **Organization Membership**: Optional grouping under Organizations for multi-tenant reporting.
 - **Metadata Inheritance**: Events created from partners automatically inherit hashtags, Bitly links, and emojis
 - **Sports Match Builder**: Intelligent event creation using two partners
 - **Searchable UI**: Predictive search with debouncing
@@ -95,7 +96,10 @@ Partners are stored in a dedicated MongoDB collection with the following structu
   
   // Metadata
   createdAt: "2025-01-21T10:00:00.000Z",  // ISO 8601 with milliseconds
-  updatedAt: "2025-01-21T10:00:00.000Z"   // ISO 8601 with milliseconds
+  updatedAt: "2025-01-21T10:00:00.000Z",  // ISO 8601 with milliseconds
+  
+  // Organization Context (v12.1.0+)
+  organizationId: ObjectId("69b322e0cb8e841f95de9aa1")
 }
 ```
 
@@ -112,6 +116,7 @@ Partners are stored in a dedicated MongoDB collection with the following structu
 | `bitlyLinkIds` | ObjectId[] | No | Array of Bitly link document IDs |
 | `createdAt` | String | Auto | ISO 8601 timestamp with milliseconds |
 | `updatedAt` | String | Auto | ISO 8601 timestamp with milliseconds |
+| `organizationId` | ObjectId | No | V3 Organization identifier for multi-tenancy |
 
 ### Indexes
 
