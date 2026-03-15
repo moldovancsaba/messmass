@@ -14,10 +14,11 @@ export interface AdminUser {
   role: UserRole
   permissions: string[]
   // WHAT: API access fields (v10.6.0+)
-  // WHY: Track API key usage and status for external integrations
   apiKeyEnabled?: boolean
   apiUsageCount?: number
   lastAPICallAt?: string
+  // WHAT: Multi-tenant organization scoping (v12.1.1+)
+  organizationIds?: string[]
 }
 
 /**
@@ -97,7 +98,9 @@ export async function getAdminUser(): Promise<AdminUser | null> {
     // WHY: Frontend needs these for display and toggle functionality
     apiKeyEnabled: user.apiKeyEnabled,
     apiUsageCount: user.apiUsageCount,
-    lastAPICallAt: user.lastAPICallAt
+    lastAPICallAt: user.lastAPICallAt,
+    // WHAT: Propagate organization scoping
+    organizationIds: user.organizationIds
   }
 }
 

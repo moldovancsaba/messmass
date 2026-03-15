@@ -4,6 +4,7 @@ import V3Organization from '@/lib/models/v3/Organization';
 import V3Entity from '@/lib/models/v3/Entity';
 import { V3ReportResolver } from '@/lib/v3/reporting/reportResolver';
 import { V3ReportingResolver } from '@/lib/v3/reporting/resolver';
+import { validateOrganizationAccess } from '@/lib/auth/orgGuard';
 
 export const dynamic = 'force-dynamic';
 
@@ -22,6 +23,13 @@ export async function GET(
 
     if (!orgId) {
       return NextResponse.json({ success: false, error: 'Organization ID is required' }, { status: 400 });
+    }
+
+    // WHAT: RBAC / Multi-tenant scoping
+    // WHY: Ensure non-superadmins are restricted to assigned organizations
+    const authorizedUser = await validateOrganizationAccess(orgId);
+    if (!authorizedUser) {
+      return NextResponse.json({ success: false, error: 'Unauthorized: Access to this organization is restricted' }, { status: 403 });
     }
 
     await connectV3();

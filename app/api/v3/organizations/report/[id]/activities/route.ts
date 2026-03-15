@@ -3,6 +3,7 @@ import connectV3 from '@/lib/mongoose-v3';
 import V3Activity from '@/lib/models/v3/Activity';
 import V3ActivityParticipant from '@/lib/models/v3/ActivityParticipant';
 import { getAdminUser } from '@/lib/auth';
+import { validateOrganizationAccess } from '@/lib/auth/orgGuard';
 import mongoose from 'mongoose';
 
 /**
@@ -17,6 +18,14 @@ export async function GET(
 ) {
   try {
     const { id: orgId } = await params;
+    
+    // WHAT: RBAC / Multi-tenant scoping
+    // WHY: Ensure non-superadmins are restricted to assigned organizations
+    const authorizedUser = await validateOrganizationAccess(orgId);
+    if (!authorizedUser) {
+      return NextResponse.json({ success: false, error: 'Unauthorized: Access to this organization is restricted' }, { status: 403 });
+    }
+
     await connectV3();
 
     // 1. Find activities owned by this organization
