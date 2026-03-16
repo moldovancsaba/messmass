@@ -1,7 +1,7 @@
 'use client';
 
 import { useParams } from 'next/navigation';
-import { OrganizationReportView } from '../OrganizationReportView';
+import OrganizationReportView from '../OrganizationReportView';
 
 /**
  * Organization Report Page
