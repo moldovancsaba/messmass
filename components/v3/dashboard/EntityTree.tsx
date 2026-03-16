@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
+import styles from './EntityTree.module.css';
 
 interface Entity {
   _id: string;
@@ -25,11 +26,11 @@ const TreeNode: React.FC<{
     <div className="flex flex-col">
       <div 
         onClick={() => onEntitySelect(entity._id)}
-        className={`py-1 px-2 mb-1 cursor-pointer rounded text-sm transition-colors ${
-          isSelected ? 'bg-indigo-50 text-indigo-700 font-medium' : 'text-gray-700 hover:bg-gray-100'
-        }`}
-        style={{ paddingLeft: `${level + 0.5}rem` }}
+        className={`${styles.entityTreeNode} ${
+          isSelected ? styles.selected : styles.unselected
+        } ${styles[`level-${Math.min(level, 10)}`]}`}
       >
+        {/* WHAT/WHY: Small inline metadata tag for entity type identification */}
         <span className="text-xs uppercase text-gray-400 mr-2">[{entity.type}]</span>
         {entity.name}
       </div>

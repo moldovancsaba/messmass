@@ -38,9 +38,10 @@ function getStatsVariablesFromElements(elements: Array<{ formula: string }>): st
 
 export default function ChartBuilderBar({ chart, stats, onSave }: ChartBuilderBarProps) {
   const elements = chart.elements.slice(0, 5);
+  const elementsKey = elements.map((e) => e.formula).join('|');
   const variables = useMemo(
     () => getStatsVariablesFromElements(elements),
-    [chart.chartId, elements.map((e) => e.formula).join('|')]
+    [elements]
   );
 
   const [tempValues, setTempValues] = useState<Record<string, string>>(() => {

@@ -39,9 +39,10 @@ function getStatsVariablesFromElements(elements: Array<{ formula: string }>): st
 }
 
 export default function ChartBuilderText({ chart, stats, onSave }: ChartBuilderTextProps) {
+  const elementsKey = chart.elements?.map((e) => e.formula).join('|') ?? '';
   const variables = useMemo(
     () => getStatsVariablesFromElements(chart.elements || []),
-    [chart.chartId, chart.elements?.map((e) => e.formula).join('|') ?? '']
+    [chart.elements]
   );
 
   const [previewKey, setPreviewKey] = useState<string | null>(null);

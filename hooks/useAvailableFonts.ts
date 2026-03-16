@@ -32,7 +32,7 @@ export function useAvailableFonts(includeInactive = false): UseAvailableFontsRet
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const fetchFonts = async () => {
+  const fetchFonts = React.useCallback(async () => {
     setLoading(true);
     setError(null);
     try {
@@ -56,11 +56,11 @@ export function useAvailableFonts(includeInactive = false): UseAvailableFontsRet
     } finally {
       setLoading(false);
     }
-  };
+  }, [includeInactive]);
 
   useEffect(() => {
     fetchFonts();
-  }, [includeInactive]);
+  }, [fetchFonts]);
 
   return {
     fonts,

@@ -60,7 +60,7 @@ export default function ClickerManagerPage() {
   const [setNameInput, setSetNameInput] = useState('');
   const [cloneCurrentSet, setCloneCurrentSet] = useState(false);
 
-  const loadClickerSets = async (): Promise<string | null> => {
+  const loadClickerSets = React.useCallback(async (): Promise<string | null> => {
     setLoadingSets(true);
     let chosenId: string | null = selectedSetId;
     try {
@@ -89,9 +89,9 @@ export default function ClickerManagerPage() {
       setLoadingSets(false);
     }
     return chosenId;
-  };
+  }, [selectedSetId]);
 
-  const loadData = async (targetSetId?: string | null) => {
+  const loadData = React.useCallback(async (targetSetId?: string | null) => {
     setLoading(true);
     try {
       const activeSetId = targetSetId || selectedSetId;
@@ -114,14 +114,14 @@ export default function ClickerManagerPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [selectedSetId]);
 
   useEffect(() => {
     (async () => {
       const setId = await loadClickerSets();
       await loadData(setId);
     })();
-  }, []);
+  }, [loadClickerSets, loadData]);
 
   const seedDefaults = async () => {
     try {

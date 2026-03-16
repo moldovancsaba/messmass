@@ -294,7 +294,7 @@ function ResponsiveRow({ rowCharts, chartResults, charts, rowIndex, unifiedTextF
       resizeObserver.disconnect();
       window.removeEventListener('resize', measureAndCalculate);
     };
-  }, [rowCharts, chartResults, rowIndex]); // Re-run if charts change
+  }, [rowCharts, chartResults, rowIndex, blockAspectRatio, tableHeightMultiplier]); // Re-run if charts change
   
   // WHAT: Runtime validation for CSS variables (A-05: Runtime Enforcement)
   // WHY: Log violations for monitoring without crashing the report

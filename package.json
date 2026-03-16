@@ -1,6 +1,6 @@
 {
   "name": "messmass",
-  "version": "12.1.1",
+  "version": "12.1.3",
   "description": "Enterprise-grade event analytics platform with comprehensive partner management, intelligent link tracking, automated event creation (Sports Match Builder), and advanced real-time statistics dashboard for sports organizations, venues, brands, and event managers",
   "keywords": [
     "event-statistics",
@@ -37,7 +37,7 @@
     "check:google-sheets-schema": "tsx -r dotenv/config scripts/check-google-sheets-schema.ts dotenv_config_path=.env.local",
     "test:email": "tsx -r dotenv/config scripts/test-email-notifications.ts dotenv_config_path=.env.local",
     "variables:inventory": "tsx -r dotenv/config scripts/generate-variables-inventory.ts dotenv_config_path=.env.local",
-    "lint": "next lint",
+    "lint": "eslint . --max-warnings 0",
     "type-check": "tsc --noEmit",
     "validate:inputs": "./scripts/validate-input-patterns.sh",
     "export": "next export",
@@ -129,7 +129,6 @@
     "security:migrate-users-to-password-hash": "tsx -r dotenv/config scripts/migrate-users-to-password-hash.ts dotenv_config_path=.env.local"
   },
   "dependencies": {
-    "@types/mongoose": "^5.11.96",
     "@types/nodemailer": "^7.0.4",
     "bcryptjs": "^3.0.3",
     "chart.js": "^4.5.0",

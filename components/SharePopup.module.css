@@ -278,6 +278,11 @@
   margin-bottom: 0.25rem;
 }
 
+.wFull {
+  width: 100% !important;
+  margin-top: 0.5rem !important;
+}
+
 /* Mobile responsiveness - EXACT MATCH to FormModal */
 @media (max-width: 640px) {
   .header {

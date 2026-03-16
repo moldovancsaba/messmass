@@ -17,19 +17,27 @@ import {
   type EnforcementResult
 } from '@/lib/layoutGrammarRuntimeEnforcement';
 
-// WHAT: Mock DOM for tests that need document.createElement
-// WHY: Jest doesn't have DOM by default, but we can mock it for these tests
+// WHAT: Store CSS variables per element using a WeakMap
+// WHY: Ensure getComputedStyle mock picks up variables from the specific element instance
+const elementMetadataMap = new WeakMap<any, Record<string, string>>();
+
+// Mock getComputedStyle globally for all tests (Node environment support)
+const mockGetComputedStyle = jest.fn((element: any) => {
+  const cssVars = elementMetadataMap.get(element) || {};
+  return {
+    getPropertyValue: (varName: string) => {
+      return cssVars[varName] || '';
+    }
+  } as any;
+});
+
+// Define on both global and window if possible
+(global as any).getComputedStyle = mockGetComputedStyle;
+if (typeof window !== 'undefined') {
+  (window as any).getComputedStyle = mockGetComputedStyle;
+}
+
 function createMockElement(cssVars: Record<string, string> = {}): HTMLElement {
-  // Mock getComputedStyle globally for all tests
-  if (!(global as any).getComputedStyle) {
-    (global as any).getComputedStyle = jest.fn((element: any) => ({
-      getPropertyValue: (varName: string) => {
-        // Return CSS variable value if provided, otherwise empty string
-        return cssVars[varName] || '';
-      }
-    }));
-  }
-  
   const element = {
     tagName: 'DIV',
     className: 'test-element',
@@ -41,6 +49,8 @@ function createMockElement(cssVars: Record<string, string> = {}): HTMLElement {
     offsetHeight: 300,
     offsetWidth: 1200
   } as any;
+  
+  elementMetadataMap.set(element, cssVars);
   
   return element;
 }

@@ -52,16 +52,17 @@ function inferTableVariableFromChart(chart: { title?: string; chartId?: string }
 const TABLE_PLACEHOLDER = 'Paste markdown table...\n\n| Col A | Col B |\n|-------|-------|\n| 1     | 2     |';
 
 export default function ChartBuilderTable({ chart, stats, onSave }: ChartBuilderTableProps) {
+  const elementsKey = chart.elements?.map((e) => e.formula).join('|') ?? '';
   const variablesFromFormulas = useMemo(
     () => getStatsVariablesFromElements(chart.elements || []),
-    [chart.chartId, chart.elements?.map((e) => e.formula).join('|') ?? '']
+    [chart.elements]
   );
   const variables = useMemo(() => {
     if (variablesFromFormulas.length > 0) return variablesFromFormulas;
     const inferred = inferTableVariableFromChart(chart);
     if (inferred) return [inferred];
     return ['reportTable1'];
-  }, [variablesFromFormulas, chart.title, chart.chartId]);
+  }, [variablesFromFormulas, chart]);
   const isFallback = variablesFromFormulas.length === 0 && variables.length === 1 && variables[0] === 'reportTable1';
   const [previewKey, setPreviewKey] = useState<string | null>(null);
 

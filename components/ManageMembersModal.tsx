@@ -28,9 +28,9 @@ export default function ManageMembersModal({ isOpen, onClose, organization }: Ma
     if (isOpen && organization) {
       loadData();
     }
-  }, [isOpen, organization]);
+  }, [isOpen, organization, loadData]);
 
-  const loadData = async () => {
+  const loadData = React.useCallback(async () => {
     setLoading(true);
     setError(null);
     try {
@@ -51,7 +51,7 @@ export default function ManageMembersModal({ isOpen, onClose, organization }: Ma
     } finally {
       setLoading(false);
     }
-  };
+  }, [organization]);
 
   const handleToggleMember = (id: string) => {
     setSelectedIds(prev => 

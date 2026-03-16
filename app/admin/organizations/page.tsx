@@ -168,7 +168,7 @@ export default function OrganizationsAdminPage() {
     }
   };
 
-  const handleDelete = async (org: any) => {
+  const handleDelete = useCallback(async (org: any) => {
     if (!confirm(`Are you sure you want to delete "${org.name}"? This will break children entities.`)) {
       return;
     }
@@ -184,9 +184,9 @@ export default function OrganizationsAdminPage() {
     } catch (err) {
       setError('Network error deleting organization');
     }
-  };
+  }, [loadOrganizations]);
 
-  const openEdit = (org: any) => {
+  const openEdit = useCallback((org: any) => {
     setEditingOrg(org);
     setFormData({
       name: org.name,
@@ -202,12 +202,12 @@ export default function OrganizationsAdminPage() {
       }
     });
     setShowEditForm(true);
-  };
+  }, []);
 
-  const openMembers = (org: any) => {
+  const openMembers = useCallback((org: any) => {
     setEditingOrg(org);
     setShowMembersModal(true);
-  };
+  }, []);
 
   const adapterWithHandlers = useMemo(() => ({
     ...organizationsAdapter,

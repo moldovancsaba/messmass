@@ -495,7 +495,7 @@ function KPIChart({ result, className, allowNA = false }: { result: ChartResult;
         mutationObserver.disconnect();
       };
     }
-  }, [showTitle, hasIcon, result.kpiValue, result.title, result.chartId, allowNA]);
+  }, [showTitle, hasIcon, result.kpiValue, result.title, result.chartId, allowNA, result.elements]);
   
   // WHAT: KPI uses internal CSS grid for deterministic layout
   // WHY: Avoids reserving space for hidden sections (title/icon)
@@ -895,7 +895,7 @@ function PieChart({ result, className }: { result: ChartResult; className?: stri
         resizeObserver.disconnect();
         mutationObserver.disconnect();
       };
-  }, [hasElements, result.chartId, showPercentages]);
+  }, [hasElements, result.chartId, showPercentages, result.elements]);
 
   if (!hasElements) {
     return <div className={styles.chart}>No pie data</div>;

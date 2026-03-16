@@ -144,8 +144,7 @@ export default function PasswordModal({
               <button
                 onClick={sendViaEmail}
                 disabled={sendingEmail || userId === 'new'}
-                className={`${styles.visitBtn} w-full`}
-                style={{ width: '100%', marginTop: '0.5rem' }}
+                className={`${styles.visitBtn} ${styles.wFull}`}
                 title={userId === 'new' ? 'Email sending is available for existing users only' : 'Send password via email'}
               >
                 {sendingEmail ? '⌛ Sending...' : emailSent ? '✅ Email Sent Successfully!' : '📧 Send via email'}

@@ -44,9 +44,10 @@ function getStatsVariablesFromElements(elements: Array<{ formula: string }>): st
 }
 
 export default function ChartBuilderValueChain({ chart, stats, onSave }: ChartBuilderValueChainProps) {
+  const elementsKey = chart.elements?.map((e) => e.formula).join('|') ?? '';
   const variables = useMemo(
     () => getStatsVariablesFromElements(chart.elements || []),
-    [chart.chartId, chart.elements?.map((e) => e.formula).join('|') ?? '']
+    [chart.elements]
   );
 
   const [tempValues, setTempValues] = useState<Record<string, string>>(() => {

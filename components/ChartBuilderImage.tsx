@@ -52,16 +52,17 @@ function isReportImageVar(name: string): boolean {
 }
 
 export default function ChartBuilderImage({ chart, stats, onSave }: ChartBuilderImageProps) {
+  const elementsKey = chart.elements?.map((e) => e.formula).join('|') ?? '';
   const variablesFromFormulas = useMemo(
     () => getStatsVariablesFromElements(chart.elements || []),
-    [chart.chartId, chart.elements?.map((e) => e.formula).join('|') ?? '']
+    [chart.elements]
   );
 
   const variables = useMemo(() => {
     if (variablesFromFormulas.length > 0) return variablesFromFormulas;
     const inferred = inferImageVariableFromChart(chart);
     return inferred ? [inferred] : [];
-  }, [variablesFromFormulas, chart.title, chart.chartId]);
+  }, [variablesFromFormulas, chart]);
 
   if (variables.length === 0) {
     return (
