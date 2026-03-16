@@ -909,19 +909,6 @@ export function evaluateFormulasBatch(
   return formulas.map(formula => evaluateFormula(formula, stats));
 }
 
-/**
- * DEPRECATED: Use fetchAvailableVariables() instead
- * 
- * Gets all available variables with their descriptions
- * Useful for building variable picker UIs
- * 
- * @deprecated Use async fetchAvailableVariables() for dynamic KYC data
- * @returns Array of available variables from cache or empty array
- */
-export function getAvailableVariables(): AvailableVariable[] {
-  console.warn('⚠️ getAvailableVariables() is deprecated. Use fetchAvailableVariables() instead.');
-  return fetchAvailableVariablesSync();
-}
 
 /**
  * WHAT: Checks if a specific variable exists in KYC system or is a content asset token

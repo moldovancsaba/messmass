@@ -212,8 +212,47 @@ export default function KPICard({
     sparklineData.length > 0 &&
     sparklineData.some(val => typeof val === 'number' && !isNaN(val));
 
+  /* WHAT: Measured Height Font Scaling (Layout Grammar Priority 5.1)
+     WHY: Ensure text fits container without overflow/scrolling
+     HOW: measure container and adjust font scaling via CSS variable */
+  const [fontSizeScale, setFontSizeScale] = React.useState(1);
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  React.useEffect(() => {
+    if (!containerRef.current) return;
+
+    const calculateScale = () => {
+      const container = containerRef.current;
+      if (!container) return;
+
+      const { offsetHeight, offsetWidth } = container;
+      // Target height calculation for value section (approx 40% of card)
+      const targetHeight = offsetHeight * 0.4;
+      const baseExpectedHeight = size === 'lg' ? 48 : size === 'sm' ? 24 : 32;
+      
+      if (targetHeight < baseExpectedHeight) {
+        setFontSizeScale(targetHeight / baseExpectedHeight);
+      } else {
+        setFontSizeScale(1);
+      }
+    };
+
+    const observer = new ResizeObserver(calculateScale);
+    observer.observe(containerRef.current);
+    calculateScale();
+
+    return () => observer.disconnect();
+  }, [size]);
+
   return (
-    <div className={`${styles.kpiCard} ${sizeClass} ${colorClass} ${className || ''}`}>
+    <div 
+      ref={containerRef}
+      className={`${styles.kpiCard} ${sizeClass} ${colorClass} ${className || ''}`}
+      // eslint-disable-next-line react/forbid-dom-props
+      style={{ 
+        ['--kpi-font-scale' as string]: fontSizeScale.toString()
+      } as React.CSSProperties}
+    >
       {/* What: Top section with title and optional subtitle
           Why: Context for the metric */}
       <div className={styles.header}>
@@ -225,7 +264,13 @@ export default function KPICard({
           Why: Primary focus on the key metric */}
       <div className={styles.content}>
         <div className={styles.valueSection}>
-          <p className={styles.value}>{displayValue}</p>
+          <p 
+            className={styles.value}
+            // eslint-disable-next-line react/forbid-dom-props
+            style={{ fontSize: `calc(var(--kpi-value-font-size, 2rem) * var(--kpi-font-scale, 1))` }}
+          >
+            {displayValue}
+          </p>
           
           {/* What: Trend indicator
               Why: Show change over time */}
@@ -236,7 +281,10 @@ export default function KPICard({
               // WHY: Trend direction (up/down/neutral) determines color
               // HOW: CSS module uses var(--trend-color) for color property
               // eslint-disable-next-line react/forbid-dom-props
-              style={{ ['--trend-color' as string]: getTrendColor() } as React.CSSProperties}
+              style={{ 
+                ['--trend-color' as string]: getTrendColor(),
+                fontSize: `calc(0.875rem * var(--kpi-font-scale, 1))`
+              } as React.CSSProperties}
             >
               <span className={styles.trendIcon}>{getTrendIcon()}</span>
               <span className={styles.trendValue}>

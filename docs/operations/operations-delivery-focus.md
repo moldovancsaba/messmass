@@ -1,6 +1,6 @@
 # Delivery Focus ({messmass})
 Status: Active
-Last Updated: 2026-03-14
+Last Updated: 2026-03-16
 Canonical: No
 Owner: Product
 
@@ -8,7 +8,7 @@ Owner: Product
 
 ## Top 5 value & high-priority (from board, Product = messmass)
 
-*Reconsidered 2026-03-14 after v12.1.0 (Organization Hierarchy) delivery.*
+*Reconsidered 2026-03-16 after v12.1.5 (V3 Context) delivery.*
 
 | Priority | Status  | Issue | Title |
 |----------|---------|-------|--------|
@@ -16,9 +16,9 @@ Owner: Product
 | P0 | Done | [#354+](https://github.com/moldovancsaba/mvp-factory-control/issues/354) | {messmass} Phase 15: Organization Hierarchy & Activity Connectivity |
 | P0 | Roadmap | [#57](https://github.com/moldovancsaba/mvp-factory-control/issues/57) | Milestone: Analytics Platform Phase 1 — Data Aggregation & Storage (Q1 2026) |
 | P1 | Roadmap | [#46+](https://github.com/moldovancsaba/mvp-factory-control/issues/46) | SSO Integration with DoneIsBetter (Ongoing Hardening) |
-| P1 | Ready | [#48](https://github.com/moldovancsaba/mvp-factory-control/issues/48) | Cross-Organization Reporting Permissions |
+| P1 | Done | [#403](https://github.com/moldovancsaba/mvp-factory-control/issues/403) | V3 Organization Context Middleware (Permissions Foundation) |
 
-**Note:** v12.1.0 (Phase 15) is Done; it delivered the finalized V3 organization hierarchy, member management, and aggregated reporting. Next executable options: **#48** (Permissions), **#44** (Insights Engine), **#57** (Bulk V3 Migration).
+**Note:** v12.1.5 (#403) is Done; it delivered the structural foundation for "Cross-Organization Reporting Permissions". Next executable options: **#48** (Report Content Slots), **#44** (Insights Engine), **#57** (Bulk V3 Migration).
 
 ## Recommended next delivery step
 
@@ -27,6 +27,8 @@ Owner: Product
 
 ## Recently completed
 
+- **V3 Organization Context Middleware** (2026-03-16): Implemented foundational RBAC groundwork by injecting `x-v3-org-id` into API requests. Created `/api/v3/health`. Version bumped to **v12.1.5**.
+- **Style Hardening Phase 5** (2026-03-16): Consolidated legacy hero components into `UnifiedAdminHeroWithSearch`. Removed orphaned assets. Version bumped to **v12.1.4**.
 - **Phase 15: Organization Hierarchy & Activity Connectivity** (2026-03-14): Finalized the V3 organization hierarchy. Implemented `ManageMembersModal`, aggregated activity APIs (`/api/v3/organizations/report/[id]/activities`), and `OrganizationReportView`. Version bumped to **v12.1.0**.
 - **Phase 14: Organization Report Initial Implementation** (2026-03-13): Added "Report" and "Edit Stats" actions to Organization Admin. Created base `OrganizationReportView` and aggregation hooks.
 - **React 19 & Next.js 15 Upgrade** (2026-03-13): Major technical upgrade to resolve hydration deadlocks and modernize the stack. Version bumped to **v12.0.0**.
@@ -35,4 +37,4 @@ Owner: Product
 
 ## In progress
 
-- None. Next: pick a Ready item (e.g. [#48](https://github.com/moldovancsaba/mvp-factory-control/issues/48)).
+- None. Next: pick a Ready item (e.g. [#44](https://github.com/moldovancsaba/mvp-factory-control/issues/44)).

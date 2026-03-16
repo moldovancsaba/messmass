@@ -1,8 +1,52 @@
 # {messmass} Release Notes
 Status: Active
-Last Updated: 2026-03-13T16:45:00.000Z
+Last Updated: 2026-03-16T16:45:00.000Z
 Canonical: No
 Owner: Operations
+
+## [v12.1.5] — 2026-03-16T16:45:00.000Z
+
+### Summary
+🔐 **V3 ORGANIZATION CONTEXT MIDDLEWARE**: Implemented the structural foundation for multi-tenant scoping and RBAC by injecting organization context into API requests.
+
+### What Was Added
+
+#### V3 Organization Context Middleware (#403) ✅
+**WHAT**: Created a reusable middleware wrapper (`withOrgContext`) for the V3 API.  
+**WHY**: To provide a reliable way for downstream services and reporting APIs to determine the organization scope of the requester.  
+**HOW**: Derives `x-v3-org-id` headers based on the authenticated session (superadmin vs. org-admin) and enforces 401 for unauthorized access.
+
+#### Infrastructure Validation (V3 Health) ✅
+**WHAT**: Added `/api/v3/health` endpoint.  
+**WHY**: To verify the middleware correctly injects the organization context before implementing complex reporting logic.  
+**HOW**: Exposes the derived `organizationId` from request headers in a JSON response.
+
+### Testing
+- ✅ `npm run build` (Successful production build)
+- ✅ `npm run lint` (0 warnings)
+- ✅ Logic verification (Correct mapping of superadmin to MASTER_ORG_ID).
+
+### Version
+v12.1.4 → v12.1.5 (PATCH — V3 Organization Context Middleware)
+
+## [v12.1.4] — 2026-03-16T12:00:00.000Z
+
+### Summary
+🧹 **STYLE HARDENING PHASE 5**: Consolidated legacy hero components and removed orphaned assets as part of UI standardization and debt reduction.
+
+### What Was Fixed
+
+#### Hero Component Consolidation (#72) ✅
+**WHAT**: Migrated all remaining admin pages from the deprecated `AdminHero` to `UnifiedAdminHeroWithSearch`.  
+**WHY**: To enforce a consistent layout and width across the entire administrative surface.  
+**HOW**: Updated Design, Cache, Styles, Quick-Add, and Home pages; deleted the legacy `AdminHero` and `AdminPageHero` components.
+
+### Testing
+- ✅ `npm run build`
+- ✅ `npm run lint`
+
+### Version
+v12.1.3 → v12.1.4 (PATCH — Style Hardening Phase 5)
 
 ## [v12.1.0] — 2026-03-14T21:00:00.000Z
 

@@ -2,7 +2,7 @@
 
 This file is onboarding plus operational context for the next agent. Keep it accurate when behavior, process, or current delivery state changes.
 
-**Last Updated:** 2026-03-14 (UI Standards strictly enforced for Organization Modals)
+**Last Updated:** 2026-03-16 (V3 Organization Context Middleware Completed)
 
 ## 🚨 CRITICAL MUST-READ FOR ALL AGENTS: STYLING & COMPONENTS 🚨
 
@@ -65,6 +65,23 @@ You MUST completely read and obey `docs/coding-standards.md` and `docs/component
 - Style editor preview updates immediately for bar/pie CSS vars and includes Value Chain and Landing page sections.
 
 ## Handover Log
+ 
+ ## 2026-03-16 — V3 Organization Context Middleware (#403)
+ - **Objective:** Implement structural foundation for V3 multi-tenant scoping.
+ - **Middleware Implementation:** Created `withOrgContext` wrapper in `lib/v3/middleware.ts` to inject `x-v3-org-id` headers derived from admin session.
+ - **Hierarchy Scoping:** Implemented logic to map `superadmin` to `MASTER_ORG_ID` and other admins to their primary `organizationId`.
+ - **Infrastructure Validation:** Created `/api/v3/health` endpoint to verify context injection.
+ - **Quality Gate Compliance:** Verified full resolution through `npm run build` and `npm run lint` with zero errors or warnings.
+ - **Status:** Complete.
+
+ ## 2026-03-16 — Style Hardening Phase 5 (#72)
+ - **Objective:** Consolidate duplicated hero components and remove dead assets as part of UI hardening.
+ - **Admin Hero Migration:** Migrated `AdminDesignPage`, `CacheManagementPage`, `StyleEditorPage`, `QuickAddPage`, `AdminHomePage`, and `ChartAlgorithmManagerPage` from the legacy `AdminHero` to the `UnifiedAdminHeroWithSearch` system.
+ - **Asset Deletion:** Deleted orphaned `AdminHero.tsx`, `AdminHero.module.css`, `AdminPageHero.tsx`, and `AdminPageHero.module.css` components and their associated styles.
+ - **Inline Style Cleanup:** Removed inline styles from `AdminDesignPage` and moved them to a centralized `.temporaryNotice` class in `Design.module.css`.
+ - **Quality Gate Compliance:** Verified full resolution through `npm run build` and `npm run lint` with zero errors or warnings.
+ - **Status:** Complete.
+ 
 
 ## 2026-03-14 — Phase 15: Deep Hierarchy & Activity Connectivity
 - **Objective:** Finalize the V3 organization hierarchy by connecting Partners to Organizations and enabling aggregated activity reporting.

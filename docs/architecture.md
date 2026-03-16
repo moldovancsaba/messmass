@@ -1,13 +1,18 @@
 # {messmass} Architecture Documentation
 Status: Active
-Last Updated: 2026-03-14T21:00:00.000Z
+Last Updated: 2026-03-16
 Canonical: No
 Owner: Architecture
 
-Version: 12.1.0
+Version: 12.1.5
 
-**Major Upgrade (2026-03-14):**
-- **Organization Hierarchy & Multi-Tenancy**: Implemented the first wave of V3 multi-tenancy, allowing Partners (Entities) to be logically grouped under Organizations for aggregated activity reporting.
+**V3 Context & Middleware (2026-03-16):**
+- **Organization Context Injection**: Implemented the structural foundation for V3 multi-tenant scoping and RBAC via `withOrgContext` middleware.
+- **Header Injection**: Automated injection of `x-v3-org-id` into API requests based on user role and assigned organizations.
+- **Infrastructure Verification**: Created `/api/v3/health` for mid-implementation validation of context derivation logic.
+
+**Organization Hierarchy & Multi-Tenancy (2026-03-14):**
+- **First wave of V3 multi-tenancy**: Partners (Entities) logically grouped under Organizations for aggregated activity reporting.
 - **Member Management**: Created the `ManageMembersModal` and associated API for bulk assignment of entities to organizations.
 - **Aggregated Activity API**: Developed a high-performance activity aggregation engine for organizations that rolls up metrics and activity lists from all member entities.
 
@@ -36,7 +41,7 @@ Version: 12.1.0
 - **Forms**: `app/admin/projects/ProjectsPageClient.tsx` (lines 916-960)
 - **Hashtags**: `components/UnifiedHashtagInput.tsx` (lines 1-298)
 - **Partners**: `components/PartnerSelector.tsx` (lines 1-234)
-- **Admin Layout**: `components/AdminHero.tsx` (lines 1-98)
+- **Admin Layout**: `components/UnifiedAdminHeroWithSearch.tsx` (lines 1-450)
 
 ### Rule 2: Use Design Tokens Exclusively
 

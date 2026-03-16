@@ -1,7 +1,6 @@
 'use client';
 
 import ChartAlgorithmManager from '@/components/ChartAlgorithmManager';
-import AdminHero from '@/components/AdminHero';
 import ColoredCard from '@/components/ColoredCard';
 import { useEffect, useState } from 'react';
 

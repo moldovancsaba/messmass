@@ -1,6 +1,6 @@
 # {messmass}
 Status: Active
-Last Updated: 2026-03-14T21:00:00.000Z
+Last Updated: 2026-03-16
 Canonical: No
 Owner: Product
 
@@ -12,7 +12,7 @@ Owner: Product
 <p align="center"><strong>Enterprise event analytics, partner reporting, and admin operations for sports organizations, venues, and brands.</strong></p>
 
 <p align="center">
-  <img src="https://img.shields.io/badge/version-v12.1.0-2563EB?style=for-the-badge" alt="Version">
+  <img src="https://img.shields.io/badge/version-v12.1.5-2563EB?style=for-the-badge" alt="Version">
   <img src="https://img.shields.io/badge/platform-Web%20App-0F172A?style=for-the-badge" alt="Platform">
   <img src="https://img.shields.io/badge/stack-Next.js%20%7C%20MongoDB-0EA5E9?style=for-the-badge" alt="Stack">
 </p>
@@ -97,7 +97,7 @@ npm run version:verify
 ```
 
 Current release version:
-- `v12.1.0` (Organization Hierarchy & Reporting)
+- `v12.1.5` (Organization Context & Hierarchy)
 
 Live product:
 - Website: [messmass.doneisbetter.com](https://messmass.doneisbetter.com)

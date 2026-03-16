@@ -17,7 +17,6 @@
   padding: var(--mm-space-6);
   transition: all 0.2s ease;
   position: relative;
-  overflow: hidden; /* Layout Grammar: decorative - card border-radius */
 }
 
 .kpiCard:hover {
@@ -77,7 +76,7 @@
 /* What: Large, prominent value display
    Why: Primary focus of the card */
 .value {
-  font-size: var(--mm-font-size-3xl);
+  font-size: var(--kpi-value-font-size, var(--mm-font-size-3xl));
   font-weight: var(--mm-font-weight-bold);
   color: var(--mm-gray-900);
   margin: 0;
@@ -123,7 +122,7 @@
 }
 
 .sizeSmall .value {
-  font-size: var(--mm-font-size-2xl);
+  --kpi-value-font-size: var(--mm-font-size-2xl);
 }
 
 .sizeSmall .title {
@@ -139,7 +138,7 @@
 }
 
 .sizeMedium .value {
-  font-size: var(--mm-font-size-3xl);
+  --kpi-value-font-size: var(--mm-font-size-3xl);
 }
 
 .sizeMedium .sparkline {
@@ -151,7 +150,7 @@
 }
 
 .sizeLarge .value {
-  font-size: var(--mm-font-size-4xl);
+  --kpi-value-font-size: var(--mm-font-size-4xl);
 }
 
 .sizeLarge .title {

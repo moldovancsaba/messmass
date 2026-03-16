@@ -211,15 +211,6 @@ export interface AvailableVariable {
   alias?: string; // User-defined display alias for white-labeling
 }
 
-/**
- * DEPRECATED: Use fetchAvailableVariables() from formulaEngine.ts
- * 
- * This constant is kept for backward compatibility only.
- * All new code MUST fetch variables dynamically from KYC system.
- * 
- * @deprecated Use `await fetchAvailableVariables()` instead
- */
-export const AVAILABLE_VARIABLES: AvailableVariable[] = [];
 
 /**
  * RULE: Chart system MUST fetch variables from KYC
@@ -292,13 +283,3 @@ export interface ChartCalculationResult {
   hasErrors: boolean; // Whether any element had calculation errors
 }
 
-/**
- * DEPRECATED: Hardcoded chart configurations removed
- * 
- * WHAT: All chart configurations are now stored in MongoDB only
- * WHY: Single source of truth, no fallbacks, full database control
- * HOW: Use `node scripts/seed-default-charts.js` to initialize database
- * 
- * @deprecated All charts must be managed via database. No hardcoded fallbacks.
- */
-export const DEFAULT_CHART_CONFIGURATIONS: Omit<ChartConfiguration, '_id' | 'createdAt' | 'updatedAt'>[] = [];

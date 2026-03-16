@@ -145,6 +145,10 @@
   background: var(--mm-gray-200);
 }
 
+.temporaryNotice {
+  padding: var(--mm-space-4);
+}
+
 /* ========================================
    CODE BLOCKS
 ======================================== */

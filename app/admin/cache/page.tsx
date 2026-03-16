@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { useAdminAuth } from '@/hooks/useAdminAuth';
-import AdminHero from '@/components/AdminHero';
+import UnifiedAdminHeroWithSearch from '@/components/UnifiedAdminHeroWithSearch';
 import ColoredCard from '@/components/ColoredCard';
 
 /* WHAT: Cache Management Page
@@ -97,7 +97,7 @@ Then select "Cached images and files" and click Clear.`);
   return (
     <div className="page-container">
       {/* Header */}
-      <AdminHero
+      <UnifiedAdminHeroWithSearch
         title="🗑️ Cache Management"
         subtitle="Clear server and browser caches to force fresh content"
         backLink="/admin"
