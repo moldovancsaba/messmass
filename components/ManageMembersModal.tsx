@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import FormModal from './modals/FormModal';
 import { apiGet, apiPost } from '@/lib/apiClient';
 
@@ -24,13 +24,7 @@ export default function ManageMembersModal({ isOpen, onClose, organization }: Ma
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    if (isOpen && organization) {
-      loadData();
-    }
-  }, [isOpen, organization, loadData]);
-
-  const loadData = React.useCallback(async () => {
+  const loadData = useCallback(async () => {
     setLoading(true);
     setError(null);
     try {
@@ -52,6 +46,12 @@ export default function ManageMembersModal({ isOpen, onClose, organization }: Ma
       setLoading(false);
     }
   }, [organization]);
+
+  useEffect(() => {
+    if (isOpen && organization) {
+      loadData();
+    }
+  }, [isOpen, organization, loadData]);
 
   const handleToggleMember = (id: string) => {
     setSelectedIds(prev => 
