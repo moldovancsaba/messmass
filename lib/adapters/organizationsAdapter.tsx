@@ -11,7 +11,16 @@ interface OrganizationDTO {
   name: string;
   slug: string;
   status: 'active' | 'inactive';
-  metadata: Record<string, any>;
+  // WHAT: Support for styling, emoji, and branding (parity with Partners)
+  metadata: {
+    emoji?: string;
+    showEmoji?: boolean;
+    logoUrl?: string;
+    styleId?: string;
+    reportTemplateId?: string;
+    clickerSetId?: string;
+    [key: string]: any;
+  };
   createdAt: string;
   updatedAt: string;
 }

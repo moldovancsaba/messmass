@@ -1,5 +1,6 @@
 import connectV3 from '@/lib/mongoose-v3';
 import V3Entity from '@/lib/models/v3/Entity';
+import V3Organization from '@/lib/models/v3/Organization';
 import V3Activity from '@/lib/models/v3/Activity';
 import clientPromise from '@/lib/mongodb';
 import { ObjectId } from 'mongodb';
@@ -78,18 +79,30 @@ export class V3ReportResolver {
   static async resolveForOrganization(orgId: string) {
     await connectV3();
     
-    const V3Organization = (await import('@/lib/models/v3/Organization')).default;
     const org = await V3Organization.findOne({ _id: orgId }).lean();
     if (!org) throw new Error('Organization not found');
 
+    const metadata = org.metadata || {};
+    const effectiveReportId = metadata.reportTemplateId || metadata.reportId;
+
     // 1. Check Organization metadata
-    if (org.metadata?.reportId) {
-      const report = await this.getReportById(org.metadata.reportId);
-      if (report) return { report, resolvedFrom: 'organization', source: org.name };
+    if (effectiveReportId) {
+      const reportRes = await this.getReportById(effectiveReportId) as any;
+      if (reportRes) {
+        // WHAT: Inject Organization-specific style if defined
+        if (metadata.styleId) {
+          reportRes.styleId = metadata.styleId;
+        }
+        return { report: reportRes, resolvedFrom: 'organization', source: org.name };
+      }
     }
 
-    // 2. Fallback to System Default (V2 source - reuse partner report as base)
-    return this.getDefaultReport('partner');
+    // 2. Fallback to System Default
+    const defaultRes = await this.getDefaultReport('partner') as any;
+    if (defaultRes && metadata.styleId) {
+      defaultRes.report.styleId = metadata.styleId;
+    }
+    return defaultRes;
   }
 
   private static async getReportById(reportId: string) {

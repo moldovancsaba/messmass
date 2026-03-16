@@ -15,6 +15,12 @@ import UnifiedTextInput from '@/components/UnifiedTextInput';
 import { apiPost, apiPatch, apiDelete } from '@/lib/apiClient';
 
 import ManageMembersModal from '@/components/ManageMembersModal';
+import EmojiSelector from '@/components/EmojiSelector';
+
+interface ConfigOption {
+  _id: string;
+  name: string;
+}
 
 export default function OrganizationsAdminPage() {
   const { user, loading: authLoading } = useAdminAuth();
@@ -29,10 +35,23 @@ export default function OrganizationsAdminPage() {
   const [showMembersModal, setShowMembersModal] = useState(false);
   const [editingOrg, setEditingOrg] = useState<any>(null);
   
+  // Settings options
+  const [availableStyles, setAvailableStyles] = useState<ConfigOption[]>([]);
+  const [availableTemplates, setAvailableTemplates] = useState<ConfigOption[]>([]);
+  const [availableClickerSets, setAvailableClickerSets] = useState<ConfigOption[]>([]);
+  
   const [formData, setFormData] = useState({
     name: '',
     slug: '',
-    status: 'active'
+    status: 'active',
+    metadata: {
+      emoji: '',
+      showEmoji: true,
+      styleId: '',
+      reportTemplateId: '',
+      clickerSetId: '',
+      logoUrl: ''
+    }
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -57,6 +76,25 @@ export default function OrganizationsAdminPage() {
   useEffect(() => {
     if (user && user.role === 'superadmin') {
       loadOrganizations();
+      
+      // Load config options (parity with Partners)
+      const fetchConfig = async (url: string, setter: (data: any) => void) => {
+        try {
+          const res = await fetch(url);
+          const data = await res.json();
+          if (data.success) {
+            if (data.styles) setter(data.styles);
+            else if (data.templates) setter(data.templates);
+            else if (data.sets) setter(data.sets);
+          }
+        } catch (err) {
+          console.error(`Failed to fetch ${url}:`, err);
+        }
+      };
+
+      fetchConfig('/api/report-styles', setAvailableStyles);
+      fetchConfig('/api/report-templates?includeAssociations=false', setAvailableTemplates);
+      fetchConfig('/api/clicker-sets', setAvailableClickerSets);
     }
   }, [user, loadOrganizations]);
 
@@ -72,7 +110,19 @@ export default function OrganizationsAdminPage() {
       if (data.success) {
         setSuccessMessage(`Organization "${formData.name}" created successfully`);
         setShowAddForm(false);
-        setFormData({ name: '', slug: '', status: 'active' });
+        setFormData({ 
+          name: '', 
+          slug: '', 
+          status: 'active',
+          metadata: {
+            emoji: '',
+            showEmoji: true,
+            styleId: '',
+            reportTemplateId: '',
+            clickerSetId: '',
+            logoUrl: ''
+          }
+        });
         loadOrganizations();
       } else {
         setError(data.error || 'Failed to create organization');
@@ -94,7 +144,19 @@ export default function OrganizationsAdminPage() {
         setSuccessMessage(`Organization "${formData.name}" updated successfully`);
         setShowEditForm(false);
         setEditingOrg(null);
-        setFormData({ name: '', slug: '', status: 'active' });
+        setFormData({ 
+          name: '', 
+          slug: '', 
+          status: 'active',
+          metadata: {
+            emoji: '',
+            showEmoji: true,
+            styleId: '',
+            reportTemplateId: '',
+            clickerSetId: '',
+            logoUrl: ''
+          }
+        });
         loadOrganizations();
       } else {
         setError(data.error || 'Failed to update organization');
@@ -129,7 +191,15 @@ export default function OrganizationsAdminPage() {
     setFormData({
       name: org.name,
       slug: org.slug,
-      status: org.status || 'active'
+      status: org.status || 'active',
+      metadata: {
+        emoji: org.metadata?.emoji || '',
+        showEmoji: org.metadata?.showEmoji !== false,
+        styleId: org.metadata?.styleId || '',
+        reportTemplateId: org.metadata?.reportTemplateId || '',
+        clickerSetId: org.metadata?.clickerSetId || '',
+        logoUrl: org.metadata?.logoUrl || ''
+      }
     });
     setShowEditForm(true);
   };
@@ -251,6 +321,101 @@ export default function OrganizationsAdminPage() {
             <option value="active">Active</option>
             <option value="inactive">Inactive</option>
           </select>
+        </div>
+
+        <div className="form-group mt-6">
+          <label className="form-label-block">Organization Branding</label>
+          <div className="p-4 bg-gray-50 rounded-lg border border-gray-200">
+            <label className="form-label-block text-xs uppercase text-gray-500 mb-2">Emoji & Identity</label>
+            <EmojiSelector
+              value={formData.metadata.emoji}
+              onChange={(emoji) => setFormData({ 
+                ...formData, 
+                metadata: { ...formData.metadata, emoji } 
+              })}
+            />
+            <div className="mt-4">
+              <UnifiedTextInput
+                label="Logo URL"
+                value={formData.metadata.logoUrl}
+                onSave={(val) => setFormData({ 
+                  ...formData, 
+                  metadata: { ...formData.metadata, logoUrl: val } 
+                })}
+                placeholder="https://example.com/logo.png"
+              />
+            </div>
+            <div className="mt-2">
+              <label className="flex items-center gap-2 cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={formData.metadata.showEmoji}
+                  onChange={(e) => setFormData({
+                    ...formData,
+                    metadata: { ...formData.metadata, showEmoji: e.target.checked }
+                  })}
+                  className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                />
+                <span className="text-sm text-gray-700">Display emoji on reports</span>
+              </label>
+            </div>
+          </div>
+        </div>
+
+        <div className="form-group mt-6">
+          <label className="form-label-block">Global Reporting Setup</label>
+          <div className="space-y-4">
+            <div>
+              <label className="form-label-block text-xs uppercase text-gray-500 mb-1">Visual Style</label>
+              <select
+                className="form-input"
+                value={formData.metadata.styleId}
+                onChange={(e) => setFormData({
+                  ...formData,
+                  metadata: { ...formData.metadata, styleId: e.target.value }
+                })}
+              >
+                <option value="">Default System Style</option>
+                {availableStyles.map(style => (
+                  <option key={style._id} value={style._id}>{style.name}</option>
+                ))}
+              </select>
+            </div>
+
+            <div>
+              <label className="form-label-block text-xs uppercase text-gray-500 mb-1">Report Template</label>
+              <select
+                className="form-input"
+                value={formData.metadata.reportTemplateId}
+                onChange={(e) => setFormData({
+                  ...formData,
+                  metadata: { ...formData.metadata, reportTemplateId: e.target.value }
+                })}
+              >
+                <option value="">Default Global Template</option>
+                {availableTemplates.map(tpl => (
+                  <option key={tpl._id} value={tpl._id}>{tpl.name}</option>
+                ))}
+              </select>
+            </div>
+
+            <div>
+              <label className="form-label-block text-xs uppercase text-gray-500 mb-1">Clicker Set</label>
+              <select
+                className="form-input"
+                value={formData.metadata.clickerSetId}
+                onChange={(e) => setFormData({
+                  ...formData,
+                  metadata: { ...formData.metadata, clickerSetId: e.target.value }
+                })}
+              >
+                <option value="">Default Metrics Set</option>
+                {availableClickerSets.map(set => (
+                  <option key={set._id} value={set._id}>{set.name}</option>
+                ))}
+              </select>
+            </div>
+          </div>
         </div>
       </FormModal>
 
