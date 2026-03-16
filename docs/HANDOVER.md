@@ -28,7 +28,7 @@ You MUST completely read and obey `docs/coding-standards.md` and `docs/component
   - Update this handover doc whenever current truth changes materially.
 
 ## Current Repo Truth
-- Active branch: `landing-overhaul`
+- Active branch: `preview`
 - Last known HEAD during this update: `cf81373ad`
 - Working tree includes untracked local `READMEDEV.md`; canonical repo-root cleanup work is now tracked under `#359`.
 - Most recent documented code delivery before this update: test tree normalization under `mvp-factory-control#358`.
@@ -718,7 +718,6 @@ You MUST completely read and obey `docs/coding-standards.md` and `docs/component
 
 ### Known issues / risks
 - Existing unrelated dirty files predate this delivery and remain untouched.
-- `app/admin/styles/[id]` still uses legacy `AdminHero`; it was intentionally left out because it is a detail/editor flow outside the touched management-page scope.
 
 ### Immediate next actions
 1. Run the full validation gates and fix any failures.

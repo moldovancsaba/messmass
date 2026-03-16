@@ -6,6 +6,11 @@ Owner: Architecture
 
 Version: 12.1.5
 
+**Deep Quality & Measured Scaling (2026-03-16):**
+- **Measured Height Font Scaling**: Implemented dynamic font resizing in `PieChart`, `VerticalBarChart`, and `KPICard` using `ResizeObserver` to prevent text overflow without clipping.
+- **Layout Grammar Enforcement**: Standardized container behaviors to follow Rule 2.1 (forbidden overflow hiding).
+- **Technical Debt Harvest**: Purged deprecated library stubs and hardcoded chart configurations in favor of MongoDB-driven SSOT.
+
 **V3 Context & Middleware (2026-03-16):**
 - **Organization Context Injection**: Implemented the structural foundation for V3 multi-tenant scoping and RBAC via `withOrgContext` middleware.
 - **Header Injection**: Automated injection of `x-v3-org-id` into API requests based on user role and assigned organizations.
