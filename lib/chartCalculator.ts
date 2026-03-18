@@ -96,7 +96,6 @@ export function calculateChartSafe(
       type: configuration.type,
       icon: configuration.icon, // WHAT: Pass through Material Icon name (v10.4.0)
       iconVariant: configuration.iconVariant, // WHAT: Pass through icon variant (v10.4.0)
-      emoji: configuration.emoji, // WHAT: Legacy emoji for backward compatibility
       subtitle: `Data incomplete: ${validation.completeness}%`,
       totalLabel: configuration.totalLabel,
       elements: [],
@@ -578,7 +577,6 @@ export function calculateChart(
     type: configuration.type,
     icon: configuration.icon, // WHAT: Material Icon name (v10.4.0)
     iconVariant: configuration.iconVariant, // WHAT: Material Icon variant (v10.4.0)
-    emoji: configuration.emoji, // WHAT: Legacy emoji for backward compatibility
     subtitle: configuration.subtitle,
     totalLabel: configuration.totalLabel,
     elements,
@@ -589,12 +587,9 @@ export function calculateChart(
     // WHY: DynamicChart needs this to control title display
     // HOW: Pass through from configuration, default to true if not specified
     showTitle: configuration.showTitle !== false,
-    // WHAT: Pass through aspectRatio for image and text charts (v9.3.0)
-    // WHY: UnifiedDataVisualization needs this to calculate grid width
-    // HOW: Optional field, set for image and text charts
-    ...((configuration.type === 'image' || configuration.type === 'text' || configuration.type === 'table') && 'aspectRatio' in configuration && configuration.aspectRatio 
-      ? { aspectRatio: configuration.aspectRatio } 
-      : {})
+    aspectRatio: (configuration.type === 'image' || configuration.type === 'text' || configuration.type === 'table') 
+      ? configuration.aspectRatio 
+      : undefined
   };
   
   // Debug logging removed - aspect ratio working correctly
@@ -642,7 +637,6 @@ export function calculateChartsBatchSafe(
       type: config.type,
       icon: config.icon, // WHAT: Material Icon name (v10.4.0)
       iconVariant: config.iconVariant, // WHAT: Material Icon variant (v10.4.0)
-      emoji: config.emoji, // WHAT: Legacy emoji for backward compatibility
       subtitle: `Data incomplete: ${validation.completeness}%`,
       totalLabel: config.totalLabel,
       elements: [],

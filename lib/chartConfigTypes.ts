@@ -126,13 +126,6 @@ export interface ChartConfiguration {
    */
   iconVariant?: 'outlined' | 'rounded';
   
-  /**
-   * @deprecated Use `icon` field instead (v10.4.0)
-   * WHAT: Legacy emoji field for backward compatibility
-   * WHY: Maintained temporarily during migration period
-   */
-  emoji?: string; // Chart center emoji for pie charts (e.g., "👥", "📍", "🌐")
-  
   subtitle?: string; // Optional subtitle/description
   showTotal?: boolean; // Whether to show total value above bars
   totalLabel?: string; // Custom label for total (e.g., "possible merch sales", "Advertisement Value")
@@ -146,12 +139,6 @@ export interface ChartConfiguration {
   // WHY: Enforces 1-unit or 2-unit system for deterministic layout
   // HOW: 1 = compact/portrait, 2 = detailed/landscape
   cellWidth?: CellWidth;
-
-  // WHAT: Legacy width field (pre-spec v2.0) - DEPRECATED
-  // WHY: Backward compatibility during migration period
-  // HOW: Will be removed in v13.0.0, use cellWidth instead
-  // @deprecated Use cellWidth (1 | 2) instead of width. Migration: width > 2 → cellWidth = 2
-  width?: number;
   
   // WHAT: HERO block visibility settings for report templates
   // WHY: Allow fine-grained control over which header elements appear in reports
@@ -172,6 +159,11 @@ export interface ChartConfiguration {
   // WHY: Allow pie charts to hide percentages in legend/tooltips
   // HOW: Controls whether "Label: 25%" or just "Label" appears
   showPercentages?: boolean;
+
+  // WHAT: Markdown rendering preset (v12.2.0, Issue #48)
+  // WHY: Allow different visual styles for text content (e.g., standard, compact, hero)
+  // HOW: Determines which CSS classes are applied to the markdown content
+  preset?: 'standard' | 'compact' | 'hero' | 'callout';
 }
 
 /**
@@ -255,9 +247,6 @@ export interface ChartCalculationResult {
   
   /** WHAT: Material Icon variant (v10.4.0) */
   iconVariant?: 'outlined' | 'rounded';
-  
-  /** @deprecated Use `icon` field instead (v10.4.0) */
-  emoji?: string; // Chart emoji from configuration
   
   subtitle?: string; // Chart subtitle from configuration
   totalLabel?: string; // Custom total label from configuration

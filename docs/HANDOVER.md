@@ -2,7 +2,7 @@
 
 This file is onboarding plus operational context for the next agent. Keep it accurate when behavior, process, or current delivery state changes.
 
-**Last Updated:** 2026-03-16 (V3 Organization Context Middleware Completed)
+**Last Updated:** 2026-03-17 (Report Content Slots Management (#48) Completed)
 
 ## 🚨 CRITICAL MUST-READ FOR ALL AGENTS: STYLING & COMPONENTS 🚨
 
@@ -66,7 +66,14 @@ You MUST completely read and obey `docs/coding-standards.md` and `docs/component
 
 ## Handover Log
  
- ## 2026-03-16 — V3 Organization Context Middleware (#403)
+ ## 2026-03-17 — Report Content Slots Management (#48)
+- **Objective:** Improve report content slot management with markdown presets and preview helpers.
+- **Markdown Presets:** Added selector (Standard, Compact, Hero, Callout) for text charts; updated API, calculation engine, and rendering styles.
+- **Image Preview Helper:** Implemented `ImagePreviewHelper` in the Builder UI for simultaneous 16:9, 9:16, and 1:1 previews.
+- **Verification:** Created `tests/chart-preset-validation.test.ts`; verified preset propagation and rendering consistency. All gates (build, lint, type-check) passed.
+- **Status:** Complete.
+
+## 2026-03-16 — V3 Organization Context Middleware (#403)
  - **Objective:** Implement structural foundation for V3 multi-tenant scoping.
  - **Middleware Implementation:** Created `withOrgContext` wrapper in `lib/v3/middleware.ts` to inject `x-v3-org-id` headers derived from admin session.
  - **Hierarchy Scoping:** Implemented logic to map `superadmin` to `MASTER_ORG_ID` and other admins to their primary `organizationId`.
@@ -718,6 +725,7 @@ You MUST completely read and obey `docs/coding-standards.md` and `docs/component
 
 ### Known issues / risks
 - Existing unrelated dirty files predate this delivery and remain untouched.
+- All admin pages and report components are now standardized on Unified components.
 
 ### Immediate next actions
 1. Run the full validation gates and fix any failures.

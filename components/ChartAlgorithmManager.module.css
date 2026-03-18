@@ -161,3 +161,75 @@
   font-size: 0.875rem;
   color: var(--mm-gray-600, #4b5563);
 }
+/* WHAT: Image Preview Helper (v12.2.0, Issue #48)
+   WHY: Multi-ratio preview grid for Builder UI */
+.imagePreviewContainer {
+  margin-top: 1rem;
+  padding: 1rem;
+  background: var(--mm-gray-50, #f9fafb);
+  border-radius: 8px;
+  border: 1px solid var(--mm-gray-200, #e5e7eb);
+}
+
+.imagePreviewTitle {
+  font-size: 0.875rem;
+  font-weight: 600;
+  margin-bottom: 0.75rem;
+  color: var(--mm-gray-700, #374151);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.imagePreviewGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+}
+
+.previewBox {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.previewLabel {
+  font-size: 0.75rem;
+  color: var(--mm-gray-500, #6b7280);
+  text-align: center;
+}
+
+.imageFrame {
+  position: relative;
+  background: var(--mm-gray-200, #e5e7eb);
+  border-radius: 4px;
+  overflow: hidden;
+  border: 1px solid var(--mm-gray-300, #d1d5db);
+}
+
+.imageFrame img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.ratio_16_9 {
+  aspect-ratio: 16 / 9;
+}
+
+.ratio_9_16 {
+  aspect-ratio: 9 / 16;
+}
+
+.ratio_1_1 {
+  aspect-ratio: 1 / 1;
+}
+
+.previewPlaceholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  color: var(--mm-gray-400, #9ca3af);
+  font-size: 1.5rem;
+}

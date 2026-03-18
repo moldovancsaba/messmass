@@ -1,6 +1,6 @@
 # Delivery Focus ({messmass})
 Status: Active
-Last Updated: 2026-03-16
+Last Updated: 2026-03-17
 Canonical: No
 Owner: Product
 
@@ -18,7 +18,7 @@ Owner: Product
 | P1 | Roadmap | [#46+](https://github.com/moldovancsaba/mvp-factory-control/issues/46) | SSO Integration with DoneIsBetter (Ongoing Hardening) |
 | P1 | Done | [#403](https://github.com/moldovancsaba/mvp-factory-control/issues/403) | V3 Organization Context Middleware (Permissions Foundation) |
 
-**Note:** v12.1.5 (#403) is Done; it delivered the structural foundation for "Cross-Organization Reporting Permissions". Next executable options: **#48** (Report Content Slots), **#44** (Insights Engine), **#57** (Bulk V3 Migration).
+**Note:** v12.1.6 (#48) is Done; it improved report content delivery with markdown presets and previewers. Next executable options: **#44** (Insights Engine), **#57** (Bulk V3 Migration), **Cross-Organization Reporting Permissions**.
 
 ## Recommended next delivery step
 
@@ -27,6 +27,7 @@ Owner: Product
 
 ## Recently completed
 
+- **Report Content Slots Management** (2026-03-17): Implemented markdown presets for text elements and multi-ratio image previews in the Builder UI. Created `tests/chart-preset-validation.test.ts`. Version bumped to **v12.1.6**.
 - **V3 Organization Context Middleware** (2026-03-16): Implemented foundational RBAC groundwork by injecting `x-v3-org-id` into API requests. Created `/api/v3/health`. Version bumped to **v12.1.5**.
 - **Style Hardening Phase 5** (2026-03-16): Consolidated legacy hero components into `UnifiedAdminHeroWithSearch`. Removed orphaned assets. Version bumped to **v12.1.4**.
 - **Phase 15: Organization Hierarchy & Activity Connectivity** (2026-03-14): Finalized the V3 organization hierarchy. Implemented `ManageMembersModal`, aggregated activity APIs (`/api/v3/organizations/report/[id]/activities`), and `OrganizationReportView`. Version bumped to **v12.1.0**.

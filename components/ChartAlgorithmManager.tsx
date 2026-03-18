@@ -45,13 +45,13 @@ interface ChartConfigFormData {
   }[];
   icon?: string; // WHAT: Material Icon name (v10.4.0)
   iconVariant?: 'outlined' | 'rounded'; // WHAT: Icon variant (v10.4.0)
-  emoji?: string; // DEPRECATED: Legacy field for backward compatibility
   subtitle?: string;
   showTotal?: boolean;
   totalLabel?: string;
   aspectRatio?: '16:9' | '9:16' | '1:1'; // WHAT: Image aspect ratio (v9.3.0) for automatic grid width calculation
   showTitle?: boolean; // WHAT: Chart-level title visibility control
   showPercentages?: boolean; // WHAT: Pie chart percentage visibility control (v11.38.0)
+  preset?: 'standard' | 'compact' | 'hero' | 'callout'; // WHAT: Markdown rendering preset (v12.2.0, Issue #48)
 }
 
 // Sample project stats for testing formulas
@@ -462,12 +462,12 @@ export default function ChartAlgorithmManager({ user }: ChartAlgorithmManagerPro
         elements: config.elements,
         icon: config.icon, // v10.4.0: Material Icon name
         iconVariant: config.iconVariant, // v10.4.0: Icon variant
-        emoji: config.emoji,
         subtitle: config.subtitle,
         showTotal: config.showTotal,
         totalLabel: config.totalLabel,
         aspectRatio: config.aspectRatio, // v9.3.0: Image aspect ratio
-        showTitle: config.showTitle // WHAT: Chart-level title visibility control
+        showTitle: config.showTitle, // WHAT: Chart-level title visibility control
+        preset: config.preset // WHAT: Markdown rendering preset (v12.2.0, Issue #48)
       });
     } else {
       // Create new configuration with proper element count based on type
@@ -483,12 +483,12 @@ export default function ChartAlgorithmManager({ user }: ChartAlgorithmManagerPro
         ],
         icon: '', // v10.4.0: Material Icon name (default empty)
         iconVariant: 'outlined', // v10.4.0: Icon variant (default outlined)
-        emoji: '📊',
         showTotal: false,
         totalLabel: '',
         aspectRatio: '16:9', // WHAT: Default aspect ratio for image charts (v9.3.0); WHY: Ensures new image charts have correct display ratio
         showTitle: true, // WHAT: Default to showing title on new charts
-        showPercentages: true // WHAT: Default to showing percentages in pie charts (v11.38.0)
+        showPercentages: true, // WHAT: Default to showing percentages in pie charts (v11.38.0)
+        preset: 'standard' // WHAT: Default markdown preset (v12.2.0, Issue #48)
       });
     }
     setShowEditor(true);
@@ -645,11 +645,10 @@ ${errors.length > 0 ? '\n\nErrors:\n' + errors.join('\n') : '\n✅ All formulas 
                   <tr key={config._id}>
                     <td>
                       <div className={styles.chartTitleCell}>
-                        {/* WHAT: Display Material Icon with fallback to emoji (v10.4.0) */}
-                        {(config.icon || config.emoji) && (
+                        {config.icon && (
                           <span className={styles.chartEmoji}>
                             <MaterialIcon
-                              name={config.icon || (config.emoji ? getIconForEmoji(config.emoji) : 'analytics')}
+                              name={config.icon || 'analytics'}
                               variant={(config as any).iconVariant || 'outlined'}
                               className="icon-size-1-5"
                             />
@@ -1080,6 +1079,8 @@ function ChartConfigurationEditor({ config, availableVariables, onSave, onUpdate
     }
   };
 
+
+
   return (
     <>
       <FormModal
@@ -1190,6 +1191,27 @@ function ChartConfigurationEditor({ config, availableVariables, onSave, onUpdate
                 </select>
                 <small className="form-help">
                   💡 Aspect ratio determines automatic grid width (max 2 units per Spec v2.0)
+                </small>
+              </div>
+            )}
+
+            {/* WHAT: Markdown Preset Selector for Text Charts (v12.2.0, Issue #48) */}
+            {/* WHY: Allow different visual styles for text content */}
+            {formData.type === 'text' && (
+              <div className="form-group">
+                <label className="form-label">Markdown Preset</label>
+                <select
+                  className="form-input"
+                  value={formData.preset || 'standard'}
+                  onChange={(e) => setFormData({ ...formData, preset: e.target.value as 'standard' | 'compact' | 'hero' | 'callout' })}
+                >
+                  <option value="standard">📄 Standard (Default)</option>
+                  <option value="compact">🔍 Compact (Smaller text)</option>
+                  <option value="hero">🏆 Hero (Large highlights)</option>
+                  <option value="callout">💡 Callout (Emphasis box)</option>
+                </select>
+                <small className="form-help">
+                  💡 Visual style for text content (fonts, padding, borders)
                 </small>
               </div>
             )}
@@ -1555,6 +1577,11 @@ function ChartConfigurationEditor({ config, availableVariables, onSave, onUpdate
                     </div>
                     )}
                   </div>
+                  
+                  {/* WHAT: Show image preview if it's an image chart and has a valid formula (URL) */}
+                  {formData.type === 'image' && element.formula && element.formula.length > 5 && (
+                    <ImagePreviewHelper imageUrl={element.formula.replace(/[\[\]]/g, '').startsWith('http') ? element.formula.replace(/[\[\]]/g, '') : `https://example.com/placeholder.jpg`} />
+                  )}
                 </div>
               );
             })}
@@ -1988,3 +2015,49 @@ function ChartConfigurationEditor({ config, availableVariables, onSave, onUpdate
     </>
   );
 }
+
+/**
+ * WHAT: Multi-ratio image preview helper (v12.2.0, Issue #48)
+ * WHY: Allow admins to see how an image fits in different aspect ratios
+ * HOW: Renders 16:9, 9:16, and 1:1 frames with CSS object-fit
+ */
+const ImagePreviewHelper = ({ imageUrl }: { imageUrl: string }) => {
+  if (!imageUrl || !imageUrl.startsWith('http')) return null;
+  
+  return (
+    <div className={styles.imagePreviewContainer}>
+      <div className={styles.imagePreviewTitle}>
+        <MaterialIcon name="visibility" variant="outlined" className="icon-size-1" />
+        Multi-Ratio Preview
+      </div>
+      <div className={styles.imagePreviewGrid}>
+        {/* 16:9 Landscape */}
+        <div className={styles.previewBox}>
+          <div className={`${styles.imageFrame} ${styles.ratio_16_9}`}>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src={imageUrl} alt="16:9 Preview" onError={(e) => (e.currentTarget.style.display = 'none')} />
+          </div>
+          <div className={styles.previewLabel}>Landscape (16:9)</div>
+        </div>
+        
+        {/* 9:16 Portrait */}
+        <div className={styles.previewBox}>
+          <div className={`${styles.imageFrame} ${styles.ratio_9_16}`}>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src={imageUrl} alt="9:16 Preview" onError={(e) => (e.currentTarget.style.display = 'none')} />
+          </div>
+          <div className={styles.previewLabel}>Portrait (9:16)</div>
+        </div>
+        
+        {/* 1:1 Square */}
+        <div className={styles.previewBox}>
+          <div className={`${styles.imageFrame} ${styles.ratio_1_1}`}>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src={imageUrl} alt="1:1 Preview" onError={(e) => (e.currentTarget.style.display = 'none')} />
+          </div>
+          <div className={styles.previewLabel}>Square (1:1)</div>
+        </div>
+      </div>
+    </div>
+  );
+};

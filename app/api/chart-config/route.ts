@@ -203,6 +203,11 @@ function validateChartConfiguration(config: Partial<ChartConfiguration>): { isVa
     return { isValid: false, error: 'Order must be a positive number' };
   }
   
+  // WHAT: Validate preset if present
+  if (config.preset && !['standard', 'compact', 'hero', 'callout'].includes(config.preset)) {
+    return { isValid: false, error: 'Invalid preset: must be "standard", "compact", "hero", or "callout"' };
+  }
+  
   return { isValid: true };
 }
 
@@ -313,7 +318,6 @@ export async function GET(request: NextRequest) {
       elements: config.elements,
       icon: config.icon, // v10.4.0: Material Icon name
       iconVariant: config.iconVariant, // v10.4.0: Icon variant (outlined/rounded)
-      emoji: config.emoji, // DEPRECATED: Legacy field
       subtitle: config.subtitle,
       showTotal: config.showTotal,
       totalLabel: config.totalLabel,
@@ -322,6 +326,7 @@ export async function GET(request: NextRequest) {
       alignmentSettings: config.alignmentSettings, // Block alignment settings
       showTitle: config.showTitle, // WHAT: Chart-level title visibility control
       showPercentages: config.showPercentages, // WHAT: Pie chart percentage visibility (v11.38.0)
+      preset: config.preset, // WHAT: Markdown rendering preset (v12.2.0, Issue #48)
       createdAt: config.createdAt,
       updatedAt: config.updatedAt,
       createdBy: config.createdBy,
@@ -377,12 +382,11 @@ export async function POST(request: NextRequest) {
     }
     
     const body = await request.json();
-    const { chartId, title, type, order, isActive, elements, icon, iconVariant, emoji, subtitle, showTotal, totalLabel, aspectRatio, heroSettings, alignmentSettings, showTitle, showPercentages } = body;
+    const { chartId, title, type, order, isActive, elements, icon, iconVariant, subtitle, showTotal, totalLabel, aspectRatio, heroSettings, alignmentSettings, showTitle, showPercentages, preset } = body;
 
     // WHAT: Log received data to debug persistence
     console.log('📥 POST RECEIVED - chartId:', chartId);
-    console.log('📥 POST RECEIVED - order:', order, 'typeof:', typeof order);
-    console.log('📥 POST RECEIVED - elements[0].formatting:', elements[0]?.formatting);
+    console.log('📥 POST RECEIVED - preset:', preset);
 
     // Validate required fields
     const validation = validateChartConfiguration({ ...body, order: typeof order === 'string' ? parseInt(order, 10) : order });
@@ -425,7 +429,6 @@ export async function POST(request: NextRequest) {
       elements,
       icon, // v10.4.0: Material Icon name
       iconVariant, // v10.4.0: Icon variant (outlined/rounded)
-      emoji, // DEPRECATED: Legacy field
       subtitle,
       showTotal,
       totalLabel,
@@ -434,6 +437,7 @@ export async function POST(request: NextRequest) {
       alignmentSettings, // Block alignment settings
       showTitle, // WHAT: Chart-level title visibility control
       showPercentages, // WHAT: Pie chart percentage visibility (v11.38.0)
+      preset, // WHAT: Markdown rendering preset (v12.2.0, Issue #48)
       createdAt: now,
       updatedAt: now,
       createdBy: user.id
@@ -481,7 +485,7 @@ export async function PUT(request: NextRequest) {
     }
     
     const body = await request.json();
-    const { configurationId, _id, createdAt, createdBy, ...updateData } = body;
+    const { configurationId, _id, createdAt, createdBy, preset, ...updateData } = body;
 
     // Coerce order to number if present (accept numeric strings); drop invalid
     if (updateData && 'order' in updateData) {
@@ -558,6 +562,7 @@ export async function PUT(request: NextRequest) {
     // WHY: element.formatting is in updateData and must persist
     const updateFields = {
       ...updateData,
+      preset, // WHAT: Markdown rendering preset (v12.2.0, Issue #48)
       updatedAt: new Date().toISOString(),
       lastModifiedBy: user.id
     };

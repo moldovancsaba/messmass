@@ -37,7 +37,8 @@ export async function GET() {
       chartId: config.chartId,
       title: config.title,
       type: config.type,
-      emoji: config.emoji,
+      icon: config.icon,
+      iconVariant: config.iconVariant,
       order: config.order,
       isActive: config.isActive
     }));

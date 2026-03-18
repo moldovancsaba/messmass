@@ -258,16 +258,16 @@ export default function ReportPage() {
     for (const chart of charts) {
       const result = calculator.calculateChart(chart.chartId);
       if (result) {
-        if (result.error) {
+        if (result.chartError) {
           errorCount++;
-          logError(`[ReportPage] Chart calculation error for ${chart.chartId}:`, undefined, new Error(String(result.error)));
+          logError(`[ReportPage] Chart calculation error for ${chart.chartId}:`, undefined, new Error(result.chartError.message));
         } else if (result.type === 'kpi' && (result.kpiValue === undefined || result.kpiValue === 'NA')) {
           emptyCount++;
           warn(`[ReportPage] Empty KPI chart: ${chart.chartId}`, {
             value: result.kpiValue,
             formula: chart.formula,
-            hasError: !!result.error,
-            error: result.error
+            hasError: !!result.chartError,
+            error: (result.chartError as any)?.message
           });
         } else if ((result.type === 'pie' || result.type === 'bar') && (!result.elements || result.elements.length === 0)) {
           emptyCount++;

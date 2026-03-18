@@ -28,11 +28,11 @@ export interface Chart {
     rounded?: boolean; // true = whole numbers (0 decimals), false = 2 decimals
     prefix?: string;
     suffix?: string;
-    decimals?: number; // DEPRECATED: Use rounded instead
   };
   aspectRatio?: '16:9' | '9:16' | '1:1';
   showTitle?: boolean; // Controls whether title/subtitle appear in rendered chart
   showPercentages?: boolean; // Controls whether pie charts show percentages in legend (v11.38.0)
+  preset?: 'standard' | 'compact' | 'hero' | 'callout'; // Markdown rendering preset (v12.2.0, Issue #48)
 }
 
 /**
@@ -63,8 +63,8 @@ export interface ChartResult {
   aspectRatio?: Chart['aspectRatio'];
   showTitle?: boolean; // Controls whether title/subtitle appear in rendered chart
   showPercentages?: boolean; // Controls whether pie charts show percentages in legend (v11.38.0)
-  /** @deprecated Use chartError instead for structured error information */
-  error?: string;
+  error?: string; // Legacy error field for backward compatibility
+  preset?: Chart['preset']; // Markdown rendering preset (v12.2.0, Issue #48)
   /** A-R-11: Structured error information with type and context */
   chartError?: ChartError;
 }
@@ -178,12 +178,11 @@ export class ReportCalculator {
         title: chart.title,
         icon: chart.icon,
         iconVariant: chart.iconVariant,
-        error: errorMessage, // Keep for backward compatibility
         chartError: createChartError(
           'CALCULATION_ERROR',
           errorMessage,
           { chartId: chart.chartId, chartType: chart.type }
-        )
+        ) as ChartError
       };
     }
   }
@@ -336,7 +335,8 @@ export class ReportCalculator {
       iconVariant: chart.iconVariant,
       kpiValue: typeof value === 'number' ? value : 'NA',
       formatting: chart.formatting,
-      showTitle: chart.showTitle
+      showTitle: chart.showTitle,
+      preset: chart.preset
     };
   }
 
@@ -368,7 +368,8 @@ export class ReportCalculator {
       elements: validElements,
       formatting: chart.formatting,
       showTitle: chart.showTitle,
-      showPercentages: chart.showPercentages
+      showPercentages: chart.showPercentages,
+      preset: chart.preset
     };
   }
 
@@ -435,7 +436,8 @@ export class ReportCalculator {
       icon: chart.icon,
       iconVariant: chart.iconVariant,
       kpiValue: typeof value === 'string' && value !== 'NA' ? value : '',
-      showTitle: chart.showTitle
+      showTitle: chart.showTitle,
+      preset: chart.preset
     };
   }
 
@@ -472,7 +474,8 @@ export class ReportCalculator {
       icon: chart.icon,
       iconVariant: chart.iconVariant,
       elements,
-      showTitle: chart.showTitle
+      showTitle: chart.showTitle,
+      preset: chart.preset
     };
   }
 
@@ -527,7 +530,8 @@ export class ReportCalculator {
       icon: chart.icon,
       iconVariant: chart.iconVariant,
       kpiValue: typeof value === 'string' && value !== 'NA' ? value : '',
-      showTitle: chart.showTitle
+      showTitle: chart.showTitle,
+      preset: chart.preset
     };
   }
 
@@ -568,7 +572,8 @@ export class ReportCalculator {
       iconVariant: chart.iconVariant,
       kpiValue: typeof value === 'string' && value !== 'NA' ? value : '',
       aspectRatio: chart.aspectRatio || '16:9',
-      showTitle: chart.showTitle
+      showTitle: chart.showTitle,
+      preset: chart.preset
     };
   }
 
@@ -597,7 +602,8 @@ export class ReportCalculator {
       kpiValue: typeof kpiValue === 'number' ? kpiValue : 0,
       elements: elements.filter(el => typeof el.value === 'number' && el.value >= 0),
       formatting: chart.formatting,
-      showTitle: chart.showTitle
+      showTitle: chart.showTitle,
+      preset: chart.preset
     };
   }
 
@@ -647,7 +653,7 @@ export class ReportCalculator {
    */
   public static hasValidData(result: ChartResult): boolean {
     // A-R-11: Charts with errors are not valid (but errors are now displayed, not hidden)
-    if (result.chartError || result.error) {
+    if (result.chartError) {
       return false;
     }
 
