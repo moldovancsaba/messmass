@@ -10,6 +10,29 @@ import { useEffect } from 'react';
  */
 export default function MaterialIconsPreload() {
   useEffect(() => {
+    // Ensure the font-faces are actually registered (preload alone doesn't define @font-face).
+    // We load the official Google Fonts CSS for the two families we use.
+    const existingCssOutlined = document.querySelector(
+      'link[href*="fonts.googleapis.com"][href*="Material+Icons+Outlined"]'
+    );
+    const existingCssRound = document.querySelector(
+      'link[href*="fonts.googleapis.com"][href*="Material+Icons+Round"]'
+    );
+
+    if (!existingCssOutlined) {
+      const css = document.createElement('link');
+      css.rel = 'stylesheet';
+      css.href = 'https://fonts.googleapis.com/css2?family=Material+Icons+Outlined';
+      document.head.appendChild(css);
+    }
+
+    if (!existingCssRound) {
+      const css = document.createElement('link');
+      css.rel = 'stylesheet';
+      css.href = 'https://fonts.googleapis.com/css2?family=Material+Icons+Round';
+      document.head.appendChild(css);
+    }
+
     // Check if preload links already exist
     const existingOutlined = document.querySelector(
       'link[href*="materialiconsoutlined"]'
