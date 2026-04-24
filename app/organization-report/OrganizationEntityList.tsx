@@ -26,7 +26,7 @@ export default function OrganizationEntityList({ entities, organizationName }: O
 
   return (
     <div className={styles.entitiesSection}>
-      <h2 className={styles.title}>{organizationName} Entities</h2>
+      <h2 className={styles.title}>{organizationName} Members ({entities.length})</h2>
       <div className={styles.entitiesGrid}>
         {entities.map((entity) => (
           <EntityCard key={entity._id} entity={entity} />
@@ -58,10 +58,10 @@ function EntityCard({ entity }: { entity: Entity }) {
         ) : (
           <span className={styles.entityIcon}>{entity.metadata?.emoji || '🏢'}</span>
         )}
-        <div>
-          <h3 className={styles.entityName}>{entity.name}</h3>
-          <span className={styles.entityType}>{entity.type}</span>
-        </div>
+              <div>
+                <h3 className={styles.entityName}>{entity.name}</h3>
+          <span className={styles.entityType}>Member</span>
+              </div>
       </div>
       
       <div className={styles.action}>

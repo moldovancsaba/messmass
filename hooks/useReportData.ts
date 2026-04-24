@@ -389,7 +389,19 @@ export function useOrganizationReportData(id: string | null) {
         throw new Error(reportResult.error || 'Failed to load organization report');
       }
 
-      setData(reportResult);
+      const chartsRes = await fetch('/api/chart-config/public', {
+        cache: 'no-store'
+      });
+      const chartsData = await chartsRes.json();
+
+      if (!chartsData.success) {
+        throw new Error(chartsData.error || 'Failed to load charts');
+      }
+
+      setData({
+        ...reportResult,
+        charts: chartsData.configurations || chartsData.charts || [],
+      });
       if (activitiesResult.success) {
         setActivities(activitiesResult.activities);
       }

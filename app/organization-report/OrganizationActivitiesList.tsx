@@ -27,7 +27,7 @@ export default function OrganizationActivitiesList({ activities, organizationNam
   return (
     <div className={styles.activitiesSection}>
       <h2 className={styles.title}>
-        {organizationName} Activities ({activities.length})
+        {organizationName} Events ({activities.length})
       </h2>
       
       <div className={styles.activitiesGrid}>
@@ -50,7 +50,7 @@ function ActivityCard({ activity }: { activity: Activity }) {
       <div className={styles.activityHeader}>
         <h3 className={styles.activityName}>{activity.name}</h3>
         <p className={styles.activityDate}>{formattedDate}</p>
-        <span className={styles.activityType}>{activity.type}</span>
+        <span className={styles.activityType}>Event</span>
       </div>
       
       {viewSlug && (

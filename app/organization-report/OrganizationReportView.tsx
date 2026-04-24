@@ -22,6 +22,7 @@ export default function OrganizationReportView({ id }: { id: string }) {
   const organization = orgData?.organization;
   const entities = orgData?.entities || [];
   const stats = orgData?.aggregatedStats || null;
+  const charts = orgData?.charts || [];
   const reportConfig = orgData?.report;
 
   // WHAT: Resolve layout from API-provided config
@@ -49,7 +50,7 @@ export default function OrganizationReportView({ id }: { id: string }) {
   // WHAT: Calculate chart results base on aggregated stats
   // WHY: The organization hierarchy uses the same aggregation logic as partner reports, but at org-level
   const chartResults = useMemo(() => {
-    const chartsArray: any[] = []; 
+    const chartsArray = charts;
     if (!stats || chartsArray.length === 0) return new Map();
     const calculator = new ReportCalculator(chartsArray, stats);
     const results = new Map();
@@ -58,7 +59,7 @@ export default function OrganizationReportView({ id }: { id: string }) {
       if (result) results.set(chart.chartId, result);
     }
     return results;
-  }, [stats]);
+  }, [charts, stats]);
 
   const { handleCSVExport, handlePDFExport } = useReportExport({
     entity: organization ? { 
@@ -69,7 +70,7 @@ export default function OrganizationReportView({ id }: { id: string }) {
     } : null,
     stats: stats || null,
     chartResults,
-    charts: [], 
+    charts: charts.map((chart: any) => ({ chartId: chart.chartId, order: chart.order })),
     filenamePrefix: `org_${organization?.slug || 'report'}`,
     reportType: 'Organization Report',
   });
@@ -112,10 +113,10 @@ export default function OrganizationReportView({ id }: { id: string }) {
         <div id="report-hero">
           <ReportHero
             project={organizationAsProject}
-            emoji={organization.metadata?.emoji}
+            emoji={report?.heroSettings?.showEmoji !== false && organization.metadata?.showEmoji !== false ? organization.metadata?.emoji : undefined}
             partnerLogo={organization.metadata?.logoUrl}
             showDate={false}
-            showExport={true}
+            showExport={report?.heroSettings?.showExportOptions ?? true}
             onExportCSV={handleCSVExport}
             onExportPDF={handlePDFExport}
           />
