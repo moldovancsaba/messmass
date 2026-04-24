@@ -5,6 +5,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { ObjectId } from 'mongodb';
 import { getAdminUser } from '@/lib/auth';
+import { hasMinimumRole } from '@/lib/permissions';
 import connectV3 from '@/lib/mongoose-v3';
 import V3Organization from '@/lib/models/v3/Organization';
 import V3Entity from '@/lib/models/v3/Entity';
@@ -21,6 +22,9 @@ export async function GET(
     const admin = await getAdminUser();
     if (!admin) {
       return NextResponse.json({ success: false, error: 'Admin authentication required' }, { status: 401 });
+    }
+    if (!hasMinimumRole(admin.role, 'superadmin')) {
+      return NextResponse.json({ success: false, error: 'Superadmin access required' }, { status: 403 });
     }
 
     const { id } = await params;
@@ -57,6 +61,9 @@ export async function PUT(
     const admin = await getAdminUser();
     if (!admin) {
       return NextResponse.json({ success: false, error: 'Admin authentication required' }, { status: 401 });
+    }
+    if (!hasMinimumRole(admin.role, 'superadmin')) {
+      return NextResponse.json({ success: false, error: 'Superadmin access required' }, { status: 403 });
     }
 
     const { id } = await params;
@@ -115,6 +122,9 @@ export async function DELETE(
     const admin = await getAdminUser();
     if (!admin) {
       return NextResponse.json({ success: false, error: 'Admin authentication required' }, { status: 401 });
+    }
+    if (!hasMinimumRole(admin.role, 'superadmin')) {
+      return NextResponse.json({ success: false, error: 'Superadmin access required' }, { status: 403 });
     }
 
     const { id } = await params;

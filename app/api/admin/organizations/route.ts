@@ -4,6 +4,7 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import { getAdminUser } from '@/lib/auth';
+import { hasMinimumRole } from '@/lib/permissions';
 import connectV3 from '@/lib/mongoose-v3';
 import V3Organization from '@/lib/models/v3/Organization';
 
@@ -23,6 +24,9 @@ export async function GET() {
     const admin = await getAdminUser();
     if (!admin) {
       return NextResponse.json({ success: false, error: 'Admin authentication required' }, { status: 401 });
+    }
+    if (!hasMinimumRole(admin.role, 'superadmin')) {
+      return NextResponse.json({ success: false, error: 'Superadmin access required' }, { status: 403 });
     }
 
     await connectV3();
@@ -54,6 +58,9 @@ export async function POST(request: NextRequest) {
     const admin = await getAdminUser();
     if (!admin) {
       return NextResponse.json({ success: false, error: 'Admin authentication required' }, { status: 401 });
+    }
+    if (!hasMinimumRole(admin.role, 'superadmin')) {
+      return NextResponse.json({ success: false, error: 'Superadmin access required' }, { status: 403 });
     }
 
     const body = (await request.json().catch(() => null)) as { name?: unknown } | null;

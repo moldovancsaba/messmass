@@ -4,10 +4,11 @@
 // WHAT: Organization Management UI
 // WHY: Create organizations and assign member partners (one-org-per-partner)
 
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import UnifiedAdminHeroWithSearch from '@/components/UnifiedAdminHeroWithSearch';
 import ColoredCard from '@/components/ColoredCard';
+import OrganizationMembersSelector from '@/components/OrganizationMembersSelector';
 import { FormModal } from '@/components/modals';
 import { apiDelete, apiPost, apiPut } from '@/lib/apiClient';
 import { useAdminAuth } from '@/hooks/useAdminAuth';
@@ -55,10 +56,6 @@ export default function OrganizationsAdminPage() {
   const [savingMembers, setSavingMembers] = useState(false);
   const [membersError, setMembersError] = useState<string | null>(null);
 
-  const selectedPartnerIds = useMemo(() => {
-    return new Set(partners.filter((p) => p.isMember).map((p) => p._id));
-  }, [partners]);
-
   const loadOrganizations = async () => {
     setLoading(true);
     setError(null);
@@ -96,9 +93,10 @@ export default function OrganizationsAdminPage() {
     }
   };
 
-  const togglePartner = (partnerId: string) => {
+  const setSelectedMembers = (memberIds: string[]) => {
+    const selectedIdSet = new Set(memberIds);
     setPartners((prev) =>
-      prev.map((p) => (p._id === partnerId ? { ...p, isMember: !p.isMember } : p))
+      prev.map((partner) => ({ ...partner, isMember: selectedIdSet.has(partner._id) }))
     );
   };
 
@@ -123,7 +121,7 @@ export default function OrganizationsAdminPage() {
   };
 
   const deleteOrganization = async (org: Organization) => {
-    if (!confirm(`Delete organization "${org.name}"? Members will be unassigned.`)) return;
+    if (!confirm(`Delete organization "${org.name}"?`)) return;
     try {
       const data = await apiDelete(`/api/admin/organizations/${org._id}`);
       if (data.success === false) {
@@ -368,52 +366,23 @@ export default function OrganizationsAdminPage() {
         size="lg"
       >
         <p className="text-sm text-gray-600 mb-4">
-          Select the Partners that belong to this organization. Note: A partner can only belong to one organization.
+          Select the members that belong to this organization. Changes are only applied when you save.
         </p>
 
         {membersError && <div className="text-sm text-red-600 mb-3">{membersError}</div>}
 
-        <div className="overflow-x-auto">
-          <table className="admin-table">
-            <thead>
-              <tr>
-                <th style={{ width: 40 }} />
-                <th>Partner Name</th>
-                <th>Current Org</th>
-              </tr>
-            </thead>
-            <tbody>
-              {partnersLoading ? (
-                <tr>
-                  <td colSpan={3} className="text-center text-gray-500 py-8">
-                    Loading partners…
-                  </td>
-                </tr>
-              ) : partners.length === 0 ? (
-                <tr>
-                  <td colSpan={3} className="text-center text-gray-500 py-8">
-                    No partners available for assignment.
-                  </td>
-                </tr>
-              ) : (
-                partners.map((p) => (
-                  <tr key={p._id}>
-                    <td>
-                      <input
-                        type="checkbox"
-                        checked={selectedPartnerIds.has(p._id)}
-                        onChange={() => togglePartner(p._id)}
-                        disabled={savingMembers}
-                      />
-                    </td>
-                    <td>{p.name}</td>
-                    <td className="text-gray-600">{p.currentOrganizationName}</td>
-                  </tr>
-                ))
-              )}
-            </tbody>
-          </table>
-        </div>
+        {partnersLoading ? (
+          <div className="text-sm text-gray-500 py-8 text-center">Loading members…</div>
+        ) : partners.length === 0 ? (
+          <div className="text-sm text-gray-500 py-8 text-center">No members available for assignment.</div>
+        ) : (
+          <OrganizationMembersSelector
+            members={partners}
+            onChange={setSelectedMembers}
+            disabled={savingMembers}
+            placeholder="Search members..."
+          />
+        )}
       </FormModal>
     </div>
   );
