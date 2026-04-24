@@ -29,10 +29,10 @@ You MUST completely read and obey `docs/coding-standards.md` and `docs/component
 
 ## Current Repo Truth
 - Active branch: `preview`
-- Last known HEAD during this update: `cf81373ad`
+- Last known HEAD during this update: `7ebd13ba8`
 - Working tree includes untracked local `READMEDEV.md`; canonical repo-root cleanup work is now tracked under `#359`.
-- Most recent documented code delivery before this update: test tree normalization under `mvp-factory-control#358`.
-- Current active delivery: root structure hardening under `mvp-factory-control#359` (Closed 2026-03-10), with the larger style hardening Phase 5 stream still open under `mvp-factory-control#72`.
+- Most recent documented code delivery before this update: organization admin data flow recovery and documentation sync.
+- Current active delivery: none recorded in this handover; use the board and `docs/operations/operations-delivery-focus.md` as the next-step authority.
 - Formally closed on SSOT board (2026-03-10): #354, #355, #356, #357, #358, #359.
 
 ## Current Priorities
