@@ -1,6 +1,6 @@
 # Delivery Focus ({messmass})
 Status: Active
-Last Updated: 2026-03-17
+Last Updated: 2026-04-24
 Canonical: No
 Owner: Product
 
@@ -8,7 +8,7 @@ Owner: Product
 
 ## Top 5 value & high-priority (from board, Product = messmass)
 
-*Reconsidered 2026-03-16 after v12.1.5 (V3 Context) delivery.*
+*Reconsidered 2026-04-24 after v12.1.7 (Organization admin recovery) delivery.*
 
 | Priority | Status  | Issue | Title |
 |----------|---------|-------|--------|
@@ -18,7 +18,7 @@ Owner: Product
 | P1 | Roadmap | [#46+](https://github.com/moldovancsaba/mvp-factory-control/issues/46) | SSO Integration with DoneIsBetter (Ongoing Hardening) |
 | P1 | Done | [#403](https://github.com/moldovancsaba/mvp-factory-control/issues/403) | V3 Organization Context Middleware (Permissions Foundation) |
 
-**Note:** v12.1.6 (#48) is Done; it improved report content delivery with markdown presets and previewers. Next executable options: **#44** (Insights Engine), **#57** (Bulk V3 Migration), **Cross-Organization Reporting Permissions**.
+**Note:** v12.1.7 is Done; it restored the live Organization admin flow on top of the existing `organizations` and `partners` data, recovered reporting/editor routes, and synchronized product docs. Next executable options: **#44** (Insights Engine), **#57** (Bulk V3 Migration), **Cross-Organization Reporting Permissions**.
 
 ## Recommended next delivery step
 
@@ -27,6 +27,7 @@ Owner: Product
 
 ## Recently completed
 
+- **Organization Admin Data Flow Recovery** (2026-04-24): Restored `/admin/organizations` against the live `organizations` + `partners` records, fixed the member assignment modal, added admin organization reporting endpoints, and synchronized docs/manuals. Version bumped to **v12.1.7**.
 - **Report Content Slots Management** (2026-03-17): Implemented markdown presets for text elements and multi-ratio image previews in the Builder UI. Created `tests/chart-preset-validation.test.ts`. Version bumped to **v12.1.6**.
 - **V3 Organization Context Middleware** (2026-03-16): Implemented foundational RBAC groundwork by injecting `x-v3-org-id` into API requests. Created `/api/v3/health`. Version bumped to **v12.1.5**.
 - **Style Hardening Phase 5** (2026-03-16): Consolidated legacy hero components into `UnifiedAdminHeroWithSearch`. Removed orphaned assets. Version bumped to **v12.1.4**.

@@ -1,38 +1,62 @@
 # Administrator Guide: Organization Management
 
 ## Overview
-Organizations in {messmass} provide a high-level grouping mechanism for **Entities** (Partners). This allows for multi-tenant reporting, cross-team performance analysis, and centralized administrative control.
+Organizations in `{messmass}` provide a high-level grouping mechanism for **Partners**. This allows superadmins to create named groups, assign partner memberships, open organization-level reports, and maintain organization-specific report content.
 
 ## 1. Creating Organizations
-1. Level: **Superadmin** (Restricted to platform-level administrators).
+1. Role required: **Superadmin**.
 2. Path: `/admin/organizations`.
-3. Action: Click **"Create Organization"**.
+3. Action: Click **"Add Organization"**.
 4. Fields:
-   - **Name**: Canonical name of the organization (e.g., "UEFA", "Global Marketing Group").
-   - **Slug**: URL-safe identifier.
-   - **Description**: Internal context for the organization.
+   - **Name**: Canonical name of the organization (for example: `Champions Hockey League`).
+   - **Slug**: URL-safe identifier (auto-generated when not explicitly set).
+   - **Status**: `active` or `inactive`.
+   - **Metadata**: Optional report/editor details such as emoji, style, and report content references.
 
-## 2. Managing Members (Entities)
-Organizations do not own activities directly; they group **Partners** who own them.
+## 2. Editing Organizations
+From the organization list, click **Edit** to update:
+- Organization name
+- Organization status
+- Metadata-backed report/editor settings through the linked editor surfaces
+
+Edits preserve existing metadata keys unless explicitly changed.
+
+## 3. Managing Members
+Organizations do not own activities directly; they group **Partners** that already own activities and reports.
 1. In the Organization list, find your organization and click **"Members"**.
-2. Select one or more **Partners** from the dropdown.
-3. Save the assignments.
-4. All activities associated with these Partners will now automatically roll up into the Organization's reports.
+2. Use the predictive-search selector to find Partners by name or current organization.
+3. Add or remove Partners from the selected chip list.
+4. Click **Save Assignments** to persist changes.
 
-## 3. Organization Reports
-Organization reports aggregate metrics across deep hierarchies.
-1. Path: `/admin/organizations`.
-2. Action: Click the **"Report"** icon (Bar Chart).
-3. **Sections**:
-   - **Metrics Summary**: Aggregated KPI sums across all member entities.
-   - **Member Entities**: List of all Partners associated with this organization.
-   - **Aggregated Activities**: A combined timeline of matches, events, or campaigns from all member partners.
+Important behavior:
+- Membership changes are staged in the modal and only applied when you save.
+- A Partner can belong to only **one** organization at a time.
+- Removing a Partner from the selected set unassigns it from that organization.
 
-## 4. Technical Integration (Sync Engine)
-The V3 Sync Engine automatically maps legacy V2 events to the new V3 hierarchy:
-- If a V2 Event is associated with a Partner that has an `organizationId`, the resulting V3 Activity inherits that organization context.
-- Manual member assignments at the Organization level take precedence.
+## 4. Organization Reports and Editor
+Each organization row exposes:
+- **Report** → `/organization-report/[id]`
+- **Edit Stats** → `/organization-edit/[id]`
 
-## 5. Security & Isolation
-- **Visibility**: Organization managers can only see data for entities within their assigned organization.
-- **Reporting Persistence**: Changes to organization membership are reflected immediately in new report resolutions.
+The report aggregates:
+- Organization-level metadata stats
+- Member partner stats
+- Related projects/events for assigned partners
+
+The editor persists organization report metadata through the same admin organization API.
+
+## 5. Deleting Organizations
+- Deletion is available from the organization row action menu.
+- An organization **cannot** be deleted while Partners are still assigned.
+- Reassign or remove all members first, then delete the organization.
+
+This delete guard prevents accidental data loss.
+
+## 6. Technical Notes
+- Primary admin data source: `organizations` collection
+- Membership source: `partners.organizationId`
+- Legacy V3 fallback remains available for older organization records, but new admin operations should use the live organization flow
+
+## 7. Security & Isolation
+- CRUD and member management require **superadmin** access.
+- Organization reports and editors use the same organization identifier shown in `/admin/organizations`.

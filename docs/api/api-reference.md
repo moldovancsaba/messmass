@@ -1,11 +1,11 @@
 # 📡 API Reference
 Status: Active
-Last Updated: 2026-03-14T22:00:00.000Z
+Last Updated: 2026-04-24T13:30:00.000Z
 Canonical: Yes
 Owner: Backend
 
-**Version:** 12.1.0  
-**Last Updated:** 2026-03-14T22:00:00.000Z (UTC)  
+**Version:** 12.1.7  
+**Last Updated:** 2026-04-24T13:30:00.000Z (UTC)  
 **Status:** Production
 
 Quick API reference for {messmass}. See detailed guides for complete schemas and examples.
@@ -73,22 +73,45 @@ Delete partner.
 
 ---
 
-## Organizations API (v12.1.0+)
+## Organizations API (v12.1.7+)
+
+All admin organization endpoints require an authenticated admin session and `superadmin` role.
 
 ### GET /api/admin/organizations
-List organizations.
+List organization records from the live `organizations` collection.
 
 ### POST /api/admin/organizations
-Create organization. Body: `{ name, slug, description }`
+Create organization. Body: `{ name, slug?, status?, metadata? }`
 
-### GET /api/v3/organizations/report/[id]
-Get aggregated organization metrics (V3 core).
+### GET /api/admin/organizations/[id]
+Fetch a single organization for admin/editor use.
 
-### GET /api/v3/organizations/report/[id]/activities
-Get aggregated organization activity timeline (V3 core).
+### PUT /api/admin/organizations/[id]
+Update an organization. Body: `{ name?, slug?, status?, metadata? }`
 
-### POST /api/admin/organizations/[id]/members
-Manage organization members (Partners). Body: `{ partnerIds: string[] }`
+### PATCH /api/admin/organizations/[id]
+Alias of `PUT /api/admin/organizations/[id]`.
+
+### DELETE /api/admin/organizations/[id]
+Delete an organization only when no partners are still assigned.
+
+### GET /api/admin/organizations/[id]/members
+Return all partners with assignment state for the predictive-search member selector.
+
+### PUT /api/admin/organizations/[id]/members
+Apply bulk membership assignment. Body: `{ memberPartnerIds: string[] }`
+
+### GET /api/organizations/report/[id]
+Get aggregated metrics, resolved report config, and member partner list for admin-managed organizations.
+
+### GET /api/organizations/report/[id]/activities
+Get the aggregated activity list derived from projects owned by member partners.
+
+### Compatibility: GET /api/v3/organizations/report/[id]
+Legacy V3 organization reporting path remains available as a fallback for older records.
+
+### Compatibility: GET /api/v3/organizations/report/[id]/activities
+Legacy V3 organization activity timeline path remains available as a fallback for older records.
 
 ---
 

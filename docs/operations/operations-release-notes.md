@@ -1,8 +1,67 @@
 # {messmass} Release Notes
 Status: Active
-Last Updated: 2026-03-16T16:45:00.000Z
+Last Updated: 2026-04-24T13:30:00.000Z
 Canonical: No
 Owner: Operations
+
+## [v12.1.7] — 2026-04-24T13:30:00.000Z
+
+### Summary
+🏢 **ORGANIZATION ADMIN DATA FLOW RESTORED**: Rewired Organization Management to the live `organizations` and `partners` collections, restored member assignment/reporting/editor paths, and synchronized product documentation.
+
+### What Was Fixed
+
+#### Organization CRUD and membership alignment ✅
+**WHAT**: Restored the admin organizations surface to the real organization records and partner memberships.  
+**WHY**: The shipped page had diverged into an incomplete flow that could render the route unreachable, hide expected actions, and fail to fetch members for existing organizations like `CHF`.  
+**HOW**: Updated `/api/admin/organizations`, `/api/admin/organizations/[id]`, and `/api/admin/organizations/[id]/members` to read/write the live `organizations` + `partners` data first, while retaining fallback compatibility for older V3 records.
+
+#### Predictive member selection and guarded deletes ✅
+**WHAT**: Kept the unified predictive-search member selector and enforced safe delete/update behavior.  
+**WHY**: Organization assignment must follow the shared design system and must not risk accidental data loss.  
+**HOW**: The members modal now stages changes until explicit save, uses `OrganizationMembersSelector`, and blocks organization deletion until all assigned partners are removed or reassigned.
+
+#### Organization reporting compatibility ✅
+**WHAT**: Added organization report/activity APIs for admin-managed organizations.  
+**WHY**: Existing org records in the `organizations` collection need working report and editor entry points, not only legacy V3 reporting paths.  
+**HOW**: Added `/api/organizations/report/[id]` and `/api/organizations/report/[id]/activities`, and updated `useOrganizationReportData` to prefer the admin organization report path with fallback to `/api/v3/organizations/report/[id]`.
+
+#### Documentation and manual sync ✅
+**WHAT**: Updated versioning, release notes, README, API reference, admin guide, in-app API docs, and the admin help/manual content.  
+**WHY**: The org feature set changed materially and the documentation had drifted from the shipped behavior.  
+**HOW**: Synced all touched product surfaces to `v12.1.7` and documented the live org CRUD, member assignment, reporting, and safety rules.
+
+### Testing
+- ✅ `npm run build`
+- ✅ DB sanity check: confirmed `CHF` exists in `organizations` and retained `8` assigned partners
+
+### Version
+v12.1.6 → v12.1.7 (PATCH — restore organization admin data flow and docs sync)
+
+## [v12.1.6] — 2026-03-17T12:00:00.000Z
+
+### Summary
+📝 **REPORT CONTENT SLOTS MANAGEMENT**: Added markdown preset support and image preview helpers to improve report content authoring.
+
+### What Was Added
+
+#### Markdown preset support for text charts ✅
+**WHAT**: Added content presets such as Standard, Compact, Hero, and Callout for markdown/text report slots.  
+**WHY**: Report authors needed faster, more consistent formatting patterns without hand-building every text block.  
+**HOW**: Extended the builder UI, report calculation flow, and text rendering surfaces to persist and honor the selected preset.
+
+#### Multi-ratio image preview helper ✅
+**WHAT**: Added simultaneous 16:9, 9:16, and 1:1 preview support for image-oriented report content.  
+**WHY**: Admins need to validate how assets will render across different output shapes before publishing.  
+**HOW**: Implemented `ImagePreviewHelper` and connected it to the Builder workflow.
+
+### Testing
+- ✅ `npm run build`
+- ✅ `npm run lint`
+- ✅ `npm run type-check`
+
+### Version
+v12.1.5 → v12.1.6 (PATCH — report content slots management)
 
 ## [v12.1.5] — 2026-03-16T16:45:00.000Z
 

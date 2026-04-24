@@ -1,10 +1,15 @@
 # {messmass} Architecture Documentation
 Status: Active
-Last Updated: 2026-03-16
+Last Updated: 2026-04-24
 Canonical: No
 Owner: Architecture
 
-Version: 12.1.5
+Version: 12.1.7
+
+**Organization Admin Data Flow Recovery (2026-04-24):**
+- **Live Admin Collections Restored**: Organization CRUD now targets the `organizations` collection and partner membership uses `partners.organizationId`.
+- **Compatibility Layer Kept**: Legacy V3 organization routes remain available for older records, but the admin UI now prefers the live admin organization/report path.
+- **Report Surface Recovery**: Added a non-V3 organization reporting adapter path (`/api/organizations/report/[id]`) so report/editor actions work for existing admin-managed organizations without forced migration.
 
 **Deep Quality & Measured Scaling (2026-03-16):**
 - **Measured Height Font Scaling**: Implemented dynamic font resizing in `PieChart`, `VerticalBarChart`, and `KPICard` using `ResizeObserver` to prevent text overflow without clipping.

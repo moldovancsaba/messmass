@@ -81,6 +81,7 @@ export default function HelpPage() {
           <ul>
             <li><a href="#getting-started">Getting Started</a></li>
             <li><a href="#sharing">Sharing Reports (Event & Partner)</a></li>
+            <li><a href="#organizations">Organization Management</a></li>
             <li><a href="#stats-page">Understanding the Stats Page</a></li>
             <li><a href="#live-tracking">Live Event Tracking (Clicker)</a></li>
             <li><a href="#kyc-management">KYC Management (Variables)</a></li>
@@ -530,6 +531,44 @@ export default function HelpPage() {
           </ul>
         </section>
 
+        <section id="organizations" className={styles.section}>
+          <h2>🏢 Organization Management</h2>
+
+          <h3>Who Can Use It</h3>
+          <p>
+            Organization Management is available to <strong>superadmins</strong> from <code>/admin/organizations</code>.
+          </p>
+
+          <h3>What You Can Do</h3>
+          <ul>
+            <li><strong>Add Organization:</strong> Create a new top-level organization record</li>
+            <li><strong>Edit:</strong> Update organization name and status</li>
+            <li><strong>Manage Members:</strong> Assign Partners with predictive search and chip-based selection</li>
+            <li><strong>Report:</strong> Open the aggregated organization report</li>
+            <li><strong>Edit Stats:</strong> Open the organization content editor</li>
+            <li><strong>Delete:</strong> Remove an organization only after all members are unassigned</li>
+          </ul>
+
+          <h3>Managing Members</h3>
+          <ol>
+            <li>Open <code>/admin/organizations</code></li>
+            <li>Find the organization and click <strong>Manage Members</strong></li>
+            <li>Search for Partners by name or current organization</li>
+            <li>Add or remove partners from the selected chips</li>
+            <li>Click <strong>Save Assignments</strong> to apply the membership changes</li>
+          </ol>
+          <p>
+            Membership changes are not applied until you save. A Partner can belong to only one organization at a time.
+          </p>
+
+          <h3>Reports and Editor</h3>
+          <ul>
+            <li><strong>Report URL:</strong> <code>/organization-report/[id]</code></li>
+            <li><strong>Editor URL:</strong> <code>/organization-edit/[id]</code></li>
+            <li>Reports aggregate organization metadata, assigned partners, and related projects/events</li>
+          </ul>
+        </section>
+
         <section id="metrics" className={styles.section}>
           <h2>📈 Understanding Metrics</h2>
           
@@ -604,7 +643,7 @@ export default function HelpPage() {
         <section id="v3-engine" className={styles.section}>
           <h2>🚀 V3 High-Performance Engine</h2>
           <p>
-            V11.61.0 introduces the <strong>{'{messmass}'} V3 Alignment</strong>, a high-performance data engine designed for multi-tenant scalability.
+            The <strong>{'{messmass}'} V3 Alignment</strong> is the background high-performance data engine designed for multi-tenant scalability and reporting compatibility.
           </p>
           <ul>
             <li><strong>Automated Sync:</strong> All edits to Events, Partners, and Stats are automatically mirrored to the V3 engine in real-time.</li>
@@ -653,8 +692,8 @@ export default function HelpPage() {
 
         <footer className={styles.footer}>
           <p>
-            <strong>{'{messmass}'} Version 11.61.0</strong><br />
-            Last Updated: 2026-03-13T10:00:00.000Z (UTC)
+            <strong>{'{messmass}'} Version 12.1.7</strong><br />
+            Last Updated: 2026-04-24T13:30:00.000Z (UTC)
           </p>
           <p>
             <strong>Quick Links:</strong><br />

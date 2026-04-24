@@ -2,7 +2,7 @@
 
 This file is onboarding plus operational context for the next agent. Keep it accurate when behavior, process, or current delivery state changes.
 
-**Last Updated:** 2026-03-17 (Report Content Slots Management (#48) Completed)
+**Last Updated:** 2026-04-24 (Organization admin data flow and documentation sync)
 
 ## 🚨 CRITICAL MUST-READ FOR ALL AGENTS: STYLING & COMPONENTS 🚨
 
@@ -65,6 +65,14 @@ You MUST completely read and obey `docs/coding-standards.md` and `docs/component
 - Style editor preview updates immediately for bar/pie CSS vars and includes Value Chain and Landing page sections.
 
 ## Handover Log
+
+## 2026-04-24 — Organization admin data flow + docs sync
+- **Objective:** Restore the shipped Organizations feature on top of the live `organizations` + `partners` data and synchronize product documentation/versioning.
+- **Admin surface recovery:** Rewired `/admin/organizations` to the real admin data source, restored `Report`, `Edit Stats`, `Edit`, `Manage Members`, and `Delete`, and kept the unified predictive-search member selector.
+- **API recovery:** Updated `/api/admin/organizations`, `/api/admin/organizations/[id]`, and `/api/admin/organizations/[id]/members` to use the live admin records first with guarded delete behavior and fallback compatibility for older V3 records.
+- **Organization reporting:** Added `/api/organizations/report/[id]` and `/api/organizations/report/[id]/activities`, then updated the shared organization report hook to prefer those endpoints before falling back to legacy V3 report routes.
+- **Documentation sync:** Bumped the product to `v12.1.7`, updated README, release notes, API reference, organization admin guide, reusable component inventory, API docs page, and embedded admin Help content.
+- **Verification:** `npm run build` passed; DB sanity check confirmed `CHF` remained present in `organizations` with `8` assigned partners.
  
  ## 2026-03-17 — Report Content Slots Management (#48)
 - **Objective:** Improve report content slot management with markdown presets and preview helpers.

@@ -1,6 +1,6 @@
 # END USER GUIDE (Admin Operations)
 Status: Complete
-Last Updated: 2026-03-13T00:00:00.000Z
+Last Updated: 2026-04-24T13:30:00.000Z
 Canonical: Yes
 Owner: Admin (Katja)
 
@@ -40,6 +40,7 @@ Evidence: `lib/users.ts`
 | Hashtags | `/admin/hashtags` | Hashtag definitions |
 | Categories | `/admin/categories` | Category definitions |
 | Cache management | `/admin/cache` | Cache invalidation actions |
+| Organization management | `/admin/organizations`, `/organization-report/[id]`, `/organization-edit/[id]` | Organization CRUD, partner member assignments, aggregated org reporting |
 | User management | `/admin/users` | Role changes and user access |
 | Main page (landing report) | `/admin/mainpage` | Choose report for messmass.com; generate static content |
 | Help and guide | `/admin/help` | User guide display |
@@ -58,6 +59,7 @@ Evidence: `lib/users.ts`
 - Exports: CSV/PDF usage and troubleshooting.
 - Cache Management: when to invalidate and what to expect after.
 - Main page: choose which event report drives the main site (messmass.com), save selection, and use **Update static content** so the site serves a static snapshot until the next update. See `docs/features/features-landing-main-page.md`.
+- Organizations: create organizations, assign partner memberships with predictive search, use **Report** for aggregate organization reporting, and use **Edit Stats** for organization report content.
 - V3 High-Performance Engine: learn about the new multi-tenant data structures, participants mapping, and time-series KPI storage. See `docs/V3/messmass_v3_quickstart_guide.md`.
 - Troubleshooting: auth issues, missing data, stale output, permissions.
 

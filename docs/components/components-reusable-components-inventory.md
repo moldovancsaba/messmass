@@ -1,11 +1,11 @@
 # {messmass} Reusable Components & Styling System Inventory
 Status: Active
-Last Updated: 2026-03-16
+Last Updated: 2026-04-24
 Canonical: No
 Owner: Architecture
 
-**Version**: 12.1.5  
-**Last Updated**: 2026-03-16 (UTC)  
+**Version**: 12.1.7  
+**Last Updated**: 2026-04-24 (UTC)  
 **Purpose**: Complete catalog of all reusable components, modules, styling systems, and utilities
 
 ---
@@ -252,6 +252,20 @@ import ProjectSelector from '@/components/ProjectSelector';
   onSelect={setProjectId}
 />
 ```
+
+#### OrganizationMembersSelector
+**File**: `components/OrganizationMembersSelector.tsx`  
+**CSS**: `components/OrganizationMembersSelector.module.css`  
+**Usage**: Predictive-search multi-select for organization member assignment
+```tsx
+import OrganizationMembersSelector from '@/components/OrganizationMembersSelector';
+<OrganizationMembersSelector
+  members={members}
+  onChange={setSelectedMemberIds}
+  placeholder="Search members..."
+/>
+```
+**Features**: Predictive search, selected chips, keyboard navigation, explicit save flow in organization membership modal
 
 ---
 
@@ -550,4 +564,4 @@ For implementation details, see:
 
 ---
 
-*Version: 12.1.5 | Last Updated: 2026-03-16 (UTC)*
+*Version: 12.1.7 | Last Updated: 2026-04-24 (UTC)*
