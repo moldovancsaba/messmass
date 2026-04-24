@@ -1,16 +1,17 @@
 // app/api/admin/organizations/[id]/members/route.ts
-// WHAT: Read + update partner membership for an organization
-// WHY: Organization Management → Manage Members modal needs add/remove partner assignment
+// WHAT: Read + update V3 entity membership for an organization
+// WHY: Organization Management must reflect the actual V3 org/entity model
 
 import { NextRequest, NextResponse } from 'next/server';
 import { ObjectId } from 'mongodb';
 import { getAdminUser } from '@/lib/auth';
-import { getDb } from '@/lib/db';
+import connectV3 from '@/lib/mongoose-v3';
+import V3Organization from '@/lib/models/v3/Organization';
+import V3Entity from '@/lib/models/v3/Entity';
 
 export const runtime = 'nodejs';
 
-type OrgRecord = { _id: ObjectId; name: string; slug: string };
-type PartnerRecord = { _id: ObjectId; name: string; organizationId?: ObjectId | null };
+const MASTER_ORG_ID = '69b322e0cb8e841f95de9aa1';
 
 export async function GET(_request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
@@ -25,20 +26,20 @@ export async function GET(_request: NextRequest, { params }: { params: Promise<{
     }
     const orgId = new ObjectId(id);
 
-    const db = await getDb();
-    const org = await db.collection<OrgRecord>('organizations').findOne({ _id: orgId });
+    await connectV3();
+
+    const org = await V3Organization.findById(orgId).lean();
     if (!org) {
       return NextResponse.json({ success: false, error: 'Organization not found' }, { status: 404 });
     }
 
-    const orgs = await db.collection<OrgRecord>('organizations').find({}).toArray();
+    const orgs = await V3Organization.find({}).lean();
     const orgNameById = new Map(orgs.map((o) => [o._id.toString(), o.name]));
 
-    const partners = await db
-      .collection<PartnerRecord>('partners')
-      .find({}, { projection: { name: 1, organizationId: 1 } })
+    const partners = await V3Entity.find({ parentEntityId: null })
+      .select('name organizationId type')
       .sort({ name: 1 })
-      .toArray();
+      .lean();
 
     return NextResponse.json({
       success: true,
@@ -48,6 +49,7 @@ export async function GET(_request: NextRequest, { params }: { params: Promise<{
         return {
           _id: p._id.toString(),
           name: p.name,
+          type: p.type,
           currentOrganizationId: currentOrgId,
           currentOrganizationName: currentOrgId ? orgNameById.get(currentOrgId) || '—' : '—',
           isMember: currentOrgId === org._id.toString(),
@@ -83,21 +85,21 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
       .filter((x): x is string => typeof x === 'string' && ObjectId.isValid(x))
       .map((x) => new ObjectId(x));
 
-    const db = await getDb();
-    const org = await db.collection<OrgRecord>('organizations').findOne({ _id: orgId }, { projection: { name: 1, slug: 1 } });
+    await connectV3();
+    const org = await V3Organization.findById(orgId).select('name slug').lean();
     if (!org) {
       return NextResponse.json({ success: false, error: 'Organization not found' }, { status: 404 });
     }
 
-    // Remove members that are currently in this org but not in the new list.
-    await db.collection('partners').updateMany(
+    // Move deselected members back to the master organization.
+    await V3Entity.updateMany(
       { organizationId: orgId, _id: { $nin: memberPartnerIds } },
-      { $unset: { organizationId: '' } }
+      { $set: { organizationId: new ObjectId(MASTER_ORG_ID) } }
     );
 
-    // Assign selected members to this org (one-org rule: overwrites any previous org).
+    // Assign selected members to this org.
     if (memberPartnerIds.length > 0) {
-      await db.collection('partners').updateMany(
+      await V3Entity.updateMany(
         { _id: { $in: memberPartnerIds } },
         { $set: { organizationId: orgId } }
       );
@@ -109,4 +111,3 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
     return NextResponse.json({ success: false, error: 'Failed to update organization members' }, { status: 500 });
   }
 }
-

@@ -1,21 +1,13 @@
 // app/api/admin/organizations/route.ts
-// WHAT: Admin CRUD for Organizations (non-V3)
-// WHY: Provide Organization Management UI + partner membership assignment
+// WHAT: Admin CRUD for real V3 organizations
+// WHY: Organization Management must operate on the same data model as reports/editors
 
 import { NextRequest, NextResponse } from 'next/server';
-import { ObjectId } from 'mongodb';
 import { getAdminUser } from '@/lib/auth';
-import { getDb } from '@/lib/db';
+import connectV3 from '@/lib/mongoose-v3';
+import V3Organization from '@/lib/models/v3/Organization';
 
 export const runtime = 'nodejs';
-
-type OrganizationRecord = {
-  _id: ObjectId;
-  name: string;
-  slug: string;
-  createdAt: string;
-  updatedAt: string;
-};
 
 function slugifyOrgName(name: string): string {
   return name
@@ -33,12 +25,11 @@ export async function GET() {
       return NextResponse.json({ success: false, error: 'Admin authentication required' }, { status: 401 });
     }
 
-    const db = await getDb();
-    const organizations = await db
-      .collection<OrganizationRecord>('organizations')
-      .find({})
+    await connectV3();
+
+    const organizations = await V3Organization.find({})
       .sort({ name: 1 })
-      .toArray();
+      .lean();
 
     return NextResponse.json({
       success: true,
@@ -46,8 +37,10 @@ export async function GET() {
         _id: o._id.toString(),
         name: o.name,
         slug: o.slug,
-        createdAt: o.createdAt,
-        updatedAt: o.updatedAt,
+        status: o.status,
+        metadata: o.metadata || {},
+        createdAt: o.createdAt instanceof Date ? o.createdAt.toISOString() : o.createdAt,
+        updatedAt: o.updatedAt instanceof Date ? o.updatedAt.toISOString() : o.updatedAt,
       })),
     });
   } catch (error) {
@@ -70,36 +63,40 @@ export async function POST(request: NextRequest) {
     }
 
     const slugBase = slugifyOrgName(name) || 'org';
-    const db = await getDb();
-    const collection = db.collection<OrganizationRecord>('organizations');
+    await connectV3();
 
-    const now = new Date().toISOString();
     let slug = slugBase;
     for (let i = 0; i < 20; i += 1) {
       const candidate = i === 0 ? slugBase : `${slugBase}-${i + 1}`;
       // eslint-disable-next-line no-await-in-loop
-      const existing = await collection.findOne({ slug: candidate });
+      const existing = await V3Organization.findOne({ slug: candidate }).lean();
       if (!existing) {
         slug = candidate;
         break;
       }
     }
 
-    const insertResult = await collection.insertOne({
-      // _id is created by Mongo
+    const organization = await V3Organization.create({
       name,
       slug,
-      createdAt: now,
-      updatedAt: now,
-    } as unknown as OrganizationRecord);
+      status: 'active',
+      metadata: {},
+    });
 
     return NextResponse.json({
       success: true,
-      organization: { _id: insertResult.insertedId.toString(), name, slug, createdAt: now, updatedAt: now },
+      organization: {
+        _id: organization._id.toString(),
+        name: organization.name,
+        slug: organization.slug,
+        status: organization.status,
+        metadata: organization.metadata || {},
+        createdAt: organization.createdAt instanceof Date ? organization.createdAt.toISOString() : organization.createdAt,
+        updatedAt: organization.updatedAt instanceof Date ? organization.updatedAt.toISOString() : organization.updatedAt,
+      },
     });
   } catch (error) {
     console.error('Failed to create organization:', error);
     return NextResponse.json({ success: false, error: 'Failed to create organization' }, { status: 500 });
   }
 }
-

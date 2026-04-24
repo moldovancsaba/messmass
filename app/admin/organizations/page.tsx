@@ -16,6 +16,11 @@ type Organization = {
   _id: string;
   name: string;
   slug: string;
+  status?: 'active' | 'inactive';
+  metadata?: {
+    emoji?: string;
+    [key: string]: unknown;
+  };
 };
 
 type PartnerRow = {
@@ -38,6 +43,11 @@ export default function OrganizationsAdminPage() {
   const [createOpen, setCreateOpen] = useState(false);
   const [creating, setCreating] = useState(false);
   const [newOrgName, setNewOrgName] = useState('');
+  const [editOpen, setEditOpen] = useState(false);
+  const [editing, setEditing] = useState(false);
+  const [editOrgId, setEditOrgId] = useState<string | null>(null);
+  const [editOrgName, setEditOrgName] = useState('');
+  const [editOrgStatus, setEditOrgStatus] = useState<'active' | 'inactive'>('active');
 
   const [membersModalOpen, setMembersModalOpen] = useState(false);
   const [activeOrg, setActiveOrg] = useState<Organization | null>(null);
@@ -145,6 +155,35 @@ export default function OrganizationsAdminPage() {
     }
   };
 
+  const openEditOrganization = (org: Organization) => {
+    setEditOrgId(org._id);
+    setEditOrgName(org.name);
+    setEditOrgStatus(org.status || 'active');
+    setEditOpen(true);
+  };
+
+  const updateOrganization = async () => {
+    if (!editOrgId || !editOrgName.trim()) return;
+    setEditing(true);
+    setError(null);
+    try {
+      const data = await apiPut(`/api/admin/organizations/${editOrgId}`, {
+        name: editOrgName.trim(),
+        status: editOrgStatus,
+      });
+      if (!data.success) {
+        throw new Error(data.error || 'Failed to update organization');
+      }
+      setEditOpen(false);
+      setEditOrgId(null);
+      await loadOrganizations();
+    } catch (e) {
+      setError(e instanceof Error ? e.message : 'Failed to update organization');
+    } finally {
+      setEditing(false);
+    }
+  };
+
   useEffect(() => {
     if (!authLoading && !user) {
       router.push('/admin/login');
@@ -201,15 +240,47 @@ export default function OrganizationsAdminPage() {
               <thead>
                 <tr>
                   <th>Name</th>
+                  <th>Slug</th>
+                  <th>Status</th>
                   <th className="text-right">Actions</th>
                 </tr>
               </thead>
               <tbody>
                 {organizations.map((org) => (
                   <tr key={org._id}>
-                    <td className="font-medium">{org.name}</td>
+                    <td className="font-medium">
+                      <div className="flex items-center gap-2">
+                        <span>{org.metadata?.emoji || '🏢'}</span>
+                        <span>{org.name}</span>
+                      </div>
+                    </td>
+                    <td>
+                      <code className="px-2 py-1 bg-gray-100 rounded text-sm text-blue-600 font-mono">
+                        {org.slug}
+                      </code>
+                    </td>
+                    <td>
+                      <span className={org.status === 'inactive' ? 'text-red-600' : 'text-green-700'}>
+                        {org.status || 'active'}
+                      </span>
+                    </td>
                     <td className="text-right">
-                      <div className="flex justify-end gap-2">
+                      <div className="flex justify-end gap-2 flex-wrap">
+                        <button
+                          className="btn btn-small btn-secondary"
+                          onClick={() => window.open(`/organization-report/${org._id}`, '_blank')}
+                        >
+                          Report
+                        </button>
+                        <button
+                          className="btn btn-small btn-secondary"
+                          onClick={() => window.open(`/organization-edit/${org._id}`, '_blank')}
+                        >
+                          Edit Stats
+                        </button>
+                        <button className="btn btn-small btn-secondary" onClick={() => openEditOrganization(org)}>
+                          Edit
+                        </button>
                         <button className="btn btn-small btn-secondary" onClick={() => openMembers(org)}>
                           Manage Members
                         </button>
@@ -244,6 +315,41 @@ export default function OrganizationsAdminPage() {
             placeholder="e.g., Champions Hockey League"
             autoFocus
           />
+        </div>
+      </FormModal>
+
+      <FormModal
+        isOpen={editOpen}
+        onClose={() => {
+          setEditOpen(false);
+          setEditOrgId(null);
+        }}
+        onSubmit={updateOrganization}
+        title="Edit Organization"
+        submitText="Save Changes"
+        isSubmitting={editing}
+        size="md"
+      >
+        <div className="form-group mb-4">
+          <label className="form-label-block">Organization Name *</label>
+          <input
+            className="form-input"
+            value={editOrgName}
+            onChange={(e) => setEditOrgName(e.target.value)}
+            placeholder="Organization name"
+            autoFocus
+          />
+        </div>
+        <div className="form-group mb-2">
+          <label className="form-label-block">Status</label>
+          <select
+            className="form-input"
+            value={editOrgStatus}
+            onChange={(e) => setEditOrgStatus(e.target.value as 'active' | 'inactive')}
+          >
+            <option value="active">Active</option>
+            <option value="inactive">Inactive</option>
+          </select>
         </div>
       </FormModal>
 
