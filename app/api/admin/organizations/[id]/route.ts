@@ -1,10 +1,11 @@
 // app/api/admin/organizations/[id]/route.ts
 // WHAT: Admin Organization details, editing, and delete
-// WHY: Organization editor and admin page both need to operate on the canonical organization model
+// WHY: Organization editor and admin page must preserve existing organization and partner membership data
 
 import { NextRequest, NextResponse } from 'next/server';
 import { ObjectId } from 'mongodb';
 import { getAdminUser } from '@/lib/auth';
+import { getDb } from '@/lib/db';
 import { hasMinimumRole } from '@/lib/permissions';
 import connectV3 from '@/lib/mongoose-v3';
 import V3Organization from '@/lib/models/v3/Organization';
@@ -13,6 +14,42 @@ import V3Entity from '@/lib/models/v3/Entity';
 export const runtime = 'nodejs';
 
 const MASTER_ORG_ID = '69b322e0cb8e841f95de9aa1';
+
+type OrganizationRecord = {
+  _id: ObjectId;
+  name: string;
+  slug: string;
+  status?: 'active' | 'inactive';
+  metadata?: Record<string, unknown>;
+  createdAt?: string;
+  updatedAt?: string;
+};
+
+function normalizeOrganization(organization: OrganizationRecord) {
+  return {
+    _id: organization._id.toString(),
+    name: organization.name,
+    slug: organization.slug,
+    status: organization.status || 'active',
+    metadata: organization.metadata || {},
+    createdAt: organization.createdAt || new Date().toISOString(),
+    updatedAt: organization.updatedAt || new Date().toISOString(),
+  };
+}
+
+function mergeMetadata(
+  currentMetadata: Record<string, unknown> | undefined,
+  nextMetadata: unknown
+) {
+  if (!nextMetadata || typeof nextMetadata !== 'object' || Array.isArray(nextMetadata)) {
+    return currentMetadata || {};
+  }
+
+  return {
+    ...(currentMetadata || {}),
+    ...(nextMetadata as Record<string, unknown>),
+  };
+}
 
 export async function GET(
   _request: NextRequest,
@@ -32,20 +69,29 @@ export async function GET(
       return NextResponse.json({ success: false, error: 'Invalid organization id' }, { status: 400 });
     }
 
-    await connectV3();
-    const organization = await V3Organization.findById(id).lean();
+    const db = await getDb();
+    const organization = await db.collection<OrganizationRecord>('organizations').findOne({ _id: new ObjectId(id) });
     if (!organization) {
-      return NextResponse.json({ success: false, error: 'Organization not found' }, { status: 404 });
+      await connectV3();
+      const v3Organization = await V3Organization.findById(id).lean();
+      if (!v3Organization) {
+        return NextResponse.json({ success: false, error: 'Organization not found' }, { status: 404 });
+      }
+
+      return NextResponse.json({
+        success: true,
+        organization: {
+          ...v3Organization,
+          _id: v3Organization._id.toString(),
+          createdAt: v3Organization.createdAt instanceof Date ? v3Organization.createdAt.toISOString() : v3Organization.createdAt,
+          updatedAt: v3Organization.updatedAt instanceof Date ? v3Organization.updatedAt.toISOString() : v3Organization.updatedAt,
+        },
+      });
     }
 
     return NextResponse.json({
       success: true,
-      organization: {
-        ...organization,
-        _id: organization._id.toString(),
-        createdAt: organization.createdAt instanceof Date ? organization.createdAt.toISOString() : organization.createdAt,
-        updatedAt: organization.updatedAt instanceof Date ? organization.updatedAt.toISOString() : organization.updatedAt,
-      },
+      organization: normalizeOrganization(organization),
     });
   } catch (error) {
     console.error('Failed to fetch organization:', error);
@@ -73,45 +119,92 @@ export async function PUT(
 
     const body = (await request.json().catch(() => null)) as {
       name?: unknown;
+      slug?: unknown;
       status?: unknown;
       metadata?: unknown;
     } | null;
+
+    const db = await getDb();
+    const collection = db.collection<OrganizationRecord>('organizations');
+    const organization = await collection.findOne({ _id: new ObjectId(id) });
+
+    if (organization) {
+      const updates: Record<string, unknown> = {
+        updatedAt: new Date().toISOString(),
+      };
+
+      if (typeof body?.name === 'string' && body.name.trim()) {
+        updates.name = body.name.trim();
+      }
+      if (typeof body?.slug === 'string' && body.slug.trim()) {
+        updates.slug = body.slug.trim();
+      }
+      if (body?.status === 'active' || body?.status === 'inactive') {
+        updates.status = body.status;
+      }
+      if (body?.metadata !== undefined) {
+        updates.metadata = mergeMetadata(organization.metadata, body.metadata);
+      }
+
+      await collection.updateOne({ _id: organization._id }, { $set: updates });
+      const updatedOrganization = await collection.findOne({ _id: organization._id });
+
+      if (!updatedOrganization) {
+        throw new Error('Updated organization could not be loaded');
+      }
+
+      return NextResponse.json({
+        success: true,
+        organization: normalizeOrganization(updatedOrganization),
+      });
+    }
+
+    await connectV3();
+    const v3Organization = await V3Organization.findById(id).lean();
+    if (!v3Organization) {
+      return NextResponse.json({ success: false, error: 'Organization not found' }, { status: 404 });
+    }
 
     const updates: Record<string, unknown> = {};
     if (typeof body?.name === 'string' && body.name.trim()) {
       updates.name = body.name.trim();
     }
+    if (typeof body?.slug === 'string' && body.slug.trim()) {
+      updates.slug = body.slug.trim();
+    }
     if (body?.status === 'active' || body?.status === 'inactive') {
       updates.status = body.status;
     }
-    if (body?.metadata && typeof body.metadata === 'object' && !Array.isArray(body.metadata)) {
-      updates.metadata = body.metadata;
+    if (body?.metadata !== undefined) {
+      updates.metadata = mergeMetadata(v3Organization.metadata || {}, body.metadata);
     }
 
-    await connectV3();
-    const organization = await V3Organization.findByIdAndUpdate(
+    const updatedOrganization = await V3Organization.findByIdAndUpdate(
       id,
       { $set: updates },
       { new: true }
     ).lean();
 
-    if (!organization) {
-      return NextResponse.json({ success: false, error: 'Organization not found' }, { status: 404 });
-    }
-
     return NextResponse.json({
       success: true,
       organization: {
-        ...organization,
-        _id: organization._id.toString(),
-        createdAt: organization.createdAt instanceof Date ? organization.createdAt.toISOString() : organization.createdAt,
-        updatedAt: organization.updatedAt instanceof Date ? organization.updatedAt.toISOString() : organization.updatedAt,
+        ...updatedOrganization,
+        _id: updatedOrganization!._id.toString(),
+        createdAt: updatedOrganization!.createdAt instanceof Date ? updatedOrganization!.createdAt.toISOString() : updatedOrganization!.createdAt,
+        updatedAt: updatedOrganization!.updatedAt instanceof Date ? updatedOrganization!.updatedAt.toISOString() : updatedOrganization!.updatedAt,
       },
     });
   } catch (error) {
     console.error('Failed to update organization:', error);
     return NextResponse.json({ success: false, error: 'Failed to update organization' }, { status: 500 });
   }
+}
+
+export async function PATCH(
+  request: NextRequest,
+  context: { params: Promise<{ id: string }> }
+) {
+  return PUT(request, context);
 }
 
 export async function DELETE(
@@ -132,13 +225,30 @@ export async function DELETE(
       return NextResponse.json({ success: false, error: 'Invalid organization id' }, { status: 400 });
     }
 
-    if (id === MASTER_ORG_ID) {
-      return NextResponse.json({ success: false, error: 'The master organization cannot be deleted' }, { status: 400 });
+    const db = await getDb();
+    const collection = db.collection<OrganizationRecord>('organizations');
+    const organization = await collection.findOne({ _id: new ObjectId(id) });
+
+    if (organization) {
+      const memberCount = await db.collection('partners').countDocuments({ organizationId: organization._id });
+      if (memberCount > 0) {
+        return NextResponse.json({
+          success: false,
+          error: 'Reassign or remove all members from this organization before deleting it',
+        }, { status: 400 });
+      }
+
+      await collection.deleteOne({ _id: organization._id });
+      return NextResponse.json({ success: true });
     }
 
     await connectV3();
 
-    const memberCount = await V3Entity.countDocuments({ organizationId: id });
+    if (id === MASTER_ORG_ID) {
+      return NextResponse.json({ success: false, error: 'The master organization cannot be deleted' }, { status: 400 });
+    }
+
+    const memberCount = await V3Entity.countDocuments({ organizationId: new ObjectId(id) });
     if (memberCount > 0) {
       return NextResponse.json({
         success: false,

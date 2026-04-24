@@ -1,10 +1,11 @@
 // app/api/admin/organizations/[id]/members/route.ts
-// WHAT: Read + update entity membership for an organization
-// WHY: Organization Management must reflect the canonical org/entity model
+// WHAT: Read + update partner membership for an organization
+// WHY: Organization Management must use the same organization and partner records shown in admin
 
 import { NextRequest, NextResponse } from 'next/server';
 import { ObjectId } from 'mongodb';
 import { getAdminUser } from '@/lib/auth';
+import { getDb } from '@/lib/db';
 import { hasMinimumRole } from '@/lib/permissions';
 import connectV3 from '@/lib/mongoose-v3';
 import V3Organization from '@/lib/models/v3/Organization';
@@ -13,6 +14,23 @@ import V3Entity from '@/lib/models/v3/Entity';
 export const runtime = 'nodejs';
 
 const MASTER_ORG_ID = '69b322e0cb8e841f95de9aa1';
+
+type OrganizationRecord = {
+  _id: ObjectId;
+  name: string;
+  slug: string;
+};
+
+type PartnerRecord = {
+  _id: ObjectId;
+  name: string;
+  organizationId?: ObjectId | string | null;
+};
+
+function normalizeId(value: ObjectId | string | null | undefined) {
+  if (!value) return null;
+  return typeof value === 'string' ? value : value.toString();
+}
 
 export async function GET(_request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
@@ -30,15 +48,43 @@ export async function GET(_request: NextRequest, { params }: { params: Promise<{
     }
     const orgId = new ObjectId(id);
 
-    await connectV3();
+    const db = await getDb();
+    const org = await db.collection<OrganizationRecord>('organizations').findOne({ _id: orgId });
 
-    const org = await V3Organization.findById(orgId).lean();
-    if (!org) {
+    if (org) {
+      const orgs = await db.collection<OrganizationRecord>('organizations').find({}).toArray();
+      const orgNameById = new Map(orgs.map((organization) => [organization._id.toString(), organization.name]));
+
+      const partners = await db
+        .collection<PartnerRecord>('partners')
+        .find({}, { projection: { name: 1, organizationId: 1 } })
+        .sort({ name: 1 })
+        .toArray();
+
+      return NextResponse.json({
+        success: true,
+        organization: { _id: org._id.toString(), name: org.name, slug: org.slug },
+        partners: partners.map((partner) => {
+          const currentOrgId = normalizeId(partner.organizationId);
+          return {
+            _id: partner._id.toString(),
+            name: partner.name,
+            currentOrganizationId: currentOrgId,
+            currentOrganizationName: currentOrgId ? orgNameById.get(currentOrgId) || '—' : '—',
+            isMember: currentOrgId === org._id.toString(),
+          };
+        }),
+      });
+    }
+
+    await connectV3();
+    const v3Organization = await V3Organization.findById(orgId).lean();
+    if (!v3Organization) {
       return NextResponse.json({ success: false, error: 'Organization not found' }, { status: 404 });
     }
 
-    const orgs = await V3Organization.find({}).lean();
-    const orgNameById = new Map(orgs.map((o) => [o._id.toString(), o.name]));
+    const v3Organizations = await V3Organization.find({}).lean();
+    const orgNameById = new Map(v3Organizations.map((organization) => [organization._id.toString(), organization.name]));
 
     const partners = await V3Entity.find({ parentEntityId: null })
       .select('name organizationId type')
@@ -47,16 +93,16 @@ export async function GET(_request: NextRequest, { params }: { params: Promise<{
 
     return NextResponse.json({
       success: true,
-      organization: { _id: org._id.toString(), name: org.name, slug: org.slug },
-      partners: partners.map((p) => {
-        const currentOrgId = p.organizationId ? p.organizationId.toString() : null;
+      organization: { _id: v3Organization._id.toString(), name: v3Organization.name, slug: v3Organization.slug },
+      partners: partners.map((partner) => {
+        const currentOrgId = normalizeId(partner.organizationId);
         return {
-          _id: p._id.toString(),
-          name: p.name,
-          type: p.type,
+          _id: partner._id.toString(),
+          name: partner.name,
+          type: partner.type,
           currentOrganizationId: currentOrgId,
           currentOrganizationName: currentOrgId ? orgNameById.get(currentOrgId) || '—' : '—',
-          isMember: currentOrgId === org._id.toString(),
+          isMember: currentOrgId === v3Organization._id.toString(),
         };
       }),
     });
@@ -92,9 +138,28 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
       .filter((x): x is string => typeof x === 'string' && ObjectId.isValid(x))
       .map((x) => new ObjectId(x));
 
+    const db = await getDb();
+    const org = await db.collection<OrganizationRecord>('organizations').findOne({ _id: orgId });
+
+    if (org) {
+      await db.collection('partners').updateMany(
+        { organizationId: orgId, _id: { $nin: memberPartnerIds } },
+        { $unset: { organizationId: '' } }
+      );
+
+      if (memberPartnerIds.length > 0) {
+        await db.collection('partners').updateMany(
+          { _id: { $in: memberPartnerIds } },
+          { $set: { organizationId: orgId } }
+        );
+      }
+
+      return NextResponse.json({ success: true });
+    }
+
     await connectV3();
-    const org = await V3Organization.findById(orgId).select('name slug').lean();
-    if (!org) {
+    const v3Organization = await V3Organization.findById(orgId).select('name slug').lean();
+    if (!v3Organization) {
       return NextResponse.json({ success: false, error: 'Organization not found' }, { status: 404 });
     }
 
@@ -104,7 +169,6 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
       { $set: { organizationId: new ObjectId(MASTER_ORG_ID) } }
     );
 
-    // Assign selected members to this org.
     if (memberPartnerIds.length > 0) {
       await V3Entity.updateMany(
         { _id: { $in: memberPartnerIds } },

@@ -346,9 +346,8 @@ export function usePartnerReportData(slug: string | null) {
 }
 
 /**
- * WHAT: Fetch report data for V3 organization
- * WHY: High-level reports aggregating data across all organization entities
- * HOW: Fetch from /api/v3/organizations/report/[id]
+ * WHAT: Fetch report data for organization reports
+ * WHY: Support admin organizations first, while preserving fallback access to older org routes
  */
 export function useOrganizationReportData(id: string | null) {
   const [data, setData] = useState<any | null>(null);
@@ -366,15 +365,25 @@ export function useOrganizationReportData(id: string | null) {
     setError(null);
 
     try {
-      const [reportRes, activitiesRes] = await Promise.all([
-        fetch(`/api/v3/organizations/report/${id}`, { cache: 'no-store' }),
-        fetch(`/api/v3/organizations/report/${id}/activities`, { cache: 'no-store' })
-      ]);
+      const fetchOrganizationBundle = async (basePath: string) => {
+        const [reportRes, activitiesRes] = await Promise.all([
+          fetch(`${basePath}/${id}`, { cache: 'no-store' }),
+          fetch(`${basePath}/${id}/activities`, { cache: 'no-store' }),
+        ]);
 
-      const [reportResult, activitiesResult] = await Promise.all([
-        reportRes.json(),
-        activitiesRes.json()
-      ]);
+        const [reportResult, activitiesResult] = await Promise.all([
+          reportRes.json(),
+          activitiesRes.json(),
+        ]);
+
+        return { reportResult, activitiesResult };
+      };
+
+      let { reportResult, activitiesResult } = await fetchOrganizationBundle('/api/organizations/report');
+
+      if (!reportResult.success) {
+        ({ reportResult, activitiesResult } = await fetchOrganizationBundle('/api/v3/organizations/report'));
+      }
 
       if (!reportResult.success) {
         throw new Error(reportResult.error || 'Failed to load organization report');

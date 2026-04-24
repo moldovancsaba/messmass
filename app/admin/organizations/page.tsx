@@ -2,16 +2,17 @@
 
 // app/admin/organizations/page.tsx
 // WHAT: Organization Management UI
-// WHY: Create organizations and assign member partners (one-org-per-partner)
+// WHY: Create organizations and manage partner membership with the unified admin design system
 
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import UnifiedAdminHeroWithSearch from '@/components/UnifiedAdminHeroWithSearch';
+import UnifiedAdminPage from '@/components/UnifiedAdminPage';
 import ColoredCard from '@/components/ColoredCard';
 import OrganizationMembersSelector from '@/components/OrganizationMembersSelector';
 import { FormModal } from '@/components/modals';
 import { apiDelete, apiPost, apiPut } from '@/lib/apiClient';
 import { useAdminAuth } from '@/hooks/useAdminAuth';
+import { organizationsAdapter } from '@/lib/adapters';
 
 type Organization = {
   _id: string;
@@ -22,6 +23,8 @@ type Organization = {
     emoji?: string;
     [key: string]: unknown;
   };
+  createdAt?: string;
+  updatedAt?: string;
 };
 
 type PartnerRow = {
@@ -56,7 +59,7 @@ export default function OrganizationsAdminPage() {
   const [savingMembers, setSavingMembers] = useState(false);
   const [membersError, setMembersError] = useState<string | null>(null);
 
-  const loadOrganizations = async () => {
+  const loadOrganizations = useCallback(async () => {
     setLoading(true);
     setError(null);
     try {
@@ -71,9 +74,9 @@ export default function OrganizationsAdminPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
-  const openMembers = async (org: Organization) => {
+  const openMembers = useCallback(async (org: Organization) => {
     setActiveOrg(org);
     setMembersModalOpen(true);
     setMembersError(null);
@@ -91,16 +94,16 @@ export default function OrganizationsAdminPage() {
     } finally {
       setPartnersLoading(false);
     }
-  };
+  }, []);
 
-  const setSelectedMembers = (memberIds: string[]) => {
+  const setSelectedMembers = useCallback((memberIds: string[]) => {
     const selectedIdSet = new Set(memberIds);
     setPartners((prev) =>
       prev.map((partner) => ({ ...partner, isMember: selectedIdSet.has(partner._id) }))
     );
-  };
+  }, []);
 
-  const saveMembers = async () => {
+  const saveMembers = useCallback(async () => {
     if (!activeOrg) return;
     setSavingMembers(true);
     setMembersError(null);
@@ -118,9 +121,9 @@ export default function OrganizationsAdminPage() {
     } finally {
       setSavingMembers(false);
     }
-  };
+  }, [activeOrg, loadOrganizations, partners]);
 
-  const deleteOrganization = async (org: Organization) => {
+  const deleteOrganization = useCallback(async (org: Organization) => {
     if (!confirm(`Delete organization "${org.name}"?`)) return;
     try {
       const data = await apiDelete(`/api/admin/organizations/${org._id}`);
@@ -131,9 +134,9 @@ export default function OrganizationsAdminPage() {
     } catch (e) {
       alert(e instanceof Error ? e.message : 'Failed to delete organization');
     }
-  };
+  }, [loadOrganizations]);
 
-  const createOrganization = async () => {
+  const createOrganization = useCallback(async () => {
     const name = newOrgName.trim();
     if (!name) return;
     setCreating(true);
@@ -151,16 +154,16 @@ export default function OrganizationsAdminPage() {
     } finally {
       setCreating(false);
     }
-  };
+  }, [loadOrganizations, newOrgName]);
 
-  const openEditOrganization = (org: Organization) => {
+  const openEditOrganization = useCallback((org: Organization) => {
     setEditOrgId(org._id);
     setEditOrgName(org.name);
     setEditOrgStatus(org.status || 'active');
     setEditOpen(true);
-  };
+  }, []);
 
-  const updateOrganization = async () => {
+  const updateOrganization = useCallback(async () => {
     if (!editOrgId || !editOrgName.trim()) return;
     setEditing(true);
     setError(null);
@@ -180,7 +183,7 @@ export default function OrganizationsAdminPage() {
     } finally {
       setEditing(false);
     }
-  };
+  }, [editOrgId, editOrgName, editOrgStatus, loadOrganizations]);
 
   useEffect(() => {
     if (!authLoading && !user) {
@@ -190,8 +193,46 @@ export default function OrganizationsAdminPage() {
     if (user) {
       loadOrganizations();
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [user, authLoading]);
+  }, [authLoading, loadOrganizations, router, user]);
+
+  const organizationsAdapterWithHandlers = useMemo(() => {
+    const mapAction = (label: string, org: Organization) => {
+      if (label === 'Report') {
+        return () => window.open(`/organization-report/${org._id}`, '_blank');
+      }
+      if (label === 'Edit Stats') {
+        return () => window.open(`/organization-edit/${org._id}`, '_blank');
+      }
+      if (label === 'Edit') {
+        return () => openEditOrganization(org);
+      }
+      if (label === 'Manage Members') {
+        return () => openMembers(org);
+      }
+      if (label === 'Delete') {
+        return () => deleteOrganization(org);
+      }
+      return () => {};
+    };
+
+    return {
+      ...organizationsAdapter,
+      listConfig: {
+        ...organizationsAdapter.listConfig,
+        rowActions: organizationsAdapter.listConfig.rowActions?.map((action) => ({
+          ...action,
+          handler: (org: Organization) => mapAction(action.label, org)(),
+        })),
+      },
+      cardConfig: {
+        ...organizationsAdapter.cardConfig,
+        cardActions: organizationsAdapter.cardConfig.cardActions?.map((action) => ({
+          ...action,
+          handler: (org: Organization) => mapAction(action.label, org)(),
+        })),
+      },
+    };
+  }, [deleteOrganization, openEditOrganization, openMembers]);
 
   if (authLoading || loading) {
     return (
@@ -204,11 +245,25 @@ export default function OrganizationsAdminPage() {
   if (!user) return null;
 
   return (
-    <div className="page-container">
-      <UnifiedAdminHeroWithSearch
+    <>
+      <UnifiedAdminPage
+        adapter={organizationsAdapterWithHandlers}
+        items={organizations}
+        isLoading={loading}
         title="🏢 Organization Management"
-        subtitle="Create organizations and manage member partners (a partner can belong to only one organization)"
+        subtitle="Create organizations, assign partner members, and open report/editor tools"
         backLink="/admin"
+        actionButtons={[
+          {
+            label: 'Add Organization',
+            onClick: () => setCreateOpen(true),
+            variant: 'primary',
+            icon: '+',
+            title: 'Create a new organization',
+          },
+        ]}
+        enableSearch
+        enableSort
       />
 
       {error && (
@@ -216,84 +271,6 @@ export default function OrganizationsAdminPage() {
           <div className="text-sm">{error}</div>
         </ColoredCard>
       )}
-
-      <ColoredCard accentColor="#3b82f6" hoverable={false} className="mb-6">
-        <div className="flex items-center justify-between gap-4">
-          <div>
-            <h2 className="text-lg font-semibold text-gray-900">Organizations</h2>
-            <p className="text-sm text-gray-600">Create, delete, and manage memberships.</p>
-          </div>
-          <button className="btn btn-primary" onClick={() => setCreateOpen(true)}>
-            + Add Organization
-          </button>
-        </div>
-      </ColoredCard>
-
-      <ColoredCard accentColor="#06b6d4" hoverable={false}>
-        {organizations.length === 0 ? (
-          <div className="text-gray-600">No organizations yet.</div>
-        ) : (
-          <div className="overflow-x-auto">
-            <table className="admin-table">
-              <thead>
-                <tr>
-                  <th>Name</th>
-                  <th>Slug</th>
-                  <th>Status</th>
-                  <th className="text-right">Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                {organizations.map((org) => (
-                  <tr key={org._id}>
-                    <td className="font-medium">
-                      <div className="flex items-center gap-2">
-                        <span>{org.metadata?.emoji || '🏢'}</span>
-                        <span>{org.name}</span>
-                      </div>
-                    </td>
-                    <td>
-                      <code className="px-2 py-1 bg-gray-100 rounded text-sm text-blue-600 font-mono">
-                        {org.slug}
-                      </code>
-                    </td>
-                    <td>
-                      <span className={org.status === 'inactive' ? 'text-red-600' : 'text-green-700'}>
-                        {org.status || 'active'}
-                      </span>
-                    </td>
-                    <td className="text-right">
-                      <div className="flex justify-end gap-2 flex-wrap">
-                        <button
-                          className="btn btn-small btn-secondary"
-                          onClick={() => window.open(`/organization-report/${org._id}`, '_blank')}
-                        >
-                          Report
-                        </button>
-                        <button
-                          className="btn btn-small btn-secondary"
-                          onClick={() => window.open(`/organization-edit/${org._id}`, '_blank')}
-                        >
-                          Edit Stats
-                        </button>
-                        <button className="btn btn-small btn-secondary" onClick={() => openEditOrganization(org)}>
-                          Edit
-                        </button>
-                        <button className="btn btn-small btn-secondary" onClick={() => openMembers(org)}>
-                          Manage Members
-                        </button>
-                        <button className="btn btn-small btn-danger" onClick={() => deleteOrganization(org)}>
-                          Delete
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        )}
-      </ColoredCard>
 
       <FormModal
         isOpen={createOpen}
@@ -384,6 +361,6 @@ export default function OrganizationsAdminPage() {
           />
         )}
       </FormModal>
-    </div>
+    </>
   );
 }
