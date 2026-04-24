@@ -1,6 +1,6 @@
 // app/api/admin/organizations/[id]/members/route.ts
-// WHAT: Read + update V3 entity membership for an organization
-// WHY: Organization Management must reflect the actual V3 org/entity model
+// WHAT: Read + update entity membership for an organization
+// WHY: Organization Management must reflect the canonical org/entity model
 
 import { NextRequest, NextResponse } from 'next/server';
 import { ObjectId } from 'mongodb';

@@ -1,5 +1,5 @@
 // app/api/admin/organizations/route.ts
-// WHAT: Admin CRUD for real V3 organizations
+// WHAT: Admin CRUD for canonical organizations
 // WHY: Organization Management must operate on the same data model as reports/editors
 
 import { NextRequest, NextResponse } from 'next/server';

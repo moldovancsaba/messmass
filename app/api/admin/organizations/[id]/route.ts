@@ -1,6 +1,6 @@
 // app/api/admin/organizations/[id]/route.ts
 // WHAT: Admin Organization details, editing, and delete
-// WHY: Organization editor and admin page both need to operate on the real V3 organization
+// WHY: Organization editor and admin page both need to operate on the canonical organization model
 
 import { NextRequest, NextResponse } from 'next/server';
 import { ObjectId } from 'mongodb';

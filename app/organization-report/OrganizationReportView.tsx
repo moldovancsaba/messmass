@@ -2,7 +2,7 @@
 
 /**
  * Organization Report View
- * WHAT: Aggregated report for V3 Organizations
+ * WHAT: Aggregated report for organizations
  * WHY: High-level stakeholders need to see metrics across all their sub-entities
  */
 import React, { useMemo } from 'react';
@@ -47,7 +47,7 @@ export default function OrganizationReportView({ id }: { id: string }) {
   });
 
   // WHAT: Calculate chart results base on aggregated stats
-  // WHY: V3 engine uses same aggregation logic as V2 but at org-level
+  // WHY: The organization hierarchy uses the same aggregation logic as partner reports, but at org-level
   const chartResults = useMemo(() => {
     const chartsArray: any[] = []; 
     if (!stats || chartsArray.length === 0) return new Map();
