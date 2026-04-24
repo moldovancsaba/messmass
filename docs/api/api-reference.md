@@ -4,8 +4,8 @@ Last Updated: 2026-04-24T13:30:00.000Z
 Canonical: Yes
 Owner: Backend
 
-**Version:** 12.1.7  
-**Last Updated:** 2026-04-24T13:30:00.000Z (UTC)  
+**Version:** 12.1.8  
+**Last Updated:** 2026-04-24T16:10:00.000Z (UTC)  
 **Status:** Production
 
 Quick API reference for {messmass}. See detailed guides for complete schemas and examples.
@@ -73,7 +73,7 @@ Delete partner.
 
 ---
 
-## Organizations API (v12.1.7+)
+## Organizations API (v12.1.8+)
 
 All admin organization endpoints require an authenticated admin session and `superadmin` role.
 
@@ -89,6 +89,13 @@ Fetch a single organization for admin/editor use.
 ### PUT /api/admin/organizations/[id]
 Update an organization. Body: `{ name?, slug?, status?, metadata? }`
 
+Organization metadata supports report-generation parity fields:
+- `metadata.styleId`
+- `metadata.reportTemplateId` (legacy-compatible mirror: `metadata.reportId`)
+- `metadata.clickerSetId`
+- `metadata.logoUrl`
+- `metadata.emoji`
+
 ### PATCH /api/admin/organizations/[id]
 Alias of `PUT /api/admin/organizations/[id]`.
 
@@ -103,6 +110,11 @@ Apply bulk membership assignment. Body: `{ memberPartnerIds: string[] }`
 
 ### GET /api/organizations/report/[id]
 Get aggregated metrics, resolved report config, and member partner list for admin-managed organizations.
+
+Report resolution precedence:
+1. `organization.metadata.reportTemplateId`
+2. `organization.metadata.reportId` (legacy compatibility)
+3. default partner report template
 
 ### GET /api/organizations/report/[id]/activities
 Get the aggregated activity list derived from projects owned by member partners.

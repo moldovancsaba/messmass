@@ -45,6 +45,18 @@ The report aggregates:
 
 The editor persists organization report metadata through the same admin organization API.
 
+Organization editor report configuration parity fields:
+- **Report Visual Style** (`metadata.styleId`)
+- **Report Template** (`metadata.reportTemplateId`, with legacy mirror `metadata.reportId`)
+- **Clicker Set** (`metadata.clickerSetId`)
+- **Organization Logo URL** (`metadata.logoUrl`)
+- **Organization Emoji / visibility** (`metadata.emoji`, `metadata.showEmoji`)
+
+Template resolution on organization report pages:
+1. `metadata.reportTemplateId`
+2. `metadata.reportId` (backward compatibility)
+3. default partner report template
+
 ## 5. Deleting Organizations
 - Deletion is available from the organization row action menu.
 - An organization **cannot** be deleted while Partners are still assigned.

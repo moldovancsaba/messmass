@@ -566,6 +566,8 @@ export default function HelpPage() {
             <li><strong>Report URL:</strong> <code>/organization-report/[id]</code></li>
             <li><strong>Editor URL:</strong> <code>/organization-edit/[id]</code></li>
             <li>Reports aggregate organization metadata, assigned partners, and related projects/events</li>
+            <li>Editor supports report-style, report-template, clicker-set, emoji, and logo configuration</li>
+            <li>Organization template resolution uses <code>reportTemplateId</code>, then legacy <code>reportId</code>, then default template</li>
           </ul>
         </section>
 
@@ -692,7 +694,7 @@ export default function HelpPage() {
 
         <footer className={styles.footer}>
           <p>
-            <strong>{'{messmass}'} Version 12.1.7</strong><br />
+            <strong>{'{messmass}'} Version 12.1.8</strong><br />
             Last Updated: 2026-04-24T13:30:00.000Z (UTC)
           </p>
           <p>

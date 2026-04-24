@@ -45,7 +45,7 @@ export default function OrganizationEditPage() {
 
   // WHAT: Apply report style colors to editor
   const { loading: styleLoading } = useReportStyle({ 
-    styleId: organization?.metadata?.reportId ? String(organization.metadata.reportId) : null,
+    styleId: organization?.metadata?.styleId ? String(organization.metadata.styleId) : null,
     enabled: !!organization 
   });
 

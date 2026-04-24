@@ -1,8 +1,36 @@
 # {messmass} Release Notes
 Status: Active
-Last Updated: 2026-04-24T13:30:00.000Z
+Last Updated: 2026-04-24T16:10:00.000Z
 Canonical: No
 Owner: Operations
+
+## [v12.1.8] — 2026-04-24T16:10:00.000Z
+
+### Summary
+🏢 **ORGANIZATION REPORT GENERATION PARITY**: Brought organization editor/report configuration to partner-level parity with dropdown-based style/template/clicker/logo controls, plus resolver compatibility hardening.
+
+### What Was Fixed
+
+#### Organization editor report-config parity ✅
+**WHAT**: Added organization-level report configuration controls for style, template, clicker set, logo, and emoji visibility in `/organization-edit/[id]`.  
+**WHY**: Superadmins need the same report-generation control surface for organizations as partners, without introducing non-standard UI patterns.  
+**HOW**: Extended `OrganizationEditorDashboard` to load options from `/api/report-styles`, `/api/report-templates?includeAssociations=false`, and `/api/clicker-sets`, then persist metadata through `/api/admin/organizations/[id]`.
+
+#### Style application mismatch fix ✅
+**WHAT**: Fixed editor style application to use `organization.metadata.styleId`.  
+**WHY**: The previous implementation incorrectly used `metadata.reportId`, so style preview could not match configured organization themes.  
+**HOW**: Updated `/organization-edit/[id]` to pass `metadata.styleId` into `useReportStyle`.
+
+#### Organization report template resolver alignment ✅
+**WHAT**: Organization report API now resolves explicit templates via `metadata.reportTemplateId` first, with `metadata.reportId` as legacy fallback.  
+**WHY**: Ensures parity with modern dropdown configuration while preserving older organization records and preventing data-loss regressions.  
+**HOW**: Updated `/api/organizations/report/[id]` template resolution order and kept fallback compatibility.
+
+### Testing
+- ✅ `npm run build`
+
+### Version
+v12.1.7 → v12.1.8 (PATCH — organization report generation parity + resolver/style alignment)
 
 ## [v12.1.7] — 2026-04-24T13:30:00.000Z
 

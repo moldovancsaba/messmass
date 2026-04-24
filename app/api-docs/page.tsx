@@ -205,6 +205,16 @@ export default function APIDocsPage() {
           <p>
             These endpoints power the <code>/organization-report/[id]</code> view and aggregate organization metadata, assigned partners, and related projects.
           </p>
+          <ul>
+            <li>
+              Organization metadata supports partner-parity report fields: <code>styleId</code>, <code>reportTemplateId</code>,
+              <code> clickerSetId</code>, <code>logoUrl</code>, and <code>emoji</code>.
+            </li>
+            <li>
+              Report resolution order is <code>metadata.reportTemplateId</code> then legacy <code>metadata.reportId</code>,
+              then system default.
+            </li>
+          </ul>
         </section>
 
         <section id="fanmass-integration" className={styles.section}>
@@ -582,7 +592,7 @@ curl -X POST \\
 
         <footer className={styles.footer}>
           <p>
-            <strong>{'{messmass}'} API Documentation — Version 12.1.7</strong><br />
+            <strong>{'{messmass}'} API Documentation — Version 12.1.8</strong><br />
             Last Updated: April 24, 2026
           </p>
           <p>

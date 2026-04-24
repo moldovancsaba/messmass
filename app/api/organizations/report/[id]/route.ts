@@ -12,6 +12,7 @@ type OrganizationRecord = {
     emoji?: string;
     logoUrl?: string;
     reportId?: string;
+    reportTemplateId?: string;
     styleId?: string;
     stats?: Record<string, number | string>;
     [key: string]: unknown;
@@ -105,7 +106,8 @@ export async function GET(
 
     const resolver = createReportResolver(db);
     const metadata = organization.metadata || {};
-    const explicitReport = metadata.reportId ? await resolver.getReportById(metadata.reportId) : null;
+    const explicitReportId = metadata.reportTemplateId || metadata.reportId;
+    const explicitReport = explicitReportId ? await resolver.getReportById(explicitReportId) : null;
     const resolved = explicitReport
       ? { report: explicitReport, resolvedFrom: 'organization', source: organization.name }
       : await resolver.getDefaultReport('partner');

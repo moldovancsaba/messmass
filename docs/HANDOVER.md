@@ -2,7 +2,7 @@
 
 This file is onboarding plus operational context for the next agent. Keep it accurate when behavior, process, or current delivery state changes.
 
-**Last Updated:** 2026-04-24 (Organization admin data flow and documentation sync)
+**Last Updated:** 2026-04-24 (Organization report-generation parity + documentation sync)
 
 ## 🚨 CRITICAL MUST-READ FOR ALL AGENTS: STYLING & COMPONENTS 🚨
 
@@ -65,6 +65,15 @@ You MUST completely read and obey `docs/coding-standards.md` and `docs/component
 - Style editor preview updates immediately for bar/pie CSS vars and includes Value Chain and Landing page sections.
 
 ## Handover Log
+
+## 2026-04-24 — Organization report-generation parity
+- **Objective:** Deliver organization report-generation parity with partner-level controls while preserving existing organization/member data.
+- **Editor parity:** Extended `/organization-edit/[id]` via `OrganizationEditorDashboard` with report-style, report-template, clicker-set, logo URL, and emoji visibility controls, using existing dropdown sources and design-system form classes.
+- **Compatibility-safe persistence:** Organization settings persist through `/api/admin/organizations/[id]` metadata updates, with legacy `reportId` mirrored from `reportTemplateId` to avoid regressions.
+- **Resolver alignment:** Updated `/api/organizations/report/[id]` to resolve templates via `metadata.reportTemplateId`, fallback `metadata.reportId`, then default partner template.
+- **Style wiring fix:** Organization editor now applies styles from `metadata.styleId` instead of `metadata.reportId`.
+- **Documentation/version sync:** Bumped product version to `v12.1.8` and updated README, release notes, API docs, architecture notes, admin guide, and in-app API docs content.
+- **Verification:** `npm run build` passed.
 
 ## 2026-04-24 — Organization admin data flow + docs sync
 - **Objective:** Restore the shipped Organizations feature on top of the live `organizations` + `partners` data and synchronize product documentation/versioning.

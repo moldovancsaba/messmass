@@ -4,7 +4,12 @@ Last Updated: 2026-04-24
 Canonical: No
 Owner: Architecture
 
-Version: 12.1.7
+Version: 12.1.8
+
+**Organization Report Parity (2026-04-24):**
+- **Config Parity in Org Editor**: Added style/template/clicker/logo/emoji settings to `/organization-edit/[id]` with the same dropdown-source model used by partner configuration.
+- **Resolver Compatibility**: Organization reports now prefer `metadata.reportTemplateId`, then fall back to legacy `metadata.reportId`, then default template.
+- **Style Wiring Fix**: Organization editor style injection now correctly reads `metadata.styleId` (not `reportId`).
 
 **Organization Admin Data Flow Recovery (2026-04-24):**
 - **Live Admin Collections Restored**: Organization CRUD now targets the `organizations` collection and partner membership uses `partners.organizationId`.
