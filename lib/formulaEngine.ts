@@ -1,6 +1,7 @@
 // lib/formulaEngine.ts - Formula parsing and safe evaluation engine
 // DYNAMIC VARIABLE SYSTEM: Fetches variables from KYC/variables_metadata collection (92 variables)
-// Returns 'NA' for division by zero, missing variables, or invalid expressions
+// Returns 'NA' for division by zero or invalid expressions
+// Missing variables/fields are treated as 0 by default (graceful degradation)
 //
 // V12 ARCHITECTURE NOTE (v12.0.0+):
 // WHAT: This is the SINGLE formula evaluation engine used across the entire system
