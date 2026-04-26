@@ -163,6 +163,8 @@ export default function PagePasswordLogin({
         return 'Partner Report';
       case 'edit':
         return 'Editor';
+      case 'organization-edit':
+        return 'Organization Editor';
       case 'filter':
         return 'Filter';
       default:

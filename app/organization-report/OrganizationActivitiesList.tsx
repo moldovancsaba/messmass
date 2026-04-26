@@ -17,29 +17,40 @@ interface Activity {
 interface OrganizationActivitiesListProps {
   activities: Activity[];
   organizationName: string;
+  showList?: boolean;
+  showTitle?: boolean;
+  showDetails?: boolean;
 }
 
-export default function OrganizationActivitiesList({ activities, organizationName }: OrganizationActivitiesListProps) {
-  if (!activities || activities.length === 0) {
+export default function OrganizationActivitiesList({
+  activities,
+  organizationName,
+  showList = true,
+  showTitle = true,
+  showDetails = true,
+}: OrganizationActivitiesListProps) {
+  if (!showList || !activities || activities.length === 0) {
     return null;
   }
 
   return (
     <div className={styles.activitiesSection}>
-      <h2 className={styles.title}>
-        {organizationName} Events ({activities.length})
-      </h2>
+      {showTitle && (
+        <h2 className={styles.title}>
+          {organizationName} Events ({activities.length})
+        </h2>
+      )}
       
       <div className={styles.activitiesGrid}>
         {activities.map((activity) => (
-          <ActivityCard key={activity._id} activity={activity} />
+          <ActivityCard key={activity._id} activity={activity} showDetails={showDetails} />
         ))}
       </div>
     </div>
   );
 }
 
-function ActivityCard({ activity }: { activity: Activity }) {
+function ActivityCard({ activity, showDetails }: { activity: Activity; showDetails: boolean }) {
   const formattedDate = activity.startDate ? formatDate(activity.startDate) : 'TBD';
   const viewSlug = activity.metadata?.viewSlug;
 
@@ -49,11 +60,11 @@ function ActivityCard({ activity }: { activity: Activity }) {
     <>
       <div className={styles.activityHeader}>
         <h3 className={styles.activityName}>{activity.name}</h3>
-        <p className={styles.activityDate}>{formattedDate}</p>
-        <span className={styles.activityType}>Event</span>
+        {showDetails && <p className={styles.activityDate}>{formattedDate}</p>}
+        {showDetails && <span className={styles.activityType}>Event</span>}
       </div>
       
-      {viewSlug && (
+      {showDetails && viewSlug && (
         <div className={styles.activityAction}>
           <span className={styles.actionText}>View Report</span>
           <span className={styles.actionArrow}>→</span>
