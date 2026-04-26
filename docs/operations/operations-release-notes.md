@@ -1,8 +1,39 @@
 # {messmass} Release Notes
 Status: Active
-Last Updated: 2026-04-24T16:10:00.000Z
+Last Updated: 2026-04-27T14:05:00.000Z
 Canonical: No
 Owner: Operations
+
+## [v12.1.9] — 2026-04-27T14:05:00.000Z
+
+### Summary
+🏢 **ORGANIZATION EDIT PARITY + VERSION RECOVERY**: Brought the organization edit flow to the same password-gated model as partner edit, added report list visibility controls, and corrected version drift on `preview`.
+
+### What Was Fixed
+
+#### Organization edit access parity ✅
+**WHAT**: Reworked `/organization-edit/[id]` to use the same password-gated access model as partner edit.  
+**WHY**: Organization editing was functionally inconsistent with the partner editing flow and could not be used as the equivalent self-service entry point.  
+**HOW**: Added `organization-edit` password support, wired `/organization-edit/[id]` through `PagePasswordLogin`, and introduced `/api/organizations/edit/[id]` for public edit access.
+
+#### Organization report list controls ✅
+**WHAT**: Added member/event list visibility, title, and detail toggles to the organization editor and report surface.  
+**WHY**: Organization report output needed the same level of content control expected from partner-facing editing workflows.  
+**HOW**: Extended `OrganizationEditorDashboard` metadata handling and updated organization report list components to respect the new settings.
+
+#### Validation and version sync ✅
+**WHAT**: Fixed preview branch version drift and validated the branch on the declared Node 24 runtime.  
+**WHY**: The branch had shipped new code while still identifying itself as `v12.1.8`, which made the actual build identity ambiguous.  
+**HOW**: Bumped repo version references to `v12.1.9`, synced package metadata, and revalidated build/lint/type-check/version gates.
+
+### Testing
+- ✅ `npm run lint`
+- ✅ `npm run build`
+- ✅ `npm run type-check`
+- ✅ `npm run version:verify`
+
+### Version
+v12.1.8 → v12.1.9 (PATCH — organization edit parity, report controls, and version sync)
 
 ## [v12.1.8] — 2026-04-24T16:10:00.000Z
 

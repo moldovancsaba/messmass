@@ -694,7 +694,7 @@ export default function HelpPage() {
 
         <footer className={styles.footer}>
           <p>
-            <strong>{'{messmass}'} Version 12.1.8</strong><br />
+            <strong>{'{messmass}'} Version 12.1.9</strong><br />
             Last Updated: 2026-04-24T13:30:00.000Z (UTC)
           </p>
           <p>

@@ -4,7 +4,7 @@ Last Updated: 2026-04-24
 Canonical: No
 Owner: Architecture
 
-Version: 12.1.8
+Version: 12.1.9
 
 **Organization Report Parity (2026-04-24):**
 - **Config Parity in Org Editor**: Added style/template/clicker/logo/emoji settings to `/organization-edit/[id]` with the same dropdown-source model used by partner configuration.

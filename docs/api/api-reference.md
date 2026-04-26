@@ -4,7 +4,7 @@ Last Updated: 2026-04-24T13:30:00.000Z
 Canonical: Yes
 Owner: Backend
 
-**Version:** 12.1.8  
+**Version:** 12.1.9  
 **Last Updated:** 2026-04-24T16:10:00.000Z (UTC)  
 **Status:** Production
 
@@ -73,7 +73,7 @@ Delete partner.
 
 ---
 
-## Organizations API (v12.1.8+)
+## Organizations API (v12.1.9+)
 
 All admin organization endpoints require an authenticated admin session and `superadmin` role.
 
