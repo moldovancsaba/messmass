@@ -126,13 +126,6 @@ export interface ChartConfiguration {
    */
   iconVariant?: 'outlined' | 'rounded';
   
-  /**
-   * @deprecated Use `icon` field instead (v10.4.0)
-   * WHAT: Legacy emoji field for backward compatibility
-   * WHY: Maintained temporarily during migration period
-   */
-  emoji?: string; // Chart center emoji for pie charts (e.g., "👥", "📍", "🌐")
-  
   subtitle?: string; // Optional subtitle/description
   showTotal?: boolean; // Whether to show total value above bars
   totalLabel?: string; // Custom label for total (e.g., "possible merch sales", "Advertisement Value")
@@ -146,12 +139,6 @@ export interface ChartConfiguration {
   // WHY: Enforces 1-unit or 2-unit system for deterministic layout
   // HOW: 1 = compact/portrait, 2 = detailed/landscape
   cellWidth?: CellWidth;
-
-  // WHAT: Legacy width field (pre-spec v2.0) - DEPRECATED
-  // WHY: Backward compatibility during migration period
-  // HOW: Will be removed in v13.0.0, use cellWidth instead
-  // @deprecated Use cellWidth (1 | 2) instead of width. Migration: width > 2 → cellWidth = 2
-  width?: number;
   
   // WHAT: HERO block visibility settings for report templates
   // WHY: Allow fine-grained control over which header elements appear in reports
@@ -172,6 +159,11 @@ export interface ChartConfiguration {
   // WHY: Allow pie charts to hide percentages in legend/tooltips
   // HOW: Controls whether "Label: 25%" or just "Label" appears
   showPercentages?: boolean;
+
+  // WHAT: Markdown rendering preset (v12.2.0, Issue #48)
+  // WHY: Allow different visual styles for text content (e.g., standard, compact, hero)
+  // HOW: Determines which CSS classes are applied to the markdown content
+  preset?: 'standard' | 'compact' | 'hero' | 'callout';
 }
 
 /**
@@ -211,15 +203,6 @@ export interface AvailableVariable {
   alias?: string; // User-defined display alias for white-labeling
 }
 
-/**
- * DEPRECATED: Use fetchAvailableVariables() from formulaEngine.ts
- * 
- * This constant is kept for backward compatibility only.
- * All new code MUST fetch variables dynamically from KYC system.
- * 
- * @deprecated Use `await fetchAvailableVariables()` instead
- */
-export const AVAILABLE_VARIABLES: AvailableVariable[] = [];
 
 /**
  * RULE: Chart system MUST fetch variables from KYC
@@ -265,9 +248,6 @@ export interface ChartCalculationResult {
   /** WHAT: Material Icon variant (v10.4.0) */
   iconVariant?: 'outlined' | 'rounded';
   
-  /** @deprecated Use `icon` field instead (v10.4.0) */
-  emoji?: string; // Chart emoji from configuration
-  
   subtitle?: string; // Chart subtitle from configuration
   totalLabel?: string; // Custom total label from configuration
   elements: {
@@ -292,13 +272,3 @@ export interface ChartCalculationResult {
   hasErrors: boolean; // Whether any element had calculation errors
 }
 
-/**
- * DEPRECATED: Hardcoded chart configurations removed
- * 
- * WHAT: All chart configurations are now stored in MongoDB only
- * WHY: Single source of truth, no fallbacks, full database control
- * HOW: Use `node scripts/seed-default-charts.js` to initialize database
- * 
- * @deprecated All charts must be managed via database. No hardcoded fallbacks.
- */
-export const DEFAULT_CHART_CONFIGURATIONS: Omit<ChartConfiguration, '_id' | 'createdAt' | 'updatedAt'>[] = [];

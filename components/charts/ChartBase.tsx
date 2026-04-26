@@ -23,7 +23,7 @@ interface ChartBaseProps {
   title: string;
   subtitle?: string;
   children: ReactNode;
-  chartRef: React.RefObject<ChartJS>;
+  chartRef: React.RefObject<ChartJS | null>;
   filename?: string;
   showExport?: boolean;
   className?: string;

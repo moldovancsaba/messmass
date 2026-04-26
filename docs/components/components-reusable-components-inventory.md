@@ -1,11 +1,11 @@
 # {messmass} Reusable Components & Styling System Inventory
 Status: Active
-Last Updated: 2026-01-11T22:28:38.000Z
+Last Updated: 2026-04-24
 Canonical: No
 Owner: Architecture
 
-**Version**: 9.1.2  
-**Last Updated**: 2026-01-11T22:28:38.000Z (UTC)  
+**Version**: 12.1.8  
+**Last Updated**: 2026-04-24 (UTC)  
 **Purpose**: Complete catalog of all reusable components, modules, styling systems, and utilities
 
 ---
@@ -184,20 +184,20 @@ import ColoredHashtagBubble from '@/components/ColoredHashtagBubble';
 
 ### 4. Admin UI Components
 
-#### AdminHero / UnifiedAdminHero
-**Files**: `components/AdminHero.tsx`, `components/UnifiedAdminHero.tsx`  
-**CSS**: `components/AdminHero.module.css`  
-**Usage**: Page headers with search/actions
+#### UnifiedAdminHeroWithSearch (Mandatory)
+**File**: `components/UnifiedAdminHeroWithSearch.tsx`  
+**CSS**: `app/styles/theme.css` (Design tokens)
+**Usage**: Standard page headers for all administrative surfaces
 ```tsx
-import AdminHero from '@/components/AdminHero';
-<AdminHero
+import UnifiedAdminHeroWithSearch from '@/components/UnifiedAdminHeroWithSearch';
+<UnifiedAdminHeroWithSearch
   title="📊 Project Management"
   searchPlaceholder="Search projects..."
   onSearchChange={handleSearch}
   actions={<button>Add Project</button>}
 />
 ```
-**Features**: Consistent styling, search integration, action slot, breadcrumbs
+**Features**: Integrated search, action slots, badge support, breadcrumb navigation, and consistent width scaling via `.page-container`.
 
 #### AdminLayout
 **File**: `components/AdminLayout.tsx`  
@@ -208,9 +208,11 @@ import AdminLayout from '@/components/AdminLayout';
 export default function Page() {
   return (
     <AdminLayout>
-      <AdminHero title="Page Title" />
+      <UnifiedAdminHeroWithSearch title="Page Title" />
       {/* content */}
     </AdminLayout>
+  );
+}
   );
 }
 ```
@@ -250,6 +252,20 @@ import ProjectSelector from '@/components/ProjectSelector';
   onSelect={setProjectId}
 />
 ```
+
+#### OrganizationMembersSelector
+**File**: `components/OrganizationMembersSelector.tsx`  
+**CSS**: `components/OrganizationMembersSelector.module.css`  
+**Usage**: Predictive-search multi-select for organization member assignment
+```tsx
+import OrganizationMembersSelector from '@/components/OrganizationMembersSelector';
+<OrganizationMembersSelector
+  members={members}
+  onChange={setSelectedMemberIds}
+  placeholder="Search members..."
+/>
+```
+**Features**: Predictive search, selected chips, keyboard navigation, explicit save flow in organization membership modal
 
 ---
 
@@ -434,6 +450,9 @@ import InsightCard from '@/components/analytics/InsightCard';
 - **`export/pdf.ts`**: PDF generation with html2canvas
 - **`performanceUtils.ts`**: Performance monitoring utilities
 
+### V3 Infrastructure
+- **`v3/middleware.ts`**: Organization context injection and scoping
+
 ---
 
 ## 🎯 Utility CSS Classes (`app/styles/utilities.css`)
@@ -526,7 +545,7 @@ Located in `lib/shareables/auth/`:
 ### ✅ MUST DO:
 1. Search existing implementations first (see CODING_STANDARDS.md)
 2. Use design tokens exclusively
-3. Follow established patterns (FormModal lines 1-245, etc.)
+3. Follow established patterns (UnifiedAdminHeroWithSearch, etc.)
 4. Run verification: `grep -r "style={{" app/` (should return 0 results)
 5. Add WHAT/WHY comments to all code
 6. Ensure mobile responsiveness
@@ -545,4 +564,4 @@ For implementation details, see:
 
 ---
 
-*Version: 9.2.1 | Last Updated: 2025-11-02T00:21:00.000Z (UTC)*
+*Version: 12.1.8 | Last Updated: 2026-04-24 (UTC)*

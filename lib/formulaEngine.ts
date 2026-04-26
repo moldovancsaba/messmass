@@ -1,6 +1,7 @@
 // lib/formulaEngine.ts - Formula parsing and safe evaluation engine
 // DYNAMIC VARIABLE SYSTEM: Fetches variables from KYC/variables_metadata collection (92 variables)
-// Returns 'NA' for division by zero, missing variables, or invalid expressions
+// Returns 'NA' for division by zero or invalid expressions
+// Missing variables/fields are treated as 0 by default (graceful degradation)
 //
 // V12 ARCHITECTURE NOTE (v12.0.0+):
 // WHAT: This is the SINGLE formula evaluation engine used across the entire system
@@ -909,19 +910,6 @@ export function evaluateFormulasBatch(
   return formulas.map(formula => evaluateFormula(formula, stats));
 }
 
-/**
- * DEPRECATED: Use fetchAvailableVariables() instead
- * 
- * Gets all available variables with their descriptions
- * Useful for building variable picker UIs
- * 
- * @deprecated Use async fetchAvailableVariables() for dynamic KYC data
- * @returns Array of available variables from cache or empty array
- */
-export function getAvailableVariables(): AvailableVariable[] {
-  console.warn('⚠️ getAvailableVariables() is deprecated. Use fetchAvailableVariables() instead.');
-  return fetchAvailableVariablesSync();
-}
 
 /**
  * WHAT: Checks if a specific variable exists in KYC system or is a content asset token

@@ -6,7 +6,7 @@
 
 import React, { useState, useEffect, useCallback } from 'react';
 import { useRouter, useParams } from 'next/navigation';
-import AdminHero from '@/components/AdminHero';
+import UnifiedAdminHeroWithSearch from '@/components/UnifiedAdminHeroWithSearch';
 import ColorPickerField from '@/components/ColorPickerField';
 import ReportStylePreview from '@/components/ReportStylePreview';
 import MaterialIcon from '@/components/MaterialIcon';
@@ -131,7 +131,7 @@ export default function StyleEditorPage() {
   if (loading) {
     return (
       <div className={styles.container}>
-        <AdminHero 
+        <UnifiedAdminHeroWithSearch 
           title={isNew ? 'Create Style' : 'Edit Style'} 
           subtitle="Loading..." 
         />
@@ -146,7 +146,7 @@ export default function StyleEditorPage() {
   if (error) {
     return (
       <div className={styles.container}>
-        <AdminHero 
+        <UnifiedAdminHeroWithSearch 
           title={isNew ? 'Create Style' : 'Edit Style'} 
           subtitle="Error" 
         />
@@ -177,7 +177,7 @@ export default function StyleEditorPage() {
 
   return (
     <div className={styles.container}>
-      <AdminHero 
+      <UnifiedAdminHeroWithSearch 
         title={isNew ? 'Create New Style' : `Edit: ${style.name}`}
         subtitle="Customize colors with live preview"
       />

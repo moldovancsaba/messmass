@@ -23,6 +23,7 @@ Owner: Documentation
 - [V3/messmass_v3_api_specification.md](V3/messmass_v3_api_specification.md) — (Active) V3 REST API specification.
 - [V3/messmass_v3_migration_playbook.md](V3/messmass_v3_migration_playbook.md) — Migration execution and operational rules.
 - [V3/messmass_v3_quickstart_guide.md](V3/messmass_v3_quickstart_guide.md) — (NEW) Admin quickstart guide for V3 data management.
+- [guides/admin/organizations.md](guides/admin/organizations.md) — (NEW) Administrator guide for Organization management and reporting.
 
 ## Security
 - [security-overview.md](security/security-overview.md) — Canonical entrypoint and pointers to archived audits and phase closure docs.

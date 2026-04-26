@@ -1,4 +1,4 @@
-# Messmass v3 -- Configuration Management
+# {messmass} v3 -- Configuration Management
 
 Purpose: Manage environment configuration and feature flags.
 

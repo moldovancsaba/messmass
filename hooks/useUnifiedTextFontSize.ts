@@ -20,7 +20,7 @@ import { calculateUnifiedFontSize } from '@/lib/textFontSizeCalculator';
 export function useUnifiedTextFontSize(
   chartResults: Map<string, ChartResult>,
   chartIds: string[],
-  blockRef: React.RefObject<HTMLDivElement>
+  blockRef: React.RefObject<HTMLDivElement | null>
 ): number | null {
   const [unifiedFontSize, setUnifiedFontSize] = useState<number | null>(null);
   const calculationTimeoutRef = useRef<NodeJS.Timeout | null>(null);
@@ -213,4 +213,3 @@ export function useUnifiedTextFontSize(
 
   return unifiedFontSize;
 }
-

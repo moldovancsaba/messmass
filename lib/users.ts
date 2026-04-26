@@ -36,6 +36,11 @@ export interface UserDoc {
   apiWriteEnabled?: boolean // Enable/disable API write access for this user (default: false)
   apiWriteCount?: number // Track API write operations made with this user's key
   lastAPIWriteAt?: string // ISO 8601 with milliseconds - last successful API write operation
+  
+  // WHAT: Multi-tenant organization scoping (v12.1.1+)
+  // WHY: Restrict organization reporting to specific IDs for non-superadmins
+  organizationIds?: string[]
+  
   createdAt: string // ISO 8601 with milliseconds
   updatedAt: string // ISO 8601 with milliseconds
 }

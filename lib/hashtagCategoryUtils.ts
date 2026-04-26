@@ -215,22 +215,6 @@ export function extractAllCategorizedHashtags(categorizedHashtags: CategorizedHa
   return Array.from(allHashtags).sort();
 }
 
-/**
- * Finds which category a hashtag belongs to (first match only)
- * Returns undefined if hashtag is not in any category
- * @deprecated Use findHashtagCategories for multi-category support
- */
-export function findHashtagCategory(
-  hashtag: string,
-  categorizedHashtags: CategorizedHashtagMap
-): string | undefined {
-  for (const [categoryName, hashtags] of Object.entries(categorizedHashtags)) {
-    if (hashtags.includes(hashtag)) {
-      return categoryName;
-    }
-  }
-  return undefined;
-}
 
 /**
  * Finds all categories a hashtag belongs to

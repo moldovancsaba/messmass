@@ -2,7 +2,7 @@
 
 import { useAdminAuth } from '@/hooks/useAdminAuth';
 import AdminDashboard from '@/components/AdminDashboard';
-import AdminHero from '@/components/AdminHero';
+import UnifiedAdminHeroWithSearch from '@/components/UnifiedAdminHeroWithSearch';
 import '../styles/admin.css';
 
 /* What: Main admin dashboard page
@@ -41,7 +41,7 @@ export default function AdminPage() {
      Why: Consistent with all other admin pages (filter, projects, design, etc.) */
   return (
     <>
-      <AdminHero
+      <UnifiedAdminHeroWithSearch
         title="Admin Dashboard"
         subtitle={`Welcome back, ${user.name}! Choose a management area below to get started.`}
       />

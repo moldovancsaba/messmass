@@ -1,8 +1,210 @@
 # {messmass} Release Notes
 Status: Active
-Last Updated: 2026-03-07T00:00:00.000Z
+Last Updated: 2026-04-24T16:10:00.000Z
 Canonical: No
 Owner: Operations
+
+## [v12.1.8] — 2026-04-24T16:10:00.000Z
+
+### Summary
+🏢 **ORGANIZATION REPORT GENERATION PARITY**: Brought organization editor/report configuration to partner-level parity with dropdown-based style/template/clicker/logo controls, plus resolver compatibility hardening.
+
+### What Was Fixed
+
+#### Organization editor report-config parity ✅
+**WHAT**: Added organization-level report configuration controls for style, template, clicker set, logo, and emoji visibility in `/organization-edit/[id]`.  
+**WHY**: Superadmins need the same report-generation control surface for organizations as partners, without introducing non-standard UI patterns.  
+**HOW**: Extended `OrganizationEditorDashboard` to load options from `/api/report-styles`, `/api/report-templates?includeAssociations=false`, and `/api/clicker-sets`, then persist metadata through `/api/admin/organizations/[id]`.
+
+#### Style application mismatch fix ✅
+**WHAT**: Fixed editor style application to use `organization.metadata.styleId`.  
+**WHY**: The previous implementation incorrectly used `metadata.reportId`, so style preview could not match configured organization themes.  
+**HOW**: Updated `/organization-edit/[id]` to pass `metadata.styleId` into `useReportStyle`.
+
+#### Organization report template resolver alignment ✅
+**WHAT**: Organization report API now resolves explicit templates via `metadata.reportTemplateId` first, with `metadata.reportId` as legacy fallback.  
+**WHY**: Ensures parity with modern dropdown configuration while preserving older organization records and preventing data-loss regressions.  
+**HOW**: Updated `/api/organizations/report/[id]` template resolution order and kept fallback compatibility.
+
+### Testing
+- ✅ `npm run build`
+
+### Version
+v12.1.7 → v12.1.8 (PATCH — organization report generation parity + resolver/style alignment)
+
+## [v12.1.7] — 2026-04-24T13:30:00.000Z
+
+### Summary
+🏢 **ORGANIZATION ADMIN DATA FLOW RESTORED**: Rewired Organization Management to the live `organizations` and `partners` collections, restored member assignment/reporting/editor paths, and synchronized product documentation.
+
+### What Was Fixed
+
+#### Organization CRUD and membership alignment ✅
+**WHAT**: Restored the admin organizations surface to the real organization records and partner memberships.  
+**WHY**: The shipped page had diverged into an incomplete flow that could render the route unreachable, hide expected actions, and fail to fetch members for existing organizations like `CHF`.  
+**HOW**: Updated `/api/admin/organizations`, `/api/admin/organizations/[id]`, and `/api/admin/organizations/[id]/members` to read/write the live `organizations` + `partners` data first, while retaining fallback compatibility for older V3 records.
+
+#### Predictive member selection and guarded deletes ✅
+**WHAT**: Kept the unified predictive-search member selector and enforced safe delete/update behavior.  
+**WHY**: Organization assignment must follow the shared design system and must not risk accidental data loss.  
+**HOW**: The members modal now stages changes until explicit save, uses `OrganizationMembersSelector`, and blocks organization deletion until all assigned partners are removed or reassigned.
+
+#### Organization reporting compatibility ✅
+**WHAT**: Added organization report/activity APIs for admin-managed organizations.  
+**WHY**: Existing org records in the `organizations` collection need working report and editor entry points, not only legacy V3 reporting paths.  
+**HOW**: Added `/api/organizations/report/[id]` and `/api/organizations/report/[id]/activities`, and updated `useOrganizationReportData` to prefer the admin organization report path with fallback to `/api/v3/organizations/report/[id]`.
+
+#### Documentation and manual sync ✅
+**WHAT**: Updated versioning, release notes, README, API reference, admin guide, in-app API docs, and the admin help/manual content.  
+**WHY**: The org feature set changed materially and the documentation had drifted from the shipped behavior.  
+**HOW**: Synced all touched product surfaces to `v12.1.7` and documented the live org CRUD, member assignment, reporting, and safety rules.
+
+### Testing
+- ✅ `npm run build`
+- ✅ DB sanity check: confirmed `CHF` exists in `organizations` and retained `8` assigned partners
+
+### Version
+v12.1.6 → v12.1.7 (PATCH — restore organization admin data flow and docs sync)
+
+## [v12.1.6] — 2026-03-17T12:00:00.000Z
+
+### Summary
+📝 **REPORT CONTENT SLOTS MANAGEMENT**: Added markdown preset support and image preview helpers to improve report content authoring.
+
+### What Was Added
+
+#### Markdown preset support for text charts ✅
+**WHAT**: Added content presets such as Standard, Compact, Hero, and Callout for markdown/text report slots.  
+**WHY**: Report authors needed faster, more consistent formatting patterns without hand-building every text block.  
+**HOW**: Extended the builder UI, report calculation flow, and text rendering surfaces to persist and honor the selected preset.
+
+#### Multi-ratio image preview helper ✅
+**WHAT**: Added simultaneous 16:9, 9:16, and 1:1 preview support for image-oriented report content.  
+**WHY**: Admins need to validate how assets will render across different output shapes before publishing.  
+**HOW**: Implemented `ImagePreviewHelper` and connected it to the Builder workflow.
+
+### Testing
+- ✅ `npm run build`
+- ✅ `npm run lint`
+- ✅ `npm run type-check`
+
+### Version
+v12.1.5 → v12.1.6 (PATCH — report content slots management)
+
+## [v12.1.5] — 2026-03-16T16:45:00.000Z
+
+### Summary
+🔐 **V3 ORGANIZATION CONTEXT MIDDLEWARE**: Implemented the structural foundation for multi-tenant scoping and RBAC by injecting organization context into API requests.
+
+### What Was Added
+
+#### V3 Organization Context Middleware (#403) ✅
+**WHAT**: Created a reusable middleware wrapper (`withOrgContext`) for the V3 API.  
+**WHY**: To provide a reliable way for downstream services and reporting APIs to determine the organization scope of the requester.  
+**HOW**: Derives `x-v3-org-id` headers based on the authenticated session (superadmin vs. org-admin) and enforces 401 for unauthorized access.
+
+#### Infrastructure Validation (V3 Health) ✅
+**WHAT**: Added `/api/v3/health` endpoint.  
+**WHY**: To verify the middleware correctly injects the organization context before implementing complex reporting logic.  
+**HOW**: Exposes the derived `organizationId` from request headers in a JSON response.
+
+### Testing
+- ✅ `npm run build` (Successful production build)
+- ✅ `npm run lint` (0 warnings)
+- ✅ Logic verification (Correct mapping of superadmin to MASTER_ORG_ID).
+
+### Version
+v12.1.4 → v12.1.5 (PATCH — V3 Organization Context Middleware)
+
+## [v12.1.4] — 2026-03-16T12:00:00.000Z
+
+### Summary
+🧹 **STYLE HARDENING PHASE 5**: Consolidated legacy hero components and removed orphaned assets as part of UI standardization and debt reduction.
+
+### What Was Fixed
+
+#### Hero Component Consolidation (#72) ✅
+**WHAT**: Migrated all remaining admin pages from the deprecated `AdminHero` to `UnifiedAdminHeroWithSearch`.  
+**WHY**: To enforce a consistent layout and width across the entire administrative surface.  
+**HOW**: Updated Design, Cache, Styles, Quick-Add, and Home pages; deleted the legacy `AdminHero` and `AdminPageHero` components.
+
+### Testing
+- ✅ `npm run build`
+- ✅ `npm run lint`
+
+### Version
+v12.1.3 → v12.1.4 (PATCH — Style Hardening Phase 5)
+
+## [v12.1.0] — 2026-03-14T21:00:00.000Z
+
+### Summary
+🏢 **ORGANIZATION HIERARCHY & MULTI-TENANCY**: Finalized the V3 organization hierarchy, enabling multi-tenant member management and aggregated reporting across deep entity structures.
+
+### What Was Added
+
+#### Organization Member Management ✅
+**WHAT**: Added a centralized "Members" management UI and API for organizations.  
+**WHY**: To allow superadmins to logically group existing Partners (Entities) under Organizations for top-level reporting.  
+**HOW**: Implemented `ManageMembersModal`, `OrganizationsAdminPage` extensions, and `POST /api/admin/organizations/[id]/members`.
+
+#### Aggregated Organization Reporting ✅
+**WHAT**: Implemented a comprehensive Organization Report view with multi-entity activity roll-ups.  
+**WHY**: Executives need a unified view of performance across all teams/partners in their organization.  
+**HOW**: Created `OrganizationReportView`, a specialized activity aggregation API (`/api/v3/organizations/report/[id]/activities`), and high-level metric resolvers.
+
+#### Sync Engine Hardening (V3 Alignment) ✅
+**WHAT**: Updated the V3 synchronization engine to support hierarchical data inheritance.  
+**WHY**: To ensure legacy data (V2) is correctly mapped to the new multi-tenant V3 hierarchy without manual intervention.  
+**HOW**: Refined `syncEngine.ts` to inherit `organizationId` from primary partners and respect manual organizational assignments.
+
+#### UI/UX Refinement ✅
+**WHAT**: Standardized organization creation/edit modals with `UnifiedTextInput` and global design tokens.  
+**WHY**: To ensure structural consistency and prevent "hardcoded" design drift in administrative interfaces.  
+**HOW**: Refactored `app/admin/organizations/page.tsx` and updated the developer handover guidelines.
+
+### Testing
+- ✅ Member assignment verified (Bulk assignment of partners to orgs).
+- ✅ Aggregated reporting verified (Metric sums and activity lists).
+- ✅ Sync integrity verified (Manual assignments preserved during V2 mirroring).
+
+### Version
+v12.0.0 → v12.1.0 (MINOR — Organization Hierarchy and Reporting)
+
+## [v12.0.0] — 2026-03-13T16:45:00.000Z
+
+### Summary
+🚀 **MAJOR UPGRADE: REACT 19 & HYDRATION FIX**: Upgraded the entire platform to React 19 and Next.js 15, resolving systemic hydration deadlocks and hardening production security.
+
+### What Was Fixed
+
+#### React 19 & Next.js 15 Upgrade ✅
+**WHAT**: Upgraded `react`, `react-dom`, and their associated types to Version 19.  
+**WHY**: Next.js 15 requires React 19 for optimal performance and to resolve systemic incompatibilities found in earlier versions.  
+**HOW**: Updated `package.json`, resolved and verified all breaking type changes in analytics and report components.
+
+#### Hydration Deadlock Resolution ✅
+**WHAT**: Fixed a critical client-side hydration failure that prevented reports from rendering.  
+**WHY**: A combination of strict CSP headers and React version mismatches caused the client bundle to fail silently.  
+**HOW**: Upgraded React, adjusted middleware security headers, and removed legacy diagnostic blocks.
+
+#### Formula Engine Hardening (CSP) ✅
+**WHAT**: Modified the Content Security Policy (CSP) in `middleware.ts` to include `'unsafe-eval'`.  
+**WHY**: The KPI formula engine relies on `new Function()` to evaluate dynamic expressions; previous strict CSP settings blocked this execution in production.  
+**HOW**: Updated the `script-src` directive while maintaining high security standards for other resources.
+
+#### Versioning & Documentation Sync ✅
+**WHAT**: Bumped major version to `v12.0.0` and updated all canonical documentation (README, Architecture, V3 Dev Guide).  
+**WHY**: The transition to React 19 represents a major platform milestone.  
+**HOW**: Updated `package.json`, `README.md`, `architecture.md`, and created a new `v3_dev_guide.md` entry.
+
+### Testing
+- ✅ `npm run build` (Successful production build)
+- ✅ `npm run dev` (Verified server-side rendering and client-side hydration)
+- ✅ Partner Report Verification (AS Roma report loaded and rendered correctly)
+- ✅ Image Audit (Verified all report images are active and rendering)
+
+### Version
+v11.63.0 → v12.0.0 (MAJOR — React 19 and hydration fix)
 
 ## [v11.60.16] — 2026-03-07T00:00:00.000Z
 

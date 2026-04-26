@@ -14,38 +14,13 @@ export interface AdminUser {
   role: UserRole
   permissions: string[]
   // WHAT: API access fields (v10.6.0+)
-  // WHY: Track API key usage and status for external integrations
   apiKeyEnabled?: boolean
   apiUsageCount?: number
   lastAPICallAt?: string
+  // WHAT: Multi-tenant organization scoping (v12.1.1+)
+  organizationIds?: string[]
 }
 
-/**
- * decodeSessionToken
- * WHAT: Decodes and validates session token (supports both JWT and Base64 formats)
- * WHY: Zero-downtime migration - supports both token formats during transition
- * HOW: Uses unified validation function that auto-detects format
- * 
- * @deprecated Use validateSessionToken from lib/sessionTokens.ts directly
- * This function is kept for backward compatibility but delegates to the new system
- */
-function decodeSessionToken(sessionToken: string, format?: 'jwt' | 'legacy'): SessionTokenData | null {
-  // WHAT: Use unified validation function
-  // WHY: Supports both JWT and Base64 formats
-  const tokenData = validateSessionToken(sessionToken, format)
-  
-  if (!tokenData) {
-    return null
-  }
-  
-  // WHAT: Normalize historical role values (e.g., 'super-admin' → 'superadmin')
-  // WHY: Backward compatibility with old tokens
-  // NOTE: Type assertion needed because old tokens may have 'super-admin' string
-  const roleRaw = tokenData.role as string;
-  const normalizedRole = (roleRaw === 'super-admin' ? 'superadmin' : tokenData.role) as SessionTokenData['role'];
-  
-  return { ...tokenData, role: normalizedRole }
-}
 
 /**
  * getAdminUser
@@ -68,7 +43,7 @@ export async function getAdminUser(): Promise<AdminUser | null> {
 
   // WHAT: Validate token with format hint (if available)
   // WHY: Route to correct validator (JWT vs Base64)
-  const tokenData = decodeSessionToken(adminSession.value, sessionFormat)
+  const tokenData = validateSessionToken(adminSession.value, sessionFormat)
   if (!tokenData) {
     warn('Token validation failed', { format: sessionFormat })
     return null
@@ -97,7 +72,9 @@ export async function getAdminUser(): Promise<AdminUser | null> {
     // WHY: Frontend needs these for display and toggle functionality
     apiKeyEnabled: user.apiKeyEnabled,
     apiUsageCount: user.apiUsageCount,
-    lastAPICallAt: user.lastAPICallAt
+    lastAPICallAt: user.lastAPICallAt,
+    // WHAT: Propagate organization scoping
+    organizationIds: user.organizationIds
   }
 }
 

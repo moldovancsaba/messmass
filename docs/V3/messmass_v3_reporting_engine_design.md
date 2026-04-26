@@ -1,6 +1,6 @@
-# Messmass v3 -- Reporting Engine Architecture
+# {messmass} v3 -- Reporting Engine Architecture
 
-Purpose: Define how Messmass generates analytics and reports from
+Purpose: Define how {messmass} generates analytics and reports from
 activities, entities, and metrics.
 
 ------------------------------------------------------------------------

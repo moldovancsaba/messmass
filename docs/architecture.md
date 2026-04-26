@@ -1,10 +1,40 @@
 # {messmass} Architecture Documentation
 Status: Active
-Last Updated: 2026-02-05T19:29:57.000Z
+Last Updated: 2026-04-24
 Canonical: No
 Owner: Architecture
 
-Version: 11.55.1
+Version: 12.1.8
+
+**Organization Report Parity (2026-04-24):**
+- **Config Parity in Org Editor**: Added style/template/clicker/logo/emoji settings to `/organization-edit/[id]` with the same dropdown-source model used by partner configuration.
+- **Resolver Compatibility**: Organization reports now prefer `metadata.reportTemplateId`, then fall back to legacy `metadata.reportId`, then default template.
+- **Style Wiring Fix**: Organization editor style injection now correctly reads `metadata.styleId` (not `reportId`).
+
+**Organization Admin Data Flow Recovery (2026-04-24):**
+- **Live Admin Collections Restored**: Organization CRUD now targets the `organizations` collection and partner membership uses `partners.organizationId`.
+- **Compatibility Layer Kept**: Legacy V3 organization routes remain available for older records, but the admin UI now prefers the live admin organization/report path.
+- **Report Surface Recovery**: Added a non-V3 organization reporting adapter path (`/api/organizations/report/[id]`) so report/editor actions work for existing admin-managed organizations without forced migration.
+
+**Deep Quality & Measured Scaling (2026-03-16):**
+- **Measured Height Font Scaling**: Implemented dynamic font resizing in `PieChart`, `VerticalBarChart`, and `KPICard` using `ResizeObserver` to prevent text overflow without clipping.
+- **Layout Grammar Enforcement**: Standardized container behaviors to follow Rule 2.1 (forbidden overflow hiding).
+- **Technical Debt Harvest**: Purged deprecated library stubs and hardcoded chart configurations in favor of MongoDB-driven SSOT.
+
+**V3 Context & Middleware (2026-03-16):**
+- **Organization Context Injection**: Implemented the structural foundation for V3 multi-tenant scoping and RBAC via `withOrgContext` middleware.
+- **Header Injection**: Automated injection of `x-v3-org-id` into API requests based on user role and assigned organizations.
+- **Infrastructure Verification**: Created `/api/v3/health` for mid-implementation validation of context derivation logic.
+
+**Organization Hierarchy & Multi-Tenancy (2026-03-14):**
+- **First wave of V3 multi-tenancy**: Partners (Entities) logically grouped under Organizations for aggregated activity reporting.
+- **Member Management**: Created the `ManageMembersModal` and associated API for bulk assignment of entities to organizations.
+- **Aggregated Activity API**: Developed a high-performance activity aggregation engine for organizations that rolls up metrics and activity lists from all member entities.
+
+**React 19 & Next.js 15 (2026-03-13):**
+- Systemic upgrade to React 19 for full compatibility with Next.js 15 features and performance improvements.
+- **Hydration Deadlock Resolution**: Fixed a systemic client-side hydration failure by adjusting dependencies and refining the Content Security Policy (CSP).
+- **Formula Engine Security**: Modified CSP to allow `'unsafe-eval'`, enabling the dynamic KPI formula engine to function securely in production.
 
 **Recent Update (2026-01-16):** 
 - **Partner Links**: Partner edit/report buttons now use `partner._id` (ObjectId) instead of `viewSlug` for reliable access. This fixes "Invalid partner ID format" errors when `viewSlug` is human-readable.
@@ -26,7 +56,7 @@ Version: 11.55.1
 - **Forms**: `app/admin/projects/ProjectsPageClient.tsx` (lines 916-960)
 - **Hashtags**: `components/UnifiedHashtagInput.tsx` (lines 1-298)
 - **Partners**: `components/PartnerSelector.tsx` (lines 1-234)
-- **Admin Layout**: `components/AdminHero.tsx` (lines 1-98)
+- **Admin Layout**: `components/UnifiedAdminHeroWithSearch.tsx` (lines 1-450)
 
 ### Rule 2: Use Design Tokens Exclusively
 

@@ -1,6 +1,6 @@
 /**
- * Messmass V3 Collection Names
- * Centralized registry for all V3-related MongoDB collections.
+ * Messmass canonical hierarchy collection names.
+ * Centralized registry for the organization/entity/activity hierarchy.
  */
 export const V3_COLLECTIONS = {
   ORGANIZATIONS: 'v3_organizations',

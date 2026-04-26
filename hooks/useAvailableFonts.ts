@@ -4,7 +4,7 @@
 
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { AvailableFont } from '@/lib/fontTypes';
 
 interface UseAvailableFontsReturn {
@@ -32,7 +32,7 @@ export function useAvailableFonts(includeInactive = false): UseAvailableFontsRet
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const fetchFonts = async () => {
+  const fetchFonts = useCallback(async () => {
     setLoading(true);
     setError(null);
     try {
@@ -56,11 +56,11 @@ export function useAvailableFonts(includeInactive = false): UseAvailableFontsRet
     } finally {
       setLoading(false);
     }
-  };
+  }, [includeInactive]);
 
   useEffect(() => {
     fetchFonts();
-  }, [includeInactive]);
+  }, [fetchFonts]);
 
   return {
     fonts,

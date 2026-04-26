@@ -211,17 +211,14 @@
   /* WHY: Title is clamped to 2 lines per Layout Grammar, but must fit within allocated height */
   /* HOW: Use min-height: 0 to allow flex shrinking, overflow: hidden to prevent overflow */
   min-height: 0 !important; /* CRITICAL: Allow flex shrinking to fit content */
-  overflow: hidden !important; /* A-03.2: Prevent overflow - title must clamp to 2 lines (Layout Grammar) */
+  overflow: visible !important; /* A-03.2: Prevent overflow - title MUST be fully visible (Layout Grammar) */
 }
 
 .kpi .kpiTitle > * {
   /* WHAT: Inner content wrapper - title 2-line clamp (Layout Grammar: allowed for title/subtitle) */
   /* WHY: Allows flex centering while maintaining line clamp */
   /* HOW: Use -webkit-box for line clamping inside flex container */
-  display: -webkit-box;
-  -webkit-box-orient: vertical;
-  -webkit-line-clamp: 2; /* Layout Grammar: title 2-line clamp */
-  overflow: hidden; /* Layout Grammar: title 2-line clamp */
+  display: block;
   text-align: center;
   width: 100%;
 }
@@ -352,7 +349,7 @@
   padding: var(--mm-space-1) var(--mm-space-2);
   height: 100%; /* CRITICAL: Fill full grid row height */
   min-height: 0; /* CRITICAL: Allow grid row to shrink if needed */
-  overflow: hidden; /* Layout Grammar: title row - title 2-line clamp */
+  overflow: visible; /* Layout Grammar: titles must be fully visible */
   box-sizing: border-box;
 }
 
@@ -599,7 +596,7 @@
   /* HOW: Use min-height: 0 to allow natural expansion, overflow: visible to prevent clipping */
   min-height: 0 !important; /* CRITICAL: Allow natural expansion */
   overflow: visible !important; /* A-03.3: Prevent clipping - labels must be visible */
-  /* WHAT: Removed line-clamp - let labels wrap naturally to fit available space (max 2 lines enforced by font size calculation) */
+  /* WHAT: Removed line-clamp - labels wrap naturally to fit available space */
 }
 
 .barTrackCell {
@@ -690,10 +687,8 @@
   /* WHAT: P1 1.5 Phase 2 - Use block-level typography instead of independent scaling */
   font-size: var(--block-base-font-size) !important;
   line-height: 1.25 !important;
-  display: -webkit-box !important;
-  -webkit-box-orient: vertical !important;
-  -webkit-line-clamp: 2 !important; /* Layout Grammar: title 2-line clamp */
-  overflow: hidden !important; /* Layout Grammar: title 2-line clamp */
+  display: block !important;
+  overflow: visible !important; /* Layout Grammar: title MUST be fully visible */
   word-break: break-word !important;
   width: 100% !important;
   box-sizing: border-box !important;
@@ -1446,4 +1441,46 @@
     object-position: center !important;
     display: block !important;
   }
+}
+
+/* WHAT: Markdown Content Presets (v12.2.0, Issue #48)
+   WHY: Allow admins to control visual style of text charts
+   HOW: Classes applied based on chart.preset configuration */
+
+.presetCompact {
+  font-size: 0.9rem !important;
+  line-height: 1.4 !important;
+}
+
+.presetCompact p {
+  margin-bottom: 0.5rem !important;
+}
+
+.presetHero {
+  font-size: 1.25rem !important;
+  font-weight: 500 !important;
+  line-height: 1.6 !important;
+  color: var(--color-gray-900) !important;
+}
+
+.presetHero h1, .presetHero h2, .presetHero h3 {
+  margin-top: 1.5rem !important;
+  margin-bottom: 1rem !important;
+}
+
+.presetCallout {
+  padding: 1.25rem !important;
+  background: var(--mm-gray-50, #f9fafb) !important;
+  border-left: 4px solid var(--mm-brand-primary, #6366f1) !important;
+  border-radius: 4px !important;
+  font-style: italic !important;
+  box-shadow: inset 0 2px 4px 0 rgba(0, 0, 0, 0.05) !important;
+}
+
+.presetCallout p {
+  margin-bottom: 0.75rem !important;
+}
+
+.presetCallout p:last-child {
+  margin-bottom: 0 !important;
 }

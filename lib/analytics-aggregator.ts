@@ -239,10 +239,16 @@ export async function aggregateTimeBucket(
       totalIndoor += (stats.indoor || 0);
       totalOutdoor += (stats.outdoor || 0);
       totalStadium += (stats.stadium || 0);
-      
-      // Bitly clicks (would need to aggregate from bitly_project_links collection)
-      // For now, placeholder - implement full Bitly aggregation separately
-      totalBitlyClicks += 0; // TODO: Implement Bitly click aggregation
+    }
+    
+    // Bitly clicks aggregation from bitly_project_links
+    const bitlyJunctionCollection = db.collection('bitly_project_links');
+    const bitlyLinks = await bitlyJunctionCollection
+      .find({ projectId: { $in: projects.map(p => p._id) } })
+      .toArray();
+    
+    for (const link of bitlyLinks) {
+      totalBitlyClicks += (link.cachedMetrics?.clicks || 0);
     }
     
     const eventCount = projects.length;

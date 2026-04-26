@@ -164,7 +164,7 @@ export default function EditorDashboard({ project: initialProject }: EditorDashb
       }
     })();
     return () => { mounted = false };
-  }, [project.partnerId, project.googleSheetUuid]);
+  }, [project.partnerId, project.googleSheetUuid, project]);
 
   const handleSheetPull = async () => {
     const pid = project.partnerId || (project as any).partnerId;

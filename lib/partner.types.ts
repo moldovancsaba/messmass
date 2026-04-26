@@ -14,6 +14,11 @@ export interface Partner {
   emoji: string; // Partner emoji for visual identification (e.g., "⚽", "🏟️")
   showEmoji?: boolean; // WHAT: Optional flag to control emoji visibility (default: true)
   
+  // WHAT: Optional organization membership (non-V3)
+  // WHY: Organization Management groups partners under a parent organization
+  // NOTE: A partner can belong to at most one organization
+  organizationId?: ObjectId;
+  
   // WHAT: Hashtag associations (unified system)
   // WHY: Partners can be tagged and filtered like projects
   hashtags?: string[]; // Traditional hashtags

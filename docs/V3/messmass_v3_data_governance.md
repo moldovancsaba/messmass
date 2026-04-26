@@ -1,7 +1,7 @@
-# Messmass v3 -- Data Governance & Data Modeling Rules
+# {messmass} v3 -- Data Governance & Data Modeling Rules
 
 Purpose: Ensure consistent data structures across organisations using
-Messmass.
+{messmass}.
 
 This prevents reporting inconsistencies and data fragmentation when
 multiple teams create entities, activities and metrics.

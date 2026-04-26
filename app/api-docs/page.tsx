@@ -23,6 +23,7 @@ export default function APIDocsPage() {
             <li><a href="#overview">Overview</a></li>
             <li><a href="#authentication">Authentication</a></li>
             <li><a href="#public-api">Public API (Read)</a></li>
+            <li><a href="#organizations">Organizations</a></li>
             <li><a href="#fanmass-integration">Fanmass Integration</a></li>
             <li><a href="#webhooks">Webhooks</a></li>
             <li><a href="#error-codes">Error Codes</a></li>
@@ -61,10 +62,15 @@ export default function APIDocsPage() {
           <h2>🔐 Authentication</h2>
           
           <h3>Bearer Token Authentication</h3>
-          <p>All API requests require a Bearer token in the Authorization header:</p>
+          <p>Public integration endpoints use a Bearer token in the Authorization header:</p>
           <div className={styles.codeBlock}>
             Authorization: Bearer YOUR_API_TOKEN_HERE
           </div>
+
+          <h3>Admin Session Authentication</h3>
+          <p>
+            Internal admin endpoints such as Organization Management use the admin session cookie established by <code>/api/admin/login</code>. These endpoints are not intended for external Bearer-token clients.
+          </p>
 
           <h3>Getting an API Token</h3>
           <ol>
@@ -158,6 +164,57 @@ export default function APIDocsPage() {
   "timestamp": "2024-11-26T15:30:00.000Z"
 }`}
           </div>
+        </section>
+
+        <section id="organizations" className={styles.section}>
+          <h2>🏢 Organizations</h2>
+
+          <h3>Admin Organization CRUD</h3>
+          <p>
+            Organization management is available to authenticated <strong>superadmins</strong> through session-based admin endpoints.
+          </p>
+          <div className={styles.codeBlock}>
+            GET /api/admin/organizations<br />
+            POST /api/admin/organizations<br />
+            GET /api/admin/organizations/[id]<br />
+            PUT /api/admin/organizations/[id]<br />
+            PATCH /api/admin/organizations/[id]<br />
+            DELETE /api/admin/organizations/[id]
+          </div>
+
+          <h3>Member Assignment</h3>
+          <p>
+            Partners are assigned to organizations through the Organization Management page using a predictive-search selector.
+          </p>
+          <div className={styles.codeBlock}>
+            GET /api/admin/organizations/[id]/members<br />
+            PUT /api/admin/organizations/[id]/members
+          </div>
+          <ul>
+            <li><strong>Body:</strong> <code>{`{ memberPartnerIds: string[] }`}</code></li>
+            <li>Assignments are only applied when the user clicks <strong>Save Assignments</strong></li>
+            <li>A partner can belong to only one organization at a time</li>
+            <li>Deletion is blocked while members are still assigned</li>
+          </ul>
+
+          <h3>Organization Reports</h3>
+          <div className={styles.codeBlock}>
+            GET /api/organizations/report/[id]<br />
+            GET /api/organizations/report/[id]/activities
+          </div>
+          <p>
+            These endpoints power the <code>/organization-report/[id]</code> view and aggregate organization metadata, assigned partners, and related projects.
+          </p>
+          <ul>
+            <li>
+              Organization metadata supports partner-parity report fields: <code>styleId</code>, <code>reportTemplateId</code>,
+              <code> clickerSetId</code>, <code>logoUrl</code>, and <code>emoji</code>.
+            </li>
+            <li>
+              Report resolution order is <code>metadata.reportTemplateId</code> then legacy <code>metadata.reportId</code>,
+              then system default.
+            </li>
+          </ul>
         </section>
 
         <section id="fanmass-integration" className={styles.section}>
@@ -535,8 +592,8 @@ curl -X POST \\
 
         <footer className={styles.footer}>
           <p>
-            <strong>{'{messmass}'} API Documentation</strong><br />
-            Last Updated: November 26, 2024
+            <strong>{'{messmass}'} API Documentation — Version 12.1.8</strong><br />
+            Last Updated: April 24, 2026
           </p>
           <p>
             <strong>Additional Resources:</strong><br />

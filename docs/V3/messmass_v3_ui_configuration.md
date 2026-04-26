@@ -1,6 +1,6 @@
-# Messmass v3 -- UI Configuration & Industry Templates
+# {messmass} v3 -- UI Configuration & Industry Templates
 
-Purpose: Allow Messmass to support multiple industries using
+Purpose: Allow {messmass} to support multiple industries using
 configurable UI labels and modules.
 
 ------------------------------------------------------------------------

@@ -1,4 +1,4 @@
-# Messmass v3 Architecture Diagrams
+# {messmass} v3 Architecture Diagrams
 
 These diagrams help developers understand system structure.
 

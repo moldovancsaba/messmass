@@ -20,12 +20,18 @@ export interface PartnerReportViewProps {
 }
 
 export function PartnerReportView({ slug }: PartnerReportViewProps) {
+  console.log('🏗️ [PartnerReportView] Multi-tenant view mounting with slug:', slug);
   const { data: partnerData, loading: dataLoading, error: dataError } = usePartnerReportData(slug);
+  
+  console.log('📦 [PartnerReportView] Hook dataLoading:', dataLoading);
+  console.log('📦 [PartnerReportView] Hook partnerData stats:', partnerData?.aggregatedStats ? 'Yes' : 'No');
+  
   const partner = partnerData?.partner;
   const events = partnerData?.events || [];
   const charts = partnerData?.charts || [];
   const stats = partnerData?.aggregatedStats || null;
 
+  console.log('🕒 [PartnerReportView] useReportLayoutForPartner input:', partner?._id || 'null');
   const {
     report,
     blocks,
@@ -34,10 +40,15 @@ export function PartnerReportView({ slug }: PartnerReportViewProps) {
     error: layoutError,
   } = useReportLayoutForPartner(partner?._id || null);
 
+  console.log('📦 [PartnerReportView] layoutLoading:', layoutLoading);
+
   const { loading: styleLoading } = useReportStyle({
     styleId: report?.styleId ? String(report.styleId) : null,
     enabled: !!report,
   });
+
+  console.log('📦 [PartnerReportView] styleLoading:', styleLoading);
+
 
   const chartResults = useMemo(() => {
     const chartsArray = partnerData?.charts || [];
@@ -136,3 +147,4 @@ export function PartnerReportView({ slug }: PartnerReportViewProps) {
     </div>
   );
 }
+

@@ -70,7 +70,6 @@ export async function GET() {
         elements: config.elements,
         icon: config.icon, // v10.4.0: Material Icon name
         iconVariant: config.iconVariant, // v10.4.0: Icon variant (outlined/rounded)
-        emoji: config.emoji, // DEPRECATED: Legacy field for backward compatibility
         subtitle: config.subtitle,
         showTotal: config.showTotal,
         totalLabel: config.totalLabel,

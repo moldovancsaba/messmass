@@ -1,11 +1,11 @@
 # {messmass} Authentication & Access Control System
 Status: Active
-Last Updated: 2026-01-11T22:28:38.000Z
+Last Updated: 2026-03-14T22:00:00.000Z
 Canonical: Yes
 Owner: Security
 
-**Version:** 11.25.1  
-**Last Updated:** 2026-01-11T22:28:38.000Z (UTC)  
+**Version:** 12.1.0  
+**Last Updated:** 2026-03-14T22:00:00.000Z (UTC)  
 **Status:** Production  
 **Maintainer:** Warp AI Development Team
 
@@ -45,6 +45,11 @@ Owner: Security
 - When `SSO_BASE_URL` is set: `/admin/dashboard` requires SSO session; other `/admin` routes support SSO or local password.
 - Login page shows "Sign in with DoneIsBetter"; callback at `/api/auth/sso/callback` validates token and sets `admin-session` + `auth-source=sso`.
 - Page-password and share URLs unchanged.
+
+✅ **V3 Multi-Tenant Authorization (v12.1.0+)**
+- All V3 API requests are scoped via `organizationId`.
+- Admin users are authorized to access data within their assigned organization(s).
+- Organizations aggregate data from multiple Partners, enforcing a hierarchical data island.
 
 ---
 

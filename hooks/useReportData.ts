@@ -96,7 +96,6 @@ export function useReportData(slug: string | null): UseReportDataResult {
     setError(null);
 
     try {
-      console.log('[useReportData] Fetching report data for:', slug);
 
       // Step 1: Fetch project data
       const projectRes = await fetch(`/api/projects/stats/${slug}`, {
@@ -171,7 +170,6 @@ export function useReportData(slug: string | null): UseReportDataResult {
         source: reportData.source
       });
 
-      console.log('[useReportData] Data loaded successfully');
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Failed to load report data';
       console.error('[useReportData] Error:', errorMessage);
@@ -252,12 +250,11 @@ export function usePartnerReportData(slug: string | null) {
     setError(null);
 
     try {
-      console.log('[usePartnerReportData] Fetching partner report data for:', slug);
-
       // Step 1: Fetch partner and events
       const partnerRes = await fetch(`/api/partners/report/${slug}`, {
         cache: 'no-store'
       });
+
       const partnerData = await partnerRes.json();
 
       if (!partnerData.success) {
@@ -327,8 +324,6 @@ export function usePartnerReportData(slug: string | null) {
         source: reportData.source
       });
 
-      console.log('[usePartnerReportData] Data loaded successfully');
-      console.log('[usePartnerReportData] Aggregated stats keys:', Object.keys(partnerData.aggregatedStats || {}));
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Failed to load partner report data';
       console.error('[usePartnerReportData] Error:', errorMessage);
@@ -343,6 +338,88 @@ export function usePartnerReportData(slug: string | null) {
   }, [fetchData]);
 
   return {
+    data,
+    loading,
+    error,
+    refresh: fetchData
+  };
+}
+
+/**
+ * WHAT: Fetch report data for organization reports
+ * WHY: Support admin organizations first, while preserving fallback access to older org routes
+ */
+export function useOrganizationReportData(id: string | null) {
+  const [data, setData] = useState<any | null>(null);
+  const [activities, setActivities] = useState<any[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
+
+  const fetchData = useCallback(async () => {
+    if (!id) {
+      setLoading(false);
+      return;
+    }
+
+    setLoading(true);
+    setError(null);
+
+    try {
+      const fetchOrganizationBundle = async (basePath: string) => {
+        const [reportRes, activitiesRes] = await Promise.all([
+          fetch(`${basePath}/${id}`, { cache: 'no-store' }),
+          fetch(`${basePath}/${id}/activities`, { cache: 'no-store' }),
+        ]);
+
+        const [reportResult, activitiesResult] = await Promise.all([
+          reportRes.json(),
+          activitiesRes.json(),
+        ]);
+
+        return { reportResult, activitiesResult };
+      };
+
+      let { reportResult, activitiesResult } = await fetchOrganizationBundle('/api/organizations/report');
+
+      if (!reportResult.success) {
+        ({ reportResult, activitiesResult } = await fetchOrganizationBundle('/api/v3/organizations/report'));
+      }
+
+      if (!reportResult.success) {
+        throw new Error(reportResult.error || 'Failed to load organization report');
+      }
+
+      const chartsRes = await fetch('/api/chart-config/public', {
+        cache: 'no-store'
+      });
+      const chartsData = await chartsRes.json();
+
+      if (!chartsData.success) {
+        throw new Error(chartsData.error || 'Failed to load charts');
+      }
+
+      setData({
+        ...reportResult,
+        charts: chartsData.configurations || chartsData.charts || [],
+      });
+      if (activitiesResult.success) {
+        setActivities(activitiesResult.activities);
+      }
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : 'Failed to load organization report data';
+      console.error('[useOrganizationReportData] Error:', errorMessage);
+      setError(errorMessage);
+    } finally {
+      setLoading(false);
+    }
+  }, [id]);
+
+  useEffect(() => {
+    fetchData();
+  }, [fetchData]);
+
+  return {
+    activities,
     data,
     loading,
     error,

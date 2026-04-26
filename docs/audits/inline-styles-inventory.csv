@@ -26,8 +26,6 @@ app/admin/dashboard/page.tsx,390,style={{,Forbidden,Static style should be moved
 app/admin/styles/page.tsx,212,backgroundColor: color,Forbidden,Static style should be moved to CSS module,Move to CSS module
 app/admin/register/page.tsx,206,"marginTop: '1rem', textAlign: 'center'",Forbidden,Static style should be moved to CSS module,Move to CSS module
 app/admin/register/page.tsx,208,"marginBottom: '0.5rem', color: 'var(--mm-gray-600)', fontSize: 'var(--mm-font-size-sm)'",Allowed,Uses CSS custom properties (design tokens),Keep as-is (dynamic value) or add eslint-disable comment
-app/admin/partners/page_old_backup.tsx,1228,"fontSize: '1rem', marginRight: '0.25rem'",Forbidden,Static style should be moved to CSS module,Move to CSS module
-app/admin/partners/page_old_backup.tsx,1239,"fontSize: '1rem', marginRight: '0.25rem'",Forbidden,Static style should be moved to CSS module,Move to CSS module
 app/admin/partners/[id]/analytics/page.tsx,704,"fontSize: 'var(--mm-font-size-xs)', color: isNeutral ? 'var(--mm-gray-500)' : isPositive ? 'var(--mm-color-secondary-600)' : 'var(--mm-error)'",Allowed,Uses CSS custom properties (design tokens),Keep as-is (dynamic value) or add eslint-disable comment
 app/admin/events/ProjectsPageClient.tsx,861,"fontSize: '1rem', marginRight: '0.25rem'",Forbidden,Static style should be moved to CSS module,Move to CSS module
 app/admin/events/ProjectsPageClient.tsx,876,"fontSize: '1rem', marginRight: '0.25rem'",Forbidden,Static style should be moved to CSS module,Move to CSS module
@@ -137,7 +135,6 @@ components/ImageUploadField.tsx,159,display: 'none',Forbidden,Static style shoul
 components/CategorizedHashtagBubble.tsx,37,style={{,Forbidden,Static style should be moved to CSS module,Move to CSS module
 components/CategorizedHashtagBubble.tsx,51,style={{,Forbidden,Static style should be moved to CSS module,Move to CSS module
 components/ImageLightbox.tsx,96,background: overlayBg,Forbidden,Static style should be moved to CSS module,Move to CSS module
-components/AdminPageHero.tsx,127,style={{,Forbidden,Static style should be moved to CSS module,Move to CSS module
 components/Sidebar.tsx,253,fontSize: '1.25rem',Forbidden,Static style should be moved to CSS module,Move to CSS module
 components/CellWrapper.tsx,43,style={{,Forbidden,Static style should be moved to CSS module,Move to CSS module
 components/ChartBuilderBar.tsx,78,backgroundColor: el.color,Forbidden,Static style should be moved to CSS module,Move to CSS module

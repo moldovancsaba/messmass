@@ -3,7 +3,7 @@
 import React, { useEffect, useState, useMemo } from 'react';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
-import AdminHero from '@/components/AdminHero';
+import UnifiedAdminHeroWithSearch from '@/components/UnifiedAdminHeroWithSearch';
 import ColoredCard from '@/components/ColoredCard';
 import PartnerSelector from '@/components/PartnerSelector';
 import type { PartnerResponse } from '@/lib/partner.types';
@@ -578,7 +578,7 @@ export default function QuickAddPage() {
 
   return (
     <div className="page-container">
-      <AdminHero
+      <UnifiedAdminHeroWithSearch
         title="⚡ Quick Add"
         subtitle="Quickly create events: Sports Matches, Partner Events, or Suggested Fixtures"
         backLink="/admin/events"

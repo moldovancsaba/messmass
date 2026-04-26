@@ -127,7 +127,8 @@ export function createCapacityUtilizationChart(
     type: 'kpi',
     order: 100, // Display after default charts
     isActive: !!venueCapacity, // Only active if capacity data exists
-    emoji: '🏟️',
+    icon: 'stadium',
+    iconVariant: 'outlined',
     subtitle: venueCapacity 
       ? `Capacity: ${venueCapacity.toLocaleString()} seats`
       : 'No capacity data available',
@@ -178,7 +179,8 @@ export function createEngagementVsCapacityChart(
     type: 'pie',
     order: 101,
     isActive: true,
-    emoji: '👥',
+    icon: 'groups',
+    iconVariant: 'outlined',
     subtitle: `Relative to ${venueCapacity.toLocaleString()}-seat capacity`,
     elements: [
       {
@@ -231,7 +233,8 @@ export function createMerchPotentialVsCapacityChart(
     type: 'bar',
     order: 102,
     isActive: true,
-    emoji: '🛍️',
+    icon: 'shopping_bag',
+    iconVariant: 'outlined',
     subtitle: 'Projected at different venue fill rates',
     showTotal: true,
     totalLabel: 'at 100% capacity',

@@ -81,6 +81,38 @@ export default function PieChart({
      WHY: Show relative proportions in tooltips and legend */
   const total = filtered.length > 0 ? filtered.reduce((sum, item) => sum + (item.value as number), 0) : 0;
 
+  /* WHAT: Measured Height Font Scaling (Layout Grammar Priority 5.1)
+     WHY: Ensure legend and titles fit container without overflow
+     HOW: measure container and adjust font scaling via CSS variable */
+  const [fontSizeScale, setFontSizeScale] = React.useState(1);
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  React.useEffect(() => {
+    if (!containerRef.current) return;
+
+    const calculateScale = () => {
+      const container = containerRef.current;
+      if (!container) return;
+
+      const { offsetHeight } = container;
+      // Pie chart legend scaling: targets approx 20-30% of height for legend
+      const targetHeight = offsetHeight;
+      const baseExpectedHeight = height || 400;
+      
+      if (targetHeight < baseExpectedHeight) {
+        setFontSizeScale(Math.max(0.7, targetHeight / baseExpectedHeight));
+      } else {
+        setFontSizeScale(1);
+      }
+    };
+
+    const observer = new ResizeObserver(calculateScale);
+    observer.observe(containerRef.current);
+    calculateScale();
+
+    return () => observer.disconnect();
+  }, [height]);
+
   /* WHAT: Show "Insufficient Data" state if data is invalid
      WHY: Provide clear feedback instead of rendering broken chart */
   if (!isDataValid || !hasValidValues || total === 0) {
@@ -250,6 +282,7 @@ export default function PieChart({
     );
   }
 
+
   return (
     <ChartBase
       title={title}
@@ -259,13 +292,32 @@ export default function PieChart({
       className={className}
     >
       <div 
+        ref={containerRef}
         className={styles.pieChartContainer} 
         // WHAT: Dynamic height from height prop
         // WHY: Chart height must be configurable per instance
         // eslint-disable-next-line react/forbid-dom-props
-        style={{ height: `${height}px` }}
+        style={{ 
+          height: `${height}px`,
+          ['--chart-font-scale' as string]: fontSizeScale.toString()
+        } as React.CSSProperties}
       >
-        <Doughnut ref={chartRef} data={chartData} options={options} />
+        <Doughnut ref={chartRef} data={chartData} options={{
+          ...options,
+          plugins: {
+            ...options.plugins,
+            legend: {
+              ...options.plugins?.legend,
+              labels: {
+                ...options.plugins?.legend?.labels,
+                font: {
+                  ...options.plugins?.legend?.labels?.font,
+                  size: 13 * fontSizeScale
+                }
+              }
+            }
+          }
+        }} />
       </div>
     </ChartBase>
   );

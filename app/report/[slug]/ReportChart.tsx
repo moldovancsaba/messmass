@@ -39,7 +39,7 @@ ChartJS.register(ArcElement, Tooltip, Legend);
  */
 function formatValue(
   value: number | string | undefined, 
-  formatting?: { rounded?: boolean; prefix?: string; suffix?: string; decimals?: number }
+  formatting?: { rounded?: boolean; prefix?: string; suffix?: string }
 ): string {
   if (value === undefined || value === 'NA') return 'NA';
   if (typeof value === 'string') return value;
@@ -52,10 +52,6 @@ function formatValue(
       // WHAT: New format - rounded flag determines decimals
       // WHY: rounded=true → whole numbers (0 decimals), rounded=false → 2 decimals
       decimals = formatting.rounded ? 0 : 2;
-    } else if (formatting.decimals !== undefined) {
-      // WHAT: Legacy format - use decimals field directly
-      // WHY: Backward compatibility with old chart configurations
-      decimals = formatting.decimals;
     }
   }
   
@@ -69,12 +65,12 @@ function formatValue(
  * WHAT: Extracts decimal count from formatting object
  * WHY: Reusable logic for percentage calculations
  */
-function getDecimalsFromFormatting(formatting?: { rounded?: boolean; decimals?: number }): number {
+function getDecimalsFromFormatting(formatting?: { rounded?: boolean }): number {
   if (!formatting) return 0;
   if (formatting.rounded !== undefined) {
     return formatting.rounded ? 0 : 2;
   }
-  return formatting.decimals ?? 0;
+  return 0;
 }
 
 
@@ -125,7 +121,7 @@ export default function ReportChart({ result, chart, width, blockHeight, unified
   // WHAT: A-R-11 - Check for calculation errors first
   // WHY: Display error messages to users instead of hiding charts
   // HOW: Show error placeholder if chartError or error exists
-  const hasError = !!(result.chartError || result.error);
+  const hasError = !!result.chartError;
   
   if (hasError) {
     return (
@@ -136,7 +132,7 @@ export default function ReportChart({ result, chart, width, blockHeight, unified
           <div className={styles.chartErrorMessage}>
             {result.chartError
               ? getUserFriendlyErrorMessage(result.chartError)
-              : result.error || 'Chart calculation failed'}
+              : 'Chart calculation failed'}
           </div>
         </div>
       </CellWrapper>
@@ -402,8 +398,8 @@ function KPIChart({ result, className, allowNA = false }: { result: ChartResult;
             const availableTitleHeight = titleRowHeight - paddingTop - paddingBottom;
             
             // WHAT: If actual rendered height exceeds available space, reduce font size to fit
-            // WHY: Title is clamped to 2 lines per Layout Grammar, but must fit within allocated space
-            // HOW: If title exceeds space, dynamically reduce font size to ensure 2 lines fit
+            // WHY: Title must fit within allocated space (Layout Grammar Rule 64)
+            // HOW: If title exceeds space, dynamically reduce font size to ensure it fits
             // NOTE: Use small tolerance (2px) to account for rounding and sub-pixel rendering
             const tolerance = 2; // 2px tolerance for rounding and sub-pixel rendering
             if (actualTitleHeight > availableTitleHeight + tolerance && availableTitleHeight > 0) {
@@ -495,7 +491,7 @@ function KPIChart({ result, className, allowNA = false }: { result: ChartResult;
         mutationObserver.disconnect();
       };
     }
-  }, [showTitle, hasIcon, result.kpiValue, result.title, result.chartId, allowNA]);
+  }, [showTitle, hasIcon, result.kpiValue, result.title, result.chartId, allowNA, result.elements]);
   
   // WHAT: KPI uses internal CSS grid for deterministic layout
   // WHY: Avoids reserving space for hidden sections (title/icon)
@@ -895,7 +891,7 @@ function PieChart({ result, className }: { result: ChartResult; className?: stri
         resizeObserver.disconnect();
         mutationObserver.disconnect();
       };
-  }, [hasElements, result.chartId, showPercentages]);
+  }, [hasElements, result.chartId, showPercentages, result.elements]);
 
   if (!hasElements) {
     return <div className={styles.chart}>No pie data</div>;
@@ -1752,7 +1748,7 @@ function TextChart({ result, unifiedTextFontSize, className }: { result: ChartRe
       <div ref={textContentWrapperRef} className={styles.textContentWrapper}>
         {html ? (
           <div
-            className={`${styles.textContent} ${styles.textMarkdown}`}
+            className={`${styles.textContent} ${styles.textMarkdown} ${result.preset ? styles[`preset${result.preset.charAt(0).toUpperCase()}${result.preset.slice(1)}`] : ''}`}
             // eslint-disable-next-line react/forbid-dom-props
             // SECURITY: parseMarkdown already sanitizes, but adding explicit sanitization for defense in depth
             dangerouslySetInnerHTML={{ __html: sanitizeHTML(html) }}

@@ -28,7 +28,7 @@ import {
  */
 function hasValidChartData(result: ChartResult | undefined): boolean {
   // A-R-11: Check both error (legacy) and chartError (new structured error)
-  if (!result || result.error || result.chartError) return false;
+  if (!result || result.chartError) return false;
   
   switch (result.type) {
     case 'text':
@@ -294,7 +294,7 @@ function ResponsiveRow({ rowCharts, chartResults, charts, rowIndex, unifiedTextF
       resizeObserver.disconnect();
       window.removeEventListener('resize', measureAndCalculate);
     };
-  }, [rowCharts, chartResults, rowIndex]); // Re-run if charts change
+  }, [rowCharts, chartResults, rowIndex, blockAspectRatio, tableHeightMultiplier]); // Re-run if charts change
   
   // WHAT: Runtime validation for CSS variables (A-05: Runtime Enforcement)
   // WHY: Log violations for monitoring without crashing the report
@@ -349,7 +349,7 @@ function ResponsiveRow({ rowCharts, chartResults, charts, rowIndex, unifiedTextF
         const result = chartResults.get(String(chart.chartId));
         // WHAT: Skip charts with no valid data (v11.48.0); when allowNA (static landing), show if result exists and no error
         const skip = allowNA
-          ? !result || !!result.error || !!result.chartError
+          ? !result || !!result.chartError
           : !hasValidChartData(result) || !result;
         if (skip) {
           if (!allowNA || !result) {
@@ -397,7 +397,7 @@ function ReportBlock({ block, chartResults, charts, gridSettings, allowNA = fals
   // WHY: All text charts should use the same font-size, fitting the largest content
   // HOW: Use hook to measure containers and calculate optimal size
   // IMPORTANT: Hooks must be called before any early returns (React Rules of Hooks)
-  const blockRef = useRef<HTMLDivElement>(null);
+  const blockRef = useRef<HTMLDivElement>(null!);
   
   // Sort charts by order
   const sortedCharts = [...block.charts].sort((a, b) => a.order - b.order);
@@ -407,7 +407,7 @@ function ReportBlock({ block, chartResults, charts, gridSettings, allowNA = fals
   const validCharts = sortedCharts.filter(chart => {
     const result = chartResults.get(String(chart.chartId));
     const isValid = allowNA
-      ? !!(result && !result.error && !result.chartError)
+      ? !!(result && !result.chartError)
       : hasValidChartData(result);
     if (!isValid && result) {
       // WHAT: Detailed logging for invalid chart data
@@ -415,8 +415,8 @@ function ReportBlock({ block, chartResults, charts, gridSettings, allowNA = fals
       const details: any = {
         chartId: chart.chartId,
         type: result.type,
-        hasError: !!result.error,
-        error: result.error,
+        hasError: !!result.chartError,
+        error: result.chartError?.message,
         kpiValue: result.kpiValue,
         elementsCount: result.elements?.length || 0,
         elementsTotal: result.elements?.reduce((sum, el) => sum + (typeof el.value === 'number' ? el.value : 0), 0) || 0
@@ -471,7 +471,7 @@ function ReportBlock({ block, chartResults, charts, gridSettings, allowNA = fals
         .map(chart => {
           const result = chartResults.get(String(chart.chartId));
           const includeForTypography = allowNA
-            ? result && !result.error && !result.chartError
+            ? result && !result.chartError
             : result && hasValidChartData(result);
           if (!includeForTypography || !result) return null;
 
@@ -616,7 +616,7 @@ function ReportBlock({ block, chartResults, charts, gridSettings, allowNA = fals
           return {
             chartId: c.chartId,
             type: result?.type,
-            error: result?.error,
+            error: result?.chartError?.message,
             hasData: result ? hasValidChartData(result) : false
           };
         })

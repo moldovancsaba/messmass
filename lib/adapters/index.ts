@@ -13,3 +13,4 @@ export { filterAdapter } from './filterAdapter';
 export { clickerAdapter } from './clickerAdapter';
 export { insightsAdapter } from './insightsAdapter';
 export { kycAdapter } from './kycAdapter';
+export { organizationsAdapter } from './organizationsAdapter';

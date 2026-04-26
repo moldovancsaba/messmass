@@ -1,9 +1,9 @@
-# Messmass v3 Migration Playbook
+# {messmass} v3 Migration Playbook
 
 **Status**: Operational (Phase 1 & 2 Complete)
 **Last Updated**: 2026-03-13
 
-Purpose: Safely migrate from the legacy Messmass model (Partner/Event/KYC) to the new Activity Intelligence architecture without breaking existing client data or reports.
+Purpose: Safely migrate from the legacy {messmass} model (Partner/Event/KYC) to the new Activity Intelligence architecture without breaking existing client data or reports.
 
 ------------------------------------------------------------------------
 
@@ -26,7 +26,7 @@ npx tsx scripts/v3/bootstrap-org.ts
 ```
 
 **Result**: 
-- Master Organization created: `Messmass Master Org`
+- Master Organization created: `{messmass} Master Org`
 - Root Organization ID: `69b322e0cb8e841f95de9aa1`
 - Middleware `withOrgContext` enabled across all V3 routes.
 

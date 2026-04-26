@@ -1,9 +1,9 @@
-# Messmass v3 -- API Specification (Operational)
+# {messmass} v3 -- API Specification (Operational)
 
 **Status**: Version 3.1.0 Active
 **Last Updated**: 2026-03-13
 
-Purpose: Define the REST API contract for the Messmass v3 backend.
+Purpose: Define the REST API contract for the {messmass} v3 backend.
 
 Base path: `/api/v3`
 
@@ -15,6 +15,7 @@ Base path: `/api/v3`
 - `GET /api/v3/entities`: List entities within organization context.
 - `GET /api/v3/entities/{id}`: Get entity details and children.
 - `POST /api/v3/entities`: Create a new entity (team, division, etc).
+- `POST /api/admin/organizations/{id}/members`: Bulk assign entities (Partners) to an organization.
 
 ## Activity Management
 - `GET /api/v3/activities`: List activities.
@@ -50,15 +51,14 @@ Base path: `/api/v3`
 - `metrics`: Comma-separated keys (e.g., "sales,attendance").
 - `startDate`, `endDate`: ISO timestamps.
 
-**Response**:
-```json
-{
-  "entityId": "...",
-  "metrics": [
-    { "metricKey": "attendance", "total": 50000, "count": 22 }
-  ]
-}
-```
+## Organization Reporting (v12.1.0)
+`GET /api/v3/organizations/report/{id}`
+
+**Response**: Aggregated metrics (sums) across all member entities.
+
+`GET /api/v3/organizations/report/{id}/activities`
+
+**Response**: Combined list of activities where organization members are owners or participants.
 
 ------------------------------------------------------------------------
 

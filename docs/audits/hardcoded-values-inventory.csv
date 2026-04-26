@@ -1266,23 +1266,17 @@ components/PageStyleEditor.tsx,343,#ffffff,"                        type=""text"
 components/PageStyleEditor.tsx,345,#ffffff,"                        value={formData.contentBoxBackground.solidColor || '#ffffff'}
                         onChange={(e) => updateField('contentBoxBackground.solidColor', e.target.value)}
          ",Color value hardcoded instead of using design token,var(--mm-color-*)
-components/AdminPageHero.tsx,109,#3b82f6,"                  const getBadgeColor = (variant: string) => {
                     switch (variant) {
                       case 'primary': return { bg: '#3b82f6', text: '#ffffff' };
                  ",Color value hardcoded instead of using design token,var(--mm-color-primary-500)
-components/AdminPageHero.tsx,110,#6b7280,"                    switch (variant) {
                       case 'primary': return { bg: '#3b82f6', text: '#ffffff' };
                       case 'secondary': return { bg: '#6b7280', text: '#ffffff' ",Color value hardcoded instead of using design token,var(--mm-gray-500)
-components/AdminPageHero.tsx,111,#10b981,"                      case 'primary': return { bg: '#3b82f6', text: '#ffffff' };
                       case 'secondary': return { bg: '#6b7280', text: '#ffffff' };
                       case 'success'",Color value hardcoded instead of using design token,var(--mm-color-success-500)
-components/AdminPageHero.tsx,112,#f59e0b,"                      case 'secondary': return { bg: '#6b7280', text: '#ffffff' };
                       case 'success': return { bg: '#10b981', text: '#ffffff' };
                       case 'warning'",Color value hardcoded instead of using design token,var(--mm-color-warning-500)
-components/AdminPageHero.tsx,113,#ef4444,"                      case 'success': return { bg: '#10b981', text: '#ffffff' };
                       case 'warning': return { bg: '#f59e0b', text: '#ffffff' };
                       case 'danger': r",Color value hardcoded instead of using design token,var(--mm-color-error-500)
-components/AdminPageHero.tsx,114,#6b7280,"                      case 'warning': return { bg: '#f59e0b', text: '#ffffff' };
                       case 'danger': return { bg: '#ef4444', text: '#ffffff' };
                       default: return {",Color value hardcoded instead of using design token,var(--mm-gray-500)
 components/ChartConfiguration.tsx,338,#1f2937,"        .config-title h3 {

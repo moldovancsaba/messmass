@@ -26,6 +26,7 @@ export const ROLE_HIERARCHY: Record<UserRole, number> = {
 export const MENU_PERMISSIONS: Record<string, UserRole[]> = {
   // WHAT: Core features - user level and above
   'Partners': ['user', 'admin', 'superadmin'],
+  'Organizations': ['superadmin'],
   'Events': ['user', 'admin', 'superadmin'],
   'Filters': ['user', 'admin', 'superadmin'],
   

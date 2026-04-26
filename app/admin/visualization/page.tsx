@@ -103,7 +103,8 @@ interface AvailableChart {
   type: string;
   order: number;
   isActive: boolean;
-  emoji?: string;
+  icon?: string;
+  iconVariant?: 'outlined' | 'rounded';
 }
 
 interface ReportTemplate {
@@ -2152,7 +2153,7 @@ export default function VisualizationPage() {
                     {/* Controls */}
                     <div className="chart-controls-grid">
                     {block.charts.map((chart, index) => {
-                      const chartConfig = availableCharts.find(c => c.chartId === chart.chartId);
+                      const chartConfig = chartConfigMap.get(chart.chartId);
                       const chartType = resolveChartType(chart.chartId);
                       const normalizedChart = normalizeChartLayout(chart);
                       const unitSize = normalizedChart.unitSize ?? normalizeUnitSize(chart.unitSize ?? chart.width);
@@ -2162,7 +2163,15 @@ export default function VisualizationPage() {
                       return (
                         <div key={`${chart.chartId}-${index}`} className="chart-control-item">
                           <div className="chart-info">
-                            <span className="chart-emoji">{chartConfig?.emoji || '📊'}</span>
+                            {chartConfig?.icon ? (
+                              <MaterialIcon 
+                                name={chartConfig.icon} 
+                                variant={chartConfig.iconVariant || 'outlined'} 
+                                className={vizStyles.chartIcon} 
+                              />
+                            ) : (
+                              <span className="chart-emoji">📊</span>
+                            )}
                             <div>
                               <div className="chart-details">
                                 {chartConfig?.title || chart.chartId}
@@ -2359,7 +2368,9 @@ export default function VisualizationPage() {
                                   onClick={() => addChartToBlock(block, chart.chartId)}
                                   className="btn btn-small btn-secondary"
                                 >
-                                  {chart.emoji || '📊'} {chart.title}
+                                  {chart.icon ? (
+                                    <MaterialIcon name={chart.icon} variant={chart.iconVariant || 'outlined'} />
+                                  ) : '📊'} {chart.title}
                                 </button>
                               ))}
                             </div>

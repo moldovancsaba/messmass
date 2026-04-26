@@ -33,7 +33,6 @@ function serializeChartResult(r: ChartResult | null): Record<string, unknown> {
   if (r.aspectRatio !== undefined) out.aspectRatio = r.aspectRatio;
   if (r.showTitle !== undefined) out.showTitle = r.showTitle;
   if (r.showPercentages !== undefined) out.showPercentages = r.showPercentages;
-  if (r.error !== undefined) out.error = r.error;
   if (r.chartError !== undefined) out.chartError = r.chartError;
   return out;
 }

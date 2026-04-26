@@ -13,7 +13,7 @@ import Link from 'next/link';
 import styles from './not-found.module.css';
 
 export const metadata: Metadata = {
-  title: '404 - Page Not Found | Messmass',
+  title: '404 - Page Not Found | {messmass}',
   description: 'The page you are looking for could not be found.',
 };
 

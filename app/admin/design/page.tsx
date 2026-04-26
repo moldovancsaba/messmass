@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import AdminHero from '@/components/AdminHero';
+import UnifiedAdminHeroWithSearch from '@/components/UnifiedAdminHeroWithSearch';
 import ColoredCard from '@/components/ColoredCard';
 import styles from './Design.module.css';
 import { apiPut } from '@/lib/apiClient';
@@ -55,12 +55,13 @@ export default function AdminDesignPage() {
 
   return (
     <div className={styles.container}>
-      <AdminHero title="Design & Styles" subtitle="Style editor disabled — rebuilding from scratch." />
+      <UnifiedAdminHeroWithSearch 
+        title="Design & Styles" 
+        subtitle="Style editor disabled — rebuilding from scratch." 
+      />
       <div className={styles.section}>
         <ColoredCard accentColor="#3b82f6">
-          {/* WHAT: Inline padding for temporary notice card - WHY: Temporary component, no need for CSS module */}
-          {/* eslint-disable-next-line react/forbid-dom-props */}
-          <div style={{ padding: '1rem' }}>
+          <div className={styles.temporaryNotice}>
             <h3>Temporary Notice</h3>
             <p>The existing style editor and per-page style application have been removed. Reports use system defaults for now.</p>
           </div>

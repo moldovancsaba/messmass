@@ -46,6 +46,13 @@ const navCards: NavCard[] = [
     accentColor: '#10b981', // var(--mm-color-secondary-500) - Green
   },
   {
+    href: '/admin/organizations',
+    icon: '🏢',
+    title: 'Organization Management',
+    description: 'Create organizations and manage partner memberships',
+    accentColor: '#3b82f6', // var(--mm-color-primary-500) - Blue
+  },
+  {
     href: '/admin/partners',
     icon: '🤝',
     title: 'Partner Management',

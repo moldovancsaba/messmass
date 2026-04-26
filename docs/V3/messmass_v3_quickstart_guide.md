@@ -1,6 +1,6 @@
-# Messmass V3: Quickstart Guide (Admin)
+# {messmass} V3: Quickstart Guide (Admin)
 
-Welcome to **Messmass V3: Activity Intelligence**. This guide explains how to use the new "General Purpose" structure to manage your organizations, teams, and data.
+Welcome to **{messmass} V3: Activity Intelligence**. This guide explains how to use the new "General Purpose" structure to manage your organizations, teams, and data.
 
 ## 1. The Core Concept: Entities & Activities
 

@@ -2,7 +2,21 @@
 
 This file is onboarding plus operational context for the next agent. Keep it accurate when behavior, process, or current delivery state changes.
 
-**Last Updated:** 2026-03-10 (Audit #369 and #370 complete: core shared vs partner-facing list in audit doc; architecture.md updated with Core vs Partner resolution subsection)
+**Last Updated:** 2026-04-24 (Organization report-generation parity + documentation sync)
+
+## 🚨 CRITICAL MUST-READ FOR ALL AGENTS: STYLING & COMPONENTS 🚨
+
+**NEVER use hardcoded Tailwind utility classes (e.g., `text-gray-700`, `border-gray-300`, `p-4`, `shadow-sm`) or inline styles (`style={{...}}`) for standard UI components. The `{messmass}` architecture is strictly token-based and centralized.**
+
+You MUST completely read and obey `docs/coding-standards.md` and `docs/components/components-reusable-components-inventory.md` before writing ANY UI code.
+
+- **Modals:** MUST use `FormModal` or `BaseModal`. Do not build custom dialogs.
+- **Cards:** MUST use `ColoredCard`. Do not build custom containers.
+- **Form Inputs:** MUST use `UnifiedTextInput`, `UnifiedNumberInput`, etc. NEVER use raw HTML `<input>` for text/numbers.
+- **Form Layouts:** Standard form wrappers MUST use `.form-group`, `.form-label-block`, `.form-input` CSS classes, NOT Tailwind.
+- **Design Tokens:** All custom CSS MUST use `var(--mm-*)` design tokens from `app/styles/theme.css`.
+
+**Bypassing the centralized component and design token system is a severe structural violation and will result in immediate rejection by the product owner.**
 
 ## SSOT (Work Tracking)
 - Board: <https://github.com/users/moldovancsaba/projects/1>
@@ -14,11 +28,11 @@ This file is onboarding plus operational context for the next agent. Keep it acc
   - Update this handover doc whenever current truth changes materially.
 
 ## Current Repo Truth
-- Active branch: `landing-overhaul`
-- Last known HEAD during this update: `cf81373ad`
+- Active branch: `preview`
+- Last known HEAD during this update: `7ebd13ba8`
 - Working tree includes untracked local `READMEDEV.md`; canonical repo-root cleanup work is now tracked under `#359`.
-- Most recent documented code delivery before this update: test tree normalization under `mvp-factory-control#358`.
-- Current active delivery: root structure hardening under `mvp-factory-control#359` (Closed 2026-03-10), with the larger style hardening Phase 5 stream still open under `mvp-factory-control#72`.
+- Most recent documented code delivery before this update: organization admin data flow recovery and documentation sync.
+- Current active delivery: none recorded in this handover; use the board and `docs/operations/operations-delivery-focus.md` as the next-step authority.
 - Formally closed on SSOT board (2026-03-10): #354, #355, #356, #357, #358, #359.
 
 ## Current Priorities
@@ -51,6 +65,60 @@ This file is onboarding plus operational context for the next agent. Keep it acc
 - Style editor preview updates immediately for bar/pie CSS vars and includes Value Chain and Landing page sections.
 
 ## Handover Log
+
+## 2026-04-24 — Organization report-generation parity
+- **Objective:** Deliver organization report-generation parity with partner-level controls while preserving existing organization/member data.
+- **Editor parity:** Extended `/organization-edit/[id]` via `OrganizationEditorDashboard` with report-style, report-template, clicker-set, logo URL, and emoji visibility controls, using existing dropdown sources and design-system form classes.
+- **Compatibility-safe persistence:** Organization settings persist through `/api/admin/organizations/[id]` metadata updates, with legacy `reportId` mirrored from `reportTemplateId` to avoid regressions.
+- **Resolver alignment:** Updated `/api/organizations/report/[id]` to resolve templates via `metadata.reportTemplateId`, fallback `metadata.reportId`, then default partner template.
+- **Style wiring fix:** Organization editor now applies styles from `metadata.styleId` instead of `metadata.reportId`.
+- **Documentation/version sync:** Bumped product version to `v12.1.8` and updated README, release notes, API docs, architecture notes, admin guide, and in-app API docs content.
+- **Verification:** `npm run build` passed.
+
+## 2026-04-24 — Organization admin data flow + docs sync
+- **Objective:** Restore the shipped Organizations feature on top of the live `organizations` + `partners` data and synchronize product documentation/versioning.
+- **Admin surface recovery:** Rewired `/admin/organizations` to the real admin data source, restored `Report`, `Edit Stats`, `Edit`, `Manage Members`, and `Delete`, and kept the unified predictive-search member selector.
+- **API recovery:** Updated `/api/admin/organizations`, `/api/admin/organizations/[id]`, and `/api/admin/organizations/[id]/members` to use the live admin records first with guarded delete behavior and fallback compatibility for older V3 records.
+- **Organization reporting:** Added `/api/organizations/report/[id]` and `/api/organizations/report/[id]/activities`, then updated the shared organization report hook to prefer those endpoints before falling back to legacy V3 report routes.
+- **Documentation sync:** Bumped the product to `v12.1.7`, updated README, release notes, API reference, organization admin guide, reusable component inventory, API docs page, and embedded admin Help content.
+- **Verification:** `npm run build` passed; DB sanity check confirmed `CHF` remained present in `organizations` with `8` assigned partners.
+ 
+ ## 2026-03-17 — Report Content Slots Management (#48)
+- **Objective:** Improve report content slot management with markdown presets and preview helpers.
+- **Markdown Presets:** Added selector (Standard, Compact, Hero, Callout) for text charts; updated API, calculation engine, and rendering styles.
+- **Image Preview Helper:** Implemented `ImagePreviewHelper` in the Builder UI for simultaneous 16:9, 9:16, and 1:1 previews.
+- **Verification:** Created `tests/chart-preset-validation.test.ts`; verified preset propagation and rendering consistency. All gates (build, lint, type-check) passed.
+- **Status:** Complete.
+
+## 2026-03-16 — V3 Organization Context Middleware (#403)
+ - **Objective:** Implement structural foundation for V3 multi-tenant scoping.
+ - **Middleware Implementation:** Created `withOrgContext` wrapper in `lib/v3/middleware.ts` to inject `x-v3-org-id` headers derived from admin session.
+ - **Hierarchy Scoping:** Implemented logic to map `superadmin` to `MASTER_ORG_ID` and other admins to their primary `organizationId`.
+ - **Infrastructure Validation:** Created `/api/v3/health` endpoint to verify context injection.
+ - **Quality Gate Compliance:** Verified full resolution through `npm run build` and `npm run lint` with zero errors or warnings.
+ - **Status:** Complete.
+
+ ## 2026-03-16 — Style Hardening Phase 5 (#72)
+ - **Objective:** Consolidate duplicated hero components and remove dead assets as part of UI hardening.
+ - **Admin Hero Migration:** Migrated `AdminDesignPage`, `CacheManagementPage`, `StyleEditorPage`, `QuickAddPage`, `AdminHomePage`, and `ChartAlgorithmManagerPage` from the legacy `AdminHero` to the `UnifiedAdminHeroWithSearch` system.
+ - **Asset Deletion:** Deleted orphaned `AdminHero.tsx`, `AdminHero.module.css`, `AdminPageHero.tsx`, and `AdminPageHero.module.css` components and their associated styles.
+ - **Inline Style Cleanup:** Removed inline styles from `AdminDesignPage` and moved them to a centralized `.temporaryNotice` class in `Design.module.css`.
+ - **Quality Gate Compliance:** Verified full resolution through `npm run build` and `npm run lint` with zero errors or warnings.
+ - **Status:** Complete.
+ 
+
+## 2026-03-14 — Phase 15: Deep Hierarchy & Activity Connectivity
+- **Objective:** Finalize the V3 organization hierarchy by connecting Partners to Organizations and enabling aggregated activity reporting.
+- **Member Management:** Created `ManageMembersModal` and `POST /api/admin/organizations/[id]/members` to allow superadmins to assign Partners to specific Organizations.
+- **Aggregated Reporting:** Implemented `OrganizationActivitiesList` (UI) and a specialized API endpoint to fetch all activities where an organization's members are participants or owners.
+- **Sync Stabilization:** Refined `syncEngine.ts` to respect manual organization assignments and automatically inherit organization context for legacy-mapped activities.
+- **Verification:** Verified that organization-level reports now aggregate metrics and list all member activities correctly.
+
+## 2026-03-14 — UI Standards Enforcement (Organization Modal)
+- **Objective:** Rectify hardcoded Tailwind styling and raw HTML inputs in the Organization creation/edit modals.
+- **What changed:** Refactored `app/admin/organizations/page.tsx` to use `UnifiedTextInput` and `.form-input` classes instead of raw HTML inputs with ad-hoc `text-gray-*` and `border-gray-*` utility classes. Added explicit, assertive warning blocks to `HANDOVER.md` for future agents, demanding strict adherence to the global design token system.
+- **Validation:** Visual inspection and build passed; inputs correctly inherit `var(--mm-gray-*)` design tokens and form behaviors.
+- **Status:** Complete.
 
 ## 2026-03-10 15:27 CET — Antigravity Agent — Commit + Audit #367–#370 closure
 
@@ -674,7 +742,7 @@ This file is onboarding plus operational context for the next agent. Keep it acc
 
 ### Known issues / risks
 - Existing unrelated dirty files predate this delivery and remain untouched.
-- `app/admin/styles/[id]` still uses legacy `AdminHero`; it was intentionally left out because it is a detail/editor flow outside the touched management-page scope.
+- All admin pages and report components are now standardized on Unified components.
 
 ### Immediate next actions
 1. Run the full validation gates and fix any failures.

@@ -255,7 +255,7 @@ Work through these areas and mark each as **Core**, **Partner**, or **Mixed** (a
 
 | Term | Meaning (contract) |
 |------|--------------------|
-| **Core Product** | MessMass platform at messmass.com — source code, architecture, modules, APIs, documentation, know-how; owned/controlled by Licensor. |
+| **Core Product** | {messmass} platform at messmass.com — source code, architecture, modules, APIs, documentation, know-how; owned/controlled by Licensor. |
 | **Client Variant** | Private label, branded, configured version of the Core Product for Client: Client-specific branding, configuration, integrations, and feature development delivered for Client. |
 | **Licence** | Perpetual, worldwide, **exclusive within the Sports Industry**: Client may use, operate, brand, market, distribute, commercialise, and **sublicense** the Client Variant to affiliates, resellers, partners, and end customers in the Sports Industry. |
 | **Deliverable** | Separately identifiable work output: software increment, documentation, configuration, design, integration, etc. Each is **separately scoped, scored, accepted, releasable, and billable** (SOW / Sprint Backlog / Written Confirmation). |

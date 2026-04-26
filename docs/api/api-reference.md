@@ -1,11 +1,11 @@
 # 📡 API Reference
 Status: Active
-Last Updated: 2026-01-11T22:45:21.000Z
+Last Updated: 2026-04-24T13:30:00.000Z
 Canonical: Yes
 Owner: Backend
 
-**Version:** 11.59.0  
-**Last Updated:** 2026-02-21T00:00:00.000Z (UTC)  
+**Version:** 12.1.8  
+**Last Updated:** 2026-04-24T16:10:00.000Z (UTC)  
 **Status:** Production
 
 Quick API reference for {messmass}. See detailed guides for complete schemas and examples.
@@ -70,6 +70,60 @@ Update partner.
 Delete partner.
 
 **See**: [PARTNERS_SYSTEM_GUIDE.md](../features/features-partners-system-guide.md#api-reference) for complete details
+
+---
+
+## Organizations API (v12.1.8+)
+
+All admin organization endpoints require an authenticated admin session and `superadmin` role.
+
+### GET /api/admin/organizations
+List organization records from the live `organizations` collection.
+
+### POST /api/admin/organizations
+Create organization. Body: `{ name, slug?, status?, metadata? }`
+
+### GET /api/admin/organizations/[id]
+Fetch a single organization for admin/editor use.
+
+### PUT /api/admin/organizations/[id]
+Update an organization. Body: `{ name?, slug?, status?, metadata? }`
+
+Organization metadata supports report-generation parity fields:
+- `metadata.styleId`
+- `metadata.reportTemplateId` (legacy-compatible mirror: `metadata.reportId`)
+- `metadata.clickerSetId`
+- `metadata.logoUrl`
+- `metadata.emoji`
+
+### PATCH /api/admin/organizations/[id]
+Alias of `PUT /api/admin/organizations/[id]`.
+
+### DELETE /api/admin/organizations/[id]
+Delete an organization only when no partners are still assigned.
+
+### GET /api/admin/organizations/[id]/members
+Return all partners with assignment state for the predictive-search member selector.
+
+### PUT /api/admin/organizations/[id]/members
+Apply bulk membership assignment. Body: `{ memberPartnerIds: string[] }`
+
+### GET /api/organizations/report/[id]
+Get aggregated metrics, resolved report config, and member partner list for admin-managed organizations.
+
+Report resolution precedence:
+1. `organization.metadata.reportTemplateId`
+2. `organization.metadata.reportId` (legacy compatibility)
+3. default partner report template
+
+### GET /api/organizations/report/[id]/activities
+Get the aggregated activity list derived from projects owned by member partners.
+
+### Compatibility: GET /api/v3/organizations/report/[id]
+Legacy V3 organization reporting path remains available as a fallback for older records.
+
+### Compatibility: GET /api/v3/organizations/report/[id]/activities
+Legacy V3 organization activity timeline path remains available as a fallback for older records.
 
 ---
 
@@ -271,6 +325,6 @@ Returns: `{ projects: [...], totalMatched: 150, nextOffset: 60 }`
 
 ---
 
-**{messmass} API Reference 11.59.0**  
-**Last Updated: 2026-02-21T00:00:00.000Z (UTC)**  
-**© 2025 {messmass} Platform**
+**{messmass} API Reference 12.1.0**  
+**Last Updated: 2026-03-14T22:00:00.000Z (UTC)**  
+**© 2026 {messmass} Platform**

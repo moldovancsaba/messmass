@@ -29,7 +29,10 @@ import { isValidSessionToken, getUserFromSession } from './passwordAuth'
 /**
  * Set session cookie
  * 
- * Sets a secure, HTTP-only session cookie with appropriate security settings.
+ * Sets a session cookie in the browser with appropriate security settings.
+ *
+ * Note: Browser JS cannot set `HttpOnly`. If you need an `HttpOnly` cookie,
+ * use `createServerCookieString()` in a server response (Set-Cookie header).
  * 
  * @param sessionToken - Base64-encoded session token
  * @param config - Optional configuration for cookie settings

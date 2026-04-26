@@ -1,4 +1,4 @@
-# Messmass v3 -- Release & Rollback Runbook
+# {messmass} v3 -- Release & Rollback Runbook
 
 Purpose: Provide safe production deployment procedures.
 
