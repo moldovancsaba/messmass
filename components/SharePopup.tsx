@@ -95,8 +95,14 @@ export default function SharePopup({ isOpen, onClose, pageId, pageType, customTi
         return 'Event Report';
       case 'partner-report':
         return 'Partner Report';
+      case 'organization-report':
+        return 'Organization Report';
       case 'edit':
         return 'Edit Page';
+      case 'partner-edit':
+        return 'Partner Edit';
+      case 'organization-edit':
+        return 'Organization Edit';
       case 'filter':
         return 'Filter Page';
       default:

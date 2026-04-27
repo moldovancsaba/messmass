@@ -45,9 +45,9 @@ export const organizationsAdapter: AdminPageAdapter<OrganizationDTO> = {
       },
     ],
     rowActions: [
+      { label: 'Edit', icon: 'edit', variant: 'primary', handler: () => {} },
       { label: 'Report', icon: 'visibility', variant: 'secondary', handler: () => {} },
-      { label: 'Edit Stats', icon: 'bar_chart', variant: 'secondary', handler: () => {} },
-      { label: 'Edit', icon: 'edit', variant: 'secondary', handler: () => {} },
+      { label: 'Edit Stats', icon: 'bar_chart', variant: 'primary', handler: () => {} },
       { label: 'Manage Members', icon: 'group', variant: 'secondary', handler: () => {} },
       { label: 'Delete', icon: 'delete', variant: 'danger', handler: () => {} },
     ],
@@ -74,9 +74,9 @@ export const organizationsAdapter: AdminPageAdapter<OrganizationDTO> = {
     ],
     renderBadge: (org) => <span>{org.status || 'active'}</span>,
     cardActions: [
+      { label: 'Edit', icon: 'edit', variant: 'primary', handler: () => {} },
       { label: 'Report', icon: 'visibility', variant: 'secondary', handler: () => {} },
-      { label: 'Edit Stats', icon: 'bar_chart', variant: 'secondary', handler: () => {} },
-      { label: 'Edit', icon: 'edit', variant: 'secondary', handler: () => {} },
+      { label: 'Edit Stats', icon: 'bar_chart', variant: 'primary', handler: () => {} },
       { label: 'Manage Members', icon: 'group', variant: 'secondary', handler: () => {} },
       { label: 'Delete', icon: 'delete', variant: 'danger', handler: () => {} },
     ],

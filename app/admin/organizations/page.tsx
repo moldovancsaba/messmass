@@ -9,6 +9,7 @@ import { useRouter } from 'next/navigation';
 import UnifiedAdminPage from '@/components/UnifiedAdminPage';
 import ColoredCard from '@/components/ColoredCard';
 import OrganizationMembersSelector from '@/components/OrganizationMembersSelector';
+import SharePopup from '@/components/SharePopup';
 import { FormModal } from '@/components/modals';
 import { apiDelete, apiPost, apiPut } from '@/lib/apiClient';
 import { useAdminAuth } from '@/hooks/useAdminAuth';
@@ -52,6 +53,8 @@ export default function OrganizationsAdminPage() {
   const [editOrgId, setEditOrgId] = useState<string | null>(null);
   const [editOrgName, setEditOrgName] = useState('');
   const [editOrgStatus, setEditOrgStatus] = useState<'active' | 'inactive'>('active');
+  const [sharePopupOpen, setSharePopupOpen] = useState(false);
+  const [shareOrganizationId, setShareOrganizationId] = useState('');
 
   const [membersModalOpen, setMembersModalOpen] = useState(false);
   const [activeOrg, setActiveOrg] = useState<Organization | null>(null);
@@ -198,7 +201,10 @@ export default function OrganizationsAdminPage() {
   const organizationsAdapterWithHandlers = useMemo(() => {
     const mapAction = (label: string, org: Organization) => {
       if (label === 'Report') {
-        return () => window.open(`/organization-report/${org._id}`, '_blank');
+        return () => {
+          setShareOrganizationId(org._id);
+          setSharePopupOpen(true);
+        };
       }
       if (label === 'Edit Stats') {
         return () => window.open(`/organization-edit/${org._id}`, '_blank');
@@ -361,6 +367,14 @@ export default function OrganizationsAdminPage() {
           />
         )}
       </FormModal>
+
+      <SharePopup
+        isOpen={sharePopupOpen}
+        onClose={() => setSharePopupOpen(false)}
+        pageId={shareOrganizationId}
+        pageType="organization-report"
+        customTitle="Share Organization Report"
+      />
     </>
   );
 }

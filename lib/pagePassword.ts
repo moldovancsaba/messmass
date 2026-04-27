@@ -11,6 +11,7 @@ import config from '@/lib/config';
 export type PageType =
   | 'event-report'
   | 'partner-report'
+  | 'organization-report'
   | 'edit'
   | 'partner-edit'
   | 'organization-edit'
@@ -221,6 +222,11 @@ export async function generateShareableLink(
       // WHAT: Partner report pages at /partner-report/[slug]
       // WHY: Public shareable partner profile pages with event listings
       url += `/partner-report/${pageId}`;
+      break;
+    case 'organization-report':
+      // WHAT: Organization report pages at /organization-report/[id]
+      // WHY: Shareable aggregated organization reporting pages
+      url += `/organization-report/${pageId}`;
       break;
     case 'edit':
       url += `/edit/${pageId}`;
