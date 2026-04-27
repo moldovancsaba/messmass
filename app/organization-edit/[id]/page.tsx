@@ -101,7 +101,7 @@ export default function OrganizationEditPage() {
         pageType="organization-edit"
         onSuccess={handleLoginSuccess}
         title="Organization Editor Access Required"
-        description="This organization editor is password protected. Enter the admin password or the page-specific password to continue."
+        description="This organization editor is password protected. Enter the page-specific password to continue, or access it through an authenticated admin session."
       />
     );
   }

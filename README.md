@@ -12,7 +12,7 @@ Owner: Product
 <p align="center"><strong>Enterprise event analytics, partner reporting, and admin operations for sports organizations, venues, and brands.</strong></p>
 
 <p align="center">
-  <img src="https://img.shields.io/badge/version-v12.1.9-2563EB?style=for-the-badge" alt="Version">
+  <img src="https://img.shields.io/badge/version-v12.1.10-2563EB?style=for-the-badge" alt="Version">
   <img src="https://img.shields.io/badge/platform-Web%20App-0F172A?style=for-the-badge" alt="Platform">
   <img src="https://img.shields.io/badge/stack-Next.js%20%7C%20MongoDB-0EA5E9?style=for-the-badge" alt="Stack">
 </p>
@@ -97,7 +97,7 @@ npm run version:verify
 ```
 
 Current release version:
-- `v12.1.9` (Organization edit password-gate parity, report list controls, and version sync)
+- `v12.1.10` (Organization admin action parity, share-flow alignment, and auth-copy cleanup)
 
 Live product:
 - Website: [messmass.doneisbetter.com](https://messmass.doneisbetter.com)

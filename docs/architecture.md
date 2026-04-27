@@ -1,10 +1,15 @@
 # {messmass} Architecture Documentation
 Status: Active
-Last Updated: 2026-04-24
+Last Updated: 2026-04-27
 Canonical: No
 Owner: Architecture
 
-Version: 12.1.9
+Version: 12.1.10
+
+**Organization Admin Action Parity (2026-04-27):**
+- **Shared action model:** `/admin/organizations` now uses the same action emphasis and report-sharing interaction pattern as `/admin/partners` for the organization routes that actually exist.
+- **Protected report sharing:** Organization reports are now first-class shareable surfaces in the page-password system via `organization-report`.
+- **Auth wording cleanup:** UI/docs wording was corrected to reflect the actual model: page password validation plus admin-session bypass, not a static admin password fallback.
 
 **Organization Report Parity (2026-04-24):**
 - **Config Parity in Org Editor**: Added style/template/clicker/logo/emoji settings to `/organization-edit/[id]` with the same dropdown-source model used by partner configuration.

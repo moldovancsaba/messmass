@@ -165,18 +165,11 @@ const db = client.db(config.dbName);
   }
 }
 
-/**
- * Check if admin password is valid
- * Uses the existing admin password system
- * 
- * @param providedPassword - Password provided by user
- * @returns boolean
- */
-// NOTE: Static admin password via env has been removed.
-// Admin session bypass is handled at the API route level (see /api/page-passwords PUT).
+// NOTE: Static admin password validation has been removed.
+// Admin-session bypass is handled at the API route level (see /api/page-passwords PUT).
 
 /**
- * Validate either admin or page-specific password
+ * Validate access using the page-specific password path.
  * 
  * @param pageId - Page identifier
  * @param pageType - Type of page

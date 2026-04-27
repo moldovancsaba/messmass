@@ -173,7 +173,7 @@ export default function PagePasswordLogin({
   };
 
   const defaultTitle = title || `${getPageTypeDisplay()} Access Required`;
-  const defaultDescription = description || `This ${getPageTypeDisplay().toLowerCase()} page is password protected. Please enter the admin password or the page-specific password to continue.`;
+  const defaultDescription = description || `This ${getPageTypeDisplay().toLowerCase()} page is password protected. Please enter the page-specific password to continue, or use an authenticated admin session.`;
 
   return (
     <div className={`login-container ${styles.container}`}>
@@ -216,8 +216,8 @@ export default function PagePasswordLogin({
         </form>
 
         <div className={styles.hint}>
-          <p className="m-0 mb-2 font-semibold">💡 Password Types:</p>
-          <p className="m-0 mb-1">• <strong>Admin Password:</strong> Global access to all pages</p>
+          <p className="m-0 mb-2 font-semibold">💡 Access Modes:</p>
+          <p className="m-0 mb-1">• <strong>Admin Session:</strong> Signed-in admin access bypasses the prompt</p>
           <p className="m-0">• <strong>Page Password:</strong> Access to this specific page only</p>
         </div>
       </div>

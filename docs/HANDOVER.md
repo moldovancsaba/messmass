@@ -2,7 +2,7 @@
 
 This file is onboarding plus operational context for the next agent. Keep it accurate when behavior, process, or current delivery state changes.
 
-**Last Updated:** 2026-04-24 (Organization report-generation parity + documentation sync)
+**Last Updated:** 2026-04-27 (Organization admin action parity + documentation/version sync)
 
 ## 🚨 CRITICAL MUST-READ FOR ALL AGENTS: STYLING & COMPONENTS 🚨
 
@@ -29,9 +29,8 @@ You MUST completely read and obey `docs/coding-standards.md` and `docs/component
 
 ## Current Repo Truth
 - Active branch: `preview`
-- Last known HEAD during this update: `7ebd13ba8`
-- Working tree includes untracked local `READMEDEV.md`; canonical repo-root cleanup work is now tracked under `#359`.
-- Most recent documented code delivery before this update: organization admin data flow recovery and documentation sync.
+- Last known HEAD during this update: `59914a997`
+- Most recent documented code delivery before this update: organization admin action parity plus share-flow alignment.
 - Current active delivery: none recorded in this handover; use the board and `docs/operations/operations-delivery-focus.md` as the next-step authority.
 - Formally closed on SSOT board (2026-03-10): #354, #355, #356, #357, #358, #359.
 
@@ -66,13 +65,21 @@ You MUST completely read and obey `docs/coding-standards.md` and `docs/component
 
 ## Handover Log
 
+## 2026-04-27 — Organization admin action parity + doc/version sync
+- **Objective:** Bring `/admin/organizations` action behavior into line with `/admin/partners`, then synchronize versioning and documentation to the shipped state.
+- **Action parity:** Reworked organization admin actions so `Report` now uses the same `SharePopup` pattern as partners instead of opening a raw tab, while keeping only the organization routes that actually exist.
+- **Share-flow support:** Added `organization-report` to the page-password/share-link system so organization reports can be shared through the existing protected-link flow.
+- **Docs and version sync:** Bumped the product to `v12.1.10`, updated README, release notes, API/docs surfaces, admin guide material, and handover metadata to reflect the current preview branch state.
+- **Comment/auth cleanup:** Removed stale wording that still implied a static admin password path for page-password access; current behavior is page password plus admin-session bypass.
+- **Verification:** `npm run lint`, `npm run build`, and `npm run type-check` passed under Node 24.
+
 ## 2026-04-24 — Organization report-generation parity
 - **Objective:** Deliver organization report-generation parity with partner-level controls while preserving existing organization/member data.
 - **Editor parity:** Extended `/organization-edit/[id]` via `OrganizationEditorDashboard` with report-style, report-template, clicker-set, logo URL, and emoji visibility controls, using existing dropdown sources and design-system form classes.
 - **Compatibility-safe persistence:** Organization settings persist through `/api/admin/organizations/[id]` metadata updates, with legacy `reportId` mirrored from `reportTemplateId` to avoid regressions.
 - **Resolver alignment:** Updated `/api/organizations/report/[id]` to resolve templates via `metadata.reportTemplateId`, fallback `metadata.reportId`, then default partner template.
 - **Style wiring fix:** Organization editor now applies styles from `metadata.styleId` instead of `metadata.reportId`.
-- **Documentation/version sync:** Bumped product version to `v12.1.9` and updated README, release notes, API docs, architecture notes, admin guide, and in-app API docs content.
+- **Documentation/version sync:** Bumped product version to `v12.1.8` and updated README, release notes, API docs, architecture notes, admin guide, and in-app API docs content.
 - **Verification:** `npm run build` passed.
 
 ## 2026-04-24 — Organization admin data flow + docs sync

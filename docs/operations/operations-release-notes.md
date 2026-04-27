@@ -1,8 +1,39 @@
 # {messmass} Release Notes
 Status: Active
-Last Updated: 2026-04-27T14:05:00.000Z
+Last Updated: 2026-04-27T16:40:00.000Z
 Canonical: No
 Owner: Operations
+
+## [v12.1.10] — 2026-04-27T16:40:00.000Z
+
+### Summary
+🏢 **ORGANIZATION ADMIN ACTION PARITY + DOCUMENTATION CLEANUP**: Aligned organization admin actions with partner behavior, added protected sharing for organization reports, and removed stale auth/version wording from docs and UI copy.
+
+### What Was Fixed
+
+#### Organization admin action parity ✅
+**WHAT**: Updated `/admin/organizations` so its action buttons follow the same interaction model as `/admin/partners` for supported organization routes.  
+**WHY**: The organization admin actions looked and behaved differently from the partner actions, which created product inconsistency and operator confusion.  
+**HOW**: Reordered and re-variant-matched organization adapter actions, kept `Edit`, `Report`, `Edit Stats`, `Manage Members`, and `Delete`, and changed `Report` to use the share modal instead of a raw tab open.
+
+#### Protected organization report sharing ✅
+**WHAT**: Added `organization-report` support to the page-password/share-link flow.  
+**WHY**: Organization reports needed the same protected sharing pattern already used by partner reports and other shareable surfaces.  
+**HOW**: Extended the page-password allow-list, share-link URL resolver, and `SharePopup` display logic to support `/organization-report/[id]`.
+
+#### Auth copy and documentation cleanup ✅
+**WHAT**: Removed stale references to a static “admin password” path where the code now relies on page passwords plus admin-session bypass.  
+**WHY**: Those comments and UI strings no longer matched the authentication implementation and would mislead future changes.  
+**HOW**: Updated page-password helper comments, password prompt copy, organization editor copy, README, handover, API/docs surfaces, and admin guides.
+
+### Testing
+- ✅ `npm run lint`
+- ✅ `npm run build`
+- ✅ `npm run type-check`
+- ✅ `npm run version:verify`
+
+### Version
+v12.1.9 → v12.1.10 (PATCH — organization admin action parity, protected sharing, and docs/auth cleanup)
 
 ## [v12.1.9] — 2026-04-27T14:05:00.000Z
 

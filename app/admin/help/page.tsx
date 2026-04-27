@@ -544,7 +544,7 @@ export default function HelpPage() {
             <li><strong>Add Organization:</strong> Create a new top-level organization record</li>
             <li><strong>Edit:</strong> Update organization name and status</li>
             <li><strong>Manage Members:</strong> Assign Partners with predictive search and chip-based selection</li>
-            <li><strong>Report:</strong> Open the aggregated organization report</li>
+            <li><strong>Report:</strong> Open the share dialog for the aggregated organization report</li>
             <li><strong>Edit Stats:</strong> Open the organization content editor</li>
             <li><strong>Delete:</strong> Remove an organization only after all members are unassigned</li>
           </ul>
@@ -563,7 +563,7 @@ export default function HelpPage() {
 
           <h3>Reports and Editor</h3>
           <ul>
-            <li><strong>Report URL:</strong> <code>/organization-report/[id]</code></li>
+            <li><strong>Report URL:</strong> <code>/organization-report/[id]</code> via protected share dialog</li>
             <li><strong>Editor URL:</strong> <code>/organization-edit/[id]</code></li>
             <li>Reports aggregate organization metadata, assigned partners, and related projects/events</li>
             <li>Editor supports report-style, report-template, clicker-set, emoji, and logo configuration</li>
@@ -694,8 +694,8 @@ export default function HelpPage() {
 
         <footer className={styles.footer}>
           <p>
-            <strong>{'{messmass}'} Version 12.1.9</strong><br />
-            Last Updated: 2026-04-24T13:30:00.000Z (UTC)
+            <strong>{'{messmass}'} Version 12.1.10</strong><br />
+            Last Updated: 2026-04-27T16:40:00.000Z (UTC)
           </p>
           <p>
             <strong>Quick Links:</strong><br />

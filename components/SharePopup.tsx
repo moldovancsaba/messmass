@@ -231,7 +231,7 @@ export default function SharePopup({ isOpen, onClose, pageId, pageType, customTi
               <ol className={styles.instructionsList}>
                 <li className={styles.instructionItem}>Share the URL with the intended recipient</li>
                 <li className={styles.instructionItem}>Provide them with the password separately (for security)</li>
-                <li>They can use either this password or the admin password to access the page</li>
+                <li>They can use this password to access the page; signed-in admins bypass the prompt</li>
               </ol>
             </div>
           </div>
