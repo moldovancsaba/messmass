@@ -13,6 +13,17 @@ export interface OrganizationDTO {
 }
 
 export const organizationsAdapter: AdminPageAdapter<OrganizationDTO> = {
+  entity: {
+    entityKey: 'organization',
+    displayName: 'Organization',
+    capabilities: {
+      canShareReport: true,
+      canOpenContentEditor: true,
+      canManageMembers: true,
+      canDelete: true,
+      canInlineEdit: true,
+    },
+  },
   pageName: 'organizations',
   defaultView: 'list',
   listConfig: {
@@ -45,11 +56,11 @@ export const organizationsAdapter: AdminPageAdapter<OrganizationDTO> = {
       },
     ],
     rowActions: [
-      { label: 'Edit', icon: 'edit', variant: 'primary', handler: () => {} },
-      { label: 'Report', icon: 'visibility', variant: 'secondary', handler: () => {} },
-      { label: 'Edit Stats', icon: 'bar_chart', variant: 'primary', handler: () => {} },
-      { label: 'Manage Members', icon: 'group', variant: 'secondary', handler: () => {} },
-      { label: 'Delete', icon: 'delete', variant: 'danger', handler: () => {} },
+      { key: 'edit', label: 'Edit', icon: 'edit', variant: 'primary', handler: () => {} },
+      { key: 'report', label: 'Report', icon: 'visibility', variant: 'secondary', handler: () => {} },
+      { key: 'editStats', label: 'Edit Stats', icon: 'bar_chart', variant: 'primary', handler: () => {} },
+      { key: 'manageMembers', label: 'Manage Members', icon: 'group', variant: 'secondary', handler: () => {} },
+      { key: 'delete', label: 'Delete', icon: 'delete', variant: 'danger', handler: () => {} },
     ],
   },
   cardConfig: {
@@ -74,11 +85,11 @@ export const organizationsAdapter: AdminPageAdapter<OrganizationDTO> = {
     ],
     renderBadge: (org) => <span>{org.status || 'active'}</span>,
     cardActions: [
-      { label: 'Edit', icon: 'edit', variant: 'primary', handler: () => {} },
-      { label: 'Report', icon: 'visibility', variant: 'secondary', handler: () => {} },
-      { label: 'Edit Stats', icon: 'bar_chart', variant: 'primary', handler: () => {} },
-      { label: 'Manage Members', icon: 'group', variant: 'secondary', handler: () => {} },
-      { label: 'Delete', icon: 'delete', variant: 'danger', handler: () => {} },
+      { key: 'edit', label: 'Edit', icon: 'edit', variant: 'primary', handler: () => {} },
+      { key: 'report', label: 'Report', icon: 'visibility', variant: 'secondary', handler: () => {} },
+      { key: 'editStats', label: 'Edit Stats', icon: 'bar_chart', variant: 'primary', handler: () => {} },
+      { key: 'manageMembers', label: 'Manage Members', icon: 'group', variant: 'secondary', handler: () => {} },
+      { key: 'delete', label: 'Delete', icon: 'delete', variant: 'danger', handler: () => {} },
     ],
   },
   searchFields: ['name', 'slug', 'status'],

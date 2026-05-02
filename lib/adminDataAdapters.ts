@@ -5,6 +5,45 @@
 
 import React from 'react';
 
+export type AdminEntityActionKey =
+  | 'edit'
+  | 'report'
+  | 'editStats'
+  | 'manageMembers'
+  | 'delete'
+  | 'analytics'
+  | 'kycData';
+
+export interface AdminEntityCapabilities {
+  canShareReport?: boolean;
+  canOpenContentEditor?: boolean;
+  canManageMembers?: boolean;
+  canViewAnalytics?: boolean;
+  canViewKycData?: boolean;
+  canDelete?: boolean;
+  canInlineEdit?: boolean;
+}
+
+export interface AdminEntityConfig {
+  entityKey: string;
+  displayName: string;
+  capabilities: AdminEntityCapabilities;
+}
+
+export interface AdminEntityAction<T> {
+  key?: AdminEntityActionKey;
+  label: string;
+  icon?: string;
+  variant?: 'primary' | 'secondary' | 'danger';
+  handler: (item: T) => void;
+  title?: string;
+  className?: string;
+}
+
+export type AdminEntityActionHandlers<T> = Partial<
+  Record<AdminEntityActionKey, (item: T) => void>
+>;
+
 /**
  * WHAT: Configuration for a single column in list view
  * WHY: Defines how data is displayed in table columns
@@ -38,14 +77,7 @@ export interface ListViewConfig<T> {
   /** Array of column configurations */
   columns: ListColumnConfig<T>[];
   /** Optional row-level action buttons */
-  rowActions?: Array<{
-    label: string;
-    icon?: string;
-    variant?: 'primary' | 'secondary' | 'danger';
-    handler: (item: T) => void;
-    title?: string;
-    className?: string;
-  }>;
+  rowActions?: AdminEntityAction<T>[];
   /** Optional function to determine if row is clickable */
   isRowClickable?: (item: T) => boolean;
   /** Optional row click handler */
@@ -87,14 +119,7 @@ export interface CardViewConfig<T> {
   /** Array of metadata fields to display */
   metaFields?: CardMetaFieldConfig<T>[];
   /** Optional card-level action buttons */
-  cardActions?: Array<{
-    label: string;
-    icon?: string;
-    variant?: 'primary' | 'secondary' | 'danger';
-    handler: (item: T) => void;
-    title?: string;
-    className?: string;
-  }>;
+  cardActions?: AdminEntityAction<T>[];
   /** Optional function to determine if card is clickable */
   isCardClickable?: (item: T) => boolean;
   /** Optional card click handler */
@@ -140,6 +165,8 @@ export interface SortOption {
  * WHY: Single configuration object per admin page
  */
 export interface AdminPageAdapter<T> {
+  /** Optional shared entity contract metadata */
+  entity?: AdminEntityConfig;
   /** Page identifier (e.g., 'partners', 'projects') */
   pageName: string;
   /** Default view mode */
@@ -158,6 +185,29 @@ export interface AdminPageAdapter<T> {
   emptyStateMessage?: string;
   /** Optional empty state icon */
   emptyStateIcon?: string;
+}
+
+export function withAdminEntityActionHandlers<T>(
+  adapter: AdminPageAdapter<T>,
+  handlers: AdminEntityActionHandlers<T>
+): AdminPageAdapter<T> {
+  const bindActions = (actions?: AdminEntityAction<T>[]) =>
+    actions?.map((action) => ({
+      ...action,
+      handler: action.key ? handlers[action.key] ?? action.handler : action.handler,
+    }));
+
+  return {
+    ...adapter,
+    listConfig: {
+      ...adapter.listConfig,
+      rowActions: bindActions(adapter.listConfig.rowActions),
+    },
+    cardConfig: {
+      ...adapter.cardConfig,
+      cardActions: bindActions(adapter.cardConfig.cardActions),
+    },
+  };
 }
 
 /**

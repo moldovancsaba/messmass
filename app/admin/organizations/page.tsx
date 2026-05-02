@@ -12,6 +12,7 @@ import OrganizationMembersSelector from '@/components/OrganizationMembersSelecto
 import SharePopup from '@/components/SharePopup';
 import { FormModal } from '@/components/modals';
 import { apiDelete, apiPost, apiPut } from '@/lib/apiClient';
+import { withAdminEntityActionHandlers } from '@/lib/adminDataAdapters';
 import { useAdminAuth } from '@/hooks/useAdminAuth';
 import { organizationsAdapter } from '@/lib/adapters';
 
@@ -199,45 +200,18 @@ export default function OrganizationsAdminPage() {
   }, [authLoading, loadOrganizations, router, user]);
 
   const organizationsAdapterWithHandlers = useMemo(() => {
-    const mapAction = (label: string, org: Organization) => {
-      if (label === 'Report') {
-        return () => {
-          setShareOrganizationId(org._id);
-          setSharePopupOpen(true);
-        };
-      }
-      if (label === 'Edit Stats') {
-        return () => window.open(`/organization-edit/${org._id}`, '_blank');
-      }
-      if (label === 'Edit') {
-        return () => openEditOrganization(org);
-      }
-      if (label === 'Manage Members') {
-        return () => openMembers(org);
-      }
-      if (label === 'Delete') {
-        return () => deleteOrganization(org);
-      }
-      return () => {};
-    };
-
-    return {
-      ...organizationsAdapter,
-      listConfig: {
-        ...organizationsAdapter.listConfig,
-        rowActions: organizationsAdapter.listConfig.rowActions?.map((action) => ({
-          ...action,
-          handler: (org: Organization) => mapAction(action.label, org)(),
-        })),
+    return withAdminEntityActionHandlers(organizationsAdapter, {
+      edit: openEditOrganization,
+      report: (org) => {
+        setShareOrganizationId(org._id);
+        setSharePopupOpen(true);
       },
-      cardConfig: {
-        ...organizationsAdapter.cardConfig,
-        cardActions: organizationsAdapter.cardConfig.cardActions?.map((action) => ({
-          ...action,
-          handler: (org: Organization) => mapAction(action.label, org)(),
-        })),
+      editStats: (org) => {
+        window.open(`/organization-edit/${org._id}`, '_blank');
       },
-    };
+      manageMembers: openMembers,
+      delete: deleteOrganization,
+    });
   }, [deleteOrganization, openEditOrganization, openMembers]);
 
   if (authLoading || loading) {

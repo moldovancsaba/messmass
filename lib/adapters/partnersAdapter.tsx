@@ -21,6 +21,18 @@ import ColoredHashtagBubble from '@/components/ColoredHashtagBubble';
  * />
  */
 export const partnersAdapter: AdminPageAdapter<PartnerResponse> = {
+  entity: {
+    entityKey: 'partner',
+    displayName: 'Partner',
+    capabilities: {
+      canShareReport: true,
+      canOpenContentEditor: true,
+      canViewAnalytics: true,
+      canViewKycData: true,
+      canDelete: true,
+      canInlineEdit: true,
+    },
+  },
   // WHAT: Page identifier for localStorage persistence
   pageName: 'partners',
   
@@ -145,6 +157,7 @@ export const partnersAdapter: AdminPageAdapter<PartnerResponse> = {
     // WHAT: Row action buttons (Edit, Report, Edit Stats, Delete)
     rowActions: [
       {
+        key: 'edit',
         label: 'Edit',
         icon: '✏️',
         variant: 'primary',
@@ -155,6 +168,7 @@ export const partnersAdapter: AdminPageAdapter<PartnerResponse> = {
         title: 'Edit partner',
       },
       {
+        key: 'report',
         label: 'Report',
         icon: '📊',
         variant: 'secondary',
@@ -173,6 +187,7 @@ export const partnersAdapter: AdminPageAdapter<PartnerResponse> = {
         title: 'View partner report',
       },
       {
+        key: 'editStats',
         label: 'Edit Stats',
         icon: 'bar_chart',
         variant: 'primary',
@@ -191,6 +206,7 @@ export const partnersAdapter: AdminPageAdapter<PartnerResponse> = {
         title: 'Edit partner content (texts & images)',
       },
       {
+        key: 'kycData',
         label: 'KYC Data',
         icon: 'table_chart',
         variant: 'secondary',
@@ -202,6 +218,7 @@ export const partnersAdapter: AdminPageAdapter<PartnerResponse> = {
         title: 'View aggregated KYC data',
       },
       {
+        key: 'analytics',
         label: 'Analytics',
         icon: 'insert_chart',
         variant: 'primary',
@@ -213,6 +230,7 @@ export const partnersAdapter: AdminPageAdapter<PartnerResponse> = {
         title: 'View partner analytics dashboard',
       },
       {
+        key: 'delete',
         label: 'Delete',
         icon: '🗑️',
         variant: 'danger',
@@ -273,6 +291,7 @@ export const partnersAdapter: AdminPageAdapter<PartnerResponse> = {
     // WHAT: Card action buttons
     cardActions: [
       {
+        key: 'edit',
         label: 'Edit',
         icon: '✏️',
         variant: 'primary',
@@ -281,6 +300,7 @@ export const partnersAdapter: AdminPageAdapter<PartnerResponse> = {
         },
       },
       {
+        key: 'report',
         label: 'Report',
         icon: '📊',
         variant: 'secondary',
@@ -296,6 +316,7 @@ export const partnersAdapter: AdminPageAdapter<PartnerResponse> = {
         },
       },
       {
+        key: 'editStats',
         label: 'Edit Stats',
         icon: 'bar_chart',
         variant: 'primary',
@@ -311,6 +332,7 @@ export const partnersAdapter: AdminPageAdapter<PartnerResponse> = {
         },
       },
       {
+        key: 'analytics',
         label: 'Analytics',
         icon: 'insert_chart',
         variant: 'primary',
@@ -321,6 +343,7 @@ export const partnersAdapter: AdminPageAdapter<PartnerResponse> = {
         },
       },
       {
+        key: 'delete',
         label: 'Delete',
         icon: '🗑️',
         variant: 'danger',

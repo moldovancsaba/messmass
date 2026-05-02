@@ -8,6 +8,7 @@ import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useAdminAuth } from '@/hooks/useAdminAuth';
 import { useDebouncedValue } from '@/hooks/useDebouncedValue';
+import { withAdminEntityActionHandlers } from '@/lib/adminDataAdapters';
 import { partnersAdapter } from '@/lib/adapters/partnersAdapter';
 import type { PartnerResponse } from '@/lib/partner.types';
 import UnifiedAdminPage from '@/components/UnifiedAdminPage';
@@ -572,100 +573,22 @@ export default function PartnersAdminPageUnified() {
   // WHAT: Override adapter handlers with real functions
   // WHY: Adapter has placeholder handlers - inject actual logic from page
   const partnersAdapterWithHandlers = useMemo(() => {
-    return {
-      ...partnersAdapter,
-      listConfig: {
-        ...partnersAdapter.listConfig,
-        rowActions: partnersAdapter.listConfig.rowActions?.map(action => {
-          if (action.label === 'Edit') {
-            return {
-              ...action,
-              handler: (partner: PartnerResponse) => openEditForm(partner)
-            };
-          }
-          if (action.label === 'Delete') {
-            return {
-              ...action,
-              handler: (partner: PartnerResponse) => handleDeletePartner(partner._id, partner.name)
-            };
-          }
-          if (action.label === 'Report') {
-            return {
-              ...action,
-              handler: (partner: PartnerResponse) => {
-                // WHAT: Open SharePopup modal with partner report URL (using _id for security)
-                // WHY: Allow admin to share partner report page with password
-                // HOW: Use partner._id (MongoDB ObjectId) instead of viewSlug for secure UUID-based URLs
-                console.log('🔍 Report clicked:', { name: partner.name, partnerId: partner._id });
-                setSharePartnerId(partner._id);
-                setSharePopupOpen(true);
-              }
-            };
-          }
-          if (action.label === 'Edit Stats') {
-            return {
-              ...action,
-              handler: (partner: PartnerResponse) => {
-                const partnerId = partner._id || partner.viewSlug;
-                if (partnerId) {
-                  window.open(`/partner-edit/${partnerId}`, '_blank');
-                } else {
-                  alert('Partner ID is missing. Please refresh the page and try again.');
-                }
-              }
-            };
-          }
-          // WHAT: Return unchanged action for other buttons (KYC Data, etc.)
-          // WHY: Preserve adapter-defined handlers
-          return action;
-        })
+    return withAdminEntityActionHandlers(partnersAdapter, {
+      edit: openEditForm,
+      delete: (partner) => handleDeletePartner(partner._id, partner.name),
+      report: (partner) => {
+        setSharePartnerId(partner._id);
+        setSharePopupOpen(true);
       },
-      cardConfig: {
-        ...partnersAdapter.cardConfig,
-        cardActions: partnersAdapter.cardConfig.cardActions?.map(action => {
-          if (action.label === 'Edit') {
-            return {
-              ...action,
-              handler: (partner: PartnerResponse) => openEditForm(partner)
-            };
-          }
-          if (action.label === 'Delete') {
-            return {
-              ...action,
-              handler: (partner: PartnerResponse) => handleDeletePartner(partner._id, partner.name)
-            };
-          }
-          if (action.label === 'Report') {
-            return {
-              ...action,
-              handler: (partner: PartnerResponse) => {
-                // WHAT: Open SharePopup modal with partner report URL (using _id for security - card view)
-                // WHY: Same behavior as row actions - share modal for partner reports
-                // HOW: Use partner._id (MongoDB ObjectId) instead of viewSlug for secure UUID-based URLs
-                setSharePartnerId(partner._id);
-                setSharePopupOpen(true);
-              }
-            };
-          }
-          if (action.label === 'Edit Stats') {
-            return {
-              ...action,
-              handler: (partner: PartnerResponse) => {
-                const partnerId = partner._id || partner.viewSlug;
-                if (partnerId) {
-                  window.open(`/partner-edit/${partnerId}`, '_blank');
-                } else {
-                  alert('Partner ID is missing. Please refresh the page and try again.');
-                }
-              }
-            };
-          }
-          // WHAT: Return unchanged action for other buttons (KYC Data, etc.)
-          // WHY: Preserve adapter-defined handlers
-          return action;
-        })
-      }
-    };
+      editStats: (partner) => {
+        const partnerId = partner._id || partner.viewSlug;
+        if (partnerId) {
+          window.open(`/partner-edit/${partnerId}`, '_blank');
+        } else {
+          alert('Partner ID is missing. Please refresh the page and try again.');
+        }
+      },
+    });
   }, [handleDeletePartner, openEditForm]); // FIXED: partnersAdapter and partners don't need to be in deps
   
   // Loading state
