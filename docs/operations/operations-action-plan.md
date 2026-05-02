@@ -146,6 +146,12 @@ Owner: Katja (Admin)
 
 ## 7. STATE MEMORY (Current Only)
 
+2026-05-02
+- CONTEXT: Style hardening Phase 5 remains the board-tracked active lane under `mvp-factory-control#72`.
+- BOARD: `#72` is still `In Progress (NOW)`; local docs were corrected to stop claiming there is no active item.
+- CODE: removed hardcoded page-level utility styling from `app/admin/clear-session/page.tsx` and `app/not-found.tsx` by moving those recovery/error surfaces onto token-based CSS modules.
+- NEXT: continue `#72` with another low-risk style cleanup slice or close the card if the remaining hardcoded/UI debt should be split into a new follow-up issue.
+
 2026-03-14
 - CONTEXT: Phase 15 (Organization Hierarchy & Activity Connectivity) delivered.
 - BOARD: `v12.1.0` milestone reached. Organization hierarchy, member management, and aggregated reporting are live.

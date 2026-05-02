@@ -20,18 +20,18 @@ export const metadata: Metadata = {
 export default function NotFound() {
   return (
     <div className="error-container">
-      <div className="card card-lg max-w-lg text-center">
+      <div className={`card card-lg ${styles.card}`}>
         <div className="card-body">
-          <div className="text-5xl mb-md">
+          <div className={styles.icon}>
             🔍
           </div>
-          <h1 className="text-2xl font-bold text-gray-900 mb-md">
+          <h1 className={styles.title}>
             Page Not Found
           </h1>
-          <p className={`text-gray-600 text-lg mb-lg ${styles.description}`}>
+          <p className={styles.description}>
             The page you are looking for could not be found. It might have been moved, deleted, or you entered the wrong URL.
           </p>
-          <div className="flex gap-md justify-center flex-wrap">
+          <div className={styles.actions}>
             <Link
               href="/"
               className="btn btn-primary"

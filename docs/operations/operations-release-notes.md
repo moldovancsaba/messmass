@@ -1,8 +1,34 @@
 # {messmass} Release Notes
 Status: Active
-Last Updated: 2026-04-27T16:40:00.000Z
+Last Updated: 2026-05-02T11:55:00.000Z
 Canonical: No
 Owner: Operations
+
+## [v12.1.11] — 2026-05-02T11:55:00.000Z
+
+### Summary
+🧹 **STYLE HARDENING PHASE 5 CONTINUES**: Removed hardcoded utility styling from two small recovery/error routes and synchronized local delivery docs back to the board truth for `#72`.
+
+### What Was Fixed
+
+#### Recovery and error route style cleanup (#72) ✅
+**WHAT**: Replaced page-level hardcoded utility classes on `/admin/clear-session` and the root `not-found` route with token-based CSS modules.  
+**WHY**: These small routes were still bypassing the repo’s centralized styling rules and were a low-risk Phase 5 cleanup target.  
+**HOW**: Added `app/admin/clear-session/page.module.css`, expanded `app/not-found.module.css`, and moved title, spacing, width, alignment, and disabled-state styling into design-token-backed classes.
+
+#### SSOT doc alignment for active work ✅
+**WHAT**: Updated local operational docs so they no longer claim that no work is in progress.  
+**WHY**: The GitHub board still shows `mvp-factory-control#72` as active, so the local repo should not contradict that state.  
+**HOW**: Synced handover and delivery-focus docs to reflect the live board state and recorded this slice in the action-plan state memory.
+
+### Testing
+- ✅ `npm run lint`
+- ✅ `npm run build`
+- ✅ `npm run type-check`
+- ✅ `npm run version:verify`
+
+### Version
+v12.1.10 → v12.1.11 (PATCH — style hardening Phase 5 route cleanup + SSOT doc sync)
 
 ## [v12.1.10] — 2026-04-27T16:40:00.000Z
 
