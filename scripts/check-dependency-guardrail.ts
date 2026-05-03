@@ -30,7 +30,6 @@ const APPROVED_RUNTIME_DEPS = new Set([
   'isomorphic-dompurify',
   'chart.js',
   'react-chartjs-2',
-  '@types/nodemailer',
   'focus-trap-react',
   'googleapis',
   'html2canvas',
@@ -41,10 +40,7 @@ const APPROVED_RUNTIME_DEPS = new Set([
   'server-only',
   'typescript',
   'uuid',
-  'expr-eval', // OPS-SEC-02: Formula parser in lib/formulaEngine.ts (restricted operators only; no code execution).
   'mongoose', // OPS-V3: Required for V3 time-series engine and multi-tenant reporting.
-  // Removal: would require internal safe evaluator and removal of Function() fallbacks; then remove from package.json and allowlist.
-  // See docs/operations/SEC02_CODE_INJECTION_AUDIT.md
   // Add other approved deps as needed
 ]);
 
@@ -64,7 +60,6 @@ const APPROVED_DEV_DEPS = new Set([
   '@types/html2canvas',
   '@types/jest',
   '@types/js-cookie',
-  '@types/uuid',
   '@eslint/eslintrc',
   'eslint',
   'eslint-config-next',
@@ -83,7 +78,6 @@ const APPROVED_DEV_DEPS = new Set([
 
 // Forbidden packages (security/architectural violations)
 const FORBIDDEN_PACKAGES = new Set([
-  // expr-eval: approved in APPROVED_RUNTIME_DEPS for formula use only; see SEC02_CODE_INJECTION_AUDIT.md
   'socket.io', // Not in approved stack (using ws)
 ]);
 
@@ -162,4 +156,3 @@ function main() {
 }
 
 main();
-

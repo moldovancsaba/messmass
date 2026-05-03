@@ -82,18 +82,18 @@ export const COMPONENT_REGISTRY: ComponentMetadata[] = [
     lastUpdated: '2025-08-29T15:16:00.000Z',
     dependencies: [
       { name: 'next', version: '>=15.0.0', type: 'dependency' },
-      { name: 'react', version: '^18.3.0', type: 'dependency' },
-      { name: 'react-dom', version: '^18.3.0', type: 'dependency' },
+      { name: 'react', version: '^19.0.0', type: 'dependency' },
+      { name: 'react-dom', version: '^19.0.0', type: 'dependency' },
       { name: 'typescript', version: '^5.0.0', type: 'devDependency' },
-      { name: '@types/react', version: '^18.0.0', type: 'devDependency' },
-      { name: '@types/node', version: '^20.0.0', type: 'devDependency' }
+      { name: '@types/react', version: '^19.0.0', type: 'devDependency' },
+      { name: '@types/node', version: '^24.0.0', type: 'devDependency' }
     ],
     tags: ['authentication', 'login', 'session', 'password', 'security', 'glassmorphism'],
     compatibility: {
       nextjs: ['15.x', '14.x'],
-      react: ['18.x'],
+      react: ['19.x'],
       typescript: true,
-      nodejs: ['18.x', '20.x', '22.x']
+      nodejs: ['24.x']
     },
     files: [
       {
