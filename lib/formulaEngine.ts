@@ -10,7 +10,6 @@
 // USAGE: Import evaluateFormula() or evaluateFormulaSafe() for safe calculation
 
 import { type AvailableVariable, FormulaValidationResult } from './chartConfigTypes';
-import { FEATURE_FLAGS } from './featureFlags';
 import { 
   validateRequiredFields, 
   ensureDerivedMetrics, 
@@ -651,6 +650,253 @@ function processMathFunctions(formula: string): string {
   return processedFormula;
 }
 
+type FormulaToken =
+  | { type: 'number'; value: number }
+  | { type: 'operator'; value: string }
+  | { type: 'paren'; value: '(' | ')' }
+  | { type: 'question'; value: '?' }
+  | { type: 'colon'; value: ':' }
+  | { type: 'eof'; value: '' };
+
+function normalizeExpressionOperators(expression: string): string {
+  return expression.replace(/×/g, '*').replace(/÷/g, '/');
+}
+
+function tokenizeExpression(expression: string): FormulaToken[] {
+  const tokens: FormulaToken[] = [];
+  let index = 0;
+
+  while (index < expression.length) {
+    const char = expression[index];
+
+    if (/\s/.test(char)) {
+      index++;
+      continue;
+    }
+
+    const twoCharOperator = expression.slice(index, index + 2);
+    if (['>=', '<=', '==', '!=', '&&', '||'].includes(twoCharOperator)) {
+      tokens.push({ type: 'operator', value: twoCharOperator });
+      index += 2;
+      continue;
+    }
+
+    if (/[0-9.]/.test(char)) {
+      let end = index + 1;
+      while (end < expression.length && /[0-9.]/.test(expression[end])) {
+        end++;
+      }
+
+      const rawNumber = expression.slice(index, end);
+      if ((rawNumber.match(/\./g) || []).length > 1) {
+        throw new Error(`Invalid number: ${rawNumber}`);
+      }
+
+      const value = Number(rawNumber);
+      if (!Number.isFinite(value)) {
+        throw new Error(`Invalid number: ${rawNumber}`);
+      }
+
+      tokens.push({ type: 'number', value });
+      index = end;
+      continue;
+    }
+
+    if ('+-*/^><'.includes(char)) {
+      tokens.push({ type: 'operator', value: char });
+      index++;
+      continue;
+    }
+
+    if (char === '(' || char === ')') {
+      tokens.push({ type: 'paren', value: char });
+      index++;
+      continue;
+    }
+
+    if (char === '?') {
+      tokens.push({ type: 'question', value: char });
+      index++;
+      continue;
+    }
+
+    if (char === ':') {
+      tokens.push({ type: 'colon', value: char });
+      index++;
+      continue;
+    }
+
+    throw new Error(`Unsupported token: ${char}`);
+  }
+
+  tokens.push({ type: 'eof', value: '' });
+  return tokens;
+}
+
+function evaluateTokenizedExpression(tokens: FormulaToken[]): number {
+  let position = 0;
+
+  const current = (): FormulaToken => tokens[position];
+  const advance = (): FormulaToken => tokens[position++];
+  const matchOperator = (...operators: string[]): string | null => {
+    const token = current();
+    if (token.type === 'operator' && operators.includes(token.value)) {
+      advance();
+      return token.value;
+    }
+    return null;
+  };
+  const expect = (type: FormulaToken['type'], value?: string): FormulaToken => {
+    const token = current();
+    if (token.type !== type || (value !== undefined && token.value !== value)) {
+      throw new Error(`Expected ${value ?? type}, got ${token.value || token.type}`);
+    }
+    advance();
+    return token;
+  };
+  const toBooleanNumber = (value: boolean): number => (value ? 1 : 0);
+
+  const parsePrimary = (): number => {
+    const token = current();
+
+    if (token.type === 'number') {
+      advance();
+      return token.value;
+    }
+
+    if (token.type === 'paren' && token.value === '(') {
+      advance();
+      const value = parseTernary();
+      expect('paren', ')');
+      return value;
+    }
+
+    throw new Error(`Unexpected token: ${token.value || token.type}`);
+  };
+
+  const parseUnary = (): number => {
+    const operator = matchOperator('+', '-');
+    if (!operator) return parsePrimary();
+    const value = parseUnary();
+    return operator === '-' ? -value : value;
+  };
+
+  const parsePower = (): number => {
+    const left = parseUnary();
+    if (!matchOperator('^')) return left;
+    const right = parsePower();
+    return Math.pow(left, right);
+  };
+
+  const parseMultiplicative = (): number => {
+    let value = parsePower();
+
+    while (true) {
+      const operator = matchOperator('*', '/');
+      if (!operator) return value;
+
+      const right = parsePower();
+      if (operator === '/') {
+        if (right === 0) throw new Error('Division by zero');
+        value /= right;
+      } else {
+        value *= right;
+      }
+    }
+  };
+
+  const parseAdditive = (): number => {
+    let value = parseMultiplicative();
+
+    while (true) {
+      const operator = matchOperator('+', '-');
+      if (!operator) return value;
+
+      const right = parseMultiplicative();
+      value = operator === '+' ? value + right : value - right;
+    }
+  };
+
+  const parseComparison = (): number => {
+    let value = parseAdditive();
+
+    while (true) {
+      const operator = matchOperator('>', '<', '>=', '<=');
+      if (!operator) return value;
+
+      const right = parseAdditive();
+      switch (operator) {
+        case '>':
+          value = toBooleanNumber(value > right);
+          break;
+        case '<':
+          value = toBooleanNumber(value < right);
+          break;
+        case '>=':
+          value = toBooleanNumber(value >= right);
+          break;
+        default:
+          value = toBooleanNumber(value <= right);
+          break;
+      }
+    }
+  };
+
+  const parseEquality = (): number => {
+    let value = parseComparison();
+
+    while (true) {
+      const operator = matchOperator('==', '!=');
+      if (!operator) return value;
+
+      const right = parseComparison();
+      value = operator === '==' ? toBooleanNumber(value === right) : toBooleanNumber(value !== right);
+    }
+  };
+
+  const parseLogicalAnd = (): number => {
+    let value = parseEquality();
+
+    while (matchOperator('&&')) {
+      const right = parseEquality();
+      value = toBooleanNumber(value !== 0 && right !== 0);
+    }
+
+    return value;
+  };
+
+  const parseLogicalOr = (): number => {
+    let value = parseLogicalAnd();
+
+    while (matchOperator('||')) {
+      const right = parseLogicalAnd();
+      value = toBooleanNumber(value !== 0 || right !== 0);
+    }
+
+    return value;
+  };
+
+  const parseTernary = (): number => {
+    const condition = parseLogicalOr();
+    if (current().type !== 'question') {
+      return condition;
+    }
+
+    advance();
+    const truthyBranch = parseTernary();
+    expect('colon', ':');
+    const falsyBranch = parseTernary();
+    return condition !== 0 ? truthyBranch : falsyBranch;
+  };
+
+  const result = parseTernary();
+  if (current().type !== 'eof') {
+    throw new Error(`Unexpected trailing token: ${current().value || current().type}`);
+  }
+
+  return result;
+}
+
 /**
  * Safely evaluates a simple mathematical expression
  * Handles basic arithmetic operations with division by zero protection
@@ -661,8 +907,7 @@ function processMathFunctions(formula: string): string {
  */
 function evaluateSimpleExpression(expression: string): number | 'NA' {
   try {
-    // Remove whitespace
-    const cleanExpression = expression.replace(/\s+/g, '');
+    const cleanExpression = normalizeExpressionOperators(expression).replace(/\s+/g, '');
     
     // WHAT: Debug logging for complex expressions
     // WHY: Help diagnose evaluation failures
@@ -670,8 +915,7 @@ function evaluateSimpleExpression(expression: string): number | 'NA' {
     if (isComplex) {
       console.log('[formulaEngine] evaluateSimpleExpression called:', {
         original: expression,
-        cleaned: cleanExpression,
-        useSafeParser: FEATURE_FLAGS.USE_SAFE_FORMULA_PARSER
+        cleaned: cleanExpression
       });
     }
     
@@ -684,44 +928,11 @@ function evaluateSimpleExpression(expression: string): number | 'NA' {
       return 'NA';
     }
     
-    // WHAT: Always use safe parser first (CSP blocks Function() constructor)
-    // WHY: CSP blocks unsafe-eval, so Function() fails in production
-    // HOW: expr-eval parser only evaluates mathematical expressions, no code execution
-    // CRITICAL: Safe parser is now the primary method, Function() is fallback only (and will fail due to CSP)
     try {
-      // WHAT: Import expr-eval parser (safe, no eval required)
-      // WHY: CSP blocks Function() constructor, so safe parser is required
-      // HOW: Use require() for conditional loading (works in both server and client)
-      // NOTE: If this fails, check that expr-eval is properly installed and bundled
-      const exprEval = require('expr-eval');
-      const Parser = exprEval.Parser || exprEval.default?.Parser || exprEval;
-      
-      if (!Parser) {
-        throw new Error('expr-eval Parser not found. Check that expr-eval is properly installed.');
-      }
-      
-      // WHAT: Create parser with only safe mathematical operators
-      // WHY: Restrict to arithmetic operations only, prevent code injection
-      const parser = new Parser({
-        operators: {
-          add: true,
-          subtract: true,
-          multiply: true,
-          divide: true,
-          power: true,
-          mod: false, // Disable modulo if not needed
-        }
-      });
-      
-      // WHAT: Parse and evaluate expression safely
-      // WHY: expr-eval only evaluates math, cannot execute arbitrary code
-      const expr = parser.parse(cleanExpression);
-      const result = expr.evaluate({});
-      
-      // WHAT: Debug logging for safe parser results
-      // WHY: Help diagnose why valid expressions return 'NA'
+      const result = evaluateTokenizedExpression(tokenizeExpression(cleanExpression));
+
       if (cleanExpression.includes('/') && cleanExpression.includes('(')) {
-        console.log('[formulaEngine] Safe parser result:', {
+        console.log('[formulaEngine] Internal parser result:', {
           expression: cleanExpression,
           result,
           resultType: typeof result,
@@ -732,7 +943,7 @@ function evaluateSimpleExpression(expression: string): number | 'NA' {
       
       // Check for invalid results
       if (typeof result !== 'number' || isNaN(result) || !isFinite(result)) {
-        console.warn('[formulaEngine] Safe parser returned invalid result:', {
+        console.warn('[formulaEngine] Internal parser returned invalid result:', {
           expression: cleanExpression,
           result,
           resultType: typeof result,
@@ -744,59 +955,11 @@ function evaluateSimpleExpression(expression: string): number | 'NA' {
       
       return result;
     } catch (parseError) {
-      // WHAT: Fallback to legacy evaluation if safe parser fails
-      // WHY: Some formulas may not parse correctly with expr-eval, need graceful degradation
-      // NOTE: This fallback will fail due to CSP blocking Function() constructor
       const errorMessage = parseError instanceof Error ? parseError.message : String(parseError);
-      console.error('[formulaEngine] Safe parser failed - this is critical as Function() will also fail due to CSP:', {
+      console.error('[formulaEngine] Internal parser failed:', {
         expression: cleanExpression,
         error: errorMessage,
-        stack: parseError instanceof Error ? parseError.stack : undefined,
-        suggestion: 'Check if expr-eval is properly bundled for client-side use'
-      });
-      // Fall through to legacy Function() evaluation (will fail if CSP blocks it)
-    }
-    
-    // WHAT: Legacy Function constructor evaluation (fallback)
-    // WHY: Maintain backward compatibility during migration, some formulas need this
-    // SECURITY: This is less secure but needed for gradual rollout
-    // TODO: Remove after migration complete and all formulas validated
-    try {
-      const safeEval = new Function('return ' + cleanExpression);
-      const result = safeEval();
-      
-      // WHAT: Debug logging for evaluation results
-      // WHY: Help diagnose why valid expressions return 'NA'
-      if (cleanExpression.includes('/') && cleanExpression.includes('(')) {
-        console.log('[formulaEngine] Evaluation result:', {
-          expression: cleanExpression,
-          result,
-          resultType: typeof result,
-          isNaN: isNaN(result),
-          isFinite: isFinite(result),
-          valueOf: result?.valueOf ? result.valueOf() : result
-        });
-      }
-      
-      // Check for invalid results
-      if (typeof result !== 'number' || isNaN(result) || !isFinite(result)) {
-        console.warn('[formulaEngine] Invalid result from evaluation:', {
-          expression: cleanExpression,
-          result,
-          resultType: typeof result,
-          isNaN: isNaN(result),
-          isFinite: isFinite(result),
-          valueOf: result?.valueOf ? result.valueOf() : result
-        });
-        return 'NA';
-      }
-      
-      return result;
-    } catch (evalError) {
-      console.error('[formulaEngine] Evaluation error:', {
-        expression: cleanExpression,
-        error: evalError instanceof Error ? evalError.message : String(evalError),
-        stack: evalError instanceof Error ? evalError.stack : undefined
+        stack: parseError instanceof Error ? parseError.stack : undefined
       });
       return 'NA';
     }
