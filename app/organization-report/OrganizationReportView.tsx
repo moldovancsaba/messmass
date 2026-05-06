@@ -22,9 +22,8 @@ export default function OrganizationReportView({ id }: { id: string }) {
   const organization = orgData?.organization;
   const entities = orgData?.entities || [];
   const stats = orgData?.aggregatedStats || null;
-  const charts = useMemo(() => orgData?.charts ?? [], [orgData?.charts]);
+  const charts = useMemo(() => orgData?.charts || [], [orgData?.charts]);
   const reportConfig = orgData?.report;
-  const metadata = organization?.metadata || {};
 
   // WHAT: Resolve layout from API-provided config
   // WHY: Unified reporting uses DB-driven templates
@@ -51,10 +50,11 @@ export default function OrganizationReportView({ id }: { id: string }) {
   // WHAT: Calculate chart results base on aggregated stats
   // WHY: The organization hierarchy uses the same aggregation logic as partner reports, but at org-level
   const chartResults = useMemo(() => {
-    if (!stats || charts.length === 0) return new Map();
-    const calculator = new ReportCalculator(charts, stats);
+    const chartsArray = charts;
+    if (!stats || chartsArray.length === 0) return new Map();
+    const calculator = new ReportCalculator(chartsArray, stats);
     const results = new Map();
-    for (const chart of charts) {
+    for (const chart of chartsArray) {
       const result = calculator.calculateChart(chart.chartId);
       if (result) results.set(chart.chartId, result);
     }
@@ -130,9 +130,6 @@ export default function OrganizationReportView({ id }: { id: string }) {
           <OrganizationEntityList
             entities={entities}
             organizationName={organization.name}
-            showList={metadata.showMembersList}
-            showTitle={metadata.showMembersListTitle}
-            showDetails={metadata.showMembersListDetails}
           />
         )}
 
@@ -140,9 +137,6 @@ export default function OrganizationReportView({ id }: { id: string }) {
           <OrganizationActivitiesList 
             activities={activities} 
             organizationName={organization.name} 
-            showList={metadata.showEventsList}
-            showTitle={metadata.showEventsListTitle}
-            showDetails={metadata.showEventsListDetails}
           />
         )}
       </div>

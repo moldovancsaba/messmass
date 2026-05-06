@@ -125,6 +125,10 @@ export interface Partner {
   // WHAT: Clicker set ID reference for partner-specific clicker layout
   // WHY: Select which clicker layout (variable groups) the partner uses by default
   clickerSetId?: ObjectId;
+
+  // WHAT: Optional partner-report filter for local/home events only
+  // WHY: Some partner reports should exclude away/team-2 appearances from aggregates and event lists
+  showOnlyTeam1Events?: boolean;
   
   // WHAT: Google Sheets URL for partner's event data sync
   // WHY: Store link to partner-created Google Sheet for bidirectional event sync
@@ -185,6 +189,7 @@ export interface CreatePartnerInput {
   reportTemplateId?: string | null; // Report template ID for partner default
   clickerSetId?: string | null; // Clicker set ID for partner default
   googleSheetsUrl?: string; // Google Sheets URL for event data sync
+  showOnlyTeam1Events?: boolean; // Only include events where the partner is team 1 / local-home side
 }
 
 /**
@@ -205,6 +210,7 @@ export interface UpdatePartnerInput {
   reportTemplateId?: string | null; // Report template ID for partner default
   clickerSetId?: string | null; // Clicker set ID for partner default
   googleSheetsUrl?: string; // Google Sheets URL for event data sync
+  showOnlyTeam1Events?: boolean; // Only include events where the partner is team 1 / local-home side
 }
 
 /**

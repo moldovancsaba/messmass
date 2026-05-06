@@ -55,6 +55,7 @@ Owner: Documentation
 
 ## Admin & Templates
 - [admin-end-user-guide.md](admin/admin-end-user-guide.md) — Canonical operator guide for Admin workflows and UI paths.
+- [admin/admin-entity-system.md](admin/admin-entity-system.md) — Shared admin entity contract, capability matrix, and action engine for admin-managed surfaces.
 - [admin/ADMIN_REPORT_TEMPLATE_MODEL.md](admin/admin-report-template-model.md) — Report template data model + runtime selection rules.
 - [admin/ADMIN_LAYOUT_V2_SCHEMA.md](admin/admin-layout-v2-schema.md) — LayoutV2 schema contract consumed by Reporting.
 - [admin/ADMIN_LAYOUT_V2_TEMPLATE_BUILDER.md](admin/admin-layout-v2-template-builder.md) — Operator guide for authoring LayoutV2 blocks.

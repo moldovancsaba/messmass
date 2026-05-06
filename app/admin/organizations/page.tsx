@@ -9,12 +9,11 @@ import { useRouter } from 'next/navigation';
 import UnifiedAdminPage from '@/components/UnifiedAdminPage';
 import ColoredCard from '@/components/ColoredCard';
 import OrganizationMembersSelector from '@/components/OrganizationMembersSelector';
-import SharePopup from '@/components/SharePopup';
 import { FormModal } from '@/components/modals';
 import { apiDelete, apiPost, apiPut } from '@/lib/apiClient';
-import { withAdminEntityActionHandlers } from '@/lib/adminDataAdapters';
 import { useAdminAuth } from '@/hooks/useAdminAuth';
-import { organizationsAdapter } from '@/lib/adapters';
+import { organizationsAdapter, organizationsEntityConfig } from '@/lib/adapters';
+import { withAdminEntityActions } from '@/lib/adminEntitySystem';
 
 type Organization = {
   _id: string;
@@ -54,8 +53,6 @@ export default function OrganizationsAdminPage() {
   const [editOrgId, setEditOrgId] = useState<string | null>(null);
   const [editOrgName, setEditOrgName] = useState('');
   const [editOrgStatus, setEditOrgStatus] = useState<'active' | 'inactive'>('active');
-  const [sharePopupOpen, setSharePopupOpen] = useState(false);
-  const [shareOrganizationId, setShareOrganizationId] = useState('');
 
   const [membersModalOpen, setMembersModalOpen] = useState(false);
   const [activeOrg, setActiveOrg] = useState<Organization | null>(null);
@@ -199,20 +196,28 @@ export default function OrganizationsAdminPage() {
     }
   }, [authLoading, loadOrganizations, router, user]);
 
-  const organizationsAdapterWithHandlers = useMemo(() => {
-    return withAdminEntityActionHandlers(organizationsAdapter, {
-      edit: openEditOrganization,
-      report: (org) => {
-        setShareOrganizationId(org._id);
-        setSharePopupOpen(true);
+  const organizationsAdapterWithHandlers = useMemo(() => withAdminEntityActions(
+    organizationsAdapter,
+    organizationsEntityConfig,
+    {
+      user,
+      openModal: (modalKey, org) => {
+        if (modalKey === 'edit-organization') {
+          openEditOrganization(org);
+          return;
+        }
+
+        if (modalKey === 'manage-members') {
+          openMembers(org);
+        }
       },
-      editStats: (org) => {
-        window.open(`/organization-edit/${org._id}`, '_blank');
+      runMutation: (mutationKey, org) => {
+        if (mutationKey === 'delete-organization') {
+          void deleteOrganization(org);
+        }
       },
-      manageMembers: openMembers,
-      delete: deleteOrganization,
-    });
-  }, [deleteOrganization, openEditOrganization, openMembers]);
+    }
+  ), [deleteOrganization, openEditOrganization, openMembers, user]);
 
   if (authLoading || loading) {
     return (
@@ -341,14 +346,6 @@ export default function OrganizationsAdminPage() {
           />
         )}
       </FormModal>
-
-      <SharePopup
-        isOpen={sharePopupOpen}
-        onClose={() => setSharePopupOpen(false)}
-        pageId={shareOrganizationId}
-        pageType="organization-report"
-        customTitle="Share Organization Report"
-      />
     </>
   );
 }

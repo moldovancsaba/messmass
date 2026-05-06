@@ -1,5 +1,6 @@
 import React from 'react';
 import type { AdminPageAdapter } from '../adminDataAdapters';
+import type { AdminEntityConfig } from '@/lib/adminEntitySystem';
 
 export interface OrganizationDTO {
   _id: string;
@@ -12,18 +13,85 @@ export interface OrganizationDTO {
   };
 }
 
-export const organizationsAdapter: AdminPageAdapter<OrganizationDTO> = {
-  entity: {
-    entityKey: 'organization',
-    displayName: 'Organization',
-    capabilities: {
-      canShareReport: true,
-      canOpenContentEditor: true,
-      canManageMembers: true,
-      canDelete: true,
-      canInlineEdit: true,
-    },
+export const organizationsEntityConfig: AdminEntityConfig<OrganizationDTO> = {
+  entityKey: 'organization',
+  pageName: 'organizations',
+  displayName: 'Organization',
+  supportedViews: ['list', 'card'],
+  capabilities: ['create', 'edit', 'delete', 'report', 'edit-content', 'manage-members'],
+  search: {
+    fields: ['name', 'slug', 'status'],
+    placeholder: 'Search organizations...',
   },
+  permissionRequirements: ['superadmin'],
+  actions: [
+    {
+      id: 'organization-report',
+      label: 'Report',
+      icon: 'visibility',
+      variant: 'secondary',
+      requiredCapabilities: ['report'],
+      requiredPermissions: ['superadmin'],
+      execution: {
+        kind: 'route',
+        getHref: (org) => `/organization-report/${org._id}`,
+        target: '_blank',
+      },
+    },
+    {
+      id: 'organization-edit-content',
+      label: 'Edit Stats',
+      icon: 'bar_chart',
+      variant: 'secondary',
+      requiredCapabilities: ['edit-content'],
+      requiredPermissions: ['superadmin'],
+      execution: {
+        kind: 'route',
+        getHref: (org) => `/organization-edit/${org._id}`,
+        target: '_blank',
+      },
+    },
+    {
+      id: 'organization-edit',
+      label: 'Edit',
+      icon: 'edit',
+      variant: 'secondary',
+      requiredCapabilities: ['edit'],
+      requiredPermissions: ['superadmin'],
+      execution: {
+        kind: 'modal',
+        modalKey: 'edit-organization',
+      },
+    },
+    {
+      id: 'organization-manage-members',
+      label: 'Manage Members',
+      icon: 'group',
+      variant: 'secondary',
+      requiredCapabilities: ['manage-members'],
+      requiredPermissions: ['superadmin'],
+      execution: {
+        kind: 'modal',
+        modalKey: 'manage-members',
+      },
+    },
+    {
+      id: 'organization-delete',
+      label: 'Delete',
+      icon: 'delete',
+      variant: 'danger',
+      requiredCapabilities: ['delete'],
+      requiredPermissions: ['superadmin'],
+      execution: {
+        kind: 'mutation',
+        mutationKey: 'delete-organization',
+        confirmMessage: (org) => `Delete organization "${org.name}"?`,
+      },
+    },
+  ],
+};
+
+export const organizationsAdapter: AdminPageAdapter<OrganizationDTO> = {
   pageName: 'organizations',
   defaultView: 'list',
   listConfig: {
@@ -55,13 +123,6 @@ export const organizationsAdapter: AdminPageAdapter<OrganizationDTO> = {
         render: (org) => <span className="adapter-meta-text">{org.status || 'active'}</span>,
       },
     ],
-    rowActions: [
-      { key: 'edit', label: 'Edit', icon: 'edit', variant: 'primary', handler: () => {} },
-      { key: 'report', label: 'Report', icon: 'visibility', variant: 'secondary', handler: () => {} },
-      { key: 'editStats', label: 'Edit Stats', icon: 'bar_chart', variant: 'primary', handler: () => {} },
-      { key: 'manageMembers', label: 'Manage Members', icon: 'group', variant: 'secondary', handler: () => {} },
-      { key: 'delete', label: 'Delete', icon: 'delete', variant: 'danger', handler: () => {} },
-    ],
   },
   cardConfig: {
     primaryField: (org) => (
@@ -84,13 +145,6 @@ export const organizationsAdapter: AdminPageAdapter<OrganizationDTO> = {
       },
     ],
     renderBadge: (org) => <span>{org.status || 'active'}</span>,
-    cardActions: [
-      { key: 'edit', label: 'Edit', icon: 'edit', variant: 'primary', handler: () => {} },
-      { key: 'report', label: 'Report', icon: 'visibility', variant: 'secondary', handler: () => {} },
-      { key: 'editStats', label: 'Edit Stats', icon: 'bar_chart', variant: 'primary', handler: () => {} },
-      { key: 'manageMembers', label: 'Manage Members', icon: 'group', variant: 'secondary', handler: () => {} },
-      { key: 'delete', label: 'Delete', icon: 'delete', variant: 'danger', handler: () => {} },
-    ],
   },
   searchFields: ['name', 'slug', 'status'],
   emptyStateMessage: 'No organizations found. Create one to begin.',

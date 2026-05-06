@@ -8,8 +8,7 @@ import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useAdminAuth } from '@/hooks/useAdminAuth';
 import { useDebouncedValue } from '@/hooks/useDebouncedValue';
-import { withAdminEntityActionHandlers } from '@/lib/adminDataAdapters';
-import { partnersAdapter } from '@/lib/adapters/partnersAdapter';
+import { partnersAdapter, partnersEntityConfig } from '@/lib/adapters/partnersAdapter';
 import type { PartnerResponse } from '@/lib/partner.types';
 import UnifiedAdminPage from '@/components/UnifiedAdminPage';
 import FormModal from '@/components/modals/FormModal';
@@ -19,6 +18,7 @@ import BitlyLinksSelector from '@/components/BitlyLinksSelector';
 import EmojiSelector from '@/components/EmojiSelector';
 import TheSportsDBSearch from '@/components/TheSportsDBSearch';
 import { apiPost, apiPut, apiDelete } from '@/lib/apiClient';
+import { withAdminEntityActions } from '@/lib/adminEntitySystem';
 import { generateSportsDbHashtags, mergeSportsDbHashtags } from '@/lib/sportsDbHashtagEnricher';
 
 const PAGE_SIZE = 20;
@@ -570,26 +570,29 @@ export default function PartnersAdminPageUnified() {
     setShowEditForm(true);
   }, [loadBitlyLinks]);
   
-  // WHAT: Override adapter handlers with real functions
-  // WHY: Adapter has placeholder handlers - inject actual logic from page
-  const partnersAdapterWithHandlers = useMemo(() => {
-    return withAdminEntityActionHandlers(partnersAdapter, {
-      edit: openEditForm,
-      delete: (partner) => handleDeletePartner(partner._id, partner.name),
-      report: (partner) => {
-        setSharePartnerId(partner._id);
-        setSharePopupOpen(true);
-      },
-      editStats: (partner) => {
-        const partnerId = partner._id || partner.viewSlug;
-        if (partnerId) {
-          window.open(`/partner-edit/${partnerId}`, '_blank');
-        } else {
-          alert('Partner ID is missing. Please refresh the page and try again.');
+  const partnersAdapterWithHandlers = useMemo(() => withAdminEntityActions(
+    partnersAdapter,
+    partnersEntityConfig,
+    {
+      user,
+      openModal: (modalKey, partner) => {
+        if (modalKey === 'edit-partner') {
+          openEditForm(partner);
         }
       },
-    });
-  }, [handleDeletePartner, openEditForm]); // FIXED: partnersAdapter and partners don't need to be in deps
+      openShare: (shareKey, resourceId) => {
+        if (shareKey === 'partner-report') {
+          setSharePartnerId(resourceId);
+          setSharePopupOpen(true);
+        }
+      },
+      runMutation: (mutationKey, partner) => {
+        if (mutationKey === 'delete-partner') {
+          void handleDeletePartner(partner._id, partner.name);
+        }
+      },
+    }
+  ), [handleDeletePartner, openEditForm, user]);
   
   // Loading state
   if (authLoading || loading) {

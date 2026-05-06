@@ -3,7 +3,7 @@
 // WHY: Single import point for all adapters
 // USAGE: import { partnersAdapter, projectsAdapter } from '@/lib/adapters';
 
-export { partnersAdapter } from './partnersAdapter';
+export { partnersAdapter, partnersEntityConfig } from './partnersAdapter';
 export { projectsAdapter } from './projectsAdapter';
 export { hashtagsAdapter } from './hashtagsAdapter';
 export { categoriesAdapter } from './categoriesAdapter';
@@ -13,4 +13,4 @@ export { filterAdapter } from './filterAdapter';
 export { clickerAdapter } from './clickerAdapter';
 export { insightsAdapter } from './insightsAdapter';
 export { kycAdapter } from './kycAdapter';
-export { organizationsAdapter } from './organizationsAdapter';
+export { organizationsAdapter, organizationsEntityConfig } from './organizationsAdapter';

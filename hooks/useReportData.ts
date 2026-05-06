@@ -205,6 +205,7 @@ export interface PartnerReportData {
     showEventsList?: boolean; // WHAT: Controls visibility of events list on partner report page
     showEventsListTitle?: boolean; // WHAT: Controls visibility of events list title on partner report page
     showEventsListDetails?: boolean; // WHAT: Controls whether event cards show detailed info or just titles
+    showOnlyTeam1Events?: boolean; // WHAT: Controls whether partner reports exclude away/team-2 appearances
     stats?: Record<string, number | string>;
   };
   events: Array<{

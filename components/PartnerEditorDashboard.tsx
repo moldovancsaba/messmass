@@ -24,6 +24,7 @@ interface Partner {
   showEventsList?: boolean; // WHAT: Controls visibility of events list on partner report page
   showEventsListTitle?: boolean; // WHAT: Controls visibility of events list title on partner report page
   showEventsListDetails?: boolean; // WHAT: Controls whether event cards show detailed info or just titles
+  showOnlyTeam1Events?: boolean; // WHAT: Restrict partner report data to local-home / team-1 appearances
   createdAt: string;
   updatedAt: string;
   // WHAT: Partner-level stats for content editing only
@@ -66,7 +67,8 @@ export default function PartnerEditorDashboard({ partner: initialPartner }: Part
         reportTemplateId: partner.reportTemplateId,
         showEventsList: partner.showEventsList,
         showEventsListTitle: partner.showEventsListTitle,
-        showEventsListDetails: partner.showEventsListDetails
+        showEventsListDetails: partner.showEventsListDetails,
+        showOnlyTeam1Events: partner.showOnlyTeam1Events
       });
 
       // WHAT: Handle successful save response
@@ -109,7 +111,8 @@ export default function PartnerEditorDashboard({ partner: initialPartner }: Part
         reportTemplateId: partner.reportTemplateId,
         showEventsList: partner.showEventsList,
         showEventsListTitle: partner.showEventsListTitle,
-        showEventsListDetails: checked
+        showEventsListDetails: checked,
+        showOnlyTeam1Events: partner.showOnlyTeam1Events
       });
 
       if (result.success) {
@@ -148,7 +151,8 @@ export default function PartnerEditorDashboard({ partner: initialPartner }: Part
         reportTemplateId: partner.reportTemplateId,
         showEventsList: partner.showEventsList,
         showEventsListTitle: checked,
-        showEventsListDetails: partner.showEventsListDetails
+        showEventsListDetails: partner.showEventsListDetails,
+        showOnlyTeam1Events: partner.showOnlyTeam1Events
       });
 
       if (result.success) {
@@ -187,7 +191,47 @@ export default function PartnerEditorDashboard({ partner: initialPartner }: Part
         reportTemplateId: partner.reportTemplateId,
         showEventsList: checked,
         showEventsListTitle: partner.showEventsListTitle,
-        showEventsListDetails: partner.showEventsListDetails
+        showEventsListDetails: partner.showEventsListDetails,
+        showOnlyTeam1Events: partner.showOnlyTeam1Events
+      });
+
+      if (result.success) {
+        setSaveStatus('saved');
+        setTimeout(() => setSaveStatus('idle'), 2000);
+      } else {
+        console.error('Save failed:', result.error || 'Unknown error');
+        setSaveStatus('error');
+        setTimeout(() => setSaveStatus('idle'), 3000);
+      }
+    } catch (error) {
+      console.error('Failed to save partner:', error);
+      setSaveStatus('error');
+      setTimeout(() => setSaveStatus('idle'), 3000);
+    }
+  };
+
+  // WHAT: Handle local-home/team-1 filter toggle
+  // WHY: Keep partner report aggregates and event list scoped to local-home appearances when needed
+  const handleShowOnlyTeam1EventsToggle = async (checked: boolean) => {
+    const updatedPartner = { ...partner, showOnlyTeam1Events: checked };
+    setPartner(updatedPartner);
+
+    setSaveStatus('saving');
+    try {
+      const result = await apiPut('/api/partners', {
+        partnerId: partner._id,
+        name: partner.name,
+        emoji: partner.emoji,
+        logoUrl: partner.logoUrl,
+        hashtags: partner.hashtags,
+        categorizedHashtags: partner.categorizedHashtags,
+        stats: partner.stats,
+        styleId: partner.styleId,
+        reportTemplateId: partner.reportTemplateId,
+        showEventsList: partner.showEventsList,
+        showEventsListTitle: partner.showEventsListTitle,
+        showEventsListDetails: partner.showEventsListDetails,
+        showOnlyTeam1Events: checked
       });
 
       if (result.success) {
@@ -268,7 +312,7 @@ export default function PartnerEditorDashboard({ partner: initialPartner }: Part
             <h4 className="text-sm font-semibold text-blue-800 mb-2">ℹ️ Partner Content Editing</h4>
             <ul className="text-sm text-blue-700 space-y-1">
               <li>• <strong>Text & Images:</strong> Edit partner-specific content (reportText*, reportImage*)</li>
-              <li>• <strong>Mathematical Data:</strong> Comes from aggregated event data (not editable here)</li>
+              <li>• <strong>Mathematical Data:</strong> Comes from aggregated included event data (not editable here)</li>
               <li>• <strong>Charts:</strong> Will show partner content + aggregated event numbers</li>
               <li>• <strong>Usage:</strong> Upload partner logos, add partner descriptions, custom messaging</li>
             </ul>
@@ -364,6 +408,22 @@ export default function PartnerEditorDashboard({ partner: initialPartner }: Part
               <p className="text-xs text-gray-500 mt-1 ml-7">
                 Controls whether event cards show detailed info (date, stats, &quot;View Report&quot; button) or just the event title (only applies when events list is shown)
               </p>
+
+              <div className="flex items-center gap-3 mt-3">
+                <input
+                  type="checkbox"
+                  id="showOnlyTeam1Events"
+                  checked={partner.showOnlyTeam1Events ?? false}
+                  onChange={(e) => handleShowOnlyTeam1EventsToggle(e.target.checked)}
+                  className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 focus:ring-2"
+                />
+                <label htmlFor="showOnlyTeam1Events" className="text-sm font-medium text-gray-700">
+                  Only Include Local/Home Events (Team 1)
+                </label>
+              </div>
+              <p className="text-xs text-gray-500 mt-1 ml-7">
+                Filters the partner report so totals, charts, and the events list only include events where this partner is Team 1, the local/home side.
+              </p>
             </div>
             
             <div className="text-xs text-gray-500 space-y-1">
@@ -392,17 +452,17 @@ export default function PartnerEditorDashboard({ partner: initialPartner }: Part
             <div>
               <h4 className="font-semibold text-gray-800 mb-2">📊 What Comes from Events</h4>
               <ul className="space-y-1 text-gray-600">
-                <li>• <strong>Fan Numbers:</strong> Total fans from all partner events</li>
-                <li>• <strong>Image Counts:</strong> Total images from all partner events</li>
-                <li>• <strong>Demographics:</strong> Age, gender data from events</li>
-                <li>• <strong>Engagement:</strong> All mathematical calculations</li>
+                <li>• <strong>Fan Numbers:</strong> Total fans from included partner events</li>
+                <li>• <strong>Image Counts:</strong> Total images from included partner events</li>
+                <li>• <strong>Demographics:</strong> Age and gender data from included events</li>
+                <li>• <strong>Engagement:</strong> Mathematical calculations from included events</li>
               </ul>
             </div>
             
             <div>
               <h4 className="font-semibold text-gray-800 mb-2">🔄 How It Works Together</h4>
               <ul className="space-y-1 text-gray-600">
-                <li>• Partner reports show <strong>aggregated event data</strong> for numbers</li>
+                <li>• Partner reports show <strong>aggregated included event data</strong> for numbers</li>
                 <li>• Partner reports show <strong>partner-specific content</strong> for text/images</li>
                 <li>• Best of both: Real data + Custom branding</li>
               </ul>

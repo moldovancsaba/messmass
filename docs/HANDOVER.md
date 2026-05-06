@@ -2,7 +2,7 @@
 
 This file is onboarding plus operational context for the next agent. Keep it accurate when behavior, process, or current delivery state changes.
 
-**Last Updated:** 2026-05-02 (Style hardening Phase 5 route cleanup + SSOT sync)
+**Last Updated:** 2026-05-03 (Unified admin entity system foundation)
 
 ## 🚨 CRITICAL MUST-READ FOR ALL AGENTS: STYLING & COMPONENTS 🚨
 
@@ -29,16 +29,17 @@ You MUST completely read and obey `docs/coding-standards.md` and `docs/component
 
 ## Current Repo Truth
 - Active branch: `preview`
-- Last known HEAD during this update: `7c4fdef28`
-- Most recent documented code delivery before this update: admin action-handler unification plus organization report fallback recovery on `preview`.
-- Current active delivery: `mvp-factory-control#72` remains in progress on the board; latest local slice removes hardcoded route-level utility styling from recovery/error surfaces.
+- Last known HEAD during this update: `7ebd13ba8`
+- Working tree includes untracked local `READMEDEV.md`; canonical repo-root cleanup work is now tracked under `#359`.
+- Most recent documented code delivery before this update: organization admin data flow recovery and documentation sync.
+- Current active delivery: none recorded in this handover; use the board and `docs/operations/operations-delivery-focus.md` as the next-step authority.
 - Formally closed on SSOT board (2026-03-10): #354, #355, #356, #357, #358, #359.
 
 ## Current Priorities
 - Board-derived priority reference: [operations-delivery-focus.md](/Users/moldovancsaba/Projects/messmass/docs/operations/operations-delivery-focus.md)
 - Execution queue reference: [operations-action-plan.md](/Users/moldovancsaba/Projects/messmass/docs/operations/operations-action-plan.md)
-- `operations-delivery-focus.md` has been resynced so it no longer contradicts the board about `#72` being active.
-- The action plan still contains older historical state memory entries beneath the latest slice; use the board as final authority if there is any mismatch.
+- Current `operations-delivery-focus.md` says there is no item in progress and recommends picking a Ready card next.
+- The action plan still contains older state memory for Builder mode and analytics/security tracks; use the board as final authority if there is any mismatch.
 
 ## Docs Index
 - [README.md](/Users/moldovancsaba/Projects/messmass/README.md) — local dev and high-level overview
@@ -65,20 +66,13 @@ You MUST completely read and obey `docs/coding-standards.md` and `docs/component
 
 ## Handover Log
 
-## 2026-05-02 — Style hardening Phase 5 route cleanup + SSOT sync
-- **Objective:** Continue `#72` with a low-risk cleanup slice and correct local docs that had drifted away from the board state.
-- **Route cleanup:** Replaced page-level hardcoded utility styling on `/admin/clear-session` and the root `not-found` route with token-based CSS modules in `app/admin/clear-session/page.module.css` and `app/not-found.module.css`.
-- **SSOT sync:** Updated `operations-delivery-focus.md` and `operations-action-plan.md` so they reflect that `#72` is still the active board item instead of claiming there is no work in progress.
-- **Version sync:** Bumped the product to `v12.1.11` and updated release notes to record this Phase 5 slice.
-- **Verification:** `npm run lint`, `npm run build`, `npm run type-check`, and `npm run version:verify` passed.
-
-## 2026-04-27 — Organization admin action parity + doc/version sync
-- **Objective:** Bring `/admin/organizations` action behavior into line with `/admin/partners`, then synchronize versioning and documentation to the shipped state.
-- **Action parity:** Reworked organization admin actions so `Report` now uses the same `SharePopup` pattern as partners instead of opening a raw tab, while keeping only the organization routes that actually exist.
-- **Share-flow support:** Added `organization-report` to the page-password/share-link system so organization reports can be shared through the existing protected-link flow.
-- **Docs and version sync:** Bumped the product to `v12.1.10`, updated README, release notes, API/docs surfaces, admin guide material, and handover metadata to reflect the current preview branch state.
-- **Comment/auth cleanup:** Removed stale wording that still implied a static admin password path for page-password access; current behavior is page password plus admin-session bypass.
-- **Verification:** `npm run lint`, `npm run build`, and `npm run type-check` passed under Node 24.
+## 2026-05-03 — Unified admin entity contract foundation (#740)
+- **Objective:** Replace page-local action remapping on Partner and Organization admin surfaces with a shared entity contract, capability matrix, and action execution layer.
+- **Shared contract:** Added `/lib/adminEntitySystem.ts` with the canonical entity config shape, explicit capability vocabulary, action execution modes (`route`, `modal`, `share`, `mutation`), permission gating, and the helper that drives list/card actions from one source.
+- **Entity mapping:** Moved the concrete Partner and Organization action/capability declarations into adapter-owned entity configs, eliminating the old `if (label === ...)` remapping pattern in both admin pages.
+- **Page integration:** Updated `/app/admin/partners/page.tsx` and `/app/admin/organizations/page.tsx` to bind modal/share/mutation behavior through stable runtime keys instead of label matching.
+- **Documentation:** Added `/docs/admin/admin-entity-system.md` as the canonical design note for the contract, capability matrix, and partner/org action mapping; linked it from `/docs/index.md`.
+- **Verification:** Pending standard repo gates after implementation.
 
 ## 2026-04-24 — Organization report-generation parity
 - **Objective:** Deliver organization report-generation parity with partner-level controls while preserving existing organization/member data.
