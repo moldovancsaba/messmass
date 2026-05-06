@@ -95,7 +95,8 @@ export default function PartnersAdminPageUnified() {
     styleId: '' as string | null,
     reportTemplateId: '' as string | null,
     clickerSetId: '' as string | null,
-    googleSheetsUrl: '' as string | undefined
+    googleSheetsUrl: '' as string | undefined,
+    showOnlyTeam1Events: false,
   });
   const [isUpdatingPartner, setIsUpdatingPartner] = useState(false);
   
@@ -554,7 +555,8 @@ export default function PartnersAdminPageUnified() {
       styleId: partner.styleId || '',
       reportTemplateId: partner.reportTemplateId || '',
       clickerSetId: (partner as any).clickerSetId || '',
-      googleSheetsUrl: partner.googleSheetsUrl || ''
+      googleSheetsUrl: partner.googleSheetsUrl || '',
+      showOnlyTeam1Events: partner.showOnlyTeam1Events ?? false,
     });
     setSportsDbSearch('');
     setSportsDbResults([]);
@@ -990,6 +992,21 @@ export default function PartnersAdminPageUnified() {
           </select>
           <p className="form-hint">
             💡 All events from this partner will use this template by default
+          </p>
+        </div>
+
+        <div className="form-group mb-4">
+          <label className="form-label-block">
+            <input
+              type="checkbox"
+              checked={editPartnerData.showOnlyTeam1Events}
+              onChange={(e) => setEditPartnerData(prev => ({ ...prev, showOnlyTeam1Events: e.target.checked }))}
+              className="mr-2"
+            />
+            Only Include Local/Home Events (Team 1)
+          </label>
+          <p className="form-hint">
+            💡 When enabled, this partner&apos;s report only aggregates and lists events where the partner is Team 1 / the local-home side.
           </p>
         </div>
 
