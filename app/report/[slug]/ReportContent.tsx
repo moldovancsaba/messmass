@@ -28,7 +28,7 @@ import {
  */
 function hasValidChartData(result: ChartResult | undefined): boolean {
   // A-R-11: Check both error (legacy) and chartError (new structured error)
-  if (!result || result.chartError) return false;
+  if (!result || result.chartError || result.error) return false;
   
   switch (result.type) {
     case 'text':

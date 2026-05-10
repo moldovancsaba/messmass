@@ -42,7 +42,7 @@ export interface ChartDataValidationResult {
  * to ensure export parity with rendered report.
  */
 export function hasValidChartData(result: ChartResult | undefined): boolean {
-  if (!result || result.chartError) return false;
+  if (!result || result.chartError || result.error) return false;
   
   switch (result.type) {
     case 'text':
