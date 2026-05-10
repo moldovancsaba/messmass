@@ -2,7 +2,7 @@
 
 This file is onboarding plus operational context for the next agent. Keep it accurate when behavior, process, or current delivery state changes.
 
-**Last Updated:** 2026-05-10 (Sponsorship Hub partner attribution slice)
+**Last Updated:** 2026-05-10 (Sponsorship Hub in-page drilldown slice)
 
 ## 🚨 CRITICAL MUST-READ FOR ALL AGENTS: STYLING & COMPONENTS 🚨
 
@@ -86,6 +86,13 @@ You MUST completely read and obey `docs/coding-standards.md` and `docs/component
 - **Attribution rule:** Updated `/lib/sponsorshipHub.ts` so partner totals use a transparent `primary_partner` attribution basis: first `analytics_aggregates.partnerContext.partnerId`, then fallback to the project primary partner. This avoids duplicate credit across multiple partner rows.
 - **Partner rollups:** The hub response now includes partner-level fans, media value, Bitly clicks, average engagement rate, and the attribution basis alongside event counts.
 - **Admin UI update:** Updated `/app/admin/analytics/sponsorship/page.tsx` so the old “Most Active Partner Entities” table is now a real “Top Partner Rollups” table with sponsorship metrics and an attribution note.
+- **Verification:** `npm run lint`, `npm run build`, and `npm run type-check` all passed.
+
+## 2026-05-10 — Unified Sponsorship Performance Hub in-page drilldown slice (#784)
+- **Objective:** Make the hub easier to use by letting admins inspect the selected ranked project or partner without leaving the page.
+- **Project drilldown:** Updated `/app/admin/analytics/sponsorship/page.tsx` so rows in the top-project table are selectable and drive a dedicated project detail card showing event, partner label, view slug, fans, media value, Bitly clicks, and engagement.
+- **Partner drilldown:** Added the same pattern for partner rollups, with a dedicated detail card showing event count, attribution basis, fans, media value, Bitly clicks, and engagement for the selected partner.
+- **UI support:** Added focused drilldown and selected-row styles to `/app/admin/analytics/sponsorship/page.module.css`.
 - **Verification:** `npm run lint`, `npm run build`, and `npm run type-check` all passed.
 
 ## 2026-05-10 — Style hardening Phase 5 duplicate admin dashboard cleanup (#72)

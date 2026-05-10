@@ -164,6 +164,82 @@
   color: var(--mm-gray-900);
 }
 
+.selectButton {
+  background: transparent;
+  border: 0;
+  padding: 0;
+  color: inherit;
+  cursor: pointer;
+  text-align: left;
+  font: inherit;
+}
+
+.selectButton:hover {
+  color: var(--mm-color-primary-700);
+}
+
+.selectedRow {
+  background: var(--mm-color-primary-50);
+}
+
+.detailGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: var(--mm-space-4);
+}
+
+.detailCard {
+  display: flex;
+  flex-direction: column;
+  gap: var(--mm-space-3);
+}
+
+.detailTitle {
+  margin: 0;
+  font-size: var(--mm-font-size-lg);
+  font-weight: var(--mm-font-weight-semibold);
+  color: var(--mm-gray-900);
+}
+
+.detailMeta {
+  display: flex;
+  flex-direction: column;
+  gap: var(--mm-space-1);
+  color: var(--mm-gray-600);
+  font-size: var(--mm-font-size-sm);
+}
+
+.detailMetrics {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--mm-space-3);
+}
+
+.detailMetric {
+  display: flex;
+  flex-direction: column;
+  gap: var(--mm-space-1);
+}
+
+.detailMetricLabel {
+  font-size: var(--mm-font-size-xs);
+  text-transform: uppercase;
+  letter-spacing: var(--mm-letter-spacing-wide);
+  color: var(--mm-gray-500);
+}
+
+.detailMetricValue {
+  font-size: var(--mm-font-size-xl);
+  font-weight: var(--mm-font-weight-semibold);
+  color: var(--mm-gray-900);
+}
+
+.detailNote {
+  margin: 0;
+  color: var(--mm-gray-600);
+  line-height: var(--mm-line-height-md);
+}
+
 .projectPicker {
   display: flex;
   flex-direction: column;

@@ -120,6 +120,8 @@ export default function SponsorshipHubPage() {
   const [selectedScopeId, setSelectedScopeId] = useState('');
   const [rangePreset, setRangePreset] = useState<RangePreset>('all');
   const [hubData, setHubData] = useState<SponsorshipHubData | null>(null);
+  const [selectedProjectId, setSelectedProjectId] = useState('');
+  const [selectedPartnerId, setSelectedPartnerId] = useState('');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [partners, setPartners] = useState<ScopeOption[]>([]);
@@ -256,12 +258,33 @@ export default function SponsorshipHubPage() {
     fetchHub();
   }, [rangePreset, scopeType, selectedScopeId]);
 
+  useEffect(() => {
+    setSelectedProjectId((current) => {
+      if (!hubData?.topProjects.length) return '';
+      if (current && hubData.topProjects.some((project) => project.projectId === current)) {
+        return current;
+      }
+      return hubData.topProjects[0].projectId;
+    });
+
+    setSelectedPartnerId((current) => {
+      if (!hubData?.topPartners.length) return '';
+      if (current && hubData.topPartners.some((partner) => partner.partnerId === current)) {
+        return current;
+      }
+      return hubData.topPartners[0].partnerId;
+    });
+  }, [hubData]);
+
   const scopeLabel = useMemo(() => {
     if (scopeType === 'portfolio') return 'Portfolio';
     if (scopeType === 'partner') return 'Partner';
     if (scopeType === 'organization') return 'Organization';
     return 'Project';
   }, [scopeType]);
+
+  const selectedProject = hubData?.topProjects.find((project) => project.projectId === selectedProjectId) || null;
+  const selectedPartner = hubData?.topPartners.find((partner) => partner.partnerId === selectedPartnerId) || null;
 
   return (
     <div className="page-container">
@@ -505,8 +528,19 @@ export default function SponsorshipHubPage() {
                     </thead>
                     <tbody>
                       {hubData.topProjects.length > 0 ? hubData.topProjects.map((project) => (
-                        <tr key={project.projectId}>
-                          <td><strong>{project.eventName}</strong></td>
+                        <tr
+                          key={project.projectId}
+                          className={project.projectId === selectedProjectId ? styles.selectedRow : ''}
+                        >
+                          <td>
+                            <button
+                              type="button"
+                              className={styles.selectButton}
+                              onClick={() => setSelectedProjectId(project.projectId)}
+                            >
+                              <strong>{project.eventName}</strong>
+                            </button>
+                          </td>
                           <td>{formatDate(project.eventDate)}</td>
                           <td>{project.partnerLabel}</td>
                           <td>{project.fans.toLocaleString('en-US')}</td>
@@ -521,6 +555,41 @@ export default function SponsorshipHubPage() {
                     </tbody>
                   </table>
                 </div>
+                {selectedProject && (
+                  <div className={styles.detailGrid}>
+                    <ColoredCard accentColor="var(--mm-color-primary-500)" hoverable={false}>
+                      <div className={styles.detailCard}>
+                        <h3 className={styles.detailTitle}>Selected Project Drilldown</h3>
+                        <div className={styles.detailMeta}>
+                          <span><strong>{selectedProject.eventName}</strong></span>
+                          <span>{formatDate(selectedProject.eventDate)} • {selectedProject.partnerLabel}</span>
+                          <span>View slug: {selectedProject.viewSlug || 'Not available'}</span>
+                        </div>
+                        <div className={styles.detailMetrics}>
+                          <div className={styles.detailMetric}>
+                            <span className={styles.detailMetricLabel}>Fans</span>
+                            <span className={styles.detailMetricValue}>{selectedProject.fans.toLocaleString('en-US')}</span>
+                          </div>
+                          <div className={styles.detailMetric}>
+                            <span className={styles.detailMetricLabel}>Media Value</span>
+                            <span className={styles.detailMetricValue}>€{selectedProject.adValue.toLocaleString('en-US')}</span>
+                          </div>
+                          <div className={styles.detailMetric}>
+                            <span className={styles.detailMetricLabel}>Bitly Clicks</span>
+                            <span className={styles.detailMetricValue}>{selectedProject.bitlyClicks.toLocaleString('en-US')}</span>
+                          </div>
+                          <div className={styles.detailMetric}>
+                            <span className={styles.detailMetricLabel}>Engagement</span>
+                            <span className={styles.detailMetricValue}>{selectedProject.engagementRate.toFixed(1)}%</span>
+                          </div>
+                        </div>
+                        <p className={styles.detailNote}>
+                          This project is ranked by combined media value and tracked link activity inside the current hub scope.
+                        </p>
+                      </div>
+                    </ColoredCard>
+                  </div>
+                )}
               </div>
             </ColoredCard>
 
@@ -546,8 +615,19 @@ export default function SponsorshipHubPage() {
                     </thead>
                     <tbody>
                       {hubData.topPartners.length > 0 ? hubData.topPartners.map((partner) => (
-                        <tr key={partner.partnerId}>
-                          <td><strong>{partner.emoji ? `${partner.emoji} ` : ''}{partner.name}</strong></td>
+                        <tr
+                          key={partner.partnerId}
+                          className={partner.partnerId === selectedPartnerId ? styles.selectedRow : ''}
+                        >
+                          <td>
+                            <button
+                              type="button"
+                              className={styles.selectButton}
+                              onClick={() => setSelectedPartnerId(partner.partnerId)}
+                            >
+                              <strong>{partner.emoji ? `${partner.emoji} ` : ''}{partner.name}</strong>
+                            </button>
+                          </td>
                           <td>{partner.eventCount}</td>
                           <td>{partner.totalFans.toLocaleString('en-US')}</td>
                           <td>€{partner.totalAdValue.toLocaleString('en-US')}</td>
@@ -562,6 +642,41 @@ export default function SponsorshipHubPage() {
                     </tbody>
                   </table>
                 </div>
+                {selectedPartner && (
+                  <div className={styles.detailGrid}>
+                    <ColoredCard accentColor="var(--mm-chart-purple)" hoverable={false}>
+                      <div className={styles.detailCard}>
+                        <h3 className={styles.detailTitle}>Selected Partner Drilldown</h3>
+                        <div className={styles.detailMeta}>
+                          <span><strong>{selectedPartner.emoji ? `${selectedPartner.emoji} ` : ''}{selectedPartner.name}</strong></span>
+                          <span>{selectedPartner.eventCount} primary-partner events in current scope</span>
+                          <span>Attribution basis: {selectedPartner.attributionBasis}</span>
+                        </div>
+                        <div className={styles.detailMetrics}>
+                          <div className={styles.detailMetric}>
+                            <span className={styles.detailMetricLabel}>Fans</span>
+                            <span className={styles.detailMetricValue}>{selectedPartner.totalFans.toLocaleString('en-US')}</span>
+                          </div>
+                          <div className={styles.detailMetric}>
+                            <span className={styles.detailMetricLabel}>Media Value</span>
+                            <span className={styles.detailMetricValue}>€{selectedPartner.totalAdValue.toLocaleString('en-US')}</span>
+                          </div>
+                          <div className={styles.detailMetric}>
+                            <span className={styles.detailMetricLabel}>Bitly Clicks</span>
+                            <span className={styles.detailMetricValue}>{selectedPartner.totalBitlyClicks.toLocaleString('en-US')}</span>
+                          </div>
+                          <div className={styles.detailMetric}>
+                            <span className={styles.detailMetricLabel}>Avg Engagement</span>
+                            <span className={styles.detailMetricValue}>{selectedPartner.avgEngagementRate.toFixed(1)}%</span>
+                          </div>
+                        </div>
+                        <p className={styles.detailNote}>
+                          This rollup uses primary-partner attribution only, so each aggregate contributes to one partner row and totals remain non-duplicative.
+                        </p>
+                      </div>
+                    </ColoredCard>
+                  </div>
+                )}
               </div>
             </ColoredCard>
           </>
