@@ -2,7 +2,7 @@
 
 This file is onboarding plus operational context for the next agent. Keep it accurate when behavior, process, or current delivery state changes.
 
-**Last Updated:** 2026-05-03 (Unified admin entity system foundation)
+**Last Updated:** 2026-05-10 (Style hardening Phase 5 duplicate admin dashboard cleanup)
 
 ## 🚨 CRITICAL MUST-READ FOR ALL AGENTS: STYLING & COMPONENTS 🚨
 
@@ -32,7 +32,7 @@ You MUST completely read and obey `docs/coding-standards.md` and `docs/component
 - Last known HEAD during this update: `7ebd13ba8`
 - Working tree includes untracked local `READMEDEV.md`; canonical repo-root cleanup work is now tracked under `#359`.
 - Most recent documented code delivery before this update: organization admin data flow recovery and documentation sync.
-- Current active delivery: none recorded in this handover; use the board and `docs/operations/operations-delivery-focus.md` as the next-step authority.
+- Current active delivery: `mvp-factory-control#72` Style hardening Phase 5 remains the active board lane; latest cleanup slice removed the inactive duplicate admin dashboard implementation.
 - Formally closed on SSOT board (2026-03-10): #354, #355, #356, #357, #358, #359.
 
 ## Current Priorities
@@ -65,6 +65,16 @@ You MUST completely read and obey `docs/coding-standards.md` and `docs/component
 - Style editor preview updates immediately for bar/pie CSS vars and includes Value Chain and Landing page sections.
 
 ## Handover Log
+
+## 2026-05-10 — Style hardening Phase 5 duplicate admin dashboard cleanup (#72)
+- **Objective:** Continue `#72` by removing inactive duplicate admin dashboard styling assets that no longer power the live admin landing page.
+- **Removed duplicate artifacts:**
+  - `components/AdminDashboardNew.tsx`
+  - `components/AdminDashboard.module.css`
+- **Additional duplicate UI cleanup:**
+  - Removed `components/ConfirmModal.tsx` after confirming admin flows already use `ConfirmDialog` from `components/modals`.
+- **Why this is safe:** `/app/admin/page.tsx` imports `components/AdminDashboard.tsx`, and no live route or component imports the deleted alternate dashboard implementation.
+- **Verification:** Pending local validation after cleanup.
 
 ## 2026-05-03 — Unified admin entity contract foundation (#740)
 - **Objective:** Replace page-local action remapping on Partner and Organization admin surfaces with a shared entity contract, capability matrix, and action execution layer.
