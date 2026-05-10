@@ -1,0 +1,227 @@
+.page {
+  display: flex;
+  flex-direction: column;
+  gap: var(--mm-space-6);
+  padding-bottom: var(--mm-space-8);
+}
+
+.controlsCard {
+  display: flex;
+  flex-direction: column;
+  gap: var(--mm-space-4);
+}
+
+.controlsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: var(--mm-space-4);
+}
+
+.controlGroup {
+  display: flex;
+  flex-direction: column;
+  gap: var(--mm-space-2);
+}
+
+.controlLabel {
+  font-size: var(--mm-font-size-sm);
+  font-weight: var(--mm-font-weight-semibold);
+  color: var(--mm-gray-700);
+}
+
+.selectInput {
+  width: 100%;
+}
+
+.scopeSummary {
+  font-size: var(--mm-font-size-sm);
+  color: var(--mm-gray-600);
+  margin: 0;
+}
+
+.metricGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: var(--mm-space-4);
+}
+
+.channelGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: var(--mm-space-4);
+}
+
+.channelCard {
+  display: flex;
+  flex-direction: column;
+  gap: var(--mm-space-3);
+}
+
+.channelTitle {
+  margin: 0;
+  font-size: var(--mm-font-size-lg);
+  font-weight: var(--mm-font-weight-semibold);
+  color: var(--mm-gray-900);
+}
+
+.channelValue {
+  font-size: var(--mm-font-size-3xl);
+  font-weight: var(--mm-font-weight-bold);
+  color: var(--mm-gray-900);
+}
+
+.channelMeta {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--mm-space-4);
+  font-size: var(--mm-font-size-sm);
+  color: var(--mm-gray-700);
+}
+
+.channelDescription {
+  margin: 0;
+  color: var(--mm-gray-600);
+  line-height: var(--mm-line-height-md);
+}
+
+.channelSource {
+  font-size: var(--mm-font-size-xs);
+  color: var(--mm-gray-500);
+}
+
+.insightGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: var(--mm-space-4);
+}
+
+.insightItem {
+  display: flex;
+  flex-direction: column;
+  gap: var(--mm-space-1);
+}
+
+.insightLabel {
+  font-size: var(--mm-font-size-xs);
+  text-transform: uppercase;
+  letter-spacing: var(--mm-letter-spacing-wide);
+  color: var(--mm-gray-500);
+}
+
+.insightValue {
+  font-size: var(--mm-font-size-2xl);
+  font-weight: var(--mm-font-weight-bold);
+  color: var(--mm-gray-900);
+}
+
+.sectionCard {
+  display: flex;
+  flex-direction: column;
+  gap: var(--mm-space-4);
+}
+
+.sectionHeader {
+  display: flex;
+  flex-direction: column;
+  gap: var(--mm-space-1);
+}
+
+.sectionTitle {
+  margin: 0;
+  font-size: var(--mm-font-size-xl);
+  font-weight: var(--mm-font-weight-semibold);
+  color: var(--mm-gray-900);
+}
+
+.sectionSubtitle {
+  margin: 0;
+  color: var(--mm-gray-600);
+}
+
+.tableWrap {
+  overflow-x: auto;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.table th,
+.table td {
+  padding: var(--mm-space-3);
+  border-bottom: 1px solid var(--mm-gray-200);
+  text-align: left;
+  font-size: var(--mm-font-size-sm);
+}
+
+.table th {
+  color: var(--mm-gray-600);
+  font-weight: var(--mm-font-weight-semibold);
+}
+
+.table strong {
+  color: var(--mm-gray-900);
+}
+
+.projectPicker {
+  display: flex;
+  flex-direction: column;
+  gap: var(--mm-space-3);
+}
+
+.projectResults {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: var(--mm-space-3);
+}
+
+.projectResultCard {
+  border: 1px solid transparent;
+}
+
+.projectResultActive {
+  border-color: var(--mm-color-primary-500);
+  box-shadow: var(--mm-shadow-md);
+}
+
+.projectResultButton {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--mm-space-1);
+  width: 100%;
+  background: transparent;
+  border: 0;
+  padding: 0;
+  color: inherit;
+  cursor: pointer;
+}
+
+.projectResultName {
+  font-size: var(--mm-font-size-base);
+  font-weight: var(--mm-font-weight-semibold);
+  color: var(--mm-gray-900);
+}
+
+.projectResultMeta {
+  font-size: var(--mm-font-size-sm);
+  color: var(--mm-gray-600);
+}
+
+.helperText {
+  margin: 0;
+  font-size: var(--mm-font-size-sm);
+  color: var(--mm-gray-600);
+}
+
+.emptyState {
+  color: var(--mm-gray-600);
+}
+
+@media (max-width: 768px) {
+  .channelMeta {
+    flex-direction: column;
+    gap: var(--mm-space-2);
+  }
+}

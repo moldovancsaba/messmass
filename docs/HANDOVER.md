@@ -2,7 +2,7 @@
 
 This file is onboarding plus operational context for the next agent. Keep it accurate when behavior, process, or current delivery state changes.
 
-**Last Updated:** 2026-05-10 (Style hardening Phase 5 duplicate admin dashboard cleanup)
+**Last Updated:** 2026-05-10 (Sponsorship Hub partner attribution slice)
 
 ## 🚨 CRITICAL MUST-READ FOR ALL AGENTS: STYLING & COMPONENTS 🚨
 
@@ -32,7 +32,7 @@ You MUST completely read and obey `docs/coding-standards.md` and `docs/component
 - Last known HEAD during this update: `7ebd13ba8`
 - Working tree includes untracked local `READMEDEV.md`; canonical repo-root cleanup work is now tracked under `#359`.
 - Most recent documented code delivery before this update: organization admin data flow recovery and documentation sync.
-- Current active delivery: `mvp-factory-control#72` Style hardening Phase 5 remains the active board lane; latest cleanup slice removed the inactive duplicate admin dashboard implementation.
+- Current active delivery: `mvp-factory-control#784` Unified Sponsorship Performance Hub initial implementation slice is now in local progress; latest work adds the first admin sponsorship hub surface backed by existing analytics and Bitly data.
 - Formally closed on SSOT board (2026-03-10): #354, #355, #356, #357, #358, #359.
 
 ## Current Priorities
@@ -65,6 +65,28 @@ You MUST completely read and obey `docs/coding-standards.md` and `docs/component
 - Style editor preview updates immediately for bar/pie CSS vars and includes Value Chain and Landing page sections.
 
 ## Handover Log
+
+## 2026-05-10 — Unified Sponsorship Performance Hub initial slice (#784)
+- **Objective:** Start `#784` with a usable admin surface that unifies current sponsorship evidence without introducing new ingestion or schema changes.
+- **Server aggregation:** Added `/lib/sponsorshipHub.ts` as the first shared sponsorship rollup layer. It resolves portfolio, partner, organization, and project scopes and combines existing `analytics_aggregates`, `projects`, `partners`, `organizations`, and `bitly_project_links` data.
+- **API surface:** Added `/app/api/analytics/sponsorship-hub/route.ts` for authenticated admin access to the unified sponsorship dataset.
+- **Admin UI:** Added `/app/admin/analytics/sponsorship/page.tsx` with scope controls, KPI cards, channel attribution cards, coverage indicators, top projects, and partner activity tables.
+- **Navigation:** Added a new `Sponsorship Hub` entry to `/components/AdminDashboard.tsx` so the feature is reachable from the admin landing page.
+- **Verification:** `npm run type-check` and `npm run lint` passed.
+
+## 2026-05-10 — Unified Sponsorship Performance Hub date-range filtering (#784)
+- **Objective:** Extend the first hub slice so sponsorship KPIs can be narrowed to a meaningful reporting window instead of remaining all-time only.
+- **Shared filtering:** Updated `/lib/sponsorshipHub.ts` to support range presets (`all`, `30d`, `90d`, `365d`) and apply event-date filtering before building the unified hub response.
+- **API support:** Extended `/app/api/analytics/sponsorship-hub/route.ts` to accept `rangePreset` and return the resolved filter window in the response payload.
+- **Admin UI controls:** Updated `/app/admin/analytics/sponsorship/page.tsx` so admins can change the time window directly from the hub and see the effective date range in the current scope summary.
+- **Verification note:** `npm run lint` passed. `npm run build` passed. `npm run type-check` passed after rerunning against the regenerated `.next/types` output because this repo includes `.next/types/**/*.ts` in `tsconfig.json`.
+
+## 2026-05-10 — Unified Sponsorship Performance Hub partner attribution slice (#784)
+- **Objective:** Turn the partner section of the Sponsorship Hub into a real commercial rollup instead of a simple activity count.
+- **Attribution rule:** Updated `/lib/sponsorshipHub.ts` so partner totals use a transparent `primary_partner` attribution basis: first `analytics_aggregates.partnerContext.partnerId`, then fallback to the project primary partner. This avoids duplicate credit across multiple partner rows.
+- **Partner rollups:** The hub response now includes partner-level fans, media value, Bitly clicks, average engagement rate, and the attribution basis alongside event counts.
+- **Admin UI update:** Updated `/app/admin/analytics/sponsorship/page.tsx` so the old “Most Active Partner Entities” table is now a real “Top Partner Rollups” table with sponsorship metrics and an attribution note.
+- **Verification:** `npm run lint`, `npm run build`, and `npm run type-check` all passed.
 
 ## 2026-05-10 — Style hardening Phase 5 duplicate admin dashboard cleanup (#72)
 - **Objective:** Continue `#72` by removing inactive duplicate admin dashboard styling assets that no longer power the live admin landing page.

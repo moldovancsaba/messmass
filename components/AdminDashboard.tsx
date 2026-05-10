@@ -74,6 +74,13 @@ const navCards: NavCard[] = [
     accentColor: '#f59e0b', // var(--mm-chart-yellow) - Golden/amber for insights
   },
   {
+    href: '/admin/analytics/sponsorship',
+    icon: '🤝',
+    title: 'Sponsorship Hub',
+    description: 'Unified sponsorship performance across events, partners, organizations, and Bitly evidence',
+    accentColor: '#14b8a6', // var(--mm-chart-teal)
+  },
+  {
     href: '/admin/filter',
     icon: '🔍',
     title: 'Hashtag Filter',
