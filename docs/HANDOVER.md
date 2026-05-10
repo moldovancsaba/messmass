@@ -73,6 +73,10 @@ You MUST completely read and obey `docs/coding-standards.md` and `docs/component
   - `components/AdminDashboard.module.css`
 - **Additional duplicate UI cleanup:**
   - Removed `components/ConfirmModal.tsx` after confirming admin flows already use `ConfirmDialog` from `components/modals`.
+- **Additional dead V3 UI cleanup:**
+  - Removed `components/v3/dashboard/StatsCard.tsx`
+  - Removed `components/v3/dashboard/EntityTree.tsx`
+  - Removed `components/v3/dashboard/EntityTree.module.css`
 - **Why this is safe:** `/app/admin/page.tsx` imports `components/AdminDashboard.tsx`, and no live route or component imports the deleted alternate dashboard implementation.
 - **Verification:** Pending local validation after cleanup.
 

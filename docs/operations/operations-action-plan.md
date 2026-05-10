@@ -157,6 +157,7 @@ Owner: Katja (Admin)
 - BOARD: `#72` remains `In Progress (NOW)`.
 - CODE: removed dead duplicate admin dashboard artifacts `components/AdminDashboardNew.tsx` and `components/AdminDashboard.module.css`; the live `/admin` route already uses `components/AdminDashboard.tsx`, so the alternate gradient-card implementation was inactive duplication.
 - CODE: removed dead legacy confirmation wrapper `components/ConfirmModal.tsx`; active admin flows already use `ConfirmDialog` from `components/modals`, so the SharePopup-based confirm variant was inactive duplicate UI.
+- CODE: removed the unused `components/v3/dashboard` scaffold (`StatsCard`, `EntityTree`, `EntityTree.module.css`); no route or component imported that V3 dashboard UI subtree, so it was unreachable and carried non-canonical styling.
 - NEXT: run validation, post SSOT evidence for this cleanup slice, then either continue Phase 5 with another dead-style consolidation or close/split the card based on remaining scope.
 
 2026-03-14
