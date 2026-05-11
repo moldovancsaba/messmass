@@ -17,11 +17,14 @@ import UnifiedHashtagInput from '@/components/UnifiedHashtagInput';
 import BitlyLinksSelector from '@/components/BitlyLinksSelector';
 import EmojiSelector from '@/components/EmojiSelector';
 import TheSportsDBSearch from '@/components/TheSportsDBSearch';
+import ImageUploader from '@/components/ImageUploader';
 import { apiPost, apiPut, apiDelete } from '@/lib/apiClient';
 import { withAdminEntityActions } from '@/lib/adminEntitySystem';
 import { generateSportsDbHashtags, mergeSportsDbHashtags } from '@/lib/sportsDbHashtagEnricher';
 
 const PAGE_SIZE = 20;
+
+const isImgBbHostedUrl = (url: string) => /imgbb\.com|i\.ibb\.co|ibb\.co/i.test(url);
 
 interface BitlyLinkOption {
   _id: string;
@@ -468,6 +471,25 @@ export default function PartnersAdminPageUnified() {
       setSportsDbLinking(true);
       
       // Create SportsDB data object from manual input
+      let finalLogoUrl = manualEntryData.logoUrl || undefined;
+
+      if (manualEntryData.logoUrl && !isImgBbHostedUrl(manualEntryData.logoUrl)) {
+        console.log('🖼️ Uploading manually provided logo to ImgBB...');
+        try {
+          const imgbbData = await apiPost('/api/partners/upload-logo', {
+            badgeUrl: manualEntryData.logoUrl,
+            partnerName: editingPartner.name,
+          });
+          if (imgbbData.success && imgbbData.logoUrl) {
+            finalLogoUrl = imgbbData.logoUrl;
+            console.log('✅ Logo uploaded to ImgBB:', finalLogoUrl);
+          }
+        } catch (logoErr) {
+          console.error('❌ Logo upload error:', logoErr);
+          // Continue without blocking the rest of the manual save
+        }
+      }
+
       const sportsDbData = {
         teamId: `manual_${Date.now()}`, // Generate unique ID for manual entries
         teamName: editingPartner.name,
@@ -476,34 +498,15 @@ export default function PartnersAdminPageUnified() {
         leagueName: manualEntryData.leagueName || undefined,
         founded: manualEntryData.founded || undefined,
         country: manualEntryData.country || undefined,
-        badge: manualEntryData.logoUrl || undefined,
+        badge: finalLogoUrl,
         lastSynced: new Date().toISOString(),
       };
-      
-      // Upload logo to ImgBB if URL provided
-      let logoUrl: string | undefined;
-      if (manualEntryData.logoUrl) {
-        console.log('🖼️ Uploading manually provided logo to ImgBB...');
-        try {
-          const imgbbData = await apiPost('/api/partners/upload-logo', {
-            badgeUrl: manualEntryData.logoUrl,
-            partnerName: editingPartner.name,
-          });
-          if (imgbbData.success && imgbbData.logoUrl) {
-            logoUrl = imgbbData.logoUrl;
-            console.log('✅ Logo uploaded to ImgBB:', logoUrl);
-          }
-        } catch (logoErr) {
-          console.error('❌ Logo upload error:', logoErr);
-          // Continue without logo - non-blocking error
-        }
-      }
       
       // Save to database
       const updateData = await apiPut('/api/partners', {
         partnerId: editingPartner._id,
         sportsDb: sportsDbData,
-        logoUrl: logoUrl,
+        logoUrl: finalLogoUrl,
       });
       
       if (updateData.success) {
@@ -513,7 +516,7 @@ export default function PartnersAdminPageUnified() {
         setEditPartnerData(prev => ({
           ...prev,
           sportsDb: sportsDbData,
-          logoUrl: logoUrl || prev.logoUrl
+          logoUrl: finalLogoUrl || prev.logoUrl
         }));
         
         // Clear manual entry form
@@ -1256,7 +1259,18 @@ export default function PartnersAdminPageUnified() {
             placeholder="https://example.com/logo.png"
           />
           <p className="form-hint">
-            💡 Logo will be uploaded to ImgBB for permanent hosting
+            Paste an existing image URL or upload a logo file below.
+          </p>
+          <div className="mt-3">
+            <ImageUploader
+              label="Upload Logo File"
+              value={manualEntryData.logoUrl || undefined}
+              onChange={(url) => setManualEntryData(prev => ({ ...prev, logoUrl: url || '' }))}
+              maxSizeMB={10}
+            />
+          </div>
+          <p className="form-hint mt-2">
+            Uploaded files are stored on ImgBB and the hosted URL is saved back into the system.
           </p>
         </div>
       </FormModal>
