@@ -24,31 +24,40 @@ export const ROLE_HIERARCHY: Record<UserRole, number> = {
  * FORMAT: { label: [allowed roles] }
  */
 export const MENU_PERMISSIONS: Record<string, UserRole[]> = {
-  // WHAT: Core features - user level and above
+  // WHAT: Operations
   'Partners': ['user', 'admin', 'superadmin'],
+  'Partner Activation': ['admin', 'superadmin'],
+  'Quick Add': ['admin', 'superadmin'],
+  'Messages': ['admin', 'superadmin'],
+
+  // WHAT: Entities
   'Organizations': ['superadmin'],
   'Events': ['user', 'admin', 'superadmin'],
+  'Project Partners': ['admin', 'superadmin'],
+  
+  // WHAT: Reports
+  'Report Builder': ['admin', 'superadmin'],
+  'Report Themes': ['admin', 'superadmin'],
+  'Content Library': ['admin', 'superadmin'],
+  'Chart Algorithms': ['admin', 'superadmin'],
+
+  // WHAT: Data
+  'KYC Variables': ['admin', 'superadmin'],
+  'Clicker Sets': ['admin', 'superadmin'],
+  'Bitly Links': ['admin', 'superadmin'],
   'Filters': ['user', 'admin', 'superadmin'],
-  
-  // WHAT: Management features - admin level and above
-  'Users': ['superadmin'],
+  'Hashtags': ['superadmin'],
+  'Categories': ['superadmin'],
+
+  // WHAT: Analytics
+  'Sponsorship Hub': ['admin', 'superadmin'],
   'Insights': ['superadmin'],
-  'KYC': ['admin', 'superadmin'],
-  'Algorithms': ['admin', 'superadmin'],
-  'Clicker Manager': ['admin', 'superadmin'],
-  'Bitly Manager': ['admin', 'superadmin'],
-  'Hashtag Manager': ['superadmin'],
-  'Category Manager': ['superadmin'],
-  
-  // WHAT: System features
-  'Reporting': ['admin', 'superadmin'],
-  'Style Editor': ['admin', 'superadmin'],
-  'Cache Management': ['superadmin'],
-  
-  // WHAT: Help section
-  'User Guide': ['guest', 'user', 'admin', 'superadmin'],
-  'Main page': ['admin', 'superadmin'],
-  'Messages': ['admin', 'superadmin'],
+
+  // WHAT: System
+  'Users': ['superadmin'],
+  'Main Page': ['admin', 'superadmin'],
+  'Cache': ['superadmin'],
+  'Help': ['guest', 'user', 'admin', 'superadmin'],
 };
 
 /**

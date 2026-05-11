@@ -79,7 +79,7 @@ export default function ChartBuilderTable({ chart, stats, onSave }: ChartBuilder
         </div>
         <div className="chart-builder-card-body">
           <p className="chart-builder-card-id">{chart.chartId}</p>
-          <p className="chart-builder-hint">No variables in formula. Add variables (e.g. [reportTable1]) in Visualization Manager, or use a title like &quot;Report Table 1&quot; / chartId report-table-1 to bind.</p>
+          <p className="chart-builder-hint">No variables in formula. Add variables (e.g. [reportTable1]) in Report Builder, or use a title like &quot;Report Table 1&quot; / chartId report-table-1 to bind.</p>
         </div>
       </div>
     );
@@ -111,7 +111,7 @@ export default function ChartBuilderTable({ chart, stats, onSave }: ChartBuilder
         </div>
         {isFallback && (
           <p className="chart-builder-hint chart-builder-hint-subtle">
-            Using [reportTable1]. To bind to another variable, use title &quot;Report Table 2&quot; or add [reportTable2] in Visualization Manager.
+            Using [reportTable1]. To bind to another variable, use title &quot;Report Table 2&quot; or add [reportTable2] in Report Builder.
           </p>
         )}
       </div>

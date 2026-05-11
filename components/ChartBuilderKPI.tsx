@@ -73,7 +73,7 @@ export default function ChartBuilderKPI({ chart, stats, onSave }: ChartBuilderKP
       <div className="chart-builder-card-body">
         <p className="chart-builder-card-id">{chart.chartId}</p>
         {variables.length === 0 ? (
-          <p className="chart-builder-hint">No variables in formula (e.g. [varName]). Add variables in Visualization Manager.</p>
+          <p className="chart-builder-hint">No variables in formula (e.g. [varName]). Add variables in Report Builder.</p>
         ) : (
           <>
             {variables.map((key) => (

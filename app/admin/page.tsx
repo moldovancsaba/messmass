@@ -42,8 +42,8 @@ export default function AdminPage() {
   return (
     <>
       <UnifiedAdminHeroWithSearch
-        title="Admin Dashboard"
-        subtitle={`Welcome back, ${user.name}! Choose a management area below to get started.`}
+        title="Admin Workspace"
+        subtitle={`Welcome back, ${user.name}. Use the canonical operations, entities, reports, data, analytics, and system areas below.`}
       />
       <AdminDashboard 
         user={user}

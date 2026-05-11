@@ -597,7 +597,7 @@ curl -X POST \\
           </p>
           <p>
             <strong>Additional Resources:</strong><br />
-            <a href="/admin/help">User Guide</a>
+            <a href="/admin/help">Help</a>
             {' '}•{' '}
             <a href="https://github.com/moldovancsaba/messmass" target="_blank" rel="noopener noreferrer">
               GitHub Repository

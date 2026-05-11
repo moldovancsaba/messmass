@@ -2,7 +2,7 @@
 
 This file is onboarding plus operational context for the next agent. Keep it accurate when behavior, process, or current delivery state changes.
 
-**Last Updated:** 2026-05-11 (Activation triage and partner queue slice)
+**Last Updated:** 2026-05-11 (UI refinement navigation and terminology slice)
 
 ## 🚨 CRITICAL MUST-READ FOR ALL AGENTS: STYLING & COMPONENTS 🚨
 
@@ -32,7 +32,7 @@ You MUST completely read and obey `docs/coding-standards.md` and `docs/component
 - Last known HEAD during this update: `7ebd13ba8`
 - Working tree includes untracked local `READMEDEV.md`; canonical repo-root cleanup work is now tracked under `#359`.
 - Most recent documented code delivery before this update: organization admin data flow recovery and documentation sync.
-- Current active delivery: `mvp-factory-control#784` Unified Sponsorship Performance Hub is extended with source drilldowns, trend views, scope actions, attribution evidence, and the first `#788` activation workspace slice backed by the same shared data model.
+- Current active delivery: `mvp-factory-control#816` UI Refinement 1/6 is in local implementation with canonical navigation, shared labels, and first-pass terminology alignment now applied across the dashboard, sidebar, help, and core report/data admin surfaces.
 - Formally closed on SSOT board (2026-03-10): #354, #355, #356, #357, #358, #359.
 
 ## Current Priorities
@@ -65,6 +65,17 @@ You MUST completely read and obey `docs/coding-standards.md` and `docs/component
 - Style editor preview updates immediately for bar/pie CSS vars and includes Value Chain and Landing page sections.
 
 ## Handover Log
+
+## 2026-05-11 — UI refinement foundation slice (#816)
+- **Objective:** Start the UI refinement program by eliminating the first structural inconsistency: the admin dashboard cards and sidebar navigation describing different products.
+- **Shared navigation SSOT:** Added `/lib/adminNavigation.ts` as the canonical admin navigation model, grouped by Operations, Entities, Reports, Data, Analytics, and System.
+- **Dashboard alignment:** Updated `/components/AdminDashboard.tsx` so the admin landing page now renders grouped cards from the shared navigation definition instead of a separate hardcoded list with conflicting labels.
+- **Sidebar alignment:** Updated `/components/Sidebar.tsx` so the sidebar now consumes the same shared navigation source instead of maintaining its own divergent route map.
+- **Permission alignment:** Updated `/lib/permissions.ts` so sidebar visibility now matches the new canonical labels (`Report Builder`, `Report Themes`, `Clicker Sets`, `Bitly Links`, `Main Page`, etc.).
+- **Entry-point framing:** Updated `/app/admin/page.tsx` from `Admin Dashboard` to `Admin Workspace` so the landing page better reflects the broader IA rather than implying a second analytics dashboard.
+- **Visible terminology alignment:** Updated user-facing admin labels to the canonical IA on the highest-traffic surfaces: `Help`, `Bitly Links`, `Report Themes`, `Clicker Sets`, `Main Page`, and `Report Builder`.
+- **Workflow copy cleanup:** Updated help guidance, unauthorized recovery CTA, and builder empty/error states so users are directed to canonical names like `Events` and `Report Builder` instead of legacy labels such as `Projects`, `User Guide`, and `Visualization Manager`.
+- **Verification:** `npm run lint`, `npm run build`, and `npm run type-check` all passed.
 
 ## 2026-05-11 — Activation triage and partner queue slice (#788)
 - **Objective:** Turn the first activation workspace from a passive proof list into an operational triage surface for sponsor-delivery follow-up.

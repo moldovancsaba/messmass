@@ -84,7 +84,7 @@ export default function StylesListPage() {
   if (loading) {
     return (
       <div className="page-container">
-        <UnifiedAdminHeroWithSearch title="Report Styles" subtitle="Loading..." />
+        <UnifiedAdminHeroWithSearch title="Report Themes" subtitle="Loading..." />
         <div className={styles.loading}>
           <div className={styles.spinner} />
           <p>Loading styles...</p>
@@ -96,7 +96,7 @@ export default function StylesListPage() {
   if (error) {
     return (
       <div className="page-container">
-        <UnifiedAdminHeroWithSearch title="Report Styles" subtitle="Error loading styles" />
+        <UnifiedAdminHeroWithSearch title="Report Themes" subtitle="Error loading themes" />
         <ColoredCard accentColor="#ef4444">
           <div className={styles.error}>
             <MaterialIcon name="error" variant="outlined" />
@@ -113,8 +113,8 @@ export default function StylesListPage() {
   return (
     <div className="page-container">
       <UnifiedAdminHeroWithSearch
-        title="Report Styles" 
-        subtitle="Manage color themes for report pages"
+        title="Report Themes" 
+        subtitle="Manage reusable visual themes for report pages"
         actionButtons={[
           {
             label: 'Create New Style',

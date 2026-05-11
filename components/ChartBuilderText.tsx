@@ -60,7 +60,7 @@ export default function ChartBuilderText({ chart, stats, onSave }: ChartBuilderT
         </div>
         <div className="chart-builder-card-body">
           <p className="chart-builder-card-id">{chart.chartId}</p>
-          <p className="chart-builder-hint">No variables in formula. Add variables (e.g. [reportText1]) in Visualization Manager.</p>
+          <p className="chart-builder-hint">No variables in formula. Add variables (e.g. [reportText1]) in Report Builder.</p>
         </div>
       </div>
     );

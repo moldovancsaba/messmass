@@ -113,8 +113,8 @@ export default function AdminMainpagePage() {
   return (
     <div className="page-container">
       <UnifiedAdminHeroWithSearch
-        title="Main page"
-        subtitle="Choose which report drives the main page (messmass.com) and generate static content"
+        title="Main Page"
+        subtitle="Choose which event report powers messmass.com and generate the published static content"
         backLink="/admin"
       />
       {message && (
@@ -126,7 +126,7 @@ export default function AdminMainpagePage() {
         <p className={styles.loading}>Loading…</p>
       ) : (
         <div className={styles.section}>
-          <h2 className={styles.heading}>Report for main page</h2>
+          <h2 className={styles.heading}>Report for Main Page</h2>
           <p className={styles.hint}>
             The content between the hero and the pricing section on the main page comes from this report.
           </p>

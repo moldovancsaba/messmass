@@ -10,23 +10,12 @@ import { useSidebar } from '@/contexts/SidebarContext';
 import MaterialIcon from '@/components/MaterialIcon';
 import { canAccessMenuItem } from '@/lib/permissions';
 import type { UserRole } from '@/lib/users';
+import { adminNavSections } from '@/lib/adminNavigation';
 
 const FOCUSABLE_SELECTOR = 'a[href], button:not([disabled]), [tabindex]:not([tabindex="-1"])';
 
 /* What: Navigation item structure
    Why: Type-safe navigation configuration with Material Icons */
-interface NavItem {
-  label: string;
-  path: string;
-  icon: string; // Material Icon name
-  iconVariant?: 'outlined' | 'rounded';
-}
-
-interface NavSection {
-  title: string;
-  items: NavItem[];
-}
-
 /* What: Responsive sidebar component for admin navigation with role-based filtering
    Why: TailAdmin V2-inspired sidebar with desktop/tablet/mobile variants
    
@@ -73,47 +62,6 @@ export default function Sidebar() {
   /* WHAT: Reorganized navigation structure per user requirements
      WHY: More intuitive order - removed Dashboard (logo serves same purpose),
           grouped logically from core content to admin tools */
-  const navSections: NavSection[] = [
-    {
-      title: 'Core',
-      items: [
-        { label: 'Partners', path: '/admin/partners', icon: 'handshake' },
-        { label: 'Events', path: '/admin/events', icon: 'event' },
-        { label: 'Filters', path: '/admin/filter', icon: 'search' },
-      ],
-    },
-    {
-      title: 'Management',
-      items: [
-        { label: 'Organizations', path: '/admin/organizations', icon: 'business' },
-        { label: 'Users', path: '/admin/users', icon: 'group' },
-        { label: 'Insights', path: '/admin/insights', icon: 'lightbulb' },
-        { label: 'KYC', path: '/admin/kyc', icon: 'lock' },
-        { label: 'Algorithms', path: '/admin/charts', icon: 'trending_up' },
-        { label: 'Clicker Manager', path: '/admin/clicker-manager', icon: 'swap_horiz' },
-        { label: 'Bitly Manager', path: '/admin/bitly', icon: 'link' },
-        { label: 'Hashtag Manager', path: '/admin/hashtags', icon: 'label' },
-        { label: 'Category Manager', path: '/admin/categories', icon: 'public' },
-      ],
-    },
-    {
-      title: 'System',
-      items: [
-        { label: 'Reporting', path: '/admin/visualization', icon: 'visibility' },
-        { label: 'Style Editor', path: '/admin/styles', icon: 'palette' },
-        { label: 'Cache Management', path: '/admin/cache', icon: 'delete' },
-      ],
-    },
-    {
-      title: 'Help',
-      items: [
-        { label: 'User Guide', path: '/admin/help', icon: 'menu_book' },
-        { label: 'Main page', path: '/admin/mainpage', icon: 'home' },
-        { label: 'Messages', path: '/admin/messages', icon: 'mail' },
-      ],
-    },
-  ];
-  
   /* What: Check if current path matches nav item
      Why: Highlight active navigation item for user orientation */
   const isActive = (path: string) => {
@@ -249,7 +197,7 @@ export default function Sidebar() {
         {/* What: Scrollable navigation sections with role-based filtering
            Why: Handle many nav items without overflow issues, show only authorized items */}
         <nav className={styles.sidebarNav}>
-          {navSections.map((section) => {
+          {adminNavSections.map((section) => {
             // WHAT: Filter section items based on user role permissions
             // WHY: Only show menu items user has access to
             const visibleItems = section.items.filter(item => 

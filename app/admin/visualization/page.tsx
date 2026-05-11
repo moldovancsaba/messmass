@@ -1401,8 +1401,8 @@ export default function VisualizationPage() {
   return (
     <div className="page-container">
       <UnifiedAdminHeroWithSearch
-        title="👁️ Visualization Manager"
-        subtitle="Manage data visualization blocks and chart layouts"
+        title="👁️ Report Builder"
+        subtitle="Manage report blocks, chart layouts, and template composition"
         backLink="/admin"
         showSearch={false}
       />

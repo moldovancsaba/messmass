@@ -4,6 +4,7 @@ import React from 'react';
 import Link from 'next/link';
 import { AdminUser } from '@/lib/auth';
 import ColoredCard from './ColoredCard';
+import { adminNavSections } from '@/lib/adminNavigation';
 
 /* What: Admin dashboard navigation component
    Why: Provides quick access to all admin sections
@@ -23,127 +24,6 @@ interface AdminDashboardProps {
     canWrite: boolean;
   };
 }
-
-/* What: Navigation card data structure
-   Why: Centralize card configuration for easier maintenance */
-interface NavCard {
-  href: string;
-  icon: string;
-  title: string;
-  description: string;
-  accentColor: string; // Hex color for ColoredCard left border
-}
-
-/* What: Navigation card configuration with accent colors
-   Why: Centralized config - easy to add/remove/reorder cards
-   Colors: Match design token system from theme.css */
-const navCards: NavCard[] = [
-  {
-    href: '/admin/events',
-    icon: '📅',
-    title: 'Manage Events',
-    description: 'Create, edit, delete, and organize all your events',
-    accentColor: '#10b981', // var(--mm-color-secondary-500) - Green
-  },
-  {
-    href: '/admin/organizations',
-    icon: '🏢',
-    title: 'Organization Management',
-    description: 'Create organizations and manage partner memberships',
-    accentColor: '#3b82f6', // var(--mm-color-primary-500) - Blue
-  },
-  {
-    href: '/admin/partners',
-    icon: '🤝',
-    title: 'Partner Management',
-    description: 'Manage clubs, federations, venues, and brands',
-    accentColor: '#06b6d4', // var(--mm-chart-cyan)
-  },
-  {
-    href: '/admin/bitly',
-    icon: '🔗',
-    title: 'Bitly Link Management',
-    description: 'Track and manage Bitly short links and analytics',
-    accentColor: '#0ea5e9', // Sky Blue
-  },
-  {
-    href: '/admin/insights',
-    icon: '💡',
-    title: 'Analytics Insights',
-    description: 'AI-powered insights with anomaly detection, trends, and predictions',
-    accentColor: '#f59e0b', // var(--mm-chart-yellow) - Golden/amber for insights
-  },
-  {
-    href: '/admin/analytics/sponsorship',
-    icon: '🤝',
-    title: 'Sponsorship Hub',
-    description: 'Unified sponsorship performance across events, partners, organizations, and Bitly evidence',
-    accentColor: '#14b8a6', // var(--mm-chart-teal)
-  },
-  {
-    href: '/admin/analytics/sponsorship/activation',
-    icon: '✅',
-    title: 'Partner Activation',
-    description: 'Proof-of-performance workspace for sponsor-ready recaps, gaps, and delivery actions',
-    accentColor: '#f97316', // var(--mm-chart-orange)
-  },
-  {
-    href: '/admin/filter',
-    icon: '🔍',
-    title: 'Hashtag Filter',
-    description: 'Advanced multi-hashtag filtering and search',
-    accentColor: '#8b5cf6', // var(--mm-chart-purple)
-  },
-  {
-    href: '/admin/hashtags',
-    icon: '🏷️',
-    title: 'Hashtag Manager',
-    description: 'Manage hashtag categories and colors',
-    accentColor: '#a855f7', // Purple
-  },
-  {
-    href: '/admin/categories',
-    icon: '🌍',
-    title: 'Category Manager',
-    description: 'Organize and group hashtag categories',
-    accentColor: '#f97316', // var(--mm-chart-orange)
-  },
-  {
-    href: '/admin/design',
-    icon: '🎨',
-    title: 'Design Manager',
-    description: 'Customize styles and visualization layouts',
-    accentColor: '#ec4899', // var(--mm-chart-pink)
-  },
-  {
-    href: '/admin/charts',
-    icon: '📊',
-    title: 'Chart Algorithm Manager',
-    description: 'Configure chart algorithms and calculations',
-    accentColor: '#f59e0b', // var(--mm-chart-yellow)
-  },
-  {
-    href: '/admin/kyc',
-    icon: '🔐',
-    title: 'KYC Variables',
-    description: 'Manage variables, aliases, and data collection fields',
-    accentColor: '#3b82f6', // var(--mm-color-primary-500) - Blue
-  },
-  {
-    href: '/admin/visualization',
-    icon: '📈',
-    title: 'Visualization Manager',
-    description: 'Control chart display and ordering',
-    accentColor: '#14b8a6', // var(--mm-chart-teal)
-  },
-  {
-    href: '/admin/cache',
-    icon: '🗑️',
-    title: 'Cache Management',
-    description: 'Clear server and browser caches for fresh content',
-    accentColor: '#ef4444', // var(--mm-error) - Red
-  },
-];
 
 /* What: Card grid styles using design tokens
    Why: Consistent with other admin pages, maintainable via globals.css */
@@ -187,40 +67,63 @@ const descriptionStyles: React.CSSProperties = {
   lineHeight: 'var(--mm-line-height-md)',
 };
 
+const sectionHeaderStyles: React.CSSProperties = {
+  margin: '0 0 var(--mm-space-4) 0',
+};
+
+const sectionTitleStyles: React.CSSProperties = {
+  fontSize: 'var(--mm-font-size-xl)',
+  fontWeight: 'var(--mm-font-weight-semibold)',
+  color: 'var(--mm-gray-900)',
+  margin: '0 0 var(--mm-space-1) 0',
+};
+
+const sectionDescriptionStyles: React.CSSProperties = {
+  fontSize: 'var(--mm-font-size-sm)',
+  color: 'var(--mm-gray-600)',
+  margin: 0,
+};
+
 export default function AdminDashboard({ user, permissions }: AdminDashboardProps) {
   return (
     <>
-      {/* What: Navigation cards grid using centralized ColoredCard
-          Why: All styling controlled via ColoredCard component - maintainable in one place */}
-      {/* eslint-disable-next-line react/forbid-dom-props */}
-      <div style={gridStyles}>
-        {navCards.map((card) => (
-          <Link 
-            key={card.href} 
-            href={card.href} 
-            // WHAT: Remove default underline from Next.js Link wrapper
-            // WHY: ColoredCard provides hover styling, text decoration conflicts
-            // NOTE: Next.js Link special case - cannot apply class to wrapper
-            // eslint-disable-next-line react/forbid-dom-props
-            style={{ textDecoration: 'none' }}
-          >
-            <ColoredCard accentColor={card.accentColor} hoverable={true}>
-              {/* eslint-disable-next-line react/forbid-dom-props */}
-              <div style={cardContentStyles}>
-                {/* eslint-disable-next-line react/forbid-dom-props */}
-                <div style={iconStyles}>{card.icon}</div>
-                {/* eslint-disable-next-line react/forbid-dom-props */}
-                <div style={textContainerStyles}>
+      {adminNavSections.map((section) => (
+        <section key={section.key}>
+          {/* eslint-disable-next-line react/forbid-dom-props */}
+          <div style={sectionHeaderStyles}>
+            {/* eslint-disable-next-line react/forbid-dom-props */}
+            <h2 style={sectionTitleStyles}>{section.title}</h2>
+            {/* eslint-disable-next-line react/forbid-dom-props */}
+            <p style={sectionDescriptionStyles}>{section.description}</p>
+          </div>
+          {/* eslint-disable-next-line react/forbid-dom-props */}
+          <div style={gridStyles}>
+            {section.items.map((item) => (
+              <Link
+                key={item.path}
+                href={item.path}
+                // eslint-disable-next-line react/forbid-dom-props
+                style={{ textDecoration: 'none' }}
+              >
+                <ColoredCard accentColor={item.accentColor} hoverable={true}>
                   {/* eslint-disable-next-line react/forbid-dom-props */}
-                  <h2 style={titleStyles}>{card.title}</h2>
-                  {/* eslint-disable-next-line react/forbid-dom-props */}
-                  <p style={descriptionStyles}>{card.description}</p>
-                </div>
-              </div>
-            </ColoredCard>
-          </Link>
-        ))}
-      </div>
+                  <div style={cardContentStyles}>
+                    {/* eslint-disable-next-line react/forbid-dom-props */}
+                    <div style={iconStyles}>{item.icon}</div>
+                    {/* eslint-disable-next-line react/forbid-dom-props */}
+                    <div style={textContainerStyles}>
+                      {/* eslint-disable-next-line react/forbid-dom-props */}
+                      <h3 style={titleStyles}>{item.label}</h3>
+                      {/* eslint-disable-next-line react/forbid-dom-props */}
+                      <p style={descriptionStyles}>{item.description}</p>
+                    </div>
+                  </div>
+                </ColoredCard>
+              </Link>
+            ))}
+          </div>
+        </section>
+      ))}
     </>
   );
 }

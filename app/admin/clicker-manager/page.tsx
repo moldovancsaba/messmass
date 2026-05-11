@@ -178,8 +178,8 @@ export default function ClickerManagerPage() {
   return (
     <div className="page-container">
       <UnifiedAdminHeroWithSearch
-        title="↔️ Clicker Manager"
-        subtitle="Configure variable groups and ordering for Editor clicker UI"
+        title="↔️ Clicker Sets"
+        subtitle="Configure reusable clicker layouts, variable groups, and editor ordering"
         backLink="/admin"
         actionButtons={[
           { label: 'New Group', onClick: () => setCreateOpen(true), variant: 'primary', icon: '➕', disabled: !selectedSetId },

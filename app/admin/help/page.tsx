@@ -38,8 +38,8 @@ export default function HelpPage() {
   return (
     <div className="page-container">
       <UnifiedAdminHeroWithSearch
-        title="📖 {messmass} User Guide"
-        subtitle="Complete guide for using {messmass} event statistics dashboard"
+        title="📖 Help"
+        subtitle="Workflow guide for using the {messmass} admin workspace, events, reports, and analytics"
         backLink="/admin"
       />
       <div className={styles.content}>
@@ -55,7 +55,7 @@ export default function HelpPage() {
               You&apos;re currently logged in as a <strong>Guest</strong>. This gives you access to documentation and help resources.
             </p>
             <p className={styles.guestText}>
-              <strong>🔒 Limited Access:</strong> As a guest, you can only view this User Guide page. To access other features like Events, Partners, and Filters, you&apos;ll need elevated permissions.
+              <strong>🔒 Limited Access:</strong> As a guest, you can only view this Help page. To access other features like Events, Partners, and Filters, you&apos;ll need elevated permissions.
             </p>
             <div className={styles.guestInnerBox}>
               <p className={styles.guestInnerHeading}>
@@ -67,7 +67,7 @@ export default function HelpPage() {
                 <li>Explain which role you need:
                   <ul className={styles.guestNestedList}>
                     <li><strong>User:</strong> View and edit Events, Partners, Filters</li>
-                    <li><strong>Admin:</strong> User access + KYC, Algorithms, Reporting, Styles</li>
+                    <li><strong>Admin:</strong> User access + KYC Variables, Chart Algorithms, Report Builder, Report Themes, Bitly Links, and Partner Activation</li>
                     <li><strong>Superadmin:</strong> Full system access including user management</li>
                   </ul>
                 </li>
@@ -101,14 +101,14 @@ export default function HelpPage() {
             {'{messmass}'} provides different ways to access your event statistics:
           </p>
           <ul>
-            <li><strong>Admin Login:</strong> Full access to create, edit, and manage projects</li>
+            <li><strong>Admin Login:</strong> Full access to create, edit, and manage events</li>
             <li><strong>View Link:</strong> Public stats page for viewing completed event data</li>
             <li><strong>Edit Link:</strong> Live tracking page for collecting data during events</li>
           </ul>
 
           <h3>Event Selection</h3>
           <p>
-            Once logged in, you can select events from the Projects page. Each event has:
+            Once logged in, you can select events from the Events page. Each event has:
           </p>
           <ul>
             <li><strong>Event Name:</strong> Unique identifier for the event</li>
@@ -687,7 +687,7 @@ export default function HelpPage() {
           <h3>Getting Help</h3>
           <ul>
             <li>Contact your event organizer or admin</li>
-            <li>Check the <a href="/admin/projects">Projects page</a> for event status</li>
+            <li>Check the <a href="/admin/events">Events page</a> for event status</li>
             <li>Report technical issues to your system administrator</li>
           </ul>
         </section>
