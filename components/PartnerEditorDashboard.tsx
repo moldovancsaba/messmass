@@ -3,7 +3,9 @@
 import React, { useState, useEffect } from 'react';
 import ColoredCard from './ColoredCard';
 import ColoredHashtagBubble from './ColoredHashtagBubble';
+import ImageUploader from './ImageUploader';
 import ReportContentManager from './ReportContentManager';
+import UnifiedTextInput from './UnifiedTextInput';
 import { 
   mergeHashtagSystems, 
   getAllHashtagRepresentations
@@ -47,32 +49,25 @@ export default function PartnerEditorDashboard({ partner: initialPartner }: Part
     setPartner(initialPartner);
   }, [initialPartner]);
 
-  // WHAT: Auto-save function with CSRF token support
-  // WHY: Persist partner content changes to database immediately after user action
-  // HOW: Use apiPut() which automatically includes CSRF token in request headers
-  const savePartner = async (updatedStats?: typeof partner.stats) => {
+  const persistPartner = async (nextPartner: Partner, nextStats?: typeof partner.stats) => {
     setSaveStatus('saving');
     try {
-      // WHAT: Use apiPut() instead of raw fetch() for CSRF token handling
-      // WHY: Production middleware requires X-CSRF-Token header for all PUT requests
       const result = await apiPut('/api/partners', {
-        partnerId: partner._id,
-        name: partner.name,
-        emoji: partner.emoji,
-        logoUrl: partner.logoUrl,
-        hashtags: partner.hashtags,
-        categorizedHashtags: partner.categorizedHashtags,
-        stats: updatedStats || partner.stats,
-        styleId: partner.styleId,
-        reportTemplateId: partner.reportTemplateId,
-        showEventsList: partner.showEventsList,
-        showEventsListTitle: partner.showEventsListTitle,
-        showEventsListDetails: partner.showEventsListDetails,
-        showOnlyTeam1Events: partner.showOnlyTeam1Events
+        partnerId: nextPartner._id,
+        name: nextPartner.name,
+        emoji: nextPartner.emoji,
+        logoUrl: nextPartner.logoUrl,
+        hashtags: nextPartner.hashtags,
+        categorizedHashtags: nextPartner.categorizedHashtags,
+        stats: nextStats || nextPartner.stats,
+        styleId: nextPartner.styleId,
+        reportTemplateId: nextPartner.reportTemplateId,
+        showEventsList: nextPartner.showEventsList,
+        showEventsListTitle: nextPartner.showEventsListTitle,
+        showEventsListDetails: nextPartner.showEventsListDetails,
+        showOnlyTeam1Events: nextPartner.showOnlyTeam1Events
       });
 
-      // WHAT: Handle successful save response
-      // WHY: Provide user feedback that changes were persisted
       if (result.success) {
         setSaveStatus('saved');
         setTimeout(() => setSaveStatus('idle'), 2000);
@@ -82,12 +77,17 @@ export default function PartnerEditorDashboard({ partner: initialPartner }: Part
         setTimeout(() => setSaveStatus('idle'), 3000);
       }
     } catch (error) {
-      // WHAT: Handle network or CSRF token errors
-      // WHY: Show error state to user if save fails
       console.error('Failed to save partner:', error);
       setSaveStatus('error');
       setTimeout(() => setSaveStatus('idle'), 3000);
     }
+  };
+
+  // WHAT: Auto-save function with CSRF token support
+  // WHY: Persist partner content changes to database immediately after user action
+  // HOW: Use apiPut() which automatically includes CSRF token in request headers
+  const savePartner = async (updatedStats?: typeof partner.stats) => {
+    await persistPartner(partner, updatedStats);
   };
 
   // WHAT: Handle showEventsListDetails toggle
@@ -95,39 +95,7 @@ export default function PartnerEditorDashboard({ partner: initialPartner }: Part
   const handleShowEventsListDetailsToggle = async (checked: boolean) => {
     const updatedPartner = { ...partner, showEventsListDetails: checked };
     setPartner(updatedPartner);
-    
-    // Save immediately
-    setSaveStatus('saving');
-    try {
-      const result = await apiPut('/api/partners', {
-        partnerId: partner._id,
-        name: partner.name,
-        emoji: partner.emoji,
-        logoUrl: partner.logoUrl,
-        hashtags: partner.hashtags,
-        categorizedHashtags: partner.categorizedHashtags,
-        stats: partner.stats,
-        styleId: partner.styleId,
-        reportTemplateId: partner.reportTemplateId,
-        showEventsList: partner.showEventsList,
-        showEventsListTitle: partner.showEventsListTitle,
-        showEventsListDetails: checked,
-        showOnlyTeam1Events: partner.showOnlyTeam1Events
-      });
-
-      if (result.success) {
-        setSaveStatus('saved');
-        setTimeout(() => setSaveStatus('idle'), 2000);
-      } else {
-        console.error('Save failed:', result.error || 'Unknown error');
-        setSaveStatus('error');
-        setTimeout(() => setSaveStatus('idle'), 3000);
-      }
-    } catch (error) {
-      console.error('Failed to save partner:', error);
-      setSaveStatus('error');
-      setTimeout(() => setSaveStatus('idle'), 3000);
-    }
+    await persistPartner(updatedPartner);
   };
 
   // WHAT: Handle showEventsListTitle toggle
@@ -135,39 +103,7 @@ export default function PartnerEditorDashboard({ partner: initialPartner }: Part
   const handleShowEventsListTitleToggle = async (checked: boolean) => {
     const updatedPartner = { ...partner, showEventsListTitle: checked };
     setPartner(updatedPartner);
-    
-    // Save immediately
-    setSaveStatus('saving');
-    try {
-      const result = await apiPut('/api/partners', {
-        partnerId: partner._id,
-        name: partner.name,
-        emoji: partner.emoji,
-        logoUrl: partner.logoUrl,
-        hashtags: partner.hashtags,
-        categorizedHashtags: partner.categorizedHashtags,
-        stats: partner.stats,
-        styleId: partner.styleId,
-        reportTemplateId: partner.reportTemplateId,
-        showEventsList: partner.showEventsList,
-        showEventsListTitle: checked,
-        showEventsListDetails: partner.showEventsListDetails,
-        showOnlyTeam1Events: partner.showOnlyTeam1Events
-      });
-
-      if (result.success) {
-        setSaveStatus('saved');
-        setTimeout(() => setSaveStatus('idle'), 2000);
-      } else {
-        console.error('Save failed:', result.error || 'Unknown error');
-        setSaveStatus('error');
-        setTimeout(() => setSaveStatus('idle'), 3000);
-      }
-    } catch (error) {
-      console.error('Failed to save partner:', error);
-      setSaveStatus('error');
-      setTimeout(() => setSaveStatus('idle'), 3000);
-    }
+    await persistPartner(updatedPartner);
   };
 
   // WHAT: Handle showEventsList toggle
@@ -175,39 +111,7 @@ export default function PartnerEditorDashboard({ partner: initialPartner }: Part
   const handleShowEventsListToggle = async (checked: boolean) => {
     const updatedPartner = { ...partner, showEventsList: checked };
     setPartner(updatedPartner);
-    
-    // Save immediately
-    setSaveStatus('saving');
-    try {
-      const result = await apiPut('/api/partners', {
-        partnerId: partner._id,
-        name: partner.name,
-        emoji: partner.emoji,
-        logoUrl: partner.logoUrl,
-        hashtags: partner.hashtags,
-        categorizedHashtags: partner.categorizedHashtags,
-        stats: partner.stats,
-        styleId: partner.styleId,
-        reportTemplateId: partner.reportTemplateId,
-        showEventsList: checked,
-        showEventsListTitle: partner.showEventsListTitle,
-        showEventsListDetails: partner.showEventsListDetails,
-        showOnlyTeam1Events: partner.showOnlyTeam1Events
-      });
-
-      if (result.success) {
-        setSaveStatus('saved');
-        setTimeout(() => setSaveStatus('idle'), 2000);
-      } else {
-        console.error('Save failed:', result.error || 'Unknown error');
-        setSaveStatus('error');
-        setTimeout(() => setSaveStatus('idle'), 3000);
-      }
-    } catch (error) {
-      console.error('Failed to save partner:', error);
-      setSaveStatus('error');
-      setTimeout(() => setSaveStatus('idle'), 3000);
-    }
+    await persistPartner(updatedPartner);
   };
 
   // WHAT: Handle local-home/team-1 filter toggle
@@ -215,38 +119,26 @@ export default function PartnerEditorDashboard({ partner: initialPartner }: Part
   const handleShowOnlyTeam1EventsToggle = async (checked: boolean) => {
     const updatedPartner = { ...partner, showOnlyTeam1Events: checked };
     setPartner(updatedPartner);
+    await persistPartner(updatedPartner);
+  };
 
-    setSaveStatus('saving');
-    try {
-      const result = await apiPut('/api/partners', {
-        partnerId: partner._id,
-        name: partner.name,
-        emoji: partner.emoji,
-        logoUrl: partner.logoUrl,
-        hashtags: partner.hashtags,
-        categorizedHashtags: partner.categorizedHashtags,
-        stats: partner.stats,
-        styleId: partner.styleId,
-        reportTemplateId: partner.reportTemplateId,
-        showEventsList: partner.showEventsList,
-        showEventsListTitle: partner.showEventsListTitle,
-        showEventsListDetails: partner.showEventsListDetails,
-        showOnlyTeam1Events: checked
-      });
+  const handleLogoUrlSave = async (logoUrl: string) => {
+    const normalizedLogoUrl = logoUrl.trim();
+    const updatedPartner = {
+      ...partner,
+      logoUrl: normalizedLogoUrl || undefined,
+    };
+    setPartner(updatedPartner);
+    await persistPartner(updatedPartner);
+  };
 
-      if (result.success) {
-        setSaveStatus('saved');
-        setTimeout(() => setSaveStatus('idle'), 2000);
-      } else {
-        console.error('Save failed:', result.error || 'Unknown error');
-        setSaveStatus('error');
-        setTimeout(() => setSaveStatus('idle'), 3000);
-      }
-    } catch (error) {
-      console.error('Failed to save partner:', error);
-      setSaveStatus('error');
-      setTimeout(() => setSaveStatus('idle'), 3000);
-    }
+  const handleLogoUpload = async (logoUrl: string | null) => {
+    const updatedPartner = {
+      ...partner,
+      logoUrl: logoUrl || undefined,
+    };
+    setPartner(updatedPartner);
+    await persistPartner(updatedPartner);
   };
 
   // Get all hashtag representations for display
@@ -351,6 +243,27 @@ export default function PartnerEditorDashboard({ partner: initialPartner }: Part
                 />
               </div>
             )}
+
+            <div className="border-t border-gray-200 pt-3">
+              <h3 className="font-semibold text-gray-900 mb-3">Logo Management</h3>
+              <UnifiedTextInput
+                label="Logo URL"
+                value={partner.logoUrl || ''}
+                onSave={handleLogoUrlSave}
+                placeholder="https://example.com/logo.png"
+                type="url"
+                autoComplete="url"
+              />
+              <p className="text-xs text-gray-500 mt-1 mb-3">
+                Paste an existing logo URL, or upload an image below to store it on ImgBB and save the hosted URL automatically.
+              </p>
+              <ImageUploader
+                label="Upload Logo"
+                value={partner.logoUrl}
+                onChange={handleLogoUpload}
+                maxSizeMB={10}
+              />
+            </div>
             
             {/* WHAT: Events List Visibility Control */}
             {/* WHY: Allow partners to control whether events list appears on their report page */}
