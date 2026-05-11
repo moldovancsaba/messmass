@@ -3,6 +3,7 @@
 import React, { useDeferredValue, useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
+import AnalyticsWorkspaceNav from '@/components/AnalyticsWorkspaceNav';
 import ColoredCard from '@/components/ColoredCard';
 import MetricCard from '@/components/analytics/MetricCard';
 import UnifiedAdminHeroWithSearch from '@/components/UnifiedAdminHeroWithSearch';
@@ -96,11 +97,13 @@ export default function SponsorshipActivationWorkspacePage() {
       <UnifiedAdminHeroWithSearch
         title="✅ Partner Activation Workspace"
         subtitle="Operational proof-of-performance queue for sponsor-ready reporting, built directly on the Sponsorship Hub evidence model."
-        backLink="/admin/analytics/sponsorship"
+        backLink="/admin/analytics"
         showSearch={false}
       />
 
       <div className={styles.page}>
+        <AnalyticsWorkspaceNav />
+
         {error && (
           <ColoredCard accentColor="var(--mm-error)" hoverable={false}>
             <div className={styles.emptyState}>{error}</div>

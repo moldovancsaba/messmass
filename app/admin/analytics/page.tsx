@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import AnalyticsWorkspaceNav from '@/components/AnalyticsWorkspaceNav';
 import ColoredCard from '@/components/ColoredCard';
 import MaterialIcon from '@/components/MaterialIcon';
 import UnifiedAdminHeroWithSearch from '@/components/UnifiedAdminHeroWithSearch';
@@ -38,6 +39,8 @@ export default function AnalyticsHomePage() {
         subtitle="Use one analytics entry point, then choose the reporting lens that matches the decision you need to make."
         backLink="/admin"
       />
+
+      <AnalyticsWorkspaceNav />
 
       <div className={styles.intro}>
         <ColoredCard accentColor="#3b82f6" hoverable={false}>

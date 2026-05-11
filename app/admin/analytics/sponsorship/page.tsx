@@ -2,6 +2,7 @@
 
 import React, { useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
+import AnalyticsWorkspaceNav from '@/components/AnalyticsWorkspaceNav';
 import ColoredCard from '@/components/ColoredCard';
 import LineChart from '@/components/analytics/LineChart';
 import MetricCard from '@/components/analytics/MetricCard';
@@ -312,7 +313,7 @@ export default function SponsorshipHubPage() {
       <UnifiedAdminHeroWithSearch
         title="🤝 Sponsorship Hub"
         subtitle="Unified sponsorship performance, proof evidence, and activation readiness across events, partners, organizations, and tracked links."
-        backLink="/admin"
+        backLink="/admin/analytics"
         showSearch={scopeType === 'project'}
         searchValue={projectSearch}
         onSearchChange={scopeType === 'project' ? setProjectSearch : undefined}
@@ -320,6 +321,8 @@ export default function SponsorshipHubPage() {
       />
 
       <div className={styles.page}>
+        <AnalyticsWorkspaceNav />
+
         <ColoredCard accentColor="var(--mm-color-primary-500)" hoverable={false}>
           <div className={styles.controlsCard}>
             <div className={styles.sectionHeader}>

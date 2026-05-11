@@ -8,6 +8,7 @@
 
 import React, { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
+import AnalyticsWorkspaceNav from '@/components/AnalyticsWorkspaceNav';
 import { LineChart, MetricCard, InsightCard } from '@/components/analytics';
 import type { LineChartDataset } from '@/components/analytics';
 import type { Insight } from '@/lib/insightsEngine';
@@ -153,6 +154,8 @@ export function ExecutiveDashboardView({
           },
         ]}
       />
+
+      <AnalyticsWorkspaceNav />
 
       <div className={styles.metricsGrid}>
         <MetricCard

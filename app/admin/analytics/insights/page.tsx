@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useEffect, useMemo, useState } from 'react';
+import AnalyticsWorkspaceNav from '@/components/AnalyticsWorkspaceNav';
 import ColoredCard from '@/components/ColoredCard';
 import InsightCard from '@/components/InsightCard';
 import UnifiedAdminHeroWithSearch from '@/components/UnifiedAdminHeroWithSearch';
@@ -134,6 +135,8 @@ export default function AnalyticsInsightsPage() {
       />
 
       <div className={styles.insightsDashboard}>
+        <AnalyticsWorkspaceNav />
+
         <ColoredCard accentColor="#3b82f6" hoverable={false}>
           <div className={styles.header}>
             <h2 className={styles.title}>Insights Queue</h2>
