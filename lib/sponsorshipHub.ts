@@ -4,6 +4,7 @@ import type { AnalyticsAggregate } from '@/lib/analytics.types';
 
 export type SponsorshipHubScopeType = 'portfolio' | 'partner' | 'organization' | 'project';
 export type SponsorshipHubRangePreset = 'all' | '30d' | '90d' | '365d';
+export type SponsorshipMetricFormat = 'number' | 'currency' | 'percentage';
 
 type ProjectRecord = {
   _id: ObjectId;
@@ -24,6 +25,7 @@ type PartnerRecord = {
   name: string;
   emoji?: string;
   organizationId?: ObjectId;
+  viewSlug?: string;
 };
 
 type OrganizationRecord = {
@@ -36,6 +38,18 @@ type BitlyProjectLinkRecord = {
   cachedMetrics?: {
     clicks?: number;
     uniqueClicks?: number;
+    topCountries?: Array<{
+      country: string;
+      clicks: number;
+    }>;
+    topReferrers?: Array<{
+      domain: string;
+      clicks: number;
+    }>;
+    dailyClicks?: Array<{
+      date: string;
+      clicks: number;
+    }>;
   };
 };
 
@@ -43,6 +57,146 @@ export interface SponsorshipHubRequest {
   scopeType: SponsorshipHubScopeType;
   scopeId?: string | null;
   rangePreset?: SponsorshipHubRangePreset;
+}
+
+export interface SponsorshipActionLinks {
+  reportUrl: string | null;
+  adminUrl: string | null;
+  activationUrl: string | null;
+}
+
+export interface SponsorshipTrendPoint {
+  date: string;
+  label: string;
+  fans: number;
+  adValue: number;
+  bitlyClicks: number;
+  engagementRate: number;
+}
+
+export interface SponsorshipBreakdownRow {
+  key: string;
+  label: string;
+  value: number;
+  format: SponsorshipMetricFormat;
+  source: string;
+}
+
+export interface SponsorshipTopProject {
+  projectId: string;
+  eventName: string;
+  eventDate: string | null;
+  partnerLabel: string;
+  primaryPartnerId: string | null;
+  primaryPartnerName: string | null;
+  fans: number;
+  adValue: number;
+  bitlyClicks: number;
+  engagementRate: number;
+  viewSlug: string | null;
+}
+
+export interface SponsorshipTopPartner {
+  partnerId: string;
+  name: string;
+  emoji?: string;
+  eventCount: number;
+  totalFans: number;
+  totalAdValue: number;
+  totalBitlyClicks: number;
+  avgEngagementRate: number;
+  attributionBasis: 'primary_partner';
+}
+
+export interface SponsorshipProjectDrilldown {
+  projectId: string;
+  eventName: string;
+  eventDate: string | null;
+  partnerLabel: string;
+  primaryPartnerId: string | null;
+  primaryPartnerName: string | null;
+  viewSlug: string | null;
+  sourceBreakdown: SponsorshipBreakdownRow[];
+  topCountries: Array<{
+    label: string;
+    clicks: number;
+  }>;
+  topReferrers: Array<{
+    label: string;
+    clicks: number;
+  }>;
+  trend: SponsorshipTrendPoint[];
+  actions: SponsorshipActionLinks;
+}
+
+export interface SponsorshipPartnerAttributedProject {
+  projectId: string;
+  eventName: string;
+  eventDate: string | null;
+  fans: number;
+  adValue: number;
+  bitlyClicks: number;
+  engagementRate: number;
+  reportUrl: string | null;
+}
+
+export interface SponsorshipPartnerDrilldown {
+  partnerId: string;
+  name: string;
+  emoji?: string;
+  eventCount: number;
+  attributionBasis: 'primary_partner';
+  sourceBreakdown: SponsorshipBreakdownRow[];
+  trend: SponsorshipTrendPoint[];
+  attributedProjects: SponsorshipPartnerAttributedProject[];
+  attributionSummary: string;
+  actions: SponsorshipActionLinks;
+}
+
+export interface SponsorshipActivationProofItem {
+  projectId: string;
+  eventName: string;
+  eventDate: string | null;
+  partnerId: string | null;
+  partnerName: string | null;
+  partnerLabel: string;
+  fans: number;
+  adValue: number;
+  bitlyClicks: number;
+  hasFanEvidence: boolean;
+  hasMediaEvidence: boolean;
+  hasBitlyEvidence: boolean;
+  hasReportLink: boolean;
+  readinessScore: number;
+  priorityScore: number;
+  missingReasons: string[];
+  reportUrl: string | null;
+  projectAdminUrl: string | null;
+  partnerAnalyticsUrl: string | null;
+  partnerReportUrl: string | null;
+  activationUrl: string | null;
+}
+
+export interface SponsorshipActivationPartnerQueue {
+  partnerId: string;
+  name: string;
+  emoji?: string;
+  projectCount: number;
+  readyProjectCount: number;
+  gapProjectCount: number;
+  totalAdValue: number;
+  totalBitlyClicks: number;
+  actions: SponsorshipActionLinks;
+}
+
+export interface SponsorshipActivationWorkspace {
+  readinessScore: number;
+  readyProjects: number;
+  needsBitlyProjects: number;
+  needsReportProjects: number;
+  proofItems: SponsorshipActivationProofItem[];
+  partnerQueues: SponsorshipActivationPartnerQueue[];
+  nextActions: string[];
 }
 
 export interface SponsorshipHubResponse {
@@ -71,14 +225,15 @@ export interface SponsorshipHubResponse {
     earliestEventDate: string | null;
     latestEventDate: string | null;
   };
+  scopeActions: SponsorshipActionLinks;
   channels: Array<{
     key: 'fan' | 'media' | 'bitly';
     label: string;
     primaryValue: number;
-    primaryFormat: 'number' | 'currency' | 'percentage';
+    primaryFormat: SponsorshipMetricFormat;
     secondaryLabel: string;
     secondaryValue: number;
-    secondaryFormat: 'number' | 'currency' | 'percentage';
+    secondaryFormat: SponsorshipMetricFormat;
     source: string;
     description: string;
   }>;
@@ -87,32 +242,40 @@ export interface SponsorshipHubResponse {
     projectsWithoutBitly: number;
     bitlyCoverageRate: number;
   };
-  topProjects: Array<{
-    projectId: string;
-    eventName: string;
-    eventDate: string | null;
-    partnerLabel: string;
-    fans: number;
-    adValue: number;
-    bitlyClicks: number;
-    engagementRate: number;
-    viewSlug: string | null;
-  }>;
-  topPartners: Array<{
-    partnerId: string;
-    name: string;
-    emoji?: string;
-    eventCount: number;
-    totalFans: number;
-    totalAdValue: number;
-    totalBitlyClicks: number;
-    avgEngagementRate: number;
-    attributionBasis: 'primary_partner';
-  }>;
+  trend: SponsorshipTrendPoint[];
+  topProjects: SponsorshipTopProject[];
+  topPartners: SponsorshipTopPartner[];
+  projectDrilldowns: SponsorshipProjectDrilldown[];
+  partnerDrilldowns: SponsorshipPartnerDrilldown[];
+  activationWorkspace: SponsorshipActivationWorkspace;
 }
 
-type TopProjectAccumulator = SponsorshipHubResponse['topProjects'][number] & {
+type TrendAccumulator = {
+  date: string;
+  label: string;
+  fans: number;
+  adValue: number;
+  bitlyClicks: number;
+  engagementRateSum: number;
   engagementSamples: number;
+};
+
+type ProjectAccumulator = SponsorshipTopProject & {
+  engagementSamples: number;
+};
+
+type PartnerAccumulator = SponsorshipTopPartner & {
+  totalBitlyUniqueClicks: number;
+  engagementSamples: number;
+  attributedProjects: SponsorshipPartnerAttributedProject[];
+};
+
+type BitlyAggregate = {
+  clicks: number;
+  uniqueClicks: number;
+  topCountries: Map<string, number>;
+  topReferrers: Map<string, number>;
+  dailyClicks: Map<string, number>;
 };
 
 function normalizeObjectId(value: ObjectId | string | undefined): string | null {
@@ -135,12 +298,16 @@ function formatDateOnly(date: Date) {
   return date.toISOString().split('T')[0];
 }
 
+function formatTrendLabel(value: string) {
+  return new Date(value).toLocaleDateString('en-US', {
+    month: 'short',
+    day: 'numeric',
+  });
+}
+
 function resolveDateRange(rangePreset: SponsorshipHubRangePreset) {
   if (rangePreset === 'all') {
-    return {
-      startDate: null,
-      endDate: null,
-    };
+    return { startDate: null, endDate: null };
   }
 
   const endDate = new Date();
@@ -159,6 +326,131 @@ function isDateInRange(eventDate: string | undefined, startDate: string | null, 
   if (startDate && eventDate < startDate) return false;
   if (endDate && eventDate > endDate) return false;
   return true;
+}
+
+function buildActivationUrl(scopeType: SponsorshipHubScopeType, scopeId: string | null, rangePreset: SponsorshipHubRangePreset) {
+  const params = new URLSearchParams({ scopeType, rangePreset });
+  if (scopeId) {
+    params.set('scopeId', scopeId);
+  }
+  return `/admin/analytics/sponsorship/activation?${params.toString()}`;
+}
+
+function buildScopeActions(
+  scopeType: SponsorshipHubScopeType,
+  scopeId: string | null,
+  rangePreset: SponsorshipHubRangePreset,
+  partner?: PartnerRecord | null,
+  project?: ProjectRecord | null
+): SponsorshipActionLinks {
+  if (scopeType === 'partner' && scopeId) {
+    return {
+      reportUrl: partner?.viewSlug ? `/partner-report/${partner.viewSlug}` : null,
+      adminUrl: `/admin/partners/${scopeId}/analytics`,
+      activationUrl: buildActivationUrl(scopeType, scopeId, rangePreset),
+    };
+  }
+
+  if (scopeType === 'organization' && scopeId) {
+    return {
+      reportUrl: `/organization-report/${scopeId}`,
+      adminUrl: '/admin/organizations',
+      activationUrl: buildActivationUrl(scopeType, scopeId, rangePreset),
+    };
+  }
+
+  if (scopeType === 'project' && scopeId) {
+    return {
+      reportUrl: project?.viewSlug ? `/report/${project.viewSlug}` : null,
+      adminUrl: '/admin/events',
+      activationUrl: buildActivationUrl(scopeType, scopeId, rangePreset),
+    };
+  }
+
+  return {
+    reportUrl: null,
+    adminUrl: '/admin',
+    activationUrl: buildActivationUrl(scopeType, scopeId, rangePreset),
+  };
+}
+
+function createEmptyBitlyAggregate(): BitlyAggregate {
+  return {
+    clicks: 0,
+    uniqueClicks: 0,
+    topCountries: new Map<string, number>(),
+    topReferrers: new Map<string, number>(),
+    dailyClicks: new Map<string, number>(),
+  };
+}
+
+function mergeBitlyAggregate(target: BitlyAggregate, source?: BitlyProjectLinkRecord['cachedMetrics']) {
+  if (!source) return;
+
+  target.clicks += source.clicks || 0;
+  target.uniqueClicks += source.uniqueClicks || 0;
+
+  (source.topCountries || []).forEach((entry) => {
+    target.topCountries.set(entry.country, (target.topCountries.get(entry.country) || 0) + (entry.clicks || 0));
+  });
+
+  (source.topReferrers || []).forEach((entry) => {
+    target.topReferrers.set(entry.domain, (target.topReferrers.get(entry.domain) || 0) + (entry.clicks || 0));
+  });
+
+  (source.dailyClicks || []).forEach((entry) => {
+    target.dailyClicks.set(entry.date, (target.dailyClicks.get(entry.date) || 0) + (entry.clicks || 0));
+  });
+}
+
+function summarizeMap(map: Map<string, number>, limit = 5) {
+  return [...map.entries()]
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, limit)
+    .map(([label, clicks]) => ({ label, clicks }));
+}
+
+function finalizeTrendSeries(accumulator: Map<string, TrendAccumulator>): SponsorshipTrendPoint[] {
+  return [...accumulator.values()]
+    .sort((a, b) => a.date.localeCompare(b.date))
+    .map((point) => ({
+      date: point.date,
+      label: point.label,
+      fans: point.fans,
+      adValue: point.adValue,
+      bitlyClicks: point.bitlyClicks,
+      engagementRate: point.engagementSamples > 0 ? point.engagementRateSum / point.engagementSamples : 0,
+    }));
+}
+
+function upsertTrendPoint(
+  trendMap: Map<string, TrendAccumulator>,
+  date: string | null,
+  values: {
+    fans: number;
+    adValue: number;
+    bitlyClicks: number;
+    engagementRate: number;
+  }
+) {
+  if (!date) return;
+  const current = trendMap.get(date) || {
+    date,
+    label: formatTrendLabel(date),
+    fans: 0,
+    adValue: 0,
+    bitlyClicks: 0,
+    engagementRateSum: 0,
+    engagementSamples: 0,
+  };
+
+  current.fans += values.fans;
+  current.adValue += values.adValue;
+  current.bitlyClicks += values.bitlyClicks;
+  current.engagementRateSum += values.engagementRate;
+  current.engagementSamples += 1;
+
+  trendMap.set(date, current);
 }
 
 function emptyHub(
@@ -195,6 +487,11 @@ function emptyHub(
       avgBitlyClickRate: 0,
       earliestEventDate: null,
       latestEventDate: null,
+    },
+    scopeActions: {
+      reportUrl: null,
+      adminUrl: scopeType === 'portfolio' ? '/admin' : null,
+      activationUrl: buildActivationUrl(scopeType, scopeId, rangePreset),
     },
     channels: [
       {
@@ -236,8 +533,20 @@ function emptyHub(
       projectsWithoutBitly: 0,
       bitlyCoverageRate: 0,
     },
+    trend: [],
     topProjects: [],
     topPartners: [],
+    projectDrilldowns: [],
+    partnerDrilldowns: [],
+    activationWorkspace: {
+      readinessScore: 0,
+      readyProjects: 0,
+      needsBitlyProjects: 0,
+      needsReportProjects: 0,
+      proofItems: [],
+      partnerQueues: [],
+      nextActions: [],
+    },
   };
 }
 
@@ -257,6 +566,8 @@ export async function getSponsorshipHubData({
   let scopeName = 'All tracked sponsorship activity';
   let scopeDescription = 'Unified sponsorship performance across all tracked projects, partners, and organizations.';
   let projects: ProjectRecord[] = [];
+  let scopedPartner: PartnerRecord | null = null;
+  let scopedProject: ProjectRecord | null = null;
 
   if (scopeType === 'partner') {
     const partnerId = toObjectId(scopeId || '', 'partner id');
@@ -265,6 +576,7 @@ export async function getSponsorshipHubData({
       throw new Error('Partner not found');
     }
 
+    scopedPartner = partner;
     scopeName = partner.name;
     scopeDescription = 'Unified sponsorship performance for one partner across all related events.';
     projects = await projectsCollection
@@ -302,14 +614,14 @@ export async function getSponsorshipHubData({
       throw new Error('Organization not found');
     }
 
+    scopeName = organization.name;
+    scopeDescription = 'Unified sponsorship performance for all partner members assigned to this organization.';
+
     const partners = await partnersCollection
       .find({ organizationId })
       .project({ _id: 1 })
       .toArray();
     const partnerIds = partners.map((partner) => partner._id);
-
-    scopeName = organization.name;
-    scopeDescription = 'Unified sponsorship performance for all partner members assigned to this organization.';
 
     if (partnerIds.length === 0) {
       return emptyHub(scopeType, scopeId || null, scopeName, scopeDescription, rangePreset, startDate, endDate);
@@ -367,13 +679,13 @@ export async function getSponsorshipHubData({
       throw new Error('Project not found');
     }
 
+    scopedProject = project;
     scopeName = project.eventName || 'Selected project';
     scopeDescription = 'Unified sponsorship performance for a single project.';
     projects = [project];
   }
 
   let aggregates: AnalyticsAggregate[] = [];
-  let projectMap = new Map<string, ProjectRecord>();
 
   if (scopeType === 'portfolio') {
     const aggregateQuery: Record<string, unknown> = {};
@@ -387,10 +699,7 @@ export async function getSponsorshipHubData({
       }
     }
 
-    aggregates = (await aggregatesCollection
-      .find(aggregateQuery)
-      .sort({ eventDate: -1 })
-      .toArray()).filter(isEventAggregate);
+    aggregates = (await aggregatesCollection.find(aggregateQuery).sort({ eventDate: -1 }).toArray()).filter(isEventAggregate);
 
     const aggregateProjectIds = [...new Set(aggregates.map((aggregate) => aggregate.projectId.toString()))]
       .filter((value) => ObjectId.isValid(value))
@@ -429,10 +738,7 @@ export async function getSponsorshipHubData({
         }
       }
 
-      aggregates = (await aggregatesCollection
-        .find(aggregateQuery)
-        .sort({ eventDate: -1 })
-        .toArray()).filter(isEventAggregate);
+      aggregates = (await aggregatesCollection.find(aggregateQuery).sort({ eventDate: -1 }).toArray()).filter(isEventAggregate);
     }
   }
 
@@ -440,7 +746,7 @@ export async function getSponsorshipHubData({
     return emptyHub(scopeType, scopeId || null, scopeName, scopeDescription, rangePreset, startDate, endDate);
   }
 
-  projectMap = new Map(projects.map((project) => [project._id.toString(), project]));
+  const projectMap = new Map(projects.map((project) => [project._id.toString(), project]));
 
   const allPartnerIds = new Set<string>();
   projects.forEach((project) => {
@@ -449,11 +755,17 @@ export async function getSponsorshipHubData({
     if (partner1Id) allPartnerIds.add(partner1Id);
     if (partner2Id) allPartnerIds.add(partner2Id);
   });
+  aggregates.forEach((aggregate) => {
+    const partnerId = normalizeObjectId(aggregate.partnerContext?.partnerId);
+    const opponentId = normalizeObjectId(aggregate.partnerContext?.opponentId);
+    if (partnerId) allPartnerIds.add(partnerId);
+    if (opponentId) allPartnerIds.add(opponentId);
+  });
 
   const partnerDocuments = allPartnerIds.size > 0
     ? await partnersCollection
         .find({ _id: { $in: [...allPartnerIds].filter((id) => ObjectId.isValid(id)).map((id) => new ObjectId(id)) } })
-        .project({ _id: 1, name: 1, emoji: 1 })
+        .project({ _id: 1, name: 1, emoji: 1, viewSlug: 1 })
         .toArray()
     : [];
   const partnerMap = new Map(partnerDocuments.map((partner) => [partner._id.toString(), partner]));
@@ -469,17 +781,17 @@ export async function getSponsorshipHubData({
     ? await bitlyProjectLinksCollection.find({ projectId: { $in: projectIds } }).toArray()
     : [];
 
-  const bitlyByProject = new Map<string, { clicks: number; uniqueClicks: number }>();
+  const bitlyByProject = new Map<string, BitlyAggregate>();
   bitlyAssociations.forEach((association) => {
     const key = association.projectId.toString();
-    const current = bitlyByProject.get(key) || { clicks: 0, uniqueClicks: 0 };
-    current.clicks += association.cachedMetrics?.clicks || 0;
-    current.uniqueClicks += association.cachedMetrics?.uniqueClicks || 0;
+    const current = bitlyByProject.get(key) || createEmptyBitlyAggregate();
+    mergeBitlyAggregate(current, association.cachedMetrics);
     bitlyByProject.set(key, current);
   });
 
-  const topProjectMap = new Map<string, TopProjectAccumulator>();
-  const partnerActivity = new Map<string, SponsorshipHubResponse['topPartners'][number] & { engagementSamples: number }>();
+  const scopeTrendMap = new Map<string, TrendAccumulator>();
+  const topProjectMap = new Map<string, ProjectAccumulator>();
+  const partnerActivity = new Map<string, PartnerAccumulator>();
   let totalFans = 0;
   let totalImages = 0;
   let totalImpressions = 0;
@@ -490,8 +802,11 @@ export async function getSponsorshipHubData({
   let latestEventDate: string | null = null;
 
   const ensurePartnerAccumulator = (partnerId: string, fallbackName?: string) => {
+    const existing = partnerActivity.get(partnerId);
+    if (existing) return existing;
+
     const partner = partnerMap.get(partnerId);
-    return partnerActivity.get(partnerId) || {
+    const created: PartnerAccumulator = {
       partnerId,
       name: partner?.name || fallbackName || 'Unknown partner',
       emoji: partner?.emoji,
@@ -499,20 +814,28 @@ export async function getSponsorshipHubData({
       totalFans: 0,
       totalAdValue: 0,
       totalBitlyClicks: 0,
+      totalBitlyUniqueClicks: 0,
       avgEngagementRate: 0,
-      attributionBasis: 'primary_partner' as const,
+      attributionBasis: 'primary_partner',
       engagementSamples: 0,
+      attributedProjects: [],
     };
+    partnerActivity.set(partnerId, created);
+    return created;
   };
 
   aggregates.forEach((aggregate) => {
     const projectId = aggregate.projectId.toString();
     const project = projectMap.get(projectId);
-    const bitly = bitlyByProject.get(projectId) || { clicks: 0, uniqueClicks: 0 };
+    const bitly = bitlyByProject.get(projectId) || createEmptyBitlyAggregate();
     const projectEventDate = aggregate.eventDate || project?.eventDate || null;
+    const resolvedPartnerId = normalizeObjectId(aggregate.partnerContext?.partnerId)
+      || normalizeObjectId(project?.partner1 || project?.partner1Id);
+    const resolvedPartner = resolvedPartnerId ? partnerMap.get(resolvedPartnerId) : null;
     const partnerLabel = aggregate.partnerContext?.partnerName
       || project?.partner1Name
       || project?.partner2Name
+      || resolvedPartner?.name
       || 'Unassigned partner';
 
     totalFans += aggregate.fanMetrics?.totalFans || 0;
@@ -522,16 +845,27 @@ export async function getSponsorshipHubData({
     totalEngagementRate += aggregate.fanMetrics?.engagementRate || 0;
     totalBitlyClickRate += aggregate.bitlyMetrics?.clickRate || 0;
 
-    if (projectEventDate) {
-      if (!earliestEventDate || projectEventDate < earliestEventDate) earliestEventDate = projectEventDate;
-      if (!latestEventDate || projectEventDate > latestEventDate) latestEventDate = projectEventDate;
+    if (projectEventDate && (!earliestEventDate || projectEventDate < earliestEventDate)) {
+      earliestEventDate = projectEventDate;
     }
+    if (projectEventDate && (!latestEventDate || projectEventDate > latestEventDate)) {
+      latestEventDate = projectEventDate;
+    }
+
+    upsertTrendPoint(scopeTrendMap, projectEventDate, {
+      fans: aggregate.fanMetrics?.totalFans || 0,
+      adValue: aggregate.adMetrics?.totalROI || 0,
+      bitlyClicks: bitly.clicks,
+      engagementRate: aggregate.fanMetrics?.engagementRate || 0,
+    });
 
     const currentProject = topProjectMap.get(projectId) || {
       projectId,
       eventName: project?.eventName || 'Untitled event',
-      eventDate: project?.eventDate || projectEventDate,
+      eventDate: projectEventDate,
       partnerLabel,
+      primaryPartnerId: resolvedPartnerId,
+      primaryPartnerName: resolvedPartner?.name || aggregate.partnerContext?.partnerName || null,
       fans: 0,
       adValue: 0,
       bitlyClicks: bitly.clicks,
@@ -542,81 +876,336 @@ export async function getSponsorshipHubData({
 
     currentProject.fans += aggregate.fanMetrics?.totalFans || 0;
     currentProject.adValue += aggregate.adMetrics?.totalROI || 0;
+    currentProject.bitlyClicks = bitly.clicks;
     currentProject.engagementRate += aggregate.fanMetrics?.engagementRate || 0;
     currentProject.engagementSamples += 1;
-    currentProject.bitlyClicks = bitly.clicks;
     topProjectMap.set(projectId, currentProject);
 
-    const attributedPartnerId =
-      normalizeObjectId(aggregate.partnerContext?.partnerId) ||
-      normalizeObjectId(project?.partner1 || project?.partner1Id);
-    if (attributedPartnerId) {
-      const attributedPartner = ensurePartnerAccumulator(
-        attributedPartnerId,
-        aggregate.partnerContext?.partnerName || project?.partner1Name
-      );
-      attributedPartner.totalFans += aggregate.fanMetrics?.totalFans || 0;
-      attributedPartner.totalAdValue += aggregate.adMetrics?.totalROI || 0;
-      attributedPartner.totalBitlyClicks += bitly.clicks;
-      attributedPartner.avgEngagementRate += aggregate.fanMetrics?.engagementRate || 0;
-      attributedPartner.engagementSamples += 1;
-      partnerActivity.set(attributedPartnerId, attributedPartner);
+    if (resolvedPartnerId) {
+      const partner = ensurePartnerAccumulator(resolvedPartnerId, aggregate.partnerContext?.partnerName || project?.partner1Name);
+      partner.eventCount += 1;
+      partner.totalFans += aggregate.fanMetrics?.totalFans || 0;
+      partner.totalAdValue += aggregate.adMetrics?.totalROI || 0;
+      partner.totalBitlyClicks += bitly.clicks;
+      partner.totalBitlyUniqueClicks += bitly.uniqueClicks;
+      partner.avgEngagementRate += aggregate.fanMetrics?.engagementRate || 0;
+      partner.engagementSamples += 1;
+      partner.attributedProjects.push({
+        projectId,
+        eventName: project?.eventName || 'Untitled event',
+        eventDate: projectEventDate,
+        fans: aggregate.fanMetrics?.totalFans || 0,
+        adValue: aggregate.adMetrics?.totalROI || 0,
+        bitlyClicks: bitly.clicks,
+        engagementRate: aggregate.fanMetrics?.engagementRate || 0,
+        reportUrl: project?.viewSlug ? `/report/${project.viewSlug}` : null,
+      });
+      partnerActivity.set(resolvedPartnerId, partner);
     }
   });
 
-  projects.forEach((project) => {
-    const primaryPartnerId = normalizeObjectId(project.partner1 || project.partner1Id);
-    if (!primaryPartnerId) return;
+  const topProjects = [...topProjectMap.values()]
+    .map((project) => ({
+      ...project,
+      engagementRate: project.engagementSamples > 0 ? project.engagementRate / project.engagementSamples : 0,
+    }))
+    .sort((a, b) => {
+      const scoreA = a.adValue + a.bitlyClicks + a.fans / 100;
+      const scoreB = b.adValue + b.bitlyClicks + b.fans / 100;
+      return scoreB - scoreA;
+    });
 
-    const current = ensurePartnerAccumulator(primaryPartnerId, project.partner1Name);
-    current.eventCount += 1;
-    partnerActivity.set(primaryPartnerId, current);
+  const topPartners = [...partnerActivity.values()]
+    .map((partner) => ({
+      partnerId: partner.partnerId,
+      name: partner.name,
+      emoji: partner.emoji,
+      eventCount: partner.eventCount,
+      totalFans: partner.totalFans,
+      totalAdValue: partner.totalAdValue,
+      totalBitlyClicks: partner.totalBitlyClicks,
+      avgEngagementRate: partner.engagementSamples > 0 ? partner.avgEngagementRate / partner.engagementSamples : 0,
+      attributionBasis: partner.attributionBasis,
+    }))
+    .sort((a, b) => {
+      const scoreA = a.totalAdValue + a.totalBitlyClicks + a.totalFans / 100;
+      const scoreB = b.totalAdValue + b.totalBitlyClicks + b.totalFans / 100;
+      return scoreB - scoreA;
+    });
+
+  const projectDrilldowns: SponsorshipProjectDrilldown[] = topProjects.map((project) => {
+    const projectDoc = projectMap.get(project.projectId);
+    const bitly = bitlyByProject.get(project.projectId) || createEmptyBitlyAggregate();
+    const projectTrendMap = new Map<string, TrendAccumulator>();
+
+    const matchingAggregate = aggregates.find((aggregate) => aggregate.projectId.toString() === project.projectId);
+    if (bitly.dailyClicks.size > 0) {
+      [...bitly.dailyClicks.entries()]
+        .sort((a, b) => a[0].localeCompare(b[0]))
+        .forEach(([date, clicks]) => {
+          upsertTrendPoint(projectTrendMap, date, {
+            fans: 0,
+            adValue: 0,
+            bitlyClicks: clicks,
+            engagementRate: 0,
+          });
+        });
+    } else if (project.eventDate) {
+      upsertTrendPoint(projectTrendMap, project.eventDate, {
+        fans: project.fans,
+        adValue: project.adValue,
+        bitlyClicks: project.bitlyClicks,
+        engagementRate: project.engagementRate,
+      });
+    }
+
+    return {
+      projectId: project.projectId,
+      eventName: project.eventName,
+      eventDate: project.eventDate,
+      partnerLabel: project.partnerLabel,
+      primaryPartnerId: project.primaryPartnerId,
+      primaryPartnerName: project.primaryPartnerName,
+      viewSlug: project.viewSlug,
+      sourceBreakdown: [
+        {
+          key: 'fans',
+          label: 'Fans',
+          value: project.fans,
+          format: 'number' as const,
+          source: 'analytics_aggregates.fanMetrics.totalFans',
+        },
+        {
+          key: 'engagement',
+          label: 'Engagement Rate',
+          value: project.engagementRate,
+          format: 'percentage' as const,
+          source: 'analytics_aggregates.fanMetrics.engagementRate',
+        },
+        {
+          key: 'adValue',
+          label: 'Media Value',
+          value: project.adValue,
+          format: 'currency' as const,
+          source: 'analytics_aggregates.adMetrics.totalROI',
+        },
+        {
+          key: 'impressions',
+          label: 'Tracked Impressions',
+          value: matchingAggregate?.adMetrics?.totalImpressions || 0,
+          format: 'number' as const,
+          source: 'analytics_aggregates.adMetrics.totalImpressions',
+        },
+        {
+          key: 'bitly',
+          label: 'Bitly Clicks',
+          value: bitly.clicks,
+          format: 'number' as const,
+          source: 'bitly_project_links.cachedMetrics.clicks',
+        },
+        {
+          key: 'uniqueBitly',
+          label: 'Unique Bitly Clicks',
+          value: bitly.uniqueClicks,
+          format: 'number' as const,
+          source: 'bitly_project_links.cachedMetrics.uniqueClicks',
+        },
+      ],
+      topCountries: summarizeMap(bitly.topCountries),
+      topReferrers: summarizeMap(bitly.topReferrers),
+      trend: finalizeTrendSeries(projectTrendMap),
+      actions: {
+        reportUrl: project.viewSlug ? `/report/${project.viewSlug}` : null,
+        adminUrl: project.primaryPartnerId ? `/admin/partners/${project.primaryPartnerId}/analytics` : null,
+        activationUrl: buildActivationUrl('project', project.projectId, rangePreset),
+      },
+    };
   });
 
-  const totalBitlyClicks = [...bitlyByProject.values()].reduce((sum, item) => sum + item.clicks, 0);
-  const totalBitlyUniqueClicks = [...bitlyByProject.values()].reduce((sum, item) => sum + item.uniqueClicks, 0);
-  const eventCount = aggregates.length;
-  const avgEngagementRate = eventCount > 0 ? totalEngagementRate / eventCount : 0;
-  const avgBitlyClickRate = eventCount > 0 ? totalBitlyClickRate / eventCount : 0;
-  const projectsWithBitly = [...bitlyByProject.values()].filter((item) => item.clicks > 0 || item.uniqueClicks > 0).length;
-  const projectsWithoutBitly = Math.max(projectMap.size - projectsWithBitly, 0);
-  const bitlyCoverageRate = projectMap.size > 0 ? (projectsWithBitly / projectMap.size) * 100 : 0;
+  const partnerDrilldowns: SponsorshipPartnerDrilldown[] = [...partnerActivity.values()]
+    .map((partner) => {
+      const trendMap = new Map<string, TrendAccumulator>();
+      partner.attributedProjects.forEach((project) => {
+        upsertTrendPoint(trendMap, project.eventDate, {
+          fans: project.fans,
+          adValue: project.adValue,
+          bitlyClicks: project.bitlyClicks,
+          engagementRate: project.engagementRate,
+        });
+      });
 
-  const channels: SponsorshipHubResponse['channels'] = [
-    {
-      key: 'fan',
-      label: 'Fan Engagement Evidence',
-      primaryValue: totalFans,
-      primaryFormat: 'number',
-      secondaryLabel: 'Avg engagement rate',
-      secondaryValue: avgEngagementRate,
-      secondaryFormat: 'percentage',
-      source: 'analytics_aggregates.fanMetrics',
-      description: 'On-site and remote fan signals rolled up from event aggregates.',
-    },
-    {
-      key: 'media',
-      label: 'Media Value Evidence',
-      primaryValue: totalAdValue,
-      primaryFormat: 'currency',
-      secondaryLabel: 'Tracked impressions',
-      secondaryValue: totalImpressions,
-      secondaryFormat: 'number',
-      source: 'analytics_aggregates.adMetrics',
-      description: 'Estimated sponsorship media value and impression volume from event analytics.',
-    },
-    {
-      key: 'bitly',
-      label: 'Tracked Link Evidence',
-      primaryValue: totalBitlyClicks,
-      primaryFormat: 'number',
-      secondaryLabel: 'Avg Bitly click rate',
-      secondaryValue: avgBitlyClickRate,
-      secondaryFormat: 'percentage',
-      source: 'bitly_project_links.cachedMetrics',
-      description: 'Tracked click-through evidence from associated Bitly links.',
-    },
-  ];
+      const partnerDoc = partnerMap.get(partner.partnerId);
+      const avgEngagementRate = partner.engagementSamples > 0 ? partner.avgEngagementRate / partner.engagementSamples : 0;
+
+      return {
+        partnerId: partner.partnerId,
+        name: partner.name,
+        emoji: partner.emoji,
+        eventCount: partner.eventCount,
+        attributionBasis: 'primary_partner' as const,
+        sourceBreakdown: [
+          {
+            key: 'fans',
+            label: 'Attributed Fans',
+            value: partner.totalFans,
+            format: 'number' as const,
+            source: 'analytics_aggregates.fanMetrics.totalFans',
+          },
+          {
+            key: 'adValue',
+            label: 'Attributed Media Value',
+            value: partner.totalAdValue,
+            format: 'currency' as const,
+            source: 'analytics_aggregates.adMetrics.totalROI',
+          },
+          {
+            key: 'bitly',
+            label: 'Attributed Bitly Clicks',
+            value: partner.totalBitlyClicks,
+            format: 'number' as const,
+            source: 'bitly_project_links.cachedMetrics.clicks',
+          },
+          {
+            key: 'uniqueBitly',
+            label: 'Attributed Unique Bitly Clicks',
+            value: partner.totalBitlyUniqueClicks,
+            format: 'number' as const,
+            source: 'bitly_project_links.cachedMetrics.uniqueClicks',
+          },
+          {
+            key: 'engagement',
+            label: 'Average Engagement',
+            value: avgEngagementRate,
+            format: 'percentage' as const,
+            source: 'analytics_aggregates.fanMetrics.engagementRate',
+          },
+        ],
+        trend: finalizeTrendSeries(trendMap),
+        attributedProjects: [...partner.attributedProjects].sort((a, b) => (b.eventDate || '').localeCompare(a.eventDate || '')),
+        attributionSummary: `${partner.eventCount} project aggregates are attributed through analytics_aggregates.partnerContext.partnerId, with project partner1 fallback only when explicit aggregate context is missing.`,
+        actions: {
+          reportUrl: partnerDoc?.viewSlug ? `/partner-report/${partnerDoc.viewSlug}` : null,
+          adminUrl: `/admin/partners/${partner.partnerId}/analytics`,
+          activationUrl: buildActivationUrl('partner', partner.partnerId, rangePreset),
+        },
+      };
+    })
+    .sort((a, b) => {
+      const scoreA = a.sourceBreakdown.find((item) => item.key === 'adValue')?.value || 0;
+      const scoreB = b.sourceBreakdown.find((item) => item.key === 'adValue')?.value || 0;
+      return scoreB - scoreA;
+    });
+
+  const proofItems: SponsorshipActivationProofItem[] = projectDrilldowns
+    .map((project) => {
+      const fanValue = project.sourceBreakdown.find((item) => item.key === 'fans')?.value || 0;
+      const mediaValue = project.sourceBreakdown.find((item) => item.key === 'adValue')?.value || 0;
+      const bitlyValue = project.sourceBreakdown.find((item) => item.key === 'bitly')?.value || 0;
+      const hasReportLink = Boolean(project.actions.reportUrl);
+      const missingReasons = [
+        fanValue > 0 ? null : 'Missing fan evidence',
+        mediaValue > 0 ? null : 'Missing media value',
+        bitlyValue > 0 ? null : 'Missing Bitly evidence',
+        hasReportLink ? null : 'Missing report link',
+      ].filter(Boolean) as string[];
+      const readinessHits = 4 - missingReasons.length;
+      const readinessScore = (readinessHits / 4) * 100;
+      const priorityScore = (mediaValue / 1000) + bitlyValue + (missingReasons.length * 500);
+      const partnerDoc = project.primaryPartnerId ? partnerMap.get(project.primaryPartnerId) : null;
+      return {
+        projectId: project.projectId,
+        eventName: project.eventName,
+        eventDate: project.eventDate,
+        partnerId: project.primaryPartnerId,
+        partnerName: project.primaryPartnerName,
+        partnerLabel: project.partnerLabel,
+        fans: fanValue,
+        adValue: mediaValue,
+        bitlyClicks: bitlyValue,
+        hasFanEvidence: fanValue > 0,
+        hasMediaEvidence: mediaValue > 0,
+        hasBitlyEvidence: bitlyValue > 0,
+        hasReportLink,
+        readinessScore,
+        priorityScore,
+        missingReasons,
+        reportUrl: project.actions.reportUrl,
+        projectAdminUrl: '/admin/events',
+        partnerAnalyticsUrl: project.primaryPartnerId ? `/admin/partners/${project.primaryPartnerId}/analytics` : null,
+        partnerReportUrl: partnerDoc?.viewSlug ? `/partner-report/${partnerDoc.viewSlug}` : null,
+        activationUrl: project.actions.activationUrl,
+      };
+    })
+    .sort((a, b) => {
+      if (b.priorityScore !== a.priorityScore) {
+        return b.priorityScore - a.priorityScore;
+      }
+      return (b.eventDate || '').localeCompare(a.eventDate || '');
+    });
+
+  const partnerQueueMap = new Map<string, SponsorshipActivationPartnerQueue>();
+  proofItems.forEach((item) => {
+    if (!item.partnerId) return;
+
+    const current = partnerQueueMap.get(item.partnerId) || {
+      partnerId: item.partnerId,
+      name: item.partnerName || item.partnerLabel,
+      emoji: partnerMap.get(item.partnerId)?.emoji,
+      projectCount: 0,
+      readyProjectCount: 0,
+      gapProjectCount: 0,
+      totalAdValue: 0,
+      totalBitlyClicks: 0,
+      actions: {
+        reportUrl: item.partnerReportUrl,
+        adminUrl: item.partnerAnalyticsUrl,
+        activationUrl: buildActivationUrl('partner', item.partnerId, rangePreset),
+      },
+    };
+
+    current.projectCount += 1;
+    current.readyProjectCount += item.readinessScore === 100 ? 1 : 0;
+    current.gapProjectCount += item.readinessScore === 100 ? 0 : 1;
+    current.totalAdValue += item.adValue;
+    current.totalBitlyClicks += item.bitlyClicks;
+    partnerQueueMap.set(item.partnerId, current);
+  });
+
+  const partnerQueues = [...partnerQueueMap.values()].sort((a, b) => {
+    if (b.gapProjectCount !== a.gapProjectCount) {
+      return b.gapProjectCount - a.gapProjectCount;
+    }
+    return b.totalAdValue - a.totalAdValue;
+  });
+
+  const readyProjects = proofItems.filter(
+    (item) => item.hasFanEvidence && item.hasMediaEvidence && item.hasBitlyEvidence && item.hasReportLink
+  ).length;
+  const needsBitlyProjects = proofItems.filter((item) => !item.hasBitlyEvidence).length;
+  const needsReportProjects = proofItems.filter((item) => !item.hasReportLink).length;
+  const readinessSamples = proofItems.length * 4;
+  const readinessHits = proofItems.reduce((sum, item) => {
+    return sum
+      + Number(item.hasFanEvidence)
+      + Number(item.hasMediaEvidence)
+      + Number(item.hasBitlyEvidence)
+      + Number(item.hasReportLink);
+  }, 0);
+  const readinessScore = readinessSamples > 0 ? (readinessHits / readinessSamples) * 100 : 0;
+
+  const nextActions: string[] = [];
+  if (needsBitlyProjects > 0) {
+    nextActions.push(`Backfill Bitly coverage for ${needsBitlyProjects} project${needsBitlyProjects === 1 ? '' : 's'} that still lack tracked link evidence.`);
+  }
+  if (needsReportProjects > 0) {
+    nextActions.push(`Create or restore report links for ${needsReportProjects} project${needsReportProjects === 1 ? '' : 's'} so proof packages can be shared externally.`);
+  }
+  if (proofItems.some((item) => !item.hasFanEvidence || !item.hasMediaEvidence)) {
+    nextActions.push('Review projects with incomplete fan or media evidence before using them in sponsor recaps.');
+  }
+  if (nextActions.length === 0 && proofItems.length > 0) {
+    nextActions.push('Activation proof coverage is healthy; proceed to partner-facing recap packaging and renewal workflows.');
+  }
 
   return {
     scope: {
@@ -631,47 +1220,75 @@ export async function getSponsorshipHubData({
       endDate,
     },
     summary: {
-      eventCount,
-      partnerCount: partnerActivity.size,
-      totalFans: Math.round(totalFans),
-      totalImages: Math.round(totalImages),
-      totalImpressions: Math.round(totalImpressions),
-      totalAdValue: Math.round(totalAdValue),
-      totalBitlyClicks: Math.round(totalBitlyClicks),
-      totalBitlyUniqueClicks: Math.round(totalBitlyUniqueClicks),
-      avgEngagementRate: Math.round(avgEngagementRate * 10) / 10,
-      avgBitlyClickRate: Math.round(avgBitlyClickRate * 10) / 10,
+      eventCount: aggregates.length,
+      partnerCount: topPartners.length,
+      totalFans,
+      totalImages,
+      totalImpressions,
+      totalAdValue,
+      totalBitlyClicks: [...bitlyByProject.values()].reduce((sum, value) => sum + value.clicks, 0),
+      totalBitlyUniqueClicks: [...bitlyByProject.values()].reduce((sum, value) => sum + value.uniqueClicks, 0),
+      avgEngagementRate: aggregates.length > 0 ? totalEngagementRate / aggregates.length : 0,
+      avgBitlyClickRate: aggregates.length > 0 ? totalBitlyClickRate / aggregates.length : 0,
       earliestEventDate,
       latestEventDate,
     },
-    channels,
+    scopeActions: buildScopeActions(scopeType, scopeId || null, rangePreset, scopedPartner, scopedProject),
+    channels: [
+      {
+        key: 'fan',
+        label: 'Fan Engagement Evidence',
+        primaryValue: totalFans,
+        primaryFormat: 'number',
+        secondaryLabel: 'Avg engagement rate',
+        secondaryValue: aggregates.length > 0 ? totalEngagementRate / aggregates.length : 0,
+        secondaryFormat: 'percentage',
+        source: 'analytics_aggregates.fanMetrics',
+        description: 'On-site and remote fan signals from event analytics.',
+      },
+      {
+        key: 'media',
+        label: 'Media Value Evidence',
+        primaryValue: totalAdValue,
+        primaryFormat: 'currency',
+        secondaryLabel: 'Tracked impressions',
+        secondaryValue: totalImpressions,
+        secondaryFormat: 'number',
+        source: 'analytics_aggregates.adMetrics',
+        description: 'Calculated media value and impression estimates from event analytics.',
+      },
+      {
+        key: 'bitly',
+        label: 'Tracked Link Evidence',
+        primaryValue: [...bitlyByProject.values()].reduce((sum, value) => sum + value.clicks, 0),
+        primaryFormat: 'number',
+        secondaryLabel: 'Avg Bitly click rate',
+        secondaryValue: aggregates.length > 0 ? totalBitlyClickRate / aggregates.length : 0,
+        secondaryFormat: 'percentage',
+        source: 'bitly_project_links.cachedMetrics',
+        description: 'Click-through evidence aggregated from Bitly link associations.',
+      },
+    ],
     coverage: {
-      projectsWithBitly,
-      projectsWithoutBitly,
-      bitlyCoverageRate: Math.round(bitlyCoverageRate * 10) / 10,
+      projectsWithBitly: [...bitlyByProject.values()].filter((value) => value.clicks > 0 || value.uniqueClicks > 0).length,
+      projectsWithoutBitly: Math.max(projects.length - [...bitlyByProject.values()].filter((value) => value.clicks > 0 || value.uniqueClicks > 0).length, 0),
+      bitlyCoverageRate: projects.length > 0
+        ? ([...bitlyByProject.values()].filter((value) => value.clicks > 0 || value.uniqueClicks > 0).length / projects.length) * 100
+        : 0,
     },
-    topProjects: [...topProjectMap.values()]
-      .map((project) => ({
-        ...project,
-        engagementRate: project.engagementSamples > 0
-          ? Math.round((project.engagementRate / project.engagementSamples) * 10) / 10
-          : 0,
-      }))
-      .sort((a, b) => (b.adValue + b.bitlyClicks) - (a.adValue + a.bitlyClicks))
-      .slice(0, 8),
-    topPartners: [...partnerActivity.values()]
-      .map((partner) => ({
-        ...partner,
-        avgEngagementRate: partner.engagementSamples > 0
-          ? Math.round((partner.avgEngagementRate / partner.engagementSamples) * 10) / 10
-          : 0,
-      }))
-      .sort((a, b) => {
-        const scoreA = a.totalAdValue + a.totalBitlyClicks;
-        const scoreB = b.totalAdValue + b.totalBitlyClicks;
-        if (scoreB !== scoreA) return scoreB - scoreA;
-        return b.eventCount - a.eventCount;
-      })
-      .slice(0, 8),
+    trend: finalizeTrendSeries(scopeTrendMap),
+    topProjects,
+    topPartners,
+    projectDrilldowns,
+    partnerDrilldowns,
+    activationWorkspace: {
+      readinessScore,
+      readyProjects,
+      needsBitlyProjects,
+      needsReportProjects,
+      proofItems,
+      partnerQueues,
+      nextActions,
+    },
   };
 }

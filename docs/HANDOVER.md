@@ -2,7 +2,7 @@
 
 This file is onboarding plus operational context for the next agent. Keep it accurate when behavior, process, or current delivery state changes.
 
-**Last Updated:** 2026-05-10 (Sponsorship Hub in-page drilldown slice)
+**Last Updated:** 2026-05-11 (Activation triage and partner queue slice)
 
 ## 🚨 CRITICAL MUST-READ FOR ALL AGENTS: STYLING & COMPONENTS 🚨
 
@@ -32,7 +32,7 @@ You MUST completely read and obey `docs/coding-standards.md` and `docs/component
 - Last known HEAD during this update: `7ebd13ba8`
 - Working tree includes untracked local `READMEDEV.md`; canonical repo-root cleanup work is now tracked under `#359`.
 - Most recent documented code delivery before this update: organization admin data flow recovery and documentation sync.
-- Current active delivery: `mvp-factory-control#784` Unified Sponsorship Performance Hub initial implementation slice is now in local progress; latest work adds the first admin sponsorship hub surface backed by existing analytics and Bitly data.
+- Current active delivery: `mvp-factory-control#784` Unified Sponsorship Performance Hub is extended with source drilldowns, trend views, scope actions, attribution evidence, and the first `#788` activation workspace slice backed by the same shared data model.
 - Formally closed on SSOT board (2026-03-10): #354, #355, #356, #357, #358, #359.
 
 ## Current Priorities
@@ -65,6 +65,25 @@ You MUST completely read and obey `docs/coding-standards.md` and `docs/component
 - Style editor preview updates immediately for bar/pie CSS vars and includes Value Chain and Landing page sections.
 
 ## Handover Log
+
+## 2026-05-11 — Activation triage and partner queue slice (#788)
+- **Objective:** Turn the first activation workspace from a passive proof list into an operational triage surface for sponsor-delivery follow-up.
+- **Shared activation scoring:** Extended `/lib/sponsorshipHub.ts` so each proof item now carries readiness score, priority score, missing-reason labels, and direct partner/report/admin links.
+- **Partner queues:** The shared activation payload now includes partner-level queue rollups with ready-vs-gap counts, total media value, total Bitly clicks, and direct navigation actions.
+- **Workspace filtering:** Updated `/app/admin/analytics/sponsorship/activation/page.tsx` with status and partner filters so admins can isolate ready packages, Bitly gaps, report gaps, or missing fan/media evidence.
+- **Proof queue actions:** The activation queue now exposes readiness percentage, gap reasons, and direct links into project reports, partner analytics, and partner reports.
+- **Verification:** `npm run lint`, `npm run build`, and `npm run type-check` all passed.
+
+## 2026-05-10 — Sponsorship evidence, trend, and activation workspace slice (#784, #788)
+- **Objective:** Deliver the next five sponsorship actions in one coherent implementation pass instead of layering more ad hoc client fetches onto the existing hub.
+- **Shared data model:** Rebuilt `/lib/sponsorshipHub.ts` so the server response now includes scope actions, scope trend points, project-level source drilldowns, partner-level attribution drilldowns, and an activation-workspace proof queue.
+- **Source-level drilldown:** The hub now exposes project source breakdowns, Bitly country/referrer evidence, and partner attribution evidence directly from the shared sponsorship payload.
+- **Trend views:** Added server-built trend series for the full scope, selected partner rollups, and selected projects (Bitly daily clicks when present, otherwise event snapshots).
+- **Scope-to-report actions:** Added direct report/admin/action links at scope level, project level, and partner level so users can move from rollups into reports or admin analytics without manual URL hunting.
+- **Attribution transparency:** Partner drilldowns now include attributed project tables plus an explicit summary of the `partnerContext.partnerId` then `partner1` fallback rule.
+- **Activation workspace:** Added `/app/admin/analytics/sponsorship/activation/page.tsx` as the first `#788` Partner Activation and Proof-of-Performance workspace. It surfaces readiness score, proof gaps, scoped project queue, and partner proof destinations.
+- **Navigation:** Added a `Partner Activation` card to `/components/AdminDashboard.tsx`.
+- **Verification:** `npm run lint`, `npm run build`, and `npm run type-check` all passed. `npm run type-check` still requires running after a successful build because this repo includes `.next/types/**/*.ts` in `tsconfig.json`.
 
 ## 2026-05-10 — Unified Sponsorship Performance Hub initial slice (#784)
 - **Objective:** Start `#784` with a usable admin surface that unifies current sponsorship evidence without introducing new ingestion or schema changes.

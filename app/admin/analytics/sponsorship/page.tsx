@@ -1,13 +1,21 @@
 'use client';
 
 import React, { useEffect, useMemo, useState } from 'react';
+import Link from 'next/link';
 import ColoredCard from '@/components/ColoredCard';
+import LineChart from '@/components/analytics/LineChart';
 import MetricCard from '@/components/analytics/MetricCard';
 import UnifiedAdminHeroWithSearch from '@/components/UnifiedAdminHeroWithSearch';
+import type {
+  SponsorshipActionLinks,
+  SponsorshipHubResponse,
+  SponsorshipHubScopeType,
+  SponsorshipHubRangePreset,
+  SponsorshipMetricFormat,
+  SponsorshipPartnerDrilldown,
+  SponsorshipProjectDrilldown,
+} from '@/lib/sponsorshipHub';
 import styles from './page.module.css';
-
-type ScopeType = 'portfolio' | 'partner' | 'organization' | 'project';
-type RangePreset = 'all' | '30d' | '90d' | '365d';
 
 interface ScopeOption {
   _id: string;
@@ -22,80 +30,14 @@ interface ProjectOption {
   partner2?: { name?: string };
 }
 
-interface SponsorshipHubData {
-  scope: {
-    type: ScopeType;
-    id: string | null;
-    name: string;
-    description: string;
-  };
-  filters: {
-    rangePreset: RangePreset;
-    startDate: string | null;
-    endDate: string | null;
-  };
-  summary: {
-    eventCount: number;
-    partnerCount: number;
-    totalFans: number;
-    totalImages: number;
-    totalImpressions: number;
-    totalAdValue: number;
-    totalBitlyClicks: number;
-    totalBitlyUniqueClicks: number;
-    avgEngagementRate: number;
-    avgBitlyClickRate: number;
-    earliestEventDate: string | null;
-    latestEventDate: string | null;
-  };
-  channels: Array<{
-    key: 'fan' | 'media' | 'bitly';
-    label: string;
-    primaryValue: number;
-    primaryFormat: 'number' | 'currency' | 'percentage';
-    secondaryLabel: string;
-    secondaryValue: number;
-    secondaryFormat: 'number' | 'currency' | 'percentage';
-    source: string;
-    description: string;
-  }>;
-  coverage: {
-    projectsWithBitly: number;
-    projectsWithoutBitly: number;
-    bitlyCoverageRate: number;
-  };
-  topProjects: Array<{
-    projectId: string;
-    eventName: string;
-    eventDate: string | null;
-    partnerLabel: string;
-    fans: number;
-    adValue: number;
-    bitlyClicks: number;
-    engagementRate: number;
-    viewSlug: string | null;
-  }>;
-  topPartners: Array<{
-    partnerId: string;
-    name: string;
-    emoji?: string;
-    eventCount: number;
-    totalFans: number;
-    totalAdValue: number;
-    totalBitlyClicks: number;
-    avgEngagementRate: number;
-    attributionBasis: 'primary_partner';
-  }>;
-}
-
-const RANGE_OPTIONS: Array<{ value: RangePreset; label: string }> = [
+const RANGE_OPTIONS: Array<{ value: SponsorshipHubRangePreset; label: string }> = [
   { value: 'all', label: 'All Time' },
   { value: '30d', label: 'Last 30 Days' },
   { value: '90d', label: 'Last 90 Days' },
   { value: '365d', label: 'Last 12 Months' },
 ];
 
-function formatMetric(value: number, format: 'number' | 'currency' | 'percentage') {
+function formatMetric(value: number, format: SponsorshipMetricFormat) {
   if (format === 'currency') {
     return `€${Math.round(value).toLocaleString('en-US')}`;
   }
@@ -115,11 +57,91 @@ function projectPartnerLabel(project: ProjectOption) {
   return labels.length > 0 ? labels.join(' vs ') : 'Partner data unavailable';
 }
 
+function actionLinks(actions: SponsorshipActionLinks) {
+  return [
+    actions.reportUrl ? { href: actions.reportUrl, label: 'Open Report' } : null,
+    actions.adminUrl ? { href: actions.adminUrl, label: 'Open Admin' } : null,
+    actions.activationUrl ? { href: actions.activationUrl, label: 'Open Activation' } : null,
+  ].filter(Boolean) as Array<{ href: string; label: string }>;
+}
+
+function renderChart(
+  title: string,
+  subtitle: string,
+  trend: SponsorshipHubResponse['trend'],
+  datasetConfig: Array<{ key: 'fans' | 'adValue' | 'bitlyClicks'; label: string; color: string; format: SponsorshipMetricFormat }>
+) {
+  const datasets = datasetConfig
+    .map((dataset) => ({
+      label: dataset.label,
+      color: dataset.color,
+      fill: false,
+      data: trend.map((point) => ({
+        label: point.label,
+        value: point[dataset.key],
+      })),
+      format: dataset.format,
+    }))
+    .filter((dataset) => dataset.data.length > 0);
+
+  if (datasets.length === 0) return null;
+
+  return (
+    <LineChart
+      title={title}
+      subtitle={subtitle}
+      datasets={datasets.map((dataset) => ({
+        label: dataset.label,
+        color: dataset.color,
+        fill: false,
+        data: dataset.data,
+      }))}
+      showLegend={true}
+      height={320}
+      formatValue={(value) => {
+        const matched = datasets.find((dataset) => dataset.data.some((point) => point.value === value));
+        return formatMetric(value, matched?.format || 'number');
+      }}
+    />
+  );
+}
+
+function EvidenceTable({
+  title,
+  rows,
+}: {
+  title: string;
+  rows: SponsorshipProjectDrilldown['sourceBreakdown'] | SponsorshipPartnerDrilldown['sourceBreakdown'];
+}) {
+  return (
+    <div className={styles.tableWrap}>
+      <table className={styles.table}>
+        <thead>
+          <tr>
+            <th>{title}</th>
+            <th>Value</th>
+            <th>Source</th>
+          </tr>
+        </thead>
+        <tbody>
+          {rows.map((row) => (
+            <tr key={row.key}>
+              <td><strong>{row.label}</strong></td>
+              <td>{formatMetric(row.value, row.format)}</td>
+              <td>{row.source}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  );
+}
+
 export default function SponsorshipHubPage() {
-  const [scopeType, setScopeType] = useState<ScopeType>('portfolio');
+  const [scopeType, setScopeType] = useState<SponsorshipHubScopeType>('portfolio');
   const [selectedScopeId, setSelectedScopeId] = useState('');
-  const [rangePreset, setRangePreset] = useState<RangePreset>('all');
-  const [hubData, setHubData] = useState<SponsorshipHubData | null>(null);
+  const [rangePreset, setRangePreset] = useState<SponsorshipHubRangePreset>('all');
+  const [hubData, setHubData] = useState<SponsorshipHubResponse | null>(null);
   const [selectedProjectId, setSelectedProjectId] = useState('');
   const [selectedPartnerId, setSelectedPartnerId] = useState('');
   const [loading, setLoading] = useState(true);
@@ -233,8 +255,7 @@ export default function SponsorshipHubPage() {
       try {
         setLoading(true);
         setError('');
-        const params = new URLSearchParams({ scopeType });
-        params.set('rangePreset', rangePreset);
+        const params = new URLSearchParams({ scopeType, rangePreset });
         if (selectedScopeId) {
           params.set('scopeId', selectedScopeId);
         }
@@ -260,19 +281,19 @@ export default function SponsorshipHubPage() {
 
   useEffect(() => {
     setSelectedProjectId((current) => {
-      if (!hubData?.topProjects.length) return '';
-      if (current && hubData.topProjects.some((project) => project.projectId === current)) {
+      if (!hubData?.projectDrilldowns.length) return '';
+      if (current && hubData.projectDrilldowns.some((project) => project.projectId === current)) {
         return current;
       }
-      return hubData.topProjects[0].projectId;
+      return hubData.projectDrilldowns[0].projectId;
     });
 
     setSelectedPartnerId((current) => {
-      if (!hubData?.topPartners.length) return '';
-      if (current && hubData.topPartners.some((partner) => partner.partnerId === current)) {
+      if (!hubData?.partnerDrilldowns.length) return '';
+      if (current && hubData.partnerDrilldowns.some((partner) => partner.partnerId === current)) {
         return current;
       }
-      return hubData.topPartners[0].partnerId;
+      return hubData.partnerDrilldowns[0].partnerId;
     });
   }, [hubData]);
 
@@ -283,14 +304,14 @@ export default function SponsorshipHubPage() {
     return 'Project';
   }, [scopeType]);
 
-  const selectedProject = hubData?.topProjects.find((project) => project.projectId === selectedProjectId) || null;
-  const selectedPartner = hubData?.topPartners.find((partner) => partner.partnerId === selectedPartnerId) || null;
+  const selectedProject = hubData?.projectDrilldowns.find((project) => project.projectId === selectedProjectId) || null;
+  const selectedPartner = hubData?.partnerDrilldowns.find((partner) => partner.partnerId === selectedPartnerId) || null;
 
   return (
     <div className="page-container">
       <UnifiedAdminHeroWithSearch
         title="🤝 Sponsorship Hub"
-        subtitle="Unified sponsorship performance across analytics aggregates, media value, and tracked link evidence."
+        subtitle="Unified sponsorship performance, proof evidence, and activation readiness across events, partners, organizations, and tracked links."
         backLink="/admin"
         showSearch={scopeType === 'project'}
         searchValue={projectSearch}
@@ -315,7 +336,7 @@ export default function SponsorshipHubPage() {
                   id="scopeType"
                   value={scopeType}
                   onChange={(event) => {
-                    setScopeType(event.target.value as ScopeType);
+                    setScopeType(event.target.value as SponsorshipHubScopeType);
                     setSelectedScopeId('');
                   }}
                   className={`form-input ${styles.selectInput}`}
@@ -332,7 +353,7 @@ export default function SponsorshipHubPage() {
                 <select
                   id="rangePreset"
                   value={rangePreset}
-                  onChange={(event) => setRangePreset(event.target.value as RangePreset)}
+                  onChange={(event) => setRangePreset(event.target.value as SponsorshipHubRangePreset)}
                   className={`form-input ${styles.selectInput}`}
                 >
                   {RANGE_OPTIONS.map((option) => (
@@ -430,6 +451,15 @@ export default function SponsorshipHubPage() {
                 <strong>{hubData.filters.endDate ? formatDate(hubData.filters.endDate) : 'Latest'}</strong>
               </p>
             )}
+            {hubData?.scopeActions && (
+              <div className={styles.actionRow}>
+                {actionLinks(hubData.scopeActions).map((action) => (
+                  <Link key={action.href} href={action.href} className={styles.actionLink}>
+                    {action.label}
+                  </Link>
+                ))}
+              </div>
+            )}
           </div>
         </ColoredCard>
 
@@ -477,32 +507,89 @@ export default function SponsorshipHubPage() {
               ))}
             </div>
 
-            <ColoredCard accentColor="var(--mm-chart-teal)" hoverable={false}>
+            <div className={styles.doubleGrid}>
+              <ColoredCard accentColor="var(--mm-chart-teal)" hoverable={false}>
+                <div className={styles.sectionCard}>
+                  <div className={styles.sectionHeader}>
+                    <h2 className={styles.sectionTitle}>Coverage and Attribution</h2>
+                    <p className={styles.sectionSubtitle}>{hubData.scope.description}</p>
+                  </div>
+                  <div className={styles.insightGrid}>
+                    <div className={styles.insightItem}>
+                      <span className={styles.insightLabel}>Date Coverage</span>
+                      <span className={styles.insightValue}>
+                        {formatDate(hubData.summary.earliestEventDate)} - {formatDate(hubData.summary.latestEventDate)}
+                      </span>
+                    </div>
+                    <div className={styles.insightItem}>
+                      <span className={styles.insightLabel}>Bitly Coverage</span>
+                      <span className={styles.insightValue}>{hubData.coverage.bitlyCoverageRate.toFixed(1)}%</span>
+                    </div>
+                    <div className={styles.insightItem}>
+                      <span className={styles.insightLabel}>Projects With Bitly</span>
+                      <span className={styles.insightValue}>{hubData.coverage.projectsWithBitly}</span>
+                    </div>
+                    <div className={styles.insightItem}>
+                      <span className={styles.insightLabel}>Projects Without Bitly</span>
+                      <span className={styles.insightValue}>{hubData.coverage.projectsWithoutBitly}</span>
+                    </div>
+                  </div>
+                </div>
+              </ColoredCard>
+
+              <ColoredCard accentColor="var(--mm-chart-purple)" hoverable={false}>
+                <div className={styles.sectionCard}>
+                  <div className={styles.sectionHeader}>
+                    <h2 className={styles.sectionTitle}>Activation Readiness</h2>
+                    <p className={styles.sectionSubtitle}>
+                      First `#788` proof-of-performance workspace slice, built from the same evidence model as the hub.
+                    </p>
+                  </div>
+                  <div className={styles.insightGrid}>
+                    <div className={styles.insightItem}>
+                      <span className={styles.insightLabel}>Readiness Score</span>
+                      <span className={styles.insightValue}>{hubData.activationWorkspace.readinessScore.toFixed(1)}%</span>
+                    </div>
+                    <div className={styles.insightItem}>
+                      <span className={styles.insightLabel}>Ready Projects</span>
+                      <span className={styles.insightValue}>{hubData.activationWorkspace.readyProjects}</span>
+                    </div>
+                    <div className={styles.insightItem}>
+                      <span className={styles.insightLabel}>Needs Bitly</span>
+                      <span className={styles.insightValue}>{hubData.activationWorkspace.needsBitlyProjects}</span>
+                    </div>
+                    <div className={styles.insightItem}>
+                      <span className={styles.insightLabel}>Needs Report Link</span>
+                      <span className={styles.insightValue}>{hubData.activationWorkspace.needsReportProjects}</span>
+                    </div>
+                  </div>
+                  <div className={styles.actionRow}>
+                    <Link href={hubData.scopeActions.activationUrl || '/admin/analytics/sponsorship/activation'} className={styles.actionLink}>
+                      Open Activation Workspace
+                    </Link>
+                  </div>
+                </div>
+              </ColoredCard>
+            </div>
+
+            <ColoredCard accentColor="var(--mm-chart-orange)" hoverable={false}>
               <div className={styles.sectionCard}>
                 <div className={styles.sectionHeader}>
-                  <h2 className={styles.sectionTitle}>Coverage and Attribution</h2>
-                  <p className={styles.sectionSubtitle}>{hubData.scope.description}</p>
+                  <h2 className={styles.sectionTitle}>Scope Trend View</h2>
+                  <p className={styles.sectionSubtitle}>
+                    Time-window movement across fan volume, media value, and tracked link clicks for the current scope.
+                  </p>
                 </div>
-                <div className={styles.insightGrid}>
-                  <div className={styles.insightItem}>
-                    <span className={styles.insightLabel}>Date Coverage</span>
-                    <span className={styles.insightValue}>
-                      {formatDate(hubData.summary.earliestEventDate)} - {formatDate(hubData.summary.latestEventDate)}
-                    </span>
-                  </div>
-                  <div className={styles.insightItem}>
-                    <span className={styles.insightLabel}>Bitly Coverage</span>
-                    <span className={styles.insightValue}>{hubData.coverage.bitlyCoverageRate.toFixed(1)}%</span>
-                  </div>
-                  <div className={styles.insightItem}>
-                    <span className={styles.insightLabel}>Projects With Bitly</span>
-                    <span className={styles.insightValue}>{hubData.coverage.projectsWithBitly}</span>
-                  </div>
-                  <div className={styles.insightItem}>
-                    <span className={styles.insightLabel}>Projects Without Bitly</span>
-                    <span className={styles.insightValue}>{hubData.coverage.projectsWithoutBitly}</span>
-                  </div>
-                </div>
+                {renderChart(
+                  'Scope Trend',
+                  'One server-side timeline for the current sponsorship scope.',
+                  hubData.trend,
+                  [
+                    { key: 'fans', label: 'Fans', color: '#2563eb', format: 'number' },
+                    { key: 'adValue', label: 'Media Value', color: '#059669', format: 'currency' },
+                    { key: 'bitlyClicks', label: 'Bitly Clicks', color: '#ea580c', format: 'number' },
+                  ]
+                )}
               </div>
             </ColoredCard>
 
@@ -544,7 +631,7 @@ export default function SponsorshipHubPage() {
                           <td>{formatDate(project.eventDate)}</td>
                           <td>{project.partnerLabel}</td>
                           <td>{project.fans.toLocaleString('en-US')}</td>
-                          <td>€{project.adValue.toLocaleString('en-US')}</td>
+                          <td>€{Math.round(project.adValue).toLocaleString('en-US')}</td>
                           <td>{project.bitlyClicks.toLocaleString('en-US')}</td>
                         </tr>
                       )) : (
@@ -555,37 +642,50 @@ export default function SponsorshipHubPage() {
                     </tbody>
                   </table>
                 </div>
+
                 {selectedProject && (
-                  <div className={styles.detailGrid}>
+                  <div className={styles.detailStack}>
                     <ColoredCard accentColor="var(--mm-color-primary-500)" hoverable={false}>
                       <div className={styles.detailCard}>
-                        <h3 className={styles.detailTitle}>Selected Project Drilldown</h3>
+                        <div className={styles.sectionHeader}>
+                          <h3 className={styles.detailTitle}>Selected Project Drilldown</h3>
+                          <p className={styles.sectionSubtitle}>
+                            Source-level evidence, report actions, and a project-level trend from the unified payload.
+                          </p>
+                        </div>
                         <div className={styles.detailMeta}>
                           <span><strong>{selectedProject.eventName}</strong></span>
                           <span>{formatDate(selectedProject.eventDate)} • {selectedProject.partnerLabel}</span>
-                          <span>View slug: {selectedProject.viewSlug || 'Not available'}</span>
+                          <span>Primary partner: {selectedProject.primaryPartnerName || 'Not resolved'}</span>
                         </div>
-                        <div className={styles.detailMetrics}>
-                          <div className={styles.detailMetric}>
-                            <span className={styles.detailMetricLabel}>Fans</span>
-                            <span className={styles.detailMetricValue}>{selectedProject.fans.toLocaleString('en-US')}</span>
+                        <div className={styles.actionRow}>
+                          {actionLinks(selectedProject.actions).map((action) => (
+                            <Link key={action.href} href={action.href} className={styles.actionLink}>
+                              {action.label}
+                            </Link>
+                          ))}
+                        </div>
+                        <EvidenceTable title="Project Evidence" rows={selectedProject.sourceBreakdown} />
+                        <div className={styles.pillGrid}>
+                          <div className={styles.pillCard}>
+                            <span className={styles.pillTitle}>Top Countries</span>
+                            {selectedProject.topCountries.length > 0 ? selectedProject.topCountries.map((item) => (
+                              <span key={item.label} className={styles.pill}>{item.label}: {item.clicks}</span>
+                            )) : <span className={styles.helperText}>No country-level Bitly evidence captured.</span>}
                           </div>
-                          <div className={styles.detailMetric}>
-                            <span className={styles.detailMetricLabel}>Media Value</span>
-                            <span className={styles.detailMetricValue}>€{selectedProject.adValue.toLocaleString('en-US')}</span>
-                          </div>
-                          <div className={styles.detailMetric}>
-                            <span className={styles.detailMetricLabel}>Bitly Clicks</span>
-                            <span className={styles.detailMetricValue}>{selectedProject.bitlyClicks.toLocaleString('en-US')}</span>
-                          </div>
-                          <div className={styles.detailMetric}>
-                            <span className={styles.detailMetricLabel}>Engagement</span>
-                            <span className={styles.detailMetricValue}>{selectedProject.engagementRate.toFixed(1)}%</span>
+                          <div className={styles.pillCard}>
+                            <span className={styles.pillTitle}>Top Referrers</span>
+                            {selectedProject.topReferrers.length > 0 ? selectedProject.topReferrers.map((item) => (
+                              <span key={item.label} className={styles.pill}>{item.label}: {item.clicks}</span>
+                            )) : <span className={styles.helperText}>No referrer-level Bitly evidence captured.</span>}
                           </div>
                         </div>
-                        <p className={styles.detailNote}>
-                          This project is ranked by combined media value and tracked link activity inside the current hub scope.
-                        </p>
+                        {renderChart(
+                          'Project Trend',
+                          'Bitly daily clicks when available, otherwise a project snapshot point.',
+                          selectedProject.trend,
+                          [{ key: 'bitlyClicks', label: 'Bitly Clicks', color: '#ea580c', format: 'number' }]
+                        )}
                       </div>
                     </ColoredCard>
                   </div>
@@ -630,7 +730,7 @@ export default function SponsorshipHubPage() {
                           </td>
                           <td>{partner.eventCount}</td>
                           <td>{partner.totalFans.toLocaleString('en-US')}</td>
-                          <td>€{partner.totalAdValue.toLocaleString('en-US')}</td>
+                          <td>€{Math.round(partner.totalAdValue).toLocaleString('en-US')}</td>
                           <td>{partner.totalBitlyClicks.toLocaleString('en-US')}</td>
                           <td>{partner.avgEngagementRate.toFixed(1)}%</td>
                         </tr>
@@ -642,39 +742,126 @@ export default function SponsorshipHubPage() {
                     </tbody>
                   </table>
                 </div>
+
                 {selectedPartner && (
-                  <div className={styles.detailGrid}>
+                  <div className={styles.detailStack}>
                     <ColoredCard accentColor="var(--mm-chart-purple)" hoverable={false}>
                       <div className={styles.detailCard}>
-                        <h3 className={styles.detailTitle}>Selected Partner Drilldown</h3>
+                        <div className={styles.sectionHeader}>
+                          <h3 className={styles.detailTitle}>Selected Partner Drilldown</h3>
+                          <p className={styles.sectionSubtitle}>
+                            Attribution evidence, proof links, and partner-level trend data for renewal conversations.
+                          </p>
+                        </div>
                         <div className={styles.detailMeta}>
                           <span><strong>{selectedPartner.emoji ? `${selectedPartner.emoji} ` : ''}{selectedPartner.name}</strong></span>
                           <span>{selectedPartner.eventCount} primary-partner events in current scope</span>
                           <span>Attribution basis: {selectedPartner.attributionBasis}</span>
                         </div>
-                        <div className={styles.detailMetrics}>
-                          <div className={styles.detailMetric}>
-                            <span className={styles.detailMetricLabel}>Fans</span>
-                            <span className={styles.detailMetricValue}>{selectedPartner.totalFans.toLocaleString('en-US')}</span>
-                          </div>
-                          <div className={styles.detailMetric}>
-                            <span className={styles.detailMetricLabel}>Media Value</span>
-                            <span className={styles.detailMetricValue}>€{selectedPartner.totalAdValue.toLocaleString('en-US')}</span>
-                          </div>
-                          <div className={styles.detailMetric}>
-                            <span className={styles.detailMetricLabel}>Bitly Clicks</span>
-                            <span className={styles.detailMetricValue}>{selectedPartner.totalBitlyClicks.toLocaleString('en-US')}</span>
-                          </div>
-                          <div className={styles.detailMetric}>
-                            <span className={styles.detailMetricLabel}>Avg Engagement</span>
-                            <span className={styles.detailMetricValue}>{selectedPartner.avgEngagementRate.toFixed(1)}%</span>
-                          </div>
+                        <div className={styles.actionRow}>
+                          {actionLinks(selectedPartner.actions).map((action) => (
+                            <Link key={action.href} href={action.href} className={styles.actionLink}>
+                              {action.label}
+                            </Link>
+                          ))}
                         </div>
-                        <p className={styles.detailNote}>
-                          This rollup uses primary-partner attribution only, so each aggregate contributes to one partner row and totals remain non-duplicative.
-                        </p>
+                        <EvidenceTable title="Partner Evidence" rows={selectedPartner.sourceBreakdown} />
+                        {renderChart(
+                          'Partner Trend',
+                          'Partner-attributed event performance across the selected time window.',
+                          selectedPartner.trend,
+                          [
+                            { key: 'fans', label: 'Fans', color: '#2563eb', format: 'number' },
+                            { key: 'adValue', label: 'Media Value', color: '#059669', format: 'currency' },
+                            { key: 'bitlyClicks', label: 'Bitly Clicks', color: '#ea580c', format: 'number' },
+                          ]
+                        )}
+                        <p className={styles.detailNote}>{selectedPartner.attributionSummary}</p>
+                        <div className={styles.tableWrap}>
+                          <table className={styles.table}>
+                            <thead>
+                              <tr>
+                                <th>Attributed Project</th>
+                                <th>Date</th>
+                                <th>Fans</th>
+                                <th>Media Value</th>
+                                <th>Bitly Clicks</th>
+                                <th>Report</th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              {selectedPartner.attributedProjects.map((project) => (
+                                <tr key={`${selectedPartner.partnerId}-${project.projectId}`}>
+                                  <td><strong>{project.eventName}</strong></td>
+                                  <td>{formatDate(project.eventDate)}</td>
+                                  <td>{project.fans.toLocaleString('en-US')}</td>
+                                  <td>€{Math.round(project.adValue).toLocaleString('en-US')}</td>
+                                  <td>{project.bitlyClicks.toLocaleString('en-US')}</td>
+                                  <td>
+                                    {project.reportUrl ? (
+                                      <Link href={project.reportUrl} className={styles.inlineLink}>Open</Link>
+                                    ) : (
+                                      'Unavailable'
+                                    )}
+                                  </td>
+                                </tr>
+                              ))}
+                            </tbody>
+                          </table>
+                        </div>
                       </div>
                     </ColoredCard>
+                  </div>
+                )}
+              </div>
+            </ColoredCard>
+
+            <ColoredCard accentColor="var(--mm-chart-teal)" hoverable={false}>
+              <div className={styles.sectionCard}>
+                <div className={styles.sectionHeader}>
+                  <h2 className={styles.sectionTitle}>Proof-of-Performance Queue</h2>
+                  <p className={styles.sectionSubtitle}>
+                    The first activation queue exposes which projects are already sponsor-ready and which ones still need proof artifacts.
+                  </p>
+                </div>
+                <div className={styles.tableWrap}>
+                  <table className={styles.table}>
+                    <thead>
+                      <tr>
+                        <th>Project</th>
+                        <th>Date</th>
+                        <th>Fan Evidence</th>
+                        <th>Media Value</th>
+                        <th>Bitly</th>
+                        <th>Report</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {hubData.activationWorkspace.proofItems.length > 0 ? hubData.activationWorkspace.proofItems.map((item) => (
+                        <tr key={item.projectId}>
+                          <td>
+                            <strong>{item.eventName}</strong>
+                            <div className={styles.cellMeta}>{item.partnerLabel}</div>
+                          </td>
+                          <td>{formatDate(item.eventDate)}</td>
+                          <td>{item.hasFanEvidence ? formatMetric(item.fans, 'number') : 'Missing'}</td>
+                          <td>{item.hasMediaEvidence ? formatMetric(item.adValue, 'currency') : 'Missing'}</td>
+                          <td>{item.hasBitlyEvidence ? formatMetric(item.bitlyClicks, 'number') : 'Missing'}</td>
+                          <td>{item.hasReportLink && item.reportUrl ? <Link href={item.reportUrl} className={styles.inlineLink}>Open</Link> : 'Missing'}</td>
+                        </tr>
+                      )) : (
+                        <tr>
+                          <td colSpan={6}>No proof items available for the current scope.</td>
+                        </tr>
+                      )}
+                    </tbody>
+                  </table>
+                </div>
+                {hubData.activationWorkspace.nextActions.length > 0 && (
+                  <div className={styles.noteList}>
+                    {hubData.activationWorkspace.nextActions.map((item) => (
+                      <p key={item} className={styles.detailNote}>{item}</p>
+                    ))}
                   </div>
                 )}
               </div>

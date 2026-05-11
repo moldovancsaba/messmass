@@ -81,6 +81,13 @@ const navCards: NavCard[] = [
     accentColor: '#14b8a6', // var(--mm-chart-teal)
   },
   {
+    href: '/admin/analytics/sponsorship/activation',
+    icon: '✅',
+    title: 'Partner Activation',
+    description: 'Proof-of-performance workspace for sponsor-ready recaps, gaps, and delivery actions',
+    accentColor: '#f97316', // var(--mm-chart-orange)
+  },
+  {
     href: '/admin/filter',
     icon: '🔍',
     title: 'Hashtag Filter',
