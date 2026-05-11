@@ -2,7 +2,7 @@
 
 This file is onboarding plus operational context for the next agent. Keep it accurate when behavior, process, or current delivery state changes.
 
-**Last Updated:** 2026-05-11 (UI refinement navigation and terminology slice)
+**Last Updated:** 2026-05-11 (analytics entry-point consolidation slice)
 
 ## 🚨 CRITICAL MUST-READ FOR ALL AGENTS: STYLING & COMPONENTS 🚨
 
@@ -32,7 +32,7 @@ You MUST completely read and obey `docs/coding-standards.md` and `docs/component
 - Last known HEAD during this update: `7ebd13ba8`
 - Working tree includes untracked local `READMEDEV.md`; canonical repo-root cleanup work is now tracked under `#359`.
 - Most recent documented code delivery before this update: organization admin data flow recovery and documentation sync.
-- Current active delivery: `mvp-factory-control#816` UI Refinement 1/6 is in local implementation with canonical navigation, shared labels, and first-pass terminology alignment now applied across the dashboard, sidebar, help, and core report/data admin surfaces.
+- Current active delivery: `mvp-factory-control#817` UI Refinement 2/6 is in local implementation with the first admin-home and analytics entry-point consolidation slice validated locally.
 - Formally closed on SSOT board (2026-03-10): #354, #355, #356, #357, #358, #359.
 
 ## Current Priorities
@@ -65,6 +65,17 @@ You MUST completely read and obey `docs/coding-standards.md` and `docs/component
 - Style editor preview updates immediately for bar/pie CSS vars and includes Value Chain and Landing page sections.
 
 ## Handover Log
+
+## 2026-05-11 — Admin home and analytics entry-point consolidation slice (#817)
+- **Objective:** Remove the next structural inconsistency after `#816`: competing admin and analytics home surfaces that made users choose between `/admin`, `/admin/dashboard`, `/admin/insights`, and `analytics/*` without a clear ownership model.
+- **Analytics home:** Added `/app/admin/analytics/page.tsx` plus `/app/admin/analytics/page.module.css` as the canonical analytics landing page. It introduces one analytics entry point and then fans out into Sponsorship Hub, Executive, Marketing, Operations, and Insights drilldowns.
+- **Workspace simplification:** Updated `/lib/adminNavigation.ts`, `/components/AdminDashboard.tsx`, `/components/Sidebar.tsx`, `/lib/permissions.ts`, and `/lib/routeProtection.ts` so the main admin workspace now exposes `Analytics Home` as the top-level analytics entry while the sidebar keeps the deeper analytics drilldowns available.
+- **Legacy route cleanup:** Replaced `/app/admin/dashboard/page.tsx` with a redirect to `/admin` and `/app/admin/insights/page.tsx` with a redirect to `/admin/analytics/insights` so existing bookmarks still resolve without preserving duplicate product homes.
+- **Canonical insights repair:** Rebuilt `/app/admin/analytics/insights/page.tsx` around the real `/api/analytics/insights` contract and the maintained `/components/InsightCard.tsx` renderer, replacing the broken dependency on the missing `/api/analytics/insights/all` endpoint.
+- **Drilldown ownership cues:** Updated `/app/admin/analytics/executive/ExecutiveDashboardView.tsx` so executive, marketing, and operations dashboards now expose a direct path back to `/admin/analytics` and a consistent jump into the canonical Insights surface.
+- **SSO default landing:** Updated `/app/api/auth/sso/login/route.ts`, `/app/api/auth/sso/callback/route.ts`, and the related login commentary so SSO defaults now land in `/admin` instead of the retired legacy dashboard entry.
+- **Role consistency:** Admin workspace cards now respect the same role filtering as the sidebar, and analytics route protection now explicitly keeps `/admin/analytics/insights` on the superadmin path.
+- **Verification:** `npm run lint`, `npm run build`, and `npm run type-check` all passed. As elsewhere in this repo, `type-check` needed to be rerun after the successful build because `tsconfig.json` includes `.next/types/**/*.ts`.
 
 ## 2026-05-11 — UI refinement foundation slice (#816)
 - **Objective:** Start the UI refinement program by eliminating the first structural inconsistency: the admin dashboard cards and sidebar navigation describing different products.

@@ -5,6 +5,7 @@ export interface AdminNavItem {
   iconVariant?: 'outlined' | 'rounded';
   description: string;
   accentColor: string;
+  showInAdminWorkspace?: boolean;
 }
 
 export interface AdminNavSection {
@@ -168,18 +169,51 @@ export const adminNavSections: AdminNavSection[] = [
     description: 'Review sponsorship performance, operational insights, and analytics surfaces.',
     items: [
       {
+        label: 'Analytics Home',
+        path: '/admin/analytics',
+        icon: 'dashboard',
+        description: 'Enter the canonical analytics workspace and choose the right reporting lens.',
+        accentColor: '#3b82f6',
+      },
+      {
         label: 'Sponsorship Hub',
         path: '/admin/analytics/sponsorship',
         icon: 'analytics',
         description: 'Review unified sponsorship performance across events, partners, and organizations.',
         accentColor: '#14b8a6',
+        showInAdminWorkspace: false,
+      },
+      {
+        label: 'Executive Dashboard',
+        path: '/admin/analytics/executive',
+        icon: 'monitoring',
+        description: 'Review cross-event KPIs, trends, and top events at portfolio level.',
+        accentColor: '#0ea5e9',
+        showInAdminWorkspace: false,
+      },
+      {
+        label: 'Marketing Dashboard',
+        path: '/admin/analytics/marketing',
+        icon: 'campaign',
+        description: 'Review campaign, audience, and reach-focused analytics views.',
+        accentColor: '#ec4899',
+        showInAdminWorkspace: false,
+      },
+      {
+        label: 'Operations Dashboard',
+        path: '/admin/analytics/operations',
+        icon: 'manufacturing',
+        description: 'Review delivery, capacity, and execution-oriented analytics views.',
+        accentColor: '#f97316',
+        showInAdminWorkspace: false,
       },
       {
         label: 'Insights',
-        path: '/admin/insights',
+        path: '/admin/analytics/insights',
         icon: 'lightbulb',
         description: 'Review anomaly detection, trends, and broader analytics insights.',
         accentColor: '#f59e0b',
+        showInAdminWorkspace: false,
       },
     ],
   },
@@ -219,3 +253,16 @@ export const adminNavSections: AdminNavSection[] = [
     ],
   },
 ];
+
+export function getAdminWorkspaceSections(): AdminNavSection[] {
+  return adminNavSections
+    .map((section) => ({
+      ...section,
+      items: section.items.filter((item) => item.showInAdminWorkspace !== false),
+    }))
+    .filter((section) => section.items.length > 0);
+}
+
+export function getAnalyticsNavItems(): AdminNavItem[] {
+  return adminNavSections.find((section) => section.key === 'analytics')?.items || [];
+}

@@ -4,7 +4,9 @@ import React from 'react';
 import Link from 'next/link';
 import { AdminUser } from '@/lib/auth';
 import ColoredCard from './ColoredCard';
-import { adminNavSections } from '@/lib/adminNavigation';
+import MaterialIcon from './MaterialIcon';
+import { getAdminWorkspaceSections } from '@/lib/adminNavigation';
+import { canAccessMenuItem } from '@/lib/permissions';
 
 /* What: Admin dashboard navigation component
    Why: Provides quick access to all admin sections
@@ -85,9 +87,16 @@ const sectionDescriptionStyles: React.CSSProperties = {
 };
 
 export default function AdminDashboard({ user, permissions }: AdminDashboardProps) {
+  const adminWorkspaceSections = getAdminWorkspaceSections()
+    .map((section) => ({
+      ...section,
+      items: section.items.filter((item) => canAccessMenuItem(user.role, item.label)),
+    }))
+    .filter((section) => section.items.length > 0);
+
   return (
     <>
-      {adminNavSections.map((section) => (
+      {adminWorkspaceSections.map((section) => (
         <section key={section.key}>
           {/* eslint-disable-next-line react/forbid-dom-props */}
           <div style={sectionHeaderStyles}>
@@ -107,9 +116,16 @@ export default function AdminDashboard({ user, permissions }: AdminDashboardProp
               >
                 <ColoredCard accentColor={item.accentColor} hoverable={true}>
                   {/* eslint-disable-next-line react/forbid-dom-props */}
-                  <div style={cardContentStyles}>
+                    <div style={cardContentStyles}>
                     {/* eslint-disable-next-line react/forbid-dom-props */}
-                    <div style={iconStyles}>{item.icon}</div>
+                    <div style={iconStyles}>
+                      <MaterialIcon
+                        name={item.icon}
+                        variant={item.iconVariant || 'outlined'}
+                        // eslint-disable-next-line react/forbid-dom-props
+                        style={{ fontSize: '2.5rem' }}
+                      />
+                    </div>
                     {/* eslint-disable-next-line react/forbid-dom-props */}
                     <div style={textContainerStyles}>
                       {/* eslint-disable-next-line react/forbid-dom-props */}

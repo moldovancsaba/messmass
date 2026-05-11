@@ -175,7 +175,7 @@ export async function POST(request: NextRequest) {
     }
 
     // WHAT: Mark session as local (not SSO) for #46 dashboard SSO requirement
-    // WHY: /admin/dashboard requires auth-source=sso when SSO is configured
+    // WHY: SSO-only sessions should land back in the admin workspace by default when SSO is configured
     response.cookies.set('auth-source', 'local', {
       httpOnly: false,
       secure: isProduction,

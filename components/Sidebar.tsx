@@ -65,8 +65,8 @@ export default function Sidebar() {
   /* What: Check if current path matches nav item
      Why: Highlight active navigation item for user orientation */
   const isActive = (path: string) => {
-    if (path === '/admin') {
-      return pathname === '/admin';
+    if (path === '/admin' || path === '/admin/analytics') {
+      return pathname === path;
     }
     return pathname.startsWith(path);
   };

@@ -1,267 +1,272 @@
 'use client';
 
-/**
- * Insights Dashboard
- * 
- * WHAT: Dedicated dashboard for viewing and managing AI-generated insights
- * WHY: Centralized view of all actionable intelligence across events
- * HOW: Real-time insights feed with filtering, prioritization, and action tracking
- * 
- * Features:
- * - All insights from Phase 2 insights engine
- * - Filter by priority (critical, high, medium, low)
- * - Filter by category (anomaly, trend, benchmark, opportunity)
- * - Search by keyword
- * - Sort by confidence, date, priority
- * - Action tracking (mark as actioned, dismiss)
- * - Export insights as CSV/PDF
- * 
- * Version: 11.55.1 (Phase 3 - Insights Dashboard)
- * Created: 2025-10-19T13:45:00.000Z
- */
-
-import React, { useState, useEffect, useCallback } from 'react';
-import { InsightCard } from '@/components/analytics';
-import type { Insight } from '@/lib/insightsEngine';
+import React, { useEffect, useMemo, useState } from 'react';
+import ColoredCard from '@/components/ColoredCard';
+import InsightCard from '@/components/InsightCard';
+import UnifiedAdminHeroWithSearch from '@/components/UnifiedAdminHeroWithSearch';
 import styles from './InsightsDashboard.module.css';
 
-type PriorityFilter = 'all' | 'critical' | 'high' | 'medium' | 'low';
-type CategoryFilter = 'all' | 'anomaly' | 'trend' | 'benchmark' | 'opportunity';
-type SortBy = 'priority' | 'confidence' | 'date';
+interface Insight {
+  id: string;
+  type: 'anomaly' | 'trend' | 'benchmark' | 'prediction' | 'recommendation';
+  severity: 'info' | 'warning' | 'critical';
+  metric: string;
+  title: string;
+  description: string;
+  value?: number;
+  change?: number;
+  confidence: number;
+  actionable: boolean;
+  recommendation?: string;
+  relatedEvents?: string[];
+  createdAt: string;
+  metadata?: Record<string, unknown>;
+}
 
-export default function InsightsDashboard() {
+interface InsightsMetadata {
+  totalInsights: number;
+  anomalies: number;
+  trends: number;
+  benchmarks: number;
+  predictions: number;
+  recommendations: number;
+  generatedAt: string;
+}
+
+type InsightTypeFilter = '' | 'anomaly' | 'trend' | 'benchmark' | 'prediction' | 'recommendation';
+type SeverityFilter = '' | 'info' | 'warning' | 'critical';
+type SortBy = 'severity' | 'confidence' | 'date';
+
+function severityRank(severity: Insight['severity']) {
+  return severity === 'critical' ? 3 : severity === 'warning' ? 2 : 1;
+}
+
+export default function AnalyticsInsightsPage() {
   const [insights, setInsights] = useState<Insight[]>([]);
-  const [filteredInsights, setFilteredInsights] = useState<Insight[]>([]);
+  const [metadata, setMetadata] = useState<InsightsMetadata | null>(null);
   const [loading, setLoading] = useState(true);
-  const [priorityFilter, setPriorityFilter] = useState<PriorityFilter>('all');
-  const [categoryFilter, setCategoryFilter] = useState<CategoryFilter>('all');
-  const [sortBy, setSortBy] = useState<SortBy>('priority');
+  const [error, setError] = useState('');
+  const [typeFilter, setTypeFilter] = useState<InsightTypeFilter>('');
+  const [severityFilter, setSeverityFilter] = useState<SeverityFilter>('');
+  const [sortBy, setSortBy] = useState<SortBy>('severity');
   const [searchTerm, setSearchTerm] = useState('');
+  const [eventWindow, setEventWindow] = useState(10);
 
-  useEffect(() => {
-    fetchInsights();
-  }, []);
-
-  /**
-   * WHAT: Fetch all insights from analytics aggregates
-   * WHY: Get comprehensive view across all events
-   */
-  async function fetchInsights() {
+  const fetchInsights = async () => {
     setLoading(true);
+    setError('');
+
     try {
-      // WHAT: Fetch recent insights across all events
-      const response = await fetch('/api/analytics/insights/all?limit=100');
-      
-      if (response.ok) {
-        const data = await response.json();
-        setInsights(data.data.insights || []);
+      const params = new URLSearchParams();
+      if (typeFilter) params.set('type', typeFilter);
+      if (severityFilter) params.set('severity', severityFilter);
+      params.set('limit', String(eventWindow));
+
+      const response = await fetch(`/api/analytics/insights?${params.toString()}`);
+      if (!response.ok) {
+        const result = await response.json().catch(() => null);
+        throw new Error(result?.error || 'Failed to fetch insights');
       }
-    } catch (error) {
-      console.error('Error fetching insights:', error);
+
+      const result = await response.json();
+      setInsights(result.insights || []);
+      setMetadata(result.metadata || null);
+    } catch (fetchError) {
+      console.error('Failed to fetch analytics insights:', fetchError);
+      setError(fetchError instanceof Error ? fetchError.message : 'Failed to load insights');
     } finally {
       setLoading(false);
     }
-  }
-
-  /**
-   * WHAT: Apply filters and sorting to insights
-   * WHY: Show relevant insights based on user selection
-   */
-  const applyFiltersAndSort = useCallback(() => {
-    let filtered = [...insights];
-
-    // WHAT: Filter by priority
-    if (priorityFilter !== 'all') {
-      filtered = filtered.filter(i => i.priority === priorityFilter);
-    }
-
-    // WHAT: Filter by category
-    if (categoryFilter !== 'all') {
-      filtered = filtered.filter(i => i.category === categoryFilter);
-    }
-
-    // WHAT: Filter by search term (title or message)
-    if (searchTerm) {
-      const term = searchTerm.toLowerCase();
-      filtered = filtered.filter(
-        i => 
-          i.title.toLowerCase().includes(term) ||
-          i.message.toLowerCase().includes(term)
-      );
-    }
-
-    // WHAT: Sort insights
-    filtered.sort((a, b) => {
-      if (sortBy === 'priority') {
-        const priorityOrder = { critical: 4, high: 3, medium: 2, low: 1 };
-        const diff = priorityOrder[b.priority] - priorityOrder[a.priority];
-        if (diff !== 0) return diff;
-        return b.confidence - a.confidence; // Tie-break with confidence
-      } else if (sortBy === 'confidence') {
-        return b.confidence - a.confidence;
-      }
-      return 0; // Date sorting would require timestamp
-    });
-
-    setFilteredInsights(filtered);
-  }, [insights, priorityFilter, categoryFilter, sortBy, searchTerm]);
-
-  useEffect(() => {
-    applyFiltersAndSort();
-  }, [applyFiltersAndSort]);
-
-  /**
-   * WHAT: Handle insight action (mark as reviewed/actioned)
-   * WHY: Track which insights have been addressed
-   */
-  function handleAction(insightId: string) {
-    // TODO: Implement action tracking in backend
-    console.log('Actioned insight:', insightId);
-    // Optimistically update UI
-    setInsights(insights.filter(i => i.id !== insightId));
-  }
-
-  /**
-   * WHAT: Handle insight dismissal
-   * WHY: Remove non-relevant insights from view
-   */
-  function handleDismiss(insightId: string) {
-    // TODO: Implement dismiss tracking in backend
-    console.log('Dismissed insight:', insightId);
-    // Optimistically update UI
-    setInsights(insights.filter(i => i.id !== insightId));
-  }
-
-  // WHAT: Calculate summary statistics
-  const stats = {
-    total: insights.length,
-    critical: insights.filter(i => i.priority === 'critical').length,
-    high: insights.filter(i => i.priority === 'high').length,
-    medium: insights.filter(i => i.priority === 'medium').length,
-    low: insights.filter(i => i.priority === 'low').length,
   };
 
+  useEffect(() => {
+    fetchInsights();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [typeFilter, severityFilter, eventWindow]);
+
+  const filteredInsights = useMemo(() => {
+    const term = searchTerm.trim().toLowerCase();
+    const searched = term
+      ? insights.filter((insight) =>
+          [
+            insight.title,
+            insight.description,
+            insight.metric,
+            insight.recommendation || '',
+            ...(insight.relatedEvents || []),
+          ]
+            .join(' ')
+            .toLowerCase()
+            .includes(term)
+        )
+      : insights;
+
+    return [...searched].sort((left, right) => {
+      if (sortBy === 'confidence') {
+        return right.confidence - left.confidence;
+      }
+      if (sortBy === 'date') {
+        return new Date(right.createdAt).getTime() - new Date(left.createdAt).getTime();
+      }
+      const severityDelta = severityRank(right.severity) - severityRank(left.severity);
+      if (severityDelta !== 0) {
+        return severityDelta;
+      }
+      return right.confidence - left.confidence;
+    });
+  }, [insights, searchTerm, sortBy]);
+
   return (
-    <div className={styles.insightsDashboard}>
-      {/* WHAT: Dashboard header */}
-      <div className={styles.header}>
-        <div>
-          <h1 className={styles.title}>🧠 Insights Dashboard</h1>
-          <p className={styles.subtitle}>AI-generated actionable intelligence across all events</p>
-        </div>
-      </div>
+    <div className="page-container">
+      <UnifiedAdminHeroWithSearch
+        title="🧠 Insights"
+        subtitle="Review anomalies, trends, benchmarks, predictions, and recommendations from one canonical analytics surface."
+        backLink="/admin/analytics"
+        showSearch={false}
+        actionButtons={[
+          {
+            label: 'Refresh',
+            icon: 'refresh',
+            onClick: fetchInsights,
+            variant: 'secondary',
+          },
+        ]}
+      />
 
-      {/* WHAT: Summary stats bar */}
-      <div className={styles.statsBar}>
-        <div className={styles.statItem}>
-          <span className={styles.statValue}>{stats.total}</span>
-          <span className={styles.statLabel}>Total Insights</span>
-        </div>
-        <div className={styles.statItem}>
-          <span className={`${styles.statValue} ${styles.critical}`}>{stats.critical}</span>
-          <span className={styles.statLabel}>Critical</span>
-        </div>
-        <div className={styles.statItem}>
-          <span className={`${styles.statValue} ${styles.high}`}>{stats.high}</span>
-          <span className={styles.statLabel}>High</span>
-        </div>
-        <div className={styles.statItem}>
-          <span className={`${styles.statValue} ${styles.medium}`}>{stats.medium}</span>
-          <span className={styles.statLabel}>Medium</span>
-        </div>
-        <div className={styles.statItem}>
-          <span className={`${styles.statValue} ${styles.low}`}>{stats.low}</span>
-          <span className={styles.statLabel}>Low</span>
-        </div>
-      </div>
-
-      {/* WHAT: Filters and controls */}
-      <div className={styles.controls}>
-        <div className={styles.filters}>
-          {/* Priority filter */}
-          <select
-            value={priorityFilter}
-            onChange={(e) => setPriorityFilter(e.target.value as PriorityFilter)}
-            className={styles.select}
-          >
-            <option value="all">All Priorities</option>
-            <option value="critical">Critical</option>
-            <option value="high">High</option>
-            <option value="medium">Medium</option>
-            <option value="low">Low</option>
-          </select>
-
-          {/* Category filter */}
-          <select
-            value={categoryFilter}
-            onChange={(e) => setCategoryFilter(e.target.value as CategoryFilter)}
-            className={styles.select}
-          >
-            <option value="all">All Categories</option>
-            <option value="anomaly">Anomalies</option>
-            <option value="trend">Trends</option>
-            <option value="benchmark">Benchmarks</option>
-            <option value="opportunity">Opportunities</option>
-          </select>
-
-          {/* Sort by */}
-          <select
-            value={sortBy}
-            onChange={(e) => setSortBy(e.target.value as SortBy)}
-            className={styles.select}
-          >
-            <option value="priority">Sort by Priority</option>
-            <option value="confidence">Sort by Confidence</option>
-          </select>
-
-          {/* Search */}
-          <input
-            type="text"
-            placeholder="Search insights..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className={styles.searchInput}
-          />
-        </div>
-
-        <div className={styles.actions}>
-          <button className={styles.actionButton} onClick={fetchInsights}>
-            🔄 Refresh
-          </button>
-          <button className={styles.actionButton}>
-            📄 Export
-          </button>
-        </div>
-      </div>
-
-      {/* WHAT: Results count */}
-      <div className={styles.resultsBar}>
-        <span className={styles.resultsText}>
-          Showing {filteredInsights.length} of {insights.length} insights
-        </span>
-      </div>
-
-      {/* WHAT: Insights feed */}
-      <div className={styles.insightsFeed}>
-        {loading ? (
-          <div className={styles.loadingState}>
-            <div className={styles.spinner}></div>
-            <p>Loading insights...</p>
+      <div className={styles.insightsDashboard}>
+        <ColoredCard accentColor="#3b82f6" hoverable={false}>
+          <div className={styles.header}>
+            <h2 className={styles.title}>Insights Queue</h2>
+            <p className={styles.subtitle}>
+              This surface uses the maintained global insights endpoint and replaces the old duplicate `/admin/insights` experience.
+            </p>
           </div>
-        ) : filteredInsights.length > 0 ? (
-          filteredInsights.map((insight) => (
-            <InsightCard
-              key={insight.id}
-              insight={insight}
-              onAction={handleAction}
-              onDismiss={handleDismiss}
-              showActions={true}
-            />
-          ))
+        </ColoredCard>
+
+        {metadata && !loading && !error && (
+          <div className={styles.statsBar}>
+            <div className={styles.statItem}>
+              <span className={styles.statValue}>{metadata.totalInsights}</span>
+              <span className={styles.statLabel}>Total Insights</span>
+            </div>
+            <div className={styles.statItem}>
+              <span className={styles.statValue}>{metadata.anomalies}</span>
+              <span className={styles.statLabel}>Anomalies</span>
+            </div>
+            <div className={styles.statItem}>
+              <span className={styles.statValue}>{metadata.trends}</span>
+              <span className={styles.statLabel}>Trends</span>
+            </div>
+            <div className={styles.statItem}>
+              <span className={styles.statValue}>{metadata.benchmarks}</span>
+              <span className={styles.statLabel}>Benchmarks</span>
+            </div>
+            <div className={styles.statItem}>
+              <span className={styles.statValue}>{metadata.predictions}</span>
+              <span className={styles.statLabel}>Predictions</span>
+            </div>
+            <div className={styles.statItem}>
+              <span className={styles.statValue}>{metadata.recommendations}</span>
+              <span className={styles.statLabel}>Recommendations</span>
+            </div>
+          </div>
+        )}
+
+        <ColoredCard accentColor="#14b8a6" hoverable={false}>
+          <div className={styles.controls}>
+            <div className={styles.filters}>
+              <select
+                value={typeFilter}
+                onChange={(event) => setTypeFilter(event.target.value as InsightTypeFilter)}
+                className={styles.select}
+                aria-label="Filter by insight type"
+              >
+                <option value="">All Types</option>
+                <option value="anomaly">Anomalies</option>
+                <option value="trend">Trends</option>
+                <option value="benchmark">Benchmarks</option>
+                <option value="prediction">Predictions</option>
+                <option value="recommendation">Recommendations</option>
+              </select>
+
+              <select
+                value={severityFilter}
+                onChange={(event) => setSeverityFilter(event.target.value as SeverityFilter)}
+                className={styles.select}
+                aria-label="Filter by severity"
+              >
+                <option value="">All Severities</option>
+                <option value="critical">Critical</option>
+                <option value="warning">Warning</option>
+                <option value="info">Info</option>
+              </select>
+
+              <select
+                value={sortBy}
+                onChange={(event) => setSortBy(event.target.value as SortBy)}
+                className={styles.select}
+                aria-label="Sort insights"
+              >
+                <option value="severity">Sort by Severity</option>
+                <option value="confidence">Sort by Confidence</option>
+                <option value="date">Sort by Date</option>
+              </select>
+
+              <select
+                value={eventWindow}
+                onChange={(event) => setEventWindow(Number(event.target.value))}
+                className={styles.select}
+                aria-label="Recent events window"
+              >
+                <option value={5}>Recent 5 Events</option>
+                <option value={10}>Recent 10 Events</option>
+                <option value={20}>Recent 20 Events</option>
+                <option value={50}>Recent 50 Events</option>
+              </select>
+
+              <input
+                type="text"
+                placeholder="Search insights..."
+                value={searchTerm}
+                onChange={(event) => setSearchTerm(event.target.value)}
+                className={styles.searchInput}
+                aria-label="Search insights"
+              />
+            </div>
+          </div>
+        </ColoredCard>
+
+        <div className={styles.resultsBar}>
+          <span className={styles.resultsText}>
+            Showing {filteredInsights.length} of {insights.length} insights
+            {metadata?.generatedAt ? ` • generated ${new Date(metadata.generatedAt).toLocaleString()}` : ''}
+          </span>
+        </div>
+
+        {error ? (
+          <ColoredCard accentColor="var(--mm-error)" hoverable={false}>
+            <div className={styles.emptyState}>
+              <h3>Insights unavailable</h3>
+              <p>{error}</p>
+            </div>
+          </ColoredCard>
         ) : (
-          <div className={styles.emptyState}>
-            <h3>No insights found</h3>
-            <p>Try adjusting your filters or check back later</p>
+          <div className={styles.insightsFeed}>
+            {loading ? (
+              <div className={styles.loadingState}>
+                <div className={styles.spinner}></div>
+                <p>Loading insights...</p>
+              </div>
+            ) : filteredInsights.length > 0 ? (
+              filteredInsights.map((insight) => (
+                <InsightCard key={insight.id} insight={insight} />
+              ))
+            ) : (
+              <div className={styles.emptyState}>
+                <h3>No insights found</h3>
+                <p>Adjust the filters or expand the recent event window.</p>
+              </div>
+            )}
           </div>
         )}
       </div>

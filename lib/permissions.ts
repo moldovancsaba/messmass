@@ -50,7 +50,11 @@ export const MENU_PERMISSIONS: Record<string, UserRole[]> = {
   'Categories': ['superadmin'],
 
   // WHAT: Analytics
+  'Analytics Home': ['admin', 'superadmin'],
   'Sponsorship Hub': ['admin', 'superadmin'],
+  'Executive Dashboard': ['admin', 'superadmin'],
+  'Marketing Dashboard': ['admin', 'superadmin'],
+  'Operations Dashboard': ['admin', 'superadmin'],
   'Insights': ['superadmin'],
 
   // WHAT: System

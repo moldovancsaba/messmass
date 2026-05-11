@@ -24,12 +24,15 @@ export const ROUTE_PROTECTION: Record<string, UserRole> = {
   '/admin/filter': 'user',
   
   // WHAT: Management features - admin level required
+  '/admin/analytics': 'admin',
+  '/admin/analytics/insights': 'superadmin',
   '/admin/kyc': 'admin',
   '/admin/charts': 'admin',
   '/admin/clicker-manager': 'admin',
   '/admin/bitly': 'admin',
   '/admin/visualization': 'admin',
   '/admin/design': 'admin',
+  '/admin/dashboard': 'guest',
   
   // WHAT: System administration - superadmin only
   '/admin/hashtags': 'superadmin',

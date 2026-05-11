@@ -14,7 +14,7 @@ export async function GET(request: NextRequest) {
     ? `${request.headers.get('x-forwarded-proto')}://${request.headers.get('x-forwarded-host') || request.headers.get('host')}`
     : request.nextUrl.origin;
   const callbackUrl = `${origin}/api/auth/sso/callback`;
-  const redirectUri = request.nextUrl.searchParams.get('redirect_uri') || '/admin/dashboard';
+  const redirectUri = request.nextUrl.searchParams.get('redirect_uri') || '/admin';
   const ssoLoginUrl = `${base}/login?redirect_uri=${encodeURIComponent(callbackUrl)}&state=${encodeURIComponent(redirectUri)}`;
   return NextResponse.redirect(ssoLoginUrl);
 }
