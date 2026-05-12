@@ -266,3 +266,25 @@ export function getAdminWorkspaceSections(): AdminNavSection[] {
 export function getAnalyticsNavItems(): AdminNavItem[] {
   return adminNavSections.find((section) => section.key === 'analytics')?.items || [];
 }
+
+export function getAnalyticsWorkspaceItems(): AdminNavItem[] {
+  const analyticsItems = getAnalyticsNavItems();
+  const partnerActivationItem = adminNavSections
+    .find((section) => section.key === 'operations')
+    ?.items.find((item) => item.label === 'Partner Activation');
+
+  if (!partnerActivationItem) {
+    return analyticsItems;
+  }
+
+  const sponsorshipHubIndex = analyticsItems.findIndex((item) => item.label === 'Sponsorship Hub');
+  if (sponsorshipHubIndex === -1) {
+    return [...analyticsItems, partnerActivationItem];
+  }
+
+  return [
+    ...analyticsItems.slice(0, sponsorshipHubIndex + 1),
+    partnerActivationItem,
+    ...analyticsItems.slice(sponsorshipHubIndex + 1),
+  ];
+}

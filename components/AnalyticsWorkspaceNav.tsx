@@ -5,7 +5,7 @@ import { usePathname } from 'next/navigation';
 import ColoredCard from '@/components/ColoredCard';
 import MaterialIcon from '@/components/MaterialIcon';
 import { useAdminAuth } from '@/hooks/useAdminAuth';
-import { getAnalyticsNavItems } from '@/lib/adminNavigation';
+import { getAnalyticsWorkspaceItems } from '@/lib/adminNavigation';
 import { canAccessMenuItem } from '@/lib/permissions';
 import styles from './AnalyticsWorkspaceNav.module.css';
 
@@ -17,7 +17,7 @@ export default function AnalyticsWorkspaceNav() {
     return null;
   }
 
-  const items = getAnalyticsNavItems().filter((item) => canAccessMenuItem(user.role, item.label));
+  const items = getAnalyticsWorkspaceItems().filter((item) => canAccessMenuItem(user.role, item.label));
 
   return (
     <div className={styles.wrap}>

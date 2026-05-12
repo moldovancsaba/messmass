@@ -2,7 +2,7 @@
 
 This file is onboarding plus operational context for the next agent. Keep it accurate when behavior, process, or current delivery state changes.
 
-**Last Updated:** 2026-05-11 (analytics entry-point consolidation slice)
+**Last Updated:** 2026-05-12 (analytics workspace nav continuation)
 
 ## 🚨 CRITICAL MUST-READ FOR ALL AGENTS: STYLING & COMPONENTS 🚨
 
@@ -65,6 +65,13 @@ You MUST completely read and obey `docs/coding-standards.md` and `docs/component
 - Style editor preview updates immediately for bar/pie CSS vars and includes Value Chain and Landing page sections.
 
 ## Handover Log
+
+## 2026-05-12 — Analytics workspace nav continuation (#817)
+- **Objective:** Finish the shared analytics-workspace movement model so the activation queue behaves like part of analytics instead of a detached operations branch.
+- **Workspace nav expansion:** Updated `/lib/adminNavigation.ts` with `getAnalyticsWorkspaceItems()` so the analytics workspace can reuse the canonical analytics lens list while explicitly inserting `Partner Activation` beside `Sponsorship Hub`.
+- **Sub-navigation alignment:** Updated `/components/AnalyticsWorkspaceNav.tsx` to render the new workspace item list, which means analytics home, Sponsorship Hub, activation, executive, marketing, operations, and insights now share one internal movement model.
+- **Workflow effect:** Users can move between proof-of-performance triage and the rest of the analytics workspace without backing out to `/admin`, which completes the main route-ownership goal of `#817`.
+- **Verification:** `npm run lint`, `npm run build`, and `npm run type-check` all passed.
 
 ## 2026-05-11 — Admin home and analytics entry-point consolidation slice (#817)
 - **Objective:** Remove the next structural inconsistency after `#816`: competing admin and analytics home surfaces that made users choose between `/admin`, `/admin/dashboard`, `/admin/insights`, and `analytics/*` without a clear ownership model.
