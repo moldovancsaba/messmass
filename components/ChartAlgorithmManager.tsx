@@ -581,7 +581,7 @@ ${errors.length > 0 ? '\n\nErrors:\n' + errors.join('\n') : '\n✅ All formulas 
       <UnifiedAdminHeroWithSearch 
         title="📊 Chart Algorithm Manager"
         subtitle="Configure chart algorithms, data processing & visualization settings"
-        backLink="/admin"
+        backLink="/admin/reports"
         showSearch
         searchValue={searchTerm}
         onSearchChange={setSearchTerm}

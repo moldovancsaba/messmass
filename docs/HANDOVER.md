@@ -2,7 +2,7 @@
 
 This file is onboarding plus operational context for the next agent. Keep it accurate when behavior, process, or current delivery state changes.
 
-**Last Updated:** 2026-05-12 (entity action direct-open slice)
+**Last Updated:** 2026-05-12 (reporting workspace foundation slice)
 
 ## 🚨 CRITICAL MUST-READ FOR ALL AGENTS: STYLING & COMPONENTS 🚨
 
@@ -32,7 +32,7 @@ You MUST completely read and obey `docs/coding-standards.md` and `docs/component
 - Last known HEAD during this update: `7ebd13ba8`
 - Working tree includes untracked local `READMEDEV.md`; canonical repo-root cleanup work is now tracked under `#359`.
 - Most recent documented code delivery before this update: organization admin data flow recovery and documentation sync.
-- Current active delivery: `mvp-factory-control#818` UI Refinement 3/6 is in local implementation after completing the final `#817` analytics-workspace nav continuation and starting the shared entity action-grammar refactor.
+- Current active delivery: `mvp-factory-control#819` UI Refinement 4/6 is in local implementation after stabilizing the core entity grammar (`#818`) and starting the reporting workspace consolidation.
 - Formally closed on SSOT board (2026-03-10): #354, #355, #356, #357, #358, #359.
 
 ## Current Priorities
@@ -65,6 +65,14 @@ You MUST completely read and obey `docs/coding-standards.md` and `docs/component
 - Style editor preview updates immediately for bar/pie CSS vars and includes Value Chain and Landing page sections.
 
 ## Handover Log
+
+## 2026-05-12 — Reporting workspace foundation slice (#819)
+- **Objective:** Start the reporting IA consolidation by giving the report-management system one canonical home and one shared movement model, matching the analytics workspace pattern.
+- **Canonical reporting home:** Added `/app/admin/reports/page.tsx` plus `/app/admin/reports/page.module.css` as the new reporting workspace landing page. It explains the reporting setup surfaces and routes users into Builder, Themes, Content Library, and Chart Algorithms from one place.
+- **Navigation model:** Updated `/lib/adminNavigation.ts` so the Reports section now exposes `Reporting Workspace` as the top-level admin destination, while `Report Builder`, `Report Themes`, `Content Library`, and `Chart Algorithms` remain available as drilldowns and are hidden from the admin workspace card grid. Added the matching permission in `/lib/permissions.ts`.
+- **Shared sub-navigation:** Added `/components/ReportingWorkspaceNav.tsx` plus `/components/ReportingWorkspaceNav.module.css` and wired that shared reporting nav into `/app/admin/visualization/page.tsx`, `/app/admin/styles/page.tsx`, `/app/admin/content-library/page.tsx`, and `/app/admin/charts/page.tsx`.
+- **Route ownership:** Updated report-management back-links so Builder, Themes, Content Library, and Chart Algorithm Manager now point back to `/admin/reports` instead of `/admin`, reinforcing the reporting workspace ownership model.
+- **Verification:** `npm run lint`, `npm run build`, and `npm run type-check` all passed.
 
 ## 2026-05-12 — Entity action direct-open slice (#818)
 - **Objective:** Remove the remaining extra click in the core entity workflows by making Events and Partners open their working destinations directly instead of forcing a share popup first.

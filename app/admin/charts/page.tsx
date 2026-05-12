@@ -2,6 +2,7 @@
 
 import ChartAlgorithmManager from '@/components/ChartAlgorithmManager';
 import ColoredCard from '@/components/ColoredCard';
+import ReportingWorkspaceNav from '@/components/ReportingWorkspaceNav';
 import { useEffect, useState } from 'react';
 
 interface User {
@@ -69,6 +70,7 @@ if (loading) {
 
   return (
     <div className="page-container">
+      <ReportingWorkspaceNav />
       {/* Chart Algorithm Manager Component with integrated AdminHero */}
       <ChartAlgorithmManager user={user} />
     </div>

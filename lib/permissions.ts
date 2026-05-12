@@ -36,6 +36,7 @@ export const MENU_PERMISSIONS: Record<string, UserRole[]> = {
   'Project Partners': ['admin', 'superadmin'],
   
   // WHAT: Reports
+  'Reporting Workspace': ['admin', 'superadmin'],
   'Report Builder': ['admin', 'superadmin'],
   'Report Themes': ['admin', 'superadmin'],
   'Content Library': ['admin', 'superadmin'],

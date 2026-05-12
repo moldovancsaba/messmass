@@ -85,11 +85,19 @@ export const adminNavSections: AdminNavSection[] = [
     description: 'Configure templates, blocks, themes, and reusable report content.',
     items: [
       {
+        label: 'Reporting Workspace',
+        path: '/admin/reports',
+        icon: 'dashboard_customize',
+        description: 'Enter the canonical reporting workspace and choose the setup surface you need.',
+        accentColor: '#3b82f6',
+      },
+      {
         label: 'Report Builder',
         path: '/admin/visualization',
         icon: 'view_quilt',
         description: 'Manage report blocks, layouts, preview flow, and template composition.',
         accentColor: '#14b8a6',
+        showInAdminWorkspace: false,
       },
       {
         label: 'Report Themes',
@@ -97,6 +105,7 @@ export const adminNavSections: AdminNavSection[] = [
         icon: 'palette',
         description: 'Manage reusable report visual themes and branded page styling.',
         accentColor: '#ec4899',
+        showInAdminWorkspace: false,
       },
       {
         label: 'Content Library',
@@ -104,6 +113,7 @@ export const adminNavSections: AdminNavSection[] = [
         icon: 'folder',
         description: 'Manage reusable report content assets and shared media resources.',
         accentColor: '#0ea5e9',
+        showInAdminWorkspace: false,
       },
       {
         label: 'Chart Algorithms',
@@ -111,6 +121,7 @@ export const adminNavSections: AdminNavSection[] = [
         icon: 'trending_up',
         description: 'Configure chart logic, formulas, and calculation behavior.',
         accentColor: '#f59e0b',
+        showInAdminWorkspace: false,
       },
     ],
   },
@@ -265,6 +276,14 @@ export function getAdminWorkspaceSections(): AdminNavSection[] {
 
 export function getAnalyticsNavItems(): AdminNavItem[] {
   return adminNavSections.find((section) => section.key === 'analytics')?.items || [];
+}
+
+export function getReportingNavItems(): AdminNavItem[] {
+  return adminNavSections.find((section) => section.key === 'reports')?.items || [];
+}
+
+export function getReportingWorkspaceItems(): AdminNavItem[] {
+  return getReportingNavItems().filter((item) => item.path !== '/admin/reports');
 }
 
 export function getAnalyticsWorkspaceItems(): AdminNavItem[] {

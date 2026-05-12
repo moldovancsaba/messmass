@@ -7,6 +7,7 @@
 
 import React, { useState, useEffect, useMemo } from 'react';
 import UnifiedAdminHeroWithSearch from '@/components/UnifiedAdminHeroWithSearch';
+import ReportingWorkspaceNav from '@/components/ReportingWorkspaceNav';
 import ColoredCard from '@/components/ColoredCard';
 import { FormModal } from '@/components/modals';
 import ImageUploadField from '@/components/ImageUploadField';
@@ -174,7 +175,7 @@ export default function ContentLibraryPage() {
       <UnifiedAdminHeroWithSearch
         title="📚 Content Library"
         subtitle="Define image and text variables for event-specific content"
-        backLink="/admin"
+        backLink="/admin/reports"
         showSearch
         searchValue={searchTerm}
         onSearchChange={setSearchTerm}
@@ -202,6 +203,8 @@ export default function ContentLibraryPage() {
           { text: `${filteredAssets.length} Variables`, variant: 'success' }
         ]}
       />
+
+      <ReportingWorkspaceNav />
       
       {/* Filters */}
       <ColoredCard accentColor="#10b981" hoverable={false}>

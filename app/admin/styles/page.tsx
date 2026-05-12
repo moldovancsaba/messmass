@@ -8,6 +8,7 @@
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import UnifiedAdminHeroWithSearch from '@/components/UnifiedAdminHeroWithSearch';
+import ReportingWorkspaceNav from '@/components/ReportingWorkspaceNav';
 import ColoredCard from '@/components/ColoredCard';
 import MaterialIcon from '@/components/MaterialIcon';
 import { ReportStyle } from '@/lib/reportStyleTypes';
@@ -115,6 +116,7 @@ export default function StylesListPage() {
       <UnifiedAdminHeroWithSearch
         title="Report Themes" 
         subtitle="Manage reusable visual themes for report pages"
+        backLink="/admin/reports"
         actionButtons={[
           {
             label: 'Create New Style',
@@ -131,6 +133,8 @@ export default function StylesListPage() {
           ...(deleteStatus ? [{ text: deleteStatus, variant: 'success' as const }] : []),
         ]}
       />
+
+      <ReportingWorkspaceNav />
 
       {stylesList.length === 0 ? (
         <ColoredCard accentColor="#3b82f6">
