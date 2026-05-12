@@ -63,6 +63,7 @@ export default function PartnersAdminPageUnified() {
   
   // Modal states - Create
   const [showAddForm, setShowAddForm] = useState(false);
+  const [createPartnerStep, setCreatePartnerStep] = useState<1 | 2>(1);
   const [newPartnerData, setNewPartnerData] = useState({
     name: '',
     emoji: '',
@@ -81,6 +82,7 @@ export default function PartnersAdminPageUnified() {
   
   // Modal states - Edit
   const [showEditForm, setShowEditForm] = useState(false);
+  const [editPartnerStep, setEditPartnerStep] = useState<1 | 2>(1);
   const [editingPartner, setEditingPartner] = useState<PartnerResponse | null>(null);
   
   // Share modal state
@@ -117,6 +119,55 @@ export default function PartnersAdminPageUnified() {
     founded: '',
     logoUrl: '',
   });
+
+  const resetCreatePartnerForm = useCallback(() => {
+    setCreatePartnerStep(1);
+    setShowAddForm(false);
+    setNewPartnerData({
+      name: '',
+      emoji: '',
+      showEmoji: true,
+      hashtags: [],
+      categorizedHashtags: {},
+      bitlyLinkIds: [],
+      styleId: '',
+      reportTemplateId: '',
+      clickerSetId: '',
+      sportsDb: undefined,
+      logoUrl: undefined,
+      autoProvisionGoogleSheet: false,
+    });
+  }, []);
+
+  const resetEditPartnerForm = useCallback(() => {
+    setEditPartnerStep(1);
+    setShowEditForm(false);
+    setEditingPartner(null);
+    setShowManualEntry(false);
+    setEditPartnerData({
+      name: '',
+      emoji: '',
+      showEmoji: true,
+      hashtags: [],
+      categorizedHashtags: {},
+      bitlyLinkIds: [],
+      logoUrl: undefined,
+      sportsDb: undefined,
+      styleId: '',
+      reportTemplateId: '',
+      clickerSetId: '',
+      googleSheetsUrl: '',
+      showOnlyTeam1Events: false,
+    });
+    setManualEntryData({
+      venueName: '',
+      venueCapacity: '',
+      leagueName: '',
+      country: '',
+      founded: '',
+      logoUrl: '',
+    });
+  }, []);
   
   // Hydrate sort state from URL
   useEffect(() => {
@@ -338,7 +389,7 @@ export default function PartnersAdminPageUnified() {
   
   // WHAT: Handle adding a new partner
   // WHY: Create organization entities
-  const handleAddPartner = async () => {
+  const handleAddPartner = useCallback(async () => {
     setError('');
     setSuccessMessage('');
     
@@ -371,21 +422,7 @@ export default function PartnersAdminPageUnified() {
           }
         }
 
-        setShowAddForm(false);
-        setNewPartnerData({
-          name: '',
-          emoji: '',
-          showEmoji: true,
-          hashtags: [],
-          categorizedHashtags: {},
-          bitlyLinkIds: [],
-          styleId: '',
-          reportTemplateId: '',
-          clickerSetId: '',
-          sportsDb: undefined,
-          logoUrl: undefined,
-          autoProvisionGoogleSheet: false
-        });
+        resetCreatePartnerForm();
         loadPartners();
       } else {
         setError(data.error || 'Failed to create partner');
@@ -396,11 +433,25 @@ export default function PartnersAdminPageUnified() {
     } finally {
       setIsCreatingPartner(false);
     }
-  };
+  }, [loadPartners, newPartnerData, resetCreatePartnerForm]);
+
+  const handleAddPartnerSubmit = useCallback(async () => {
+    setError('');
+    if (createPartnerStep === 1) {
+      if (!newPartnerData.name.trim() || !newPartnerData.emoji.trim()) {
+        setError('Name and emoji are required');
+        return;
+      }
+      setCreatePartnerStep(2);
+      return;
+    }
+
+    await handleAddPartner();
+  }, [createPartnerStep, handleAddPartner, newPartnerData.emoji, newPartnerData.name]);
   
   // WHAT: Handle updating an existing partner
   // WHY: Allows editing partner details
-  const handleUpdatePartner = async () => {
+  const handleUpdatePartner = useCallback(async () => {
     setError('');
     setSuccessMessage('');
     
@@ -418,8 +469,7 @@ export default function PartnersAdminPageUnified() {
       
       if (data.success) {
         setSuccessMessage(`✓ Partner "${editPartnerData.name}" updated successfully!`);
-        setShowEditForm(false);
-        setEditingPartner(null);
+        resetEditPartnerForm();
         loadPartners();
       } else {
         setError(data.error || 'Failed to update partner');
@@ -430,7 +480,21 @@ export default function PartnersAdminPageUnified() {
     } finally {
       setIsUpdatingPartner(false);
     }
-  };
+  }, [editPartnerData, editingPartner, loadPartners, resetEditPartnerForm]);
+
+  const handleUpdatePartnerSubmit = useCallback(async () => {
+    setError('');
+    if (editPartnerStep === 1) {
+      if (!editingPartner || !editPartnerData.name.trim() || !editPartnerData.emoji.trim()) {
+        setError('Name and emoji are required');
+        return;
+      }
+      setEditPartnerStep(2);
+      return;
+    }
+
+    await handleUpdatePartner();
+  }, [editPartnerData.emoji, editPartnerData.name, editPartnerStep, editingPartner, handleUpdatePartner]);
   
   // WHAT: Handle deleting a partner
   // WHY: Remove organizations from system
@@ -545,6 +609,7 @@ export default function PartnersAdminPageUnified() {
 
   const openEditForm = useCallback((partner: PartnerResponse) => {
     loadBitlyLinks();
+    setEditPartnerStep(1);
     setEditingPartner(partner);
     setEditPartnerData({
       name: partner.name,
@@ -574,6 +639,85 @@ export default function PartnersAdminPageUnified() {
     });
     setShowEditForm(true);
   }, [loadBitlyLinks]);
+
+  const renderPartnerStepHeader = (currentStep: 1 | 2, labels: [string, string]) => (
+    <div className="form-group mb-4">
+      <div className="flex items-center gap-2 flex-wrap">
+        {labels.map((label, index) => {
+          const stepNumber = (index + 1) as 1 | 2;
+          return (
+            <span
+              key={label}
+              className={`badge ${currentStep === stepNumber ? 'badge-primary' : 'badge-secondary'}`}
+            >
+              {stepNumber}. {label}
+            </span>
+          );
+        })}
+      </div>
+      <p className="form-hint mt-2">
+        {currentStep === 1
+          ? 'Start with partner identity, display rules, sports enrichment, and hashtags.'
+          : 'Then configure reporting defaults, distribution links, clicker layout, and Google Sheets behavior.'}
+      </p>
+    </div>
+  );
+
+  const createPartnerFooter = (
+    <div className="flex items-center justify-between gap-3">
+      <div className="flex items-center gap-2">
+        <span className={`badge ${createPartnerStep === 1 ? 'badge-primary' : 'badge-secondary'}`}>Basics</span>
+        <span className={`badge ${createPartnerStep === 2 ? 'badge-primary' : 'badge-secondary'}`}>Reporting</span>
+      </div>
+      <div className="flex items-center gap-2">
+        <button
+          type="button"
+          onClick={() => {
+            if (createPartnerStep === 1) {
+              resetCreatePartnerForm();
+              return;
+            }
+            setCreatePartnerStep(1);
+          }}
+          disabled={isCreatingPartner}
+          className="btn btn-small btn-secondary"
+        >
+          {createPartnerStep === 1 ? 'Cancel' : 'Back'}
+        </button>
+        <button type="submit" disabled={isCreatingPartner} className="btn btn-small btn-primary">
+          {isCreatingPartner ? 'Saving…' : createPartnerStep === 1 ? 'Continue to Reporting' : 'Create Partner'}
+        </button>
+      </div>
+    </div>
+  );
+
+  const editPartnerFooter = (
+    <div className="flex items-center justify-between gap-3">
+      <div className="flex items-center gap-2">
+        <span className={`badge ${editPartnerStep === 1 ? 'badge-primary' : 'badge-secondary'}`}>Basics</span>
+        <span className={`badge ${editPartnerStep === 2 ? 'badge-primary' : 'badge-secondary'}`}>Reporting</span>
+      </div>
+      <div className="flex items-center gap-2">
+        <button
+          type="button"
+          onClick={() => {
+            if (editPartnerStep === 1) {
+              resetEditPartnerForm();
+              return;
+            }
+            setEditPartnerStep(1);
+          }}
+          disabled={isUpdatingPartner}
+          className="btn btn-small btn-secondary"
+        >
+          {editPartnerStep === 1 ? 'Cancel' : 'Back'}
+        </button>
+        <button type="submit" disabled={isUpdatingPartner} className="btn btn-small btn-primary">
+          {isUpdatingPartner ? 'Saving…' : editPartnerStep === 1 ? 'Continue to Reporting' : 'Update Partner'}
+        </button>
+      </div>
+    </div>
+  );
   
   const partnersAdapterWithHandlers = useMemo(() => withAdminEntityActions(
     partnersAdapter,
@@ -675,162 +819,173 @@ export default function PartnersAdminPageUnified() {
       {/* Add Partner Modal */}
       <FormModal
         isOpen={showAddForm}
-        onClose={() => setShowAddForm(false)}
-        onSubmit={handleAddPartner}
-        title="+ Add Partner"
-        submitText="Create Partner"
+        onClose={resetCreatePartnerForm}
+        onSubmit={handleAddPartnerSubmit}
+        title={createPartnerStep === 1 ? '+ Add Partner: Basics' : '+ Add Partner: Reporting Setup'}
+        submitText={createPartnerStep === 1 ? 'Continue to Reporting' : 'Create Partner'}
         isSubmitting={isCreatingPartner}
         size="lg"
+        subtitle={createPartnerStep === 1 ? 'Define the partner entity first.' : 'Assign default reporting and integration behavior.'}
+        showStatusIndicator={false}
+        customFooter={createPartnerFooter}
       >
-        <div className="form-group mb-4">
-          <label className="form-label-block">Partner Name *</label>
-          <input
-            type="text"
-            className="form-input"
-            value={newPartnerData.name}
-            onChange={(e) => setNewPartnerData(prev => ({ ...prev, name: e.target.value }))}
-            placeholder="Enter partner name (e.g., FC Barcelona, UEFA, Camp Nou)"
-            required
-            autoFocus
-          />
-        </div>
-        
-        <div className="form-group mb-4">
-          <label className="form-label-block">Partner Emoji *</label>
-          <EmojiSelector
-            value={newPartnerData.emoji}
-            onChange={(emoji) => setNewPartnerData(prev => ({ ...prev, emoji }))}
-          />
-        </div>
-        
-        <div className="form-group mb-4">
-          <label className="form-label-block">
-            <input
-              type="checkbox"
-              checked={newPartnerData.showEmoji}
-              onChange={(e) => setNewPartnerData(prev => ({ ...prev, showEmoji: e.target.checked }))}
-              className="mr-2"
-            />
-            Show emoji in reports and displays
-          </label>
-          <p className="form-hint">
-            💡 Uncheck to hide the emoji while keeping it stored for future use
-          </p>
-        </div>
-        
-        <div className="form-group mb-4">
-          <label className="form-label-block">TheSportsDB</label>
-          <TheSportsDBSearch
-            linkedTeam={newPartnerData.sportsDb}
-            onLink={(team) => {
-              setNewPartnerData(prev => ({
-                ...prev,
-                sportsDb: team,
-                logoUrl: team.strTeamBadge
-              }));
-            }}
-            onUnlink={() => {
-              setNewPartnerData(prev => ({ ...prev, sportsDb: undefined }));
-            }}
-          />
-          <p className="form-hint">
-            💡 Link to sports team for auto-populated data (logo, colors, stadium, hashtags)
-          </p>
-        </div>
-        
-        <div className="form-group mb-4">
-          <label className="form-label-block">Hashtags (optional)</label>
-          <UnifiedHashtagInput
-            generalHashtags={newPartnerData.hashtags}
-            onGeneralChange={(hashtags) => 
-              setNewPartnerData(prev => ({ ...prev, hashtags }))
-            }
-            categorizedHashtags={newPartnerData.categorizedHashtags}
-            onCategorizedChange={(categorizedHashtags) => 
-              setNewPartnerData(prev => ({ ...prev, categorizedHashtags }))
-            }
-            placeholder="Search or add hashtags..."
-          />
-        </div>
-        
-        <div className="form-group mb-4">
-          <label className="form-label-block">Bitly Links (optional)</label>
-          <BitlyLinksSelector
-            selectedLinkIds={newPartnerData.bitlyLinkIds}
-            onChange={(bitlyLinkIds) => 
-              setNewPartnerData(prev => ({ ...prev, bitlyLinkIds }))
-            }
-          />
-          <p className="form-hint">
-            💡 Type to search Bitly links (e.g., &quot;fanselfie.me/swisshockey&quot;)
-          </p>
-        </div>
-        
-        <div className="form-group mb-4">
-          <label className="form-label-block">Report Visual Style</label>
-          <select 
-            className="form-input"
-            value={newPartnerData.styleId || ''}
-            onChange={(e) => setNewPartnerData(prev => ({ ...prev, styleId: e.target.value || null }))}
-          >
-            <option value="">— Use Default Style —</option>
-            {availableStyles.map(s => (
-              <option key={s._id} value={s._id}>{s.name}</option>
-            ))}
-          </select>
-          <p className="form-hint">
-            💡 Report color theme (26-color system) for partner report page
-          </p>
-        </div>
+        {renderPartnerStepHeader(createPartnerStep, ['Partner Basics', 'Reporting & Integrations'])}
 
-        <div className="form-group mb-4">
-          <label className="form-label-block">Report Template</label>
-          <select 
-            className="form-input"
-            value={newPartnerData.reportTemplateId || ''}
-            onChange={(e) => setNewPartnerData(prev => ({ ...prev, reportTemplateId: e.target.value }))}
-          >
-            <option value="">— Use Default Template —</option>
-            {availableTemplates.map(t => (
-              <option key={t._id} value={t._id}>{t.name} ({t.type})</option>
-            ))}
-          </select>
-          <p className="form-hint">
-            💡 All events from this partner will use this template by default
-          </p>
-        </div>
+        {createPartnerStep === 1 ? (
+          <>
+            <div className="form-group mb-4">
+              <label className="form-label-block">Partner Name *</label>
+              <input
+                type="text"
+                className="form-input"
+                value={newPartnerData.name}
+                onChange={(e) => setNewPartnerData(prev => ({ ...prev, name: e.target.value }))}
+                placeholder="Enter partner name (e.g., FC Barcelona, UEFA, Camp Nou)"
+                required
+                autoFocus
+              />
+            </div>
+            
+            <div className="form-group mb-4">
+              <label className="form-label-block">Partner Emoji *</label>
+              <EmojiSelector
+                value={newPartnerData.emoji}
+                onChange={(emoji) => setNewPartnerData(prev => ({ ...prev, emoji }))}
+              />
+            </div>
+            
+            <div className="form-group mb-4">
+              <label className="form-label-block">
+                <input
+                  type="checkbox"
+                  checked={newPartnerData.showEmoji}
+                  onChange={(e) => setNewPartnerData(prev => ({ ...prev, showEmoji: e.target.checked }))}
+                  className="mr-2"
+                />
+                Show emoji in reports and displays
+              </label>
+              <p className="form-hint">
+                💡 Uncheck to hide the emoji while keeping it stored for future use
+              </p>
+            </div>
+            
+            <div className="form-group mb-4">
+              <label className="form-label-block">TheSportsDB</label>
+              <TheSportsDBSearch
+                linkedTeam={newPartnerData.sportsDb}
+                onLink={(team) => {
+                  setNewPartnerData(prev => ({
+                    ...prev,
+                    sportsDb: team,
+                    logoUrl: team.strTeamBadge
+                  }));
+                }}
+                onUnlink={() => {
+                  setNewPartnerData(prev => ({ ...prev, sportsDb: undefined }));
+                }}
+              />
+              <p className="form-hint">
+                💡 Link to sports team for auto-populated data (logo, colors, stadium, hashtags)
+              </p>
+            </div>
+            
+            <div className="form-group mb-4">
+              <label className="form-label-block">Hashtags (optional)</label>
+              <UnifiedHashtagInput
+                generalHashtags={newPartnerData.hashtags}
+                onGeneralChange={(hashtags) => 
+                  setNewPartnerData(prev => ({ ...prev, hashtags }))
+                }
+                categorizedHashtags={newPartnerData.categorizedHashtags}
+                onCategorizedChange={(categorizedHashtags) => 
+                  setNewPartnerData(prev => ({ ...prev, categorizedHashtags }))
+                }
+                placeholder="Search or add hashtags..."
+              />
+            </div>
+          </>
+        ) : (
+          <>
+            <div className="form-group mb-4">
+              <label className="form-label-block">Bitly Links (optional)</label>
+              <BitlyLinksSelector
+                selectedLinkIds={newPartnerData.bitlyLinkIds}
+                onChange={(bitlyLinkIds) => 
+                  setNewPartnerData(prev => ({ ...prev, bitlyLinkIds }))
+                }
+              />
+              <p className="form-hint">
+                💡 Type to search Bitly links (e.g., &quot;fanselfie.me/swisshockey&quot;)
+              </p>
+            </div>
+            
+            <div className="form-group mb-4">
+              <label className="form-label-block">Report Visual Style</label>
+              <select 
+                className="form-input"
+                value={newPartnerData.styleId || ''}
+                onChange={(e) => setNewPartnerData(prev => ({ ...prev, styleId: e.target.value || null }))}
+              >
+                <option value="">— Use Default Style —</option>
+                {availableStyles.map(s => (
+                  <option key={s._id} value={s._id}>{s.name}</option>
+                ))}
+              </select>
+              <p className="form-hint">
+                💡 Report color theme (26-color system) for partner report page
+              </p>
+            </div>
 
-        <div className="form-group mb-4">
-          <label className="form-label-block">Clicker Set</label>
-          <select
-            className="form-input"
-            value={newPartnerData.clickerSetId || ''}
-            onChange={(e) => setNewPartnerData(prev => ({ ...prev, clickerSetId: e.target.value || null }))}
-          >
-            <option value="">— Use Default Clicker —</option>
-            {availableClickerSets.map(set => (
-              <option key={set._id} value={set._id}>
-                {set.isDefault ? '⭐ ' : ''}{set.name}
-              </option>
-            ))}
-          </select>
-          <p className="form-hint">Select which clicker layout this partner should use by default.</p>
-        </div>
+            <div className="form-group mb-4">
+              <label className="form-label-block">Report Template</label>
+              <select 
+                className="form-input"
+                value={newPartnerData.reportTemplateId || ''}
+                onChange={(e) => setNewPartnerData(prev => ({ ...prev, reportTemplateId: e.target.value }))}
+              >
+                <option value="">— Use Default Template —</option>
+                {availableTemplates.map(t => (
+                  <option key={t._id} value={t._id}>{t.name} ({t.type})</option>
+                ))}
+              </select>
+              <p className="form-hint">
+                💡 All events from this partner will use this template by default
+              </p>
+            </div>
 
-        <div className="form-group mb-2">
-          <label className="form-label-block">
-            <input
-              type="checkbox"
-              checked={newPartnerData.autoProvisionGoogleSheet}
-              onChange={(e) => setNewPartnerData(prev => ({ ...prev, autoProvisionGoogleSheet: e.target.checked }))}
-              className="mr-2"
-            />
-            Auto-create + connect Google Sheet for this partner
-          </label>
-          <p className="form-hint">
-            💡 Phase 2.5: Creates a new sheet, writes headers, and connects it automatically. You still need to share the sheet with the partner&apos;s editors.
-          </p>
-        </div>
+            <div className="form-group mb-4">
+              <label className="form-label-block">Clicker Set</label>
+              <select
+                className="form-input"
+                value={newPartnerData.clickerSetId || ''}
+                onChange={(e) => setNewPartnerData(prev => ({ ...prev, clickerSetId: e.target.value || null }))}
+              >
+                <option value="">— Use Default Clicker —</option>
+                {availableClickerSets.map(set => (
+                  <option key={set._id} value={set._id}>
+                    {set.isDefault ? '⭐ ' : ''}{set.name}
+                  </option>
+                ))}
+              </select>
+              <p className="form-hint">Select which clicker layout this partner should use by default.</p>
+            </div>
+
+            <div className="form-group mb-2">
+              <label className="form-label-block">
+                <input
+                  type="checkbox"
+                  checked={newPartnerData.autoProvisionGoogleSheet}
+                  onChange={(e) => setNewPartnerData(prev => ({ ...prev, autoProvisionGoogleSheet: e.target.checked }))}
+                  className="mr-2"
+                />
+                Auto-create + connect Google Sheet for this partner
+              </label>
+              <p className="form-hint">
+                💡 Phase 2.5: Creates a new sheet, writes headers, and connects it automatically. You still need to share the sheet with the partner&apos;s editors.
+              </p>
+            </div>
+          </>
+        )}
       </FormModal>
       
       {/* Share Partner Report Modal */}
@@ -845,13 +1000,20 @@ export default function PartnersAdminPageUnified() {
       {/* Edit Partner Modal */}
       <FormModal
         isOpen={showEditForm}
-        onClose={() => setShowEditForm(false)}
-        onSubmit={handleUpdatePartner}
-        title="Edit Partner"
-        submitText="Update Partner"
+        onClose={resetEditPartnerForm}
+        onSubmit={handleUpdatePartnerSubmit}
+        title={editPartnerStep === 1 ? 'Edit Partner: Basics' : 'Edit Partner: Reporting & Integrations'}
+        submitText={editPartnerStep === 1 ? 'Continue to Reporting' : 'Update Partner'}
         isSubmitting={isUpdatingPartner}
         size="lg"
+        subtitle={editPartnerStep === 1 ? 'Validate the partner record first.' : 'Then adjust reporting defaults and connected workflows.'}
+        showStatusIndicator={false}
+        customFooter={editPartnerFooter}
       >
+        {renderPartnerStepHeader(editPartnerStep, ['Partner Basics', 'Reporting & Integrations'])}
+
+        {editPartnerStep === 1 ? (
+          <>
         <div className="form-group mb-4">
           <label className="form-label-block">Partner Name *</label>
           <input
@@ -950,7 +1112,9 @@ export default function PartnersAdminPageUnified() {
             placeholder="Search or add hashtags..."
           />
         </div>
-        
+          </>
+        ) : (
+          <>
         <div className="form-group mb-4">
           <label className="form-label-block">Bitly Links</label>
           <BitlyLinksSelector
@@ -1078,6 +1242,8 @@ export default function PartnersAdminPageUnified() {
         </div>
 
         {/* Inline Connect + Pull/Push */}
+          </>
+        )}
         <div className="form-group mb-4">
           <button
             type="button"

@@ -2,7 +2,7 @@
 
 This file is onboarding plus operational context for the next agent. Keep it accurate when behavior, process, or current delivery state changes.
 
-**Last Updated:** 2026-05-12 (reporting dependency consolidation slice)
+**Last Updated:** 2026-05-12 (guided setup flow foundation slice)
 
 ## 🚨 CRITICAL MUST-READ FOR ALL AGENTS: STYLING & COMPONENTS 🚨
 
@@ -32,7 +32,7 @@ You MUST completely read and obey `docs/coding-standards.md` and `docs/component
 - Last known HEAD during this update: `7ebd13ba8`
 - Working tree includes untracked local `READMEDEV.md`; canonical repo-root cleanup work is now tracked under `#359`.
 - Most recent documented code delivery before this update: organization admin data flow recovery and documentation sync.
-- Current active delivery: `mvp-factory-control#819` UI Refinement 4/6 is in local implementation after stabilizing the core entity grammar (`#818`) and starting the reporting workspace consolidation.
+- Current active delivery: `mvp-factory-control#820` UI Refinement 5/6 is in local implementation after completing the reporting-workspace consolidation and starting guided setup flow simplification for Events and Partners.
 - Formally closed on SSOT board (2026-03-10): #354, #355, #356, #357, #358, #359.
 
 ## Current Priorities
@@ -65,6 +65,14 @@ You MUST completely read and obey `docs/coding-standards.md` and `docs/component
 - Style editor preview updates immediately for bar/pie CSS vars and includes Value Chain and Landing page sections.
 
 ## Handover Log
+
+## 2026-05-12 — Guided setup flow foundation slice (#820)
+- **Objective:** Reduce decision overload in the two highest-friction admin setup surfaces by staging creation/edit flows instead of forcing all decisions into one modal.
+- **Event setup flow:** Updated `/app/admin/events/page.tsx` so both create and edit now use a two-step flow inside the same modal: `Event Basics` first, then `Reporting` / `Reporting & Distribution`. The first submit now advances the workflow and the final submit persists changes.
+- **Partner setup flow:** Updated `/app/admin/partners/page.tsx` so both create and edit now use a two-step flow: `Partner Basics` first, then `Reporting & Integrations`. Identity, emoji, sports enrichment, and hashtags are separated from Bitly, templates, clicker sets, and Google Sheets behavior.
+- **Shared interaction pattern:** Both surfaces now use step badges, explicit `Continue to Reporting` / `Back` controls, and close/reset behavior that returns the modal to step 1 on reopen.
+- **Workflow effect:** Operators no longer have to make reporting and integration choices before they have finished defining the base event or partner record. This lowers setup friction without removing any existing functionality.
+- **Verification:** `npm run lint`, `npm run build`, and `npm run type-check` all passed.
 
 ## 2026-05-12 — Reporting dependency consolidation slice (#819)
 - **Objective:** Remove the last major report-authoring split by pulling variable schema and clicker layout into the reporting workspace instead of leaving them mentally stranded in a separate data bucket.
