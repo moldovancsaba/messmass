@@ -1,6 +1,6 @@
 # Brain Dump
 Status: Active
-Last Updated: 2026-03-06
+Last Updated: 2026-05-12
 Canonical: Yes
 Owner: Documentation
 
@@ -15,7 +15,8 @@ Owner: Documentation
 ## Admin UI consistency (issue #56)
 - Admin management pages now use `UnifiedAdminHeroWithSearch` as the canonical hero path, including badges when a page needs status/count context. Legacy `AdminHero` remains exception-only for untouched detail/editor flows.
 - The shared admin shell remains: `AdminLayout` -> `.content-surface` -> `.page-container` -> page content. Outer page width is token-driven by `--mm-admin-content-max-width`; narrower widths are only allowed as inner readable wrappers.
-- Touched routes in this delivery: `/admin/dashboard`, `/admin/styles`, `/admin/insights`, `/admin/content-library`, `/admin/mainpage`, `/admin/messages`, `/admin/help`, `/admin/events`.
+- The current canonical workspace map is: `/admin` as Admin Workspace, `/admin/reports` as Reporting Workspace, and `/admin/analytics` as Analytics Workspace. Legacy routes such as `/admin/dashboard` and `/admin/insights` now redirect into those canonical homes.
+- Touched routes in the workspace-consolidation delivery include `/admin`, `/admin/reports`, `/admin/analytics`, `/admin/styles`, `/admin/content-library`, `/admin/mainpage`, `/admin/messages`, `/admin/help`, and `/admin/events`.
 - Styling hygiene for touched scope: no inline style objects remain in those routes; the help page guest access notice moved into CSS modules, event action icons use CSS classes, and styles color swatches now render through SVG instead of React `style` props.
 
 ## Production hotfixes (issues #345, #346, #348, #349)

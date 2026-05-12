@@ -2,7 +2,7 @@
 
 This file is onboarding plus operational context for the next agent. Keep it accurate when behavior, process, or current delivery state changes.
 
-**Last Updated:** 2026-05-12 (guided setup flow foundation slice)
+**Last Updated:** 2026-05-12 (legacy route and help-system alignment slice)
 
 ## 🚨 CRITICAL MUST-READ FOR ALL AGENTS: STYLING & COMPONENTS 🚨
 
@@ -32,7 +32,7 @@ You MUST completely read and obey `docs/coding-standards.md` and `docs/component
 - Last known HEAD during this update: `7ebd13ba8`
 - Working tree includes untracked local `READMEDEV.md`; canonical repo-root cleanup work is now tracked under `#359`.
 - Most recent documented code delivery before this update: organization admin data flow recovery and documentation sync.
-- Current active delivery: `mvp-factory-control#820` UI Refinement 5/6 is in local implementation after completing the reporting-workspace consolidation and starting guided setup flow simplification for Events and Partners.
+- Current active delivery: `mvp-factory-control#821` UI Refinement 6/6 has been implemented in the repo, aligning the remaining legacy route/help guidance to the workspace model after the guided setup flow foundation.
 - Formally closed on SSOT board (2026-03-10): #354, #355, #356, #357, #358, #359.
 
 ## Current Priorities
@@ -65,6 +65,15 @@ You MUST completely read and obey `docs/coding-standards.md` and `docs/component
 - Style editor preview updates immediately for bar/pie CSS vars and includes Value Chain and Landing page sections.
 
 ## Handover Log
+
+## 2026-05-12 — Legacy route and help-system alignment slice (#821)
+- **Objective:** Finish the current UI refinement track by removing the last live guidance drift between the implemented workspace model and the in-product help/route ownership language.
+- **Help rewrite:** Rebuilt `/app/admin/help/page.tsx` around the current Admin Workspace, Reporting Workspace, and Analytics Workspace model. The page now teaches the staged Event and Partner flows, the canonical `/admin/reports` and `/admin/analytics` entry points, and the direct-open/share-second action grammar instead of the old dashboard/KYC-manager wording.
+- **Guest access guidance:** Updated the help-page role ladder so Guest, User, Admin, and Superadmin descriptions match the current product map rather than the legacy dashboard-era labels.
+- **Route ownership cleanup:** Updated `/lib/routeProtection.ts` so the comments and explicit protection map now recognize `Reporting Workspace`, protect `/admin/reports`, `/admin/styles`, and `/admin/content-library` at the admin level, and label `/admin/dashboard` as a legacy redirect entry point instead of an active home.
+- **Repo memory sync:** Updated `/docs/messmass-codex-brain-dump.md` so the canonical workspace map and touched-route list no longer present `/admin/dashboard` and `/admin/insights` as active product homes.
+- **Workflow effect:** Users reading in-product guidance are now directed into the same product structure that the navigation, redirects, and staged setup flows already implement, closing the remaining “old map vs live product” mismatch from the UI refinement program.
+- **Verification:** `npm run lint`, `npm run build`, and `npm run type-check` all passed.
 
 ## 2026-05-12 — Guided setup flow foundation slice (#820)
 - **Objective:** Reduce decision overload in the two highest-friction admin setup surfaces by staging creation/edit flows instead of forcing all decisions into one modal.

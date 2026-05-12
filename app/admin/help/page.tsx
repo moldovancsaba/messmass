@@ -1,19 +1,18 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import UnifiedAdminHeroWithSearch from '@/components/UnifiedAdminHeroWithSearch';
 import styles from './page.module.css';
 import type { UserRole } from '@/lib/users';
 
-/* What: Admin help page displaying the user guide with role-based welcome messages
-   Why: Make END_USER_GUIDE.md content accessible to admins, provide guidance for guests */
+/* What: Admin help page displaying the current workspace model with role-aware guidance
+   Why: Keep in-product guidance aligned with the active admin IA and workflow patterns */
 
 export default function HelpPage() {
   const [userRole, setUserRole] = useState<UserRole | undefined>(undefined);
   const [userName, setUserName] = useState<string>('');
   const [loading, setLoading] = useState(true);
-  
-  // WHAT: Fetch current user info for personalized greeting
+
   useEffect(() => {
     const fetchUser = async () => {
       try {
@@ -31,44 +30,53 @@ export default function HelpPage() {
         setLoading(false);
       }
     };
-    
+
     fetchUser();
   }, []);
-  
+
   return (
     <div className="page-container">
       <UnifiedAdminHeroWithSearch
         title="📖 Help"
-        subtitle="Workflow guide for using the {messmass} admin workspace, events, reports, and analytics"
+        subtitle="How to use the {messmass} admin workspace, reporting workspace, and analytics workspace"
         backLink="/admin"
       />
       <div className={styles.content}>
-
-        {/* WHAT: Welcome message for guest users
-            WHY: Explain limited permissions and how to request elevation */}
         {!loading && userRole === 'guest' && (
           <div className={styles.guestBox}>
-            <h2 className={styles.guestHeading}>
-              👋 Welcome, {userName}!
-            </h2>
+            <h2 className={styles.guestHeading}>👋 Welcome, {userName}!</h2>
             <p className={styles.guestText}>
-              You&apos;re currently logged in as a <strong>Guest</strong>. This gives you access to documentation and help resources.
+              You&apos;re currently logged in as a <strong>Guest</strong>. Guest access is
+              intentionally limited to the help surface so you can understand the product map
+              before higher-permission work is enabled.
             </p>
             <p className={styles.guestText}>
-              <strong>🔒 Limited Access:</strong> As a guest, you can only view this Help page. To access other features like Events, Partners, and Filters, you&apos;ll need elevated permissions.
+              <strong>🔒 Limited Access:</strong> To work with Events, Partners,
+              Reporting, Analytics, or Organizations, ask a superadmin to upgrade your role.
             </p>
             <div className={styles.guestInnerBox}>
-              <p className={styles.guestInnerHeading}>
-                ⬆️ How to Request Elevated Permissions:
-              </p>
+              <p className={styles.guestInnerHeading}>⬆️ Current role ladder:</p>
               <ol className={styles.guestList}>
-                <li>Contact a <strong>Superadmin</strong> in your organization</li>
-                <li>Provide your email: <strong>{userName.includes('@') ? userName : 'Check with admin'}</strong></li>
-                <li>Explain which role you need:
+                <li>Contact a <strong>Superadmin</strong> in your organization.</li>
+                <li>
+                  Provide your email:{' '}
+                  <strong>{userName.includes('@') ? userName : 'Check with admin'}</strong>
+                </li>
+                <li>
+                  Request the role that matches your workflow:
                   <ul className={styles.guestNestedList}>
-                    <li><strong>User:</strong> View and edit Events, Partners, Filters</li>
-                    <li><strong>Admin:</strong> User access + KYC Variables, Chart Algorithms, Report Builder, Report Themes, Bitly Links, and Partner Activation</li>
-                    <li><strong>Superadmin:</strong> Full system access including user management</li>
+                    <li>
+                      <strong>User:</strong> Events, Partners, Organizations, and day-to-day
+                      entity management
+                    </li>
+                    <li>
+                      <strong>Admin:</strong> User access plus Reporting Workspace, Analytics
+                      Workspace, Bitly Links, KYC Variables, Clicker Sets, and report setup
+                    </li>
+                    <li>
+                      <strong>Superadmin:</strong> Full system access, user management, and
+                      system administration
+                    </li>
                   </ul>
                 </li>
               </ol>
@@ -79,638 +87,244 @@ export default function HelpPage() {
         <nav className={styles.toc}>
           <h2>Table of Contents</h2>
           <ul>
-            <li><a href="#getting-started">Getting Started</a></li>
-            <li><a href="#sharing">Sharing Reports (Event & Partner)</a></li>
-            <li><a href="#organizations">Organization Management</a></li>
-            <li><a href="#stats-page">Understanding the Stats Page</a></li>
-            <li><a href="#live-tracking">Live Event Tracking (Clicker)</a></li>
-            <li><a href="#kyc-management">KYC Management (Variables)</a></li>
-            <li><a href="#exporting">Exporting Data</a></li>
-            <li><a href="#metrics">Understanding Metrics</a></li>
-            <li><a href="#hashtags">Hashtag System</a></li>
-            <li><a href="#v3-engine">V3 High-Performance Engine</a></li>
+            <li><a href="#workspace-map">Workspace Map</a></li>
+            <li><a href="#core-workflows">Core Workflows</a></li>
+            <li><a href="#reporting-workspace">Reporting Workspace</a></li>
+            <li><a href="#analytics-workspace">Analytics Workspace</a></li>
+            <li><a href="#sharing-export">Sharing and Export</a></li>
+            <li><a href="#organizations">Organizations</a></li>
             <li><a href="#troubleshooting">Troubleshooting</a></li>
           </ul>
         </nav>
 
-        <section id="getting-started" className={styles.section}>
-          <h2>🚀 Getting Started</h2>
-          
-          <h3>Accessing Your Event Dashboard</h3>
+        <section id="workspace-map" className={styles.section}>
+          <h2>🧭 Workspace Map</h2>
+
+          <h3>Start from Admin Workspace</h3>
           <p>
-            {'{messmass}'} provides different ways to access your event statistics:
+            <code>/admin</code> is the single command center for authenticated users. Use it
+            to enter the product by job, not by old internal route names.
           </p>
           <ul>
-            <li><strong>Admin Login:</strong> Full access to create, edit, and manage events</li>
-            <li><strong>View Link:</strong> Public stats page for viewing completed event data</li>
-            <li><strong>Edit Link:</strong> Live tracking page for collecting data during events</li>
+            <li><strong>Operations:</strong> Events, Messages, Quick Add, and execution work</li>
+            <li><strong>Entities:</strong> Partners and Organizations</li>
+            <li><strong>Reports:</strong> Reporting Workspace and report-authoring tools</li>
+            <li><strong>Data:</strong> Integrations and supporting data systems</li>
+            <li><strong>Analytics:</strong> Analytics Workspace, Sponsorship Hub, and Insights</li>
+            <li><strong>System:</strong> User access, cache, and admin-only controls</li>
           </ul>
 
-          <h3>Event Selection</h3>
-          <p>
-            Once logged in, you can select events from the Events page. Each event has:
-          </p>
+          <h3>Canonical Workspace Rules</h3>
           <ul>
-            <li><strong>Event Name:</strong> Unique identifier for the event</li>
-            <li><strong>Event Date:</strong> When the event took place</li>
-            <li><strong>Hashtags:</strong> Categories and labels for organization</li>
+            <li>
+              Use <code>/admin/reports</code> when you are changing how reports are built,
+              themed, populated, or exported.
+            </li>
+            <li>
+              Use <code>/admin/analytics</code> when you are reviewing performance, proof,
+              trends, or executive summaries.
+            </li>
+            <li>
+              Use <code>/admin/events</code>, <code>/admin/partners</code>, and{' '}
+              <code>/admin/organizations</code> when you are managing entities and their setup.
+            </li>
+            <li>
+              Legacy routes like <code>/admin/dashboard</code> and <code>/admin/insights</code>{' '}
+              now redirect into the canonical workspace model.
+            </li>
           </ul>
         </section>
 
-        <section id="stats-page" className={styles.section}>
-          <h2>📊 Understanding the Stats Page</h2>
-          
-          <h3>Reading Charts</h3>
+        <section id="core-workflows" className={styles.section}>
+          <h2>⚙️ Core Workflows</h2>
+
+          <h3>Event Setup and Editing</h3>
           <p>
-            The stats page displays your event data in visual charts:
+            Events now use a staged workflow so you do not have to decide everything at once.
+          </p>
+          <ol>
+            <li>Open <strong>Events</strong> at <code>/admin/events</code>.</li>
+            <li>Create a new event or edit an existing one.</li>
+            <li>Complete <strong>Event Basics</strong> first.</li>
+            <li>Continue into <strong>Reporting</strong> or <strong>Reporting &amp; Distribution</strong>.</li>
+            <li>Use <strong>Open Editor</strong> for live data capture and <strong>Open Report</strong> for output review.</li>
+          </ol>
+
+          <h3>Partner Setup and Editing</h3>
+          <p>
+            Partners follow the same staged pattern: identity first, reporting and integrations
+            second.
+          </p>
+          <ol>
+            <li>Open <strong>Partners</strong> at <code>/admin/partners</code>.</li>
+            <li>Create or edit the partner record.</li>
+            <li>Finish <strong>Partner Basics</strong> before moving to integrations.</li>
+            <li>Use the second step for Bitly, templates, clicker sets, Google Sheets, and logo/report setup.</li>
+          </ol>
+
+          <h3>Live Event Tracking</h3>
+          <p>
+            Use the event editor at <code>/edit/[event-slug]</code> for live collection.
           </p>
           <ul>
-            <li><strong>Pie Charts:</strong> Show proportional breakdowns (gender, age groups)</li>
-            <li><strong>Bar Charts:</strong> Compare different categories side by side</li>
-            <li><strong>KPI Cards:</strong> Display key numbers at a glance</li>
-          </ul>
-
-          <h3>Chart Layout</h3>
-          <div className={styles.codeBlock}>
-            Row 1: Merchandise | Engagement | Value<br />
-            Row 2: Gender Distribution | Age Groups<br />
-            Row 3: Location | Sources
-          </div>
-
-          <h3>Interactive Features</h3>
-          <ul>
-            <li>Click on chart segments for detailed breakdowns</li>
-            <li>Hover over elements to see exact numbers</li>
-            <li>Export charts as PNG images using the download button</li>
+            <li><strong>Clicker Mode:</strong> Fast button-based entry during live execution</li>
+            <li><strong>Manual Mode:</strong> Exact field-based entry and cleanup</li>
+            <li><strong>Realtime updates:</strong> Connected collaborators see changes instantly</li>
+            <li><strong>Best default:</strong> Use Clicker live, then Manual for correction and completion</li>
           </ul>
         </section>
 
-        <section id="live-tracking" className={styles.section}>
-          <h2>⚡ Live Event Tracking (Clicker)</h2>
-          
-          <h3>Accessing the Event Editor</h3>
+        <section id="reporting-workspace" className={styles.section}>
+          <h2>🧱 Reporting Workspace</h2>
+
+          <h3>What Lives Here</h3>
+          <p>
+            <code>/admin/reports</code> is the canonical home for report authoring.
+          </p>
+          <ul>
+            <li><strong>Report Builder:</strong> Compose report structures and content</li>
+            <li><strong>Report Themes:</strong> Control visual styling and brand presentation</li>
+            <li><strong>Content Library:</strong> Reusable report assets and content blocks</li>
+            <li><strong>Chart Algorithms:</strong> Manage chart logic and rendering behavior</li>
+            <li><strong>KYC Variables:</strong> Define the metric schema available to reports and editors</li>
+            <li><strong>Clicker Sets:</strong> Control the live input layout that feeds report data</li>
+          </ul>
+
+          <h3>How to Think About Variables and Clicker Sets</h3>
+          <p>
+            KYC Variables and Clicker Sets are not isolated admin utilities. They are report
+            dependencies.
+          </p>
+          <ul>
+            <li>
+              Update <strong>KYC Variables</strong> when you need to add, rename, or hide the
+              metrics available to events and reports.
+            </li>
+            <li>
+              Update <strong>Clicker Sets</strong> when you need to change the operator-facing
+              live capture layout.
+            </li>
+            <li>
+              Return to <strong>Report Builder</strong> after schema or input changes so the
+              final report composition stays aligned.
+            </li>
+          </ul>
+
+          <h3>Common Reporting Path</h3>
           <ol>
-            <li>Go to <strong>Events</strong> page (<code>/admin/events</code>)</li>
-            <li>Click on the <strong>event name</strong> (blue link) to open the editor</li>
-            <li>Or use the direct URL: <code>/edit/[event-slug]</code></li>
+            <li>Start in <code>/admin/reports</code>.</li>
+            <li>Adjust variables or clicker layout if the data model needs to change.</li>
+            <li>Update themes, content, or builder composition.</li>
+            <li>Open a report to review the output with real project data.</li>
           </ol>
-
-          <h3>Editor Modes</h3>
-          <p>
-            The editor provides two modes for data entry:
-          </p>
-
-          <h4>1. Clicker Mode (Default)</h4>
-          <p>
-            Fast, button-based data entry organized in groups:
-          </p>
-          <ul>
-            <li><strong>Images Group:</strong> Remote Images, Hostess Images, Selfies
-              <ul>
-                <li>Shows live KPI chart: &ldquo;All Images Taken&rdquo;</li>
-              </ul>
-            </li>
-            <li><strong>Location Group:</strong> Remote Fans, Stadium
-              <ul>
-                <li>Shows live KPI chart: &ldquo;Total Fans&rdquo;</li>
-              </ul>
-            </li>
-            <li><strong>Demographics Group:</strong> Female, Male, Gen Alpha, Gen Y/Z, Gen X, Boomer</li>
-            <li><strong>Merchandise Group:</strong> Merched, Jersey, Scarf, Flags, Baseball Cap, Other</li>
-          </ul>
-
-          <h4>Clicker Interaction Methods</h4>
-          <ul>
-            <li><strong>Single Click:</strong> Increment by +1</li>
-            <li><strong>Double Click:</strong> Increment by +10 (fast entry for large crowds)</li>
-            <li><strong>Right Click:</strong> Decrement by -1 (undo mistakes)</li>
-          </ul>
-
-          <h4>Visual Feedback</h4>
-          <ul>
-            <li>Button shows current value below the label</li>
-            <li>KPI charts update in real-time as you click</li>
-            <li>All connected users see updates instantly (WebSocket)</li>
-          </ul>
-
-          <h4>2. Manual Input Mode</h4>
-          <p>
-            Precise data entry using text fields:
-          </p>
-          <ul>
-            <li>Toggle to Manual Mode using the switch at the top</li>
-            <li>All editable variables appear as text input fields</li>
-            <li>Enter exact numbers (e.g., when copying from spreadsheets)</li>
-            <li>Includes Success Manager metrics (attendees, ticket purchases, visits, etc.)</li>
-            <li>Click <strong>&ldquo;Save&rdquo;</strong> to update all fields at once</li>
-          </ul>
-
-          <h3>Success Manager Metrics (Optional Section)</h3>
-          <p>
-            Click <strong>&ldquo;Show Success Manager Metrics&rdquo;</strong> to expand additional fields:
-          </p>
-          <ul>
-            <li>Event Attendees</li>
-            <li>Event Ticket Purchases</li>
-            <li>Value Proposition Visits/Purchases</li>
-            <li>Event Results (Home/Visitor scores)</li>
-            <li>Visit Sources (QR Code, Short URL, Web, Social)</li>
-          </ul>
-
-          <h3>Real-Time Collaboration</h3>
-          <ul>
-            <li><strong>Live Updates:</strong> All connected users see changes instantly</li>
-            <li><strong>Connection Status:</strong> Green dot = connected, Red = disconnected</li>
-            <li><strong>Auto-Reconnect:</strong> WebSocket reconnects automatically on network issues</li>
-            <li><strong>Multiple Users:</strong> Multiple people can edit simultaneously</li>
-            <li><strong>Conflict Resolution:</strong> Last write wins (updates merge automatically)</li>
-          </ul>
-
-          <h3>Best Practices</h3>
-          <ul>
-            <li>Use <strong>Clicker Mode</strong> during live events for speed</li>
-            <li>Use <strong>Manual Mode</strong> for post-event data correction or bulk imports</li>
-            <li>Double-click clicker buttons for large counts (e.g., stadium attendance)</li>
-            <li>Right-click to quickly undo accidental clicks</li>
-            <li>Monitor the KPI charts to verify data accuracy in real-time</li>
-          </ul>
         </section>
 
-        <section id="kyc-management" className={styles.section}>
-          <h2>📋 KYC Management (Variables & Metrics)</h2>
-          
-          <h3>What is KYC Management?</h3>
-          <p>
-            KYC Management (<code>/admin/kyc</code>) is the admin interface for configuring all variables (metrics) tracked in {'{messmass}'}. It controls:
-          </p>
-          <ul>
-            <li>Which variables appear in the <strong>Clicker Mode</strong></li>
-            <li>Which variables are editable in <strong>Manual Input Mode</strong></li>
-            <li>Display labels (aliases) shown in the UI</li>
-            <li>Variable organization and ordering</li>
-          </ul>
+        <section id="analytics-workspace" className={styles.section}>
+          <h2>📊 Analytics Workspace</h2>
 
-          <h3>Variable Types</h3>
-          <h4>1. System Variables (96 built-in)</h4>
-          <ul>
-            <li><strong>Images:</strong> remoteImages, hostessImages, selfies</li>
-            <li><strong>Fans:</strong> remoteFans, stadium</li>
-            <li><strong>Demographics:</strong> female, male, genAlpha, genYZ, genX, boomer</li>
-            <li><strong>Merchandise:</strong> merched, jersey, scarf, flags, baseballCap, other</li>
-            <li><strong>Visits:</strong> visitQrCode, visitShortUrl, visitWeb, socialVisit</li>
-            <li><strong>Event:</strong> eventAttendees, eventResultHome, eventResultVisitor</li>
-            <li><strong>Bitly:</strong> totalBitlyClicks, uniqueBitlyClicks, and 80+ country/device metrics</li>
-          </ul>
+          <h3>Canonical Entry Point</h3>
           <p>
-            System variables have a green <strong>&ldquo;System&rdquo;</strong> badge and cannot be deleted.
+            <code>/admin/analytics</code> is the only analytics home. Use it to move into the
+            right analysis lens instead of starting from legacy dashboard routes.
           </p>
 
-          <h4>2. Derived Variables (Auto-calculated)</h4>
+          <h3>Primary Analytics Surfaces</h3>
           <ul>
-            <li><strong>allImages:</strong> remoteImages + hostessImages + selfies</li>
-            <li><strong>totalFans:</strong> remoteFans + stadium</li>
-            <li><strong>totalVisit:</strong> Sum of all visit sources</li>
-          </ul>
-          <p>
-            Derived variables are marked with <code>type: derived</code> and cannot be manually edited (enforced).
-          </p>
-
-          <h4>3. Custom Variables (User-created)</h4>
-          <ul>
-            <li>Created by admins via KYC Management interface</li>
-            <li>Examples: vipGuests, pressCount, sponsorBooth</li>
-            <li>Stored in database just like system variables</li>
-            <li>Can be deleted (system variables cannot)</li>
+            <li><strong>Sponsorship Hub:</strong> Unified sponsorship evidence and performance rollups</li>
+            <li><strong>Partner Activation:</strong> Proof-of-performance readiness and gap triage</li>
+            <li><strong>Executive / Marketing / Operations:</strong> Role-specific decision views</li>
+            <li><strong>Insights:</strong> Higher-level synthesized findings</li>
           </ul>
 
-          <h3>Variable Cards</h3>
-          <p>
-            Each variable displays a card showing:
-          </p>
-          <ul>
-            <li><strong>Name:</strong> Database field name (immutable for system variables)</li>
-            <li><strong>Alias:</strong> UI display label (editable for ALL variables)</li>
-            <li><strong>Type:</strong> number, text, or derived</li>
-            <li><strong>Category:</strong> Grouping label (e.g., Images, Fans, Merchandise)</li>
-            <li><strong>System Badge:</strong> Green &ldquo;System&rdquo; badge if built-in variable</li>
-            <li><strong>Visibility Flags:</strong> Two checkboxes (see below)</li>
-          </ul>
-
-          <h3>Understanding Alias vs. Name</h3>
-          <p>
-            <strong>Critical Concept:</strong> The <code>alias</code> field is ONLY a UI display label. It does NOT affect:
-          </p>
-          <ul>
-            <li>Database field names (always use <code>name</code> field)</li>
-            <li>Code references (always use <code>stats.name</code>)</li>
-            <li>Formula syntax</li>
-          </ul>
-          <p>
-            <strong>What Alias Controls:</strong>
-          </p>
-          <ul>
-            <li>Button labels in Clicker Mode</li>
-            <li>Field labels in Manual Input Mode</li>
-            <li>Chart legends and axis labels</li>
-            <li>Admin UI display text</li>
-          </ul>
-          <p>
-            <strong>Example:</strong><br />
-            Name: <code>remoteImages</code> (immutable, used in database)<br />
-            Alias: &ldquo;Remote Photos&rdquo; (editable, shown to users)
-          </p>
-
-          <h3>Editing an Alias</h3>
+          <h3>Recommended Analytics Path</h3>
           <ol>
-            <li>Go to <strong>KYC Management</strong> (<code>/admin/kyc</code>)</li>
-            <li>Find the variable card</li>
-            <li>Click into the <strong>&ldquo;Alias&rdquo;</strong> field</li>
-            <li>Type a new display name (e.g., change &ldquo;Remote Images&rdquo; to &ldquo;Remote Photos&rdquo;)</li>
-            <li>Press Enter or click outside the field</li>
-            <li>Changes save automatically</li>
+            <li>Start from <code>/admin/analytics</code>.</li>
+            <li>Choose the correct lens for the decision you are making.</li>
+            <li>Use shared workspace navigation to move between hub, activation, and insights.</li>
+            <li>Jump back into reports or entity pages only when you need to act on a finding.</li>
           </ol>
-          <p>
-            <strong>Result:</strong> UI labels update immediately; database field name unchanged.
-          </p>
-
-          <h3>Visibility Flags</h3>
-          <p>
-            Each variable has two independent flags:
-          </p>
-
-          <h4>1. Visible in Clicker</h4>
-          <ul>
-            <li><strong>Purpose:</strong> Controls whether variable appears as a button in Clicker Mode</li>
-            <li><strong>Default:</strong> <code>true</code> for Images, Fans, Demographics, Merchandise; <code>false</code> for others</li>
-            <li><strong>Use Case:</strong> Hide variables that are rarely used or better suited for manual input</li>
-          </ul>
-
-          <h4>2. Editable in Manual</h4>
-          <ul>
-            <li><strong>Purpose:</strong> Controls whether variable appears in Manual Input Mode</li>
-            <li><strong>Default:</strong> <code>true</code> for all base variables; <code>false</code> for derived/text variables</li>
-            <li><strong>Use Case:</strong> Prevent manual editing of auto-calculated metrics</li>
-          </ul>
-
-          <h4>Example Scenarios</h4>
-          <ul>
-            <li><code>remoteImages</code>: visibleInClicker = ✅, editableInManual = ✅</li>
-            <li><code>allImages</code> (derived): visibleInClicker = ❌, editableInManual = ❌ (enforced)</li>
-            <li><code>eventAttendees</code>: visibleInClicker = ❌, editableInManual = ✅ (manual input only)</li>
-          </ul>
-
-          <h3>Creating a Custom Variable</h3>
-          <ol>
-            <li>Go to <strong>KYC Management</strong></li>
-            <li>Scroll to the bottom</li>
-            <li>Click <strong>&ldquo;Add Variable&rdquo;</strong> button</li>
-            <li>Fill in the form:
-              <ul>
-                <li><strong>Variable Name:</strong> Camelcase, no spaces (e.g., <code>vipGuests</code>)</li>
-                <li><strong>Alias (Display Label):</strong> Human-readable (e.g., &ldquo;VIP Guests&rdquo;)</li>
-                <li><strong>Variable Type:</strong> <code>number</code> or <code>text</code></li>
-                <li><strong>Category:</strong> Select from dropdown or type new category</li>
-                <li><strong>Visible in Clicker:</strong> Show as button in editor? (checkbox)</li>
-                <li><strong>Editable in Manual:</strong> Allow manual input? (checkbox)</li>
-              </ul>
-            </li>
-            <li>Click <strong>&ldquo;Create Variable&rdquo;</strong></li>
-          </ol>
-          <p>
-            <strong>Result:</strong> Variable is immediately available in project editor and stored in <code>project.stats</code> when values are entered.
-          </p>
-
-          <h3>Deleting a Custom Variable</h3>
-          <p>
-            <strong>Restriction:</strong> Only custom variables (non-system) can be deleted.
-          </p>
-          <ol>
-            <li>Find the custom variable card</li>
-            <li>Click <strong>&ldquo;Delete&rdquo;</strong> button (only visible for custom variables)</li>
-            <li>Confirm deletion</li>
-          </ol>
-          <p>
-            <strong>⚠️ Warning:</strong> Deleting a variable removes it from the UI but does NOT delete existing data in <code>project.stats</code>. Historical data remains but is no longer visible/editable.
-          </p>
-
-          <h3>Variable Groups & Ordering</h3>
-          <p>
-            Variables in Clicker Mode are organized into groups with optional KPI charts.
-          </p>
-          <h4>Default Groups</h4>
-          <ul>
-            <li><strong>Images:</strong> remoteImages, hostessImages, selfies → Shows &ldquo;All Images Taken&rdquo; chart</li>
-            <li><strong>Location:</strong> remoteFans, stadium → Shows &ldquo;Total Fans&rdquo; chart</li>
-            <li><strong>Demographics:</strong> female, male, genAlpha, genYZ, genX, boomer</li>
-            <li><strong>Merchandise:</strong> merched, jersey, scarf, flags, baseballCap, other</li>
-          </ul>
-
-          <h4>Reordering Clicker Buttons</h4>
-          <ol>
-            <li>Go to <strong>Variables</strong> page (<code>/admin/kyc</code>)</li>
-            <li>Click <strong>&ldquo;Reorder Clicker&rdquo;</strong> button</li>
-            <li>Drag and drop buttons within their category</li>
-            <li>Click <strong>&ldquo;Save Order&rdquo;</strong></li>
-          </ol>
-          <p>
-            <strong>Result:</strong> Button order updates immediately in all project editors.
-          </p>
         </section>
 
-        <section id="exporting" className={styles.section}>
-          <h2>💾 Exporting Data</h2>
-          
-          <h3>CSV Export</h3>
+        <section id="sharing-export" className={styles.section}>
+          <h2>🔗 Sharing and Export</h2>
+
+          <h3>Open First, Share Second</h3>
           <p>
-            Export your data to CSV for analysis in Excel or Google Sheets:
+            Across Events, Partners, and Organizations, the primary workflow is now direct open.
+            Use <strong>Open Report</strong> or <strong>Open Editor</strong> first, then use
+            share actions when you need a recipient-safe link.
           </p>
-          <ul>
-            <li>Includes all collected metrics</li>
-            <li>Timestamps in ISO 8601 format (UTC)</li>
-            <li>Easy to import into other tools</li>
-          </ul>
 
-          <h3>PDF Export</h3>
-          <ul>
-            <li>Professional reports with charts</li>
-            <li>Ready to share with stakeholders</li>
-            <li>Preserves visual formatting</li>
-          </ul>
-
-          <h3>Chart Images</h3>
-          <ul>
-            <li>Download individual charts as PNG</li>
-            <li>High quality for presentations</li>
-            <li>Click the download icon on any chart</li>
-          </ul>
-        </section>
-
-        <section id="sharing" className={styles.section}>
-          <h2>🔗 Sharing Reports (Event & Partner)</h2>
-          
-          <h3>Overview</h3>
-          <p>
-            {'{messmass}'} provides two types of shareable reports:
-          </p>
-          <ul>
-            <li><strong>Event Reports:</strong> Individual event statistics and analytics</li>
-            <li><strong>Partner Reports:</strong> Aggregated statistics across all events for a partner organization</li>
-          </ul>
-
-          <h3>How to Share an Event Report</h3>
-          <ol>
-            <li>Go to <strong>Events</strong> page (<code>/admin/events</code>)</li>
-            <li>Find the event you want to share</li>
-            <li>Click the <strong>&ldquo;Report&rdquo;</strong> button on the event row</li>
-            <li>In the Share Popup modal:
-              <ul>
-                <li>Review the generated shareable link</li>
-                <li>Copy the link using the &ldquo;Copy Link&rdquo; button</li>
-                <li>Note: The link is password-protected for security</li>
-              </ul>
-            </li>
-            <li>Share the link and password with your recipients</li>
-          </ol>
-
-          <h3>How to Share a Partner Report</h3>
-          <ol>
-            <li>Go to <strong>Partners</strong> page (<code>/admin/partners</code>)</li>
-            <li>Find the partner organization you want to share</li>
-            <li>Click the <strong>&ldquo;Report&rdquo;</strong> button on the partner row</li>
-            <li>In the Share Popup modal:
-              <ul>
-                <li>Review the generated shareable link</li>
-                <li>Copy the link using the &ldquo;Copy Link&rdquo; button</li>
-                <li>Note: Partner reports aggregate ALL events for that organization</li>
-              </ul>
-            </li>
-            <li>Share the link and password with your recipients</li>
-          </ol>
-
-          <h3>Report URLs</h3>
+          <h3>Shareable Outputs</h3>
           <ul>
             <li><strong>Event Report:</strong> <code>/report/[event-slug]</code></li>
             <li><strong>Partner Report:</strong> <code>/partner-report/[partner-slug]</code></li>
-            <li>Both are password-protected by default</li>
-            <li>Passwords are unique per report and auto-generated</li>
+            <li><strong>Organization Report:</strong> <code>/organization-report/[id]</code></li>
           </ul>
 
-          <h3>What Recipients See</h3>
-          <h4>Event Report Page</h4>
+          <h3>Export Types</h3>
           <ul>
-            <li>Event name, date, and emoji</li>
-            <li>All KPI charts (merchandise, demographics, engagement)</li>
-            <li>Total statistics summary</li>
-            <li>Hashtags and categories</li>
-            <li>Export buttons for charts (PNG download)</li>
-          </ul>
-
-          <h4>Partner Report Page</h4>
-          <ul>
-            <li>Partner name and emoji</li>
-            <li>Total aggregated metrics across ALL events</li>
-            <li>List of all events with individual stats</li>
-            <li>Event cards with links to individual event reports</li>
-            <li>Comprehensive totals grid (images, fans, attendees, etc.)</li>
-          </ul>
-
-          <h3>Managing Access</h3>
-          <ul>
-            <li><strong>Password Protection:</strong> All report links require a password</li>
-            <li><strong>Regenerate Password:</strong> Use the Share Popup to generate a new password</li>
-            <li><strong>Revoke Access:</strong> Delete the page password to disable the link</li>
-            <li><strong>Admin Bypass:</strong> Admin users can access any report without a password</li>
-          </ul>
-
-          <h3>Best Practices</h3>
-          <ul>
-            <li>Share passwords separately from links (e.g., via different communication channel)</li>
-            <li>Use partner reports for season summaries or client presentations</li>
-            <li>Use event reports for individual game/event analysis</li>
-            <li>Regenerate passwords periodically for sensitive data</li>
+            <li><strong>CSV:</strong> Data extraction for spreadsheet analysis</li>
+            <li><strong>PNG:</strong> Individual chart image export from report surfaces</li>
+            <li><strong>Report output:</strong> Styled, shareable stakeholder view through the report routes</li>
           </ul>
         </section>
 
         <section id="organizations" className={styles.section}>
-          <h2>🏢 Organization Management</h2>
+          <h2>🏢 Organizations</h2>
 
-          <h3>Who Can Use It</h3>
+          <h3>When to Use Organizations</h3>
           <p>
-            Organization Management is available to <strong>superadmins</strong> from <code>/admin/organizations</code>.
+            Organizations group partners and support organization-level reporting and member
+            management.
           </p>
-
-          <h3>What You Can Do</h3>
           <ul>
-            <li><strong>Add Organization:</strong> Create a new top-level organization record</li>
-            <li><strong>Edit:</strong> Update organization name and status</li>
-            <li><strong>Manage Members:</strong> Assign Partners with predictive search and chip-based selection</li>
-            <li><strong>Report:</strong> Open the share dialog for the aggregated organization report</li>
-            <li><strong>Edit Stats:</strong> Open the organization content editor</li>
-            <li><strong>Delete:</strong> Remove an organization only after all members are unassigned</li>
+            <li><strong>Admin UI:</strong> <code>/admin/organizations</code></li>
+            <li><strong>Report UI:</strong> <code>/organization-report/[id]</code></li>
+            <li><strong>Content editor:</strong> <code>/organization-edit/[id]</code></li>
           </ul>
 
-          <h3>Managing Members</h3>
+          <h3>Typical Organization Workflow</h3>
           <ol>
-            <li>Open <code>/admin/organizations</code></li>
-            <li>Find the organization and click <strong>Manage Members</strong></li>
-            <li>Search for Partners by name or current organization</li>
-            <li>Add or remove partners from the selected chips</li>
-            <li>Click <strong>Save Assignments</strong> to apply the membership changes</li>
+            <li>Create or open the organization.</li>
+            <li>Assign partner members.</li>
+            <li>Configure organization reporting settings.</li>
+            <li>Open the organization report for aggregate review.</li>
           </ol>
-          <p>
-            Membership changes are not applied until you save. A Partner can belong to only one organization at a time.
-          </p>
-
-          <h3>Reports and Editor</h3>
-          <ul>
-            <li><strong>Report URL:</strong> <code>/organization-report/[id]</code> via protected share dialog</li>
-            <li><strong>Editor URL:</strong> <code>/organization-edit/[id]</code></li>
-            <li>Reports aggregate organization metadata, assigned partners, and related projects/events</li>
-            <li>Editor supports report-style, report-template, clicker-set, emoji, and logo configuration</li>
-            <li>Organization template resolution uses <code>reportTemplateId</code>, then legacy <code>reportId</code>, then default template</li>
-          </ul>
-        </section>
-
-        <section id="metrics" className={styles.section}>
-          <h2>📈 Understanding Metrics</h2>
-          
-          <h3>Image Categories</h3>
-          <ul>
-            <li><strong>Remote Images:</strong> Photos taken by professional photographers</li>
-            <li><strong>Hostess Images:</strong> Photos with event staff/ambassadors</li>
-            <li><strong>Selfies:</strong> Self-taken photos by attendees</li>
-          </ul>
-
-          <h3>Demographics</h3>
-          <ul>
-            <li><strong>Gender:</strong> Male/Female distribution</li>
-            <li><strong>Age Groups:</strong> Gen Alpha, Gen Y/Z, Gen X, Boomer</li>
-          </ul>
-
-          <h3>Location Types</h3>
-          <ul>
-            <li><strong>Indoor:</strong> Covered venues</li>
-            <li><strong>Outdoor:</strong> Open-air events</li>
-            <li><strong>Stadium:</strong> Sports venues</li>
-          </ul>
-
-          <h3>Merchandise Tracking</h3>
-          <ul>
-            <li><strong>Merched:</strong> Attendees wearing team merchandise</li>
-            <li><strong>Jersey:</strong> Official team jerseys</li>
-            <li><strong>Scarf:</strong> Team scarves</li>
-            <li><strong>Flags:</strong> Team flags</li>
-            <li><strong>Baseball Cap:</strong> Team caps</li>
-            <li><strong>Other:</strong> Other branded items</li>
-          </ul>
-
-          <h3>Core Fan Team Metric</h3>
-          <p>
-            Calculated as: <code>(Merched Fans / Total Fans) × Event Attendees</code>
-          </p>
-          <p>
-            This metric estimates the number of engaged fans who attend events and show their support through merchandise.
-          </p>
-        </section>
-
-        <section id="hashtags" className={styles.section}>
-          <h2>🏷️ Hashtag System</h2>
-          
-          <h3>Traditional Hashtags</h3>
-          <ul>
-            <li>Simple text labels for organizing events</li>
-            <li>Example: <code>#soccer</code>, <code>#concert</code>, <code>#festival</code></li>
-            <li>Filter events by hashtags in the admin panel</li>
-          </ul>
-
-          <h3>Category-Prefixed Hashtags</h3>
-          <p>
-            Advanced organization with categories:
-          </p>
-          <ul>
-            <li><strong>Format:</strong> <code>category:hashtag</code></li>
-            <li><strong>Example:</strong> <code>country:france</code>, <code>year:2024</code></li>
-            <li><strong>Color Coding:</strong> Categories have consistent colors</li>
-          </ul>
-
-          <h3>Using Hashtags</h3>
-          <ul>
-            <li>Add hashtags when creating or editing events</li>
-            <li>Use multiple hashtags for better organization</li>
-            <li>Filter by hashtags to find related events</li>
-            <li>View aggregated stats across hashtag groups</li>
-          </ul>
-        </section>
-
-        <section id="v3-engine" className={styles.section}>
-          <h2>🚀 V3 High-Performance Engine</h2>
-          <p>
-            The <strong>{'{messmass}'} V3 Alignment</strong> is the background high-performance data engine designed for multi-tenant scalability and reporting compatibility.
-          </p>
-          <ul>
-            <li><strong>Automated Sync:</strong> All edits to Events, Partners, and Stats are automatically mirrored to the V3 engine in real-time.</li>
-            <li><strong>Enriched Entities:</strong> High-fidelity metadata (logos, sports data) is now preserved for all organizations.</li>
-            <li><strong>Participant Mapping:</strong> Events now support multiple participants (e.g., Home vs. Away) with explicitly defined roles.</li>
-            <li><strong>Time-Series KPI:</strong> Every metric change is tracked with a precise timestamp for advanced trend analysis.</li>
-          </ul>
-          <p>
-            <em>Note: This engine operates in the background to ensure your data is ready for the upcoming V3 analytics dashboard.</em>
-          </p>
         </section>
 
         <section id="troubleshooting" className={styles.section}>
           <h2>🔧 Troubleshooting</h2>
-          
-          <h3>Common Issues</h3>
-          
-          <h4>Login Problems</h4>
+
+          <h3>If You Cannot Find a Feature</h3>
           <ul>
-            <li>Clear browser cookies and try again</li>
-            <li>Use the &quot;Clear Session&quot; page: <code>/admin/clear-session</code></li>
-            <li>Contact your administrator for password reset</li>
+            <li>Start from <code>/admin</code> and use the workspace grouping, not old bookmark names.</li>
+            <li>Check whether the feature belongs to <strong>Reports</strong>, <strong>Analytics</strong>, or an entity page.</li>
+            <li>If a bookmarked route redirects, the new canonical surface has replaced it.</li>
           </ul>
 
-          <h4>Data Not Syncing</h4>
+          <h3>If You Cannot Access a Page</h3>
           <ul>
-            <li>Check your internet connection</li>
-            <li>Refresh the page to see latest updates</li>
-            <li>Ensure you&apos;re on the correct edit link</li>
+            <li>Your role may not include that workspace.</li>
+            <li>Guests can use Help only.</li>
+            <li>Users can manage core entities and execution flows.</li>
+            <li>Admins and Superadmins can access the reporting and analytics workspaces.</li>
           </ul>
 
-          <h4>Charts Not Displaying</h4>
+          <h3>If Report Output Looks Wrong</h3>
           <ul>
-            <li>Try a different browser (Chrome, Firefox, Safari)</li>
-            <li>Disable browser extensions temporarily</li>
-            <li>Clear browser cache</li>
-          </ul>
-
-          <h3>Getting Help</h3>
-          <ul>
-            <li>Contact your event organizer or admin</li>
-            <li>Check the <a href="/admin/events">Events page</a> for event status</li>
-            <li>Report technical issues to your system administrator</li>
+            <li>Check the event or partner setup first.</li>
+            <li>Then check <code>/admin/reports</code> for theme, content, builder, variables, or clicker dependencies.</li>
+            <li>Use analytics surfaces to confirm whether the underlying data is missing or only the presentation layer is off.</li>
           </ul>
         </section>
 
-        <footer className={styles.footer}>
+        <div className={styles.footer}>
           <p>
-            <strong>{'{messmass}'} Version 12.1.10</strong><br />
-            Last Updated: 2026-04-27T16:40:00.000Z (UTC)
+            Need deeper implementation context? Start with{' '}
+            <a href="/admin">Admin Workspace</a>, then move into the canonical Reports or Analytics workspaces.
           </p>
-          <p>
-            <strong>Quick Links:</strong><br />
-            <a href="/api-docs" target="_blank" rel="noopener noreferrer">
-              📚 Public API Documentation
-            </a>
-            {' '}•{' '}
-            <a href="https://github.com/moldovancsaba/messmass" target="_blank" rel="noopener noreferrer">
-              GitHub Repository
-            </a>
-          </p>
-          <p>
-            For additional help, contact your system administrator.
-          </p>
-        </footer>
+        </div>
       </div>
     </div>
   );
