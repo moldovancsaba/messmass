@@ -29,7 +29,7 @@ export const organizationsEntityConfig: AdminEntityConfig<OrganizationDTO> = {
       id: 'organization-report',
       label: 'Open Report',
       icon: 'visibility',
-      variant: 'secondary',
+      variant: 'primary',
       requiredCapabilities: ['report'],
       requiredPermissions: ['superadmin'],
       execution: {
@@ -42,7 +42,7 @@ export const organizationsEntityConfig: AdminEntityConfig<OrganizationDTO> = {
       id: 'organization-edit-content',
       label: 'Open Editor',
       icon: 'bar_chart',
-      variant: 'secondary',
+      variant: 'primary',
       requiredCapabilities: ['edit-content'],
       requiredPermissions: ['superadmin'],
       execution: {

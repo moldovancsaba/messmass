@@ -2,7 +2,7 @@
 
 This file is onboarding plus operational context for the next agent. Keep it accurate when behavior, process, or current delivery state changes.
 
-**Last Updated:** 2026-05-12 (entity action grammar foundation slice)
+**Last Updated:** 2026-05-12 (entity action direct-open slice)
 
 ## 🚨 CRITICAL MUST-READ FOR ALL AGENTS: STYLING & COMPONENTS 🚨
 
@@ -65,6 +65,13 @@ You MUST completely read and obey `docs/coding-standards.md` and `docs/component
 - Style editor preview updates immediately for bar/pie CSS vars and includes Value Chain and Landing page sections.
 
 ## Handover Log
+
+## 2026-05-12 — Entity action direct-open slice (#818)
+- **Objective:** Remove the remaining extra click in the core entity workflows by making Events and Partners open their working destinations directly instead of forcing a share popup first.
+- **Action grammar refinement:** Updated `/lib/adapters/projectsAdapter.tsx`, `/lib/adapters/partnersAdapter.tsx`, and `/lib/adapters/organizationsAdapter.tsx` so the main actions now lead with direct-open behavior: `Open Report` and `Open Editor` are primary actions, while `Share Report` and `Share Editor` remain secondary utilities where they are still useful.
+- **Surface simplification:** Restricted share and utility actions to list surfaces where appropriate, keeping cards focused on the main workflow destinations rather than utility buttons.
+- **Workflow effect:** The core admin entities now expose a clearer primary path: open the report/editor first, then use share/export/KYC utilities only when needed. This removes one unnecessary modal step from the most common reporting and editing flows.
+- **Verification:** `npm run lint`, `npm run build`, and `npm run type-check` all passed.
 
 ## 2026-05-12 — Entity action grammar foundation slice (#818)
 - **Objective:** Remove the remaining page-local action inconsistency by moving Events onto the same shared entity-action runtime used by Partners and Organizations, and by making action labels describe the real behavior.
