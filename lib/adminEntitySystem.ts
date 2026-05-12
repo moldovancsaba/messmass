@@ -12,7 +12,8 @@ export type AdminEntityCapability =
   | 'edit-content'
   | 'manage-members'
   | 'analytics'
-  | 'kyc';
+  | 'kyc'
+  | 'export';
 
 export type AdminEntityPermission = AdminUser['role'] | 'authenticated';
 

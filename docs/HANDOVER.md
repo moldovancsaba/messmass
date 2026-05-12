@@ -2,7 +2,7 @@
 
 This file is onboarding plus operational context for the next agent. Keep it accurate when behavior, process, or current delivery state changes.
 
-**Last Updated:** 2026-05-12 (analytics workspace nav continuation)
+**Last Updated:** 2026-05-12 (entity action grammar foundation slice)
 
 ## 🚨 CRITICAL MUST-READ FOR ALL AGENTS: STYLING & COMPONENTS 🚨
 
@@ -32,7 +32,7 @@ You MUST completely read and obey `docs/coding-standards.md` and `docs/component
 - Last known HEAD during this update: `7ebd13ba8`
 - Working tree includes untracked local `READMEDEV.md`; canonical repo-root cleanup work is now tracked under `#359`.
 - Most recent documented code delivery before this update: organization admin data flow recovery and documentation sync.
-- Current active delivery: `mvp-factory-control#817` UI Refinement 2/6 is in local implementation with the first admin-home and analytics entry-point consolidation slice validated locally.
+- Current active delivery: `mvp-factory-control#818` UI Refinement 3/6 is in local implementation after completing the final `#817` analytics-workspace nav continuation and starting the shared entity action-grammar refactor.
 - Formally closed on SSOT board (2026-03-10): #354, #355, #356, #357, #358, #359.
 
 ## Current Priorities
@@ -65,6 +65,14 @@ You MUST completely read and obey `docs/coding-standards.md` and `docs/component
 - Style editor preview updates immediately for bar/pie CSS vars and includes Value Chain and Landing page sections.
 
 ## Handover Log
+
+## 2026-05-12 — Entity action grammar foundation slice (#818)
+- **Objective:** Remove the remaining page-local action inconsistency by moving Events onto the same shared entity-action runtime used by Partners and Organizations, and by making action labels describe the real behavior.
+- **Shared event contract:** Added `projectsEntityConfig` in `/lib/adapters/projectsAdapter.tsx` and exported it through `/lib/adapters/index.ts`, so Events now declare capabilities and actions through the same admin entity model as the other main admin surfaces.
+- **Execution unification:** Updated `/app/admin/events/page.tsx` to use `withAdminEntityActions(...)` instead of remapping row/card actions by checking labels like `Edit Stats`. Event actions now route through stable runtime keys for edit modal, share popup, CSV export, and deletion.
+- **Action clarity:** Renamed ambiguous user-facing actions across the entity configs so the click matches the label: Events now expose `Share Report` and `Share Editor`, Partners now use `Share Report` and `Open Editor`, and Organizations now use `Open Report` and `Open Editor`.
+- **Capability extension:** Added the `export` capability to `/lib/adminEntitySystem.ts` so export actions can live inside the same shared action grammar instead of remaining a one-off adapter exception.
+- **Verification:** `npm run lint`, `npm run build`, and `npm run type-check` all passed. As elsewhere in this repo, `type-check` was run after the successful build because `tsconfig.json` includes `.next/types/**/*.ts`.
 
 ## 2026-05-12 — Analytics workspace nav continuation (#817)
 - **Objective:** Finish the shared analytics-workspace movement model so the activation queue behaves like part of analytics instead of a detached operations branch.

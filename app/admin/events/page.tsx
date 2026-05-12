@@ -8,7 +8,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useAdminAuth } from '@/hooks/useAdminAuth';
 import { useDebouncedValue } from '@/hooks/useDebouncedValue';
-import { projectsAdapter } from '@/lib/adapters/projectsAdapter';
+import { projectsAdapter, projectsEntityConfig } from '@/lib/adapters/projectsAdapter';
 import { ProjectDTO } from '@/lib/types/api';
 import UnifiedAdminPage from '@/components/UnifiedAdminPage';
 import FormModal from '@/components/modals/FormModal';
@@ -16,6 +16,7 @@ import SharePopup from '@/components/SharePopup';
 import UnifiedHashtagInput from '@/components/UnifiedHashtagInput';
 import MaterialIcon from '@/components/MaterialIcon';
 import { apiPost, apiPut, apiDelete } from '@/lib/apiClient';
+import { withAdminEntityActions } from '@/lib/adminEntitySystem';
 import BitlyLinksEditor from '@/components/BitlyLinksEditor';
 
 const PAGE_SIZE = 20;
@@ -345,7 +346,7 @@ export default function ProjectsPageUnified() {
   };
   
   // Edit project
-  const editProject = (project: ProjectDTO) => {
+  const editProject = useCallback((project: ProjectDTO) => {
     setEditingProject(project);
     
     // WHAT: Extract partner IDs from project
@@ -365,7 +366,7 @@ export default function ProjectsPageUnified() {
       partner2Id
     });
     setShowEditProjectForm(true);
-  };
+  }, []);
   
   // Update project
   const updateProject = async () => {
@@ -444,92 +445,101 @@ export default function ProjectsPageUnified() {
     }
   };
   
-  // Delete project
-  const handleDeleteSuccess = (projectId: string) => {
-    setProjects(prev => prev.filter(p => p._id !== projectId));
-  };
+  const exportProjectCsv = useCallback(async (project: ProjectDTO) => {
+    try {
+      const timestamp = new Date().getTime();
+      const id = project.viewSlug || project._id;
+      const res = await fetch(`/api/projects/stats/${id}?refresh=${timestamp}`);
+      const data = await res.json();
+      if (!data.success || !data.project) {
+        alert('Failed to fetch project stats for CSV export');
+        return;
+      }
+
+      const loadedProject = data.project;
+      const esc = (value: unknown) => `"${String(value ?? '').replace(/"/g, '""')}"`;
+      const rows: Array<[string, string | number]> = [
+        ['Event Name', loadedProject.eventName],
+        ['Event Date', loadedProject.eventDate],
+        ['Created At', loadedProject.createdAt],
+        ['Updated At', loadedProject.updatedAt],
+      ];
+
+      Object.entries(loadedProject.stats || {}).forEach(([key, value]) => {
+        rows.push([key, typeof value === 'number' || typeof value === 'string' ? value : '']);
+      });
+
+      const header = ['Variable', 'Value'];
+      const csv = [header, ...rows].map(([key, value]) => `${esc(key)},${esc(value)}`).join('\n');
+      const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+      const link = document.createElement('a');
+      const base = loadedProject.eventName.replace(/[^a-zA-Z0-9]/g, '_') || 'event';
+      const url = URL.createObjectURL(blob);
+      link.setAttribute('href', url);
+      link.setAttribute('download', `${base}_variables.csv`);
+      link.style.visibility = 'hidden';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    } catch (error) {
+      console.error('Export failed', error);
+      alert('Export failed');
+    }
+  }, []);
+
+  const deleteProject = useCallback(async (project: ProjectDTO) => {
+    try {
+      const result = await apiDelete<{ success: boolean; error?: string }>(`/api/projects?projectId=${project._id}`);
+      if (result.success) {
+        setProjects((prev) => prev.filter((currentProject) => currentProject._id !== project._id));
+        return;
+      }
+
+      alert(result.error || 'Failed to delete project');
+    } catch (error) {
+      alert(error instanceof Error ? error.message : 'Delete failed');
+    }
+  }, []);
   
   // Share handlers
-  const handleShareOpen = (pageId: string, pageType: 'event-report' | 'edit' | 'filter') => {
+  const handleShareOpen = useCallback((pageId: string, pageType: 'event-report' | 'edit' | 'filter') => {
     setSharePageId(pageId);
     setSharePageType(pageType);
     setSharePopupOpen(true);
-  };
+  }, []);
   
-  // WHAT: Create enhanced adapter with custom action handlers
-  // WHY: Override Report/Edit Stats to open share modal, Edit to open edit modal
-  // NOTE: Must be called before any early returns (React Hooks rules)
-  const enhancedAdapter = React.useMemo(() => ({
-    ...projectsAdapter,
-    listConfig: {
-      ...projectsAdapter.listConfig,
-      rowActions: projectsAdapter.listConfig.rowActions?.map(action => {
-        if (action.label === 'Edit') {
-          return {
-            ...action,
-            handler: (project: ProjectDTO) => editProject(project)
-          };
+  const projectsAdapterWithHandlers = React.useMemo(() => withAdminEntityActions(
+    projectsAdapter,
+    projectsEntityConfig,
+    {
+      user,
+      openModal: (modalKey, project) => {
+        if (modalKey === 'edit-project') {
+          editProject(project);
         }
-        if (action.label === 'Report') {
-          return {
-            ...action,
-            handler: (project: ProjectDTO) => {
-              // WHAT: Use viewSlug for report page (stats type)
-              // WHY: SharePopup needs the correct slug to generate the right URL
-              const slug = project.viewSlug || project._id;
-              handleShareOpen(slug, 'event-report');
-            }
-          };
+      },
+      openShare: (shareKey, resourceId) => {
+        if (shareKey === 'project-report') {
+          handleShareOpen(resourceId, 'event-report');
+          return;
         }
-        if (action.label === 'Edit Stats') {
-          return {
-            ...action,
-            handler: (project: ProjectDTO) => {
-              // WHAT: Use editSlug for edit page (edit type)
-              // WHY: SharePopup needs the correct slug to generate the right URL
-              const slug = project.editSlug || project._id;
-              handleShareOpen(slug, 'edit');
-            }
-          };
+
+        if (shareKey === 'project-editor') {
+          handleShareOpen(resourceId, 'edit');
         }
-        return action;
-      })
-    },
-    cardConfig: {
-      ...projectsAdapter.cardConfig,
-      cardActions: projectsAdapter.cardConfig.cardActions?.map(action => {
-        if (action.label === 'Edit') {
-          return {
-            ...action,
-            handler: (project: ProjectDTO) => editProject(project)
-          };
+      },
+      runMutation: (mutationKey, project) => {
+        if (mutationKey === 'export-project-csv') {
+          void exportProjectCsv(project);
+          return;
         }
-        if (action.label === 'Report') {
-          return {
-            ...action,
-            handler: (project: ProjectDTO) => {
-              // WHAT: Use viewSlug for report page (stats type)
-              // WHY: SharePopup needs the correct slug to generate the right URL
-              const slug = project.viewSlug || project._id;
-              handleShareOpen(slug, 'event-report');
-            }
-          };
+
+        if (mutationKey === 'delete-project') {
+          void deleteProject(project);
         }
-        if (action.label === 'Edit Stats') {
-          return {
-            ...action,
-            handler: (project: ProjectDTO) => {
-              // WHAT: Use editSlug for edit page (edit type)
-              // WHY: SharePopup needs the correct slug to generate the right URL
-              const slug = project.editSlug || project._id;
-              handleShareOpen(slug, 'edit');
-            }
-          };
-        }
-        return action;
-      })
+      },
     }
-  }), []);
+  ), [deleteProject, editProject, exportProjectCsv, handleShareOpen, user]);
   
   // Loading state
   if (authLoading || loading) {
@@ -550,7 +560,7 @@ export default function ProjectsPageUnified() {
   return (
     <>
       <UnifiedAdminPage
-        adapter={enhancedAdapter}
+        adapter={projectsAdapterWithHandlers}
         items={projects}
         isLoading={loading}
         title="📅 Manage Events"

@@ -36,7 +36,7 @@ export const partnersEntityConfig: AdminEntityConfig<PartnerResponse> = {
     },
     {
       id: 'partner-report-share',
-      label: 'Report',
+      label: 'Share Report',
       icon: '📊',
       variant: 'secondary',
       requiredCapabilities: ['report', 'share'],
@@ -49,7 +49,7 @@ export const partnersEntityConfig: AdminEntityConfig<PartnerResponse> = {
     },
     {
       id: 'partner-edit-content',
-      label: 'Edit Stats',
+      label: 'Open Editor',
       icon: 'bar_chart',
       variant: 'primary',
       requiredCapabilities: ['edit-content'],

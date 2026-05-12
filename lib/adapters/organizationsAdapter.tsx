@@ -27,7 +27,7 @@ export const organizationsEntityConfig: AdminEntityConfig<OrganizationDTO> = {
   actions: [
     {
       id: 'organization-report',
-      label: 'Report',
+      label: 'Open Report',
       icon: 'visibility',
       variant: 'secondary',
       requiredCapabilities: ['report'],
@@ -40,7 +40,7 @@ export const organizationsEntityConfig: AdminEntityConfig<OrganizationDTO> = {
     },
     {
       id: 'organization-edit-content',
-      label: 'Edit Stats',
+      label: 'Open Editor',
       icon: 'bar_chart',
       variant: 'secondary',
       requiredCapabilities: ['edit-content'],
