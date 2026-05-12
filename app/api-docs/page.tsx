@@ -592,12 +592,12 @@ curl -X POST \\
 
         <footer className={styles.footer}>
           <p>
-            <strong>{'{messmass}'} API Documentation — Version 12.1.8</strong><br />
-            Last Updated: April 24, 2026
+            <strong>{'{messmass}'} API Documentation — Version 12.1.10</strong><br />
+            Last Updated: April 27, 2026
           </p>
           <p>
             <strong>Additional Resources:</strong><br />
-            <a href="/admin/help">User Guide</a>
+            <a href="/admin/help">Help</a>
             {' '}•{' '}
             <a href="https://github.com/moldovancsaba/messmass" target="_blank" rel="noopener noreferrer">
               GitHub Repository

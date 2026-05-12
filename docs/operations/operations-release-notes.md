@@ -1,8 +1,96 @@
 # {messmass} Release Notes
 Status: Active
-Last Updated: 2026-04-24T16:10:00.000Z
+Last Updated: 2026-05-02T11:55:00.000Z
 Canonical: No
 Owner: Operations
+
+## [v12.1.11] — 2026-05-02T11:55:00.000Z
+
+### Summary
+🧹 **STYLE HARDENING PHASE 5 CONTINUES**: Removed hardcoded utility styling from two small recovery/error routes and synchronized local delivery docs back to the board truth for `#72`.
+
+### What Was Fixed
+
+#### Recovery and error route style cleanup (#72) ✅
+**WHAT**: Replaced page-level hardcoded utility classes on `/admin/clear-session` and the root `not-found` route with token-based CSS modules.  
+**WHY**: These small routes were still bypassing the repo’s centralized styling rules and were a low-risk Phase 5 cleanup target.  
+**HOW**: Added `app/admin/clear-session/page.module.css`, expanded `app/not-found.module.css`, and moved title, spacing, width, alignment, and disabled-state styling into design-token-backed classes.
+
+#### SSOT doc alignment for active work ✅
+**WHAT**: Updated local operational docs so they no longer claim that no work is in progress.  
+**WHY**: The GitHub board still shows `mvp-factory-control#72` as active, so the local repo should not contradict that state.  
+**HOW**: Synced handover and delivery-focus docs to reflect the live board state and recorded this slice in the action-plan state memory.
+
+### Testing
+- ✅ `npm run lint`
+- ✅ `npm run build`
+- ✅ `npm run type-check`
+- ✅ `npm run version:verify`
+
+### Version
+v12.1.10 → v12.1.11 (PATCH — style hardening Phase 5 route cleanup + SSOT doc sync)
+
+## [v12.1.10] — 2026-04-27T16:40:00.000Z
+
+### Summary
+🏢 **ORGANIZATION ADMIN ACTION PARITY + DOCUMENTATION CLEANUP**: Aligned organization admin actions with partner behavior, added protected sharing for organization reports, and removed stale auth/version wording from docs and UI copy.
+
+### What Was Fixed
+
+#### Organization admin action parity ✅
+**WHAT**: Updated `/admin/organizations` so its action buttons follow the same interaction model as `/admin/partners` for supported organization routes.  
+**WHY**: The organization admin actions looked and behaved differently from the partner actions, which created product inconsistency and operator confusion.  
+**HOW**: Reordered and re-variant-matched organization adapter actions, kept `Edit`, `Report`, `Edit Stats`, `Manage Members`, and `Delete`, and changed `Report` to use the share modal instead of a raw tab open.
+
+#### Protected organization report sharing ✅
+**WHAT**: Added `organization-report` support to the page-password/share-link flow.  
+**WHY**: Organization reports needed the same protected sharing pattern already used by partner reports and other shareable surfaces.  
+**HOW**: Extended the page-password allow-list, share-link URL resolver, and `SharePopup` display logic to support `/organization-report/[id]`.
+
+#### Auth copy and documentation cleanup ✅
+**WHAT**: Removed stale references to a static “admin password” path where the code now relies on page passwords plus admin-session bypass.  
+**WHY**: Those comments and UI strings no longer matched the authentication implementation and would mislead future changes.  
+**HOW**: Updated page-password helper comments, password prompt copy, organization editor copy, README, handover, API/docs surfaces, and admin guides.
+
+### Testing
+- ✅ `npm run lint`
+- ✅ `npm run build`
+- ✅ `npm run type-check`
+- ✅ `npm run version:verify`
+
+### Version
+v12.1.9 → v12.1.10 (PATCH — organization admin action parity, protected sharing, and docs/auth cleanup)
+
+## [v12.1.9] — 2026-04-27T14:05:00.000Z
+
+### Summary
+🏢 **ORGANIZATION EDIT PARITY + VERSION RECOVERY**: Brought the organization edit flow to the same password-gated model as partner edit, added report list visibility controls, and corrected version drift on `preview`.
+
+### What Was Fixed
+
+#### Organization edit access parity ✅
+**WHAT**: Reworked `/organization-edit/[id]` to use the same password-gated access model as partner edit.  
+**WHY**: Organization editing was functionally inconsistent with the partner editing flow and could not be used as the equivalent self-service entry point.  
+**HOW**: Added `organization-edit` password support, wired `/organization-edit/[id]` through `PagePasswordLogin`, and introduced `/api/organizations/edit/[id]` for public edit access.
+
+#### Organization report list controls ✅
+**WHAT**: Added member/event list visibility, title, and detail toggles to the organization editor and report surface.  
+**WHY**: Organization report output needed the same level of content control expected from partner-facing editing workflows.  
+**HOW**: Extended `OrganizationEditorDashboard` metadata handling and updated organization report list components to respect the new settings.
+
+#### Validation and version sync ✅
+**WHAT**: Fixed preview branch version drift and validated the branch on the declared Node 24 runtime.  
+**WHY**: The branch had shipped new code while still identifying itself as `v12.1.8`, which made the actual build identity ambiguous.  
+**HOW**: Bumped repo version references to `v12.1.9`, synced package metadata, and revalidated build/lint/type-check/version gates.
+
+### Testing
+- ✅ `npm run lint`
+- ✅ `npm run build`
+- ✅ `npm run type-check`
+- ✅ `npm run version:verify`
+
+### Version
+v12.1.8 → v12.1.9 (PATCH — organization edit parity, report controls, and version sync)
 
 ## [v12.1.8] — 2026-04-24T16:10:00.000Z
 

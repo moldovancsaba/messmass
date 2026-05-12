@@ -8,6 +8,7 @@ import { useRouter } from 'next/navigation'
 import { useState } from 'react'
 import ColoredCard from '@/components/ColoredCard'
 import { apiPost } from '@/lib/apiClient'
+import styles from './page.module.css'
 
 export default function ClearSession() {
   const router = useRouter()
@@ -42,42 +43,46 @@ export default function ClearSession() {
 
   return (
     <div className="login-container">
-      <div className="max-w-md mx-auto">
-      <ColoredCard accentColor="#6366f1" hoverable={false} className="text-center">
-        <div className="text-6xl mb-6">
-          {cleared ? '✅' : '🔧'}
-        </div>
-        
-        <h1 className="text-3xl font-bold text-gray-900 mb-4">
-          {cleared ? 'Session Cleared!' : 'Clear Session'}
-        </h1>
-        
-        <p className="text-lg text-gray-600 mb-8">
-          {cleared 
-            ? 'Your session has been cleared. Redirecting to login...'
-            : 'Having trouble logging in? Click below to clear your session and try again.'
-          }
-        </p>
+      <div className={styles.wrapper}>
+        <ColoredCard
+          accentColor="var(--mm-chart-indigo)"
+          hoverable={false}
+          className={styles.card}
+        >
+          <div className={styles.icon}>
+            {cleared ? '✅' : '🔧'}
+          </div>
 
-        {!cleared && (
-          <>
-            <button
-              onClick={clearCookies}
-              disabled={loading}
-              className={`btn btn-primary btn-full mb-4 ${loading ? 'opacity-60 cursor-not-allowed' : 'cursor-pointer'}`}
-            >
-              {loading ? '🔄 Clearing...' : '🗑️ Clear Session & Retry Login'}
-            </button>
+          <h1 className={styles.title}>
+            {cleared ? 'Session Cleared!' : 'Clear Session'}
+          </h1>
 
-            <button
-              onClick={() => router.push('/admin/login')}
-              className="btn btn-secondary btn-full"
-            >
-              ← Back to Login
-            </button>
-          </>
-        )}
-      </ColoredCard>
+          <p className={styles.description}>
+            {cleared
+              ? 'Your session has been cleared. Redirecting to login...'
+              : 'Having trouble logging in? Click below to clear your session and try again.'
+            }
+          </p>
+
+          {!cleared && (
+            <>
+              <button
+                onClick={clearCookies}
+                disabled={loading}
+                className={`btn btn-primary btn-full ${styles.primaryAction} ${loading ? styles.buttonDisabled : styles.buttonEnabled}`}
+              >
+                {loading ? '🔄 Clearing...' : '🗑️ Clear Session & Retry Login'}
+              </button>
+
+              <button
+                onClick={() => router.push('/admin/login')}
+                className="btn btn-secondary btn-full"
+              >
+                ← Back to Login
+              </button>
+            </>
+          )}
+        </ColoredCard>
       </div>
     </div>
   )

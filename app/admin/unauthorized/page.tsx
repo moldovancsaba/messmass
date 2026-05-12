@@ -128,7 +128,7 @@ export default function UnauthorizedPage() {
             onClick={() => router.push('/admin/help')}
             className="btn btn-primary w-full"
           >
-            📚 Go to User Guide
+            📚 Go to Help
           </button>
           
           <button

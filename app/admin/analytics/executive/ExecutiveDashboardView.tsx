@@ -7,9 +7,12 @@
  */
 
 import React, { useState, useEffect, useCallback } from 'react';
+import { useRouter } from 'next/navigation';
+import AnalyticsWorkspaceNav from '@/components/AnalyticsWorkspaceNav';
 import { LineChart, MetricCard, InsightCard } from '@/components/analytics';
 import type { LineChartDataset } from '@/components/analytics';
 import type { Insight } from '@/lib/insightsEngine';
+import UnifiedAdminHeroWithSearch from '@/components/UnifiedAdminHeroWithSearch';
 import styles from './ExecutiveDashboard.module.css';
 
 export interface ExecutiveDashboardViewProps {
@@ -54,6 +57,7 @@ export function ExecutiveDashboardView({
   subtitle = 'Real-time analytics across all events',
   defaultPeriod = '30d',
 }: ExecutiveDashboardViewProps) {
+  const router = useRouter();
   const [metrics, setMetrics] = useState<ExecutiveMetrics | null>(null);
   const [trends, setTrends] = useState<TrendData | null>(null);
   const [topEvents, setTopEvents] = useState<TopEvent[]>([]);
@@ -130,26 +134,28 @@ export function ExecutiveDashboardView({
 
   return (
     <div className={styles.executiveDashboard}>
-      <div className={styles.header}>
-        <div>
-          <h1 className={styles.title}>{title}</h1>
-          <p className={styles.subtitle}>{subtitle}</p>
-        </div>
-        <div className={styles.periodSelector}>
-          <button
-            onClick={() => setPeriod('30d')}
-            className={period === '30d' ? styles.periodActive : styles.periodButton}
-          >
-            Last 30 Days
-          </button>
-          <button
-            onClick={() => setPeriod('90d')}
-            className={period === '90d' ? styles.periodActive : styles.periodButton}
-          >
-            Last 90 Days
-          </button>
-        </div>
-      </div>
+      <UnifiedAdminHeroWithSearch
+        title={title}
+        subtitle={subtitle}
+        backLink="/admin/analytics"
+        showSearch={false}
+        actionButtons={[
+          {
+            label: period === '30d' ? 'Last 30 Days' : 'Last 90 Days',
+            icon: 'date_range',
+            onClick: () => setPeriod(period === '30d' ? '90d' : '30d'),
+            variant: 'secondary',
+          },
+          {
+            label: 'Open Insights',
+            icon: 'lightbulb',
+            onClick: () => router.push('/admin/analytics/insights'),
+            variant: 'secondary',
+          },
+        ]}
+      />
+
+      <AnalyticsWorkspaceNav />
 
       <div className={styles.metricsGrid}>
         <MetricCard

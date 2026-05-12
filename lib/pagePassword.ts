@@ -8,7 +8,15 @@ import config from '@/lib/config';
  * Page password types and interfaces for {messmass} authentication system
  */
 
-export type PageType = 'event-report' | 'partner-report' | 'edit' | 'partner-edit' | 'filter' | 'hashtag';
+export type PageType =
+  | 'event-report'
+  | 'partner-report'
+  | 'organization-report'
+  | 'edit'
+  | 'partner-edit'
+  | 'organization-edit'
+  | 'filter'
+  | 'hashtag';
 
 export interface PagePassword {
   _id?: string;
@@ -157,18 +165,11 @@ const db = client.db(config.dbName);
   }
 }
 
-/**
- * Check if admin password is valid
- * Uses the existing admin password system
- * 
- * @param providedPassword - Password provided by user
- * @returns boolean
- */
-// NOTE: Static admin password via env has been removed.
-// Admin session bypass is handled at the API route level (see /api/page-passwords PUT).
+// NOTE: Static admin password validation has been removed.
+// Admin-session bypass is handled at the API route level (see /api/page-passwords PUT).
 
 /**
- * Validate either admin or page-specific password
+ * Validate access using the page-specific password path.
  * 
  * @param pageId - Page identifier
  * @param pageType - Type of page
@@ -215,6 +216,11 @@ export async function generateShareableLink(
       // WHY: Public shareable partner profile pages with event listings
       url += `/partner-report/${pageId}`;
       break;
+    case 'organization-report':
+      // WHAT: Organization report pages at /organization-report/[id]
+      // WHY: Shareable aggregated organization reporting pages
+      url += `/organization-report/${pageId}`;
+      break;
     case 'edit':
       url += `/edit/${pageId}`;
       break;
@@ -222,6 +228,11 @@ export async function generateShareableLink(
       // WHAT: Partner content editing pages at /partner-edit/[slug]
       // WHY: Allow editing partner-level text and image content
       url += `/partner-edit/${pageId}`;
+      break;
+    case 'organization-edit':
+      // WHAT: Organization content editing pages at /organization-edit/[id]
+      // WHY: Allow editing organization-level report content and visibility settings
+      url += `/organization-edit/${pageId}`;
       break;
     case 'filter':
       url += `/filter/${pageId}`;

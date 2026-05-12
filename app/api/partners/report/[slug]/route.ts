@@ -65,20 +65,30 @@ const db = client.db(config.dbName);
       );
     }
 
-    // Fetch all events associated with this partner
-    // WHAT: Events can reference partner as partner1/partner2 OR partner1Id/partner2Id (home/away)
-    // WHY: Sports Match Builder creates events with two partners, field names vary by creation method
     const partnerObjectId = new ObjectId(partner._id);
+    const showOnlyTeam1Events = partner.showOnlyTeam1Events === true;
+    const eventQuery = showOnlyTeam1Events
+      ? {
+          $or: [
+            { partner1: partnerObjectId },
+            { partner1Id: partnerObjectId },
+          ],
+        }
+      : {
+          $or: [
+            { partner1: partnerObjectId },
+            { partner2: partnerObjectId },
+            { partner1Id: partnerObjectId },
+            { partner2Id: partnerObjectId },
+          ],
+        };
+
+    // Fetch all report-eligible events associated with this partner
+    // WHAT: partner1 / partner1Id represent the local-home side in existing builders
+    // WHY: Some partner reports should aggregate only local-home appearances
     const events = await db
       .collection('projects')
-      .find({
-        $or: [
-          { partner1: partnerObjectId },
-          { partner2: partnerObjectId },
-          { partner1Id: partnerObjectId },
-          { partner2Id: partnerObjectId }
-        ]
-      })
+      .find(eventQuery)
       .sort({ eventDate: -1 }) // Most recent events first
       .project({
         _id: 1,
@@ -130,6 +140,7 @@ const db = client.db(config.dbName);
         showEventsList: partner.showEventsList ?? true, // Default to true for backward compatibility
         showEventsListTitle: partner.showEventsListTitle ?? true, // Default to true for backward compatibility
         showEventsListDetails: partner.showEventsListDetails ?? true, // Default to true for backward compatibility
+        showOnlyTeam1Events,
         createdAt: partner.createdAt,
         updatedAt: partner.updatedAt,
         // WHAT: Include partner-level stats (reportText*, reportImage*) for chart display

@@ -77,7 +77,7 @@ export default function ChartBuilderImage({ chart, stats, onSave }: ChartBuilder
         </div>
         <div className="chart-builder-card-body">
           <p className="chart-builder-card-id">{chart.chartId}</p>
-          <p className="chart-builder-hint">No variables in formula. Add variables (e.g. [reportImage1]) in Visualization Manager, or use a title like &quot;Report Image 3&quot; to bind to [reportImage3].</p>
+          <p className="chart-builder-hint">No variables in formula. Add variables (e.g. [reportImage1]) in Report Builder, or use a title like &quot;Report Image 3&quot; to bind to [reportImage3].</p>
         </div>
       </div>
     );

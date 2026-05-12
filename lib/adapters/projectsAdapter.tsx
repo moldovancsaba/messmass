@@ -7,9 +7,130 @@ import React from 'react';
 import Image from 'next/image';
 import { AdminPageAdapter } from '../adminDataAdapters';
 import { ProjectDTO } from '../types/api';
+import type { AdminEntityConfig } from '@/lib/adminEntitySystem';
 import ColoredHashtagBubble from '@/components/ColoredHashtagBubble';
-import { apiDelete } from '@/lib/apiClient';
 import { getStoredOrDerivedTotalFans } from '@/lib/totalFans';
+
+export const projectsEntityConfig: AdminEntityConfig<ProjectDTO> = {
+  entityKey: 'project',
+  pageName: 'projects',
+  displayName: 'Event',
+  supportedViews: ['list', 'card'],
+  capabilities: ['create', 'edit', 'delete', 'report', 'share', 'edit-content', 'kyc', 'export'],
+  search: {
+    fields: ['eventName', 'hashtags', 'categorizedHashtags'],
+    placeholder: 'Search events...',
+  },
+  permissionRequirements: ['admin'],
+  actions: [
+    {
+      id: 'project-open-report',
+      label: 'Open Report',
+      icon: 'visibility',
+      variant: 'primary',
+      requiredCapabilities: ['report'],
+      requiredPermissions: ['admin'],
+      execution: {
+        kind: 'route',
+        getHref: (project) => `/report/${project.viewSlug || project._id}`,
+        target: '_blank',
+      },
+    },
+    {
+      id: 'project-open-editor',
+      label: 'Open Editor',
+      icon: 'bar_chart',
+      variant: 'primary',
+      requiredCapabilities: ['edit-content'],
+      requiredPermissions: ['admin'],
+      execution: {
+        kind: 'route',
+        getHref: (project) => `/edit/${project.editSlug || project._id}`,
+        target: '_blank',
+      },
+    },
+    {
+      id: 'project-share-report',
+      label: 'Share Report',
+      icon: 'ios_share',
+      variant: 'secondary',
+      surfaces: ['list'],
+      requiredCapabilities: ['report', 'share'],
+      requiredPermissions: ['admin'],
+      execution: {
+        kind: 'share',
+        shareKey: 'project-report',
+        getResourceId: (project) => project.viewSlug || project._id,
+      },
+    },
+    {
+      id: 'project-share-editor',
+      label: 'Share Editor',
+      icon: 'share',
+      variant: 'secondary',
+      surfaces: ['list'],
+      requiredCapabilities: ['edit-content', 'share'],
+      requiredPermissions: ['admin'],
+      execution: {
+        kind: 'share',
+        shareKey: 'project-editor',
+        getResourceId: (project) => project.editSlug || project._id,
+      },
+    },
+    {
+      id: 'project-edit',
+      label: 'Edit',
+      icon: 'edit',
+      variant: 'secondary',
+      requiredCapabilities: ['edit'],
+      requiredPermissions: ['admin'],
+      execution: {
+        kind: 'modal',
+        modalKey: 'edit-project',
+      },
+    },
+    {
+      id: 'project-export-csv',
+      label: 'Export CSV',
+      icon: 'download',
+      variant: 'secondary',
+      surfaces: ['list'],
+      requiredCapabilities: ['export'],
+      requiredPermissions: ['admin'],
+      execution: {
+        kind: 'mutation',
+        mutationKey: 'export-project-csv',
+      },
+    },
+    {
+      id: 'project-kyc',
+      label: 'KYC Data',
+      icon: 'table_chart',
+      variant: 'secondary',
+      surfaces: ['list'],
+      requiredCapabilities: ['kyc'],
+      requiredPermissions: ['admin'],
+      execution: {
+        kind: 'route',
+        getHref: (project) => `/admin/events/${project._id}/kyc-data`,
+        target: '_blank',
+      },
+    },
+    {
+      id: 'project-delete',
+      label: 'Delete',
+      icon: 'delete',
+      variant: 'danger',
+      requiredCapabilities: ['delete'],
+      requiredPermissions: ['admin'],
+      execution: {
+        kind: 'mutation',
+        mutationKey: 'delete-project',
+        confirmMessage: (project) => `Delete event "${project.eventName}"?`,
+      },
+    },
+  ],
+};
 
 /**
  * WHAT: Complete adapter configuration for Projects page
@@ -145,113 +266,6 @@ export const projectsAdapter: AdminPageAdapter<ProjectDTO> = {
         ),
       },
     ],
-    rowActions: [
-      {
-        label: 'CSV',
-        icon: 'download',
-        variant: 'secondary',
-        handler: async (project) => {
-          try {
-            const timestamp = new Date().getTime();
-            const id = project.viewSlug || project._id;
-            const res = await fetch(`/api/projects/stats/${id}?refresh=${timestamp}`);
-            const data = await res.json();
-            if (!data.success || !data.project) {
-              alert('Failed to fetch project stats for CSV export');
-              return;
-            }
-            const p = data.project;
-            const esc = (v: any) => '"' + String(v ?? '').replace(/"/g, '""') + '"';
-            const rows: Array<[string, string | number]> = [];
-            rows.push(['Event Name', p.eventName]);
-            rows.push(['Event Date', p.eventDate]);
-            rows.push(['Created At', p.createdAt]);
-            rows.push(['Updated At', p.updatedAt]);
-            Object.entries(p.stats || {}).forEach(([k, v]) => {
-              rows.push([k, typeof v === 'number' || typeof v === 'string' ? v : '']);
-            });
-            const header = ['Variable', 'Value'];
-            const csv = [header, ...rows].map(([k, v]) => `${esc(k)},${esc(v)}`).join('\n');
-            const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
-            const link = document.createElement('a');
-            const base = p.eventName.replace(/[^a-zA-Z0-9]/g, '_') || 'event';
-            const url = URL.createObjectURL(blob);
-            link.setAttribute('href', url);
-            link.setAttribute('download', `${base}_variables.csv`);
-            link.style.visibility = 'hidden';
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-          } catch (e) {
-            alert('Export failed');
-          }
-        },
-        title: 'Download CSV export',
-      },
-      {
-        label: 'KYC Data',
-        icon: 'table_chart',
-        variant: 'secondary',
-        handler: (project) => {
-          // WHAT: Open KYC data table view for this event
-          // WHY: Display all KYC variables in structured table format
-          window.open(`/admin/events/${project._id}/kyc-data`, '_blank');
-        },
-        title: 'View KYC data table',
-      },
-      {
-        label: 'Report',
-        icon: 'visibility',
-        variant: 'secondary',
-        handler: (project) => {
-          // WHAT: Open share modal for report page (handler overridden by page component)
-          // WHY: Allow sharing report link AND visiting report page
-          console.log('Report:', project._id);
-        },
-        title: 'Share and view report page',
-      },
-      {
-        label: 'Edit Stats',
-        icon: 'bar_chart',
-        variant: 'primary',
-        handler: (project) => {
-          // WHAT: Open share modal for edit page (handler overridden by page component)
-          // WHY: Allow sharing edit link AND visiting clicker/editor
-          console.log('Edit Stats:', project._id);
-        },
-        title: 'Share and edit event statistics',
-      },
-      {
-        label: 'Edit',
-        icon: 'edit',
-        variant: 'secondary',
-        handler: (project) => {
-          // This will be overridden by the page component
-          console.log('Edit project:', project._id);
-        },
-        title: 'Edit project details (name, date, hashtags)',
-      },
-      {
-        label: 'Delete',
-        icon: 'delete',
-        variant: 'danger',
-        handler: async (project) => {
-          if (confirm(`Delete event "${project.eventName}"?`)) {
-            try {
-              const result = await apiDelete<{ success: boolean; error?: string }>(`/api/projects?projectId=${project._id}`);
-              if (result.success) {
-                window.location.reload();
-              } else {
-                alert(result.error || 'Failed to delete project');
-              }
-            } catch (error) {
-              alert(error instanceof Error ? error.message : 'Delete failed');
-            }
-          }
-        },
-        title: 'Delete project',
-      },
-    ],
   },
 
   cardConfig: {
@@ -289,30 +303,6 @@ export const projectsAdapter: AdminPageAdapter<ProjectDTO> = {
         label: 'Attendees',
         icon: '🏟️',
         render: (project) => (project.stats.eventAttendees || 0).toLocaleString(),
-      },
-    ],
-    cardActions: [
-      {
-        label: 'Report',
-        icon: 'visibility',
-        variant: 'secondary',
-        handler: (project) => {
-          // WHAT: Open share modal for report page (handler overridden by page component)
-          // WHY: Allow sharing report link AND visiting report page
-          console.log('Report:', project._id);
-        },
-        title: 'Share and view report page',
-      },
-      {
-        label: 'Edit Stats',
-        icon: 'bar_chart',
-        variant: 'primary',
-        handler: (project) => {
-          // WHAT: Open share modal for edit page (handler overridden by page component)
-          // WHY: Allow sharing edit link AND visiting clicker/editor
-          console.log('Edit Stats:', project._id);
-        },
-        title: 'Share and edit event statistics',
       },
     ],
   },

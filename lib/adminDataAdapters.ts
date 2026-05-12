@@ -5,6 +5,15 @@
 
 import React from 'react';
 
+export interface AdminSurfaceAction<T> {
+  label: string;
+  icon?: string;
+  variant?: 'primary' | 'secondary' | 'danger';
+  handler: (item: T) => void;
+  title?: string;
+  className?: string;
+}
+
 /**
  * WHAT: Configuration for a single column in list view
  * WHY: Defines how data is displayed in table columns
@@ -38,14 +47,7 @@ export interface ListViewConfig<T> {
   /** Array of column configurations */
   columns: ListColumnConfig<T>[];
   /** Optional row-level action buttons */
-  rowActions?: Array<{
-    label: string;
-    icon?: string;
-    variant?: 'primary' | 'secondary' | 'danger';
-    handler: (item: T) => void;
-    title?: string;
-    className?: string;
-  }>;
+  rowActions?: AdminSurfaceAction<T>[];
   /** Optional function to determine if row is clickable */
   isRowClickable?: (item: T) => boolean;
   /** Optional row click handler */
@@ -87,14 +89,7 @@ export interface CardViewConfig<T> {
   /** Array of metadata fields to display */
   metaFields?: CardMetaFieldConfig<T>[];
   /** Optional card-level action buttons */
-  cardActions?: Array<{
-    label: string;
-    icon?: string;
-    variant?: 'primary' | 'secondary' | 'danger';
-    handler: (item: T) => void;
-    title?: string;
-    className?: string;
-  }>;
+  cardActions?: AdminSurfaceAction<T>[];
   /** Optional function to determine if card is clickable */
   isCardClickable?: (item: T) => boolean;
   /** Optional card click handler */

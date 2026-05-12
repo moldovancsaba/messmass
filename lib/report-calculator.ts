@@ -653,7 +653,7 @@ export class ReportCalculator {
    */
   public static hasValidData(result: ChartResult): boolean {
     // A-R-11: Charts with errors are not valid (but errors are now displayed, not hidden)
-    if (result.chartError) {
+    if (result.chartError || result.error) {
       return false;
     }
 

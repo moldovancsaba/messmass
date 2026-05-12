@@ -16,6 +16,12 @@ type OrganizationMetadata = {
   reportTemplateId?: string;
   styleId?: string;
   clickerSetId?: string;
+  showMembersList?: boolean;
+  showMembersListTitle?: boolean;
+  showMembersListDetails?: boolean;
+  showEventsList?: boolean;
+  showEventsListTitle?: boolean;
+  showEventsListDetails?: boolean;
 };
 
 interface Organization {
@@ -65,6 +71,12 @@ export default function OrganizationEditorDashboard({ organization: initialOrg }
     styleId: '',
     reportTemplateId: '',
     clickerSetId: '',
+    showMembersList: true,
+    showMembersListTitle: true,
+    showMembersListDetails: true,
+    showEventsList: true,
+    showEventsListTitle: true,
+    showEventsListDetails: true,
   });
 
   useEffect(() => {
@@ -80,6 +92,12 @@ export default function OrganizationEditorDashboard({ organization: initialOrg }
       styleId: metadata.styleId || '',
       reportTemplateId: metadata.reportTemplateId || metadata.reportId || '',
       clickerSetId: metadata.clickerSetId || '',
+      showMembersList: metadata.showMembersList !== false,
+      showMembersListTitle: metadata.showMembersListTitle !== false,
+      showMembersListDetails: metadata.showMembersListDetails !== false,
+      showEventsList: metadata.showEventsList !== false,
+      showEventsListTitle: metadata.showEventsListTitle !== false,
+      showEventsListDetails: metadata.showEventsListDetails !== false,
     });
   }, [org]);
 
@@ -157,7 +175,7 @@ export default function OrganizationEditorDashboard({ organization: initialOrg }
     }
 
     try {
-      const result = await apiPut(`/api/admin/organizations/${org._id}`, {
+      const result = await apiPut(`/api/organizations/edit/${org._id}`, {
         metadata: nextMetadata,
       });
 
@@ -198,8 +216,29 @@ export default function OrganizationEditorDashboard({ organization: initialOrg }
         styleId: settingsDraft.styleId || undefined,
         reportTemplateId: settingsDraft.reportTemplateId || undefined,
         clickerSetId: settingsDraft.clickerSetId || undefined,
+        showMembersList: settingsDraft.showMembersList,
+        showMembersListTitle: settingsDraft.showMembersListTitle,
+        showMembersListDetails: settingsDraft.showMembersListDetails,
+        showEventsList: settingsDraft.showEventsList,
+        showEventsListTitle: settingsDraft.showEventsListTitle,
+        showEventsListDetails: settingsDraft.showEventsListDetails,
       },
     });
+  };
+
+  const handleBooleanSettingChange = async (
+    key:
+      | 'showEmoji'
+      | 'showMembersList'
+      | 'showMembersListTitle'
+      | 'showMembersListDetails'
+      | 'showEventsList'
+      | 'showEventsListTitle'
+      | 'showEventsListDetails',
+    value: boolean
+  ) => {
+    setSettingsDraft((prev) => ({ ...prev, [key]: value }));
+    await saveOrg({ metadataPatch: { [key]: value } });
   };
 
   const resolvedTemplateId = useMemo(
@@ -235,11 +274,14 @@ export default function OrganizationEditorDashboard({ organization: initialOrg }
       <div className="content-grid">
         <ColoredCard>
           <h2 className="section-title">📦 Organization Report Content</h2>
-          <div className="mb-4 p-3 bg-blue-50 border border-blue-200 rounded-lg text-sm text-blue-700">
-            <p>
-              <strong>Organization-level content:</strong> This content appears on the organization report page above
-              members and events.
-            </p>
+          <div className="mb-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+            <h4 className="text-sm font-semibold text-blue-800 mb-2">ℹ️ Organization Content Editing</h4>
+            <ul className="text-sm text-blue-700 space-y-1">
+              <li>• <strong>Text & Images:</strong> Edit organization-specific content (reportText*, reportImage*)</li>
+              <li>• <strong>Mathematical Data:</strong> Comes from aggregated member and event data</li>
+              <li>• <strong>Lists:</strong> Control whether member and event sections appear on the report</li>
+              <li>• <strong>Branding:</strong> Configure emoji, logo, template, style, and clicker defaults</li>
+            </ul>
           </div>
 
           <ReportContentManager
@@ -277,7 +319,7 @@ export default function OrganizationEditorDashboard({ organization: initialOrg }
               <input
                 type="checkbox"
                 checked={settingsDraft.showEmoji}
-                onChange={(event) => setSettingsDraft((prev) => ({ ...prev, showEmoji: event.target.checked }))}
+                onChange={(event) => handleBooleanSettingChange('showEmoji', event.target.checked)}
                 className="mr-2"
               />
               Show emoji in report header
@@ -351,6 +393,108 @@ export default function OrganizationEditorDashboard({ organization: initialOrg }
             <p className="form-hint">Stored for org-level defaults and future member/event tooling.</p>
           </div>
 
+          <div className="border-t border-gray-200 pt-3">
+            <div className="flex items-center gap-3 mb-3">
+              <input
+                type="checkbox"
+                id="showMembersList"
+                checked={settingsDraft.showMembersList}
+                onChange={(event) => handleBooleanSettingChange('showMembersList', event.target.checked)}
+                className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 focus:ring-2"
+              />
+              <label htmlFor="showMembersList" className="text-sm font-medium text-gray-700">
+                Show Members List on Report Page
+              </label>
+            </div>
+            <p className="text-xs text-gray-500 mb-3 ml-7">
+              Controls whether the organization member cards appear below the main report content.
+            </p>
+
+            <div className="flex items-center gap-3 mb-3">
+              <input
+                type="checkbox"
+                id="showMembersListTitle"
+                checked={settingsDraft.showMembersListTitle}
+                onChange={(event) => handleBooleanSettingChange('showMembersListTitle', event.target.checked)}
+                disabled={!settingsDraft.showMembersList}
+                className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 focus:ring-2 disabled:opacity-50"
+              />
+              <label htmlFor="showMembersListTitle" className={`text-sm font-medium ${!settingsDraft.showMembersList ? 'text-gray-400' : 'text-gray-700'}`}>
+                Show Members List Title
+              </label>
+            </div>
+            <p className="text-xs text-gray-500 mb-3 ml-7">
+              Controls whether the “Members (X)” heading appears above the member list.
+            </p>
+
+            <div className="flex items-center gap-3 mb-3">
+              <input
+                type="checkbox"
+                id="showMembersListDetails"
+                checked={settingsDraft.showMembersListDetails}
+                onChange={(event) => handleBooleanSettingChange('showMembersListDetails', event.target.checked)}
+                disabled={!settingsDraft.showMembersList}
+                className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 focus:ring-2 disabled:opacity-50"
+              />
+              <label htmlFor="showMembersListDetails" className={`text-sm font-medium ${!settingsDraft.showMembersList ? 'text-gray-400' : 'text-gray-700'}`}>
+                Show Member Card Details
+              </label>
+            </div>
+            <p className="text-xs text-gray-500 mb-3 ml-7">
+              Controls whether member cards show labels and report actions or just the member name.
+            </p>
+
+            <div className="flex items-center gap-3 mb-3">
+              <input
+                type="checkbox"
+                id="showOrganizationEventsList"
+                checked={settingsDraft.showEventsList}
+                onChange={(event) => handleBooleanSettingChange('showEventsList', event.target.checked)}
+                className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 focus:ring-2"
+              />
+              <label htmlFor="showOrganizationEventsList" className="text-sm font-medium text-gray-700">
+                Show Events List on Report Page
+              </label>
+            </div>
+            <p className="text-xs text-gray-500 mb-3 ml-7">
+              Controls whether organization-related event cards appear at the bottom of the report.
+            </p>
+
+            <div className="flex items-center gap-3 mb-3">
+              <input
+                type="checkbox"
+                id="showOrganizationEventsListTitle"
+                checked={settingsDraft.showEventsListTitle}
+                onChange={(event) => handleBooleanSettingChange('showEventsListTitle', event.target.checked)}
+                disabled={!settingsDraft.showEventsList}
+                className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 focus:ring-2 disabled:opacity-50"
+              />
+              <label htmlFor="showOrganizationEventsListTitle" className={`text-sm font-medium ${!settingsDraft.showEventsList ? 'text-gray-400' : 'text-gray-700'}`}>
+                Show Events List Title
+              </label>
+            </div>
+            <p className="text-xs text-gray-500 mb-3 ml-7">
+              Controls whether the “Events (X)” heading appears above the event list.
+            </p>
+
+            <div className="flex items-center gap-3 mb-4">
+              <input
+                type="checkbox"
+                id="showOrganizationEventsListDetails"
+                checked={settingsDraft.showEventsListDetails}
+                onChange={(event) => handleBooleanSettingChange('showEventsListDetails', event.target.checked)}
+                disabled={!settingsDraft.showEventsList}
+                className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 focus:ring-2 disabled:opacity-50"
+              />
+              <label htmlFor="showOrganizationEventsListDetails" className={`text-sm font-medium ${!settingsDraft.showEventsList ? 'text-gray-400' : 'text-gray-700'}`}>
+                Show Event Card Details
+              </label>
+            </div>
+            <p className="text-xs text-gray-500 ml-7">
+              Controls whether event cards show date, labels, and report actions or only the event name.
+            </p>
+          </div>
+
           <button
             type="button"
             className="btn btn-primary"
@@ -378,6 +522,29 @@ export default function OrganizationEditorDashboard({ organization: initialOrg }
               {resolvedTemplateId && <p>Template ID: {resolvedTemplateId}</p>}
               {org.metadata?.styleId && <p>Style ID: {org.metadata.styleId}</p>}
               {org.metadata?.clickerSetId && <p>Clicker Set ID: {org.metadata.clickerSetId}</p>}
+            </div>
+          </div>
+        </ColoredCard>
+
+        <ColoredCard>
+          <h2 className="section-title">📚 How Organization Content Works</h2>
+          <div className="space-y-4 text-sm">
+            <div>
+              <h4 className="font-semibold text-gray-800 mb-2">🎯 What You Can Edit</h4>
+              <ul className="space-y-1 text-gray-600">
+                <li>• <strong>Organization Texts:</strong> Executive messaging, intros, and summaries</li>
+                <li>• <strong>Organization Images:</strong> Logos, banners, and organization-level creative</li>
+                <li>• <strong>Report Presentation:</strong> Template, style, clicker default, and list visibility</li>
+              </ul>
+            </div>
+
+            <div>
+              <h4 className="font-semibold text-gray-800 mb-2">📊 What Comes from Members and Events</h4>
+              <ul className="space-y-1 text-gray-600">
+                <li>• <strong>Aggregated Numbers:</strong> All numeric KPIs are summed from assigned members and linked events</li>
+                <li>• <strong>Member Cards:</strong> Partners assigned to the organization</li>
+                <li>• <strong>Event Cards:</strong> Organization-related activities exposed on the report</li>
+              </ul>
             </div>
           </div>
         </ColoredCard>

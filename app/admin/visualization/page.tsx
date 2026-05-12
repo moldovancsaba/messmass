@@ -6,6 +6,7 @@ import ReportChart from '@/app/report/[slug]/ReportChart';
 import { ChartConfiguration, ChartCalculationResult, HeroBlockSettings, BlockAlignmentSettings } from '@/lib/chartConfigTypes';
 import { calculateActiveCharts } from '@/lib/chartCalculator';
 import UnifiedAdminHeroWithSearch from '@/components/UnifiedAdminHeroWithSearch';
+import ReportingWorkspaceNav from '@/components/ReportingWorkspaceNav';
 import ColoredCard from '@/components/ColoredCard';
 import FormModal from '@/components/modals/FormModal';
 import ConfirmDialog from '@/components/modals/ConfirmDialog';
@@ -1401,11 +1402,13 @@ export default function VisualizationPage() {
   return (
     <div className="page-container">
       <UnifiedAdminHeroWithSearch
-        title="👁️ Visualization Manager"
-        subtitle="Manage data visualization blocks and chart layouts"
-        backLink="/admin"
+        title="👁️ Report Builder"
+        subtitle="Manage report blocks, chart layouts, and template composition"
+        backLink="/admin/reports"
         showSearch={false}
       />
+
+      <ReportingWorkspaceNav />
       
       {/* WHAT: Status Message - Smooth UX feedback without page reloads
           WHY: Replace alert() dialogs with auto-dismissing status messages */}

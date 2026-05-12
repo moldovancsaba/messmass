@@ -225,7 +225,7 @@ export default function VerticalBarChart({
           /* What: Custom tooltip with value and percentage
              Why: More informative than just raw numbers */
           label: (context) => {
-            const value = context.parsed.y;
+            const value = context.parsed.y ?? 0;
             const percentage = total > 0 ? ((value / total) * 100).toFixed(1) : '0.0';
             return `${context.label}: ${value.toLocaleString()} (${percentage}%)`;
           },

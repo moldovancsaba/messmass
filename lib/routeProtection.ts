@@ -12,7 +12,7 @@ import { hasMinimumRole } from './permissions';
  * FORMAT: { route: minimumRole }
  */
 export const ROUTE_PROTECTION: Record<string, UserRole> = {
-  // WHAT: Main admin dashboard - accessible to all authenticated users (cards filtered by role)
+  // WHAT: Main admin workspace - accessible to all authenticated users (cards filtered by role)
   '/admin': 'guest',
   
   // WHAT: Help page - accessible to all authenticated users (guests can read docs)
@@ -24,12 +24,20 @@ export const ROUTE_PROTECTION: Record<string, UserRole> = {
   '/admin/filter': 'user',
   
   // WHAT: Management features - admin level required
+  '/admin/analytics': 'admin',
+  '/admin/analytics/insights': 'superadmin',
+  '/admin/reports': 'admin',
   '/admin/kyc': 'admin',
   '/admin/charts': 'admin',
   '/admin/clicker-manager': 'admin',
   '/admin/bitly': 'admin',
+  '/admin/content-library': 'admin',
   '/admin/visualization': 'admin',
+  '/admin/styles': 'admin',
   '/admin/design': 'admin',
+
+  // WHAT: Legacy admin entry points - protected, but immediately redirected to canonical workspaces
+  '/admin/dashboard': 'guest',
   
   // WHAT: System administration - superadmin only
   '/admin/hashtags': 'superadmin',

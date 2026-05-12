@@ -3,7 +3,9 @@
 import React, { useState, useEffect } from 'react';
 import ColoredCard from './ColoredCard';
 import ColoredHashtagBubble from './ColoredHashtagBubble';
+import ImageUploader from './ImageUploader';
 import ReportContentManager from './ReportContentManager';
+import UnifiedTextInput from './UnifiedTextInput';
 import { 
   mergeHashtagSystems, 
   getAllHashtagRepresentations
@@ -24,6 +26,7 @@ interface Partner {
   showEventsList?: boolean; // WHAT: Controls visibility of events list on partner report page
   showEventsListTitle?: boolean; // WHAT: Controls visibility of events list title on partner report page
   showEventsListDetails?: boolean; // WHAT: Controls whether event cards show detailed info or just titles
+  showOnlyTeam1Events?: boolean; // WHAT: Restrict partner report data to local-home / team-1 appearances
   createdAt: string;
   updatedAt: string;
   // WHAT: Partner-level stats for content editing only
@@ -46,31 +49,25 @@ export default function PartnerEditorDashboard({ partner: initialPartner }: Part
     setPartner(initialPartner);
   }, [initialPartner]);
 
-  // WHAT: Auto-save function with CSRF token support
-  // WHY: Persist partner content changes to database immediately after user action
-  // HOW: Use apiPut() which automatically includes CSRF token in request headers
-  const savePartner = async (updatedStats?: typeof partner.stats) => {
+  const persistPartner = async (nextPartner: Partner, nextStats?: typeof partner.stats) => {
     setSaveStatus('saving');
     try {
-      // WHAT: Use apiPut() instead of raw fetch() for CSRF token handling
-      // WHY: Production middleware requires X-CSRF-Token header for all PUT requests
       const result = await apiPut('/api/partners', {
-        partnerId: partner._id,
-        name: partner.name,
-        emoji: partner.emoji,
-        logoUrl: partner.logoUrl,
-        hashtags: partner.hashtags,
-        categorizedHashtags: partner.categorizedHashtags,
-        stats: updatedStats || partner.stats,
-        styleId: partner.styleId,
-        reportTemplateId: partner.reportTemplateId,
-        showEventsList: partner.showEventsList,
-        showEventsListTitle: partner.showEventsListTitle,
-        showEventsListDetails: partner.showEventsListDetails
+        partnerId: nextPartner._id,
+        name: nextPartner.name,
+        emoji: nextPartner.emoji,
+        logoUrl: nextPartner.logoUrl,
+        hashtags: nextPartner.hashtags,
+        categorizedHashtags: nextPartner.categorizedHashtags,
+        stats: nextStats || nextPartner.stats,
+        styleId: nextPartner.styleId,
+        reportTemplateId: nextPartner.reportTemplateId,
+        showEventsList: nextPartner.showEventsList,
+        showEventsListTitle: nextPartner.showEventsListTitle,
+        showEventsListDetails: nextPartner.showEventsListDetails,
+        showOnlyTeam1Events: nextPartner.showOnlyTeam1Events
       });
 
-      // WHAT: Handle successful save response
-      // WHY: Provide user feedback that changes were persisted
       if (result.success) {
         setSaveStatus('saved');
         setTimeout(() => setSaveStatus('idle'), 2000);
@@ -80,12 +77,17 @@ export default function PartnerEditorDashboard({ partner: initialPartner }: Part
         setTimeout(() => setSaveStatus('idle'), 3000);
       }
     } catch (error) {
-      // WHAT: Handle network or CSRF token errors
-      // WHY: Show error state to user if save fails
       console.error('Failed to save partner:', error);
       setSaveStatus('error');
       setTimeout(() => setSaveStatus('idle'), 3000);
     }
+  };
+
+  // WHAT: Auto-save function with CSRF token support
+  // WHY: Persist partner content changes to database immediately after user action
+  // HOW: Use apiPut() which automatically includes CSRF token in request headers
+  const savePartner = async (updatedStats?: typeof partner.stats) => {
+    await persistPartner(partner, updatedStats);
   };
 
   // WHAT: Handle showEventsListDetails toggle
@@ -93,38 +95,7 @@ export default function PartnerEditorDashboard({ partner: initialPartner }: Part
   const handleShowEventsListDetailsToggle = async (checked: boolean) => {
     const updatedPartner = { ...partner, showEventsListDetails: checked };
     setPartner(updatedPartner);
-    
-    // Save immediately
-    setSaveStatus('saving');
-    try {
-      const result = await apiPut('/api/partners', {
-        partnerId: partner._id,
-        name: partner.name,
-        emoji: partner.emoji,
-        logoUrl: partner.logoUrl,
-        hashtags: partner.hashtags,
-        categorizedHashtags: partner.categorizedHashtags,
-        stats: partner.stats,
-        styleId: partner.styleId,
-        reportTemplateId: partner.reportTemplateId,
-        showEventsList: partner.showEventsList,
-        showEventsListTitle: partner.showEventsListTitle,
-        showEventsListDetails: checked
-      });
-
-      if (result.success) {
-        setSaveStatus('saved');
-        setTimeout(() => setSaveStatus('idle'), 2000);
-      } else {
-        console.error('Save failed:', result.error || 'Unknown error');
-        setSaveStatus('error');
-        setTimeout(() => setSaveStatus('idle'), 3000);
-      }
-    } catch (error) {
-      console.error('Failed to save partner:', error);
-      setSaveStatus('error');
-      setTimeout(() => setSaveStatus('idle'), 3000);
-    }
+    await persistPartner(updatedPartner);
   };
 
   // WHAT: Handle showEventsListTitle toggle
@@ -132,38 +103,7 @@ export default function PartnerEditorDashboard({ partner: initialPartner }: Part
   const handleShowEventsListTitleToggle = async (checked: boolean) => {
     const updatedPartner = { ...partner, showEventsListTitle: checked };
     setPartner(updatedPartner);
-    
-    // Save immediately
-    setSaveStatus('saving');
-    try {
-      const result = await apiPut('/api/partners', {
-        partnerId: partner._id,
-        name: partner.name,
-        emoji: partner.emoji,
-        logoUrl: partner.logoUrl,
-        hashtags: partner.hashtags,
-        categorizedHashtags: partner.categorizedHashtags,
-        stats: partner.stats,
-        styleId: partner.styleId,
-        reportTemplateId: partner.reportTemplateId,
-        showEventsList: partner.showEventsList,
-        showEventsListTitle: checked,
-        showEventsListDetails: partner.showEventsListDetails
-      });
-
-      if (result.success) {
-        setSaveStatus('saved');
-        setTimeout(() => setSaveStatus('idle'), 2000);
-      } else {
-        console.error('Save failed:', result.error || 'Unknown error');
-        setSaveStatus('error');
-        setTimeout(() => setSaveStatus('idle'), 3000);
-      }
-    } catch (error) {
-      console.error('Failed to save partner:', error);
-      setSaveStatus('error');
-      setTimeout(() => setSaveStatus('idle'), 3000);
-    }
+    await persistPartner(updatedPartner);
   };
 
   // WHAT: Handle showEventsList toggle
@@ -171,38 +111,34 @@ export default function PartnerEditorDashboard({ partner: initialPartner }: Part
   const handleShowEventsListToggle = async (checked: boolean) => {
     const updatedPartner = { ...partner, showEventsList: checked };
     setPartner(updatedPartner);
-    
-    // Save immediately
-    setSaveStatus('saving');
-    try {
-      const result = await apiPut('/api/partners', {
-        partnerId: partner._id,
-        name: partner.name,
-        emoji: partner.emoji,
-        logoUrl: partner.logoUrl,
-        hashtags: partner.hashtags,
-        categorizedHashtags: partner.categorizedHashtags,
-        stats: partner.stats,
-        styleId: partner.styleId,
-        reportTemplateId: partner.reportTemplateId,
-        showEventsList: checked,
-        showEventsListTitle: partner.showEventsListTitle,
-        showEventsListDetails: partner.showEventsListDetails
-      });
+    await persistPartner(updatedPartner);
+  };
 
-      if (result.success) {
-        setSaveStatus('saved');
-        setTimeout(() => setSaveStatus('idle'), 2000);
-      } else {
-        console.error('Save failed:', result.error || 'Unknown error');
-        setSaveStatus('error');
-        setTimeout(() => setSaveStatus('idle'), 3000);
-      }
-    } catch (error) {
-      console.error('Failed to save partner:', error);
-      setSaveStatus('error');
-      setTimeout(() => setSaveStatus('idle'), 3000);
-    }
+  // WHAT: Handle local-home/team-1 filter toggle
+  // WHY: Keep partner report aggregates and event list scoped to local-home appearances when needed
+  const handleShowOnlyTeam1EventsToggle = async (checked: boolean) => {
+    const updatedPartner = { ...partner, showOnlyTeam1Events: checked };
+    setPartner(updatedPartner);
+    await persistPartner(updatedPartner);
+  };
+
+  const handleLogoUrlSave = async (logoUrl: string) => {
+    const normalizedLogoUrl = logoUrl.trim();
+    const updatedPartner = {
+      ...partner,
+      logoUrl: normalizedLogoUrl || undefined,
+    };
+    setPartner(updatedPartner);
+    await persistPartner(updatedPartner);
+  };
+
+  const handleLogoUpload = async (logoUrl: string | null) => {
+    const updatedPartner = {
+      ...partner,
+      logoUrl: logoUrl || undefined,
+    };
+    setPartner(updatedPartner);
+    await persistPartner(updatedPartner);
   };
 
   // Get all hashtag representations for display
@@ -268,7 +204,7 @@ export default function PartnerEditorDashboard({ partner: initialPartner }: Part
             <h4 className="text-sm font-semibold text-blue-800 mb-2">ℹ️ Partner Content Editing</h4>
             <ul className="text-sm text-blue-700 space-y-1">
               <li>• <strong>Text & Images:</strong> Edit partner-specific content (reportText*, reportImage*)</li>
-              <li>• <strong>Mathematical Data:</strong> Comes from aggregated event data (not editable here)</li>
+              <li>• <strong>Mathematical Data:</strong> Comes from aggregated included event data (not editable here)</li>
               <li>• <strong>Charts:</strong> Will show partner content + aggregated event numbers</li>
               <li>• <strong>Usage:</strong> Upload partner logos, add partner descriptions, custom messaging</li>
             </ul>
@@ -307,6 +243,27 @@ export default function PartnerEditorDashboard({ partner: initialPartner }: Part
                 />
               </div>
             )}
+
+            <div className="border-t border-gray-200 pt-3">
+              <h3 className="font-semibold text-gray-900 mb-3">Logo Management</h3>
+              <UnifiedTextInput
+                label="Logo URL"
+                value={partner.logoUrl || ''}
+                onSave={handleLogoUrlSave}
+                placeholder="https://example.com/logo.png"
+                type="url"
+                autoComplete="url"
+              />
+              <p className="text-xs text-gray-500 mt-1 mb-3">
+                Paste an existing logo URL, or upload an image below to store it on ImgBB and save the hosted URL automatically.
+              </p>
+              <ImageUploader
+                label="Upload Logo"
+                value={partner.logoUrl}
+                onChange={handleLogoUpload}
+                maxSizeMB={10}
+              />
+            </div>
             
             {/* WHAT: Events List Visibility Control */}
             {/* WHY: Allow partners to control whether events list appears on their report page */}
@@ -364,6 +321,22 @@ export default function PartnerEditorDashboard({ partner: initialPartner }: Part
               <p className="text-xs text-gray-500 mt-1 ml-7">
                 Controls whether event cards show detailed info (date, stats, &quot;View Report&quot; button) or just the event title (only applies when events list is shown)
               </p>
+
+              <div className="flex items-center gap-3 mt-3">
+                <input
+                  type="checkbox"
+                  id="showOnlyTeam1Events"
+                  checked={partner.showOnlyTeam1Events ?? false}
+                  onChange={(e) => handleShowOnlyTeam1EventsToggle(e.target.checked)}
+                  className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 focus:ring-2"
+                />
+                <label htmlFor="showOnlyTeam1Events" className="text-sm font-medium text-gray-700">
+                  Only Include Local/Home Events (Team 1)
+                </label>
+              </div>
+              <p className="text-xs text-gray-500 mt-1 ml-7">
+                Filters the partner report so totals, charts, and the events list only include events where this partner is Team 1, the local/home side.
+              </p>
             </div>
             
             <div className="text-xs text-gray-500 space-y-1">
@@ -392,17 +365,17 @@ export default function PartnerEditorDashboard({ partner: initialPartner }: Part
             <div>
               <h4 className="font-semibold text-gray-800 mb-2">📊 What Comes from Events</h4>
               <ul className="space-y-1 text-gray-600">
-                <li>• <strong>Fan Numbers:</strong> Total fans from all partner events</li>
-                <li>• <strong>Image Counts:</strong> Total images from all partner events</li>
-                <li>• <strong>Demographics:</strong> Age, gender data from events</li>
-                <li>• <strong>Engagement:</strong> All mathematical calculations</li>
+                <li>• <strong>Fan Numbers:</strong> Total fans from included partner events</li>
+                <li>• <strong>Image Counts:</strong> Total images from included partner events</li>
+                <li>• <strong>Demographics:</strong> Age and gender data from included events</li>
+                <li>• <strong>Engagement:</strong> Mathematical calculations from included events</li>
               </ul>
             </div>
             
             <div>
               <h4 className="font-semibold text-gray-800 mb-2">🔄 How It Works Together</h4>
               <ul className="space-y-1 text-gray-600">
-                <li>• Partner reports show <strong>aggregated event data</strong> for numbers</li>
+                <li>• Partner reports show <strong>aggregated included event data</strong> for numbers</li>
                 <li>• Partner reports show <strong>partner-specific content</strong> for text/images</li>
                 <li>• Best of both: Real data + Custom branding</li>
               </ul>

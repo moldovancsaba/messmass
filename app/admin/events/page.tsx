@@ -8,7 +8,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useAdminAuth } from '@/hooks/useAdminAuth';
 import { useDebouncedValue } from '@/hooks/useDebouncedValue';
-import { projectsAdapter } from '@/lib/adapters/projectsAdapter';
+import { projectsAdapter, projectsEntityConfig } from '@/lib/adapters/projectsAdapter';
 import { ProjectDTO } from '@/lib/types/api';
 import UnifiedAdminPage from '@/components/UnifiedAdminPage';
 import FormModal from '@/components/modals/FormModal';
@@ -16,6 +16,7 @@ import SharePopup from '@/components/SharePopup';
 import UnifiedHashtagInput from '@/components/UnifiedHashtagInput';
 import MaterialIcon from '@/components/MaterialIcon';
 import { apiPost, apiPut, apiDelete } from '@/lib/apiClient';
+import { withAdminEntityActions } from '@/lib/adminEntitySystem';
 import BitlyLinksEditor from '@/components/BitlyLinksEditor';
 
 const PAGE_SIZE = 20;
@@ -49,6 +50,7 @@ export default function ProjectsPageUnified() {
   
   // Modal states - Create
   const [showNewProjectForm, setShowNewProjectForm] = useState(false);
+  const [createProjectStep, setCreateProjectStep] = useState<1 | 2>(1);
   const [newProjectData, setNewProjectData] = useState({
     eventName: '',
     eventDate: '',
@@ -61,6 +63,7 @@ export default function ProjectsPageUnified() {
   
   // Modal states - Edit
   const [showEditProjectForm, setShowEditProjectForm] = useState(false);
+  const [editProjectStep, setEditProjectStep] = useState<1 | 2>(1);
   const [editingProject, setEditingProject] = useState<ProjectDTO | null>(null);
   const [editProjectData, setEditProjectData] = useState({
     eventName: '',
@@ -78,6 +81,35 @@ export default function ProjectsPageUnified() {
   const [sharePopupOpen, setSharePopupOpen] = useState(false);
   const [sharePageId, setSharePageId] = useState<string | null>(null);
   const [sharePageType, setSharePageType] = useState<'event-report' | 'edit' | 'filter' | null>(null);
+
+  const resetCreateProjectForm = useCallback(() => {
+    setCreateProjectStep(1);
+    setNewProjectData({
+      eventName: '',
+      eventDate: '',
+      hashtags: [],
+      categorizedHashtags: {},
+      styleId: '',
+      reportTemplateId: '',
+    });
+    setShowNewProjectForm(false);
+  }, []);
+
+  const resetEditProjectForm = useCallback(() => {
+    setEditProjectStep(1);
+    setShowEditProjectForm(false);
+    setEditingProject(null);
+    setEditProjectData({
+      eventName: '',
+      eventDate: '',
+      hashtags: [],
+      categorizedHashtags: {},
+      styleId: '',
+      reportTemplateId: '',
+      partner1Id: '',
+      partner2Id: '',
+    });
+  }, []);
   
   // Hydrate sort state from URL
   useEffect(() => {
@@ -292,7 +324,7 @@ export default function ProjectsPageUnified() {
   };
   
   // Create project
-  const createNewProject = async () => {
+  const createNewProject = useCallback(async () => {
     if (!newProjectData.eventName.trim() || !newProjectData.eventDate) {
       alert('Please fill in both Event Name and Event Date.');
       return;
@@ -330,8 +362,7 @@ export default function ProjectsPageUnified() {
       
       if (result.success) {
         setProjects(prev => [result.project, ...prev]);
-        setNewProjectData({ eventName: '', eventDate: '', hashtags: [], categorizedHashtags: {}, styleId: '', reportTemplateId: '' });
-        setShowNewProjectForm(false);
+        resetCreateProjectForm();
         alert(`Project \"${result.project.eventName}\" created successfully!\n\nEdit Link: /edit/${result.project.editSlug}\nReport Link: /report/${result.project.viewSlug}`);
       } else {
         alert(`Failed to create project: ${result.error || 'Unknown error'}`);
@@ -342,10 +373,25 @@ export default function ProjectsPageUnified() {
     } finally {
       setIsCreatingProject(false);
     }
-  };
+  }, [newProjectData, resetCreateProjectForm]);
+
+  const handleCreateProjectSubmit = useCallback(async () => {
+    if (createProjectStep === 1) {
+      if (!newProjectData.eventName.trim() || !newProjectData.eventDate) {
+        alert('Please fill in both Event Name and Event Date.');
+        return;
+      }
+
+      setCreateProjectStep(2);
+      return;
+    }
+
+    await createNewProject();
+  }, [createNewProject, createProjectStep, newProjectData.eventDate, newProjectData.eventName]);
   
   // Edit project
-  const editProject = (project: ProjectDTO) => {
+  const editProject = useCallback((project: ProjectDTO) => {
+    setEditProjectStep(1);
     setEditingProject(project);
     
     // WHAT: Extract partner IDs from project
@@ -365,10 +411,10 @@ export default function ProjectsPageUnified() {
       partner2Id
     });
     setShowEditProjectForm(true);
-  };
+  }, []);
   
   // Update project
-  const updateProject = async () => {
+  const updateProject = useCallback(async () => {
     // WHAT: Validate required fields based on event type
     // WHY: Partner 1 is always required, Event Name required only for Type 1 (single partner events)
     if (!editingProject || !editProjectData.eventDate) {
@@ -428,9 +474,7 @@ export default function ProjectsPageUnified() {
             : p
         ));
         
-        setEditProjectData({ eventName: '', eventDate: '', hashtags: [], categorizedHashtags: {}, styleId: '', reportTemplateId: '', partner1Id: '', partner2Id: '' });
-        setEditingProject(null);
-        setShowEditProjectForm(false);
+        resetEditProjectForm();
         
         alert(`Project \"${finalEventName}\" updated successfully!`);
       } else {
@@ -442,94 +486,212 @@ export default function ProjectsPageUnified() {
     } finally {
       setIsUpdatingProject(false);
     }
-  };
+  }, [availablePartners, editProjectData, editingProject, resetEditProjectForm]);
+
+  const handleEditProjectSubmit = useCallback(async () => {
+    if (editProjectStep === 1) {
+      if (!editProjectData.eventDate) {
+        alert('Please fill in Event Date.');
+        return;
+      }
+
+      if (!editProjectData.partner1Id) {
+        alert('Partner 1 (Organizer / Home Team) is required.');
+        return;
+      }
+
+      if (!(editProjectData.partner1Id && editProjectData.partner2Id) && !editProjectData.eventName.trim()) {
+        alert('Event Name is required for non-match events.');
+        return;
+      }
+
+      setEditProjectStep(2);
+      return;
+    }
+
+    await updateProject();
+  }, [editProjectData.eventDate, editProjectData.eventName, editProjectData.partner1Id, editProjectData.partner2Id, editProjectStep, updateProject]);
   
-  // Delete project
-  const handleDeleteSuccess = (projectId: string) => {
-    setProjects(prev => prev.filter(p => p._id !== projectId));
-  };
+  const exportProjectCsv = useCallback(async (project: ProjectDTO) => {
+    try {
+      const timestamp = new Date().getTime();
+      const id = project.viewSlug || project._id;
+      const res = await fetch(`/api/projects/stats/${id}?refresh=${timestamp}`);
+      const data = await res.json();
+      if (!data.success || !data.project) {
+        alert('Failed to fetch project stats for CSV export');
+        return;
+      }
+
+      const loadedProject = data.project;
+      const esc = (value: unknown) => `"${String(value ?? '').replace(/"/g, '""')}"`;
+      const rows: Array<[string, string | number]> = [
+        ['Event Name', loadedProject.eventName],
+        ['Event Date', loadedProject.eventDate],
+        ['Created At', loadedProject.createdAt],
+        ['Updated At', loadedProject.updatedAt],
+      ];
+
+      Object.entries(loadedProject.stats || {}).forEach(([key, value]) => {
+        rows.push([key, typeof value === 'number' || typeof value === 'string' ? value : '']);
+      });
+
+      const header = ['Variable', 'Value'];
+      const csv = [header, ...rows].map(([key, value]) => `${esc(key)},${esc(value)}`).join('\n');
+      const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+      const link = document.createElement('a');
+      const base = loadedProject.eventName.replace(/[^a-zA-Z0-9]/g, '_') || 'event';
+      const url = URL.createObjectURL(blob);
+      link.setAttribute('href', url);
+      link.setAttribute('download', `${base}_variables.csv`);
+      link.style.visibility = 'hidden';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    } catch (error) {
+      console.error('Export failed', error);
+      alert('Export failed');
+    }
+  }, []);
+
+  const deleteProject = useCallback(async (project: ProjectDTO) => {
+    try {
+      const result = await apiDelete<{ success: boolean; error?: string }>(`/api/projects?projectId=${project._id}`);
+      if (result.success) {
+        setProjects((prev) => prev.filter((currentProject) => currentProject._id !== project._id));
+        return;
+      }
+
+      alert(result.error || 'Failed to delete project');
+    } catch (error) {
+      alert(error instanceof Error ? error.message : 'Delete failed');
+    }
+  }, []);
   
   // Share handlers
-  const handleShareOpen = (pageId: string, pageType: 'event-report' | 'edit' | 'filter') => {
+  const handleShareOpen = useCallback((pageId: string, pageType: 'event-report' | 'edit' | 'filter') => {
     setSharePageId(pageId);
     setSharePageType(pageType);
     setSharePopupOpen(true);
-  };
+  }, []);
+
+  const renderProjectStepHeader = (currentStep: 1 | 2, labels: [string, string]) => (
+    <div className="form-group mb-4">
+      <div className="flex items-center gap-2 flex-wrap">
+        {labels.map((label, index) => {
+          const stepNumber = (index + 1) as 1 | 2;
+          const variant = currentStep === stepNumber ? 'badge-primary' : 'badge-secondary';
+          return (
+            <span key={label} className={`badge ${variant}`}>
+              {stepNumber}. {label}
+            </span>
+          );
+        })}
+      </div>
+      <p className="form-hint mt-2">
+        {currentStep === 1
+          ? 'Start with event basics so the primary delivery object is correct before you choose reporting options.'
+          : 'Now assign reporting defaults and supporting tools. These are optional and can be changed later.'}
+      </p>
+    </div>
+  );
+
+  const createProjectFooter = (
+    <div className="flex items-center justify-between gap-3">
+      <div className="flex items-center gap-2">
+        <span className={`badge ${createProjectStep === 1 ? 'badge-primary' : 'badge-secondary'}`}>Basics</span>
+        <span className={`badge ${createProjectStep === 2 ? 'badge-primary' : 'badge-secondary'}`}>Reporting</span>
+      </div>
+      <div className="flex items-center gap-2">
+        <button
+          type="button"
+          onClick={() => {
+            if (createProjectStep === 1) {
+              resetCreateProjectForm();
+              return;
+            }
+            setCreateProjectStep(1);
+          }}
+          disabled={isCreatingProject}
+          className="btn btn-small btn-secondary"
+        >
+          {createProjectStep === 1 ? 'Cancel' : 'Back'}
+        </button>
+        <button
+          type="submit"
+          disabled={isCreatingProject}
+          className="btn btn-small btn-primary"
+        >
+          {isCreatingProject ? 'Saving…' : createProjectStep === 1 ? 'Continue to Reporting' : 'Create Event'}
+        </button>
+      </div>
+    </div>
+  );
+
+  const editProjectFooter = (
+    <div className="flex items-center justify-between gap-3">
+      <div className="flex items-center gap-2">
+        <span className={`badge ${editProjectStep === 1 ? 'badge-primary' : 'badge-secondary'}`}>Basics</span>
+        <span className={`badge ${editProjectStep === 2 ? 'badge-primary' : 'badge-secondary'}`}>Reporting</span>
+      </div>
+      <div className="flex items-center gap-2">
+        <button
+          type="button"
+          onClick={() => {
+            if (editProjectStep === 1) {
+              resetEditProjectForm();
+              return;
+            }
+            setEditProjectStep(1);
+          }}
+          disabled={isUpdatingProject}
+          className="btn btn-small btn-secondary"
+        >
+          {editProjectStep === 1 ? 'Cancel' : 'Back'}
+        </button>
+        <button
+          type="submit"
+          disabled={isUpdatingProject}
+          className="btn btn-small btn-primary"
+        >
+          {isUpdatingProject ? 'Saving…' : editProjectStep === 1 ? 'Continue to Reporting' : 'Update Event'}
+        </button>
+      </div>
+    </div>
+  );
   
-  // WHAT: Create enhanced adapter with custom action handlers
-  // WHY: Override Report/Edit Stats to open share modal, Edit to open edit modal
-  // NOTE: Must be called before any early returns (React Hooks rules)
-  const enhancedAdapter = React.useMemo(() => ({
-    ...projectsAdapter,
-    listConfig: {
-      ...projectsAdapter.listConfig,
-      rowActions: projectsAdapter.listConfig.rowActions?.map(action => {
-        if (action.label === 'Edit') {
-          return {
-            ...action,
-            handler: (project: ProjectDTO) => editProject(project)
-          };
+  const projectsAdapterWithHandlers = React.useMemo(() => withAdminEntityActions(
+    projectsAdapter,
+    projectsEntityConfig,
+    {
+      user,
+      openModal: (modalKey, project) => {
+        if (modalKey === 'edit-project') {
+          editProject(project);
         }
-        if (action.label === 'Report') {
-          return {
-            ...action,
-            handler: (project: ProjectDTO) => {
-              // WHAT: Use viewSlug for report page (stats type)
-              // WHY: SharePopup needs the correct slug to generate the right URL
-              const slug = project.viewSlug || project._id;
-              handleShareOpen(slug, 'event-report');
-            }
-          };
+      },
+      openShare: (shareKey, resourceId) => {
+        if (shareKey === 'project-report') {
+          handleShareOpen(resourceId, 'event-report');
+          return;
         }
-        if (action.label === 'Edit Stats') {
-          return {
-            ...action,
-            handler: (project: ProjectDTO) => {
-              // WHAT: Use editSlug for edit page (edit type)
-              // WHY: SharePopup needs the correct slug to generate the right URL
-              const slug = project.editSlug || project._id;
-              handleShareOpen(slug, 'edit');
-            }
-          };
+
+        if (shareKey === 'project-editor') {
+          handleShareOpen(resourceId, 'edit');
         }
-        return action;
-      })
-    },
-    cardConfig: {
-      ...projectsAdapter.cardConfig,
-      cardActions: projectsAdapter.cardConfig.cardActions?.map(action => {
-        if (action.label === 'Edit') {
-          return {
-            ...action,
-            handler: (project: ProjectDTO) => editProject(project)
-          };
+      },
+      runMutation: (mutationKey, project) => {
+        if (mutationKey === 'export-project-csv') {
+          void exportProjectCsv(project);
+          return;
         }
-        if (action.label === 'Report') {
-          return {
-            ...action,
-            handler: (project: ProjectDTO) => {
-              // WHAT: Use viewSlug for report page (stats type)
-              // WHY: SharePopup needs the correct slug to generate the right URL
-              const slug = project.viewSlug || project._id;
-              handleShareOpen(slug, 'event-report');
-            }
-          };
+
+        if (mutationKey === 'delete-project') {
+          void deleteProject(project);
         }
-        if (action.label === 'Edit Stats') {
-          return {
-            ...action,
-            handler: (project: ProjectDTO) => {
-              // WHAT: Use editSlug for edit page (edit type)
-              // WHY: SharePopup needs the correct slug to generate the right URL
-              const slug = project.editSlug || project._id;
-              handleShareOpen(slug, 'edit');
-            }
-          };
-        }
-        return action;
-      })
+      },
     }
-  }), []);
+  ), [deleteProject, editProject, exportProjectCsv, handleShareOpen, user]);
   
   // Loading state
   if (authLoading || loading) {
@@ -550,7 +712,7 @@ export default function ProjectsPageUnified() {
   return (
     <>
       <UnifiedAdminPage
-        adapter={enhancedAdapter}
+        adapter={projectsAdapterWithHandlers}
         items={projects}
         isLoading={loading}
         title="📅 Manage Events"
@@ -602,240 +764,252 @@ export default function ProjectsPageUnified() {
       {/* Create Event Modal */}
       <FormModal
         isOpen={showNewProjectForm}
-        onClose={() => setShowNewProjectForm(false)}
-        onSubmit={createNewProject}
-        title="➕ Create New Event"
-        submitText="Create Event"
+        onClose={resetCreateProjectForm}
+        onSubmit={handleCreateProjectSubmit}
+        title={createProjectStep === 1 ? '➕ Create Event: Basics' : '➕ Create Event: Reporting Setup'}
+        submitText={createProjectStep === 1 ? 'Continue to Reporting' : 'Create Event'}
         isSubmitting={isCreatingProject}
         size="lg"
+        subtitle={createProjectStep === 1 ? 'Define the event itself first. Reporting defaults come next.' : 'Assign optional reporting defaults and tags before creating the event.'}
+        showStatusIndicator={false}
+        customFooter={createProjectFooter}
       >
-        <div className="form-group mb-4">
-          <label className="form-label-block">Event Name *</label>
-          <input
-            type="text"
-            className="form-input"
-            value={newProjectData.eventName}
-            onChange={(e) => setNewProjectData(prev => ({ ...prev, eventName: e.target.value }))}
-            placeholder="Enter event name..."
-          />
-        </div>
-        
-        <div className="form-group mb-4">
-          <label className="form-label-block">Event Date *</label>
-          <input
-            type="date"
-            className="form-input"
-            value={newProjectData.eventDate}
-            onChange={(e) => setNewProjectData(prev => ({ ...prev, eventDate: e.target.value }))}
-          />
-        </div>
-        
-        <div className="form-group mb-4">
-          <label className="form-label-block">Hashtags</label>
-          <UnifiedHashtagInput
-            generalHashtags={newProjectData.hashtags}
-            onGeneralChange={(hashtags) => 
-              setNewProjectData(prev => ({ ...prev, hashtags }))
-            }
-            categorizedHashtags={newProjectData.categorizedHashtags}
-            onCategorizedChange={(categorizedHashtags) => 
-              setNewProjectData(prev => ({ ...prev, categorizedHashtags }))
-            }
-            placeholder="Search or add hashtags..."
-          />
-        </div>
-        
-        <div className="form-group mb-4">
-          <label className="form-label-block">Report Visual Style</label>
-          <select 
-            className="form-input"
-            value={newProjectData.styleId || ''}
-            onChange={(e) => setNewProjectData(prev => ({ ...prev, styleId: e.target.value || null }))}
-          >
-            <option value="">— Use Default Style —</option>
-            {availableStyles.map(s => (
-              <option key={s._id} value={s._id}>{s.name}</option>
-            ))}
-          </select>
-          <p className="form-hint">
-            💡 Report color theme (26-color system for charts, hero, text)
-          </p>
-        </div>
-        
-        <div className="form-group mb-4">
-          <label className="form-label-block">Report Template</label>
-          <select 
-            className="form-input"
-            value={newProjectData.reportTemplateId || ''}
-            onChange={(e) => setNewProjectData(prev => ({ ...prev, reportTemplateId: e.target.value }))}
-          >
-            <option value="">— Use Partner or Default Template —</option>
-            {availableTemplates.map(t => (
-              <option key={t._id} value={t._id}>{t.name} ({t.type})</option>
-            ))}
-          </select>
-          <p className="form-hint">
-            💡 If not set, this event will use its partner&apos;s template or the default template
-          </p>
-        </div>
+        {renderProjectStepHeader(createProjectStep, ['Event Basics', 'Reporting Defaults'])}
+
+        {createProjectStep === 1 ? (
+          <>
+            <div className="form-group mb-4">
+              <label className="form-label-block">Event Name *</label>
+              <input
+                type="text"
+                className="form-input"
+                value={newProjectData.eventName}
+                onChange={(e) => setNewProjectData(prev => ({ ...prev, eventName: e.target.value }))}
+                placeholder="Enter event name..."
+              />
+            </div>
+            
+            <div className="form-group mb-4">
+              <label className="form-label-block">Event Date *</label>
+              <input
+                type="date"
+                className="form-input"
+                value={newProjectData.eventDate}
+                onChange={(e) => setNewProjectData(prev => ({ ...prev, eventDate: e.target.value }))}
+              />
+            </div>
+            
+            <div className="form-group mb-4">
+              <label className="form-label-block">Hashtags</label>
+              <UnifiedHashtagInput
+                generalHashtags={newProjectData.hashtags}
+                onGeneralChange={(hashtags) => 
+                  setNewProjectData(prev => ({ ...prev, hashtags }))
+                }
+                categorizedHashtags={newProjectData.categorizedHashtags}
+                onCategorizedChange={(categorizedHashtags) => 
+                  setNewProjectData(prev => ({ ...prev, categorizedHashtags }))
+                }
+                placeholder="Search or add hashtags..."
+              />
+            </div>
+          </>
+        ) : (
+          <>
+            <div className="form-group mb-4">
+              <label className="form-label-block">Report Visual Style</label>
+              <select 
+                className="form-input"
+                value={newProjectData.styleId || ''}
+                onChange={(e) => setNewProjectData(prev => ({ ...prev, styleId: e.target.value || null }))}
+              >
+                <option value="">— Use Default Style —</option>
+                {availableStyles.map(s => (
+                  <option key={s._id} value={s._id}>{s.name}</option>
+                ))}
+              </select>
+              <p className="form-hint">
+                💡 Report color theme (26-color system for charts, hero, text)
+              </p>
+            </div>
+            
+            <div className="form-group mb-4">
+              <label className="form-label-block">Report Template</label>
+              <select 
+                className="form-input"
+                value={newProjectData.reportTemplateId || ''}
+                onChange={(e) => setNewProjectData(prev => ({ ...prev, reportTemplateId: e.target.value }))}
+              >
+                <option value="">— Use Partner or Default Template —</option>
+                {availableTemplates.map(t => (
+                  <option key={t._id} value={t._id}>{t.name} ({t.type})</option>
+                ))}
+              </select>
+              <p className="form-hint">
+                💡 If not set, this event will use its partner&apos;s template or the default template
+              </p>
+            </div>
+          </>
+        )}
       </FormModal>
       
       {/* Edit Event Modal */}
       {editingProject && (
         <FormModal
           isOpen={showEditProjectForm}
-          onClose={() => setShowEditProjectForm(false)}
-          onSubmit={updateProject}
-          title="✏️ Edit Event"
-          submitText="Update Event"
+          onClose={resetEditProjectForm}
+          onSubmit={handleEditProjectSubmit}
+          title={editProjectStep === 1 ? '✏️ Edit Event: Basics' : '✏️ Edit Event: Reporting Setup'}
+          submitText={editProjectStep === 1 ? 'Continue to Reporting' : 'Update Event'}
           isSubmitting={isUpdatingProject}
           size="lg"
+          subtitle={editProjectStep === 1 ? 'Validate event ownership, naming, and date first.' : 'Then adjust reporting defaults, hashtags, and linked distribution tools.'}
+          showStatusIndicator={false}
+          customFooter={editProjectFooter}
         >
-          {/* WHAT: Read-only Event UUID field
-              WHY: Provide a stable reference ID to copy/paste when coordinating across systems
-              HOW: Show MongoDB ObjectId from editingProject._id; non-editable */}
-          <div className="form-group">
-            <label>Event UUID</label>
-            <input type="text" className="form-input" value={editingProject._id} readOnly disabled />
-            <p className="form-hint">Auto-generated at creation; read-only identifier.</p>
-          </div>
+          {renderProjectStepHeader(editProjectStep, ['Event Basics', 'Reporting & Distribution'])}
 
-          <div className="form-group">
-            <label>Partner 1 (Organizer / Home Team) *</label>
-            <select
-              className="form-input"
-              value={editProjectData.partner1Id || ''}
-              onChange={(e) => setEditProjectData(prev => ({ ...prev, partner1Id: e.target.value || null }))}
-            >
-              <option value="">— Select Partner 1 —</option>
-              {availablePartners.map(p => (
-                <option key={p._id} value={p._id}>{p.name}</option>
-              ))}
-            </select>
-            <p className="form-hint">
-              💡 Required: Primary organizer or home team
-            </p>
-          </div>
-          
-          {/* WHAT: Event Name field - hidden for Type 2 (paired matches)
-              WHY: Sports matches auto-generate name from partners */}
-          {!(editProjectData.partner1Id && editProjectData.partner2Id) && (
-            <div className="form-group">
-              <label>Event Name {!editProjectData.partner2Id && '*'}</label>
-              <input
-                type="text"
-                className="form-input"
-                value={editProjectData.eventName}
-                onChange={(e) => setEditProjectData(prev => ({ ...prev, eventName: e.target.value }))}
-                placeholder="Enter event name..."
-              />
-              <p className="form-hint">
-                💡 Leave blank for Sports Match (auto-generated from partners)
-              </p>
-            </div>
-          )}
-          
-          <div className="form-group">
-            <label>Partner 2 (Away Team)</label>
-            <select
-              className="form-input"
-              value={editProjectData.partner2Id || ''}
-              onChange={(e) => setEditProjectData(prev => ({ ...prev, partner2Id: e.target.value || null }))}
-            >
-              <option value="">— No Partner 2 (Single Event) —</option>
-              {availablePartners.map(p => (
-                <option key={p._id} value={p._id}>{p.name}</option>
-              ))}
-            </select>
-            <p className="form-hint">
-              💡 Optional: For Sports Matches, set away team. Event name will be auto-generated.
-            </p>
-          </div>
-          
-          {/* WHAT: Show auto-generated name preview for Type 2 */}
-          {editProjectData.partner1Id && editProjectData.partner2Id && (() => {
-            const partner1 = availablePartners.find(p => p._id === editProjectData.partner1Id);
-            const partner2 = availablePartners.find(p => p._id === editProjectData.partner2Id);
-            if (partner1 && partner2) {
-              return (
+          {editProjectStep === 1 ? (
+            <>
+              <div className="form-group">
+                <label>Event UUID</label>
+                <input type="text" className="form-input" value={editingProject._id} readOnly disabled />
+                <p className="form-hint">Auto-generated at creation; read-only identifier.</p>
+              </div>
+
+              <div className="form-group">
+                <label>Partner 1 (Organizer / Home Team) *</label>
+                <select
+                  className="form-input"
+                  value={editProjectData.partner1Id || ''}
+                  onChange={(e) => setEditProjectData(prev => ({ ...prev, partner1Id: e.target.value || null }))}
+                >
+                  <option value="">— Select Partner 1 —</option>
+                  {availablePartners.map(p => (
+                    <option key={p._id} value={p._id}>{p.name}</option>
+                  ))}
+                </select>
+                <p className="form-hint">
+                  💡 Required: Primary organizer or home team
+                </p>
+              </div>
+              
+              {!(editProjectData.partner1Id && editProjectData.partner2Id) && (
                 <div className="form-group">
-                  <label>Event Name (Auto-Generated)</label>
-                  {/* WHAT: Inline styles for disabled input appearance - WHY: Visual feedback for auto-generated field, cannot use CSS classes for dynamic state */}
-                  {/* eslint-disable-next-line react/forbid-dom-props */}
-                  <div className="form-input" style={{ backgroundColor: '#f3f4f6', cursor: 'not-allowed' }}>
-                    {partner1.name} x {partner2.name}
-                  </div>
+                  <label>Event Name {!editProjectData.partner2Id && '*'}</label>
+                  <input
+                    type="text"
+                    className="form-input"
+                    value={editProjectData.eventName}
+                    onChange={(e) => setEditProjectData(prev => ({ ...prev, eventName: e.target.value }))}
+                    placeholder="Enter event name..."
+                  />
                   <p className="form-hint">
-                    ✅ Sports Match: Name generated automatically
+                    💡 Leave blank for Sports Match (auto-generated from partners)
                   </p>
                 </div>
-              );
-            }
-            return null;
-          })()}
-          
-          <div className="form-group">
-            <label>Event Date *</label>
-            <input
-              type="date"
-              className="form-input"
-              value={editProjectData.eventDate}
-              onChange={(e) => setEditProjectData(prev => ({ ...prev, eventDate: e.target.value }))}
-            />
-          </div>
-          
-          <div className="form-group">
-            <label>Hashtags</label>
-            <UnifiedHashtagInput
-              generalHashtags={editProjectData.hashtags}
-              onGeneralChange={(hashtags) => 
-                setEditProjectData(prev => ({ ...prev, hashtags }))
-              }
-              categorizedHashtags={editProjectData.categorizedHashtags}
-              onCategorizedChange={(categorizedHashtags) => 
-                setEditProjectData(prev => ({ ...prev, categorizedHashtags }))
-              }
-              placeholder="Search or add hashtags..."
-            />
-          </div>
-          
-          <div className="form-group">
-            <label>Report Visual Style</label>
-            <select 
-              className="form-input"
-              value={editProjectData.styleId || ''}
-              onChange={(e) => setEditProjectData(prev => ({ ...prev, styleId: e.target.value || null }))}
-            >
-              <option value="">— Use Default Style —</option>
-              {availableStyles.map(s => (
-                <option key={s._id} value={s._id}>{s.name}</option>
-              ))}
-            </select>
-            <p className="form-hint">
-              💡 Report color theme (26-color system for charts, hero, text)
-            </p>
-          </div>
-          
-          <div className="form-group">
-            <label>Report Template</label>
-            <select 
-              className="form-input"
-              value={editProjectData.reportTemplateId || ''}
-              onChange={(e) => setEditProjectData(prev => ({ ...prev, reportTemplateId: e.target.value }))}
-            >
-              <option value="">— Use Partner or Default Template —</option>
-              {availableTemplates.map(t => (
-                <option key={t._id} value={t._id}>{t.name} ({t.type})</option>
-              ))}
-            </select>
-            <p className="form-hint">
-              💡 If not set, this event will use its partner&apos;s template or the default template
-            </p>
-          </div>
-          
-          <div className="form-group">
-            <BitlyLinksEditor projectId={editingProject._id} projectName={editingProject.eventName} />
-          </div>
+              )}
+              
+              <div className="form-group">
+                <label>Partner 2 (Away Team)</label>
+                <select
+                  className="form-input"
+                  value={editProjectData.partner2Id || ''}
+                  onChange={(e) => setEditProjectData(prev => ({ ...prev, partner2Id: e.target.value || null }))}
+                >
+                  <option value="">— No Partner 2 (Single Event) —</option>
+                  {availablePartners.map(p => (
+                    <option key={p._id} value={p._id}>{p.name}</option>
+                  ))}
+                </select>
+                <p className="form-hint">
+                  💡 Optional: For Sports Matches, set away team. Event name will be auto-generated.
+                </p>
+              </div>
+              
+              {editProjectData.partner1Id && editProjectData.partner2Id && (() => {
+                const partner1 = availablePartners.find(p => p._id === editProjectData.partner1Id);
+                const partner2 = availablePartners.find(p => p._id === editProjectData.partner2Id);
+                if (partner1 && partner2) {
+                  return (
+                    <div className="form-group">
+                      <label>Event Name (Auto-Generated)</label>
+                      <input type="text" className="form-input" value={`${partner1.name} x ${partner2.name}`} readOnly disabled />
+                      <p className="form-hint">
+                        ✅ Sports Match: Name generated automatically
+                      </p>
+                    </div>
+                  );
+                }
+                return null;
+              })()}
+              
+              <div className="form-group">
+                <label>Event Date *</label>
+                <input
+                  type="date"
+                  className="form-input"
+                  value={editProjectData.eventDate}
+                  onChange={(e) => setEditProjectData(prev => ({ ...prev, eventDate: e.target.value }))}
+                />
+              </div>
+            </>
+          ) : (
+            <>
+              <div className="form-group">
+                <label>Hashtags</label>
+                <UnifiedHashtagInput
+                  generalHashtags={editProjectData.hashtags}
+                  onGeneralChange={(hashtags) => 
+                    setEditProjectData(prev => ({ ...prev, hashtags }))
+                  }
+                  categorizedHashtags={editProjectData.categorizedHashtags}
+                  onCategorizedChange={(categorizedHashtags) => 
+                    setEditProjectData(prev => ({ ...prev, categorizedHashtags }))
+                  }
+                  placeholder="Search or add hashtags..."
+                />
+              </div>
+              
+              <div className="form-group">
+                <label>Report Visual Style</label>
+                <select 
+                  className="form-input"
+                  value={editProjectData.styleId || ''}
+                  onChange={(e) => setEditProjectData(prev => ({ ...prev, styleId: e.target.value || null }))}
+                >
+                  <option value="">— Use Default Style —</option>
+                  {availableStyles.map(s => (
+                    <option key={s._id} value={s._id}>{s.name}</option>
+                  ))}
+                </select>
+                <p className="form-hint">
+                  💡 Report color theme (26-color system for charts, hero, text)
+                </p>
+              </div>
+              
+              <div className="form-group">
+                <label>Report Template</label>
+                <select 
+                  className="form-input"
+                  value={editProjectData.reportTemplateId || ''}
+                  onChange={(e) => setEditProjectData(prev => ({ ...prev, reportTemplateId: e.target.value }))}
+                >
+                  <option value="">— Use Partner or Default Template —</option>
+                  {availableTemplates.map(t => (
+                    <option key={t._id} value={t._id}>{t.name} ({t.type})</option>
+                  ))}
+                </select>
+                <p className="form-hint">
+                  💡 If not set, this event will use its partner&apos;s template or the default template
+                </p>
+              </div>
+              
+              <div className="form-group">
+                <BitlyLinksEditor projectId={editingProject._id} projectName={editingProject.eventName} />
+              </div>
+            </>
+          )}
         </FormModal>
       )}
       

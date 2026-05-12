@@ -93,7 +93,7 @@ export default function ChartBuilderValueChain({ chart, stats, onSave }: ChartBu
         </div>
         <div className="chart-builder-card-body">
           <p className="chart-builder-card-id">{chart.chartId}</p>
-          <p className="chart-builder-hint">No variables in formulas (e.g. [varName]). Add variables in Visualization Manager.</p>
+          <p className="chart-builder-hint">No variables in formulas (e.g. [varName]). Add variables in Report Builder.</p>
         </div>
       </div>
     );
@@ -151,4 +151,3 @@ export default function ChartBuilderValueChain({ chart, stats, onSave }: ChartBu
     </div>
   );
 }
-

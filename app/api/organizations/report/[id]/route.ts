@@ -2,6 +2,10 @@ import { NextResponse } from 'next/server';
 import { ObjectId } from 'mongodb';
 import { getDb } from '@/lib/db';
 import { createReportResolver } from '@/lib/report-resolver';
+import connectV3 from '@/lib/mongoose-v3';
+import V3Organization from '@/lib/models/v3/Organization';
+import V3Entity from '@/lib/models/v3/Entity';
+import { V3ReportResolver } from '@/lib/v3/reporting/reportResolver';
 
 type OrganizationRecord = {
   _id: ObjectId;
@@ -71,90 +75,130 @@ export async function GET(
     const projectsCollection = db.collection('projects');
     const organization = await organizations.findOne({ _id: new ObjectId(id) });
 
-    if (!organization) {
+    if (organization) {
+      const assignedPartners = await partnersCollection
+        .find({ organizationId: organization._id })
+        .sort({ name: 1 })
+        .toArray();
+
+      const partnerIds = assignedPartners.map((partner) => partner._id);
+      const projects = partnerIds.length
+        ? await projectsCollection
+            .find({
+              $or: [
+                { partner1: { $in: partnerIds } },
+                { partner2: { $in: partnerIds } },
+                { partner1Id: { $in: partnerIds } },
+                { partner2Id: { $in: partnerIds } },
+              ],
+            })
+            .sort({ eventDate: -1 })
+            .project({
+              _id: 1,
+              eventName: 1,
+              eventDate: 1,
+              viewSlug: 1,
+              createdAt: 1,
+              updatedAt: 1,
+              stats: 1,
+            })
+            .toArray()
+        : [];
+
+      const resolver = createReportResolver(db);
+      const metadata = organization.metadata || {};
+      const explicitReportId = metadata.reportTemplateId || metadata.reportId;
+      const explicitReport = explicitReportId ? await resolver.getReportById(explicitReportId) : null;
+      const resolved = explicitReport
+        ? { report: explicitReport, resolvedFrom: 'organization', source: organization.name }
+        : await resolver.getDefaultReport('partner');
+
+      if (!resolved?.report) {
+        throw new Error('Failed to resolve organization report');
+      }
+
+      if (metadata.styleId) {
+        resolved.report.styleId = metadata.styleId;
+      }
+
+      const aggregatedStats: Record<string, number | string> = {
+        ...(metadata.stats || {}),
+      };
+
+      assignedPartners.forEach((partner) => {
+        aggregateNumericStats(aggregatedStats, partner.stats);
+      });
+
+      projects.forEach((project) => {
+        aggregateNumericStats(aggregatedStats, (project.stats || {}) as Record<string, unknown>);
+      });
+
+      return NextResponse.json({
+        success: true,
+        organization: {
+          _id: organization._id.toString(),
+          name: organization.name,
+          slug: organization.slug,
+          status: organization.status || 'active',
+          metadata,
+          createdAt: organization.createdAt || new Date().toISOString(),
+          updatedAt: organization.updatedAt || new Date().toISOString(),
+        },
+        entities: assignedPartners.map((partner) => ({
+          _id: partner._id.toString(),
+          name: partner.name,
+          type: 'partner',
+          status: 'active',
+          metadata: {
+            emoji: partner.emoji || '🤝',
+            logoUrl: partner.logoUrl,
+          },
+        })),
+        report: resolved.report,
+        resolvedFrom: resolved.resolvedFrom,
+        source: resolved.source,
+        aggregatedStats,
+        totalEntities: assignedPartners.length,
+        totalEvents: projects.length,
+      });
+    }
+
+    await connectV3();
+    const v3Organization = await V3Organization.findById(id).lean();
+    if (!v3Organization) {
       return NextResponse.json({ success: false, error: 'Organization not found' }, { status: 404 });
     }
 
-    const assignedPartners = await partnersCollection
-      .find({ organizationId: organization._id })
-      .sort({ name: 1 })
-      .toArray();
-
-    const partnerIds = assignedPartners.map((partner) => partner._id);
-    const projects = partnerIds.length
-      ? await projectsCollection
-          .find({
-            $or: [
-              { partner1: { $in: partnerIds } },
-              { partner2: { $in: partnerIds } },
-              { partner1Id: { $in: partnerIds } },
-              { partner2Id: { $in: partnerIds } },
-            ],
-          })
-          .sort({ eventDate: -1 })
-          .project({
-            _id: 1,
-            eventName: 1,
-            eventDate: 1,
-            viewSlug: 1,
-            createdAt: 1,
-            updatedAt: 1,
-            stats: 1,
-          })
-          .toArray()
-      : [];
-
-    const resolver = createReportResolver(db);
-    const metadata = organization.metadata || {};
-    const explicitReportId = metadata.reportTemplateId || metadata.reportId;
-    const explicitReport = explicitReportId ? await resolver.getReportById(explicitReportId) : null;
-    const resolved = explicitReport
-      ? { report: explicitReport, resolvedFrom: 'organization', source: organization.name }
-      : await resolver.getDefaultReport('partner');
-
-    if (metadata.styleId) {
-      resolved.report.styleId = metadata.styleId;
+    const resolution = await V3ReportResolver.resolveForOrganization(id);
+    if (!resolution?.report) {
+      throw new Error('Failed to resolve organization report');
     }
 
-    const aggregatedStats: Record<string, number | string> = {
-      ...(metadata.stats || {}),
-    };
-
-    assignedPartners.forEach((partner) => {
-      aggregateNumericStats(aggregatedStats, partner.stats);
-    });
-
-    projects.forEach((project) => {
-      aggregateNumericStats(aggregatedStats, (project.stats || {}) as Record<string, unknown>);
-    });
+    const entities = await V3Entity.find({ organizationId: id, parentEntityId: null })
+      .select('name type metadata')
+      .sort({ name: 1 })
+      .lean();
 
     return NextResponse.json({
       success: true,
       organization: {
-        _id: organization._id.toString(),
-        name: organization.name,
-        slug: organization.slug,
-        status: organization.status || 'active',
-        metadata,
-        createdAt: organization.createdAt || new Date().toISOString(),
-        updatedAt: organization.updatedAt || new Date().toISOString(),
+        ...v3Organization,
+        _id: v3Organization._id.toString(),
+        createdAt: v3Organization.createdAt instanceof Date ? v3Organization.createdAt.toISOString() : v3Organization.createdAt,
+        updatedAt: v3Organization.updatedAt instanceof Date ? v3Organization.updatedAt.toISOString() : v3Organization.updatedAt,
       },
-      entities: assignedPartners.map((partner) => ({
-        _id: partner._id.toString(),
-        name: partner.name,
-        type: 'partner',
+      entities: entities.map((entity) => ({
+        _id: entity._id.toString(),
+        name: entity.name,
+        type: entity.type,
         status: 'active',
-        metadata: {
-          emoji: partner.emoji || '🤝',
-          logoUrl: partner.logoUrl,
-        },
+        metadata: entity.metadata || {},
       })),
-      report: resolved.report,
-      resolvedFrom: resolved.resolvedFrom,
-      source: resolved.source,
-      aggregatedStats,
-      totalEntities: assignedPartners.length,
-      totalEvents: projects.length,
+      report: resolution.report,
+      resolvedFrom: resolution.resolvedFrom,
+      source: resolution.source,
+      aggregatedStats: { ...((v3Organization.metadata?.stats as Record<string, number | string>) || {}) },
+      totalEntities: entities.length,
     });
   } catch (error) {
     console.error('Failed to fetch organization report:', error);

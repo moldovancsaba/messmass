@@ -1,6 +1,6 @@
 # Delivery Focus ({messmass})
 Status: Active
-Last Updated: 2026-04-24
+Last Updated: 2026-05-02
 Canonical: No
 Owner: Product
 
@@ -8,22 +8,23 @@ Owner: Product
 
 ## Top 5 value & high-priority (from board, Product = messmass)
 
-*Reconsidered 2026-04-24 after v12.1.7 (Organization admin recovery) delivery.*
+*Rechecked 2026-05-02 against the live board state.*
 
 | Priority | Status  | Issue | Title |
 |----------|---------|-------|--------|
+| P1 | In Progress | [#72](https://github.com/moldovancsaba/mvp-factory-control/issues/72) | Style hardening Phase 5: consolidate duplicated CSS |
 | P0 | Roadmap | [#44](https://github.com/moldovancsaba/mvp-factory-control/issues/44) | Advanced Analytics & Insights Platform (Q1–Q2 2026) |
 | P0 | Done | [#354+](https://github.com/moldovancsaba/mvp-factory-control/issues/354) | {messmass} Phase 15: Organization Hierarchy & Activity Connectivity |
-| P0 | Roadmap | [#57](https://github.com/moldovancsaba/mvp-factory-control/issues/57) | Milestone: Analytics Platform Phase 1 — Data Aggregation & Storage (Q1 2026) |
+| P0 | Done | [#57](https://github.com/moldovancsaba/mvp-factory-control/issues/57) | Milestone: Analytics Platform Phase 1 — Data Aggregation & Storage (Q1 2026) |
 | P1 | Roadmap | [#46+](https://github.com/moldovancsaba/mvp-factory-control/issues/46) | SSO Integration with DoneIsBetter (Ongoing Hardening) |
 | P1 | Done | [#403](https://github.com/moldovancsaba/mvp-factory-control/issues/403) | V3 Organization Context Middleware (Permissions Foundation) |
 
-**Note:** v12.1.7 is Done; it restored the live Organization admin flow on top of the existing `organizations` and `partners` data, recovered reporting/editor routes, and synchronized product docs. Next executable options: **#44** (Insights Engine), **#57** (Bulk V3 Migration), **Cross-Organization Reporting Permissions**.
+**Note:** The board still has **#72** active. Local docs previously drifted and incorrectly said there was no item in progress; that mismatch was corrected in the `v12.1.11` cleanup slice.
 
 ## Recommended next delivery step
 
-1. **Cross-Organization Reporting Permissions:** Now that the hierarchy exists, implement granular RBAC for organization managers to restrict data visibility to their specific sub-entities.
-2. **V3 Bulk Migration Validation:** Run high-volume sync tests to ensure the hierarchy handles 100+ member entities without performance degradation on the aggregated reporting API.
+1. **Continue #72 low-risk cleanup slices:** finish remaining small hardcoded/dead-style removals or decide whether the remaining UI debt should be split into a new card.
+2. **Cross-Organization Reporting Permissions:** implement granular RBAC for organization managers to restrict data visibility to their specific sub-entities once `#72` is closed or intentionally paused.
 
 ## Recently completed
 
@@ -39,4 +40,4 @@ Owner: Product
 
 ## In progress
 
-- None. Next: pick a Ready item (e.g. [#44](https://github.com/moldovancsaba/mvp-factory-control/issues/44)).
+- **Style hardening Phase 5** ([#72](https://github.com/moldovancsaba/mvp-factory-control/issues/72)): still active on the board; latest slice moved `/admin/clear-session` and `not-found` away from hardcoded page-level utility styling.

@@ -1,0 +1,43 @@
+.wrapper {
+  width: 100%;
+  max-width: 32rem;
+  margin: 0 auto;
+}
+
+.card {
+  text-align: center;
+}
+
+.icon {
+  margin-bottom: var(--mm-space-6);
+  font-size: var(--text-5xl);
+  line-height: 1;
+}
+
+.title {
+  margin: 0 0 var(--mm-space-4);
+  color: var(--mm-gray-900);
+  font-size: var(--mm-font-size-3xl);
+  font-weight: var(--mm-font-weight-bold);
+  line-height: var(--mm-line-height-sm);
+}
+
+.description {
+  margin: 0 0 var(--mm-space-8);
+  color: var(--mm-gray-600);
+  font-size: var(--mm-font-size-lg);
+  line-height: var(--mm-line-height-md);
+}
+
+.primaryAction {
+  margin-bottom: var(--mm-space-4);
+}
+
+.buttonEnabled {
+  cursor: pointer;
+}
+
+.buttonDisabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}

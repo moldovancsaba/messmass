@@ -149,7 +149,7 @@ export default function BuilderMode({ projectId, stats, onSave }: BuilderModePro
       <div className="builder-error">
         <p>❌ {error}</p>
         <p className="builder-error-message">
-          Make sure a report template is assigned to this project in Visualization Manager.
+          Make sure a report template is assigned to this project in Report Builder.
         </p>
       </div>
     );
@@ -169,7 +169,7 @@ export default function BuilderMode({ projectId, stats, onSave }: BuilderModePro
       <div className="builder-empty-state">
         <p>📋 No report template assigned to this project</p>
         <p className="builder-empty-message">
-          Go to <a href="/admin/visualization" className="builder-empty-link">Visualization Manager</a> to assign a template.
+          Go to <a href="/admin/visualization" className="builder-empty-link">Report Builder</a> to assign a template.
         </p>
       </div>
     );

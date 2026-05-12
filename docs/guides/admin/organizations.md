@@ -23,7 +23,7 @@ Edits preserve existing metadata keys unless explicitly changed.
 
 ## 3. Managing Members
 Organizations do not own activities directly; they group **Partners** that already own activities and reports.
-1. In the Organization list, find your organization and click **"Members"**.
+1. In the Organization list, find your organization and click **"Manage Members"**.
 2. Use the predictive-search selector to find Partners by name or current organization.
 3. Add or remove Partners from the selected chip list.
 4. Click **Save Assignments** to persist changes.
@@ -35,15 +35,17 @@ Important behavior:
 
 ## 4. Organization Reports and Editor
 Each organization row exposes:
-- **Report** → `/organization-report/[id]`
+- **Report** → opens the protected share dialog for `/organization-report/[id]`
 - **Edit Stats** → `/organization-edit/[id]`
+- **Edit** → inline admin metadata editing for name and status
+- **Manage Members** → predictive-search membership assignment
 
 The report aggregates:
 - Organization-level metadata stats
 - Member partner stats
 - Related projects/events for assigned partners
 
-The editor persists organization report metadata through the same admin organization API.
+The editor persists organization report metadata through the public organization edit API, while admin CRUD remains on the admin organization API.
 
 Organization editor report configuration parity fields:
 - **Report Visual Style** (`metadata.styleId`)
@@ -71,4 +73,6 @@ This delete guard prevents accidental data loss.
 
 ## 7. Security & Isolation
 - CRUD and member management require **superadmin** access.
+- Organization reports use protected share links backed by page-specific passwords.
+- Organization editors use page-specific passwords, while authenticated admin sessions bypass the prompt.
 - Organization reports and editors use the same organization identifier shown in `/admin/organizations`.

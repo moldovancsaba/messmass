@@ -7,7 +7,115 @@ import React from 'react';
 import Image from 'next/image';
 import { AdminPageAdapter } from '../adminDataAdapters';
 import { PartnerResponse } from '../partner.types';
+import type { AdminEntityConfig } from '@/lib/adminEntitySystem';
 import ColoredHashtagBubble from '@/components/ColoredHashtagBubble';
+
+export const partnersEntityConfig: AdminEntityConfig<PartnerResponse> = {
+  entityKey: 'partner',
+  pageName: 'partners',
+  displayName: 'Partner',
+  supportedViews: ['list', 'card'],
+  capabilities: ['create', 'edit', 'delete', 'report', 'share', 'edit-content', 'analytics', 'kyc'],
+  search: {
+    fields: ['name', 'hashtags', 'categorizedHashtags'],
+    placeholder: 'Search partners...',
+  },
+  permissionRequirements: ['admin'],
+  actions: [
+    {
+      id: 'partner-open-report',
+      label: 'Open Report',
+      icon: 'visibility',
+      variant: 'primary',
+      requiredCapabilities: ['report'],
+      requiredPermissions: ['admin'],
+      execution: {
+        kind: 'route',
+        getHref: (partner) => `/partner-report/${partner.viewSlug || partner._id}`,
+        target: '_blank',
+      },
+    },
+    {
+      id: 'partner-open-editor',
+      label: 'Open Editor',
+      icon: 'bar_chart',
+      variant: 'primary',
+      requiredCapabilities: ['edit-content'],
+      requiredPermissions: ['admin'],
+      execution: {
+        kind: 'route',
+        getHref: (partner) => `/partner-edit/${partner._id || partner.viewSlug}`,
+        target: '_blank',
+      },
+    },
+    {
+      id: 'partner-report-share',
+      label: 'Share Report',
+      icon: 'ios_share',
+      variant: 'secondary',
+      surfaces: ['list'],
+      requiredCapabilities: ['report', 'share'],
+      requiredPermissions: ['admin'],
+      execution: {
+        kind: 'share',
+        shareKey: 'partner-report',
+        getResourceId: (partner) => partner._id || partner.viewSlug || '',
+      },
+    },
+    {
+      id: 'partner-kyc',
+      label: 'KYC Data',
+      icon: 'table_chart',
+      variant: 'secondary',
+      surfaces: ['list'],
+      requiredCapabilities: ['kyc'],
+      requiredPermissions: ['admin'],
+      execution: {
+        kind: 'route',
+        getHref: (partner) => `/admin/partners/${partner._id}/kyc-data`,
+        target: '_blank',
+      },
+    },
+    {
+      id: 'partner-analytics',
+      label: 'Analytics',
+      icon: 'insert_chart',
+      variant: 'primary',
+      requiredCapabilities: ['analytics'],
+      requiredPermissions: ['admin'],
+      execution: {
+        kind: 'route',
+        getHref: (partner) => `/admin/partners/${partner._id}/analytics`,
+        target: '_blank',
+      },
+    },
+    {
+      id: 'partner-edit',
+      label: 'Edit',
+      icon: '✏️',
+      variant: 'secondary',
+      requiredCapabilities: ['edit'],
+      requiredPermissions: ['admin'],
+      execution: {
+        kind: 'modal',
+        modalKey: 'edit-partner',
+      },
+    },
+    {
+      id: 'partner-delete',
+      label: 'Delete',
+      icon: '🗑️',
+      variant: 'danger',
+      requiredCapabilities: ['delete'],
+      requiredPermissions: ['admin'],
+      execution: {
+        kind: 'mutation',
+        mutationKey: 'delete-partner',
+        confirmMessage: (partner) => `Delete partner "${partner.name}"? This action cannot be undone.`,
+      },
+    },
+  ],
+};
 
 /**
  * WHAT: Complete adapter configuration for Partners page
@@ -142,89 +250,6 @@ export const partnersAdapter: AdminPageAdapter<PartnerResponse> = {
         ),
       },
     ],
-    // WHAT: Row action buttons (Edit, Report, Edit Stats, Delete)
-    rowActions: [
-      {
-        label: 'Edit',
-        icon: '✏️',
-        variant: 'primary',
-        handler: (partner) => {
-          console.log('Edit partner:', partner._id);
-          // This would be replaced with actual edit handler from parent
-        },
-        title: 'Edit partner',
-      },
-      {
-        label: 'Report',
-        icon: '📊',
-        variant: 'secondary',
-        handler: (partner) => {
-          // WHAT: Open partner report page in new tab
-          // WHY: Allow viewing shareable partner profile with events
-          // HOW: Use _id (ObjectId) which is always valid, or viewSlug if it's a secure UUID/ObjectId
-          // NOTE: viewSlug might be human-readable (insecure), so prefer _id for reliability
-          const partnerId = partner._id || partner.viewSlug;
-          if (partnerId) {
-            window.open(`/partner-report/${partnerId}`, '_blank');
-          } else {
-            alert('Partner ID is missing. Please refresh the page and try again.');
-          }
-        },
-        title: 'View partner report',
-      },
-      {
-        label: 'Edit Stats',
-        icon: 'bar_chart',
-        variant: 'primary',
-        handler: (partner) => {
-          // WHAT: Open partner content editor for text and image editing
-          // WHY: Allow editing partner-level content (reportText*, reportImage*) separate from event data
-          // HOW: Use _id (ObjectId) which is always valid, or viewSlug if it's a secure UUID/ObjectId
-          // NOTE: viewSlug might be human-readable (insecure), so prefer _id for reliability
-          const partnerId = partner._id || partner.viewSlug;
-          if (partnerId) {
-            window.open(`/partner-edit/${partnerId}`, '_blank');
-          } else {
-            alert('Partner ID is missing. Please refresh the page and try again.');
-          }
-        },
-        title: 'Edit partner content (texts & images)',
-      },
-      {
-        label: 'KYC Data',
-        icon: 'table_chart',
-        variant: 'secondary',
-        handler: (partner) => {
-          // WHAT: Open partner KYC data table view (aggregated across all events)
-          // WHY: Display aggregated KYC metrics in structured table format
-          window.open(`/admin/partners/${partner._id}/kyc-data`, '_blank');
-        },
-        title: 'View aggregated KYC data',
-      },
-      {
-        label: 'Analytics',
-        icon: 'insert_chart',
-        variant: 'primary',
-        handler: (partner) => {
-          // WHAT: Open partner analytics dashboard
-          // WHY: View comprehensive analytics including trends, demographics, and performance metrics
-          window.open(`/admin/partners/${partner._id}/analytics`, '_blank');
-        },
-        title: 'View partner analytics dashboard',
-      },
-      {
-        label: 'Delete',
-        icon: '🗑️',
-        variant: 'danger',
-        handler: (partner) => {
-          if (confirm(`Delete partner "${partner.name}"?`)) {
-            console.log('Delete partner:', partner._id);
-            // This would be replaced with actual delete handler from parent
-          }
-        },
-        title: 'Delete partner',
-      },
-    ],
   },
 
   // WHAT: Card view configuration (grid layout)
@@ -268,67 +293,6 @@ export const partnersAdapter: AdminPageAdapter<PartnerResponse> = {
         label: 'Last Updated',
         icon: '📅',
         render: (partner) => new Date(partner.updatedAt).toLocaleDateString(),
-      },
-    ],
-    // WHAT: Card action buttons
-    cardActions: [
-      {
-        label: 'Edit',
-        icon: '✏️',
-        variant: 'primary',
-        handler: (partner) => {
-          console.log('Edit partner:', partner._id);
-        },
-      },
-      {
-        label: 'Report',
-        icon: '📊',
-        variant: 'secondary',
-        handler: (partner) => {
-          // WHAT: Open partner report page in new tab
-          // WHY: Allow viewing shareable partner profile with events
-          const partnerId = partner._id || partner.viewSlug;
-          if (partnerId) {
-            window.open(`/partner-report/${partnerId}`, '_blank');
-          } else {
-            alert('Partner ID is missing. Please refresh the page and try again.');
-          }
-        },
-      },
-      {
-        label: 'Edit Stats',
-        icon: 'bar_chart',
-        variant: 'primary',
-        handler: (partner) => {
-          // WHAT: Open partner content editor for text and image editing
-          // WHY: Allow editing partner-level content (reportText*, reportImage*) separate from event data
-          const partnerId = partner._id || partner.viewSlug;
-          if (partnerId) {
-            window.open(`/partner-edit/${partnerId}`, '_blank');
-          } else {
-            alert('Partner ID is missing. Please refresh the page and try again.');
-          }
-        },
-      },
-      {
-        label: 'Analytics',
-        icon: 'insert_chart',
-        variant: 'primary',
-        handler: (partner) => {
-          // WHAT: Open partner analytics dashboard
-          // WHY: View comprehensive analytics including trends, demographics, and performance metrics
-          window.open(`/admin/partners/${partner._id}/analytics`, '_blank');
-        },
-      },
-      {
-        label: 'Delete',
-        icon: '🗑️',
-        variant: 'danger',
-        handler: (partner) => {
-          if (confirm(`Delete "${partner.name}"?`)) {
-            console.log('Delete partner:', partner._id);
-          }
-        },
       },
     ],
   },

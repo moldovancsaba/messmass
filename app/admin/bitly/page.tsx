@@ -797,8 +797,8 @@ export default function BitlyAdminPage() {
   return (
     <div className="page-container">
       <UnifiedAdminHeroWithSearch
-        title="🔗 Bitly Link Management"
-        subtitle="Manage Bitly link associations, track click analytics, and connect shortened URLs to your {messmass} events"
+        title="🔗 Bitly Links"
+        subtitle="Manage Bitly associations, click analytics, and event or partner attribution from one place"
         backLink="/admin"
         showSearch
         searchValue={searchTerm}

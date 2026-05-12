@@ -146,6 +146,20 @@ Owner: Katja (Admin)
 
 ## 7. STATE MEMORY (Current Only)
 
+2026-05-02
+- CONTEXT: Style hardening Phase 5 remains the board-tracked active lane under `mvp-factory-control#72`.
+- BOARD: `#72` is still `In Progress (NOW)`; local docs were corrected to stop claiming there is no active item.
+- CODE: removed hardcoded page-level utility styling from `app/admin/clear-session/page.tsx` and `app/not-found.tsx` by moving those recovery/error surfaces onto token-based CSS modules.
+- NEXT: continue `#72` with another low-risk style cleanup slice or close the card if the remaining hardcoded/UI debt should be split into a new follow-up issue.
+
+2026-05-10
+- CONTEXT: Style hardening Phase 5 continues under `mvp-factory-control#72`.
+- BOARD: `#72` remains `In Progress (NOW)`.
+- CODE: removed dead duplicate admin dashboard artifacts `components/AdminDashboardNew.tsx` and `components/AdminDashboard.module.css`; the live `/admin` route already uses `components/AdminDashboard.tsx`, so the alternate gradient-card implementation was inactive duplication.
+- CODE: removed dead legacy confirmation wrapper `components/ConfirmModal.tsx`; active admin flows already use `ConfirmDialog` from `components/modals`, so the SharePopup-based confirm variant was inactive duplicate UI.
+- CODE: removed the unused `components/v3/dashboard` scaffold (`StatsCard`, `EntityTree`, `EntityTree.module.css`); no route or component imported that V3 dashboard UI subtree, so it was unreachable and carried non-canonical styling.
+- NEXT: run validation, post SSOT evidence for this cleanup slice, then either continue Phase 5 with another dead-style consolidation or close/split the card based on remaining scope.
+
 2026-03-14
 - CONTEXT: Phase 15 (Organization Hierarchy & Activity Connectivity) delivered.
 - BOARD: `v12.1.0` milestone reached. Organization hierarchy, member management, and aggregated reporting are live.

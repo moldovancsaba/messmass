@@ -17,6 +17,7 @@ Owner: Documentation
 - [operations-action-plan.md](operations/operations-action-plan.md) — Tactical queue for ops, sprint goals, and blockers.
 - [operations-delivery-focus.md](operations/operations-delivery-focus.md) — Top 5 value/priority board issues and recommended next delivery step.
 - [ops-analytics-01-design.md](operations/ops-analytics-01-design.md) — OPS-ANALYTICS-01 design, Phase 1 backlog, scope/sequencing.
+- [ideabank-industry-benchmark-2026-05-10.md](operations/ideabank-industry-benchmark-2026-05-10.md) — industry benchmark research and top 25 `{messmass}` ideabank candidates.
 - [operations-roadmap.md](operations/operations-roadmap.md) — Quarterly roadmap with targets, risks, and dependencies.
 - [operations-deployment-checklist.md](operations/operations-deployment-checklist.md) — Pre/post deployment validation, smoke tests, and rollbacks.
 - [operations-implementation-complete.md](operations/operations-implementation-complete.md) — Summary of finished implementation work and evidence of completion.
@@ -55,6 +56,7 @@ Owner: Documentation
 
 ## Admin & Templates
 - [admin-end-user-guide.md](admin/admin-end-user-guide.md) — Canonical operator guide for Admin workflows and UI paths.
+- [admin/admin-entity-system.md](admin/admin-entity-system.md) — Shared admin entity contract, capability matrix, and action engine for admin-managed surfaces.
 - [admin/ADMIN_REPORT_TEMPLATE_MODEL.md](admin/admin-report-template-model.md) — Report template data model + runtime selection rules.
 - [admin/ADMIN_LAYOUT_V2_SCHEMA.md](admin/admin-layout-v2-schema.md) — LayoutV2 schema contract consumed by Reporting.
 - [admin/ADMIN_LAYOUT_V2_TEMPLATE_BUILDER.md](admin/admin-layout-v2-template-builder.md) — Operator guide for authoring LayoutV2 blocks.

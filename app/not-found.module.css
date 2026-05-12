@@ -1,5 +1,35 @@
 /* not-found.module.css */
 
+.card {
+  width: 100%;
+  max-width: 32rem;
+  text-align: center;
+}
+
+.icon {
+  margin-bottom: var(--mm-space-4);
+  font-size: var(--text-5xl);
+  line-height: 1;
+}
+
+.title {
+  margin: 0 0 var(--mm-space-4);
+  color: var(--mm-gray-900);
+  font-size: var(--mm-font-size-2xl);
+  font-weight: var(--mm-font-weight-bold);
+  line-height: var(--mm-line-height-sm);
+}
+
 .description {
+  margin: 0 0 var(--mm-space-6);
+  color: var(--mm-gray-600);
+  font-size: var(--mm-font-size-lg);
   line-height: 1.6;
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--mm-space-4);
 }

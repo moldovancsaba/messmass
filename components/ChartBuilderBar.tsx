@@ -85,7 +85,7 @@ export default function ChartBuilderBar({ chart, stats, onSave }: ChartBuilderBa
         </div>
         <div className="chart-builder-card-body">
           <p className="chart-builder-card-id">{chart.chartId}</p>
-          <p className="chart-builder-hint">No variables in bar formulas. Add variables (e.g. [varName]) in Visualization Manager.</p>
+          <p className="chart-builder-hint">No variables in bar formulas. Add variables (e.g. [varName]) in Report Builder.</p>
         </div>
       </div>
     );

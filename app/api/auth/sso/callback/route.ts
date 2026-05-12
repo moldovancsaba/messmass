@@ -1,6 +1,6 @@
 // app/api/auth/sso/callback/route.ts
 // WHAT: DoneIsBetter SSO callback — validate token, create admin session, set auth-source=sso
-// WHY: #46 — dashboard requires SSO; this creates the session after SSO redirect
+// WHY: #46 — create the admin session after SSO redirect and return users to the admin workspace
 // HOW: GET ?token=...&redirect_uri=...; validate with ssoClient; find user by email; set cookies; redirect
 
 import { NextRequest, NextResponse } from 'next/server';
@@ -20,8 +20,8 @@ export async function GET(request: NextRequest) {
     return NextResponse.redirect(new URL('/admin/login?error=sso_not_configured', request.url));
   }
   const token = request.nextUrl.searchParams.get('token');
-  const redirectUri = request.nextUrl.searchParams.get('redirect_uri') ?? request.nextUrl.searchParams.get('state') ?? '/admin/dashboard';
-  const safeRedirect = redirectUri.startsWith('/admin') ? redirectUri : '/admin/dashboard';
+  const redirectUri = request.nextUrl.searchParams.get('redirect_uri') ?? request.nextUrl.searchParams.get('state') ?? '/admin';
+  const safeRedirect = redirectUri.startsWith('/admin') ? redirectUri : '/admin';
 
   if (!token?.trim()) {
     return NextResponse.redirect(new URL('/admin/login?error=missing_token', request.url));

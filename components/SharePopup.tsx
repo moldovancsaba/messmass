@@ -95,8 +95,14 @@ export default function SharePopup({ isOpen, onClose, pageId, pageType, customTi
         return 'Event Report';
       case 'partner-report':
         return 'Partner Report';
+      case 'organization-report':
+        return 'Organization Report';
       case 'edit':
         return 'Edit Page';
+      case 'partner-edit':
+        return 'Partner Edit';
+      case 'organization-edit':
+        return 'Organization Edit';
       case 'filter':
         return 'Filter Page';
       default:
@@ -225,7 +231,7 @@ export default function SharePopup({ isOpen, onClose, pageId, pageType, customTi
               <ol className={styles.instructionsList}>
                 <li className={styles.instructionItem}>Share the URL with the intended recipient</li>
                 <li className={styles.instructionItem}>Provide them with the password separately (for security)</li>
-                <li>They can use either this password or the admin password to access the page</li>
+                <li>They can use this password to access the page; signed-in admins bypass the prompt</li>
               </ol>
             </div>
           </div>

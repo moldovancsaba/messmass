@@ -12,7 +12,8 @@ import OrganizationMembersSelector from '@/components/OrganizationMembersSelecto
 import { FormModal } from '@/components/modals';
 import { apiDelete, apiPost, apiPut } from '@/lib/apiClient';
 import { useAdminAuth } from '@/hooks/useAdminAuth';
-import { organizationsAdapter } from '@/lib/adapters';
+import { organizationsAdapter, organizationsEntityConfig } from '@/lib/adapters';
+import { withAdminEntityActions } from '@/lib/adminEntitySystem';
 
 type Organization = {
   _id: string;
@@ -195,44 +196,28 @@ export default function OrganizationsAdminPage() {
     }
   }, [authLoading, loadOrganizations, router, user]);
 
-  const organizationsAdapterWithHandlers = useMemo(() => {
-    const mapAction = (label: string, org: Organization) => {
-      if (label === 'Report') {
-        return () => window.open(`/organization-report/${org._id}`, '_blank');
-      }
-      if (label === 'Edit Stats') {
-        return () => window.open(`/organization-edit/${org._id}`, '_blank');
-      }
-      if (label === 'Edit') {
-        return () => openEditOrganization(org);
-      }
-      if (label === 'Manage Members') {
-        return () => openMembers(org);
-      }
-      if (label === 'Delete') {
-        return () => deleteOrganization(org);
-      }
-      return () => {};
-    };
+  const organizationsAdapterWithHandlers = useMemo(() => withAdminEntityActions(
+    organizationsAdapter,
+    organizationsEntityConfig,
+    {
+      user,
+      openModal: (modalKey, org) => {
+        if (modalKey === 'edit-organization') {
+          openEditOrganization(org);
+          return;
+        }
 
-    return {
-      ...organizationsAdapter,
-      listConfig: {
-        ...organizationsAdapter.listConfig,
-        rowActions: organizationsAdapter.listConfig.rowActions?.map((action) => ({
-          ...action,
-          handler: (org: Organization) => mapAction(action.label, org)(),
-        })),
+        if (modalKey === 'manage-members') {
+          openMembers(org);
+        }
       },
-      cardConfig: {
-        ...organizationsAdapter.cardConfig,
-        cardActions: organizationsAdapter.cardConfig.cardActions?.map((action) => ({
-          ...action,
-          handler: (org: Organization) => mapAction(action.label, org)(),
-        })),
+      runMutation: (mutationKey, org) => {
+        if (mutationKey === 'delete-organization') {
+          void deleteOrganization(org);
+        }
       },
-    };
-  }, [deleteOrganization, openEditOrganization, openMembers]);
+    }
+  ), [deleteOrganization, openEditOrganization, openMembers, user]);
 
   if (authLoading || loading) {
     return (

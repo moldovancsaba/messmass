@@ -8,6 +8,7 @@
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import UnifiedAdminHeroWithSearch from '@/components/UnifiedAdminHeroWithSearch';
+import ReportingWorkspaceNav from '@/components/ReportingWorkspaceNav';
 import ColoredCard from '@/components/ColoredCard';
 import MaterialIcon from '@/components/MaterialIcon';
 import { ReportStyle } from '@/lib/reportStyleTypes';
@@ -84,7 +85,7 @@ export default function StylesListPage() {
   if (loading) {
     return (
       <div className="page-container">
-        <UnifiedAdminHeroWithSearch title="Report Styles" subtitle="Loading..." />
+        <UnifiedAdminHeroWithSearch title="Report Themes" subtitle="Loading..." />
         <div className={styles.loading}>
           <div className={styles.spinner} />
           <p>Loading styles...</p>
@@ -96,7 +97,7 @@ export default function StylesListPage() {
   if (error) {
     return (
       <div className="page-container">
-        <UnifiedAdminHeroWithSearch title="Report Styles" subtitle="Error loading styles" />
+        <UnifiedAdminHeroWithSearch title="Report Themes" subtitle="Error loading themes" />
         <ColoredCard accentColor="#ef4444">
           <div className={styles.error}>
             <MaterialIcon name="error" variant="outlined" />
@@ -113,8 +114,9 @@ export default function StylesListPage() {
   return (
     <div className="page-container">
       <UnifiedAdminHeroWithSearch
-        title="Report Styles" 
-        subtitle="Manage color themes for report pages"
+        title="Report Themes" 
+        subtitle="Manage reusable visual themes for report pages"
+        backLink="/admin/reports"
         actionButtons={[
           {
             label: 'Create New Style',
@@ -131,6 +133,8 @@ export default function StylesListPage() {
           ...(deleteStatus ? [{ text: deleteStatus, variant: 'success' as const }] : []),
         ]}
       />
+
+      <ReportingWorkspaceNav />
 
       {stylesList.length === 0 ? (
         <ColoredCard accentColor="#3b82f6">

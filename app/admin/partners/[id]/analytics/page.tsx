@@ -327,10 +327,10 @@ function OverviewTab({ data }: { data: PartnerAnalyticsData }) {
                   </p>
                 </div>
                 <a
-                  href={`/admin/projects`}
+                  href="/admin/events"
                   className={`btn btn-primary btn-sm ${styles.linkClean}`}
                 >
-                  View Details
+                  Open Events
                 </a>
               </div>
             );

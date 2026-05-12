@@ -22,7 +22,7 @@ export default function OrganizationReportView({ id }: { id: string }) {
   const organization = orgData?.organization;
   const entities = orgData?.entities || [];
   const stats = orgData?.aggregatedStats || null;
-  const charts = orgData?.charts || [];
+  const charts = useMemo(() => orgData?.charts || [], [orgData?.charts]);
   const reportConfig = orgData?.report;
 
   // WHAT: Resolve layout from API-provided config

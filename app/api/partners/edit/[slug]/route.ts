@@ -79,6 +79,7 @@ const db = client.db(config.dbName);
       showEventsList: partner.showEventsList ?? true, // Default to true for backward compatibility
       showEventsListTitle: partner.showEventsListTitle ?? true, // Default to true for backward compatibility
       showEventsListDetails: partner.showEventsListDetails ?? true, // Default to true for backward compatibility
+      showOnlyTeam1Events: partner.showOnlyTeam1Events ?? false,
       createdAt: partner.createdAt,
       updatedAt: partner.updatedAt,
       // WHAT: Partner stats for content editing (reportText*, reportImage*)

@@ -115,9 +115,6 @@ function binarySearchFont(textSamples: string[], containerWidthPx: number, maxLi
     // Very long titles: lower minimum and maximum
     adjustedLo = Math.max(8, lo - 2);
     adjustedHi = Math.min(24, hi - 4);
-  } else if (avgTitleLength < 20) {
-    // Short titles: can use larger fonts
-    adjustedHi = Math.min(32, hi + 4);
   }
   
   let best = adjustedLo;

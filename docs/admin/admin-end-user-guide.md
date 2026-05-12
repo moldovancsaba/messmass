@@ -59,7 +59,7 @@ Evidence: `lib/users.ts`
 - Exports: CSV/PDF usage and troubleshooting.
 - Cache Management: when to invalidate and what to expect after.
 - Main page: choose which event report drives the main site (messmass.com), save selection, and use **Update static content** so the site serves a static snapshot until the next update. See `docs/features/features-landing-main-page.md`.
-- Organizations: create organizations, assign partner memberships with predictive search, use **Report** for aggregate organization reporting, and use **Edit Stats** for organization report content.
+- Organizations: create organizations, assign partner memberships with predictive search, use **Report** to open the protected share flow for aggregate organization reporting, and use **Edit Stats** for organization report content.
 - V3 High-Performance Engine: learn about the new multi-tenant data structures, participants mapping, and time-series KPI storage. See `docs/V3/messmass_v3_quickstart_guide.md`.
 - Troubleshooting: auth issues, missing data, stale output, permissions.
 

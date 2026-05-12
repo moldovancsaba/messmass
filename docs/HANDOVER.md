@@ -2,7 +2,7 @@
 
 This file is onboarding plus operational context for the next agent. Keep it accurate when behavior, process, or current delivery state changes.
 
-**Last Updated:** 2026-04-24 (Organization report-generation parity + documentation sync)
+**Last Updated:** 2026-05-12 (legacy route and help-system alignment slice)
 
 ## 🚨 CRITICAL MUST-READ FOR ALL AGENTS: STYLING & COMPONENTS 🚨
 
@@ -32,7 +32,7 @@ You MUST completely read and obey `docs/coding-standards.md` and `docs/component
 - Last known HEAD during this update: `7ebd13ba8`
 - Working tree includes untracked local `READMEDEV.md`; canonical repo-root cleanup work is now tracked under `#359`.
 - Most recent documented code delivery before this update: organization admin data flow recovery and documentation sync.
-- Current active delivery: none recorded in this handover; use the board and `docs/operations/operations-delivery-focus.md` as the next-step authority.
+- Current active delivery: `mvp-factory-control#821` UI Refinement 6/6 has been implemented in the repo, aligning the remaining legacy route/help guidance to the workspace model after the guided setup flow foundation.
 - Formally closed on SSOT board (2026-03-10): #354, #355, #356, #357, #358, #359.
 
 ## Current Priorities
@@ -65,6 +65,154 @@ You MUST completely read and obey `docs/coding-standards.md` and `docs/component
 - Style editor preview updates immediately for bar/pie CSS vars and includes Value Chain and Landing page sections.
 
 ## Handover Log
+
+## 2026-05-12 — Legacy route and help-system alignment slice (#821)
+- **Objective:** Finish the current UI refinement track by removing the last live guidance drift between the implemented workspace model and the in-product help/route ownership language.
+- **Help rewrite:** Rebuilt `/app/admin/help/page.tsx` around the current Admin Workspace, Reporting Workspace, and Analytics Workspace model. The page now teaches the staged Event and Partner flows, the canonical `/admin/reports` and `/admin/analytics` entry points, and the direct-open/share-second action grammar instead of the old dashboard/KYC-manager wording.
+- **Guest access guidance:** Updated the help-page role ladder so Guest, User, Admin, and Superadmin descriptions match the current product map rather than the legacy dashboard-era labels.
+- **Route ownership cleanup:** Updated `/lib/routeProtection.ts` so the comments and explicit protection map now recognize `Reporting Workspace`, protect `/admin/reports`, `/admin/styles`, and `/admin/content-library` at the admin level, and label `/admin/dashboard` as a legacy redirect entry point instead of an active home.
+- **Repo memory sync:** Updated `/docs/messmass-codex-brain-dump.md` so the canonical workspace map and touched-route list no longer present `/admin/dashboard` and `/admin/insights` as active product homes.
+- **Workflow effect:** Users reading in-product guidance are now directed into the same product structure that the navigation, redirects, and staged setup flows already implement, closing the remaining “old map vs live product” mismatch from the UI refinement program.
+- **Verification:** `npm run lint`, `npm run build`, and `npm run type-check` all passed.
+
+## 2026-05-12 — Guided setup flow foundation slice (#820)
+- **Objective:** Reduce decision overload in the two highest-friction admin setup surfaces by staging creation/edit flows instead of forcing all decisions into one modal.
+- **Event setup flow:** Updated `/app/admin/events/page.tsx` so both create and edit now use a two-step flow inside the same modal: `Event Basics` first, then `Reporting` / `Reporting & Distribution`. The first submit now advances the workflow and the final submit persists changes.
+- **Partner setup flow:** Updated `/app/admin/partners/page.tsx` so both create and edit now use a two-step flow: `Partner Basics` first, then `Reporting & Integrations`. Identity, emoji, sports enrichment, and hashtags are separated from Bitly, templates, clicker sets, and Google Sheets behavior.
+- **Shared interaction pattern:** Both surfaces now use step badges, explicit `Continue to Reporting` / `Back` controls, and close/reset behavior that returns the modal to step 1 on reopen.
+- **Workflow effect:** Operators no longer have to make reporting and integration choices before they have finished defining the base event or partner record. This lowers setup friction without removing any existing functionality.
+- **Verification:** `npm run lint`, `npm run build`, and `npm run type-check` all passed.
+
+## 2026-05-12 — Reporting dependency consolidation slice (#819)
+- **Objective:** Remove the last major report-authoring split by pulling variable schema and clicker layout into the reporting workspace instead of leaving them mentally stranded in a separate data bucket.
+- **Workspace scope expansion:** Updated `/lib/adminNavigation.ts` so `getReportingWorkspaceItems()` now includes `KYC Variables` and `Clicker Sets` alongside Builder, Themes, Content Library, and Chart Algorithms.
+- **Reporting home copy:** Updated `/app/admin/reports/page.tsx` so the canonical reporting workspace now explicitly frames `KYC Variables` and `Clicker Sets` as report-authoring dependencies rather than isolated data tools.
+- **Route ownership:** Updated `/app/admin/kyc/page.tsx` and `/app/admin/clicker-manager/page.tsx` to use `/admin/reports` as their back-link and embedded `/components/ReportingWorkspaceNav.tsx` so authors can move through the full reporting setup workflow without backing out to the main admin workspace.
+- **Workflow effect:** Report setup no longer splits across two mental buckets for the most common authoring path. Variables, clicker layout, content, themes, charts, and builder composition are now navigable as one workspace.
+- **Verification:** `npm run lint`, `npm run build`, and `npm run type-check` all passed.
+
+## 2026-05-12 — Reporting workspace foundation slice (#819)
+- **Objective:** Start the reporting IA consolidation by giving the report-management system one canonical home and one shared movement model, matching the analytics workspace pattern.
+- **Canonical reporting home:** Added `/app/admin/reports/page.tsx` plus `/app/admin/reports/page.module.css` as the new reporting workspace landing page. It explains the reporting setup surfaces and routes users into Builder, Themes, Content Library, and Chart Algorithms from one place.
+- **Navigation model:** Updated `/lib/adminNavigation.ts` so the Reports section now exposes `Reporting Workspace` as the top-level admin destination, while `Report Builder`, `Report Themes`, `Content Library`, and `Chart Algorithms` remain available as drilldowns and are hidden from the admin workspace card grid. Added the matching permission in `/lib/permissions.ts`.
+- **Shared sub-navigation:** Added `/components/ReportingWorkspaceNav.tsx` plus `/components/ReportingWorkspaceNav.module.css` and wired that shared reporting nav into `/app/admin/visualization/page.tsx`, `/app/admin/styles/page.tsx`, `/app/admin/content-library/page.tsx`, and `/app/admin/charts/page.tsx`.
+- **Route ownership:** Updated report-management back-links so Builder, Themes, Content Library, and Chart Algorithm Manager now point back to `/admin/reports` instead of `/admin`, reinforcing the reporting workspace ownership model.
+- **Verification:** `npm run lint`, `npm run build`, and `npm run type-check` all passed.
+
+## 2026-05-12 — Entity action direct-open slice (#818)
+- **Objective:** Remove the remaining extra click in the core entity workflows by making Events and Partners open their working destinations directly instead of forcing a share popup first.
+- **Action grammar refinement:** Updated `/lib/adapters/projectsAdapter.tsx`, `/lib/adapters/partnersAdapter.tsx`, and `/lib/adapters/organizationsAdapter.tsx` so the main actions now lead with direct-open behavior: `Open Report` and `Open Editor` are primary actions, while `Share Report` and `Share Editor` remain secondary utilities where they are still useful.
+- **Surface simplification:** Restricted share and utility actions to list surfaces where appropriate, keeping cards focused on the main workflow destinations rather than utility buttons.
+- **Workflow effect:** The core admin entities now expose a clearer primary path: open the report/editor first, then use share/export/KYC utilities only when needed. This removes one unnecessary modal step from the most common reporting and editing flows.
+- **Verification:** `npm run lint`, `npm run build`, and `npm run type-check` all passed.
+
+## 2026-05-12 — Entity action grammar foundation slice (#818)
+- **Objective:** Remove the remaining page-local action inconsistency by moving Events onto the same shared entity-action runtime used by Partners and Organizations, and by making action labels describe the real behavior.
+- **Shared event contract:** Added `projectsEntityConfig` in `/lib/adapters/projectsAdapter.tsx` and exported it through `/lib/adapters/index.ts`, so Events now declare capabilities and actions through the same admin entity model as the other main admin surfaces.
+- **Execution unification:** Updated `/app/admin/events/page.tsx` to use `withAdminEntityActions(...)` instead of remapping row/card actions by checking labels like `Edit Stats`. Event actions now route through stable runtime keys for edit modal, share popup, CSV export, and deletion.
+- **Action clarity:** Renamed ambiguous user-facing actions across the entity configs so the click matches the label: Events now expose `Share Report` and `Share Editor`, Partners now use `Share Report` and `Open Editor`, and Organizations now use `Open Report` and `Open Editor`.
+- **Capability extension:** Added the `export` capability to `/lib/adminEntitySystem.ts` so export actions can live inside the same shared action grammar instead of remaining a one-off adapter exception.
+- **Verification:** `npm run lint`, `npm run build`, and `npm run type-check` all passed. As elsewhere in this repo, `type-check` was run after the successful build because `tsconfig.json` includes `.next/types/**/*.ts`.
+
+## 2026-05-12 — Analytics workspace nav continuation (#817)
+- **Objective:** Finish the shared analytics-workspace movement model so the activation queue behaves like part of analytics instead of a detached operations branch.
+- **Workspace nav expansion:** Updated `/lib/adminNavigation.ts` with `getAnalyticsWorkspaceItems()` so the analytics workspace can reuse the canonical analytics lens list while explicitly inserting `Partner Activation` beside `Sponsorship Hub`.
+- **Sub-navigation alignment:** Updated `/components/AnalyticsWorkspaceNav.tsx` to render the new workspace item list, which means analytics home, Sponsorship Hub, activation, executive, marketing, operations, and insights now share one internal movement model.
+- **Workflow effect:** Users can move between proof-of-performance triage and the rest of the analytics workspace without backing out to `/admin`, which completes the main route-ownership goal of `#817`.
+- **Verification:** `npm run lint`, `npm run build`, and `npm run type-check` all passed.
+
+## 2026-05-11 — Admin home and analytics entry-point consolidation slice (#817)
+- **Objective:** Remove the next structural inconsistency after `#816`: competing admin and analytics home surfaces that made users choose between `/admin`, `/admin/dashboard`, `/admin/insights`, and `analytics/*` without a clear ownership model.
+- **Analytics home:** Added `/app/admin/analytics/page.tsx` plus `/app/admin/analytics/page.module.css` as the canonical analytics landing page. It introduces one analytics entry point and then fans out into Sponsorship Hub, Executive, Marketing, Operations, and Insights drilldowns.
+- **Workspace simplification:** Updated `/lib/adminNavigation.ts`, `/components/AdminDashboard.tsx`, `/components/Sidebar.tsx`, `/lib/permissions.ts`, and `/lib/routeProtection.ts` so the main admin workspace now exposes `Analytics Home` as the top-level analytics entry while the sidebar keeps the deeper analytics drilldowns available.
+- **Legacy route cleanup:** Replaced `/app/admin/dashboard/page.tsx` with a redirect to `/admin` and `/app/admin/insights/page.tsx` with a redirect to `/admin/analytics/insights` so existing bookmarks still resolve without preserving duplicate product homes.
+- **Canonical insights repair:** Rebuilt `/app/admin/analytics/insights/page.tsx` around the real `/api/analytics/insights` contract and the maintained `/components/InsightCard.tsx` renderer, replacing the broken dependency on the missing `/api/analytics/insights/all` endpoint.
+- **Drilldown ownership cues:** Updated `/app/admin/analytics/executive/ExecutiveDashboardView.tsx` so executive, marketing, and operations dashboards now expose a direct path back to `/admin/analytics` and a consistent jump into the canonical Insights surface.
+- **Workspace sub-navigation:** Added `/components/AnalyticsWorkspaceNav.tsx` plus `/components/AnalyticsWorkspaceNav.module.css` and embedded that shared analytics nav into the analytics home, Sponsorship Hub, activation workspace, Insights, and executive-family dashboards so drilldowns no longer feel isolated.
+- **SSO default landing:** Updated `/app/api/auth/sso/login/route.ts`, `/app/api/auth/sso/callback/route.ts`, and the related login commentary so SSO defaults now land in `/admin` instead of the retired legacy dashboard entry.
+- **Role consistency:** Admin workspace cards now respect the same role filtering as the sidebar, and analytics route protection now explicitly keeps `/admin/analytics/insights` on the superadmin path.
+- **Verification:** `npm run lint`, `npm run build`, and `npm run type-check` all passed. As elsewhere in this repo, `type-check` needed to be rerun after the successful build because `tsconfig.json` includes `.next/types/**/*.ts`.
+
+## 2026-05-11 — UI refinement foundation slice (#816)
+- **Objective:** Start the UI refinement program by eliminating the first structural inconsistency: the admin dashboard cards and sidebar navigation describing different products.
+- **Shared navigation SSOT:** Added `/lib/adminNavigation.ts` as the canonical admin navigation model, grouped by Operations, Entities, Reports, Data, Analytics, and System.
+- **Dashboard alignment:** Updated `/components/AdminDashboard.tsx` so the admin landing page now renders grouped cards from the shared navigation definition instead of a separate hardcoded list with conflicting labels.
+- **Sidebar alignment:** Updated `/components/Sidebar.tsx` so the sidebar now consumes the same shared navigation source instead of maintaining its own divergent route map.
+- **Permission alignment:** Updated `/lib/permissions.ts` so sidebar visibility now matches the new canonical labels (`Report Builder`, `Report Themes`, `Clicker Sets`, `Bitly Links`, `Main Page`, etc.).
+- **Entry-point framing:** Updated `/app/admin/page.tsx` from `Admin Dashboard` to `Admin Workspace` so the landing page better reflects the broader IA rather than implying a second analytics dashboard.
+- **Visible terminology alignment:** Updated user-facing admin labels to the canonical IA on the highest-traffic surfaces: `Help`, `Bitly Links`, `Report Themes`, `Clicker Sets`, `Main Page`, and `Report Builder`.
+- **Workflow copy cleanup:** Updated help guidance, unauthorized recovery CTA, and builder empty/error states so users are directed to canonical names like `Events` and `Report Builder` instead of legacy labels such as `Projects`, `User Guide`, and `Visualization Manager`.
+- **Verification:** `npm run lint`, `npm run build`, and `npm run type-check` all passed.
+
+## 2026-05-11 — Activation triage and partner queue slice (#788)
+- **Objective:** Turn the first activation workspace from a passive proof list into an operational triage surface for sponsor-delivery follow-up.
+- **Shared activation scoring:** Extended `/lib/sponsorshipHub.ts` so each proof item now carries readiness score, priority score, missing-reason labels, and direct partner/report/admin links.
+- **Partner queues:** The shared activation payload now includes partner-level queue rollups with ready-vs-gap counts, total media value, total Bitly clicks, and direct navigation actions.
+- **Workspace filtering:** Updated `/app/admin/analytics/sponsorship/activation/page.tsx` with status and partner filters so admins can isolate ready packages, Bitly gaps, report gaps, or missing fan/media evidence.
+- **Proof queue actions:** The activation queue now exposes readiness percentage, gap reasons, and direct links into project reports, partner analytics, and partner reports.
+- **Verification:** `npm run lint`, `npm run build`, and `npm run type-check` all passed.
+
+## 2026-05-10 — Sponsorship evidence, trend, and activation workspace slice (#784, #788)
+- **Objective:** Deliver the next five sponsorship actions in one coherent implementation pass instead of layering more ad hoc client fetches onto the existing hub.
+- **Shared data model:** Rebuilt `/lib/sponsorshipHub.ts` so the server response now includes scope actions, scope trend points, project-level source drilldowns, partner-level attribution drilldowns, and an activation-workspace proof queue.
+- **Source-level drilldown:** The hub now exposes project source breakdowns, Bitly country/referrer evidence, and partner attribution evidence directly from the shared sponsorship payload.
+- **Trend views:** Added server-built trend series for the full scope, selected partner rollups, and selected projects (Bitly daily clicks when present, otherwise event snapshots).
+- **Scope-to-report actions:** Added direct report/admin/action links at scope level, project level, and partner level so users can move from rollups into reports or admin analytics without manual URL hunting.
+- **Attribution transparency:** Partner drilldowns now include attributed project tables plus an explicit summary of the `partnerContext.partnerId` then `partner1` fallback rule.
+- **Activation workspace:** Added `/app/admin/analytics/sponsorship/activation/page.tsx` as the first `#788` Partner Activation and Proof-of-Performance workspace. It surfaces readiness score, proof gaps, scoped project queue, and partner proof destinations.
+- **Navigation:** Added a `Partner Activation` card to `/components/AdminDashboard.tsx`.
+- **Verification:** `npm run lint`, `npm run build`, and `npm run type-check` all passed. `npm run type-check` still requires running after a successful build because this repo includes `.next/types/**/*.ts` in `tsconfig.json`.
+
+## 2026-05-10 — Unified Sponsorship Performance Hub initial slice (#784)
+- **Objective:** Start `#784` with a usable admin surface that unifies current sponsorship evidence without introducing new ingestion or schema changes.
+- **Server aggregation:** Added `/lib/sponsorshipHub.ts` as the first shared sponsorship rollup layer. It resolves portfolio, partner, organization, and project scopes and combines existing `analytics_aggregates`, `projects`, `partners`, `organizations`, and `bitly_project_links` data.
+- **API surface:** Added `/app/api/analytics/sponsorship-hub/route.ts` for authenticated admin access to the unified sponsorship dataset.
+- **Admin UI:** Added `/app/admin/analytics/sponsorship/page.tsx` with scope controls, KPI cards, channel attribution cards, coverage indicators, top projects, and partner activity tables.
+- **Navigation:** Added a new `Sponsorship Hub` entry to `/components/AdminDashboard.tsx` so the feature is reachable from the admin landing page.
+- **Verification:** `npm run type-check` and `npm run lint` passed.
+
+## 2026-05-10 — Unified Sponsorship Performance Hub date-range filtering (#784)
+- **Objective:** Extend the first hub slice so sponsorship KPIs can be narrowed to a meaningful reporting window instead of remaining all-time only.
+- **Shared filtering:** Updated `/lib/sponsorshipHub.ts` to support range presets (`all`, `30d`, `90d`, `365d`) and apply event-date filtering before building the unified hub response.
+- **API support:** Extended `/app/api/analytics/sponsorship-hub/route.ts` to accept `rangePreset` and return the resolved filter window in the response payload.
+- **Admin UI controls:** Updated `/app/admin/analytics/sponsorship/page.tsx` so admins can change the time window directly from the hub and see the effective date range in the current scope summary.
+- **Verification note:** `npm run lint` passed. `npm run build` passed. `npm run type-check` passed after rerunning against the regenerated `.next/types` output because this repo includes `.next/types/**/*.ts` in `tsconfig.json`.
+
+## 2026-05-10 — Unified Sponsorship Performance Hub partner attribution slice (#784)
+- **Objective:** Turn the partner section of the Sponsorship Hub into a real commercial rollup instead of a simple activity count.
+- **Attribution rule:** Updated `/lib/sponsorshipHub.ts` so partner totals use a transparent `primary_partner` attribution basis: first `analytics_aggregates.partnerContext.partnerId`, then fallback to the project primary partner. This avoids duplicate credit across multiple partner rows.
+- **Partner rollups:** The hub response now includes partner-level fans, media value, Bitly clicks, average engagement rate, and the attribution basis alongside event counts.
+- **Admin UI update:** Updated `/app/admin/analytics/sponsorship/page.tsx` so the old “Most Active Partner Entities” table is now a real “Top Partner Rollups” table with sponsorship metrics and an attribution note.
+- **Verification:** `npm run lint`, `npm run build`, and `npm run type-check` all passed.
+
+## 2026-05-10 — Unified Sponsorship Performance Hub in-page drilldown slice (#784)
+- **Objective:** Make the hub easier to use by letting admins inspect the selected ranked project or partner without leaving the page.
+- **Project drilldown:** Updated `/app/admin/analytics/sponsorship/page.tsx` so rows in the top-project table are selectable and drive a dedicated project detail card showing event, partner label, view slug, fans, media value, Bitly clicks, and engagement.
+- **Partner drilldown:** Added the same pattern for partner rollups, with a dedicated detail card showing event count, attribution basis, fans, media value, Bitly clicks, and engagement for the selected partner.
+- **UI support:** Added focused drilldown and selected-row styles to `/app/admin/analytics/sponsorship/page.module.css`.
+- **Verification:** `npm run lint`, `npm run build`, and `npm run type-check` all passed.
+
+## 2026-05-10 — Style hardening Phase 5 duplicate admin dashboard cleanup (#72)
+- **Objective:** Continue `#72` by removing inactive duplicate admin dashboard styling assets that no longer power the live admin landing page.
+- **Removed duplicate artifacts:**
+  - `components/AdminDashboardNew.tsx`
+  - `components/AdminDashboard.module.css`
+- **Additional duplicate UI cleanup:**
+  - Removed `components/ConfirmModal.tsx` after confirming admin flows already use `ConfirmDialog` from `components/modals`.
+- **Additional dead V3 UI cleanup:**
+  - Removed `components/v3/dashboard/StatsCard.tsx`
+  - Removed `components/v3/dashboard/EntityTree.tsx`
+  - Removed `components/v3/dashboard/EntityTree.module.css`
+- **Why this is safe:** `/app/admin/page.tsx` imports `components/AdminDashboard.tsx`, and no live route or component imports the deleted alternate dashboard implementation.
+- **Verification:** Pending local validation after cleanup.
+
+## 2026-05-03 — Unified admin entity contract foundation (#740)
+- **Objective:** Replace page-local action remapping on Partner and Organization admin surfaces with a shared entity contract, capability matrix, and action execution layer.
+- **Shared contract:** Added `/lib/adminEntitySystem.ts` with the canonical entity config shape, explicit capability vocabulary, action execution modes (`route`, `modal`, `share`, `mutation`), permission gating, and the helper that drives list/card actions from one source.
+- **Entity mapping:** Moved the concrete Partner and Organization action/capability declarations into adapter-owned entity configs, eliminating the old `if (label === ...)` remapping pattern in both admin pages.
+- **Page integration:** Updated `/app/admin/partners/page.tsx` and `/app/admin/organizations/page.tsx` to bind modal/share/mutation behavior through stable runtime keys instead of label matching.
+- **Documentation:** Added `/docs/admin/admin-entity-system.md` as the canonical design note for the contract, capability matrix, and partner/org action mapping; linked it from `/docs/index.md`.
+- **Verification:** Pending standard repo gates after implementation.
 
 ## 2026-04-24 — Organization report-generation parity
 - **Objective:** Deliver organization report-generation parity with partner-level controls while preserving existing organization/member data.

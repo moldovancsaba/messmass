@@ -1,5 +1,6 @@
 import React from 'react';
 import type { AdminPageAdapter } from '../adminDataAdapters';
+import type { AdminEntityConfig } from '@/lib/adminEntitySystem';
 
 export interface OrganizationDTO {
   _id: string;
@@ -11,6 +12,84 @@ export interface OrganizationDTO {
     [key: string]: unknown;
   };
 }
+
+export const organizationsEntityConfig: AdminEntityConfig<OrganizationDTO> = {
+  entityKey: 'organization',
+  pageName: 'organizations',
+  displayName: 'Organization',
+  supportedViews: ['list', 'card'],
+  capabilities: ['create', 'edit', 'delete', 'report', 'edit-content', 'manage-members'],
+  search: {
+    fields: ['name', 'slug', 'status'],
+    placeholder: 'Search organizations...',
+  },
+  permissionRequirements: ['superadmin'],
+  actions: [
+    {
+      id: 'organization-report',
+      label: 'Open Report',
+      icon: 'visibility',
+      variant: 'primary',
+      requiredCapabilities: ['report'],
+      requiredPermissions: ['superadmin'],
+      execution: {
+        kind: 'route',
+        getHref: (org) => `/organization-report/${org._id}`,
+        target: '_blank',
+      },
+    },
+    {
+      id: 'organization-edit-content',
+      label: 'Open Editor',
+      icon: 'bar_chart',
+      variant: 'primary',
+      requiredCapabilities: ['edit-content'],
+      requiredPermissions: ['superadmin'],
+      execution: {
+        kind: 'route',
+        getHref: (org) => `/organization-edit/${org._id}`,
+        target: '_blank',
+      },
+    },
+    {
+      id: 'organization-edit',
+      label: 'Edit',
+      icon: 'edit',
+      variant: 'secondary',
+      requiredCapabilities: ['edit'],
+      requiredPermissions: ['superadmin'],
+      execution: {
+        kind: 'modal',
+        modalKey: 'edit-organization',
+      },
+    },
+    {
+      id: 'organization-manage-members',
+      label: 'Manage Members',
+      icon: 'group',
+      variant: 'secondary',
+      requiredCapabilities: ['manage-members'],
+      requiredPermissions: ['superadmin'],
+      execution: {
+        kind: 'modal',
+        modalKey: 'manage-members',
+      },
+    },
+    {
+      id: 'organization-delete',
+      label: 'Delete',
+      icon: 'delete',
+      variant: 'danger',
+      requiredCapabilities: ['delete'],
+      requiredPermissions: ['superadmin'],
+      execution: {
+        kind: 'mutation',
+        mutationKey: 'delete-organization',
+        confirmMessage: (org) => `Delete organization "${org.name}"?`,
+      },
+    },
+  ],
+};
 
 export const organizationsAdapter: AdminPageAdapter<OrganizationDTO> = {
   pageName: 'organizations',
@@ -44,13 +123,6 @@ export const organizationsAdapter: AdminPageAdapter<OrganizationDTO> = {
         render: (org) => <span className="adapter-meta-text">{org.status || 'active'}</span>,
       },
     ],
-    rowActions: [
-      { label: 'Report', icon: 'visibility', variant: 'secondary', handler: () => {} },
-      { label: 'Edit Stats', icon: 'bar_chart', variant: 'secondary', handler: () => {} },
-      { label: 'Edit', icon: 'edit', variant: 'secondary', handler: () => {} },
-      { label: 'Manage Members', icon: 'group', variant: 'secondary', handler: () => {} },
-      { label: 'Delete', icon: 'delete', variant: 'danger', handler: () => {} },
-    ],
   },
   cardConfig: {
     primaryField: (org) => (
@@ -73,13 +145,6 @@ export const organizationsAdapter: AdminPageAdapter<OrganizationDTO> = {
       },
     ],
     renderBadge: (org) => <span>{org.status || 'active'}</span>,
-    cardActions: [
-      { label: 'Report', icon: 'visibility', variant: 'secondary', handler: () => {} },
-      { label: 'Edit Stats', icon: 'bar_chart', variant: 'secondary', handler: () => {} },
-      { label: 'Edit', icon: 'edit', variant: 'secondary', handler: () => {} },
-      { label: 'Manage Members', icon: 'group', variant: 'secondary', handler: () => {} },
-      { label: 'Delete', icon: 'delete', variant: 'danger', handler: () => {} },
-    ],
   },
   searchFields: ['name', 'slug', 'status'],
   emptyStateMessage: 'No organizations found. Create one to begin.',
