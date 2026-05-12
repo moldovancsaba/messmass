@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useEffect, useMemo, useState } from "react";
+import ReportingWorkspaceNav from "@/components/ReportingWorkspaceNav";
 import UnifiedAdminHeroWithSearch from "@/components/UnifiedAdminHeroWithSearch";
 import ColoredCard from "@/components/ColoredCard";
 import { apiPost, apiPut, apiDelete } from "@/lib/apiClient";
@@ -116,7 +117,7 @@ export default function KycVariablesPage() {
       <UnifiedAdminHeroWithSearch
         title="🔐 KYC Variables"
         subtitle="Catalog of all variables (manual, system, derived) powering analytics and clicker"
-        backLink="/admin"
+        backLink="/admin/reports"
         showSearch
         searchValue={search}
         onSearchChange={setSearch}
@@ -127,6 +128,8 @@ export default function KycVariablesPage() {
           { label: "Export JSON", onClick: () => exportJSON(filtered), variant: "secondary" },
         ]}
       />
+
+      <ReportingWorkspaceNav />
 
       {loading && (
         <ColoredCard accentColor="#6366f1" hoverable={false} className="text-center">

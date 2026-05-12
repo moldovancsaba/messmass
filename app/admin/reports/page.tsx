@@ -54,6 +54,7 @@ export default function ReportingHomePage() {
               <li>Use <strong>Report Themes</strong> for branded styling and reusable visual systems.</li>
               <li>Use <strong>Content Library</strong> for text and image variables used in report formulas.</li>
               <li>Use <strong>Chart Algorithms</strong> for chart logic, formulas, and variable-driven chart behavior.</li>
+              <li>Use <strong>KYC Variables</strong> and <strong>Clicker Sets</strong> when the reporting workflow depends on variable definitions or editor input layout.</li>
             </ul>
           </div>
         </ColoredCard>
@@ -62,6 +63,7 @@ export default function ReportingHomePage() {
           <div className={styles.summaryCard}>
             <h2 className={styles.summaryTitle}>Reporting now has one home</h2>
             <p className={styles.summaryMeta}>The admin card grid now points to this workspace first instead of treating each reporting tool as its own top-level destination.</p>
+            <p className={styles.summaryMeta}>Variable schema and clicker layout are now treated as reporting dependencies, not isolated setup islands.</p>
             <p className={styles.summaryMeta}>Visible destinations are filtered by your current role.</p>
           </div>
         </ColoredCard>

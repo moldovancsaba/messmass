@@ -2,7 +2,7 @@
 
 This file is onboarding plus operational context for the next agent. Keep it accurate when behavior, process, or current delivery state changes.
 
-**Last Updated:** 2026-05-12 (reporting workspace foundation slice)
+**Last Updated:** 2026-05-12 (reporting dependency consolidation slice)
 
 ## 🚨 CRITICAL MUST-READ FOR ALL AGENTS: STYLING & COMPONENTS 🚨
 
@@ -65,6 +65,14 @@ You MUST completely read and obey `docs/coding-standards.md` and `docs/component
 - Style editor preview updates immediately for bar/pie CSS vars and includes Value Chain and Landing page sections.
 
 ## Handover Log
+
+## 2026-05-12 — Reporting dependency consolidation slice (#819)
+- **Objective:** Remove the last major report-authoring split by pulling variable schema and clicker layout into the reporting workspace instead of leaving them mentally stranded in a separate data bucket.
+- **Workspace scope expansion:** Updated `/lib/adminNavigation.ts` so `getReportingWorkspaceItems()` now includes `KYC Variables` and `Clicker Sets` alongside Builder, Themes, Content Library, and Chart Algorithms.
+- **Reporting home copy:** Updated `/app/admin/reports/page.tsx` so the canonical reporting workspace now explicitly frames `KYC Variables` and `Clicker Sets` as report-authoring dependencies rather than isolated data tools.
+- **Route ownership:** Updated `/app/admin/kyc/page.tsx` and `/app/admin/clicker-manager/page.tsx` to use `/admin/reports` as their back-link and embedded `/components/ReportingWorkspaceNav.tsx` so authors can move through the full reporting setup workflow without backing out to the main admin workspace.
+- **Workflow effect:** Report setup no longer splits across two mental buckets for the most common authoring path. Variables, clicker layout, content, themes, charts, and builder composition are now navigable as one workspace.
+- **Verification:** `npm run lint`, `npm run build`, and `npm run type-check` all passed.
 
 ## 2026-05-12 — Reporting workspace foundation slice (#819)
 - **Objective:** Start the reporting IA consolidation by giving the report-management system one canonical home and one shared movement model, matching the analytics workspace pattern.

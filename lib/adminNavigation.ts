@@ -283,7 +283,13 @@ export function getReportingNavItems(): AdminNavItem[] {
 }
 
 export function getReportingWorkspaceItems(): AdminNavItem[] {
-  return getReportingNavItems().filter((item) => item.path !== '/admin/reports');
+  const reportingItems = getReportingNavItems().filter((item) => item.path !== '/admin/reports');
+  const dataItems = adminNavSections.find((section) => section.key === 'data')?.items || [];
+  const reportingDependencies = dataItems.filter((item) =>
+    item.label === 'KYC Variables' || item.label === 'Clicker Sets'
+  );
+
+  return [...reportingItems, ...reportingDependencies];
 }
 
 export function getAnalyticsWorkspaceItems(): AdminNavItem[] {

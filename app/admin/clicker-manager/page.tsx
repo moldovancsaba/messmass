@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
+import ReportingWorkspaceNav from '@/components/ReportingWorkspaceNav';
 import UnifiedAdminHeroWithSearch from '@/components/UnifiedAdminHeroWithSearch';
 import ColoredCard from '@/components/ColoredCard';
 import FormModal from '@/components/modals/FormModal';
@@ -180,7 +181,7 @@ export default function ClickerManagerPage() {
       <UnifiedAdminHeroWithSearch
         title="↔️ Clicker Sets"
         subtitle="Configure reusable clicker layouts, variable groups, and editor ordering"
-        backLink="/admin"
+        backLink="/admin/reports"
         actionButtons={[
           { label: 'New Group', onClick: () => setCreateOpen(true), variant: 'primary', icon: '➕', disabled: !selectedSetId },
           { label: 'Add Report Content', onClick: async () => {
@@ -205,6 +206,8 @@ export default function ClickerManagerPage() {
           { label: 'Delete All', onClick: () => setConfirmDeleteAllOpen(true), variant: 'danger', disabled: saving },
         ]}
       />
+
+      <ReportingWorkspaceNav />
 
       {/* Clicker Set Selector (mirrors report template selector UX) */}
       <ColoredCard accentColor="#3b82f6" hoverable={false}>
