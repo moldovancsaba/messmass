@@ -702,7 +702,10 @@ export default function BitlyAdminPage() {
   // WHY: Bidirectional sync - updates partners.bitlyLinkIds array
   async function handleAddPartnerAssociation(bitlyLinkId: string, partnerId: string | null) {
     if (!partnerId) return;
-    
+
+    setError('');
+    setSuccessMessage('');
+
     try {
       // Optimistic update
       setLinks(prev => prev.map(link => {
@@ -724,6 +727,7 @@ export default function BitlyAdminPage() {
       // WHY: Production middleware requires X-CSRF-Token header for POST requests
       const data = await apiPost('/api/bitly/partners/associate', { bitlyLinkId, partnerId });
       if (data.success) {
+        setError('');
         setSuccessMessage(data.message);
       }
     } catch (error) {
@@ -737,6 +741,9 @@ export default function BitlyAdminPage() {
   // WHAT: Remove partner association from Bitly link
   // WHY: Bidirectional sync - removes from partners.bitlyLinkIds array
   async function handleRemovePartnerAssociation(bitlyLinkId: string, partnerId: string) {
+    setError('');
+    setSuccessMessage('');
+
     try {
       // Optimistic update
       setLinks(prev => prev.map(link => {
@@ -753,6 +760,7 @@ export default function BitlyAdminPage() {
       // WHY: Production middleware requires X-CSRF-Token header for DELETE requests
       const data = await apiDelete(`/api/bitly/partners/associate?bitlyLinkId=${bitlyLinkId}&partnerId=${partnerId}`);
       if (data.success) {
+        setError('');
         setSuccessMessage(data.message);
       }
     } catch (error) {

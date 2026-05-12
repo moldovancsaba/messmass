@@ -3,12 +3,14 @@
   grid-template-columns: minmax(0, 1.35fr) minmax(280px, 0.9fr);
   gap: var(--mm-space-6);
   margin-bottom: var(--mm-space-8);
+  align-items: stretch;
 }
 
 .introBody {
   display: flex;
   flex-direction: column;
   gap: var(--mm-space-3);
+  min-width: 0;
 }
 
 .introTitle {
@@ -38,6 +40,7 @@
   display: flex;
   flex-direction: column;
   gap: var(--mm-space-3);
+  min-width: 0;
 }
 
 .summaryTitle {
@@ -60,6 +63,8 @@
 }
 
 .cardLink {
+  display: block;
+  height: 100%;
   text-decoration: none;
 }
 
@@ -67,6 +72,7 @@
   display: flex;
   gap: var(--mm-space-4);
   align-items: flex-start;
+  min-width: 0;
 }
 
 .cardIcon {
@@ -78,6 +84,7 @@
   display: flex;
   flex-direction: column;
   gap: var(--mm-space-2);
+  min-width: 0;
 }
 
 .cardTitle {
@@ -85,6 +92,7 @@
   font-size: var(--mm-font-size-lg);
   font-weight: var(--mm-font-weight-semibold);
   color: var(--mm-gray-900);
+  overflow-wrap: anywhere;
 }
 
 .cardDescription {
@@ -92,6 +100,7 @@
   font-size: var(--mm-font-size-sm);
   line-height: var(--mm-line-height-md);
   color: var(--mm-gray-600);
+  overflow-wrap: anywhere;
 }
 
 .cardMeta {

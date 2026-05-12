@@ -7,6 +7,7 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import styles from './page.module.css';
+import { apiGet, apiPost, apiPut } from '@/lib/apiClient';
 
 interface Partner {
   _id: string;
@@ -39,12 +40,10 @@ export default function ProjectPartnersPage() {
     setLoading(true);
     try {
       // Load projects
-      const projectsRes = await fetch('/api/admin/project-partners');
-      const projectsData = await projectsRes.json();
+      const projectsData = await apiGet('/api/admin/project-partners');
       
       // Load partners
-      const partnersRes = await fetch('/api/admin/partners');
-      const partnersData = await partnersRes.json();
+      const partnersData = await apiGet('/api/admin/partners');
 
       if (projectsData.success) {
         setProjects(projectsData.projects);
@@ -62,13 +61,7 @@ export default function ProjectPartnersPage() {
   async function updateProjectPartners(projectId: string, partner1Id: string | null, partner2Id: string | null) {
     setSaving(projectId);
     try {
-      const res = await fetch('/api/admin/project-partners', {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ projectId, partner1Id, partner2Id })
-      });
-
-      const data = await res.json();
+      const data = await apiPut('/api/admin/project-partners', { projectId, partner1Id, partner2Id });
       if (data.success) {
         // Update local state
         setProjects(prev => prev.map(p => 
@@ -94,11 +87,7 @@ export default function ProjectPartnersPage() {
 
     setAutoSuggesting(true);
     try {
-      const res = await fetch('/api/admin/project-partners/auto-suggest', {
-        method: 'POST'
-      });
-
-      const data = await res.json();
+      const data = await apiPost('/api/admin/project-partners/auto-suggest', {});
       if (data.success) {
         alert(`Auto-suggested partners for ${data.updated} projects`);
         await loadData();
