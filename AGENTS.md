@@ -12,6 +12,7 @@ Use this file as the tracked quick-start for repo-specific agent workflows. For 
 - Install: `npm install`
 - Run the app: `npm run dev`
 - Default local URL: `http://localhost:3001`
+- First-run variable seed: `npm run seed:variables`
 - Optional realtime server: `cd server && npm start`
 
 ## Core Validation
@@ -23,6 +24,7 @@ Use this file as the tracked quick-start for repo-specific agent workflows. For 
 - Version check: `npm run version:verify`
 - Design token/style guardrails: `npm run style:check`
 - Style audit report: `npm run style:audit`
+- If `npm run type-check` fails on missing `.next/types`, run `npm run build` first and rerun the type check.
 
 ## Organization Workflow
 
@@ -48,6 +50,12 @@ Current organization management behavior verified in code:
 ## Report And Data Diagnostics
 
 - Diagnose report-template warnings: `npm run diagnose:reports`
+- Variable inventory snapshot/diff: `npm run variables:inventory`
+- Data quality audit/fix: `npm run data:audit` / `npm run data:fix`
+- Database audit: `npm run audit:database`
+- Database backup/restore: `npm run db:backup` / `npm run db:restore -- --backup=<backup-id>`
+- Google Sheets integration validation: `npm run test:google-sheets`
+- Google Sheets schema check: `npm run check:google-sheets-schema`
 - Verify production flag safety: `npm run security:verify-production-flags`
 
 ## Notes
