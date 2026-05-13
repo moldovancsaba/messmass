@@ -1,8 +1,44 @@
 # {messmass} Release Notes
 Status: Active
-Last Updated: 2026-05-02T11:55:00.000Z
+Last Updated: 2026-05-13T09:30:00.000Z
 Canonical: No
 Owner: Operations
+
+## [v12.1.12] — 2026-05-13T09:30:00.000Z
+
+### Summary
+🩹 **ADMIN WORKSPACE REGRESSION FIXES**: Fixed the project-partner CSRF failure, tightened shared admin hero wrapping, corrected analytics card overflow, cleaned up stale Bitly status messaging, and refreshed the README to the current workspace model.
+
+### What Was Fixed
+
+#### Project-partner CSRF fix ✅
+**WHAT**: Reworked `/admin/project-partners` so partner updates and auto-suggest requests use the shared CSRF-aware API client.  
+**WHY**: The page was still using raw state-changing `fetch(...)` calls, which failed under the active CSRF middleware and blocked partner assignment.  
+**HOW**: Replaced the direct `fetch` PUT/POST flows with `apiPut(...)` and `apiPost(...)`, while keeping the existing local state update behavior.
+
+#### Shared admin hero containment fix ✅
+**WHAT**: Tightened the shared `UnifiedAdminHeroWithSearch` layout so multi-button hero actions wrap safely instead of overflowing or clipping.  
+**WHY**: Bitly and other admin pages could break horizontally on mid-width layouts where the right-side control set no longer fit on one line.  
+**HOW**: Added flex wrapping, min-width protection, and width-constrained action-button behavior in `/components/UnifiedAdminHeroWithSearch.module.css`.
+
+#### Analytics and Bitly UI cleanup ✅
+**WHAT**: Corrected analytics card text overflow and stale Bitly error persistence after successful association actions.  
+**WHY**: The analytics workspace cards could spill text outside their bounds, and Bitly could show an old network error alongside a new success message.  
+**HOW**: Added `min-width: 0`, wrapping, and card-link containment in `/app/admin/analytics/page.module.css`, and reset status messages around partner association actions in `/app/admin/bitly/page.tsx`.
+
+#### README refresh ✅
+**WHAT**: Updated `README.md` to the current product/workspace model and current shipped version.  
+**WHY**: The repo entrypoint still described an older admin shape and older release state.  
+**HOW**: Reframed the README around Admin Workspace, Reporting Workspace, Analytics Workspace, and `v12.1.12`.
+
+### Testing
+- ✅ `npm run lint`
+- ✅ `npm run build`
+- ✅ `npm run type-check`
+- ✅ `npm run version:verify`
+
+### Version
+v12.1.11 → v12.1.12 (PATCH — admin workspace regression fixes + README/version sync)
 
 ## [v12.1.11] — 2026-05-02T11:55:00.000Z
 

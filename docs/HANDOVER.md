@@ -2,7 +2,7 @@
 
 This file is onboarding plus operational context for the next agent. Keep it accurate when behavior, process, or current delivery state changes.
 
-**Last Updated:** 2026-05-12 (legacy route and help-system alignment slice)
+**Last Updated:** 2026-05-13 (v12.1.12 admin workspace regression fix release)
 
 ## 🚨 CRITICAL MUST-READ FOR ALL AGENTS: STYLING & COMPONENTS 🚨
 
@@ -28,11 +28,11 @@ You MUST completely read and obey `docs/coding-standards.md` and `docs/component
   - Update this handover doc whenever current truth changes materially.
 
 ## Current Repo Truth
-- Active branch: `preview`
-- Last known HEAD during this update: `7ebd13ba8`
+- Active branch: `main`
+- Last known HEAD during this update: `128d5fc64`
 - Working tree includes untracked local `READMEDEV.md`; canonical repo-root cleanup work is now tracked under `#359`.
 - Most recent documented code delivery before this update: organization admin data flow recovery and documentation sync.
-- Current active delivery: `mvp-factory-control#821` UI Refinement 6/6 has been implemented in the repo, aligning the remaining legacy route/help guidance to the workspace model after the guided setup flow foundation.
+- Current active delivery: `v12.1.12` admin workspace regression fix release is now in the repo and on `main`, covering the project-partner CSRF fix, shared hero containment fix, analytics card overflow cleanup, Bitly status cleanup, and README/workspace sync.
 - Formally closed on SSOT board (2026-03-10): #354, #355, #356, #357, #358, #359.
 
 ## Current Priorities
@@ -65,6 +65,14 @@ You MUST completely read and obey `docs/coding-standards.md` and `docs/component
 - Style editor preview updates immediately for bar/pie CSS vars and includes Value Chain and Landing page sections.
 
 ## Handover Log
+
+## 2026-05-13 — v12.1.12 admin workspace regression fix release
+- **Objective:** Ship the first post-merge cleanup pass on the current admin workspace model by fixing the most visible broken interactions without changing product scope.
+- **Project-partner fix:** Updated `/app/admin/project-partners/page.tsx` so partner assignment and auto-suggest now use the shared CSRF-aware API client instead of raw state-changing `fetch(...)` calls. This resolves the `CSRF token invalid or missing` failure path.
+- **Shared hero containment:** Updated `/components/UnifiedAdminHeroWithSearch.module.css` so action buttons wrap and stay inside the hero on mid-width layouts, fixing Bitly-style overflow regressions.
+- **Analytics/Bitly cleanup:** Updated `/app/admin/analytics/page.module.css` to keep card text inside card bounds, and updated `/app/admin/bitly/page.tsx` to clear stale error/success state around partner association actions.
+- **Version and repo entrypoint sync:** Bumped the product version to `v12.1.12`, refreshed `README.md`, and recorded this release in `/docs/operations/operations-release-notes.md`.
+- **Verification:** `npm run lint`, `npm run build`, `npm run type-check`, and `npm run version:verify` all passed.
 
 ## 2026-05-12 — Legacy route and help-system alignment slice (#821)
 - **Objective:** Finish the current UI refinement track by removing the last live guidance drift between the implemented workspace model and the in-product help/route ownership language.
