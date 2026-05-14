@@ -1,10 +1,15 @@
 # Brain Dump
 Status: Active
-Last Updated: 2026-05-12
+Last Updated: 2026-05-14
 Canonical: Yes
 Owner: Documentation
 
 **Purpose:** quick-reference notes that capture the state of this repo and how the docs/ tree is organized after today's refactor.
+
+## Current release
+- Current shipped product version: `v12.1.12`.
+- Current delivery branch: `main`.
+- Latest shipped repo slice: admin workspace regression fixes plus version/documentation sync.
 
 ## Builder mode (clicker) — one input per variable + unified layout
 - Event edit page (e.g. `/edit/[slug]`) has **Builder** mode: it loads the report template and chart configs, then renders a builder per chart. **Every chart type** parses element formulas, extracts variables via `extractVariablesFromFormula()` (from `lib/formulaEngine`), deduplicates, and shows **one input per variable**. Image/table charts infer variable from title (e.g. "Report Image 3") or chartId when formula is empty; table fallback: `reportTable1`.

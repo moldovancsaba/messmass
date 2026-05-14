@@ -1,6 +1,6 @@
 # Documentation Index
 Status: Active
-Last Updated: 2026-03-07T00:00:00.000Z
+Last Updated: 2026-05-14T10:00:00.000Z
 Canonical: Yes
 Owner: Documentation
 
@@ -16,6 +16,8 @@ Owner: Documentation
 ## Operations & Delivery
 - [operations-action-plan.md](operations/operations-action-plan.md) — Tactical queue for ops, sprint goals, and blockers.
 - [operations-delivery-focus.md](operations/operations-delivery-focus.md) — Top 5 value/priority board issues and recommended next delivery step.
+- [operations-release-notes.md](operations/operations-release-notes.md) — Shipped version history and release summaries.
+- [ui-refinement-implementation-spec-2026-05-11.md](operations/ui-refinement-implementation-spec-2026-05-11.md) — Current UI refinement implementation breakdown and dependencies.
 - [ops-analytics-01-design.md](operations/ops-analytics-01-design.md) — OPS-ANALYTICS-01 design, Phase 1 backlog, scope/sequencing.
 - [ideabank-industry-benchmark-2026-05-10.md](operations/ideabank-industry-benchmark-2026-05-10.md) — industry benchmark research and top 25 `{messmass}` ideabank candidates.
 - [operations-roadmap.md](operations/operations-roadmap.md) — Quarterly roadmap with targets, risks, and dependencies.
@@ -38,30 +40,30 @@ Owner: Documentation
 
 ## Design System & Layout Grammar
 - [design-overview.md](design/design-overview.md) — Canonical entrypoint for design, layout grammar, and renderer contracts.
-- [design/DESIGN_SYSTEM.md](design/design-system.md) — Design tokens, component primitives, and styling rules.
-- [design/LAYOUT_GRAMMAR.md](design/design-layout-grammar.md) — The non-negotiable rules used by audits and implementation.
-- [design/LAYOUT_SYSTEM.md](design/design-layout-system.md) — Report layout system spec (blocks/items) and behaviors.
-- [design/REPORT_LAYOUT_V2_CONTRACT.md](design/design-report-layout-v2-contract.md) — LayoutV2 contract between Admin config and renderer.
+- [design-system.md](design/design-system.md) — Design tokens, component primitives, and styling rules.
+- [design-layout-grammar.md](design/design-layout-grammar.md) — The non-negotiable rules used by audits and implementation.
+- [design-layout-system.md](design/design-layout-system.md) — Report layout system spec (blocks/items) and behaviors.
+- [design-report-layout-v2-contract.md](design/design-report-layout-v2-contract.md) — LayoutV2 contract between Admin config and renderer.
 
 ## Features
 - [features-overview.md](features/features-overview.md) — Canonical entrypoint for subsystem feature docs.
 - [2026-03-06_ADMIN_TOTALFANS_PARTNER_CARD_EDIT_HOTFIX.md](2026-03-06_ADMIN_TOTALFANS_PARTNER_CARD_EDIT_HOTFIX.md) — Production hotfix notes for admin `totalFans` consistency and partner card-view report-edit actions.
 - [2026-03-06_PARTNER_REPORT_DELETE_HOTFIX.md](2026-03-06_PARTNER_REPORT_DELETE_HOTFIX.md) — Production hotfix notes for partner report total-fans cards and admin delete-project failure handling.
-- [features/AUTHENTICATION.md](features/features-authentication.md) — Authentication, roles, sessions, and page-password access.
-- [features/PARTNERS_SYSTEM_GUIDE.md](features/features-partners-system-guide.md) — Partner model, UI flows, and partner-related APIs.
-- [features/BITLY_INTEGRATION_GUIDE.md](features/features-bitly-integration-guide.md) — Bitly integration architecture, endpoints, and operations.
-- [features/GOOGLE_SHEETS_INTEGRATION.md](features/features-google-sheets-integration.md) — Google Sheets integration, auth, sync behavior, and troubleshooting.
-- [features/HASHTAG_SYSTEM.md](features/features-hashtag-system.md) — Hashtag system behavior and APIs.
+- [features-authentication.md](features/features-authentication.md) — Authentication, roles, sessions, and page-password access.
+- [features-partners-system-guide.md](features/features-partners-system-guide.md) — Partner model, UI flows, and partner-related APIs.
+- [features-bitly-integration-guide.md](features/features-bitly-integration-guide.md) — Bitly integration architecture, endpoints, and operations.
+- [features-google-sheets-integration.md](features/features-google-sheets-integration.md) — Google Sheets integration, auth, sync behavior, and troubleshooting.
+- [features-hashtag-system.md](features/features-hashtag-system.md) — Hashtag system behavior and APIs.
 - [features/features-reporting-builder.md](features/features-reporting-builder.md) — Reporting & Builder mode (clicker): variable inputs per chart on `/edit/[slug]`.
 
 ## Admin & Templates
 - [admin-end-user-guide.md](admin/admin-end-user-guide.md) — Canonical operator guide for Admin workflows and UI paths.
 - [admin/admin-entity-system.md](admin/admin-entity-system.md) — Shared admin entity contract, capability matrix, and action engine for admin-managed surfaces.
-- [admin/ADMIN_REPORT_TEMPLATE_MODEL.md](admin/admin-report-template-model.md) — Report template data model + runtime selection rules.
-- [admin/ADMIN_LAYOUT_V2_SCHEMA.md](admin/admin-layout-v2-schema.md) — LayoutV2 schema contract consumed by Reporting.
-- [admin/ADMIN_LAYOUT_V2_TEMPLATE_BUILDER.md](admin/admin-layout-v2-template-builder.md) — Operator guide for authoring LayoutV2 blocks.
-- [admin/STYLE_MODEL_AND_ASSIGNMENT_RULES.md](admin/admin-style-model-and-assignment-rules.md) — Where report styles live and how they resolve.
-- [admin/clicker_manager.md](admin/admin-clicker-manager.md) — Partner-aware clicker sets and fallback rules.
+- [admin-report-template-model.md](admin/admin-report-template-model.md) — Report template data model + runtime selection rules.
+- [admin-layout-v2-schema.md](admin/admin-layout-v2-schema.md) — LayoutV2 schema contract consumed by Reporting.
+- [admin-layout-v2-template-builder.md](admin/admin-layout-v2-template-builder.md) — Operator guide for authoring LayoutV2 blocks.
+- [admin-style-model-and-assignment-rules.md](admin/admin-style-model-and-assignment-rules.md) — Where report styles live and how they resolve.
+- [admin-clicker-manager.md](admin/admin-clicker-manager.md) — Partner-aware clicker sets and fallback rules.
 
 ## API
 - [api-public.md](api/api-public.md) — Public, bearer-token API documentation (partners/events read APIs).
@@ -73,7 +75,7 @@ Owner: Documentation
 - `docs/archive/_archive/` — Deprecated/legacy material kept for traceability; do not edit unless explicitly reviving.
 - `docs/archive/` — Long-term archived audits and implementation reports.
 - Chart alignment history (archived): `archive/_archive/charts/CHART_ALIGNMENT_HISTORY.md`.
-- Audit investigations pack (archived): `archive/_archive/investigations/INVESTIGATIONS_PACK_2026.md`.
+- Audit investigations pack (archived): `archive/_archive/investigations/archive-investigations-pack-2026.md`.
 - `docs/_meta/` — Generated reports used to keep docs consistent:
   - `docs/_meta/meta-docs-inventory.md` — Full inventory + metadata.
   - `docs/_meta/meta-docs-triage.md` — Fixed-order cleanup queue.

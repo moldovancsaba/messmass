@@ -1,43 +1,41 @@
 # Delivery Focus ({messmass})
 Status: Active
-Last Updated: 2026-05-02
+Last Updated: 2026-05-14
 Canonical: No
 Owner: Product
 
-**Source of truth:** [MVP Factory Board](https://github.com/users/moldovancsaba/projects/1) (Product = messmass). Issues live in [mvp-factory-control](https://github.com/moldovancsaba/mvp-factory-control). **When a delivery is completed:** update the board (move the relevant issue to **Done**, post evidence link in the issue); update this doc and release notes.
+**Source of truth:** [MVP Factory Board](https://github.com/users/moldovancsaba/projects/1) (Product = `messmass`). Issues live in [mvp-factory-control](https://github.com/moldovancsaba/mvp-factory-control). This local file is a reminder of how to choose work, not a substitute for the live board.
 
-## Top 5 value & high-priority (from board, Product = messmass)
+## Current Rule
 
-*Rechecked 2026-05-02 against the live board state.*
+Do **not** treat any older issue ranking stored in this repo as current delivery truth.
 
-| Priority | Status  | Issue | Title |
-|----------|---------|-------|--------|
-| P1 | In Progress | [#72](https://github.com/moldovancsaba/mvp-factory-control/issues/72) | Style hardening Phase 5: consolidate duplicated CSS |
-| P0 | Roadmap | [#44](https://github.com/moldovancsaba/mvp-factory-control/issues/44) | Advanced Analytics & Insights Platform (Q1–Q2 2026) |
-| P0 | Done | [#354+](https://github.com/moldovancsaba/mvp-factory-control/issues/354) | {messmass} Phase 15: Organization Hierarchy & Activity Connectivity |
-| P0 | Done | [#57](https://github.com/moldovancsaba/mvp-factory-control/issues/57) | Milestone: Analytics Platform Phase 1 — Data Aggregation & Storage (Q1 2026) |
-| P1 | Roadmap | [#46+](https://github.com/moldovancsaba/mvp-factory-control/issues/46) | SSO Integration with DoneIsBetter (Ongoing Hardening) |
-| P1 | Done | [#403](https://github.com/moldovancsaba/mvp-factory-control/issues/403) | V3 Organization Context Middleware (Permissions Foundation) |
+Before starting work:
+1. Open the live board.
+2. Filter for `Product = messmass`.
+3. Identify the highest-priority item that is either `In Progress`, `Ready`, or the board’s current equivalent.
+4. Use the board state, not this repo, as the deciding authority.
 
-**Note:** The board still has **#72** active. Local docs previously drifted and incorrectly said there was no item in progress; that mismatch was corrected in the `v12.1.11` cleanup slice.
+## Local Repo Context
 
-## Recommended next delivery step
+Latest shipped repo release:
+- `v12.1.12` — admin workspace regression fixes, including:
+  - project-partner CSRF fix
+  - shared admin hero containment fix
+  - analytics card overflow cleanup
+  - Bitly status cleanup
+  - README/workspace sync
 
-1. **Continue #72 low-risk cleanup slices:** finish remaining small hardcoded/dead-style removals or decide whether the remaining UI debt should be split into a new card.
-2. **Cross-Organization Reporting Permissions:** implement granular RBAC for organization managers to restrict data visibility to their specific sub-entities once `#72` is closed or intentionally paused.
+Current local documentation truth:
+- [README.md](/Users/moldovancsaba/Projects/messmass/README.md) reflects the current product/workspace model and shipped version.
+- [HANDOVER.md](/Users/moldovancsaba/Projects/messmass/docs/HANDOVER.md) reflects the latest repo truth and dated delivery log.
+- [operations-release-notes.md](/Users/moldovancsaba/Projects/messmass/docs/operations/operations-release-notes.md) reflects the latest shipped release.
 
-## Recently completed
+## Next Step Discipline
 
-- **Organization Admin Data Flow Recovery** (2026-04-24): Restored `/admin/organizations` against the live `organizations` + `partners` records, fixed the member assignment modal, added admin organization reporting endpoints, and synchronized docs/manuals. Version bumped to **v12.1.7**.
-- **Report Content Slots Management** (2026-03-17): Implemented markdown presets for text elements and multi-ratio image previews in the Builder UI. Created `tests/chart-preset-validation.test.ts`. Version bumped to **v12.1.6**.
-- **V3 Organization Context Middleware** (2026-03-16): Implemented foundational RBAC groundwork by injecting `x-v3-org-id` into API requests. Created `/api/v3/health`. Version bumped to **v12.1.5**.
-- **Style Hardening Phase 5** (2026-03-16): Consolidated legacy hero components into `UnifiedAdminHeroWithSearch`. Removed orphaned assets. Version bumped to **v12.1.4**.
-- **Phase 15: Organization Hierarchy & Activity Connectivity** (2026-03-14): Finalized the V3 organization hierarchy. Implemented `ManageMembersModal`, aggregated activity APIs (`/api/v3/organizations/report/[id]/activities`), and `OrganizationReportView`. Version bumped to **v12.1.0**.
-- **Phase 14: Organization Report Initial Implementation** (2026-03-13): Added "Report" and "Edit Stats" actions to Organization Admin. Created base `OrganizationReportView` and aggregation hooks.
-- **React 19 & Next.js 15 Upgrade** (2026-03-13): Major technical upgrade to resolve hydration deadlocks and modernize the stack. Version bumped to **v12.0.0**.
-- **Branding Standardization** (2026-03-13): Normalized product branding to `{messmass}` across 200+ files and documentation assets.
-- **Builder mode (clicker) — variable inputs** (2026-02-24): All chart types on `/edit/[slug]` Builder show one input per variable from formulas.
+If you need a “top 5” or “next best step” list:
+- re-check the live board first
+- verify issue status and dependencies directly
+- then update this file only after the board snapshot is confirmed
 
-## In progress
-
-- **Style hardening Phase 5** ([#72](https://github.com/moldovancsaba/mvp-factory-control/issues/72)): still active on the board; latest slice moved `/admin/clear-session` and `not-found` away from hardcoded page-level utility styling.
+This prevents local documentation from drifting into outdated rankings such as older `#72`-centric guidance after the product focus has moved on.

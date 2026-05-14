@@ -1,52 +1,36 @@
-# Next Agent Prompt (Handover)
+# Next Agent Prompt (Historical Note)
 
-**Generated:** 2026-02-24  
-**Context:** Builder mode (clicker) delivered end-to-end: variable inputs, overflow fix, unified card layout. Build passed; pushed to preview; board evidence posted.
+**Last Updated:** 2026-05-14  
+**Status:** Historical reference only  
+**Canonical current handover:** [docs/HANDOVER.md](/Users/moldovancsaba/Projects/messmass/docs/HANDOVER.md)
 
----
+This file is no longer the current execution handover.
 
-## What to read first
+It was originally created for a specific Builder-mode delivery on `2026-02-24`, and it still reflects that historical moment:
+- Builder-mode variable-input rollout
+- old branch/push guidance centered on `preview`
+- an outdated continuation checklist
 
-1. **docs/messmass-codex-brain-dump.md** — doc structure, style-editor (v11.59.0), and **Builder mode / clicker** section (including unified layout).
-2. **MEMORY.md** — recent focus and delivery.
-3. **docs/operations/operations-action-plan.md** — execution queue and STATE MEMORY.
-4. **docs/plan-builder-mode-variable-inputs.md** — Builder mode plan (Phase 1–2 done; optional Phase 3–4).
-5. **docs/features/features-reporting-builder.md** — Builder feature summary.
+## Use This File Only For
 
----
+- historical context around the Builder-mode delivery
+- reconstructing why the Builder-mode variable-input work was framed the way it was
+- locating the older builder-specific references mentioned below
 
-## What was done (ready for next agent)
+## Do Not Use This File For
 
-- **Builder mode (clicker):** All chart types (KPI, Bar, Pie, Text, Table, Image, Value chain) show **one input per variable** from element formulas (`extractVariablesFromFormula()`, dedupe, stats-only). Value chain supported; text chart empty fix; card style + Material Icons.
-- **Image/Table when formula empty:** Image: infer variable from title ("Report Image 3") or chartId (`report-image-3`); show image + Replace + Remove. Table: infer from title/chartId or fallback to `reportTable1` so table always has an input.
-- **Overflow fix:** Cards and grid use `min-width: 0`, `overflow: hidden`, `.chart-builder-card-body`; `.builder-chart-wrapper` allows shrink so inputs never overflow the card.
-- **Unified card layout:** Every builder card now: (1) title (2) chartId (3) per variable: label + [registry name] (4) input. No mixed phrasing (Variable:, Formula:, "Pie chart • …", etc.). CSS: `.chart-builder-card-id`, `.chart-builder-variable-meta`, `.chart-builder-registry-name`, `.chart-builder-variable-row`.
-- **Build:** `npm run build` passed.
-- **Push:** `landing-overhaul` pushed to **preview** (`d2fc6e22f..747eb0a40`).
-- **Board evidence:** Comment posted on mvp-factory-control [#49](https://github.com/moldovancsaba/mvp-factory-control/issues/49#issuecomment-3957698585) (Variables System Enhancements) describing Builder delivery; no dedicated Builder card on MVP Factory Board to move.
-- **Docs:** Release notes 11.59.0 §4, features-reporting-builder, delivery-focus, action-plan, brain-dump, MEMORY, handover (this file).
+- current branch truth
+- current release truth
+- current board priority
+- current delivery instructions
 
----
+For those, always use:
+1. [docs/HANDOVER.md](/Users/moldovancsaba/Projects/messmass/docs/HANDOVER.md)
+2. [docs/PROJECT_MANAGEMENT.md](/Users/moldovancsaba/Projects/messmass/docs/PROJECT_MANAGEMENT.md)
+3. [docs/operations/operations-delivery-focus.md](/Users/moldovancsaba/Projects/messmass/docs/operations/operations-delivery-focus.md)
 
-## What to run first (if continuing)
+## Historical Builder References
 
-1. `git status --short` — check for uncommitted changes.
-2. `npm run build` — confirm still green after any edits.
-3. Push to **preview** if on another branch: `git push origin <branch>:preview`.
-
----
-
-## What to avoid
-
-- Do not revert "one input per variable" or the unified card layout (title → chartId → label + [name] → input).
-- Keep chart builder styles in `app/styles/components.css`; `.chart-builder-*` and `.builder-chart-wrapper` are shared.
-
----
-
-## Definition of done for this handover
-
-- [x] Builder: all chart types show one input per variable; image/table inference when formula empty.
-- [x] Overflow fixed; unified card layout applied to all builders.
-- [x] Build passed; changes pushed to **preview**.
-- [x] Board evidence posted (mvp-factory-control #49).
-- [x] Handover doc (this file), brain-dump, and STATE MEMORY updated.
+- [docs/messmass-codex-brain-dump.md](/Users/moldovancsaba/Projects/messmass/docs/messmass-codex-brain-dump.md)
+- [docs/plan-builder-mode-variable-inputs.md](/Users/moldovancsaba/Projects/messmass/docs/plan-builder-mode-variable-inputs.md)
+- [docs/features/features-reporting-builder.md](/Users/moldovancsaba/Projects/messmass/docs/features/features-reporting-builder.md)

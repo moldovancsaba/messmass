@@ -2,7 +2,7 @@
 
 This file is onboarding plus operational context for the next agent. Keep it accurate when behavior, process, or current delivery state changes.
 
-**Last Updated:** 2026-05-13 (v12.1.12 admin workspace regression fix release)
+**Last Updated:** 2026-05-14 (documentation consistency cleanup)
 
 ## 🚨 CRITICAL MUST-READ FOR ALL AGENTS: STYLING & COMPONENTS 🚨
 
@@ -29,10 +29,10 @@ You MUST completely read and obey `docs/coding-standards.md` and `docs/component
 
 ## Current Repo Truth
 - Active branch: `main`
-- Last known HEAD during this update: `128d5fc64`
+- Last known HEAD during this update: `08b64e191`
 - Working tree includes untracked local `READMEDEV.md`; canonical repo-root cleanup work is now tracked under `#359`.
 - Most recent documented code delivery before this update: organization admin data flow recovery and documentation sync.
-- Current active delivery: `v12.1.12` admin workspace regression fix release is now in the repo and on `main`, covering the project-partner CSRF fix, shared hero containment fix, analytics card overflow cleanup, Bitly status cleanup, and README/workspace sync.
+- Current active delivery: documentation consistency cleanup is in local implementation after shipping `v12.1.12` to `main`.
 - Formally closed on SSOT board (2026-03-10): #354, #355, #356, #357, #358, #359.
 
 ## Current Priorities
@@ -65,6 +65,14 @@ You MUST completely read and obey `docs/coding-standards.md` and `docs/component
 - Style editor preview updates immediately for bar/pie CSS vars and includes Value Chain and Landing page sections.
 
 ## Handover Log
+
+## 2026-05-14 — Documentation consistency cleanup
+- **Objective:** Remove the highest-signal documentation drift across the repo entrypoints and state docs without guessing live board state.
+- **Entrypoint cleanup:** Updated `/docs/index.md` so its `Last Updated` value and key links match the current lowercase file names and active documentation set.
+- **State-doc cleanup:** Updated `/docs/HANDOVER.md`, `/docs/messmass-codex-brain-dump.md`, and `/docs/api/api-reference.md` so current branch, current version, and current workspace framing no longer contradict the shipped repo state.
+- **Delivery-focus cleanup:** Reworked `/docs/operations/operations-delivery-focus.md` to stop pretending an old local issue ranking is current board truth. It now explicitly tells agents to re-check the live board before using it for prioritization.
+- **Historical handover cleanup:** Updated `/docs/NEXT_AGENT_PROMPT.md` so it is clearly treated as a historical builder-delivery note, not a current execution guide.
+- **Verification:** Pending targeted documentation validation after edits.
 
 ## 2026-05-13 — v12.1.12 admin workspace regression fix release
 - **Objective:** Ship the first post-merge cleanup pass on the current admin workspace model by fixing the most visible broken interactions without changing product scope.
