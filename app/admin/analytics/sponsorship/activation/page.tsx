@@ -19,6 +19,11 @@ function formatDate(value: string | null) {
   return new Date(value).toLocaleDateString();
 }
 
+function buildAbsoluteUrl(path: string) {
+  if (typeof window === 'undefined') return path;
+  return new URL(path, window.location.origin).toString();
+}
+
 function formatPriorityScore(value: number) {
   return Math.round(value).toLocaleString('en-US');
 }
@@ -74,6 +79,41 @@ const SAVED_VIEW_PRESETS = [
   },
 ];
 
+function buildRecapEmailDraft(partner: SponsorshipHubResponse['activationWorkspace']['recapPackages'][number]) {
+  const reportUrl = partner.actions.reportUrl ? buildAbsoluteUrl(partner.actions.reportUrl) : '';
+  const subject = `${partner.name} sponsorship recap package`;
+  const body = [
+    `Hi,`,
+    ``,
+    `The ${partner.name} recap package is ${partner.packageStatus === 'ready' ? 'ready to share' : 'partially ready for review'}.`,
+    ``,
+    `Ready projects: ${partner.readyProjectCount}/${partner.totalProjectCount}`,
+    `Fans: ${partner.totalFans.toLocaleString('en-US')}`,
+    `Media value: €${Math.round(partner.totalAdValue).toLocaleString('en-US')}`,
+    `Bitly clicks: ${partner.totalBitlyClicks.toLocaleString('en-US')}`,
+    `Latest ready event: ${formatDate(partner.latestEventDate)}`,
+    `Included events: ${partner.readyProjectNames.join(', ') || 'None yet'}`,
+    reportUrl ? `Report: ${reportUrl}` : '',
+  ].filter(Boolean).join('\n');
+
+  return `mailto:?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+}
+
+function buildRecapSummary(partner: SponsorshipHubResponse['activationWorkspace']['recapPackages'][number]) {
+  const reportUrl = partner.actions.reportUrl ? buildAbsoluteUrl(partner.actions.reportUrl) : 'No partner report link available';
+  return [
+    `${partner.name} recap package`,
+    `Status: ${partner.packageStatus === 'ready' ? 'Full package ready' : 'Partial package ready'}`,
+    `Ready projects: ${partner.readyProjectCount}/${partner.totalProjectCount}`,
+    `Fans: ${partner.totalFans.toLocaleString('en-US')}`,
+    `Media value: €${Math.round(partner.totalAdValue).toLocaleString('en-US')}`,
+    `Bitly clicks: ${partner.totalBitlyClicks.toLocaleString('en-US')}`,
+    `Latest ready event: ${formatDate(partner.latestEventDate)}`,
+    `Included events: ${partner.readyProjectNames.join(', ') || 'None yet'}`,
+    `Partner report: ${reportUrl}`,
+  ].join('\n');
+}
+
 export default function SponsorshipActivationWorkspacePage() {
   const router = useRouter();
   const pathname = usePathname();
@@ -81,6 +121,7 @@ export default function SponsorshipActivationWorkspacePage() {
   const [hubData, setHubData] = useState<SponsorshipHubResponse | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [copiedRecapPartnerId, setCopiedRecapPartnerId] = useState<string | null>(null);
   const [statusFilter, setStatusFilter] = useState<'all' | 'ready' | 'missing_bitly' | 'missing_report' | 'missing_metrics'>(() => parseStatusFilter(searchParams.get('statusFilter')));
   const [partnerFilter, setPartnerFilter] = useState(() => searchParams.get('partnerFilter') || 'all');
 
@@ -186,6 +227,21 @@ export default function SponsorshipActivationWorkspacePage() {
     () => filteredProofItems.reduce((sum, item) => sum + item.adValue, 0),
     [filteredProofItems]
   );
+
+  const filteredRecapPackages = useMemo(
+    () => (hubData?.activationWorkspace.recapPackages || []).filter((partner) => partnerFilter === 'all' || partner.partnerId === partnerFilter),
+    [hubData, partnerFilter]
+  );
+
+  const handleCopyRecapSummary = async (partner: SponsorshipHubResponse['activationWorkspace']['recapPackages'][number]) => {
+    try {
+      await navigator.clipboard.writeText(buildRecapSummary(partner));
+      setCopiedRecapPartnerId(partner.partnerId);
+      window.setTimeout(() => setCopiedRecapPartnerId((current) => (current === partner.partnerId ? null : current)), 2000);
+    } catch (copyError) {
+      console.error('Failed to copy recap summary:', copyError);
+    }
+  };
 
   return (
     <div className="page-container">
@@ -365,9 +421,7 @@ export default function SponsorshipActivationWorkspacePage() {
                   </p>
                 </div>
                 <div className={styles.projectResults}>
-                  {hubData.activationWorkspace.recapPackages
-                    .filter((partner) => partnerFilter === 'all' || partner.partnerId === partnerFilter)
-                    .map((partner) => (
+                  {filteredRecapPackages.map((partner) => (
                       <ColoredCard
                         key={partner.partnerId}
                         accentColor="var(--mm-color-success-500, #16a34a)"
@@ -396,11 +450,24 @@ export default function SponsorshipActivationWorkspacePage() {
                             <p className={styles.detailNote}>
                               Included ready events: {partner.readyProjectNames.join(', ') || 'None'}
                             </p>
+                            {copiedRecapPartnerId === partner.partnerId && (
+                              <p className={styles.detailNote}>Recap summary copied to clipboard.</p>
+                            )}
                           </div>
                           <div className={styles.actionRow}>
                             {partner.actions.reportUrl && (
                               <Link href={partner.actions.reportUrl} className={styles.actionLink}>Open Partner Report</Link>
                             )}
+                            <button
+                              type="button"
+                              className={styles.filterButton}
+                              onClick={() => void handleCopyRecapSummary(partner)}
+                            >
+                              Copy Recap Summary
+                            </button>
+                            <Link href={buildRecapEmailDraft(partner)} className={styles.actionLink}>
+                              Draft Recap Email
+                            </Link>
                             {partner.actions.adminUrl && (
                               <Link href={partner.actions.adminUrl} className={styles.actionLink}>Open Partner Analytics</Link>
                             )}
@@ -411,7 +478,7 @@ export default function SponsorshipActivationWorkspacePage() {
                         </div>
                       </ColoredCard>
                     ))}
-                  {hubData.activationWorkspace.recapPackages.filter((partner) => partnerFilter === 'all' || partner.partnerId === partnerFilter).length === 0 && (
+                  {filteredRecapPackages.length === 0 && (
                     <p className={styles.detailNote}>No partner recap package is ready yet for the current filter scope.</p>
                   )}
                 </div>

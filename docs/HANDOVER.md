@@ -128,6 +128,13 @@ Use this checklist for the next SSOT/board pass so the next agent does not have 
 - **Workflow effect:** Users can now see which partners already have enough ready evidence to package into sponsor-facing recaps, instead of stopping at raw project-level queue items.
 - **Verification:** `npm run lint`, `npm run build`, and `npm run type-check` all passed. As usual in this repo, `type-check` was rerun after the successful build because `tsconfig.json` includes `.next/types/**/*.ts`.
 
+## 2026-05-20 — Recap share/export handoff slice (#788)
+- **Objective:** Add a lightweight delivery handoff layer on top of the recap packages so teams can export or forward sponsor-facing proof without waiting for a separate backend export system.
+- **Recap handoff actions:** Updated `/app/admin/analytics/sponsorship/activation/page.tsx` so each recap package now supports `Copy Recap Summary` and `Draft Recap Email` in addition to the existing report and analytics links.
+- **Summary generation:** The copied/email-ready recap summary includes package status, ready-project counts, fans, media value, Bitly clicks, latest ready event, included ready events, and the absolute partner report URL when available.
+- **Workflow effect:** Activation no longer stops at “this package is ready”; users can now immediately hand the package to commercial or delivery teams through a reusable summary and prefilled email draft.
+- **Verification:** `npm run lint`, `npm run build`, and `npm run type-check` all passed. As usual in this repo, `type-check` was rerun after the successful build because `tsconfig.json` includes `.next/types/**/*.ts`.
+
 ## 2026-05-20 — Active documentation overhaul
 - **Objective:** Remove active-documentation drift across the current operator, feature, and API docs rather than only bumping versions.
 - **Admin guide rewrite:** Replaced `/docs/admin/admin-end-user-guide.md` so it now matches the live Admin Workspace, Reporting Workspace, and Analytics Workspace model, including staged Event and Partner setup flows and the current canonical routes.
