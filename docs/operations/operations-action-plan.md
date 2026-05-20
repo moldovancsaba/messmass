@@ -1,15 +1,15 @@
 # Operations Action Plan
 Status: Active
-Last Updated: 2026-03-06
+Last Updated: 2026-05-20
 Canonical: Yes
 Owner: Operations
 
-**Version:** 1.3.7  
+**Version:** 1.3.8  
 **Created:** 2026-01-12T00:09:33.679Z  
-**Last Updated (UTC):** 2026-02-06  
+**Last Updated (UTC):** 2026-05-20T16:15:00.000Z  
 **Audience:** Product + Engineering
 
-**Source of truth:** Project planning and execution now live on the [MVP Factory Board](https://github.com/users/moldovancsaba/projects/1). This file is reference only. Roadmap = Status **Roadmap**; Backlog = not yet broken down; Ready = actionable. Product = **messmass**. Top 5 value/priority items and next step: [operations-delivery-focus.md](operations-delivery-focus.md).
+**Source of truth:** Project planning and execution live on the [MVP Factory Board](https://github.com/users/moldovancsaba/projects/1). This file is reference-only supporting context, not the active task authority. Roadmap = Status **Roadmap**; Backlog = not yet broken down; Ready = actionable. Product = **messmass**. Top 5 value/priority items and next step: [operations-delivery-focus.md](operations-delivery-focus.md).
 
 ---
 
@@ -28,11 +28,11 @@ Owner: Operations
 
 ## 1. Operating Rules
 
-1.1 docs/operations/operations-action-plan.md is the single executable TODO and the only long-term memory for execution state.  
+1.1 The MVP Factory Board is the active execution authority. `docs/operations/operations-action-plan.md` is supporting reference memory only.  
 1.2 This file contains only:
 - Open or waiting action items (checkbox tasks)
-- Minimal metadata needed for execution: owner, status, dependencies, deliverable paths
-- STATE MEMORY (current task per agent only)
+- Minimal metadata needed for historical operational context
+- Archived state memory snapshots when they still help interpret older delivery slices
 
 1.3 This file must not contain:
 - Closure evidence blocks
@@ -41,8 +41,8 @@ Owner: Operations
 - Release note content
 
 1.4 DONE rule:
-- When a task is DONE, remove it from Sections 3 to 6.
-- Do not list completed or DONE items in this file or on the Roadmap; they belong in release notes (docs/archive/_archive/releases/).
+- The board owns active status changes.
+- Do not treat completed or superseded notes in this file as current execution truth; use release notes and `docs/HANDOVER.md` for shipped evidence.
 
 ---
 
@@ -144,7 +144,23 @@ Owner: Katja (Admin)
 
 ---
 
-## 7. STATE MEMORY (Current Only)
+## 7. STATE MEMORY (Historical Reference)
+
+This section is preserved as dated operational memory only.
+
+Rules for use:
+- do not treat any entry below as the current active card without checking the board first
+- prefer `docs/HANDOVER.md` for shipped delivery evidence
+- prefer `operations-delivery-focus.md` for the current “what should we do next” reminder
+
+Current alignment note as of 2026-05-20:
+- the shipped repo state includes the sponsorship/activation work (`#784`, `#788`) and the UI refinement chain (`#816` through `#821`)
+- the board was updated to reflect `#815` through `#821` as review-ready
+- `#784` remains review-ready
+- `#788` remains in progress
+- `#72` remains an open board decision and should not be treated by this file as the automatic current priority
+
+Historical entries follow below.
 
 2026-05-02
 - CONTEXT: Style hardening Phase 5 remains the board-tracked active lane under `mvp-factory-control#72`.
