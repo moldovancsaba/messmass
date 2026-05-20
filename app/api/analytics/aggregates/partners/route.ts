@@ -2,10 +2,7 @@
  * Partner Analytics API
  * 
  * WHAT: Query partner-level aggregated analytics
- * WHY: Fast access to partner performance metrics and trends
- * 
- * Version: 6.1.0
- * Created: 2025-01-21T17:00:00.000Z
+ * WHY: Provide fast partner performance rollups for admin analytics surfaces
  */
 
 import { NextRequest, NextResponse } from 'next/server';
@@ -34,7 +31,7 @@ export async function GET(request: NextRequest) {
   const startTime = Date.now();
   
   try {
-    // Authentication check - admin only
+    // Authentication check: admin session required
     const user = await getAdminUser();
     if (!user) {
       return NextResponse.json(
@@ -45,25 +42,25 @@ export async function GET(request: NextRequest) {
     
     const { searchParams } = new URL(request.url);
     
-    // Parse query parameters
+    // Parse partner analytics query parameters
     const partnerId = searchParams.get('partnerId');
     const limit = Math.min(parseInt(searchParams.get('limit') || '100'), 1000);
     const offset = parseInt(searchParams.get('offset') || '0');
     const sortBy = searchParams.get('sortBy') || 'partnerName';
     const sortOrder = searchParams.get('sortOrder') === 'asc' ? 1 : -1;
     
-    // Connect to database
+    // Connect to the partner analytics aggregate collection
     const client = await clientPromise;
     const db: Db = client.db(config.dbName);
     const analyticsCollection: Collection<PartnerAnalytics> = db.collection('partner_analytics');
     
-    // Build query
+    // Build the partner analytics filter
     const query: any = {};
     if (partnerId) {
       query.partnerId = partnerId;
     }
     
-    // Build sort
+    // Translate API sort semantics into collection field names
     const sortField = sortBy === 'name' ? 'partnerName' :
                       sortBy === 'totalEvents' ? 'totalEvents' :
                       sortBy === 'totalAttendees' ? 'totalAttendees' :
@@ -72,7 +69,7 @@ export async function GET(request: NextRequest) {
     
     const sort: any = { [sortField]: sortOrder };
     
-    // Execute query
+    // Execute the paginated partner analytics query
     const [data, totalPartners] = await Promise.all([
       analyticsCollection
         .find(query)

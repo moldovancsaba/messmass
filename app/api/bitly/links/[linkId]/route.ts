@@ -1,8 +1,8 @@
 // app/api/bitly/links/[linkId]/route.ts
 // WHAT: API endpoints for updating and deleting individual Bitly links
-// WHY: Enables admins to reassign links, update metadata, and archive links
+// WHY: Enables admins to manage link metadata, favorite/archive state, and limited legacy project fields
 // ENDPOINTS:
-//   PUT - Update link (reassign project, update title/tags, archive)
+//   PUT - Update link metadata or limited legacy project assignment fields
 //   DELETE - Soft-delete/archive link
 
 import { NextRequest, NextResponse } from 'next/server';
@@ -15,17 +15,17 @@ import { error as logError, warn as logWarn } from '@/lib/logger';
 
 /**
  * PUT /api/bitly/links/[linkId]
- * WHAT: Update Bitly link metadata or reassign to different project
- * WHY: Supports use cases like reassigning links between events or updating titles
+ * WHAT: Update Bitly link metadata or limited legacy project assignment fields
+ * WHY: Supports admin maintenance of link records while the primary project association model lives in `bitly_project_links`
  * 
  * AUTH: Admin only
  * BODY: { projectId?: string | null, title?: string, tags?: string[], archived?: boolean }
  * 
- * KEY SCENARIOS:
- * - Reassign link to different project (projectId: "new_project_id")
- * - Unassign link from project (projectId: null)
+ * COMMON SCENARIOS:
  * - Update custom title or tags
- * - Archive/unarchive link
+ * - Toggle favorite state
+ * - Archive/unarchive a link
+ * - Clear or set legacy `projectId` metadata when needed during maintenance
  */
 export async function PUT(
   request: NextRequest,
@@ -61,11 +61,11 @@ export async function PUT(
       updatedAt: new Date().toISOString(),
     };
 
-    // WHAT: Handle projectId update (reassignment or unassignment)
+    // WHAT: Handle optional legacy projectId metadata update
     if ('projectId' in body) {
       if (projectId === null) {
-        // WHAT: Unassign link from project
-        // WHY: Makes link available for reassignment
+        // WHAT: Clear legacy projectId metadata
+        // WHY: The active many-to-many association model lives in `bitly_project_links`
         update.projectId = null;
       } else if (projectId) {
         // WHAT: Validate new projectId
@@ -76,7 +76,7 @@ export async function PUT(
           );
         }
 
-        // WHAT: Verify new project exists
+        // WHAT: Verify the referenced project exists
         const client = await clientPromise;
         const db = client.db(config.dbName);
         const project = await db.collection('projects').findOne({ _id: new ObjectId(projectId) });

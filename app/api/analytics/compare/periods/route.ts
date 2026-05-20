@@ -2,7 +2,7 @@
  * Analytics API - Compare Periods Endpoint
  *
  * WHAT: Compares aggregated metrics between two time periods (e.g. month vs month)
- * WHY: Enable period-to-period analysis (OPS-ANALYTICS-01 Phase 1)
+ * WHY: Enable period-to-period analysis from aggregate analytics data
  *
  * GET /api/analytics/compare/periods
  * Query params:
@@ -12,8 +12,6 @@
  *   - partnerId: Optional partner filter
  *
  * Response: Aggregated metrics per period and deltas. Performance target: <500ms
- *
- * Version: 11.55.1 (OPS-ANALYTICS-01 P1-3)
  */
 
 import { NextRequest, NextResponse } from 'next/server';

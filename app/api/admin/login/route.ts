@@ -1,6 +1,6 @@
 // app/api/admin/login/route.ts — Email + password admin login
-// WHAT: Authenticates against local MongoDB Users collection; preserves legacy admin master fallback
-// WHY: Enable multiple admin users while keeping existing simple cookie session model
+// WHAT: Authenticates against the MongoDB-backed Users collection
+// WHY: Support role-based multi-user admin access with the current cookie session model
 
 export const runtime = 'nodejs'
 
@@ -174,8 +174,8 @@ export async function POST(request: NextRequest) {
       })
     }
 
-    // WHAT: Mark session as local (not SSO) for #46 dashboard SSO requirement
-    // WHY: SSO-only sessions should land back in the admin workspace by default when SSO is configured
+    // WHAT: Mark session as local (not SSO)
+    // WHY: Downstream auth checks distinguish local and SSO-backed admin sessions
     response.cookies.set('auth-source', 'local', {
       httpOnly: false,
       secure: isProduction,

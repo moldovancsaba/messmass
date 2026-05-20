@@ -2,7 +2,7 @@
  * Analytics API - Trends Endpoint
  * 
  * WHAT: Returns time-series analytics data for trend analysis and visualization
- * WHY: Enable dashboard charts showing metrics evolution over time
+ * WHY: Enable analytics charts showing metric evolution over time
  * 
  * Endpoint: GET /api/analytics/trends
  * Query params:
@@ -12,11 +12,8 @@
  *   - metrics: Comma-separated list (e.g., 'fans,merch,adValue') (default: all)
  *   - groupBy: 'day' | 'week' | 'month' (default: 'day')
  * 
- * Response: Time-series data points for requested metrics
+ * Response: Time-series data points plus a summarized date-range payload
  * Performance target: <500ms for 1-year datasets
- * 
- * Version: 6.26.0 (Phase 1 - Data Aggregation Infrastructure)
- * Created: 2025-10-19T11:58:43.000Z
  */
 
 import { NextRequest, NextResponse } from 'next/server';

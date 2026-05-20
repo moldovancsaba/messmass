@@ -2,7 +2,7 @@
  * Analytics API - Compare Partners Endpoint
  *
  * WHAT: Compares aggregated metrics between two or more partners
- * WHY: Enable partner-to-partner performance analysis (OPS-ANALYTICS-01 Phase 1)
+ * WHY: Enable partner-to-partner performance analysis
  *
  * GET /api/analytics/compare/partners
  * Query params:
@@ -10,8 +10,6 @@
  *   - metrics: Optional comma-separated metrics (default: totalAttendees, totalEvents, avgMerchandiseRate, totalBitlyClicks)
  *
  * Response: Partner metrics, rankings, and deltas. Performance target: <500ms
- *
- * Version: 11.55.1 (OPS-ANALYTICS-01 P1-2)
  */
 
 import { NextRequest, NextResponse } from 'next/server';

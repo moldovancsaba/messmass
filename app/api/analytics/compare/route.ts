@@ -1,19 +1,16 @@
 /**
  * Analytics API - Compare Endpoint
  * 
- * WHAT: Compares analytics metrics between two or more events
- * WHY: Enable side-by-side performance analysis and benchmarking
+ * WHAT: Compare analytics metrics between two to five projects
+ * WHY: Support side-by-side project performance review and benchmarking
  * 
  * Endpoint: GET /api/analytics/compare
  * Query params:
  *   - projectIds: Comma-separated list of project IDs (2-5 required)
  *   - metrics: Comma-separated list of metrics to compare (default: all)
  * 
- * Response: Comparative analysis with deltas and rankings
- * Performance target: <300ms for 5 events
- * 
- * Version: 6.26.0 (Phase 1 - Data Aggregation Infrastructure)
- * Created: 2025-10-19T11:58:43.000Z
+ * Response: Comparative analysis with rankings and deltas
+ * Performance target: <300ms for 5 compared projects
  */
 
 import { NextRequest, NextResponse } from 'next/server';

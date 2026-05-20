@@ -1,17 +1,13 @@
 /**
  * Analytics Aggregates API
  * 
- * WHAT: Query pre-aggregated analytics data for fast performance
- * WHY: Avoid expensive real-time calculations - query pre-computed metrics
+ * WHAT: Query pre-aggregated analytics data for the current analytics workspace
+ * WHY: Avoid expensive real-time calculations by querying pre-computed metrics
  * 
  * PERFORMANCE TARGET: < 500ms response time for 1-year datasets
  * 
- * ENDPOINTS:
- * - GET /api/analytics/aggregates - Query time-bucketed aggregates
- * - GET /api/analytics/aggregates/partners - Query partner analytics
- * 
- * Version: 6.1.0
- * Created: 2025-01-21T17:00:00.000Z
+ * RELATED ROUTE:
+ * - GET /api/analytics/aggregates/partners - Partner-level aggregate lookup
  */
 
 import { NextRequest, NextResponse } from 'next/server';
@@ -50,7 +46,7 @@ export async function GET(request: NextRequest) {
   const startTime = Date.now();
   
   try {
-    // Authentication check - admin only
+    // Authentication check: admin session required
     const user = await getAdminUser();
     if (!user) {
       return NextResponse.json(
@@ -61,7 +57,7 @@ export async function GET(request: NextRequest) {
     
     const { searchParams } = new URL(request.url);
     
-    // Parse query parameters
+    // Parse aggregate query parameters
     const filters: AggregateQueryFilters = {
       bucket: (searchParams.get('bucket') as any) || undefined,
       startDate: searchParams.get('startDate') || undefined,
@@ -77,12 +73,12 @@ export async function GET(request: NextRequest) {
       sortOrder: (searchParams.get('sortOrder') as any) || 'desc'
     };
     
-    // Connect to database
+    // Connect to the pre-aggregated analytics collections
     const client = await clientPromise;
     const db: Db = client.db(config.dbName);
     const aggregatesCollection: Collection<TimeAggregatedMetrics> = db.collection('analytics_aggregates');
     
-    // Build MongoDB query
+    // Build MongoDB filter from the supported aggregate query parameters
     const query: any = {};
     
     if (filters.bucket) {
@@ -115,7 +111,7 @@ export async function GET(request: NextRequest) {
       query.month = filters.month;
     }
     
-    // Build sort object
+    // Translate API sort semantics into collection field names
     const sortField = filters.sortBy === 'date' ? 'periodStart' :
                       filters.sortBy === 'attendance' ? 'totalAttendees' :
                       filters.sortBy === 'engagement' ? 'avgEngagementRate' :
@@ -125,7 +121,7 @@ export async function GET(request: NextRequest) {
     const sortOrder = filters.sortOrder === 'asc' ? 1 : -1;
     const sort: any = { [sortField]: sortOrder };
     
-    // Execute query with pagination
+    // Execute the paginated aggregate query
     const [data, totalRecords] = await Promise.all([
       aggregatesCollection
         .find(query)
