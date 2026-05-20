@@ -2,7 +2,7 @@
 
 import React, { useDeferredValue, useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
-import { useSearchParams } from 'next/navigation';
+import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import AnalyticsWorkspaceNav from '@/components/AnalyticsWorkspaceNav';
 import ColoredCard from '@/components/ColoredCard';
 import MetricCard from '@/components/analytics/MetricCard';
@@ -37,19 +37,89 @@ function parseRangePreset(value: string | null): SponsorshipHubRangePreset {
   return value === '30d' || value === '90d' || value === '365d' ? value : 'all';
 }
 
+function parseStatusFilter(value: string | null): 'all' | 'ready' | 'missing_bitly' | 'missing_report' | 'missing_metrics' {
+  return value === 'ready' || value === 'missing_bitly' || value === 'missing_report' || value === 'missing_metrics' ? value : 'all';
+}
+
+const SAVED_VIEW_PRESETS = [
+  {
+    key: 'all',
+    label: 'All Activation Work',
+    description: 'Full queue ordered by urgency and commercial value.',
+    statusFilter: 'all' as const,
+  },
+  {
+    key: 'bitly',
+    label: 'Bitly Backfill',
+    description: 'Projects blocked by missing tracked-link evidence.',
+    statusFilter: 'missing_bitly' as const,
+  },
+  {
+    key: 'report',
+    label: 'Report Recovery',
+    description: 'Projects with evidence but no shareable report route.',
+    statusFilter: 'missing_report' as const,
+  },
+  {
+    key: 'metrics',
+    label: 'Metrics Proof',
+    description: 'Projects missing fan or media proof.',
+    statusFilter: 'missing_metrics' as const,
+  },
+  {
+    key: 'ready',
+    label: 'Ready to Share',
+    description: 'Sponsor-proof projects that can move into recap delivery.',
+    statusFilter: 'ready' as const,
+  },
+];
+
 export default function SponsorshipActivationWorkspacePage() {
+  const router = useRouter();
+  const pathname = usePathname();
   const searchParams = useSearchParams();
   const [hubData, setHubData] = useState<SponsorshipHubResponse | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
-  const [statusFilter, setStatusFilter] = useState<'all' | 'ready' | 'missing_bitly' | 'missing_report' | 'missing_metrics'>('all');
-  const [partnerFilter, setPartnerFilter] = useState('all');
+  const [statusFilter, setStatusFilter] = useState<'all' | 'ready' | 'missing_bitly' | 'missing_report' | 'missing_metrics'>(() => parseStatusFilter(searchParams.get('statusFilter')));
+  const [partnerFilter, setPartnerFilter] = useState(() => searchParams.get('partnerFilter') || 'all');
 
   const scopeType = useMemo(() => parseScopeType(searchParams.get('scopeType')), [searchParams]);
   const scopeId = useMemo(() => searchParams.get('scopeId'), [searchParams]);
   const rangePreset = useMemo(() => parseRangePreset(searchParams.get('rangePreset')), [searchParams]);
   const deferredStatusFilter = useDeferredValue(statusFilter);
   const deferredPartnerFilter = useDeferredValue(partnerFilter);
+  const currentSavedView = useMemo(
+    () => SAVED_VIEW_PRESETS.find((preset) => preset.statusFilter === statusFilter) || SAVED_VIEW_PRESETS[0],
+    [statusFilter]
+  );
+
+  useEffect(() => {
+    setStatusFilter(parseStatusFilter(searchParams.get('statusFilter')));
+    setPartnerFilter(searchParams.get('partnerFilter') || 'all');
+  }, [searchParams]);
+
+  useEffect(() => {
+    const params = new URLSearchParams(Array.from(searchParams.entries()));
+
+    if (statusFilter === 'all') {
+      params.delete('statusFilter');
+    } else {
+      params.set('statusFilter', statusFilter);
+    }
+
+    if (partnerFilter === 'all') {
+      params.delete('partnerFilter');
+    } else {
+      params.set('partnerFilter', partnerFilter);
+    }
+
+    const nextQuery = params.toString();
+    const currentQuery = searchParams.toString();
+    if (nextQuery !== currentQuery) {
+      router.replace(nextQuery ? `${pathname}?${nextQuery}` : pathname, { scroll: false });
+    }
+  }, [partnerFilter, pathname, router, searchParams, statusFilter]);
 
   useEffect(() => {
     const fetchHub = async () => {
@@ -101,6 +171,21 @@ export default function SponsorshipActivationWorkspacePage() {
       return true;
     });
   }, [deferredPartnerFilter, deferredStatusFilter, hubData]);
+
+  const filteredGapCount = useMemo(
+    () => filteredProofItems.filter((item) => item.readinessScore < 100).length,
+    [filteredProofItems]
+  );
+
+  const filteredReadyCount = useMemo(
+    () => filteredProofItems.filter((item) => item.readinessScore === 100).length,
+    [filteredProofItems]
+  );
+
+  const filteredPotentialValue = useMemo(
+    () => filteredProofItems.reduce((sum, item) => sum + item.adValue, 0),
+    [filteredProofItems]
+  );
 
   return (
     <div className="page-container">
@@ -194,6 +279,22 @@ export default function SponsorshipActivationWorkspacePage() {
                     Narrow the activation queue by gap type or by partner so commercial follow-up can stay focused.
                   </p>
                 </div>
+                <div className={styles.pillGrid}>
+                  {SAVED_VIEW_PRESETS.map((preset) => {
+                    const isActive = currentSavedView.key === preset.key;
+                    return (
+                      <button
+                        key={preset.key}
+                        type="button"
+                        className={`${styles.pillCardButton} ${isActive ? styles.pillCardActive : ''}`}
+                        onClick={() => setStatusFilter(preset.statusFilter)}
+                      >
+                        <span className={styles.pillTitle}>{preset.label}</span>
+                        <span className={styles.helperText}>{preset.description}</span>
+                      </button>
+                    );
+                  })}
+                </div>
                 <div className={styles.controlsGrid}>
                   <div className={styles.controlGroup}>
                     <label htmlFor="statusFilter" className={styles.controlLabel}>Status</label>
@@ -230,8 +331,26 @@ export default function SponsorshipActivationWorkspacePage() {
                 <p className={styles.scopeSummary}>
                   Showing <strong>{filteredProofItems.length}</strong> project{filteredProofItems.length === 1 ? '' : 's'} in the current activation queue.
                 </p>
+                <div className={styles.insightGrid}>
+                  <div className={styles.insightItem}>
+                    <span className={styles.insightLabel}>Current View</span>
+                    <span className={styles.insightValue}>{currentSavedView.label}</span>
+                  </div>
+                  <div className={styles.insightItem}>
+                    <span className={styles.insightLabel}>Projects With Gaps</span>
+                    <span className={styles.insightValue}>{filteredGapCount}</span>
+                  </div>
+                  <div className={styles.insightItem}>
+                    <span className={styles.insightLabel}>Ready In View</span>
+                    <span className={styles.insightValue}>{filteredReadyCount}</span>
+                  </div>
+                  <div className={styles.insightItem}>
+                    <span className={styles.insightLabel}>Media Value In View</span>
+                    <span className={styles.insightValue}>€{Math.round(filteredPotentialValue).toLocaleString('en-US')}</span>
+                  </div>
+                </div>
                 <p className={styles.helperText}>
-                  Queue order is server-ranked by gap urgency first, then commercial value, so the top rows are the best next fixes.
+                  Queue order is server-ranked by gap urgency first, then commercial value, so the top rows are the best next fixes. Filter state is stored in the URL so this view can be bookmarked or shared.
                 </p>
               </div>
             </ColoredCard>

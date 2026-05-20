@@ -113,6 +113,14 @@ Use this checklist for the next SSOT/board pass so the next agent does not have 
 - **Workflow effect:** Operators can now work top-down through the queue by urgency and click directly into the most relevant fix surface for Bitly coverage, report access, or incomplete event evidence.
 - **Verification:** `npm run lint`, `npm run build`, and `npm run type-check` all passed. As usual in this repo, `type-check` was rerun after the successful build because `tsconfig.json` includes `.next/types/**/*.ts`.
 
+## 2026-05-20 — Partner Activation saved-view and shareable-filter slice (#788)
+- **Objective:** Remove the need to rebuild activation queues manually by making the current workspace filter state reusable and shareable.
+- **URL-backed filters:** Updated `/app/admin/analytics/sponsorship/activation/page.tsx` so `statusFilter` and `partnerFilter` now read from and write to the query string without leaving the page.
+- **Reusable queue presets:** Added saved-view style presets for `All Activation Work`, `Bitly Backfill`, `Report Recovery`, `Metrics Proof`, and `Ready to Share`, all mapped onto the current queue logic without introducing a new backend persistence layer.
+- **Filtered scope summary:** The activation workspace now shows the current preset name, filtered gap count, filtered ready count, and total media value for the active view.
+- **Workflow effect:** Commercial and ops users can now bookmark or share the exact activation queue they want another user to work, instead of describing a manual filter combination.
+- **Verification:** `npm run lint`, `npm run build`, and `npm run type-check` all passed. As usual in this repo, `type-check` was rerun after the successful build because `tsconfig.json` includes `.next/types/**/*.ts`.
+
 ## 2026-05-20 — Active documentation overhaul
 - **Objective:** Remove active-documentation drift across the current operator, feature, and API docs rather than only bumping versions.
 - **Admin guide rewrite:** Replaced `/docs/admin/admin-end-user-guide.md` so it now matches the live Admin Workspace, Reporting Workspace, and Analytics Workspace model, including staged Event and Partner setup flows and the current canonical routes.
