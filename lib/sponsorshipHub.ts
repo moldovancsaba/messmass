@@ -196,14 +196,31 @@ export interface SponsorshipActivationPartnerQueue {
   actions: SponsorshipActionLinks;
 }
 
+export interface SponsorshipActivationRecapPackage {
+  partnerId: string;
+  name: string;
+  emoji?: string;
+  readyProjectCount: number;
+  totalProjectCount: number;
+  totalFans: number;
+  totalAdValue: number;
+  totalBitlyClicks: number;
+  latestEventDate: string | null;
+  packageStatus: 'ready' | 'partial';
+  readyProjectNames: string[];
+  actions: SponsorshipActionLinks;
+}
+
 export interface SponsorshipActivationWorkspace {
   readinessScore: number;
   readyProjects: number;
+  readyPartners: number;
   needsBitlyProjects: number;
   needsReportProjects: number;
   needsMetricsProjects: number;
   proofItems: SponsorshipActivationProofItem[];
   partnerQueues: SponsorshipActivationPartnerQueue[];
+  recapPackages: SponsorshipActivationRecapPackage[];
   nextActions: string[];
 }
 
@@ -549,11 +566,13 @@ function emptyHub(
     activationWorkspace: {
       readinessScore: 0,
       readyProjects: 0,
+      readyPartners: 0,
       needsBitlyProjects: 0,
       needsReportProjects: 0,
       needsMetricsProjects: 0,
       proofItems: [],
       partnerQueues: [],
+      recapPackages: [],
       nextActions: [],
     },
   };
@@ -1220,9 +1239,62 @@ export async function getSponsorshipHubData({
     return b.totalAdValue - a.totalAdValue;
   });
 
+  const recapPackageMap = new Map<string, SponsorshipActivationRecapPackage>();
+  proofItems.forEach((item) => {
+    if (!item.partnerId) return;
+
+    const current: SponsorshipActivationRecapPackage = recapPackageMap.get(item.partnerId) || {
+      partnerId: item.partnerId,
+      name: item.partnerName || item.partnerLabel,
+      emoji: partnerMap.get(item.partnerId)?.emoji,
+      readyProjectCount: 0,
+      totalProjectCount: 0,
+      totalFans: 0,
+      totalAdValue: 0,
+      totalBitlyClicks: 0,
+      latestEventDate: null,
+      packageStatus: 'partial' as const,
+      readyProjectNames: [],
+      actions: {
+        reportUrl: item.partnerReportUrl,
+        adminUrl: item.partnerAnalyticsUrl,
+        activationUrl: buildActivationUrl('partner', item.partnerId, rangePreset),
+      },
+    };
+
+    current.totalProjectCount += 1;
+    if (item.readinessScore === 100) {
+      current.readyProjectCount += 1;
+      current.totalFans += item.fans;
+      current.totalAdValue += item.adValue;
+      current.totalBitlyClicks += item.bitlyClicks;
+      current.readyProjectNames.push(item.eventName);
+      if (item.eventDate && (!current.latestEventDate || item.eventDate > current.latestEventDate)) {
+        current.latestEventDate = item.eventDate;
+      }
+    }
+
+    recapPackageMap.set(item.partnerId, current);
+  });
+
+  const recapPackages = [...recapPackageMap.values()]
+    .filter((item) => item.readyProjectCount > 0)
+    .map((item) => ({
+      ...item,
+      packageStatus: item.readyProjectCount === item.totalProjectCount ? 'ready' as const : 'partial' as const,
+      readyProjectNames: item.readyProjectNames.slice(0, 4),
+    }))
+    .sort((a, b) => {
+      if (b.readyProjectCount !== a.readyProjectCount) {
+        return b.readyProjectCount - a.readyProjectCount;
+      }
+      return b.totalAdValue - a.totalAdValue;
+    });
+
   const readyProjects = proofItems.filter(
     (item) => item.hasFanEvidence && item.hasMediaEvidence && item.hasBitlyEvidence && item.hasReportLink
   ).length;
+  const readyPartners = recapPackages.length;
   const needsBitlyProjects = proofItems.filter((item) => !item.hasBitlyEvidence).length;
   const needsReportProjects = proofItems.filter((item) => !item.hasReportLink).length;
   const needsMetricsProjects = proofItems.filter((item) => !item.hasFanEvidence || !item.hasMediaEvidence).length;
@@ -1327,11 +1399,13 @@ export async function getSponsorshipHubData({
     activationWorkspace: {
       readinessScore,
       readyProjects,
+      readyPartners,
       needsBitlyProjects,
       needsReportProjects,
       needsMetricsProjects,
       proofItems,
       partnerQueues,
+      recapPackages,
       nextActions,
     },
   };

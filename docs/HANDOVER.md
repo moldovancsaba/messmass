@@ -121,6 +121,13 @@ Use this checklist for the next SSOT/board pass so the next agent does not have 
 - **Workflow effect:** Commercial and ops users can now bookmark or share the exact activation queue they want another user to work, instead of describing a manual filter combination.
 - **Verification:** `npm run lint`, `npm run build`, and `npm run type-check` all passed. As usual in this repo, `type-check` was rerun after the successful build because `tsconfig.json` includes `.next/types/**/*.ts`.
 
+## 2026-05-20 — Partner-facing recap packaging slice (#788)
+- **Objective:** Turn the internal activation queue into the first reusable partner-facing delivery layer by grouping ready proof into recap packages per partner.
+- **Shared recap model:** Updated `/lib/sponsorshipHub.ts` so the activation workspace now includes `readyPartners` and `recapPackages`, with ready-project counts, total proof metrics, latest ready event date, package status (`ready` vs `partial`), and direct partner report/analytics/activation links.
+- **Activation UI packaging:** Updated `/app/admin/analytics/sponsorship/activation/page.tsx` so the workspace now shows a `Ready Partners` KPI and a new `Partner Recap Packages` section for teams moving from internal proof readiness into external delivery.
+- **Workflow effect:** Users can now see which partners already have enough ready evidence to package into sponsor-facing recaps, instead of stopping at raw project-level queue items.
+- **Verification:** `npm run lint`, `npm run build`, and `npm run type-check` all passed. As usual in this repo, `type-check` was rerun after the successful build because `tsconfig.json` includes `.next/types/**/*.ts`.
+
 ## 2026-05-20 — Active documentation overhaul
 - **Objective:** Remove active-documentation drift across the current operator, feature, and API docs rather than only bumping versions.
 - **Admin guide rewrite:** Replaced `/docs/admin/admin-end-user-guide.md` so it now matches the live Admin Workspace, Reporting Workspace, and Analytics Workspace model, including staged Event and Partner setup flows and the current canonical routes.

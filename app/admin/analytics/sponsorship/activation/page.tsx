@@ -210,6 +210,7 @@ export default function SponsorshipActivationWorkspacePage() {
             <div className={styles.metricGrid}>
               <MetricCard title="Readiness Score" value={hubData.activationWorkspace.readinessScore} format="percentage" loading={loading} icon="✅" />
               <MetricCard title="Ready Projects" value={hubData.activationWorkspace.readyProjects} format="number" loading={loading} icon="📦" />
+              <MetricCard title="Ready Partners" value={hubData.activationWorkspace.readyPartners} format="number" loading={loading} icon="🤝" />
               <MetricCard title="Needs Bitly" value={hubData.activationWorkspace.needsBitlyProjects} format="number" loading={loading} icon="🔗" />
               <MetricCard title="Needs Report Link" value={hubData.activationWorkspace.needsReportProjects} format="number" loading={loading} icon="📝" />
               <MetricCard title="Needs Fan or Media Proof" value={hubData.activationWorkspace.needsMetricsProjects} format="number" loading={loading} icon="📊" />
@@ -352,6 +353,68 @@ export default function SponsorshipActivationWorkspacePage() {
                 <p className={styles.helperText}>
                   Queue order is server-ranked by gap urgency first, then commercial value, so the top rows are the best next fixes. Filter state is stored in the URL so this view can be bookmarked or shared.
                 </p>
+              </div>
+            </ColoredCard>
+
+            <ColoredCard accentColor="var(--mm-color-success-500, #16a34a)" hoverable={false}>
+              <div className={styles.sectionCard}>
+                <div className={styles.sectionHeader}>
+                  <h2 className={styles.sectionTitle}>Partner Recap Packages</h2>
+                  <p className={styles.sectionSubtitle}>
+                    Ready proof grouped into partner-facing recap packages so delivery teams can move from internal triage into external sharing.
+                  </p>
+                </div>
+                <div className={styles.projectResults}>
+                  {hubData.activationWorkspace.recapPackages
+                    .filter((partner) => partnerFilter === 'all' || partner.partnerId === partnerFilter)
+                    .map((partner) => (
+                      <ColoredCard
+                        key={partner.partnerId}
+                        accentColor="var(--mm-color-success-500, #16a34a)"
+                        hoverable={false}
+                        className={styles.projectResultCard}
+                      >
+                        <div className={styles.detailCard}>
+                          <div className={styles.detailMeta}>
+                            <span>
+                              <strong>{partner.emoji ? `${partner.emoji} ` : ''}{partner.name}</strong>
+                            </span>
+                            <span>
+                              {partner.readyProjectCount} ready project{partner.readyProjectCount === 1 ? '' : 's'} • {partner.totalProjectCount} total in scope
+                            </span>
+                            <span>
+                              {partner.packageStatus === 'ready' ? 'Full package ready' : 'Partial package ready'}
+                            </span>
+                            <span>
+                              €{Math.round(partner.totalAdValue).toLocaleString('en-US')} media value • {partner.totalBitlyClicks.toLocaleString('en-US')} Bitly clicks
+                            </span>
+                            <span>
+                              {partner.totalFans.toLocaleString('en-US')} fans • latest ready event {formatDate(partner.latestEventDate)}
+                            </span>
+                          </div>
+                          <div className={styles.noteList}>
+                            <p className={styles.detailNote}>
+                              Included ready events: {partner.readyProjectNames.join(', ') || 'None'}
+                            </p>
+                          </div>
+                          <div className={styles.actionRow}>
+                            {partner.actions.reportUrl && (
+                              <Link href={partner.actions.reportUrl} className={styles.actionLink}>Open Partner Report</Link>
+                            )}
+                            {partner.actions.adminUrl && (
+                              <Link href={partner.actions.adminUrl} className={styles.actionLink}>Open Partner Analytics</Link>
+                            )}
+                            {partner.actions.activationUrl && (
+                              <Link href={partner.actions.activationUrl} className={styles.actionLink}>Open Activation Queue</Link>
+                            )}
+                          </div>
+                        </div>
+                      </ColoredCard>
+                    ))}
+                  {hubData.activationWorkspace.recapPackages.filter((partner) => partnerFilter === 'all' || partner.partnerId === partnerFilter).length === 0 && (
+                    <p className={styles.detailNote}>No partner recap package is ready yet for the current filter scope.</p>
+                  )}
+                </div>
               </div>
             </ColoredCard>
 
