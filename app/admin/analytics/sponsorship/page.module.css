@@ -251,13 +251,15 @@
 }
 
 .actionLink,
-.inlineLink {
+.inlineLink,
+.filterButton {
   color: var(--mm-color-primary-700);
   text-decoration: none;
   font-weight: var(--mm-font-weight-semibold);
 }
 
-.actionLink {
+.actionLink,
+.filterButton {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -269,8 +271,14 @@
 }
 
 .actionLink:hover,
-.inlineLink:hover {
+.inlineLink:hover,
+.filterButton:hover {
   color: var(--mm-color-primary-800);
+}
+
+.filterButton {
+  cursor: pointer;
+  font: inherit;
 }
 
 .pillCard {

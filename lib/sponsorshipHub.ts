@@ -11,6 +11,7 @@ type ProjectRecord = {
   eventName?: string;
   eventDate?: string;
   viewSlug?: string;
+  editSlug?: string;
   partner1?: ObjectId;
   partner2?: ObjectId;
   partner1Id?: ObjectId | string;
@@ -94,6 +95,7 @@ export interface SponsorshipTopProject {
   bitlyClicks: number;
   engagementRate: number;
   viewSlug: string | null;
+  editSlug: string | null;
 }
 
 export interface SponsorshipTopPartner {
@@ -116,6 +118,7 @@ export interface SponsorshipProjectDrilldown {
   primaryPartnerId: string | null;
   primaryPartnerName: string | null;
   viewSlug: string | null;
+  editSlug: string | null;
   sourceBreakdown: SponsorshipBreakdownRow[];
   topCountries: Array<{
     label: string;
@@ -172,9 +175,13 @@ export interface SponsorshipActivationProofItem {
   missingReasons: string[];
   reportUrl: string | null;
   projectAdminUrl: string | null;
+  editorUrl: string | null;
   partnerAnalyticsUrl: string | null;
   partnerReportUrl: string | null;
   activationUrl: string | null;
+  recommendedActionLabel: string;
+  recommendedActionUrl: string | null;
+  recommendedActionReason: string;
 }
 
 export interface SponsorshipActivationPartnerQueue {
@@ -194,6 +201,7 @@ export interface SponsorshipActivationWorkspace {
   readyProjects: number;
   needsBitlyProjects: number;
   needsReportProjects: number;
+  needsMetricsProjects: number;
   proofItems: SponsorshipActivationProofItem[];
   partnerQueues: SponsorshipActivationPartnerQueue[];
   nextActions: string[];
@@ -543,6 +551,7 @@ function emptyHub(
       readyProjects: 0,
       needsBitlyProjects: 0,
       needsReportProjects: 0,
+      needsMetricsProjects: 0,
       proofItems: [],
       partnerQueues: [],
       nextActions: [],
@@ -595,6 +604,7 @@ export async function getSponsorshipHubData({
         eventName: 1,
         eventDate: 1,
         viewSlug: 1,
+        editSlug: 1,
         partner1: 1,
         partner2: 1,
         partner1Id: 1,
@@ -643,6 +653,7 @@ export async function getSponsorshipHubData({
         eventName: 1,
         eventDate: 1,
         viewSlug: 1,
+        editSlug: 1,
         partner1: 1,
         partner2: 1,
         partner1Id: 1,
@@ -665,6 +676,7 @@ export async function getSponsorshipHubData({
           eventName: 1,
           eventDate: 1,
           viewSlug: 1,
+          editSlug: 1,
           partner1: 1,
           partner2: 1,
           partner1Id: 1,
@@ -713,6 +725,7 @@ export async function getSponsorshipHubData({
           eventName: 1,
           eventDate: 1,
           viewSlug: 1,
+          editSlug: 1,
           partner1: 1,
           partner2: 1,
           partner1Id: 1,
@@ -871,6 +884,7 @@ export async function getSponsorshipHubData({
       bitlyClicks: bitly.clicks,
       engagementRate: 0,
       viewSlug: project?.viewSlug || null,
+      editSlug: project?.editSlug || null,
       engagementSamples: 0,
     };
 
@@ -967,6 +981,7 @@ export async function getSponsorshipHubData({
       primaryPartnerId: project.primaryPartnerId,
       primaryPartnerName: project.primaryPartnerName,
       viewSlug: project.viewSlug,
+      editSlug: project.editSlug,
       sourceBreakdown: [
         {
           key: 'fans',
@@ -1016,7 +1031,7 @@ export async function getSponsorshipHubData({
       trend: finalizeTrendSeries(projectTrendMap),
       actions: {
         reportUrl: project.viewSlug ? `/report/${project.viewSlug}` : null,
-        adminUrl: project.primaryPartnerId ? `/admin/partners/${project.primaryPartnerId}/analytics` : null,
+        adminUrl: project.editSlug ? `/edit/${project.editSlug}` : '/admin/events',
         activationUrl: buildActivationUrl('project', project.projectId, rangePreset),
       },
     };
@@ -1112,6 +1127,29 @@ export async function getSponsorshipHubData({
       const readinessScore = (readinessHits / 4) * 100;
       const priorityScore = (mediaValue / 1000) + bitlyValue + (missingReasons.length * 500);
       const partnerDoc = project.primaryPartnerId ? partnerMap.get(project.primaryPartnerId) : null;
+      const editorUrl = project.actions.adminUrl;
+      let recommendedActionLabel = 'Review Project';
+      let recommendedActionUrl: string | null = editorUrl;
+      let recommendedActionReason = 'Open the project workspace to verify proof readiness.';
+
+      if (bitlyValue <= 0) {
+        recommendedActionLabel = 'Fix Bitly Coverage';
+        recommendedActionUrl = '/admin/bitly';
+        recommendedActionReason = 'Tracked link evidence is missing, so sponsor proof is incomplete.';
+      } else if (!hasReportLink) {
+        recommendedActionLabel = editorUrl ? 'Restore Report Access' : 'Open Events Admin';
+        recommendedActionUrl = editorUrl || '/admin/events';
+        recommendedActionReason = 'The project has evidence but no shareable report link yet.';
+      } else if (fanValue <= 0 || mediaValue <= 0) {
+        recommendedActionLabel = editorUrl ? 'Review Event Evidence' : 'Open Events Admin';
+        recommendedActionUrl = editorUrl || '/admin/events';
+        recommendedActionReason = 'Core fan or media proof is still incomplete for recap usage.';
+      } else if (project.actions.reportUrl) {
+        recommendedActionLabel = 'Open Proof Report';
+        recommendedActionUrl = project.actions.reportUrl;
+        recommendedActionReason = 'This project is ready to be used as sponsor-facing proof.';
+      }
+
       return {
         projectId: project.projectId,
         eventName: project.eventName,
@@ -1130,10 +1168,14 @@ export async function getSponsorshipHubData({
         priorityScore,
         missingReasons,
         reportUrl: project.actions.reportUrl,
-        projectAdminUrl: '/admin/events',
+        projectAdminUrl: editorUrl || '/admin/events',
+        editorUrl,
         partnerAnalyticsUrl: project.primaryPartnerId ? `/admin/partners/${project.primaryPartnerId}/analytics` : null,
         partnerReportUrl: partnerDoc?.viewSlug ? `/partner-report/${partnerDoc.viewSlug}` : null,
         activationUrl: project.actions.activationUrl,
+        recommendedActionLabel,
+        recommendedActionUrl,
+        recommendedActionReason,
       };
     })
     .sort((a, b) => {
@@ -1183,6 +1225,7 @@ export async function getSponsorshipHubData({
   ).length;
   const needsBitlyProjects = proofItems.filter((item) => !item.hasBitlyEvidence).length;
   const needsReportProjects = proofItems.filter((item) => !item.hasReportLink).length;
+  const needsMetricsProjects = proofItems.filter((item) => !item.hasFanEvidence || !item.hasMediaEvidence).length;
   const readinessSamples = proofItems.length * 4;
   const readinessHits = proofItems.reduce((sum, item) => {
     return sum
@@ -1200,8 +1243,8 @@ export async function getSponsorshipHubData({
   if (needsReportProjects > 0) {
     nextActions.push(`Create or restore report links for ${needsReportProjects} project${needsReportProjects === 1 ? '' : 's'} so proof packages can be shared externally.`);
   }
-  if (proofItems.some((item) => !item.hasFanEvidence || !item.hasMediaEvidence)) {
-    nextActions.push('Review projects with incomplete fan or media evidence before using them in sponsor recaps.');
+  if (needsMetricsProjects > 0) {
+    nextActions.push(`Review fan/media proof for ${needsMetricsProjects} project${needsMetricsProjects === 1 ? '' : 's'} before using them in sponsor recaps.`);
   }
   if (nextActions.length === 0 && proofItems.length > 0) {
     nextActions.push('Activation proof coverage is healthy; proceed to partner-facing recap packaging and renewal workflows.');
@@ -1286,6 +1329,7 @@ export async function getSponsorshipHubData({
       readyProjects,
       needsBitlyProjects,
       needsReportProjects,
+      needsMetricsProjects,
       proofItems,
       partnerQueues,
       nextActions,

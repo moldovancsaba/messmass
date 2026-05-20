@@ -2,7 +2,7 @@
 
 This file is onboarding plus operational context for the next agent. Keep it accurate when behavior, process, or current delivery state changes.
 
-**Last Updated:** 2026-05-20 (documentation overhaul)
+**Last Updated:** 2026-05-20 (board/documentation alignment)
 
 ## 🚨 CRITICAL MUST-READ FOR ALL AGENTS: STYLING & COMPONENTS 🚨
 
@@ -29,17 +29,55 @@ You MUST completely read and obey `docs/coding-standards.md` and `docs/component
 
 ## Current Repo Truth
 - Active branch: `main`
-- Last known HEAD during this update: `0de8ccf42`
-- Working tree includes untracked local `READMEDEV.md`; canonical repo-root cleanup work is now tracked under `#359`.
-- Most recent documented code delivery before this update: organization admin data flow recovery and documentation sync.
-- Current active delivery: active documentation overhaul and canonical-doc refresh after `v12.1.12`.
-- Formally closed on SSOT board (2026-03-10): #354, #355, #356, #357, #358, #359.
+- Last known HEAD during this update: `5d25086c1`
+- Working tree should be clean after the latest docs/board-alignment pass.
+- Most recent shipped repo work:
+  - active documentation overhaul and canonical-doc refresh
+  - API comment cleanup aligned to current runtime behavior
+  - operations action-plan demoted from task authority to historical/supporting reference
+- Current product/doc baseline: `v12.1.12`
+- Formally closed on SSOT board (historical): `#354`, `#355`, `#356`, `#357`, `#358`, `#359`
 
 ## Current Priorities
 - Board-derived priority reference: [operations-delivery-focus.md](operations/operations-delivery-focus.md)
 - Execution queue reference: [operations-action-plan.md](operations/operations-action-plan.md)
-- Current `operations-delivery-focus.md` says there is no item in progress and recommends picking a Ready card next.
-- The action plan still contains older state memory for Builder mode and analytics/security tracks; use the board as final authority if there is any mismatch.
+- Use the GitHub board as final authority when any local doc disagrees.
+- `operations-action-plan.md` is now explicitly reference-only memory, not active execution authority.
+- Last verified board alignment:
+  - `#784` = `Review (ALMOST)`
+  - `#788` = `In Progress (NOW)`
+  - `#815` through `#821` = `Review (ALMOST)` with `dod:ready-for-review`
+  - `#72` remains open and needs a real product decision rather than silent auto-closure
+
+## Pending GitHub Updates
+
+Use this checklist for the next SSOT/board pass so the next agent does not have to reconstruct the required GitHub work.
+
+1. Review-close or punch-list the UI refinement chain:
+   - `#815`, `#816`, `#817`, `#818`, `#819`, `#820`, `#821`
+   - Current expected board state: `Review (ALMOST)`
+   - Current expected DoD label: `dod:ready-for-review`
+   - If accepted, move to done/closed on the board and update the issue comments with any review outcome.
+
+2. Keep `#788` as the active product-facing in-progress item until the proof-of-performance workspace is either completed or deliberately split.
+
+3. Do not auto-close `#72`.
+   - The repo proves multiple cleanup slices were shipped.
+   - The repo does **not** prove the whole remaining card scope is complete.
+   - Required next GH action is a product decision: close it with explicit rationale, or split remaining style debt into narrower follow-up issues.
+
+4. Preserve `#784` as review-ready unless new code materially changes the Sponsorship Hub scope.
+
+5. When syncing the board again, also verify these issue labels still match reality:
+   - `agent:chappie`
+   - `dod:ready-for-review` or `dod:in-progress`
+   - `priority:p1` / `priority:p2`
+   - `type:plan` / `type:refactor` / `type:feature`
+
+6. If GitHub Project GraphQL rate-limits again:
+   - prefer targeted item updates over a full board rewrite
+   - trust shipped repo state plus this handover and `operations-delivery-focus.md`
+   - leave a note in the updated issue comment instead of guessing a status change
 
 ## Docs Index
 - [README.md](../README.md) — local dev and high-level overview
@@ -66,6 +104,15 @@ You MUST completely read and obey `docs/coding-standards.md` and `docs/component
 
 ## Handover Log
 
+## 2026-05-20 — Partner Activation queue hardening slice (#788)
+- **Objective:** Make the activation workspace operationally actionable by exposing the real next fix path for each project instead of only showing passive gap labels.
+- **Shared activation model:** Updated `/lib/sponsorshipHub.ts` so proof items now carry exact editor/admin destinations, a recommended next action label/URL/reason, and a separate `needsMetricsProjects` summary for fan/media evidence gaps.
+- **Project destination fix:** Activation project actions now resolve to the real event editor route when an `editSlug` exists instead of falling back to unrelated partner analytics routes.
+- **Workspace usability:** Updated `/app/admin/analytics/sponsorship/activation/page.tsx` so the proof queue now shows priority, recommended fix actions, an additional metrics-gap KPI, and partner-queue focus toggles.
+- **Styling support:** Updated `/app/admin/analytics/sponsorship/page.module.css` so the new queue/focus controls reuse the existing workspace action styling model.
+- **Workflow effect:** Operators can now work top-down through the queue by urgency and click directly into the most relevant fix surface for Bitly coverage, report access, or incomplete event evidence.
+- **Verification:** `npm run lint`, `npm run build`, and `npm run type-check` all passed. As usual in this repo, `type-check` was rerun after the successful build because `tsconfig.json` includes `.next/types/**/*.ts`.
+
 ## 2026-05-20 — Active documentation overhaul
 - **Objective:** Remove active-documentation drift across the current operator, feature, and API docs rather than only bumping versions.
 - **Admin guide rewrite:** Replaced `/docs/admin/admin-end-user-guide.md` so it now matches the live Admin Workspace, Reporting Workspace, and Analytics Workspace model, including staged Event and Partner setup flows and the current canonical routes.
@@ -73,6 +120,12 @@ You MUST completely read and obey `docs/coding-standards.md` and `docs/component
 - **API refresh:** Reworked `/docs/api/api-public.md` and `/docs/api/api-analytics.md` so they document the current public partner APIs, sponsorship hub, compare endpoints, trends, and insights summary behavior.
 - **Cross-doc cleanup:** Updated `/README.md`, `/docs/features/features-overview.md`, `/docs/features/features-authentication.md`, and `/docs/api/api-reference.md` to remove live inconsistencies such as the obsolete `ADMIN_PASSWORD` environment note and old API reference version metadata.
 - **Verification:** `npm run version:verify` passed and `python3 scripts/docs_link_check.py` regenerated `/docs/_meta/meta-docs-link-check.md` with `Broken links found: 0`.
+
+## 2026-05-20 — Board/documentation alignment follow-up
+- **Objective:** Reconcile the local state docs with the actual shipped repo and the last verified GitHub board state so future SSOT updates can be done mechanically instead of by rediscovery.
+- **Board sync captured:** The current expected board truth is now recorded here: `#784` review-ready, `#788` in progress, `#815` through `#821` review-ready, and `#72` still an unresolved board/product decision.
+- **Authority cleanup:** `/docs/operations/operations-action-plan.md` now explicitly defers active task authority to the GitHub board and is preserved as supporting memory only.
+- **Next-agent GH checklist:** Added a concrete “Pending GitHub Updates” checklist to this handover so later board cleanup can be executed from one place.
 
 ## 2026-05-14 — Documentation consistency cleanup
 - **Objective:** Remove the highest-signal documentation drift across the repo entrypoints and state docs without guessing live board state.

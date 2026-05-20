@@ -19,6 +19,16 @@ function formatDate(value: string | null) {
   return new Date(value).toLocaleDateString();
 }
 
+function formatPriorityScore(value: number) {
+  return Math.round(value).toLocaleString('en-US');
+}
+
+function getPriorityTone(value: number) {
+  if (value >= 2500) return 'High';
+  if (value >= 1000) return 'Medium';
+  return 'Low';
+}
+
 function parseScopeType(value: string | null): SponsorshipHubScopeType {
   return value === 'partner' || value === 'organization' || value === 'project' ? value : 'portfolio';
 }
@@ -117,6 +127,7 @@ export default function SponsorshipActivationWorkspacePage() {
               <MetricCard title="Ready Projects" value={hubData.activationWorkspace.readyProjects} format="number" loading={loading} icon="📦" />
               <MetricCard title="Needs Bitly" value={hubData.activationWorkspace.needsBitlyProjects} format="number" loading={loading} icon="🔗" />
               <MetricCard title="Needs Report Link" value={hubData.activationWorkspace.needsReportProjects} format="number" loading={loading} icon="📝" />
+              <MetricCard title="Needs Fan or Media Proof" value={hubData.activationWorkspace.needsMetricsProjects} format="number" loading={loading} icon="📊" />
             </div>
 
             <ColoredCard accentColor="var(--mm-chart-teal)" hoverable={false}>
@@ -219,6 +230,9 @@ export default function SponsorshipActivationWorkspacePage() {
                 <p className={styles.scopeSummary}>
                   Showing <strong>{filteredProofItems.length}</strong> project{filteredProofItems.length === 1 ? '' : 's'} in the current activation queue.
                 </p>
+                <p className={styles.helperText}>
+                  Queue order is server-ranked by gap urgency first, then commercial value, so the top rows are the best next fixes.
+                </p>
               </div>
             </ColoredCard>
 
@@ -237,10 +251,12 @@ export default function SponsorshipActivationWorkspacePage() {
                         <th>Project</th>
                         <th>Date</th>
                         <th>Readiness</th>
+                        <th>Priority</th>
                         <th>Gap Reasons</th>
                         <th>Fans</th>
                         <th>Media Value</th>
                         <th>Bitly</th>
+                        <th>Recommended Fix</th>
                         <th>Actions</th>
                       </tr>
                     </thead>
@@ -253,13 +269,32 @@ export default function SponsorshipActivationWorkspacePage() {
                           </td>
                           <td>{formatDate(item.eventDate)}</td>
                           <td>{item.readinessScore.toFixed(0)}%</td>
+                          <td>
+                            <div className={styles.detailMeta}>
+                              <span>{getPriorityTone(item.priorityScore)}</span>
+                              <span>Score {formatPriorityScore(item.priorityScore)}</span>
+                            </div>
+                          </td>
                           <td>{item.missingReasons.length > 0 ? item.missingReasons.join(', ') : 'Ready'}</td>
                           <td>{item.hasFanEvidence ? item.fans.toLocaleString('en-US') : 'Missing'}</td>
                           <td>{item.hasMediaEvidence ? `€${Math.round(item.adValue).toLocaleString('en-US')}` : 'Missing'}</td>
                           <td>{item.hasBitlyEvidence ? item.bitlyClicks.toLocaleString('en-US') : 'Missing'}</td>
                           <td>
+                            <div className={styles.detailMeta}>
+                              {item.recommendedActionUrl ? (
+                                <Link href={item.recommendedActionUrl} className={styles.inlineLink}>
+                                  {item.recommendedActionLabel}
+                                </Link>
+                              ) : (
+                                <span>{item.recommendedActionLabel}</span>
+                              )}
+                              <span>{item.recommendedActionReason}</span>
+                            </div>
+                          </td>
+                          <td>
                             <div className={styles.actionRow}>
                               {item.reportUrl && <Link href={item.reportUrl} className={styles.inlineLink}>Report</Link>}
+                              {item.editorUrl && <Link href={item.editorUrl} className={styles.inlineLink}>Editor</Link>}
                               {item.partnerAnalyticsUrl && <Link href={item.partnerAnalyticsUrl} className={styles.inlineLink}>Analytics</Link>}
                               {item.partnerReportUrl && <Link href={item.partnerReportUrl} className={styles.inlineLink}>Partner</Link>}
                             </div>
@@ -267,7 +302,7 @@ export default function SponsorshipActivationWorkspacePage() {
                         </tr>
                       )) : (
                         <tr>
-                          <td colSpan={8}>No scoped proof items match the current filters.</td>
+                          <td colSpan={10}>No scoped proof items match the current filters.</td>
                         </tr>
                       )}
                     </tbody>
@@ -290,7 +325,7 @@ export default function SponsorshipActivationWorkspacePage() {
                       key={partner.partnerId}
                       accentColor="var(--mm-chart-orange)"
                       hoverable={false}
-                      className={styles.projectResultCard}
+                      className={`${styles.projectResultCard} ${partnerFilter === partner.partnerId ? styles.projectResultActive : ''}`}
                     >
                       <div className={styles.detailCard}>
                         <div className={styles.detailMeta}>
@@ -300,6 +335,13 @@ export default function SponsorshipActivationWorkspacePage() {
                           <span>€{Math.round(partner.totalAdValue).toLocaleString('en-US')} media value • {partner.totalBitlyClicks.toLocaleString('en-US')} Bitly clicks</span>
                         </div>
                         <div className={styles.actionRow}>
+                          <button
+                            type="button"
+                            className={styles.filterButton}
+                            onClick={() => setPartnerFilter((current) => (current === partner.partnerId ? 'all' : partner.partnerId))}
+                          >
+                            {partnerFilter === partner.partnerId ? 'Show All Partners' : 'Focus Queue'}
+                          </button>
                           {partner.actions.adminUrl && (
                             <Link href={partner.actions.adminUrl} className={styles.actionLink}>Open Analytics</Link>
                           )}
