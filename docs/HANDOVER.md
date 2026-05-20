@@ -2,7 +2,7 @@
 
 This file is onboarding plus operational context for the next agent. Keep it accurate when behavior, process, or current delivery state changes.
 
-**Last Updated:** 2026-05-14 (documentation consistency cleanup)
+**Last Updated:** 2026-05-20 (documentation overhaul)
 
 ## 🚨 CRITICAL MUST-READ FOR ALL AGENTS: STYLING & COMPONENTS 🚨
 
@@ -24,33 +24,33 @@ You MUST completely read and obey `docs/coding-standards.md` and `docs/component
 - Rules:
   - Track {messmass} delivery work only in `mvp-factory-control` and on Project 1.
   - Do not create or manage product work as local task files.
-  - Use [PROJECT_MANAGEMENT.md](/Users/moldovancsaba/Projects/messmass/docs/PROJECT_MANAGEMENT.md) for the required SSOT cadence.
+  - Use [PROJECT_MANAGEMENT.md](PROJECT_MANAGEMENT.md) for the required SSOT cadence.
   - Update this handover doc whenever current truth changes materially.
 
 ## Current Repo Truth
 - Active branch: `main`
-- Last known HEAD during this update: `08b64e191`
+- Last known HEAD during this update: `0de8ccf42`
 - Working tree includes untracked local `READMEDEV.md`; canonical repo-root cleanup work is now tracked under `#359`.
 - Most recent documented code delivery before this update: organization admin data flow recovery and documentation sync.
-- Current active delivery: documentation consistency cleanup is in local implementation after shipping `v12.1.12` to `main`.
+- Current active delivery: active documentation overhaul and canonical-doc refresh after `v12.1.12`.
 - Formally closed on SSOT board (2026-03-10): #354, #355, #356, #357, #358, #359.
 
 ## Current Priorities
-- Board-derived priority reference: [operations-delivery-focus.md](/Users/moldovancsaba/Projects/messmass/docs/operations/operations-delivery-focus.md)
-- Execution queue reference: [operations-action-plan.md](/Users/moldovancsaba/Projects/messmass/docs/operations/operations-action-plan.md)
+- Board-derived priority reference: [operations-delivery-focus.md](operations/operations-delivery-focus.md)
+- Execution queue reference: [operations-action-plan.md](operations/operations-action-plan.md)
 - Current `operations-delivery-focus.md` says there is no item in progress and recommends picking a Ready card next.
 - The action plan still contains older state memory for Builder mode and analytics/security tracks; use the board as final authority if there is any mismatch.
 
 ## Docs Index
-- [README.md](/Users/moldovancsaba/Projects/messmass/README.md) — local dev and high-level overview
-- [index.md](/Users/moldovancsaba/Projects/messmass/docs/index.md) — canonical docs entrypoint
-- [messmass-codex-brain-dump.md](/Users/moldovancsaba/Projects/messmass/docs/messmass-codex-brain-dump.md) — repo structure and current mental model refresher
-- [PROJECT_MANAGEMENT.md](/Users/moldovancsaba/Projects/messmass/docs/PROJECT_MANAGEMENT.md) — SSOT rules and board cadence
-- [NEXT_AGENT_PROMPT.md](/Users/moldovancsaba/Projects/messmass/docs/NEXT_AGENT_PROMPT.md) — continuation package from the last recorded delivery
-- [operations-action-plan.md](/Users/moldovancsaba/Projects/messmass/docs/operations/operations-action-plan.md) — execution queue and state memory
-- [operations-delivery-focus.md](/Users/moldovancsaba/Projects/messmass/docs/operations/operations-delivery-focus.md) — board-derived priority shortlist
-- [architecture.md](/Users/moldovancsaba/Projects/messmass/docs/architecture.md) — system architecture
-- [documentation-governance.md](/Users/moldovancsaba/Projects/messmass/docs/documentation-governance.md) — canonical doc rules
+- [README.md](../README.md) — local dev and high-level overview
+- [index.md](index.md) — canonical docs entrypoint
+- [messmass-codex-brain-dump.md](messmass-codex-brain-dump.md) — repo structure and current mental model refresher
+- [PROJECT_MANAGEMENT.md](PROJECT_MANAGEMENT.md) — SSOT rules and board cadence
+- [NEXT_AGENT_PROMPT.md](NEXT_AGENT_PROMPT.md) — continuation package from the last recorded delivery
+- [operations-action-plan.md](operations/operations-action-plan.md) — execution queue and state memory
+- [operations-delivery-focus.md](operations/operations-delivery-focus.md) — board-derived priority shortlist
+- [architecture.md](architecture.md) — system architecture
+- [documentation-governance.md](documentation-governance.md) — canonical doc rules
 
 ## Quick Runtime Pointers
 - Next.js app: `/app`, `/components`, `/lib`
@@ -65,6 +65,14 @@ You MUST completely read and obey `docs/coding-standards.md` and `docs/component
 - Style editor preview updates immediately for bar/pie CSS vars and includes Value Chain and Landing page sections.
 
 ## Handover Log
+
+## 2026-05-20 — Active documentation overhaul
+- **Objective:** Remove active-documentation drift across the current operator, feature, and API docs rather than only bumping versions.
+- **Admin guide rewrite:** Replaced `/docs/admin/admin-end-user-guide.md` so it now matches the live Admin Workspace, Reporting Workspace, and Analytics Workspace model, including staged Event and Partner setup flows and the current canonical routes.
+- **Bitly guide rewrite:** Replaced `/docs/features/features-bitly-integration-guide.md` with current link, association, sync, recalculation, and project-metrics behavior based on the live `/api/bitly/*` surface and `/admin/bitly`.
+- **API refresh:** Reworked `/docs/api/api-public.md` and `/docs/api/api-analytics.md` so they document the current public partner APIs, sponsorship hub, compare endpoints, trends, and insights summary behavior.
+- **Cross-doc cleanup:** Updated `/README.md`, `/docs/features/features-overview.md`, `/docs/features/features-authentication.md`, and `/docs/api/api-reference.md` to remove live inconsistencies such as the obsolete `ADMIN_PASSWORD` environment note and old API reference version metadata.
+- **Verification:** `npm run version:verify` passed and `python3 scripts/docs_link_check.py` regenerated `/docs/_meta/meta-docs-link-check.md` with `Broken links found: 0`.
 
 ## 2026-05-14 — Documentation consistency cleanup
 - **Objective:** Remove the highest-signal documentation drift across the repo entrypoints and state docs without guessing live board state.

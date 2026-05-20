@@ -1,11 +1,11 @@
 # {messmass} Authentication & Access Control System
 Status: Active
-Last Updated: 2026-03-14T22:00:00.000Z
+Last Updated: 2026-05-20T12:00:00.000Z
 Canonical: Yes
 Owner: Security
 
-**Version:** 12.1.0  
-**Last Updated:** 2026-03-14T22:00:00.000Z (UTC)  
+**Version:** 12.1.12  
+**Last Updated:** 2026-05-20T12:00:00.000Z (UTC)  
 **Status:** Production  
 **Maintainer:** Warp AI Development Team
 
@@ -42,8 +42,8 @@ Owner: Security
 - Graceful error handling and recovery
 
 ✅ **DoneIsBetter SSO (optional, #46)**
-- When `SSO_BASE_URL` is set: `/admin/dashboard` requires SSO session; other `/admin` routes support SSO or local password.
-- Login page shows "Sign in with DoneIsBetter"; callback at `/api/auth/sso/callback` validates token and sets `admin-session` + `auth-source=sso`.
+- When `SSO_BASE_URL` is set, the login page exposes `Sign in with DoneIsBetter`, `/api/auth/sso/login` redirects into the SSO provider, and `/api/auth/sso/callback` validates the token and sets `admin-session` + `auth-source=sso`.
+- Successful SSO login returns the user to `/admin` by default, or to another safe `/admin...` path supplied as the redirect target.
 - Page-password and share URLs unchanged.
 
 ✅ **V3 Multi-Tenant Authorization (v12.1.0+)**

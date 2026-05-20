@@ -1,6 +1,6 @@
 # Delivery Focus ({messmass})
 Status: Active
-Last Updated: 2026-05-14
+Last Updated: 2026-05-20
 Canonical: No
 Owner: Product
 
@@ -27,9 +27,9 @@ Latest shipped repo release:
   - README/workspace sync
 
 Current local documentation truth:
-- [README.md](/Users/moldovancsaba/Projects/messmass/README.md) reflects the current product/workspace model and shipped version.
-- [HANDOVER.md](/Users/moldovancsaba/Projects/messmass/docs/HANDOVER.md) reflects the latest repo truth and dated delivery log.
-- [operations-release-notes.md](/Users/moldovancsaba/Projects/messmass/docs/operations/operations-release-notes.md) reflects the latest shipped release.
+- [README.md](../../README.md) reflects the current product/workspace model and shipped version.
+- [HANDOVER.md](../HANDOVER.md) reflects the latest repo truth and dated delivery log.
+- [operations-release-notes.md](operations-release-notes.md) reflects the latest shipped release.
 
 ## Next Step Discipline
 

@@ -1,140 +1,269 @@
-# Analytics API (Aggregates & Compare)
+# Analytics API
 Status: Active
-Last Updated: 2026-02-21
-Canonical: No
+Last Updated: 2026-05-20
+Canonical: Yes
 Owner: Backend
 
-**Version:** 11.55.1  
-**OPS-ANALYTICS-01 Phase 1** — Contract for pre-aggregated analytics and comparison endpoints.
+**Version:** 12.1.12
 
----
+## Purpose
 
-## Overview
+This document covers the current analytics read APIs that power the `{messmass}` analytics workspace, sponsorship surfaces, and external-style compare endpoints.
 
-- **Performance target:** &lt;500ms for 1-year datasets (aggregates); &lt;300ms for event compare.
-- **Auth:** Admin session required for `/api/analytics/aggregates` and `/api/analytics/aggregates/partners`. Compare endpoints use rate limiting (see [api-public.md](api-public.md) for bearer token).
-- **Rate limits:** Read operations — 100 requests/minute per client (same as READ in api-public).
+## Access Model
 
----
+There are two access patterns in the current code:
 
-## Aggregates
+- admin-session required
+- rate-limited read endpoints without the same admin-session requirement
 
-### GET /api/analytics/aggregates
+### Admin-auth endpoints
 
-Time-bucketed metrics. **Auth:** Admin.
+- `GET /api/analytics/aggregates`
+- `GET /api/analytics/aggregates/partners`
+- `GET /api/analytics/insights/summary`
+- `GET /api/analytics/sponsorship-hub`
 
-| Param      | Type   | Description |
-|-----------|--------|-------------|
-| bucket    | string | `daily` \| `weekly` \| `monthly` \| `yearly` |
-| startDate | string | ISO 8601 date (e.g. `2025-01-01`) |
-| endDate   | string | ISO 8601 date |
-| partnerId | string | Filter by partner ID |
-| partnerIds| string | Comma-separated partner IDs |
-| hashtag   | string | Filter by hashtag |
-| year      | number | Filter by year |
-| month     | number | 1–12 |
-| limit     | number | Default 100, max 1000 |
-| offset    | number | Pagination |
-| sortBy    | string | `date` \| `attendance` \| `engagement` \| `merchandise` |
-| sortOrder | string | `asc` \| `desc` |
+### Rate-limited compare/trend endpoints
 
-**Response:** `{ data: TimeAggregatedMetrics[], metadata: { totalRecords, returnedRecords, hasMore, nextOffset, aggregatedAt, queryTimeMs } }`
+- `GET /api/analytics/compare`
+- `GET /api/analytics/compare/partners`
+- `GET /api/analytics/compare/periods`
+- `GET /api/analytics/trends`
 
-### GET /api/analytics/aggregates/partners
+These compare/trend routes use read-rate limiting and return `429` when throttled.
 
-Partner-level aggregates. **Auth:** Admin.
+## Core Endpoints
 
-| Param     | Type   | Description |
-|-----------|--------|-------------|
-| partnerId | string | Filter by partner |
-| limit     | number | Default 100, max 1000 |
-| offset    | number | Pagination |
-| sortBy    | string | `name` \| `totalEvents` \| `totalAttendees` \| `avgAttendees` |
-| sortOrder | string | `asc` \| `desc` |
+### `GET /api/analytics/aggregates`
 
-**Response:** `{ data: PartnerAnalytics[], metadata: { totalPartners, returnedRecords, hasMore, nextOffset, aggregatedAt, queryTimeMs } }`
+Time-bucketed aggregate metrics from `analytics_aggregates`.
 
----
+Query parameters:
 
-## Compare
+- `bucket` — `daily`, `weekly`, `monthly`, or `yearly`
+- `startDate`
+- `endDate`
+- `partnerId`
+- `partnerIds` — comma-separated
+- `hashtag`
+- `year`
+- `month`
+- `limit` — default `100`, max `1000`
+- `offset`
+- `sortBy` — `date`, `attendance`, `engagement`, `merchandise`
+- `sortOrder` — `asc` or `desc`
 
-### GET /api/analytics/compare
+Response shape:
 
-Event-to-event comparison (2–5 projects).
+```json
+{
+  "data": [],
+  "metadata": {
+    "totalRecords": 0,
+    "returnedRecords": 0,
+    "hasMore": false,
+    "aggregatedAt": "2026-05-20T10:00:00.000Z",
+    "queryTimeMs": 42
+  }
+}
+```
 
-| Param      | Type   | Description |
-|-----------|--------|-------------|
-| projectIds| string | **Required.** Comma-separated project IDs (2–5) |
-| metrics   | string | Optional. Comma-separated: `fans`, `merch`, `adValue`, `engagement`, `penetration` |
+### `GET /api/analytics/aggregates/partners`
 
-**Response:** `{ success, data: { metrics, events, rankings, deltas }, timestamp }`
+Partner-level analytics rollups from `partner_analytics`.
 
-### GET /api/analytics/compare/partners
+Query parameters:
 
-Partner-to-partner comparison (2–5 partners). **Added:** OPS-ANALYTICS-01 P1-2.
+- `partnerId`
+- `limit` — default `100`, max `1000`
+- `offset`
+- `sortBy` — `name`, `totalEvents`, `totalAttendees`, `avgAttendees`
+- `sortOrder` — `asc` or `desc`
 
-| Param      | Type   | Description |
-|-----------|--------|-------------|
-| partnerIds| string | **Required.** Comma-separated partner IDs (2–5) |
-| metrics   | string | Optional. Default: totalAttendees, totalEvents, avgMerchandiseRate, totalBitlyClicks |
+### `GET /api/analytics/sponsorship-hub`
 
-**Response:** `{ success, data: { partners, metrics, rankings, deltas }, metadata: { queryTimeMs }, timestamp }`
+Primary server endpoint for the Sponsorship Hub and related activation surfaces.
 
-### GET /api/analytics/compare/periods
+Query parameters:
 
-Period-to-period comparison. **Added:** OPS-ANALYTICS-01 P1-3.
+- `scopeType` — `portfolio`, `partner`, `organization`, `project`
+- `scopeId` — required for all non-portfolio scopes
+- `rangePreset` — `all`, `30d`, `90d`, `365d`
 
-| Param     | Type   | Description |
-|-----------|--------|-------------|
-| periodA   | string | **Required.** Start of period A (e.g. `2025-01` or `2025-01-15`) |
-| periodB   | string | **Required.** Start of period B (same format) |
-| bucket    | string | `daily` \| `weekly` \| `monthly` \| `yearly` (default: monthly) |
-| partnerId | string | Optional partner filter |
+Response pattern:
 
-**Response:** `{ success, data: { periodA: { label, range, metrics, recordCount }, periodB: { ... }, deltas, bucket, partnerId }, metadata: { queryTimeMs }, timestamp }`
+```json
+{
+  "success": true,
+  "data": {}
+}
+```
 
----
+This route currently powers:
 
-## Types (reference)
+- sponsorship rollups
+- scope summaries
+- partner/project breakdowns
+- partner activation and proof-of-performance data dependencies
 
-- **TimeAggregatedMetrics:** bucket, periodStart, periodEnd, partnerId, eventCount, totalAttendees, avgAttendees, totalImages, totalFans, totalMerchedFans, merchandiseRate, totalBitlyClicks, demographics, lastAggregatedAt, etc. See `lib/analytics-aggregates.types.ts`.
-- **PartnerAnalytics:** partnerId, partnerName, totalEvents, totalAttendees, avgAttendeesPerEvent, totalBitlyClicks, attendanceTrend, etc.
+## Compare Endpoints
 
----
+### `GET /api/analytics/compare`
 
-## Insights (Phase 2)
+Compares 2 to 5 projects.
 
-Rule-based anomaly/trend detection via `lib/insightsEngine.ts` and `lib/analytics-insights.ts`.
+Query parameters:
 
-### GET /api/analytics/insights/summary
+- `projectIds` — required, comma-separated, 2 to 5 IDs
+- `metrics` — optional, comma-separated
 
-Counts only (for dashboards). **Auth:** Admin.
+Default metrics when omitted:
 
-| Param     | Type   | Description |
-|-----------|--------|-------------|
-| partnerId | string | Optional — filter to partner's events |
-| period    | string | `7d` \| `30d` \| `90d` (default: 30d) |
-| maxEvents | number | Max events to analyze (default: 50, max: 100) |
+- `fans`
+- `merch`
+- `adValue`
+- `engagement`
+- `penetration`
 
-**Response:** `{ success, data: { totalInsights, criticalCount, highCount, mediumCount, lowCount, byCategory, eventsAnalyzed, period, partnerId }, metadata: { queryTimeMs }, timestamp }`
+Response shape:
 
-### GET /api/analytics/insights
+```json
+{
+  "success": true,
+  "data": {
+    "metrics": [],
+    "events": [],
+    "rankings": {},
+    "deltas": []
+  },
+  "timestamp": "2026-05-20T10:00:00.000Z"
+}
+```
 
-Global insights across recent events (full insight bodies). **Auth:** Admin. Query: `type`, `severity`, `limit`, `since`. See main insights route for details.
+### `GET /api/analytics/compare/partners`
 
-### GET /api/analytics/insights/partners/[partnerId]
+Compares 2 to 5 partners.
 
-Partner-level insights. **Auth:** Admin.
+Query parameters:
 
-### GET /api/analytics/executive/insights
+- `partnerIds` — required, comma-separated, 2 to 5 IDs
+- `metrics` — optional
 
-Executive aggregated insights (priority filter, period). Query: `priority`, `limit`, `period`. Rate-limited.
+Current default metrics:
 
----
+- `totalAttendees`
+- `totalEvents`
+- `avgMerchandiseRate`
+- `totalBitlyClicks`
 
-## Cron (aggregation job)
+### `GET /api/analytics/compare/periods`
 
-- **Endpoint:** `POST /api/cron/analytics-aggregation`
-- **Auth:** `Authorization: Bearer <CRON_SECRET>` or admin session.
-- **Query:** `?force=true` to force full re-aggregation.
-- **Schedule:** Run daily (e.g. 02:00 UTC). Configure in Vercel Cron or equivalent. See [ops-analytics-01-design.md](../operations/ops-analytics-01-design.md) P1-5.
+Compares two time periods.
+
+Query parameters:
+
+- `periodA` — required
+- `periodB` — required
+- `bucket` — `daily`, `weekly`, `monthly`, `yearly`, default `monthly`
+- `partnerId` — optional
+
+Supported period examples in current implementation:
+
+- `2026-01`
+- `2026`
+- `2026-01-15`
+
+## Trends And Insights
+
+### `GET /api/analytics/trends`
+
+Returns time-series analytics points.
+
+Query parameters:
+
+- `startDate` — required
+- `endDate` — required
+- `partnerId` — optional
+- `metrics` — optional
+- `groupBy` — `day`, `week`, or `month`
+
+Current default metrics:
+
+- `fans`
+- `merch`
+- `adValue`
+- `engagement`
+
+### `GET /api/analytics/insights/summary`
+
+Returns lightweight counts for dashboard surfaces.
+
+Query parameters:
+
+- `partnerId` — optional
+- `period` — `7d`, `30d`, `90d`, default `30d`
+- `maxEvents` — default `50`, max `100`
+
+Response shape:
+
+```json
+{
+  "success": true,
+  "data": {
+    "totalInsights": 0,
+    "criticalCount": 0,
+    "highCount": 0,
+    "mediumCount": 0,
+    "lowCount": 0,
+    "byCategory": {},
+    "eventsAnalyzed": 0,
+    "period": "30d",
+    "partnerId": null
+  },
+  "metadata": {
+    "queryTimeMs": 40
+  },
+  "timestamp": "2026-05-20T10:00:00.000Z"
+}
+```
+
+## Related Analytics Routes
+
+These are active in code but are not the main focus of this document:
+
+- `GET /api/analytics/insights`
+- `GET /api/analytics/insights/[projectId]`
+- `GET /api/analytics/insights/partners/[partnerId]`
+- `GET /api/analytics/executive/insights`
+- `GET /api/analytics/executive/metrics`
+- `GET /api/analytics/executive/top-events`
+- `GET /api/analytics/partner/[partnerId]`
+- `GET /api/analytics/event/[projectId]`
+- `GET /api/analytics/benchmarks`
+
+## Common Failure Modes
+
+- `401` on admin endpoints when no valid admin session exists
+- `400` for missing required IDs, invalid ID formats, or invalid date ranges
+- `404` when requested analytics documents are missing for a compared entity set
+- `429` on compare/trend endpoints when rate-limited
+- `500` for internal analytics calculation or database failures
+
+## Product Context
+
+These APIs back the current analytics workspace model:
+
+- `/admin/analytics`
+- `/admin/analytics/sponsorship`
+- `/admin/analytics/sponsorship/activation`
+- `/admin/analytics/executive`
+- `/admin/analytics/marketing`
+- `/admin/analytics/operations`
+- `/admin/analytics/insights`
+
+## Related Docs
+
+- `/Users/moldovancsaba/Projects/messmass/docs/admin/admin-end-user-guide.md`
+- `/Users/moldovancsaba/Projects/messmass/docs/api/api-reference.md`
+- `/Users/moldovancsaba/Projects/messmass/docs/features/features-bitly-integration-guide.md`

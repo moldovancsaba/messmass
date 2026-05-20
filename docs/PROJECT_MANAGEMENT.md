@@ -71,8 +71,8 @@ gh issue comment <ISSUE_NUMBER> --repo moldovancsaba/mvp-factory-control --body-
 ```
 
 ## 8. {messmass} Canonical Delivery Docs
-- [index.md](/Users/moldovancsaba/Projects/messmass/docs/index.md) — canonical docs entrypoint
-- [messmass-codex-brain-dump.md](/Users/moldovancsaba/Projects/messmass/docs/messmass-codex-brain-dump.md) — quick repo refresher
-- [operations-action-plan.md](/Users/moldovancsaba/Projects/messmass/docs/operations/operations-action-plan.md) — execution queue and state memory
-- [operations-delivery-focus.md](/Users/moldovancsaba/Projects/messmass/docs/operations/operations-delivery-focus.md) — board-derived priority view
-- [NEXT_AGENT_PROMPT.md](/Users/moldovancsaba/Projects/messmass/docs/NEXT_AGENT_PROMPT.md) — next-agent continuation package
+- [index.md](index.md) — canonical docs entrypoint
+- [messmass-codex-brain-dump.md](messmass-codex-brain-dump.md) — quick repo refresher
+- [operations-action-plan.md](operations/operations-action-plan.md) — execution queue and state memory
+- [operations-delivery-focus.md](operations/operations-delivery-focus.md) — board-derived priority view
+- [NEXT_AGENT_PROMPT.md](NEXT_AGENT_PROMPT.md) — next-agent continuation package

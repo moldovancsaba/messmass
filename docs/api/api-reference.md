@@ -325,6 +325,6 @@ Returns: `{ projects: [...], totalMatched: 150, nextOffset: 60 }`
 
 ---
 
-**{messmass} API Reference 12.1.0**  
-**Last Updated: 2026-03-14T22:00:00.000Z (UTC)**  
+**{messmass} API Reference 12.1.12**  
+**Last Updated: 2026-05-20T12:00:00.000Z (UTC)**  
 **© 2026 {messmass} Platform**

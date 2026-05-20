@@ -1,6 +1,6 @@
 # {messmass}
 Status: Active
-Last Updated: 2026-05-13
+Last Updated: 2026-05-20
 Canonical: No
 Owner: Product
 
@@ -83,13 +83,16 @@ Typical required variables:
 MONGODB_URI=mongodb+srv://...
 MONGODB_DB=messmass
 NEXT_PUBLIC_WS_URL=wss://your-websocket-server.com
-ADMIN_PASSWORD=your_secure_password
 BITLY_ACCESS_TOKEN=your_bitly_token
 BITLY_ORGANIZATION_GUID=your_org_guid
 BITLY_GROUP_GUID=your_group_guid
 SPORTSDB_API_KEY=your_api_key
 SPORTSDB_BASE_URL=https://www.thesportsdb.com/api/v1/json
 ```
+
+Notes:
+- admin authentication is DB-backed through the `users` collection; there is no canonical env-based `ADMIN_PASSWORD` login path anymore
+- optional DoneIsBetter SSO uses `SSO_BASE_URL` and related runtime configuration
 
 Many scripts expect `.env.local`. Prefer the existing `npm run ...` aliases instead of ad hoc command variants.
 

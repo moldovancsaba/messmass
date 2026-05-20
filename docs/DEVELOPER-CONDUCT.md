@@ -97,4 +97,4 @@ The developer’s task is not only to make the product run, but to ensure it is 
 - [documentation-governance.md](documentation-governance.md) — Canonical docs, deprecation, and metadata rules.
 - [coding-standards.md](coding-standards.md) — Code style and documentation expectations.
 - [architecture.md](architecture.md) — Platform architecture and approved stack.
-- [agentic/operating-rules/execution-playbook.md](../agentic/operating-rules/execution-playbook.md) — Mandatory execution loop: Investigate → Fix → Verify → Document → Report.
+- `agentic/operating-rules/execution-playbook.md` — historical reference path only. If that local playbook is absent in the current checkout, follow the canonical repo process docs instead: [documentation-governance.md](documentation-governance.md), [PROJECT_MANAGEMENT.md](PROJECT_MANAGEMENT.md), and [HANDOVER.md](HANDOVER.md).

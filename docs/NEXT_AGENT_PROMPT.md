@@ -2,7 +2,7 @@
 
 **Last Updated:** 2026-05-14  
 **Status:** Historical reference only  
-**Canonical current handover:** [docs/HANDOVER.md](/Users/moldovancsaba/Projects/messmass/docs/HANDOVER.md)
+**Canonical current handover:** [docs/HANDOVER.md](HANDOVER.md)
 
 This file is no longer the current execution handover.
 
@@ -25,12 +25,12 @@ It was originally created for a specific Builder-mode delivery on `2026-02-24`, 
 - current delivery instructions
 
 For those, always use:
-1. [docs/HANDOVER.md](/Users/moldovancsaba/Projects/messmass/docs/HANDOVER.md)
-2. [docs/PROJECT_MANAGEMENT.md](/Users/moldovancsaba/Projects/messmass/docs/PROJECT_MANAGEMENT.md)
-3. [docs/operations/operations-delivery-focus.md](/Users/moldovancsaba/Projects/messmass/docs/operations/operations-delivery-focus.md)
+1. [docs/HANDOVER.md](HANDOVER.md)
+2. [docs/PROJECT_MANAGEMENT.md](PROJECT_MANAGEMENT.md)
+3. [docs/operations/operations-delivery-focus.md](operations/operations-delivery-focus.md)
 
 ## Historical Builder References
 
-- [docs/messmass-codex-brain-dump.md](/Users/moldovancsaba/Projects/messmass/docs/messmass-codex-brain-dump.md)
-- [docs/plan-builder-mode-variable-inputs.md](/Users/moldovancsaba/Projects/messmass/docs/plan-builder-mode-variable-inputs.md)
-- [docs/features/features-reporting-builder.md](/Users/moldovancsaba/Projects/messmass/docs/features/features-reporting-builder.md)
+- [docs/messmass-codex-brain-dump.md](messmass-codex-brain-dump.md)
+- [docs/plan-builder-mode-variable-inputs.md](plan-builder-mode-variable-inputs.md)
+- [docs/features/features-reporting-builder.md](features/features-reporting-builder.md)
