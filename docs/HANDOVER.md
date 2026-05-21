@@ -2,7 +2,7 @@
 
 This file is onboarding plus operational context for the next agent. Keep it accurate when behavior, process, or current delivery state changes.
 
-**Last Updated:** 2026-05-21 (recap proof-gap slice)
+**Last Updated:** 2026-05-21 (recap delivery packet slice)
 
 ## 🚨 CRITICAL MUST-READ FOR ALL AGENTS: STYLING & COMPONENTS 🚨
 
@@ -29,7 +29,7 @@ You MUST completely read and obey `docs/coding-standards.md` and `docs/component
 
 ## Current Repo Truth
 - Active branch: `main`
-- Last known HEAD during this update: `5d25086c1`
+- Last known HEAD during this update: `be523e00a`
 - Working tree should be clean after the latest docs/board-alignment pass.
 - Most recent shipped repo work:
   - active documentation overhaul and canonical-doc refresh
@@ -103,6 +103,13 @@ Use this checklist for the next SSOT/board pass so the next agent does not have 
 - Style editor preview updates immediately for bar/pie CSS vars and includes Value Chain and Landing page sections.
 
 ## Handover Log
+
+## 2026-05-21 — Recap delivery packet export slice (#788)
+- **Objective:** Turn the dedicated recap brief into a stronger handoff artifact by giving users a structured sponsor-delivery packet they can download and forward outside the admin UI.
+- **Delivery packet export:** Updated `/app/admin/analytics/sponsorship/activation/recap/[partnerId]/page.tsx` so the recap brief now supports `Download Delivery Packet (.md)` in addition to the existing summary, email, and print actions.
+- **Packet contents:** The exported markdown packet includes package status, ready-project counts, fans, media value, Bitly clicks, latest ready event, ready event list, partner report URL, activation queue URL, and any remaining proof gaps with recommended fix links.
+- **Workflow effect:** Delivery and commercial users can now hand off a structured sponsor recap packet directly from the recap route instead of stitching together evidence manually from the admin workspace.
+- **Verification:** `npm run lint`, `npm run build`, and `npm run type-check` all passed. As usual in this repo, `type-check` was run after the successful build because `tsconfig.json` includes `.next/types/**/*.ts`.
 
 ## 2026-05-21 — Recap proof-gap delivery slice (#788)
 - **Objective:** Make partial sponsor recap packages actionable by showing exactly which partner events are still blocked and linking directly into the fix path from the dedicated recap brief.

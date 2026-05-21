@@ -80,6 +80,62 @@ function downloadRecapSummary(partner: SponsorshipActivationRecapPackage) {
   URL.revokeObjectURL(url);
 }
 
+function buildDeliveryPacketMarkdown(
+  partner: SponsorshipActivationRecapPackage,
+  readyCount: number,
+  gapItems: SponsorshipHubResponse['activationWorkspace']['proofItems']
+) {
+  const reportUrl = partner.actions.reportUrl ? buildAbsoluteUrl(partner.actions.reportUrl) : 'No partner report link available';
+  const activationUrl = partner.actions.activationUrl ? buildAbsoluteUrl(partner.actions.activationUrl) : 'No scoped activation queue available';
+
+  const sections = [
+    `# ${partner.name} sponsor recap packet`,
+    '',
+    '## Package summary',
+    `- Status: ${partner.packageStatus === 'ready' ? 'Full package ready' : 'Partial package ready'}`,
+    `- Ready projects: ${partner.readyProjectCount}/${partner.totalProjectCount}`,
+    `- Ready events in current proof set: ${readyCount}`,
+    `- Fans: ${partner.totalFans.toLocaleString('en-US')}`,
+    `- Media value: €${Math.round(partner.totalAdValue).toLocaleString('en-US')}`,
+    `- Bitly clicks: ${partner.totalBitlyClicks.toLocaleString('en-US')}`,
+    `- Latest ready event: ${formatDate(partner.latestEventDate)}`,
+    `- Partner report: ${reportUrl}`,
+    `- Activation queue: ${activationUrl}`,
+    '',
+    '## Included ready events',
+    ...(partner.readyProjectNames.length > 0 ? partner.readyProjectNames.map((name) => `- ${name}`) : ['- None yet']),
+  ];
+
+  if (gapItems.length > 0) {
+    sections.push('', '## Remaining proof gaps');
+    gapItems.forEach((item) => {
+      sections.push(`### ${item.eventName}`);
+      sections.push(`- Readiness: ${item.readinessScore.toFixed(0)}%`);
+      sections.push(`- Missing: ${item.missingReasons.join(', ')}`);
+      sections.push(`- Recommended fix: ${item.recommendedActionLabel}${item.recommendedActionUrl ? ` — ${buildAbsoluteUrl(item.recommendedActionUrl)}` : ''}`);
+    });
+  }
+
+  return sections.join('\n');
+}
+
+function downloadDeliveryPacket(
+  partner: SponsorshipActivationRecapPackage,
+  readyCount: number,
+  gapItems: SponsorshipHubResponse['activationWorkspace']['proofItems']
+) {
+  const filenameBase = partner.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') || 'partner-recap';
+  const blob = new Blob([buildDeliveryPacketMarkdown(partner, readyCount, gapItems)], { type: 'text/markdown;charset=utf-8' });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement('a');
+  link.href = url;
+  link.download = `${filenameBase}-delivery-packet.md`;
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+  URL.revokeObjectURL(url);
+}
+
 export default function SponsorshipActivationRecapBriefPage() {
   const params = useParams<{ partnerId: string }>();
   const searchParams = useSearchParams();
@@ -239,6 +295,13 @@ export default function SponsorshipActivationRecapBriefPage() {
                   </Link>
                   <button type="button" className={styles.actionButton} onClick={() => downloadRecapSummary(recapPackage)}>
                     Download Brief (.txt)
+                  </button>
+                  <button
+                    type="button"
+                    className={styles.actionButton}
+                    onClick={() => downloadDeliveryPacket(recapPackage, readyProofItems.length, gapProofItems)}
+                  >
+                    Download Delivery Packet (.md)
                   </button>
                   <button type="button" className={styles.actionButton} onClick={() => window.print()}>
                     Print / Export PDF
