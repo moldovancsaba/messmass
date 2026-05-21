@@ -2,7 +2,7 @@
 
 This file is onboarding plus operational context for the next agent. Keep it accurate when behavior, process, or current delivery state changes.
 
-**Last Updated:** 2026-05-21 (recap ready-event action slice)
+**Last Updated:** 2026-05-21 (recap proof-gap checklist slice)
 
 ## 🚨 CRITICAL MUST-READ FOR ALL AGENTS: STYLING & COMPONENTS 🚨
 
@@ -29,7 +29,7 @@ You MUST completely read and obey `docs/coding-standards.md` and `docs/component
 
 ## Current Repo Truth
 - Active branch: `main`
-- Last known HEAD during this update: `58cdc4e8e`
+- Last known HEAD during this update: `7ae304e27`
 - Working tree should be clean after the latest docs/board-alignment pass.
 - Most recent shipped repo work:
   - active documentation overhaul and canonical-doc refresh
@@ -103,6 +103,13 @@ Use this checklist for the next SSOT/board pass so the next agent does not have 
 - Style editor preview updates immediately for bar/pie CSS vars and includes Value Chain and Landing page sections.
 
 ## Handover Log
+
+## 2026-05-21 — Recap proof-gap checklist slice (#788)
+- **Objective:** Make partial recap packages easier to assign and recover by turning remaining delivery blockers into a copyable checklist with grouped gap counts.
+- **Checklist handoff:** Updated `/app/admin/analytics/sponsorship/activation/recap/[partnerId]/page.tsx` so partial packages now support `Copy Proof Gap Checklist`, generating an ops-ready list with readiness, missing reasons, recommended fixes, and direct action URLs per blocked event.
+- **Grouped gap summary:** The recap route now also shows package-level counts for `Missing Bitly`, `Missing Report`, and `Missing Metrics`, making the dominant blocker type visible without scanning every event.
+- **Workflow effect:** Commercial and operations users can now hand off a concrete recovery checklist for partial sponsor packages instead of verbally describing blocked proof items or manually transcribing them from the page.
+- **Verification:** `npm run lint`, `npm run build`, and `npm run type-check` all passed. As usual in this repo, `type-check` was run after the successful build because `tsconfig.json` includes `.next/types/**/*.ts`.
 
 ## 2026-05-21 — Recap ready-event action slice (#788)
 - **Objective:** Remove another navigation step from recap delivery by turning “included ready events” into direct operational/report actions instead of a static name list.

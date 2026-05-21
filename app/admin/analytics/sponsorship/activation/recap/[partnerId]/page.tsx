@@ -140,6 +140,31 @@ function downloadDeliveryPacket(
   URL.revokeObjectURL(url);
 }
 
+function buildProofGapChecklist(
+  partner: SponsorshipActivationRecapPackage,
+  gapItems: SponsorshipHubResponse['activationWorkspace']['proofItems']
+) {
+  if (gapItems.length === 0) {
+    return `${partner.name} proof gap checklist\nNo remaining proof gaps in the current scope.`;
+  }
+
+  return [
+    `${partner.name} proof gap checklist`,
+    '',
+    ...gapItems.map((item, index) => [
+      `${index + 1}. ${item.eventName}`,
+      `Readiness: ${item.readinessScore.toFixed(0)}%`,
+      `Missing: ${item.missingReasons.join(', ')}`,
+      `Recommended fix: ${item.recommendedActionLabel}`,
+      `Reason: ${item.recommendedActionReason}`,
+      item.recommendedActionUrl ? `Action URL: ${buildAbsoluteUrl(item.recommendedActionUrl)}` : null,
+      item.editorUrl ? `Editor: ${buildAbsoluteUrl(item.editorUrl)}` : null,
+      item.reportUrl ? `Report: ${buildAbsoluteUrl(item.reportUrl)}` : null,
+      '',
+    ].filter(Boolean).join('\n')),
+  ].join('\n');
+}
+
 export default function SponsorshipActivationRecapBriefPage() {
   const params = useParams<{ partnerId: string }>();
   const searchParams = useSearchParams();
@@ -149,6 +174,7 @@ export default function SponsorshipActivationRecapBriefPage() {
   const [error, setError] = useState('');
   const [copied, setCopied] = useState(false);
   const [copiedLink, setCopiedLink] = useState(false);
+  const [copiedChecklist, setCopiedChecklist] = useState(false);
 
   const scopeType = useMemo(() => parseScopeType(searchParams.get('scopeType')), [searchParams]);
   const scopeId = useMemo(() => searchParams.get('scopeId'), [searchParams]);
@@ -209,6 +235,22 @@ export default function SponsorshipActivationRecapBriefPage() {
     [partnerProofItems]
   );
 
+  const gapReasonSummary = useMemo(() => {
+    const summary = {
+      missingBitly: 0,
+      missingReport: 0,
+      missingMetrics: 0,
+    };
+
+    gapProofItems.forEach((item) => {
+      if (!item.hasBitlyEvidence) summary.missingBitly += 1;
+      if (!item.hasReportLink) summary.missingReport += 1;
+      if (!item.hasFanEvidence || !item.hasMediaEvidence) summary.missingMetrics += 1;
+    });
+
+    return summary;
+  }, [gapProofItems]);
+
   const activationHref = useMemo(() => {
     const query = new URLSearchParams({ scopeType, rangePreset });
     if (scopeType !== 'portfolio' && scopeId) {
@@ -241,6 +283,18 @@ export default function SponsorshipActivationRecapBriefPage() {
       window.setTimeout(() => setCopiedLink(false), 2000);
     } catch (copyError) {
       console.error('Failed to copy recap brief link:', copyError);
+    }
+  };
+
+  const handleCopyProofGapChecklist = async () => {
+    if (!recapPackage) return;
+
+    try {
+      await navigator.clipboard.writeText(buildProofGapChecklist(recapPackage, gapProofItems));
+      setCopiedChecklist(true);
+      window.setTimeout(() => setCopiedChecklist(false), 2000);
+    } catch (copyError) {
+      console.error('Failed to copy proof gap checklist:', copyError);
     }
   };
 
@@ -310,6 +364,11 @@ export default function SponsorshipActivationRecapBriefPage() {
                   <button type="button" className={styles.actionButton} onClick={handleCopyBriefLink}>
                     {copiedLink ? 'Copied Brief Link' : 'Copy Brief Link'}
                   </button>
+                  {gapProofItems.length > 0 && (
+                    <button type="button" className={styles.actionButton} onClick={handleCopyProofGapChecklist}>
+                      {copiedChecklist ? 'Copied Gap Checklist' : 'Copy Proof Gap Checklist'}
+                    </button>
+                  )}
                   <Link href={buildRecapEmailDraft(recapPackage)} className={styles.actionLink}>
                     Draft Delivery Email
                   </Link>
@@ -467,6 +526,18 @@ export default function SponsorshipActivationRecapBriefPage() {
                     <div className={styles.insightItem}>
                       <span className={styles.insightLabel}>Delivery Status</span>
                       <span className={styles.insightValue}>{recapPackage.packageStatus === 'ready' ? 'Ready to send' : 'Needs follow-up'}</span>
+                    </div>
+                    <div className={styles.insightItem}>
+                      <span className={styles.insightLabel}>Missing Bitly</span>
+                      <span className={styles.insightValue}>{gapReasonSummary.missingBitly}</span>
+                    </div>
+                    <div className={styles.insightItem}>
+                      <span className={styles.insightLabel}>Missing Report</span>
+                      <span className={styles.insightValue}>{gapReasonSummary.missingReport}</span>
+                    </div>
+                    <div className={styles.insightItem}>
+                      <span className={styles.insightLabel}>Missing Metrics</span>
+                      <span className={styles.insightValue}>{gapReasonSummary.missingMetrics}</span>
                     </div>
                   </div>
                 </div>
