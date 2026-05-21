@@ -137,6 +137,29 @@
   color: var(--mm-text-secondary);
 }
 
+.proofList {
+  display: grid;
+  gap: 14px;
+}
+
+.proofItem {
+  display: grid;
+  gap: 10px;
+  padding: 16px;
+  border-radius: 16px;
+  background: var(--mm-surface-secondary);
+  border: 1px solid var(--mm-border-secondary);
+}
+
+.proofHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+  color: var(--mm-text-primary);
+}
+
 .emptyState {
   margin: 0;
   color: var(--mm-text-secondary);

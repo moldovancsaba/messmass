@@ -2,7 +2,7 @@
 
 This file is onboarding plus operational context for the next agent. Keep it accurate when behavior, process, or current delivery state changes.
 
-**Last Updated:** 2026-05-21 (template lifecycle + setup handoff slice)
+**Last Updated:** 2026-05-21 (recap proof-gap slice)
 
 ## 🚨 CRITICAL MUST-READ FOR ALL AGENTS: STYLING & COMPONENTS 🚨
 
@@ -103,6 +103,12 @@ Use this checklist for the next SSOT/board pass so the next agent does not have 
 - Style editor preview updates immediately for bar/pie CSS vars and includes Value Chain and Landing page sections.
 
 ## Handover Log
+
+## 2026-05-21 — Recap proof-gap delivery slice (#788)
+- **Objective:** Make partial sponsor recap packages actionable by showing exactly which partner events are still blocked and linking directly into the fix path from the dedicated recap brief.
+- **Recap delivery hardening:** Updated `/app/admin/analytics/sponsorship/activation/recap/[partnerId]/page.tsx` and its scoped stylesheet so the recap brief now shows partner-specific delivery readiness, open proof gaps, missing reasons, and direct actions into the recommended fix, editor, or report route.
+- **Workflow effect:** Delivery teams can now move from a partial recap package directly into the blocked events instead of bouncing back to the broader activation workspace to rediscover what is missing.
+- **Verification:** `npm run lint`, `npm run build`, and `npm run type-check` all passed. As usual in this repo, `type-check` was run after the successful build because `tsconfig.json` includes `.next/types/**/*.ts`.
 
 ## 2026-05-21 — Template lifecycle, setup handoff, and recap artifact slice (#788, #72, #64, #63, #820)
 - **Objective:** Ship another concrete usability/foundation pass across the active work: safer report-template lifecycle operations, faster next actions after Event/Partner creation, and a stronger sponsor-delivery recap artifact.

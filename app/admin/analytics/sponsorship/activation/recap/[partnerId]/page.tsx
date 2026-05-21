@@ -133,6 +133,21 @@ export default function SponsorshipActivationRecapBriefPage() {
     [hubData, partnerId]
   );
 
+  const partnerProofItems = useMemo(
+    () => hubData?.activationWorkspace.proofItems.filter((item) => item.partnerId === partnerId) || [],
+    [hubData, partnerId]
+  );
+
+  const readyProofItems = useMemo(
+    () => partnerProofItems.filter((item) => item.readinessScore === 100),
+    [partnerProofItems]
+  );
+
+  const gapProofItems = useMemo(
+    () => partnerProofItems.filter((item) => item.readinessScore < 100),
+    [partnerProofItems]
+  );
+
   const activationHref = useMemo(() => {
     const query = new URLSearchParams({ scopeType, rangePreset });
     if (scopeType !== 'portfolio' && scopeId) {
@@ -317,6 +332,87 @@ export default function SponsorshipActivationRecapBriefPage() {
                 )}
               </div>
             </ColoredCard>
+
+            <div className={styles.doubleGrid}>
+              <ColoredCard accentColor="var(--mm-chart-orange)" hoverable={false}>
+                <div className={styles.sectionCard}>
+                  <div className={styles.sectionHeader}>
+                    <h2 className={styles.sectionTitle}>Delivery Readiness</h2>
+                    <p className={styles.sectionSubtitle}>
+                      A package-level view of what is already sponsor-safe and what still needs operational proof.
+                    </p>
+                  </div>
+                  <div className={styles.insightGrid}>
+                    <div className={styles.insightItem}>
+                      <span className={styles.insightLabel}>Ready Events</span>
+                      <span className={styles.insightValue}>{readyProofItems.length}</span>
+                    </div>
+                    <div className={styles.insightItem}>
+                      <span className={styles.insightLabel}>Open Gaps</span>
+                      <span className={styles.insightValue}>{gapProofItems.length}</span>
+                    </div>
+                    <div className={styles.insightItem}>
+                      <span className={styles.insightLabel}>Ready Rate</span>
+                      <span className={styles.insightValue}>
+                        {partnerProofItems.length > 0 ? Math.round((readyProofItems.length / partnerProofItems.length) * 100) : 0}%
+                      </span>
+                    </div>
+                    <div className={styles.insightItem}>
+                      <span className={styles.insightLabel}>Delivery Status</span>
+                      <span className={styles.insightValue}>{recapPackage.packageStatus === 'ready' ? 'Ready to send' : 'Needs follow-up'}</span>
+                    </div>
+                  </div>
+                </div>
+              </ColoredCard>
+
+              <ColoredCard accentColor="var(--mm-color-primary-500)" hoverable={false}>
+                <div className={styles.sectionCard}>
+                  <div className={styles.sectionHeader}>
+                    <h2 className={styles.sectionTitle}>Remaining Proof Gaps</h2>
+                    <p className={styles.sectionSubtitle}>
+                      Use these direct fix paths when the package is not fully ready for external delivery.
+                    </p>
+                  </div>
+                  {gapProofItems.length > 0 ? (
+                    <div className={styles.proofList}>
+                      {gapProofItems.map((item) => (
+                        <div key={item.projectId} className={styles.proofItem}>
+                          <div className={styles.proofHeader}>
+                            <strong>{item.eventName}</strong>
+                            <span>{item.readinessScore.toFixed(0)}% ready</span>
+                          </div>
+                          <p className={styles.detailNote}>
+                            Missing: {item.missingReasons.join(', ')}
+                          </p>
+                          <p className={styles.detailNote}>
+                            Recommended fix: {item.recommendedActionReason}
+                          </p>
+                          <div className={styles.actionRow}>
+                            {item.recommendedActionUrl && (
+                              <Link href={item.recommendedActionUrl} className={styles.actionLink}>
+                                {item.recommendedActionLabel}
+                              </Link>
+                            )}
+                            {item.editorUrl && (
+                              <Link href={item.editorUrl} className={styles.actionLink}>
+                                Open Editor
+                              </Link>
+                            )}
+                            {item.reportUrl && (
+                              <Link href={item.reportUrl} className={styles.actionLink}>
+                                Open Report
+                              </Link>
+                            )}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <p className={styles.emptyState}>No open proof gaps remain for this partner in the current scope.</p>
+                  )}
+                </div>
+              </ColoredCard>
+            </div>
           </>
         )}
       </div>
