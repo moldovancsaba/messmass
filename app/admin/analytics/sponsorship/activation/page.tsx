@@ -122,6 +122,7 @@ export default function SponsorshipActivationWorkspacePage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [copiedRecapPartnerId, setCopiedRecapPartnerId] = useState<string | null>(null);
+  const [selectedRecapPartnerId, setSelectedRecapPartnerId] = useState<string | null>(null);
   const [statusFilter, setStatusFilter] = useState<'all' | 'ready' | 'missing_bitly' | 'missing_report' | 'missing_metrics'>(() => parseStatusFilter(searchParams.get('statusFilter')));
   const [partnerFilter, setPartnerFilter] = useState(() => searchParams.get('partnerFilter') || 'all');
 
@@ -231,6 +232,24 @@ export default function SponsorshipActivationWorkspacePage() {
   const filteredRecapPackages = useMemo(
     () => (hubData?.activationWorkspace.recapPackages || []).filter((partner) => partnerFilter === 'all' || partner.partnerId === partnerFilter),
     [hubData, partnerFilter]
+  );
+
+  useEffect(() => {
+    if (filteredRecapPackages.length === 0) {
+      setSelectedRecapPartnerId(null);
+      return;
+    }
+
+    if (selectedRecapPartnerId && filteredRecapPackages.some((item) => item.partnerId === selectedRecapPartnerId)) {
+      return;
+    }
+
+    setSelectedRecapPartnerId(filteredRecapPackages[0].partnerId);
+  }, [filteredRecapPackages, selectedRecapPartnerId]);
+
+  const selectedRecapPackage = useMemo(
+    () => filteredRecapPackages.find((item) => item.partnerId === selectedRecapPartnerId) || filteredRecapPackages[0] || null,
+    [filteredRecapPackages, selectedRecapPartnerId]
   );
 
   const handleCopyRecapSummary = async (partner: SponsorshipHubResponse['activationWorkspace']['recapPackages'][number]) => {
@@ -426,7 +445,7 @@ export default function SponsorshipActivationWorkspacePage() {
                         key={partner.partnerId}
                         accentColor="var(--mm-color-success-500, #16a34a)"
                         hoverable={false}
-                        className={styles.projectResultCard}
+                        className={`${styles.projectResultCard} ${selectedRecapPackage?.partnerId === partner.partnerId ? styles.projectResultActive : ''}`}
                       >
                         <div className={styles.detailCard}>
                           <div className={styles.detailMeta}>
@@ -455,6 +474,13 @@ export default function SponsorshipActivationWorkspacePage() {
                             )}
                           </div>
                           <div className={styles.actionRow}>
+                            <button
+                              type="button"
+                              className={styles.filterButton}
+                              onClick={() => setSelectedRecapPartnerId(partner.partnerId)}
+                            >
+                              {selectedRecapPackage?.partnerId === partner.partnerId ? 'Previewing Brief' : 'Preview Brief'}
+                            </button>
                             {partner.actions.reportUrl && (
                               <Link href={partner.actions.reportUrl} className={styles.actionLink}>Open Partner Report</Link>
                             )}
@@ -484,6 +510,85 @@ export default function SponsorshipActivationWorkspacePage() {
                 </div>
               </div>
             </ColoredCard>
+
+            {selectedRecapPackage && (
+              <ColoredCard accentColor="var(--mm-color-success-500, #16a34a)" hoverable={false}>
+                <div className={styles.sectionCard}>
+                  <div className={styles.sectionHeader}>
+                    <h2 className={styles.sectionTitle}>Recipient-Ready Recap Brief</h2>
+                    <p className={styles.sectionSubtitle}>
+                      A concise sponsor-facing handoff built from the currently selected recap package.
+                    </p>
+                  </div>
+                  <div className={styles.doubleGrid}>
+                    <div className={styles.detailCard}>
+                      <h3 className={styles.detailTitle}>
+                        {selectedRecapPackage.emoji ? `${selectedRecapPackage.emoji} ` : ''}{selectedRecapPackage.name}
+                      </h3>
+                      <div className={styles.noteList}>
+                        <p className={styles.detailNote}>
+                          {selectedRecapPackage.packageStatus === 'ready'
+                            ? 'This package is ready for sponsor-facing sharing.'
+                            : 'This package is partially ready and may still need follow-up before external delivery.'}
+                        </p>
+                        <p className={styles.detailNote}>
+                          {selectedRecapPackage.readyProjectCount} of {selectedRecapPackage.totalProjectCount} scoped projects are fully ready.
+                        </p>
+                        <p className={styles.detailNote}>
+                          Latest ready event: {formatDate(selectedRecapPackage.latestEventDate)}
+                        </p>
+                      </div>
+                    </div>
+                    <div className={styles.detailCard}>
+                      <div className={styles.insightGrid}>
+                        <div className={styles.insightItem}>
+                          <span className={styles.insightLabel}>Fans</span>
+                          <span className={styles.insightValue}>{selectedRecapPackage.totalFans.toLocaleString('en-US')}</span>
+                        </div>
+                        <div className={styles.insightItem}>
+                          <span className={styles.insightLabel}>Media Value</span>
+                          <span className={styles.insightValue}>€{Math.round(selectedRecapPackage.totalAdValue).toLocaleString('en-US')}</span>
+                        </div>
+                        <div className={styles.insightItem}>
+                          <span className={styles.insightLabel}>Bitly Clicks</span>
+                          <span className={styles.insightValue}>{selectedRecapPackage.totalBitlyClicks.toLocaleString('en-US')}</span>
+                        </div>
+                        <div className={styles.insightItem}>
+                          <span className={styles.insightLabel}>Package Status</span>
+                          <span className={styles.insightValue}>{selectedRecapPackage.packageStatus === 'ready' ? 'Ready' : 'Partial'}</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div className={styles.noteList}>
+                    <p className={styles.detailNote}>
+                      Included ready events: {selectedRecapPackage.readyProjectNames.join(', ') || 'None'}
+                    </p>
+                    <p className={styles.detailNote}>
+                      Recommended delivery path: share the partner report first, then use the activation queue if any additional proof items still need to be completed.
+                    </p>
+                  </div>
+                  <div className={styles.actionRow}>
+                    {selectedRecapPackage.actions.reportUrl && (
+                      <Link href={selectedRecapPackage.actions.reportUrl} className={styles.actionLink}>Open Partner Report</Link>
+                    )}
+                    <button
+                      type="button"
+                      className={styles.filterButton}
+                      onClick={() => void handleCopyRecapSummary(selectedRecapPackage)}
+                    >
+                      Copy Brief Summary
+                    </button>
+                    <Link href={buildRecapEmailDraft(selectedRecapPackage)} className={styles.actionLink}>
+                      Draft Delivery Email
+                    </Link>
+                    {selectedRecapPackage.actions.activationUrl && (
+                      <Link href={selectedRecapPackage.actions.activationUrl} className={styles.actionLink}>Open Partner Activation Queue</Link>
+                    )}
+                  </div>
+                </div>
+              </ColoredCard>
+            )}
 
             <ColoredCard accentColor="var(--mm-color-secondary-500)" hoverable={false}>
               <div className={styles.sectionCard}>

@@ -2,7 +2,7 @@
 
 This file is onboarding plus operational context for the next agent. Keep it accurate when behavior, process, or current delivery state changes.
 
-**Last Updated:** 2026-05-20 (board/documentation alignment)
+**Last Updated:** 2026-05-21 (board sync + recap brief)
 
 ## 🚨 CRITICAL MUST-READ FOR ALL AGENTS: STYLING & COMPONENTS 🚨
 
@@ -103,6 +103,13 @@ Use this checklist for the next SSOT/board pass so the next agent does not have 
 - Style editor preview updates immediately for bar/pie CSS vars and includes Value Chain and Landing page sections.
 
 ## Handover Log
+
+## 2026-05-21 — Board sync + recap brief slice (#788)
+- **Objective:** Keep the live GitHub board aligned with the shipped `#788` progress, then continue the recap-delivery path with a stronger recipient-ready surface.
+- **Board update:** Confirmed `#788` still correctly stays `In Progress (NOW)` with `dod:in-progress` and posted a fresh evidence comment summarizing shipped commits `b2d4f6525`, `bc0c51e49`, `69c06acd3`, and `4e0140c36`: <https://github.com/moldovancsaba/mvp-factory-control/issues/788#issuecomment-4506928896>
+- **Recap brief UI:** Updated `/app/admin/analytics/sponsorship/activation/page.tsx` so partner recap packages now support a dedicated `Recipient-Ready Recap Brief` preview with package status, totals, included ready events, and direct delivery actions.
+- **Workflow effect:** Delivery teams can now move from package identification into a presentation-ready brief without leaving the activation workspace.
+- **Verification:** `npm run lint`, `npm run build`, and `npm run type-check` all passed. As usual in this repo, `type-check` was rerun after the successful build because `tsconfig.json` includes `.next/types/**/*.ts`.
 
 ## 2026-05-20 — Partner Activation queue hardening slice (#788)
 - **Objective:** Make the activation workspace operationally actionable by exposing the real next fix path for each project instead of only showing passive gap labels.
