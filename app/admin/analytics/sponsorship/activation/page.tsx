@@ -127,6 +127,15 @@ function buildRecapBriefHref(
   return `/admin/analytics/sponsorship/activation/recap/${partnerId}?${params.toString()}`;
 }
 
+function buildAbsoluteRecapBriefUrl(
+  partnerId: string,
+  scopeType: SponsorshipHubScopeType,
+  scopeId: string | null,
+  rangePreset: SponsorshipHubRangePreset
+) {
+  return buildAbsoluteUrl(buildRecapBriefHref(partnerId, scopeType, scopeId, rangePreset));
+}
+
 export default function SponsorshipActivationWorkspacePage() {
   const router = useRouter();
   const pathname = usePathname();
@@ -135,6 +144,7 @@ export default function SponsorshipActivationWorkspacePage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [copiedRecapPartnerId, setCopiedRecapPartnerId] = useState<string | null>(null);
+  const [copiedRecapLinkPartnerId, setCopiedRecapLinkPartnerId] = useState<string | null>(null);
   const [selectedRecapPartnerId, setSelectedRecapPartnerId] = useState<string | null>(null);
   const [statusFilter, setStatusFilter] = useState<'all' | 'ready' | 'missing_bitly' | 'missing_report' | 'missing_metrics'>(() => parseStatusFilter(searchParams.get('statusFilter')));
   const [partnerFilter, setPartnerFilter] = useState(() => searchParams.get('partnerFilter') || 'all');
@@ -272,6 +282,16 @@ export default function SponsorshipActivationWorkspacePage() {
       window.setTimeout(() => setCopiedRecapPartnerId((current) => (current === partner.partnerId ? null : current)), 2000);
     } catch (copyError) {
       console.error('Failed to copy recap summary:', copyError);
+    }
+  };
+
+  const handleCopyRecapLink = async (partner: SponsorshipHubResponse['activationWorkspace']['recapPackages'][number]) => {
+    try {
+      await navigator.clipboard.writeText(buildAbsoluteRecapBriefUrl(partner.partnerId, scopeType, scopeId, rangePreset));
+      setCopiedRecapLinkPartnerId(partner.partnerId);
+      window.setTimeout(() => setCopiedRecapLinkPartnerId((current) => (current === partner.partnerId ? null : current)), 2000);
+    } catch (copyError) {
+      console.error('Failed to copy recap brief link:', copyError);
     }
   };
 
@@ -485,6 +505,9 @@ export default function SponsorshipActivationWorkspacePage() {
                             {copiedRecapPartnerId === partner.partnerId && (
                               <p className={styles.detailNote}>Recap summary copied to clipboard.</p>
                             )}
+                            {copiedRecapLinkPartnerId === partner.partnerId && (
+                              <p className={styles.detailNote}>Recap brief link copied to clipboard.</p>
+                            )}
                           </div>
                           <div className={styles.actionRow}>
                             <button
@@ -509,6 +532,13 @@ export default function SponsorshipActivationWorkspacePage() {
                               onClick={() => void handleCopyRecapSummary(partner)}
                             >
                               Copy Recap Summary
+                            </button>
+                            <button
+                              type="button"
+                              className={styles.filterButton}
+                              onClick={() => void handleCopyRecapLink(partner)}
+                            >
+                              Copy Brief Link
                             </button>
                             <Link href={buildRecapEmailDraft(partner)} className={styles.actionLink}>
                               Draft Recap Email
@@ -603,6 +633,13 @@ export default function SponsorshipActivationWorkspacePage() {
                       onClick={() => void handleCopyRecapSummary(selectedRecapPackage)}
                     >
                       Copy Brief Summary
+                    </button>
+                    <button
+                      type="button"
+                      className={styles.filterButton}
+                      onClick={() => void handleCopyRecapLink(selectedRecapPackage)}
+                    >
+                      {copiedRecapLinkPartnerId === selectedRecapPackage.partnerId ? 'Copied Brief Link' : 'Copy Brief Link'}
                     </button>
                     <Link href={buildRecapEmailDraft(selectedRecapPackage)} className={styles.actionLink}>
                       Draft Delivery Email

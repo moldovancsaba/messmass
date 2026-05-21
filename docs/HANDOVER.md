@@ -2,7 +2,7 @@
 
 This file is onboarding plus operational context for the next agent. Keep it accurate when behavior, process, or current delivery state changes.
 
-**Last Updated:** 2026-05-21 (recap delivery packet slice)
+**Last Updated:** 2026-05-21 (recap brief link handoff slice)
 
 ## 🚨 CRITICAL MUST-READ FOR ALL AGENTS: STYLING & COMPONENTS 🚨
 
@@ -29,7 +29,7 @@ You MUST completely read and obey `docs/coding-standards.md` and `docs/component
 
 ## Current Repo Truth
 - Active branch: `main`
-- Last known HEAD during this update: `be523e00a`
+- Last known HEAD during this update: `a51d7e80f`
 - Working tree should be clean after the latest docs/board-alignment pass.
 - Most recent shipped repo work:
   - active documentation overhaul and canonical-doc refresh
@@ -103,6 +103,13 @@ Use this checklist for the next SSOT/board pass so the next agent does not have 
 - Style editor preview updates immediately for bar/pie CSS vars and includes Value Chain and Landing page sections.
 
 ## Handover Log
+
+## 2026-05-21 — Recap brief link handoff slice (#788)
+- **Objective:** Remove another step from recap coordination by letting operators copy the exact scoped brief URL directly from both the activation workspace and the dedicated recap page.
+- **Activation workspace handoff:** Updated `/app/admin/analytics/sponsorship/activation/page.tsx` so each partner recap package and the selected recap preview now support `Copy Brief Link`, using the canonical scoped recap route with the current scope and date-window query state preserved.
+- **Dedicated recap route handoff:** Updated `/app/admin/analytics/sponsorship/activation/recap/[partnerId]/page.tsx` so the route-level brief also supports `Copy Brief Link` alongside summary, email, download, and print actions.
+- **Workflow effect:** Delivery, commercial, and ops users can now pass around the exact recap surface for a partner without asking teammates to reconstruct filters or navigate back through the activation workspace first.
+- **Verification:** `npm run lint`, `npm run build`, and `npm run type-check` all passed. As usual in this repo, `type-check` was run after the successful build because `tsconfig.json` includes `.next/types/**/*.ts`.
 
 ## 2026-05-21 — Recap delivery packet export slice (#788)
 - **Objective:** Turn the dedicated recap brief into a stronger handoff artifact by giving users a structured sponsor-delivery packet they can download and forward outside the admin UI.

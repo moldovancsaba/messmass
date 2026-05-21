@@ -144,6 +144,7 @@ export default function SponsorshipActivationRecapBriefPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [copied, setCopied] = useState(false);
+  const [copiedLink, setCopiedLink] = useState(false);
 
   const scopeType = useMemo(() => parseScopeType(searchParams.get('scopeType')), [searchParams]);
   const scopeId = useMemo(() => searchParams.get('scopeId'), [searchParams]);
@@ -227,6 +228,18 @@ export default function SponsorshipActivationRecapBriefPage() {
     }
   };
 
+  const handleCopyBriefLink = async () => {
+    if (typeof window === 'undefined') return;
+
+    try {
+      await navigator.clipboard.writeText(window.location.href);
+      setCopiedLink(true);
+      window.setTimeout(() => setCopiedLink(false), 2000);
+    } catch (copyError) {
+      console.error('Failed to copy recap brief link:', copyError);
+    }
+  };
+
   return (
     <div className="page-container">
       <UnifiedAdminHeroWithSearch
@@ -289,6 +302,9 @@ export default function SponsorshipActivationRecapBriefPage() {
                 <div className={styles.actionRow}>
                   <button type="button" className={styles.actionButton} onClick={handleCopySummary}>
                     {copied ? 'Copied Summary' : 'Copy Brief Summary'}
+                  </button>
+                  <button type="button" className={styles.actionButton} onClick={handleCopyBriefLink}>
+                    {copiedLink ? 'Copied Brief Link' : 'Copy Brief Link'}
                   </button>
                   <Link href={buildRecapEmailDraft(recapPackage)} className={styles.actionLink}>
                     Draft Delivery Email
