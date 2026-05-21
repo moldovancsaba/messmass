@@ -15,6 +15,11 @@ export interface AdminNavSection {
   items: AdminNavItem[];
 }
 
+export interface SidebarNavGroup {
+  parent: AdminNavItem;
+  children: AdminNavItem[];
+}
+
 export const adminNavSections: AdminNavSection[] = [
   {
     key: 'operations',
@@ -312,4 +317,20 @@ export function getAnalyticsWorkspaceItems(): AdminNavItem[] {
     partnerActivationItem,
     ...analyticsItems.slice(sponsorshipHubIndex + 1),
   ];
+}
+
+export function getSidebarNavGroups(section: AdminNavSection): SidebarNavGroup[] {
+  if (section.key === 'analytics' || section.key === 'reports') {
+    const [parent, ...children] = section.items;
+    if (!parent) {
+      return [];
+    }
+
+    return [{ parent, children }];
+  }
+
+  return section.items.map((item) => ({
+    parent: item,
+    children: [],
+  }));
 }

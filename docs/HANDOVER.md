@@ -2,7 +2,7 @@
 
 This file is onboarding plus operational context for the next agent. Keep it accurate when behavior, process, or current delivery state changes.
 
-**Last Updated:** 2026-05-21 (recap proof-gap checklist slice)
+**Last Updated:** 2026-05-21 (shared menu normalization slice)
 
 ## 🚨 CRITICAL MUST-READ FOR ALL AGENTS: STYLING & COMPONENTS 🚨
 
@@ -29,7 +29,7 @@ You MUST completely read and obey `docs/coding-standards.md` and `docs/component
 
 ## Current Repo Truth
 - Active branch: `main`
-- Last known HEAD during this update: `7ae304e27`
+- Last known HEAD during this update: `c8abdd66d`
 - Working tree should be clean after the latest docs/board-alignment pass.
 - Most recent shipped repo work:
   - active documentation overhaul and canonical-doc refresh
@@ -103,6 +103,14 @@ Use this checklist for the next SSOT/board pass so the next agent does not have 
 - Style editor preview updates immediately for bar/pie CSS vars and includes Value Chain and Landing page sections.
 
 ## Handover Log
+
+## 2026-05-21 — Shared menu normalization slice (#72, #816, #817, #818)
+- **Objective:** Fix the inconsistent admin menu hierarchy and spacing issues at the shared-component level so sidebar and workspace menus behave like one coherent navigation system.
+- **Sidebar hierarchy fix:** Updated `/components/Sidebar.tsx`, `/components/Sidebar.module.css`, and `/lib/adminNavigation.ts` so analytics and reporting children now render as true nested submenus under `Analytics Home` and `Reporting Workspace` instead of flat peer rows. Section titles were restored, child indentation is explicit, active states now apply at both group and child level, and icon/text alignment was normalized.
+- **Footer cleanup:** The sidebar footer now uses the current year dynamically and a more compact layout, reducing the visual clash between navigation and version metadata.
+- **Workspace menu consistency:** Updated `/components/AnalyticsWorkspaceNav.module.css` and `/components/ReportingWorkspaceNav.module.css` so the in-page workspace menus use the same stronger chip sizing, hover motion, and active emphasis as the sidebar navigation.
+- **Workflow effect:** Operators can now scan menu structure more quickly, understand parent/child relationships without guessing, and move between sidebar and in-page menus without hitting a different visual grammar.
+- **Verification:** `npm run lint`, `npm run build`, and `npm run type-check` all passed. As usual in this repo, `type-check` was run after the successful build because `tsconfig.json` includes `.next/types/**/*.ts`.
 
 ## 2026-05-21 — Recap proof-gap checklist slice (#788)
 - **Objective:** Make partial recap packages easier to assign and recover by turning remaining delivery blockers into a copyable checklist with grouped gap counts.

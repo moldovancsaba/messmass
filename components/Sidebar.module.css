@@ -186,7 +186,7 @@
   flex: 1;
   overflow-y: auto;
   overflow-x: hidden;
-  padding: var(--mm-space-4) 0;
+  padding: var(--mm-space-4) 0 var(--mm-space-5);
 }
 
 /* What: Hide scrollbar for cleaner look
@@ -208,22 +208,18 @@
   background: var(--mm-gray-400);
 }
 
-.navSection {
-  /* What: Navigation section grouping
-     Why: Logical organization of nav items */
-  margin-bottom: var(--mm-space-6);
-}
-
 .sectionTitle {
-  /* What: Section heading
-     Why: Uppercase label for section groups */
   padding: 0 var(--mm-space-4);
-  margin-bottom: var(--mm-space-2);
+  margin: 0 0 var(--mm-space-2);
   font-size: var(--mm-font-size-xs);
   font-weight: var(--mm-font-weight-semibold);
   text-transform: uppercase;
   letter-spacing: var(--mm-letter-spacing-wide);
   color: var(--mm-gray-500);
+}
+
+.navSection {
+  margin-bottom: var(--mm-space-5);
 }
 
 .navList {
@@ -234,26 +230,31 @@
   margin: 0;
 }
 
+.navItem {
+  display: grid;
+  gap: var(--mm-space-1);
+}
+
 .navLink {
-  /* What: Navigation link with flat design
-     Why: Clean, professional appearance without gradients */
   display: flex;
   align-items: center;
   gap: var(--mm-space-3);
+  min-height: 48px;
   padding: var(--mm-space-3) var(--mm-space-4);
   margin: 0 var(--mm-space-2);
   border-radius: var(--mm-radius-md);
   text-decoration: none;
   color: var(--mm-gray-700);
-  font-size: var(--mm-font-size-sm);
+  font-size: 1.0625rem;
   font-weight: var(--mm-font-weight-medium);
-  transition: all var(--transition-base);
+  transition: background-color var(--transition-base), color var(--transition-base), border-color var(--transition-base), transform 160ms ease;
   position: relative;
 }
 
 .navLink:hover {
   background: var(--mm-gray-100);
   color: var(--mm-gray-900);
+  transform: translateY(-1px);
 }
 
 .navLink:focus-visible {
@@ -270,9 +271,6 @@
 }
 
 .navIcon {
-  /* What: Icon/emoji container
-     Why: Consistent sizing and spacing */
-  font-size: var(--mm-font-size-lg);
   flex-shrink: 0;
   width: 24px;
   height: 24px;
@@ -281,11 +279,14 @@
   justify-content: center;
 }
 
+.materialIcon {
+  font-size: 1.25rem;
+}
+
 .navLabel {
-  /* What: Nav item label text
-     Why: Hidden when collapsed */
   flex: 1;
-  white-space: nowrap;
+  min-width: 0;
+  line-height: 1.2;
 }
 
 .activeIndicator {
@@ -306,23 +307,63 @@
 }
 
 .collapsed .navSection {
-  margin-bottom: var(--mm-space-4);
+  margin-bottom: var(--mm-space-3);
+}
+
+.childList {
+  list-style: none;
+  margin: 0;
+  padding: 0 0 0 var(--mm-space-6);
+  display: grid;
+  gap: 4px;
+}
+
+.childLink {
+  display: flex;
+  align-items: center;
+  gap: var(--mm-space-3);
+  min-height: 42px;
+  padding: 10px var(--mm-space-4);
+  margin: 0 var(--mm-space-2);
+  border-radius: var(--mm-radius-md);
+  text-decoration: none;
+  color: var(--mm-gray-600);
+  font-size: var(--mm-font-size-sm);
+  font-weight: var(--mm-font-weight-medium);
+  transition: background-color var(--transition-base), color var(--transition-base), border-color var(--transition-base), transform 160ms ease;
+}
+
+.childLink:hover {
+  background: var(--mm-gray-100);
+  color: var(--mm-gray-900);
+  transform: translateY(-1px);
+}
+
+.childLinkActive {
+  background: var(--mm-color-primary-50);
+  color: var(--mm-color-primary-700);
+  font-weight: var(--mm-font-weight-semibold);
+}
+
+.childLinkLine {
+  width: 10px;
+  height: 1px;
+  background: currentColor;
+  opacity: 0.55;
+  flex-shrink: 0;
 }
 
 /* ===== Sidebar Footer ===== */
 .sidebarFooter {
-  /* WHAT: Unified footer with copyright and version from package.json
-     WHY: Single footer for entire admin interface */
   border-top: 1px solid var(--mm-border-color-default);
-  padding: var(--mm-space-4);
+  padding: var(--mm-space-3) var(--mm-space-4) var(--mm-space-4);
   display: flex;
   flex-direction: column;
-  gap: var(--mm-space-3);
+  gap: var(--mm-space-2);
+  background: var(--mm-surface-primary, var(--mm-white));
 }
 
 .footerText {
-  /* WHAT: Copyright text styling
-     WHY: Small, subtle legal text above version info */
   font-size: var(--mm-font-size-xs);
   color: var(--mm-gray-500);
   line-height: 1.4;

@@ -10,7 +10,7 @@ import { useSidebar } from '@/contexts/SidebarContext';
 import MaterialIcon from '@/components/MaterialIcon';
 import { canAccessMenuItem } from '@/lib/permissions';
 import type { UserRole } from '@/lib/users';
-import { adminNavSections } from '@/lib/adminNavigation';
+import { adminNavSections, getSidebarNavGroups } from '@/lib/adminNavigation';
 
 const FOCUSABLE_SELECTOR = 'a[href], button:not([disabled]), [tabindex]:not([tabindex="-1"])';
 
@@ -36,6 +36,7 @@ export default function Sidebar() {
   // WHY: Show only menu items user has permission to access
   const [userRole, setUserRole] = useState<UserRole | undefined>(undefined);
   const [loadingRole, setLoadingRole] = useState(true);
+  const currentYear = new Date().getFullYear();
   
   // WHAT: Fetch user role on component mount
   // WHY: Determine which menu items to show
@@ -69,6 +70,10 @@ export default function Sidebar() {
       return pathname === path;
     }
     return pathname.startsWith(path);
+  };
+
+  const isGroupActive = (path: string, childrenPaths: string[]) => {
+    return isActive(path) || childrenPaths.some((childPath) => isActive(childPath));
   };
   
   /* What: Close mobile drawer on route change
@@ -210,39 +215,71 @@ export default function Sidebar() {
               return null;
             }
             
+            const visibleSection = {
+              ...section,
+              items: visibleItems,
+            };
+            const navGroups = getSidebarNavGroups(visibleSection);
+
             return (
               <div key={section.title} className={styles.navSection}>
-                {/* WHAT: Section titles removed to prevent menu jumping
-                    WHY: User request - cleaner UI without section headers */}
+                {!isCollapsed && (
+                  <div className={styles.sectionTitle}>{section.title}</div>
+                )}
                 
                 <ul className={styles.navList}>
-                  {visibleItems.map((item) => (
-                    <li key={item.path}>
+                  {navGroups.map((group) => {
+                    const groupActive = isGroupActive(group.parent.path, group.children.map((child) => child.path));
+                    return (
+                    <li key={group.parent.path} className={styles.navItem}>
                       <Link
-                        href={item.path}
-                        className={`${styles.navLink} ${isActive(item.path) ? styles.active : ''}`}
-                        title={isCollapsed ? item.label : undefined}
-                        aria-current={isActive(item.path) ? 'page' : undefined}
+                        href={group.parent.path}
+                        className={`${styles.navLink} ${groupActive ? styles.active : ''}`}
+                        title={isCollapsed ? group.parent.label : undefined}
+                        aria-current={isActive(group.parent.path) ? 'page' : undefined}
                       >
                         <span className={styles.navIcon}>
                           <MaterialIcon
-                            name={item.icon}
-                            variant={item.iconVariant || 'outlined'}
-                            // WHAT: Fixed fontSize override for sidebar icons
-                            // WHY: Sidebar needs larger icons (1.25rem) than MaterialIcon default (1rem)
-                            // eslint-disable-next-line react/forbid-dom-props
-                            style={{ fontSize: '1.25rem' }}
+                            name={group.parent.icon}
+                            variant={group.parent.iconVariant || 'outlined'}
+                            className={styles.materialIcon}
                           />
                         </span>
                         {!isCollapsed && (
-                          <span className={styles.navLabel}>{item.label}</span>
+                          <span className={styles.navLabel}>{group.parent.label}</span>
                         )}
-                        {isActive(item.path) && !isCollapsed && (
+                        {groupActive && !isCollapsed && (
                           <span className={styles.activeIndicator} aria-label="Current page" />
                         )}
                       </Link>
+                      {!isCollapsed && group.children.length > 0 && (
+                        <ul className={styles.childList} aria-label={`${group.parent.label} submenu`}>
+                          {group.children.map((child) => (
+                            <li key={child.path}>
+                              <Link
+                                href={child.path}
+                                className={`${styles.childLink} ${isActive(child.path) ? styles.childLinkActive : ''}`}
+                                aria-current={isActive(child.path) ? 'page' : undefined}
+                              >
+                                <span className={styles.childLinkLine} aria-hidden="true" />
+                                <span className={styles.navIcon}>
+                                  <MaterialIcon
+                                    name={child.icon}
+                                    variant={child.iconVariant || 'outlined'}
+                                    className={styles.materialIcon}
+                                  />
+                                </span>
+                                <span className={styles.navLabel}>{child.label}</span>
+                                {isActive(child.path) && (
+                                  <span className={styles.activeIndicator} aria-label="Current page" />
+                                )}
+                              </Link>
+                            </li>
+                          ))}
+                        </ul>
+                      )}
                     </li>
-                  ))}
+                  )})}
                 </ul>
               </div>
             );
@@ -255,7 +292,7 @@ export default function Sidebar() {
           {!isCollapsed && (
             <>
               <div className={styles.footerText}>
-                © 2025 {'{messmass}'}. All rights reserved.
+                © {currentYear} {'{messmass}'}
               </div>
               <div className={styles.versionInfo}>
                 <span className={styles.versionLabel}>Version</span>

@@ -37,20 +37,22 @@
   display: inline-flex;
   align-items: center;
   gap: var(--mm-space-2);
-  padding: var(--mm-space-2) var(--mm-space-3);
-  border-radius: var(--mm-radius-full);
+  min-height: 44px;
+  padding: 0 var(--mm-space-4);
+  border-radius: 999px;
   border: 1px solid var(--mm-gray-200);
   background: var(--mm-white);
   color: var(--mm-gray-700);
   text-decoration: none;
   font-size: var(--mm-font-size-sm);
-  font-weight: var(--mm-font-weight-medium);
-  transition: background-color var(--mm-transition-base), color var(--mm-transition-base), border-color var(--mm-transition-base);
+  font-weight: var(--mm-font-weight-semibold);
+  transition: background-color var(--mm-transition-base), color var(--mm-transition-base), border-color var(--mm-transition-base), transform 160ms ease;
 }
 
 .link:hover {
   border-color: var(--mm-color-primary-500);
   color: var(--mm-color-primary-700);
+  transform: translateY(-1px);
 }
 
 .linkActive {
