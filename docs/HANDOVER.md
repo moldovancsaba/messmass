@@ -2,7 +2,7 @@
 
 This file is onboarding plus operational context for the next agent. Keep it accurate when behavior, process, or current delivery state changes.
 
-**Last Updated:** 2026-05-21 (shared menu normalization slice)
+**Last Updated:** 2026-05-21 (analytics home card hardening slice)
 
 ## 🚨 CRITICAL MUST-READ FOR ALL AGENTS: STYLING & COMPONENTS 🚨
 
@@ -29,7 +29,7 @@ You MUST completely read and obey `docs/coding-standards.md` and `docs/component
 
 ## Current Repo Truth
 - Active branch: `main`
-- Last known HEAD during this update: `c8abdd66d`
+- Last known HEAD during this update: `c376bf199`
 - Working tree should be clean after the latest docs/board-alignment pass.
 - Most recent shipped repo work:
   - active documentation overhaul and canonical-doc refresh
@@ -103,6 +103,14 @@ Use this checklist for the next SSOT/board pass so the next agent does not have 
 - Style editor preview updates immediately for bar/pie CSS vars and includes Value Chain and Landing page sections.
 
 ## Handover Log
+
+## 2026-05-21 — Analytics home card hardening slice (#72, #817)
+- **Objective:** Fix the broken analytics-home tiles where long labels/descriptions could collapse into narrow vertical text and leave oversized empty card areas.
+- **Card layout hardening:** Updated `/app/admin/analytics/page.tsx` and `/app/admin/analytics/page.module.css` so analytics surface tiles now use a stable grid column size, full-width card surfaces, a stronger two-column internal layout, and consistent minimum heights.
+- **Text-wrapping fix:** Replaced the overly aggressive `overflow-wrap: anywhere` behavior with safer title/description wrapping rules, preventing letter-by-letter vertical stacking when a card body gets constrained.
+- **Responsive effect:** The analytics grid now keeps cards readable at large widths and falls back to one-column tiles cleanly on narrow screens instead of allowing distorted tile geometry.
+- **Workflow effect:** Analytics entry cards are now predictable click targets again, and operators can scan the available surfaces without layout corruption or missing content.
+- **Verification:** `npm run lint`, `npm run build`, and `npm run type-check` all passed. As usual in this repo, `type-check` was run after the successful build because `tsconfig.json` includes `.next/types/**/*.ts`.
 
 ## 2026-05-21 — Shared menu normalization slice (#72, #816, #817, #818)
 - **Objective:** Fix the inconsistent admin menu hierarchy and spacing issues at the shared-component level so sidebar and workspace menus behave like one coherent navigation system.

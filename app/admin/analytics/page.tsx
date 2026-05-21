@@ -70,7 +70,7 @@ export default function AnalyticsHomePage() {
       <div className={styles.grid}>
         {analyticsItems.map((item) => (
           <Link key={item.path} href={item.path} className={styles.cardLink}>
-            <ColoredCard accentColor={item.accentColor} hoverable={true}>
+            <ColoredCard accentColor={item.accentColor} hoverable={true} className={styles.cardSurface}>
               <div className={styles.cardContent}>
                 <div className={styles.cardIcon}>
                   <MaterialIcon name={item.icon} variant={item.iconVariant || 'outlined'} style={{ fontSize: '2rem' }} />
