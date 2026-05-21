@@ -212,6 +212,34 @@ async function deleteTemplate(request: Request) {
     if (!template) return NextResponse.json({ success: false, error: 'Template not found' }, { status: 404 });
     if (template.isDefault) return NextResponse.json({ success: false, error: 'Cannot delete default template' }, { status: 400 });
 
+    await connectV3();
+    const [assignedProjects, assignedPartners] = await Promise.all([
+      V3Activity.countDocuments({
+        organizationId: orgId,
+        $or: [
+          { "metadata.reportTemplateId": templateId },
+          { "metadata.originalData.reportTemplateId": new ObjectId(templateId) }
+        ]
+      }),
+      V3Entity.countDocuments({
+        organizationId: orgId,
+        $or: [
+          { "metadata.reportTemplateId": templateId },
+          { "metadata.originalData.reportTemplateId": new ObjectId(templateId) }
+        ]
+      })
+    ]);
+
+    if (assignedProjects > 0 || assignedPartners > 0) {
+      return NextResponse.json(
+        {
+          success: false,
+          error: `Template is still assigned to ${assignedProjects} project(s) and ${assignedPartners} partner(s)`,
+        },
+        { status: 400 }
+      );
+    }
+
     await templatesCollection.deleteOne({ _id: new ObjectId(templateId) });
     return NextResponse.json({ success: true, deletedId: templateId });
 

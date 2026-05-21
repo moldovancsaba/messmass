@@ -5,6 +5,7 @@
 // MIGRATION: From hardcoded table to adapter-based system (matches /admin/events pattern)
 
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
+import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useAdminAuth } from '@/hooks/useAdminAuth';
 import { useDebouncedValue } from '@/hooks/useDebouncedValue';
@@ -21,6 +22,7 @@ import ImageUploader from '@/components/ImageUploader';
 import { apiPost, apiPut, apiDelete } from '@/lib/apiClient';
 import { withAdminEntityActions } from '@/lib/adminEntitySystem';
 import { generateSportsDbHashtags, mergeSportsDbHashtags } from '@/lib/sportsDbHashtagEnricher';
+import ColoredCard from '@/components/ColoredCard';
 
 const PAGE_SIZE = 20;
 
@@ -79,6 +81,13 @@ export default function PartnersAdminPageUnified() {
     autoProvisionGoogleSheet: false
   });
   const [isCreatingPartner, setIsCreatingPartner] = useState(false);
+  const [createPartnerResult, setCreatePartnerResult] = useState<{
+    partnerId: string;
+    name: string;
+    viewSlug?: string | null;
+    googleSheetUrl?: string | null;
+    provisioningError?: string | null;
+  } | null>(null);
   
   // Modal states - Edit
   const [showEditForm, setShowEditForm] = useState(false);
@@ -405,23 +414,30 @@ export default function PartnersAdminPageUnified() {
       
       if (data.success) {
         setSuccessMessage(`✓ Partner "${newPartnerData.name}" created successfully!`);
+        let provisionedSheetUrl: string | null = null;
+        let provisioningError: string | null = null;
 
         // Phase 2.5: Optional auto-provisioning (create + setup + connect)
         if (autoProvisionGoogleSheet && data?.partner?._id) {
           try {
             const provision = await apiPost(`/api/partners/${data.partner._id}/google-sheet/provision`, { syncMode: 'manual' });
             if (provision?.success && provision?.sheetUrl) {
-              alert(
-                `✅ Google Sheet created + connected!\n\nURL: ${provision.sheetUrl}\n\nNext: open the sheet and share it with the partner's editors (service account already has access).`
-              );
+              provisionedSheetUrl = provision.sheetUrl;
             } else {
-              alert(`⚠️ Partner created, but sheet provisioning failed: ${provision?.error || 'Unknown error'}`);
+              provisioningError = provision?.error || 'Unknown error';
             }
           } catch (e) {
-            alert(`⚠️ Partner created, but sheet provisioning failed: ${e instanceof Error ? e.message : 'Unknown error'}`);
+            provisioningError = e instanceof Error ? e.message : 'Unknown error';
           }
         }
 
+        setCreatePartnerResult({
+          partnerId: data.partner._id,
+          name: data.partner.name || newPartnerData.name,
+          viewSlug: data.partner.viewSlug || null,
+          googleSheetUrl: provisionedSheetUrl,
+          provisioningError,
+        });
         resetCreatePartnerForm();
         loadPartners();
       } else {
@@ -790,6 +806,53 @@ export default function PartnersAdminPageUnified() {
         sortOrder={sortOrder}
         onSortChange={handleSortChange}
       />
+
+      {createPartnerResult && (
+        <div className="mb-4">
+          <ColoredCard accentColor="var(--mm-color-success-500, #16a34a)" hoverable={false}>
+            <div className="flex flex-col gap-3">
+              <div>
+                <h3 className="m-0 text-lg font-semibold">Partner created: {createPartnerResult.name}</h3>
+                <p className="form-hint mt-2 mb-0">
+                  The partner record is ready. Continue directly into the next operational surface instead of reopening the admin flow manually.
+                </p>
+                {createPartnerResult.provisioningError && (
+                  <p className="form-hint mt-2 mb-0">
+                    Google Sheets provisioning needs follow-up: {createPartnerResult.provisioningError}
+                  </p>
+                )}
+              </div>
+              <div className="flex items-center gap-2 flex-wrap">
+                {createPartnerResult.viewSlug && (
+                  <Link href={`/partner-edit/${createPartnerResult.viewSlug}`} className="btn btn-small btn-primary">
+                    Open Editor
+                  </Link>
+                )}
+                {createPartnerResult.viewSlug && (
+                  <Link href={`/partner-report/${createPartnerResult.viewSlug}`} className="btn btn-small btn-secondary">
+                    Open Partner Report
+                  </Link>
+                )}
+                <Link href={`/admin/partners/${createPartnerResult.partnerId}/analytics`} className="btn btn-small btn-secondary">
+                  Open Analytics
+                </Link>
+                {createPartnerResult.googleSheetUrl && (
+                  <a href={createPartnerResult.googleSheetUrl} className="btn btn-small btn-secondary" target="_blank" rel="noreferrer">
+                    Open Google Sheet
+                  </a>
+                )}
+                <button
+                  type="button"
+                  className="btn btn-small btn-secondary"
+                  onClick={() => setCreatePartnerResult(null)}
+                >
+                  Dismiss
+                </button>
+              </div>
+            </div>
+          </ColoredCard>
+        </div>
+      )}
       
       {/* Error/Success Messages */}
       {error && (

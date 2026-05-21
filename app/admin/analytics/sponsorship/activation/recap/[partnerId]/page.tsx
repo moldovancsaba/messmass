@@ -67,6 +67,19 @@ function buildRecapSummary(partner: SponsorshipActivationRecapPackage) {
   ].join('\n');
 }
 
+function downloadRecapSummary(partner: SponsorshipActivationRecapPackage) {
+  const filenameBase = partner.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') || 'partner-recap';
+  const blob = new Blob([buildRecapSummary(partner)], { type: 'text/plain;charset=utf-8' });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement('a');
+  link.href = url;
+  link.download = `${filenameBase}-recap-brief.txt`;
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+  URL.revokeObjectURL(url);
+}
+
 export default function SponsorshipActivationRecapBriefPage() {
   const params = useParams<{ partnerId: string }>();
   const searchParams = useSearchParams();
@@ -209,6 +222,9 @@ export default function SponsorshipActivationRecapBriefPage() {
                   <Link href={buildRecapEmailDraft(recapPackage)} className={styles.actionLink}>
                     Draft Delivery Email
                   </Link>
+                  <button type="button" className={styles.actionButton} onClick={() => downloadRecapSummary(recapPackage)}>
+                    Download Brief (.txt)
+                  </button>
                   <button type="button" className={styles.actionButton} onClick={() => window.print()}>
                     Print / Export PDF
                   </button>

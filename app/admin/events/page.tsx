@@ -5,6 +5,7 @@
 // FEATURES: Card/list toggle, server-side search/sort, modal CRUD, CSV export, share functionality
 
 import React, { useState, useEffect, useCallback } from 'react';
+import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useAdminAuth } from '@/hooks/useAdminAuth';
 import { useDebouncedValue } from '@/hooks/useDebouncedValue';
@@ -18,6 +19,7 @@ import MaterialIcon from '@/components/MaterialIcon';
 import { apiPost, apiPut, apiDelete } from '@/lib/apiClient';
 import { withAdminEntityActions } from '@/lib/adminEntitySystem';
 import BitlyLinksEditor from '@/components/BitlyLinksEditor';
+import ColoredCard from '@/components/ColoredCard';
 
 const PAGE_SIZE = 20;
 
@@ -60,6 +62,11 @@ export default function ProjectsPageUnified() {
     reportTemplateId: '' as string | null
   });
   const [isCreatingProject, setIsCreatingProject] = useState(false);
+  const [createResult, setCreateResult] = useState<{
+    eventName: string;
+    editSlug?: string | null;
+    viewSlug?: string | null;
+  } | null>(null);
   
   // Modal states - Edit
   const [showEditProjectForm, setShowEditProjectForm] = useState(false);
@@ -362,8 +369,12 @@ export default function ProjectsPageUnified() {
       
       if (result.success) {
         setProjects(prev => [result.project, ...prev]);
+        setCreateResult({
+          eventName: result.project.eventName,
+          editSlug: result.project.editSlug || null,
+          viewSlug: result.project.viewSlug || null,
+        });
         resetCreateProjectForm();
-        alert(`Project \"${result.project.eventName}\" created successfully!\n\nEdit Link: /edit/${result.project.editSlug}\nReport Link: /report/${result.project.viewSlug}`);
       } else {
         alert(`Failed to create project: ${result.error || 'Unknown error'}`);
       }
@@ -738,6 +749,43 @@ export default function ProjectsPageUnified() {
           }
         ]}
       />
+
+      {createResult && (
+        <div className="mb-4">
+          <ColoredCard accentColor="var(--mm-color-success-500, #16a34a)" hoverable={false}>
+            <div className="flex flex-col gap-3">
+              <div>
+                <h3 className="m-0 text-lg font-semibold">Event created: {createResult.eventName}</h3>
+                <p className="form-hint mt-2 mb-0">
+                  The basics are saved. Move directly into the next operational action instead of navigating back through the admin workspace.
+                </p>
+              </div>
+              <div className="flex items-center gap-2 flex-wrap">
+                {createResult.editSlug && (
+                  <Link href={`/edit/${createResult.editSlug}`} className="btn btn-small btn-primary">
+                    Open Editor
+                  </Link>
+                )}
+                {createResult.viewSlug && (
+                  <Link href={`/report/${createResult.viewSlug}`} className="btn btn-small btn-secondary">
+                    Open Report
+                  </Link>
+                )}
+                <Link href="/admin/project-partners" className="btn btn-small btn-secondary">
+                  Assign Partners
+                </Link>
+                <button
+                  type="button"
+                  className="btn btn-small btn-secondary"
+                  onClick={() => setCreateResult(null)}
+                >
+                  Dismiss
+                </button>
+              </div>
+            </div>
+          </ColoredCard>
+        </div>
+      )}
       
       {/* WHAT: Load More button for pagination
           WHY: Allow users to load additional events beyond first page */}

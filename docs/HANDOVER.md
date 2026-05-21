@@ -2,7 +2,7 @@
 
 This file is onboarding plus operational context for the next agent. Keep it accurate when behavior, process, or current delivery state changes.
 
-**Last Updated:** 2026-05-21 (recap route slice)
+**Last Updated:** 2026-05-21 (template lifecycle + setup handoff slice)
 
 ## 🚨 CRITICAL MUST-READ FOR ALL AGENTS: STYLING & COMPONENTS 🚨
 
@@ -103,6 +103,15 @@ Use this checklist for the next SSOT/board pass so the next agent does not have 
 - Style editor preview updates immediately for bar/pie CSS vars and includes Value Chain and Landing page sections.
 
 ## Handover Log
+
+## 2026-05-21 — Template lifecycle, setup handoff, and recap artifact slice (#788, #72, #64, #63, #820)
+- **Objective:** Ship another concrete usability/foundation pass across the active work: safer report-template lifecycle operations, faster next actions after Event/Partner creation, and a stronger sponsor-delivery recap artifact.
+- **Report template lifecycle hardening (`#64`):** Updated `/app/admin/visualization/page.tsx`, `/app/admin/visualization/Visualization.module.css`, and `/app/api/report-templates/route.ts` so template management now shows usage counts, supports explicit copy naming, removes more inline management layout duplication, and blocks deletion when a template is still assigned to live projects or partners.
+- **Setup-flow productivity handoff (`#63`, `#820`):** Updated `/app/admin/events/page.tsx` and `/app/admin/partners/page.tsx` so successful creation now yields actionable next-step cards instead of dead-end alerts. Operators can jump directly into Editor, Report, Analytics, Partner assignment, and Google Sheet follow-up from the creation flow.
+- **Recap delivery artifact (`#788`):** Updated `/app/admin/analytics/sponsorship/activation/recap/[partnerId]/page.tsx` so the dedicated recap brief now supports `Download Brief (.txt)` in addition to copy, email, and print/PDF handoff actions.
+- **Style debt reduction (`#72`):** The template-management modal layout now uses dedicated CSS-module classes instead of repeating ad hoc inline layout for rename/copy/delete sections, reducing duplication in an active reporting admin surface.
+- **Issue-program context:** These changes reinforce the already-shipped `#816`, `#817`, and `#818` UI-refinement work by making the staged setup flows and action grammar more operational after creation, rather than only cleaner during navigation.
+- **Verification:** `npm run lint`, `npm run build`, and `npm run type-check` all passed. As usual in this repo, `type-check` was run after the successful build because `tsconfig.json` includes `.next/types/**/*.ts`.
 
 ## 2026-05-21 — Dedicated recap brief route slice (#788)
 - **Objective:** Move recap delivery from an activation-only preview into a stable sponsor-delivery artifact that can be opened, shared, printed, or exported without relying on the full activation workspace UI.

@@ -111,12 +111,15 @@ interface AvailableChart {
 interface ReportTemplate {
   _id: string;
   name: string;
+  description?: string;
   type: 'event' | 'partner' | 'global';
   isDefault: boolean;
   dataBlocks: Array<{ blockId: string; order: number }>;
   gridSettings: { desktopUnits: number; tabletUnits: number; mobileUnits: number };
   heroSettings?: HeroBlockSettings;
   alignmentSettings?: BlockAlignmentSettings;
+  associatedProjects?: Array<{ _id: string; eventName: string; eventDate?: string }>;
+  associatedPartners?: Array<{ _id: string; name: string; emoji?: string }>;
 }
 
 export default function VisualizationPage() {
@@ -146,6 +149,7 @@ export default function VisualizationPage() {
   // WHY: Allow managing existing templates
   const [showTemplateEditModal, setShowTemplateEditModal] = useState(false);
   const [templateEditName, setTemplateEditName] = useState('');
+  const [templateCopyName, setTemplateCopyName] = useState('');
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   
   // WHAT: Track which block editors are expanded (default: all collapsed)
@@ -505,7 +509,7 @@ export default function VisualizationPage() {
   // WHY: Populate template selector
   const loadTemplates = async () => {
     try {
-      const response = await fetch('/api/report-templates?includeAssociations=false');
+      const response = await fetch('/api/report-templates?includeAssociations=true');
       const data = await response.json();
       
       if (data.success && data.templates) {
@@ -1215,6 +1219,7 @@ export default function VisualizationPage() {
       
       if (data.success) {
         await loadTemplates();
+        setTemplateEditName(templateEditName.trim());
         showMessage('success', 'Template renamed successfully!');
       } else {
         showMessage('error', data.error || 'Failed to rename template');
@@ -1232,6 +1237,7 @@ export default function VisualizationPage() {
     
     const selectedTemplate = templates.find(t => t._id === selectedTemplateId);
     if (!selectedTemplate) return;
+    const copyName = templateCopyName.trim() || `Copy of ${selectedTemplate.name}`;
     
     try {
       // WHAT: Fetch all blocks referenced by the original template
@@ -1289,7 +1295,7 @@ export default function VisualizationPage() {
         // WHAT: Create template with new block references
         // WHY: New template points to new blocks, completely independent
         const copyData: any = {
-          name: `Copy of ${selectedTemplate.name}`,
+          name: copyName,
           type: selectedTemplate.type,
           isDefault: false, // WHAT: Never mark copy as default
           dataBlocks: newBlockRefs,
@@ -1316,6 +1322,7 @@ export default function VisualizationPage() {
           // WHY: User expects to edit the copy immediately
           setSelectedTemplateId(data.template._id);
           setShowTemplateEditModal(false);
+          setTemplateCopyName('');
           showMessage('success', 'Template copied successfully with independent blocks!');
         } else {
           showMessage('error', data.error || 'Failed to copy template');
@@ -1324,7 +1331,7 @@ export default function VisualizationPage() {
         // WHAT: Template has no blocks, just copy template structure
         // WHY: Some templates might be empty
         const copyData: any = {
-          name: `Copy of ${selectedTemplate.name}`,
+          name: copyName,
           type: selectedTemplate.type,
           isDefault: false,
           dataBlocks: [],
@@ -1347,6 +1354,7 @@ export default function VisualizationPage() {
           await loadTemplates();
           setSelectedTemplateId(data.template._id);
           setShowTemplateEditModal(false);
+          setTemplateCopyName('');
           showMessage('success', 'Template copied successfully!');
         } else {
           showMessage('error', data.error || 'Failed to copy template');
@@ -1365,12 +1373,18 @@ export default function VisualizationPage() {
     
     const selectedTemplate = templates.find(t => t._id === selectedTemplateId);
     if (!selectedTemplate) return;
+    const assignmentCount = (selectedTemplate.associatedProjects?.length || 0) + (selectedTemplate.associatedPartners?.length || 0);
+    if (assignmentCount > 0) {
+      showMessage('error', 'Remove project and partner assignments before deleting this template.');
+      setShowDeleteConfirm(false);
+      return;
+    }
     
     try {
       const data = await apiDelete(`/api/report-templates?templateId=${selectedTemplateId}`);
       
-      if (data.success) {
-        await loadTemplates();
+        if (data.success) {
+          await loadTemplates();
         // WHAT: Clear selection if deleted template was selected
         // WHY: Prevent editing non-existent template
         setSelectedTemplateId(null);
@@ -1422,9 +1436,8 @@ export default function VisualizationPage() {
           WHY: Allow selecting which template to edit */}
       <ColoredCard accentColor="#3b82f6" hoverable={false}>
         <div className={vizStyles.templateSelector}>
-          <div className={vizStyles.templateSelectorHeader}>
-            {/* eslint-disable-next-line react/forbid-dom-props */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', flexWrap: 'wrap' }}>
+                <div className={vizStyles.templateSelectorHeader}>
+            <div className={vizStyles.templateHeaderRow}>
               <h3 className={vizStyles.templateSelectorTitle}>📊 Select Report Template</h3>
               <SaveStatusIndicator status={templateSaveStatus} />
             </div>
@@ -1505,6 +1518,7 @@ export default function VisualizationPage() {
                     const selectedTemplate = templates.find(t => t._id === selectedTemplateId);
                     if (selectedTemplate) {
                       setTemplateEditName(selectedTemplate.name);
+                      setTemplateCopyName(`Copy of ${selectedTemplate.name}`);
                       setShowTemplateEditModal(true);
                     }
                   }}
@@ -1628,6 +1642,7 @@ export default function VisualizationPage() {
             onClose={() => {
               setShowTemplateEditModal(false);
               setTemplateEditName(selectedTemplate.name);
+              setTemplateCopyName(`Copy of ${selectedTemplate.name}`);
             }}
             onSubmit={async () => {
               // WHAT: FormModal requires onSubmit, but we handle actions via buttons
@@ -1637,15 +1652,14 @@ export default function VisualizationPage() {
             title={`📝 Manage Report Template: ${selectedTemplate.name}`}
             size="md"
             customFooter={
-              <div 
-                // eslint-disable-next-line react/forbid-dom-props
-                style={{ display: 'flex', justifyContent: 'flex-end', gap: 'var(--mm-space-3)' }}>
+              <div className={vizStyles.templateManagementFooter}>
                 <button
                   type="button"
                   className="btn btn-secondary"
                   onClick={() => {
                     setShowTemplateEditModal(false);
                     setTemplateEditName(selectedTemplate.name);
+                    setTemplateCopyName(`Copy of ${selectedTemplate.name}`);
                   }}
                 >
                   Close
@@ -1653,13 +1667,32 @@ export default function VisualizationPage() {
               </div>
             }
           >
+            <div className={`${vizStyles.templateManagementSection} ${vizStyles.templateManagementDivider}`}>
+              <label className="form-label-block">Template Usage</label>
+              <div className={vizStyles.templateUsageGrid}>
+                <div className={vizStyles.templateUsageItem}>
+                  <span className={vizStyles.templateUsageLabel}>Projects</span>
+                  <span className={vizStyles.templateUsageValue}>{selectedTemplate.associatedProjects?.length || 0}</span>
+                </div>
+                <div className={vizStyles.templateUsageItem}>
+                  <span className={vizStyles.templateUsageLabel}>Partners</span>
+                  <span className={vizStyles.templateUsageValue}>{selectedTemplate.associatedPartners?.length || 0}</span>
+                </div>
+                <div className={vizStyles.templateUsageItem}>
+                  <span className={vizStyles.templateUsageLabel}>Blocks</span>
+                  <span className={vizStyles.templateUsageValue}>{selectedTemplate.dataBlocks?.length || 0}</span>
+                </div>
+              </div>
+              <p className={vizStyles.templateHint}>
+                Template lifecycle actions are safest when you can see where the template is already in use.
+              </p>
+            </div>
+
             {/* Rename Section */}
-            <div className="form-group mb-6">
+            <div className={`${vizStyles.templateManagementSection} ${vizStyles.templateManagementDivider}`}>
               <label className="form-label-block">Rename Template</label>
-              {/* eslint-disable-next-line react/forbid-dom-props */}
-              <div style={{ display: 'flex', gap: 'var(--mm-space-3)', alignItems: 'flex-end' }}>
-                {/* eslint-disable-next-line react/forbid-dom-props */}
-                <div style={{ flex: 1 }}>
+              <div className={vizStyles.templateActionRow}>
+                <div className={vizStyles.templateInputGrow}>
                   <input
                     type="text"
                     className="form-input"
@@ -1680,37 +1713,53 @@ export default function VisualizationPage() {
             </div>
             
             {/* Copy Section */}
-            {/* eslint-disable-next-line react/forbid-dom-props */}
-            <div className="form-group mb-6" style={{ paddingBottom: 'var(--mm-space-6)', borderBottom: '1px solid var(--mm-gray-200)' }}>
+            <div className={`${vizStyles.templateManagementSection} ${vizStyles.templateManagementDivider}`}>
               <label className="form-label-block">Copy Template</label>
-              {/* eslint-disable-next-line react/forbid-dom-props */}
-              <p className="form-hint" style={{ marginBottom: 'var(--mm-space-4)' }}>
-                Create a duplicate of this template with all its blocks and settings.
+              <p className={vizStyles.templateHint}>
+                Create a duplicate of this template with all its blocks and settings so you can iterate without rewriting from scratch.
               </p>
-              <button
-                type="button"
-                className="btn btn-secondary"
-                onClick={handleCopyTemplate}
-              >
-                <MaterialIcon name="content_copy" variant="outlined" style={{ fontSize: '1rem', marginRight: '0.5rem' }} />
-                Copy Template
-              </button>
+              <div className={vizStyles.templateActionRow}>
+                <div className={vizStyles.templateInputGrow}>
+                  <input
+                    type="text"
+                    className="form-input"
+                    value={templateCopyName}
+                    onChange={(e) => setTemplateCopyName(e.target.value)}
+                    placeholder="Enter copy name..."
+                  />
+                </div>
+                <button
+                  type="button"
+                  className="btn btn-secondary"
+                  onClick={handleCopyTemplate}
+                  disabled={!templateCopyName.trim()}
+                >
+                  <MaterialIcon name="content_copy" variant="outlined" style={{ fontSize: '1rem', marginRight: '0.5rem' }} />
+                  Copy Template
+                </button>
+              </div>
             </div>
             
             {/* Delete Section */}
-            <div className="form-group mb-4">
+            <div className={vizStyles.templateManagementSection}>
               <label className="form-label-block">Delete Template</label>
-              {/* eslint-disable-next-line react/forbid-dom-props */}
-              <p className="form-hint" style={{ marginBottom: 'var(--mm-space-4)' }}>
+              <p className={vizStyles.templateHint}>
                 {selectedTemplate.isDefault 
                   ? '⚠️ Cannot delete default template. Mark another template as default first.'
-                  : 'Permanently delete this template. This action cannot be undone.'}
+                  : ((selectedTemplate.associatedProjects?.length || 0) + (selectedTemplate.associatedPartners?.length || 0)) > 0
+                    ? '⚠️ This template is still assigned. Remove project and partner assignments before deleting it.'
+                    : 'Permanently delete this template. This action cannot be undone.'}
               </p>
+              {((selectedTemplate.associatedProjects?.length || 0) + (selectedTemplate.associatedPartners?.length || 0)) > 0 && (
+                <p className={vizStyles.templateGuardrail}>
+                  Deletion is blocked while the template is still assigned to live projects or partners. Reassign those entities first to keep report resolution predictable.
+                </p>
+              )}
               <button
                 type="button"
                 className="btn btn-danger"
                 onClick={() => setShowDeleteConfirm(true)}
-                disabled={selectedTemplate.isDefault}
+                disabled={selectedTemplate.isDefault || ((selectedTemplate.associatedProjects?.length || 0) + (selectedTemplate.associatedPartners?.length || 0)) > 0}
               >
                 <MaterialIcon name="delete" variant="outlined" style={{ fontSize: '1rem', marginRight: '0.5rem' }} />
                 Delete Template
