@@ -502,9 +502,9 @@ export default function SponsorshipActivationWorkspacePage() {
                             <p className={styles.detailNote}>
                               Included ready events: {partner.readyProjectNames.join(', ') || 'None'}
                             </p>
-                            {copiedRecapPartnerId === partner.partnerId && (
-                              <p className={styles.detailNote}>Recap summary copied to clipboard.</p>
-                            )}
+                          {copiedRecapPartnerId === partner.partnerId && (
+                            <p className={styles.detailNote}>Recap summary copied to clipboard.</p>
+                          )}
                             {copiedRecapLinkPartnerId === partner.partnerId && (
                               <p className={styles.detailNote}>Recap brief link copied to clipboard.</p>
                             )}
@@ -617,6 +617,43 @@ export default function SponsorshipActivationWorkspacePage() {
                       Recommended delivery path: share the partner report first, then use the activation queue if any additional proof items still need to be completed.
                     </p>
                   </div>
+                  {selectedRecapPackage.readyProjects.length > 0 && (
+                    <div className={styles.projectResults}>
+                      {selectedRecapPackage.readyProjects.map((project) => (
+                        <ColoredCard
+                          key={project.projectId}
+                          accentColor="var(--mm-chart-teal)"
+                          hoverable={false}
+                          className={styles.projectResultCard}
+                        >
+                          <div className={styles.detailCard}>
+                            <h3 className={styles.detailTitle}>{project.eventName}</h3>
+                            <div className={styles.detailMeta}>
+                              <span>{formatDate(project.eventDate)}</span>
+                              <span>Ready for sponsor-facing recap usage</span>
+                            </div>
+                            <div className={styles.actionRow}>
+                              {project.reportUrl && (
+                                <Link href={project.reportUrl} className={styles.actionLink}>
+                                  Open Event Report
+                                </Link>
+                              )}
+                              {project.editorUrl && (
+                                <Link href={project.editorUrl} className={styles.actionLink}>
+                                  Open Editor
+                                </Link>
+                              )}
+                              {project.projectAdminUrl && (
+                                <Link href={project.projectAdminUrl} className={styles.actionLink}>
+                                  Open Event Admin
+                                </Link>
+                              )}
+                            </div>
+                          </div>
+                        </ColoredCard>
+                      ))}
+                    </div>
+                  )}
                   <div className={styles.actionRow}>
                     <Link
                       href={buildRecapBriefHref(selectedRecapPackage.partnerId, scopeType, scopeId, rangePreset)}

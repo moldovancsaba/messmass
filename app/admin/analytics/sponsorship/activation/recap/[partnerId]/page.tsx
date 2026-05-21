@@ -45,7 +45,7 @@ function buildRecapEmailDraft(partner: SponsorshipActivationRecapPackage) {
     `Media value: €${Math.round(partner.totalAdValue).toLocaleString('en-US')}`,
     `Bitly clicks: ${partner.totalBitlyClicks.toLocaleString('en-US')}`,
     `Latest ready event: ${formatDate(partner.latestEventDate)}`,
-    `Included events: ${partner.readyProjectNames.join(', ') || 'None yet'}`,
+    `Included events: ${partner.readyProjects.map((project) => project.eventName).join(', ') || 'None yet'}`,
     reportUrl ? `Report: ${reportUrl}` : '',
   ].filter(Boolean).join('\n');
 
@@ -62,7 +62,7 @@ function buildRecapSummary(partner: SponsorshipActivationRecapPackage) {
     `Media value: €${Math.round(partner.totalAdValue).toLocaleString('en-US')}`,
     `Bitly clicks: ${partner.totalBitlyClicks.toLocaleString('en-US')}`,
     `Latest ready event: ${formatDate(partner.latestEventDate)}`,
-    `Included events: ${partner.readyProjectNames.join(', ') || 'None yet'}`,
+    `Included events: ${partner.readyProjects.map((project) => project.eventName).join(', ') || 'None yet'}`,
     `Partner report: ${reportUrl}`,
   ].join('\n');
 }
@@ -103,7 +103,11 @@ function buildDeliveryPacketMarkdown(
     `- Activation queue: ${activationUrl}`,
     '',
     '## Included ready events',
-    ...(partner.readyProjectNames.length > 0 ? partner.readyProjectNames.map((name) => `- ${name}`) : ['- None yet']),
+    ...(partner.readyProjects.length > 0
+      ? partner.readyProjects.map((project) =>
+          `- ${project.eventName}${project.eventDate ? ` (${formatDate(project.eventDate)})` : ''}${project.reportUrl ? ` — ${buildAbsoluteUrl(project.reportUrl)}` : ''}`
+        )
+      : ['- None yet']),
   ];
 
   if (gapItems.length > 0) {
@@ -400,10 +404,34 @@ export default function SponsorshipActivationRecapBriefPage() {
                     These are the scoped events already ready to support external recap delivery.
                   </p>
                 </div>
-                {recapPackage.readyProjectNames.length > 0 ? (
+                {recapPackage.readyProjects.length > 0 ? (
                   <ol className={styles.eventsList}>
-                    {recapPackage.readyProjectNames.map((eventName) => (
-                      <li key={eventName}>{eventName}</li>
+                    {recapPackage.readyProjects.map((project) => (
+                      <li key={project.projectId}>
+                        <div className={styles.proofItem}>
+                          <div className={styles.proofHeader}>
+                            <strong>{project.eventName}</strong>
+                            <span>{formatDate(project.eventDate)}</span>
+                          </div>
+                          <div className={styles.actionRow}>
+                            {project.reportUrl && (
+                              <Link href={project.reportUrl} className={styles.actionLink}>
+                                Open Event Report
+                              </Link>
+                            )}
+                            {project.editorUrl && (
+                              <Link href={project.editorUrl} className={styles.actionLink}>
+                                Open Editor
+                              </Link>
+                            )}
+                            {project.projectAdminUrl && (
+                              <Link href={project.projectAdminUrl} className={styles.actionLink}>
+                                Open Event Admin
+                              </Link>
+                            )}
+                          </div>
+                        </div>
+                      </li>
                     ))}
                   </ol>
                 ) : (

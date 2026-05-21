@@ -208,6 +208,14 @@ export interface SponsorshipActivationRecapPackage {
   latestEventDate: string | null;
   packageStatus: 'ready' | 'partial';
   readyProjectNames: string[];
+  readyProjects: Array<{
+    projectId: string;
+    eventName: string;
+    eventDate: string | null;
+    reportUrl: string | null;
+    editorUrl: string | null;
+    projectAdminUrl: string | null;
+  }>;
   actions: SponsorshipActionLinks;
 }
 
@@ -1255,6 +1263,7 @@ export async function getSponsorshipHubData({
       latestEventDate: null,
       packageStatus: 'partial' as const,
       readyProjectNames: [],
+      readyProjects: [],
       actions: {
         reportUrl: item.partnerReportUrl,
         adminUrl: item.partnerAnalyticsUrl,
@@ -1269,6 +1278,14 @@ export async function getSponsorshipHubData({
       current.totalAdValue += item.adValue;
       current.totalBitlyClicks += item.bitlyClicks;
       current.readyProjectNames.push(item.eventName);
+      current.readyProjects.push({
+        projectId: item.projectId,
+        eventName: item.eventName,
+        eventDate: item.eventDate,
+        reportUrl: item.reportUrl,
+        editorUrl: item.editorUrl,
+        projectAdminUrl: item.projectAdminUrl,
+      });
       if (item.eventDate && (!current.latestEventDate || item.eventDate > current.latestEventDate)) {
         current.latestEventDate = item.eventDate;
       }
@@ -1283,6 +1300,9 @@ export async function getSponsorshipHubData({
       ...item,
       packageStatus: item.readyProjectCount === item.totalProjectCount ? 'ready' as const : 'partial' as const,
       readyProjectNames: item.readyProjectNames.slice(0, 4),
+      readyProjects: item.readyProjects
+        .sort((a, b) => (b.eventDate || '').localeCompare(a.eventDate || ''))
+        .slice(0, 4),
     }))
     .sort((a, b) => {
       if (b.readyProjectCount !== a.readyProjectCount) {

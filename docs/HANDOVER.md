@@ -2,7 +2,7 @@
 
 This file is onboarding plus operational context for the next agent. Keep it accurate when behavior, process, or current delivery state changes.
 
-**Last Updated:** 2026-05-21 (recap brief link handoff slice)
+**Last Updated:** 2026-05-21 (recap ready-event action slice)
 
 ## 🚨 CRITICAL MUST-READ FOR ALL AGENTS: STYLING & COMPONENTS 🚨
 
@@ -29,7 +29,7 @@ You MUST completely read and obey `docs/coding-standards.md` and `docs/component
 
 ## Current Repo Truth
 - Active branch: `main`
-- Last known HEAD during this update: `a51d7e80f`
+- Last known HEAD during this update: `58cdc4e8e`
 - Working tree should be clean after the latest docs/board-alignment pass.
 - Most recent shipped repo work:
   - active documentation overhaul and canonical-doc refresh
@@ -103,6 +103,14 @@ Use this checklist for the next SSOT/board pass so the next agent does not have 
 - Style editor preview updates immediately for bar/pie CSS vars and includes Value Chain and Landing page sections.
 
 ## Handover Log
+
+## 2026-05-21 — Recap ready-event action slice (#788)
+- **Objective:** Remove another navigation step from recap delivery by turning “included ready events” into direct operational/report actions instead of a static name list.
+- **Shared recap model:** Updated `/lib/sponsorshipHub.ts` so recap packages now expose a `readyProjects` collection with event ids, dates, report URLs, editor URLs, and admin URLs in addition to the existing summary names.
+- **Activation workspace usability:** Updated `/app/admin/analytics/sponsorship/activation/page.tsx` so the selected recap preview now renders ready-event cards with direct `Open Event Report`, `Open Editor`, and `Open Event Admin` actions.
+- **Dedicated recap brief usability:** Updated `/app/admin/analytics/sponsorship/activation/recap/[partnerId]/page.tsx` so included ready events now render with per-event action links, and the exported summary/packet content uses the richer ready-event model.
+- **Workflow effect:** Delivery and commercial users can move from a partner recap package straight into the exact event proof or edit surface they need, instead of backing out to Events or reconstructing the event path manually.
+- **Verification:** `npm run lint`, `npm run build`, and `npm run type-check` all passed. As usual in this repo, `type-check` was run after the successful build because `tsconfig.json` includes `.next/types/**/*.ts`.
 
 ## 2026-05-21 — Recap brief link handoff slice (#788)
 - **Objective:** Remove another step from recap coordination by letting operators copy the exact scoped brief URL directly from both the activation workspace and the dedicated recap page.
