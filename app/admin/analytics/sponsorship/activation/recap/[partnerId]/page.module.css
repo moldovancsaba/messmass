@@ -1,0 +1,150 @@
+.page {
+  display: grid;
+  gap: 24px;
+}
+
+.heroMeta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  color: var(--mm-text-secondary);
+  font-size: 0.95rem;
+}
+
+.sectionCard {
+  display: grid;
+  gap: 20px;
+}
+
+.sectionHeader {
+  display: grid;
+  gap: 8px;
+}
+
+.sectionTitle {
+  margin: 0;
+  color: var(--mm-text-primary);
+  font-size: 1.35rem;
+  font-weight: 700;
+}
+
+.sectionSubtitle {
+  margin: 0;
+  color: var(--mm-text-secondary);
+  line-height: 1.6;
+}
+
+.doubleGrid {
+  display: grid;
+  gap: 20px;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+}
+
+.detailCard {
+  display: grid;
+  gap: 14px;
+  padding: 20px;
+  border: 1px solid var(--mm-border-primary);
+  border-radius: 18px;
+  background: var(--mm-surface-secondary);
+}
+
+.detailTitle {
+  margin: 0;
+  color: var(--mm-text-primary);
+  font-size: 1.1rem;
+  font-weight: 700;
+}
+
+.noteList {
+  display: grid;
+  gap: 10px;
+}
+
+.detailNote {
+  margin: 0;
+  color: var(--mm-text-secondary);
+  line-height: 1.7;
+}
+
+.insightGrid {
+  display: grid;
+  gap: 14px;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+}
+
+.insightItem {
+  display: grid;
+  gap: 6px;
+  padding: 16px;
+  border-radius: 16px;
+  background: var(--mm-surface-tertiary);
+  border: 1px solid var(--mm-border-secondary);
+}
+
+.insightLabel {
+  color: var(--mm-text-tertiary);
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.insightValue {
+  color: var(--mm-text-primary);
+  font-size: 1.05rem;
+  font-weight: 700;
+}
+
+.actionRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.actionLink,
+.actionButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+  padding: 0 16px;
+  border-radius: 999px;
+  border: 1px solid var(--mm-border-primary);
+  background: var(--mm-surface-primary);
+  color: var(--mm-text-primary);
+  font-weight: 600;
+  text-decoration: none;
+  transition: transform 160ms ease, box-shadow 160ms ease, border-color 160ms ease;
+}
+
+.actionButton {
+  cursor: pointer;
+}
+
+.actionLink:hover,
+.actionButton:hover {
+  transform: translateY(-1px);
+  border-color: var(--mm-color-primary-500);
+  box-shadow: var(--mm-shadow-sm);
+}
+
+.eventsList {
+  display: grid;
+  gap: 10px;
+  padding-left: 18px;
+  margin: 0;
+  color: var(--mm-text-secondary);
+}
+
+.emptyState {
+  margin: 0;
+  color: var(--mm-text-secondary);
+  line-height: 1.7;
+}
+
+@media print {
+  .actionRow {
+    display: none;
+  }
+}

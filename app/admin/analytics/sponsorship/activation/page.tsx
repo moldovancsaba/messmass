@@ -114,6 +114,19 @@ function buildRecapSummary(partner: SponsorshipHubResponse['activationWorkspace'
   ].join('\n');
 }
 
+function buildRecapBriefHref(
+  partnerId: string,
+  scopeType: SponsorshipHubScopeType,
+  scopeId: string | null,
+  rangePreset: SponsorshipHubRangePreset
+) {
+  const params = new URLSearchParams({ scopeType, rangePreset });
+  if (scopeType !== 'portfolio' && scopeId) {
+    params.set('scopeId', scopeId);
+  }
+  return `/admin/analytics/sponsorship/activation/recap/${partnerId}?${params.toString()}`;
+}
+
 export default function SponsorshipActivationWorkspacePage() {
   const router = useRouter();
   const pathname = usePathname();
@@ -481,6 +494,12 @@ export default function SponsorshipActivationWorkspacePage() {
                             >
                               {selectedRecapPackage?.partnerId === partner.partnerId ? 'Previewing Brief' : 'Preview Brief'}
                             </button>
+                            <Link
+                              href={buildRecapBriefHref(partner.partnerId, scopeType, scopeId, rangePreset)}
+                              className={styles.actionLink}
+                            >
+                              Open Recap Brief
+                            </Link>
                             {partner.actions.reportUrl && (
                               <Link href={partner.actions.reportUrl} className={styles.actionLink}>Open Partner Report</Link>
                             )}
@@ -569,6 +588,12 @@ export default function SponsorshipActivationWorkspacePage() {
                     </p>
                   </div>
                   <div className={styles.actionRow}>
+                    <Link
+                      href={buildRecapBriefHref(selectedRecapPackage.partnerId, scopeType, scopeId, rangePreset)}
+                      className={styles.actionLink}
+                    >
+                      Open Dedicated Brief
+                    </Link>
                     {selectedRecapPackage.actions.reportUrl && (
                       <Link href={selectedRecapPackage.actions.reportUrl} className={styles.actionLink}>Open Partner Report</Link>
                     )}

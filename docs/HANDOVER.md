@@ -2,7 +2,7 @@
 
 This file is onboarding plus operational context for the next agent. Keep it accurate when behavior, process, or current delivery state changes.
 
-**Last Updated:** 2026-05-21 (board sync + recap brief)
+**Last Updated:** 2026-05-21 (recap route slice)
 
 ## 🚨 CRITICAL MUST-READ FOR ALL AGENTS: STYLING & COMPONENTS 🚨
 
@@ -103,6 +103,14 @@ Use this checklist for the next SSOT/board pass so the next agent does not have 
 - Style editor preview updates immediately for bar/pie CSS vars and includes Value Chain and Landing page sections.
 
 ## Handover Log
+
+## 2026-05-21 — Dedicated recap brief route slice (#788)
+- **Objective:** Move recap delivery from an activation-only preview into a stable sponsor-delivery artifact that can be opened, shared, printed, or exported without relying on the full activation workspace UI.
+- **Dedicated recap route:** Added `/app/admin/analytics/sponsorship/activation/recap/[partnerId]/page.tsx` plus a scoped stylesheet so each partner recap package now has its own route-level brief page with package totals, included ready events, delivery guidance, and sponsor-facing summary framing.
+- **Delivery actions:** The dedicated recap brief now supports `Copy Brief Summary`, `Draft Delivery Email`, `Print / Export PDF`, and direct jumps into the partner report or scoped activation queue.
+- **Activation linking:** Updated `/app/admin/analytics/sponsorship/activation/page.tsx` so recap packages and the inline recap preview both expose direct links into the dedicated brief route while preserving the current scope and date-window query state.
+- **Workflow effect:** Delivery and commercial users now have a stable handoff artifact for sponsor recap packaging instead of depending on the broader activation workspace as the presentation layer.
+- **Verification:** `npm run lint`, `npm run build`, and `npm run type-check` all passed. As usual in this repo, `type-check` was rerun after the successful build because `tsconfig.json` includes `.next/types/**/*.ts`.
 
 ## 2026-05-21 — Board sync + recap brief slice (#788)
 - **Objective:** Keep the live GitHub board aligned with the shipped `#788` progress, then continue the recap-delivery path with a stronger recipient-ready surface.
