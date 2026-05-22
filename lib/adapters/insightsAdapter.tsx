@@ -5,6 +5,14 @@
 
 import React from 'react';
 import { AdminPageAdapter } from '../adminDataAdapters';
+import SemanticBadge from '@/components/SemanticBadge';
+
+const priorityTone: Record<string, 'danger' | 'warning' | 'info'> = {
+  critical: 'danger',
+  high: 'warning',
+  medium: 'warning',
+  low: 'info',
+};
 
 // WHAT: Insight data type (placeholder - adjust based on actual schema)
 interface InsightDTO {
@@ -43,9 +51,7 @@ export const insightsAdapter: AdminPageAdapter<InsightDTO> = {
         sortable: true,
         width: '120px',
         render: (insight) => (
-          <span className="px-2 py-1 rounded text-sm bg-gray-100">
-            {insight.category}
-          </span>
+          <SemanticBadge tone="secondary" label={insight.category} />
         ),
       },
       {
@@ -53,36 +59,19 @@ export const insightsAdapter: AdminPageAdapter<InsightDTO> = {
         label: 'Priority',
         sortable: true,
         width: '100px',
-        render: (insight) => {
-          // WHAT: Priority badge with conditional colors based on priority level
-          // WHY: Colors are computed at runtime (critical=red, high=orange, medium=yellow, low=blue)
-          const colors = {
-            critical: { bg: '#fee2e2', color: '#991b1b' },
-            high: { bg: '#fed7aa', color: '#9a3412' },
-            medium: { bg: '#fef3c7', color: '#92400e' },
-            low: { bg: '#dbeafe', color: '#1e40af' },
-          };
-          const style = colors[insight.priority as keyof typeof colors] || colors.low;
-          return (
-            <span style={{ // eslint-disable-line react/forbid-dom-props
-              padding: '4px 12px',
-              borderRadius: '12px',
-              fontSize: '0.875rem',
-              fontWeight: 500,
-              backgroundColor: style.bg,
-              color: style.color,
-            }}>
-              {insight.priority}
-            </span>
-          );
-        },
+        render: (insight) => (
+          <SemanticBadge
+            tone={priorityTone[insight.priority] || 'info'}
+            label={insight.priority}
+          />
+        ),
       },
       {
         key: 'message',
         label: 'Insight',
         minWidth: '300px',
         render: (insight) => (
-          <span className="text-sm leading-relaxed">
+          <span className="adapter-body-text">
             {insight.message.substring(0, 100)}
             {insight.message.length > 100 ? '...' : ''}
           </span>

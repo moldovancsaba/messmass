@@ -1,0 +1,60 @@
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--mm-space-1);
+  min-height: 1.75rem;
+  padding: var(--mm-space-1) var(--mm-space-3);
+  border-radius: var(--mm-radius-full);
+  font-size: var(--mm-font-size-sm);
+  font-weight: var(--mm-font-weight-medium);
+  line-height: 1;
+  border: 1px solid transparent;
+  white-space: nowrap;
+}
+
+.primary {
+  background: var(--mm-color-primary-50);
+  border-color: var(--mm-color-primary-200);
+  color: var(--mm-color-primary-700);
+}
+
+.secondary {
+  background: var(--mm-gray-100);
+  border-color: var(--mm-gray-200);
+  color: var(--mm-gray-700);
+}
+
+.success {
+  background: var(--mm-success-light);
+  border-color: var(--mm-color-secondary-200);
+  color: var(--mm-color-secondary-800);
+}
+
+.warning {
+  background: var(--mm-warning-light);
+  border-color: var(--mm-warning);
+  color: var(--mm-gray-900);
+}
+
+.danger {
+  background: var(--mm-error-light);
+  border-color: var(--mm-error);
+  color: var(--mm-gray-900);
+}
+
+.info {
+  background: var(--mm-info-light);
+  border-color: var(--mm-color-primary-200);
+  color: var(--mm-color-primary-800);
+}
+
+.neutral {
+  background: var(--mm-gray-50);
+  border-color: var(--mm-gray-200);
+  color: var(--mm-gray-600);
+}
+
+.icon {
+  font-size: 0.875em;
+  line-height: 1;
+}

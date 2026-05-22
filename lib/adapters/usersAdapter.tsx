@@ -5,6 +5,7 @@
 
 import React from 'react';
 import { AdminPageAdapter } from '../adminDataAdapters';
+import SemanticBadge from '@/components/SemanticBadge';
 
 // WHAT: User data type (placeholder - adjust based on actual user schema)
 interface UserDTO {
@@ -21,6 +22,17 @@ interface UserDTO {
   apiUsageCount?: number;
   lastAPICallAt?: string;
 }
+
+const roleConfig: Record<
+  string,
+  { tone: 'secondary' | 'info' | 'success' | 'primary'; icon: string; label: string }
+> = {
+  guest: { tone: 'secondary', icon: '👤', label: 'Guest' },
+  user: { tone: 'info', icon: '👥', label: 'User' },
+  admin: { tone: 'success', icon: '🔧', label: 'Admin' },
+  superadmin: { tone: 'primary', icon: '⚡', label: 'Superadmin' },
+  api: { tone: 'success', icon: '🔑', label: 'API' },
+};
 
 /**
  * WHAT: Complete adapter configuration for Users page
@@ -46,7 +58,7 @@ export const usersAdapter: AdminPageAdapter<UserDTO> = {
         label: 'Name',
         sortable: true,
         minWidth: '150px',
-        render: (user) => user.name || <span className="text-gray-400">—</span>,
+        render: (user) => user.name || <span className="adapter-empty-value">—</span>,
       },
       {
         key: 'role',
@@ -54,28 +66,8 @@ export const usersAdapter: AdminPageAdapter<UserDTO> = {
         sortable: true,
         width: '140px',
         render: (user) => {
-          // WHAT: Role badge with 4-tier hierarchy colors
-          // WHY: Visual differentiation of privilege levels (guest < user < admin < superadmin)
-          const roleConfig: Record<string, { bg: string; color: string; icon: string; label: string }> = {
-            guest: { bg: '#f3f4f6', color: '#6b7280', icon: '👤', label: 'Guest' },
-            user: { bg: '#dbeafe', color: '#1e40af', icon: '👥', label: 'User' },
-            admin: { bg: '#d1fae5', color: '#065f46', icon: '🔧', label: 'Admin' },
-            superadmin: { bg: '#ede9fe', color: '#5b21b6', icon: '⚡', label: 'Superadmin' },
-            api: { bg: '#dcfce7', color: '#166534', icon: '🔑', label: 'API' }, // Legacy
-          };
           const config = roleConfig[user.role] || roleConfig.guest;
-          return (
-            <span style={{ // eslint-disable-line react/forbid-dom-props
-              padding: '4px 12px',
-              borderRadius: '12px',
-              fontSize: '0.875rem',
-              fontWeight: 500,
-              backgroundColor: config.bg,
-              color: config.color,
-            }}>
-              {config.icon} {config.label}
-            </span>
-          );
+          return <SemanticBadge tone={config.tone} icon={config.icon} label={config.label} />;
         },
       },
       {
@@ -84,9 +76,11 @@ export const usersAdapter: AdminPageAdapter<UserDTO> = {
         sortable: false,
         width: '120px',
         render: (user) => (
-          <span className="text-sm">
-            {user.apiKeyEnabled ? '✅ Enabled' : '❌ Disabled'}
-          </span>
+          <SemanticBadge
+            tone={user.apiKeyEnabled ? 'success' : 'secondary'}
+            icon={user.apiKeyEnabled ? '✅' : '❌'}
+            label={user.apiKeyEnabled ? 'Enabled' : 'Disabled'}
+          />
         ),
       },
       {
@@ -111,7 +105,7 @@ export const usersAdapter: AdminPageAdapter<UserDTO> = {
               {new Date(user.lastAPICallAt).toLocaleDateString()}
             </span>
           ) : (
-            <span className="text-gray-400 text-sm">Never</span>
+            <span className="adapter-empty-value">Never</span>
           ),
       },
       {
@@ -125,7 +119,7 @@ export const usersAdapter: AdminPageAdapter<UserDTO> = {
               {new Date(user.lastLogin).toLocaleDateString()}
             </span>
           ) : (
-            <span className="text-gray-400 text-sm">Never</span>
+            <span className="adapter-empty-value">Never</span>
           ),
       },
       {

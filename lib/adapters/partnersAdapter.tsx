@@ -157,14 +157,11 @@ export const partnersAdapter: AdminPageAdapter<PartnerResponse> = {
               alt={`${partner.name} logo`}
               width={60}
               height={60}
-              style={{
-                objectFit: 'contain',
-                borderRadius: '4px',
-              }}
+              className="adapter-logo"
               unoptimized
             />
           ) : (
-            <span className="text-gray-400">—</span>
+            <span className="adapter-empty-value">—</span>
           ),
       },
       {
@@ -181,7 +178,7 @@ export const partnersAdapter: AdminPageAdapter<PartnerResponse> = {
         label: 'Hashtags',
         minWidth: '250px',
         render: (partner) => (
-          <div className="flex flex-wrap gap-2">
+          <div className="adapter-tag-cloud">
             {/* Traditional hashtags */}
             {partner.hashtags?.map((hashtag) => (
               <ColoredHashtagBubble
@@ -208,7 +205,7 @@ export const partnersAdapter: AdminPageAdapter<PartnerResponse> = {
               )}
             {!partner.hashtags?.length &&
               !Object.keys(partner.categorizedHashtags || {}).length && (
-                <span className="text-gray-400 text-sm">No hashtags</span>
+                <span className="adapter-empty-value">No hashtags</span>
               )}
           </div>
         ),
@@ -219,14 +216,14 @@ export const partnersAdapter: AdminPageAdapter<PartnerResponse> = {
         width: '150px',
         render: (partner) =>
           partner.bitlyLinks && partner.bitlyLinks.length > 0 ? (
-            <div className="flex flex-col gap-1">
+            <div className="adapter-link-list">
               {partner.bitlyLinks.map((link) => (
                 <a
                   key={link._id}
                   href={`https://${link.bitlink}`}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-sm link-primary"
+                  className="adapter-link"
                   title={link.title}
                 >
                   {link.bitlink}
@@ -234,7 +231,7 @@ export const partnersAdapter: AdminPageAdapter<PartnerResponse> = {
               ))}
             </div>
           ) : (
-            <span className="text-gray-400 text-sm">No links</span>
+            <span className="adapter-empty-value">No links</span>
           ),
       },
       {

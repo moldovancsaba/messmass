@@ -2,7 +2,7 @@
 
 This file is onboarding plus operational context for the next agent. Keep it accurate when behavior, process, or current delivery state changes.
 
-**Last Updated:** 2026-05-22 (design system remediation tranche 1)
+**Last Updated:** 2026-05-22 (design system remediation tranche 2)
 
 ## 🚨 CRITICAL MUST-READ FOR ALL AGENTS: STYLING & COMPONENTS 🚨
 
@@ -122,6 +122,17 @@ Use this checklist for the next SSOT/board pass so the next agent does not have 
 - Style editor preview updates immediately for bar/pie CSS vars and includes Value Chain and Landing page sections.
 
 ## Handover Log
+
+## 2026-05-22 — Design system remediation tranche 2 (#842, #843, #844)
+- **Objective:** Continue the remediation program by removing more handcrafted shared-state presentation from the adapter layer and flattening the shared admin hero surface away from baked-in gradient/rgba styling.
+- **Shared semantic badge primitive:** Added `/components/SemanticBadge.tsx` and `/components/SemanticBadge.module.css` as a reusable token-backed badge component for status/category/role presentation.
+- **Adapter normalization:** Updated `/lib/adapters/usersAdapter.tsx`, `/lib/adapters/partnersAdapter.tsx`, and `/lib/adapters/insightsAdapter.tsx`.
+  - Users role and API-access states now render through `SemanticBadge` instead of inline style objects.
+  - Insights category/priority states now render through `SemanticBadge` instead of utility-like classes or inline color maps.
+  - Partner list rendering now uses semantic adapter classes for empty values, logo presentation, tag clouds, and Bitly link lists instead of raw utility-like class strings and inline image styling.
+- **Shared adapter class cleanup:** Updated `/app/styles/components.css` with token-backed `adapter-body-text`, `adapter-empty-value`, `adapter-tag-cloud`, `adapter-link-list`, `adapter-link`, and `adapter-logo` helpers, and normalized `adapter-meta-text` to use the current font/color tokens.
+- **Hero surface flattening:** Updated `/components/UnifiedAdminHeroWithSearch.module.css` to remove the baked-in gradient, raw rgba states, and raw box shadow from the shared admin hero. It now uses the primary token surface, tokenized spacing, tokenized badge backgrounds, and token-backed search focus/interaction behavior.
+- **Validation:** `npm run style:check`, `npm run lint`, `npm run build`, and `npm run type-check` all passed.
 
 ## 2026-05-22 — Design system remediation tranche 1 (#840, #841, #842, #843)
 - **Objective:** Start the remediation program by locking the repo authority model, freezing new drift in shared surfaces, and normalizing the highest-leverage shared UI/reporting entry points.
