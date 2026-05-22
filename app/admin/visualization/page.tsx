@@ -1494,7 +1494,7 @@ export default function VisualizationPage() {
   if (loading) {
     return (
       <div className="page-container">
-        <ColoredCard accentColor="#6366f1" hoverable={false} className="p-8 text-center">
+        <ColoredCard accentColor="var(--mm-color-primary-600)" hoverable={false} className="p-8 text-center">
           <div className="loading-spinner-viz"></div>
           <p>Loading data visualization blocks...</p>
         </ColoredCard>

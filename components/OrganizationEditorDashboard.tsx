@@ -4,6 +4,9 @@ import React, { useEffect, useMemo, useState } from 'react';
 import ColoredCard from './ColoredCard';
 import ReportContentManager from './ReportContentManager';
 import { apiPut } from '@/lib/apiClient';
+import UnifiedInputField from './UnifiedInputField';
+import UnifiedSelectField from './UnifiedSelectField';
+import UnifiedCheckboxField from './UnifiedCheckboxField';
 
 type OrganizationMetadata = {
   emoji?: string;
@@ -263,7 +266,7 @@ export default function OrganizationEditorDashboard({ organization: initialOrg, 
             </p>
           </div>
           <div className="admin-user-info">
-            <div className="admin-badge p-3">
+            <div className="admin-badge editor-statusBadge">
               <p className="admin-role">🔑 Superadmin Access</p>
               <p className="admin-level">Organization Level</p>
               <p className="admin-status">
@@ -280,9 +283,9 @@ export default function OrganizationEditorDashboard({ organization: initialOrg, 
       <div className="content-grid">
         <ColoredCard>
           <h2 className="section-title">📦 Organization Report Content</h2>
-          <div className="mb-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
-            <h4 className="text-sm font-semibold text-blue-800 mb-2">ℹ️ Organization Content Editing</h4>
-            <ul className="text-sm text-blue-700 space-y-1">
+          <div className="editor-info-panel">
+            <h4 className="editor-info-panelTitle">ℹ️ Organization Content Editing</h4>
+            <ul className="editor-info-panelList">
               <li>• <strong>Text & Images:</strong> Edit organization-specific content (reportText*, reportImage*)</li>
               <li>• <strong>Mathematical Data:</strong> Comes from aggregated member and event data</li>
               <li>• <strong>Lists:</strong> Control whether member and event sections appear on the report</li>
@@ -305,200 +308,126 @@ export default function OrganizationEditorDashboard({ organization: initialOrg, 
         <ColoredCard>
           <h2 className="section-title">🎛️ Report Configuration</h2>
 
-          <div className="form-group mb-3">
-            <label className="form-label-block">Organization Emoji</label>
-            <input
-              type="text"
-              className="form-input"
-              value={settingsDraft.emoji}
-              maxLength={4}
-              onChange={(event) => {
-                const emoji = Array.from(event.target.value.trim())[0] || '';
-                setSettingsDraft((prev) => ({ ...prev, emoji }));
-              }}
-              placeholder="🏢"
+          <UnifiedInputField
+            label="Organization Emoji"
+            value={settingsDraft.emoji}
+            onChange={(value) => {
+              const emoji = Array.from(value.trim())[0] || '';
+              setSettingsDraft((prev) => ({ ...prev, emoji }));
+            }}
+            placeholder="🏢"
+            maxLength={4}
+          />
+
+          <UnifiedCheckboxField
+            id="showOrganizationEmoji"
+            label="Show emoji in report header"
+            checked={settingsDraft.showEmoji}
+            onChange={(checked) => handleBooleanSettingChange('showEmoji', checked)}
+          />
+
+          <UnifiedInputField
+            label="Organization Logo URL"
+            value={settingsDraft.logoUrl}
+            onChange={(value) => setSettingsDraft((prev) => ({ ...prev, logoUrl: value }))}
+            placeholder="https://..."
+            hint="Displayed in organization report hero and member sections."
+          />
+
+          <UnifiedSelectField
+            label="Report Visual Style"
+            value={settingsDraft.styleId}
+            onChange={(value) => setSettingsDraft((prev) => ({ ...prev, styleId: value }))}
+            disabled={optionsLoading}
+            options={[
+              { value: '', label: '— Use Default Style —' },
+              ...availableStyles.map((style) => ({ value: style._id, label: style.name })),
+            ]}
+          />
+          <p className="form-hint">Report color theme (26-color system) for this organization report page.</p>
+
+          <UnifiedSelectField
+            label="Report Template"
+            value={settingsDraft.reportTemplateId}
+            onChange={(value) => setSettingsDraft((prev) => ({ ...prev, reportTemplateId: value }))}
+            disabled={optionsLoading}
+            options={[
+              { value: '', label: '— Use Default Template —' },
+              ...availableTemplates.map((template) => ({
+                value: template._id,
+                label: `${template.name} (${template.type})`,
+              })),
+            ]}
+          />
+          <p className="form-hint">Controls which report layout the organization page uses.</p>
+
+          <UnifiedSelectField
+            label="Clicker Set"
+            value={settingsDraft.clickerSetId}
+            onChange={(value) => setSettingsDraft((prev) => ({ ...prev, clickerSetId: value }))}
+            disabled={optionsLoading}
+            options={[
+              { value: '', label: '— Use Default Clicker —' },
+              ...availableClickerSets.map((set) => ({
+                value: set._id,
+                label: `${set.isDefault ? '⭐ ' : ''}${set.name}`,
+              })),
+            ]}
+          />
+          <p className="form-hint">Stored for org-level defaults and future member/event tooling.</p>
+
+          <div className="editor-subsection">
+            <UnifiedCheckboxField
+              id="showMembersList"
+              label="Show Members List on Report Page"
+              checked={settingsDraft.showMembersList}
+              onChange={(checked) => handleBooleanSettingChange('showMembersList', checked)}
+              hint="Controls whether the organization member cards appear below the main report content."
             />
-          </div>
 
-          <div className="form-group mb-3">
-            <label className="form-label-block">
-              <input
-                type="checkbox"
-                checked={settingsDraft.showEmoji}
-                onChange={(event) => handleBooleanSettingChange('showEmoji', event.target.checked)}
-                className="mr-2"
-              />
-              Show emoji in report header
-            </label>
-          </div>
-
-          <div className="form-group mb-3">
-            <label className="form-label-block">Organization Logo URL</label>
-            <input
-              type="text"
-              className="form-input"
-              value={settingsDraft.logoUrl}
-              onChange={(event) => setSettingsDraft((prev) => ({ ...prev, logoUrl: event.target.value }))}
-              placeholder="https://..."
+            <UnifiedCheckboxField
+              id="showMembersListTitle"
+              label="Show Members List Title"
+              checked={settingsDraft.showMembersListTitle}
+              onChange={(checked) => handleBooleanSettingChange('showMembersListTitle', checked)}
+              disabled={!settingsDraft.showMembersList}
+              hint="Controls whether the “Members (X)” heading appears above the member list."
             />
-            <p className="form-hint">Displayed in organization report hero and member sections.</p>
-          </div>
 
-          <div className="form-group mb-3">
-            <label className="form-label-block">Report Visual Style</label>
-            <select
-              className="form-input"
-              value={settingsDraft.styleId}
-              onChange={(event) => setSettingsDraft((prev) => ({ ...prev, styleId: event.target.value }))}
-              disabled={optionsLoading}
-            >
-              <option value="">— Use Default Style —</option>
-              {availableStyles.map((style) => (
-                <option key={style._id} value={style._id}>
-                  {style.name}
-                </option>
-              ))}
-            </select>
-            <p className="form-hint">Report color theme (26-color system) for this organization report page.</p>
-          </div>
+            <UnifiedCheckboxField
+              id="showMembersListDetails"
+              label="Show Member Card Details"
+              checked={settingsDraft.showMembersListDetails}
+              onChange={(checked) => handleBooleanSettingChange('showMembersListDetails', checked)}
+              disabled={!settingsDraft.showMembersList}
+              hint="Controls whether member cards show labels and report actions or just the member name."
+            />
 
-          <div className="form-group mb-3">
-            <label className="form-label-block">Report Template</label>
-            <select
-              className="form-input"
-              value={settingsDraft.reportTemplateId}
-              onChange={(event) => setSettingsDraft((prev) => ({ ...prev, reportTemplateId: event.target.value }))}
-              disabled={optionsLoading}
-            >
-              <option value="">— Use Default Template —</option>
-              {availableTemplates.map((template) => (
-                <option key={template._id} value={template._id}>
-                  {template.name} ({template.type})
-                </option>
-              ))}
-            </select>
-            <p className="form-hint">Controls which report layout the organization page uses.</p>
-          </div>
+            <UnifiedCheckboxField
+              id="showOrganizationEventsList"
+              label="Show Events List on Report Page"
+              checked={settingsDraft.showEventsList}
+              onChange={(checked) => handleBooleanSettingChange('showEventsList', checked)}
+              hint="Controls whether organization-related event cards appear at the bottom of the report."
+            />
 
-          <div className="form-group mb-4">
-            <label className="form-label-block">Clicker Set</label>
-            <select
-              className="form-input"
-              value={settingsDraft.clickerSetId}
-              onChange={(event) => setSettingsDraft((prev) => ({ ...prev, clickerSetId: event.target.value }))}
-              disabled={optionsLoading}
-            >
-              <option value="">— Use Default Clicker —</option>
-              {availableClickerSets.map((set) => (
-                <option key={set._id} value={set._id}>
-                  {set.isDefault ? '⭐ ' : ''}
-                  {set.name}
-                </option>
-              ))}
-            </select>
-            <p className="form-hint">Stored for org-level defaults and future member/event tooling.</p>
-          </div>
+            <UnifiedCheckboxField
+              id="showOrganizationEventsListTitle"
+              label="Show Events List Title"
+              checked={settingsDraft.showEventsListTitle}
+              onChange={(checked) => handleBooleanSettingChange('showEventsListTitle', checked)}
+              disabled={!settingsDraft.showEventsList}
+              hint="Controls whether the “Events (X)” heading appears above the event list."
+            />
 
-          <div className="border-t border-gray-200 pt-3">
-            <div className="flex items-center gap-3 mb-3">
-              <input
-                type="checkbox"
-                id="showMembersList"
-                checked={settingsDraft.showMembersList}
-                onChange={(event) => handleBooleanSettingChange('showMembersList', event.target.checked)}
-                className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 focus:ring-2"
-              />
-              <label htmlFor="showMembersList" className="text-sm font-medium text-gray-700">
-                Show Members List on Report Page
-              </label>
-            </div>
-            <p className="text-xs text-gray-500 mb-3 ml-7">
-              Controls whether the organization member cards appear below the main report content.
-            </p>
-
-            <div className="flex items-center gap-3 mb-3">
-              <input
-                type="checkbox"
-                id="showMembersListTitle"
-                checked={settingsDraft.showMembersListTitle}
-                onChange={(event) => handleBooleanSettingChange('showMembersListTitle', event.target.checked)}
-                disabled={!settingsDraft.showMembersList}
-                className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 focus:ring-2 disabled:opacity-50"
-              />
-              <label htmlFor="showMembersListTitle" className={`text-sm font-medium ${!settingsDraft.showMembersList ? 'text-gray-400' : 'text-gray-700'}`}>
-                Show Members List Title
-              </label>
-            </div>
-            <p className="text-xs text-gray-500 mb-3 ml-7">
-              Controls whether the “Members (X)” heading appears above the member list.
-            </p>
-
-            <div className="flex items-center gap-3 mb-3">
-              <input
-                type="checkbox"
-                id="showMembersListDetails"
-                checked={settingsDraft.showMembersListDetails}
-                onChange={(event) => handleBooleanSettingChange('showMembersListDetails', event.target.checked)}
-                disabled={!settingsDraft.showMembersList}
-                className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 focus:ring-2 disabled:opacity-50"
-              />
-              <label htmlFor="showMembersListDetails" className={`text-sm font-medium ${!settingsDraft.showMembersList ? 'text-gray-400' : 'text-gray-700'}`}>
-                Show Member Card Details
-              </label>
-            </div>
-            <p className="text-xs text-gray-500 mb-3 ml-7">
-              Controls whether member cards show labels and report actions or just the member name.
-            </p>
-
-            <div className="flex items-center gap-3 mb-3">
-              <input
-                type="checkbox"
-                id="showOrganizationEventsList"
-                checked={settingsDraft.showEventsList}
-                onChange={(event) => handleBooleanSettingChange('showEventsList', event.target.checked)}
-                className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 focus:ring-2"
-              />
-              <label htmlFor="showOrganizationEventsList" className="text-sm font-medium text-gray-700">
-                Show Events List on Report Page
-              </label>
-            </div>
-            <p className="text-xs text-gray-500 mb-3 ml-7">
-              Controls whether organization-related event cards appear at the bottom of the report.
-            </p>
-
-            <div className="flex items-center gap-3 mb-3">
-              <input
-                type="checkbox"
-                id="showOrganizationEventsListTitle"
-                checked={settingsDraft.showEventsListTitle}
-                onChange={(event) => handleBooleanSettingChange('showEventsListTitle', event.target.checked)}
-                disabled={!settingsDraft.showEventsList}
-                className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 focus:ring-2 disabled:opacity-50"
-              />
-              <label htmlFor="showOrganizationEventsListTitle" className={`text-sm font-medium ${!settingsDraft.showEventsList ? 'text-gray-400' : 'text-gray-700'}`}>
-                Show Events List Title
-              </label>
-            </div>
-            <p className="text-xs text-gray-500 mb-3 ml-7">
-              Controls whether the “Events (X)” heading appears above the event list.
-            </p>
-
-            <div className="flex items-center gap-3 mb-4">
-              <input
-                type="checkbox"
-                id="showOrganizationEventsListDetails"
-                checked={settingsDraft.showEventsListDetails}
-                onChange={(event) => handleBooleanSettingChange('showEventsListDetails', event.target.checked)}
-                disabled={!settingsDraft.showEventsList}
-                className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 focus:ring-2 disabled:opacity-50"
-              />
-              <label htmlFor="showOrganizationEventsListDetails" className={`text-sm font-medium ${!settingsDraft.showEventsList ? 'text-gray-400' : 'text-gray-700'}`}>
-                Show Event Card Details
-              </label>
-            </div>
-            <p className="text-xs text-gray-500 ml-7">
-              Controls whether event cards show date, labels, and report actions or only the event name.
-            </p>
+            <UnifiedCheckboxField
+              id="showOrganizationEventsListDetails"
+              label="Show Event Card Details"
+              checked={settingsDraft.showEventsListDetails}
+              onChange={(checked) => handleBooleanSettingChange('showEventsListDetails', checked)}
+              disabled={!settingsDraft.showEventsList}
+              hint="Controls whether event cards show date, labels, and report actions or only the event name."
+            />
           </div>
 
           <button
@@ -513,16 +442,16 @@ export default function OrganizationEditorDashboard({ organization: initialOrg, 
 
         <ColoredCard>
           <h2 className="section-title">🏢 Details</h2>
-          <div className="space-y-3 text-sm">
-            <div className="flex items-center gap-3">
+          <div className="editor-detailStack">
+            <div className="editor-detailRow">
               <span className="text-2xl">{org.metadata?.emoji || '🏢'}</span>
               <div>
-                <h3 className="font-semibold text-gray-900">{org.name}</h3>
-                <p className="text-gray-600">Slug: {org.slug}</p>
-                <p className="text-gray-600">ID: {org._id}</p>
+                <h3 className="editor-detailHeading">{org.name}</h3>
+                <p className="editor-detailText">Slug: {org.slug}</p>
+                <p className="editor-detailText">ID: {org._id}</p>
               </div>
             </div>
-            <div className="pt-3 border-t border-gray-100 text-xs text-gray-500">
+            <div className="editor-subsection editor-metaList">
               <p>Created: {new Date(org.createdAt).toLocaleString()}</p>
               <p>Updated: {new Date(org.updatedAt).toLocaleString()}</p>
               {resolvedTemplateId && <p>Template ID: {resolvedTemplateId}</p>}
@@ -534,19 +463,19 @@ export default function OrganizationEditorDashboard({ organization: initialOrg, 
 
         <ColoredCard>
           <h2 className="section-title">📚 How Organization Content Works</h2>
-          <div className="space-y-4 text-sm">
-            <div>
-              <h4 className="font-semibold text-gray-800 mb-2">🎯 What You Can Edit</h4>
-              <ul className="space-y-1 text-gray-600">
+          <div className="editor-guide">
+            <div className="editor-guideSection">
+              <h4 className="editor-guideTitle">🎯 What You Can Edit</h4>
+              <ul className="editor-guideList">
                 <li>• <strong>Organization Texts:</strong> Executive messaging, intros, and summaries</li>
                 <li>• <strong>Organization Images:</strong> Logos, banners, and organization-level creative</li>
                 <li>• <strong>Report Presentation:</strong> Template, style, clicker default, and list visibility</li>
               </ul>
             </div>
 
-            <div>
-              <h4 className="font-semibold text-gray-800 mb-2">📊 What Comes from Members and Events</h4>
-              <ul className="space-y-1 text-gray-600">
+            <div className="editor-guideSection">
+              <h4 className="editor-guideTitle">📊 What Comes from Members and Events</h4>
+              <ul className="editor-guideList">
                 <li>• <strong>Aggregated Numbers:</strong> All numeric KPIs are summed from assigned members and linked events</li>
                 <li>• <strong>Member Cards:</strong> Partners assigned to the organization</li>
                 <li>• <strong>Event Cards:</strong> Organization-related activities exposed on the report</li>

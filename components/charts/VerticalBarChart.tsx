@@ -14,6 +14,7 @@ import {
 } from 'chart.js';
 import ChartBase from './ChartBase';
 import styles from './ChartShared.module.css';
+import { CHART_THEME } from '@/lib/chartTheme';
 
 /* What: Register Chart.js components
    Why: Chart.js requires explicit registration of components to reduce bundle size */
@@ -150,38 +151,14 @@ export default function VerticalBarChart({
           if (item.color && typeof item.color === 'string' && item.color.trim()) return item.color;
           
           // Cycle through theme chart colors
-          const colors = [
-            'rgba(59, 130, 246, 0.8)',   // --mm-chart-blue
-            'rgba(16, 185, 129, 0.8)',   // --mm-chart-green
-            'rgba(139, 92, 246, 0.8)',   // --mm-chart-purple
-            'rgba(249, 115, 22, 0.8)',   // --mm-chart-orange
-            'rgba(236, 72, 153, 0.8)',   // --mm-chart-pink
-            'rgba(6, 182, 212, 0.8)',    // --mm-chart-cyan
-            'rgba(234, 179, 8, 0.8)',    // --mm-chart-yellow
-            'rgba(239, 68, 68, 0.8)',    // --mm-chart-red
-            'rgba(99, 102, 241, 0.8)',   // --mm-chart-indigo
-            'rgba(20, 184, 166, 0.8)',   // --mm-chart-teal
-          ];
-          return colors[index % colors.length];
+          return CHART_THEME.fillPalette(index, 0.8);
         }),
         borderColor: filtered.map((item, index) => {
           // WHAT: Validate item.color before using
           // WHY: Prevent undefined from being returned to Chart.js
           if (item.color && typeof item.color === 'string' && item.color.trim()) return item.color;
           
-          const colors = [
-            'rgb(59, 130, 246)',
-            'rgb(16, 185, 129)',
-            'rgb(139, 92, 246)',
-            'rgb(249, 115, 22)',
-            'rgb(236, 72, 153)',
-            'rgb(6, 182, 212)',
-            'rgb(234, 179, 8)',
-            'rgb(239, 68, 68)',
-            'rgb(99, 102, 241)',
-            'rgb(20, 184, 166)',
-          ];
-          return colors[index % colors.length];
+          return CHART_THEME.linePalette(index);
         }),
         borderWidth: 2,
         borderRadius: 8, // Rounded top corners
@@ -200,10 +177,10 @@ export default function VerticalBarChart({
         display: showLegend,
         position: 'top' as const,
         labels: {
-          color: 'rgb(75, 85, 99)', // --mm-gray-600
+          color: CHART_THEME.legendText,
           font: {
             size: 12,
-            family: 'inherit',
+            family: CHART_THEME.fontFamily,
             weight: 500,
           },
           padding: 12,
@@ -213,10 +190,10 @@ export default function VerticalBarChart({
       },
       tooltip: {
         enabled: true,
-        backgroundColor: 'rgba(31, 41, 55, 0.95)', // --mm-gray-800 with opacity
-        titleColor: 'rgb(255, 255, 255)',
-        bodyColor: 'rgb(255, 255, 255)',
-        borderColor: 'rgb(209, 213, 219)', // --mm-gray-300
+        backgroundColor: CHART_THEME.tooltipBackground,
+        titleColor: CHART_THEME.tooltipText,
+        bodyColor: CHART_THEME.tooltipText,
+        borderColor: CHART_THEME.tooltipBorder,
         borderWidth: 1,
         padding: 12,
         cornerRadius: 8,
@@ -238,30 +215,30 @@ export default function VerticalBarChart({
           display: false, // Clean look without vertical grid lines
         },
         ticks: {
-          color: 'rgb(107, 114, 128)', // --mm-gray-500
+          color: CHART_THEME.axisText,
           font: {
             size: 12,
-            family: 'inherit',
+            family: CHART_THEME.fontFamily,
           },
           maxRotation: 45,
           minRotation: 0,
         },
         border: {
           display: true,
-          color: 'rgb(229, 231, 235)', // --mm-gray-200
+          color: CHART_THEME.axisBorder,
         },
       },
       y: {
         beginAtZero: true,
         grid: {
-          color: 'rgba(229, 231, 235, 0.5)', // --mm-gray-200 with opacity
+          color: CHART_THEME.gridLine,
           lineWidth: 1,
         },
         ticks: {
-          color: 'rgb(107, 114, 128)', // --mm-gray-500
+          color: CHART_THEME.axisText,
           font: {
             size: 12,
-            family: 'inherit',
+            family: CHART_THEME.fontFamily,
           },
           callback: (value) => {
             /* What: Format large numbers with K/M suffixes
@@ -274,7 +251,7 @@ export default function VerticalBarChart({
         },
         border: {
           display: true,
-          color: 'rgb(229, 231, 235)', // --mm-gray-200
+          color: CHART_THEME.axisBorder,
         },
       },
     },

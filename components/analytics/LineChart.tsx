@@ -33,6 +33,7 @@ import {
 } from 'chart.js';
 import { Line } from 'react-chartjs-2';
 import ChartBase from '../charts/ChartBase';
+import { CHART_THEME } from '@/lib/chartTheme';
 
 // WHAT: Register Chart.js components for line charts
 ChartJS.register(
@@ -132,8 +133,7 @@ export default function LineChart({
   const chartData = {
     labels,
     datasets: datasets.map((dataset, index) => {
-      const defaultColors = ['#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6'];
-      const color = dataset.color || defaultColors[index % defaultColors.length];
+      const color = dataset.color || CHART_THEME.linePalette(index);
 
       return {
         label: dataset.label,
@@ -167,12 +167,17 @@ export default function LineChart({
           padding: 16,
           font: {
             size: 12,
-            family: "'Inter', sans-serif",
+            family: CHART_THEME.fontFamily,
           },
+          color: CHART_THEME.legendText,
         },
       },
       tooltip: {
-        backgroundColor: 'rgba(0, 0, 0, 0.8)',
+        backgroundColor: CHART_THEME.tooltipBackground,
+        borderColor: CHART_THEME.tooltipBorder,
+        borderWidth: 1,
+        titleColor: CHART_THEME.tooltipText,
+        bodyColor: CHART_THEME.tooltipText,
         padding: 12,
         titleFont: {
           size: 14,
@@ -196,8 +201,10 @@ export default function LineChart({
           display: false,
         },
         ticks: {
+          color: CHART_THEME.axisText,
           font: {
             size: 11,
+            family: CHART_THEME.fontFamily,
           },
           maxRotation: 45,
           minRotation: 0,
@@ -206,11 +213,13 @@ export default function LineChart({
       y: {
         beginAtZero: true,
         grid: {
-          color: 'rgba(0, 0, 0, 0.05)',
+          color: CHART_THEME.gridLine,
         },
         ticks: {
+          color: CHART_THEME.axisText,
           font: {
             size: 11,
+            family: CHART_THEME.fontFamily,
           },
           callback: (value) => formatValue(Number(value)),
         },
@@ -218,9 +227,11 @@ export default function LineChart({
           ? {
               display: true,
               text: yAxisLabel,
+              color: CHART_THEME.legendText,
               font: {
                 size: 12,
                 weight: 'bold',
+                family: CHART_THEME.fontFamily,
               },
             }
           : undefined,

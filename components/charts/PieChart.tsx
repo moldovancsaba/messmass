@@ -12,6 +12,7 @@ import {
 } from 'chart.js';
 import ChartBase from './ChartBase';
 import styles from './ChartShared.module.css';
+import { CHART_THEME } from '@/lib/chartTheme';
 
 /* What: Register Chart.js components for pie/donut charts
    Why: Chart.js requires explicit registration of components to reduce bundle size */
@@ -151,21 +152,9 @@ export default function PieChart({
           if (item.color && typeof item.color === 'string' && item.color.trim()) return item.color;
           
           // Cycle through theme chart colors with full opacity for pie charts
-          const colors = [
-            'rgba(59, 130, 246, 0.9)',   // --mm-chart-blue
-            'rgba(16, 185, 129, 0.9)',   // --mm-chart-green
-            'rgba(139, 92, 246, 0.9)',   // --mm-chart-purple
-            'rgba(249, 115, 22, 0.9)',   // --mm-chart-orange
-            'rgba(236, 72, 153, 0.9)',   // --mm-chart-pink
-            'rgba(6, 182, 212, 0.9)',    // --mm-chart-cyan
-            'rgba(234, 179, 8, 0.9)',    // --mm-chart-yellow
-            'rgba(239, 68, 68, 0.9)',    // --mm-chart-red
-            'rgba(99, 102, 241, 0.9)',   // --mm-chart-indigo
-            'rgba(20, 184, 166, 0.9)',   // --mm-chart-teal
-          ];
-          return colors[index % colors.length];
+          return CHART_THEME.fillPalette(index, 0.9);
         }),
-        borderColor: 'rgba(255, 255, 255, 1)', // White borders for clean separation
+        borderColor: CHART_THEME.tooltipText,
         borderWidth: 2,
         hoverOffset: 8, // Slight pop-out effect on hover
       },
@@ -183,10 +172,10 @@ export default function PieChart({
         display: showLegend,
         position: legendPosition,
         labels: {
-          color: 'rgb(75, 85, 99)', // --mm-gray-600
+          color: CHART_THEME.legendText,
           font: {
             size: 13,
-            family: 'inherit',
+            family: CHART_THEME.fontFamily,
             weight: 500,
           },
           padding: 16,
@@ -233,10 +222,10 @@ export default function PieChart({
       },
       tooltip: {
         enabled: true,
-        backgroundColor: 'rgba(31, 41, 55, 0.95)', // --mm-gray-800 with opacity
-        titleColor: 'rgb(255, 255, 255)',
-        bodyColor: 'rgb(255, 255, 255)',
-        borderColor: 'rgb(209, 213, 219)', // --mm-gray-300
+        backgroundColor: CHART_THEME.tooltipBackground,
+        titleColor: CHART_THEME.tooltipText,
+        bodyColor: CHART_THEME.tooltipText,
+        borderColor: CHART_THEME.tooltipBorder,
         borderWidth: 1,
         padding: 12,
         cornerRadius: 8,

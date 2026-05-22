@@ -2,7 +2,7 @@
 
 This file is onboarding plus operational context for the next agent. Keep it accurate when behavior, process, or current delivery state changes.
 
-**Last Updated:** 2026-05-22 (design system remediation tranche 2)
+**Last Updated:** 2026-05-22 (design system remediation tranche 3)
 
 ## 🚨 CRITICAL MUST-READ FOR ALL AGENTS: STYLING & COMPONENTS 🚨
 
@@ -122,6 +122,18 @@ Use this checklist for the next SSOT/board pass so the next agent does not have 
 - Style editor preview updates immediately for bar/pie CSS vars and includes Value Chain and Landing page sections.
 
 ## Handover Log
+
+## 2026-05-22 — Design system remediation tranche 3 (#843, #845, #846)
+- **Objective:** Normalize the remaining high-traffic authoring/chart surfaces so the design-system program now covers shared dashboards, shared state presentation, chart theming, and the core organization/partner editors.
+- **Chart theme centralization:** Added `/lib/chartTheme.ts` and updated `/components/analytics/LineChart.tsx`, `/components/charts/PieChart.tsx`, and `/components/charts/VerticalBarChart.tsx`.
+  - Palette, tooltip, legend, axis, and grid styling now resolve through one shared chart theme helper instead of each chart carrying its own raw color map, tooltip palette, or fallback font family.
+  - This is the first substantive `#845` delivery slice and removes the old repeated `rgba(...)`/hex palette blocks from the canonical chart components.
+- **Shared editor primitive expansion:** Added `/components/UnifiedCheckboxField.tsx`, expanded `/components/UnifiedInputField.tsx` and `/components/UnifiedSelectField.tsx`, and moved organization/partner editor configuration toggles onto these shared controls.
+- **Organization editor normalization:** Updated `/components/OrganizationEditorDashboard.tsx` to use `UnifiedInputField`, `UnifiedSelectField`, and `UnifiedCheckboxField` for configuration controls, and replaced the old utility-like info/detail/help layout strings with token-backed editor support classes in `/app/styles/components.css`.
+- **Partner editor normalization:** Updated `/components/PartnerEditorDashboard.tsx` the same way, including list-visibility toggles, logo-management helper copy, and informational/help sections.
+- **Reporting workspace cleanup:** Updated `/app/admin/visualization/page.tsx` to remove another hardcoded accent color from the shared report-builder empty/selection surface.
+- **Guardrail expansion:** Extended `/scripts/check-design-violations.js` again so `npm run style:check` now also blocks raw color literals in the canonical chart components and raw form controls in the organization/partner editor dashboards.
+- **Validation:** `npm run style:check`, `npm run lint`, `npm run build`, and `npm run type-check` all passed.
 
 ## 2026-05-22 — Design system remediation tranche 2 (#842, #843, #844)
 - **Objective:** Continue the remediation program by removing more handcrafted shared-state presentation from the adapter layer and flattening the shared admin hero surface away from baked-in gradient/rgba styling.

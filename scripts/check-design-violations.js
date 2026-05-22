@@ -92,6 +92,23 @@ const CONTENT_GUARDRAILS = [
       'app/admin/organizations/[id]/reports/page.tsx',
       'app/admin/partners/[id]/reports/page.tsx'
     ]
+  },
+  {
+    message: 'Raw color literals detected in canonical chart components',
+    pattern: /#[0-9a-fA-F]{3,8}\b|\brgba?\(/,
+    files: [
+      'components/analytics/LineChart.tsx',
+      'components/charts/PieChart.tsx',
+      'components/charts/VerticalBarChart.tsx'
+    ]
+  },
+  {
+    message: 'Raw form controls detected in shared editor dashboards',
+    pattern: /<(input|select)\b/,
+    files: [
+      'components/OrganizationEditorDashboard.tsx',
+      'components/PartnerEditorDashboard.tsx'
+    ]
   }
 ];
 

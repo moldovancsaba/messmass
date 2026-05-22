@@ -6,6 +6,7 @@ import ColoredHashtagBubble from './ColoredHashtagBubble';
 import ImageUploader from './ImageUploader';
 import ReportContentManager from './ReportContentManager';
 import UnifiedTextInput from './UnifiedTextInput';
+import UnifiedCheckboxField from './UnifiedCheckboxField';
 import { 
   mergeHashtagSystems, 
   getAllHashtagRepresentations
@@ -198,7 +199,7 @@ export default function PartnerEditorDashboard({ partner: initialPartner, varian
             )}
           </div>
           <div className="admin-user-info">
-            <div className="admin-badge p-3">
+            <div className="admin-badge editor-statusBadge">
               <p className="admin-role">🏢 Partner Editor</p>
               <p className="admin-level">📦 Content Only</p>
               <p className="admin-status">
@@ -209,7 +210,7 @@ export default function PartnerEditorDashboard({ partner: initialPartner, varian
               </p>
               
               {/* Info about what can be edited */}
-              <div className="mt-2 text-xs text-gray-600">
+              <div className="editor-statusHint">
                 <p>✅ Text & Image Content</p>
                 <p>❌ Numbers from Events</p>
               </div>
@@ -224,9 +225,9 @@ export default function PartnerEditorDashboard({ partner: initialPartner, varian
         {/* HOW: Use same ReportContentManager as events but with partner stats */}
         <ColoredCard>
           <h2 className="section-title">📦 Partner Report Content</h2>
-          <div className="mb-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
-            <h4 className="text-sm font-semibold text-blue-800 mb-2">ℹ️ Partner Content Editing</h4>
-            <ul className="text-sm text-blue-700 space-y-1">
+          <div className="editor-info-panel">
+            <h4 className="editor-info-panelTitle">ℹ️ Partner Content Editing</h4>
+            <ul className="editor-info-panelList">
               <li>• <strong>Text & Images:</strong> Edit partner-specific content (reportText*, reportImage*)</li>
               <li>• <strong>Mathematical Data:</strong> Comes from aggregated included event data (not editable here)</li>
               <li>• <strong>Charts:</strong> Will show partner content + aggregated event numbers</li>
@@ -247,29 +248,29 @@ export default function PartnerEditorDashboard({ partner: initialPartner, varian
         {/* WHY: Show partner details for context while editing */}
         <ColoredCard>
           <h2 className="section-title">🏢 Partner Information</h2>
-          <div className="space-y-3">
-            <div className="flex items-center gap-3">
+          <div className="editor-detailStack">
+            <div className="editor-detailRow">
               <span className="text-2xl">{partner.showEmoji !== false ? partner.emoji : ''}</span>
               <div>
-                <h3 className="font-semibold text-gray-900">{partner.name}</h3>
-                <p className="text-sm text-gray-600">Partner ID: {partner._id}</p>
+                <h3 className="editor-detailHeading">{partner.name}</h3>
+                <p className="editor-detailText">Partner ID: {partner._id}</p>
               </div>
             </div>
             
             {partner.logoUrl && (
               <div>
-                <p className="text-sm font-medium text-gray-700 mb-2">Partner Logo:</p>
+                <p className="editor-logoPreviewLabel">Partner Logo:</p>
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img 
                   src={partner.logoUrl} 
                   alt={`${partner.name} logo`}
-                  className="max-w-32 max-h-16 object-contain border border-gray-200 rounded"
+                  className="editor-logoPreview"
                 />
               </div>
             )}
 
-            <div className="border-t border-gray-200 pt-3">
-              <h3 className="font-semibold text-gray-900 mb-3">Logo Management</h3>
+            <div className="editor-subsection">
+              <h3 className="editor-subsectionTitle">Logo Management</h3>
               <UnifiedTextInput
                 label="Logo URL"
                 value={partner.logoUrl || ''}
@@ -278,7 +279,7 @@ export default function PartnerEditorDashboard({ partner: initialPartner, varian
                 type="url"
                 autoComplete="url"
               />
-              <p className="text-xs text-gray-500 mt-1 mb-3">
+              <p className="editor-helperText">
                 Paste an existing logo URL, or upload an image below to store it on ImgBB and save the hosted URL automatically.
               </p>
               <ImageUploader
@@ -291,79 +292,43 @@ export default function PartnerEditorDashboard({ partner: initialPartner, varian
             
             {/* WHAT: Events List Visibility Control */}
             {/* WHY: Allow partners to control whether events list appears on their report page */}
-            <div className="border-t border-gray-200 pt-3">
-              <div className="flex items-center gap-3 mb-3">
-                <input
-                  type="checkbox"
-                  id="showEventsList"
-                  checked={partner.showEventsList ?? true}
-                  onChange={(e) => handleShowEventsListToggle(e.target.checked)}
-                  className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 focus:ring-2"
-                />
-                <label htmlFor="showEventsList" className="text-sm font-medium text-gray-700">
-                  Show Events List on Report Page
-                </label>
-              </div>
-              <p className="text-xs text-gray-500 mb-3 ml-7">
-                Controls whether &quot;{partner.name} Events (X)&quot; section appears at the bottom of the partner report page
-              </p>
-              
-              {/* WHAT: Events List Title Visibility Control */}
-              {/* WHY: Allow partners to show events list but hide the title */}
-              <div className="flex items-center gap-3 mb-3">
-                <input
-                  type="checkbox"
-                  id="showEventsListTitle"
-                  checked={partner.showEventsListTitle ?? true}
-                  onChange={(e) => handleShowEventsListTitleToggle(e.target.checked)}
-                  disabled={!(partner.showEventsList ?? true)} // Disable if events list is hidden
-                  className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 focus:ring-2 disabled:opacity-50"
-                />
-                <label htmlFor="showEventsListTitle" className={`text-sm font-medium ${!(partner.showEventsList ?? true) ? 'text-gray-400' : 'text-gray-700'}`}>
-                  Show Events List TITLE on Report Page
-                </label>
-              </div>
-              <p className="text-xs text-gray-500 mb-3 ml-7">
-                Controls whether the title &quot;{partner.name} Events (X)&quot; appears above the events list (only applies when events list is shown)
-              </p>
-              
-              {/* WHAT: Events List Details Visibility Control */}
-              {/* WHY: Allow partners to show events list with minimal or detailed cards */}
-              <div className="flex items-center gap-3">
-                <input
-                  type="checkbox"
-                  id="showEventsListDetails"
-                  checked={partner.showEventsListDetails ?? true}
-                  onChange={(e) => handleShowEventsListDetailsToggle(e.target.checked)}
-                  disabled={!(partner.showEventsList ?? true)} // Disable if events list is hidden
-                  className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 focus:ring-2 disabled:opacity-50"
-                />
-                <label htmlFor="showEventsListDetails" className={`text-sm font-medium ${!(partner.showEventsList ?? true) ? 'text-gray-400' : 'text-gray-700'}`}>
-                  Show Event Card DETAILS on Report Page
-                </label>
-              </div>
-              <p className="text-xs text-gray-500 mt-1 ml-7">
-                Controls whether event cards show detailed info (date, stats, &quot;View Report&quot; button) or just the event title (only applies when events list is shown)
-              </p>
+            <div className="editor-subsection">
+              <UnifiedCheckboxField
+                id="showEventsList"
+                label="Show Events List on Report Page"
+                checked={partner.showEventsList ?? true}
+                onChange={handleShowEventsListToggle}
+                hint={`Controls whether "${partner.name} Events (X)" appears at the bottom of the partner report page.`}
+              />
 
-              <div className="flex items-center gap-3 mt-3">
-                <input
-                  type="checkbox"
-                  id="showOnlyTeam1Events"
-                  checked={partner.showOnlyTeam1Events ?? false}
-                  onChange={(e) => handleShowOnlyTeam1EventsToggle(e.target.checked)}
-                  className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 focus:ring-2"
-                />
-                <label htmlFor="showOnlyTeam1Events" className="text-sm font-medium text-gray-700">
-                  Only Include Local/Home Events (Team 1)
-                </label>
-              </div>
-              <p className="text-xs text-gray-500 mt-1 ml-7">
-                Filters the partner report so totals, charts, and the events list only include events where this partner is Team 1, the local/home side.
-              </p>
+              <UnifiedCheckboxField
+                id="showEventsListTitle"
+                label="Show Events List Title on Report Page"
+                checked={partner.showEventsListTitle ?? true}
+                onChange={handleShowEventsListTitleToggle}
+                disabled={!(partner.showEventsList ?? true)}
+                hint={`Controls whether the title "${partner.name} Events (X)" appears above the events list.`}
+              />
+
+              <UnifiedCheckboxField
+                id="showEventsListDetails"
+                label="Show Event Card Details on Report Page"
+                checked={partner.showEventsListDetails ?? true}
+                onChange={handleShowEventsListDetailsToggle}
+                disabled={!(partner.showEventsList ?? true)}
+                hint="Controls whether event cards show detailed info and actions or just the event title."
+              />
+
+              <UnifiedCheckboxField
+                id="showOnlyTeam1Events"
+                label="Only Include Local/Home Events (Team 1)"
+                checked={partner.showOnlyTeam1Events ?? false}
+                onChange={handleShowOnlyTeam1EventsToggle}
+                hint="Filters totals, charts, and the events list to only include team-1 / home appearances."
+              />
             </div>
             
-            <div className="text-xs text-gray-500 space-y-1">
+            <div className="editor-metaList">
               <p>Created: {new Date(partner.createdAt).toLocaleDateString()}</p>
               <p>Updated: {new Date(partner.updatedAt).toLocaleDateString()}</p>
               {partner.styleId && <p>Style ID: {partner.styleId}</p>}
@@ -376,19 +341,19 @@ export default function PartnerEditorDashboard({ partner: initialPartner, varian
         {/* WHY: Help users understand how partner content editing works */}
         <ColoredCard>
           <h2 className="section-title">📚 How Partner Content Works</h2>
-          <div className="space-y-4 text-sm">
-            <div>
-              <h4 className="font-semibold text-gray-800 mb-2">🎯 What You Can Edit</h4>
-              <ul className="space-y-1 text-gray-600">
+          <div className="editor-guide">
+            <div className="editor-guideSection">
+              <h4 className="editor-guideTitle">🎯 What You Can Edit</h4>
+              <ul className="editor-guideList">
                 <li>• <strong>Partner Texts:</strong> Custom descriptions, messages, notes</li>
                 <li>• <strong>Partner Images:</strong> Logos, banners, promotional images</li>
                 <li>• <strong>Report Content:</strong> Content that appears in partner reports</li>
               </ul>
             </div>
             
-            <div>
-              <h4 className="font-semibold text-gray-800 mb-2">📊 What Comes from Events</h4>
-              <ul className="space-y-1 text-gray-600">
+            <div className="editor-guideSection">
+              <h4 className="editor-guideTitle">📊 What Comes from Events</h4>
+              <ul className="editor-guideList">
                 <li>• <strong>Fan Numbers:</strong> Total fans from included partner events</li>
                 <li>• <strong>Image Counts:</strong> Total images from included partner events</li>
                 <li>• <strong>Demographics:</strong> Age and gender data from included events</li>
@@ -396,9 +361,9 @@ export default function PartnerEditorDashboard({ partner: initialPartner, varian
               </ul>
             </div>
             
-            <div>
-              <h4 className="font-semibold text-gray-800 mb-2">🔄 How It Works Together</h4>
-              <ul className="space-y-1 text-gray-600">
+            <div className="editor-guideSection">
+              <h4 className="editor-guideTitle">🔄 How It Works Together</h4>
+              <ul className="editor-guideList">
                 <li>• Partner reports show <strong>aggregated included event data</strong> for numbers</li>
                 <li>• Partner reports show <strong>partner-specific content</strong> for text/images</li>
                 <li>• Best of both: Real data + Custom branding</li>

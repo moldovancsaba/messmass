@@ -10,6 +10,7 @@ interface UnifiedSelectFieldProps {
   value: string;
   onChange: (value: string) => void;
   options: UnifiedSelectFieldOption[];
+  disabled?: boolean;
 }
 
 export default function UnifiedSelectField({
@@ -17,6 +18,7 @@ export default function UnifiedSelectField({
   value,
   onChange,
   options,
+  disabled = false,
 }: UnifiedSelectFieldProps) {
   return (
     <div className="form-group">
@@ -25,6 +27,7 @@ export default function UnifiedSelectField({
         className="form-input"
         value={value}
         onChange={(event) => onChange(event.target.value)}
+        disabled={disabled}
       >
         {options.map((option) => (
           <option key={option.value} value={option.value}>
