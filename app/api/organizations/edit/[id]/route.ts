@@ -3,6 +3,7 @@ import { ObjectId } from 'mongodb';
 import { getDb } from '@/lib/db';
 import connectV3 from '@/lib/mongoose-v3';
 import V3Organization from '@/lib/models/v3/Organization';
+import { resolveReportVariant, listReportVariants, updateReportVariant } from '@/lib/reportVariants';
 
 export const dynamic = 'force-dynamic';
 
@@ -97,11 +98,12 @@ function mergeMetadata(
 }
 
 export async function GET(
-  _request: NextRequest,
+  request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const { id } = await params;
+    const variantSlug = new URL(request.url).searchParams.get('variant');
 
     if (!ObjectId.isValid(id)) {
       return NextResponse.json({ success: false, error: 'Invalid organization id' }, { status: 400 });
@@ -111,6 +113,44 @@ export async function GET(
     const organization = await db.collection<OrganizationRecord>('organizations').findOne({ _id: new ObjectId(id) });
 
     if (organization) {
+      if (variantSlug && variantSlug !== 'default') {
+        const resolvedVariant = await resolveReportVariant(db, 'organization', id, variantSlug);
+        const normalized = normalizeOrganization(organization);
+        return NextResponse.json({
+          success: true,
+          organization: {
+            ...normalized,
+            metadata: {
+              ...normalized.metadata,
+              stats: resolvedVariant.variant.statsOverrides || {},
+              emoji: resolvedVariant.variant.emoji ?? normalized.metadata.emoji,
+              logoUrl: resolvedVariant.variant.logoUrl ?? normalized.metadata.logoUrl,
+              styleId: resolvedVariant.variant.styleId ?? normalized.metadata.styleId,
+              reportTemplateId:
+                resolvedVariant.variant.reportTemplateId ??
+                normalized.metadata.reportTemplateId ??
+                normalized.metadata.reportId,
+              reportId:
+                resolvedVariant.variant.reportTemplateId ??
+                normalized.metadata.reportTemplateId ??
+                normalized.metadata.reportId,
+              showEmoji: resolvedVariant.variant.showEmoji ?? normalized.metadata.showEmoji,
+              showMembersList: resolvedVariant.variant.showMembersList ?? normalized.metadata.showMembersList,
+              showMembersListTitle:
+                resolvedVariant.variant.showMembersListTitle ?? normalized.metadata.showMembersListTitle,
+              showMembersListDetails:
+                resolvedVariant.variant.showMembersListDetails ?? normalized.metadata.showMembersListDetails,
+              showEventsList: resolvedVariant.variant.showEventsList ?? normalized.metadata.showEventsList,
+              showEventsListTitle:
+                resolvedVariant.variant.showEventsListTitle ?? normalized.metadata.showEventsListTitle,
+              showEventsListDetails:
+                resolvedVariant.variant.showEventsListDetails ?? normalized.metadata.showEventsListDetails,
+            },
+            reportVariant: resolvedVariant.variant,
+          },
+        });
+      }
+
       return NextResponse.json({
         success: true,
         organization: normalizeOrganization(organization),
@@ -145,6 +185,7 @@ export async function PUT(
 ) {
   try {
     const { id } = await params;
+    const variantSlug = new URL(request.url).searchParams.get('variant');
 
     if (!ObjectId.isValid(id)) {
       return NextResponse.json({ success: false, error: 'Invalid organization id' }, { status: 400 });
@@ -163,6 +204,47 @@ export async function PUT(
     const organization = await collection.findOne({ _id: new ObjectId(id) });
 
     if (organization) {
+      if (variantSlug && variantSlug !== 'default') {
+        const { variants } = await listReportVariants(db, 'organization', id);
+        const targetVariant = variants.find((variant) => variant.slug === variantSlug || variant._id === variantSlug);
+        if (!targetVariant || targetVariant._id.startsWith('virtual-default:')) {
+          return NextResponse.json({ success: false, error: 'Report variant not found' }, { status: 404 });
+        }
+
+        const metadata = mergeMetadata({}, body.metadata);
+        const variant = await updateReportVariant(db, targetVariant._id, {
+          statsOverrides: (metadata.stats as Record<string, unknown>) || {},
+          emoji: metadata.emoji ? String(metadata.emoji) : undefined,
+          logoUrl: metadata.logoUrl ? String(metadata.logoUrl) : undefined,
+          styleId: metadata.styleId ? String(metadata.styleId) : undefined,
+          reportTemplateId: metadata.reportTemplateId
+            ? String(metadata.reportTemplateId)
+            : metadata.reportId
+              ? String(metadata.reportId)
+              : undefined,
+          showEmoji: metadata.showEmoji as boolean | undefined,
+          showMembersList: metadata.showMembersList as boolean | undefined,
+          showMembersListTitle: metadata.showMembersListTitle as boolean | undefined,
+          showMembersListDetails: metadata.showMembersListDetails as boolean | undefined,
+          showEventsList: metadata.showEventsList as boolean | undefined,
+          showEventsListTitle: metadata.showEventsListTitle as boolean | undefined,
+          showEventsListDetails: metadata.showEventsListDetails as boolean | undefined,
+        });
+
+        const normalized = normalizeOrganization(organization);
+        return NextResponse.json({
+          success: true,
+          organization: {
+            ...normalized,
+            metadata: {
+              ...normalized.metadata,
+              ...metadata,
+            },
+            reportVariant: variant,
+          },
+        });
+      }
+
       const metadata = mergeMetadata(organization.metadata, body.metadata);
       if (Object.prototype.hasOwnProperty.call(metadata, 'reportTemplateId')) {
         metadata.reportId = metadata.reportTemplateId || undefined;

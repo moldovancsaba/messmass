@@ -6,6 +6,8 @@ import V3Activity from '@/lib/models/v3/Activity';
 import V3ActivityParticipant from '@/lib/models/v3/ActivityParticipant';
 import V3Organization from '@/lib/models/v3/Organization';
 import mongoose from 'mongoose';
+import { resolveReportVariant } from '@/lib/reportVariants';
+import { isEventDateInPeriod } from '@/lib/reportPeriods';
 
 type OrganizationRecord = {
   _id: ObjectId;
@@ -14,11 +16,13 @@ type OrganizationRecord = {
 export const dynamic = 'force-dynamic';
 
 export async function GET(
-  _request: Request,
+  request: Request,
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const { id } = await params;
+    const { searchParams } = new URL(request.url);
+    const variantSlug = searchParams.get('variant');
     if (!ObjectId.isValid(id)) {
       return NextResponse.json({ success: false, error: 'Invalid organization id' }, { status: 400 });
     }
@@ -59,9 +63,14 @@ export async function GET(
         })
         .toArray();
 
+      const resolvedVariant = await resolveReportVariant(db, 'organization', id, variantSlug);
+      const filteredProjects = projects.filter((project) =>
+        isEventDateInPeriod(project.eventDate, resolvedVariant.period)
+      );
+
       return NextResponse.json({
         success: true,
-        activities: projects.map((project) => ({
+        activities: filteredProjects.map((project) => ({
           _id: project._id.toString(),
           name: project.eventName,
           type: 'event',
@@ -71,7 +80,7 @@ export async function GET(
           },
           createdAt: project.createdAt,
           updatedAt: project.updatedAt,
-        })),
+      })),
       });
     }
 

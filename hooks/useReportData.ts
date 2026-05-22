@@ -236,7 +236,7 @@ export interface PartnerReportData {
  * @param slug - Partner view slug or ID
  * @returns Partner report data with loading/error states
  */
-export function usePartnerReportData(slug: string | null) {
+export function usePartnerReportData(slug: string | null, variantSlug?: string | null) {
   const [data, setData] = useState<PartnerReportData | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
@@ -252,7 +252,8 @@ export function usePartnerReportData(slug: string | null) {
 
     try {
       // Step 1: Fetch partner and events
-      const partnerRes = await fetch(`/api/partners/report/${slug}`, {
+      const query = variantSlug ? `?variant=${encodeURIComponent(variantSlug)}` : '';
+      const partnerRes = await fetch(`/api/partners/report/${slug}${query}`, {
         cache: 'no-store'
       });
 
@@ -292,17 +293,7 @@ export function usePartnerReportData(slug: string | null) {
         throw new Error(partnerData.error || 'Failed to load partner');
       }
 
-      // Step 2: Resolve report configuration for partner
-      const reportRes = await fetch(`/api/reports/resolve?partnerId=${partnerData.partner._id}`, {
-        cache: 'no-store'
-      });
-      const reportData = await reportRes.json();
-
-      if (!reportData.success) {
-        throw new Error(reportData.error || 'Failed to load report configuration');
-      }
-
-      // Step 3: Load all charts from chart_configurations collection
+      // Step 2: Load all charts from chart_configurations collection
       const chartsRes = await fetch('/api/chart-config/public', {
         cache: 'no-store'
       });
@@ -319,10 +310,10 @@ export function usePartnerReportData(slug: string | null) {
         partner: partnerData.partner,
         events: partnerData.events || [],
         aggregatedStats: partnerData.aggregatedStats || {},
-        report: reportData.report,
+        report: partnerData.report,
         charts: chartsData.configurations || chartsData.charts || [], // WHAT: chart-config/public returns 'configurations', fallback to 'charts' for backward compatibility
-        resolvedFrom: reportData.resolvedFrom,
-        source: reportData.source
+        resolvedFrom: partnerData.resolvedFrom,
+        source: partnerData.source
       });
 
     } catch (err) {
@@ -332,7 +323,7 @@ export function usePartnerReportData(slug: string | null) {
     } finally {
       setLoading(false);
     }
-  }, [slug]);
+  }, [slug, variantSlug]);
 
   useEffect(() => {
     fetchData();
@@ -350,7 +341,7 @@ export function usePartnerReportData(slug: string | null) {
  * WHAT: Fetch report data for organization reports
  * WHY: Support admin organizations first, while preserving fallback access to older org routes
  */
-export function useOrganizationReportData(id: string | null) {
+export function useOrganizationReportData(id: string | null, variantSlug?: string | null) {
   const [data, setData] = useState<any | null>(null);
   const [activities, setActivities] = useState<any[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
@@ -367,9 +358,10 @@ export function useOrganizationReportData(id: string | null) {
 
     try {
       const fetchOrganizationBundle = async (basePath: string) => {
+        const query = variantSlug ? `?variant=${encodeURIComponent(variantSlug)}` : '';
         const [reportRes, activitiesRes] = await Promise.all([
-          fetch(`${basePath}/${id}`, { cache: 'no-store' }),
-          fetch(`${basePath}/${id}/activities`, { cache: 'no-store' }),
+          fetch(`${basePath}/${id}${query}`, { cache: 'no-store' }),
+          fetch(`${basePath}/${id}/activities${query}`, { cache: 'no-store' }),
         ]);
 
         const [reportResult, activitiesResult] = await Promise.all([
@@ -413,7 +405,7 @@ export function useOrganizationReportData(id: string | null) {
     } finally {
       setLoading(false);
     }
-  }, [id]);
+  }, [id, variantSlug]);
 
   useEffect(() => {
     fetchData();

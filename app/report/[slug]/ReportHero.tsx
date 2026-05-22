@@ -34,6 +34,9 @@ interface ReportHeroProps {
   
   /** Show date information */
   showDate?: boolean;
+
+  /** Optional subtitle shown under the title */
+  customSubtitle?: string;
   
   /** Show export options */
   showExport?: boolean;
@@ -66,6 +69,7 @@ export default function ReportHero({
   partnerLogo,
   partner2Logo,
   showDate = true,
+  customSubtitle,
   showExport = true,
   onExportCSV,
   onExportPDF,
@@ -120,7 +124,9 @@ export default function ReportHero({
           )}
           <div className={styles.heroText}>
             <h1 className={styles.heroTitle}>{project.eventName}</h1>
-            {formattedDate && (
+            {customSubtitle ? (
+              <p className={styles.heroDate}>{customSubtitle}</p>
+            ) : formattedDate && (
               <p className={styles.heroDate}>{formattedDate}</p>
             )}
           </div>

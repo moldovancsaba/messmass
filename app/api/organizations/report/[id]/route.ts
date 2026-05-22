@@ -1,11 +1,12 @@
 import { NextResponse } from 'next/server';
 import { ObjectId } from 'mongodb';
 import { getDb } from '@/lib/db';
-import { createReportResolver } from '@/lib/report-resolver';
 import connectV3 from '@/lib/mongoose-v3';
 import V3Organization from '@/lib/models/v3/Organization';
 import V3Entity from '@/lib/models/v3/Entity';
 import { V3ReportResolver } from '@/lib/v3/reporting/reportResolver';
+import { resolveReportVariant } from '@/lib/reportVariants';
+import { isEventDateInPeriod } from '@/lib/reportPeriods';
 
 type OrganizationRecord = {
   _id: ObjectId;
@@ -60,11 +61,13 @@ function aggregateNumericStats(
 }
 
 export async function GET(
-  _request: Request,
+  request: Request,
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const { id } = await params;
+    const { searchParams } = new URL(request.url);
+    const variantSlug = searchParams.get('variant');
     if (!ObjectId.isValid(id)) {
       return NextResponse.json({ success: false, error: 'Invalid organization id' }, { status: 400 });
     }
@@ -82,7 +85,7 @@ export async function GET(
         .toArray();
 
       const partnerIds = assignedPartners.map((partner) => partner._id);
-      const projects = partnerIds.length
+      const allProjects = partnerIds.length
         ? await projectsCollection
             .find({
               $or: [
@@ -105,29 +108,37 @@ export async function GET(
             .toArray()
         : [];
 
-      const resolver = createReportResolver(db);
-      const metadata = organization.metadata || {};
-      const explicitReportId = metadata.reportTemplateId || metadata.reportId;
-      const explicitReport = explicitReportId ? await resolver.getReportById(explicitReportId) : null;
-      const resolved = explicitReport
-        ? { report: explicitReport, resolvedFrom: 'organization', source: organization.name }
-        : await resolver.getDefaultReport('partner');
-
-      if (!resolved?.report) {
+      const resolvedVariant = await resolveReportVariant(db, 'organization', id, variantSlug);
+      if (!resolvedVariant.runtimeReport.report) {
         throw new Error('Failed to resolve organization report');
       }
 
-      if (metadata.styleId) {
-        resolved.report.styleId = metadata.styleId;
-      }
+      const projects = allProjects.filter((project) =>
+        isEventDateInPeriod(project.eventDate, resolvedVariant.period)
+      );
 
-      const aggregatedStats: Record<string, number | string> = {
-        ...(metadata.stats || {}),
+      const baseMetadata = organization.metadata || {};
+      const variant = resolvedVariant.variant;
+      const mergedMetadata = {
+        ...baseMetadata,
+        stats: variant.statsOverrides || {},
+        emoji: variant.emoji ?? baseMetadata.emoji,
+        logoUrl: variant.logoUrl ?? baseMetadata.logoUrl,
+        styleId: variant.styleId ?? baseMetadata.styleId,
+        reportTemplateId: variant.reportTemplateId ?? baseMetadata.reportTemplateId ?? baseMetadata.reportId,
+        reportId: variant.reportTemplateId ?? baseMetadata.reportTemplateId ?? baseMetadata.reportId,
+        showEmoji: variant.showEmoji ?? baseMetadata.showEmoji,
+        showMembersList: variant.showMembersList ?? baseMetadata.showMembersList,
+        showMembersListTitle: variant.showMembersListTitle ?? baseMetadata.showMembersListTitle,
+        showMembersListDetails: variant.showMembersListDetails ?? baseMetadata.showMembersListDetails,
+        showEventsList: variant.showEventsList ?? baseMetadata.showEventsList,
+        showEventsListTitle: variant.showEventsListTitle ?? baseMetadata.showEventsListTitle,
+        showEventsListDetails: variant.showEventsListDetails ?? baseMetadata.showEventsListDetails,
       };
 
-      assignedPartners.forEach((partner) => {
-        aggregateNumericStats(aggregatedStats, partner.stats);
-      });
+      const aggregatedStats: Record<string, number | string> = {
+        ...((variant.statsOverrides || {}) as Record<string, number | string>),
+      };
 
       projects.forEach((project) => {
         aggregateNumericStats(aggregatedStats, (project.stats || {}) as Record<string, unknown>);
@@ -140,7 +151,7 @@ export async function GET(
           name: organization.name,
           slug: organization.slug,
           status: organization.status || 'active',
-          metadata,
+          metadata: mergedMetadata,
           createdAt: organization.createdAt || new Date().toISOString(),
           updatedAt: organization.updatedAt || new Date().toISOString(),
         },
@@ -154,9 +165,13 @@ export async function GET(
             logoUrl: partner.logoUrl,
           },
         })),
-        report: resolved.report,
-        resolvedFrom: resolved.resolvedFrom,
-        source: resolved.source,
+        report: resolvedVariant.runtimeReport.report,
+        resolvedFrom: resolvedVariant.runtimeReport.resolvedFrom,
+        source: resolvedVariant.runtimeReport.source,
+        reportVariant: {
+          ...variant,
+          period: resolvedVariant.period,
+        },
         aggregatedStats,
         totalEntities: assignedPartners.length,
         totalEvents: projects.length,

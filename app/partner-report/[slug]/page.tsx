@@ -1,6 +1,6 @@
 'use client';
 
-import { useParams } from 'next/navigation';
+import { useParams, useSearchParams } from 'next/navigation';
 import { PartnerReportView } from '../PartnerReportView';
 
 /**
@@ -10,6 +10,8 @@ import { PartnerReportView } from '../PartnerReportView';
  */
 export default function PartnerReportPage() {
   const params = useParams();
+  const searchParams = useSearchParams();
   const slug = (params?.slug as string) ?? '';
-  return <PartnerReportView slug={slug} />;
+  const variant = searchParams?.get('variant');
+  return <PartnerReportView slug={slug} variant={variant} />;
 }

@@ -1,6 +1,6 @@
 'use client';
 
-import { useParams } from 'next/navigation';
+import { useParams, useSearchParams } from 'next/navigation';
 import OrganizationReportView from '../OrganizationReportView';
 
 /**
@@ -9,9 +9,11 @@ import OrganizationReportView from '../OrganizationReportView';
  */
 export default function OrganizationReportPage() {
   const params = useParams();
+  const searchParams = useSearchParams();
   const id = (params?.id as string) ?? '';
+  const variant = searchParams?.get('variant');
   
   if (!id) return <div>Invalid ID</div>;
   
-  return <OrganizationReportView id={id} />;
+  return <OrganizationReportView id={id} variant={variant} />;
 }

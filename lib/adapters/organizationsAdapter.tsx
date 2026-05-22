@@ -18,7 +18,7 @@ export const organizationsEntityConfig: AdminEntityConfig<OrganizationDTO> = {
   pageName: 'organizations',
   displayName: 'Organization',
   supportedViews: ['list', 'card'],
-  capabilities: ['create', 'edit', 'delete', 'report', 'edit-content', 'manage-members'],
+  capabilities: ['create', 'edit', 'delete', 'report', 'report-workspace', 'edit-content', 'manage-members'],
   search: {
     fields: ['name', 'slug', 'status'],
     placeholder: 'Search organizations...',
@@ -26,28 +26,28 @@ export const organizationsEntityConfig: AdminEntityConfig<OrganizationDTO> = {
   permissionRequirements: ['superadmin'],
   actions: [
     {
-      id: 'organization-report',
-      label: 'Open Report',
+      id: 'organization-reports',
+      label: 'Reports',
       icon: 'visibility',
       variant: 'primary',
+      requiredCapabilities: ['report-workspace'],
+      requiredPermissions: ['superadmin'],
+      execution: {
+        kind: 'route',
+        getHref: (org) => `/admin/organizations/${org._id}/reports`,
+        target: '_self',
+      },
+    },
+    {
+      id: 'organization-report',
+      label: 'Open Default Report',
+      icon: 'visibility',
+      variant: 'secondary',
       requiredCapabilities: ['report'],
       requiredPermissions: ['superadmin'],
       execution: {
         kind: 'route',
         getHref: (org) => `/organization-report/${org._id}`,
-        target: '_blank',
-      },
-    },
-    {
-      id: 'organization-edit-content',
-      label: 'Open Editor',
-      icon: 'bar_chart',
-      variant: 'primary',
-      requiredCapabilities: ['edit-content'],
-      requiredPermissions: ['superadmin'],
-      execution: {
-        kind: 'route',
-        getHref: (org) => `/organization-edit/${org._id}`,
         target: '_blank',
       },
     },

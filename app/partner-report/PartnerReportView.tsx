@@ -9,7 +9,6 @@ import ReportHero from '@/app/report/[slug]/ReportHero';
 import ReportContent from '@/app/report/[slug]/ReportContent';
 import PartnerEventsList from '@/app/partner-report/[slug]/PartnerEventsList';
 import { usePartnerReportData } from '@/hooks/useReportData';
-import { useReportLayoutForPartner } from '@/hooks/useReportLayout';
 import { useReportStyle } from '@/hooks/useReportStyle';
 import { useReportExport } from '@/hooks/useReportExport';
 import { ReportCalculator } from '@/lib/report-calculator';
@@ -17,11 +16,12 @@ import styles from '@/app/styles/report-page.module.css';
 
 export interface PartnerReportViewProps {
   slug: string;
+  variant?: string | null;
 }
 
-export function PartnerReportView({ slug }: PartnerReportViewProps) {
+export function PartnerReportView({ slug, variant }: PartnerReportViewProps) {
   console.log('🏗️ [PartnerReportView] Multi-tenant view mounting with slug:', slug);
-  const { data: partnerData, loading: dataLoading, error: dataError } = usePartnerReportData(slug);
+  const { data: partnerData, loading: dataLoading, error: dataError } = usePartnerReportData(slug, variant);
   
   console.log('📦 [PartnerReportView] Hook dataLoading:', dataLoading);
   console.log('📦 [PartnerReportView] Hook partnerData stats:', partnerData?.aggregatedStats ? 'Yes' : 'No');
@@ -30,17 +30,13 @@ export function PartnerReportView({ slug }: PartnerReportViewProps) {
   const events = partnerData?.events || [];
   const charts = partnerData?.charts || [];
   const stats = partnerData?.aggregatedStats || null;
-
-  console.log('🕒 [PartnerReportView] useReportLayoutForPartner input:', partner?._id || 'null');
-  const {
-    report,
-    blocks,
-    gridSettings,
-    loading: layoutLoading,
-    error: layoutError,
-  } = useReportLayoutForPartner(partner?._id || null);
-
-  console.log('📦 [PartnerReportView] layoutLoading:', layoutLoading);
+  const report = partnerData?.report || null;
+  const blocks = useMemo(() => (report?.layout?.blocks || []).sort((a, b) => a.order - b.order), [report]);
+  const gridSettings = useMemo(() => ({
+    desktop: report?.layout?.gridColumns?.desktop || 3,
+    tablet: report?.layout?.gridColumns?.tablet || 2,
+    mobile: report?.layout?.gridColumns?.mobile || 1,
+  }), [report]);
 
   const { loading: styleLoading } = useReportStyle({
     styleId: report?.styleId ? String(report.styleId) : null,
@@ -71,8 +67,8 @@ export function PartnerReportView({ slug }: PartnerReportViewProps) {
     reportType: 'Partner Report',
   });
 
-  const loading = dataLoading || layoutLoading || styleLoading;
-  const error = dataError || layoutError;
+  const loading = dataLoading || styleLoading;
+  const error = dataError;
 
   if (loading) {
     return (
@@ -116,6 +112,7 @@ export function PartnerReportView({ slug }: PartnerReportViewProps) {
     eventDate: new Date().toISOString(),
     _id: partner._id,
   };
+  const reportVariant = (partnerData as any)?.reportVariant;
 
   return (
     <div className={styles.page}>
@@ -126,6 +123,7 @@ export function PartnerReportView({ slug }: PartnerReportViewProps) {
             emoji={heroSettings?.showEmoji !== false && partner.showEmoji !== false ? partner.emoji : undefined}
             partnerLogo={(partner as any).logoUrl}
             showDate={false}
+            customSubtitle={reportVariant ? `${reportVariant.name} · ${reportVariant.period?.label || 'All Time'}` : undefined}
             showExport={heroSettings?.showExportOptions ?? true}
             onExportCSV={handleCSVExport}
             onExportPDF={handlePDFExport}
@@ -147,4 +145,3 @@ export function PartnerReportView({ slug }: PartnerReportViewProps) {
     </div>
   );
 }
-

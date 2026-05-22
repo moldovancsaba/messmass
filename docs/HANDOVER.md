@@ -2,7 +2,7 @@
 
 This file is onboarding plus operational context for the next agent. Keep it accurate when behavior, process, or current delivery state changes.
 
-**Last Updated:** 2026-05-22 (report variants compatibility-first planning)
+**Last Updated:** 2026-05-22 (report variants compatibility-first rollout)
 
 ## 🚨 CRITICAL MUST-READ FOR ALL AGENTS: STYLING & COMPONENTS 🚨
 
@@ -29,8 +29,8 @@ You MUST completely read and obey `docs/coding-standards.md` and `docs/component
 
 ## Current Repo Truth
 - Active branch: `main`
-- Last known HEAD during this update: `213d5e25b`
-- Working tree should be clean after the latest docs/board-alignment pass.
+- Last known HEAD during this update: local uncommitted report-variants rollout on top of `213d5e25b`
+- Working tree is intentionally dirty during the report-variants implementation pass described below.
 - Most recent shipped repo work:
   - active documentation overhaul and canonical-doc refresh
   - API comment cleanup aligned to current runtime behavior
@@ -113,6 +113,28 @@ Use this checklist for the next SSOT/board pass so the next agent does not have 
 - Style editor preview updates immediately for bar/pie CSS vars and includes Value Chain and Landing page sections.
 
 ## Handover Log
+
+## 2026-05-22 — Report variants compatibility-first rollout foundation (#831, #832, #833, #834, #835, #836, #837)
+- **Objective:** Implement the first end-to-end report-variants foundation without harming any existing live reports, keeping `/organization-report/[id]` as the canonical `DEFAULT` fallback while adding additive support for named time-scoped variants.
+- **New shared model:** Added `/lib/reportVariants.ts`, `/lib/reportPeriods.ts`, and `/lib/reportRuntime.ts`.
+  - `reportVariants.ts` introduces owner-scoped variants for `organization`, `partner`, `hashtag`, and `filter`, plus virtual `DEFAULT` fallback resolution when no stored variants exist yet.
+  - `reportPeriods.ts` introduces the shared preset engine for `all_time`, `this_month`, `last_30_days`, `this_year`, `last_year`, and `custom`.
+  - `reportRuntime.ts` provides compatibility-safe runtime report resolution across legacy `reports`, `report_templates`, and fallback layouts so existing report content can continue to render.
+- **Admin API foundation (`#831`, `#832`):** Added `/app/api/report-variants/route.ts` and `/app/api/report-variants/[id]/route.ts` for admin-authenticated variant list/create/read/update operations.
+- **Organization runtime and editing (`#833`, `#834`, `#835`):**
+  - `/app/api/organizations/report/[id]/route.ts` and `/app/api/organizations/report/[id]/activities/route.ts` now accept `?variant=` and period-scope the report payload while preserving default/all-time behavior when no variant is requested.
+  - `/app/api/organizations/edit/[id]/route.ts`, `/app/organization-edit/[id]/page.tsx`, and `/components/OrganizationEditorDashboard.tsx` now support variant-scoped editing for custom variants while leaving the base organization edit flow intact.
+  - Added `/app/admin/organizations/[id]/reports/page.tsx` and `/app/admin/organizations/[id]/reports/page.module.css` as the first owner-scoped `Reports` workspace with create, rename, set-default, archive/publish, open, edit, and share flows.
+  - `/lib/adapters/organizationsAdapter.tsx` now uses `Reports` as the primary organization action, with default report access retained as a secondary action.
+- **Partner rollout (`#836`):**
+  - `/app/api/partners/report/[slug]/route.ts`, `/app/partner-report/[slug]/page.tsx`, `/app/partner-report/PartnerReportView.tsx`, and `/hooks/useReportData.ts` now support partner variants and period scoping.
+  - The partner report runtime now uses the resolved report payload directly instead of depending on a separate layout fetch, which keeps custom variant rendering compatible with existing partner reports.
+- **Hashtag and filter rollout (`#837`):**
+  - `/app/api/hashtags/[hashtag]/route.ts`, `/app/api/hashtags/filter-by-slug/[slug]/route.ts`, `/app/hashtag/[hashtag]/page.tsx`, and `/app/filter/[slug]/page.tsx` now accept `?variant=` and apply the shared time-period resolver to their matched projects.
+- **Sharing compatibility:** Updated `/lib/pagePassword.ts` so hashed sharing links can encode owner variants with composite ids like `base::variant=slug` and generate correct public URLs for organization reports, organization editors, filters, and hashtags.
+- **Current product rule preserved:** `/organization-report/[id]` remains the canonical `DEFAULT` report URL. Custom variants are additive and can be opened/shared explicitly without changing the existing all-time default report unless the operator intentionally sets a different stored variant as default in the new reports workspace.
+- **Validation:** `npm run lint`, `npm run build`, and `npm run type-check` all passed. As usual in this repo, `type-check` was rerun after the successful build because `tsconfig.json` includes `.next/types/**/*.ts`.
+- **Outstanding follow-up:** Commit/push this rollout, then update the GitHub issue chain `#831` through `#837` and Project 1 to reflect the shipped foundation status and the remaining `#838` list-view cleanup / broader rollout decisions.
 
 ## 2026-05-22 — Report variants compatibility-first planning
 - **Objective:** Translate the PO request for time-period-based report variants into a compatibility-safe delivery program that does not harm existing reports.

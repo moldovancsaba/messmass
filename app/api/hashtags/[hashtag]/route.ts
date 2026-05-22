@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import clientPromise from '@/lib/mongodb';
 import config from '@/lib/config';
+import { resolveReportVariant } from '@/lib/reportVariants';
+import { isEventDateInPeriod } from '@/lib/reportPeriods';
 
 export async function GET(
   request: NextRequest,
@@ -9,6 +11,7 @@ export async function GET(
   try {
     const resolvedParams = await params;
     const hashtagOrSlug = decodeURIComponent(resolvedParams.hashtag);
+    const variantSlug = new URL(request.url).searchParams.get('variant');
     
     console.log('📊 Fetching aggregated stats for hashtag/slug:', hashtagOrSlug);
     
@@ -38,7 +41,7 @@ const db = client.db(config.dbName);
 
     // Find all projects with this hashtag (case insensitive)
     // Handle both array format and comma-separated string format
-    const projects = await projectsCollection.find({
+    const matchingProjects = await projectsCollection.find({
       $or: [
         // Array format
         { hashtags: { $regex: new RegExp(`^${actualHashtag}$`, 'i') } },
@@ -46,6 +49,11 @@ const db = client.db(config.dbName);
         { hashtags: { $regex: new RegExp(`(^|,)\\s*${actualHashtag}\\s*(,|$)`, 'i') } }
       ]
     }).toArray();
+
+    const resolvedVariant = await resolveReportVariant(db as any, 'hashtag', actualHashtag, variantSlug);
+    const projects = matchingProjects.filter((project) =>
+      isEventDateInPeriod(project.eventDate, resolvedVariant.period)
+    );
     
     // Create project list for display
     const projectList = projects.map(project => ({
@@ -67,7 +75,7 @@ const db = client.db(config.dbName);
     console.log(`✅ Found ${projects.length} projects with hashtag: ${actualHashtag}`);
 
     // Calculate aggregated statistics
-    const aggregatedStats = {
+    const aggregatedStats: Record<string, number | string> = {
       remoteImages: 0,
       hostessImages: 0,
       selfies: 0,
@@ -104,6 +112,10 @@ const db = client.db(config.dbName);
       eventValuePropositionVisited: 0,
       eventValuePropositionPurchases: 0
     };
+
+    Object.entries((resolvedVariant.variant.statsOverrides || {}) as Record<string, unknown>).forEach(([key, value]) => {
+      aggregatedStats[key] = value as number | string;
+    });
 
     // Find date range - initialize with first project date
     let oldestDate = new Date(projects[0].eventDate);
@@ -148,6 +160,12 @@ const db = client.db(config.dbName);
       success: true,
       project: aggregatedProject,
       projects: projectList,
+      report: resolvedVariant.runtimeReport.report,
+      styleId: resolvedVariant.variant.styleId || null,
+      reportVariant: {
+        ...resolvedVariant.variant,
+        period: resolvedVariant.period,
+      },
       debug: {
         projectsFound: projects.length,
         hashtag: actualHashtag,

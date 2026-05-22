@@ -5,7 +5,7 @@
 'use client';
 
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
-import { useParams } from 'next/navigation';
+import { useParams, useSearchParams } from 'next/navigation';
 import ReportHero from '@/app/report/[slug]/ReportHero';
 import ReportContent from '@/app/report/[slug]/ReportContent';
 import UnifiedProjectsSection from '@/components/UnifiedProjectsSection';
@@ -41,7 +41,9 @@ interface FilterReportData {
 
 export default function FilterReportPage() {
   const params = useParams();
+  const searchParams = useSearchParams();
   const filterSlug = params?.slug as string;
+  const variant = searchParams?.get('variant');
   
   // Authentication state
   const [isAuthorized, setIsAuthorized] = useState(false);
@@ -76,7 +78,8 @@ export default function FilterReportPage() {
       console.log('🔍 [FilterReport] Fetching data for:', filterSlug);
       
       // Step 1: Fetch filter aggregated data
-      const dataRes = await fetch(`/api/hashtags/filter-by-slug/${filterSlug}`, {
+      const query = variant ? `?variant=${encodeURIComponent(variant)}` : '';
+      const dataRes = await fetch(`/api/hashtags/filter-by-slug/${filterSlug}${query}`, {
         cache: 'no-store'
       });
       const data = await dataRes.json();
@@ -88,20 +91,13 @@ export default function FilterReportPage() {
       setReportData(data);
       
       // Step 2: Fetch report template (v12 system)
-      const templateRes = await fetch(
-        `/api/report-config/${filterSlug}?type=filter`,
-        { cache: 'no-store' }
-      );
-      const templateData = await templateRes.json();
-      
-      if (!templateData.success) {
-        throw new Error(templateData.error || 'Failed to load report template');
+      const template = data.report;
+      if (!template) {
+        throw new Error('Failed to load report template');
       }
-      
-      const template = templateData.template;
-      setBlocks(template.dataBlocks || []);
-      setGridSettings(template.gridSettings || { desktopUnits: 3, tabletUnits: 2, mobileUnits: 1 });
-      setStyleId(template.styleId || null); // Extract styleId from template
+      setBlocks(template.layout?.blocks || []);
+      setGridSettings(template.layout?.gridColumns || { desktop: 3, tablet: 2, mobile: 1 });
+      setStyleId(data.styleId || template.styleId || null);
       
       // Step 3: Fetch chart configurations
       const chartsRes = await fetch('/api/chart-config/public', { cache: 'no-store' });
@@ -120,11 +116,11 @@ export default function FilterReportPage() {
     } finally {
       setLoading(false);
     }
-  }, [filterSlug]);
+  }, [filterSlug, variant]);
 
   useEffect(() => {
     if (filterSlug) {
-      const authenticated = isAuthenticated(filterSlug, 'filter');
+      const authenticated = isAuthenticated(variant ? `${filterSlug}::variant=${variant}` : filterSlug, 'filter');
       setIsAuthorized(authenticated);
       setCheckingAuth(false);
       
@@ -132,7 +128,7 @@ export default function FilterReportPage() {
         fetchFilterData();
       }
     }
-  }, [filterSlug, fetchFilterData]);
+  }, [fetchFilterData, filterSlug, variant]);
   
   // Handle successful login
   const handleLoginSuccess = (isAdmin: boolean) => {
@@ -174,7 +170,7 @@ export default function FilterReportPage() {
   }
   
   if (!isAuthorized) {
-    return <PagePasswordLogin pageId={filterSlug} pageType="filter" onSuccess={handleLoginSuccess} />;
+    return <PagePasswordLogin pageId={variant ? `${filterSlug}::variant=${variant}` : filterSlug} pageType="filter" onSuccess={handleLoginSuccess} />;
   }
   
   // Loading state
@@ -232,6 +228,7 @@ export default function FilterReportPage() {
           project={projectForHero}
           emoji="🔍"
           showDate={true}
+          customSubtitle={(reportData as any).reportVariant ? `${(reportData as any).reportVariant.name} · ${(reportData as any).reportVariant.period?.label || 'All Time'}` : undefined}
           showExport={true}
         />
         

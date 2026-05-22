@@ -36,6 +36,14 @@ export interface ShareableLink {
   expiresAt?: string;
 }
 
+function parseVariantPageId(pageId: string): { basePageId: string; variantSlug: string | null } {
+  const [basePageId, variantPart] = pageId.split('::variant=');
+  return {
+    basePageId,
+    variantSlug: variantPart || null,
+  };
+}
+
 /**
  * Generate a secure MD5-style password
  * Creates a password that looks like an MD5 hash but is randomly generated
@@ -203,6 +211,7 @@ export async function generateShareableLink(
   baseUrl: string = ''
 ): Promise<ShareableLink> {
   const pagePassword = await getOrCreatePagePassword(pageId, pageType);
+  const { basePageId, variantSlug } = parseVariantPageId(pageId);
   
   let url = baseUrl;
   switch (pageType) {
@@ -219,7 +228,10 @@ export async function generateShareableLink(
     case 'organization-report':
       // WHAT: Organization report pages at /organization-report/[id]
       // WHY: Shareable aggregated organization reporting pages
-      url += `/organization-report/${pageId}`;
+      url += `/organization-report/${basePageId}`;
+      if (variantSlug) {
+        url += `?variant=${encodeURIComponent(variantSlug)}`;
+      }
       break;
     case 'edit':
       url += `/edit/${pageId}`;
@@ -232,10 +244,22 @@ export async function generateShareableLink(
     case 'organization-edit':
       // WHAT: Organization content editing pages at /organization-edit/[id]
       // WHY: Allow editing organization-level report content and visibility settings
-      url += `/organization-edit/${pageId}`;
+      url += `/organization-edit/${basePageId}`;
+      if (variantSlug) {
+        url += `?variant=${encodeURIComponent(variantSlug)}`;
+      }
       break;
     case 'filter':
-      url += `/filter/${pageId}`;
+      url += `/filter/${basePageId}`;
+      if (variantSlug) {
+        url += `?variant=${encodeURIComponent(variantSlug)}`;
+      }
+      break;
+    case 'hashtag':
+      url += `/hashtag/${basePageId}`;
+      if (variantSlug) {
+        url += `?variant=${encodeURIComponent(variantSlug)}`;
+      }
       break;
   }
 

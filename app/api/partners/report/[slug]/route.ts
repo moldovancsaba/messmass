@@ -7,6 +7,8 @@ import { ObjectId } from 'mongodb';
 import config from '@/lib/config';
 import { error as logError } from '@/lib/logger';
 import { addDerivedMetrics } from '@/lib/projectStatsUtils';
+import { resolveReportVariant } from '@/lib/reportVariants';
+import { isEventDateInPeriod } from '@/lib/reportPeriods';
 
 export const dynamic = 'force-dynamic';
 
@@ -16,6 +18,8 @@ export async function GET(
 ) {
   let slug: string | undefined;
   try {
+    const variantSlug = new URL(request.url).searchParams.get('variant');
+
     // WHAT: Await params Promise (Next.js 15 requirement)
     // WHY: Next.js 15 changed params to async to support edge runtime
     const paramsResolved = await params;
@@ -86,7 +90,7 @@ const db = client.db(config.dbName);
     // Fetch all report-eligible events associated with this partner
     // WHAT: partner1 / partner1Id represent the local-home side in existing builders
     // WHY: Some partner reports should aggregate only local-home appearances
-    const events = await db
+    const allEvents = await db
       .collection('projects')
       .find(eventQuery)
       .sort({ eventDate: -1 }) // Most recent events first
@@ -105,11 +109,14 @@ const db = client.db(config.dbName);
       })
       .toArray();
 
-    // WHAT: Server-side stats aggregation (Phase 2 - v12.4.0)
-    // WHY: Move computation to server for better performance and consistency
-    // HOW: Sum all numeric stats across events, merge with partner-level stats
-    const aggregatedStats: Record<string, number | string> = { ...(partner.stats || {}) };
-    
+    const resolvedVariant = await resolveReportVariant(db as any, 'partner', partner._id.toString(), variantSlug);
+    const events = allEvents.filter((event) => isEventDateInPeriod(event.eventDate, resolvedVariant.period));
+
+    const useLegacyAllTimeAggregation = !variantSlug && resolvedVariant.isVirtualDefault && resolvedVariant.period.periodPreset === 'all_time';
+    const aggregatedStats: Record<string, number | string> = useLegacyAllTimeAggregation
+      ? { ...(partner.stats || {}) }
+      : { ...((resolvedVariant.variant.statsOverrides || {}) as Record<string, number | string>) };
+
     events.forEach(event => {
       const eventStats = event.stats || {};
       Object.entries(eventStats).forEach(([key, value]) => {
@@ -131,27 +138,35 @@ const db = client.db(config.dbName);
       partner: {
         _id: partner._id.toString(),
         name: partner.name,
-        emoji: partner.emoji,
-        logoUrl: partner.logoUrl,
+        emoji: resolvedVariant.variant.emoji ?? partner.emoji,
+        logoUrl: resolvedVariant.variant.logoUrl ?? partner.logoUrl,
         hashtags: partner.hashtags || [],
         categorizedHashtags: partner.categorizedHashtags || {},
-        styleId: partner.styleId ? partner.styleId.toString() : undefined,
-        reportTemplateId: partner.reportTemplateId ? partner.reportTemplateId.toString() : undefined,
-        showEventsList: partner.showEventsList ?? true, // Default to true for backward compatibility
-        showEventsListTitle: partner.showEventsListTitle ?? true, // Default to true for backward compatibility
-        showEventsListDetails: partner.showEventsListDetails ?? true, // Default to true for backward compatibility
+        styleId: resolvedVariant.variant.styleId || (partner.styleId ? partner.styleId.toString() : undefined),
+        reportTemplateId: resolvedVariant.variant.reportTemplateId || (partner.reportTemplateId ? partner.reportTemplateId.toString() : undefined),
+        showEventsList: resolvedVariant.variant.showEventsList ?? partner.showEventsList ?? true,
+        showEventsListTitle: resolvedVariant.variant.showEventsListTitle ?? partner.showEventsListTitle ?? true,
+        showEventsListDetails: resolvedVariant.variant.showEventsListDetails ?? partner.showEventsListDetails ?? true,
+        showEmoji: resolvedVariant.variant.showEmoji ?? partner.showEmoji ?? true,
         showOnlyTeam1Events,
         createdAt: partner.createdAt,
         updatedAt: partner.updatedAt,
         // WHAT: Include partner-level stats (reportText*, reportImage*) for chart display
         // WHY: Partner editor creates content that should appear in partner reports
         // HOW: Pass partner.stats to frontend for merging with aggregated event data
-        stats: partner.stats || {}
+        stats: useLegacyAllTimeAggregation ? partner.stats || {} : resolvedVariant.variant.statsOverrides || {}
       },
       // WHAT: Pre-aggregated stats computed on server (Phase 2 - v12.4.0)
       // WHY: Eliminates client-side computation, improves performance
       // HOW: Sum all numeric event stats + merge partner-level stats (reportText*, reportImage*)
       aggregatedStats,
+      reportVariant: {
+        ...resolvedVariant.variant,
+        period: resolvedVariant.period,
+      },
+      report: resolvedVariant.runtimeReport.report,
+      resolvedFrom: resolvedVariant.runtimeReport.resolvedFrom,
+      source: resolvedVariant.runtimeReport.source,
       events: events.map(event => {
         const rawStats = event.stats || {};
         const derivedStats = addDerivedMetrics(rawStats);

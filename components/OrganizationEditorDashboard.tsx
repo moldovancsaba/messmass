@@ -53,9 +53,10 @@ interface ClickerSetOption {
 
 interface OrganizationEditorDashboardProps {
   organization: Organization;
+  variantSlug?: string | null;
 }
 
-export default function OrganizationEditorDashboard({ organization: initialOrg }: OrganizationEditorDashboardProps) {
+export default function OrganizationEditorDashboard({ organization: initialOrg, variantSlug }: OrganizationEditorDashboardProps) {
   const [org, setOrg] = useState<Organization>(initialOrg);
   const [saveStatus, setSaveStatus] = useState<'idle' | 'saving' | 'saved' | 'error'>('idle');
 
@@ -175,7 +176,8 @@ export default function OrganizationEditorDashboard({ organization: initialOrg }
     }
 
     try {
-      const result = await apiPut(`/api/organizations/edit/${org._id}`, {
+      const query = variantSlug ? `?variant=${encodeURIComponent(variantSlug)}` : '';
+      const result = await apiPut(`/api/organizations/edit/${org._id}${query}`, {
         metadata: nextMetadata,
       });
 
@@ -254,7 +256,11 @@ export default function OrganizationEditorDashboard({ organization: initialOrg }
             <h1 className="admin-title">
               {org.metadata?.showEmoji === false ? '' : org.metadata?.emoji || '🏢'} {org.name}
             </h1>
-            <p className="admin-subtitle">Organization Report Editor</p>
+            <p className="admin-subtitle">
+              {variantSlug && variantSlug !== 'default'
+                ? `Organization Report Variant Editor · ${variantSlug}`
+                : 'Organization Report Editor'}
+            </p>
           </div>
           <div className="admin-user-info">
             <div className="admin-badge p-3">

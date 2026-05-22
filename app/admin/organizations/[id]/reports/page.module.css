@@ -1,0 +1,186 @@
+.page {
+  padding: 24px;
+  display: grid;
+  gap: 20px;
+}
+
+.loading {
+  padding: 32px;
+  font-size: 1rem;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  gap: 24px;
+  align-items: flex-start;
+  flex-wrap: wrap;
+}
+
+.eyebrow {
+  margin: 0 0 8px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #64748b;
+}
+
+.title {
+  margin: 0 0 8px;
+  font-size: clamp(2rem, 3vw, 2.6rem);
+  line-height: 1.05;
+}
+
+.subtitle {
+  margin: 0;
+  max-width: 760px;
+  font-size: 1rem;
+  color: #475569;
+}
+
+.headerActions {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.primaryButton,
+.secondaryButton,
+.inlineButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+  padding: 0 16px;
+  border-radius: 14px;
+  border: 1px solid #cbd5e1;
+  background: white;
+  color: #0f172a;
+  text-decoration: none;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.primaryButton {
+  background: #2563eb;
+  border-color: #2563eb;
+  color: white;
+}
+
+.inlineButton {
+  min-height: 38px;
+  padding: 0 12px;
+}
+
+.summaryGrid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.summaryLabel {
+  margin: 0 0 6px;
+  font-size: 0.82rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: #64748b;
+}
+
+.summaryValue {
+  margin: 0;
+  font-size: 1.4rem;
+  font-weight: 700;
+}
+
+.variantList {
+  display: grid;
+  gap: 16px;
+}
+
+.variantCard {
+  display: grid;
+  gap: 16px;
+}
+
+.variantHeader {
+  display: flex;
+  justify-content: space-between;
+  gap: 20px;
+  align-items: flex-start;
+  flex-wrap: wrap;
+}
+
+.badgeRow {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-bottom: 10px;
+}
+
+.defaultBadge,
+.variantBadge,
+.statusBadge {
+  display: inline-flex;
+  align-items: center;
+  min-height: 28px;
+  padding: 0 10px;
+  border-radius: 999px;
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+
+.defaultBadge {
+  background: #dbeafe;
+  color: #1d4ed8;
+}
+
+.variantBadge {
+  background: #fef3c7;
+  color: #b45309;
+}
+
+.statusBadge {
+  background: #e2e8f0;
+  color: #334155;
+  text-transform: capitalize;
+}
+
+.variantTitle {
+  margin: 0 0 6px;
+  font-size: 1.35rem;
+}
+
+.variantMeta {
+  margin: 0;
+  color: #475569;
+}
+
+.variantActions,
+.controlRow {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.formStack {
+  display: grid;
+  gap: 16px;
+}
+
+.customGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.errorText {
+  font-size: 0.95rem;
+}
+
+@media (max-width: 900px) {
+  .summaryGrid,
+  .customGrid {
+    grid-template-columns: 1fr;
+  }
+}

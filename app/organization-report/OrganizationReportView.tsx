@@ -16,14 +16,15 @@ import { useReportExport } from '@/hooks/useReportExport';
 import { ReportCalculator } from '@/lib/report-calculator';
 import styles from '@/app/styles/report-page.module.css';
 
-export default function OrganizationReportView({ id }: { id: string }) {
-  const { data: orgData, activities, loading: dataLoading, error: dataError } = useOrganizationReportData(id);
+export default function OrganizationReportView({ id, variant }: { id: string; variant?: string | null }) {
+  const { data: orgData, activities, loading: dataLoading, error: dataError } = useOrganizationReportData(id, variant);
   
   const organization = orgData?.organization;
   const entities = orgData?.entities || [];
   const stats = orgData?.aggregatedStats || null;
   const charts = useMemo(() => orgData?.charts || [], [orgData?.charts]);
   const reportConfig = orgData?.report;
+  const reportVariant = orgData?.reportVariant;
 
   // WHAT: Resolve layout from API-provided config
   // WHY: Unified reporting uses DB-driven templates
@@ -71,7 +72,7 @@ export default function OrganizationReportView({ id }: { id: string }) {
     stats: stats || null,
     chartResults,
     charts: charts.map((chart: any) => ({ chartId: chart.chartId, order: chart.order })),
-    filenamePrefix: `org_${organization?.slug || 'report'}`,
+    filenamePrefix: `org_${organization?.slug || 'report'}${reportVariant?.slug && reportVariant.slug !== 'default' ? `_${reportVariant.slug}` : ''}`,
     reportType: 'Organization Report',
   });
 
@@ -116,6 +117,7 @@ export default function OrganizationReportView({ id }: { id: string }) {
             emoji={report?.heroSettings?.showEmoji !== false && organization.metadata?.showEmoji !== false ? organization.metadata?.emoji : undefined}
             partnerLogo={organization.metadata?.logoUrl}
             showDate={false}
+            customSubtitle={reportVariant ? `${reportVariant.name} · ${reportVariant.period?.label || 'All Time'}` : undefined}
             showExport={report?.heroSettings?.showExportOptions ?? true}
             onExportCSV={handleCSVExport}
             onExportPDF={handlePDFExport}
@@ -126,14 +128,14 @@ export default function OrganizationReportView({ id }: { id: string }) {
           <ReportContent blocks={blocks} chartResults={chartResults} gridSettings={gridSettings} />
         </div>
         
-        {entities.length > 0 && (
+        {organization.metadata?.showMembersList !== false && entities.length > 0 && (
           <OrganizationEntityList
             entities={entities}
             organizationName={organization.name}
           />
         )}
 
-        {activities.length > 0 && (
+        {organization.metadata?.showEventsList !== false && activities.length > 0 && (
           <OrganizationActivitiesList 
             activities={activities} 
             organizationName={organization.name} 

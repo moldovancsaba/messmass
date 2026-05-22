@@ -8,6 +8,7 @@ export type AdminEntityCapability =
   | 'edit'
   | 'delete'
   | 'report'
+  | 'report-workspace'
   | 'share'
   | 'edit-content'
   | 'manage-members'

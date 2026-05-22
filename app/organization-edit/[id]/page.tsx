@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useEffect, useState, useCallback } from 'react';
-import { useParams } from 'next/navigation';
+import { useParams, useSearchParams } from 'next/navigation';
 import OrganizationEditorDashboard from '@/components/OrganizationEditorDashboard';
 import PagePasswordLogin, { isAuthenticated } from '@/components/PagePasswordLogin';
 import { useReportStyle } from '@/hooks/useReportStyle';
@@ -14,7 +14,9 @@ import styles from '@/app/styles/editor-states.module.css';
  */
 export default function OrganizationEditPage() {
   const params = useParams();
+  const searchParams = useSearchParams();
   const id = params?.id as string;
+  const variant = searchParams?.get('variant');
 
   const [isAuthorized, setIsAuthorized] = useState(false);
   const [checkingAuth, setCheckingAuth] = useState(true);
@@ -30,7 +32,8 @@ export default function OrganizationEditPage() {
         return;
       }
       
-      const response = await fetch(`/api/organizations/edit/${id}`, { cache: 'no-store' });
+      const query = variant ? `?variant=${encodeURIComponent(variant)}` : '';
+      const response = await fetch(`/api/organizations/edit/${id}${query}`, { cache: 'no-store' });
       const data = await response.json();
 
       if (data.success) {
@@ -44,7 +47,7 @@ export default function OrganizationEditPage() {
       setError('Failed to load organization for editing');
       setLoading(false);
     }
-  }, [id]);
+  }, [id, variant]);
 
   // WHAT: Apply report style colors to editor
   const { loading: styleLoading } = useReportStyle({ 
@@ -58,14 +61,14 @@ export default function OrganizationEditPage() {
       return;
     }
 
-    const authenticated = isAuthenticated(id, 'organization-edit');
+      const authenticated = isAuthenticated(variant ? `${id}::variant=${variant}` : id, 'organization-edit');
     setIsAuthorized(authenticated);
     setCheckingAuth(false);
 
     if (authenticated) {
       loadOrganization();
     }
-  }, [id, loadOrganization]);
+  }, [id, loadOrganization, variant]);
 
   useEffect(() => {
     const handleVisibilityChange = () => {
@@ -97,10 +100,10 @@ export default function OrganizationEditPage() {
   if (!isAuthorized) {
     return (
       <PagePasswordLogin
-        pageId={id}
+        pageId={variant ? `${id}::variant=${variant}` : id}
         pageType="organization-edit"
         onSuccess={handleLoginSuccess}
-        title="Organization Editor Access Required"
+        title={variant ? 'Organization Report Variant Editor Access Required' : 'Organization Editor Access Required'}
         description="This organization editor is password protected. Enter the page-specific password to continue, or access it through an authenticated admin session."
       />
     );
@@ -137,7 +140,7 @@ export default function OrganizationEditPage() {
   if (organization) {
     return (
       <div className="page-bg-gray">
-        <OrganizationEditorDashboard organization={organization} />
+        <OrganizationEditorDashboard organization={organization} variantSlug={variant} />
       </div>
     );
   }

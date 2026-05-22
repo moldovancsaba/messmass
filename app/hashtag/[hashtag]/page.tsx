@@ -5,7 +5,7 @@
 'use client';
 
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
-import { useParams } from 'next/navigation';
+import { useParams, useSearchParams } from 'next/navigation';
 import ReportHero from '@/app/report/[slug]/ReportHero';
 import ReportContent from '@/app/report/[slug]/ReportContent';
 import UnifiedProjectsSection from '@/components/UnifiedProjectsSection';
@@ -40,7 +40,9 @@ interface HashtagReportData {
 
 export default function HashtagReportPage() {
   const params = useParams();
+  const searchParams = useSearchParams();
   const hashtagParam = params?.hashtag as string;
+  const variant = searchParams?.get('variant');
   
   // Authentication state
   const [isAuthorized, setIsAuthorized] = useState(false);
@@ -75,7 +77,8 @@ export default function HashtagReportPage() {
       console.log('🏷️ [HashtagReport] Fetching data for:', hashtagParam);
       
       // Step 1: Fetch hashtag aggregated data
-      const dataRes = await fetch(`/api/hashtags/${encodeURIComponent(hashtagParam)}`, {
+      const query = variant ? `?variant=${encodeURIComponent(variant)}` : '';
+      const dataRes = await fetch(`/api/hashtags/${encodeURIComponent(hashtagParam)}${query}`, {
         cache: 'no-store'
       });
       const data = await dataRes.json();
@@ -87,20 +90,13 @@ export default function HashtagReportPage() {
       setReportData(data);
       
       // Step 2: Fetch report template (v12 system)
-      const templateRes = await fetch(
-        `/api/report-config/${encodeURIComponent(hashtagParam)}?type=hashtag`,
-        { cache: 'no-store' }
-      );
-      const templateData = await templateRes.json();
-      
-      if (!templateData.success) {
-        throw new Error(templateData.error || 'Failed to load report template');
+      const template = data.report;
+      if (!template) {
+        throw new Error('Failed to load report template');
       }
-      
-      const template = templateData.template;
-      setBlocks(template.dataBlocks || []);
-      setGridSettings(template.gridSettings || { desktopUnits: 3, tabletUnits: 2, mobileUnits: 1 });
-      setStyleId(template.styleId || null); // Extract styleId from template
+      setBlocks(template.layout?.blocks || []);
+      setGridSettings(template.layout?.gridColumns || { desktop: 3, tablet: 2, mobile: 1 });
+      setStyleId(data.styleId || template.styleId || null);
       
       // Step 3: Fetch chart configurations
       const chartsRes = await fetch('/api/chart-config/public', { cache: 'no-store' });
@@ -119,11 +115,11 @@ export default function HashtagReportPage() {
     } finally {
       setLoading(false);
     }
-  }, [hashtagParam]);
+  }, [hashtagParam, variant]);
 
   useEffect(() => {
     if (hashtagParam) {
-      const authenticated = isAuthenticated(hashtagParam, 'hashtag');
+      const authenticated = isAuthenticated(variant ? `${hashtagParam}::variant=${variant}` : hashtagParam, 'hashtag');
       setIsAuthorized(authenticated);
       setCheckingAuth(false);
       
@@ -131,7 +127,7 @@ export default function HashtagReportPage() {
         fetchHashtagData();
       }
     }
-  }, [hashtagParam, fetchHashtagData]);
+  }, [fetchHashtagData, hashtagParam, variant]);
   
   // Handle successful login
   const handleLoginSuccess = useCallback((isAdmin: boolean) => {
@@ -173,7 +169,7 @@ export default function HashtagReportPage() {
   }
   
   if (!isAuthorized) {
-    return <PagePasswordLogin pageId={hashtagParam} pageType="hashtag" onSuccess={handleLoginSuccess} />;
+    return <PagePasswordLogin pageId={variant ? `${hashtagParam}::variant=${variant}` : hashtagParam} pageType="hashtag" onSuccess={handleLoginSuccess} />;
   }
   
   // Loading state
@@ -231,6 +227,7 @@ export default function HashtagReportPage() {
           project={projectForHero}
           emoji="🏷️"
           showDate={true}
+          customSubtitle={(reportData as any).reportVariant ? `${(reportData as any).reportVariant.name} · ${(reportData as any).reportVariant.period?.label || 'All Time'}` : undefined}
           showExport={true}
         />
         

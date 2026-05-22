@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from 'next/server';
 import { findHashtagsByFilterSlug } from '@/lib/slugUtils';
 import { getAllHashtagRepresentations } from '@/lib/hashtagCategoryUtils';
 import clientPromise from '@/lib/mongodb';
+import { resolveReportVariant } from '@/lib/reportVariants';
+import { isEventDateInPeriod } from '@/lib/reportPeriods';
 
 import config from '@/lib/config';
 const MONGODB_DB = config.dbName;
@@ -21,6 +23,7 @@ async function connectToDatabase() {
 export async function GET(request: NextRequest, { params }: { params: Promise<{ slug: string }> }) {
   try {
     const { slug } = await params;
+    const variantSlug = new URL(request.url).searchParams.get('variant');
 
     if (!slug) {
       return NextResponse.json(
@@ -83,7 +86,7 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
     const allProjects = await collection.find({}).toArray();
 
     // Filter projects that match ALL specified hashtags
-    const projects = allProjects.filter(project => {
+    const matchingProjects = allProjects.filter(project => {
       const allHashtagRepresentations = getAllHashtagRepresentations({
         hashtags: project.hashtags || [],
         categorizedHashtags: project.categorizedHashtags || {}
@@ -92,6 +95,11 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
         projectHasFilterHashtag(allHashtagRepresentations, filterHashtag)
       );
     });
+
+    const resolvedVariant = await resolveReportVariant(db as any, 'filter', slug, variantSlug);
+    const projects = matchingProjects.filter((project) =>
+      isEventDateInPeriod(project.eventDate, resolvedVariant.period)
+    );
 
     if (projects.length === 0) {
       return NextResponse.json({
@@ -112,12 +120,13 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
       // Sum up all numeric stats
       Object.keys(stats).forEach(key => {
         if (typeof stats[key] === 'number') {
-          acc[key] = (acc[key] || 0) + stats[key];
+          const currentValue = typeof acc[key] === 'number' ? acc[key] : 0;
+          acc[key] = currentValue + stats[key];
         }
       });
       
       return acc;
-    }, {} as Record<string, number>);
+    }, { ...((resolvedVariant.variant.statsOverrides || {}) as Record<string, number | string>) } as Record<string, number | string>);
 
     // Get date range
     const dates = projects
@@ -171,7 +180,12 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
       project: aggregatedProject,
       projects: publicProjects,
       hashtags: hashtags,
-      styleId
+      styleId: resolvedVariant.variant.styleId || styleId,
+      report: resolvedVariant.runtimeReport.report,
+      reportVariant: {
+        ...resolvedVariant.variant,
+        period: resolvedVariant.period,
+      },
     });
 
   } catch (error) {
