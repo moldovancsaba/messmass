@@ -357,10 +357,24 @@ export default function VisualizationPage() {
 
   useEffect(() => {
     const initializeData = async () => {
-      const templates = await loadTemplates();
-      await loadUserPreferences(templates); // Pass templates to avoid race condition
-      loadAvailableCharts();
-      loadChartConfigs();
+      try {
+        setLoading(true);
+        const loadedTemplates = await loadTemplates();
+        await loadUserPreferences(loadedTemplates); // Pass templates to avoid race condition
+        await Promise.all([
+          loadAvailableCharts(),
+          loadChartConfigs()
+        ]);
+
+        // If initialization could not select a template, stop the global loader
+        // so the page can render its fallback empty-state instead of spinning forever.
+        if (loadedTemplates.length === 0) {
+          setLoading(false);
+        }
+      } catch (error) {
+        console.error('Failed to initialize report builder:', error);
+        setLoading(false);
+      }
     };
     
     initializeData();

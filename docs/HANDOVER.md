@@ -2,7 +2,7 @@
 
 This file is onboarding plus operational context for the next agent. Keep it accurate when behavior, process, or current delivery state changes.
 
-**Last Updated:** 2026-05-21 (analytics home card hardening slice)
+**Last Updated:** 2026-05-22 (report builder load fail-safe slice)
 
 ## 🚨 CRITICAL MUST-READ FOR ALL AGENTS: STYLING & COMPONENTS 🚨
 
@@ -29,7 +29,7 @@ You MUST completely read and obey `docs/coding-standards.md` and `docs/component
 
 ## Current Repo Truth
 - Active branch: `main`
-- Last known HEAD during this update: `c376bf199`
+- Last known HEAD during this update: `661dac06a`
 - Working tree should be clean after the latest docs/board-alignment pass.
 - Most recent shipped repo work:
   - active documentation overhaul and canonical-doc refresh
@@ -103,6 +103,13 @@ Use this checklist for the next SSOT/board pass so the next agent does not have 
 - Style editor preview updates immediately for bar/pie CSS vars and includes Value Chain and Landing page sections.
 
 ## Handover Log
+
+## 2026-05-22 — Report Builder load fail-safe slice (#64, #819)
+- **Objective:** Fix the Report Builder route getting stuck on `Loading data visualization blocks...` when initialization fails to select a template or the template set is empty.
+- **Initialization hardening:** Updated `/app/admin/visualization/page.tsx` so the route-level initialization now wraps the startup sequence in `try/finally`-style fail-safe behavior, awaits the supporting chart/config fetches, and explicitly clears `loading` when no templates are available instead of leaving the page in a permanent spinner state.
+- **Failure behavior:** The Report Builder can now fall through to its existing no-template or empty-state UI instead of appearing to hang indefinitely when the template bootstrap path cannot produce a selected template.
+- **Workflow effect:** Operators can distinguish a real empty/configuration state from a broken loading state and continue working in the reporting workspace without hard-refresh guesswork.
+- **Verification:** `npm run lint`, `npm run build`, and `npm run type-check` all passed. As usual in this repo, `type-check` was run after the successful build because `tsconfig.json` includes `.next/types/**/*.ts`.
 
 ## 2026-05-21 — Analytics home card hardening slice (#72, #817)
 - **Objective:** Fix the broken analytics-home tiles where long labels/descriptions could collapse into narrow vertical text and leave oversized empty card areas.
