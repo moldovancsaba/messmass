@@ -2,7 +2,7 @@
 
 This file is onboarding plus operational context for the next agent. Keep it accurate when behavior, process, or current delivery state changes.
 
-**Last Updated:** 2026-05-22 (report builder template list hydration hardening)
+**Last Updated:** 2026-05-22 (report variants compatibility-first planning)
 
 ## 🚨 CRITICAL MUST-READ FOR ALL AGENTS: STYLING & COMPONENTS 🚨
 
@@ -48,6 +48,16 @@ You MUST completely read and obey `docs/coding-standards.md` and `docs/component
   - `#788` = `In Progress (NOW)`
   - `#815` through `#821` = `Review (ALMOST)` with `dod:ready-for-review`
   - `#72` remains open and needs a real product decision rather than silent auto-closure
+  - New report variants program created:
+    - `#830` umbrella
+    - `#831` compatibility foundation and virtual default resolver
+    - `#832` shared time-period engine
+    - `#833` organization reports workspace
+    - `#834` organization variant editor
+    - `#835` organization runtime variant resolution
+    - `#836` partner rollout
+    - `#837` hashtag/filter rollout
+    - `#838` list-view `Reports` workflow cleanup
 
 ## Pending GitHub Updates
 
@@ -103,6 +113,15 @@ Use this checklist for the next SSOT/board pass so the next agent does not have 
 - Style editor preview updates immediately for bar/pie CSS vars and includes Value Chain and Landing page sections.
 
 ## Handover Log
+
+## 2026-05-22 — Report variants compatibility-first planning
+- **Objective:** Translate the PO request for time-period-based report variants into a compatibility-safe delivery program that does not harm existing reports.
+- **Spec added:** `/docs/operations/report-variants-time-period-spec-2026-05-22.md`
+- **Core product decision:** Time period should not be modeled as a property of reusable templates. Introduce owner-scoped `report_variants` instead, with `DEFAULT` as the canonical all-time fallback and custom variants always duplicated from `DEFAULT`.
+- **Compatibility rule:** Existing report URLs and current entity-level `reportTemplateId` / legacy `reportId` resolution must remain valid during rollout. Variant resolver must be additive first, with virtual default fallback when no explicit variants exist yet.
+- **SSOT issues created:** `#830` through `#838` in `moldovancsaba/mvp-factory-control`, attached to Project 1. Umbrella dependency comment posted on `#830`: <https://github.com/moldovancsaba/mvp-factory-control/issues/830#issuecomment-4517523394>
+- **Execution order:** `#831` → `#832` → `#833` → `#834` → `#835` → `#836` → `#837` → `#838`
+- **First live scope:** organizations, specifically to support report variants like CHL default/all-time plus named time-scoped custom reports without touching the live default report.
 
 ## 2026-05-22 — Report Builder template list hydration hardening (#64, #819)
 - **Objective:** Fix the case where `/admin/visualization` could load but still show no usable template list even though report templates existed in MongoDB.
