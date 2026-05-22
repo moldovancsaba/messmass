@@ -33,7 +33,9 @@ export default function HashtagManagerPage() {
         const data = await response.json();
         
         if (!data.authenticated) {
-          window.location.href = '/admin/login';
+          setHasAccess(false);
+          setLoading(false);
+          router.replace('/admin/login');
           return;
         }
 
@@ -44,12 +46,14 @@ export default function HashtagManagerPage() {
         setLoading(false);
       } catch (error) {
         console.error('Auth check failed:', error);
-        window.location.href = '/admin/login';
+        setHasAccess(false);
+        setLoading(false);
+        router.replace('/admin/login');
       }
     }
 
     checkAuth();
-  }, []);
+  }, [router]);
 
   // Loading state
   if (loading) {

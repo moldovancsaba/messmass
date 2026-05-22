@@ -3,6 +3,7 @@
 import ChartAlgorithmManager from '@/components/ChartAlgorithmManager';
 import ColoredCard from '@/components/ColoredCard';
 import ReportingWorkspaceNav from '@/components/ReportingWorkspaceNav';
+import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 
 interface User {
@@ -11,6 +12,7 @@ interface User {
 }
 
 export default function ChartAlgorithmManagerPage() {
+  const router = useRouter();
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const [hasAccess, setHasAccess] = useState(false);
@@ -23,7 +25,9 @@ export default function ChartAlgorithmManagerPage() {
         const data = await response.json();
         
         if (!data.authenticated) {
-          window.location.href = '/admin/login';
+          setHasAccess(false);
+          setLoading(false);
+          router.replace('/admin/login');
           return;
         }
 
@@ -34,12 +38,14 @@ export default function ChartAlgorithmManagerPage() {
         setLoading(false);
       } catch (error) {
         console.error('Auth check failed:', error);
-        window.location.href = '/admin/login';
+        setHasAccess(false);
+        setLoading(false);
+        router.replace('/admin/login');
       }
     }
 
     checkAuth();
-  }, []);
+  }, [router]);
 
 if (loading) {
     return (

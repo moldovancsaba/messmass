@@ -2,7 +2,7 @@
 
 This file is onboarding plus operational context for the next agent. Keep it accurate when behavior, process, or current delivery state changes.
 
-**Last Updated:** 2026-05-22 (report builder load fail-safe slice)
+**Last Updated:** 2026-05-22 (auth loading fail-safe audit slice)
 
 ## 🚨 CRITICAL MUST-READ FOR ALL AGENTS: STYLING & COMPONENTS 🚨
 
@@ -29,7 +29,7 @@ You MUST completely read and obey `docs/coding-standards.md` and `docs/component
 
 ## Current Repo Truth
 - Active branch: `main`
-- Last known HEAD during this update: `661dac06a`
+- Last known HEAD during this update: `213d5e25b`
 - Working tree should be clean after the latest docs/board-alignment pass.
 - Most recent shipped repo work:
   - active documentation overhaul and canonical-doc refresh
@@ -103,6 +103,13 @@ Use this checklist for the next SSOT/board pass so the next agent does not have 
 - Style editor preview updates immediately for bar/pie CSS vars and includes Value Chain and Landing page sections.
 
 ## Handover Log
+
+## 2026-05-22 — Auth loading fail-safe audit slice (#63, #819)
+- **Objective:** Check for other permanent-loader risks matching the Report Builder bug and harden any pages that only clear `loading` on one success path.
+- **Audit result:** The same structural risk was found in `/app/admin/charts/page.tsx` and `/app/admin/hashtags/page.tsx`. Both pages relied on redirect side effects during auth failure and only cleared `loading` on the authenticated success branch.
+- **Fix:** Updated both routes so failed or unauthenticated auth checks now explicitly clear `loading`, mark access as unavailable, and then route to `/admin/login` via the client router. This prevents a permanent spinner if navigation does not complete cleanly.
+- **Not found elsewhere:** The other nearby reporting/admin setup routes checked in this pass (`/app/admin/content-library/page.tsx`, `/app/admin/styles/page.tsx`, `/app/admin/mainpage/page.tsx`, `components/BuilderMode.tsx`, `components/ChartConfiguration.tsx`, `components/BitlyLinksEditor.tsx`) already clear their loader states through `finally` or explicit fallback branches and did not share the same stuck-loading pattern.
+- **Verification:** `npm run lint`, `npm run build`, and `npm run type-check` all passed. As usual in this repo, `type-check` was run after the successful build because `tsconfig.json` includes `.next/types/**/*.ts`.
 
 ## 2026-05-22 — Report Builder load fail-safe slice (#64, #819)
 - **Objective:** Fix the Report Builder route getting stuck on `Loading data visualization blocks...` when initialization fails to select a template or the template set is empty.
