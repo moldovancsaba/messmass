@@ -15,7 +15,7 @@ export const partnersEntityConfig: AdminEntityConfig<PartnerResponse> = {
   pageName: 'partners',
   displayName: 'Partner',
   supportedViews: ['list', 'card'],
-  capabilities: ['create', 'edit', 'delete', 'report', 'share', 'edit-content', 'analytics', 'kyc'],
+  capabilities: ['create', 'edit', 'delete', 'report', 'share', 'edit-content', 'analytics', 'kyc', 'report-workspace'],
   search: {
     fields: ['name', 'hashtags', 'categorizedHashtags'],
     placeholder: 'Search partners...',
@@ -23,10 +23,22 @@ export const partnersEntityConfig: AdminEntityConfig<PartnerResponse> = {
   permissionRequirements: ['admin'],
   actions: [
     {
+      id: 'partner-reports-workspace',
+      label: 'Reports',
+      icon: 'view_list',
+      variant: 'primary',
+      requiredCapabilities: ['report-workspace'],
+      requiredPermissions: ['admin'],
+      execution: {
+        kind: 'route',
+        getHref: (partner) => `/admin/partners/${partner._id}/reports`,
+      },
+    },
+    {
       id: 'partner-open-report',
       label: 'Open Report',
       icon: 'visibility',
-      variant: 'primary',
+      variant: 'secondary',
       requiredCapabilities: ['report'],
       requiredPermissions: ['admin'],
       execution: {
@@ -39,7 +51,7 @@ export const partnersEntityConfig: AdminEntityConfig<PartnerResponse> = {
       id: 'partner-open-editor',
       label: 'Open Editor',
       icon: 'bar_chart',
-      variant: 'primary',
+      variant: 'secondary',
       requiredCapabilities: ['edit-content'],
       requiredPermissions: ['admin'],
       execution: {

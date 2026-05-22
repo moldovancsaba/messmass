@@ -31,6 +31,7 @@ export function PartnerReportView({ slug, variant }: PartnerReportViewProps) {
   const charts = partnerData?.charts || [];
   const stats = partnerData?.aggregatedStats || null;
   const report = partnerData?.report || null;
+  const reportVariant = (partnerData as any)?.reportVariant;
   const blocks = useMemo(() => (report?.layout?.blocks || []).sort((a, b) => a.order - b.order), [report]);
   const gridSettings = useMemo(() => ({
     desktop: report?.layout?.gridColumns?.desktop || 3,
@@ -63,7 +64,9 @@ export function PartnerReportView({ slug, variant }: PartnerReportViewProps) {
     stats: stats || null,
     chartResults,
     charts: partnerData?.charts?.map((chart) => ({ chartId: chart.chartId, order: chart.order })),
-    filenamePrefix: 'partner_report',
+    filenamePrefix: reportVariant?.slug && reportVariant.slug !== 'default'
+      ? `partner_report_${reportVariant.slug}`
+      : 'partner_report',
     reportType: 'Partner Report',
   });
 
@@ -112,8 +115,6 @@ export function PartnerReportView({ slug, variant }: PartnerReportViewProps) {
     eventDate: new Date().toISOString(),
     _id: partner._id,
   };
-  const reportVariant = (partnerData as any)?.reportVariant;
-
   return (
     <div className={styles.page}>
       <div className={styles.container}>

@@ -69,8 +69,10 @@ const db = client.db(config.dbName);
       );
     }
 
+    const resolvedVariant = await resolveReportVariant(db as any, 'partner', partner._id.toString(), variantSlug);
+
     const partnerObjectId = new ObjectId(partner._id);
-    const showOnlyTeam1Events = partner.showOnlyTeam1Events === true;
+    const showOnlyTeam1Events = resolvedVariant.variant.showOnlyTeam1Events ?? (partner.showOnlyTeam1Events === true);
     const eventQuery = showOnlyTeam1Events
       ? {
           $or: [
@@ -109,7 +111,6 @@ const db = client.db(config.dbName);
       })
       .toArray();
 
-    const resolvedVariant = await resolveReportVariant(db as any, 'partner', partner._id.toString(), variantSlug);
     const events = allEvents.filter((event) => isEventDateInPeriod(event.eventDate, resolvedVariant.period));
 
     const useLegacyAllTimeAggregation = !variantSlug && resolvedVariant.isVirtualDefault && resolvedVariant.period.periodPreset === 'all_time';

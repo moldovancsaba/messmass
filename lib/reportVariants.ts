@@ -34,6 +34,7 @@ export interface ReportVariant {
   showEventsList?: boolean;
   showEventsListTitle?: boolean;
   showEventsListDetails?: boolean;
+  showOnlyTeam1Events?: boolean;
   statsOverrides: Record<string, unknown>;
   createdFromVariantId?: string | null;
   createdAt: string;
@@ -58,6 +59,7 @@ interface PartnerRecord {
   showEventsList?: boolean;
   showEventsListTitle?: boolean;
   showEventsListDetails?: boolean;
+  showOnlyTeam1Events?: boolean;
 }
 
 export interface ReportVariantBaseSource {
@@ -76,6 +78,7 @@ export interface ReportVariantBaseSource {
   showEventsList?: boolean;
   showEventsListTitle?: boolean;
   showEventsListDetails?: boolean;
+  showOnlyTeam1Events?: boolean;
   statsOverrides: Record<string, unknown>;
 }
 
@@ -122,6 +125,7 @@ function normalizeVariantRecord(record: any): ReportVariant {
     showEventsList: record.showEventsList,
     showEventsListTitle: record.showEventsListTitle,
     showEventsListDetails: record.showEventsListDetails,
+    showOnlyTeam1Events: record.showOnlyTeam1Events,
     statsOverrides: record.statsOverrides || {},
     createdFromVariantId: record.createdFromVariantId || null,
     createdAt: record.createdAt || new Date().toISOString(),
@@ -205,6 +209,7 @@ export async function resolveReportVariantBaseSource(
       showEventsList: partner.showEventsList !== false,
       showEventsListTitle: partner.showEventsListTitle !== false,
       showEventsListDetails: partner.showEventsListDetails !== false,
+      showOnlyTeam1Events: partner.showOnlyTeam1Events === true,
       statsOverrides: partner.stats || {},
     };
   }
@@ -255,6 +260,7 @@ export function buildVirtualDefaultVariant(baseSource: ReportVariantBaseSource):
     showEventsList: baseSource.showEventsList,
     showEventsListTitle: baseSource.showEventsListTitle,
     showEventsListDetails: baseSource.showEventsListDetails,
+    showOnlyTeam1Events: baseSource.showOnlyTeam1Events,
     statsOverrides: baseSource.statsOverrides || {},
     createdFromVariantId: null,
     createdAt: new Date(0).toISOString(),
@@ -369,6 +375,7 @@ export async function createReportVariant(
     showEventsList: sourceVariant.showEventsList,
     showEventsListTitle: sourceVariant.showEventsListTitle,
     showEventsListDetails: sourceVariant.showEventsListDetails,
+    showOnlyTeam1Events: sourceVariant.showOnlyTeam1Events,
     statsOverrides: sourceVariant.statsOverrides || {},
     createdFromVariantId: sourceVariant._id,
     createdAt: now,

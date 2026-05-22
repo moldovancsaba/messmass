@@ -223,7 +223,10 @@ export async function generateShareableLink(
     case 'partner-report':
       // WHAT: Partner report pages at /partner-report/[slug]
       // WHY: Public shareable partner profile pages with event listings
-      url += `/partner-report/${pageId}`;
+      url += `/partner-report/${basePageId}`;
+      if (variantSlug) {
+        url += `?variant=${encodeURIComponent(variantSlug)}`;
+      }
       break;
     case 'organization-report':
       // WHAT: Organization report pages at /organization-report/[id]
@@ -239,7 +242,10 @@ export async function generateShareableLink(
     case 'partner-edit':
       // WHAT: Partner content editing pages at /partner-edit/[slug]
       // WHY: Allow editing partner-level text and image content
-      url += `/partner-edit/${pageId}`;
+      url += `/partner-edit/${basePageId}`;
+      if (variantSlug) {
+        url += `?variant=${encodeURIComponent(variantSlug)}`;
+      }
       break;
     case 'organization-edit':
       // WHAT: Organization content editing pages at /organization-edit/[id]

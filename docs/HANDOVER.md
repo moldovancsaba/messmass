@@ -2,7 +2,7 @@
 
 This file is onboarding plus operational context for the next agent. Keep it accurate when behavior, process, or current delivery state changes.
 
-**Last Updated:** 2026-05-22 (report variants compatibility-first rollout)
+**Last Updated:** 2026-05-22 (partner report variants workspace rollout)
 
 ## 🚨 CRITICAL MUST-READ FOR ALL AGENTS: STYLING & COMPONENTS 🚨
 
@@ -113,6 +113,18 @@ Use this checklist for the next SSOT/board pass so the next agent does not have 
 - Style editor preview updates immediately for bar/pie CSS vars and includes Value Chain and Landing page sections.
 
 ## Handover Log
+
+## 2026-05-22 — Partner report variants workspace parity (#836)
+- **Objective:** Extend the compatibility-first report-variants system to partners with the same workflow now available for organizations: create named variants from `DEFAULT`, open/share them publicly, and edit their own partner-specific content/settings without harming the existing default partner reports.
+- **Partner admin workspace:** Added `/app/admin/partners/[id]/reports/page.tsx` and `/app/admin/partners/[id]/reports/page.module.css`.
+  - Partners now have a dedicated `Reports` workspace with `Create Report Variant`, `Open Report`, `Edit Report`, `Share Report`, `Rename`, `Set Default`, `Publish`, and `Archive`.
+  - `/lib/adapters/partnersAdapter.tsx` now routes the primary partner admin action to `Reports`, while `Open Report` and `Open Editor` remain available as secondary actions.
+- **Variant-aware partner editing:** Updated `/app/api/partners/edit/[slug]/route.ts`, `/app/partner-edit/[slug]/page.tsx`, and `/components/PartnerEditorDashboard.tsx` so custom partner variants can be loaded and saved through the secure partner-edit route using `?variant=`. This keeps the generic `/api/partners` update path intact for the base/default partner configuration.
+- **Partner runtime parity:** Updated `/app/api/partners/report/[slug]/route.ts` so partner variants now also control `showOnlyTeam1Events`, which is a true report-specific data-scope behavior and therefore belongs to the variant layer, not just the base partner record.
+- **Sharing parity:** Updated `/lib/pagePassword.ts` so `partner-report` and `partner-edit` can generate correct hashed share URLs for variant routes using composite page ids like `base::variant=slug`, matching the organization/filter/hashtag variant sharing model.
+- **Export parity:** Updated `/app/partner-report/PartnerReportView.tsx` so partner CSV/PDF exports now include the variant slug in the filename when a custom variant is open.
+- **Compatibility rule preserved:** `/partner-report/[slug]` still opens the canonical `DEFAULT` report unless a `?variant=` is explicitly requested or a stored custom variant is intentionally promoted to default.
+- **Verification:** `npm run lint`, `npm run build`, and `npm run type-check` all passed. As usual in this repo, `type-check` was run after the successful build because `tsconfig.json` includes `.next/types/**/*.ts`.
 
 ## 2026-05-22 — Report variants compatibility-first rollout foundation (#831, #832, #833, #834, #835, #836, #837)
 - **Objective:** Implement the first end-to-end report-variants foundation without harming any existing live reports, keeping `/organization-report/[id]` as the canonical `DEFAULT` fallback while adding additive support for named time-scoped variants.

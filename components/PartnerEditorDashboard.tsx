@@ -38,9 +38,10 @@ interface Partner {
 
 interface PartnerEditorDashboardProps {
   partner: Partner;
+  variantSlug?: string | null;
 }
 
-export default function PartnerEditorDashboard({ partner: initialPartner }: PartnerEditorDashboardProps) {
+export default function PartnerEditorDashboard({ partner: initialPartner, variantSlug }: PartnerEditorDashboardProps) {
   const [partner, setPartner] = useState<Partner>(initialPartner);
   const [saveStatus, setSaveStatus] = useState<'idle' | 'saving' | 'saved' | 'error'>('idle');
 
@@ -52,23 +53,44 @@ export default function PartnerEditorDashboard({ partner: initialPartner }: Part
   const persistPartner = async (nextPartner: Partner, nextStats?: typeof partner.stats) => {
     setSaveStatus('saving');
     try {
-      const result = await apiPut('/api/partners', {
-        partnerId: nextPartner._id,
-        name: nextPartner.name,
-        emoji: nextPartner.emoji,
-        logoUrl: nextPartner.logoUrl,
-        hashtags: nextPartner.hashtags,
-        categorizedHashtags: nextPartner.categorizedHashtags,
-        stats: nextStats || nextPartner.stats,
-        styleId: nextPartner.styleId,
-        reportTemplateId: nextPartner.reportTemplateId,
-        showEventsList: nextPartner.showEventsList,
-        showEventsListTitle: nextPartner.showEventsListTitle,
-        showEventsListDetails: nextPartner.showEventsListDetails,
-        showOnlyTeam1Events: nextPartner.showOnlyTeam1Events
-      });
+      const result = variantSlug && variantSlug !== 'default'
+        ? await apiPut(`/api/partners/edit/${nextPartner._id}?variant=${encodeURIComponent(variantSlug)}`, {
+            metadata: {
+              emoji: nextPartner.emoji,
+              logoUrl: nextPartner.logoUrl,
+              stats: nextStats || nextPartner.stats,
+              styleId: nextPartner.styleId,
+              reportTemplateId: nextPartner.reportTemplateId,
+              showEmoji: nextPartner.showEmoji,
+              showEventsList: nextPartner.showEventsList,
+              showEventsListTitle: nextPartner.showEventsListTitle,
+              showEventsListDetails: nextPartner.showEventsListDetails,
+              showOnlyTeam1Events: nextPartner.showOnlyTeam1Events,
+            },
+          })
+        : await apiPut('/api/partners', {
+            partnerId: nextPartner._id,
+            name: nextPartner.name,
+            emoji: nextPartner.emoji,
+            logoUrl: nextPartner.logoUrl,
+            hashtags: nextPartner.hashtags,
+            categorizedHashtags: nextPartner.categorizedHashtags,
+            stats: nextStats || nextPartner.stats,
+            styleId: nextPartner.styleId,
+            reportTemplateId: nextPartner.reportTemplateId,
+            showEventsList: nextPartner.showEventsList,
+            showEventsListTitle: nextPartner.showEventsListTitle,
+            showEventsListDetails: nextPartner.showEventsListDetails,
+            showOnlyTeam1Events: nextPartner.showOnlyTeam1Events
+          });
 
       if (result.success) {
+        if (result.partner) {
+          setPartner((prev) => ({
+            ...prev,
+            ...result.partner,
+          }));
+        }
         setSaveStatus('saved');
         setTimeout(() => setSaveStatus('idle'), 2000);
       } else {
@@ -157,7 +179,9 @@ export default function PartnerEditorDashboard({ partner: initialPartner }: Part
               {partner.showEmoji !== false ? partner.emoji : ''} {partner.name}
             </h1>
             <p className="admin-subtitle">
-              Partner Content Editor - Report Text & Images
+              {variantSlug && variantSlug !== 'default'
+                ? `Partner Report Variant Editor - ${variantSlug}`
+                : 'Partner Content Editor - Report Text & Images'}
             </p>
             
             {/* Beautiful hashtag display - showing all hashtags including categorized ones */}

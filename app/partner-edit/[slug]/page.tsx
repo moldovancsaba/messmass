@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useEffect, useState, useCallback } from 'react';
-import { useParams } from 'next/navigation';
+import { useParams, useSearchParams } from 'next/navigation';
 import PartnerEditorDashboard from '@/components/PartnerEditorDashboard';
 import PagePasswordLogin, { isAuthenticated } from '@/components/PagePasswordLogin';
 import { useReportStyle } from '@/hooks/useReportStyle';
@@ -10,7 +10,9 @@ import styles from '@/app/styles/editor-states.module.css';
 interface Partner {
   _id: string;
   name: string;
+  viewSlug?: string;
   emoji: string;
+  showEmoji?: boolean;
   logoUrl?: string;
   hashtags?: string[];
   categorizedHashtags?: { [categoryName: string]: string[] };
@@ -34,7 +36,9 @@ interface Partner {
 
 export default function PartnerEditPage() {
   const params = useParams();
+  const searchParams = useSearchParams();
   const slug = params?.slug as string;
+  const variantSlug = searchParams?.get('variant');
   
   // Authentication state
   const [isAuthorized, setIsAuthorized] = useState(false);
@@ -55,7 +59,8 @@ export default function PartnerEditPage() {
         return;
       }
       
-      const response = await fetch(`/api/partners/edit/${slug}`, { cache: 'no-store' });
+      const query = variantSlug ? `?variant=${encodeURIComponent(variantSlug)}` : '';
+      const response = await fetch(`/api/partners/edit/${slug}${query}`, { cache: 'no-store' });
       console.log('📡 API response status:', response.status);
       
       const data = await response.json();
@@ -77,7 +82,7 @@ export default function PartnerEditPage() {
       setError('Failed to load partner for editing');
       setLoading(false);
     }
-  }, [slug]);
+  }, [slug, variantSlug]);
 
   // WHAT: Apply report style colors to partner edit page
   // WHY: Partner edit pages should use same 26-color system as reports
@@ -90,7 +95,8 @@ export default function PartnerEditPage() {
   // Check authentication on component mount
   useEffect(() => {
     if (slug) {
-      const authenticated = isAuthenticated(slug, 'partner-edit');
+      const pageId = variantSlug ? `${slug}::variant=${variantSlug}` : slug;
+      const authenticated = isAuthenticated(pageId, 'partner-edit');
       setIsAuthorized(authenticated);
       setCheckingAuth(false);
       
@@ -99,7 +105,7 @@ export default function PartnerEditPage() {
         loadPartnerForEditing();
       }
     }
-  }, [slug, loadPartnerForEditing]);
+  }, [slug, variantSlug, loadPartnerForEditing]);
 
   // WHAT: Auto-reload when page becomes visible (e.g., returning from another tab)
   // WHY: Ensures partner data and page style are synced without manual refresh
@@ -138,7 +144,7 @@ export default function PartnerEditPage() {
   if (!isAuthorized) {
     return (
       <PagePasswordLogin
-        pageId={slug}
+        pageId={variantSlug ? `${slug}::variant=${variantSlug}` : slug}
         pageType="partner-edit"
         onSuccess={handleLoginSuccess}
       />
@@ -191,7 +197,7 @@ export default function PartnerEditPage() {
   if (partner) {
     return (
       <div className="page-bg-gray">
-        <PartnerEditorDashboard partner={partner} />
+        <PartnerEditorDashboard partner={partner} variantSlug={variantSlug} />
       </div>
     );
   }
