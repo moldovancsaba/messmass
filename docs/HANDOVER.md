@@ -2,7 +2,7 @@
 
 This file is onboarding plus operational context for the next agent. Keep it accurate when behavior, process, or current delivery state changes.
 
-**Last Updated:** 2026-05-22 (design system remediation tranche 3)
+**Last Updated:** 2026-05-23 (analytics chart UX benchmark planning)
 
 ## 🚨 CRITICAL MUST-READ FOR ALL AGENTS: STYLING & COMPONENTS 🚨
 
@@ -29,12 +29,12 @@ You MUST completely read and obey `docs/coding-standards.md` and `docs/component
 
 ## Current Repo Truth
 - Active branch: `main`
-- Last known HEAD during this update: local uncommitted report-variants rollout on top of `213d5e25b`
-- Working tree is intentionally dirty during the report-variants implementation pass described below.
+- Last known HEAD during this update: `d678b3af9`
+- Working tree was clean before this handover/spec update.
 - Most recent shipped repo work:
-  - active documentation overhaul and canonical-doc refresh
-  - API comment cleanup aligned to current runtime behavior
-  - operations action-plan demoted from task authority to historical/supporting reference
+  - design-system remediation tranche 1: `4f66d54ae`
+  - design-system remediation tranche 2: `06cedc822`
+  - design-system remediation tranche 3: `d678b3af9`
 - Current product/doc baseline: `v12.1.12`
 - Formally closed on SSOT board (historical): `#354`, `#355`, `#356`, `#357`, `#358`, `#359`
 
@@ -67,6 +67,51 @@ You MUST completely read and obey `docs/coding-standards.md` and `docs/component
     - `#844` semantic status badge consolidation
     - `#845` chart/analytics presentation normalization
     - `#846` global CSS and legacy cleanup
+  - New analytics chart UX benchmark program created:
+    - `#847` umbrella
+    - `#848` shared KPI card system
+    - `#849` shared chart card wrapper and section shell
+    - `#850` shared period and filter toolbar
+    - `#851` legend, tooltip, and chart summary grammar normalization
+    - `#852` loading, empty, and error state system
+    - `#853` responsive dashboard grid and section layout normalization
+    - `#854` chart and table composite evidence panels
+    - `#855` rollout across live analytics surfaces
+
+## 2026-05-23 — Analytics chart UX benchmark planning
+
+- Benchmarked `design-sparx/mantine-analytics-dashboard` as an ideabank only.
+- Explicitly rejected:
+  - ApexCharts migration
+  - Mantine component import/adoption
+  - any new runtime dependency for chart/dashboard work
+- Accepted benchmark themes for future `{messmass}` work:
+  - KPI card hierarchy
+  - chart-card shell and section composition
+  - period/filter toolbar UX
+  - legend/tooltip/summary normalization
+  - loading/empty/error state grammar
+  - chart + table evidence panel pattern
+  - responsive dashboard grid behavior
+- Local plan doc created:
+  - `docs/operations/analytics-chart-ux-benchmark-plan-2026-05-23.md`
+- SSOT board follow-up created:
+  - `#847` through `#855`
+- Dependency order recorded on umbrella `#847`:
+  1. `#849`
+  2. `#848`
+  3. `#850`
+  4. `#851`
+  5. `#852`
+  6. `#853`
+  7. `#854`
+  8. `#855`
+- Current expected board state for the benchmark chain:
+  - `#847` to `#855` = `Backlog (SOONER)`
+  - all labeled `agent:chappie`
+  - umbrella type `plan`
+  - child slices type `feature`
+  - all `dod:not-started` until implementation begins
 
 ## Pending GitHub Updates
 
