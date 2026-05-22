@@ -8,6 +8,7 @@
  */
 
 const { execSync } = require('child_process');
+const fs = require('fs');
 const path = require('path');
 
 const VIOLATIONS = {
@@ -17,7 +18,9 @@ const VIOLATIONS = {
     allowedFiles: [
       'app/styles/theme.css',  // Legacy gradient tokens (deprecated but documented)
       'app/charts.css',        // Chart visualizations need gradients
-      'app/globals.css'        // Shimmer animation uses gradient
+      'app/globals.css',       // Shimmer animation uses gradient
+      'app/page.module.css',   // Landing hero remains tokenized but intentionally gradient-backed
+      'app/styles/utilities.css' // Shared utility fade helpers still use tokenized gradients
     ]
   },
   glassMorphism: {
@@ -59,6 +62,57 @@ for (const [name, config] of Object.entries(VIOLATIONS)) {
     if (error.status === 1) {
       console.log(`✅ ${config.message}: None found`);
     }
+  }
+}
+
+const CONTENT_GUARDRAILS = [
+  {
+    message: 'Inline style props detected in shared UI surfaces',
+    pattern: /\bstyle=\{\{/,
+    files: [
+      'components/AdminDashboard.tsx',
+      'components/AnalyticsWorkspaceNav.tsx',
+      'components/ReportingWorkspaceNav.tsx'
+    ]
+  },
+  {
+    message: 'Raw hex/rgb colors detected in canonical shared surfaces',
+    pattern: /#[0-9a-fA-F]{3,8}\b|\brgba?\(/,
+    files: [
+      'lib/adminNavigation.ts',
+      'components/AdminDashboard.tsx',
+      'components/AnalyticsWorkspaceNav.tsx',
+      'components/ReportingWorkspaceNav.tsx'
+    ]
+  },
+  {
+    message: 'Raw form controls detected in report-variant workspaces',
+    pattern: /<(input|select)\b/,
+    files: [
+      'app/admin/organizations/[id]/reports/page.tsx',
+      'app/admin/partners/[id]/reports/page.tsx'
+    ]
+  }
+];
+
+for (const guardrail of CONTENT_GUARDRAILS) {
+  const violations = [];
+
+  for (const relativeFile of guardrail.files) {
+    const filePath = path.join(process.cwd(), relativeFile);
+    const content = fs.readFileSync(filePath, 'utf-8');
+    if (guardrail.pattern.test(content)) {
+      violations.push(relativeFile);
+    }
+  }
+
+  if (violations.length > 0) {
+    console.log(`❌ ${guardrail.message}:`);
+    violations.forEach((file) => console.log(`   ${file}`));
+    console.log('');
+    totalViolations += violations.length;
+  } else {
+    console.log(`✅ ${guardrail.message}: None found`);
   }
 }
 

@@ -2,7 +2,7 @@
 
 This file is onboarding plus operational context for the next agent. Keep it accurate when behavior, process, or current delivery state changes.
 
-**Last Updated:** 2026-05-22 (partner report variants workspace rollout)
+**Last Updated:** 2026-05-22 (design system remediation tranche 1)
 
 ## 🚨 CRITICAL MUST-READ FOR ALL AGENTS: STYLING & COMPONENTS 🚨
 
@@ -58,6 +58,15 @@ You MUST completely read and obey `docs/coding-standards.md` and `docs/component
     - `#836` partner rollout
     - `#837` hashtag/filter rollout
     - `#838` list-view `Reports` workflow cleanup
+  - New design-system remediation program created:
+    - `#839` umbrella
+    - `#840` authority model and repo contract alignment
+    - `#841` drift freeze and enforcement guardrails
+    - `#842` shared admin/navigation normalization
+    - `#843` reporting/admin workflow primitive normalization
+    - `#844` semantic status badge consolidation
+    - `#845` chart/analytics presentation normalization
+    - `#846` global CSS and legacy cleanup
 
 ## Pending GitHub Updates
 
@@ -113,6 +122,16 @@ Use this checklist for the next SSOT/board pass so the next agent does not have 
 - Style editor preview updates immediately for bar/pie CSS vars and includes Value Chain and Landing page sections.
 
 ## Handover Log
+
+## 2026-05-22 — Design system remediation tranche 1 (#840, #841, #842, #843)
+- **Objective:** Start the remediation program by locking the repo authority model, freezing new drift in shared surfaces, and normalizing the highest-leverage shared UI/reporting entry points.
+- **Authority contract:** Updated `/docs/coding-standards.md` so the repo now explicitly states the current implementation authority: local token-and-wrapper design system first, external GENERAL_DESIGN_SYSTEM as strategic guidance until a tracked Mantine migration exists.
+- **Shared admin normalization:** Updated `/components/AdminDashboard.tsx` and added `/components/AdminDashboard.module.css` to remove inline style objects from the admin workspace card surface and move that shared layout into token-backed CSS classes.
+- **Navigation accent normalization:** Updated `/lib/adminNavigation.ts` so canonical admin/workspace accent colors now resolve through token-backed semantic values (`var(--mm-info)`, `var(--mm-success)`, `var(--mm-warning)`, `var(--mm-error)`, `var(--mm-color-primary-500)`) instead of raw hex strings.
+- **Workspace chip normalization:** Updated `/components/AnalyticsWorkspaceNav.tsx`, `/components/ReportingWorkspaceNav.tsx`, and their CSS modules so the shared workspace menus no longer hardcode primary hex colors or use inline icon font sizing.
+- **Reporting primitive normalization:** Added `/components/UnifiedInputField.tsx` and `/components/UnifiedSelectField.tsx`, then updated `/app/admin/organizations/[id]/reports/page.tsx` and `/app/admin/partners/[id]/reports/page.tsx` to use those centralized controlled fields instead of raw `<input>` and `<select>` controls in the variant-creation modals.
+- **Guardrail upgrade:** Extended `/scripts/check-design-violations.js` so `npm run style:check` now also blocks inline styles in the shared dashboard/workspace nav components, raw color literals in those canonical shared files, and raw form controls in the organization/partner report-variant workspaces.
+- **Scope note:** This is the first hardening tranche, not the end of the program. Charts, badge semantics, and broader legacy CSS cleanup are still queued under `#844` through `#846`.
 
 ## 2026-05-22 — Partner report variants workspace parity (#836)
 - **Objective:** Extend the compatibility-first report-variants system to partners with the same workflow now available for organizations: create named variants from `DEFAULT`, open/share them publicly, and edit their own partner-specific content/settings without harming the existing default partner reports.

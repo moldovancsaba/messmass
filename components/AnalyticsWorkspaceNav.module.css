@@ -66,6 +66,10 @@
   align-items: center;
 }
 
+.materialIcon {
+  font-size: 1rem;
+}
+
 @media (max-width: 768px) {
   .links {
     flex-direction: column;

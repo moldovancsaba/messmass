@@ -21,7 +21,7 @@ export default function AnalyticsWorkspaceNav() {
 
   return (
     <div className={styles.wrap}>
-      <ColoredCard accentColor="#3b82f6" hoverable={false}>
+      <ColoredCard accentColor="var(--mm-color-primary-500)" hoverable={false}>
         <div className={styles.card}>
           <div className={styles.header}>
             <h2 className={styles.title}>Analytics Workspace</h2>
@@ -38,7 +38,7 @@ export default function AnalyticsWorkspaceNav() {
                   aria-current={isActive ? 'page' : undefined}
                 >
                   <span className={styles.icon}>
-                    <MaterialIcon name={item.icon} variant={item.iconVariant || 'outlined'} style={{ fontSize: '1rem' }} />
+                    <MaterialIcon name={item.icon} variant={item.iconVariant || 'outlined'} className={styles.materialIcon} />
                   </span>
                   {item.label}
                 </Link>

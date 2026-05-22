@@ -35,19 +35,6 @@ export const partnersEntityConfig: AdminEntityConfig<PartnerResponse> = {
       },
     },
     {
-      id: 'partner-open-report',
-      label: 'Open Report',
-      icon: 'visibility',
-      variant: 'secondary',
-      requiredCapabilities: ['report'],
-      requiredPermissions: ['admin'],
-      execution: {
-        kind: 'route',
-        getHref: (partner) => `/partner-report/${partner.viewSlug || partner._id}`,
-        target: '_blank',
-      },
-    },
-    {
       id: 'partner-open-editor',
       label: 'Open Editor',
       icon: 'bar_chart',

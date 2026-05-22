@@ -11,6 +11,20 @@ Owner: Architecture
 
 ## 🏗️ Centralized Module Management Strategy
 
+## 🎯 Current Design System Authority Contract
+
+Until a full repo-approved Mantine migration is actually implemented, `{messmass}` uses the local token-and-wrapper system as the implementation authority for this codebase.
+
+That means:
+- `app/styles/theme.css` and the existing `var(--mm-*)` token system are the active design-token source.
+- centralized local wrappers such as `ColoredCard`, `FormModal`, `UnifiedTextInput`, and related shared admin/reporting primitives are the required implementation path.
+- the external `/Users/Shared/Projects/GENERAL_DESIGN_SYSTEM` remains strategic guidance and future migration input, not a reason to bypass the current local SSOT with ad hoc feature styling.
+
+Practical rule:
+- do not create a third styling system
+- do not mix raw feature styling into shared surfaces
+- if a Mantine migration step is desired, it must land as an explicit tracked remediation slice, not as one-off component drift
+
 ### Critical Principle: Single Source of Truth
 
 **ALL reusable components, utilities, and styling systems in {messmass} are centrally managed.**

@@ -5,6 +5,8 @@ import { useEffect, useMemo, useState } from 'react';
 import { useParams } from 'next/navigation';
 import ColoredCard from '@/components/ColoredCard';
 import SharePopup from '@/components/SharePopup';
+import UnifiedInputField from '@/components/UnifiedInputField';
+import UnifiedSelectField from '@/components/UnifiedSelectField';
 import { FormModal } from '@/components/modals';
 import { useAdminAuth } from '@/hooks/useAdminAuth';
 import { apiPost, apiPut } from '@/lib/apiClient';
@@ -289,49 +291,32 @@ export default function OrganizationReportsWorkspacePage() {
         submitText="Create Variant"
       >
         <div className={styles.formStack}>
-          <div className="form-group">
-            <label className="form-label-block">Variant Name</label>
-            <input
-              className="form-input"
-              value={createForm.name}
-              onChange={(event) => setCreateForm((prev) => ({ ...prev, name: event.target.value }))}
-              placeholder="CHL This Year"
-            />
-          </div>
-          <div className="form-group">
-            <label className="form-label-block">Time Period</label>
-            <select
-              className="form-input"
-              value={createForm.periodPreset}
-              onChange={(event) => setCreateForm((prev) => ({ ...prev, periodPreset: event.target.value }))}
-            >
-              {PERIOD_OPTIONS.map((option) => (
-                <option key={option.value} value={option.value}>
-                  {option.label}
-                </option>
-              ))}
-            </select>
-          </div>
+          <UnifiedInputField
+            label="Variant Name"
+            value={createForm.name}
+            onChange={(value) => setCreateForm((prev) => ({ ...prev, name: value }))}
+            placeholder="CHL This Year"
+          />
+          <UnifiedSelectField
+            label="Time Period"
+            value={createForm.periodPreset}
+            onChange={(value) => setCreateForm((prev) => ({ ...prev, periodPreset: value }))}
+            options={PERIOD_OPTIONS}
+          />
           {createForm.periodPreset === 'custom' && (
             <div className={styles.customGrid}>
-              <div className="form-group">
-                <label className="form-label-block">Start Date</label>
-                <input
-                  type="date"
-                  className="form-input"
-                  value={createForm.customStartDate}
-                  onChange={(event) => setCreateForm((prev) => ({ ...prev, customStartDate: event.target.value }))}
-                />
-              </div>
-              <div className="form-group">
-                <label className="form-label-block">End Date</label>
-                <input
-                  type="date"
-                  className="form-input"
-                  value={createForm.customEndDate}
-                  onChange={(event) => setCreateForm((prev) => ({ ...prev, customEndDate: event.target.value }))}
-                />
-              </div>
+              <UnifiedInputField
+                label="Start Date"
+                type="date"
+                value={createForm.customStartDate}
+                onChange={(value) => setCreateForm((prev) => ({ ...prev, customStartDate: value }))}
+              />
+              <UnifiedInputField
+                label="End Date"
+                type="date"
+                value={createForm.customEndDate}
+                onChange={(value) => setCreateForm((prev) => ({ ...prev, customEndDate: value }))}
+              />
             </div>
           )}
         </div>
