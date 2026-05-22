@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import AnalyticsWorkspaceNav from '@/components/AnalyticsWorkspaceNav';
 import ColoredCard from '@/components/ColoredCard';
+import { AnalyticsStatePanel, AnalyticsToolbar } from '@/components/analytics';
 import MetricCard from '@/components/analytics/MetricCard';
 import UnifiedAdminHeroWithSearch from '@/components/UnifiedAdminHeroWithSearch';
 import type {
@@ -308,9 +309,11 @@ export default function SponsorshipActivationWorkspacePage() {
         <AnalyticsWorkspaceNav />
 
         {error && (
-          <ColoredCard accentColor="var(--mm-error)" hoverable={false}>
-            <div className={styles.emptyState}>{error}</div>
-          </ColoredCard>
+          <AnalyticsStatePanel
+            variant="error"
+            title="Activation workspace unavailable"
+            description={error}
+          />
         )}
 
         {!error && hubData && (
@@ -380,30 +383,47 @@ export default function SponsorshipActivationWorkspacePage() {
               </div>
             </ColoredCard>
 
-            <ColoredCard accentColor="var(--mm-color-primary-500)" hoverable={false}>
-              <div className={styles.controlsCard}>
-                <div className={styles.sectionHeader}>
-                  <h2 className={styles.sectionTitle}>Queue Filters</h2>
-                  <p className={styles.sectionSubtitle}>
-                    Narrow the activation queue by gap type or by partner so commercial follow-up can stay focused.
+            <AnalyticsToolbar
+              title="Queue Filters"
+              subtitle="Narrow the activation queue by gap type or by partner so commercial follow-up can stay focused."
+              accentColor="var(--mm-color-primary-500)"
+              presets={SAVED_VIEW_PRESETS.map((preset) => ({
+                key: preset.key,
+                label: preset.label,
+                description: preset.description,
+                active: currentSavedView.key === preset.key,
+                onClick: () => setStatusFilter(preset.statusFilter),
+              }))}
+              summary={(
+                <>
+                  <p className={styles.scopeSummary}>
+                    Showing <strong>{filteredProofItems.length}</strong> project{filteredProofItems.length === 1 ? '' : 's'} in the current activation queue.
                   </p>
-                </div>
-                <div className={styles.pillGrid}>
-                  {SAVED_VIEW_PRESETS.map((preset) => {
-                    const isActive = currentSavedView.key === preset.key;
-                    return (
-                      <button
-                        key={preset.key}
-                        type="button"
-                        className={`${styles.pillCardButton} ${isActive ? styles.pillCardActive : ''}`}
-                        onClick={() => setStatusFilter(preset.statusFilter)}
-                      >
-                        <span className={styles.pillTitle}>{preset.label}</span>
-                        <span className={styles.helperText}>{preset.description}</span>
-                      </button>
-                    );
-                  })}
-                </div>
+                  <div className={styles.insightGrid}>
+                    <div className={styles.insightItem}>
+                      <span className={styles.insightLabel}>Current View</span>
+                      <span className={styles.insightValue}>{currentSavedView.label}</span>
+                    </div>
+                    <div className={styles.insightItem}>
+                      <span className={styles.insightLabel}>Projects With Gaps</span>
+                      <span className={styles.insightValue}>{filteredGapCount}</span>
+                    </div>
+                    <div className={styles.insightItem}>
+                      <span className={styles.insightLabel}>Ready In View</span>
+                      <span className={styles.insightValue}>{filteredReadyCount}</span>
+                    </div>
+                    <div className={styles.insightItem}>
+                      <span className={styles.insightLabel}>Media Value In View</span>
+                      <span className={styles.insightValue}>€{Math.round(filteredPotentialValue).toLocaleString('en-US')}</span>
+                    </div>
+                  </div>
+                  <p className={styles.helperText}>
+                    Queue order is server-ranked by gap urgency first, then commercial value, so the top rows are the best next fixes. Filter state is stored in the URL so this view can be bookmarked or shared.
+                  </p>
+                </>
+              )}
+            >
+              <div className={styles.controlsCard}>
                 <div className={styles.controlsGrid}>
                   <div className={styles.controlGroup}>
                     <label htmlFor="statusFilter" className={styles.controlLabel}>Status</label>
@@ -437,32 +457,8 @@ export default function SponsorshipActivationWorkspacePage() {
                     </select>
                   </div>
                 </div>
-                <p className={styles.scopeSummary}>
-                  Showing <strong>{filteredProofItems.length}</strong> project{filteredProofItems.length === 1 ? '' : 's'} in the current activation queue.
-                </p>
-                <div className={styles.insightGrid}>
-                  <div className={styles.insightItem}>
-                    <span className={styles.insightLabel}>Current View</span>
-                    <span className={styles.insightValue}>{currentSavedView.label}</span>
-                  </div>
-                  <div className={styles.insightItem}>
-                    <span className={styles.insightLabel}>Projects With Gaps</span>
-                    <span className={styles.insightValue}>{filteredGapCount}</span>
-                  </div>
-                  <div className={styles.insightItem}>
-                    <span className={styles.insightLabel}>Ready In View</span>
-                    <span className={styles.insightValue}>{filteredReadyCount}</span>
-                  </div>
-                  <div className={styles.insightItem}>
-                    <span className={styles.insightLabel}>Media Value In View</span>
-                    <span className={styles.insightValue}>€{Math.round(filteredPotentialValue).toLocaleString('en-US')}</span>
-                  </div>
-                </div>
-                <p className={styles.helperText}>
-                  Queue order is server-ranked by gap urgency first, then commercial value, so the top rows are the best next fixes. Filter state is stored in the URL so this view can be bookmarked or shared.
-                </p>
               </div>
-            </ColoredCard>
+            </AnalyticsToolbar>
 
             <ColoredCard accentColor="var(--mm-color-success-500, #16a34a)" hoverable={false}>
               <div className={styles.sectionCard}>

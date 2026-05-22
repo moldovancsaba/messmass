@@ -4,6 +4,12 @@ import React, { useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
 import AnalyticsWorkspaceNav from '@/components/AnalyticsWorkspaceNav';
 import ColoredCard from '@/components/ColoredCard';
+import {
+  AnalyticsChartTablePanel,
+  AnalyticsSectionCard,
+  AnalyticsStatePanel,
+  AnalyticsToolbar,
+} from '@/components/analytics';
 import LineChart from '@/components/analytics/LineChart';
 import MetricCard from '@/components/analytics/MetricCard';
 import UnifiedAdminHeroWithSearch from '@/components/UnifiedAdminHeroWithSearch';
@@ -323,15 +329,36 @@ export default function SponsorshipHubPage() {
       <div className={styles.page}>
         <AnalyticsWorkspaceNav />
 
-        <ColoredCard accentColor="var(--mm-color-primary-500)" hoverable={false}>
-          <div className={styles.controlsCard}>
-            <div className={styles.sectionHeader}>
-              <h2 className={styles.sectionTitle}>Scope Controls</h2>
-              <p className={styles.sectionSubtitle}>
-                Start with a portfolio view, then narrow to a partner, organization, or single project.
+        <AnalyticsToolbar
+          title="Scope Controls"
+          subtitle="Start with a portfolio view, then narrow to a partner, organization, or single project."
+          accentColor="var(--mm-color-primary-500)"
+          summary={(
+            <>
+              <p className={styles.scopeSummary}>
+                Current scope: <strong>{scopeLabel}</strong>
+                {hubData?.scope.name ? ` • ${hubData.scope.name}` : ''}
               </p>
-            </div>
-
+              {hubData?.filters && (
+                <p className={styles.scopeSummary}>
+                  Date window: <strong>{hubData.filters.startDate ? formatDate(hubData.filters.startDate) : 'Earliest'}</strong>
+                  {' '}to{' '}
+                  <strong>{hubData.filters.endDate ? formatDate(hubData.filters.endDate) : 'Latest'}</strong>
+                </p>
+              )}
+              {hubData?.scopeActions && (
+                <div className={styles.actionRow}>
+                  {actionLinks(hubData.scopeActions).map((action) => (
+                    <Link key={action.href} href={action.href} className={styles.actionLink}>
+                      {action.label}
+                    </Link>
+                  ))}
+                </div>
+              )}
+            </>
+          )}
+        >
+          <div className={styles.controlsCard}>
             <div className={styles.controlsGrid}>
               <div className={styles.controlGroup}>
                 <label htmlFor="scopeType" className={styles.controlLabel}>Scope Type</label>
@@ -442,34 +469,15 @@ export default function SponsorshipHubPage() {
                 )}
               </div>
             )}
-
-            <p className={styles.scopeSummary}>
-              Current scope: <strong>{scopeLabel}</strong>
-              {hubData?.scope.name ? ` • ${hubData.scope.name}` : ''}
-            </p>
-            {hubData?.filters && (
-              <p className={styles.scopeSummary}>
-                Date window: <strong>{hubData.filters.startDate ? formatDate(hubData.filters.startDate) : 'Earliest'}</strong>
-                {' '}to{' '}
-                <strong>{hubData.filters.endDate ? formatDate(hubData.filters.endDate) : 'Latest'}</strong>
-              </p>
-            )}
-            {hubData?.scopeActions && (
-              <div className={styles.actionRow}>
-                {actionLinks(hubData.scopeActions).map((action) => (
-                  <Link key={action.href} href={action.href} className={styles.actionLink}>
-                    {action.label}
-                  </Link>
-                ))}
-              </div>
-            )}
           </div>
-        </ColoredCard>
+        </AnalyticsToolbar>
 
         {error && (
-          <ColoredCard accentColor="var(--mm-error)" hoverable={false}>
-            <div className={styles.emptyState}>{error}</div>
-          </ColoredCard>
+          <AnalyticsStatePanel
+            variant="error"
+            title="Sponsorship hub unavailable"
+            description={error}
+          />
         )}
 
         {!error && hubData && (
@@ -575,35 +583,21 @@ export default function SponsorshipHubPage() {
               </ColoredCard>
             </div>
 
-            <ColoredCard accentColor="var(--mm-chart-orange)" hoverable={false}>
-              <div className={styles.sectionCard}>
-                <div className={styles.sectionHeader}>
-                  <h2 className={styles.sectionTitle}>Scope Trend View</h2>
-                  <p className={styles.sectionSubtitle}>
-                    Time-window movement across fan volume, media value, and tracked link clicks for the current scope.
-                  </p>
-                </div>
-                {renderChart(
-                  'Scope Trend',
-                  'One server-side timeline for the current sponsorship scope.',
-                  hubData.trend,
-                  [
-                    { key: 'fans', label: 'Fans', color: '#2563eb', format: 'number' },
-                    { key: 'adValue', label: 'Media Value', color: '#059669', format: 'currency' },
-                    { key: 'bitlyClicks', label: 'Bitly Clicks', color: '#ea580c', format: 'number' },
-                  ]
-                )}
-              </div>
-            </ColoredCard>
-
-            <ColoredCard accentColor="var(--mm-color-secondary-500)" hoverable={false}>
-              <div className={styles.sectionCard}>
-                <div className={styles.sectionHeader}>
-                  <h2 className={styles.sectionTitle}>Top Projects</h2>
-                  <p className={styles.sectionSubtitle}>
-                    Ranked by combined sponsorship value and tracked link activity inside the current scope.
-                  </p>
-                </div>
+            <AnalyticsChartTablePanel
+              title="Scope Trend and Top Projects"
+              subtitle="Keep the current time-window trend and the ranked evidence table in one sponsorship decision surface."
+              accentColor="var(--mm-chart-orange)"
+              chart={renderChart(
+                'Scope Trend',
+                'One server-side timeline for the current sponsorship scope.',
+                hubData.trend,
+                [
+                  { key: 'fans', label: 'Fans', color: '#2563eb', format: 'number' },
+                  { key: 'adValue', label: 'Media Value', color: '#059669', format: 'currency' },
+                  { key: 'bitlyClicks', label: 'Bitly Clicks', color: '#ea580c', format: 'number' },
+                ]
+              )}
+              table={(
                 <div className={styles.tableWrap}>
                   <table className={styles.table}>
                     <thead>
@@ -645,17 +639,17 @@ export default function SponsorshipHubPage() {
                     </tbody>
                   </table>
                 </div>
+              )}
+            />
 
                 {selectedProject && (
                   <div className={styles.detailStack}>
-                    <ColoredCard accentColor="var(--mm-color-primary-500)" hoverable={false}>
-                      <div className={styles.detailCard}>
-                        <div className={styles.sectionHeader}>
-                          <h3 className={styles.detailTitle}>Selected Project Drilldown</h3>
-                          <p className={styles.sectionSubtitle}>
-                            Source-level evidence, report actions, and a project-level trend from the unified payload.
-                          </p>
-                        </div>
+                    <AnalyticsSectionCard
+                      accentColor="var(--mm-color-primary-500)"
+                      title="Selected Project Drilldown"
+                      subtitle="Source-level evidence, report actions, and a project-level trend from the unified payload."
+                      className={styles.detailCard}
+                    >
                         <div className={styles.detailMeta}>
                           <span><strong>{selectedProject.eventName}</strong></span>
                           <span>{formatDate(selectedProject.eventDate)} • {selectedProject.partnerLabel}</span>
@@ -689,12 +683,9 @@ export default function SponsorshipHubPage() {
                           selectedProject.trend,
                           [{ key: 'bitlyClicks', label: 'Bitly Clicks', color: '#ea580c', format: 'number' }]
                         )}
-                      </div>
-                    </ColoredCard>
+                    </AnalyticsSectionCard>
                   </div>
                 )}
-              </div>
-            </ColoredCard>
 
             <ColoredCard accentColor="var(--mm-chart-purple)" hoverable={false}>
               <div className={styles.sectionCard}>

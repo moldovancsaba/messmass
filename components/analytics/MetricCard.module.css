@@ -28,9 +28,17 @@
 /* Header Section */
 .header {
   display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--mm-space-3);
+  margin-bottom: var(--mm-space-3);
+}
+
+.headerMain {
+  display: flex;
   align-items: center;
   gap: var(--mm-space-2);
-  margin-bottom: var(--mm-space-3);
+  min-width: 0;
 }
 
 .icon {
@@ -45,6 +53,19 @@
   color: var(--mm-text-secondary);
   text-transform: uppercase;
   letter-spacing: 0.5px;
+}
+
+.periodLabel {
+  display: inline-flex;
+  align-items: center;
+  min-height: 28px;
+  padding: 0 var(--mm-space-2);
+  border-radius: 999px;
+  background: var(--mm-color-primary-50);
+  color: var(--mm-color-primary-800);
+  font-size: var(--mm-font-size-xs);
+  font-weight: var(--mm-font-weight-semibold);
+  white-space: nowrap;
 }
 
 /* Value Section */

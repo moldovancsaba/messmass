@@ -245,12 +245,9 @@ export default function LineChart({
       subtitle={subtitle}
       chartRef={chartRef}
       filename={filename}
+      height={height}
     >
-      {/* WHAT: Dynamic height from props
-          WHY: Chart height is configurable per instance */}
-      <div style={{ height: `${height}px` }}> {/* eslint-disable-line react/forbid-dom-props */}
-        <Line ref={chartRef} data={chartData} options={options} />
-      </div>
+      <Line ref={chartRef} data={chartData} options={options} />
     </ChartBase>
   );
 }

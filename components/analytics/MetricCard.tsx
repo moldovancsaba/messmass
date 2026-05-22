@@ -34,6 +34,8 @@ interface MetricCardProps {
   icon?: string; // Emoji or icon
   loading?: boolean;
   className?: string;
+  periodLabel?: string;
+  comparisonLabel?: string;
 }
 
 /**
@@ -82,6 +84,8 @@ export default function MetricCard({
   icon,
   loading = false,
   className = '',
+  periodLabel,
+  comparisonLabel,
 }: MetricCardProps) {
   const trend = explicitTrend || determineTrend(value, previousValue);
   const percentChange = previousValue !== undefined ? calculatePercentChange(value, previousValue) : null;
@@ -98,8 +102,11 @@ export default function MetricCard({
     <div className={`${styles.metricCard} ${className}`}>
       {/* WHAT: Header with icon and title */}
       <div className={styles.header}>
-        {icon && <span className={styles.icon}>{icon}</span>}
-        <h3 className={styles.title}>{title}</h3>
+        <div className={styles.headerMain}>
+          {icon && <span className={styles.icon}>{icon}</span>}
+          <h3 className={styles.title}>{title}</h3>
+        </div>
+        {periodLabel ? <span className={styles.periodLabel}>{periodLabel}</span> : null}
       </div>
 
       {/* WHAT: Main metric value */}
@@ -126,7 +133,7 @@ export default function MetricCard({
         <div className={styles.footer}>
           {subtitle || (
             <span className={styles.comparison}>
-              vs {formatMetricValue(previousValue!, format)} previous period
+              {comparisonLabel || `vs ${formatMetricValue(previousValue!, format)} previous period`}
             </span>
           )}
         </div>

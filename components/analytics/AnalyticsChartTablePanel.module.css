@@ -1,0 +1,17 @@
+.panel {
+  display: grid;
+  grid-template-columns: minmax(0, 1.3fr) minmax(320px, 0.9fr);
+  gap: var(--mm-space-4);
+  align-items: start;
+}
+
+.chart,
+.table {
+  min-width: 0;
+}
+
+@media (max-width: 960px) {
+  .panel {
+    grid-template-columns: 1fr;
+  }
+}

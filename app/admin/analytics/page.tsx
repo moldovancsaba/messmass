@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import AnalyticsWorkspaceNav from '@/components/AnalyticsWorkspaceNav';
+import { AnalyticsSectionCard, AnalyticsStatePanel } from '@/components/analytics';
 import ColoredCard from '@/components/ColoredCard';
 import MaterialIcon from '@/components/MaterialIcon';
 import UnifiedAdminHeroWithSearch from '@/components/UnifiedAdminHeroWithSearch';
@@ -15,11 +16,12 @@ export default function AnalyticsHomePage() {
 
   if (loading) {
     return (
-      <div className="loading-container">
-        <div className="loading-card">
-          <div className="text-4xl mb-4">📈</div>
-          <div className="text-gray-600">Loading analytics workspace...</div>
-        </div>
+      <div className="page-container">
+        <AnalyticsStatePanel
+          variant="loading"
+          title="Loading analytics workspace"
+          description="Preparing the canonical analytics entry point and your available reporting lenses."
+        />
       </div>
     );
   }
@@ -43,28 +45,29 @@ export default function AnalyticsHomePage() {
       <AnalyticsWorkspaceNav />
 
       <div className={styles.intro}>
-        <ColoredCard accentColor="#3b82f6" hoverable={false}>
-          <div className={styles.introBody}>
-            <h2 className={styles.introTitle}>Choose the right analytics path</h2>
-            <p className={styles.introText}>
-              Sponsorship performance, executive reporting, marketing analysis, operations capacity, and anomaly review are all analytics workflows, but they should start from one place.
-            </p>
-            <ul className={styles.introList}>
-              <li>Use <strong>Sponsorship Hub</strong> for partner, project, and organization performance.</li>
-              <li>Use <strong>Partner Activation</strong> from Operations when the job is proof delivery, not analysis.</li>
-              <li>Use <strong>Executive</strong>, <strong>Marketing</strong>, or <strong>Operations</strong> dashboards for role-specific portfolio views.</li>
-              <li>Use <strong>Insights</strong> when you need anomalies, trends, and AI-generated review cues.</li>
-            </ul>
-          </div>
-        </ColoredCard>
+        <AnalyticsSectionCard
+          accentColor="var(--mm-color-primary-500)"
+          title="Choose the right analytics path"
+          subtitle="Sponsorship performance, executive reporting, marketing analysis, operations capacity, and anomaly review are all analytics workflows, but they should start from one place."
+        >
+          <ul className={styles.introList}>
+            <li>Use <strong>Sponsorship Hub</strong> for partner, project, and organization performance.</li>
+            <li>Use <strong>Partner Activation</strong> from Operations when the job is proof delivery, not analysis.</li>
+            <li>Use <strong>Executive</strong>, <strong>Marketing</strong>, or <strong>Operations</strong> dashboards for role-specific portfolio views.</li>
+            <li>Use <strong>Insights</strong> when you need anomalies, trends, and AI-generated review cues.</li>
+          </ul>
+        </AnalyticsSectionCard>
 
-        <ColoredCard accentColor="#14b8a6" hoverable={false}>
+        <AnalyticsSectionCard
+          accentColor="var(--mm-chart-teal)"
+          title="Analytics now has one home"
+          subtitle="Legacy routes remain reachable, but they now resolve back into this analytics workspace structure."
+        >
           <div className={styles.summaryCard}>
-            <h2 className={styles.summaryTitle}>Analytics now has one home</h2>
-            <p className={styles.summaryMeta}>Legacy routes remain reachable, but they now resolve back into this analytics workspace structure.</p>
             <p className={styles.summaryMeta}>Visible destinations are filtered by your current role.</p>
+            <p className={styles.summaryMeta}>Shared KPI, card, filter, and state patterns are now the target grammar for the analytics workspace.</p>
           </div>
-        </ColoredCard>
+        </AnalyticsSectionCard>
       </div>
 
       <div className={styles.grid}>
@@ -73,7 +76,7 @@ export default function AnalyticsHomePage() {
             <ColoredCard accentColor={item.accentColor} hoverable={true} className={styles.cardSurface}>
               <div className={styles.cardContent}>
                 <div className={styles.cardIcon}>
-                  <MaterialIcon name={item.icon} variant={item.iconVariant || 'outlined'} style={{ fontSize: '2rem' }} />
+                  <MaterialIcon name={item.icon} variant={item.iconVariant || 'outlined'} className={styles.cardMaterialIcon} />
                 </div>
                 <div className={styles.cardBody}>
                   <p className={styles.cardMeta}>Analytics Surface</p>

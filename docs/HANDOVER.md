@@ -2,7 +2,7 @@
 
 This file is onboarding plus operational context for the next agent. Keep it accurate when behavior, process, or current delivery state changes.
 
-**Last Updated:** 2026-05-23 (analytics chart UX benchmark planning)
+**Last Updated:** 2026-05-23 (analytics chart UX rollout)
 
 ## 🚨 CRITICAL MUST-READ FOR ALL AGENTS: STYLING & COMPONENTS 🚨
 
@@ -112,6 +112,42 @@ You MUST completely read and obey `docs/coding-standards.md` and `docs/component
   - umbrella type `plan`
   - child slices type `feature`
   - all `dod:not-started` until implementation begins
+
+## 2026-05-23 — Analytics chart UX rollout (`#847`–`#855`)
+
+- Implemented shared analytics UX primitives without adding dependencies or changing chart engines:
+  - `components/analytics/AnalyticsSectionCard.tsx`
+  - `components/analytics/AnalyticsToolbar.tsx`
+  - `components/analytics/AnalyticsStatePanel.tsx`
+  - `components/analytics/AnalyticsChartTablePanel.tsx`
+- Extended current shared chart/KPI primitives:
+  - `components/analytics/MetricCard.tsx` now supports period badges and comparison-label overrides
+  - `components/analytics/LineChart.tsx` now uses `ChartBase` height plumbing directly instead of a local wrapper
+- Rolled the shared UX grammar into live analytics surfaces:
+  - analytics home
+  - insights
+  - executive dashboard
+  - marketing dashboard (inherits executive shared view)
+  - operations dashboard (inherits executive shared view)
+  - sponsorship hub
+  - partner activation
+- Key delivered patterns from the benchmark ideabank:
+  - reusable KPI hierarchy
+  - shared chart-card / section shell
+  - shared analytics toolbar for periods and filters
+  - reusable loading / empty / error states
+  - chart + evidence composite panels
+  - more consistent responsive dashboard composition
+- Non-negotiables preserved:
+  - no new runtime dependencies
+  - no ApexCharts migration
+  - no Mantine import
+  - existing analytics/report behavior preserved
+- Validation passed on the rollout:
+  - `npm run style:check`
+  - `npm run lint`
+  - `npm run build`
+  - `npm run type-check`
 
 ## Pending GitHub Updates
 

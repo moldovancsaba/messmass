@@ -6,27 +6,6 @@
   align-items: stretch;
 }
 
-.introBody {
-  display: flex;
-  flex-direction: column;
-  gap: var(--mm-space-3);
-  min-width: 0;
-}
-
-.introTitle {
-  margin: 0;
-  font-size: var(--mm-font-size-2xl);
-  font-weight: var(--mm-font-weight-semibold);
-  color: var(--mm-gray-900);
-}
-
-.introText {
-  margin: 0;
-  font-size: var(--mm-font-size-base);
-  line-height: var(--mm-line-height-md);
-  color: var(--mm-gray-700);
-}
-
 .introList {
   margin: 0;
   padding-left: var(--mm-space-5);
@@ -88,6 +67,10 @@
 .cardIcon {
   color: var(--mm-gray-900);
   flex-shrink: 0;
+}
+
+.cardMaterialIcon {
+  font-size: 2rem;
 }
 
 .cardBody {
