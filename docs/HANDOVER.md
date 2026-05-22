@@ -2,7 +2,7 @@
 
 This file is onboarding plus operational context for the next agent. Keep it accurate when behavior, process, or current delivery state changes.
 
-**Last Updated:** 2026-05-22 (report builder template picker hardening)
+**Last Updated:** 2026-05-22 (report builder template list hydration hardening)
 
 ## 🚨 CRITICAL MUST-READ FOR ALL AGENTS: STYLING & COMPONENTS 🚨
 
@@ -103,6 +103,14 @@ Use this checklist for the next SSOT/board pass so the next agent does not have 
 - Style editor preview updates immediately for bar/pie CSS vars and includes Value Chain and Landing page sections.
 
 ## Handover Log
+
+## 2026-05-22 — Report Builder template list hydration hardening (#64, #819)
+- **Objective:** Fix the case where `/admin/visualization` could load but still show no usable template list even though report templates existed in MongoDB.
+- **Root cause:** The selector bootstrap was fetching `/api/report-templates?includeAssociations=true` on first load. That made the entire picker depend on heavier V3 assignment-hydration work before even the basic template names could render. If that association enrichment path failed or degraded, the builder looked empty even though `report_templates` data existed.
+- **Fix:** Updated `/app/admin/visualization/page.tsx` so the initial template load now uses `includeAssociations=false` with `cache: 'no-store'`, which is enough for selection and editing. Assignment counts and usage metadata are now hydrated in a separate background pass via `loadTemplateAssociations()`, and also refreshed when template-management actions need them.
+- **Data audit context:** Local DB verification during this fix confirmed the active master organization already has 34 `report_templates`, plus legacy overlap with 6 `reports` documents. The immediate blocker was not missing template data in Mongo; it was the builder’s over-coupled initial load path.
+- **Workflow effect:** The Report Builder can now populate the template picker from the canonical template records immediately, then backfill project/partner usage counts afterward without blocking selection.
+- **Verification:** `npm run lint`, `npm run build`, and `npm run type-check` all passed. As usual in this repo, `type-check` was run after the successful build because `tsconfig.json` includes `.next/types/**/*.ts`.
 
 ## 2026-05-22 — Report Builder template picker hardening (#64, #819)
 - **Objective:** Fix the Report Builder template selector on `/admin/visualization` where operators could see the selector UI but still be unable to choose a template reliably.

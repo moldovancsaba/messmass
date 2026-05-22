@@ -357,11 +357,37 @@ export default function VisualizationPage() {
     setTimeout(() => setStatusMessage(null), 5000); // Auto-dismiss after 5 seconds
   }, []);
 
+  const loadTemplateAssociations = useCallback(async () => {
+    try {
+      const response = await fetch('/api/report-templates?includeAssociations=true', {
+        cache: 'no-store'
+      });
+      const data = await response.json();
+
+      if (!data.success || !Array.isArray(data.templates)) {
+        console.warn('Template association load skipped:', data.error || 'Unexpected response');
+        return;
+      }
+
+      setTemplates((prev) => {
+        if (prev.length === 0) {
+          return data.templates;
+        }
+
+        const nextById = new Map(data.templates.map((template: ReportTemplate) => [template._id, template]));
+        return prev.map((template) => nextById.get(template._id) || template);
+      });
+    } catch (error) {
+      console.warn('Failed to load template associations:', error);
+    }
+  }, []);
+
   useEffect(() => {
     const initializeData = async () => {
       try {
         setLoading(true);
         const loadedTemplates = await loadTemplates();
+        void loadTemplateAssociations();
         await loadUserPreferences(loadedTemplates); // Pass templates to avoid race condition
         await Promise.all([
           loadAvailableCharts(),
@@ -380,7 +406,7 @@ export default function VisualizationPage() {
     };
     
     initializeData();
-  }, []);
+  }, [loadTemplateAssociations]);
   
   const loadTemplateConfig = useCallback(async (templateId: string) => {
     try {
@@ -548,7 +574,9 @@ export default function VisualizationPage() {
   // WHY: Populate template selector
   const loadTemplates = async () => {
     try {
-      const response = await fetch('/api/report-templates?includeAssociations=true');
+      const response = await fetch('/api/report-templates?includeAssociations=false', {
+        cache: 'no-store'
+      });
       const data = await response.json();
       
       if (data.success && data.templates) {
@@ -1239,6 +1267,7 @@ export default function VisualizationPage() {
       if (data.success && data.template) {
         // Reload templates list
         await loadTemplates();
+        void loadTemplateAssociations();
         // Auto-select newly created template
         setSelectedTemplateId(data.template._id);
         // Close modal and reset form
@@ -1275,6 +1304,7 @@ export default function VisualizationPage() {
       
       if (data.success) {
         await loadTemplates();
+        void loadTemplateAssociations();
         setTemplateEditName(templateEditName.trim());
         showMessage('success', 'Template renamed successfully!');
       } else {
@@ -1374,6 +1404,7 @@ export default function VisualizationPage() {
         
         if (data.success && data.template) {
           await loadTemplates();
+          void loadTemplateAssociations();
           // WHAT: Auto-select newly copied template
           // WHY: User expects to edit the copy immediately
           setSelectedTemplateId(data.template._id);
@@ -1408,6 +1439,7 @@ export default function VisualizationPage() {
         
         if (data.success && data.template) {
           await loadTemplates();
+          void loadTemplateAssociations();
           setSelectedTemplateId(data.template._id);
           setShowTemplateEditModal(false);
           setTemplateCopyName('');
@@ -1441,6 +1473,7 @@ export default function VisualizationPage() {
       
         if (data.success) {
           await loadTemplates();
+          void loadTemplateAssociations();
         // WHAT: Clear selection if deleted template was selected
         // WHY: Prevent editing non-existent template
         setSelectedTemplateId(null);
@@ -1590,6 +1623,9 @@ export default function VisualizationPage() {
                     e.stopPropagation();
                     const selectedTemplate = templates.find(t => t._id === selectedTemplateId);
                     if (selectedTemplate) {
+                      if (!selectedTemplate.associatedProjects || !selectedTemplate.associatedPartners) {
+                        void loadTemplateAssociations();
+                      }
                       setTemplateEditName(selectedTemplate.name);
                       setTemplateCopyName(`Copy of ${selectedTemplate.name}`);
                       setShowTemplateEditModal(true);
