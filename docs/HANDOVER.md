@@ -2,7 +2,7 @@
 
 This file is onboarding plus operational context for the next agent. Keep it accurate when behavior, process, or current delivery state changes.
 
-**Last Updated:** 2026-05-22 (auth loading fail-safe audit slice)
+**Last Updated:** 2026-05-22 (report builder template picker hardening)
 
 ## 🚨 CRITICAL MUST-READ FOR ALL AGENTS: STYLING & COMPONENTS 🚨
 
@@ -103,6 +103,13 @@ Use this checklist for the next SSOT/board pass so the next agent does not have 
 - Style editor preview updates immediately for bar/pie CSS vars and includes Value Chain and Landing page sections.
 
 ## Handover Log
+
+## 2026-05-22 — Report Builder template picker hardening (#64, #819)
+- **Objective:** Fix the Report Builder template selector on `/admin/visualization` where operators could see the selector UI but still be unable to choose a template reliably.
+- **Root cause:** The route still depended on a native browser `<select>` popup for a critical workflow. On Safari, that control could fall back into a broken placeholder-only interaction state even when the template data existed. The page also had no final safety net for auto-selecting a valid template after the template list loaded.
+- **Fix:** Replaced the template selector with an in-app dropdown menu in `/app/admin/visualization/page.tsx` and `/app/admin/visualization/Visualization.module.css`, backed by the same template list and `handleTemplateChange()` flow. Added a fallback effect that auto-selects the default template, or the first available template, whenever templates are loaded and no active selection exists.
+- **Workflow effect:** Operators can now always open the template menu, choose any available report template, and continue into block/chart editing without being trapped in a placeholder state or Safari-native select bug.
+- **Verification:** `npm run lint`, `npm run build`, and `npm run type-check` all passed. As usual in this repo, `type-check` was run after the successful build because `tsconfig.json` includes `.next/types/**/*.ts`.
 
 ## 2026-05-22 — Auth loading fail-safe audit slice (#63, #819)
 - **Objective:** Check for other permanent-loader risks matching the Report Builder bug and harden any pages that only clear `loading` on one success path.

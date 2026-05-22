@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect, useCallback, useMemo } from 'react';
+import React, { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import ReportChart from '@/app/report/[slug]/ReportChart';
 import { ChartConfiguration, ChartCalculationResult, HeroBlockSettings, BlockAlignmentSettings } from '@/lib/chartConfigTypes';
@@ -124,6 +124,7 @@ interface ReportTemplate {
 
 export default function VisualizationPage() {
   const router = useRouter();
+  const templateMenuRef = useRef<HTMLDivElement | null>(null);
   const [dataBlocks, setDataBlocks] = useState<DataVisualizationBlock[]>([]);
   const [availableCharts, setAvailableCharts] = useState<AvailableChart[]>([]);
   const [loading, setLoading] = useState(true);
@@ -151,6 +152,7 @@ export default function VisualizationPage() {
   const [templateEditName, setTemplateEditName] = useState('');
   const [templateCopyName, setTemplateCopyName] = useState('');
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [isTemplateMenuOpen, setIsTemplateMenuOpen] = useState(false);
   
   // WHAT: Track which block editors are expanded (default: all collapsed)
   // WHY: Cleaner UX on page load - focus on chart previews, not implementation details
@@ -458,6 +460,28 @@ export default function VisualizationPage() {
     }
   }, [selectedTemplateId, loadTemplateConfig]);
 
+  useEffect(() => {
+    if (templates.length === 0 || selectedTemplateId) return;
+
+    const fallbackTemplate = templates.find((t: ReportTemplate) => t.isDefault) || templates[0];
+    if (fallbackTemplate) {
+      setSelectedTemplateId(fallbackTemplate._id);
+    }
+  }, [templates, selectedTemplateId]);
+
+  useEffect(() => {
+    if (!isTemplateMenuOpen) return;
+
+    const handlePointerDown = (event: MouseEvent) => {
+      if (templateMenuRef.current && !templateMenuRef.current.contains(event.target as Node)) {
+        setIsTemplateMenuOpen(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handlePointerDown);
+    return () => document.removeEventListener('mousedown', handlePointerDown);
+  }, [isTemplateMenuOpen]);
+
   // WHAT: Load user preferences (last selected template)
   // WHY: Remember user's last choice across browsers and sessions
   const loadUserPreferences = async (availableTemplates: ReportTemplate[]) => {
@@ -506,6 +530,7 @@ export default function VisualizationPage() {
     
     console.log('Setting template to:', templateId);
     setSelectedTemplateId(templateId);
+    setIsTemplateMenuOpen(false);
     
     // WHAT: Save to preferences using apiPut for CSRF protection
     // WHY: Persist selection so it's remembered on next visit
@@ -537,6 +562,23 @@ export default function VisualizationPage() {
       console.error('Failed to load templates:', error);
       return [];
     }
+  };
+
+  const selectedTemplate = templates.find((template) => template._id === selectedTemplateId);
+
+  const getTemplateLabel = (template: ReportTemplate) => {
+    const isLivePartnerReportTemplate = template.name === 'Default Event Report' && template.type === 'event';
+    const isPartnerTemplate = template.type === 'partner';
+
+    let label = `${template.isDefault ? '⭐ ' : ''}${isLivePartnerReportTemplate ? '🎯 ' : ''}${template.name} (${template.type})`;
+
+    if (isLivePartnerReportTemplate) {
+      label += ' - Fallback Template for Partner Reports';
+    } else if (isPartnerTemplate) {
+      label += ' - Partner-Specific Template';
+    }
+
+    return label;
   };
   
 
@@ -1464,31 +1506,48 @@ export default function VisualizationPage() {
           <div className={vizStyles.templateSelectorControls}>
             
             <div className={vizStyles.templateSelectorRow}>
-              <select
-                className={vizStyles.templateDropdown}
-                value={selectedTemplateId || ''}
-                onChange={(e) => {
-                  console.log('Template dropdown changed to:', e.target.value);
-                  const selectedTemplate = templates.find(t => t._id === e.target.value);
-                  console.log('Selected template:', selectedTemplate?.name);
-                  handleTemplateChange(e.target.value);
-                }}
-              >
-                <option value="" disabled>Select a template...</option>
-                {templates.map(template => {
-                  const isLivePartnerReportTemplate = template.name === 'Default Event Report' && template.type === 'event';
-                  const isPartnerTemplate = template.type === 'partner';
-                  return (
-                    <option key={template._id} value={template._id}>
-                      {template.isDefault && '⭐ '}
-                      {isLivePartnerReportTemplate && '🎯 '}
-                      {template.name} ({template.type})
-                      {isLivePartnerReportTemplate && ' - Fallback Template for Partner Reports'}
-                      {isPartnerTemplate && ' - Partner-Specific Template'}
-                    </option>
-                  );
-                })}
-              </select>
+              <div className={vizStyles.templateDropdownShell} ref={templateMenuRef}>
+                <button
+                  type="button"
+                  className={`${vizStyles.templateDropdownButton} ${isTemplateMenuOpen ? vizStyles.templateDropdownButtonOpen : ''}`}
+                  onClick={() => setIsTemplateMenuOpen((open) => !open)}
+                  aria-haspopup="listbox"
+                  aria-expanded={isTemplateMenuOpen}
+                >
+                  <span className={vizStyles.templateDropdownButtonLabel}>
+                    {selectedTemplate ? getTemplateLabel(selectedTemplate) : 'Select a template...'}
+                  </span>
+                  <MaterialIcon
+                    name={isTemplateMenuOpen ? 'expand_less' : 'expand_more'}
+                    className={vizStyles.templateDropdownIcon}
+                  />
+                </button>
+
+                {isTemplateMenuOpen && (
+                  <div className={vizStyles.templateDropdownMenu} role="listbox" aria-label="Report templates">
+                    {templates.length > 0 ? (
+                      templates.map((template) => {
+                        const isSelected = template._id === selectedTemplateId;
+
+                        return (
+                          <button
+                            key={template._id}
+                            type="button"
+                            role="option"
+                            aria-selected={isSelected}
+                            className={`${vizStyles.templateDropdownOption} ${isSelected ? vizStyles.templateDropdownOptionSelected : ''}`}
+                            onClick={() => handleTemplateChange(template._id)}
+                          >
+                            {getTemplateLabel(template)}
+                          </button>
+                        );
+                      })
+                    ) : (
+                      <div className={vizStyles.templateDropdownEmpty}>No templates available yet.</div>
+                    )}
+                  </div>
+                )}
+              </div>
               
               <button
                 onClick={(e) => {
