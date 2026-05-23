@@ -8,22 +8,26 @@
   box-shadow: var(--mm-modal-shadow);
   display: flex;
   flex-direction: column;
-  max-height: min(var(--mm-modal-max-height), calc(100vh - (var(--mm-modal-padding) * 2)));
+  max-height: min(var(--mm-modal-max-height), calc(100dvh - (var(--mm-modal-padding) * 2)));
   overflow: hidden;
   position: relative;
 }
 
+.shell {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  min-height: 0;
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
 .closeButton {
-  color: var(--mm-gray-500);
   position: absolute;
   top: 1rem;
   right: 1rem;
   z-index: var(--mm-z-modal-close);
-}
-
-.closeButton:hover {
-  color: var(--mm-gray-700);
-  background-color: var(--mm-gray-100);
 }
 
 .closeButton:focus {
@@ -31,17 +35,11 @@
   outline-offset: 2px;
 }
 
-.header {
-  background: transparent;
-  min-height: 0;
-  padding: 0;
-  margin: 0;
-}
-
 .body {
   padding: 0;
   display: flex;
   flex: 1 1 auto;
+  height: 100%;
   min-height: 0;
   overflow: hidden;
 }
@@ -70,7 +68,7 @@
 
 @media (max-width: 640px) {
   .content {
-    max-height: min(var(--mm-modal-max-height-mobile), calc(100vh - (var(--mm-modal-padding-mobile) * 2)));
+    max-height: min(var(--mm-modal-max-height-mobile), calc(100dvh - (var(--mm-modal-padding-mobile) * 2)));
   }
 
   .closeButton {

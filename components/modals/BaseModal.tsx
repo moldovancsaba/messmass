@@ -1,7 +1,8 @@
 'use client';
 
 import React from 'react';
-import { Modal } from '@mantine/core';
+import { ActionIcon, Modal } from '@mantine/core';
+import { IconX } from '@tabler/icons-react';
 import styles from './BaseModal.module.css';
 
 /**
@@ -79,15 +80,14 @@ export default function BaseModal({
       onClose={onClose}
       size={resolvedSize}
       fullScreen={isFullScreen}
-      withCloseButton={showCloseButton}
+      withCloseButton={false}
       closeOnClickOutside={closeOnClickOutside}
       closeOnEscape={closeOnEscape}
       centered={!isFullScreen}
+      padding={0}
       classNames={{
         content: `${styles.content}${className ? ` ${className}` : ''}`,
-        header: styles.header,
         body: styles.body,
-        close: styles.closeButton,
       }}
       overlayProps={{
         backgroundOpacity: 0.55,
@@ -97,7 +97,22 @@ export default function BaseModal({
       aria-label={ariaLabel}
       aria-describedby={ariaDescribedBy}
     >
-      {children}
+      <div className={styles.shell}>
+        {showCloseButton && (
+          <ActionIcon
+            aria-label="Close modal"
+            className={styles.closeButton}
+            color="gray"
+            onClick={onClose}
+            radius="xl"
+            size="lg"
+            variant="subtle"
+          >
+            <IconX size={18} />
+          </ActionIcon>
+        )}
+        {children}
+      </div>
     </Modal>
   );
 }
