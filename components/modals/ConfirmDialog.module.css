@@ -52,61 +52,23 @@
 .cancelButton,
 .confirmButton,
 .confirmButtonDanger {
-  padding: 0.625rem 1.5rem;
-  border-radius: var(--mm-radius-lg);
-  font-size: var(--mm-font-size-sm);
-  font-weight: var(--mm-font-weight-medium);
-  cursor: pointer;
-  transition: all var(--transition-fast);
-  border: none;
+  min-width: 120px;
 }
 
 /* Cancel button */
 .cancelButton {
-  background-color: white;
   color: var(--mm-gray-700);
-  border: 1px solid var(--mm-gray-300);
-}
-
-.cancelButton:hover {
-  background-color: var(--mm-gray-50);
-  border-color: var(--mm-gray-400);
-}
-
-.cancelButton:active {
-  background-color: var(--mm-gray-100);
 }
 
 /* Confirm button (info variant) */
 .confirmButton {
-  background-color: var(--mm-color-primary-500);
   color: white;
-}
-
-.confirmButton:hover {
-  background-color: var(--mm-color-primary-600);
-  box-shadow: var(--mm-shadow-sm);
-}
-
-.confirmButton:active {
-  background-color: var(--mm-color-primary-700);
-  transform: translateY(1px);
 }
 
 /* Confirm button (danger variant) */
 .confirmButtonDanger {
-  background-color: var(--mm-error);
+  background-color: var(--mm-color-error-600, var(--mm-error));
   color: white;
-}
-
-.confirmButtonDanger:hover {
-  background-color: var(--mm-error);
-  box-shadow: var(--mm-shadow-sm);
-}
-
-.confirmButtonDanger:active {
-  background-color: var(--mm-color-error-700);
-  transform: translateY(1px);
 }
 
 /* Mobile responsiveness */

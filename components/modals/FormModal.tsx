@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+import { Button, Group, Stack, Text, Title } from '@mantine/core';
 import BaseModal from './BaseModal';
 import SaveStatusIndicator, { SaveStatus } from '../SaveStatusIndicator';
 import styles from './FormModal.module.css';
@@ -126,8 +127,14 @@ export default function FormModal({
       <form onSubmit={handleSubmit} className={styles.form}>
         {/* Header */}
         <div className={styles.header}>
-          <h2 className={styles.title}>{title}</h2>
-          {subtitle && <p className={styles.subtitle}>{subtitle}</p>}
+          <Title order={2} className={styles.title}>
+            {title}
+          </Title>
+          {subtitle && (
+            <Text className={styles.subtitle}>
+              {subtitle}
+            </Text>
+          )}
         </div>
         
         {/* Body (scrollable) */}
@@ -149,20 +156,22 @@ export default function FormModal({
               )}
               
               {/* Right: Action Buttons */}
-              <div className={styles.buttonGroup}>
-                <button
+              <Group className={styles.buttonGroup} gap="sm">
+                <Button
                   type="button"
+                  variant="default"
                   onClick={onClose}
                   disabled={isSubmitting || saveStatus === 'saving'}
                   className={styles.cancelButton}
                 >
                   {cancelText}
-                </button>
+                </Button>
                 
                 {/* Update button (save without closing) */}
                 {onUpdate && (
-                  <button
+                  <Button
                     type="button"
+                    variant="filled"
                     onClick={handleUpdate}
                     disabled={isSubmitting || saveStatus === 'saving'}
                     className={styles.updateButton}
@@ -175,11 +184,12 @@ export default function FormModal({
                     ) : (
                       updateText
                     )}
-                  </button>
+                  </Button>
                 )}
                 
-                <button
+                <Button
                   type="submit"
+                  variant="filled"
                   disabled={submitDisabled || saveStatus === 'saving'}
                   className={styles.submitButton}
                 >
@@ -188,11 +198,11 @@ export default function FormModal({
                       <span className={styles.spinner}></span>
                       Saving...
                     </>
-                  ) : (
-                    submitText
-                  )}
-                </button>
-              </div>
+                    ) : (
+                      submitText
+                    )}
+                </Button>
+              </Group>
             </>
           )}
         </div>

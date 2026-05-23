@@ -178,6 +178,15 @@ You MUST completely read and obey `docs/coding-standards.md` and `docs/component
 - Mobile drawer behavior, role-based filtering, focus trapping, route activation logic, and nested analytics/reporting group structure were preserved.
 - This is still not a full AppShell conversion. The sidebar shell itself remains custom, but the interaction layer is now materially closer to the GDS Mantine-only target.
 
+## 2026-05-23 — Mantine dialog wrapper tranche (`#859`, `#862`)
+
+- `FormModal` now uses Mantine `Button`, `Group`, `Text`, and `Title` primitives while preserving the existing wrapper API and submit/update/cancel flow.
+- `ConfirmDialog` now uses Mantine `Button`, `Group`, `Text`, and `Title` primitives while preserving variant-driven semantics and the current confirm-close behavior.
+- This continues the compatibility-first wrapper transition:
+  - shared modal foundation already migrated via `BaseModal`
+  - dialog wrappers now sit on Mantine controls too
+  - page-level admin flows do not need to change their modal call sites yet
+
 ## 2026-05-23 — Analytics chart UX benchmark planning
 
 - Benchmarked `design-sparx/mantine-analytics-dashboard` as an ideabank only.

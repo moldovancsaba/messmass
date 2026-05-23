@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+import { Button, Group, Stack, Text, Title } from '@mantine/core';
 import BaseModal from './BaseModal';
 import styles from './ConfirmDialog.module.css';
 
@@ -103,29 +104,31 @@ export default function ConfirmDialog({
         )}
         
         {/* Content */}
-        <div className={styles.content}>
-          <h2 className={styles.title}>{title}</h2>
-          <p className={styles.message}>{message}</p>
-        </div>
+        <Stack className={styles.content} gap="sm">
+          <Title order={2} className={styles.title}>{title}</Title>
+          <Text className={styles.message}>{message}</Text>
+        </Stack>
         
         {/* Actions */}
-        <div className={styles.actions}>
-          <button
+        <Group className={styles.actions} gap="md" justify="center">
+          <Button
             type="button"
             onClick={onClose}
+            variant="default"
             className={styles.cancelButton}
           >
             {cancelText}
-          </button>
+          </Button>
           
-          <button
+          <Button
             type="button"
             onClick={handleConfirm}
+            variant="filled"
             className={confirmButtonClass}
           >
             {confirmText}
-          </button>
-        </div>
+          </Button>
+        </Group>
       </div>
     </BaseModal>
   );
