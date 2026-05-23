@@ -1,24 +1,30 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# Fail if dynamic-eval patterns are present in source (excluding node_modules, .next, dist, scripts, and comments)
+# Fail if dynamic-eval patterns are present in application source only.
 ROOT_DIR=$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)
 echo "Running eval-guard in $ROOT_DIR"
 
-# WHAT: Check for dynamic-eval patterns in production code only
-# WHY: Exclude test scripts (scripts/ directory) and comments
-# HOW: Use grep with exclusions, then filter out comment-only lines
+# WHAT: Check only tracked application source directories.
+# WHY: Generated output (.vercel/.next), tests, and maintenance scripts contain
+# non-production patterns and should not trip the production guardrail.
+SOURCE_DIRS=(
+  "$ROOT_DIR/app"
+  "$ROOT_DIR/components"
+  "$ROOT_DIR/lib"
+  "$ROOT_DIR/server"
+)
+
 MATCHES=$(grep -RIn \
-  --exclude-dir={node_modules,.next,dist,build,scripts} \
   --include='*.ts' \
   --include='*.tsx' \
   --include='*.js' \
   --include='*.jsx' \
   -E "new Function|\beval\s*\(|\bFunction\s*\(" \
-  "$ROOT_DIR" || true)
+  "${SOURCE_DIRS[@]}" 2>/dev/null || true)
 
 if [ -z "$MATCHES" ]; then
-  echo "No dynamic-eval patterns detected in production code."
+  echo "No dynamic-eval patterns detected in application source."
   exit 0
 fi
 
@@ -86,9 +92,9 @@ done <<< "$MATCHES"
 if [ -n "$CODE_MATCHES" ]; then
   echo -e "ERROR: dynamic-eval patterns found in production code:" >&2
   echo -e "$CODE_MATCHES" >&2
-  echo "NOTE: Test scripts in scripts/ directory are excluded from this check." >&2
+  echo "NOTE: The guardrail only scans application source directories." >&2
   echo "NOTE: Comments mentioning Function() or eval() are excluded from this check." >&2
   exit 2
 fi
 
-echo "No dynamic-eval patterns detected in production code (comments excluded)."
+echo "No dynamic-eval patterns detected in application source (comments excluded)."

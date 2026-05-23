@@ -6,6 +6,8 @@
 'use client';
 
 import React from 'react';
+import { Button, Group } from '@mantine/core';
+import { IconLayoutGrid, IconList } from '@tabler/icons-react';
 import styles from './UnifiedAdminViewToggle.module.css';
 
 export type ViewMode = 'list' | 'card';
@@ -34,39 +36,42 @@ export default function UnifiedAdminViewToggle({
   onViewChange,
   className = '',
 }: UnifiedAdminViewToggleProps) {
+  const buttonClass = (view: ViewMode) =>
+    `btn btn-small ${currentView === view ? 'btn-secondary' : styles.inactive}`;
+
   return (
-    <div 
+    <Group
       className={`${styles.toggleContainer} ${className}`}
       role="group"
       aria-label="View mode selector"
+      gap="xs"
+      wrap="nowrap"
     >
-      {/* WHAT: List view button with unified hero button style
-           WHY: Consistency with other action buttons using btn btn-small classes */}
-      <button
-        type="button"
+      <Button
         onClick={() => onViewChange('list')}
-        className={`btn btn-small ${currentView === 'list' ? 'btn-secondary' : styles.inactive}`}
+        className={buttonClass('list')}
         aria-label="List view"
         aria-pressed={currentView === 'list'}
         title="Switch to list view"
+        variant="filled"
+        size="sm"
+        leftSection={<IconList size={16} stroke={1.8} />}
       >
-        <span aria-hidden="true">☰</span>
         <span>List</span>
-      </button>
+      </Button>
 
-      {/* WHAT: Card view button with unified hero button style
-           WHY: Consistency with other action buttons using btn btn-small classes */}
-      <button
-        type="button"
+      <Button
         onClick={() => onViewChange('card')}
-        className={`btn btn-small ${currentView === 'card' ? 'btn-secondary' : styles.inactive}`}
+        className={buttonClass('card')}
         aria-label="Card view"
         aria-pressed={currentView === 'card'}
         title="Switch to card view"
+        variant="filled"
+        size="sm"
+        leftSection={<IconLayoutGrid size={16} stroke={1.8} />}
       >
-        <span aria-hidden="true">▦</span>
         <span>Cards</span>
-      </button>
-    </div>
+      </Button>
+    </Group>
   );
 }

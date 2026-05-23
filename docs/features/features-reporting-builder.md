@@ -9,7 +9,7 @@ Document how report templates are edited and how Builder mode on the event edit 
 
 ## Builder mode (event edit page)
 - **Path:** `/edit/[slug]` — Event edit page with a **Builder** view that renders the report template layout and, for each chart block, a **builder card** with inputs for the variables that feed that chart.
-- **Source of truth:** [MVP Factory Board](https://github.com/users/moldovancsaba/projects/1) (Product = messmass). Builder/clicker work may be tracked there; when delivered, move the relevant issue to **Done** and post evidence.
+- **Source of truth:** [{messmass} - From IDEA to LIVE](https://github.com/users/moldovancsaba/projects/8). Builder/clicker work may be tracked there; when delivered, move the relevant issue to **Done** and post evidence.
 
 ## Variable inputs per chart type
 All chart builders now:

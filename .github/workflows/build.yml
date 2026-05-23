@@ -5,11 +5,9 @@ on:
     branches:
       - main
       - preview
-      - preview
   push:
     branches:
       - main
-      - preview
       - preview
 
 jobs:
@@ -24,7 +22,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: '24'
           cache: 'npm'
 
       - name: Install dependencies
@@ -35,4 +33,3 @@ jobs:
         env:
           MONGODB_URI: ${{ secrets.MONGODB_URI || 'mongodb://localhost:27017/test' }}
           DB_NAME: ${{ secrets.DB_NAME || 'messmass_test' }}
-

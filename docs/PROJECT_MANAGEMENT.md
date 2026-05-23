@@ -10,7 +10,7 @@
 - Do not treat local notes as task truth. The board is the SSOT.
 
 ## 2. Single Source of Truth (SSOT)
-- Board: <https://github.com/users/moldovancsaba/projects/1>
+- Board: <https://github.com/users/moldovancsaba/projects/8>
 - SSOT issues repo: `moldovancsaba/mvp-factory-control`
 - Product field for this repo: `messmass`
 
@@ -25,7 +25,7 @@ Rules:
 Use this process for every {messmass} delivery:
 
 1. Confirm the active issue exists in `mvp-factory-control`.
-2. Ensure it is attached to Project 1.
+2. Ensure it is attached to Project 8.
 3. Ensure board fields are correct at minimum: `Product=messmass`, `Type`, `Priority`, `Status`.
 4. Before implementation, move it to `In Progress` and post a short start note with objective and approach.
 5. After each meaningful milestone, post a progress note with evidence.
@@ -65,7 +65,7 @@ Use the board UI first if CLI behavior is unreliable. If CLI is available, these
 
 ```bash
 gh issue view <ISSUE_NUMBER> --repo moldovancsaba/mvp-factory-control
-gh project item-add 1 --owner moldovancsaba --url "https://github.com/moldovancsaba/mvp-factory-control/issues/<ISSUE_NUMBER>"
+gh project item-add 8 --owner moldovancsaba --url "https://github.com/moldovancsaba/mvp-factory-control/issues/<ISSUE_NUMBER>"
 gh project item-list 1 --owner moldovancsaba --limit 500 --format json
 gh issue comment <ISSUE_NUMBER> --repo moldovancsaba/mvp-factory-control --body-file /tmp/ssot-note.md
 ```

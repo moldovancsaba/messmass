@@ -15,6 +15,12 @@ interface PackageJson {
 
 // Approved runtime dependencies (add as needed)
 const APPROVED_RUNTIME_DEPS = new Set([
+  '@mantine/core',
+  '@mantine/form',
+  '@mantine/hooks',
+  '@mantine/modals',
+  '@mantine/notifications',
+  '@tabler/icons-react',
   'next',
   'react',
   'react-dom',

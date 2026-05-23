@@ -19,10 +19,10 @@ You MUST completely read and obey `docs/coding-standards.md` and `docs/component
 **Bypassing the centralized component and design token system is a severe structural violation and will result in immediate rejection by the product owner.**
 
 ## SSOT (Work Tracking)
-- Board: <https://github.com/users/moldovancsaba/projects/1>
+- Board: <https://github.com/users/moldovancsaba/projects/8>
 - Issues repo: `moldovancsaba/mvp-factory-control`
 - Rules:
-  - Track {messmass} delivery work only in `mvp-factory-control` and on Project 1.
+  - Track {messmass} delivery work only in `mvp-factory-control` and on Project 8.
   - Do not create or manage product work as local task files.
   - Use [PROJECT_MANAGEMENT.md](PROJECT_MANAGEMENT.md) for the required SSOT cadence.
   - Update this handover doc whenever current truth changes materially.
@@ -44,49 +44,17 @@ You MUST completely read and obey `docs/coding-standards.md` and `docs/component
 - Use the GitHub board as final authority when any local doc disagrees.
 - `operations-action-plan.md` is now explicitly reference-only memory, not active execution authority.
 - Last verified board alignment:
-  - `#784` = `Review (ALMOST)`
-  - `#788` = `In Progress (NOW)`
-  - `#815` through `#821` = `Review (ALMOST)` with `dod:ready-for-review`
-  - `#72` remains open and needs a real product decision rather than silent auto-closure
-  - New report variants program created:
-    - `#830` umbrella
-    - `#831` compatibility foundation and virtual default resolver
-    - `#832` shared time-period engine
-    - `#833` organization reports workspace
-    - `#834` organization variant editor
-    - `#835` organization runtime variant resolution
-    - `#836` partner rollout
-    - `#837` hashtag/filter rollout
-    - `#838` list-view `Reports` workflow cleanup
-  - New design-system remediation program created:
-    - `#839` umbrella
-    - `#840` authority model and repo contract alignment
-    - `#841` drift freeze and enforcement guardrails
-    - `#842` shared admin/navigation normalization
-    - `#843` reporting/admin workflow primitive normalization
-    - `#844` semantic status badge consolidation
-    - `#845` chart/analytics presentation normalization
-    - `#846` global CSS and legacy cleanup
-  - New analytics chart UX benchmark program created:
-    - `#847` umbrella
-    - `#848` shared KPI card system
-    - `#849` shared chart card wrapper and section shell
-    - `#850` shared period and filter toolbar
-    - `#851` legend, tooltip, and chart summary grammar normalization
-    - `#852` loading, empty, and error state system
-    - `#853` responsive dashboard grid and section layout normalization
-    - `#854` chart and table composite evidence panels
-    - `#855` rollout across live analytics surfaces
-  - New Messmass Mantine migration program created:
-    - `#856` umbrella
-    - `#857` governance reset and authority alignment
-    - `#858` root runtime, theme, and overlay platform
-    - `#859` shared primitive parity and wrapper transition
-    - `#860` shared shell, navigation, and page-header migration
-    - `#861` reporting and analytics workspace migration
-    - `#862` report-variant and editor workflow migration
-    - `#863` public report shell migration with runtime compatibility
-    - `#864` legacy deletion and enforcement hardening
+  - Canonical board: Project 8 — <https://github.com/users/moldovancsaba/projects/8>
+  - `#859` = `In Progress (NOW)`
+  - `#857` = `Review (ALMOST)`
+  - `#858` = `Review (ALMOST)`
+  - `#860` = `Todo (NEXT)`
+  - `#861` = `Backlog (SOONER)`
+  - `#862` = `Backlog (SOONER)`
+  - `#863` = `Roadmap (LATER)`
+  - `#864` = `Roadmap (LATER)`
+  - `#739` through `#746` = `Roadmap (LATER)` until the Mantine stream is materially further along
+  - Closed duplicate tickets `#865`, `#866`, and `#867` were removed from the board during queue cleanup
 
 ## 2026-05-23 — Messmass Mantine implementation planning
 
@@ -378,14 +346,14 @@ Use this checklist for the next SSOT/board pass so the next agent does not have 
 - **Sharing compatibility:** Updated `/lib/pagePassword.ts` so hashed sharing links can encode owner variants with composite ids like `base::variant=slug` and generate correct public URLs for organization reports, organization editors, filters, and hashtags.
 - **Current product rule preserved:** `/organization-report/[id]` remains the canonical `DEFAULT` report URL. Custom variants are additive and can be opened/shared explicitly without changing the existing all-time default report unless the operator intentionally sets a different stored variant as default in the new reports workspace.
 - **Validation:** `npm run lint`, `npm run build`, and `npm run type-check` all passed. As usual in this repo, `type-check` was rerun after the successful build because `tsconfig.json` includes `.next/types/**/*.ts`.
-- **Outstanding follow-up:** Commit/push this rollout, then update the GitHub issue chain `#831` through `#837` and Project 1 to reflect the shipped foundation status and the remaining `#838` list-view cleanup / broader rollout decisions.
+- **Outstanding follow-up:** Commit/push this rollout, then update the GitHub issue chain `#831` through `#837` and the canonical {messmass} board to reflect the shipped foundation status and the remaining `#838` list-view cleanup / broader rollout decisions.
 
 ## 2026-05-22 — Report variants compatibility-first planning
 - **Objective:** Translate the PO request for time-period-based report variants into a compatibility-safe delivery program that does not harm existing reports.
 - **Spec added:** `/docs/operations/report-variants-time-period-spec-2026-05-22.md`
 - **Core product decision:** Time period should not be modeled as a property of reusable templates. Introduce owner-scoped `report_variants` instead, with `DEFAULT` as the canonical all-time fallback and custom variants always duplicated from `DEFAULT`.
 - **Compatibility rule:** Existing report URLs and current entity-level `reportTemplateId` / legacy `reportId` resolution must remain valid during rollout. Variant resolver must be additive first, with virtual default fallback when no explicit variants exist yet.
-- **SSOT issues created:** `#830` through `#838` in `moldovancsaba/mvp-factory-control`, attached to Project 1. Umbrella dependency comment posted on `#830`: <https://github.com/moldovancsaba/mvp-factory-control/issues/830#issuecomment-4517523394>
+- **SSOT issues created:** `#830` through `#838` in `moldovancsaba/mvp-factory-control`, now tracked on the canonical {messmass} board. Umbrella dependency comment posted on `#830`: <https://github.com/moldovancsaba/mvp-factory-control/issues/830#issuecomment-4517523394>
 - **Execution order:** `#831` → `#832` → `#833` → `#834` → `#835` → `#836` → `#837` → `#838`
 - **First live scope:** organizations, specifically to support report variants like CHL default/all-time plus named time-scoped custom reports without touching the live default report.
 
@@ -894,7 +862,7 @@ Use this checklist for the next SSOT/board pass so the next agent does not have 
 - Objective: Execute style hardening Phase 5 by consolidating duplicated CSS in equivalent editor state shells.
 
 ### What changed
-- Activated SSOT card `#72` on Project 1.
+- Activated SSOT card `#72` on the canonical {messmass} board.
 - Added shared stylesheet `app/styles/editor-states.module.css` for loading/error states used by both event and partner editors.
 - Updated:
   - `app/edit/[slug]/page.tsx`
@@ -1229,7 +1197,7 @@ Use this checklist for the next SSOT/board pass so the next agent does not have 
 - Objective: Fix admin `totalFans` drift across event surfaces and align partner admin card-view report-edit behavior with the working list-view path.
 
 ### What changed
-- Created SSOT bug cards `#348` and `#349` in `moldovancsaba/mvp-factory-control`, attached them to Project 1, and moved both into active tracked delivery.
+- Created SSOT bug cards `#348` and `#349` in `moldovancsaba/mvp-factory-control`, attached them to the canonical {messmass} board, and moved both into active tracked delivery.
 - Added `getStoredOrDerivedTotalFans(...)` in `lib/projectStatsUtils.ts` so admin surfaces prefer stored `stats.totalFans` and only derive from legacy fields when that value is absent.
 - Updated admin Total Fans surfaces:
   - `lib/adapters/projectsAdapter.tsx`
@@ -1266,7 +1234,7 @@ Use this checklist for the next SSOT/board pass so the next agent does not have 
 - Objective: Track and document two production hotfixes separately: partner report related-event cards showing Total Fans Engaged and the admin delete-project failure path.
 
 ### What changed
-- Created SSOT bug cards `#345` and `#346` in `moldovancsaba/mvp-factory-control` and attached them to Project 1.
+- Created SSOT bug cards `#345` and `#346` in `moldovancsaba/mvp-factory-control` and attached them to the canonical {messmass} board.
 - Set `#345` to `In Progress (NOW)` with a start note; set `#346` to `Ready (NEXT)` with a planning note.
 - Documented the hotfix scope and implementation in `docs/2026-03-06_PARTNER_REPORT_DELETE_HOTFIX.md`.
 - Prepared the repo for a patch version update from `11.60.0` to `11.60.1` tied to these production fixes.

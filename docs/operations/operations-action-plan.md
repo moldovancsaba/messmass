@@ -9,7 +9,7 @@ Owner: Operations
 **Last Updated (UTC):** 2026-05-20T16:15:00.000Z  
 **Audience:** Product + Engineering
 
-**Source of truth:** Project planning and execution live on the [MVP Factory Board](https://github.com/users/moldovancsaba/projects/1). This file is reference-only supporting context, not the active task authority. Roadmap = Status **Roadmap**; Backlog = not yet broken down; Ready = actionable. Product = **messmass**. Top 5 value/priority items and next step: [operations-delivery-focus.md](operations-delivery-focus.md).
+**Source of truth:** Project planning and execution live on the [{messmass} - From IDEA to LIVE](https://github.com/users/moldovancsaba/projects/8). This file is reference-only supporting context, not the active task authority. Roadmap = Status **Roadmap**; Backlog = not yet broken down; Ready = actionable. Product = **messmass**. Top 5 value/priority items and next step: [operations-delivery-focus.md](operations-delivery-focus.md).
 
 ---
 
@@ -264,7 +264,7 @@ Historical entries follow below.
 - CONTEXT: New production bugs now tracked under:
   - `mvp-factory-control#349` admin event surfaces must use stored `[totalFans]` consistently
   - `mvp-factory-control#348` partner admin card-view report-edit action must match list view
-- BOARD: `#348` and `#349` are active on Project 1 and carry the current hotfix work.
+- BOARD: `#348` and `#349` are active on the canonical {messmass} board and carry the current hotfix work.
 - CODE: `getStoredOrDerivedTotalFans(...)` was introduced for admin fan displays and `/api/projects` fan sorting; partner card-view report-edit action is being aligned to `_id || viewSlug`.
 - NEXT: finish validation, bump to `11.60.2`, sync release docs, post SSOT evidence, push, then continue with the next tracked delivery item.
 

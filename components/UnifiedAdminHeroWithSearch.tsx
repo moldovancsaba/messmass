@@ -7,6 +7,8 @@
 
 import React from 'react';
 import Link from 'next/link';
+import { Badge as MantineBadge, Button, Group, Stack, Text, TextInput, Title } from '@mantine/core';
+import { IconArrowLeft, IconSearch } from '@tabler/icons-react';
 import UnifiedAdminViewToggle, { ViewMode } from './UnifiedAdminViewToggle';
 import styles from './UnifiedAdminHeroWithSearch.module.css';
 
@@ -84,44 +86,58 @@ export default function UnifiedAdminHeroWithSearch({
   onViewChange,
   className = '',
 }: UnifiedAdminHeroWithSearchProps) {
+  const badgeVariantClass = (variant: Badge['variant']) =>
+    styles[`badge${variant.charAt(0).toUpperCase() + variant.slice(1)}`];
+
+  const actionButtonClass = (variant?: ActionButton['variant']) => `btn btn-small btn-${variant || 'primary'}`;
+
   return (
     <div className={`${styles.heroContainer} ${className}`}>
       <div className={styles.heroContent}>
         {/* WHAT: Left section - Title, subtitle, and search */}
-        <div className={styles.heroLeft}>
-          <div className={styles.heroTitleGroup}>
-            <h1 className={styles.heroTitle}>{title}</h1>
+        <Stack gap="md" className={styles.heroLeft}>
+          <Stack gap="xs" className={styles.heroTitleGroup}>
+            <Title order={1} className={styles.heroTitle}>
+              {title}
+            </Title>
             {subtitle && (
-              <p className={styles.heroSubtitle}>{subtitle}</p>
+              <Text className={styles.heroSubtitle}>{subtitle}</Text>
             )}
-          </div>
+          </Stack>
 
           {/* WHAT: Search input with debouncing handled by parent */}
           {showSearch && onSearchChange && (
             <div className={styles.searchContainer}>
-              <input
-                type="text"
+              <TextInput
                 value={searchValue}
-                onChange={(e) => onSearchChange(e.target.value)}
+                onChange={(event) => onSearchChange(event.currentTarget.value)}
                 placeholder={searchPlaceholder}
-                className={styles.searchInput}
                 aria-label="Search"
+                leftSection={<IconSearch size={16} stroke={1.8} />}
+                classNames={{
+                  input: styles.searchInput,
+                  section: styles.searchIcon,
+                }}
               />
-              <span className={styles.searchIcon} aria-hidden="true">🔍</span>
             </div>
           )}
-        </div>
+        </Stack>
 
         {/* WHAT: Right section - View toggle, actions, back link */}
-        <div className={styles.heroRight}>
+        <Group gap="md" className={styles.heroRight}>
           {badges.length > 0 && (
-            <div className={styles.badgeContainer}>
+            <Group gap="xs" className={styles.badgeContainer}>
               {badges.map((badge, idx) => (
-                <span key={idx} className={`${styles.badge} ${styles[`badge${badge.variant.charAt(0).toUpperCase() + badge.variant.slice(1)}`]}`}>
+                <MantineBadge
+                  key={idx}
+                  className={`${styles.badge} ${badgeVariantClass(badge.variant)}`}
+                  radius="xl"
+                  variant="filled"
+                >
                   {badge.text}
-                </span>
+                </MantineBadge>
               ))}
-            </div>
+            </Group>
           )}
 
           {/* WHAT: View toggle for list/card switching */}
@@ -136,31 +152,39 @@ export default function UnifiedAdminHeroWithSearch({
 
           {/* WHAT: Action buttons (e.g., "Add New") */}
           {actionButtons.length > 0 && (
-            <div className={styles.actionButtons}>
+            <Group gap="sm" className={styles.actionButtons}>
               {actionButtons.map((btn, idx) => {
-                const variantClass = `btn-${btn.variant || 'primary'}`;
                 return (
-                  <button
+                  <Button
                     key={idx}
                     onClick={btn.onClick}
                     disabled={!!btn.disabled}
                     title={btn.title}
-                    className={`btn btn-small ${variantClass}`}
+                    className={actionButtonClass(btn.variant)}
+                    variant="filled"
+                    size="sm"
                   >
                     {btn.icon ? `${btn.icon} ${btn.label}` : btn.label}
-                  </button>
+                  </Button>
                 );
               })}
-            </div>
+            </Group>
           )}
 
           {/* WHAT: Back link to parent page */}
           {backLink && (
-            <Link href={backLink} className="btn btn-small btn-secondary">
-              ← Back
-            </Link>
+            <Button
+              component={Link}
+              href={backLink}
+              className="btn btn-small btn-secondary"
+              variant="filled"
+              size="sm"
+              leftSection={<IconArrowLeft size={16} stroke={1.8} />}
+            >
+              Back
+            </Button>
           )}
-        </div>
+        </Group>
       </div>
     </div>
   );

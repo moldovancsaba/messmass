@@ -1,10 +1,10 @@
 # Delivery Focus ({messmass})
 Status: Active
-Last Updated: 2026-05-20
+Last Updated: 2026-05-23
 Canonical: No
 Owner: Product
 
-**Source of truth:** [MVP Factory Board](https://github.com/users/moldovancsaba/projects/1) (Product = `messmass`). Issues live in [mvp-factory-control](https://github.com/moldovancsaba/mvp-factory-control). This local file is a reminder of how to choose work, not a substitute for the live board.
+**Source of truth:** [{messmass} - From IDEA to LIVE](https://github.com/users/moldovancsaba/projects/8). Issues live in [mvp-factory-control](https://github.com/moldovancsaba/mvp-factory-control). This local file is a reminder of how to choose work, not a substitute for the live board.
 
 ## Current Rule
 
@@ -15,6 +15,22 @@ Before starting work:
 2. Filter for `Product = messmass`.
 3. Identify the highest-priority item that is either `In Progress`, `Ready`, or the board’s current equivalent.
 4. Use the board state, not this repo, as the deciding authority.
+
+## Current Queue
+
+Last verified against Project 8 on `2026-05-23`.
+
+1. `#859` — `In Progress (NOW)` — shared primitive parity and wrapper transition
+2. `#857` — `Review (ALMOST)` — governance reset and authority alignment
+3. `#858` — `Review (ALMOST)` — root runtime, theme, and overlay platform
+4. `#860` — `Todo (NEXT)` — shared shell, navigation, and page-header migration
+5. `#861` — `Backlog (SOONER)` — reporting and analytics workspace migration
+
+Queue notes:
+- `#862` remains `Backlog (SOONER)` behind `#861`.
+- `#863` and `#864` are intentionally deferred to `Roadmap (LATER)`.
+- `#739` through `#746` are open but currently deferred to `Roadmap (LATER)` until the Mantine chain is materially further along.
+- Closed duplicate issues `#865`, `#866`, and `#867` were removed from the board.
 
 ## Local Repo Context
 

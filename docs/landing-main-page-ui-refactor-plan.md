@@ -2,7 +2,7 @@
 
 **Goal:** Unify the main page (messmass.com) with web UI standards, consistent block widths and implementation, and the existing report design language (responsiveness/scale). Use the [report style system](https://www.messmass.com/admin/styles/6999bbd2680bbfd7dec08b1e) as the single source of visual language; extend the global UI library only where elements are missing so future landing variants stay consistent.
 
-**Implementation status:** Phases 1–5 delivered. Epic and phase issues tracked on [MVP Factory Board](https://github.com/users/moldovancsaba/projects/1) (mvp-factory-control #248, #249–#253).
+**Implementation status:** Phases 1–5 delivered. Epic and phase issues tracked on [{messmass} - From IDEA to LIVE](https://github.com/users/moldovancsaba/projects/8) (mvp-factory-control #248, #249–#253).
 
 ---
 
