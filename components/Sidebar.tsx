@@ -4,6 +4,7 @@ import React, { useEffect, useState, useRef } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { usePathname } from 'next/navigation';
+import { ActionIcon, NavLink as MantineNavLink, ScrollArea, Text } from '@mantine/core';
 import styles from './Sidebar.module.css';
 import packageJson from '../package.json';
 import { useSidebar } from '@/contexts/SidebarContext';
@@ -166,14 +167,20 @@ export default function Sidebar() {
       
       {/* WHAT: Desktop/tablet collapse toggle - positioned OUTSIDE sidebar
           WHY: Better UX - clearer affordance for sidebar control */}
-      <button
+      <div
         className={`${styles.collapseToggle} ${isCollapsed ? styles.collapseToggleCollapsed : ''}`}
-        onClick={() => setIsCollapsed(!isCollapsed)}
-        aria-label={isCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
-        title={isCollapsed ? 'Expand' : 'Collapse'}
       >
-        {isCollapsed ? '»' : '«'}
-      </button>
+        <ActionIcon
+          variant="default"
+          radius="md"
+          color="gray"
+          onClick={() => setIsCollapsed(!isCollapsed)}
+          aria-label={isCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
+          title={isCollapsed ? 'Expand' : 'Collapse'}
+        >
+          {isCollapsed ? '»' : '«'}
+        </ActionIcon>
+      </div>
       
       {/* What: Main sidebar navigation
          Why: Core navigation structure with responsive behavior */}
@@ -201,7 +208,8 @@ export default function Sidebar() {
         
         {/* What: Scrollable navigation sections with role-based filtering
            Why: Handle many nav items without overflow issues, show only authorized items */}
-        <nav className={styles.sidebarNav}>
+        <ScrollArea className={styles.sidebarNav}>
+        <nav>
           {adminNavSections.map((section) => {
             // WHAT: Filter section items based on user role permissions
             // WHY: Only show menu items user has access to
@@ -232,48 +240,50 @@ export default function Sidebar() {
                     const groupActive = isGroupActive(group.parent.path, group.children.map((child) => child.path));
                     return (
                     <li key={group.parent.path} className={styles.navItem}>
-                      <Link
+                      <MantineNavLink
+                        component={Link}
                         href={group.parent.path}
                         className={`${styles.navLink} ${groupActive ? styles.active : ''}`}
+                        label={!isCollapsed ? group.parent.label : undefined}
+                        leftSection={
+                          <span className={styles.navIcon}>
+                            <MaterialIcon
+                              name={group.parent.icon}
+                              variant={group.parent.iconVariant || 'outlined'}
+                              className={styles.materialIcon}
+                            />
+                          </span>
+                        }
+                        rightSection={groupActive && !isCollapsed ? <span className={styles.activeIndicator} aria-label="Current page" /> : undefined}
+                        active={groupActive}
                         title={isCollapsed ? group.parent.label : undefined}
                         aria-current={isActive(group.parent.path) ? 'page' : undefined}
-                      >
-                        <span className={styles.navIcon}>
-                          <MaterialIcon
-                            name={group.parent.icon}
-                            variant={group.parent.iconVariant || 'outlined'}
-                            className={styles.materialIcon}
-                          />
-                        </span>
-                        {!isCollapsed && (
-                          <span className={styles.navLabel}>{group.parent.label}</span>
-                        )}
-                        {groupActive && !isCollapsed && (
-                          <span className={styles.activeIndicator} aria-label="Current page" />
-                        )}
-                      </Link>
+                      />
                       {!isCollapsed && group.children.length > 0 && (
                         <ul className={styles.childList} aria-label={`${group.parent.label} submenu`}>
                           {group.children.map((child) => (
                             <li key={child.path}>
-                              <Link
+                              <MantineNavLink
+                                component={Link}
                                 href={child.path}
                                 className={`${styles.childLink} ${isActive(child.path) ? styles.childLinkActive : ''}`}
+                                label={child.label}
+                                leftSection={
+                                  <>
+                                    <span className={styles.childLinkLine} aria-hidden="true" />
+                                    <span className={styles.navIcon}>
+                                      <MaterialIcon
+                                        name={child.icon}
+                                        variant={child.iconVariant || 'outlined'}
+                                        className={styles.materialIcon}
+                                      />
+                                    </span>
+                                  </>
+                                }
+                                rightSection={isActive(child.path) ? <span className={styles.activeIndicator} aria-label="Current page" /> : undefined}
+                                active={isActive(child.path)}
                                 aria-current={isActive(child.path) ? 'page' : undefined}
-                              >
-                                <span className={styles.childLinkLine} aria-hidden="true" />
-                                <span className={styles.navIcon}>
-                                  <MaterialIcon
-                                    name={child.icon}
-                                    variant={child.iconVariant || 'outlined'}
-                                    className={styles.materialIcon}
-                                  />
-                                </span>
-                                <span className={styles.navLabel}>{child.label}</span>
-                                {isActive(child.path) && (
-                                  <span className={styles.activeIndicator} aria-label="Current page" />
-                                )}
-                              </Link>
+                              />
                             </li>
                           ))}
                         </ul>
@@ -285,6 +295,7 @@ export default function Sidebar() {
             );
           })}
         </nav>
+        </ScrollArea>
         
         {/* WHAT: Unified footer with copyright and auto-updated version from package.json
            WHY: Single source of truth - reads version dynamically, avoids hardcoded duplicates */}
@@ -295,8 +306,8 @@ export default function Sidebar() {
                 © {currentYear} {'{messmass}'}
               </div>
               <div className={styles.versionInfo}>
-                <span className={styles.versionLabel}>Version</span>
-                <span className={styles.versionNumber}>v{packageJson.version}</span>
+                <Text className={styles.versionLabel}>Version</Text>
+                <Text className={styles.versionNumber}>v{packageJson.version}</Text>
               </div>
             </>
           )}

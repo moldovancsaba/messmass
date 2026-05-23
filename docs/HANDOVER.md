@@ -168,6 +168,16 @@ You MUST completely read and obey `docs/coding-standards.md` and `docs/component
   - header is partially migrated
   - sidebar is still custom and remains the main follow-up for `#860`
 
+## 2026-05-23 — Mantine sidebar navigation tranche (`#860`)
+
+- `Sidebar` now uses Mantine primitives in the navigation layer while preserving the current information architecture and routing behavior:
+  - `ActionIcon` for the collapse affordance
+  - `ScrollArea` for the main nav scroll container
+  - `NavLink` for parent and child navigation rows
+  - `Text` for version metadata
+- Mobile drawer behavior, role-based filtering, focus trapping, route activation logic, and nested analytics/reporting group structure were preserved.
+- This is still not a full AppShell conversion. The sidebar shell itself remains custom, but the interaction layer is now materially closer to the GDS Mantine-only target.
+
 ## 2026-05-23 — Analytics chart UX benchmark planning
 
 - Benchmarked `design-sparx/mantine-analytics-dashboard` as an ideabank only.
