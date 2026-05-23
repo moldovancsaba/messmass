@@ -6,11 +6,19 @@
   background: var(--mm-modal-content-bg);
   border-radius: var(--mm-modal-border-radius);
   box-shadow: var(--mm-modal-shadow);
+  display: flex;
+  flex-direction: column;
+  max-height: min(var(--mm-modal-max-height), calc(100vh - (var(--mm-modal-padding) * 2)));
   overflow: hidden;
+  position: relative;
 }
 
 .closeButton {
   color: var(--mm-gray-500);
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  z-index: var(--mm-z-modal-close);
 }
 
 .closeButton:hover {
@@ -24,11 +32,18 @@
 }
 
 .header {
-  background: var(--mm-modal-content-bg);
+  background: transparent;
+  min-height: 0;
+  padding: 0;
+  margin: 0;
 }
 
 .body {
-  padding-top: 0;
+  padding: 0;
+  display: flex;
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow: hidden;
 }
 
 .body::-webkit-scrollbar,
@@ -55,6 +70,11 @@
 
 @media (max-width: 640px) {
   .content {
-    max-height: var(--mm-modal-max-height-mobile);
+    max-height: min(var(--mm-modal-max-height-mobile), calc(100vh - (var(--mm-modal-padding-mobile) * 2)));
+  }
+
+  .closeButton {
+    top: var(--mm-modal-padding-mobile);
+    right: var(--mm-modal-padding-mobile);
   }
 }
