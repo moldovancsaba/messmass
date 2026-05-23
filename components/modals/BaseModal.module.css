@@ -37,11 +37,13 @@
 
 .body {
   padding: 0;
-  display: flex;
+  display: block;
   flex: 1 1 auto;
-  height: 100%;
+  max-height: inherit;
   min-height: 0;
-  overflow: hidden;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
 }
 
 .body::-webkit-scrollbar,

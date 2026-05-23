@@ -9,10 +9,8 @@
 .form {
   display: grid;
   grid-template-rows: auto minmax(0, 1fr) auto;
-  height: 100%;
+  min-height: 100%;
   max-height: inherit;
-  min-height: 0;
-  overflow: hidden;
 }
 
 /* Header section */
@@ -41,10 +39,8 @@
 /* Body section (scrollable) */
 .body {
   padding: 2rem;
-  overflow-y: auto;
+  overflow: visible;
   min-height: 0;
-  overscroll-behavior: contain;
-  -webkit-overflow-scrolling: touch;
 }
 
 /* Footer section */
