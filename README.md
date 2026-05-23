@@ -14,7 +14,7 @@ Owner: Product
 <p align="center">
   <img src="https://img.shields.io/badge/version-v12.1.12-2563EB?style=for-the-badge" alt="Version">
   <img src="https://img.shields.io/badge/platform-Web%20App-0F172A?style=for-the-badge" alt="Platform">
-  <img src="https://img.shields.io/badge/stack-Next.js%20%7C%20MongoDB-0EA5E9?style=for-the-badge" alt="Stack">
+  <img src="https://img.shields.io/badge/stack-Next.js%20%7C%20MongoDB%20%7C%20Mantine-0EA5E9?style=for-the-badge" alt="Stack">
 </p>
 
 <p align="center">
@@ -147,6 +147,10 @@ Main system areas:
 - `app/api/*` for admin, public, analytics, Bitly, report, organization, partner, and project APIs
 - `lib/*` for adapters, analytics engines, reporting logic, integrations, CSRF-safe client utilities, and shared business logic
 - `docs/*` for canonical product, engineering, operations, and audit documentation
+
+Current UI foundation note:
+- Root Mantine runtime is now installed and active through `app/providers.tsx` and `lib/ui/mantineTheme.ts`
+- Legacy local wrappers and CSS systems still exist as compatibility layers until the board-tracked Mantine migration chain is completed
 
 ## Documentation Map
 

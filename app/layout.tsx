@@ -1,10 +1,13 @@
 import type { Metadata, Viewport } from 'next';
+import { ColorSchemeScript } from '@mantine/core';
 import { Inter, Roboto, Poppins, Montserrat, Pacifico } from 'next/font/google';
+import '@mantine/core/styles.css';
+import '@mantine/notifications/styles.css';
 import './globals.css';
 import GoogleAnalytics from '../components/GoogleAnalytics';
-import { HashtagDataProvider } from '../contexts/HashtagDataProvider';
 import { cookies } from 'next/headers';
 import clientPromise from '@/lib/mongodb';
+import AppProviders from './providers';
 
 /* What: Load multiple Google Fonts for admin selection
    Why: Allows runtime font switching without full reload via CSS variables */
@@ -157,12 +160,13 @@ export default async function RootLayout({
           href="https://fonts.googleapis.com/css2?family=Material+Icons+Round&display=swap" 
           rel="stylesheet"
         />
+        <ColorSchemeScript defaultColorScheme="light" />
         <GoogleAnalytics />
       </head>
       <body>
-        <HashtagDataProvider>
+        <AppProviders>
           {children}
-        </HashtagDataProvider>
+        </AppProviders>
       </body>
     </html>
   );

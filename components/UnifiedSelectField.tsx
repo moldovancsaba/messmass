@@ -1,5 +1,7 @@
 'use client';
 
+import { Select } from '@mantine/core';
+
 interface UnifiedSelectFieldOption {
   value: string;
   label: string;
@@ -21,20 +23,13 @@ export default function UnifiedSelectField({
   disabled = false,
 }: UnifiedSelectFieldProps) {
   return (
-    <div className="form-group">
-      <label className="form-label-block">{label}</label>
-      <select
-        className="form-input"
-        value={value}
-        onChange={(event) => onChange(event.target.value)}
-        disabled={disabled}
-      >
-        {options.map((option) => (
-          <option key={option.value} value={option.value}>
-            {option.label}
-          </option>
-        ))}
-      </select>
-    </div>
+    <Select
+      label={label}
+      value={value}
+      onChange={(nextValue) => onChange(nextValue ?? '')}
+      data={options}
+      disabled={disabled}
+      allowDeselect={false}
+    />
   );
 }

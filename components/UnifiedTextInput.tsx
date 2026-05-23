@@ -6,6 +6,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import { Text, TextInput } from '@mantine/core';
 
 interface UnifiedTextInputProps {
   label?: string;
@@ -78,35 +79,32 @@ export default function UnifiedTextInput({
     }
   };
 
+  const labelNode = label ? (
+    <>
+      {label} {required && <span className="text-danger">*</span>}
+      {isSaving && <span className="text-muted ml-2">💾 Saving...</span>}
+    </>
+  ) : undefined;
+
+  const description = showCharCount && tempValue.length > 0
+    ? `${tempValue.length} characters${maxLength ? ` / ${maxLength}` : ''}`
+    : undefined;
+
   return (
-    <div className="form-group">
-      {label && (
-        <label className="form-label-block">
-          {label} {required && <span className="text-danger">*</span>}
-          {isSaving && <span className="text-muted ml-2">💾 Saving...</span>}
-        </label>
-      )}
-      
-      <input
-        type={type}
-        value={tempValue}
-        onChange={(e) => setTempValue(e.target.value)}
-        onBlur={handleBlur}
-        onKeyDown={handleKeyDown}
-        placeholder={placeholder}
-        disabled={disabled}
-        required={required}
-        maxLength={maxLength}
-        autoComplete={autoComplete}
-        className={className}
-      />
-      
-      {showCharCount && tempValue.length > 0 && (
-        <div className="text-muted text-sm mt-1">
-          {tempValue.length} characters
-          {maxLength && ` / ${maxLength}`}
-        </div>
-      )}
-    </div>
+    <TextInput
+      label={labelNode}
+      value={tempValue}
+      onChange={(event) => setTempValue(event.currentTarget.value)}
+      onBlur={handleBlur}
+      onKeyDown={handleKeyDown}
+      placeholder={placeholder}
+      disabled={disabled}
+      required={required}
+      maxLength={maxLength}
+      autoComplete={autoComplete}
+      className={className}
+      type={type}
+      description={description ? <Text size="sm">{description}</Text> : undefined}
+    />
   );
 }

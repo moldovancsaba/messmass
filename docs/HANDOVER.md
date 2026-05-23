@@ -2,7 +2,7 @@
 
 This file is onboarding plus operational context for the next agent. Keep it accurate when behavior, process, or current delivery state changes.
 
-**Last Updated:** 2026-05-23 (analytics chart UX rollout)
+**Last Updated:** 2026-05-23 (Messmass Mantine foundation and primitive migration started)
 
 ## 🚨 CRITICAL MUST-READ FOR ALL AGENTS: STYLING & COMPONENTS 🚨
 
@@ -77,6 +77,81 @@ You MUST completely read and obey `docs/coding-standards.md` and `docs/component
     - `#853` responsive dashboard grid and section layout normalization
     - `#854` chart and table composite evidence panels
     - `#855` rollout across live analytics surfaces
+  - New Messmass Mantine migration program created:
+    - `#856` umbrella
+    - `#857` governance reset and authority alignment
+    - `#858` root runtime, theme, and overlay platform
+    - `#859` shared primitive parity and wrapper transition
+    - `#860` shared shell, navigation, and page-header migration
+    - `#861` reporting and analytics workspace migration
+    - `#862` report-variant and editor workflow migration
+    - `#863` public report shell migration with runtime compatibility
+    - `#864` legacy deletion and enforcement hardening
+
+## 2026-05-23 — Messmass Mantine implementation planning
+
+- Created the local migration plan:
+  - `docs/operations/messmass-mantine-implementation-plan-2026-05-23.md`
+- This plan is explicitly aligned to the shared GDS service backbone and the new shared project plan:
+  - `/Users/Shared/Projects/GENERAL_DESIGN_SYSTEM/SERVICE_BACKBONE_IMPLEMENTATION_PLAN.md`
+  - `/Users/Shared/Projects/GENERAL_DESIGN_SYSTEM/PROJECTS/MESSMASS_MANTINE_REFACTOR.md`
+- The most important local truth captured in the plan:
+  - `{messmass}` currently has an authority conflict in `docs/coding-standards.md`
+  - migration must be compatibility-first
+  - no big-bang rewrite
+  - existing reports, share flows, exports, and report-variant runtime behavior must remain stable throughout migration
+- Recommended future implementation sequence:
+  1. governance reset
+  2. root Mantine runtime
+  3. shared primitive parity
+  4. shared shells/navigation
+  5. reporting/analytics workspace migration
+  6. report-variant/editor migration
+  7. public report shells
+  8. legacy deletion and enforcement
+- SSOT board chain created from the plan:
+  - `#856` through `#864`
+  - initial board state set to `Backlog (SOONER)`
+  - labels applied: `agent:chappie`, `dod:not-started`, `priority`, `type`
+  - umbrella dependency note posted on `#856`
+- Cleanup note:
+  - duplicate issues `#865`, `#866`, and `#867` were created during CLI body-fix retries and were immediately closed as duplicates of `#862`, `#863`, and `#864`
+- This is planning/board sync only. No Mantine runtime or product-surface migration was implemented in this slice.
+
+## 2026-05-23 — Messmass Mantine migration phases 0-1 started (`#857`, `#858`)
+
+- Started SSOT execution on `#857` with a board comment describing the governance-reset and root-runtime approach.
+- Added Mantine package baseline to the repo:
+  - `@mantine/core`
+  - `@mantine/hooks`
+  - `@mantine/form`
+  - `@mantine/notifications`
+  - `@mantine/modals`
+  - `@tabler/icons-react`
+- Added root Mantine files:
+  - `app/providers.tsx`
+  - `lib/ui/mantineTheme.ts`
+- Updated `app/layout.tsx` so the app now renders under a root `MantineProvider` and centralized `ModalsProvider` / `Notifications` runtime while preserving the existing route structure and `HashtagDataProvider`.
+- Updated `docs/coding-standards.md` so the shared GDS is now explicit local authority and the old local token/wrapper system is documented as a frozen compatibility layer instead of the governing design authority.
+- This does **not** complete the full migration chain. It starts the real dependency-critical foundation work for `#857` and `#858`.
+
+## 2026-05-23 — Messmass Mantine primitive migration started (`#859`)
+
+- Pinned Mantine to the React-compatible `8.3.18` line after the latest `9.2.1` release failed against the current `react@19.2.6` runtime during build (`Activity` / `useEffectEvent` import errors from Mantine internals).
+- Started the shared primitive parity slice by converting the existing reusable input wrappers to Mantine-backed components without changing their public APIs:
+  - `components/UnifiedInputField.tsx` -> Mantine `TextInput`
+  - `components/UnifiedSelectField.tsx` -> Mantine `Select`
+  - `components/UnifiedCheckboxField.tsx` -> Mantine `Checkbox`
+  - `components/UnifiedTextInput.tsx` -> Mantine `TextInput`
+- Board alignment after this slice:
+  - `#857` = `Review (ALMOST)`
+  - `#858` = `Review (ALMOST)`
+  - `#859` = `In Progress (NOW)`
+- Validation passed:
+  - `npm run style:check`
+  - `npm run lint`
+  - `npm run build`
+  - `npm run type-check`
 
 ## 2026-05-23 — Analytics chart UX benchmark planning
 

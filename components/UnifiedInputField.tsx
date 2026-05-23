@@ -1,5 +1,7 @@
 'use client';
 
+import { TextInput } from '@mantine/core';
+
 interface UnifiedInputFieldProps {
   label: string;
   value: string;
@@ -22,21 +24,15 @@ export default function UnifiedInputField({
   hint,
 }: UnifiedInputFieldProps) {
   return (
-    <div className="form-group">
-      <label className="form-label-block">
-        {label}
-        {required && <span className="text-danger">*</span>}
-      </label>
-      <input
-        type={type}
-        className="form-input"
-        value={value}
-        onChange={(event) => onChange(event.target.value)}
-        placeholder={placeholder}
-        required={required}
-        maxLength={maxLength}
-      />
-      {hint ? <p className="form-hint">{hint}</p> : null}
-    </div>
+    <TextInput
+      label={label}
+      value={value}
+      onChange={(event) => onChange(event.currentTarget.value)}
+      placeholder={placeholder}
+      type={type}
+      withAsterisk={required}
+      maxLength={maxLength}
+      description={hint}
+    />
   );
 }

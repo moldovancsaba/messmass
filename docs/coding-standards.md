@@ -13,17 +13,20 @@ Owner: Architecture
 
 ## 🎯 Current Design System Authority Contract
 
-Until a full repo-approved Mantine migration is actually implemented, `{messmass}` uses the local token-and-wrapper system as the implementation authority for this codebase.
+`/Users/Shared/Projects/GENERAL_DESIGN_SYSTEM` is the mandatory design, UI, and UX SSOT for `{messmass}`. Mantine is the required and exclusive product UI foundation.
 
 That means:
-- `app/styles/theme.css` and the existing `var(--mm-*)` token system are the active design-token source.
-- centralized local wrappers such as `ColoredCard`, `FormModal`, `UnifiedTextInput`, and related shared admin/reporting primitives are the required implementation path.
-- the external `/Users/Shared/Projects/GENERAL_DESIGN_SYSTEM` remains strategic guidance and future migration input, not a reason to bypass the current local SSOT with ad hoc feature styling.
+- the shared GDS, not this file, is the authority for primitive policy, component behavior, responsive rules, accessibility expectations, and design-system governance
+- the local pre-Mantine token-and-wrapper system is now a **frozen compatibility layer**, not the governing authority
+- Mantine runtime, theme, modals, and notifications are the active foundation path for future `{messmass}` migration work
+- existing local wrappers and CSS systems may still be used only where migration parity has not landed yet
 
-Practical rule:
+Practical rules:
 - do not create a third styling system
-- do not mix raw feature styling into shared surfaces
-- if a Mantine migration step is desired, it must land as an explicit tracked remediation slice, not as one-off component drift
+- do not treat legacy wrappers or local CSS as permission to invent new foundational patterns
+- do not bypass Mantine for new foundation-level product UI
+- all Mantine migration work must land as explicit SSOT-tracked slices, not as ad hoc page drift
+- while compatibility migration is still in progress, preserve existing report/runtime behavior first and replace the underlying authority slice by slice
 
 ### Critical Principle: Single Source of Truth
 

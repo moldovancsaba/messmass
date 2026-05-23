@@ -1,5 +1,7 @@
 'use client';
 
+import { Checkbox } from '@mantine/core';
+
 interface UnifiedCheckboxFieldProps {
   id: string;
   label: string;
@@ -18,24 +20,13 @@ export default function UnifiedCheckboxField({
   disabled = false,
 }: UnifiedCheckboxFieldProps) {
   return (
-    <div className="editor-toggle-field">
-      <div className="editor-toggle-row">
-        <input
-          type="checkbox"
-          id={id}
-          checked={checked}
-          onChange={(event) => onChange(event.target.checked)}
-          disabled={disabled}
-          className="editor-checkbox"
-        />
-        <label
-          htmlFor={id}
-          className={`editor-toggle-label ${disabled ? 'editor-toggle-label-disabled' : ''}`}
-        >
-          {label}
-        </label>
-      </div>
-      {hint ? <p className="editor-toggle-hint">{hint}</p> : null}
-    </div>
+    <Checkbox
+      id={id}
+      checked={checked}
+      onChange={(event) => onChange(event.currentTarget.checked)}
+      disabled={disabled}
+      label={label}
+      description={hint}
+    />
   );
 }
