@@ -80,6 +80,7 @@ export default function BaseModal({
       onClose={onClose}
       size={resolvedSize}
       fullScreen={isFullScreen}
+      zIndex={1050}
       withCloseButton={false}
       closeOnClickOutside={closeOnClickOutside}
       closeOnEscape={closeOnEscape}
