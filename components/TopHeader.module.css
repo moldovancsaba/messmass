@@ -20,26 +20,15 @@
 }
 
 .headerContent {
-  /* WHAT: Inner content container with constrained width to prevent overflow
-     WHY: Logout button frequently goes off-screen without max-width */
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
   width: 100%;
   max-width: 100%; /* Prevent overflow */
   padding: 0 var(--mm-space-6);
-  gap: var(--mm-space-4);
 }
 
 /* ===== Left Section ===== */
 .headerLeft {
-  /* WHAT: Left section for search or quick actions with overflow control
-     WHY: Allow shrinking to prevent pushing right section off-screen */
   flex: 1;
   min-width: 0; /* Allow flex item to shrink below content size */
-  display: flex;
-  align-items: center;
-  gap: var(--mm-space-4);
 }
 
 .welcomeText {
@@ -55,14 +44,7 @@
 
 /* ===== Right Section ===== */
 .headerRight {
-  /* WHAT: Right section with user info and actions, constrained to prevent overflow
-     WHY: Prevent logout button and user info from going off-screen */
-  display: flex;
-  align-items: center;
-  gap: var(--mm-space-4);
   flex-shrink: 0; /* Prevent shrinking below content size */
-  flex-wrap: wrap; /* Allow wrapping on very small screens */
-  justify-content: flex-end;
   max-width: 100%; /* Prevent overflow */
 }
 
@@ -73,104 +55,46 @@
 }
 
 .notificationButton {
-  /* WHAT: Active notification bell button
-   * WHY: Clickable bell icon with badge for unread count */
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 40px;
-  height: 40px;
-  border-radius: var(--mm-radius-md);
   background: transparent;
-  border: 1px solid var(--mm-border-color-default);
+  border: none;
+  padding: 0;
   cursor: pointer;
-  transition: all var(--transition-base);
   position: relative;
 }
 
-.notificationButton:hover {
-  background: var(--mm-gray-50);
-  border-color: var(--mm-color-primary-300);
-}
-
-.notificationButton:active {
-  background: var(--mm-gray-100);
-}
-
-.notificationIcon {
-  font-size: var(--mm-font-size-lg);
+.notificationButton :global(.mantine-ActionIcon-root) {
+  box-shadow: none;
 }
 
 .notificationBadge {
-  /* WHAT: Unread count badge on bell icon
-   * WHY: Shows number of unread notifications at a glance */
   position: absolute;
   top: -4px;
   right: -4px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  min-width: 18px;
-  height: 18px;
-  padding: 0 4px;
-  background: var(--mm-error);
-  color: var(--mm-white);
-  font-size: 10px;
-  font-weight: var(--mm-font-weight-bold);
-  border-radius: var(--mm-radius-full);
   border: 2px solid var(--mm-white);
+  pointer-events: none;
 }
 
 /* ===== User Info ===== */
 .userInfo {
-  /* What: User information display
-     Why: Show avatar, name, and role */
-  display: flex;
-  align-items: center;
-  gap: var(--mm-space-3);
-  padding: var(--mm-space-2) var(--mm-space-3);
-  border-radius: var(--mm-radius-md);
   background: var(--mm-gray-50);
-  border: 1px solid var(--mm-border-color-default);
 }
 
 .userAvatar {
-  /* What: User avatar with initial
-     Why: Visual identifier for the user */
   width: 36px;
   height: 36px;
-  border-radius: var(--mm-radius-full);
-  background: var(--mm-color-primary-600);
-  color: var(--mm-white);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: var(--mm-font-size-base);
-  font-weight: var(--mm-font-weight-semibold);
   flex-shrink: 0;
 }
 
 .userDetails {
-  /* What: User name and role container
-     Why: Stacked layout for text info */
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
+  min-width: 0;
 }
 
 .userName {
-  /* What: User's full name
-     Why: Primary user identifier */
-  font-size: var(--mm-font-size-sm);
-  font-weight: var(--mm-font-weight-semibold);
   color: var(--mm-gray-900);
   line-height: 1.2;
 }
 
 .userRole {
-  /* What: User's role/permission level
-     Why: Quick reference for access level */
-  font-size: var(--mm-font-size-xs);
   color: var(--mm-gray-600);
   text-transform: capitalize;
   line-height: 1.2;
@@ -178,41 +102,7 @@
 
 /* ===== Logout Button ===== */
 .logoutButton {
-  /* What: Logout button with flat design
-     Why: Clear, accessible logout action */
-  display: flex;
-  align-items: center;
-  gap: var(--mm-space-2);
-  padding: var(--mm-space-2) var(--mm-space-4);
-  background: var(--mm-white);
-  border: 1px solid var(--mm-border-color-default);
-  border-radius: var(--mm-radius-md);
   color: var(--mm-gray-700);
-  font-size: var(--mm-font-size-sm);
-  font-weight: var(--mm-font-weight-medium);
-  cursor: pointer;
-  transition: all var(--transition-base);
-}
-
-.logoutButton:hover {
-  background: var(--mm-error);
-  color: var(--mm-white);
-  border-color: var(--mm-error);
-  transform: translateY(-1px);
-  box-shadow: var(--mm-shadow-md);
-}
-
-.logoutButton:focus-visible {
-  outline: 2px solid var(--mm-border-color-focus);
-  outline-offset: 2px;
-}
-
-.logoutButton:active {
-  transform: translateY(0);
-}
-
-.logoutIcon {
-  font-size: var(--mm-font-size-base);
 }
 
 .logoutText {

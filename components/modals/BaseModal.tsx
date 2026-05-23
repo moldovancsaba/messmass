@@ -1,7 +1,7 @@
 'use client';
 
-import React, { useEffect, useRef } from 'react';
-import FocusTrap from 'focus-trap-react';
+import React from 'react';
+import { Modal } from '@mantine/core';
 import styles from './BaseModal.module.css';
 
 /**
@@ -70,105 +70,34 @@ export default function BaseModal({
   ariaLabel,
   ariaDescribedBy,
 }: BaseModalProps) {
-  // Store element that triggered modal for focus restoration
-  const triggerElementRef = useRef<HTMLElement | null>(null);
-  
-  // Track if modal was just opened to save trigger element
-  useEffect(() => {
-    if (isOpen) {
-      // Save the currently focused element to restore later
-      triggerElementRef.current = document.activeElement as HTMLElement;
-    } else {
-      // Restore focus when modal closes
-      if (triggerElementRef.current) {
-        triggerElementRef.current.focus();
-      }
-    }
-  }, [isOpen]);
-  
-  // Handle escape key
-  useEffect(() => {
-    if (!isOpen || !closeOnEscape) return;
-    
-    const handleEscape = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') {
-        onClose();
-      }
-    };
-    
-    document.addEventListener('keydown', handleEscape);
-    return () => document.removeEventListener('keydown', handleEscape);
-  }, [isOpen, closeOnEscape, onClose]);
-  
-  // Prevent body scroll when modal is open
-  useEffect(() => {
-    if (isOpen) {
-      document.body.style.overflow = 'hidden';
-    } else {
-      document.body.style.overflow = '';
-    }
-    
-    return () => {
-      document.body.style.overflow = '';
-    };
-  }, [isOpen]);
-  
-  // Handle overlay click
-  const handleOverlayClick = (e: React.MouseEvent<HTMLDivElement>) => {
-    // Only close if clicking the overlay itself (not bubbled from content)
-    if (closeOnClickOutside && e.target === e.currentTarget) {
-      onClose();
-    }
-  };
-  
-  // Don't render anything if not open
-  if (!isOpen) return null;
-  
-  // Determine size class
-  const sizeClass = styles[`modal-${size}`] || styles['modal-md'];
-  
-  // Combine classes
-  const modalClasses = `${styles.modal} ${sizeClass} ${className}`;
+  const isFullScreen = size === 'full';
+  const resolvedSize = size === 'full' ? '100%' : size;
   
   return (
-    <div 
-      className={styles.overlay}
-      onClick={handleOverlayClick}
-      aria-modal="true"
-      role="dialog"
+    <Modal
+      opened={isOpen}
+      onClose={onClose}
+      size={resolvedSize}
+      fullScreen={isFullScreen}
+      withCloseButton={showCloseButton}
+      closeOnClickOutside={closeOnClickOutside}
+      closeOnEscape={closeOnEscape}
+      centered={!isFullScreen}
+      classNames={{
+        content: `${styles.content}${className ? ` ${className}` : ''}`,
+        header: styles.header,
+        body: styles.body,
+        close: styles.closeButton,
+      }}
+      overlayProps={{
+        backgroundOpacity: 0.55,
+        blur: 0,
+        className: styles.overlay,
+      }}
       aria-label={ariaLabel}
       aria-describedby={ariaDescribedBy}
     >
-      <FocusTrap
-        focusTrapOptions={{
-          // Allow clicking outside to not throw error
-          clickOutsideDeactivates: closeOnClickOutside,
-          // Escape key is handled by our custom handler
-          escapeDeactivates: false,
-          // Return focus on unmount
-          returnFocusOnDeactivate: true,
-        }}
-      >
-        <div 
-          className={modalClasses}
-          onClick={(e) => e.stopPropagation()}
-        >
-          {/* Close button */}
-          {showCloseButton && (
-            <button
-              type="button"
-              className={styles.closeButton}
-              onClick={onClose}
-              aria-label="Close modal"
-            >
-              ✕
-            </button>
-          )}
-          
-          {/* Modal content */}
-          {children}
-        </div>
-      </FocusTrap>
-    </div>
+      {children}
+    </Modal>
   );
 }

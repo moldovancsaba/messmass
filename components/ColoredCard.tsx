@@ -1,10 +1,10 @@
-/* WHAT: Centralized colored card component with left border accent
- * WHY: Single source of truth for all admin cards with colored borders
- * HOW: Reusable component used by dashboard, categories, hashtags, and any future cards
+/* WHAT: Centralized Mantine-backed card component with left border accent
+ * WHY: Shared card surface across admin and analytics flows while preserving
+ *      the existing API during the Mantine migration
  */
 
 import React from 'react';
-import styles from './ColoredCard.module.css';
+import { Paper } from '@mantine/core';
 
 interface ColoredCardProps {
   /** Optional color for the left border accent (default: transparent/no accent) */
@@ -29,30 +29,41 @@ export default function ColoredCard({
   hoverable = true,
   ...rest
 }: ColoredCardProps) {
-  // WHAT: Only use CSS variables for dynamic styling (ESLint compliant)
-  // WHY: Avoid inline style props while supporting dynamic accent colors
-  // CRITICAL: Validate accentColor is a non-empty string before setting CSS variable
-  // BUG FIX: React calls .trim() on CSS variable values, crashes if undefined/null
-  const cssVars = (accentColor && typeof accentColor === 'string' && accentColor.trim()) 
-    ? { '--accent-color': accentColor } as React.CSSProperties 
-    : undefined;
-
-  // WHAT: Filter out data attributes from rest props
-  // WHY: Pass through data-* attributes for PDF export and other purposes
+  const resolvedAccentColor = (accentColor && typeof accentColor === 'string' && accentColor.trim())
+    ? accentColor
+    : 'transparent';
   const dataAttrs = Object.keys(rest)
     .filter(key => key.startsWith('data-'))
     .reduce((obj, key) => ({ ...obj, [key]: rest[key] }), {});
 
   return (
-    // WHAT: Dynamic accent color via CSS variable (legitimate inline style)
-    // WHY: accentColor prop is data-driven, must be set at runtime
-    <div
-      className={`${styles.coloredCard} ${hoverable ? styles.hoverable : ''} ${className}`}
-      style={cssVars} // eslint-disable-line react/forbid-dom-props
+    <Paper
+      withBorder
+      radius="lg"
+      shadow="sm"
+      className={className}
+      data-hoverable={hoverable ? 'true' : 'false'}
       onClick={onClick}
+      style={{
+        background: 'var(--mm-white)',
+        borderColor: 'var(--mm-border-color-light)',
+        borderLeft: `4px solid ${resolvedAccentColor}`,
+        padding: 'var(--mm-space-4)',
+        cursor: onClick ? 'pointer' : undefined,
+        transition: 'transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease',
+      }}
+      styles={{
+        root: {
+          '&[data-hoverable="true"]:hover': {
+            boxShadow: 'var(--mm-shadow-md)',
+            transform: 'translateY(-2px)',
+            borderColor: 'var(--mm-border-color-default)',
+          },
+        },
+      }}
       {...dataAttrs}
     >
       {children}
-    </div>
+    </Paper>
   );
 }

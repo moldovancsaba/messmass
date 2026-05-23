@@ -153,6 +153,21 @@ You MUST completely read and obey `docs/coding-standards.md` and `docs/component
   - `npm run build`
   - `npm run type-check`
 
+## 2026-05-23 — Mantine shared surface migration continued (`#859`, `#860`)
+
+- `ColoredCard` is now Mantine-backed via `@mantine/core/Paper` while preserving its current API:
+  - `accentColor`
+  - `hoverable`
+  - `className`
+  - `data-*` passthrough
+- `TopHeader` now renders with Mantine primitives (`ActionIcon`, `Avatar`, `Badge`, `Button`, `Group`, `Paper`, `Stack`, `Text`) while preserving:
+  - current notifications panel behavior
+  - unread badge semantics
+  - logout flow
+- This is the next safe shell tranche after the root runtime work:
+  - header is partially migrated
+  - sidebar is still custom and remains the main follow-up for `#860`
+
 ## 2026-05-23 — Analytics chart UX benchmark planning
 
 - Benchmarked `design-sparx/mantine-analytics-dashboard` as an ideabank only.

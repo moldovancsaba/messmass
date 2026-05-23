@@ -2,6 +2,8 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
+import { ActionIcon, Avatar, Badge, Box, Button, Group, Paper, Stack, Text } from '@mantine/core';
+import { IconBell, IconDoorExit } from '@tabler/icons-react';
 import NotificationPanel from './NotificationPanel';
 import styles from './TopHeader.module.css';
 
@@ -81,30 +83,24 @@ export default function TopHeader({ user }: TopHeaderProps) {
       if (response.ok) {
         router.push('/admin/login');
       } else {
-        alert('Logout failed. Please try again.');
+        window.alert('Logout failed. Please try again.');
       }
     } catch (error) {
       console.error('Logout error:', error);
-      alert('Logout failed. Please try again.');
+      window.alert('Logout failed. Please try again.');
     }
   };
   
   return (
     <header className={styles.topHeader}>
-      <div className={styles.headerContent}>
-        {/* What: Left section placeholder
-           Why: Can add search or quick actions later */}
-        <div className={styles.headerLeft}>
-          <span className={styles.welcomeText}>
-            Welcome back{user?.name ? `, ${user.name}` : ''}! 👋
-          </span>
-        </div>
+      <Group className={styles.headerContent} justify="space-between" gap="md" wrap="nowrap">
+        <Box className={styles.headerLeft}>
+          <Text className={styles.welcomeText} fw={500}>
+            Welcome back{user?.name ? `, ${user.name}` : ''}! <span aria-hidden="true">👋</span>
+          </Text>
+        </Box>
         
-        {/* What: Right section with user info and actions
-           Why: Quick access to user menu, notifications, and logout */}
-        <div className={styles.headerRight}>
-          {/* What: Active notifications bell with badge and dropdown panel
-             Why: Display project activity notifications in real-time */}
+        <Group className={styles.headerRight} gap="md" justify="flex-end" wrap="wrap">
           <div className={styles.notificationsBell}>
             <span
               id="notifications-live"
@@ -113,49 +109,61 @@ export default function TopHeader({ user }: TopHeaderProps) {
               aria-atomic="true"
               className="sr-only"
             />
-            <button
+            <div
               className={styles.notificationButton}
-              onClick={handleBellClick}
-              title="View notifications"
-              aria-label={unreadCount > 0 ? `Notifications, ${unreadCount} unread` : 'Notifications'}
             >
-              <span className={styles.notificationIcon}>🔔</span>
+              <ActionIcon
+                variant="default"
+                size="lg"
+                radius="md"
+                color="gray"
+                onClick={handleBellClick}
+                title="View notifications"
+                aria-label={unreadCount > 0 ? `Notifications, ${unreadCount} unread` : 'Notifications'}
+              >
+                <IconBell size={18} stroke={1.8} />
+              </ActionIcon>
               {unreadCount > 0 && (
-                <span className={styles.notificationBadge}>{unreadCount}</span>
+                <Badge className={styles.notificationBadge} size="sm" circle>
+                  {unreadCount}
+                </Badge>
               )}
-            </button>
+            </div>
             <NotificationPanel
               isOpen={showNotifications}
               onClose={() => setShowNotifications(false)}
             />
           </div>
           
-          {/* What: User info display
-             Why: Show current user name, email, and role */}
           {user && (
-            <div className={styles.userInfo}>
-              <div className={styles.userAvatar}>
-                {user.name.charAt(0).toUpperCase()}
-              </div>
-              <div className={styles.userDetails}>
-                <div className={styles.userName}>{user.name}</div>
-                <div className={styles.userRole}>{user.role}</div>
-              </div>
-            </div>
+            <Paper withBorder radius="md" className={styles.userInfo} p="xs">
+              <Group gap="sm" wrap="nowrap">
+                <Avatar color="blue" radius="xl" className={styles.userAvatar}>
+                  {user.name.charAt(0).toUpperCase()}
+                </Avatar>
+                <Stack gap={2} className={styles.userDetails}>
+                  <Text className={styles.userName} fw={600} size="sm">
+                    {user.name}
+                  </Text>
+                  <Text className={styles.userRole} size="xs">
+                    {user.role}
+                  </Text>
+                </Stack>
+              </Group>
+            </Paper>
           )}
           
-          {/* What: Logout button
-             Why: Primary action to end session */}
-          <button 
+          <Button
+            variant="default"
+            leftSection={<IconDoorExit size={16} stroke={1.8} />}
             className={styles.logoutButton}
             onClick={handleLogout}
             title="Logout"
           >
-            <span className={styles.logoutIcon}>🚪</span>
             <span className={styles.logoutText}>Logout</span>
-          </button>
-        </div>
-      </div>
+          </Button>
+        </Group>
+      </Group>
     </header>
   );
 }
