@@ -117,3 +117,8 @@ kyc-audit-report.json
 package-lock
 test-partner-emoji-visibility.js
 test-title-overflow-fix.js
+
+# Allow GDS package build artifacts to be committed
+!packages/gds-theme/dist/
+!packages/gds-core/dist/
+!packages/gds-admin/dist/
