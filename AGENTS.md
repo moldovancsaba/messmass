@@ -2,9 +2,9 @@
 
 Use this file as the tracked quick-start for repo-specific agent workflows. For canonical project status and handoff context, start with:
 
-- [`/Users/moldovancsaba/Projects/messmass/docs/PROJECT_MANAGEMENT.md`](/Users/moldovancsaba/Projects/messmass/docs/PROJECT_MANAGEMENT.md)
-- [`/Users/moldovancsaba/Projects/messmass/docs/HANDOVER.md`](/Users/moldovancsaba/Projects/messmass/docs/HANDOVER.md)
-- [`/Users/moldovancsaba/Projects/messmass/README.md`](/Users/moldovancsaba/Projects/messmass/README.md)
+- [`/Users/Shared/Projects/messmass/docs/PROJECT_MANAGEMENT.md`](/Users/Shared/Projects/messmass/docs/PROJECT_MANAGEMENT.md)
+- [`/Users/Shared/Projects/messmass/docs/HANDOVER.md`](/Users/Shared/Projects/messmass/docs/HANDOVER.md)
+- [`/Users/Shared/Projects/messmass/README.md`](/Users/Shared/Projects/messmass/README.md)
 
 ## Local App
 
