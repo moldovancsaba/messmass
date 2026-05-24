@@ -3,23 +3,17 @@
 /**
  * MetricCard Component
  * 
- * WHAT: Enhanced KPI card with trend indicators and comparison
- * WHY: Display key metrics with context (change from previous period)
- * HOW: Card with large number, label, trend arrow, and comparison
+ * WHAT: Enhanced KPI card leveraging @gds/core
+ * WHY: centralize design tokens, theme integration, and primitive patterns using GDS packages
+ * HOW: wraps @gds/core's MetricCard and maps messmass props for stable backwards compatibility
  * 
- * Features:
- * - Primary metric with formatted display (number, currency, percentage)
- * - Trend indicator (up/down/neutral with color coding)
- * - Comparison to previous period
- * - Optional sparkline chart
- * - Loading and error states
- * 
- * Version: 6.28.0 (Phase 3 - Dashboards)
- * Created: 2025-10-19T13:15:00.000Z
+ * Version: 12.2.0 (Phase 3 - GDS Integration)
+ * Created: 2026-05-24T13:49:00.000Z
  */
 
 import React from 'react';
-import styles from './MetricCard.module.css';
+import { MetricCard as GdsMetricCard } from '@gds/core';
+import { Skeleton, Text } from '@mantine/core';
 
 export type MetricFormat = 'number' | 'currency' | 'percentage';
 export type TrendDirection = 'up' | 'down' | 'neutral';
@@ -92,52 +86,32 @@ export default function MetricCard({
 
   if (loading) {
     return (
-      <div className={`${styles.metricCard} ${styles.loading} ${className}`}>
-        <div className={styles.skeleton}></div>
+      <div className={className}>
+        <Skeleton height={140} radius="lg" />
       </div>
     );
   }
 
+  const formattedValue = formatMetricValue(value, format);
+  const descriptionText = subtitle || (previousValue !== undefined ? (
+    comparisonLabel || `vs ${formatMetricValue(previousValue, format)} previous period`
+  ) : undefined);
+
+  const gdsTrend = percentChange !== null ? {
+    label: `${trend === 'up' ? '↑' : trend === 'down' ? '↓' : '→'} ${Math.abs(percentChange).toFixed(1)}%`,
+    tone: (trend === 'up' ? 'positive' : trend === 'down' ? 'negative' : 'neutral') as 'positive' | 'negative' | 'neutral'
+  } : undefined;
+
   return (
-    <div className={`${styles.metricCard} ${className}`}>
-      {/* WHAT: Header with icon and title */}
-      <div className={styles.header}>
-        <div className={styles.headerMain}>
-          {icon && <span className={styles.icon}>{icon}</span>}
-          <h3 className={styles.title}>{title}</h3>
-        </div>
-        {periodLabel ? <span className={styles.periodLabel}>{periodLabel}</span> : null}
-      </div>
-
-      {/* WHAT: Main metric value */}
-      <div className={styles.valueSection}>
-        <div className={styles.value}>{formatMetricValue(value, format)}</div>
-
-        {/* WHAT: Trend indicator with percent change */}
-        {percentChange !== null && (
-          <div className={`${styles.trend} ${styles[`trend--${trend}`]}`}>
-            <span className={styles.trendArrow}>
-              {trend === 'up' && '↑'}
-              {trend === 'down' && '↓'}
-              {trend === 'neutral' && '→'}
-            </span>
-            <span className={styles.trendValue}>
-              {Math.abs(percentChange).toFixed(1)}%
-            </span>
-          </div>
-        )}
-      </div>
-
-      {/* WHAT: Subtitle or comparison text */}
-      {(subtitle || previousValue !== undefined) && (
-        <div className={styles.footer}>
-          {subtitle || (
-            <span className={styles.comparison}>
-              {comparisonLabel || `vs ${formatMetricValue(previousValue!, format)} previous period`}
-            </span>
-          )}
-        </div>
-      )}
+    <div className={className}>
+      <GdsMetricCard
+        label={title}
+        value={formattedValue}
+        description={descriptionText}
+        trend={gdsTrend}
+        icon={icon ? <span>{icon}</span> : undefined}
+        footer={periodLabel ? <Text size="xs" c="dimmed">{periodLabel}</Text> : undefined}
+      />
     </div>
   );
 }

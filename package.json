@@ -26,6 +26,7 @@
   "license": "MIT",
   "private": true,
   "scripts": {
+    "gds:sync": "bash scripts/gds-sync-packages.sh",
     "dev": "next dev -p 3001",
     "build": "next build",
     "start": "next start",
@@ -129,6 +130,9 @@
     "security:migrate-users-to-password-hash": "tsx -r dotenv/config scripts/migrate-users-to-password-hash.ts dotenv_config_path=.env.local"
   },
   "dependencies": {
+    "@gds/theme": "file:./packages/gds-theme",
+    "@gds/core": "file:./packages/gds-core",
+    "@gds/admin": "file:./packages/gds-admin",
     "@mantine/core": "^8.3.18",
     "@mantine/form": "^8.3.18",
     "@mantine/hooks": "^8.3.18",

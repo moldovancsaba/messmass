@@ -1,14 +1,17 @@
 import { createTheme } from '@mantine/core';
+import { gdsTheme } from '@gds/theme';
 
 export const messmassMantineTheme = createTheme({
+  ...gdsTheme,
   primaryColor: 'messmassBlue',
-  defaultRadius: 'md',
   fontFamily: 'var(--active-font, var(--font-inter)), var(--font-inter), system-ui, sans-serif',
   headings: {
+    ...gdsTheme.headings,
     fontFamily: 'var(--active-font, var(--font-inter)), var(--font-inter), system-ui, sans-serif',
     fontWeight: '700',
   },
   colors: {
+    ...gdsTheme.colors,
     messmassBlue: [
       '#eef4ff',
       '#dae6ff',
@@ -59,6 +62,7 @@ export const messmassMantineTheme = createTheme({
     ],
   },
   components: {
+    ...gdsTheme.components,
     Button: {
       defaultProps: {
         radius: 'md',
