@@ -7,6 +7,7 @@ import {
   type ReportVariantOwnerType,
 } from '@/lib/reportVariants';
 import type { ReportCustomDateRange, ReportPeriodPreset } from '@/lib/reportPeriods';
+import { ReportPeriodValidationError } from '@/lib/reportPeriodValidation';
 
 const ALLOWED_OWNER_TYPES: ReportVariantOwnerType[] = ['organization', 'partner', 'hashtag', 'filter'];
 
@@ -87,6 +88,13 @@ export async function POST(request: NextRequest) {
       variant,
     });
   } catch (error) {
+    if (error instanceof ReportPeriodValidationError) {
+      return NextResponse.json(
+        { success: false, error: error.message, code: error.code },
+        { status: error.status }
+      );
+    }
+
     return NextResponse.json(
       {
         success: false,

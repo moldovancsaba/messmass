@@ -11,6 +11,7 @@ interface UnifiedInputFieldProps {
   required?: boolean;
   maxLength?: number;
   hint?: string;
+  error?: string;
 }
 
 export default function UnifiedInputField({
@@ -22,6 +23,7 @@ export default function UnifiedInputField({
   required = false,
   maxLength,
   hint,
+  error,
 }: UnifiedInputFieldProps) {
   return (
     <TextInput
@@ -33,6 +35,7 @@ export default function UnifiedInputField({
       withAsterisk={required}
       maxLength={maxLength}
       description={hint}
+      error={error}
     />
   );
 }

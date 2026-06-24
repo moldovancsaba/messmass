@@ -10,6 +10,7 @@ import UnifiedSelectField from '@/components/UnifiedSelectField';
 import { FormModal } from '@/components/modals';
 import { useAdminAuth } from '@/hooks/useAdminAuth';
 import { apiPost, apiPut } from '@/lib/apiClient';
+import { hasReportVariantCreateFormErrors, validateReportVariantCreateForm } from '@/lib/reportVariantFormValidation';
 import styles from './page.module.css';
 import { useCallback } from 'react';
 
@@ -107,9 +108,11 @@ export default function OrganizationReportsWorkspacePage() {
     () => variants.find((variant) => variant.isDefault) || null,
     [variants]
   );
+  const createFormErrors = useMemo(() => validateReportVariantCreateForm(createForm), [createForm]);
+  const isCreateFormInvalid = hasReportVariantCreateFormErrors(createFormErrors);
 
   const createVariant = async () => {
-    if (!createForm.name.trim()) return;
+    if (isCreateFormInvalid) return;
 
     const payload: Record<string, unknown> = {
       ownerType: 'organization',
@@ -289,6 +292,7 @@ export default function OrganizationReportsWorkspacePage() {
         subtitle="Every custom report starts as a duplicate of DEFAULT, then you can change its period, text, images, style, and template."
         onSubmit={createVariant}
         submitText="Create Variant"
+        disableSubmit={isCreateFormInvalid}
       >
         <div className={styles.formStack}>
           <UnifiedInputField
@@ -296,12 +300,16 @@ export default function OrganizationReportsWorkspacePage() {
             value={createForm.name}
             onChange={(value) => setCreateForm((prev) => ({ ...prev, name: value }))}
             placeholder="CHL This Year"
+            required
+            error={createFormErrors.name}
           />
           <UnifiedSelectField
             label="Time Period"
             value={createForm.periodPreset}
             onChange={(value) => setCreateForm((prev) => ({ ...prev, periodPreset: value }))}
             options={PERIOD_OPTIONS}
+            error={createFormErrors.periodPreset}
+            withinPortal={false}
           />
           {createForm.periodPreset === 'custom' && (
             <div className={styles.customGrid}>
@@ -310,12 +318,16 @@ export default function OrganizationReportsWorkspacePage() {
                 type="date"
                 value={createForm.customStartDate}
                 onChange={(value) => setCreateForm((prev) => ({ ...prev, customStartDate: value }))}
+                required
+                error={createFormErrors.customStartDate}
               />
               <UnifiedInputField
                 label="End Date"
                 type="date"
                 value={createForm.customEndDate}
                 onChange={(value) => setCreateForm((prev) => ({ ...prev, customEndDate: value }))}
+                required
+                error={createFormErrors.customEndDate}
               />
             </div>
           )}

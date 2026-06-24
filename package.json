@@ -115,6 +115,7 @@
     "export:partners": "tsx -r dotenv/config scripts/exportPartners.ts dotenv_config_path=.env.local",
     "import:partners": "tsx -r dotenv/config scripts/importPartners.ts dotenv_config_path=.env.local",
     "migrate:reports-v12": "tsx -r dotenv/config scripts/migrate-to-reports-v12.ts dotenv_config_path=.env.local",
+    "audit:report-variant-periods": "tsx -r dotenv/config scripts/audit-report-variant-periods.ts dotenv_config_path=.env.local --dry-run",
     "fix:chart-formulas": "tsx -r dotenv/config scripts/fix-chart-formulas.ts dotenv_config_path=.env.local",
     "migrate:user-roles": "tsx -r dotenv/config scripts/migrateUserRoles.ts dotenv_config_path=.env.local",
     "seed:superadmin": "tsx -r dotenv/config scripts/ensureSuperadmin.ts dotenv_config_path=.env.local",

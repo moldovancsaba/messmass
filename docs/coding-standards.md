@@ -164,6 +164,31 @@ Validation:
 
 ---
 
+## Modal Select And Report Period Contract
+
+Mantine combobox/select dropdowns used inside `FormModal` must not render in a way that makes option clicks look like modal outside-clicks.
+
+Required:
+- use `UnifiedSelectField` for report/admin selects
+- pass `withinPortal={false}` when the select is inside `FormModal`
+- keep labels, errors, and descriptions on the shared field wrapper, not in page-specific markup
+- do not disable `closeOnClickOutside` globally to hide select containment bugs
+
+Report period writes must use `lib/reportPeriodValidation.ts`.
+
+Required:
+- custom periods require `startDate` and `endDate`
+- date strings must be `YYYY-MM-DD`
+- `startDate` must be less than or equal to `endDate`
+- non-custom presets must persist `customDateRange: null`
+- API validation errors must include a stable machine-readable `code`
+
+Validation:
+- add unit tests for new period presets, date validation, and modal-safe select usage
+- use `npm run audit:report-variant-periods` before/after period contract migrations when existing data may be affected
+
+---
+
 ## 🎨 Landing and public page styling
 
 **Rule:** Every element on the landing page (and any future landing or public pages) must use **global CSS design tokens only**. No in-code hardcoded style values.

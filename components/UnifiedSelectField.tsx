@@ -13,6 +13,8 @@ interface UnifiedSelectFieldProps {
   onChange: (value: string) => void;
   options: UnifiedSelectFieldOption[];
   disabled?: boolean;
+  error?: string;
+  withinPortal?: boolean;
 }
 
 export default function UnifiedSelectField({
@@ -21,6 +23,8 @@ export default function UnifiedSelectField({
   onChange,
   options,
   disabled = false,
+  error,
+  withinPortal = true,
 }: UnifiedSelectFieldProps) {
   return (
     <Select
@@ -29,7 +33,9 @@ export default function UnifiedSelectField({
       onChange={(nextValue) => onChange(nextValue ?? '')}
       data={options}
       disabled={disabled}
+      error={error}
       allowDeselect={false}
+      comboboxProps={{ withinPortal }}
     />
   );
 }

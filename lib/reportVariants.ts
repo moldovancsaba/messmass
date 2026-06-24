@@ -7,6 +7,7 @@ import {
   resolveReportPeriod,
   type ResolvedReportPeriod,
 } from '@/lib/reportPeriods';
+import { normalizeReportPeriodInput, normalizeReportPeriodUpdate } from '@/lib/reportPeriodValidation';
 import { resolveRuntimeReportById, type RuntimeReportResolution } from '@/lib/reportRuntime';
 
 export type ReportVariantOwnerType = 'organization' | 'partner' | 'hashtag' | 'filter';
@@ -346,6 +347,10 @@ export async function createReportVariant(
   const sourceVariant = buildVirtualDefaultVariant(baseSource);
   const now = new Date().toISOString();
   const collection = db.collection('report_variants');
+  const normalizedPeriod = normalizeReportPeriodInput({
+    periodPreset: input.periodPreset,
+    customDateRange: input.customDateRange,
+  });
 
   let slug = slugifyVariantName(input.name);
   let counter = 2;
@@ -362,8 +367,8 @@ export async function createReportVariant(
     isDefault: false,
     status: 'draft' as ReportVariantStatus,
     timezone: input.timezone || baseSource.timezone || DEFAULT_TIMEZONE,
-    periodPreset: input.periodPreset || 'all_time',
-    customDateRange: input.customDateRange || null,
+    periodPreset: normalizedPeriod.periodPreset,
+    customDateRange: normalizedPeriod.customDateRange,
     reportTemplateId: sourceVariant.reportTemplateId || null,
     styleId: sourceVariant.styleId || null,
     logoUrl: sourceVariant.logoUrl || null,
@@ -416,6 +421,18 @@ export async function updateReportVariant(
 
   if (typeof updates.slug === 'string' && updates.slug.trim()) {
     normalizedUpdates.slug = slugifyVariantName(updates.slug);
+  }
+
+  const normalizedPeriod = normalizeReportPeriodUpdate(
+    {
+      periodPreset: existing.periodPreset,
+      customDateRange: existing.customDateRange,
+    },
+    updates
+  );
+  if (normalizedPeriod) {
+    normalizedUpdates.periodPreset = normalizedPeriod.periodPreset;
+    normalizedUpdates.customDateRange = normalizedPeriod.customDateRange;
   }
 
   if (updates.isDefault === true) {

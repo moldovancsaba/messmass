@@ -2,7 +2,7 @@
 
 This file is onboarding plus operational context for the next agent. Keep it accurate when behavior, process, or current delivery state changes.
 
-**Last Updated:** 2026-06-24 (mobile admin action UX hardening)
+**Last Updated:** 2026-06-24 (report variant period selector reliability)
 
 ## 🚨 CRITICAL MUST-READ FOR ALL AGENTS: STYLING & COMPONENTS 🚨
 
@@ -39,6 +39,43 @@ You MUST completely read and obey `docs/coding-standards.md` and `docs/component
 - Current GDS package baseline: `@doneisbetter/gds-theme`, `@doneisbetter/gds-core`, and `@doneisbetter/gds-admin` at `3.4.6`
 - Local vendored `@gds/*` packages have been removed from active package authority.
 - Formally closed on SSOT board (historical): `#354`, `#355`, `#356`, `#357`, `#358`, `#359`
+
+## 2026-06-24 - Report variant period selector reliability (`moldovancsaba/messmass#71`-`#76`)
+
+- Canonical implementation:
+  - `lib/reportPeriodValidation.ts`
+  - `lib/reportVariantFormValidation.ts`
+  - `lib/reportVariantPeriodAudit.ts`
+  - `components/UnifiedSelectField.tsx`
+  - `components/UnifiedInputField.tsx`
+  - `app/admin/organizations/[id]/reports/page.tsx`
+  - `app/admin/partners/[id]/reports/page.tsx`
+  - `scripts/audit-report-variant-periods.ts`
+- Product behavior:
+  - report variant Time Period selects inside `FormModal` use modal-contained combobox dropdowns via `withinPortal={false}`
+  - selecting a period no longer exits the create dialog
+  - `custom` periods require both start and end dates
+  - reversed custom ranges are blocked client-side and server-side
+  - non-custom presets clear stale custom date ranges before persistence
+  - invalid custom period API writes return 400 with stable `code` values
+- Operational behavior:
+  - dry-run audit command: `npm run audit:report-variant-periods`
+  - repair mode: `npx tsx -r dotenv/config scripts/audit-report-variant-periods.ts dotenv_config_path=.env.local --repair --strategy convert-to-all-time`
+  - repair converts invalid custom records to `all_time` with `customDateRange: null`; no records are deleted
+- Regression coverage:
+  - `tests/report-period-validation.test.ts`
+  - `tests/report-variant-period-audit.test.ts`
+  - `tests/unified-select-field-contract.test.tsx`
+- Release gate:
+  - `npm run gds:sync`
+  - `npm run style:check`
+  - `npm run lint`
+  - `npm run type-check`
+  - `npm test -- --runInBand`
+  - `MONGODB_URI='mongodb://127.0.0.1:27017/messmass-build-check' npm run build`
+- Rollback:
+  - revert the delivery commit to restore the prior select/API behavior
+  - if repair mode was run, restore affected `report_variants` from backup or reapply original period fields from dry-run evidence
 
 ## 2026-06-24 - Mobile admin action UX hardening (`moldovancsaba/messmass#64`-`#70`)
 

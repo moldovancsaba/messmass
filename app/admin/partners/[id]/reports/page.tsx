@@ -10,6 +10,7 @@ import UnifiedSelectField from '@/components/UnifiedSelectField';
 import { FormModal } from '@/components/modals';
 import { useAdminAuth } from '@/hooks/useAdminAuth';
 import { apiPost, apiPut } from '@/lib/apiClient';
+import { hasReportVariantCreateFormErrors, validateReportVariantCreateForm } from '@/lib/reportVariantFormValidation';
 import styles from './page.module.css';
 
 type ReportVariant = {
@@ -111,9 +112,11 @@ export default function PartnerReportsWorkspacePage() {
     () => variants.find((variant) => variant.isDefault) || null,
     [variants]
   );
+  const createFormErrors = useMemo(() => validateReportVariantCreateForm(createForm), [createForm]);
+  const isCreateFormInvalid = hasReportVariantCreateFormErrors(createFormErrors);
 
   const createVariant = async () => {
-    if (!createForm.name.trim()) return;
+    if (isCreateFormInvalid) return;
 
     const payload: Record<string, unknown> = {
       ownerType: 'partner',
@@ -303,6 +306,8 @@ export default function PartnerReportsWorkspacePage() {
         onClose={() => setCreateOpen(false)}
         title="Create Partner Report Variant"
         onSubmit={createVariant}
+        submitText="Create Variant"
+        disableSubmit={isCreateFormInvalid}
       >
         <div className={styles.formStack}>
           <UnifiedInputField
@@ -310,6 +315,8 @@ export default function PartnerReportsWorkspacePage() {
             value={createForm.name}
             onChange={(value) => setCreateForm((prev) => ({ ...prev, name: value }))}
             placeholder="e.g. Renewal 2026"
+            required
+            error={createFormErrors.name}
           />
 
           <UnifiedSelectField
@@ -317,6 +324,8 @@ export default function PartnerReportsWorkspacePage() {
             value={createForm.periodPreset}
             onChange={(value) => setCreateForm((prev) => ({ ...prev, periodPreset: value }))}
             options={PERIOD_OPTIONS}
+            error={createFormErrors.periodPreset}
+            withinPortal={false}
           />
 
           {createForm.periodPreset === 'custom' && (
@@ -326,12 +335,16 @@ export default function PartnerReportsWorkspacePage() {
                 type="date"
                 value={createForm.customStartDate}
                 onChange={(value) => setCreateForm((prev) => ({ ...prev, customStartDate: value }))}
+                required
+                error={createFormErrors.customStartDate}
               />
               <UnifiedInputField
                 label="End Date"
                 type="date"
                 value={createForm.customEndDate}
                 onChange={(value) => setCreateForm((prev) => ({ ...prev, customEndDate: value }))}
+                required
+                error={createFormErrors.customEndDate}
               />
             </div>
           )}

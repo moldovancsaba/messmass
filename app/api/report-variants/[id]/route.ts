@@ -3,6 +3,7 @@ import { ObjectId } from 'mongodb';
 import { getDb } from '@/lib/db';
 import { getAdminUser } from '@/lib/auth';
 import { updateReportVariant } from '@/lib/reportVariants';
+import { ReportPeriodValidationError } from '@/lib/reportPeriodValidation';
 
 export async function GET(
   _request: NextRequest,
@@ -67,6 +68,13 @@ export async function PUT(
       variant,
     });
   } catch (error) {
+    if (error instanceof ReportPeriodValidationError) {
+      return NextResponse.json(
+        { success: false, error: error.message, code: error.code },
+        { status: error.status }
+      );
+    }
+
     return NextResponse.json(
       {
         success: false,
