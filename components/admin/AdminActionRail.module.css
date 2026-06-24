@@ -1,0 +1,173 @@
+/* components/admin/AdminActionRail.module.css */
+/* WHAT: Shared admin action rail styles */
+/* WHY: Mobile portrait action buttons must remain visible, reachable, and accessible */
+
+.rail {
+  display: flex;
+  align-items: stretch;
+  gap: var(--mm-spacing-xs, 8px);
+  width: 100%;
+}
+
+.visibleActions {
+  display: flex;
+  align-items: stretch;
+  gap: var(--mm-spacing-xs, 8px);
+  flex: 1;
+  min-width: 0;
+}
+
+.actionButton,
+.overflowSummary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--mm-spacing-xs, 6px);
+  min-height: 44px;
+  min-width: 44px;
+  padding: var(--mm-spacing-xs, 8px) var(--mm-spacing-sm, 12px);
+  border: 1px solid var(--mm-gray-300);
+  border-radius: var(--mm-radius-md, 8px);
+  background: var(--mm-white);
+  color: var(--mm-gray-800);
+  font-size: var(--mm-font-size-sm);
+  font-weight: var(--mm-font-weight-semibold);
+  line-height: 1.1;
+  text-decoration: none;
+  cursor: pointer;
+  transition: background-color 0.16s ease, border-color 0.16s ease, box-shadow 0.16s ease;
+}
+
+.actionButton {
+  flex: 1 1 auto;
+}
+
+.actionButton:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
+.actionButton:focus-visible,
+.overflowSummary:focus-visible {
+  outline: 2px solid var(--mm-color-primary-500);
+  outline-offset: 2px;
+}
+
+.actionButton:hover:not(:disabled),
+.overflowSummary:hover {
+  border-color: var(--mm-color-primary-500);
+  box-shadow: var(--mm-shadow-sm);
+}
+
+.variant-primary {
+  background: var(--mm-color-primary-600);
+  border-color: var(--mm-color-primary-600);
+  color: var(--mm-white);
+}
+
+.variant-primary:hover:not(:disabled) {
+  background: var(--mm-color-primary-700);
+  border-color: var(--mm-color-primary-700);
+}
+
+.variant-secondary {
+  background: var(--mm-gray-50);
+  color: var(--mm-gray-800);
+}
+
+.variant-danger,
+.priority-danger {
+  background: var(--mm-error);
+  border-color: var(--mm-error);
+  color: var(--mm-white);
+}
+
+.variant-danger:hover:not(:disabled),
+.priority-danger:hover:not(:disabled) {
+  background: var(--mm-color-error-600);
+  border-color: var(--mm-color-error-600);
+}
+
+.icon,
+.emojiIcon {
+  flex: 0 0 auto;
+  font-size: 1.1rem;
+  line-height: 1;
+}
+
+.label {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.overflow {
+  position: relative;
+  flex: 0 0 auto;
+}
+
+.overflowSummary {
+  height: 100%;
+  list-style: none;
+}
+
+.overflowSummary::-webkit-details-marker {
+  display: none;
+}
+
+.overflowMenu {
+  position: absolute;
+  right: 0;
+  z-index: 20;
+  display: grid;
+  min-width: 220px;
+  gap: var(--mm-spacing-xs, 8px);
+  margin-top: var(--mm-spacing-xs, 8px);
+  padding: var(--mm-spacing-xs, 8px);
+  border: 1px solid var(--mm-gray-200);
+  border-radius: var(--mm-radius-lg, 12px);
+  background: var(--mm-white);
+  box-shadow: var(--mm-shadow-lg);
+}
+
+.emptyState {
+  width: 100%;
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--mm-spacing-xs, 8px) var(--mm-spacing-sm, 12px);
+  border: 1px dashed var(--mm-gray-300);
+  border-radius: var(--mm-radius-md, 8px);
+  color: var(--mm-gray-600);
+  font-size: var(--mm-font-size-sm);
+  text-align: center;
+}
+
+.mode-list-row .visibleActions,
+.mode-card .visibleActions {
+  flex-wrap: wrap;
+}
+
+@media (max-width: 640px) {
+  .rail,
+  .visibleActions {
+    flex-direction: column;
+  }
+
+  .actionButton,
+  .overflowSummary {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .overflow {
+    width: 100%;
+  }
+
+  .overflowMenu {
+    position: static;
+    width: 100%;
+    min-width: 0;
+  }
+}

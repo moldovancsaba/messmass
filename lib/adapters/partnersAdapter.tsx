@@ -25,8 +25,10 @@ export const partnersEntityConfig: AdminEntityConfig<PartnerResponse> = {
     {
       id: 'partner-reports-workspace',
       label: 'Reports',
+      mobileLabel: 'Reports',
       icon: 'view_list',
       variant: 'primary',
+      priority: 'primary',
       requiredCapabilities: ['report-workspace'],
       requiredPermissions: ['admin'],
       execution: {
@@ -37,8 +39,10 @@ export const partnersEntityConfig: AdminEntityConfig<PartnerResponse> = {
     {
       id: 'partner-open-editor',
       label: 'Open Editor',
+      mobileLabel: 'Editor',
       icon: 'bar_chart',
       variant: 'secondary',
+      priority: 'primary',
       requiredCapabilities: ['edit-content'],
       requiredPermissions: ['admin'],
       execution: {
@@ -50,9 +54,10 @@ export const partnersEntityConfig: AdminEntityConfig<PartnerResponse> = {
     {
       id: 'partner-report-share',
       label: 'Share Report',
+      mobileLabel: 'Share',
       icon: 'ios_share',
       variant: 'secondary',
-      surfaces: ['list'],
+      priority: 'secondary',
       requiredCapabilities: ['report', 'share'],
       requiredPermissions: ['admin'],
       execution: {
@@ -64,9 +69,10 @@ export const partnersEntityConfig: AdminEntityConfig<PartnerResponse> = {
     {
       id: 'partner-kyc',
       label: 'KYC Data',
+      mobileLabel: 'KYC',
       icon: 'table_chart',
       variant: 'secondary',
-      surfaces: ['list'],
+      priority: 'overflow',
       requiredCapabilities: ['kyc'],
       requiredPermissions: ['admin'],
       execution: {
@@ -80,6 +86,7 @@ export const partnersEntityConfig: AdminEntityConfig<PartnerResponse> = {
       label: 'Analytics',
       icon: 'insert_chart',
       variant: 'primary',
+      priority: 'secondary',
       requiredCapabilities: ['analytics'],
       requiredPermissions: ['admin'],
       execution: {
@@ -93,6 +100,7 @@ export const partnersEntityConfig: AdminEntityConfig<PartnerResponse> = {
       label: 'Edit',
       icon: '✏️',
       variant: 'secondary',
+      priority: 'overflow',
       requiredCapabilities: ['edit'],
       requiredPermissions: ['admin'],
       execution: {
@@ -105,6 +113,7 @@ export const partnersEntityConfig: AdminEntityConfig<PartnerResponse> = {
       label: 'Delete',
       icon: '🗑️',
       variant: 'danger',
+      priority: 'danger',
       requiredCapabilities: ['delete'],
       requiredPermissions: ['admin'],
       execution: {
@@ -142,6 +151,7 @@ export const partnersAdapter: AdminPageAdapter<PartnerResponse> = {
         label: 'Icon',
         width: '60px',
         className: 'text-center',
+        mobile: { behavior: 'hidden' },
         render: (partner) => (
           <span className="text-2xl">{partner.showEmoji !== false ? partner.emoji : ''}</span>
         ),
@@ -150,6 +160,7 @@ export const partnersAdapter: AdminPageAdapter<PartnerResponse> = {
         key: 'logoUrl',
         label: 'Logo',
         width: '80px',
+        mobile: { behavior: 'hidden' },
         render: (partner) =>
           partner.logoUrl ? (
             <Image
@@ -169,6 +180,7 @@ export const partnersAdapter: AdminPageAdapter<PartnerResponse> = {
         label: 'Name',
         sortable: true,
         minWidth: '200px',
+        mobile: { behavior: 'primary' },
         render: (partner) => (
           <span className="adapter-primary-field">{partner.name}</span>
         ),
@@ -177,6 +189,7 @@ export const partnersAdapter: AdminPageAdapter<PartnerResponse> = {
         key: 'hashtags',
         label: 'Hashtags',
         minWidth: '250px',
+        mobile: { behavior: 'secondary' },
         render: (partner) => (
           <div className="adapter-tag-cloud">
             {/* Traditional hashtags */}
@@ -214,6 +227,7 @@ export const partnersAdapter: AdminPageAdapter<PartnerResponse> = {
         key: 'bitlyLinks',
         label: 'Bitly Links',
         width: '150px',
+        mobile: { behavior: 'hidden' },
         render: (partner) =>
           partner.bitlyLinks && partner.bitlyLinks.length > 0 ? (
             <div className="adapter-link-list">
@@ -239,6 +253,7 @@ export const partnersAdapter: AdminPageAdapter<PartnerResponse> = {
         label: 'Updated',
         sortable: true,
         width: '120px',
+        mobile: { behavior: 'secondary' },
         render: (partner) => (
           <span className="adapter-meta-text">
             {new Date(partner.updatedAt).toLocaleDateString()}

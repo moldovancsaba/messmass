@@ -246,4 +246,14 @@
   .grid {
     grid-template-columns: 1fr;
   }
+
+  .cardActions {
+    flex-direction: column;
+  }
+
+  .editButton,
+  .deleteButton {
+    width: 100%;
+    min-height: 44px;
+  }
 }

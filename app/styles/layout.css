@@ -195,6 +195,7 @@
 /* Uniform action buttons across admin tables */
 .actions-cell .btn {
   min-width: 112px;
+  min-height: 44px;
   justify-content: flex-start; /* WHAT: Left-align button content with icon */
   border-radius: var(--radius-xl);
   white-space: nowrap; /* WHAT: Prevent button text wrapping */
@@ -420,6 +421,13 @@
   
   .actions-cell {
     flex-direction: column;
+    align-items: stretch;
+    width: 100%;
+  }
+
+  .actions-cell .btn {
+    width: 100%;
+    justify-content: center;
   }
   
   .projects-header {

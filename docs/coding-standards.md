@@ -132,6 +132,38 @@ One reported example ⇒ assume there are more ⇒ find and fix the whole class 
 
 ---
 
+## Mobile Admin Action Contract
+
+All admin list/card actions must route through the shared action contract unless a page is still on a legacy custom surface.
+
+Required for unified admin surfaces:
+- define action metadata in `AdminEntityActionDefinition` / `AdminSurfaceAction`
+- set `priority` for sequencing: `primary`, `secondary`, `overflow`, or `danger`
+- use `mobileLabel` when the desktop label is too long for portrait screens
+- use `ariaLabel` when the visible label does not fully describe the action
+- use `disabled` for permission/data-gated states instead of hiding recoverable actions
+- define `ListColumnConfig.mobile` for high-traffic tables instead of hiding columns by `nth-child`
+- set `actionEmptyStateLabel` when a permitted page may render with no row/card actions
+
+Required behavior:
+- mobile portrait actions remain visible and reachable
+- touch targets are at least 44px high
+- keyboard focus uses a visible focus ring
+- destructive actions are never the first visible action when safer primary actions exist
+- overflow actions remain keyboard accessible
+- row/card click handlers must not fire when an action button is clicked
+
+Legacy/custom admin surfaces:
+- use `.action-buttons-container` or `.mobile-action-stack`
+- ensure custom CSS stacks action buttons full-width below `640px`
+- do not create page-specific mobile hiding rules unless the adapter explicitly defines the mobile behavior
+
+Validation:
+- run `npm run style:check`, `npm run lint`, `npm run type-check`, `npm test`, and `npm run build`
+- add or update regression tests when changing action sequencing, permissions, or mobile column behavior
+
+---
+
 ## 🎨 Landing and public page styling
 
 **Rule:** Every element on the landing page (and any future landing or public pages) must use **global CSS design tokens only**. No in-code hardcoded style values.

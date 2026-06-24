@@ -26,8 +26,10 @@ export const projectsEntityConfig: AdminEntityConfig<ProjectDTO> = {
     {
       id: 'project-open-report',
       label: 'Open Report',
+      mobileLabel: 'Report',
       icon: 'visibility',
       variant: 'primary',
+      priority: 'primary',
       requiredCapabilities: ['report'],
       requiredPermissions: ['admin'],
       execution: {
@@ -39,8 +41,10 @@ export const projectsEntityConfig: AdminEntityConfig<ProjectDTO> = {
     {
       id: 'project-open-editor',
       label: 'Open Editor',
+      mobileLabel: 'Editor',
       icon: 'bar_chart',
       variant: 'primary',
+      priority: 'primary',
       requiredCapabilities: ['edit-content'],
       requiredPermissions: ['admin'],
       execution: {
@@ -52,9 +56,10 @@ export const projectsEntityConfig: AdminEntityConfig<ProjectDTO> = {
     {
       id: 'project-share-report',
       label: 'Share Report',
+      mobileLabel: 'Share Report',
       icon: 'ios_share',
       variant: 'secondary',
-      surfaces: ['list'],
+      priority: 'secondary',
       requiredCapabilities: ['report', 'share'],
       requiredPermissions: ['admin'],
       execution: {
@@ -66,9 +71,10 @@ export const projectsEntityConfig: AdminEntityConfig<ProjectDTO> = {
     {
       id: 'project-share-editor',
       label: 'Share Editor',
+      mobileLabel: 'Share Editor',
       icon: 'share',
       variant: 'secondary',
-      surfaces: ['list'],
+      priority: 'overflow',
       requiredCapabilities: ['edit-content', 'share'],
       requiredPermissions: ['admin'],
       execution: {
@@ -82,6 +88,7 @@ export const projectsEntityConfig: AdminEntityConfig<ProjectDTO> = {
       label: 'Edit',
       icon: 'edit',
       variant: 'secondary',
+      priority: 'overflow',
       requiredCapabilities: ['edit'],
       requiredPermissions: ['admin'],
       execution: {
@@ -92,9 +99,10 @@ export const projectsEntityConfig: AdminEntityConfig<ProjectDTO> = {
     {
       id: 'project-export-csv',
       label: 'Export CSV',
+      mobileLabel: 'Export',
       icon: 'download',
       variant: 'secondary',
-      surfaces: ['list'],
+      priority: 'overflow',
       requiredCapabilities: ['export'],
       requiredPermissions: ['admin'],
       execution: {
@@ -105,9 +113,10 @@ export const projectsEntityConfig: AdminEntityConfig<ProjectDTO> = {
     {
       id: 'project-kyc',
       label: 'KYC Data',
+      mobileLabel: 'KYC',
       icon: 'table_chart',
       variant: 'secondary',
-      surfaces: ['list'],
+      priority: 'overflow',
       requiredCapabilities: ['kyc'],
       requiredPermissions: ['admin'],
       execution: {
@@ -121,6 +130,7 @@ export const projectsEntityConfig: AdminEntityConfig<ProjectDTO> = {
       label: 'Delete',
       icon: 'delete',
       variant: 'danger',
+      priority: 'danger',
       requiredCapabilities: ['delete'],
       requiredPermissions: ['admin'],
       execution: {
@@ -154,6 +164,7 @@ export const projectsAdapter: AdminPageAdapter<ProjectDTO> = {
         label: 'Event Name',
         sortable: true,
         minWidth: '250px',
+        mobile: { behavior: 'primary', label: 'Event' },
         render: (project) => {
           return (
             <div>
@@ -228,6 +239,7 @@ export const projectsAdapter: AdminPageAdapter<ProjectDTO> = {
         label: 'Date',
         sortable: true,
         width: '120px',
+        mobile: { behavior: 'secondary' },
         render: (project) => (
           <span className="text-sm">
             {new Date(project.eventDate).toLocaleDateString()}
@@ -239,6 +251,7 @@ export const projectsAdapter: AdminPageAdapter<ProjectDTO> = {
         label: 'Images',
         width: '100px',
         sortable: true,
+        mobile: { behavior: 'hidden' },
         render: (project) => {
           const total = (project.stats.remoteImages || 0) + 
                        (project.stats.hostessImages || 0) + 
@@ -251,6 +264,7 @@ export const projectsAdapter: AdminPageAdapter<ProjectDTO> = {
         label: 'Total Fans',
         width: '100px',
         sortable: true,
+        mobile: { behavior: 'secondary', label: 'Fans' },
         render: (project) => {
           const total = getStoredOrDerivedTotalFans(project.stats);
           return <span>{total.toLocaleString()}</span>;
@@ -261,6 +275,7 @@ export const projectsAdapter: AdminPageAdapter<ProjectDTO> = {
         label: 'Attendees',
         width: '100px',
         sortable: true,
+        mobile: { behavior: 'hidden' },
         render: (project) => (
           <span>{(project.stats.eventAttendees || 0).toLocaleString()}</span>
         ),

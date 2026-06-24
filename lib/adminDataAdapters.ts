@@ -7,12 +7,18 @@ import React from 'react';
 
 export interface AdminSurfaceAction<T> {
   label: string;
+  mobileLabel?: string;
   icon?: string;
   variant?: 'primary' | 'secondary' | 'danger';
+  priority?: 'primary' | 'secondary' | 'overflow' | 'danger';
   handler: (item: T) => void;
   title?: string;
+  ariaLabel?: string | ((item: T) => string);
+  disabled?: boolean | ((item: T) => boolean);
   className?: string;
 }
+
+export type MobileColumnBehavior = 'primary' | 'secondary' | 'hidden';
 
 /**
  * WHAT: Configuration for a single column in list view
@@ -37,6 +43,11 @@ export interface ListColumnConfig<T> {
   className?: string;
   /** CSS class name for header cell */
   headerClassName?: string;
+  /** Mobile card behavior for portrait table collapse */
+  mobile?: {
+    behavior?: MobileColumnBehavior;
+    label?: string;
+  };
 }
 
 /**
@@ -54,6 +65,8 @@ export interface ListViewConfig<T> {
   onRowClick?: (item: T) => void;
   /** Optional custom row className */
   rowClassName?: (item: T) => string;
+  /** Optional message shown when a row has no permitted actions */
+  actionEmptyStateLabel?: string;
 }
 
 /**
@@ -98,6 +111,8 @@ export interface CardViewConfig<T> {
   cardClassName?: (item: T) => string;
   /** Optional badge/tag renderer */
   renderBadge?: (item: T) => React.ReactNode;
+  /** Optional message shown when a card has no permitted actions */
+  actionEmptyStateLabel?: string;
 }
 
 /**

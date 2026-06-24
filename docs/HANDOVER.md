@@ -2,7 +2,7 @@
 
 This file is onboarding plus operational context for the next agent. Keep it accurate when behavior, process, or current delivery state changes.
 
-**Last Updated:** 2026-06-24 (GDS 3.4.6 package authority upgraded)
+**Last Updated:** 2026-06-24 (mobile admin action UX hardening)
 
 ## 🚨 CRITICAL MUST-READ FOR ALL AGENTS: STYLING & COMPONENTS 🚨
 
@@ -39,6 +39,44 @@ You MUST completely read and obey `docs/coding-standards.md` and `docs/component
 - Current GDS package baseline: `@doneisbetter/gds-theme`, `@doneisbetter/gds-core`, and `@doneisbetter/gds-admin` at `3.4.6`
 - Local vendored `@gds/*` packages have been removed from active package authority.
 - Formally closed on SSOT board (historical): `#354`, `#355`, `#356`, `#357`, `#358`, `#359`
+
+## 2026-06-24 - Mobile admin action UX hardening (`moldovancsaba/messmass#64`-`#70`)
+
+- Canonical implementation:
+  - `components/admin/AdminActionRail.tsx`
+  - `components/admin/AdminActionRail.module.css`
+  - `components/UnifiedCardView.tsx`
+  - `components/UnifiedListView.tsx`
+  - `lib/adminDataAdapters.ts`
+  - `lib/adminEntitySystem.ts`
+- Product behavior:
+  - list and card actions now share one accessible action rail
+  - mobile portrait action buttons remain visible, full-width when constrained, keyboard-focusable, and at least 44px tall
+  - rare/destructive actions are sequenced into overflow instead of disappearing
+  - list mobile collapse is adapter-driven through `ListColumnConfig.mobile`, not hard-coded `nth-child` hiding
+  - organizations show a permission-safe empty action state when the user lacks superadmin actions
+  - organization creation is gated to `superadmin` in the page action bar
+- Scope covered:
+  - Events/projects adapter
+  - Partners adapter
+  - Organizations adapter
+  - Unified list/card surfaces
+  - Organization and partner report workspaces
+  - Styles admin cards
+  - legacy `.actions-cell` and `.action-buttons-container` surfaces
+- Regression coverage:
+  - `tests/admin-action-rail.test.tsx`
+  - `tests/mobile-admin-action-contract.test.ts`
+- Release gate for this class of work:
+  - `npm run gds:sync`
+  - `npm run style:check`
+  - `npm run lint`
+  - `npm run type-check`
+  - `npm test`
+  - `MONGODB_URI='mongodb://127.0.0.1:27017/messmass-build-check' npm run build`
+- Rollback:
+  - revert the delivery commit to restore prior button rendering
+  - no database migration, environment change, or API contract change is required for rollback
 
 ## Current Priorities
 - Board-derived priority reference: [operations-delivery-focus.md](operations/operations-delivery-focus.md)

@@ -50,9 +50,13 @@ export type AdminEntityActionExecution<T> =
 export interface AdminEntityActionDefinition<T> {
   id: string;
   label: string;
+  mobileLabel?: string;
   icon?: string;
   variant?: 'primary' | 'secondary' | 'danger';
+  priority?: 'primary' | 'secondary' | 'overflow' | 'danger';
   title?: string;
+  ariaLabel?: string | ((item: T) => string);
+  disabled?: boolean | ((item: T) => boolean);
   surfaces?: AdminEntitySurface[];
   requiredCapabilities?: AdminEntityCapability[];
   requiredPermissions?: AdminEntityPermission[];
@@ -171,9 +175,13 @@ export function getAdminEntitySurfaceActions<T>(
     .filter((action) => hasRequiredPermissions(action.requiredPermissions, runtime.user))
     .map((action) => ({
       label: action.label,
+      mobileLabel: action.mobileLabel,
       icon: action.icon,
       variant: action.variant,
+      priority: action.priority,
       title: action.title,
+      ariaLabel: action.ariaLabel,
+      disabled: action.disabled,
       handler: (item: T) => executeAdminEntityAction(action, item, runtime),
     }));
 }

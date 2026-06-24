@@ -28,8 +28,10 @@ export const organizationsEntityConfig: AdminEntityConfig<OrganizationDTO> = {
     {
       id: 'organization-reports',
       label: 'Reports',
+      mobileLabel: 'Reports',
       icon: 'visibility',
       variant: 'primary',
+      priority: 'primary',
       requiredCapabilities: ['report-workspace'],
       requiredPermissions: ['superadmin'],
       execution: {
@@ -41,8 +43,10 @@ export const organizationsEntityConfig: AdminEntityConfig<OrganizationDTO> = {
     {
       id: 'organization-report',
       label: 'Open Default Report',
+      mobileLabel: 'Default Report',
       icon: 'visibility',
       variant: 'secondary',
+      priority: 'secondary',
       requiredCapabilities: ['report'],
       requiredPermissions: ['superadmin'],
       execution: {
@@ -56,6 +60,7 @@ export const organizationsEntityConfig: AdminEntityConfig<OrganizationDTO> = {
       label: 'Edit',
       icon: 'edit',
       variant: 'secondary',
+      priority: 'overflow',
       requiredCapabilities: ['edit'],
       requiredPermissions: ['superadmin'],
       execution: {
@@ -66,8 +71,10 @@ export const organizationsEntityConfig: AdminEntityConfig<OrganizationDTO> = {
     {
       id: 'organization-manage-members',
       label: 'Manage Members',
+      mobileLabel: 'Members',
       icon: 'group',
       variant: 'secondary',
+      priority: 'overflow',
       requiredCapabilities: ['manage-members'],
       requiredPermissions: ['superadmin'],
       execution: {
@@ -80,6 +87,7 @@ export const organizationsEntityConfig: AdminEntityConfig<OrganizationDTO> = {
       label: 'Delete',
       icon: 'delete',
       variant: 'danger',
+      priority: 'danger',
       requiredCapabilities: ['delete'],
       requiredPermissions: ['superadmin'],
       execution: {
@@ -101,6 +109,7 @@ export const organizationsAdapter: AdminPageAdapter<OrganizationDTO> = {
         label: 'Name',
         sortable: true,
         minWidth: '220px',
+        mobile: { behavior: 'primary' },
         render: (org) => (
           <div className="flex items-center gap-2">
             <span>{org.metadata?.emoji || '🏢'}</span>
@@ -113,6 +122,7 @@ export const organizationsAdapter: AdminPageAdapter<OrganizationDTO> = {
         label: 'Slug',
         sortable: true,
         minWidth: '180px',
+        mobile: { behavior: 'secondary' },
         render: (org) => <span className="adapter-meta-text">/{org.slug}</span>,
       },
       {
@@ -120,9 +130,11 @@ export const organizationsAdapter: AdminPageAdapter<OrganizationDTO> = {
         label: 'Status',
         sortable: true,
         minWidth: '120px',
+        mobile: { behavior: 'secondary' },
         render: (org) => <span className="adapter-meta-text">{org.status || 'active'}</span>,
       },
     ],
+    actionEmptyStateLabel: 'No organization actions are available for your role.',
   },
   cardConfig: {
     primaryField: (org) => (
@@ -145,6 +157,7 @@ export const organizationsAdapter: AdminPageAdapter<OrganizationDTO> = {
       },
     ],
     renderBadge: (org) => <span>{org.status || 'active'}</span>,
+    actionEmptyStateLabel: 'No organization actions are available for your role.',
   },
   searchFields: ['name', 'slug', 'status'],
   emptyStateMessage: 'No organizations found. Create one to begin.',

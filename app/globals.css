@@ -888,6 +888,10 @@ img {
   flex-wrap: wrap;
 }
 
+.actions-cell .btn {
+  min-height: 44px;
+}
+
 /* Project Details */
 .project-details {
   padding: 2rem;
@@ -1067,6 +1071,13 @@ img {
   
   .actions-cell {
     flex-direction: column;
+    align-items: stretch;
+    width: 100%;
+  }
+
+  .actions-cell .btn {
+    width: 100%;
+    justify-content: center;
   }
   
   .project-details-header {

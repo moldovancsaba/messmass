@@ -97,9 +97,10 @@
   vertical-align: middle;
 }
 
-/* WHAT: Actions cell styling - REMOVED */
-/* WHY: Using centralized .actions-cell from layout.css for consistency with Partners page */
-/* See: app/styles/layout.css lines 177-190 for the unified pattern */
+.actionsCell {
+  width: 1%;
+  min-width: 240px;
+}
 
 /* WHAT: Loading skeleton styling */
 /* WHY: Visual feedback during data loading */
@@ -157,8 +158,8 @@
   max-width: 400px;
 }
 
-/* WHAT: Responsive adjustments for mobile - CARD-STYLE LAYOUT */
-/* WHY: Hide unnecessary columns, show all actions under event name */
+/* WHAT: Responsive adjustments for mobile - card-style layout */
+/* WHY: Mobile visibility is configured per column, not by fragile table position */
 @media (max-width: 768px) {
   /* WHAT: Transform table into mobile-friendly card layout */
   /* WHY: Better UX on narrow screens - vertical stacking */
@@ -206,39 +207,47 @@
     border: none;
   }
   
-  /* WHAT: Hide Date, Images, Total Fans, Attendees columns */
-  /* WHY: User requirement - show only Event Name and Actions on mobile */
-  .table tbody td:nth-child(2), /* Date */
-  .table tbody td:nth-child(3), /* Images */
-  .table tbody td:nth-child(4), /* Total Fans */
-  .table tbody td:nth-child(5)  /* Attendees */ {
+  .mobileHidden {
     display: none !important;
   }
-  
-  /* WHAT: Event Name cell - full width at top */
-  .table tbody td:first-child {
+
+  .mobilePrimary {
     margin-bottom: var(--mm-spacing-md, 16px);
     padding-bottom: var(--mm-spacing-md, 16px);
     border-bottom: 1px solid var(--mm-gray-200);
   }
-  
-  /* WHAT: Actions cell - full width below Event Name */
-  /* WHY: All action buttons stacked vertically for easy tapping */
-  .table .actions-cell {
+
+  .mobileSecondary {
+    display: flex !important;
+    justify-content: space-between;
+    gap: var(--mm-spacing-sm, 12px);
+    margin-bottom: var(--mm-spacing-xs, 8px);
+    color: var(--mm-gray-700);
+  }
+
+  .mobileSecondary::before {
+    content: attr(data-label);
+    flex: 0 0 auto;
+    color: var(--mm-gray-500);
+    font-weight: var(--mm-font-weight-semibold);
+  }
+
+  .actionsCell {
     width: 100% !important;
-    display: flex;
-    flex-direction: column;
-    gap: var(--mm-spacing-xs, 8px);
+    min-width: 0;
+    display: block !important;
     margin-top: var(--mm-spacing-sm, 12px);
   }
-  
-  /* WHAT: Make action buttons full-width and easy to tap */
-  .table .actions-cell .btn {
-    width: 100% !important;
-    font-size: var(--mm-font-size-sm);
-    padding: var(--mm-spacing-sm, 12px);
-    justify-content: center;
-    text-align: center;
+
+  .actionsCell::before {
+    content: attr(data-label);
+    display: block;
+    margin-bottom: var(--mm-spacing-xs, 8px);
+    color: var(--mm-gray-500);
+    font-size: var(--mm-font-size-xs);
+    font-weight: var(--mm-font-weight-semibold);
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
   }
   
   /* WHAT: Loading skeleton rows */

@@ -229,6 +229,8 @@ export default function OrganizationsAdminPage() {
 
   if (!user) return null;
 
+  const canCreateOrganization = user.role === 'superadmin';
+
   return (
     <>
       <UnifiedAdminPage
@@ -238,7 +240,7 @@ export default function OrganizationsAdminPage() {
         title="🏢 Organization Management"
         subtitle="Create organizations, assign partner members, and open report/editor tools"
         backLink="/admin"
-        actionButtons={[
+        actionButtons={canCreateOrganization ? [
           {
             label: 'Add Organization',
             onClick: () => setCreateOpen(true),
@@ -246,7 +248,7 @@ export default function OrganizationsAdminPage() {
             icon: '+',
             title: 'Create a new organization',
           },
-        ]}
+        ] : []}
         enableSearch
         enableSort
       />

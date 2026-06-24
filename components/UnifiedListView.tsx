@@ -6,8 +6,8 @@
 'use client';
 
 import React from 'react';
-import { ListViewConfig } from '@/lib/adminDataAdapters';
-import MaterialIcon from '@/components/MaterialIcon';
+import { ListColumnConfig, ListViewConfig } from '@/lib/adminDataAdapters';
+import AdminActionRail from '@/components/admin/AdminActionRail';
 import styles from './UnifiedListView.module.css';
 
 interface UnifiedListViewProps<T> {
@@ -64,6 +64,14 @@ export default function UnifiedListView<T extends { _id: string }>({
     onSortChange(field);
   };
 
+  const getMobileClassName = (column: ListColumnConfig<T>, index: number) => {
+    const behavior = column.mobile?.behavior || (index === 0 ? 'primary' : 'secondary');
+
+    if (behavior === 'hidden') return styles.mobileHidden;
+    if (behavior === 'primary') return styles.mobilePrimary;
+    return styles.mobileSecondary;
+  };
+
   // WHAT: Render empty state
   // WHY: User feedback when no data available
   if (!isLoading && items.length === 0) {
@@ -115,7 +123,7 @@ export default function UnifiedListView<T extends { _id: string }>({
                   </th>
                 );
               })}
-              {config.rowActions && config.rowActions.length > 0 && (
+              {((config.rowActions && config.rowActions.length > 0) || config.actionEmptyStateLabel) && (
                 <th>Actions</th>
               )}
             </tr>
@@ -131,7 +139,9 @@ export default function UnifiedListView<T extends { _id: string }>({
                       <div className={styles.skeleton} />
                     </td>
                   ))}
-                  {config.rowActions && <td><div className={styles.skeleton} /></td>}
+                  {((config.rowActions && config.rowActions.length > 0) || config.actionEmptyStateLabel) && (
+                    <td className={styles.actionsCell}><div className={styles.skeleton} /></td>
+                  )}
                 </tr>
               ))
             ) : (
@@ -156,34 +166,20 @@ export default function UnifiedListView<T extends { _id: string }>({
                     {config.columns.map((column) => (
                       <td
                         key={column.key}
-                        className={column.className || ''}
+                        className={`${column.className || ''} ${getMobileClassName(column, config.columns.indexOf(column))}`}
+                        data-label={column.mobile?.label || column.label}
                       >
                         {column.render ? column.render(item) : String((item as any)[column.key] || '')}
                       </td>
                     ))}
-                    {config.rowActions && config.rowActions.length > 0 && (
-                      <td className="actions-cell">
-                        {config.rowActions.map((action, idx) => (
-                          <button
-                            key={idx}
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              action.handler(item);
-                            }}
-                            className={`btn btn-small btn-${action.variant || 'primary'} ${action.className || ''}`}
-                            title={action.title}
-                            aria-label={action.label}
-                          >
-                            {action.icon && (
-                              typeof action.icon === 'string' ? (
-                                <MaterialIcon name={action.icon} variant="outlined" className="icon-sm-mr" />
-                              ) : (
-                                action.icon
-                              )
-                            )}
-                            {action.label}
-                          </button>
-                        ))}
+                    {((config.rowActions && config.rowActions.length > 0) || config.actionEmptyStateLabel) && (
+                      <td className={styles.actionsCell} data-label="Actions">
+                        <AdminActionRail
+                          actions={config.rowActions || []}
+                          item={item}
+                          mode="list-row"
+                          emptyStateLabel={config.actionEmptyStateLabel}
+                        />
                       </td>
                     )}
                   </tr>

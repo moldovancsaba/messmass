@@ -8,8 +8,8 @@
 import React from 'react';
 import Image from 'next/image';
 import { CardViewConfig, getNestedValue } from '@/lib/adminDataAdapters';
+import AdminActionRail from '@/components/admin/AdminActionRail';
 import ColoredCard from './ColoredCard';
-import MaterialIcon from './MaterialIcon';
 import styles from './UnifiedCardView.module.css';
 
 interface UnifiedCardViewProps<T> {
@@ -163,32 +163,14 @@ export default function UnifiedCardView<T extends { _id: string }>({
                 )}
 
                 {/* WHAT: Card actions */}
-                {config.cardActions && config.cardActions.length > 0 && (
+                {((config.cardActions && config.cardActions.length > 0) || config.actionEmptyStateLabel) && (
                   <div className={styles.cardActions}>
-                    {config.cardActions.map((action, idx) => (
-                      <button
-                        key={idx}
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          action.handler(item);
-                        }}
-                        className={`
-                          ${styles.actionButton}
-                          ${action.variant ? styles[`variant-${action.variant}`] : styles['variant-primary']}
-                          ${action.className || ''}
-                        `}
-                        title={action.title}
-                      >
-                        {action.icon && (
-                          <MaterialIcon 
-                            name={action.icon} 
-                            variant="outlined" 
-                            className="icon-sm-mr"
-                          />
-                        )}
-                        <span className={styles.actionLabel}>{action.label}</span>
-                      </button>
-                    ))}
+                    <AdminActionRail
+                      actions={config.cardActions || []}
+                      item={item}
+                      mode="card"
+                      emptyStateLabel={config.actionEmptyStateLabel}
+                    />
                   </div>
                 )}
               </div>

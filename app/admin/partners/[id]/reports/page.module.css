@@ -184,3 +184,28 @@
     grid-template-columns: 1fr;
   }
 }
+
+@media (max-width: 640px) {
+  .page {
+    padding: 16px;
+  }
+
+  .header,
+  .variantHeader {
+    align-items: stretch;
+  }
+
+  .headerActions,
+  .variantActions,
+  .controlRow {
+    width: 100%;
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .primaryButton,
+  .secondaryButton,
+  .inlineButton {
+    width: 100%;
+  }
+}

@@ -117,71 +117,10 @@
 /* WHAT: Card actions styling */
 /* WHY: Action buttons at bottom of card */
 .cardActions {
-  display: flex;
-  gap: var(--mm-spacing-xs, 8px);
+  display: block;
   padding-top: var(--mm-spacing-sm, 12px);
   border-top: 1px solid var(--mm-gray-200);
   margin-top: var(--mm-spacing-sm, 12px);
-}
-
-.actionButton {
-  display: inline-flex;
-  align-items: center;
-  gap: var(--mm-spacing-xs, 6px);
-  padding: var(--mm-spacing-xs, 8px) var(--mm-spacing-sm, 12px);
-  border: 1px solid transparent;
-  border-radius: var(--mm-radius-md, 6px);
-  font-size: var(--mm-font-size-sm);
-  font-weight: var(--mm-font-weight-medium);
-  cursor: pointer;
-  transition: all 0.2s ease;
-  flex: 1;
-  justify-content: center;
-}
-
-.actionButton:focus-visible {
-  outline: 2px solid var(--mm-color-primary-500);
-  outline-offset: 2px;
-}
-
-/* WHAT: Action button variants */
-/* WHY: Visual differentiation for different action types */
-.actionButton.variant-primary {
-  background: var(--mm-color-primary-500);
-  color: white;
-}
-
-.actionButton.variant-primary:hover {
-  background: var(--mm-color-primary-600);
-}
-
-.actionButton.variant-secondary {
-  background: var(--mm-gray-100);
-  color: var(--mm-gray-700);
-  border-color: var(--mm-gray-300);
-}
-
-.actionButton.variant-secondary:hover {
-  background: var(--mm-gray-200);
-  border-color: var(--mm-gray-400);
-}
-
-.actionButton.variant-danger {
-  background: var(--mm-error, var(--mm-error));
-  color: white;
-}
-
-.actionButton.variant-danger:hover {
-  background: var(--mm-error);
-}
-
-.actionIcon {
-  font-size: var(--mm-font-size-base);
-  line-height: 1;
-}
-
-.actionLabel {
-  font-size: var(--mm-font-size-sm);
 }
 
 /* WHAT: Loading skeleton styling */
@@ -288,11 +227,4 @@
     font-size: var(--mm-font-size-base);
   }
   
-  .cardActions {
-    flex-direction: column;
-  }
-  
-  .actionButton {
-    width: 100%;
-  }
 }
