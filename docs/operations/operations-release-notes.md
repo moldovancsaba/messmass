@@ -1,8 +1,50 @@
 # {messmass} Release Notes
 Status: Active
-Last Updated: 2026-05-13T09:30:00.000Z
+Last Updated: 2026-06-24T13:15:00.000Z
 Canonical: No
 Owner: Operations
+
+## [v12.1.13] — 2026-06-24T13:15:00.000Z
+
+### Summary
+REPORT VARIANT PERIOD RELIABILITY: Fixed the modal time-period selector failure, added deterministic period validation, added audit tooling for existing custom-period data, and refreshed repository documentation/architecture references.
+
+### What Was Fixed
+
+#### Report variant time-period selector
+**WHAT**: Report variant create modals now render the Mantine select dropdown inside the modal instead of through a portal that can be interpreted as an outside click.
+**WHY**: Selecting a period could close the dialog, making it look impossible to create variants with a selected period.
+**HOW**: Extended `UnifiedSelectField` with `withinPortal`, then passed `withinPortal={false}` from organization and partner report variant modals.
+
+#### Period API and data contract
+**WHAT**: Period writes now normalize presets, require complete custom date ranges, reject invalid date formats, reject reversed ranges, and clear stale custom ranges for non-custom presets.
+**WHY**: The UI fix needed server-side safety so malformed records could not re-enter the system through direct API writes or future forms.
+**HOW**: Added `lib/reportPeriodValidation.ts`, wired create/update in `lib/reportVariants.ts`, and mapped validation failures to stable 400 responses with machine-readable codes.
+
+#### Operational audit and regression coverage
+**WHAT**: Added a dry-run/repair audit command for invalid custom-period records and regression tests for validation, audit classification, and modal select configuration.
+**WHY**: Production recovery must be predictable and independently executable.
+**HOW**: Added `npm run audit:report-variant-periods`, `scripts/audit-report-variant-periods.ts`, and the related Jest suites.
+
+#### Documentation, architecture, and comment guidance
+**WHAT**: Updated README, handover, architecture, low-level design, release notes, and coding standards to match the shipped behavior and current version.
+**WHY**: Delivery state, API contracts, and comment expectations had drifted from the code.
+**HOW**: Recorded the current implementation contract and clarified that comments should explain non-obvious intent, invariants, and operational tradeoffs rather than restating code.
+
+### Testing
+- `git diff --check`
+- `npm run lint`
+- `npm run type-check`
+- `npm test -- --runInBand`
+- `npm run style:check`
+- `npm run gds:sync`
+- `npm run audit:report-variant-periods`
+- `npm run build`
+- GitHub Actions on `main`: Build, Lint, Type Check, and guardrails passed for `8218de8`
+- Vercel production deployment `dpl_GhgeythZUYDD678P7WNQFrPm1ffr` was Ready with no warning/error logs after smoke checks
+
+### Version
+v12.1.12 → v12.1.13 (PATCH — report variant period selector reliability + documentation/version sync)
 
 ## [v12.1.12] — 2026-05-13T09:30:00.000Z
 

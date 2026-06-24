@@ -1,6 +1,6 @@
 # {messmass}
 Status: Active
-Last Updated: 2026-05-20
+Last Updated: 2026-06-24
 Canonical: No
 Owner: Product
 
@@ -12,7 +12,7 @@ Owner: Product
 <p align="center"><strong>Enterprise event analytics, partner reporting, reporting operations, and admin workflow tooling for sports organizations, venues, and brands.</strong></p>
 
 <p align="center">
-  <img src="https://img.shields.io/badge/version-v12.1.12-2563EB?style=for-the-badge" alt="Version">
+  <img src="https://img.shields.io/badge/version-v12.1.13-2563EB?style=for-the-badge" alt="Version">
   <img src="https://img.shields.io/badge/platform-Web%20App-0F172A?style=for-the-badge" alt="Platform">
   <img src="https://img.shields.io/badge/stack-Next.js%20%7C%20MongoDB%20%7C%20Mantine-0EA5E9?style=for-the-badge" alt="Stack">
 </p>
@@ -33,6 +33,7 @@ Core capabilities:
 - Real-time event tracking through event editor and clicker/manual workflows
 - Partner, organization, and event administration in a unified admin system
 - Reporting Workspace for themes, builder composition, content, chart logic, and data dependencies
+- Report variant management with validated preset/custom time-period contracts
 - Analytics Workspace for sponsorship performance, activation proof, executive views, and insights
 - Public, partner, and organization report delivery surfaces
 - Bitly link attribution and click analytics across events and partners
@@ -126,13 +127,15 @@ npm run type-check
 npm run version:verify
 npm run style:check
 npm run style:audit
+npm run gds:sync
+npm run audit:report-variant-periods
 ```
 
 Important repo note:
 - If `npm run type-check` fails on missing `.next/types`, run `npm run build` first and rerun the type check.
 
 Current release version:
-- `v12.1.12`
+- `v12.1.13`
 
 Live product:
 - Website: [messmass.doneisbetter.com](https://messmass.doneisbetter.com)
@@ -154,6 +157,12 @@ Current UI foundation note:
 - Legacy local wrappers and CSS systems still exist as compatibility layers until the board-tracked Mantine migration chain is completed
 - Local vendored `@gds/*` packages are no longer active package authority
 
+Current report variant reliability note:
+- report variant period writes are normalized by `lib/reportPeriodValidation.ts`
+- organization and partner report variant create modals validate custom date ranges before submit
+- Mantine selects inside `FormModal` must pass `withinPortal={false}` through `UnifiedSelectField`
+- operational data checks use `npm run audit:report-variant-periods`
+
 ## Documentation Map
 
 Canonical entrypoints:
@@ -161,6 +170,7 @@ Canonical entrypoints:
 - [docs/PROJECT_MANAGEMENT.md](docs/PROJECT_MANAGEMENT.md) — SSOT and GitHub Project workflow
 - [docs/HANDOVER.md](docs/HANDOVER.md) — current repo truth and latest delivery state
 - [docs/architecture.md](docs/architecture.md) — technical architecture
+- [docs/low-level-design.md](docs/low-level-design.md) — implementation-level contracts for current high-risk flows
 - [docs/coding-standards.md](docs/coding-standards.md) — code and styling rules
 - [docs/operations/operations-action-plan.md](docs/operations/operations-action-plan.md) — active execution queue
 - [docs/operations/operations-release-notes.md](docs/operations/operations-release-notes.md) — shipped version history

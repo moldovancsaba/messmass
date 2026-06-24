@@ -1,6 +1,6 @@
 # Documentation Index
 Status: Active
-Last Updated: 2026-05-14T10:00:00.000Z
+Last Updated: 2026-06-24T13:15:00.000Z
 Canonical: Yes
 Owner: Documentation
 
@@ -10,6 +10,7 @@ Owner: Documentation
 - [HANDOVER.md](HANDOVER.md) — Current repo handover, active context, and dated agent log.
 - [root-structure.md](root-structure.md) — Canonical top-level repository structure and what is allowed at root.
 - [architecture.md](architecture.md) — Platform architecture, dependency layout, and service-level diagrams.
+- [low-level-design.md](low-level-design.md) — Low-level implementation contracts for report variant periods, admin actions, and shared UI primitives.
 - [coding-standards.md](coding-standards.md) — Code style, naming conventions, and documentation expectations.
 - [documentation-governance.md](documentation-governance.md) — Rules for canonical docs, deprecation, and required metadata.
 

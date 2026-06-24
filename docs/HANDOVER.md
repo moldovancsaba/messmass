@@ -2,7 +2,7 @@
 
 This file is onboarding plus operational context for the next agent. Keep it accurate when behavior, process, or current delivery state changes.
 
-**Last Updated:** 2026-06-24 (report variant period selector reliability)
+**Last Updated:** 2026-06-24 (v12.1.13 documentation/version sync)
 
 ## 🚨 CRITICAL MUST-READ FOR ALL AGENTS: STYLING & COMPONENTS 🚨
 
@@ -20,25 +20,42 @@ You MUST completely read and obey `docs/coding-standards.md` and `docs/component
 
 ## SSOT (Work Tracking)
 - Board: <https://github.com/users/moldovancsaba/projects/8>
-- Issues repo: `moldovancsaba/mvp-factory-control`
+- Issues repo: `moldovancsaba/messmass`
 - Rules:
-  - Track {messmass} delivery work only in `mvp-factory-control` and on Project 8.
+  - Track {messmass} delivery work in `moldovancsaba/messmass` and on Project 8.
   - Do not create or manage product work as local task files.
   - Use [PROJECT_MANAGEMENT.md](PROJECT_MANAGEMENT.md) for the required SSOT cadence.
   - Update this handover doc whenever current truth changes materially.
 
 ## Current Repo Truth
 - Active branch: `main`
-- Last known HEAD during this update: `d678b3af9`
-- Working tree was clean before this handover/spec update.
+- Last known shipped HEAD before this documentation update: `8218de8`
+- Working tree was clean before this documentation/version update.
 - Most recent shipped repo work:
+  - report variant period selector reliability: `8218de8`
   - design-system remediation tranche 1: `4f66d54ae`
   - design-system remediation tranche 2: `06cedc822`
   - design-system remediation tranche 3: `d678b3af9`
-- Current product/doc baseline: `v12.1.12`
+- Current product/doc baseline: `v12.1.13`
 - Current GDS package baseline: `@doneisbetter/gds-theme`, `@doneisbetter/gds-core`, and `@doneisbetter/gds-admin` at `3.4.6`
 - Local vendored `@gds/*` packages have been removed from active package authority.
-- Formally closed on SSOT board (historical): `#354`, `#355`, `#356`, `#357`, `#358`, `#359`
+- Most recent closed delivery issues on Project 8: `moldovancsaba/messmass#71` through `#76`
+
+## 2026-06-24 - Documentation/version sync (`v12.1.13`)
+
+- Updated version metadata to `12.1.13` in `package.json` and `package-lock.json`.
+- Updated repository entrypoint and canonical docs:
+  - `README.md`
+  - `docs/index.md`
+  - `docs/architecture.md`
+  - `docs/low-level-design.md`
+  - `docs/coding-standards.md`
+  - `docs/operations/operations-release-notes.md`
+  - `docs/HANDOVER.md`
+- Code comment standard clarified:
+  - comments should explain non-obvious intent, invariants, browser/runtime quirks, operational tradeoffs, and rollback-sensitive behavior
+  - comments should not mechanically restate local assignments or duplicate code names
+- GitHub Project 8 tracking issue: `moldovancsaba/messmass#77`.
 
 ## 2026-06-24 - Report variant period selector reliability (`moldovancsaba/messmass#71`-`#76`)
 

@@ -1,10 +1,17 @@
 # {messmass} Architecture Documentation
 Status: Active
-Last Updated: 2026-04-27
+Last Updated: 2026-06-24
 Canonical: No
 Owner: Architecture
 
-Version: 12.1.10
+Version: 12.1.13
+
+**Report Variant Period Reliability (2026-06-24):**
+- **Period contract authority:** `lib/reportPeriodValidation.ts` is the shared server/client-adjacent contract for report variant period presets and custom date ranges.
+- **Modal select containment:** Mantine `Select` controls inside `FormModal` must be rendered within the modal tree through `UnifiedSelectField` with `withinPortal={false}`.
+- **Persistence safety:** `createReportVariant` and `updateReportVariant` normalize period data before writing to `report_variants`; invalid writes return 400 responses with stable error codes.
+- **Operational recovery:** `scripts/audit-report-variant-periods.ts` supports dry-run detection and explicit repair for invalid custom-period records without deleting variants.
+- **LLD reference:** See `docs/low-level-design.md` for request flow, contracts, edge cases, and test expectations.
 
 **Organization Admin Action Parity (2026-04-27):**
 - **Shared action model:** `/admin/organizations` now uses the same action emphasis and report-sharing interaction pattern as `/admin/partners` for the organization routes that actually exist.

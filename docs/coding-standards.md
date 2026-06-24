@@ -1,11 +1,11 @@
 # {messmass} Coding Standards
 Status: Active
-Last Updated: 2026-01-11T22:28:38.000Z
+Last Updated: 2026-06-24T13:15:00.000Z
 Canonical: No
 Owner: Architecture
 
-**Version:** 11.59.0  
-**Last Updated:** 2026-06-24T09:45:00.000Z (UTC)
+**Version:** 12.1.13
+**Last Updated:** 2026-06-24T13:15:00.000Z (UTC)
 
 ---
 
@@ -129,6 +129,39 @@ For any bug or UI/design issue:
 
 ### Rule Of Thumb
 One reported example ⇒ assume there are more ⇒ find and fix the whole class (or document the rest), then say done.
+
+---
+
+## Code Comment Quality Contract
+
+Comments are part of the implementation surface. They must improve future maintenance, not restate the syntax.
+
+Required:
+- explain non-obvious intent, invariants, compatibility constraints, browser/runtime quirks, data recovery behavior, or rollback-sensitive logic
+- keep comments close to the code they explain
+- update or remove comments when behavior changes
+- prefer named helpers and clear contracts over explanatory comments where the code can be made self-describing
+
+Avoid:
+- `WHAT` / `WHY` boilerplate that repeats the function or variable name
+- comments that describe simple assignments, imports, or JSX structure
+- stale release-history comments inside active code
+- comments that claim security, accessibility, or operational behavior without tests or docs backing the claim
+
+Acceptable example:
+
+```ts
+// Keep explicit null distinct from omission so partial updates cannot reuse stale custom dates.
+const hasCustomDateRangeUpdate = Object.prototype.hasOwnProperty.call(updates, 'customDateRange');
+```
+
+Unacceptable example:
+
+```ts
+// WHAT: Set customDateRange.
+// WHY: This variable stores the customDateRange.
+const customDateRange = updates.customDateRange;
+```
 
 ---
 

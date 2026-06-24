@@ -1,7 +1,5 @@
-// lib/db.ts
-// Central DB accessor built on top of lib/mongodb and lib/config
-// WHAT: Provides getDb() to retrieve the application's configured database
-// WHY: Removes repetition of clientPromise + db(config.dbName) across routes
+// Shared MongoDB accessors. Keep database selection centralized so routes and scripts
+// use the configured database name consistently.
 
 import clientPromise from './mongodb';
 import config from './config';
