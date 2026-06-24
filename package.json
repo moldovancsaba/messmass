@@ -130,9 +130,9 @@
     "security:migrate-users-to-password-hash": "tsx -r dotenv/config scripts/migrate-users-to-password-hash.ts dotenv_config_path=.env.local"
   },
   "dependencies": {
-    "@gds/theme": "file:./packages/gds-theme",
-    "@gds/core": "file:./packages/gds-core",
-    "@gds/admin": "file:./packages/gds-admin",
+    "@doneisbetter/gds-admin": "^3.4.6",
+    "@doneisbetter/gds-core": "^3.4.6",
+    "@doneisbetter/gds-theme": "^3.4.6",
     "@mantine/core": "^8.3.18",
     "@mantine/form": "^8.3.18",
     "@mantine/hooks": "^8.3.18",

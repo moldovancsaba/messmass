@@ -2,7 +2,7 @@
 
 This file is onboarding plus operational context for the next agent. Keep it accurate when behavior, process, or current delivery state changes.
 
-**Last Updated:** 2026-05-23 (Messmass Mantine foundation and primitive migration started)
+**Last Updated:** 2026-06-24 (GDS 3.4.6 package authority upgraded)
 
 ## 🚨 CRITICAL MUST-READ FOR ALL AGENTS: STYLING & COMPONENTS 🚨
 
@@ -36,6 +36,8 @@ You MUST completely read and obey `docs/coding-standards.md` and `docs/component
   - design-system remediation tranche 2: `06cedc822`
   - design-system remediation tranche 3: `d678b3af9`
 - Current product/doc baseline: `v12.1.12`
+- Current GDS package baseline: `@doneisbetter/gds-theme`, `@doneisbetter/gds-core`, and `@doneisbetter/gds-admin` at `3.4.6`
+- Local vendored `@gds/*` packages have been removed from active package authority.
 - Formally closed on SSOT board (historical): `#354`, `#355`, `#356`, `#357`, `#358`, `#359`
 
 ## Current Priorities
@@ -48,13 +50,35 @@ You MUST completely read and obey `docs/coding-standards.md` and `docs/component
   - `#859` = `In Progress (NOW)`
   - `#857` = `Review (ALMOST)`
   - `#858` = `Review (ALMOST)`
-  - `#860` = `Todo (NEXT)`
+  - `#860` = `Backlog (SOONER)`
   - `#861` = `Backlog (SOONER)`
   - `#862` = `Backlog (SOONER)`
   - `#863` = `Roadmap (LATER)`
   - `#864` = `Roadmap (LATER)`
+  - `#904`, `#905`, `#906` = GDS 3.4.6 upgrade chain
   - `#739` through `#746` = `Roadmap (LATER)` until the Mantine stream is materially further along
   - Closed duplicate tickets `#865`, `#866`, and `#867` were removed from the board during queue cleanup
+
+## 2026-06-24 — GDS 3.4.6 package authority upgrade (`#904`, `#905`, `#906`)
+
+- Replaced stale local `@gds/*` file dependencies with published GDS packages:
+  - `@doneisbetter/gds-theme@3.4.6`
+  - `@doneisbetter/gds-core@3.4.6`
+  - `@doneisbetter/gds-admin@3.4.6`
+- Removed vendored `packages/gds-theme`, `packages/gds-core`, and `packages/gds-admin` artifacts from the active repo.
+- Updated `scripts/gds-sync-packages.sh` so `npm run gds:sync` now verifies published GDS package resolution instead of copying local package artifacts.
+- Updated runtime imports:
+  - `lib/ui/mantineTheme.ts` now imports `gdsTheme` from `@doneisbetter/gds-theme`
+  - `components/analytics/MetricCard.tsx` now wraps `MetricCard` from `@doneisbetter/gds-core`
+- Validation evidence captured during delivery:
+  - `npm run gds:sync`
+  - `npm run style:check`
+  - `npm run lint`
+  - `npm run type-check`
+  - `MONGODB_URI='mongodb://127.0.0.1:27017/messmass-build-check' npm run build`
+- Environment note:
+  - the repo declares Node `>=24.0.0 <25.0.0`; local validation ran under Node `22.22.3`, which emits `EBADENGINE` warnings during npm install.
+  - `npm run build` requires `MONGODB_URI` during page-data collection; use a safe local placeholder for compatibility validation when production credentials are not available.
 
 ## 2026-05-23 — Messmass Mantine implementation planning
 

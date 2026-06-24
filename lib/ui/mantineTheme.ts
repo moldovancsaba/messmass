@@ -1,5 +1,5 @@
 import { createTheme } from '@mantine/core';
-import { gdsTheme } from '@gds/theme';
+import { gdsTheme } from '@doneisbetter/gds-theme';
 
 export const messmassMantineTheme = createTheme({
   ...gdsTheme,
