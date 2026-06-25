@@ -1,6 +1,6 @@
 {
   "name": "messmass",
-  "version": "12.1.15",
+  "version": "12.1.16",
   "description": "Enterprise-grade event analytics platform with comprehensive partner management, intelligent link tracking, automated event creation (Sports Match Builder), and advanced real-time statistics dashboard for sports organizations, venues, brands, and event managers",
   "keywords": [
     "event-statistics",
@@ -33,7 +33,7 @@
     "test": "jest",
     "test:watch": "jest --watch",
     "test:coverage": "jest --coverage",
-    "test:fanmass": "tsx scripts/test-fanmass-integration.ts",
+    "test:fanmass": "tsx scripts/verify-fanmass-integration-contracts.ts",
     "test:google-sheets": "tsx -r dotenv/config scripts/test-google-sheets.ts dotenv_config_path=.env.local",
     "check:google-sheets-schema": "tsx -r dotenv/config scripts/check-google-sheets-schema.ts dotenv_config_path=.env.local",
     "test:email": "tsx -r dotenv/config scripts/test-email-notifications.ts dotenv_config_path=.env.local",

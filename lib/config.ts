@@ -49,6 +49,9 @@ export type AppConfig = {
   // WHAT: API key for API-Football (API-Sports) multi-sport data
   // WHY: Required for enriching partners and events with official sports data
   apiFootballKey?: string;
+  fanmassBaseUrl?: string;
+  fanmassApiKey?: string;
+  fanmassIntegrationToken?: string;
 };
 
 function getEnv(name: string): string | undefined {
@@ -87,14 +90,16 @@ function initializeConfig(): AppConfig {
 
   // Resolve configuration with safe defaults where historically relied upon.
   // Strategic choice:
-  // - mongodbUri: required (critical to run)
+  // - mongodbUri: resolved lazily by DB helpers so build-time imports can read non-DB config
   // - dbName: default to 'messmass' to match existing behavior
   // - adminPassword: keep existing fallback for backward compatibility, though
   //   production should set ADMIN_PASSWORD explicitly.
   // - nextPublicWsUrl: optional; only used if real-time is enabled
   cachedConfig = {
-    // WHAT: Required to run; throws on first access if not provided.
-    mongodbUri: requireEnv('MONGODB_URI'),
+    // WHAT: Required for actual DB usage, but not for importing config during build.
+    // WHY: Next.js imports DB-backed routes during build/page-data collection.
+    // HOW: lib/mongodb.ts validates and fails loudly when a runtime DB call needs it.
+    mongodbUri: getEnv('MONGODB_URI') || '',
     // WHY: dbName is non-sensitive and historically defaulted; keep default for DX (non-secret).
     dbName: getEnv('MONGODB_DB') || 'messmass',
     // SECURITY: no baked default for secrets; remain optional at config object level.
@@ -122,6 +127,9 @@ function initializeConfig(): AppConfig {
     imgbbApiKey: getEnv('IMGBB_API_KEY'),
     // API-Football integration (server-only)
     apiFootballKey: getEnv('API_FOOTBALL_KEY'),
+    fanmassBaseUrl: getEnv('FANMASS_BASE_URL'),
+    fanmassApiKey: getEnv('FANMASS_API_KEY'),
+    fanmassIntegrationToken: getEnv('FANMASS_INTEGRATION_TOKEN') || getEnv('MESSMASS_FANMASS_TOKEN'),
   };
 
   return cachedConfig;

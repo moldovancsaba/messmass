@@ -5,12 +5,6 @@ import config from './config';
  * MONGODB_URI is required for V3 Mongoose connection.
  * We reuse the existing mongodbUri from config.
  */
-const MONGODB_URI = config.mongodbUri;
-
-if (!MONGODB_URI) {
-  throw new Error('Please define the MONGODB_URI environment variable inside lib/config.ts');
-}
-
 /**
  * Global is used here to maintain a cached connection across hot reloads
  * in development and across function invocations in serverless environments.
@@ -27,6 +21,11 @@ async function connectV3() {
   }
 
   if (!cached.promise) {
+    const MONGODB_URI = config.mongodbUri;
+    if (!MONGODB_URI) {
+      throw new Error('Please define the MONGODB_URI environment variable inside lib/config.ts');
+    }
+
     const opts = {
       bufferCommands: false,
       maxPoolSize: 10,

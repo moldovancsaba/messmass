@@ -24,17 +24,21 @@ function getConnectionOptions() {
 // WHY: Reuse connection across requests
 let cachedClientPromise: Promise<MongoClient> | null = null;
 
+function createMissingMongoMockClient(): MongoClient {
+  return {
+    db() {
+      throw new Error('MONGODB_URI environment variable is not configured');
+    },
+    close() {
+      return Promise.resolve();
+    },
+  } as unknown as MongoClient;
+}
+
 // WHAT: Connection with retry logic
 // WHY: Lazy URI validation - only validate when actually connecting (not at module load)
 // HOW: Access config.mongodbUri inside function to defer validation until runtime
 async function createConnection(): Promise<MongoClient> {
-  // WHAT: Detect if we're in build/prerender phase
-  // WHY: Next.js tries to connect during static generation - skip gracefully
-  // HOW: Check for webpack/build indicators and lack of server runtime
-  const isBuildPhase = typeof window === 'undefined' && 
-                      (process.env.__NEXT_PRIVATE_PREBUNDLED_REACT === 'next' ||
-                       process.env.NEXT_PHASE === 'phase-production-build');
-  
   try {
     // WHAT: Safely access MongoDB URI
     // WHY: Config validation happens here (lazy)
@@ -43,21 +47,18 @@ async function createConnection(): Promise<MongoClient> {
       uri = config.mongodbUri;
     } catch (error) {
       // WHAT: Config validation failed (missing/invalid MONGODB_URI)
-      if (isBuildPhase) {
-        // WHY: Build phase doesn't need real database - return mock silently
-        return {} as MongoClient;
-      }
-      // WHY: Runtime requires valid configuration - fail loudly
-      throw new Error('MONGODB_URI environment variable is not configured');
+      // WHY: Next imports DB-backed API modules during build/page-data collection.
+      // HOW: Defer the hard failure until code actually tries to call client.db().
+      return createMissingMongoMockClient();
     }
     
     // WHAT: Validate URI format before attempting connection
     // WHY: Provide clear error message for misconfigured environments
-    if (!uri || (!uri.startsWith('mongodb://') && !uri.startsWith('mongodb+srv://'))) {
-      if (isBuildPhase) {
-        // WHY: Build phase doesn't need real database - return mock silently
-        return {} as MongoClient;
-      }
+    if (!uri) {
+      return createMissingMongoMockClient();
+    }
+
+    if (!uri.startsWith('mongodb://') && !uri.startsWith('mongodb+srv://')) {
       // WHY: Runtime requires valid URI format - fail with helpful message
       throw new Error(
         `Invalid MongoDB URI format. Expected connection string to start with "mongodb://" or "mongodb+srv://". ` +

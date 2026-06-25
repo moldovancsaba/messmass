@@ -12,7 +12,7 @@ Owner: Product
 <p align="center"><strong>Enterprise event analytics, partner reporting, reporting operations, and admin workflow tooling for sports organizations, venues, and brands.</strong></p>
 
 <p align="center">
-  <img src="https://img.shields.io/badge/version-v12.1.15-2563EB?style=for-the-badge" alt="Version">
+  <img src="https://img.shields.io/badge/version-v12.1.16-2563EB?style=for-the-badge" alt="Version">
   <img src="https://img.shields.io/badge/platform-Web%20App-0F172A?style=for-the-badge" alt="Platform">
   <img src="https://img.shields.io/badge/stack-Next.js%20%7C%20MongoDB%20%7C%20Mantine-0EA5E9?style=for-the-badge" alt="Stack">
 </p>
@@ -90,6 +90,9 @@ BITLY_ORGANIZATION_GUID=your_org_guid
 BITLY_GROUP_GUID=your_group_guid
 SPORTSDB_API_KEY=your_api_key
 SPORTSDB_BASE_URL=https://www.thesportsdb.com/api/v1/json
+FANMASS_BASE_URL=http://127.0.0.1:8787
+FANMASS_API_KEY=shared-fanmass-api-key
+FANMASS_INTEGRATION_TOKEN=shared-messmass-fanmass-token
 ```
 
 Notes:
@@ -136,7 +139,18 @@ Important repo note:
 - If `npm run type-check` fails on missing `.next/types`, run `npm run build` first and rerun the type check.
 
 Current release version:
-- `v12.1.15`
+- `v12.1.16`
+
+## Fanmass Integration
+
+Messmass exposes a production API boundary for Fanmass event/image analytics:
+
+- `GET /api/integrations/fanmass/events/{eventId}/context`
+- `GET|POST /api/integrations/fanmass/events/{eventId}/link`
+- `GET|POST /api/integrations/fanmass/events/{eventId}/sync`
+- `POST /api/integrations/fanmass/callbacks`
+
+Fanmass-derived analytics are stored only under `project.stats.fanmass` and must not overwrite existing clicker/manual stats. See `docs/operations/messmass-fanmass-integration-delivery-plan-2026-06-25.md`.
 
 Live product:
 - Website: [messmass.doneisbetter.com](https://messmass.doneisbetter.com)
