@@ -1,0 +1,17 @@
+.card {
+  background: var(--mm-white);
+  border-color: var(--mm-border-color-light);
+  border-left: 4px solid var(--card-accent-color, transparent);
+  padding: var(--mm-space-4);
+  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+}
+
+.clickable {
+  cursor: pointer;
+}
+
+.card[data-hoverable='true']:hover {
+  box-shadow: var(--mm-shadow-md);
+  transform: translateY(-2px);
+  border-color: var(--mm-border-color-default);
+}

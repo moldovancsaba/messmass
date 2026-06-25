@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+import { Box, Stack, Text, Title } from '@mantine/core';
 import ColoredCard from '@/components/ColoredCard';
 import styles from './AnalyticsStatePanel.module.css';
 
@@ -35,16 +36,16 @@ export default function AnalyticsStatePanel({
 }: AnalyticsStatePanelProps) {
   return (
     <ColoredCard accentColor={VARIANT_ACCENT[variant]} hoverable={false} className={className}>
-      <div className={styles.state}>
-        <div className={styles.icon} aria-hidden="true">
+      <Stack align="center" justify="center" gap="md" className={styles.state}>
+        <Box className={styles.icon} aria-hidden="true">
           {VARIANT_ICON[variant]}
-        </div>
-        <div className={styles.copy}>
-          <h3 className={styles.title}>{title}</h3>
-          <p className={styles.description}>{description}</p>
-        </div>
-        {action ? <div className={styles.action}>{action}</div> : null}
-      </div>
+        </Box>
+        <Stack gap="xs" className={styles.copy}>
+          <Title order={3} className={styles.title}>{title}</Title>
+          <Text className={styles.description}>{description}</Text>
+        </Stack>
+        {action ? <Box className={styles.action}>{action}</Box> : null}
+      </Stack>
     </ColoredCard>
   );
 }

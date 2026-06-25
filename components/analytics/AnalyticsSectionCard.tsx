@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+import { Box, Group, Stack, Text, Title } from '@mantine/core';
 import ColoredCard from '@/components/ColoredCard';
 import styles from './AnalyticsSectionCard.module.css';
 
@@ -29,18 +30,18 @@ export default function AnalyticsSectionCard({
 
   return (
     <ColoredCard accentColor={accentColor} hoverable={hoverable} className={className}>
-      <div className={styles.card}>
+      <Stack gap="md" className={styles.card}>
         {hasHeader && (
-          <div className={styles.header}>
-            <div className={styles.heading}>
-              {title && <h2 className={styles.title}>{title}</h2>}
-              {subtitle && <p className={styles.subtitle}>{subtitle}</p>}
-            </div>
-            {actions ? <div className={styles.actions}>{actions}</div> : null}
-          </div>
+          <Group className={styles.header} justify="space-between" align="flex-start" gap="md">
+            <Stack gap={4} className={styles.heading}>
+              {title && <Title order={2} className={styles.title}>{title}</Title>}
+              {subtitle && <Text className={styles.subtitle}>{subtitle}</Text>}
+            </Stack>
+            {actions ? <Group gap="xs" className={styles.actions}>{actions}</Group> : null}
+          </Group>
         )}
-        <div className={`${styles.content} ${contentClassName}`.trim()}>{children}</div>
-      </div>
+        <Box className={`${styles.content} ${contentClassName}`.trim()}>{children}</Box>
+      </Stack>
     </ColoredCard>
   );
 }

@@ -2,7 +2,7 @@
 
 This file is onboarding plus operational context for the next agent. Keep it accurate when behavior, process, or current delivery state changes.
 
-**Last Updated:** 2026-06-24 (v12.1.13 documentation/version sync)
+**Last Updated:** 2026-06-25 (v12.1.14 Mantine migration chain closure)
 
 ## 🚨 CRITICAL MUST-READ FOR ALL AGENTS: STYLING & COMPONENTS 🚨
 
@@ -29,17 +29,40 @@ You MUST completely read and obey `docs/coding-standards.md` and `docs/component
 
 ## Current Repo Truth
 - Active branch: `main`
-- Last known shipped HEAD before this documentation update: `8218de8`
-- Working tree was clean before this documentation/version update.
+- Last known shipped HEAD before this Mantine chain update: `33af39b`
+- Working tree was clean before this Mantine chain update.
 - Most recent shipped repo work:
   - report variant period selector reliability: `8218de8`
   - design-system remediation tranche 1: `4f66d54ae`
   - design-system remediation tranche 2: `06cedc822`
   - design-system remediation tranche 3: `d678b3af9`
-- Current product/doc baseline: `v12.1.13`
+- Current product/doc baseline: `v12.1.14`
 - Current GDS package baseline: `@doneisbetter/gds-theme`, `@doneisbetter/gds-core`, and `@doneisbetter/gds-admin` at `3.4.6`
 - Local vendored `@gds/*` packages have been removed from active package authority.
 - Most recent closed delivery issues on Project 8: `moldovancsaba/messmass#71` through `#76`
+
+## 2026-06-25 - Mantine migration highest-value chain (`mvp-factory-control#857`-`#861`)
+
+- Scope delivered:
+  - `#857` governance reset and authority alignment verified as shipped
+  - `#858` root runtime, theme, modals, and notifications verified as shipped
+  - `#859` shared primitive parity advanced through Mantine-backed `ColoredCard` CSS-module hardening
+  - `#860` shared shell/navigation advanced through Mantine `Box` layout wrapper and `ActionIcon` mobile navigation toggle
+  - `#861` analytics workspace migration advanced through Mantine-governed shared analytics section, toolbar, and state-panel primitives
+- Canonical implementation touched:
+  - `components/AdminLayout.tsx`
+  - `components/Sidebar.tsx`
+  - `components/ColoredCard.tsx`
+  - `components/ColoredCard.module.css`
+  - `components/analytics/AnalyticsSectionCard.tsx`
+  - `components/analytics/AnalyticsToolbar.tsx`
+  - `components/analytics/AnalyticsStatePanel.tsx`
+- Current migration rule:
+  - use the active Mantine/GDS shared primitives before introducing page-local UI foundations
+  - keep legacy CSS classes only as compatibility styling around Mantine-governed components
+  - do not reintroduce raw interactive controls in shared shell/workspace primitives
+- Next dependency after this chain:
+  - `mvp-factory-control#862` — report-variant and editor workflow migration
 
 ## 2026-06-24 - Documentation/version sync (`v12.1.13`)
 

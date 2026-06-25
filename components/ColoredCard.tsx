@@ -1,24 +1,14 @@
-/* WHAT: Centralized Mantine-backed card component with left border accent
- * WHY: Shared card surface across admin and analytics flows while preserving
- *      the existing API during the Mantine migration
- */
-
 import React from 'react';
 import { Paper } from '@mantine/core';
+import styles from './ColoredCard.module.css';
 
 interface ColoredCardProps {
-  /** Optional color for the left border accent (default: transparent/no accent) */
   accentColor?: string;
-  /** Optional CSS class names */
   className?: string;
-  /** Card content */
   children: React.ReactNode;
-  /** Optional click handler */
   onClick?: () => void;
-  /** Optional hover effect */
   hoverable?: boolean;
-  /** Optional data attributes (e.g., data-pdf-block) */
-  [key: string]: any;
+  [key: `data-${string}`]: string | number | boolean | undefined;
 }
 
 export default function ColoredCard({
@@ -32,35 +22,27 @@ export default function ColoredCard({
   const resolvedAccentColor = (accentColor && typeof accentColor === 'string' && accentColor.trim())
     ? accentColor
     : 'transparent';
-  const dataAttrs = Object.keys(rest)
-    .filter(key => key.startsWith('data-'))
-    .reduce((obj, key) => ({ ...obj, [key]: rest[key] }), {});
+  const dataAttrs: Record<string, string | number | boolean | undefined> = {};
+  for (const [key, value] of Object.entries(rest)) {
+    if (key.startsWith('data-')) {
+      dataAttrs[key] = value;
+    }
+  }
+  const classes = [
+    styles.card,
+    onClick ? styles.clickable : '',
+    className,
+  ].filter(Boolean).join(' ');
 
   return (
     <Paper
       withBorder
       radius="lg"
       shadow="sm"
-      className={className}
+      className={classes}
       data-hoverable={hoverable ? 'true' : 'false'}
       onClick={onClick}
-      style={{
-        background: 'var(--mm-white)',
-        borderColor: 'var(--mm-border-color-light)',
-        borderLeft: `4px solid ${resolvedAccentColor}`,
-        padding: 'var(--mm-space-4)',
-        cursor: onClick ? 'pointer' : undefined,
-        transition: 'transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease',
-      }}
-      styles={{
-        root: {
-          '&[data-hoverable="true"]:hover': {
-            boxShadow: 'var(--mm-shadow-md)',
-            transform: 'translateY(-2px)',
-            borderColor: 'var(--mm-border-color-default)',
-          },
-        },
-      }}
+      style={{ '--card-accent-color': resolvedAccentColor } as React.CSSProperties}
       {...dataAttrs}
     >
       {children}

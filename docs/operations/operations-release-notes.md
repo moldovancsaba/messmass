@@ -1,8 +1,53 @@
 # {messmass} Release Notes
 Status: Active
-Last Updated: 2026-06-24T13:15:00.000Z
+Last Updated: 2026-06-25T00:00:00.000Z
 Canonical: No
 Owner: Operations
+
+## [v12.1.14] — 2026-06-25T00:00:00.000Z
+
+### Summary
+MANTINE MIGRATION DELIVERY CHAIN: Closed the highest-value #857-#861 dependency sequence by verifying completed governance/runtime work, hardening shared primitives, migrating shell interaction controls, and moving repeated analytics workspace surfaces onto Mantine/GDS-governed contracts.
+
+### What Was Delivered
+
+#### Governance and root runtime closure
+**WHAT**: Confirmed the governance reset and root Mantine runtime are active and documented.
+**WHY**: The rest of the migration chain depends on one authority model, one root provider stack, and one theme baseline.
+**HOW**: Verified `app/providers.tsx`, `app/layout.tsx`, `lib/ui/mantineTheme.ts`, GDS package resolution, and local standards/handover references.
+
+#### Shared primitive parity
+**WHAT**: Hardened the shared `ColoredCard` primitive by moving its card presentation into a CSS module and preserving only the dynamic accent color as a runtime CSS variable.
+**WHY**: Shared primitives should be Mantine-backed without carrying inline presentation rules forward.
+**HOW**: Added `components/ColoredCard.module.css` and kept the current `ColoredCard` API stable for existing consumers.
+
+#### Shared shell and navigation
+**WHAT**: Migrated the admin layout wrapper to Mantine `Box` and replaced the sidebar mobile toggle with Mantine `ActionIcon` plus Tabler icons.
+**WHY**: Shell-level interaction controls should be governed centrally instead of relying on raw page-local controls.
+**HOW**: Updated `components/AdminLayout.tsx` and `components/Sidebar.tsx` while preserving route behavior, focus trap behavior, and existing class contracts.
+
+#### Analytics workspace primitives
+**WHAT**: Moved shared analytics section, toolbar, and state-panel components onto Mantine layout/text/button primitives.
+**WHY**: Reporting and analytics workspaces reuse these surfaces heavily; migrating them first reduces old-foundation drift across high-traffic pages.
+**HOW**: Updated `AnalyticsSectionCard`, `AnalyticsToolbar`, and `AnalyticsStatePanel` to use Mantine `Group`, `Stack`, `SimpleGrid`, `Button`, `Text`, `Title`, and `Box`.
+
+#### Comment cleanup
+**WHAT**: Removed noisy WHAT/WHY comments from touched shell/shared files.
+**WHY**: Comments should explain non-obvious invariants, not restate JSX structure or assignments.
+**HOW**: Kept behavior self-documenting and left only meaningful accessibility/operational notes.
+
+### Testing
+- `npm run lint`
+- `npm run type-check`
+- `npm run style:check`
+- `npm run version:verify`
+- `npm test -- --runInBand`
+- `npm run gds:sync`
+- `npm run audit:report-variant-periods`
+- `MONGODB_URI='mongodb://127.0.0.1:27017/messmass-build-check' npm run build`
+
+### Version
+v12.1.13 → v12.1.14 (PATCH — Mantine migration chain #857-#861 closure + shared primitive/shell/workspace hardening)
 
 ## [v12.1.13] — 2026-06-24T13:15:00.000Z
 

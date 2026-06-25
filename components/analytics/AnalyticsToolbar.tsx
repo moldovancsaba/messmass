@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+import { Button, SimpleGrid, Stack, Text } from '@mantine/core';
 import AnalyticsSectionCard from './AnalyticsSectionCard';
 import styles from './AnalyticsToolbar.module.css';
 
@@ -31,25 +32,30 @@ export default function AnalyticsToolbar({
 }: AnalyticsToolbarProps) {
   return (
     <AnalyticsSectionCard title={title} subtitle={subtitle} accentColor={accentColor}>
-      <div className={styles.toolbar}>
+      <Stack gap="md" className={styles.toolbar}>
         {presets.length > 0 && (
-          <div className={styles.presets}>
+          <SimpleGrid cols={{ base: 1, sm: 2, lg: 3 }} spacing="md" className={styles.presets}>
             {presets.map((preset) => (
-              <button
+              <Button
                 key={preset.key}
                 type="button"
                 className={`${styles.preset} ${preset.active ? styles.presetActive : ''}`.trim()}
                 onClick={preset.onClick}
+                variant={preset.active ? 'light' : 'default'}
+                justify="flex-start"
+                fullWidth
               >
-                <span className={styles.presetLabel}>{preset.label}</span>
-                {preset.description ? <span className={styles.presetDescription}>{preset.description}</span> : null}
-              </button>
+                <Stack gap={2} align="flex-start">
+                  <Text className={styles.presetLabel}>{preset.label}</Text>
+                  {preset.description ? <Text className={styles.presetDescription}>{preset.description}</Text> : null}
+                </Stack>
+              </Button>
             ))}
-          </div>
+          </SimpleGrid>
         )}
-        {children ? <div className={styles.controls}>{children}</div> : null}
-        {summary ? <div className={styles.summary}>{summary}</div> : null}
-      </div>
+        {children ? <Stack gap="md" className={styles.controls}>{children}</Stack> : null}
+        {summary ? <Stack gap="xs" className={styles.summary}>{summary}</Stack> : null}
+      </Stack>
     </AnalyticsSectionCard>
   );
 }

@@ -29,24 +29,6 @@
   outline-offset: 2px;
 }
 
-/* What: Hamburger icon animation
-   Why: Classic three-line menu icon */
-.hamburger {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-  width: 24px;
-  height: 20px;
-}
-
-.hamburger span {
-  display: block;
-  height: 2px;
-  background: var(--mm-gray-700);
-  border-radius: 2px;
-  transition: all 0.3s ease;
-}
-
 /* ===== Mobile Scrim/Overlay ===== */
 .mobileScrim {
   /* What: Dark overlay behind mobile drawer

@@ -1,10 +1,10 @@
 # Delivery Focus ({messmass})
 Status: Active
-Last Updated: 2026-05-23
+Last Updated: 2026-06-25
 Canonical: No
 Owner: Product
 
-**Source of truth:** [{messmass} - From IDEA to LIVE](https://github.com/users/moldovancsaba/projects/8). Issues live in [mvp-factory-control](https://github.com/moldovancsaba/mvp-factory-control). This local file is a reminder of how to choose work, not a substitute for the live board.
+**Source of truth:** [{messmass} - From IDEA to LIVE](https://github.com/users/moldovancsaba/projects/8). Migration-program issues live in [mvp-factory-control](https://github.com/moldovancsaba/mvp-factory-control); repo-local bug/delivery issues may live in [moldovancsaba/messmass](https://github.com/moldovancsaba/messmass). This local file is a reminder of how to choose work, not a substitute for the live board.
 
 ## Current Rule
 
@@ -18,29 +18,29 @@ Before starting work:
 
 ## Current Queue
 
-Last verified against Project 8 on `2026-05-23`.
+Last verified against Project 8 on `2026-06-25` after the #857-#861 delivery chain.
 
-1. `#859` — `In Progress (NOW)` — shared primitive parity and wrapper transition
-2. `#857` — `Review (ALMOST)` — governance reset and authority alignment
-3. `#858` — `Review (ALMOST)` — root runtime, theme, and overlay platform
-4. `#860` — `Todo (NEXT)` — shared shell, navigation, and page-header migration
-5. `#861` — `Backlog (SOONER)` — reporting and analytics workspace migration
+1. `#862` — next dependency — report-variant and editor workflow migration
+2. `#863` — later dependency — public report shell migration with runtime compatibility
+3. `#864` — later dependency — legacy deletion and enforcement hardening
+4. `#739`-`#746` — later unified admin entity system chain, revisit after Mantine migration progresses
+5. `#66` — lower-value documentation infrastructure, keep behind product/runtime migration work
 
 Queue notes:
-- `#862` remains `Backlog (SOONER)` behind `#861`.
-- `#863` and `#864` are intentionally deferred to `Roadmap (LATER)`.
-- `#739` through `#746` are open but currently deferred to `Roadmap (LATER)` until the Mantine chain is materially further along.
+- `#857` through `#861` are delivered/closed by the `v12.1.14` chain.
+- `#862` should move ahead of `#863`/`#864` because it continues the same dependency path and directly affects editor/report-variant workflows.
+- `#863` and `#864` remain deferred until editor/report-variant migration is stable.
+- `#739` through `#746` are still deferred until the Mantine chain is materially further along.
 - Closed duplicate issues `#865`, `#866`, and `#867` were removed from the board.
 
 ## Local Repo Context
 
 Latest shipped repo release:
-- `v12.1.12` — admin workspace regression fixes, including:
-  - project-partner CSRF fix
-  - shared admin hero containment fix
-  - analytics card overflow cleanup
-  - Bitly status cleanup
-  - README/workspace sync
+- `v12.1.14` — Mantine migration chain closure and shared primitive/shell/workspace hardening, including:
+  - governance/runtime verification for `#857` and `#858`
+  - Mantine-backed card primitive hardening for `#859`
+  - Mantine-governed admin shell/mobile navigation controls for `#860`
+  - Mantine-governed analytics section/toolbar/state primitives for `#861`
 
 Current local documentation truth:
 - [README.md](../../README.md) reflects the current product/workspace model and shipped version.

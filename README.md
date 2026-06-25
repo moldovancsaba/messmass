@@ -1,6 +1,6 @@
 # {messmass}
 Status: Active
-Last Updated: 2026-06-24
+Last Updated: 2026-06-25
 Canonical: No
 Owner: Product
 
@@ -12,7 +12,7 @@ Owner: Product
 <p align="center"><strong>Enterprise event analytics, partner reporting, reporting operations, and admin workflow tooling for sports organizations, venues, and brands.</strong></p>
 
 <p align="center">
-  <img src="https://img.shields.io/badge/version-v12.1.13-2563EB?style=for-the-badge" alt="Version">
+  <img src="https://img.shields.io/badge/version-v12.1.14-2563EB?style=for-the-badge" alt="Version">
   <img src="https://img.shields.io/badge/platform-Web%20App-0F172A?style=for-the-badge" alt="Platform">
   <img src="https://img.shields.io/badge/stack-Next.js%20%7C%20MongoDB%20%7C%20Mantine-0EA5E9?style=for-the-badge" alt="Stack">
 </p>
@@ -34,6 +34,7 @@ Core capabilities:
 - Partner, organization, and event administration in a unified admin system
 - Reporting Workspace for themes, builder composition, content, chart logic, and data dependencies
 - Report variant management with validated preset/custom time-period contracts
+- Mantine-governed shared admin shell, primitives, analytics cards, and workspace state components
 - Analytics Workspace for sponsorship performance, activation proof, executive views, and insights
 - Public, partner, and organization report delivery surfaces
 - Bitly link attribution and click analytics across events and partners
@@ -135,7 +136,7 @@ Important repo note:
 - If `npm run type-check` fails on missing `.next/types`, run `npm run build` first and rerun the type check.
 
 Current release version:
-- `v12.1.13`
+- `v12.1.14`
 
 Live product:
 - Website: [messmass.doneisbetter.com](https://messmass.doneisbetter.com)
@@ -162,6 +163,12 @@ Current report variant reliability note:
 - organization and partner report variant create modals validate custom date ranges before submit
 - Mantine selects inside `FormModal` must pass `withinPortal={false}` through `UnifiedSelectField`
 - operational data checks use `npm run audit:report-variant-periods`
+
+Current Mantine migration note:
+- root Mantine runtime, theme, modals, and notifications are active globally
+- shared admin shell/header/sidebar controls use Mantine primitives for interaction surfaces
+- shared analytics section, toolbar, state, and metric components are Mantine/GDS-governed
+- new UI work must extend these shared contracts instead of creating page-local foundations
 
 ## Documentation Map
 
