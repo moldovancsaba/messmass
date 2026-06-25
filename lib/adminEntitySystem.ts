@@ -68,6 +68,30 @@ export interface AdminEntitySearchConfig<T> {
   placeholder?: string;
 }
 
+export type AdminEntityFormFieldType = 'text' | 'select' | 'checkbox' | 'readonly';
+
+export interface AdminEntityFormOption {
+  value: string;
+  label: string;
+}
+
+export interface AdminEntityFormField<TForm extends Record<string, unknown>> {
+  key: keyof TForm & string;
+  label: string;
+  type: AdminEntityFormFieldType;
+  required?: boolean;
+  placeholder?: string;
+  description?: string;
+  options?: AdminEntityFormOption[];
+}
+
+export interface AdminEntityFormSchema<TForm extends Record<string, unknown>> {
+  id: string;
+  title: string;
+  submitText: string;
+  fields: AdminEntityFormField<TForm>[];
+}
+
 export interface AdminEntityConfig<T> {
   entityKey: string;
   pageName: string;
@@ -77,6 +101,7 @@ export interface AdminEntityConfig<T> {
   search: AdminEntitySearchConfig<T>;
   permissionRequirements?: AdminEntityPermission[];
   actions: AdminEntityActionDefinition<T>[];
+  forms?: AdminEntityFormSchema<Record<string, unknown>>[];
 }
 
 export interface AdminEntityRuntime<T> {

@@ -1,14 +1,20 @@
 # {messmass} Architecture Documentation
 Status: Active
-Last Updated: 2026-06-24
+Last Updated: 2026-06-25
 Canonical: No
 Owner: Architecture
 
-Version: 12.1.13
+Version: 12.1.15
+
+**Mantine Entity, Variant, and Public Report Shell Delivery (2026-06-25):**
+- **Report variant selector recovery:** Mantine `Select` dropdowns inside report variant `FormModal` now render through a portal with modal-safe z-index, preventing the dropdown from being hidden behind or interpreted as outside the dialog.
+- **Schema-driven organization forms:** `/admin/organizations` create/edit flows now use the shared `EntityFormModal` schema layer backed by `AdminEntityConfig.forms`.
+- **Public report shell migration:** Partner and organization report loading/error/page shells now use `PublicReportShell` and `PublicReportState` from Mantine primitives while preserving existing report runtime/content behavior.
+- **Enforcement hardening:** `npm run style:check` now blocks regression to legacy public report shell wrappers in the migrated partner/organization report views.
 
 **Report Variant Period Reliability (2026-06-24):**
 - **Period contract authority:** `lib/reportPeriodValidation.ts` is the shared server/client-adjacent contract for report variant period presets and custom date ranges.
-- **Modal select containment:** Mantine `Select` controls inside `FormModal` must be rendered within the modal tree through `UnifiedSelectField` with `withinPortal={false}`.
+- **Modal select layering:** Mantine `Select` controls inside `FormModal` must render through `UnifiedSelectField` with a portal and modal-safe z-index.
 - **Persistence safety:** `createReportVariant` and `updateReportVariant` normalize period data before writing to `report_variants`; invalid writes return 400 responses with stable error codes.
 - **Operational recovery:** `scripts/audit-report-variant-periods.ts` supports dry-run detection and explicit repair for invalid custom-period records without deleting variants.
 - **LLD reference:** See `docs/low-level-design.md` for request flow, contracts, edge cases, and test expectations.

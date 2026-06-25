@@ -14,7 +14,7 @@ import { useOrganizationReportData } from '@/hooks/useReportData';
 import { useReportStyle } from '@/hooks/useReportStyle';
 import { useReportExport } from '@/hooks/useReportExport';
 import { ReportCalculator } from '@/lib/report-calculator';
-import styles from '@/app/styles/report-page.module.css';
+import { PublicReportShell, PublicReportState } from '@/components/reports/PublicReportShell';
 
 export default function OrganizationReportView({ id, variant }: { id: string; variant?: string | null }) {
   const { data: orgData, activities, loading: dataLoading, error: dataError } = useOrganizationReportData(id, variant);
@@ -81,24 +81,17 @@ export default function OrganizationReportView({ id, variant }: { id: string; va
 
   if (loading) {
     return (
-      <div className={styles.page}>
-        <div className={styles.loading}>
-          <div className={styles.loadingSpinner} />
-          <p className={styles.loadingText}>Loading organization report...</p>
-        </div>
-      </div>
+      <PublicReportState title="Loading organization report..." kind="loading" />
     );
   }
 
   if (error || !organization || !report) {
     return (
-      <div className={styles.page}>
-        <div className={styles.error}>
-          <span className={styles.errorIcon}>⚠️</span>
-          <h2 className={styles.errorTitle}>Report Error</h2>
-          <p className={styles.errorText}>{error || 'Organization or report layout not found'}</p>
-        </div>
-      </div>
+      <PublicReportState
+        title="Report Error"
+        message={error || 'Organization or report layout not found'}
+        kind="error"
+      />
     );
   }
 
@@ -109,8 +102,7 @@ export default function OrganizationReportView({ id, variant }: { id: string; va
   };
 
   return (
-    <div className={styles.page}>
-      <div className={styles.container}>
+    <PublicReportShell>
         <div id="report-hero">
           <ReportHero
             project={organizationAsProject}
@@ -141,7 +133,6 @@ export default function OrganizationReportView({ id, variant }: { id: string; va
             organizationName={organization.name} 
           />
         )}
-      </div>
-    </div>
+    </PublicReportShell>
   );
 }

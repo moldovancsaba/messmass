@@ -309,7 +309,6 @@ export default function OrganizationReportsWorkspacePage() {
             onChange={(value) => setCreateForm((prev) => ({ ...prev, periodPreset: value }))}
             options={PERIOD_OPTIONS}
             error={createFormErrors.periodPreset}
-            withinPortal={false}
           />
           {createForm.periodPreset === 'custom' && (
             <div className={styles.customGrid}>

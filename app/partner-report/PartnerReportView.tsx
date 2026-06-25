@@ -12,7 +12,7 @@ import { usePartnerReportData } from '@/hooks/useReportData';
 import { useReportStyle } from '@/hooks/useReportStyle';
 import { useReportExport } from '@/hooks/useReportExport';
 import { ReportCalculator } from '@/lib/report-calculator';
-import styles from '@/app/styles/report-page.module.css';
+import { PublicReportShell, PublicReportState } from '@/components/reports/PublicReportShell';
 
 export interface PartnerReportViewProps {
   slug: string;
@@ -75,37 +75,25 @@ export function PartnerReportView({ slug, variant }: PartnerReportViewProps) {
 
   if (loading) {
     return (
-      <div className={styles.page}>
-        <div className={styles.loading}>
-          <div className={styles.loadingSpinner} />
-          <p className={styles.loadingText}>Loading partner report...</p>
-        </div>
-      </div>
+      <PublicReportState title="Loading partner report..." kind="loading" />
     );
   }
   if (error) {
     return (
-      <div className={styles.page}>
-        <div className={styles.error}>
-          <span className={styles.errorIcon}>⚠️</span>
-          <h2 className={styles.errorTitle}>Failed to Load Partner Report</h2>
-          <p className={styles.errorText}>{error}</p>
-          <p className={styles.errorMeta}>
-            Partner: {slug}
-          </p>
-        </div>
-      </div>
+      <PublicReportState
+        title="Failed to Load Partner Report"
+        message={error}
+        meta={`Partner: ${slug}`}
+        kind="error"
+      />
     );
   }
   if (!partner || !stats || !report) {
     return (
-      <div className={styles.page}>
-        <div className={styles.error}>
-          <span className={styles.errorIcon}>📊</span>
-          <h2 className={styles.errorTitle}>Partner Report Not Found</h2>
-          <p className={styles.errorText}>The requested partner report could not be found.</p>
-        </div>
-      </div>
+      <PublicReportState
+        title="Partner Report Not Found"
+        message="The requested partner report could not be found."
+      />
     );
   }
 
@@ -116,8 +104,7 @@ export function PartnerReportView({ slug, variant }: PartnerReportViewProps) {
     _id: partner._id,
   };
   return (
-    <div className={styles.page}>
-      <div className={styles.container}>
+    <PublicReportShell>
         <div id="report-hero">
           <ReportHero
             project={partnerAsProject}
@@ -142,7 +129,6 @@ export function PartnerReportView({ slug, variant }: PartnerReportViewProps) {
             showEventsListDetails={partner.showEventsListDetails}
           />
         )}
-      </div>
-    </div>
+    </PublicReportShell>
   );
 }

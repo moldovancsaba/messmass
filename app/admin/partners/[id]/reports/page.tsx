@@ -325,7 +325,6 @@ export default function PartnerReportsWorkspacePage() {
             onChange={(value) => setCreateForm((prev) => ({ ...prev, periodPreset: value }))}
             options={PERIOD_OPTIONS}
             error={createFormErrors.periodPreset}
-            withinPortal={false}
           />
 
           {createForm.periodPreset === 'custom' && (

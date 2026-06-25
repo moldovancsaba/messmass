@@ -35,7 +35,7 @@ export default function UnifiedSelectField({
       disabled={disabled}
       error={error}
       allowDeselect={false}
-      comboboxProps={{ withinPortal }}
+      comboboxProps={{ withinPortal, zIndex: 1200 }}
     />
   );
 }

@@ -109,6 +109,14 @@ const CONTENT_GUARDRAILS = [
       'components/OrganizationEditorDashboard.tsx',
       'components/PartnerEditorDashboard.tsx'
     ]
+  },
+  {
+    message: 'Legacy public report shell wrappers detected',
+    pattern: /styles\.(page|container|loading|error)/,
+    files: [
+      'app/partner-report/PartnerReportView.tsx',
+      'app/organization-report/OrganizationReportView.tsx'
+    ]
   }
 ];
 

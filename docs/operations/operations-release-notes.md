@@ -4,6 +4,41 @@ Last Updated: 2026-06-25T00:00:00.000Z
 Canonical: No
 Owner: Operations
 
+## [v12.1.15] — 2026-06-25T00:00:00.000Z
+
+### Summary
+MANTINE REPORT/ENTITY DELIVERY: Completed the next highest-value report-variant, public-shell, legacy-enforcement, and admin-entity-form slices for `#862`, `#863`, `#864`, `#740`, and `#741`.
+
+### What Was Delivered
+
+#### Report variant selector reliability
+**WHAT**: Report variant Time Period selects now render dropdowns through the shared Mantine portal/z-index contract.
+**WHY**: Dropdown options could appear behind the modal or behave like an outside click in the report variant create flow.
+**HOW**: Updated `UnifiedSelectField` and removed page-local `withinPortal={false}` overrides from partner and organization report workspaces.
+
+#### Schema-driven organization forms
+**WHAT**: Added `EntityFormModal` and `AdminEntityConfig.forms`, then migrated organization create/edit modals onto schema-driven Mantine controls.
+**WHY**: Admin entity editing should be declared through shared contracts instead of page-local form JSX.
+**HOW**: Extended `lib/adminEntitySystem.ts`, added `components/admin/EntityFormModal.tsx`, and declared organization create/edit schemas in `organizationsAdapter`.
+
+#### Public report shell migration
+**WHAT**: Migrated partner and organization public report loading/error/page shells to a shared Mantine `PublicReportShell`.
+**WHY**: Public report routes are customer-facing and should no longer rely on legacy shell wrappers while report runtime stays compatible.
+**HOW**: Added `components/reports/PublicReportShell.tsx` and wrapped existing report hero/content/list rendering without changing URL or variant semantics.
+
+#### Legacy enforcement hardening
+**WHAT**: Added a style guardrail that blocks reintroduction of legacy public report shell wrappers in migrated views.
+**WHY**: The migration is incomplete if legacy wrappers can silently return after the shell is migrated.
+**HOW**: Extended `scripts/check-design-violations.js` with a public report shell regression check.
+
+### Testing
+- `npm run type-check`
+- `npm run style:check`
+- `npm run version:verify`
+
+### Version
+v12.1.14 → v12.1.15 (PATCH — Mantine report variant/public shell/entity form migration and enforcement)
+
 ## [v12.1.14] — 2026-06-25T00:00:00.000Z
 
 ### Summary

@@ -2,7 +2,7 @@
 
 This file is onboarding plus operational context for the next agent. Keep it accurate when behavior, process, or current delivery state changes.
 
-**Last Updated:** 2026-06-25 (v12.1.14 Mantine migration chain closure)
+**Last Updated:** 2026-06-25 (v12.1.15 Mantine report/entity delivery)
 
 ## 🚨 CRITICAL MUST-READ FOR ALL AGENTS: STYLING & COMPONENTS 🚨
 
@@ -36,7 +36,7 @@ You MUST completely read and obey `docs/coding-standards.md` and `docs/component
   - design-system remediation tranche 1: `4f66d54ae`
   - design-system remediation tranche 2: `06cedc822`
   - design-system remediation tranche 3: `d678b3af9`
-- Current product/doc baseline: `v12.1.14`
+- Current product/doc baseline: `v12.1.15`
 - Current GDS package baseline: `@doneisbetter/gds-theme`, `@doneisbetter/gds-core`, and `@doneisbetter/gds-admin` at `3.4.6`
 - Local vendored `@gds/*` packages have been removed from active package authority.
 - Most recent closed delivery issues on Project 8: `moldovancsaba/messmass#71` through `#76`
@@ -61,8 +61,32 @@ You MUST completely read and obey `docs/coding-standards.md` and `docs/component
   - use the active Mantine/GDS shared primitives before introducing page-local UI foundations
   - keep legacy CSS classes only as compatibility styling around Mantine-governed components
   - do not reintroduce raw interactive controls in shared shell/workspace primitives
-- Next dependency after this chain:
-  - `mvp-factory-control#862` — report-variant and editor workflow migration
+## 2026-06-25 - Mantine report/entity delivery (`mvp-factory-control#862`-`#864`, `#740`-`#741`)
+
+- Scope delivered:
+  - fixed report variant Time Period dropdown layering by rendering Mantine selects through a portal with modal-safe z-index
+  - added `components/admin/EntityFormModal.tsx` and `AdminEntityConfig.forms`
+  - migrated organization create/edit forms onto the schema-driven entity form layer
+  - migrated partner and organization public report loading/error/shell wrappers onto `PublicReportShell`
+  - hardened `npm run style:check` against legacy public report shell wrapper reintroduction
+- Canonical implementation touched:
+  - `components/UnifiedSelectField.tsx`
+  - `components/admin/EntityFormModal.tsx`
+  - `components/reports/PublicReportShell.tsx`
+  - `lib/adminEntitySystem.ts`
+  - `lib/adapters/organizationsAdapter.tsx`
+  - `app/admin/organizations/page.tsx`
+  - `app/admin/organizations/[id]/reports/page.tsx`
+  - `app/admin/partners/[id]/reports/page.tsx`
+  - `app/partner-report/PartnerReportView.tsx`
+  - `app/organization-report/OrganizationReportView.tsx`
+  - `scripts/check-design-violations.js`
+- Current migration rule:
+  - Mantine selects inside modals must use the shared portal/z-index contract, not page-local `withinPortal={false}`
+  - new admin entity metadata forms should declare schema where practical and use `EntityFormModal`
+  - public report shell work must preserve existing report URL and `?variant=` semantics
+
+## 2026-06-25 - Mantine migration highest-value chain (`mvp-factory-control#857`-`#861`)
 
 ## 2026-06-24 - Documentation/version sync (`v12.1.13`)
 

@@ -18,24 +18,29 @@ Before starting work:
 
 ## Current Queue
 
-Last verified against Project 8 on `2026-06-25` after the #857-#861 delivery chain.
+Last verified against Project 8 on `2026-06-25` before the #862-#864 and #740-#741 delivery update.
 
-1. `#862` — next dependency — report-variant and editor workflow migration
-2. `#863` — later dependency — public report shell migration with runtime compatibility
-3. `#864` — later dependency — legacy deletion and enforcement hardening
-4. `#739`-`#746` — later unified admin entity system chain, revisit after Mantine migration progresses
-5. `#66` — lower-value documentation infrastructure, keep behind product/runtime migration work
+1. `#862` — delivered in `v12.1.15` through report-variant selector layering and report workspace form hardening
+2. `#863` — delivered in `v12.1.15` through shared Mantine public report shells for partner/organization reports
+3. `#864` — delivered in `v12.1.15` through public shell enforcement and legacy-wrapper guardrails
+4. `#740` — delivered in `v12.1.15` through expanded entity contract/action/form schema documentation and runtime support
+5. `#741` — delivered in `v12.1.15` through `EntityFormModal` and organization create/edit migration
 
 Queue notes:
 - `#857` through `#861` are delivered/closed by the `v12.1.14` chain.
-- `#862` should move ahead of `#863`/`#864` because it continues the same dependency path and directly affects editor/report-variant workflows.
-- `#863` and `#864` remain deferred until editor/report-variant migration is stable.
-- `#739` through `#746` are still deferred until the Mantine chain is materially further along.
+- `#862` through `#864` should be closed after validation and board update.
+- `#740` and `#741` should be closed after validation and board update.
+- Remaining unified admin chain sub-issues `#742`, `#743`, `#744`, and `#746` remain the next likely product architecture sequence.
 - Closed duplicate issues `#865`, `#866`, and `#867` were removed from the board.
 
 ## Local Repo Context
 
 Latest shipped repo release:
+- `v12.1.15` — Mantine report variant/public shell/entity form delivery, including:
+  - report-variant select dropdown portal/z-index fix for `#862`
+  - Mantine public report shell migration for `#863`
+  - guardrail hardening for `#864`
+  - admin entity form schema and organization form migration for `#740`/`#741`
 - `v12.1.14` — Mantine migration chain closure and shared primitive/shell/workspace hardening, including:
   - governance/runtime verification for `#857` and `#858`
   - Mantine-backed card primitive hardening for `#859`

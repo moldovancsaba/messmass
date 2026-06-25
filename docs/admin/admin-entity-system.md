@@ -1,6 +1,6 @@
 # Unified Admin Entity System
 Status: Active
-Last Updated: 2026-05-03
+Last Updated: 2026-06-25
 Canonical: Yes
 Owner: Engineering
 
@@ -31,6 +31,7 @@ type AdminEntityConfig<T> = {
   }
   permissionRequirements?: AdminEntityPermission[]
   actions: AdminEntityActionDefinition<T>[]
+  forms?: AdminEntityFormSchema<Record<string, unknown>>[]
 }
 ```
 
@@ -42,6 +43,7 @@ Each entity now declares:
 - capability flags: explicit support matrix for supported behaviors
 - permission expectations: minimum role gate for the entity/action
 - actions: one declarative action list consumed by both list and card views
+- forms: optional schema-driven modal fields for metadata create/edit flows
 
 ## Action Model
 
@@ -97,6 +99,8 @@ Current shared capability vocabulary:
 | `manage-members` | Entity supports membership assignment | Organization |
 | `analytics` | Entity exposes analytics dashboard | Partner |
 | `kyc` | Entity exposes KYC data view | Partner |
+| `report-workspace` | Entity exposes report variant workspace | Partner, Organization |
+| `export` | Entity supports export actions | Reserved |
 
 Rules:
 
@@ -106,6 +110,28 @@ Rules:
 - list and card surfaces consume the same action source, filtered only by `surfaces`
 
 ## Current Entity Mapping
+
+## Form Schema Model
+
+The shared edit/create modal layer is `components/admin/EntityFormModal.tsx`.
+
+Supported schema fields:
+
+| Field type | Runtime control | Notes |
+| :--- | :--- | :--- |
+| `text` | Mantine `TextInput` | Required state is declared in schema; validation remains page/domain-owned |
+| `select` | Mantine `Select` | Dropdown renders through a portal with modal-safe z-index |
+| `checkbox` | Mantine `Checkbox` | Boolean metadata fields |
+| `readonly` | Mantine `TextInput` disabled/read-only | Stable identifiers and immutable metadata |
+
+Execution boundary:
+- entity config owns the editable field declaration
+- `EntityFormModal` owns accessible rendering and submit shell
+- page code owns mutation calls, normalization, retries, and recovery behavior
+
+Current migration status:
+- Organizations create/edit use `EntityFormModal`
+- Partners retain the existing two-step operational form because it includes richer nested integrations, but the compatibility path is explicit: keep the `edit-partner` modal runtime key and migrate smaller metadata subsets into schema-backed sections when the partner form is decomposed
 
 ### Organization
 
@@ -119,6 +145,7 @@ Declared capabilities:
 - `edit`
 - `delete`
 - `report`
+- `report-workspace`
 - `edit-content`
 - `manage-members`
 
@@ -126,8 +153,8 @@ Action mapping:
 
 | Action | Execution kind | Runtime key |
 | :--- | :--- | :--- |
-| `Report` | `route` | `/organization-report/[id]` |
-| `Edit Stats` | `route` | `/organization-edit/[id]` |
+| `Reports` | `route` | `/admin/organizations/[id]/reports` |
+| `Open Default Report` | `route` | `/organization-report/[id]` |
 | `Edit` | `modal` | `edit-organization` |
 | `Manage Members` | `modal` | `manage-members` |
 | `Delete` | `mutation` + confirm | `delete-organization` |
@@ -148,22 +175,23 @@ Declared capabilities:
 - `edit-content`
 - `analytics`
 - `kyc`
+- `report-workspace`
 
 Action mapping:
 
 | Action | Execution kind | Runtime key |
 | :--- | :--- | :--- |
-| `Edit` | `modal` | `edit-partner` |
-| `Report` | `share` | `partner-report` |
-| `Edit Stats` | `route` | `/partner-edit/[id]` |
+| `Reports` | `route` | `/admin/partners/[id]/reports` |
+| `Open Editor` | `route` | `/partner-edit/[id]` |
+| `Share Report` | `share` | `partner-report` |
 | `KYC Data` | `route` | `/admin/partners/[id]/kyc-data` |
 | `Analytics` | `route` | `/admin/partners/[id]/analytics` |
+| `Edit` | `modal` | `edit-partner` |
 | `Delete` | `mutation` + confirm | `delete-partner` |
 
 Notes:
 
-- `KYC Data` is currently list-only via `surfaces: ['list']`
-- `Report` intentionally uses the share popup flow instead of direct navigation
+- `Share Report` intentionally uses the share popup flow instead of direct navigation
 - Partner-only capabilities remain explicit rather than being approximated on Organizations
 
 ## How Pages Consume The Contract
@@ -207,6 +235,7 @@ This foundation issue delivers:
 - capability matrix
 - shared action execution model
 - shared list/card action source
+- schema-driven organization create/edit modal layer
 - concrete Partner and Organization mapping onto the contract
 
 Follow-up issues should build on this foundation instead of introducing new page-local action branching.

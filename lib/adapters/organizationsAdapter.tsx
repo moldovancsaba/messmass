@@ -24,6 +24,46 @@ export const organizationsEntityConfig: AdminEntityConfig<OrganizationDTO> = {
     placeholder: 'Search organizations...',
   },
   permissionRequirements: ['superadmin'],
+  forms: [
+    {
+      id: 'create-organization',
+      title: '+ Add Organization',
+      submitText: 'Create',
+      fields: [
+        {
+          key: 'name',
+          label: 'Organization Name',
+          type: 'text',
+          required: true,
+          placeholder: 'e.g., Champions Hockey League',
+        },
+      ],
+    },
+    {
+      id: 'edit-organization',
+      title: 'Edit Organization',
+      submitText: 'Save Changes',
+      fields: [
+        {
+          key: 'name',
+          label: 'Organization Name',
+          type: 'text',
+          required: true,
+          placeholder: 'Organization name',
+        },
+        {
+          key: 'status',
+          label: 'Status',
+          type: 'select',
+          required: true,
+          options: [
+            { value: 'active', label: 'Active' },
+            { value: 'inactive', label: 'Inactive' },
+          ],
+        },
+      ],
+    },
+  ],
   actions: [
     {
       id: 'organization-reports',

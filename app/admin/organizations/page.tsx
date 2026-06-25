@@ -10,6 +10,7 @@ import UnifiedAdminPage from '@/components/UnifiedAdminPage';
 import ColoredCard from '@/components/ColoredCard';
 import OrganizationMembersSelector from '@/components/OrganizationMembersSelector';
 import { FormModal } from '@/components/modals';
+import EntityFormModal from '@/components/admin/EntityFormModal';
 import { apiDelete, apiPost, apiPut } from '@/lib/apiClient';
 import { useAdminAuth } from '@/hooks/useAdminAuth';
 import { organizationsAdapter, organizationsEntityConfig } from '@/lib/adapters';
@@ -47,12 +48,11 @@ export default function OrganizationsAdminPage() {
 
   const [createOpen, setCreateOpen] = useState(false);
   const [creating, setCreating] = useState(false);
-  const [newOrgName, setNewOrgName] = useState('');
+  const [createForm, setCreateForm] = useState({ name: '' });
   const [editOpen, setEditOpen] = useState(false);
   const [editing, setEditing] = useState(false);
   const [editOrgId, setEditOrgId] = useState<string | null>(null);
-  const [editOrgName, setEditOrgName] = useState('');
-  const [editOrgStatus, setEditOrgStatus] = useState<'active' | 'inactive'>('active');
+  const [editForm, setEditForm] = useState({ name: '', status: 'active' });
 
   const [membersModalOpen, setMembersModalOpen] = useState(false);
   const [activeOrg, setActiveOrg] = useState<Organization | null>(null);
@@ -138,7 +138,7 @@ export default function OrganizationsAdminPage() {
   }, [loadOrganizations]);
 
   const createOrganization = useCallback(async () => {
-    const name = newOrgName.trim();
+    const name = createForm.name.trim();
     if (!name) return;
     setCreating(true);
     setError(null);
@@ -148,30 +148,29 @@ export default function OrganizationsAdminPage() {
         throw new Error(data.error || 'Failed to create organization');
       }
       setCreateOpen(false);
-      setNewOrgName('');
+      setCreateForm({ name: '' });
       await loadOrganizations();
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Failed to create organization');
     } finally {
       setCreating(false);
     }
-  }, [loadOrganizations, newOrgName]);
+  }, [createForm.name, loadOrganizations]);
 
   const openEditOrganization = useCallback((org: Organization) => {
     setEditOrgId(org._id);
-    setEditOrgName(org.name);
-    setEditOrgStatus(org.status || 'active');
+    setEditForm({ name: org.name, status: org.status || 'active' });
     setEditOpen(true);
   }, []);
 
   const updateOrganization = useCallback(async () => {
-    if (!editOrgId || !editOrgName.trim()) return;
+    if (!editOrgId || !editForm.name.trim()) return;
     setEditing(true);
     setError(null);
     try {
       const data = await apiPut(`/api/admin/organizations/${editOrgId}`, {
-        name: editOrgName.trim(),
-        status: editOrgStatus,
+        name: editForm.name.trim(),
+        status: editForm.status,
       });
       if (!data.success) {
         throw new Error(data.error || 'Failed to update organization');
@@ -184,7 +183,7 @@ export default function OrganizationsAdminPage() {
     } finally {
       setEditing(false);
     }
-  }, [editOrgId, editOrgName, editOrgStatus, loadOrganizations]);
+  }, [editForm.name, editForm.status, editOrgId, loadOrganizations]);
 
   useEffect(() => {
     if (!authLoading && !user) {
@@ -218,6 +217,9 @@ export default function OrganizationsAdminPage() {
       },
     }
   ), [deleteOrganization, openEditOrganization, openMembers, user]);
+
+  const createOrganizationSchema = organizationsEntityConfig.forms?.find((form) => form.id === 'create-organization');
+  const editOrganizationSchema = organizationsEntityConfig.forms?.find((form) => form.id === 'edit-organization');
 
   if (authLoading || loading) {
     return (
@@ -259,61 +261,34 @@ export default function OrganizationsAdminPage() {
         </ColoredCard>
       )}
 
-      <FormModal
-        isOpen={createOpen}
-        onClose={() => setCreateOpen(false)}
-        onSubmit={createOrganization}
-        title="+ Add Organization"
-        submitText="Create"
-        isSubmitting={creating}
-        size="md"
-      >
-        <div className="form-group mb-2">
-          <label className="form-label-block">Organization Name *</label>
-          <input
-            className="form-input"
-            value={newOrgName}
-            onChange={(e) => setNewOrgName(e.target.value)}
-            placeholder="e.g., Champions Hockey League"
-            autoFocus
-          />
-        </div>
-      </FormModal>
+      {createOrganizationSchema && (
+        <EntityFormModal
+          isOpen={createOpen}
+          onClose={() => setCreateOpen(false)}
+          onSubmit={createOrganization}
+          schema={createOrganizationSchema}
+          values={createForm}
+          onChange={(key, value) => setCreateForm((prev) => ({ ...prev, [key]: value }))}
+          isSubmitting={creating}
+          disableSubmit={!createForm.name.trim()}
+        />
+      )}
 
-      <FormModal
-        isOpen={editOpen}
-        onClose={() => {
-          setEditOpen(false);
-          setEditOrgId(null);
-        }}
-        onSubmit={updateOrganization}
-        title="Edit Organization"
-        submitText="Save Changes"
-        isSubmitting={editing}
-        size="md"
-      >
-        <div className="form-group mb-4">
-          <label className="form-label-block">Organization Name *</label>
-          <input
-            className="form-input"
-            value={editOrgName}
-            onChange={(e) => setEditOrgName(e.target.value)}
-            placeholder="Organization name"
-            autoFocus
-          />
-        </div>
-        <div className="form-group mb-2">
-          <label className="form-label-block">Status</label>
-          <select
-            className="form-input"
-            value={editOrgStatus}
-            onChange={(e) => setEditOrgStatus(e.target.value as 'active' | 'inactive')}
-          >
-            <option value="active">Active</option>
-            <option value="inactive">Inactive</option>
-          </select>
-        </div>
-      </FormModal>
+      {editOrganizationSchema && (
+        <EntityFormModal
+          isOpen={editOpen}
+          onClose={() => {
+            setEditOpen(false);
+            setEditOrgId(null);
+          }}
+          onSubmit={updateOrganization}
+          schema={editOrganizationSchema}
+          values={editForm}
+          onChange={(key, value) => setEditForm((prev) => ({ ...prev, [key]: value }))}
+          isSubmitting={editing}
+          disableSubmit={!editForm.name.trim()}
+        />
+      )}
 
       <FormModal
         isOpen={membersModalOpen}
