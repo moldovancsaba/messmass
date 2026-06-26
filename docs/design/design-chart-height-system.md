@@ -38,7 +38,7 @@ The **chart graphic area** height is calculated based on the total grid units in
 1. **Calculate unit width**: `unitWidth = blockWidth / totalUnits`
 2. **Get multiplier**: Based on total units (see table above)
 3. **Calculate height**: `chartHeight = unitWidth × multiplier`
-4. **Apply caps**: 
+4. **Apply caps**:
    - Minimum: 200px
    - Maximum: 800px or 80vh (whichever is smaller)
 
@@ -94,7 +94,7 @@ Total = 7.5rem + 450px ≈ 570px (assuming 1rem = 16px)
 ```css
 .chart-item {
   display: grid;
-  grid-template-rows: 
+  grid-template-rows:
     4rem                          /* Title */
     2rem                          /* Subtitle */
     var(--block-chart-height)     /* Chart graphic - CALCULATED */
@@ -173,6 +173,6 @@ These charts maintain their aspect ratio and don't use the calculated height.
 
 ---
 
-**Version**: 11.35.3  
+**Version**: 12.1.16
 **Last Updated**: 2026-01-11T22:28:38.000Z
 **Status**: Production Ready

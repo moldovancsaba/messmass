@@ -528,15 +528,14 @@ GET /api/partners/[id]/google-sheet/status
 
 ### Event-Level Sync
 
-**Pull Single Event**
+Event-level Google Sheets sync is not exposed through project-scoped API routes in the current implementation. The supported contract is partner-scoped:
+
 ```http
-POST /api/projects/[id]/google-sheet/pull
+POST /api/partners/[id]/google-sheet/pull
+POST /api/partners/[id]/google-sheet/push
 ```
 
-**Push Single Event**
-```http
-POST /api/projects/[id]/google-sheet/push
-```
+Use the partner route to pull or push all sheet-backed events for that partner. If single-event sync is required later, add a dedicated route and document its idempotency, conflict handling, and rollback behavior before exposing it.
 
 ### Cron Job
 

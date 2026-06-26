@@ -584,9 +584,7 @@ export function calculateChart(
     total,
     kpiValue,
     hasErrors,
-    // WHAT: Pass through showTitle for chart-level title visibility control
-    // WHY: DynamicChart needs this to control title display
-    // HOW: Pass through from configuration, default to true if not specified
+    // Preserve chart-level title visibility for the report renderer.
     showTitle: configuration.showTitle !== false,
     aspectRatio: (configuration.type === 'image' || configuration.type === 'text' || configuration.type === 'table') 
       ? configuration.aspectRatio 

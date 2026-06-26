@@ -4,8 +4,8 @@ Last Updated: 2026-05-20
 Canonical: Yes
 Owner: Architecture
 
-**Version:** 12.1.12  
-**Base URL:** `https://messmass.com`  
+**Version:** 12.1.16
+**Base URL:** `https://messmass.com`
 **Local development base URL:** `http://localhost:3001`
 
 ## Purpose
@@ -17,6 +17,7 @@ Current scope in code:
 - partner list
 - single partner details
 - partner events
+- single event details
 
 ## Authentication
 
@@ -163,6 +164,37 @@ Current event fields returned:
 - `totalFans`
 - `eventAttendees`
 
+### `GET /api/public/events/{id}`
+
+Returns one public event record with optional full stats.
+
+Query parameters:
+
+- `includeStats` — default `true`; set to `false` to omit the full `stats` object
+
+Rules:
+
+- `id` must be a valid MongoDB `ObjectId`
+- invalid ID returns `400`
+- missing event returns `404`
+
+Response shape:
+
+```json
+{
+  "success": true,
+  "event": {
+    "id": "507f1f77bcf86cd799439011",
+    "eventName": "Example Event",
+    "partner": {
+      "id": "507f1f77bcf86cd799439012",
+      "name": "Example Partner"
+    }
+  },
+  "timestamp": "2026-06-26T10:00:00.000Z"
+}
+```
+
 ## CORS And Preflight
 
 All current public partner routes support `OPTIONS` for browser preflight handling:
@@ -170,6 +202,7 @@ All current public partner routes support `OPTIONS` for browser preflight handli
 - `OPTIONS /api/public/partners`
 - `OPTIONS /api/public/partners/{id}`
 - `OPTIONS /api/public/partners/{id}/events`
+- `OPTIONS /api/public/events/{id}`
 
 ## Error Behavior
 
@@ -213,7 +246,14 @@ curl -H "Authorization: Bearer YOUR_API_KEY" \
   "https://messmass.com/api/public/partners/507f1f77bcf86cd799439011/events?limit=5"
 ```
 
+### Fetch one event
+
+```bash
+curl -H "Authorization: Bearer YOUR_API_KEY" \
+  "https://messmass.com/api/public/events/507f1f77bcf86cd799439011?includeStats=false"
+```
+
 ## Related Docs
 
-- `/Users/moldovancsaba/Projects/messmass/docs/api/api-reference.md`
-- `/Users/moldovancsaba/Projects/messmass/docs/features/features-authentication.md`
+- `docs/api/api-reference.md`
+- `docs/features/features-authentication.md`

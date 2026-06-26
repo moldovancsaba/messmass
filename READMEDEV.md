@@ -35,7 +35,7 @@ ACCEPTED ✅
 PROHIBITED ❌ (Hard stops)
 - Autonomous assumptions (requirements, priority, architecture, env, deploy steps).
 - Placeholder docs or invented details (“it should work”, “probably”).
-- Creating competing planning files (task.md, ROADMAP.md, IDEABANK.md, etc.).
+- Creating competing planning files such as ad hoc task files, duplicate roadmaps, or idea dumps.
 - Adding deps/framework changes without explicit PO approval.
 - Marking “Done” without passing DoD + updating SSOT + updating docs.
 
@@ -94,16 +94,16 @@ To mark a card “Done”, ALL must be true:
 4) Evidence & documentation
 - Provide: what changed / where / how validated / results.
 - Update docs/HANDOVER.md.
-- Update docs/RELEASE_NOTES.md ONLY if something is actually shipped (see shipping rule).
+- Update `docs/operations/operations-release-notes.md` ONLY if something is actually shipped (see shipping rule).
 - Update SSOT with Done + evidence note.
 
 ================================================================================
 7) SHIPPING / RELEASE NOTES RULE ✅
 ================================================================================
 “Shipped” must be explicitly defined by the PO or existing docs (e.g., merged to main, deployed to prod).
-- Only write RELEASE_NOTES entries for verified shipped changes.
+- Only write release-notes entries for verified shipped changes.
 - No speculation, no future tense.
-If “shipped” definition is unclear, ask PO before editing RELEASE_NOTES.
+If “shipped” definition is unclear, ask PO before editing release notes.
 
 ================================================================================
 8) COMMIT / PR HYGIENE ✅
@@ -177,7 +177,7 @@ Append an entry (no history rewriting unless correcting false info). Include:
 - Known issues/risks/follow-ups
 - Immediate next actions (ordered list)
 
-C) UPDATE docs/RELEASE_NOTES.md (ONLY if shipped)
+C) UPDATE `docs/operations/operations-release-notes.md` (ONLY if shipped)
 - Only verified shipped changes per rule #7.
 
 D) OUTPUT “NEXT AGENT PROMPT PACKAGE” (IN YOUR ANSWER)
@@ -382,7 +382,7 @@ TEAM:
 |----------|---------------|---------|
 | `/README.md` | Project README | Local dev, deployment notes, and high-level system overview. |
 | `/docs/operations/operations-deployment-checklist.md` | Deployment Checklist | Pre-deploy and post-deploy verification + rollback steps. |
-| `/docs/operations/WARP.md` | WARP | Operational notes / updates history. |
+| `/docs/operations/ops-warp.md` | WARP / Ops Notes | Operational notes and implementation history. |
 
 ### Feature Documents (Date-Based Format)
 
@@ -429,7 +429,7 @@ TEAM:
 
 | Location | Document Name | Summary |
 |----------|---------------|---------|
-| `/docs/NEXT_PHASES.md` | Next Phases | Planned future phases of development. Upcoming features, priorities, and timeline estimates. |
+| `/docs/operations/operations-action-plan.md` | Active Execution Queue | Current executable priorities, blockers, and follow-up work. |
 
 
 ---
@@ -438,11 +438,11 @@ TEAM:
 
 ### Critical System State
 
-**Current Version**:
-  
-**Last Known Working Commit**: 
+**Current Version**: `12.1.16`
 
-**Status**:
+**Last Known Working Commit**: `main`
+
+**Status**: Active production codebase. Use `docs/index.md` as the docs entrypoint and run verification before pushing.
 
 
 ### Authentication System 
@@ -451,10 +451,10 @@ TEAM:
 
 ### Documentation System Rules
 
-1. **All feature documents** go in `/docs` folder
-2. **Format**: `YYYY-MM-DD_FEATURE.md` (e.g., `2026-01-23_ADMIN_UI_IMPROVEMENTS.md`)
-3. **Feature documents** must be referenced in TASKLIST.md, ROADMAP.md, RELEASE_NOTES.md
-4. **Update immediately** after code changes - documentation = code
+1. **Start from the docs index**: `/docs/index.md`
+2. **Track executable work** in `/docs/operations/operations-action-plan.md`
+3. **Track strategic direction** in `/docs/operations/operations-roadmap.md`
+4. **Track completed release evidence** in `/docs/operations/operations-release-notes.md`
 5. **No placeholders** - every document must reflect current state
 
 ### Tech Stack Constraints
@@ -466,7 +466,7 @@ TEAM:
 ### Development Workflow
 
 1. **Before starting**: Start at `/docs/index.md`, then check `/docs/operations/operations-action-plan.md`
-2. **During work**: Update feature document in `/docs` as you go
+2. **During work**: Update the relevant feature or operations document as you go
 3. **Before commit**: Update `/docs/operations/operations-release-notes.md` and `/docs/architecture.md` if needed
 4. **After commit**: Verify build passes, no warnings/errors
 

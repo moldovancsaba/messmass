@@ -235,7 +235,7 @@ grep -r "[3-9][0-9]*px" --include="*.css" components/
 grep -r 'style={{' --include="*.tsx" components/ app/
 ```
 
-**See:** `CODING_STANDARDS.md` for complete rules and examples
+**See:** `docs/coding-standards.md` for complete rules and examples
 
 ---
 
@@ -244,8 +244,8 @@ grep -r 'style={{' --include="*.tsx" components/ app/
 **CRITICAL:** A comprehensive technical audit was conducted on 2025-12-20.
 
 ### Audit Report
-**File:** `TECH_AUDIT_REPORTING_SYSTEM.md` (982 lines)  
-**Health Score:** 62/100 ⚠️ NEEDS IMPROVEMENT
+**File:** `docs/audits/documentation-consistency-audit-2026-06-26.md`
+**Status:** Active documentation consistency audit with prioritized remediation plan
 
 ### Critical Findings
 
@@ -253,13 +253,12 @@ grep -r 'style={{' --include="*.tsx" components/ app/
 |----------|-------|----------------|--------|
 | 🔴 **CRITICAL** | Inline style violations | 87+ files | ESLint rules added |
 | 🔴 **CRITICAL** | Hardcoded colors/values | 200+ files | Refactor in progress |
-| 🟡 **HIGH** | Deprecated DynamicChart.tsx | In use | Migration required |
+| 🟡 **HIGH** | Removed chart wrapper references | Active docs | Cleanup in progress |
 
 ### Automated Enforcement
 
 **ESLint Rules Active** (`.eslintrc.js`):
 - ✅ `react/forbid-dom-props` - Blocks inline `style` prop (ERROR)
-- ✅ `no-restricted-imports` - Warns about DynamicChart imports
 - ✅ React hooks exhaustive-deps
 - ✅ Next.js Image component enforcement
 
@@ -268,20 +267,15 @@ grep -r 'style={{' --include="*.tsx" components/ app/
 npm run lint
 ```
 
-### Chart System Migration (v12.0.0)
-
-**DEPRECATED:**
-- ❌ `components/DynamicChart.tsx` - Marked for removal in v12.0.0 (June 2025)
+### Chart System (v12)
 
 **CURRENT:**
 - ✅ `app/report/[slug]/ReportChart.tsx` - Unified v12 chart renderer
 - ✅ All new reports MUST use ReportChart
-- ✅ Migration guide in `TECH_AUDIT_REPORTING_SYSTEM.md` Part 2.1
 
-**Why Migration Required:**
-- Dual systems cause maintenance burden (bug fixes needed twice)
-- Inconsistent chart behavior between systems
-- DynamicChart imports will trigger ESLint warnings
+**Current Rule:**
+- Removed chart wrappers must not appear in active docs or new implementation code.
+- Historical migration notes belong under archive docs only.
 
 ---
 
@@ -352,7 +346,7 @@ The project features a **completely unified hashtag system** with consistent com
 # BEFORE npm run dev
 # Increment PATCH version: 2.6.2 → 2.6.3
 
-# BEFORE git commit  
+# BEFORE git commit
 # Increment MINOR, reset PATCH: 2.6.3 → 2.7.0
 ```
 
@@ -366,8 +360,8 @@ The project features a **completely unified hashtag system** with consistent com
 - **TypeScript strict mode** enforced
 - **ESLint validation** required before commits
 - **No test files** - MVP factory approach (tests prohibited)
-- **No inline styles** - The `style` prop is PROHIBITED on DOM elements (see `CODING_STANDARDS.md`)
-- **Avoid .trim()** - Do NOT use `.trim()` on strings unless absolutely necessary with documented reason (see `CODING_STANDARDS.md`)
+- **No inline styles** - The `style` prop is PROHIBITED on DOM elements (see `docs/coding-standards.md`)
+- **Avoid .trim()** - Do NOT use `.trim()` on strings unless absolutely necessary with documented reason (see `docs/coding-standards.md`)
 
 ### Timestamp Format (Mandatory)
 **All timestamps MUST use:** `YYYY-MM-DDTHH:MM:SS.sssZ`
@@ -398,7 +392,7 @@ The project features a **completely unified hashtag system** with consistent com
     // ALL variables stored here (system + custom)
     // Image tracking
     remoteImages: number, hostessImages: number, selfies: number,
-    // Demographics  
+    // Demographics
     female: number, male: number,
     genAlpha: number, genYZ: number, genX: number, boomer: number,
     // Location
@@ -562,10 +556,10 @@ npm run analytics:backfill
 - **`GET /api/hashtags/filter-by-slug/[slug]`** - Public filtering
 
 ### Admin APIs
-- **`GET /api/admin/hashtag-categories`** - List categories
-- **`POST /api/admin/hashtag-categories`** - Create category
-- **`PUT /api/admin/hashtag-categories/[id]`** - Update category
-- **`DELETE /api/admin/hashtag-categories/[id]`** - Delete category
+- **`GET /api/hashtag-categories`** - List categories with search and pagination
+- **`POST /api/hashtag-categories`** - Create category; requires `admin-session`
+- **`PUT /api/hashtag-categories`** - Update category by `id` in request body; requires `admin-session`
+- **`DELETE /api/hashtag-categories?id=<categoryId>`** - Delete category; requires `admin-session`
 
 ### Variables APIs
 - **`GET /api/variables-config`** - Fetch all variables with flags and ordering
@@ -854,7 +848,7 @@ const value = project.remoteImages;
 ```typescript
 import ReportChart from '@/app/report/[slug]/ReportChart';
 
-<ReportChart 
+<ReportChart
   result={chartResult}  // From ReportCalculator
   width={2}             // Grid units
   className="custom-class"
@@ -874,17 +868,11 @@ ReportChart (app/report/[slug]/ReportChart.tsx)
   ↓ Supports KPI, PIE, BAR, TEXT, IMAGE, VALUE
 ```
 
-### Legacy System (DEPRECATED)
+### Removed Legacy System
 
-**⚠️ DO NOT USE:**
-- ❌ `components/DynamicChart.tsx` - Deprecated in v11.37.0
-- ❌ Scheduled for removal in v12.0.0 (June 2025)
-- ❌ ESLint will warn if imported
-
-**Migration Required:**
-- Replace all `DynamicChart` imports with `ReportChart`
-- Update props to match `ReportChart` interface
-- See `TECH_AUDIT_REPORTING_SYSTEM.md` for migration guide
+**Do not use removed chart wrappers in active code or docs.**
+- The current report renderer is `app/report/[slug]/ReportChart.tsx`.
+- Historical migration notes are archive-only context.
 
 ### Image Layout System (v9.3.0)
 
@@ -940,8 +928,8 @@ interface ChartConfiguration {
 - **`lib/export/pdf.ts`** - Smart pagination PDF export with html2canvas
 - Supports hero repetition, aspect ratio preservation, 3-column grid layout
 
-**Deprecated:**
-- ~~`components/DynamicChart.tsx`~~ - Use ReportChart instead (v12.0.0 removal)
+**Current renderer:**
+- `app/report/[slug]/ReportChart.tsx`
 
 ## 📄 PDF Export System
 
@@ -1008,7 +996,7 @@ imagesToRestore.forEach(({ parent, img, placeholder }) => {
 ### Development
 ```bash
 npm run dev               # Next.js on :5000
-cd server && npm start    # WebSocket on :7654 
+cd server && npm start    # WebSocket on :7654
 ```
 
 ### Production
@@ -1050,7 +1038,7 @@ BITLY_GROUP_GUID=your_group_guid      # From Bitly dashboard URL
 
 ### Mandatory Protocols
 - **Documentation updates**: All relevant docs must be updated with changes
-- **Version consistency**: Version must match across package.json and all documentation  
+- **Version consistency**: Version must match across package.json and all documentation
 - **Comment requirements**: All code needs functional + strategic comments
 - **Timestamp standards**: ISO 8601 with milliseconds everywhere
 - **Board Card Width Rule**: All cards on any board/grid must have equal width within that board (set widths at the grid container, not per-card).
@@ -1085,7 +1073,7 @@ BITLY_GROUP_GUID=your_group_guid      # From Bitly dashboard URL
 
 For detailed information, see:
 - **`ARCHITECTURE.md`** - Complete system architecture and component relationships
-- **`CODING_STANDARDS.md`** - **MANDATORY** coding standards including inline style prohibition
+- **`docs/coding-standards.md`** - **MANDATORY** coding standards including inline style prohibition
 - **`HASHTAG_SYSTEM.md`** - Unified hashtag system documentation
 - **`[VARIABLE_SYSTEM_HISTORY.md](docs/archive/2025/deprecated-guides/archive-variable-system-history.md#overview)`** - Variables & metrics management system
 - **`docs/operations/operations-action-plan.md`** - Current active tasks and project status (single executable queue)
@@ -1393,4 +1381,4 @@ const value = stats[statsKey]; // Get current value
 
 ---
 
-*Version: 11.55.1 | Last Updated: 2026-02-21T00:00:00.000Z (UTC) | Status: Production-Ready*
+*Version: 12.1.16 | Last Updated: 2026-06-26T10:00:00.000Z (UTC) | Status: Production*

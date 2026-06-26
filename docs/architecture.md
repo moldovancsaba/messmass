@@ -4,7 +4,7 @@ Last Updated: 2026-06-25
 Canonical: No
 Owner: Architecture
 
-Version: 12.1.15
+Version: 12.1.16
 
 **Mantine Entity, Variant, and Public Report Shell Delivery (2026-06-25):**
 - **Report variant selector recovery:** Mantine `Select` dropdowns inside report variant `FormModal` now render through a portal with modal-safe z-index, preventing the dropdown from being hidden behind or interpreted as outside the dialog.
@@ -54,7 +54,7 @@ Version: 12.1.15
 - **Hydration Deadlock Resolution**: Fixed a systemic client-side hydration failure by adjusting dependencies and refining the Content Security Policy (CSP).
 - **Formula Engine Security**: Modified CSP to allow `'unsafe-eval'`, enabling the dynamic KPI formula engine to function securely in production.
 
-**Recent Update (2026-01-16):** 
+**Recent Update (2026-01-16):**
 - **Partner Links**: Partner edit/report buttons now use `partner._id` (ObjectId) instead of `viewSlug` for reliable access. This fixes "Invalid partner ID format" errors when `viewSlug` is human-readable.
 - **Clicker Manager UX**: Chart algorithm selection replaced text input with searchable dropdown showing all available charts. Users can now discover and select algorithms like "gender-distribution", "szerencse-gender", etc. without manual typing.
 
@@ -125,7 +125,7 @@ import FormModal from '@/components/modals/FormModal';
 | Not using ColoredCard | ❌ Rejection |
 | Not searching codebase first | ❌ Rejection |
 
-**See:** `CODING_STANDARDS.md` for complete rules and enforcement.
+**See:** `docs/coding-standards.md` for complete rules and enforcement.
 
 ---
 
@@ -344,7 +344,7 @@ export function LegacyModal() { ... }
 
 The Partners Management System provides comprehensive infrastructure for managing organizational entities (clubs, federations, venues, brands) that participate in or host events. Partners serve as the foundation for rapid event creation via the Sports Match Builder and maintain associations with Bitly tracking links for attribution.
 
-**Status**: Production-Ready (Fully migrated to UnifiedAdminPage system in v10.7.0)  
+**Status**: Production-Ready (Fully migrated to UnifiedAdminPage system in v10.7.0)
 **Key Enhancement**: Partner report pages with shareable public URLs
 
 ### Key Features
@@ -1032,7 +1032,7 @@ interface HashtagDoc {
 ```typescript
 // Expand categorized hashtags for display
 const expandedTags = expandHashtagsWithCategories(
-  ["summer", "travel"], 
+  ["summer", "travel"],
   { country: ["hungary"], period: ["summer"] }
 );
 // Returns: ["summer", "travel", "country:hungary", "period:summer"]
@@ -1045,10 +1045,10 @@ const parsed = parseHashtagQuery("country:hungary");
 #### 3. API Endpoints
 
 **Hashtag Categories Management**
-- `GET /api/admin/hashtag-categories` - List all categories
-- `POST /api/admin/hashtag-categories` - Create new category
-- `PUT /api/admin/hashtag-categories/[id]` - Update category
-- `DELETE /api/admin/hashtag-categories/[id]` - Delete category
+- `GET /api/hashtag-categories` - List categories with search and pagination
+- `POST /api/hashtag-categories` - Create category; requires `admin-session`
+- `PUT /api/hashtag-categories` - Update category by `id` in the request body; requires `admin-session`
+- `DELETE /api/hashtag-categories?id=<categoryId>` - Delete category; requires `admin-session`
 
 **Enhanced Project APIs**
 - `POST /api/projects` - Create project with categorized hashtags
@@ -1213,10 +1213,10 @@ The system supports sophisticated filtering with both traditional and categorize
 - `GET /api/hashtags/[hashtag]` - Aggregated stats for single hashtag
 
 **Hashtag Categories**
-- `GET /api/admin/hashtag-categories` - List categories
-- `POST /api/admin/hashtag-categories` - Create category
-- `PUT /api/admin/hashtag-categories/[id]` - Update category
-- `DELETE /api/admin/hashtag-categories/[id]` - Delete category
+- `GET /api/hashtag-categories` - List categories with search and pagination
+- `POST /api/hashtag-categories` - Create category; requires `admin-session`
+- `PUT /api/hashtag-categories` - Update category by `id` in the request body; requires `admin-session`
+- `DELETE /api/hashtag-categories?id=<categoryId>` - Delete category; requires `admin-session`
 
 **Variables & Metrics**
 - `GET /api/variables-config` - Fetch all variables with flags and ordering
@@ -1246,8 +1246,8 @@ The system supports sophisticated filtering with both traditional and categorize
 ## 📊 Reporting System v12 Architecture (v11.37.0+)
 
 **Last Updated: 2026-01-16T11:30:00.000Z
-**Status:** Production (v12.0.0 migration in progress)  
-**Technical Audit:** See `TECH_AUDIT_REPORTING_SYSTEM.md` for comprehensive analysis
+**Status:** Production (v12.0.0 migration in progress)
+**Technical Audit:** See `docs/audits/documentation-consistency-audit-2026-06-26.md` for current documentation consistency analysis.
 
 ### Overview
 
@@ -1488,28 +1488,23 @@ interface ReportTemplate {
 
 #### v11.37.0 → v12.0.0 Transition
 
-**Deprecated Components:**
-- ❌ **`components/DynamicChart.tsx`** - Legacy renderer
-  - Status: DEPRECATED (v11.37.0)
-  - Removal: v12.0.0 (June 2025)
-  - Remaining Usage: 2 files
-  - Migration: See `DYNAMICCHART_MIGRATION_PLAN.md`
+**Removed Components:**
+- **Legacy chart wrapper** - The old `DynamicChart` renderer has been removed from the active component tree. Historical migration notes remain in archive docs only.
 
+**Deprecated Components:**
 - ⚠️ **`components/UnifiedDataVisualization.tsx`** - Old visualization system
-  - Status: DEPRECATED (line 2 marker)
+  - Status: Deprecated
   - Replacement: ReportChart + ReportContent
 
 **Current Architecture (v12):**
 - ✅ **`app/report/[slug]/ReportChart.tsx`** - Primary renderer
 - ✅ **`app/report/[slug]/ReportContent.tsx`** - Layout manager
 - ✅ All v12 reports use new system
-- ✅ ESLint warns about DynamicChart imports
+- ✅ Imports of removed chart wrappers should fail during review and documentation audit
 
-**Migration Effort:**
-- 2 files to migrate (visualization page + UnifiedDataVisualization)
-- Props mapping documented
-- Testing checklist provided
-- Timeline: 2 weeks (Phase 1 of technical audit)
+**Migration Status:**
+- Report rendering uses `ReportChart` and `ReportContent`
+- Remaining work is documentation cleanup and removal of historical references from active docs
 
 ### Performance Characteristics
 
@@ -1550,11 +1545,10 @@ interface ReportTemplate {
 
 ### Related Documentation
 
-- **Technical Audit:** `TECH_AUDIT_REPORTING_SYSTEM.md` (982 lines)
-- **Migration Plan:** `DYNAMICCHART_MIGRATION_PLAN.md` (253 lines)
-- **User Guide:** `WARP.md` Chart System & Visualization section
+- **Technical Audit:** `docs/audits/documentation-consistency-audit-2026-06-26.md`
+- **Operations Notes:** `docs/operations/ops-warp.md`
 - **Aspect Ratios:** `lib/aspectRatioUtils.ts` JSDoc comments
-- **Coding Standards:** `CODING_STANDARDS.md` Component patterns
+- **Coding Standards:** `docs/coding-standards.md` Component patterns
 
 ### Core vs Partner Resolution (2026-03-10)
 
@@ -1676,7 +1670,7 @@ Notifications are automatically created when:
 
 1. **Array-Based Tracking**: Uses `readBy` and `archivedBy` arrays containing user IDs
 2. **Independent Actions**: Each user's actions only affect their own arrays
-3. **Visibility Logic**: 
+3. **Visibility Logic**:
    - Notification visible if user ID NOT in `archivedBy`
    - Badge count includes notifications where user ID NOT in `readBy`
 
@@ -1749,14 +1743,14 @@ For production issues:
 
 The Unified Admin System provides a consistent, reusable architecture for admin pages with card/list toggle, server-side search, modal CRUD operations, and responsive design. It eliminates code duplication across admin pages while maintaining flexibility for page-specific features.
 
-**Status**: Production-Ready  
-**Migrated Pages**: Categories (v9.3.0), Users (v9.3.0), Projects (v10.1.0)  
+**Status**: Production-Ready
+**Migrated Pages**: Categories (v9.3.0), Users (v9.3.0), Projects (v10.1.0)
 **Key Achievement**: Server-side search with zero client-side filtering
 
 ### Core Components
 
 #### 1. UnifiedAdminPage (`components/UnifiedAdminPage.tsx`)
-**Role**: Master wrapper orchestrating hero, search, view toggle, and data display  
+**Role**: Master wrapper orchestrating hero, search, view toggle, and data display
 **Features**:
 - Auto-detects client-side vs server-side search mode
 - Manages view mode persistence (localStorage)
@@ -1791,7 +1785,7 @@ const isServerSideSearch = externalSearchValue !== undefined && onExternalSearch
 ```
 
 #### 2. Adapters (`lib/adapters/*.tsx`)
-**Role**: Page-specific configuration defining list/card structure and actions  
+**Role**: Page-specific configuration defining list/card structure and actions
 **Pattern**: Single adapter per admin page
 
 **Example** (`lib/adapters/projectsAdapter.tsx`):
@@ -1816,7 +1810,7 @@ export const projectsAdapter: AdminPageAdapter<ProjectDTO> = {
 ```
 
 #### 3. UnifiedListView (`components/UnifiedListView.tsx`)
-**Role**: Table-based data display with sortable columns  
+**Role**: Table-based data display with sortable columns
 **Features**:
 - Responsive table layout
 - Sortable columns (visual indicators)
@@ -1824,7 +1818,7 @@ export const projectsAdapter: AdminPageAdapter<ProjectDTO> = {
 - Empty state handling
 
 #### 4. UnifiedCardView (`components/UnifiedCardView.tsx`)
-**Role**: Grid-based card display  
+**Role**: Grid-based card display
 **Features**:
 - Responsive grid (1-4 columns based on screen size)
 - Colored accent borders
@@ -1832,7 +1826,7 @@ export const projectsAdapter: AdminPageAdapter<ProjectDTO> = {
 - Action buttons per card
 
 #### 5. UnifiedAdminHeroWithSearch (`components/UnifiedAdminHeroWithSearch.tsx`)
-**Role**: Header with title, search, view toggle, action buttons  
+**Role**: Header with title, search, view toggle, action buttons
 **Features**:
 - Integrated search input
 - Card/list view toggle
@@ -1940,8 +1934,8 @@ return (
 
 The Admin Layout & Navigation System provides a comprehensive, responsive layout framework for all {messmass} admin pages. It features a collapsible sidebar navigation, top header with user info and notifications, and adaptive behavior across desktop, tablet, and mobile devices.
 
-**Status**: Stable, Production-Ready  
-**Documentation**: See [ADMIN_LAYOUT_SYSTEM (archived)](archive/_archive/deprecated-guides-2025/archive-legacy-guides-pack.md#legacy-admin_layout_system) for complete documentation  
+**Status**: Stable, Production-Ready
+**Documentation**: See [ADMIN_LAYOUT_SYSTEM (archived)](archive/_archive/deprecated-guides-2025/archive-legacy-guides-pack.md#legacy-admin_layout_system) for complete documentation
 **Code Review (Archived)**: See [admin-layout-code-review-findings-2026-02-05.md](archive/_archive/admin/admin-layout-code-review-findings-2026-02-05.md)
 
 ### Key Components
@@ -1999,8 +1993,8 @@ app/admin/layout.tsx (Server Component)
 
 ### Design System Integration
 
-**CSS Modules**: All components use scoped CSS Modules  
-**Theme Tokens**: Leverages `app/styles/theme.css` for colors, spacing, typography  
+**CSS Modules**: All components use scoped CSS Modules
+**Theme Tokens**: Leverages `app/styles/theme.css` for colors, spacing, typography
 **Tokens Used**: `--mm-space-*`, `--mm-gray-*`, `--mm-color-primary-*`, `--mm-shadow-*`, `--z-*`
 
 **Tech Debt** (documented in CODE_REVIEW_FINDINGS):
@@ -2050,7 +2044,7 @@ const { isCollapsed, setIsCollapsed } = useSidebar();
 
 ### Future Enhancements
 
-See ROADMAP.md for planned improvements:
+See `docs/operations/operations-roadmap.md` for planned improvements:
 1. Tokenize sidebar widths and breakpoints (High priority)
 2. Add tooltips for collapsed sidebar (Medium priority)
 3. Add skip-to-content link (Medium priority)
@@ -2067,8 +2061,8 @@ For complete documentation, usage examples, troubleshooting, and technical detai
 
 The Page Styles System is a complete custom theming engine that allows administrators to create, manage, and apply visual themes to projects dynamically. It provides full control over backgrounds (solid/gradient), typography, and color schemes for public project pages, enabling white-label deployments, per-client branding, and dark mode support.
 
-**Status**: Production-Ready  
-**Documentation**: Complete implementation with 5 default themes included  
+**Status**: Production-Ready
+**Documentation**: Complete implementation with 5 default themes included
 **Complexity**: 2,887 lines of production code across 11 files
 
 ### Key Features
@@ -2187,21 +2181,21 @@ interface ColorScheme {
 **Style Management**
 - `GET /api/page-styles-enhanced` - List all styles (admin auth required)
   - Response: `{ success: true, styles: [...] }`
-  
+
 - `POST /api/page-styles-enhanced` - Create new style
   - Body: Complete `PageStyleEnhanced` object (without `_id`)
   - Validation: Name uniqueness, only one global default
   - Returns: Created style with `_id`
-  
+
 - `PUT /api/page-styles-enhanced?styleId=X` - Update existing style
   - Body: Partial `PageStyleEnhanced` object
   - Updates `updatedAt` timestamp automatically
   - Prevents duplicate global defaults
-  
+
 - `DELETE /api/page-styles-enhanced?styleId=X` - Delete style
   - Removes style from all assigned projects
   - Returns: `{ success: true, deletedCount: 1 }`
-  
+
 **Migration Note** (v6.44.0):
 - **Database Field**: Projects use `styleIdEnhanced` field (migrated from deprecated `styleId`)
 - **API Parameter**: Endpoints still accept `styleId` param for backward compatibility
@@ -2218,7 +2212,7 @@ interface ColorScheme {
   - Body: `{ styleId: ObjectId, projectId: ObjectId }`
   - Bidirectional linking: Updates both collections
   - Updates: `style.projectIds[]` and `project.styleIdEnhanced` (database field name)
-  
+
 - `DELETE /api/page-styles-enhanced/assign-project` - Remove assignment
   - Body: `{ styleId: ObjectId, projectId: ObjectId }`
   - Cleans up both collections
@@ -2272,7 +2266,7 @@ interface ColorScheme {
 
 **usePageStyle Hook** (`hooks/usePageStyle.ts`, 170 lines)
 - **Purpose**: Fetch and apply page style dynamically on public pages
-- **Usage**: 
+- **Usage**:
   ```typescript
   // In app/stats/[slug]/page.tsx
   usePageStyle({ projectId: slug });
@@ -2299,7 +2293,7 @@ interface ColorScheme {
 
 #### 5. Default Themes (Seed Script)
 
-**Script**: `scripts/seedPageStyles.ts` (260 lines)  
+**Script**: `scripts/seedPageStyles.ts` (260 lines)
 **Command**: `npm run seed:page-styles`
 
 **Included Themes**:
@@ -2385,7 +2379,7 @@ import { usePageStyle } from '@/hooks/usePageStyle';
 
 export default function StatsPage({ params }: { params: { slug: string } }) {
   usePageStyle({ projectId: params.slug }); // Add this line
-  
+
   // Rest of component code...
 }
 ```
@@ -2453,7 +2447,7 @@ messmass/
 
 ### Future Enhancements
 
-See ROADMAP.md for planned improvements:
+See `docs/operations/operations-roadmap.md` for planned improvements:
 1. **Enhanced Color Picker**: Gradient builder UI (vs. manual CSS input)
 2. **Theme Import/Export**: JSON export for sharing themes across instances
 3. **Theme Preview URL**: Shareable preview link before applying to production
@@ -2554,7 +2548,7 @@ await fetch('/api/page-styles-enhanced/set-global', {
 
 The Security Enhancements system provides comprehensive API protection through rate limiting, CSRF protection, and centralized logging. These layers work together to protect against abuse, ensure request authenticity, and provide operational visibility.
 
-**Status**: Production-Ready  
+**Status**: Production-Ready
 **Documentation**: See [security-enhancements.md](security/security-enhancements.md) and [security-migration-guide.md](security/security-migration-guide.md)
 
 ### Key Components
@@ -2732,15 +2726,15 @@ See [security-migration-guide.md](security/security-migration-guide.md) for step
 - ✅ System variables (schema fields) protected from deletion
 - ✅ In-memory caching for performance (5-minute TTL)
 
-**Status**: Production-Ready  
+**Status**: Production-Ready
 **Documentation**: See [VARIABLES_DATABASE_SCHEMA.md (archived)](archive/_archive/legacy-variable-system/archive-variables-database-schema.md) and [ADMIN_VARIABLES_SYSTEM.md (archived)](archive/_archive/legacy-variable-system/archive-admin-variables-system.md)
 
 ### Core Principles
 
 #### Single Reference System
 
-**WHAT**: Use full MongoDB document paths as canonical reference everywhere  
-**WHY**: Zero translation layer = zero confusion, one source of truth  
+**WHAT**: Use full MongoDB document paths as canonical reference everywhere
+**WHY**: Zero translation layer = zero confusion, one source of truth
 **HOW**: Database path `stats.female` = Formula token `[stats.female]` = Code reference `stats.female`
 
 **Rules**:
@@ -2968,7 +2962,7 @@ interface VariableGroup {
 
 The Formula Validation System provides real-time validation for chart formulas in the Admin Charts interface, preventing invalid formulas from entering the system and guiding admins toward consistent token usage.
 
-**Status**: Production-Ready  
+**Status**: Production-Ready
 **Components**: FormulaEditor component, validation functions, Validate All feature
 
 ### Key Components
@@ -3027,8 +3021,8 @@ interface FormulaValidationResult {
 
 #### 3. Validate All Feature (ChartAlgorithmManager)
 
-**Location**: Admin Charts page header  
-**Button**: "✓ Validate All"  
+**Location**: Admin Charts page header
+**Button**: "✓ Validate All"
 
 **Functionality**:
 - Validates all formulas across all chart configurations
@@ -3128,8 +3122,8 @@ const variables = extractVariablesFromFormula(formula);
 
 ### Performance
 
-**Debouncing**: 300ms delay prevents validation on every keystroke  
-**Caching**: Validation results stored in component state  
+**Debouncing**: 300ms delay prevents validation on every keystroke
+**Caching**: Validation results stored in component state
 **Efficiency**: Single-pass regex for token extraction
 
 ### Accessibility
@@ -3155,8 +3149,8 @@ const variables = extractVariablesFromFormula(formula);
 
 Chart System Enhancement Phase B transforms the Chart Algorithm Manager from hardcoded formulas to a fully flexible, data-driven system with parameterized values, Bitly enrichment charts, and support for aggregated analytics.
 
-**Status**: Production-Ready  
-**Release**: v6.10.0 (2025-01-16)  
+**Status**: Production-Ready
+**Release**: v6.10.0 (2025-01-16)
 **Components**: Formula engine extensions, 3 Bitly charts, parameter migration
 
 ### Phase B.1: Parameterized Marketing Multipliers
@@ -3189,8 +3183,8 @@ parameters: {
 ```typescript
 // Updated signature to accept parameters
 export function evaluateFormula(
-  formula: string, 
-  stats: ProjectStats, 
+  formula: string,
+  stats: ProjectStats,
   parameters?: Record<string, number>,
   manualData?: Record<string, number>
 ): number | 'NA'
@@ -3198,7 +3192,7 @@ export function evaluateFormula(
 // PARAM token substitution
 if (parameters) {
   processedFormula = processedFormula.replace(
-    /\[PARAM:([a-zA-Z0-9_]+)\]/g, 
+    /\[PARAM:([a-zA-Z0-9_]+)\]/g,
     (_match, paramKey) => {
       const value = parameters[paramKey];
       return value !== undefined ? String(value) : '0';
@@ -3215,7 +3209,7 @@ interface ChartElement {
   formula: string;
   color: string;
   description?: string;
-  
+
   parameters?: {
     [key: string]: {
       value: number;
@@ -3329,7 +3323,7 @@ Enables `[MANUAL:key]` tokens for aggregated analytics data that doesn't belong 
 // MANUAL token substitution
 if (manualData) {
   processedFormula = processedFormula.replace(
-    /\[MANUAL:([a-zA-Z0-9_]+)\]/g, 
+    /\[MANUAL:([a-zA-Z0-9_]+)\]/g,
     (_match, manualKey) => {
       const value = manualData[manualKey];
       return value !== undefined ? String(value) : '0';
@@ -3378,7 +3372,7 @@ manualData: {
 **Chart Calculator** (`lib/chartCalculator.ts`):
 ```typescript
 // Extract parameters and manualData from element
-const paramValues = element.parameters 
+const paramValues = element.parameters
   ? Object.fromEntries(Object.entries(element.parameters).map(([k, v]) => [k, v.value]))
   : undefined;
 
@@ -3426,8 +3420,8 @@ const value = evaluateFormula(element.formula, stats, paramValues, manualValues)
 
 The Advanced Chart Formatting System replaces hardcoded type-based formatting with a flexible, configurable interface supporting custom prefix/suffix combinations and decimal precision control. This enables white-label deployments with multiple currencies and custom units without code changes.
 
-**Status**: Production-Ready  
-**Release**: v8.17.0 (2025-10-31)  
+**Status**: Production-Ready
+**Release**: v8.17.0 (2025-10-31)
 **Components**: ChartValueFormatting interface, VALUE chart type, dual formatting UI, API validation
 
 ### Key Features
@@ -3501,11 +3495,11 @@ interface ChartValueFormatting {
 
 #### 3. Updated Chart Components
 
-**ValueChart Component** (`components/DynamicChart.tsx`):
-- New component with dual formatting support
-- Validates exactly 5 elements on render
-- Portrait and landscape layout switching
-- Uses large KPI display + horizontal bar chart
+**Value Chart Rendering** (`app/report/[slug]/ReportChart.tsx`):
+- Uses the current report renderer with dual formatting support
+- Validates the required value-chain shape before display
+- Supports responsive portrait and landscape report layouts
+- Uses large KPI display plus supporting value rows/bars where configured
 
 **Existing Chart Updates**:
 - **PieChart**: Updated to use `formatting` field (backward compatible)
@@ -3549,10 +3543,10 @@ function formatChartValue(
 
 **Examples**:
 ```typescript
-formatChartValue(1234.567, { rounded: true, prefix: '€', suffix: '' }) 
+formatChartValue(1234.567, { rounded: true, prefix: '€', suffix: '' })
 // → "€1,235"
 
-formatChartValue(0.4567, { rounded: false, prefix: '', suffix: '%' }) 
+formatChartValue(0.4567, { rounded: false, prefix: '', suffix: '%' })
 // → "0.46%"
 
 formatChartValue(1234.567, undefined, 'currency') // Legacy
@@ -3588,7 +3582,7 @@ formatChartValue(1234.567, undefined, 'currency') // Legacy
 **validateFormatting() Helper**:
 ```typescript
 function validateFormatting(
-  formatting: any, 
+  formatting: any,
   fieldName: string
 ): { valid: boolean; error?: string }
 ```
@@ -3651,9 +3645,9 @@ db.chart_configurations.updateMany(
 - Passes `formatting` to `formatChartValue()` for each element
 - Handles VALUE chart dual formatting (KPI vs. bars)
 
-**DynamicChart** (`components/DynamicChart.tsx`):
-- Routes VALUE type to `ValueChart` component
-- Validates 5-element requirement before render
+**ReportChart** (`app/report/[slug]/ReportChart.tsx`):
+- Routes VALUE chart configuration through the current report renderer
+- Validates chart data before render
 
 **Visualization Manager** (`app/admin/visualization/page.tsx`):
 - Displays VALUE charts with dual formatting in preview blocks
@@ -3706,8 +3700,8 @@ db.chart_configurations.updateMany(
 
 The Pie Chart Percentage Visibility Control adds a configurable `showPercentages` field to pie charts, allowing admins to toggle percentage display in legends and tooltips on a per-chart basis. This provides flexibility for cleaner chart designs when percentages are not needed.
 
-**Status**: Production-Ready  
-**Release**: v11.43.0 (2025-12-22)  
+**Status**: Production-Ready
+**Release**: v11.43.0 (2025-12-22)
 **Components**: showPercentages field, Chart Algorithm Manager checkbox
 
 ### Key Features
@@ -3770,7 +3764,7 @@ callbacks: {
     const label = context.label || '';
     const value = context.parsed as number;
     const percentage = total > 0 ? ((value / total) * 100).toFixed(1) : '0.0';
-    return showPercentages 
+    return showPercentages
       ? `${label}: ${value.toLocaleString()} (${percentage}%)`
       : `${label}: ${value.toLocaleString()}`;
   }
@@ -3830,8 +3824,8 @@ callbacks: {
 
 The Image Layout System introduces flexible aspect ratio configuration for IMAGE charts, enabling consistent visual presentation across landscape, portrait, and square formats. This system ensures predictable grid layouts, maintains image cropping quality, and guarantees WYSIWYG PDF exports.
 
-**Status**: Production-Ready  
-**Release**: v9.3.0 (2025-11-01)  
+**Status**: Production-Ready
+**Release**: v9.3.0 (2025-11-01)
 **Components**: aspectRatio field, automatic width calculation, background-image rendering
 
 ### Key Features
@@ -3870,7 +3864,7 @@ interface ChartConfiguration {
 export function calculateImageWidth(aspectRatio: '16:9' | '9:16' | '1:1'): number {
   // Grid height = 1 unit (portrait chart: 100% of CSS grid row height)
   // Calculate width to maintain aspect ratio
-  
+
   switch (aspectRatio) {
     case '9:16': return 1;   // Portrait: 1 grid unit (narrow, baseline)
     case '1:1':  return 2;   // Square: 2 grid units (medium width)
@@ -3910,8 +3904,8 @@ const chartWidth = useMemo(() => {
 
 **Before** (Legacy):
 ```tsx
-<img 
-  src={imageUrl} 
+<img
+  src={imageUrl}
   alt={title}
   style={{ objectFit: 'cover' }}
 />
@@ -3919,7 +3913,7 @@ const chartWidth = useMemo(() => {
 
 **After** (v9.3.0):
 ```tsx
-<div 
+<div
   className={styles.imageChartImg}
   style={{ '--image-url': `url("${imageUrl}")` } as React.CSSProperties}
 />
@@ -3972,7 +3966,7 @@ const chartWidth = useMemo(() => {
 
 **Execution**:
 ```bash
-npm run ts-node scripts/migrations/add-aspect-ratio-to-image-charts.ts
+npx tsx -r dotenv/config scripts/migrations/add-aspect-ratio-to-image-charts.ts dotenv_config_path=.env.local
 ```
 
 **Safety**:
@@ -4084,7 +4078,7 @@ if (config.type === 'image') {
 
 - **WARP.md**: PDF Export System section (object-fit handling)
 - **REUSABLE_COMPONENTS_INVENTORY.md**: ImageChart component catalog
-- **CODING_STANDARDS.md**: Background-image vs. img element guidelines
+- **docs/coding-standards.md**: Background-image vs. img element guidelines
 
 ---
 
@@ -4122,7 +4116,7 @@ if (config.type === 'image') {
 
 ### Future Enhancements
 
-See ROADMAP.md for planned improvements:
+See `docs/operations/operations-roadmap.md` for planned improvements:
 1. Bulk variable operations (enable/disable multiple)
 2. Variable templates (predefined sets for common event types)
 3. Formula validation in UI for derived variables
@@ -4553,6 +4547,6 @@ When working with the hashtag categories system:
 
 ---
 
-*Last Updated: 2025-10-19T11:58:43.000Z*  
-*Version: 6.26.0*  
+*Last Updated: 2025-10-19T11:58:43.000Z*
+*Version: 12.1.16*
 *Status: Production-Ready — Enterprise Event Analytics Platform with Advanced Analytics Infrastructure*

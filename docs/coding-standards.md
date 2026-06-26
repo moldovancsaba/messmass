@@ -4,7 +4,7 @@ Last Updated: 2026-06-24T13:15:00.000Z
 Canonical: No
 Owner: Architecture
 
-**Version:** 12.1.13
+**Version:** 12.1.16
 **Last Updated:** 2026-06-24T13:15:00.000Z (UTC)
 
 ---
@@ -64,7 +64,7 @@ Practical rules:
 3. **Test Propagation**: Verify changes across ALL usages
 4. **Fix The Class, Not The Instance**: If the bug is a pattern/symptom, search for all similar instances and fix the whole class (or document scope + follow-ups). Do not claim "done" after a one-point patch for a systemic issue. (See `docs/operations/operations-learnings.md`.)
 5. **Version Bump**: Follow semantic versioning (PATCH for fixes, MINOR for features)
-6. **Document Changes**: Update RELEASE_NOTES.md with module impact
+6. **Document Changes**: Update `docs/operations/operations-release-notes.md` with module impact
 
 **Example - Updating FormModal:**
 ```
@@ -745,7 +745,7 @@ import styles from './Component.module.css';
     "react/forbid-dom-props": ["warn", {
       "forbid": [{
         "propName": "style",
-        "message": "Inline styles are prohibited. Use CSS modules or utility classes instead. See CODING_STANDARDS.md"
+        "message": "Inline styles are prohibited. Use CSS modules or utility classes instead. See docs/coding-standards.md"
       }]
     }]
   }
@@ -928,4 +928,4 @@ grep -r "var(--mm-" --include="*.css" components/
 
 ---
 
-*This document is part of the {messmass} technical standards and must be followed by all contributors, including AI development tools. Version 11.5.0 - Last Updated: 2025-11-12T16:34:00.000Z*
+*This document is part of the {messmass} technical standards and must be followed by all contributors, including AI development tools. Version 12.1.16 - Last Updated: 2026-06-26T10:00:00.000Z*

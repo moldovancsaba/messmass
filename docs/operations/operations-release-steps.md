@@ -15,7 +15,7 @@ Owner: Product
 ## 2. Documentation
 
 - Update feature/API docs for the code you changed (e.g. landing main page, API reference).
-- If the project has **RELEASE_NOTES.md** or equivalent, add a short entry for the change (module impact per `docs/coding-standards.md`).
+- Add a short entry to `docs/operations/operations-release-notes.md` for shipped changes (module impact per `docs/coding-standards.md`).
 
 ## 3. Test local build
 

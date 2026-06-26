@@ -1,6 +1,6 @@
 // app/api/admin/local-users/route.ts
 // WHAT: Admin-only CRUD endpoints (GET list, POST create) for local Users collection
-// WHY: Enable managing multiple admin users; passwords are generated MD5-style per project rules
+// WHY: Enable managing admin/API users; generated credentials are stored through the user helper's hashing path
 
 import { NextRequest, NextResponse } from 'next/server'
 import { getAdminUser } from '@/lib/auth'
@@ -128,7 +128,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ success: false, error: 'Email and name are required' }, { status: 400 })
     }
 
-    // Generate MD5-style password (looks like MD5 hash; simple random per project rule)
+    // Generate an opaque one-time credential for the admin to share securely.
     const password = generateMD5StylePassword()
     const now = new Date().toISOString()
     
@@ -153,8 +153,8 @@ export async function POST(request: NextRequest) {
         email: created.email,
         name: created.name,
         role: created.role,
-        // WHAT: New users have API access disabled by default
-        // WHY: Security best practice - require explicit enable
+        // WHAT: Reflect the API access state returned by createUser.
+        // WHY: API-role users are enabled during creation; admin users remain disabled by default.
         apiKeyEnabled: created.apiKeyEnabled || false,
         apiUsageCount: created.apiUsageCount || 0,
         lastAPICallAt: created.lastAPICallAt,
@@ -179,4 +179,3 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ success: false, error: 'Failed to create user' }, { status: 500 })
   }
 }
-

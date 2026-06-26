@@ -4,8 +4,8 @@ Last Updated: 2026-05-14T10:00:00.000Z
 Canonical: Yes
 Owner: Backend
 
-**Version:** 12.1.12  
-**Last Updated:** 2026-05-14T10:00:00.000Z (UTC)  
+**Version:** 12.1.16
+**Last Updated:** 2026-06-26T10:00:00.000Z (UTC)
 **Status:** Production
 
 Quick API reference for {messmass}. See detailed guides for complete schemas and examples.
@@ -22,7 +22,7 @@ https://messmass.com/api
 
 All admin endpoints require session authentication via HTTP-only cookie.
 
-**Login**: `POST /api/admin/login`  
+**Login**: `POST /api/admin/login`
 **Logout**: `DELETE /api/admin/login`
 
 **See**: [AUTHENTICATION.md](../features/features-authentication.md) for details
@@ -190,19 +190,25 @@ Create/update groups.
 
 ---
 
-## Admin Categories API
+## Hashtag Categories API
 
-### GET /api/admin/hashtag-categories
-List all hashtag categories.
+### GET /api/hashtag-categories
+List hashtag categories with optional `search`, `limit`, and `offset` query parameters. This read route is public because category labels are used on public and login-facing screens.
 
-### POST /api/admin/hashtag-categories
-Create new category.
+### POST /api/hashtag-categories
+Create a category. Requires the `admin-session` cookie.
 
-### PUT /api/admin/hashtag-categories/[id]
-Update category.
+**Body**: `{ name: string, color: string, order?: number }`
 
-### DELETE /api/admin/hashtag-categories/[id]
-Delete category.
+### PUT /api/hashtag-categories
+Update a category. Requires the `admin-session` cookie.
+
+**Body**: `{ id: string, name?: string, color?: string, order?: number }`
+
+### DELETE /api/hashtag-categories
+Delete a category. Requires the `admin-session` cookie.
+
+**Query**: `id=<categoryId>`
 
 ---
 
@@ -325,6 +331,6 @@ Returns: `{ projects: [...], totalMatched: 150, nextOffset: 60 }`
 
 ---
 
-**{messmass} API Reference 12.1.12**  
-**Last Updated: 2026-05-20T12:00:00.000Z (UTC)**  
+**{messmass} API Reference 12.1.16**
+**Last Updated: 2026-06-26T10:00:00.000Z (UTC)**
 **© 2026 {messmass} Platform**

@@ -2,11 +2,11 @@
  * /api/hashtag-categories/route.ts
  * 
  * API endpoints for hashtag categories management.
- * Provides CRUD operations for hashtag categories with proper authentication.
+ * Provides CRUD operations for hashtag categories.
  * 
  * Strategic Implementation:
  * - Follows existing API patterns in the project for consistency
- * - Implements proper admin authentication and access control
+ * - Protects write operations with the current admin-session cookie check
  * - Provides comprehensive error handling and validation
  * - Maintains data integrity through careful MongoDB operations
  * - Uses ISO 8601 timestamps per project standards
@@ -37,21 +37,18 @@ import {
 // Use centralized Mongo client and config
 
 /**
- * Validates admin authentication for category management
- * Only admin users can modify hashtag categories
+ * Validates the current admin-session cookie gate for category writes.
+ * This does not perform role lookup; add role validation before documenting stricter RBAC.
  */
 async function validateAdminAccess(request: NextRequest): Promise<boolean> {
   try {
-    // Get session cookie (following existing auth pattern)
     const sessionCookie = request.cookies.get('admin-session');
     
     if (!sessionCookie) {
       return false;
     }
 
-    // For now, we'll use a simple validation approach
-    // In production, this should validate the session properly
-    return true; // Simplified for MVP - actual validation should check admin role
+    return true;
   } catch (error) {
     logError('Admin validation error', { context: 'hashtag-categories' }, error instanceof Error ? error : new Error(String(error)));
     return false;

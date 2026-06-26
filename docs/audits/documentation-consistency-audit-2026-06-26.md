@@ -14,6 +14,19 @@ The documentation set is not currently reliable enough to use as an implementati
 
 The most important issue is not broken Markdown linking. It is semantic drift between active documentation and the implemented runtime surface.
 
+## Remediation Status
+
+Status as of 2026-06-26:
+
+- Public API docs no longer advertise the deleted public stats write endpoint.
+- Google Sheets docs now document the implemented partner-scoped sync routes.
+- Hashtag category docs now describe the implemented `/api/hashtag-categories` contract.
+- Active docs no longer use the removed chart wrapper as an implementation target.
+- Developer governance references now point to current canonical docs.
+- Active version headers were aligned to `12.1.16`.
+- Misleading auth/password/chart comments were corrected in the touched code paths.
+- `npm run docs:audit` now validates the current-doc checks that caught these issues.
+
 ## Inventory
 
 Messmass:

@@ -79,6 +79,7 @@
     "migrate:existing-charts-formatting": "tsx -r dotenv/config scripts/migrateExistingChartsFormatting.ts dotenv_config_path=.env.local",
     "version:update": "node scripts/update-version.js",
     "version:verify": "node scripts/update-version.js --verify",
+    "docs:audit": "node scripts/docs-consistency-audit.js && python3 scripts/docs_link_check.py",
     "audit:database": "tsx -r dotenv/config scripts/auditDatabaseCollections.ts dotenv_config_path=.env.local",
     "db:backup": "npx tsx -r dotenv/config scripts/backupDatabase.ts dotenv_config_path=.env.local",
     "db:restore": "npx tsx -r dotenv/config scripts/restoreDatabase.ts dotenv_config_path=.env.local",

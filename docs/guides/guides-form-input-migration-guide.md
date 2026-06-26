@@ -4,8 +4,8 @@ Last Updated: 2026-01-11T22:28:38.000Z
 Canonical: No
 Owner: Product
 
-**Version**: 11.54.5  
-**Last Updated**: 2026-01-11T22:28:38.000Z  
+**Version**: 12.1.16
+**Last Updated**: 2026-01-11T22:28:38.000Z
 **Purpose**: Prevent aggressive parsing anti-patterns in future forms
 
 ## 🎯 Quick Reference
@@ -15,8 +15,8 @@ Owner: Product
 <input
   type="number"
   value={formData.age}
-  onChange={(e) => setFormData({ 
-    ...formData, 
+  onChange={(e) => setFormData({
+    ...formData,
     age: parseInt(e.target.value) || 0  // ❌ WRONG
   })}
 />
@@ -27,12 +27,12 @@ Owner: Product
 <input
   type="number"
   value={formData.age}
-  onChange={(e) => setFormData({ 
-    ...formData, 
+  onChange={(e) => setFormData({
+    ...formData,
     age: e.target.value as any  // ✅ Store raw value
   })}
-  onBlur={() => setFormData({ 
-    ...formData, 
+  onBlur={() => setFormData({
+    ...formData,
     age: Math.max(0, parseInt(String(formData.age)) || 0)  // ✅ Parse on blur
   })}
 />
@@ -147,8 +147,8 @@ import TextareaField from '@/components/TextareaField';
 <input
   type="number"
   value={formData.quantity}
-  onChange={(e) => setFormData({ 
-    ...formData, 
+  onChange={(e) => setFormData({
+    ...formData,
     quantity: Math.max(1, parseInt(e.target.value) || 1)  // ❌ Aggressive
   })}
   min={1}
@@ -176,8 +176,8 @@ import TextareaField from '@/components/TextareaField';
   type="number"
   step="0.1"
   value={formData.price}
-  onChange={(e) => setFormData({ 
-    ...formData, 
+  onChange={(e) => setFormData({
+    ...formData,
     price: parseFloat(e.target.value) || 0  // ❌ Aggressive
   })}
 />
@@ -238,14 +238,14 @@ import TextareaField from '@/components/TextareaField';
       onChange={(e) => setFormData({ ...formData, name: e.target.value })}
     />
   </div>
-  
+
   <div className="form-group">
     <label>Order</label>
     <input
       type="number"
       value={formData.order}
-      onChange={(e) => setFormData({ 
-        ...formData, 
+      onChange={(e) => setFormData({
+        ...formData,
         order: parseInt(e.target.value) || 0  // ❌ Aggressive
       })}
     />
@@ -267,7 +267,7 @@ import TextareaField from '@/components/TextareaField';
     onSave={(newValue) => setFormData({ ...formData, name: newValue })}
     required={true}
   />
-  
+
   <UnifiedNumberInput
     label="Order"
     value={formData.order}
@@ -544,11 +544,11 @@ function useNumericInput(
 ) {
   const [tempValue, setTempValue] = useState<string>(initialValue.toString());
   const [finalValue, setFinalValue] = useState<number>(initialValue);
-  
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setTempValue(e.target.value);
   };
-  
+
   const handleBlur = () => {
     const parsed = parseInt(tempValue) || options.min || 0;
     const clamped = Math.max(
@@ -558,7 +558,7 @@ function useNumericInput(
     setFinalValue(clamped);
     setTempValue(clamped.toString());
   };
-  
+
   return {
     value: tempValue,
     onChange: handleChange,
@@ -575,13 +575,13 @@ function useNumericInput(
 - **`docs/components/components-unified-input-system.md`** - Complete unified system guide
 - **`docs/fixes/NUMERIC_INPUT_CONSISTENCY_FIX.md`** - Fix documentation
 - **`LEARNINGS.md`** - Historical context and lessons learned
-- **`CODING_STANDARDS.md`** - General coding standards
+- **`docs/coding-standards.md`** - General coding standards
 
 ---
 
 ## ✅ Summary
 
-**Remember**: 
+**Remember**:
 1. **Always use unified components** (`UnifiedTextInput`, `UnifiedNumberInput`, `TextareaField`)
 2. **Never parse in onChange** - parse in onBlur only
 3. **Allow empty state** during typing
@@ -601,6 +601,6 @@ Need an input field?
 
 ---
 
-**Last Updated**: 2025-12-25T20:50:00.000Z  
-**Maintained By**: Development Team  
+**Last Updated**: 2025-12-25T20:50:00.000Z
+**Maintained By**: Development Team
 **Status**: ✅ Active - Reference for all new forms

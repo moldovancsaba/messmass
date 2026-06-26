@@ -4,7 +4,7 @@ Last Updated: 2026-05-20
 Canonical: Yes
 Owner: Product
 
-**Version:** 12.1.12  
+**Version:** 12.1.16
 **Primary admin surface:** `/admin/bitly`
 
 ## Purpose

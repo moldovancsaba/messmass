@@ -39,7 +39,7 @@ export default function APIDocsPage() {
           <p>{'{messmass}'} provides several API endpoints for different use cases:</p>
           <ul>
             <li><strong>Public API (Read):</strong> Retrieve event and partner data</li>
-            <li><strong>Public API (Write):</strong> Inject external data (e.g., fan identification)</li>
+            <li><strong>Fanmass Integration:</strong> Exchange event context and analytics through dedicated integration endpoints</li>
             <li><strong>Webhooks:</strong> Real-time notifications for event changes</li>
             <li><strong>Admin API:</strong> Internal management endpoints (admin only)</li>
           </ul>
@@ -83,7 +83,7 @@ export default function APIDocsPage() {
           <h3>Permission Levels</h3>
           <ul>
             <li><strong>Read Access:</strong> <code>apiKeyEnabled = true</code></li>
-            <li><strong>Write Access:</strong> <code>apiKeyEnabled = true</code> AND <code>apiWriteEnabled = true</code></li>
+            <li><strong>Write Access:</strong> Public write routes are not exposed in the current API surface. Integration writes use dedicated server-side endpoints.</li>
           </ul>
 
           <h3>Security Best Practices</h3>
@@ -222,109 +222,63 @@ export default function APIDocsPage() {
           
           <h3>Overview</h3>
           <p>
-            The Fanmass integration allows external fan identification services to inject enriched data back into {'{messmass}'} events.
+            The Fanmass integration exchanges event context and analytics through versioned integration endpoints. Fanmass data is stored under the event <code>stats.fanmass</code> namespace and mirrored into report-friendly <code>fanmass*</code> flat fields.
           </p>
 
-          <h3>Write Stats Data</h3>
+          <h3>Implemented Routes</h3>
           <div className={styles.codeBlock}>
-            POST /api/public/events/[id]/stats
+            GET /api/integrations/fanmass/events/[eventId]/context<br />
+            GET /api/integrations/fanmass/events/[eventId]/link<br />
+            POST /api/integrations/fanmass/events/[eventId]/link<br />
+            GET /api/integrations/fanmass/events/[eventId]/sync<br />
+            POST /api/integrations/fanmass/events/[eventId]/sync<br />
+            POST /api/integrations/fanmass/callbacks<br />
+            GET /api/admin/fanmass/events/[eventId]<br />
+            POST /api/admin/fanmass/events/[eventId]
           </div>
 
           <h4>Authentication</h4>
-          <p>Requires both <code>apiKeyEnabled</code> AND <code>apiWriteEnabled</code> flags.</p>
+          <p>
+            Integration endpoints use the shared Fanmass integration token configured through <code>FANMASS_INTEGRATION_TOKEN</code> or <code>MESSMASS_FANMASS_TOKEN</code>. Admin sync controls use the authenticated admin session.
+          </p>
 
-          <h4>Request Body</h4>
+          <h4>Event Context Contract</h4>
           <div className={styles.codeBlock}>
 {`{
-  "stats": {
-    "male": 1200,
-    "female": 950,
-    "genAlpha": 150,
-    "genYZ": 800,
-    "genX": 600,
-    "boomer": 600,
-    "merched": 400,
-    "jersey": 200,
-    "remoteFans": 600
-  },
-  "source": "fanmass",
-  "metadata": {
-    "confidence": 0.95,
-    "processingTime": 1234,
-    "version": "2.0"
-  }
+  "contract": "messmass.fanmass.event-context.v1",
+  "event": { "id": "507f1f77bcf86cd799439011", "eventName": "Example Event" },
+  "partner": { "id": "507f1f77bcf86cd799439012", "name": "Example Partner" },
+  "organization": { "id": "507f1f77bcf86cd799439013", "name": "Example Organization" }
 }`}
           </div>
 
-          <h4>Valid KYC Fields</h4>
-          <p><strong>Demographics:</strong></p>
-          <ul>
-            <li><code>male</code>, <code>female</code></li>
-            <li><code>genAlpha</code>, <code>genYZ</code>, <code>genX</code>, <code>boomer</code></li>
-          </ul>
-
-          <p><strong>Merchandise:</strong></p>
-          <ul>
-            <li><code>merched</code>, <code>jersey</code>, <code>scarf</code>, <code>flags</code>, <code>baseballCap</code>, <code>other</code></li>
-          </ul>
-
-          <p><strong>Fan Counts:</strong></p>
-          <ul>
-            <li><code>remoteFans</code>, <code>stadium</code>, <code>indoor</code>, <code>outdoor</code></li>
-          </ul>
-
-          <p><strong>Image Counts:</strong></p>
-          <ul>
-            <li><code>remoteImages</code>, <code>hostessImages</code>, <code>selfies</code></li>
-          </ul>
-
-          <h4>Validation Rules</h4>
-          <ul>
-            <li>All values must be <strong>non-negative integers</strong></li>
-            <li>Field names must be from the valid KYC fields list</li>
-            <li>No null or undefined values</li>
-            <li>Decimal values are rejected</li>
-            <li>Values &gt; 1,000,000 generate warnings but are accepted</li>
-          </ul>
-
-          <h4>Response (Success)</h4>
+          <h4>Analytics Summary Contract</h4>
           <div className={styles.codeBlock}>
 {`{
+  "contract": "fanmass.messmass.analytics-summary.v1",
   "success": true,
-  "updatedFields": ["male", "female", "genAlpha", "genYZ", "merched", "remoteFans"],
-  "warnings": [],
-  "timestamp": "2024-11-26T15:30:00.000Z"
+  "batchId": "fanmass-batch-123",
+  "status": "completed",
+  "peopleCount": 1250,
+  "projectedReach": 84000,
+  "brands": [{ "name": "Example Brand", "count": 42 }],
+  "warnings": []
 }`}
           </div>
 
-          <h4>Response (Validation Error)</h4>
-          <div className={styles.codeBlock}>
-{`{
-  "success": false,
-  "error": "Invalid stats data",
-  "errorCode": "INVALID_STATS_DATA",
-  "details": [
-    "Field \\"male\\" must be non-negative, got -10",
-    "Invalid field name: \\"invalidField\\""
-  ],
-  "timestamp": "2024-11-26T15:30:00.000Z"
-}`}
-          </div>
-
-          <h3>Derived Metrics</h3>
-          <p>The following metrics are automatically calculated:</p>
+          <h3>Report Variables</h3>
+          <p>Synced Fanmass analytics are exposed to reports through nested and flat variables:</p>
           <ul>
-            <li><code>totalFans = remoteFans + stadium + indoor + outdoor</code></li>
-            <li><code>totalImages = remoteImages + hostessImages + selfies</code></li>
+            <li><code>[fanmass.peopleCount]</code>, <code>[fanmass.projectedReach]</code>, <code>[fanmass.brands]</code></li>
+            <li><code>[fanmassPeopleCount]</code>, <code>[fanmassProjectedReach]</code>, <code>[fanmassTopBrandName]</code></li>
           </ul>
 
-          <h3>Audit Logging</h3>
-          <p>All write operations are logged with:</p>
+          <h3>Operational Behavior</h3>
           <ul>
-            <li>Event ID and user email</li>
-            <li>Timestamp and IP address</li>
-            <li>Before/after values for each changed field</li>
-            <li>Source and metadata</li>
+            <li>Sync calls are idempotent by Messmass event ID and Fanmass batch ID.</li>
+            <li>Fanmass fetches use a server-side timeout and record failures on the link record.</li>
+            <li>Callbacks are token-protected and non-blocking for Fanmass processing.</li>
+            <li>Manual clicker stats are not overwritten; Fanmass data is stored in its own namespace.</li>
           </ul>
         </section>
 
@@ -420,7 +374,7 @@ app.post('/webhooks/messmass', (req, res) => {
 
           <h3>Permission Errors (403)</h3>
           <ul>
-            <li><code>WRITE_ACCESS_DISABLED</code> - User has apiWriteEnabled=false</li>
+            <li><code>WRITE_ACCESS_DISABLED</code> - Reserved for protected API write routes if enabled</li>
             <li><code>COOKIES_NOT_ALLOWED</code> - Request included cookies (not allowed for API)</li>
           </ul>
 
@@ -496,31 +450,7 @@ const response = await fetch(
 const data = await response.json();
 console.log(data.event);
 
-// Write stats data
-const writeResponse = await fetch(
-  'https://messmass.com/api/public/events/507f1f77bcf86cd799439011/stats',
-  {
-    method: 'POST',
-    headers: {
-      'Authorization': 'Bearer YOUR_TOKEN_HERE',
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify({
-      stats: {
-        male: 1200,
-        female: 950,
-        remoteFans: 600
-      },
-      source: 'my-service',
-      metadata: {
-        confidence: 0.95
-      }
-    })
-  }
-);
-
-const writeData = await writeResponse.json();
-console.log('Updated fields:', writeData.updatedFields);`}
+// Fanmass sync is performed through /api/integrations/fanmass/* or the admin Fanmass sync controls.`}
           </div>
 
           <h3>Python</h3>
@@ -539,28 +469,7 @@ response = requests.get(
 data = response.json()
 print(data['event'])
 
-# Write stats data
-write_response = requests.post(
-    'https://messmass.com/api/public/events/507f1f77bcf86cd799439011/stats',
-    headers={
-        'Authorization': 'Bearer YOUR_TOKEN_HERE',
-        'Content-Type': 'application/json'
-    },
-    json={
-        'stats': {
-            'male': 1200,
-            'female': 950,
-            'remoteFans': 600
-        },
-        'source': 'my-service',
-        'metadata': {
-            'confidence': 0.95
-        }
-    }
-)
-
-write_data = write_response.json()
-print('Updated fields:', write_data['updatedFields'])`}
+# Fanmass sync is performed through /api/integrations/fanmass/* or the admin Fanmass sync controls.`}
           </div>
 
           <h3>cURL</h3>
@@ -571,29 +480,14 @@ curl -X GET \\
   -H 'Authorization: Bearer YOUR_TOKEN_HERE' \\
   -H 'Content-Type: application/json'
 
-# Write stats data
-curl -X POST \\
-  'https://messmass.com/api/public/events/507f1f77bcf86cd799439011/stats' \\
-  -H 'Authorization: Bearer YOUR_TOKEN_HERE' \\
-  -H 'Content-Type: application/json' \\
-  -d '{
-    "stats": {
-      "male": 1200,
-      "female": 950,
-      "remoteFans": 600
-    },
-    "source": "my-service",
-    "metadata": {
-      "confidence": 0.95
-    }
-  }'`}
+# Fanmass sync is performed through /api/integrations/fanmass/* or the admin Fanmass sync controls.`}
           </div>
         </section>
 
         <footer className={styles.footer}>
           <p>
-            <strong>{'{messmass}'} API Documentation — Version 12.1.10</strong><br />
-            Last Updated: April 27, 2026
+            <strong>{'{messmass}'} API Documentation — Version 12.1.16</strong><br />
+            Last Updated: June 26, 2026
           </p>
           <p>
             <strong>Additional Resources:</strong><br />

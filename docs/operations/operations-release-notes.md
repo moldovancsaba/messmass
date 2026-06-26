@@ -1,8 +1,48 @@
 # {messmass} Release Notes
 Status: Active
-Last Updated: 2026-06-25T00:00:00.000Z
+Last Updated: 2026-06-26T10:00:00.000Z
 Canonical: No
 Owner: Operations
+
+## [v12.1.16] — 2026-06-26T10:00:00.000Z
+
+### Summary
+DOCUMENTATION CONSISTENCY DELIVERY: Converted the documentation audit findings into direct repo fixes, corrected stale active docs, and added an automated docs consistency gate.
+
+### What Was Delivered
+
+#### Runtime contract documentation cleanup
+**WHAT**: Removed the deleted public stats write endpoint from the API docs and documented the implemented Fanmass integration endpoints instead.
+**WHY**: Public docs must not advertise routes that return 404.
+**HOW**: Updated `app/api-docs/page.tsx`, `docs/api/api-public.md`, and `docs/api/api-reference.md` around the implemented public and Fanmass surfaces.
+
+#### API route and component reference cleanup
+**WHAT**: Corrected Google Sheets, hashtag category, chart renderer, and governance references across active docs.
+**WHY**: Active docs referenced missing project-scoped sync routes, nonexistent admin hashtag category paths, removed chart wrappers, and obsolete planning files.
+**HOW**: Updated architecture, component inventory, Google Sheets, operations, developer, and guide documentation to current canonical paths and contracts.
+
+#### GDS-first design-system rewrite
+**WHAT**: Replaced stale TailAdmin-era design-system guidance with a current GDS adapter contract.
+**WHY**: All UI/UX/frontend work must exclusively use the General Design System and maintain accessibility/mobile behavior.
+**HOW**: Rewrote `docs/design/design-system.md` around GDS packages, approved local wrappers, accessibility requirements, mobile portrait behavior, observability, and verification.
+
+#### Documentation audit automation
+**WHAT**: Added `npm run docs:audit`.
+**WHY**: Route/script/file/version drift should fail locally and in CI instead of being discovered manually.
+**HOW**: Added `scripts/docs-consistency-audit.js` and generated `docs/_meta/meta-docs-consistency-audit.md`; existing Markdown link checks still run through the same command.
+
+#### Comment hygiene cleanup
+**WHAT**: Corrected misleading comments around hashtag category auth, local user credential handling, and removed chart renderer references.
+**WHY**: Security and runtime comments must describe current behavior exactly.
+**HOW**: Updated `app/api/hashtag-categories/route.ts`, `app/api/admin/local-users/route.ts`, and `lib/chartCalculator.ts`.
+
+### Testing
+- `npm run docs:audit`
+- `npm run type-check`
+- `npm run lint`
+
+### Version
+v12.1.15 → v12.1.16 (PATCH — documentation contract cleanup and docs audit automation)
 
 ## [v12.1.15] — 2026-06-25T00:00:00.000Z
 

@@ -4,8 +4,8 @@ Last Updated: 2026-04-24
 Canonical: No
 Owner: Architecture
 
-**Version**: 12.1.10  
-**Last Updated**: 2026-04-24 (UTC)  
+**Version**: 12.1.16
+**Last Updated**: 2026-04-24 (UTC)
 **Purpose**: Complete catalog of all reusable components, modules, styling systems, and utilities
 
 ---
@@ -13,14 +13,14 @@ Owner: Architecture
 ## 🎨 Design System Foundation
 
 ### Core Design Tokens (`app/styles/theme.css`)
-**What**: Centralized design token system with 200+ variables  
+**What**: Centralized design token system with 200+ variables
 **Usage**: `var(--mm-[category]-[variant])`
 
 #### Color System
 - **Primary Palette**: `--mm-color-primary-50` through `--mm-color-primary-900` (Blue - TailAdmin inspired)
 - **Secondary Palette**: `--mm-color-secondary-50` through `--mm-color-secondary-900` (Green - Success/Growth)
 - **Grayscale**: `--mm-gray-50` through `--mm-gray-900`
-- **Semantic Colors**: 
+- **Semantic Colors**:
   - Success: `--mm-success`, `--mm-success-light`
   - Warning: `--mm-warning`, `--mm-warning-light`
   - Error: `--mm-error`, `--mm-error-light`
@@ -28,7 +28,7 @@ Owner: Architecture
 - **Chart Colors**: 10 distinct colors (`--mm-chart-blue`, `--mm-chart-green`, etc.)
 
 #### Typography
-- **Font Families**: 
+- **Font Families**:
   - `--mm-font-family-inter` (Default)
   - `--mm-font-family-roboto`
   - `--mm-font-family-poppins`
@@ -66,8 +66,8 @@ Owner: Architecture
 **Mandatory Usage**: All modals MUST use FormModal or BaseModal
 
 #### FormModal (Primary)
-**File**: `components/modals/FormModal.tsx`  
-**CSS**: `components/modals/FormModal.module.css`  
+**File**: `components/modals/FormModal.tsx`
+**CSS**: `components/modals/FormModal.module.css`
 **Usage**: Forms, edit dialogs, create workflows
 ```tsx
 import FormModal from '@/components/modals/FormModal';
@@ -83,8 +83,8 @@ import FormModal from '@/components/modals/FormModal';
 **Features**: Auto header, footer with Cancel/Save, keyboard shortcuts (ESC/Enter), focus trap
 
 #### BaseModal (Secondary)
-**File**: `components/modals/BaseModal.tsx`  
-**CSS**: `components/modals/BaseModal.module.css`  
+**File**: `components/modals/BaseModal.tsx`
+**CSS**: `components/modals/BaseModal.module.css`
 **Usage**: Custom layouts, non-form content
 ```tsx
 import BaseModal from '@/components/modals/BaseModal';
@@ -95,8 +95,8 @@ import BaseModal from '@/components/modals/BaseModal';
 ```
 
 #### ConfirmDialog
-**File**: `components/modals/ConfirmDialog.tsx`  
-**CSS**: `components/modals/ConfirmDialog.module.css`  
+**File**: `components/modals/ConfirmDialog.tsx`
+**CSS**: `components/modals/ConfirmDialog.module.css`
 **Usage**: Destructive action confirmations
 ```tsx
 import ConfirmDialog from '@/components/modals/ConfirmDialog';
@@ -122,9 +122,9 @@ import ConfirmDialog from '@/components/modals/ConfirmDialog';
 ### 2. Card System
 
 #### ColoredCard (Standard)
-**File**: `components/ColoredCard.tsx`  
-**CSS**: `components/ColoredCard.module.css`  
-**Mandatory**: Only allowed card component  
+**File**: `components/ColoredCard.tsx`
+**CSS**: `components/ColoredCard.module.css`
+**Mandatory**: Only allowed card component
 **Usage**: All cards, info boxes, data displays
 ```tsx
 import ColoredCard from '@/components/ColoredCard';
@@ -148,7 +148,7 @@ import ColoredCard from '@/components/ColoredCard';
 ### 3. Hashtag System
 
 #### UnifiedHashtagInput (Mandatory)
-**File**: `components/UnifiedHashtagInput.tsx`  
+**File**: `components/UnifiedHashtagInput.tsx`
 **Usage**: ALL hashtag input fields
 ```tsx
 import UnifiedHashtagInput from '@/components/UnifiedHashtagInput';
@@ -162,8 +162,8 @@ import UnifiedHashtagInput from '@/components/UnifiedHashtagInput';
 **Features**: Category support, autocomplete, color inheritance, validation
 
 #### ColoredHashtagBubble (Display)
-**File**: `components/ColoredHashtagBubble.tsx`  
-**CSS**: `components/ColoredHashtagBubble.module.css`  
+**File**: `components/ColoredHashtagBubble.tsx`
+**CSS**: `components/ColoredHashtagBubble.module.css`
 **Usage**: Display hashtags with categories
 ```tsx
 import ColoredHashtagBubble from '@/components/ColoredHashtagBubble';
@@ -185,7 +185,7 @@ import ColoredHashtagBubble from '@/components/ColoredHashtagBubble';
 ### 4. Admin UI Components
 
 #### UnifiedAdminHeroWithSearch (Mandatory)
-**File**: `components/UnifiedAdminHeroWithSearch.tsx`  
+**File**: `components/UnifiedAdminHeroWithSearch.tsx`
 **CSS**: `app/styles/theme.css` (Design tokens)
 **Usage**: Standard page headers for all administrative surfaces
 ```tsx
@@ -200,8 +200,8 @@ import UnifiedAdminHeroWithSearch from '@/components/UnifiedAdminHeroWithSearch'
 **Features**: Integrated search, action slots, badge support, breadcrumb navigation, and consistent width scaling via `.page-container`.
 
 #### AdminLayout
-**File**: `components/AdminLayout.tsx`  
-**CSS**: `components/AdminLayout.module.css`  
+**File**: `components/AdminLayout.tsx`
+**CSS**: `components/AdminLayout.module.css`
 **Usage**: Wrap all admin pages
 ```tsx
 import AdminLayout from '@/components/AdminLayout';
@@ -218,8 +218,8 @@ export default function Page() {
 ```
 
 #### Sidebar
-**File**: `components/Sidebar.tsx`  
-**CSS**: `components/Sidebar.module.css`  
+**File**: `components/Sidebar.tsx`
+**CSS**: `components/Sidebar.module.css`
 **Usage**: Admin navigation (automatic in AdminLayout). Help section includes User Guide, **Main page** (landing report selector and static content generation), and Messages.
 
 ---
@@ -227,8 +227,8 @@ export default function Page() {
 ### 5. Selector Components
 
 #### PartnerSelector
-**File**: `components/PartnerSelector.tsx`  
-**CSS**: `components/PartnerSelector.module.css`  
+**File**: `components/PartnerSelector.tsx`
+**CSS**: `components/PartnerSelector.module.css`
 **Usage**: Partner selection with predictive search
 ```tsx
 import PartnerSelector from '@/components/PartnerSelector';
@@ -242,8 +242,8 @@ import PartnerSelector from '@/components/PartnerSelector';
 **Features**: Predictive search, logo display, creation mode, keyboard navigation
 
 #### ProjectSelector
-**File**: `components/ProjectSelector.tsx`  
-**CSS**: `components/ProjectSelector.module.css`  
+**File**: `components/ProjectSelector.tsx`
+**CSS**: `components/ProjectSelector.module.css`
 **Usage**: Project dropdowns
 ```tsx
 import ProjectSelector from '@/components/ProjectSelector';
@@ -254,8 +254,8 @@ import ProjectSelector from '@/components/ProjectSelector';
 ```
 
 #### OrganizationMembersSelector
-**File**: `components/OrganizationMembersSelector.tsx`  
-**CSS**: `components/OrganizationMembersSelector.module.css`  
+**File**: `components/OrganizationMembersSelector.tsx`
+**CSS**: `components/OrganizationMembersSelector.module.css`
 **Usage**: Predictive-search multi-select for organization member assignment
 ```tsx
 import OrganizationMembersSelector from '@/components/OrganizationMembersSelector';
@@ -284,13 +284,12 @@ import OrganizationMembersSelector from '@/components/OrganizationMembersSelecto
 import { KPICard, PieChart, VerticalBarChart } from '@/components/charts';
 ```
 
-#### DynamicChart (Wrapper)
-**File**: `components/DynamicChart.tsx`  
-**CSS**: `components/DynamicChart.module.css`  
-**Usage**: Automatically renders chart based on config
+#### ReportChart (Renderer)
+**File**: `app/report/[slug]/ReportChart.tsx`
+**Usage**: Renders report chart blocks from persisted chart configuration and calculated stats
 ```tsx
-import DynamicChart from '@/components/DynamicChart';
-<DynamicChart result={chartResult} />
+import ReportChart from '@/app/report/[slug]/ReportChart';
+<ReportChart block={block} stats={stats} />
 ```
 
 ---
@@ -298,8 +297,8 @@ import DynamicChart from '@/components/DynamicChart';
 ### 7. Form Components
 
 #### ImageUploadField
-**File**: `components/ImageUploadField.tsx`  
-**CSS**: `components/ImageUploadField.module.css`  
+**File**: `components/ImageUploadField.tsx`
+**CSS**: `components/ImageUploadField.module.css`
 **Usage**: Image uploads with preview
 ```tsx
 import ImageUploadField from '@/components/ImageUploadField';
@@ -311,8 +310,8 @@ import ImageUploadField from '@/components/ImageUploadField';
 ```
 
 #### TextareaField
-**File**: `components/TextareaField.tsx`  
-**CSS**: `components/TextareaField.module.css`  
+**File**: `components/TextareaField.tsx`
+**CSS**: `components/TextareaField.module.css`
 **Usage**: Multi-line text inputs
 ```tsx
 import TextareaField from '@/components/TextareaField';
@@ -329,8 +328,8 @@ import TextareaField from '@/components/TextareaField';
 ### 8. Notification System
 
 #### NotificationPanel
-**File**: `components/NotificationPanel.tsx`  
-**CSS**: `components/NotificationPanel.module.css`  
+**File**: `components/NotificationPanel.tsx`
+**CSS**: `components/NotificationPanel.module.css`
 **Usage**: Real-time notifications (automatic in admin layout)
 **Features**: Grouping (5-min window), read/archive, activity types (create/edit/edit-stats)
 
@@ -339,8 +338,8 @@ import TextareaField from '@/components/TextareaField';
 ### 9. Analytics Components (`components/analytics/`)
 
 #### MetricCard
-**File**: `components/analytics/MetricCard.tsx`  
-**CSS**: `components/analytics/MetricCard.module.css`  
+**File**: `components/analytics/MetricCard.tsx`
+**CSS**: `components/analytics/MetricCard.module.css`
 **Usage**: KPI displays with trends
 ```tsx
 import MetricCard from '@/components/analytics/MetricCard';
@@ -353,8 +352,8 @@ import MetricCard from '@/components/analytics/MetricCard';
 ```
 
 #### InsightCard
-**File**: `components/analytics/InsightCard.tsx`  
-**CSS**: `components/analytics/InsightCard.module.css`  
+**File**: `components/analytics/InsightCard.tsx`
+**CSS**: `components/analytics/InsightCard.module.css`
 **Usage**: AI-generated insights
 ```tsx
 import InsightCard from '@/components/analytics/InsightCard';
@@ -362,7 +361,7 @@ import InsightCard from '@/components/analytics/InsightCard';
 ```
 
 #### LineChart
-**File**: `components/analytics/LineChart.tsx`  
+**File**: `components/analytics/LineChart.tsx`
 **Usage**: Trend visualizations
 
 ---
@@ -543,7 +542,7 @@ Located in `lib/shareables/auth/`:
 7. Duplicate CSS classes across files
 
 ### ✅ MUST DO:
-1. Search existing implementations first (see CODING_STANDARDS.md)
+1. Search existing implementations first (see `docs/coding-standards.md`)
 2. Use design tokens exclusively
 3. Follow established patterns (UnifiedAdminHeroWithSearch, etc.)
 4. Run verification: `grep -r "style={{" app/` (should return 0 results)
@@ -555,13 +554,11 @@ Located in `lib/shareables/auth/`:
 ## 📖 Reference Documentation
 
 For implementation details, see:
-- **CODING_STANDARDS.md** - Mandatory "Search Before Implementation" section
-- **MODAL_SYSTEM.md** - FormModal/BaseModal patterns
-- **CARD_SYSTEM.md** - ColoredCard usage
-- **HASHTAG_SYSTEM.md** - UnifiedHashtagInput guide
-- **DESIGN_SYSTEM.md** - Complete token catalog
-- **ARCHITECTURE.md** - Reference file catalog with line numbers
+- **docs/coding-standards.md** - Mandatory "Search Before Implementation" section
+- **docs/design/design-system.md** - Current General Design System adapter rules
+- **docs/architecture.md** - Runtime architecture and API surface
+- **docs/features/features-hashtag-system.md** - UnifiedHashtagInput guide
 
 ---
 
-*Version: 12.1.10 | Last Updated: 2026-04-27 (UTC)*
+*Version: 12.1.16 | Last Updated: 2026-06-26 (UTC)*

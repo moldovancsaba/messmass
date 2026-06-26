@@ -4,8 +4,8 @@ Last Updated: 2026-01-11T22:28:38.000Z
 Canonical: No
 Owner: Architecture
 
-**Version**: 11.54.4  
-**Last Updated**: 2026-01-11T22:28:38.000Z  
+**Version**: 12.1.16
+**Last Updated**: 2026-01-11T22:28:38.000Z
 **Status**: Production-Ready
 
 ## 📋 Overview
@@ -327,9 +327,9 @@ To convert an old input to the unified system:
 **File**: `components/EditorDashboard.tsx`
 
 ```tsx
-const ManualInputCard = ({ label, value, statKey }: { 
-  label: string; 
-  value: number; 
+const ManualInputCard = ({ label, value, statKey }: {
+  label: string;
+  value: number;
   statKey: keyof typeof project.stats;
 }) => (
   <div className="input-card flex-row gap-4">
@@ -412,12 +412,12 @@ const CustomNumberInput = ({ stat, onUpdate }: Props) => {
       alert('Value too large!');
       return;
     }
-    
+
     // Custom transformation
     const rounded = Math.round(newValue / 10) * 10;
     onUpdate(rounded);
   };
-  
+
   return (
     <UnifiedNumberInput
       value={stat}
@@ -433,7 +433,7 @@ const CustomNumberInput = ({ stat, onUpdate }: Props) => {
 
 ## 📖 Related Documentation
 
-- **Coding Standards**: See `CODING_STANDARDS.md` for input field conventions
+- **Coding Standards**: See `docs/coding-standards.md` for input field conventions
 - **Component Library**: See `docs/components/` for other reusable components
 - **Editor Architecture**: See `ARCHITECTURE.md` for Editor system overview
 

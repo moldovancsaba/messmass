@@ -508,7 +508,7 @@ console.log(project.createdAt); // Already camelCase!
 
 - **Verification Report:** `MONGODB_FIELD_NAMING_VERIFICATION.md`
 - **Role Naming Audit:** `NAMING_CONSISTENCY_FULL_AUDIT.md`
-- **Code Standards:** `CODING_STANDARDS.md`
+- **Code Standards:** `docs/coding-standards.md`
 - **Architecture:** `ARCHITECTURE.md`
 
 ---

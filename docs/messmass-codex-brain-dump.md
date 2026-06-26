@@ -1,15 +1,15 @@
 # Brain Dump
 Status: Active
-Last Updated: 2026-05-14
+Last Updated: 2026-06-26
 Canonical: Yes
 Owner: Documentation
 
 **Purpose:** quick-reference notes that capture the state of this repo and how the docs/ tree is organized after today's refactor.
 
 ## Current release
-- Current shipped product version: `v12.1.12`.
+- Current shipped product version: `v12.1.16`.
 - Current delivery branch: `main`.
-- Latest shipped repo slice: admin workspace regression fixes plus version/documentation sync.
+- Latest shipped repo slice: Fanmass integration delivery, documentation consistency audit, and documentation contract cleanup.
 
 ## Builder mode (clicker) — one input per variable + unified layout
 - Event edit page (e.g. `/edit/[slug]`) has **Builder** mode: it loads the report template and chart configs, then renders a builder per chart. **Every chart type** parses element formulas, extracts variables via `extractVariablesFromFormula()` (from `lib/formulaEngine`), deduplicates, and shows **one input per variable**. Image/table charts infer variable from title (e.g. "Report Image 3") or chartId when formula is empty; table fallback: `reportTable1`.
@@ -53,7 +53,7 @@ Owner: Documentation
 - Security project runs in four phases: password security (bcrypt migration), session security (JWT session refactor), XSS protection (sanitization and logging), and code injection protection. Historical phase completion notes live in `docs/archive/_archive/security/archive-security-archive-pack.md`.
 - Operations documentation is the single source of truth for rollout plans, checklists, and remediation steps. Point references to `docs/operations/*` from other docs to avoid stale root file names.
 - Engineering discipline rule: **Fix the class, not the instance** (no single-point patching). Treat every reported bug as a likely pattern; search for all instances, fix the whole class (or document remaining scope), then say done. Source: `docs/coding-standards.md` and `docs/operations/operations-learnings.md`.
-- Execution state lives in `docs/operations/operations-action-plan.md` only (single executable queue). TASKLIST.md was removed per merge rule—no separate task list.
+- Execution state lives in `docs/operations/operations-action-plan.md` only (single executable queue). The former standalone task list was removed per merge rule.
 - Use `docs/index.md` as the canonical overview—if you add a new key doc, make sure it’s linked there.
 - Deprecated or archived content should go into `docs/archive/_archive/` or `docs/archive/2025/` so readers know not to rely on it.
 - Deprecated entrypoints under `docs/` are deleted (not kept as redirect stubs) to prevent working from the wrong source. When a file moves, update internal links and use `docs/index.md` + `docs/_meta/meta-canonical-map.md` to find the canonical doc.
