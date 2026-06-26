@@ -130,13 +130,13 @@ Before adding/upgrading any dependency:
 10) DOCUMENTATION TARGETING (WHAT TO UPDATE WHEN) ✅
 ================================================================================
 When you change:
-- System behaviour/architecture → docs/ARCHITECTURE.md (+ dependency map if relevant)
-- UI flows / where things live → docs/APP_NAVIGATION.md
-- Operational gotchas/decisions/risks → docs/BRAIN_DUMP.md
+- System behaviour/architecture → `docs/architecture.md` (+ dependency map if relevant)
+- UI flows / where things live → `docs/index.md` and the relevant feature/admin doc
+- Operational gotchas/decisions/risks → `docs/messmass-codex-brain-dump.md` or `docs/operations/ops-warp.md`
 - Running/setup/dev workflow → README.md and/or relevant ops docs
-- Ingestion/sync pipelines → docs/INGESTION.md
-- Board rules/fields/process → docs/PROJECT_MANAGEMENT.md
-Always keep docs/HANDOVER.md current.
+- Ingestion/sync pipelines → relevant `docs/operations/*` integration or deployment doc
+- Board rules/fields/process → `docs/PROJECT_MANAGEMENT.md`
+Always update the relevant handover or operations note when state changes.
 
 ================================================================================
 11) EVIDENCE TEMPLATE (STANDARD OUTPUT) ✅

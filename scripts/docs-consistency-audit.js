@@ -63,6 +63,10 @@ const forbiddenCurrentDocPatterns = [
   {
     pattern: /docs\/NEXT_PHASES\.md|TASKLIST\.md|(?<!operations-)ROADMAP\.md|(?<!operations-)RELEASE_NOTES\.md|CODING_STANDARDS\.md/g,
     message: 'References obsolete root governance file path.'
+  },
+  {
+    pattern: /docs\/APP_NAVIGATION\.md|docs\/BRAIN_DUMP\.md|docs\/INGESTION\.md|docs\/conventions\/VARIABLE_MANAGEMENT_GUIDE\.md|docs\/fixes\/NUMERIC_INPUT_CONSISTENCY_FIX\.md|docs\/api-reference\.md|LEARNINGS\.md/g,
+    message: 'References a missing or moved documentation path.'
   }
 ];
 
@@ -86,13 +90,13 @@ for (const file of currentDocFiles) {
 }
 
 const versionHeaderFiles = currentDocFiles.filter((file) => {
-  const content = read(file);
-  return /\*\*Version\*\*:|\*\*Version\*\s*:/.test(content);
+  const content = read(file).split('\n').slice(0, 25).join('\n');
+  return /\*\*Version:?\*\*\s*:|^Version:\s+/m.test(content);
 });
 
 for (const file of versionHeaderFiles) {
-  const content = read(file);
-  const versionMatch = content.match(/\*\*Version\*\*\s*:?\s*`?([0-9]+\.[0-9]+\.[0-9]+)`?/);
+  const content = read(file).split('\n').slice(0, 25).join('\n');
+  const versionMatch = content.match(/(?:\*\*Version:?\*\*\s*:|^Version:)\s*`?([0-9]+\.[0-9]+\.[0-9]+)`?/m);
   if (versionMatch && versionMatch[1] !== packageVersion) {
     addFailure(file, `Version header ${versionMatch[1]} does not match package version ${packageVersion}.`);
   }

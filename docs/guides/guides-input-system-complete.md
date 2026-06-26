@@ -30,9 +30,9 @@ This document provides a complete overview of the unified input system, all docu
 - ✅ `TextareaField` - Multi-line text (already existed, already correct)
 
 ### 3. **Created Comprehensive Documentation** (4 documents)
-- ✅ `LEARNINGS.md` - Historical learning entry
+- ✅ `docs/operations/operations-learnings.md` - Historical learning entry
 - ✅ `docs/components/components-unified-input-system.md` - Complete system guide
-- ✅ `docs/fixes/NUMERIC_INPUT_CONSISTENCY_FIX.md` - Fix documentation
+- ✅ `docs/guides/guides-form-input-migration-guide.md` - Fix documentation
 - ✅ `docs/guides/guides-form-input-migration-guide.md` - Migration guide
 
 ### 4. **Created Validation Tools**
@@ -46,9 +46,9 @@ This document provides a complete overview of the unified input system, all docu
 ### For Learning & Context
 | Document | Purpose | When to Use |
 |----------|---------|-------------|
-| `LEARNINGS.md` (v11.54.3 entry) | Historical record of the problem and solution | Understanding why this pattern exists |
+| `docs/operations/operations-learnings.md` | Historical record of the problem and solution | Understanding why this pattern exists |
 | `docs/components/components-unified-input-system.md` | Complete technical guide to unified components | Deep dive into architecture |
-| `docs/fixes/NUMERIC_INPUT_CONSISTENCY_FIX.md` | What was fixed and how | Reference for the fix implementation |
+| `docs/guides/guides-form-input-migration-guide.md` | What was fixed and how | Reference for the fix implementation |
 
 ### For Implementation
 | Document | Purpose | When to Use |
@@ -265,9 +265,9 @@ Need an input?
 - `/components/TextareaField.tsx`
 
 ### Documentation
-- `/LEARNINGS.md`
+- `/docs/operations/operations-learnings.md`
 - `/docs/components/components-unified-input-system.md`
-- `/docs/fixes/NUMERIC_INPUT_CONSISTENCY_FIX.md`
+- `/docs/guides/guides-form-input-migration-guide.md`
 - `/docs/guides/guides-form-input-migration-guide.md`
 
 ### Validation
@@ -300,7 +300,7 @@ You now have:
 ✅ **Unified input system** - Consistent across entire app
 ✅ **Complete documentation** - 4 comprehensive guides
 ✅ **Validation tools** - Automated pattern detection
-✅ **Historical record** - LEARNINGS.md entry
+✅ **Historical record** - operations learnings entry
 ✅ **Future prevention** - Scripts and guides
 
 **No more aggressive parsing!** 🚀

@@ -555,10 +555,10 @@ const remoteImagesVar = variable.find(v => v.name === 'remoteImages');
 ## Related Documentation
 
 - **Variable Naming Conventions:** `docs/conventions/conventions-naming-conventions.md`
-- **Variable Management Guide:** `docs/conventions/VARIABLE_MANAGEMENT_GUIDE.md` (to be created)
+- **Variable Management:** use this dictionary plus `docs/architecture.md` until a dedicated management guide is created.
 - **Formula Engine:** `lib/formulaEngine.ts`
 - **Variables API:** `app/api/variables-config/route.ts`
-- **Architecture:** `ARCHITECTURE.md` (Variable System section)
+- **Architecture:** `docs/architecture.md` (Variable System section)
 
 ---
 

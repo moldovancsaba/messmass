@@ -1,6 +1,6 @@
 # Admin Report Template Model and Selection Rules
 Status: Active
-Version: 1.0.0
+Spec Version: 1.0.0
 Created: 2026-01-16T11:09:32.000Z
 Last Updated: 2026-01-16T11:09:32.000Z
 Canonical: Yes

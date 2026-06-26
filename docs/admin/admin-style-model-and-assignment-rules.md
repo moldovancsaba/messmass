@@ -4,7 +4,7 @@ Last Updated: 2026-02-04T00:00:00.000Z
 Canonical: Yes
 Owner: Admin (Katja)
 
-Version: 1.0.0
+Spec Version: 1.0.0
 Audience: Product + Engineering
 
 ---
@@ -89,4 +89,3 @@ Style resolution follows a **priority order**. The first non-null value wins.
 - Style application in Reporting: `hooks/useReportStyle.ts`, report page components
 - Admin styles list: `app/admin/styles/page.tsx`
 - Admin style editor: `app/admin/styles/[id]/page.tsx`
-

@@ -4,8 +4,8 @@ Last Updated: 2026-01-11T22:28:38.000Z
 Canonical: Yes
 Owner: Product
 
-**Version:** 11.25.1  
-**Last Updated:** 2026-01-11T22:28:38.000Z (UTC)  
+**Version:** 12.1.16
+**Last Updated:** 2026-01-11T22:28:38.000Z (UTC)
 **Status:** Production
 
 ## 🔒 MANDATORY: Use UnifiedHashtagInput - Do NOT Create Custom Hashtag Components
@@ -29,11 +29,11 @@ import UnifiedHashtagInput from '@/components/UnifiedHashtagInput';
 
 <UnifiedHashtagInput
   generalHashtags={newProjectData.hashtags}
-  onGeneralChange={(hashtags) => 
+  onGeneralChange={(hashtags) =>
     setNewProjectData(prev => ({ ...prev, hashtags }))
   }
   categorizedHashtags={newProjectData.categorizedHashtags}
-  onCategorizedChange={(categorizedHashtags) => 
+  onCategorizedChange={(categorizedHashtags) =>
     setNewProjectData(prev => ({ ...prev, categorizedHashtags }))
   }
   placeholder="Search or add hashtags..."
@@ -48,8 +48,8 @@ import UnifiedHashtagInput from '@/components/UnifiedHashtagInput';
 // ✅ For displaying hashtags
 import ColoredHashtagBubble from '@/components/ColoredHashtagBubble';
 
-<ColoredHashtagBubble 
-  hashtag="summer" 
+<ColoredHashtagBubble
+  hashtag="summer"
   interactive={true}
   onClick={(hashtag) => handleClick(hashtag)}
 />
@@ -93,21 +93,21 @@ The {messmass} project now features a **completely unified hashtag system** that
 <ColoredHashtagBubble hashtag="summer" />
 
 // Interactive hashtag (clickable)
-<ColoredHashtagBubble 
-  hashtag="summer" 
+<ColoredHashtagBubble
+  hashtag="summer"
   interactive={true}
   onClick={(hashtag) => navigateTo(`/hashtag/${hashtag}`)}
 />
 
 // Removable hashtag
-<ColoredHashtagBubble 
-  hashtag="summer" 
+<ColoredHashtagBubble
+  hashtag="summer"
   removable={true}
   onRemove={(hashtag) => removeHashtag(hashtag)}
 />
 
 // Category-prefixed hashtag
-<ColoredHashtagBubble 
+<ColoredHashtagBubble
   hashtag="period:summer"
   showCategoryPrefix={true}
   removable={true}
@@ -268,7 +268,7 @@ const {
 **New Pattern**:
 ```jsx
 // New unified approach
-<ColoredHashtagBubble 
+<ColoredHashtagBubble
   hashtag={hashtag}
   removable={true}
   onRemove={removeHashtag}
@@ -322,7 +322,7 @@ The unified system makes it easy to add new features:
 The {messmass} hashtag system is now **completely unified** with:
 
 - **Same beautiful design everywhere** 🎨
-- **Consistent remove (×) buttons** ❌  
+- **Consistent remove (×) buttons** ❌
 - **Predictive search throughout** 🔍
 - **Unified API integration** 🔌
 - **Category-aware functionality** 🏷️

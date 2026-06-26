@@ -1,6 +1,6 @@
 # Admin LayoutV2 Schema (Layout Configuration)
 Status: Active
-Version: 1.0.0
+Spec Version: 1.0.0
 Created: 2026-01-15T12:24:23.000Z
 Last Updated: 2026-01-15T14:46:42.000Z
 Canonical: Yes

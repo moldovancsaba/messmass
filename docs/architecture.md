@@ -962,7 +962,7 @@ const wsUrl = process.env.NEXT_PUBLIC_WS_URL;
 - Collection shape (proposed in Step 3): { project, env, key, value, updated_at, comment }
 - Purpose: centralize non-sensitive toggles and base URLs; never secrets
 - Caching: in-process TTL (e.g., 300000 ms) with manual bust method
-- Reference: see LEARNINGS.md entry “2025-09-24T11:07:46.000Z — Atlas settings collection plan”
+- Reference: see `docs/operations/operations-learnings.md` entry “2025-09-24T11:07:46.000Z — Atlas settings collection plan”
 
 ### Migration plan (Step 4)
 - Replace direct `process.env.*` usages with the config module

@@ -170,7 +170,7 @@ git add -A && git status
 git commit -m "Landing overhaul: container, typography, icons, cards, content, FAQ, pricing"
 
 # 7) Version bump (e.g. 11.57.0)
-# Edit package.json, README, docs/api-reference.md, docs/coding-standards.md
+# Edit package.json, README, docs/api/api-reference.md, docs/coding-standards.md
 git add package.json README.md docs/ && git commit -m "Bump version to 11.57.0"
 
 # 8) Push preview

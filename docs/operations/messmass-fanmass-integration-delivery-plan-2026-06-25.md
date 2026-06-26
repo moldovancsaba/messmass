@@ -32,10 +32,10 @@ Connect Messmass events, organizations, partners, and report analytics to Fanmas
 
 ## Board State
 
-- Messmass MF-101 is in `Todo (NEXT)`.
-- Fanmass MF-102 is in `Todo (NEXT)`.
-- All downstream issues are in `Backlog (SOONER)` and must not move forward before their explicit dependencies are done.
-- Both project board readmes include this delivery pack and sequencing rules.
+- Initial sequencing is preserved above for historical traceability.
+- MF-101 through MF-112 have been delivered and the corresponding GitHub issues were closed.
+- Future Messmass <> Fanmass work should create new follow-up issues instead of reopening this initial MVP sequence.
+- Both project board readmes should continue to reference this delivery pack as the MVP baseline, not as the current Todo queue.
 
 ## Implemented Messmass Runtime Surface
 

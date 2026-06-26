@@ -4,8 +4,8 @@ Last Updated: 2026-01-11T22:28:38.000Z
 Canonical: No
 Owner: Architecture
 
-**Date:** 2026-01-02  
-**Version:** 11.46.2  
+**Date:** 2026-01-02
+**Version:** 12.1.16
 **Status:** ✅ COMPLIANT
 
 ---
@@ -173,5 +173,5 @@ All development up to v11.46.2 is fully aligned with the Layout Grammar specific
 
 ---
 
-*Layout Grammar Compliance Report*  
+*Layout Grammar Compliance Report*
 *Version 11.46.2 | 2026-01-02 | Tribeca*

@@ -4,7 +4,7 @@ Last Updated: 2026-01-16T11:30:00.000Z
 Canonical: Yes
 Owner: Architecture
 
-**Version:** 11.55.1  
+**Version:** 12.1.16
 **Last Updated: 2026-01-16T11:30:00.000Z
 **Status:** Complete (Phase 1: 2025-12-19, Phase 2: 2025-12-25, Phase 3: 2025-12-25, Phase 4: 2026-01-02, Phase 5: 2026-01-02, Phase 6: 2026-01-15-16)
 
@@ -46,7 +46,7 @@ All other unit options removed. Units define **relative width** only, not aspect
 Each cell is divided vertically:
 
 1. **Title Zone** - Fixed height, centered, max 2 lines
-2. **Subtitle Zone** - Fixed height, centered, max 2 lines  
+2. **Subtitle Zone** - Fixed height, centered, max 2 lines
 3. **Body Zone** - Chart/content fills remaining space
 
 ## Chart Types
@@ -73,13 +73,13 @@ Each cell is divided vertically:
 - **Markdown Support:** All CommonMark features (headings h1-h6, lists, bold, italic, links, blockquotes, code blocks, strikethrough, horizontal rules, GFM)
 - **Dynamic Font Sizing:** Largest possible font size (max 4rem) that fills available space without overflow
 - **Algorithm:** "Fill space" algorithm maximizes vertical fill, allows 5% overflow tolerance for better fill, then clamps
-- **Alignment:** 
+- **Alignment:**
   - **Horizontal:** Center-aligned by design (except code blocks for readability)
   - **Vertical:** Content is vertically centered in its container using flexbox (`align-items: center`, `justify-content: center`)
   - **Container:** `.textContentWrapper` uses `flex: 1` to fill remaining space after title
   - **Content:** `.textContent` and `.textMarkdown` use `display: flex` with `height: 100%` to fill and center content
 - **Overflow:** `overflow: hidden` (no scrolling per Layout Grammar)
-- **Structure:** 
+- **Structure:**
   - `.text` container uses `display: flex` with `flex-direction: column` to stack title and content
   - `.textContentWrapper` fills remaining space with `flex: 1`
   - `.textContent` and `.textMarkdown` fill 100% height and center content vertically and horizontally
@@ -100,7 +100,7 @@ Across all cells in the same block:
 
 ## Global Scaling Rule
 
-Every piece of content **scales to fit** its allocated space both vertically and horizontally.  
+Every piece of content **scales to fit** its allocated space both vertically and horizontally.
 **Overflow is never allowed.**
 
 ## Font Synchronization (Block-Level)
@@ -276,8 +276,8 @@ PDF export automatically matches screen layout:
 ## Phase 2 Completion (v11.54.4 - 2025-12-25)
 
 ### CellWrapper Integration ✅
-**WHAT**: All chart components now use `CellWrapper` to enforce 3-zone structure  
-**WHY**: Ensures title/subtitle/body alignment across all cells in a block  
+**WHAT**: All chart components now use `CellWrapper` to enforce 3-zone structure
+**WHY**: Ensures title/subtitle/body alignment across all cells in a block
 **HOW**: Wrapped KPI, PIE, BAR, TEXT, and IMAGE chart bodies with `CellWrapper`
 
 **Implementation**:
@@ -286,8 +286,8 @@ PDF export automatically matches screen layout:
 - **3-Zone Structure**: Title zone + subtitle zone + body zone (chart content)
 
 ### Block Height Threading ✅
-**WHAT**: Calculated block heights now passed from `ReportContent` to individual charts  
-**WHY**: Enables charts to size themselves according to row height constraints  
+**WHAT**: Calculated block heights now passed from `ReportContent` to individual charts
+**WHY**: Enables charts to size themselves according to row height constraints
 **HOW**: `rowHeight` from `solveBlockHeightWithImages()` → `ReportChart` → chart components
 
 **Data Flow**:
@@ -297,8 +297,8 @@ PDF export automatically matches screen layout:
 4. **Chart Components**: Accept `blockHeight` prop (future: use for dynamic sizing)
 
 ### Admin UI Validation ✅
-**WHAT**: Updated admin UI labels to reflect Spec v2.0 width constraints  
-**WHY**: Prevent confusion about grid unit limits (max 2 units)  
+**WHAT**: Updated admin UI labels to reflect Spec v2.0 width constraints
+**WHY**: Prevent confusion about grid unit limits (max 2 units)
 **HOW**: Updated aspect ratio labels in `ChartAlgorithmManager` and `Visualization` admin
 
 **Changes**:
@@ -311,8 +311,8 @@ PDF export automatically matches screen layout:
 ## Phase 3 Completion (v11.54.5 - 2025-12-25)
 
 ### Font Synchronization Calculator ✅
-**WHAT**: Integrated `fontSyncCalculator` to calculate synchronized font sizes across all cells in a block  
-**WHY**: Ensures all titles share the same font size, all subtitles share the same font size  
+**WHAT**: Integrated `fontSyncCalculator` to calculate synchronized font sizes across all cells in a block
+**WHY**: Ensures all titles share the same font size, all subtitles share the same font size
 **HOW**: Binary search algorithm finds optimal font sizes that fit all text within 2-line constraints
 
 **Implementation**:
@@ -332,8 +332,8 @@ PDF export automatically matches screen layout:
 7. CellWrapper applies via inline styles: `style={{ fontSize: '${titleFontSize}px' }}`
 
 ### Dynamic Height Utilization ✅
-**WHAT**: CellWrapper now accepts `blockHeight` prop for explicit height control  
-**WHY**: Replaces `height: 100%` inheritance with deterministic pixel height  
+**WHAT**: CellWrapper now accepts `blockHeight` prop for explicit height control
+**WHY**: Replaces `height: 100%` inheritance with deterministic pixel height
 **HOW**: Inline style on CellWrapper root div: `style={{ height: '${blockHeight}px' }}`
 
 **Implementation**:
@@ -348,8 +348,8 @@ PDF export automatically matches screen layout:
 - Consistent height enforcement across all chart types
 
 ### Per-Template Feature Flag ✅
-**WHAT**: Existing `blockLayoutMode` field in ReportTemplate serves as feature flag  
-**WHY**: Allow legacy templates to opt out if needed (future use)  
+**WHAT**: Existing `blockLayoutMode` field in ReportTemplate serves as feature flag
+**WHY**: Allow legacy templates to opt out if needed (future use)
 **HOW**: `blockLayoutMode: 'deterministic'` enables Spec v2.0, `'legacy'` disables
 
 **Implementation**:
@@ -361,8 +361,8 @@ PDF export automatically matches screen layout:
 ## Phase 4 Completion (v11.46.1 - 2026-01-02)
 
 ### Blocks Never Break ✅
-**WHAT**: All charts in a block are rendered in a single horizontal row  
-**WHY**: Layout Grammar requirement - blocks are horizontal containers that never break into multiple lines  
+**WHAT**: All charts in a block are rendered in a single horizontal row
+**WHY**: Layout Grammar requirement - blocks are horizontal containers that never break into multiple lines
 **HOW**: `groupChartsIntoRows()` returns all charts as a single row array
 
 **Implementation**:
@@ -371,8 +371,8 @@ PDF export automatically matches screen layout:
 - **No 12-Column Grid**: Removed fixed 12-column grid system, uses dynamic fr units
 
 ### PIE Chart Layout Reordering ✅
-**WHAT**: PIE chart sections reordered: Title (top) → Pie (middle) → Legends (bottom, centered)  
-**WHY**: User requirement for better visual hierarchy  
+**WHAT**: PIE chart sections reordered: Title (top) → Pie (middle) → Legends (bottom, centered)
+**WHY**: User requirement for better visual hierarchy
 **HOW**: 3-zone vertical layout (30:40:30 ratio) with centered legends
 
 **Implementation**:
@@ -384,8 +384,8 @@ PDF export automatically matches screen layout:
 - **Legend Width**: Changed from `width: 100%` to `width: auto` for proper centering
 
 ### Image Aspect Ratio Detection ✅
-**WHAT**: Images detect actual dimensions on load and use real aspect ratio  
-**WHY**: Use actual image aspect ratio instead of configured one  
+**WHAT**: Images detect actual dimensions on load and use real aspect ratio
+**WHY**: Use actual image aspect ratio instead of configured one
 **HOW**: `onLoad` handler reads `naturalWidth`/`naturalHeight`, sets `--image-aspect-ratio` CSS custom property
 
 **Implementation**:
@@ -395,8 +395,8 @@ PDF export automatically matches screen layout:
 - **Rendering**: `object-fit: contain` ensures full image visible without cropping
 
 ### Text Chart Markdown Support ✅
-**WHAT**: Full CommonMark markdown support for text charts  
-**WHY**: Allow rich text formatting in report texts  
+**WHAT**: Full CommonMark markdown support for text charts
+**WHY**: Allow rich text formatting in report texts
 **HOW**: `marked` library with GFM support, sanitized HTML output
 
 **Implementation**:
@@ -407,8 +407,8 @@ PDF export automatically matches screen layout:
 - **Layout Grammar**: `overflow: hidden` (no scrolling), no truncation
 
 ### Design Token Integration ✅
-**WHAT**: Block height calculation uses design tokens instead of hardcoded values  
-**WHY**: No hardcoded sizes - all values must come from design system  
+**WHAT**: Block height calculation uses design tokens instead of hardcoded values
+**WHY**: No hardcoded sizes - all values must come from design system
 **HOW**: `getCSSVariableValue()` reads from `theme.css` CSS custom properties
 
 **Implementation**:
@@ -418,8 +418,8 @@ PDF export automatically matches screen layout:
 - **Fallbacks**: Server-side fallbacks only (SSR), client-side always uses design tokens
 
 ### Layout Grammar Compliance ✅
-**WHAT**: All recent changes comply with Layout Grammar requirements  
-**WHY**: Ensure no scrolling, no truncation, no clipping  
+**WHAT**: All recent changes comply with Layout Grammar requirements
+**WHY**: Ensure no scrolling, no truncation, no clipping
 **HOW**: Verified against Layout Grammar specification
 
 **Compliance Checklist**:
@@ -433,8 +433,8 @@ PDF export automatically matches screen layout:
 ## Phase 5 Completion (v11.47.0 - 2026-01-02)
 
 ### Text Chart Vertical Alignment and Space Filling ✅
-**WHAT**: Text content vertically centered and fills available space  
-**WHY**: User requirement - text should be centered vertically and fill space  
+**WHAT**: Text content vertically centered and fills available space
+**WHY**: User requirement - text should be centered vertically and fill space
 **HOW**: Flexbox layout with proper height filling
 
 **Implementation**:
@@ -458,5 +458,5 @@ PDF export automatically matches screen layout:
 
 ---
 
-*{messmass} Layout System Documentation*  
+*{messmass} Layout System Documentation*
 *Version 11.47.0 | 2026-01-02 | Spec v2.0*

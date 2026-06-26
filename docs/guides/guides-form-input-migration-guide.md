@@ -573,8 +573,8 @@ function useNumericInput(
 ## 📚 Related Documentation
 
 - **`docs/components/components-unified-input-system.md`** - Complete unified system guide
-- **`docs/fixes/NUMERIC_INPUT_CONSISTENCY_FIX.md`** - Fix documentation
-- **`LEARNINGS.md`** - Historical context and lessons learned
+- **`docs/components/components-unified-input-system.md`** - Fix documentation and current component contract
+- **`docs/operations/operations-learnings.md`** - Historical context and lessons learned
 - **`docs/coding-standards.md`** - General coding standards
 
 ---
