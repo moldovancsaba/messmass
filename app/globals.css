@@ -54,6 +54,24 @@
   font-display: swap;
 }
 
+/* CHL Hypercharged PPT Black Custom Font */
+@font-face {
+  font-family: 'CHL Hypercharged PPT Black';
+  src: url('/fonts/CHLHyperchargedPPT-Black.woff') format('woff');
+  font-weight: 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* CHL Hypercharged Black Custom Font */
+@font-face {
+  font-family: 'CHL Hypercharged Black';
+  src: url('/fonts/CHLHypercharged-Black.woff') format('woff');
+  font-weight: 900;
+  font-style: normal;
+  font-display: swap;
+}
+
 /* ========================================
    CSS RESET & BASE STYLES
 ======================================== */

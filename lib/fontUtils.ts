@@ -41,6 +41,27 @@ export function getFontFamilyCSS(fontName: string, availableFonts: AvailableFont
   if (fontName === 'Aquatic' || fontName === 'Aquatics') {
     return '"Aquatics", sans-serif';
   }
+
+  // WHAT: Keep CHL font families working even if source data uses normalized names
+  // WHY: Persisted styles can store multiple variants of the same font label
+  // HOW: Resolve explicit and normalized CHL naming forms to registered font-family
+  if (
+    fontName === 'CHL Hypercharged PPT Black' ||
+    fontName === 'CHLHyperchargedPPTBlack' ||
+    fontName === 'CHLHypercharged-PPT-Black' ||
+    normalizedName === 'chlhyperchargedpptblack'
+  ) {
+    return '"CHL Hypercharged PPT Black", sans-serif';
+  }
+
+  if (
+    fontName === 'CHL Hypercharged Black' ||
+    fontName === 'CHLHyperchargedBlack' ||
+    fontName === 'CHLHypercharged-Black' ||
+    normalizedName === 'chlhyperchargedblack'
+  ) {
+    return '"CHL Hypercharged Black", sans-serif';
+  }
   
   // WHAT: Industry Light font from SCB partner
   // WHY: Partner font requirement - matches scb.ch CSS usage
@@ -81,4 +102,3 @@ export function getFontNameFromKey(fontKey: string, availableFonts: AvailableFon
   
   return font?.name || fontKey;
 }
-

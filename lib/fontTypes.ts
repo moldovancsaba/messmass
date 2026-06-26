@@ -106,11 +106,29 @@ export const DEFAULT_FONTS: Omit<AvailableFont, '_id' | 'createdAt' | 'updatedAt
     fontFile: '/fonts/Industry-Light.woff'
   },
   {
+    name: 'CHL Hypercharged PPT Black',
+    fontFamily: '"CHL Hypercharged PPT Black", sans-serif',
+    category: 'custom',
+    isActive: true,
+    displayOrder: 8,
+    description: 'Custom font - CHL Hypercharged PPT Black',
+    fontFile: '/fonts/CHLHyperchargedPPT-Black.woff'
+  },
+  {
+    name: 'CHL Hypercharged Black',
+    fontFamily: '"CHL Hypercharged Black", sans-serif',
+    category: 'custom',
+    isActive: true,
+    displayOrder: 9,
+    description: 'Custom font - CHL Hypercharged Black',
+    fontFile: '/fonts/CHLHypercharged-Black.woff'
+  },
+  {
     name: 'System Default',
     fontFamily: 'system-ui',
     category: 'system',
     isActive: true,
-    displayOrder: 8,
+    displayOrder: 10,
     description: 'System default font stack'
   }
 ];
@@ -132,4 +150,3 @@ export function isValidFontName(name: string): boolean {
 export function isValidFontFamily(fontFamily: string): boolean {
   return typeof fontFamily === 'string' && fontFamily.trim().length > 0;
 }
-
