@@ -338,6 +338,53 @@ interface ProjectStats {
   flagsPrice?: number;
   capPrice?: number;
   otherPrice?: number;
+  [key: string]: number | string | boolean | Record<string, any> | undefined;
+}
+
+function resolveStatsPath(stats: ProjectStats, fieldPath: string): unknown {
+  if (!fieldPath.includes('.')) {
+    return (stats as Record<string, unknown>)[fieldPath];
+  }
+
+  return fieldPath.split('.').reduce<unknown>((current, key) => {
+    if (current === null || current === undefined) {
+      return undefined;
+    }
+
+    if (Array.isArray(current) && /^\d+$/.test(key)) {
+      return current[Number(key)];
+    }
+
+    if (typeof current === 'object') {
+      return (current as Record<string, unknown>)[key];
+    }
+
+    return undefined;
+  }, stats);
+}
+
+function stringifyFormulaValue(value: unknown): string {
+  if (value === undefined || value === null) {
+    return '0';
+  }
+
+  if (Array.isArray(value)) {
+    return String(value.length);
+  }
+
+  if (typeof value === 'number') {
+    return Number.isFinite(value) ? String(value) : '0';
+  }
+
+  if (typeof value === 'boolean') {
+    return value ? '1' : '0';
+  }
+
+  if (typeof value === 'string') {
+    return value.trim() === '' ? '0' : value;
+  }
+
+  return '0';
 }
 
 /**
@@ -499,8 +546,8 @@ function substituteVariables(
   // WHY: stats parameter passed to evaluateFormula is already the stats object, not project
   // HOW: Handle [fieldName] format only (no "stats." prefix)
   
-  // Handle variable format: [fieldName] (stats object is already passed in)
-  processedFormula = processedFormula.replace(/\[([a-zA-Z0-9_]+)\]/g, (_match, fieldName) => {
+  // Handle variable format: [fieldName] and nested stats paths such as [fanmass.peopleCount].
+  processedFormula = processedFormula.replace(/\[([a-zA-Z0-9_.-]+)\]/g, (_match, fieldName) => {
     // WHAT: Direct field access from stats object
     // WHY: stats parameter is already project.stats, so we access stats[fieldName] directly
     // HOW: No prefix needed - fieldName is the actual field name
@@ -540,14 +587,8 @@ function substituteVariables(
     
     // WHAT: Direct field access from stats object
     // WHY: stats parameter is already project.stats, so access stats[fieldName] directly
-    const value = (stats as any)[fieldName];
-    
-    if (value !== undefined && value !== null) {
-      return String(value);
-    }
-    
-    // Field doesn't exist → return 0
-    return '0';
+    const value = resolveStatsPath(stats, fieldName);
+    return stringifyFormulaValue(value);
   });
   
   // WHAT: Handle non-bracketed format: fieldName (no prefix)
@@ -991,12 +1032,13 @@ export function evaluateFormula(
     // WHAT: Handle simple single-variable formulas directly
     // WHY: Formulas like [fieldName] should return the value directly without evaluation
     // HOW: Check if formula is just [fieldName] pattern
-    const singleVarMatch = formula.trim().match(/^\[([a-zA-Z0-9_]+)\]$/);
+    const singleVarMatch = formula.trim().match(/^\[([a-zA-Z0-9_.-]+)\]$/);
     if (singleVarMatch) {
       const fieldName = singleVarMatch[1];
-      const value = (stats as any)[fieldName];
+      const value = resolveStatsPath(stats, fieldName);
       if (value !== undefined && value !== null) {
-        const numValue = typeof value === 'number' ? value : parseFloat(String(value));
+        const normalizedValue = Array.isArray(value) ? value.length : value;
+        const numValue = typeof normalizedValue === 'number' ? normalizedValue : parseFloat(String(normalizedValue));
         if (!isNaN(numValue) && isFinite(numValue)) {
           return numValue;
         }

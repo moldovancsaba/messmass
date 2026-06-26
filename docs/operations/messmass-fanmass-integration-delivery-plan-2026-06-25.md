@@ -59,7 +59,10 @@ Routes:
 Persistence:
 
 - `fanmass_event_links` collection stores `eventId`, `fanmassBatchId`, status, retry/error state, sync snapshots, and audit entries.
-- `projects.stats.fanmass` stores Fanmass analytics only. Existing clicker/manual stats are not overwritten.
+- `projects.stats.fanmass` stores canonical Fanmass analytics. Existing clicker/manual stats are not overwritten.
+- `projects.stats.fanmass*` flat mirrors expose report-friendly variables, including `fanmassPeopleCount`, `fanmassProjectedReach`, `fanmassImageCount`, `fanmassTopBrandName`, `fanmassTopBrandCount`, `fanmassTopClubName`, and sync metadata.
+- The Events admin action rail exposes `Fanmass Sync`, backed by `GET|POST /api/admin/fanmass/events/{eventId}`. This route requires an authenticated admin session and executes link, dry-run, and sync actions server-side.
+- Report formulas support nested Fanmass tokens such as `[fanmass.peopleCount]` and `[fanmass.brands]` plus the flat mirrors above.
 
 Contracts:
 
@@ -71,10 +74,30 @@ Contracts:
 - Messmass remains the source of truth for organizations, partners, events, report templates, and report consumption.
 - Fanmass remains the source of truth for image intake, image analysis, people research, brand/entity extraction, and normalized analysis export.
 - Fanmass must consume Messmass through versioned APIs, not direct Messmass database access.
-- Messmass must ingest Fanmass analytics into a `fanmass` stats namespace only.
+- Messmass must ingest Fanmass analytics into a canonical `fanmass` stats namespace and may mirror selected primitives into `fanmass*` flat report variables.
 - Existing clicker/manual stats must not be overwritten.
 - UI/frontend work must exclusively use https://github.com/sovereignsquad/general-design-system.
 - Accessibility, mobile portrait action visibility, tests, observability, rollback, and documentation are release blockers.
+
+## Verification Evidence - 2026-06-26
+
+Messmass:
+
+- `npm test -- --runInBand tests/fanmass-report-variables.test.ts --forceExit`
+- `npm run test:fanmass`
+- `npm run type-check`
+- `npm run lint`
+- `npm run build`
+
+Fanmass:
+
+- `.venv/bin/python scripts/smoke_messmass_integration.py`
+- `.venv/bin/python -m py_compile app.py config.py services/messmass_integration.py services/database.py`
+- `cd frontend && npm run build`
+
+Known local-test note:
+
+- Running the focused Jest test without `--forceExit` passes assertions but leaves a MongoDB connection open because importing `lib/fanmassIntegration.ts` imports the shared MongoDB module. Use the forced focused test command above unless the Mongo client lifecycle is mocked in the test.
 
 ## Continuation Checklist
 

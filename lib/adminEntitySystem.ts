@@ -13,6 +13,7 @@ export type AdminEntityCapability =
   | 'edit-content'
   | 'manage-members'
   | 'analytics'
+  | 'fanmass-sync'
   | 'kyc'
   | 'export';
 

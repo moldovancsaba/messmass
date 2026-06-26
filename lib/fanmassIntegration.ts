@@ -286,6 +286,43 @@ function mapFanmassSummaryToStats(summary: any) {
   };
 }
 
+function firstNamedCount(items: unknown[], nameKeys: string[]): { name: string; count: number } {
+  const first = items.find((item) => item && typeof item === 'object') as Record<string, unknown> | undefined;
+  if (!first) {
+    return { name: '', count: 0 };
+  }
+
+  const name = nameKeys.map((key) => first[key]).find((value) => typeof value === 'string' && value.trim()) || '';
+  return {
+    name: String(name),
+    count: asNumber(first.count ?? first.mentions ?? first.value ?? first.total),
+  };
+}
+
+export function mapFanmassStatsToFlatStats(fanmassStats: ReturnType<typeof mapFanmassSummaryToStats>) {
+  const topBrand = firstNamedCount(fanmassStats.brands, ['brandName', 'brand', 'name', 'label']);
+  const topClub = firstNamedCount(fanmassStats.clubs, ['clubName', 'club', 'name', 'label']);
+
+  return {
+    fanmassBatchId: String(fanmassStats.batchId || ''),
+    fanmassStatus: String(fanmassStats.status || ''),
+    fanmassImageCount: fanmassStats.imageCount,
+    fanmassAnalyzedImageCount: fanmassStats.analyzedImageCount,
+    fanmassPeopleCount: fanmassStats.peopleCount,
+    fanmassProjectedReach: fanmassStats.projectedReach,
+    fanmassConfidence: fanmassStats.confidence,
+    fanmassBrandCount: fanmassStats.brands.length,
+    fanmassTopBrandName: topBrand.name,
+    fanmassTopBrandCount: topBrand.count,
+    fanmassClubCount: fanmassStats.clubs.length,
+    fanmassTopClubName: topClub.name,
+    fanmassTopClubCount: topClub.count,
+    fanmassWarningCount: fanmassStats.warnings.length,
+    fanmassSourceRunCount: fanmassStats.sourceRunIds.length,
+    fanmassLastSyncedAt: fanmassStats.lastSyncedAt,
+  };
+}
+
 export async function syncFanmassAnalytics(eventId: string, correlationId: string, options?: { dryRun?: boolean; force?: boolean }) {
   const link = await loadFanmassLink(eventId);
   if (!link) {
@@ -315,8 +352,9 @@ export async function syncFanmassAnalytics(eventId: string, correlationId: strin
     });
   }
   const fanmassStats = mapFanmassSummaryToStats(summary);
+  const fanmassFlatStats = mapFanmassStatsToFlatStats(fanmassStats);
   if (options?.dryRun) {
-    return { dryRun: true, link, fanmassStats, summary };
+    return { dryRun: true, link, fanmassStats, fanmassFlatStats, summary };
   }
 
   const db = await getDb();
@@ -328,6 +366,9 @@ export async function syncFanmassAnalytics(eventId: string, correlationId: strin
     {
       $set: {
         'stats.fanmass': fanmassStats,
+        ...Object.fromEntries(
+          Object.entries(fanmassFlatStats).map(([key, value]) => [`stats.${key}`, value])
+        ),
         updatedAt: timestamp,
       },
     }
@@ -351,7 +392,7 @@ export async function syncFanmassAnalytics(eventId: string, correlationId: strin
   );
 
   info('fanmass_analytics_synced', { eventId, batchId: link.fanmassBatchId, correlationId, status: summary.status });
-  return { dryRun: false, fanmassStats, summary };
+  return { dryRun: false, fanmassStats, fanmassFlatStats, summary };
 }
 
 async function recordFanmassSyncFailure(

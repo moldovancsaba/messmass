@@ -16,7 +16,7 @@ export const projectsEntityConfig: AdminEntityConfig<ProjectDTO> = {
   pageName: 'projects',
   displayName: 'Event',
   supportedViews: ['list', 'card'],
-  capabilities: ['create', 'edit', 'delete', 'report', 'share', 'edit-content', 'kyc', 'export'],
+  capabilities: ['create', 'edit', 'delete', 'report', 'share', 'edit-content', 'fanmass-sync', 'kyc', 'export'],
   search: {
     fields: ['eventName', 'hashtags', 'categorizedHashtags'],
     placeholder: 'Search events...',
@@ -81,6 +81,20 @@ export const projectsEntityConfig: AdminEntityConfig<ProjectDTO> = {
         kind: 'share',
         shareKey: 'project-editor',
         getResourceId: (project) => project.editSlug || project._id,
+      },
+    },
+    {
+      id: 'project-fanmass-sync',
+      label: 'Fanmass Sync',
+      mobileLabel: 'Fanmass',
+      icon: 'sync',
+      variant: 'secondary',
+      priority: 'overflow',
+      requiredCapabilities: ['fanmass-sync'],
+      requiredPermissions: ['admin'],
+      execution: {
+        kind: 'modal',
+        modalKey: 'fanmass-sync',
       },
     },
     {

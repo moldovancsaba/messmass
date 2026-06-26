@@ -59,6 +59,7 @@ interface ProjectStats {
   flagsPrice?: number;
   capPrice?: number;
   otherPrice?: number;
+  [key: string]: number | string | boolean | Record<string, any> | undefined;
 }
 
 /**

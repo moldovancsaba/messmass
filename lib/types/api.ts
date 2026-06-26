@@ -129,7 +129,7 @@ export interface ProjectDTO {
     baseballCap: number;
     other: number;
     eventAttendees?: number;
-    [key: string]: number | string | undefined; // Allow dynamic stats including stored numeric strings
+    [key: string]: number | string | boolean | Record<string, any> | undefined; // Allow dynamic stats including Fanmass namespaces and stored numeric strings
   };
   viewSlug?: string;
   editSlug?: string;

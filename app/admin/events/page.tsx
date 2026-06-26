@@ -16,12 +16,20 @@ import FormModal from '@/components/modals/FormModal';
 import SharePopup from '@/components/SharePopup';
 import UnifiedHashtagInput from '@/components/UnifiedHashtagInput';
 import MaterialIcon from '@/components/MaterialIcon';
-import { apiPost, apiPut, apiDelete } from '@/lib/apiClient';
+import { apiGet, apiPost, apiPut, apiDelete } from '@/lib/apiClient';
 import { withAdminEntityActions } from '@/lib/adminEntitySystem';
 import BitlyLinksEditor from '@/components/BitlyLinksEditor';
 import ColoredCard from '@/components/ColoredCard';
 
 const PAGE_SIZE = 20;
+
+type FanmassLinkView = {
+  fanmassBatchId?: string;
+  status?: string;
+  lastCompletedAt?: string;
+  lastErrorCode?: string;
+  lastErrorMessage?: string;
+};
 
 export default function ProjectsPageUnified() {
   const { user, loading: authLoading } = useAdminAuth();
@@ -88,6 +96,14 @@ export default function ProjectsPageUnified() {
   const [sharePopupOpen, setSharePopupOpen] = useState(false);
   const [sharePageId, setSharePageId] = useState<string | null>(null);
   const [sharePageType, setSharePageType] = useState<'event-report' | 'edit' | 'filter' | null>(null);
+
+  // Fanmass operator workflow state
+  const [fanmassProject, setFanmassProject] = useState<ProjectDTO | null>(null);
+  const [fanmassBatchId, setFanmassBatchId] = useState('');
+  const [fanmassLink, setFanmassLink] = useState<FanmassLinkView | null>(null);
+  const [fanmassMessage, setFanmassMessage] = useState('');
+  const [fanmassError, setFanmassError] = useState('');
+  const [isFanmassWorking, setIsFanmassWorking] = useState(false);
 
   const resetCreateProjectForm = useCallback(() => {
     setCreateProjectStep(1);
@@ -586,6 +602,102 @@ export default function ProjectsPageUnified() {
     setSharePopupOpen(true);
   }, []);
 
+  const refreshProjectStats = useCallback((projectId: string, fanmassStats?: Record<string, unknown>, flatStats?: Record<string, unknown>) => {
+    if (!fanmassStats && !flatStats) {
+      return;
+    }
+
+    setProjects((prev) => prev.map((project) => {
+      if (project._id !== projectId) {
+        return project;
+      }
+
+      return {
+        ...project,
+        stats: {
+          ...project.stats,
+          ...(flatStats || {}),
+          ...(fanmassStats ? { fanmass: fanmassStats } : {}),
+        },
+      };
+    }));
+  }, []);
+
+  const openFanmassSync = useCallback(async (project: ProjectDTO) => {
+    setFanmassProject(project);
+    setFanmassBatchId(String((project.stats as any).fanmassBatchId || (project.stats as any).fanmass?.batchId || ''));
+    setFanmassLink(null);
+    setFanmassMessage('');
+    setFanmassError('');
+    setIsFanmassWorking(true);
+
+    try {
+      const result = await apiGet<{ success: boolean; data?: { link: FanmassLinkView | null } }>(`/api/admin/fanmass/events/${project._id}`);
+      const link = result.data?.link || null;
+      setFanmassLink(link);
+      if (link?.fanmassBatchId) {
+        setFanmassBatchId(link.fanmassBatchId);
+      }
+    } catch (error) {
+      setFanmassError(error instanceof Error ? error.message : 'Failed to load Fanmass link.');
+    } finally {
+      setIsFanmassWorking(false);
+    }
+  }, []);
+
+  const runFanmassAction = useCallback(async (action: 'link' | 'dry-run' | 'sync') => {
+    if (!fanmassProject) {
+      return;
+    }
+
+    if (!fanmassBatchId.trim()) {
+      setFanmassError('Fanmass batch ID is required before link or sync.');
+      return;
+    }
+
+    setIsFanmassWorking(true);
+    setFanmassError('');
+    setFanmassMessage('');
+
+    try {
+      const result = await apiPost<{
+        success: boolean;
+        data?: {
+          link?: FanmassLinkView | null;
+          sync?: {
+            fanmassStats?: Record<string, unknown>;
+            fanmassFlatStats?: Record<string, unknown>;
+            summary?: { status?: string };
+          };
+        };
+      }>(`/api/admin/fanmass/events/${fanmassProject._id}`, {
+        action: action === 'link' ? undefined : action,
+        fanmassBatchId: fanmassBatchId.trim(),
+        force: action === 'sync',
+      });
+
+      const link = result.data?.link || null;
+      setFanmassLink(link);
+      refreshProjectStats(
+        fanmassProject._id,
+        result.data?.sync?.fanmassStats,
+        result.data?.sync?.fanmassFlatStats
+      );
+
+      if (action === 'link') {
+        setFanmassMessage('Fanmass batch linked to this event.');
+      } else if (action === 'dry-run') {
+        setFanmassMessage(`Dry run completed. Fanmass returned ${result.data?.sync?.summary?.status || 'unknown'} status.`);
+      } else {
+        setFanmassMessage(`Fanmass analytics synced. Status: ${result.data?.sync?.summary?.status || 'unknown'}.`);
+      }
+    } catch (error) {
+      setFanmassError(error instanceof Error ? error.message : 'Fanmass action failed.');
+    } finally {
+      setIsFanmassWorking(false);
+    }
+  }, [fanmassBatchId, fanmassProject, refreshProjectStats]);
+
   const renderProjectStepHeader = (currentStep: 1 | 2, labels: [string, string]) => (
     <div className="form-group mb-4">
       <div className="flex items-center gap-2 flex-wrap">
@@ -679,6 +791,11 @@ export default function ProjectsPageUnified() {
       openModal: (modalKey, project) => {
         if (modalKey === 'edit-project') {
           editProject(project);
+          return;
+        }
+
+        if (modalKey === 'fanmass-sync') {
+          void openFanmassSync(project);
         }
       },
       openShare: (shareKey, resourceId) => {
@@ -702,7 +819,7 @@ export default function ProjectsPageUnified() {
         }
       },
     }
-  ), [deleteProject, editProject, exportProjectCsv, handleShareOpen, user]);
+  ), [deleteProject, editProject, exportProjectCsv, handleShareOpen, openFanmassSync, user]);
   
   // Loading state
   if (authLoading || loading) {
@@ -1058,6 +1175,121 @@ export default function ProjectsPageUnified() {
               </div>
             </>
           )}
+        </FormModal>
+      )}
+
+      {fanmassProject && (
+        <FormModal
+          isOpen={Boolean(fanmassProject)}
+          onClose={() => {
+            setFanmassProject(null);
+            setFanmassMessage('');
+            setFanmassError('');
+          }}
+          onSubmit={() => runFanmassAction('link')}
+          title="Fanmass Sync"
+          subtitle="Link a Fanmass batch to this event, dry-run the import, then sync analytics into report variables."
+          submitText="Save Link"
+          isSubmitting={isFanmassWorking}
+          size="lg"
+          showStatusIndicator={false}
+          customFooter={
+            <div className="flex items-center justify-between gap-3 flex-wrap">
+              <button
+                type="button"
+                className="btn btn-small btn-secondary"
+                onClick={() => setFanmassProject(null)}
+                disabled={isFanmassWorking}
+              >
+                Cancel
+              </button>
+              <div className="flex items-center gap-2 flex-wrap">
+                <button
+                  type="button"
+                  className="btn btn-small btn-secondary"
+                  onClick={() => runFanmassAction('dry-run')}
+                  disabled={isFanmassWorking || !fanmassBatchId.trim()}
+                  aria-label="Dry run Fanmass analytics sync"
+                >
+                  Dry Run
+                </button>
+                <button
+                  type="submit"
+                  className="btn btn-small btn-secondary"
+                  disabled={isFanmassWorking || !fanmassBatchId.trim()}
+                  aria-label="Save Fanmass batch link"
+                >
+                  Save Link
+                </button>
+                <button
+                  type="button"
+                  className="btn btn-small btn-primary"
+                  onClick={() => runFanmassAction('sync')}
+                  disabled={isFanmassWorking || !fanmassBatchId.trim()}
+                  aria-label="Sync Fanmass analytics into Messmass event variables"
+                >
+                  {isFanmassWorking ? 'Working…' : 'Sync Analytics'}
+                </button>
+              </div>
+            </div>
+          }
+        >
+          <div className="form-group">
+            <label>Event</label>
+            <input type="text" className="form-input" value={fanmassProject.eventName} readOnly disabled />
+            <p className="form-hint">Messmass event UUID: {fanmassProject._id}</p>
+          </div>
+
+          <div className="form-group">
+            <label htmlFor="fanmass-batch-id">Fanmass Batch ID *</label>
+            <input
+              id="fanmass-batch-id"
+              type="text"
+              className="form-input"
+              value={fanmassBatchId}
+              onChange={(event) => setFanmassBatchId(event.target.value)}
+              placeholder="Paste Fanmass batch UUID..."
+              aria-describedby="fanmass-batch-help"
+              disabled={isFanmassWorking}
+            />
+            <p id="fanmass-batch-help" className="form-hint">
+              The batch ID connects Fanmass image/person/brand analysis to this Messmass event without overwriting clicker stats.
+            </p>
+          </div>
+
+          <div className="form-group">
+            <label>Current Link Status</label>
+            <div className="flex items-center gap-2 flex-wrap" aria-live="polite">
+              <span className={`badge ${fanmassLink?.status === 'ready' ? 'badge-primary' : 'badge-secondary'}`}>
+                {fanmassLink?.status || 'Not linked'}
+              </span>
+              {fanmassLink?.lastCompletedAt && (
+                <span className="form-hint">Last synced: {new Date(fanmassLink.lastCompletedAt).toLocaleString()}</span>
+              )}
+            </div>
+          </div>
+
+          {fanmassMessage && (
+            <div className="form-group" role="status" aria-live="polite">
+              <div className="badge badge-primary">{fanmassMessage}</div>
+            </div>
+          )}
+
+          {(fanmassError || fanmassLink?.lastErrorMessage) && (
+            <div className="form-group" role="alert">
+              <div className="badge badge-secondary">
+                {fanmassError || `${fanmassLink?.lastErrorCode || 'Fanmass error'}: ${fanmassLink?.lastErrorMessage}`}
+              </div>
+            </div>
+          )}
+
+          <div className="form-group">
+            <label>Report Variables Written</label>
+            <p className="form-hint">
+              Nested variables: [fanmass.peopleCount], [fanmass.projectedReach], [fanmass.brands].
+              Flat variables: [fanmassPeopleCount], [fanmassProjectedReach], [fanmassTopBrandName].
+            </p>
+          </div>
         </FormModal>
       )}
       

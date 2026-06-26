@@ -150,7 +150,9 @@ Messmass exposes a production API boundary for Fanmass event/image analytics:
 - `GET|POST /api/integrations/fanmass/events/{eventId}/sync`
 - `POST /api/integrations/fanmass/callbacks`
 
-Fanmass-derived analytics are stored only under `project.stats.fanmass` and must not overwrite existing clicker/manual stats. See `docs/operations/messmass-fanmass-integration-delivery-plan-2026-06-25.md`.
+Admin operators can manage event links through `POST /api/admin/fanmass/events/{eventId}` from the Events action rail. The admin endpoint uses the authenticated admin session and never exposes the shared integration token to the browser.
+
+Fanmass-derived analytics are stored under `project.stats.fanmass` and mirrored into flat report variables such as `[fanmassPeopleCount]`, `[fanmassProjectedReach]`, and `[fanmassTopBrandName]`. Nested formulas such as `[fanmass.peopleCount]` are also supported. Existing clicker/manual stats must not be overwritten. See `docs/operations/messmass-fanmass-integration-delivery-plan-2026-06-25.md`.
 
 Live product:
 - Website: [messmass.doneisbetter.com](https://messmass.doneisbetter.com)
