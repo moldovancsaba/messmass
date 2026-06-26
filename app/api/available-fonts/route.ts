@@ -11,6 +11,10 @@ import { error as logError } from '@/lib/logger';
 const DB_NAME = process.env.MONGODB_DB || 'messmass';
 const COLLECTION = 'available_fonts';
 
+function normalizeFontName(name: string): string {
+  return name.trim().toLowerCase().replace(/\s+/g, ' ');
+}
+
 /**
  * GET /api/available-fonts
  * Fetch all available fonts (active only by default)
@@ -49,10 +53,27 @@ export async function GET(request: NextRequest) {
         isDefault: true
       });
     }
+
+    const existingNames = new Set(fonts.map((font) => normalizeFontName(font.name)));
+    const missingDefaults = DEFAULT_FONTS
+      .filter((font) => (includeInactive || font.isActive) && !existingNames.has(normalizeFontName(font.name)))
+      .map((font, idx) => ({
+        ...font,
+        _id: `default-merged-${idx}`,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString()
+      }));
+
+    const mergedFonts = [...fonts.map(f => ({ ...f, _id: f._id?.toString() })), ...missingDefaults].sort((a, b) => {
+      if (a.displayOrder !== b.displayOrder) {
+        return a.displayOrder - b.displayOrder;
+      }
+      return a.name.localeCompare(b.name);
+    });
     
     return NextResponse.json({
       success: true,
-      fonts: fonts.map(f => ({ ...f, _id: f._id?.toString() })),
+      fonts: mergedFonts,
       isDefault: false
     });
   } catch (error) {
@@ -292,4 +313,3 @@ export async function DELETE(request: NextRequest) {
     );
   }
 }
-

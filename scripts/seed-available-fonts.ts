@@ -23,6 +23,10 @@ const COLLECTION = 'available_fonts';
 
 async function seedFonts() {
   const force = process.argv.includes('--force');
+
+  if (!MONGODB_URI || (!MONGODB_URI.startsWith('mongodb://') && !MONGODB_URI.startsWith('mongodb+srv://'))) {
+    throw new Error('Missing or invalid MONGODB_URI. Seed script requires a mongodb:// or mongodb+srv:// connection string.');
+  }
   
   const client = new MongoClient(MONGODB_URI);
   
@@ -33,32 +37,32 @@ async function seedFonts() {
     const db = client.db(MONGODB_DB);
     const collection = db.collection(COLLECTION);
     
-    // Check if fonts already exist
-    const existingCount = await collection.countDocuments();
-    
-    if (existingCount > 0 && !force) {
-      console.log(`ℹ️  Fonts already exist (${existingCount} fonts). Use --force to overwrite.`);
-      return;
-    }
-    
+    const existingFonts = await collection.find({}, { projection: { _id: 1, name: 1 } }).toArray();
+    const existingCount = existingFonts.length;
+
     if (force && existingCount > 0) {
       console.log('🗑️  Removing existing fonts...');
       await collection.deleteMany({});
     }
-    
-    // Insert default fonts
-    const fontsToInsert = DEFAULT_FONTS.map(font => ({
-      ...font,
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString()
-    }));
-    
-    const result = await collection.insertMany(fontsToInsert);
-    
-    console.log(`✅ Seeded ${result.insertedCount} fonts:`);
-    fontsToInsert.forEach((font, idx) => {
-      console.log(`   ${idx + 1}. ${font.name} (${font.category})`);
-    });
+
+    const existingNameSet = new Set(existingFonts.map((font) => String(font.name || '').trim().toLowerCase()));
+    const fontsToInsert = DEFAULT_FONTS
+      .filter((font) => force || !existingNameSet.has(font.name.trim().toLowerCase()))
+      .map(font => ({
+        ...font,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString()
+      }));
+
+    if (fontsToInsert.length === 0) {
+      console.log(`ℹ️  All default fonts are already available (${existingCount} fonts in collection).`);
+    } else {
+      const result = await collection.insertMany(fontsToInsert);
+      console.log(`✅ Seeded ${result.insertedCount} missing fonts:`);
+      fontsToInsert.forEach((font, idx) => {
+        console.log(`   ${idx + 1}. ${font.name} (${font.category})`);
+      });
+    }
     
     // Create indexes
     await collection.createIndex({ name: 1 }, { unique: true });
@@ -75,4 +79,3 @@ async function seedFonts() {
 }
 
 seedFonts();
-
