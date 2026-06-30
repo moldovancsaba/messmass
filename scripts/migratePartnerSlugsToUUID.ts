@@ -1,10 +1,11 @@
-// WHAT: Migrate partners with human-readable viewSlug to secure UUID format
-// WHY: UUID security enforcement (v11.53.0) broke partners with old slug format
-// HOW: Update all partners: if viewSlug is not UUID format, replace with _id
+// WHAT: Migrate partners with legacy or missing viewSlug values to UUID v4
+// WHY: Canonical UUID viewSlug values reduce guessable URLs while preserving old links safely
+// HOW: Move legacy slugs into legacyViewSlugs, assign a new UUID v4 as viewSlug, and clone partner password rows
 
 import { MongoClient, ObjectId } from 'mongodb';
 import * as dotenv from 'dotenv';
 import * as path from 'path';
+import { randomUUID } from 'crypto';
 
 // Load environment variables
 dotenv.config({ path: path.resolve(__dirname, '../.env.local') });
@@ -25,9 +26,66 @@ function isMongoObjectId(str: string): boolean {
   return ObjectId.isValid(str) && str.length === 24 && /^[0-9a-f]{24}$/i.test(str);
 }
 
-// Check if string is a secure UUID (ObjectId or UUID v4)
-function isSecureUUID(str: string): boolean {
-  return isMongoObjectId(str) || UUID_V4_PATTERN.test(str);
+function isCanonicalPartnerSlug(str: string): boolean {
+  return UUID_V4_PATTERN.test(str);
+}
+
+function escapeRegex(value: string): string {
+  return value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
+
+async function generateUniquePartnerSlug(partnersCollection: any): Promise<string> {
+  let slug = randomUUID();
+  while (
+    await partnersCollection.findOne({
+      $or: [
+        { viewSlug: slug },
+        { legacyViewSlugs: slug },
+      ],
+    })
+  ) {
+    slug = randomUUID();
+  }
+  return slug;
+}
+
+async function clonePagePasswords(db: any, oldSlug: string, newSlug: string) {
+  const passwords = db.collection('page_passwords');
+  const rows = await passwords
+    .find({
+      pageType: { $in: ['partner-report', 'partner-edit'] },
+      $or: [
+        { pageId: oldSlug },
+        { pageId: { $regex: `^${escapeRegex(oldSlug)}::variant=` } },
+      ],
+    })
+    .toArray();
+
+  let cloned = 0;
+  for (const row of rows) {
+    const nextPageId = row.pageId === oldSlug
+      ? newSlug
+      : row.pageId.replace(`${oldSlug}::variant=`, `${newSlug}::variant=`);
+
+    await passwords.updateOne(
+      { pageId: nextPageId, pageType: row.pageType },
+      {
+        $setOnInsert: {
+          pageId: nextPageId,
+          pageType: row.pageType,
+          password: row.password,
+          createdAt: row.createdAt,
+          expiresAt: row.expiresAt,
+          usageCount: row.usageCount || 0,
+          lastUsedAt: row.lastUsedAt,
+        },
+      },
+      { upsert: true }
+    );
+    cloned += 1;
+  }
+
+  return cloned;
 }
 
 async function migratePartnerSlugs() {
@@ -41,40 +99,42 @@ async function migratePartnerSlugs() {
     
     const db = client.db(MONGODB_DB);
     const partnersCollection = db.collection('partners');
+    await partnersCollection.createIndex({ viewSlug: 1 }, { unique: true, sparse: true, name: 'viewSlug_unique' });
+    await partnersCollection.createIndex({ legacyViewSlugs: 1 }, { sparse: true, name: 'legacyViewSlugs_lookup' });
     
     // Fetch all partners
     const allPartners = await partnersCollection.find({}).toArray();
     console.log(`📊 Found ${allPartners.length} partners in database\n`);
     
     // Analyze partners
-    const insecurePartners: any[] = [];
+    const legacyPartners: any[] = [];
     const securePartners: any[] = [];
     const noSlugPartners: any[] = [];
     
     for (const partner of allPartners) {
       if (!partner.viewSlug) {
         noSlugPartners.push(partner);
-      } else if (isSecureUUID(partner.viewSlug)) {
+      } else if (isCanonicalPartnerSlug(partner.viewSlug)) {
         securePartners.push(partner);
       } else {
-        insecurePartners.push(partner);
+        legacyPartners.push(partner);
       }
     }
     
     console.log('📈 Analysis:');
     console.log(`  ✅ Secure partners (UUID format): ${securePartners.length}`);
-    console.log(`  ❌ Insecure partners (human-readable): ${insecurePartners.length}`);
+    console.log(`  ❌ Legacy partners (non-UUID): ${legacyPartners.length}`);
     console.log(`  ⚠️  Partners without viewSlug: ${noSlugPartners.length}\n`);
     
-    if (insecurePartners.length === 0 && noSlugPartners.length === 0) {
-      console.log('✅ All partners already have secure UUID format. Nothing to migrate.');
+    if (legacyPartners.length === 0 && noSlugPartners.length === 0) {
+      console.log('✅ All partners already have canonical UUID viewSlug values. Nothing to migrate.');
       return;
     }
     
     // Show partners that need migration
-    if (insecurePartners.length > 0) {
-      console.log('❌ Partners with insecure viewSlug (human-readable):');
-      insecurePartners.forEach(p => {
+    if (legacyPartners.length > 0) {
+      console.log('❌ Partners with legacy viewSlug values:');
+      legacyPartners.forEach(p => {
         console.log(`  - ${p.name} (${p._id.toString()}) → viewSlug: "${p.viewSlug}"`);
       });
       console.log('');
@@ -90,17 +150,18 @@ async function migratePartnerSlugs() {
     
     // Confirm migration
     console.log('🔧 Migration Plan:');
-    console.log('  1. Partners with insecure viewSlug → replace with _id (MongoDB ObjectId)');
-    console.log('  2. Partners without viewSlug → set to _id (MongoDB ObjectId)');
-    console.log('  3. Partners already secure → no changes\n');
+    console.log('  1. Partners with legacy viewSlug → move old slug into legacyViewSlugs and assign new UUID v4');
+    console.log('  2. Partners without viewSlug → assign new UUID v4');
+    console.log('  3. Clone partner-report and partner-edit page passwords to the new canonical slug');
+    console.log('  4. Partners already on UUID v4 → no changes\n');
     
-    console.log('⚠️  IMPORTANT: This will update partner URLs!');
-    console.log('   Old: /partner-report/szerencsejtk-zrt');
-    console.log('   New: /partner-report/67478d95e6b1234567890abc\n');
+    console.log('⚠️  IMPORTANT: Public partner URLs will move to UUID v4 while preserving redirects from old slugs.');
+    console.log('   Old: /partner-report/mtk-budapest');
+    console.log('   New: /partner-report/11329474-28a3-4089-8d28-1938689339a1\n');
     
     // Perform migration
     let migratedCount = 0;
-    const partnersToMigrate = [...insecurePartners, ...noSlugPartners];
+    const partnersToMigrate = [...legacyPartners, ...noSlugPartners];
     
     console.log(`🚀 Migrating ${partnersToMigrate.length} partners...\n`);
     
@@ -108,7 +169,18 @@ async function migratePartnerSlugs() {
       const partnerId = partner._id;
       const partnerName = partner.name;
       const oldViewSlug = partner.viewSlug || '(none)';
-      const newViewSlug = partnerId.toString(); // Use MongoDB ObjectId as viewSlug
+      const newViewSlug = await generateUniquePartnerSlug(partnersCollection);
+      const legacyViewSlugs = Array.from(
+        new Set(
+          [
+            ...(Array.isArray(partner.legacyViewSlugs) ? partner.legacyViewSlugs : []),
+            ...(partner.viewSlug ? [partner.viewSlug] : []),
+          ]
+            .map((value: unknown) => String(value || '').trim())
+            .filter(Boolean)
+            .filter((value: string) => value !== newViewSlug)
+        )
+      );
       
       // Update partner
       await partnersCollection.updateOne(
@@ -116,14 +188,25 @@ async function migratePartnerSlugs() {
         { 
           $set: { 
             viewSlug: newViewSlug,
+            legacyViewSlugs,
             updatedAt: new Date().toISOString()
           } 
         }
       );
+
+      const clonedPasswords = partner.viewSlug
+        ? await clonePagePasswords(db, partner.viewSlug, newViewSlug)
+        : 0;
       
       migratedCount++;
       console.log(`  ✅ ${migratedCount}/${partnersToMigrate.length} - ${partnerName}`);
       console.log(`     Old: ${oldViewSlug} → New: ${newViewSlug}`);
+      if (legacyViewSlugs.length > 0) {
+        console.log(`     Legacy aliases: ${legacyViewSlugs.join(', ')}`);
+      }
+      if (clonedPasswords > 0) {
+        console.log(`     Cloned page passwords: ${clonedPasswords}`);
+      }
     }
     
     console.log(`\n✅ Migration complete! Updated ${migratedCount} partners.`);
@@ -131,21 +214,21 @@ async function migratePartnerSlugs() {
     console.log(`  - Total partners: ${allPartners.length}`);
     console.log(`  - Already secure: ${securePartners.length}`);
     console.log(`  - Migrated: ${migratedCount}`);
-    console.log(`  - All partners now have secure UUID format ✅\n`);
+    console.log(`  - All migrated partners now have canonical UUID viewSlug values ✅\n`);
     
     // Final verification
     const allPartnersAfter = await partnersCollection.find({}).toArray();
-    const stillInsecure = allPartnersAfter.filter(p => 
-      p.viewSlug && !isSecureUUID(p.viewSlug)
+    const stillLegacy = allPartnersAfter.filter((p: any) =>
+      p.viewSlug && !isCanonicalPartnerSlug(p.viewSlug)
     );
     
-    if (stillInsecure.length > 0) {
-      console.log('⚠️  WARNING: Some partners still have insecure slugs:');
-      stillInsecure.forEach(p => {
+    if (stillLegacy.length > 0) {
+      console.log('⚠️  WARNING: Some partners still have legacy viewSlug values:');
+      stillLegacy.forEach((p: any) => {
         console.log(`  - ${p.name}: ${p.viewSlug}`);
       });
     } else {
-      console.log('✅ Verification passed: All partners have secure UUID format');
+      console.log('✅ Verification passed: All partner viewSlug values are canonical UUID v4');
     }
     
   } catch (error) {

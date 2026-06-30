@@ -6,6 +6,7 @@ import clientPromise from '@/lib/mongodb';
 import { ObjectId } from 'mongodb';
 import config from '@/lib/config';
 import { error as logError, info as logInfo } from '@/lib/logger';
+import { generateUniquePartnerViewSlug } from '@/lib/partnerIdentifier';
 import { syncPartnerToV3Entity } from '@/lib/v3/syncEngine';
 
 export const dynamic = 'force-dynamic';
@@ -187,12 +188,7 @@ export async function POST(request: NextRequest) {
     const client = await clientPromise;
 const db = client.db(config.dbName);
 
-    // Generate viewSlug from name
-    const viewSlug = name.toLowerCase()
-      .replace(/[^a-z0-9\s-]/g, '')
-      .replace(/\s+/g, '-')
-      .replace(/-+/g, '-')
-      .trim();
+    const viewSlug = await generateUniquePartnerViewSlug(db as any);
 
     const partnerData: any = {
       name,

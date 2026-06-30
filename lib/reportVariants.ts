@@ -9,6 +9,7 @@ import {
 } from '@/lib/reportPeriods';
 import { normalizeReportPeriodInput, normalizeReportPeriodUpdate } from '@/lib/reportPeriodValidation';
 import { resolveRuntimeReportById, type RuntimeReportResolution } from '@/lib/reportRuntime';
+import { findPartnerByIdentifier } from '@/lib/partnerIdentifier';
 
 export type ReportVariantOwnerType = 'organization' | 'partner' | 'hashtag' | 'filter';
 export type ReportVariantStatus = 'draft' | 'published' | 'archived';
@@ -189,9 +190,7 @@ export async function resolveReportVariantBaseSource(
 
   if (ownerType === 'partner') {
     const partners = db.collection<PartnerRecord>('partners');
-    const partner = ObjectId.isValid(ownerId)
-      ? await partners.findOne({ _id: new ObjectId(ownerId) })
-      : await partners.findOne({ viewSlug: ownerId } as any);
+    const partner = await findPartnerByIdentifier(db, ownerId) as PartnerRecord | null;
 
     if (!partner) {
       throw new Error('Partner not found');

@@ -29,9 +29,14 @@ describe('partner identifier resolution', () => {
   });
 
   it('resolves a partner by legacy viewSlug when the identifier is not UUID-based', async () => {
-    const partner = { _id: new ObjectId(), name: 'Zalaegerszegi TE FC', viewSlug: 'zte-football-club' };
+    const partner = {
+      _id: new ObjectId(),
+      name: 'Zalaegerszegi TE FC',
+      viewSlug: '11329474-28a3-4089-8d28-1938689339a1',
+      legacyViewSlugs: ['zte-football-club'],
+    };
     const db = createDb(async (query) => {
-      if (query.viewSlug === 'zte-football-club') {
+      if (query.legacyViewSlugs === 'zte-football-club') {
         return partner;
       }
       return null;

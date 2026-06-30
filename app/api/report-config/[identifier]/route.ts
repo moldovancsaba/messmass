@@ -3,6 +3,7 @@ import { ObjectId } from 'mongodb';
 import { getDb } from '@/lib/db';
 import { ReportTemplate, ResolvedTemplate, HARDCODED_DEFAULT_TEMPLATE } from '@/lib/reportTemplateTypes';
 import { error as logError, info as logInfo, warn as logWarn, debug as logDebug } from '@/lib/logger';
+import { findPartnerByIdentifier } from '@/lib/partnerIdentifier';
 
 // WHAT: Report configuration resolution endpoint (v11.0.0)
 // WHY: Central API for resolving report templates with hierarchy support
@@ -182,30 +183,12 @@ async function resolveReportTemplate(
   // ==========================================
   if (entityType === 'partner') {
     try {
-      // WHAT: Validate secure UUID format (MongoDB ObjectId OR UUID v4)
-      // WHY: Prevent slug-based URL guessing attacks (reject human-readable slugs)
-      // HOW: Accept cryptographically random identifiers only
-      
-      // UUID v4 pattern: xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx (32 hex + 4 dashes)
-      const uuidV4Pattern = /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
-      const isMongoObjectId = ObjectId.isValid(identifier);
-      const isUuidV4 = uuidV4Pattern.test(identifier);
-      
-      if (!isMongoObjectId && !isUuidV4) {
+      if (!identifier.trim() || identifier.includes('/')) {
         logWarn('Invalid secure UUID format', { context: 'report-config', entityType: 'partner', identifier });
         throw new Error('Invalid partner ID format');
       }
 
-      // WHAT: Match by _id (MongoDB ObjectId) OR viewSlug (UUID v4)
-      // WHY: Both formats are cryptographically secure (prevent URL guessing)
-      // HOW: UUID v4 uses viewSlug lookup, ObjectId uses _id lookup
-      let partner;
-      if (isMongoObjectId) {
-        partner = await partnersCollection.findOne({ _id: new ObjectId(identifier) });
-      } else {
-        // UUID v4 format - lookup by viewSlug (secure)
-        partner = await partnersCollection.findOne({ viewSlug: identifier });
-      }
+      const partner = await findPartnerByIdentifier(db, identifier);
       if (partner?.reportTemplateId) {
         const templateId = typeof partner.reportTemplateId === 'string' && ObjectId.isValid(partner.reportTemplateId)
           ? new ObjectId(partner.reportTemplateId)

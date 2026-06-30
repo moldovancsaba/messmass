@@ -9,7 +9,7 @@ import { error as logError } from '@/lib/logger';
 import { addDerivedMetrics } from '@/lib/projectStatsUtils';
 import { resolveReportVariant } from '@/lib/reportVariants';
 import { isEventDateInPeriod } from '@/lib/reportPeriods';
-import { findPartnerByIdentifier, isUuidV4 } from '@/lib/partnerIdentifier';
+import { findPartnerByIdentifier } from '@/lib/partnerIdentifier';
 
 export const dynamic = 'force-dynamic';
 
@@ -33,12 +33,9 @@ export async function GET(
       );
     }
 
-    const uuidV4Pattern = /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
-    const isMongoObjectId = ObjectId.isValid(slug);
-    const isSecureViewSlug = isUuidV4(slug);
     const looksLikeLegacyViewSlug = !slug.includes('/') && slug.trim().length > 0;
 
-    if (!isMongoObjectId && !isSecureViewSlug && !looksLikeLegacyViewSlug) {
+    if (!looksLikeLegacyViewSlug) {
       return NextResponse.json(
         { success: false, error: 'Invalid partner identifier format' },
         { status: 400 }

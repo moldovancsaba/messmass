@@ -5,7 +5,7 @@
 
 import clientPromise from '../lib/mongodb';
 import config from '../lib/config';
-import { generateUniqueViewSlug } from '../lib/slugUtils';
+import { generateUniquePartnerViewSlug } from '../lib/partnerIdentifier';
 
 async function addViewSlugToPartners() {
   console.log('🚀 Starting partner viewSlug migration...');
@@ -40,7 +40,7 @@ async function addViewSlugToPartners() {
     for (const partner of partnersWithoutSlug) {
       try {
         // Generate unique viewSlug using existing utility
-        const viewSlug = await generateUniqueViewSlug();
+        const viewSlug = await generateUniquePartnerViewSlug(db as any);
         
         // Update partner document
         await partnersCollection.updateOne(

@@ -334,6 +334,20 @@ const INDEX_SPECS: IndexSpec[] = [
     keys: { name: 1 },
     rationale: 'Search partners by name'
   },
+  {
+    collection: 'partners',
+    name: 'viewSlug_unique',
+    keys: { viewSlug: 1 },
+    options: { unique: true, sparse: true },
+    rationale: 'Canonical partner report and editor slug lookup'
+  },
+  {
+    collection: 'partners',
+    name: 'legacyViewSlugs_lookup',
+    keys: { legacyViewSlugs: 1 },
+    options: { sparse: true },
+    rationale: 'Legacy partner slug redirect and compatibility lookup'
+  },
 
   // fixtures (football match data)
   {

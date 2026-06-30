@@ -3,6 +3,7 @@
 import { randomBytes } from 'crypto';
 import clientPromise from '@/lib/mongodb';
 import config from '@/lib/config';
+import { resolvePartnerIdentifier } from './partnerIdentifier';
 
 /**
  * Page password types and interfaces for {messmass} authentication system
@@ -145,7 +146,18 @@ export async function validatePagePassword(
 const db = client.db(config.dbName);
     const collection = db.collection('page_passwords');
 
-    const pagePassword = await collection.findOne({ pageId, pageType });
+    let pagePassword = await collection.findOne({ pageId, pageType });
+
+    if (!pagePassword && (pageType === 'partner-report' || pageType === 'partner-edit')) {
+      const { basePageId, variantSlug } = parseVariantPageId(pageId);
+      const resolved = await resolvePartnerIdentifier(db as any, basePageId);
+      if (resolved?.canonicalSlug && resolved.canonicalSlug !== basePageId) {
+        const canonicalPageId = variantSlug
+          ? `${resolved.canonicalSlug}::variant=${variantSlug}`
+          : resolved.canonicalSlug;
+        pagePassword = await collection.findOne({ pageId: canonicalPageId, pageType });
+      }
+    }
     
     if (!pagePassword) {
       return false;
@@ -157,7 +169,7 @@ const db = client.db(config.dbName);
     if (isValid) {
       // Update usage statistics
       await collection.updateOne(
-        { pageId, pageType },
+        { pageId: pagePassword.pageId, pageType },
         { 
           $inc: { usageCount: 1 },
           $set: { lastUsedAt: new Date().toISOString() }
