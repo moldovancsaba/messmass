@@ -1,0 +1,10 @@
+{
+  "name": "messmass partner report 4xx anomaly",
+  "type": "error_anomaly",
+  "httpGroup": "4xx",
+  "severity": "medium",
+  "notifications": [],
+  "autosubscribeOwnersInKnock": true,
+  "autosubscribeProjectAdminsInKnock": true,
+  "action": "trigger"
+}

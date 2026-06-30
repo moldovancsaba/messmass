@@ -20,12 +20,7 @@ export interface PartnerReportViewProps {
 }
 
 export function PartnerReportView({ slug, variant }: PartnerReportViewProps) {
-  console.log('🏗️ [PartnerReportView] Multi-tenant view mounting with slug:', slug);
   const { data: partnerData, loading: dataLoading, error: dataError } = usePartnerReportData(slug, variant);
-  
-  console.log('📦 [PartnerReportView] Hook dataLoading:', dataLoading);
-  console.log('📦 [PartnerReportView] Hook partnerData stats:', partnerData?.aggregatedStats ? 'Yes' : 'No');
-  
   const partner = partnerData?.partner;
   const events = partnerData?.events || [];
   const charts = partnerData?.charts || [];
@@ -43,9 +38,6 @@ export function PartnerReportView({ slug, variant }: PartnerReportViewProps) {
     styleId: report?.styleId ? String(report.styleId) : null,
     enabled: !!report,
   });
-
-  console.log('📦 [PartnerReportView] styleLoading:', styleLoading);
-
 
   const chartResults = useMemo(() => {
     const chartsArray = partnerData?.charts || [];
