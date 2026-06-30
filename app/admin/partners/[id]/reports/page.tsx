@@ -214,8 +214,8 @@ export default function PartnerReportsWorkspacePage() {
             ? `/partner-report/${publicSlug}`
             : `/partner-report/${publicSlug}?variant=${encodeURIComponent(variant.slug)}`;
           const editorHref = variant.slug === 'default'
-            ? `/partner-edit/${id}`
-            : `/partner-edit/${id}?variant=${encodeURIComponent(variant.slug)}`;
+            ? `/partner-edit/${publicSlug}`
+            : `/partner-edit/${publicSlug}?variant=${encodeURIComponent(variant.slug)}`;
 
           return (
             <ColoredCard key={variant._id} accentColor={variant.isDefault ? '#2563eb' : '#f59e0b'} hoverable={false}>

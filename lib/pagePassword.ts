@@ -45,6 +45,36 @@ function parseVariantPageId(pageId: string): { basePageId: string; variantSlug: 
   };
 }
 
+function mapPagePasswordDocument(pagePassword: any): PagePassword {
+  return {
+    _id: pagePassword._id?.toString(),
+    pageId: pagePassword.pageId,
+    pageType: pagePassword.pageType,
+    password: pagePassword.password,
+    createdAt: pagePassword.createdAt,
+    expiresAt: pagePassword.expiresAt,
+    usageCount: pagePassword.usageCount,
+    lastUsedAt: pagePassword.lastUsedAt,
+  };
+}
+
+async function resolveCanonicalPageId(db: any, pageId: string, pageType: PageType): Promise<string> {
+  if (pageType !== 'partner-report' && pageType !== 'partner-edit') {
+    return pageId;
+  }
+
+  const { basePageId, variantSlug } = parseVariantPageId(pageId);
+  const resolved = await resolvePartnerIdentifier(db, basePageId);
+
+  if (!resolved?.canonicalSlug) {
+    return pageId;
+  }
+
+  return variantSlug
+    ? `${resolved.canonicalSlug}::variant=${variantSlug}`
+    : resolved.canonicalSlug;
+}
+
 /**
  * Generate a secure MD5-style password
  * Creates a password that looks like an MD5 hash but is randomly generated
@@ -76,26 +106,41 @@ export async function getOrCreatePagePassword(
     const client = await clientPromise;
 const db = client.db(config.dbName);
     const collection = db.collection('page_passwords');
+    const canonicalPageId = await resolveCanonicalPageId(db as any, pageId, pageType);
 
-    // Check if password already exists
-    let existingPassword = await collection.findOne({ pageId, pageType });
+    let existingPassword = await collection.findOne({ pageId: canonicalPageId, pageType });
+
+    if (!existingPassword && canonicalPageId !== pageId) {
+      const legacyPassword = await collection.findOne({ pageId, pageType });
+
+      if (legacyPassword && !regenerate) {
+        await collection.updateOne(
+          { pageId: canonicalPageId, pageType },
+          {
+            $setOnInsert: {
+              pageId: canonicalPageId,
+              pageType,
+              password: legacyPassword.password,
+              createdAt: legacyPassword.createdAt,
+              expiresAt: legacyPassword.expiresAt,
+              usageCount: legacyPassword.usageCount || 0,
+              lastUsedAt: legacyPassword.lastUsedAt,
+            },
+          },
+          { upsert: true }
+        );
+
+        existingPassword = await collection.findOne({ pageId: canonicalPageId, pageType });
+      }
+    }
 
     if (existingPassword && !regenerate) {
-      return {
-        _id: existingPassword._id.toString(),
-        pageId: existingPassword.pageId,
-        pageType: existingPassword.pageType,
-        password: existingPassword.password,
-        createdAt: existingPassword.createdAt,
-        expiresAt: existingPassword.expiresAt,
-        usageCount: existingPassword.usageCount,
-        lastUsedAt: existingPassword.lastUsedAt
-      };
+      return mapPagePasswordDocument(existingPassword);
     }
 
     // Generate new password
     const newPassword: Omit<PagePassword, '_id'> = {
-      pageId,
+      pageId: canonicalPageId,
       pageType,
       password: generateMD5StylePassword(),
       createdAt: new Date().toISOString(),
@@ -103,24 +148,14 @@ const db = client.db(config.dbName);
     };
 
     // Update or insert password
-    const result = await collection.updateOne(
-      { pageId, pageType },
+    await collection.updateOne(
+      { pageId: canonicalPageId, pageType },
       { $set: newPassword },
       { upsert: true }
     );
 
-    const savedPassword = await collection.findOne({ pageId, pageType });
-    
-    return {
-      _id: savedPassword!._id.toString(),
-      pageId: savedPassword!.pageId,
-      pageType: savedPassword!.pageType,
-      password: savedPassword!.password,
-      createdAt: savedPassword!.createdAt,
-      expiresAt: savedPassword!.expiresAt,
-      usageCount: savedPassword!.usageCount,
-      lastUsedAt: savedPassword!.lastUsedAt
-    };
+    const savedPassword = await collection.findOne({ pageId: canonicalPageId, pageType });
+    return mapPagePasswordDocument(savedPassword!);
 
   } catch (error) {
     console.error('Failed to generate page password:', error);
@@ -148,13 +183,9 @@ const db = client.db(config.dbName);
 
     let pagePassword = await collection.findOne({ pageId, pageType });
 
-    if (!pagePassword && (pageType === 'partner-report' || pageType === 'partner-edit')) {
-      const { basePageId, variantSlug } = parseVariantPageId(pageId);
-      const resolved = await resolvePartnerIdentifier(db as any, basePageId);
-      if (resolved?.canonicalSlug && resolved.canonicalSlug !== basePageId) {
-        const canonicalPageId = variantSlug
-          ? `${resolved.canonicalSlug}::variant=${variantSlug}`
-          : resolved.canonicalSlug;
+    if (!pagePassword) {
+      const canonicalPageId = await resolveCanonicalPageId(db as any, pageId, pageType);
+      if (canonicalPageId !== pageId) {
         pagePassword = await collection.findOne({ pageId: canonicalPageId, pageType });
       }
     }
@@ -223,14 +254,14 @@ export async function generateShareableLink(
   baseUrl: string = ''
 ): Promise<ShareableLink> {
   const pagePassword = await getOrCreatePagePassword(pageId, pageType);
-  const { basePageId, variantSlug } = parseVariantPageId(pageId);
+  const { basePageId, variantSlug } = parseVariantPageId(pagePassword.pageId);
   
   let url = baseUrl;
   switch (pageType) {
     case 'event-report':
       // WHAT: Project/event report pages at /report/[slug]
       // WHY: Public shareable event statistics pages
-      url += `/report/${pageId}`;
+      url += `/report/${pagePassword.pageId}`;
       break;
     case 'partner-report':
       // WHAT: Partner report pages at /partner-report/[slug]

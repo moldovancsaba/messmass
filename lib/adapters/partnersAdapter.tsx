@@ -47,7 +47,7 @@ export const partnersEntityConfig: AdminEntityConfig<PartnerResponse> = {
       requiredPermissions: ['admin'],
       execution: {
         kind: 'route',
-        getHref: (partner) => `/partner-edit/${partner._id || partner.viewSlug}`,
+        getHref: (partner) => `/partner-edit/${partner.viewSlug || partner._id}`,
         target: '_blank',
       },
     },
@@ -63,7 +63,7 @@ export const partnersEntityConfig: AdminEntityConfig<PartnerResponse> = {
       execution: {
         kind: 'share',
         shareKey: 'partner-report',
-        getResourceId: (partner) => partner._id || partner.viewSlug || '',
+        getResourceId: (partner) => partner.viewSlug || partner._id || '',
       },
     },
     {

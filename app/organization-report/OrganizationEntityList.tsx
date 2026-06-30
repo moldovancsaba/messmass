@@ -10,6 +10,7 @@ interface Entity {
   name: string;
   type: string;
   status: string;
+  viewSlug?: string;
   metadata?: {
     logoUrl?: string;
     emoji?: string;
@@ -49,7 +50,7 @@ function EntityCard({ entity, showDetails }: { entity: Entity; showDetails: bool
   // WHAT: Link to the appropriate report based on entity type
   // WHY: Allow drilling down from organization into partners
   const reportHref = entity.type === 'partner' 
-    ? `/partner-report/${entity._id}` 
+    ? `/partner-report/${entity.viewSlug || entity._id}` 
     : `/report/${entity._id}`;
 
   return (
