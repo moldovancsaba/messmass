@@ -7,6 +7,7 @@ import { ObjectId } from 'mongodb';
 import config from '@/lib/config';
 import { error as logError } from '@/lib/logger';
 import { listReportVariants, resolveReportVariant, updateReportVariant } from '@/lib/reportVariants';
+import { findPartnerByIdentifier, isUuidV4 } from '@/lib/partnerIdentifier';
 
 export const dynamic = 'force-dynamic';
 
@@ -28,18 +29,13 @@ export async function GET(
       );
     }
 
-    // WHAT: Validate secure ID format (MongoDB ObjectId OR UUID v4)
-    // WHY: Prevent slug-based URL guessing attacks (reject human-readable slugs)
-    // HOW: Accept cryptographically random identifiers only
-    
-    // UUID v4 pattern: xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx (32 hex + 4 dashes)
-    const uuidV4Pattern = /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
     const isMongoObjectId = ObjectId.isValid(slug);
-    const isUuidV4 = uuidV4Pattern.test(slug);
-    
-    if (!isMongoObjectId && !isUuidV4) {
+    const isSecureViewSlug = isUuidV4(slug);
+    const looksLikeLegacyViewSlug = !slug.includes('/') && slug.trim().length > 0;
+
+    if (!isMongoObjectId && !isSecureViewSlug && !looksLikeLegacyViewSlug) {
       return NextResponse.json(
-        { success: false, error: 'Invalid partner ID format - secure UUID required' },
+        { success: false, error: 'Invalid partner identifier format' },
         { status: 400 }
       );
     }
@@ -47,16 +43,7 @@ export async function GET(
     const client = await clientPromise;
 const db = client.db(config.dbName);
 
-    // WHAT: Find partner by _id (MongoDB ObjectId) OR viewSlug (UUID v4)
-    // WHY: Both formats are cryptographically secure (prevent URL guessing)
-    // HOW: UUID v4 uses viewSlug lookup, ObjectId uses _id lookup
-    let partner;
-    if (isMongoObjectId) {
-      partner = await db.collection('partners').findOne({ _id: new ObjectId(slug) });
-    } else {
-      // UUID v4 format - lookup by viewSlug (secure)
-      partner = await db.collection('partners').findOne({ viewSlug: slug });
-    }
+    const partner = await findPartnerByIdentifier(db as any, slug);
 
     if (!partner) {
       return NextResponse.json(
@@ -146,13 +133,13 @@ export async function PUT(
       );
     }
 
-    const uuidV4Pattern = /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
     const isMongoObjectId = ObjectId.isValid(slug);
-    const isUuidV4 = uuidV4Pattern.test(slug);
+    const isSecureViewSlug = isUuidV4(slug);
+    const looksLikeLegacyViewSlug = !slug.includes('/') && slug.trim().length > 0;
 
-    if (!isMongoObjectId && !isUuidV4) {
+    if (!isMongoObjectId && !isSecureViewSlug && !looksLikeLegacyViewSlug) {
       return NextResponse.json(
-        { success: false, error: 'Invalid partner ID format - secure UUID required' },
+        { success: false, error: 'Invalid partner identifier format' },
         { status: 400 }
       );
     }
@@ -179,12 +166,7 @@ export async function PUT(
     const client = await clientPromise;
     const db = client.db(config.dbName);
 
-    let partner;
-    if (isMongoObjectId) {
-      partner = await db.collection('partners').findOne({ _id: new ObjectId(slug) });
-    } else {
-      partner = await db.collection('partners').findOne({ viewSlug: slug });
-    }
+    const partner = await findPartnerByIdentifier(db as any, slug);
 
     if (!partner) {
       return NextResponse.json({ success: false, error: 'Partner not found' }, { status: 404 });
