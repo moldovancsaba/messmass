@@ -1,8 +1,26 @@
 # {messmass} Release Notes
 Status: Active
-Last Updated: 2026-07-01T21:09:14.000Z
+Last Updated: 2026-07-01T21:29:47.000Z
 Canonical: No
 Owner: Operations
+
+## [v12.1.19] — 2026-07-01T21:29:47.000Z
+
+### Summary
+STYLED-JSX SURFACE REDUCTION (#85, part 1): Removed four dead styled-jsx components that were not imported anywhere, halving the tracked styled-jsx baseline from 8 files to 4. This advances the #864 "retire the competing CSS-in-JS authority" goal by deletion rather than risky migration.
+
+### What Was Delivered
+
+#### Dead styled-jsx component removal
+**WHAT**: Deleted `components/SimpleHashtagInput.tsx`, `components/FormattingControls.tsx`, `components/CategorizedHashtagInput.tsx`, and `components/FormulaEditor.tsx`.
+**WHY**: All four had zero imports across `app/`, `components/`, `lib/`, `hooks/`, and `tests/` — confirmed dead code. Each used styled-jsx, so deleting them reduces the non-Mantine CSS-in-JS surface with no regression risk (nothing renders them). `ChartAlgorithmManager` reimplements the formatting UI inline, so `FormattingControls` was never used.
+**HOW**: `git rm` the four files and trimmed `STYLED_JSX_BASELINE` in `scripts/check-design-violations.js` to the 4 remaining live files (`ChartAlgorithmManager`, `ChartConfiguration`, `UnifiedHashtagInput`, `app/admin/visualization/page.tsx`).
+
+#### Remaining #85 scope
+The 4 live styled-jsx files above still need a careful styled-jsx→CSS-module migration with visual verification (they render in auth-gated admin pages). The 5,406-line global legacy-CSS removal remains separately tracked. Both stay in issue #85.
+
+### Testing
+- `npm run type-check`, `npm run lint`, `npm test` (280 passing), `npm run build`, `npm run style:check`, `npm run version:verify`, `npm run docs:audit`
 
 ## [v12.1.18] — 2026-07-01T21:09:14.000Z
 

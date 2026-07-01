@@ -2,7 +2,7 @@
 
 This file is onboarding plus operational context for the next agent. Keep it accurate when behavior, process, or current delivery state changes.
 
-**Last Updated:** 2026-07-01 (v12.1.18 Definition-of-Done close-out)
+**Last Updated:** 2026-07-01 (v12.1.19 styled-jsx surface reduction)
 
 ## 🚨 CRITICAL MUST-READ FOR ALL AGENTS: STYLING & COMPONENTS 🚨
 
@@ -36,11 +36,16 @@ You MUST completely read and obey `docs/coding-standards.md` and `docs/component
   - design-system remediation tranche 1: `4f66d54ae`
   - design-system remediation tranche 2: `06cedc822`
   - design-system remediation tranche 3: `d678b3af9`
-- Current product/doc baseline: `v12.1.18`
+- Current product/doc baseline: `v12.1.19`
 - Current GDS package baseline: `@doneisbetter/gds-theme`, `@doneisbetter/gds-core`, and `@doneisbetter/gds-admin` at `3.4.6`
 - Local vendored `@gds/*` packages have been removed from active package authority.
 - Most recent closed delivery issues on Project 8: `moldovancsaba/messmass#71` through `#76`
 - CI: `.github/workflows/ci.yml` runs the guardrail battery on push/PR to `main`/`preview` (restored in v12.1.17 after `38c87cd` deleted the 8 original workflows).
+
+## 2026-07-01 - Styled-jsx surface reduction (`v12.1.19`)
+
+- **#85 part 1:** deleted 4 dead styled-jsx components (`SimpleHashtagInput`, `FormattingControls`, `CategorizedHashtagInput`, `FormulaEditor`) — zero imports repo-wide, confirmed dead. Styled-jsx baseline 8→4 in `scripts/check-design-violations.js`.
+- **Remaining #85:** 4 live styled-jsx files (`ChartAlgorithmManager`, `ChartConfiguration`, `UnifiedHashtagInput`, `app/admin/visualization/page.tsx`) need styled-jsx→CSS-module migration with visual QA (auth-gated admin UI); plus the 5,406-line global legacy-CSS removal. Both tracked in #85.
 
 ## 2026-07-01 - Definition-of-Done close-out (`v12.1.18`)
 

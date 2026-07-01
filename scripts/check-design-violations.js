@@ -146,12 +146,8 @@ for (const guardrail of CONTENT_GUARDRAILS) {
 //      (issue #85); any `<style jsx` outside them fails the check so the debt cannot grow.
 const STYLED_JSX_BASELINE = [
   'app/admin/visualization/page.tsx',
-  'components/CategorizedHashtagInput.tsx',
   'components/ChartAlgorithmManager.tsx',
   'components/ChartConfiguration.tsx',
-  'components/FormattingControls.tsx',
-  'components/FormulaEditor.tsx',
-  'components/SimpleHashtagInput.tsx',
   'components/UnifiedHashtagInput.tsx',
 ];
 try {
