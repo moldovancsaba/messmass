@@ -36,6 +36,7 @@ Queue notes:
 ## Local Repo Context
 
 Latest shipped repo release:
+- `v12.1.18` — Definition-of-Done close-out: real insights `overallScore` (was hardcoded), honest Bitly device/browser comment, a styled-jsx reintroduction guardrail in `style:check`, an archived-docs note, and CI promoted to a required status check on `main`. The two high-risk migrations (Mantine legacy retirement, V2→V3 data layer) remain staged in issues #85/#87.
 - `v12.1.17` — Enforcement & security hardening: restored the CI guardrail gate removed in `38c87cd`, re-enabled ESLint in the production build, authenticated the `content-assets` write endpoints, fixed the Jest connection leak, patched `ws`/`qs` advisories, and re-synced version/handover docs that had drifted to `v12.1.15`.
 - `v12.1.16` — Documentation consistency delivery plus the (previously unversioned) partner-report slug canonicalization, ImgBB-413 direct-upload fix, and CHL report fonts.
 - `v12.1.15` — Mantine report variant/public shell/entity form delivery, including:

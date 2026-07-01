@@ -141,6 +141,41 @@ for (const guardrail of CONTENT_GUARDRAILS) {
   }
 }
 
+// WHAT: Block reintroduction of styled-jsx beyond the known legacy baseline.
+// WHY: #864 requires no NEW non-Mantine CSS-in-JS. The files below are tracked debt
+//      (issue #85); any `<style jsx` outside them fails the check so the debt cannot grow.
+const STYLED_JSX_BASELINE = [
+  'app/admin/visualization/page.tsx',
+  'components/CategorizedHashtagInput.tsx',
+  'components/ChartAlgorithmManager.tsx',
+  'components/ChartConfiguration.tsx',
+  'components/FormattingControls.tsx',
+  'components/FormulaEditor.tsx',
+  'components/SimpleHashtagInput.tsx',
+  'components/UnifiedHashtagInput.tsx',
+];
+try {
+  const cmd = `grep -rIl "<style jsx" components app --include="*.tsx" | grep -v "node_modules" | grep -v ".next"`;
+  const output = execSync(cmd, { encoding: 'utf-8' });
+  const files = output.trim().split('\n').filter(Boolean).map((f) => f.replace(/^\.\//, ''));
+  const violations = files.filter((f) => !STYLED_JSX_BASELINE.includes(f));
+  if (violations.length > 0) {
+    console.log('❌ New styled-jsx detected (use Mantine/design tokens; see issue #85):');
+    violations.forEach((v) => console.log(`   ${v}`));
+    console.log('');
+    totalViolations += violations.length;
+  } else {
+    console.log('✅ New styled-jsx beyond tracked baseline: None found');
+  }
+} catch (error) {
+  // grep exit code 1 = no `<style jsx` matches anywhere = good.
+  if (error.status === 1) {
+    console.log('✅ New styled-jsx beyond tracked baseline: None found');
+  } else {
+    throw error;
+  }
+}
+
 console.log('\n' + '='.repeat(60));
 if (totalViolations === 0) {
   console.log('✅ Design system check passed!');

@@ -97,9 +97,10 @@ export async function aggregateMetricsByDateRange(
     linkDoc.click_summary.total || 0
   );
 
-  // Aggregate device and browser data
-  // WHY: Bitly doesn't store historical device/browser timeseries, so we estimate
-  // proportionally based on current cumulative distribution
+  // Device and browser data
+  // NOTE: Device/browser data is NOT collected yet — these return placeholder zeros,
+  // not measurements. Do not present them as real breakdowns. Real collection is
+  // tracked as future work (Bitly device/browser timeseries are not in our schema).
   const deviceClicks = estimateDeviceClicks(
     totalClicks,
     linkDoc.click_summary.total || 0

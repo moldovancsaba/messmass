@@ -1,8 +1,40 @@
 # {messmass} Release Notes
 Status: Active
-Last Updated: 2026-07-01T20:33:54.000Z
+Last Updated: 2026-07-01T21:09:14.000Z
 Canonical: No
 Owner: Operations
+
+## [v12.1.18] — 2026-07-01T21:09:14.000Z
+
+### Summary
+DEFINITION-OF-DONE CLOSE-OUT: Closed the remaining low-risk gaps from the v12.1.17 health audit and made the design-system enforcement real, without touching the two high-risk migrations (Mantine legacy retirement, V2→V3 data layer), which stay tracked as staged work.
+
+### What Was Delivered
+
+#### Real overall-performance score (was hardcoded)
+**WHAT**: `lib/insightsEngine.ts` now derives `summary.overallScore`/`overallRating` from the prioritized insights via `computeOverallScore` + `scoreToRating`.
+**WHY**: The value was a hardcoded `70` / `'average'` with a `TODO`; any consumer of the summary would have shown a constant fake score.
+**HOW**: Score starts at 100, deducts for negative insights weighted by priority and adds for positives (mirrors `lib/analytics-insights.ts`), clamped 0–100; rating maps the score to the shared `PerformanceRating` scale. Covered by `tests/insights-overall-score.test.ts`.
+
+#### Honest Bitly device/browser data
+**WHAT**: Corrected the misleading comment in `lib/bitly-aggregator.ts` that claimed device/browser clicks were "estimated proportionally".
+**WHY**: The `estimate*` helpers return placeholder zeros — the data is not collected — and the comment implied real measurement. No UI renders these fields, so no contract change was made; real collection remains future work.
+**HOW**: Comment now states the values are placeholder zeros, not measurements.
+
+#### Styled-jsx reintroduction guardrail
+**WHAT**: `scripts/check-design-violations.js` (`npm run style:check`) now fails on any `<style jsx` outside a known baseline of 8 legacy files.
+**WHY**: Enforces the `#864` acceptance criterion "block reintroduction of non-Mantine UI" for real; the existing debt is tracked in issue #85 and does not fail the check.
+**HOW**: Baseline allowlist + grep scan of `components/` and `app/`; verified it catches a new violation and passes on the baseline.
+
+#### Archived-docs note
+**WHAT**: Added `docs/archive/README.md` clarifying that archived material is non-authoritative and its internal links are unmaintained.
+**WHY**: Explains the known broken links in `docs/archive/` (excluded from the docs audit) instead of leaving them unexplained.
+
+### Enforcement
+- CI (`.github/workflows/ci.yml`, added in v12.1.17) is now a **required status check** on `main`, so a red build blocks merges.
+
+### Testing
+- `npm run type-check`, `npm run lint`, `npm test` (280 passing), `npm run build`, `npm run style:check`, `npm run version:verify`, `npm run docs:audit`
 
 ## [v12.1.17] — 2026-07-01T20:33:54.000Z
 

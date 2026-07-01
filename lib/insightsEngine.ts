@@ -332,6 +332,36 @@ function generateOpportunityInsights(aggregate: AnalyticsAggregate): Insight[] {
  * @param historicalAggregates - Previous events for comparison
  * @returns Complete insights report with 5-10 prioritized insights
  */
+
+/**
+ * WHAT: Derive an overall 0-100 performance score from the prioritized insights.
+ * WHY: Replaces a hardcoded `70`. Mirrors lib/analytics-insights.ts calculateOverallScore
+ *      (start at 100, deduct for negatives, add for positives) but keyed off this
+ *      engine's priority/impact fields rather than the sibling engine's severity/type.
+ */
+export function computeOverallScore(insights: Insight[]): number {
+  const negWeight: Record<InsightPriority, number> = { critical: 15, high: 10, medium: 5, low: 2 };
+  const posWeight: Record<InsightPriority, number> = { critical: 8, high: 5, medium: 3, low: 1 };
+  let score = 100;
+  for (const insight of insights) {
+    if (insight.impact === 'negative') score -= negWeight[insight.priority];
+    else if (insight.impact === 'positive') score += posWeight[insight.priority];
+  }
+  return Math.max(0, Math.min(100, score));
+}
+
+/**
+ * WHAT: Map a 0-100 score to the shared PerformanceRating scale.
+ * WHY: Keeps `overallRating` consistent with `overallScore` instead of a hardcoded label.
+ */
+export function scoreToRating(score: number): PerformanceRating {
+  if (score >= 85) return 'excellent';
+  if (score >= 70) return 'good';
+  if (score >= 50) return 'average';
+  if (score >= 30) return 'below_average';
+  return 'poor';
+}
+
 export function generateEventInsights(
   currentAggregate: AnalyticsAggregate,
   historicalAggregates: AnalyticsAggregate[]
@@ -410,13 +440,14 @@ export function generateEventInsights(
     .slice(0, 10); // Top 10 insights
   
   // WHAT: Generate summary
+  const overallScore = computeOverallScore(sortedInsights);
   const summary = {
     critical: sortedInsights.filter(i => i.priority === 'critical').length,
     high: sortedInsights.filter(i => i.priority === 'high').length,
     medium: sortedInsights.filter(i => i.priority === 'medium').length,
     low: sortedInsights.filter(i => i.priority === 'low').length,
-    overallScore: 70, // TODO: Calculate from benchmarks
-    overallRating: 'average' as PerformanceRating,
+    overallScore,
+    overallRating: scoreToRating(overallScore),
     topStrengths: sortedInsights
       .filter(i => i.impact === 'positive')
       .slice(0, 3)

@@ -2,7 +2,7 @@
 
 This file is onboarding plus operational context for the next agent. Keep it accurate when behavior, process, or current delivery state changes.
 
-**Last Updated:** 2026-07-01 (v12.1.17 enforcement & security hardening)
+**Last Updated:** 2026-07-01 (v12.1.18 Definition-of-Done close-out)
 
 ## 🚨 CRITICAL MUST-READ FOR ALL AGENTS: STYLING & COMPONENTS 🚨
 
@@ -36,11 +36,20 @@ You MUST completely read and obey `docs/coding-standards.md` and `docs/component
   - design-system remediation tranche 1: `4f66d54ae`
   - design-system remediation tranche 2: `06cedc822`
   - design-system remediation tranche 3: `d678b3af9`
-- Current product/doc baseline: `v12.1.17`
+- Current product/doc baseline: `v12.1.18`
 - Current GDS package baseline: `@doneisbetter/gds-theme`, `@doneisbetter/gds-core`, and `@doneisbetter/gds-admin` at `3.4.6`
 - Local vendored `@gds/*` packages have been removed from active package authority.
 - Most recent closed delivery issues on Project 8: `moldovancsaba/messmass#71` through `#76`
 - CI: `.github/workflows/ci.yml` runs the guardrail battery on push/PR to `main`/`preview` (restored in v12.1.17 after `38c87cd` deleted the 8 original workflows).
+
+## 2026-07-01 - Definition-of-Done close-out (`v12.1.18`)
+
+- **Insights score:** `lib/insightsEngine.ts` `overallScore`/`overallRating` are now derived (`computeOverallScore`/`scoreToRating`), replacing the hardcoded `70`; unit-tested in `tests/insights-overall-score.test.ts`.
+- **Bitly honesty:** corrected the misleading "estimated proportionally" comment in `lib/bitly-aggregator.ts`; device/browser values are placeholder zeros (not collected, not rendered) — real collection is future work.
+- **Design-system enforcement:** `npm run style:check` now blocks NEW `<style jsx` outside the 8-file legacy baseline (issue #85 tracks retiring the baseline).
+- **Docs:** added `docs/archive/README.md` marking archived material non-authoritative with unmaintained links.
+- **Enforcement:** CI is now a required status check on `main`.
+- **Deliberately NOT done (staged, high-risk):** Mantine legacy CSS/styled-jsx retirement (#85/#864) and V2→V3 data-layer consolidation (#87) — these need incremental, verified migration, not a one-shot.
 
 ## 2026-07-01 - Enforcement & security hardening (`v12.1.17`)
 
