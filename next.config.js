@@ -28,8 +28,9 @@ const nextConfig = {
     return config;
   },
   eslint: {
-    // Disable ESLint during builds to prevent dependency conflicts
-    ignoreDuringBuilds: true,
+    // WHAT: Run ESLint as part of `next build` (and thus every Vercel deploy).
+    // WHY: Lint must gate production; CI also runs `npm run lint` as a second gate.
+    ignoreDuringBuilds: false,
   },
   typescript: {
     // Type checking is enabled

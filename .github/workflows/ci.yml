@@ -1,0 +1,36 @@
+name: CI
+
+# Restores the guardrail gate removed in 38c87cd. One job, one install, runs the
+# existing package.json scripts — no new checks invented. Gates GitHub; enable
+# "required status checks" in repo/Vercel settings to also block deploys.
+
+on:
+  push:
+    branches: [main, preview]
+  pull_request:
+    branches: [main, preview]
+
+jobs:
+  verify:
+    name: Verify
+    runs-on: ubuntu-latest
+    env:
+      # Dummy values so `next build` doesn't fail on missing runtime config.
+      MONGODB_URI: ${{ secrets.MONGODB_URI || 'mongodb://localhost:27017/test' }}
+      DB_NAME: ${{ secrets.DB_NAME || 'messmass_test' }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: '.nvmrc'
+          cache: 'npm'
+      - run: npm ci
+      - run: npm run type-check
+      - run: npm run lint
+      - run: npm test
+      - run: npm run style:check
+      - run: npm run version:verify
+      - run: npm run docs:audit
+      - run: npx tsx scripts/check-dependency-guardrail.ts
+      - run: npx tsx scripts/check-layout-grammar-guardrail.ts
+      - run: npm run build

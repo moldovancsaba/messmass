@@ -1,3 +1,11 @@
+// Prevent lib/mongodb.ts (eager `MongoClient.connect()` at import time) from
+// opening a real connection that never closes -> "worker failed to exit gracefully".
+// fanmassIntegration imports clientPromise transitively but this suite never queries.
+jest.mock('@/lib/mongodb', () => ({
+  __esModule: true,
+  default: Promise.resolve({ db: () => ({ collection: () => ({}) }) }),
+}));
+
 import { evaluateFormula, extractVariablesFromFormula } from '@/lib/formulaEngine';
 import { mapFanmassStatsToFlatStats } from '@/lib/fanmassIntegration';
 

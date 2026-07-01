@@ -2,7 +2,7 @@
 
 This file is onboarding plus operational context for the next agent. Keep it accurate when behavior, process, or current delivery state changes.
 
-**Last Updated:** 2026-06-25 (v12.1.15 Mantine report/entity delivery)
+**Last Updated:** 2026-07-01 (v12.1.17 enforcement & security hardening)
 
 ## 🚨 CRITICAL MUST-READ FOR ALL AGENTS: STYLING & COMPONENTS 🚨
 
@@ -36,10 +36,21 @@ You MUST completely read and obey `docs/coding-standards.md` and `docs/component
   - design-system remediation tranche 1: `4f66d54ae`
   - design-system remediation tranche 2: `06cedc822`
   - design-system remediation tranche 3: `d678b3af9`
-- Current product/doc baseline: `v12.1.15`
+- Current product/doc baseline: `v12.1.17`
 - Current GDS package baseline: `@doneisbetter/gds-theme`, `@doneisbetter/gds-core`, and `@doneisbetter/gds-admin` at `3.4.6`
 - Local vendored `@gds/*` packages have been removed from active package authority.
 - Most recent closed delivery issues on Project 8: `moldovancsaba/messmass#71` through `#76`
+- CI: `.github/workflows/ci.yml` runs the guardrail battery on push/PR to `main`/`preview` (restored in v12.1.17 after `38c87cd` deleted the 8 original workflows).
+
+## 2026-07-01 - Enforcement & security hardening (`v12.1.17`)
+
+- **Restored CI:** added `.github/workflows/ci.yml` (single job) running `type-check`, `lint`, `test`, `style:check`, `version:verify`, `docs:audit`, dependency + layout-grammar guardrails, and `build`. Reverses the ungated state left by `38c87cd`.
+- **ESLint gates the build again:** `next.config.js` `eslint.ignoreDuringBuilds` flipped to `false`; verified the old dependency-conflict concern does not recur.
+- **Security:** `POST`/`PUT`/`DELETE` `/api/content-assets` now require the `admin-session` cookie (were unauthenticated DB writes). `GET` stays public for report rendering.
+- **Test leak fixed:** mocked `@/lib/mongodb` in `tests/fanmass-report-variables.test.ts`; the "worker failed to exit gracefully" Jest leak is gone, 275 tests pass.
+- **Advisories:** `npm audit fix` patched `ws` (high) + `qs` (moderate); `nodemailer` (high) left — exploit path (`raw` option) is unreachable in `lib/emailNotifications.ts` and the fix is a breaking major.
+- **Doc/version SSOT:** bumped to `v12.1.17`; the `v12.1.16` partner-report canonicalization, ImgBB-413 fix, and CHL fonts were previously unversioned and are now recorded in release notes.
+- **Known follow-ups (not fixed here, tracked on Project 8):** Mantine `#864` "legacy deletion" is overstated (legacy CSS + styled-jsx remain); Unified Admin Entity System runs a dual V2/V3 data layer; several post-`06-29` commits shipped off-board; local dev runs Node 22 while the repo targets Node 24.
 
 ## 2026-06-25 - Mantine migration highest-value chain (`mvp-factory-control#857`-`#861`)
 

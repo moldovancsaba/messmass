@@ -19,6 +19,22 @@ import {
 const MONGODB_DB = config.dbName;
 
 /**
+ * WHAT: Admin-session gate for content-asset writes.
+ * WHY: POST/PUT/DELETE mutate the content_assets collection and must not be
+ *      callable unauthenticated. Mirrors app/api/hashtag-categories/route.ts.
+ *      GET stays public because lib/formulaEngine.ts reads assets when rendering
+ *      public reports.
+ */
+function hasAdminSession(request: NextRequest): boolean {
+  return Boolean(request.cookies.get('admin-session'));
+}
+
+const UNAUTHORIZED = NextResponse.json(
+  { success: false, error: 'Unauthorized' } as ContentAssetResponse,
+  { status: 401 }
+);
+
+/**
  * GET /api/content-assets
  * WHAT: Retrieve all content assets with optional filtering and sorting
  * WHY: Support admin UI search, filter, and pagination
@@ -129,6 +145,7 @@ export async function GET(request: NextRequest) {
  */
 export async function POST(request: NextRequest) {
   try {
+    if (!hasAdminSession(request)) return UNAUTHORIZED;
     const body: ContentAssetFormData = await request.json();
     
     // WHAT: Validate required fields
@@ -266,6 +283,7 @@ export async function POST(request: NextRequest) {
  */
 export async function PUT(request: NextRequest) {
   try {
+    if (!hasAdminSession(request)) return UNAUTHORIZED;
     const body: ContentAssetFormData = await request.json();
     
     // WHAT: Identify asset by _id or slug
@@ -390,6 +408,7 @@ export async function PUT(request: NextRequest) {
  */
 export async function DELETE(request: NextRequest) {
   try {
+    if (!hasAdminSession(request)) return UNAUTHORIZED;
     const { searchParams } = new URL(request.url);
     const id = searchParams.get('id');
     const slug = searchParams.get('slug');

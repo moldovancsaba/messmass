@@ -1,8 +1,48 @@
 # {messmass} Release Notes
 Status: Active
-Last Updated: 2026-06-26T10:00:00.000Z
+Last Updated: 2026-07-01T20:33:54.000Z
 Canonical: No
 Owner: Operations
+
+## [v12.1.17] — 2026-07-01T20:33:54.000Z
+
+### Summary
+ENFORCEMENT & SECURITY HARDENING DELIVERY: Restored the automated guardrail gate that was removed in commit `38c87cd`, closed an unauthenticated content-asset write endpoint, fixed a leaking test connection, patched two dependency advisories, and re-synced version/handover documentation that had drifted behind the shipped baseline.
+
+### What Was Delivered
+
+#### Restored CI guardrail gate
+**WHAT**: Added `.github/workflows/ci.yml` running `type-check`, `lint`, `test`, `style:check`, `version:verify`, `docs:audit`, the dependency and layout-grammar guardrails, and `build` on push/PR to `main`/`preview`.
+**WHY**: Commit `38c87cd` deleted all 8 guardrail workflows, leaving every check (275 tests, ESLint, design-system, version SSOT) to run only if a human remembered. Regressions could reach production ungated.
+**HOW**: One consolidated workflow, single `npm ci`, wiring the existing package.json scripts on Node from `.nvmrc` (24). No new checks were invented.
+
+#### ESLint re-enabled in the production build
+**WHAT**: Set `eslint.ignoreDuringBuilds: false` in `next.config.js`.
+**WHY**: With the CI lint job also gone, `eslint . --max-warnings 0` ran in zero automated places; a lint-failing change could deploy on Vercel unblocked.
+**HOW**: `next build` (and every Vercel deploy) now lints; CI runs `npm run lint` as a second gate. Verified the previously-cited dependency conflict does not recur.
+
+#### Security: authenticated content-asset writes
+**WHAT**: Gated `POST`/`PUT`/`DELETE` `/api/content-assets` behind the `admin-session` cookie (returns 401 otherwise).
+**WHY**: These endpoints inserted/updated/deleted the `content_assets` collection with no authentication — exploitable data tampering. `GET` remains public because report rendering reads assets.
+**HOW**: Added a `hasAdminSession` guard mirroring `app/api/hashtag-categories/route.ts`; the admin content-library UI already sends the cookie same-origin, so no client change was needed.
+
+#### Test teardown leak fixed
+**WHAT**: Mocked `@/lib/mongodb` in `tests/fanmass-report-variables.test.ts`.
+**WHY**: `lib/mongodb.ts` opens a `MongoClient` connection at import time; the Fanmass suite imported it transitively and never closed it, producing the Jest "worker process failed to exit gracefully" leak that would hang CI.
+**HOW**: Suite-level mock returning a resolved client stub; the suite never queries the database. 275 tests pass with the warning gone.
+
+#### Dependency advisories patched
+**WHAT**: Applied `npm audit fix` for `ws` (high) and `qs` (moderate).
+**WHY**: `ws` is a live dependency (WebSocket server); the advisories had non-breaking fixes.
+**HOW**: `package-lock.json` transitive bumps only. `nodemailer` (high) was left unpatched — its exploit path is the message-level `raw` option, which `lib/emailNotifications.ts` never uses, and the fix is a breaking major bump.
+
+#### Version and documentation re-sync
+**WHAT**: Bumped product version to `v12.1.17` and refreshed the stale `v12.1.15` baselines in `docs/HANDOVER.md` and `docs/operations/operations-delivery-focus.md`.
+**WHY**: `package.json`/`README` were at `v12.1.16` while the partner-report canonicalization, ImgBB-413 upload fix, and CHL font work shipped afterward with no version bump, and HANDOVER still declared `v12.1.15` — breaking the version-SSOT traceability rule.
+**HOW**: Updated version metadata, README badge/changelog, and handover baselines; `npm run version:verify` confirms consistency and now runs in CI.
+
+### Testing
+- `npm run type-check`, `npm run lint`, `npm test` (275 passing), `npm run build`, `npm run style:check`, `npm run version:verify`, `npm run docs:audit`
 
 ## [v12.1.16] — 2026-06-26T10:00:00.000Z
 

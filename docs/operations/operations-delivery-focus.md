@@ -36,6 +36,8 @@ Queue notes:
 ## Local Repo Context
 
 Latest shipped repo release:
+- `v12.1.17` — Enforcement & security hardening: restored the CI guardrail gate removed in `38c87cd`, re-enabled ESLint in the production build, authenticated the `content-assets` write endpoints, fixed the Jest connection leak, patched `ws`/`qs` advisories, and re-synced version/handover docs that had drifted to `v12.1.15`.
+- `v12.1.16` — Documentation consistency delivery plus the (previously unversioned) partner-report slug canonicalization, ImgBB-413 direct-upload fix, and CHL report fonts.
 - `v12.1.15` — Mantine report variant/public shell/entity form delivery, including:
   - report-variant select dropdown portal/z-index fix for `#862`
   - Mantine public report shell migration for `#863`
