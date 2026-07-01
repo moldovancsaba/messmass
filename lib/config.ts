@@ -167,6 +167,11 @@ export function clientConfig() {
   return {
     appUrl: getEnv('NEXT_PUBLIC_APP_URL'),
     wsUrl: getEnv('NEXT_PUBLIC_WS_URL'),
+    // WHAT: Public ImgBB key for direct browser-to-ImgBB uploads
+    // WHY: Proxying file uploads through our own serverless function hit
+    //      Vercel's hard 4.5MB request body cap (413). Uploading straight
+    //      from the browser bypasses that cap entirely (ImgBB allows 32MB).
+    imgbbApiKey: getEnv('NEXT_PUBLIC_IMGBB_API_KEY'),
   } as const;
 }
 

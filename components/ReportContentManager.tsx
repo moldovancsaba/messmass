@@ -3,11 +3,12 @@
 // components/ReportContentManager.tsx
 // WHAT: Manage reportImageN and reportTextN slots (1..500) from a single Clicker tab
 // WHY: Bulk upload images to ImgBB, bulk add texts, keep stable slot references for charts
-// HOW: Reuses existing /api/upload-image endpoint and EditorDashboard saveProject()
+// HOW: Uploads directly to ImgBB from the browser and EditorDashboard saveProject()
 
 import React, { useMemo, useRef, useState } from 'react';
 import Image from 'next/image';
-import { apiRequest, apiPost } from '@/lib/apiClient';
+import { apiPost } from '@/lib/apiClient';
+import { uploadImageToImgbb } from '@/lib/imgbbClientUpload';
 import styles from './ReportContentManager.module.css';
 
 interface ReportContentManagerProps {
@@ -121,18 +122,11 @@ export default function ReportContentManager({ stats, onCommit, maxSlots = 500 }
         }
         
         console.log(`📤 Uploading to slot reportImage${next}`);
-        const fd = new FormData();
-        fd.append('image', file);
-        // WHAT: Use apiRequest for FormData uploads with CSRF protection
-        // WHY: apiPost uses JSON.stringify which doesn't work with FormData
-        // HOW: apiRequest handles FormData and automatically includes CSRF token
-        const data = await apiRequest('/api/upload-image', {
-          method: 'POST',
-          body: fd,
-          // WHAT: Don't set Content-Type header for FormData
-          // WHY: Browser needs to set it with boundary for multipart/form-data
-        });
-        
+        // WHAT: Upload directly to ImgBB from the browser
+        // WHY: Proxying through our own serverless function hit Vercel's
+        //      4.5MB request body cap (413) for larger photos
+        const data = await uploadImageToImgbb(file);
+
         console.log('📥 Upload response:', data);
         
         if (!data?.success || !data?.url) throw new Error(data?.error || 'Upload failed');
@@ -155,17 +149,10 @@ export default function ReportContentManager({ stats, onCommit, maxSlots = 500 }
     setBusy(true);
     setError(null);
     try {
-      const fd = new FormData();
-      fd.append('image', file);
-      // WHAT: Use apiRequest for FormData uploads with CSRF protection
-      // WHY: apiPost uses JSON.stringify which doesn't work with FormData
-      // HOW: apiRequest handles FormData and automatically includes CSRF token
-      const data = await apiRequest('/api/upload-image', {
-        method: 'POST',
-        body: fd,
-        // WHAT: Don't set Content-Type header for FormData
-        // WHY: Browser needs to set it with boundary for multipart/form-data
-      });
+      // WHAT: Upload directly to ImgBB from the browser
+      // WHY: Proxying through our own serverless function hit Vercel's
+      //      4.5MB request body cap (413) for larger photos
+      const data = await uploadImageToImgbb(file);
       if (!data?.success || !data?.url) throw new Error(data?.error || 'Upload failed');
       const newStats = { ...stats, [`reportImage${slotIndex}`]: String(data.url) };
       onCommit(newStats);

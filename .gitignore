@@ -122,3 +122,4 @@ test-title-overflow-fix.js
 !packages/gds-theme/dist/
 !packages/gds-core/dist/
 !packages/gds-admin/dist/
+.env*

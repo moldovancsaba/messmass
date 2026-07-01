@@ -8,7 +8,7 @@
 import { useState, useRef } from 'react';
 import Image from 'next/image';
 import MaterialIcon from '@/components/MaterialIcon';
-import { apiRequest } from '@/lib/apiClient';
+import { uploadImageToImgbb } from '@/lib/imgbbClientUpload';
 
 interface ImageUploaderProps {
   value?: string;              // Current image URL (if any)
@@ -57,20 +57,10 @@ export default function ImageUploader({
     try {
       setUploading(true);
 
-      // WHAT: Upload to ImgBB via API
-      // WHY: Centralized upload endpoint with error handling
-      const formData = new FormData();
-      formData.append('image', file);
-
-      // WHAT: Use apiRequest for FormData uploads with CSRF protection
-      // WHY: apiPost uses JSON.stringify which doesn't work with FormData
-      // HOW: apiRequest handles FormData and automatically includes CSRF token
-      const data = await apiRequest('/api/upload-image', {
-        method: 'POST',
-        body: formData,
-        // WHAT: Don't set Content-Type header for FormData
-        // WHY: Browser needs to set it with boundary for multipart/form-data
-      });
+      // WHAT: Upload directly to ImgBB from the browser
+      // WHY: Proxying through our own serverless function hit Vercel's
+      //      4.5MB request body cap (413) for larger photos
+      const data = await uploadImageToImgbb(file);
 
       if (!data.success) {
         throw new Error(data.error || 'Upload failed');
@@ -78,7 +68,7 @@ export default function ImageUploader({
 
       // WHAT: Call onChange with new URL
       // WHY: Parent component updates state
-      onChange(data.url);
+      onChange(data.url!);
       console.log('✅ Image uploaded:', data.url);
 
     } catch (err: any) {

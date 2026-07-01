@@ -6,7 +6,7 @@
 'use client';
 
 import React, { useState, useRef } from 'react';
-import { apiRequest } from '@/lib/apiClient';
+import { uploadImageToImgbb } from '@/lib/imgbbClientUpload';
 import styles from './ImageUploadField.module.css';
 import Image from 'next/image';
 
@@ -45,20 +45,10 @@ export default function ImageUploadField({ label, value, onSave, disabled }: Ima
     setError(null);
 
     try {
-      // WHAT: Upload to ImgBB via our API endpoint
-      // WHY: ImgBB provides reliable CDN-hosted image URLs
-      const formData = new FormData();
-      formData.append('image', file);
-
-      // WHAT: Use apiRequest for FormData uploads with CSRF protection
-      // WHY: apiPost uses JSON.stringify which doesn't work with FormData
-      // HOW: apiRequest handles FormData and automatically includes CSRF token
-      const data = await apiRequest('/api/upload-image', {
-        method: 'POST',
-        body: formData,
-        // WHAT: Don't set Content-Type header for FormData
-        // WHY: Browser needs to set it with boundary for multipart/form-data
-      });
+      // WHAT: Upload directly to ImgBB from the browser
+      // WHY: Proxying through our own serverless function hit Vercel's
+      //      4.5MB request body cap (413) for larger photos
+      const data = await uploadImageToImgbb(file);
 
       if (!data.success) {
         throw new Error(data.error || 'Upload failed');
@@ -66,7 +56,7 @@ export default function ImageUploadField({ label, value, onSave, disabled }: Ima
 
       // WHAT: Save the ImgBB URL to database
       // WHY: Store permanent URL for display in reports
-      const imageUrl = data.url;
+      const imageUrl = data.url!;
       setPreview(imageUrl);
       onSave(imageUrl);
 
