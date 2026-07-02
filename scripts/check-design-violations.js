@@ -145,10 +145,16 @@ for (const guardrail of CONTENT_GUARDRAILS) {
 // WHY: #864 requires no NEW non-Mantine CSS-in-JS. The files below are tracked debt
 //      (issue #85); any `<style jsx` outside them fails the check so the debt cannot grow.
 const STYLED_JSX_BASELINE = [
+  // Intentional/permanent: dynamic per-block responsive grid computed from chart data
+  // at runtime; @media rules must override a class (inline styles can't), so styled-jsx
+  // (or a runtime <style>) is the correct tool here — not debt.
   'app/admin/visualization/page.tsx',
+  // Pending migration (issue #85): these intermix GLOBAL design-system classes (.btn,
+  // .btn-primary, ...) with local overrides, so a faithful move to CSS modules needs
+  // visual QA of the admin UI. Migrate with the app running, not blind.
   'components/ChartAlgorithmManager.tsx',
   'components/ChartConfiguration.tsx',
-  'components/UnifiedHashtagInput.tsx',
+  // UnifiedHashtagInput.tsx migrated to UnifiedHashtagInput.module.css in v12.1.20.
 ];
 try {
   const cmd = `grep -rIl "<style jsx" components app --include="*.tsx" | grep -v "node_modules" | grep -v ".next"`;

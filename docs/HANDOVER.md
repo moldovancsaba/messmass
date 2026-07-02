@@ -2,7 +2,7 @@
 
 This file is onboarding plus operational context for the next agent. Keep it accurate when behavior, process, or current delivery state changes.
 
-**Last Updated:** 2026-07-01 (v12.1.19 styled-jsx surface reduction)
+**Last Updated:** 2026-07-02 (v12.1.20 styled-jsx migration)
 
 ## 🚨 CRITICAL MUST-READ FOR ALL AGENTS: STYLING & COMPONENTS 🚨
 
@@ -36,11 +36,18 @@ You MUST completely read and obey `docs/coding-standards.md` and `docs/component
   - design-system remediation tranche 1: `4f66d54ae`
   - design-system remediation tranche 2: `06cedc822`
   - design-system remediation tranche 3: `d678b3af9`
-- Current product/doc baseline: `v12.1.19`
+- Current product/doc baseline: `v12.1.20`
 - Current GDS package baseline: `@doneisbetter/gds-theme`, `@doneisbetter/gds-core`, and `@doneisbetter/gds-admin` at `3.4.6`
 - Local vendored `@gds/*` packages have been removed from active package authority.
 - Most recent closed delivery issues on Project 8: `moldovancsaba/messmass#71` through `#76`
 - CI: `.github/workflows/ci.yml` runs the guardrail battery on push/PR to `main`/`preview` (restored in v12.1.17 after `38c87cd` deleted the 8 original workflows).
+
+## 2026-07-02 - Styled-jsx migration (`v12.1.20`)
+
+- **#85 part 2:** migrated `UnifiedHashtagInput` off styled-jsx to `UnifiedHashtagInput.module.css` (byte-faithful CSS; global `hashtag-group-spacing` kept as plain string; static-verified all classes resolve). **Spot-check** admin partners/events hashtag inputs.
+- **Intentional exception:** `app/admin/visualization/page.tsx` styled-jsx stays — it computes per-block `grid-template-columns` from chart data at runtime with `@media` breakpoints (inline styles can't be media-overridden), so styled-jsx is correct, not debt. Documented in the guardrail baseline.
+- **Held for visual QA:** `ChartAlgorithmManager` + `ChartConfiguration` intermix global design-system classes (`.btn`, `.btn-primary`) with local overrides; migrating blind would drop global button styling. Do these with the app running. Guardrail still blocks NEW styled-jsx.
+- **Styled-jsx status:** 8 → 3 files (4 dead deleted in v12.1.19, 1 migrated here); of the 3 remaining, 1 is a permanent exception and 2 await visual QA.
 
 ## 2026-07-01 - Styled-jsx surface reduction (`v12.1.19`)
 

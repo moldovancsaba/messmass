@@ -11,6 +11,7 @@
  */
 
 import React, { useState, useRef, KeyboardEvent, useEffect } from 'react';
+import styles from './UnifiedHashtagInput.module.css';
 import type { HashtagCategory } from '@/lib/hashtagCategoryTypes';
 import type { HashtagSuggestion, HashtagWithCount } from '@/lib/types/hashtags';
 import { normalizeHashtagResponse } from '@/lib/types/hashtags';
@@ -294,23 +295,23 @@ export default function UnifiedHashtagInput({
     if (safeHashtags.length === 0) return null;
     
     return (
-      <div className="hashtag-group hashtag-group-spacing">
-        <div className="group-header">
-          <div className="group-info">
+      <div className={`${styles['hashtag-group']} hashtag-group-spacing`}>
+        <div className={styles['group-header']}>
+          <div className={styles['group-info']}>
             {categoryColor && (
               <div 
-                className="category-indicator"
+                className={styles['category-indicator']}
                 // WHAT: Dynamic category color for visual distinction
                 // WHY: Each category has a unique color stored in MongoDB
                 // eslint-disable-next-line react/forbid-dom-props
                 style={{ backgroundColor: (typeof categoryColor === 'string' && categoryColor.trim()) ? categoryColor.trim() : '#667eea' }}
               />
             )}
-            <label className="group-label">{title}</label>
-            <span className="group-count">({safeHashtags.length})</span>
+            <label className={styles['group-label']}>{title}</label>
+            <span className={styles['group-count']}>({safeHashtags.length})</span>
           </div>
         </div>
-        <div className="hashtag-bubbles">
+        <div className={styles['hashtag-bubbles']}>
               {safeHashtags.map((hashtag, index) => (
                 <ColoredHashtagBubble 
                   key={index}
@@ -336,16 +337,16 @@ export default function UnifiedHashtagInput({
   };
   
   return (
-    <div className="unified-hashtag-input">
+    <div className={styles['unified-hashtag-input']}>
       {/* Control Panel */}
-      <div className="control-panel">
-        <div className="category-selector">
-          <label className="selector-label">Add hashtag to:</label>
+      <div className={styles['control-panel']}>
+        <div className={styles['category-selector']}>
+          <label className={styles['selector-label']}>Add hashtag to:</label>
           <select
             value={selectedCategory}
             onChange={(e) => setSelectedCategory(e.target.value)}
             disabled={disabled}
-            className="category-select"
+            className={styles['category-select']}
             // WHAT: Dynamic border/background based on selected category color
             // WHY: Visual feedback showing which category is currently active
             // eslint-disable-next-line react/forbid-dom-props
@@ -363,8 +364,8 @@ export default function UnifiedHashtagInput({
           </select>
         </div>
         
-        <div className="input-container">
-          <div className="input-wrapper">
+        <div className={styles['input-container']}>
+          <div className={styles['input-wrapper']}>
             <input
               ref={inputRef}
               type="text"
@@ -375,7 +376,7 @@ export default function UnifiedHashtagInput({
               onBlur={handleInputBlur}
               disabled={disabled}
               placeholder={placeholder}
-              className="hashtag-input"
+              className={styles['hashtag-input']}
               autoComplete="off"
               // WHAT: Dynamic border/shadow to match selected category color
               // WHY: Consistent visual feedback - input color matches category
@@ -388,13 +389,13 @@ export default function UnifiedHashtagInput({
           </div>
           
           {showSuggestions && suggestions.length > 0 && (
-            <div ref={suggestionsRef} className="hashtag-suggestions">
+            <div ref={suggestionsRef} className={styles['hashtag-suggestions']}>
               {suggestions.map((suggestion, index) => (
                 <div
                   key={suggestion.hashtag}
-                  className={`hashtag-suggestion ${
-                    index === selectedSuggestionIndex ? 'selected' : ''
-                  } ${suggestion.isExisting ? 'existing' : 'new'}`}
+                  className={`${styles['hashtag-suggestion']} ${
+                    index === selectedSuggestionIndex ? styles.selected : ''
+                  } ${suggestion.isExisting ? styles.existing : styles.new}`}
                   onClick={() => handleSuggestionClick(suggestion.hashtag)}
                   // WHAT: Dynamic left border color for suggestion item
                   // WHY: Shows which category the hashtag will be added to
@@ -403,13 +404,13 @@ export default function UnifiedHashtagInput({
                     borderLeftColor: getCurrentCategoryColor()
                   }}
                 >
-                  <span className="hashtag-suggestion-text">
+                  <span className={styles['hashtag-suggestion-text']}>
                     #{suggestion.hashtag}
                   </span>
-                  <span className="hashtag-suggestion-label">
+                  <span className={styles['hashtag-suggestion-label']}>
                     {suggestion.isExisting ? 'existing' : 'new'}
                   </span>
-                  <span className="target-category">
+                  <span className={styles['target-category']}>
                     → {selectedCategory === 'general' ? 'General' : selectedCategory}
                   </span>
                 </div>
@@ -420,7 +421,7 @@ export default function UnifiedHashtagInput({
       </div>
       
       {/* Hashtag Display Groups */}
-      <div className="hashtag-groups">
+      <div className={styles['hashtag-groups']}>
         {/* General Hashtags */}
         {renderHashtagGroup('General Hashtags', generalHashtags, 'general')}
         
@@ -442,217 +443,6 @@ export default function UnifiedHashtagInput({
           );
         })}
       </div>
-      
-      <style jsx>{`
-        .unified-hashtag-input {
-          display: grid;
-          gap: 1.5rem;
-        }
-        
-        .control-panel {
-          display: grid;
-          gap: 1rem;
-          padding: 1.5rem;
-          background: rgba(255, 255, 255, 0.9);
-          border: 1px solid rgba(102, 126, 234, 0.2);
-          border-radius: 12px;
-          box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-        }
-        
-        .category-selector {
-          display: grid;
-          gap: 0.5rem;
-        }
-        
-        .selector-label {
-          font-size: 0.875rem;
-          font-weight: 600;
-          color: #374151;
-        }
-        
-        .category-select {
-          padding: 0.75rem 1rem;
-          font-size: 1rem;
-          border: 2px solid;
-          border-radius: 8px;
-          background: white;
-          color: #1a202c;
-          font-weight: 500;
-          cursor: pointer;
-          transition: all 0.2s ease;
-        }
-        
-        .category-select:hover {
-          transform: translateY(-1px);
-          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-        }
-        
-        .category-select:focus {
-          outline: none;
-          box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.2);
-        }
-        
-        .input-container {
-          position: relative;
-        }
-        
-        .input-wrapper {
-          position: relative;
-          display: flex;
-          align-items: center;
-        }
-        
-        .hashtag-input {
-          width: 100%;
-          padding: 0.75rem 1rem;
-          font-size: 1rem;
-          border: 2px solid;
-          border-radius: 8px;
-          background: white;
-          color: #1a202c;
-          transition: all 0.2s ease;
-        }
-        
-        .hashtag-input:focus {
-          outline: none;
-          transform: translateY(-1px);
-        }
-        
-        .hashtag-input::placeholder {
-          color: #9ca3af;
-        }
-        
-        .input-loading {
-          position: absolute;
-          right: 1rem;
-          font-size: 0.875rem;
-        }
-        
-        .hashtag-suggestions {
-          position: absolute;
-          top: 100%;
-          left: 0;
-          right: 0;
-          background: white;
-          border: 1px solid rgba(229, 231, 235, 0.8);
-          border-radius: 8px;
-          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-          z-index: var(--z-dropdown);
-          max-height: 300px;
-          overflow-y: auto;
-          margin-top: 4px;
-        }
-        
-        .hashtag-suggestion {
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-          padding: 0.75rem 1rem;
-          cursor: pointer;
-          transition: all 0.2s ease;
-          border-left: 3px solid transparent;
-        }
-        
-        .hashtag-suggestion:hover,
-        .hashtag-suggestion.selected {
-          background: rgba(102, 126, 234, 0.05);
-          border-left-color: currentColor;
-        }
-        
-        .hashtag-suggestion-text {
-          font-weight: 500;
-          color: #1a202c;
-        }
-        
-        .hashtag-suggestion-label {
-          font-size: 0.75rem;
-          color: #6b7280;
-          background: rgba(107, 114, 128, 0.1);
-          padding: 0.25rem 0.5rem;
-          border-radius: 4px;
-          text-transform: uppercase;
-          font-weight: 600;
-          letter-spacing: 0.5px;
-        }
-        
-        .hashtag-suggestion.new .hashtag-suggestion-label {
-          background: rgba(34, 197, 94, 0.1);
-          color: #059669;
-        }
-        
-        .hashtag-suggestion.existing .hashtag-suggestion-label {
-          background: rgba(59, 130, 246, 0.1);
-          color: #2563eb;
-        }
-        
-        .target-category {
-          font-size: 0.75rem;
-          color: #6b7280;
-          font-weight: 500;
-        }
-        
-        .hashtag-groups {
-          display: grid;
-          gap: 1.5rem;
-        }
-        
-        .hashtag-group {
-          padding: 1rem;
-          background: rgba(255, 255, 255, 0.7);
-          border: 1px solid rgba(229, 231, 235, 0.5);
-          border-radius: 8px;
-        }
-        
-        .group-header {
-          margin-bottom: 0.75rem;
-        }
-        
-        .group-info {
-          display: flex;
-          align-items: center;
-          gap: 0.5rem;
-        }
-        
-        .category-indicator {
-          width: 12px;
-          height: 12px;
-          border-radius: 50%;
-          border: 2px solid rgba(255, 255, 255, 0.8);
-          box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
-        }
-        
-        .group-label {
-          font-size: 0.875rem;
-          font-weight: 600;
-          color: #374151;
-        }
-        
-        .group-count {
-          font-size: 0.75rem;
-          color: #6b7280;
-          font-weight: 500;
-        }
-        
-        .hashtag-bubbles {
-          display: flex;
-          flex-wrap: wrap;
-          gap: 0.5rem;
-        }
-        
-        
-        /* Responsive design */
-        @media (max-width: 768px) {
-          .control-panel {
-            padding: 1rem;
-          }
-          
-          .hashtag-suggestion {
-            flex-direction: column;
-            align-items: flex-start;
-            gap: 0.25rem;
-          }
-        }
-      `}</style>
     </div>
   );
 }

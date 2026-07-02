@@ -1,8 +1,31 @@
 # {messmass} Release Notes
 Status: Active
-Last Updated: 2026-07-01T21:29:47.000Z
+Last Updated: 2026-07-02T06:23:29.000Z
 Canonical: No
 Owner: Operations
+
+## [v12.1.20] — 2026-07-02T06:23:29.000Z
+
+### Summary
+STYLED-JSX MIGRATION (#85, part 2): Migrated `UnifiedHashtagInput` off styled-jsx to a co-located CSS module, classified the visualization page's dynamic grid styled-jsx as an intentional (non-debt) exception, and documented why the two remaining chart-admin components need visual QA before migration.
+
+### What Was Delivered
+
+#### UnifiedHashtagInput → CSS module
+**WHAT**: Replaced the 210-line styled-jsx block in `components/UnifiedHashtagInput.tsx` with a co-located `components/UnifiedHashtagInput.module.css`; all classNames now reference `styles[...]`.
+**WHY**: Advances #864's "retire the competing CSS-in-JS authority" for a cleanly-migratable component (no `:global`, no runtime interpolation).
+**HOW**: CSS rules copied unchanged (byte-faithful); the one global class (`hashtag-group-spacing`, from `app/styles/components.css`) is preserved as a plain string; dynamic `selected`/`existing`/`new` states mapped to module classes. Static verification confirmed every referenced class resolves in the module (0 unmapped). Build/type-check/lint/tests green. **Visual spot-check recommended** on the admin partners/events hashtag inputs.
+
+#### Visualization page classified as intentional styled-jsx
+**WHAT**: `app/admin/visualization/page.tsx` retains its styled-jsx block; the guardrail baseline now documents it as permanent.
+**WHY**: The block computes `grid-template-columns` per report block from chart data at runtime and relies on `@media` breakpoints — inline styles can't be overridden by media queries, so a class-based runtime `<style>` is the correct tool, not debt.
+
+#### Remaining #85 held for visual QA
+**WHAT**: `ChartAlgorithmManager` and `ChartConfiguration` remain on styled-jsx.
+**WHY**: They intermix GLOBAL design-system classes (`.btn`, `.btn-primary`, …) with local overrides; a faithful CSS-module migration must not drop the global styling and needs visual QA of the admin UI. The guardrail still blocks any NEW styled-jsx, so this debt cannot grow. Tracked in #85.
+
+### Testing
+- `npm run type-check`, `npm run lint`, `npm test` (280 passing), `npm run build`, `npm run style:check`, `npm run version:verify`, `npm run docs:audit`
 
 ## [v12.1.19] — 2026-07-01T21:29:47.000Z
 
