@@ -210,7 +210,18 @@ run the audit from a session scoped to them).
 
 ---
 
-## 5. Audit Method
+## 5. Remediation Status (2026-06-30, same-day follow-up)
+
+| Finding | Action taken |
+|---------|--------------|
+| 1 — CI removed | All 8 workflows restored verbatim from `38c87cd^` on branch `claude/repo-sandbox-issue-audit-1b6wvq`; decision tracked in issue **#88** (restore vs. documented replacement is the PO's call). |
+| 2 — SSOT contradiction | `PROJECT_MANAGEMENT.md` §2/§3/§7 updated: issue SSOT is `moldovancsaba/messmass`; `mvp-factory-control` references marked historical. |
+| 3/4 — Weak V3 closures | #58, #59, #60 backfilled with code-verification comments naming the verified artifacts and the earliest traceable commit `e7aaf59` (2026-05-21; original delivering commits predate a history rewrite and are not individually traceable). |
+| 5 — Missing labels | #58–#60 retro-labeled (`product:messmass`, priority, type). |
+| 8 — Untracked TODOs | Tracked in issue **#89**; `HANDOVER.md` baseline synced to `v12.1.16`. |
+| 7 — Board access | Unchanged — requires access to Project 8 / `mvp-factory-control`. |
+
+## 6. Audit Method
 
 - Enumerated issues via GitHub MCP (`list_issues`, `search_issues`) over
   `moldovancsaba/messmass`; both open- and all-state queries → 23 issues, all

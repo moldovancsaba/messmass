@@ -11,20 +11,20 @@
 
 ## 2. Single Source of Truth (SSOT)
 - Board: <https://github.com/users/moldovancsaba/projects/8>
-- SSOT issues repo: `moldovancsaba/mvp-factory-control`
+- SSOT issues repo: `moldovancsaba/messmass`
 - Product field for this repo: `messmass`
 
 Rules:
 - If work is not on the board, it is not active delivery work.
 - Status is controlled by the board field, not by issue titles.
-- {messmass} issues live in `mvp-factory-control`, not in this product repo.
+- {messmass} issues live in `moldovancsaba/messmass` (this repo), attached to Project 8. Older deliveries were tracked in `mvp-factory-control`; those references remain valid history but no new {messmass} issues go there.
 - Every delivery must map to one SSOT card and keep that card updated at start, milestone, blocker, and done states.
 - Local docs must reflect board truth immediately after material progress.
 
 ## 3. Mandatory Delivery SOP
 Use this process for every {messmass} delivery:
 
-1. Confirm the active issue exists in `mvp-factory-control`.
+1. Confirm the active issue exists in `moldovancsaba/messmass`.
 2. Ensure it is attached to Project 8.
 3. Ensure board fields are correct at minimum: `Product=messmass`, `Type`, `Priority`, `Status`.
 4. Before implementation, move it to `In Progress` and post a short start note with objective and approach.
@@ -64,10 +64,10 @@ If any of these are materially unclear, stop and ask the PO.
 Use the board UI first if CLI behavior is unreliable. If CLI is available, these are the safe baseline commands:
 
 ```bash
-gh issue view <ISSUE_NUMBER> --repo moldovancsaba/mvp-factory-control
-gh project item-add 8 --owner moldovancsaba --url "https://github.com/moldovancsaba/mvp-factory-control/issues/<ISSUE_NUMBER>"
-gh project item-list 1 --owner moldovancsaba --limit 500 --format json
-gh issue comment <ISSUE_NUMBER> --repo moldovancsaba/mvp-factory-control --body-file /tmp/ssot-note.md
+gh issue view <ISSUE_NUMBER> --repo moldovancsaba/messmass
+gh project item-add 8 --owner moldovancsaba --url "https://github.com/moldovancsaba/messmass/issues/<ISSUE_NUMBER>"
+gh project item-list 8 --owner moldovancsaba --limit 500 --format json
+gh issue comment <ISSUE_NUMBER> --repo moldovancsaba/messmass --body-file /tmp/ssot-note.md
 ```
 
 ## 8. {messmass} Canonical Delivery Docs

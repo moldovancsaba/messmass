@@ -2,7 +2,7 @@
 
 This file is onboarding plus operational context for the next agent. Keep it accurate when behavior, process, or current delivery state changes.
 
-**Last Updated:** 2026-06-25 (v12.1.15 Mantine report/entity delivery)
+**Last Updated:** 2026-06-30 (v12.1.16 baseline sync + issue audit; previous: 2026-06-25 v12.1.15 Mantine report/entity delivery)
 
 ## 🚨 CRITICAL MUST-READ FOR ALL AGENTS: STYLING & COMPONENTS 🚨
 
@@ -36,7 +36,7 @@ You MUST completely read and obey `docs/coding-standards.md` and `docs/component
   - design-system remediation tranche 1: `4f66d54ae`
   - design-system remediation tranche 2: `06cedc822`
   - design-system remediation tranche 3: `d678b3af9`
-- Current product/doc baseline: `v12.1.15`
+- Current product/doc baseline: `v12.1.16` (see `package.json`)
 - Current GDS package baseline: `@doneisbetter/gds-theme`, `@doneisbetter/gds-core`, and `@doneisbetter/gds-admin` at `3.4.6`
 - Local vendored `@gds/*` packages have been removed from active package authority.
 - Most recent closed delivery issues on Project 8: `moldovancsaba/messmass#71` through `#76`
