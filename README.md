@@ -170,7 +170,7 @@ Main system areas:
 
 Current UI foundation note:
 - Root Mantine runtime is now installed and active through `app/providers.tsx` and `lib/ui/mantineTheme.ts`
-- Shared GDS packages resolve from published `@doneisbetter/gds-*` packages at `3.4.6`
+- Shared GDS packages resolve from published `@sovereignsquad/gds-*` packages at `3.9.0`
 - Legacy local wrappers and CSS systems still exist as compatibility layers until the board-tracked Mantine migration chain is completed
 - Local vendored `@gds/*` packages are no longer active package authority
 

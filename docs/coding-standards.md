@@ -17,7 +17,7 @@ Owner: Architecture
 
 That means:
 - the shared GDS, not this file, is the authority for primitive policy, component behavior, responsive rules, accessibility expectations, and design-system governance
-- published GDS packages are consumed directly through `@doneisbetter/gds-theme`, `@doneisbetter/gds-core`, and `@doneisbetter/gds-admin` at the current verified `3.4.6` baseline
+- published GDS packages are consumed directly through `@sovereignsquad/gds-theme`, `@sovereignsquad/gds-core`, and `@sovereignsquad/gds-admin` at the current verified `3.9.0` baseline
 - the local pre-Mantine token-and-wrapper system is now a **frozen compatibility layer**, not the governing authority
 - Mantine runtime, theme, modals, and notifications are the active foundation path for future `{messmass}` migration work
 - existing local wrappers and CSS systems may still be used only where migration parity has not landed yet

@@ -17,7 +17,7 @@ Local UI code may adapt GDS primitives to Messmass domain needs, but it must not
 
 ## Current Stack
 
-- GDS packages: `@doneisbetter/gds-admin`, `@doneisbetter/gds-core`, `@doneisbetter/gds-theme`
+- GDS packages: `@sovereignsquad/gds-admin`, `@sovereignsquad/gds-core`, `@sovereignsquad/gds-theme`
 - UI foundation: Mantine 8
 - Icons: Tabler icons through GDS-compatible wrappers
 - Product routes: Next.js App Router

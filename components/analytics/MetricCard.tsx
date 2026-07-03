@@ -3,16 +3,16 @@
 /**
  * MetricCard Component
  * 
- * WHAT: Enhanced KPI card leveraging @doneisbetter/gds-core
+ * WHAT: Enhanced KPI card leveraging @sovereignsquad/gds-core
  * WHY: centralize design tokens, theme integration, and primitive patterns using GDS packages
- * HOW: wraps @doneisbetter/gds-core's MetricCard and maps messmass props for stable backwards compatibility
+ * HOW: wraps @sovereignsquad/gds-core's MetricCard and maps messmass props for stable backwards compatibility
  * 
  * Version: 12.2.0 (Phase 3 - GDS Integration)
  * Created: 2026-05-24T13:49:00.000Z
  */
 
 import React from 'react';
-import { MetricCard as GdsMetricCard } from '@doneisbetter/gds-core';
+import { MetricCard as GdsMetricCard } from '@sovereignsquad/gds-core';
 import { Skeleton, Text } from '@mantine/core';
 
 export type MetricFormat = 'number' | 'currency' | 'percentage';

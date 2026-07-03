@@ -134,9 +134,9 @@
     "ops:partner-report:logs:fail": "node scripts/auditPartnerReportLogs.mjs --fail-on-errors"
   },
   "dependencies": {
-    "@doneisbetter/gds-admin": "^3.4.6",
-    "@doneisbetter/gds-core": "^3.4.6",
-    "@doneisbetter/gds-theme": "^3.4.6",
+    "@sovereignsquad/gds-admin": "^3.9.0",
+    "@sovereignsquad/gds-core": "^3.9.0",
+    "@sovereignsquad/gds-theme": "^3.9.0",
     "@mantine/core": "^8.3.18",
     "@mantine/form": "^8.3.18",
     "@mantine/hooks": "^8.3.18",

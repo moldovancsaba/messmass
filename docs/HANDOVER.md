@@ -2,7 +2,7 @@
 
 This file is onboarding plus operational context for the next agent. Keep it accurate when behavior, process, or current delivery state changes.
 
-**Last Updated:** 2026-07-02 (v12.1.20 styled-jsx migration)
+**Last Updated:** 2026-07-03 (GDS `@sovereignsquad` scope migration)
 
 ## 🚨 CRITICAL MUST-READ FOR ALL AGENTS: STYLING & COMPONENTS 🚨
 
@@ -37,10 +37,16 @@ You MUST completely read and obey `docs/coding-standards.md` and `docs/component
   - design-system remediation tranche 2: `06cedc822`
   - design-system remediation tranche 3: `d678b3af9`
 - Current product/doc baseline: `v12.1.20`
-- Current GDS package baseline: `@doneisbetter/gds-theme`, `@doneisbetter/gds-core`, and `@doneisbetter/gds-admin` at `3.4.6`
+- Current GDS package baseline: `@sovereignsquad/gds-theme`, `@sovereignsquad/gds-core`, and `@sovereignsquad/gds-admin` at `3.9.0`
 - Local vendored `@gds/*` packages have been removed from active package authority.
 - Most recent closed delivery issues on Project 8: `moldovancsaba/messmass#71` through `#76`
 - CI: `.github/workflows/ci.yml` runs the guardrail battery on push/PR to `main`/`preview` (restored in v12.1.17 after `38c87cd` deleted the 8 original workflows).
+
+## 2026-07-03 — GDS `@sovereignsquad` scope migration
+
+- GDS moved npm scopes from `@doneisbetter/*` to `@sovereignsquad/*`; mechanical rename per upstream `MIGRATION_TO_SOVEREIGNSQUAD.md`, no API changes (`3.4.6` → `3.9.0`).
+- Updated `package.json` deps, `scripts/gds-sync-packages.sh`, `scripts/check-dependency-guardrail.ts` allowlist, `lib/ui/mantineTheme.ts`, `components/analytics/MetricCard.tsx`, and docs (`README.md`, `docs/coding-standards.md`, `docs/design/design-system.md`).
+- Reinstalled `node_modules`/lockfile clean; typecheck and build verified green.
 
 ## 2026-07-02 - Styled-jsx migration (`v12.1.20`)
 
@@ -233,14 +239,14 @@ You MUST completely read and obey `docs/coding-standards.md` and `docs/component
 ## 2026-06-24 — GDS 3.4.6 package authority upgrade (`#904`, `#905`, `#906`)
 
 - Replaced stale local `@gds/*` file dependencies with published GDS packages:
-  - `@doneisbetter/gds-theme@3.4.6`
-  - `@doneisbetter/gds-core@3.4.6`
-  - `@doneisbetter/gds-admin@3.4.6`
+  - `@sovereignsquad/gds-theme@3.4.6`
+  - `@sovereignsquad/gds-core@3.4.6`
+  - `@sovereignsquad/gds-admin@3.4.6`
 - Removed vendored `packages/gds-theme`, `packages/gds-core`, and `packages/gds-admin` artifacts from the active repo.
 - Updated `scripts/gds-sync-packages.sh` so `npm run gds:sync` now verifies published GDS package resolution instead of copying local package artifacts.
 - Updated runtime imports:
-  - `lib/ui/mantineTheme.ts` now imports `gdsTheme` from `@doneisbetter/gds-theme`
-  - `components/analytics/MetricCard.tsx` now wraps `MetricCard` from `@doneisbetter/gds-core`
+  - `lib/ui/mantineTheme.ts` now imports `gdsTheme` from `@sovereignsquad/gds-theme`
+  - `components/analytics/MetricCard.tsx` now wraps `MetricCard` from `@sovereignsquad/gds-core`
 - Validation evidence captured during delivery:
   - `npm run gds:sync`
   - `npm run style:check`
