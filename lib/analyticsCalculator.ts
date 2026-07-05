@@ -373,11 +373,32 @@ export function calculateBitlyMetrics(stats: ProjectStats): BitlyMetrics | undef
 }
 
 /**
+ * WHAT: Minimal project shape consumed by the analytics aggregation functions
+ * WHY: Replaces `any` with a precise, verifiable contract for the exact fields read here.
+ *      Compile-time only — no runtime behavior change.
+ */
+export interface AnalyticsProjectInput {
+  _id: string | ObjectId;
+  eventDate: string;
+  stats: ProjectStats;
+  partner1Id?: string | ObjectId;
+  partner1Name?: string;
+  partner1Emoji?: string;
+  partner2Id?: string | ObjectId;
+  partner2Name?: string;
+  sportsDb?: {
+    leagueId?: string;
+    strLeague?: string;
+    intStadiumCapacity?: number;
+  };
+}
+
+/**
  * WHAT: Build partner context from project data
  * WHY: Extract team/league info for partner-based analytics
  */
 export function buildPartnerContext(
-  project: any // TODO: Replace with proper Project interface
+  project: AnalyticsProjectInput
 ): PartnerContext {
   // Extract venue type from stats
   let venueType: 'indoor' | 'outdoor' | 'stadium' | 'mixed' = 'mixed';
@@ -411,10 +432,10 @@ export function buildPartnerContext(
  * WHY: Single function to generate all pre-computed metrics for one event
  */
 export function aggregateEventMetrics(
-  project: any, // TODO: Replace with proper Project interface
+  project: AnalyticsProjectInput,
   aggregationType: 'event' | 'daily' | 'weekly' | 'monthly' | 'yearly' = 'event'
 ): AnalyticsAggregate {
-  const stats = project.stats as ProjectStats;
+  const stats = project.stats;
   
   // Calculate all metric groups
   const fanMetrics = calculateFanMetrics(stats);
