@@ -243,6 +243,48 @@ which it sets (`:73`), changing its own identity and re-firing the open-effect
 
 ---
 
+## Remediation status (2026-07-05)
+
+Every finding below was addressed in code on branch
+`claude/repo-sandbox-issue-audit-1b6wvq`. Items marked **[run in DB session]**
+have their code/scripts delivered but need a credentialed database to execute
+(index creation, data migration) — they cannot be run from the audit sandbox.
+
+| # | Status | How |
+|---|--------|-----|
+| C1 growth/no retention | Fixed (code) + **[run in DB session]** | `occurredAt` Date + TTL index (90d) in index specs; `migrate-notifications-schema.ts` backfills existing docs; run `db:create-indexes` + `migrate:notifications` |
+| C2 unauth POST | **Fixed** | Deleted the public create endpoint; creation is session-only |
+| C3 dual count drift | **Fixed** | Single count owned by TopHeader, shared with panel, refreshed after every mutation |
+| H1 dedupe race | **Fixed** | Atomic idempotent upsert on `dedupeKey` + unique-sparse index |
+| H2 no runtime indexes | Fixed (specs) + **[run in DB session]** | Corrected specs; run `db:create-indexes` at deploy |
+| H3 wrong index fields | **Fixed** | Replaced `userId`/`createdAt` specs with `timestamp`/`dedupeKey`/`occurredAt`/readBy/archivedBy |
+| H4 identity split | **Fixed** | `actorId` stored + used for grouping; `getCurrentActor` |
+| H5 dual write paths | **Fixed** | POST removed; single `createNotification` path |
+| H6 orphaned/dead email | **Fixed** | Removed 4 zero-caller functions |
+| H7 SMTP config bypass | Partial | Documented all SMTP_* in `.env.example`; full `config.ts` routing left as follow-up |
+| H8 pagination mismatch | **Fixed** | Load-more via offset/nextOffset |
+| H9 swallowed errors | **Fixed** | Panel error state + retry; creation failures logged |
+| H10 double fetch | **Fixed** | Removed self-retriggering dependency |
+| M1 edit/edit-stats double | **Fixed** | Normalized dedupe bucket |
+| M2 markAll mis-scoped | **Fixed** | mark-all-read excludes archived |
+| M3 debug leak | **Fixed** | Requires auth; no stack traces |
+| M4 wrong deep-link | **Fixed** | `router.push('/admin/events/{id}')` |
+| M5 non-GDS panel | Partial | a11y/semantics fixed; full Mantine re-skin deferred (needs visual QA) |
+| M6 accessibility | **Fixed** | dialog role, Escape, keyboard rows, aria-hidden emoji |
+| M7 cron open if unset | **Fixed** | Fail-closed in production; `CRON_SECRET` documented |
+| M8 no tests | Partial | Added `notification-dedupe` (7) + `editor-content-metadata` (8); panel component tests deferred |
+| L1 pagination inputs | **Fixed** | Bounded/sanitized |
+| L2 timestamp string/TTL | **Fixed** | `occurredAt` Date added; migration converts |
+| L3 markAsRead dup | **Fixed** | Idempotent `readBy` push |
+| L4 dead new-indicator | **Fixed** | Removed |
+| L5 hardcoded CSS | Deferred | Cosmetic; needs visual QA in the running app |
+| L6 bell-click race | **Fixed** | Functional setState |
+| L7 badge cap | **Fixed** | `99+` cap |
+| L8 misattribution | Partial | `actorId=null` signals unknown; name fallback retained |
+
+Deferred items are cosmetic (L5, M5 re-skin) or require the DB/running app for
+safe verification; they are captured here and in the local-agent handover.
+
 ## Verified first-hand (not agent-only)
 - `POST /api/notifications` has no `getAdminUser()` (read of `route.ts:95-160`). ✅ C2
 - No retention/TTL/cleanup for notifications anywhere (repo-wide grep). ✅ C1
