@@ -8,9 +8,15 @@ import config from '@/lib/config';
 /* WHAT: Multi-user notifications API endpoint for shared activity notifications
  * WHY: Track project creation, edits, and stat updates visible to all users
  *      Each user can independently mark notifications as read or archived
- * 
+ *
  * GET: Fetch notifications with per-user read/archive status and unread count
- * POST: Create new notification (called by project operations) */
+ *
+ * Notification CREATION is intentionally NOT exposed over HTTP. All notifications
+ * are written server-side through lib/notificationUtils.ts:createNotification(),
+ * which derives the actor from the authenticated session and de-duplicates. A
+ * public POST create path previously existed here; it was unauthenticated
+ * (any client could forge notifications) and bypassed the de-dup/grouping logic,
+ * so it was removed. See docs/audits/notification-system-audit-2026-07-05.md (C2/H5). */
 
 export async function GET(request: NextRequest) {
   try {
@@ -92,69 +98,3 @@ const db = client.db(config.dbName);
   }
 }
 
-export async function POST(request: NextRequest) {
-  try {
-    const client = await clientPromise;
-const db = client.db(config.dbName);
-    const notifications = db.collection('notifications');
-
-    // WHAT: Parse notification data from request body
-    // WHY: Create notification from project operations
-    const body = await request.json();
-    const {
-      activityType,
-      user,
-      projectId,
-      projectName,
-      projectSlug
-    } = body;
-
-    // WHAT: Validate required fields
-    // WHY: Ensure notification integrity
-    if (!activityType || !user || !projectId || !projectName) {
-      return NextResponse.json(
-        { success: false, error: 'Missing required fields' },
-        { status: 400 }
-      );
-    }
-
-    // WHAT: Validate activity type
-    // WHY: Only allow specific activity types
-    const validTypes = ['create', 'edit', 'edit-stats'];
-    if (!validTypes.includes(activityType)) {
-      return NextResponse.json(
-        { success: false, error: 'Invalid activity type' },
-        { status: 400 }
-      );
-    }
-
-    // WHAT: Create notification document with ISO 8601 timestamp and empty read/archive arrays
-    // WHY: Multi-user support - each user can independently mark as read or archived
-    const timestamp = new Date().toISOString();
-    const notification = {
-      activityType,
-      user,
-      projectId,
-      projectName,
-      projectSlug: projectSlug || null,
-      timestamp,
-      readBy: [],           // Array of user IDs who have read this notification
-      archivedBy: [],       // Array of user IDs who have archived this notification
-      createdAt: timestamp
-    };
-
-    const result = await notifications.insertOne(notification);
-
-    return NextResponse.json({
-      success: true,
-      notificationId: result.insertedId,
-      notification
-    });
-  } catch (error) {
-    console.error('Error creating notification:', error);
-    return NextResponse.json(
-      { success: false, error: 'Failed to create notification' },
-      { status: 500 }
-    );
-  }
-}

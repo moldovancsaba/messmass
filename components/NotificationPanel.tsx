@@ -25,15 +25,19 @@ interface Notification {
 interface NotificationPanelProps {
   isOpen: boolean;
   onClose: () => void;
+  /* WHAT: Unread count owned by TopHeader — the single source of truth shared with the bell badge.
+     WHY: Prevents the bell and this panel from drifting (the "bell 2 vs panel 286" bug). */
+  unreadCount: number;
+  /* WHAT: Ask the owner to re-fetch the authoritative unread count.
+     WHY: Called after every read/archive/mark-all so the bell and panel stay in sync. */
+  refreshUnreadCount: () => void;
 }
 
-export default function NotificationPanel({ isOpen, onClose }: NotificationPanelProps) {
+export default function NotificationPanel({ isOpen, onClose, unreadCount, refreshUnreadCount }: NotificationPanelProps) {
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [loading, setLoading] = useState(true);
-  const [unreadCount, setUnreadCount] = useState(0);
+  const [error, setError] = useState(false);
   const [currentUserId, setCurrentUserId] = useState<string>('');
-  const [previousUnreadCount, setPreviousUnreadCount] = useState(0);
-  const [showNewIndicator, setShowNewIndicator] = useState(false);
   const panelRef = useRef<HTMLDivElement>(null);
 
   // WHAT: Close panel when clicking outside
@@ -56,29 +60,26 @@ export default function NotificationPanel({ isOpen, onClose }: NotificationPanel
   const fetchNotifications = useCallback(async () => {
     try {
       setLoading(true);
-      const response = await fetch('/api/notifications?limit=20&excludeArchived=true');
+      setError(false);
+      const response = await fetch('/api/notifications?limit=20&excludeArchived=true', { credentials: 'include' });
       const data = await response.json();
 
       if (data.success) {
         setNotifications(data.notifications);
         setCurrentUserId(data.currentUserId);
-        
-        // WHAT: Detect new notifications by comparing unread count
-        // WHY: Show visual indicator when new notifications arrive
-        if (data.unreadCount > previousUnreadCount && previousUnreadCount > 0) {
-          setShowNewIndicator(true);
-          setTimeout(() => setShowNewIndicator(false), 3000);
-        }
-        
-        setPreviousUnreadCount(data.unreadCount);
-        setUnreadCount(data.unreadCount);
+        // WHAT: Sync the authoritative unread count (owned by TopHeader)
+        // WHY: Opening the panel refreshes the single shared count so the bell can't go stale
+        refreshUnreadCount();
+      } else {
+        setError(true);
       }
-    } catch (error) {
-      console.error('Error fetching notifications:', error);
+    } catch (err) {
+      console.error('Error fetching notifications:', err);
+      setError(true);
     } finally {
       setLoading(false);
     }
-  }, [previousUnreadCount]);
+  }, [refreshUnreadCount]);
 
   // WHAT: Fetch notifications when panel opens
   // WHY: Load fresh data each time user clicks the bell
@@ -98,11 +99,13 @@ export default function NotificationPanel({ isOpen, onClose }: NotificationPanel
         action: 'read'
       });
 
-      // Update local state - add current user to readBy array
+      // Update local list optimistically, then refresh the shared count from the server
       setNotifications(prev =>
-        prev.map(n => n._id === notificationId ? { ...n, readBy: [...n.readBy, currentUserId] } : n)
+        prev.map(n => n._id === notificationId
+          ? { ...n, readBy: n.readBy.includes(currentUserId) ? n.readBy : [...n.readBy, currentUserId] }
+          : n)
       );
-      setUnreadCount(prev => Math.max(0, prev - 1));
+      refreshUnreadCount();
     } catch (error) {
       console.error('Error marking notification as read:', error);
     }
@@ -120,14 +123,9 @@ export default function NotificationPanel({ isOpen, onClose }: NotificationPanel
         action: 'archive'
       });
 
-      // Remove from local state immediately
+      // Remove from local list immediately, then refresh the shared count from the server
       setNotifications(prev => prev.filter(n => n._id !== notificationId));
-      
-      // Decrease unread count if it was unread
-      const notification = notifications.find(n => n._id === notificationId);
-      if (notification && !notification.readBy.includes(currentUserId)) {
-        setUnreadCount(prev => Math.max(0, prev - 1));
-      }
+      refreshUnreadCount();
     } catch (error) {
       console.error('Error archiving notification:', error);
     }
@@ -143,12 +141,12 @@ export default function NotificationPanel({ isOpen, onClose }: NotificationPanel
         action: 'read'
       });
 
-      // Update local state - add current user to readBy arrays
+      // Update local list, then refresh the shared count from the server
       setNotifications(prev => prev.map(n => ({
         ...n,
         readBy: n.readBy.includes(currentUserId) ? n.readBy : [...n.readBy, currentUserId]
       })));
-      setUnreadCount(0);
+      refreshUnreadCount();
     } catch (error) {
       console.error('Error marking all notifications as read:', error);
     }
@@ -206,7 +204,6 @@ export default function NotificationPanel({ isOpen, onClose }: NotificationPanel
           {unreadCount > 0 && (
             <span className={styles.unreadBadge}>
               {unreadCount}
-              {showNewIndicator && <span className={styles.newIndicator}>•</span>}
             </span>
           )}
         </h3>
@@ -228,6 +225,14 @@ export default function NotificationPanel({ isOpen, onClose }: NotificationPanel
           <div className={styles.loadingState}>
             <div className={styles.spinner}></div>
             <p>Loading notifications...</p>
+          </div>
+        ) : error ? (
+          <div className={styles.emptyState}>
+            <span className={styles.emptyIcon} aria-hidden="true">⚠️</span>
+            <p className={styles.emptyTitle}>Couldn&apos;t load notifications</p>
+            <button className={styles.markAllButton} onClick={fetchNotifications}>
+              Try again
+            </button>
           </div>
         ) : notifications.length === 0 ? (
           <div className={styles.emptyState}>
