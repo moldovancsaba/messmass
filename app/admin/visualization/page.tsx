@@ -152,6 +152,9 @@ export default function VisualizationPage() {
   const [templateEditName, setTemplateEditName] = useState('');
   const [templateCopyName, setTemplateCopyName] = useState('');
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  // WHAT: Id of the data block awaiting delete confirmation (null = no pending delete)
+  // WHY: Drive the GDS ConfirmDialog instead of the native confirm() dialog
+  const [blockPendingDelete, setBlockPendingDelete] = useState<string | null>(null);
   const [isTemplateMenuOpen, setIsTemplateMenuOpen] = useState(false);
   
   // WHAT: Track which block editors are expanded (default: all collapsed)
@@ -942,15 +945,24 @@ export default function VisualizationPage() {
     }
   };
   
-  const handleDeleteBlock = async (blockId: string) => {
-    // TODO: Replace confirm() with modal dialog in future enhancement
-    if (!confirm('Are you sure you want to delete this data block?')) {
+  // WHAT: Open the GDS confirmation dialog for a data-block delete
+  // WHY: Native confirm() bypasses the design system; deletion runs from confirmDeleteBlock
+  const handleDeleteBlock = (blockId: string) => {
+    setBlockPendingDelete(blockId);
+  };
+
+  // WHAT: Perform the delete once the operator confirms in the dialog
+  // WHY: Separates the destructive mutation from the trigger for a GDS-compliant flow
+  const confirmDeleteBlock = async () => {
+    const blockId = blockPendingDelete;
+    setBlockPendingDelete(null);
+    if (!blockId) {
       return;
     }
-    
+
     try {
       const data = await apiDelete(`/api/data-blocks?id=${blockId}`);
-      
+
       if (data.success) {
         const updatedBlocks = dataBlocks.filter(b => b._id !== blockId);
         setDataBlocks(updatedBlocks);
@@ -1897,7 +1909,24 @@ export default function VisualizationPage() {
           />
         );
       })()}
-      
+
+      {/* WHAT: Delete Data Block Confirmation Dialog
+          WHY: GDS-compliant confirmation for the destructive block delete (replaces native confirm()) */}
+      <ConfirmDialog
+        isOpen={blockPendingDelete !== null}
+        onClose={() => setBlockPendingDelete(null)}
+        onConfirm={confirmDeleteBlock}
+        title="Delete Data Block?"
+        message={`Are you sure you want to delete ${
+          dataBlocks.find(b => b._id === blockPendingDelete)?.name
+            ? `"${dataBlocks.find(b => b._id === blockPendingDelete)!.name}"`
+            : 'this data block'
+        }? This action cannot be undone.`}
+        confirmText="Delete"
+        cancelText="Cancel"
+        variant="danger"
+      />
+
       {!selectedTemplateId && (
         <ColoredCard accentColor="#f59e0b">
           <div className="info-box">

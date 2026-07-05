@@ -7,6 +7,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { ObjectId } from 'mongodb';
 import clientPromise from '@/lib/mongodb';
 import config from '@/lib/config';
+import { getAdminUser } from '@/lib/auth';
 import {
   type ContentAsset,
   type ContentAssetQuery,
@@ -196,7 +197,11 @@ export async function POST(request: NextRequest) {
     const client = await clientPromise;
     const db = client.db(MONGODB_DB);
     const collection = db.collection<ContentAsset>('content_assets');
-    
+
+    // WHAT: Resolve the acting admin from the session cookie
+    // WHY: Attribute the created asset to its uploader for audit/ownership
+    const user = await getAdminUser();
+
     // WHAT: Check slug uniqueness
     // WHY: Duplicate slugs would break asset references
     const existing = await collection.findOne({ slug });
@@ -222,7 +227,7 @@ export async function POST(request: NextRequest) {
       category: body.category || 'Uncategorized',
       tags: body.tags || [],
       isVariable: body.isVariable || false, // WHAT: Flag for Variable Definition vs Global Asset
-      uploadedBy: undefined, // TODO: Add user session tracking
+      uploadedBy: user?.email || 'admin', // WHAT: Attribute to the acting admin (matches createdBy convention)
       usageCount: 0, // Initially zero, updated by usage tracking system
       createdAt: now,
       updatedAt: now
