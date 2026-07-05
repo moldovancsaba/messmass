@@ -127,7 +127,7 @@ export default function TopHeader({ user }: TopHeaderProps) {
               </ActionIcon>
               {unreadCount > 0 && (
                 <Badge className={styles.notificationBadge} size="sm" circle>
-                  {unreadCount}
+                  {unreadCount > 99 ? '99+' : unreadCount}
                 </Badge>
               )}
             </div>
