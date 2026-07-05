@@ -8,7 +8,7 @@
  */
 
 import { validateBlocksForEditor, checkPublishValidity, type EditorBlockInput, type BlockValidationResult } from './editorValidationAPI';
-import type { AspectRatio } from './chartConfigTypes';
+import type { AspectRatio, ChartCalculationResult } from './chartConfigTypes';
 import { isValidAspectRatio } from './aspectRatioUtils';
 
 // Types for editor data structures (these should match actual editor types)
@@ -58,7 +58,12 @@ function convertBlockToCellConfiguration(
       chartId: chartRef.chartId,
       elementType: (chart?.type || 'kpi') as 'text' | 'table' | 'pie' | 'bar' | 'kpi' | 'image',
       width: chartRef.width,
-      contentMetadata: {}, // TODO: Build from actual chart data
+      // WHAT: Size-driving metadata (barCount/rowCount/legendItemCount/labels) comes from
+      //       buildContentMetadata(chart, chartData). chartData (ChartCalculationResult) is not
+      //       threaded into this adapter yet; wiring it changes publish-gating behavior and needs
+      //       runtime verification against the editor. Tracked in #284; empty until then (safe:
+      //       the fit validators treat missing counts as zero, i.e. current behavior).
+      contentMetadata: chart ? buildContentMetadata(chart) : {},
       imageMode: blockConfig?.imageModes?.[chartRef.chartId]
     };
   });
@@ -82,23 +87,59 @@ function convertBlockToCellConfiguration(
 }
 
 /**
- * Builds content metadata for validation from chart data
+ * Builds content metadata consumed by the Layout Grammar fit validators
+ * (`elementFitValidator` / `blockHeightCalculator`). Those readers key off:
+ *   bar   -> barCount, labels
+ *   pie   -> legendItemCount, legendLabels
+ *   table -> rowCount, labels
+ *   text  -> characterCount, lineCount
+ *   image -> aspectRatio
+ * Extraction is deterministic from the chart's calculation result; when no
+ * chartData is available only the chart type is returned.
  */
 export function buildContentMetadata(
   chart: EditorChart,
-  chartData?: unknown
+  chartData?: Pick<ChartCalculationResult, 'elements' | 'kpiValue' | 'aspectRatio'>
 ): Record<string, unknown> {
-  // TODO: Extract actual content metadata based on chart type
-  // For text: character count, line count
-  // For table: row count, column count
-  // For pie: slice count, label lengths
-  // For bar: bar count, label lengths
-  // For image: dimensions, aspect ratio
-  
-  return {
-    type: chart.type
-    // Additional metadata will be populated based on chart type
-  };
+  const metadata: Record<string, unknown> = { type: chart.type };
+
+  if (!chartData) {
+    return metadata;
+  }
+
+  const elements = Array.isArray(chartData.elements) ? chartData.elements : [];
+  const labels = elements.map(el => String(el.label ?? ''));
+
+  switch (chart.type) {
+    case 'bar':
+      metadata.barCount = elements.length;
+      metadata.labels = labels;
+      break;
+    case 'pie':
+      metadata.legendItemCount = elements.length;
+      metadata.legendLabels = labels;
+      break;
+    case 'table':
+      metadata.rowCount = elements.length;
+      metadata.labels = labels;
+      break;
+    case 'text': {
+      const text = typeof chartData.kpiValue === 'string'
+        ? chartData.kpiValue
+        : elements.map(el => (typeof el.value === 'string' ? el.value : '')).join('\n');
+      metadata.characterCount = text.length;
+      metadata.lineCount = text.length === 0 ? 0 : text.split('\n').length;
+      break;
+    }
+    case 'image':
+      if (chartData.aspectRatio) {
+        metadata.aspectRatio = chartData.aspectRatio;
+      }
+      break;
+    // 'kpi' (and any other type): type only — no size-driving content metadata
+  }
+
+  return metadata;
 }
 
 /**
