@@ -37,8 +37,12 @@ const db = client.db(config.dbName);
     // WHAT: Parse query parameters for pagination and filtering
     // WHY: Support infinite scroll, read-only, and archived views
     const searchParams = request.nextUrl.searchParams;
-    const limit = parseInt(searchParams.get('limit') || '20');
-    const offset = parseInt(searchParams.get('offset') || '0');
+    // WHAT: Bound and sanitize pagination inputs (audit L1)
+    // WHY: Prevent NaN/negative offsets and unbounded scans (e.g. ?limit=1000000)
+    const rawLimit = parseInt(searchParams.get('limit') || '20', 10);
+    const rawOffset = parseInt(searchParams.get('offset') || '0', 10);
+    const limit = Number.isFinite(rawLimit) ? Math.min(Math.max(rawLimit, 1), 100) : 20;
+    const offset = Number.isFinite(rawOffset) ? Math.max(rawOffset, 0) : 0;
     const unreadOnly = searchParams.get('unreadOnly') === 'true';
     const archivedOnly = searchParams.get('archivedOnly') === 'true';
     const excludeArchived = searchParams.get('excludeArchived') === 'true';

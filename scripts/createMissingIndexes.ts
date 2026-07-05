@@ -87,18 +87,28 @@ const INDEX_SPECS: IndexSpec[] = [
     rationale: 'Unique edit slug lookup'
   },
 
-  // notifications (4,128 docs) - High-volume collection
+  // notifications (high-volume) — indexes corrected to match actual schema/queries
+  // (audit H2/H3). The app sorts by `timestamp` and filters readBy/archivedBy;
+  // creation upserts on `dedupeKey`; retention uses the `occurredAt` Date TTL.
   {
     collection: 'notifications',
-    name: 'createdAt_desc',
-    keys: { createdAt: -1 },
-    rationale: 'Recent notifications first (notification panel)'
+    name: 'timestamp_desc',
+    keys: { timestamp: -1 },
+    rationale: 'Feed sort — GET /api/notifications sorts by timestamp desc'
   },
   {
     collection: 'notifications',
-    name: 'userId_createdAt',
-    keys: { userId: 1, createdAt: -1 },
-    rationale: 'User-specific notifications sorted by time'
+    name: 'dedupeKey_unique',
+    keys: { dedupeKey: 1 },
+    options: { unique: true, sparse: true },
+    rationale: 'Idempotent createNotification upsert; enforces one doc per (actor,action,project,window)'
+  },
+  {
+    collection: 'notifications',
+    name: 'occurredAt_ttl',
+    keys: { occurredAt: 1 },
+    options: { expireAfterSeconds: 60 * 60 * 24 * 90 },
+    rationale: 'Retention — auto-expire notifications 90 days after occurredAt (requires BSON Date)'
   },
   {
     collection: 'notifications',

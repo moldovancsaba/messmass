@@ -31,7 +31,15 @@ export async function GET(request: NextRequest) {
     const expectedSecret = process.env.CRON_SECRET;
     
     if (!expectedSecret) {
-      logWarn('CRON_SECRET not configured - cron endpoint is unprotected', { context: 'cron-google-sheets-sync' });
+      // WHAT: Fail closed in production when the secret is missing (audit M7).
+      // WHY: Previously this warned and continued, leaving the cron open to anyone.
+      logWarn('CRON_SECRET not configured', { context: 'cron-google-sheets-sync' });
+      if (process.env.NODE_ENV === 'production') {
+        return NextResponse.json(
+          { success: false, error: 'Cron endpoint not configured' },
+          { status: 503 }
+        );
+      }
     } else if (authHeader !== `Bearer ${expectedSecret}`) {
       return NextResponse.json(
         { success: false, error: 'Unauthorized' },
