@@ -50,11 +50,16 @@ export async function PUT(request: NextRequest) {
     let result;
 
     if (markAll) {
-      // WHAT: Mark all unread/unarchived notifications for this user
-      // WHY: Bulk action for clearing all notifications
+      // WHAT: Mark all unread notifications for this user as read/archived.
+      // WHY: Scope to exactly the set the unread count covers (audit M2):
+      //      unread = not-read AND not-archived. So "mark all read" excludes
+      //      already-archived docs, keeping the action consistent with the badge.
       const filter: any = {};
       filter[fieldToUpdate] = { $ne: user.id };
-      
+      if (action === 'read') {
+        filter.archivedBy = { $ne: user.id };
+      }
+
       result = await notifications.updateMany(filter, updateOperation);
     } else if (notificationIds && Array.isArray(notificationIds) && notificationIds.length > 0) {
       // WHAT: Mark specific notifications as read/archived for this user

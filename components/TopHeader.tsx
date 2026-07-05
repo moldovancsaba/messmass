@@ -65,13 +65,14 @@ export default function TopHeader({ user }: TopHeaderProps) {
   }, [unreadCount]);
 
   /* What: Toggle notification panel visibility
-     Why: Show/hide notifications on bell click */
+     Why: Show/hide notifications on bell click
+     Note: functional update avoids a stale-closure race with the panel's
+           outside-click handler when the bell is clicked while open (audit L6). */
   const handleBellClick = () => {
-    setShowNotifications(!showNotifications);
-    // Refresh count when opening panel
-    if (!showNotifications) {
-      fetchUnreadCount();
-    }
+    setShowNotifications(prev => {
+      if (!prev) fetchUnreadCount(); // refresh count when opening
+      return !prev;
+    });
   };
   
   /* What: Handle logout action
