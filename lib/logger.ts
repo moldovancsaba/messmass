@@ -1,7 +1,10 @@
 // lib/logger.ts
 // WHAT: Centralized structured logging system for {messmass}
 // WHY: Consistent logging format enables effective monitoring, debugging, and audit trails
-// HOW: Structured JSON logs with severity levels, context tracking, and external service integration
+// HOW: Structured JSON logs written to stdout/stderr (captured by the platform log drain)
+//      with severity levels and context tracking. Shipping to a hosted aggregator
+//      (Datadog/CloudWatch/etc.) is intentionally a deployment/log-drain concern, not an
+//      in-process sink, so this module has no file or external-service transport.
 
 // WHAT: Log severity levels (RFC 5424 compatible)
 // WHY: Standard levels enable filtering and alert routing
@@ -46,9 +49,7 @@ interface ErrorDetails {
 // WHAT: Logger configuration
 interface LoggerConfig {
   minLevel: LogLevel;                    // Minimum level to log
-  enableConsole: boolean;                // Output to console
-  enableFile: boolean;                   // Output to file (future)
-  enableExternal: boolean;               // Send to external service (future)
+  enableConsole: boolean;                // Output to console (stdout/stderr)
   redactSensitiveData: boolean;          // Redact passwords, tokens, etc.
   includeStackTrace: boolean;            // Include stack traces in error logs
 }
@@ -57,8 +58,6 @@ interface LoggerConfig {
 const DEFAULT_CONFIG: LoggerConfig = {
   minLevel: process.env.NODE_ENV === 'production' ? LogLevel.INFO : LogLevel.DEBUG,
   enableConsole: true,
-  enableFile: false,        // TODO: Implement file logging
-  enableExternal: false,    // TODO: Implement Datadog/CloudWatch integration
   redactSensitiveData: true,
   includeStackTrace: process.env.NODE_ENV !== 'production',
 };
@@ -180,22 +179,10 @@ function log(
       }
     } else {
       // WHAT: Structured JSON for production (parseable by log aggregators)
+      // WHY: The platform log drain ships stdout/stderr to any external aggregator;
+      //      no in-process file or network transport is needed here.
       logFn(JSON.stringify(entry));
     }
-  }
-  
-  // WHAT: TODO: Write to file (log rotation)
-  if (currentConfig.enableFile) {
-    // Implement file logging with rotation
-    // Libraries: winston, pino, bunyan
-  }
-  
-  // WHAT: TODO: Send to external service
-  if (currentConfig.enableExternal) {
-    // Implement integration with:
-    // - Datadog: https://docs.datadoghq.com/logs/
-    // - CloudWatch: https://docs.aws.amazon.com/cloudwatch/
-    // - New Relic: https://docs.newrelic.com/docs/logs/
   }
 }
 
@@ -401,17 +388,4 @@ export function logConfigChange(key: string, oldValue: unknown, newValue: unknow
     newValue: redactSensitiveData(newValue),
     tags: ['config', 'change'],
   });
-}
-
-// WHAT: Export for external monitoring integration
-// WHY: Allow external services to query log statistics
-export function getLogStatistics(): {
-  totalLogs: number;
-  byLevel: Record<string, number>;
-} {
-  // TODO: Implement log statistics tracking
-  return {
-    totalLogs: 0,
-    byLevel: {},
-  };
 }
