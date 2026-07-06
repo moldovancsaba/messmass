@@ -1,14 +1,16 @@
 'use client';
 
 import React, { useState, useEffect, useRef, useCallback } from 'react';
+import { useRouter } from 'next/navigation';
 import styles from './NotificationPanel.module.css';
 import { apiPut } from '@/lib/apiClient';
 
-/* WHAT: Notification panel component to display project activity notifications
- * WHY: Users need to see who created/edited projects and when, with links to the projects
- * 
- * Displays notifications in a dropdown panel below the bell icon
- * Shows time, user, activity type, and project name with link */
+/* WHAT: Notification panel dropdown below the header bell.
+ * WHY: Shows who created/edited projects and when, with deep links.
+ *
+ * The unread count is owned by TopHeader (single source of truth) and passed in;
+ * this panel renders it and asks TopHeader to refresh it after every mutation so
+ * the bell and panel can never drift (audit C3). */
 
 interface Notification {
   _id: string;
@@ -18,160 +20,144 @@ interface Notification {
   projectName: string;
   projectSlug?: string | null;
   timestamp: string;
-  readBy: string[];        // Array of user IDs who have read this
-  archivedBy: string[];    // Array of user IDs who have archived this
+  readBy: string[];
+  archivedBy: string[];
 }
 
 interface NotificationPanelProps {
   isOpen: boolean;
   onClose: () => void;
+  /* Shared unread count owned by TopHeader (single source of truth with the bell). */
+  unreadCount: number;
+  /* Re-fetch the authoritative unread count after any read/archive/mark-all. */
+  refreshUnreadCount: () => void;
 }
 
-export default function NotificationPanel({ isOpen, onClose }: NotificationPanelProps) {
+const PAGE_SIZE = 20;
+
+export default function NotificationPanel({ isOpen, onClose, unreadCount, refreshUnreadCount }: NotificationPanelProps) {
+  const router = useRouter();
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [loading, setLoading] = useState(true);
-  const [unreadCount, setUnreadCount] = useState(0);
+  const [loadingMore, setLoadingMore] = useState(false);
+  const [error, setError] = useState(false);
   const [currentUserId, setCurrentUserId] = useState<string>('');
-  const [previousUnreadCount, setPreviousUnreadCount] = useState(0);
-  const [showNewIndicator, setShowNewIndicator] = useState(false);
+  const [nextOffset, setNextOffset] = useState<number | null>(null);
   const panelRef = useRef<HTMLDivElement>(null);
 
-  // WHAT: Close panel when clicking outside
-  // WHY: Standard UX pattern for dropdown panels
+  // WHAT: Close on outside click. WHY: standard dropdown UX.
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
       if (panelRef.current && !panelRef.current.contains(event.target as Node)) {
         onClose();
       }
     }
-
     if (isOpen) {
       document.addEventListener('mousedown', handleClickOutside);
       return () => document.removeEventListener('mousedown', handleClickOutside);
     }
   }, [isOpen, onClose]);
 
-  // WHAT: Fetch notifications from API with exclude archived filter
-  // WHY: Display recent activities in the panel, hide archived items
-  const fetchNotifications = useCallback(async () => {
+  // WHAT: Escape-to-close + move focus into the panel on open (a11y — audit M6).
+  useEffect(() => {
+    if (!isOpen) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') onClose();
+    };
+    document.addEventListener('keydown', onKey);
+    panelRef.current?.focus();
+    return () => document.removeEventListener('keydown', onKey);
+  }, [isOpen, onClose]);
+
+  // WHAT: Load a page of notifications; append when offset > 0 (audit H8).
+  const load = useCallback(async (offset: number) => {
+    const append = offset > 0;
     try {
-      setLoading(true);
-      const response = await fetch('/api/notifications?limit=20&excludeArchived=true');
+      if (append) setLoadingMore(true);
+      else { setLoading(true); setError(false); }
+
+      const response = await fetch(
+        `/api/notifications?limit=${PAGE_SIZE}&offset=${offset}&excludeArchived=true`,
+        { credentials: 'include' }
+      );
       const data = await response.json();
 
       if (data.success) {
-        setNotifications(data.notifications);
+        setNotifications(prev => append ? [...prev, ...data.notifications] : data.notifications);
         setCurrentUserId(data.currentUserId);
-        
-        // WHAT: Detect new notifications by comparing unread count
-        // WHY: Show visual indicator when new notifications arrive
-        if (data.unreadCount > previousUnreadCount && previousUnreadCount > 0) {
-          setShowNewIndicator(true);
-          setTimeout(() => setShowNewIndicator(false), 3000);
-        }
-        
-        setPreviousUnreadCount(data.unreadCount);
-        setUnreadCount(data.unreadCount);
+        setNextOffset(data.pagination?.nextOffset ?? null);
+        // Sync the single shared unread count (bell + header).
+        refreshUnreadCount();
+      } else if (!append) {
+        setError(true);
       }
-    } catch (error) {
-      console.error('Error fetching notifications:', error);
+    } catch (err) {
+      console.error('Error fetching notifications:', err);
+      if (!append) setError(true);
     } finally {
-      setLoading(false);
+      if (append) setLoadingMore(false);
+      else setLoading(false);
     }
-  }, [previousUnreadCount]);
+  }, [refreshUnreadCount]);
 
-  // WHAT: Fetch notifications when panel opens
-  // WHY: Load fresh data each time user clicks the bell
+  // WHAT: Load fresh data each time the panel opens.
   useEffect(() => {
-    if (isOpen) {
-      fetchNotifications();
-    }
-  }, [isOpen, fetchNotifications]);
+    if (isOpen) load(0);
+  }, [isOpen, load]);
 
-  // WHAT: Mark notification as read when clicked
-  // WHY: Dismiss notifications and clear badge count
-  // HOW: Use apiPut() for automatic CSRF token handling
   const markAsRead = async (notificationId: string) => {
     try {
-      await apiPut('/api/notifications/mark-read', {
-        notificationIds: [notificationId],
-        action: 'read'
-      });
-
-      // Update local state - add current user to readBy array
+      await apiPut('/api/notifications/mark-read', { notificationIds: [notificationId], action: 'read' });
       setNotifications(prev =>
-        prev.map(n => n._id === notificationId ? { ...n, readBy: [...n.readBy, currentUserId] } : n)
+        prev.map(n => n._id === notificationId
+          ? { ...n, readBy: n.readBy.includes(currentUserId) ? n.readBy : [...n.readBy, currentUserId] }
+          : n)
       );
-      setUnreadCount(prev => Math.max(0, prev - 1));
+      refreshUnreadCount();
     } catch (error) {
       console.error('Error marking notification as read:', error);
     }
   };
 
-  // WHAT: Archive notification to remove from main list
-  // WHY: Allow users to hide notifications they don't want to see anymore
-  // HOW: Use apiPut() for automatic CSRF token handling
   const archiveNotification = async (notificationId: string, event: React.MouseEvent) => {
-    event.stopPropagation(); // Prevent notification click
-    
+    event.stopPropagation();
     try {
-      await apiPut('/api/notifications/mark-read', {
-        notificationIds: [notificationId],
-        action: 'archive'
-      });
-
-      // Remove from local state immediately
+      await apiPut('/api/notifications/mark-read', { notificationIds: [notificationId], action: 'archive' });
       setNotifications(prev => prev.filter(n => n._id !== notificationId));
-      
-      // Decrease unread count if it was unread
-      const notification = notifications.find(n => n._id === notificationId);
-      if (notification && !notification.readBy.includes(currentUserId)) {
-        setUnreadCount(prev => Math.max(0, prev - 1));
-      }
+      refreshUnreadCount();
     } catch (error) {
       console.error('Error archiving notification:', error);
     }
   };
 
-  // WHAT: Mark all notifications as read
-  // WHY: Bulk action for clearing all notifications
-  // HOW: Use apiPut() for automatic CSRF token handling
   const markAllAsRead = async () => {
     try {
-      await apiPut('/api/notifications/mark-read', {
-        markAll: true,
-        action: 'read'
-      });
-
-      // Update local state - add current user to readBy arrays
+      await apiPut('/api/notifications/mark-read', { markAll: true, action: 'read' });
       setNotifications(prev => prev.map(n => ({
         ...n,
         readBy: n.readBy.includes(currentUserId) ? n.readBy : [...n.readBy, currentUserId]
       })));
-      setUnreadCount(0);
+      refreshUnreadCount();
     } catch (error) {
       console.error('Error marking all notifications as read:', error);
     }
   };
 
-  // WHAT: Handle notification click - navigate to events page and mark as read
-  // WHY: Allow users to view events details directly from notification
+  // WHAT: Navigate to the specific project and mark read (audit M4).
+  // WHY: Previously always hard-navigated to /admin/events, discarding the
+  //      notification's project identity and reloading the whole app.
   const handleNotificationClick = (notification: Notification) => {
     if (!notification.readBy.includes(currentUserId)) {
       markAsRead(notification._id);
     }
-    
-    // Navigate to admin events page
-    window.location.href = `/admin/events`;
+    onClose();
+    router.push(notification.projectId ? `/admin/events/${notification.projectId}` : '/admin/events');
   };
 
-  // WHAT: Format timestamp to relative time
-  // WHY: "2 minutes ago" is more user-friendly than ISO timestamp
   const formatTimestamp = (timestamp: string): string => {
     const date = new Date(timestamp);
     const now = new Date();
     const seconds = Math.floor((now.getTime() - date.getTime()) / 1000);
-
     if (seconds < 60) return 'just now';
     if (seconds < 3600) return `${Math.floor(seconds / 60)}m ago`;
     if (seconds < 86400) return `${Math.floor(seconds / 3600)}h ago`;
@@ -179,109 +165,112 @@ export default function NotificationPanel({ isOpen, onClose }: NotificationPanel
     return date.toLocaleDateString();
   };
 
-  // WHAT: Get activity label and icon
-  // WHY: Display meaningful activity descriptions
   const getActivityLabel = (activityType: string): { label: string; icon: string } => {
     switch (activityType) {
-      case 'create':
-        return { label: 'created project', icon: '✨' };
-      case 'edit':
-        return { label: 'edited project', icon: '✏️' };
-      case 'edit-stats':
-        return { label: 'updated stats', icon: '📊' };
-      default:
-        return { label: 'modified', icon: '🔄' };
+      case 'create': return { label: 'created project', icon: '✨' };
+      case 'edit': return { label: 'edited project', icon: '✏️' };
+      case 'edit-stats': return { label: 'updated stats', icon: '📊' };
+      default: return { label: 'modified', icon: '🔄' };
     }
   };
 
   if (!isOpen) return null;
 
   return (
-    <div ref={panelRef} className={styles.notificationPanel}>
-      {/* WHAT: Panel header with title and action buttons
-         * WHY: Shows unread count and provides mark all as read action */}
+    <div
+      ref={panelRef}
+      className={styles.notificationPanel}
+      role="dialog"
+      aria-label="Notifications"
+      tabIndex={-1}
+    >
       <div className={styles.panelHeader}>
         <h3 className={styles.panelTitle}>
           Notifications
           {unreadCount > 0 && (
-            <span className={styles.unreadBadge}>
-              {unreadCount}
-              {showNewIndicator && <span className={styles.newIndicator}>•</span>}
-            </span>
+            <span className={styles.unreadBadge}>{unreadCount > 99 ? '99+' : unreadCount}</span>
           )}
         </h3>
         {notifications.length > 0 && (
-          <button
-            className={styles.markAllButton}
-            onClick={markAllAsRead}
-            title="Mark all as read"
-          >
+          <button className={styles.markAllButton} onClick={markAllAsRead} title="Mark all as read">
             Mark all read
           </button>
         )}
       </div>
 
-      {/* WHAT: Notifications list
-         * WHY: Display all recent activities */}
       <div className={styles.notificationsList}>
         {loading ? (
           <div className={styles.loadingState}>
             <div className={styles.spinner}></div>
             <p>Loading notifications...</p>
           </div>
+        ) : error ? (
+          <div className={styles.emptyState}>
+            <span className={styles.emptyIcon} aria-hidden="true">⚠️</span>
+            <p className={styles.emptyTitle}>Couldn&apos;t load notifications</p>
+            <button className={styles.markAllButton} onClick={() => load(0)}>Try again</button>
+          </div>
         ) : notifications.length === 0 ? (
           <div className={styles.emptyState}>
-            <span className={styles.emptyIcon}>🔔</span>
+            <span className={styles.emptyIcon} aria-hidden="true">🔔</span>
             <p className={styles.emptyTitle}>No notifications yet</p>
-            <p className={styles.emptyText}>
-              Project activities will appear here
-            </p>
+            <p className={styles.emptyText}>Project activities will appear here</p>
           </div>
         ) : (
-          notifications.map(notification => {
-            const activity = getActivityLabel(notification.activityType);
-            return (
-              <div
-                key={notification._id}
-                className={`${styles.notificationItem} ${
-                  !notification.readBy.includes(currentUserId) ? styles.unread : ''
-                }`}
-                onClick={() => handleNotificationClick(notification)}
+          <>
+            {notifications.map(notification => {
+              const activity = getActivityLabel(notification.activityType);
+              const isUnread = !notification.readBy.includes(currentUserId);
+              return (
+                <div
+                  key={notification._id}
+                  className={`${styles.notificationItem} ${isUnread ? styles.unread : ''}`}
+                  role="button"
+                  tabIndex={0}
+                  onClick={() => handleNotificationClick(notification)}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                      e.preventDefault();
+                      handleNotificationClick(notification);
+                    }
+                  }}
+                >
+                  <div className={styles.notificationIcon} aria-hidden="true">{activity.icon}</div>
+                  <div className={styles.notificationContent}>
+                    <div className={styles.notificationText} title={`${notification.user} ${activity.label}`}>
+                      <strong>{notification.user}</strong> {activity.label}
+                    </div>
+                    <div className={styles.notificationProject} title={notification.projectName ?? undefined}>
+                      {notification.projectName}
+                    </div>
+                    <div className={styles.notificationTime}>
+                      {formatTimestamp(notification.timestamp)}
+                    </div>
+                  </div>
+                  <div className={styles.notificationActions}>
+                    {isUnread && <div className={styles.unreadDot}></div>}
+                    <button
+                      className={styles.archiveButton}
+                      onClick={(e) => archiveNotification(notification._id, e)}
+                      title="Archive notification"
+                      aria-label="Archive notification"
+                    >
+                      ×
+                    </button>
+                  </div>
+                </div>
+              );
+            })}
+            {nextOffset !== null && (
+              <button
+                className={styles.loadMoreButton}
+                onClick={() => load(nextOffset)}
+                disabled={loadingMore}
               >
-                <div className={styles.notificationIcon}>{activity.icon}</div>
-                <div className={styles.notificationContent}>
-                  <div
-                    className={styles.notificationText}
-                    title={`${notification.user} ${activity.label}`}
-                  >
-                    <strong>{notification.user}</strong> {activity.label}
-                  </div>
-                  <div
-                    className={styles.notificationProject}
-                    title={notification.projectName ?? undefined}
-                  >
-                    {notification.projectName}
-                  </div>
-                  <div className={styles.notificationTime}>
-                    {formatTimestamp(notification.timestamp)}
-                  </div>
-                </div>
-                <div className={styles.notificationActions}>
-                  {!notification.readBy.includes(currentUserId) && (
-                    <div className={styles.unreadDot}></div>
-                  )}
-                  <button
-                    className={styles.archiveButton}
-                    onClick={(e) => archiveNotification(notification._id, e)}
-                    title="Archive notification"
-                    aria-label="Archive"
-                  >
-                    ×
-                  </button>
-                </div>
-              </div>
-            );
-          })
+                {loadingMore ? 'Loading…' : 'Load more'}
+              </button>
+            )}
+          </>
         )}
       </div>
     </div>

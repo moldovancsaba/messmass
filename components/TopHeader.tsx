@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { ActionIcon, Avatar, Badge, Box, Button, Group, Paper, Stack, Text } from '@mantine/core';
 import { IconBell, IconDoorExit } from '@tabler/icons-react';
@@ -26,6 +26,22 @@ export default function TopHeader({ user }: TopHeaderProps) {
   const [unreadCount, setUnreadCount] = useState(0);
   const prevUnreadRef = useRef<number | null>(null);
 
+  /* What: Fetch unread notification count from API — the single source of truth
+     Why: Both the bell badge and the notification panel header read THIS value.
+          Stable identity (useCallback) so the panel can call it after mutations
+          without re-triggering render loops. */
+  const fetchUnreadCount = useCallback(async () => {
+    try {
+      const response = await fetch('/api/notifications?limit=1', { credentials: 'include' });
+      const data = await response.json();
+      if (data.success) {
+        setUnreadCount(data.unreadCount);
+      }
+    } catch (error) {
+      console.error('Error fetching unread count:', error);
+    }
+  }, []);
+
   /* What: Fetch unread notification count on mount and periodically
      Why: Display badge with current unread count */
   useEffect(() => {
@@ -33,7 +49,7 @@ export default function TopHeader({ user }: TopHeaderProps) {
     fetchUnreadCount();
     const interval = setInterval(fetchUnreadCount, 30000);
     return () => clearInterval(interval);
-  }, [user]);
+  }, [user, fetchUnreadCount]);
 
   /* OPS-ADMIN-01: Announce badge updates to screen readers (aria-live) */
   useEffect(() => {
@@ -47,29 +63,16 @@ export default function TopHeader({ user }: TopHeaderProps) {
     }
     prevUnreadRef.current = unreadCount;
   }, [unreadCount]);
-  
-  /* What: Fetch unread notification count from API
-     Why: Update badge without opening the panel */
-  const fetchUnreadCount = async () => {
-    try {
-      const response = await fetch('/api/notifications?limit=1', { credentials: 'include' });
-      const data = await response.json();
-      if (data.success) {
-        setUnreadCount(data.unreadCount);
-      }
-    } catch (error) {
-      console.error('Error fetching unread count:', error);
-    }
-  };
-  
+
   /* What: Toggle notification panel visibility
-     Why: Show/hide notifications on bell click */
+     Why: Show/hide notifications on bell click
+     Note: functional update avoids a stale-closure race with the panel's
+           outside-click handler when the bell is clicked while open (audit L6). */
   const handleBellClick = () => {
-    setShowNotifications(!showNotifications);
-    // Refresh count when opening panel
-    if (!showNotifications) {
-      fetchUnreadCount();
-    }
+    setShowNotifications(prev => {
+      if (!prev) fetchUnreadCount(); // refresh count when opening
+      return !prev;
+    });
   };
   
   /* What: Handle logout action
@@ -125,13 +128,15 @@ export default function TopHeader({ user }: TopHeaderProps) {
               </ActionIcon>
               {unreadCount > 0 && (
                 <Badge className={styles.notificationBadge} size="sm" circle>
-                  {unreadCount}
+                  {unreadCount > 99 ? '99+' : unreadCount}
                 </Badge>
               )}
             </div>
             <NotificationPanel
               isOpen={showNotifications}
               onClose={() => setShowNotifications(false)}
+              unreadCount={unreadCount}
+              refreshUnreadCount={fetchUnreadCount}
             />
           </div>
           

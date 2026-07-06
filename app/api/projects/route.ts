@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { ObjectId, Db } from 'mongodb';
 import { generateProjectSlugs } from '@/lib/slugUtils';
 import clientPromise from '@/lib/mongodb';
-import { createNotification, getCurrentUser } from '@/lib/notificationUtils';
+import { createNotification, getCurrentActor } from '@/lib/notificationUtils';
 import { error as logError, info as logInfo, warn as logWarn, debug as logDebug } from '@/lib/logger';
 
 // Import hashtag category types for categorized hashtags support
@@ -689,10 +689,11 @@ export async function POST(request: NextRequest) {
     // WHAT: Log notification for project creation
     // WHY: Notify all users of new project activity
     try {
-      const user = await getCurrentUser();
+      const actor = await getCurrentActor();
       await createNotification(db, {
         activityType: 'create',
-        user,
+        actorId: actor.id,
+        actorName: actor.name,
         projectId: result.insertedId.toString(),
         projectName: eventName,
         projectSlug: viewSlug
@@ -951,10 +952,11 @@ export async function PUT(request: NextRequest) {
     // WHAT: Log notification for project edit
     // WHY: Notify all users of project changes
     try {
-      const user = await getCurrentUser();
+      const actor = await getCurrentActor();
       await createNotification(db, {
         activityType: 'edit',
-        user,
+        actorId: actor.id,
+        actorName: actor.name,
         projectId: projectId,
         projectName: eventName,
         projectSlug: currentProject.viewSlug || null

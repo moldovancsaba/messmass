@@ -106,12 +106,13 @@ export async function PUT(
     // WHAT: Log notification for stats update
     // WHY: Notify all users when project statistics are modified
     try {
-      const { getCurrentUser, createNotification } = await import('@/lib/notificationUtils');
-      const user = await getCurrentUser();
-      
+      const { getCurrentActor, createNotification } = await import('@/lib/notificationUtils');
+      const actor = await getCurrentActor();
+
       await createNotification(db, {
         activityType: 'edit-stats',
-        user,
+        actorId: actor.id,
+        actorName: actor.name,
         projectId: id,
         projectName: existingProject.eventName || 'Unknown Project',
         projectSlug: existingProject.viewSlug || null

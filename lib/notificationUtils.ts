@@ -1,13 +1,36 @@
 /* WHAT: Notification utility functions for logging project activities
- * WHY: Centralize notification creation logic to avoid code duplication
- * 
- * Used by project API routes to automatically log user activities */
+ * WHY: Single, authenticated, server-side creation path for the notifications
+ *      collection. There is intentionally no HTTP create endpoint — see
+ *      docs/audits/notification-system-audit-2026-07-05.md.
+ *
+ * Design (ground-up rebuild, 2026-07-05):
+ * - Idempotent creation: an atomic upsert keyed by a deterministic `dedupeKey`
+ *   (actor + normalized action + project + 5-minute bucket). This replaces the
+ *   previous non-atomic findOne→insert, so concurrent edits can no longer race
+ *   into duplicate notifications (requires the unique sparse index on dedupeKey;
+ *   see scripts/ensure-notification-indexes.ts).
+ * - Stable identity: the actor is stored as `actorId` (stable) plus `user`
+ *   (denormalized display name for rendering). Grouping keys off the id, never
+ *   the mutable name.
+ * - Retention-ready: `occurredAt` is a real BSON Date so a TTL index can bound
+ *   the collection (the legacy `timestamp` ISO string is kept for the client). */
 
 import { Db } from 'mongodb';
 
+export type NotificationActivityType =
+  | 'create'
+  | 'edit'
+  | 'edit-stats'
+  | 'api_stats_update'
+  | 'webhook_disabled'
+  | 'webhook_failed';
+
 export interface CreateNotificationParams {
-  activityType: 'create' | 'edit' | 'edit-stats' | 'api_stats_update' | 'webhook_disabled' | 'webhook_failed';
-  user: string;
+  activityType: NotificationActivityType;
+  /** Stable user id of the actor (preferred key for grouping/attribution). */
+  actorId?: string | null;
+  /** Display name of the actor, denormalized for rendering. */
+  actorName: string;
   projectId: string;
   projectName: string;
   projectSlug?: string | null;
@@ -19,122 +42,118 @@ export interface CreateNotificationParams {
   metadata?: {
     webhookId?: string;
     reason?: string;
-    [key: string]: any;
+    [key: string]: unknown;
   };
 }
 
+/** Grouping window in milliseconds — rapid activity inside one window collapses. */
+const GROUPING_WINDOW_MS = 5 * 60 * 1000;
+
 /**
- * WHAT: Create a notification by writing directly to MongoDB with intelligent grouping
- * WHY: Logs user activities for display in the header bell notification panel
- *      Groups rapid consecutive edits to prevent notification spam
- *      Direct DB write avoids circular API calls from within API routes
- * 
- * STRATEGY: If a similar notification (same user, activity, project) exists within
- *           the last 5 minutes, update its timestamp instead of creating a duplicate.
- *           This groups rapid edits during a single workflow into one notification.
- * 
- * @param db - MongoDB database instance
- * @param params - Notification parameters
- * @returns Promise resolving to success status
+ * WHAT: Normalize activity type for grouping only.
+ * WHY: A project metadata save ('edit') and a stats save ('edit-stats') on the
+ *      same project in the same window are one logical action to the operator,
+ *      so they share a dedupe bucket (audit finding M1). The stored activityType
+ *      is preserved for display; only the grouping key is normalized.
+ */
+function groupingAction(activityType: NotificationActivityType): string {
+  return activityType === 'edit-stats' ? 'edit' : activityType;
+}
+
+/**
+ * WHAT: Deterministic idempotency key for a notification within a time bucket.
+ * WHY: Two writes with the same key collapse into one document via upsert.
+ */
+export function buildDedupeKey(
+  params: Pick<CreateNotificationParams, 'activityType' | 'actorId' | 'actorName' | 'projectId'>,
+  nowMs: number
+): string {
+  const actorKey = params.actorId || params.actorName;
+  const bucket = Math.floor(nowMs / GROUPING_WINDOW_MS);
+  return `${actorKey}|${groupingAction(params.activityType)}|${params.projectId}|${bucket}`;
+}
+
+/**
+ * WHAT: Create (or refresh) a notification with an atomic, idempotent upsert.
+ * WHY: Logs user activities for the header bell panel without duplicates or races.
+ *
+ * @returns true on success, false on validation error or DB failure (logged).
  */
 export async function createNotification(db: Db, params: CreateNotificationParams): Promise<boolean> {
   try {
     const notifications = db.collection('notifications');
 
     // WHAT: Validate required fields
-    // WHY: Ensure notification integrity
-    if (!params.activityType || !params.user || !params.projectId || !params.projectName) {
-      console.error('Missing required notification fields');
+    if (!params.activityType || !params.actorName || !params.projectId || !params.projectName) {
+      console.error('createNotification: missing required fields', {
+        activityType: params.activityType,
+        hasActor: !!params.actorName,
+        projectId: params.projectId,
+      });
       return false;
     }
 
     const now = new Date();
     const timestamp = now.toISOString();
-    
-    // WHAT: Calculate 5-minute window for grouping notifications
-    // WHY: Group rapid consecutive edits from the same user on the same project
-    const fiveMinutesAgo = new Date(now.getTime() - 5 * 60 * 1000).toISOString();
-    
-    // WHAT: Check if a similar notification exists within the last 5 minutes
-    // WHY: Prevent notification spam during rapid editing workflows
-    const existingNotification = await notifications.findOne({
-      user: params.user,
+    const dedupeKey = buildDedupeKey(params, now.getTime());
+
+    // WHAT: Fields set only when the notification is first inserted this window.
+    const setOnInsert: Record<string, unknown> = {
       activityType: params.activityType,
+      actorId: params.actorId ?? null,
+      user: params.actorName, // denormalized display name (client reads `user`)
       projectId: params.projectId,
-      timestamp: { $gte: fiveMinutesAgo }
-    });
-    
-    if (existingNotification) {
-      // WHAT: Update existing notification timestamp to show latest activity
-      // WHY: Groups rapid edits into single notification while keeping it fresh
-      await notifications.updateOne(
-        { _id: existingNotification._id },
-        { 
-          $set: { 
-            timestamp,
-            projectName: params.projectName, // Update name in case it changed
-            projectSlug: params.projectSlug || existingNotification.projectSlug || null
-          }
-        }
-      );
-      console.log(`🔄 Notification grouped: ${params.user} ${params.activityType} "${params.projectName}" (updated existing)`);
-      return true;
-    }
-    
-    // WHAT: Create new notification document with ISO 8601 timestamp and empty arrays
-    // WHY: No recent similar notification exists - create a fresh one
-    const notification: any = {
-      activityType: params.activityType,
-      user: params.user,
-      projectId: params.projectId,
-      projectName: params.projectName,
-      projectSlug: params.projectSlug || null,
-      timestamp,
-      readBy: [],           // Array of user IDs who have read this notification
-      archivedBy: [],       // Array of user IDs who have archived this notification
-      createdAt: timestamp
+      dedupeKey,
+      readBy: [],
+      archivedBy: [],
+      createdAt: timestamp,
     };
-    
-    // WHAT: Add API-specific fields for API activity notifications
-    // WHY: Track which API user made the change and what fields were modified
+
     if (params.activityType === 'api_stats_update' && params.apiUser) {
-      notification.apiUser = params.apiUser;
+      setOnInsert.apiUser = params.apiUser;
     }
-    
     if (params.modifiedFields && params.modifiedFields.length > 0) {
-      notification.modifiedFields = params.modifiedFields;
+      setOnInsert.modifiedFields = params.modifiedFields;
     }
-    
-    // WHAT: Add webhook-specific metadata
-    // WHY: Track webhook failures and auto-disable events
-    if ((params.activityType === 'webhook_disabled' || params.activityType === 'webhook_failed') && params.metadata) {
-      notification.metadata = params.metadata;
+    if (
+      (params.activityType === 'webhook_disabled' || params.activityType === 'webhook_failed') &&
+      params.metadata
+    ) {
+      setOnInsert.metadata = params.metadata;
     }
 
-    await notifications.insertOne(notification);
-    console.log(`✅ Notification created: ${params.user} ${params.activityType} "${params.projectName}"`);
+    // WHAT: Fields refreshed on every activity in the window (insert and update).
+    const set: Record<string, unknown> = {
+      timestamp, // ISO string for the client
+      occurredAt: now, // BSON Date for TTL + range/sort
+      projectName: params.projectName,
+      projectSlug: params.projectSlug ?? null,
+    };
+
+    // WHAT: One atomic upsert keyed by dedupeKey.
+    // WHY: Eliminates the check-then-insert race; the unique sparse index on
+    //      dedupeKey guarantees a single document per (actor, action, project, window).
+    await notifications.updateOne({ dedupeKey }, { $setOnInsert: setOnInsert, $set: set }, { upsert: true });
     return true;
   } catch (error) {
-    console.error('Error creating notification:', error);
+    // WHAT: Surface, don't swallow. Callers wrap this in try/catch and log too,
+    //       so a failure is always observable rather than a silent boolean.
+    console.error('createNotification failed:', error);
     return false;
   }
 }
 
 /**
- * WHAT: Get user info from auth session
- * WHY: Extract user identity for notification logging using existing auth system
- * 
- * @returns Promise resolving to user name or 'Unknown User'
+ * WHAT: Resolve the acting admin (stable id + display name) from the session.
+ * WHY: Notifications must attribute to a stable id, not a mutable display name.
  */
-export async function getCurrentUser(): Promise<string> {
-  // WHAT: Import and use existing auth system to get current user
-  // WHY: Reuse centralized authentication logic
+export async function getCurrentActor(): Promise<{ id: string | null; name: string }> {
   try {
     const { getAdminUser } = await import('./auth');
     const user = await getAdminUser();
-    return user?.name || 'Admin User';
+    return { id: user?.id ?? null, name: user?.name || 'Admin User' };
   } catch (error) {
-    console.error('Error getting current user:', error);
-    return 'Admin User';
+    console.error('getCurrentActor failed:', error);
+    return { id: null, name: 'Admin User' };
   }
 }

@@ -77,6 +77,31 @@
   color: var(--mm-color-primary-700);
 }
 
+.loadMoreButton {
+  /* WHAT: Load the next page of notifications (audit H8)
+   * WHY: The header count can exceed the first page; this reveals the rest */
+  display: block;
+  width: 100%;
+  background: none;
+  border: none;
+  color: var(--mm-color-primary-600);
+  font-size: var(--mm-font-size-sm);
+  font-weight: var(--mm-font-weight-medium);
+  cursor: pointer;
+  padding: var(--mm-space-3);
+  transition: all var(--transition-base);
+}
+
+.loadMoreButton:hover:not(:disabled) {
+  background: var(--mm-color-primary-50);
+  color: var(--mm-color-primary-700);
+}
+
+.loadMoreButton:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+
 .notificationsList {
   /* WHAT: Scrollable notifications list
    * WHY: Support many notifications without expanding panel */

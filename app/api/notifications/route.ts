@@ -8,9 +8,15 @@ import config from '@/lib/config';
 /* WHAT: Multi-user notifications API endpoint for shared activity notifications
  * WHY: Track project creation, edits, and stat updates visible to all users
  *      Each user can independently mark notifications as read or archived
- * 
+ *
  * GET: Fetch notifications with per-user read/archive status and unread count
- * POST: Create new notification (called by project operations) */
+ *
+ * Notification CREATION is intentionally NOT exposed over HTTP. All notifications
+ * are written server-side through lib/notificationUtils.ts:createNotification(),
+ * which derives the actor from the authenticated session and de-duplicates. A
+ * public POST create path previously existed here; it was unauthenticated
+ * (any client could forge notifications) and bypassed the de-dup/grouping logic,
+ * so it was removed. See docs/audits/notification-system-audit-2026-07-05.md (C2/H5). */
 
 export async function GET(request: NextRequest) {
   try {
@@ -31,8 +37,12 @@ const db = client.db(config.dbName);
     // WHAT: Parse query parameters for pagination and filtering
     // WHY: Support infinite scroll, read-only, and archived views
     const searchParams = request.nextUrl.searchParams;
-    const limit = parseInt(searchParams.get('limit') || '20');
-    const offset = parseInt(searchParams.get('offset') || '0');
+    // WHAT: Bound and sanitize pagination inputs (audit L1)
+    // WHY: Prevent NaN/negative offsets and unbounded scans (e.g. ?limit=1000000)
+    const rawLimit = parseInt(searchParams.get('limit') || '20', 10);
+    const rawOffset = parseInt(searchParams.get('offset') || '0', 10);
+    const limit = Number.isFinite(rawLimit) ? Math.min(Math.max(rawLimit, 1), 100) : 20;
+    const offset = Number.isFinite(rawOffset) ? Math.max(rawOffset, 0) : 0;
     const unreadOnly = searchParams.get('unreadOnly') === 'true';
     const archivedOnly = searchParams.get('archivedOnly') === 'true';
     const excludeArchived = searchParams.get('excludeArchived') === 'true';
@@ -92,69 +102,3 @@ const db = client.db(config.dbName);
   }
 }
 
-export async function POST(request: NextRequest) {
-  try {
-    const client = await clientPromise;
-const db = client.db(config.dbName);
-    const notifications = db.collection('notifications');
-
-    // WHAT: Parse notification data from request body
-    // WHY: Create notification from project operations
-    const body = await request.json();
-    const {
-      activityType,
-      user,
-      projectId,
-      projectName,
-      projectSlug
-    } = body;
-
-    // WHAT: Validate required fields
-    // WHY: Ensure notification integrity
-    if (!activityType || !user || !projectId || !projectName) {
-      return NextResponse.json(
-        { success: false, error: 'Missing required fields' },
-        { status: 400 }
-      );
-    }
-
-    // WHAT: Validate activity type
-    // WHY: Only allow specific activity types
-    const validTypes = ['create', 'edit', 'edit-stats'];
-    if (!validTypes.includes(activityType)) {
-      return NextResponse.json(
-        { success: false, error: 'Invalid activity type' },
-        { status: 400 }
-      );
-    }
-
-    // WHAT: Create notification document with ISO 8601 timestamp and empty read/archive arrays
-    // WHY: Multi-user support - each user can independently mark as read or archived
-    const timestamp = new Date().toISOString();
-    const notification = {
-      activityType,
-      user,
-      projectId,
-      projectName,
-      projectSlug: projectSlug || null,
-      timestamp,
-      readBy: [],           // Array of user IDs who have read this notification
-      archivedBy: [],       // Array of user IDs who have archived this notification
-      createdAt: timestamp
-    };
-
-    const result = await notifications.insertOne(notification);
-
-    return NextResponse.json({
-      success: true,
-      notificationId: result.insertedId,
-      notification
-    });
-  } catch (error) {
-    console.error('Error creating notification:', error);
-    return NextResponse.json(
-      { success: false, error: 'Failed to create notification' },
-      { status: 500 }
-    );
-  }
-}

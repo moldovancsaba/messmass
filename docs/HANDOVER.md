@@ -2,7 +2,7 @@
 
 This file is onboarding plus operational context for the next agent. Keep it accurate when behavior, process, or current delivery state changes.
 
-**Last Updated:** 2026-07-03 (GDS `@sovereignsquad` scope migration)
+**Last Updated:** 2026-07-05 (notification system ground-up audit + remediation; GDS `@sovereignsquad` scope migration)
 
 ## 🚨 CRITICAL MUST-READ FOR ALL AGENTS: STYLING & COMPONENTS 🚨
 
@@ -38,6 +38,7 @@ You MUST completely read and obey `docs/coding-standards.md` and `docs/component
   - design-system remediation tranche 3: `d678b3af9`
 - Current product/doc baseline: `v12.1.20`
 - Current GDS package baseline: `@sovereignsquad/gds-theme`, `@sovereignsquad/gds-core`, and `@sovereignsquad/gds-admin` at `3.9.0`
+- Notification system: ground-up audit + remediation landed 2026-07-05 — see `docs/audits/notification-system-audit-2026-07-05.md`. Index creation + `npm run migrate:notifications` must be run against the DB to arm retention/TTL.
 - Local vendored `@gds/*` packages have been removed from active package authority.
 - Most recent closed delivery issues on Project 8: `moldovancsaba/messmass#71` through `#76`
 - CI: `.github/workflows/ci.yml` runs the guardrail battery on push/PR to `main`/`preview` (restored in v12.1.17 after `38c87cd` deleted the 8 original workflows).

@@ -10,13 +10,19 @@ import { getAdminUser } from '@/lib/auth';
 
 export async function GET(request: NextRequest) {
   try {
-    // Check 1: Authentication
+    // WHAT: Require an authenticated admin before returning ANY diagnostic data.
+    // WHY: This endpoint lists recent notifications (user names, project names,
+    //      per-user counts). Previously it responded regardless of auth, leaking
+    //      that data to anonymous callers (audit M3).
     const user = await getAdminUser();
+    if (!user) {
+      return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 401 });
+    }
     const authStatus = {
-      authenticated: !!user,
-      userId: user?.id || null,
-      userName: user?.name || null,
-      userEmail: user?.email || null
+      authenticated: true,
+      userId: user.id,
+      userName: user.name,
+      userEmail: user.email
     };
 
     // Check 2: Database connection
@@ -85,9 +91,7 @@ export async function GET(request: NextRequest) {
         } : null
       },
       troubleshooting: {
-        message: !user 
-          ? '❌ Not authenticated - Login to admin to see notifications'
-          : notificationCount === 0
+        message: notificationCount === 0
           ? '⚠️ No notifications in database - Create/edit a project to generate one'
           : userNotificationInfo && userNotificationInfo.unreadCount === 0
           ? '✅ All notifications read or archived for this user'
@@ -95,10 +99,11 @@ export async function GET(request: NextRequest) {
       }
     });
   } catch (error) {
+    // WHAT: Do not leak stack traces to the client (audit M3); log server-side.
+    console.error('debug/notifications error:', error);
     return NextResponse.json({
       success: false,
-      error: error instanceof Error ? error.message : 'Unknown error',
-      stack: error instanceof Error ? error.stack : null
+      error: 'Internal error'
     }, { status: 500 });
   }
 }

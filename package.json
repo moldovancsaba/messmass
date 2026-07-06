@@ -53,6 +53,7 @@
     "analytics:aggregate": "tsx scripts/aggregateAnalytics.ts",
     "analytics:backfill": "tsx scripts/backfillAnalytics.ts",
     "analytics:backfill-partners": "tsx -r dotenv/config scripts/backfillPartnerAnalytics.ts dotenv_config_path=.env.local",
+    "migrate:notifications": "tsx -r dotenv/config scripts/migrate-notifications-schema.ts dotenv_config_path=.env.local",
     "migrate:remoteFans": "node scripts/migrate-to-remoteFans.js",
     "migrate:chart-formulas": "node scripts/migrate-chart-formulas.js",
     "migrate:chart-lowercase": "tsx -r dotenv/config scripts/migrateChartFormulasToLowercase.ts dotenv_config_path=.env.local",
