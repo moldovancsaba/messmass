@@ -1,8 +1,31 @@
 # {messmass} Release Notes
 Status: Active
-Last Updated: 2026-07-02T06:23:29.000Z
+Last Updated: 2026-07-07T14:52:18.000Z
 Canonical: No
 Owner: Operations
+
+## [v12.1.22] — 2026-07-07T14:52:18.000Z
+
+### Summary
+REPORT VARIANTS LIST-VIEW ALIGNMENT (#252): Made `Reports` the singular primary list-view action for partners, matching the organizations pattern. The substantive Report Variants workspace (open/create/edit/manage variants, with direct report opening preserved) was already shipped for organizations and partners; this closes the last list-view-grammar gap.
+
+### What Was Delivered
+
+#### Partners list: `Reports` is the sole primary action
+**WHAT**: In `lib/adapters/partnersAdapter.tsx`, demoted the `Open Editor` action from `priority: 'primary'` to `'secondary'`.
+**WHY**: The partners list had two competing primary actions (`Reports` and `Open Editor`), diluting the "primary mental model becomes `Reports`" goal (#252 AC#1). Organizations already model this correctly (`Reports` primary; entity edit in overflow).
+**HOW**: One-line priority change. `Open Editor` is **not** removed — `/partner-edit` is partner data-capture with no parity in the reports workspace, and #252 explicitly forbids removing a working shortcut before parity exists. Full removal is deferred to a product decision.
+
+### Acceptance (#252)
+- AC#1 primary mental model = `Reports`: satisfied (partners now match organizations)
+- AC#2 open/edit variants from the workspace without list-view editor actions: already shipped (workspace has create/edit/manage)
+- AC#3 existing report access preserved: `Open Editor` retained (secondary), direct report opening preserved
+
+### Note
+Depends on #288 (v12.1.21) merging first; if merge order flips, rebase the version. Visual QA of the partners action rail ordering recommended (admin auth/DB not available in the authoring session).
+
+### Testing
+- `npm run type-check`, `npm run lint`, `npm test` (295 passing incl. `admin-action-rail`, `mobile-admin-action-contract`), `npm run style:check`, `npm run version:verify`, `npm run docs:audit`, `npm run build`
 
 ## [v12.1.20] — 2026-07-02T06:23:29.000Z
 
