@@ -1,8 +1,31 @@
 # {messmass} Release Notes
 Status: Active
-Last Updated: 2026-07-02T06:23:29.000Z
+Last Updated: 2026-07-07T14:33:08.000Z
 Canonical: No
 Owner: Operations
+
+## [v12.1.21] — 2026-07-07T14:33:08.000Z
+
+### Summary
+ANALYTICS TODO GAPS (#284): Closed the remaining analytics-engine stubs so computed metrics stop silently returning placeholder values. Two of the six markers (`overallScore`, editor `contentMetadata`) were already resolved by the 2026-07-05 notification/analytics merge; this release closes the other four and removes every TODO marker from the four tracked files.
+
+### What Was Delivered
+
+#### `costPerEngagement` → honest null instead of 0
+**WHAT**: `lib/analyticsCalculator.ts` returns `null` (not `0`); `AdMetrics.costPerEngagement` typed `number | null` in `lib/analytics.types.ts`.
+**WHY**: `0` reads as a legitimate "free" value to anomaly detection; `null` truthfully signals "unavailable" until an ad-spend data source exists.
+
+#### `hourlyPattern` documented unavailable
+**WHAT**: The `undefined` hourlyPattern in `calculateBitlyMetrics` is now commented as unavailable (the Bitly source has no hourly breakdown); the optional field stays absent rather than faked.
+
+#### `isProjectAggregatable` typed
+**WHAT**: Replaced `project: any` with `Partial<AnalyticsProjectInput>` in `lib/analyticsCalculator.ts`.
+
+#### `detectSeasonalAnomalies` explicitly descoped
+**WHAT**: `lib/analytics-anomaly.ts` — the STL/moving-average TODO is replaced with an explicit descope comment. The function has zero callers; it delegates to standard (non-seasonal) detection and will be wired + implemented under #233 when a caller needs seasonal baselines.
+
+### Testing
+- `npm run type-check`, `npm run lint`, `npm test` (295 passing), `npm run style:check`, `npm run version:verify`, `npm run docs:audit`, `npm run build`
 
 ## [v12.1.20] — 2026-07-02T06:23:29.000Z
 
