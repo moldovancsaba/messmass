@@ -4,7 +4,7 @@ Last Updated: 2026-01-11T22:28:38.000Z
 Canonical: No
 Owner: Product
 
-**Version**: 12.1.20
+**Version**: 12.1.23
 **Last Updated**: 2026-01-11T22:28:38.000Z
 **Purpose**: Prevent aggressive parsing anti-patterns in future forms
 

@@ -1,8 +1,26 @@
 # {messmass} Release Notes
 Status: Active
-Last Updated: 2026-07-02T06:23:29.000Z
+Last Updated: 2026-07-08T07:07:41.000Z
 Canonical: No
 Owner: Operations
+
+## [v12.1.23] — 2026-07-08T07:07:41.000Z
+
+### Summary
+ORGANIZATION INSIGHTS SCOPE (#233): Added organization as a reporting scope to the analytics insights engine, giving parity with the existing event and partner scopes (#233 AC#3). The anomaly/trend/benchmark/prediction insight engines were already live for event and partner scopes; this closes the org-scope gap.
+
+### What Was Delivered
+
+#### `generateOrganizationInsights` + org insights route
+**WHAT**: New `generateOrganizationInsights(organizationId)` in `lib/analytics-insights.ts`, plus `GET /api/analytics/insights/organizations/[orgId]`.
+**WHY**: The insights engine already served event (`generateInsights`) and partner (`generatePartnerInsights`) scopes; #233 AC#3 requires organization scope.
+**HOW**: Mirrors the partner path — resolves the org's member partners (`partner.organizationId`), then their events via the same `partner1/partner2/partner1Id/partner2Id` linkage `app/api/organizations/report/[id]` uses, and generates insights for the most recent event. Fail-proof: returns `null` (not an error) when the org has no member partners, no events, or insufficient data. The route mirrors the partner route's auth + ObjectId validation + error handling.
+
+### Note
+No DB-integration unit test added — consistent with the existing `generatePartnerInsights` (these functions require a live Mongo connection; the repo's test suite is DB-free). Verified by `tsc` + `next build`; the mirrored partner path is exercised in production.
+
+### Testing
+- `npm run type-check`, `npm run lint`, `npm test` (295 passing), `npm run style:check`, `npm run version:verify`, `npm run docs:audit`, both guardrails, `npm run build`
 
 ## [v12.1.20] — 2026-07-02T06:23:29.000Z
 
