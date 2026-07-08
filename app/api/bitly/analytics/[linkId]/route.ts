@@ -17,6 +17,7 @@ import {
   mergeTimeseries 
 } from '@/lib/bitly-mappers';
 import { error as logError, info as logInfo } from '@/lib/logger';
+import { bitlyLinkToCsv, bitlyExportFilename, type BitlyExportLink } from '@/lib/bitlyExport';
 
 /**
  * GET /api/bitly/analytics/[linkId]
@@ -64,6 +65,7 @@ export async function GET(
     // WHAT: Parse query parameters
     const { searchParams } = new URL(request.url);
     const refresh = searchParams.get('refresh') === 'true';
+    const format = searchParams.get('format');
 
     // WHAT: Fetch link document from database
     const client = await clientPromise;
@@ -141,6 +143,21 @@ export async function GET(
           error: error instanceof Error ? error.message : 'Unknown error',
         });
       }
+    }
+
+    // WHAT: CSV export of cached analytics (#131)
+    // WHY: Package a single link's click/geo/referrer/timeseries breakdown for reporting,
+    //      reusing DB-cached data (no Bitly API call).
+    if (format === 'csv') {
+      const exportLink = link as unknown as BitlyExportLink;
+      const csv = bitlyLinkToCsv(exportLink);
+      return new NextResponse(csv, {
+        status: 200,
+        headers: {
+          'Content-Type': 'text/csv; charset=utf-8',
+          'Content-Disposition': `attachment; filename="${bitlyExportFilename(exportLink)}"`,
+        },
+      });
     }
 
     // WHAT: Return cached analytics data (no refresh requested)

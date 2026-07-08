@@ -1,8 +1,26 @@
 # {messmass} Release Notes
 Status: Active
-Last Updated: 2026-07-02T06:23:29.000Z
+Last Updated: 2026-07-08T07:16:48.000Z
 Canonical: No
 Owner: Operations
+
+## [v12.1.25] — 2026-07-08T07:16:48.000Z
+
+### Summary
+BITLY ANALYTICS CSV EXPORT (#131): Add a per-link CSV export so a Bitly link's full click/geo/referrer/timeseries breakdown can be packaged for stakeholder reporting. Reuses DB-cached analytics (no Bitly API call).
+
+### What Was Delivered
+
+#### Bitly link CSV export
+**WHAT**: New pure serializer `lib/bitlyExport.ts` (`bitlyLinkToCsv`, `csvCell`, `bitlyExportFilename`); `?format=csv` on `GET /api/bitly/analytics/[linkId]` returns a sectioned CSV (Summary / Daily Clicks / Countries / Referrers) with `Content-Type: text/csv` + `Content-Disposition`; a `📄 Export` button on each row in `app/admin/bitly/page.tsx`.
+**WHY**: Bitly evidence already rode along in report CSVs, but there was no way to export a single link's full breakdown. #131.
+**HOW**: Export reads the cached `bitly_links` document (no live Bitly call); CSV cells are RFC-4180 escaped. Unit-tested in `tests/bitly-export.test.ts` (8 cases: escaping, filename slugging, section content, missing-section robustness).
+
+### Testing
+- `npm run type-check`, `npm run lint`, `npm test` (303 passing, +8 new), `npm run style:check`, `npm run version:verify`, `npm run docs:audit`, both guardrails, `npm run build`
+
+### Note
+Depends on #288/#289/#290/#291 merging first; rebase version if order differs. Visual QA of the Export button in `/admin/bitly` recommended (admin auth/DB not available in the authoring session).
 
 ## [v12.1.20] — 2026-07-02T06:23:29.000Z
 

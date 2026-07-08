@@ -1081,6 +1081,16 @@ export default function BitlyAdminPage() {
                         >
                           ⬇️ Pull
                         </button>
+                        {/* WHAT: Export this link's cached analytics as CSV (#131)
+                         * WHY: Package click/geo/referrer/timeseries evidence for reporting; uses cached data */}
+                        <a
+                          href={`/api/bitly/analytics/${link._id}?format=csv`}
+                          className="btn btn-small btn-secondary action-button"
+                          title="Export this link's analytics as CSV"
+                          download
+                        >
+                          📄 Export
+                        </a>
                         <button
                           onClick={() => handleArchiveLink(link._id)}
                           className="btn btn-small btn-danger action-button"
