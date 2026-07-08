@@ -9,6 +9,7 @@ import React, { useMemo, useRef, useState } from 'react';
 import Image from 'next/image';
 import { apiPost } from '@/lib/apiClient';
 import { uploadImageToImgbb } from '@/lib/imgbbClientUpload';
+import { findSlotHoles } from '@/lib/reportContentSlots';
 import styles from './ReportContentManager.module.css';
 
 interface ReportContentManagerProps {
@@ -95,6 +96,12 @@ export default function ReportContentManager({ stats, onCommit, maxSlots = 500 }
 
   const occupiedImages = useMemo(() => getOccupied(stats, 'reportImage', maxSlots), [stats, maxSlots]);
   const occupiedTexts = useMemo(() => getOccupied(stats, 'reportText', maxSlots), [stats, maxSlots]);
+
+  // WHAT: Detect gaps in the occupied slot sequences
+  // WHY: Holes misalign auto-generated chart blocks; surfacing the gap indices lets
+  //      operators Compact (re-number) before the report renders. See #125.
+  const imageHoles = useMemo(() => findSlotHoles(occupiedImages), [occupiedImages]);
+  const textHoles = useMemo(() => findSlotHoles(occupiedTexts), [occupiedTexts]);
 
   // ACTION: Bulk upload images → assign to next free slots
   const handleBulkUpload = async (files: FileList | null) => {
@@ -248,6 +255,13 @@ export default function ReportContentManager({ stats, onCommit, maxSlots = 500 }
         <div className={styles.note}>
           {busy ? 'Processing…' : error ? `⚠️ ${error}` : 'Manage unlimited slots. Deleting keeps holes; use Compact to re-number.'}
         </div>
+        {(imageHoles.length > 0 || textHoles.length > 0) && (
+          <div className={styles.note}>
+            ⚠️ Slot gaps detected — chart blocks may misalign; use Compact to re-number.
+            {imageHoles.length > 0 && ` Images: ${imageHoles.map((h) => `#${h}`).join(', ')}.`}
+            {textHoles.length > 0 && ` Texts: ${textHoles.map((h) => `#${h}`).join(', ')}.`}
+          </div>
+        )}
       </div>
 
       {/* Images Section */}

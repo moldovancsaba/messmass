@@ -1,8 +1,26 @@
 # {messmass} Release Notes
 Status: Active
-Last Updated: 2026-07-02T06:23:29.000Z
+Last Updated: 2026-07-08T07:11:54.000Z
 Canonical: No
 Owner: Operations
+
+## [v12.1.24] — 2026-07-08T07:11:54.000Z
+
+### Summary
+REPORT CONTENT SLOT GAP DETECTION (#125): Surface gaps ("holes") in the occupied report-content slot sequences so operators can fix chart-block misalignment before a report renders. The slot manager already supported bulk upload/add/swap/compact/auto-chart-generation; this adds the missing validation feedback.
+
+### What Was Delivered
+
+#### Slot gap detection + warning
+**WHAT**: New pure helper `lib/reportContentSlots.ts` `findSlotHoles()`; wired into `components/ReportContentManager.tsx` via two memos (`imageHoles`, `textHoles`) that render a warning listing the gap indices.
+**WHY**: Holes in `reportImageN`/`reportTextN` sequences misalign auto-generated chart blocks (the existing Compact action re-numbers to fix them, but the UI never showed WHERE the gaps were). #125 acceptance-check "preview/validation".
+**HOW**: `findSlotHoles` returns the missing indices between 1 and the highest occupied slot (trailing free slots are not holes). Unit-tested in `tests/report-content-slot-holes.test.ts` (6 cases).
+
+### Testing
+- `npm run type-check`, `npm run lint`, `npm test` (301 passing, +6 new), `npm run style:check`, `npm run version:verify`, `npm run docs:audit`, both guardrails, `npm run build`
+
+### Note
+Depends on #288/#289/#290 merging first; rebase version if order differs. Visual QA of the warning in the Clicker content tab recommended (admin auth/DB not available in the authoring session).
 
 ## [v12.1.20] — 2026-07-02T06:23:29.000Z
 
