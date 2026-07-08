@@ -1,8 +1,26 @@
 # {messmass} Release Notes
 Status: Active
-Last Updated: 2026-07-02T06:23:29.000Z
+Last Updated: 2026-07-08T07:20:14.000Z
 Canonical: No
 Owner: Operations
+
+## [v12.1.26] — 2026-07-08T07:20:14.000Z
+
+### Summary
+VARIABLE MANAGEMENT GUIDE (#139): Added a single canonical operational reference for the variable system, consolidating the previously fragmented docs and grounding every claim in the shipped behavior of `lib/formulaEngine.ts` and the variable admin APIs.
+
+### What Was Delivered
+
+#### `docs/guides/guides-variable-management.md`
+**WHAT**: New canonical guide covering: what a variable is (stats vs metadata), the SSOT (`variables_metadata` collection + `fetchAvailableVariables`), the bracket `[variableName]` formula syntax and the bracket↔camelCase-stats gotcha, the admin flow (`variables-config`/`variables-groups` APIs + `app/admin/clicker-manager`), the validation lifecycle (`validateFormula`/`validateStatsForFormula`/`evaluateFormulaSafe`), governance rules, and a common-failures table.
+**WHY**: #139 — the variable system had only fragmented references (`conventions-variable-dictionary.md`, `variables-hygiene-ops-var-01.md`, the inventory CSV), no single guide.
+**HOW**: Every code reference (file + line) verified against the current tree before writing, to avoid doc/behavior drift. Existing fragments linked as appendices rather than duplicated.
+
+### Testing
+- `npm run version:verify`, `npm run docs:audit` (113 docs), `npm run type-check` (docs-only change; no code impact)
+
+### Note
+Depends on #288/#289/#290/#291/#292 merging first; rebase version if order differs.
 
 ## [v12.1.20] — 2026-07-02T06:23:29.000Z
 
