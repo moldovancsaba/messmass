@@ -1,8 +1,30 @@
 # {messmass} Release Notes
 Status: Active
-Last Updated: 2026-07-02T06:23:29.000Z
+Last Updated: 2026-07-08T08:24:11.000Z
 Canonical: No
 Owner: Operations
+
+## [v12.1.27] — 2026-07-08T08:24:11.000Z
+
+### Summary
+FIX — LOGO/IMAGE UPLOAD BROKEN (#294): The public ImgBB key never reached the browser, so every direct browser→ImgBB upload (logos, report images) failed with "Image upload not configured". Fixed by reading `NEXT_PUBLIC_*` via static literal access so Next.js inlines it into the client bundle.
+
+### Root Cause
+`clientConfig()` in `lib/config.ts` read `NEXT_PUBLIC_IMGBB_API_KEY` via `getEnv()` — a dynamic `process.env[name]` access. Next.js only inlines `NEXT_PUBLIC_*` into the browser bundle for **static literal** accesses; a dynamic access is never inlined, so `clientConfig().imgbbApiKey` was always `undefined` client-side regardless of deployment env. Regression from `ae2fb1dc` (2026-07-01, direct-to-ImgBB upload); broken since it shipped.
+
+### What Was Fixed
+**WHAT**: `clientConfig()` now reads `process.env.NEXT_PUBLIC_APP_URL` / `NEXT_PUBLIC_WS_URL` / `NEXT_PUBLIC_IMGBB_API_KEY` as static literals (via a `cleanEnv` trim helper), not `getEnv()`.
+**WHY**: Static literal access is the only form Next.js inlines into client bundles. This restores logo/image uploads in `components/ImageUploader.tsx`, `components/ImageUploadField.tsx`, `components/ReportContentManager.tsx`.
+
+### Verification
+Built with `NEXT_PUBLIC_IMGBB_API_KEY=<sentinel>` and grepped `.next/static`:
+- before (dynamic `getEnv`): sentinel in **0** client chunks
+- after (static literal): sentinel in **3** client chunks (incl. `app/admin/partners`, `app/admin/content-library`)
+
+No jest test — the bug is a build-time inlining behavior that a Node-runtime unit test cannot reproduce (`process.env[name]` works at runtime); the build+grep is the guard.
+
+### Testing
+- `npm run type-check`, `npm run lint`, `npm test` (303 passing), `npm run style:check`, `npm run version:verify`, `npm run docs:audit`, both guardrails, `npm run build`
 
 ## [v12.1.20] — 2026-07-02T06:23:29.000Z
 
