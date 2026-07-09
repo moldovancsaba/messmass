@@ -1,8 +1,13 @@
 # {messmass} Release Notes
 Status: Active
-Last Updated: 2026-07-09T09:45:41.000Z
+Last Updated: 2026-07-09T09:46:37.000Z
 Canonical: No
 Owner: Operations
+
+## [v12.1.29] — 2026-07-09T09:46:37.000Z
+
+### Summary
+Reports as singular primary partners list-view action (#252). Version rebased onto main after the v12.1.27 hotfix; content unchanged from the original PR.
 
 ## [v12.1.28] — 2026-07-09T09:45:41.000Z
 
