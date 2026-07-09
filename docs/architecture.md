@@ -4,7 +4,7 @@ Last Updated: 2026-06-25
 Canonical: No
 Owner: Architecture
 
-Version: 12.1.30
+Version: 12.1.31
 
 **Mantine Entity, Variant, and Public Report Shell Delivery (2026-06-25):**
 - **Report variant selector recovery:** Mantine `Select` dropdowns inside report variant `FormModal` now render through a portal with modal-safe z-index, preventing the dropdown from being hidden behind or interpreted as outside the dialog.
@@ -4548,5 +4548,5 @@ When working with the hashtag categories system:
 ---
 
 *Last Updated: 2025-10-19T11:58:43.000Z*
-*Version: 12.1.30*
+*Version: 12.1.31*
 *Status: Production-Ready — Enterprise Event Analytics Platform with Advanced Analytics Infrastructure*

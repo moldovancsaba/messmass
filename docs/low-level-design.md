@@ -4,7 +4,7 @@ Last Updated: 2026-06-25T00:00:00.000Z
 Canonical: No
 Owner: Architecture
 
-Version: 12.1.30
+Version: 12.1.31
 
 This document captures implementation-level contracts for recently changed high-risk flows. It complements `docs/architecture.md`; it does not replace feature specs or API references.
 
