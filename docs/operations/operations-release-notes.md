@@ -1,31 +1,40 @@
 # {messmass} Release Notes
 Status: Active
-Last Updated: 2026-07-07T14:52:18.000Z
+Last Updated: 2026-07-09T09:46:37.000Z
 Canonical: No
 Owner: Operations
 
-## [v12.1.22] — 2026-07-07T14:52:18.000Z
+## [v12.1.29] — 2026-07-09T09:46:37.000Z
 
 ### Summary
-REPORT VARIANTS LIST-VIEW ALIGNMENT (#252): Made `Reports` the singular primary list-view action for partners, matching the organizations pattern. The substantive Report Variants workspace (open/create/edit/manage variants, with direct report opening preserved) was already shipped for organizations and partners; this closes the last list-view-grammar gap.
+Reports as singular primary partners list-view action (#252). Version rebased onto main after the v12.1.27 hotfix; content unchanged from the original PR.
 
-### What Was Delivered
+## [v12.1.28] — 2026-07-09T09:45:41.000Z
 
-#### Partners list: `Reports` is the sole primary action
-**WHAT**: In `lib/adapters/partnersAdapter.tsx`, demoted the `Open Editor` action from `priority: 'primary'` to `'secondary'`.
-**WHY**: The partners list had two competing primary actions (`Reports` and `Open Editor`), diluting the "primary mental model becomes `Reports`" goal (#252 AC#1). Organizations already model this correctly (`Reports` primary; entity edit in overflow).
-**HOW**: One-line priority change. `Open Editor` is **not** removed — `/partner-edit` is partner data-capture with no parity in the reports workspace, and #252 explicitly forbids removing a working shortcut before parity exists. Full removal is deferred to a product decision.
+### Summary
+Analytics engine TODO gaps closed (#284). Version rebased onto main after the v12.1.27 hotfix; content unchanged from the original PR.
 
-### Acceptance (#252)
-- AC#1 primary mental model = `Reports`: satisfied (partners now match organizations)
-- AC#2 open/edit variants from the workspace without list-view editor actions: already shipped (workspace has create/edit/manage)
-- AC#3 existing report access preserved: `Open Editor` retained (secondary), direct report opening preserved
+## [v12.1.27] — 2026-07-08T08:24:11.000Z
 
-### Note
-Depends on #288 (v12.1.21) merging first; if merge order flips, rebase the version. Visual QA of the partners action rail ordering recommended (admin auth/DB not available in the authoring session).
+### Summary
+FIX — LOGO/IMAGE UPLOAD BROKEN (#294): The public ImgBB key never reached the browser, so every direct browser→ImgBB upload (logos, report images) failed with "Image upload not configured". Fixed by reading `NEXT_PUBLIC_*` via static literal access so Next.js inlines it into the client bundle.
+
+### Root Cause
+`clientConfig()` in `lib/config.ts` read `NEXT_PUBLIC_IMGBB_API_KEY` via `getEnv()` — a dynamic `process.env[name]` access. Next.js only inlines `NEXT_PUBLIC_*` into the browser bundle for **static literal** accesses; a dynamic access is never inlined, so `clientConfig().imgbbApiKey` was always `undefined` client-side regardless of deployment env. Regression from `ae2fb1dc` (2026-07-01, direct-to-ImgBB upload); broken since it shipped.
+
+### What Was Fixed
+**WHAT**: `clientConfig()` now reads `process.env.NEXT_PUBLIC_APP_URL` / `NEXT_PUBLIC_WS_URL` / `NEXT_PUBLIC_IMGBB_API_KEY` as static literals (via a `cleanEnv` trim helper), not `getEnv()`.
+**WHY**: Static literal access is the only form Next.js inlines into client bundles. This restores logo/image uploads in `components/ImageUploader.tsx`, `components/ImageUploadField.tsx`, `components/ReportContentManager.tsx`.
+
+### Verification
+Built with `NEXT_PUBLIC_IMGBB_API_KEY=<sentinel>` and grepped `.next/static`:
+- before (dynamic `getEnv`): sentinel in **0** client chunks
+- after (static literal): sentinel in **3** client chunks (incl. `app/admin/partners`, `app/admin/content-library`)
+
+No jest test — the bug is a build-time inlining behavior that a Node-runtime unit test cannot reproduce (`process.env[name]` works at runtime); the build+grep is the guard.
 
 ### Testing
-- `npm run type-check`, `npm run lint`, `npm test` (295 passing incl. `admin-action-rail`, `mobile-admin-action-contract`), `npm run style:check`, `npm run version:verify`, `npm run docs:audit`, `npm run build`
+- `npm run type-check`, `npm run lint`, `npm test` (303 passing), `npm run style:check`, `npm run version:verify`, `npm run docs:audit`, both guardrails, `npm run build`
 
 ## [v12.1.20] — 2026-07-02T06:23:29.000Z
 
