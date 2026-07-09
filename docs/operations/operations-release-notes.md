@@ -1,8 +1,13 @@
 # {messmass} Release Notes
 Status: Active
-Last Updated: 2026-07-09T09:48:13.000Z
+Last Updated: 2026-07-09T09:48:46.000Z
 Canonical: No
 Owner: Operations
+
+## [v12.1.32] — 2026-07-09T09:48:46.000Z
+
+### Summary
+Bitly analytics CSV export (#131). Version rebased onto main after the v12.1.27 hotfix; content unchanged from the original PR.
 
 ## [v12.1.31] — 2026-07-09T09:48:13.000Z
 
