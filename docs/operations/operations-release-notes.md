@@ -1,26 +1,60 @@
 # {messmass} Release Notes
 Status: Active
-Last Updated: 2026-07-08T07:20:14.000Z
+Last Updated: 2026-07-09T09:49:15.000Z
 Canonical: No
 Owner: Operations
 
-## [v12.1.26] — 2026-07-08T07:20:14.000Z
+## [v12.1.33] — 2026-07-09T09:49:15.000Z
 
 ### Summary
-VARIABLE MANAGEMENT GUIDE (#139): Added a single canonical operational reference for the variable system, consolidating the previously fragmented docs and grounding every claim in the shipped behavior of `lib/formulaEngine.ts` and the variable admin APIs.
+Variable Management Guide (#139). Version rebased onto main after the v12.1.27 hotfix; content unchanged from the original PR.
 
-### What Was Delivered
+## [v12.1.32] — 2026-07-09T09:48:46.000Z
 
-#### `docs/guides/guides-variable-management.md`
-**WHAT**: New canonical guide covering: what a variable is (stats vs metadata), the SSOT (`variables_metadata` collection + `fetchAvailableVariables`), the bracket `[variableName]` formula syntax and the bracket↔camelCase-stats gotcha, the admin flow (`variables-config`/`variables-groups` APIs + `app/admin/clicker-manager`), the validation lifecycle (`validateFormula`/`validateStatsForFormula`/`evaluateFormulaSafe`), governance rules, and a common-failures table.
-**WHY**: #139 — the variable system had only fragmented references (`conventions-variable-dictionary.md`, `variables-hygiene-ops-var-01.md`, the inventory CSV), no single guide.
-**HOW**: Every code reference (file + line) verified against the current tree before writing, to avoid doc/behavior drift. Existing fragments linked as appendices rather than duplicated.
+### Summary
+Bitly analytics CSV export (#131). Version rebased onto main after the v12.1.27 hotfix; content unchanged from the original PR.
+
+## [v12.1.31] — 2026-07-09T09:48:13.000Z
+
+### Summary
+Report content slot gap detection (#125). Version rebased onto main after the v12.1.27 hotfix; content unchanged from the original PR.
+
+## [v12.1.30] — 2026-07-09T09:47:45.000Z
+
+### Summary
+Organization scope for analytics insights engine (#233). Version rebased onto main after the v12.1.27 hotfix; content unchanged from the original PR.
+
+## [v12.1.29] — 2026-07-09T09:46:37.000Z
+
+### Summary
+Reports as singular primary partners list-view action (#252). Version rebased onto main after the v12.1.27 hotfix; content unchanged from the original PR.
+
+## [v12.1.28] — 2026-07-09T09:45:41.000Z
+
+### Summary
+Analytics engine TODO gaps closed (#284). Version rebased onto main after the v12.1.27 hotfix; content unchanged from the original PR.
+
+## [v12.1.27] — 2026-07-08T08:24:11.000Z
+
+### Summary
+FIX — LOGO/IMAGE UPLOAD BROKEN (#294): The public ImgBB key never reached the browser, so every direct browser→ImgBB upload (logos, report images) failed with "Image upload not configured". Fixed by reading `NEXT_PUBLIC_*` via static literal access so Next.js inlines it into the client bundle.
+
+### Root Cause
+`clientConfig()` in `lib/config.ts` read `NEXT_PUBLIC_IMGBB_API_KEY` via `getEnv()` — a dynamic `process.env[name]` access. Next.js only inlines `NEXT_PUBLIC_*` into the browser bundle for **static literal** accesses; a dynamic access is never inlined, so `clientConfig().imgbbApiKey` was always `undefined` client-side regardless of deployment env. Regression from `ae2fb1dc` (2026-07-01, direct-to-ImgBB upload); broken since it shipped.
+
+### What Was Fixed
+**WHAT**: `clientConfig()` now reads `process.env.NEXT_PUBLIC_APP_URL` / `NEXT_PUBLIC_WS_URL` / `NEXT_PUBLIC_IMGBB_API_KEY` as static literals (via a `cleanEnv` trim helper), not `getEnv()`.
+**WHY**: Static literal access is the only form Next.js inlines into client bundles. This restores logo/image uploads in `components/ImageUploader.tsx`, `components/ImageUploadField.tsx`, `components/ReportContentManager.tsx`.
+
+### Verification
+Built with `NEXT_PUBLIC_IMGBB_API_KEY=<sentinel>` and grepped `.next/static`:
+- before (dynamic `getEnv`): sentinel in **0** client chunks
+- after (static literal): sentinel in **3** client chunks (incl. `app/admin/partners`, `app/admin/content-library`)
+
+No jest test — the bug is a build-time inlining behavior that a Node-runtime unit test cannot reproduce (`process.env[name]` works at runtime); the build+grep is the guard.
 
 ### Testing
-- `npm run version:verify`, `npm run docs:audit` (113 docs), `npm run type-check` (docs-only change; no code impact)
-
-### Note
-Depends on #288/#289/#290/#291/#292 merging first; rebase version if order differs.
+- `npm run type-check`, `npm run lint`, `npm test` (303 passing), `npm run style:check`, `npm run version:verify`, `npm run docs:audit`, both guardrails, `npm run build`
 
 ## [v12.1.20] — 2026-07-02T06:23:29.000Z
 

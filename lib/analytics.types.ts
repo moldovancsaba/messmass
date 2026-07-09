@@ -74,7 +74,7 @@ export interface AdMetrics {
   totalROI: number;                     // socialValue + emailValue
   viralCoefficient: number;             // shares / images × 100
   emailConversion: number;              // purchases / propositionVisits × 100
-  costPerEngagement: number;            // ad spend / total engagements (if available)
+  costPerEngagement: number | null;     // ad spend / total engagements; null = unavailable (no ad-spend data source)
   adValuePerFan: number;                // totalROI / totalFans (unit economics)
   reachMultiplier: number;              // organic reach vs. paid (if applicable)
 }
