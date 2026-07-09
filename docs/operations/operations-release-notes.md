@@ -1,8 +1,13 @@
 # {messmass} Release Notes
 Status: Active
-Last Updated: 2026-07-08T08:24:11.000Z
+Last Updated: 2026-07-09T09:45:41.000Z
 Canonical: No
 Owner: Operations
+
+## [v12.1.28] — 2026-07-09T09:45:41.000Z
+
+### Summary
+Analytics engine TODO gaps closed (#284). Version rebased onto main after the v12.1.27 hotfix; content unchanged from the original PR.
 
 ## [v12.1.27] — 2026-07-08T08:24:11.000Z
 
