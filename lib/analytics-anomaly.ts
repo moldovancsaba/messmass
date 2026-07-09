@@ -389,8 +389,9 @@ export async function detectSeasonalAnomalies(
   seasonality: 'weekly' | 'monthly' | 'quarterly',
   options: AnomalyDetectionOptions = {}
 ): Promise<AnomalyDetectionResult> {
-  // WHAT: For now, delegate to standard anomaly detection
-  // WHY: Full seasonal decomposition requires more complex time-series analysis
-  // TODO: Implement seasonal decomposition (STL decomposition or moving averages)
+  // ponytail: descoped — seasonal decomposition (STL / moving-average) is intentionally NOT implemented.
+  // This function has no callers yet; building STL for a dead path is unused complexity. It delegates to
+  // standard (non-seasonal) detection so the `seasonality` argument is currently ignored. Wire + implement
+  // under #233 (anomaly/trend detection) when a caller actually needs seasonal baselines.
   return detectAnomalies(metric, data, options);
 }

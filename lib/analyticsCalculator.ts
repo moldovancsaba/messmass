@@ -248,8 +248,9 @@ export function calculateAdMetrics(stats: ProjectStats, fanMetrics: FanMetrics):
   // Email conversion: Purchases / visits × 100
   const emailConversion = safeDivide(propositionPurchases, propositionVisits) * 100;
   
-  // Cost per engagement: Would need ad spend data (placeholder calculation)
-  const costPerEngagement = 0; // TODO: Implement when ad spend data available
+  // Cost per engagement: requires ad-spend data we don't ingest yet.
+  // ponytail: null = unavailable, not 0 (0 reads as "free" to anomaly detection). Compute when an ad-spend source lands.
+  const costPerEngagement = null;
   
   // Ad value per fan: Total ROI / total fans (unit economics)
   const adValuePerFan = safeDivide(totalROI, totalFans);
@@ -366,7 +367,7 @@ export function calculateBitlyMetrics(stats: ProjectStats): BitlyMetrics | undef
     topCountry: stats.bitlyTopCountry || '',
     referrers: stats.bitlyReferrers || {},
     topReferrer: stats.bitlyTopReferrer || '',
-    hourlyPattern: undefined, // TODO: Implement when hourly data available
+    hourlyPattern: undefined, // unavailable: Bitly source provides no hourly breakdown (optional field = absent)
     clickRate: safeDivide(totalClicks, eventAttendees) * 100,
     mobileRate: safeDivide(mobile, totalClicks) * 100,
   };
@@ -483,7 +484,7 @@ export function aggregateEventMetrics(
  * WHAT: Validate project has minimum required data for aggregation
  * WHY: Skip projects with incomplete data to avoid invalid aggregates
  */
-export function isProjectAggregatable(project: any): boolean {
+export function isProjectAggregatable(project: Partial<AnalyticsProjectInput> | null | undefined): boolean {
   if (!project || !project.stats) return false;
   
   const stats = project.stats;

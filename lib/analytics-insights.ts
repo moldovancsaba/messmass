@@ -603,6 +603,64 @@ export async function generatePartnerInsights(partnerId: string): Promise<Insigh
     console.warn(`Partner ${partnerId} latest event has insufficient data for insights`);
     return null;
   }
-  
+
+  return insights;
+}
+
+/**
+ * WHAT: Generate insights for an organization across its member partners' events
+ * WHY: Adds organization as a reporting scope for the insights engine (#233 AC#3),
+ *      giving parity with the event and partner scopes.
+ *
+ * Organizations aggregate events via partner membership (partner.organizationId),
+ * and projects link to partners through partner1/partner2/partner1Id/partner2Id —
+ * mirroring how app/api/organizations/report/[id] resolves an org's events.
+ */
+export async function generateOrganizationInsights(organizationId: string): Promise<InsightsReport | null> {
+  const client = await clientPromise;
+  const db = client.db(config.dbName);
+
+  // WHAT: Resolve the org's member partners first
+  // WHY: Events belong to partners; an org's dataset is the union of its members' events
+  const memberPartners = await db
+    .collection('partners')
+    .find({ organizationId: new ObjectId(organizationId) })
+    .project({ _id: 1 })
+    .toArray();
+
+  const partnerIds = memberPartners.map((partner) => partner._id);
+  if (partnerIds.length === 0) {
+    console.warn(`No member partners for organization ${organizationId}`);
+    return null;
+  }
+
+  // WHAT: Fetch the org's events (across all member partners), newest first
+  // WHY: Same $or partner linkage the org report uses, so scopes stay consistent
+  const orgEvents = await db
+    .collection('projects')
+    .find({
+      $or: [
+        { partner1: { $in: partnerIds } },
+        { partner2: { $in: partnerIds } },
+        { partner1Id: { $in: partnerIds } },
+        { partner2Id: { $in: partnerIds } },
+      ],
+    })
+    .sort({ eventDate: -1 })
+    .toArray();
+
+  if (orgEvents.length === 0) {
+    console.warn(`No events found for organization ${organizationId}`);
+    return null;
+  }
+
+  // WHAT: Insights for the most recent event across member partners
+  // WHY: Mirrors generatePartnerInsights (representative latest-event sample)
+  const insights = await generateInsights(orgEvents[0]._id.toString());
+  if (!insights) {
+    console.warn(`Organization ${organizationId} latest event has insufficient data for insights`);
+    return null;
+  }
+
   return insights;
 }

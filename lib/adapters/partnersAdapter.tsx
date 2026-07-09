@@ -42,7 +42,10 @@ export const partnersEntityConfig: AdminEntityConfig<PartnerResponse> = {
       mobileLabel: 'Editor',
       icon: 'bar_chart',
       variant: 'secondary',
-      priority: 'primary',
+      // ponytail: demoted primary→secondary so `Reports` is the singular primary entry (#252 AC#1),
+      // matching the organizations pattern. NOT deleted — `/partner-edit` is partner data-capture with no
+      // parity in the reports workspace; removal awaits product confirmation of that parity.
+      priority: 'secondary',
       requiredCapabilities: ['edit-content'],
       requiredPermissions: ['admin'],
       execution: {
