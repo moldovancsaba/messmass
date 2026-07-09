@@ -1,31 +1,35 @@
 # {messmass} Release Notes
 Status: Active
-Last Updated: 2026-07-07T14:33:08.000Z
+Last Updated: 2026-07-09T09:45:41.000Z
 Canonical: No
 Owner: Operations
 
-## [v12.1.21] — 2026-07-07T14:33:08.000Z
+## [v12.1.28] — 2026-07-09T09:45:41.000Z
 
 ### Summary
-ANALYTICS TODO GAPS (#284): Closed the remaining analytics-engine stubs so computed metrics stop silently returning placeholder values. Two of the six markers (`overallScore`, editor `contentMetadata`) were already resolved by the 2026-07-05 notification/analytics merge; this release closes the other four and removes every TODO marker from the four tracked files.
+Analytics engine TODO gaps closed (#284). Version rebased onto main after the v12.1.27 hotfix; content unchanged from the original PR.
 
-### What Was Delivered
+## [v12.1.27] — 2026-07-08T08:24:11.000Z
 
-#### `costPerEngagement` → honest null instead of 0
-**WHAT**: `lib/analyticsCalculator.ts` returns `null` (not `0`); `AdMetrics.costPerEngagement` typed `number | null` in `lib/analytics.types.ts`.
-**WHY**: `0` reads as a legitimate "free" value to anomaly detection; `null` truthfully signals "unavailable" until an ad-spend data source exists.
+### Summary
+FIX — LOGO/IMAGE UPLOAD BROKEN (#294): The public ImgBB key never reached the browser, so every direct browser→ImgBB upload (logos, report images) failed with "Image upload not configured". Fixed by reading `NEXT_PUBLIC_*` via static literal access so Next.js inlines it into the client bundle.
 
-#### `hourlyPattern` documented unavailable
-**WHAT**: The `undefined` hourlyPattern in `calculateBitlyMetrics` is now commented as unavailable (the Bitly source has no hourly breakdown); the optional field stays absent rather than faked.
+### Root Cause
+`clientConfig()` in `lib/config.ts` read `NEXT_PUBLIC_IMGBB_API_KEY` via `getEnv()` — a dynamic `process.env[name]` access. Next.js only inlines `NEXT_PUBLIC_*` into the browser bundle for **static literal** accesses; a dynamic access is never inlined, so `clientConfig().imgbbApiKey` was always `undefined` client-side regardless of deployment env. Regression from `ae2fb1dc` (2026-07-01, direct-to-ImgBB upload); broken since it shipped.
 
-#### `isProjectAggregatable` typed
-**WHAT**: Replaced `project: any` with `Partial<AnalyticsProjectInput>` in `lib/analyticsCalculator.ts`.
+### What Was Fixed
+**WHAT**: `clientConfig()` now reads `process.env.NEXT_PUBLIC_APP_URL` / `NEXT_PUBLIC_WS_URL` / `NEXT_PUBLIC_IMGBB_API_KEY` as static literals (via a `cleanEnv` trim helper), not `getEnv()`.
+**WHY**: Static literal access is the only form Next.js inlines into client bundles. This restores logo/image uploads in `components/ImageUploader.tsx`, `components/ImageUploadField.tsx`, `components/ReportContentManager.tsx`.
 
-#### `detectSeasonalAnomalies` explicitly descoped
-**WHAT**: `lib/analytics-anomaly.ts` — the STL/moving-average TODO is replaced with an explicit descope comment. The function has zero callers; it delegates to standard (non-seasonal) detection and will be wired + implemented under #233 when a caller needs seasonal baselines.
+### Verification
+Built with `NEXT_PUBLIC_IMGBB_API_KEY=<sentinel>` and grepped `.next/static`:
+- before (dynamic `getEnv`): sentinel in **0** client chunks
+- after (static literal): sentinel in **3** client chunks (incl. `app/admin/partners`, `app/admin/content-library`)
+
+No jest test — the bug is a build-time inlining behavior that a Node-runtime unit test cannot reproduce (`process.env[name]` works at runtime); the build+grep is the guard.
 
 ### Testing
-- `npm run type-check`, `npm run lint`, `npm test` (295 passing), `npm run style:check`, `npm run version:verify`, `npm run docs:audit`, `npm run build`
+- `npm run type-check`, `npm run lint`, `npm test` (303 passing), `npm run style:check`, `npm run version:verify`, `npm run docs:audit`, both guardrails, `npm run build`
 
 ## [v12.1.20] — 2026-07-02T06:23:29.000Z
 

@@ -4,7 +4,7 @@ Last Updated: 2026-04-24
 Canonical: No
 Owner: Architecture
 
-**Version**: 12.1.21
+**Version**: 12.1.28
 **Last Updated**: 2026-04-24 (UTC)
 **Purpose**: Complete catalog of all reusable components, modules, styling systems, and utilities
 
@@ -561,4 +561,4 @@ For implementation details, see:
 
 ---
 
-*Version: 12.1.21 | Last Updated: 2026-06-26 (UTC)*
+*Version: 12.1.28 | Last Updated: 2026-06-26 (UTC)*
