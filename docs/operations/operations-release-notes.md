@@ -1,26 +1,45 @@
 # {messmass} Release Notes
 Status: Active
-Last Updated: 2026-07-08T07:07:41.000Z
+Last Updated: 2026-07-09T09:47:45.000Z
 Canonical: No
 Owner: Operations
 
-## [v12.1.23] — 2026-07-08T07:07:41.000Z
+## [v12.1.30] — 2026-07-09T09:47:45.000Z
 
 ### Summary
-ORGANIZATION INSIGHTS SCOPE (#233): Added organization as a reporting scope to the analytics insights engine, giving parity with the existing event and partner scopes (#233 AC#3). The anomaly/trend/benchmark/prediction insight engines were already live for event and partner scopes; this closes the org-scope gap.
+Organization scope for analytics insights engine (#233). Version rebased onto main after the v12.1.27 hotfix; content unchanged from the original PR.
 
-### What Was Delivered
+## [v12.1.29] — 2026-07-09T09:46:37.000Z
 
-#### `generateOrganizationInsights` + org insights route
-**WHAT**: New `generateOrganizationInsights(organizationId)` in `lib/analytics-insights.ts`, plus `GET /api/analytics/insights/organizations/[orgId]`.
-**WHY**: The insights engine already served event (`generateInsights`) and partner (`generatePartnerInsights`) scopes; #233 AC#3 requires organization scope.
-**HOW**: Mirrors the partner path — resolves the org's member partners (`partner.organizationId`), then their events via the same `partner1/partner2/partner1Id/partner2Id` linkage `app/api/organizations/report/[id]` uses, and generates insights for the most recent event. Fail-proof: returns `null` (not an error) when the org has no member partners, no events, or insufficient data. The route mirrors the partner route's auth + ObjectId validation + error handling.
+### Summary
+Reports as singular primary partners list-view action (#252). Version rebased onto main after the v12.1.27 hotfix; content unchanged from the original PR.
 
-### Note
-No DB-integration unit test added — consistent with the existing `generatePartnerInsights` (these functions require a live Mongo connection; the repo's test suite is DB-free). Verified by `tsc` + `next build`; the mirrored partner path is exercised in production.
+## [v12.1.28] — 2026-07-09T09:45:41.000Z
+
+### Summary
+Analytics engine TODO gaps closed (#284). Version rebased onto main after the v12.1.27 hotfix; content unchanged from the original PR.
+
+## [v12.1.27] — 2026-07-08T08:24:11.000Z
+
+### Summary
+FIX — LOGO/IMAGE UPLOAD BROKEN (#294): The public ImgBB key never reached the browser, so every direct browser→ImgBB upload (logos, report images) failed with "Image upload not configured". Fixed by reading `NEXT_PUBLIC_*` via static literal access so Next.js inlines it into the client bundle.
+
+### Root Cause
+`clientConfig()` in `lib/config.ts` read `NEXT_PUBLIC_IMGBB_API_KEY` via `getEnv()` — a dynamic `process.env[name]` access. Next.js only inlines `NEXT_PUBLIC_*` into the browser bundle for **static literal** accesses; a dynamic access is never inlined, so `clientConfig().imgbbApiKey` was always `undefined` client-side regardless of deployment env. Regression from `ae2fb1dc` (2026-07-01, direct-to-ImgBB upload); broken since it shipped.
+
+### What Was Fixed
+**WHAT**: `clientConfig()` now reads `process.env.NEXT_PUBLIC_APP_URL` / `NEXT_PUBLIC_WS_URL` / `NEXT_PUBLIC_IMGBB_API_KEY` as static literals (via a `cleanEnv` trim helper), not `getEnv()`.
+**WHY**: Static literal access is the only form Next.js inlines into client bundles. This restores logo/image uploads in `components/ImageUploader.tsx`, `components/ImageUploadField.tsx`, `components/ReportContentManager.tsx`.
+
+### Verification
+Built with `NEXT_PUBLIC_IMGBB_API_KEY=<sentinel>` and grepped `.next/static`:
+- before (dynamic `getEnv`): sentinel in **0** client chunks
+- after (static literal): sentinel in **3** client chunks (incl. `app/admin/partners`, `app/admin/content-library`)
+
+No jest test — the bug is a build-time inlining behavior that a Node-runtime unit test cannot reproduce (`process.env[name]` works at runtime); the build+grep is the guard.
 
 ### Testing
-- `npm run type-check`, `npm run lint`, `npm test` (295 passing), `npm run style:check`, `npm run version:verify`, `npm run docs:audit`, both guardrails, `npm run build`
+- `npm run type-check`, `npm run lint`, `npm test` (303 passing), `npm run style:check`, `npm run version:verify`, `npm run docs:audit`, both guardrails, `npm run build`
 
 ## [v12.1.20] — 2026-07-02T06:23:29.000Z
 
