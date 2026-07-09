@@ -170,7 +170,16 @@ export function requiresCsrfProtection(request: NextRequest): boolean {
   if (authEndpoints.includes(pathname)) {
     return false;
   }
-  
+
+  // WHAT: Fanmass integration endpoints are authed by a shared integration token
+  //       (requireFanmassIntegrationAuth), not by a cookie session.
+  // WHY: CSRF (double-submit cookie) protects cookie/browser sessions; it does not
+  //      apply to cookieless server-to-server calls carrying a bearer/api-key token.
+  //      Requiring CSRF here would 403 every fanmass call (incl. link/callbacks/sync).
+  if (pathname.startsWith('/api/integrations/fanmass/')) {
+    return false;
+  }
+
   // WHAT: Public stats pages (if POST allowed) need CSRF
   // WHY: Prevent unauthorized stats submissions
   if (pathname.startsWith('/api/')) {
