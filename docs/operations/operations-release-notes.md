@@ -1,8 +1,13 @@
 # {messmass} Release Notes
 Status: Active
-Last Updated: 2026-07-09T09:46:37.000Z
+Last Updated: 2026-07-09T09:47:45.000Z
 Canonical: No
 Owner: Operations
+
+## [v12.1.30] — 2026-07-09T09:47:45.000Z
+
+### Summary
+Organization scope for analytics insights engine (#233). Version rebased onto main after the v12.1.27 hotfix; content unchanged from the original PR.
 
 ## [v12.1.29] — 2026-07-09T09:46:37.000Z
 
