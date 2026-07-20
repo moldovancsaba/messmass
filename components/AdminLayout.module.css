@@ -104,19 +104,17 @@
 
 /* ===== Responsive Behavior ===== */
 
-/* What: Desktop (OPS-ADMIN-01: match --mm-breakpoint-desktop) */
-@media (min-width: 1280px) {
+/* What: Tablet + desktop (≥768px) — content margin follows the sidebar's real width.
+   ponytail: expanded margin here, collapsed margin via .mainWrapper.collapsed above (higher
+   specificity, wins when collapsed). State-driven at every width, matching the sidebar. */
+@media (min-width: 768px) {
   .mainWrapper {
     margin-left: var(--mm-sidebar-width);
   }
 }
 
-/* What: Tablet – sidebar auto-collapsed (OPS-ADMIN-01: match --mm-breakpoint-*) */
+/* What: Tablet content padding */
 @media (min-width: 768px) and (max-width: 1279px) {
-  .mainWrapper {
-    margin-left: var(--mm-sidebar-width-collapsed);
-  }
-  
   .mainContent {
     padding: var(--mm-space-6);
   }

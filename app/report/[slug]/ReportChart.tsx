@@ -635,87 +635,12 @@ function PieChart({ result, className }: { result: ChartResult; className?: stri
   // WHY: v11.38.0 - Allow hiding percentages in pie chart legends
   const showPercentages = result.showPercentages !== false;
   
-  // WHAT: A-03.4 - Calculate and set measured body height for pie chart container
-  // WHY: Replace competing flex containers with guaranteed height (KPI-safe pattern)
-  // HOW: Measure container height, subtract title and legend heights, set --chart-body-height CSS variable
-  useEffect(() => {
-    if (!hasElements || !pieGridRef.current || !pieChartContainerRef.current || typeof window === 'undefined') {
-      return;
-    }
+  // ponytail: removed the measure→mutate→measure body-height effect. The pie container now
+  // derives its height from its own width (aspect-ratio, see .pieChartContainer in
+  // ReportChart.module.css), so it no longer needs a JS-measured --chart-body-height. This
+  // also kills the ResizeObserver+MutationObserver loop that watched the same subtree it
+  // mutated — the main aggravator of the mobile tiny-donut flicker.
 
-    const measureAndSetBodyHeight = () => {
-        try {
-          const pieGrid = pieGridRef.current;
-          const pieChartContainer = pieChartContainerRef.current;
-          if (!pieGrid || !pieChartContainer) return;
-          
-          // WHAT: Get container height from offsetHeight (actual rendered height)
-          // WHY: Container height is set via --block-height from row
-          const containerHeight = pieGrid.offsetHeight;
-          if (containerHeight <= 0) return;
-          
-          // WHAT: Measure title height if shown
-          // WHY: Subtract title height from container to get body height
-          let titleHeight = 0;
-          if (showTitle && pieTitleRowRef.current) {
-            titleHeight = pieTitleRowRef.current.offsetHeight;
-          }
-          
-          // WHAT: Measure legend height
-          // WHY: Subtract legend height from container to get body height
-          let legendHeight = 0;
-          if (pieLegendRef.current) {
-            legendHeight = pieLegendRef.current.offsetHeight;
-          }
-          
-          // WHAT: Calculate body height: container - title - legend
-          // WHY: Chart container must have guaranteed height (not competing flex)
-          const bodyHeight = containerHeight - titleHeight - legendHeight;
-          
-          // WHAT: Set CSS custom property on chart container
-          // WHY: CSS uses this variable to set explicit height (guaranteed, not flex-dependent)
-          // HOW: Use setProperty to set --chart-body-height
-          if (bodyHeight > 0) {
-            pieChartContainer.style.setProperty('--chart-body-height', `${bodyHeight}px`);
-          }
-        } catch (error) {
-          console.error('[PieChart] Unexpected error during body height calculation:', error);
-        }
-      };
-      
-      // WHAT: Measure after initial render and on resize
-      // WHY: Heights may change on resize or content changes
-      measureAndSetBodyHeight();
-      const timeoutId = setTimeout(measureAndSetBodyHeight, 100);
-      
-      const resizeObserver = new ResizeObserver(() => {
-        requestAnimationFrame(measureAndSetBodyHeight);
-      });
-      
-      if (pieGridRef.current) {
-        resizeObserver.observe(pieGridRef.current);
-      }
-      
-      const mutationObserver = new MutationObserver(() => {
-        requestAnimationFrame(measureAndSetBodyHeight);
-      });
-      
-      if (pieGridRef.current) {
-        mutationObserver.observe(pieGridRef.current, {
-          childList: true,
-          subtree: true,
-          attributes: true,
-          attributeFilter: ['style', 'class']
-        });
-      }
-      
-      return () => {
-        clearTimeout(timeoutId);
-        resizeObserver.disconnect();
-        mutationObserver.disconnect();
-      };
-  }, [hasElements, showTitle, result.chartId]);
-  
   // WHAT: Measure and reduce font size for PIE chart titles if they exceed available space
   // WHY: Titles must fit within allocated space per Layout Grammar
   // HOW: Measure title height and reduce font size if content exceeds space

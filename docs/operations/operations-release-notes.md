@@ -1,8 +1,20 @@
 # {messmass} Release Notes
 Status: Active
-Last Updated: 2026-07-09T09:49:15.000Z
+Last Updated: 2026-07-20T12:14:55.000Z
 Canonical: No
 Owner: Operations
+
+## [v12.1.34] — 2026-07-20T12:14:55.000Z
+
+### Summary
+Responsive fixes for pie/donut charts and the admin sidebar on tablet and mobile.
+
+### What Was Delivered
+- **Pie charts render at a stable size on every device.** The Chart.js donut canvas now takes its height from a square `aspect-ratio` box (`.pieChartContainer`) instead of a definite-height cascade that the mobile media queries severed (`display:contents` row + `min-height`-only item). That collapse had shrunk the canvas to a ~2px animated ring that read as a stuck loading spinner. Also removed the per-pie JS body-height measurement effect and its ResizeObserver+MutationObserver feedback loop, which had no CSS consumer and aggravated the mobile flicker.
+- **Admin sidebar expand/collapse works on tablet (768–1279px).** Removed the tablet media queries (in `Sidebar.module.css`, `AdminLayout.module.css`, `TopHeader.module.css`) that hard-pinned the sidebar width, content margin, and header offset to the collapsed 80px regardless of the React toggle state — which made the toggle do nothing, clipped the menu labels, and detached the arrow button from the sidebar edge. Tablet now shares the desktop state-driven behavior.
+
+### Testing
+- Full local CI gate: `npm run type-check`, `npm run lint`, `npm test`, `npm run style:check`, `npm run version:verify`, `npm run docs:audit`, dependency + layout-grammar guardrails, and `npm run build`.
 
 ## [v12.1.33] — 2026-07-09T09:49:15.000Z
 

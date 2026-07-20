@@ -376,29 +376,10 @@
 
 /* ===== Responsive Behavior ===== */
 
-/* What: Tablet behavior (768-1279px) - auto-collapse sidebar (OPS-ADMIN-01: match --mm-breakpoint-* in theme) */
-@media (min-width: 768px) and (max-width: 1279px) {
-  .sidebar {
-    width: var(--mm-sidebar-width-collapsed);
-  }
-  
-  .sidebar .sectionTitle,
-  .sidebar .navLabel,
-  .sidebar .activeIndicator,
-  .sidebar .logoText,
-  .sidebar .versionInfo {
-    display: none;
-  }
-  
-  .sidebar .navLink {
-    justify-content: center;
-    padding: var(--mm-space-3);
-  }
-  
-  .sidebar .logoIcon {
-    display: block;
-  }
-}
+/* ponytail: removed the tablet auto-collapse override. It hard-pinned width:80px and hid
+   labels regardless of the React toggle state, so expand/collapse could never win and the
+   arrow button detached from the sidebar edge. Tablet (768-1279px) now falls through to the
+   base .sidebar / .sidebar.collapsed rules above — state-driven, identical to desktop. */
 
 /* What: Mobile behavior (<768px) - drawer overlay (OPS-ADMIN-01: match --mm-breakpoint-tablet) */
 @media (max-width: 767px) {
@@ -429,13 +410,5 @@
   }
 }
 
-/* What: Desktop behavior (≥1280px) - full sidebar (OPS-ADMIN-01: match --mm-breakpoint-desktop) */
-@media (min-width: 1280px) {
-  .sidebar {
-    width: var(--mm-sidebar-width);
-  }
-  
-  .sidebar.collapsed {
-    width: var(--mm-sidebar-width-collapsed);
-  }
-}
+/* ponytail: dropped the ≥1280px "restore" block — it only re-stated the unconditional base
+   .sidebar / .sidebar.collapsed widths, which now govern every width ≥768px on their own. */

@@ -428,19 +428,24 @@
 
 /* Pie Chart Container for Chart.js - Grid row 2 (40% of cell) */
 .pieChartContainer {
-  /* WHAT: Grid row 2 - fixed 40% proportion (CSS Grid layout), fills full grid row height */
-  /* WHY: CSS Grid ensures fixed proportion, no flex competition or overflow */
-  /* HOW: Grid row with flex centering for Chart.js canvas, fills allocated space */
-  /* NOTE: --chart-body-height is still calculated for canvas sizing, but container uses grid row */
-  height: 100% !important; /* CRITICAL: Fill full grid row 2 height (40% of pieGrid) */
-  width: 100%;
-  min-height: 0; /* CRITICAL: Allow grid row to shrink if needed */
+  /* WHAT: Square box sized from its OWN width (aspect-ratio), centered in the grid cell. */
+  /* WHY: The Chart.js canvas needs a definite height. Deriving height from width works on */
+  /*      every device and never depends on the ancestor height chain — which the mobile */
+  /*      media queries sever (display:contents row + min-height-only rowItem), collapsing */
+  /*      the old `height:100%` container to ~0 and rendering the donut as a tiny ring. */
+  /* ponytail: aspect-ratio box replaces the fragile definite-height cascade + JS measurement. */
+  aspect-ratio: 1 / 1;
+  width: min(100%, 240px);
+  margin: 0 auto;
+  align-self: center; /* override .pieGrid align-items:stretch so aspect-ratio governs height */
+  justify-self: center;
+  min-height: 0;
   position: relative;
   display: flex;
   align-items: center;
   justify-content: center;
   container-type: size;
-  overflow: visible; /* WHAT: P1 1.6 - Layout Grammar: no clipping on content layers, Chart.js canvas must be fully visible */
+  overflow: visible; /* WHAT: P1 1.6 - Layout Grammar: no clipping, Chart.js canvas must be fully visible */
   box-sizing: border-box;
 }
 

@@ -145,13 +145,8 @@
   }
 }
 
-/* What: Collapsed sidebar on tablet (OPS-ADMIN-01: token) */
-@media (min-width: 768px) and (max-width: 1279px) {
-  .topHeader {
-    margin-left: var(--mm-sidebar-width-collapsed);
-    width: calc(100% - var(--mm-sidebar-width-collapsed));
-  }
-}
+/* ponytail: removed the tablet-only collapsed-width override so the header offset matches
+   desktop across all widths ≥768px (the ≥768px rule above governs). */
 
 /* What: No left margin on mobile
    Why: Sidebar is overlay, not shifting content */
