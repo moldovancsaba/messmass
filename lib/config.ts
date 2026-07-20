@@ -52,6 +52,9 @@ export type AppConfig = {
   fanmassBaseUrl?: string;
   fanmassApiKey?: string;
   fanmassIntegrationToken?: string;
+  // messmass -> camera provisioning (messmass is master for orgs/partners/events)
+  cameraBaseUrl?: string;
+  cameraProvisionToken?: string;
 };
 
 function getEnv(name: string): string | undefined {
@@ -130,6 +133,8 @@ function initializeConfig(): AppConfig {
     fanmassBaseUrl: getEnv('FANMASS_BASE_URL'),
     fanmassApiKey: getEnv('FANMASS_API_KEY'),
     fanmassIntegrationToken: getEnv('FANMASS_INTEGRATION_TOKEN') || getEnv('MESSMASS_FANMASS_TOKEN'),
+    cameraBaseUrl: getEnv('CAMERA_BASE_URL'),
+    cameraProvisionToken: getEnv('CAMERA_MESSMASS_INTERNAL_SECRET'),
   };
 
   return cachedConfig;
