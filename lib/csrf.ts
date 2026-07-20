@@ -176,7 +176,7 @@ export function requiresCsrfProtection(request: NextRequest): boolean {
   // WHY: CSRF (double-submit cookie) protects cookie/browser sessions; it does not
   //      apply to cookieless server-to-server calls carrying a bearer/api-key token.
   //      Requiring CSRF here would 403 every fanmass call (incl. link/callbacks/sync).
-  if (pathname.startsWith('/api/integrations/fanmass/')) {
+  if (pathname.startsWith('/api/integrations/')) {
     return false;
   }
 

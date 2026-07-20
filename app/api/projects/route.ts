@@ -686,6 +686,18 @@ export async function POST(request: NextRequest) {
       }
     }
 
+    // WHAT: Provision the mirror event in the camera app (messmass is the master).
+    // WHY: Full circle — same partner/event everywhere; the camera event inherits
+    //      the partner's default design. Fire-and-forget; never blocks/fails create.
+    try {
+      const { provisionCameraEventForProject } = await import('@/lib/cameraProvision');
+      void provisionCameraEventForProject(db, { ...project, _id: result.insertedId }).catch((err) =>
+        logError('Camera provisioning failed', { context: 'projects', projectId: result.insertedId.toString() }, err instanceof Error ? err : new Error(String(err))),
+      );
+    } catch (provisionError) {
+      logError('Camera provisioning import failed', { context: 'projects', projectId: result.insertedId.toString() }, provisionError instanceof Error ? provisionError : new Error(String(provisionError)));
+    }
+
     // WHAT: Log notification for project creation
     // WHY: Notify all users of new project activity
     try {
