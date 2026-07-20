@@ -35,7 +35,7 @@ async function req(method: string, path: string, body?: unknown): Promise<Record
 export const cameraClient = {
   upsertOrganization: (name: string, messmassOrganizationId: string) =>
     req('POST', '/api/internal/messmass/organizations', { name, messmassOrganizationId }).then((d) => d.organization as { organizationId: string }),
-  upsertPartner: (input: { name: string; messmassPartnerId: string; organizationId?: string; logoUrl?: string }) =>
+  upsertPartner: (input: { name: string; messmassPartnerId: string; organizationId?: string; logoUrl?: string; cameraPartnerId?: string }) =>
     req('POST', '/api/internal/messmass/partners', input).then((d) => d.partner as { partnerId: string; linked: boolean; created: boolean }),
   findPartners: (params: { name?: string; messmassPartnerId?: string }) => {
     const q = new URLSearchParams();
@@ -43,6 +43,12 @@ export const cameraClient = {
     if (params.messmassPartnerId) q.set('messmassPartnerId', params.messmassPartnerId);
     return req('GET', `/api/internal/messmass/partners?${q.toString()}`).then((d) => (d.partners as Array<{ partnerId: string; name: string }>) || []);
   },
-  provisionEvent: (input: { messmassEventId: string; partnerId: string; eventName: string; eventDate?: string }) =>
-    req('POST', '/api/internal/messmass/events', input).then((d) => d.event as { eventId: string; mongoId: string; created: boolean }),
+  // Existing camera events available for adoption (create/link a messmass event for each).
+  listAdoptableEvents: (unlinkedOnly = false) =>
+    req('GET', `/api/internal/messmass/events${unlinkedOnly ? '?unlinked=true' : ''}`).then(
+      (d) => (d.events as Array<{ eventId: string; name: string; partnerId: string; partnerName: string | null; eventDate: string | null; messmassEventId: string | null }>) || [],
+    ),
+  // With cameraEventId: adopt that existing camera event; else create a new one.
+  provisionEvent: (input: { messmassEventId: string; partnerId: string; eventName: string; eventDate?: string; cameraEventId?: string }) =>
+    req('POST', '/api/internal/messmass/events', input).then((d) => d.event as { eventId: string; mongoId: string; created: boolean; adopted?: boolean }),
 };
