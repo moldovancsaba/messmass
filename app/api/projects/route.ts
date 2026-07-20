@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextRequest, NextResponse, after } from 'next/server';
 import { ObjectId, Db } from 'mongodb';
 import { generateProjectSlugs } from '@/lib/slugUtils';
 import clientPromise from '@/lib/mongodb';
@@ -688,15 +688,19 @@ export async function POST(request: NextRequest) {
 
     // WHAT: Provision the mirror event in the camera app (messmass is the master).
     // WHY: Full circle — same partner/event everywhere; the camera event inherits
-    //      the partner's default design. Fire-and-forget; never blocks/fails create.
-    try {
-      const { provisionCameraEventForProject } = await import('@/lib/cameraProvision');
-      void provisionCameraEventForProject(db, { ...project, _id: result.insertedId }).catch((err) =>
-        logError('Camera provisioning failed', { context: 'projects', projectId: result.insertedId.toString() }, err instanceof Error ? err : new Error(String(err))),
-      );
-    } catch (provisionError) {
-      logError('Camera provisioning import failed', { context: 'projects', projectId: result.insertedId.toString() }, provisionError instanceof Error ? provisionError : new Error(String(provisionError)));
-    }
+    //      the partner's default design. Runs via after() so it completes AFTER the
+    //      response WITHOUT being suspended (a plain fire-and-forget is killed by the
+    //      serverless runtime once the response is returned). Never blocks/fails create.
+    const provisionProject = { ...project, _id: result.insertedId };
+    after(async () => {
+      try {
+        const { getDb } = await import('@/lib/fanmassIntegration');
+        const { provisionCameraEventForProject } = await import('@/lib/cameraProvision');
+        await provisionCameraEventForProject(await getDb(), provisionProject);
+      } catch (err) {
+        logError('Camera provisioning failed', { context: 'projects', projectId: result.insertedId.toString() }, err instanceof Error ? err : new Error(String(err)));
+      }
+    });
 
     // WHAT: Log notification for project creation
     // WHY: Notify all users of new project activity
