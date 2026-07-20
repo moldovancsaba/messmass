@@ -428,17 +428,19 @@
 
 /* Pie Chart Container for Chart.js - Grid row 2 (40% of cell) */
 .pieChartContainer {
-  /* WHAT: Square box sized from its OWN width (aspect-ratio), centered in the grid cell. */
-  /* WHY: The Chart.js canvas needs a definite height. Deriving height from width works on */
-  /*      every device and never depends on the ancestor height chain — which the mobile */
-  /*      media queries sever (display:contents row + min-height-only rowItem), collapsing */
-  /*      the old `height:100%` container to ~0 and rendering the donut as a tiny ring. */
-  /* ponytail: aspect-ratio box replaces the fragile definite-height cascade + JS measurement. */
-  aspect-ratio: 1 / 1;
-  width: min(100%, 240px);
-  margin: 0 auto;
-  align-self: center; /* override .pieGrid align-items:stretch so aspect-ratio governs height */
-  justify-self: center;
+  /* WHAT: Circular donut = a square sized to the grid row's HEIGHT, centered horizontally. */
+  /* WHY: The pie sits in a fixed-proportion grid row (3fr:4fr:3fr). A circle is bounded by */
+  /*      its shorter axis (the row height), so we fill the row height and derive the width */
+  /*      from it via aspect-ratio — never width-driven, which would overflow the row into */
+  /*      the legend. Definite on every device; the mobile @media block mirrors these values. */
+  /* ponytail: height-driven square replaces the old `height:100%` fill that let the canvas */
+  /*      stretch to the full cell width and squish the donut into a flat sliver. */
+  align-self: stretch;   /* fill the grid row height (definite) */
+  justify-self: center;  /* center the square; do NOT stretch width to the column */
+  height: 100%;
+  width: auto;
+  aspect-ratio: 1 / 1;   /* width follows the row height → perfect circle */
+  max-width: 100%;
   min-height: 0;
   position: relative;
   display: flex;
@@ -1351,6 +1353,17 @@
     container-type: size; /* Ensure container queries work on mobile */
   }
   
+  /* WHAT: Give the pie block an EXPLICIT height so its % chain resolves on mobile. */
+  /* WHY: The generic `.chart:not(.image) { height: 100% }` above resolves against a rowItem */
+  /*      that only has min-height (height:auto), so it computes to auto — then `.pieGrid */
+  /*      { height: 100% }` can't resolve and the grid collapses to content (~36px donut). */
+  /*      --block-height is definite (set per-row in JS), matching desktop. */
+  /* ponytail: one explicit height fixes the whole cascade; same specificity as the rule above, */
+  /*      placed after it so it wins on the pie block only. */
+  .chart.pie {
+    height: var(--block-height, 250px) !important;
+  }
+
   /* WHAT: PIE chart uses CSS Grid layout on mobile (same as desktop, same as KPI charts) */
   /* WHY: Table-style layout ensures fixed proportions, prevents overflow */
   /* HOW: CSS Grid with grid-template-rows: 3fr 4fr 3fr ensures content stays within frame */
@@ -1371,9 +1384,14 @@
     box-sizing: border-box !important;
   }
   .pieChartContainer {
-    /* WHAT: Grid row 2 - fixed 40% proportion */
-    height: 100% !important; /* Fill grid row 2 */
-    width: 100% !important;
+    /* WHAT: Grid row 2 - height-driven square (circle sized to the row height, centered). */
+    /* ponytail: was width:100% + height:100%, which squished the donut into a wide sliver. */
+    align-self: stretch !important;
+    justify-self: center !important;
+    height: 100% !important; /* fill grid row 2 */
+    width: auto !important;
+    aspect-ratio: 1 / 1 !important; /* width follows the row height → perfect circle */
+    max-width: 100% !important;
     min-height: 0 !important; /* Allow grid row to shrink if needed */
     position: relative !important;
     overflow: visible !important; /* WHAT: P1 1.6 - Layout Grammar: no clipping on content layers, Chart.js canvas must be fully visible */

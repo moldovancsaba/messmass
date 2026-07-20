@@ -1,8 +1,21 @@
 # {messmass} Release Notes
 Status: Active
-Last Updated: 2026-07-20T12:14:55.000Z
+Last Updated: 2026-07-20T12:52:10.000Z
 Canonical: No
 Owner: Operations
+
+## [v12.1.35] — 2026-07-20T12:52:10.000Z
+
+### Summary
+Follow-up to v12.1.34: make the report pie/donut charts render as a true circle on every device.
+
+### What Was Delivered
+- **Pie charts are now circular, not squished.** v12.1.34 removed the tiny-spinner collapse but the donut still drew into the full cell width (e.g. 335×100 on mobile) as a flat wide ellipse. The `.pieChartContainer` is now a height-driven square: it fills the pie grid row's height and derives its width from that via `aspect-ratio: 1/1`, centered horizontally — a perfect circle bounded by the row height on all viewports. The mobile `@media` override was updated to match instead of forcing `width/height: 100%`.
+- **Fixed the collapsed pie block on mobile.** The generic `.chart:not(.image) { height: 100% }` resolved to `auto` against a `min-height`-only `rowItem`, so `.pieGrid { height: 100% }` couldn't resolve and the grid collapsed to ~36px. Added an explicit `.chart.pie { height: var(--block-height) }` in the mobile block so the height chain resolves (matching desktop), sizing the donut to the full block.
+
+### Testing
+- Full local CI gate: type-check, lint, test, style:check, version:verify, docs:audit, dependency + layout-grammar guardrails, and build.
+- Verified in-browser at mobile (375px) and desktop (1280px): donut renders as a centered circle (`isCircle` confirmed via measured canvas bounds), grid resolves to the full block height.
 
 ## [v12.1.34] — 2026-07-20T12:14:55.000Z
 
