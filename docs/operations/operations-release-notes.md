@@ -1,8 +1,20 @@
 # {messmass} Release Notes
 Status: Active
-Last Updated: 2026-07-20T13:08:10.000Z
+Last Updated: 2026-07-20T19:36:17.000Z
 Canonical: No
 Owner: Operations
+
+## [v12.1.37] — 2026-07-20T19:36:17.000Z
+
+### Summary
+Added a complete end-user tutorial set for messmass, in the repo docs and surfaced in the in-product help page.
+
+### What Was Delivered
+- 21 new task-oriented tutorials under `docs/guides/` (a learning-path index `guides-tutorials-index.md` plus 20 tutorials): core objects (getting-started, organisations, partners, events, collecting-data, reports, report-themes, report-variants, sharing-access), building blocks (variables-kyc, clicker-sets, charts-formulas, content-library, hashtags-filters), and integrations (camera-app, fanmass, bitly, sport-databases, google-sheets, authentication-sso). Each covers what the object is, who can manage it, step-by-step actions with exact admin routes, gotchas, and how it connects.
+- Wired the set into `docs/index.md` (new "Tutorials (Learning Path)" section) and into the in-product help page `app/admin/help/page.tsx` (a Table-of-Contents entry plus a "Tutorials" catalog section grouped by phase). Tutorials are text-first; screenshots are a follow-up pass.
+
+### Testing
+- Full local CI gate: type-check, lint, test, style:check, version:verify, docs:audit (134 docs, 0 broken links), dependency + layout-grammar guardrails, and build.
 
 ## [v12.1.36] — 2026-07-20T13:08:10.000Z
 

@@ -87,6 +87,7 @@ export default function HelpPage() {
         <nav className={styles.toc}>
           <h2>Table of Contents</h2>
           <ul>
+            <li><a href="#tutorials">Tutorials</a></li>
             <li><a href="#workspace-map">Workspace Map</a></li>
             <li><a href="#core-workflows">Core Workflows</a></li>
             <li><a href="#reporting-workspace">Reporting Workspace</a></li>
@@ -132,6 +133,50 @@ export default function HelpPage() {
               Legacy routes like <code>/admin/dashboard</code> and <code>/admin/insights</code>{' '}
               now redirect into the canonical workspace model.
             </li>
+          </ul>
+        </section>
+
+        <section id="tutorials" className={styles.section}>
+          <h2>📚 Tutorials</h2>
+
+          <h3>Step-by-step guides</h3>
+          <p>
+            Task-oriented tutorials for creating and managing every core object, and for
+            connecting messmass to the apps it works with. The full step-by-step text lives in
+            the repository under <code>docs/guides/</code> (start at{' '}
+            <code>guides-tutorials-index.md</code>); this catalog shows what each one covers.
+          </p>
+
+          <h3>Core objects</h3>
+          <ul>
+            <li><strong>Getting Started:</strong> the Organisation → Partner → Event → Report model, roles, and login</li>
+            <li><strong>Organisations:</strong> group partners and run org-level reports — <code>/admin/organizations</code></li>
+            <li><strong>Partners:</strong> teams, clubs, and sponsors that own events — <code>/admin/partners</code></li>
+            <li><strong>Events:</strong> the individual matches/activities you report on — <code>/admin/events</code></li>
+            <li><strong>Collecting event data:</strong> the Clicker &amp; Manual editor — <code>/edit/[event-slug]</code></li>
+            <li><strong>Building reports:</strong> templates, data blocks, and charts — <code>/admin/visualization</code></li>
+            <li><strong>Report themes &amp; styles:</strong> colours and fonts — <code>/admin/styles</code></li>
+            <li><strong>Report variants:</strong> time-scoped, publishable report versions</li>
+            <li><strong>Sharing &amp; access:</strong> links, page passwords, and who can see what</li>
+          </ul>
+
+          <h3>Building blocks</h3>
+          <ul>
+            <li><strong>Variables (KYC):</strong> the single source of truth for every stat — <code>/admin/kyc</code></li>
+            <li><strong>Clicker sets:</strong> the live capture layout — <code>/admin/clicker-manager</code></li>
+            <li><strong>Charts &amp; formulas:</strong> chart types and the <code>[variable]</code> language — <code>/admin/charts</code></li>
+            <li><strong>Content Library:</strong> reusable image/text assets — <code>/admin/content-library</code></li>
+            <li><strong>Hashtags &amp; filters:</strong> tagging and cross-event filter reports — <code>/admin/hashtags</code>, <code>/admin/filter</code></li>
+          </ul>
+
+          <h3>Integrations</h3>
+          <ul>
+            <li><strong>Camera app:</strong> provisioning orgs/partners/events into the selfie-capture app</li>
+            <li><strong>Fanmass:</strong> image-intelligence analytics and the mapping API</li>
+            <li><strong>Bitly:</strong> short-link click analytics attributed to events/partners — <code>/admin/bitly</code></li>
+            <li><strong>Sport databases:</strong> Football-Data.org, API-Football, and TheSportsDB enrichment</li>
+            <li><strong>Google Sheets:</strong> managing a partner&apos;s events from a spreadsheet</li>
+            <li><strong>Authentication &amp; SSO:</strong> sign-in, roles, SSO, and API keys</li>
           </ul>
         </section>
 
