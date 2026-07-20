@@ -196,31 +196,36 @@ export async function createVariable(input: { name: string; label?: string; type
     throw Object.assign(new Error('Variable name must be camelCase (letters/digits, starting with a letter)'), { status: 400, code: 'INVALID_VARIABLE_NAME' });
   }
   const db = await getDb();
-  const existing = await db.collection('variables_metadata').findOne({ name });
-  const setOnInsert: Record<string, unknown> = {
-    name,
-    isSystem: false,
-    type: input.type || 'count',
-    category: input.category || 'Custom',
-    derived: false,
-    flags: { visibleInClicker: false, editableInManual: true },
-    order: 999,
-    label: input.label || name,
-    createdAt: nowIso(),
-  };
-  const set: Record<string, unknown> = { updatedAt: nowIso() };
+  const col = db.collection('variables_metadata');
+  const existing = await col.findOne({ name });
   if (existing) {
+    // Only touch provided fields on update (never both $set and $setOnInsert on the
+    // same path — Mongo rejects that as a conflict).
+    const set: Record<string, unknown> = { updatedAt: nowIso() };
     if (input.label) set.label = input.label;
     if (input.type) set.type = input.type;
     if (input.category) set.category = input.category;
     if (input.unit !== undefined) set.unit = input.unit;
     if (input.description !== undefined) set.description = input.description;
+    await col.updateOne({ name }, { $set: set });
   } else {
-    if (input.unit !== undefined) setOnInsert.unit = input.unit;
-    if (input.description !== undefined) setOnInsert.description = input.description;
+    const now = nowIso();
+    await col.insertOne({
+      name,
+      isSystem: false,
+      type: input.type || 'count',
+      category: input.category || 'Custom',
+      label: input.label || name,
+      derived: false,
+      flags: { visibleInClicker: false, editableInManual: true },
+      order: 999,
+      ...(input.unit !== undefined ? { unit: input.unit } : {}),
+      ...(input.description !== undefined ? { description: input.description } : {}),
+      createdAt: now,
+      updatedAt: now,
+    });
   }
-  await db.collection('variables_metadata').updateOne({ name }, { $set: set, $setOnInsert: setOnInsert }, { upsert: true });
-  const saved = await db.collection('variables_metadata').findOne({ name });
+  const saved = await col.findOne({ name });
   return { variable: toVariable(saved), created: !existing };
 }
 
