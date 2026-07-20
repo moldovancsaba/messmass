@@ -324,7 +324,7 @@
   height: 100% !important; /* CRITICAL: Fill full height of parent */
   width: 100%;
   display: grid;
-  grid-template-rows: 3fr 4fr 3fr; /* Title (30%) : Pie (40%) : Legend (30%) - FIXED PROPORTIONS */
+  grid-template-rows: 2fr 5fr 3fr; /* Title (20%) : Pie (50%) : Legend (30%) - larger, still-circular donut */
   gap: 0;
   align-items: stretch;
   justify-items: stretch;
@@ -1369,7 +1369,7 @@
   /* HOW: CSS Grid with grid-template-rows: 3fr 4fr 3fr ensures content stays within frame */
   .pieGrid {
     display: grid !important; /* WHAT: CSS Grid layout (table-style) */
-    grid-template-rows: 3fr 4fr 3fr !important; /* Title (30%) : Pie (40%) : Legend (30%) */
+    grid-template-rows: 2fr 5fr 3fr !important; /* Title (20%) : Pie (50%) : Legend (30%) */
     height: 100% !important;
     width: 100% !important;
   }

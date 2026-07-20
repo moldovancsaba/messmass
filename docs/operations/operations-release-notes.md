@@ -1,8 +1,20 @@
 # {messmass} Release Notes
 Status: Active
-Last Updated: 2026-07-20T12:52:10.000Z
+Last Updated: 2026-07-20T13:08:10.000Z
 Canonical: No
 Owner: Operations
+
+## [v12.1.36] — 2026-07-20T13:08:10.000Z
+
+### Summary
+Enlarge the report pie/donut so it reads as the primary element of its card.
+
+### What Was Delivered
+- Rebalanced the pie card grid from `3fr 4fr 3fr` (title 30% / pie 40% / legend 30%) to `2fr 5fr 3fr` (title 20% / pie 50% / legend 30%), in both the base and mobile rules. Because the donut is sized to the pie row's height, the bigger row yields a bigger circle: mobile ~120px → ~150px, desktop ~110px → ~138px. Still perfectly circular; title and legend remain non-overlapping.
+
+### Testing
+- Full local CI gate: type-check, lint, test, style:check, version:verify, docs:audit, dependency + layout-grammar guardrails, and build.
+- Verified in-browser at 375px and 1280px: donut larger and circular (canvas bounds + drawn-arc pixel sampling confirm ~1:1 aspect), no overlap with title/legend.
 
 ## [v12.1.35] — 2026-07-20T12:52:10.000Z
 
