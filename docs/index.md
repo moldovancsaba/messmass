@@ -14,6 +14,14 @@ Owner: Documentation
 - [coding-standards.md](coding-standards.md) — Code style, naming conventions, and documentation expectations.
 - [documentation-governance.md](documentation-governance.md) — Rules for canonical docs, deprecation, and required metadata.
 
+## Tutorials (Learning Path)
+Task-oriented, end-user tutorials for creating and managing the core objects and connecting messmass to the apps it works with. Start with the index, which orders everything into a learning path.
+
+- [guides-tutorials-index.md](guides/guides-tutorials-index.md) — **Start here.** The tutorials hub and ordered learning path.
+- Core objects: [Getting Started](guides/guides-tutorial-getting-started.md) · [Organisations](guides/guides-tutorial-organisations.md) · [Partners](guides/guides-tutorial-partners.md) · [Events](guides/guides-tutorial-events.md) · [Collecting event data](guides/guides-tutorial-collecting-data.md) · [Building reports](guides/guides-tutorial-reports.md) · [Report themes & styles](guides/guides-tutorial-report-themes.md) · [Report variants](guides/guides-tutorial-report-variants.md) · [Sharing & access](guides/guides-tutorial-sharing-access.md)
+- Building blocks: [Variables (KYC)](guides/guides-tutorial-variables-kyc.md) · [Clicker sets](guides/guides-tutorial-clicker-sets.md) · [Charts & formulas](guides/guides-tutorial-charts-formulas.md) · [Content Library](guides/guides-tutorial-content-library.md) · [Hashtags & filters](guides/guides-tutorial-hashtags-filters.md)
+- Integrations: [Camera app](guides/guides-tutorial-camera-app.md) · [Fanmass](guides/guides-tutorial-fanmass.md) · [Bitly](guides/guides-tutorial-bitly.md) · [Sport databases](guides/guides-tutorial-sport-databases.md) · [Google Sheets](guides/guides-tutorial-google-sheets.md) · [Authentication & SSO](guides/guides-tutorial-authentication-sso.md)
+
 ## Operations & Delivery
 - [operations-action-plan.md](operations/operations-action-plan.md) — Tactical queue for ops, sprint goals, and blockers.
 - [operations-delivery-focus.md](operations/operations-delivery-focus.md) — Top 5 value/priority board issues and recommended next delivery step.
