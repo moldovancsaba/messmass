@@ -20,6 +20,14 @@ export type AppConfig = {
   nodeEnv: 'development' | 'production' | 'test' | string;
   // Remove hard-coded SSO default; this value must come from env or be undefined.
   ssoBaseUrl?: string;
+  // Real OAuth2/OIDC client registration on sso.doneisbetter.com (server-only).
+  // WHAT: messmass's own registered OAuth client id/secret.
+  // WHY: Replaces the old token-validate-only "Sign in with DoneIsBetter" shortcut
+  //     with the same protocol camera/launchmass already use, and lets messmass
+  //     read the shared per-app permission store instead of requiring a
+  //     pre-existing local account before SSO login can work.
+  ssoClientId?: string;
+  ssoClientSecret?: string;
   // Centralized service bases (server-only)
   appBaseUrl?: string;
   apiBaseUrl?: string;
@@ -111,6 +119,8 @@ function initializeConfig(): AppConfig {
     nodeEnv: getEnv('NODE_ENV') || 'development',
     // SECURITY: remove hard-coded SSO default; must be provided via env if used.
     ssoBaseUrl: getEnv('SSO_BASE_URL'),
+    ssoClientId: getEnv('SSO_CLIENT_ID'),
+    ssoClientSecret: getEnv('SSO_CLIENT_SECRET'),
     // Service bases (server-only)
     appBaseUrl: getEnv('APP_BASE_URL'),
     apiBaseUrl: getEnv('API_BASE_URL'),

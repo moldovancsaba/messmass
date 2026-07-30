@@ -1,20 +1,49 @@
 // app/api/auth/sso/login/route.ts
-// WHAT: Redirect to DoneIsBetter SSO login with callback_uri to our callback
-// WHY: #46 — single entry point for "Sign in with DoneIsBetter" on login page
+// WHAT: Initiates real OAuth2/OIDC (Authorization Code + optional PKCE) login
+//     against sso.doneisbetter.com, using messmass's own registered OAuth client.
+// WHY: #46 replaced the token-validate shortcut (old lib/ssoClient.ts flow) with
+//     the same protocol camera/launchmass already run in production. See
+//     SSO_EMAIL_UNIFICATION_PLAN.md for the full rationale.
 
 import { NextRequest, NextResponse } from 'next/server';
+import {
+  generatePKCEPair,
+  generateState,
+  getAuthorizationUrl,
+  getOAuthCallbackRedirectUri,
+  shouldUseConfidentialOAuth,
+} from '@/lib/auth/ssoOAuth';
+import { setPendingOAuthCookie } from '@/lib/auth/oauthPendingCookie';
+import { checkRateLimit, getClientIdentifier, RATE_LIMITS } from '@/lib/rateLimit';
 import config from '@/lib/config';
 
 export async function GET(request: NextRequest) {
-  const base = config.ssoBaseUrl?.replace(/\/$/, '');
-  if (!base) {
+  if (!config.ssoBaseUrl?.trim() || !config.ssoClientId?.trim()) {
     return NextResponse.redirect(new URL('/admin/login?error=sso_not_configured', request.url));
   }
-  const origin = request.headers.get('x-forwarded-proto')
-    ? `${request.headers.get('x-forwarded-proto')}://${request.headers.get('x-forwarded-host') || request.headers.get('host')}`
-    : request.nextUrl.origin;
-  const callbackUrl = `${origin}/api/auth/sso/callback`;
-  const redirectUri = request.nextUrl.searchParams.get('redirect_uri') || '/admin';
-  const ssoLoginUrl = `${base}/login?redirect_uri=${encodeURIComponent(callbackUrl)}&state=${encodeURIComponent(redirectUri)}`;
-  return NextResponse.redirect(ssoLoginUrl);
+
+  const identifier = getClientIdentifier(request);
+  const rl = checkRateLimit(`sso-login:${identifier}`, RATE_LIMITS.AUTH);
+  if (!rl.allowed) {
+    return NextResponse.json({ error: RATE_LIMITS.AUTH.message }, { status: 429 });
+  }
+
+  const redirectToParam = request.nextUrl.searchParams.get('redirect_uri');
+  const redirectTo = redirectToParam?.startsWith('/admin') ? redirectToParam : '/admin';
+  const redirectUri = getOAuthCallbackRedirectUri(request);
+
+  if (shouldUseConfidentialOAuth()) {
+    const state = generateState();
+    const authUrl = getAuthorizationUrl(null, state, { redirectUri });
+    const response = NextResponse.redirect(authUrl);
+    setPendingOAuthCookie(response, { state, redirectTo });
+    return response;
+  }
+
+  const { codeVerifier, codeChallenge } = generatePKCEPair();
+  const state = generateState();
+  const authUrl = getAuthorizationUrl(codeChallenge, state, { redirectUri });
+  const response = NextResponse.redirect(authUrl);
+  setPendingOAuthCookie(response, { state, codeVerifier, redirectTo });
+  return response;
 }
