@@ -28,6 +28,11 @@ export interface UserDoc {
   password?: string // WHAT: Legacy plaintext password (deprecated - use passwordHash instead)
   passwordHash?: string // WHAT: Bcrypt-hashed password (secure, production-ready)
   lastLogin?: string // ISO 8601 with milliseconds (optional for backward compatibility)
+  // WHAT: SSO subject id (OIDC `sub`) — set when this user was created or has ever
+  //   logged in via sso.doneisbetter.com. WHY: lets future SSO logins resolve to
+  //   this account even if their SSO email changes; also the join key if messmass
+  //   ever needs to push permission changes back to SSO like launchmass does.
+  ssoUserId?: string
   // API Access fields (v10.5.1+)
   apiKeyEnabled?: boolean // Enable/disable API access for this user (default: false)
   apiUsageCount?: number // Track API calls made with this user's key
@@ -78,6 +83,17 @@ export async function findUserById(id: string): Promise<UserDoc | null> {
   const col = await getUsersCollection()
   if (!ObjectId.isValid(id)) return null
   return col.findOne({ _id: new ObjectId(id) })
+}
+
+/**
+ * findUserBySsoId
+ * WHAT: Finds a user by their SSO subject id (OIDC `sub`)
+ * WHY: Resolves SSO logins to the right local account even if the SSO email
+ *      changed since the account was created/last linked.
+ */
+export async function findUserBySsoId(ssoUserId: string): Promise<UserDoc | null> {
+  const col = await getUsersCollection()
+  return col.findOne({ ssoUserId })
 }
 
 /**

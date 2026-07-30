@@ -1,86 +1,93 @@
 // lib/emailNotifications.ts
 // WHAT: Email transport utility for {messmass}
 // WHY: Send the transactional emails the app actually uses (admin password
-//      regeneration, and an SMTP config self-test).
-// HOW: SMTP via nodemailer.
+//      regeneration, and an email config self-test).
+// HOW: Resend HTTP API — matches camera (lib/email/submission-notification.ts),
+//      standardizing the two apps on one email provider instead of messmass's
+//      previous SMTP-via-nodemailer path. See SSO_EMAIL_UNIFICATION_PLAN.md
+//      Phase 2. SMTP has real serverless drawbacks Resend's HTTP API avoids
+//      (a raw SMTP connection per cold Vercel invocation vs. one POST), and
+//      messmass's SMTP_* vars were never actually configured in production —
+//      this closes that gap rather than just relocating it.
 //
-// NOTE (2026-07-05 audit cleanup): four functions that had ZERO callers were
-// removed — sendSyncSuccessEmail, sendSyncErrorEmail, sendDailySyncSummaryEmail,
-// sendContactFormEmail. The Google-Sheets sync writes status to the partner doc
-// (it never emailed), and the contact route persists via createContactInquiry.
-// The in-app notification system does NOT send email; if alert emails for
-// webhook failures are wanted, wire them explicitly from a single server-side
-// path rather than reintroducing orphaned helpers.
+// Configuration: RESEND_API_KEY (server-only), EMAIL_FROM (e.g.
+// '"messmass" <notifications@messmass.com>' — verified sending domain in
+// Resend). SMTP_* vars are no longer read; keep them in .env.example only as
+// a historical note if still wired to any external doc, not as live config.
 //
-// SMTP configuration is read from environment variables (documented in
-// .env.example): SMTP_HOST, SMTP_PORT, SMTP_SECURE, SMTP_USER, SMTP_PASS,
-// SMTP_FROM / EMAIL_FROM.
+// NOTE (2026-07-05 audit cleanup, still true): four functions that had ZERO
+// callers were removed — sendSyncSuccessEmail, sendSyncErrorEmail,
+// sendDailySyncSummaryEmail, sendContactFormEmail. The Google-Sheets sync
+// writes status to the partner doc (it never emailed), and the contact route
+// persists via createContactInquiry.
 
-const nodemailer = require('nodemailer');
+import { Resend } from 'resend';
 
-/**
- * WHAT: Email configuration from environment variables
- * WHY: SMTP credentials for transactional email
- */
-const EMAIL_CONFIG = {
-  host: process.env.SMTP_HOST || 'smtp.gmail.com',
-  port: parseInt(process.env.SMTP_PORT || '587'),
-  secure: process.env.SMTP_SECURE === 'true',
-  auth: {
-    user: process.env.SMTP_USER,
-    pass: process.env.SMTP_PASS
-  },
-  from: process.env.SMTP_FROM || process.env.EMAIL_FROM
-};
+function getApiKey(): string {
+  return (process.env.RESEND_API_KEY || '').trim();
+}
 
-/**
- * WHAT: Create SMTP transporter instance
- * WHY: Reusable email client
- */
-function createTransporter() {
-  if (!EMAIL_CONFIG.auth.user || !EMAIL_CONFIG.auth.pass) {
-    throw new Error('SMTP credentials not configured. Set SMTP_USER and SMTP_PASS in environment variables.');
+function getFromAddress(): string {
+  return (process.env.EMAIL_FROM || process.env.SMTP_FROM || '').trim();
+}
+
+function summarizeResendError(error: unknown): string {
+  if (error && typeof error === 'object') {
+    const e = error as Record<string, unknown>;
+    const parts: string[] = [];
+    if (typeof e.message === 'string' && e.message.trim()) parts.push(e.message.trim());
+    if (typeof e.name === 'string' && e.name.trim()) parts.push(`[${e.name.trim()}]`);
+    if (parts.length) return parts.join(' ');
   }
-
-  return nodemailer.createTransport({
-    host: EMAIL_CONFIG.host,
-    port: EMAIL_CONFIG.port,
-    secure: EMAIL_CONFIG.secure,
-    auth: EMAIL_CONFIG.auth
-  });
+  return error instanceof Error ? error.message : String(error);
 }
 
 /**
  * WHAT: Test email configuration
- * WHY: Verify SMTP credentials work before production
+ * WHY: Verify Resend credentials + sender identity work before relying on them
  */
 export async function testEmailConfig(recipientEmail: string): Promise<boolean> {
-  try {
-    const transporter = createTransporter();
+  const apiKey = getApiKey();
+  const from = getFromAddress();
 
-    await transporter.sendMail({
-      from: EMAIL_CONFIG.from,
+  if (!apiKey) {
+    console.error('Email configuration test failed: RESEND_API_KEY is not set');
+    return false;
+  }
+  if (!from) {
+    console.error('Email configuration test failed: EMAIL_FROM is not set');
+    return false;
+  }
+
+  try {
+    const resend = new Resend(apiKey);
+    const response = await resend.emails.send({
+      from,
       to: recipientEmail,
       subject: '✅ {messmass} Email Configuration Test',
       html: `
         <h2>Email Configuration Test</h2>
-        <p>This is a test email from {messmass} to verify SMTP configuration.</p>
+        <p>This is a test email from {messmass} to verify the Resend configuration.</p>
         <p>If you received this email, your email notifications are working correctly!</p>
         <hr>
         <p><strong>Configuration:</strong></p>
         <ul>
-          <li>SMTP Host: ${EMAIL_CONFIG.host}</li>
-          <li>SMTP Port: ${EMAIL_CONFIG.port}</li>
-          <li>From: ${EMAIL_CONFIG.from}</li>
+          <li>Provider: Resend</li>
+          <li>From: ${from}</li>
         </ul>
         <p><small>Sent at: ${new Date().toISOString()}</small></p>
-      `
+      `,
     });
+
+    if (response.error) {
+      console.error('Email configuration test failed:', summarizeResendError(response.error));
+      return false;
+    }
 
     console.log(`✅ Test email sent successfully to ${recipientEmail}`);
     return true;
   } catch (error) {
-    console.error('Email configuration test failed:', error);
+    console.error('Email configuration test failed:', summarizeResendError(error));
     return false;
   }
 }
@@ -93,11 +100,18 @@ export async function sendPasswordRegeneratedEmail(params: {
   userEmail: string;
   password: string;
 }): Promise<boolean> {
-  try {
-    const transporter = createTransporter();
+  const apiKey = getApiKey();
+  const from = getFromAddress();
 
-    await transporter.sendMail({
-      from: EMAIL_CONFIG.from,
+  if (!apiKey || !from) {
+    console.error('Failed to send password email: Resend is not configured (RESEND_API_KEY / EMAIL_FROM)');
+    return false;
+  }
+
+  try {
+    const resend = new Resend(apiKey);
+    const response = await resend.emails.send({
+      from,
       to: params.userEmail,
       subject: '🔐 {messmass} Access Password Regenerated',
       html: `
@@ -114,13 +128,18 @@ export async function sendPasswordRegeneratedEmail(params: {
           <li>For security, please do not share this password with anyone.</li>
         </ul>
         <p><small>This is an automated security message from {messmass}.</small></p>
-      `
+      `,
     });
+
+    if (response.error) {
+      console.error('Failed to send password email:', summarizeResendError(response.error));
+      return false;
+    }
 
     console.log(`✅ Password email sent to ${params.userEmail}`);
     return true;
   } catch (error) {
-    console.error('Failed to send password email:', error);
+    console.error('Failed to send password email:', summarizeResendError(error));
     return false;
   }
 }
