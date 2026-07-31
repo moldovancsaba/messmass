@@ -1,6 +1,7 @@
 // scripts/test-email-notifications.ts
 // WHAT: Test email notification system
-// WHY: Verify Resend credentials + sender identity work before production use
+// WHY: Verify camera's shared internal email service is reachable and configured
+//      before relying on it in production (see lib/emailNotifications.ts)
 
 import { testEmailConfig } from '../lib/emailNotifications';
 
@@ -28,9 +29,9 @@ async function runTest() {
   } else {
     console.log('\n❌ Failed to send test email.');
     console.log('💡 Troubleshooting:');
-    console.log('   1. Verify RESEND_API_KEY is set in .env.local');
-    console.log('   2. Verify EMAIL_FROM is a verified sending identity in Resend');
-    console.log('   3. Check the Resend dashboard for delivery/API errors');
+    console.log('   1. Verify CAMERA_BASE_URL and CAMERA_MESSMASS_INTERNAL_SECRET are set in .env.local');
+    console.log('   2. Confirm camera itself has RESEND_API_KEY / CAMERA_EMAIL_FROM configured');
+    console.log('   3. Check camera\'s logs / the Resend dashboard for delivery/API errors');
     process.exit(1);
   }
 }

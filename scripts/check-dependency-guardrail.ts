@@ -45,7 +45,6 @@ const APPROVED_RUNTIME_DEPS = new Set([
   'js-cookie',
   'jspdf',
   'lucide-react',
-  'resend',
   'server-only',
   'typescript',
   'uuid',
