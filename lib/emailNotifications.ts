@@ -2,94 +2,101 @@
 // WHAT: Email transport utility for {messmass}
 // WHY: Send the transactional emails the app actually uses (admin password
 //      regeneration, and an email config self-test).
-// HOW: Resend HTTP API — matches camera (lib/email/submission-notification.ts),
-//      standardizing the two apps on one email provider instead of messmass's
-//      previous SMTP-via-nodemailer path. See SSO_EMAIL_UNIFICATION_PLAN.md
-//      Phase 2. SMTP has real serverless drawbacks Resend's HTTP API avoids
-//      (a raw SMTP connection per cold Vercel invocation vs. one POST), and
-//      messmass's SMTP_* vars were never actually configured in production —
-//      this closes that gap rather than just relocating it.
+// HOW: Calls camera's shared internal email service
+//      (POST /api/internal/messmass/email/send is NOT a route -- the actual
+//      path is POST /api/internal/email/send on camera) instead of talking to
+//      Resend directly. Camera is the one app in the SEYU stack with a
+//      working Resend integration and verified sending domain; this avoids
+//      messmass keeping its own separate Resend account/dependency/error
+//      handling, duplicating logic camera already has. Auth reuses
+//      config.cameraProvisionToken -- the SAME shared secret already used for
+//      messmass -> camera provisioning (lib/cameraClient.ts), not a new one.
+//      See SSO_EMAIL_UNIFICATION_PLAN.md.
 //
-// Configuration: RESEND_API_KEY (server-only), EMAIL_FROM (e.g.
-// '"messmass" <notifications@messmass.com>' — verified sending domain in
-// Resend). SMTP_* vars are no longer read; keep them in .env.example only as
-// a historical note if still wired to any external doc, not as live config.
-//
-// NOTE (2026-07-05 audit cleanup, still true): four functions that had ZERO
-// callers were removed — sendSyncSuccessEmail, sendSyncErrorEmail,
-// sendDailySyncSummaryEmail, sendContactFormEmail. The Google-Sheets sync
-// writes status to the partner doc (it never emailed), and the contact route
-// persists via createContactInquiry.
+// If CAMERA_BASE_URL / CAMERA_MESSMASS_INTERNAL_SECRET aren't configured,
+// both functions return false without throwing (same "not configured, skip
+// gracefully" contract the Resend-direct version had).
 
-import { Resend } from 'resend';
+import config from './config';
 
-function getApiKey(): string {
-  return (process.env.RESEND_API_KEY || '').trim();
+function cameraBase(): string {
+  return (config.cameraBaseUrl || '').replace(/\/$/, '');
 }
 
-function getFromAddress(): string {
-  return (process.env.EMAIL_FROM || process.env.SMTP_FROM || '').trim();
+function cameraToken(): string {
+  return config.cameraProvisionToken || '';
 }
 
-function summarizeResendError(error: unknown): string {
-  if (error && typeof error === 'object') {
-    const e = error as Record<string, unknown>;
-    const parts: string[] = [];
-    if (typeof e.message === 'string' && e.message.trim()) parts.push(e.message.trim());
-    if (typeof e.name === 'string' && e.name.trim()) parts.push(`[${e.name.trim()}]`);
-    if (parts.length) return parts.join(' ');
+function emailServiceConfigured(): boolean {
+  return Boolean(config.cameraBaseUrl && config.cameraProvisionToken);
+}
+
+async function sendViaCameraEmailService(params: {
+  to: string;
+  subject: string;
+  html: string;
+}): Promise<{ sent: boolean; error?: string }> {
+  if (!emailServiceConfigured()) {
+    console.error('Email send skipped: CAMERA_BASE_URL / CAMERA_MESSMASS_INTERNAL_SECRET not configured');
+    return { sent: false, error: 'camera_email_service_not_configured' };
   }
-  return error instanceof Error ? error.message : String(error);
+
+  try {
+    const res = await fetch(`${cameraBase()}/api/internal/email/send`, {
+      method: 'POST',
+      headers: {
+        'content-type': 'application/json',
+        'x-messmass-secret': cameraToken(),
+        authorization: `Bearer ${cameraToken()}`,
+      },
+      body: JSON.stringify({ to: params.to, subject: params.subject, html: params.html, fromName: 'messmass' }),
+    });
+
+    const json = (await res.json().catch(() => ({}))) as {
+      success?: boolean;
+      data?: { sent?: boolean; error?: string; messageId?: string | null };
+      error?: { message?: string };
+    };
+
+    if (!res.ok) {
+      const message = json?.error?.message || `camera responded ${res.status}`;
+      console.error('Email send failed (camera service error):', message);
+      return { sent: false, error: message };
+    }
+
+    if (!json?.data?.sent) {
+      console.error('Email send failed (Resend rejected via camera):', json?.data?.error);
+      return { sent: false, error: json?.data?.error || 'unknown_error' };
+    }
+
+    return { sent: true };
+  } catch (error) {
+    const message = error instanceof Error ? error.message : String(error);
+    console.error('Email send failed (network error calling camera):', message);
+    return { sent: false, error: message };
+  }
 }
 
 /**
  * WHAT: Test email configuration
- * WHY: Verify Resend credentials + sender identity work before relying on them
+ * WHY: Verify the camera email service (and Resend behind it) works before relying on it
  */
 export async function testEmailConfig(recipientEmail: string): Promise<boolean> {
-  const apiKey = getApiKey();
-  const from = getFromAddress();
+  const result = await sendViaCameraEmailService({
+    to: recipientEmail,
+    subject: '✅ {messmass} Email Configuration Test',
+    html: `
+      <h2>Email Configuration Test</h2>
+      <p>This is a test email from {messmass} to verify the email service configuration.</p>
+      <p>If you received this email, your email notifications are working correctly!</p>
+      <p><small>Sent at: ${new Date().toISOString()}</small></p>
+    `,
+  });
 
-  if (!apiKey) {
-    console.error('Email configuration test failed: RESEND_API_KEY is not set');
-    return false;
-  }
-  if (!from) {
-    console.error('Email configuration test failed: EMAIL_FROM is not set');
-    return false;
-  }
-
-  try {
-    const resend = new Resend(apiKey);
-    const response = await resend.emails.send({
-      from,
-      to: recipientEmail,
-      subject: '✅ {messmass} Email Configuration Test',
-      html: `
-        <h2>Email Configuration Test</h2>
-        <p>This is a test email from {messmass} to verify the Resend configuration.</p>
-        <p>If you received this email, your email notifications are working correctly!</p>
-        <hr>
-        <p><strong>Configuration:</strong></p>
-        <ul>
-          <li>Provider: Resend</li>
-          <li>From: ${from}</li>
-        </ul>
-        <p><small>Sent at: ${new Date().toISOString()}</small></p>
-      `,
-    });
-
-    if (response.error) {
-      console.error('Email configuration test failed:', summarizeResendError(response.error));
-      return false;
-    }
-
+  if (result.sent) {
     console.log(`✅ Test email sent successfully to ${recipientEmail}`);
-    return true;
-  } catch (error) {
-    console.error('Email configuration test failed:', summarizeResendError(error));
-    return false;
   }
+  return result.sent;
 }
 
 /**
@@ -100,46 +107,30 @@ export async function sendPasswordRegeneratedEmail(params: {
   userEmail: string;
   password: string;
 }): Promise<boolean> {
-  const apiKey = getApiKey();
-  const from = getFromAddress();
+  const result = await sendViaCameraEmailService({
+    to: params.userEmail,
+    subject: '🔐 {messmass} Access Password Regenerated',
+    html: `
+      <h2>Access Password Regenerated</h2>
+      <p>A new access password has been generated for your account on {messmass}.</p>
+      <div style="background: #f3f4f6; padding: 1.5rem; border-radius: 8px; margin: 1.5rem 0; text-align: center;">
+        <p style="margin-bottom: 0.5rem; color: #4b5563; font-size: 0.875rem;">Your new password:</p>
+        <code style="font-size: 1.5rem; font-weight: bold; color: #111827; letter-spacing: 0.05em;">${params.password}</code>
+      </div>
+      <hr>
+      <p><strong>Security Instructions:</strong></p>
+      <ul>
+        <li>Use your email (${params.userEmail}) and the password above to log in.</li>
+        <li>For security, please do not share this password with anyone.</li>
+      </ul>
+      <p><small>This is an automated security message from {messmass}.</small></p>
+    `,
+  });
 
-  if (!apiKey || !from) {
-    console.error('Failed to send password email: Resend is not configured (RESEND_API_KEY / EMAIL_FROM)');
-    return false;
-  }
-
-  try {
-    const resend = new Resend(apiKey);
-    const response = await resend.emails.send({
-      from,
-      to: params.userEmail,
-      subject: '🔐 {messmass} Access Password Regenerated',
-      html: `
-        <h2>Access Password Regenerated</h2>
-        <p>A new access password has been generated for your account on {messmass}.</p>
-        <div style="background: #f3f4f6; padding: 1.5rem; border-radius: 8px; margin: 1.5rem 0; text-align: center;">
-          <p style="margin-bottom: 0.5rem; color: #4b5563; font-size: 0.875rem;">Your new password:</p>
-          <code style="font-size: 1.5rem; font-weight: bold; color: #111827; letter-spacing: 0.05em;">${params.password}</code>
-        </div>
-        <hr>
-        <p><strong>Security Instructions:</strong></p>
-        <ul>
-          <li>Use your email (${params.userEmail}) and the password above to log in.</li>
-          <li>For security, please do not share this password with anyone.</li>
-        </ul>
-        <p><small>This is an automated security message from {messmass}.</small></p>
-      `,
-    });
-
-    if (response.error) {
-      console.error('Failed to send password email:', summarizeResendError(response.error));
-      return false;
-    }
-
+  if (result.sent) {
     console.log(`✅ Password email sent to ${params.userEmail}`);
-    return true;
-  } catch (error) {
-    console.error('Failed to send password email:', summarizeResendError(error));
-    return false;
+  } else {
+    console.error('Failed to send password email:', result.error);
   }
+  return result.sent;
 }
