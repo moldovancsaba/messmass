@@ -10,23 +10,9 @@
 //     apps already hold this value, no new secret to manage.
 
 import { NextRequest, NextResponse } from 'next/server';
-import config from '@/lib/config';
+import { assertCameraSecret } from '@/lib/cameraClient';
 import { upsertPartnerFromCamera } from '@/lib/cameraPartnerSync';
 import { error as logError } from '@/lib/logger';
-
-function assertCameraSecret(request: NextRequest): NextResponse | null {
-  const configured = config.cameraProvisionToken;
-  if (!configured) {
-    return NextResponse.json({ success: false, error: 'camera_integration_not_configured' }, { status: 503 });
-  }
-  const auth = request.headers.get('authorization') || '';
-  const bearer = auth.startsWith('Bearer ') ? auth.slice(7).trim() : '';
-  const headerSecret = request.headers.get('x-camera-secret')?.trim() || '';
-  if (bearer !== configured && headerSecret !== configured) {
-    return NextResponse.json({ success: false, error: 'invalid_camera_secret' }, { status: 401 });
-  }
-  return null;
-}
 
 export async function POST(request: NextRequest) {
   const authError = assertCameraSecret(request);
