@@ -10,16 +10,6 @@
 //     isAdmin checks, /admin/dashboard gating) needs to change.
 
 import { NextRequest, NextResponse } from 'next/server';
-import crypto from 'crypto';
-import {
-  createUser,
-  findUserByEmail,
-  findUserBySsoId,
-  getUsersCollection,
-  updateUserLastLogin,
-  type UserRole,
-} from '@/lib/users';
-import { generateSessionToken, type SessionTokenData } from '@/lib/sessionTokens';
 import {
   decodeIdToken,
   exchangeCodeForToken,
@@ -28,19 +18,11 @@ import {
   shouldUseConfidentialOAuth,
 } from '@/lib/auth/ssoOAuth';
 import { getAppPermission, hasAppAccess, type AppPermission } from '@/lib/auth/ssoPermissions';
+import { mintMessmassSessionForSsoUser } from '@/lib/auth/mintSession';
 import { clearPendingOAuthCookie, readPendingOAuthCookie } from '@/lib/auth/oauthPendingCookie';
-import { logAuthSuccess, error as logError } from '@/lib/logger';
-import { FEATURE_FLAGS } from '@/lib/featureFlags';
+import { pushSsoSessionToCamera } from '@/lib/cameraClient';
+import { error as logError } from '@/lib/logger';
 import config from '@/lib/config';
-
-const AUTH_SOURCE_COOKIE = 'auth-source';
-
-/** SSO app-role -> messmass's local role set. 'none' is handled separately (access denied). */
-function mapSsoRoleToMessmassRole(ssoRole: AppPermission['role']): UserRole {
-  if (ssoRole === 'superadmin') return 'superadmin';
-  if (ssoRole === 'admin') return 'admin';
-  return 'user';
-}
 
 function redirectWithError(request: NextRequest, error: string): NextResponse {
   const response = NextResponse.redirect(new URL(`/admin/login?error=${error}`, request.url));
@@ -107,69 +89,29 @@ export async function GET(request: NextRequest) {
       return redirectWithError(request, 'no_access');
     }
 
-    // Resolve local user: by linked SSO id first, then by email (first-ever SSO
-    // login for an existing local account links it), else auto-provision.
-    let user = await findUserBySsoId(ssoUser.id);
-    if (!user) {
-      user = await findUserByEmail(ssoUser.email);
-    }
-
-    const mappedRole = mapSsoRoleToMessmassRole(permission.role);
-
-    if (!user) {
-      user = await createUser({
-        email: ssoUser.email,
-        name: ssoUser.name || ssoUser.email,
-        role: mappedRole,
-        ssoUserId: ssoUser.id,
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
-      });
-    } else if (user.ssoUserId !== ssoUser.id || user.role !== mappedRole) {
-      // Keep the local cache in sync with SSO (source of truth for role).
-      const col = await getUsersCollection();
-      await col.updateOne(
-        { _id: user._id },
-        { $set: { ssoUserId: ssoUser.id, role: mappedRole, updatedAt: new Date().toISOString() } }
-      );
-      user = { ...user, ssoUserId: ssoUser.id, role: mappedRole };
-    }
-
-    const tokenData: SessionTokenData = {
-      token: crypto.randomBytes(32).toString('hex'),
-      expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
-      userId: user._id!.toString(),
-      role: user.role,
-    };
-    const sessionToken = generateSessionToken(tokenData);
-
-    const isProduction = config.nodeEnv === 'production';
-    const host = request.headers.get('host') || '';
-    const domain = isProduction && host.endsWith('messmass.com') ? '.messmass.com' : undefined;
-    const cookieOpts = {
-      httpOnly: true,
-      secure: isProduction,
-      sameSite: 'lax' as const,
-      maxAge: 7 * 24 * 60 * 60,
-      path: '/' as const,
-      ...(domain && { domain }),
-    };
-
-    const userId = user._id!.toString();
-    try {
-      await updateUserLastLogin(userId);
-    } catch {
-      // non-fatal
-    }
-    logAuthSuccess(userId, request.headers.get('x-forwarded-for') || undefined);
-
     const safeRedirect = pending.redirectTo.startsWith('/admin') ? pending.redirectTo : '/admin';
     const response = NextResponse.redirect(new URL(safeRedirect, request.url));
     clearPendingOAuthCookie(response);
-    response.cookies.set('admin-session', sessionToken, cookieOpts);
-    response.cookies.set(AUTH_SOURCE_COOKIE, 'sso', { ...cookieOpts, httpOnly: false });
-    if (FEATURE_FLAGS.USE_JWT_SESSIONS) {
-      response.cookies.set('session-format', 'jwt', { ...cookieOpts, httpOnly: false });
+
+    const minted = await mintMessmassSessionForSsoUser(ssoUser, permission, request, response);
+    if (!minted) {
+      // hasAppAccess() already checked above; this is defense-in-depth only.
+      return redirectWithError(request, 'no_access');
+    }
+
+    // WHAT: Best-effort -- also log this user into camera, so one SSO login
+    //     covers both apps (see SESSION_COOKIE_DOMAIN=.messmass.com on
+    //     camera's side + lib/cameraClient.ts:pushSsoSessionToCamera).
+    // WHY: Never let this block or fail messmass's own login -- camera being
+    //     unreachable, or this user simply not having camera access, are
+    //     both fine outcomes; the user just won't be auto-logged into camera.
+    try {
+      const cameraCookies = await pushSsoSessionToCamera(tokens);
+      for (const cookie of cameraCookies || []) {
+        response.headers.append('set-cookie', cookie);
+      }
+    } catch (e) {
+      logError('Cross-app camera session push failed (non-fatal)', {}, e instanceof Error ? e : new Error(String(e)));
     }
 
     return response;

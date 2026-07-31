@@ -3,7 +3,29 @@
  * calls camera's token-authed /api/internal/messmass/* endpoints to create/link
  * organisations, partners and events. Auth = shared secret (config.cameraProvisionToken).
  */
+import { NextRequest, NextResponse } from 'next/server';
 import config from '@/lib/config';
+
+/**
+ * WHAT: Validates an inbound request claims to be camera, via the same
+ *     shared secret used for the forward (messmass -> camera) direction.
+ * WHY: Reused by every camera -> messmass inbound endpoint
+ *     (app/api/integrations/camera/partners, app/api/internal/camera/sso-session)
+ *     so the check stays in exactly one place.
+ */
+export function assertCameraSecret(request: NextRequest): NextResponse | null {
+  const configured = config.cameraProvisionToken;
+  if (!configured) {
+    return NextResponse.json({ success: false, error: 'camera_integration_not_configured' }, { status: 503 });
+  }
+  const auth = request.headers.get('authorization') || '';
+  const bearer = auth.startsWith('Bearer ') ? auth.slice(7).trim() : '';
+  const headerSecret = request.headers.get('x-camera-secret')?.trim() || '';
+  if (bearer !== configured && headerSecret !== configured) {
+    return NextResponse.json({ success: false, error: 'invalid_camera_secret' }, { status: 401 });
+  }
+  return null;
+}
 
 function base(): string {
   return (config.cameraBaseUrl || '').replace(/\/$/, '');
@@ -30,6 +52,46 @@ async function req(method: string, path: string, body?: unknown): Promise<Record
     throw new Error(`camera_${res.status}:${JSON.stringify(json).slice(0, 200)}`);
   }
   return (json.data !== undefined ? json.data : json) as Record<string, unknown>;
+}
+
+/**
+ * WHAT: Best-effort cross-app login -- forwards the SSO tokens messmass just
+ *     received to camera's /api/internal/messmass/sso-session, which
+ *     independently re-verifies them against SSO and mints a REAL camera
+ *     session if the user has camera access. Returns the Set-Cookie
+ *     header(s) camera produced (to be appended onto messmass's own
+ *     response), or null if camera is unconfigured, unreachable, or the
+ *     user doesn't have camera access -- all non-fatal, never throws.
+ * WHY: Together with SESSION_COOKIE_DOMAIN=.messmass.com on camera's side,
+ *     this is what makes "log into messmass -> also logged into camera"
+ *     work without a second OAuth round-trip. See docs/... shared session.
+ */
+export async function pushSsoSessionToCamera(tokens: {
+  access_token: string;
+  refresh_token: string;
+  expires_in: number;
+}): Promise<string[] | null> {
+  if (!cameraConfigured()) return null;
+  try {
+    const res = await fetch(`${base()}/api/internal/messmass/sso-session`, {
+      method: 'POST',
+      headers: {
+        'content-type': 'application/json',
+        'x-messmass-secret': token(),
+        authorization: `Bearer ${token()}`,
+      },
+      body: JSON.stringify({
+        accessToken: tokens.access_token,
+        refreshToken: tokens.refresh_token,
+        expiresIn: tokens.expires_in,
+      }),
+    });
+    if (!res.ok) return null;
+    const cookies = typeof res.headers.getSetCookie === 'function' ? res.headers.getSetCookie() : [];
+    return cookies.length ? cookies : null;
+  } catch {
+    return null;
+  }
 }
 
 export const cameraClient = {
