@@ -1,4 +1,5 @@
-// app/admin/login/page.tsx - Email + password login UI with existing {messmass} styling
+// app/admin/login/page.tsx - SSO-only login (DoneIsBetter). Local email/password
+// login was removed -- see SSO_EMAIL_UNIFICATION_PLAN.md Phase 4 follow-up.
 'use client'
 
 import { useState, useEffect } from 'react'
@@ -9,14 +10,11 @@ import styles from './page.module.css'
 
 export default function AdminLogin() {
   const router = useRouter()
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
-  const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
   const [checkingAuth, setCheckingAuth] = useState(true)
-  const [ssoEnabled, setSsoEnabled] = useState(false)
+  const [ssoConfigured, setSsoConfigured] = useState(false)
 
-  // Check if already authenticated and SSO config
+  // Check if already authenticated and whether SSO is configured
   useEffect(() => {
     const checkAuth = async () => {
       try {
@@ -30,7 +28,7 @@ export default function AdminLogin() {
           return
         }
         const ssoData = await ssoRes.json().catch(() => ({}))
-        setSsoEnabled(Boolean(ssoData?.ssoEnabled))
+        setSsoConfigured(Boolean(ssoData?.ssoEnabled))
       } catch {
         // ignore
       }
@@ -46,43 +44,23 @@ export default function AdminLogin() {
     const reason = params.get('reason')
     const err = params.get('error')
     if (reason === 'sso_required') {
-      setError('Dashboard requires Sign in with DoneIsBetter when SSO is enabled.')
+      setError('Please sign in with DoneIsBetter to access the dashboard.')
+    } else if (err === 'no_access') {
+      setError('Your account does not have access to {messmass} yet. Contact an admin to request access.')
     } else if (err === 'no_account') {
-      setError('No {messmass} account for this identity. Use email/password or contact an admin.')
-    } else if (err === 'invalid_sso') {
-      setError('SSO session invalid or expired. Try again or sign in with email/password.')
-    } else if (err === 'missing_token') {
-      setError('SSO did not return a token. Try again or sign in with email/password.')
+      setError('No {messmass} account for this identity yet. Contact an admin to request access.')
+    } else if (err === 'invalid_sso' || err === 'session_expired' || err === 'auth_failed') {
+      setError('Sign-in session expired or invalid. Please try again.')
+    } else if (err === 'missing_token' || err === 'missing_code') {
+      setError('SSO did not return a token. Please try again.')
     } else if (err === 'sso_not_configured') {
-      setError('SSO is not configured.')
+      setError('SSO is not configured. Contact an administrator.')
+    } else if (err === 'permission_check_failed') {
+      setError('Could not verify your access with SSO. Please try again.')
+    } else if (err) {
+      setError('Sign-in failed. Please try again.')
     }
   }, [])
-
-  const handleLogin = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setLoading(true)
-    setError('')
-    try {
-      const response = await fetch('/api/admin/login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        credentials: 'include',
-        body: JSON.stringify({ email: email.trim(), password })
-      })
-      const data = await response.json().catch(() => ({}))
-      if (response.ok) {
-        // WHAT: Use window.location instead of router.push to force full page reload
-        // WHY: Ensures cookie is fully set in browser before middleware checks authentication
-        window.location.href = '/admin'
-      } else {
-        setError(data.error || 'Invalid credentials')
-      }
-    } catch {
-      setError('Login failed. Please try again.')
-    } finally {
-      setLoading(false)
-    }
-  }
 
   return (
     <div className="app-container">
@@ -96,106 +74,44 @@ export default function AdminLogin() {
             {'{messmass}'} Admin
           </h1>
           <p className="subtitle login-subtitle">
-            {ssoEnabled ? 'Sign in with DoneIsBetter or email/password' : 'Sign in with email and password to access the dashboard'}
+            Sign in with your DoneIsBetter account to access the dashboard
           </p>
         </div>
 
-        {/* SSO entry when configured (#46) */}
-        {ssoEnabled && (
-          <div className={`form-group ${styles.ssoBlock}`}>
-            <a
-              href="/api/auth/sso/login"
-              className={`btn btn-secondary w-full ${styles.ssoButton}`}
-            >
-              Sign in with DoneIsBetter
-            </a>
-            <p className={styles.ssoMicrocopy}>
-              Required for Dashboard access
-            </p>
+        {/* Error Message */}
+        {error && (
+          <div className="login-error">
+            <div className="login-error-content">
+              <svg width="20" height="20" fill="currentColor" viewBox="0 0 20 20" className="login-error-icon">
+                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+              </svg>
+              <span className="login-error-text">
+                {error}
+              </span>
+            </div>
           </div>
         )}
 
-        {/* Login Form */}
-        <form onSubmit={handleLogin} className="login-form">
-          <div className="form-group">
-            <label htmlFor="email" className="form-label">Email</label>
-            <input
-              id="email"
-              name="email"
-              type="text"
-              required
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              className="form-input login-input"
-              placeholder="admin or admin@messmass.com"
-              disabled={loading}
-            />
-          </div>
-
-          <div className="form-group">
-            <label htmlFor="password" className="form-label">Password</label>
-            <input
-              id="password"
-              name="password"
-              type="password"
-              required
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className="form-input login-input"
-              placeholder="Enter your password"
-              disabled={loading}
-            />
-          </div>
-
-          {/* Error Message */}
-          {error && (
+        {!checkingAuth && (
+          ssoConfigured ? (
+            <div className={`form-group ${styles.ssoBlock}`}>
+              <a
+                href="/api/auth/sso/login"
+                className={`btn btn-primary w-full ${styles.ssoButton}`}
+              >
+                Sign in with DoneIsBetter
+              </a>
+            </div>
+          ) : (
             <div className="login-error">
               <div className="login-error-content">
-                <svg width="20" height="20" fill="currentColor" viewBox="0 0 20 20" className="login-error-icon">
-                  <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
-                </svg>
                 <span className="login-error-text">
-                  {error}
+                  SSO is not configured for this environment. Contact an administrator.
                 </span>
               </div>
             </div>
-          )}
-
-          {/* Login Button */}
-          <button
-            type="submit"
-            disabled={loading || !email.trim() || !password.trim()}
-            className="btn btn-primary w-full login-button"
-          >
-            {loading ? (
-              <div className="login-loading">
-                <div className="login-spinner"></div>
-                Signing in...
-              </div>
-            ) : (
-              <>🔐 Sign in to Admin</>
-            )}
-          </button>
-        </form>
-
-        {/* Registration Link */}
-        {/* WHAT: Inline styles for login page layout - WHY: Simple spacing and alignment, no CSS module needed */}
-        {/* eslint-disable-next-line react/forbid-dom-props */}
-        <div className="login-back" style={{ marginTop: '1rem', textAlign: 'center' }}>
-          {/* eslint-disable-next-line react/forbid-dom-props */}
-          <p style={{ marginBottom: '0.5rem', color: 'var(--mm-gray-600)', fontSize: 'var(--mm-font-size-sm)' }}>
-            Don&apos;t have an account?
-          </p>
-          <button
-            type="button"
-            onClick={() => router.push('/admin/register')}
-            className="btn btn-small btn-primary"
-            // eslint-disable-next-line react/forbid-dom-props
-            style={{ marginBottom: '1rem' }}
-          >
-            Create Account
-          </button>
-        </div>
+          )
+        )}
 
         {/* Back to Main App */}
         <div className="login-back">
