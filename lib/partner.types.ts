@@ -137,10 +137,20 @@ export interface Partner {
   // Metadata
   createdAt: string; // ISO 8601 with milliseconds
   updatedAt: string; // ISO 8601 with milliseconds
-  
+
   // WHAT: Draft flag for auto-created partners
   // WHY: Identify entities created by automation for later review
   isDraft?: boolean;
+
+  // WHAT: Where this partner record originated (unset = created directly in messmass)
+  // WHY: Distinguishes partners synced in from camera/fanmass vs. messmass-native ones;
+  //   also used to prevent sync ping-pong (see lib/cameraPartnerSync.ts)
+  source?: 'messmass' | 'fanmass' | 'camera';
+
+  // WHAT: Linked camera partner id (camera's `partnerId`, a UUID -- not a Mongo _id)
+  // WHY: Shared identity with camera, set by lib/cameraProvision.ts (messmass -> camera)
+  //   or lib/cameraPartnerSync.ts (camera -> messmass), whichever direction linked first
+  cameraPartnerId?: string;
   
   // WHAT: Google Sheets integration configuration (v12.0.0)
   // WHY: Enable automated event sync from Google Sheets to {messmass}
