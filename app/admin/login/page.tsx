@@ -1,12 +1,15 @@
-// app/admin/login/page.tsx - SSO-only login (DoneIsBetter), built on the same
-// shared AuthShell component camera uses, so the two apps' login screens
-// share one visual language instead of looking like unrelated products.
+// app/admin/login/page.tsx - SSO-only login (DoneIsBetter). This page is not
+// a login form -- the login form lives at sso.doneisbetter.com and is the
+// same page every app in the stack sends users to. When there is nothing to
+// tell the user (no error, no pending "SSO not configured" state), this page
+// immediately forwards to it and renders nothing. It only shows content when
+// it has to explain why the user landed back here instead of /admin.
 'use client'
 
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { AuthShell } from '@sovereignsquad/gds-core/client'
-import { Button, Stack, Text, Image as MantineImage } from '@mantine/core'
+import { Button, Stack, Text } from '@mantine/core'
 import GdsLoginShell from './GdsLoginShell'
 
 const ERROR_MESSAGES = new Map<string, string>([
@@ -22,14 +25,23 @@ const ERROR_MESSAGES = new Map<string, string>([
   ['permission_check_failed', 'Could not verify your access with SSO. Please try again.'],
 ])
 
+const SSO_LOGIN_URL = '/api/auth/sso/login'
+
 function AdminLoginContent() {
   const router = useRouter()
   const [error, setError] = useState('')
-  const [checkingAuth, setCheckingAuth] = useState(true)
-  const [ssoConfigured, setSsoConfigured] = useState(false)
+  const [ssoNotConfigured, setSsoNotConfigured] = useState(false)
+  const [redirecting, setRedirecting] = useState(true)
 
-  // Check if already authenticated and whether SSO is configured
   useEffect(() => {
+    const params = new URLSearchParams(window.location.search)
+    const reason = params.get('reason')
+    const err = params.get('error')
+    const knownMessage = err ? ERROR_MESSAGES.get(err) : undefined
+    const errorMessage = reason === 'sso_required'
+      ? ERROR_MESSAGES.get('sso_required')!
+      : knownMessage || (err ? 'Sign-in failed. Please try again.' : '')
+
     const checkAuth = async () => {
       try {
         const [authRes, ssoRes] = await Promise.all([
@@ -42,55 +54,44 @@ function AdminLoginContent() {
           return
         }
         const ssoData = await ssoRes.json().catch(() => ({}))
-        setSsoConfigured(Boolean(ssoData?.ssoEnabled))
+        const ssoEnabled = Boolean(ssoData?.ssoEnabled)
+
+        if (!ssoEnabled) {
+          setSsoNotConfigured(true)
+          setRedirecting(false)
+          return
+        }
+        if (errorMessage) {
+          setError(errorMessage)
+          setRedirecting(false)
+          return
+        }
+        // Nothing to explain -- go straight to the real sign-in page.
+        window.location.replace(SSO_LOGIN_URL)
       } catch {
-        // ignore
+        setError('Could not reach the sign-in service. Please try again.')
+        setRedirecting(false)
       }
-      setCheckingAuth(false)
     }
     checkAuth()
   }, [router])
 
-  // Read URL params for SSO redirect reasons and errors
-  useEffect(() => {
-    if (typeof window === 'undefined') return
-    const params = new URLSearchParams(window.location.search)
-    const reason = params.get('reason')
-    const err = params.get('error')
-    const knownMessage = err ? ERROR_MESSAGES.get(err) : undefined
-    if (reason === 'sso_required') {
-      setError(ERROR_MESSAGES.get('sso_required')!)
-    } else if (knownMessage) {
-      setError(knownMessage)
-    } else if (err) {
-      setError('Sign-in failed. Please try again.')
-    }
-  }, [])
+  if (redirecting) return null
 
   return (
     <AuthShell
       title="{messmass}"
-      description="Sign in with your DoneIsBetter account to access the dashboard"
       intent="sign-in"
-      brand={
-        <MantineImage src="/messmass-logo.png" alt="{messmass}" w={48} h={48} fit="contain" />
-      }
       error={error || null}
-      footer={`${'{messmass}'} Admin Panel — Secure Access Required`}
     >
       <Stack align="center" gap="md" w="100%">
-        {!checkingAuth && (
-          ssoConfigured ? (
-            <Button component="a" href="/api/auth/sso/login" size="lg" fullWidth>
-              Sign in with DoneIsBetter
-            </Button>
-          ) : (
-            <Text c="red">SSO is not configured for this environment. Contact an administrator.</Text>
-          )
+        {ssoNotConfigured ? (
+          <Text c="red">SSO is not configured for this environment. Contact an administrator.</Text>
+        ) : (
+          <Button component="a" href={SSO_LOGIN_URL} size="lg" fullWidth>
+            Sign In
+          </Button>
         )}
-        <Button component="a" href="/" variant="default" size="sm">
-          ← Back to {'{messmass}'}
-        </Button>
       </Stack>
     </AuthShell>
   )
