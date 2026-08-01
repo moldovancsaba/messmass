@@ -1,14 +1,28 @@
-// app/admin/login/page.tsx - SSO-only login (DoneIsBetter). Local email/password
-// login was removed -- see SSO_EMAIL_UNIFICATION_PLAN.md Phase 4 follow-up.
+// app/admin/login/page.tsx - SSO-only login (DoneIsBetter), built on the same
+// shared AuthShell component camera uses, so the two apps' login screens
+// share one visual language instead of looking like unrelated products.
 'use client'
 
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
-import ColoredCard from '@/components/ColoredCard'
-import Image from 'next/image'
-import styles from './page.module.css'
+import { AuthShell } from '@sovereignsquad/gds-core/client'
+import { Button, Stack, Text, Image as MantineImage } from '@mantine/core'
+import GdsLoginShell from './GdsLoginShell'
 
-export default function AdminLogin() {
+const ERROR_MESSAGES: Record<string, string> = {
+  sso_required: 'Please sign in with DoneIsBetter to access the dashboard.',
+  no_access: 'Your account does not have access to {messmass} yet. Contact an admin to request access.',
+  no_account: 'No {messmass} account for this identity yet. Contact an admin to request access.',
+  invalid_sso: 'Sign-in session expired or invalid. Please try again.',
+  session_expired: 'Sign-in session expired or invalid. Please try again.',
+  auth_failed: 'Sign-in session expired or invalid. Please try again.',
+  missing_token: 'SSO did not return a token. Please try again.',
+  missing_code: 'SSO did not return a token. Please try again.',
+  sso_not_configured: 'SSO is not configured. Contact an administrator.',
+  permission_check_failed: 'Could not verify your access with SSO. Please try again.',
+}
+
+function AdminLoginContent() {
   const router = useRouter()
   const [error, setError] = useState('')
   const [checkingAuth, setCheckingAuth] = useState(true)
@@ -44,94 +58,47 @@ export default function AdminLogin() {
     const reason = params.get('reason')
     const err = params.get('error')
     if (reason === 'sso_required') {
-      setError('Please sign in with DoneIsBetter to access the dashboard.')
-    } else if (err === 'no_access') {
-      setError('Your account does not have access to {messmass} yet. Contact an admin to request access.')
-    } else if (err === 'no_account') {
-      setError('No {messmass} account for this identity yet. Contact an admin to request access.')
-    } else if (err === 'invalid_sso' || err === 'session_expired' || err === 'auth_failed') {
-      setError('Sign-in session expired or invalid. Please try again.')
-    } else if (err === 'missing_token' || err === 'missing_code') {
-      setError('SSO did not return a token. Please try again.')
-    } else if (err === 'sso_not_configured') {
-      setError('SSO is not configured. Contact an administrator.')
-    } else if (err === 'permission_check_failed') {
-      setError('Could not verify your access with SSO. Please try again.')
+      setError(ERROR_MESSAGES.sso_required)
+    } else if (err && ERROR_MESSAGES[err]) {
+      setError(ERROR_MESSAGES[err])
     } else if (err) {
       setError('Sign-in failed. Please try again.')
     }
   }, [])
 
   return (
-    <div className="app-container">
-      <ColoredCard accentColor="#6366f1" hoverable={false} className="login-card">
-        {/* Logo/Icon Section */}
-        <div className="login-header">
-          <div className="login-logo-container">
-            <Image src="/messmass-logo.png" alt="{messmass}" className="login-logo" width={48} height={48} priority />
-          </div>
-          <h1 className="title login-title">
-            {'{messmass}'} Admin
-          </h1>
-          <p className="subtitle login-subtitle">
-            Sign in with your DoneIsBetter account to access the dashboard
-          </p>
-        </div>
-
-        {/* Error Message */}
-        {error && (
-          <div className="login-error">
-            <div className="login-error-content">
-              <svg width="20" height="20" fill="currentColor" viewBox="0 0 20 20" className="login-error-icon">
-                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
-              </svg>
-              <span className="login-error-text">
-                {error}
-              </span>
-            </div>
-          </div>
-        )}
-
+    <AuthShell
+      title="{messmass}"
+      description="Sign in with your DoneIsBetter account to access the dashboard"
+      intent="sign-in"
+      brand={
+        <MantineImage src="/messmass-logo.png" alt="{messmass}" w={48} h={48} fit="contain" />
+      }
+      error={error || null}
+      footer={`${'{messmass}'} Admin Panel — Secure Access Required`}
+    >
+      <Stack align="center" gap="md" w="100%">
         {!checkingAuth && (
           ssoConfigured ? (
-            <div className={`form-group ${styles.ssoBlock}`}>
-              <a
-                href="/api/auth/sso/login"
-                className={`btn btn-primary w-full ${styles.ssoButton}`}
-              >
-                Sign in with DoneIsBetter
-              </a>
-            </div>
+            <Button component="a" href="/api/auth/sso/login" size="lg" fullWidth>
+              Sign in with DoneIsBetter
+            </Button>
           ) : (
-            <div className="login-error">
-              <div className="login-error-content">
-                <span className="login-error-text">
-                  SSO is not configured for this environment. Contact an administrator.
-                </span>
-              </div>
-            </div>
+            <Text c="red">SSO is not configured for this environment. Contact an administrator.</Text>
           )
         )}
+        <Button component="a" href="/" variant="default" size="sm">
+          ← Back to {'{messmass}'}
+        </Button>
+      </Stack>
+    </AuthShell>
+  )
+}
 
-        {/* Back to Main App */}
-        <div className="login-back">
-          <button
-            type="button"
-            onClick={() => router.push('/')}
-            className="btn btn-small btn-secondary"
-          >
-            ← Back to {'{messmass}'}
-          </button>
-        </div>
-
-        {/* Footer */}
-        <div className="login-footer">
-          <p className="login-footer-text">
-            {'{messmass}'} Admin Panel<br />
-            Secure Access Required
-          </p>
-        </div>
-      </ColoredCard>
-    </div>
+export default function AdminLogin() {
+  return (
+    <GdsLoginShell>
+      <AdminLoginContent />
+    </GdsLoginShell>
   )
 }
