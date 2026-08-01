@@ -53,6 +53,7 @@ export async function POST(request: NextRequest) {
   if (!accessToken) {
     return NextResponse.json({ success: false, error: 'accessToken is required' }, { status: 400 });
   }
+  const refreshToken = typeof body?.refreshToken === 'string' ? body.refreshToken.trim() : '';
 
   let ssoUser;
   try {
@@ -79,6 +80,7 @@ export async function POST(request: NextRequest) {
   const response = NextResponse.json({ success: true, role: permission.role });
   const minted = await mintMessmassSessionForSsoUser(ssoUser, permission, request, response, {
     access_token: accessToken,
+    refresh_token: refreshToken || undefined,
   });
   if (!minted) {
     return NextResponse.json({ success: false, error: 'no_access' }, { status: 403 });

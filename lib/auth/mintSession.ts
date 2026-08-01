@@ -128,8 +128,19 @@ export async function mintMessmassSessionForSsoUser(
   //     all -- logging out only cleared messmass's own cookie while the SSO
   //     tokens (and often SSO's own browser session) stayed live, so the
   //     very next SSO redirect silently signed the user back in.
+  // SECURITY: deliberately host-only (no `domain` attribute), unlike the
+  //     other cookies above -- these are raw OAuth credentials only this
+  //     app's own logout endpoint needs, and the shared `.messmass.com`
+  //     domain would otherwise hand them to every sibling app's server on
+  //     every request.
   if (ssoTokens?.access_token) {
-    response.cookies.set(SSO_TOKENS_COOKIE, JSON.stringify(ssoTokens), cookieOpts);
+    response.cookies.set(SSO_TOKENS_COOKIE, JSON.stringify(ssoTokens), {
+      httpOnly: true,
+      secure: isProduction,
+      sameSite: 'lax',
+      maxAge: 7 * 24 * 60 * 60,
+      path: '/',
+    });
   }
 
   return { userId, role: user.role };

@@ -80,13 +80,31 @@ export async function DELETE(request: NextRequest) {
       path: '/',
       domain,
     })
+    // SECURITY: no `domain` here -- sso-tokens is minted host-only
+    // (see mintSession.ts), so clearing it with the shared `.messmass.com`
+    // domain wouldn't actually remove the host-only cookie the browser has.
     response.cookies.set('sso-tokens', '', {
       httpOnly: true,
       secure: isProduction,
       sameSite: 'lax',
       maxAge: 0,
       path: '/',
-      domain,
+    })
+
+    // WHAT: Short-lived, non-sensitive marker so the very next SSO login
+    //     attempt (however the user reaches it -- a dashboard link, a
+    //     bookmark, /admin/login's own auto-redirect) forces SSO to show
+    //     its real login screen instead of silently re-approving.
+    // WHY: Revoking this app's SSO tokens doesn't end SSO's own browser
+    //     session. Without this, only a login initiated with an explicit
+    //     ?from_logout=true got prompt=login -- every other path back into
+    //     SSO right after logout would just silently sign the user back in.
+    response.cookies.set('post-logout', '1', {
+      httpOnly: true,
+      secure: isProduction,
+      sameSite: 'lax',
+      maxAge: 120,
+      path: '/',
     })
 
     return response
