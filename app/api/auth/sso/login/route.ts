@@ -31,10 +31,16 @@ export async function GET(request: NextRequest) {
   const redirectToParam = request.nextUrl.searchParams.get('redirect_uri');
   const redirectTo = redirectToParam?.startsWith('/admin') ? redirectToParam : '/admin';
   const redirectUri = getOAuthCallbackRedirectUri(request);
+  // WHAT: Force SSO to show its real login screen instead of silently
+  //     re-approving an existing SSO browser session.
+  // WHY: Revoking this app's own SSO tokens at logout doesn't end the
+  //     session cookie SSO itself holds -- without this hint, signing back
+  //     in right after logging out can look like logout never happened.
+  const fromLogout = request.nextUrl.searchParams.get('from_logout') === 'true';
 
   if (shouldUseConfidentialOAuth()) {
     const state = generateState();
-    const authUrl = getAuthorizationUrl(null, state, { redirectUri });
+    const authUrl = getAuthorizationUrl(null, state, { redirectUri, prompt: fromLogout ? 'login' : undefined });
     const response = NextResponse.redirect(authUrl);
     setPendingOAuthCookie(response, { state, redirectTo });
     return response;
@@ -42,7 +48,7 @@ export async function GET(request: NextRequest) {
 
   const { codeVerifier, codeChallenge } = generatePKCEPair();
   const state = generateState();
-  const authUrl = getAuthorizationUrl(codeChallenge, state, { redirectUri });
+  const authUrl = getAuthorizationUrl(codeChallenge, state, { redirectUri, prompt: fromLogout ? 'login' : undefined });
   const response = NextResponse.redirect(authUrl);
   setPendingOAuthCookie(response, { state, codeVerifier, redirectTo });
   return response;

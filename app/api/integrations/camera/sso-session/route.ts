@@ -77,7 +77,9 @@ export async function POST(request: NextRequest) {
   }
 
   const response = NextResponse.json({ success: true, role: permission.role });
-  const minted = await mintMessmassSessionForSsoUser(ssoUser, permission, request, response);
+  const minted = await mintMessmassSessionForSsoUser(ssoUser, permission, request, response, {
+    access_token: accessToken,
+  });
   if (!minted) {
     return NextResponse.json({ success: false, error: 'no_access' }, { status: 403 });
   }

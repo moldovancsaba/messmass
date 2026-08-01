@@ -4,8 +4,10 @@
 // WHY: SSO_EMAIL_UNIFICATION_PLAN.md Phase 4 follow-up. Having a parallel local
 //     login meant messmass genuinely had two separate user systems instead of
 //     one unified one.
-// NOTE: DELETE (logout) is unchanged and still works for any existing session,
-//     regardless of whether it was minted via SSO or (historically) locally.
+// NOTE: DELETE (logout) also revokes the SSO access/refresh tokens minted at
+//     login (best-effort) -- clearing only messmass's own cookie left the
+//     SSO tokens (and often SSO's own browser session) alive, so the next
+//     SSO redirect would silently sign the user back in.
 
 export const runtime = 'nodejs'
 
@@ -13,6 +15,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { cookies } from 'next/headers'
 import { env } from '@/lib/config'
 import { error as logError } from '@/lib/logger'
+import { revokeToken } from '@/lib/auth/ssoOAuth'
 
 export async function POST() {
   return NextResponse.json(
@@ -31,11 +34,33 @@ export async function DELETE(request: NextRequest) {
     const host = request.headers.get('host') || ''
     const domain = isProduction && host.endsWith('messmass.com') ? '.messmass.com' : undefined
 
-    // WHAT: Delete session cookie
+    // WHAT: Revoke the SSO tokens minted at login, if any (best-effort --
+    //     revocation failure must never block local logout).
+    // WHY: Ending messmass's own session isn't enough on its own; the SSO
+    //     tokens (and the access SSO itself grants from them) should die too.
+    const ssoTokensRaw = cookieStore.get('sso-tokens')?.value
+    if (ssoTokensRaw) {
+      try {
+        const ssoTokens = JSON.parse(ssoTokensRaw) as { access_token?: string; refresh_token?: string }
+        if (ssoTokens.access_token) {
+          await revokeToken(ssoTokens.access_token, 'access_token')
+        }
+        if (ssoTokens.refresh_token) {
+          await revokeToken(ssoTokens.refresh_token, 'refresh_token')
+        }
+      } catch (revokeError) {
+        logError('SSO token revocation failed (non-blocking)', {
+          pathname: '/api/admin/login',
+          method: 'DELETE',
+        }, revokeError instanceof Error ? revokeError : new Error(String(revokeError)))
+      }
+    }
+
+    // WHAT: Delete session cookies
     // WHY: Invalidate user session on logout
     cookieStore.delete('admin-session')
-
     cookieStore.delete('auth-source')
+    cookieStore.delete('sso-tokens')
 
     // Also set explicit deletion response cookie
     const response = NextResponse.json({ success: true, message: 'Logged out successfully' })
@@ -49,6 +74,14 @@ export async function DELETE(request: NextRequest) {
     })
     response.cookies.set('auth-source', '', {
       httpOnly: false,
+      secure: isProduction,
+      sameSite: 'lax',
+      maxAge: 0,
+      path: '/',
+      domain,
+    })
+    response.cookies.set('sso-tokens', '', {
+      httpOnly: true,
       secure: isProduction,
       sameSite: 'lax',
       maxAge: 0,
