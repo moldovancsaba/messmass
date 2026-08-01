@@ -76,15 +76,17 @@ export default function TopHeader({ user }: TopHeaderProps) {
   };
   
   /* What: Handle logout action
-     Why: Clear session and redirect to login */
+     Why: Clear session (local + SSO tokens) and land on the real homepage --
+          not /admin/login, which immediately redirects back into SSO and
+          would make logout look like it did nothing. */
   const handleLogout = async () => {
     try {
       const response = await fetch('/api/admin/login', {
         method: 'DELETE',
       });
-      
+
       if (response.ok) {
-        router.push('/admin/login');
+        router.push('/');
       } else {
         window.alert('Logout failed. Please try again.');
       }

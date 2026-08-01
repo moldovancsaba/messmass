@@ -31,19 +31,33 @@ export async function GET(request: NextRequest) {
   const redirectToParam = request.nextUrl.searchParams.get('redirect_uri');
   const redirectTo = redirectToParam?.startsWith('/admin') ? redirectToParam : '/admin';
   const redirectUri = getOAuthCallbackRedirectUri(request);
+  // WHAT: Force SSO to show its real login screen instead of silently
+  //     re-approving an existing SSO browser session.
+  // WHY: Revoking this app's own SSO tokens at logout doesn't end the
+  //     session cookie SSO itself holds -- without this hint, signing back
+  //     in right after logging out can look like logout never happened.
+  //     The post-logout cookie covers every path back into this route
+  //     (a dashboard link, a bookmark, /admin/login's own auto-redirect),
+  //     not just callers that explicitly pass ?from_logout=true.
+  const justLoggedOut = Boolean(request.cookies.get('post-logout')?.value);
+  const fromLogout = justLoggedOut || request.nextUrl.searchParams.get('from_logout') === 'true';
 
+  let response: NextResponse;
   if (shouldUseConfidentialOAuth()) {
     const state = generateState();
-    const authUrl = getAuthorizationUrl(null, state, { redirectUri });
-    const response = NextResponse.redirect(authUrl);
+    const authUrl = getAuthorizationUrl(null, state, { redirectUri, prompt: fromLogout ? 'login' : undefined });
+    response = NextResponse.redirect(authUrl);
     setPendingOAuthCookie(response, { state, redirectTo });
-    return response;
+  } else {
+    const { codeVerifier, codeChallenge } = generatePKCEPair();
+    const state = generateState();
+    const authUrl = getAuthorizationUrl(codeChallenge, state, { redirectUri, prompt: fromLogout ? 'login' : undefined });
+    response = NextResponse.redirect(authUrl);
+    setPendingOAuthCookie(response, { state, codeVerifier, redirectTo });
   }
 
-  const { codeVerifier, codeChallenge } = generatePKCEPair();
-  const state = generateState();
-  const authUrl = getAuthorizationUrl(codeChallenge, state, { redirectUri });
-  const response = NextResponse.redirect(authUrl);
-  setPendingOAuthCookie(response, { state, codeVerifier, redirectTo });
+  if (justLoggedOut) {
+    response.cookies.set('post-logout', '', { maxAge: 0, path: '/' });
+  }
   return response;
 }

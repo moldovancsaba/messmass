@@ -228,6 +228,11 @@ export async function getUserInfo(accessToken: string): Promise<SSOUser> {
   };
 }
 
+// WHAT: Best-effort revocation, bounded to 3s.
+// WHY: This runs inline in the logout request (see app/api/admin/login's
+//     DELETE handler) -- an unresponsive SSO revoke endpoint must not be
+//     able to hang the whole logout request and leave the local session
+//     cookie un-cleared.
 export async function revokeToken(token: string, tokenTypeHint: 'access_token' | 'refresh_token' = 'access_token'): Promise<void> {
   const c = SSO_CONFIG();
   const endpoints = SSO_ENDPOINTS();
@@ -236,6 +241,7 @@ export async function revokeToken(token: string, tokenTypeHint: 'access_token' |
     method: 'POST',
     headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
     body: params.toString(),
+    signal: AbortSignal.timeout(3000),
   });
   if (!response.ok) {
     console.error('SSO token revocation failed:', response.status);
