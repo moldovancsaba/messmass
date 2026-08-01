@@ -96,16 +96,24 @@ any auth code here:
   sibling app's server ends up receiving this app's SSO tokens on every request.
 - **`revokeToken()` bounds its own fetch to a 3s timeout.** It runs inline in the
   logout request; an unresponsive SSO must not be able to hang logout indefinitely.
-- **Rate limiting:** every path under `/api/auth/*` (and `/api/admin/login` except
-  `DELETE`) shares one bucket: 5 requests / 15 minutes per IP
-  (`lib/rateLimit.ts` `RATE_LIMITS.AUTH`, wired in `middleware.ts`
-  `getRateLimitConfig`). It's in-memory and per-process, so a local dev server
-  restart clears it. When manually testing login flows against a local dev server,
-  budget requests carefully — a login round-trip alone costs 2 (initiate +
-  callback); repeated automated test runs exhaust the budget fast and a 429 can
+- **Rate limiting is per-path, not one shared bucket.** `middleware.ts`'s
+  `rateLimitMiddleware()` keys every request as `${identifier}:${pathname}`
+  (`lib/rateLimit.ts`) — `/api/auth/sso/config`, `/api/auth/sso/login`, and
+  `/api/auth/sso/callback` each get their own independent 5-requests/15-minutes
+  allowance (`RATE_LIMITS.AUTH`, applied to any path under `/api/auth/*` or
+  `/api/admin/login` except `DELETE` — see `getRateLimitConfig`). The
+  `/api/auth/sso/login` route handler *also* does its own separate manual check
+  (`checkRateLimit(\`sso-login:${identifier}\`, ...)`) layered on top of the
+  middleware's per-path one, so a single hit there decrements two counters at
+  once. It's in-memory and per-process, so a local dev server restart clears all
+  of it. Practical consequence when testing locally: a real login round-trip
+  touches several independent counters and rarely runs dry — but a page that
+  fetches the *same* endpoint on every load (e.g. `/admin/login` calling
+  `/api/auth/sso/config` via `checkAuth()` on mount) will exhaust *that one
+  path's* budget fast under repeated automated testing, and a 429 there can
   masquerade as "SSO not configured" if the caller silently swallows a failed
-  config fetch. If you hit unexplained auth failures while testing locally, check
-  for a 429 before assuming a code bug.
+  fetch. If you hit unexplained auth failures while testing locally, check for a
+  429 on the specific path before assuming a code bug.
 - **`@sovereignsquad/gds-core` / `@sovereignsquad/gds-theme`** are already approved
   dependencies (`package.json`), and this app's Mantine theme
   (`lib/ui/mantineTheme.ts`) already spreads `gdsTheme` as its base. Prefer the

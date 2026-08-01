@@ -1,5 +1,10 @@
 # AGENTS
 
+**Read `CLAUDE.md` first.** It holds the standing operating rules (read-before-claiming
+discipline, the AI-branding ban, the quality gate, git workflow, and the SSO-ecosystem
+tribal knowledge) that apply regardless of which harness loaded this file. This file
+(`AGENTS.md`) is the command-reference quick-start only.
+
 Use this file as the tracked quick-start for repo-specific agent workflows. For canonical project status and handoff context, start with:
 
 - [`/Users/Shared/Projects/messmass/docs/PROJECT_MANAGEMENT.md`](/Users/Shared/Projects/messmass/docs/PROJECT_MANAGEMENT.md)
