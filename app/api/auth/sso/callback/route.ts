@@ -93,7 +93,10 @@ export async function GET(request: NextRequest) {
     const response = NextResponse.redirect(new URL(safeRedirect, request.url));
     clearPendingOAuthCookie(response);
 
-    const minted = await mintMessmassSessionForSsoUser(ssoUser, permission, request, response);
+    const minted = await mintMessmassSessionForSsoUser(ssoUser, permission, request, response, {
+      access_token: tokens.access_token,
+      refresh_token: tokens.refresh_token,
+    });
     if (!minted) {
       // hasAppAccess() already checked above; this is defense-in-depth only.
       return redirectWithError(request, 'no_access');

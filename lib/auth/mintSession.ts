@@ -26,6 +26,7 @@ import { FEATURE_FLAGS } from '@/lib/featureFlags';
 import config from '@/lib/config';
 
 const AUTH_SOURCE_COOKIE = 'auth-source';
+const SSO_TOKENS_COOKIE = 'sso-tokens';
 
 /** SSO app-role -> messmass's local role set. 'none' is handled via hasAppAccess() below. */
 function mapSsoRoleToMessmassRole(ssoRole: AppPermission['role']): UserRole {
@@ -45,11 +46,17 @@ export interface MintableSsoUser {
  * access -- caller decides how to handle that (redirect with an error, or
  * for the cross-app endpoint, a 403 JSON response).
  */
+export interface MintableSsoTokens {
+  access_token: string;
+  refresh_token?: string;
+}
+
 export async function mintMessmassSessionForSsoUser(
   ssoUser: MintableSsoUser,
   permission: AppPermission,
   request: NextRequest,
-  response: NextResponse
+  response: NextResponse,
+  ssoTokens?: MintableSsoTokens
 ): Promise<{ userId: string; role: UserRole } | null> {
   if (!hasAppAccess(permission)) return null;
 
@@ -113,6 +120,27 @@ export async function mintMessmassSessionForSsoUser(
   response.cookies.set(AUTH_SOURCE_COOKIE, 'sso', { ...cookieOpts, httpOnly: false });
   if (FEATURE_FLAGS.USE_JWT_SESSIONS) {
     response.cookies.set('session-format', 'jwt', { ...cookieOpts, httpOnly: false });
+  }
+  // WHAT: Keep the SSO access/refresh tokens around (httpOnly, never sent to
+  //     the client) so logout can revoke them at SSO instead of only
+  //     forgetting the local session.
+  // WHY: Without this, messmass had no way to end the SSO-side session at
+  //     all -- logging out only cleared messmass's own cookie while the SSO
+  //     tokens (and often SSO's own browser session) stayed live, so the
+  //     very next SSO redirect silently signed the user back in.
+  // SECURITY: deliberately host-only (no `domain` attribute), unlike the
+  //     other cookies above -- these are raw OAuth credentials only this
+  //     app's own logout endpoint needs, and the shared `.messmass.com`
+  //     domain would otherwise hand them to every sibling app's server on
+  //     every request.
+  if (ssoTokens?.access_token) {
+    response.cookies.set(SSO_TOKENS_COOKIE, JSON.stringify(ssoTokens), {
+      httpOnly: true,
+      secure: isProduction,
+      sameSite: 'lax',
+      maxAge: 7 * 24 * 60 * 60,
+      path: '/',
+    });
   }
 
   return { userId, role: user.role };
