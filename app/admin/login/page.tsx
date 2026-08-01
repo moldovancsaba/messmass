@@ -9,18 +9,18 @@ import { AuthShell } from '@sovereignsquad/gds-core/client'
 import { Button, Stack, Text, Image as MantineImage } from '@mantine/core'
 import GdsLoginShell from './GdsLoginShell'
 
-const ERROR_MESSAGES: Record<string, string> = {
-  sso_required: 'Please sign in with DoneIsBetter to access the dashboard.',
-  no_access: 'Your account does not have access to {messmass} yet. Contact an admin to request access.',
-  no_account: 'No {messmass} account for this identity yet. Contact an admin to request access.',
-  invalid_sso: 'Sign-in session expired or invalid. Please try again.',
-  session_expired: 'Sign-in session expired or invalid. Please try again.',
-  auth_failed: 'Sign-in session expired or invalid. Please try again.',
-  missing_token: 'SSO did not return a token. Please try again.',
-  missing_code: 'SSO did not return a token. Please try again.',
-  sso_not_configured: 'SSO is not configured. Contact an administrator.',
-  permission_check_failed: 'Could not verify your access with SSO. Please try again.',
-}
+const ERROR_MESSAGES = new Map<string, string>([
+  ['sso_required', 'Please sign in with DoneIsBetter to access the dashboard.'],
+  ['no_access', 'Your account does not have access to {messmass} yet. Contact an admin to request access.'],
+  ['no_account', 'No {messmass} account for this identity yet. Contact an admin to request access.'],
+  ['invalid_sso', 'Sign-in session expired or invalid. Please try again.'],
+  ['session_expired', 'Sign-in session expired or invalid. Please try again.'],
+  ['auth_failed', 'Sign-in session expired or invalid. Please try again.'],
+  ['missing_token', 'SSO did not return a token. Please try again.'],
+  ['missing_code', 'SSO did not return a token. Please try again.'],
+  ['sso_not_configured', 'SSO is not configured. Contact an administrator.'],
+  ['permission_check_failed', 'Could not verify your access with SSO. Please try again.'],
+])
 
 function AdminLoginContent() {
   const router = useRouter()
@@ -57,10 +57,11 @@ function AdminLoginContent() {
     const params = new URLSearchParams(window.location.search)
     const reason = params.get('reason')
     const err = params.get('error')
+    const knownMessage = err ? ERROR_MESSAGES.get(err) : undefined
     if (reason === 'sso_required') {
-      setError(ERROR_MESSAGES.sso_required)
-    } else if (err && ERROR_MESSAGES[err]) {
-      setError(ERROR_MESSAGES[err])
+      setError(ERROR_MESSAGES.get('sso_required')!)
+    } else if (knownMessage) {
+      setError(knownMessage)
     } else if (err) {
       setError('Sign-in failed. Please try again.')
     }
