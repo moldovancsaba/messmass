@@ -1,0 +1,22 @@
+/*
+ * WHAT: the guided tour's dark backdrop / spotlight-cutout color values.
+ * WHY: kept in a CSS file rather than inline in TourOverlay.tsx, matching
+ *      this app's own convention of keeping raw color literals out of
+ *      canonical .tsx surfaces (see scripts/check-design-violations.js).
+ */
+
+.backdropFallback {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 15, 20, 0.65);
+}
+
+.spotlight {
+  position: fixed;
+  pointer-events: none;
+  box-shadow: 0 0 0 9999px rgba(15, 15, 20, 0.65);
+}
+
+.spotlightAnimated {
+  transition: top 200ms ease, left 200ms ease, width 200ms ease, height 200ms ease;
+}

@@ -182,16 +182,16 @@ export default function Sidebar() {
             const navGroups = getSidebarNavGroups(visibleSection);
 
             return (
-              <div key={section.title} className={styles.navSection}>
+              <div key={section.title} className={styles.navSection} data-tour-id={`nav-section-${visibleSection.key}`}>
                 {!isCollapsed && (
                   <div className={styles.sectionTitle}>{section.title}</div>
                 )}
-                
+
                 <ul className={styles.navList}>
                   {navGroups.map((group) => {
                     const groupActive = isGroupActive(group.parent.path, group.children.map((child) => child.path));
                     return (
-                    <li key={group.parent.path} className={styles.navItem}>
+                    <li key={group.parent.path} className={styles.navItem} data-tour-id={`nav-${group.parent.path}`}>
                       <MantineNavLink
                         component={Link}
                         href={group.parent.path}
@@ -214,7 +214,7 @@ export default function Sidebar() {
                       {!isCollapsed && group.children.length > 0 && (
                         <ul className={styles.childList} aria-label={`${group.parent.label} submenu`}>
                           {group.children.map((child) => (
-                            <li key={child.path}>
+                            <li key={child.path} data-tour-id={`nav-${child.path}`}>
                               <MantineNavLink
                                 component={Link}
                                 href={child.path}

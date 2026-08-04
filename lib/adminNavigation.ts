@@ -6,6 +6,14 @@ export interface AdminNavItem {
   description: string;
   accentColor: string;
   showInAdminWorkspace?: boolean;
+  /**
+   * WHAT: alternate copy for the guided tour (lib/tour/*)
+   * WHY: `description` is nav-item hover text, written for someone who
+   *      already knows roughly what the item is. Set this only where that
+   *      assumption doesn't hold for a first-time reader; otherwise the
+   *      tour falls back to `description` as the single source of truth.
+   */
+  tourDescription?: string;
 }
 
 export interface AdminNavSection {
@@ -42,6 +50,7 @@ export const adminNavSections: AdminNavSection[] = [
         path: '/admin/events',
         icon: 'event',
         description: 'Create events, manage setup, and open live editor or report flows.',
+        tourDescription: 'An event is a single occurrence you track stats for — a game, an activation, a campaign moment. It belongs to a partner, and its tracked stats become its report.',
         accentColor: navAccent.success,
       },
       {
@@ -49,6 +58,7 @@ export const adminNavSections: AdminNavSection[] = [
         path: '/admin/analytics/sponsorship/activation',
         icon: 'task_alt',
         description: 'Work sponsor proof gaps, recap readiness, and delivery follow-up queues.',
+        tourDescription: 'Track what each sponsor still needs before their activation is complete — missing proof, recap status, and follow-up tasks.',
         accentColor: navAccent.warning,
       },
       {
@@ -105,6 +115,7 @@ export const adminNavSections: AdminNavSection[] = [
         path: '/admin/reports',
         icon: 'dashboard_customize',
         description: 'Enter the canonical reporting workspace and choose the setup surface you need.',
+        tourDescription: 'A report is the shareable page a partner sees for their event or organization. This is the hub for everything that builds one — layout, visual theme, and reusable content.',
         accentColor: navAccent.primary,
       },
       {
@@ -112,6 +123,7 @@ export const adminNavSections: AdminNavSection[] = [
         path: '/admin/visualization',
         icon: 'view_quilt',
         description: 'Manage report blocks, layouts, preview flow, and template composition.',
+        tourDescription: 'Design what a report looks like — arrange its blocks (charts, stats, text) into a layout, then preview it before it goes live.',
         accentColor: navAccent.secondary,
         showInAdminWorkspace: false,
       },
@@ -151,6 +163,7 @@ export const adminNavSections: AdminNavSection[] = [
         path: '/admin/kyc',
         icon: 'lock',
         description: 'Manage tracked variables, aliases, and input-field definitions.',
+        tourDescription: 'The master dictionary of every metric messmass can track — VIP guests, merch sold, and so on. Define a variable once here, and it becomes usable in data entry and report formulas.',
         accentColor: navAccent.primary,
       },
       {
@@ -158,6 +171,7 @@ export const adminNavSections: AdminNavSection[] = [
         path: '/admin/clicker-manager',
         icon: 'swap_horiz',
         description: 'Manage clicker-mode groupings and partner-level variable-set assignment.',
+        tourDescription: 'A Clicker Set is a reusable layout for fast, tap-to-count data entry at live events. Assign a set to a partner and every one of their events uses that same counter layout.',
         accentColor: navAccent.secondary,
       },
       {
@@ -200,6 +214,7 @@ export const adminNavSections: AdminNavSection[] = [
         path: '/admin/analytics',
         icon: 'dashboard',
         description: 'Enter the canonical analytics workspace and choose the right reporting lens.',
+        tourDescription: 'The entry point for every analytics view — sponsorship, executive, marketing, and operations dashboards all start here.',
         accentColor: navAccent.primary,
       },
       {
