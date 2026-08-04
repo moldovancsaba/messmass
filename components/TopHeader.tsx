@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { ActionIcon, Avatar, Badge, Box, Button, Group, Paper, Stack, Text } from '@mantine/core';
 import { IconBell, IconDoorExit } from '@tabler/icons-react';
 import NotificationPanel from './NotificationPanel';
+import TourMenu from './tour/TourMenu';
 import styles from './TopHeader.module.css';
 
 /* What: Top header component for admin layout
@@ -106,6 +107,8 @@ export default function TopHeader({ user }: TopHeaderProps) {
         </Box>
         
         <Group className={styles.headerRight} gap="md" justify="flex-end" wrap="wrap">
+          <TourMenu />
+
           <div className={styles.notificationsBell}>
             <span
               id="notifications-live"

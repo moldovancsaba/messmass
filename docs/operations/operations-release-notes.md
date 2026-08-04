@@ -1,8 +1,25 @@
 # {messmass} Release Notes
 Status: Active
-Last Updated: 2026-07-20T19:36:17.000Z
+Last Updated: 2026-08-04T21:59:31.000Z
 Canonical: No
 Owner: Operations
+
+## [v12.1.38] — 2026-08-04T21:59:31.000Z
+
+### Summary
+Added a guided tour (spotlight onboarding overlay) to the admin panel — a manually-triggered "Guided tours" entry point in the header, offering a short welcome tour plus one tour per sidebar section (Operations, Entities, Reports, Data, Analytics, System), so a new admin can get "what is an event / report / partner" explained in place, pointing at the actual nav item.
+
+### What Was Delivered
+- New tour engine (`lib/tour/*`, `components/tour/*`): a from-scratch spotlight/backdrop overlay (no existing library covers this), registered with `@sovereignsquad/gds-core`'s `OverlayManagerProvider` (newly mounted, scoped to the admin layout only) so it coordinates with the notification panel instead of running an independent overlay stack.
+- `components/tour/TourMenu.tsx` — the entry point, structured like the existing `NotificationPanel.tsx` (outside-click-to-close, Escape-to-close, focus-on-open). Lists the welcome tour and all six segment tours, hides any tour with zero accessible items for the current role, and shows a completed checkmark per tour via `localStorage`.
+- Tour step copy is derived from `lib/adminNavigation.ts`'s existing per-item `label`/`description` fields (already authored, shown as nav hover text) rather than re-written from scratch, keeping one source of truth. A new optional `tourDescription` field overrides the nav description only where it assumed prior knowledge a first-time reader wouldn't have (e.g. "KYC Variables", "Clicker Sets", "Reporting Workspace").
+- New `data-tour-id` convention on `components/Sidebar.tsx`'s nav items and section wrappers — the only DOM targeting attribute convention in the codebase so far.
+
+### Testing
+- `type-check` and `lint` clean across all new/changed files.
+- Live-verified the tour engine (spotlight measurement, retry-then-skip for a not-yet-mounted target, Tab focus-trap, Next/Back/Skip/Done, keyboard Escape, `localStorage` persistence) in a real browser against a temporary scratch route that mounts the engine directly, bypassing the admin auth/DB chain entirely — this sandbox cannot reach messmass's MongoDB Atlas cluster (confirmed independently; even the public homepage's own DB-backed data fetch 500s here), so no route requiring a real authenticated session could be exercised end-to-end. The scratch route was deleted before this commit.
+- Role-based step filtering (`getSegmentTourSteps`, `getWelcomeTourSteps`) verified directly against `guest`/`user`/`admin`/`superadmin` roles — confirmed each role sees exactly the nav items `canAccessMenuItem` already grants it.
+- Full Sidebar/TopHeader/TourMenu integration under a real logged-in session was **not** live-verified, for the DB-connectivity reason above.
 
 ## [v12.1.37] — 2026-07-20T19:36:17.000Z
 

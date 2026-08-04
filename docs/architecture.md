@@ -4,7 +4,7 @@ Last Updated: 2026-06-25
 Canonical: No
 Owner: Architecture
 
-Version: 12.1.37
+Version: 12.1.38
 
 **Mantine Entity, Variant, and Public Report Shell Delivery (2026-06-25):**
 - **Report variant selector recovery:** Mantine `Select` dropdowns inside report variant `FormModal` now render through a portal with modal-safe z-index, preventing the dropdown from being hidden behind or interpreted as outside the dialog.
@@ -2052,6 +2052,54 @@ See `docs/operations/operations-roadmap.md` for planned improvements:
 5. Implement focus trap in mobile overlay (Low priority)
 
 For complete documentation, usage examples, troubleshooting, and technical details, see [ADMIN_LAYOUT_SYSTEM (archived)](archive/_archive/deprecated-guides-2025/archive-legacy-guides-pack.md#legacy-admin_layout_system).
+
+---
+
+## Guided Tour System (Version 12.1.38)
+
+### Overview
+
+A manually-triggered spotlight/backdrop product tour for the admin panel — a dark backdrop with a cutout highlighting one nav item at a time, plus a step-by-step tooltip. No auto-start: a "Guided tours" entry point in `TopHeader.tsx` opens a menu offering a short welcome tour (introduces the six sidebar sections) and one tour per section (Operations, Entities, Reports, Data, Analytics, System). No equivalent existed anywhere in this codebase or its dependencies before this — see `components/tour/`, `lib/tour/`.
+
+### Key Components
+
+#### 1. `useTourController` (`lib/tour/useTourController.ts`)
+- **Role**: Step-sequencing state (`start`/`next`/`back`/`skip`) for one tour
+- **Integration**: Registers with `@sovereignsquad/gds-core`'s `OverlayManagerProvider` as a `popover` overlay, so a tour yields correctly to the notification panel or any other overlay instead of running its own independent stack
+- **Note**: `next()` reads `currentIndex` from the hook's closure rather than a `setCurrentIndex` functional updater — the alternative called a side-effecting `finish()` (mutating a *different* component's overlay state) from inside a value React can invoke during another component's render pass, which is unsafe
+
+#### 2. `TourOverlay` (`components/tour/TourOverlay.tsx`)
+- **Role**: Presentational spotlight/backdrop/tooltip renderer, purely driven by a `TourController`
+- **Measurement**: `getBoundingClientRect()` against `[data-tour-id="..."]`, tracked live via `ResizeObserver` + `resize`/`scroll` listeners
+- **Retry**: polls briefly (~3s) for a target that hasn't mounted yet before concluding it genuinely won't appear and auto-skipping the step — tracked via a separate `measuring` boolean so a not-yet-mounted target renders nothing rather than a misleading centered dialog
+
+#### 3. `TourMenu` (`components/tour/TourMenu.tsx`)
+- **Role**: The "Guided tours" entry point — an `ActionIcon` + dropdown panel in `TopHeader.tsx`, structured like the existing `NotificationPanel.tsx` (outside-click-to-close, Escape-to-close, focus-on-open) for consistency with that already-proven pattern
+- **Role filtering**: fetches the current user's role via `/api/admin/auth` (same call `Sidebar.tsx` already makes) and hides any tour with zero accessible items for that role, via `canAccessMenuItem` (`lib/permissions.ts`)
+- **Ownership**: mounts all seven `useTourController` instances (welcome + 6 segments) and their `TourOverlay`s; none auto-start
+
+#### 4. Step content (`lib/tour/config/segmentTourSteps.ts`, `welcomeTourSteps.ts`)
+- Segment tour steps are **derived** from `lib/adminNavigation.ts`'s `adminNavSections` — each nav item's existing `label`/`description` (already authored, shown as hover text) becomes the step's title/description, so tour copy and nav copy can't drift apart
+- `AdminNavItem` gained an optional `tourDescription?: string` field, used only where the existing `description` assumed knowledge a first-time reader wouldn't have (e.g. "KYC Variables", "Clicker Sets", "Reporting Workspace") — `description` remains the fallback and the default for every item where it already reads fine standalone
+- The welcome tour targets `data-tour-id="nav-section-<key>"` (one per sidebar section) and drops any section with zero accessible items for the current role, since `Sidebar.tsx` itself doesn't render that section's wrapper when nothing inside it is visible
+
+### `data-tour-id` convention
+
+The only DOM-targeting-attribute convention in this codebase so far (no prior `data-testid`/`data-tour-id` existed anywhere). Added directly to `components/Sidebar.tsx`'s existing nav `<li>` elements and section wrapper `<div>`s:
+- `data-tour-id="nav-<path>"` on each nav item (parent and child)
+- `data-tour-id="nav-section-<key>"` on each section wrapper
+
+### Persistence
+
+`lib/tour/storage.ts` — plain exported functions (`hasTourBeenSeen`/`markTourSeen`), SSR-guarded, try/catch, mirroring `lib/adminViewState.ts`'s existing style rather than introducing a new persistence pattern. `localStorage` keys: `mm-tour-<tourId>`.
+
+### Provider scope
+
+`OverlayManagerProvider` is mounted in `components/AdminLayout.tsx`, not the app-wide `app/providers.tsx` — deliberately scoped to the admin layout only, since public report pages (`/report/[slug]`, etc.) share the root providers and have no need for overlay-manager machinery.
+
+### Accessibility
+
+`role="dialog"` `aria-modal="true"` tooltip, manual Tab focus-trap, `Escape` to skip, `aria-live="polite"` step announcements, `prefers-reduced-motion` disables the spotlight-move transition, focus returns to the triggering element on exit.
 
 ---
 

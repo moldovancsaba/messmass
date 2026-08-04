@@ -1,0 +1,112 @@
+/* WHAT: Guided-tour entry point styles
+ * WHY: Mirrors NotificationPanel.module.css's dropdown pattern for visual
+ *      consistency with the existing header-icon-opens-a-panel convention. */
+
+.tourMenuWrapper {
+  position: relative;
+}
+
+.tourPanel {
+  position: absolute;
+  top: calc(100% + var(--mm-space-2));
+  right: 0;
+  width: 360px;
+  max-height: 520px;
+  background: var(--mm-white);
+  border: 1px solid var(--mm-border-color-default);
+  border-radius: var(--mm-radius-xl);
+  box-shadow: var(--mm-shadow-lg);
+  overflow: hidden;
+  z-index: calc(var(--z-sticky) + 2);
+  display: flex;
+  flex-direction: column;
+}
+
+.panelHeader {
+  padding: var(--mm-space-4) var(--mm-space-5);
+  border-bottom: 1px solid var(--mm-border-color-default);
+  background: var(--mm-gray-50);
+}
+
+.panelTitle {
+  font-size: var(--mm-font-size-base);
+  font-weight: var(--mm-font-weight-semibold);
+  color: var(--mm-gray-900);
+  margin: 0;
+}
+
+.tourList {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+.tourItem {
+  display: block;
+  width: 100%;
+  text-align: left;
+  background: none;
+  border: none;
+  border-bottom: 1px solid var(--mm-border-color-light);
+  padding: var(--mm-space-3) var(--mm-space-5);
+  cursor: pointer;
+  transition: background var(--transition-base);
+}
+
+.tourItem:last-child {
+  border-bottom: none;
+}
+
+.tourItem:hover {
+  background: var(--mm-gray-50);
+}
+
+.tourItemHeader {
+  display: flex;
+  align-items: center;
+  gap: var(--mm-space-2);
+}
+
+.tourItemTitle {
+  font-size: var(--mm-font-size-sm);
+  font-weight: var(--mm-font-weight-semibold);
+  color: var(--mm-gray-900);
+}
+
+.tourItemCheck {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  border-radius: var(--mm-radius-full);
+  background: var(--mm-success);
+  color: var(--mm-white);
+}
+
+.tourItemDescription {
+  margin: var(--mm-space-1) 0 var(--mm-space-2) 0;
+  font-size: var(--mm-font-size-xs);
+  color: var(--mm-gray-600);
+  line-height: 1.4;
+}
+
+.tourItemAction {
+  font-size: var(--mm-font-size-xs);
+  font-weight: var(--mm-font-weight-medium);
+  color: var(--mm-color-primary-600);
+}
+
+.emptyState {
+  padding: var(--mm-space-8) var(--mm-space-5);
+  text-align: center;
+  color: var(--mm-gray-600);
+  font-size: var(--mm-font-size-sm);
+}
+
+@media (max-width: 480px) {
+  .tourPanel {
+    width: calc(100vw - var(--mm-space-8));
+    right: var(--mm-space-4);
+  }
+}
