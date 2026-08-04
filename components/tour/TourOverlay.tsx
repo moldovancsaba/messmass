@@ -160,10 +160,15 @@ export default function TourOverlay({ controller }: { controller: TourController
 
   return (
     <>
-      {/* WHAT: toggles pointer-events based on whether a spotlight rect exists
-          WHY: only a runtime-computed boolean, can't be a static CSS class */}
+      {/* WHAT: always intercepts pointer events (a real modal backdrop)
+          WHY: the tour registers with closeOnOutsideClick: false -- letting
+               clicks pass through to the page (e.g. sidebar links) while a
+               step is open would let a user navigate away while the tour
+               logically stays "open", and z-index uses the shared popover
+               token so this renders above fixed chrome (sidebar/header,
+               which use --z-fixed/--z-sticky, both lower) */}
       {/* eslint-disable-next-line react/forbid-dom-props */}
-      <div aria-hidden style={{ position: 'fixed', inset: 0, zIndex: 1000, pointerEvents: rect ? 'none' : 'auto' }}>
+      <div aria-hidden style={{ position: 'fixed', inset: 0, zIndex: 'var(--z-popover)', pointerEvents: 'auto' }}>
         {rect ? (
           <div
             className={reducedMotion ? styles.spotlight : `${styles.spotlight} ${styles.spotlightAnimated}`}
@@ -192,9 +197,12 @@ export default function TourOverlay({ controller }: { controller: TourController
         tabIndex={-1}
         onKeyDown={handleKeyDown}
         // WHAT: positions the tooltip relative to the live-measured spotlight rect
-        // WHY: computed by tooltipPosition() at runtime, can't be a static CSS class
+        // WHY: computed by tooltipPosition() at runtime, can't be a static CSS class.
+        //      z-index uses the shared tooltip token, one level above the
+        //      backdrop's popover token, so it always paints above both the
+        //      backdrop and fixed admin chrome.
         // eslint-disable-next-line react/forbid-dom-props
-        style={{ position: 'fixed', zIndex: 1001, width: 320, maxWidth: 'calc(100vw - 24px)', ...tooltipPosition(rect) }}
+        style={{ position: 'fixed', zIndex: 'var(--z-tooltip)', width: 320, maxWidth: 'calc(100vw - 24px)', ...tooltipPosition(rect) }}
       >
         <Box p="md" style={{ background: 'var(--mantine-color-body)', borderRadius: 12, boxShadow: 'var(--mantine-shadow-lg)' }}>
           <Stack gap="sm">

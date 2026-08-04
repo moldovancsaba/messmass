@@ -18,6 +18,7 @@ import { useTourController, type TourController } from '@/lib/tour/useTourContro
 import { hasTourBeenSeen } from '@/lib/tour/storage';
 import { getWelcomeTourSteps } from '@/lib/tour/config/welcomeTourSteps';
 import { getSegmentTourSteps, getSegmentTourMeta } from '@/lib/tour/config/segmentTourSteps';
+import { useSidebar } from '@/contexts/SidebarContext';
 import type { UserRole } from '@/lib/users';
 
 interface TourEntry {
@@ -32,6 +33,7 @@ export default function TourMenu() {
   const [userRole, setUserRole] = useState<UserRole | undefined>(undefined);
   const [loadingRole, setLoadingRole] = useState(true);
   const panelRef = useRef<HTMLDivElement>(null);
+  const { isCollapsed, setIsCollapsed } = useSidebar();
 
   useEffect(() => {
     const fetchUserRole = async () => {
@@ -123,6 +125,12 @@ export default function TourMenu() {
 
   const startTour = (controller: TourController) => {
     setIsOpen(false);
+    // WHAT: expand the sidebar before starting -- WHY: Sidebar.tsx doesn't
+    // render child nav <li>s (and their data-tour-id) at all while
+    // collapsed, so a segment tour with child steps (Reports, Analytics)
+    // would silently retry-then-skip nearly every step for a returning
+    // user with the sidebar collapsed.
+    if (isCollapsed) setIsCollapsed(false);
     controller.start();
   };
 
