@@ -106,7 +106,17 @@
 
 @media (max-width: 480px) {
   .tourPanel {
-    width: calc(100vw - var(--mm-space-8));
+    /* WHAT: switch from absolute (anchored to the small trigger icon) to
+       fixed (anchored to the viewport) on narrow screens
+       WHY: the trigger icon sits left-of-center in the header, not at the
+       right edge -- an absolutely-positioned wide panel anchored to it
+       overflows off the left edge of the screen on mobile */
+    position: fixed;
+    /* 72px matches .topHeader's own hardcoded height (TopHeader.module.css) -- not tokenized there either */
+    top: calc(72px + var(--mm-space-2));
+    left: var(--mm-space-4);
     right: var(--mm-space-4);
+    width: auto;
+    max-height: calc(100vh - 72px - var(--mm-space-8));
   }
 }
