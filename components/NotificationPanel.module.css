@@ -324,10 +324,20 @@
 }
 
 /* WHAT: Responsive adjustments
- * WHY: Adapt panel width for mobile devices */
+ * WHY: Adapt panel width for mobile devices. Switches from absolute (anchored
+ *      to the bell icon) to fixed (anchored to the viewport) -- the bell
+ *      doesn't sit at the true right edge of the header (avatar/logout
+ *      controls follow it), so a wide panel anchored to it with `right`
+ *      still relative to that narrow wrapper overflowed off the left edge
+ *      of the screen on phones. See components/tour/TourMenu.module.css for
+ *      the same fix applied to the guided-tour panel. */
 @media (max-width: 480px) {
   .notificationPanel {
-    width: calc(100vw - var(--mm-space-8));
+    position: fixed;
+    top: calc(72px + var(--mm-space-2));
+    left: var(--mm-space-4);
     right: var(--mm-space-4);
+    width: auto;
+    max-height: calc(100vh - 72px - var(--mm-space-8));
   }
 }
