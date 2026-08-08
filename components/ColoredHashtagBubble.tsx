@@ -1,18 +1,25 @@
 'use client';
 
 import { useMemo, memo } from 'react';
+import { ChoiceChip } from '@sovereignsquad/gds-core/client';
+import type React from 'react';
 import useHashtagColorResolver from '../hooks/useHashtagColorResolver';
 import { compareHashtagBubbleProps } from '../lib/performanceUtils';
 import styles from './ColoredHashtagBubble.module.css';
 
-/* What: Modernized hashtag bubble component with TailAdmin V2 styling
-   Why: Professional pill design with proper interaction states
-   
-   Changes:
-   - CSS Modules for better styling encapsulation
-   - Improved accessibility with proper focus states
-   - Smooth animations and transitions
-   - Better touch targets for mobile */
+/* What: Hashtag bubble rendered through GDS's ChoiceChip/Badge primitive
+   Why: Replaces a hand-rolled <span>/<button> pill with the shared design
+   system's chip so hashtags get token-driven styling instead of a
+   page-local pattern. See docs/components/components-reusable-components-inventory.md
+   ("Hashtag System" section) for the full rationale. */
+
+// WHAT: ChoiceChipProps doesn't declare every native attribute Badge forwards once it
+// renders with onClick (component="button" internally, per Mantine's polymorphic Badge)
+// -- `title` is a real, runtime-forwarded prop, just not typed on GDS's ChoiceChip
+// wrapper. Cast once here rather than reaching for `any` at the call site.
+const HashtagChoiceChip = ChoiceChip as React.ComponentType<
+  React.ComponentProps<typeof ChoiceChip> & { title?: string }
+>;
 
 interface ColoredHashtagBubbleProps {
   hashtag: string;
@@ -32,10 +39,10 @@ interface ColoredHashtagBubbleProps {
 
 // WHAT: Memoized hashtag bubble component to prevent unnecessary re-renders
 // WHY: Hashtags are rendered in large lists; memoization reduces render overhead
-function ColoredHashtagBubbleComponent({ 
-  hashtag, 
-  className = '', 
-  small = false, 
+function ColoredHashtagBubbleComponent({
+  hashtag,
+  className = '',
+  small = false,
   customStyle = {},
   interactive = false,
   onClick,
@@ -68,12 +75,12 @@ function ColoredHashtagBubbleComponent({
     if (categoryColor) {
       return categoryColor;
     }
-    
+
     // If auto-resolve is enabled and we have project context, use intelligent resolution
     if (autoResolveColor && projectCategorizedHashtags) {
       return resolveHashtagColor(hStr, projectCategorizedHashtags);
     }
-    
+
     // Legacy fallback: use individual hashtag color or default
     const colorInfo = getHashtagColorInfo(hStr, projectCategorizedHashtags);
     return colorInfo.effectiveColor;
@@ -86,15 +93,6 @@ function ColoredHashtagBubbleComponent({
     }
     return hStr;
   }, [showCategoryPrefix, hashtagCategory, hStr]);
-  /* What: Build CSS Module classes dynamically
-     Why: Combine base styles with variant modifiers */
-  const bubbleClasses = [
-    styles.hashtag,
-    small && styles.hashtagSmall,
-    interactive && styles.hashtagInteractive,
-    removable && styles.hashtagRemovable,
-    className
-  ].filter(Boolean).join(' ');
 
   // Handle empty hashtag gracefully
   if (!hStr || !hStr.trim()) {
@@ -102,7 +100,7 @@ function ColoredHashtagBubbleComponent({
   }
 
   // Handle click functionality
-  const handleClick = () => {
+  const handleClick: React.MouseEventHandler<HTMLElement> = () => {
     if (interactive && onClick) {
       onClick(hStr);
     }
@@ -132,41 +130,46 @@ function ColoredHashtagBubbleComponent({
   // WHAT: Validate backgroundColor before using in style
   // WHY: React calls .trim() on style values, will crash if undefined
   const safeBackgroundColor = (backgroundColor && typeof backgroundColor === 'string' && backgroundColor.trim()) ? backgroundColor : '#3b82f6';
-  
+
+  // WHAT: interactive chips render as a real <button> (ChoiceChip's onClick branch); a
+  // removable chip that's ALSO interactive can't nest a second real <button> inside a
+  // <button> (invalid HTML). In that combination the "×" is decorative only — the whole
+  // chip already removes on click, which matches every current call site where onClick
+  // and onRemove invoke the same handler. A removable-but-not-interactive chip renders as
+  // a plain (non-button) Badge, so a real nested remove <button> stays valid there.
+  const removeGlyph = removable ? (
+    interactive ? (
+      <span aria-hidden className={`${styles.removeGlyph} ${small ? styles.removeGlyphSmall : ''}`}>×</span>
+    ) : (
+      <button
+        type="button"
+        onClick={handleRemove}
+        className={`${styles.removeButton} ${small ? styles.removeButtonSmall : ''}`}
+        title="Remove hashtag"
+        aria-label="Remove hashtag"
+      >
+        ×
+      </button>
+    )
+  ) : null;
+
   return (
-    <span 
-      className={bubbleClasses}
-      // WHAT: Dynamic hashtag bubble styling based on category/hashtag color + props
-      // WHY: backgroundColor computed from MongoDB category data, cursor/gap from interactive/removable flags
-      // HOW: Color resolution uses intelligent resolver based on project categorizedHashtags
-      // NOTE: customStyle prop allows component reuse with flexible sizing (fontSize/fontWeight)
-      // eslint-disable-next-line react/forbid-dom-props
-      style={{
-        backgroundColor: safeBackgroundColor,
-        background: safeBackgroundColor, // Ensure both properties are set
-        color: 'white', // Force text color to always be white
-        cursor: interactive ? 'pointer' : 'default',
-        position: 'relative',
-        display: 'inline-flex',
-        alignItems: 'center',
-        gap: removable ? '0.25rem' : '0',
-        ...customStyle 
-      }}
+    <HashtagChoiceChip
+      label={
+        <>
+          #{displayText}
+          {removeGlyph}
+        </>
+      }
+      active // always filled/solid, matching this bubble's original always-colored look
+      color={safeBackgroundColor}
+      size={small ? 'xs' : 'sm'}
+      className={className}
+      style={customStyle}
       title={`Hashtag color: ${safeBackgroundColor}`}
-      onClick={handleClick}
-    >
-      #{displayText}
-      {removable && (
-        <button
-          onClick={handleRemove}
-          className={`${styles.removeButton} ${small ? styles.removeButtonSmall : ''}`}
-          title="Remove hashtag"
-          aria-label="Remove hashtag"
-        >
-          ×
-        </button>
-      )}
-    </span>
+      onClick={interactive ? handleClick : undefined}
+      aria-label={interactive ? `Toggle ${hStr} filter` : undefined}
+    />
   );
 }
 

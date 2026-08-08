@@ -1,10 +1,10 @@
 # {messmass} Design System
 Status: Active
-Last Updated: 2026-06-26T10:00:00.000Z
+Last Updated: 2026-08-08T16:40:43.000Z
 Canonical: Yes
 Owner: Architecture
 
-**Version**: 12.1.38
+**Version**: 12.1.39
 **Status**: Production
 
 ## Purpose
@@ -42,8 +42,42 @@ Local UI code may adapt GDS primitives to Messmass domain needs, but it must not
 | `FormModal` / `BaseModal` | Modal workflows that need consistent accessible structure |
 | `ConfirmDialog` | Destructive confirmation flows |
 | `UnifiedHashtagInput` | Hashtag selection and categorized hashtag input |
+| `ColoredHashtagBubble` | Hashtag display/selection/removal chip, over GDS `ChoiceChip` |
+| `HashtagMultiSelect` | Hashtag filter-bar multi-select, over GDS `ChoiceChip` |
 | `ReportChart` | Report chart rendering |
 | `ReportContent` | Report block layout |
+
+### `ColoredHashtagBubble` / `HashtagMultiSelect` (2026-08-08 GDS migration)
+
+- **GDS primitive used**: `ChoiceChip` (`@sovereignsquad/gds-core/client`) — a real `<button>`
+  when interactive (`onClick` set), a non-interactive `Badge` otherwise.
+- **Runtime flow**: `ColoredHashtagBubble` keeps its existing color-resolution logic
+  (`useHashtagColorResolver`) and prop contract, but renders the pill via `ChoiceChip`
+  instead of a hand-rolled `<span>`/`<button>`. `HashtagMultiSelect`'s selection grid
+  replaced `<label><input type="checkbox"/></label>` with `ChoiceChip`'s own
+  `active`/`onClick` (`aria-pressed` under the hood) — GDS's `ChoiceChip` is explicitly
+  documented upstream for "lightweight selection, mode toggles, and taxonomy links".
+- **Props contract**: unchanged externally for `ColoredHashtagBubble`
+  (`hashtag`/`small`/`interactive`/`onClick`/`removable`/`onRemove`/`categoryColor`/
+  `projectCategorizedHashtags`/`autoResolveColor`) — all 14 existing call sites work as-is.
+- **Accessibility behavior**: interactive chips are real `<button>`s (native keyboard
+  reachability, focus state, `aria-pressed` on selection chips). An `interactive` +
+  `removable` chip can't nest a second real button (invalid HTML), so in that combination
+  the "×" is decorative (`aria-hidden`) and the whole chip removes on click — only used
+  where `onClick`/`onRemove` already invoke the same handler. A `removable`-only chip
+  keeps a real, independently focusable/labelled remove `<button>`.
+- **Mobile behavior**: `ChoiceChip` touch targets match GDS's own sizing; the selection
+  grid still wraps via `HashtagMultiSelect.module.css`'s `.hashtagsGrid`
+  (`repeat(auto-fill, minmax(280px, 1fr))`), unchanged.
+- **States**: disabled forwards to the underlying `<button>` (verified: `ChoiceChip`'s
+  Mantine `Badge` is polymorphic and forwards unrecognized props to the DOM element it
+  renders as, even though its own TS type doesn't declare `disabled`/`title`). No
+  loading/empty/error state applies to a display chip.
+- **Verification**: `npm run lint`, `npm run type-check`, `npm test`, `npm run build`
+  all clean; manually verified via a temporary scratch route (deleted before commit) —
+  display/removable/interactive+removable bubbles, the selection grid's active/light
+  variant swap on click, and the selected-filters row's remove-on-click, all screenshot-
+  and interaction-tested with headless Chromium.
 
 If a new local wrapper is needed, document:
 

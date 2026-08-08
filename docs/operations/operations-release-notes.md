@@ -1,8 +1,64 @@
 # {messmass} Release Notes
 Status: Active
-Last Updated: 2026-08-04T21:59:31.000Z
+Last Updated: 2026-08-08T16:40:43.000Z
 Canonical: No
 Owner: Operations
+
+## [v12.1.39] — 2026-08-08T16:40:43.000Z
+
+### Summary
+Migrated the hashtag chip UI (`ColoredHashtagBubble`, `HashtagMultiSelect`) from a
+hand-rolled `<span>`/`<button>` pattern to GDS's `ChoiceChip`
+(`@sovereignsquad/gds-core/client`), the last significant hand-rolled UI surface in the
+hashtag system.
+
+### What Was Delivered
+- `components/ColoredHashtagBubble.tsx` now renders through GDS's `ChoiceChip` instead
+  of a local `<span>`/`<button>` pill; `ColoredHashtagBubble.module.css` now only styles
+  the inline "×" remove affordance, not the chip shell (GDS owns padding/radius/color/
+  hover/focus/disabled/print). External prop contract unchanged — all 14 existing call
+  sites work as-is.
+- Fixed a real invalid-HTML nesting hazard this migration would otherwise introduce:
+  `interactive`+`removable` together used to safely nest a real `<button>` inside a
+  `<span>`; once the primitive renders `interactive` chips as a real `<button>`
+  (`ChoiceChip`'s `onClick` branch), that same combination would nest a button inside a
+  button. Resolved by making the "×" decorative (`aria-hidden`) whenever `interactive`
+  is set — the whole chip already removes on click in every call site that combines the
+  two, so behavior is unchanged.
+- `components/HashtagMultiSelect.tsx`'s selection grid replaced
+  `<label><input type="checkbox"/></label>` (wrapping a non-interactive bubble) with
+  `ChoiceChip`'s own `active`/`onClick` selection semantics (`aria-pressed` under the
+  hood) — the idiomatic GDS pattern for "lightweight selection, mode toggles, and
+  taxonomy links" per its own JSDoc. Each grid item composes a display-only
+  `ColoredHashtagBubble` (carries the per-hashtag category color) as the `ChoiceChip`'s
+  `label`, plus the count badge.
+- Found and fixed a real layout bug during verification: the inline remove `<button>`/
+  decorative "×" needed `vertical-align: middle` — without it, the `<button>`'s default
+  baseline alignment stretched the chip's line box (measured ~32px vs the chip's own
+  ~18px height) and got clipped by the chip's `overflow: hidden`, visually overlapping
+  the hashtag text.
+- Docs: `docs/design/design-system.md` (new "Approved Local Patterns" entries +
+  dedicated GDS-primitive/accessibility/verification writeup) and
+  `docs/components/components-reusable-components-inventory.md` (`ColoredHashtagBubble`/
+  `HashtagMultiSelect` entries updated with the new implementation and the
+  interactive+removable nesting rule).
+
+### Testing
+- `type-check`, `lint` (`--max-warnings 0`), `test`, `style:check`,
+  `check-dependency-guardrail`, `check-layout-grammar-guardrail`, and `build` all clean.
+- Fixed two test suites (`tests/admin-action-rail.test.tsx`,
+  `tests/mobile-admin-action-contract.test.ts`) that crashed at import time once
+  `ColoredHashtagBubble` started importing `@sovereignsquad/gds-core/client`: that
+  import transitively barrel-imports all of `@mantine/core` (including `Textarea`/
+  `JsonInput`, whose `react-textarea-autosize` dependency touches browser-only APIs at
+  module-load time), which this repo's `jest-environment-node` (no DOM, by design) can't
+  tolerate. Both suites only test unrelated adapter/action-rail logic that transitively
+  imports the adapters for other reasons, so `ColoredHashtagBubble` is mocked out in
+  those two files rather than changing the repo's test environment.
+- Live-verified via a temporary scratch route (deleted before commit) with headless
+  Chromium: display-only, removable-only, and interactive+removable bubbles; the
+  selection grid's active/light variant swap and `aria-pressed` on click; the
+  selected-filters row's remove-on-click; the vertical-align layout fix, before/after.
 
 ## [v12.1.38] — 2026-08-04T21:59:31.000Z
 
