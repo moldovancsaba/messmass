@@ -1,11 +1,11 @@
 # {messmass} Reusable Components & Styling System Inventory
 Status: Active
-Last Updated: 2026-04-24
+Last Updated: 2026-08-08
 Canonical: No
 Owner: Architecture
 
-**Version**: 12.1.38
-**Last Updated**: 2026-04-24 (UTC)
+**Version**: 12.1.39
+**Last Updated**: 2026-08-08 (UTC)
 **Purpose**: Complete catalog of all reusable components, modules, styling systems, and utilities
 
 ---
@@ -163,22 +163,65 @@ import UnifiedHashtagInput from '@/components/UnifiedHashtagInput';
 
 #### ColoredHashtagBubble (Display)
 **File**: `components/ColoredHashtagBubble.tsx`
-**CSS**: `components/ColoredHashtagBubble.module.css`
+**CSS**: `components/ColoredHashtagBubble.module.css` (remove-affordance styling only —
+see below)
 **Usage**: Display hashtags with categories
 ```tsx
 import ColoredHashtagBubble from '@/components/ColoredHashtagBubble';
 <ColoredHashtagBubble
   hashtag="country:hungary"
-  color="#3b82f6"
+  categoryColor="#3b82f6"
   onRemove={() => {}}
+  removable={true}
   interactive={true}
+  onClick={(hashtag) => {}}
 />
 ```
+
+**Implementation (2026-08-08, GDS migration)**: renders through GDS's `ChoiceChip`
+(`@sovereignsquad/gds-core/client`) instead of a hand-rolled `<span>`/`<button>` pill —
+`ColoredHashtagBubble.module.css` now only styles the inline "×" remove affordance, not
+the chip shell (padding/radius/color/hover/focus/disabled/print), which GDS owns. The
+external prop contract (`hashtag`/`small`/`interactive`/`onClick`/`removable`/`onRemove`/
+`categoryColor`/`projectCategorizedHashtags`/`autoResolveColor`) is unchanged — all
+existing call sites work as-is.
+
+One structural rule this introduces: **`interactive` and `removable` can both be `true`
+on the same bubble, but the remove control changes shape depending on which.** An
+`interactive` chip renders as a real `<button>` (GDS's `ChoiceChip` `onClick` branch);
+HTML forbids nesting a second interactive control inside a `<button>`, so when both flags
+are set the "×" is decorative only (`aria-hidden` `<span>`) and the *whole chip* removes
+on click — this only makes sense (and is only used) where `onClick`/`onRemove` already
+invoke the same handler, as in `HashtagMultiSelect`'s selected-filters row. A
+`removable`-but-not-`interactive` chip (e.g. `UnifiedHashtagInput`'s entry chips) renders
+as a non-interactive `Badge`, so a real nested `<button>` for removal stays valid HTML.
+**Do not add a case that needs an `interactive` chip with an independently-clickable
+remove control** — that combination cannot be valid HTML with this primitive; redesign
+the interaction instead (e.g. split into two adjacent controls) rather than forcing it.
 
 **Examples**:
 - `app/admin/projects/ProjectsPageClient.tsx` (lines 450-480)
 - `app/admin/filter/page.tsx` (lines 120-150)
 - `app/edit/[slug]/page.tsx` (lines 300-330)
+- `components/HashtagMultiSelect.tsx` — selected-filters row (`interactive` +
+  `removable` together) and the selection grid, which composes a display-only
+  `ColoredHashtagBubble` as the `label` inside a selecting `ChoiceChip` (see below)
+
+#### HashtagMultiSelect (Filter selection)
+**File**: `components/HashtagMultiSelect.tsx`
+**Usage**: The hashtag filter bar's multi-select grid (`app/admin/filter/page.tsx`)
+
+**Implementation (2026-08-08, GDS migration)**: the selection grid previously used
+`<label><input type="checkbox"/>…</label>` wrapping a non-interactive
+`ColoredHashtagBubble`. Migrated to GDS's `ChoiceChip` driving selection directly
+(`active`/`onClick`, `aria-pressed` under the hood) instead of a checkbox, since
+`ChoiceChip` is explicitly meant for "lightweight selection, mode toggles, and taxonomy
+links" (its own JSDoc). Each grid item is now one `ChoiceChip` whose `label` composes a
+display-only `ColoredHashtagBubble` (carries the per-hashtag category color) plus the
+count badge — a real button wrapping a non-interactive badge, which is valid nesting.
+This dropped the card-style `.hashtagItem` background/border/selected-highlight CSS in
+favor of `ChoiceChip`'s own filled/light variant to show selection state, rather than
+layering a second, competing background on top of it.
 
 ---
 
