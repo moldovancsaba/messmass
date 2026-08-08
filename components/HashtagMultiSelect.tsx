@@ -1,8 +1,17 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import { ChoiceChip } from '@sovereignsquad/gds-core/client';
 import ColoredHashtagBubble from './ColoredHashtagBubble';
 import styles from './HashtagMultiSelect.module.css';
+
+// WHAT: ChoiceChipProps doesn't declare the native <button> attributes Badge forwards
+// once it renders with onClick (component="button" internally) -- `disabled` is a real,
+// runtime-forwarded prop (Mantine's Badge is polymorphic), just not typed on GDS's
+// ChoiceChip wrapper. Cast once here rather than reaching for `any` at the call site.
+const SelectableChoiceChip = ChoiceChip as React.ComponentType<
+  React.ComponentProps<typeof ChoiceChip> & { disabled?: boolean }
+>;
 
 interface HashtagItem {
   hashtag: string;
@@ -134,7 +143,7 @@ export default function HashtagMultiSelect({
                     AND
                   </span>
                 )}
-                <ColoredHashtagBubble 
+                <ColoredHashtagBubble
                   hashtag={hashtag}
                   customStyle={{
                     fontSize: '1rem',
@@ -144,6 +153,7 @@ export default function HashtagMultiSelect({
                   onRemove={() => handleHashtagToggle(hashtag)}
                   interactive={true}
                   onClick={() => handleHashtagToggle(hashtag)}
+                  ariaLabel={`Remove ${hashtag} filter`}
                 />
               </div>
             ))}
@@ -191,6 +201,35 @@ export default function HashtagMultiSelect({
             return acc;
           }, {} as Record<string, typeof sortedHashtags>);
           
+          const renderHashtagGridItem = (item: HashtagItem) => {
+            const isSelected = selectedHashtags.includes(item.hashtag);
+            return (
+              <SelectableChoiceChip
+                key={item.hashtag}
+                active={isSelected}
+                onClick={() => handleHashtagToggle(item.hashtag)}
+                disabled={disabled}
+                className={`${styles.hashtagItem} ${disabled ? styles.disabled : ''}`}
+                aria-label={`${item.hashtag}, ${item.count} project${item.count === 1 ? '' : 's'}${isSelected ? ', selected' : ''}`}
+                label={
+                  <span className={styles.hashtagContent}>
+                    <ColoredHashtagBubble
+                      hashtag={item.hashtag}
+                      small
+                      customStyle={{
+                        fontSize: '0.875rem',
+                        fontWeight: '500'
+                      }}
+                    />
+                    <span className={styles.countBadge}>
+                      {item.count}
+                    </span>
+                  </span>
+                }
+              />
+            );
+          };
+
           return (
             <div>
               {/* Traditional Hashtags */}
@@ -200,36 +239,11 @@ export default function HashtagMultiSelect({
                     🏷️ General Hashtags ({traditionalHashtags.length})
                   </h5>
                   <div className={styles.hashtagsGrid}>
-                    {traditionalHashtags.map((item) => (
-                      <label
-                        key={item.hashtag}
-                        className={`${styles.hashtagItem} ${selectedHashtags.includes(item.hashtag) ? styles.selected : ''} ${disabled ? styles.disabled : ''}`}
-                      >
-                        <input
-                          type="checkbox"
-                          checked={selectedHashtags.includes(item.hashtag)}
-                          onChange={() => handleHashtagToggle(item.hashtag)}
-                          disabled={disabled}
-                          className={styles.checkbox}
-                        />
-                        <div className={styles.hashtagContent}>
-                          <ColoredHashtagBubble 
-                            hashtag={item.hashtag}
-                            customStyle={{
-                              fontSize: '0.875rem',
-                              fontWeight: '500'
-                            }}
-                          />
-                          <span className={styles.countBadge}>
-                            {item.count}
-                          </span>
-                        </div>
-                      </label>
-                    ))}
+                    {traditionalHashtags.map(renderHashtagGridItem)}
                   </div>
                 </div>
               )}
-              
+
               {/* Categorized Hashtags */}
               {Object.entries(categorizedByCategory).map(([category, categoryHashtags]) => (
                 <div key={category} className={styles.categorySection}>
@@ -237,32 +251,7 @@ export default function HashtagMultiSelect({
                     📂 {category.charAt(0).toUpperCase() + category.slice(1)} Category ({categoryHashtags.length})
                   </h5>
                   <div className={styles.hashtagsGrid}>
-                    {categoryHashtags.map((item) => (
-                      <label
-                        key={item.hashtag}
-                        className={`${styles.hashtagItem} ${selectedHashtags.includes(item.hashtag) ? styles.selected : ''} ${disabled ? styles.disabled : ''}`}
-                      >
-                        <input
-                          type="checkbox"
-                          checked={selectedHashtags.includes(item.hashtag)}
-                          onChange={() => handleHashtagToggle(item.hashtag)}
-                          disabled={disabled}
-                          className={styles.checkbox}
-                        />
-                        <div className={styles.hashtagContent}>
-                          <ColoredHashtagBubble 
-                            hashtag={item.hashtag}
-                            customStyle={{
-                              fontSize: '0.875rem',
-                              fontWeight: '500'
-                            }}
-                          />
-                          <span className={styles.countBadge}>
-                            {item.count}
-                          </span>
-                        </div>
-                      </label>
-                    ))}
+                    {categoryHashtags.map(renderHashtagGridItem)}
                   </div>
                 </div>
               ))}

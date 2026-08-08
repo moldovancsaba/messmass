@@ -778,6 +778,7 @@ export default function ProjectsPageClient({ user }: ProjectsPageClientProps) {
                                     // Open share popup for single-hashtag filter (same flow as Admin → Filter)
                                     shareSingleHashtag(hashtag, project.styleIdEnhanced || null);
                                   }}
+                                  ariaLabel={`Share ${hashtag}`}
                                   projectCategorizedHashtags={project.categorizedHashtags}
                                   autoResolveColor={true}
                                 />
@@ -800,6 +801,7 @@ export default function ProjectsPageClient({ user }: ProjectsPageClientProps) {
                                       // Open share popup for category-prefixed single-hashtag filter
                                       shareSingleHashtag(hashtag, project.styleIdEnhanced || null);
                                     }}
+                                    ariaLabel={`Share ${category}:${hashtag}`}
                                     projectCategorizedHashtags={project.categorizedHashtags}
                                     autoResolveColor={true}
                                   />
