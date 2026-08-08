@@ -60,6 +60,12 @@ Local UI code may adapt GDS primitives to Messmass domain needs, but it must not
 - **Props contract**: unchanged externally for `ColoredHashtagBubble`
   (`hashtag`/`small`/`interactive`/`onClick`/`removable`/`onRemove`/`categoryColor`/
   `projectCategorizedHashtags`/`autoResolveColor`) — all 14 existing call sites work as-is.
+  One new optional prop: `ariaLabel`. `ColoredHashtagBubble` is reused for genuinely
+  different `interactive` actions across the app (toggle a filter, open a share popup, …)
+  — it cannot guess which one a given caller means, so it never hardcodes a description.
+  Omit `ariaLabel` and the chip's visible text (`#hashtag`) is the accessible name, which
+  is always at least accurate; pass it when a caller's action needs a more specific
+  description (e.g. `"Remove {hashtag} filter"`).
 - **Accessibility behavior**: interactive chips are real `<button>`s (native keyboard
   reachability, focus state, `aria-pressed` on selection chips). An `interactive` +
   `removable` chip can't nest a second real button (invalid HTML), so in that combination

@@ -37,6 +37,13 @@ hashtag system.
   baseline alignment stretched the chip's line box (measured ~32px vs the chip's own
   ~18px height) and got clipped by the chip's `overflow: hidden`, visually overlapping
   the hashtag text.
+- Fixed a real accessibility bug found via automated PR review: the initial version
+  hardcoded `aria-label="Toggle {hashtag} filter"` on every `interactive` chip, but
+  `ColoredHashtagBubble` is reused for other actions too (`app/admin/events/
+  ProjectsPageClient.tsx` uses it to open a share popup, not toggle a filter) — screen
+  readers would announce the wrong action there. Added an optional `ariaLabel` prop
+  instead: omitted, the chip's visible text (`#hashtag`) is the accessible name (always
+  accurate); callers pass it when they need a more specific description.
 - Docs: `docs/design/design-system.md` (new "Approved Local Patterns" entries +
   dedicated GDS-primitive/accessibility/verification writeup) and
   `docs/components/components-reusable-components-inventory.md` (`ColoredHashtagBubble`/

@@ -32,6 +32,12 @@ interface ColoredHashtagBubbleProps {
   categoryColor?: string;
   removable?: boolean;
   onRemove?: () => void;
+  // WHAT: Optional accessible-name override for interactive chips.
+  // WHY: This component is reused for genuinely different actions (toggle a filter,
+  // open a share popup, ...) -- it cannot guess which one a given caller means, so it
+  // must not hardcode one. Omit it and the chip's visible text ("#hashtag") serves as
+  // the accessible name, which is always at least accurate, if generic.
+  ariaLabel?: string;
   // New props for intelligent color resolution
   projectCategorizedHashtags?: { [categoryName: string]: string[] };
   autoResolveColor?: boolean;
@@ -50,6 +56,7 @@ function ColoredHashtagBubbleComponent({
   categoryColor,
   removable = false,
   onRemove,
+  ariaLabel,
   projectCategorizedHashtags,
   autoResolveColor = false
 }: ColoredHashtagBubbleProps) {
@@ -168,7 +175,7 @@ function ColoredHashtagBubbleComponent({
       style={customStyle}
       title={`Hashtag color: ${safeBackgroundColor}`}
       onClick={interactive ? handleClick : undefined}
-      aria-label={interactive ? `Toggle ${hStr} filter` : undefined}
+      aria-label={ariaLabel}
     />
   );
 }

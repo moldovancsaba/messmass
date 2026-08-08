@@ -143,7 +143,7 @@ export default function HashtagMultiSelect({
                     AND
                   </span>
                 )}
-                <ColoredHashtagBubble 
+                <ColoredHashtagBubble
                   hashtag={hashtag}
                   customStyle={{
                     fontSize: '1rem',
@@ -153,6 +153,7 @@ export default function HashtagMultiSelect({
                   onRemove={() => handleHashtagToggle(hashtag)}
                   interactive={true}
                   onClick={() => handleHashtagToggle(hashtag)}
+                  ariaLabel={`Remove ${hashtag} filter`}
                 />
               </div>
             ))}
