@@ -149,8 +149,14 @@ export default function DriveFoldersEditor({ projectId, projectName }: DriveFold
               value={newFolderUrl}
               onChange={(e) => setNewFolderUrl(e.target.value)}
               onKeyDown={(e) => {
-                if (e.key === 'Enter' && previewFolderId) {
-                  e.preventDefault();
+                // This input still lives inside FormModal's own outer <form>
+                // (only the add-panel wrapper stopped being one). preventDefault
+                // unconditionally on Enter so an invalid-but-non-empty value —
+                // which still satisfies the native `required` constraint — can
+                // never fall through to the outer form's implicit submit.
+                if (e.key !== 'Enter') return;
+                e.preventDefault();
+                if (previewFolderId) {
                   handleAddLink();
                 }
               }}
