@@ -16,6 +16,7 @@ interface PackageJson {
 // Approved runtime dependencies (add as needed)
 const APPROVED_RUNTIME_DEPS = new Set([
   '@mantine/core',
+  '@mantine/dates', // Required as of GDS 6.0.0: @sovereignsquad/gds-core declares it as a peer dependency.
   '@mantine/form',
   '@mantine/hooks',
   '@mantine/modals',

@@ -1,6 +1,6 @@
 {
   "name": "messmass",
-  "version": "12.1.39",
+  "version": "12.1.40",
   "description": "Enterprise-grade event analytics platform with comprehensive partner management, intelligent link tracking, automated event creation (Sports Match Builder), and advanced real-time statistics dashboard for sports organizations, venues, brands, and event managers",
   "keywords": [
     "event-statistics",
@@ -136,13 +136,14 @@
   },
   "dependencies": {
     "@mantine/core": "^8.3.18",
+    "@mantine/dates": "^8.3.18",
     "@mantine/form": "^8.3.18",
     "@mantine/hooks": "^8.3.18",
     "@mantine/modals": "^8.3.18",
     "@mantine/notifications": "^8.3.18",
-    "@sovereignsquad/gds-admin": "^3.9.0",
-    "@sovereignsquad/gds-core": "^3.9.0",
-    "@sovereignsquad/gds-theme": "^3.9.0",
+    "@sovereignsquad/gds-admin": "file:vendor/gds/sovereignsquad-gds-admin-6.0.0.tgz",
+    "@sovereignsquad/gds-core": "file:vendor/gds/sovereignsquad-gds-core-6.0.0.tgz",
+    "@sovereignsquad/gds-theme": "file:vendor/gds/sovereignsquad-gds-theme-6.0.0.tgz",
     "@tabler/icons-react": "^3.44.0",
     "bcryptjs": "^3.0.3",
     "chart.js": "^4.5.1",
