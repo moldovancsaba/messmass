@@ -9,14 +9,22 @@
 //   POST              - Add a Drive folder link to an event
 
 import { NextRequest, NextResponse } from 'next/server';
-import { getAdminUser } from '@/lib/auth';
+import { getAdminUser, type AdminUser } from '@/lib/auth';
 import { addDriveFolder, listDriveFolders } from '@/lib/driveFolders';
 import { error as logError } from '@/lib/logger';
+
+// Same admin-role check used by other admin-scoped routes (e.g.
+// app/api/admin/projects/route.ts) — getAdminUser() only proves a valid
+// session exists, not that the role is actually admin (UserRole also
+// includes 'guest'/'user'/'api').
+function isAdmin(user: AdminUser | null): user is AdminUser {
+  return user !== null && (user.role === 'admin' || user.role === 'superadmin');
+}
 
 export async function GET(request: NextRequest) {
   try {
     const user = await getAdminUser();
-    if (!user) {
+    if (!isAdmin(user)) {
       return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 401 });
     }
 
@@ -41,7 +49,7 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   try {
     const user = await getAdminUser();
-    if (!user) {
+    if (!isAdmin(user)) {
       return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 401 });
     }
 
