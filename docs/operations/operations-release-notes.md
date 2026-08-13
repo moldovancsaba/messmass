@@ -1,8 +1,53 @@
 # {messmass} Release Notes
 Status: Active
-Last Updated: 2026-08-08T16:40:43.000Z
+Last Updated: 2026-08-13T08:09:15.000Z
 Canonical: No
 Owner: Operations
+
+## [v12.1.40] — 2026-08-13T08:09:15.000Z
+
+### Summary
+Bumped the vendored `@sovereignsquad/gds-core`/`gds-theme`/`gds-admin` packages from
+`3.9.0` (the only version ever published to the public registry) to `6.0.0`. This is
+the fourth and last of four sibling apps sharing SSO at `sso.doneisbetter.com`
+(camera, fanmass, launchmass, messmass) to receive this bump, closing a
+version-alignment gap across the group.
+
+### What Was Delivered
+- Cloned the `gds-v6.0.0` tag from the GDS source repo, built
+  `@sovereignsquad/gds-core`/`gds-theme`/`gds-admin` via
+  `npm run build --workspace=<pkg>`, and packed each with `npm pack` into
+  `vendor/gds/sovereignsquad-gds-{core,theme,admin}-6.0.0.tgz` (messmass had no
+  existing `vendor/` directory before this change, unlike its three sibling repos).
+- `package.json`'s three GDS dependencies now point at
+  `file:vendor/gds/sovereignsquad-gds-{core,theme,admin}-6.0.0.tgz` instead of the
+  registry range `^3.9.0`.
+- `gds-core@6.0.0` introduced a new peer dependency on `@mantine/dates` that
+  `gds-core@3.9.0` did not have and that messmass had never declared; added
+  `@mantine/dates@^8.3.18` alongside messmass's other pinned Mantine packages to
+  resolve it. This is an additive peer requirement from the GDS package itself, not
+  one of the two documented breaking changes below.
+- `scripts/gds-sync-packages.sh` updated: default `EXPECTED_VERSION` `3.9.0` ->
+  `6.0.0`, and its comments/echo text updated to describe verifying vendored
+  packages rather than packages resolved from the public registry (the `npm ls`
+  check itself is unaffected — it matches by declared package version regardless
+  of install source).
+- Verified via `git grep` across `app/`, `components/`, `lib/` (excluding
+  `node_modules`/build output) that messmass's real source uses neither of the two
+  documented breaking changes between `3.9.0` and `6.0.0`
+  (GDS source repo's `CHANGELOG.md`/`DEPRECATIONS_AND_MIGRATIONS.md`):
+  1. `ReferenceThemeExplorer` relocated to a dedicated import subpath in `5.0.0` — a
+     demo/playground component messmass doesn't import.
+  2. A `class-usa` brand-theme token rename in `6.0.0` — a brand lane messmass
+     doesn't use.
+- Live-rendered `ColoredHashtagBubble`/`HashtagMultiSelect` (messmass's existing
+  `ChoiceChip`-based components from the prior GDS migration) through a real
+  Chromium browser check with mock data to confirm no visual regression against the
+  `3.9.0` render.
+
+### Testing
+- `npm test`, `npm run type-check`, `npm run lint` (`--max-warnings 0`),
+  `npm run build`, `npm run version:verify`, and `npm run style:check` all clean.
 
 ## [v12.1.39] — 2026-08-08T16:40:43.000Z
 
