@@ -135,6 +135,11 @@ export async function loadEventContext(eventId: string, correlationId: string) {
     ? await db.collection('organizations').findOne({ _id: organizationObjectId })
     : null;
 
+  const driveFolderDocs = await db
+    .collection('drive_folder_links')
+    .find({ eventId }, { projection: { folderId: 1, folderUrl: 1, label: 1 } })
+    .toArray();
+
   const context = {
     contractVersion: EVENT_CONTEXT_CONTRACT,
     messmassEventId: event._id.toString(),
@@ -148,6 +153,12 @@ export async function loadEventContext(eventId: string, correlationId: string) {
     categorizedHashtags: event.categorizedHashtags || {},
     reportTemplateId: stringifyId(event.reportTemplateId),
     styleId: stringifyId(event.styleId),
+    // folderId/folderUrl/label only — status is fanmass's write, not messmass's read.
+    driveFolders: driveFolderDocs.map((doc) => ({
+      folderId: doc.folderId,
+      folderUrl: doc.folderUrl,
+      label: doc.label ?? undefined,
+    })),
     sourceUpdatedAt: event.updatedAt || event.createdAt || null,
     syncCorrelationId: correlationId,
   };

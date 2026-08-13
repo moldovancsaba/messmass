@@ -21,6 +21,8 @@ function main() {
       '/api/integrations/fanmass/events/{eventId}/link',
       '/api/integrations/fanmass/events/{eventId}/sync',
       '/api/integrations/fanmass/callbacks',
+      '/api/integrations/fanmass/drive-folders',
+      '/api/integrations/fanmass/events/{eventId}/drive-folders/status',
     ],
     missingOptionalRuntimeEnv: missing,
   };

@@ -1,0 +1,248 @@
+/* components/DriveFoldersEditor.module.css */
+/* WHAT: Styling for inline Drive Folders editor in event edit page */
+/* WHY: Matches {messmass} design system; mirrors BitlyLinksEditor.module.css */
+
+.container {
+  width: 100%;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--mm-gray-900);
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.count {
+  font-size: 1rem;
+  color: var(--mm-gray-600);
+  font-weight: 400;
+}
+
+.addButton {
+  background: var(--mm-color-primary-500);
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.addButton:hover {
+  background: var(--mm-color-primary-600);
+  transform: translateY(-1px);
+}
+
+.error {
+  background: var(--mm-error-light);
+  color: var(--mm-error);
+  padding: 0.75rem;
+  border-radius: 6px;
+  margin-bottom: 1rem;
+  border-left: 3px solid var(--mm-error);
+  font-size: 0.9rem;
+}
+
+.success {
+  background: var(--mm-success-light);
+  color: var(--mm-color-secondary-700);
+  padding: 0.75rem;
+  border-radius: 6px;
+  margin-bottom: 1rem;
+  border-left: 3px solid var(--mm-success);
+  font-size: 0.9rem;
+}
+
+.addForm {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+  padding: 1rem;
+  background: var(--mm-gray-100);
+  border-radius: 8px;
+}
+
+.inputGroup {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.input {
+  padding: 0.75rem;
+  border: 2px solid var(--mm-gray-300);
+  border-radius: 6px;
+  font-size: 0.95rem;
+  transition: border-color 0.2s ease;
+}
+
+.input:focus {
+  outline: none;
+  border-color: var(--mm-color-primary-500);
+}
+
+.inputHint {
+  margin: 0;
+  font-size: 0.8rem;
+  color: var(--mm-gray-600);
+}
+
+.submitButton {
+  background: var(--mm-success);
+  color: white;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 6px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.submitButton:hover:not(:disabled) {
+  background: var(--mm-color-secondary-600);
+  transform: translateY(-1px);
+}
+
+.submitButton:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.loading,
+.empty {
+  text-align: center;
+  padding: 2rem;
+  color: var(--mm-gray-400);
+  font-size: 0.95rem;
+}
+
+.linksList {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.linkCard {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem;
+  background: var(--mm-gray-50);
+  border-radius: 8px;
+  border: 1px solid var(--mm-gray-200);
+  transition: all 0.2s ease;
+}
+
+.linkCard:hover {
+  background: var(--mm-gray-100);
+  border-color: var(--mm-color-primary-500);
+}
+
+.linkInfo {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  min-width: 0;
+}
+
+.linkUrl {
+  color: var(--mm-color-primary-500);
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 1rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.linkUrl:hover {
+  text-decoration: underline;
+}
+
+.linkMeta {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.85rem;
+  color: var(--mm-gray-600);
+}
+
+.statusBadge {
+  font-weight: 600;
+  padding: 0.15rem 0.5rem;
+  border-radius: 999px;
+  font-size: 0.8rem;
+}
+
+.status_pending {
+  background: var(--mm-gray-200);
+  color: var(--mm-gray-600);
+}
+
+.status_verified {
+  background: var(--mm-success-light);
+  color: var(--mm-success);
+}
+
+.status_error {
+  background: var(--mm-error-light);
+  color: var(--mm-error);
+}
+
+.errorDetail {
+  color: var(--mm-error);
+}
+
+.separator {
+  color: var(--mm-gray-300);
+}
+
+.removeButton {
+  background: transparent;
+  border: none;
+  color: var(--mm-gray-400);
+  font-size: 1.2rem;
+  cursor: pointer;
+  padding: 0.25rem 0.5rem;
+  transition: all 0.2s ease;
+  border-radius: 4px;
+}
+
+.removeButton:hover {
+  color: var(--mm-error);
+  background: var(--mm-error-light);
+}
+
+/* Responsive design */
+@media (max-width: 640px) {
+  .addForm {
+    flex-direction: column;
+  }
+
+  .linkCard {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .removeButton {
+    align-self: flex-end;
+  }
+}

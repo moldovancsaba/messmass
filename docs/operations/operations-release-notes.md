@@ -1,8 +1,68 @@
 # {messmass} Release Notes
 Status: Active
-Last Updated: 2026-08-13T08:09:15.000Z
+Last Updated: 2026-08-13T09:00:00.000Z
 Canonical: No
 Owner: Operations
+
+## [v12.1.41] — 2026-08-13T09:00:00.000Z
+
+### Summary
+Added self-service Google Drive folder linking for events. An admin can now paste
+one or more Google Drive folder URLs into an event's edit form and have them
+stored against that event; a sibling service (fanmass) reads these links via a
+new integration endpoint and reports back per-folder verification status via
+another new endpoint. messmass never reads Google Drive itself — it only stores
+and re-validates whatever URL an admin pastes; fanmass's own service account is
+the sole reader/access authority.
+
+### What Was Delivered
+- `lib/googleDriveFolder.ts`: `extractDriveFolderId()` / `buildDriveFolderUrl()` —
+  single source of truth for parsing a Drive folder URL or bare ID, shared by the
+  client component and the API route's server-side re-validation.
+- `lib/driveFolders.ts`: data access on a new `drive_folder_links` collection (one
+  doc per folder link, not an embedded array on `projects` — avoids
+  array-positional-update contention with the existing autosave `PUT /api/projects`
+  handler, mirroring the existing `fanmass_event_links` separate-collection
+  precedent). Unique index `{eventId:1, folderId:1}`, index `{status:1}`.
+- `lib/fanmassIntegration.ts`: `loadEventContext()` now includes a `driveFolders`
+  array (folderId/folderUrl/label only) in the context payload fanmass reads.
+  No context contract version bump — the field is purely additive and fanmass's
+  own consumer does a strict string equality check against its hardcoded
+  contract constant, so bumping the `v1` string would break the existing
+  camera-context fetch too.
+- `app/api/drive-folders/route.ts` (GET/POST) and
+  `app/api/drive-folders/[linkId]/route.ts` (DELETE): admin-session-authed
+  endpoints (same `getAdminUser()` guard `/api/bitly/links` uses) for adding,
+  listing, and removing Drive folder links on an event.
+- `app/api/integrations/fanmass/drive-folders/route.ts` (GET): bulk discovery —
+  every event with at least one linked Drive folder, plus enough metadata for
+  fanmass to auto-provision a batch, in one call rather than N per-event context
+  fetches.
+- `app/api/integrations/fanmass/events/[eventId]/drive-folders/status/route.ts`
+  (POST): per-folder status write-back (`pending`/`verified`/`error`), mirroring
+  `pushEventStats`'s targeted-update shape and the same
+  `requireFanmassIntegrationAuth` guard as the rest of the
+  `/api/integrations/fanmass/**` surface.
+- `components/DriveFoldersEditor.tsx` + `.module.css`: new admin UI component,
+  cloned from `BitlyLinksEditor`'s shape (own list state, `apiPost`/`apiDelete`,
+  confirm-dialog remove) but simpler (1:N per event, no junction table) — a
+  paste-a-URL add form with instant client-side validation feedback and a status
+  badge per row. Rendered in `app/admin/events/page.tsx`'s edit-project
+  `FormModal`, immediately after the existing `BitlyLinksEditor`.
+- `scripts/verify-fanmass-integration-contracts.ts`: added the two new routes to
+  its documentation-only route-surface list.
+
+### Verification
+- `npm run type-check`, `npm run lint`, `npm run build`, `npm test` (309/309),
+  `npm run style:check`, and `npx tsx scripts/verify-fanmass-integration-contracts.ts`
+  all pass clean.
+- Live click-through in a local dev server: added and removed a Drive folder link
+  on a real test event via the new UI; the list and status badge updated
+  correctly (see PR description for the exact steps and admin-auth workaround
+  used).
+- Curled both new `/api/integrations/fanmass/**` routes directly with the
+  configured `FANMASS_INTEGRATION_TOKEN` to confirm the auth guard rejects
+  missing/invalid tokens and the response shapes match what fanmass expects.
 
 ## [v12.1.40] — 2026-08-13T08:09:15.000Z
 

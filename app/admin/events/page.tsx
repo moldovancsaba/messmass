@@ -19,6 +19,7 @@ import MaterialIcon from '@/components/MaterialIcon';
 import { apiGet, apiPost, apiPut, apiDelete } from '@/lib/apiClient';
 import { withAdminEntityActions } from '@/lib/adminEntitySystem';
 import BitlyLinksEditor from '@/components/BitlyLinksEditor';
+import DriveFoldersEditor from '@/components/DriveFoldersEditor';
 import ColoredCard from '@/components/ColoredCard';
 
 const PAGE_SIZE = 20;
@@ -1172,6 +1173,10 @@ export default function ProjectsPageUnified() {
               
               <div className="form-group">
                 <BitlyLinksEditor projectId={editingProject._id} projectName={editingProject.eventName} />
+              </div>
+
+              <div className="form-group">
+                <DriveFoldersEditor projectId={editingProject._id} projectName={editingProject.eventName} />
               </div>
             </>
           )}
