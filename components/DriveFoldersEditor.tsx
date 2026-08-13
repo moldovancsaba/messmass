@@ -69,8 +69,7 @@ export default function DriveFoldersEditor({ projectId, projectName }: DriveFold
   const previewFolderId = newFolderUrl.trim() ? extractDriveFolderId(newFolderUrl) : null;
   const showInvalidHint = newFolderUrl.trim().length > 0 && !previewFolderId;
 
-  async function handleAddLink(e: React.FormEvent) {
-    e.preventDefault();
+  async function handleAddLink() {
     setError('');
     setSuccess('');
 
@@ -138,13 +137,29 @@ export default function DriveFoldersEditor({ projectId, projectName }: DriveFold
       {error && <div className={styles.error}>{error}</div>}
       {success && <div className={styles.success}>{success}</div>}
 
+      {/* A plain div, not a <form> — this editor is embedded inside FormModal's
+          own <form>, and a nested form is invalid HTML whose submit can bubble
+          to the outer modal's submit handler. type="button" + onClick keeps
+          this action fully independent of the surrounding form. */}
       {showAddForm && (
-        <form onSubmit={handleAddLink} className={styles.addForm}>
+        <div className={styles.addForm}>
           <div className={styles.inputGroup}>
             <input
               type="text"
               value={newFolderUrl}
               onChange={(e) => setNewFolderUrl(e.target.value)}
+              onKeyDown={(e) => {
+                // This input still lives inside FormModal's own outer <form>
+                // (only the add-panel wrapper stopped being one). preventDefault
+                // unconditionally on Enter so an invalid-but-non-empty value —
+                // which still satisfies the native `required` constraint — can
+                // never fall through to the outer form's implicit submit.
+                if (e.key !== 'Enter') return;
+                e.preventDefault();
+                if (previewFolderId) {
+                  handleAddLink();
+                }
+              }}
               placeholder="Paste a Google Drive folder link"
               className={styles.input}
               required
@@ -155,10 +170,15 @@ export default function DriveFoldersEditor({ projectId, projectName }: DriveFold
               </p>
             )}
           </div>
-          <button type="submit" className={styles.submitButton} disabled={!previewFolderId}>
+          <button
+            type="button"
+            onClick={handleAddLink}
+            className={styles.submitButton}
+            disabled={!previewFolderId}
+          >
             Add
           </button>
-        </form>
+        </div>
       )}
 
       {loading ? (
@@ -193,6 +213,7 @@ export default function DriveFoldersEditor({ projectId, projectName }: DriveFold
                 </div>
               </div>
               <button
+                type="button"
                 onClick={() => handleRemoveLink(link._id, link.folderUrl)}
                 className={styles.removeButton}
                 title="Remove from this event"
