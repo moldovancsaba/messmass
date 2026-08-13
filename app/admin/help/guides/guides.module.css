@@ -1,0 +1,115 @@
+/* What: Prose styling for the in-app user-guide reader.
+   Why: Render tutorial markdown legibly, aligned with the admin design tokens. */
+
+.wrapper {
+  max-width: 860px;
+  margin: 0 auto;
+  padding: var(--mm-space-6, 1.5rem);
+}
+
+.back {
+  display: inline-block;
+  margin-bottom: var(--mm-space-4, 1rem);
+  color: var(--mm-gray-600, #4b5563);
+  font-size: var(--mm-font-size-sm, 0.875rem);
+  text-decoration: none;
+}
+.back:hover {
+  text-decoration: underline;
+}
+
+.prose {
+  color: var(--mm-gray-800, #1f2937);
+  line-height: 1.65;
+  font-size: 1rem;
+  word-wrap: break-word;
+}
+
+.prose h1 {
+  font-size: 1.9rem;
+  line-height: 1.2;
+  margin: 0 0 var(--mm-space-4, 1rem);
+}
+.prose h2 {
+  font-size: 1.4rem;
+  line-height: 1.25;
+  margin: var(--mm-space-6, 1.5rem) 0 var(--mm-space-3, 0.75rem);
+  padding-bottom: var(--mm-space-2, 0.5rem);
+  border-bottom: 1px solid var(--mm-border-color-default, #e5e7eb);
+}
+.prose h3 {
+  font-size: 1.15rem;
+  margin: var(--mm-space-5, 1.25rem) 0 var(--mm-space-2, 0.5rem);
+}
+
+.prose p,
+.prose ul,
+.prose ol {
+  margin: 0 0 var(--mm-space-4, 1rem);
+}
+
+.prose ul,
+.prose ol {
+  padding-left: 1.5rem;
+}
+.prose li {
+  margin: 0.25rem 0;
+}
+
+.prose a {
+  color: var(--mm-primary, #2563eb);
+  text-decoration: underline;
+}
+
+.prose code {
+  font-family: var(--font-mono, ui-monospace, SFMono-Regular, Menlo, monospace);
+  font-size: 0.875em;
+  background: var(--mm-gray-100, #f3f4f6);
+  padding: 0.1em 0.35em;
+  border-radius: var(--mm-radius-sm, 4px);
+}
+.prose pre {
+  background: var(--mm-gray-100, #f3f4f6);
+  padding: var(--mm-space-4, 1rem);
+  border-radius: var(--mm-radius-md, 8px);
+  overflow-x: auto;
+}
+.prose pre code {
+  background: none;
+  padding: 0;
+}
+
+.prose blockquote {
+  margin: 0 0 var(--mm-space-4, 1rem);
+  padding: var(--mm-space-2, 0.5rem) var(--mm-space-4, 1rem);
+  border-left: 3px solid var(--mm-border-color-default, #d1d5db);
+  color: var(--mm-gray-600, #4b5563);
+  background: var(--mm-gray-50, #f9fafb);
+}
+
+/* Tables (tutorials use GFM tables) — must scroll, never break the page width */
+.prose table {
+  display: block;
+  width: 100%;
+  overflow-x: auto;
+  border-collapse: collapse;
+  margin: 0 0 var(--mm-space-4, 1rem);
+  font-size: 0.9rem;
+}
+.prose th,
+.prose td {
+  border: 1px solid var(--mm-border-color-default, #e5e7eb);
+  padding: 0.5rem 0.75rem;
+  text-align: left;
+  vertical-align: top;
+}
+.prose th {
+  background: var(--mm-gray-50, #f9fafb);
+  font-weight: var(--mm-font-weight-semibold, 600);
+}
+
+@media (prefers-color-scheme: dark) {
+  .prose {
+    color: var(--mm-gray-100, #f3f4f6);
+  }
+}

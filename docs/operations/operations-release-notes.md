@@ -1,8 +1,35 @@
 # {messmass} Release Notes
 Status: Active
-Last Updated: 2026-08-13T09:00:00.000Z
+Last Updated: 2026-08-13T21:00:00.000Z
 Canonical: No
 Owner: Operations
+
+## [v12.1.42] — 2026-08-13T21:00:00.000Z
+
+### Summary
+Made the end-user guide set readable inside the product. The tutorials shipped in
+v12.1.37 existed only as markdown files in the repository, so the in-product help
+catalog linked to documents nobody could open without a checkout. `/admin/help/guides`
+now renders them, and the catalog links there.
+
+The work itself was completed at v12.1.38 but never reached `main`; it is landed here
+rebased onto current `main` and renumbered, which is why no v12.1.38 entry exists.
+
+### What Was Delivered
+- `lib/guides.ts`: resolves a guide slug to its markdown source, rejecting any path
+  that escapes the guides directory, and strips front-matter metadata before render.
+- `app/admin/help/guides/page.tsx` and `[slug]/page.tsx`: the index and reader, both
+  statically rendered at build time.
+- `next.config.js`: includes the guide markdown in the server bundle so the reader
+  works on a serverless deploy.
+- The help catalog now links to the in-product reader instead of repository paths.
+
+### Testing
+- `npm run build` statically renders all 20 guide pages with no errors.
+- Rendered HTML verified directly: headings, tables and rewritten links present, no
+  front-matter leakage, and path traversal rejected.
+- Full CI battery green locally: type-check, lint, test, style:check, version:verify,
+  docs:audit, dependency and layout-grammar guardrails, build.
 
 ## [v12.1.41] — 2026-08-13T09:00:00.000Z
 

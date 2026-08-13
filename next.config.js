@@ -44,6 +44,13 @@ const nextConfig = {
       'node_modules/@swc/**/*',
     ],
   },
+  // WHAT: Bundle the user-guide markdown with the online reader routes.
+  // WHY: /admin/help/guides reads docs/guides/*.md; keep the files traced into the
+  //      function bundle so the reader works even if rendered on-demand.
+  outputFileTracingIncludes: {
+    '/admin/help/guides': ['./docs/guides/*.md'],
+    '/admin/help/guides/[slug]': ['./docs/guides/*.md'],
+  },
   // Redirect old hashtag pages to filter system
   async redirects() {
     return [
