@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { requireSession } from '@/lib/apiGuards';
 import clientPromise from '@/lib/mongodb';
 import config from '@/lib/config';
 import { error as logError, info as logInfo } from '@/lib/logger';
@@ -8,6 +9,12 @@ import { error as logError, info as logInfo } from '@/lib/logger';
 // WHY: Allow users to persist style choices without regenerating filter slugs
 // HOW: Find filter by normalized hashtags, update styleId field
 export async function POST(request: NextRequest) {
+  // F-009: this handler had no authentication. Caller analysis shows only the
+  // admin UI invokes it, so a session is the correct guard — no page-password
+  // grant path applies here.
+  const denied = await requireSession();
+  if (denied) return denied;
+
   try {
     const body = await request.json();
     const { hashtags, styleId } = body;

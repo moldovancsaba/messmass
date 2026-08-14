@@ -1,8 +1,49 @@
 # {messmass} Release Notes
 Status: Active
-Last Updated: 2026-08-14T21:30:00.000Z
+Last Updated: 2026-08-14T22:30:00.000Z
 Canonical: No
 Owner: Operations
+
+## [v12.1.58] — 2026-08-14T22:30:00.000Z
+
+### Summary
+Second pass on F-009, plus a regression guard. One item is deliberately escalated
+rather than fixed.
+
+### Six More Routes Guarded (F-009: 40 -> 33)
+Caller analysis across app, components, hooks and lib identified six mutating
+routes with only admin-UI callers: admin/filter-style,
+admin/project-partners/auto-suggest, admin/ui-settings, data-blocks (POST/PUT/
+DELETE), filter-slug and partners/upload-logo. All now require a session, verified
+returning 401 to an anonymous caller holding a valid CSRF token. GET on those
+routes still returns 200 — only the mutating handlers changed.
+
+### Recurrence Blocked
+tests/api-mutation-auth.test.ts fails if a new mutating route ships without an auth
+primitive, and also fails if a listed exception becomes guarded but is left on the
+list, so the debt list cannot quietly rot. Verified it can actually fail: a probe
+route with an unguarded DELETE made the suite fail naming that file, and pass again
+once removed.
+
+### Why The Other 33 Are Not Simply Guarded
+PartnerEditorDashboard and OrganizationEditorDashboard issue PUT requests from
+pages protected by a page password rather than an admin session. A session-only
+guard would break partner and organisation self-service editing in production —
+the same trap that PUT /api/projects presented. Each needs a scoped grant path
+resolved against the correct identifier, and the page-password pageId is not
+obviously the same value as the route's _id parameter.
+
+### Escalated, Not Actioned: 163 Unenforced Page Passwords
+event-report (99), partner-report (63) and organization-report (1) were traced to
+their data paths. None enforces its password anywhere — not server-side, and not
+even client-side. This is not the F-001 bypass pattern; there is no gate at all.
+Enforcing them would immediately break every already-shared report link for those
+entities, so whether those reports are meant to be protected is a product decision
+and is escalated rather than guessed.
+
+### Testing
+- Full gate: type-check, lint, 339 tests, style:check, version:verify, docs:audit,
+  guardrails, build.
 
 ## [v12.1.57] — 2026-08-14T21:30:00.000Z
 

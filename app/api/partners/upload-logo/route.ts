@@ -3,6 +3,7 @@
 // WHY: Handle badge upload from TheSportsDB to permanent ImgBB hosting
 
 import { NextRequest, NextResponse } from 'next/server';
+import { requireSession } from '@/lib/apiGuards';
 import { uploadPartnerBadge, isImgBBConfigured } from '@/lib/imgbbApi';
 
 /**
@@ -14,6 +15,12 @@ import { uploadPartnerBadge, isImgBBConfigured } from '@/lib/imgbbApi';
  * Returns: { success: boolean, logoUrl?: string, error?: string }
  */
 export async function POST(request: NextRequest) {
+  // F-009: this handler had no authentication. Caller analysis shows only the
+  // admin UI invokes it, so a session is the correct guard — no page-password
+  // grant path applies here.
+  const denied = await requireSession();
+  if (denied) return denied;
+
   try {
     // WHAT: Parse request body
     const body = await request.json();

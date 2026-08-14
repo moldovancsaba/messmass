@@ -1,11 +1,11 @@
 # LLD Audit — Findings Register
 
 Status: Active
-Last Updated: 2026-08-14T21:30:00.000Z
+Last Updated: 2026-08-14T22:30:00.000Z
 Canonical: Yes (findings register)
 Owner: Architecture
 
-**Version:** 12.1.57
+**Version:** 12.1.58
 
 Findings from the LLD deep audit (`docs/audits/lld-audit-plan-2026-08-14.md`).
 Per rule R5 findings are recorded here and **not fixed on the audit branch**; per
@@ -21,7 +21,7 @@ claim is structural rather than demonstrated, it says so.
 
 | ID | Severity | Status | Title | Phase |
 |---|---|---|---|---|
-| [F-009](#f-009) | **Critical** | **Fixed (core), open (35 routes)** | Mutating API routes have no authentication | 4 |
+| [F-009](#f-009) | **Critical** | **Partly fixed — 33 routes open, frozen by test** | Mutating API routes have no authentication | 4 |
 | [F-001](#f-001) | **Critical** | **Fixed** | Page-password protection is client-side only; data APIs are unauthenticated | 4 |
 | [F-002](#f-002) | **Critical** | **Fixed** | Unsigned legacy session tokens are accepted, always | 4 |
 | [F-003](#f-003) | High | Open | Middleware admin gate checks cookie presence, never validity | 4 |
@@ -80,10 +80,33 @@ The dual path on `PUT` is not a compromise — it is required for correctness.
 `PUT /api/projects`, and that editor authenticates by page password, not by admin
 session. A session-only guard would have broken data collection at events.
 
-**Still open: the other 35 routes.** They need the same treatment, route by route,
-each with its own decision about whether a grant path applies. That is Phase 6
-work and should not be done blind — a wrong guard on a route the editor uses
-breaks live events, exactly as it would have here.
+**Second pass (v12.1.58).** Caller analysis was run across `app`, `components`,
+`hooks` and `lib` to find which UI invokes each unguarded route. Six were proven to
+have **only** admin-UI callers and are now session-guarded, all verified returning
+401 to an anonymous caller holding a valid CSRF token:
+
+`admin/filter-style` · `admin/project-partners/auto-suggest` · `admin/ui-settings` ·
+`data-blocks` (POST/PUT/DELETE) · `filter-slug` · `partners/upload-logo`
+
+GET on those routes was re-checked and still returns 200 — the guards are on the
+mutating handlers only.
+
+**Count: 40 → 33 unguarded.**
+
+**Why the remaining 33 are not simply guarded.** The same trap as `PUT /api/projects`.
+`PartnerEditorDashboard.tsx:58,72` and `OrganizationEditorDashboard.tsx:183` issue
+`apiPut` to `partners/edit`, `partners` and `organizations/edit` **from pages
+protected by a page password, not an admin session**. A session-only guard there
+would break partner and organisation self-service editing in production. Each
+needs a scoped grant path resolved against the right identifier — the page-password
+`pageId` and the route's `_id` parameter are not obviously the same value, and
+guessing that mapping would be the exact failure R2 warns about.
+
+**Recurrence is now blocked.** `tests/api-mutation-auth.test.ts` fails if any new
+mutating route ships without an auth primitive, and separately fails if a listed
+exception gets fixed but is left on the list. Verified to actually fail: a probe
+route with an unguarded `DELETE` was added, the test failed naming it, and passed
+again once removed.
 
 ---
 
@@ -157,9 +180,29 @@ of a prompt. Both guarded pages now treat `PAGE_PASSWORD_REQUIRED` as "clear loc
 state and re-prompt". Confirmed in the browser: the filter page renders
 "Filter Access Required" with a password field and no error screen.
 
-**Still open:** the `event-report`, `partner-report` and `organization-report`
-page types (163 passwords between them) were not traced to their data routes and
-are **not** yet guarded.
+**Traced (v12.1.58), and deliberately not changed — this needs a product decision.**
+The three remaining page types were traced to their data paths:
+
+| Type | Passwords | Page | Data path | Enforcement found |
+|---|---:|---|---|---|
+| `event-report` | 99 | `/report/[slug]` | `GET /api/projects/stats/[slug]` | **none, client or server** |
+| `partner-report` | 63 | `/partner-report/[slug]` | server component, direct `getDb()` | **none** |
+| `organization-report` | 1 | `/organization-report/[id]` | client | **none** |
+
+This is **not** the F-001 pattern. For `filter` and `edit` a password gate existed
+in the browser and was bypassable. Here there is no gate at all — not server-side,
+and not even the client-side `PagePasswordLogin` check. These 163 passwords are
+configured and never enforced anywhere.
+
+Two readings are possible and the code cannot distinguish them: either those
+reports are meant to be public and the passwords are vestigial, or protection was
+intended and never implemented. The passwords are not auto-generated for
+everything — 99 of 370 projects and 63 of 202 partners — so someone created them
+deliberately, which argues for the second reading.
+
+**Enforcing them would immediately break every already-shared report link** for
+those 163 entities. That is a product decision, not an audit finding, so it is
+escalated rather than actioned.
 
 ---
 

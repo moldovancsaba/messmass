@@ -1,8 +1,15 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { requireSession } from '@/lib/apiGuards';
 import { generateFilterSlug } from '@/lib/slugUtils';
 
 // POST /api/filter-slug - Generate a filter slug for hashtag combinations
 export async function POST(request: NextRequest) {
+  // F-009: this handler had no authentication. Caller analysis shows only the
+  // admin UI invokes it, so a session is the correct guard — no page-password
+  // grant path applies here.
+  const denied = await requireSession();
+  if (denied) return denied;
+
   try {
     const body = await request.json();
     const { hashtags, styleId } = body;

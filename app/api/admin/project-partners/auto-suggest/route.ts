@@ -3,6 +3,7 @@
 // HOW: Parse "Home x Away" format and match against partner names
 
 import { NextResponse } from 'next/server';
+import { requireSession } from '@/lib/apiGuards';
 import { ObjectId } from 'mongodb';
 import { getDb } from '@/lib/db';
 
@@ -72,6 +73,12 @@ function findBestPartnerMatch(teamName: string, partners: any[]): { partner: any
  * WHY: Bulk fix for missing relationships
  */
 export async function POST() {
+  // F-009: this handler had no authentication. Caller analysis shows only the
+  // admin UI invokes it, so a session is the correct guard — no page-password
+  // grant path applies here.
+  const denied = await requireSession();
+  if (denied) return denied;
+
   try {
     const db = await getDb();
     const projectsCollection = db.collection('projects');

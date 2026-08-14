@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { requireSession } from '@/lib/apiGuards';
 import { ObjectId } from 'mongodb';
 import clientPromise from '@/lib/mongodb';
 import { error as logError } from '@/lib/logger';
@@ -56,6 +57,12 @@ export async function GET() {
 
 // POST /api/data-blocks - Create new data visualization block
 export async function POST(request: NextRequest) {
+  // F-009: this handler had no authentication. Caller analysis shows only the
+  // admin UI invokes it, so a session is the correct guard — no page-password
+  // grant path applies here.
+  const denied = await requireSession();
+  if (denied) return denied;
+
   try {
     const body = await request.json();
     const { name, charts, order, isActive, showTitle } = body;
@@ -104,6 +111,12 @@ export async function POST(request: NextRequest) {
 
 // PUT /api/data-blocks - Update data visualization block
 export async function PUT(request: NextRequest) {
+  // F-009: this handler had no authentication. Caller analysis shows only the
+  // admin UI invokes it, so a session is the correct guard — no page-password
+  // grant path applies here.
+  const denied = await requireSession();
+  if (denied) return denied;
+
   try {
     const body = await request.json();
     const { _id, name, charts, order, isActive, showTitle, blockAspectRatio, tableHeightMultiplier } = body;
@@ -169,6 +182,12 @@ export async function PUT(request: NextRequest) {
 
 // DELETE /api/data-blocks - Delete data visualization block
 export async function DELETE(request: NextRequest) {
+  // F-009: this handler had no authentication. Caller analysis shows only the
+  // admin UI invokes it, so a session is the correct guard — no page-password
+  // grant path applies here.
+  const denied = await requireSession();
+  if (denied) return denied;
+
   try {
     const url = new URL(request.url);
     const blockId = url.searchParams.get('id');

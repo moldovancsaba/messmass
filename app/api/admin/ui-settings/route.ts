@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { requireSession } from '@/lib/apiGuards';
 import clientPromise from '@/lib/mongodb';
 import { isAuthenticated } from '@/lib/auth';
 import config from '@/lib/config';
@@ -58,6 +59,12 @@ const db = client.db(config.dbName);
 }
 
 export async function PUT(request: NextRequest) {
+  // F-009: this handler had no authentication. Caller analysis shows only the
+  // admin UI invokes it, so a session is the correct guard — no page-password
+  // grant path applies here.
+  const denied = await requireSession();
+  if (denied) return denied;
+
   try {
     /* What: Validate admin session before updating settings
        Why: Only authenticated admins can change UI preferences */
