@@ -1,11 +1,11 @@
 # LLD Audit — Findings Register
 
 Status: Active
-Last Updated: 2026-08-14T23:30:00.000Z
+Last Updated: 2026-08-15T01:30:00.000Z
 Canonical: Yes (findings register)
 Owner: Architecture
 
-**Version:** 12.1.59
+**Version:** 12.1.61
 
 Findings from the LLD deep audit (`docs/audits/lld-audit-plan-2026-08-14.md`).
 Per rule R5 findings are recorded here and **not fixed on the audit branch**; per
@@ -25,6 +25,7 @@ claim is structural rather than demonstrated, it says so.
 | [F-009](#f-009) | **Critical** | **Partly fixed — 33 routes open, frozen by test** | Mutating API routes have no authentication | 4 |
 | [F-001](#f-001) | **Critical** | **Fixed** | Page-password protection is client-side only; data APIs are unauthenticated | 4 |
 | [F-002](#f-002) | **Critical** | **Fixed** | Unsigned legacy session tokens are accepted, always | 4 |
+| [F-011](#f-011) | High | Open — needs your decision | Public API keys are users' plaintext passwords | 4 |
 | [F-003](#f-003) | High | Open | Middleware admin gate checks cookie presence, never validity | 4 |
 | [F-004](#f-004) | High | Open | v3 organisation scoping is not enforced | 4 |
 | [F-005](#f-005) | Medium | Open | Identical-branch ternary grants every user the same permissions | 4 |
@@ -350,6 +351,52 @@ forged unsigned token, hint=legacy  -> null
 minted token is a JWT (3 parts)     -> true
 genuine token still validates       -> true
 ```
+
+---
+
+## F-011
+
+### Public API keys are users' plaintext passwords
+
+**Severity: High — verified in production. Not fixed; needs a decision.**
+
+`requireAPIAuth` resolves a Bearer token through `findUserByPassword`
+(`lib/apiAuth.ts:81`), and that function is:
+
+```ts
+return col.findOne({ password })   // lib/users.ts:258
+```
+
+A direct plaintext equality query. The public API's Bearer token **is** the user's
+password, which means the design *requires* passwords to be stored in the clear —
+`lib/users.ts:28` already marks the field "Legacy plaintext password (deprecated -
+use passwordHash instead)", but the API path depends on it.
+
+**Verified against production, read-only:**
+
+| Collection | Docs | Plaintext `password` | `passwordHash` | `apiKeyEnabled` |
+|---|---:|---:|---:|---:|
+| `users` | 18 | **3** | 14 | 2 |
+| `local_users` | 1 | **1** | 0 | 0 |
+
+Both `apiKeyEnabled` users carry a plaintext password, and zero API-enabled users
+lack one — consistent with the API path being the reason those values still exist.
+
+**Why High and not Critical.** Unlike F-010, nothing serves these values: no
+endpoint returns the field, and `GET /api/admin/users` reads from the SSO service
+rather than the local collection. The exposure is at rest — any database read,
+backup, dump, or log of a user document yields working credentials.
+
+**Not fixed, deliberately.** The correct fix is a separate `apiKeyHash` field with
+its own generated key, decoupling API keys from passwords. But rotating the two
+live API keys would break whichever integrations use them, and the camera and
+fanmass pipelines were only just restored. Unlike page passwords — where you
+explicitly accepted losing existing access — nobody has said these integrations
+can go down, and I am not going to infer it.
+
+**What I need from you:** confirmation that the two API-enabled users' keys can be
+rotated, and ideally which integrations hold them, so the change can be sequenced
+instead of discovered as an outage.
 
 ---
 

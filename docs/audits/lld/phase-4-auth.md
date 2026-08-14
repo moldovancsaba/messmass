@@ -1,19 +1,20 @@
 # Phase 4 — Authentication, Authorisation & Trust Boundaries (LLD draft)
 
 Status: Active
-Last Updated: 2026-08-14T20:00:00.000Z
+Last Updated: 2026-08-15T01:30:00.000Z
 Canonical: Yes (phase record)
 Owner: Architecture
 
-**Version:** 12.1.57
+**Version:** 12.1.61
 
 Phase 4 of `docs/audits/lld-audit-plan-2026-08-14.md`, written to the section
 template approved in `phase-1-viewpoints.md` §6. Phase 9 assembles these drafts
 into `docs/low-level-design.md`.
 
-**Status: partial.** The admin session flow is documented below. Page passwords,
-machine tokens and CSRF are delimited and partially traced; their sections are
-marked accordingly. The partial state is declared rather than hidden, per R4.
+**Status: complete for the four flows in scope.** Admin sessions, page passwords,
+machine tokens and CSRF are documented below. One finding (F-011) is recorded but
+not remediated, because remediation would take live integrations down and nobody
+has authorised that.
 
 ---
 
@@ -200,17 +201,126 @@ What is established:
 
 ## Flow 4.3 — Machine-token integration auth
 
-**Status: not started.** Delimited: 16 routes under `app/api/integrations/**`
-using `requireFanmassIntegrationAuth`, plus `lib/apiAuth.ts` (374 lines) serving
-`/api/public/**` via Bearer tokens. The one control verified so far is positive —
-`/api/public/partners` correctly rejects unauthenticated requests
-(`app/api/public/partners/route.ts:51`).
+### 1. Purpose & trigger
+
+Authenticates non-browser callers. Two separate mechanisms, deliberately distinct:
+the fleet integration token used by fanmass and camera across 16 routes under
+`app/api/integrations/**`, and the public API's per-user Bearer token serving
+`/api/public/**`.
+
+### 2. Contract
+
+**Fleet token** (`requireFanmassIntegrationAuth`, `lib/fanmassIntegration.ts:74`):
+accepted as either `Authorization: Bearer <token>` or `X-API-Key: <token>`, both
+compared against one configured value. Returns `503
+FANMASS_INTEGRATION_NOT_CONFIGURED` when unset and `401 INVALID_INTEGRATION_TOKEN`
+when wrong.
+
+**Public API** (`requireAPIAuth`, `lib/apiAuth.ts`): Bearer only — cookies are
+explicitly rejected with `401` and a `WWW-Authenticate: Bearer` challenge. The
+token resolves to a user, who must additionally have `apiKeyEnabled`; write
+operations require `apiWriteEnabled` as well.
+
+### 3. Data touched
+
+Fleet token: none — a config comparison. Public API: reads `users`, and writes
+usage counters (`apiUsageCount`, `lastAPICallAt`) asynchronously so tracking never
+blocks the response.
+
+### 4. Runtime sequence
+
+Guard runs first in each handler, before any body parsing or database work, so an
+unauthenticated caller cannot trigger work. `/api/integrations/**` is exempt from
+CSRF (`lib/csrf.ts:179`) — correctly, since CSRF defends cookie-borne authority and
+these callers present a bearer credential.
+
+### 5. Trust boundary
+
+**Yes.** Fails closed when unconfigured, which is the right default: a missing
+token disables the integration rather than opening it.
+
+Two weaknesses:
+
+- **Token comparison is `!==`**, not constant-time (`lib/fanmassIntegration.ts:83`).
+  Remote timing attacks against a high-entropy token are impractical, and
+  `lib/csrf.ts` already contains a `timingSafeEqual` helper that could be reused.
+  Low severity, recorded rather than fixed.
+- **The public API's key is the user's plaintext password** — F-011, High.
+
+**STRIDE.** Spoofing needs the token; the shared fleet token means fanmass and
+camera are mutually indistinguishable, so a compromise of either is a compromise of
+both. Repudiation: the public API records per-user usage, the fleet token records
+nothing attributable. Elevation: bounded by `apiKeyEnabled` / `apiWriteEnabled`.
+
+### 6–8. Algorithm / State / Failure
+
+Not applicable — stateless comparison, no computation, no partial state.
+
+### 9. Verification
+
+`/api/public/partners` rejects unauthenticated callers
+(`app/api/public/partners/route.ts:51`, confirmed by reading and by the earlier
+F-001 sweep, where it was the one route that correctly refused). Production
+credential state for F-011 verified read-only.
+
+### 10. Open findings
+
+F-011 (High). Non-constant-time fleet token comparison (Low, recorded here).
+
+---
 
 ## Flow 4.4 — CSRF
 
-**Status: not started.** Delimited: `lib/csrf.ts` (197 lines),
-`csrfProtectionMiddleware` in `middleware.ts:82`, `app/api/csrf-token/route.ts`,
-and `ensureCsrfToken` in `lib/apiClient.ts`.
+### 1. Purpose & trigger
+
+Protects cookie-authenticated state-changing requests from cross-site forgery.
+Runs in `middleware.ts:82` on every request before any handler.
+
+### 2. Contract
+
+Double-submit cookie: a token is issued at `GET /api/csrf-token` and set as a
+cookie; the client echoes it in `x-csrf-token`. A mismatch is `403
+CSRF_TOKEN_INVALID`.
+
+### 3. Data touched
+
+None — the token is self-contained in cookie and header.
+
+### 4. Runtime sequence
+
+Exempt: `GET`, `HEAD`, `OPTIONS` (`lib/csrf.ts:164`), and `/api/integrations/**`
+(`:179`). Enforced for everything else under `/api/`. `lib/apiClient.ts`'s
+`ensureCsrfToken` fetches the token automatically, which is why application code
+does not handle it explicitly.
+
+### 5. Trust boundary
+
+Supporting control, not an authentication boundary — a distinction that matters
+here, because F-009 showed CSRF standing alone in front of an unauthenticated
+`DELETE`, and a CSRF token is obtainable by anyone.
+
+**Comparison is constant-time** (`timingSafeEqual`, `lib/csrf.ts:32`, with a
+length check first). Correctly implemented.
+
+One operational note: `ENABLE_CSRF_PROTECTION` disables the whole control when set
+to the string `'false'` (`lib/csrf.ts:95`). Default-on, which is the right
+polarity, but it is a single environment variable away from off.
+
+### 6–8. Algorithm / State / Failure
+
+Not applicable.
+
+### 9. Verification
+
+Exercised repeatedly during this phase: state-changing requests without a token
+return `403 CSRF_TOKEN_INVALID`; with a token fetched from `/api/csrf-token` and a
+matching cookie they proceed. That behaviour is what made the F-009 demonstration
+possible and is confirmed working.
+
+### 10. Open findings
+
+None specific to CSRF. Its role is bounded correctly; the failure in F-009 was
+relying on it for a job it does not do.
 
 ---
 
@@ -221,7 +331,7 @@ and `ensureCsrfToken` in `lib/apiClient.ts`.
 - [x] Trust boundary assessed against ASVS and STRIDE
 - [x] Claims verified by execution, not reading (§9)
 - [x] Findings registered with severity and evidence
-- [ ] Page-password flow completed — `edit` type untested
-- [ ] Machine-token flow documented
-- [ ] CSRF flow documented
-- [ ] Ledger rows dispositioned for all 13 modules
+- [x] Page-password flow completed — `edit` type verified end to end
+- [x] Machine-token flow documented
+- [x] CSRF flow documented
+- [ ] Ledger rows dispositioned for all 13 modules (Phase 9)

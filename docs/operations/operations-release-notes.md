@@ -1,8 +1,51 @@
 # {messmass} Release Notes
 Status: Active
-Last Updated: 2026-08-15T00:30:00.000Z
+Last Updated: 2026-08-15T01:30:00.000Z
 Canonical: No
 Owner: Operations
+
+## [v12.1.61] — 2026-08-15T01:30:00.000Z
+
+### Summary
+Phase 4 of the LLD audit is complete. Documentation and one new finding — no
+product code changed.
+
+### Live Event Data Entry Verified Intact
+The highest operational risk after the password rotation was the `edit` page type
+(304 passwords), which fronts data collection at events. Verified end to end
+against a real event: an unauthenticated request is refused, an admin issues a new
+password, an operator with no admin session submits it and receives a grant, loads
+the editor, and saves stats successfully. The save wrote identical values and the
+stored stats were confirmed byte-identical afterwards, so nothing was mutated to
+prove it.
+
+### F-011 — Public API keys are users' plaintext passwords
+requireAPIAuth resolves a Bearer token via findUserByPassword, which is a direct
+`findOne({ password })` query. The public API's token IS the user's password, so
+the design requires plaintext storage. Production carries 3 plaintext passwords in
+`users` and 1 in `local_users`; both API-enabled users have one.
+
+High rather than Critical: no endpoint serves these values, so the exposure is at
+rest rather than remote. Deliberately NOT fixed — the correct change is a separate
+hashed apiKey field, but rotating the two live keys would break whichever
+integrations hold them, and unlike page passwords nobody has authorised that
+outage.
+
+### Phase 4 Flows Documented
+Machine-token auth (fleet token plus the public API's per-user Bearer) and CSRF
+are now written to the approved section template. CSRF was found correctly built:
+constant-time comparison, correct method exemptions, and /api/integrations exempt
+because those callers present bearer credentials rather than cookies. Its only
+real failure was in F-009, where it was standing alone in front of an
+unauthenticated DELETE — a job it does not do.
+
+Also recorded (Low): the fleet integration token is compared with `!==` rather
+than a constant-time comparison, while lib/csrf.ts already contains a suitable
+helper.
+
+### Testing
+Full gate: type-check, lint, 339 tests, style:check, version:verify, docs:audit,
+guardrails, build.
 
 ## [v12.1.60] — 2026-08-15T00:30:00.000Z
 
