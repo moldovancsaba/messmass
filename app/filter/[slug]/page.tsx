@@ -11,7 +11,7 @@ import ReportContent from '@/app/report/[slug]/ReportContent';
 import UnifiedProjectsSection from '@/components/UnifiedProjectsSection';
 import { ReportCalculator } from '@/lib/report-calculator';
 import { useReportStyle } from '@/hooks/useReportStyle';
-import PagePasswordLogin, { isAuthenticated } from '@/components/PagePasswordLogin';
+import PagePasswordLogin, { isAuthenticated, clearAuthentication } from '@/components/PagePasswordLogin';
 import styles from '@/app/styles/report-page.module.css';
 
 interface FilterReportData {
@@ -83,7 +83,19 @@ export default function FilterReportPage() {
         cache: 'no-store'
       });
       const data = await dataRes.json();
-      
+
+      // WHAT: The server now enforces the page password, and its grant cookie can
+      //     expire while this tab's sessionStorage flag lives on.
+      // WHY: Without this the visitor would see a generic error instead of the
+      //     password prompt they can actually act on. Re-prompting is the correct
+      //     response to PAGE_PASSWORD_REQUIRED, not an error screen.
+      if (dataRes.status === 401 && data?.code === 'PAGE_PASSWORD_REQUIRED') {
+        clearAuthentication(variant ? `${filterSlug}::variant=${variant}` : filterSlug, 'filter');
+        setIsAuthorized(false);
+        setLoading(false);
+        return;
+      }
+
       if (!data.success) {
         throw new Error(data.error || 'Failed to load filter statistics');
       }

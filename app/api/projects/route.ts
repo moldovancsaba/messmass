@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse, after } from 'next/server';
+import { requireSession, requireProjectWrite } from '@/lib/apiGuards';
 import { ObjectId, Db } from 'mongodb';
 import { generateProjectSlugs } from '@/lib/slugUtils';
 import clientPromise from '@/lib/mongodb';
@@ -508,6 +509,11 @@ export async function GET(request: NextRequest) {
 
 // POST /api/projects - Create new project
 export async function POST(request: NextRequest) {
+  // F-009: creating events is admin-only. The page-password editor updates an
+  // existing event and never creates one, so no grant path applies here.
+  const denied = await requireSession();
+  if (denied) return denied;
+
   try {
     const body = await request.json();
     // Enhanced to support both traditional and categorized hashtags + styleId + partner references + reportTemplateId
@@ -766,6 +772,16 @@ export async function PUT(request: NextRequest) {
       );
     }
 
+    // F-009: admin session, or a page-password grant for THIS project's edit
+    // slug. Scoped per project so a grant for one event cannot modify another.
+    // Placed after the id validation so the guard always has a usable id, and
+    // before any write so nothing is mutated on the unauthorised path.
+    {
+      const guardClient = await connectToDatabase();
+      const denied = await requireProjectWrite(guardClient.db(MONGODB_DB), projectId);
+      if (denied) return denied;
+    }
+
     logInfo('Updating project', { context: 'projects', projectId, styleId });
 
     // WHAT: Validate styleId against report_styles collection (26-color system)
@@ -1004,6 +1020,12 @@ export async function PUT(request: NextRequest) {
 
 // DELETE /api/projects - Delete project
 export async function DELETE(request: NextRequest) {
+  // F-009: this handler was reachable unauthenticated — a CSRF token is public,
+  // and nothing else stood between the request and deleteOne(). Deletion is
+  // admin-only; a page password must never be able to destroy an event.
+  const deleteDenied = await requireSession();
+  if (deleteDenied) return deleteDenied;
+
   let projectId: string | null = null;
   try {
     const url = new URL(request.url);

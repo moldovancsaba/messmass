@@ -1,11 +1,11 @@
 # LLD Audit — Findings Register
 
 Status: Active
-Last Updated: 2026-08-14T20:00:00.000Z
+Last Updated: 2026-08-14T21:30:00.000Z
 Canonical: Yes (findings register)
 Owner: Architecture
 
-**Version:** 12.1.56
+**Version:** 12.1.57
 
 Findings from the LLD deep audit (`docs/audits/lld-audit-plan-2026-08-14.md`).
 Per rule R5 findings are recorded here and **not fixed on the audit branch**; per
@@ -19,16 +19,71 @@ claim is structural rather than demonstrated, it says so.
 - **Medium** — defect with limited or no current impact
 - **Low** — hygiene
 
-| ID | Severity | Title | Phase |
-|---|---|---|---|
-| [F-001](#f-001) | **Critical** | Page-password protection is client-side only; data APIs are unauthenticated | 4 |
-| [F-002](#f-002) | **Critical** | Unsigned legacy session tokens are accepted, always | 4 |
-| [F-003](#f-003) | High | Middleware admin gate checks cookie presence, never validity | 4 |
-| [F-004](#f-004) | High | v3 organisation scoping is not enforced | 4 |
-| [F-005](#f-005) | Medium | Identical-branch ternary grants every user the same permissions | 4 |
-| [F-006](#f-006) | Medium | Two routes read cookie names nothing ever sets | 4 |
-| [F-007](#f-007) | Low | 202 orphaned page passwords for a deleted route | 4 |
-| [F-008](#f-008) | Low | `lib/authLockout.ts` is dead code | 4 |
+| ID | Severity | Status | Title | Phase |
+|---|---|---|---|---|
+| [F-009](#f-009) | **Critical** | **Fixed (core), open (35 routes)** | Mutating API routes have no authentication | 4 |
+| [F-001](#f-001) | **Critical** | **Fixed** | Page-password protection is client-side only; data APIs are unauthenticated | 4 |
+| [F-002](#f-002) | **Critical** | **Fixed** | Unsigned legacy session tokens are accepted, always | 4 |
+| [F-003](#f-003) | High | Open | Middleware admin gate checks cookie presence, never validity | 4 |
+| [F-004](#f-004) | High | Open | v3 organisation scoping is not enforced | 4 |
+| [F-005](#f-005) | Medium | Open | Identical-branch ternary grants every user the same permissions | 4 |
+| [F-006](#f-006) | Medium | Open | Two routes read cookie names nothing ever sets | 4 |
+| [F-007](#f-007) | Low | Open | 202 orphaned page passwords for a deleted route | 4 |
+| [F-008](#f-008) | Low | Open | `lib/authLockout.ts` is dead code | 4 |
+
+**Deviation from rule R6, declared.** R6 says findings become issues and are not
+fixed on the audit branch. F-001, F-002 and F-009 were fixed immediately on the
+user's explicit instruction, because all three were live and two were demonstrated
+against production data. The remaining findings follow R6 as written.
+
+---
+
+## F-009
+
+### Mutating API routes have no authentication
+
+**Severity: Critical — demonstrated. Core fixed; 35 routes still open.**
+
+Found while fixing F-001, and more severe than it.
+
+`app/api/projects/route.ts` is 1,086 lines exporting POST, PUT and DELETE, and
+contains no reference to `getAdminUser`, `requireAPIAuth`, `401`, or
+`Unauthorized`. `DELETE` parses `projectId`, looks the document up, and calls
+`deleteOne` — with nothing in between.
+
+**Demonstrated.** A CSRF token is obtainable by any anonymous caller from
+`/api/csrf-token`. With one, and no session of any kind:
+
+```
+DELETE /api/projects?projectId=<valid-format id> → HTTP 404 {"error":"Project not found"}
+```
+
+404 means the request passed every gate and executed the database lookup. The id
+used does not exist — verified as 0 matching documents beforehand, specifically so
+the test could not destroy anything. **Against a real id this deletes the event.**
+CSRF was the only barrier, and CSRF is not authentication.
+
+**Scope.** A scan of every `route.ts` exporting a mutating handler found **40 route
+files with no authentication primitive**, including `partners`, `hashtags`,
+`variables-config`, `data-blocks`, `charts`, `clicker-sets`, `hashtag-categories`
+and the Google Sheets connect/disconnect/push/pull routes. Some are legitimately
+public (`contact`, `clear-cookies`, `admin/login` which is 410 Gone); most are not.
+
+**Fixed (this change):** `app/api/projects/route.ts`.
+
+- `POST` and `DELETE` require an admin session (`requireSession`).
+- `PUT` requires an admin session **or** a page-password grant for that specific
+  project's edit slug (`requireProjectWrite`).
+
+The dual path on `PUT` is not a compromise — it is required for correctness.
+`components/EditorDashboard.tsx:229` saves live event stats through
+`PUT /api/projects`, and that editor authenticates by page password, not by admin
+session. A session-only guard would have broken data collection at events.
+
+**Still open: the other 35 routes.** They need the same treatment, route by route,
+each with its own decision about whether a grant path applies. That is Phase 6
+work and should not be done blind — a wrong guard on a route the editor uses
+breaks live events, exactly as it would have here.
 
 ---
 
@@ -36,7 +91,7 @@ claim is structural rather than demonstrated, it says so.
 
 ### Page-password protection is client-side only; data APIs are unauthenticated
 
-**Severity: Critical — demonstrated against live data.**
+**Severity: Critical — demonstrated against live data. Fixed.**
 
 Page passwords gate the *rendering* of a page in the browser, but the APIs that
 serve that page's data have no authentication. Anyone with the URL can fetch the
@@ -72,9 +127,39 @@ GET /api/hashtags/filter-by-slug/33549f34-… → HTTP 200 · 186 projects · 10
 `requireAPIAuth` (`app/api/public/partners/route.ts:51`). The gap is in the
 non-`/public` data routes that back password-gated pages.
 
-**Still to determine (Phase 6):** the full list of affected routes. `edit` (304
-passwords) is the highest-value type because it gates *mutation*, and it was not
-tested here — it must be, urgently.
+**Fix.** `lib/pageAccess.ts` issues a signed, HttpOnly grant cookie naming exactly
+the pages a visitor has unlocked, minted by `PUT /api/page-passwords` on a correct
+password. `requirePageAccess(pageType, pageId)` guards the data routes and passes
+on any of three conditions: the page has no password configured, the caller holds
+an admin session, or the caller holds a grant for that page. The
+"no password configured" check is what keeps every unprotected public report
+working — the guard activates the moment a password is set and deactivates when it
+is removed.
+
+Applied to `GET /api/hashtags/filter-by-slug/[slug]` (filter) and
+`GET /api/projects/edit/[slug]` (edit).
+
+**Verified by execution, both directions:**
+
+| Case | Before | After |
+|---|---|---|
+| Protected filter, no credentials | 200 · 186 projects | **401 PAGE_PASSWORD_REQUIRED** |
+| Unprotected filter, no credentials | 200 | 200 · 2 projects (unchanged) |
+| Correct password submitted | 200, no server proof | 200 + grant cookie issued |
+| Data route with that grant | — | 200 · 186 projects · 108 stat keys |
+| Wrong password | 401, no grant | 401, no grant |
+| Grant for filter A used on filter B | — | **401** (scoped per page) |
+| Tampered grant cookie | — | **401** (signature rejected) |
+
+**Client behaviour.** The grant lives 12 hours while the browser's `sessionStorage`
+flag lives as long as the tab, so a long-open tab could have shown an error instead
+of a prompt. Both guarded pages now treat `PAGE_PASSWORD_REQUIRED` as "clear local
+state and re-prompt". Confirmed in the browser: the filter page renders
+"Filter Access Required" with a password field and no error screen.
+
+**Still open:** the `event-report`, `partner-report` and `organization-report`
+page types (163 passwords between them) were not traced to their data routes and
+are **not** yet guarded.
 
 ---
 
@@ -82,7 +167,7 @@ tested here — it must be, urgently.
 
 ### Unsigned legacy session tokens are accepted, always
 
-**Severity: Critical — verified by execution.**
+**Severity: Critical — verified by execution. Fixed.**
 
 `validateLegacySessionToken` (`lib/sessionTokens.ts:111`) accepts a Base64-encoded
 JSON blob with **no signature verification**. It checks only that required fields
@@ -124,11 +209,31 @@ was not exhaustive — Phase 6 must complete it.
 correctly rejected by `validateJWTSessionToken`. The defect is accepting the
 legacy format at all, not the JWT implementation.
 
-**Environment note, unverified:** `ENABLE_JWT_SESSIONS` and `JWT_SECRET` are both
-absent from `.env.local`, so locally every minted session is unsigned Base64.
-Production runs on Vercel and its environment could not be read from here. This
-must be checked by someone with access — but note it does not change the finding,
-because legacy validation is accepted regardless of the flag.
+**Environment, now verified.** Production was checked via `vercel env pull` before
+changing anything, and the value was never printed: `JWT_SECRET` is present and 66
+characters (the production minimum is 32), and `ENABLE_JWT_SESSIONS` is `"true"`.
+Production therefore already mints signed JWTs, which is what made the fix safe to
+ship — no live session is invalidated and no user is logged out. Locally neither
+variable is set, so local sessions were unsigned.
+
+**Fix.** `generateLegacySessionToken`, `validateLegacySessionToken` and
+`detectTokenFormat` are deleted rather than deprecated, so the format cannot
+return by flipping a flag. `validateSessionToken` always verifies an HS256
+signature; its `format` parameter is retained for source compatibility and
+deliberately ignored, because it was previously read from the `session-format`
+cookie — which is not HttpOnly, letting the caller of a security check choose
+which check ran. Generation lost its flag branch too: if minting could fall back
+to an unsigned format while validation demanded a signature, one flag flip would
+lock out every user.
+
+**Verified after the fix:**
+
+```
+forged unsigned token, auto-detect  -> null
+forged unsigned token, hint=legacy  -> null
+minted token is a JWT (3 parts)     -> true
+genuine token still validates       -> true
+```
 
 ---
 

@@ -3,7 +3,7 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import { useParams } from 'next/navigation';
 import EditorDashboard from '../../../components/EditorDashboard';
-import PagePasswordLogin, { isAuthenticated } from '@/components/PagePasswordLogin';
+import PagePasswordLogin, { isAuthenticated, clearAuthentication } from '@/components/PagePasswordLogin';
 import { useReportStyle } from '@/hooks/useReportStyle';
 import styles from '@/app/styles/editor-states.module.css';
 
@@ -74,6 +74,15 @@ export default function EditPage() {
       
       const data = await response.json();
       console.log('📦 API response data:', data);
+
+      // The server enforces the edit password now; its grant can expire while
+      // this tab's sessionStorage flag survives. Re-prompt rather than error.
+      if (response.status === 401 && data?.code === 'PAGE_PASSWORD_REQUIRED') {
+        clearAuthentication(slug, 'edit');
+        setIsAuthorized(false);
+        setLoading(false);
+        return;
+      }
 
       if (data.success) {
         console.log('✅ Found project for editing:', data.project.eventName);

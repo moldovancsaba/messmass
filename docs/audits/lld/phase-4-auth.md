@@ -5,7 +5,7 @@ Last Updated: 2026-08-14T20:00:00.000Z
 Canonical: Yes (phase record)
 Owner: Architecture
 
-**Version:** 12.1.56
+**Version:** 12.1.57
 
 Phase 4 of `docs/audits/lld-audit-plan-2026-08-14.md`, written to the section
 template approved in `phase-1-viewpoints.md` §6. Phase 9 assembles these drafts

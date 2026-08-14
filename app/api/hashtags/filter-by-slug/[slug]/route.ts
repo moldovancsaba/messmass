@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { requirePageAccess } from '@/lib/pageAccess';
 import { findHashtagsByFilterSlug } from '@/lib/slugUtils';
 import { getAllHashtagRepresentations } from '@/lib/hashtagCategoryUtils';
 import clientPromise from '@/lib/mongodb';
@@ -23,6 +24,13 @@ async function connectToDatabase() {
 export async function GET(request: NextRequest, { params }: { params: Promise<{ slug: string }> }) {
   try {
     const { slug } = await params;
+
+    // WHAT: Enforce the filter page's password server-side.
+    // WHY: F-001 — this endpoint returned a whole filter's aggregated data to any
+    //     unauthenticated caller while the page above it showed a password prompt.
+    //     The guard is a no-op for filters that have no password set.
+    const denied = await requirePageAccess('filter', slug);
+    if (denied) return denied;
     const variantSlug = new URL(request.url).searchParams.get('variant');
 
     if (!slug) {

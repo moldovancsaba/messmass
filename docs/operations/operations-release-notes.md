@@ -1,8 +1,46 @@
 # {messmass} Release Notes
 Status: Active
-Last Updated: 2026-08-14T20:00:00.000Z
+Last Updated: 2026-08-14T21:30:00.000Z
 Canonical: No
 Owner: Operations
+
+## [v12.1.57] — 2026-08-14T21:30:00.000Z
+
+### Summary
+Security fixes for three Critical audit findings. F-009 was discovered while
+fixing the other two and is the most severe of the three.
+
+### F-009 — Unauthenticated mutating API routes (core fixed)
+`app/api/projects/route.ts` exported POST, PUT and DELETE with no authentication
+anywhere in 1,086 lines. Demonstrated: with a CSRF token any anonymous caller can
+fetch from /api/csrf-token, an unauthenticated DELETE reached the database lookup
+and returned 404 — against a real id it would have deleted the event. POST and
+DELETE now require an admin session; PUT requires an admin session or a
+page-password grant for that specific project, because the event editor saves live
+stats through it and authenticates by page password, not by session. A scan found
+40 mutating route files with no auth primitive; 35 remain and are tracked.
+
+### F-001 — Page-password protection was client-side only (fixed)
+Auth state lived in sessionStorage and no content route checked anything. New
+lib/pageAccess.ts issues a signed HttpOnly grant on a correct password, and
+requirePageAccess guards the data routes. Pages with no password configured stay
+public, so no public report changes behaviour. Verified both directions, plus
+per-page scoping, wrong-password rejection and signature tampering. Both guarded
+pages re-prompt on expiry instead of showing an error.
+
+### F-002 — Unsigned session tokens accepted (fixed)
+The JWT flag gated only generation, never validation, so an unsigned Base64 blob
+was accepted even with JWT sessions on. The legacy mint/validate/detect functions
+are deleted rather than deprecated. Verified safe before shipping: production has
+JWT_SECRET (66 chars) and ENABLE_JWT_SESSIONS=true, so live sessions are already
+signed and nobody is logged out.
+
+### Testing
+- Every fix verified by executing real HTTP requests, not by reading code.
+- Destructive tests used an id verified beforehand to match zero documents; the
+  POST probe was confirmed afterwards to have created nothing.
+- Full gate: type-check, lint, 336 tests, style:check, version:verify, docs:audit,
+  guardrails, build. Password prompt confirmed rendering in the browser.
 
 ## [v12.1.56] — 2026-08-14T20:00:00.000Z
 

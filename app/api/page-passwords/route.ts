@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from 'next/server';
 import { generateShareableLink, getOrCreatePagePassword, validateAnyPassword } from '@/lib/pagePassword';
 import { PageType } from '@/lib/pagePassword';
 import { getAdminUser } from '@/lib/auth';
+import { cookies } from 'next/headers';
+import { PAGE_ACCESS_COOKIE, mintPageAccessToken, pageAccessCookieOptions } from '@/lib/pageAccess';
 import { error as logError, info as logInfo, warn as logWarn } from '@/lib/logger';
 
 import config from '@/lib/config';
@@ -103,12 +105,22 @@ export async function PUT(request: NextRequest) {
     // Admin bypass: if request has a valid admin session, accept immediately
     const admin = await getAdminUser()
     if (admin) {
-      return NextResponse.json({
+      // The guard accepts an admin session directly, so this grant is not what
+      // authorises them — it keeps the client's stored state consistent with the
+      // password path so both routes behave identically downstream.
+      const adminCookies = await cookies();
+      const adminResponse = NextResponse.json({
         success: true,
         isValid: true,
         isAdmin: true,
         message: 'Admin session accepted'
       })
+      adminResponse.cookies.set(
+        PAGE_ACCESS_COOKIE,
+        mintPageAccessToken(adminCookies.get(PAGE_ACCESS_COOKIE)?.value, pageType, pageId),
+        pageAccessCookieOptions()
+      );
+      return adminResponse;
     }
 
     logInfo('Validating password for page', { context: 'page-passwords', pageType, pageIdPrefix: pageId.substring(0, 8) });
@@ -118,13 +130,24 @@ export async function PUT(request: NextRequest) {
 
     if (validation.isValid) {
       logInfo('Password validation successful', { context: 'page-passwords', pageType, isAdmin: validation.isAdmin, pageIdPrefix: pageId.substring(0, 8) });
-      
-      return NextResponse.json({
+
+      // WHAT: Issue a signed, HttpOnly grant for this page.
+      // WHY: Until now a correct password produced only a JSON `isValid: true`,
+      //     which the browser recorded in sessionStorage. The server kept no proof,
+      //     so the APIs behind the page could not tell an authorised visitor from
+      //     anyone else — and did not try (F-001). This cookie is that proof.
+      const cookieStore = await cookies();
+      const existing = cookieStore.get(PAGE_ACCESS_COOKIE)?.value;
+      const grantToken = mintPageAccessToken(existing, pageType, pageId);
+
+      const okResponse = NextResponse.json({
         success: true,
         isValid: true,
         isAdmin: validation.isAdmin,
         message: validation.isAdmin ? 'Admin password accepted' : 'Page password accepted'
       });
+      okResponse.cookies.set(PAGE_ACCESS_COOKIE, grantToken, pageAccessCookieOptions());
+      return okResponse;
     } else {
       logWarn('Password validation failed', { context: 'page-passwords', pageType, pageIdPrefix: pageId.substring(0, 8) });
       

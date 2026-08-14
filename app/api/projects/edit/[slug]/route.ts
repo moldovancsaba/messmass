@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { requirePageAccess } from '@/lib/pageAccess';
 import { findProjectByEditSlug } from '@/lib/slugUtils';
 import { error as logError, info as logInfo, debug as logDebug } from '@/lib/logger';
 
@@ -15,6 +16,13 @@ export async function GET(
         { status: 400 }
       );
     }
+
+    // WHAT: Enforce the edit page's password server-side (F-001).
+    // WHY: `edit` is the largest protected page type (304 passwords) and the only
+    //     one that fronts data entry, so an unauthenticated read here exposes an
+    //     event's full stats to anyone holding the URL.
+    const denied = await requirePageAccess('edit', slug);
+    if (denied) return denied;
 
     logDebug('Finding project by edit slug', { context: 'projects/edit/[slug]', slugPrefix: slug.substring(0, 8) });
     

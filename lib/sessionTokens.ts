@@ -1,10 +1,18 @@
 // lib/sessionTokens.ts
-// WHAT: Session token utilities with dual-format support (Base64 legacy + JWT)
-// WHY: Zero-downtime migration from unsigned Base64 tokens to cryptographically signed JWT
-// HOW: Supports both formats during transition, validates based on format
+// WHAT: Signed session token mint/validate. JWT (HS256) only.
+// WHY: This module previously accepted an unsigned Base64 "legacy" format, and
+//     accepted it *unconditionally* — the USE_JWT_SESSIONS flag gated only
+//     generation, never validation. A session cookie is a bearer credential, so an
+//     unsigned one is forgeable: audit F-002 verified that a hand-built Base64
+//     blob was accepted with an arbitrary userId, and that a session holder could
+//     extend their own expiry indefinitely by editing the cookie.
+// HOW: One format, always verified. The legacy mint/validate functions are gone
+//     rather than deprecated, so the format cannot be reintroduced by flipping a
+//     flag. Verified safe to remove before shipping: production has JWT_SECRET
+//     (66 chars) and ENABLE_JWT_SESSIONS=true, so live sessions are already
+//     signed and no user is logged out by this change.
 
 import jwt from 'jsonwebtoken';
-import { FEATURE_FLAGS } from './featureFlags';
 import { type UserRole, USER_ROLES } from './users';
 
 /**
@@ -95,88 +103,23 @@ export function validateJWTSessionToken(jwtToken: string): SessionTokenData | nu
 }
 
 /**
- * WHAT: Generate legacy Base64 session token
- * WHY: Backward compatibility during migration
- * HOW: Simple Base64 encoding (NOT secure - for migration only)
+ * WHAT: Validate a session token. Signature is always verified.
+ * WHY: The `format` parameter is retained only so existing callers keep compiling;
+ *     it is deliberately ignored. It used to be sourced from the `session-format`
+ *     cookie, which is not HttpOnly and therefore client-writable — letting the
+ *     caller of a security check choose which check runs is the bug, not a feature.
  */
-export function generateLegacySessionToken(tokenData: SessionTokenData): string {
-  return Buffer.from(JSON.stringify(tokenData)).toString('base64');
+export function validateSessionToken(token: string, _format?: 'jwt' | 'legacy'): SessionTokenData | null {
+  return validateJWTSessionToken(token);
 }
 
 /**
- * WHAT: Validate and decode legacy Base64 session token
- * WHY: Support existing sessions during migration
- * HOW: Decodes Base64 and validates expiration manually
- */
-export function validateLegacySessionToken(legacyToken: string): SessionTokenData | null {
-  try {
-    const json = Buffer.from(legacyToken, 'base64').toString();
-    const tokenData = JSON.parse(json) as SessionTokenData;
-    
-    // WHAT: Validate token structure
-    // WHY: Ensure all required fields are present
-    if (!tokenData.token || !tokenData.expiresAt || !tokenData.userId || !tokenData.role) {
-      return null;
-    }
-    
-    // WHAT: Validate expiration manually (legacy tokens don't auto-expire)
-    // WHY: Prevent use of expired tokens
-    const expiresAt = new Date(tokenData.expiresAt);
-    const now = new Date();
-    if (now > expiresAt) {
-      return null; // Expired
-    }
-    
-    return tokenData;
-  } catch (error) {
-    // WHAT: Decoding failed (invalid Base64, malformed JSON)
-    // WHY: Return null to indicate invalid token
-    return null;
-  }
-}
-
-/**
- * WHAT: Detect token format (JWT or legacy Base64)
- * WHY: Route to appropriate validation function
- * HOW: JWT tokens contain dots (header.payload.signature), Base64 doesn't
- */
-export function detectTokenFormat(token: string): 'jwt' | 'legacy' {
-  // WHAT: JWT tokens have 3 parts separated by dots
-  // WHY: Simple heuristic to distinguish formats
-  const parts = token.split('.');
-  if (parts.length === 3) {
-    return 'jwt';
-  }
-  return 'legacy';
-}
-
-/**
- * WHAT: Validate session token (supports both formats)
- * WHY: Unified validation interface for dual-token migration
- * HOW: Auto-detects format and routes to appropriate validator
- */
-export function validateSessionToken(token: string, format?: 'jwt' | 'legacy'): SessionTokenData | null {
-  // WHAT: Use provided format or auto-detect
-  // WHY: Support explicit format hint or automatic detection
-  const detectedFormat = format || detectTokenFormat(token);
-  
-  if (detectedFormat === 'jwt') {
-    return validateJWTSessionToken(token);
-  } else {
-    return validateLegacySessionToken(token);
-  }
-}
-
-/**
- * WHAT: Generate session token (supports both formats via feature flag)
- * WHY: Zero-downtime migration - generate format based on feature flag
- * HOW: Uses feature flag to determine which format to generate
+ * WHAT: Generate a session token.
+ * WHY: No format branch. If generation could fall back to an unsigned format while
+ *     validation requires a signature, flipping a flag would lock every user out —
+ *     so the two must not be independently switchable.
  */
 export function generateSessionToken(tokenData: SessionTokenData): string {
-  if (FEATURE_FLAGS.USE_JWT_SESSIONS) {
-    return generateJWTSessionToken(tokenData);
-  } else {
-    return generateLegacySessionToken(tokenData);
-  }
+  return generateJWTSessionToken(tokenData);
 }
 
