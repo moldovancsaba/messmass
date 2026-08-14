@@ -1,8 +1,24 @@
 # {messmass} Release Notes
 Status: Active
-Last Updated: 2026-08-14T00:00:00.000Z
+Last Updated: 2026-08-14T00:30:00.000Z
 Canonical: No
 Owner: Operations
+
+## [v12.1.44] — 2026-08-14T00:30:00.000Z
+
+### Summary
+Return the Drive-folder progress counters from bulk discovery so a consumer can
+render "analysing, 154 of 386" without a round trip per folder. The counters were
+stored by v12.1.43 but not projected, so they read as absent.
+
+### What Was Delivered
+- `ActiveDriveFolderEventGroup.folders[]` now carries `imagesDiscovered` and
+  `imagesAnalyzed` alongside `status`.
+
+### Testing
+- `npm run type-check`, `npm run lint`, `npm test` (309), `style:check` green.
+- Verified live: both folders on the UEFA Super Cup Fan Festival event report
+  `complete` with real counts after a fanmass sync.
 
 ## [v12.1.43] — 2026-08-14T00:00:00.000Z
 

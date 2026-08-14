@@ -204,7 +204,14 @@ export interface ActiveDriveFolderEventGroup {
   eventName: string;
   partnerIds: string[];
   partnerNames: string[];
-  folders: Array<{ folderId: string; folderUrl: string; label?: string; status: DriveFolderStatus }>;
+  folders: Array<{
+    folderId: string;
+    folderUrl: string;
+    label?: string;
+    status: DriveFolderStatus;
+    imagesDiscovered?: number;
+    imagesAnalyzed?: number;
+  }>;
 }
 
 /**
@@ -276,6 +283,10 @@ export async function listActiveDriveFoldersGroupedByEvent(): Promise<ActiveDriv
         folderUrl: link.folderUrl,
         label: link.label ?? undefined,
         status: link.status || 'pending',
+        // Progress travels with the status so a consumer can render "analysing,
+        // 154 of 386" without a second round trip per folder.
+        imagesDiscovered: link.imagesDiscovered,
+        imagesAnalyzed: link.imagesAnalyzed,
       })),
     });
   }
