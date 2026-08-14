@@ -1,8 +1,48 @@
 # {messmass} Release Notes
 Status: Active
-Last Updated: 2026-08-14T18:30:00.000Z
+Last Updated: 2026-08-14T20:00:00.000Z
 Canonical: No
 Owner: Operations
+
+## [v12.1.56] — 2026-08-14T20:00:00.000Z
+
+### Summary
+LLD audit Phase 4 (auth and trust boundaries), partial. Documentation and findings
+only — no product code changed, per audit rule R6.
+
+### Two Critical Findings, Both Verified By Execution
+- **F-001 — page-password protection is client-side only.** Auth state lives in
+  sessionStorage; no content-serving route validates a page password. Demonstrated:
+  an unauthenticated GET of a password-protected filter's data API returned HTTP
+  200 with 186 projects and 108 aggregated stat keys. 699 page passwords are
+  configured across six page types; the largest (`edit`, 304) gates mutation and
+  is not yet tested.
+- **F-002 — unsigned legacy session tokens are accepted unconditionally.** The
+  JWT feature flag gates only token generation, never validation, so a Base64 JSON
+  blob with no signature is accepted even when JWT sessions are on. Verified: a
+  forged token is accepted, and a session's expiry can be extended by its own
+  holder by editing the cookie. Impersonation additionally requires knowing a
+  target's ObjectId.
+
+### Further Findings
+F-003 the middleware admin gate checks cookie presence but never validity;
+F-004 v3 organisation scoping is inert (identical ternary branches, an impossible
+predicate, and `organizationIds` ignored) — latent only because v3 data is
+currently single-tenant, while 10 organizations exist; F-005 an identical-branch
+ternary hands every user `delete` and `manage-users`; F-006 two routes read cookie
+names nothing sets, leaving `GET /api/images` returning 401 to everyone;
+F-007 202 orphaned page passwords for a deleted route; F-008 dead lockout module.
+
+F-008 is explicitly recorded as *not* a vulnerability: local login is 410 Gone, so
+brute-force protection is the identity provider's concern.
+
+### Testing
+- Forgery, expiry-extension and JWT-tamper-rejection verified against the pure
+  token functions; no production writes.
+- Unauthenticated HTTP requests executed against live data routes.
+- Production reads were read-only.
+- Full gate: type-check, lint, 336 tests, style:check, version:verify, docs:audit,
+  guardrails, build.
 
 ## [v12.1.55] — 2026-08-14T18:30:00.000Z
 

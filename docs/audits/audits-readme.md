@@ -15,6 +15,8 @@ Rules:
 - `docs/archive/_archive/audits/comprehensive-system-audit-plan-2026.md` - What was audited, why, and the log of work.
 - `docs/audits/audits-audit-execution-playbook-2026.md` - How to run an audit (process + templates).
 - `docs/audits/lld/phase-0-evidence.md` - Phase 0 record: coverage ledger, graphs, scratch-DB harness, reconciliation.
+- `docs/audits/lld/findings.md` - LLD audit findings register (severity-ranked, evidence-backed).
+- `docs/audits/lld/phase-4-auth.md` - Phase 4 record: auth and trust boundaries (partial).
 - `docs/audits/lld/phase-1-viewpoints.md` - Phase 1 record: stakeholders, concerns, and the LLD section template (awaiting approval).
 - `docs/audits/lld-audit-plan-2026-08-14.md` - Deep architectural + code audit plan behind rebuilding `docs/low-level-design.md` as a canonical LLD (IEEE 1016 / ISO 42010 / C4 / arc42 anchored).
 - `docs/audits/audit-developer-conduct-and-build-2026-02-21.md` - Developer Conduct codification, build/lint/deps audit (2026-02-21).
