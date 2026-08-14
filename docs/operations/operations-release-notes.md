@@ -1,8 +1,54 @@
 # {messmass} Release Notes
 Status: Active
-Last Updated: 2026-08-14T22:30:00.000Z
+Last Updated: 2026-08-14T23:30:00.000Z
 Canonical: No
 Owner: Operations
+
+## [v12.1.59] — 2026-08-14T23:30:00.000Z
+
+### Summary
+Page passwords are now generated, stored and enforced properly, and all 699
+existing passwords have been rotated. Previously shared page links are dead — an
+accepted, instructed consequence.
+
+### F-010 — The feature was handing out its own key
+POST /api/page-passwords required no authentication and returned a working
+32-character password to any anonymous caller who supplied a pageId — and the
+pageId is in the page's own URL. Every configured password was therefore
+obtainable by anyone able to open the page. Passwords were additionally stored in
+plaintext and compared with ===, not a constant-time comparison.
+
+Generation was never the weakness: randomBytes(16) is 128 bits of CSPRNG entropy.
+The system simply gave the value away and kept it in the clear.
+
+### What Changed
+- POST /api/page-passwords requires an admin session.
+- Passwords are stored as bcrypt hashes at cost 12, matching lib/users.ts, and the
+  plaintext is revealed exactly once at generation and never persisted.
+- Validation uses bcrypt.compare; a document carrying only a plaintext password
+  validates as false, so disclosed values are void rather than migrated.
+- All 699 documents rotated: 699/699 now carry a cost-12 hash, 0 carry plaintext,
+  verified against the database after the run. The new plaintexts were never
+  logged, returned or stored, so share links must be re-issued from the admin UI.
+
+### Enforcement Completed For Two More Page Types
+event-report (99 passwords) is enforced at GET /api/projects/stats/[slug].
+partner-report (63) is enforced in its server component, before any partner data
+is fetched — on the unauthorised path the data never leaves the server.
+components/ServerPageGate.tsx provides the prompt, since a server component cannot
+hand a callback to a client component. organization-report (1) remains unguarded.
+
+### Testing
+- Hashing verified in an isolated scratch database: correct password true, wrong
+  password false, plaintext-only record false, no plaintext persisted.
+- Anonymous POST /api/page-passwords now returns 401; a protected event report
+  returns 401 while an unprotected one still returns 200 with its data.
+- tests/page-password-partner-alias.test.ts updated: it had been asserting the
+  insecure behaviour. It then caught a real bug in this change — the legacy
+  identifier migration copied the retired plaintext field, which would have
+  migrated records while dropping their credential.
+- Full gate: type-check, lint, 339 tests, style:check, version:verify, docs:audit,
+  guardrails, build.
 
 ## [v12.1.58] — 2026-08-14T22:30:00.000Z
 

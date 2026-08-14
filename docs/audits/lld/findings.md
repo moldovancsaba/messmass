@@ -1,11 +1,11 @@
 # LLD Audit — Findings Register
 
 Status: Active
-Last Updated: 2026-08-14T22:30:00.000Z
+Last Updated: 2026-08-14T23:30:00.000Z
 Canonical: Yes (findings register)
 Owner: Architecture
 
-**Version:** 12.1.58
+**Version:** 12.1.59
 
 Findings from the LLD deep audit (`docs/audits/lld-audit-plan-2026-08-14.md`).
 Per rule R5 findings are recorded here and **not fixed on the audit branch**; per
@@ -21,6 +21,7 @@ claim is structural rather than demonstrated, it says so.
 
 | ID | Severity | Status | Title | Phase |
 |---|---|---|---|---|
+| [F-010](#f-010) | **Critical** | **Fixed + rotated** | Page passwords were served to anonymous callers and stored in plaintext | 4 |
 | [F-009](#f-009) | **Critical** | **Partly fixed — 33 routes open, frozen by test** | Mutating API routes have no authentication | 4 |
 | [F-001](#f-001) | **Critical** | **Fixed** | Page-password protection is client-side only; data APIs are unauthenticated | 4 |
 | [F-002](#f-002) | **Critical** | **Fixed** | Unsigned legacy session tokens are accepted, always | 4 |
@@ -35,6 +36,68 @@ claim is structural rather than demonstrated, it says so.
 fixed on the audit branch. F-001, F-002 and F-009 were fixed immediately on the
 user's explicit instruction, because all three were live and two were demonstrated
 against production data. The remaining findings follow R6 as written.
+
+---
+
+## F-010
+
+### Page passwords were served to anonymous callers and stored in plaintext
+
+**Severity: Critical — demonstrated. Fixed, and all 699 passwords rotated.**
+
+Found while investigating whether the page-password feature could be trusted going
+forward. It could not: the feature handed out its own key.
+
+**`POST /api/page-passwords` required no authentication and returned a working
+password.** Demonstrated with no session and no credentials of any kind:
+
+```
+POST /api/page-passwords {"pageId":"<filter slug>","pageType":"filter"}
+  → HTTP 200 · keys: success, shareableLink, pagePassword
+  → PASSWORD RETURNED TO ANONYMOUS CALLER: YES — length 32
+```
+
+The `pageId` is in the page's own URL, so **every one of the 699 configured
+passwords was obtainable by anyone who could open the page**. Guarding the data
+routes (F-001) would have been pointless while this stood.
+
+**Compounding defects:**
+
+- **Stored in plaintext.** `page_passwords` documents carried a `password` field
+  in the clear; any database read, backup, or log exposed working credentials.
+- **Compared with `===`** (`lib/pagePassword.ts`), not a constant-time comparison.
+
+**Not a defect:** generation was already sound — `randomBytes(16)` is 128 bits of
+CSPRNG entropy. The weakness was never the password's strength; it was that the
+system gave it away and kept it in the clear.
+
+**Fix.**
+
+1. `POST /api/page-passwords` now requires an admin session.
+2. Passwords are stored as **bcrypt hashes at cost 12**, matching `lib/users.ts`.
+   The plaintext is returned exactly once, at generation, and is never persisted.
+3. Validation uses `bcrypt.compare`. A document carrying only a plaintext
+   `password` field validates as **false** — pre-existing values are treated as
+   void rather than migrated, because they were all disclosed.
+4. The legacy-identifier migration path carries the *hash* across. A test caught
+   this: the first version copied the retired `password` field, which would have
+   migrated records while silently dropping their credential.
+
+**Rotation executed** (`scripts/rotate-page-passwords.ts --commit`), on the
+explicit instruction that existing access could be sacrificed:
+
+```
+rotated                  : 699
+documents with a hash    : 699/699
+plaintext fields left    : 0
+```
+
+Verified independently against the database afterwards: zero documents carry a
+plaintext field, and all 699 carry a cost-12 bcrypt hash. The new plaintexts were
+never logged, returned, or stored — they are unrecoverable by design, so every
+share link must be re-issued from the admin UI.
+
+**Consequence, accepted in advance:** every previously shared page link is dead.
 
 ---
 
@@ -200,9 +263,19 @@ intended and never implemented. The passwords are not auto-generated for
 everything — 99 of 370 projects and 63 of 202 partners — so someone created them
 deliberately, which argues for the second reading.
 
-**Enforcing them would immediately break every already-shared report link** for
-those 163 entities. That is a product decision, not an audit finding, so it is
-escalated rather than actioned.
+**Resolved (v12.1.59).** The decision was to enforce, accepting the loss of
+existing access. `event-report` is now guarded at `GET /api/projects/stats/[slug]`,
+and `partner-report` is guarded in its server component — the check runs before any
+partner data is fetched, so on the unauthorised path the data never leaves the
+server at all. Because that page is a server component and cannot pass a callback
+to a client component, `components/ServerPageGate.tsx` renders the prompt and
+refreshes on success; the first attempt passed `undefined as never` as the success
+handler, which type-checked and would have crashed the moment anyone entered a
+correct password.
+
+Verified: a protected event report returns 401 unauthenticated, an unprotected one
+still returns 200 with its data. `organization-report` (1 password) is not yet
+guarded — its client data path was not traced.
 
 ---
 

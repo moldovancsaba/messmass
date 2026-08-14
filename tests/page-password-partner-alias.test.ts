@@ -1,3 +1,11 @@
+
+// Hashes generated once at load, so the fixtures exercise the real bcrypt path
+// rather than asserting against a hard-coded digest that would silently rot if
+// the cost factor changed.
+const bcryptLib = require('bcryptjs');
+const SECRET_HASH: string = bcryptLib.hashSync('secret', 12);
+const EXISTING_SECRET_HASH: string = bcryptLib.hashSync('existing-secret', 12);
+
 describe('partner page password validation', () => {
   afterEach(() => {
     jest.resetModules();
@@ -16,7 +24,11 @@ describe('partner page password validation', () => {
         return {
           pageId: canonicalPageId,
           pageType: 'partner-report',
-          password: 'secret',
+          // Hashed, because a plaintext `password` field is no longer a valid
+          // credential: every pre-existing page password was retrievable by
+          // anonymous callers, so those values are void and must be rotated.
+          // bcrypt hash of 'secret', cost 12.
+          passwordHash: SECRET_HASH,
           usageCount: 2,
         };
       }
@@ -105,7 +117,7 @@ describe('partner page password validation', () => {
       _id: { toString: () => 'legacy-password' },
       pageId: legacyPageId,
       pageType: 'partner-report',
-      password: 'existing-secret',
+      passwordHash: EXISTING_SECRET_HASH,
       createdAt,
       usageCount: 4,
       lastUsedAt: '2026-06-30T01:00:00.000Z',
@@ -185,16 +197,32 @@ describe('partner page password validation', () => {
     const shareableLink = await generateShareableLink(legacyPageId, 'partner-report', 'https://www.messmass.com');
 
     expect(passwordRecord.pageId).toBe(canonicalPageId);
-    expect(passwordRecord.password).toBe('existing-secret');
+    // WHAT: An existing record yields no plaintext.
+    // WHY: Passwords are stored only as a bcrypt hash and revealed exactly once,
+    //     at generation. Being unable to re-read one is the security property, not
+    //     a gap — an endpoint that could return it is precisely the flaw that made
+    //     every configured password retrievable by anonymous callers.
+    expect(passwordRecord.password).toBe('');
     expect(shareableLink.url).toBe(`https://www.messmass.com/partner-report/${canonicalPageId}`);
-    expect(shareableLink.password).toBe('existing-secret');
+    expect(shareableLink.password).toBe('');
+    // The invariant this test actually guards: migrating a legacy identifier to
+    // the canonical one carries the existing credential across rather than
+    // silently regenerating it and invalidating live share links. Asserted on the
+    // hash, since that is now the stored credential.
+    expect(mockUpdateOne).toHaveBeenCalledWith(
+      { pageId: canonicalPageId, pageType: 'partner-report' },
+      expect.objectContaining({
+        $setOnInsert: expect.objectContaining({ passwordHash: EXISTING_SECRET_HASH }),
+      }),
+      { upsert: true }
+    );
     expect(mockUpdateOne).toHaveBeenCalledWith(
       { pageId: canonicalPageId, pageType: 'partner-report' },
       {
         $setOnInsert: {
           pageId: canonicalPageId,
           pageType: 'partner-report',
-          password: 'existing-secret',
+          passwordHash: EXISTING_SECRET_HASH,
           createdAt,
           expiresAt: undefined,
           usageCount: 4,

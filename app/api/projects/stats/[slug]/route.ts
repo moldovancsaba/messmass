@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { requirePageAccess } from '@/lib/pageAccess';
 import { findProjectByViewSlug } from '@/lib/slugUtils';
 import { getAllHashtagRepresentations } from '@/lib/hashtagCategoryUtils';
 
@@ -9,6 +10,13 @@ export async function GET(
 ) {
   try {
     const { slug } = await context.params;
+
+    // WHAT: Enforce the event report's page password server-side.
+    // WHY: F-001 — this route backs /report/[slug], which has 99 configured
+    //     passwords and enforced none of them anywhere. No-op when the report
+    //     has no password set, so public reports are unaffected.
+    const denied = await requirePageAccess('event-report', slug);
+    if (denied) return denied;
 
     if (!slug) {
       return NextResponse.json(

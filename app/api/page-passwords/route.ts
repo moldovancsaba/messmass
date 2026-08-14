@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { requireSession } from '@/lib/apiGuards';
 import { generateShareableLink, getOrCreatePagePassword, validateAnyPassword } from '@/lib/pagePassword';
 import { PageType } from '@/lib/pagePassword';
 import { getAdminUser } from '@/lib/auth';
@@ -17,6 +18,16 @@ export const runtime = 'nodejs';
 
 // POST /api/page-passwords - Generate or retrieve page password and create shareable link
 export async function POST(request: NextRequest) {
+  // WHAT: Minting or revealing a page password requires an admin session.
+  // WHY: This handler returned a working 32-character password to any anonymous
+  //     caller who knew the pageId — and the pageId is in the page's own URL. The
+  //     page-password feature was therefore handing out its own key: every one of
+  //     the 699 configured passwords was obtainable by anyone. This guard is the
+  //     fix for that; the hashing in lib/pagePassword.ts limits the blast radius
+  //     if it is ever bypassed again.
+  const denied = await requireSession();
+  if (denied) return denied;
+
   let pageType: string = 'unknown';
   try {
     const body = await request.json();

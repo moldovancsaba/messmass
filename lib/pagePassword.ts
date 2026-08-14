@@ -1,5 +1,6 @@
 // lib/pagePassword.ts - Page-specific password generation and management
 
+import bcrypt from 'bcryptjs';
 import { randomBytes } from 'crypto';
 import clientPromise from '@/lib/mongodb';
 import config from '@/lib/config';
@@ -81,6 +82,34 @@ async function resolveCanonicalPageId(db: any, pageId: string, pageType: PageTyp
  * 
  * @returns 32-character hexadecimal string (like MD5 hash)
  */
+// WHAT: Cost factor for page-password hashing.
+// WHY: Matches lib/users.ts so the codebase has one answer. 12 is the OWASP
+//     floor; page passwords are 128-bit random tokens rather than human-chosen
+//     secrets, so the hash defends against database disclosure, not guessing.
+const PAGE_PASSWORD_SALT_ROUNDS = 12;
+
+export async function hashPagePassword(plain: string): Promise<string> {
+  return bcrypt.hash(plain, PAGE_PASSWORD_SALT_ROUNDS);
+}
+
+// WHAT: Compare a supplied password against the stored hash.
+// WHY: bcrypt.compare is constant-time for a given hash, unlike the `===` this
+//     replaces. A plaintext `password` field is treated as no credential at all:
+//     every pre-existing password was retrievable by anonymous callers through
+//     POST /api/page-passwords, so those values are burned and must be rotated
+//     rather than migrated. Returning false here is what forces that.
+export async function verifyPagePassword(
+  doc: { passwordHash?: string | null },
+  supplied: string
+): Promise<boolean> {
+  if (!doc?.passwordHash) return false;
+  try {
+    return await bcrypt.compare(supplied, doc.passwordHash);
+  } catch {
+    return false;
+  }
+}
+
 export function generateMD5StylePassword(): string {
   // WHAT: Produce a 32-character lowercase hex string that "looks like" an MD5 hash.
   // WHY: Consumers expect an MD5-style token for page/admin one-time passwords.
@@ -120,7 +149,10 @@ const db = client.db(config.dbName);
             $setOnInsert: {
               pageId: canonicalPageId,
               pageType,
-              password: legacyPassword.password,
+              // Carry the hash, not the retired plaintext field. Copying
+              // `password` here would migrate the record while dropping its
+              // credential, silently invalidating a live share link.
+              passwordHash: legacyPassword.passwordHash,
               createdAt: legacyPassword.createdAt,
               expiresAt: legacyPassword.expiresAt,
               usageCount: legacyPassword.usageCount || 0,
@@ -135,27 +167,38 @@ const db = client.db(config.dbName);
     }
 
     if (existingPassword && !regenerate) {
-      return mapPagePasswordDocument(existingPassword);
+      // The stored value is a hash, so there is no password to return. Callers
+      // that need one for a share link must regenerate, which is a deliberate
+      // trade: an irrecoverable password is the point.
+      return { ...mapPagePasswordDocument(existingPassword), password: '' };
     }
 
-    // Generate new password
-    const newPassword: Omit<PagePassword, '_id'> = {
-      pageId: canonicalPageId,
-      pageType,
-      password: generateMD5StylePassword(),
-      createdAt: new Date().toISOString(),
-      usageCount: 0
-    };
+    // WHAT: Generate, store only the hash, and hand the plaintext back once.
+    // WHY: The plaintext is never persisted and cannot be re-read afterwards, so
+    //     a later disclosure of the database — or of any endpoint that reads it —
+    //     cannot reveal a working password. This is the property that was missing:
+    //     passwords were stored in the clear and served to anonymous callers.
+    const plaintext = generateMD5StylePassword();
+    const passwordHash = await hashPagePassword(plaintext);
 
-    // Update or insert password
     await collection.updateOne(
       { pageId: canonicalPageId, pageType },
-      { $set: newPassword },
+      {
+        $set: {
+          pageId: canonicalPageId,
+          pageType,
+          passwordHash,
+          createdAt: new Date().toISOString(),
+          usageCount: 0,
+        },
+        // Remove any pre-hash plaintext left on the document.
+        $unset: { password: '' },
+      },
       { upsert: true }
     );
 
     const savedPassword = await collection.findOne({ pageId: canonicalPageId, pageType });
-    return mapPagePasswordDocument(savedPassword!);
+    return { ...mapPagePasswordDocument(savedPassword!), password: plaintext };
 
   } catch (error) {
     console.error('Failed to generate page password:', error);
@@ -194,8 +237,8 @@ const db = client.db(config.dbName);
       return false;
     }
 
-    // Check if password matches
-    const isValid = pagePassword.password === providedPassword;
+    // Check if password matches (constant-time, hash-based)
+    const isValid = await verifyPagePassword(pagePassword as { passwordHash?: string }, providedPassword);
 
     if (isValid) {
       // Update usage statistics
