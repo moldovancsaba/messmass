@@ -1,8 +1,32 @@
 # {messmass} Release Notes
 Status: Active
-Last Updated: 2026-08-14T03:00:00.000Z
+Last Updated: 2026-08-14T11:00:00.000Z
 Canonical: No
 Owner: Operations
+
+## [v12.1.49] — 2026-08-14T11:00:00.000Z
+
+### Summary
+Fixed the AI Analytics item never appearing in the sidebar. The page shipped in
+v12.1.47 and worked, but nothing linked to it.
+
+### Root Cause
+`canAccessMenuItem` returns false for any label absent from `MENU_PERMISSIONS`,
+so a nav item added without a permission entry is hidden from every role. The
+entry was added to `adminNavigation.ts` but never registered in `permissions.ts`.
+The page was reachable by URL the whole time, which is why it was not obvious.
+
+### What Was Delivered
+- `AI Analytics` registered for `user`, `admin` and `superadmin` — open to every
+  role, unlike the admin-only analytics dashboards, because report authors are the
+  audience.
+- `tests/nav-menu-permissions.test.ts` asserts every nav item in every section is
+  registered and reachable by at least one role, so this class of silent
+  disappearance cannot recur. The suite confirms no other item is currently hidden.
+
+### Testing
+- 4 new tests; full gate green: type-check, lint, 331 tests (35 suites),
+  style:check, docs:audit, guardrails, build.
 
 ## [v12.1.48] — 2026-08-14T03:00:00.000Z
 

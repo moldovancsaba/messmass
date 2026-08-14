@@ -51,6 +51,13 @@ export const MENU_PERMISSIONS: Record<string, UserRole[]> = {
   'Categories': ['superadmin'],
 
   // WHAT: Analytics
+  // NOTE: 'AI Analytics' is open to every role, unlike the dashboards below. Its
+  //     audience is report authors deciding which AI variables are populated widely
+  //     enough to build into a report, and that is not an admin-only job.
+  //     A label missing from this map is hidden from EVERYONE (canAccessMenuItem
+  //     returns false for an unknown label), so any new nav item must be registered
+  //     here or it silently never appears in the sidebar.
+  'AI Analytics': ['user', 'admin', 'superadmin'],
   'Analytics Home': ['admin', 'superadmin'],
   'Sponsorship Hub': ['admin', 'superadmin'],
   'Executive Dashboard': ['admin', 'superadmin'],
