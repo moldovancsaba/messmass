@@ -1,11 +1,11 @@
 # Low-Level Design — Deep Audit Plan
 
 Status: Active
-Last Updated: 2026-08-14T17:00:00.000Z
+Last Updated: 2026-08-14T18:30:00.000Z
 Canonical: Yes (audit plan)
 Owner: Architecture
 
-**Version:** 12.1.54
+**Version:** 12.1.55
 
 ---
 
@@ -44,7 +44,7 @@ rebuilt from an audit, which is what this plan describes.
 | **API routes** (`route.ts`) | **182** | — |
 | **Pages** (`page.tsx`) | **69** | — |
 | CSS modules | 110 | — |
-| Distinct Mongo collection names referenced | **68** | — |
+| Distinct Mongo collection names referenced | **69** | — |
 
 An LLD covering 5 flows against a 128,700-line application (excluding scripts) is
 documenting roughly the surface area of one feature.
@@ -180,7 +180,7 @@ template hierarchy resolution, layout grammar, and the public report shell.
 
 ### Phase 3 — Data layer and the collection surface
 
-All 68 collection names: owner, schema-in-practice (sampled, not assumed),
+All 69 collection names: owner, schema-in-practice (sampled, not assumed),
 indexes, write paths, and lifecycle. This phase resolves the drift already
 surfaced in §8.
 
@@ -278,6 +278,13 @@ updated. Anything less leaves the unit `pending`.
 | Board issues | GitHub Project 8 | Remediation, GDS #81 standard, never fixed inline (R6) |
 
 ---
+
+> **Correction (Phase 0, 2026-08-14):** this plan was drafted with grep and stated
+> 68 collection names. The verified figure is **69**. grep missed 70 references of
+> the form `db.collection<T>('name')` and invented a `categories` collection that
+> exists only inside a documentation string. See
+> `docs/audits/lld/phase-0-evidence.md` §2. Figures above are corrected; the
+> episode is itself the argument for rule R1.
 
 ## 8. Signals already surfaced while scoping this plan
 

@@ -1,0 +1,1115 @@
+id,kind,file,lines,last_commit,churn_12mo,domain,disposition,phase,evidence,notes
+app/admin/analytics/ai/AiAnalyticsView.tsx,app-module,app/admin/analytics/ai/AiAnalyticsView.tsx,370,2026-08-14T20:40:28+02:00,3,analytics,pending,,,
+app/admin/analytics/ai/[eventId]/AiEventReportView.tsx,app-module,app/admin/analytics/ai/[eventId]/AiEventReportView.tsx,284,2026-08-14T20:33:08+02:00,2,analytics,pending,,,
+app/admin/analytics/ai/[eventId]/page.tsx,page,app/admin/analytics/ai/[eventId]/page.tsx,12,2026-08-14T20:21:54+02:00,1,analytics,pending,,,
+app/admin/analytics/ai/page.tsx,page,app/admin/analytics/ai/page.tsx,13,2026-08-14T11:56:42+02:00,1,analytics,pending,,,
+app/admin/analytics/executive/ExecutiveDashboardView.tsx,app-module,app/admin/analytics/executive/ExecutiveDashboardView.tsx,269,2026-05-23T00:59:27+02:00,4,analytics,pending,,,
+app/admin/analytics/executive/page.tsx,page,app/admin/analytics/executive/page.tsx,19,2026-02-21T10:12:28+01:00,5,analytics,pending,,,
+app/admin/analytics/insights/page.tsx,page,app/admin/analytics/insights/page.tsx,264,2026-05-23T00:59:27+02:00,6,analytics,pending,,,
+app/admin/analytics/marketing/page.tsx,page,app/admin/analytics/marketing/page.tsx,18,2026-02-21T10:12:28+01:00,1,analytics,pending,,,
+app/admin/analytics/operations/page.tsx,page,app/admin/analytics/operations/page.tsx,18,2026-02-21T10:12:28+01:00,1,analytics,pending,,,
+app/admin/analytics/page.tsx,page,app/admin/analytics/page.tsx,93,2026-05-23T00:59:27+02:00,4,analytics,pending,,,
+app/admin/analytics/sponsorship/activation/page.tsx,page,app/admin/analytics/sponsorship/activation/page.tsx,815,2026-05-23T00:59:27+02:00,11,analytics,pending,,,
+app/admin/analytics/sponsorship/activation/recap/[partnerId]/page.tsx,page,app/admin/analytics/sponsorship/activation/recap/[partnerId]/page.tsx,599,2026-05-21T12:58:34+02:00,7,analytics,pending,,,
+app/admin/analytics/sponsorship/page.tsx,page,app/admin/analytics/sponsorship/page.tsx,868,2026-05-23T00:59:27+02:00,5,analytics,pending,,,
+app/admin/api-football-enrich/page.tsx,page,app/admin/api-football-enrich/page.tsx,140,2025-11-16T12:32:05+01:00,1,admin,pending,,,
+app/admin/bitly/page.tsx,page,app/admin/bitly/page.tsx,1229,2026-07-09T11:49:03+02:00,32,admin,pending,,,
+app/admin/cache/page.tsx,page,app/admin/cache/page.tsx,296,2026-03-16T17:10:01+01:00,10,admin,pending,,,
+app/admin/categories/page.tsx,page,app/admin/categories/page.tsx,525,2025-12-25T22:22:55+01:00,28,admin,pending,,,
+app/admin/charts/page.tsx,page,app/admin/charts/page.tsx,84,2026-05-22T09:52:34+02:00,18,admin,pending,,,
+app/admin/clear-session/page.tsx,page,app/admin/clear-session/page.tsx,89,2026-05-02T11:02:49+02:00,6,admin,pending,,,
+app/admin/clicker-manager/page.tsx,page,app/admin/clicker-manager/page.tsx,989,2026-05-12T23:45:04+02:00,25,admin,pending,,,
+app/admin/content-library/page.tsx,page,app/admin/content-library/page.tsx,1027,2026-05-12T23:28:27+02:00,10,admin,pending,,,
+app/admin/cookie-test/page.tsx,page,app/admin/cookie-test/page.tsx,67,2025-10-10T12:53:33+02:00,4,admin,pending,,,
+app/admin/dashboard/page.tsx,page,app/admin/dashboard/page.tsx,5,2026-05-11T19:56:32+02:00,12,admin,pending,,,
+app/admin/design/page.tsx,page,app/admin/design/page.tsx,98,2026-03-16T17:10:01+01:00,44,admin,pending,,,
+app/admin/events/ProjectsPageClient.tsx,app-module,app/admin/events/ProjectsPageClient.tsx,1108,2026-08-08T16:57:06Z,11,unreached,pending,,,
+app/admin/events/[id]/kyc-data/page.tsx,page,app/admin/events/[id]/kyc-data/page.tsx,282,2025-12-21T01:24:48+01:00,6,admin,pending,,,
+app/admin/events/page.tsx,page,app/admin/events/page.tsx,1318,2026-08-13T11:17:20Z,28,admin,pending,,,
+app/admin/filter/page.tsx,page,app/admin/filter/page.tsx,804,2026-03-07T12:49:13+01:00,32,admin,pending,,,
+app/admin/hashtags/page.tsx,page,app/admin/hashtags/page.tsx,109,2026-05-22T09:52:34+02:00,15,admin,pending,,,
+app/admin/help/guides/[slug]/page.tsx,page,app/admin/help/guides/[slug]/page.tsx,36,2026-08-13T23:26:45+02:00,1,admin,pending,,,
+app/admin/help/guides/page.tsx,page,app/admin/help/guides/page.tsx,29,2026-08-13T23:26:45+02:00,1,admin,pending,,,
+app/admin/help/page.tsx,page,app/admin/help/page.tsx,379,2026-08-13T23:26:45+02:00,22,admin,pending,,,
+app/admin/insights/page.tsx,page,app/admin/insights/page.tsx,5,2026-05-11T19:56:32+02:00,5,admin,pending,,,
+app/admin/kyc/page.tsx,page,app/admin/kyc/page.tsx,579,2026-05-12T23:45:04+02:00,17,admin,pending,,,
+app/admin/layout.tsx,app-module,app/admin/layout.tsx,83,2025-12-15T13:40:11+01:00,10,unreached,pending,,,
+app/admin/login/GdsLoginShell.tsx,app-module,app/admin/login/GdsLoginShell.tsx,32,2026-08-01T03:36:02Z,1,admin,pending,,,
+app/admin/login/page.tsx,page,app/admin/login/page.tsx,106,2026-08-01T09:00:03Z,26,admin,pending,,,
+app/admin/mainpage/page.tsx,page,app/admin/mainpage/page.tsx,179,2026-05-11T16:12:45+02:00,5,admin,pending,,,
+app/admin/messages/page.tsx,page,app/admin/messages/page.tsx,101,2026-03-06T11:03:00+01:00,2,admin,pending,,,
+app/admin/organizations/[id]/reports/page.tsx,page,app/admin/organizations/[id]/reports/page.tsx,345,2026-06-25T11:22:10+02:00,4,admin,pending,,,
+app/admin/organizations/page.tsx,page,app/admin/organizations/page.tsx,328,2026-06-25T11:22:10+02:00,14,admin,pending,,,
+app/admin/page.tsx,page,app/admin/page.tsx,59,2026-05-11T16:12:45+02:00,12,admin,pending,,,
+app/admin/partners/[id]/analytics/page.tsx,page,app/admin/partners/[id]/analytics/page.tsx,807,2026-05-11T16:12:45+02:00,5,admin,pending,,,
+app/admin/partners/[id]/kyc-data/page.tsx,page,app/admin/partners/[id]/kyc-data/page.tsx,332,2026-02-04T12:58:36+01:00,8,admin,pending,,,
+app/admin/partners/[id]/page.tsx,page,app/admin/partners/[id]/page.tsx,293,2026-03-07T12:49:13+01:00,6,admin,pending,,,
+app/admin/partners/[id]/reports/page.tsx,page,app/admin/partners/[id]/reports/page.tsx,364,2026-06-30T21:50:45+02:00,5,admin,pending,,,
+app/admin/partners/page.tsx,page,app/admin/partners/page.tsx,1508,2026-05-21T12:30:35+02:00,63,admin,pending,,,
+app/admin/project-partners/page.tsx,page,app/admin/project-partners/page.tsx,257,2026-05-13T01:13:25+02:00,2,admin,pending,,,
+app/admin/projects/page.tsx,page,app/admin/projects/page.tsx,27,2025-11-04T21:45:50+01:00,15,admin,pending,,,
+app/admin/quick-add/page.tsx,page,app/admin/quick-add/page.tsx,1140,2026-03-16T17:10:01+01:00,29,admin,pending,,,
+app/admin/register/page.tsx,page,app/admin/register/page.tsx,20,2026-07-31T22:08:47Z,4,admin,pending,,,
+app/admin/reports/page.tsx,page,app/admin/reports/page.tsx,92,2026-05-12T23:45:04+02:00,2,admin,pending,,,
+app/admin/styles/[id]/page.tsx,page,app/admin/styles/[id]/page.tsx,325,2026-03-16T17:10:01+01:00,9,admin,pending,,,
+app/admin/styles/page.tsx,page,app/admin/styles/page.tsx,221,2026-05-12T23:28:27+02:00,6,admin,pending,,,
+app/admin/unauthorized/page.tsx,page,app/admin/unauthorized/page.tsx,168,2026-05-11T16:12:45+02:00,5,admin,pending,,,
+app/admin/users/page.tsx,page,app/admin/users/page.tsx,491,2026-03-11T10:42:47+01:00,24,admin,pending,,,
+app/admin/visualization/page.tsx,page,app/admin/visualization/page.tsx,2748,2026-07-05T10:38:33Z,79,admin,pending,,,
+app/api/admin/auth/route.ts,route,app/api/admin/auth/route.ts,27,2025-09-01T11:10:54+02:00,1,admin,pending,,,
+app/api/admin/clear-cache/route.ts,route,app/api/admin/clear-cache/route.ts,115,2025-12-29T06:13:58+01:00,4,admin,pending,,,
+app/api/admin/clear-cookies/route.ts,route,app/api/admin/clear-cookies/route.ts,50,2025-12-29T06:13:58+01:00,4,admin,pending,,,
+app/api/admin/contact-inquiries/route.ts,route,app/api/admin/contact-inquiries/route.ts,24,2026-02-21T14:27:57+01:00,1,admin,pending,,,
+app/api/admin/email-selftest/route.ts,route,app/api/admin/email-selftest/route.ts,37,2026-07-31T10:04:01Z,1,admin,pending,,,
+app/api/admin/fanmass/events/[eventId]/route.ts,route,app/api/admin/fanmass/events/[eventId]/route.ts,77,2026-06-26T11:21:18+02:00,1,admin,pending,,,
+app/api/admin/filter-style/route.ts,route,app/api/admin/filter-style/route.ts,155,2025-12-29T11:21:48+01:00,6,admin,pending,,,
+app/api/admin/fix-mojibake-text/route.ts,route,app/api/admin/fix-mojibake-text/route.ts,95,2026-07-31T18:28:02Z,1,admin,pending,,,
+app/api/admin/hashtag-style/route.ts,route,app/api/admin/hashtag-style/route.ts,103,2025-12-29T11:21:48+01:00,5,admin,pending,,,
+app/api/admin/landing-projects/route.ts,route,app/api/admin/landing-projects/route.ts,41,2026-02-22T10:42:41+01:00,1,admin,pending,,,
+app/api/admin/landing-settings/route.ts,route,app/api/admin/landing-settings/route.ts,43,2026-02-22T10:42:41+01:00,1,admin,pending,,,
+app/api/admin/landing-static-generate/route.ts,route,app/api/admin/landing-static-generate/route.ts,231,2026-03-18T14:55:40+01:00,9,admin,pending,,,
+app/api/admin/local-users/[id]/api-access/route.ts,route,app/api/admin/local-users/[id]/api-access/route.ts,147,2025-11-04T22:51:02+01:00,1,admin,pending,,,
+app/api/admin/local-users/[id]/route.ts,route,app/api/admin/local-users/[id]/route.ts,149,2025-12-29T14:10:48+01:00,11,admin,pending,,,
+app/api/admin/local-users/[id]/send-email/route.ts,route,app/api/admin/local-users/[id]/send-email/route.ts,80,2026-03-11T10:42:47+01:00,1,admin,pending,,,
+app/api/admin/local-users/route.ts,route,app/api/admin/local-users/route.ts,181,2026-06-26T12:35:57+02:00,8,admin,pending,,,
+app/api/admin/login/route.ts,route,app/api/admin/login/route.ts,122,2026-08-01T10:44:08Z,23,admin,pending,,,
+app/api/admin/organizations/[id]/members/route.ts,route,app/api/admin/organizations/[id]/members/route.ts,184,2026-04-24T15:25:46+02:00,6,admin,pending,,,
+app/api/admin/organizations/[id]/route.ts,route,app/api/admin/organizations/[id]/route.ts,269,2026-04-24T15:25:46+02:00,7,admin,pending,,,
+app/api/admin/organizations/route.ts,route,app/api/admin/organizations/route.ts,138,2026-04-24T15:25:46+02:00,6,admin,pending,,,
+app/api/admin/partners/route.ts,route,app/api/admin/partners/route.ts,40,2025-11-13T11:57:14+01:00,1,admin,pending,,,
+app/api/admin/permissions/route.ts,route,app/api/admin/permissions/route.ts,343,2025-12-29T05:23:52+01:00,5,admin,pending,,,
+app/api/admin/project-partners/auto-suggest/route.ts,route,app/api/admin/project-partners/auto-suggest/route.ts,141,2025-11-13T11:59:36+01:00,2,admin,pending,,,
+app/api/admin/project-partners/route.ts,route,app/api/admin/project-partners/route.ts,166,2026-03-13T10:08:08+01:00,2,admin,pending,,,
+app/api/admin/projects/[id]/route.ts,route,app/api/admin/projects/[id]/route.ts,150,2025-12-29T05:21:30+01:00,6,admin,pending,,,
+app/api/admin/projects/route.ts,route,app/api/admin/projects/route.ts,199,2026-03-13T10:08:08+01:00,8,admin,pending,,,
+app/api/admin/register/route.ts,route,app/api/admin/register/route.ts,13,2026-07-31T22:08:47Z,6,admin,pending,,,
+app/api/admin/sync-events-to-camera/route.ts,route,app/api/admin/sync-events-to-camera/route.ts,90,2026-07-31T18:14:58Z,1,admin,pending,,,
+app/api/admin/sync-partners-to-camera/route.ts,route,app/api/admin/sync-partners-to-camera/route.ts,84,2026-07-31T17:58:24Z,2,admin,pending,,,
+app/api/admin/ui-settings/route.ts,route,app/api/admin/ui-settings/route.ts,158,2026-01-05T16:36:28+01:00,5,admin,pending,,,
+app/api/admin/users/[id]/role/route.ts,route,app/api/admin/users/[id]/role/route.ts,130,2026-02-07T17:47:06+01:00,5,admin,pending,,,
+app/api/admin/users/route.ts,route,app/api/admin/users/route.ts,170,2026-02-21T09:38:15+01:00,6,admin,pending,,,
+app/api/analytics/aggregates/partners/route.ts,route,app/api/analytics/aggregates/partners/route.ts,113,2026-05-20T20:42:21+02:00,4,analytics,pending,,,
+app/api/analytics/aggregates/route.ts,route,app/api/analytics/aggregates/route.ts,165,2026-05-20T20:42:21+02:00,4,analytics,pending,,,
+app/api/analytics/ai/coverage/route.ts,route,app/api/analytics/ai/coverage/route.ts,39,2026-08-14T11:56:42+02:00,1,analytics,pending,,,
+app/api/analytics/ai/events/[eventId]/summary/route.ts,route,app/api/analytics/ai/events/[eventId]/summary/route.ts,44,2026-08-14T18:33:42+02:00,1,analytics,pending,,,
+app/api/analytics/ai/events/route.ts,route,app/api/analytics/ai/events/route.ts,58,2026-08-14T11:56:42+02:00,1,analytics,pending,,,
+app/api/analytics/ai/variables/route.ts,route,app/api/analytics/ai/variables/route.ts,38,2026-08-14T11:56:42+02:00,1,analytics,pending,,,
+app/api/analytics/benchmarks/route.ts,route,app/api/analytics/benchmarks/route.ts,221,2025-12-17T18:54:05+01:00,2,analytics,pending,,,
+app/api/analytics/compare/partners/route.ts,route,app/api/analytics/compare/partners/route.ts,151,2026-05-20T20:42:21+02:00,2,analytics,pending,,,
+app/api/analytics/compare/periods/route.ts,route,app/api/analytics/compare/periods/route.ts,137,2026-05-20T20:42:21+02:00,2,analytics,pending,,,
+app/api/analytics/compare/route.ts,route,app/api/analytics/compare/route.ts,240,2026-05-20T20:42:21+02:00,3,analytics,pending,,,
+app/api/analytics/event/[projectId]/route.ts,route,app/api/analytics/event/[projectId]/route.ts,169,2025-12-17T18:54:05+01:00,3,analytics,pending,,,
+app/api/analytics/executive/insights/route.ts,route,app/api/analytics/executive/insights/route.ts,194,2025-12-17T18:54:05+01:00,2,analytics,pending,,,
+app/api/analytics/executive/metrics/route.ts,route,app/api/analytics/executive/metrics/route.ts,202,2025-12-17T18:54:05+01:00,2,analytics,pending,,,
+app/api/analytics/executive/top-events/route.ts,route,app/api/analytics/executive/top-events/route.ts,171,2025-12-17T18:54:05+01:00,2,analytics,pending,,,
+app/api/analytics/insights/[projectId]/route.ts,route,app/api/analytics/insights/[projectId]/route.ts,224,2025-12-17T18:54:05+01:00,2,analytics,pending,,,
+app/api/analytics/insights/organizations/[orgId]/route.ts,route,app/api/analytics/insights/organizations/[orgId]/route.ts,72,2026-07-09T11:48:01+02:00,1,analytics,pending,,,
+app/api/analytics/insights/partners/[partnerId]/route.ts,route,app/api/analytics/insights/partners/[partnerId]/route.ts,72,2025-10-15T19:41:36+02:00,1,analytics,pending,,,
+app/api/analytics/insights/route.ts,route,app/api/analytics/insights/route.ts,166,2025-10-15T19:41:36+02:00,1,analytics,pending,,,
+app/api/analytics/insights/summary/route.ts,route,app/api/analytics/insights/summary/route.ts,117,2026-02-21T09:19:27+01:00,1,analytics,pending,,,
+app/api/analytics/partner/[partnerId]/route.ts,route,app/api/analytics/partner/[partnerId]/route.ts,199,2025-12-17T18:54:05+01:00,2,analytics,pending,,,
+app/api/analytics/sponsorship-hub/route.ts,route,app/api/analytics/sponsorship-hub/route.ts,59,2026-05-10T20:36:25+02:00,1,analytics,pending,,,
+app/api/analytics/trends/route.ts,route,app/api/analytics/trends/route.ts,233,2026-05-20T20:42:21+02:00,3,analytics,pending,,,
+app/api/api-football/enrich-partners/route.ts,route,app/api/api-football/enrich-partners/route.ts,243,2025-11-16T12:32:05+01:00,1,api-football,pending,,,
+app/api/auth/check/route.ts,route,app/api/auth/check/route.ts,30,2025-12-29T05:23:52+01:00,2,auth,pending,,,
+app/api/auth/sso/callback/route.ts,route,app/api/auth/sso/callback/route.ts,125,2026-08-01T10:33:10Z,6,auth,pending,,,
+app/api/auth/sso/config/route.ts,route,app/api/auth/sso/config/route.ts,15,2026-02-21T09:38:15+01:00,1,auth,pending,,,
+app/api/auth/sso/login/route.ts,route,app/api/auth/sso/login/route.ts,63,2026-08-01T10:44:08Z,5,auth,pending,,,
+app/api/auto-generate-chart-block/route.ts,route,app/api/auto-generate-chart-block/route.ts,199,2026-01-15T15:48:04+01:00,4,reporting,pending,,,
+app/api/available-fonts/route.ts,route,app/api/available-fonts/route.ts,315,2026-06-26T21:45:20+02:00,2,available-fonts,pending,,,
+app/api/bitly/analytics/[linkId]/route.ts,route,app/api/bitly/analytics/[linkId]/route.ts,181,2026-07-09T11:49:03+02:00,7,bitly,pending,,,
+app/api/bitly/associations/route.ts,route,app/api/bitly/associations/route.ts,87,2025-12-29T06:13:58+01:00,2,bitly,pending,,,
+app/api/bitly/links/[linkId]/route.ts,route,app/api/bitly/links/[linkId]/route.ts,236,2026-05-20T20:42:21+02:00,5,bitly,pending,,,
+app/api/bitly/links/route.ts,route,app/api/bitly/links/route.ts,400,2026-03-07T12:49:13+01:00,11,bitly,pending,,,
+app/api/bitly/partners/associate/route.ts,route,app/api/bitly/partners/associate/route.ts,187,2025-10-27T11:22:47+01:00,1,bitly,pending,,,
+app/api/bitly/project-metrics/[projectId]/route.ts,route,app/api/bitly/project-metrics/[projectId]/route.ts,177,2025-10-14T11:30:02+02:00,1,bitly,pending,,,
+app/api/bitly/pull/route.ts,route,app/api/bitly/pull/route.ts,173,2026-03-07T12:49:13+01:00,8,bitly,pending,,,
+app/api/bitly/recalculate/route.ts,route,app/api/bitly/recalculate/route.ts,187,2025-12-29T06:09:04+01:00,2,bitly,pending,,,
+app/api/bitly/sync/route.ts,route,app/api/bitly/sync/route.ts,344,2025-12-29T06:09:04+01:00,4,bitly,pending,,,
+app/api/chart-config/public/route.ts,route,app/api/chart-config/public/route.ts,105,2026-03-18T14:55:40+01:00,13,reporting,pending,,,
+app/api/chart-config/route.ts,route,app/api/chart-config/route.ts,681,2026-03-18T14:55:40+01:00,23,reporting,pending,,,
+app/api/chart-configs/route.ts,route,app/api/chart-configs/route.ts,61,2026-03-18T14:55:40+01:00,5,reporting,pending,,,
+app/api/chart-formatting-defaults/route.ts,route,app/api/chart-formatting-defaults/route.ts,105,2025-12-29T06:11:15+01:00,3,reporting,pending,,,
+app/api/charts/route.ts,route,app/api/charts/route.ts,203,2025-12-18T18:09:34+01:00,1,reporting,pending,,,
+app/api/cities/route.ts,route,app/api/cities/route.ts,76,2025-12-17T18:40:14+01:00,2,cities,pending,,,
+app/api/clicker-sets/route.ts,route,app/api/clicker-sets/route.ts,151,2026-01-21T14:21:26+01:00,2,data,pending,,,
+app/api/contact/route.ts,route,app/api/contact/route.ts,65,2026-02-21T14:27:57+01:00,1,contact,pending,,,
+app/api/content-assets/route.ts,route,app/api/content-assets/route.ts,486,2026-07-05T10:38:33Z,4,content-assets,pending,,,
+app/api/content-assets/usage/route.ts,route,app/api/content-assets/usage/route.ts,116,2025-11-03T11:08:42+01:00,1,content-assets,pending,,,
+app/api/countries/[code]/route.ts,route,app/api/countries/[code]/route.ts,62,2025-10-29T12:36:54+01:00,1,countries,pending,,,
+app/api/countries/route.ts,route,app/api/countries/route.ts,49,2025-10-29T12:36:54+01:00,1,countries,pending,,,
+app/api/cron/analytics-aggregation/route.ts,route,app/api/cron/analytics-aggregation/route.ts,218,2026-02-21T09:06:47+01:00,3,integrations,pending,,,
+app/api/cron/bitly-refresh/route.ts,route,app/api/cron/bitly-refresh/route.ts,107,2025-10-14T11:30:02+02:00,1,integrations,pending,,,
+app/api/cron/google-sheets-sync/route.ts,route,app/api/cron/google-sheets-sync/route.ts,258,2026-07-05T22:19:10Z,5,integrations,pending,,,
+app/api/csrf-token/route.ts,route,app/api/csrf-token/route.ts,13,2025-10-18T12:26:41+02:00,1,auth,pending,,,
+app/api/data-blocks/route.ts,route,app/api/data-blocks/route.ts,208,2026-01-22T11:55:09+01:00,11,reporting,pending,,,
+app/api/debug/categorized-hashtags/route.ts,route,app/api/debug/categorized-hashtags/route.ts,112,2025-12-17T19:34:44+01:00,2,debug,pending,,,
+app/api/debug/notifications/route.ts,route,app/api/debug/notifications/route.ts,109,2026-07-05T22:19:10Z,3,debug,pending,,,
+app/api/debug/overview-block/route.ts,route,app/api/debug/overview-block/route.ts,32,2025-12-19T11:56:46+01:00,1,debug,pending,,,
+app/api/drive-folders/[linkId]/route.ts,route,app/api/drive-folders/[linkId]/route.ts,48,2026-08-13T11:28:22Z,2,integrations,pending,,,
+app/api/drive-folders/route.ts,route,app/api/drive-folders/route.ts,82,2026-08-13T11:28:22Z,2,integrations,pending,,,
+app/api/filter-slug/route.ts,route,app/api/filter-slug/route.ts,42,2025-09-06T13:39:18+02:00,2,data,pending,,,
+app/api/football-data/fixtures/route.ts,route,app/api/football-data/fixtures/route.ts,84,2025-10-19T21:58:41+02:00,1,football-data,pending,,,
+app/api/football-data/sync/route.ts,route,app/api/football-data/sync/route.ts,36,2025-10-19T21:58:41+02:00,1,football-data,pending,,,
+app/api/google-sheets/template/route.ts,route,app/api/google-sheets/template/route.ts,15,2026-02-06T10:22:40+01:00,1,integrations,pending,,,
+app/api/grid-settings/route.ts,route,app/api/grid-settings/route.ts,53,2025-09-07T19:35:57+02:00,1,grid-settings,pending,,,
+app/api/hashtag-categories/route.ts,route,app/api/hashtag-categories/route.ts,470,2026-06-26T12:35:57+02:00,8,data,pending,,,
+app/api/hashtag-colors/route.ts,route,app/api/hashtag-colors/route.ts,237,2025-11-02T21:13:40+01:00,5,data,pending,,,
+app/api/hashtags/[hashtag]/route.ts,route,app/api/hashtags/[hashtag]/route.ts,184,2026-05-22T12:32:05+02:00,7,data,pending,,,
+app/api/hashtags/filter/route.ts,route,app/api/hashtags/filter/route.ts,263,2025-12-17T18:39:49+01:00,4,data,pending,,,
+app/api/hashtags/filter-by-slug/[slug]/route.ts,route,app/api/hashtags/filter-by-slug/[slug]/route.ts,199,2026-05-22T12:32:05+02:00,7,data,pending,,,
+app/api/hashtags/route.ts,route,app/api/hashtags/route.ts,378,2025-12-29T05:50:53+01:00,8,data,pending,,,
+app/api/hashtags/slugs/route.ts,route,app/api/hashtags/slugs/route.ts,104,2025-09-25T11:38:17+02:00,5,data,pending,,,
+app/api/images/route.ts,route,app/api/images/route.ts,144,2025-12-29T06:11:15+01:00,3,images,pending,,,
+app/api/integrations/camera/link-partners/route.ts,route,app/api/integrations/camera/link-partners/route.ts,16,2026-07-20T15:51:40+02:00,1,integrations,pending,,,
+app/api/integrations/camera/partners/route.ts,route,app/api/integrations/camera/partners/route.ts,45,2026-07-31T19:11:20Z,2,integrations,pending,,,
+app/api/integrations/camera/provision-missing/route.ts,route,app/api/integrations/camera/provision-missing/route.ts,18,2026-07-20T15:51:40+02:00,1,integrations,pending,,,
+app/api/integrations/camera/sso-session/route.ts,route,app/api/integrations/camera/sso-session/route.ts,89,2026-08-01T10:44:08Z,3,integrations,pending,,,
+app/api/integrations/fanmass/callbacks/route.ts,route,app/api/integrations/fanmass/callbacks/route.ts,38,2026-06-25T16:40:47+02:00,1,integrations,pending,,,
+app/api/integrations/fanmass/drive-folders/route.ts,route,app/api/integrations/fanmass/drive-folders/route.ts,25,2026-08-13T11:17:20Z,1,integrations,pending,,,
+app/api/integrations/fanmass/events/[eventId]/analysis-summary/route.ts,route,app/api/integrations/fanmass/events/[eventId]/analysis-summary/route.ts,33,2026-08-14T18:33:42+02:00,1,integrations,pending,,,
+app/api/integrations/fanmass/events/[eventId]/context/route.ts,route,app/api/integrations/fanmass/events/[eventId]/context/route.ts,24,2026-06-25T16:40:47+02:00,1,integrations,pending,,,
+app/api/integrations/fanmass/events/[eventId]/drive-folders/status/route.ts,route,app/api/integrations/fanmass/events/[eventId]/drive-folders/status/route.ts,68,2026-08-14T08:34:37+02:00,2,integrations,pending,,,
+app/api/integrations/fanmass/events/[eventId]/link/route.ts,route,app/api/integrations/fanmass/events/[eventId]/link/route.ts,48,2026-06-25T16:40:47+02:00,1,integrations,pending,,,
+app/api/integrations/fanmass/events/[eventId]/stats/route.ts,route,app/api/integrations/fanmass/events/[eventId]/stats/route.ts,23,2026-07-09T13:22:28+02:00,1,integrations,pending,,,
+app/api/integrations/fanmass/events/[eventId]/sync/route.ts,route,app/api/integrations/fanmass/events/[eventId]/sync/route.ts,45,2026-06-25T16:40:47+02:00,1,integrations,pending,,,
+app/api/integrations/fanmass/events/route.ts,route,app/api/integrations/fanmass/events/route.ts,22,2026-07-09T13:22:28+02:00,1,integrations,pending,,,
+app/api/integrations/fanmass/partners/[partnerId]/events/route.ts,route,app/api/integrations/fanmass/partners/[partnerId]/events/route.ts,19,2026-07-09T13:22:28+02:00,1,integrations,pending,,,
+app/api/integrations/fanmass/partners/route.ts,route,app/api/integrations/fanmass/partners/route.ts,38,2026-07-09T13:22:28+02:00,1,integrations,pending,,,
+app/api/integrations/fanmass/variables/route.ts,route,app/api/integrations/fanmass/variables/route.ts,36,2026-07-09T13:22:28+02:00,1,integrations,pending,,,
+app/api/landing-report/route.ts,route,app/api/landing-report/route.ts,165,2026-02-21T16:26:10+01:00,3,reporting,pending,,,
+app/api/landing-static/route.ts,route,app/api/landing-static/route.ts,28,2026-02-22T10:42:41+01:00,1,reporting,pending,,,
+app/api/me/route.ts,route,app/api/me/route.ts,73,2025-12-15T13:40:11+01:00,2,auth,pending,,,
+app/api/notifications/mark-read/route.ts,route,app/api/notifications/mark-read/route.ts,94,2026-07-05T22:23:19Z,4,notifications,pending,,,
+app/api/notifications/route.ts,route,app/api/notifications/route.ts,104,2026-07-05T22:19:10Z,6,notifications,pending,,,
+app/api/organizations/edit/[id]/route.ts,route,app/api/organizations/edit/[id]/route.ts,313,2026-05-22T12:32:05+02:00,3,organizations,pending,,,
+app/api/organizations/report/[id]/activities/route.ts,route,app/api/organizations/report/[id]/activities/route.ts,136,2026-05-22T12:32:05+02:00,3,organizations,pending,,,
+app/api/organizations/report/[id]/route.ts,route,app/api/organizations/report/[id]/route.ts,225,2026-05-22T12:32:05+02:00,4,organizations,pending,,,
+app/api/page-passwords/route.ts,route,app/api/page-passwords/route.ts,149,2026-04-27T09:26:03+02:00,14,auth,pending,,,
+app/api/partners/[id]/bitly-kyc/route.ts,route,app/api/partners/[id]/bitly-kyc/route.ts,116,2025-11-14T22:02:36+01:00,1,partners,pending,,,
+app/api/partners/[id]/events/route.ts,route,app/api/partners/[id]/events/route.ts,123,2025-11-14T14:45:43+01:00,1,partners,pending,,,
+app/api/partners/[id]/google-sheet/connect/route.ts,route,app/api/partners/[id]/google-sheet/connect/route.ts,111,2026-03-07T12:49:13+01:00,9,partners,pending,,,
+app/api/partners/[id]/google-sheet/disconnect/route.ts,route,app/api/partners/[id]/google-sheet/disconnect/route.ts,102,2025-12-29T12:15:48+01:00,4,partners,pending,,,
+app/api/partners/[id]/google-sheet/provision/route.ts,route,app/api/partners/[id]/google-sheet/provision/route.ts,55,2026-02-08T12:08:10+01:00,1,partners,pending,,,
+app/api/partners/[id]/google-sheet/pull/route.ts,route,app/api/partners/[id]/google-sheet/pull/route.ts,278,2026-03-07T12:49:13+01:00,13,partners,pending,,,
+app/api/partners/[id]/google-sheet/push/route.ts,route,app/api/partners/[id]/google-sheet/push/route.ts,262,2026-03-07T12:49:13+01:00,7,partners,pending,,,
+app/api/partners/[id]/google-sheet/rename/route.ts,route,app/api/partners/[id]/google-sheet/rename/route.ts,74,2025-12-29T12:15:48+01:00,3,partners,pending,,,
+app/api/partners/[id]/google-sheet/setup/route.ts,route,app/api/partners/[id]/google-sheet/setup/route.ts,67,2026-03-07T12:49:13+01:00,12,partners,pending,,,
+app/api/partners/[id]/google-sheet/status/route.ts,route,app/api/partners/[id]/google-sheet/status/route.ts,172,2026-03-07T12:49:13+01:00,7,partners,pending,,,
+app/api/partners/edit/[slug]/route.ts,route,app/api/partners/edit/[slug]/route.ts,231,2026-06-30T21:32:39+02:00,14,partners,pending,,,
+app/api/partners/link-football-data/route.ts,route,app/api/partners/link-football-data/route.ts,98,2025-10-19T21:58:41+02:00,1,partners,pending,,,
+app/api/partners/report/[slug]/route.ts,route,app/api/partners/report/[slug]/route.ts,203,2026-06-30T21:32:39+02:00,23,partners,pending,,,
+app/api/partners/route.ts,route,app/api/partners/route.ts,282,2026-06-30T21:32:39+02:00,23,partners,pending,,,
+app/api/partners/upload-logo/route.ts,route,app/api/partners/upload-logo/route.ts,89,2025-10-17T13:33:40+02:00,1,partners,pending,,,
+app/api/projects/[id]/layout.tsx,app-module,app/api/projects/[id]/layout.tsx,28,2026-03-07T12:49:13+01:00,2,unreached,pending,,,
+app/api/projects/[id]/route.ts,route,app/api/projects/[id]/route.ts,184,2026-07-05T22:19:10Z,8,data,pending,,,
+app/api/projects/edit/[slug]/route.ts,route,app/api/projects/edit/[slug]/route.ts,66,2026-02-21T09:58:23+01:00,6,data,pending,,,
+app/api/projects/route.ts,route,app/api/projects/route.ts,1086,2026-07-20T20:59:15+02:00,32,data,pending,,,
+app/api/projects/stats/[slug]/route.ts,route,app/api/projects/stats/[slug]/route.ts,72,2025-12-19T19:47:07+01:00,6,data,pending,,,
+app/api/public/events/[id]/route.ts,route,app/api/public/events/[id]/route.ts,173,2025-11-04T22:51:02+01:00,1,public,pending,,,
+app/api/public/partners/[id]/events/route.ts,route,app/api/public/partners/[id]/events/route.ts,187,2025-11-04T22:51:02+01:00,1,public,pending,,,
+app/api/public/partners/[id]/route.ts,route,app/api/public/partners/[id]/route.ts,137,2025-11-04T22:51:02+01:00,1,public,pending,,,
+app/api/public/partners/route.ts,route,app/api/public/partners/route.ts,173,2025-11-04T22:51:02+01:00,1,public,pending,,,
+app/api/report-config/[identifier]/route.ts,route,app/api/report-config/[identifier]/route.ts,360,2026-06-30T21:32:39+02:00,15,reporting,pending,,,
+app/api/report-styles/[id]/route.ts,route,app/api/report-styles/[id]/route.ts,59,2025-12-29T12:24:48+01:00,3,reporting,pending,,,
+app/api/report-styles/route.ts,route,app/api/report-styles/route.ts,151,2026-03-13T10:08:08+01:00,5,reporting,pending,,,
+app/api/report-templates/assign/route.ts,route,app/api/report-templates/assign/route.ts,210,2025-11-11T12:47:36+01:00,1,reporting,pending,,,
+app/api/report-templates/route.ts,route,app/api/report-templates/route.ts,255,2026-05-21T12:30:35+02:00,5,reporting,pending,,,
+app/api/report-variants/[id]/route.ts,route,app/api/report-variants/[id]/route.ts,86,2026-06-24T14:59:40+02:00,2,reporting,pending,,,
+app/api/report-variants/route.ts,route,app/api/report-variants/route.ts,106,2026-06-24T14:59:40+02:00,2,reporting,pending,,,
+app/api/reports/resolve/route.ts,route,app/api/reports/resolve/route.ts,78,2025-12-18T18:09:34+01:00,1,reporting,pending,,,
+app/api/sports-db/fixtures/draft/route.ts,route,app/api/sports-db/fixtures/draft/route.ts,36,2025-10-19T21:58:41+02:00,1,sports-db,pending,,,
+app/api/sports-db/fixtures/route.ts,route,app/api/sports-db/fixtures/route.ts,108,2025-10-19T21:58:41+02:00,1,sports-db,pending,,,
+app/api/sports-db/lookup/route.ts,route,app/api/sports-db/lookup/route.ts,199,2025-10-17T12:38:40+02:00,1,sports-db,pending,,,
+app/api/sports-db/search/route.ts,route,app/api/sports-db/search/route.ts,180,2025-10-17T12:38:40+02:00,1,sports-db,pending,,,
+app/api/sports-db/sync/route.ts,route,app/api/sports-db/sync/route.ts,24,2025-10-19T21:58:41+02:00,1,sports-db,pending,,,
+app/api/stats/route.ts,route,app/api/stats/route.ts,61,2025-12-15T13:40:11+01:00,2,data,pending,,,
+app/api/user-preferences/route.ts,route,app/api/user-preferences/route.ts,92,2025-12-29T06:11:15+01:00,2,user-preferences,pending,,,
+app/api/v3/activities/[id]/participants/[entityId]/route.ts,route,app/api/v3/activities/[id]/participants/[entityId]/route.ts,36,2026-03-13T10:08:08+01:00,1,v3,pending,,,
+app/api/v3/activities/[id]/participants/route.ts,route,app/api/v3/activities/[id]/participants/route.ts,57,2026-03-13T10:08:08+01:00,1,v3,pending,,,
+app/api/v3/activities/route.ts,route,app/api/v3/activities/route.ts,45,2026-03-13T10:08:08+01:00,1,v3,pending,,,
+app/api/v3/entities/[id]/route.ts,route,app/api/v3/entities/[id]/route.ts,51,2026-03-13T10:08:08+01:00,1,v3,pending,,,
+app/api/v3/entities/route.ts,route,app/api/v3/entities/route.ts,43,2026-03-13T10:08:08+01:00,1,v3,pending,,,
+app/api/v3/health/route.ts,route,app/api/v3/health/route.ts,24,2026-03-16T17:10:01+01:00,2,v3,pending,,,
+app/api/v3/metrics/record/route.ts,route,app/api/v3/metrics/record/route.ts,48,2026-03-13T10:08:08+01:00,1,v3,pending,,,
+app/api/v3/organizations/report/[id]/activities/route.ts,route,app/api/v3/organizations/report/[id]/activities/route.ts,63,2026-03-15T13:18:18+01:00,2,v3,pending,,,
+app/api/v3/organizations/report/[id]/route.ts,route,app/api/v3/organizations/report/[id]/route.ts,86,2026-03-15T13:18:18+01:00,2,v3,pending,,,
+app/api/v3/reporting/dashboard/route.ts,route,app/api/v3/reporting/dashboard/route.ts,58,2026-03-13T10:08:08+01:00,1,v3,pending,,,
+app/api/v3/reporting/export/[entityId]/route.ts,route,app/api/v3/reporting/export/[entityId]/route.ts,81,2026-03-13T10:08:08+01:00,1,v3,pending,,,
+app/api/v3/reports/resolve/route.ts,route,app/api/v3/reports/resolve/route.ts,44,2026-03-13T10:08:08+01:00,1,v3,pending,,,
+app/api/variables-config/route.ts,route,app/api/variables-config/route.ts,492,2026-01-03T10:53:22+01:00,12,data,pending,,,
+app/api/variables-groups/route.ts,route,app/api/variables-groups/route.ts,239,2026-01-21T14:21:26+01:00,11,data,pending,,,
+app/api-docs/page.tsx,page,app/api-docs/page.tsx,507,2026-06-26T12:35:57+02:00,11,uncategorised,pending,,,
+app/dashboard/filter/[filterSlug]/page.tsx,page,app/dashboard/filter/[filterSlug]/page.tsx,168,2026-03-06T11:55:07+01:00,2,uncategorised,pending,,,
+app/dashboard/hashtag/[hashtag]/page.tsx,page,app/dashboard/hashtag/[hashtag]/page.tsx,29,2026-03-06T11:55:07+01:00,2,uncategorised,pending,,,
+app/dashboard/layout.tsx,app-module,app/dashboard/layout.tsx,15,2026-02-21T10:23:25+01:00,1,unreached,pending,,,
+app/dashboard/partner/[partnerId]/page.tsx,page,app/dashboard/partner/[partnerId]/page.tsx,25,2026-03-06T11:55:07+01:00,2,uncategorised,pending,,,
+app/debug/hashtag-categories/page.tsx,page,app/debug/hashtag-categories/page.tsx,217,2026-01-03T10:05:49+01:00,5,uncategorised,pending,,,
+app/edit/[slug]/page.tsx,page,app/edit/[slug]/page.tsx,213,2026-03-06T13:03:44+01:00,24,uncategorised,pending,,,
+app/error.tsx,app-module,app/error.tsx,75,2026-01-03T10:05:49+01:00,6,unreached,pending,,,
+app/examples/password-gate-demo/page.tsx,page,app/examples/password-gate-demo/page.tsx,71,2025-11-06T20:26:43+01:00,5,uncategorised,pending,,,
+app/filter/[slug]/page.tsx,page,app/filter/[slug]/page.tsx,249,2026-05-22T12:32:05+02:00,26,uncategorised,pending,,,
+app/hashtag/[hashtag]/page.tsx,page,app/hashtag/[hashtag]/page.tsx,248,2026-05-22T12:32:05+02:00,26,uncategorised,pending,,,
+app/layout.tsx,app-module,app/layout.tsx,173,2026-05-23T09:34:49+02:00,27,unreached,pending,,,
+app/not-found.tsx,app-module,app/not-found.tsx,52,2026-05-02T11:02:49+02:00,7,unreached,pending,,,
+app/organization-edit/[id]/page.tsx,page,app/organization-edit/[id]/page.tsx,149,2026-05-22T12:32:05+02:00,5,uncategorised,pending,,,
+app/organization-report/OrganizationActivitiesList.tsx,app-module,app/organization-report/OrganizationActivitiesList.tsx,102,2026-04-27T00:18:22+02:00,3,reporting,pending,,,
+app/organization-report/OrganizationEntityList.tsx,app-module,app/organization-report/OrganizationEntityList.tsx,85,2026-06-30T21:50:45+02:00,4,reporting,pending,,,
+app/organization-report/OrganizationReportView.tsx,app-module,app/organization-report/OrganizationReportView.tsx,138,2026-06-25T11:22:10+02:00,7,reporting,pending,,,
+app/organization-report/[id]/page.tsx,page,app/organization-report/[id]/page.tsx,19,2026-05-22T12:32:05+02:00,3,reporting,pending,,,
+app/page.tsx,page,app/page.tsx,56,2026-03-07T12:49:13+01:00,32,uncategorised,pending,,,
+app/partner-edit/[slug]/PartnerEditClient.tsx,app-module,app/partner-edit/[slug]/PartnerEditClient.tsx,164,2026-06-30T21:32:39+02:00,1,uncategorised,pending,,,
+app/partner-edit/[slug]/page.tsx,page,app/partner-edit/[slug]/page.tsx,24,2026-06-30T21:32:39+02:00,10,uncategorised,pending,,,
+app/partner-report/PartnerReportView.tsx,app-module,app/partner-report/PartnerReportView.tsx,126,2026-07-01T00:11:27+02:00,7,shared,pending,,,
+app/partner-report/[slug]/PartnerEventsList.tsx,app-module,app/partner-report/[slug]/PartnerEventsList.tsx,199,2026-03-06T12:07:33+01:00,6,shared,pending,,,
+app/partner-report/[slug]/page.tsx,page,app/partner-report/[slug]/page.tsx,29,2026-06-30T21:32:39+02:00,36,reporting,pending,,,
+app/privacy/page.tsx,page,app/privacy/page.tsx,79,2026-03-07T12:49:13+01:00,2,uncategorised,pending,,,
+app/providers.tsx,app-module,app/providers.tsx,23,2026-05-23T09:34:49+02:00,1,unreached,pending,,,
+app/report/[slug]/ReportChart.tsx,app-module,app/report/[slug]/ReportChart.tsx,2212,2026-07-20T14:22:42+02:00,85,shared,pending,,,
+app/report/[slug]/ReportContent.tsx,app-module,app/report/[slug]/ReportContent.tsx,681,2026-05-10T20:42:41+02:00,53,shared,pending,,,
+app/report/[slug]/ReportHero.tsx,app-module,app/report/[slug]/ReportHero.tsx,187,2026-05-22T12:32:05+02:00,7,shared,pending,,,
+app/report/[slug]/layout.tsx,app-module,app/report/[slug]/layout.tsx,31,2025-11-04T20:56:01+01:00,1,unreached,pending,,,
+app/report/[slug]/page.tsx,page,app/report/[slug]/page.tsx,426,2026-03-18T14:55:40+01:00,38,reporting,pending,,,
+app/terms/page.tsx,page,app/terms/page.tsx,93,2026-03-07T12:49:13+01:00,2,uncategorised,pending,,,
+app/test-csrf/page.tsx,page,app/test-csrf/page.tsx,109,2025-10-20T16:33:11+02:00,3,uncategorised,pending,,,
+lib/adapters/categoriesAdapter.tsx,lib,lib/adapters/categoriesAdapter.tsx,145,2025-12-21T15:09:09+01:00,4,admin,pending,,,
+lib/adapters/chartsAdapter.tsx,lib,lib/adapters/chartsAdapter.tsx,144,2026-01-08T10:49:01+01:00,3,admin,pending,,,
+lib/adapters/clickerAdapter.tsx,lib,lib/adapters/clickerAdapter.tsx,130,2025-12-21T22:43:13+01:00,2,admin,pending,,,
+lib/adapters/filterAdapter.tsx,lib,lib/adapters/filterAdapter.tsx,18,2025-11-02T01:17:32+01:00,1,admin,pending,,,
+lib/adapters/hashtagsAdapter.tsx,lib,lib/adapters/hashtagsAdapter.tsx,116,2025-12-21T15:13:50+01:00,2,admin,pending,,,
+lib/adapters/index.ts,lib,lib/adapters/index.ts,16,2026-05-12T23:16:37+02:00,7,admin,pending,,,
+lib/adapters/insightsAdapter.tsx,lib,lib/adapters/insightsAdapter.tsx,141,2026-05-22T15:38:26+02:00,3,admin,pending,,,
+lib/adapters/kycAdapter.tsx,lib,lib/adapters/kycAdapter.tsx,179,2025-12-21T15:13:50+01:00,2,admin,pending,,,
+lib/adapters/organizationsAdapter.tsx,lib,lib/adapters/organizationsAdapter.tsx,205,2026-06-25T11:22:10+02:00,13,admin,pending,,,
+lib/adapters/partnersAdapter.tsx,lib,lib/adapters/partnersAdapter.tsx,320,2026-07-09T11:47:30+02:00,24,admin,pending,,,
+lib/adapters/projectsAdapter.tsx,lib,lib/adapters/projectsAdapter.tsx,342,2026-06-26T11:21:18+02:00,18,admin,pending,,,
+lib/adapters/usersAdapter.tsx,lib,lib/adapters/usersAdapter.tsx,230,2026-05-22T15:38:26+02:00,7,admin,pending,,,
+lib/adminDataAdapters.ts,lib,lib/adminDataAdapters.ts,275,2026-06-24T13:37:37+02:00,4,admin,pending,,,
+lib/adminEntitySystem.ts,lib,lib/adminEntitySystem.ts,236,2026-06-26T11:21:18+02:00,6,admin,pending,,,
+lib/adminNavigation.ts,lib,lib/adminNavigation.ts,370,2026-08-14T11:56:42+02:00,9,shared,pending,,,
+lib/adminViewState.ts,lib,lib/adminViewState.ts,156,2025-11-02T01:19:02+01:00,1,admin,pending,,,
+lib/aiAnalysisSummary.ts,lib,lib/aiAnalysisSummary.ts,111,2026-08-14T18:33:42+02:00,1,shared,pending,,,
+lib/aiAnalytics.ts,lib,lib/aiAnalytics.ts,242,2026-08-14T11:56:42+02:00,1,analytics,pending,,,
+lib/analytics-aggregates.types.ts,lib,lib/analytics-aggregates.types.ts,335,2025-10-15T19:12:51+02:00,1,shared,pending,,,
+lib/analytics-aggregator.ts,lib,lib/analytics-aggregator.ts,760,2026-03-18T14:55:40+01:00,2,integrations,pending,,,
+lib/analytics-anomaly.ts,lib,lib/analytics-anomaly.ts,397,2026-07-09T11:46:22+02:00,2,analytics,pending,,,
+lib/analytics-benchmarking.ts,lib,lib/analytics-benchmarking.ts,570,2025-10-19T21:58:41+02:00,2,analytics,pending,,,
+lib/analytics-insights.ts,lib,lib/analytics-insights.ts,666,2026-07-09T11:48:01+02:00,3,analytics,pending,,,
+lib/analytics-predictions.ts,lib,lib/analytics-predictions.ts,561,2025-10-15T19:41:36+02:00,1,analytics,pending,,,
+lib/analytics-trends.ts,lib,lib/analytics-trends.ts,438,2025-10-15T19:41:36+02:00,1,analytics,pending,,,
+lib/analytics.types.ts,lib,lib/analytics.types.ts,371,2026-07-09T11:46:22+02:00,2,shared,pending,,,
+lib/analyticsCalculator.ts,lib,lib/analyticsCalculator.ts,500,2026-07-09T11:46:22+02:00,6,shared,pending,,,
+lib/anomalyDetection.ts,lib,lib/anomalyDetection.ts,389,2025-10-19T15:04:05+02:00,1,analytics,pending,,,
+lib/api/caching.ts,lib,lib/api/caching.ts,285,2025-10-02T13:48:44+02:00,1,data,pending,,,
+lib/api/response.ts,lib,lib/api/response.ts,287,2025-10-02T13:35:14+02:00,1,unreached,pending,,,
+lib/api-football.ts,lib,lib/api-football.ts,341,2026-03-07T12:49:13+01:00,2,api-football,pending,,,
+lib/apiAuth.ts,lib,lib/apiAuth.ts,374,2026-03-07T12:49:13+01:00,5,public,pending,,,
+lib/apiClient.ts,lib,lib/apiClient.ts,254,2026-01-05T11:19:44+01:00,2,shared,pending,,,
+lib/aspectRatioResolver.ts,lib,lib/aspectRatioResolver.ts,22,2025-12-19T11:56:46+01:00,1,admin,pending,,,
+lib/aspectRatioUtils.ts,lib,lib/aspectRatioUtils.ts,239,2025-12-20T20:15:12+01:00,1,admin,pending,,,
+lib/auditLog.ts,lib,lib/auditLog.ts,176,2025-12-15T13:40:11+01:00,3,unreached,pending,,,
+lib/auth/mintSession.ts,lib,lib/auth/mintSession.ts,147,2026-08-01T10:44:08Z,3,shared,pending,,,
+lib/auth/oauthPendingCookie.ts,lib,lib/auth/oauthPendingCookie.ts,55,2026-07-30T21:32:45Z,1,auth,pending,,,
+lib/auth/orgGuard.ts,lib,lib/auth/orgGuard.ts,37,2026-03-15T13:18:18+01:00,1,v3,pending,,,
+lib/auth/ssoOAuth.ts,lib,lib/auth/ssoOAuth.ts,249,2026-08-01T10:44:08Z,2,shared,pending,,,
+lib/auth/ssoPermissions.ts,lib,lib/auth/ssoPermissions.ts,54,2026-07-30T21:32:45Z,1,shared,pending,,,
+lib/auth.ts,lib,lib/auth.ts,115,2026-03-18T14:55:40+01:00,13,shared,pending,,,
+lib/authLockout.ts,lib,lib/authLockout.ts,81,2026-02-07T17:47:06+01:00,1,unreached,pending,,,
+lib/barChartFontSizeCalculator.ts,lib,lib/barChartFontSizeCalculator.ts,204,2026-01-12T10:52:26+01:00,3,shared,pending,,,
+lib/benchmarkEngine.ts,lib,lib/benchmarkEngine.ts,383,2025-10-19T15:04:05+02:00,1,analytics,pending,,,
+lib/bitly-aggregator.ts,lib,lib/bitly-aggregator.ts,371,2026-07-01T23:11:07+02:00,2,shared,pending,,,
+lib/bitly-date-calculator.ts,lib,lib/bitly-date-calculator.ts,240,2025-10-14T11:30:02+02:00,1,shared,pending,,,
+lib/bitly-db.types.ts,lib,lib/bitly-db.types.ts,220,2026-03-07T12:49:13+01:00,4,shared,pending,,,
+lib/bitly-junction.types.ts,lib,lib/bitly-junction.types.ts,171,2025-10-14T11:30:02+02:00,1,shared,pending,,,
+lib/bitly-mappers.ts,lib,lib/bitly-mappers.ts,317,2026-03-07T12:49:13+01:00,5,bitly,pending,,,
+lib/bitly-recalculator.ts,lib,lib/bitly-recalculator.ts,435,2025-10-27T14:13:46+01:00,2,shared,pending,,,
+lib/bitly.ts,lib,lib/bitly.ts,471,2026-03-07T12:49:13+01:00,5,bitly,pending,,,
+lib/bitly.types.ts,lib,lib/bitly.types.ts,220,2026-03-07T12:49:13+01:00,4,shared,pending,,,
+lib/bitlyChartAggregator.ts,lib,lib/bitlyChartAggregator.ts,230,2025-10-29T12:36:54+01:00,2,shared,pending,,,
+lib/bitlyExport.ts,lib,lib/bitlyExport.ts,81,2026-07-09T11:49:03+02:00,1,bitly,pending,,,
+lib/bitlyStatsEnricher.ts,lib,lib/bitlyStatsEnricher.ts,234,2025-10-27T14:13:46+01:00,1,shared,pending,,,
+lib/blockHeightCalculator.ts,lib,lib/blockHeightCalculator.ts,325,2026-01-12T00:15:45+01:00,8,admin,pending,,,
+lib/blockLayoutTypes.ts,lib,lib/blockLayoutTypes.ts,48,2026-02-22T23:49:24+01:00,3,shared,pending,,,
+lib/builderModeValidation.ts,lib,lib/builderModeValidation.ts,124,2026-01-01T02:17:05+01:00,1,unreached,pending,,,
+lib/cameraClient.ts,lib,lib/cameraClient.ts,110,2026-07-31T19:11:20Z,2,shared,pending,,,
+lib/cameraPartnerSync.ts,lib,lib/cameraPartnerSync.ts,80,2026-07-31T14:11:59Z,1,integrations,pending,,,
+lib/cameraProvision.ts,lib,lib/cameraProvision.ts,97,2026-07-20T15:51:40+02:00,1,shared,pending,,,
+lib/chart-config.ts,lib,lib/chart-config.ts,345,2026-03-07T12:49:13+01:00,3,unreached,pending,,,
+lib/chartCalculator.ts,lib,lib/chartCalculator.ts,962,2026-06-26T12:35:57+02:00,32,shared,pending,,,
+lib/chartConfigTypes.ts,lib,lib/chartConfigTypes.ts,274,2026-03-18T14:55:40+01:00,32,shared,pending,,,
+lib/chartErrorTypes.ts,lib,lib/chartErrorTypes.ts,111,2026-01-13T12:39:12+01:00,1,shared,pending,,,
+lib/chartHeightCalculator.ts,lib,lib/chartHeightCalculator.ts,97,2025-12-18T18:09:34+01:00,1,unreached,pending,,,
+lib/chartLabelUtils.ts,lib,lib/chartLabelUtils.ts,47,2025-12-19T23:04:02+01:00,1,shared,pending,,,
+lib/chartPartnerUtils.ts,lib,lib/chartPartnerUtils.ts,432,2026-03-18T14:55:40+01:00,2,unreached,pending,,,
+lib/chartTheme.ts,lib,lib/chartTheme.ts,43,2026-05-22T15:53:19+02:00,1,analytics,pending,,,
+lib/config.ts,lib,lib/config.ts,205,2026-07-30T21:32:45Z,17,shared,pending,,,
+lib/constants.ts,lib,lib/constants.ts,15,2026-04-24T14:49:52+02:00,2,shared,pending,,,
+lib/contactInquiries.ts,lib,lib/contactInquiries.ts,56,2026-02-21T14:33:47+01:00,2,shared,pending,,,
+lib/contentAssetTypes.ts,lib,lib/contentAssetTypes.ts,260,2025-11-03T14:58:47+01:00,2,shared,pending,,,
+lib/contentFormat.ts,lib,lib/contentFormat.ts,9,2026-02-22T19:55:06+01:00,1,shared,pending,,,
+lib/cors.ts,lib,lib/cors.ts,53,2026-02-07T13:25:39+01:00,2,public,pending,,,
+lib/countryService.ts,lib,lib/countryService.ts,212,2025-10-29T12:42:33+01:00,2,shared,pending,,,
+lib/csrf.ts,lib,lib/csrf.ts,197,2026-07-20T15:51:40+02:00,6,auth,pending,,,
+lib/dataValidator.ts,lib,lib/dataValidator.ts,931,2025-10-22T13:09:14+03:00,2,shared,pending,,,
+lib/db.ts,lib,lib/db.ts,16,2026-06-24T16:14:51+02:00,2,shared,pending,,,
+lib/driveFolders.ts,lib,lib/driveFolders.ts,295,2026-08-14T08:39:44+02:00,3,integrations,pending,,,
+lib/editorBlockValidator.ts,lib,lib/editorBlockValidator.ts,199,2026-07-05T18:07:42Z,3,unreached,pending,,,
+lib/editorValidationAPI.ts,lib,lib/editorValidationAPI.ts,194,2026-03-06T11:03:00+01:00,4,admin,pending,,,
+lib/elementFitValidator.ts,lib,lib/elementFitValidator.ts,362,2026-03-13T10:08:08+01:00,5,admin,pending,,,
+lib/emailNotifications.ts,lib,lib/emailNotifications.ts,136,2026-07-31T09:02:25Z,7,admin,pending,,,
+lib/export/chartValidation.ts,lib,lib/export/chartValidation.ts,317,2026-05-10T20:42:41+02:00,4,shared,pending,,,
+lib/export/csv.ts,lib,lib/export/csv.ts,320,2026-01-13T16:12:29+01:00,3,shared,pending,,,
+lib/export/pdf.ts,lib,lib/export/pdf.ts,467,2025-12-22T21:30:48+01:00,17,shared,pending,,,
+lib/fanmassIntegration.ts,lib,lib/fanmassIntegration.ts,440,2026-08-13T11:17:20Z,3,shared,pending,,,
+lib/fanmassMapping.ts,lib,lib/fanmassMapping.ts,275,2026-08-14T11:56:42+02:00,3,integrations,pending,,,
+lib/featureFlags.ts,lib,lib/featureFlags.ts,129,2026-03-13T10:50:24+01:00,3,shared,pending,,,
+lib/fixtureImporter.ts,lib,lib/fixtureImporter.ts,257,2025-10-19T21:58:41+02:00,1,football-data,pending,,,
+lib/fontSyncCalculator.ts,lib,lib/fontSyncCalculator.ts,220,2026-05-10T20:42:41+02:00,4,shared,pending,,,
+lib/fontTypes.ts,lib,lib/fontTypes.ts,152,2026-06-26T16:36:09+02:00,4,shared,pending,,,
+lib/fontUtils.ts,lib,lib/fontUtils.ts,104,2026-06-26T16:36:09+02:00,4,shared,pending,,,
+lib/footballData.types.ts,lib,lib/footballData.types.ts,90,2025-10-19T21:58:41+02:00,1,shared,pending,,,
+lib/footballDataApi.ts,lib,lib/footballDataApi.ts,108,2025-10-19T21:58:41+02:00,1,shared,pending,,,
+lib/footballDataEnricher.ts,lib,lib/footballDataEnricher.ts,51,2025-10-19T21:58:41+02:00,1,partners,pending,,,
+lib/formulaEngine.ts,lib,lib/formulaEngine.ts,1325,2026-06-26T11:21:18+02:00,32,shared,pending,,,
+lib/googleDriveFolder.ts,lib,lib/googleDriveFolder.ts,49,2026-08-13T11:17:20Z,1,shared,pending,,,
+lib/googleSheets/client.ts,lib,lib/googleSheets/client.ts,490,2026-03-07T12:49:13+01:00,7,shared,pending,,,
+lib/googleSheets/columnMap.ts,lib,lib/googleSheets/columnMap.ts,89,2025-12-28T20:12:45+01:00,17,shared,pending,,,
+lib/googleSheets/columnMappingVisualizer.ts,lib,lib/googleSheets/columnMappingVisualizer.ts,158,2025-12-28T19:09:15+01:00,1,shared,pending,,,
+lib/googleSheets/dynamicMapping.ts,lib,lib/googleSheets/dynamicMapping.ts,243,2026-03-07T12:49:13+01:00,5,shared,pending,,,
+lib/googleSheets/eventTypeDetector.ts,lib,lib/googleSheets/eventTypeDetector.ts,162,2025-12-27T04:54:11+01:00,2,shared,pending,,,
+lib/googleSheets/metrics.ts,lib,lib/googleSheets/metrics.ts,27,2026-02-08T12:08:10+01:00,1,partners,pending,,,
+lib/googleSheets/partnerSheetOps.ts,lib,lib/googleSheets/partnerSheetOps.ts,297,2026-02-08T12:08:10+01:00,1,partners,pending,,,
+lib/googleSheets/pullEvents.ts,lib,lib/googleSheets/pullEvents.ts,359,2026-03-07T12:49:13+01:00,11,shared,pending,,,
+lib/googleSheets/pushEvents.ts,lib,lib/googleSheets/pushEvents.ts,451,2026-03-07T12:49:13+01:00,7,partners,pending,,,
+lib/googleSheets/rowMapper.ts,lib,lib/googleSheets/rowMapper.ts,364,2026-03-07T12:49:13+01:00,8,shared,pending,,,
+lib/googleSheets/template.ts,lib,lib/googleSheets/template.ts,61,2026-02-06T10:22:40+01:00,1,integrations,pending,,,
+lib/googleSheets/types.ts,lib,lib/googleSheets/types.ts,281,2026-03-07T12:49:13+01:00,6,shared,pending,,,
+lib/googleSheetsClient.ts,lib,lib/googleSheetsClient.ts,194,2026-03-07T12:49:13+01:00,3,unreached,pending,,,
+lib/gridSettings.ts,lib,lib/gridSettings.ts,62,2025-09-07T19:35:57+02:00,1,grid-settings,pending,,,
+lib/guides.ts,lib,lib/guides.ts,67,2026-08-13T23:26:45+02:00,1,admin,pending,,,
+lib/hashtagCategoryDisplay.ts,lib,lib/hashtagCategoryDisplay.ts,140,2025-09-01T11:10:54+02:00,1,uncategorised,pending,,,
+lib/hashtagCategoryTypes.ts,lib,lib/hashtagCategoryTypes.ts,229,2025-12-26T15:28:30+01:00,2,shared,pending,,,
+lib/hashtagCategoryUtils.ts,lib,lib/hashtagCategoryUtils.ts,646,2026-03-18T14:55:40+01:00,3,shared,pending,,,
+lib/hashtagUtils.ts,lib,lib/hashtagUtils.ts,152,2025-09-25T11:38:17+02:00,3,unreached,pending,,,
+lib/iconMapping.ts,lib,lib/iconMapping.ts,105,2026-03-07T12:49:13+01:00,3,admin,pending,,,
+lib/imageLayoutUtils.ts,lib,lib/imageLayoutUtils.ts,107,2025-11-02T16:53:03+01:00,1,unreached,pending,,,
+lib/imgbbApi.ts,lib,lib/imgbbApi.ts,221,2025-10-17T13:33:40+02:00,1,shared,pending,,,
+lib/imgbbClientUpload.ts,lib,lib/imgbbClientUpload.ts,42,2026-07-01T12:25:19+02:00,1,shared,pending,,,
+lib/insightsEngine.ts,lib,lib/insightsEngine.ts,468,2026-07-01T23:11:07+02:00,2,analytics,pending,,,
+lib/landingReportSlug.ts,lib,lib/landingReportSlug.ts,13,2026-02-22T19:19:47+01:00,3,uncategorised,pending,,,
+lib/landingSettings.ts,lib,lib/landingSettings.ts,74,2026-02-23T14:12:41+01:00,2,shared,pending,,,
+lib/layoutGrammar.ts,lib,lib/layoutGrammar.ts,64,2026-01-02T01:13:20+01:00,2,shared,pending,,,
+lib/layoutGrammarRuntimeEnforcement.ts,lib,lib/layoutGrammarRuntimeEnforcement.ts,230,2026-01-16T12:21:33+01:00,2,shared,pending,,,
+lib/layoutGrammarValidation.ts,lib,lib/layoutGrammarValidation.ts,543,2025-12-29T21:25:20+01:00,1,unreached,pending,,,
+lib/layoutV2BlockCalculator.ts,lib,lib/layoutV2BlockCalculator.ts,367,2026-01-22T11:55:09+01:00,3,shared,pending,,,
+lib/logger.ts,lib,lib/logger.ts,391,2026-07-05T10:42:49Z,5,shared,pending,,,
+lib/markdownUtils.ts,lib,lib/markdownUtils.ts,196,2026-01-03T20:35:42+01:00,6,shared,pending,,,
+lib/middleware/rateLimit.ts,lib,lib/middleware/rateLimit.ts,73,2026-03-13T10:08:08+01:00,1,v3,pending,,,
+lib/middleware/v3/orgContext.ts,lib,lib/middleware/v3/orgContext.ts,51,2026-03-13T10:08:08+01:00,1,shared,pending,,,
+lib/middleware/v3/validators/hierarchy.ts,lib,lib/middleware/v3/validators/hierarchy.ts,36,2026-03-13T10:08:08+01:00,1,unreached,pending,,,
+lib/models/v3/Activity.ts,lib,lib/models/v3/Activity.ts,51,2026-03-13T10:08:08+01:00,1,shared,pending,,,
+lib/models/v3/ActivityParticipant.ts,lib,lib/models/v3/ActivityParticipant.ts,46,2026-03-13T10:08:08+01:00,1,shared,pending,,,
+lib/models/v3/Entity.ts,lib,lib/models/v3/Entity.ts,45,2026-03-13T10:08:08+01:00,1,shared,pending,,,
+lib/models/v3/EntityRelationship.ts,lib,lib/models/v3/EntityRelationship.ts,41,2026-03-13T10:08:08+01:00,1,unreached,pending,,,
+lib/models/v3/MetricDefinition.ts,lib,lib/models/v3/MetricDefinition.ts,41,2026-03-13T10:08:08+01:00,1,unreached,pending,,,
+lib/models/v3/MetricThreshold.ts,lib,lib/models/v3/MetricThreshold.ts,45,2026-03-13T10:08:08+01:00,1,unreached,pending,,,
+lib/models/v3/MetricValue.ts,lib,lib/models/v3/MetricValue.ts,66,2026-03-13T10:08:08+01:00,1,v3,pending,,,
+lib/models/v3/MigrationHistory.ts,lib,lib/models/v3/MigrationHistory.ts,39,2026-03-13T10:08:08+01:00,1,unreached,pending,,,
+lib/models/v3/Organization.ts,lib,lib/models/v3/Organization.ts,36,2026-03-13T10:08:08+01:00,1,shared,pending,,,
+lib/mongodb.ts,lib,lib/mongodb.ts,111,2026-06-25T16:40:47+02:00,6,shared,pending,,,
+lib/mongoose-v3.ts,lib,lib/mongoose-v3.ts,52,2026-06-25T16:40:47+02:00,2,shared,pending,,,
+lib/notificationUtils.ts,lib,lib/notificationUtils.ts,159,2026-07-05T22:19:10Z,5,data,pending,,,
+lib/pagePassword.ts,lib,lib/pagePassword.ts,388,2026-06-30T21:50:45+02:00,18,shared,pending,,,
+lib/pageStyleTypesEnhanced.ts,lib,lib/pageStyleTypesEnhanced.ts,317,2025-12-22T20:16:37+01:00,7,unreached,pending,,,
+lib/partner.types.ts,lib,lib/partner.types.ts,268,2026-07-31T14:11:59Z,19,admin,pending,,,
+lib/partnerIdentifier.ts,lib,lib/partnerIdentifier.ts,82,2026-06-30T21:32:39+02:00,2,shared,pending,,,
+lib/performanceUtils.ts,lib,lib/performanceUtils.ts,243,2026-03-07T12:49:13+01:00,2,shared,pending,,,
+lib/permissions.ts,lib,lib/permissions.ts,139,2026-08-14T15:24:58+02:00,12,shared,pending,,,
+lib/projectStatsUtils.ts,lib,lib/projectStatsUtils.ts,38,2026-03-06T12:51:58+01:00,2,shared,pending,,,
+lib/rateLimit.ts,lib,lib/rateLimit.ts,262,2026-02-21T14:27:57+01:00,4,shared,pending,,,
+lib/report-calculator.ts,lib,lib/report-calculator.ts,726,2026-05-10T20:42:41+02:00,22,shared,pending,,,
+lib/report-resolver.ts,lib,lib/report-resolver.ts,309,2025-12-18T18:09:34+01:00,1,shared,pending,,,
+lib/reportContentSlots.ts,lib,lib/reportContentSlots.ts,22,2026-07-09T11:48:31+02:00,1,uncategorised,pending,,,
+lib/reportPeriodValidation.ts,lib,lib/reportPeriodValidation.ts,133,2026-06-24T14:59:40+02:00,1,shared,pending,,,
+lib/reportPeriods.ts,lib,lib/reportPeriods.ts,132,2026-05-22T12:32:05+02:00,1,shared,pending,,,
+lib/reportRuntime.ts,lib,lib/reportRuntime.ts,182,2026-05-22T12:32:05+02:00,1,shared,pending,,,
+lib/reportStyleTypes.ts,lib,lib/reportStyleTypes.ts,412,2026-02-23T18:28:33+01:00,4,shared,pending,,,
+lib/reportTemplateTypes.ts,lib,lib/reportTemplateTypes.ts,157,2025-12-19T11:56:46+01:00,3,reporting,pending,,,
+lib/reportVariantFormValidation.ts,lib,lib/reportVariantFormValidation.ts,47,2026-06-24T14:59:40+02:00,1,admin,pending,,,
+lib/reportVariantPeriodAudit.ts,lib,lib/reportVariantPeriodAudit.ts,46,2026-06-24T14:59:40+02:00,1,unreached,pending,,,
+lib/reportVariants.ts,lib,lib/reportVariants.ts,455,2026-06-30T21:32:39+02:00,4,shared,pending,,,
+lib/routeProtection.ts,lib,lib/routeProtection.ts,115,2026-05-13T00:02:23+02:00,6,unreached,pending,,,
+lib/sanitize.ts,lib,lib/sanitize.ts,133,2026-02-21T14:27:57+01:00,5,shared,pending,,,
+lib/sessionTokens.ts,lib,lib/sessionTokens.ts,182,2026-02-07T17:47:06+01:00,3,shared,pending,,,
+lib/shareables/auth/AuthProvider.tsx,lib,lib/shareables/auth/AuthProvider.tsx,473,2026-03-07T12:49:13+01:00,6,unreached,pending,,,
+lib/shareables/auth/LoginForm.tsx,lib,lib/shareables/auth/LoginForm.tsx,334,2026-03-07T12:49:13+01:00,4,unreached,pending,,,
+lib/shareables/auth/index.ts,lib,lib/shareables/auth/index.ts,324,2026-03-07T12:49:13+01:00,4,unreached,pending,,,
+lib/shareables/auth/passwordAuth.ts,lib,lib/shareables/auth/passwordAuth.ts,349,2026-03-07T12:49:13+01:00,3,unreached,pending,,,
+lib/shareables/auth/session.ts,lib,lib/shareables/auth/session.ts,401,2026-04-24T14:31:57+02:00,3,unreached,pending,,,
+lib/shareables/auth/types.ts,lib,lib/shareables/auth/types.ts,202,2026-03-07T12:49:13+01:00,3,unreached,pending,,,
+lib/shareables/components/CodeViewer.tsx,lib,lib/shareables/components/CodeViewer.tsx,363,2026-03-07T12:49:13+01:00,6,unreached,pending,,,
+lib/shareables/components/CopyButton.tsx,lib,lib/shareables/components/CopyButton.tsx,498,2026-03-07T12:49:13+01:00,3,unreached,pending,,,
+lib/shareables/components/LiveDemo.tsx,lib,lib/shareables/components/LiveDemo.tsx,521,2026-03-07T12:49:13+01:00,3,unreached,pending,,,
+lib/shareables/metadata.ts,lib,lib/shareables/metadata.ts,200,2026-05-03T11:33:07+02:00,4,unreached,pending,,,
+lib/slugUtils.ts,lib,lib/slugUtils.ts,515,2026-02-22T10:42:41+01:00,15,shared,pending,,,
+lib/sponsorshipHub.ts,lib,lib/sponsorshipHub.ts,1432,2026-05-21T12:55:24+02:00,5,analytics,pending,,,
+lib/sportsDbApi.ts,lib,lib/sportsDbApi.ts,327,2025-10-19T21:58:41+02:00,3,sports-db,pending,,,
+lib/sportsDbHashtagEnricher.ts,lib,lib/sportsDbHashtagEnricher.ts,170,2025-10-17T19:11:19+02:00,1,admin,pending,,,
+lib/sportsDbTypes.ts,lib,lib/sportsDbTypes.ts,153,2025-10-19T21:58:41+02:00,2,shared,pending,,,
+lib/sportsdbFixtureImporter.ts,lib,lib/sportsdbFixtureImporter.ts,246,2025-10-19T21:58:41+02:00,1,sports-db,pending,,,
+lib/ssoClient.ts,lib,lib/ssoClient.ts,62,2026-02-21T09:38:15+01:00,1,admin,pending,,,
+lib/statsValidator.ts,lib,lib/statsValidator.ts,192,2025-12-15T13:40:11+01:00,2,unreached,pending,,,
+lib/tableMarkdownUtils.ts,lib,lib/tableMarkdownUtils.ts,85,2025-12-29T04:24:08+01:00,1,shared,pending,,,
+lib/templateCompatibilityValidator.ts,lib,lib/templateCompatibilityValidator.ts,279,2026-01-13T14:37:39+01:00,1,reporting,pending,,,
+lib/textFontSizeCalculator.ts,lib,lib/textFontSizeCalculator.ts,163,2026-01-03T20:35:42+01:00,3,shared,pending,,,
+lib/textRepair.ts,lib,lib/textRepair.ts,49,2026-07-31T18:28:02Z,1,admin,pending,,,
+lib/totalFans.ts,lib,lib/totalFans.ts,40,2026-03-06T12:51:58+01:00,1,shared,pending,,,
+lib/tour/config/segmentTourSteps.ts,lib,lib/tour/config/segmentTourSteps.ts,34,2026-08-04T22:06:40Z,1,unreached,pending,,,
+lib/tour/config/welcomeTourSteps.ts,lib,lib/tour/config/welcomeTourSteps.ts,25,2026-08-04T22:06:40Z,1,unreached,pending,,,
+lib/tour/storage.ts,lib,lib/tour/storage.ts,60,2026-08-04T22:06:40Z,1,unreached,pending,,,
+lib/tour/types.ts,lib,lib/tour/types.ts,23,2026-08-04T22:06:40Z,1,unreached,pending,,,
+lib/tour/useTourController.ts,lib,lib/tour/useTourController.ts,100,2026-08-04T22:06:40Z,1,unreached,pending,,,
+lib/trendAnalysis.ts,lib,lib/trendAnalysis.ts,457,2025-10-19T15:04:05+02:00,1,analytics,pending,,,
+lib/types/api.ts,lib,lib/types/api.ts,281,2026-06-26T11:21:18+02:00,6,shared,pending,,,
+lib/types/hashtags.ts,lib,lib/types/hashtags.ts,141,2025-10-02T13:04:19+02:00,1,shared,pending,,,
+lib/ui/mantineTheme.ts,lib,lib/ui/mantineTheme.ts,99,2026-07-03T13:01:06+02:00,4,unreached,pending,,,
+lib/users.ts,lib,lib/users.ts,348,2026-07-30T21:32:45Z,12,shared,pending,,,
+lib/v3/compatAdapter.ts,lib,lib/v3/compatAdapter.ts,62,2026-03-13T10:08:08+01:00,1,shared,pending,,,
+lib/v3/middleware.ts,lib,lib/v3/middleware.ts,54,2026-03-16T17:10:01+01:00,1,v3,pending,,,
+lib/v3/reporting/reportResolver.ts,lib,lib/v3/reporting/reportResolver.ts,121,2026-03-16T11:08:13+01:00,3,shared,pending,,,
+lib/v3/reporting/resolver.ts,lib,lib/v3/reporting/resolver.ts,81,2026-03-14T16:26:02+01:00,2,v3,pending,,,
+lib/v3/syncEngine.ts,lib,lib/v3/syncEngine.ts,152,2026-03-14T16:26:02+01:00,2,shared,pending,,,
+lib/validateTypographyRatios.ts,lib,lib/validateTypographyRatios.ts,182,2026-01-08T12:04:37+01:00,2,unreached,pending,,,
+lib/variableRefs.ts,lib,lib/variableRefs.ts,49,2025-10-28T12:57:14+01:00,6,unreached,pending,,,
+lib/webhooks.ts,lib,lib/webhooks.ts,474,2026-03-07T12:49:13+01:00,3,unreached,pending,,,
+components/AdminDashboard.tsx,component,components/AdminDashboard.tsx,76,2026-05-22T15:20:51+02:00,35,admin,pending,,,
+components/AdminLayout.tsx,component,components/AdminLayout.tsx,44,2026-08-04T22:06:40Z,7,unreached,pending,,,
+components/AnalyticsWorkspaceNav.tsx,component,components/AnalyticsWorkspaceNav.tsx,52,2026-05-22T15:20:51+02:00,3,analytics,pending,,,
+components/BitlyLinksEditor.tsx,component,components/BitlyLinksEditor.tsx,211,2025-12-17T15:36:21+01:00,6,admin,pending,,,
+components/BitlyLinksSelector.tsx,component,components/BitlyLinksSelector.tsx,314,2026-01-03T10:05:49+01:00,3,admin,pending,,,
+components/BlockEditor.tsx,component,components/BlockEditor.tsx,160,2026-01-01T02:17:05+01:00,1,unreached,pending,,,
+components/BuilderMode.tsx,component,components/BuilderMode.tsx,363,2026-05-11T16:12:45+02:00,14,uncategorised,pending,,,
+components/CategorizedHashtagBubble.tsx,component,components/CategorizedHashtagBubble.tsx,78,2025-12-21T22:27:49+01:00,4,uncategorised,pending,,,
+components/CellWrapper.tsx,component,components/CellWrapper.tsx,248,2026-02-08T12:08:10+01:00,9,shared,pending,,,
+components/ChartAlgorithmManager.tsx,component,components/ChartAlgorithmManager.tsx,2149,2026-08-14T12:03:56+02:00,67,admin,pending,,,
+components/ChartBuilderBar.tsx,component,components/ChartBuilderBar.tsx,131,2026-05-11T16:12:45+02:00,9,uncategorised,pending,,,
+components/ChartBuilderImage.tsx,component,components/ChartBuilderImage.tsx,164,2026-05-11T16:12:45+02:00,9,uncategorised,pending,,,
+components/ChartBuilderKPI.tsx,component,components/ChartBuilderKPI.tsx,104,2026-05-11T16:12:45+02:00,7,uncategorised,pending,,,
+components/ChartBuilderPie.tsx,component,components/ChartBuilderPie.tsx,136,2026-05-11T16:12:45+02:00,9,uncategorised,pending,,,
+components/ChartBuilderTable.tsx,component,components/ChartBuilderTable.tsx,158,2026-05-11T16:12:45+02:00,8,uncategorised,pending,,,
+components/ChartBuilderText.tsx,component,components/ChartBuilderText.tsx,128,2026-05-11T16:12:45+02:00,11,uncategorised,pending,,,
+components/ChartBuilderValueChain.tsx,component,components/ChartBuilderValueChain.tsx,153,2026-05-11T16:12:45+02:00,5,uncategorised,pending,,,
+components/ChartConfiguration.tsx,component,components/ChartConfiguration.tsx,649,2026-01-05T14:53:27+01:00,3,unreached,pending,,,
+components/ChartErrorBoundary.tsx,component,components/ChartErrorBoundary.tsx,85,2026-01-13T15:03:43+01:00,1,shared,pending,,,
+components/ColorPickerField.tsx,component,components/ColorPickerField.tsx,145,2026-01-08T10:49:01+01:00,2,admin,pending,,,
+components/ColoredCard.tsx,component,components/ColoredCard.tsx,51,2026-06-25T05:02:39+02:00,8,shared,pending,,,
+components/ColoredHashtagBubble.tsx,component,components/ColoredHashtagBubble.tsx,185,2026-08-08T16:57:06Z,12,shared,pending,,,
+components/ContactForm.tsx,component,components/ContactForm.tsx,91,2026-02-21T16:09:02+01:00,2,uncategorised,pending,,,
+components/DataQualityInsights.tsx,component,components/DataQualityInsights.tsx,360,2025-12-21T09:52:34+01:00,3,unreached,pending,,,
+components/DriveFoldersEditor.tsx,component,components/DriveFoldersEditor.tsx,274,2026-08-14T10:53:58+02:00,4,admin,pending,,,
+components/EditorDashboard.tsx,component,components/EditorDashboard.tsx,898,2026-03-16T11:40:58+01:00,50,uncategorised,pending,,,
+components/EmojiSelector.tsx,component,components/EmojiSelector.tsx,143,2025-11-11T14:04:08+01:00,1,admin,pending,,,
+components/FootballDataFixtureCard.tsx,component,components/FootballDataFixtureCard.tsx,40,2025-10-20T16:33:11+02:00,2,unreached,pending,,,
+components/GoogleAnalytics.tsx,component,components/GoogleAnalytics.tsx,32,2026-03-13T16:13:37+01:00,3,unreached,pending,,,
+components/GoogleSheetsConnectModal.tsx,component,components/GoogleSheetsConnectModal.tsx,237,2026-01-05T14:53:27+01:00,4,admin,pending,,,
+components/GoogleSheetsSyncButtons.tsx,component,components/GoogleSheetsSyncButtons.tsx,185,2026-03-07T12:49:13+01:00,2,admin,pending,,,
+components/GoogleSheetsSyncStatus.tsx,component,components/GoogleSheetsSyncStatus.tsx,315,2026-02-04T12:58:36+01:00,4,admin,pending,,,
+components/HashtagCategoryDebug.tsx,component,components/HashtagCategoryDebug.tsx,99,2025-12-21T22:27:49+01:00,3,uncategorised,pending,,,
+components/HashtagEditor.tsx,component,components/HashtagEditor.tsx,455,2025-10-20T15:12:54+02:00,15,admin,pending,,,
+components/HashtagInput.tsx,component,components/HashtagInput.tsx,277,2026-01-05T14:53:27+01:00,6,unreached,pending,,,
+components/HashtagMultiSelect.tsx,component,components/HashtagMultiSelect.tsx,277,2026-08-08T16:57:06Z,10,admin,pending,,,
+components/ImageLightbox.tsx,component,components/ImageLightbox.tsx,119,2025-12-21T22:27:49+01:00,8,unreached,pending,,,
+components/ImageUploadField.tsx,component,components/ImageUploadField.tsx,153,2026-07-01T12:25:19+02:00,5,shared,pending,,,
+components/ImageUploader.tsx,component,components/ImageUploader.tsx,189,2026-07-01T12:25:19+02:00,6,shared,pending,,,
+components/InsightCard.tsx,component,components/InsightCard.tsx,188,2025-12-21T22:27:49+01:00,3,analytics,pending,,,
+components/LandingKPIChart.tsx,component,components/LandingKPIChart.tsx,67,2026-03-06T11:55:07+01:00,5,unreached,pending,,,
+components/LandingPage.tsx,component,components/LandingPage.tsx,472,2026-02-23T18:28:33+01:00,21,uncategorised,pending,,,
+components/LandingReportRoot.tsx,component,components/LandingReportRoot.tsx,291,2026-03-07T12:49:13+01:00,4,unreached,pending,,,
+components/LandingValueChainSection.tsx,component,components/LandingValueChainSection.tsx,91,2026-02-21T16:09:02+01:00,2,unreached,pending,,,
+components/MaterialIcon.tsx,component,components/MaterialIcon.tsx,118,2025-12-29T12:05:08+01:00,4,shared,pending,,,
+components/MaterialIconsPreload.tsx,component,components/MaterialIconsPreload.tsx,67,2026-04-24T14:39:18+02:00,3,unreached,pending,,,
+components/NotificationPanel.tsx,component,components/NotificationPanel.tsx,278,2026-07-05T22:22:01Z,8,unreached,pending,,,
+components/OrganizationEditorDashboard.tsx,component,components/OrganizationEditorDashboard.tsx,489,2026-05-22T15:53:19+02:00,5,uncategorised,pending,,,
+components/OrganizationMembersSelector.tsx,component,components/OrganizationMembersSelector.tsx,193,2026-04-24T14:57:27+02:00,1,admin,pending,,,
+components/PagePasswordLogin.tsx,component,components/PagePasswordLogin.tsx,257,2026-04-27T09:37:36+02:00,10,uncategorised,pending,,,
+components/PageStyleEditor.tsx,component,components/PageStyleEditor.tsx,1055,2025-12-25T22:22:55+01:00,10,unreached,pending,,,
+components/PartnerEditorDashboard.tsx,component,components/PartnerEditorDashboard.tsx,377,2026-05-22T15:53:19+02:00,12,uncategorised,pending,,,
+components/PartnerSelector.tsx,component,components/PartnerSelector.tsx,222,2026-02-06T10:22:40+01:00,4,admin,pending,,,
+components/PasswordGate.tsx,component,components/PasswordGate.tsx,93,2025-12-21T19:33:21+01:00,3,uncategorised,pending,,,
+components/PasswordModal.tsx,component,components/PasswordModal.tsx,184,2026-03-16T11:40:58+01:00,3,admin,pending,,,
+components/PredictiveFormattingInput.tsx,component,components/PredictiveFormattingInput.tsx,183,2025-11-12T17:16:56+01:00,3,admin,pending,,,
+components/ProjectSelector.tsx,component,components/ProjectSelector.tsx,220,2026-02-06T10:22:40+01:00,3,admin,pending,,,
+components/ReportContentManager.tsx,component,components/ReportContentManager.tsx,370,2026-07-09T11:48:31+02:00,10,uncategorised,pending,,,
+components/ReportStylePreview.tsx,component,components/ReportStylePreview.tsx,271,2026-03-06T11:55:07+01:00,6,admin,pending,,,
+components/ReportingWorkspaceNav.tsx,component,components/ReportingWorkspaceNav.tsx,52,2026-05-22T15:20:51+02:00,2,admin,pending,,,
+components/ResourceLoader.tsx,component,components/ResourceLoader.tsx,186,2026-02-04T12:58:36+01:00,4,unreached,pending,,,
+components/RoleDropdown.tsx,component,components/RoleDropdown.tsx,209,2026-02-07T17:47:06+01:00,3,admin,pending,,,
+components/SaveStatusIndicator.tsx,component,components/SaveStatusIndicator.tsx,104,2025-12-21T19:44:15+01:00,2,admin,pending,,,
+components/SemanticBadge.tsx,component,components/SemanticBadge.tsx,35,2026-05-22T15:38:26+02:00,1,admin,pending,,,
+components/SharePopup.tsx,component,components/SharePopup.tsx,242,2026-04-27T09:37:36+02:00,10,admin,pending,,,
+components/Sidebar.tsx,component,components/Sidebar.tsx,268,2026-08-04T22:06:40Z,36,unreached,pending,,,
+components/StandardState.tsx,component,components/StandardState.tsx,32,2025-10-20T16:33:11+02:00,4,unreached,pending,,,
+components/StatsCharts.tsx,component,components/StatsCharts.tsx,547,2025-12-21T15:07:14+01:00,9,unreached,pending,,,
+components/StylePreview.tsx,component,components/StylePreview.tsx,344,2026-01-06T12:30:20+01:00,9,unreached,pending,,,
+components/TextHashtagDisplay.tsx,component,components/TextHashtagDisplay.tsx,48,2025-10-20T16:33:11+02:00,2,unreached,pending,,,
+components/TextareaField.tsx,component,components/TextareaField.tsx,71,2025-10-30T10:22:22+01:00,1,uncategorised,pending,,,
+components/TheSportsDBSearch.tsx,component,components/TheSportsDBSearch.tsx,178,2025-11-13T11:23:35+01:00,2,admin,pending,,,
+components/TopHeader.tsx,component,components/TopHeader.tsx,179,2026-08-04T22:06:40Z,10,unreached,pending,,,
+components/UnifiedAdminHeroWithSearch.tsx,component,components/UnifiedAdminHeroWithSearch.tsx,191,2026-05-23T15:42:56+02:00,3,shared,pending,,,
+components/UnifiedAdminPage.tsx,component,components/UnifiedAdminPage.tsx,227,2025-12-21T19:44:15+01:00,8,admin,pending,,,
+components/UnifiedAdminViewToggle.tsx,component,components/UnifiedAdminViewToggle.tsx,77,2026-05-23T15:42:56+02:00,3,shared,pending,,,
+components/UnifiedCardView.tsx,component,components/UnifiedCardView.tsx,183,2026-06-24T13:37:37+02:00,5,admin,pending,,,
+components/UnifiedCheckboxField.tsx,component,components/UnifiedCheckboxField.tsx,32,2026-05-23T09:34:49+02:00,2,uncategorised,pending,,,
+components/UnifiedHashtagInput.tsx,component,components/UnifiedHashtagInput.tsx,448,2026-07-02T08:24:27+02:00,13,shared,pending,,,
+components/UnifiedInputField.tsx,component,components/UnifiedInputField.tsx,41,2026-06-24T14:59:40+02:00,4,shared,pending,,,
+components/UnifiedListView.tsx,component,components/UnifiedListView.tsx,194,2026-06-24T13:37:37+02:00,5,admin,pending,,,
+components/UnifiedNumberInput.tsx,component,components/UnifiedNumberInput.tsx,143,2025-12-29T02:27:48+01:00,2,uncategorised,pending,,,
+components/UnifiedPageHero.tsx,component,components/UnifiedPageHero.tsx,314,2026-02-04T12:58:36+01:00,24,unreached,pending,,,
+components/UnifiedProjectsSection.tsx,component,components/UnifiedProjectsSection.tsx,111,2025-11-04T20:56:01+01:00,7,uncategorised,pending,,,
+components/UnifiedSelectField.tsx,component,components/UnifiedSelectField.tsx,41,2026-06-25T11:22:10+02:00,5,shared,pending,,,
+components/UnifiedStatsHero.tsx,component,components/UnifiedStatsHero.tsx,109,2026-01-08T10:49:01+01:00,16,unreached,pending,,,
+components/UnifiedTextInput.tsx,component,components/UnifiedTextInput.tsx,110,2026-05-23T09:34:49+02:00,2,shared,pending,,,
+components/admin/AdminActionRail.tsx,component,components/admin/AdminActionRail.tsx,148,2026-06-24T13:37:37+02:00,1,admin,pending,,,
+components/admin/EntityFormModal.tsx,component,components/admin/EntityFormModal.tsx,91,2026-06-25T11:22:10+02:00,1,admin,pending,,,
+components/analytics/AnalyticsChartTablePanel.tsx,component,components/analytics/AnalyticsChartTablePanel.tsx,32,2026-05-23T00:59:27+02:00,1,analytics,pending,,,
+components/analytics/AnalyticsSectionCard.tsx,component,components/analytics/AnalyticsSectionCard.tsx,47,2026-06-25T05:02:39+02:00,2,analytics,pending,,,
+components/analytics/AnalyticsStatePanel.tsx,component,components/analytics/AnalyticsStatePanel.tsx,51,2026-06-25T05:02:39+02:00,2,analytics,pending,,,
+components/analytics/AnalyticsToolbar.tsx,component,components/analytics/AnalyticsToolbar.tsx,61,2026-06-25T05:02:39+02:00,2,analytics,pending,,,
+components/analytics/InsightCard.tsx,component,components/analytics/InsightCard.tsx,173,2025-10-19T15:11:40+02:00,1,analytics,pending,,,
+components/analytics/LineChart.tsx,component,components/analytics/LineChart.tsx,253,2026-05-23T00:59:27+02:00,6,analytics,pending,,,
+components/analytics/MetricCard.tsx,component,components/analytics/MetricCard.tsx,117,2026-07-03T13:01:06+02:00,5,analytics,pending,,,
+components/analytics/index.ts,component,components/analytics/index.ts,23,2026-05-23T00:59:27+02:00,2,analytics,pending,,,
+components/charts/ChartBase.tsx,component,components/charts/ChartBase.tsx,106,2026-04-24T14:31:57+02:00,6,analytics,pending,,,
+components/charts/ImageChart.tsx,component,components/charts/ImageChart.tsx,100,2025-12-21T20:44:13+01:00,12,unreached,pending,,,
+components/charts/KPICard.tsx,component,components/charts/KPICard.tsx,311,2026-03-16T17:10:01+01:00,6,unreached,pending,,,
+components/charts/PieChart.tsx,component,components/charts/PieChart.tsx,313,2026-05-22T15:53:19+02:00,8,unreached,pending,,,
+components/charts/TextChart.tsx,component,components/charts/TextChart.tsx,209,2026-01-27T15:02:58+01:00,7,unreached,pending,,,
+components/charts/VerticalBarChart.tsx,component,components/charts/VerticalBarChart.tsx,325,2026-05-22T15:53:19+02:00,9,unreached,pending,,,
+components/charts/index.ts,component,components/charts/index.ts,25,2025-10-30T10:22:22+01:00,2,unreached,pending,,,
+components/modals/BaseModal.tsx,component,components/modals/BaseModal.tsx,119,2026-05-23T10:27:03+02:00,7,admin,pending,,,
+components/modals/ConfirmDialog.tsx,component,components/modals/ConfirmDialog.tsx,135,2026-05-23T10:04:59+02:00,2,admin,pending,,,
+components/modals/FormModal.tsx,component,components/modals/FormModal.tsx,212,2026-05-23T10:04:59+02:00,3,admin,pending,,,
+components/modals/index.ts,component,components/modals/index.ts,18,2025-11-01T16:33:21+01:00,1,admin,pending,,,
+components/reports/PublicReportShell.tsx,component,components/reports/PublicReportShell.tsx,61,2026-06-25T11:22:10+02:00,1,shared,pending,,,
+components/tour/TourMenu.tsx,component,components/tour/TourMenu.tsx,201,2026-08-04T22:20:22Z,2,unreached,pending,,,
+components/tour/TourOverlay.tsx,component,components/tour/TourOverlay.tsx,241,2026-08-04T22:20:22Z,2,unreached,pending,,,
+hooks/useAdminAuth.ts,hook,hooks/useAdminAuth.ts,64,2025-12-22T12:23:36+01:00,3,shared,pending,,,
+hooks/useAvailableFonts.ts,hook,hooks/useAvailableFonts.ts,72,2026-03-16T12:06:35+01:00,3,admin,pending,,,
+hooks/useChartExport.ts,hook,hooks/useChartExport.ts,95,2025-10-03T09:49:30+02:00,1,analytics,pending,,,
+hooks/useDebouncedValue.ts,hook,hooks/useDebouncedValue.ts,17,2025-10-19T12:28:04+02:00,1,admin,pending,,,
+hooks/useGoogleSheetsConnector.ts,hook,hooks/useGoogleSheetsConnector.ts,72,2026-02-06T10:22:40+01:00,1,unreached,pending,,,
+hooks/useHashtagColorResolver.ts,hook,hooks/useHashtagColorResolver.ts,139,2025-09-02T12:11:52+02:00,1,shared,pending,,,
+hooks/useHashtags.ts,hook,hooks/useHashtags.ts,159,2025-10-19T12:28:04+02:00,5,uncategorised,pending,,,
+hooks/useReportData.ts,hook,hooks/useReportData.ts,421,2026-05-22T12:32:05+02:00,13,shared,pending,,,
+hooks/useReportExport.ts,hook,hooks/useReportExport.ts,219,2026-01-13T16:57:08+01:00,2,shared,pending,,,
+hooks/useReportLayout.ts,hook,hooks/useReportLayout.ts,301,2026-01-22T11:55:09+01:00,5,shared,pending,,,
+hooks/useReportStyle.ts,hook,hooks/useReportStyle.ts,124,2025-12-24T13:34:24+01:00,10,shared,pending,,,
+hooks/useUnifiedTextFontSize.ts,hook,hooks/useUnifiedTextFontSize.ts,215,2026-04-24T14:31:57+02:00,5,shared,pending,,,
+tests/admin-action-rail.test.tsx,test,tests/admin-action-rail.test.tsx,121,2026-08-08T16:47:40Z,2,tests,pending,,,
+tests/ai-analysis-summary.test.ts,test,tests/ai-analysis-summary.test.ts,52,2026-08-14T18:33:42+02:00,1,tests,pending,,,
+tests/ai-analytics.test.ts,test,tests/ai-analytics.test.ts,93,2026-08-14T11:56:42+02:00,1,tests,pending,,,
+tests/ai-variable-hint.test.ts,test,tests/ai-variable-hint.test.ts,65,2026-08-14T12:03:56+02:00,1,tests,pending,,,
+tests/bitly-export.test.ts,test,tests/bitly-export.test.ts,71,2026-07-09T11:49:03+02:00,1,tests,pending,,,
+tests/chart-data-validation.test.ts,test,tests/chart-data-validation.test.ts,348,2026-03-07T13:35:29+01:00,1,tests,pending,,,
+tests/chart-preset-validation.test.ts,test,tests/chart-preset-validation.test.ts,70,2026-03-18T14:55:40+01:00,1,tests,pending,,,
+tests/editor-content-metadata.test.ts,test,tests/editor-content-metadata.test.ts,70,2026-07-05T18:07:42Z,1,tests,pending,,,
+tests/export-csv-formatting.test.ts,test,tests/export-csv-formatting.test.ts,355,2026-05-10T20:42:41+02:00,2,tests,pending,,,
+tests/export-parity.test.ts,test,tests/export-parity.test.ts,230,2026-03-07T13:35:29+01:00,1,tests,pending,,,
+tests/fanmass-report-variables.test.ts,test,tests/fanmass-report-variables.test.ts,95,2026-07-01T22:39:14+02:00,2,tests,pending,,,
+tests/fixtures/layoutV2/validate-fixtures.js,test,tests/fixtures/layoutV2/validate-fixtures.js,83,2026-03-07T13:35:29+01:00,1,tests,pending,,,
+tests/formula-engine-production-like.test.ts,test,tests/formula-engine-production-like.test.ts,129,2026-03-07T13:35:29+01:00,1,tests,pending,,,
+tests/formula-error-handling.test.ts,test,tests/formula-error-handling.test.ts,232,2026-03-07T13:35:29+01:00,1,tests,pending,,,
+tests/height-calculation.test.ts,test,tests/height-calculation.test.ts,284,2026-03-07T13:35:29+01:00,1,tests,pending,,,
+tests/height-extreme-density.test.ts,test,tests/height-extreme-density.test.ts,110,2026-03-13T10:08:08+01:00,1,tests,pending,,,
+tests/insights-overall-score.test.ts,test,tests/insights-overall-score.test.ts,57,2026-07-01T23:11:07+02:00,1,tests,pending,,,
+tests/layout-grammar/layout-grammar.test.ts,test,tests/layout-grammar/layout-grammar.test.ts,634,2026-03-07T13:35:29+01:00,1,tests,pending,,,
+tests/layout-grammar-runtime-enforcement.test.ts,test,tests/layout-grammar-runtime-enforcement.test.ts,408,2026-03-16T11:40:58+01:00,2,tests,pending,,,
+tests/layoutV2-packing.test.ts,test,tests/layoutV2-packing.test.ts,155,2026-03-07T13:35:29+01:00,1,tests,pending,,,
+tests/layoutV2-regression.test.ts,test,tests/layoutV2-regression.test.ts,447,2026-03-07T13:35:29+01:00,1,tests,pending,,,
+tests/layoutV2-variable-aspect-ratio.test.ts,test,tests/layoutV2-variable-aspect-ratio.test.ts,272,2026-03-07T13:35:29+01:00,1,tests,pending,,,
+tests/mobile-admin-action-contract.test.ts,test,tests/mobile-admin-action-contract.test.ts,34,2026-08-08T16:47:40Z,2,tests,pending,,,
+tests/nav-menu-permissions.test.ts,test,tests/nav-menu-permissions.test.ts,36,2026-08-14T15:24:58+02:00,1,tests,pending,,,
+tests/notification-dedupe.test.ts,test,tests/notification-dedupe.test.ts,56,2026-07-05T22:19:10Z,1,tests,pending,,,
+tests/page-password-partner-alias.test.ts,test,tests/page-password-partner-alias.test.ts,207,2026-06-30T21:50:45+02:00,2,tests,pending,,,
+tests/partner-identifier.test.ts,test,tests/partner-identifier.test.ts,65,2026-06-30T21:32:39+02:00,2,tests,pending,,,
+tests/report-content-slot-holes.test.ts,test,tests/report-content-slot-holes.test.ts,33,2026-07-09T11:48:31+02:00,1,tests,pending,,,
+tests/report-period-validation.test.ts,test,tests/report-period-validation.test.ts,97,2026-06-24T14:59:40+02:00,1,tests,pending,,,
+tests/report-variant-period-audit.test.ts,test,tests/report-variant-period-audit.test.ts,50,2026-06-24T14:59:40+02:00,1,tests,pending,,,
+tests/sanitize-feature-flag.test.ts,test,tests/sanitize-feature-flag.test.ts,29,2026-03-07T13:35:29+01:00,1,tests,pending,,,
+tests/security/auth.test.ts,test,tests/security/auth.test.ts,54,2026-03-13T10:08:08+01:00,1,tests,pending,,,
+tests/security/formulaSafety.test.ts,test,tests/security/formulaSafety.test.ts,34,2026-05-10T20:42:41+02:00,2,tests,pending,,,
+tests/security/sanitization.test.ts,test,tests/security/sanitization.test.ts,53,2026-03-13T10:08:08+01:00,1,tests,pending,,,
+tests/template-compatibility.test.ts,test,tests/template-compatibility.test.ts,407,2026-03-07T13:35:29+01:00,1,tests,pending,,,
+tests/typography-edge-cases.test.ts,test,tests/typography-edge-cases.test.ts,234,2026-03-07T13:35:29+01:00,1,tests,pending,,,
+tests/unified-select-field-contract.test.tsx,test,tests/unified-select-field-contract.test.tsx,33,2026-06-24T14:59:40+02:00,1,tests,pending,,,
+scripts/add-bar-charts.js,script,scripts/add-bar-charts.js,132,2025-11-02T21:13:40+01:00,2,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/add-currency-type-to-charts.js,script,scripts/add-currency-type-to-charts.js,172,2025-11-02T21:13:40+01:00,2,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/add-image-density 3.js,script,scripts/add-image-density 3.js,83,2025-08-28T06:47:03+02:00,1,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/add-image-density 4.js,script,scripts/add-image-density 4.js,83,2025-08-28T06:47:03+02:00,1,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/add-kpi-chart 3.js,script,scripts/add-kpi-chart 3.js,84,2025-08-28T06:47:03+02:00,1,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/add-kpi-chart 4.js,script,scripts/add-kpi-chart 4.js,84,2025-08-28T06:47:03+02:00,1,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/add-kpi-charts.js,script,scripts/add-kpi-charts.js,200,2025-11-02T21:13:40+01:00,2,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/add-mandatory-kyc-variables.ts,script,scripts/add-mandatory-kyc-variables.ts,125,2026-01-03T10:53:22+01:00,1,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/add-partner-report-variables.js,script,scripts/add-partner-report-variables.js,140,2025-10-30T10:22:22+01:00,1,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/add-pie-charts.js,script,scripts/add-pie-charts.js,157,2025-11-02T21:13:40+01:00,2,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/add-report-image-variables.js,script,scripts/add-report-image-variables.js,120,2025-12-16T19:21:56+01:00,1,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/add-vent-variables-and-charts.js,script,scripts/add-vent-variables-and-charts.js,228,2025-11-02T21:13:40+01:00,2,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/addGameVariables.ts,script,scripts/addGameVariables.ts,81,2025-12-27T07:40:07+01:00,1,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/addNewVariables.ts,script,scripts/addNewVariables.ts,80,2025-12-27T08:18:07+01:00,1,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/addReportContentGroup.ts,script,scripts/addReportContentGroup.ts,45,2025-11-17T16:15:23+01:00,1,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/addViewSlugToPartners.ts,script,scripts/addViewSlugToPartners.ts,90,2026-06-30T21:32:39+02:00,2,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/addVisitorKYCVariables.js,script,scripts/addVisitorKYCVariables.js,121,2025-10-29T09:42:33+01:00,1,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/aggregate-partner-bitly-kyc.ts,script,scripts/aggregate-partner-bitly-kyc.ts,127,2025-11-14T22:02:36+01:00,1,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/aggregateAnalytics.ts,script,scripts/aggregateAnalytics.ts,397,2025-12-20T21:25:31+01:00,2,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/alignClickerManagerToKyc.ts,script,scripts/alignClickerManagerToKyc.ts,140,2025-11-17T15:53:30+01:00,1,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/analyze-partner-mapping.ts,script,scripts/analyze-partner-mapping.ts,88,2025-11-13T11:57:14+01:00,1,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/apply-p0-fix-faces.js,script,scripts/apply-p0-fix-faces.js,82,2025-11-02T21:13:40+01:00,2,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/assign-report-styles.ts,script,scripts/assign-report-styles.ts,77,2025-12-18T18:09:34+01:00,1,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/assignDefaultPartnerToOrphanedEvents.ts,script,scripts/assignDefaultPartnerToOrphanedEvents.ts,119,2025-12-24T13:34:24+01:00,1,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/audit-bitly-thesportdb-kyc.ts,script,scripts/audit-bitly-thesportdb-kyc.ts,264,2025-11-13T18:27:40+01:00,2,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/audit-chart-variables.ts,script,scripts/audit-chart-variables.ts,139,2025-11-13T13:48:27+01:00,2,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/audit-charts.js,script,scripts/audit-charts.js,96,2025-10-16T17:41:50+02:00,1,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/audit-inline-styles.js,script,scripts/audit-inline-styles.js,196,2026-03-07T12:49:13+01:00,2,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/audit-kyc-data-completeness.ts,script,scripts/audit-kyc-data-completeness.ts,376,2025-11-14T21:30:52+01:00,2,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/audit-report-variant-periods.ts,script,scripts/audit-report-variant-periods.ts,100,2026-06-24T14:59:40+02:00,1,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/audit-styles.js,script,scripts/audit-styles.js,91,2025-09-27T15:02:34+02:00,1,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/audit-variable-naming-consistency.ts,script,scripts/audit-variable-naming-consistency.ts,279,2025-11-13T18:07:45+01:00,1,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/audit-variable-naming.ts,script,scripts/audit-variable-naming.ts,220,2026-02-06T10:22:40+01:00,2,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/auditDatabaseCollections.ts,script,scripts/auditDatabaseCollections.ts,369,2025-11-02T20:14:54+01:00,1,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/auditLegacyPartnerViewSlugs.ts,script,scripts/auditLegacyPartnerViewSlugs.ts,96,2026-06-30T17:27:04+02:00,1,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/auto-map-project-partners.ts,script,scripts/auto-map-project-partners.ts,212,2025-11-13T12:04:40+01:00,3,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/backfillClickerSets.ts,script,scripts/backfillClickerSets.ts,83,2026-01-21T14:21:26+01:00,2,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/backfillDerivedMetrics.ts,script,scripts/backfillDerivedMetrics.ts,77,2025-10-19T21:58:41+02:00,1,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/backfillPartnerAnalytics.ts,script,scripts/backfillPartnerAnalytics.ts,166,2025-12-20T21:25:31+01:00,1,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/backup-all-charts.js,script,scripts/backup-all-charts.js,69,2025-11-02T21:13:40+01:00,2,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/backupDatabase.ts,script,scripts/backupDatabase.ts,223,2025-11-02T20:36:03+01:00,1,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/canonicalizePartnerPagePasswords.ts,script,scripts/canonicalizePartnerPagePasswords.ts,99,2026-06-30T21:50:45+02:00,1,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/check-aggregate.js,script,scripts/check-aggregate.js,40,2025-10-19T14:05:39+02:00,1,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/check-asroma-partner-template.ts,script,scripts/check-asroma-partner-template.ts,97,2025-11-13T12:22:13+01:00,1,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/check-atlas-users.js,script,scripts/check-atlas-users.js,40,2025-11-04T11:17:41+01:00,1,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/check-bitly-cache-status.ts,script,scripts/check-bitly-cache-status.ts,58,2025-10-29T12:26:41+01:00,1,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/check-bitly-country-data.ts,script,scripts/check-bitly-country-data.ts,67,2025-10-29T12:26:41+01:00,1,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/check-bitly-link.js,script,scripts/check-bitly-link.js,90,2025-10-13T19:09:34+02:00,1,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/check-block-storage.ts,script,scripts/check-block-storage.ts,48,2025-11-02T21:13:40+01:00,2,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/check-chart-formulas.js,script,scripts/check-chart-formulas.js,33,2025-11-02T21:13:40+01:00,2,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/check-chart-structure.js,script,scripts/check-chart-structure.js,66,2025-12-15T15:51:36+01:00,1,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/check-chart-titles.ts,script,scripts/check-chart-titles.ts,67,2025-11-13T15:38:55+01:00,1,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/check-collections.js,script,scripts/check-collections.js,22,2025-11-02T17:58:36+01:00,1,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/check-content-slots.ts,script,scripts/check-content-slots.ts,50,2025-11-13T11:57:14+01:00,1,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/check-country-charts-in-blocks.ts,script,scripts/check-country-charts-in-blocks.ts,54,2025-11-02T21:13:40+01:00,2,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/check-country-charts.ts,script,scripts/check-country-charts.ts,49,2025-11-02T21:13:40+01:00,2,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/check-date-placeholders.ts,script,scripts/check-date-placeholders.ts,102,2026-01-02T14:54:15+01:00,1,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/check-default-template.js,script,scripts/check-default-template.js,77,2025-12-16T15:02:17+01:00,1,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/check-dependency-guardrail.ts,script,scripts/check-dependency-guardrail.ts,167,2026-08-13T08:27:46Z,14,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/check-design-violations.js,script,scripts/check-design-violations.js,192,2026-07-02T08:24:27+02:00,7,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/check-google-sheets-schema.ts,script,scripts/check-google-sheets-schema.ts,44,2026-02-07T13:40:00+01:00,1,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/check-image-charts.js,script,scripts/check-image-charts.js,21,2025-11-02T21:13:40+01:00,2,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/check-layout-grammar-guardrail.ts,script,scripts/check-layout-grammar-guardrail.ts,149,2026-03-07T13:35:29+01:00,5,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/check-marketing-chart.js,script,scripts/check-marketing-chart.js,61,2025-11-02T21:13:40+01:00,2,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/check-old-template-styles.ts,script,scripts/check-old-template-styles.ts,42,2025-12-18T18:09:34+01:00,1,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/check-one-chart.js,script,scripts/check-one-chart.js,19,2025-11-02T21:13:40+01:00,2,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/check-overview-block.js,script,scripts/check-overview-block.js,44,2025-11-02T21:13:40+01:00,2,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/check-partner-by-slug.ts,script,scripts/check-partner-by-slug.ts,82,2025-12-18T18:09:34+01:00,1,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/check-partner-connection.ts,script,scripts/check-partner-connection.ts,74,2025-11-13T11:57:14+01:00,1,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/check-partner-schema.js,script,scripts/check-partner-schema.js,28,2025-10-29T12:36:54+01:00,1,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/check-partner-template-assignment.js,script,scripts/check-partner-template-assignment.js,91,2025-12-15T15:51:36+01:00,1,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/check-partners-with-bitly.ts,script,scripts/check-partners-with-bitly.ts,38,2025-10-29T12:26:41+01:00,1,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/check-project-country-data.js,script,scripts/check-project-country-data.js,47,2025-10-29T14:08:57+01:00,1,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/check-project-template.ts,script,scripts/check-project-template.ts,30,2025-11-13T11:57:14+01:00,1,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/check-report-image-charts.js,script,scripts/check-report-image-charts.js,55,2025-12-18T18:09:34+01:00,1,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/check-roma-data.ts,script,scripts/check-roma-data.ts,66,2025-11-14T22:02:36+01:00,1,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/check-sihf-blocks.js,script,scripts/check-sihf-blocks.js,75,2025-12-15T15:51:36+01:00,1,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/check-sihf-chart-formulas.js,script,scripts/check-sihf-chart-formulas.js,116,2025-12-15T15:51:36+01:00,1,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/check-sihf-charts.js,script,scripts/check-sihf-charts.js,85,2025-12-15T15:51:36+01:00,1,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/check-sihf-event-fields.js,script,scripts/check-sihf-event-fields.js,77,2025-12-15T15:51:36+01:00,1,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/check-sihf-hashtags.js,script,scripts/check-sihf-hashtags.js,108,2025-12-16T15:02:17+01:00,1,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/check-sihf-report.js,script,scripts/check-sihf-report.js,75,2025-12-22T16:16:44+01:00,1,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/check-sihf.js,script,scripts/check-sihf.js,34,2025-12-15T15:51:36+01:00,1,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/check-template-blocks.ts,script,scripts/check-template-blocks.ts,32,2025-11-13T11:57:14+01:00,1,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/check-templates.js,script,scripts/check-templates.js,34,2025-12-25T11:52:16+01:00,1,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/check-users-password-hash.ts,script,scripts/check-users-password-hash.ts,68,2026-02-08T12:35:24+01:00,2,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/check-var-structure.ts,script,scripts/check-var-structure.ts,19,2025-11-04T11:17:41+01:00,1,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/check-vars.ts,script,scripts/check-vars.ts,26,2025-11-04T11:17:41+01:00,1,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/checkChartIcons.ts,script,scripts/checkChartIcons.ts,66,2025-11-03T02:13:59+01:00,1,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/checkDatabaseFields.ts,script,scripts/checkDatabaseFields.ts,53,2025-10-28T12:57:14+01:00,1,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/checkPageStyles.ts,script,scripts/checkPageStyles.ts,76,2025-10-24T04:57:05+02:00,1,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/checkPartner.js,script,scripts/checkPartner.js,100,2025-12-28T18:25:12+01:00,1,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/checkUsers.ts,script,scripts/checkUsers.ts,20,2025-11-02T21:26:11+01:00,1,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/check_aspectratio.js,script,scripts/check_aspectratio.js,36,2025-11-02T21:13:40+01:00,2,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/check_db_field.js,script,scripts/check_db_field.js,34,2025-10-28T12:57:14+01:00,1,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/cleanup-report-kyc-variables.ts,script,scripts/cleanup-report-kyc-variables.ts,105,2025-11-14T11:53:23+01:00,1,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/cleanup-stats-report-references.js,script,scripts/cleanup-stats-report-references.js,156,2025-12-16T22:59:00+01:00,1,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/cleanupEmptyCollections.ts,script,scripts/cleanupEmptyCollections.ts,327,2026-03-07T12:49:13+01:00,2,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/cleanupLocalUsers.ts,script,scripts/cleanupLocalUsers.ts,19,2025-11-02T21:38:47+01:00,1,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/cleanupOldStyleSystem.ts,script,scripts/cleanupOldStyleSystem.ts,95,2025-10-24T04:57:05+02:00,1,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/compare-hashtag-vs-partner.js,script,scripts/compare-hashtag-vs-partner.js,212,2025-12-16T15:02:17+01:00,1,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/compare-sheet-kyc-variables.ts,script,scripts/compare-sheet-kyc-variables.ts,111,2025-12-28T19:17:26+01:00,1,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/compareFields.js,script,scripts/compareFields.js,121,2025-12-28T18:25:12+01:00,1,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/compareVariables.js,script,scripts/compareVariables.js,86,2025-12-28T18:25:12+01:00,1,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/compareVariables.ts,script,scripts/compareVariables.ts,24,2025-11-02T21:13:40+01:00,1,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/config.js,script,scripts/config.js,27,2026-03-07T12:49:13+01:00,2,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/consolidate-chart-collections.js,script,scripts/consolidate-chart-collections.js,142,2025-11-02T17:51:06+01:00,1,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/consolidate-chart-collections.ts,script,scripts/consolidate-chart-collections.ts,92,2025-11-13T13:48:27+01:00,1,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/consolidateBitlyJunctions.ts,script,scripts/consolidateBitlyJunctions.ts,315,2025-11-02T21:13:40+01:00,1,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/consolidateVariablesConfig.ts,script,scripts/consolidateVariablesConfig.ts,287,2025-11-02T21:13:40+01:00,1,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/copy-default-to-asroma-template.ts,script,scripts/copy-default-to-asroma-template.ts,82,2025-11-13T12:22:13+01:00,1,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/count-bitly-links.js,script,scripts/count-bitly-links.js,20,2025-10-14T20:44:22+02:00,1,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/create-admin-user.js,script,scripts/create-admin-user.js,61,2025-12-25T11:28:34+01:00,3,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/create-bitly-countries-kpi.js,script,scripts/create-bitly-countries-kpi.js,83,2025-11-02T21:13:40+01:00,2,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/create-bitly-countries-reached-kpi.ts,script,scripts/create-bitly-countries-reached-kpi.ts,70,2025-11-02T21:13:40+01:00,3,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/create-bitly-device-chart.js,script,scripts/create-bitly-device-chart.js,88,2025-11-02T21:13:40+01:00,2,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/create-bitly-geo-chart.js,script,scripts/create-bitly-geo-chart.js,81,2025-11-02T21:13:40+01:00,2,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/create-bitly-referrer-chart.js,script,scripts/create-bitly-referrer-chart.js,109,2025-11-02T21:13:40+01:00,2,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/create-bitly-top-countries-bar.ts,script,scripts/create-bitly-top-countries-bar.ts,94,2025-11-02T21:13:40+01:00,3,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/create-bitly-top-countries-clicks-chart.js,script,scripts/create-bitly-top-countries-clicks-chart.js,115,2025-11-02T21:13:40+01:00,2,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/create-bitly-top-country-kpi.ts,script,scripts/create-bitly-top-country-kpi.ts,70,2025-11-02T21:13:40+01:00,3,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/create-indexes.js,script,scripts/create-indexes.js,243,2026-03-07T12:49:13+01:00,2,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/create-local-admin.js,script,scripts/create-local-admin.js,86,2025-12-25T11:28:34+01:00,3,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/createMissingIndexes.ts,script,scripts/createMissingIndexes.ts,695,2026-07-05T22:19:10Z,4,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/createPartnerSheets.ts,script,scripts/createPartnerSheets.ts,276,2026-03-07T12:49:13+01:00,3,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/debug-api-football-response.ts,script,scripts/debug-api-football-response.ts,20,2025-11-16T12:32:05+01:00,1,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/debug-chart-collections.js,script,scripts/debug-chart-collections.js,61,2025-08-22T20:34:22+02:00,1,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/debug-chart-configs.js,script,scripts/debug-chart-configs.js,66,2025-12-15T15:51:36+01:00,1,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/debug-css-specificity.js,script,scripts/debug-css-specificity.js,69,2025-12-15T16:25:56+01:00,1,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/debug-frontend-flow.js,script,scripts/debug-frontend-flow.js,157,2025-12-15T15:51:36+01:00,1,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/debug-frontend-style-flow.js,script,scripts/debug-frontend-style-flow.js,123,2025-12-15T16:25:56+01:00,1,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/debug-partner-charts.js,script,scripts/debug-partner-charts.js,173,2025-12-16T15:02:17+01:00,1,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/debug-partner-events.js,script,scripts/debug-partner-events.js,96,2025-12-15T15:51:36+01:00,1,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/debug-partner-report-style.js,script,scripts/debug-partner-report-style.js,93,2025-12-15T16:25:56+01:00,1,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/debug-partner-report.js,script,scripts/debug-partner-report.js,130,2025-12-15T15:51:36+01:00,1,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/debug-partner-style-loading.js,script,scripts/debug-partner-style-loading.js,115,2025-12-15T15:51:36+01:00,1,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/debug-pull-endpoint.ts,script,scripts/debug-pull-endpoint.ts,143,2025-12-28T18:55:17+01:00,1,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/debug-report-style.ts,script,scripts/debug-report-style.ts,66,2025-12-18T18:09:34+01:00,1,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/debug-style-application.js,script,scripts/debug-style-application.js,89,2025-12-15T16:25:56+01:00,1,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/debug-template-dropdown.js,script,scripts/debug-template-dropdown.js,87,2025-12-16T18:09:38+01:00,1,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/debugFindEvent.ts,script,scripts/debugFindEvent.ts,47,2025-12-27T03:20:34+01:00,1,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/debugProjectsForPartner.ts,script,scripts/debugProjectsForPartner.ts,38,2025-12-27T03:20:34+01:00,1,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/deep-inspect-asroma-template.ts,script,scripts/deep-inspect-asroma-template.ts,54,2025-11-13T12:22:13+01:00,1,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/delete-all-charts.js,script,scripts/delete-all-charts.js,62,2025-11-02T21:13:40+01:00,2,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/delete-bitly-geo-charts.js,script,scripts/delete-bitly-geo-charts.js,18,2025-11-02T21:13:40+01:00,2,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/delete-temp-var.ts,script,scripts/delete-temp-var.ts,16,2025-11-03T14:58:47+01:00,1,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/delete-variables.ts,script,scripts/delete-variables.ts,35,2025-11-03T14:58:47+01:00,1,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/delete-wrong-bitly-charts.js,script,scripts/delete-wrong-bitly-charts.js,18,2025-10-27T14:13:46+01:00,1,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/diagnose-builder-charts.ts,script,scripts/diagnose-builder-charts.ts,84,2025-11-13T11:57:14+01:00,1,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/diagnose-charts-system.js,script,scripts/diagnose-charts-system.js,181,2025-11-02T21:13:40+01:00,3,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/diagnose-clicker.ts,script,scripts/diagnose-clicker.ts,119,2025-11-17T15:53:30+01:00,1,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/diagnose-overview-block.js,script,scripts/diagnose-overview-block.js,143,2025-11-02T21:13:40+01:00,3,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/diagnose-partner-templates.js,script,scripts/diagnose-partner-templates.js,133,2025-12-15T15:51:36+01:00,1,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/diagnose-pull-push-sync.ts,script,scripts/diagnose-pull-push-sync.ts,245,2025-12-28T18:25:12+01:00,1,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/diagnose-report-templates.ts,script,scripts/diagnose-report-templates.ts,411,2025-12-22T13:18:37+01:00,1,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/diagnose-report-texts.js,script,scripts/diagnose-report-texts.js,226,2026-01-03T09:06:09+01:00,1,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/diagnose-sihf-partner.js,script,scripts/diagnose-sihf-partner.js,164,2025-12-15T15:51:36+01:00,1,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/diagnose-sihf-specific.js,script,scripts/diagnose-sihf-specific.js,197,2025-12-15T15:51:36+01:00,1,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/diagnosticCompleteFlow.js,script,scripts/diagnosticCompleteFlow.js,294,2025-11-02T21:13:40+01:00,2,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/docs-consistency-audit.js,script,scripts/docs-consistency-audit.js,138,2026-06-26T13:14:13+02:00,2,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/drop-lowercase.js,script,scripts/drop-lowercase.js,25,2025-11-02T17:51:06+01:00,1,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/dropLegacyVariablesConfig.ts,script,scripts/dropLegacyVariablesConfig.ts,80,2025-11-02T21:13:40+01:00,1,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/enable-export-buttons.js,script,scripts/enable-export-buttons.js,113,2025-12-25T11:52:16+01:00,1,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/enableManualModeForAllVariables.ts,script,scripts/enableManualModeForAllVariables.ts,53,2025-11-18T08:40:32+01:00,1,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/enrich-all-projects-bitly-countries.ts,script,scripts/enrich-all-projects-bitly-countries.ts,160,2025-10-29T12:26:41+01:00,1,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/enrich-all-projects-countries.js,script,scripts/enrich-all-projects-countries.js,144,2025-10-29T14:08:57+01:00,1,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/enrich-partners-daily.ts,script,scripts/enrich-partners-daily.ts,295,2025-11-16T12:32:05+01:00,1,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/enrich-partners-sportsdb.js,script,scripts/enrich-partners-sportsdb.js,511,2026-03-07T12:49:13+01:00,3,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/enrich-project-bitly-metrics.ts,script,scripts/enrich-project-bitly-metrics.ts,123,2025-11-13T14:22:08+01:00,1,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/ensure-kpi-all-images-taken.js,script,scripts/ensure-kpi-all-images-taken.js,46,2025-11-02T21:13:40+01:00,2,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/ensureSuperadmin.ts,script,scripts/ensureSuperadmin.ts,80,2025-12-22T10:24:00+01:00,1,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/explore-all-bitly-endpoints.js,script,scripts/explore-all-bitly-endpoints.js,156,2025-10-13T19:23:13+02:00,1,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/explore-db.js,script,scripts/explore-db.js,56,2025-10-16T17:41:50+02:00,1,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/exportPartners.ts,script,scripts/exportPartners.ts,51,2025-12-17T18:40:14+01:00,1,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/final-partner-report-test.js,script,scripts/final-partner-report-test.js,108,2025-12-15T15:51:36+01:00,1,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/final-partner-template-verification.js,script,scripts/final-partner-template-verification.js,47,2025-12-15T15:51:36+01:00,1,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/final-partner-test.js,script,scripts/final-partner-test.js,30,2025-12-15T15:51:36+01:00,1,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/final-style-verification.js,script,scripts/final-style-verification.js,50,2025-12-15T15:51:36+01:00,1,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/find-sihf-events.js,script,scripts/find-sihf-events.js,73,2025-12-15T15:51:36+01:00,1,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/find-swiss-ice-hockey-style.js,script,scripts/find-swiss-ice-hockey-style.js,123,2025-12-22T14:24:29+01:00,1,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/fix-as-roma-template.ts,script,scripts/fix-as-roma-template.ts,55,2025-12-22T13:28:53+01:00,1,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/fix-asroma-partner-template.ts,script,scripts/fix-asroma-partner-template.ts,43,2025-11-13T12:22:13+01:00,1,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/fix-asroma-template.ts,script,scripts/fix-asroma-template.ts,23,2025-11-13T11:57:14+01:00,1,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/fix-bitly-kyc-data.ts,script,scripts/fix-bitly-kyc-data.ts,341,2025-11-14T22:02:36+01:00,2,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/fix-bitly-variables-for-growth-tier.ts,script,scripts/fix-bitly-variables-for-growth-tier.ts,246,2025-11-14T22:02:36+01:00,1,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/fix-broken-charts.js,script,scripts/fix-broken-charts.js,133,2025-11-02T21:13:40+01:00,2,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/fix-chart-active-status.js,script,scripts/fix-chart-active-status.js,54,2025-12-15T15:51:36+01:00,1,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/fix-chart-formulas-brackets.ts,script,scripts/fix-chart-formulas-brackets.ts,110,2025-11-13T14:02:23+01:00,1,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/fix-chart-formulas.ts,script,scripts/fix-chart-formulas.ts,82,2025-12-18T18:09:34+01:00,1,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/fix-chart-labels.js,script,scripts/fix-chart-labels.js,118,2025-12-15T15:51:36+01:00,1,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/fix-charts-p0.js,script,scripts/fix-charts-p0.js,136,2025-10-16T17:16:33+02:00,1,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/fix-clicker-groups-prefix.ts,script,scripts/fix-clicker-groups-prefix.ts,86,2025-11-17T15:53:30+01:00,1,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/fix-country-chart-labels.js,script,scripts/fix-country-chart-labels.js,57,2025-10-29T14:08:57+01:00,1,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/fix-data-block-chart-refs.ts,script,scripts/fix-data-block-chart-refs.ts,81,2025-11-13T13:48:27+01:00,1,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/fix-data-blocks-chart-ids.ts,script,scripts/fix-data-blocks-chart-ids.ts,85,2026-01-03T11:04:46+01:00,1,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/fix-formulas-and-variables.ts,script,scripts/fix-formulas-and-variables.ts,215,2026-01-03T10:53:22+01:00,1,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/fix-formulas-to-correct-format.ts,script,scripts/fix-formulas-to-correct-format.ts,110,2026-01-03T10:53:22+01:00,1,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/fix-formulas-use-only-standard-fields.ts,script,scripts/fix-formulas-use-only-standard-fields.ts,176,2026-01-03T10:53:22+01:00,1,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/fix-image-chart-aspect-ratios.ts,script,scripts/fix-image-chart-aspect-ratios.ts,145,2025-11-04T11:17:41+01:00,1,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/fix-invalid-field-names.ts,script,scripts/fix-invalid-field-names.ts,189,2026-01-03T10:53:22+01:00,1,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/fix-kyc-variable-names.ts,script,scripts/fix-kyc-variable-names.ts,62,2025-11-14T21:23:04+01:00,1,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/fix-last-warning.ts,script,scripts/fix-last-warning.ts,64,2025-12-22T13:28:53+01:00,1,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/fix-missing-labels.ts,script,scripts/fix-missing-labels.ts,31,2025-11-03T14:58:47+01:00,1,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/fix-missing-partners.ts,script,scripts/fix-missing-partners.ts,111,2025-11-13T13:30:55+01:00,1,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/fix-missing-stats.js,script,scripts/fix-missing-stats.js,98,2026-01-03T09:06:09+01:00,1,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/fix-p1-2.2-variable-naming-violations.ts,script,scripts/fix-p1-2.2-variable-naming-violations.ts,160,2026-01-09T11:47:27+01:00,1,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/fix-partner-event-connections.ts,script,scripts/fix-partner-event-connections.ts,196,2025-10-29T12:26:41+01:00,1,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/fix-partner-templates.js,script,scripts/fix-partner-templates.js,100,2025-12-15T15:51:36+01:00,1,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/fix-remaining-issues.ts,script,scripts/fix-remaining-issues.ts,225,2026-01-03T11:16:14+01:00,1,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/fix-report-config-warnings.ts,script,scripts/fix-report-config-warnings.ts,355,2025-12-22T13:28:53+01:00,1,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/fix-report-image-3.js,script,scripts/fix-report-image-3.js,38,2025-12-18T18:09:34+01:00,1,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/fix-report-template-chart-ids.ts,script,scripts/fix-report-template-chart-ids.ts,91,2026-01-03T11:04:46+01:00,1,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/fix-sihf-chart-formulas.js,script,scripts/fix-sihf-chart-formulas.js,94,2025-12-15T15:51:36+01:00,1,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/fix-sihf-heading-color.js,script,scripts/fix-sihf-heading-color.js,62,2025-12-22T15:52:27+01:00,1,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/fix-template-copies.ts,script,scripts/fix-template-copies.ts,236,2026-01-05T11:43:18+01:00,1,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/fix-visitor-sources-chart.ts,script,scripts/fix-visitor-sources-chart.ts,60,2026-01-03T11:16:14+01:00,1,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/fixInvalidIcons.ts,script,scripts/fixInvalidIcons.ts,94,2025-11-03T02:13:59+01:00,1,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/fixOrphanedStyleReferences.ts,script,scripts/fixOrphanedStyleReferences.ts,259,2025-11-02T21:13:40+01:00,1,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/fixUsersCollection.ts,script,scripts/fixUsersCollection.ts,69,2025-11-02T21:13:40+01:00,1,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/generate-p0-3-audit-inventories.ts,script,scripts/generate-p0-3-audit-inventories.ts,287,2026-01-09T20:19:17+01:00,1,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/generate-settings-inventory.js,script,scripts/generate-settings-inventory.js,102,2025-09-25T11:38:17+02:00,1,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/generate-variables-inventory.ts,script,scripts/generate-variables-inventory.ts,140,2026-02-07T17:47:06+01:00,1,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/generatePartnerReportPasswords.ts,script,scripts/generatePartnerReportPasswords.ts,61,2025-11-06T20:26:43+01:00,1,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/import-all-bitly-links.js,script,scripts/import-all-bitly-links.js,226,2026-03-07T12:49:13+01:00,2,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/importPartners.ts,script,scripts/importPartners.ts,96,2025-12-17T18:40:14+01:00,1,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/init-all-charts.js,script,scripts/init-all-charts.js,268,2025-09-12T15:30:46+02:00,3,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/initialize-mandatory-fields.ts,script,scripts/initialize-mandatory-fields.ts,134,2026-01-03T10:53:22+01:00,1,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/inspect-aggregate.js,script,scripts/inspect-aggregate.js,35,2025-10-19T14:05:39+02:00,1,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/inspect-target-charts.js,script,scripts/inspect-target-charts.js,55,2025-11-02T21:13:40+01:00,2,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/investigateDuplicateCollections.ts,script,scripts/investigateDuplicateCollections.ts,145,2025-11-02T21:13:40+01:00,2,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/list-all-charts.js,script,scripts/list-all-charts.js,38,2025-11-02T21:13:40+01:00,2,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/list-all-templates.ts,script,scripts/list-all-templates.ts,36,2025-11-13T12:22:13+01:00,1,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/list-charts.js,script,scripts/list-charts.js,22,2025-11-02T21:13:40+01:00,2,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/list-mongodb-fields.ts,script,scripts/list-mongodb-fields.ts,94,2026-01-03T10:53:22+01:00,1,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/list-partners.ts,script,scripts/list-partners.ts,48,2025-11-13T11:57:14+01:00,1,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/list-projects-partners.ts,script,scripts/list-projects-partners.ts,51,2025-11-13T11:57:14+01:00,1,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/list-users.js,script,scripts/list-users.js,49,2025-11-02T21:13:40+01:00,2,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/migrate-all-charts-to-chart-configurations.ts,script,scripts/migrate-all-charts-to-chart-configurations.ts,168,2026-01-22T10:29:00+01:00,1,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/migrate-bitly-many-to-many.js,script,scripts/migrate-bitly-many-to-many.js,386,2025-10-14T11:30:02+02:00,1,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/migrate-chart-formulas-to-seyu.js,script,scripts/migrate-chart-formulas-to-seyu.js,151,2025-11-02T21:13:40+01:00,2,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/migrate-chart-formulas.js,script,scripts/migrate-chart-formulas.js,112,2025-12-16T22:59:00+01:00,2,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/migrate-chart-formulas.ts,script,scripts/migrate-chart-formulas.ts,134,2026-01-03T10:53:22+01:00,2,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/migrate-formulas-to-total-remote.js,script,scripts/migrate-formulas-to-total-remote.js,81,2025-09-13T12:42:43+02:00,1,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/migrate-hero-settings.js,script,scripts/migrate-hero-settings.js,117,2025-12-16T22:59:00+01:00,1,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/migrate-layout-grammar.ts,script,scripts/migrate-layout-grammar.ts,457,2026-01-12T08:12:30+01:00,1,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/migrate-notifications-schema.ts,script,scripts/migrate-notifications-schema.ts,91,2026-07-05T22:19:10Z,1,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/migrate-partners-geography.js,script,scripts/migrate-partners-geography.js,121,2025-10-29T12:36:54+01:00,1,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/migrate-passwords-to-bcrypt.ts,script,scripts/migrate-passwords-to-bcrypt.ts,177,2025-12-29T01:05:13+01:00,1,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/migrate-reports-to-layout-grammar.ts,script,scripts/migrate-reports-to-layout-grammar.ts,461,2026-01-02T18:55:50+01:00,1,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/migrate-stats-v2.13.0.js,script,scripts/migrate-stats-v2.13.0.js,57,2025-09-06T16:03:09+02:00,1,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/migrate-templates-to-datablocks.ts,script,scripts/migrate-templates-to-datablocks.ts,58,2025-11-13T12:22:13+01:00,1,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/migrate-text-chart-aspect-ratios.js,script,scripts/migrate-text-chart-aspect-ratios.js,89,2025-12-16T22:59:00+01:00,1,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/migrate-to-remoteFans.js,script,scripts/migrate-to-remoteFans.js,218,2025-10-28T12:57:14+01:00,1,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/migrate-users-to-password-hash.ts,script,scripts/migrate-users-to-password-hash.ts,89,2026-02-08T12:35:24+01:00,1,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/migrateChartFormattingCleanup.ts,script,scripts/migrateChartFormattingCleanup.ts,178,2025-10-31T11:38:21+01:00,1,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/migrateChartFormulasToLowercase.ts,script,scripts/migrateChartFormulasToLowercase.ts,250,2025-11-02T21:13:40+01:00,2,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/migrateChartsToNewFormatting.ts,script,scripts/migrateChartsToNewFormatting.ts,198,2025-10-31T12:13:35+01:00,1,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/migrateEmojiToIcon.ts,script,scripts/migrateEmojiToIcon.ts,114,2025-11-03T01:44:47+01:00,1,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/migrateExistingChartsFormatting.ts,script,scripts/migrateExistingChartsFormatting.ts,222,2025-10-31T13:11:18+01:00,1,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/migrateGlobalVisualizationToWUKF.ts,script,scripts/migrateGlobalVisualizationToWUKF.ts,125,2025-11-11T12:58:32+01:00,1,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/migrateImageAspectRatio.ts,script,scripts/migrateImageAspectRatio.ts,99,2025-11-02T17:45:30+01:00,2,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/migratePartnerSlugsToUUID.ts,script,scripts/migratePartnerSlugsToUUID.ts,256,2026-06-30T21:32:39+02:00,2,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/migrateShowTitleField.ts,script,scripts/migrateShowTitleField.ts,66,2025-10-30T22:12:05+01:00,1,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/migrateStyleIdToEnhanced.ts,script,scripts/migrateStyleIdToEnhanced.ts,244,2025-10-24T11:52:40+02:00,1,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/migrateToAbsoluteDbPaths.ts,script,scripts/migrateToAbsoluteDbPaths.ts,205,2025-10-28T12:57:14+01:00,1,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/migrateToReportTemplates.ts,script,scripts/migrateToReportTemplates.ts,234,2025-11-11T12:11:21+01:00,1,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/migrateUserRoles.ts,script,scripts/migrateUserRoles.ts,176,2025-12-22T10:24:00+01:00,1,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/migrations/add-api-write-fields.ts,script,scripts/migrations/add-api-write-fields.ts,81,2025-12-15T13:40:11+01:00,2,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/migrations/addApiFieldsToUsers.ts,script,scripts/migrations/addApiFieldsToUsers.ts,114,2025-11-04T22:51:02+01:00,1,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/populate-kyc-from-existing-bitly.ts,script,scripts/populate-kyc-from-existing-bitly.ts,116,2025-11-14T22:02:36+01:00,1,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/populateSzerencsejatek.ts,script,scripts/populateSzerencsejatek.ts,202,2026-03-07T12:49:13+01:00,2,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/queryEvents.js,script,scripts/queryEvents.js,144,2025-12-28T18:25:12+01:00,1,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/querySzerencsejatekEvents.ts,script,scripts/querySzerencsejatekEvents.ts,95,2025-12-28T18:25:12+01:00,1,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/register-missing-kyc-variables.ts,script,scripts/register-missing-kyc-variables.ts,316,2025-11-13T18:07:45+01:00,1,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/remove-home-visitor-categories.js,script,scripts/remove-home-visitor-categories.js,107,2025-10-16T18:54:26+02:00,1,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/remove-invalid-formulas.ts,script,scripts/remove-invalid-formulas.ts,149,2026-01-03T10:53:22+01:00,1,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/remove-obsolete-visit-vars.js,script,scripts/remove-obsolete-visit-vars.js,105,2025-11-02T21:13:40+01:00,2,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/remove-stats-prefix-everywhere.ts,script,scripts/remove-stats-prefix-everywhere.ts,195,2026-01-03T10:53:22+01:00,1,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/remove-value-charts.js,script,scripts/remove-value-charts.js,63,2025-11-02T21:13:40+01:00,2,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/renameCollections.ts,script,scripts/renameCollections.ts,294,2025-11-02T21:13:40+01:00,1,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/reset-password-simple.js,script,scripts/reset-password-simple.js,75,2025-11-02T21:13:40+01:00,2,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/restore-missing-blocks.ts,script,scripts/restore-missing-blocks.ts,343,2025-12-22T13:18:37+01:00,1,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/restoreDatabase.ts,script,scripts/restoreDatabase.ts,251,2025-11-02T20:36:03+01:00,1,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/restoreUsers.ts,script,scripts/restoreUsers.ts,69,2025-11-02T21:13:40+01:00,1,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/revert-sihf-charts.js,script,scripts/revert-sihf-charts.js,57,2025-12-15T15:51:36+01:00,1,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/root-cause-analysis.ts,script,scripts/root-cause-analysis.ts,123,2025-11-13T13:12:23+01:00,1,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/search-partner-in-api-football.ts,script,scripts/search-partner-in-api-football.ts,67,2025-11-16T12:32:05+01:00,1,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/seed-additional-report-variables.ts,script,scripts/seed-additional-report-variables.ts,125,2025-11-14T11:05:07+01:00,1,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/seed-available-fonts.ts,script,scripts/seed-available-fonts.ts,81,2026-06-26T21:45:20+02:00,2,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/seed-cities.js,script,scripts/seed-cities.js,169,2025-10-29T12:36:54+01:00,1,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/seed-content-slots.ts,script,scripts/seed-content-slots.ts,79,2025-11-13T11:57:14+01:00,1,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/seed-countries.js,script,scripts/seed-countries.js,287,2025-10-29T12:26:41+01:00,1,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/seed-country-mappings.js,script,scripts/seed-country-mappings.js,264,2025-10-29T12:26:41+01:00,1,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/seed-default-charts.js,script,scripts/seed-default-charts.js,239,2025-11-02T21:13:40+01:00,2,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/seed-legacy-report-variables.ts,script,scripts/seed-legacy-report-variables.ts,126,2025-11-03T14:58:47+01:00,1,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/seed-messmass-landing.ts,script,scripts/seed-messmass-landing.ts,390,2026-02-22T19:19:47+01:00,4,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/seedChartFormattingDefaults.ts,script,scripts/seedChartFormattingDefaults.ts,111,2025-10-31T11:58:19+01:00,1,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/seedChartsFromPlan.js,script,scripts/seedChartsFromPlan.js,248,2025-10-21T17:45:35+02:00,1,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/seedFanmassStatusVariable.ts,script,scripts/seedFanmassStatusVariable.ts,83,2026-08-14T11:56:42+02:00,2,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/seedPageStyles.ts,script,scripts/seedPageStyles.ts,260,2025-10-22T21:46:42+03:00,1,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/seedValueChartTemplates.ts,script,scripts/seedValueChartTemplates.ts,497,2025-10-31T11:38:21+01:00,1,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/seedVariableGroups.ts,script,scripts/seedVariableGroups.ts,159,2025-11-02T23:27:20+01:00,1,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/setup-content-assets-indexes.ts,script,scripts/setup-content-assets-indexes.ts,153,2025-11-03T11:08:42+01:00,1,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/setupAnalyticsIndexes.ts,script,scripts/setupAnalyticsIndexes.ts,216,2025-10-19T14:05:39+02:00,1,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/setupFootballDataIndexes.ts,script,scripts/setupFootballDataIndexes.ts,31,2025-10-19T21:58:41+02:00,1,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/setupPartnerSheet.ts,script,scripts/setupPartnerSheet.ts,373,2026-03-07T12:49:13+01:00,2,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/setupPartnerSheets.ts,script,scripts/setupPartnerSheets.ts,379,2026-03-07T12:49:13+01:00,2,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/setupSzerencsejatek.ts,script,scripts/setupSzerencsejatek.ts,257,2026-03-07T12:49:13+01:00,2,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/show-user-password.js,script,scripts/show-user-password.js,21,2025-11-02T21:13:40+01:00,2,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/simulate-frontend-calculation.js,script,scripts/simulate-frontend-calculation.js,153,2025-12-15T15:51:36+01:00,1,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/simulate-partner-chart-calc.js,script,scripts/simulate-partner-chart-calc.js,188,2025-12-15T15:51:36+01:00,1,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/simulate-partner-frontend.js,script,scripts/simulate-partner-frontend.js,313,2025-12-16T15:02:17+01:00,1,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/sync-30-links-standalone.js,script,scripts/sync-30-links-standalone.js,216,2025-10-29T12:36:54+01:00,2,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/sync-bitly-field-names.ts,script,scripts/sync-bitly-field-names.ts,68,2025-11-14T22:02:36+01:00,1,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/sync-bitly-to-project-stats.ts,script,scripts/sync-bitly-to-project-stats.ts,226,2025-11-14T22:02:36+01:00,2,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/sync-content-assets-to-kyc.ts,script,scripts/sync-content-assets-to-kyc.ts,114,2025-11-14T11:12:07+01:00,2,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/sync-last-30-bitly-links.ts,script,scripts/sync-last-30-bitly-links.ts,101,2025-10-29T12:26:41+01:00,1,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/sync-last-30-via-api.ts,script,scripts/sync-last-30-via-api.ts,79,2025-10-29T12:26:41+01:00,1,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/sync-roma-bitly.ts,script,scripts/sync-roma-bitly.ts,99,2025-11-14T22:02:36+01:00,1,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/syncFootballDataFixtures.ts,script,scripts/syncFootballDataFixtures.ts,60,2025-10-19T21:58:41+02:00,1,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/temp-check-schema.ts,script,scripts/temp-check-schema.ts,33,2025-11-03T14:58:47+01:00,1,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/test-api-football.ts,script,scripts/test-api-football.ts,121,2026-03-07T12:49:13+01:00,2,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/test-bitly-api.js,script,scripts/test-bitly-api.js,79,2025-10-14T20:57:17+02:00,1,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/test-bitly-countries.js,script,scripts/test-bitly-countries.js,87,2025-10-13T19:09:34+02:00,1,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/test-both-fixes.js,script,scripts/test-both-fixes.js,60,2025-12-15T16:25:56+01:00,1,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/test-browser-reality.js,script,scripts/test-browser-reality.js,72,2025-12-15T16:25:56+01:00,1,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/test-chart-calculation.js,script,scripts/test-chart-calculation.js,127,2025-12-15T15:51:36+01:00,1,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/test-dropdown-browser.js,script,scripts/test-dropdown-browser.js,54,2025-12-16T18:09:38+01:00,1,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/test-dynamic-style-fix.js,script,scripts/test-dynamic-style-fix.js,46,2025-12-15T16:25:56+01:00,1,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/test-email-notifications.ts,script,scripts/test-email-notifications.ts,39,2026-07-31T09:02:25Z,3,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/test-fanmass-integration.ts,script,scripts/test-fanmass-integration.ts,346,2025-12-15T13:40:11+01:00,2,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/test-frontend-debug.js,script,scripts/test-frontend-debug.js,111,2025-12-15T15:51:36+01:00,1,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/test-full-partner-report.js,script,scripts/test-full-partner-report.js,164,2025-12-15T15:51:36+01:00,1,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/test-google-sheets.ts,script,scripts/test-google-sheets.ts,243,2025-12-26T15:28:30+01:00,1,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/test-gradient-css.js,script,scripts/test-gradient-css.js,72,2025-12-15T16:25:56+01:00,1,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/test-hero-style-fix.js,script,scripts/test-hero-style-fix.js,55,2025-12-15T16:25:56+01:00,1,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/test-insights-api.js,script,scripts/test-insights-api.js,32,2025-10-19T15:04:05+02:00,1,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/test-login-domains.js,script,scripts/test-login-domains.js,117,2025-10-06T09:58:20+02:00,1,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/test-mongo-connection.js,script,scripts/test-mongo-connection.js,79,2025-08-28T06:47:03+02:00,1,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/test-mongodb-connection.js,script,scripts/test-mongodb-connection.js,105,2025-10-14T12:08:00+02:00,1,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/test-partner-apis.js,script,scripts/test-partner-apis.js,77,2025-12-15T15:51:36+01:00,1,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/test-partner-chart-calculation.js,script,scripts/test-partner-chart-calculation.js,148,2025-12-15T15:51:36+01:00,1,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/test-partner-content-merge.js,script,scripts/test-partner-content-merge.js,138,2025-12-16T15:08:43+01:00,1,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/test-partner-fix.js,script,scripts/test-partner-fix.js,164,2025-12-16T15:02:17+01:00,1,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/test-partner-report-fix.js,script,scripts/test-partner-report-fix.js,67,2025-12-15T16:25:56+01:00,1,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/test-partner-report-system.js,script,scripts/test-partner-report-system.js,97,2025-12-15T15:51:36+01:00,1,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/test-partner-style-dom.js,script,scripts/test-partner-style-dom.js,81,2025-12-15T16:25:56+01:00,1,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/test-partner-style-frontend.js,script,scripts/test-partner-style-frontend.js,85,2025-12-15T15:51:36+01:00,1,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/test-partner-template-fix.js,script,scripts/test-partner-template-fix.js,62,2025-12-15T15:51:36+01:00,1,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/test-report-image-fix.js,script,scripts/test-report-image-fix.js,76,2025-12-18T18:09:34+01:00,1,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/test-safe-calculation.js,script,scripts/test-safe-calculation.js,100,2025-12-15T15:51:36+01:00,1,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/test-sportsdb-api.js,script,scripts/test-sportsdb-api.js,88,2025-10-17T12:38:40+02:00,1,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/test-style-generation.js,script,scripts/test-style-generation.js,127,2025-12-15T16:25:56+01:00,1,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/test-style-loading-fix.js,script,scripts/test-style-loading-fix.js,41,2025-12-15T15:51:36+01:00,1,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/test-style-loading-logic-fix.js,script,scripts/test-style-loading-logic-fix.js,49,2025-12-15T16:25:56+01:00,1,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/test-template-dropdown-fix.js,script,scripts/test-template-dropdown-fix.js,85,2025-12-16T18:09:38+01:00,1,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/test-template-resolution.js,script,scripts/test-template-resolution.js,67,2025-12-15T15:51:36+01:00,1,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/test-universal-partner-report.js,script,scripts/test-universal-partner-report.js,94,2025-12-15T15:51:36+01:00,1,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/test-universal-partner-styles.js,script,scripts/test-universal-partner-styles.js,114,2025-12-15T16:25:56+01:00,1,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/test-universal-system.js,script,scripts/test-universal-system.js,70,2025-12-15T16:25:56+01:00,1,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/test-updated-partner-report.js,script,scripts/test-updated-partner-report.js,33,2025-12-15T15:51:36+01:00,1,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/testGoogleServiceAccount.ts,script,scripts/testGoogleServiceAccount.ts,106,2025-12-27T02:09:57+01:00,1,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/update-kpi-chart 3.js,script,scripts/update-kpi-chart 3.js,71,2025-08-28T06:47:03+02:00,1,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/update-kpi-chart 4.js,script,scripts/update-kpi-chart 4.js,71,2025-08-28T06:47:03+02:00,1,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/update-kpi-chart.js,script,scripts/update-kpi-chart.js,67,2025-11-02T21:13:40+01:00,3,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/update-version.js,script,scripts/update-version.js,81,2026-03-06T11:03:00+01:00,2,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/upload-partner-logos.js,script,scripts/upload-partner-logos.js,198,2025-10-17T13:33:40+02:00,1,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/v3/audit-data.ts,script,scripts/v3/audit-data.ts,32,2026-03-13T10:08:08+01:00,1,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/v3/bootstrap-org.ts,script,scripts/v3/bootstrap-org.ts,53,2026-03-13T10:08:08+01:00,1,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/v3/create-metrics-view.ts,script,scripts/v3/create-metrics-view.ts,73,2026-03-13T10:08:08+01:00,1,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/v3/diagnose-query-performance.ts,script,scripts/v3/diagnose-query-performance.ts,55,2026-03-13T10:08:08+01:00,1,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/v3/migrate-partners.ts,script,scripts/v3/migrate-partners.ts,66,2026-03-13T10:08:08+01:00,1,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/v3/migrate-projects-to-activities.ts,script,scripts/v3/migrate-projects-to-activities.ts,75,2026-03-13T10:08:08+01:00,1,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/v3/migrate-projects.ts,script,scripts/v3/migrate-projects.ts,84,2026-03-13T10:08:08+01:00,1,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/v3/migrate-qualitative-metadata.ts,script,scripts/v3/migrate-qualitative-metadata.ts,59,2026-03-13T10:08:08+01:00,1,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/v3/migrate-stats-to-metrics.ts,script,scripts/v3/migrate-stats-to-metrics.ts,93,2026-03-13T10:08:08+01:00,1,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/v3/migrate-stats.ts,script,scripts/v3/migrate-stats.ts,66,2026-03-13T10:08:08+01:00,1,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/v3/migrate-v2-v3.ts,script,scripts/v3/migrate-v2-v3.ts,84,2026-03-13T10:08:08+01:00,1,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/v3/rollback-migration-v3.ts,script,scripts/v3/rollback-migration-v3.ts,39,2026-03-13T10:08:08+01:00,1,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/v3/scope-admin-data.ts,script,scripts/v3/scope-admin-data.ts,50,2026-03-13T10:08:08+01:00,1,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/v3/test-permissions.ts,script,scripts/v3/test-permissions.ts,64,2026-03-15T13:18:18+01:00,1,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/v3/verify-migration.ts,script,scripts/v3/verify-migration.ts,60,2026-03-13T10:08:08+01:00,1,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/v3/verify-qualitative-data.ts,script,scripts/v3/verify-qualitative-data.ts,63,2026-03-13T10:08:08+01:00,1,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/validate-and-fix-all-formulas.ts,script,scripts/validate-and-fix-all-formulas.ts,132,2026-01-03T10:53:22+01:00,1,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/validate-chart-configs.ts,script,scripts/validate-chart-configs.ts,103,2025-12-17T15:12:05+01:00,1,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/validateDataQuality.ts,script,scripts/validateDataQuality.ts,506,2026-03-07T12:49:13+01:00,2,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/verify-and-fix-formulas.ts,script,scripts/verify-and-fix-formulas.ts,104,2026-01-03T10:53:22+01:00,1,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/verify-asroma-charts.ts,script,scripts/verify-asroma-charts.ts,59,2025-11-13T12:56:34+01:00,1,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/verify-bitly-variables.js,script,scripts/verify-bitly-variables.js,35,2025-10-27T14:13:46+01:00,1,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/verify-buildermode-setup.ts,script,scripts/verify-buildermode-setup.ts,109,2025-11-13T13:30:55+01:00,1,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/verify-chart-labels.js,script,scripts/verify-chart-labels.js,86,2025-12-15T15:51:36+01:00,1,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/verify-complete-system.ts,script,scripts/verify-complete-system.ts,356,2026-01-03T11:16:14+01:00,1,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/verify-fanmass-integration-contracts.ts,script,scripts/verify-fanmass-integration-contracts.ts,40,2026-08-13T11:17:20Z,2,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/verify-kyc-integration.ts,script,scripts/verify-kyc-integration.ts,338,2025-12-28T18:25:12+01:00,1,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/verify-p0-fixes.js,script,scripts/verify-p0-fixes.js,255,2025-10-17T12:38:40+02:00,1,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/verify-partner-report-fix.js,script,scripts/verify-partner-report-fix.js,40,2025-12-15T15:51:36+01:00,1,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/verify-partner-template-connection.js,script,scripts/verify-partner-template-connection.js,72,2025-12-16T18:09:38+01:00,1,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/verify-production-db.js,script,scripts/verify-production-db.js,79,2025-11-02T21:13:40+01:00,2,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/verify-production-flags.ts,script,scripts/verify-production-flags.ts,122,2026-03-13T10:50:24+01:00,3,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/verify-report-variables.js,script,scripts/verify-report-variables.js,78,2025-12-16T19:21:56+01:00,1,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/verify-v3-middleware.ts,script,scripts/verify-v3-middleware.ts,41,2026-03-16T17:10:01+01:00,1,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/verifyViewSlug.ts,script,scripts/verifyViewSlug.ts,34,2025-11-06T20:26:43+01:00,1,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+collection:admin_users,collection,,0,,0,data,pending,3,,1 refs; 0 writer files; 1 reader files; 0 refs in app/lib code
+collection:aggregation_jobs,collection,,0,,0,data,pending,3,,2 refs; 1 writer files; 0 reader files; 2 refs in app/lib code
+collection:aggregation_logs,collection,,0,,0,data,pending,3,,2 refs; 2 writer files; 0 reader files; 0 refs in app/lib code
+collection:ai_analysis_summaries,collection,,0,,0,data,pending,3,,2 refs; 1 writer files; 1 reader files; 2 refs in app/lib code
+collection:analytics_aggregates,collection,,0,,0,data,pending,3,,26 refs; 3 writer files; 16 reader files; 19 refs in app/lib code
+collection:api_audit_logs,collection,,0,,0,data,pending,3,,3 refs; 1 writer files; 0 reader files; 3 refs in app/lib code
+collection:api_football_enrichment_log,collection,,0,,0,data,pending,3,,3 refs; 1 writer files; 1 reader files; 3 refs in app/lib code
+collection:audit_logs,collection,,0,,0,data,pending,3,,2 refs; 2 writer files; 0 reader files; 2 refs in app/lib code
+collection:available_fonts,collection,,0,,0,data,pending,3,,2 refs; 0 writer files; 2 reader files; 2 refs in app/lib code
+collection:bitly_link_project_junction,collection,,0,,0,data,pending,3,,12 refs; 2 writer files; 7 reader files; 0 refs in app/lib code
+collection:bitly_links,collection,,0,,0,data,pending,3,,47 refs; 10 writer files; 24 reader files; 16 refs in app/lib code
+collection:bitly_project_links,collection,,0,,0,data,pending,3,,29 refs; 5 writer files; 16 reader files; 14 refs in app/lib code
+collection:bitly_sync_logs,collection,,0,,0,data,pending,3,,2 refs; 1 writer files; 0 reader files; 2 refs in app/lib code
+collection:chartConfigurations,collection,,0,,0,data,pending,3,,11 refs; 10 writer files; 1 reader files; 1 refs in app/lib code
+collection:chart_algorithms,collection,,0,,0,data,pending,3,,3 refs; 1 writer files; 1 reader files; 0 refs in app/lib code
+collection:chart_algorithms_backup,collection,,0,,0,data,pending,3,,2 refs; 1 writer files; 0 reader files; 0 refs in app/lib code
+collection:chart_configs,collection,,0,,0,data,pending,3,,2 refs; 0 writer files; 2 reader files; 0 refs in app/lib code
+collection:chart_configurations,collection,,0,,0,data,pending,3,,141 refs; 55 writer files; 58 reader files; 9 refs in app/lib code
+collection:chart_formatting_defaults,collection,,0,,0,data,pending,3,,4 refs; 2 writer files; 1 reader files; 2 refs in app/lib code
+collection:chartconfigurations,collection,,0,,0,data,pending,3,,1 refs; 1 writer files; 0 reader files; 0 refs in app/lib code
+collection:charts,collection,,0,,0,data,pending,3,,5 refs; 3 writer files; 0 reader files; 3 refs in app/lib code
+collection:cities,collection,,0,,0,data,pending,3,,8 refs; 1 writer files; 3 reader files; 1 refs in app/lib code
+collection:clickerSets,collection,,0,,0,data,pending,3,,2 refs; 2 writer files; 0 reader files; 0 refs in app/lib code
+collection:content_assets,collection,,0,,0,data,pending,3,,8 refs; 4 writer files; 1 reader files; 4 refs in app/lib code
+collection:countries,collection,,0,,0,data,pending,3,,8 refs; 1 writer files; 5 reader files; 3 refs in app/lib code
+collection:country_mappings,collection,,0,,0,data,pending,3,,1 refs; 1 writer files; 0 reader files; 0 refs in app/lib code
+collection:data_blocks,collection,,0,,0,data,pending,3,,53 refs; 8 writer files; 31 reader files; 10 refs in app/lib code
+collection:data_visualization_blocks,collection,,0,,0,data,pending,3,,1 refs; 1 writer files; 0 reader files; 0 refs in app/lib code
+collection:drive_folder_links,collection,,0,,0,data,pending,3,,11 refs; 1 writer files; 3 reader files; 11 refs in app/lib code
+collection:event_comparisons,collection,,0,,0,data,pending,3,,1 refs; 1 writer files; 0 reader files; 0 refs in app/lib code
+collection:fanmass_event_links,collection,,0,,0,data,pending,3,,8 refs; 1 writer files; 1 reader files; 8 refs in app/lib code
+collection:filter_slugs,collection,,0,,0,data,pending,3,,4 refs; 2 writer files; 0 reader files; 4 refs in app/lib code
+collection:football_data_fixtures,collection,,0,,0,data,pending,3,,6 refs; 2 writer files; 1 reader files; 5 refs in app/lib code
+collection:grid_settings,collection,,0,,0,data,pending,3,,2 refs; 0 writer files; 2 reader files; 0 refs in app/lib code
+collection:hashtag_categories,collection,,0,,0,data,pending,3,,12 refs; 2 writer files; 2 reader files; 10 refs in app/lib code
+collection:hashtag_colors,collection,,0,,0,data,pending,3,,8 refs; 2 writer files; 1 reader files; 8 refs in app/lib code
+collection:hashtag_slugs,collection,,0,,0,data,pending,3,,7 refs; 4 writer files; 1 reader files; 7 refs in app/lib code
+collection:hashtags,collection,,0,,0,data,pending,3,,5 refs; 2 writer files; 0 reader files; 5 refs in app/lib code
+collection:local_users,collection,,0,,0,data,pending,3,,13 refs; 5 writer files; 6 reader files; 0 refs in app/lib code
+collection:notifications,collection,,0,,0,data,pending,3,,5 refs; 3 writer files; 2 reader files; 4 refs in app/lib code
+collection:organizations,collection,,0,,0,data,pending,3,,17 refs; 4 writer files; 10 reader files; 17 refs in app/lib code
+collection:pageStyles,collection,,0,,0,data,pending,3,,2 refs; 0 writer files; 2 reader files; 1 refs in app/lib code
+collection:page_passwords,collection,,0,,0,data,pending,3,,8 refs; 4 writer files; 1 reader files; 4 refs in app/lib code
+collection:page_styles_enhanced,collection,,0,,0,data,pending,3,,16 refs; 3 writer files; 10 reader files; 0 refs in app/lib code
+collection:partner_analytics,collection,,0,,0,data,pending,3,,4 refs; 2 writer files; 2 reader files; 3 refs in app/lib code
+collection:partners,collection,,0,,0,data,pending,3,,193 refs; 40 writer files; 104 reader files; 85 refs in app/lib code
+collection:project_permissions,collection,,0,,0,data,pending,3,,3 refs; 1 writer files; 0 reader files; 3 refs in app/lib code
+collection:projects,collection,,0,,0,data,pending,3,,239 refs; 46 writer files; 124 reader files; 104 refs in app/lib code
+collection:report_styles,collection,,0,,0,data,pending,3,,4 refs; 1 writer files; 2 reader files; 3 refs in app/lib code
+collection:report_templates,collection,,0,,0,data,pending,3,,82 refs; 13 writer files; 35 reader files; 9 refs in app/lib code
+collection:report_variants,collection,,0,,0,data,pending,3,,5 refs; 2 writer files; 1 reader files; 4 refs in app/lib code
+collection:reports,collection,,0,,0,data,pending,3,,14 refs; 2 writer files; 6 reader files; 8 refs in app/lib code
+collection:reports_v12,collection,,0,,0,data,pending,3,,1 refs; 0 writer files; 1 reader files; 0 refs in app/lib code
+collection:settings,collection,,0,,0,data,pending,3,,9 refs; 4 writer files; 4 reader files; 8 refs in app/lib code
+collection:sportsdb_fixtures,collection,,0,,0,data,pending,3,,4 refs; 1 writer files; 1 reader files; 4 refs in app/lib code
+collection:styles,collection,,0,,0,data,pending,3,,1 refs; 0 writer files; 1 reader files; 0 refs in app/lib code
+collection:system_settings,collection,,0,,0,data,pending,3,,2 refs; 1 writer files; 0 reader files; 0 refs in app/lib code
+collection:user_preferences,collection,,0,,0,data,pending,3,,2 refs; 1 writer files; 0 reader files; 2 refs in app/lib code
+collection:users,collection,,0,,0,data,pending,3,,12 refs; 6 writer files; 4 reader files; 4 refs in app/lib code
+collection:v3_activities,collection,,0,,0,data,pending,3,,1 refs; 0 writer files; 1 reader files; 0 refs in app/lib code
+collection:v3_metric_definitions,collection,,0,,0,data,pending,3,,2 refs; 1 writer files; 1 reader files; 0 refs in app/lib code
+collection:v3_metric_values,collection,,0,,0,data,pending,3,,3 refs; 1 writer files; 1 reader files; 0 refs in app/lib code
+collection:variablesConfig,collection,,0,,0,data,pending,3,,7 refs; 3 writer files; 3 reader files; 0 refs in app/lib code
+collection:variablesGroups,collection,,0,,0,data,pending,3,,6 refs; 5 writer files; 1 reader files; 0 refs in app/lib code
+collection:variables_groups,collection,,0,,0,data,pending,3,,2 refs; 0 writer files; 1 reader files; 0 refs in app/lib code
+collection:variables_metadata,collection,,0,,0,data,pending,3,,48 refs; 22 writer files; 23 reader files; 4 refs in app/lib code
+collection:visualizationBlocks,collection,,0,,0,data,pending,3,,2 refs; 1 writer files; 1 reader files; 0 refs in app/lib code
+collection:webhook_delivery_logs,collection,,0,,0,data,pending,3,,2 refs; 1 writer files; 0 reader files; 2 refs in app/lib code
+collection:webhooks,collection,,0,,0,data,pending,3,,7 refs; 1 writer files; 0 reader files; 7 refs in app/lib code

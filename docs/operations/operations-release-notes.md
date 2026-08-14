@@ -1,8 +1,56 @@
 # {messmass} Release Notes
 Status: Active
-Last Updated: 2026-08-14T16:00:00.000Z
+Last Updated: 2026-08-14T18:30:00.000Z
 Canonical: No
 Owner: Operations
+
+## [v12.1.55] — 2026-08-14T18:30:00.000Z
+
+### Summary
+Phases 0 and 1 of the LLD deep audit. Instrumentation and the section template
+only — no audit sweep performed, no product code changed.
+
+### What Was Delivered
+- `scripts/lld-audit/build-inventory.ts`: coverage ledger, entry-point→collection
+  graph, and collection read/write matrix, built with the TypeScript compiler API
+  so imports resolve through path aliases and collection names come off the AST.
+- `scripts/lld-audit/scratch-db.ts`: disposable-database harness with a hard
+  `lld_scratch_` naming guard, so audit rule R3 can execute state-changing flows
+  without risking the fanmass database on the same mongod. Guard tested.
+- `docs/audits/lld/phase-0-evidence.md` and `phase-1-viewpoints.md`.
+
+### Findings About The Plan Itself
+The plan was drafted with grep and stated 68 Mongo collections. Verified figure is
+69: grep misses `db.collection<T>('name')` (70 such references) and invented a
+`categories` collection that exists only inside a documentation string literal.
+Plan corrected in place.
+
+### Instrumentation Defects Found And Fixed
+Source files from a `ts.Program` carry no parent pointers until the binder runs,
+so every chained `db.collection('x').findOne()` in app/ and lib/ was misclassified
+as unknown access — 683 of 1,163 references. Fixed by tracking ancestry during
+traversal and resolving bound handles; unknown access is now 1, dispositioned by
+hand. The audit's own tooling is also now excluded from its own scan, after the
+scratch-DB harness's probe collection registered as a real 70th collection.
+
+### Ledger Reconciliation
+All rows match independent measurement exactly: 182 routes, 69 pages, 22 app
+modules, 210 lib, 111 components, 12 hooks, 37 tests, 402 scripts (deferred by
+scope decision), 69 collections. 1,114 units total; 643 non-deferred working set.
+
+### Observations Recorded For Later Phases
+81 modules are unreachable from any route or page. Two checked by hand have no
+importer anywhere in the repo: `app/admin/events/ProjectsPageClient.tsx` (1,108
+lines) and `lib/layoutGrammarValidation.ts` (543 lines) — the latter despite a
+required CI guardrail that sounds like its consumer but imports only fs and path.
+Recorded as candidates for sweep-phase disposition, not asserted as dead code.
+
+### Testing
+- `npx tsx scripts/lld-audit/build-inventory.ts` — reconciliation printed above.
+- `npx tsx scripts/lld-audit/scratch-db.ts` — round-trip PASS, teardown PASS,
+  guard-refuses-non-scratch PASS; zero leftover databases, fanmass untouched.
+- Full gate: type-check, lint, 336 tests, style:check, version:verify, docs:audit,
+  guardrails, build.
 
 ## [v12.1.54] — 2026-08-14T16:00:00.000Z
 

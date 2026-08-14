@@ -1,13 +1,13 @@
 # Docs Triage
 Status: Active
-Last Updated: 2026-08-14T19:18:54Z
+Last Updated: 2026-08-14T19:35:20Z
 Canonical: Yes
 Owner: Documentation
 
 This report highlights actionable doc-cleanup work: missing metadata, suspicious titles, and potential near-duplicates in the ACTIVE docs tree.
 
 ## Counts
-- Active Markdown files: 148
+- Active Markdown files: 152
 - Archived Markdown files: 31
 - Active files missing header metadata fields: 38
 - Active files with suspicious titles: 0
