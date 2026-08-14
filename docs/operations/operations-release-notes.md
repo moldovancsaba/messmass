@@ -1,8 +1,33 @@
 # {messmass} Release Notes
 Status: Active
-Last Updated: 2026-08-14T01:00:00.000Z
+Last Updated: 2026-08-14T01:30:00.000Z
 Canonical: No
 Owner: Operations
+
+## [v12.1.46] — 2026-08-14T01:30:00.000Z
+
+### Summary
+The Drive-folder badge now tells an operator whether an event's data is ready.
+It previously read "Verified" as soon as fanmass had finished *reading* a folder,
+which was observed live showing two verified folders on an event whose 411 photos
+were unanalysed and whose variables were empty.
+
+### What Was Delivered
+- `DriveFoldersEditor` renders the analysis-aware states: Waiting to be read,
+  Analysing (with percent and counts), Analysis complete, No images found, Failed.
+- Only "Analysis complete" carries the success colour. The legacy `verified` state
+  renders neutral, not green — "read" is not "ready".
+- Progress is text with `role="progressbar"` and a spoken label, so state is never
+  conveyed by colour or animation alone.
+- An unrecognised status renders neutrally instead of breaking the row, so a newer
+  fanmass cannot break an older messmass.
+
+### Testing
+- `type-check`, `lint`, `test` (309), `style:check`, `docs:audit`, guardrails, build.
+- All eight states rendered and screenshotted via a temporary route (the editor is
+  SSO-gated), then the route was deleted. The one hydration warning present is the
+  pre-existing site-wide `data-mantine-color-scheme` mismatch — confirmed by
+  reproducing it on `/` and `/admin/login`.
 
 ## [v12.1.45] — 2026-08-14T01:00:00.000Z
 

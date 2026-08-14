@@ -197,9 +197,28 @@
   color: var(--mm-gray-600);
 }
 
+/* Legacy state from a fanmass build predating the analysis-aware vocabulary.
+   Deliberately neutral rather than success-coloured: "read" is not "ready". */
 .status_verified {
+  background: var(--mm-gray-200);
+  color: var(--mm-gray-600);
+}
+
+/* In progress — warning tone, because the data is not yet safe to report from. */
+.status_analyzing {
+  background: var(--mm-warning-light);
+  color: var(--mm-warning);
+}
+
+/* The only state that means the event's Drive data is actually ready. */
+.status_complete {
   background: var(--mm-success-light);
   color: var(--mm-success);
+}
+
+.status_empty {
+  background: var(--mm-gray-200);
+  color: var(--mm-gray-600);
 }
 
 .status_error {
@@ -209,6 +228,11 @@
 
 .errorDetail {
   color: var(--mm-error);
+}
+
+.progressDetail {
+  color: var(--mm-gray-600);
+  font-variant-numeric: tabular-nums;
 }
 
 .separator {

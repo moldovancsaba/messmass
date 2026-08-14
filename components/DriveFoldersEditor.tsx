@@ -24,15 +24,36 @@ interface DriveFolderLink {
   folderId: string;
   folderUrl: string;
   label?: string;
-  status: 'pending' | 'verified' | 'error';
+  status: 'pending' | 'analyzing' | 'complete' | 'empty' | 'error' | 'verified';
   lastError?: string;
+  imagesDiscovered?: number;
+  imagesAnalyzed?: number;
 }
 
+// WHAT: What each state means to the person reading it.
+// WHY: The badge used to say "Verified" as soon as fanmass had *read* the folder,
+//      which an operator reasonably takes to mean the data is ready. It was not:
+//      an event showed two verified folders while 411 photos were unanalysed and
+//      its variables were empty. The wording now answers "is this ready?".
 const STATUS_LABEL: Record<DriveFolderLink['status'], string> = {
-  pending: '⏳ Pending',
-  verified: '✓ Verified',
-  error: '⚠ Error',
+  pending: 'Waiting to be read',
+  analyzing: 'Analysing',
+  complete: 'Analysis complete',
+  empty: 'No images found',
+  error: 'Failed',
+  // Legacy: written by a fanmass build predating the analysis-aware vocabulary.
+  verified: 'Read, analysis unknown',
 };
+
+// WHAT: Percent analysed for a folder, or null when it cannot be known.
+// WHY: Shown as text alongside the state so progress never depends on colour or
+//      an animation to be understood.
+function progressPercent(link: DriveFolderLink): number | null {
+  const discovered = link.imagesDiscovered ?? 0;
+  const analyzed = link.imagesAnalyzed ?? 0;
+  if (discovered <= 0) return null;
+  return Math.min(100, Math.max(0, Math.round((analyzed / discovered) * 100)));
+}
 
 export default function DriveFoldersEditor({ projectId, projectName }: DriveFoldersEditorProps) {
   const [links, setLinks] = useState<DriveFolderLink[]>([]);
@@ -201,12 +222,36 @@ export default function DriveFoldersEditor({ projectId, projectName }: DriveFold
                   {link.label || link.folderUrl}
                 </a>
                 <div className={styles.linkMeta}>
-                  <span className={`${styles.statusBadge} ${styles[`status_${link.status}`]}`}>
-                    {STATUS_LABEL[link.status]}
+                  {/* The label carries the meaning; the colour only reinforces it,
+                      so the state is legible without colour vision and to a screen
+                      reader reading the text content. */}
+                  <span className={`${styles.statusBadge} ${styles[`status_${link.status}`] || ''}`}>
+                    {STATUS_LABEL[link.status] || 'Unknown state'}
                   </span>
+                  {(() => {
+                    const percent = progressPercent(link);
+                    if (percent === null || link.status === 'error') return null;
+                    const discovered = link.imagesDiscovered ?? 0;
+                    const analyzed = link.imagesAnalyzed ?? 0;
+                    return (
+                      <>
+                        <span className={styles.separator} aria-hidden="true">•</span>
+                        <span
+                          className={styles.progressDetail}
+                          role="progressbar"
+                          aria-valuenow={percent}
+                          aria-valuemin={0}
+                          aria-valuemax={100}
+                          aria-label={`Analysis progress: ${percent} percent, ${analyzed} of ${discovered} images`}
+                        >
+                          {percent}% · {analyzed} of {discovered} images
+                        </span>
+                      </>
+                    );
+                  })()}
                   {link.status === 'error' && link.lastError && (
                     <>
-                      <span className={styles.separator}>•</span>
+                      <span className={styles.separator} aria-hidden="true">•</span>
                       <span className={styles.errorDetail}>{link.lastError}</span>
                     </>
                   )}
