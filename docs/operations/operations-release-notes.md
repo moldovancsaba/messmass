@@ -1,8 +1,30 @@
 # {messmass} Release Notes
 Status: Active
-Last Updated: 2026-08-14T00:30:00.000Z
+Last Updated: 2026-08-14T01:00:00.000Z
 Canonical: No
 Owner: Operations
+
+## [v12.1.45] — 2026-08-14T01:00:00.000Z
+
+### Summary
+Registered `fanmassStatus` so the analysis-progress percentage fanmass writes is
+usable by the product. The value was already landing on live events — 100 on the
+UEFA Super Cup Fan Festival event — but as an unregistered stats key it could not
+be picked in a chart formula, had no label or unit in the variables admin, and no
+validation caught a formula referencing it by a wrong name.
+
+### What Was Delivered
+- `scripts/seedFanmassStatusVariable.ts` and the `seed:fanmass-status` alias.
+- Registered as `type: percentage`, `category: Fanmass`, `derived: true`, and not
+  editable in manual entry — the value is owned by fanmass, so offering an operator
+  an edit that the next push overwrites would be a lie.
+- The description records the two semantics consumers need: an event with no images
+  reports 0 rather than 100, and an event with permanently failing images never
+  reaches 100.
+
+### Testing
+- Seed run twice against production: created, then updated, exactly one document.
+- `npm run type-check`, `npm run lint`, `npm test` (309), `style:check` green.
 
 ## [v12.1.44] — 2026-08-14T00:30:00.000Z
 

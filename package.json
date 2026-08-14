@@ -1,6 +1,6 @@
 {
   "name": "messmass",
-  "version": "12.1.44",
+  "version": "12.1.45",
   "description": "Enterprise-grade event analytics platform with comprehensive partner management, intelligent link tracking, automated event creation (Sports Match Builder), and advanced real-time statistics dashboard for sports organizations, venues, brands, and event managers",
   "keywords": [
     "event-statistics",
@@ -132,7 +132,8 @@
     "security:check-users-password-hash": "tsx -r dotenv/config scripts/check-users-password-hash.ts dotenv_config_path=.env.local",
     "security:migrate-users-to-password-hash": "tsx -r dotenv/config scripts/migrate-users-to-password-hash.ts dotenv_config_path=.env.local",
     "ops:partner-report:logs": "node scripts/auditPartnerReportLogs.mjs",
-    "ops:partner-report:logs:fail": "node scripts/auditPartnerReportLogs.mjs --fail-on-errors"
+    "ops:partner-report:logs:fail": "node scripts/auditPartnerReportLogs.mjs --fail-on-errors",
+    "seed:fanmass-status": "tsx -r dotenv/config scripts/seedFanmassStatusVariable.ts dotenv_config_path=.env.local"
   },
   "dependencies": {
     "@mantine/core": "^8.3.18",
