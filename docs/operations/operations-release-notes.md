@@ -1,8 +1,34 @@
 # {messmass} Release Notes
 Status: Active
-Last Updated: 2026-08-13T21:00:00.000Z
+Last Updated: 2026-08-14T00:00:00.000Z
 Canonical: No
 Owner: Operations
+
+## [v12.1.43] — 2026-08-14T00:00:00.000Z
+
+### Summary
+Made a linked Drive folder's status mean what an operator reads it to mean. The
+status previously flipped to `verified` the moment fanmass finished *reading* a
+folder, so a folder could show as done while none of its images had been analysed
+and the event's variables were still empty — observed live on an event with 411
+photos. Folder state now tracks the analysis pipeline, and carries progress counts.
+
+### What Was Delivered
+- `lib/driveFolders.ts`: `DriveFolderStatus` widened to
+  `pending | analyzing | complete | empty | error`, with `verified` retained so a
+  fanmass build predating the change keeps working.
+- `DriveFolderLink` gained optional `imagesDiscovered` / `imagesAnalyzed`, so the
+  UI can show how far an analysis has got rather than a binary badge.
+- `setDriveFolderStatus` accepts and validates those counters, and only writes
+  the ones actually supplied — a status-only update must not zero the progress an
+  earlier poll established.
+- The fanmass status endpoint accepts the widened vocabulary and rejects
+  non-numeric or negative counts with `INVALID_PROGRESS`.
+
+### Testing
+- `npm run type-check`, `npm run lint`, `npm test` (309 tests) green.
+- fanmass side verified against its own smoke suite, including the analysis-aware
+  status contract and the recovery-from-error path.
 
 ## [v12.1.42] — 2026-08-13T21:00:00.000Z
 

@@ -13,7 +13,21 @@ import { Db, ObjectId } from 'mongodb';
 import { getDb } from './fanmassIntegration';
 import { extractDriveFolderId, buildDriveFolderUrl } from './googleDriveFolder';
 
-export type DriveFolderStatus = 'pending' | 'verified' | 'error';
+// WHAT: Lifecycle of a linked Drive folder, from the operator's point of view.
+// WHY: 'verified' only ever meant "fanmass finished reading the folder", which is
+//     not the question an operator is asking. A folder could read as verified
+//     while none of its images had been analysed and the event's variables were
+//     still empty — observed live with 411 photos. The vocabulary now tracks the
+//     whole pipeline so the badge answers "is this event's data ready?".
+// HOW: 'verified' is retained so an older fanmass keeps working; it is treated as
+//     a synonym for 'analyzing' until real counts arrive.
+export type DriveFolderStatus =
+  | 'pending'    // linked; fanmass has not read it yet
+  | 'analyzing'  // images pulled and staged; analysis in progress
+  | 'complete'   // every discovered image analysed
+  | 'empty'      // read successfully, contained no images
+  | 'error'      // failed; lastError carries the reason
+  | 'verified';  // deprecated: pre-analysis-aware fanmass builds
 
 export interface DriveFolderLink {
   _id: string;
@@ -24,6 +38,11 @@ export interface DriveFolderLink {
   status: DriveFolderStatus;
   lastError?: string;
   lastCheckedAt?: string;
+  // WHAT: Progress counters reported by fanmass alongside the status.
+  // WHY: Let the UI show how far along an analysis is instead of a binary badge,
+  //     and distinguish "no images found" from "images not analysed yet".
+  imagesDiscovered?: number;
+  imagesAnalyzed?: number;
   addedBy?: string;
   createdAt: string;
   updatedAt: string;
@@ -43,6 +62,8 @@ function toDriveFolderLink(doc: any): DriveFolderLink {
     status: doc.status || 'pending',
     lastError: doc.lastError ?? undefined,
     lastCheckedAt: doc.lastCheckedAt ?? undefined,
+    imagesDiscovered: typeof doc.imagesDiscovered === 'number' ? doc.imagesDiscovered : undefined,
+    imagesAnalyzed: typeof doc.imagesAnalyzed === 'number' ? doc.imagesAnalyzed : undefined,
     addedBy: doc.addedBy ?? undefined,
     createdAt: doc.createdAt,
     updatedAt: doc.updatedAt,
@@ -137,13 +158,24 @@ export async function setDriveFolderStatus(
   eventId: string,
   folderId: string,
   status: DriveFolderStatus,
-  lastError?: string
+  lastError?: string,
+  progress?: { imagesDiscovered?: number; imagesAnalyzed?: number }
 ): Promise<DriveFolderLink> {
   if (!ObjectId.isValid(eventId)) {
     throw Object.assign(new Error('Invalid event id.'), { status: 422, code: 'INVALID_EVENT_ID' });
   }
   const db = await getDb();
   const timestamp = nowIso();
+  // WHAT: Only write counters fanmass actually sent.
+  // WHY: A poll that reports status without counts must not silently zero the
+  //     progress a previous poll established, or the badge would flap back to 0%.
+  const counters: Record<string, number> = {};
+  if (typeof progress?.imagesDiscovered === 'number') {
+    counters.imagesDiscovered = Math.max(0, Math.trunc(progress.imagesDiscovered));
+  }
+  if (typeof progress?.imagesAnalyzed === 'number') {
+    counters.imagesAnalyzed = Math.max(0, Math.trunc(progress.imagesAnalyzed));
+  }
   const result = await db.collection('drive_folder_links').findOneAndUpdate(
     { eventId, folderId },
     {
@@ -151,6 +183,7 @@ export async function setDriveFolderStatus(
         status,
         lastCheckedAt: timestamp,
         updatedAt: timestamp,
+        ...counters,
         ...(status === 'error' && lastError ? { lastError } : {}),
       },
       ...(status !== 'error' ? { $unset: { lastError: '' } } : {}),
