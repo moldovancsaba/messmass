@@ -35,6 +35,8 @@ interface SummaryDoc {
     genderProjection?: Record<string, number>;
     ageProjection?: Record<string, number>;
     merchandiseCounts?: Record<string, number>;
+    emotionProjection?: Record<string, number>;
+    smilingPct?: number | null;
     brandMentions?: Mention[];
     clubMentions?: Mention[];
     confidence?: number;
@@ -232,6 +234,7 @@ export default function AiEventReportView() {
             {eventRow?.isStale ? ' · stale' : ''}
           </span>
           {typeof s.confidence === 'number' && <span>Confidence: {Math.round(s.confidence * 100)}%</span>}
+          {typeof s.smilingPct === 'number' && <span>Smiling: {s.smilingPct}%</span>}
           {eventRow?.progressPercent !== null && eventRow?.progressPercent !== undefined && (
             <span>Analysis progress: {eventRow.progressPercent}%</span>
           )}
@@ -273,6 +276,8 @@ export default function AiEventReportView() {
         <CountsTable counts={s.genderProjection || {}} caption="Gender projection" nameHeader="Gender" />
         <h3 className={styles.srOnly}>Age projection</h3>
         <CountsTable counts={s.ageProjection || {}} caption="Age projection" nameHeader="Age group" />
+        <h3 className={styles.srOnly}>Emotions</h3>
+        <CountsTable counts={s.emotionProjection || {}} caption="Emotions detected on analysed faces" nameHeader="Emotion" />
       </AnalyticsSectionCard>
     </div>
   );

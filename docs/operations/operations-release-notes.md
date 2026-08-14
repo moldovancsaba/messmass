@@ -1,8 +1,37 @@
 # {messmass} Release Notes
 Status: Active
-Last Updated: 2026-08-14T13:00:00.000Z
+Last Updated: 2026-08-14T14:00:00.000Z
 Canonical: No
 Owner: Operations
+
+## [v12.1.52] — 2026-08-14T14:00:00.000Z
+
+### Summary
+Fan demographics now populate on the AI event report, and emotions plus smiling
+percentage render alongside them.
+
+### Root Cause
+The contract reserved `genderProjection` and `ageProjection` from the start, but
+fanmass's summary builder hardcoded both to `{}` — the fields were never mapped
+from the batch-level analysis, which held full data the whole time (738 male /
+371 female, 85.5% young adults on the UEFA batch). Every consumer therefore saw
+"Not available" while the producer sat on the numbers.
+
+### What Was Delivered
+- fanmass maps gender, age groups, emotions and smiling percentage into the
+  summary. Partner slices keep projections empty on purpose: the batch-level
+  summary is batch-wide, and serving it for a slice would misattribute
+  demographics.
+- The report renders the emotions table and shows smiling percentage in the
+  header. Gender and age required no UI change — the sections existed and simply
+  had no data.
+- The corrected summary was re-pushed and verified stored in production before
+  this release: gender {male 738, female 371}, age {youngAdults 966…}, emotions
+  {happy 1076…}, smiling 96.7.
+
+### Testing
+- Full messmass gate: type-check, lint, 336 tests, style:check, docs:audit,
+  guardrails, build. fanmass smoke suite green.
 
 ## [v12.1.51] — 2026-08-14T13:00:00.000Z
 
