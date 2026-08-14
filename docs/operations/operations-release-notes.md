@@ -1,8 +1,34 @@
 # {messmass} Release Notes
 Status: Active
-Last Updated: 2026-08-14T12:00:00.000Z
+Last Updated: 2026-08-14T13:00:00.000Z
 Canonical: No
 Owner: Operations
+
+## [v12.1.51] — 2026-08-14T13:00:00.000Z
+
+### Summary
+The AI event report: `/admin/analytics/ai/[eventId]` renders the full fanmass
+analysis for one event — brand mentions, club/federation mentions, merchandise,
+demographics, people counts, confidence and freshness — and event names in the
+AI Analytics list now link to it for connected events.
+
+### What Was Delivered
+- Report page consuming the stored analysis summary. Mentions render in the
+  producer's order; any share shown is labelled as share of detections in that
+  list, not of attendees — conflating those is the obvious misreading.
+- Long mention lists cap at 8 rows behind an accessible "Show all N".
+- Distinct states: loading, sign-in, error with retry, and "no summary yet" —
+  an event may predate the transport channel, and fanmass re-sends hourly.
+- Event names in the workspace list link only when AI-connected; a report for an
+  unconnected event would land on an empty state.
+
+### Testing
+- Rendered with the exact document stored in production for the UEFA event
+  (Heineken 194 at 48% of 406 detections; PSG 94 at 55% of 170) via a temporary
+  route, deleted before commit. Demographics correctly fall through to "Not
+  available" — the real projections are empty.
+- Full gate: type-check, lint, 336 tests, style:check, docs:audit, guardrails,
+  build.
 
 ## [v12.1.50] — 2026-08-14T12:00:00.000Z
 

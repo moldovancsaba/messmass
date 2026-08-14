@@ -13,6 +13,7 @@
  */
 
 import { useCallback, useEffect, useState } from 'react';
+import Link from 'next/link';
 import AnalyticsSectionCard from '@/components/analytics/AnalyticsSectionCard';
 import AnalyticsStatePanel from '@/components/analytics/AnalyticsStatePanel';
 import styles from './AiAnalyticsView.module.css';
@@ -233,7 +234,21 @@ export default function AiAnalyticsView() {
               <tbody>
                 {visibleEvents.slice(0, 200).map((row) => (
                   <tr key={row.eventId}>
-                    <th scope="row" className={styles.eventName}>{row.eventName}</th>
+                    <th scope="row" className={styles.eventName}>
+                      {/* Only connected events link out: a report for an event with
+                          no AI analytics would land on an empty state. */}
+                      {row.status !== 'not_connected' ? (
+                        <Link
+                          className={styles.eventLink}
+                          href={`/admin/analytics/ai/${row.eventId}`}
+                          aria-label={`Open AI report for ${row.eventName}`}
+                        >
+                          {row.eventName}
+                        </Link>
+                      ) : (
+                        row.eventName
+                      )}
+                    </th>
                     <td>
                       <span className={`${styles.badge} ${styles[`status_${row.status}`] || ''}`}>{statusText(row)}</span>
                       {row.lastError && <span className={styles.errorDetail}> {row.lastError}</span>}

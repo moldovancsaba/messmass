@@ -162,3 +162,13 @@
   white-space: nowrap;
   border: 0;
 }
+
+.eventLink {
+  color: var(--mm-color-primary-600);
+  text-decoration: none;
+}
+
+.eventLink:hover,
+.eventLink:focus-visible {
+  text-decoration: underline;
+}

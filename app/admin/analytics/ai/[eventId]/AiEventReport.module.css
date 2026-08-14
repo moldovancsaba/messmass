@@ -1,0 +1,107 @@
+/* AI event report styles. Design tokens only; meaning is carried by text, with
+   colour as reinforcement. */
+
+.wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: var(--mm-space-6);
+}
+
+.backLink {
+  font-size: var(--mm-font-size-sm);
+  color: var(--mm-color-primary-600);
+  text-decoration: none;
+}
+
+.backLink:hover,
+.backLink:focus-visible {
+  text-decoration: underline;
+}
+
+.headerMeta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--mm-space-4);
+  font-size: var(--mm-font-size-sm);
+  color: var(--mm-gray-600);
+}
+
+.metricsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(9rem, 1fr));
+  gap: var(--mm-space-4);
+  margin: 0;
+}
+
+.metricItem {
+  display: flex;
+  flex-direction: column;
+  gap: var(--mm-space-1);
+}
+
+.metricLabel {
+  font-size: var(--mm-font-size-sm);
+  color: var(--mm-gray-600);
+}
+
+.metricValue {
+  font-size: var(--mm-font-size-2xl);
+  font-weight: 700;
+  color: var(--mm-gray-900);
+  margin: 0;
+  font-variant-numeric: tabular-nums;
+}
+
+.tableScroll {
+  overflow-x: auto;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--mm-font-size-sm);
+}
+
+.table th,
+.table td {
+  text-align: left;
+  padding: var(--mm-space-2) var(--mm-space-3);
+  border-bottom: 1px solid var(--mm-gray-200);
+}
+
+.table thead th {
+  color: var(--mm-gray-600);
+  font-weight: 600;
+}
+
+.numeric {
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+}
+
+.shareNote {
+  font-size: var(--mm-font-size-sm);
+  color: var(--mm-gray-600);
+  margin: var(--mm-space-3) 0 0;
+}
+
+.showAll {
+  margin-top: var(--mm-space-3);
+}
+
+.emptyNote {
+  font-size: var(--mm-font-size-sm);
+  color: var(--mm-gray-600);
+}
+
+.srOnly {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
