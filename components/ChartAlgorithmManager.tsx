@@ -14,6 +14,35 @@ import SaveStatusIndicator, { SaveStatus } from './SaveStatusIndicator';
 import { apiPost, apiPut, apiDelete } from '@/lib/apiClient';
 import styles from './ChartAlgorithmManager.module.css';
 
+// WHAT: Fill-rate row for an AI-owned variable, as returned by
+//     GET /api/analytics/ai/variables.
+// WHY: Only the fields the picker needs; the workspace owns the full shape.
+interface AiVariableFill {
+  name: string;
+  eventsWithValue: number;
+  eventsTotalConnected: number;
+  fillRate: number;
+}
+
+// WHAT: Below this share of connected events, a variable is called out as risky.
+// WHY: Matches the AI Analytics workspace so the two surfaces never disagree.
+const AI_SPARSE_THRESHOLD = 50;
+
+// WHAT: The hint shown under an AI variable in the picker, or null for a
+//     non-AI variable or when the lookup was unavailable.
+// WHY: Informs, never blocks — an author may have a good reason to use a sparse
+//     variable, but should not discover the sparseness from a customer.
+function aiFillHint(row: AiVariableFill | undefined): { text: string; sparse: boolean } | null {
+  if (!row || row.eventsTotalConnected <= 0) return null;
+  const sparse = row.fillRate < AI_SPARSE_THRESHOLD;
+  return {
+    sparse,
+    text: sparse
+      ? `AI · filled on only ${row.eventsWithValue} of ${row.eventsTotalConnected} events — may render empty`
+      : `AI · filled on ${row.eventsWithValue} of ${row.eventsTotalConnected} events`,
+  };
+}
+
 /**
  * DYNAMIC VARIABLE SYSTEM - KYC as Single Source of Truth
  * 
@@ -93,12 +122,18 @@ export default function ChartAlgorithmManager({ user }: ChartAlgorithmManagerPro
   
   // WHAT: Dynamic variable state from KYC system
   // WHY: Replace hardcoded AVAILABLE_VARIABLES with live data
+  //
+  // (AiVariableFill is declared at module scope below the imports.)
   const [availableVariables, setAvailableVariables] = useState<AvailableVariable[]>([]);
   const [variablesLoading, setVariablesLoading] = useState(true);
+  // Fill rates for AI-owned variables, keyed by variable name. Empty when the
+  // lookup fails, which simply means the picker shows no fill-rate hint.
+  const [aiFillRates, setAiFillRates] = useState<Map<string, AiVariableFill>>(new Map());
   
   // Load variables on mount
   useEffect(() => {
     loadVariablesFromKYC();
+    loadAiVariableFillRates();
   }, []);
   
   // WHAT: Debounce search term to avoid excessive API calls
@@ -142,6 +177,27 @@ export default function ChartAlgorithmManager({ user }: ChartAlgorithmManagerPro
       setAvailableVariables([]);
     } finally {
       setVariablesLoading(false);
+    }
+  };
+
+  // WHAT: How completely each AI variable is populated across connected events.
+  // WHY: Fill rate is decision-critical at authoring time and was only visible in
+  //     the AI Analytics workspace. On the current estate the merch variables sit
+  //     at 1.3% — a template built on one renders empty on 153 of 155 events, and
+  //     the author finds out from a customer. Showing it here puts the number where
+  //     the choice is actually made.
+  // HOW: One request per editor session. A failure is deliberately silent: the
+  //     picker must keep working exactly as before rather than block authoring.
+  const loadAiVariableFillRates = async () => {
+    try {
+      const response = await fetch('/api/analytics/ai/variables', { cache: 'no-store' });
+      if (!response.ok) return;
+      const data = await response.json();
+      const rows = data?.data?.variables;
+      if (!Array.isArray(rows)) return;
+      setAiFillRates(new Map(rows.map((row: AiVariableFill) => [row.name, row])));
+    } catch {
+      // Silent by design — see above.
     }
   };
 
@@ -729,6 +785,7 @@ ${errors.length > 0 ? '\n\nErrors:\n' + errors.join('\n') : '\n✅ All formulas 
         <ChartConfigurationEditor
           config={editingConfig}
           availableVariables={availableVariables}
+          aiFillRates={aiFillRates}
           onSave={saveConfiguration}
           onUpdate={updateConfiguration}
           onCancel={() => {
@@ -745,12 +802,16 @@ ${errors.length > 0 ? '\n\nErrors:\n' + errors.join('\n') : '\n✅ All formulas 
 interface ChartConfigurationEditorProps {
   config: ChartConfigFormData;
   availableVariables: AvailableVariable[]; // WHAT: Dynamic variables from KYC
+  // WHAT: Fill rate per AI-owned variable, keyed by name; empty when unavailable.
+  // WHY: Shown in the variable picker so an author sees, at the moment of choosing,
+  //     whether a variable is populated widely enough to build a report on.
+  aiFillRates: Map<string, AiVariableFill>;
   onSave: (config: ChartConfigFormData) => Promise<void>;
   onUpdate: (config: ChartConfigFormData) => Promise<ChartConfigFormData>; // WHAT: Update without closing, returns fresh data
   onCancel: () => void;
 }
 
-function ChartConfigurationEditor({ config, availableVariables, onSave, onUpdate, onCancel }: ChartConfigurationEditorProps) {
+function ChartConfigurationEditor({ config, availableVariables, aiFillRates, onSave, onUpdate, onCancel }: ChartConfigurationEditorProps) {
   const [formData, setFormData] = useState<ChartConfigFormData>(config);
   const [showVariablePicker, setShowVariablePicker] = useState<{ elementIndex: number } | null>(null);
   const [variableSearchTerm, setVariableSearchTerm] = useState('');
@@ -1638,20 +1699,30 @@ function ChartConfigurationEditor({ config, availableVariables, onSave, onUpdate
             </div>
             
             <div className="variable-picker-list">
-              {getFilteredVariablesForPicker().map(variable => (
-                <div 
-                  key={variable.name} 
-                  className="variable-picker-item"
-                  onClick={() => insertVariable(variable.name)}
-                >
-                  <div className="variable-picker-item-header">
-                    <strong>[{variable.name}]</strong>
-                    <span className="variable-picker-category">{variable.category}</span>
+              {getFilteredVariablesForPicker().map(variable => {
+                const hint = aiFillHint(aiFillRates.get(variable.name));
+                return (
+                  <div
+                    key={variable.name}
+                    className="variable-picker-item"
+                    onClick={() => insertVariable(variable.name)}
+                  >
+                    <div className="variable-picker-item-header">
+                      <strong>[{variable.name}]</strong>
+                      <span className="variable-picker-category">{variable.category}</span>
+                    </div>
+                    <div className="variable-picker-item-name">{variable.displayName}</div>
+                    <div className="variable-picker-item-description">{variable.description}</div>
+                    {/* Worded, not colour-only: this caution is the whole point, so it
+                        must survive greyscale and a screen reader. */}
+                    {hint && (
+                      <div className={hint.sparse ? 'variable-picker-ai-sparse' : 'variable-picker-ai-fill'}>
+                        {hint.text}
+                      </div>
+                    )}
                   </div>
-                  <div className="variable-picker-item-name">{variable.displayName}</div>
-                  <div className="variable-picker-item-description">{variable.description}</div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           </div>
         </FormModal>
@@ -2010,6 +2081,21 @@ function ChartConfigurationEditor({ config, availableVariables, onSave, onUpdate
           font-size: 0.875rem;
           color: #6b7280;
           line-height: 1.4;
+        }
+
+        /* Fill-rate hint for AI-owned variables. Tokens rather than literals, and
+           the wording carries the meaning so colour is only reinforcement. */
+        .variable-picker-ai-fill {
+          font-size: 0.8125rem;
+          color: var(--mm-gray-600);
+          margin-top: 0.25rem;
+        }
+
+        .variable-picker-ai-sparse {
+          font-size: 0.8125rem;
+          color: var(--mm-warning);
+          font-weight: 600;
+          margin-top: 0.25rem;
         }
       `}</style>
     </>

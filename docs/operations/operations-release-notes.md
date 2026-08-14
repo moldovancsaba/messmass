@@ -1,8 +1,33 @@
 # {messmass} Release Notes
 Status: Active
-Last Updated: 2026-08-14T02:30:00.000Z
+Last Updated: 2026-08-14T03:00:00.000Z
 Canonical: No
 Owner: Operations
+
+## [v12.1.48] — 2026-08-14T03:00:00.000Z
+
+### Summary
+Put AI variable fill rates in the chart-formula picker, where the choice is
+actually made. The AI Analytics workspace already showed that the merch variables
+sit at 1.3% (2 of 155 events), but an author picking one while writing a formula
+had no way to know — they would find out when a template rendered empty for a
+customer.
+
+### What Was Delivered
+- The variable picker in `ChartAlgorithmManager` shows, for AI-owned variables,
+  how many of the connected events actually carry a value.
+- Below 50% the hint is a worded caution — "filled on only 2 of 155 events — may
+  render empty" — not a colour. Selection is never blocked; an author may have a
+  good reason, they just should not be surprised.
+- The threshold matches the workspace, so the two surfaces cannot disagree.
+- The lookup fails silently: if it is unavailable the picker behaves exactly as
+  before rather than blocking authoring.
+
+### Testing
+- 6 unit tests covering non-AI variables, zero connected events, well-populated,
+  sparse, the threshold boundary, and the denominator always being stated.
+- Full gate: type-check, lint, 327 tests (34 suites), style:check, docs:audit,
+  guardrails, build.
 
 ## [v12.1.47] — 2026-08-14T02:30:00.000Z
 
