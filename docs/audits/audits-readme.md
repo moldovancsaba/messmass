@@ -1,6 +1,6 @@
 # Audits (Canonical Entrypoints)
 Status: Reference
-Last Updated: 2026-02-05T20:53:25.000Z
+Last Updated: 2026-08-14T17:00:00.000Z
 Canonical: Yes
 Owner: Audit
 
@@ -14,6 +14,7 @@ Rules:
 ## Start Here
 - `docs/archive/_archive/audits/comprehensive-system-audit-plan-2026.md` - What was audited, why, and the log of work.
 - `docs/audits/audits-audit-execution-playbook-2026.md` - How to run an audit (process + templates).
+- `docs/audits/lld-audit-plan-2026-08-14.md` - Deep architectural + code audit plan behind rebuilding `docs/low-level-design.md` as a canonical LLD (IEEE 1016 / ISO 42010 / C4 / arc42 anchored).
 - `docs/audits/audit-developer-conduct-and-build-2026-02-21.md` - Developer Conduct codification, build/lint/deps audit (2026-02-21).
 - `docs/archive/_archive/audits/AUDIT_REMEDIATION_STATUS.md` - Remediation tracker.
 - `docs/audits/audits-audit-evidence-index.md` - Evidence index (points to the investigations archive pack).

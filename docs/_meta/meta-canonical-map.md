@@ -1,6 +1,6 @@
 # Canonical Map
 Status: Active
-Last Updated: 2026-08-14T18:58:56Z
+Last Updated: 2026-08-14T19:18:54Z
 Canonical: Yes
 Owner: Documentation
 
@@ -10,7 +10,7 @@ This is the current classification of the documentation set. Use it to prune, me
 - archive: 31
 - canonical: 75
 - generated: 5
-- reference: 67
+- reference: 68
 
 ## Table
 | Kind | Path | Title | Status | Canonical | Owner | Last Updated | Note |
@@ -38,11 +38,11 @@ This is the current classification of the documentation set. Use it to prune, me
 | reference | docs/V3/messmass_v3_security_model.md | {messmass} v3 -- Security Model |  |  |  |  | Reference-only doc; keep if still used, otherwise archive. |
 | reference | docs/V3/messmass_v3_testing_strategy.md | {messmass} v3 -- Testing & QA Strategy |  |  |  |  | Reference-only doc; keep if still used, otherwise archive. |
 | reference | docs/V3/messmass_v3_ui_configuration.md | {messmass} v3 -- UI Configuration & Industry Templates |  |  |  |  | Reference-only doc; keep if still used, otherwise archive. |
-| generated | docs/_meta/meta-canonical-map.md | Canonical Map | Active | Yes | Documentation | 2026-03-06T11:50:05Z | Auto-generated inventory/triage artifacts. Do not edit by hand. |
-| generated | docs/_meta/meta-docs-consistency-audit.md | Docs Consistency Audit | Active | Yes | Documentation | 2026-08-14T18:39:34.778Z | Auto-generated inventory/triage artifacts. Do not edit by hand. |
-| generated | docs/_meta/meta-docs-inventory.md | Docs Inventory | Active | Yes | Documentation | 2026-08-14T18:58:55Z | Auto-generated inventory/triage artifacts. Do not edit by hand. |
-| generated | docs/_meta/meta-docs-link-check.md | Docs Link Check | Active | Yes | Documentation | 2026-08-14T18:58:56Z | Auto-generated inventory/triage artifacts. Do not edit by hand. |
-| generated | docs/_meta/meta-docs-triage.md | Docs Triage | Active | Yes | Documentation | 2026-08-14T18:58:56Z | Auto-generated inventory/triage artifacts. Do not edit by hand. |
+| generated | docs/_meta/meta-canonical-map.md | Canonical Map | Active | Yes | Documentation | 2026-08-14T18:58:56Z | Auto-generated inventory/triage artifacts. Do not edit by hand. |
+| generated | docs/_meta/meta-docs-consistency-audit.md | Docs Consistency Audit | Active | Yes | Documentation | 2026-08-14T19:18:40.916Z | Auto-generated inventory/triage artifacts. Do not edit by hand. |
+| generated | docs/_meta/meta-docs-inventory.md | Docs Inventory | Active | Yes | Documentation | 2026-08-14T19:18:54Z | Auto-generated inventory/triage artifacts. Do not edit by hand. |
+| generated | docs/_meta/meta-docs-link-check.md | Docs Link Check | Active | Yes | Documentation | 2026-08-14T19:18:40Z | Auto-generated inventory/triage artifacts. Do not edit by hand. |
+| generated | docs/_meta/meta-docs-triage.md | Docs Triage | Active | Yes | Documentation | 2026-08-14T19:18:54Z | Auto-generated inventory/triage artifacts. Do not edit by hand. |
 | reference | docs/admin/admin-clicker-manager.md | Clicker Manager — Partner Clicker Sets | Active | No | Admin UX (Katja) | 2026-01-21 | Reference-only doc; keep if still used, otherwise archive. |
 | canonical | docs/admin/admin-end-user-guide.md | End User Guide (Admin Operations) | Active | Yes | Product Operations | 2026-05-20 | Primary source of truth for this topic. |
 | canonical | docs/admin/admin-entity-system.md | Unified Admin Entity System | Active | Yes | Engineering | 2026-06-25 | Primary source of truth for this topic. |
@@ -88,12 +88,13 @@ This is the current classification of the documentation set. Use it to prune, me
 | reference | docs/audits/audit-developer-conduct-and-build-2026-02-21.md | Audit: Developer Conduct Codification & Build/Doc Audit | Active | No (audit report) | Product | 2026-02-21 | Reference-only doc; keep if still used, otherwise archive. |
 | canonical | docs/audits/audits-audit-evidence-index.md | Audit Evidence Index | Active | Yes | Audit | 2026-02-05T19:41:25.000Z | Primary source of truth for this topic. |
 | reference | docs/audits/audits-audit-execution-playbook-2026.md | Audit Execution Playbook 2026 | Active | No | Audit | 2026-02-05T19:41:25.000Z | Reference-only doc; keep if still used, otherwise archive. |
-| canonical | docs/audits/audits-readme.md | Audits (Canonical Entrypoints) | Reference | Yes | Audit | 2026-02-05T20:53:25.000Z | Primary source of truth for this topic. |
+| canonical | docs/audits/audits-readme.md | Audits (Canonical Entrypoints) | Reference | Yes | Audit | 2026-08-14T17:00:00.000Z | Primary source of truth for this topic. |
 | reference | docs/audits/deep-document-audit-2026-06-26.md | Deep Documentation Audit |  |  |  |  | Reference-only doc; keep if still used, otherwise archive. |
 | reference | docs/audits/design-system-audit-2026-05-22.md | Design System Audit — 2026-05-22 |  |  |  |  | Reference-only doc; keep if still used, otherwise archive. |
 | reference | docs/audits/documentation-consistency-audit-2026-06-26.md | Documentation Consistency Audit |  |  |  |  | Reference-only doc; keep if still used, otherwise archive. |
 | canonical | docs/audits/investigations/audits-readme.md | Investigations (Consolidated) | Reference | Yes | Audit | 2026-02-05T19:41:25.000Z | Primary source of truth for this topic. |
 | reference | docs/audits/issue-audit-2026-06-30.md | Issue Audit — 2026-06-30 | Active | No (audit report) | Product | 2026-06-30 | Reference-only doc; keep if still used, otherwise archive. |
+| reference | docs/audits/lld-audit-plan-2026-08-14.md | Low-Level Design — Deep Audit Plan | Active | Yes (audit plan) | Architecture | 2026-08-14T17:00:00.000Z | Reference-only doc; keep if still used, otherwise archive. |
 | reference | docs/audits/notification-system-audit-2026-07-05.md | Notification System — Ground-Up Audit | Active | Yes (subsystem audit) | Product | 2026-07-05 | Reference-only doc; keep if still used, otherwise archive. |
 | reference | docs/audits/system-audit-plan-2026.md |  |  |  |  |  | Reference-only doc; keep if still used, otherwise archive. |
 | canonical | docs/charts/charts-chart-alignment-summary.md | Chart Alignment & Layout Fixes (2026) | Active | Yes | Operations | 2026-02-04T03:00:00.000Z | Primary source of truth for this topic. |
@@ -171,7 +172,7 @@ This is the current classification of the documentation set. Use it to prune, me
 | reference | docs/operations/operations-deployment-checklist.md | Chart Alignment Fixes - Deployment Checklist | Active | No | Operations | 2026-01-11T22:28:38.000Z | Reference-only doc; keep if still used, otherwise archive. |
 | canonical | docs/operations/operations-implementation-complete.md | Implementation Complete | Active | Yes | Operations | 2026-02-06T13:13:16.000Z | Primary source of truth for this topic. |
 | reference | docs/operations/operations-learnings.md | {messmass} Development Learnings | Active | No | Architecture | 2026-02-05T21:01:23.000Z | Reference-only doc; keep if still used, otherwise archive. |
-| reference | docs/operations/operations-release-notes.md | {messmass} Release Notes | Active | No | Operations | 2026-08-14T15:00:00.000Z | Reference-only doc; keep if still used, otherwise archive. |
+| reference | docs/operations/operations-release-notes.md | {messmass} Release Notes | Active | No | Operations | 2026-08-14T16:00:00.000Z | Reference-only doc; keep if still used, otherwise archive. |
 | canonical | docs/operations/operations-release-steps.md | Release Steps (Every Deliverable Change) | Active | Yes | Product | 2026-02-21T00:00:00.000Z | Primary source of truth for this topic. |
 | canonical | docs/operations/operations-roadmap.md | Operations Roadmap | Active | Yes | Product + Engineering | 2026-02-08 | Primary source of truth for this topic. |
 | reference | docs/operations/ops-analytics-01-design.md | OPS-ANALYTICS-01: Advanced Analytics & Insights — Design & Phase 1 Plan | Active | No | Product / Engineering | 2026-02-21 | Reference-only doc; keep if still used, otherwise archive. |

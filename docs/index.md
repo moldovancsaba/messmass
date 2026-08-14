@@ -37,6 +37,10 @@ Task-oriented, end-user tutorials for creating and managing the core objects and
 - [V3/messmass_v3_quickstart_guide.md](V3/messmass_v3_quickstart_guide.md) — (NEW) Admin quickstart guide for V3 data management.
 - [guides/admin/organizations.md](guides/admin/organizations.md) — (NEW) Administrator guide for Organization management and reporting.
 
+## Audits
+- [audits/audits-readme.md](audits/audits-readme.md) — audit entrypoints and rules.
+- [audits/lld-audit-plan-2026-08-14.md](audits/lld-audit-plan-2026-08-14.md) — plan for the deep audit that rebuilds the low-level design doc as canonical.
+
 ## Security
 - [security-overview.md](security/security-overview.md) — Canonical entrypoint and pointers to archived audits and phase closure docs.
 - [security/security-enhancements.md](security/security-enhancements.md) — API protection, rate limiting, and middleware details.
