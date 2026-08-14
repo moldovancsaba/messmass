@@ -1,8 +1,39 @@
 # {messmass} Release Notes
 Status: Active
-Last Updated: 2026-08-14T11:00:00.000Z
+Last Updated: 2026-08-14T12:00:00.000Z
 Canonical: No
 Owner: Operations
+
+## [v12.1.50] — 2026-08-14T12:00:00.000Z
+
+### Summary
+Opened the channel that brings fanmass's full per-event analysis into messmass.
+Only flat scalar variables crossed the boundary before, so everything list-shaped
+— brand mentions, club/federation mentions, demographic projections — was
+discarded at transfer. Verified on the live UEFA batch: 20 brand mentions
+(Heineken 167, Adidas 45), 20 club mentions, 8 merchandise kinds, none of it
+previously reachable by any messmass surface.
+
+### What Was Delivered
+- `lib/aiAnalysisSummary.ts`: one summary document per event in
+  `ai_analysis_summaries`, latest wins. Contract-version gate (major mismatch is a
+  409, never partial storage), 1MB size guard, unknown same-major fields stored
+  untouched, `receivedAt` server-assigned.
+- `POST /api/integrations/fanmass/events/{id}/analysis-summary` — fanmass-facing
+  receiver, same integration token as the stats push.
+- `GET /api/analytics/ai/events/{id}/summary` — read endpoint for the upcoming AI
+  event report; authenticated, role-agnostic like the other AI endpoints.
+  `SUMMARY_NOT_FOUND` is distinct from an invalid event, because an event may
+  simply predate the channel.
+
+### Testing
+- 5 validation tests: malformed id, missing contract, wrong major version, empty
+  envelope, oversized document.
+- Failure isolation proven against live production before the endpoint existed:
+  the fanmass summary push 404s cleanly and the scalar stats push is unaffected
+  (13 variables applied).
+- Full gate: type-check, lint, 336 tests (36 suites), style:check, docs:audit,
+  guardrails, build.
 
 ## [v12.1.49] — 2026-08-14T11:00:00.000Z
 
