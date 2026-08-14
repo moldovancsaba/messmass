@@ -1,6 +1,6 @@
 # {messmass}
 Status: Active
-Last Updated: 2026-06-25
+Last Updated: 2026-08-14T15:00:00.000Z
 Canonical: No
 Owner: Product
 
@@ -114,7 +114,7 @@ Main admin areas:
 - `Entities`: Partners, Organizations, Project-Partner relationships
 - `Reports`: Report Builder, Report Themes, Content Library, Chart Algorithms, KYC Variables, Clicker Sets
 - `Data`: Bitly Links, filters, and supporting integrations
-- `Analytics`: Sponsorship Hub, Partner Activation, Executive, Marketing, Operations, Insights
+- `Analytics`: AI Analytics, Sponsorship Hub, Partner Activation, Executive, Marketing, Operations, Insights
 - `System`: Users, Main Page, Cache, Help
 
 Legacy routes such as `/admin/dashboard` and `/admin/insights` are retained only as redirects into the canonical workspace structure.
@@ -153,6 +153,24 @@ Messmass exposes a production API boundary for Fanmass event/image analytics:
 Admin operators can manage event links through `POST /api/admin/fanmass/events/{eventId}` from the Events action rail. The admin endpoint uses the authenticated admin session and never exposes the shared integration token to the browser.
 
 Fanmass-derived analytics are stored under `project.stats.fanmass` and mirrored into flat report variables such as `[fanmassPeopleCount]`, `[fanmassProjectedReach]`, and `[fanmassTopBrandName]`. Nested formulas such as `[fanmass.peopleCount]` are also supported. Existing clicker/manual stats must not be overwritten. See `docs/operations/messmass-fanmass-integration-delivery-plan-2026-06-25.md`.
+
+### AI Analytics surfaces
+
+`/admin/analytics/ai` shows which events have AI analytics, how far each has got,
+and how completely each `fanmass*` variable is populated across the estate — the
+figure that decides whether a variable is safe to build into a report template.
+Clicking an event opens its AI report (brands, clubs/federations, merchandise,
+demographics). Both are open to **any authenticated role**, unlike the admin-only
+analytics dashboards, because the audience is report authors.
+
+Beside the stats push, Fanmass sends the full structured analysis to
+`POST /api/integrations/fanmass/events/{eventId}/analysis-summary`, stored per
+event in `ai_analysis_summaries` under the `fanmass.messmass.analytics-summary.v1`
+contract. The two channels are failure-isolated: a failed summary push must not
+cost the event its stats.
+
+See `docs/api/api-analytics.md` and the "AI Analytics & Fanmass Analysis Pipeline"
+section of `docs/architecture.md`.
 
 Live product:
 - Website: [messmass.doneisbetter.com](https://messmass.doneisbetter.com)
@@ -208,6 +226,8 @@ Key system docs:
 - [docs/features/features-bitly-integration-guide.md](docs/features/features-bitly-integration-guide.md)
 - [docs/features/features-authentication.md](docs/features/features-authentication.md)
 - [docs/api/api-reference.md](docs/api/api-reference.md)
+- [docs/api/api-analytics.md](docs/api/api-analytics.md) — analytics and AI Analytics read APIs
+- [docs/guides/guides-tutorial-fanmass.md](docs/guides/guides-tutorial-fanmass.md) — Fanmass integration and AI Analytics walkthrough
 
 ## Delivery Rules
 

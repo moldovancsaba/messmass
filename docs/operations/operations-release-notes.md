@@ -1,8 +1,40 @@
 # {messmass} Release Notes
 Status: Active
-Last Updated: 2026-08-14T15:00:00.000Z
+Last Updated: 2026-08-14T16:00:00.000Z
 Canonical: No
 Owner: Operations
+
+## [v12.1.54] — 2026-08-14T16:00:00.000Z
+
+### Summary
+Documentation catch-up for the AI Analytics work shipped in v12.1.47–v12.1.53,
+which had landed with release notes only. No product code changed.
+
+### What Was Delivered
+- `docs/architecture.md`: new "AI Analytics & Fanmass Analysis Pipeline" section —
+  fleet boundary, the two push channels and why they are failure-isolated, the
+  major-version contract gate, status/staleness derivation, and the four
+  constraints that each cost a debugging cycle (MENU_PERMISSIONS, Stable API v1
+  vs `distinct()`, `derived: false` on `fanmassStatus`, unknown-field passthrough).
+- `docs/api/api-analytics.md`: all four `/api/analytics/ai/*` read endpoints, the
+  fanmass `analysis-summary` ingest endpoint with its contract/size/latest-wins
+  gates, and the any-authenticated-role access posture documented as a deliberate
+  product decision rather than an oversight.
+- `docs/guides/guides-tutorial-fanmass.md`: operator walkthrough of the AI
+  Analytics workspace and the per-event AI report, including the hide-empty
+  default and how to read demographic projections honestly.
+- `HANDOVER.md`: rewritten. Its "active thread" described the Drive pipeline as
+  in-flight and needing user action — that shipped and is verified in production,
+  so a fresh agent was being handed a resolved blocker as the first thing to read.
+  Now records real fleet state, with credential rotation as the one open item.
+- `README.md` and `docs/index.md`: AI Analytics registered in the workspace map
+  and documentation map.
+
+### Testing
+- `docs_inventory`, `docs_triage`, `docs_link_check`, `docs_canonical_map`:
+  0 broken links, 0 missing metadata, 0 suspicious titles.
+- Full gate: type-check, lint, 336 tests, style:check, version:verify,
+  docs:audit, guardrails, build.
 
 ## [v12.1.53] — 2026-08-14T15:00:00.000Z
 

@@ -1,10 +1,10 @@
 # Analytics API
 Status: Active
-Last Updated: 2026-05-20
+Last Updated: 2026-08-14T15:00:00.000Z
 Canonical: Yes
 Owner: Backend
 
-**Version:** 12.1.16
+**Version:** 12.1.53
 
 ## Purpose
 
@@ -23,6 +23,19 @@ There are two access patterns in the current code:
 - `GET /api/analytics/aggregates/partners`
 - `GET /api/analytics/insights/summary`
 - `GET /api/analytics/sponsorship-hub`
+
+### Any-authenticated-role endpoints (AI Analytics)
+
+The AI Analytics endpoints deliberately require a session but **no particular
+role**. Their audience is report authors deciding which AI variables are
+populated widely enough to build into a report, and that is not an admin-only
+job. Do not add a role check to these without changing the product decision
+behind it.
+
+- `GET /api/analytics/ai/coverage`
+- `GET /api/analytics/ai/events`
+- `GET /api/analytics/ai/events/[eventId]/summary`
+- `GET /api/analytics/ai/variables`
 
 ### Rate-limited compare/trend endpoints
 
@@ -242,6 +255,97 @@ These are active in code but are not the main focus of this document:
 - `GET /api/analytics/event/[projectId]`
 - `GET /api/analytics/benchmarks`
 
+## AI Analytics Endpoints
+
+Read model behind `/admin/analytics/ai`. All four are read-only aggregations over
+existing collections — no new schema, and no runtime dependency on fanmass being
+reachable. Implementation: `lib/aiAnalytics.ts` and `lib/aiAnalysisSummary.ts`.
+
+An AI-owned variable is one whose name starts with `fanmass`. `isAiVariableName()`
+in `lib/aiAnalytics.ts` is the single authority for that test; widen the definition
+there rather than at call sites.
+
+### `GET /api/analytics/ai/coverage`
+
+Estate-level counts.
+
+```json
+{ "success": true, "data": {
+  "totalEvents": 369, "connected": 155, "analyzing": 152,
+  "complete": 3, "notConnected": 214, "stale": 0
+} }
+```
+
+`stale` counts connected events whose analytics are older than
+`STALE_AFTER_HOURS` (24). An event with **no** freshness stamp is deliberately
+NOT stale: ~155 events were analysed before freshness was recorded, and flagging
+all of them on day one would train operators to ignore the signal.
+
+### `GET /api/analytics/ai/events`
+
+Per-event status rows. Optional `status` and `limit` (default 200, max 500).
+
+| Field | Meaning |
+|---|---|
+| `status` | `not_connected` \| `analyzing` \| `complete` \| `error` |
+| `progressPercent` | Producer's own `fanmassStatus`, falling back to analysed/discovered |
+| `imagesAnalyzed` / `imagesDiscovered` | Counts behind the progress figure |
+| `sources` | `drive`, `camera`, or both — inferred from `drive_folder_links` |
+| `lastAnalyzedAt` / `isStale` | Freshness stamp and its derived flag |
+| `lastError` | Present only when a linked Drive folder is in `error` |
+
+Status derivation (`deriveEventStatus`) must match the Drive folder badge already
+shipped, or the same event reads differently in two places.
+
+### `GET /api/analytics/ai/events/[eventId]/summary`
+
+The stored structured analysis for one event — brand mentions, club/federation
+mentions, merchandise, and demographic projections. `404` with a distinct code
+when the event exists but has never received a summary push; that is not the same
+as an invalid event id.
+
+### `GET /api/analytics/ai/variables`
+
+Every AI-owned variable with its fill rate across connected events, plus the
+`formulaToken` to paste into a chart formula.
+
+The result is the **union** of registered `variables_metadata` and keys actually
+present on events. A key present on events but absent from metadata is exactly the
+case a report author trips over, so it surfaces with `registered: false` rather
+than being filtered out.
+
+Fill rate is the number that decides whether a variable belongs in a template: the
+merch variables sit at 1.3% (2 of 155 events), so a report built on one renders
+empty almost everywhere. The same figure is surfaced inline in the chart-formula
+picker; see `tests/ai-variable-hint.test.ts` for the hint's exact wording rules.
+
+> Implementation note: these aggregations use `$group`, never `distinct()`. The
+> Mongo client runs Stable API v1 with `strict: true`, and `distinct` is not part
+> of that API — it fails with `APIStrictError`.
+
+## Fanmass Ingest Endpoint
+
+`POST /api/integrations/fanmass/events/[eventId]/analysis-summary`
+
+Not an analytics read endpoint, but the producer side of the summary above.
+Authenticated with the fanmass integration token (`requireFanmassIntegrationAuth`),
+the same token as the stats push, and failure-isolated from it.
+
+- **Contract gate:** `contractVersion` must start with
+  `fanmass.messmass.analytics-summary.v1`. A same-major producer may add fields
+  and they are stored untouched; a different major is rejected `409`, because
+  silent storage would hand the report undefined behaviour.
+- **Size gate:** `MAX_SUMMARY_BYTES` = 1MB, ~50x observed real size. The lists are
+  producer-controlled, so the bound is not optional.
+- **Latest wins:** one document per event in `ai_analysis_summaries`. The summary
+  is a snapshot of the batch's current analysis, not an event log.
+- **`receivedAt` is server-assigned**, never producer-supplied. `generatedAt` is
+  the producer's own stamp and is informational only.
+
+Stored as a document rather than stats keys on purpose: stats names are chart
+variables with registration semantics, and twenty brand rows are not twenty
+variables.
+
 ## Common Failure Modes
 
 - `401` on admin endpoints when no valid admin session exists
@@ -261,6 +365,7 @@ These APIs back the current analytics workspace model:
 - `/admin/analytics/marketing`
 - `/admin/analytics/operations`
 - `/admin/analytics/insights`
+- `/admin/analytics/ai` and `/admin/analytics/ai/[eventId]`
 
 ## Related Docs
 

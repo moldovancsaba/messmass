@@ -4,7 +4,7 @@ Last Updated: 2026-06-25
 Canonical: No
 Owner: Architecture
 
-Version: 12.1.53
+Version: 12.1.54
 
 **Mantine Entity, Variant, and Public Report Shell Delivery (2026-06-25):**
 - **Report variant selector recovery:** Mantine `Select` dropdowns inside report variant `FormModal` now render through a portal with modal-safe z-index, preventing the dropdown from being hidden behind or interpreted as outside the dialog.
@@ -316,6 +316,7 @@ export function LegacyModal() { ... }
 
 ## Version History
 
+- **Version 12.1.53** — AI Analytics workspace, per-event AI report, and the fanmass analysis-summary channel
 - **Version 7.0.1** — 🚀 **DATABASE-FIRST VARIABLE SYSTEM**: Complete migration to MongoDB-driven variables with Single Reference System (`stats.` prefix)
 - **Version 6.42.0** — Page Styles System: Complete custom theming engine with admin UI and live preview
 - **Version 6.10.0** — Chart System Enhancement Phase B (Parameterization, Bitly Charts, Manual Tokens)
@@ -4566,6 +4567,117 @@ npm run analytics:aggregate
 - Excel export with formatting
 - Scheduled email reports
 - White-label partner reports
+
+---
+
+## AI Analytics & Fanmass Analysis Pipeline (Version 12.1.53)
+
+### Why this exists
+
+AI-derived analytics already existed on ~155 events but were **invisible in the
+product**. A report author had no way to tell whether an AI variable was safe to
+put in a template — one present on 3% of events renders empty for almost everyone,
+and they find out from a customer. This subsystem makes coverage, freshness, and
+fill rate visible, and renders the structured analysis that previously never
+crossed the integration boundary at all.
+
+### The fleet boundary
+
+```
+Google Drive folder ──┐
+                      ├──► fanmass (user hardware, local AI)  ──► messmass
+camera.messmass.com ──┘      Ollama vision + MediaPipe + YOLO      (this repo)
+```
+
+messmass **does not analyse images**. It owns events and variables, hands fanmass
+the context for an event, and ingests what fanmass sends back. fanmass runs on the
+operator's own hardware and is not cloud-deployed; messmass must therefore never
+have a runtime dependency on fanmass being reachable. Every read surface described
+below is an aggregation over collections messmass already owns.
+
+### Two channels across the boundary
+
+| Channel | Endpoint | Carries |
+|---|---|---|
+| Stats push | `POST /api/integrations/fanmass/events/[eventId]/stats` | Flat scalars → `projects.stats.fanmass*` |
+| Summary push | `POST /api/integrations/fanmass/events/[eventId]/analysis-summary` | The whole structured document → `ai_analysis_summaries` |
+
+The summary channel exists because the stats push carries only flat scalars, so
+everything list-shaped — twenty brand mentions, twenty club mentions, demographic
+projections — was discarded at the boundary. The two are **failure-isolated**: a
+summary push that fails must not cost the event its stats.
+
+Summaries are stored as a document, not as stats keys. Stats names are chart
+variables with registration semantics, and twenty brand rows are not twenty
+variables.
+
+### Contract versioning
+
+`fanmass.messmass.analytics-summary.v1`, enforced as a **major-version gate** in
+`lib/aiAnalysisSummary.ts`:
+
+- Same major, extra fields → **stored untouched**. This is what let
+  `emotionProjection` and `smilingPct` reach production with no messmass schema
+  change; only the rendering needed a release.
+- Different major → **rejected `409`**. The shape itself changed, and storing it
+  silently would hand the report undefined behaviour.
+
+### AI variable identity
+
+An AI-owned variable is one whose name begins with `fanmass`.
+`isAiVariableName()` in `lib/aiAnalytics.ts` is the single authority — widening the
+definition later (a category, a second producer) is one function rather than a
+sweep across call sites.
+
+`fanmassStatus` is registered with **`derived: false`** on purpose. In messmass,
+`derived: true` means "computed by the formula engine, don't let external writes
+clobber it" — which made `pushEventStats` skip the field silently. The producer
+owns this value, so it must not be marked derived.
+
+### Status and freshness derivation
+
+`deriveEventStatus()` must agree with the Drive folder badge already shipped, or
+the same event reads differently in two places. It prefers the producer's own
+`fanmassStatus` and falls back to analysed/discovered counts for events pushed
+before that field existed.
+
+`isStale()` treats an **unknown** timestamp as NOT stale. The estate carries ~155
+events analysed before freshness was recorded; flagging all of them on day one
+would train operators to ignore the signal entirely.
+
+### Surfaces
+
+| Route | What it is |
+|---|---|
+| `/admin/analytics/ai` | Workspace: coverage, per-event status list, variable catalogue with fill rates |
+| `/admin/analytics/ai/[eventId]` | Per-event AI report: brands, clubs/federations, merchandise, demographics |
+| Chart formula picker | Inline fill-rate hint next to every AI variable |
+
+**Access posture:** authenticated session, **any role** — deliberately unlike the
+admin-only analytics dashboards. The audience is report authors deciding what to
+build into a template. Note that `canAccessMenuItem` returns false for any label
+absent from `MENU_PERMISSIONS`, so a new nav item is invisible to *everyone* until
+registered there; `tests/nav-menu-permissions.test.ts` guards this.
+
+**Default view hides zero-image events.** Most of the estate is camera-provisioned
+events still waiting for photos, so the unfiltered list was 152 rows of
+"Analysing · 0%" burying the few with real analysis. Two exceptions are load-bearing:
+failed events stay visible regardless of image count, and an explicit status filter
+overrides the hide entirely.
+
+### Query constraint
+
+The Mongo client runs **Stable API v1 with `strict: true`**. `distinct()` is not
+part of that API and fails with `APIStrictError`. Use `$group` aggregation instead —
+this applies to any new code in this subsystem, not just the existing calls.
+
+### Related implementation files
+
+- `lib/aiAnalytics.ts` — read model (coverage, events, variables, staleness)
+- `lib/aiAnalysisSummary.ts` — summary storage, contract and size gates
+- `app/admin/analytics/ai/` — workspace and per-event report
+- `app/api/analytics/ai/` — read endpoints
+- `app/api/integrations/fanmass/` — producer-side ingest
 
 ---
 

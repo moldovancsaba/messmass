@@ -1,6 +1,6 @@
 # Tutorial: Fanmass integration
 Status: Active
-Last Updated: 2026-07-20T00:00:00.000Z
+Last Updated: 2026-08-14T15:00:00.000Z
 Canonical: Yes
 Owner: Documentation
 
@@ -186,6 +186,59 @@ bare `{ ... }` map. **Derived (formula) variables are skipped** — you cannot p
 onto a variable whose value is computed from a formula; those are recalculated for you after
 the merge. The response lists which keys were `applied`.
 
+## Watching it: the AI Analytics workspace
+
+Everything above describes how the numbers get in. **AI Analytics**
+(sidebar → Analytics → AI Analytics, or `/admin/analytics/ai`) is where you see what
+arrived. Any signed-in user can open it — you do not need to be an admin, because the
+audience is whoever is building a report.
+
+Three things live there:
+
+**1. Coverage.** How many events have AI analytics at all, how many are still analysing,
+how many are complete, and how many have gone stale (analytics older than 24 hours).
+
+**2. The event list.** One row per event: status, progress, images analysed out of images
+discovered, whether the photos came from Drive or the Camera app, and when it was last
+analysed. **Click an event's name** to open its full AI report.
+
+> By default the list **hides events with no images**. Most events are provisioned for the
+> Camera app long before any photo is taken, and 150 rows of "Analysing · 0%" bury the few
+> with real analysis. Tick **"Show events without images"** to see them — the label tells you
+> how many are hidden. Two exceptions: failed events always show, and picking an explicit
+> status from the dropdown ignores the hide.
+
+**3. The variable catalogue.** Every `fanmass*` variable, its **fill rate** across connected
+events, and the token to paste into a chart formula.
+
+Fill rate is the number that matters when you are authoring a report. A variable filled on
+2 of 155 events will render an empty chart for almost every partner who opens their report.
+The same warning appears inline next to AI variables in the chart formula picker, so you get
+it at the moment you would make the mistake — but a variable under 50% is flagged in words,
+not blocked. It is your call.
+
+## Reading an event's AI report
+
+Clicking an event name in AI Analytics opens its report — the structured analysis that does
+*not* fit in flat variables:
+
+- **Brands** and **clubs / federations** — what the analysis recognised, ranked by mentions.
+  The share shown is of detections *in that list*, not of attendees.
+- **Merchandise** — jerseys, scarves, and the rest, counted across analysed photos.
+- **Fan demographics** — gender, age group, and emotion projections from analysed faces,
+  plus the share of faces smiling.
+
+Two things to keep in mind when reading it:
+
+- **These are projections from analysed faces, not a headcount.** They describe the faces the
+  analysis could resolve, which is a subset of everyone present.
+- **Demographics are batch-wide.** A partner-scoped slice deliberately shows no demographic
+  projection rather than reusing the batch figure, because attributing a whole event's
+  demographics to one partner would be quietly wrong.
+
+If an event shows "No AI analysis summary", it either predates the summary channel or its
+analysis has not yet completed a push — it is not an error.
+
 ## Managing it
 
 - **Operators** live in the Events admin **Fanmass Sync** panel: link a batch, dry-run to
@@ -220,6 +273,9 @@ the merge. The response lists which keys were `applied`.
   partner still exists, but partner-scoped views and Camera-app provisioning both key off
   the partner. See [Partners](guides-tutorial-partners.md) and
   [Camera app](guides-tutorial-camera-app.md).
+- **A new Fanmass field can arrive without a messmass release.** The summary contract accepts
+  unknown fields from a same-major producer and stores them untouched. They will not *render*
+  until the report is taught to show them, but no data is lost in the meantime.
 - **Timeouts.** Outbound calls to Fanmass are time-bounded, so a slow Fanmass surfaces as a
   failed sync you can retry, not a hung request.
 
@@ -233,6 +289,8 @@ the merge. The response lists which keys were `applied`.
   and `[fanmass.brands]`, or the flat mirrors such as `[fanmassPeopleCount]`.
 - **[Collecting data](guides-tutorial-collecting-data.md)** — Fanmass analytics sit
   *beside* your Clicker/manual data in the same event stats, not on top of it.
+- **[Charts & formulas](guides-tutorial-charts-formulas.md)** — where fill rate stops being
+  trivia: the picker shows it next to every AI variable as you write the formula.
 - **[Camera app](guides-tutorial-camera-app.md)** — the sibling integration. The Camera app
   captures the photos; Fanmass analyses them. Both share `FANMASS_INTEGRATION_TOKEN` for
   their operator/ingest endpoints.
