@@ -1,8 +1,51 @@
 # {messmass} Release Notes
 Status: Active
-Last Updated: 2026-08-14T01:30:00.000Z
+Last Updated: 2026-08-14T02:30:00.000Z
 Canonical: No
 Owner: Operations
+
+## [v12.1.47] — 2026-08-14T02:30:00.000Z
+
+### Summary
+Added the AI Analytics workspace at `/admin/analytics/ai`: which events have AI
+analytics, how far each has got, how fresh it is, and how completely each AI
+variable is populated — the last being the number that decides whether a variable
+belongs in a report.
+
+Measured on the current estate: 369 events, 155 connected, 214 with no AI
+analytics. The core variables sit at 100% fill; every merch variable sits at 1.3%
+(2 of 155) and `fanmassMerchCap` at 0.6% (1 event). A report built on one of those
+renders empty on 153 of 155 events, and nothing in the product said so before.
+
+### What Was Delivered
+- `lib/aiAnalytics.ts` — read model. `isAiVariableName()` is the single authority
+  for what counts as AI-owned, so widening it later is one function.
+- Freshness: `aiLastAnalyzedAt` stamped server-side on every stats receipt. Unknown
+  is deliberately **not** stale — flagging the 155 pre-existing events on day one
+  would have trained operators to ignore the signal.
+- Three read-only endpoints under `/api/analytics/ai/`, authenticated but
+  **role-agnostic**, unlike the admin-only analytics dashboards: report authors of
+  any role are the audience. The decision is commented in each route.
+- Workspace UI with coverage, event table and variable catalogue, plus a copyable
+  formula token per variable.
+
+### Fixed
+- `fanmassStatus` was registered `derived: true` in v12.1.45, which made
+  `pushEventStats` skip it — messmass uses that flag for formula-engine-computed
+  values that external writers must not clobber. Applied silently fell from 12 keys
+  to 11. Now `derived: false`, with the reasoning recorded in the seed script.
+- `distinct()` fails on this connection (Stable API v1 with `strict: true`,
+  `APIStrictError` 323). Replaced with `$group`.
+
+### Testing
+- 12 unit tests for status derivation, staleness and the AI predicate.
+- Read model probed against production: coverage and fill rates as quoted above.
+- All endpoints return 401 to anonymous callers, checked before filter validation.
+- UI rendered and screenshotted via a temporary route (the workspace is
+  session-gated), which surfaced a real bug: the fill-rate sentence took its
+  denominator from the loaded event list rather than coverage, so it disagreed with
+  the per-row counts. Fixed and re-verified at 155; route deleted before commit.
+- Full gate: type-check, lint, 321 tests, style:check, docs:audit, guardrails, build.
 
 ## [v12.1.46] — 2026-08-14T01:30:00.000Z
 

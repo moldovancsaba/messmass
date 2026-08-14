@@ -23,9 +23,14 @@ if (!MONGODB_URI) {
 }
 
 // WHAT: The variable definition.
-// WHY: `derived: true` and non-editable flags record that this value is owned by
-//      fanmass. An operator editing it by hand would be overwritten by the next
-//      push, so the admin must not offer that.
+// WHY: `editableInManual: false` records that this value is owned by fanmass — an
+//      operator editing it by hand would be overwritten by the next push, so the
+//      admin must not offer that.
+// NOTE: `derived` must stay FALSE. In messmass `derived: true` means "computed by
+//      the formula engine", and pushEventStats deliberately skips those so an
+//      external writer cannot clobber a computed value. fanmassStatus is computed
+//      by fanmass and pushed in, so marking it derived silently drops it from every
+//      push — observed: applied fell from 12 keys to 11 with no error anywhere.
 const FANMASS_STATUS_VARIABLE = {
   name: 'fanmassStatus',
   isSystem: false,
@@ -38,7 +43,7 @@ const FANMASS_STATUS_VARIABLE = {
     'not 100 — waiting for media is not completion. An event whose images include ' +
     'permanent analysis failures never reaches 100, because a failed image counts ' +
     'toward the total but not toward analysed.',
-  derived: true,
+  derived: false,
   flags: {
     visibleInClicker: false,
     editableInManual: false,

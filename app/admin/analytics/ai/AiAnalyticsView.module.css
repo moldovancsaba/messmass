@@ -1,0 +1,164 @@
+/* AI Analytics workspace styles.
+   Design tokens only — no hardcoded colours, spacing or radii. Status is carried
+   by the label text; colour only reinforces it, so the table stays readable
+   without colour vision. */
+
+.wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: var(--mm-space-6);
+}
+
+.coverageGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(9rem, 1fr));
+  gap: var(--mm-space-4);
+  margin: 0;
+}
+
+.coverageItem {
+  display: flex;
+  flex-direction: column;
+  gap: var(--mm-space-1);
+}
+
+.coverageLabel {
+  font-size: var(--mm-font-size-sm);
+  color: var(--mm-gray-600);
+}
+
+.coverageValue {
+  font-size: var(--mm-font-size-2xl);
+  font-weight: 700;
+  color: var(--mm-gray-900);
+  margin: 0;
+  font-variant-numeric: tabular-nums;
+}
+
+.note {
+  font-size: var(--mm-font-size-sm);
+  color: var(--mm-gray-600);
+  margin: var(--mm-space-3) 0 0;
+}
+
+/* Wide tables scroll inside their own container so the page never scrolls sideways. */
+.tableScroll {
+  overflow-x: auto;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--mm-font-size-sm);
+}
+
+.table th,
+.table td {
+  text-align: left;
+  padding: var(--mm-space-2) var(--mm-space-3);
+  border-bottom: 1px solid var(--mm-gray-200);
+  vertical-align: top;
+}
+
+.table thead th {
+  color: var(--mm-gray-600);
+  font-weight: 600;
+}
+
+.eventName {
+  display: flex;
+  flex-direction: column;
+  gap: var(--mm-space-1);
+  font-weight: 600;
+  color: var(--mm-gray-900);
+}
+
+.variableName {
+  font-weight: 400;
+  color: var(--mm-gray-500);
+  font-family: var(--mm-font-mono, monospace);
+}
+
+.numeric {
+  font-variant-numeric: tabular-nums;
+}
+
+.fillDetail {
+  display: block;
+  color: var(--mm-gray-500);
+}
+
+/* Cautions are worded, not colour-only — this is the trap the page exists to
+   prevent, so it must survive being read in greyscale or by a screen reader. */
+.warnNote {
+  display: block;
+  color: var(--mm-warning);
+  font-weight: 600;
+}
+
+.badge {
+  display: inline-block;
+  padding: 0.15rem 0.5rem;
+  border-radius: 999px;
+  font-weight: 600;
+  background: var(--mm-gray-200);
+  color: var(--mm-gray-600);
+}
+
+.status_complete {
+  background: var(--mm-success-light);
+  color: var(--mm-success);
+}
+
+.status_analyzing {
+  background: var(--mm-warning-light);
+  color: var(--mm-warning);
+}
+
+.status_error {
+  background: var(--mm-error-light);
+  color: var(--mm-error);
+}
+
+.status_not_connected {
+  background: var(--mm-gray-200);
+  color: var(--mm-gray-600);
+}
+
+.errorDetail {
+  color: var(--mm-error);
+}
+
+.staleNote {
+  color: var(--mm-warning);
+  font-weight: 600;
+}
+
+.filterLabel {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--mm-space-2);
+  font-size: var(--mm-font-size-sm);
+  color: var(--mm-gray-600);
+}
+
+.filterSelect {
+  padding: var(--mm-space-1) var(--mm-space-2);
+  border: 1px solid var(--mm-gray-300);
+  border-radius: var(--mm-radius-md);
+  background: var(--mm-white);
+  color: var(--mm-gray-900);
+}
+
+/* Visually hidden but available to assistive technology. */
+.srOnly {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}

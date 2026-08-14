@@ -233,7 +233,7 @@ export async function createVariable(input: { name: string; label?: string; type
 // Push stats — partial merge into an event's stats (never touches derived vars)
 // ---------------------------------------------------------------------------
 
-export async function pushEventStats(eventId: string, statsPartial: Record<string, unknown>): Promise<{ eventId: string; stats: Record<string, unknown>; applied: string[] }> {
+export async function pushEventStats(eventId: string, statsPartial: Record<string, unknown>): Promise<{ eventId: string; stats: Record<string, unknown>; applied: string[]; aiLastAnalyzedAt: string }> {
   if (!ObjectId.isValid(eventId)) {
     throw Object.assign(new Error('Invalid event id'), { status: 422, code: 'INVALID_EVENT_ID' });
   }
@@ -258,6 +258,18 @@ export async function pushEventStats(eventId: string, statsPartial: Record<strin
   }
 
   const mergedStats = addDerivedMetrics({ ...(event.stats || {}), ...clean } as any);
-  await db.collection('projects').updateOne({ _id: oid }, { $set: { stats: mergedStats, updatedAt: new Date().toISOString() } });
-  return { eventId, stats: mergedStats, applied };
+  // WHAT: Stamp when AI analytics last landed on this event.
+  // WHY: Nothing recorded it, so "100% analysed" read identically whether it
+  //     happened this morning or three weeks ago — for a live event that is the
+  //     difference between usable and misleading. `updatedAt` cannot stand in: it
+  //     moves for any edit to the project.
+  // HOW: Server-assigned on receipt, never taken from the producer, so clock skew
+  //     or a replayed request cannot overstate freshness. Stored beside `stats`
+  //     rather than inside it, so it is never mistaken for a chart variable.
+  const receivedAt = new Date().toISOString();
+  await db.collection('projects').updateOne(
+    { _id: oid },
+    { $set: { stats: mergedStats, aiLastAnalyzedAt: receivedAt, updatedAt: receivedAt } },
+  );
+  return { eventId, stats: mergedStats, applied, aiLastAnalyzedAt: receivedAt };
 }

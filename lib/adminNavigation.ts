@@ -218,6 +218,14 @@ export const adminNavSections: AdminNavSection[] = [
         accentColor: navAccent.primary,
       },
       {
+        label: 'AI Analytics',
+        path: '/admin/analytics/ai',
+        icon: 'smart_toy',
+        description: 'See which events have AI analytics, how far each has got, and which AI variables are populated enough to use in a report.',
+        tourDescription: 'Shows AI analysis coverage across events and the fill rate of every AI variable, so you know which ones are safe to build into a report.',
+        accentColor: navAccent.info,
+      },
+      {
         label: 'Sponsorship Hub',
         path: '/admin/analytics/sponsorship',
         icon: 'analytics',
