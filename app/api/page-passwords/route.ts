@@ -60,8 +60,15 @@ export async function POST(request: NextRequest) {
     const host = request.headers.get('host') || request.headers.get('x-forwarded-host') || 'localhost:5000';
     const baseUrl = `${protocol}://${host}`;
 
-    // Generate shareable link
-    const shareableLink = await generateShareableLink(pageId, bodyPageType as PageType, baseUrl);
+    // WHAT: Build the share link, then carry across the plaintext from the call
+    //     above rather than whatever the link builder found.
+    // WHY: generateShareableLink calls getOrCreatePagePassword again without the
+    //     regenerate flag, so it takes the "existing record" branch and returns an
+    //     empty password — a stored hash cannot be read back. Without this, a
+    //     regenerate request minted a new password and then threw it away, leaving
+    //     the caller with a link and no credential and no way to obtain one.
+    const builtLink = await generateShareableLink(pageId, bodyPageType as PageType, baseUrl);
+    const shareableLink = { ...builtLink, password: pagePassword.password || builtLink.password };
 
     logInfo('Generated password for page successfully', { context: 'page-passwords', pageType: pageType, pageIdPrefix: pageId.substring(0, 8) });
 

@@ -1,8 +1,47 @@
 # {messmass} Release Notes
 Status: Active
-Last Updated: 2026-08-14T23:30:00.000Z
+Last Updated: 2026-08-15T00:30:00.000Z
 Canonical: No
 Owner: Operations
+
+## [v12.1.60] — 2026-08-15T00:30:00.000Z
+
+### Summary
+Repairs the password re-issue path, which v12.1.59 left broken. Without this,
+roughly 496 links demanded a password and the admin UI could not produce one.
+
+### The Regression
+Rotating every password to a hash was correct, but two composition defects meant
+no new password could be issued:
+
+1. SharePopup requested `regenerate: false`, so it always took the "existing
+   record" branch, which returns an empty string by design — a stored hash cannot
+   be read back. The dialog showed a blank password field.
+2. The POST handler regenerated correctly, then called generateShareableLink,
+   which calls getOrCreatePagePassword again *without* the flag and therefore
+   returned an empty password — discarding the plaintext just minted. So even an
+   explicit regenerate produced a link with no credential.
+
+The second defect survived unit-level checks because each function behaved
+correctly in isolation; only the composition was wrong, and only an end-to-end
+request exposed it.
+
+### What Changed
+- The POST handler carries the freshly minted plaintext into the share link.
+- SharePopup has two explicit states: a password it just minted, shown once with a
+  warning that it cannot be retrieved and that the previous one has stopped
+  working; or no displayable password, with a "Generate new password" action.
+- The "Try Again" button now passes `false` explicitly. It previously passed the
+  handler directly, so the click event arrived as the `regenerate` argument — and
+  an event object is truthy, meaning a retry would have silently revoked the live
+  password. Caught by the type-checker.
+- The demo page requests a regenerate, since it has nothing to display otherwise.
+
+### Testing
+End-to-end against a real admin session: regenerate returns a 32-character
+password, an immediate non-regenerating call returns empty (proving it is not
+re-readable), submitting the new password validates, and the guarded data route
+then returns its 186 projects. Full gate green: 339 tests, build, guardrails.
 
 ## [v12.1.59] — 2026-08-14T23:30:00.000Z
 

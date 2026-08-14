@@ -25,6 +25,11 @@ export default function SharePopup({ isOpen, onClose, pageId, pageType, customTi
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [copiedField, setCopiedField] = useState<'url' | 'password' | null>(null);
+  // WHAT: Whether the password on screen was minted in this dialog session.
+  // WHY: It is the only moment it can ever be shown. Everything about the UI has
+  //     to distinguish "here is your password, copy it now" from "a password
+  //     exists but cannot be displayed", because those need opposite actions.
+  const [justGenerated, setJustGenerated] = useState(false);
   // WHAT: Optional recipient name/email field for user convenience
   // WHY: Users want to track who they're sharing links with when copying the URL and password
   const [recipientInfo, setRecipientInfo] = useState<string>('');
@@ -40,7 +45,7 @@ export default function SharePopup({ isOpen, onClose, pageId, pageType, customTi
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isOpen, pageId, pageType]);
 
-  const generateShareableLink = async () => {
+  const generateShareableLink = async (regenerate: boolean = false) => {
     setIsLoading(true);
     setError(null);
 
@@ -50,7 +55,12 @@ export default function SharePopup({ isOpen, onClose, pageId, pageType, customTi
       const data = await apiPost('/api/page-passwords', {
         pageId,
         pageType,
-        regenerate: false // Don't regenerate existing passwords
+        // WHAT: Only mint a new password when explicitly asked.
+        // WHY: Passwords are stored as bcrypt hashes and revealed exactly once, at
+        //     generation, so an existing record returns an empty string — there is
+        //     nothing to re-read. Regenerating silently on every open would
+        //     invalidate a link the moment someone glanced at this dialog.
+        regenerate
       });
 
       if (data.success) {
@@ -59,6 +69,7 @@ export default function SharePopup({ isOpen, onClose, pageId, pageType, customTi
           password: data.shareableLink.password,
           pageType: data.shareableLink.pageType
         });
+        setJustGenerated(Boolean(regenerate && data.shareableLink.password));
       } else {
         setError(data.error || 'Failed to generate shareable link');
       }
@@ -142,7 +153,10 @@ export default function SharePopup({ isOpen, onClose, pageId, pageType, customTi
           <div className={styles.errorContainer}>
             <div className={styles.errorEmoji}>❌</div>
             <p className={styles.errorText}>{error}</p>
-            <button onClick={generateShareableLink} className={styles.retryBtn}>
+            {/* Explicit false: passing the handler directly would hand the click
+                event in as `regenerate`, and an event object is truthy — a retry
+                would then silently mint a new password and revoke the live one. */}
+            <button onClick={() => generateShareableLink(false)} className={styles.retryBtn}>
               Try Again
             </button>
           </div>
@@ -204,25 +218,56 @@ export default function SharePopup({ isOpen, onClose, pageId, pageType, customTi
               </div>
             </div>
 
-            {/* Password Section */}
+            {/* Password Section
+                WHAT: Two states, because a stored password cannot be re-read.
+                WHY: The password is held only as a bcrypt hash, so this dialog can
+                    either show one it just minted or offer to mint a new one. It
+                    must never imply a password is retrievable. */}
             <div className={styles.section}>
               <label className={styles.label}>
                 🔐 Access Password
               </label>
-              <div className={styles.inputGroup}>
-                <input
-                  type="text"
-                  value={shareableData.password}
-                  readOnly
-                  className={`${styles.input} ${styles.inputMonospace}`}
-                />
-                <button
-                  onClick={() => copyToClipboard(shareableData.password, 'password')}
-                  className={`${styles.copyBtn} ${styles.copyBtnPassword} ${copiedField === 'password' ? styles.copyBtnCopied : ''}`}
-                >
-                  {copiedField === 'password' ? '✅ Copied!' : '📋 Copy'}
-                </button>
-              </div>
+
+              {shareableData.password ? (
+                <>
+                  <div className={styles.inputGroup}>
+                    <input
+                      type="text"
+                      value={shareableData.password}
+                      readOnly
+                      className={`${styles.input} ${styles.inputMonospace}`}
+                    />
+                    <button
+                      onClick={() => copyToClipboard(shareableData.password, 'password')}
+                      className={`${styles.copyBtn} ${styles.copyBtnPassword} ${copiedField === 'password' ? styles.copyBtnCopied : ''}`}
+                    >
+                      {copiedField === 'password' ? '✅ Copied!' : '📋 Copy'}
+                    </button>
+                  </div>
+                  {justGenerated && (
+                    <p className={styles.helpText}>
+                      ⚠️ Copy this now — it is shown once and cannot be retrieved later.
+                      Any password issued for this page before now has stopped working.
+                    </p>
+                  )}
+                </>
+              ) : (
+                <>
+                  <p className={styles.helpText}>
+                    This page has a password, but it cannot be displayed — only a
+                    one-way hash is stored, so nobody, including an admin, can read
+                    it back. Generate a new one to share access.
+                  </p>
+                  <button
+                    type="button"
+                    onClick={() => generateShareableLink(true)}
+                    className={styles.retryBtn}
+                    disabled={isLoading}
+                  >
+                    🔄 Generate new password
+                  </button>
+                </>
+              )}
             </div>
 
             {/* Instructions */}
@@ -231,6 +276,7 @@ export default function SharePopup({ isOpen, onClose, pageId, pageType, customTi
               <ol className={styles.instructionsList}>
                 <li className={styles.instructionItem}>Share the URL with the intended recipient</li>
                 <li className={styles.instructionItem}>Provide them with the password separately (for security)</li>
+                <li className={styles.instructionItem}>Generating a new password immediately revokes the previous one</li>
                 <li>They can use this password to access the page; signed-in admins bypass the prompt</li>
               </ol>
             </div>
