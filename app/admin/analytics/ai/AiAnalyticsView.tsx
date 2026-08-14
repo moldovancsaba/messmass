@@ -93,6 +93,12 @@ export default function AiAnalyticsView() {
   const [unauthenticated, setUnauthenticated] = useState(false);
   const [error, setError] = useState('');
   const [statusFilter, setStatusFilter] = useState<'all' | AiEventRow['status']>('all');
+  // WHAT: Whether events with no discovered images appear in the default view.
+  // WHY: Most of the estate is camera-provisioned events still waiting for photos
+  //     — 152 rows of "Analysing · 0%" buried the handful with real analysis.
+  //     Hidden by default; failed events stay visible regardless, because an
+  //     error with no images is exactly what an operator needs to see.
+  const [showEmpty, setShowEmpty] = useState(false);
   const [copied, setCopied] = useState('');
 
   const load = useCallback(async () => {
@@ -161,7 +167,14 @@ export default function AiAnalyticsView() {
     );
   }
 
-  const visibleEvents = statusFilter === 'all' ? events : events.filter((e) => e.status === statusFilter);
+  const hasImagesOrError = (e: AiEventRow) => (e.imagesDiscovered ?? 0) > 0 || e.status === 'error';
+  // An explicit status filter overrides the hide: choosing "No AI analytics" and
+  // seeing nothing because of a default-hidden rule would read as a bug.
+  const visibleEvents =
+    statusFilter === 'all'
+      ? events.filter((e) => showEmpty || hasImagesOrError(e))
+      : events.filter((e) => e.status === statusFilter);
+  const hiddenCount = statusFilter === 'all' && !showEmpty ? events.length - visibleEvents.length : 0;
 
   return (
     <div className={styles.wrapper}>
@@ -200,6 +213,16 @@ export default function AiAnalyticsView() {
         title="Events"
         subtitle="Analysis status per event"
         actions={
+          <div className={styles.filterGroup}>
+            <label className={styles.filterLabel}>
+              <input
+                type="checkbox"
+                className={styles.filterCheckbox}
+                checked={showEmpty}
+                onChange={(e) => setShowEmpty(e.target.checked)}
+              />
+              <span>Show events without images{hiddenCount > 0 ? ` (${hiddenCount} hidden)` : ''}</span>
+            </label>
           <label className={styles.filterLabel}>
             <span>Status</span>
             <select
@@ -214,6 +237,7 @@ export default function AiAnalyticsView() {
               <option value="not_connected">No AI analytics</option>
             </select>
           </label>
+          </div>
         }
       >
         {visibleEvents.length === 0 ? (

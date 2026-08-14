@@ -1,8 +1,31 @@
 # {messmass} Release Notes
 Status: Active
-Last Updated: 2026-08-14T14:00:00.000Z
+Last Updated: 2026-08-14T15:00:00.000Z
 Canonical: No
 Owner: Operations
+
+## [v12.1.53] — 2026-08-14T15:00:00.000Z
+
+### Summary
+The AI Analytics default view now hides events with no discovered images. Most of
+the estate is camera-provisioned events still waiting for photos — 152 rows of
+"Analysing · 0%" buried the handful with real analysis.
+
+### What Was Delivered
+- Default event list shows only events with images; a labelled checkbox reveals
+  the rest and states how many are hidden.
+- Failed events stay visible regardless of image count — an error with no images
+  is exactly what an operator needs to see.
+- An explicit status filter overrides the hide: selecting "No AI analytics" shows
+  those events, because filtering to a status and seeing nothing due to a hidden
+  default would read as a bug.
+
+### Testing
+- Rendered against a six-case fixture (real analysis, partial, two zero-image,
+  failed-zero-image, unconnected): default view showed exactly the three expected
+  rows with "(3 hidden)" in the label; toggling revealed all six.
+- Full gate: type-check, lint, 336 tests, style:check, docs:audit, guardrails,
+  build.
 
 ## [v12.1.52] — 2026-08-14T14:00:00.000Z
 

@@ -172,3 +172,14 @@
 .eventLink:focus-visible {
   text-decoration: underline;
 }
+
+.filterGroup {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--mm-space-4);
+}
+
+.filterCheckbox {
+  accent-color: var(--mm-color-primary-600);
+}
