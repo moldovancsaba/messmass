@@ -1,11 +1,11 @@
 # LLD Audit — Findings Register
 
 Status: Active
-Last Updated: 2026-08-15T05:30:00.000Z
+Last Updated: 2026-08-15T06:30:00.000Z
 Canonical: Yes (findings register)
 Owner: Architecture
 
-**Version:** 12.1.64
+**Version:** 12.1.65
 
 Findings from the LLD deep audit (`docs/audits/lld-audit-plan-2026-08-14.md`).
 Per rule R5 findings are recorded here and **not fixed on the audit branch**; per
@@ -25,6 +25,9 @@ claim is structural rather than demonstrated, it says so.
 | [F-009](#f-009) | **Critical** | **Partly fixed — 33 routes open, frozen by test** | Mutating API routes have no authentication | 4 |
 | [F-001](#f-001) | **Critical** | **Fixed** | Page-password protection is client-side only; data APIs are unauthenticated | 4 |
 | [F-002](#f-002) | **Critical** | **Fixed** | Unsigned legacy session tokens are accepted, always | 4 |
+| [F-020](#f-020) | **High** | Open | Analytics aggregates are five months stale; their cron was never scheduled | 3 |
+| [F-021](#f-021) | Medium | Open | The only scheduled cron has logged once in ten months | 3 |
+| [F-019](#f-019) | Medium | Open | `lib/auditLog.ts` is dead — the API write audit trail was never wired up | 3 |
 | [F-017](#f-017) | Medium | **Fixed** | Content-asset deletion guard was inert and its usage panel queried a non-existent collection | 3 |
 | [F-018](#f-018) | Low | Open | A missing report renders a JSON parse error instead of "not found" | 2 |
 | [F-015](#f-015) | Medium | **Fixed** | Admin preview and partner report format the same number differently | 2 |
@@ -358,6 +361,96 @@ forged unsigned token, hint=legacy  -> null
 minted token is a JWT (3 parts)     -> true
 genuine token still validates       -> true
 ```
+
+---
+
+## F-020
+
+### Analytics aggregates are five months stale; their cron was never scheduled
+
+**Severity: High — verified against production. Not fixed; needs your decision.**
+
+Three cron routes exist and are correctly `CRON_SECRET`-guarded:
+
+- `/api/cron/analytics-aggregation`
+- `/api/cron/bitly-refresh`
+- `/api/cron/google-sheets-sync`
+
+**None of them is scheduled.** `vercel.json` declares exactly one cron entry,
+`/api/bitly/sync` at `0 3 * * *`, which is a different route. The three above have
+no trigger, so nothing runs them.
+
+The consequence is visible in the data. Today is 2026-08-15:
+
+| Collection | Docs | Most recent document |
+|---|---:|---|
+| `analytics_aggregates` | 69 | **2026-03-18** |
+| `aggregation_logs` | 7 | **2026-03-18** |
+| `partner_analytics` | 170 | **2026-03-18** |
+
+Aggregation ran until 18 March and has not run since — five months. All three
+collections stop on the same day, which points at one trigger being removed rather
+than three separate failures.
+
+`analytics_aggregates` is read by **six** analytics endpoints:
+`analytics/aggregates`, `analytics/insights/[projectId]`,
+`analytics/insights/summary`, `analytics/partner/[partnerId]`,
+`analytics/trends`, `analytics/benchmarks`.
+
+**What I did not establish:** whether those endpoints treat the collection as a
+cache and recompute when it is stale, or serve it directly. If they serve it
+directly, every analytics dashboard has been showing March numbers since March.
+That is the question to answer first, and it is a read-path trace rather than a
+guess.
+
+Not fixed because adding cron entries changes production scheduling and load, and
+the right cadence is your call, not mine.
+
+---
+
+## F-021
+
+### The only scheduled cron has logged once in ten months
+
+**Severity: Medium — verified.**
+
+`/api/bitly/sync` is the single entry in `vercel.json`'s `crons`, scheduled daily
+at 03:00. It writes to `bitly_sync_logs` on both its success and failure paths
+(`app/api/bitly/sync/route.ts:269` and `:300`), so every run should leave a row.
+
+`bitly_sync_logs` contains **one document, dated 2025-10-27** — roughly ten months
+ago.
+
+Either the schedule is not firing, or every run fails before reaching line 269.
+Both write paths are inside the handler, so a failure early enough to skip both
+would have to be a throw before the try block or a failure to invoke the route at
+all. Distinguishing those needs the Vercel cron execution log, which I cannot read
+from here.
+
+---
+
+## F-019
+
+### `lib/auditLog.ts` is dead — the API write audit trail was never wired up
+
+**Severity: Medium.**
+
+`lib/auditLog.ts` writes audit entries to `api_audit_logs` from three call sites
+inside itself, and has **zero importers** anywhere in `app`, `lib`, `components`
+or `hooks`. The collection does not exist in production, which is consistent:
+Mongo creates a collection on first insert, so nothing has ever been written.
+
+An audit trail for API write operations was built and never connected. That is a
+compliance-shaped gap rather than a functional one — nothing is broken, but there
+is no record of API writes and the code implies there is.
+
+**Deliberately not reported as broken logging:** the separate `audit_logs`
+collection, written directly by `app/api/admin/permissions/route.ts:314` and
+`app/api/admin/projects/[id]/route.ts:120`, also does not exist. Those writes sit
+on live reachable paths immediately after a successful permission revoke and
+project delete, so the honest reading is that **those two actions have never been
+performed in production**, not that their logging fails. Recorded that way rather
+than as a defect.
 
 ---
 

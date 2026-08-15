@@ -62,7 +62,7 @@ app/api/admin/clear-cookies/route.ts,route,app/api/admin/clear-cookies/route.ts,
 app/api/admin/contact-inquiries/route.ts,route,app/api/admin/contact-inquiries/route.ts,24,2026-02-21T14:27:57+01:00,1,admin,pending,,,
 app/api/admin/email-selftest/route.ts,route,app/api/admin/email-selftest/route.ts,37,2026-07-31T10:04:01Z,1,admin,pending,,,
 app/api/admin/fanmass/events/[eventId]/route.ts,route,app/api/admin/fanmass/events/[eventId]/route.ts,77,2026-06-26T11:21:18+02:00,1,admin,pending,,,
-app/api/admin/filter-style/route.ts,route,app/api/admin/filter-style/route.ts,155,2025-12-29T11:21:48+01:00,6,admin,pending,,,
+app/api/admin/filter-style/route.ts,route,app/api/admin/filter-style/route.ts,162,2026-08-14T22:20:54+02:00,7,admin,pending,,,
 app/api/admin/fix-mojibake-text/route.ts,route,app/api/admin/fix-mojibake-text/route.ts,95,2026-07-31T18:28:02Z,1,admin,pending,,,
 app/api/admin/hashtag-style/route.ts,route,app/api/admin/hashtag-style/route.ts,103,2025-12-29T11:21:48+01:00,5,admin,pending,,,
 app/api/admin/landing-projects/route.ts,route,app/api/admin/landing-projects/route.ts,41,2026-02-22T10:42:41+01:00,1,admin,pending,,,
@@ -78,14 +78,14 @@ app/api/admin/organizations/[id]/route.ts,route,app/api/admin/organizations/[id]
 app/api/admin/organizations/route.ts,route,app/api/admin/organizations/route.ts,138,2026-04-24T15:25:46+02:00,6,admin,pending,,,
 app/api/admin/partners/route.ts,route,app/api/admin/partners/route.ts,40,2025-11-13T11:57:14+01:00,1,admin,pending,,,
 app/api/admin/permissions/route.ts,route,app/api/admin/permissions/route.ts,343,2025-12-29T05:23:52+01:00,5,admin,pending,,,
-app/api/admin/project-partners/auto-suggest/route.ts,route,app/api/admin/project-partners/auto-suggest/route.ts,141,2025-11-13T11:59:36+01:00,2,admin,pending,,,
+app/api/admin/project-partners/auto-suggest/route.ts,route,app/api/admin/project-partners/auto-suggest/route.ts,148,2026-08-14T22:20:54+02:00,3,admin,pending,,,
 app/api/admin/project-partners/route.ts,route,app/api/admin/project-partners/route.ts,166,2026-03-13T10:08:08+01:00,2,admin,pending,,,
 app/api/admin/projects/[id]/route.ts,route,app/api/admin/projects/[id]/route.ts,150,2025-12-29T05:21:30+01:00,6,admin,pending,,,
 app/api/admin/projects/route.ts,route,app/api/admin/projects/route.ts,199,2026-03-13T10:08:08+01:00,8,admin,pending,,,
 app/api/admin/register/route.ts,route,app/api/admin/register/route.ts,13,2026-07-31T22:08:47Z,6,admin,pending,,,
 app/api/admin/sync-events-to-camera/route.ts,route,app/api/admin/sync-events-to-camera/route.ts,90,2026-07-31T18:14:58Z,1,admin,pending,,,
 app/api/admin/sync-partners-to-camera/route.ts,route,app/api/admin/sync-partners-to-camera/route.ts,84,2026-07-31T17:58:24Z,2,admin,pending,,,
-app/api/admin/ui-settings/route.ts,route,app/api/admin/ui-settings/route.ts,158,2026-01-05T16:36:28+01:00,5,admin,pending,,,
+app/api/admin/ui-settings/route.ts,route,app/api/admin/ui-settings/route.ts,165,2026-08-14T22:20:54+02:00,6,admin,pending,,,
 app/api/admin/users/[id]/role/route.ts,route,app/api/admin/users/[id]/role/route.ts,130,2026-02-07T17:47:06+01:00,5,admin,pending,,,
 app/api/admin/users/route.ts,route,app/api/admin/users/route.ts,170,2026-02-21T09:38:15+01:00,6,admin,pending,,,
 app/api/analytics/aggregates/partners/route.ts,route,app/api/analytics/aggregates/partners/route.ts,113,2026-05-20T20:42:21+02:00,4,analytics,pending,,,
@@ -134,21 +134,21 @@ app/api/charts/route.ts,route,app/api/charts/route.ts,203,2025-12-18T18:09:34+01
 app/api/cities/route.ts,route,app/api/cities/route.ts,76,2025-12-17T18:40:14+01:00,2,cities,pending,,,
 app/api/clicker-sets/route.ts,route,app/api/clicker-sets/route.ts,151,2026-01-21T14:21:26+01:00,2,data,pending,,,
 app/api/contact/route.ts,route,app/api/contact/route.ts,65,2026-02-21T14:27:57+01:00,1,contact,pending,,,
-app/api/content-assets/route.ts,route,app/api/content-assets/route.ts,486,2026-07-05T10:38:33Z,4,content-assets,pending,,,
-app/api/content-assets/usage/route.ts,route,app/api/content-assets/usage/route.ts,116,2025-11-03T11:08:42+01:00,1,content-assets,pending,,,
+app/api/content-assets/route.ts,route,app/api/content-assets/route.ts,495,2026-08-15T10:41:53+02:00,5,content-assets,pending,,,
+app/api/content-assets/usage/route.ts,route,app/api/content-assets/usage/route.ts,120,2026-08-15T10:41:53+02:00,2,content-assets,pending,,,
 app/api/countries/[code]/route.ts,route,app/api/countries/[code]/route.ts,62,2025-10-29T12:36:54+01:00,1,countries,pending,,,
 app/api/countries/route.ts,route,app/api/countries/route.ts,49,2025-10-29T12:36:54+01:00,1,countries,pending,,,
 app/api/cron/analytics-aggregation/route.ts,route,app/api/cron/analytics-aggregation/route.ts,218,2026-02-21T09:06:47+01:00,3,integrations,pending,,,
 app/api/cron/bitly-refresh/route.ts,route,app/api/cron/bitly-refresh/route.ts,107,2025-10-14T11:30:02+02:00,1,integrations,pending,,,
 app/api/cron/google-sheets-sync/route.ts,route,app/api/cron/google-sheets-sync/route.ts,258,2026-07-05T22:19:10Z,5,integrations,pending,,,
 app/api/csrf-token/route.ts,route,app/api/csrf-token/route.ts,13,2025-10-18T12:26:41+02:00,1,auth,pending,,,
-app/api/data-blocks/route.ts,route,app/api/data-blocks/route.ts,208,2026-01-22T11:55:09+01:00,11,reporting,pending,,,
+app/api/data-blocks/route.ts,route,app/api/data-blocks/route.ts,227,2026-08-14T22:20:54+02:00,12,reporting,pending,,,
 app/api/debug/categorized-hashtags/route.ts,route,app/api/debug/categorized-hashtags/route.ts,112,2025-12-17T19:34:44+01:00,2,debug,pending,,,
 app/api/debug/notifications/route.ts,route,app/api/debug/notifications/route.ts,109,2026-07-05T22:19:10Z,3,debug,pending,,,
 app/api/debug/overview-block/route.ts,route,app/api/debug/overview-block/route.ts,32,2025-12-19T11:56:46+01:00,1,debug,pending,,,
 app/api/drive-folders/[linkId]/route.ts,route,app/api/drive-folders/[linkId]/route.ts,48,2026-08-13T11:28:22Z,2,integrations,pending,,,
 app/api/drive-folders/route.ts,route,app/api/drive-folders/route.ts,82,2026-08-13T11:28:22Z,2,integrations,pending,,,
-app/api/filter-slug/route.ts,route,app/api/filter-slug/route.ts,42,2025-09-06T13:39:18+02:00,2,data,pending,,,
+app/api/filter-slug/route.ts,route,app/api/filter-slug/route.ts,49,2026-08-14T22:20:54+02:00,3,data,pending,,,
 app/api/football-data/fixtures/route.ts,route,app/api/football-data/fixtures/route.ts,84,2025-10-19T21:58:41+02:00,1,football-data,pending,,,
 app/api/football-data/sync/route.ts,route,app/api/football-data/sync/route.ts,36,2025-10-19T21:58:41+02:00,1,football-data,pending,,,
 app/api/google-sheets/template/route.ts,route,app/api/google-sheets/template/route.ts,15,2026-02-06T10:22:40+01:00,1,integrations,pending,,,
@@ -157,7 +157,7 @@ app/api/hashtag-categories/route.ts,route,app/api/hashtag-categories/route.ts,47
 app/api/hashtag-colors/route.ts,route,app/api/hashtag-colors/route.ts,237,2025-11-02T21:13:40+01:00,5,data,pending,,,
 app/api/hashtags/[hashtag]/route.ts,route,app/api/hashtags/[hashtag]/route.ts,184,2026-05-22T12:32:05+02:00,7,data,pending,,,
 app/api/hashtags/filter/route.ts,route,app/api/hashtags/filter/route.ts,263,2025-12-17T18:39:49+01:00,4,data,pending,,,
-app/api/hashtags/filter-by-slug/[slug]/route.ts,route,app/api/hashtags/filter-by-slug/[slug]/route.ts,199,2026-05-22T12:32:05+02:00,7,data,pending,,,
+app/api/hashtags/filter-by-slug/[slug]/route.ts,route,app/api/hashtags/filter-by-slug/[slug]/route.ts,207,2026-08-14T22:13:31+02:00,8,data,pending,,,
 app/api/hashtags/route.ts,route,app/api/hashtags/route.ts,378,2025-12-29T05:50:53+01:00,8,data,pending,,,
 app/api/hashtags/slugs/route.ts,route,app/api/hashtags/slugs/route.ts,104,2025-09-25T11:38:17+02:00,5,data,pending,,,
 app/api/images/route.ts,route,app/api/images/route.ts,144,2025-12-29T06:11:15+01:00,3,images,pending,,,
@@ -185,7 +185,7 @@ app/api/notifications/route.ts,route,app/api/notifications/route.ts,104,2026-07-
 app/api/organizations/edit/[id]/route.ts,route,app/api/organizations/edit/[id]/route.ts,313,2026-05-22T12:32:05+02:00,3,organizations,pending,,,
 app/api/organizations/report/[id]/activities/route.ts,route,app/api/organizations/report/[id]/activities/route.ts,136,2026-05-22T12:32:05+02:00,3,organizations,pending,,,
 app/api/organizations/report/[id]/route.ts,route,app/api/organizations/report/[id]/route.ts,225,2026-05-22T12:32:05+02:00,4,organizations,pending,,,
-app/api/page-passwords/route.ts,route,app/api/page-passwords/route.ts,149,2026-04-27T09:26:03+02:00,14,auth,pending,,,
+app/api/page-passwords/route.ts,route,app/api/page-passwords/route.ts,190,2026-08-14T23:44:16+02:00,17,auth,pending,,,
 app/api/partners/[id]/bitly-kyc/route.ts,route,app/api/partners/[id]/bitly-kyc/route.ts,116,2025-11-14T22:02:36+01:00,1,partners,pending,,,
 app/api/partners/[id]/events/route.ts,route,app/api/partners/[id]/events/route.ts,123,2025-11-14T14:45:43+01:00,1,partners,pending,,,
 app/api/partners/[id]/google-sheet/connect/route.ts,route,app/api/partners/[id]/google-sheet/connect/route.ts,111,2026-03-07T12:49:13+01:00,9,partners,pending,,,
@@ -200,12 +200,12 @@ app/api/partners/edit/[slug]/route.ts,route,app/api/partners/edit/[slug]/route.t
 app/api/partners/link-football-data/route.ts,route,app/api/partners/link-football-data/route.ts,98,2025-10-19T21:58:41+02:00,1,partners,pending,,,
 app/api/partners/report/[slug]/route.ts,route,app/api/partners/report/[slug]/route.ts,203,2026-06-30T21:32:39+02:00,23,partners,pending,,,
 app/api/partners/route.ts,route,app/api/partners/route.ts,282,2026-06-30T21:32:39+02:00,23,partners,pending,,,
-app/api/partners/upload-logo/route.ts,route,app/api/partners/upload-logo/route.ts,89,2025-10-17T13:33:40+02:00,1,partners,pending,,,
+app/api/partners/upload-logo/route.ts,route,app/api/partners/upload-logo/route.ts,96,2026-08-14T22:20:54+02:00,2,partners,pending,,,
 app/api/projects/[id]/layout.tsx,app-module,app/api/projects/[id]/layout.tsx,28,2026-03-07T12:49:13+01:00,2,unreached,pending,,,
 app/api/projects/[id]/route.ts,route,app/api/projects/[id]/route.ts,184,2026-07-05T22:19:10Z,8,data,pending,,,
-app/api/projects/edit/[slug]/route.ts,route,app/api/projects/edit/[slug]/route.ts,66,2026-02-21T09:58:23+01:00,6,data,pending,,,
-app/api/projects/route.ts,route,app/api/projects/route.ts,1086,2026-07-20T20:59:15+02:00,32,data,pending,,,
-app/api/projects/stats/[slug]/route.ts,route,app/api/projects/stats/[slug]/route.ts,72,2025-12-19T19:47:07+01:00,6,data,pending,,,
+app/api/projects/edit/[slug]/route.ts,route,app/api/projects/edit/[slug]/route.ts,74,2026-08-14T22:13:31+02:00,7,data,pending,,,
+app/api/projects/route.ts,route,app/api/projects/route.ts,1108,2026-08-14T22:13:31+02:00,33,data,pending,,,
+app/api/projects/stats/[slug]/route.ts,route,app/api/projects/stats/[slug]/route.ts,80,2026-08-14T23:14:50+02:00,7,data,pending,,,
 app/api/public/events/[id]/route.ts,route,app/api/public/events/[id]/route.ts,173,2025-11-04T22:51:02+01:00,1,public,pending,,,
 app/api/public/partners/[id]/events/route.ts,route,app/api/public/partners/[id]/events/route.ts,187,2025-11-04T22:51:02+01:00,1,public,pending,,,
 app/api/public/partners/[id]/route.ts,route,app/api/public/partners/[id]/route.ts,137,2025-11-04T22:51:02+01:00,1,public,pending,,,
@@ -245,10 +245,10 @@ app/dashboard/hashtag/[hashtag]/page.tsx,page,app/dashboard/hashtag/[hashtag]/pa
 app/dashboard/layout.tsx,app-module,app/dashboard/layout.tsx,15,2026-02-21T10:23:25+01:00,1,unreached,pending,,,
 app/dashboard/partner/[partnerId]/page.tsx,page,app/dashboard/partner/[partnerId]/page.tsx,25,2026-03-06T11:55:07+01:00,2,uncategorised,pending,,,
 app/debug/hashtag-categories/page.tsx,page,app/debug/hashtag-categories/page.tsx,217,2026-01-03T10:05:49+01:00,5,uncategorised,pending,,,
-app/edit/[slug]/page.tsx,page,app/edit/[slug]/page.tsx,213,2026-03-06T13:03:44+01:00,24,uncategorised,pending,,,
+app/edit/[slug]/page.tsx,page,app/edit/[slug]/page.tsx,222,2026-08-14T22:13:31+02:00,25,uncategorised,pending,,,
 app/error.tsx,app-module,app/error.tsx,75,2026-01-03T10:05:49+01:00,6,unreached,pending,,,
-app/examples/password-gate-demo/page.tsx,page,app/examples/password-gate-demo/page.tsx,71,2025-11-06T20:26:43+01:00,5,uncategorised,pending,,,
-app/filter/[slug]/page.tsx,page,app/filter/[slug]/page.tsx,249,2026-05-22T12:32:05+02:00,26,uncategorised,pending,,,
+app/examples/password-gate-demo/page.tsx,page,app/examples/password-gate-demo/page.tsx,73,2026-08-14T23:44:16+02:00,6,uncategorised,pending,,,
+app/filter/[slug]/page.tsx,page,app/filter/[slug]/page.tsx,261,2026-08-14T22:13:31+02:00,27,uncategorised,pending,,,
 app/hashtag/[hashtag]/page.tsx,page,app/hashtag/[hashtag]/page.tsx,248,2026-05-22T12:32:05+02:00,26,uncategorised,pending,,,
 app/layout.tsx,app-module,app/layout.tsx,173,2026-05-23T09:34:49+02:00,27,unreached,pending,,,
 app/not-found.tsx,app-module,app/not-found.tsx,52,2026-05-02T11:02:49+02:00,7,unreached,pending,,,
@@ -262,10 +262,10 @@ app/partner-edit/[slug]/PartnerEditClient.tsx,app-module,app/partner-edit/[slug]
 app/partner-edit/[slug]/page.tsx,page,app/partner-edit/[slug]/page.tsx,24,2026-06-30T21:32:39+02:00,10,uncategorised,pending,,,
 app/partner-report/PartnerReportView.tsx,app-module,app/partner-report/PartnerReportView.tsx,126,2026-07-01T00:11:27+02:00,7,shared,pending,,,
 app/partner-report/[slug]/PartnerEventsList.tsx,app-module,app/partner-report/[slug]/PartnerEventsList.tsx,199,2026-03-06T12:07:33+01:00,6,shared,pending,,,
-app/partner-report/[slug]/page.tsx,page,app/partner-report/[slug]/page.tsx,29,2026-06-30T21:32:39+02:00,36,reporting,pending,,,
+app/partner-report/[slug]/page.tsx,page,app/partner-report/[slug]/page.tsx,43,2026-08-14T23:14:50+02:00,37,reporting,pending,,,
 app/privacy/page.tsx,page,app/privacy/page.tsx,79,2026-03-07T12:49:13+01:00,2,uncategorised,pending,,,
 app/providers.tsx,app-module,app/providers.tsx,23,2026-05-23T09:34:49+02:00,1,unreached,pending,,,
-app/report/[slug]/ReportChart.tsx,app-module,app/report/[slug]/ReportChart.tsx,2212,2026-07-20T14:22:42+02:00,85,shared,pending,,,
+app/report/[slug]/ReportChart.tsx,app-module,app/report/[slug]/ReportChart.tsx,2183,2026-08-15T10:41:53+02:00,86,shared,pending,,,
 app/report/[slug]/ReportContent.tsx,app-module,app/report/[slug]/ReportContent.tsx,681,2026-05-10T20:42:41+02:00,53,shared,pending,,,
 app/report/[slug]/ReportHero.tsx,app-module,app/report/[slug]/ReportHero.tsx,187,2026-05-22T12:32:05+02:00,7,shared,pending,,,
 app/report/[slug]/layout.tsx,app-module,app/report/[slug]/layout.tsx,31,2025-11-04T20:56:01+01:00,1,unreached,pending,,,
@@ -305,6 +305,7 @@ lib/api/response.ts,lib,lib/api/response.ts,287,2025-10-02T13:35:14+02:00,1,unre
 lib/api-football.ts,lib,lib/api-football.ts,341,2026-03-07T12:49:13+01:00,2,api-football,pending,,,
 lib/apiAuth.ts,lib,lib/apiAuth.ts,374,2026-03-07T12:49:13+01:00,5,public,pending,,,
 lib/apiClient.ts,lib,lib/apiClient.ts,254,2026-01-05T11:19:44+01:00,2,shared,pending,,,
+lib/apiGuards.ts,lib,lib/apiGuards.ts,63,2026-08-14T22:13:31+02:00,1,shared,pending,,,
 lib/aspectRatioResolver.ts,lib,lib/aspectRatioResolver.ts,22,2025-12-19T11:56:46+01:00,1,admin,pending,,,
 lib/aspectRatioUtils.ts,lib,lib/aspectRatioUtils.ts,239,2025-12-20T20:15:12+01:00,1,admin,pending,,,
 lib/auditLog.ts,lib,lib/auditLog.ts,176,2025-12-15T13:40:11+01:00,3,unreached,pending,,,
@@ -335,7 +336,7 @@ lib/cameraClient.ts,lib,lib/cameraClient.ts,110,2026-07-31T19:11:20Z,2,shared,pe
 lib/cameraPartnerSync.ts,lib,lib/cameraPartnerSync.ts,80,2026-07-31T14:11:59Z,1,integrations,pending,,,
 lib/cameraProvision.ts,lib,lib/cameraProvision.ts,97,2026-07-20T15:51:40+02:00,1,shared,pending,,,
 lib/chart-config.ts,lib,lib/chart-config.ts,345,2026-03-07T12:49:13+01:00,3,unreached,pending,,,
-lib/chartCalculator.ts,lib,lib/chartCalculator.ts,962,2026-06-26T12:35:57+02:00,32,shared,pending,,,
+lib/chartCalculator.ts,lib,lib/chartCalculator.ts,951,2026-08-15T10:41:53+02:00,33,shared,pending,,,
 lib/chartConfigTypes.ts,lib,lib/chartConfigTypes.ts,274,2026-03-18T14:55:40+01:00,32,shared,pending,,,
 lib/chartErrorTypes.ts,lib,lib/chartErrorTypes.ts,111,2026-01-13T12:39:12+01:00,1,shared,pending,,,
 lib/chartHeightCalculator.ts,lib,lib/chartHeightCalculator.ts,97,2025-12-18T18:09:34+01:00,1,unreached,pending,,,
@@ -370,6 +371,7 @@ lib/fontUtils.ts,lib,lib/fontUtils.ts,104,2026-06-26T16:36:09+02:00,4,shared,pen
 lib/footballData.types.ts,lib,lib/footballData.types.ts,90,2025-10-19T21:58:41+02:00,1,shared,pending,,,
 lib/footballDataApi.ts,lib,lib/footballDataApi.ts,108,2025-10-19T21:58:41+02:00,1,shared,pending,,,
 lib/footballDataEnricher.ts,lib,lib/footballDataEnricher.ts,51,2025-10-19T21:58:41+02:00,1,partners,pending,,,
+lib/formatChartValue.ts,lib,lib/formatChartValue.ts,51,2026-08-15T10:41:53+02:00,1,shared,pending,,,
 lib/formulaEngine.ts,lib,lib/formulaEngine.ts,1325,2026-06-26T11:21:18+02:00,32,shared,pending,,,
 lib/googleDriveFolder.ts,lib,lib/googleDriveFolder.ts,49,2026-08-13T11:17:20Z,1,shared,pending,,,
 lib/googleSheets/client.ts,lib,lib/googleSheets/client.ts,490,2026-03-07T12:49:13+01:00,7,shared,pending,,,
@@ -419,7 +421,8 @@ lib/models/v3/Organization.ts,lib,lib/models/v3/Organization.ts,36,2026-03-13T10
 lib/mongodb.ts,lib,lib/mongodb.ts,111,2026-06-25T16:40:47+02:00,6,shared,pending,,,
 lib/mongoose-v3.ts,lib,lib/mongoose-v3.ts,52,2026-06-25T16:40:47+02:00,2,shared,pending,,,
 lib/notificationUtils.ts,lib,lib/notificationUtils.ts,159,2026-07-05T22:19:10Z,5,data,pending,,,
-lib/pagePassword.ts,lib,lib/pagePassword.ts,388,2026-06-30T21:50:45+02:00,18,shared,pending,,,
+lib/pageAccess.ts,lib,lib/pageAccess.ts,143,2026-08-14T22:13:31+02:00,1,shared,pending,,,
+lib/pagePassword.ts,lib,lib/pagePassword.ts,431,2026-08-14T23:14:50+02:00,19,shared,pending,,,
 lib/pageStyleTypesEnhanced.ts,lib,lib/pageStyleTypesEnhanced.ts,317,2025-12-22T20:16:37+01:00,7,unreached,pending,,,
 lib/partner.types.ts,lib,lib/partner.types.ts,268,2026-07-31T14:11:59Z,19,admin,pending,,,
 lib/partnerIdentifier.ts,lib,lib/partnerIdentifier.ts,82,2026-06-30T21:32:39+02:00,2,shared,pending,,,
@@ -440,7 +443,7 @@ lib/reportVariantPeriodAudit.ts,lib,lib/reportVariantPeriodAudit.ts,46,2026-06-2
 lib/reportVariants.ts,lib,lib/reportVariants.ts,455,2026-06-30T21:32:39+02:00,4,shared,pending,,,
 lib/routeProtection.ts,lib,lib/routeProtection.ts,115,2026-05-13T00:02:23+02:00,6,unreached,pending,,,
 lib/sanitize.ts,lib,lib/sanitize.ts,133,2026-02-21T14:27:57+01:00,5,shared,pending,,,
-lib/sessionTokens.ts,lib,lib/sessionTokens.ts,182,2026-02-07T17:47:06+01:00,3,shared,pending,,,
+lib/sessionTokens.ts,lib,lib/sessionTokens.ts,125,2026-08-14T22:13:31+02:00,4,shared,pending,,,
 lib/shareables/auth/AuthProvider.tsx,lib,lib/shareables/auth/AuthProvider.tsx,473,2026-03-07T12:49:13+01:00,6,unreached,pending,,,
 lib/shareables/auth/LoginForm.tsx,lib,lib/shareables/auth/LoginForm.tsx,334,2026-03-07T12:49:13+01:00,4,unreached,pending,,,
 lib/shareables/auth/index.ts,lib,lib/shareables/auth/index.ts,324,2026-03-07T12:49:13+01:00,4,unreached,pending,,,
@@ -531,7 +534,7 @@ components/MaterialIconsPreload.tsx,component,components/MaterialIconsPreload.ts
 components/NotificationPanel.tsx,component,components/NotificationPanel.tsx,278,2026-07-05T22:22:01Z,8,unreached,pending,,,
 components/OrganizationEditorDashboard.tsx,component,components/OrganizationEditorDashboard.tsx,489,2026-05-22T15:53:19+02:00,5,uncategorised,pending,,,
 components/OrganizationMembersSelector.tsx,component,components/OrganizationMembersSelector.tsx,193,2026-04-24T14:57:27+02:00,1,admin,pending,,,
-components/PagePasswordLogin.tsx,component,components/PagePasswordLogin.tsx,257,2026-04-27T09:37:36+02:00,10,uncategorised,pending,,,
+components/PagePasswordLogin.tsx,component,components/PagePasswordLogin.tsx,257,2026-04-27T09:37:36+02:00,10,shared,pending,,,
 components/PageStyleEditor.tsx,component,components/PageStyleEditor.tsx,1055,2025-12-25T22:22:55+01:00,10,unreached,pending,,,
 components/PartnerEditorDashboard.tsx,component,components/PartnerEditorDashboard.tsx,377,2026-05-22T15:53:19+02:00,12,uncategorised,pending,,,
 components/PartnerSelector.tsx,component,components/PartnerSelector.tsx,222,2026-02-06T10:22:40+01:00,4,admin,pending,,,
@@ -546,7 +549,8 @@ components/ResourceLoader.tsx,component,components/ResourceLoader.tsx,186,2026-0
 components/RoleDropdown.tsx,component,components/RoleDropdown.tsx,209,2026-02-07T17:47:06+01:00,3,admin,pending,,,
 components/SaveStatusIndicator.tsx,component,components/SaveStatusIndicator.tsx,104,2025-12-21T19:44:15+01:00,2,admin,pending,,,
 components/SemanticBadge.tsx,component,components/SemanticBadge.tsx,35,2026-05-22T15:38:26+02:00,1,admin,pending,,,
-components/SharePopup.tsx,component,components/SharePopup.tsx,242,2026-04-27T09:37:36+02:00,10,admin,pending,,,
+components/ServerPageGate.tsx,component,components/ServerPageGate.tsx,42,2026-08-14T23:14:50+02:00,1,reporting,pending,,,
+components/SharePopup.tsx,component,components/SharePopup.tsx,288,2026-08-14T23:44:16+02:00,11,admin,pending,,,
 components/Sidebar.tsx,component,components/Sidebar.tsx,268,2026-08-04T22:06:40Z,36,unreached,pending,,,
 components/StandardState.tsx,component,components/StandardState.tsx,32,2025-10-20T16:33:11+02:00,4,unreached,pending,,,
 components/StatsCharts.tsx,component,components/StatsCharts.tsx,547,2025-12-21T15:07:14+01:00,9,unreached,pending,,,
@@ -609,6 +613,7 @@ tests/admin-action-rail.test.tsx,test,tests/admin-action-rail.test.tsx,121,2026-
 tests/ai-analysis-summary.test.ts,test,tests/ai-analysis-summary.test.ts,52,2026-08-14T18:33:42+02:00,1,tests,pending,,,
 tests/ai-analytics.test.ts,test,tests/ai-analytics.test.ts,93,2026-08-14T11:56:42+02:00,1,tests,pending,,,
 tests/ai-variable-hint.test.ts,test,tests/ai-variable-hint.test.ts,65,2026-08-14T12:03:56+02:00,1,tests,pending,,,
+tests/api-mutation-auth.test.ts,test,tests/api-mutation-auth.test.ts,123,2026-08-14T22:20:54+02:00,1,tests,pending,,,
 tests/bitly-export.test.ts,test,tests/bitly-export.test.ts,71,2026-07-09T11:49:03+02:00,1,tests,pending,,,
 tests/chart-data-validation.test.ts,test,tests/chart-data-validation.test.ts,348,2026-03-07T13:35:29+01:00,1,tests,pending,,,
 tests/chart-preset-validation.test.ts,test,tests/chart-preset-validation.test.ts,70,2026-03-18T14:55:40+01:00,1,tests,pending,,,
@@ -617,6 +622,7 @@ tests/export-csv-formatting.test.ts,test,tests/export-csv-formatting.test.ts,355
 tests/export-parity.test.ts,test,tests/export-parity.test.ts,230,2026-03-07T13:35:29+01:00,1,tests,pending,,,
 tests/fanmass-report-variables.test.ts,test,tests/fanmass-report-variables.test.ts,95,2026-07-01T22:39:14+02:00,2,tests,pending,,,
 tests/fixtures/layoutV2/validate-fixtures.js,test,tests/fixtures/layoutV2/validate-fixtures.js,83,2026-03-07T13:35:29+01:00,1,tests,pending,,,
+tests/format-chart-value.test.ts,test,tests/format-chart-value.test.ts,66,2026-08-15T10:41:53+02:00,1,tests,pending,,,
 tests/formula-engine-production-like.test.ts,test,tests/formula-engine-production-like.test.ts,129,2026-03-07T13:35:29+01:00,1,tests,pending,,,
 tests/formula-error-handling.test.ts,test,tests/formula-error-handling.test.ts,232,2026-03-07T13:35:29+01:00,1,tests,pending,,,
 tests/height-calculation.test.ts,test,tests/height-calculation.test.ts,284,2026-03-07T13:35:29+01:00,1,tests,pending,,,
@@ -630,7 +636,7 @@ tests/layoutV2-variable-aspect-ratio.test.ts,test,tests/layoutV2-variable-aspect
 tests/mobile-admin-action-contract.test.ts,test,tests/mobile-admin-action-contract.test.ts,34,2026-08-08T16:47:40Z,2,tests,pending,,,
 tests/nav-menu-permissions.test.ts,test,tests/nav-menu-permissions.test.ts,36,2026-08-14T15:24:58+02:00,1,tests,pending,,,
 tests/notification-dedupe.test.ts,test,tests/notification-dedupe.test.ts,56,2026-07-05T22:19:10Z,1,tests,pending,,,
-tests/page-password-partner-alias.test.ts,test,tests/page-password-partner-alias.test.ts,207,2026-06-30T21:50:45+02:00,2,tests,pending,,,
+tests/page-password-partner-alias.test.ts,test,tests/page-password-partner-alias.test.ts,235,2026-08-14T23:14:50+02:00,3,tests,pending,,,
 tests/partner-identifier.test.ts,test,tests/partner-identifier.test.ts,65,2026-06-30T21:32:39+02:00,2,tests,pending,,,
 tests/report-content-slot-holes.test.ts,test,tests/report-content-slot-holes.test.ts,33,2026-07-09T11:48:31+02:00,1,tests,pending,,,
 tests/report-period-validation.test.ts,test,tests/report-period-validation.test.ts,97,2026-06-24T14:59:40+02:00,1,tests,pending,,,
@@ -928,6 +934,7 @@ scripts/restoreDatabase.ts,script,scripts/restoreDatabase.ts,251,2025-11-02T20:3
 scripts/restoreUsers.ts,script,scripts/restoreUsers.ts,69,2025-11-02T21:13:40+01:00,1,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
 scripts/revert-sihf-charts.js,script,scripts/revert-sihf-charts.js,57,2025-12-15T15:51:36+01:00,1,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
 scripts/root-cause-analysis.ts,script,scripts/root-cause-analysis.ts,123,2025-11-13T13:12:23+01:00,1,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
+scripts/rotate-page-passwords.ts,script,scripts/rotate-page-passwords.ts,85,2026-08-14T23:14:50+02:00,1,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
 scripts/search-partner-in-api-football.ts,script,scripts/search-partner-in-api-football.ts,67,2025-11-16T12:32:05+01:00,1,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
 scripts/seed-additional-report-variables.ts,script,scripts/seed-additional-report-variables.ts,125,2025-11-14T11:05:07+01:00,1,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
 scripts/seed-available-fonts.ts,script,scripts/seed-available-fonts.ts,81,2026-06-26T21:45:20+02:00,2,scripts,deferred,,,"scope decision 2026-08-14: scripts/ deferred (low risk, one-off migrations)"
@@ -1057,11 +1064,11 @@ collection:bitly_link_project_junction,collection,,0,,0,data,pending,3,,12 refs;
 collection:bitly_links,collection,,0,,0,data,pending,3,,47 refs; 10 writer files; 24 reader files; 16 refs in app/lib code
 collection:bitly_project_links,collection,,0,,0,data,pending,3,,29 refs; 5 writer files; 16 reader files; 14 refs in app/lib code
 collection:bitly_sync_logs,collection,,0,,0,data,pending,3,,2 refs; 1 writer files; 0 reader files; 2 refs in app/lib code
-collection:chartConfigurations,collection,,0,,0,data,pending,3,,11 refs; 10 writer files; 1 reader files; 1 refs in app/lib code
+collection:chartConfigurations,collection,,0,,0,data,pending,3,,10 refs; 10 writer files; 0 reader files; 0 refs in app/lib code
 collection:chart_algorithms,collection,,0,,0,data,pending,3,,3 refs; 1 writer files; 1 reader files; 0 refs in app/lib code
 collection:chart_algorithms_backup,collection,,0,,0,data,pending,3,,2 refs; 1 writer files; 0 reader files; 0 refs in app/lib code
 collection:chart_configs,collection,,0,,0,data,pending,3,,2 refs; 0 writer files; 2 reader files; 0 refs in app/lib code
-collection:chart_configurations,collection,,0,,0,data,pending,3,,141 refs; 55 writer files; 58 reader files; 9 refs in app/lib code
+collection:chart_configurations,collection,,0,,0,data,pending,3,,143 refs; 55 writer files; 60 reader files; 11 refs in app/lib code
 collection:chart_formatting_defaults,collection,,0,,0,data,pending,3,,4 refs; 2 writer files; 1 reader files; 2 refs in app/lib code
 collection:chartconfigurations,collection,,0,,0,data,pending,3,,1 refs; 1 writer files; 0 reader files; 0 refs in app/lib code
 collection:charts,collection,,0,,0,data,pending,3,,5 refs; 3 writer files; 0 reader files; 3 refs in app/lib code
@@ -1086,12 +1093,12 @@ collection:local_users,collection,,0,,0,data,pending,3,,13 refs; 5 writer files;
 collection:notifications,collection,,0,,0,data,pending,3,,5 refs; 3 writer files; 2 reader files; 4 refs in app/lib code
 collection:organizations,collection,,0,,0,data,pending,3,,17 refs; 4 writer files; 10 reader files; 17 refs in app/lib code
 collection:pageStyles,collection,,0,,0,data,pending,3,,2 refs; 0 writer files; 2 reader files; 1 refs in app/lib code
-collection:page_passwords,collection,,0,,0,data,pending,3,,8 refs; 4 writer files; 1 reader files; 4 refs in app/lib code
+collection:page_passwords,collection,,0,,0,data,pending,3,,10 refs; 5 writer files; 2 reader files; 5 refs in app/lib code
 collection:page_styles_enhanced,collection,,0,,0,data,pending,3,,16 refs; 3 writer files; 10 reader files; 0 refs in app/lib code
 collection:partner_analytics,collection,,0,,0,data,pending,3,,4 refs; 2 writer files; 2 reader files; 3 refs in app/lib code
 collection:partners,collection,,0,,0,data,pending,3,,193 refs; 40 writer files; 104 reader files; 85 refs in app/lib code
 collection:project_permissions,collection,,0,,0,data,pending,3,,3 refs; 1 writer files; 0 reader files; 3 refs in app/lib code
-collection:projects,collection,,0,,0,data,pending,3,,239 refs; 46 writer files; 124 reader files; 104 refs in app/lib code
+collection:projects,collection,,0,,0,data,pending,3,,240 refs; 46 writer files; 125 reader files; 105 refs in app/lib code
 collection:report_styles,collection,,0,,0,data,pending,3,,4 refs; 1 writer files; 2 reader files; 3 refs in app/lib code
 collection:report_templates,collection,,0,,0,data,pending,3,,82 refs; 13 writer files; 35 reader files; 9 refs in app/lib code
 collection:report_variants,collection,,0,,0,data,pending,3,,5 refs; 2 writer files; 1 reader files; 4 refs in app/lib code

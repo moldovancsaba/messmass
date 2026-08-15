@@ -1,7 +1,7 @@
 # Collection Read/Write Matrix
 
 Status: Active
-Last Updated: 2026-08-14T19:32:22.202Z
+Last Updated: 2026-08-15T08:52:48.556Z
 Canonical: No (generated)
 Owner: Architecture
 
@@ -26,11 +26,11 @@ not reveal intent — those need manual disposition in Phase 3.
 | `bitly_links` | 47 | 16 | 31 | 12 | 35 | 0 |
 | `bitly_project_links` | 29 | 14 | 15 | 10 | 19 | 0 |
 | `bitly_sync_logs` | 2 | 2 | 0 | 2 | 0 | 0 |
-| `chartConfigurations` | 11 | 1 | 10 | 10 | 1 | 0 |
+| `chartConfigurations` | 10 | 0 | 10 | 10 | 0 | 0 |
 | `chart_algorithms` | 3 | 0 | 3 | 1 | 2 | 0 |
 | `chart_algorithms_backup` | 2 | 0 | 2 | 2 | 0 | 0 |
 | `chart_configs` | 2 | 0 | 2 | 0 | 2 | 0 |
-| `chart_configurations` | 141 | 9 | 132 | 66 | 75 | 0 |
+| `chart_configurations` | 143 | 11 | 132 | 66 | 77 | 0 |
 | `chart_formatting_defaults` | 4 | 2 | 2 | 3 | 1 | 0 |
 | `chartconfigurations` | 1 | 0 | 1 | 1 | 0 | 0 |
 | `charts` | 5 | 3 | 2 | 5 | 0 | 0 |
@@ -55,12 +55,12 @@ not reveal intent — those need manual disposition in Phase 3.
 | `notifications` | 5 | 4 | 1 | 3 | 2 | 0 |
 | `organizations` | 17 | 17 | 0 | 5 | 12 | 0 |
 | `pageStyles` | 2 | 1 | 1 | 0 | 2 | 0 |
-| `page_passwords` | 8 | 4 | 4 | 7 | 1 | 0 |
+| `page_passwords` | 10 | 5 | 5 | 8 | 2 | 0 |
 | `page_styles_enhanced` | 16 | 0 | 16 | 3 | 13 | 0 |
 | `partner_analytics` | 4 | 3 | 1 | 2 | 2 | 0 |
 | `partners` | 193 | 85 | 108 | 59 | 133 | 1 |
 | `project_permissions` | 3 | 3 | 0 | 3 | 0 | 0 |
-| `projects` | 239 | 104 | 135 | 61 | 178 | 0 |
+| `projects` | 240 | 105 | 135 | 61 | 179 | 0 |
 | `report_styles` | 4 | 3 | 1 | 1 | 3 | 0 |
 | `report_templates` | 82 | 9 | 73 | 19 | 63 | 0 |
 | `report_variants` | 5 | 4 | 1 | 4 | 1 | 0 |
@@ -152,7 +152,7 @@ not reveal intent — those need manual disposition in Phase 3.
 
 ### `available_fonts`
 
-- `app/api/admin/ui-settings/route.ts:87` — read (`.find()`)
+- `app/api/admin/ui-settings/route.ts:94` — read (`.find()`)
 - `app/layout.tsx:85` — read (`.find()`)
 
 ### `bitly_link_project_junction`
@@ -259,7 +259,6 @@ not reveal intent — those need manual disposition in Phase 3.
 
 ### `chartConfigurations`
 
-- `app/api/content-assets/usage/route.ts:52` — read (`.find()`)
 - `scripts/add-image-density 3.js:29` — write (`.insertOne()`)
 - `scripts/add-image-density 4.js:29` — write (`.insertOne()`)
 - `scripts/add-kpi-chart 3.js:29` — write (`.insertOne()`)
@@ -297,6 +296,8 @@ not reveal intent — those need manual disposition in Phase 3.
 - `app/api/chart-config/route.ts:519` — write (`.deleteOne/insertOne/updateOne()`)
 - `app/api/chart-config/route.ts:638` — write (`.deleteOne/insertOne/updateOne()`)
 - `app/api/chart-configs/route.ts:23` — read (`.find()`)
+- `app/api/content-assets/route.ts:461` — read (`.countDocuments()`)
+- `app/api/content-assets/usage/route.ts:56` — read (`.find()`)
 - `app/api/landing-report/route.ts:24` — read (`.find()`)
 - `scripts/add-bar-charts.js:22` — write (`.insertMany()`)
 - `scripts/add-currency-type-to-charts.js:100` — write (`.updateOne()`)
@@ -496,10 +497,10 @@ not reveal intent — those need manual disposition in Phase 3.
 
 - `app/api/admin/landing-static-generate/route.ts:91` — read (`.find()`)
 - `app/api/auto-generate-chart-block/route.ts:42` — write (`.insertOne()`)
-- `app/api/data-blocks/route.ts:35` — write (`.deleteOne/insertOne/updateOne()`)
-- `app/api/data-blocks/route.ts:72` — write (`.deleteOne/insertOne/updateOne()`)
-- `app/api/data-blocks/route.ts:120` — write (`.deleteOne/insertOne/updateOne()`)
-- `app/api/data-blocks/route.ts:185` — write (`.deleteOne/insertOne/updateOne()`)
+- `app/api/data-blocks/route.ts:36` — write (`.deleteOne/insertOne/updateOne()`)
+- `app/api/data-blocks/route.ts:79` — write (`.deleteOne/insertOne/updateOne()`)
+- `app/api/data-blocks/route.ts:133` — write (`.deleteOne/insertOne/updateOne()`)
+- `app/api/data-blocks/route.ts:204` — write (`.deleteOne/insertOne/updateOne()`)
 - `app/api/debug/overview-block/route.ts:12` — read (`.findOne()`)
 - `app/api/landing-report/route.ts:23` — read (`.find()`)
 - `app/api/report-config/[identifier]/route.ts:40` — read (`.find()`)
@@ -583,8 +584,8 @@ not reveal intent — those need manual disposition in Phase 3.
 
 ### `filter_slugs`
 
-- `app/api/admin/filter-style/route.ts:45` — write (`.insertOne/updateOne()`)
-- `app/api/admin/filter-style/route.ts:127` — write (`.insertOne/updateOne()`)
+- `app/api/admin/filter-style/route.ts:52` — write (`.insertOne/updateOne()`)
+- `app/api/admin/filter-style/route.ts:134` — write (`.insertOne/updateOne()`)
 - `lib/slugUtils.ts:393` — write (`.insertOne/updateOne()`)
 - `lib/slugUtils.ts:497` — write (`.insertOne/updateOne()`)
 
@@ -641,10 +642,10 @@ not reveal intent — those need manual disposition in Phase 3.
 ### `hashtags`
 
 - `app/api/hashtags/route.ts:336` — write (`.deleteMany()`)
-- `app/api/projects/route.ts:36` — write (`.deleteMany/updateOne()`)
-- `app/api/projects/route.ts:617` — write (`.deleteMany/updateOne()`)
-- `app/api/projects/route.ts:901` — write (`.deleteMany/updateOne()`)
-- `app/api/projects/route.ts:1058` — write (`.deleteMany/updateOne()`)
+- `app/api/projects/route.ts:37` — write (`.deleteMany/updateOne()`)
+- `app/api/projects/route.ts:623` — write (`.deleteMany/updateOne()`)
+- `app/api/projects/route.ts:917` — write (`.deleteMany/updateOne()`)
+- `app/api/projects/route.ts:1080` — write (`.deleteMany/updateOne()`)
 
 ### `local_users`
 
@@ -697,14 +698,16 @@ not reveal intent — those need manual disposition in Phase 3.
 
 ### `page_passwords`
 
-- `lib/pagePassword.ts:108` — write (`.deleteMany/updateOne()`)
-- `lib/pagePassword.ts:182` — write (`.deleteMany/updateOne()`)
-- `lib/pagePassword.ts:333` — write (`.deleteMany/updateOne()`)
-- `lib/pagePassword.ts:359` — write (`.deleteMany/updateOne()`)
+- `lib/pageAccess.ts:107` — read (`.findOne()`)
+- `lib/pagePassword.ts:137` — write (`.deleteMany/updateOne()`)
+- `lib/pagePassword.ts:225` — write (`.deleteMany/updateOne()`)
+- `lib/pagePassword.ts:376` — write (`.deleteMany/updateOne()`)
+- `lib/pagePassword.ts:402` — write (`.deleteMany/updateOne()`)
 - `scripts/canonicalizePartnerPagePasswords.ts:36` — write (`.updateOne()`)
 - `scripts/generatePartnerReportPasswords.ts:25` — read (`.findOne()`)
 - `scripts/generatePartnerReportPasswords.ts:39` — write (`.insertOne()`)
 - `scripts/migratePartnerSlugsToUUID.ts:53` — write (`.updateOne()`)
+- `scripts/rotate-page-passwords.ts:33` — write (`.updateOne()`)
 
 ### `page_styles_enhanced`
 
@@ -740,7 +743,7 @@ not reveal intent — those need manual disposition in Phase 3.
 - `app/api/admin/organizations/[id]/members/route.ts:151` — write (`.updateMany()`)
 - `app/api/admin/organizations/[id]/route.ts:233` — read (`.countDocuments()`)
 - `app/api/admin/partners/route.ts:17` — read (`.find()`)
-- `app/api/admin/project-partners/auto-suggest/route.ts:78` — read (`.find()`)
+- `app/api/admin/project-partners/auto-suggest/route.ts:85` — read (`.find()`)
 - `app/api/admin/sync-partners-to-camera/route.ts:43` — read (`.countDocuments()`)
 - `app/api/admin/sync-partners-to-camera/route.ts:44` — read (`.find()`)
 - `app/api/analytics/partner/[partnerId]/route.ts:65` — read (`.findOne()`)
@@ -774,9 +777,9 @@ not reveal intent — those need manual disposition in Phase 3.
 - `app/api/partners/route.ts:152` — read (`.findOne()`)
 - `app/api/partners/route.ts:211` — write (`.insertOne()`)
 - `app/api/partners/route.ts:255` — write (`.deleteOne()`)
-- `app/api/projects/route.ts:305` — read (`.find/findOne()`)
-- `app/api/projects/route.ts:411` — read (`.find/findOne()`)
-- `app/api/projects/route.ts:656` — read (`.find/findOne()`)
+- `app/api/projects/route.ts:306` — read (`.find/findOne()`)
+- `app/api/projects/route.ts:412` — read (`.find/findOne()`)
+- `app/api/projects/route.ts:662` — read (`.find/findOne()`)
 - `app/api/public/events/[id]/route.ts:94` — read (`.findOne()`)
 - `app/api/public/partners/[id]/events/route.ts:78` — read (`.findOne()`)
 - `app/api/public/partners/[id]/route.ts:67` — read (`.findOne()`)
@@ -937,7 +940,7 @@ not reveal intent — those need manual disposition in Phase 3.
 ### `projects`
 
 - `app/api/admin/landing-projects/route.ts:18` — read (`.find()`)
-- `app/api/admin/project-partners/auto-suggest/route.ts:77` — write (`.updateOne()`)
+- `app/api/admin/project-partners/auto-suggest/route.ts:84` — write (`.updateOne()`)
 - `app/api/admin/project-partners/route.ts:21` — write (`.updateOne()`)
 - `app/api/admin/project-partners/route.ts:87` — write (`.updateOne()`)
 - `app/api/admin/projects/[id]/route.ts:95` — write (`.deleteOne()`)
@@ -956,7 +959,7 @@ not reveal intent — those need manual disposition in Phase 3.
 - `app/api/debug/categorized-hashtags/route.ts:72` — read (`.countDocuments()`)
 - `app/api/hashtag-categories/route.ts:431` — read (`.countDocuments()`)
 - `app/api/hashtags/[hashtag]/route.ts:20` — read (`.find()`)
-- `app/api/hashtags/filter-by-slug/[slug]/route.ts:40` — read (`.find()`)
+- `app/api/hashtags/filter-by-slug/[slug]/route.ts:48` — read (`.find()`)
 - `app/api/hashtags/filter/route.ts:39` — read (`.find()`)
 - `app/api/hashtags/route.ts:53` — read (`.aggregate()`)
 - `app/api/hashtags/route.ts:60` — read (`.aggregate()`)
@@ -977,12 +980,12 @@ not reveal intent — those need manual disposition in Phase 3.
 - `app/api/projects/[id]/route.ts:22` — write (`.deleteOne/updateOne()`)
 - `app/api/projects/[id]/route.ts:64` — write (`.deleteOne/updateOne()`)
 - `app/api/projects/[id]/route.ts:155` — write (`.deleteOne/updateOne()`)
-- `app/api/projects/route.ts:35` — read (`.find()`)
-- `app/api/projects/route.ts:117` — read (`.findOne()`)
-- `app/api/projects/route.ts:145` — write (`.deleteOne/insertOne/updateOne()`)
-- `app/api/projects/route.ts:565` — write (`.deleteOne/insertOne/updateOne()`)
-- `app/api/projects/route.ts:784` — write (`.deleteOne/insertOne/updateOne()`)
-- `app/api/projects/route.ts:1023` — write (`.deleteOne/insertOne/updateOne()`)
+- `app/api/projects/route.ts:36` — read (`.find()`)
+- `app/api/projects/route.ts:118` — read (`.findOne()`)
+- `app/api/projects/route.ts:146` — write (`.deleteOne/insertOne/updateOne()`)
+- `app/api/projects/route.ts:571` — write (`.deleteOne/insertOne/updateOne()`)
+- `app/api/projects/route.ts:800` — write (`.deleteOne/insertOne/updateOne()`)
+- `app/api/projects/route.ts:1045` — write (`.deleteOne/insertOne/updateOne()`)
 - `app/api/public/events/[id]/route.ts:73` — read (`.findOne()`)
 - `app/api/public/partners/[id]/events/route.ts:97` — read (`.find()`)
 - `app/api/public/partners/[id]/events/route.ts:105` — read (`.countDocuments()`)
@@ -1011,6 +1014,7 @@ not reveal intent — those need manual disposition in Phase 3.
 - `lib/analytics-predictions.ts:75` — read (`.find()`)
 - `lib/analytics-predictions.ts:244` — read (`.find()`)
 - `lib/analytics-predictions.ts:466` — read (`.findOne()`)
+- `lib/apiGuards.ts:52` — read (`.findOne()`)
 - `lib/bitly-recalculator.ts:58` — read (`.find()`)
 - `lib/bitlyStatsEnricher.ts:231` — write (`.bulkWrite()`)
 - `lib/cameraProvision.ts:54` — write (`.updateOne()`)
@@ -1179,8 +1183,8 @@ not reveal intent — those need manual disposition in Phase 3.
 ### `report_styles`
 
 - `app/api/landing-report/route.ts:25` — read (`.findOne()`)
-- `app/api/projects/route.ts:554` — read (`.findOne()`)
-- `app/api/projects/route.ts:789` — read (`.findOne()`)
+- `app/api/projects/route.ts:560` — read (`.findOne()`)
+- `app/api/projects/route.ts:805` — read (`.findOne()`)
 - `scripts/seed-messmass-landing.ts:77` — write (`.insertOne()`)
 
 ### `report_templates`
@@ -1300,8 +1304,8 @@ not reveal intent — those need manual disposition in Phase 3.
 ### `settings`
 
 - `app/admin/layout.tsx:16` — read (`.findOne()`)
-- `app/api/admin/ui-settings/route.ts:37` — read (`.findOne()`)
-- `app/api/admin/ui-settings/route.ts:118` — write (`.updateOne()`)
+- `app/api/admin/ui-settings/route.ts:38` — read (`.findOne()`)
+- `app/api/admin/ui-settings/route.ts:125` — write (`.updateOne()`)
 - `app/api/grid-settings/route.ts:33` — write (`.updateOne()`)
 - `lib/gridSettings.ts:46` — read (`.findOne()`)
 - `lib/landingSettings.ts:38` — read (`.findOne()`)

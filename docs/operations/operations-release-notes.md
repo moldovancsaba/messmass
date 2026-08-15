@@ -1,8 +1,56 @@
 # {messmass} Release Notes
 Status: Active
-Last Updated: 2026-08-15T05:30:00.000Z
+Last Updated: 2026-08-15T06:30:00.000Z
 Canonical: No
 Owner: Operations
+
+## [v12.1.65] — 2026-08-15T06:30:00.000Z
+
+### Summary
+LLD audit Phase 3 opened on the collection surface. Three findings, all
+operational rather than code defects — which is why none of them surfaced on their
+own. No product code changed.
+
+### F-020 — Analytics aggregates frozen since 18 March (High)
+Three cron routes exist and are correctly CRON_SECRET-guarded:
+/api/cron/analytics-aggregation, /api/cron/bitly-refresh and
+/api/cron/google-sheets-sync. None is scheduled — vercel.json declares exactly one
+cron, /api/bitly/sync, which is a different route.
+
+The data shows the consequence: analytics_aggregates (69 docs), aggregation_logs
+(7) and partner_analytics (170) all stop on 2026-03-18, five months ago. Three
+collections stopping on the same day points at one trigger being removed rather
+than three failures. analytics_aggregates is read by six analytics endpoints.
+
+Not established, and the first thing to check: whether those endpoints treat the
+collection as a cache and recompute when stale, or serve it directly. If directly,
+the analytics dashboards have shown March numbers since March.
+
+### F-021 — The one scheduled cron has logged once in ten months (Medium)
+/api/bitly/sync writes bitly_sync_logs on both its success and failure paths, so
+every run should leave a row. The collection holds one document, dated
+2025-10-27. Either the schedule is not firing or every run fails before reaching
+either write. Distinguishing them needs the Vercel cron execution log.
+
+### F-019 — The API write audit trail was never wired up (Medium)
+lib/auditLog.ts writes to api_audit_logs and has zero importers anywhere. The
+collection does not exist, which is consistent — nothing has ever been written. An
+audit trail was built and never connected.
+
+Deliberately not reported as broken logging: the separate audit_logs collection
+also does not exist, but its two write sites sit on live paths immediately after a
+successful permission revoke and project delete, so the honest reading is that
+those actions have never been performed — not that their logging fails.
+
+### Method
+The sweep cross-references every collection name referenced from app/lib code
+against the live database, which is the same check that found F-017. Seven
+app-referenced collections have never been written; most correspond to features
+that have never run rather than to defects, and the writeup distinguishes the two.
+
+### Testing
+Full gate: type-check, lint, 349 tests, style:check, version:verify, docs:audit,
+guardrails, build.
 
 ## [v12.1.64] — 2026-08-15T05:30:00.000Z
 

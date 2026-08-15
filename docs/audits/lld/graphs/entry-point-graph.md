@@ -1,7 +1,7 @@
 # Entry Point → Collection Graph
 
 Status: Active
-Last Updated: 2026-08-14T19:32:22.210Z
+Last Updated: 2026-08-15T08:52:48.564Z
 Canonical: No (generated)
 Owner: Architecture
 
@@ -14,17 +14,25 @@ it through a path this analysis cannot see — both are Phase 2–7 questions.
 
 | Entry point | Modules | Collections |
 |---|---:|---|
-| `app/api/projects/route.ts` | 30 | `bitly_links`, `bitly_project_links`, `countries`, `drive_folder_links`, `fanmass_event_links`, `filter_slugs`, `hashtags`, `notifications`, `organizations`, `partners`, `projects`, `report_styles`, `users` |
+| `app/api/projects/route.ts` | 34 | `bitly_links`, `bitly_project_links`, `countries`, `drive_folder_links`, `fanmass_event_links`, `filter_slugs`, `hashtags`, `notifications`, `organizations`, `page_passwords`, `partners`, `projects`, `report_styles`, `users` |
+| `app/api/hashtags/filter-by-slug/[slug]/route.ts` | 21 | `data_blocks`, `drive_folder_links`, `fanmass_event_links`, `filter_slugs`, `organizations`, `page_passwords`, `partners`, `projects`, `report_templates`, `report_variants`, `reports`, `users` |
+| `app/api/admin/ui-settings/route.ts` | 15 | `available_fonts`, `drive_folder_links`, `fanmass_event_links`, `organizations`, `page_passwords`, `partners`, `projects`, `settings`, `users` |
 | `app/api/hashtags/[hashtag]/route.ts` | 12 | `data_blocks`, `filter_slugs`, `hashtag_slugs`, `organizations`, `partners`, `projects`, `report_templates`, `report_variants`, `reports` |
 | `app/api/report-variants/[id]/route.ts` | 17 | `data_blocks`, `filter_slugs`, `organizations`, `partners`, `projects`, `report_templates`, `report_variants`, `reports`, `users` |
 | `app/api/report-variants/route.ts` | 17 | `data_blocks`, `filter_slugs`, `organizations`, `partners`, `projects`, `report_templates`, `report_variants`, `reports`, `users` |
+| `app/api/admin/filter-style/route.ts` | 14 | `drive_folder_links`, `fanmass_event_links`, `filter_slugs`, `organizations`, `page_passwords`, `partners`, `projects`, `users` |
 | `app/api/admin/landing-static-generate/route.ts` | 19 | `chart_configurations`, `data_blocks`, `filter_slugs`, `partners`, `projects`, `report_templates`, `settings`, `users` |
-| `app/api/hashtags/filter-by-slug/[slug]/route.ts` | 13 | `data_blocks`, `filter_slugs`, `organizations`, `partners`, `projects`, `report_templates`, `report_variants`, `reports` |
+| `app/api/data-blocks/route.ts` | 14 | `data_blocks`, `drive_folder_links`, `fanmass_event_links`, `organizations`, `page_passwords`, `partners`, `projects`, `users` |
+| `app/api/filter-slug/route.ts` | 16 | `drive_folder_links`, `fanmass_event_links`, `filter_slugs`, `organizations`, `page_passwords`, `partners`, `projects`, `users` |
 | `app/api/organizations/edit/[id]/route.ts` | 16 | `data_blocks`, `filter_slugs`, `organizations`, `partners`, `projects`, `report_templates`, `report_variants`, `reports` |
 | `app/api/organizations/report/[id]/activities/route.ts` | 18 | `data_blocks`, `filter_slugs`, `organizations`, `partners`, `projects`, `report_templates`, `report_variants`, `reports` |
 | `app/api/organizations/report/[id]/route.ts` | 19 | `data_blocks`, `filter_slugs`, `organizations`, `partners`, `projects`, `report_templates`, `report_variants`, `reports` |
 | `app/api/partners/edit/[slug]/route.ts` | 13 | `data_blocks`, `filter_slugs`, `organizations`, `partners`, `projects`, `report_templates`, `report_variants`, `reports` |
 | `app/api/partners/report/[slug]/route.ts` | 17 | `data_blocks`, `filter_slugs`, `organizations`, `partners`, `projects`, `report_templates`, `report_variants`, `reports` |
+| `app/api/projects/edit/[slug]/route.ts` | 15 | `drive_folder_links`, `fanmass_event_links`, `filter_slugs`, `organizations`, `page_passwords`, `partners`, `projects`, `users` |
+| `app/api/projects/stats/[slug]/route.ts` | 16 | `drive_folder_links`, `fanmass_event_links`, `filter_slugs`, `organizations`, `page_passwords`, `partners`, `projects`, `users` |
+| `app/partner-report/[slug]/page.tsx` | 56 | `drive_folder_links`, `fanmass_event_links`, `organizations`, `page_passwords`, `partners`, `projects`, `reports`, `users` |
+| `app/api/admin/project-partners/auto-suggest/route.ts` | 14 | `drive_folder_links`, `fanmass_event_links`, `organizations`, `page_passwords`, `partners`, `projects`, `users` |
 | `app/api/analytics/ai/coverage/route.ts` | 11 | `drive_folder_links`, `fanmass_event_links`, `organizations`, `partners`, `projects`, `users`, `variables_metadata` |
 | `app/api/analytics/ai/events/[eventId]/summary/route.ts` | 11 | `ai_analysis_summaries`, `drive_folder_links`, `fanmass_event_links`, `organizations`, `partners`, `projects`, `users` |
 | `app/api/analytics/ai/events/route.ts` | 11 | `drive_folder_links`, `fanmass_event_links`, `organizations`, `partners`, `projects`, `users`, `variables_metadata` |
@@ -35,6 +43,8 @@ it through a path this analysis cannot see — both are Phase 2–7 questions.
 | `app/api/integrations/fanmass/partners/[partnerId]/events/route.ts` | 21 | `drive_folder_links`, `fanmass_event_links`, `filter_slugs`, `organizations`, `partners`, `projects`, `variables_metadata` |
 | `app/api/integrations/fanmass/partners/route.ts` | 21 | `drive_folder_links`, `fanmass_event_links`, `filter_slugs`, `organizations`, `partners`, `projects`, `variables_metadata` |
 | `app/api/integrations/fanmass/variables/route.ts` | 21 | `drive_folder_links`, `fanmass_event_links`, `filter_slugs`, `organizations`, `partners`, `projects`, `variables_metadata` |
+| `app/api/page-passwords/route.ts` | 14 | `drive_folder_links`, `fanmass_event_links`, `organizations`, `page_passwords`, `partners`, `projects`, `users` |
+| `app/api/partners/upload-logo/route.ts` | 15 | `drive_folder_links`, `fanmass_event_links`, `organizations`, `page_passwords`, `partners`, `projects`, `users` |
 | `app/admin/analytics/sponsorship/activation/page.tsx` | 34 | `analytics_aggregates`, `bitly_project_links`, `organizations`, `partners`, `projects`, `users` |
 | `app/admin/analytics/sponsorship/page.tsx` | 34 | `analytics_aggregates`, `bitly_project_links`, `organizations`, `partners`, `projects`, `users` |
 | `app/api/admin/fanmass/events/[eventId]/route.ts` | 10 | `drive_folder_links`, `fanmass_event_links`, `organizations`, `partners`, `projects`, `users` |
@@ -43,7 +53,7 @@ it through a path this analysis cannot see — both are Phase 2–7 questions.
 | `app/api/drive-folders/[linkId]/route.ts` | 12 | `drive_folder_links`, `fanmass_event_links`, `organizations`, `partners`, `projects`, `users` |
 | `app/api/drive-folders/route.ts` | 12 | `drive_folder_links`, `fanmass_event_links`, `organizations`, `partners`, `projects`, `users` |
 | `app/api/integrations/fanmass/events/[eventId]/analysis-summary/route.ts` | 7 | `ai_analysis_summaries`, `drive_folder_links`, `fanmass_event_links`, `organizations`, `partners`, `projects` |
-| `app/api/landing-report/route.ts` | 10 | `chart_configurations`, `data_blocks`, `partners`, `projects`, `report_styles`, `report_templates` |
+| `app/api/landing-report/route.ts` | 11 | `chart_configurations`, `data_blocks`, `partners`, `projects`, `report_styles`, `report_templates` |
 | `app/admin/analytics/sponsorship/activation/recap/[partnerId]/page.tsx` | 11 | `analytics_aggregates`, `bitly_project_links`, `organizations`, `partners`, `projects` |
 | `app/api/hashtags/route.ts` | 7 | `hashtag_colors`, `hashtag_slugs`, `hashtags`, `partners`, `projects` |
 | `app/api/integrations/camera/link-partners/route.ts` | 8 | `drive_folder_links`, `fanmass_event_links`, `organizations`, `partners`, `projects` |
@@ -63,12 +73,11 @@ it through a path this analysis cannot see — both are Phase 2–7 questions.
 | `app/api/report-templates/assign/route.ts` | 9 | `partners`, `projects`, `report_templates`, `users` |
 | `app/api/sports-db/fixtures/draft/route.ts` | 15 | `partners`, `projects`, `sportsdb_fixtures`, `users` |
 | `app/api/sports-db/sync/route.ts` | 15 | `partners`, `projects`, `sportsdb_fixtures`, `users` |
-| `app/filter/[slug]/page.tsx` | 51 | `page_passwords`, `partners`, `projects`, `reports` |
-| `app/hashtag/[hashtag]/page.tsx` | 52 | `page_passwords`, `partners`, `projects`, `reports` |
-| `app/page.tsx` | 44 | `partners`, `projects`, `reports`, `settings` |
+| `app/filter/[slug]/page.tsx` | 52 | `page_passwords`, `partners`, `projects`, `reports` |
+| `app/hashtag/[hashtag]/page.tsx` | 53 | `page_passwords`, `partners`, `projects`, `reports` |
+| `app/page.tsx` | 45 | `partners`, `projects`, `reports`, `settings` |
 | `app/api/admin/organizations/[id]/members/route.ts` | 14 | `organizations`, `partners`, `users` |
 | `app/api/admin/organizations/[id]/route.ts` | 14 | `organizations`, `partners`, `users` |
-| `app/api/admin/ui-settings/route.ts` | 10 | `available_fonts`, `settings`, `users` |
 | `app/api/analytics/insights/organizations/[orgId]/route.ts` | 14 | `partners`, `projects`, `users` |
 | `app/api/analytics/insights/partners/[partnerId]/route.ts` | 14 | `partners`, `projects`, `users` |
 | `app/api/analytics/insights/route.ts` | 14 | `partners`, `projects`, `users` |
@@ -77,18 +86,15 @@ it through a path this analysis cannot see — both are Phase 2–7 questions.
 | `app/api/bitly/partners/associate/route.ts` | 9 | `bitly_links`, `partners`, `users` |
 | `app/api/bitly/project-metrics/[projectId]/route.ts` | 6 | `bitly_links`, `bitly_project_links`, `projects` |
 | `app/api/bitly/sync/route.ts` | 13 | `bitly_links`, `bitly_sync_logs`, `users` |
-| `app/api/filter-slug/route.ts` | 5 | `filter_slugs`, `partners`, `projects` |
+| `app/api/content-assets/route.ts` | 10 | `chart_configurations`, `content_assets`, `users` |
 | `app/api/projects/[id]/route.ts` | 14 | `notifications`, `projects`, `users` |
-| `app/api/projects/edit/[slug]/route.ts` | 6 | `filter_slugs`, `partners`, `projects` |
-| `app/api/projects/stats/[slug]/route.ts` | 6 | `filter_slugs`, `partners`, `projects` |
 | `app/api/public/events/[id]/route.ts` | 11 | `partners`, `projects`, `users` |
 | `app/api/public/partners/[id]/events/route.ts` | 11 | `partners`, `projects`, `users` |
 | `app/api/reports/resolve/route.ts` | 6 | `partners`, `projects`, `reports` |
-| `app/dashboard/filter/[filterSlug]/page.tsx` | 46 | `partners`, `projects`, `reports` |
-| `app/dashboard/partner/[partnerId]/page.tsx` | 42 | `partners`, `projects`, `reports` |
-| `app/organization-report/[id]/page.tsx` | 43 | `partners`, `projects`, `reports` |
-| `app/partner-report/[slug]/page.tsx` | 46 | `partners`, `projects`, `reports` |
-| `app/report/[slug]/page.tsx` | 42 | `partners`, `projects`, `reports` |
+| `app/dashboard/filter/[filterSlug]/page.tsx` | 47 | `partners`, `projects`, `reports` |
+| `app/dashboard/partner/[partnerId]/page.tsx` | 43 | `partners`, `projects`, `reports` |
+| `app/organization-report/[id]/page.tsx` | 44 | `partners`, `projects`, `reports` |
+| `app/report/[slug]/page.tsx` | 43 | `partners`, `projects`, `reports` |
 | `app/admin/events/page.tsx` | 42 | `page_passwords`, `users` |
 | `app/admin/organizations/[id]/reports/page.tsx` | 25 | `page_passwords`, `users` |
 | `app/admin/partners/[id]/reports/page.tsx` | 25 | `page_passwords`, `users` |
@@ -98,7 +104,6 @@ it through a path this analysis cannot see — both are Phase 2–7 questions.
 | `app/api/admin/local-users/route.ts` | 11 | `page_passwords`, `users` |
 | `app/api/admin/organizations/route.ts` | 10 | `organizations`, `users` |
 | `app/api/admin/permissions/route.ts` | 5 | `audit_logs`, `project_permissions` |
-| `app/api/admin/project-partners/auto-suggest/route.ts` | 5 | `partners`, `projects` |
 | `app/api/admin/project-partners/route.ts` | 15 | `projects`, `users` |
 | `app/api/admin/projects/[id]/route.ts` | 5 | `audit_logs`, `projects` |
 | `app/api/analytics/aggregates/partners/route.ts` | 10 | `partner_analytics`, `users` |
@@ -110,7 +115,6 @@ it through a path this analysis cannot see — both are Phase 2–7 questions.
 | `app/api/bitly/associations/route.ts` | 9 | `bitly_project_links`, `users` |
 | `app/api/bitly/pull/route.ts` | 13 | `bitly_links`, `users` |
 | `app/api/chart-config/route.ts` | 10 | `chart_configurations`, `users` |
-| `app/api/content-assets/route.ts` | 10 | `content_assets`, `users` |
 | `app/api/cron/google-sheets-sync/route.ts` | 13 | `partners`, `projects` |
 | `app/api/debug/notifications/route.ts` | 9 | `notifications`, `users` |
 | `app/api/football-data/fixtures/route.ts` | 10 | `football_data_fixtures`, `users` |
@@ -118,7 +122,6 @@ it through a path this analysis cannot see — both are Phase 2–7 questions.
 | `app/api/hashtags/slugs/route.ts` | 6 | `hashtag_slugs`, `projects` |
 | `app/api/notifications/mark-read/route.ts` | 9 | `notifications`, `users` |
 | `app/api/notifications/route.ts` | 9 | `notifications`, `users` |
-| `app/api/page-passwords/route.ts` | 11 | `page_passwords`, `users` |
 | `app/api/partners/[id]/bitly-kyc/route.ts` | 9 | `projects`, `users` |
 | `app/api/partners/[id]/events/route.ts` | 4 | `partners`, `projects` |
 | `app/api/partners/[id]/google-sheet/connect/route.ts` | 13 | `partners`, `projects` |
@@ -142,7 +145,7 @@ it through a path this analysis cannot see — both are Phase 2–7 questions.
 | `app/admin/bitly/page.tsx` | 19 | `users` |
 | `app/admin/cache/page.tsx` | 13 | `users` |
 | `app/admin/categories/page.tsx` | 48 | `users` |
-| `app/admin/charts/page.tsx` | 29 | `users` |
+| `app/admin/charts/page.tsx` | 30 | `users` |
 | `app/admin/clicker-manager/page.tsx` | 23 | `users` |
 | `app/admin/content-library/page.tsx` | 26 | `users` |
 | `app/admin/events/[id]/kyc-data/page.tsx` | 11 | `users` |
@@ -160,11 +163,10 @@ it through a path this analysis cannot see — both are Phase 2–7 questions.
 | `app/admin/styles/page.tsx` | 20 | `users` |
 | `app/admin/unauthorized/page.tsx` | 8 | `users` |
 | `app/admin/users/page.tsx` | 50 | `users` |
-| `app/admin/visualization/page.tsx` | 46 | `users` |
+| `app/admin/visualization/page.tsx` | 47 | `users` |
 | `app/api/admin/auth/route.ts` | 9 | `users` |
 | `app/api/admin/clear-cache/route.ts` | 9 | `users` |
 | `app/api/admin/contact-inquiries/route.ts` | 11 | `users` |
-| `app/api/admin/filter-style/route.ts` | 5 | `filter_slugs` |
 | `app/api/admin/fix-mojibake-text/route.ts` | 10 | `users` |
 | `app/api/admin/hashtag-style/route.ts` | 5 | `hashtag_slugs` |
 | `app/api/admin/local-users/[id]/api-access/route.ts` | 9 | `users` |
@@ -190,10 +192,9 @@ it through a path this analysis cannot see — both are Phase 2–7 questions.
 | `app/api/chart-formatting-defaults/route.ts` | 5 | `chart_formatting_defaults` |
 | `app/api/charts/route.ts` | 11 | `charts` |
 | `app/api/cities/route.ts` | 4 | `cities` |
-| `app/api/content-assets/usage/route.ts` | 5 | `chartConfigurations` |
+| `app/api/content-assets/usage/route.ts` | 5 | `chart_configurations` |
 | `app/api/countries/[code]/route.ts` | 5 | `countries` |
 | `app/api/countries/route.ts` | 5 | `countries` |
-| `app/api/data-blocks/route.ts` | 5 | `data_blocks` |
 | `app/api/debug/categorized-hashtags/route.ts` | 3 | `projects` |
 | `app/api/debug/overview-block/route.ts` | 4 | `data_blocks` |
 | `app/api/grid-settings/route.ts` | 6 | `settings` |
@@ -253,7 +254,6 @@ it through a path this analysis cannot see — both are Phase 2–7 questions.
 | `app/api/csrf-token/route.ts` | 2 | — |
 | `app/api/google-sheets/template/route.ts` | 4 | — |
 | `app/api/me/route.ts` | 1 | — |
-| `app/api/partners/upload-logo/route.ts` | 2 | — |
 | `app/api/report-styles/[id]/route.ts` | 8 | — |
 | `app/api/sports-db/lookup/route.ts` | 3 | — |
 | `app/api/sports-db/search/route.ts` | 3 | — |

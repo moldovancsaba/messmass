@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-08-14T19:32:22.210Z",
+  "generatedAt": "2026-08-15T08:52:48.564Z",
   "imports": {
     "app/admin/analytics/ai/AiAnalyticsView.tsx": [
       "components/analytics/AnalyticsSectionCard.tsx",
@@ -381,6 +381,7 @@
       "lib/fanmassIntegration.ts"
     ],
     "app/api/admin/filter-style/route.ts": [
+      "lib/apiGuards.ts",
       "lib/mongodb.ts",
       "lib/config.ts",
       "lib/logger.ts"
@@ -473,6 +474,7 @@
       "lib/logger.ts"
     ],
     "app/api/admin/project-partners/auto-suggest/route.ts": [
+      "lib/apiGuards.ts",
       "lib/db.ts"
     ],
     "app/api/admin/project-partners/route.ts": [
@@ -508,6 +510,7 @@
       "lib/logger.ts"
     ],
     "app/api/admin/ui-settings/route.ts": [
+      "lib/apiGuards.ts",
       "lib/mongodb.ts",
       "lib/auth.ts",
       "lib/config.ts",
@@ -819,6 +822,7 @@
       "lib/csrf.ts"
     ],
     "app/api/data-blocks/route.ts": [
+      "lib/apiGuards.ts",
       "lib/mongodb.ts",
       "lib/logger.ts",
       "lib/config.ts"
@@ -846,6 +850,7 @@
       "lib/logger.ts"
     ],
     "app/api/filter-slug/route.ts": [
+      "lib/apiGuards.ts",
       "lib/slugUtils.ts"
     ],
     "app/api/football-data/fixtures/route.ts": [
@@ -890,6 +895,7 @@
       "lib/config.ts"
     ],
     "app/api/hashtags/filter-by-slug/[slug]/route.ts": [
+      "lib/pageAccess.ts",
       "lib/slugUtils.ts",
       "lib/hashtagCategoryUtils.ts",
       "lib/mongodb.ts",
@@ -1023,8 +1029,10 @@
       "lib/reportPeriods.ts"
     ],
     "app/api/page-passwords/route.ts": [
+      "lib/apiGuards.ts",
       "lib/pagePassword.ts",
       "lib/auth.ts",
+      "lib/pageAccess.ts",
       "lib/logger.ts",
       "lib/config.ts"
     ],
@@ -1115,6 +1123,7 @@
       "lib/v3/syncEngine.ts"
     ],
     "app/api/partners/upload-logo/route.ts": [
+      "lib/apiGuards.ts",
       "lib/imgbbApi.ts"
     ],
     "app/api/projects/[id]/layout.tsx": [],
@@ -1126,10 +1135,12 @@
       "lib/notificationUtils.ts"
     ],
     "app/api/projects/edit/[slug]/route.ts": [
+      "lib/pageAccess.ts",
       "lib/slugUtils.ts",
       "lib/logger.ts"
     ],
     "app/api/projects/route.ts": [
+      "lib/apiGuards.ts",
       "lib/slugUtils.ts",
       "lib/mongodb.ts",
       "lib/notificationUtils.ts",
@@ -1144,6 +1155,7 @@
       "lib/cameraProvision.ts"
     ],
     "app/api/projects/stats/[slug]/route.ts": [
+      "lib/pageAccess.ts",
       "lib/slugUtils.ts",
       "lib/hashtagCategoryUtils.ts"
     ],
@@ -1417,7 +1429,9 @@
     "app/partner-report/[slug]/page.tsx": [
       "lib/db.ts",
       "lib/partnerIdentifier.ts",
-      "app/partner-report/PartnerReportView.tsx"
+      "lib/pageAccess.ts",
+      "app/partner-report/PartnerReportView.tsx",
+      "components/ServerPageGate.tsx"
     ],
     "app/privacy/page.tsx": [],
     "app/providers.tsx": [
@@ -1425,6 +1439,7 @@
       "lib/ui/mantineTheme.ts"
     ],
     "app/report/[slug]/ReportChart.tsx": [
+      "lib/formatChartValue.ts",
       "lib/report-calculator.ts",
       "lib/chartLabelUtils.ts",
       "lib/contentFormat.ts",
@@ -1584,6 +1599,10 @@
       "lib/logger.ts"
     ],
     "lib/apiClient.ts": [],
+    "lib/apiGuards.ts": [
+      "lib/auth.ts",
+      "lib/pageAccess.ts"
+    ],
     "lib/aspectRatioResolver.ts": [
       "lib/chartConfigTypes.ts"
     ],
@@ -1682,6 +1701,7 @@
     "lib/chart-config.ts": [],
     "lib/chartCalculator.ts": [
       "lib/chartConfigTypes.ts",
+      "lib/formatChartValue.ts",
       "lib/formulaEngine.ts",
       "lib/contentAssetTypes.ts",
       "lib/dataValidator.ts"
@@ -1780,6 +1800,7 @@
     "lib/footballDataEnricher.ts": [
       "lib/footballData.types.ts"
     ],
+    "lib/formatChartValue.ts": [],
     "lib/formulaEngine.ts": [
       "lib/chartConfigTypes.ts",
       "lib/dataValidator.ts",
@@ -1923,6 +1944,11 @@
     "lib/notificationUtils.ts": [
       "lib/auth.ts"
     ],
+    "lib/pageAccess.ts": [
+      "lib/pagePassword.ts",
+      "lib/auth.ts",
+      "lib/fanmassIntegration.ts"
+    ],
     "lib/pagePassword.ts": [
       "lib/mongodb.ts",
       "lib/config.ts",
@@ -1981,7 +2007,6 @@
       "lib/featureFlags.ts"
     ],
     "lib/sessionTokens.ts": [
-      "lib/featureFlags.ts",
       "lib/users.ts"
     ],
     "lib/shareables/auth/AuthProvider.tsx": [
@@ -2365,6 +2390,10 @@
     ],
     "components/SaveStatusIndicator.tsx": [],
     "components/SemanticBadge.tsx": [],
+    "components/ServerPageGate.tsx": [
+      "components/PagePasswordLogin.tsx",
+      "lib/pagePassword.ts"
+    ],
     "components/SharePopup.tsx": [
       "lib/pagePassword.ts",
       "lib/apiClient.ts",
@@ -2597,14 +2626,14 @@
     {
       "name": "filter_slugs",
       "file": "app/api/admin/filter-style/route.ts",
-      "line": 45,
+      "line": 52,
       "access": "write",
       "method": "insertOne/updateOne"
     },
     {
       "name": "filter_slugs",
       "file": "app/api/admin/filter-style/route.ts",
-      "line": 127,
+      "line": 134,
       "access": "write",
       "method": "insertOne/updateOne"
     },
@@ -2800,14 +2829,14 @@
     {
       "name": "projects",
       "file": "app/api/admin/project-partners/auto-suggest/route.ts",
-      "line": 77,
+      "line": 84,
       "access": "write",
       "method": "updateOne"
     },
     {
       "name": "partners",
       "file": "app/api/admin/project-partners/auto-suggest/route.ts",
-      "line": 78,
+      "line": 85,
       "access": "read",
       "method": "find"
     },
@@ -2884,21 +2913,21 @@
     {
       "name": "settings",
       "file": "app/api/admin/ui-settings/route.ts",
-      "line": 37,
+      "line": 38,
       "access": "read",
       "method": "findOne"
     },
     {
       "name": "available_fonts",
       "file": "app/api/admin/ui-settings/route.ts",
-      "line": 87,
+      "line": 94,
       "access": "read",
       "method": "find"
     },
     {
       "name": "settings",
       "file": "app/api/admin/ui-settings/route.ts",
-      "line": 118,
+      "line": 125,
       "access": "write",
       "method": "updateOne"
     },
@@ -3414,9 +3443,16 @@
       "method": "deleteOne/insertOne/updateOne"
     },
     {
-      "name": "chartConfigurations",
+      "name": "chart_configurations",
+      "file": "app/api/content-assets/route.ts",
+      "line": 461,
+      "access": "read",
+      "method": "countDocuments"
+    },
+    {
+      "name": "chart_configurations",
       "file": "app/api/content-assets/usage/route.ts",
-      "line": 52,
+      "line": 56,
       "access": "read",
       "method": "find"
     },
@@ -3451,28 +3487,28 @@
     {
       "name": "data_blocks",
       "file": "app/api/data-blocks/route.ts",
-      "line": 35,
+      "line": 36,
       "access": "write",
       "method": "deleteOne/insertOne/updateOne"
     },
     {
       "name": "data_blocks",
       "file": "app/api/data-blocks/route.ts",
-      "line": 72,
+      "line": 79,
       "access": "write",
       "method": "deleteOne/insertOne/updateOne"
     },
     {
       "name": "data_blocks",
       "file": "app/api/data-blocks/route.ts",
-      "line": 120,
+      "line": 133,
       "access": "write",
       "method": "deleteOne/insertOne/updateOne"
     },
     {
       "name": "data_blocks",
       "file": "app/api/data-blocks/route.ts",
-      "line": 185,
+      "line": 204,
       "access": "write",
       "method": "deleteOne/insertOne/updateOne"
     },
@@ -3682,7 +3718,7 @@
     {
       "name": "projects",
       "file": "app/api/hashtags/filter-by-slug/[slug]/route.ts",
-      "line": 40,
+      "line": 48,
       "access": "read",
       "method": "find"
     },
@@ -4067,105 +4103,105 @@
     {
       "name": "projects",
       "file": "app/api/projects/route.ts",
-      "line": 35,
+      "line": 36,
       "access": "read",
       "method": "find"
     },
     {
       "name": "hashtags",
       "file": "app/api/projects/route.ts",
-      "line": 36,
+      "line": 37,
       "access": "write",
       "method": "deleteMany/updateOne"
     },
     {
       "name": "projects",
       "file": "app/api/projects/route.ts",
-      "line": 117,
+      "line": 118,
       "access": "read",
       "method": "findOne"
     },
     {
       "name": "projects",
       "file": "app/api/projects/route.ts",
-      "line": 145,
+      "line": 146,
       "access": "write",
       "method": "deleteOne/insertOne/updateOne"
     },
     {
       "name": "partners",
       "file": "app/api/projects/route.ts",
-      "line": 305,
+      "line": 306,
       "access": "read",
       "method": "find/findOne"
     },
     {
       "name": "partners",
       "file": "app/api/projects/route.ts",
-      "line": 411,
+      "line": 412,
       "access": "read",
       "method": "find/findOne"
     },
     {
       "name": "report_styles",
       "file": "app/api/projects/route.ts",
-      "line": 554,
+      "line": 560,
       "access": "read",
       "method": "findOne"
     },
     {
       "name": "projects",
       "file": "app/api/projects/route.ts",
-      "line": 565,
+      "line": 571,
       "access": "write",
       "method": "deleteOne/insertOne/updateOne"
     },
     {
       "name": "hashtags",
       "file": "app/api/projects/route.ts",
-      "line": 617,
+      "line": 623,
       "access": "write",
       "method": "deleteMany/updateOne"
     },
     {
       "name": "partners",
       "file": "app/api/projects/route.ts",
-      "line": 656,
+      "line": 662,
       "access": "read",
       "method": "find/findOne"
     },
     {
       "name": "projects",
       "file": "app/api/projects/route.ts",
-      "line": 784,
+      "line": 800,
       "access": "write",
       "method": "deleteOne/insertOne/updateOne"
     },
     {
       "name": "report_styles",
       "file": "app/api/projects/route.ts",
-      "line": 789,
+      "line": 805,
       "access": "read",
       "method": "findOne"
     },
     {
       "name": "hashtags",
       "file": "app/api/projects/route.ts",
-      "line": 901,
+      "line": 917,
       "access": "write",
       "method": "deleteMany/updateOne"
     },
     {
       "name": "projects",
       "file": "app/api/projects/route.ts",
-      "line": 1023,
+      "line": 1045,
       "access": "write",
       "method": "deleteOne/insertOne/updateOne"
     },
     {
       "name": "hashtags",
       "file": "app/api/projects/route.ts",
-      "line": 1058,
+      "line": 1080,
       "access": "write",
       "method": "deleteMany/updateOne"
     },
@@ -4586,6 +4622,13 @@
       "name": "projects",
       "file": "lib/analytics-predictions.ts",
       "line": 466,
+      "access": "read",
+      "method": "findOne"
+    },
+    {
+      "name": "projects",
+      "file": "lib/apiGuards.ts",
+      "line": 52,
       "access": "read",
       "method": "findOne"
     },
@@ -5242,29 +5285,36 @@
     },
     {
       "name": "page_passwords",
+      "file": "lib/pageAccess.ts",
+      "line": 107,
+      "access": "read",
+      "method": "findOne"
+    },
+    {
+      "name": "page_passwords",
       "file": "lib/pagePassword.ts",
-      "line": 108,
+      "line": 137,
       "access": "write",
       "method": "deleteMany/updateOne"
     },
     {
       "name": "page_passwords",
       "file": "lib/pagePassword.ts",
-      "line": 182,
+      "line": 225,
       "access": "write",
       "method": "deleteMany/updateOne"
     },
     {
       "name": "page_passwords",
       "file": "lib/pagePassword.ts",
-      "line": 333,
+      "line": 376,
       "access": "write",
       "method": "deleteMany/updateOne"
     },
     {
       "name": "page_passwords",
       "file": "lib/pagePassword.ts",
-      "line": 359,
+      "line": 402,
       "access": "write",
       "method": "deleteMany/updateOne"
     },
@@ -9679,6 +9729,13 @@
       "method": "findOne"
     },
     {
+      "name": "page_passwords",
+      "file": "scripts/rotate-page-passwords.ts",
+      "line": 33,
+      "access": "write",
+      "method": "updateOne"
+    },
+    {
       "name": "content_assets",
       "file": "scripts/seed-additional-report-variables.ts",
       "line": 56,
@@ -10816,7 +10873,7 @@
       ]
     },
     "app/admin/charts/page.tsx": {
-      "modules": 29,
+      "modules": 30,
       "collections": [
         "users"
       ]
@@ -11008,7 +11065,7 @@
       ]
     },
     "app/admin/visualization/page.tsx": {
-      "modules": 46,
+      "modules": 47,
       "collections": [
         "users"
       ]
@@ -11051,9 +11108,16 @@
       ]
     },
     "app/api/admin/filter-style/route.ts": {
-      "modules": 5,
+      "modules": 14,
       "collections": [
-        "filter_slugs"
+        "drive_folder_links",
+        "fanmass_event_links",
+        "filter_slugs",
+        "organizations",
+        "page_passwords",
+        "partners",
+        "projects",
+        "users"
       ]
     },
     "app/api/admin/fix-mojibake-text/route.ts": {
@@ -11161,10 +11225,15 @@
       ]
     },
     "app/api/admin/project-partners/auto-suggest/route.ts": {
-      "modules": 5,
+      "modules": 14,
       "collections": [
+        "drive_folder_links",
+        "fanmass_event_links",
+        "organizations",
+        "page_passwords",
         "partners",
-        "projects"
+        "projects",
+        "users"
       ]
     },
     "app/api/admin/project-partners/route.ts": {
@@ -11210,9 +11279,15 @@
       ]
     },
     "app/api/admin/ui-settings/route.ts": {
-      "modules": 10,
+      "modules": 15,
       "collections": [
         "available_fonts",
+        "drive_folder_links",
+        "fanmass_event_links",
+        "organizations",
+        "page_passwords",
+        "partners",
+        "projects",
         "settings",
         "users"
       ]
@@ -11558,6 +11633,7 @@
     "app/api/content-assets/route.ts": {
       "modules": 10,
       "collections": [
+        "chart_configurations",
         "content_assets",
         "users"
       ]
@@ -11565,7 +11641,7 @@
     "app/api/content-assets/usage/route.ts": {
       "modules": 5,
       "collections": [
-        "chartConfigurations"
+        "chart_configurations"
       ]
     },
     "app/api/countries/[code]/route.ts": {
@@ -11613,9 +11689,16 @@
       "collections": []
     },
     "app/api/data-blocks/route.ts": {
-      "modules": 5,
+      "modules": 14,
       "collections": [
-        "data_blocks"
+        "data_blocks",
+        "drive_folder_links",
+        "fanmass_event_links",
+        "organizations",
+        "page_passwords",
+        "partners",
+        "projects",
+        "users"
       ]
     },
     "app/api/debug/categorized-hashtags/route.ts": {
@@ -11660,11 +11743,16 @@
       ]
     },
     "app/api/filter-slug/route.ts": {
-      "modules": 5,
+      "modules": 16,
       "collections": [
+        "drive_folder_links",
+        "fanmass_event_links",
         "filter_slugs",
+        "organizations",
+        "page_passwords",
         "partners",
-        "projects"
+        "projects",
+        "users"
       ]
     },
     "app/api/football-data/fixtures/route.ts": {
@@ -11727,16 +11815,20 @@
       ]
     },
     "app/api/hashtags/filter-by-slug/[slug]/route.ts": {
-      "modules": 13,
+      "modules": 21,
       "collections": [
         "data_blocks",
+        "drive_folder_links",
+        "fanmass_event_links",
         "filter_slugs",
         "organizations",
+        "page_passwords",
         "partners",
         "projects",
         "report_templates",
         "report_variants",
-        "reports"
+        "reports",
+        "users"
       ]
     },
     "app/api/hashtags/route.ts": {
@@ -11926,7 +12018,7 @@
       ]
     },
     "app/api/landing-report/route.ts": {
-      "modules": 10,
+      "modules": 11,
       "collections": [
         "chart_configurations",
         "data_blocks",
@@ -12000,9 +12092,14 @@
       ]
     },
     "app/api/page-passwords/route.ts": {
-      "modules": 11,
+      "modules": 14,
       "collections": [
+        "drive_folder_links",
+        "fanmass_event_links",
+        "organizations",
         "page_passwords",
+        "partners",
+        "projects",
         "users"
       ]
     },
@@ -12113,8 +12210,16 @@
       ]
     },
     "app/api/partners/upload-logo/route.ts": {
-      "modules": 2,
-      "collections": []
+      "modules": 15,
+      "collections": [
+        "drive_folder_links",
+        "fanmass_event_links",
+        "organizations",
+        "page_passwords",
+        "partners",
+        "projects",
+        "users"
+      ]
     },
     "app/api/projects/[id]/route.ts": {
       "modules": 14,
@@ -12125,15 +12230,20 @@
       ]
     },
     "app/api/projects/edit/[slug]/route.ts": {
-      "modules": 6,
+      "modules": 15,
       "collections": [
+        "drive_folder_links",
+        "fanmass_event_links",
         "filter_slugs",
+        "organizations",
+        "page_passwords",
         "partners",
-        "projects"
+        "projects",
+        "users"
       ]
     },
     "app/api/projects/route.ts": {
-      "modules": 30,
+      "modules": 34,
       "collections": [
         "bitly_links",
         "bitly_project_links",
@@ -12144,6 +12254,7 @@
         "hashtags",
         "notifications",
         "organizations",
+        "page_passwords",
         "partners",
         "projects",
         "report_styles",
@@ -12151,11 +12262,16 @@
       ]
     },
     "app/api/projects/stats/[slug]/route.ts": {
-      "modules": 6,
+      "modules": 16,
       "collections": [
+        "drive_folder_links",
+        "fanmass_event_links",
         "filter_slugs",
+        "organizations",
+        "page_passwords",
         "partners",
-        "projects"
+        "projects",
+        "users"
       ]
     },
     "app/api/public/events/[id]/route.ts": {
@@ -12390,7 +12506,7 @@
       "collections": []
     },
     "app/dashboard/filter/[filterSlug]/page.tsx": {
-      "modules": 46,
+      "modules": 47,
       "collections": [
         "partners",
         "projects",
@@ -12402,7 +12518,7 @@
       "collections": []
     },
     "app/dashboard/partner/[partnerId]/page.tsx": {
-      "modules": 42,
+      "modules": 43,
       "collections": [
         "partners",
         "projects",
@@ -12426,7 +12542,7 @@
       ]
     },
     "app/filter/[slug]/page.tsx": {
-      "modules": 51,
+      "modules": 52,
       "collections": [
         "page_passwords",
         "partners",
@@ -12435,7 +12551,7 @@
       ]
     },
     "app/hashtag/[hashtag]/page.tsx": {
-      "modules": 52,
+      "modules": 53,
       "collections": [
         "page_passwords",
         "partners",
@@ -12450,7 +12566,7 @@
       ]
     },
     "app/organization-report/[id]/page.tsx": {
-      "modules": 43,
+      "modules": 44,
       "collections": [
         "partners",
         "projects",
@@ -12458,7 +12574,7 @@
       ]
     },
     "app/page.tsx": {
-      "modules": 44,
+      "modules": 45,
       "collections": [
         "partners",
         "projects",
@@ -12473,11 +12589,16 @@
       ]
     },
     "app/partner-report/[slug]/page.tsx": {
-      "modules": 46,
+      "modules": 56,
       "collections": [
+        "drive_folder_links",
+        "fanmass_event_links",
+        "organizations",
+        "page_passwords",
         "partners",
         "projects",
-        "reports"
+        "reports",
+        "users"
       ]
     },
     "app/privacy/page.tsx": {
@@ -12485,7 +12606,7 @@
       "collections": []
     },
     "app/report/[slug]/page.tsx": {
-      "modules": 42,
+      "modules": 43,
       "collections": [
         "partners",
         "projects",
