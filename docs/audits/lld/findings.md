@@ -1,11 +1,11 @@
 # LLD Audit — Findings Register
 
 Status: Active
-Last Updated: 2026-08-15T06:30:00.000Z
+Last Updated: 2026-08-15T07:30:00.000Z
 Canonical: Yes (findings register)
 Owner: Architecture
 
-**Version:** 12.1.65
+**Version:** 12.1.66
 
 Findings from the LLD deep audit (`docs/audits/lld-audit-plan-2026-08-14.md`).
 Per rule R5 findings are recorded here and **not fixed on the audit branch**; per
@@ -25,7 +25,8 @@ claim is structural rather than demonstrated, it says so.
 | [F-009](#f-009) | **Critical** | **Partly fixed — 33 routes open, frozen by test** | Mutating API routes have no authentication | 4 |
 | [F-001](#f-001) | **Critical** | **Fixed** | Page-password protection is client-side only; data APIs are unauthenticated | 4 |
 | [F-002](#f-002) | **Critical** | **Fixed** | Unsigned legacy session tokens are accepted, always | 4 |
-| [F-020](#f-020) | **High** | Open | Analytics aggregates are five months stale; their cron was never scheduled | 3 |
+| [F-020](#f-020) | **High** | Open — confirmed | The entire analytics workspace serves data frozen on 2026-03-18 | 3 |
+| [F-022](#f-022) | Low | Open | `/api/analytics/aggregates` queries a document shape that was never written | 3 |
 | [F-021](#f-021) | Medium | Open | The only scheduled cron has logged once in ten months | 3 |
 | [F-019](#f-019) | Medium | Open | `lib/auditLog.ts` is dead — the API write audit trail was never wired up | 3 |
 | [F-017](#f-017) | Medium | **Fixed** | Content-asset deletion guard was inert and its usage panel queried a non-existent collection | 3 |
@@ -397,14 +398,75 @@ than three separate failures.
 `analytics/insights/summary`, `analytics/partner/[partnerId]`,
 `analytics/trends`, `analytics/benchmarks`.
 
-**What I did not establish:** whether those endpoints treat the collection as a
-cache and recompute when it is stale, or serve it directly. If they serve it
-directly, every analytics dashboard has been showing March numbers since March.
-That is the question to answer first, and it is a read-path trace rather than a
-guess.
+**Now established — they serve it directly.** The open question from the first
+writeup is answered, and the answer is the bad one.
 
-Not fixed because adding cron entries changes production scheduling and load, and
-the right cadence is your call, not mine.
+`app/api/analytics/aggregates/route.ts:76` comments *"Connect to the pre-aggregated
+analytics collections"* and reads the collection with no live fallback and no
+recomputation. **None of the readers queries `projects` directly.** There are 17
+read sites across 12 routes, plus `lib/sponsorshipHub.ts:598`.
+
+Cross-referencing against what the admin UI actually calls, the following surfaces
+read this frozen collection:
+
+| Endpoint the UI calls | Reads `analytics_aggregates` |
+|---|---|
+| `/api/analytics/trends` | yes |
+| `/api/analytics/insights` | yes |
+| `/api/analytics/executive/metrics` | yes |
+| `/api/analytics/executive/insights` | yes |
+| `/api/analytics/executive/top-events` | yes |
+| `/api/analytics/partner/[partnerId]` | yes |
+| `/api/analytics/sponsorship-hub` | yes (via `sponsorshipHub.ts`) |
+
+So the Executive, Insights, Partner and Sponsorship surfaces have been serving
+2026-03-18 data for five months. These readers are not broken — they query by
+`eventDate`, `projectId` and `partnerContext.partnerId`, all of which exist in the
+stored documents. They are simply reading a collection nothing refreshes.
+
+**Where the data came from.** The only non-script writer is
+`lib/analytics-aggregator.ts:135`; the bulk write is in
+`scripts/aggregateAnalytics.ts:118` — a script run by hand. Combined with the
+unscheduled cron, the picture is that aggregation has only ever run manually, and
+the last run was 18 March.
+
+Not fixed: adding cron entries changes production scheduling and load, and
+re-running the aggregator rewrites the collection every dashboard reads. Both are
+your call.
+
+---
+
+## F-022
+
+### `/api/analytics/aggregates` queries a document shape that was never written
+
+**Severity: Low — structurally broken, but no UI consumer.**
+
+The route types the collection as `TimeAggregatedMetrics` and filters on `bucket`,
+`periodStart` and `periodEnd` (`lib/analytics-aggregates.types.ts:31-33`). The 69
+stored documents contain none of those fields — their shape is per-project:
+`projectId, eventDate, aggregationType, fanMetrics, merchMetrics, adMetrics,
+demographicMetrics, visitMetrics, bitlyMetrics, partnerContext, rawStats,
+createdAt, updatedAt, version`.
+
+Two different aggregation designs met at one collection name: a per-project
+writer, and a time-bucketed reader.
+
+Verified by execution against an admin session:
+
+| Request | Result |
+|---|---|
+| `/api/analytics/aggregates` | **200**, 69 records of the wrong shape |
+| `?bucket=daily` | **200**, 0 records |
+| `?startDate=2026-01-01&endDate=2026-12-31` | **200**, 0 records |
+
+Every filtered query returns empty with a success status — the endpoint never
+signals that its filter cannot match anything.
+
+**Low, not High, for one reason:** no UI calls it. A grep across `app/admin`,
+`components` and `hooks` finds no consumer. The dashboards use `trends`,
+`insights`, `executive/*` and `partner/*`, which read the same collection with
+queries that do match the stored shape. This endpoint is latent, not live.
 
 ---
 

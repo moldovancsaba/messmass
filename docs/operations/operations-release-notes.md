@@ -1,8 +1,54 @@
 # {messmass} Release Notes
 Status: Active
-Last Updated: 2026-08-15T06:30:00.000Z
+Last Updated: 2026-08-15T07:30:00.000Z
 Canonical: No
 Owner: Operations
+
+## [v12.1.66] — 2026-08-15T07:30:00.000Z
+
+### Summary
+Answered the open question from v12.1.65, and the answer is the bad one. No
+product code changed.
+
+### F-020 confirmed — the analytics workspace serves March data
+The previous release recorded that analytics_aggregates stopped updating on
+2026-03-18 but explicitly did not claim an impact, because whether the endpoints
+recompute or serve stored documents had not been traced. They serve stored
+documents. The aggregates route reads the collection with no live fallback, and
+none of the readers queries projects directly.
+
+Cross-referencing the 17 read sites against what the admin UI actually calls, the
+Executive metrics, Executive insights, Executive top-events, Insights, Trends,
+Partner analytics and Sponsorship Hub surfaces all read this collection. All have
+been showing 2026-03-18 numbers for five months.
+
+Those readers are not broken — they query by eventDate, projectId and
+partnerContext.partnerId, all of which exist in the stored documents. They are
+reading a collection nothing refreshes. The only non-script writer is
+lib/analytics-aggregator.ts; the bulk write lives in scripts/aggregateAnalytics.ts,
+run by hand. With the cron unscheduled, aggregation appears to have only ever run
+manually.
+
+Not fixed: scheduling the cron changes production load, and re-running the
+aggregator rewrites the collection every dashboard reads.
+
+### F-022 — An endpoint querying a shape that was never written (Low)
+/api/analytics/aggregates types the collection as TimeAggregatedMetrics and filters
+on bucket, periodStart and periodEnd. The 69 stored documents have none of those
+fields; their shape is per-project. Two aggregation designs met at one collection
+name.
+
+Verified against an admin session: unfiltered returns 200 with 69 wrong-shaped
+records, ?bucket=daily returns 200 with zero, and a date range returns 200 with
+zero. Every filtered query succeeds and returns nothing.
+
+Filed Low rather than High because no UI calls it — the dashboards use trends,
+insights, executive/* and partner/*, whose queries do match the stored shape.
+
+### Testing
+Endpoint behaviour verified by executing real requests with a minted admin
+session, not by reading the code. Full gate: type-check, lint, 349 tests,
+style:check, version:verify, docs:audit, guardrails, build.
 
 ## [v12.1.65] — 2026-08-15T06:30:00.000Z
 
