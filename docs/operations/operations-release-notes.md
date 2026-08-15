@@ -1,8 +1,56 @@
 # {messmass} Release Notes
 Status: Active
-Last Updated: 2026-08-15T04:00:00.000Z
+Last Updated: 2026-08-15T05:30:00.000Z
 Canonical: No
 Owner: Operations
+
+## [v12.1.64] — 2026-08-15T05:30:00.000Z
+
+### Summary
+Two fixes on the core value path: report numbers now match what their author
+approved, and the content-asset deletion guard actually works.
+
+### F-015 — One formatter instead of two (fixed)
+chartCalculator (admin builder) formatted with toLocaleString while ReportChart
+(published report) used toFixed, so an author approved "€1,500,000" and the
+partner opening the link saw "€1500000". Both now call lib/formatChartValue.ts.
+Separators are kept, because the builder's rendering is what the author reviewed.
+
+Patching one call site would have left two implementations of one rule, which is
+how this arose. tests/format-chart-value.test.ts pins the behaviour across 10
+cases, including that non-finite values render as NA rather than reaching a
+partner's report as the word "Infinity".
+
+Verified in a production build, not only in unit tests: a published report now
+renders 2,531 with its separator and contains no ungrouped four-digit numbers.
+
+### F-017 — Content-asset protection was inert on both layers (fixed)
+The usage endpoint queried `chartConfigurations`, which does not exist; the real
+collection is `chart_configurations` with 146 documents, and Mongo names are
+case-sensitive, so it always reported an asset as referenced by zero charts.
+Separately the deletion guard tested `asset.usageCount`, a field written once as 0
+at creation by a "usage tracking system" that does not exist — all 40 assets sit
+at zero, so the guard could never fire.
+
+Both layers of a two-layer protection were therefore dead: an asset could be
+deleted while charts referenced it, with the UI confirming it was unused. The
+usage route now reads the correct collection, and the guard counts live references
+at delete time rather than trusting a denormalised counter. The regex was
+validated against scratch-database fixtures including a near-miss case.
+
+Current exposure was nil — a live scan found zero charts using MEDIA:/TEXT:
+tokens — so this was latent rather than active.
+
+### F-018 — Recorded, not fixed
+A report URL with an unknown slug shows "Unexpected token '<'" instead of a
+not-found message: useReportData falls back to /api/v3/activities/{slug}, which
+has no route handler, and calls .json() on the 404 HTML without checking res.ok.
+Pre-existing; found because a mistyped slug of mine produced it.
+
+### Testing
+349 tests (10 new). Full gate: type-check, lint, style:check, version:verify,
+docs:audit, guardrails, build. Production build served locally and inspected in
+the browser for both fixes.
 
 ## [v12.1.63] — 2026-08-15T04:00:00.000Z
 

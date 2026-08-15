@@ -49,7 +49,11 @@ export async function GET(request: NextRequest) {
     
     const client = await clientPromise;
     const db = client.db(MONGODB_DB);
-    const chartsCollection = db.collection('chartConfigurations');
+    // WHAT: The chart collection is `chart_configurations` (snake_case).
+    // WHY: This read used 'chartConfigurations', which does not exist — Mongo
+    //     collection names are case-sensitive, so the query silently returned an
+    //     empty set and this endpoint always reported an asset as unreferenced.
+    const chartsCollection = db.collection('chart_configurations');
     
     // WHAT: Fetch all chart configurations
     // WHY: Need to scan formulas for asset references

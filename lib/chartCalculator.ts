@@ -3,6 +3,7 @@
 // Handles PieChart, HorizontalBar, and KPI chart types with "NA" error substitution
 
 import { ChartConfiguration, ChartCalculationResult } from './chartConfigTypes';
+import { formatChartValue as sharedFormatChartValue } from './formatChartValue';
 import { evaluateFormula, evaluateFormulasBatch, evaluateFormulaSafe, validateStatsForFormula, fetchContentAssetsSync, resolveContentAssetToken } from './formulaEngine';
 import { type ContentAsset } from './contentAssetTypes';
 import { 
@@ -921,20 +922,8 @@ export function formatChartValue(
   // WHAT: Use new flexible formatting system if available
   // WHY: Supports custom prefix/suffix for white-labeling
   if (options.formatting) {
-    // WHAT: Determine decimal places based on rounded flag
-    // WHY: rounded = whole numbers, !rounded = 2 decimal places
-    const decimals = options.formatting.rounded ? 0 : 2;
-    
-    // WHAT: Use toLocaleString() for thousands separator
-    // WHY: Improves readability for large numbers (1,000,000 vs 1000000)
-    const numericValue = value.toLocaleString('en-US', {
-      minimumFractionDigits: decimals,
-      maximumFractionDigits: decimals
-    });
-    
-    // WHAT: Apply prefix and suffix in correct order
-    // WHY: Standard format is: prefix + number + suffix (e.g., "€1,234.56" or "50%")
-    return `${options.formatting.prefix || ''}${numericValue}${options.formatting.suffix || ''}`;
+    // Shared with the published report — see lib/formatChartValue.ts for why.
+    return sharedFormatChartValue(value, options.formatting);
   }
   
   // WHAT: Legacy type-based formatting for backward compatibility

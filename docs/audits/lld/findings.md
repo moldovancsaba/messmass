@@ -1,11 +1,11 @@
 # LLD Audit — Findings Register
 
 Status: Active
-Last Updated: 2026-08-15T04:00:00.000Z
+Last Updated: 2026-08-15T05:30:00.000Z
 Canonical: Yes (findings register)
 Owner: Architecture
 
-**Version:** 12.1.63
+**Version:** 12.1.64
 
 Findings from the LLD deep audit (`docs/audits/lld-audit-plan-2026-08-14.md`).
 Per rule R5 findings are recorded here and **not fixed on the audit branch**; per
@@ -25,7 +25,9 @@ claim is structural rather than demonstrated, it says so.
 | [F-009](#f-009) | **Critical** | **Partly fixed — 33 routes open, frozen by test** | Mutating API routes have no authentication | 4 |
 | [F-001](#f-001) | **Critical** | **Fixed** | Page-password protection is client-side only; data APIs are unauthenticated | 4 |
 | [F-002](#f-002) | **Critical** | **Fixed** | Unsigned legacy session tokens are accepted, always | 4 |
-| [F-015](#f-015) | Medium | Open — needs your call | Admin preview and partner report format the same number differently | 2 |
+| [F-017](#f-017) | Medium | **Fixed** | Content-asset deletion guard was inert and its usage panel queried a non-existent collection | 3 |
+| [F-018](#f-018) | Low | Open | A missing report renders a JSON parse error instead of "not found" | 2 |
+| [F-015](#f-015) | Medium | **Fixed** | Admin preview and partner report format the same number differently | 2 |
 | [F-016](#f-016) | Low | Open | `lib/layoutGrammarValidation.ts` is dead code | 2 |
 | [F-012](#f-012) | Medium | **Fixed** | CSP granted `unsafe-eval` app-wide for a reason that stopped being true | 2 |
 | [F-013](#f-013) | Medium | Open | Page gate prompts for pages that have no password | 2 |
@@ -359,11 +361,75 @@ genuine token still validates       -> true
 
 ---
 
+## F-017
+
+### Content-asset deletion guard was inert and its usage panel queried a non-existent collection
+
+**Severity: Medium — fixed. Two independent failures of the same safety feature.**
+
+This is the collection-name drift first noticed while scoping the audit plan,
+now resolved.
+
+**Failure 1 — the usage panel read a collection that does not exist.**
+`app/api/content-assets/usage/route.ts:52` queried `chartConfigurations`
+(camelCase). Verified against production: that collection **does not exist**,
+while `chart_configurations` holds **146** documents. Mongo collection names are
+case-sensitive, so the query returned an empty set and the endpoint always
+reported an asset as referenced by zero charts.
+
+**Failure 2 — the deletion guard trusted a counter nothing maintains.**
+`app/api/content-assets/route.ts` blocked deletion with
+`if (asset.usageCount > 0 && !force)`. `usageCount` is written once, as `0`, at
+creation, with the comment *"updated by usage tracking system"* — no such writer
+exists anywhere in the codebase. All **40** content assets sit at `usageCount: 0`,
+so the guard could never fire.
+
+Both layers of a two-layer protection were therefore inert: an asset could be
+deleted while charts referenced it, and the UI would confirm it was unused. The
+referencing charts' `[MEDIA:slug]` / `[TEXT:slug]` tokens would then fail to
+resolve.
+
+**Fix.** The usage route reads `chart_configurations`. The deletion guard counts
+live references at delete time instead of trusting a denormalised field — a count
+computed on demand cannot drift out of maintenance.
+
+**Verified.** The guard's regex was validated against fixtures in a scratch
+database, including the near-miss case: a chart referencing `hero-banner-2` does
+not satisfy a guard for `hero-banner`.
+
+**Current exposure: none.** A live scan found **zero** charts using any
+`MEDIA:`/`TEXT:` token, so no asset was actually at risk. The defect was latent —
+it would have bitten the first time someone used the content library as intended.
+
+---
+
+## F-018
+
+### A missing report renders a JSON parse error instead of "not found"
+
+**Severity: Low — pre-existing, found incidentally.**
+
+Requesting `/report/<slug>` for a slug that does not exist shows:
+
+> ⚠️ Failed to Load Report — Unexpected token '<', "<!DOCTYPE "... is not valid JSON
+
+`hooks/useReportData.ts:109` falls back to `GET /api/v3/activities/${slug}` when
+the v2 lookup misses, then calls `.json()` on the response without checking
+`res.ok`. There is **no route handler at that path** — `app/api/v3/activities/`
+has `route.ts` and `[id]/participants/`, but no `[id]/route.ts` — so Next.js
+returns a 404 HTML page and `JSON.parse` throws on the doctype.
+
+Untouched by this session (0 commits since `bfe95226` modify that file). Found
+because a mistyped slug of mine produced it, which is exactly the situation a real
+user hits with a stale link.
+
+---
+
 ## F-015
 
 ### Admin preview and partner report format the same number differently
 
-**Severity: Medium — demonstrated. Not fixed; the correction is user-visible.**
+**Severity: Medium — demonstrated, then fixed.**
 
 The report pipeline has **two independent value formatters** for the same
 `formatting` object, and they disagree on every value of 1,000 or more.
@@ -393,12 +459,18 @@ under 1,000 matches, which is why it survives casual checking.
 (`:925-926`) *do* use `toLocaleString()`, so within one rendered report a value
 can carry separators in a tooltip and lose them in the KPI beside it.
 
-**Why not fixed here.** The defensible fix is to make the report match the
-preview, since the preview is what the author designed against. But that changes
-the appearance of **every existing partner report**, which is a product decision
-about presentation, not a defect I should resolve unilaterally. The opposite fix —
-stripping separators from the admin — is almost certainly wrong but is technically
-the smaller visual change.
+**Fix.** One implementation, `lib/formatChartValue.ts`, used by both surfaces.
+Separators are kept, because the builder's rendering is what the author reviewed
+and approved, and because sponsors read these numbers at a glance.
+
+Patching one call site would have left two implementations of one rule, which is
+how the divergence arose; `tests/format-chart-value.test.ts` (10 cases) pins the
+behaviour, including that non-finite values render as `NA` rather than reaching a
+partner's report as the word "Infinity".
+
+**Verified end to end in a production build**, not just in unit tests: the
+published report for an event with a 61,473 stat now renders `2,531` with a
+separator and contains no ungrouped four-digit numbers.
 
 ---
 

@@ -451,13 +451,22 @@ export async function DELETE(request: NextRequest) {
       );
     }
     
-    // WHAT: Check usage count (safety check)
-    // WHY: Prevent deletion of assets referenced by active charts
-    if (asset.usageCount > 0 && !force) {
+    // WHAT: Count live references to this asset before allowing deletion.
+    // WHY: This guard previously read `asset.usageCount`, a denormalised field set
+    //     to 0 at creation and incremented by nothing — the "usage tracking system"
+    //     its comment referred to does not exist. Every one of the 40 assets sat at
+    //     zero, so the guard could never fire and any asset could be deleted while
+    //     charts referenced it, breaking their [MEDIA:slug] / [TEXT:slug] tokens.
+    //     Counting at delete time needs no counter to be maintained correctly.
+    const referencingCharts = await db
+      .collection('chart_configurations')
+      .countDocuments({ 'elements.formula': { $regex: `\\[(MEDIA|TEXT):${asset.slug}\\]` } });
+
+    if (referencingCharts > 0 && !force) {
       return NextResponse.json(
         {
           success: false,
-          error: `Cannot delete asset "${asset.title}": currently used in ${asset.usageCount} chart(s). Use force=true to delete anyway.`
+          error: `Cannot delete asset "${asset.title}": currently used in ${referencingCharts} chart(s). Use force=true to delete anyway.`
         } as ContentAssetResponse,
         { status: 409 }
       );

@@ -4,6 +4,7 @@
 
 'use client';
 
+import { formatChartValue, decimalsFor } from '@/lib/formatChartValue';
 import React, { useRef, useState, useEffect } from 'react';
 import { Doughnut } from 'react-chartjs-2';
 import {
@@ -37,42 +38,12 @@ ChartJS.register(ArcElement, Tooltip, Legend);
  * WHY: Support both rounded (whole numbers) and decimal (2 places) formatting
  * HOW: Uses rounded flag from formatting object, converts to decimals
  */
-function formatValue(
-  value: number | string | undefined, 
-  formatting?: { rounded?: boolean; prefix?: string; suffix?: string }
-): string {
-  if (value === undefined || value === 'NA') return 'NA';
-  if (typeof value === 'string') return value;
-  
-  // WHAT: Determine decimal places from rounded flag or legacy decimals field
-  // WHY: Support both new formatting.rounded and legacy decimals format
-  let decimals = 0;
-  if (formatting) {
-    if (formatting.rounded !== undefined) {
-      // WHAT: New format - rounded flag determines decimals
-      // WHY: rounded=true → whole numbers (0 decimals), rounded=false → 2 decimals
-      decimals = formatting.rounded ? 0 : 2;
-    }
-  }
-  
-  const { prefix = '', suffix = '' } = formatting || {};
-  const formattedNumber = value.toFixed(decimals);
-  return `${prefix}${formattedNumber}${suffix}`;
-}
-
-/**
- * Helper function to get decimal places from formatting
- * WHAT: Extracts decimal count from formatting object
- * WHY: Reusable logic for percentage calculations
- */
-function getDecimalsFromFormatting(formatting?: { rounded?: boolean }): number {
-  if (!formatting) return 0;
-  if (formatting.rounded !== undefined) {
-    return formatting.rounded ? 0 : 2;
-  }
-  return 0;
-}
-
+// WHAT: Display formatting is delegated to the shared implementation.
+// WHY: This file previously had its own `toFixed` version while the admin builder
+//     used `toLocaleString`, so the same value rendered differently to the author
+//     and to the partner. One implementation, one result.
+const formatValue = formatChartValue;
+const getDecimalsFromFormatting = decimalsFor;
 
 /**
  * Props for ReportChart component
