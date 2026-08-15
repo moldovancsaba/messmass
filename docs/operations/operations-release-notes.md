@@ -1,8 +1,47 @@
 # {messmass} Release Notes
 Status: Active
-Last Updated: 2026-08-15T03:00:00.000Z
+Last Updated: 2026-08-15T04:00:00.000Z
 Canonical: No
 Owner: Operations
+
+## [v12.1.63] — 2026-08-15T04:00:00.000Z
+
+### Summary
+LLD audit Phase 2 continued into the calculation chain. Two findings recorded, no
+product code changed.
+
+### F-015 — Admin preview and partner report format numbers differently
+The pipeline has two independent formatters reading the same `formatting` object.
+chartCalculator.ts (admin) uses toLocaleString; ReportChart.tsx (public report)
+uses toFixed. Decimals agree; thousands separators do not. Verified by executing
+both on identical inputs: 1234567 renders as "1,234,567" to the author and
+"1234567" to the partner, and "€1,500,000" becomes "€1500000". Values under 1,000
+match, which is why it survives casual checking.
+
+ReportChart.tsx is also internally inconsistent — its tooltips use toLocaleString
+while the KPI beside them does not, so one rendered report can show both forms.
+
+Not fixed: making the report match the preview is the defensible correction, but
+it changes the appearance of every existing partner report, which is a
+presentation decision rather than a defect to resolve unilaterally.
+
+### F-016 — lib/layoutGrammarValidation.ts is dead code
+543 lines, 10 exports, zero importers anywhere including tests. It appears
+load-bearing because scripts/check-layout-grammar-guardrail.ts is a required CI
+gate with a matching name, but that script imports only fs and path and works by
+scanning file text. The live implementations are layoutGrammar.ts,
+layoutGrammarRuntimeEnforcement.ts and layoutV2BlockCalculator.ts. Recorded rather
+than deleted, so the 81 unreached modules from Phase 0 get one deliberate sweep.
+
+### Architecture Mapped
+formulaEngine is the shared base. ReportCalculator serves every public report
+surface (hashtag, filter, partner-report, organization-report, landing static);
+chartCalculator serves the admin builder and landing-report API. The split is the
+root of F-015.
+
+### Testing
+Both formatters executed against a shared input set. Full gate: type-check, lint,
+339 tests, style:check, version:verify, docs:audit, guardrails, build.
 
 ## [v12.1.62] — 2026-08-15T03:00:00.000Z
 

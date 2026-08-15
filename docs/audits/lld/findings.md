@@ -1,11 +1,11 @@
 # LLD Audit — Findings Register
 
 Status: Active
-Last Updated: 2026-08-15T03:00:00.000Z
+Last Updated: 2026-08-15T04:00:00.000Z
 Canonical: Yes (findings register)
 Owner: Architecture
 
-**Version:** 12.1.62
+**Version:** 12.1.63
 
 Findings from the LLD deep audit (`docs/audits/lld-audit-plan-2026-08-14.md`).
 Per rule R5 findings are recorded here and **not fixed on the audit branch**; per
@@ -25,6 +25,8 @@ claim is structural rather than demonstrated, it says so.
 | [F-009](#f-009) | **Critical** | **Partly fixed — 33 routes open, frozen by test** | Mutating API routes have no authentication | 4 |
 | [F-001](#f-001) | **Critical** | **Fixed** | Page-password protection is client-side only; data APIs are unauthenticated | 4 |
 | [F-002](#f-002) | **Critical** | **Fixed** | Unsigned legacy session tokens are accepted, always | 4 |
+| [F-015](#f-015) | Medium | Open — needs your call | Admin preview and partner report format the same number differently | 2 |
+| [F-016](#f-016) | Low | Open | `lib/layoutGrammarValidation.ts` is dead code | 2 |
 | [F-012](#f-012) | Medium | **Fixed** | CSP granted `unsafe-eval` app-wide for a reason that stopped being true | 2 |
 | [F-013](#f-013) | Medium | Open | Page gate prompts for pages that have no password | 2 |
 | [F-014](#f-014) | Low | Open | Documented formula-parser rollback has no effect | 2 |
@@ -354,6 +356,71 @@ forged unsigned token, hint=legacy  -> null
 minted token is a JWT (3 parts)     -> true
 genuine token still validates       -> true
 ```
+
+---
+
+## F-015
+
+### Admin preview and partner report format the same number differently
+
+**Severity: Medium — demonstrated. Not fixed; the correction is user-visible.**
+
+The report pipeline has **two independent value formatters** for the same
+`formatting` object, and they disagree on every value of 1,000 or more.
+
+| Surface | Implementation | Method |
+|---|---|---|
+| Admin preview / builder | `lib/chartCalculator.ts:930` | `value.toLocaleString('en-US', …)` |
+| Published partner report | `app/report/[slug]/ReportChart.tsx:59` | `value.toFixed(decimals)` |
+
+Both derive decimals identically from `formatting.rounded`, so the divergence is
+purely thousands separators. Verified by executing faithful reproductions of both
+on identical inputs:
+
+| Value | Formatting | Admin preview | Partner report | Match |
+|---|---|---|---|---|
+| 1234567 | `rounded: true` | `1,234,567` | `1234567` | **no** |
+| 1234567.891 | `rounded: false` | `1,234,567.89` | `1234567.89` | **no** |
+| 1500000 | `rounded: true, prefix: €` | `€1,500,000` | `€1500000` | **no** |
+| 42 | `rounded: true` | `42` | `42` | yes |
+| 87.5 | `rounded: false, suffix: %` | `87.50%` | `87.50%` | yes |
+
+This is a WYSIWYG break on the core value path: an author composes a report,
+sees `€1,500,000`, and the partner who opens the link sees `€1500000`. Anything
+under 1,000 matches, which is why it survives casual checking.
+
+`ReportChart.tsx` is also internally inconsistent — its chart tooltips
+(`:925-926`) *do* use `toLocaleString()`, so within one rendered report a value
+can carry separators in a tooltip and lose them in the KPI beside it.
+
+**Why not fixed here.** The defensible fix is to make the report match the
+preview, since the preview is what the author designed against. But that changes
+the appearance of **every existing partner report**, which is a product decision
+about presentation, not a defect I should resolve unilaterally. The opposite fix —
+stripping separators from the admin — is almost certainly wrong but is technically
+the smaller visual change.
+
+---
+
+## F-016
+
+### `lib/layoutGrammarValidation.ts` is dead code
+
+**Severity: Low — confirmed.**
+
+543 lines exporting 10 symbols, with **zero importers** anywhere in the
+repository: not in `app`, `lib`, `components`, `hooks`, `scripts`, or `tests`.
+
+It looks load-bearing because `scripts/check-layout-grammar-guardrail.ts` is a
+required CI gate with a matching name — but that script imports only `fs` and
+`path` and works by scanning file text for patterns. It never calls this module.
+
+The live implementations are `lib/layoutGrammar.ts`,
+`lib/layoutGrammarRuntimeEnforcement.ts` and `lib/layoutV2BlockCalculator.ts`,
+which are imported normally. This module was superseded and left behind.
+
+Safe to delete, but recorded rather than removed — Phase 0 flagged 81 unreached
+modules and they deserve one deliberate sweep rather than piecemeal deletion.
 
 ---
 
