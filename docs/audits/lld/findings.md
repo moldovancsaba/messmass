@@ -1,11 +1,11 @@
 # LLD Audit — Findings Register
 
 Status: Active
-Last Updated: 2026-08-15T10:00:00.000Z
+Last Updated: 2026-08-15T12:00:00.000Z
 Canonical: Yes (findings register)
 Owner: Architecture
 
-**Version:** 12.1.67
+**Version:** 12.1.68
 
 Findings from the LLD deep audit (`docs/audits/lld-audit-plan-2026-08-14.md`).
 Per rule R5 findings are recorded here and **not fixed on the audit branch**; per
@@ -26,7 +26,8 @@ claim is structural rather than demonstrated, it says so.
 | [F-001](#f-001) | **Critical** | **Fixed** | Page-password protection is client-side only; data APIs are unauthenticated | 4 |
 | [F-002](#f-002) | **Critical** | **Fixed** | Unsigned legacy session tokens are accepted, always | 4 |
 | [F-020](#f-020) | **High** | **Fixed — refreshed** | Analytics aggregates had not been rebuilt since 2026-03-18 | 3 |
-| [F-023](#f-023) | **High** | Open — do not schedule | The analytics cron writes a shape incompatible with every working reader | 3 |
+| [F-024](#f-024) | **High** | **Fixed** | Aggregation could only insert, never update — the real cause of the stale data | 3 |
+| [F-023](#f-023) | **High** | **Resolved** | The analytics cron writes a shape incompatible with every working reader | 3 |
 | [F-022](#f-022) | Low | **Fixed** | `/api/analytics/aggregates` queried a document shape that was never written | 3 |
 | [F-021](#f-021) | Medium | Open | The only scheduled cron has logged once in ten months | 3 |
 | [F-019](#f-019) | Medium | Open | `lib/auditLog.ts` is dead — the API write audit trail was never wired up | 3 |
@@ -468,11 +469,64 @@ that under-reports its own work is precisely why nobody noticed it had stopped.
 
 ---
 
+## F-024
+
+### Aggregation could only insert, never update — the real cause of the stale data
+
+**Severity: High — fixed. This is the root cause F-020 was circling.**
+
+`aggregateEventMetrics` mints `_id: new ObjectId()` on every call
+(`lib/analyticsCalculator.ts:454`), and the aggregation pushed that document
+straight into a `replaceOne` matched on `projectId`. Replacing an existing
+document with one carrying a different `_id` is rejected by MongoDB — `_id` is
+immutable.
+
+With `bulkWrite(..., { ordered: false })` those rejections are per-operation and
+**silent**: inserts for projects with no existing aggregate succeeded, while every
+update to an existing aggregate failed. That is exactly the observed behaviour —
+new aggregates appeared, old ones never refreshed, and the summary reported
+`upserted: 0, modified: 0` because the modify path always failed.
+
+It also explains the discrepancy recorded in F-020, where 47 documents were created
+while the job claimed to have written none.
+
+**Caught by execution, not review.** Extracting the logic into
+`lib/eventAggregation.ts` and calling it directly surfaced the error immediately:
+
+```
+FAILED: After applying the update, the (immutable) field '_id' was found to have
+been altered to _id: ObjectId('6a804163d05f14f79a107e3d')
+```
+
+Reading the code had not revealed it, and the original script had shipped with the
+same defect since its first run.
+
+**Fix.** The generated `_id` is omitted from the replacement document, so Mongo
+keeps the existing one on update and generates one on insert.
+
+**Verified against production:**
+
+| | Before the fix | After |
+|---|---:|---:|
+| Aggregates written by a run | 0 (updates all failed) | **64** |
+| Total aggregates | 116 | **119** |
+| Updated today | 47 (inserts only) | **107** |
+| Eligible projects covered | 110 of 120 | **113 of 120** |
+
+A follow-up run processed only what had changed since, confirming the operation
+remains incremental and idempotent.
+
+**Note:** `scripts/aggregateAnalytics.ts` still contains the original defective
+upsert. It should be migrated onto `lib/eventAggregation.ts` so there is one
+implementation rather than two — the F-015 lesson.
+
+---
+
 ## F-023
 
 ### The analytics cron writes a shape incompatible with every working reader
 
-**Severity: High — do NOT schedule these crons until resolved.**
+**Severity: High — resolved by rewiring the cron rather than scheduling it as-is.**
 
 The obvious remedy for F-020 is to schedule `/api/cron/analytics-aggregation`.
 **That would corrupt the analytics rather than fix them.**
@@ -495,10 +549,49 @@ does a `find()` and **sums** the results. A time-bucketed document is already an
 aggregate over many events, so mixing one into a collection of per-event documents
 double-counts — silently, and in the direction of larger numbers.
 
-Resolving this is a design decision, not a patch: either give the time-bucketed
-aggregates their own collection, or migrate every reader onto one shape. Until
-then the three cron routes should stay unscheduled, which is the state they are
-already in.
+**Resolution: the time-bucketed system is retired rather than accommodated.**
+
+The evidence for retiring it rather than separating it:
+
+- **No live consumers.** After the F-022 fix, the only remaining reader of the
+  time-bucketed shape was `compare/periods`, which has no UI consumer either. The
+  only importer of `lib/analytics-aggregator.ts` is the cron route.
+- **It optimises a problem that does not exist.** Its stated purpose is "<500ms
+  query response by pre-computing all metrics". Measured on the live collection: a
+  full scan of all documents takes **85 ms**, a date-ranged query **19 ms**, and
+  the collection is **192 KB**. There is an order of magnitude of headroom.
+- **Per-event is the shape that won** — it holds every document and backs all seven
+  UI surfaces.
+
+Keeping both was the actual cost: every future reader would have to know which
+shape it was getting, which is the ambiguity that produced this bug twice.
+
+**Done:**
+
+1. `compare/periods` repointed to the per-event shape. Both its filter *and* its
+   metric extraction needed changing — it summed flat `totalAttendees` /
+   `totalFans` keys that do not exist on a per-event document, so even a matching
+   query would have returned zeroes.
+2. `/api/cron/analytics-aggregation` now calls `runEventAggregation` instead of
+   `runFullAggregation`.
+3. The three cron routes are scheduled in `vercel.json`, staggered at 03:30, 04:00
+   and 04:30 to avoid contending with the existing 03:00 Bitly sync.
+
+**Two things found while doing it, both of which would have made the schedule a
+no-op:**
+
+- **Vercel Cron issues GET; the aggregation lived only in POST.** The route's GET
+  was an admin status endpoint, so a scheduled call would have returned 401 and
+  silently never aggregated. GET now runs the job when it carries a valid
+  `CRON_SECRET` and keeps the admin status behaviour otherwise. Verified: no
+  header returns 401, a wrong secret returns 401.
+- **`CRON_SECRET` is not set in the production environment.** Verified via
+  `vercel env ls production`. Until it is set, the guard cannot match and the
+  scheduled jobs will not run. **This is a one-line environment change and it is
+  yours to make** — the schedule is inert without it.
+
+`lib/analytics-aggregator.ts` is left in place for the dead-module sweep rather
+than deleted here.
 
 ---
 

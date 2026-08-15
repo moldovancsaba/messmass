@@ -3,6 +3,18 @@
     {
       "path": "/api/bitly/sync",
       "schedule": "0 3 * * *"
+    },
+    {
+      "path": "/api/cron/analytics-aggregation",
+      "schedule": "30 3 * * *"
+    },
+    {
+      "path": "/api/cron/bitly-refresh",
+      "schedule": "0 4 * * *"
+    },
+    {
+      "path": "/api/cron/google-sheets-sync",
+      "schedule": "30 4 * * *"
     }
   ]
 }

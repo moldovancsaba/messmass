@@ -1,8 +1,60 @@
 # {messmass} Release Notes
 Status: Active
-Last Updated: 2026-08-15T10:00:00.000Z
+Last Updated: 2026-08-15T12:00:00.000Z
 Canonical: No
 Owner: Operations
+
+## [v12.1.68] — 2026-08-15T12:00:00.000Z
+
+### Summary
+Consolidated the two analytics aggregation systems onto one, and found the actual
+reason the data had gone stale.
+
+### F-024 — Aggregation could only insert, never update (fixed, root cause)
+aggregateEventMetrics mints a fresh _id on every call, and that document was
+pushed straight into a replaceOne matched on projectId. MongoDB rejects altering
+an immutable _id, and with ordered:false those rejections are per-operation and
+silent — so inserts for new projects succeeded while every update to an existing
+aggregate failed. New aggregates appeared, old ones never refreshed, and the job
+reported writing nothing.
+
+That also explains the discrepancy recorded last release, where 47 documents were
+created while the summary claimed zero.
+
+Caught by execution rather than review: extracting the logic and calling it
+directly produced the immutable-_id error immediately. Reading the code had not
+revealed it, and the original script had carried the defect since its first run.
+
+Verified against production: a run now writes 64 aggregates where updates
+previously wrote 0; total aggregates went 116 to 119, documents updated today from
+47 to 107, and eligible-project coverage from 110/120 to 113/120.
+
+### F-023 — Time-bucketed aggregation retired (resolved)
+Rather than accommodate two shapes in one collection, the time-bucketed system is
+retired. It had no live consumers, and it optimises a problem that does not exist:
+a full scan of the collection measures 85ms, a date-ranged query 19ms, at 192KB
+total.
+
+compare/periods was repointed to the per-event shape — both its filter and its
+metric extraction, since it summed flat keys that per-event documents do not carry.
+The cron route now calls runEventAggregation, and the three cron routes are
+scheduled at 03:30, 04:00 and 04:30, staggered clear of the existing 03:00 Bitly
+sync.
+
+### Two blockers found that would have made the schedule a no-op
+Vercel Cron issues GET, and the aggregation lived only in POST — the route's GET
+was an admin status endpoint, so a scheduled call would have returned 401 and
+silently aggregated nothing. GET now runs the job when carrying a valid
+CRON_SECRET, verified to still reject a missing or wrong secret.
+
+CRON_SECRET is not set in the production environment. Until it is, the guard cannot
+match and the scheduled jobs will not run. That is a one-line environment change
+and it is the owner's to make.
+
+### Testing
+Aggregation executed against production before and after the fix. Full gate:
+type-check, lint, 349 tests, style:check, version:verify, docs:audit, guardrails,
+build.
 
 ## [v12.1.67] — 2026-08-15T10:00:00.000Z
 

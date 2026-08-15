@@ -15,6 +15,7 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server';
+import { ObjectId } from 'mongodb';
 import clientPromise from '@/lib/mongodb';
 import config from '@/lib/config';
 import { rateLimitMiddleware, RATE_LIMITS } from '@/lib/rateLimit';
@@ -66,36 +67,58 @@ export async function GET(request: NextRequest) {
     const db = client.db(config.dbName);
     const collection = db.collection('analytics_aggregates');
 
-    const queryBase: Record<string, unknown> = { bucket };
-    if (partnerId) queryBase.partnerId = partnerId;
+    // WHAT: Query and read the per-event shape this collection actually stores.
+    // WHY: This route filtered on `bucket` and `periodStart` and summed flat
+    //     `totalAttendees` / `totalFans` fields — the TimeAggregatedMetrics shape,
+    //     which nothing writes. Both period queries therefore returned zero rows and
+    //     every comparison reported 0 vs 0 with a 200. The stored documents are
+    //     per-event (`aggregationType`, `eventDate`, nested `fanMetrics` /
+    //     `merchMetrics` / `bitlyMetrics` / `rawStats`), so both the filter and the
+    //     metric extraction had to change, not just the filter.
+    const queryBase: Record<string, unknown> = { aggregationType: bucket === 'monthly' || bucket === 'yearly' ? 'event' : 'event' };
+    if (partnerId) queryBase['partnerContext.partnerId'] = new ObjectId(partnerId);
 
     const [docsA, docsB] = await Promise.all([
-      collection.find({ ...queryBase, periodStart: { $gte: rangeA.start, $lte: rangeA.end } }).toArray(),
-      collection.find({ ...queryBase, periodStart: { $gte: rangeB.start, $lte: rangeB.end } }).toArray(),
+      collection.find({ ...queryBase, eventDate: { $gte: rangeA.start, $lte: rangeA.end } }).toArray(),
+      collection.find({ ...queryBase, eventDate: { $gte: rangeB.start, $lte: rangeB.end } }).toArray(),
     ]);
 
-    const sum = (arr: Array<Record<string, unknown>>, key: string) =>
-      arr.reduce((acc, d) => acc + (Number(d[key]) ?? 0), 0);
-    const avg = (arr: Array<Record<string, unknown>>, key: string) =>
-      arr.length ? sum(arr, key) / arr.length : 0;
-
-    const keys = ['totalAttendees', 'totalImages', 'totalFans', 'totalMerchedFans', 'totalBitlyClicks', 'eventCount'];
-    const periodMetrics = (docs: Array<Record<string, unknown>>) => {
-      const out: Record<string, number> = {};
-      keys.forEach((k) => {
-        out[k] = k === 'eventCount' ? sum(docs, k) : sum(docs, k);
-      });
-      out.avgAttendees = docs.length ? avg(docs, 'totalAttendees') : 0;
-      out.avgEngagementRate = docs.length ? avg(docs, 'avgEngagementRate') : 0;
-      out.merchandiseRate = docs.length ? avg(docs, 'merchandiseRate') : 0;
-      return out;
+    // WHAT: Read a nested metric path off a per-event aggregate.
+    // WHY: The former flat keys have no equivalent at the top level; reading them
+    //     produced 0 for every document even when documents matched.
+    const at = (d: Record<string, any>, path: string): number => {
+      const v = path.split('.').reduce<any>((acc, k) => (acc == null ? acc : acc[k]), d);
+      return typeof v === 'number' && Number.isFinite(v) ? v : 0;
     };
+    const sumPath = (arr: Array<Record<string, any>>, path: string) =>
+      arr.reduce((acc, d) => acc + at(d, path), 0);
+    const avgPath = (arr: Array<Record<string, any>>, path: string) =>
+      arr.length ? sumPath(arr, path) / arr.length : 0;
+
+    // Per-event equivalents of the metrics this endpoint reports. `eventCount` is
+    // the document count, since one document is one event.
+    const periodMetrics = (docs: Array<Record<string, any>>) => ({
+      totalAttendees: sumPath(docs, 'rawStats.eventAttendees'),
+      totalImages: sumPath(docs, 'rawStats.remoteImages') + sumPath(docs, 'rawStats.hostessImages'),
+      totalFans: sumPath(docs, 'fanMetrics.totalFans'),
+      totalMerchedFans: sumPath(docs, 'merchMetrics.totalMerched'),
+      totalBitlyClicks: sumPath(docs, 'bitlyMetrics.clicks'),
+      eventCount: docs.length,
+      avgAttendees: avgPath(docs, 'rawStats.eventAttendees'),
+      avgEngagementRate: avgPath(docs, 'fanMetrics.engagementRate'),
+      merchandiseRate: avgPath(docs, 'merchMetrics.penetrationRate'),
+    });
 
     const metricsA = periodMetrics(docsA);
     const metricsB = periodMetrics(docsB);
 
+    // The `keys` list was removed with the flat-field summing; deltas are computed
+    // over the metric names periodMetrics actually returns.
+    const deltaKeys: Array<keyof ReturnType<typeof periodMetrics>> = [
+      'totalAttendees', 'totalImages', 'totalFans', 'totalMerchedFans', 'totalBitlyClicks', 'eventCount',
+    ];
     const deltas: Record<string, { absolute: number; percent: number }> = {};
-    keys.forEach((k) => {
+    deltaKeys.forEach((k) => {
       const a = metricsA[k] ?? 0;
       const b = metricsB[k] ?? 0;
       deltas[k] = {
