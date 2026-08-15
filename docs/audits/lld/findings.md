@@ -1,11 +1,11 @@
 # LLD Audit — Findings Register
 
 Status: Active
-Last Updated: 2026-08-15T01:30:00.000Z
+Last Updated: 2026-08-15T03:00:00.000Z
 Canonical: Yes (findings register)
 Owner: Architecture
 
-**Version:** 12.1.61
+**Version:** 12.1.62
 
 Findings from the LLD deep audit (`docs/audits/lld-audit-plan-2026-08-14.md`).
 Per rule R5 findings are recorded here and **not fixed on the audit branch**; per
@@ -25,6 +25,9 @@ claim is structural rather than demonstrated, it says so.
 | [F-009](#f-009) | **Critical** | **Partly fixed — 33 routes open, frozen by test** | Mutating API routes have no authentication | 4 |
 | [F-001](#f-001) | **Critical** | **Fixed** | Page-password protection is client-side only; data APIs are unauthenticated | 4 |
 | [F-002](#f-002) | **Critical** | **Fixed** | Unsigned legacy session tokens are accepted, always | 4 |
+| [F-012](#f-012) | Medium | **Fixed** | CSP granted `unsafe-eval` app-wide for a reason that stopped being true | 2 |
+| [F-013](#f-013) | Medium | Open | Page gate prompts for pages that have no password | 2 |
+| [F-014](#f-014) | Low | Open | Documented formula-parser rollback has no effect | 2 |
 | [F-011](#f-011) | High | Open — needs your decision | Public API keys are users' plaintext passwords | 4 |
 | [F-003](#f-003) | High | Open | Middleware admin gate checks cookie presence, never validity | 4 |
 | [F-004](#f-004) | High | Open | v3 organisation scoping is not enforced | 4 |
@@ -351,6 +354,87 @@ forged unsigned token, hint=legacy  -> null
 minted token is a JWT (3 parts)     -> true
 genuine token still validates       -> true
 ```
+
+---
+
+## F-012
+
+### CSP granted `unsafe-eval` app-wide for a reason that stopped being true
+
+**Severity: Medium — fixed and verified in both modes.**
+
+`middleware.ts:114` granted `'unsafe-eval'` in `script-src` for every response, with
+the justification *"Formula Engine (new Function)"*. That justification is stale:
+the formula engine tokenises and walks expressions
+(`lib/formulaEngine.ts:706,777`), and a scan of `app`, `lib`, `components` and
+`hooks` finds **no `new Function` and no `eval(`** in first-party source at all.
+
+`'unsafe-eval'` removes one of the strongest protections a CSP offers against
+XSS — it is what stops an injected string from becoming executing code. Granting
+it in production for a dependency that no longer exists is pure downside.
+
+**Verified by removing it**, rather than reasoned about:
+
+| Mode | Result |
+|---|---|
+| Development | `EvalError` from `_next/static/chunks/main-app.js` — Next.js's HMR runtime |
+| **Production build** | **Report page renders, zero CSP violations** (only unrelated preload warnings) |
+
+So the need is real in development and absent in production. The fix is
+conditional rather than a flat removal, because a flat removal breaks local
+development entirely.
+
+Confirmed after the change: production serves
+`script-src 'self' 'unsafe-inline' https://…` and development still includes
+`'unsafe-eval'`.
+
+Note the same file already reasoned correctly about this once — line 124 records
+that Chart.js does not need `eval` — but the grant was never revisited when the
+formula engine migrated.
+
+---
+
+## F-013
+
+### Page gate prompts for pages that have no password
+
+**Severity: Medium — pre-existing, not introduced by the F-001 work.**
+
+The client and server disagree about what "protected" means.
+
+- **Server** (`requirePageAccess`): conditional — a page with no password record
+  is served openly.
+- **Client** (`app/filter/[slug]/page.tsx:122`, and the sibling pages): unconditional
+  — `isAuthenticated()` reads `sessionStorage`, which is empty on first visit, so
+  the password prompt renders regardless of whether a password exists.
+
+Observed on a production build: filter `154254a9-…`, which has **no** password
+configured and whose API correctly returns 200 with its data, still renders
+"Filter Access Required".
+
+A visitor to such a page cannot proceed — there is no password to enter — while
+the same data is served freely by the API. Neither half is dangerous alone; the
+inconsistency is the defect, and it predates this audit.
+
+Related and separate: `PagePasswordLogin` fetches `/api/page-config` to style the
+prompt, and **that route does not exist** — verified 404. Cosmetic only, since the
+call is wrapped in `res.ok`, but it is a dead dependency.
+
+---
+
+## F-014
+
+### Documented formula-parser rollback has no effect
+
+**Severity: Low.**
+
+`lib/featureFlags.ts:51` documents *"ROLLBACK: Set ENABLE_SAFE_FORMULA_PARSER=false
+in Vercel"*, and exposes `USE_SAFE_FORMULA_PARSER`. But `lib/formulaEngine.ts`
+references the flag **zero times** — the safe parser is the only path.
+
+Harmless in itself, and the safe direction. Recorded because someone following
+that documented rollback during an incident would set the variable, see no
+change, and lose time.
 
 ---
 

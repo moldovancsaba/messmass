@@ -109,9 +109,19 @@ export async function middleware(request: NextRequest) {
   // WHY: Prevent XSS attacks by restricting what resources can be loaded
   // HOW: Strict CSP that allows only same-origin resources and inline styles (for design tokens)
   // SECURITY: Phase 0 Task 0.1 - Secure Markdown Rendering
+  // WHAT: 'unsafe-eval' is granted in development only.
+  // WHY: The comment here used to justify it as "Formula Engine (new Function)",
+  //     but the formula engine no longer evaluates code — it tokenises and walks
+  //     the expression (lib/formulaEngine.ts:706,777), and there is no `new
+  //     Function` or `eval` anywhere in first-party source. What still needs it is
+  //     Next.js's own dev-mode HMR runtime, verified by removing the grant: a
+  //     production build renders reports with no CSP violation, while dev throws
+  //     EvalError from main-app.js. Granting it in production weakened XSS defence
+  //     across the whole application for a reason that had stopped being true.
+  const allowEval = process.env.NODE_ENV !== 'production' ? " 'unsafe-eval'" : '';
   const cspHeader = [
     "default-src 'self'",
-    "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.googletagmanager.com https://vercel.live", // Allow GA, Vercel, and Formula Engine (new Function)
+    `script-src 'self' 'unsafe-inline'${allowEval} https://www.googletagmanager.com https://vercel.live`,
     "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com", // Allow Material Icons stylesheet from Google Fonts
     "img-src 'self' data: https:", // Allow images from same origin, data URIs, and HTTPS
     "font-src 'self' data: https://fonts.gstatic.com https://vercel.live", // Allow Material Icons fonts from Google Fonts CDN and Vercel Live fonts

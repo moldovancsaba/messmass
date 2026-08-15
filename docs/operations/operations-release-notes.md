@@ -1,8 +1,47 @@
 # {messmass} Release Notes
 Status: Active
-Last Updated: 2026-08-15T01:30:00.000Z
+Last Updated: 2026-08-15T03:00:00.000Z
 Canonical: No
 Owner: Operations
+
+## [v12.1.62] — 2026-08-15T03:00:00.000Z
+
+### Summary
+LLD audit Phase 2 opened on the report pipeline. One security fix, two findings
+recorded.
+
+### F-012 — CSP no longer grants unsafe-eval in production (fixed)
+middleware.ts granted 'unsafe-eval' on every response, justified in a comment as
+"Formula Engine (new Function)". That stopped being true: the formula engine
+tokenises and walks expressions, and there is no `new Function` or `eval(` in
+first-party source anywhere. unsafe-eval is the single largest concession a CSP
+can make to XSS, and it was being made for a dependency that no longer exists.
+
+Verified by removing it rather than reasoning about it: a production build renders
+reports with zero CSP violations, while development throws EvalError from
+Next.js's own HMR runtime. The grant is therefore now development-only — a flat
+removal would have broken local development. Confirmed in both modes after the
+change.
+
+### F-013 — Client and server disagree about "protected" (recorded, pre-existing)
+requirePageAccess is conditional: a page with no password is served openly. The
+client gate is unconditional: sessionStorage is empty on first visit so the prompt
+always renders. A filter with no password configured, whose API correctly returns
+its data, still shows "Filter Access Required" — and the visitor cannot proceed,
+because there is no password to enter. Predates this audit; not introduced by the
+F-001 work. Also noted: PagePasswordLogin fetches /api/page-config to style the
+prompt and that route does not exist (404, cosmetic only).
+
+### F-014 — Documented rollback has no effect (recorded)
+featureFlags.ts documents setting ENABLE_SAFE_FORMULA_PARSER=false as a rollback,
+but formulaEngine.ts references the flag zero times. Harmless, and the safe
+direction, but someone following it during an incident would lose time.
+
+### Testing
+Production build served locally with the real security flags set, report page
+loaded, console checked for CSP violations. Dev mode re-verified to retain the
+grant. Full gate: type-check, lint, 339 tests, style:check, version:verify,
+docs:audit, guardrails, build.
 
 ## [v12.1.61] — 2026-08-15T01:30:00.000Z
 
