@@ -1,8 +1,64 @@
 # {messmass} Release Notes
 Status: Active
-Last Updated: 2026-08-15T07:30:00.000Z
+Last Updated: 2026-08-15T10:00:00.000Z
 Canonical: No
 Owner: Operations
+
+## [v12.1.67] — 2026-08-15T10:00:00.000Z
+
+### Summary
+Analytics aggregates refreshed against production, the aggregates endpoint fixed,
+and a correction to the previous release's characterisation.
+
+### Correction to v12.1.66
+That release said the analytics workspace "serves data frozen on 2026-03-18".
+That overstated it. Aggregation is incremental, keyed on updatedAt >= lastRunTime,
+so nothing was broken — it had simply not been run since March, because the only
+writer is a hand-run script. The dashboards were showing an incomplete picture,
+not a frozen one.
+
+### F-020 — Aggregates refreshed (fixed)
+`npm run analytics:aggregate` was run against production. It is idempotent
+(replaceOne on projectId with upsert, never deleting) and shape-compatible,
+building documents through the same aggregateEventMetrics call the stored
+documents came from. Aggregate documents went from 69 to 116, with 47 written, and
+the newest event covered moved from 2026-03-18 to 2026-08-11. A second run
+immediately after processed 0 projects and exited cleanly.
+
+Coverage is capped by data rather than code: isProjectAggregatable requires
+stats.eventAttendees > 0, so of 370 projects only 120 are eligible and 110 now have
+aggregates. The remaining 250 cannot be aggregated until they carry attendance
+data, and no amount of scheduling changes that.
+
+Observed and deliberately not explained: the run reported "upserted: 0,
+modified: 0" while 47 documents were created. Reproducing it means resetting
+lastRunTime, which is not worth disturbing production for. Recorded rather than
+guessed at — a job that under-reports its own work is why nobody noticed it had
+stopped.
+
+### F-023 — Do not schedule the analytics cron (new, High)
+The obvious remedy for F-020 would corrupt the data. Two aggregation designs share
+the collection name: the hand-run script writes per-event documents keyed by
+projectId and eventDate, while lib/analytics-aggregator.ts — what the cron calls —
+writes time-bucketed documents with bucket/periodStart/eventIds and no projectId.
+
+Every working reader queries by projectId, eventDate or partnerContext.partnerId.
+Worse, executive/metrics does a find() and sums; a time-bucketed document is
+already an aggregate over many events, so mixing the shapes double-counts silently
+and upward. Resolving it is a design decision — separate collections, or migrate
+readers onto one shape — so the crons stay unscheduled.
+
+### F-022 — Aggregates endpoint fixed
+The route now filters on aggregationType, eventDate and partnerContext.partnerId
+instead of bucket, periodStart and a top-level partnerId. year/month are derived
+into an eventDate range rather than matching nothing. Verified live: unfiltered
+went from 69 wrong-shaped rows to 100, ?bucket=event from 0 to 100, a 2026 range
+from 0 to 37, and August 2026 from 0 to 2.
+
+### Testing
+All endpoint behaviour verified by executing real requests with a minted admin
+session. Full gate: type-check, lint, 349 tests, style:check, version:verify,
+docs:audit, guardrails, build.
 
 ## [v12.1.66] — 2026-08-15T07:30:00.000Z
 

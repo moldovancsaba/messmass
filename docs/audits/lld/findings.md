@@ -1,11 +1,11 @@
 # LLD Audit — Findings Register
 
 Status: Active
-Last Updated: 2026-08-15T07:30:00.000Z
+Last Updated: 2026-08-15T10:00:00.000Z
 Canonical: Yes (findings register)
 Owner: Architecture
 
-**Version:** 12.1.66
+**Version:** 12.1.67
 
 Findings from the LLD deep audit (`docs/audits/lld-audit-plan-2026-08-14.md`).
 Per rule R5 findings are recorded here and **not fixed on the audit branch**; per
@@ -25,8 +25,9 @@ claim is structural rather than demonstrated, it says so.
 | [F-009](#f-009) | **Critical** | **Partly fixed — 33 routes open, frozen by test** | Mutating API routes have no authentication | 4 |
 | [F-001](#f-001) | **Critical** | **Fixed** | Page-password protection is client-side only; data APIs are unauthenticated | 4 |
 | [F-002](#f-002) | **Critical** | **Fixed** | Unsigned legacy session tokens are accepted, always | 4 |
-| [F-020](#f-020) | **High** | Open — confirmed | The entire analytics workspace serves data frozen on 2026-03-18 | 3 |
-| [F-022](#f-022) | Low | Open | `/api/analytics/aggregates` queries a document shape that was never written | 3 |
+| [F-020](#f-020) | **High** | **Fixed — refreshed** | Analytics aggregates had not been rebuilt since 2026-03-18 | 3 |
+| [F-023](#f-023) | **High** | Open — do not schedule | The analytics cron writes a shape incompatible with every working reader | 3 |
+| [F-022](#f-022) | Low | **Fixed** | `/api/analytics/aggregates` queried a document shape that was never written | 3 |
 | [F-021](#f-021) | Medium | Open | The only scheduled cron has logged once in ten months | 3 |
 | [F-019](#f-019) | Medium | Open | `lib/auditLog.ts` is dead — the API write audit trail was never wired up | 3 |
 | [F-017](#f-017) | Medium | **Fixed** | Content-asset deletion guard was inert and its usage panel queried a non-existent collection | 3 |
@@ -398,7 +399,13 @@ than three separate failures.
 `analytics/insights/summary`, `analytics/partner/[partnerId]`,
 `analytics/trends`, `analytics/benchmarks`.
 
-**Now established — they serve it directly.** The open question from the first
+> **Correction (2026-08-15).** The previous writeup said the workspace "serves data
+> frozen on 2026-03-18". That overstated it. Aggregation is **incremental**, keyed on
+> `updatedAt >= lastRunTime`, so nothing was broken — it simply had not been run since
+> March, because the only writer is a hand-run script. Running it refreshed the data.
+> The dashboards were showing an incomplete picture, not a frozen one.
+
+**Readers serve stored documents directly.** The open question from the first
 writeup is answered, and the answer is the bad one.
 
 `app/api/analytics/aggregates/route.ts:76` comments *"Connect to the pre-aggregated
@@ -430,9 +437,68 @@ stored documents. They are simply reading a collection nothing refreshes.
 unscheduled cron, the picture is that aggregation has only ever run manually, and
 the last run was 18 March.
 
-Not fixed: adding cron entries changes production scheduling and load, and
-re-running the aggregator rewrites the collection every dashboard reads. Both are
-your call.
+**Fixed by refreshing, 2026-08-15.** `npm run analytics:aggregate` was run against
+production. It is idempotent — `replaceOne` filtered on `projectId` with
+`upsert: true`, never deleting — and shape-compatible, building documents via the
+same `aggregateEventMetrics(project, 'event')` the stored documents came from.
+
+| | Before | After |
+|---|---:|---:|
+| Aggregate documents | 69 | **116** |
+| Newest event covered | 2026-03-18 | **2026-08-11** |
+| Written in this run | — | 47 |
+
+A second run immediately after found 0 projects to process and exited cleanly,
+confirming the incremental logic works and the operation is safely repeatable.
+
+**Coverage is capped by data, not by code.** `isProjectAggregatable`
+(`lib/analyticsCalculator.ts:488`) requires `stats.eventAttendees > 0` plus numeric
+`remoteImages`, `hostessImages` and `selfies`. Of 370 projects, **120 are eligible**
+and **110 now have aggregates** — 10 still missing. The other 250 can never be
+aggregated until they carry attendance data. That is a data-entry gap, and no
+amount of scheduling fixes it.
+
+**One thing observed and not explained:** the run reported
+`Aggregates upserted: 0, Aggregates modified: 0` while 47 documents were in fact
+created. The counters flow from `bulkWrite`'s `upsertedCount`/`modifiedCount`
+through a single `upsertResult` variable, so the discrepancy is real but its cause
+was not isolated — reproducing it requires resetting `lastRunTime`, which is not
+worth disturbing production for. Recorded rather than guessed at, because a job
+that under-reports its own work is precisely why nobody noticed it had stopped.
+
+---
+
+## F-023
+
+### The analytics cron writes a shape incompatible with every working reader
+
+**Severity: High — do NOT schedule these crons until resolved.**
+
+The obvious remedy for F-020 is to schedule `/api/cron/analytics-aggregation`.
+**That would corrupt the analytics rather than fix them.**
+
+Two incompatible aggregation designs share the collection name
+`analytics_aggregates`:
+
+| Writer | Shape | Key fields |
+|---|---|---|
+| `scripts/aggregateAnalytics.ts` (hand-run, produced all 116 stored docs) | per-event | `projectId`, `eventDate`, `aggregationType`, `partnerContext` |
+| `lib/analytics-aggregator.ts` (what the cron calls) | time-bucketed | `bucket`, `periodStart`, `periodEnd`, `eventCount`, `eventIds[]` — **no `projectId`, no `eventDate`** |
+
+Every reader that currently works — `trends`, `insights/[projectId]`,
+`executive/metrics`, `executive/insights`, `executive/top-events`,
+`partner/[partnerId]`, `sponsorshipHub` — queries by `projectId`, `eventDate` or
+`partnerContext.partnerId`. None of those exists on a time-bucketed document.
+
+The damage is not that the new documents would be ignored. `executive/metrics`
+does a `find()` and **sums** the results. A time-bucketed document is already an
+aggregate over many events, so mixing one into a collection of per-event documents
+double-counts — silently, and in the direction of larger numbers.
+
+Resolving this is a design decision, not a patch: either give the time-bucketed
+aggregates their own collection, or migrate every reader onto one shape. Until
+then the three cron routes should stay unscheduled, which is the state they are
+already in.
 
 ---
 
@@ -463,7 +529,22 @@ Verified by execution against an admin session:
 Every filtered query returns empty with a success status — the endpoint never
 signals that its filter cannot match anything.
 
-**Low, not High, for one reason:** no UI calls it. A grep across `app/admin`,
+**Fixed.** The route now filters on the fields the documents actually carry:
+`aggregationType` in place of `bucket`, `eventDate` in place of `periodStart`, and
+`partnerContext.partnerId` in place of a top-level `partnerId`. `year`/`month` have
+no stored equivalent and are now derived into an `eventDate` range rather than left
+to match nothing.
+
+Verified against production data through the live endpoint:
+
+| Request | Before | After |
+|---|---:|---:|
+| unfiltered | 69 wrong-shaped | **100** (page limit) |
+| `?bucket=event` | 0 | **100** |
+| `?startDate=2026-01-01&endDate=2026-12-31` | 0 | **37** |
+| `?startDate=2026-08-01&endDate=2026-08-31` | 0 | **2** |
+
+**Was filed Low for one reason:** no UI calls it. A grep across `app/admin`,
 `components` and `hooks` finds no consumer. The dashboards use `trends`,
 `insights`, `executive/*` and `partner/*`, which read the same collection with
 queries that do match the stored shape. This endpoint is latent, not live.

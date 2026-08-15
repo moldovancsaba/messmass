@@ -78,37 +78,47 @@ export async function GET(request: NextRequest) {
     const db: Db = client.db(config.dbName);
     const aggregatesCollection: Collection<TimeAggregatedMetrics> = db.collection('analytics_aggregates');
     
-    // Build MongoDB filter from the supported aggregate query parameters
+    // WHAT: Filter against the shape this collection actually stores.
+    // WHY: These filters previously used `bucket`, `periodStart`, `periodEnd` and a
+    //     top-level `partnerId` — the TimeAggregatedMetrics shape. Nothing writes
+    //     that shape. The documents here are per-event aggregates written by
+    //     scripts/aggregateAnalytics.ts via aggregateEventMetrics(), carrying
+    //     `aggregationType`, `eventDate` and `partnerContext.partnerId`. The result
+    //     was that every filtered request returned zero rows with a 200, silently:
+    //     ?bucket=daily and any date range both matched nothing, while an
+    //     unfiltered request returned documents whose fields the caller did not
+    //     expect. Verified against production before and after this change.
     const query: any = {};
-    
+
     if (filters.bucket) {
-      query.bucket = filters.bucket;
+      query.aggregationType = filters.bucket;
     }
-    
+
     if (filters.startDate || filters.endDate) {
-      query.periodStart = {};
-      if (filters.startDate) query.periodStart.$gte = filters.startDate;
-      if (filters.endDate) query.periodStart.$lte = filters.endDate;
+      query.eventDate = {};
+      if (filters.startDate) query.eventDate.$gte = filters.startDate;
+      if (filters.endDate) query.eventDate.$lte = filters.endDate;
     }
-    
+
     if (filters.partnerId) {
-      query.partnerId = filters.partnerId;
+      query['partnerContext.partnerId'] = filters.partnerId;
     }
-    
+
     if (filters.partnerIds && filters.partnerIds.length > 0) {
-      query.partnerId = { $in: filters.partnerIds };
+      query['partnerContext.partnerId'] = { $in: filters.partnerIds };
     }
     
     if (filters.hashtag) {
       query.hashtag = filters.hashtag;
     }
     
+    // `year` and `month` do not exist on the stored documents; they are derived
+    // from eventDate rather than left to match nothing.
     if (filters.year) {
-      query.year = filters.year;
-    }
-    
-    if (filters.month) {
-      query.month = filters.month;
+      const y = String(filters.year);
+      const from = filters.month ? `${y}-${String(filters.month).padStart(2, '0')}-01` : `${y}-01-01`;
+      const to = filters.month ? `${y}-${String(filters.month).padStart(2, '0')}-31` : `${y}-12-31`;
+      query.eventDate = { ...(query.eventDate || {}), $gte: from, $lte: to };
     }
     
     // Translate API sort semantics into collection field names
