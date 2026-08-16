@@ -14,18 +14,10 @@ jobs:
   verify:
     name: Verify
     runs-on: ubuntu-latest
-    # GDS installs from GitHub Packages (.npmrc: @sovereignsquad:registry), which
-    # authenticates every install, even public packages — the ambient Actions
-    # token needs packages:read explicitly requested or npm ci gets a 401.
-    permissions:
-      contents: read
-      packages: read
     env:
       # Dummy values so `next build` doesn't fail on missing runtime config.
       MONGODB_URI: ${{ secrets.MONGODB_URI || 'mongodb://localhost:27017/test' }}
       DB_NAME: ${{ secrets.DB_NAME || 'messmass_test' }}
-      # .npmrc resolves @sovereignsquad:registry auth from this exact name.
-      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -39,6 +31,12 @@ jobs:
       - run: npm run style:check
       - run: npm run version:verify
       - run: npm run docs:audit
+      # Catches exactly the failure that motivated this: package.json
+      # declaring one GDS version while node_modules silently ran a stale,
+      # unrelated one for three majors because npm install was never re-run
+      # after the vendor bump. This runs on every push now, not just when
+      # someone happens to remember.
+      - run: npm run gds:sync
       - run: npx tsx scripts/check-dependency-guardrail.ts
       - run: npx tsx scripts/check-layout-grammar-guardrail.ts
       - run: npm run build
