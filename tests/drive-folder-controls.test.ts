@@ -14,7 +14,6 @@
 //     without touching a real database.
 
 jest.mock('@/lib/mongodb', () => {
-  // eslint-disable-next-line @typescript-eslint/no-var-requires
   const { ObjectId } = require('mongodb');
   const docs: Record<string, any>[] = [];
 
@@ -66,7 +65,6 @@ import {
   listPendingSyncFolderIds,
 } from '@/lib/driveFolders';
 
-// eslint-disable-next-line @typescript-eslint/no-var-requires
 const { __fakeCollection: fake } = jest.requireMock('@/lib/mongodb') as { __fakeCollection: any };
 
 function seed(doc: Partial<Record<string, any>>) {
