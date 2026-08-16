@@ -1,0 +1,20 @@
+/* lib/adapters/aiAnalyticsAdapter.module.css */
+/* WHAT: Layout only — colour comes from the shared global .badge-* classes
+   (app/globals.css), the same ones the Status column itself uses. */
+/* WHY: A prior version used .adapter-empty-value (color: var(--mm-gray-400),
+   meant for "nothing here" placeholders) for these — the one signal on the
+   row that says something is actively happening read as the least important
+   text on it. An operator asked "does this mean the process is ongoing? I
+   have no information if it is in progress" while looking straight at it. */
+
+.statusExtras {
+  display: flex;
+  flex-direction: column;
+  gap: var(--mm-space-1);
+  margin-top: var(--mm-space-1);
+}
+
+.errorText {
+  color: var(--mm-color-error-600);
+  font-size: var(--mm-font-size-sm);
+}

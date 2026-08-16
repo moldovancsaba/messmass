@@ -1,8 +1,35 @@
 # {messmass} Release Notes
 Status: Active
-Last Updated: 2026-08-16T14:00:00.000Z
+Last Updated: 2026-08-16T15:00:00.000Z
 Canonical: No
 Owner: Operations
+
+## [v12.1.72] — 2026-08-16T15:00:00.000Z
+
+### Summary
+Two real bugs in the just-shipped events table, found from a live mobile
+screenshot: the new "Deep analysis" column lost its label on mobile, and
+in-progress indicators (check requested, rescan requested, paused) were
+styled identically to "nothing here" placeholder text.
+
+### Deep analysis column had no label on mobile
+UnifiedListView.module.css only prints a column's label on mobile for
+columns marked `mobile.behavior: 'secondary'` — `'primary'` is for a
+title-like field that reads fine unlabelled (the event name). This column
+was wrongly marked `'primary'`, so "Brands: 30 · Merch: 5 · Demographics: 4%"
+rendered with nothing saying what it was, directly under an unlabelled
+status badge with the same problem structurally (though that one is
+intentional — Event and Status are the two fields meant to read as the
+card's title block).
+
+### In-progress state was styled as if it meant nothing
+Check requested / Rescan requested / Paused / the last error message all used
+`.adapter-empty-value` — color: var(--mm-gray-400), the class meant for "this
+field has no value." The one signal on the row that answers "is something
+happening right now" was the least visually significant text on it. Replaced
+with `badge badge-primary` (pending states) and `badge badge-secondary`
+(paused), matching the same visual language as the Status badge itself
+rather than reading as an afterthought.
 
 ## [v12.1.71] — 2026-08-16T14:00:00.000Z
 

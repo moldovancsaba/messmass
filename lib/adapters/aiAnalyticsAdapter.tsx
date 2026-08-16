@@ -15,6 +15,7 @@
 import React from 'react';
 import Link from 'next/link';
 import type { AdminPageAdapter, AdminSurfaceAction } from '@/lib/adminDataAdapters';
+import styles from './aiAnalyticsAdapter.module.css';
 
 export type AiEventStatus = 'not_connected' | 'analyzing' | 'complete' | 'error';
 
@@ -216,10 +217,14 @@ export function createAiEventsAdapter(handlers: AiEventRowHandlers): AdminPageAd
           render: (row) => (
             <>
               <span className={`badge ${STATUS_BADGE_VARIANT[row.status]}`}>{statusText(row)}</span>
-              {row.lastError && <div className="adapter-empty-value">{row.lastError}</div>}
-              {row.drivePaused && <div className="adapter-empty-value">Paused</div>}
-              {row.driveSyncPending && <div className="adapter-empty-value">Check requested…</div>}
-              {row.rescanPending && <div className="adapter-empty-value">Rescan requested…</div>}
+              {/* Same visual weight as the status badge above — this is the
+                  answer to "is something running right now", not a footnote. */}
+              <div className={styles.statusExtras}>
+                {row.driveSyncPending && <span className="badge badge-primary">⏳ Check requested</span>}
+                {row.rescanPending && <span className="badge badge-primary">⏳ Rescan requested</span>}
+                {row.drivePaused && <span className="badge badge-secondary">Paused</span>}
+                {row.lastError && <span className={styles.errorText}>{row.lastError}</span>}
+              </div>
             </>
           ),
         },
@@ -237,7 +242,14 @@ export function createAiEventsAdapter(handlers: AiEventRowHandlers): AdminPageAd
           key: 'brandCount',
           label: 'Deep analysis',
           width: '260px',
-          mobile: { behavior: 'primary', label: 'Deep analysis' },
+          // WHAT: 'secondary', not 'primary'.
+          // WHY: On mobile, UnifiedListView.module.css only prints a label
+          //     (::before) for 'secondary' columns — 'primary' is meant for a
+          //     title-like field that reads fine unlabelled (the event name).
+          //     This column is unreadable without its label: "Brands: 30 ·
+          //     Merch: 5 · Demographics: 4%" floating with nothing to say
+          //     what it is or that it differs from the Status badge above it.
+          mobile: { behavior: 'secondary', label: 'Deep analysis' },
           render: (row) => <DeepAnalysisCell row={row} />,
         },
         {
