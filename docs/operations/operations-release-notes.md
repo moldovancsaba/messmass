@@ -1,8 +1,41 @@
 # {messmass} Release Notes
 Status: Active
-Last Updated: 2026-08-16T16:00:00.000Z
+Last Updated: 2026-08-16T17:00:00.000Z
 Canonical: No
 Owner: Operations
+
+## [v12.1.74] — 2026-08-16T17:00:00.000Z
+
+### Summary
+Phase 1 of the GDS adoption plan: fixed a three-major version drift where
+package.json declared GDS 6.0.0 but node_modules actually ran 3.9.0.
+
+### The drift
+An audit of the design system found messmass's vendored GDS tarballs
+(vendor/gds/*.tgz, declared at 6.0.0 in package.json) had never actually been
+installed — node_modules resolved 3.9.0 the whole time. GDS's own docs call
+vendored release tarballs "not a documented consumer install path"; the
+correct install path is the GitHub Packages registry. Added `.npmrc` registry
+auth, moved the three GDS packages to `^6.1.0` (true latest, not just 6.0.0),
+deleted the stale tarballs, added registry auth to CI.
+
+### Breaking-change surface confirmed inert
+Only two real breaking changes exist between 3.9.0 and 6.1.0 — a
+`ReferenceThemeExplorer` import-path move (5.0.0) and a `class-usa`
+brand-theme palette rename (6.0.0). Repo-wide grep, post-install: zero hits
+for either. Also confirmed messmass renders no GDS date components, so the
+3.14.0 dates.css opt-in change doesn't apply either.
+
+### Found and fixed along the way
+A full `rm -rf node_modules package-lock.json && npm install` (the obvious
+first move) let `googleapis-common` drift 8.0.1→8.0.3, breaking type-check
+against `google-auth-library`'s `JWT`/`OAuth2Client` shapes — entirely
+unrelated to GDS. Redid the install preserving the existing lockfile except
+for what the GDS version bump actually required, which kept
+`googleapis-common` at 8.0.1 and fixed it. Also promoted `google-auth-library`
+from an implicitly-hoisted transitive dependency (working only by hoisting
+luck) to an explicit direct one, matching what `lib/googleSheetsClient.ts`
+actually imports.
 
 ## [v12.1.73] — 2026-08-16T16:00:00.000Z
 

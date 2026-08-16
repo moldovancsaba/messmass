@@ -41,6 +41,7 @@ const APPROVED_RUNTIME_DEPS = new Set([
   'chart.js',
   'react-chartjs-2',
   'focus-trap-react',
+  'google-auth-library', // pinned exact version alongside googleapis; see lib/googleSheetsClient.ts's direct import
   'googleapis',
   'html2canvas',
   'js-cookie',
