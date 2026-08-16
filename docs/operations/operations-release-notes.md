@@ -1,10 +1,41 @@
 # {messmass} Release Notes
 Status: Active
-Last Updated: 2026-08-15T12:00:00.000Z
+Last Updated: 2026-08-16T09:00:00.000Z
 Canonical: No
 Owner: Operations
 
-## [v12.1.68] — 2026-08-15T12:00:00.000Z
+## [v12.1.69] — 2026-08-16T09:00:00.000Z
+
+### Summary
+Operator controls for the fanmass AI pipeline, and two fixes for status that
+overstated how complete an event's analysis actually was.
+
+### Drive folder controls: Check now / Pause
+fanmass only ever polls messmass — it has no reachable address of its own — so
+each control is a flag on the folder link's document that fanmass's next poll
+notices and clears once served. Check now bypasses the normal ~30 minute poll
+interval for one folder; Pause removes a folder from fanmass's discovery
+entirely, for events that are finished or were linked ahead of images that
+never arrived. Both live in the event editor's Drive Folders panel.
+
+### AI rescan controls: per module, or everything
+The AI event report gained buttons to force fanmass to re-run one module
+(demographics, or brands/clubs/merchandise) or every module against images
+already ingested, bypassing the normal skip-existing reuse policy. Built after
+tracing a live event that showed 1,501/1,501 images analysed with every
+brand, merchandise, and demographics table empty — the base pass had run, the
+deeper modules had not, and there was previously no way to ask for them
+without re-ingesting from Drive.
+
+fanmass's start_messmass_analysis_run gained a reuse_policy parameter so a
+force request is never silently absorbed into an already-active lesser run.
+
+### Status badges no longer overclaim
+"Analysis complete" only ever meant every discovered image had been through
+the base pass — it said nothing about the deeper modules above. Relabelled to
+"Images complete" everywhere it appears. The per-event AI report now also
+shows how many people actually got a demographics label (e.g. "170 of 4,143"),
+rather than implying the full measured-people count was covered.
 
 ### Summary
 Consolidated the two analytics aggregation systems onto one, and found the actual
