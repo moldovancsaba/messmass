@@ -239,6 +239,46 @@
   color: var(--mm-gray-300);
 }
 
+.pausedBadge {
+  color: var(--mm-gray-600);
+  font-style: italic;
+}
+
+.pendingBadge {
+  color: var(--mm-color-primary-600);
+  font-weight: 600;
+}
+
+.linkActions {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  flex-shrink: 0;
+}
+
+.actionButton {
+  background: transparent;
+  border: 1px solid var(--mm-gray-300);
+  color: var(--mm-gray-700);
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 0.35rem 0.7rem;
+  border-radius: 6px;
+  white-space: nowrap;
+  transition: all 0.2s ease;
+}
+
+.actionButton:hover:not(:disabled) {
+  border-color: var(--mm-color-primary-500);
+  color: var(--mm-color-primary-600);
+}
+
+.actionButton:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
 .removeButton {
   background: transparent;
   border: none;
@@ -266,7 +306,7 @@
     align-items: flex-start;
   }
 
-  .removeButton {
+  .linkActions {
     align-self: flex-end;
   }
 }

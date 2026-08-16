@@ -19,7 +19,22 @@ import Link from 'next/link';
 import { useParams } from 'next/navigation';
 import AnalyticsSectionCard from '@/components/analytics/AnalyticsSectionCard';
 import AnalyticsStatePanel from '@/components/analytics/AnalyticsStatePanel';
+import { apiPost } from '@/lib/apiClient';
 import styles from './AiEventReport.module.css';
+
+type RescanModuleId = 'demographics' | 'brands' | 'poster_faces' | 'all';
+
+interface RescanRequest {
+  moduleId: RescanModuleId;
+  requestedAt: string;
+}
+
+const RESCAN_LABEL: Record<RescanModuleId, string> = {
+  demographics: 'Rescan demographics',
+  brands: 'Rescan brands, clubs & merchandise',
+  poster_faces: 'Rescan poster faces',
+  all: 'Restart everything',
+};
 
 interface Mention { name: string; count: number }
 
@@ -56,6 +71,11 @@ interface EventRow {
 // WHAT: Rows shown before the list collapses behind "Show all".
 // WHY: Twenty rows of brands would bury the header; the tail is one action away.
 const VISIBLE_ROWS = 8;
+
+function sumValues(counts: Record<string, number> | undefined): number {
+  if (!counts) return 0;
+  return Object.values(counts).reduce((sum, n) => sum + (n || 0), 0);
+}
 
 function relativeTime(iso: string | null): string {
   if (!iso) return 'Not recorded';
@@ -149,6 +169,21 @@ export default function AiEventReportView() {
   const [noSummary, setNoSummary] = useState(false);
   const [unauthenticated, setUnauthenticated] = useState(false);
   const [error, setError] = useState('');
+  const [rescanPending, setRescanPending] = useState<RescanRequest | null>(null);
+  const [rescanBusy, setRescanBusy] = useState<RescanModuleId | null>(null);
+  const [rescanError, setRescanError] = useState('');
+
+  const loadRescanStatus = useCallback(async () => {
+    try {
+      const res = await fetch(`/api/analytics/ai/events/${eventId}/rescan`, { cache: 'no-store' });
+      if (!res.ok) return;
+      const body = await res.json();
+      setRescanPending(body.data || null);
+    } catch {
+      // Non-critical: the rescan buttons still work without knowing the
+      // pending state, they just won't show "requested" until the next load.
+    }
+  }, [eventId]);
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -184,7 +219,46 @@ export default function AiEventReportView() {
 
   useEffect(() => {
     load();
-  }, [load]);
+    loadRescanStatus();
+  }, [load, loadRescanStatus]);
+
+  async function handleRescan(moduleId: RescanModuleId) {
+    setRescanError('');
+    setRescanBusy(moduleId);
+    try {
+      const data = await apiPost(`/api/analytics/ai/events/${eventId}/rescan`, { moduleId });
+      if (data.success) {
+        setRescanPending(data.data);
+      } else {
+        setRescanError(data.error?.message || `Failed to request a rescan.`);
+      }
+    } catch (err) {
+      setRescanError(err instanceof Error ? err.message : 'Network error. Please try again.');
+    } finally {
+      setRescanBusy(null);
+    }
+  }
+
+  // WHAT: One rescan button, disabled while a request is in flight or while
+  //     any request for this event is already pending.
+  // WHY: fanmass only picks up a rescan request on its next poll tick — a
+  //     second click before that happens would just overwrite the pending
+  //     request with an identical one, not speed anything up.
+  function RescanButton({ moduleId }: { moduleId: RescanModuleId }) {
+    const pendingThis = rescanPending?.moduleId === moduleId;
+    const anyPending = rescanPending !== null;
+    return (
+      <button
+        type="button"
+        className={styles.rescanButton}
+        disabled={rescanBusy !== null || anyPending}
+        onClick={() => handleRescan(moduleId)}
+        title={anyPending && !pendingThis ? 'Another rescan is already pending for this event' : undefined}
+      >
+        {pendingThis ? 'Requested…' : rescanBusy === moduleId ? 'Requesting…' : RESCAN_LABEL[moduleId]}
+      </button>
+    );
+  }
 
   if (loading) {
     return <AnalyticsStatePanel variant="loading" title="Loading AI report" description="Reading the analysis summary for this event." />;
@@ -219,6 +293,21 @@ export default function AiEventReportView() {
   const people = s.peopleCounts || {};
   const images = s.imageCounts || {};
 
+  // WHAT: How many analysed people actually got a demographic label.
+  // WHY: "Images analysed" counts the base pass (person/brand/merch detection),
+  //     but gender/age/emotion come from a separate, narrower pass over those
+  //     same images — a batch can show every image analysed while only a
+  //     fraction of its measured people carry a demographic label. Summing one
+  //     projection gives that true count instead of leaving it implied by a
+  //     table that just looks sparse. The three projections should agree since
+  //     they label the same detected faces; if they don't, the largest is the
+  //     most complete one to anchor on.
+  const demographicsAnalyzed = Math.max(
+    sumValues(s.genderProjection),
+    sumValues(s.ageProjection),
+    sumValues(s.emotionProjection)
+  );
+
   return (
     <div className={styles.wrapper}>
       <Link className={styles.backLink} href="/admin/analytics/ai">← AI Analytics</Link>
@@ -238,6 +327,10 @@ export default function AiEventReportView() {
           {eventRow?.progressPercent !== null && eventRow?.progressPercent !== undefined && (
             <span>Analysis progress: {eventRow.progressPercent}%</span>
           )}
+        </div>
+        {rescanError && <p className={styles.errorDetail}>{rescanError}</p>}
+        <div className={styles.rescanRow}>
+          <RescanButton moduleId="all" />
         </div>
         <dl className={styles.metricsGrid}>
           <div className={styles.metricItem}>
@@ -260,6 +353,13 @@ export default function AiEventReportView() {
       </AnalyticsSectionCard>
 
       <AnalyticsSectionCard title="Brands" subtitle="Brand detections across this event's images">
+        {/* Brands, Clubs & federations, and Merchandise are all read from one
+            pair of fanmass modules (sports_merchandise + fashion_brands) — one
+            button covers all three sections, rather than three buttons that
+            would request the same rescan three times. */}
+        <div className={styles.rescanRow}>
+          <RescanButton moduleId="brands" />
+        </div>
         <MentionTable title="Brand" caption="Brand detections ranked by count" mentions={s.brandMentions || []} />
       </AnalyticsSectionCard>
 
@@ -272,6 +372,16 @@ export default function AiEventReportView() {
       </AnalyticsSectionCard>
 
       <AnalyticsSectionCard title="Fan demographics" subtitle="Projections from analysed faces">
+        <div className={styles.rescanRow}>
+          <RescanButton moduleId="demographics" />
+        </div>
+        {/* people.measured is every person detected in the base pass; the
+            demographic pass runs over a subset of those, so this is the number
+            that actually backs the tables below — not the images/people totals
+            shown at the top, which would overstate coverage here. */}
+        <p className={styles.shareNote}>
+          Based on {demographicsAnalyzed} of {people.measured ?? 0} people analysed for demographics.
+        </p>
         <h3 className={styles.srOnly}>Gender projection</h3>
         <CountsTable counts={s.genderProjection || {}} caption="Gender projection" nameHeader="Gender" />
         <h3 className={styles.srOnly}>Age projection</h3>

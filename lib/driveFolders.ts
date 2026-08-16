@@ -43,6 +43,19 @@ export interface DriveFolderLink {
   //     and distinguish "no images found" from "images not analysed yet".
   imagesDiscovered?: number;
   imagesAnalyzed?: number;
+  // WHAT: Operator controls, both read by fanmass's poll rather than pushed to it
+  //     — fanmass has no reachable address of its own, so a "command" is just a
+  //     field on the doc that the next poll notices.
+  // WHY paused: a folder that is fully analysed, or was linked ahead of images
+  //     that never arrived, still gets walked every poll cycle forever with
+  //     nothing to show for it. Pausing removes it from fanmass's discovery
+  //     entirely until resumed.
+  // WHY syncRequestedAt: the normal poll runs on a fixed interval (default 30
+  //     min); this lets an operator ask for "check now" instead of waiting.
+  //     Cleared automatically the next time fanmass reports back a status for
+  //     this folder, since any report means the request was served.
+  paused?: boolean;
+  syncRequestedAt?: string;
   addedBy?: string;
   createdAt: string;
   updatedAt: string;
@@ -64,6 +77,8 @@ function toDriveFolderLink(doc: any): DriveFolderLink {
     lastCheckedAt: doc.lastCheckedAt ?? undefined,
     imagesDiscovered: typeof doc.imagesDiscovered === 'number' ? doc.imagesDiscovered : undefined,
     imagesAnalyzed: typeof doc.imagesAnalyzed === 'number' ? doc.imagesAnalyzed : undefined,
+    paused: doc.paused === true,
+    syncRequestedAt: doc.syncRequestedAt ?? undefined,
     addedBy: doc.addedBy ?? undefined,
     createdAt: doc.createdAt,
     updatedAt: doc.updatedAt,
@@ -186,11 +201,83 @@ export async function setDriveFolderStatus(
         ...counters,
         ...(status === 'error' && lastError ? { lastError } : {}),
       },
-      ...(status !== 'error' ? { $unset: { lastError: '' } } : {}),
+      // Any status report means fanmass just polled this folder, which serves
+      // whatever sync-now request was pending — clear it here rather than
+      // trusting fanmass to ack it separately, so a request can never leak
+      // past the poll that actually fulfilled it.
+      $unset: {
+        ...(status !== 'error' ? { lastError: '' } : {}),
+        syncRequestedAt: '',
+      },
     },
     { returnDocument: 'after' }
   );
   if (!result) {
+    throw Object.assign(new Error('Drive folder link was not found.'), {
+      status: 404,
+      code: 'DRIVE_FOLDER_LINK_NOT_FOUND',
+    });
+  }
+  return toDriveFolderLink(result);
+}
+
+// WHAT: Operator override — remove/return a folder to fanmass's poll rotation.
+// WHY: A folder that is done, or was linked ahead of images that never came,
+//     otherwise gets walked forever for nothing. See DriveFolderLink.paused.
+export async function setDriveFolderPaused(
+  eventId: string,
+  linkId: string,
+  paused: boolean
+): Promise<DriveFolderLink> {
+  if (!ObjectId.isValid(eventId)) {
+    throw Object.assign(new Error('Invalid event id.'), { status: 422, code: 'INVALID_EVENT_ID' });
+  }
+  if (!ObjectId.isValid(linkId)) {
+    throw Object.assign(new Error('Invalid link id.'), { status: 422, code: 'INVALID_LINK_ID' });
+  }
+  const db = await getDb();
+  const timestamp = nowIso();
+  const result = await db.collection('drive_folder_links').findOneAndUpdate(
+    { _id: new ObjectId(linkId), eventId },
+    { $set: { paused, updatedAt: timestamp } },
+    { returnDocument: 'after' }
+  );
+  if (!result) {
+    throw Object.assign(new Error('Drive folder link was not found.'), {
+      status: 404,
+      code: 'DRIVE_FOLDER_LINK_NOT_FOUND',
+    });
+  }
+  return toDriveFolderLink(result);
+}
+
+// WHAT: Operator override — ask fanmass to check this folder before its next
+//     scheduled poll. See DriveFolderLink.syncRequestedAt.
+// WHY: A paused folder cannot be force-checked — resume it first, since
+//     "check now" on a folder fanmass has been told to ignore would be
+//     confusing (it would appear to work once, then go back to being ignored).
+export async function requestDriveFolderSync(eventId: string, linkId: string): Promise<DriveFolderLink> {
+  if (!ObjectId.isValid(eventId)) {
+    throw Object.assign(new Error('Invalid event id.'), { status: 422, code: 'INVALID_EVENT_ID' });
+  }
+  if (!ObjectId.isValid(linkId)) {
+    throw Object.assign(new Error('Invalid link id.'), { status: 422, code: 'INVALID_LINK_ID' });
+  }
+  const db = await getDb();
+  const timestamp = nowIso();
+  const result = await db.collection('drive_folder_links').findOneAndUpdate(
+    { _id: new ObjectId(linkId), eventId, paused: { $ne: true } },
+    { $set: { syncRequestedAt: timestamp, updatedAt: timestamp } },
+    { returnDocument: 'after' }
+  );
+  if (!result) {
+    const existing = await db.collection('drive_folder_links').findOne({ _id: new ObjectId(linkId), eventId });
+    if (existing?.paused) {
+      throw Object.assign(new Error('This folder is paused. Resume it before requesting a check.'), {
+        status: 409,
+        code: 'DRIVE_FOLDER_PAUSED',
+      });
+    }
     throw Object.assign(new Error('Drive folder link was not found.'), {
       status: 404,
       code: 'DRIVE_FOLDER_LINK_NOT_FOUND',
@@ -227,7 +314,11 @@ export async function listActiveDriveFoldersGroupedByEvent(): Promise<ActiveDriv
   const db = await getDb();
   await ensureDriveFolderIndexes(db);
 
-  const links = await db.collection('drive_folder_links').find({}).toArray();
+  // Paused folders are deliberately absent from fanmass's discovery — see
+  // DriveFolderLink.paused — rather than included with a flag fanmass must
+  // remember to check, so a future caller of this function can't reintroduce
+  // polling for one by skipping that check.
+  const links = await db.collection('drive_folder_links').find({ paused: { $ne: true } }).toArray();
   if (links.length === 0) return [];
 
   const eventIds = Array.from(new Set(links.map((link) => String(link.eventId))));
@@ -292,4 +383,22 @@ export async function listActiveDriveFoldersGroupedByEvent(): Promise<ActiveDriv
   }
 
   return groups;
+}
+
+// WHAT: Folder ids with a live "check now" request, for fanmass to poll
+//     cheaply and often — cheap enough to check every worker loop tick rather
+//     than waiting for the normal interval, unlike listActiveDriveFoldersGroupedByEvent
+//     (which joins events/partners and is only meant for the full sweep).
+// WHY: "Check now" needs to feel closer to instant than the ~30 min default
+//     poll interval without shortening that interval for every folder.
+export async function listPendingSyncFolderIds(): Promise<string[]> {
+  const db = await getDb();
+  const rows = await db
+    .collection('drive_folder_links')
+    .find(
+      { paused: { $ne: true }, syncRequestedAt: { $exists: true, $ne: null } },
+      { projection: { folderId: 1 } }
+    )
+    .toArray();
+  return rows.map((row) => String(row.folderId));
 }

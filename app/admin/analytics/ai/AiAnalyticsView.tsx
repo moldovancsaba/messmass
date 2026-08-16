@@ -56,8 +56,14 @@ interface AiVariableRow {
 // WHY: Named once so the workspace and the authoring surface can agree.
 const SPARSE_THRESHOLD = 50;
 
+// 'complete' means every discovered image has been through the base pass
+// (person/brand/merch detection) — it says nothing about whether the deeper
+// demographic pass covered all of those people. The label used to say
+// "Analysis complete", which read as "everything is done" when a badge could
+// show 100% here while its demographics table covered a small fraction of the
+// people counted. See the per-event report for the true demographics count.
 const STATUS_LABEL: Record<AiEventRow['status'], string> = {
-  complete: 'Analysis complete',
+  complete: 'Images complete',
   analyzing: 'Analysing',
   error: 'Failed',
   not_connected: 'No AI analytics',

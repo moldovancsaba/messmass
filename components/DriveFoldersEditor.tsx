@@ -11,7 +11,7 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import styles from './DriveFoldersEditor.module.css';
-import { apiPost, apiDelete } from '@/lib/apiClient';
+import { apiPost, apiDelete, apiPatch } from '@/lib/apiClient';
 import { extractDriveFolderId } from '@/lib/googleDriveFolder';
 
 interface DriveFoldersEditorProps {
@@ -28,6 +28,8 @@ interface DriveFolderLink {
   lastError?: string;
   imagesDiscovered?: number;
   imagesAnalyzed?: number;
+  paused?: boolean;
+  syncRequestedAt?: string;
 }
 
 // WHAT: What each state means to the person reading it.
@@ -38,7 +40,10 @@ interface DriveFolderLink {
 const STATUS_LABEL: Record<DriveFolderLink['status'], string> = {
   pending: 'Waiting to be read',
   analyzing: 'Analysing',
-  complete: 'Analysis complete',
+  // "Images complete", not "Analysis complete" — this only means every
+  // discovered image had its base pass run. Deeper modules (e.g.
+  // demographics) can cover a smaller slice; see the per-event AI report.
+  complete: 'Images complete',
   empty: 'No images found',
   error: 'Failed',
   // Legacy: written by a fanmass build predating the analysis-aware vocabulary.
@@ -139,6 +144,25 @@ export default function DriveFoldersEditor({ projectId, projectName }: DriveFold
     }
   }
 
+  // Shared by Check now / Pause / Resume — same request shape, same
+  // optimistic reload, only the action and success copy differ.
+  async function handleAction(linkId: string, action: 'pause' | 'resume' | 'sync', successMessage: string) {
+    setError('');
+    setSuccess('');
+    try {
+      const data = await apiPatch(`/api/drive-folders/${linkId}?projectId=${projectId}`, { action });
+      if (data.success) {
+        setSuccess(successMessage);
+        loadLinks();
+      } else {
+        setError(data.error || `Failed to ${action} this folder`);
+      }
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Network error. Please try again.');
+      console.error(`Drive folder ${action} error:`, err);
+    }
+  }
+
   return (
     <div className={styles.container}>
       <div className={styles.header}>
@@ -228,6 +252,18 @@ export default function DriveFoldersEditor({ projectId, projectName }: DriveFold
                   <span className={`${styles.statusBadge} ${styles[`status_${link.status}`] || ''}`}>
                     {STATUS_LABEL[link.status] || 'Unknown state'}
                   </span>
+                  {link.paused && (
+                    <>
+                      <span className={styles.separator} aria-hidden="true">•</span>
+                      <span className={styles.pausedBadge}>Paused — not checked by fanmass</span>
+                    </>
+                  )}
+                  {!link.paused && link.syncRequestedAt && (
+                    <>
+                      <span className={styles.separator} aria-hidden="true">•</span>
+                      <span className={styles.pendingBadge}>Check requested…</span>
+                    </>
+                  )}
                   {(() => {
                     const percent = progressPercent(link);
                     if (percent === null || link.status === 'error') return null;
@@ -257,14 +293,39 @@ export default function DriveFoldersEditor({ projectId, projectName }: DriveFold
                   )}
                 </div>
               </div>
-              <button
-                type="button"
-                onClick={() => handleRemoveLink(link._id, link.folderUrl)}
-                className={styles.removeButton}
-                title="Remove from this event"
-              >
-                ✕
-              </button>
+              <div className={styles.linkActions}>
+                {!link.paused && (
+                  <button
+                    type="button"
+                    onClick={() => handleAction(link._id, 'sync', '✓ Check requested — fanmass will look within moments')}
+                    className={styles.actionButton}
+                    disabled={Boolean(link.syncRequestedAt)}
+                    title="Check for new images now, instead of waiting for the next scheduled poll"
+                  >
+                    {link.syncRequestedAt ? 'Check requested…' : 'Check now'}
+                  </button>
+                )}
+                <button
+                  type="button"
+                  onClick={() =>
+                    link.paused
+                      ? handleAction(link._id, 'resume', '✓ Resumed — fanmass will poll this folder again')
+                      : handleAction(link._id, 'pause', '✓ Paused — fanmass will stop checking this folder')
+                  }
+                  className={styles.actionButton}
+                  title={link.paused ? 'Resume fanmass polling for this folder' : 'Stop fanmass from checking this folder — use once it is done, or if it has no images'}
+                >
+                  {link.paused ? 'Resume' : 'Pause'}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => handleRemoveLink(link._id, link.folderUrl)}
+                  className={styles.removeButton}
+                  title="Remove from this event"
+                >
+                  ✕
+                </button>
+              </div>
             </div>
           ))}
         </div>
