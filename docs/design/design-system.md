@@ -4,7 +4,7 @@ Last Updated: 2026-08-08T16:40:43.000Z
 Canonical: Yes
 Owner: Architecture
 
-**Version**: 12.1.74
+**Version**: 12.1.75
 **Status**: Production
 
 ## Purpose
@@ -35,17 +35,28 @@ Local UI code may adapt GDS primitives to Messmass domain needs, but it must not
 
 ## Approved Local Patterns
 
-| Pattern | Current Use |
-|---------|-------------|
-| `AdminLayout` | Admin shell and page containment |
-| `UnifiedAdminHeroWithSearch` | Admin list-page hero, search, and primary actions |
-| `FormModal` / `BaseModal` | Modal workflows that need consistent accessible structure |
-| `ConfirmDialog` | Destructive confirmation flows |
-| `UnifiedHashtagInput` | Hashtag selection and categorized hashtag input |
-| `ColoredHashtagBubble` | Hashtag display/selection/removal chip, over GDS `ChoiceChip` |
-| `HashtagMultiSelect` | Hashtag filter-bar multi-select, over GDS `ChoiceChip` |
-| `ReportChart` | Report chart rendering |
-| `ReportContent` | Report block layout |
+Machine-readable form of this table lives in `gds-adoption.json`'s `localAdapters`
+— keep the two in sync. `status: active` here means a genuine thin GDS wrapper;
+`status: planned` means fully local/custom markup with a scheduled GDS
+replacement (see the GDS adoption plan for the migration order).
+
+| Pattern | Current Use | GDS target | Status |
+|---------|-------------|------------|--------|
+| `ColoredHashtagBubble` | Hashtag display/selection/removal chip, over GDS `ChoiceChip` | `ChoiceChip` | active |
+| `HashtagMultiSelect` | Hashtag filter-bar multi-select, over GDS `ChoiceChip` | `ChoiceChip` | active |
+| `MetricCard` (`components/analytics/MetricCard.tsx`) | Analytics metric card, over GDS `MetricCard` | `MetricCard` | active |
+| `AdminLayout` | Admin shell and page containment | `AppShell` | planned |
+| `UnifiedAdminPage` | Orchestrates hero+search+list/card toggle+sort across 6 admin pages; not previously documented despite being load-bearing | `AdminResourceManager` | planned |
+| `UnifiedListView` | Sortable admin table, composes `AdminActionRail` for row actions; not previously documented | `AdminDataTable` / `ResponsiveDataView` | planned |
+| `UnifiedCardView` | Admin card grid, composes `ColoredCard` + `AdminActionRail`; not previously documented | `AdminResourceGrid` | planned |
+| `UnifiedAdminHeroWithSearch` | Admin list-page hero, search, and primary actions | `PageHeader` | planned |
+| `FormModal` / `BaseModal` | Modal workflows that need consistent accessible structure | `AdminCrudForm` / `AdminModal` | planned |
+| `ConfirmDialog` | Destructive confirmation flows — name collision with GDS's own `ConfirmDialog`/`GdsConfirmProvider` export | `GdsConfirmProvider` | planned |
+| `AdminActionRail` | Shared primary/secondary/overflow row and card action rail; not previously documented | `ActionBar` | planned |
+| `TopHeader` | Admin workspace header | `WorkspaceHeader` | planned |
+| `UnifiedHashtagInput` | Hashtag selection and categorized hashtag input | — | domain-specific, not yet mapped |
+| `ReportChart` | Report chart rendering (Chart.js) | — | domain-specific, not a UI-kit primitive |
+| `ReportContent` | Report block layout (custom CSS-grid layout engine) | — | domain-specific, not a UI-kit primitive |
 
 ### `ColoredHashtagBubble` / `HashtagMultiSelect` (2026-08-08 GDS migration)
 

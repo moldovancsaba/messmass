@@ -37,6 +37,11 @@ jobs:
       # after the vendor bump. This runs on every push now, not just when
       # someone happens to remember.
       - run: npm run gds:sync
+      # Report-only: 111 pre-existing forbidden-color findings across the repo
+      # (raw color literals outside theme/token files) predate this manifest
+      # and are real, tracked Phase 4 work, not something to block every push
+      # on today. Promote to a hard gate once that count trends to zero.
+      - run: npx gds-compliance check --manifest ./gds-adoption.json || true
       - run: npx tsx scripts/check-dependency-guardrail.ts
       - run: npx tsx scripts/check-layout-grammar-guardrail.ts
       - run: npm run build

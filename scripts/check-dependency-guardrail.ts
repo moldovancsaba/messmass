@@ -83,6 +83,7 @@ const APPROVED_DEV_DEPS = new Set([
   'tsx',
   'fast-check',
   'is-date-object',
+  '@sovereignsquad/gds-compliance', // gds-adoption.json drift/exception checker; see CI's non-blocking check step
   // Add other approved dev deps as needed
 ]);
 

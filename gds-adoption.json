@@ -1,0 +1,85 @@
+{
+  "schemaVersion": 1,
+  "gdsVersion": "6.1.0",
+  "productArchetype": "hybrid",
+  "supportedEntryPoints": [
+    "@sovereignsquad/gds-theme",
+    "@sovereignsquad/gds-theme/client",
+    "@sovereignsquad/gds-theme/server",
+    "@sovereignsquad/gds-core",
+    "@sovereignsquad/gds-core/client",
+    "@sovereignsquad/gds-core/server",
+    "@sovereignsquad/gds-admin",
+    "@sovereignsquad/gds-admin/client",
+    "@sovereignsquad/gds-admin/server"
+  ],
+  "requiredContracts": [
+    "GdsProvider",
+    "ChoiceChip",
+    "MetricCard",
+    "AuthShell",
+    "OverlayManagerProvider",
+    "AppShell",
+    "AdminResourceManager",
+    "AdminDataTable",
+    "AdminResourceGrid",
+    "PageHeader",
+    "AdminCrudForm",
+    "AdminModal",
+    "GdsConfirmProvider",
+    "ActionBar",
+    "WorkspaceHeader"
+  ],
+  "localAdapters": [
+    { "contract": "ChoiceChip", "path": "components/ColoredHashtagBubble.tsx", "status": "active" },
+    { "contract": "ChoiceChip", "path": "components/HashtagMultiSelect.tsx", "status": "active" },
+    { "contract": "MetricCard", "path": "components/analytics/MetricCard.tsx", "status": "active" },
+    { "contract": "AppShell", "path": "components/AdminLayout.tsx", "status": "planned" },
+    { "contract": "AdminResourceManager", "path": "components/UnifiedAdminPage.tsx", "status": "planned" },
+    { "contract": "AdminDataTable", "path": "components/UnifiedListView.tsx", "status": "planned" },
+    { "contract": "AdminResourceGrid", "path": "components/UnifiedCardView.tsx", "status": "planned" },
+    { "contract": "PageHeader", "path": "components/UnifiedAdminHeroWithSearch.tsx", "status": "planned" },
+    { "contract": "AdminCrudForm", "path": "components/modals/FormModal.tsx", "status": "planned" },
+    { "contract": "AdminModal", "path": "components/modals/BaseModal.tsx", "status": "planned" },
+    { "contract": "GdsConfirmProvider", "path": "components/modals/ConfirmDialog.tsx", "status": "planned" },
+    { "contract": "ActionBar", "path": "components/admin/AdminActionRail.tsx", "status": "planned" },
+    { "contract": "WorkspaceHeader", "path": "components/TopHeader.tsx", "status": "planned" }
+  ],
+  "approvedExceptions": [
+    {
+      "surface": "Root theme/provider authority",
+      "category": "migration-bridge",
+      "scope": [
+        "app/providers.tsx",
+        "app/admin/login/GdsLoginShell.tsx",
+        "lib/ui/mantineTheme.ts"
+      ],
+      "reason": "App-wide MantineProvider (from @mantine/core directly, not GdsProvider) fed by a locally-authored theme that spreads gdsTheme as a starting point, predating GdsProvider adoption. A second, nested GdsProvider is temporarily live on /admin/login only, scoped via applyDocumentColorScheme=false to avoid a hydration conflict with the outer provider — a documented workaround, not the target state.",
+      "allowedImplementation": [
+        "MantineProvider from @mantine/core, themed via lib/ui/mantineTheme.ts spreading gdsTheme",
+        "A second, route-scoped GdsProvider in app/admin/login/GdsLoginShell.tsx with applyDocumentColorScheme=false"
+      ],
+      "mustStillUse": [
+        "gdsTheme as the base token source",
+        "GDS component contracts wherever already adopted (ChoiceChip, MetricCard, AuthShell, OverlayManagerProvider)"
+      ],
+      "mustNotDo": [
+        "Do not add a third provider instance",
+        "Do not let the two existing providers diverge in token values",
+        "Do not expand GdsLoginShell's scope to more routes — it is a bounded workaround, not a pattern to replicate"
+      ],
+      "owner": "moldovancsaba",
+      "reviewDate": "2026-08-16",
+      "exitCondition": "Resolved by Phase 3 of the GDS adoption plan — single root GdsProvider via createPublicBrandTheme, GdsLoginShell.tsx deleted.",
+      "status": "temporary"
+    }
+  ],
+  "compliance": {
+    "themeOwnershipPaths": ["app/providers.tsx", "lib/ui/mantineTheme.ts"],
+    "protectedSurfacePaths": ["app/styles/theme.css"],
+    "strictMode": false
+  },
+  "migrationStatus": "partial",
+  "owner": "moldovancsaba",
+  "lastReviewedAt": "2026-08-16"
+}

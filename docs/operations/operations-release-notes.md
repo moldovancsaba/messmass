@@ -1,8 +1,37 @@
 # {messmass} Release Notes
 Status: Active
-Last Updated: 2026-08-16T17:00:00.000Z
+Last Updated: 2026-08-16T18:00:00.000Z
 Canonical: No
 Owner: Operations
+
+## [v12.1.75] — 2026-08-16T18:00:00.000Z
+
+### Summary
+Phase 2 of the GDS adoption plan: a `gds-adoption.json` governance manifest
+declaring the full known gap inventory, so none of it has to be rediscovered
+by a future audit.
+
+### The manifest
+Installed `@sovereignsquad/gds-compliance` (vendored, same pattern as the
+core packages) and declared `gds-adoption.json` — 13 `localAdapters` entries
+(3 genuine thin GDS wrappers already correct, 10 fully-local components with
+a scheduled GDS replacement) and one `approvedExceptions` entry for the root
+provider/theme situation, owned and dated, not left implicit.
+
+### `docs/design/design-system.md` now matches reality
+Its Approved Local Patterns table listed 9 patterns; the codebase actually
+has 13 GDS-relevant ones. Added the 4 that existed but were undocumented
+despite being load-bearing — `UnifiedAdminPage` alone backs 6 admin pages —
+plus a GDS-target/status column so the doc and the manifest read the same
+migration state, not two different lists.
+
+### `gds-compliance check` — non-blocking, on purpose
+Wired into CI, `|| true`. It found 111 pre-existing raw-color-literal
+findings across the repo the moment it ran — real, but Phase 4's scope, not
+something to block every push on today. `gds-eslint-config` was deferred
+entirely: it requires ESLint 9 or 10 as a peer, and messmass is still on
+ESLint 8 with the legacy `.eslintrc` format — that's its own migration, not
+something to bundle into this one.
 
 ## [v12.1.74] — 2026-08-16T17:00:00.000Z
 
