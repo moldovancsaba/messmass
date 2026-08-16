@@ -1,8 +1,34 @@
 # {messmass} Release Notes
 Status: Active
-Last Updated: 2026-08-16T21:00:00.000Z
+Last Updated: 2026-08-16T21:30:00.000Z
 Canonical: No
 Owner: Operations
+
+## [v12.1.80] — 2026-08-16T21:30:00.000Z
+
+### Summary
+Phase 3 (commit 3 of 3) of the GDS adoption plan, closing it out: deleted
+`app/admin/login/GdsLoginShell.tsx`, the route-scoped second `GdsProvider`
+that worked around a hydration conflict with the pre-GDS root
+`MantineProvider`. Now that `app/providers.tsx` mounts a single real root
+`GdsProvider` (commit 2), that workaround is resolved rather than needed.
+
+### What changed
+`app/admin/login/page.tsx` no longer wraps its content in `GdsLoginShell` —
+`AdminLoginContent` renders directly under the app-wide provider, which
+already covers every route including this one. Removed the now-resolved
+`approvedExceptions` entry from `gds-adoption.json` (its own
+`exitCondition` named this exact commit). Verified: `npm run type-check`,
+`npm run lint`, `npm test`, a clean `npm run build`, and `gds-compliance
+validate-manifest` — no new findings from the exception removal beyond the
+same 111 pre-existing, tracked, non-blocking forbidden-color findings.
+
+### Phase 3 complete
+All three commits landed: `lib/ui/mantineTheme.ts` on `createPublicBrandTheme`
+(v12.1.77), the root provider swap (v12.1.78), and this cleanup. messmass now
+has exactly one `GdsProvider` in the tree, mounted at the root, with no
+parallel or nested instance anywhere — the state GDS's own docs call for.
+Phase 4 (token bridge) and Phase 5 (component consolidation) remain open.
 
 ## [v12.1.79] — 2026-08-16T21:00:00.000Z
 

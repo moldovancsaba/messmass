@@ -10,7 +10,6 @@ import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { AuthShell } from '@sovereignsquad/gds-core/client'
 import { Button, Stack, Text } from '@mantine/core'
-import GdsLoginShell from './GdsLoginShell'
 
 const ERROR_MESSAGES = new Map<string, string>([
   ['sso_required', 'Please sign in with DoneIsBetter to access the dashboard.'],
@@ -97,10 +96,12 @@ function AdminLoginContent() {
   )
 }
 
+// WHAT: No local GdsProvider wrapper here.
+// WHY: app/providers.tsx now mounts the single root GdsProvider that covers
+//     every route, including this one — the second, route-scoped GdsProvider
+//     that used to live in GdsLoginShell.tsx (worked around a hydration
+//     conflict with the pre-GDS root MantineProvider) is resolved now that
+//     there is only one provider in the tree.
 export default function AdminLogin() {
-  return (
-    <GdsLoginShell>
-      <AdminLoginContent />
-    </GdsLoginShell>
-  )
+  return <AdminLoginContent />
 }
