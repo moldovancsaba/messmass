@@ -19,8 +19,29 @@ import Link from 'next/link';
 import { useParams } from 'next/navigation';
 import AnalyticsSectionCard from '@/components/analytics/AnalyticsSectionCard';
 import AnalyticsStatePanel from '@/components/analytics/AnalyticsStatePanel';
-import { apiPost } from '@/lib/apiClient';
+import { apiPatch, apiPost } from '@/lib/apiClient';
 import styles from './AiEventReport.module.css';
+
+interface DriveFolderLink {
+  _id: string;
+  folderUrl: string;
+  label?: string;
+  status: 'pending' | 'analyzing' | 'complete' | 'empty' | 'error' | 'verified';
+  lastError?: string;
+  imagesDiscovered?: number;
+  imagesAnalyzed?: number;
+  paused?: boolean;
+  syncRequestedAt?: string;
+}
+
+const DRIVE_STATUS_LABEL: Record<DriveFolderLink['status'], string> = {
+  pending: 'Waiting to be read',
+  analyzing: 'Analysing',
+  complete: 'Images complete',
+  empty: 'No images found',
+  error: 'Failed',
+  verified: 'Read, analysis unknown',
+};
 
 type RescanModuleId = 'demographics' | 'brands' | 'poster_faces' | 'all';
 
@@ -172,6 +193,9 @@ export default function AiEventReportView() {
   const [rescanPending, setRescanPending] = useState<RescanRequest | null>(null);
   const [rescanBusy, setRescanBusy] = useState<RescanModuleId | null>(null);
   const [rescanError, setRescanError] = useState('');
+  const [folderLinks, setFolderLinks] = useState<DriveFolderLink[]>([]);
+  const [folderError, setFolderError] = useState('');
+  const [folderBusy, setFolderBusy] = useState<string | null>(null);
 
   const loadRescanStatus = useCallback(async () => {
     try {
@@ -182,6 +206,21 @@ export default function AiEventReportView() {
     } catch {
       // Non-critical: the rescan buttons still work without knowing the
       // pending state, they just won't show "requested" until the next load.
+    }
+  }, [eventId]);
+
+  // WHAT: Same Drive folder links the event editor's Drive Folders panel
+  //     shows, reused here with Check now / Pause. Same endpoints, same data
+  //     — this is the second place that data is worth acting on, not a
+  //     separate system.
+  const loadFolderLinks = useCallback(async () => {
+    try {
+      const res = await fetch(`/api/drive-folders?projectId=${eventId}`, { cache: 'no-store' });
+      if (!res.ok) return;
+      const body = await res.json();
+      if (body.success && Array.isArray(body.links)) setFolderLinks(body.links);
+    } catch {
+      // Non-critical: the report itself still renders without folder status.
     }
   }, [eventId]);
 
@@ -220,7 +259,25 @@ export default function AiEventReportView() {
   useEffect(() => {
     load();
     loadRescanStatus();
-  }, [load, loadRescanStatus]);
+    loadFolderLinks();
+  }, [load, loadRescanStatus, loadFolderLinks]);
+
+  async function handleFolderAction(linkId: string, action: 'pause' | 'resume' | 'sync') {
+    setFolderError('');
+    setFolderBusy(linkId);
+    try {
+      const data = await apiPatch(`/api/drive-folders/${linkId}?projectId=${eventId}`, { action });
+      if (data.success) {
+        loadFolderLinks();
+      } else {
+        setFolderError(data.error || `Failed to ${action} this folder.`);
+      }
+    } catch (err) {
+      setFolderError(err instanceof Error ? err.message : 'Network error. Please try again.');
+    } finally {
+      setFolderBusy(null);
+    }
+  }
 
   async function handleRescan(moduleId: RescanModuleId) {
     setRescanError('');
@@ -351,6 +408,70 @@ export default function AiEventReportView() {
           </div>
         </dl>
       </AnalyticsSectionCard>
+
+      {folderLinks.length > 0 && (
+        <AnalyticsSectionCard title="Drive folders" subtitle="Ingestion status for this event's linked folders">
+          {folderError && <p className={styles.errorDetail}>{folderError}</p>}
+          <div className={styles.folderList}>
+            {folderLinks.map((link) => (
+              <div key={link._id} className={styles.folderRow}>
+                <div className={styles.folderInfo}>
+                  <a href={link.folderUrl} target="_blank" rel="noopener noreferrer" className={styles.folderUrl}>
+                    {link.label || link.folderUrl}
+                  </a>
+                  <div className={styles.folderMeta}>
+                    <span className={styles.folderStatusBadge}>{DRIVE_STATUS_LABEL[link.status] || 'Unknown state'}</span>
+                    {typeof link.imagesDiscovered === 'number' && (
+                      <>
+                        <span aria-hidden="true">·</span>
+                        <span>{link.imagesAnalyzed ?? 0} of {link.imagesDiscovered} images</span>
+                      </>
+                    )}
+                    {link.paused && (
+                      <>
+                        <span aria-hidden="true">·</span>
+                        <span>Paused — not checked by fanmass</span>
+                      </>
+                    )}
+                    {!link.paused && link.syncRequestedAt && (
+                      <>
+                        <span aria-hidden="true">·</span>
+                        <span>Check requested…</span>
+                      </>
+                    )}
+                    {link.status === 'error' && link.lastError && (
+                      <>
+                        <span aria-hidden="true">·</span>
+                        <span className={styles.errorDetail}>{link.lastError}</span>
+                      </>
+                    )}
+                  </div>
+                </div>
+                <div className={styles.folderActions}>
+                  {!link.paused && (
+                    <button
+                      type="button"
+                      className={styles.rescanButton}
+                      disabled={folderBusy !== null || Boolean(link.syncRequestedAt)}
+                      onClick={() => handleFolderAction(link._id, 'sync')}
+                    >
+                      {link.syncRequestedAt ? 'Requested…' : 'Check now'}
+                    </button>
+                  )}
+                  <button
+                    type="button"
+                    className={styles.rescanButton}
+                    disabled={folderBusy !== null}
+                    onClick={() => handleFolderAction(link._id, link.paused ? 'resume' : 'pause')}
+                  >
+                    {link.paused ? 'Resume' : 'Pause'}
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+        </AnalyticsSectionCard>
+      )}
 
       <AnalyticsSectionCard title="Brands" subtitle="Brand detections across this event's images">
         {/* Brands, Clubs & federations, and Merchandise are all read from one
