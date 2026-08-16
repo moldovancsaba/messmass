@@ -1,8 +1,22 @@
 # {messmass} Release Notes
 Status: Active
-Last Updated: 2026-08-16T09:00:00.000Z
+Last Updated: 2026-08-16T10:00:00.000Z
 Canonical: No
 Owner: Operations
+
+## [v12.1.70] — 2026-08-16T10:00:00.000Z
+
+### Summary
+Moved Drive folder Check now / Pause out of the event editor and into the AI
+event report itself.
+
+### Drive folder controls now live where the status is read
+These controls existed only in the event editor's Drive Folders panel — a
+separate admin surface with no other connection to AI analytics. An operator
+looking at a "Failed" status inside the AI Analytics UI had to leave it
+entirely to act on it. The same folder links now render on the per-event AI
+report page, with the same Check now / Pause actions, reusing the existing
+/api/drive-folders endpoints — no new backend.
 
 ## [v12.1.69] — 2026-08-16T09:00:00.000Z
 
