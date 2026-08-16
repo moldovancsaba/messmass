@@ -1,8 +1,37 @@
 # {messmass} Release Notes
 Status: Active
-Last Updated: 2026-08-16T20:00:00.000Z
+Last Updated: 2026-08-16T20:30:00.000Z
 Canonical: No
 Owner: Operations
+
+## [v12.1.78] — 2026-08-16T20:30:00.000Z
+
+### Summary
+Phase 3 (commit 2 of 3) of the GDS adoption plan: a single root `GdsProvider`
+now owns theming, modals, and notifications — the raw `MantineProvider` +
+`ModalsProvider` + `Notifications` stack it replaces was named GDS's own
+docs as messmass's single highest governance risk.
+
+### What changed
+`app/providers.tsx` now mounts `GdsProvider` (from `@sovereignsquad/gds-theme/client`)
+instead of `MantineProvider`. `GdsProvider` wraps `MantineProvider` +
+`ModalsProvider` + `Notifications` internally, so both local imports were
+removed rather than nested a second time. `app/layout.tsx` gained the
+mandatory `import '@sovereignsquad/gds-theme/styles.css'` GDS's docs call
+out as required — without it GDS surfaces render unstyled.
+
+### Notification position: verified non-issue
+`GdsProvider`'s internal `<Notifications />` takes no position prop
+(Mantine's own default, `bottom-right`), while messmass's old mount used
+`position="top-right"`. Checked: zero `notifications.show()` call sites
+exist anywhere in the app, so nothing was ever rendered through that mount
+— no visible behavior to regress.
+
+### Scope: provider only, login workaround still standing
+`app/admin/login/GdsLoginShell.tsx`'s nested `GdsProvider` workaround is
+untouched — that's Phase 3 commit 3, deleting it and simplifying
+`app/admin/login/page.tsx` now that the root provider is real GDS.
+Verified via `npm run type-check`, `npm run lint`, a full clean `npm run build`.
 
 ## [v12.1.77] — 2026-08-16T20:00:00.000Z
 

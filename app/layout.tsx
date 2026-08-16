@@ -3,6 +3,7 @@ import { ColorSchemeScript } from '@mantine/core';
 import { Inter, Roboto, Poppins, Montserrat, Pacifico } from 'next/font/google';
 import '@mantine/core/styles.css';
 import '@mantine/notifications/styles.css';
+import '@sovereignsquad/gds-theme/styles.css';
 import './globals.css';
 import GoogleAnalytics from '../components/GoogleAnalytics';
 import { cookies } from 'next/headers';
