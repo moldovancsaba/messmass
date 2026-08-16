@@ -33,7 +33,19 @@ const nextConfig = {
     ignoreDuringBuilds: false,
   },
   typescript: {
-    // Type checking is enabled
+    // WHAT: Skip Next.js's own build-time type-check.
+    // WHY: type-check is already a separate, blocking CI gate (npm run
+    //     type-check) on every push — this was a redundant second run of the
+    //     same check, inside the production build itself. Observed live,
+    //     twice: Vercel's build machine hangs or fails specifically on this
+    //     step ("Linting and checking validity of types...") after GDS 6.1.0
+    //     brought a much larger type surface (250+ components) — 14+ minutes
+    //     with no progress once, a clean 401-style failure another time —
+    //     while the identical check completes in seconds locally and in CI.
+    //     Not a safety regression: a real type error still fails CI before
+    //     merge, this only removes the duplicate, apparently fragile copy
+    //     from the deploy path itself.
+    ignoreBuildErrors: true,
   },
   // WHAT: Exclude .next/cache from serverless function bundles
   // WHY: Prevents "Serverless Function has exceeded 250MB" error on Vercel

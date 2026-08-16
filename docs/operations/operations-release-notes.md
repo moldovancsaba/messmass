@@ -1,8 +1,26 @@
 # {messmass} Release Notes
 Status: Active
-Last Updated: 2026-08-16T18:00:00.000Z
+Last Updated: 2026-08-16T19:00:00.000Z
 Canonical: No
 Owner: Operations
+
+## [v12.1.76] — 2026-08-16T19:00:00.000Z
+
+### Summary
+Production hotfix: Vercel builds were hanging or failing on "Linting and
+checking validity of types", observed live twice since the GDS 6.1.0
+upgrade — once a clean fail, once stuck 14+ minutes with zero progress,
+while the identical check passes in seconds locally and in CI.
+
+### The fix
+`next.config.js`'s `typescript` block set `ignoreBuildErrors: true`.
+Next.js's own build-time type-check was a second, redundant run of exactly
+what `npm run type-check` already gates as a separate, blocking CI step —
+this doesn't weaken that gate, a real type error still fails CI before
+merge. It only removes the duplicate copy from the production build path
+itself, which is the copy that's proving fragile against GDS 6.1.0's much
+larger type surface (250+ components) on Vercel's build machine
+specifically.
 
 ## [v12.1.75] — 2026-08-16T18:00:00.000Z
 
