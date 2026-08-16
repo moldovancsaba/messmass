@@ -26,13 +26,14 @@ export function isAiVariableName(name: string): boolean {
 //     for a finished event. One named constant so it can be tuned in one place.
 export const STALE_AFTER_HOURS = 24;
 
-export type AiEventStatus = 'not_connected' | 'analyzing' | 'complete' | 'error';
+export type AiEventStatus = 'not_connected' | 'no_images' | 'analyzing' | 'complete' | 'error';
 
 export interface AiCoverageSummary {
   totalEvents: number;
   connected: number;
   analyzing: number;
   complete: number;
+  noImages: number;
   notConnected: number;
   stale: number;
 }
@@ -99,6 +100,13 @@ export function isStale(lastAnalyzedAt: string | null, now: number = Date.now())
 // WHY: Must match the Drive folder badge already shipped, or the same event would
 //     read differently in two places. No images means not complete; a full count
 //     means complete; anything in between is in progress.
+// HOW: `discovered === 0` (strict) means fanmass explicitly reported zero
+//     images for this event — whether that's a camera event with nothing
+//     uploaded yet or (in principle) a Drive folder that came back empty —
+//     as distinct from `discovered === null`, where fanmass hasn't reported a
+//     count at all yet. The former can never progress past 0% under the old
+//     percent(0, 0) = 0 guard, so it read as "analysing" forever with nothing
+//     actually running; it gets its own terminal-until-photos-arrive status.
 export function deriveEventStatus(stats: Record<string, unknown>): {
   status: AiEventStatus;
   progressPercent: number | null;
@@ -112,6 +120,9 @@ export function deriveEventStatus(stats: Record<string, unknown>): {
 
   if (!hasAny) {
     return { status: 'not_connected', progressPercent: null, imagesAnalyzed: null, imagesDiscovered: null };
+  }
+  if (discovered === 0) {
+    return { status: 'no_images', progressPercent: null, imagesAnalyzed: analyzed ?? 0, imagesDiscovered: 0 };
   }
   // Prefer the producer's own figure; fall back to counts for events pushed
   // before fanmassStatus existed.
@@ -312,6 +323,7 @@ export async function getAiCoverage(): Promise<AiCoverageSummary> {
     connected: connected.length,
     analyzing: events.filter((e) => e.status === 'analyzing').length,
     complete: events.filter((e) => e.status === 'complete').length,
+    noImages: events.filter((e) => e.status === 'no_images').length,
     notConnected: totalEvents - connected.length,
     stale: connected.filter((e) => e.isStale).length,
   };

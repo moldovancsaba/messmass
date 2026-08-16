@@ -98,6 +98,17 @@ function sumValues(counts: Record<string, number> | undefined): number {
   return Object.values(counts).reduce((sum, n) => sum + (n || 0), 0);
 }
 
+// WHAT: The same "based on X of Y analysed" caveat the demographics section
+//     already had, generalised so Brands/Clubs/Merchandise can carry it too.
+// WHY: Brand and merchandise detections run on the same base image pass as
+//     everything else — without this line, "30 brands detected" reads as
+//     final even when it's drawn from a handful of an event's images.
+function imageProgressNote(analyzed: number | undefined, total: number | undefined, unit = 'images analysed'): string {
+  if (!total) return `No ${unit} yet for this event.`;
+  const pct = Math.round(((analyzed ?? 0) / total) * 100);
+  return `Based on ${analyzed ?? 0} of ${total} ${unit} (${pct}%).`;
+}
+
 function relativeTime(iso: string | null): string {
   if (!iso) return 'Not recorded';
   const ms = Date.now() - Date.parse(iso);
@@ -481,14 +492,17 @@ export default function AiEventReportView() {
         <div className={styles.rescanRow}>
           <RescanButton moduleId="brands" />
         </div>
+        <p className={styles.shareNote}>{imageProgressNote(images.analyzed, images.total)}</p>
         <MentionTable title="Brand" caption="Brand detections ranked by count" mentions={s.brandMentions || []} />
       </AnalyticsSectionCard>
 
       <AnalyticsSectionCard title="Clubs & federations" subtitle="Club and federation detections">
+        <p className={styles.shareNote}>{imageProgressNote(images.analyzed, images.total)}</p>
         <MentionTable title="Club / federation" caption="Club and federation detections ranked by count" mentions={s.clubMentions || []} />
       </AnalyticsSectionCard>
 
       <AnalyticsSectionCard title="Merchandise" subtitle="Merchandise kinds detected on fans">
+        <p className={styles.shareNote}>{imageProgressNote(images.analyzed, images.total)}</p>
         <CountsTable counts={s.merchandiseCounts || {}} caption="Merchandise detections by kind" nameHeader="Kind" />
       </AnalyticsSectionCard>
 
@@ -500,9 +514,7 @@ export default function AiEventReportView() {
             demographic pass runs over a subset of those, so this is the number
             that actually backs the tables below — not the images/people totals
             shown at the top, which would overstate coverage here. */}
-        <p className={styles.shareNote}>
-          Based on {demographicsAnalyzed} of {people.measured ?? 0} people analysed for demographics.
-        </p>
+        <p className={styles.shareNote}>{imageProgressNote(demographicsAnalyzed, people.measured, 'people analysed for demographics')}</p>
         <h3 className={styles.srOnly}>Gender projection</h3>
         <CountsTable counts={s.genderProjection || {}} caption="Gender projection" nameHeader="Gender" />
         <h3 className={styles.srOnly}>Age projection</h3>

@@ -1,8 +1,59 @@
 # {messmass} Release Notes
 Status: Active
-Last Updated: 2026-08-16T20:30:00.000Z
+Last Updated: 2026-08-16T21:00:00.000Z
 Canonical: No
 Owner: Operations
+
+## [v12.1.79] — 2026-08-16T21:00:00.000Z
+
+### Summary
+AI Analytics status was lying by omission on two counts: 153 camera-linked
+events with zero photos uploaded so far showed as "Analysing" forever (there
+was nothing to analyse and nothing running), and every AI-derived number —
+brand counts, merchandise counts, demographic percentages — was shown with
+no indication of how much of the event had actually been scanned to produce
+it. A number drawn from 1% of an event's images read exactly like a final
+result.
+
+### Root cause: "explicitly zero" and "in progress" were the same status
+`lib/aiAnalytics.ts`'s `deriveEventStatus()` computed `percent(0, 0) = 0`
+(the existing divide-by-zero guard) for a camera event fanmass had checked
+and found no photos on — 0% is not `>= 100`, so it fell into 'analyzing'
+with nothing to distinguish it from an event genuinely mid-scan. Investigated
+live: fanmass's `camera_sync.py` provisions a batch for every event the
+camera service reports, no image-count check, so this is expected upstream
+behaviour — the wrong part was messmass display logic treating "confirmed
+empty" the same as "in progress."
+
+### The fix
+- New `AiEventStatus` value `'no_images'` — fires when fanmass has reported
+  in (`hasAny` true) with `imagesDiscovered === 0` (strict; distinct from
+  `null`, which means no count has been reported yet and stays 'analyzing').
+  Labelled "No image available" everywhere it renders. Verified against
+  production: coverage's `analyzing` count went from a false 153 to a true 0
+  — no event is actually being processed right now, confirmed independently
+  from fanmass's own local worker logs (last push landed 12+ minutes before
+  this check, scheduler mid-tick).
+- Every AI-derived data group now states its own completeness: the events
+  list's status badge reads "Analysing · 17 of 1,700 images (1%)" instead of
+  just "1%"; the Deep Analysis cell prefixes "Based on 17 of 1,700 images
+  analysed (1%) — Brands: 30 · Merch: 5 · Demographics: 4%"; the per-event
+  report's Brands, Clubs & federations, and Merchandise sections gained the
+  same "Based on X of Y images analysed (Z%)" caveat the Fan demographics
+  section already had (which also gained the missing percent).
+- `AiCoverageSummary` and the coverage grid gained a `noImages` bucket; the
+  events-list status filter gained a matching option; rescan actions are now
+  disabled for `no_images` rows (nothing ingested yet to rescan).
+- `app/api/analytics/ai/events/route.ts`'s `VALID_STATUSES` whitelist —
+  runtime, not type-checked — needed the new value too, or selecting the new
+  filter option would 400.
+
+### Verification
+`npm run type-check`, `npm run lint`, `npm test` (added two `deriveEventStatus`
+cases: explicit zero → `no_images`, missing count → still `analyzing`), a
+clean `npm run build`, plus a live read against production data confirming
+all 153 previously-mislabelled events now report `no_images` and the
+`analyzing` bucket correctly reads 0.
 
 ## [v12.1.78] — 2026-08-16T20:30:00.000Z
 

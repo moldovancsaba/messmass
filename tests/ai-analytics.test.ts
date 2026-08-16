@@ -79,10 +79,20 @@ describe('deriveEventStatus', () => {
     expect(result.status).toBe('analyzing');
   });
 
-  it('does not call an empty connected event complete', () => {
-    // Present but with nothing analysed: waiting for media is not completion.
+  it('reports no_images for a connected event with zero discovered images', () => {
+    // Camera-provisioned event, nothing uploaded yet: not "analysing" (nothing
+    // is running) and not "complete" (nothing has happened) — its own status.
     const result = deriveEventStatus({ fanmassImages: 0, fanmassAnalyzedImages: 0 });
-    expect(result.status).not.toBe('complete');
+    expect(result.status).toBe('no_images');
+    expect(result.progressPercent).toBeNull();
+    expect(result.imagesDiscovered).toBe(0);
+  });
+
+  it('does not treat a missing image count the same as an explicit zero', () => {
+    // fanmassImages never reported (vs. reported as 0): still "analysing",
+    // waiting on a count, not "no images".
+    const result = deriveEventStatus({ fanmassStatus: 0 });
+    expect(result.status).toBe('analyzing');
   });
 
   it('surfaces the image counts it used', () => {

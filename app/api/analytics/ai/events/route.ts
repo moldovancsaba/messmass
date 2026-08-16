@@ -13,7 +13,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getAdminUser } from '@/lib/auth';
 import { getAiEvents, type AiEventStatus } from '@/lib/aiAnalytics';
 
-const VALID_STATUSES: AiEventStatus[] = ['not_connected', 'analyzing', 'complete', 'error'];
+const VALID_STATUSES: AiEventStatus[] = ['not_connected', 'no_images', 'analyzing', 'complete', 'error'];
 
 export async function GET(request: NextRequest) {
   try {

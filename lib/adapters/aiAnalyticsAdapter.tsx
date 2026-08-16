@@ -17,7 +17,7 @@ import Link from 'next/link';
 import type { AdminPageAdapter, AdminSurfaceAction } from '@/lib/adminDataAdapters';
 import styles from './aiAnalyticsAdapter.module.css';
 
-export type AiEventStatus = 'not_connected' | 'analyzing' | 'complete' | 'error';
+export type AiEventStatus = 'not_connected' | 'no_images' | 'analyzing' | 'complete' | 'error';
 
 export interface AiEventListItem {
   _id: string; // = eventId, required by UnifiedListView<T extends {_id: string}>
@@ -56,6 +56,7 @@ export interface AiEventRowHandlers {
 const STATUS_LABEL: Record<AiEventStatus, string> = {
   complete: 'Images complete',
   analyzing: 'Analysing',
+  no_images: 'No image available',
   error: 'Failed',
   not_connected: 'No AI analytics',
 };
@@ -65,14 +66,25 @@ const STATUS_LABEL: Record<AiEventStatus, string> = {
 const STATUS_BADGE_VARIANT: Record<AiEventStatus, string> = {
   complete: 'badge-success',
   analyzing: 'badge-warning',
+  no_images: 'badge-secondary',
   error: 'badge-danger',
   not_connected: 'badge-secondary',
 };
 
+// WHAT: The status word plus the real fraction behind it, not just a percent.
+// WHY: "Analysing · 1%" still reads as final-ish. "Analysing · 17 of 1,700
+//     images (1%)" makes it unmistakable that every number below is drawn
+//     from a thin, early sample.
 function statusText(row: AiEventListItem): string {
   const base = STATUS_LABEL[row.status] || 'Unknown state';
-  if (row.status === 'analyzing' && row.progressPercent !== null) {
-    return `${base} · ${row.progressPercent}%`;
+  if (row.status === 'analyzing') {
+    if (row.imagesDiscovered !== null && row.imagesDiscovered > 0) {
+      const pct = row.progressPercent ?? 0;
+      return `${base} · ${row.imagesAnalyzed ?? 0} of ${row.imagesDiscovered} images (${pct}%)`;
+    }
+    if (row.progressPercent !== null) {
+      return `${base} · ${row.progressPercent}%`;
+    }
   }
   return base;
 }
@@ -94,13 +106,21 @@ function relativeTime(iso: string | null): string {
 //     demographics ran at all, independent of the base-pass status.
 // WHY: This is the exact gap that made "Images complete" read as a lie for an
 //     event with an empty Brands table and 0% demographics.
+// HOW: While the base pass is still running, every count below is drawn from
+//     only part of the event's images — the caveat states the real fraction
+//     so "Brands: 30" isn't misread as the final total.
 function DeepAnalysisCell({ row }: { row: AiEventListItem }) {
   if (row.status === 'not_connected') return <span>—</span>;
+  if (row.status === 'no_images') return <span>No image available</span>;
   const demographicsPct = row.peopleMeasured > 0
     ? Math.round((row.demographicsAnalyzed / row.peopleMeasured) * 100)
     : null;
+  const caveat = row.status === 'analyzing' && row.imagesDiscovered !== null && row.imagesDiscovered > 0
+    ? `Based on ${row.imagesAnalyzed ?? 0} of ${row.imagesDiscovered} images analysed (${row.progressPercent ?? 0}%) — `
+    : '';
   return (
     <span>
+      {caveat}
       Brands: {row.brandCount || 'none'}
       {' · '}
       Merch: {row.merchandiseCount || 'none'}
@@ -151,7 +171,7 @@ function rowActions(handlers: AiEventRowHandlers): AdminSurfaceAction<AiEventLis
       icon: '🔁',
       priority: 'secondary',
       title: 'Force fanmass to re-run the demographics module against already-ingested images',
-      disabled: (row) => row.status === 'not_connected' || row.rescanPending || busy(row),
+      disabled: (row) => row.status === 'not_connected' || row.status === 'no_images' || row.rescanPending || busy(row),
       ariaLabel: (row) => `Rescan demographics for ${row.eventName}`,
       handler: (row) => handlers.onRescan(row.eventId, 'demographics'),
     },
@@ -161,7 +181,7 @@ function rowActions(handlers: AiEventRowHandlers): AdminSurfaceAction<AiEventLis
       icon: '🔁',
       priority: 'overflow',
       title: 'Force fanmass to re-run brand, club, and merchandise detection against already-ingested images',
-      disabled: (row) => row.status === 'not_connected' || row.rescanPending || busy(row),
+      disabled: (row) => row.status === 'not_connected' || row.status === 'no_images' || row.rescanPending || busy(row),
       ariaLabel: (row) => `Rescan brands, clubs and merchandise for ${row.eventName}`,
       handler: (row) => handlers.onRescan(row.eventId, 'brands'),
     },
@@ -171,7 +191,7 @@ function rowActions(handlers: AiEventRowHandlers): AdminSurfaceAction<AiEventLis
       variant: 'danger',
       priority: 'overflow',
       title: 'Force fanmass to re-run every module against already-ingested images',
-      disabled: (row) => row.status === 'not_connected' || row.rescanPending || busy(row),
+      disabled: (row) => row.status === 'not_connected' || row.status === 'no_images' || row.rescanPending || busy(row),
       ariaLabel: (row) => `Restart all analysis for ${row.eventName}`,
       handler: (row) => handlers.onRescan(row.eventId, 'all'),
     },

@@ -25,6 +25,7 @@ interface CoverageSummary {
   connected: number;
   analyzing: number;
   complete: number;
+  noImages: number;
   notConnected: number;
   stale: number;
 }
@@ -54,11 +55,11 @@ export default function AiAnalyticsView() {
   const [unauthenticated, setUnauthenticated] = useState(false);
   const [error, setError] = useState('');
   const [statusFilter, setStatusFilter] = useState<'all' | AiEventRow['status']>('all');
-  // WHAT: Whether events with no discovered images appear in the default view.
+  // WHAT: Whether "No image available" events appear in the default view.
   // WHY: Most of the estate is camera-provisioned events still waiting for photos
-  //     — 152 rows of "Analysing · 0%" buried the handful with real analysis.
-  //     Hidden by default; failed events stay visible regardless, because an
-  //     error with no images is exactly what an operator needs to see.
+  //     — 152 rows of them buried the handful with real analysis. Hidden by
+  //     default; failed events stay visible regardless, because an error with
+  //     no images is exactly what an operator needs to see.
   const [showEmpty, setShowEmpty] = useState(false);
   const [copied, setCopied] = useState('');
 
@@ -207,6 +208,10 @@ export default function AiAnalyticsView() {
               <dd className={styles.coverageValue}>{coverage.complete}</dd>
             </div>
             <div className={styles.coverageItem}>
+              <dt className={styles.coverageLabel}>No image available</dt>
+              <dd className={styles.coverageValue}>{coverage.noImages}</dd>
+            </div>
+            <div className={styles.coverageItem}>
               <dt className={styles.coverageLabel}>No AI analytics</dt>
               <dd className={styles.coverageValue}>{coverage.notConnected}</dd>
             </div>
@@ -246,6 +251,7 @@ export default function AiAnalyticsView() {
               <option value="all">All</option>
               <option value="analyzing">Analysing</option>
               <option value="complete">Complete</option>
+              <option value="no_images">No image available</option>
               <option value="error">Failed</option>
               <option value="not_connected">No AI analytics</option>
             </select>
