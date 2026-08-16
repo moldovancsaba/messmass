@@ -16,10 +16,16 @@
   --mm-color-primary-300: #93c5fd;
   --mm-color-primary-400: #60a5fa;
   --mm-color-primary-500: #3b82f6;  /* Base primary - TailAdmin standard */
-  --mm-color-primary-600: #2563eb;
-  --mm-color-primary-700: #1d4ed8;
-  --mm-color-primary-800: #1e40af;
-  --mm-color-primary-900: #1e3a8a;
+  /* WHAT: 600-900 aliased to GDS's messmassBlue ramp (lib/ui/mantineTheme.ts).
+     WHY: Byte-identical at these four shades — verified, not assumed — so this
+     is a true no-op alias, not a color change. 50-500 diverge from GDS's ramp
+     shape and are NOT aliased: forcing them to the nearest GDS shade would be
+     a real (if small) visual change, which belongs in Phase 4b as a reviewed
+     decision, not a mechanical Phase 4a alias. */
+  --mm-color-primary-600: var(--mantine-color-messmassBlue-6, #2563eb);
+  --mm-color-primary-700: var(--mantine-color-messmassBlue-7, #1d4ed8);
+  --mm-color-primary-800: var(--mantine-color-messmassBlue-8, #1e40af);
+  --mm-color-primary-900: var(--mantine-color-messmassBlue-9, #1e3a8a);
   
   /* What: Green accent for success states and CTAs
      Why: Modern dashboards use green for positive actions and growth metrics */
@@ -28,11 +34,14 @@
   --mm-color-secondary-200: #bbf7d0;
   --mm-color-secondary-300: #86efac;
   --mm-color-secondary-400: #4ade80;
-  --mm-color-secondary-500: #10b981;  /* Base secondary */
-  --mm-color-secondary-600: #059669;
-  --mm-color-secondary-700: #047857;
-  --mm-color-secondary-800: #065f46;
-  --mm-color-secondary-900: #064e3b;
+  /* WHAT: 500-900 aliased to GDS's messmassGreen ramp — byte-identical at
+     these five shades, verified. 50-400 diverge and stay local (see the
+     matching note on --mm-color-primary above). */
+  --mm-color-secondary-500: var(--mantine-color-messmassGreen-5, #10b981);  /* Base secondary */
+  --mm-color-secondary-600: var(--mantine-color-messmassGreen-6, #059669);
+  --mm-color-secondary-700: var(--mantine-color-messmassGreen-7, #047857);
+  --mm-color-secondary-800: var(--mantine-color-messmassGreen-8, #065f46);
+  --mm-color-secondary-900: var(--mantine-color-messmassGreen-9, #064e3b);
 
   /* What: Professional grayscale for text, borders, and backgrounds
      Why: Clean neutrals ensure readability and provide modern minimalist aesthetic */
@@ -51,22 +60,31 @@
   
   /* What: Semantic state colors for feedback and status
      Why: Consistent color language for success/warning/error improves UX */
-  --mm-success: #10b981;
+  /* WHAT/WHY: success/warning/error aliased to the matching GDS brand ramp
+     shade (verified byte-identical). *-light variants alias where an exact
+     match exists (warning-light, error-light); success-light and the info
+     pair have no exact GDS equivalent and stay local. */
+  --mm-success: var(--mantine-color-messmassGreen-5, #10b981);
   --mm-success-light: #d1fae5;
-  --mm-warning: #f59e0b;
-  --mm-warning-light: #fef3c7;
-  --mm-error: #ef4444;
-  --mm-error-light: #fee2e2;
+  --mm-warning: var(--mantine-color-messmassAmber-5, #f59e0b);
+  --mm-warning-light: var(--mantine-color-messmassAmber-1, #fef3c7);
+  --mm-error: var(--mantine-color-messmassRed-5, #ef4444);
+  --mm-error-light: var(--mantine-color-messmassRed-1, #fee2e2);
   --mm-info: #3b82f6;
   --mm-info-light: #dbeafe;
   
   /* What: Chart color palette for data visualization
      Why: Distinct, accessible colors for charts; maintains consistency with design system */
+  /* WHAT/WHY: green/yellow/red alias to the matching GDS brand shade
+     (byte-identical, verified). blue/purple/pink/cyan/orange/indigo/teal are
+     messmass's Tailwind-derived chart palette; GDS's default Mantine ramps
+     are Open Color-derived and share no exact values with these — aliasing
+     them would silently shift chart colors, not a no-op. They stay local. */
   --mm-chart-blue: #3b82f6;
-  --mm-chart-green: #10b981;
-  --mm-chart-yellow: #f59e0b;
+  --mm-chart-green: var(--mantine-color-messmassGreen-5, #10b981);
+  --mm-chart-yellow: var(--mantine-color-messmassAmber-5, #f59e0b);
   --mm-chart-purple: #8b5cf6;
-  --mm-chart-red: #ef4444;
+  --mm-chart-red: var(--mantine-color-messmassRed-5, #ef4444);
   --mm-chart-pink: #ec4899;
   --mm-chart-cyan: #06b6d4;
   --mm-chart-orange: #f97316;
@@ -90,8 +108,8 @@
   --chartNoDataBackground: var(--mm-gray-50);
   --chartNoDataBorder: var(--mm-gray-300);
   --chartNoDataText: var(--mm-gray-500);
-  --chartErrorBackground: #fef2f2;
-  --chartErrorText: #991b1b;
+  --chartErrorBackground: var(--mantine-color-messmassRed-0, #fef2f2);
+  --chartErrorText: var(--mantine-color-messmassRed-8, #991b1b);
   --chartTooltipBackground: rgba(0, 0, 0, 0.85);
   --chartTooltipText: #ffffff;
   --exportButtonBackground: var(--mm-white);

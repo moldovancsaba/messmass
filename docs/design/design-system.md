@@ -4,7 +4,7 @@ Last Updated: 2026-08-08T16:40:43.000Z
 Canonical: Yes
 Owner: Architecture
 
-**Version**: 12.1.80
+**Version**: 12.1.81
 **Status**: Production
 
 ## Purpose
@@ -140,6 +140,16 @@ Mobile portrait is a first-class viewport. Required behavior:
 ## Token Contract
 
 Use the GDS theme first. Use `app/styles/theme.css` only for Messmass-specific compatibility tokens and legacy migration support.
+
+**Alias status (Phase 4a)**: 17 of `theme.css`'s ~80 color tokens are aliased
+to a GDS/Mantine CSS variable (`var(--mantine-color-messmassX-N, #original)`)
+— verified byte-identical to the prior literal, not a visual change. Only
+values with an exact match were aliased; GDS's default Mantine palette is
+Open Color-derived while messmass's remaining chart/landing colors are
+Tailwind-derived, so most of the file has no exact GDS equivalent to alias
+to. Retiring those requires picking a real replacement color and a visual
+review — that is Phase 4b, tracked as ongoing token-system work, not a
+mechanical alias.
 
 Allowed token work:
 

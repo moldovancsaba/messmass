@@ -1,8 +1,47 @@
 # {messmass} Release Notes
 Status: Active
-Last Updated: 2026-08-16T21:30:00.000Z
+Last Updated: 2026-08-16T22:00:00.000Z
 Canonical: No
 Owner: Operations
+
+## [v12.1.81] — 2026-08-16T22:00:00.000Z
+
+### Summary
+Phase 4a of the GDS adoption plan (token bridge, alias step): 17 color
+values in `app/styles/theme.css` now source from GDS's brand color ramps
+instead of a hardcoded local literal — verified byte-identical, zero visual
+change.
+
+### What changed, and why only 17 of ~80
+The plan's original estimate (78 hardcoded hex values, alias all of them)
+assumed GDS's default palette would have a value close enough to alias to.
+It doesn't, for most of them: GDS's default Mantine colors are Open
+Color-derived (`#e7f5ff...#1864ab` for blue); messmass's chart/landing
+palette is Tailwind-derived (`#eff6ff...#1e3a8a` for the same role). The two
+systems only overlap where messmass's own custom brand ramps
+(`messmassBlue`/`Green`/`Amber`/`Red`, `lib/ui/mantineTheme.ts`) were built
+by reusing messmass's darker shades — verified index-by-index against
+`gdsTheme` and `messmassMantineTheme` via a real Node fetch of the computed
+theme, not assumed from the two hex strings looking similar.
+
+17 values matched exactly and were aliased: `--mm-color-primary-600..900`
+(→ messmassBlue 6-9), `--mm-color-secondary-500..900` (→ messmassGreen
+5-9), `--mm-success`/`--mm-warning`/`--mm-warning-light`/`--mm-error`/
+`--mm-error-light`, `--mm-chart-green`/`--mm-chart-yellow`/`--mm-chart-red`,
+and `--chartErrorBackground`/`--chartErrorText`. Everything else in the
+file — primary/secondary's lighter shades, the full grayscale, and every
+non-brand chart/landing color (blue, purple, pink, cyan, orange, indigo,
+teal) — has no exact GDS match and stays local; forcing those to the
+nearest GDS shade would be a real (if often small) color change, which
+belongs in Phase 4b as a reviewed decision, not this mechanical alias step.
+
+### Verification
+Confirmed live in a running dev server, not just read from source: the
+GDS-emitted `--mantine-color-messmassBlue-6` computed to `#2563eb`, matching
+`--mm-color-primary-600`'s prior literal exactly. Visual check of
+`/admin/login` (Phase 3's highest-risk route) showed no rendering change.
+`npm run type-check`, `npm run lint`, `npm run style:check`, `npm test`, a
+clean `npm run build` all pass.
 
 ## [v12.1.80] — 2026-08-16T21:30:00.000Z
 
