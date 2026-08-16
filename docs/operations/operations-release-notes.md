@@ -1,8 +1,32 @@
 # {messmass} Release Notes
 Status: Active
-Last Updated: 2026-08-16T19:00:00.000Z
+Last Updated: 2026-08-16T20:00:00.000Z
 Canonical: No
 Owner: Operations
+
+## [v12.1.77] — 2026-08-16T20:00:00.000Z
+
+### Summary
+Phase 3 (commit 1 of 3) of the GDS adoption plan: `lib/ui/mantineTheme.ts`
+now builds messmass's brand theme through GDS's approved `createPublicBrandTheme`
+lane instead of a locally-authored `createTheme({ ...gdsTheme })` call.
+
+### What changed
+Replaced the manual `createTheme({ ...gdsTheme, colors: { ...gdsTheme.colors, ... },
+components: { ...gdsTheme.components, ... } })` pattern with
+`createPublicBrandTheme({ overrides: {...} })`. `createPublicBrandTheme` deep-merges
+`overrides` over the base `gdsTheme` internally via Mantine's own `mergeMantineTheme`,
+so the manual spreads of `gdsTheme.colors`/`gdsTheme.components` were redundant —
+removed. All four custom color ramps (`messmassBlue`/`Green`/`Amber`/`Red`) and the
+six component `defaultProps` overrides (`Button`/`Paper`/`Card`/`Modal`/`TextInput`/
+`Select`) carried over unchanged; verified via `npm run type-check`, `npm run lint`,
+`npm run build`, all clean.
+
+### Scope: theme construction only, provider unchanged
+This commit deliberately still feeds `messmassMantineTheme` into the existing
+`MantineProvider` — isolates "did the theme construction change break anything"
+from the `MantineProvider`→`GdsProvider` swap, which is a separate, higher-blast-
+radius commit (Phase 3 commit 2).
 
 ## [v12.1.76] — 2026-08-16T19:00:00.000Z
 
