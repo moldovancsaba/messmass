@@ -13,7 +13,7 @@ import { usersAdapter } from '@/lib/adapters';
 import { FormModal } from '@/components/modals';
 import { apiPost, apiPut, apiDelete } from '@/lib/apiClient';
 import PasswordModal from '@/components/PasswordModal';
-import { ConfirmDialog } from '@/components/modals';
+import { useGdsConfirm } from '@sovereignsquad/gds-core/client';
 import RoleDropdown from '@/components/RoleDropdown';
 import type { AdminUser } from '@/lib/auth';
 import type { UserRole } from '@/lib/users';
@@ -47,14 +47,7 @@ export default function AdminUsersPageUnified() {
     title: string;
   }>({ isOpen: false, password: '', userEmail: '', userId: '', title: '' });
   
-  const [confirmModal, setConfirmModal] = useState<{
-    isOpen: boolean;
-    onConfirm: () => void;
-    title: string;
-    message: string;
-    confirmText?: string;
-    isDangerous?: boolean;
-  }>({ isOpen: false, onConfirm: () => {}, title: '', message: '' });
+  const { confirm } = useGdsConfirm();
 
   // WHAT: Auth guard + fetch current user
   // WHY: Protect page and get user context for role management
@@ -159,91 +152,82 @@ export default function AdminUsersPageUnified() {
 
   // Regenerate password handler
   const onRegenerate = async (user: AdminUser) => {
-    setConfirmModal({
-      isOpen: true,
+    const ok = await confirm({
       title: 'Regenerate Password',
       message: 'Regenerate password for this user? Old password will no longer work.',
-      confirmText: 'Regenerate',
-      isDangerous: true,
-      onConfirm: async () => {
-        try {
-          const data = await apiPut(`/api/admin/local-users/${user.id}`, {
-            regeneratePassword: true
-          });
-          if (data.success) {
-            setPasswordModal({
-              isOpen: true,
-              password: data.password,
-              userEmail: user.email,
-              userId: user.id || (user as any)._id,
-              title: 'Password Regenerated'
-            });
-            await refreshUsers();
-          } else {
-            setError(data.error || 'Failed to regenerate password');
-          }
-        } catch (err) {
-          console.error('❌ Regenerate password error:', err);
-          const errorMessage = err instanceof Error ? err.message : 'Failed to regenerate password';
-          setError(errorMessage);
-        }
-      }
+      danger: true,
     });
+    if (!ok) return;
+    try {
+      const data = await apiPut(`/api/admin/local-users/${user.id}`, {
+        regeneratePassword: true
+      });
+      if (data.success) {
+        setPasswordModal({
+          isOpen: true,
+          password: data.password,
+          userEmail: user.email,
+          userId: user.id || (user as any)._id,
+          title: 'Password Regenerated'
+        });
+        await refreshUsers();
+      } else {
+        setError(data.error || 'Failed to regenerate password');
+      }
+    } catch (err) {
+      console.error('❌ Regenerate password error:', err);
+      const errorMessage = err instanceof Error ? err.message : 'Failed to regenerate password';
+      setError(errorMessage);
+    }
   };
 
   // Toggle API access handler
   const onToggleAPIAccess = async (user: AdminUser) => {
     const newState = !user.apiKeyEnabled
-    setConfirmModal({
-      isOpen: true,
+    const ok = await confirm({
       title: newState ? 'Enable API Access' : 'Disable API Access',
-      message: newState 
+      message: newState
         ? `Enable API access for ${user.email}? They can immediately use their password as an API key.`
         : `Disable API access for ${user.email}? Active integrations may break.`,
-      confirmText: newState ? 'Enable' : 'Disable',
-      isDangerous: !newState,
-      onConfirm: async () => {
-        try {
-          const data = await apiPut(
-            `/api/admin/local-users/${user.id}/api-access`,
-            { enabled: newState }
-          )
-          if (data.success) {
-            await refreshUsers()
-            if (newState && data.recommendation) {
-              alert(data.recommendation)
-            }
-          } else {
-            setError(data.error || 'Failed to toggle API access')
-          }
-        } catch {
-          setError('Failed to toggle API access')
+      danger: !newState,
+    });
+    if (!ok) return;
+    try {
+      const data = await apiPut(
+        `/api/admin/local-users/${user.id}/api-access`,
+        { enabled: newState }
+      )
+      if (data.success) {
+        await refreshUsers()
+        if (newState && data.recommendation) {
+          alert(data.recommendation)
         }
+      } else {
+        setError(data.error || 'Failed to toggle API access')
       }
-    })
+    } catch {
+      setError('Failed to toggle API access')
+    }
   }
 
   // Delete user handler
   const onDelete = async (user: AdminUser) => {
-    setConfirmModal({
-      isOpen: true,
+    const ok = await confirm({
       title: 'Delete User',
       message: 'Are you sure you want to delete this user? This cannot be undone.',
-      confirmText: 'Delete',
-      isDangerous: true,
-      onConfirm: async () => {
-        try {
-          const data = await apiDelete(`/api/admin/local-users/${user.id}`);
-          if (data.success !== false) {
-            await refreshUsers();
-          } else {
-            setError(data.error || 'Failed to delete user');
-          }
-        } catch {
-          setError('Failed to delete user');
-        }
-      }
+      danger: true,
     });
+    if (!ok) return;
+    try {
+      const data = await apiDelete(`/api/admin/local-users/${user.id}`);
+      if (data.success !== false) {
+        await refreshUsers();
+      } else {
+        setError(data.error || 'Failed to delete user');
+      }
+    } catch {
+      setError('Failed to delete user');
+    }
   };
   
   // WHAT: Role change handler for RoleDropdown
@@ -474,17 +458,6 @@ export default function AdminUsersPageUnified() {
         userEmail={passwordModal.userEmail}
         userId={passwordModal.userId}
         subtitle="Copy this password and share it securely with the user"
-      />
-
-      {/* Confirmation Modal */}
-      <ConfirmDialog
-        isOpen={confirmModal.isOpen}
-        onClose={() => setConfirmModal({ isOpen: false, onConfirm: () => {}, title: '', message: '' })}
-        onConfirm={confirmModal.onConfirm}
-        title={confirmModal.title}
-        message={confirmModal.message}
-        confirmText={confirmModal.confirmText}
-        variant={confirmModal.isDangerous ? 'danger' : 'info'}
       />
     </>
   );

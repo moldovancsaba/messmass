@@ -9,7 +9,7 @@ import UnifiedAdminHeroWithSearch from '@/components/UnifiedAdminHeroWithSearch'
 import ReportingWorkspaceNav from '@/components/ReportingWorkspaceNav';
 import ColoredCard from '@/components/ColoredCard';
 import FormModal from '@/components/modals/FormModal';
-import ConfirmDialog from '@/components/modals/ConfirmDialog';
+import { useGdsConfirm } from '@sovereignsquad/gds-core/client';
 import vizStyles from './Visualization.module.css';
 import { apiPost, apiPut, apiDelete } from '@/lib/apiClient';
 import MaterialIcon from '@/components/MaterialIcon';
@@ -151,11 +151,8 @@ export default function VisualizationPage() {
   const [showTemplateEditModal, setShowTemplateEditModal] = useState(false);
   const [templateEditName, setTemplateEditName] = useState('');
   const [templateCopyName, setTemplateCopyName] = useState('');
-  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
-  // WHAT: Id of the data block awaiting delete confirmation (null = no pending delete)
-  // WHY: Drive the GDS ConfirmDialog instead of the native confirm() dialog
-  const [blockPendingDelete, setBlockPendingDelete] = useState<string | null>(null);
   const [isTemplateMenuOpen, setIsTemplateMenuOpen] = useState(false);
+  const { confirm } = useGdsConfirm();
   
   // WHAT: Track which block editors are expanded (default: all collapsed)
   // WHY: Cleaner UX on page load - focus on chart previews, not implementation details
@@ -945,20 +942,15 @@ export default function VisualizationPage() {
     }
   };
   
-  // WHAT: Open the GDS confirmation dialog for a data-block delete
-  // WHY: Native confirm() bypasses the design system; deletion runs from confirmDeleteBlock
-  const handleDeleteBlock = (blockId: string) => {
-    setBlockPendingDelete(blockId);
-  };
-
-  // WHAT: Perform the delete once the operator confirms in the dialog
-  // WHY: Separates the destructive mutation from the trigger for a GDS-compliant flow
-  const confirmDeleteBlock = async () => {
-    const blockId = blockPendingDelete;
-    setBlockPendingDelete(null);
-    if (!blockId) {
-      return;
-    }
+  // WHAT: Confirm then delete a data block
+  // WHY: Native confirm() bypasses the design system; useGdsConfirm replaces it
+  const handleDeleteBlock = async (blockId: string, blockName: string | undefined) => {
+    const ok = await confirm({
+      title: 'Delete Data Block?',
+      message: `Are you sure you want to delete ${blockName ? `"${blockName}"` : 'this data block'}? This action cannot be undone.`,
+      danger: true,
+    });
+    if (!ok) return;
 
     try {
       const data = await apiDelete(`/api/data-blocks?id=${blockId}`);
@@ -1470,19 +1462,25 @@ export default function VisualizationPage() {
   // WHY: Allow removing unused templates
   const handleDeleteTemplate = async () => {
     if (!selectedTemplateId) return;
-    
+
     const selectedTemplate = templates.find(t => t._id === selectedTemplateId);
     if (!selectedTemplate) return;
     const assignmentCount = (selectedTemplate.associatedProjects?.length || 0) + (selectedTemplate.associatedPartners?.length || 0);
     if (assignmentCount > 0) {
       showMessage('error', 'Remove project and partner assignments before deleting this template.');
-      setShowDeleteConfirm(false);
       return;
     }
-    
+
+    const ok = await confirm({
+      title: 'Delete Report Template?',
+      message: `Are you sure you want to delete "${selectedTemplate.name}"? This action cannot be undone.`,
+      danger: true,
+    });
+    if (!ok) return;
+
     try {
       const data = await apiDelete(`/api/report-templates?templateId=${selectedTemplateId}`);
-      
+
         if (data.success) {
           await loadTemplates();
           void loadTemplateAssociations();
@@ -1490,16 +1488,13 @@ export default function VisualizationPage() {
         // WHY: Prevent editing non-existent template
         setSelectedTemplateId(null);
         setShowTemplateEditModal(false);
-        setShowDeleteConfirm(false);
         showMessage('success', 'Template deleted successfully!');
       } else {
         showMessage('error', data.error || 'Failed to delete template');
-        setShowDeleteConfirm(false);
       }
     } catch (error) {
       console.error('Failed to delete template:', error);
       showMessage('error', 'Failed to delete template');
-      setShowDeleteConfirm(false);
     }
   };
 
@@ -1595,16 +1590,16 @@ export default function VisualizationPage() {
               </div>
               
               <button
-                onClick={(e) => {
+                onClick={async (e) => {
                   e.preventDefault();
                   e.stopPropagation();
                   // Find and select the Default Event Report template
                   const defaultEventTemplate = templates.find(t => t.name === 'Default Event Report' && t.type === 'event');
                   if (defaultEventTemplate) {
-                    const confirmed = confirm(
-                      'This will switch to "Default Event Report" template, which is the fallback template for partner reports.\n\n' +
-                      'Click OK to edit the fallback template, or Cancel to continue editing your current selection (which may be used by specific partners).'
-                    );
+                    const confirmed = await confirm({
+                      title: 'Switch to Default Event Report?',
+                      message: 'This will switch to "Default Event Report" template, which is the fallback template for partner reports. Click OK to edit the fallback template, or Cancel to continue editing your current selection (which may be used by specific partners).',
+                    });
                     if (confirmed) {
                       handleTemplateChange(defaultEventTemplate._id);
                     }
@@ -1879,7 +1874,7 @@ export default function VisualizationPage() {
               <button
                 type="button"
                 className="btn btn-danger"
-                onClick={() => setShowDeleteConfirm(true)}
+                onClick={handleDeleteTemplate}
                 disabled={selectedTemplate.isDefault || ((selectedTemplate.associatedProjects?.length || 0) + (selectedTemplate.associatedPartners?.length || 0)) > 0}
               >
                 <MaterialIcon name="delete" variant="outlined" style={{ fontSize: '1rem', marginRight: '0.5rem' }} />
@@ -1890,43 +1885,6 @@ export default function VisualizationPage() {
         );
       })()}
       
-      {/* WHAT: Delete Confirmation Dialog
-          WHY: Confirm destructive action before deleting template */}
-      {selectedTemplateId && (() => {
-        const selectedTemplate = templates.find(t => t._id === selectedTemplateId);
-        if (!selectedTemplate) return null;
-        
-        return (
-          <ConfirmDialog
-            isOpen={showDeleteConfirm}
-            onClose={() => setShowDeleteConfirm(false)}
-            onConfirm={handleDeleteTemplate}
-            title="Delete Report Template?"
-            message={`Are you sure you want to delete "${selectedTemplate.name}"? This action cannot be undone.`}
-            confirmText="Delete"
-            cancelText="Cancel"
-            variant="danger"
-          />
-        );
-      })()}
-
-      {/* WHAT: Delete Data Block Confirmation Dialog
-          WHY: GDS-compliant confirmation for the destructive block delete (replaces native confirm()) */}
-      <ConfirmDialog
-        isOpen={blockPendingDelete !== null}
-        onClose={() => setBlockPendingDelete(null)}
-        onConfirm={confirmDeleteBlock}
-        title="Delete Data Block?"
-        message={`Are you sure you want to delete ${
-          dataBlocks.find(b => b._id === blockPendingDelete)?.name
-            ? `"${dataBlocks.find(b => b._id === blockPendingDelete)!.name}"`
-            : 'this data block'
-        }? This action cannot be undone.`}
-        confirmText="Delete"
-        cancelText="Cancel"
-        variant="danger"
-      />
-
       {!selectedTemplateId && (
         <ColoredCard accentColor="#f59e0b">
           <div className="info-box">
@@ -2236,7 +2194,7 @@ export default function VisualizationPage() {
                         Edit
                       </button>
                       <button
-                        onClick={() => handleDeleteBlock(block._id!)}
+                        onClick={() => handleDeleteBlock(block._id!, block.name)}
                         className="btn btn-small btn-danger action-button"
                       >
                         <MaterialIcon name="delete" variant="outlined" className={vizStyles.iconSpacing} />

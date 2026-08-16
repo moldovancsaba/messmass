@@ -1,8 +1,60 @@
 # {messmass} Release Notes
 Status: Active
-Last Updated: 2026-08-16T22:00:00.000Z
+Last Updated: 2026-08-16T22:30:00.000Z
 Canonical: No
 Owner: Operations
+
+## [v12.1.82] — 2026-08-16T22:30:00.000Z
+
+### Summary
+Phase 5 of the GDS adoption plan, first component: `components/modals/ConfirmDialog.tsx`
+is retired entirely. `GdsConfirmProvider`/`useGdsConfirm` (`@sovereignsquad/gds-core/client`)
+now provides confirmation dialogs everywhere, mounted once at the root
+(`app/providers.tsx`, inside `GdsProvider`).
+
+### What changed
+3 call sites converted from a controlled `isOpen`/`onClose`/`onConfirm` component
+to an imperative `const ok = await confirm({ title, message, danger })` call:
+`app/admin/clicker-manager/page.tsx` (2 dialogs), `app/admin/visualization/page.tsx`
+(2 dialogs), `app/admin/users/page.tsx` (3 dialogs, previously a hand-rolled
+`confirmModal` state object that was itself already a local reimplementation of
+what `useGdsConfirm` provides natively). `components/modals/index.ts` no longer
+exports `ConfirmDialog`. `gds-adoption.json`'s `localAdapters` entry removed
+(full retirement, not a wrapper — nothing left to track).
+
+### A second name collision, not the one the plan anticipated
+The plan flagged GDS's own `ConfirmDialog` export colliding with messmass's —
+avoided by using the hook, not the component. The real collision found during
+implementation: destructuring `const { confirm } = useGdsConfirm()` shadows the
+**global `window.confirm`** for the rest of the component. `npm run type-check`
+caught it immediately — two pre-existing native `confirm(string)` calls in
+`clicker-manager` (delete clicker set) and `visualization` (switch-template
+navigation) broke at compile time. Both were themselves instances of the exact
+"native confirm() bypasses the design system" problem this migration exists to
+fix, so both were migrated to the same `confirm({ title, message, danger? })`
+call rather than worked around. Other files still have their own independent
+native `confirm()` calls — out of scope for this component's retirement, not
+touched.
+
+### Verification, and one honest gap
+`npm run type-check`, `npm run lint`, `npm test`, a clean `npm run build` all
+pass. Visual check confirmed the provider tree renders without new errors
+(`/admin/login`, `/admin` dashboard). **Not verified**: an actual interactive
+click-through of any of the 7 confirm dialogs — this local dev environment has
+no SSO configured and no local-login fallback (SSO-only, per architecture),
+so authenticating past `/admin/login` here isn't possible. The dialogs are
+GDS's own tested primitive, called with a documented, type-checked API shape;
+that's a materially weaker guarantee than seeing them render, and the next
+session (with real SSO access) should click through all 7 before calling this
+migration fully verified.
+
+### Also fixed in passing
+Running local production builds (`rm -rf .next && npm run build`) repeatedly
+while a separate `next dev` process on port 3001 stayed alive against the same
+`.next` directory corrupted the dev server's asset manifest (visible as mass
+404s on static chunks, unstyled page). Not a code regression — restarting the
+dev server cleanly resolved it. Worth remembering for future sessions running
+both a live preview and background builds concurrently.
 
 ## [v12.1.81] — 2026-08-16T22:00:00.000Z
 

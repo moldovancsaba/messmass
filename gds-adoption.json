@@ -41,7 +41,6 @@
     { "contract": "PageHeader", "path": "components/UnifiedAdminHeroWithSearch.tsx", "status": "planned" },
     { "contract": "AdminCrudForm", "path": "components/modals/FormModal.tsx", "status": "planned" },
     { "contract": "AdminModal", "path": "components/modals/BaseModal.tsx", "status": "planned" },
-    { "contract": "GdsConfirmProvider", "path": "components/modals/ConfirmDialog.tsx", "status": "planned" },
     { "contract": "ActionBar", "path": "components/admin/AdminActionRail.tsx", "status": "planned" },
     { "contract": "WorkspaceHeader", "path": "components/TopHeader.tsx", "status": "planned" }
   ],

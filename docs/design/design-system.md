@@ -4,7 +4,7 @@ Last Updated: 2026-08-08T16:40:43.000Z
 Canonical: Yes
 Owner: Architecture
 
-**Version**: 12.1.81
+**Version**: 12.1.82
 **Status**: Production
 
 ## Purpose
@@ -51,7 +51,6 @@ replacement (see the GDS adoption plan for the migration order).
 | `UnifiedCardView` | Admin card grid, composes `ColoredCard` + `AdminActionRail`; not previously documented | `AdminResourceGrid` | planned |
 | `UnifiedAdminHeroWithSearch` | Admin list-page hero, search, and primary actions | `PageHeader` | planned |
 | `FormModal` / `BaseModal` | Modal workflows that need consistent accessible structure | `AdminCrudForm` / `AdminModal` | planned |
-| `ConfirmDialog` | Destructive confirmation flows — name collision with GDS's own `ConfirmDialog`/`GdsConfirmProvider` export | `GdsConfirmProvider` | planned |
 | `AdminActionRail` | Shared primary/secondary/overflow row and card action rail; not previously documented | `ActionBar` | planned |
 | `TopHeader` | Admin workspace header | `WorkspaceHeader` | planned |
 | `UnifiedHashtagInput` | Hashtag selection and categorized hashtag input | — | domain-specific, not yet mapped |
@@ -95,6 +94,27 @@ replacement (see the GDS adoption plan for the migration order).
   display/removable/interactive+removable bubbles, the selection grid's active/light
   variant swap on click, and the selected-filters row's remove-on-click, all screenshot-
   and interaction-tested with headless Chromium.
+
+### `ConfirmDialog` retired (2026-08-16, Phase 5)
+
+- **GDS primitive used**: `GdsConfirmProvider`/`useGdsConfirm` (`@sovereignsquad/gds-core/client`),
+  mounted once at the root (`app/providers.tsx`, inside `GdsProvider`).
+- **Runtime flow**: full retirement, not a wrapper — `components/modals/ConfirmDialog.tsx`
+  is deleted. All 3 call sites (`app/admin/clicker-manager/page.tsx`,
+  `app/admin/visualization/page.tsx`, `app/admin/users/page.tsx`) now call
+  `const ok = await confirm({ title, message, danger })` imperatively instead of
+  rendering a controlled `isOpen`/`onClose` dialog component; the local `isOpen`
+  state each site kept solely to drive the old dialog was removed.
+- **Props contract**: `confirm()`'s `ConfirmRequest` takes `title`/`message`/`danger`
+  (boolean) — no `confirmText`/`cancelText` override; button copy comes from GDS's
+  own semantic action vocabulary (`danger: true` defaults to the `delete` action).
+  None of the 3 call sites customized button text beyond "Delete"/"Delete All", both
+  already covered by the default.
+- **Accessibility / mobile / states**: inherited entirely from GDS's own dialog —
+  not re-implemented locally, so there is nothing local left to verify beyond the
+  call sites' own confirm/cancel branching.
+- **Verification**: `npm run lint`, `npm run type-check`, `npm test`, `npm run build`
+  all clean.
 
 If a new local wrapper is needed, document:
 
