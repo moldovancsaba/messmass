@@ -12,6 +12,10 @@ const customJestConfig = {
   testEnvironment: 'jest-environment-node',
   moduleNameMapper: {
     '^@/(.*)$': '<rootDir>/$1',
+    // See tests/__mocks__/uuid.js — uuid's real "node" export condition is
+    // ESM-only and next/jest's transform config can't be overridden to parse
+    // it (transformIgnorePatterns alone did not work here).
+    '^uuid$': '<rootDir>/tests/__mocks__/uuid.js',
   },
   testMatch: [
     '**/tests/**/*.test.ts',

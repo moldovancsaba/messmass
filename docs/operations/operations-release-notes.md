@@ -1,8 +1,49 @@
 # {messmass} Release Notes
 Status: Active
-Last Updated: 2026-08-16T15:00:00.000Z
+Last Updated: 2026-08-16T16:00:00.000Z
 Canonical: No
 Owner: Operations
+
+## [v12.1.73] — 2026-08-16T16:00:00.000Z
+
+### Summary
+16 new AI variables — gender, age, emotion, smiling, and brand/club coverage
+— none of which existed as report tokens before, despite being real,
+populated data on every event that had gone through a demographics pass.
+
+### Why only 13 fanmass* variables existed
+Checked the live data directly: 13 scalar `fanmassX` keys existed in total —
+6 core (images, people, confidence, status) plus 7 sparse per-merchandise-type
+counts. Everything else fanmass computes — gender/age/emotion projections,
+smiling %, brand and club mentions — only ever reached messmass as a nested
+document (`ai_analysis_summaries`) the per-event AI report renders. It was
+never decomposed into anything a report could actually use as a `[token]`.
+
+### What's new, and what deliberately isn't
+Gender (male/female/unknown), age (children/youngAdults/adults/older/
+unknown), and emotion (happy/angry/neutral/unknown) are closed category sets
+— fixed across every event — so each becomes its own percentage variable
+(`fanmassGenderMalePct`, `fanmassAgeAdultsPct`, ...), plus
+`fanmassDemographicsAnalyzed` (the count they're a percentage of) and
+`fanmassSmilingPct`. Brand and club *names* stay out of scope on purpose:
+Nike this event, Adidas the next — a dynamic per-event set can't become fixed
+variable names. `fanmassBrandCount` / `fanmassClubCount` (how many distinct
+ones were detected) are the reportable signal instead.
+
+### Live now, not just for future analysis
+lib/aiAnalysisSummary.ts derives and pushes these on every future summary
+push automatically. Backfilled the 7 already-analysed events directly against
+production so they don't wait for their next push: verified each variable
+landed with the values `getAiVariables()`'s fill-rate table now shows.
+
+### Also: a test suite was silently broken by this
+Adding the derivation pulled `lib/aiAnalysisSummary.ts` into `lib/
+slugUtils.ts`'s import chain, which reaches the uuid package's ESM-only
+"node" build — Jest can't parse `export ... from` and failed the whole suite
+with "Unexpected token 'export'", pre-existing and invisible until something
+finally traversed that path. Mocked uuid for tests
+(tests/__mocks__/uuid.js + jest.config.js moduleNameMapper) rather than
+leave it broken.
 
 ## [v12.1.72] — 2026-08-16T15:00:00.000Z
 

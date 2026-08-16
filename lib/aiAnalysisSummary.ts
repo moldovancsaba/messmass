@@ -8,10 +8,17 @@
 //     event report can render it.
 // HOW: One document per event in `ai_analysis_summaries`, latest wins. A document,
 //     not stats keys — stats names are chart variables with registration
-//     semantics, and twenty brand rows are not twenty variables.
+//     semantics, and twenty brand rows are not twenty variables. That still
+//     holds for brand/club NAMES (see lib/aiDemographicStats.ts's own WHY):
+//     what changed is that gender/age/emotion are a closed, fixed category
+//     set, unlike brand names, so THOSE — plus smiling% and brand/club
+//     COUNTS — are also derived into real stats variables on every store,
+//     rather than living only in this document where no report can reach them.
 
 import { ObjectId } from 'mongodb';
 import { getDb } from './fanmassIntegration';
+import { pushEventStats } from './fanmassMapping';
+import { deriveFanmassDemographicStats } from './aiDemographicStats';
 
 // WHAT: The contract family this store accepts.
 // WHY: Major-version gate. A same-major producer may add fields (stored as-is);
@@ -98,6 +105,19 @@ export async function storeAnalysisSummary(
     },
     { upsert: true }
   );
+
+  // Best-effort: a report-variable derivation failing must never fail the
+  // summary push itself — fanmass has no retry path for this half of the
+  // write, and the summary document (the source of truth) already landed.
+  const derived = deriveFanmassDemographicStats(summary);
+  if (Object.keys(derived).length > 0) {
+    try {
+      await pushEventStats(eventId, derived);
+    } catch {
+      // Next push retries this; the summary document above is unaffected.
+    }
+  }
+
   return { eventId, receivedAt };
 }
 
