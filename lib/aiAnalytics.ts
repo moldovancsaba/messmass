@@ -49,6 +49,17 @@ export interface AiEventRow {
   lastAnalyzedAt: string | null;
   isStale: boolean;
   lastError?: string;
+  // WHAT: Whether the deeper modules — brands/clubs, merchandise, demographics
+  //     — actually produced anything, independent of the base-pass `status`
+  //     above. See loadDeepAnalysisByEvent for why these are not implied by it.
+  brandCount: number;
+  merchandiseCount: number;
+  peopleMeasured: number;
+  demographicsAnalyzed: number;
+  hasDriveFolder: boolean;
+  drivePaused: boolean;
+  driveSyncPending: boolean;
+  rescanPending: boolean;
 }
 
 export interface AiVariableRow {
@@ -110,6 +121,18 @@ export function deriveEventStatus(stats: Record<string, unknown>): {
   return { status, progressPercent: progress, imagesAnalyzed: analyzed, imagesDiscovered: discovered };
 }
 
+// WHAT: Event ids with a live rescan request — see lib/aiRescan.ts.
+// WHY: Used to disable the row's rescan actions rather than let a second
+//     click silently overwrite a request fanmass hasn't served yet.
+async function loadPendingRescanEventIds(): Promise<Set<string>> {
+  const db = await getDb();
+  const rows = await db
+    .collection('ai_rescan_requests')
+    .find({}, { projection: { eventId: 1 } })
+    .toArray();
+  return new Set(rows.map((row) => String(row.eventId)));
+}
+
 async function loadDriveErrorsByEvent(): Promise<Map<string, string>> {
   const db = await getDb();
   const rows = await db
@@ -123,15 +146,103 @@ async function loadDriveErrorsByEvent(): Promise<Map<string, string>> {
   return map;
 }
 
-async function loadDriveEventIds(): Promise<Set<string>> {
+export interface DriveFolderEventState {
+  folderCount: number;
+  anyPaused: boolean;
+  allPaused: boolean;
+  anySyncPending: boolean;
+}
+
+// WHAT: Per-event Drive folder state — how many links, and whether any are
+//     paused or have a live "check now" request — for the Check now / Pause
+//     row actions on the coverage list.
+// WHY: Those actions operate per event (all of an event's linked folders at
+//     once — see requestDriveFolderSyncForEvent), so the list needs to know
+//     this without a second round trip per row.
+async function loadDriveFolderStateByEvent(): Promise<Map<string, DriveFolderEventState>> {
   const db = await getDb();
-  // $group rather than distinct(): the client runs Stable API v1 with strict:true,
-  // and the distinct command is not part of that API — it fails with APIStrictError.
   const rows = await db
     .collection('drive_folder_links')
-    .aggregate<{ _id: string }>([{ $group: { _id: '$eventId' } }])
+    .find({}, { projection: { eventId: 1, paused: 1, syncRequestedAt: 1 } })
     .toArray();
-  return new Set(rows.map((row) => String(row._id)));
+  const map = new Map<string, DriveFolderEventState>();
+  for (const row of rows) {
+    const eventId = String(row.eventId);
+    const state = map.get(eventId) || { folderCount: 0, anyPaused: false, allPaused: true, anySyncPending: false };
+    state.folderCount += 1;
+    const paused = row.paused === true;
+    state.anyPaused = state.anyPaused || paused;
+    state.allPaused = state.allPaused && paused;
+    state.anySyncPending = state.anySyncPending || Boolean(row.syncRequestedAt);
+    map.set(eventId, state);
+  }
+  return map;
+}
+
+export interface DeepAnalysisState {
+  brandCount: number;
+  merchandiseCount: number;
+  peopleMeasured: number;
+  demographicsAnalyzed: number;
+}
+
+function sumProjection(counts: unknown): number {
+  if (!counts || typeof counts !== 'object') return 0;
+  return Object.values(counts as Record<string, unknown>).reduce(
+    (sum: number, n) => sum + (typeof n === 'number' ? n : 0),
+    0
+  );
+}
+
+// WHAT: Whether the modules beyond the base image pass — brands, clubs,
+//     merchandise, demographics — actually produced anything, per event.
+// WHY: fanmassAnalyzedImages/fanmassImages (what `status` is derived from)
+//     only measure the base pass. An event can show every image analysed while
+//     these deeper modules never ran at all; the coverage list had no way to
+//     show that difference, which is what made "complete" read as a lie for an
+//     event with an empty Brands table and a 0% demographics count.
+async function loadDeepAnalysisByEvent(): Promise<Map<string, DeepAnalysisState>> {
+  const db = await getDb();
+  const docs = await db
+    .collection('ai_analysis_summaries')
+    .find(
+      {},
+      {
+        projection: {
+          eventId: 1,
+          'summary.brandMentions': 1,
+          'summary.clubMentions': 1,
+          'summary.merchandiseCounts': 1,
+          'summary.peopleCounts': 1,
+          'summary.genderProjection': 1,
+          'summary.ageProjection': 1,
+          'summary.emotionProjection': 1,
+        },
+      }
+    )
+    .toArray();
+  const map = new Map<string, DeepAnalysisState>();
+  for (const doc of docs) {
+    const summary = (doc.summary || {}) as Record<string, unknown>;
+    const brandMentions = Array.isArray(summary.brandMentions) ? summary.brandMentions.length : 0;
+    const clubMentions = Array.isArray(summary.clubMentions) ? summary.clubMentions.length : 0;
+    const merchandiseCount = summary.merchandiseCounts && typeof summary.merchandiseCounts === 'object'
+      ? Object.keys(summary.merchandiseCounts as Record<string, unknown>).length
+      : 0;
+    const peopleMeasured = Number((summary.peopleCounts as Record<string, unknown> | undefined)?.measured) || 0;
+    const demographicsAnalyzed = Math.max(
+      sumProjection(summary.genderProjection),
+      sumProjection(summary.ageProjection),
+      sumProjection(summary.emotionProjection)
+    );
+    map.set(String(doc.eventId), {
+      brandCount: brandMentions + clubMentions,
+      merchandiseCount,
+      peopleMeasured,
+      demographicsAnalyzed,
+    });
+  }
+  return map;
 }
 
 export async function getAiEvents(options: { status?: AiEventStatus; limit?: number } = {}): Promise<{
@@ -140,14 +251,16 @@ export async function getAiEvents(options: { status?: AiEventStatus; limit?: num
 }> {
   const db = await getDb();
   const limit = Math.min(Math.max(options.limit ?? 200, 1), 500);
-  const [docs, driveErrors, driveEventIds] = await Promise.all([
+  const [docs, driveErrors, driveFolderState, deepAnalysis, pendingRescans] = await Promise.all([
     db
       .collection('projects')
       .find({}, { projection: { eventName: 1, eventDate: 1, stats: 1, aiLastAnalyzedAt: 1 } })
       .sort({ eventDate: -1 })
       .toArray(),
     loadDriveErrorsByEvent(),
-    loadDriveEventIds(),
+    loadDriveFolderStateByEvent(),
+    loadDeepAnalysisByEvent(),
+    loadPendingRescanEventIds(),
   ]);
 
   const rows: AiEventRow[] = docs.map((doc) => {
@@ -155,10 +268,12 @@ export async function getAiEvents(options: { status?: AiEventStatus; limit?: num
     const derived = deriveEventStatus(stats);
     const eventId = String(doc._id);
     const lastError = driveErrors.get(eventId);
+    const folderState = driveFolderState.get(eventId);
+    const deep = deepAnalysis.get(eventId);
     const sources: Array<'camera' | 'drive'> = [];
-    if (driveEventIds.has(eventId)) sources.push('drive');
+    if (folderState) sources.push('drive');
     // Any AI data without a Drive link must have arrived through the camera path.
-    if (derived.status !== 'not_connected' && !driveEventIds.has(eventId)) sources.push('camera');
+    if (derived.status !== 'not_connected' && !folderState) sources.push('camera');
     const lastAnalyzedAt = typeof doc.aiLastAnalyzedAt === 'string' ? doc.aiLastAnalyzedAt : null;
     return {
       eventId,
@@ -171,6 +286,14 @@ export async function getAiEvents(options: { status?: AiEventStatus; limit?: num
       sources,
       lastAnalyzedAt,
       isStale: isStale(lastAnalyzedAt),
+      brandCount: deep?.brandCount ?? 0,
+      merchandiseCount: deep?.merchandiseCount ?? 0,
+      peopleMeasured: deep?.peopleMeasured ?? 0,
+      demographicsAnalyzed: deep?.demographicsAnalyzed ?? 0,
+      hasDriveFolder: Boolean(folderState),
+      drivePaused: folderState?.allPaused ?? false,
+      driveSyncPending: folderState?.anySyncPending ?? false,
+      rescanPending: pendingRescans.has(eventId),
       ...(lastError ? { lastError } : {}),
     };
   });

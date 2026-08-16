@@ -286,6 +286,38 @@ export async function requestDriveFolderSync(eventId: string, linkId: string): P
   return toDriveFolderLink(result);
 }
 
+// WHAT: Event-scoped Check now / Pause / Resume, over every folder linked to
+//     the event at once.
+// WHY: The AI Analytics coverage list has one row per event, not per folder —
+//     an operator scanning that list for a "Failed" event wants to act on the
+//     event, not first find which of its (usually one, occasionally several)
+//     Drive folders is the problem.
+export async function requestDriveFolderSyncForEvent(eventId: string): Promise<number> {
+  if (!ObjectId.isValid(eventId)) {
+    throw Object.assign(new Error('Invalid event id.'), { status: 422, code: 'INVALID_EVENT_ID' });
+  }
+  const db = await getDb();
+  const timestamp = nowIso();
+  const result = await db.collection('drive_folder_links').updateMany(
+    { eventId, paused: { $ne: true } },
+    { $set: { syncRequestedAt: timestamp, updatedAt: timestamp } }
+  );
+  return result.modifiedCount;
+}
+
+export async function setDriveFolderPausedForEvent(eventId: string, paused: boolean): Promise<number> {
+  if (!ObjectId.isValid(eventId)) {
+    throw Object.assign(new Error('Invalid event id.'), { status: 422, code: 'INVALID_EVENT_ID' });
+  }
+  const db = await getDb();
+  const timestamp = nowIso();
+  const result = await db.collection('drive_folder_links').updateMany(
+    { eventId },
+    { $set: { paused, updatedAt: timestamp } }
+  );
+  return result.modifiedCount;
+}
+
 export interface ActiveDriveFolderEventGroup {
   eventId: string;
   eventName: string;

@@ -12,10 +12,12 @@
  *      here; a second definition would drift from lib/aiAnalytics.ts.
  */
 
-import { useCallback, useEffect, useState } from 'react';
-import Link from 'next/link';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import AnalyticsSectionCard from '@/components/analytics/AnalyticsSectionCard';
 import AnalyticsStatePanel from '@/components/analytics/AnalyticsStatePanel';
+import UnifiedListView from '@/components/UnifiedListView';
+import { apiPost } from '@/lib/apiClient';
+import { createAiEventsAdapter, type AiEventListItem, type RescanModuleId } from '@/lib/adapters/aiAnalyticsAdapter';
 import styles from './AiAnalyticsView.module.css';
 
 interface CoverageSummary {
@@ -27,19 +29,7 @@ interface CoverageSummary {
   stale: number;
 }
 
-interface AiEventRow {
-  eventId: string;
-  eventName: string;
-  eventDate: string | null;
-  status: 'not_connected' | 'analyzing' | 'complete' | 'error';
-  progressPercent: number | null;
-  imagesAnalyzed: number | null;
-  imagesDiscovered: number | null;
-  sources: string[];
-  lastAnalyzedAt: string | null;
-  isStale: boolean;
-  lastError?: string;
-}
+type AiEventRow = Omit<AiEventListItem, '_id'>;
 
 interface AiVariableRow {
   name: string;
@@ -55,41 +45,6 @@ interface AiVariableRow {
 // WHAT: Below this, a variable is called out as risky to build a report on.
 // WHY: Named once so the workspace and the authoring surface can agree.
 const SPARSE_THRESHOLD = 50;
-
-// 'complete' means every discovered image has been through the base pass
-// (person/brand/merch detection) — it says nothing about whether the deeper
-// demographic pass covered all of those people. The label used to say
-// "Analysis complete", which read as "everything is done" when a badge could
-// show 100% here while its demographics table covered a small fraction of the
-// people counted. See the per-event report for the true demographics count.
-const STATUS_LABEL: Record<AiEventRow['status'], string> = {
-  complete: 'Images complete',
-  analyzing: 'Analysing',
-  error: 'Failed',
-  not_connected: 'No AI analytics',
-};
-
-function statusText(row: AiEventRow): string {
-  const base = STATUS_LABEL[row.status] || 'Unknown state';
-  if (row.status === 'analyzing' && row.progressPercent !== null) {
-    return `${base} · ${row.progressPercent}%`;
-  }
-  return base;
-}
-
-function relativeTime(iso: string | null): string {
-  if (!iso) return 'Not recorded';
-  const ms = Date.now() - Date.parse(iso);
-  if (Number.isNaN(ms)) return 'Not recorded';
-  const minutes = Math.floor(ms / 60000);
-  if (minutes < 1) return 'Just now';
-  if (minutes < 60) return `${minutes} min ago`;
-  const hours = Math.floor(minutes / 60);
-  if (hours < 24) return `${hours} h ago`;
-  const days = Math.floor(hours / 24);
-  // Past a week a relative figure stops being useful; show the date instead.
-  return days <= 7 ? `${days} d ago` : new Date(iso).toISOString().slice(0, 10);
-}
 
 export default function AiAnalyticsView() {
   const [coverage, setCoverage] = useState<CoverageSummary | null>(null);
@@ -149,6 +104,58 @@ export default function AiAnalyticsView() {
       // Clipboard can be denied; the token is visible as text either way.
     }
   }, []);
+
+  // WHAT: Check now / Pause / Resume / Rescan, called from the row actions
+  //     below. All reuse endpoints already built for the per-event report and
+  //     the event editor's Drive Folders panel — event-scoped variants of the
+  //     same mutations, not a new backend.
+  const [busyEventId, setBusyEventId] = useState<string | null>(null);
+  const [actionError, setActionError] = useState('');
+
+  const runDriveAction = useCallback(async (eventId: string, action: 'sync' | 'pause' | 'resume') => {
+    setActionError('');
+    setBusyEventId(eventId);
+    try {
+      const data = await apiPost(`/api/analytics/ai/events/${eventId}/drive-sync`, { action });
+      if (data.success) {
+        await load();
+      } else {
+        setActionError(data.error || `Failed to ${action} this event's Drive folder.`);
+      }
+    } catch (err) {
+      setActionError(err instanceof Error ? err.message : 'Network error. Please try again.');
+    } finally {
+      setBusyEventId(null);
+    }
+  }, [load]);
+
+  const runRescan = useCallback(async (eventId: string, moduleId: RescanModuleId) => {
+    setActionError('');
+    setBusyEventId(eventId);
+    try {
+      const data = await apiPost(`/api/analytics/ai/events/${eventId}/rescan`, { moduleId });
+      if (data.success) {
+        await load();
+      } else {
+        setActionError(data.error?.message || 'Failed to request a rescan.');
+      }
+    } catch (err) {
+      setActionError(err instanceof Error ? err.message : 'Network error. Please try again.');
+    } finally {
+      setBusyEventId(null);
+    }
+  }, [load]);
+
+  const eventsAdapter = useMemo(
+    () => createAiEventsAdapter({
+      busyEventId,
+      onCheckNow: (eventId) => runDriveAction(eventId, 'sync'),
+      onPause: (eventId) => runDriveAction(eventId, 'pause'),
+      onResume: (eventId) => runDriveAction(eventId, 'resume'),
+      onRescan: (eventId, moduleId) => runRescan(eventId, moduleId),
+    }),
+    [busyEventId, runDriveAction, runRescan]
+  );
 
   if (loading) {
     return <AnalyticsStatePanel variant="loading" title="Loading AI analytics" description="Reading coverage, event status and variable fill rates." />;
@@ -246,63 +253,12 @@ export default function AiAnalyticsView() {
           </div>
         }
       >
-        {visibleEvents.length === 0 ? (
-          <AnalyticsStatePanel variant="empty" title="No events match" description="No events have this AI analysis status." />
-        ) : (
-          <div className={styles.tableScroll}>
-            <table className={styles.table}>
-              <caption className={styles.srOnly}>Events with their AI analysis status, progress and freshness</caption>
-              <thead>
-                <tr>
-                  <th scope="col">Event</th>
-                  <th scope="col">Status</th>
-                  <th scope="col">Images</th>
-                  <th scope="col">Source</th>
-                  <th scope="col">Last analysed</th>
-                </tr>
-              </thead>
-              <tbody>
-                {visibleEvents.slice(0, 200).map((row) => (
-                  <tr key={row.eventId}>
-                    <th scope="row" className={styles.eventName}>
-                      {/* Only connected events link out: a report for an event with
-                          no AI analytics would land on an empty state. */}
-                      {row.status !== 'not_connected' ? (
-                        <Link
-                          className={styles.eventLink}
-                          href={`/admin/analytics/ai/${row.eventId}`}
-                          aria-label={`Open AI report for ${row.eventName}`}
-                        >
-                          {row.eventName}
-                        </Link>
-                      ) : (
-                        row.eventName
-                      )}
-                    </th>
-                    <td>
-                      <span className={`${styles.badge} ${styles[`status_${row.status}`] || ''}`}>{statusText(row)}</span>
-                      {row.lastError && <span className={styles.errorDetail}> {row.lastError}</span>}
-                    </td>
-                    <td className={styles.numeric}>
-                      {row.imagesDiscovered === null
-                        ? '—'
-                        : `${row.imagesAnalyzed ?? 0} of ${row.imagesDiscovered}`}
-                    </td>
-                    <td>{row.sources.length ? row.sources.join(', ') : '—'}</td>
-                    <td>
-                      {row.lastAnalyzedAt ? (
-                        <time dateTime={row.lastAnalyzedAt}>{relativeTime(row.lastAnalyzedAt)}</time>
-                      ) : (
-                        'Not recorded'
-                      )}
-                      {row.isStale && <span className={styles.staleNote}> · stale</span>}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        )}
+        {actionError && <p className={styles.errorDetail}>{actionError}</p>}
+        <UnifiedListView
+          items={visibleEvents.slice(0, 200).map((row) => ({ ...row, _id: row.eventId }))}
+          config={eventsAdapter.listConfig}
+          emptyMessage="No events have this AI analysis status."
+        />
       </AnalyticsSectionCard>
 
       <AnalyticsSectionCard

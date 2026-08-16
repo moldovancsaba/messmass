@@ -1,8 +1,40 @@
 # {messmass} Release Notes
 Status: Active
-Last Updated: 2026-08-16T10:00:00.000Z
+Last Updated: 2026-08-16T14:00:00.000Z
 Canonical: No
 Owner: Operations
+
+## [v12.1.71] — 2026-08-16T14:00:00.000Z
+
+### Summary
+Rebuilt the AI Analytics events table on the same shared components every
+other admin list (Events, Partners) uses, added a real per-event signal for
+whether brands/merchandise/demographics ran at all, and moved Check now /
+Pause / Rescan directly onto it.
+
+### The table now follows the same structure as everywhere else
+It was a hand-rolled `<table>` with page-local status pills and no row
+actions — invented rather than reused. Replaced with UnifiedListView +
+AdminActionRail, the same pattern Events and Partners use, with the shared
+`.badge-success`/`.badge-warning`/`.badge-danger`/`.badge-secondary` classes
+instead of bespoke ones.
+
+### A real "Deep analysis" column, not just a relabelled badge
+The "Images complete" badge only ever measured the base pass. There was no
+way to tell, from the list, whether brands, merchandise, or demographics had
+run at all — an event could show every image analysed while all three sat at
+zero, identical at a glance to one where everything actually finished. Each
+row now shows real counts (`ai_analysis_summaries`, bulk-loaded once, not a
+query per row): brand mentions, merchandise kinds, and demographics coverage
+as a percentage of people measured.
+
+### Check now / Pause / Rescan on the list itself
+Previously reachable only from the event editor (Check now / Pause) or a
+separate per-event page (rescan). Both are now event-scoped bulk actions
+(`requestDriveFolderSyncForEvent`, `setDriveFolderPausedForEvent` in
+lib/driveFolders.ts, reusing the same endpoints) so a row with several linked
+folders acts on all of them at once, matching how an operator actually thinks
+about "recheck this event" rather than "recheck this specific folder."
 
 ## [v12.1.70] — 2026-08-16T10:00:00.000Z
 
