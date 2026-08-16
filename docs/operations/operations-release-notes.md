@@ -1,8 +1,30 @@
 # {messmass} Release Notes
 Status: Active
-Last Updated: 2026-08-16T22:30:00.000Z
+Last Updated: 2026-08-16T22:45:00.000Z
 Canonical: No
 Owner: Operations
+
+## [v12.1.83] — 2026-08-16T22:45:00.000Z
+
+### Summary
+Documentation-only: full rewrite of root `HANDOVER.md` at the user's
+explicit request, to hand off everything open to the next session/agent.
+No app code changed.
+
+### What changed
+Replaced the previous handover (last verified 2026-08-14, messmass HEAD
+`cd8ab0cb`/v12.1.53) with the current state as of HEAD `58fe9e96`
+(v12.1.82), CI confirmed green. Covers: exactly which GDS adoption plan
+phases are done vs. open (Phase 4b and 9 of 10 Phase 5 components remain),
+the AI Analytics honest-status fix and its one still-open scoping question,
+a full technical trail of every non-obvious finding this session (the real
+`createPublicBrandTheme`/`GdsProvider`/`useGdsConfirm` signatures verified
+against installed `.d.ts` files rather than assumed, the `window.confirm`
+shadowing bug, the dev-server `.next` corruption, Phase 4a's real 17-of-78
+scope discovered via a live theme fetch), and an explicit list of what was
+*not* verified (interactive click-through of the 7 new confirm dialogs — no
+SSO in this local environment) so the next session doesn't mistake a clean
+type-check for a fully verified feature.
 
 ## [v12.1.82] — 2026-08-16T22:30:00.000Z
 
