@@ -60,6 +60,14 @@ export type AppConfig = {
   fanmassBaseUrl?: string;
   fanmassApiKey?: string;
   fanmassIntegrationToken?: string;
+  // WHAT: fanmass's human-facing web UI origin (its own React SPA), e.g.
+  //     http://localhost:8787. Distinct from fanmassBaseUrl, which is the
+  //     server-to-server API base for the existing integration and may not
+  //     be the same origin as the browser-facing app.
+  // WHY: Backs the messmass admin "Fanmass" nav item, which links out to
+  //     fanmass's own dashboards/entity-curation UI rather than embedding
+  //     or re-implementing them.
+  fanmassAppUrl?: string;
   // messmass -> camera provisioning (messmass is master for orgs/partners/events)
   cameraBaseUrl?: string;
   cameraProvisionToken?: string;
@@ -143,6 +151,7 @@ function initializeConfig(): AppConfig {
     fanmassBaseUrl: getEnv('FANMASS_BASE_URL'),
     fanmassApiKey: getEnv('FANMASS_API_KEY'),
     fanmassIntegrationToken: getEnv('FANMASS_INTEGRATION_TOKEN') || getEnv('MESSMASS_FANMASS_TOKEN'),
+    fanmassAppUrl: getEnv('FANMASS_APP_URL'),
     cameraBaseUrl: getEnv('CAMERA_BASE_URL'),
     cameraProvisionToken: getEnv('CAMERA_MESSMASS_INTERNAL_SECRET'),
   };

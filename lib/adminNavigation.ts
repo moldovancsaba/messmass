@@ -265,6 +265,14 @@ export const adminNavSections: AdminNavSection[] = [
         accentColor: navAccent.warning,
         showInAdminWorkspace: false,
       },
+      {
+        label: 'Fanmass',
+        path: '/admin/fanmass',
+        icon: 'query_stats',
+        description: 'Open fanmass\'s own executive dashboard, analytics, run control, entity curation, and settings.',
+        tourDescription: 'Links out to fanmass, the AI analysis tool that produces demographics, brand, and merchandise data for your events — its own dashboards and entity rename/merge tooling, not yet rebuilt inside messmass.',
+        accentColor: navAccent.info,
+      },
     ],
   },
   {

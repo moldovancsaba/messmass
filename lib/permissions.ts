@@ -64,6 +64,7 @@ export const MENU_PERMISSIONS: Record<string, UserRole[]> = {
   'Marketing Dashboard': ['admin', 'superadmin'],
   'Operations Dashboard': ['admin', 'superadmin'],
   'Insights': ['superadmin'],
+  'Fanmass': ['admin', 'superadmin'],
 
   // WHAT: System
   'Users': ['superadmin'],

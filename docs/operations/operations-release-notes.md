@@ -1,8 +1,39 @@
 # {messmass} Release Notes
 Status: Active
-Last Updated: 2026-08-17T13:03:41.000Z
+Last Updated: 2026-08-17T13:16:47.000Z
 Canonical: No
 Owner: Operations
+
+## [v12.1.87] — 2026-08-17T13:16:47.000Z
+
+### Summary
+Adds a single "Fanmass" nav item to messmass admin's Analytics section,
+linking out (new tab) to fanmass's own web UI — Executive Dashboard,
+Analytics, Run Control, Entity Curation, and Settings. Deliberately not an
+iframe embed and not deep integration: fanmass already has all of this, and
+messmass just needs to get an operator there. Deeper integration is a
+separate, later planning exercise.
+
+### Changed
+- `lib/config.ts` — new `fanmassAppUrl` config field, backed by
+  `FANMASS_APP_URL` env var. Distinct from the pre-existing `fanmassBaseUrl`
+  (the server-to-server API base) since the human-facing web UI isn't
+  guaranteed to be the same origin.
+- `app/admin/fanmass/page.tsx` (new) — plain server component rendering an
+  `AnalyticsSectionCard` with one link per fanmass dashboard page. Renders an
+  explanatory empty state instead of dead links when `FANMASS_APP_URL` isn't
+  set.
+- `lib/adminNavigation.ts` / `lib/permissions.ts` — new "Fanmass" nav item
+  (`admin`/`superadmin`), same tier as the section's other dashboard items.
+- `.env.example` — documents `FANMASS_APP_URL`.
+
+### Testing
+`type-check`, `lint`, `tests/nav-menu-permissions.test.ts` (targeted) and the
+full suite (363/363), `style:check`, and a clean `rm -rf .next && npm run
+build` all pass. This local environment has no `FANMASS_*` vars set, so the
+honest verification here is that `page.tsx`'s empty-state branch is
+reachable and correct code-wise — not a live signed-in click-through to
+fanmass (messmass is SSO-only with no local dev-login bypass in this repo).
 
 ## [v12.1.86] — 2026-08-17T13:03:41.000Z
 

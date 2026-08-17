@@ -1,0 +1,50 @@
+/* app/admin/fanmass/page.module.css */
+/* Design tokens only — no hardcoded colours, spacing or radii. */
+
+.wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: var(--mm-space-6);
+}
+
+.emptyState {
+  color: var(--mm-gray-600);
+  font-size: var(--mm-font-size-sm);
+  margin: 0;
+}
+
+.emptyState code {
+  background: var(--mm-gray-100);
+  padding: 0.125rem 0.375rem;
+  border-radius: var(--mm-radius-sm);
+  font-size: var(--mm-font-size-sm);
+}
+
+.linkGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr));
+  gap: var(--mm-space-4);
+}
+
+.linkCard {
+  display: flex;
+  flex-direction: column;
+  gap: var(--mm-space-2);
+  padding: var(--mm-space-4);
+  border: var(--mm-border-width-sm) var(--mm-border-style-solid) var(--mm-gray-200);
+  border-radius: var(--mm-radius-md);
+}
+
+.linkTitle {
+  margin: 0;
+  font-size: var(--mm-font-size-lg);
+  font-weight: var(--mm-font-weight-semibold);
+  color: var(--mm-gray-900);
+}
+
+.linkDescription {
+  margin: 0;
+  font-size: var(--mm-font-size-sm);
+  color: var(--mm-gray-600);
+  flex-grow: 1;
+}
