@@ -1,8 +1,43 @@
 # {messmass} Release Notes
 Status: Active
-Last Updated: 2026-08-17T00:15:00.000Z
+Last Updated: 2026-08-17T00:30:00.000Z
 Canonical: No
 Owner: Operations
+
+## [v12.1.85] — 2026-08-17T00:30:00.000Z
+
+### Summary
+Follow-up to v12.1.84: the previous fix wired fanmass's real `deepStatus`
+into the events list and the per-event report's header banner, but missed
+the per-event report's own section captions. Brands, Clubs & federations,
+Merchandise, and Fan demographics still said "Based on 670 of 670 images
+analysed (100%)" — the exact same false-completion claim the header banner
+right above it was now correctly contradicting.
+
+### The fix
+`imageProgressNote()` (`AiEventReportView.tsx`) takes a `deepStatus`
+parameter now. When fanmass's `summary.status` isn't `'ready'`, every one of
+the four section captions says "Deep analysis still running — figures below
+are partial." instead of computing a percentage from the base image/people
+count. Deliberately a full replacement, not an addition: keeping a specific
+fraction (e.g. "4% of people analysed for demographics") next to "still
+running" would imply that fraction is itself trustworthy progress, when the
+same ambiguity in fanmass's own `status` semantics applies to all four
+modules equally — better to make one honest, consistent claim than a
+precise-looking one that can't be verified.
+
+Swept the whole app for every other surface rendering brand/merchandise/
+demographic-derived numbers (`grep` for `brandMentions`,
+`merchandiseCounts`, `demographicsAnalyzed`, `brandCount`,
+`merchandiseCount`) — confirmed only two files render them
+(`AiEventReportView.tsx`, `aiAnalyticsAdapter.tsx`), both now fixed. Still
+open, not touched: whether this caveat needs to reach client-facing report
+pages that render `fanmass*` variables through the formula engine/chart
+pipeline — a materially different, larger surface. See `HANDOVER.md`.
+
+### Verification
+`npm run type-check`, `npm run lint`, `npm test`, a clean `npm run build`
+all pass.
 
 ## [v12.1.84] — 2026-08-17T00:15:00.000Z
 

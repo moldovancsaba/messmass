@@ -116,7 +116,18 @@ function sumValues(counts: Record<string, number> | undefined): number {
 // WHY: Brand and merchandise detections run on the same base image pass as
 //     everything else — without this line, "30 brands detected" reads as
 //     final even when it's drawn from a handful of an event's images.
-function imageProgressNote(analyzed: number | undefined, total: number | undefined, unit = 'images analysed'): string {
+// HOW: `deepStatus` is fanmass's own status for the deep-analysis pass,
+//     separate from the image/people fraction below it — the fraction can
+//     read 100% while fanmass itself says the deep pass ('partial') is not
+//     actually done. Saying "(100%)" in that case is a direct contradiction
+//     of a near-empty table right below it, so deepStatus wins.
+function imageProgressNote(
+  analyzed: number | undefined,
+  total: number | undefined,
+  unit = 'images analysed',
+  deepStatus?: 'ready' | 'partial' | 'running' | null
+): string {
+  if (deepStatus && deepStatus !== 'ready') return 'Deep analysis still running — figures below are partial.';
   if (!total) return `No ${unit} yet for this event.`;
   const pct = Math.round(((analyzed ?? 0) / total) * 100);
   return `Based on ${analyzed ?? 0} of ${total} ${unit} (${pct}%).`;
@@ -515,17 +526,17 @@ export default function AiEventReportView() {
         <div className={styles.rescanRow}>
           <RescanButton moduleId="brands" />
         </div>
-        <p className={styles.shareNote}>{imageProgressNote(images.analyzed, images.total)}</p>
+        <p className={styles.shareNote}>{imageProgressNote(images.analyzed, images.total, 'images analysed', s.status)}</p>
         <MentionTable title="Brand" caption="Brand detections ranked by count" mentions={s.brandMentions || []} />
       </AnalyticsSectionCard>
 
       <AnalyticsSectionCard title="Clubs & federations" subtitle="Club and federation detections">
-        <p className={styles.shareNote}>{imageProgressNote(images.analyzed, images.total)}</p>
+        <p className={styles.shareNote}>{imageProgressNote(images.analyzed, images.total, 'images analysed', s.status)}</p>
         <MentionTable title="Club / federation" caption="Club and federation detections ranked by count" mentions={s.clubMentions || []} />
       </AnalyticsSectionCard>
 
       <AnalyticsSectionCard title="Merchandise" subtitle="Merchandise kinds detected on fans">
-        <p className={styles.shareNote}>{imageProgressNote(images.analyzed, images.total)}</p>
+        <p className={styles.shareNote}>{imageProgressNote(images.analyzed, images.total, 'images analysed', s.status)}</p>
         <CountsTable counts={s.merchandiseCounts || {}} caption="Merchandise detections by kind" nameHeader="Kind" />
       </AnalyticsSectionCard>
 
@@ -537,7 +548,7 @@ export default function AiEventReportView() {
             demographic pass runs over a subset of those, so this is the number
             that actually backs the tables below — not the images/people totals
             shown at the top, which would overstate coverage here. */}
-        <p className={styles.shareNote}>{imageProgressNote(demographicsAnalyzed, people.measured, 'people analysed for demographics')}</p>
+        <p className={styles.shareNote}>{imageProgressNote(demographicsAnalyzed, people.measured, 'people analysed for demographics', s.status)}</p>
         <h3 className={styles.srOnly}>Gender projection</h3>
         <CountsTable counts={s.genderProjection || {}} caption="Gender projection" nameHeader="Gender" />
         <h3 className={styles.srOnly}>Age projection</h3>
