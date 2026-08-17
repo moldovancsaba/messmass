@@ -1,0 +1,45 @@
+/* components/fanmass/PrintableReportSections.module.css */
+/* Design tokens only — no hardcoded colours, spacing or radii. */
+
+.stack {
+  display: flex;
+  flex-direction: column;
+  gap: var(--mm-space-4);
+}
+
+.empty {
+  color: var(--mm-gray-600);
+  font-size: var(--mm-font-size-sm);
+  margin: 0;
+}
+
+.rowList {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: var(--mm-space-2) var(--mm-space-4);
+  margin: 0;
+}
+
+.row {
+  display: contents;
+}
+
+.rowLabel {
+  font-size: var(--mm-font-size-sm);
+  color: var(--mm-gray-600);
+  align-self: center;
+}
+
+.rowValue {
+  margin: 0;
+  font-size: var(--mm-font-size-sm);
+  font-weight: var(--mm-font-weight-semibold);
+  color: var(--mm-gray-900);
+  text-align: right;
+  align-self: center;
+}
+
+.rowMeta {
+  font-weight: var(--mm-font-weight-normal);
+  color: var(--mm-gray-600);
+}

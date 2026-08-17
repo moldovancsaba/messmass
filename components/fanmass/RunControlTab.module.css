@@ -1,0 +1,24 @@
+/* components/fanmass/RunControlTab.module.css */
+/* Design tokens only — no hardcoded colours, spacing or radii. */
+
+.jobLine {
+  font-size: var(--mm-font-size-sm);
+  color: var(--mm-gray-600);
+  margin-top: var(--mm-space-2);
+}
+
+.placeholder {
+  color: var(--mm-gray-600);
+  font-size: var(--mm-font-size-sm);
+  margin: 0;
+}
+
+.enqueuedNote {
+  font-size: var(--mm-font-size-sm);
+  color: var(--mm-gray-700);
+}
+
+.errorText {
+  font-size: var(--mm-font-size-sm);
+  color: var(--mm-error);
+}

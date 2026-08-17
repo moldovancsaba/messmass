@@ -1,0 +1,17 @@
+/* components/fanmass/EntityCurationTab.module.css */
+/* Design tokens only — no hardcoded colours, spacing or radii. */
+
+.placeholder {
+  color: var(--mm-gray-600);
+  font-size: var(--mm-font-size-sm);
+  margin: 0;
+}
+
+.errorText {
+  font-size: var(--mm-font-size-sm);
+  color: var(--mm-error);
+}
+
+.mergeRow {
+  margin-top: var(--mm-space-4);
+}

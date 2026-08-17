@@ -1,8 +1,62 @@
 # {messmass} Release Notes
 Status: Active
-Last Updated: 2026-08-17T13:29:42.000Z
+Last Updated: 2026-08-17T18:03:43.000Z
 Canonical: No
 Owner: Operations
+
+## [v12.1.89] — 2026-08-17T18:03:43.000Z
+
+### Summary
+Replaces `/admin/fanmass`'s static outbound-link grid with a native, tabbed
+dashboard hosted entirely inside messmass — Executive Dashboard, Analytics,
+Run Control, Entity Curation, and Settings — fed by a new asynchronous
+push/poll channel with Fanmass (which has no public URL and cannot be
+reached from Messmass directly; Fanmass is always the outbound caller in
+both directions, mirroring the existing rescan-request pattern rather than
+inventing a new mechanism). Closes messmass#336–#342.
+
+### Added
+- `fanmass_dashboard_snapshot` collection + `POST /api/integrations/fanmass/dashboard-snapshot`
+  (fanmass-authenticated ingestion) — Fanmass pushes a full dashboard
+  snapshot per connected batch/event on its own cadence.
+- `fanmass_commands` collection + `GET`/`DELETE /api/integrations/fanmass/commands[/{commandId}]`
+  (fanmass-authenticated poll/ack) and `POST /api/admin/fanmass/commands`
+  (admin-session-authenticated enqueue) — a generic, typed command channel
+  for `run_control.start_batch`/`stop_batch`, `entity.rename`/`merge`/
+  `confirm_cluster`/`reject_cluster`, and `settings.update`/`rotateApiKey`.
+- `lib/fanmassSettingsAllowlist.ts` — the 16-field settings allowlist,
+  independently re-enforced server-side alongside Fanmass's own `config.py`
+  allowlist (defense in depth; `apiKey` is never a writable field).
+- `components/fanmass/{FanmassDashboardTabs,PrintableReportSections,RunControlTab,EntityCurationTab,SettingsTab}.tsx` —
+  the five-tab client shell replacing the old link grid, each tab honestly
+  representing Fanmass's async, restart-gated architecture (an enqueued
+  command shows "queued", never "applied", until the next real snapshot
+  confirms it).
+- `tests/fanmass-{commands,dashboard-snapshot,settings-allowlist}.test.ts`.
+
+### Changed
+- `app/admin/fanmass/page.tsx` — now a thin server component hosting
+  `FanmassDashboardTabs`, replacing the five `<a target="_blank">` cards.
+- `.env.example` — `FANMASS_APP_URL`'s comment updated; it's no longer read
+  for outbound links now that the nav item hosts Fanmass's dashboards
+  natively.
+
+### Testing
+`type-check`, `lint`, `style:check` (first use of Mantine `Tabs`/`Progress`/`Table`
+in this codebase, checked clean against the design-token rules), full test
+suite (381/381, including `tests/api-mutation-auth.test.ts` for the new
+mutating route), and a clean `npm run build`.
+
+### Known Limitations
+- No live acknowledgement channel: an enqueued command's effect is only
+  ever confirmed by the next scheduled snapshot push, never a synchronous
+  response — this is the accepted architecture, not a gap.
+- Settings changes require a Fanmass process restart to take effect; the
+  UI says so explicitly rather than implying immediate effect.
+- No delete action for confirmed entities — Fanmass's command dispatcher
+  (fanmass#80) has no `entity.delete` case yet; add the button when it does.
+- End-to-end verification against a live, SSO-authenticated browser session
+  (messmass#343's release-gate runbook) has not been run.
 
 ## [v12.1.88] — 2026-08-17T13:29:42.000Z
 

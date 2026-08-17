@@ -1,12 +1,43 @@
 # Session Handover — messmass
 
-Last verified: 2026-08-17, HEAD `4a4dbed0` (v12.1.88, committed/pushed/CI-green).
-Tree is clean and level with `origin/main`. This file was rewritten this
-session after being found ~2 versions stale (it described v12.1.87 as
-"about to be committed" and framed the GDS bump as still-6.1.0 after 6.2.0
-had already shipped).
+Last verified: 2026-08-17 (v12.1.89, committed/pushed).
 
-**Housekeeping done this session** (repo hygiene sweep, all verified):
+**Fanmass Unified Dashboard & Settings v1 shipped this session**
+(messmass#336–#342, plus fanmass#79–#81 in the sibling repo). `/admin/fanmass`
+went from a static five-card outbound-link grid to a native, tabbed
+dashboard (Executive Dashboard, Analytics, Run Control, Entity Curation,
+Settings) fed by a new asynchronous push/poll channel — Fanmass has no
+public URL and is always the outbound caller in both directions, exactly
+mirroring the existing `ai_rescan_requests` pattern rather than inventing a
+new mechanism. See `docs/operations/operations-release-notes.md`'s
+`[v12.1.89]` entry for the full file list and known limitations.
+
+**Two coordination gaps found and closed while implementing, not left as
+open TODOs**: (1) `fanmass#340`'s stop-batch command needs a `runId`, which
+the originally-scoped snapshot payload didn't carry — added `activeRun` to
+fanmass's `build_dashboard_snapshot()`. (2) `fanmass#341`'s issue draft
+assumed `entity.confirm_cluster`/`reject_cluster` meant reclassify/delete on
+the entity catalog; the real dispatcher (fanmass#80) uses them for
+face-cluster confirm/reject, a different concept, and has no delete
+handler at all — the UI was built against what the dispatcher actually
+does, and the delete button was deliberately left out rather than wired to
+a command type that would sit "unrecognized, pending forever."
+
+**Not done — messmass#343 (release-gate issue), the initiative's capstone**:
+requires a live SSO-authenticated browser session (screenshots, real
+click-throughs) and both processes running against each other, neither of
+which this session had access to. Everything gate-able without a browser
+session (full local `type-check`/`lint`/`test`/`style:check`/`build`,
+grep-verified no Messmass→Fanmass call path in the new code, three-layer
+settings-allowlist rejection proven via `tests/fanmass-settings-allowlist.test.ts`
++ fanmass's `scripts/smoke_settings_writeback.py`) is done; the rest needs a
+human operator with real admin credentials.
+
+---
+
+## 0. Prior housekeeping session (2026-08-17, v12.1.88, committed/pushed/CI-green)
+
+**Housekeeping done that session** (repo hygiene sweep, all verified):
 - `coverage/` (456 tracked files) untracked and added to `.gitignore` —
   it's `npm run test:coverage` output, never should have been committed.
   This stops further growth of the 460MB `.git`; it does **not** shrink the

@@ -1,0 +1,26 @@
+/* components/fanmass/SettingsTab.module.css */
+/* Design tokens only — no hardcoded colours, spacing or radii. */
+
+.placeholder {
+  color: var(--mm-gray-600);
+  font-size: var(--mm-font-size-sm);
+  margin: 0;
+}
+
+.queuedBanner {
+  font-size: var(--mm-font-size-sm);
+  color: var(--mm-gray-700);
+  padding: var(--mm-space-3);
+  border: 1px solid var(--mm-gray-400);
+  border-radius: var(--mm-radius-md);
+}
+
+.errorText {
+  font-size: var(--mm-font-size-sm);
+  color: var(--mm-error);
+}
+
+.changedField {
+  border-left: 3px solid var(--mm-color-primary-500);
+  padding-left: var(--mm-space-2);
+}

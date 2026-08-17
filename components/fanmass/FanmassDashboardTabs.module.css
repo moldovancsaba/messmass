@@ -1,0 +1,33 @@
+/* components/fanmass/FanmassDashboardTabs.module.css */
+/* Design tokens only — no hardcoded colours, spacing or radii. */
+
+.wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: var(--mm-space-4);
+}
+
+.picker {
+  display: flex;
+  align-items: flex-end;
+  gap: var(--mm-space-4);
+  flex-wrap: wrap;
+}
+
+.freshness {
+  font-size: var(--mm-font-size-sm);
+  color: var(--mm-gray-600);
+  padding-bottom: var(--mm-space-2);
+}
+
+.staleness {
+  font-size: var(--mm-font-size-sm);
+  color: var(--mm-warning);
+  padding-bottom: var(--mm-space-2);
+}
+
+.placeholder {
+  color: var(--mm-gray-600);
+  font-size: var(--mm-font-size-sm);
+  margin: 0;
+}
