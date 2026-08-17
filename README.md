@@ -12,7 +12,7 @@ Owner: Product
 <p align="center"><strong>Enterprise event analytics, partner reporting, reporting operations, and admin workflow tooling for sports organizations, venues, and brands.</strong></p>
 
 <p align="center">
-  <img src="https://img.shields.io/badge/version-v12.1.85-2563EB?style=for-the-badge" alt="Version">
+  <img src="https://img.shields.io/badge/version-v12.1.88-2563EB?style=for-the-badge" alt="Version">
   <img src="https://img.shields.io/badge/platform-Web%20App-0F172A?style=for-the-badge" alt="Platform">
   <img src="https://img.shields.io/badge/stack-Next.js%20%7C%20MongoDB%20%7C%20Mantine-0EA5E9?style=for-the-badge" alt="Stack">
 </p>
@@ -139,7 +139,7 @@ Important repo note:
 - If `npm run type-check` fails on missing `.next/types`, run `npm run build` first and rerun the type check.
 
 Current release version:
-- `v12.1.85`
+- `v12.1.88`
 
 ## Fanmass Integration
 
@@ -188,9 +188,9 @@ Main system areas:
 
 Current UI foundation note:
 - Root Mantine runtime is now installed and active through `app/providers.tsx` and `lib/ui/mantineTheme.ts`
-- Shared GDS packages resolve from published `@sovereignsquad/gds-*` packages at `3.9.0`
+- Shared GDS packages resolve from vendored `@sovereignsquad/gds-*` GitHub Release tarballs under `vendor/gds/` at `6.2.0`
 - Legacy local wrappers and CSS systems still exist as compatibility layers until the board-tracked Mantine migration chain is completed
-- Local vendored `@gds/*` packages are no longer active package authority
+- Old local `@gds/*` package folders (pre-vendoring) are no longer active package authority
 
 Current report variant reliability note:
 - report variant period writes are normalized by `lib/reportPeriodValidation.ts`

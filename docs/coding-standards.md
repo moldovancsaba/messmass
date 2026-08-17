@@ -4,8 +4,8 @@ Last Updated: 2026-06-24T13:15:00.000Z
 Canonical: No
 Owner: Architecture
 
-**Version:** 12.1.16
-**Last Updated:** 2026-06-24T13:15:00.000Z (UTC)
+**Version:** 12.1.88
+**Last Updated:** 2026-08-17T00:00:00.000Z (UTC)
 
 ---
 
@@ -17,17 +17,17 @@ Owner: Architecture
 
 That means:
 - the shared GDS, not this file, is the authority for primitive policy, component behavior, responsive rules, accessibility expectations, and design-system governance
-- published GDS packages are consumed directly through `@sovereignsquad/gds-theme`, `@sovereignsquad/gds-core`, and `@sovereignsquad/gds-admin` at the current verified `3.9.0` baseline
+- GDS packages (`@sovereignsquad/gds-theme`, `@sovereignsquad/gds-core`, `@sovereignsquad/gds-admin`) are consumed at the current verified `6.2.0` baseline, vendored as GitHub Release tarballs under `vendor/gds/` (`package.json` `file:` dependencies) — registry install was tried and abandoned; see root `HANDOVER.md` for why
 - the local pre-Mantine token-and-wrapper system is now a **frozen compatibility layer**, not the governing authority
 - Mantine runtime, theme, modals, and notifications are the active foundation path for future `{messmass}` migration work
 - existing local wrappers and CSS systems may still be used only where migration parity has not landed yet
-- local vendored `@gds/*` package folders are no longer part of the active package authority
+- old local `@gds/*` package folders (pre-vendoring, pre-Sovereign-Squad-scope) are no longer part of the active package authority — the current vendored tarballs above are
 
 Practical rules:
 - do not create a third styling system
 - do not treat legacy wrappers or local CSS as permission to invent new foundational patterns
 - do not bypass Mantine for new foundation-level product UI
-- do not reintroduce `@gds/*` imports or file-based GDS package dependencies
+- do not reintroduce old local `@gds/*` imports or bypass the vendored `vendor/gds/` tarballs
 - all Mantine migration work must land as explicit SSOT-tracked slices, not as ad hoc page drift
 - while compatibility migration is still in progress, preserve existing report/runtime behavior first and replace the underlying authority slice by slice
 

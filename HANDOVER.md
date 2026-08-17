@@ -1,84 +1,44 @@
 # Session Handover — messmass
 
-Last verified: 2026-08-17, HEAD `434380d1` (v12.1.86, committed/pushed/CI-green).
-The "Fanmass nav item" work below (section 0) is now **done, verified, and
-about to be committed as v12.1.87** in this same session — read it for
-what shipped, not as a resume-first item. Also fixed this session:
-`docs/HANDOVER.md` was a five-week-stale duplicate of this file, silently
-excluded from `npm run docs:audit` — it's now a short pointer here instead,
-and every doc that pointed agents at it (`AGENTS.md`, `README.md`,
-`READMEDEV.md`, `docs/NEXT_AGENT_PROMPT.md`,
-`docs/features/features-overview.md`) was repointed. See v12.1.86's release
-notes entry for the full list.
+Last verified: 2026-08-17, HEAD `4a4dbed0` (v12.1.88, committed/pushed/CI-green).
+Tree is clean and level with `origin/main`. This file was rewritten this
+session after being found ~2 versions stale (it described v12.1.87 as
+"about to be committed" and framed the GDS bump as still-6.1.0 after 6.2.0
+had already shipped).
 
----
-
-## 0. "Fanmass nav item" — done, v12.1.87
-
-**Plan file (approved by user, read this in full before touching anything)**:
-`/Users/chappie/.claude/plans/pure-cuddling-swan.md` — "Phase 1: single
-'Fanmass' nav item in messmass admin". If that path doesn't exist in your
-environment, the plan is fully reconstructable from this section.
-
-**What this is**: user wants messmass's admin panel to have one new nav item,
-"Fanmass", that links out (new tab, `target="_blank"`) to fanmass's own web
-UI pages (Executive Dashboard, Analytics, Run Control, Entity Curation
-[rename/merge/reclassify brand-vs-club entities], Settings). Explicitly
-**not** an iframe embed (user chose plain links over iframe when asked —
-iframe was technically viable, zero blocking headers on fanmass's side, but
-user wanted the simpler zero-cross-origin-risk option). Explicitly **not**
-deep integration — that's a separate, later planning exercise, not started.
-
-**Shipped as v12.1.87**, all six files below:
-1. `lib/config.ts` — added `fanmassAppUrl?: string` to the `AppConfig` type
-   (near the other `fanmass*` fields, ~line 60) and
-   `fanmassAppUrl: getEnv('FANMASS_APP_URL')` to the config binding
-   (~line 154). **Distinct** from the pre-existing `fanmassBaseUrl` — that
-   one is the server-to-server API base used by
-   `lib/fanmassIntegration.ts`, not necessarily the same origin as the
-   human-facing web UI.
-2. `app/admin/fanmass/page.tsx` (new file) — plain **server component** (no
-   `'use client'`, no hooks — just static links built from
-   `config.fanmassAppUrl`). Renders one `AnalyticsSectionCard`
-   (`@/components/analytics/AnalyticsSectionCard`) containing a
-   `FANMASS_PAGES` array of 5 entries (Executive Dashboard
-   `/dashboard/executive`, Analytics `/dashboard/analytics`, Run Control
-   `/dashboard/run-control`, Entity Curation `/dashboard/annotation`,
-   Settings `/dashboard/settings`), each rendered as a card with a
-   `target="_blank" rel="noopener noreferrer"` anchor. If
-   `config.fanmassAppUrl` is falsy, renders an explanatory empty state
-   instead of dead links.
-3. `app/admin/fanmass/page.module.css` (new file) — matches the existing
-   `.wrapper` flex-column pattern from
-   `app/admin/analytics/ai/AiAnalyticsView.module.css`; design tokens only,
-   no hardcoded colors (would fail `npm run style:check` otherwise).
-4. `lib/adminNavigation.ts` — added a `Fanmass` item to the `analytics`
-   section's `items` array (right after `Insights`, before the section
-   closes), `path: '/admin/fanmass'`, `icon: 'query_stats'`.
-5. `lib/permissions.ts` — added `'Fanmass': ['admin', 'superadmin']` to
-   `MENU_PERMISSIONS` (same tier as the other dashboard-style items in that
-   section). **This step is load-bearing**: a nav label missing from
-   `MENU_PERMISSIONS` is invisible to every role, and
-   `tests/nav-menu-permissions.test.ts` will fail without it.
-6. `.env.example` — documented the new `FANMASS_APP_URL` var (defaulted to
-   `http://localhost:8787` as an example value) right after the existing
-   `FANMASS_INTEGRATION_TOKEN` line.
-
-**Verified before commit**: `type-check`, `lint`, the targeted
-`tests/nav-menu-permissions.test.ts` then the full suite (363/363 passing),
-`style:check`, a clean `rm -rf .next && npm run build` (confirmed no live
-`next dev` process was running against this `.next` first), dependency and
-layout guardrails, and a secret-scan of the diff — all clean.
-
-**What was not verified, and why**: a live signed-in browser click-through
-to confirm "Fanmass" renders in the sidebar and `/admin/fanmass` looks right.
-messmass is SSO-only with no local dev-login bypass in this repo, and this
-local environment's `.env.local` has no `FANMASS_*` vars set — so instead,
-`app/admin/fanmass/page.tsx` was read directly to confirm its empty-state
-branch (`!baseUrl`) is what actually renders when `FANMASS_APP_URL` is
-unset, which it is here. **Whoever next has real SSO access and a
-`FANMASS_APP_URL`/reachable fanmass instance should do the actual
-click-through** — don't assume this substituted for it.
+**Housekeeping done this session** (repo hygiene sweep, all verified):
+- `coverage/` (456 tracked files) untracked and added to `.gitignore` —
+  it's `npm run test:coverage` output, never should have been committed.
+  This stops further growth of the 460MB `.git`; it does **not** shrink the
+  existing history — that needs a `git filter-repo` pass, which rewrites
+  every commit SHA and requires a coordinated force-push + all-clones
+  re-clone. Deliberately not done unilaterally; get explicit sign-off
+  first if you want to reclaim that space.
+- `Archive.zi2.zip` (3.7MB, a macOS-zipped snapshot of old `app/` files
+  including `__MACOSX/` cruft and `.DS_Store`) removed — violated
+  `docs/root-structure.md`'s own canonical-root list and had no reachable
+  purpose.
+- `ADMIN_PASSWORD` removed from `.env.example` — confirmed dead: not read
+  anywhere in live `app/`/`lib/` code except the unused `config.adminPassword`
+  field binding and an entirely unreferenced demo module
+  (`lib/shareables/auth/passwordAuth.ts`, which also hardcodes an
+  `'admin123'` fallback — dead code, not a live vuln, but worth deleting in
+  a future pass). Local admin login is 410 Gone; this var did nothing.
+- Stale GDS version references fixed in `README.md` and
+  `docs/coding-standards.md` — both said GDS packages resolve from the
+  **published registry at 3.9.0**, which was backwards: the real, current
+  mechanism is vendored GitHub Release tarballs under `vendor/gds/` at
+  **6.2.0** (registry install was tried and abandoned — see the GDS section
+  below). `docs/coding-standards.md`'s own `**Version:**` header was also
+  stale at 12.1.16 (from June) — bumped to 12.1.88.
+- `README.md`'s version badge and "Current release version" line were
+  stale at v12.1.85 — bumped to v12.1.88. Note `npm run version:verify`
+  does **not** catch README drift — it only gates `package-lock.json` (×2)
+  and the release-notes entry. The `docs/architecture.md` /
+  `docs/low-level-design.md` `Version:` headers are separately correct
+  (already 12.1.88) but are a **manual** bump, not automated by
+  `scripts/update-version.js` — that script only touches the lockfile and
+  release notes. Don't assume "ran version:update" covers doc headers.
 
 ---
 
@@ -104,25 +64,24 @@ click-through** — don't assume this substituted for it.
 
 ---
 
-## 2. GDS 6.1.0 adoption plan — still open (unrelated to the Fanmass work above)
+## 2. GDS adoption plan — now on 6.2.0, Phase 4b/5/6 still open
 
 Separate, older effort, still genuinely mid-flight. Full plan was at
-`/Users/chappie/.claude/plans/pure-cuddling-swan.md` — **that file has since
-been overwritten by the Fanmass plan in section 0**, so the GDS plan's own
-document no longer exists standalone; everything you need is summarized
-here.
+`/Users/chappie/.claude/plans/pure-cuddling-swan.md`, since overwritten by a
+later plan — everything you need is summarized here.
 
-**Done and pushed** (verified, CI-green, through v12.1.81): Phase 0
-(baseline), Phase 1 (fixed 3.9.0-vs-6.0.0 version drift, now genuinely on
-GDS 6.1.0 via vendored GitHub Release tarballs — registry install was tried
-and abandoned, see section 3a of the version history if you need the
-why), Phase 2 (`gds-adoption.json` governance manifest), Phase 3 (root
+**Done and pushed** (verified, CI-green): Phase 0 (baseline), Phase 1 (fixed
+3.9.0-vs-6.0.0 version drift, on GDS 6.2.0 via vendored GitHub Release
+tarballs under `vendor/gds/` — registry install was tried and abandoned),
+Phase 2 (`gds-adoption.json` governance manifest), Phase 3 (root
 `GdsProvider` is the only provider in the tree — no raw `MantineProvider`,
 no nested per-route workaround), Phase 4a (17 of ~80 `theme.css` color
 values aliased to GDS/Mantine CSS variables — the ones verified
 byte-identical; the rest have no exact GDS equivalent, Tailwind-derived vs.
 Open Color-derived palettes), Phase 5 component 1 of 10
 (`ConfirmDialog` retired for `GdsConfirmProvider`/`useGdsConfirm`).
+camera is also on GDS 6.2.0 (its own vendored tarballs, v2.24.0) — the two
+apps aren't required to move in lockstep, but currently do.
 
 **Open — Phase 4b**: token bridge, remainder. Most of `theme.css`'s
 remaining ~63 color values have no exact GDS match — retiring them needs a
@@ -149,10 +108,31 @@ whole admin section, largest blast radius);
 Deferred/out of scope: `GdsAccessGate` for
 `ServerPageGate.tsx`/`PagePasswordLogin.tsx`.
 
-**Open — Phase 6**: flip `gds-adoption.json`'s `compliance.strictMode` to
-`true`, promote `gds-compliance check` from non-blocking to a hard CI gate,
-add `@sovereignsquad/gds-eslint-config` (needs ESLint 9/10, messmass is on
-8.57.0 — separate migration).
+**Open — Phase 6, gate readiness verified this session (corrects a stale
+number)**: CI's non-blocking `npx gds-compliance check` currently reports
+**24** `forbidden-color` findings, not the "111" figure previously quoted
+in this file and the CI comment — that 111 turns out to be the count under
+`compliance.strictMode: true`, not the real baseline. Tested `strictMode:
+true` directly this session (scratch edit to `gds-adoption.json`, reverted,
+never committed): it surfaces **486** findings across 12 rule families
+(`strict.raw-color` 110, `strict.raw-control` 105, `strict.inline-style`
+46, `strict.browser-dialog` 42, `strict.import.mantine-core` 22,
+`strict.raw-table` 14, and more) — confirming Phase 6 is genuinely blocked
+on Phase 5 landing, not just unstarted paperwork. The current 24
+non-strict findings are all in `scripts/` and one `tests/` fixture file —
+zero in `app/`, `components/`, or `lib/`. They **cannot** be scoped out via
+`gds-adoption.json`'s `approvedExceptions`: read the vendored
+`node_modules/@sovereignsquad/gds-compliance/index.js` directly and
+confirmed `forbidden-color` (unlike the `strict.*` family) is pushed
+unconditionally from `scanSourceFile()`, with no exception-suppression
+path, and the file walker's `IGNORED_DIRS` (`node_modules`, `.git`,
+`.next`, `dist`, `coverage`) is a hardcoded constant, not manifest-
+configurable — `scripts/`/`tests/` can't be excluded from the walk either.
+Zeroing these out for real means either editing each of the ~23 files
+(raw hex literals in one-off debug/seed/test scripts — low value, since
+none of it is shipped UI) or asking upstream GDS to add a
+scripts/tests-exclusion mechanism. Don't add `@sovereignsquad/gds-eslint-config`
+yet either (needs ESLint 9/10, messmass is on 8.57.0 — separate migration).
 
 ---
 
