@@ -2,7 +2,7 @@
 
 **Last Updated:** 2026-05-14  
 **Status:** Historical reference only  
-**Canonical current handover:** [docs/HANDOVER.md](HANDOVER.md)
+**Canonical current handover:** [HANDOVER.md](../HANDOVER.md)
 
 This file is no longer the current execution handover.
 
@@ -25,7 +25,7 @@ It was originally created for a specific Builder-mode delivery on `2026-02-24`, 
 - current delivery instructions
 
 For those, always use:
-1. [docs/HANDOVER.md](HANDOVER.md)
+1. [HANDOVER.md](../HANDOVER.md)
 2. [docs/PROJECT_MANAGEMENT.md](PROJECT_MANAGEMENT.md)
 3. [docs/operations/operations-delivery-focus.md](operations/operations-delivery-focus.md)
 

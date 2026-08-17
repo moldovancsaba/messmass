@@ -21,4 +21,4 @@ This folder contains feature-level “how it works” documentation for major `{
 - Start here when you are debugging or extending a subsystem.
 - Prefer these docs over one-off historical notes in `docs/archive/`.
 - For current admin user journeys, also use `/Users/moldovancsaba/Projects/messmass/docs/admin/admin-end-user-guide.md`.
-- For current release and handoff state, use `/Users/moldovancsaba/Projects/messmass/docs/HANDOVER.md` and `/Users/moldovancsaba/Projects/messmass/README.md`.
+- For current release and handoff state, use `HANDOVER.md` (repo root) and `README.md`.

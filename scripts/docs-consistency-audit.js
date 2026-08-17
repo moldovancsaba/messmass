@@ -18,7 +18,6 @@ const currentDocFiles = markdownFiles.filter((file) => {
   if (!file.startsWith('docs/') && file !== 'README.md' && file !== 'READMEDEV.md') return false;
   if (file.startsWith('docs/archive/')) return false;
   if (file.startsWith('docs/audits/')) return false;
-  if (file === 'docs/HANDOVER.md') return false;
   if (file === 'docs/operations/operations-release-notes.md') return false;
   if (file === 'docs/operations/operations-learnings.md') return false;
   if (file === 'docs/operations/operations-action-plan.md') return false;

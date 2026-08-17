@@ -45,7 +45,7 @@ PROHIBITED ❌ (Hard stops)
 Before changing anything:
 1) Sync working context
 - Pull latest / sync branch state (if applicable).
-- Read: docs/PROJECT_MANAGEMENT.md, docs/HANDOVER.md, and the active SSOT issue/card.
+- Read: docs/PROJECT_MANAGEMENT.md, HANDOVER.md, and the active SSOT issue/card.
 2) Establish the contract (write it explicitly)
 - Objective (1–2 lines)
 - Acceptance criteria (bullets)
@@ -93,7 +93,7 @@ To mark a card “Done”, ALL must be true:
 - Dependencies unchanged unless explicitly approved + documented.
 4) Evidence & documentation
 - Provide: what changed / where / how validated / results.
-- Update docs/HANDOVER.md.
+- Update HANDOVER.md.
 - Update `docs/operations/operations-release-notes.md` ONLY if something is actually shipped (see shipping rule).
 - Update SSOT with Done + evidence note.
 
@@ -166,7 +166,7 @@ A) SSOT UPDATE (NOW)
 - Set correct status (In Progress / Blocked / Done).
 - Add a concise note: completed / in progress / blockers / next steps / key file paths / PR/commit refs if any.
 
-B) UPDATE docs/HANDOVER.md (NOW)
+B) UPDATE HANDOVER.md (NOW)
 Append an entry (no history rewriting unless correcting false info). Include:
 - Timestamp (local) + agent label
 - Branch + last commit hash (if known)
@@ -184,7 +184,7 @@ D) OUTPUT “NEXT AGENT PROMPT PACKAGE” (IN YOUR ANSWER)
 Your answer MUST contain:
 1) Checklist confirming A/B/C done (or what could not be done + why).
 2) A single fenced code block titled “NEXT AGENT PROMPT” with:
-   - Read docs/HANDOVER.md and docs/PROJECT_MANAGEMENT.md first
+   - Read HANDOVER.md and docs/PROJECT_MANAGEMENT.md first
    - Current objective + explicit next actions
    - Validation commands
    - SSOT board link (if known/provided by PO)
@@ -194,7 +194,7 @@ Your answer MUST contain:
 ================================================================================
 Before you stop/respond with “done for now”:
 - SSOT updated (status + note).
-- docs/HANDOVER.md appended with current truth.
+- HANDOVER.md appended with current truth.
 - Validation evidence provided (or explicitly unavailable).
 - Clear next step stated (1–3 bullets).
 

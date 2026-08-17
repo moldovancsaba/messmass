@@ -12,7 +12,7 @@ Owner: Product
 <p align="center"><strong>Enterprise event analytics, partner reporting, reporting operations, and admin workflow tooling for sports organizations, venues, and brands.</strong></p>
 
 <p align="center">
-  <img src="https://img.shields.io/badge/version-v12.1.20-2563EB?style=for-the-badge" alt="Version">
+  <img src="https://img.shields.io/badge/version-v12.1.85-2563EB?style=for-the-badge" alt="Version">
   <img src="https://img.shields.io/badge/platform-Web%20App-0F172A?style=for-the-badge" alt="Platform">
   <img src="https://img.shields.io/badge/stack-Next.js%20%7C%20MongoDB%20%7C%20Mantine-0EA5E9?style=for-the-badge" alt="Stack">
 </p>
@@ -139,7 +139,7 @@ Important repo note:
 - If `npm run type-check` fails on missing `.next/types`, run `npm run build` first and rerun the type check.
 
 Current release version:
-- `v12.1.20`
+- `v12.1.85`
 
 ## Fanmass Integration
 
@@ -212,7 +212,7 @@ Current Mantine migration note:
 Canonical entrypoints:
 - [docs/index.md](docs/index.md) — curated documentation entrypoint
 - [docs/PROJECT_MANAGEMENT.md](docs/PROJECT_MANAGEMENT.md) — SSOT and GitHub Project workflow
-- [docs/HANDOVER.md](docs/HANDOVER.md) — current repo truth and latest delivery state
+- [HANDOVER.md](HANDOVER.md) — current repo truth and latest delivery state
 - [docs/architecture.md](docs/architecture.md) — technical architecture
 - [docs/low-level-design.md](docs/low-level-design.md) — implementation-level contracts for current high-risk flows
 - [docs/coding-standards.md](docs/coding-standards.md) — code and styling rules
@@ -240,4 +240,4 @@ This repo runs with strict documentation and SSOT discipline:
 ## Notes
 
 - The README is a product-level entrypoint, not the canonical full rulebook.
-- For active work, always follow [docs/PROJECT_MANAGEMENT.md](docs/PROJECT_MANAGEMENT.md) and [docs/HANDOVER.md](docs/HANDOVER.md).
+- For active work, always follow [docs/PROJECT_MANAGEMENT.md](docs/PROJECT_MANAGEMENT.md) and [HANDOVER.md](HANDOVER.md).

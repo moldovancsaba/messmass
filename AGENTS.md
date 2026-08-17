@@ -2,8 +2,8 @@
 
 Use this file as the tracked quick-start for repo-specific agent workflows. For canonical project status and handoff context, start with:
 
+- [`/Users/Shared/Projects/messmass/HANDOVER.md`](/Users/Shared/Projects/messmass/HANDOVER.md)
 - [`/Users/Shared/Projects/messmass/docs/PROJECT_MANAGEMENT.md`](/Users/Shared/Projects/messmass/docs/PROJECT_MANAGEMENT.md)
-- [`/Users/Shared/Projects/messmass/docs/HANDOVER.md`](/Users/Shared/Projects/messmass/docs/HANDOVER.md)
 - [`/Users/Shared/Projects/messmass/README.md`](/Users/Shared/Projects/messmass/README.md)
 
 ## AI Attribution & Branding Policy (non-negotiable, owner directive 2026-07-31)

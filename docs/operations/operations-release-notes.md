@@ -1,8 +1,33 @@
 # {messmass} Release Notes
 Status: Active
-Last Updated: 2026-08-17T00:30:00.000Z
+Last Updated: 2026-08-17T13:03:41.000Z
 Canonical: No
 Owner: Operations
+
+## [v12.1.86] — 2026-08-17T13:03:41.000Z
+
+### Summary
+`docs/HANDOVER.md` had gone five-plus weeks stale (still describing v12.1.20)
+while staying explicitly excluded from `npm run docs:audit`, so nothing ever
+caught the drift — and `AGENTS.md`, `README.md`, `READMEDEV.md`, and
+`docs/NEXT_AGENT_PROMPT.md` all pointed agents at it as the canonical
+current-state doc anyway. Fixed the structural trap instead of re-writing
+1,556 lines of stale content by hand.
+
+### The fix
+- `docs/HANDOVER.md` is now a short pointer to the real, actively-maintained
+  root `HANDOVER.md`, instead of a second copy that silently rots.
+- Removed its exclusion from `scripts/docs-consistency-audit.js` so it can
+  no longer drift unnoticed.
+- Repointed every entrypoint that told agents to read/update
+  `docs/HANDOVER.md` (`AGENTS.md`, `README.md`, `READMEDEV.md`,
+  `docs/NEXT_AGENT_PROMPT.md`, `docs/features/features-overview.md`) at the
+  root `HANDOVER.md`.
+- Refreshed `README.md`'s version badge and "Current release version" line,
+  which had also been stuck at `v12.1.20`.
+
+### Testing
+`npm run docs:audit` passes (135 current doc files, 0 broken links).
 
 ## [v12.1.85] — 2026-08-17T00:30:00.000Z
 
