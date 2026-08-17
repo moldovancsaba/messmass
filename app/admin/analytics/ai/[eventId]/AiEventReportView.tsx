@@ -59,6 +59,12 @@ const RESCAN_LABEL: Record<RescanModuleId, string> = {
 
 interface Mention { name: string; count: number }
 
+interface SummaryWarning {
+  code: string;
+  severity: 'info' | 'warning' | 'error';
+  message: string;
+}
+
 interface SummaryDoc {
   eventId: string;
   batchId: string;
@@ -66,6 +72,11 @@ interface SummaryDoc {
   receivedAt: string;
   generatedAt: string | null;
   summary: {
+    // WHAT: fanmass's own status for this full analysis run.
+    // WHY: The base-pass image count can read 100% while this still says
+    //     'partial' — the deep modules (brands/merch/demographics) run
+    //     behind the image count, not alongside it.
+    status?: 'ready' | 'partial' | 'running';
     imageCounts?: { total?: number; analyzed?: number };
     peopleCounts?: { measured?: number; projected?: number };
     genderProjection?: Record<string, number>;
@@ -76,7 +87,9 @@ interface SummaryDoc {
     brandMentions?: Mention[];
     clubMentions?: Mention[];
     confidence?: number;
-    warnings?: string[];
+    // Was previously typed string[] and never rendered anywhere — the real
+    // shape fanmass actually sends is structured objects, not strings.
+    warnings?: SummaryWarning[];
   };
 }
 
@@ -395,7 +408,17 @@ export default function AiEventReportView() {
           {eventRow?.progressPercent !== null && eventRow?.progressPercent !== undefined && (
             <span>Analysis progress: {eventRow.progressPercent}%</span>
           )}
+          {s.status && (
+            <span>
+              Deep analysis: {s.status === 'ready' ? 'Done' : s.status === 'partial' ? 'Still running' : 'Just started'}
+            </span>
+          )}
         </div>
+        {(s.warnings || []).map((w) => (
+          <div key={w.code} className={`${styles.warningBanner} ${w.severity === 'error' ? styles.warningBannerError : ''}`}>
+            <p>{w.message}</p>
+          </div>
+        ))}
         {rescanError && <p className={styles.errorDetail}>{rescanError}</p>}
         <div className={styles.rescanRow}>
           <RescanButton moduleId="all" />

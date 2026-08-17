@@ -36,6 +36,11 @@ export interface AiEventListItem {
   merchandiseCount: number;
   peopleMeasured: number;
   demographicsAnalyzed: number;
+  // WHAT: fanmass's own status for the deep-analysis pass (brands/merch/
+  //     demographics), independent of the base image-count percent above,
+  //     plus any warnings it attached (e.g. "analysis is not complete yet").
+  deepStatus: 'ready' | 'partial' | 'running' | null;
+  warnings: Array<{ code: string; severity: 'info' | 'warning' | 'error'; message: string }>;
   hasDriveFolder: boolean;
   drivePaused: boolean;
   driveSyncPending: boolean;
@@ -78,6 +83,14 @@ const STATUS_BADGE_VARIANT: Record<AiEventStatus, string> = {
 function statusText(row: AiEventListItem): string {
   const base = STATUS_LABEL[row.status] || 'Unknown state';
   if (row.status === 'analyzing') {
+    const baseImagesDone = row.imagesDiscovered !== null && row.imagesAnalyzed !== null && row.imagesDiscovered > 0
+      && row.imagesAnalyzed >= row.imagesDiscovered;
+    // Base pass is done; the reason this row still reads 'analyzing' is
+    // purely fanmass's deep pass lagging — saying "(100%)" here would
+    // contradict that, not clarify it.
+    if (baseImagesDone && row.deepStatus && row.deepStatus !== 'ready') {
+      return `${base} · deep analysis still running`;
+    }
     if (row.imagesDiscovered !== null && row.imagesDiscovered > 0) {
       const pct = row.progressPercent ?? 0;
       return `${base} · ${row.imagesAnalyzed ?? 0} of ${row.imagesDiscovered} images (${pct}%)`;
@@ -115,9 +128,21 @@ function DeepAnalysisCell({ row }: { row: AiEventListItem }) {
   const demographicsPct = row.peopleMeasured > 0
     ? Math.round((row.demographicsAnalyzed / row.peopleMeasured) * 100)
     : null;
-  const caveat = row.status === 'analyzing' && row.imagesDiscovered !== null && row.imagesDiscovered > 0
-    ? `Based on ${row.imagesAnalyzed ?? 0} of ${row.imagesDiscovered} images analysed (${row.progressPercent ?? 0}%) — `
-    : '';
+  // WHAT: Two different reasons a row can be 'analyzing', each needing its
+  //     own caveat — the base image pass isn't done yet, vs. the base pass
+  //     hit 100% but fanmass's deep modules (brands/merch/demographics) are
+  //     still running behind it.
+  // WHY: Reusing the image-count caveat for the second case would say
+  //     "(100%)" right next to a near-empty Brands table — contradictory,
+  //     not reassuring.
+  const baseImagesDone = row.imagesDiscovered !== null && row.imagesAnalyzed !== null && row.imagesDiscovered > 0
+    && row.imagesAnalyzed >= row.imagesDiscovered;
+  let caveat = '';
+  if (row.status === 'analyzing' && baseImagesDone && row.deepStatus && row.deepStatus !== 'ready') {
+    caveat = 'Deep analysis still running — ';
+  } else if (row.status === 'analyzing' && row.imagesDiscovered !== null && row.imagesDiscovered > 0) {
+    caveat = `Based on ${row.imagesAnalyzed ?? 0} of ${row.imagesDiscovered} images analysed (${row.progressPercent ?? 0}%) — `;
+  }
   return (
     <span>
       {caveat}
@@ -244,6 +269,14 @@ export function createAiEventsAdapter(handlers: AiEventRowHandlers): AdminPageAd
                 {row.rescanPending && <span className="badge badge-primary">⏳ Rescan requested</span>}
                 {row.drivePaused && <span className="badge badge-secondary">Paused</span>}
                 {row.lastError && <span className={styles.errorText}>{row.lastError}</span>}
+                {row.warnings.map((w) => (
+                  <span
+                    key={w.code}
+                    className={w.severity === 'error' ? styles.errorText : w.severity === 'warning' ? styles.warningText : styles.infoText}
+                  >
+                    {w.message}
+                  </span>
+                ))}
               </div>
             </>
           ),

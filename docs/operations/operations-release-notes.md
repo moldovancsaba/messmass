@@ -1,8 +1,60 @@
 # {messmass} Release Notes
 Status: Active
-Last Updated: 2026-08-16T22:45:00.000Z
+Last Updated: 2026-08-17T00:15:00.000Z
 Canonical: No
 Owner: Operations
+
+## [v12.1.84] — 2026-08-17T00:15:00.000Z
+
+### Summary
+Fixed the actual root cause behind "100% images analysed but the Brands
+table is nearly empty": fanmass has always sent an authoritative
+`summary.status` field (`'ready' | 'partial' | 'running'`) plus a
+`summary.warnings` array — both stored in `ai_analysis_summaries` the whole
+time, neither ever read by any messmass code. The base-pass image counter
+reaching 100% does not mean fanmass considers the full analysis (brands,
+merchandise, demographics) done; that's a separate, slower pass that lags
+behind the image count, and fanmass says so explicitly.
+
+### What was actually happening, confirmed against production
+Connected to the live DB for 5 flagged events. Four of five —
+Basketball/Football/Handball/ICE Hockey — had `stats.fanmassStatus: 100`
+(so messmass showed "Images complete") while their stored summary carried
+`"status": "partial"` and
+`"warnings": [{"code":"analysis_incomplete","severity":"info","message":"Fanmass analysis is not complete yet."}]`.
+Handball's near-empty output (`brandMentions: []`, `merchandiseCounts: {}`)
+at "1501 of 1501 images" wasn't a bug or a failure — it's mid-run, exactly
+as fanmass reported, just never surfaced. The fifth event, MotoGP Balaton
+Park 2026, had `warnings: []` and was genuinely done — correctly stayed
+"Complete".
+
+### The fix
+- `lib/aiAnalytics.ts`: `DeepAnalysisState`/`AiEventRow` now carry
+  `deepStatus` (`'ready'|'partial'|'running'|null`) and `warnings` read from
+  `summary.status`/`summary.warnings`. `getAiEvents()` downgrades a row from
+  `'complete'` to `'analyzing'` whenever the base pass is 100% but
+  `deepStatus !== 'ready'` — never promotes, only corrects a false
+  completion.
+- Every surface that shows deep-analysis numbers now says why they look
+  incomplete instead of just showing them: the events-list status badge
+  reads "Analysing · deep analysis still running" instead of a
+  contradictory "(100%)"; the Deep Analysis cell prefixes "Deep analysis
+  still running — " instead of the (now misleading) image-fraction caveat;
+  the per-event report shows fanmass's own warning message in a banner and
+  a "Deep analysis: Still running" line in the header.
+- Fixed a real type bug found along the way: `AiEventReportView.tsx`'s
+  `SummaryDoc.summary.warnings` was typed `string[]` — the actual shape
+  fanmass sends is `{code, severity, message}` objects. That mismatch is
+  almost certainly why this was never rendered in the first place; the type
+  didn't match reality closely enough for anyone to write the render logic.
+
+### Verification
+Live re-check after the fix: Basketball/Football/Handball/ICE Hockey now
+correctly report `status: 'analyzing'` with the fanmass warning message
+attached; MotoGP correctly stays `'complete'`. Coverage's `complete` count
+dropped from a false 7 to a true 3; `analyzing` rose from 0 to the correct
+4. `npm run type-check`, `npm run lint`, `npm test`, a clean `npm run build`
+all pass.
 
 ## [v12.1.83] — 2026-08-16T22:45:00.000Z
 

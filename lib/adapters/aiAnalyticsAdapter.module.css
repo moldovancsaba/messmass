@@ -18,3 +18,16 @@
   color: var(--mm-color-error-600);
   font-size: var(--mm-font-size-sm);
 }
+
+/* fanmass-reported warnings/info (summary.warnings) — distinct from
+   errorText's red so an "analysis is not complete yet" info note doesn't
+   read as an actual failure. */
+.warningText {
+  color: var(--mm-warning);
+  font-size: var(--mm-font-size-sm);
+}
+
+.infoText {
+  color: var(--mm-gray-500);
+  font-size: var(--mm-font-size-sm);
+}

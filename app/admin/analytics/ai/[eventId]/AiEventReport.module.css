@@ -91,6 +91,33 @@
   margin: 0;
 }
 
+/* WHAT: fanmass-reported warnings (summary.warnings) — e.g. "analysis is
+   not complete yet" alongside a 100% base-pass count.
+   WHY: Distinct from errorDetail's red — an info/warning-severity note
+   explaining why deep-analysis numbers below look sparse is not the same
+   signal as an actual failure. */
+.warningBanner {
+  display: flex;
+  flex-direction: column;
+  gap: var(--mm-space-1);
+  margin: var(--mm-space-3) 0 0;
+  padding: var(--mm-space-3);
+  border-radius: var(--mm-radius-md);
+  background: var(--mm-warning-light);
+  border: var(--mm-border-width-sm) var(--mm-border-style-solid) var(--mm-warning);
+}
+
+.warningBanner p {
+  margin: 0;
+  font-size: var(--mm-font-size-sm);
+  color: var(--mm-gray-800);
+}
+
+.warningBannerError {
+  background: var(--mm-error-light);
+  border-color: var(--mm-error);
+}
+
 .rescanRow {
   display: flex;
   flex-wrap: wrap;

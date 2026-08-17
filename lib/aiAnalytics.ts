@@ -57,6 +57,10 @@ export interface AiEventRow {
   merchandiseCount: number;
   peopleMeasured: number;
   demographicsAnalyzed: number;
+  // WHAT: fanmass's own status for the deep-analysis pass, and any warnings
+  //     it attached — see DeepAnalysisState for why this exists.
+  deepStatus: 'ready' | 'partial' | 'running' | null;
+  warnings: AiSummaryWarning[];
   hasDriveFolder: boolean;
   drivePaused: boolean;
   driveSyncPending: boolean;
@@ -190,11 +194,29 @@ async function loadDriveFolderStateByEvent(): Promise<Map<string, DriveFolderEve
   return map;
 }
 
+export interface AiSummaryWarning {
+  code: string;
+  severity: 'info' | 'warning' | 'error';
+  message: string;
+}
+
 export interface DeepAnalysisState {
   brandCount: number;
   merchandiseCount: number;
   peopleMeasured: number;
   demographicsAnalyzed: number;
+  // WHAT: fanmass's own authoritative status for the full analysis run
+  //     ('ready' | 'partial' | 'running'), and the warnings it attaches —
+  //     e.g. analysis_incomplete when the base image pass hit 100% but the
+  //     deep modules (brands/merch/demographics) are still running behind it.
+  // WHY: fanmassAnalyzedImages/fanmassImages only measure the base pass —
+  //     an event can read 100% there while fanmass's own `summary.status`
+  //     says 'partial', which is exactly why a "100% analysed" event can show
+  //     a near-empty Brands/Merchandise table: the deep pass hasn't caught up.
+  //     This field was in the fanmass contract and stored in Mongo the whole
+  //     time; nothing in messmass ever read it until now.
+  deepStatus: 'ready' | 'partial' | 'running' | null;
+  warnings: AiSummaryWarning[];
 }
 
 function sumProjection(counts: unknown): number {
@@ -221,6 +243,8 @@ async function loadDeepAnalysisByEvent(): Promise<Map<string, DeepAnalysisState>
       {
         projection: {
           eventId: 1,
+          'summary.status': 1,
+          'summary.warnings': 1,
           'summary.brandMentions': 1,
           'summary.clubMentions': 1,
           'summary.merchandiseCounts': 1,
@@ -246,11 +270,22 @@ async function loadDeepAnalysisByEvent(): Promise<Map<string, DeepAnalysisState>
       sumProjection(summary.ageProjection),
       sumProjection(summary.emotionProjection)
     );
+    const deepStatus = summary.status === 'ready' || summary.status === 'partial' || summary.status === 'running'
+      ? summary.status
+      : null;
+    const warnings: AiSummaryWarning[] = Array.isArray(summary.warnings)
+      ? (summary.warnings as unknown[]).filter(
+          (w): w is AiSummaryWarning =>
+            Boolean(w) && typeof w === 'object' && typeof (w as AiSummaryWarning).message === 'string'
+        )
+      : [];
     map.set(String(doc.eventId), {
       brandCount: brandMentions + clubMentions,
       merchandiseCount,
       peopleMeasured,
       demographicsAnalyzed,
+      deepStatus,
+      warnings,
     });
   }
   return map;
@@ -286,11 +321,20 @@ export async function getAiEvents(options: { status?: AiEventStatus; limit?: num
     // Any AI data without a Drive link must have arrived through the camera path.
     if (derived.status !== 'not_connected' && !folderState) sources.push('camera');
     const lastAnalyzedAt = typeof doc.aiLastAnalyzedAt === 'string' ? doc.aiLastAnalyzedAt : null;
+    // WHAT: The base pass hitting 100% does not mean fanmass considers the
+    //     event fully analysed — its own summary.status can still be
+    //     'partial'/'running' (deep modules lagging behind the image count).
+    // WHY: Without this, a "100% images" event with an empty Brands table
+    //     read as done ("Images complete") when fanmass itself says
+    //     otherwise — the exact false-completion this whole model exists to
+    //     prevent. Only downgrades 'complete'; never promotes another status.
+    const deepIncomplete = deep?.deepStatus != null && deep.deepStatus !== 'ready';
+    const baseStatus = derived.status === 'complete' && deepIncomplete ? 'analyzing' : derived.status;
     return {
       eventId,
       eventName: String(doc.eventName || 'Untitled event'),
       eventDate: doc.eventDate ? String(doc.eventDate) : null,
-      status: lastError && derived.status !== 'not_connected' ? 'error' : derived.status,
+      status: lastError && baseStatus !== 'not_connected' ? 'error' : baseStatus,
       progressPercent: derived.progressPercent,
       imagesAnalyzed: derived.imagesAnalyzed,
       imagesDiscovered: derived.imagesDiscovered,
@@ -301,6 +345,8 @@ export async function getAiEvents(options: { status?: AiEventStatus; limit?: num
       merchandiseCount: deep?.merchandiseCount ?? 0,
       peopleMeasured: deep?.peopleMeasured ?? 0,
       demographicsAnalyzed: deep?.demographicsAnalyzed ?? 0,
+      deepStatus: deep?.deepStatus ?? null,
+      warnings: deep?.warnings ?? [],
       hasDriveFolder: Boolean(folderState),
       drivePaused: folderState?.allPaused ?? false,
       driveSyncPending: folderState?.anySyncPending ?? false,
