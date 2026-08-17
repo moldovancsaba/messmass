@@ -1,8 +1,38 @@
 # {messmass} Release Notes
 Status: Active
-Last Updated: 2026-08-17T13:16:47.000Z
+Last Updated: 2026-08-17T13:29:42.000Z
 Canonical: No
 Owner: Operations
+
+## [v12.1.88] — 2026-08-17T13:29:42.000Z
+
+### Summary
+Bumps vendored GDS `6.1.0` → `6.2.0` (Phase 1's dependency baseline). GDS
+6.2.0 is a purely additive minor release — five new backward-compatible
+package features, zero breaking changes (confirmed against the upstream
+`CHANGELOG.md`/`DEPRECATIONS_AND_MIGRATIONS.md`, which record nothing past
+the 6.0.0 `class-usa` rename). `gds-adoption.json`'s `gdsVersion` moves to
+`6.2.0` to match, since — unlike camera's deliberately-pinned manifest —
+messmass keeps this field aligned with the real installed version.
+
+### Changed
+- `vendor/gds/*.tgz` — the four vendored `@sovereignsquad/gds-*` tarballs
+  (`admin`, `core`, `theme`, `compliance`) replaced with `gds-v6.2.0`'s
+  GitHub Release assets.
+- `package.json` — the four deps repointed to the new tarballs.
+- `gds-adoption.json` — `gdsVersion` `6.1.0` → `6.2.0`.
+- `scripts/gds-sync-packages.sh` — default `EXPECTED_VERSION` `6.1.0` →
+  `6.2.0`; corrected a stale comment claiming these packages install from
+  the GitHub Packages registry (they don't — `package.json` pins
+  `file:vendor/gds/*.tgz`, a prior registry-install attempt was abandoned).
+
+### Testing
+`type-check`, `lint`, full test suite (363/363), `style:check`, a clean
+`rm -rf .next && npm run build`, dependency/layout guardrails, and
+`npm run gds:sync` all pass. `npx gds-compliance check` surfaces
+pre-existing `forbidden-color` findings in unrelated seed/debug scripts
+under `scripts/` and one test file — not introduced by this change, and
+already non-blocking in CI.
 
 ## [v12.1.87] — 2026-08-17T13:16:47.000Z
 
