@@ -43,6 +43,7 @@ const KNOWN_UNGUARDED = new Set<string>([
   'app/api/admin/login/route.ts',           // returns 410 Gone — SSO-only
   'app/api/admin/register/route.ts',        // registration entry point
   'app/api/contact/route.ts',               // public contact form, rate limited
+  'app/api/client-error/route.ts',          // records a crash report; a logged-out visitor can crash too
   // [debt] called from page-password surfaces — need a scoped grant path
   'app/api/organizations/edit/[id]/route.ts',
   'app/api/partners/edit/[slug]/route.ts',

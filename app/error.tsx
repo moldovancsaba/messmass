@@ -22,6 +22,23 @@ export default function Error({ error, reset }: ErrorProps) {
   useEffect(() => {
     // Log the error to error reporting service
     console.error('Application error:', error);
+
+    // WHAT: Best-effort report to the server logger so a browser-only crash
+    //     (never touches an API route otherwise) is still queryable later.
+    // WHY: This page's own detail box is dev-only; production crashes were
+    //     previously invisible outside the browser console nobody reads.
+    fetch('/api/client-error', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        message: error.message,
+        stack: error.stack,
+        digest: error.digest,
+        pathname: typeof window !== 'undefined' ? window.location.pathname : undefined,
+      }),
+    }).catch(() => {
+      // Reporting failure must never compound the error this page is showing.
+    });
   }, [error]);
 
   return (

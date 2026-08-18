@@ -1,8 +1,31 @@
 # {messmass} Release Notes
 Status: Active
-Last Updated: 2026-08-17T18:03:43.000Z
+Last Updated: 2026-08-18T09:05:23.000Z
 Canonical: No
 Owner: Operations
+
+## [v12.1.90] — 2026-08-18T09:05:23.000Z
+
+### Summary
+A production crash under `app/error.tsx` previously logged only to the browser
+console — invisible outside a live debugging session. Adds a best-effort report
+from that boundary to the server's structured logger, so a client-render-only
+crash (one that never touches an API route, and so never appears in server
+request logs) is queryable afterward via `vercel logs`.
+
+### Added
+- `POST /api/client-error` — unauthenticated by design (a crash can happen to a
+  logged-out visitor), rate-limited under the default `WRITE` tier, body
+  capped at 20 KB, message/stack/digest/pathname sanitized and length-capped
+  before being passed to `logger.error()`.
+
+### Changed
+- `app/error.tsx` — its existing error-logging effect now also POSTs to
+  `/api/client-error`, fire-and-forget; a reporting failure never compounds
+  the error the page is already showing.
+- `tests/api-mutation-auth.test.ts` — `app/api/client-error/route.ts` added to
+  `KNOWN_UNGUARDED` under `[public]`, matching the existing `/api/contact`
+  precedent.
 
 ## [v12.1.89] — 2026-08-17T18:03:43.000Z
 
