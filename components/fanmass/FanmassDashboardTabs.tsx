@@ -15,7 +15,7 @@
 //     issues that extend this same shell rather than building a new one.
 
 import React, { useEffect, useState } from 'react';
-import { Badge, Select, Tabs } from '@mantine/core';
+import { Badge, Checkbox, Select, Tabs } from '@mantine/core';
 import AnalyticsSectionCard from '@/components/analytics/AnalyticsSectionCard';
 import AnalyticsStatePanel from '@/components/analytics/AnalyticsStatePanel';
 import PrintableReportSections from './PrintableReportSections';
@@ -37,6 +37,7 @@ interface FanmassSnapshotEvent {
   eventId: string;
   batchName: string | null;
   receivedAt: string;
+  imageCount: number;
 }
 
 interface FanmassDashboardSnapshot {
@@ -79,6 +80,12 @@ export default function FanmassDashboardTabs() {
   const [eventsLoading, setEventsLoading] = useState(true);
   const [eventsError, setEventsError] = useState('');
   const [selectedEventId, setSelectedEventId] = useState<string | null>(null);
+  // WHAT: Whether events with no images yet appear in the picker.
+  // WHY: Same rationale as AiAnalyticsView.tsx's "Show events without
+  //     images" — most of the estate is provisioned but not yet analyzed;
+  //     hidden by default so the picker leads with events that actually
+  //     have something to show.
+  const [showEmpty, setShowEmpty] = useState(false);
 
   const [snapshot, setSnapshot] = useState<FanmassDashboardSnapshot | null>(null);
   const [snapshotLoading, setSnapshotLoading] = useState(false);
@@ -94,7 +101,13 @@ export default function FanmassDashboardTabs() {
         if (cancelled) return;
         const list = res.data?.events || [];
         setEvents(list);
-        if (list.length > 0) setSelectedEventId((current) => current ?? list[0].eventId);
+        if (list.length > 0) {
+          setSelectedEventId((current) => {
+            if (current) return current;
+            const withImages = list.find((e) => e.imageCount > 0);
+            return (withImages ?? list[0]).eventId;
+          });
+        }
       } catch (err) {
         if (!cancelled) setEventsError(err instanceof Error ? err.message : 'Could not load Fanmass-linked events.');
       } finally {
@@ -155,18 +168,25 @@ export default function FanmassDashboardTabs() {
   }
 
   const isStale = snapshot ? Date.now() - new Date(snapshot.receivedAt).getTime() > STALE_AFTER_MS : false;
+  const visibleEvents = showEmpty ? events : events.filter((e) => e.imageCount > 0);
+  const hiddenCount = showEmpty ? 0 : events.length - visibleEvents.length;
 
   return (
     <div className={styles.wrapper}>
       <div className={styles.picker}>
         <Select
           label="Event"
-          data={events.map((e) => ({ value: e.eventId, label: e.batchName || e.eventId }))}
+          data={visibleEvents.map((e) => ({ value: e.eventId, label: e.batchName || e.eventId }))}
           value={selectedEventId}
           onChange={setSelectedEventId}
           searchable
           allowDeselect={false}
           aria-label="Select a Fanmass-linked event"
+        />
+        <Checkbox
+          label={`Show events without images${hiddenCount > 0 ? ` (${hiddenCount} hidden)` : ''}`}
+          checked={showEmpty}
+          onChange={(e) => setShowEmpty(e.currentTarget.checked)}
         />
         {snapshot && (
           <span className={isStale ? styles.staleness : styles.freshness} role="status">

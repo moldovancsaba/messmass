@@ -125,14 +125,26 @@ export async function getLatestDashboardSnapshot(eventId: string): Promise<Fanma
 }
 
 // WHAT: Every event with at least one dashboard snapshot on record, newest
-//     first — the source list for the admin tab's event picker.
-export async function listSnapshotEvents(): Promise<Array<{ eventId: string; batchName: string | null; receivedAt: string }>> {
+//     first — the source list for the admin tab's event picker. Carries
+//     imageCount (sections.runControl.progress.uploadedImages) so the picker
+//     can default-hide events with nothing to show yet, the same "Show
+//     events without images" pattern AiAnalyticsView.tsx already uses.
+export async function listSnapshotEvents(): Promise<
+  Array<{ eventId: string; batchName: string | null; receivedAt: string; imageCount: number }>
+> {
   const db = await getDb();
   const docs = await db
     .collection('fanmass_dashboard_snapshot')
     .aggregate([
       { $sort: { receivedAt: -1 } },
-      { $group: { _id: '$eventId', batchName: { $first: '$batchName' }, receivedAt: { $first: '$receivedAt' } } },
+      {
+        $group: {
+          _id: '$eventId',
+          batchName: { $first: '$batchName' },
+          receivedAt: { $first: '$receivedAt' },
+          imageCount: { $first: '$sections.runControl.progress.uploadedImages' },
+        },
+      },
       { $sort: { receivedAt: -1 } },
       { $limit: 200 },
     ])
@@ -141,5 +153,6 @@ export async function listSnapshotEvents(): Promise<Array<{ eventId: string; bat
     eventId: String(doc._id),
     batchName: typeof doc.batchName === 'string' ? doc.batchName : null,
     receivedAt: String(doc.receivedAt || ''),
+    imageCount: typeof doc.imageCount === 'number' ? doc.imageCount : 0,
   }));
 }

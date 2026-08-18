@@ -1,8 +1,33 @@
 # {messmass} Release Notes
 Status: Active
-Last Updated: 2026-08-18T09:54:08.000Z
+Last Updated: 2026-08-18T10:16:57.000Z
 Canonical: No
 Owner: Operations
+
+## [v12.1.92] — 2026-08-18T10:16:57.000Z
+
+### Summary
+The Fanmass dashboard's event picker now hides events with no images by
+default, the same "Show events without images (N hidden)" pattern
+`AiAnalyticsView.tsx` already uses — most of the connected estate is
+provisioned but not yet photographed (confirmed against production: 20 of
+199 real batches have any uploaded images), and burying the handful that
+do behind ~180 empty ones made the picker nearly useless as a default view.
+
+### Changed
+- `lib/fanmassDashboardSnapshot.ts`'s `listSnapshotEvents()` now projects
+  `imageCount` from `sections.runControl.progress.uploadedImages` in the
+  aggregation (verified against `expectedImages`/`batchCard.imageCount` —
+  all three agree on which batches are non-empty).
+- `components/fanmass/FanmassDashboardTabs.tsx`: a Mantine `Checkbox`
+  ("Show events without images") next to the event picker, default
+  unchecked; the picker's default selection now prefers the first event
+  with images over the first event overall.
+
+### Testing
+`type-check`, `lint`, `style:check`, full test suite (381/381), and a
+clean build all pass. The `imageCount` field choice verified directly
+against all 199 real production batches, not a synthetic sample.
 
 ## [v12.1.91] — 2026-08-18T09:54:08.000Z
 
