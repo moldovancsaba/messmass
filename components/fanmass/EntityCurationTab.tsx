@@ -52,10 +52,22 @@ interface PosterCluster {
 
 interface CatalogEntity {
   entityId: string;
-  name: string;
-  kind: string;
+  // Real data has both null: camera-partner-sourced entities land in the
+  // catalog with no display name/classification assigned yet (source:
+  // "camera-partner"), confirmed against production data - not a shape
+  // this issue's original assumption covered.
+  name: string | null;
+  kind: string | null;
   count: number;
   hasLogo: boolean;
+}
+
+// Every place an entity's name reaches the UI - a null/empty name (a
+// camera-partner entity nobody has curated yet) must never reach a
+// searchable Select's label unguarded: Mantine's search filter calls
+// .toLowerCase() on it and throws on null, taking down the whole page.
+function entityLabel(e: CatalogEntity): string {
+  return e.name || `(unnamed — ${e.entityId})`;
 }
 
 export interface EntityCurationSection {
@@ -118,7 +130,7 @@ export default function EntityCurationTab({ batchId, entityCuration }: EntityCur
 
   function openEdit(entity: CatalogEntity) {
     setEditTarget(entity);
-    setEditName(entity.name);
+    setEditName(entity.name || '');
     setEditKind(entity.kind);
   }
 
@@ -137,9 +149,11 @@ export default function EntityCurationTab({ batchId, entityCuration }: EntityCur
     if (!mergeTargetId || !mergeSourceId) return;
     const source = entities.find((e) => e.entityId === mergeSourceId);
     const target = entities.find((e) => e.entityId === mergeTargetId);
+    const sourceLabel = source ? entityLabel(source) : mergeSourceId;
+    const targetLabel = target ? entityLabel(target) : mergeTargetId;
     const ok = await confirm({
       title: 'Merge entities',
-      message: `Merge "${source?.name}" into "${target?.name}"? "${source?.name}" will be permanently removed once fanmass applies this — this cannot be undone.`,
+      message: `Merge "${sourceLabel}" into "${targetLabel}"? "${sourceLabel}" will be permanently removed once fanmass applies this — this cannot be undone.`,
       danger: true,
     });
     if (!ok) return;
@@ -236,15 +250,15 @@ export default function EntityCurationTab({ batchId, entityCuration }: EntityCur
                   const isPending = !!pending[key];
                   return (
                     <Table.Tr key={e.entityId}>
-                      <Table.Td>{e.name}</Table.Td>
-                      <Table.Td>{e.kind}</Table.Td>
+                      <Table.Td>{e.name || <Text component="span" c="dimmed">(unnamed)</Text>}</Table.Td>
+                      <Table.Td>{e.kind || <Text component="span" c="dimmed">unclassified</Text>}</Table.Td>
                       <Table.Td>{e.count}</Table.Td>
                       <Table.Td>{e.hasLogo ? <Badge color="green">Has logo</Badge> : <Badge color="gray">No logo</Badge>}</Table.Td>
                       <Table.Td>
                         {isPending ? (
                           <Badge color="yellow">Pending…</Badge>
                         ) : (
-                          <Button size="xs" variant="outline" onClick={() => openEdit(e)} aria-label={`Edit ${e.name}`}>
+                          <Button size="xs" variant="outline" onClick={() => openEdit(e)} aria-label={`Edit ${entityLabel(e)}`}>
                             Edit
                           </Button>
                         )}
@@ -259,7 +273,7 @@ export default function EntityCurationTab({ batchId, entityCuration }: EntityCur
               <Select
                 label="Keep (merge target)"
                 placeholder="Select entity"
-                data={entities.map((e) => ({ value: e.entityId, label: e.name }))}
+                data={entities.map((e) => ({ value: e.entityId, label: entityLabel(e) }))}
                 value={mergeTargetId}
                 onChange={setMergeTargetId}
                 searchable
@@ -267,7 +281,7 @@ export default function EntityCurationTab({ batchId, entityCuration }: EntityCur
               <Select
                 label="Merge away (source)"
                 placeholder="Select entity"
-                data={entities.filter((e) => e.entityId !== mergeTargetId).map((e) => ({ value: e.entityId, label: e.name }))}
+                data={entities.filter((e) => e.entityId !== mergeTargetId).map((e) => ({ value: e.entityId, label: entityLabel(e) }))}
                 value={mergeSourceId}
                 onChange={setMergeSourceId}
                 searchable
@@ -284,7 +298,7 @@ export default function EntityCurationTab({ batchId, entityCuration }: EntityCur
         )}
       </AnalyticsSectionCard>
 
-      <Modal opened={editTarget !== null} onClose={() => setEditTarget(null)} title={`Edit ${editTarget?.name ?? ''}`}>
+      <Modal opened={editTarget !== null} onClose={() => setEditTarget(null)} title={`Edit ${editTarget ? entityLabel(editTarget) : ''}`}>
         <Stack gap="sm">
           <TextInput label="Name" value={editName} onChange={(e) => setEditName(e.currentTarget.value)} required />
           <Select label="Classification" data={[...KINDS]} value={editKind} onChange={setEditKind} />

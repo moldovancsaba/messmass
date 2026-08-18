@@ -1,8 +1,39 @@
 # {messmass} Release Notes
 Status: Active
-Last Updated: 2026-08-18T09:05:23.000Z
+Last Updated: 2026-08-18T09:54:08.000Z
 Canonical: No
 Owner: Operations
+
+## [v12.1.91] — 2026-08-18T09:54:08.000Z
+
+### Summary
+Fixes a real production crash on the Fanmass Entity Curation tab
+(`components/fanmass/EntityCurationTab.tsx`), found by reproducing it
+against a live production data pull rather than guessing: camera-partner-
+sourced catalog entities can legitimately have `name: null`/`kind: null`
+(detected but never curated). The tab's two merge-target `Select`
+components are `searchable`, and Mantine's search filter calls
+`.toLowerCase()` on each option's `label` — a `null` label threw an
+uncaught `TypeError`, taking down the whole page under Next.js's global
+error boundary ("Something went wrong!"). v12.1.89 shipped this tab against
+smoke-test data only; this is the first real-production-data exercise of it.
+
+### Fixed
+- `entityLabel()` helper renders `(unnamed — {entityId})` for a null/empty
+  name everywhere one reaches the UI: both merge Selects, the row's Edit
+  `aria-label`, the Edit modal's title, and the merge confirmation copy.
+- `openEdit()` no longer seeds the rename form's `TextInput` with a raw
+  `null` (would have thrown on `.trim()` at submit) — defaults to `''`.
+- `CatalogEntity.name`/`kind` retyped `string | null` to match reality,
+  catching any other unguarded use at compile time.
+- Table cells for name/classification show a dimmed "(unnamed)"/
+  "unclassified" placeholder instead of rendering nothing silently.
+
+### Testing
+Verified `entityLabel()` directly against the exact real production entity
+shape that crashed (`{entityId: "camera_partner_...", name: null, kind: null}`).
+`type-check`, `lint`, `style:check`, full test suite (381/381), and a clean
+`npm run build` all pass.
 
 ## [v12.1.90] — 2026-08-18T09:05:23.000Z
 
