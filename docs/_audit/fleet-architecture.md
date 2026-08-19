@@ -46,8 +46,8 @@ Verified messmass n/a · camera `97c1f67` · try-on `e2c92c6`.
 - **Reconciliation cron (camera)**: vercel.json every 5 min hits
   `GET /api/internal/tryon/sync?status=done` to materialize any results the
   webhook missed — because camera ALSO ships an in-repo worker
-  (npm run tryon:worker, lib/tryon/worker.ts) that writes Mongo directly and
-  skips the webhook. **Both sides verified; two divergences flagged**: (a) the
+  (the camera-side `tryon:worker` script, lib/tryon/worker.ts) that writes
+  Mongo directly and skips the webhook. **Both sides verified; two divergences flagged**: (a) the
   sync route accepts a spoofable `x-vercel-cron:1` header when the secret is
   absent (camera#119); (b) try-on probes up to 16 completion POSTs per job over
   id candidates `source.eventMongoId`/`eventId` that are NOT in the contract's
