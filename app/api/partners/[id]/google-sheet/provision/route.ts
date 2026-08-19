@@ -11,6 +11,7 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server';
+import { requireSession } from '@/lib/apiGuards';
 import { ObjectId } from 'mongodb';
 import { provisionPartnerSheet } from '@/lib/googleSheets/partnerSheetOps';
 import { error as logError } from '@/lib/logger';
@@ -19,6 +20,10 @@ export async function POST(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
+  // SECURITY (messmass#347): require an authenticated admin session.
+  const __denied = await requireSession();
+  if (__denied) return __denied;
+
   let id: string | undefined;
   try {
     const paramsResolved = await params;

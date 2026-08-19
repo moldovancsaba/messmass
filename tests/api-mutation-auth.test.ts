@@ -57,7 +57,6 @@ const KNOWN_UNGUARDED = new Set<string>([
   'app/api/hashtag-categories/route.ts',
   'app/api/hashtag-colors/route.ts',
   // [debt] admin-facing, not yet verified free of non-admin callers
-  'app/api/admin/hashtag-style/route.ts',
   'app/api/auto-generate-chart-block/route.ts',
   'app/api/available-fonts/route.ts',
   'app/api/bitly/recalculate/route.ts',
@@ -66,13 +65,6 @@ const KNOWN_UNGUARDED = new Set<string>([
   'app/api/grid-settings/route.ts',
   'app/api/sports-db/lookup/route.ts',
   'app/api/sports-db/search/route.ts',
-  'app/api/partners/[id]/google-sheet/connect/route.ts',
-  'app/api/partners/[id]/google-sheet/disconnect/route.ts',
-  'app/api/partners/[id]/google-sheet/provision/route.ts',
-  'app/api/partners/[id]/google-sheet/pull/route.ts',
-  'app/api/partners/[id]/google-sheet/push/route.ts',
-  'app/api/partners/[id]/google-sheet/rename/route.ts',
-  'app/api/partners/[id]/google-sheet/setup/route.ts',
   // [debt] machine integrations — verify their own token handling, then remove
   'app/api/integrations/camera/partners/route.ts',
   'app/api/integrations/camera/sso-session/route.ts',

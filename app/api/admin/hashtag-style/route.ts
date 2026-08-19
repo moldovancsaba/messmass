@@ -3,6 +3,7 @@
 // HOW: Store styleId in hashtag_slugs collection
 
 import { NextRequest, NextResponse } from 'next/server';
+import { requireSession } from '@/lib/apiGuards';
 import clientPromise from '@/lib/mongodb';
 import config from '@/lib/config';
 import { error as logError, info as logInfo } from '@/lib/logger';
@@ -54,6 +55,10 @@ export async function GET(request: NextRequest) {
  * HOW: Upsert hashtag_slugs record with styleId
  */
 export async function POST(request: NextRequest) {
+  // SECURITY (messmass#347): require an authenticated admin session.
+  const __denied = await requireSession();
+  if (__denied) return __denied;
+
   try {
     const body = await request.json();
     const { hashtag, styleId } = body;

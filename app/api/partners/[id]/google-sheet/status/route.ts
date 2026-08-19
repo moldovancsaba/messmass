@@ -18,6 +18,7 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server';
+import { requireSession } from '@/lib/apiGuards';
 import { ObjectId } from 'mongodb';
 import clientPromise from '@/lib/mongodb';
 import { testConnection } from '@/lib/googleSheets/client';
@@ -29,6 +30,10 @@ export async function GET(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
+  // SECURITY (messmass#347): require an authenticated admin session.
+  const __denied = await requireSession();
+  if (__denied) return __denied;
+
   let id: string | undefined;
   try {
     const paramsResolved = await params;

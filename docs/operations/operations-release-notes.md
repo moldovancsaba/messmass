@@ -4,6 +4,30 @@ Last Updated: 2026-08-19T12:00:28.000Z
 Canonical: No
 Owner: Operations
 
+## [v12.2.0] — 2026-08-19T12:00:28.000Z
+
+### Summary
+Fleet version-unification milestone + messmass Wave 0 security hardening. All
+four SEYU apps (messmass, camera, fanmass, try-on) adopt the single shared
+version 12.2.0 and bump in lockstep from here — see
+`docs/_audit/fleet-version-policy.md`. Security (messmass#347): the
+analytics-aggregation cron no longer accepts a hardcoded `development_secret`
+fallback (fails closed when `CRON_SECRET` is unset), and the eight
+`/api/partners/[id]/google-sheet/*` routes plus `POST /api/admin/hashtag-style`
+now require an authenticated admin session (`requireSession`).
+`tests/api-mutation-auth.test.ts` no longer lists those routes as unguarded.
+
+### Changed
+- `app/api/cron/analytics-aggregation/route.ts` — fail-closed cron auth.
+- `app/api/partners/[id]/google-sheet/{connect,disconnect,provision,pull,push,rename,setup,status}/route.ts`
+  and `app/api/admin/hashtag-style/route.ts` — `requireSession` guard.
+- `tests/api-mutation-auth.test.ts` — removed the eight now-guarded entries.
+- `docs/_audit/fleet-version-policy.md` — the unified-version policy.
+
+### Security
+- Removes a remote cron auth bypass and eight unauthenticated mutating routes
+  (messmass#347).
+
 ## [v12.1.95] — 2026-08-19T12:00:28.000Z
 
 ### Summary

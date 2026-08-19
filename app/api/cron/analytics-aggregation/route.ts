@@ -48,7 +48,14 @@ export async function POST(request: NextRequest) {
     // Verify authorization
     // In production, check for cron secret or admin session
     const authHeader = request.headers.get('authorization');
-    const cronSecret = process.env.CRON_SECRET || 'development_secret';
+    // SECURITY (messmass#347): fail CLOSED. A hardcoded fallback let any caller
+    // authenticate with `Bearer development_secret` when CRON_SECRET was unset.
+    const cronSecret = process.env.CRON_SECRET;
+    if (!cronSecret) {
+      const { getAdminUser } = await import('@/lib/auth');
+      const adminUser = await getAdminUser();
+      if (!adminUser) return NextResponse.json({ success: false, error: 'unauthorized' }, { status: 401 });
+    }
     
     // Allow requests with valid cron secret OR from authenticated admin users
     const isAuthorized = authHeader === `Bearer ${cronSecret}`;
