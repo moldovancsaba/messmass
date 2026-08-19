@@ -46,15 +46,63 @@
   margin: 0;
 }
 
-/* WHAT: Pie chart container with flex layout */
+/* WHAT: Pie chart container with flex layout.
+   position: relative anchors the top-center tooltip bubble. */
 .pieChartContainer {
+  position: relative;
   width: 100%;
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
-/* WHAT: Bar chart container */
+/* WHAT: Bar chart container.
+   position: relative anchors the top-center tooltip bubble. */
 .barChartContainer {
+  position: relative;
   width: 100%;
+}
+
+/* WHAT: Fixed top-center HTML tooltip bubble for Chart.js charts.
+   WHY: Canvas-drawn tooltips clip at the canvas edge; this bubble is real
+   DOM pinned top-center of the chart container, wrapping via CSS up to the
+   full container width so no label length can ever be cut. Toggled by the
+   external handler via data-visible - no inline layout styles. */
+.chartTooltipBubble {
+  position: absolute;
+  top: var(--mm-space-1);
+  left: 50%;
+  transform: translateX(-50%);
+  width: max-content;
+  max-width: calc(100% - var(--mm-space-2));
+  background: var(--mm-gray-800);
+  color: var(--mm-white);
+  border: 1px solid var(--mm-gray-300);
+  border-radius: var(--mm-radius-md);
+  padding: var(--mm-space-2) var(--mm-space-3);
+  font-size: var(--mm-font-size-sm);
+  line-height: 1.4;
+  text-align: center;
+  overflow-wrap: anywhere;
+  pointer-events: none;
+  z-index: 10;
+  opacity: 0;
+  transition: opacity 0.15s ease;
+}
+
+.chartTooltipBubble[data-visible='true'] {
+  opacity: 1;
+}
+
+.chartTooltipBubble strong {
+  font-weight: 600;
+}
+
+.chartTooltipBubble i {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  margin-right: var(--mm-space-2);
+  vertical-align: baseline;
 }

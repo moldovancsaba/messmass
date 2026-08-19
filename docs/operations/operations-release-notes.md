@@ -4,6 +4,44 @@ Last Updated: 2026-08-19T12:00:28.000Z
 Canonical: No
 Owner: Operations
 
+## [v12.1.94] — 2026-08-19T12:00:28.000Z
+
+### Summary
+Replaces the v12.1.93 tooltip wrapping with a definitive fix, after the user
+reported overlay text still being cut. Chart tooltips no longer render on the
+canvas at all: Chart.js's external-tooltip mode now feeds a fixed top-center
+HTML bubble inside the chart container (`createTopCenterTooltipHandler` in
+`lib/chartTheme.ts`, styled by `ChartShared.module.css`). Being real DOM, the
+bubble wraps text via CSS up to the full container width, so no label length
+can ever be clipped — the canvas-edge constraint that caused both defects is
+gone by construction. Verified live in the browser on both chart types with
+the exact reported label ("Refused Images (unwanted content detected)") and
+an even longer 90-character label: full text visible, DOM-measured inside the
+container (bubble 262px within a 270px container on a deliberately narrow
+320px chart).
+
+### Changed
+- `lib/chartTheme.ts` — `wrapChartTooltipText()` (v12.1.93, superseded) replaced
+  by `createTopCenterTooltipHandler(bubbleClassName)`: an external tooltip
+  handler that creates one reusable bubble element per chart, fills it with
+  swatch + title + value lines via `textContent` (no innerHTML), toggles
+  visibility through `data-visible`, and exposes it to screen readers via
+  `role="status"` (canvas tooltips were invisible to assistive tech).
+- `components/charts/ChartShared.module.css` — new `.chartTooltipBubble`
+  (absolute, top-center, `max-width: calc(100% - var(--mm-space-2))`,
+  `overflow-wrap: anywhere`, design tokens only) plus `position: relative` on
+  both chart containers to anchor it.
+- `components/charts/PieChart.tsx` + `components/charts/VerticalBarChart.tsx` —
+  tooltip config switched to `enabled: false` + `external:` handler; dead
+  canvas-tooltip styling options removed.
+
+### Verification
+- Full local gate green: type-check, lint, style:check, 381/381 tests, build.
+- Live browser check on a dev-only harness page rendering both components at
+  320px width: hovered segments/bars, screenshot-confirmed the bubble shows the
+  complete longest label wrapped over multiple lines, and DOM-measured the
+  bubble box inside the container box on both chart types.
+
 ## [v12.1.93] — 2026-08-19T12:00:28.000Z
 
 ### Summary

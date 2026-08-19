@@ -14,7 +14,7 @@ import {
 } from 'chart.js';
 import ChartBase from './ChartBase';
 import styles from './ChartShared.module.css';
-import { CHART_THEME, wrapChartTooltipText } from '@/lib/chartTheme';
+import { CHART_THEME, createTopCenterTooltipHandler } from '@/lib/chartTheme';
 
 /* What: Register Chart.js components
    Why: Chart.js requires explicit registration of components to reduce bundle size */
@@ -189,23 +189,16 @@ export default function VerticalBarChart({
         },
       },
       tooltip: {
-        enabled: true,
-        backgroundColor: CHART_THEME.tooltipBackground,
-        titleColor: CHART_THEME.tooltipText,
-        bodyColor: CHART_THEME.tooltipText,
-        borderColor: CHART_THEME.tooltipBorder,
-        borderWidth: 1,
-        padding: 12,
-        cornerRadius: 8,
-        displayColors: true,
+        /* What: Overlay info rendered into a fixed top-center HTML bubble
+           (createTopCenterTooltipHandler) instead of the canvas-drawn box.
+           Why: Canvas tooltips physically clip at the canvas edge - the
+           same defect observed live on the pie chart. The HTML bubble wraps
+           via CSS up to the full container width, so no label can ever be
+           clipped. */
+        enabled: false,
+        external: createTopCenterTooltipHandler(styles.chartTooltipBubble),
         callbacks: {
-          /* What: Custom tooltip - wrapped label as the title, value+percentage
-             as the body line.
-             Why: Chart.js paints the tooltip ON the canvas, so a long
-             single-line label near the canvas edge gets clipped mid-word
-             (same defect observed live on the pie chart). Wrapping keeps the
-             box narrow enough to always fit. */
-          title: (items) => wrapChartTooltipText(items[0]?.label || ''),
+          title: (items) => items[0]?.label || '',
           label: (context) => {
             const value = context.parsed.y ?? 0;
             const percentage = total > 0 ? ((value / total) * 100).toFixed(1) : '0.0';
