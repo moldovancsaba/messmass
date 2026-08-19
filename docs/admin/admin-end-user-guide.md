@@ -4,7 +4,7 @@ Last Updated: 2026-05-20
 Canonical: Yes
 Owner: Product Operations
 
-**Version:** 12.1.16
+**Version:** 12.2.0
 **Audience:** admins, operators, support, implementation partners
 **Primary in-product reference:** `/admin/help`
 

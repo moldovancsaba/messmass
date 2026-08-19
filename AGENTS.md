@@ -62,7 +62,6 @@ default behavior is not a valid reason to violate it.
 - Run the app: `npm run dev`
 - Default local URL: `http://localhost:3001`
 - First-run variable seed: `npm run seed:variables`
-- Optional realtime server: `cd server && npm start`
 
 ## Core Validation
 

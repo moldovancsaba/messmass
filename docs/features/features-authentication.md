@@ -4,7 +4,7 @@ Last Updated: 2026-05-20T12:00:00.000Z
 Canonical: Yes
 Owner: Security
 
-**Version:** 12.1.16
+**Version:** 12.2.0
 **Last Updated:** 2026-05-20T12:00:00.000Z (UTC)
 **Status:** Production
 **Maintainer:** Warp AI Development Team
@@ -219,7 +219,7 @@ export default function PasswordGate({
 - Admin session bypasses page password requirements
 
 **Admin Session (DB-Backed):**
-- Admins log in with email + password from MongoDB `users` collection
+- Admins log in via DoneIsBetter SSO (OAuth2). The email+password login is retired (`POST /api/admin/login` → 410 Gone); the `users` collection stores the session/role, not a login password.
 - Successful login creates base64-encoded JSON session token
 - Token contains: `{token, expiresAt, userId, role}`
 - Cookie: HttpOnly, SameSite=Lax, Secure (production), 7-day expiration
@@ -1011,7 +1011,7 @@ if (process.env.NODE_ENV === 'development') {
 
 ### Admin Authentication
 
-- `POST /api/admin/login` - Login with email + password
+- `POST /api/admin/login` - **410 Gone** (retired; use SSO). `DELETE` still logs out.
 - `DELETE /api/admin/login` - Logout (delete session cookie)
 - `GET /api/auth/check` - Check current session status
 

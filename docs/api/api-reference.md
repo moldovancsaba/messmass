@@ -4,7 +4,7 @@ Last Updated: 2026-05-14T10:00:00.000Z
 Canonical: Yes
 Owner: Backend
 
-**Version:** 12.1.16
+**Version:** 12.2.0
 **Last Updated:** 2026-06-26T10:00:00.000Z (UTC)
 **Status:** Production
 
@@ -282,19 +282,6 @@ All API endpoints return JSON with consistent structure:
 - `X-RateLimit-Remaining`: Requests left
 - `X-RateLimit-Reset`: Reset timestamp
 
----
-
-## WebSocket API
-
-**URL**: `wss://messmass.com` (separate WebSocket server, port 7654)
-
-**Messages**:
-- `join-project`: Join project room
-- `stat-update`: Statistics changed
-- `project-update`: Metadata changed
-- `heartbeat`: Keep-alive
-
-**See**: [ARCHITECTURE.md](../architecture.md) for WebSocket details
 
 ---
 

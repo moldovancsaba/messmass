@@ -90,12 +90,12 @@ for (const file of currentDocFiles) {
 
 const versionHeaderFiles = currentDocFiles.filter((file) => {
   const content = read(file).split('\n').slice(0, 25).join('\n');
-  return /\*\*Version:?\*\*\s*:|^Version:\s+/m.test(content);
+  return /\*\*Version:?\*\*:?\s|^Version:\s+/m.test(content);
 });
 
 for (const file of versionHeaderFiles) {
   const content = read(file).split('\n').slice(0, 25).join('\n');
-  const versionMatch = content.match(/(?:\*\*Version:?\*\*\s*:|^Version:)\s*`?([0-9]+\.[0-9]+\.[0-9]+)`?/m);
+  const versionMatch = content.match(/(?:\*\*Version:?\*\*:?|^Version:)\s*`?([0-9]+\.[0-9]+\.[0-9]+)`?/m);
   if (versionMatch && versionMatch[1] !== packageVersion) {
     addFailure(file, `Version header ${versionMatch[1]} does not match package version ${packageVersion}.`);
   }

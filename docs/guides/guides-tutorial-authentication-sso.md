@@ -12,7 +12,7 @@ messmass controls who can do what through a small number of cooperating mechanis
 
 There are three ways to be recognised by messmass:
 
-1. **Admin sign-in** — an email + password checked against the `users` collection. This grants a session and access to the admin console.
+1. **Admin sign-in** — via DoneIsBetter SSO (OAuth2 authorization-code). The old email+password login at `/admin/login` is retired and returns **410 Gone**; SSO is the only entry. A successful SSO callback mints the `admin-session` cookie and auto-provisions the user from the central per-app permission store.
 2. **Page passwords** — per-page share links that let someone view or edit a single event without any admin account (recapped below; covered fully in [Sharing & access](guides-tutorial-sharing-access.md)).
 3. **API keys** — a user's password used as a Bearer token for the public REST API, so external systems can read (and, when permitted, write) data.
 
@@ -30,7 +30,7 @@ Why it matters: these layers are the difference between "a partner can see their
 
 ### 1. Sign in to the admin console
 
-Go to **`/admin/login`** and enter your email and password. Emails are matched case-insensitively (they are normalised to lowercase). On success you receive an `admin-session` cookie (HttpOnly, valid for seven days), and the middleware lets you into `/admin/*`. The public admin routes that never require a session are `/admin/login`, `/admin/register` and `/admin/clear-session`; everything else under `/admin` redirects to the login page when you are not authenticated.
+Go to **`/admin`** (or any `/admin/*` route) while signed out and you are redirected into the SSO flow at `sso.doneisbetter.com`. After you approve, the callback (`/api/auth/sso/callback`) exchanges the code, reads your role from the central permission store, and mints the `admin-session` cookie. `POST /api/admin/login` and `/api/admin/register` are **410 Gone** — there is no password login. The public admin routes are `/admin/login` (the SSO entry page), `/admin/clear-session`, and the SSO callback; everything else under `/admin` requires the session.
 
 ### 2. Understand the roles
 

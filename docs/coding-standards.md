@@ -4,7 +4,7 @@ Last Updated: 2026-06-24T13:15:00.000Z
 Canonical: No
 Owner: Architecture
 
-**Version:** 12.1.88
+**Version:** 12.2.0
 **Last Updated:** 2026-08-17T00:00:00.000Z (UTC)
 
 ---
@@ -72,7 +72,7 @@ Module: components/modals/FormModal.tsx
 Affected: 12 admin pages (partners, variables, kyc, categories, etc.)
 Change Type: MINOR (added new prop `footerAlign`)
 Test Coverage: All 12 pages verified
-Version: 9.1.1 → 9.2.0
+Version: 12.2.0 → 9.2.0
 ```
 
 ### Module Usage Rules

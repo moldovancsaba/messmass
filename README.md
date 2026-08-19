@@ -27,10 +27,10 @@ Owner: Product
 
 ## Product Overview
 
-`{messmass}` is a production event intelligence platform for live-event delivery, partner proof-of-performance, and report operations. It combines real-time event data capture, partner and organization administration, Bitly attribution, report authoring, and analytics review in one product.
+`{messmass}` is a production event intelligence platform for live-event delivery, partner proof-of-performance, and report operations. It combines event data capture, partner and organization administration, Bitly attribution, report authoring, and analytics review in one product.
 
 Core capabilities:
-- Real-time event tracking through event editor and clicker/manual workflows
+- Event tracking through event editor and clicker/manual workflows
 - Partner, organization, and event administration in a unified admin system
 - Reporting Workspace for themes, builder composition, content, chart logic, and data dependencies
 - Report variant management with validated preset/custom time-period contracts
@@ -84,7 +84,6 @@ Typical required variables:
 ```bash
 MONGODB_URI=mongodb+srv://...
 MONGODB_DB=messmass
-NEXT_PUBLIC_WS_URL=wss://your-websocket-server.com
 BITLY_ACCESS_TOKEN=your_bitly_token
 BITLY_ORGANIZATION_GUID=your_org_guid
 BITLY_GROUP_GUID=your_group_guid
