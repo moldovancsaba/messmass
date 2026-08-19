@@ -1,14 +1,14 @@
 {
  "_meta": {
-  "generated": "2026-08-19T16:52:58+00:00",
+  "generated": "2026-08-19T23:52:41+00:00",
   "repo": "messmass",
-  "head": "6d28c7f3",
+  "head": "5e82a8ae",
   "counts": {
-   "endpoints": 194,
-   "collections": 71,
-   "env": 41,
+   "endpoints": 191,
+   "collections": 69,
+   "env": 40,
    "outbound-hosts": 28,
-   "docs": 194
+   "docs": 200
   }
  },
  "items": [
@@ -123,6 +123,30 @@
   {
    "file": "docs/V3/messmass_v3_ui_configuration.md",
    "title": "{messmass} v3 -- UI Configuration & Industry Templates"
+  },
+  {
+   "file": "docs/_audit/README.md",
+   "title": "Fleet audit artifacts"
+  },
+  {
+   "file": "docs/_audit/api-reference.md",
+   "title": "messmass API Reference"
+  },
+  {
+   "file": "docs/_audit/drift-register.md",
+   "title": "messmass drift register \u2014 fleet audit P3, first edition"
+  },
+  {
+   "file": "docs/_audit/fleet-architecture.md",
+   "title": "SEYU Fleet Architecture \u2014 canonical map"
+  },
+  {
+   "file": "docs/_audit/fleet-version-policy.md",
+   "title": "Fleet version policy \u2014 one version, in lockstep"
+  },
+  {
+   "file": "docs/_audit/messmass-in-the-fleet.md",
+   "title": "messmass in the SEYU fleet"
   },
   {
    "file": "docs/_meta/meta-canonical-map.md",

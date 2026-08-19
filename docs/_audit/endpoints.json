@@ -1,14 +1,14 @@
 {
  "_meta": {
-  "generated": "2026-08-19T16:52:58+00:00",
+  "generated": "2026-08-19T23:52:41+00:00",
   "repo": "messmass",
-  "head": "6d28c7f3",
+  "head": "5e82a8ae",
   "counts": {
-   "endpoints": 194,
-   "collections": 71,
-   "env": 41,
+   "endpoints": 191,
+   "collections": 69,
+   "env": 40,
    "outbound-hosts": 28,
-   "docs": 194
+   "docs": 200
   }
  },
  "items": [
@@ -1166,15 +1166,6 @@
    "no_auth_marker": true
   },
   {
-   "path": "/api/images",
-   "methods": [
-    "GET"
-   ],
-   "file": "app/api/images/route.ts",
-   "auth_markers": [],
-   "no_auth_marker": true
-  },
-  {
    "path": "/api/integrations/camera/link-partners",
    "methods": [
     "POST"
@@ -1417,29 +1408,11 @@
    "no_auth_marker": false
   },
   {
-   "path": "/api/landing-report",
-   "methods": [
-    "GET"
-   ],
-   "file": "app/api/landing-report/route.ts",
-   "auth_markers": [],
-   "no_auth_marker": true
-  },
-  {
    "path": "/api/landing-static",
    "methods": [
     "GET"
    ],
    "file": "app/api/landing-static/route.ts",
-   "auth_markers": [],
-   "no_auth_marker": true
-  },
-  {
-   "path": "/api/me",
-   "methods": [
-    "GET"
-   ],
-   "file": "app/api/me/route.ts",
    "auth_markers": [],
    "no_auth_marker": true
   },

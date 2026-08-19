@@ -1,14 +1,14 @@
 {
  "_meta": {
-  "generated": "2026-08-19T16:52:58+00:00",
+  "generated": "2026-08-19T23:52:41+00:00",
   "repo": "messmass",
-  "head": "6d28c7f3",
+  "head": "5e82a8ae",
   "counts": {
-   "endpoints": 194,
-   "collections": 71,
-   "env": 41,
+   "endpoints": 191,
+   "collections": 69,
+   "env": 40,
    "outbound-hosts": 28,
-   "docs": 194
+   "docs": 200
   }
  },
  "items": [
