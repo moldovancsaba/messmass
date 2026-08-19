@@ -58,9 +58,12 @@ export async function getAdminUser(): Promise<AdminUser | null> {
   
   debug('User authenticated', { email: user.email })
 
-  // Map DB user to AdminUser view model; permissions derived from role
+  // Map DB user to AdminUser view model.
+  // NOTE: permissions are currently the SAME for every authenticated role - the
+  // ternary below is intentionally identical on both sides (kept as a seam for
+  // future per-role narrowing). Do not read this as 'permissions derived from role'.
   const basePermissions = ['read', 'write', 'delete', 'manage-users']
-  const permissions = user.role === 'superadmin' ? basePermissions : basePermissions
+  const permissions = basePermissions
 
   return {
     id: user._id!.toString(),
@@ -90,7 +93,7 @@ export async function isAuthenticated(): Promise<boolean> {
 /**
  * hasPermission
  * Simplified permission check based on role+permissions.
- * WHAT: Support 4-tier role hierarchy with superadmin having all permissions
+ * WHAT: Support the 5-role hierarchy (guest/user/admin/superadmin/api) with superadmin having all permissions
  * WHY: Maintain backward compatibility while enabling granular access control
  */
 export async function hasPermission(permission: string): Promise<boolean> {

@@ -3,7 +3,8 @@
 //       pushEventStats's shape — a targeted update against one folder link,
 //       same requireFanmassIntegrationAuth guard, on the same
 //       /api/integrations/fanmass/** surface as everything else the plain
-//       bearer/x-api-key MessmassClient calls (not the separate HMAC-signed
+//       bearer/x-api-key MessmassClient calls (the /callbacks route uses the SAME
+//       requireFanmassIntegrationAuth - there is no separate HMAC-signed
 //       callback path).
 // AUTH: requireFanmassIntegrationAuth
 // BODY: { folderId: string, status: DriveFolderStatus, lastError?: string,

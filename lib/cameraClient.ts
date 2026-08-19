@@ -10,7 +10,7 @@ import config from '@/lib/config';
  * WHAT: Validates an inbound request claims to be camera, via the same
  *     shared secret used for the forward (messmass -> camera) direction.
  * WHY: Reused by every camera -> messmass inbound endpoint
- *     (app/api/integrations/camera/partners, app/api/internal/camera/sso-session)
+ *     (app/api/integrations/camera/partners, app/api/integrations/camera/sso-session)
  *     so the check stays in exactly one place.
  */
 export function assertCameraSecret(request: NextRequest): NextResponse | null {

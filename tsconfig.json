@@ -33,7 +33,6 @@
       "react",
       "react-dom",
       "html2canvas",
-      "ws",
       "jest",
       "@types/jest"
     ]
