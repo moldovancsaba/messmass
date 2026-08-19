@@ -106,3 +106,82 @@
   margin-right: var(--mm-space-2);
   vertical-align: baseline;
 }
+
+/* WHAT: Layout modifiers for the chart container - HTML legend beside or
+   below the canvas.
+   WHY: The canvas-drawn legend truncated long labels at the canvas edge;
+   the legend is real DOM now and needs a flex layout with the canvas. */
+.legendRight {
+  flex-direction: row;
+  gap: var(--mm-space-4);
+}
+
+.legendBottom {
+  flex-direction: column;
+  gap: var(--mm-space-2);
+}
+
+/* WHAT: Positioned wrapper for the canvas alone.
+   WHY: The top-center tooltip bubble anchors to the canvas's parent, which
+   must be the chart area - not the chart+legend row. */
+.pieCanvasWrap {
+  position: relative;
+  flex: 1 1 auto;
+  min-width: 0;
+  min-height: 0;
+  align-self: stretch;
+}
+
+/* WHAT: HTML legend for pie/donut charts.
+   WHY: Real DOM wraps long labels via CSS instead of truncating, keeps the
+   click-to-hide behavior, and is readable by assistive technology. */
+.chartLegend {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  gap: var(--mm-space-1);
+}
+
+.legendRight .chartLegend {
+  flex-direction: column;
+  justify-content: center;
+  max-width: 45%;
+  overflow-y: auto;
+}
+
+.legendBottom .chartLegend {
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.chartLegendItem {
+  display: flex;
+  align-items: baseline;
+  gap: var(--mm-space-2);
+  background: none;
+  border: 0;
+  padding: var(--mm-space-1);
+  cursor: pointer;
+  color: var(--mm-gray-600);
+  font-size: calc(13px * var(--chart-font-scale, 1));
+  font-weight: 500;
+  font-family: inherit;
+  text-align: left;
+  overflow-wrap: anywhere;
+}
+
+.chartLegendItem[data-hidden='true'] {
+  opacity: 0.45;
+  text-decoration: line-through;
+}
+
+.chartLegendItem i {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  transform: translateY(1px);
+}

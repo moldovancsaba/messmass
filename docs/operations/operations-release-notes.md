@@ -4,6 +4,37 @@ Last Updated: 2026-08-19T12:00:28.000Z
 Canonical: No
 Owner: Operations
 
+## [v12.1.95] — 2026-08-19T12:00:28.000Z
+
+### Summary
+Completes the chart-text overhaul started in v12.1.94: the pie/donut LEGEND
+is now real HTML too. The canvas-drawn legend truncated long labels at the
+canvas edge ("Refused Images (unw…") — the same physical constraint that
+clipped tooltips. The legend is now a DOM list rendered beside (right) or
+below (bottom) the canvas: long labels wrap via CSS, click-to-hide still
+toggles segments (Chart.js toggleDataVisibility), and the entries are real
+buttons with aria-pressed state, readable by assistive technology — the
+canvas legend never was.
+
+### Changed
+- `components/charts/PieChart.tsx` — Chart.js legend disabled; HTML legend
+  list rendered from the same filtered data + colors (`segmentColor` shared
+  between slices and swatches); hidden-segment state in React with
+  `toggleDataVisibility` applied to the chart; canvas moved into its own
+  positioned wrapper so the v12.1.94 tooltip bubble keeps anchoring to the
+  chart area alone.
+- `components/charts/ChartShared.module.css` — `.legendRight`/`.legendBottom`
+  container layouts, `.pieCanvasWrap`, `.chartLegend`, `.chartLegendItem`
+  (design tokens only; legend font scales with the existing
+  `--chart-font-scale`).
+
+### Verification
+- Full local gate green: type-check, lint, style:check, 381/381 tests, build.
+- Live browser check on a dev-only harness at 340px width, both legend
+  positions: all six legend entries DOM-measured with zero CSS truncation
+  (including a 93-character label), screenshot-confirmed wrapped rendering,
+  and click-to-hide verified (aria-pressed flips, segment hidden).
+
 ## [v12.1.94] — 2026-08-19T12:00:28.000Z
 
 ### Summary

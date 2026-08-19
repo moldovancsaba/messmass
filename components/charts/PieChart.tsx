@@ -8,7 +8,6 @@ import {
   Tooltip,
   Legend,
   ChartOptions,
-  LegendItem,
 } from 'chart.js';
 import ChartBase from './ChartBase';
 import styles from './ChartShared.module.css';
@@ -65,6 +64,27 @@ export default function PieChart({
   showPercentageInTooltip = true,
 }: PieChartProps) {
   const chartRef = useRef<ChartJS<'doughnut'>>(null);
+
+  /* WHAT: Indices of segments the user hid via the HTML legend.
+     WHY: The legend is real DOM now (long labels wrap instead of truncating
+     at the canvas edge), so hide/show state lives in React and is applied
+     to the chart with toggleDataVisibility - same behavior the canvas
+     legend's onClick used to provide. */
+  const [hiddenSegments, setHiddenSegments] = React.useState<ReadonlySet<number>>(new Set());
+
+  const toggleSegment = (index: number) => {
+    const chart = chartRef.current;
+    if (chart) {
+      chart.toggleDataVisibility(index);
+      chart.update();
+    }
+    setHiddenSegments(previous => {
+      const next = new Set(previous);
+      if (next.has(index)) next.delete(index);
+      else next.add(index);
+      return next;
+    });
+  };
 
   /* WHAT: Validate data before rendering
      WHY: Prevent crashes from empty, null, or invalid data
@@ -136,6 +156,13 @@ export default function PieChart({
     );
   }
 
+  /* WHAT: Resolve a segment's color the same way for the chart and the legend.
+     WHY: The HTML legend below must show exactly the slice colors. */
+  const segmentColor = (item: PieChartData, index: number) =>
+    item.color && typeof item.color === 'string' && item.color.trim()
+      ? item.color
+      : CHART_THEME.fillPalette(index, 0.9);
+
   /* What: Prepare chart data in Chart.js format
      Why: Chart.js requires specific data structure for pie/donut charts */
   const chartData = {
@@ -144,16 +171,7 @@ export default function PieChart({
       {
         label: title,
         data: filtered.map(item => item.value),
-        backgroundColor: filtered.map((item, index) => {
-          /* What: Use custom color or fall back to theme colors
-             Why: Allow chart-specific colors while maintaining consistency */
-          // WHAT: Validate item.color before using
-          // WHY: Prevent undefined from being returned to Chart.js
-          if (item.color && typeof item.color === 'string' && item.color.trim()) return item.color;
-          
-          // Cycle through theme chart colors with full opacity for pie charts
-          return CHART_THEME.fillPalette(index, 0.9);
-        }),
+        backgroundColor: filtered.map((item, index) => segmentColor(item, index)),
         borderColor: CHART_THEME.tooltipText,
         borderWidth: 2,
         hoverOffset: 8, // Slight pop-out effect on hover
@@ -169,56 +187,14 @@ export default function PieChart({
     cutout, // Controls pie vs donut style
     plugins: {
       legend: {
-        display: showLegend,
-        position: legendPosition,
-        labels: {
-          color: CHART_THEME.legendText,
-          font: {
-            size: 13,
-            family: CHART_THEME.fontFamily,
-            weight: 500,
-          },
-          padding: 16,
-          usePointStyle: true,
-          pointStyle: 'circle',
-          generateLabels: (chart) => {
-            /* What: Custom legend labels with percentages
-               Why: Show both label and percentage in legend for better readability */
-            const datasets = chart.data.datasets;
-            const labels = chart.data.labels || [];
-            
-            if (!datasets.length || !datasets[0].data.length) {
-              return [];
-            }
-
-            return labels.map((label, index) => {
-              const value = datasets[0].data[index] as number;
-              const percentage = total > 0 ? ((value / total) * 100).toFixed(1) : '0.0';
-              const backgroundColor = datasets[0].backgroundColor as string[];
-              
-              return {
-                text: `${label}: ${percentage}%`,
-                fillStyle: backgroundColor[index],
-                strokeStyle: backgroundColor[index],
-                lineWidth: 0,
-                hidden: false,
-                index,
-                pointStyle: 'circle' as const,
-              } as LegendItem;
-            });
-          },
-        },
-        onClick: (e, legendItem, legend) => {
-          /* What: Toggle segment visibility on legend click
-             Why: Allow users to hide/show specific segments for better analysis */
-          const index = legendItem.index;
-          const chart = legend.chart;
-          
-          if (index !== undefined) {
-            chart.toggleDataVisibility(index);
-            chart.update();
-          }
-        },
+        /* What: The canvas-drawn legend is fully replaced by an HTML legend
+           rendered next to the canvas (see the list below in JSX).
+           Why: Chart.js paints legend text on the canvas, so long labels
+           ("Refused Images (unw…") truncate at the canvas edge - the same
+           physical constraint that clipped tooltips (fixed in v12.1.94).
+           Real DOM wraps via CSS, stays clickable, and is readable by
+           screen readers, which the canvas legend never was. */
+        display: false,
       },
       tooltip: {
         /* What: Overlay info rendered into a fixed top-center HTML bubble
@@ -277,33 +253,58 @@ export default function PieChart({
       filename={filename}
       className={className}
     >
-      <div 
+      <div
         ref={containerRef}
-        className={styles.pieChartContainer} 
+        className={`${styles.pieChartContainer} ${
+          legendPosition === 'top' || legendPosition === 'bottom'
+            ? styles.legendBottom
+            : styles.legendRight
+        }`}
         // WHAT: Dynamic height from height prop
         // WHY: Chart height must be configurable per instance
         // eslint-disable-next-line react/forbid-dom-props
-        style={{ 
+        style={{
           height: `${height}px`,
           ['--chart-font-scale' as string]: fontSizeScale.toString()
         } as React.CSSProperties}
       >
-        <Doughnut ref={chartRef} data={chartData} options={{
-          ...options,
-          plugins: {
-            ...options.plugins,
-            legend: {
-              ...options.plugins?.legend,
-              labels: {
-                ...options.plugins?.legend?.labels,
-                font: {
-                  ...options.plugins?.legend?.labels?.font,
-                  size: 13 * fontSizeScale
-                }
-              }
-            }
-          }
-        }} />
+        {/* WHAT: The canvas gets its own positioned wrapper.
+            WHY: The top-center tooltip bubble anchors to the canvas's parent
+            element, which must stay the chart area (not chart+legend). */}
+        <div className={styles.pieCanvasWrap}>
+          <Doughnut ref={chartRef} data={chartData} options={options} />
+        </div>
+        {showLegend && (
+          /* WHAT: HTML legend replacing the canvas-drawn one.
+             WHY: Canvas legend text truncates at the canvas edge
+             ("Refused Images (unw…") - real DOM wraps via CSS, keeps
+             click-to-hide, and is readable by assistive tech. */
+          <ul className={styles.chartLegend}>
+            {filtered.map((item, index) => {
+              const percentage = total > 0 ? (((item.value as number) / total) * 100).toFixed(1) : '0.0';
+              const isHidden = hiddenSegments.has(index);
+              return (
+                <li key={`${item.label}-${index}`}>
+                  <button
+                    type="button"
+                    className={styles.chartLegendItem}
+                    data-hidden={isHidden ? 'true' : 'false'}
+                    aria-pressed={!isHidden}
+                    onClick={() => toggleSegment(index)}
+                  >
+                    <i
+                      aria-hidden="true"
+                      // WHAT: Swatch color is per-segment data, not design.
+                      // eslint-disable-next-line react/forbid-dom-props
+                      style={{ backgroundColor: segmentColor(item, index) }}
+                    />
+                    <span>{`${item.label}: ${percentage}%`}</span>
+                  </button>
+                </li>
+              );
+            })}
+          </ul>
+        )}
       </div>
     </ChartBase>
   );
