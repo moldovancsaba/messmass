@@ -1,0 +1,792 @@
+{
+ "_meta": {
+  "generated": "2026-08-19T16:52:58+00:00",
+  "repo": "messmass",
+  "head": "6d28c7f3",
+  "counts": {
+   "endpoints": 194,
+   "collections": 71,
+   "env": 41,
+   "outbound-hosts": 28,
+   "docs": 194
+  }
+ },
+ "items": [
+  {
+   "file": ".github/pull_request_template.md",
+   "title": "Pull Request"
+  },
+  {
+   "file": "AGENTS.md",
+   "title": "AGENTS"
+  },
+  {
+   "file": "HANDOVER.md",
+   "title": "Session Handover \u2014 messmass"
+  },
+  {
+   "file": "README.md",
+   "title": "{messmass}"
+  },
+  {
+   "file": "READMEDEV.md",
+   "title": "MESSMASS"
+  },
+  {
+   "file": "docs/2026-03-06_ADMIN_TOTALFANS_PARTNER_CARD_EDIT_HOTFIX.md",
+   "title": "Admin Total Fans + Partner Card Edit Hotfix"
+  },
+  {
+   "file": "docs/2026-03-06_PARTNER_REPORT_DELETE_HOTFIX.md",
+   "title": "Partner Report and Delete Project Hotfix"
+  },
+  {
+   "file": "docs/2026-03-09_AUDIT_CORE_VS_PARTNER_FUNCTIONS.md",
+   "title": "Audit Plan: Separating Core vs Partner-Level Functions"
+  },
+  {
+   "file": "docs/DEVELOPER-CONDUCT.md",
+   "title": "Developer Conduct & Product Owner Mandate"
+  },
+  {
+   "file": "docs/HANDOVER.md",
+   "title": "Handover"
+  },
+  {
+   "file": "docs/NEXT_AGENT_PROMPT.md",
+   "title": "Next Agent Prompt (Historical Note)"
+  },
+  {
+   "file": "docs/PROJECT_MANAGEMENT.md",
+   "title": "Project Management & SSOT Guidelines"
+  },
+  {
+   "file": "docs/V3/messmass_v3_api_specification.md",
+   "title": "{messmass} v3 -- API Specification (Operational)"
+  },
+  {
+   "file": "docs/V3/messmass_v3_architecture.md",
+   "title": "{messmass} v3 -- Activity Intelligence Platform"
+  },
+  {
+   "file": "docs/V3/messmass_v3_architecture_diagrams.md",
+   "title": "{messmass} v3 Architecture Diagrams"
+  },
+  {
+   "file": "docs/V3/messmass_v3_configuration_management.md",
+   "title": "{messmass} v3 -- Configuration Management"
+  },
+  {
+   "file": "docs/V3/messmass_v3_data_governance.md",
+   "title": "{messmass} v3 -- Data Governance & Data Modeling Rules"
+  },
+  {
+   "file": "docs/V3/messmass_v3_github_project_structure.md",
+   "title": "{messmass} v3 GitHub Project Structure"
+  },
+  {
+   "file": "docs/V3/messmass_v3_migration_playbook.md",
+   "title": "{messmass} v3 Migration Playbook"
+  },
+  {
+   "file": "docs/V3/messmass_v3_mongodb_mongoose_schema.md",
+   "title": "{messmass} v3 -- MongoDB & Mongoose Schema Specification"
+  },
+  {
+   "file": "docs/V3/messmass_v3_observability_monitoring.md",
+   "title": "{messmass} v3 -- Observability & Monitoring"
+  },
+  {
+   "file": "docs/V3/messmass_v3_quickstart_guide.md",
+   "title": "{messmass} V3: Quickstart Guide (Admin)"
+  },
+  {
+   "file": "docs/V3/messmass_v3_release_runbook.md",
+   "title": "{messmass} v3 -- Release & Rollback Runbook"
+  },
+  {
+   "file": "docs/V3/messmass_v3_reporting_engine_design.md",
+   "title": "{messmass} v3 -- Reporting Engine Architecture"
+  },
+  {
+   "file": "docs/V3/messmass_v3_sample_data_models.md",
+   "title": "{messmass} v3 -- Example Data Models"
+  },
+  {
+   "file": "docs/V3/messmass_v3_security_model.md",
+   "title": "{messmass} v3 -- Security Model"
+  },
+  {
+   "file": "docs/V3/messmass_v3_testing_strategy.md",
+   "title": "{messmass} v3 -- Testing & QA Strategy"
+  },
+  {
+   "file": "docs/V3/messmass_v3_ui_configuration.md",
+   "title": "{messmass} v3 -- UI Configuration & Industry Templates"
+  },
+  {
+   "file": "docs/_meta/meta-canonical-map.md",
+   "title": "Canonical Map"
+  },
+  {
+   "file": "docs/_meta/meta-docs-consistency-audit.md",
+   "title": "Docs Consistency Audit"
+  },
+  {
+   "file": "docs/_meta/meta-docs-inventory.md",
+   "title": "Docs Inventory"
+  },
+  {
+   "file": "docs/_meta/meta-docs-link-check.md",
+   "title": "Docs Link Check"
+  },
+  {
+   "file": "docs/_meta/meta-docs-triage.md",
+   "title": "Docs Triage"
+  },
+  {
+   "file": "docs/admin/admin-clicker-manager.md",
+   "title": "Clicker Manager \u2014 Partner Clicker Sets"
+  },
+  {
+   "file": "docs/admin/admin-end-user-guide.md",
+   "title": "End User Guide (Admin Operations)"
+  },
+  {
+   "file": "docs/admin/admin-entity-system.md",
+   "title": "Unified Admin Entity System"
+  },
+  {
+   "file": "docs/admin/admin-layout-v2-schema.md",
+   "title": "Admin LayoutV2 Schema (Layout Configuration)"
+  },
+  {
+   "file": "docs/admin/admin-layout-v2-template-builder.md",
+   "title": "Admin LayoutV2 Template Builder (Operator Guide)"
+  },
+  {
+   "file": "docs/admin/admin-report-template-model.md",
+   "title": "Admin Report Template Model and Selection Rules"
+  },
+  {
+   "file": "docs/admin/admin-style-model-and-assignment-rules.md",
+   "title": "Style Model and Assignment Rules"
+  },
+  {
+   "file": "docs/api/api-analytics.md",
+   "title": "Analytics API"
+  },
+  {
+   "file": "docs/api/api-public.md",
+   "title": "{messmass} Public API"
+  },
+  {
+   "file": "docs/api/api-reference.md",
+   "title": "\ud83d\udce1 API Reference"
+  },
+  {
+   "file": "docs/architecture.md",
+   "title": "{messmass} Architecture Documentation"
+  },
+  {
+   "file": "docs/archive/2025/archive-documentation-refactor-pack.md",
+   "title": "Documentation Refactor Pack (2025)"
+  },
+  {
+   "file": "docs/archive/2025/archive-implementation-reports-pack.md",
+   "title": "Implementation Reports Pack (2025)"
+  },
+  {
+   "file": "docs/archive/2025/archive-old-audits-pack.md",
+   "title": "Old Audits Pack (2025)"
+  },
+  {
+   "file": "docs/archive/2025/deprecated-guides/archive-readme.md",
+   "title": "Deprecated Guides (2025)"
+  },
+  {
+   "file": "docs/archive/2025/deprecated-guides/archive-variable-system-history.md",
+   "title": "Variable System History & Migration Summary"
+  },
+  {
+   "file": "docs/archive/README.md",
+   "title": "Archived Documentation"
+  },
+  {
+   "file": "docs/archive/_archive/admin/admin-layout-code-review-findings-2026-02-05.md",
+   "title": "Admin Layout Code Review Findings"
+  },
+  {
+   "file": "docs/archive/_archive/admin/admin-ui-variable-system-enhancement.md",
+   "title": "Admin Variable System Enhancement (ADM-RM-09)"
+  },
+  {
+   "file": "docs/archive/_archive/admin/archive-admin-ui-variable-system-enhancement-2026-01-14.md",
+   "title": "Admin Variable System Enhancement (ADM-RM-09)"
+  },
+  {
+   "file": "docs/archive/_archive/audits/archive-admin-ui-audits-pack.md",
+   "title": "Admin UI Audits Pack"
+  },
+  {
+   "file": "docs/archive/_archive/audits/archive-audits-misc-pack.md",
+   "title": "Audits Misc Pack (Historical)"
+  },
+  {
+   "file": "docs/archive/_archive/audits/archive-reporting-roadmap-pack.md",
+   "title": "Reporting Roadmap Pack (Historical)"
+  },
+  {
+   "file": "docs/archive/_archive/audits/audit-remediation-status.md",
+   "title": "Audit Remediation Progress Tracker"
+  },
+  {
+   "file": "docs/archive/_archive/audits/comprehensive-system-audit-plan-2026.md",
+   "title": "Comprehensive System Audit Plan 2026"
+  },
+  {
+   "file": "docs/archive/_archive/charts/archive-chart-alignment-history.md",
+   "title": "Chart Alignment Fixes - Historical Notes (2026)"
+  },
+  {
+   "file": "docs/archive/_archive/deprecated-guides-2025/archive-legacy-guides-pack.md",
+   "title": "Legacy Guides Pack (2025)"
+  },
+  {
+   "file": "docs/archive/_archive/design/archive-ui-master-plans-pack.md",
+   "title": "UI Master Plans Pack (Historical)"
+  },
+  {
+   "file": "docs/archive/_archive/design/report-text-sizing-plan.md",
+   "title": "Report Text Sizing & Markdown Enhancement Plan"
+  },
+  {
+   "file": "docs/archive/_archive/design/table-chart-height-control-plan.md",
+   "title": "Table Chart Height Control - Implementation Plan"
+  },
+  {
+   "file": "docs/archive/_archive/features/archive-delivered-one-offs-pack-2026.md",
+   "title": "Delivered One-Off Feature Notes (2026)"
+  },
+  {
+   "file": "docs/archive/_archive/investigations/archive-investigations-pack-2026.md",
+   "title": "Investigations Pack (2026)"
+  },
+  {
+   "file": "docs/archive/_archive/legacy-variable-system/archive-admin-variables-system.md",
+   "title": "Database-First Variables & Metrics Management System"
+  },
+  {
+   "file": "docs/archive/_archive/legacy-variable-system/archive-variable-system-v7-migration.md",
+   "title": "Variable System Version 7.0.0 - Complete Migration Documentation"
+  },
+  {
+   "file": "docs/archive/_archive/legacy-variable-system/archive-variables-database-schema.md",
+   "title": "Variables Database Schema"
+  },
+  {
+   "file": "docs/archive/_archive/migrations/google-sheets-schema-update.md",
+   "title": "Google Sheets Integration - MongoDB Schema Updates (v12.0.0)"
+  },
+  {
+   "file": "docs/archive/_archive/operations/archive-operations-tasklist-2026-01-16.md",
+   "title": "Operations Tasklist"
+  },
+  {
+   "file": "docs/archive/_archive/operations/documentation-audit-2026-02-05.md",
+   "title": "Documentation Audit (Merge Rule & Single Task List)"
+  },
+  {
+   "file": "docs/archive/_archive/releases/archive-reporting-release-candidate.md",
+   "title": "Reporting Release Candidate"
+  },
+  {
+   "file": "docs/archive/_archive/releases/archive-reporting-release-preflight-evidence.md",
+   "title": "Reporting Release Preflight Evidence"
+  },
+  {
+   "file": "docs/archive/_archive/security/archive-security-archive-pack.md",
+   "title": "Security Archive Pack"
+  },
+  {
+   "file": "docs/archive/_archive/security/cto-remediation-plan.md",
+   "title": "CTO Remediation Plan: Security Hardening in Production"
+  },
+  {
+   "file": "docs/archive/architecture-changelog-pre-2026-08.md",
+   "title": "Architecture Doc \u2014 Changelog Extraction (pre-2026-08)"
+  },
+  {
+   "file": "docs/audits/audit-developer-conduct-and-build-2026-02-21.md",
+   "title": "Audit: Developer Conduct Codification & Build/Doc Audit"
+  },
+  {
+   "file": "docs/audits/audits-audit-evidence-index.md",
+   "title": "Audit Evidence Index"
+  },
+  {
+   "file": "docs/audits/audits-audit-execution-playbook-2026.md",
+   "title": "Audit Execution Playbook 2026"
+  },
+  {
+   "file": "docs/audits/audits-readme.md",
+   "title": "Audits (Canonical Entrypoints)"
+  },
+  {
+   "file": "docs/audits/deep-document-audit-2026-06-26.md",
+   "title": "Deep Documentation Audit"
+  },
+  {
+   "file": "docs/audits/design-system-audit-2026-05-22.md",
+   "title": "Design System Audit \u2014 2026-05-22"
+  },
+  {
+   "file": "docs/audits/documentation-consistency-audit-2026-06-26.md",
+   "title": "Documentation Consistency Audit"
+  },
+  {
+   "file": "docs/audits/investigations/audits-readme.md",
+   "title": "Investigations (Consolidated)"
+  },
+  {
+   "file": "docs/audits/issue-audit-2026-06-30.md",
+   "title": "Issue Audit \u2014 2026-06-30"
+  },
+  {
+   "file": "docs/audits/lld/findings.md",
+   "title": "LLD Audit \u2014 Findings Register"
+  },
+  {
+   "file": "docs/audits/lld/graphs/collection-matrix.md",
+   "title": "Collection Read/Write Matrix"
+  },
+  {
+   "file": "docs/audits/lld/graphs/entry-point-graph.md",
+   "title": "Entry Point \u2192 Collection Graph"
+  },
+  {
+   "file": "docs/audits/lld/phase-0-evidence.md",
+   "title": "Phase 0 \u2014 Instrumentation & Coverage Ledger (Evidence)"
+  },
+  {
+   "file": "docs/audits/lld/phase-1-viewpoints.md",
+   "title": "Phase 1 \u2014 Stakeholders, Concerns & the LLD Section Template"
+  },
+  {
+   "file": "docs/audits/lld/phase-4-auth.md",
+   "title": "Phase 4 \u2014 Authentication, Authorisation & Trust Boundaries (LLD draft)"
+  },
+  {
+   "file": "docs/audits/lld-audit-plan-2026-08-14.md",
+   "title": "Low-Level Design \u2014 Deep Audit Plan"
+  },
+  {
+   "file": "docs/audits/notification-system-audit-2026-07-05.md",
+   "title": "Notification System \u2014 Ground-Up Audit"
+  },
+  {
+   "file": "docs/audits/system-audit-plan-2026.md",
+   "title": "**Comprehensive Unified System Audit Plan for {messmass}**"
+  },
+  {
+   "file": "docs/charts/charts-chart-alignment-summary.md",
+   "title": "Chart Alignment & Layout Fixes (2026)"
+  },
+  {
+   "file": "docs/charts/charts-overview.md",
+   "title": "Charts Overview"
+  },
+  {
+   "file": "docs/charts/charts-table-chart-usage-guide.md",
+   "title": "Table Chart Usage Guide"
+  },
+  {
+   "file": "docs/coding-standards.md",
+   "title": "{messmass} Coding Standards"
+  },
+  {
+   "file": "docs/components/components-reusable-components-inventory.md",
+   "title": "{messmass} Reusable Components & Styling System Inventory"
+  },
+  {
+   "file": "docs/components/components-unified-input-system.md",
+   "title": "Unified Input System"
+  },
+  {
+   "file": "docs/conventions/conventions-naming-conventions.md",
+   "title": "{messmass} Naming Conventions"
+  },
+  {
+   "file": "docs/conventions/conventions-variable-dictionary.md",
+   "title": "Variable Dictionary"
+  },
+  {
+   "file": "docs/debug-admin-access.md",
+   "title": "Debugging Admin Access Issues"
+  },
+  {
+   "file": "docs/design/design-chart-height-system.md",
+   "title": "Chart Block Height System"
+  },
+  {
+   "file": "docs/design/design-font-management-system.md",
+   "title": "Font Management System"
+  },
+  {
+   "file": "docs/design/design-layout-grammar-compliance.md",
+   "title": "Layout Grammar Compliance Report"
+  },
+  {
+   "file": "docs/design/design-layout-grammar.md",
+   "title": "Layout Grammar"
+  },
+  {
+   "file": "docs/design/design-layout-system.md",
+   "title": "Report Layout System (Spec v2.0)"
+  },
+  {
+   "file": "docs/design/design-overview.md",
+   "title": "Design Overview"
+  },
+  {
+   "file": "docs/design/design-report-layout-v2-contract.md",
+   "title": "Report Layout V2 Renderer Contract"
+  },
+  {
+   "file": "docs/design/design-system.md",
+   "title": "{messmass} Design System"
+  },
+  {
+   "file": "docs/documentation-governance.md",
+   "title": "Documentation Governance"
+  },
+  {
+   "file": "docs/features/features-authentication.md",
+   "title": "{messmass} Authentication & Access Control System"
+  },
+  {
+   "file": "docs/features/features-bitly-integration-guide.md",
+   "title": "Bitly Integration Guide"
+  },
+  {
+   "file": "docs/features/features-google-sheets-integration.md",
+   "title": "Google Sheets Integration - Feature Guide (v12.0.0)"
+  },
+  {
+   "file": "docs/features/features-hashtag-system.md",
+   "title": "{messmass} Unified Hashtag System Documentation"
+  },
+  {
+   "file": "docs/features/features-landing-main-page.md",
+   "title": "Landing / Main Page (messmass.com)"
+  },
+  {
+   "file": "docs/features/features-multi-user-notifications.md",
+   "title": "Multi-User Notifications"
+  },
+  {
+   "file": "docs/features/features-overview.md",
+   "title": "Features Overview"
+  },
+  {
+   "file": "docs/features/features-partners-system-guide.md",
+   "title": "\ud83e\udd1d Partners System Technical Guide"
+  },
+  {
+   "file": "docs/features/features-reporting-builder.md",
+   "title": "Reporting & Builder Mode (Clicker)"
+  },
+  {
+   "file": "docs/guides/admin/organizations.md",
+   "title": "Administrator Guide: Organization Management"
+  },
+  {
+   "file": "docs/guides/guides-form-input-migration-guide.md",
+   "title": "Form Input Migration Guide"
+  },
+  {
+   "file": "docs/guides/guides-input-system-complete.md",
+   "title": "Complete Input System Documentation & Validation"
+  },
+  {
+   "file": "docs/guides/guides-tutorial-authentication-sso.md",
+   "title": "Tutorial: Authentication, roles & SSO"
+  },
+  {
+   "file": "docs/guides/guides-tutorial-bitly.md",
+   "title": "Tutorial: Bitly integration"
+  },
+  {
+   "file": "docs/guides/guides-tutorial-camera-app.md",
+   "title": "Tutorial: Camera app integration"
+  },
+  {
+   "file": "docs/guides/guides-tutorial-charts-formulas.md",
+   "title": "Tutorial: Charts & formulas"
+  },
+  {
+   "file": "docs/guides/guides-tutorial-clicker-sets.md",
+   "title": "Tutorial: Clicker sets & variable groups"
+  },
+  {
+   "file": "docs/guides/guides-tutorial-collecting-data.md",
+   "title": "Tutorial: Collecting event data (Clicker & Manual)"
+  },
+  {
+   "file": "docs/guides/guides-tutorial-content-library.md",
+   "title": "Tutorial: Content Library (images & text)"
+  },
+  {
+   "file": "docs/guides/guides-tutorial-events.md",
+   "title": "Tutorial: Events"
+  },
+  {
+   "file": "docs/guides/guides-tutorial-fanmass.md",
+   "title": "Tutorial: Fanmass integration"
+  },
+  {
+   "file": "docs/guides/guides-tutorial-getting-started.md",
+   "title": "Getting Started with messmass"
+  },
+  {
+   "file": "docs/guides/guides-tutorial-google-sheets.md",
+   "title": "Tutorial: Google Sheets sync"
+  },
+  {
+   "file": "docs/guides/guides-tutorial-hashtags-filters.md",
+   "title": "Tutorial: Hashtags, categories & filters"
+  },
+  {
+   "file": "docs/guides/guides-tutorial-organisations.md",
+   "title": "Tutorial: Organisations"
+  },
+  {
+   "file": "docs/guides/guides-tutorial-partners.md",
+   "title": "Tutorial: Partners"
+  },
+  {
+   "file": "docs/guides/guides-tutorial-report-themes.md",
+   "title": "Tutorial: Report themes & styles"
+  },
+  {
+   "file": "docs/guides/guides-tutorial-report-variants.md",
+   "title": "Tutorial: Report variants"
+  },
+  {
+   "file": "docs/guides/guides-tutorial-reports.md",
+   "title": "Tutorial: Building reports"
+  },
+  {
+   "file": "docs/guides/guides-tutorial-sharing-access.md",
+   "title": "Tutorial: Sharing reports & access control"
+  },
+  {
+   "file": "docs/guides/guides-tutorial-sport-databases.md",
+   "title": "Tutorial: Sport databases"
+  },
+  {
+   "file": "docs/guides/guides-tutorial-variables-kyc.md",
+   "title": "Tutorial: Variables (KYC)"
+  },
+  {
+   "file": "docs/guides/guides-tutorials-index.md",
+   "title": "messmass Tutorials \u2014 Learning Path"
+  },
+  {
+   "file": "docs/guides/guides-variable-management.md",
+   "title": "Variable Management Guide"
+  },
+  {
+   "file": "docs/index.md",
+   "title": "Documentation Index"
+  },
+  {
+   "file": "docs/landing-main-page-ui-refactor-plan.md",
+   "title": "Landing / Main Page UI Refactor Plan"
+  },
+  {
+   "file": "docs/landing-overhaul-plan.md",
+   "title": "Landing Page Visual + Content Overhaul \u2014 Implementation Plan"
+  },
+  {
+   "file": "docs/low-level-design.md",
+   "title": "{messmass} Low-Level Design"
+  },
+  {
+   "file": "docs/messmass-codex-brain-dump.md",
+   "title": "Brain Dump"
+  },
+  {
+   "file": "docs/migrations/migrations-layout-grammar-migration.md",
+   "title": "Layout Grammar Migration Tool"
+  },
+  {
+   "file": "docs/operations/AGENT-HANDOVER-2026-07-05.md",
+   "title": "Agent Handover \u2014 messmass issue delivery (2026-07-05)"
+  },
+  {
+   "file": "docs/operations/admin-ui-width-and-hero.md",
+   "title": "Admin UI: Width and Hero Usage"
+  },
+  {
+   "file": "docs/operations/analytics-chart-ux-benchmark-plan-2026-05-23.md",
+   "title": "Analytics Chart UX Benchmark Plan"
+  },
+  {
+   "file": "docs/operations/atlas-theme-injection-plan.md",
+   "title": "Atlas-Managed Theme Injection Plan (OPS-STYLE-01 Phase 6)"
+  },
+  {
+   "file": "docs/operations/board-migration-2026-07-03.md",
+   "title": "Board Migration Record \u2014 mvp-factory-control to messmass (2026-07-03, corrected 2026-07-04)"
+  },
+  {
+   "file": "docs/operations/design-system-remediation-spec-2026-05-22.md",
+   "title": "Design System Remediation Spec \u2014 2026-05-22"
+  },
+  {
+   "file": "docs/operations/ideabank-industry-benchmark-2026-05-10.md",
+   "title": "Industry Benchmark Ideabank \u2014 2026-05-10"
+  },
+  {
+   "file": "docs/operations/layout-grammar-editor-blocked-configs.md",
+   "title": "Layout Grammar \u2013 blocked configurations and editor messages (OPS-LAYOUT-01)"
+  },
+  {
+   "file": "docs/operations/messmass-fanmass-integration-delivery-plan-2026-06-25.md",
+   "title": "Messmass <> Fanmass Integration Delivery Plan"
+  },
+  {
+   "file": "docs/operations/messmass-mantine-implementation-plan-2026-05-23.md",
+   "title": "Messmass Mantine Implementation Plan"
+  },
+  {
+   "file": "docs/operations/operations-action-plan.md",
+   "title": "Operations Action Plan"
+  },
+  {
+   "file": "docs/operations/operations-agent-names.md",
+   "title": "AGENT_NAMES"
+  },
+  {
+   "file": "docs/operations/operations-delivery-focus.md",
+   "title": "Delivery Focus ({messmass})"
+  },
+  {
+   "file": "docs/operations/operations-delivery-roadmap-2026-07-05.md",
+   "title": "Delivery Roadmap ({messmass})"
+  },
+  {
+   "file": "docs/operations/operations-deployment-checklist.md",
+   "title": "Chart Alignment Fixes - Deployment Checklist"
+  },
+  {
+   "file": "docs/operations/operations-implementation-complete.md",
+   "title": "Implementation Complete"
+  },
+  {
+   "file": "docs/operations/operations-learnings.md",
+   "title": "{messmass} Development Learnings"
+  },
+  {
+   "file": "docs/operations/operations-release-notes.md",
+   "title": "{messmass} Release Notes"
+  },
+  {
+   "file": "docs/operations/operations-release-steps.md",
+   "title": "Release Steps (Every Deliverable Change)"
+  },
+  {
+   "file": "docs/operations/operations-roadmap.md",
+   "title": "Operations Roadmap"
+  },
+  {
+   "file": "docs/operations/ops-analytics-01-design.md",
+   "title": "OPS-ANALYTICS-01: Advanced Analytics & Insights \u2014 Design & Phase 1 Plan"
+  },
+  {
+   "file": "docs/operations/ops-google-sheets-deployment-checklist.md",
+   "title": "Google Sheets Partner Sync \u2013 Deployment & E2E Validation Checklist"
+  },
+  {
+   "file": "docs/operations/ops-warp.md",
+   "title": "WARP Guidance"
+  },
+  {
+   "file": "docs/operations/partner-report-monitoring.md",
+   "title": "Partner Report Monitoring"
+  },
+  {
+   "file": "docs/operations/report-variants-time-period-spec-2026-05-22.md",
+   "title": "Report Variants And Time-Period Selection Spec"
+  },
+  {
+   "file": "docs/operations/sec-02-code-injection-audit.md",
+   "title": "OPS-SEC-02: Code injection hardening \u2013 audit"
+  },
+  {
+   "file": "docs/operations/sec-03-operational-hardening.md",
+   "title": "OPS-SEC-03: Operational hardening"
+  },
+  {
+   "file": "docs/operations/style-system-phase-5-audit.md",
+   "title": "Style System Phase 5 \u2013 CSS Duplication Audit (OPS-STYLE-01)"
+  },
+  {
+   "file": "docs/operations/ui-refinement-implementation-spec-2026-05-11.md",
+   "title": "UI Refinement Implementation Spec ({messmass})"
+  },
+  {
+   "file": "docs/operations/variables-hygiene-ops-var-01.md",
+   "title": "Variables system hygiene (OPS-VAR-01)"
+  },
+  {
+   "file": "docs/plan-builder-mode-variable-inputs.md",
+   "title": "Plan: Builder Mode \u2014 Variable Inputs from Report Layout"
+  },
+  {
+   "file": "docs/release-notes-11.57.0.md",
+   "title": "Release Notes \u2014 v11.57.0"
+  },
+  {
+   "file": "docs/release-notes-11.58.0.md",
+   "title": "Release Notes \u2014 v11.58.0"
+  },
+  {
+   "file": "docs/release-notes-11.59.0.md",
+   "title": "Release Notes \u2014 v11.59.0"
+  },
+  {
+   "file": "docs/root-structure.md",
+   "title": "Root Structure"
+  },
+  {
+   "file": "docs/security/security-enhancements.md",
+   "title": "Security Enhancements"
+  },
+  {
+   "file": "docs/security/security-migration-guide.md",
+   "title": "Security Migration Guide"
+  },
+  {
+   "file": "docs/security/security-overview.md",
+   "title": "Security Overview"
+  },
+  {
+   "file": "docs/setup/setup-google-service-account-setup.md",
+   "title": "Google Service Account Setup - Quick Guide"
+  },
+  {
+   "file": "scripts/readme-partner-enrichment.md",
+   "title": "Partner SportsDB Bulk Enrichment Script"
+  },
+  {
+   "file": "tests/fixtures/layoutV2/readme.md",
+   "title": "LayoutV2 Contract Conformance Fixtures (X-LAYOUT-01)"
+  },
+  {
+   "file": "tests/fixtures/layoutV2/validation-checklist.md",
+   "title": "LayoutV2 Validation Checklist (X-LAYOUT-01)"
+  }
+ ]
+}

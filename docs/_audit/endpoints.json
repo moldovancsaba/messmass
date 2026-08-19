@@ -1,0 +1,2039 @@
+{
+ "_meta": {
+  "generated": "2026-08-19T16:52:58+00:00",
+  "repo": "messmass",
+  "head": "6d28c7f3",
+  "counts": {
+   "endpoints": 194,
+   "collections": 71,
+   "env": 41,
+   "outbound-hosts": 28,
+   "docs": 194
+  }
+ },
+ "items": [
+  {
+   "path": "/api/admin/auth",
+   "methods": [
+    "GET"
+   ],
+   "file": "app/api/admin/auth/route.ts",
+   "auth_markers": [
+    "getAdminUser"
+   ],
+   "no_auth_marker": false
+  },
+  {
+   "path": "/api/admin/clear-cache",
+   "methods": [
+    "POST"
+   ],
+   "file": "app/api/admin/clear-cache/route.ts",
+   "auth_markers": [
+    "getAdminUser"
+   ],
+   "no_auth_marker": false
+  },
+  {
+   "path": "/api/admin/clear-cookies",
+   "methods": [
+    "GET",
+    "POST"
+   ],
+   "file": "app/api/admin/clear-cookies/route.ts",
+   "auth_markers": [],
+   "no_auth_marker": true
+  },
+  {
+   "path": "/api/admin/contact-inquiries",
+   "methods": [
+    "GET"
+   ],
+   "file": "app/api/admin/contact-inquiries/route.ts",
+   "auth_markers": [
+    "getAdminUser"
+   ],
+   "no_auth_marker": false
+  },
+  {
+   "path": "/api/admin/email-selftest",
+   "methods": [
+    "GET"
+   ],
+   "file": "app/api/admin/email-selftest/route.ts",
+   "auth_markers": [],
+   "no_auth_marker": true
+  },
+  {
+   "path": "/api/admin/fanmass/commands",
+   "methods": [
+    "POST"
+   ],
+   "file": "app/api/admin/fanmass/commands/route.ts",
+   "auth_markers": [
+    "getAdminUser"
+   ],
+   "no_auth_marker": false
+  },
+  {
+   "path": "/api/admin/fanmass/events/[eventId]",
+   "methods": [
+    "GET",
+    "POST"
+   ],
+   "file": "app/api/admin/fanmass/events/[eventId]/route.ts",
+   "auth_markers": [
+    "getAdminUser"
+   ],
+   "no_auth_marker": false
+  },
+  {
+   "path": "/api/admin/fanmass/events",
+   "methods": [
+    "GET"
+   ],
+   "file": "app/api/admin/fanmass/events/route.ts",
+   "auth_markers": [
+    "getAdminUser"
+   ],
+   "no_auth_marker": false
+  },
+  {
+   "path": "/api/admin/fanmass/snapshot",
+   "methods": [
+    "GET"
+   ],
+   "file": "app/api/admin/fanmass/snapshot/route.ts",
+   "auth_markers": [
+    "getAdminUser"
+   ],
+   "no_auth_marker": false
+  },
+  {
+   "path": "/api/admin/filter-style",
+   "methods": [
+    "GET",
+    "POST"
+   ],
+   "file": "app/api/admin/filter-style/route.ts",
+   "auth_markers": [],
+   "no_auth_marker": true
+  },
+  {
+   "path": "/api/admin/fix-mojibake-text",
+   "methods": [
+    "GET"
+   ],
+   "file": "app/api/admin/fix-mojibake-text/route.ts",
+   "auth_markers": [
+    "getAdminUser"
+   ],
+   "no_auth_marker": false
+  },
+  {
+   "path": "/api/admin/hashtag-style",
+   "methods": [
+    "GET",
+    "POST"
+   ],
+   "file": "app/api/admin/hashtag-style/route.ts",
+   "auth_markers": [],
+   "no_auth_marker": true
+  },
+  {
+   "path": "/api/admin/landing-projects",
+   "methods": [
+    "GET"
+   ],
+   "file": "app/api/admin/landing-projects/route.ts",
+   "auth_markers": [
+    "getAdminUser"
+   ],
+   "no_auth_marker": false
+  },
+  {
+   "path": "/api/admin/landing-settings",
+   "methods": [
+    "GET",
+    "PUT"
+   ],
+   "file": "app/api/admin/landing-settings/route.ts",
+   "auth_markers": [
+    "getAdminUser"
+   ],
+   "no_auth_marker": false
+  },
+  {
+   "path": "/api/admin/landing-static-generate",
+   "methods": [
+    "POST"
+   ],
+   "file": "app/api/admin/landing-static-generate/route.ts",
+   "auth_markers": [
+    "getAdminUser"
+   ],
+   "no_auth_marker": false
+  },
+  {
+   "path": "/api/admin/local-users/[id]/api-access",
+   "methods": [
+    "PUT"
+   ],
+   "file": "app/api/admin/local-users/[id]/api-access/route.ts",
+   "auth_markers": [
+    "getAdminUser"
+   ],
+   "no_auth_marker": false
+  },
+  {
+   "path": "/api/admin/local-users/[id]",
+   "methods": [
+    "PUT",
+    "DELETE"
+   ],
+   "file": "app/api/admin/local-users/[id]/route.ts",
+   "auth_markers": [
+    "getAdminUser"
+   ],
+   "no_auth_marker": false
+  },
+  {
+   "path": "/api/admin/local-users/[id]/send-email",
+   "methods": [
+    "POST"
+   ],
+   "file": "app/api/admin/local-users/[id]/send-email/route.ts",
+   "auth_markers": [
+    "getAdminUser"
+   ],
+   "no_auth_marker": false
+  },
+  {
+   "path": "/api/admin/local-users",
+   "methods": [
+    "GET",
+    "POST"
+   ],
+   "file": "app/api/admin/local-users/route.ts",
+   "auth_markers": [
+    "getAdminUser"
+   ],
+   "no_auth_marker": false
+  },
+  {
+   "path": "/api/admin/login",
+   "methods": [
+    "POST",
+    "DELETE"
+   ],
+   "file": "app/api/admin/login/route.ts",
+   "auth_markers": [],
+   "no_auth_marker": true
+  },
+  {
+   "path": "/api/admin/organizations/[id]/members",
+   "methods": [
+    "GET",
+    "PUT"
+   ],
+   "file": "app/api/admin/organizations/[id]/members/route.ts",
+   "auth_markers": [
+    "getAdminUser"
+   ],
+   "no_auth_marker": false
+  },
+  {
+   "path": "/api/admin/organizations/[id]",
+   "methods": [
+    "GET",
+    "PUT",
+    "PATCH",
+    "DELETE"
+   ],
+   "file": "app/api/admin/organizations/[id]/route.ts",
+   "auth_markers": [
+    "getAdminUser"
+   ],
+   "no_auth_marker": false
+  },
+  {
+   "path": "/api/admin/organizations",
+   "methods": [
+    "GET",
+    "POST"
+   ],
+   "file": "app/api/admin/organizations/route.ts",
+   "auth_markers": [
+    "getAdminUser"
+   ],
+   "no_auth_marker": false
+  },
+  {
+   "path": "/api/admin/partners",
+   "methods": [
+    "GET"
+   ],
+   "file": "app/api/admin/partners/route.ts",
+   "auth_markers": [],
+   "no_auth_marker": true
+  },
+  {
+   "path": "/api/admin/permissions",
+   "methods": [
+    "GET",
+    "POST",
+    "DELETE"
+   ],
+   "file": "app/api/admin/permissions/route.ts",
+   "auth_markers": [],
+   "no_auth_marker": true
+  },
+  {
+   "path": "/api/admin/project-partners/auto-suggest",
+   "methods": [
+    "POST"
+   ],
+   "file": "app/api/admin/project-partners/auto-suggest/route.ts",
+   "auth_markers": [],
+   "no_auth_marker": true
+  },
+  {
+   "path": "/api/admin/project-partners",
+   "methods": [
+    "GET",
+    "PUT"
+   ],
+   "file": "app/api/admin/project-partners/route.ts",
+   "auth_markers": [
+    "getAdminUser"
+   ],
+   "no_auth_marker": false
+  },
+  {
+   "path": "/api/admin/projects/[id]",
+   "methods": [
+    "DELETE"
+   ],
+   "file": "app/api/admin/projects/[id]/route.ts",
+   "auth_markers": [],
+   "no_auth_marker": true
+  },
+  {
+   "path": "/api/admin/projects",
+   "methods": [
+    "GET",
+    "POST"
+   ],
+   "file": "app/api/admin/projects/route.ts",
+   "auth_markers": [],
+   "no_auth_marker": true
+  },
+  {
+   "path": "/api/admin/register",
+   "methods": [
+    "POST"
+   ],
+   "file": "app/api/admin/register/route.ts",
+   "auth_markers": [],
+   "no_auth_marker": true
+  },
+  {
+   "path": "/api/admin/sync-events-to-camera",
+   "methods": [
+    "GET"
+   ],
+   "file": "app/api/admin/sync-events-to-camera/route.ts",
+   "auth_markers": [
+    "getAdminUser"
+   ],
+   "no_auth_marker": false
+  },
+  {
+   "path": "/api/admin/sync-partners-to-camera",
+   "methods": [
+    "GET"
+   ],
+   "file": "app/api/admin/sync-partners-to-camera/route.ts",
+   "auth_markers": [
+    "getAdminUser"
+   ],
+   "no_auth_marker": false
+  },
+  {
+   "path": "/api/admin/ui-settings",
+   "methods": [
+    "GET",
+    "PUT"
+   ],
+   "file": "app/api/admin/ui-settings/route.ts",
+   "auth_markers": [],
+   "no_auth_marker": true
+  },
+  {
+   "path": "/api/admin/users/[id]/role",
+   "methods": [
+    "PUT"
+   ],
+   "file": "app/api/admin/users/[id]/role/route.ts",
+   "auth_markers": [
+    "getAdminUser"
+   ],
+   "no_auth_marker": false
+  },
+  {
+   "path": "/api/admin/users",
+   "methods": [
+    "GET",
+    "PUT"
+   ],
+   "file": "app/api/admin/users/route.ts",
+   "auth_markers": [],
+   "no_auth_marker": true
+  },
+  {
+   "path": "/api/analytics/aggregates/partners",
+   "methods": [
+    "GET"
+   ],
+   "file": "app/api/analytics/aggregates/partners/route.ts",
+   "auth_markers": [
+    "getAdminUser"
+   ],
+   "no_auth_marker": false
+  },
+  {
+   "path": "/api/analytics/aggregates",
+   "methods": [
+    "GET"
+   ],
+   "file": "app/api/analytics/aggregates/route.ts",
+   "auth_markers": [
+    "getAdminUser"
+   ],
+   "no_auth_marker": false
+  },
+  {
+   "path": "/api/analytics/ai/coverage",
+   "methods": [
+    "GET"
+   ],
+   "file": "app/api/analytics/ai/coverage/route.ts",
+   "auth_markers": [
+    "getAdminUser"
+   ],
+   "no_auth_marker": false
+  },
+  {
+   "path": "/api/analytics/ai/events/[eventId]/drive-sync",
+   "methods": [
+    "POST"
+   ],
+   "file": "app/api/analytics/ai/events/[eventId]/drive-sync/route.ts",
+   "auth_markers": [
+    "getAdminUser"
+   ],
+   "no_auth_marker": false
+  },
+  {
+   "path": "/api/analytics/ai/events/[eventId]/rescan",
+   "methods": [
+    "GET",
+    "POST"
+   ],
+   "file": "app/api/analytics/ai/events/[eventId]/rescan/route.ts",
+   "auth_markers": [
+    "getAdminUser"
+   ],
+   "no_auth_marker": false
+  },
+  {
+   "path": "/api/analytics/ai/events/[eventId]/summary",
+   "methods": [
+    "GET"
+   ],
+   "file": "app/api/analytics/ai/events/[eventId]/summary/route.ts",
+   "auth_markers": [
+    "getAdminUser"
+   ],
+   "no_auth_marker": false
+  },
+  {
+   "path": "/api/analytics/ai/events",
+   "methods": [
+    "GET"
+   ],
+   "file": "app/api/analytics/ai/events/route.ts",
+   "auth_markers": [
+    "getAdminUser"
+   ],
+   "no_auth_marker": false
+  },
+  {
+   "path": "/api/analytics/ai/variables",
+   "methods": [
+    "GET"
+   ],
+   "file": "app/api/analytics/ai/variables/route.ts",
+   "auth_markers": [
+    "getAdminUser"
+   ],
+   "no_auth_marker": false
+  },
+  {
+   "path": "/api/analytics/benchmarks",
+   "methods": [
+    "GET"
+   ],
+   "file": "app/api/analytics/benchmarks/route.ts",
+   "auth_markers": [],
+   "no_auth_marker": true
+  },
+  {
+   "path": "/api/analytics/compare/partners",
+   "methods": [
+    "GET"
+   ],
+   "file": "app/api/analytics/compare/partners/route.ts",
+   "auth_markers": [],
+   "no_auth_marker": true
+  },
+  {
+   "path": "/api/analytics/compare/periods",
+   "methods": [
+    "GET"
+   ],
+   "file": "app/api/analytics/compare/periods/route.ts",
+   "auth_markers": [],
+   "no_auth_marker": true
+  },
+  {
+   "path": "/api/analytics/compare",
+   "methods": [
+    "GET"
+   ],
+   "file": "app/api/analytics/compare/route.ts",
+   "auth_markers": [],
+   "no_auth_marker": true
+  },
+  {
+   "path": "/api/analytics/event/[projectId]",
+   "methods": [
+    "GET"
+   ],
+   "file": "app/api/analytics/event/[projectId]/route.ts",
+   "auth_markers": [],
+   "no_auth_marker": true
+  },
+  {
+   "path": "/api/analytics/executive/insights",
+   "methods": [
+    "GET"
+   ],
+   "file": "app/api/analytics/executive/insights/route.ts",
+   "auth_markers": [],
+   "no_auth_marker": true
+  },
+  {
+   "path": "/api/analytics/executive/metrics",
+   "methods": [
+    "GET"
+   ],
+   "file": "app/api/analytics/executive/metrics/route.ts",
+   "auth_markers": [],
+   "no_auth_marker": true
+  },
+  {
+   "path": "/api/analytics/executive/top-events",
+   "methods": [
+    "GET"
+   ],
+   "file": "app/api/analytics/executive/top-events/route.ts",
+   "auth_markers": [],
+   "no_auth_marker": true
+  },
+  {
+   "path": "/api/analytics/insights/[projectId]",
+   "methods": [
+    "GET"
+   ],
+   "file": "app/api/analytics/insights/[projectId]/route.ts",
+   "auth_markers": [],
+   "no_auth_marker": true
+  },
+  {
+   "path": "/api/analytics/insights/organizations/[orgId]",
+   "methods": [
+    "GET"
+   ],
+   "file": "app/api/analytics/insights/organizations/[orgId]/route.ts",
+   "auth_markers": [
+    "getAdminUser"
+   ],
+   "no_auth_marker": false
+  },
+  {
+   "path": "/api/analytics/insights/partners/[partnerId]",
+   "methods": [
+    "GET"
+   ],
+   "file": "app/api/analytics/insights/partners/[partnerId]/route.ts",
+   "auth_markers": [
+    "getAdminUser"
+   ],
+   "no_auth_marker": false
+  },
+  {
+   "path": "/api/analytics/insights",
+   "methods": [
+    "GET"
+   ],
+   "file": "app/api/analytics/insights/route.ts",
+   "auth_markers": [
+    "getAdminUser"
+   ],
+   "no_auth_marker": false
+  },
+  {
+   "path": "/api/analytics/insights/summary",
+   "methods": [
+    "GET"
+   ],
+   "file": "app/api/analytics/insights/summary/route.ts",
+   "auth_markers": [
+    "getAdminUser"
+   ],
+   "no_auth_marker": false
+  },
+  {
+   "path": "/api/analytics/partner/[partnerId]",
+   "methods": [
+    "GET"
+   ],
+   "file": "app/api/analytics/partner/[partnerId]/route.ts",
+   "auth_markers": [],
+   "no_auth_marker": true
+  },
+  {
+   "path": "/api/analytics/sponsorship-hub",
+   "methods": [
+    "GET"
+   ],
+   "file": "app/api/analytics/sponsorship-hub/route.ts",
+   "auth_markers": [
+    "getAdminUser"
+   ],
+   "no_auth_marker": false
+  },
+  {
+   "path": "/api/analytics/trends",
+   "methods": [
+    "GET"
+   ],
+   "file": "app/api/analytics/trends/route.ts",
+   "auth_markers": [],
+   "no_auth_marker": true
+  },
+  {
+   "path": "/api/api-football/enrich-partners",
+   "methods": [
+    "GET",
+    "POST"
+   ],
+   "file": "app/api/api-football/enrich-partners/route.ts",
+   "auth_markers": [
+    "getAdminUser"
+   ],
+   "no_auth_marker": false
+  },
+  {
+   "path": "/api/auth/check",
+   "methods": [
+    "GET"
+   ],
+   "file": "app/api/auth/check/route.ts",
+   "auth_markers": [
+    "getAdminUser"
+   ],
+   "no_auth_marker": false
+  },
+  {
+   "path": "/api/auth/sso/callback",
+   "methods": [
+    "GET"
+   ],
+   "file": "app/api/auth/sso/callback/route.ts",
+   "auth_markers": [],
+   "no_auth_marker": true
+  },
+  {
+   "path": "/api/auth/sso/config",
+   "methods": [
+    "GET"
+   ],
+   "file": "app/api/auth/sso/config/route.ts",
+   "auth_markers": [],
+   "no_auth_marker": true
+  },
+  {
+   "path": "/api/auth/sso/login",
+   "methods": [
+    "GET"
+   ],
+   "file": "app/api/auth/sso/login/route.ts",
+   "auth_markers": [],
+   "no_auth_marker": true
+  },
+  {
+   "path": "/api/auto-generate-chart-block",
+   "methods": [
+    "POST"
+   ],
+   "file": "app/api/auto-generate-chart-block/route.ts",
+   "auth_markers": [],
+   "no_auth_marker": true
+  },
+  {
+   "path": "/api/available-fonts",
+   "methods": [
+    "GET",
+    "POST",
+    "PUT",
+    "DELETE"
+   ],
+   "file": "app/api/available-fonts/route.ts",
+   "auth_markers": [],
+   "no_auth_marker": true
+  },
+  {
+   "path": "/api/bitly/analytics/[linkId]",
+   "methods": [
+    "GET"
+   ],
+   "file": "app/api/bitly/analytics/[linkId]/route.ts",
+   "auth_markers": [
+    "getAdminUser"
+   ],
+   "no_auth_marker": false
+  },
+  {
+   "path": "/api/bitly/associations",
+   "methods": [
+    "DELETE"
+   ],
+   "file": "app/api/bitly/associations/route.ts",
+   "auth_markers": [
+    "getAdminUser"
+   ],
+   "no_auth_marker": false
+  },
+  {
+   "path": "/api/bitly/links/[linkId]",
+   "methods": [
+    "PUT",
+    "DELETE"
+   ],
+   "file": "app/api/bitly/links/[linkId]/route.ts",
+   "auth_markers": [
+    "getAdminUser"
+   ],
+   "no_auth_marker": false
+  },
+  {
+   "path": "/api/bitly/links",
+   "methods": [
+    "GET",
+    "POST"
+   ],
+   "file": "app/api/bitly/links/route.ts",
+   "auth_markers": [
+    "getAdminUser"
+   ],
+   "no_auth_marker": false
+  },
+  {
+   "path": "/api/bitly/partners/associate",
+   "methods": [
+    "POST",
+    "DELETE"
+   ],
+   "file": "app/api/bitly/partners/associate/route.ts",
+   "auth_markers": [
+    "getAdminUser"
+   ],
+   "no_auth_marker": false
+  },
+  {
+   "path": "/api/bitly/project-metrics/[projectId]",
+   "methods": [
+    "GET"
+   ],
+   "file": "app/api/bitly/project-metrics/[projectId]/route.ts",
+   "auth_markers": [],
+   "no_auth_marker": true
+  },
+  {
+   "path": "/api/bitly/pull",
+   "methods": [
+    "POST"
+   ],
+   "file": "app/api/bitly/pull/route.ts",
+   "auth_markers": [
+    "getAdminUser"
+   ],
+   "no_auth_marker": false
+  },
+  {
+   "path": "/api/bitly/recalculate",
+   "methods": [
+    "GET",
+    "POST"
+   ],
+   "file": "app/api/bitly/recalculate/route.ts",
+   "auth_markers": [],
+   "no_auth_marker": true
+  },
+  {
+   "path": "/api/bitly/sync",
+   "methods": [
+    "POST"
+   ],
+   "file": "app/api/bitly/sync/route.ts",
+   "auth_markers": [
+    "getAdminUser"
+   ],
+   "no_auth_marker": false
+  },
+  {
+   "path": "/api/chart-config/public",
+   "methods": [
+    "GET"
+   ],
+   "file": "app/api/chart-config/public/route.ts",
+   "auth_markers": [],
+   "no_auth_marker": true
+  },
+  {
+   "path": "/api/chart-config",
+   "methods": [
+    "GET",
+    "POST",
+    "PUT",
+    "DELETE"
+   ],
+   "file": "app/api/chart-config/route.ts",
+   "auth_markers": [
+    "getAdminUser"
+   ],
+   "no_auth_marker": false
+  },
+  {
+   "path": "/api/chart-configs",
+   "methods": [
+    "GET"
+   ],
+   "file": "app/api/chart-configs/route.ts",
+   "auth_markers": [],
+   "no_auth_marker": true
+  },
+  {
+   "path": "/api/chart-formatting-defaults",
+   "methods": [
+    "GET",
+    "PUT"
+   ],
+   "file": "app/api/chart-formatting-defaults/route.ts",
+   "auth_markers": [],
+   "no_auth_marker": true
+  },
+  {
+   "path": "/api/charts",
+   "methods": [
+    "GET",
+    "POST",
+    "DELETE"
+   ],
+   "file": "app/api/charts/route.ts",
+   "auth_markers": [],
+   "no_auth_marker": true
+  },
+  {
+   "path": "/api/cities",
+   "methods": [
+    "GET"
+   ],
+   "file": "app/api/cities/route.ts",
+   "auth_markers": [],
+   "no_auth_marker": true
+  },
+  {
+   "path": "/api/clicker-sets",
+   "methods": [
+    "GET",
+    "POST",
+    "PUT",
+    "DELETE"
+   ],
+   "file": "app/api/clicker-sets/route.ts",
+   "auth_markers": [],
+   "no_auth_marker": true
+  },
+  {
+   "path": "/api/client-error",
+   "methods": [
+    "POST"
+   ],
+   "file": "app/api/client-error/route.ts",
+   "auth_markers": [],
+   "no_auth_marker": true
+  },
+  {
+   "path": "/api/contact",
+   "methods": [
+    "POST"
+   ],
+   "file": "app/api/contact/route.ts",
+   "auth_markers": [],
+   "no_auth_marker": true
+  },
+  {
+   "path": "/api/content-assets",
+   "methods": [
+    "GET",
+    "POST",
+    "PUT",
+    "DELETE"
+   ],
+   "file": "app/api/content-assets/route.ts",
+   "auth_markers": [
+    "getAdminUser"
+   ],
+   "no_auth_marker": false
+  },
+  {
+   "path": "/api/content-assets/usage",
+   "methods": [
+    "GET"
+   ],
+   "file": "app/api/content-assets/usage/route.ts",
+   "auth_markers": [],
+   "no_auth_marker": true
+  },
+  {
+   "path": "/api/countries/[code]",
+   "methods": [
+    "GET"
+   ],
+   "file": "app/api/countries/[code]/route.ts",
+   "auth_markers": [],
+   "no_auth_marker": true
+  },
+  {
+   "path": "/api/countries",
+   "methods": [
+    "GET"
+   ],
+   "file": "app/api/countries/route.ts",
+   "auth_markers": [],
+   "no_auth_marker": true
+  },
+  {
+   "path": "/api/cron/analytics-aggregation",
+   "methods": [
+    "GET",
+    "POST"
+   ],
+   "file": "app/api/cron/analytics-aggregation/route.ts",
+   "auth_markers": [
+    "getAdminUser"
+   ],
+   "no_auth_marker": false
+  },
+  {
+   "path": "/api/cron/bitly-refresh",
+   "methods": [
+    "GET",
+    "POST"
+   ],
+   "file": "app/api/cron/bitly-refresh/route.ts",
+   "auth_markers": [],
+   "no_auth_marker": true
+  },
+  {
+   "path": "/api/cron/google-sheets-sync",
+   "methods": [
+    "GET"
+   ],
+   "file": "app/api/cron/google-sheets-sync/route.ts",
+   "auth_markers": [],
+   "no_auth_marker": true
+  },
+  {
+   "path": "/api/csrf-token",
+   "methods": [
+    "GET"
+   ],
+   "file": "app/api/csrf-token/route.ts",
+   "auth_markers": [],
+   "no_auth_marker": true
+  },
+  {
+   "path": "/api/data-blocks",
+   "methods": [
+    "GET",
+    "POST",
+    "PUT",
+    "DELETE"
+   ],
+   "file": "app/api/data-blocks/route.ts",
+   "auth_markers": [],
+   "no_auth_marker": true
+  },
+  {
+   "path": "/api/debug/categorized-hashtags",
+   "methods": [
+    "GET"
+   ],
+   "file": "app/api/debug/categorized-hashtags/route.ts",
+   "auth_markers": [],
+   "no_auth_marker": true
+  },
+  {
+   "path": "/api/debug/notifications",
+   "methods": [
+    "GET"
+   ],
+   "file": "app/api/debug/notifications/route.ts",
+   "auth_markers": [
+    "getAdminUser"
+   ],
+   "no_auth_marker": false
+  },
+  {
+   "path": "/api/debug/overview-block",
+   "methods": [
+    "GET"
+   ],
+   "file": "app/api/debug/overview-block/route.ts",
+   "auth_markers": [],
+   "no_auth_marker": true
+  },
+  {
+   "path": "/api/drive-folders/[linkId]",
+   "methods": [
+    "PATCH",
+    "DELETE"
+   ],
+   "file": "app/api/drive-folders/[linkId]/route.ts",
+   "auth_markers": [
+    "getAdminUser"
+   ],
+   "no_auth_marker": false
+  },
+  {
+   "path": "/api/drive-folders",
+   "methods": [
+    "GET",
+    "POST"
+   ],
+   "file": "app/api/drive-folders/route.ts",
+   "auth_markers": [
+    "getAdminUser"
+   ],
+   "no_auth_marker": false
+  },
+  {
+   "path": "/api/filter-slug",
+   "methods": [
+    "POST"
+   ],
+   "file": "app/api/filter-slug/route.ts",
+   "auth_markers": [],
+   "no_auth_marker": true
+  },
+  {
+   "path": "/api/football-data/fixtures",
+   "methods": [
+    "GET"
+   ],
+   "file": "app/api/football-data/fixtures/route.ts",
+   "auth_markers": [
+    "getAdminUser"
+   ],
+   "no_auth_marker": false
+  },
+  {
+   "path": "/api/football-data/sync",
+   "methods": [
+    "POST"
+   ],
+   "file": "app/api/football-data/sync/route.ts",
+   "auth_markers": [
+    "getAdminUser"
+   ],
+   "no_auth_marker": false
+  },
+  {
+   "path": "/api/google-sheets/template",
+   "methods": [
+    "GET"
+   ],
+   "file": "app/api/google-sheets/template/route.ts",
+   "auth_markers": [],
+   "no_auth_marker": true
+  },
+  {
+   "path": "/api/grid-settings",
+   "methods": [
+    "GET",
+    "PUT"
+   ],
+   "file": "app/api/grid-settings/route.ts",
+   "auth_markers": [],
+   "no_auth_marker": true
+  },
+  {
+   "path": "/api/hashtag-categories",
+   "methods": [
+    "GET",
+    "POST",
+    "PUT",
+    "DELETE"
+   ],
+   "file": "app/api/hashtag-categories/route.ts",
+   "auth_markers": [],
+   "no_auth_marker": true
+  },
+  {
+   "path": "/api/hashtag-colors",
+   "methods": [
+    "GET",
+    "POST",
+    "PUT",
+    "DELETE"
+   ],
+   "file": "app/api/hashtag-colors/route.ts",
+   "auth_markers": [],
+   "no_auth_marker": true
+  },
+  {
+   "path": "/api/hashtags/[hashtag]",
+   "methods": [
+    "GET"
+   ],
+   "file": "app/api/hashtags/[hashtag]/route.ts",
+   "auth_markers": [],
+   "no_auth_marker": true
+  },
+  {
+   "path": "/api/hashtags/filter",
+   "methods": [
+    "GET",
+    "POST"
+   ],
+   "file": "app/api/hashtags/filter/route.ts",
+   "auth_markers": [],
+   "no_auth_marker": true
+  },
+  {
+   "path": "/api/hashtags/filter-by-slug/[slug]",
+   "methods": [
+    "GET"
+   ],
+   "file": "app/api/hashtags/filter-by-slug/[slug]/route.ts",
+   "auth_markers": [
+    "requirePageAccess"
+   ],
+   "no_auth_marker": false
+  },
+  {
+   "path": "/api/hashtags",
+   "methods": [
+    "GET",
+    "POST",
+    "DELETE"
+   ],
+   "file": "app/api/hashtags/route.ts",
+   "auth_markers": [],
+   "no_auth_marker": true
+  },
+  {
+   "path": "/api/hashtags/slugs",
+   "methods": [
+    "GET"
+   ],
+   "file": "app/api/hashtags/slugs/route.ts",
+   "auth_markers": [],
+   "no_auth_marker": true
+  },
+  {
+   "path": "/api/images",
+   "methods": [
+    "GET"
+   ],
+   "file": "app/api/images/route.ts",
+   "auth_markers": [],
+   "no_auth_marker": true
+  },
+  {
+   "path": "/api/integrations/camera/link-partners",
+   "methods": [
+    "POST"
+   ],
+   "file": "app/api/integrations/camera/link-partners/route.ts",
+   "auth_markers": [
+    "requireFanmassIntegrationAuth"
+   ],
+   "no_auth_marker": false
+  },
+  {
+   "path": "/api/integrations/camera/partners",
+   "methods": [
+    "POST"
+   ],
+   "file": "app/api/integrations/camera/partners/route.ts",
+   "auth_markers": [],
+   "no_auth_marker": true
+  },
+  {
+   "path": "/api/integrations/camera/provision-missing",
+   "methods": [
+    "POST"
+   ],
+   "file": "app/api/integrations/camera/provision-missing/route.ts",
+   "auth_markers": [
+    "requireFanmassIntegrationAuth"
+   ],
+   "no_auth_marker": false
+  },
+  {
+   "path": "/api/integrations/camera/sso-session",
+   "methods": [
+    "POST"
+   ],
+   "file": "app/api/integrations/camera/sso-session/route.ts",
+   "auth_markers": [],
+   "no_auth_marker": true
+  },
+  {
+   "path": "/api/integrations/fanmass/callbacks",
+   "methods": [
+    "POST"
+   ],
+   "file": "app/api/integrations/fanmass/callbacks/route.ts",
+   "auth_markers": [
+    "requireFanmassIntegrationAuth"
+   ],
+   "no_auth_marker": false
+  },
+  {
+   "path": "/api/integrations/fanmass/commands/[commandId]",
+   "methods": [
+    "DELETE"
+   ],
+   "file": "app/api/integrations/fanmass/commands/[commandId]/route.ts",
+   "auth_markers": [
+    "requireFanmassIntegrationAuth"
+   ],
+   "no_auth_marker": false
+  },
+  {
+   "path": "/api/integrations/fanmass/commands",
+   "methods": [
+    "GET"
+   ],
+   "file": "app/api/integrations/fanmass/commands/route.ts",
+   "auth_markers": [
+    "requireFanmassIntegrationAuth"
+   ],
+   "no_auth_marker": false
+  },
+  {
+   "path": "/api/integrations/fanmass/dashboard-snapshot",
+   "methods": [
+    "POST"
+   ],
+   "file": "app/api/integrations/fanmass/dashboard-snapshot/route.ts",
+   "auth_markers": [
+    "requireFanmassIntegrationAuth"
+   ],
+   "no_auth_marker": false
+  },
+  {
+   "path": "/api/integrations/fanmass/drive-folders/pending-sync",
+   "methods": [
+    "GET"
+   ],
+   "file": "app/api/integrations/fanmass/drive-folders/pending-sync/route.ts",
+   "auth_markers": [
+    "requireFanmassIntegrationAuth"
+   ],
+   "no_auth_marker": false
+  },
+  {
+   "path": "/api/integrations/fanmass/drive-folders",
+   "methods": [
+    "GET"
+   ],
+   "file": "app/api/integrations/fanmass/drive-folders/route.ts",
+   "auth_markers": [
+    "requireFanmassIntegrationAuth"
+   ],
+   "no_auth_marker": false
+  },
+  {
+   "path": "/api/integrations/fanmass/events/[eventId]/analysis-summary",
+   "methods": [
+    "POST"
+   ],
+   "file": "app/api/integrations/fanmass/events/[eventId]/analysis-summary/route.ts",
+   "auth_markers": [
+    "requireFanmassIntegrationAuth"
+   ],
+   "no_auth_marker": false
+  },
+  {
+   "path": "/api/integrations/fanmass/events/[eventId]/context",
+   "methods": [
+    "GET"
+   ],
+   "file": "app/api/integrations/fanmass/events/[eventId]/context/route.ts",
+   "auth_markers": [
+    "requireFanmassIntegrationAuth"
+   ],
+   "no_auth_marker": false
+  },
+  {
+   "path": "/api/integrations/fanmass/events/[eventId]/drive-folders/status",
+   "methods": [
+    "POST"
+   ],
+   "file": "app/api/integrations/fanmass/events/[eventId]/drive-folders/status/route.ts",
+   "auth_markers": [
+    "requireFanmassIntegrationAuth"
+   ],
+   "no_auth_marker": false
+  },
+  {
+   "path": "/api/integrations/fanmass/events/[eventId]/link",
+   "methods": [
+    "GET",
+    "POST"
+   ],
+   "file": "app/api/integrations/fanmass/events/[eventId]/link/route.ts",
+   "auth_markers": [
+    "requireFanmassIntegrationAuth"
+   ],
+   "no_auth_marker": false
+  },
+  {
+   "path": "/api/integrations/fanmass/events/[eventId]/stats",
+   "methods": [
+    "POST"
+   ],
+   "file": "app/api/integrations/fanmass/events/[eventId]/stats/route.ts",
+   "auth_markers": [
+    "requireFanmassIntegrationAuth"
+   ],
+   "no_auth_marker": false
+  },
+  {
+   "path": "/api/integrations/fanmass/events/[eventId]/sync",
+   "methods": [
+    "GET",
+    "POST"
+   ],
+   "file": "app/api/integrations/fanmass/events/[eventId]/sync/route.ts",
+   "auth_markers": [
+    "requireFanmassIntegrationAuth"
+   ],
+   "no_auth_marker": false
+  },
+  {
+   "path": "/api/integrations/fanmass/events",
+   "methods": [
+    "POST"
+   ],
+   "file": "app/api/integrations/fanmass/events/route.ts",
+   "auth_markers": [
+    "requireFanmassIntegrationAuth"
+   ],
+   "no_auth_marker": false
+  },
+  {
+   "path": "/api/integrations/fanmass/partners/[partnerId]/events",
+   "methods": [
+    "GET"
+   ],
+   "file": "app/api/integrations/fanmass/partners/[partnerId]/events/route.ts",
+   "auth_markers": [
+    "requireFanmassIntegrationAuth"
+   ],
+   "no_auth_marker": false
+  },
+  {
+   "path": "/api/integrations/fanmass/partners",
+   "methods": [
+    "GET",
+    "POST"
+   ],
+   "file": "app/api/integrations/fanmass/partners/route.ts",
+   "auth_markers": [
+    "requireFanmassIntegrationAuth"
+   ],
+   "no_auth_marker": false
+  },
+  {
+   "path": "/api/integrations/fanmass/rescan-requests/[eventId]",
+   "methods": [
+    "DELETE"
+   ],
+   "file": "app/api/integrations/fanmass/rescan-requests/[eventId]/route.ts",
+   "auth_markers": [
+    "requireFanmassIntegrationAuth"
+   ],
+   "no_auth_marker": false
+  },
+  {
+   "path": "/api/integrations/fanmass/rescan-requests",
+   "methods": [
+    "GET"
+   ],
+   "file": "app/api/integrations/fanmass/rescan-requests/route.ts",
+   "auth_markers": [
+    "requireFanmassIntegrationAuth"
+   ],
+   "no_auth_marker": false
+  },
+  {
+   "path": "/api/integrations/fanmass/variables",
+   "methods": [
+    "GET",
+    "POST"
+   ],
+   "file": "app/api/integrations/fanmass/variables/route.ts",
+   "auth_markers": [
+    "requireFanmassIntegrationAuth"
+   ],
+   "no_auth_marker": false
+  },
+  {
+   "path": "/api/landing-report",
+   "methods": [
+    "GET"
+   ],
+   "file": "app/api/landing-report/route.ts",
+   "auth_markers": [],
+   "no_auth_marker": true
+  },
+  {
+   "path": "/api/landing-static",
+   "methods": [
+    "GET"
+   ],
+   "file": "app/api/landing-static/route.ts",
+   "auth_markers": [],
+   "no_auth_marker": true
+  },
+  {
+   "path": "/api/me",
+   "methods": [
+    "GET"
+   ],
+   "file": "app/api/me/route.ts",
+   "auth_markers": [],
+   "no_auth_marker": true
+  },
+  {
+   "path": "/api/notifications/mark-read",
+   "methods": [
+    "PUT"
+   ],
+   "file": "app/api/notifications/mark-read/route.ts",
+   "auth_markers": [
+    "getAdminUser"
+   ],
+   "no_auth_marker": false
+  },
+  {
+   "path": "/api/notifications",
+   "methods": [
+    "GET"
+   ],
+   "file": "app/api/notifications/route.ts",
+   "auth_markers": [
+    "getAdminUser"
+   ],
+   "no_auth_marker": false
+  },
+  {
+   "path": "/api/organizations/edit/[id]",
+   "methods": [
+    "GET",
+    "PUT"
+   ],
+   "file": "app/api/organizations/edit/[id]/route.ts",
+   "auth_markers": [],
+   "no_auth_marker": true
+  },
+  {
+   "path": "/api/organizations/report/[id]/activities",
+   "methods": [
+    "GET"
+   ],
+   "file": "app/api/organizations/report/[id]/activities/route.ts",
+   "auth_markers": [],
+   "no_auth_marker": true
+  },
+  {
+   "path": "/api/organizations/report/[id]",
+   "methods": [
+    "GET"
+   ],
+   "file": "app/api/organizations/report/[id]/route.ts",
+   "auth_markers": [],
+   "no_auth_marker": true
+  },
+  {
+   "path": "/api/page-passwords",
+   "methods": [
+    "POST",
+    "PUT"
+   ],
+   "file": "app/api/page-passwords/route.ts",
+   "auth_markers": [
+    "getAdminUser"
+   ],
+   "no_auth_marker": false
+  },
+  {
+   "path": "/api/partners/[id]/bitly-kyc",
+   "methods": [
+    "GET"
+   ],
+   "file": "app/api/partners/[id]/bitly-kyc/route.ts",
+   "auth_markers": [
+    "getAdminUser"
+   ],
+   "no_auth_marker": false
+  },
+  {
+   "path": "/api/partners/[id]/events",
+   "methods": [
+    "GET"
+   ],
+   "file": "app/api/partners/[id]/events/route.ts",
+   "auth_markers": [],
+   "no_auth_marker": true
+  },
+  {
+   "path": "/api/partners/[id]/google-sheet/connect",
+   "methods": [
+    "POST"
+   ],
+   "file": "app/api/partners/[id]/google-sheet/connect/route.ts",
+   "auth_markers": [],
+   "no_auth_marker": true
+  },
+  {
+   "path": "/api/partners/[id]/google-sheet/disconnect",
+   "methods": [
+    "DELETE"
+   ],
+   "file": "app/api/partners/[id]/google-sheet/disconnect/route.ts",
+   "auth_markers": [],
+   "no_auth_marker": true
+  },
+  {
+   "path": "/api/partners/[id]/google-sheet/provision",
+   "methods": [
+    "POST"
+   ],
+   "file": "app/api/partners/[id]/google-sheet/provision/route.ts",
+   "auth_markers": [],
+   "no_auth_marker": true
+  },
+  {
+   "path": "/api/partners/[id]/google-sheet/pull",
+   "methods": [
+    "POST"
+   ],
+   "file": "app/api/partners/[id]/google-sheet/pull/route.ts",
+   "auth_markers": [],
+   "no_auth_marker": true
+  },
+  {
+   "path": "/api/partners/[id]/google-sheet/push",
+   "methods": [
+    "POST"
+   ],
+   "file": "app/api/partners/[id]/google-sheet/push/route.ts",
+   "auth_markers": [],
+   "no_auth_marker": true
+  },
+  {
+   "path": "/api/partners/[id]/google-sheet/rename",
+   "methods": [
+    "POST"
+   ],
+   "file": "app/api/partners/[id]/google-sheet/rename/route.ts",
+   "auth_markers": [],
+   "no_auth_marker": true
+  },
+  {
+   "path": "/api/partners/[id]/google-sheet/setup",
+   "methods": [
+    "POST"
+   ],
+   "file": "app/api/partners/[id]/google-sheet/setup/route.ts",
+   "auth_markers": [],
+   "no_auth_marker": true
+  },
+  {
+   "path": "/api/partners/[id]/google-sheet/status",
+   "methods": [
+    "GET"
+   ],
+   "file": "app/api/partners/[id]/google-sheet/status/route.ts",
+   "auth_markers": [],
+   "no_auth_marker": true
+  },
+  {
+   "path": "/api/partners/edit/[slug]",
+   "methods": [
+    "GET",
+    "PUT"
+   ],
+   "file": "app/api/partners/edit/[slug]/route.ts",
+   "auth_markers": [],
+   "no_auth_marker": true
+  },
+  {
+   "path": "/api/partners/link-football-data",
+   "methods": [
+    "POST"
+   ],
+   "file": "app/api/partners/link-football-data/route.ts",
+   "auth_markers": [
+    "getAdminUser"
+   ],
+   "no_auth_marker": false
+  },
+  {
+   "path": "/api/partners/report/[slug]",
+   "methods": [
+    "GET"
+   ],
+   "file": "app/api/partners/report/[slug]/route.ts",
+   "auth_markers": [],
+   "no_auth_marker": true
+  },
+  {
+   "path": "/api/partners",
+   "methods": [
+    "GET",
+    "POST",
+    "PUT",
+    "DELETE"
+   ],
+   "file": "app/api/partners/route.ts",
+   "auth_markers": [],
+   "no_auth_marker": true
+  },
+  {
+   "path": "/api/partners/upload-logo",
+   "methods": [
+    "POST"
+   ],
+   "file": "app/api/partners/upload-logo/route.ts",
+   "auth_markers": [],
+   "no_auth_marker": true
+  },
+  {
+   "path": "/api/projects/[id]",
+   "methods": [
+    "GET",
+    "PUT",
+    "DELETE"
+   ],
+   "file": "app/api/projects/[id]/route.ts",
+   "auth_markers": [],
+   "no_auth_marker": true
+  },
+  {
+   "path": "/api/projects/edit/[slug]",
+   "methods": [
+    "GET"
+   ],
+   "file": "app/api/projects/edit/[slug]/route.ts",
+   "auth_markers": [
+    "requirePageAccess"
+   ],
+   "no_auth_marker": false
+  },
+  {
+   "path": "/api/projects",
+   "methods": [
+    "GET",
+    "POST",
+    "PUT",
+    "DELETE"
+   ],
+   "file": "app/api/projects/route.ts",
+   "auth_markers": [],
+   "no_auth_marker": true
+  },
+  {
+   "path": "/api/projects/stats/[slug]",
+   "methods": [
+    "GET"
+   ],
+   "file": "app/api/projects/stats/[slug]/route.ts",
+   "auth_markers": [
+    "requirePageAccess"
+   ],
+   "no_auth_marker": false
+  },
+  {
+   "path": "/api/public/events/[id]",
+   "methods": [
+    "GET",
+    "OPTIONS"
+   ],
+   "file": "app/api/public/events/[id]/route.ts",
+   "auth_markers": [],
+   "no_auth_marker": true
+  },
+  {
+   "path": "/api/public/partners/[id]/events",
+   "methods": [
+    "GET",
+    "OPTIONS"
+   ],
+   "file": "app/api/public/partners/[id]/events/route.ts",
+   "auth_markers": [],
+   "no_auth_marker": true
+  },
+  {
+   "path": "/api/public/partners/[id]",
+   "methods": [
+    "GET",
+    "OPTIONS"
+   ],
+   "file": "app/api/public/partners/[id]/route.ts",
+   "auth_markers": [],
+   "no_auth_marker": true
+  },
+  {
+   "path": "/api/public/partners",
+   "methods": [
+    "GET",
+    "OPTIONS"
+   ],
+   "file": "app/api/public/partners/route.ts",
+   "auth_markers": [],
+   "no_auth_marker": true
+  },
+  {
+   "path": "/api/report-config/[identifier]",
+   "methods": [
+    "GET"
+   ],
+   "file": "app/api/report-config/[identifier]/route.ts",
+   "auth_markers": [],
+   "no_auth_marker": true
+  },
+  {
+   "path": "/api/report-styles/[id]",
+   "methods": [
+    "GET"
+   ],
+   "file": "app/api/report-styles/[id]/route.ts",
+   "auth_markers": [],
+   "no_auth_marker": true
+  },
+  {
+   "path": "/api/report-styles",
+   "methods": [
+    "GET",
+    "POST",
+    "PUT",
+    "DELETE"
+   ],
+   "file": "app/api/report-styles/route.ts",
+   "auth_markers": [],
+   "no_auth_marker": true
+  },
+  {
+   "path": "/api/report-templates/assign",
+   "methods": [
+    "POST",
+    "DELETE"
+   ],
+   "file": "app/api/report-templates/assign/route.ts",
+   "auth_markers": [
+    "getAdminUser"
+   ],
+   "no_auth_marker": false
+  },
+  {
+   "path": "/api/report-templates",
+   "methods": [
+    "GET",
+    "POST",
+    "PUT",
+    "DELETE"
+   ],
+   "file": "app/api/report-templates/route.ts",
+   "auth_markers": [
+    "getAdminUser"
+   ],
+   "no_auth_marker": false
+  },
+  {
+   "path": "/api/report-variants/[id]",
+   "methods": [
+    "GET",
+    "PUT"
+   ],
+   "file": "app/api/report-variants/[id]/route.ts",
+   "auth_markers": [
+    "getAdminUser"
+   ],
+   "no_auth_marker": false
+  },
+  {
+   "path": "/api/report-variants",
+   "methods": [
+    "GET",
+    "POST"
+   ],
+   "file": "app/api/report-variants/route.ts",
+   "auth_markers": [
+    "getAdminUser"
+   ],
+   "no_auth_marker": false
+  },
+  {
+   "path": "/api/reports/resolve",
+   "methods": [
+    "GET"
+   ],
+   "file": "app/api/reports/resolve/route.ts",
+   "auth_markers": [],
+   "no_auth_marker": true
+  },
+  {
+   "path": "/api/sports-db/fixtures/draft",
+   "methods": [
+    "POST"
+   ],
+   "file": "app/api/sports-db/fixtures/draft/route.ts",
+   "auth_markers": [
+    "getAdminUser"
+   ],
+   "no_auth_marker": false
+  },
+  {
+   "path": "/api/sports-db/fixtures",
+   "methods": [
+    "GET"
+   ],
+   "file": "app/api/sports-db/fixtures/route.ts",
+   "auth_markers": [
+    "getAdminUser"
+   ],
+   "no_auth_marker": false
+  },
+  {
+   "path": "/api/sports-db/lookup",
+   "methods": [
+    "GET",
+    "POST",
+    "PUT",
+    "DELETE"
+   ],
+   "file": "app/api/sports-db/lookup/route.ts",
+   "auth_markers": [],
+   "no_auth_marker": true
+  },
+  {
+   "path": "/api/sports-db/search",
+   "methods": [
+    "GET",
+    "POST",
+    "PUT",
+    "DELETE"
+   ],
+   "file": "app/api/sports-db/search/route.ts",
+   "auth_markers": [],
+   "no_auth_marker": true
+  },
+  {
+   "path": "/api/sports-db/sync",
+   "methods": [
+    "POST"
+   ],
+   "file": "app/api/sports-db/sync/route.ts",
+   "auth_markers": [
+    "getAdminUser"
+   ],
+   "no_auth_marker": false
+  },
+  {
+   "path": "/api/stats",
+   "methods": [
+    "GET"
+   ],
+   "file": "app/api/stats/route.ts",
+   "auth_markers": [],
+   "no_auth_marker": true
+  },
+  {
+   "path": "/api/user-preferences",
+   "methods": [
+    "GET",
+    "PUT"
+   ],
+   "file": "app/api/user-preferences/route.ts",
+   "auth_markers": [
+    "getAdminUser"
+   ],
+   "no_auth_marker": false
+  },
+  {
+   "path": "/api/v3/activities/[id]/participants/[entityId]",
+   "methods": [
+    "DELETE"
+   ],
+   "file": "app/api/v3/activities/[id]/participants/[entityId]/route.ts",
+   "auth_markers": [],
+   "no_auth_marker": true
+  },
+  {
+   "path": "/api/v3/activities/[id]/participants",
+   "methods": [
+    "GET",
+    "POST"
+   ],
+   "file": "app/api/v3/activities/[id]/participants/route.ts",
+   "auth_markers": [],
+   "no_auth_marker": true
+  },
+  {
+   "path": "/api/v3/activities",
+   "methods": [
+    "GET"
+   ],
+   "file": "app/api/v3/activities/route.ts",
+   "auth_markers": [],
+   "no_auth_marker": true
+  },
+  {
+   "path": "/api/v3/entities/[id]",
+   "methods": [
+    "GET"
+   ],
+   "file": "app/api/v3/entities/[id]/route.ts",
+   "auth_markers": [],
+   "no_auth_marker": true
+  },
+  {
+   "path": "/api/v3/entities",
+   "methods": [
+    "GET"
+   ],
+   "file": "app/api/v3/entities/route.ts",
+   "auth_markers": [],
+   "no_auth_marker": true
+  },
+  {
+   "path": "/api/v3/health",
+   "methods": [
+    "GET",
+    "POST"
+   ],
+   "file": "app/api/v3/health/route.ts",
+   "auth_markers": [],
+   "no_auth_marker": true
+  },
+  {
+   "path": "/api/v3/metrics/record",
+   "methods": [
+    "POST"
+   ],
+   "file": "app/api/v3/metrics/record/route.ts",
+   "auth_markers": [],
+   "no_auth_marker": true
+  },
+  {
+   "path": "/api/v3/organizations/report/[id]/activities",
+   "methods": [
+    "GET"
+   ],
+   "file": "app/api/v3/organizations/report/[id]/activities/route.ts",
+   "auth_markers": [
+    "getAdminUser"
+   ],
+   "no_auth_marker": false
+  },
+  {
+   "path": "/api/v3/organizations/report/[id]",
+   "methods": [
+    "GET"
+   ],
+   "file": "app/api/v3/organizations/report/[id]/route.ts",
+   "auth_markers": [],
+   "no_auth_marker": true
+  },
+  {
+   "path": "/api/v3/reporting/dashboard",
+   "methods": [
+    "GET"
+   ],
+   "file": "app/api/v3/reporting/dashboard/route.ts",
+   "auth_markers": [],
+   "no_auth_marker": true
+  },
+  {
+   "path": "/api/v3/reporting/export/[entityId]",
+   "methods": [
+    "GET"
+   ],
+   "file": "app/api/v3/reporting/export/[entityId]/route.ts",
+   "auth_markers": [],
+   "no_auth_marker": true
+  },
+  {
+   "path": "/api/v3/reports/resolve",
+   "methods": [
+    "GET"
+   ],
+   "file": "app/api/v3/reports/resolve/route.ts",
+   "auth_markers": [],
+   "no_auth_marker": true
+  },
+  {
+   "path": "/api/variables-config",
+   "methods": [
+    "GET",
+    "POST",
+    "PUT",
+    "DELETE"
+   ],
+   "file": "app/api/variables-config/route.ts",
+   "auth_markers": [],
+   "no_auth_marker": true
+  },
+  {
+   "path": "/api/variables-groups",
+   "methods": [
+    "GET",
+    "POST",
+    "DELETE"
+   ],
+   "file": "app/api/variables-groups/route.ts",
+   "auth_markers": [],
+   "no_auth_marker": true
+  }
+ ]
+}

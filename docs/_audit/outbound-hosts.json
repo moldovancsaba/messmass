@@ -1,0 +1,44 @@
+{
+ "_meta": {
+  "generated": "2026-08-19T16:52:58+00:00",
+  "repo": "messmass",
+  "head": "6d28c7f3",
+  "counts": {
+   "endpoints": 194,
+   "collections": 71,
+   "env": 41,
+   "outbound-hosts": 28,
+   "docs": 194
+  }
+ },
+ "items": [
+  "api-ssl.bitly.com",
+  "api.football-data.org",
+  "api.imgbb.com",
+  "bit.ly",
+  "dev.bitly.com",
+  "docs.google.com",
+  "docs.mongodb.com",
+  "drive.google.com",
+  "fonts.google.com",
+  "fonts.googleapis.com",
+  "fonts.gstatic.com",
+  "github.com",
+  "i.ibb.co",
+  "messmass-staging.vercel.app",
+  "messmass.com",
+  "nextjs.org",
+  "picsum.photos",
+  "preview.messmass.com",
+  "v1.basketball.api-sports.io",
+  "v1.handball.api-sports.io",
+  "v1.hockey.api-sports.io",
+  "v1.volleyball.api-sports.io",
+  "v3.football.api-sports.io",
+  "vercel.live",
+  "www.googleapis.com",
+  "www.googletagmanager.com",
+  "www.messmass.com",
+  "www.thesportsdb.com"
+ ]
+}
