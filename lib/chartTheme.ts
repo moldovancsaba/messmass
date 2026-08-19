@@ -23,6 +23,30 @@ function hexToRgba(hex: string, alpha: number): string {
   return `rgba(${r}, ${g}, ${b}, ${alpha})`;
 }
 
+// WHAT: Wrap a long label into lines of at most maxLineLength characters,
+//     breaking on word boundaries (a single over-long word stays whole).
+// WHY: Chart.js paints its tooltip ON the canvas, so a tooltip wider than
+//     the space between the hovered element and the canvas edge is clipped
+//     mid-word - observed live on a report's Brand Protection donut, where
+//     "Refused Images (unwanted content detected)" got cut. Returning a
+//     string[] from a tooltip callback renders one array element per line,
+//     keeping the box narrow enough to always fit inside the canvas.
+export function wrapChartTooltipText(text: string, maxLineLength = 28): string[] {
+  const words = String(text || '').split(' ');
+  const lines: string[] = [];
+  let current = '';
+  for (const word of words) {
+    if (current && current.length + 1 + word.length > maxLineLength) {
+      lines.push(current);
+      current = word;
+    } else {
+      current = current ? `${current} ${word}` : word;
+    }
+  }
+  if (current) lines.push(current);
+  return lines;
+}
+
 export const CHART_THEME = {
   palette: CHART_PALETTE_HEX,
   tooltipBackground: 'rgba(31, 41, 55, 0.95)',

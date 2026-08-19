@@ -1,8 +1,46 @@
 # {messmass} Release Notes
 Status: Active
-Last Updated: 2026-08-18T10:16:57.000Z
+Last Updated: 2026-08-19T12:00:28.000Z
 Canonical: No
 Owner: Operations
+
+## [v12.1.93] — 2026-08-19T12:00:28.000Z
+
+### Summary
+Fixes a user-reported report defect: hovering a chart segment with a long
+label (observed live on a report's Brand Protection donut — "Refused Images
+(unwanted content detected)") showed a tooltip cut off mid-word. Chart.js
+paints its tooltip ON the canvas, so a tooltip wider than the space between
+the hovered element and the canvas edge is physically clipped — no CSS can
+fix it from outside. The fix uses Chart.js's own multi-line mechanism:
+tooltip callbacks now return the label wrapped into ≤28-character lines as
+the tooltip title (via a new shared `wrapChartTooltipText()` helper in
+`lib/chartTheme.ts`), with the body reduced to just the value/percentage.
+The exact reported label now renders as two short lines instead of one
+~48-character line.
+
+### Changed
+- `lib/chartTheme.ts` — new exported `wrapChartTooltipText(text, maxLineLength=28)`
+  (word-boundary wrapping; a single over-long word stays whole).
+- `components/charts/PieChart.tsx` + `components/charts/VerticalBarChart.tsx` —
+  tooltip `title` callback returns the wrapped label; `label` callback returns
+  value + percentage only (the same defect existed in the bar chart's
+  single-line `label: value (pct)` tooltip).
+
+### Testing
+Wrap logic verified against the exact reported label plus empty/short/
+over-long-word edge cases. `type-check`, `lint`, `style:check`, full test
+suite (381/381), `docs:audit`, and a clean build all pass. The affected
+report (European Aquatics Championships 2026 Paris) loads with the new code
+against real data with zero console errors; a live hover screenshot could
+not be captured this session (preview-pane compositing issue), so a visual
+hover check on the deployed report is the remaining confirmation step.
+
+### Known Limitations
+- On very narrow canvases (small phones), even a wrapped ~24-character line
+  can exceed the canvas width — an inherent Chart.js canvas-tooltip limit.
+  The fix removes the defect at all realistic desktop/tablet report widths
+  and strictly improves narrow ones.
 
 ## [v12.1.92] — 2026-08-18T10:16:57.000Z
 

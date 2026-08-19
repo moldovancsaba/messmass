@@ -14,7 +14,7 @@ import {
 } from 'chart.js';
 import ChartBase from './ChartBase';
 import styles from './ChartShared.module.css';
-import { CHART_THEME } from '@/lib/chartTheme';
+import { CHART_THEME, wrapChartTooltipText } from '@/lib/chartTheme';
 
 /* What: Register Chart.js components
    Why: Chart.js requires explicit registration of components to reduce bundle size */
@@ -199,12 +199,17 @@ export default function VerticalBarChart({
         cornerRadius: 8,
         displayColors: true,
         callbacks: {
-          /* What: Custom tooltip with value and percentage
-             Why: More informative than just raw numbers */
+          /* What: Custom tooltip - wrapped label as the title, value+percentage
+             as the body line.
+             Why: Chart.js paints the tooltip ON the canvas, so a long
+             single-line label near the canvas edge gets clipped mid-word
+             (same defect observed live on the pie chart). Wrapping keeps the
+             box narrow enough to always fit. */
+          title: (items) => wrapChartTooltipText(items[0]?.label || ''),
           label: (context) => {
             const value = context.parsed.y ?? 0;
             const percentage = total > 0 ? ((value / total) * 100).toFixed(1) : '0.0';
-            return `${context.label}: ${value.toLocaleString()} (${percentage}%)`;
+            return `${value.toLocaleString()} (${percentage}%)`;
           },
         },
       },
