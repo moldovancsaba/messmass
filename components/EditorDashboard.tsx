@@ -108,6 +108,23 @@ export default function EditorDashboard({ project: initialProject }: EditorDashb
   const [varsConfig, setVarsConfig] = useState<VariableWithFlags[]>([]);
   const [varsLoading, setVarsLoading] = useState<boolean>(false);
 
+  // WHAT: Data-driven derived-total config (no hardcoded variable names).
+  // WHY: So renaming/merging a base variable via /admin/kyc updates these totals
+  //     automatically (the merge rewrites [tokens] in derived_variable_config).
+  const [derivedConfig, setDerivedConfig] = useState<{
+    totals: Array<{ key: string; label: string; formula: string }>;
+    fans: { remoteFansVar: string; stadiumVar: string; remoteFansFallbackFormula: string };
+  }>({
+    totals: [
+      { key: 'totalGender', label: 'Gender total', formula: '[female]+[male]' },
+      { key: 'totalUnder40', label: 'Under 40', formula: '[genAlpha]+[genYZ]' },
+      { key: 'totalOver40', label: 'Over 40', formula: '[genX]+[boomer]' },
+      { key: 'totalAge', label: 'Age total', formula: '[genAlpha]+[genYZ]+[genX]+[boomer]' },
+      { key: 'totalMerch', label: 'Merch total', formula: '[merched]+[jersey]+[scarf]+[flags]+[baseballCap]+[other]' },
+    ],
+    fans: { remoteFansVar: 'remoteFans', stadiumVar: 'stadium', remoteFansFallbackFormula: '[indoor]+[outdoor]' },
+  });
+
   // Google Sheets event-level sync (Phase 3)
   const [sheetSyncConnected, setSheetSyncConnected] = useState<boolean | null>(null);
   const [sheetSyncLoading, setSheetSyncLoading] = useState(false);
@@ -120,6 +137,25 @@ export default function EditorDashboard({ project: initialProject }: EditorDashb
     setHashtags(initialProject.hashtags || []);
     setCategorizedHashtags(initialProject.categorizedHashtags || {});
   }, [initialProject]);
+
+  // Load the data-driven derived-total config (keeps built-in defaults on failure).
+  useEffect(() => {
+    let mounted = true;
+    (async () => {
+      try {
+        const res = await fetch('/api/derived-variable-config', { cache: 'no-store' });
+        const data = await res.json();
+        if (mounted && data?.success && data.config?.totals && data.config?.fans) {
+          setDerivedConfig({ totals: data.config.totals, fans: data.config.fans });
+        }
+      } catch {
+        // keep the built-in defaults — never break the editor on a config read
+      }
+    })();
+    return () => {
+      mounted = false;
+    };
+  }, []);
 
   // Load variables-config (flags and custom variables)
   useEffect(() => {
@@ -359,7 +395,6 @@ export default function EditorDashboard({ project: initialProject }: EditorDashb
   };
 
   // Calculate totals
-  const totalImages = project.stats.remoteImages + project.stats.hostessImages + project.stats.selfies;
   // Groups
   const [groups, setGroups] = useState<{ groupOrder: number; chartId?: string; titleOverride?: string; variables?: string[]; specialType?: 'report-content'; visibleInClicker?: boolean; visibleInManual?: boolean }[]>([])
   const [clickerSetFallback, setClickerSetFallback] = useState(false)
@@ -403,13 +438,23 @@ export default function EditorDashboard({ project: initialProject }: EditorDashb
       } catch {}
     })()
   }, [project.partner1?.clickerSetId, project.partner2?.clickerSetId])
-  const remoteFansCalc = (project.stats.remoteFans ?? (project.stats.indoor + project.stats.outdoor));
-  const totalFans = remoteFansCalc + project.stats.stadium;
-  const totalGender = project.stats.female + project.stats.male;
-  const totalUnder40 = project.stats.genAlpha + project.stats.genYZ;
-  const totalOver40 = project.stats.genX + project.stats.boomer;
-  const totalAge = totalUnder40 + totalOver40;
-  const totalMerch = project.stats.merched + project.stats.jersey + project.stats.scarf + project.stats.flags + project.stats.baseballCap + project.stats.other;
+  // WHAT: Derived totals computed from the data-driven config (no hardcoded
+  //     variable names). WHY: a rename/merge in /admin/kyc updates these formulas.
+  const evalNum = (formula: string): number => {
+    const r = evaluateFormula(formula, project.stats as never);
+    return typeof r === 'number' ? r : 0;
+  };
+  const totalByKey: Record<string, number> = {};
+  for (const t of derivedConfig.totals) totalByKey[t.key] = evalNum(t.formula);
+  const fansCfg = derivedConfig.fans;
+  const remoteFansStored = (project.stats as Record<string, number>)[fansCfg.remoteFansVar];
+  const remoteFansCalc = remoteFansStored ?? evalNum(fansCfg.remoteFansFallbackFormula);
+  const totalFans = remoteFansCalc + ((project.stats as Record<string, number>)[fansCfg.stadiumVar] || 0);
+  const totalGender = totalByKey.totalGender ?? 0;
+  const totalUnder40 = totalByKey.totalUnder40 ?? 0;
+  const totalOver40 = totalByKey.totalOver40 ?? 0;
+  const totalAge = totalByKey.totalAge ?? totalUnder40 + totalOver40;
+  const totalMerch = totalByKey.totalMerch ?? 0;
 
   // Manual input field update (on blur/leave)
   const updateManualField = (field: keyof typeof project.stats, value: number) => {
@@ -731,7 +776,7 @@ export default function EditorDashboard({ project: initialProject }: EditorDashb
                   // WHAT: Normalize variable key (strip stats. prefix)
                   // WHY: Variables are stored as stats.female but MongoDB structure is { stats: { female: 120 } }
                   const normalizedName = normalizeKey(v.name);
-                  const isRemoteFans = normalizedName === 'remoteFans' || v.name === 'remoteFans';
+                  const isRemoteFans = normalizedName === fansCfg.remoteFansVar || v.name === fansCfg.remoteFansVar;
                   
                   // WHAT: Render based on variable type (new type system)
                   // WHY: Each type has specific UI requirements
@@ -791,17 +836,15 @@ export default function EditorDashboard({ project: initialProject }: EditorDashb
                     isRemoteFans ? (
                       <StatCard key={v.name}
                         label={v.label}
-                        value={(project.stats as any).remoteFans ?? (project.stats.indoor + project.stats.outdoor)}
+                        value={remoteFansCalc}
                         onIncrement={() => {
-                          const current = (project.stats.remoteFans ?? (project.stats.indoor + project.stats.outdoor));
-                          const newStats = { ...project.stats, remoteFans: current + 1 };
+                          const newStats = { ...project.stats, [fansCfg.remoteFansVar]: remoteFansCalc + 1 };
                           setProject(prev => ({ ...prev, stats: newStats }));
                           saveProject(newStats);
                         }}
                         onDecrement={() => {
-                          const current = (project.stats.remoteFans ?? (project.stats.indoor + project.stats.outdoor));
-                          const next = Math.max(0, current - 1);
-                          const newStats = { ...project.stats, remoteFans: next };
+                          const next = Math.max(0, remoteFansCalc - 1);
+                          const newStats = { ...project.stats, [fansCfg.remoteFansVar]: next };
                           setProject(prev => ({ ...prev, stats: newStats }));
                           saveProject(newStats);
                         }}
@@ -811,7 +854,7 @@ export default function EditorDashboard({ project: initialProject }: EditorDashb
                     )
                   ) : (
                     isRemoteFans ? (
-                      <ManualInputCard key={v.name} label={v.label} value={(project.stats as any).remoteFans ?? (project.stats.indoor + project.stats.outdoor)} statKey={"remoteFans" as keyof typeof project.stats} variableType={v.type} />
+                      <ManualInputCard key={v.name} label={v.label} value={remoteFansCalc} statKey={fansCfg.remoteFansVar as keyof typeof project.stats} variableType={v.type} />
                     ) : (
                       <ManualInputCard key={v.name} label={v.label} value={getStat(v.name)} statKey={normalizedName as keyof typeof project.stats} variableType={v.type} />
                     )

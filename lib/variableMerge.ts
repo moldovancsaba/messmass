@@ -20,13 +20,11 @@ export const MIGRATION_BACKUP_COLLECTION = 'variable_migration_backup';
 // and gender totals). A data migration cannot rewrite code, so these may be a
 // merge TARGET (canonical) but must never be renamed AWAY (as a legacy source),
 // or the hardcoded clicker/derivation would break. Keep in sync with the editor.
-export const PROTECTED_CLICKER_VARIABLES = new Set<string>([
-  'male', 'female', 'other',
-  'boomer', 'genX', 'genYZ', 'genAlpha',
-  'jersey', 'scarf', 'flags', 'baseballCap', 'merched',
-  'remoteImages', 'hostessImages', 'selfies',
-  'indoor', 'outdoor', 'stadium', 'remoteFans',
-]);
+// Empty: the editor's derived totals are now data-driven (derived_variable_config,
+// rewritten by the merge), so NO variable name is hardcoded and every variable is
+// freely renamable. Kept as a mechanism in case a hardcoded variable is ever
+// re-introduced.
+export const PROTECTED_CLICKER_VARIABLES = new Set<string>([]);
 
 export type MergeKind = 'casing' | 'token-reorder' | 'name-mismatch';
 export type ConflictRule = 'copy' | 'sum' | 'prefer-canonical';
@@ -220,7 +218,7 @@ export interface MergeResult {
 }
 
 // Collections whose docs reference a variable as a `[name]` formula token.
-const REF_COLLECTIONS = ['chart_configurations', 'charts', 'report_templates', 'report_variants', 'reports', 'reports_v12'];
+const REF_COLLECTIONS = ['chart_configurations', 'charts', 'report_templates', 'report_variants', 'reports', 'reports_v12', 'derived_variable_config'];
 
 type DocBackup = { collection: string; id: unknown; before: unknown };
 
@@ -281,6 +279,27 @@ async function updateGroups(db: Db, from: string, to: string, dryRun: boolean, b
     backups.push({ collection: 'variables_groups', id: g._id, before: g });
     const vars = [...new Set(((g.variables as string[]) || []).map((v) => (v === `stats.${from}` ? `stats.${to}` : v)))];
     await db.collection('variables_groups').updateOne({ _id: g._id }, { $set: { variables: vars } });
+  }
+  return count;
+}
+
+
+/** Rename the bare variable-name fields in derived_variable_config.fans. */
+async function rewriteDerivedConfigNames(db: Db, from: string, to: string, dryRun: boolean, backups: DocBackup[]): Promise<number> {
+  let count = 0;
+  const docs = await db
+    .collection('derived_variable_config')
+    .find({ $or: [{ 'fans.remoteFansVar': from }, { 'fans.stadiumVar': from }] })
+    .toArray()
+    .catch(() => []);
+  for (const d of docs) {
+    count++;
+    if (dryRun) continue;
+    backups.push({ collection: 'derived_variable_config', id: d._id, before: d });
+    const set: Record<string, string> = {};
+    if ((d as { fans?: { remoteFansVar?: string } }).fans?.remoteFansVar === from) set['fans.remoteFansVar'] = to;
+    if ((d as { fans?: { stadiumVar?: string } }).fans?.stadiumVar === from) set['fans.stadiumVar'] = to;
+    await db.collection('derived_variable_config').updateOne({ _id: d._id }, { $set: set });
   }
   return count;
 }
@@ -377,6 +396,7 @@ export async function applyMerges(
       refsRewritten += await rewriteFormulaRefs(db, l, canonical, opts.dryRun, docBackups);
       registryUpdated += await updateRegistry(db, l, canonical, opts.dryRun, docBackups);
       groupsUpdated += await updateGroups(db, l, canonical, opts.dryRun, docBackups);
+      groupsUpdated += await rewriteDerivedConfigNames(db, l, canonical, opts.dryRun, docBackups);
     }
     if (!opts.dryRun && docBackups.length > 0) {
       await db.collection(MIGRATION_BACKUP_COLLECTION).insertMany(

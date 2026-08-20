@@ -21,14 +21,30 @@ describe('variable-merge token signature (word-order dedup detection)', () => {
 import { PROTECTED_CLICKER_VARIABLES } from '@/lib/variableMerge';
 
 describe('protected clicker variables', () => {
-  it('includes the core hardcoded-in-editor base variables', () => {
-    for (const v of ['male', 'female', 'indoor', 'outdoor', 'remoteFans', 'baseballCap', 'boomer', 'genX']) {
-      expect(PROTECTED_CLICKER_VARIABLES.has(v)).toBe(true);
-    }
-  });
-  it('does not protect merge-safe variables (they can be renamed away)', () => {
-    for (const v of ['ventFacebook', 'totalBitlyClicks', 'Caps', 'visitTiktok']) {
+  it('is empty — the editor derivations are data-driven, so every variable is renamable', () => {
+    // The 4 derived totals moved to derived_variable_config (rewritten by the
+    // merge), so no variable name is hardcoded in the editor anymore.
+    expect(PROTECTED_CLICKER_VARIABLES.size).toBe(0);
+    for (const v of ['male', 'female', 'indoor', 'ventFacebook', 'Caps']) {
       expect(PROTECTED_CLICKER_VARIABLES.has(v)).toBe(false);
     }
+  });
+});
+
+import { evaluateFormula } from '@/lib/formulaEngine';
+
+describe('data-driven derived totals', () => {
+  // Guards the contract in EditorDashboard: derived totals are now computed via
+  // evaluateFormula from derived_variable_config, and MUST match the old hardcoded
+  // arithmetic exactly, or every editor total would silently change.
+  const stats = { female: 3, male: 7, genAlpha: 1, genYZ: 2, genX: 4, boomer: 5, indoor: 6, outdoor: 8 } as never;
+  it('sums two variables like the old female+male total', () => {
+    expect(evaluateFormula('[female]+[male]', stats)).toBe(10);
+  });
+  it('sums the four age buckets like the old totalAge', () => {
+    expect(evaluateFormula('[genAlpha]+[genYZ]+[genX]+[boomer]', stats)).toBe(12);
+  });
+  it('computes the remoteFans fallback like indoor+outdoor', () => {
+    expect(evaluateFormula('[indoor]+[outdoor]', stats)).toBe(14);
   });
 });
