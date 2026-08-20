@@ -19,7 +19,14 @@ const MONGODB_DB = process.env.MONGODB_DB || process.env.DB_NAME || 'messmass';
 // ai_analysis_summaries docs (checked directly, not guessed) — see
 // lib/aiDemographicStats.ts for how these get derived from a live summary.
 const GENDER_KEYS = ['male', 'female', 'unknown'];
-const AGE_KEYS = ['children', 'youngAdults', 'adults', 'older', 'unknown'];
+// #367: fanmass's age detection redesign (fanmass milestone "Age Detection:
+// Category Buckets to Report-Time Generations", fanmass#89-97) replaced its
+// 5 life-stage keys (children/youngAdults/adults/older/unknown — 'teens' was
+// already missing from this list, a pre-existing bug now moot) with 7
+// generation keys, computed fresh at push time from fanmass's
+// services/generations.py — keep this list in sync with that module's
+// GENERATIONS tuple if it ever changes.
+const AGE_KEYS = ['silent', 'boomer', 'genX', 'millennial', 'genZ', 'genAlpha', 'genBeta', 'unknown'];
 const EMOTION_KEYS = ['happy', 'angry', 'neutral', 'unknown'];
 
 function capitalize(key: string): string {
@@ -31,13 +38,31 @@ function labelForCategoryKey(key: string): string {
   return capitalize(key.replace(/([A-Z])/g, ' $1').toLowerCase());
 }
 
+// #367: verified before shipping (not assumed) — the generic
+// labelForCategoryKey() lowercases every word after the first, which is
+// wrong for these: genX -> "Gen x", genAlpha -> "Gen alpha", etc. These get
+// their real human names instead, matching the actual generation names.
+const AGE_LABELS: Record<string, string> = {
+  silent: 'Silent Generation',
+  boomer: 'Baby Boomers',
+  genX: 'Generation X',
+  millennial: 'Millennials',
+  genZ: 'Generation Z',
+  genAlpha: 'Generation Alpha',
+  genBeta: 'Generation Beta',
+  unknown: 'Unknown',
+};
+function labelForAgeKey(key: string): string {
+  return AGE_LABELS[key] || labelForCategoryKey(key);
+}
+
 const NEW_VARIABLES: Array<{ name: string; label: string; type: 'count' | 'percentage' }> = [
   { name: 'fanmassDemographicsAnalyzed', label: 'Demographics analysed (people)', type: 'count' },
   { name: 'fanmassSmilingPct', label: 'Smiling (%)', type: 'percentage' },
   { name: 'fanmassBrandCount', label: 'Distinct brands detected', type: 'count' },
   { name: 'fanmassClubCount', label: 'Distinct clubs/federations detected', type: 'count' },
   ...GENDER_KEYS.map((k) => ({ name: `fanmassGender${capitalize(k)}Pct`, label: `Gender: ${labelForCategoryKey(k)} (%)`, type: 'percentage' as const })),
-  ...AGE_KEYS.map((k) => ({ name: `fanmassAge${capitalize(k)}Pct`, label: `Age: ${labelForCategoryKey(k)} (%)`, type: 'percentage' as const })),
+  ...AGE_KEYS.map((k) => ({ name: `fanmassAge${capitalize(k)}Pct`, label: `Age: ${labelForAgeKey(k)} (%)`, type: 'percentage' as const })),
   ...EMOTION_KEYS.map((k) => ({ name: `fanmassEmotion${capitalize(k)}Pct`, label: `Emotion: ${labelForCategoryKey(k)} (%)`, type: 'percentage' as const })),
 ];
 
