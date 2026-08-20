@@ -49,8 +49,14 @@ function Pill({ children, tone }: { children: React.ReactNode; tone?: 'primary' 
   );
 }
 
+interface VariableInfo {
+  name: string;
+  events: number;
+}
+
 export default function VariableMergeConsole() {
   const [candidates, setCandidates] = useState<Candidate[]>([]);
+  const [variables, setVariables] = useState<VariableInfo[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [selected, setSelected] = useState<Record<string, boolean>>({});
@@ -59,22 +65,30 @@ export default function VariableMergeConsole() {
   const [result, setResult] = useState<MergeResult | null>(null);
   const [resultMode, setResultMode] = useState<'preview' | 'applied'>('preview');
 
+  // Custom rename / merge form: source -> target (new or existing).
+  const [customSource, setCustomSource] = useState('');
+  const [customTarget, setCustomTarget] = useState('');
+  const [customRule, setCustomRule] = useState<ConflictRule>('copy');
+
+  async function load() {
+    try {
+      const res = await fetch('/api/admin/variables/merge-candidates', { cache: 'no-store' });
+      const data = await res.json();
+      if (!res.ok || !data.success) throw new Error(data.error || 'Failed to load merge candidates');
+      setCandidates(data.candidates);
+      setVariables(data.variables || []);
+      const r: Record<string, ConflictRule> = {};
+      for (const c of data.candidates as Candidate[]) r[c.id] = c.recommendation.rule;
+      setRules(r);
+    } catch (e) {
+      setError(e instanceof Error ? e.message : 'Failed to load');
+    } finally {
+      setLoading(false);
+    }
+  }
+
   useEffect(() => {
-    (async () => {
-      try {
-        const res = await fetch('/api/admin/variables/merge-candidates', { cache: 'no-store' });
-        const data = await res.json();
-        if (!res.ok || !data.success) throw new Error(data.error || 'Failed to load merge candidates');
-        setCandidates(data.candidates);
-        const r: Record<string, ConflictRule> = {};
-        for (const c of data.candidates as Candidate[]) r[c.id] = c.recommendation.rule;
-        setRules(r);
-      } catch (e) {
-        setError(e instanceof Error ? e.message : 'Failed to load');
-      } finally {
-        setLoading(false);
-      }
-    })();
+    load();
   }, []);
 
   const selectedMerges = useMemo(
@@ -85,21 +99,28 @@ export default function VariableMergeConsole() {
     [candidates, selected, rules],
   );
 
-  async function run(dryRun: boolean) {
-    if (selectedMerges.length === 0) return;
+  async function run(dryRun: boolean, mergesOverride?: Array<{ canonical: string; legacy: string[]; rule: ConflictRule }>) {
+    const merges = mergesOverride ?? selectedMerges;
+    if (merges.length === 0) return;
     setBusy(true);
     setError(null);
     try {
-      const data = await apiPost('/api/admin/variables/merge', { merges: selectedMerges, dryRun });
+      const data = await apiPost('/api/admin/variables/merge', { merges, dryRun });
       if (!data.success) throw new Error(data.error || 'Merge failed');
       setResult(data.result);
       setResultMode(dryRun ? 'preview' : 'applied');
+      // a real apply changes the data — refresh candidates so the list stays accurate
+      if (!dryRun) await load();
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Merge failed');
     } finally {
       setBusy(false);
     }
   }
+
+  const customValid = customSource.trim() !== '' && customTarget.trim() !== '' && customSource.trim() !== customTarget.trim();
+  const customMerge = () => [{ canonical: customTarget.trim(), legacy: [customSource.trim()], rule: customRule }];
+  const targetExists = variables.some((v) => v.name === customTarget.trim());
 
   const safeCount = candidates.filter((c) => c.recommendation.safe).length;
   const selectAllSafe = () => {
@@ -124,6 +145,54 @@ export default function VariableMergeConsole() {
           {error}
         </div>
       )}
+
+      {/* Custom rename / merge: rename a variable to a NEW name, or merge into any name. */}
+      <div className={styles.customForm}>
+        <span className={styles.customTitle}>Rename / merge a variable</span>
+        <label className={styles.customField}>
+          <span>From</span>
+          <input
+            list="mm-var-list"
+            value={customSource}
+            onChange={(e) => setCustomSource(e.target.value)}
+            placeholder="existing variable"
+            aria-label="Source variable to rename or merge from"
+          />
+        </label>
+        <MaterialIcon name="arrow_forward" />
+        <label className={styles.customField}>
+          <span>To</span>
+          <input
+            list="mm-var-list"
+            value={customTarget}
+            onChange={(e) => setCustomTarget(e.target.value)}
+            placeholder="new or existing name"
+            aria-label="Target variable name (new or existing)"
+          />
+        </label>
+        <label className={styles.ruleLabel}>
+          Rule{' '}
+          <select value={customRule} onChange={(e) => setCustomRule(e.target.value as ConflictRule)} aria-label="Conflict rule for the custom merge">
+            <option value="copy">copy (fill empty)</option>
+            <option value="prefer-canonical">prefer target</option>
+            <option value="sum">sum</option>
+          </select>
+        </label>
+        <span className={styles.customHint}>
+          {customTarget.trim() && (targetExists ? 'merge into existing' : 'rename → new name')}
+        </span>
+        <button className="btn btn-small btn-secondary" type="button" disabled={busy || !customValid} onClick={() => run(true, customMerge())}>
+          Preview
+        </button>
+        <button className="btn btn-small btn-primary" type="button" disabled={busy || !customValid} onClick={() => run(false, customMerge())}>
+          Apply
+        </button>
+      </div>
+      <datalist id="mm-var-list">
+        {variables.map((v) => (
+          <option key={v.name} value={v.name}>{`${v.name} (${v.events})`}</option>
+        ))}
+      </datalist>
 
       <div className={styles.toolbar}>
         <button className="btn btn-small btn-secondary" onClick={selectAllSafe} type="button">

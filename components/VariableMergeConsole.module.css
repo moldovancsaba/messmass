@@ -101,3 +101,33 @@
   background: var(--mm-warning-bg, #f7efd9);
   color: var(--mm-warning, #a06a0c);
 }
+
+.customForm {
+  display: flex;
+  gap: var(--mm-space-2);
+  align-items: center;
+  flex-wrap: wrap;
+  padding: var(--mm-space-3);
+  margin-bottom: var(--mm-space-4);
+  border: 1px dashed var(--mm-border-color-default);
+  border-radius: var(--mm-radius-md);
+  background: var(--mm-gray-50);
+}
+
+.customTitle {
+  font-weight: 600;
+  color: var(--mm-gray-700);
+}
+
+.customField {
+  display: flex;
+  flex-direction: column;
+  font-size: var(--mm-font-size-sm);
+  color: var(--mm-gray-600);
+}
+
+.customHint {
+  font-size: var(--mm-font-size-sm);
+  color: var(--mm-gray-500);
+  font-style: italic;
+}

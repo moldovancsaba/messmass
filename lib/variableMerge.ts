@@ -178,6 +178,17 @@ export async function computeMergeCandidates(db: Db): Promise<MergeCandidate[]> 
   return candidates;
 }
 
+/**
+ * List every distinct stat variable name with its event count. Read-only.
+ * Powers the rename/merge autocomplete.
+ */
+export async function listVariables(db: Db): Promise<Array<{ name: string; events: number }>> {
+  const projects = await db.collection('projects').find({}, { projection: { stats: 1 } }).toArray();
+  const count = new Map<string, number>();
+  for (const p of projects) for (const k of Object.keys(p.stats || {})) count.set(k, (count.get(k) || 0) + 1);
+  return [...count.entries()].map(([name, events]) => ({ name, events })).sort((a, b) => a.name.localeCompare(b.name));
+}
+
 export interface MergeResult {
   dryRun: boolean;
   applied: number;
