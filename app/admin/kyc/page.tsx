@@ -3,6 +3,7 @@
 import React, { useEffect, useMemo, useState } from "react";
 import ReportingWorkspaceNav from "@/components/ReportingWorkspaceNav";
 import UnifiedAdminHeroWithSearch from "@/components/UnifiedAdminHeroWithSearch";
+import VariableMergeConsole from "@/components/VariableMergeConsole";
 import ColoredCard from "@/components/ColoredCard";
 import { apiPost, apiPut, apiDelete } from "@/lib/apiClient";
 import { FormModal } from "@/components/modals";
@@ -130,6 +131,10 @@ export default function KycVariablesPage() {
       />
 
       <ReportingWorkspaceNav />
+
+      {/* WHAT: Variable-merge console (dedupe/normalize event variables).
+          WHY: Operator reviews audit-detected merge candidates and applies them. */}
+      <VariableMergeConsole />
 
       {loading && (
         <ColoredCard accentColor="#6366f1" hoverable={false} className="text-center">

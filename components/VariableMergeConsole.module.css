@@ -1,0 +1,103 @@
+/* Variable merge console — GDS tokens only. */
+
+.heading {
+  margin-top: 0;
+}
+
+.intro {
+  color: var(--mm-gray-600);
+  margin-bottom: var(--mm-space-3);
+}
+
+.errorText {
+  color: var(--mm-error, #b3402a);
+  margin-bottom: var(--mm-space-3);
+}
+
+.toolbar {
+  display: flex;
+  gap: var(--mm-space-2);
+  margin-bottom: var(--mm-space-4);
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.spacer {
+  flex: 1;
+}
+
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--mm-space-2);
+}
+
+.row {
+  border: 1px solid var(--mm-border-color-default);
+  border-radius: var(--mm-radius-md);
+  padding: var(--mm-space-3);
+  display: flex;
+  gap: var(--mm-space-3);
+  align-items: flex-start;
+  background: var(--mm-white);
+}
+
+.row[data-selected='true'] {
+  background: var(--mm-gray-50);
+}
+
+.rowMain {
+  flex: 1;
+  min-width: 0;
+}
+
+.pillRow {
+  display: flex;
+  gap: var(--mm-space-2);
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.note {
+  color: var(--mm-gray-600);
+  font-size: var(--mm-font-size-sm);
+  margin-top: var(--mm-space-1);
+}
+
+.ruleLabel {
+  font-size: var(--mm-font-size-sm);
+  color: var(--mm-gray-600);
+}
+
+.emptyText {
+  color: var(--mm-gray-600);
+}
+
+.conflictNote {
+  color: var(--mm-warning, #a06a0c);
+}
+
+.pill {
+  border-radius: var(--mm-radius-sm, 6px);
+  padding: 2px var(--mm-space-2);
+  font-size: var(--mm-font-size-sm);
+  font-weight: 500;
+  white-space: nowrap;
+  background: var(--mm-gray-100);
+  color: var(--mm-gray-700);
+}
+
+.pill[data-tone='primary'] {
+  background: var(--mm-color-primary-100, #ede9fe);
+  color: var(--mm-color-primary-700, #6d28d9);
+}
+
+.pill[data-tone='good'] {
+  background: var(--mm-success-bg, #e2f0ec);
+  color: var(--mm-success, #0e7c66);
+}
+
+.pill[data-tone='warn'] {
+  background: var(--mm-warning-bg, #f7efd9);
+  color: var(--mm-warning, #a06a0c);
+}
