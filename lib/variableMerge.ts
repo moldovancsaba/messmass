@@ -192,13 +192,89 @@ export async function listVariables(db: Db): Promise<Array<{ name: string; event
 export interface MergeResult {
   dryRun: boolean;
   applied: number;
-  changes: Array<{ canonical: string; legacy: string[]; rule: ConflictRule; eventsTouched: number }>;
+  changes: Array<{
+    canonical: string;
+    legacy: string[];
+    rule: ConflictRule;
+    eventsTouched: number;
+    refsRewritten: number;
+    registryUpdated: number;
+    groupsUpdated: number;
+  }>;
   conflicts: Array<{ projectId: string; canonical: string; legacy: string; canonicalValue: unknown; legacyValue: unknown }>;
 }
 
+// Collections whose docs reference a variable as a `[name]` formula token.
+const REF_COLLECTIONS = ['chart_configurations', 'charts', 'report_templates', 'report_variants', 'reports', 'reports_v12'];
+
+type DocBackup = { collection: string; id: unknown; before: unknown };
+
 /**
- * Apply approved merges. Dry-run by default. Backs up every touched field to
- * MIGRATION_BACKUP_COLLECTION before mutating, and is idempotent.
+ * Rewrite the formula token [from] -> [to] across every report/chart collection,
+ * so existing reports keep working after a rename/merge. Tokens are unique
+ * bracketed strings, so a JSON string-replace is safe.
+ */
+async function rewriteFormulaRefs(db: Db, from: string, to: string, dryRun: boolean, backups: DocBackup[]): Promise<number> {
+  const token = `[${from}]`;
+  let count = 0;
+  for (const col of REF_COLLECTIONS) {
+    const docs = await db.collection(col).find({}).toArray().catch(() => []);
+    for (const doc of docs) {
+      const json = JSON.stringify(doc);
+      if (!json.includes(token)) continue;
+      count++;
+      if (dryRun) continue;
+      backups.push({ collection: col, id: doc._id, before: doc });
+      const rewritten = JSON.parse(json.split(token).join(`[${to}]`));
+      delete rewritten._id;
+      await db.collection(col).replaceOne({ _id: doc._id }, rewritten);
+    }
+  }
+  return count;
+}
+
+/** Rename the registry entry from->to (or drop `from` if `to` already exists). */
+async function updateRegistry(db: Db, from: string, to: string, dryRun: boolean, backups: DocBackup[]): Promise<number> {
+  const fromDoc = await db.collection('variables_metadata').findOne({ name: from });
+  if (!fromDoc) return 0;
+  if (dryRun) return 1;
+  backups.push({ collection: 'variables_metadata', id: fromDoc._id, before: fromDoc });
+  const toDoc = await db.collection('variables_metadata').findOne({ name: to });
+  if (toDoc) {
+    await db.collection('variables_metadata').deleteOne({ _id: fromDoc._id });
+  } else {
+    await db
+      .collection('variables_metadata')
+      .updateOne({ _id: fromDoc._id }, { $set: { name: to, updatedAt: new Date().toISOString() } });
+  }
+  return 1;
+}
+
+/** Update clicker/manual grouping arrays: variablesGroups (bare) + variables_groups (stats.-prefixed). */
+async function updateGroups(db: Db, from: string, to: string, dryRun: boolean, backups: DocBackup[]): Promise<number> {
+  let count = 0;
+  for (const g of await db.collection('variablesGroups').find({ variables: from }).toArray().catch(() => [])) {
+    count++;
+    if (dryRun) continue;
+    backups.push({ collection: 'variablesGroups', id: g._id, before: g });
+    const vars = [...new Set(((g.variables as string[]) || []).map((v) => (v === from ? to : v)))];
+    await db.collection('variablesGroups').updateOne({ _id: g._id }, { $set: { variables: vars } });
+  }
+  for (const g of await db.collection('variables_groups').find({ variables: `stats.${from}` }).toArray().catch(() => [])) {
+    count++;
+    if (dryRun) continue;
+    backups.push({ collection: 'variables_groups', id: g._id, before: g });
+    const vars = [...new Set(((g.variables as string[]) || []).map((v) => (v === `stats.${from}` ? `stats.${to}` : v)))];
+    await db.collection('variables_groups').updateOne({ _id: g._id }, { $set: { variables: vars } });
+  }
+  return count;
+}
+
+/**
+ * Apply approved merges. Dry-run by default. Moves event data AND rewrites every
+ * reference site (charts, report templates, the registry, clicker/manual groups)
+ * so no report breaks. Backs up every touched field/doc to MIGRATION_BACKUP_COLLECTION
+ * and is idempotent.
  */
 export async function applyMerges(
   db: Db,
@@ -271,7 +347,24 @@ export async function applyMerges(
       await db.collection('projects').updateOne({ _id: p._id }, { $set: setOps, $unset: unsetOps });
     }
 
-    result.changes.push({ canonical, legacy, rule, eventsTouched });
+    // Rewrite EVERY reference site so no report/clicker breaks: charts + report
+    // templates (formula tokens), the registry entry, and the grouping arrays.
+    const docBackups: DocBackup[] = [];
+    let refsRewritten = 0;
+    let registryUpdated = 0;
+    let groupsUpdated = 0;
+    for (const l of legacy) {
+      refsRewritten += await rewriteFormulaRefs(db, l, canonical, opts.dryRun, docBackups);
+      registryUpdated += await updateRegistry(db, l, canonical, opts.dryRun, docBackups);
+      groupsUpdated += await updateGroups(db, l, canonical, opts.dryRun, docBackups);
+    }
+    if (!opts.dryRun && docBackups.length > 0) {
+      await db.collection(MIGRATION_BACKUP_COLLECTION).insertMany(
+        docBackups.map((b) => ({ ...b, canonical, legacy, rule, kind: 'reference', actor: opts.actor || 'unknown', at: now })),
+      );
+    }
+
+    result.changes.push({ canonical, legacy, rule, eventsTouched, refsRewritten, registryUpdated, groupsUpdated });
     if (!opts.dryRun) result.applied += eventsTouched;
   }
 

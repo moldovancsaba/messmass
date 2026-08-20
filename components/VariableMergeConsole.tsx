@@ -28,10 +28,20 @@ interface Candidate {
   recommendation: { rule: ConflictRule; safe: boolean; note: string };
 }
 
+interface MergeChange {
+  canonical: string;
+  legacy: string[];
+  rule: ConflictRule;
+  eventsTouched: number;
+  refsRewritten: number;
+  registryUpdated: number;
+  groupsUpdated: number;
+}
+
 interface MergeResult {
   dryRun: boolean;
   applied: number;
-  changes: Array<{ canonical: string; legacy: string[]; rule: ConflictRule; eventsTouched: number }>;
+  changes: MergeChange[];
   conflicts: Array<{ projectId: string; canonical: string; legacy: string; canonicalValue: unknown; legacyValue: unknown }>;
 }
 
@@ -135,8 +145,10 @@ export default function VariableMergeConsole() {
     <ColoredCard accentColor="#7c3aed" hoverable={false}>
       <h2 className={styles.heading}>🔀 Variable Merges</h2>
       <p className={styles.intro}>
-        {candidates.length} candidate group(s) — {safeCount} safe (no value conflicts). Select the
-        merges to apply, preview the exact changes, then apply. Every applied change is backed up to{' '}
+        {candidates.length} candidate group(s) — {safeCount} safe (no value conflicts). Applying a
+        merge moves the event values <em>and</em> updates every reference — chart/report formulas, the
+        clicker &amp; manual groups, and the variable registry — so existing and new reports keep
+        working. Preview shows the exact impact first; every applied change is backed up to{' '}
         <code>variable_migration_backup</code>.
       </p>
 
@@ -284,7 +296,9 @@ export default function VariableMergeConsole() {
             {result.changes.map((ch, i) => (
               <li key={i}>
                 <code>{ch.legacy.join(', ')}</code> → <code>{ch.canonical}</code> ({ch.rule}):{' '}
-                {ch.eventsTouched} event(s)
+                {ch.eventsTouched} event(s), {ch.refsRewritten} chart/report formula(s),{' '}
+                {ch.groupsUpdated} clicker/manual group(s), {ch.registryUpdated} registry entry(ies)
+                {resultMode === 'preview' ? ' would update' : ' updated'}
               </li>
             ))}
           </ul>
