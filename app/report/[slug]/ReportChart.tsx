@@ -283,11 +283,13 @@ function KPIChart({ result, className, allowNA = false }: { result: ChartResult;
         // WHAT: Calculate allocated row heights based on grid proportions
         // WHY: KPI layout changes when title/icon are hidden
         // HOW: Match the CSS grid-template-rows variants in ReportChart.module.css
-        const valueRowFraction = allowNA ? 0.4 : 0.3;
+        //      (#359: rebalanced to 3fr:4fr:3fr / 3fr:7fr so the value — the hero number the
+        //      icon is meant to support — gets the largest share instead of the icon).
+        const valueRowFraction = 0.4;
         const titleRowFraction = 0.3;
-        const iconRowHeight = hasIcon ? (containerHeight * 0.4) : 0;
+        const iconRowHeight = hasIcon ? (containerHeight * 0.3) : 0;
         const valueRowHeight = hasIcon
-          ? (showTitle ? (containerHeight * valueRowFraction) : (containerHeight * 0.6))
+          ? (showTitle ? (containerHeight * valueRowFraction) : (containerHeight * 0.7))
           : (showTitle ? (containerHeight * 0.7) : containerHeight);
         const titleRowHeight = showTitle ? (containerHeight * titleRowFraction) : 0;
         

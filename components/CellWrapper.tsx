@@ -79,10 +79,25 @@ export default function CellWrapper({
             const minFontSize = 10;
             if (scaleFactor < 0.95 && newFontSize >= minFontSize) {
               titleElement.style.setProperty('font-size', `${Math.max(minFontSize, newFontSize)}px`, 'important');
-              
+
               // Keep this as warn (not log) to avoid noisy console.log in production.
               console.warn(
                 `[CellWrapper] Title font reduced: "${title}" from ${currentFontSize}px to ${Math.max(minFontSize, newFontSize)}px`
+              );
+            } else if (newFontSize < minFontSize) {
+              // #364: content still doesn't fit even at the minimum readable font size, and
+              // Layout Grammar prohibits ellipsis/truncation (see .title's own comment: "text
+              // should fit or wrap naturally... Ellipsis hides content which is prohibited").
+              // Both the zone (fixed height) and .title itself (max-height: 3 lines) clip via
+              // overflow:hidden, so both must be defeated or the title still cuts off mid-word
+              // with zero indication text is missing. Let it overflow visibly instead — the
+              // same "never hide content" resolution used everywhere else in this codebase
+              // (text/table/pie all use overflow:visible for the same reason).
+              titleZone.style.setProperty('overflow', 'visible', 'important');
+              titleElement.style.setProperty('overflow', 'visible', 'important');
+              titleElement.style.setProperty('max-height', 'none', 'important');
+              console.warn(
+                `[CellWrapper] Title "${title}" still exceeds its zone at the ${minFontSize}px floor — showing in full instead of clipping (Layout Grammar: no truncation).`
               );
             }
           }
@@ -166,10 +181,21 @@ export default function CellWrapper({
             const minFontSize = 9;
             if (scaleFactor < 0.95 && newFontSize >= minFontSize) {
               subtitleElement.style.setProperty('font-size', `${Math.max(minFontSize, newFontSize)}px`, 'important');
-              
+
               // WHAT: Log when font size reduction occurs for debugging
               // WHY: Help identify problematic subtitles that need attention
               console.log(`[CellWrapper] Subtitle font reduced: "${subtitle}" from ${currentFontSize}px to ${Math.max(minFontSize, newFontSize)}px`);
+            } else if (newFontSize < minFontSize) {
+              // #364: same "never hide content" resolution as the title effect above — content
+              // still doesn't fit at the minimum readable font size, so defeat both the zone's
+              // and .subtitle's own overflow:hidden/max-height clamp instead of silently
+              // clipping (Layout Grammar prohibits ellipsis/truncation).
+              subtitleZone.style.setProperty('overflow', 'visible', 'important');
+              subtitleElement.style.setProperty('overflow', 'visible', 'important');
+              subtitleElement.style.setProperty('max-height', 'none', 'important');
+              console.warn(
+                `[CellWrapper] Subtitle "${subtitle}" still exceeds its zone at the ${minFontSize}px floor — showing in full instead of clipping (Layout Grammar: no truncation).`
+              );
             }
           }
         } catch (error) {

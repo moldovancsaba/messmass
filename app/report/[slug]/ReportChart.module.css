@@ -91,12 +91,21 @@
 
 /* KPI Chart - 3-row grid: Icon (40%), Value (30%), Title (30%) */
 .kpi {
-  /* WHAT: Full height cell with internal 3-row grid (4fr:3fr:3fr = 40%:30%:30%) */
-  /* WHY: Larger icon section for visual impact */
+  /* WHAT: Full height cell with internal 3-row grid (3fr:4fr:3fr = 30%:40%:30%) */
+  /* WHY: #359 - the value is the hero number (JS scales its font via cqh against this row's
+   *      height: kpiValueRow, ReportChart.tsx). The original 4fr:3fr:3fr gave the (purely
+   *      decorative) icon MORE room than the value, so on a short mobile card (after #357's
+   *      fix, the real floor is 250px) the icon visually dwarfed the value it's meant to
+   *      support. Rebalanced so value gets the largest share. Deliberately kept as fixed Nfr
+   *      fractions (not min-content/minmax) — value/title font-size is derived from THIS row's
+   *      own height via cqh (container query units); switching the row to intrinsic/content
+   *      sizing would make that height depend on the font-size that depends on the height, a
+   *      circular reference that empties cqh — a real regression risk this rebalance avoids
+   *      while still fixing the disproportion. */
   /* HOW: Direct grid layout with vertical centering for all content */
   height: var(--block-height, var(--row-height, var(--mm-block-height-default))); /* WHAT: Use centrally managed block-height from row, fallback to design token (P1 1.4: explicit height cascade, no implicit fallbacks) */
   display: grid;
-  grid-template-rows: 4fr 3fr 3fr; /* Icon (top 40%) : Value (middle 30%) : Title (bottom 30%) */
+  grid-template-rows: 3fr 4fr 3fr; /* Icon (top 30%) : Value (middle 40%) : Title (bottom 30%) */
   gap: 0;
   width: 100%;
   box-sizing: border-box;
@@ -108,7 +117,7 @@
   /* WHAT: Collapse KPI title row when showTitle=false */
   /* WHY: Avoid leaving an empty 3rd row that shrinks icon/value */
   /* HOW: Switch to 2-row grid while keeping icon row stable */
-  grid-template-rows: 4fr 6fr; /* Icon (40%) : Value (60%) */
+  grid-template-rows: 3fr 7fr; /* Icon (30%) : Value (70%) */
 }
 
 .kpiNoIcon {
@@ -225,9 +234,16 @@
 
 /* ValueChain Chart - Icon 32px, Title row 32px, Description row 16px; shrink-to-fit in JS */
 .valuechain {
+  /* WHAT: 3fr:4fr:3fr = 30%:40%:30% */
+  /* WHY: #359 - .valuechainTitleRow is the big bold value (32px, chartValueColor); the
+   *      original 3fr:3fr:4fr gave the caption description MORE room (40%) than the value
+   *      it captions (30%). Rebalanced so the value gets the largest share, matching the
+   *      same fix applied to .kpi. Unlike KPI, valuechain's rows use fixed px font-sizes
+   *      (not cqh-derived), so there's no circular-sizing risk here — still kept as fixed
+   *      Nfr fractions for consistency with the KPI treatment. */
   height: var(--block-height, var(--row-height, var(--mm-block-height-default)));
   display: grid;
-  grid-template-rows: 3fr 3fr 4fr; /* Icon (30%) : Title (30%) : Description (40%) */
+  grid-template-rows: 3fr 4fr 3fr; /* Icon (30%) : Title/Value (40%) : Description (30%) */
   gap: 0;
   width: 100%;
   box-sizing: border-box;
@@ -237,7 +253,7 @@
 }
 
 .valuechainNoIcon {
-  grid-template-rows: 4fr 6fr; /* Title (40%) : Description (60%) */
+  grid-template-rows: 7fr 3fr; /* Title/Value (70%) : Description (30%) */
 }
 
 .valuechainNoDesc {
@@ -1101,16 +1117,19 @@
   box-sizing: border-box;
 }
 
-/* WHAT: Give text-heavy columns more width so words fit without breaking or overflow */
-.tableMarkdown table th:nth-child(1),
-.tableMarkdown table td:nth-child(1) { width: 22%; } /* Esemény neve */
-.tableMarkdown table th:nth-child(2),
-.tableMarkdown table td:nth-child(2) { width: 10%; } /* Dátum */
-.tableMarkdown table th:nth-child(3),
-.tableMarkdown table td:nth-child(3) { width: 20%; } /* Partner neve */
-.tableMarkdown table th:nth-child(4),
-.tableMarkdown table td:nth-child(4) { width: 14%; } /* Esemény helyszín */
-/* Columns 5+ share remaining 34% via table-layout: fixed */
+/* WHAT: Column widths are NOT hard-coded per position.
+ * WHY: #363 - the previous rule set width: 22%/10%/20%/14% on the first 4 columns by
+ *      `nth-child` position, tuned for one specific 4-column schema (event name / date /
+ *      partner name / venue). Since nth-child matches by POSITION not identity, those same
+ *      percentages were silently applied to every markdown table regardless of its actual
+ *      column count or meaning — a 2-column table got 22%+10% on its first two columns and
+ *      an undefined split on the rest; a 6-column table had its first 4 columns forced
+ *      asymmetric while columns 5-6 shared whatever was left.
+ * HOW: With no explicit width on any column, table-layout:fixed distributes space EVENLY
+ *      across however many columns actually exist — correct by construction for any schema.
+ *      Long-text columns get proportionally less room than the old scheme gave "Esemény
+ *      neve", but the existing font-size clamp() and break-opportunity insertion (both
+ *      already in this component) handle that via wrapping/shrinking, not clipping. */
 
 .tableMarkdown table thead {
   background: var(--chartTitleColor, var(--mm-gray-100));
@@ -1214,18 +1233,6 @@
   border-radius: var(--mm-radius-lg); /* Match container rounded corners */
 }
 
-/* WHAT: Image container on mobile - same dynamic aspect ratio approach */
-/* WHY: Consistent behavior across breakpoints */
-@media (max-width: 768px) {
-  .imageContainer {
-    width: 100% !important;
-    height: auto !important; /* Let aspect-ratio determine height */
-    min-height: 0 !important; /* Remove min-height constraint */
-    max-width: 100% !important;
-    max-height: 100% !important;
-    aspect-ratio: var(--image-aspect-ratio, 16 / 9) !important; /* Use actual image aspect ratio */
-  }
-}
 
 /* VALUE Composite Chart */
 .valueComposite {
@@ -1278,40 +1285,7 @@
   container-type: size;
 }
 
-/* Responsive Adjustments */
-@media (max-width: 768px) {
-  .pieSegments {
-    flex-direction: column;
-    gap: var(--mm-space-4);
-  }
-  
-  .barTable {
-    /* WHAT: Mobile - table remains responsive, rows expand naturally */
-    /* WHY: Tables are naturally responsive, no special mobile handling needed */
-    width: 100%;
-    margin: 0 auto; /* WHAT: Center table on mobile too */
-  }
-  
-  .barLabel {
-    /* WHAT: Mobile - adjust label column width for smaller screens */
-    width: 45%; /* WHAT: Even wider label column on mobile for better readability */
-    padding-right: var(--mm-space-1);
-  }
-  
-  .barTrackCell {
-    /* WHAT: Mobile - track column fills remaining space */
-    padding: 0 var(--mm-space-1);
-  }
-  
-  .barValue {
-    /* WHAT: Mobile - value column auto-width, same font size as label */
-    padding-left: var(--mm-space-1);
-    font-size: var(--block-base-font-size); /* WHAT: Same font size as label */
-  }
-  
-  /* WHAT: Charts must scale to fit their container on mobile
-   * WHY: Prevent overflow - charts must behave same as desktop (scale and fit)
-   * HOW: Maintain flexbox fill behavior, ensure container queries work properly */
+
 /* A-R-11: Error Placeholder Styles */
 .chartError {
   display: flex;
@@ -1347,6 +1321,52 @@
   max-width: 100%;
   word-wrap: break-word;
 }
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+  /* WHAT: Image container on mobile - same dynamic aspect ratio approach */
+  /* WHY: Consistent behavior across breakpoints */
+  .imageContainer {
+    width: 100% !important;
+    height: auto !important; /* Let aspect-ratio determine height */
+    min-height: 0 !important; /* Remove min-height constraint */
+    max-width: 100% !important;
+    max-height: 100% !important;
+    aspect-ratio: var(--image-aspect-ratio, 16 / 9) !important; /* Use actual image aspect ratio */
+  }
+
+  .pieSegments {
+    flex-direction: column;
+    gap: var(--mm-space-4);
+  }
+  
+  .barTable {
+    /* WHAT: Mobile - table remains responsive, rows expand naturally */
+    /* WHY: Tables are naturally responsive, no special mobile handling needed */
+    width: 100%;
+    margin: 0 auto; /* WHAT: Center table on mobile too */
+  }
+  
+  .barLabel {
+    /* WHAT: Mobile - adjust label column width for smaller screens */
+    width: 45%; /* WHAT: Even wider label column on mobile for better readability */
+    padding-right: var(--mm-space-1);
+  }
+  
+  .barTrackCell {
+    /* WHAT: Mobile - track column fills remaining space */
+    padding: 0 var(--mm-space-1);
+  }
+  
+  .barValue {
+    /* WHAT: Mobile - value column auto-width, same font size as label */
+    padding-left: var(--mm-space-1);
+    font-size: var(--block-base-font-size); /* WHAT: Same font size as label */
+  }
+  
+  /* WHAT: Charts must scale to fit their container on mobile
+   * WHY: Prevent overflow - charts must behave same as desktop (scale and fit)
+   * HOW: Maintain flexbox fill behavior, ensure container queries work properly */
 
   .chart:not(.image) {
     /* WHAT: Consume --block-height directly instead of height:100%. */

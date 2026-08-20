@@ -141,7 +141,6 @@ export default function ReportContent({
           block={block}
           chartResults={chartResults}
           charts={charts} // A-R-13: Pass chart configs for validation
-          gridSettings={gridSettings}
           allowNA={allowNA}
           showBlockTitles={showBlockTitles}
         />
@@ -157,7 +156,6 @@ interface ReportBlockProps {
   block: ReportBlock;
   chartResults: Map<string, ChartResult>;
   charts?: Map<string, Chart> | null; // A-R-13: Chart configs for validation
-  gridSettings: GridSettings;
   allowNA?: boolean;
   showBlockTitles?: boolean;
 }
@@ -166,15 +164,23 @@ interface ReportBlockProps {
  * WHAT: Group charts into rows - blocks NEVER break into multiple lines
  * WHY: Layout Grammar rule - a block is a single horizontal container
  * HOW: Put ALL charts in a single row, grid is based on sum of units
- * 
+ *
  * Layout Grammar Rules:
  * - Charts have width: 1 or 2 units
  * - Block grid = sum of all chart units (e.g., [1,2,1] → "1fr 2fr 1fr")
- * - Block NEVER breaks into multiple rows
+ * - Block NEVER breaks into multiple rows, at any breakpoint
+ *
+ * #365: this function used to take a `maxColumns` parameter that it silently ignored
+ * (dead — the Layout Grammar contract above makes per-breakpoint column chunking
+ * fundamentally incompatible with "a block is always one row"). Removed rather than
+ * wired up: `gridSettings.mobile`/`.tablet` (hooks/useReportLayout.ts) remain a real,
+ * admin-editable configuration surface (app/admin/visualization/page.tsx persists
+ * desktopUnits/tabletUnits/mobileUnits), they're just not consumed at render time —
+ * mobile's single-column layout comes entirely from the CSS layer (ReportContent.module.css
+ * `.row`/`.rowItem` mobile rules), not from JS chunking charts into multiple rows.
  */
 function groupChartsIntoRows(
-  charts: Array<{ chartId: string; width: number; order: number }>,
-  maxColumns: number // WHAT: Unused parameter kept for backward compatibility
+  charts: Array<{ chartId: string; width: number; order: number }>
 ): Array<Array<{ chartId: string; width: number; order: number }>> {
   // WHAT: Return all charts as a single row
   // WHY: Blocks never break - all charts in one horizontal row
@@ -398,7 +404,7 @@ function ResponsiveRow({ rowCharts, chartResults, charts, rowIndex, unifiedTextF
   );
 }
 
-function ReportBlock({ block, chartResults, charts, gridSettings, allowNA = false, showBlockTitles = true }: ReportBlockProps) {
+function ReportBlock({ block, chartResults, charts, allowNA = false, showBlockTitles = true }: ReportBlockProps) {
   // WHAT: Calculate unified font-size for all text charts in this block
   // WHY: All text charts should use the same font-size, fitting the largest content
   // HOW: Use hook to measure containers and calculate optimal size
@@ -634,7 +640,7 @@ function ReportBlock({ block, chartResults, charts, gridSettings, allowNA = fals
   }
 
   // Group charts into rows based on desktop column count
-  const rows = groupChartsIntoRows(validCharts, gridSettings.desktop);
+  const rows = groupChartsIntoRows(validCharts);
   
   // DEBUG: Log rendering for specific blocks
   if (block.title && (block.title.includes('OVERVIEW') || block.title.includes('Overview'))) {
