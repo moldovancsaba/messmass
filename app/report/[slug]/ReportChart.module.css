@@ -324,7 +324,13 @@
   height: 100% !important; /* CRITICAL: Fill full height of parent */
   width: 100%;
   display: grid;
-  grid-template-rows: 2fr 5fr 3fr; /* Title (20%) : Pie (50%) : Legend (30%) - larger, still-circular donut */
+  /* WHAT: Title + legend size to their content; the donut takes ALL leftover height.
+   * WHY: Fixed fractions (was 2fr:5fr:3fr) over-reserve for a 1-line title and a short
+   *      2-item legend, leaving the donut only 50% of the card and a big void below —
+   *      worst on wide/short mobile cards. `auto` rows collapse to content so the donut
+   *      grows into the space instead of a fixed sliver. minmax(0,1fr) lets it shrink
+   *      without overflowing. */
+  grid-template-rows: min-content minmax(0, 1fr) minmax(2.75rem, min-content);
   gap: 0;
   align-items: stretch;
   justify-items: stretch;
@@ -334,8 +340,8 @@
 .pieGridNoTitle {
   /* WHAT: Collapse PIE title row when showTitle=false */
   /* WHY: Without the title element, the grid would otherwise leave an unused row */
-  /* HOW: Switch to 2 rows: Pie + Legend */
-  grid-template-rows: 7fr 3fr; /* Pie (70%) : Legend (30%) */
+  /* HOW: Switch to 2 rows: donut takes leftover, legend keeps its guaranteed floor */
+  grid-template-rows: minmax(0, 1fr) minmax(2.75rem, min-content);
 }
 
 /* Title row: Grid row 1 (30% of cell), vertically centered */
@@ -462,7 +468,7 @@
   align-items: center;
   gap: clamp(0.125rem, 1cqh, var(--mm-space-1)); /* WHAT: Responsive gap - smaller in constrained spaces */
   width: 100%;
-  height: 100% !important; /* CRITICAL: Fill full grid row 3 height (30% of pieGrid) */
+  height: auto !important; /* size to content so the auto grid row reserves legend space */
   min-height: 0; /* CRITICAL: Allow grid row to shrink if needed */
   container-type: size;
   overflow: visible; /* WHAT: Layout Grammar: content must be visible */
@@ -1369,7 +1375,9 @@
   /* HOW: CSS Grid with grid-template-rows: 3fr 4fr 3fr ensures content stays within frame */
   .pieGrid {
     display: grid !important; /* WHAT: CSS Grid layout (table-style) */
-    grid-template-rows: 2fr 5fr 3fr !important; /* Title (20%) : Pie (50%) : Legend (30%) */
+    /* Title sizes to content, donut takes leftover, legend keeps a guaranteed floor
+     * so it can't collapse under the donut's aspect-ratio square (see base rule). */
+    grid-template-rows: min-content minmax(0, 1fr) minmax(2.75rem, min-content) !important;
     height: 100% !important;
     width: 100% !important;
   }
@@ -1420,7 +1428,7 @@
     display: flex !important;
     flex-direction: column !important;
     width: 100% !important;
-    height: 100% !important; /* CRITICAL: Fill full grid row 3 height */
+    height: auto !important; /* size to content so the auto grid row reserves legend space */
     min-height: 0 !important; /* Allow grid row to shrink if needed */
     overflow: visible !important; /* WHAT: Layout Grammar: content must be visible */
     justify-content: flex-start !important; /* Align legend items to start */
