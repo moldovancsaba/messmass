@@ -18,6 +18,18 @@ const doc = {
   ],
   // remoteFans keeps its "use stored value, else indoor+outdoor" fallback; names are data.
   fans: { remoteFansVar: 'remoteFans', stadiumVar: 'stadium', remoteFansFallbackFormula: '[indoor]+[outdoor]' },
+  // Estimate male/female from fanmass's AI demographics when the manual clicker was never
+  // used for this event (male=0 AND female=0, a "never recorded" default, not a real zero).
+  fallbackGroups: [
+    {
+      label: 'Gender (fanmass AI estimate when the manual clicker was never used)',
+      triggerVars: ['male', 'female'],
+      entries: [
+        { key: 'male', label: 'Male (fanmass estimate)', formula: '([fanmassGenderMalePct]/100)*[fanmassDemographicsAnalyzed]' },
+        { key: 'female', label: 'Female (fanmass estimate)', formula: '([fanmassGenderFemalePct]/100)*[fanmassDemographicsAnalyzed]' },
+      ],
+    },
+  ],
   updatedAt: new Date().toISOString(),
 };
 await db.collection('derived_variable_config').replaceOne({ _id: 'default' }, doc, { upsert: true });

@@ -48,10 +48,12 @@ export interface MergeRequestItem {
 // Curated semantic families the audit found (not structurally detectable).
 // canonical is the name reports SHOULD use; legacy names fold into it.
 const SEED_FAMILIES: Array<{ canonical: string; legacy: string[] }> = [
-  { canonical: 'visitFacebook', legacy: ['ventFacebook'] },
-  { canonical: 'visitInstagram', legacy: ['ventInstagram'] },
-  { canonical: 'directUrl', legacy: ['ventUrl'] },
-  { canonical: 'visitQrCode', legacy: ['ventQr'] },
+  // NOTE (2026-08-20): ventFacebook/ventInstagram/ventQr/ventUrl were originally seeded here
+  // on the assumption that `vent*` is a truncation/typo of `visit*` (same metric, different
+  // name). User correction: these are sourced from Bitly-adjacent tracking (a different
+  // measurement channel than the visit*/direct* direct-visit tracking), not name variants of
+  // the same metric — merging would conflate two different data sources. All four removed.
+  // Do not merge any vent* field without confirming its actual source first.
   { canonical: 'baseballCap', legacy: ['Caps'] },
 ];
 
@@ -286,20 +288,42 @@ async function updateGroups(db: Db, from: string, to: string, dryRun: boolean, b
 
 /** Rename the bare variable-name fields in derived_variable_config.fans. */
 async function rewriteDerivedConfigNames(db: Db, from: string, to: string, dryRun: boolean, backups: DocBackup[]): Promise<number> {
+  type FallbackGroup = { triggerVars?: string[]; entries?: Array<{ key?: string }> };
+  type ConfigDoc = { _id: unknown; fans?: { remoteFansVar?: string; stadiumVar?: string }; fallbackGroups?: FallbackGroup[] };
+
   let count = 0;
-  const docs = await db
-    .collection('derived_variable_config')
-    .find({ $or: [{ 'fans.remoteFansVar': from }, { 'fans.stadiumVar': from }] })
-    .toArray()
-    .catch(() => []);
+  // Full scan (this collection has at most a handful of docs — one per template) since the
+  // bare-name field can be nested inside fallbackGroups[].triggerVars[]/entries[].key, which
+  // a MongoDB query filter can't express as cleanly as a plain JS check on the fetched doc.
+  const docs = (await db.collection('derived_variable_config').find({}).toArray().catch(() => [])) as unknown as ConfigDoc[];
   for (const d of docs) {
+    let touched = false;
+    const fans = d.fans ? { ...d.fans } : undefined;
+    if (fans?.remoteFansVar === from) { fans.remoteFansVar = to; touched = true; }
+    if (fans?.stadiumVar === from) { fans.stadiumVar = to; touched = true; }
+
+    const fallbackGroups = d.fallbackGroups?.map(group => {
+      const triggerVars = group.triggerVars?.map(v => {
+        if (v !== from) return v;
+        touched = true;
+        return to;
+      });
+      const entries = group.entries?.map(e => {
+        if (e.key !== from) return e;
+        touched = true;
+        return { ...e, key: to };
+      });
+      return { ...group, ...(triggerVars ? { triggerVars } : {}), ...(entries ? { entries } : {}) };
+    });
+
+    if (!touched) continue;
     count++;
     if (dryRun) continue;
     backups.push({ collection: 'derived_variable_config', id: d._id, before: d });
-    const set: Record<string, string> = {};
-    if ((d as { fans?: { remoteFansVar?: string } }).fans?.remoteFansVar === from) set['fans.remoteFansVar'] = to;
-    if ((d as { fans?: { stadiumVar?: string } }).fans?.stadiumVar === from) set['fans.stadiumVar'] = to;
-    await db.collection('derived_variable_config').updateOne({ _id: d._id }, { $set: set });
+    const set: Record<string, unknown> = {};
+    if (fans) set.fans = fans;
+    if (fallbackGroups) set.fallbackGroups = fallbackGroups;
+    await db.collection('derived_variable_config').updateOne({ _id: d._id as never }, { $set: set });
   }
   return count;
 }

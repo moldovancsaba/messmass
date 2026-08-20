@@ -19,6 +19,30 @@ const DEFAULT = {
     { key: 'totalMerch', label: 'Merch total', formula: '[merched]+[jersey]+[scarf]+[flags]+[baseballCap]+[other]' },
   ],
   fans: { remoteFansVar: 'remoteFans', stadiumVar: 'stadium', remoteFansFallbackFormula: '[indoor]+[outdoor]' },
+  // WHAT: Estimate manual-clicker fields from fanmass's AI-detected demographics when the
+  //     manual clicker was never used for this event.
+  // WHY: male/female are raw headcounts from the operator's clicker; fanmassGenderMalePct/
+  //     fanmassGenderFemalePct are AI percentages of a DIFFERENT, usually much larger,
+  //     photo-sampled population (fanmassDemographicsAnalyzed) — different units, different
+  //     population, so they can never be merged into one field (unlike a name-typo dupe).
+  //     But on events where nobody used the clicker (male=0 AND female=0, confirmed against
+  //     4 real events) while fanmass DID run, the operator's zero is a "never recorded" default,
+  //     not a real "zero fans" measurement — an estimate from the AI data is strictly better
+  //     than showing zero fans attended.
+  // HOW: The "should I use the fallback" decision (are ALL triggerVars exactly 0?) is a JS
+  //     condition (EditorDashboard.tsx) — this formula engine has no IF/ternary. Only the
+  //     estimate arithmetic itself is formula-driven, so a rename of any of these variables
+  //     still propagates via the /admin/kyc merge like everything else in this config.
+  fallbackGroups: [
+    {
+      label: 'Gender (fanmass AI estimate when the manual clicker was never used)',
+      triggerVars: ['male', 'female'],
+      entries: [
+        { key: 'male', label: 'Male (fanmass estimate)', formula: '([fanmassGenderMalePct]/100)*[fanmassDemographicsAnalyzed]' },
+        { key: 'female', label: 'Female (fanmass estimate)', formula: '([fanmassGenderFemalePct]/100)*[fanmassDemographicsAnalyzed]' },
+      ],
+    },
+  ],
 };
 
 export async function GET() {

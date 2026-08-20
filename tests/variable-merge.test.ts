@@ -47,4 +47,16 @@ describe('data-driven derived totals', () => {
   it('computes the remoteFans fallback like indoor+outdoor', () => {
     expect(evaluateFormula('[indoor]+[outdoor]', stats)).toBe(14);
   });
+
+  describe('fanmass AI demographic fallback (male/female estimate)', () => {
+    // Guards the fallbackGroups formula contract: a fanmass percentage of the
+    // AI-analyzed population converts to an estimated headcount.
+    const fanmassStats = { fanmassGenderMalePct: 77.7, fanmassGenderFemalePct: 21.8, fanmassDemographicsAnalyzed: 409 } as never;
+    it('estimates male count from percentage × analyzed population', () => {
+      expect(evaluateFormula('([fanmassGenderMalePct]/100)*[fanmassDemographicsAnalyzed]', fanmassStats)).toBeCloseTo(317.81, 1);
+    });
+    it('estimates female count from percentage × analyzed population', () => {
+      expect(evaluateFormula('([fanmassGenderFemalePct]/100)*[fanmassDemographicsAnalyzed]', fanmassStats)).toBeCloseTo(89.16, 1);
+    });
+  });
 });

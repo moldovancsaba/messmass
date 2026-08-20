@@ -114,6 +114,7 @@ export default function EditorDashboard({ project: initialProject }: EditorDashb
   const [derivedConfig, setDerivedConfig] = useState<{
     totals: Array<{ key: string; label: string; formula: string }>;
     fans: { remoteFansVar: string; stadiumVar: string; remoteFansFallbackFormula: string };
+    fallbackGroups: Array<{ label: string; triggerVars: string[]; entries: Array<{ key: string; label: string; formula: string }> }>;
   }>({
     totals: [
       { key: 'totalGender', label: 'Gender total', formula: '[female]+[male]' },
@@ -123,6 +124,16 @@ export default function EditorDashboard({ project: initialProject }: EditorDashb
       { key: 'totalMerch', label: 'Merch total', formula: '[merched]+[jersey]+[scarf]+[flags]+[baseballCap]+[other]' },
     ],
     fans: { remoteFansVar: 'remoteFans', stadiumVar: 'stadium', remoteFansFallbackFormula: '[indoor]+[outdoor]' },
+    fallbackGroups: [
+      {
+        label: 'Gender (fanmass AI estimate when the manual clicker was never used)',
+        triggerVars: ['male', 'female'],
+        entries: [
+          { key: 'male', label: 'Male (fanmass estimate)', formula: '([fanmassGenderMalePct]/100)*[fanmassDemographicsAnalyzed]' },
+          { key: 'female', label: 'Female (fanmass estimate)', formula: '([fanmassGenderFemalePct]/100)*[fanmassDemographicsAnalyzed]' },
+        ],
+      },
+    ],
   });
 
   // Google Sheets event-level sync (Phase 3)
@@ -146,7 +157,11 @@ export default function EditorDashboard({ project: initialProject }: EditorDashb
         const res = await fetch('/api/derived-variable-config', { cache: 'no-store' });
         const data = await res.json();
         if (mounted && data?.success && data.config?.totals && data.config?.fans) {
-          setDerivedConfig({ totals: data.config.totals, fans: data.config.fans });
+          setDerivedConfig(prev => ({
+            totals: data.config.totals,
+            fans: data.config.fans,
+            fallbackGroups: data.config.fallbackGroups ?? prev.fallbackGroups,
+          }));
         }
       } catch {
         // keep the built-in defaults — never break the editor on a config read
@@ -440,10 +455,24 @@ export default function EditorDashboard({ project: initialProject }: EditorDashb
   }, [project.partner1?.clickerSetId, project.partner2?.clickerSetId])
   // WHAT: Derived totals computed from the data-driven config (no hardcoded
   //     variable names). WHY: a rename/merge in /admin/kyc updates these formulas.
-  const evalNum = (formula: string): number => {
-    const r = evaluateFormula(formula, project.stats as never);
+  const rawEvalNum = (formula: string, stats: Record<string, unknown>): number => {
+    const r = evaluateFormula(formula, stats as never);
     return typeof r === 'number' ? r : 0;
   };
+  // WHAT: Stats view for total formulas, with AI-estimate fallbacks substituted in when a
+  //     fallbackGroup's trigger fields are all exactly 0 (manual clicker never used for this
+  //     event). The raw clicker button/stat card for e.g. male/female still reads/writes
+  //     project.stats directly (the operator should see what was actually clicked) — only the
+  //     TOTALS computed here use the estimate, so nothing overwrites real recorded data.
+  const statsForTotals: Record<string, unknown> = { ...(project.stats as Record<string, unknown>) };
+  for (const group of derivedConfig.fallbackGroups || []) {
+    const triggered = group.triggerVars.every(v => ((project.stats as Record<string, number>)[v] ?? 0) === 0);
+    if (!triggered) continue;
+    for (const entry of group.entries) {
+      statsForTotals[entry.key] = rawEvalNum(entry.formula, project.stats as Record<string, unknown>);
+    }
+  }
+  const evalNum = (formula: string): number => rawEvalNum(formula, statsForTotals);
   const totalByKey: Record<string, number> = {};
   for (const t of derivedConfig.totals) totalByKey[t.key] = evalNum(t.formula);
   const fansCfg = derivedConfig.fans;
