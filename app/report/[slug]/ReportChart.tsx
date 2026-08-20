@@ -872,18 +872,21 @@ function PieChart({ result, className }: { result: ChartResult; className?: stri
     responsive: true,
     maintainAspectRatio: false,
     cutout: '50%',
-    // #369: animation disabled. chartData/options here are fresh object literals on every
-    // render (not memoized), so any unrelated parent re-render - and ReportContent's
-    // ResponsiveRow re-renders often, its ResizeObserver firing on every layout shift as the
-    // page scrolls - makes react-chartjs-2 see new prop references and call Chart.js's
-    // animated update(). That update's requestAnimationFrame-driven draw loop can race a
-    // concurrent resize()-triggered canvas clear on the same <canvas>, leaving a torn frame:
-    // reported live as a chunk missing from the donut ring with a legend swatch bleeding into
-    // the gap, reproduced on both Chrome and Safari (confirming it's a timing race, not a
-    // browser rendering quirk). This is a static report, not an interactive dashboard, so an
-    // enter/update animation has no UX value here - disabling it makes every draw synchronous
-    // and complete before the call returns, closing the race entirely.
+    // #369: animation disabled (still correct: no scroll-driven update() should ever animate
+    // on a static report), but it did NOT fix the reported bug - that was disproven by direct
+    // reproduction: the torn-ring artifact (a chunk missing from the ring, legend swatch
+    // bleeding into the gap) reproduces on a plain CLICK/TAP on the chart, with zero scrolling
+    // and zero resize involved, even with animation: false already in place. The real trigger
+    // is Chart.js's own hover/active-element redraw path (tooltip + hoverOffset) - clicking
+    // sets an active element and Chart.js redraws that slice's arc offset outward, and that
+    // redraw is what's corrupted. Since this is a read-only report (every value the tooltip
+    // would show - label, value, percentage - is already in the HTML legend right below the
+    // chart), the correct fix is to stop Chart.js from listening for interaction events at
+    // all, rather than keep chasing the specific redraw bug inside the charting library.
     animation: false,
+    events: [], // WHAT: No mouse/touch/click listeners attached at all - no hover, no active
+    // element, no tooltip, ever. WHY: the only draw call Chart.js will ever make is the
+    // initial one; there is no interactive path left that can trigger a corrupted redraw.
     layout: {
       padding: 10 // WHAT: Padding to prevent hover overflow
     },
@@ -892,6 +895,8 @@ function PieChart({ result, className }: { result: ChartResult; className?: stri
         display: false // WHAT: Hide Chart.js legend, use custom HTML legend
       },
       tooltip: {
+        // #369: enabled is now moot with events: [] above (tooltip can never be triggered),
+        // left in place rather than removed in case events are ever re-enabled later.
         enabled: true,
         backgroundColor: tooltipColors.bg,
         titleColor: tooltipColors.text,
