@@ -18,8 +18,33 @@ interface ErrorProps {
   reset: () => void;
 }
 
+// WHAT: Recognise the post-deploy "chunk skew" error class.
+// WHY: When a new deployment lands, a browser holding the previous page requests
+//     JS chunk hashes the new build renamed, so the first navigation throws
+//     ChunkLoadError / "Loading chunk failed" / "Failed to fetch dynamically
+//     imported module". A one-time reload fetches the new HTML and it works —
+//     which is why such errors "fix themselves on refresh". We do that reload
+//     automatically so users never see the blip after a deploy.
+function isChunkSkewError(error: Error): boolean {
+  const text = `${error?.name || ''} ${error?.message || ''}`;
+  return /ChunkLoadError|Loading chunk [\d]+ failed|Failed to fetch dynamically imported module|Importing a module script failed|error loading dynamically imported module/i.test(text);
+}
+
 export default function Error({ error, reset }: ErrorProps) {
   useEffect(() => {
+    // Auto-recover from post-deploy chunk skew: reload ONCE (guarded by a
+    // sessionStorage flag so a genuinely broken chunk can't loop forever).
+    if (typeof window !== 'undefined' && isChunkSkewError(error)) {
+      const KEY = 'mm-chunk-reload-at';
+      const last = Number(sessionStorage.getItem(KEY) || '0');
+      // only auto-reload if we haven't already tried in the last 10s
+      if (Date.now() - last > 10_000) {
+        sessionStorage.setItem(KEY, String(Date.now()));
+        window.location.reload();
+        return;
+      }
+    }
+
     // Log the error to error reporting service
     console.error('Application error:', error);
 
