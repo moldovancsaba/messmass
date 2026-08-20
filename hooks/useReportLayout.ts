@@ -21,6 +21,7 @@ export interface ReportBlock {
     order: number;
   }>;
   blockAspectRatio?: string; // R-LAYOUT-02.1: Optional block aspect ratio override (e.g., "4:6")
+  mobileAspectRatio?: string; // #358: Optional mobile-only aspect ratio override (e.g., "1:1"), used instead of blockAspectRatio on mobile
   tableHeightMultiplier?: number; // Table height control: height = blockWidth × multiplier (0.1 to 5.0)
 }
 
@@ -146,6 +147,7 @@ export function useReportLayout(options: UseReportLayoutOptions): UseReportLayou
                   order: Number(c.order ?? 0),
                 })),
                 blockAspectRatio: b.blockAspectRatio || b.overrides?.blockAspectRatio, // R-LAYOUT-02.1: Optional aspect ratio override
+                mobileAspectRatio: b.mobileAspectRatio || b.overrides?.mobileAspectRatio, // #358: Optional mobile-only aspect ratio override
                 tableHeightMultiplier: b.tableHeightMultiplier || b.overrides?.tableHeightMultiplier, // Table height control
               })),
             },
@@ -194,6 +196,7 @@ export function useReportLayout(options: UseReportLayoutOptions): UseReportLayou
                   order: Number(c.order ?? 0),
                 })),
                 blockAspectRatio: b.blockAspectRatio || b.overrides?.blockAspectRatio, // R-LAYOUT-02.1: Optional aspect ratio override
+                mobileAspectRatio: b.mobileAspectRatio || b.overrides?.mobileAspectRatio, // #358: Optional mobile-only aspect ratio override
                 tableHeightMultiplier: b.tableHeightMultiplier || b.overrides?.tableHeightMultiplier, // Table height control
               })),
             },

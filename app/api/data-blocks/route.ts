@@ -23,6 +23,7 @@ interface DataVisualizationBlock {
   isActive: boolean;
   showTitle?: boolean;
   blockAspectRatio?: string; // R-LAYOUT-02.1: Optional block aspect ratio override (e.g., "4:6")
+  mobileAspectRatio?: string; // #358: Optional mobile-only aspect ratio override (e.g., "1:1"), used instead of blockAspectRatio on mobile
   tableHeightMultiplier?: number; // Table height control: height = blockWidth × multiplier (0.1 to 5.0)
   createdAt?: string;
   updatedAt?: string;
@@ -119,7 +120,7 @@ export async function PUT(request: NextRequest) {
 
   try {
     const body = await request.json();
-    const { _id, name, charts, order, isActive, showTitle, blockAspectRatio, tableHeightMultiplier } = body;
+    const { _id, name, charts, order, isActive, showTitle, blockAspectRatio, mobileAspectRatio, tableHeightMultiplier } = body;
 
     if (!_id || !name) {
       return NextResponse.json(
@@ -145,7 +146,12 @@ export async function PUT(request: NextRequest) {
     if (blockAspectRatio !== undefined) {
       updateData.blockAspectRatio = blockAspectRatio;
     }
-    
+
+    // WHAT: Include mobileAspectRatio if provided (#358)
+    if (mobileAspectRatio !== undefined) {
+      updateData.mobileAspectRatio = mobileAspectRatio;
+    }
+
     // WHAT: Include tableHeightMultiplier if provided (Table height control)
     if (tableHeightMultiplier !== undefined) {
       updateData.tableHeightMultiplier = tableHeightMultiplier;

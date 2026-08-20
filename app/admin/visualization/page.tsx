@@ -27,6 +27,7 @@ interface DataVisualizationBlock {
   isActive: boolean;
   showTitle?: boolean;
   blockAspectRatio?: string; // R-LAYOUT-02.1: Optional block aspect ratio override (e.g., "4:6")
+  mobileAspectRatio?: string; // #358: Optional mobile-only aspect ratio override (e.g., "1:1"), used instead of blockAspectRatio on mobile
   tableHeightMultiplier?: number; // Table height control: height = blockWidth × multiplier (0.1 to 5.0)
   createdAt?: string;
   updatedAt?: string;
@@ -2420,6 +2421,56 @@ export default function VisualizationPage() {
                           </label>
                           <small className={vizStyles.blockAspectRatioHelper}>
                             Allowed only for TEXT-only or TABLE-only blocks. Range 4:1 to 4:10. For TABLE blocks, Table Height Multiplier (below) takes priority if set.
+                          </small>
+                        </div>
+                      </div>
+                    );
+                  })()}
+
+                  {/* WHAT: Mobile Aspect Ratio Control (#358) */}
+                  {/* WHY: A block's desktop aspect ratio is wrong for a single narrow mobile column
+                   *      (e.g. a wide 4:1 desktop block becomes a squat sliver at mobile width);
+                   *      this lets an admin set a portrait/square ratio used instead on mobile only.
+                   *      Same TEXT-only/TABLE-only gate as the desktop ratio above — KPI/BAR/PIE
+                   *      blocks have their own internal fixed-fraction grids, out of scope here. */}
+                  {(() => {
+                    const allText = block.charts.length > 0 && block.charts.every(chart => resolveChartType(chart.chartId) === 'text');
+                    const allTable = block.charts.length > 0 && block.charts.every(chart => resolveChartType(chart.chartId) === 'table');
+                    const totalUnits = block.charts.reduce((sum, c) => sum + (normalizeUnitSize(c.unitSize ?? c.width)), 0);
+                    const canSetMobileAspectRatio = (allText || allTable) && totalUnits <= 4;
+                    if (!canSetMobileAspectRatio) return null;
+                    const MOBILE_ASPECT_OPTIONS = [
+                      { value: '', label: 'Same as desktop ratio' },
+                      ...([1, 2, 3, 4, 5, 6, 7, 8, 9, 10].flatMap(w =>
+                        [1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map(h => ({ value: `${w}:${h}`, label: `${w}:${h}` }))
+                      ))
+                    ];
+                    return (
+                      <div className={vizStyles.blockAspectRatioCard}>
+                        <h4 className={vizStyles.blockAspectRatioTitle}>Mobile Aspect Ratio</h4>
+                        <div className={vizStyles.blockAspectRatioControls}>
+                          <label htmlFor={`block-mobile-aspect-${block._id}`} className={vizStyles.blockAspectRatioLabel}>
+                            Mobile aspect ratio (width:height):
+                            <select
+                              id={`block-mobile-aspect-${block._id}`}
+                              value={block.mobileAspectRatio ?? ''}
+                              onChange={(e) => {
+                                const val = e.target.value;
+                                const updatedBlock = {
+                                  ...block,
+                                  mobileAspectRatio: val ? val : undefined
+                                };
+                                handleUpdateBlock(updatedBlock);
+                              }}
+                              className={vizStyles.blockAspectRatioSelect}
+                            >
+                              {MOBILE_ASPECT_OPTIONS.map(opt => (
+                                <option key={opt.value || 'default'} value={opt.value}>{opt.label}</option>
+                              ))}
+                            </select>
+                          </label>
+                          <small className={vizStyles.blockAspectRatioHelper}>
+                            Used instead of the desktop ratio at mobile widths (≤768px). Portrait/square ratios allowed (e.g. 1:1, 3:4) — the 4:x desktop convention does not apply here.
                           </small>
                         </div>
                       </div>

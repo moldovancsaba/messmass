@@ -68,6 +68,7 @@ async function resolveReportTemplate(
         isActive: block.isActive ?? true,
         charts: block.charts || [],
         blockAspectRatio: block.blockAspectRatio || ref.overrides?.blockAspectRatio, // R-LAYOUT-02.1: Optional aspect ratio override
+        mobileAspectRatio: block.mobileAspectRatio || ref.overrides?.mobileAspectRatio, // #358: Optional mobile-only aspect ratio override
         tableHeightMultiplier: block.tableHeightMultiplier || ref.overrides?.tableHeightMultiplier // Table height control
       };
     }).filter((b: any) => b !== null);

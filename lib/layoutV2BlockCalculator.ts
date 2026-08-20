@@ -194,7 +194,41 @@ export function validateAspectRatioRange(
   if (aspectHeight < 1 || aspectHeight > 10) {
     return { valid: false, error: `Aspect ratio height must be between 1 and 10. Got: ${aspectHeight}` };
   }
-  
+
+  return { valid: true };
+}
+
+/**
+ * WHAT: Validate a MOBILE aspect ratio override (independent of the desktop 4:x family)
+ * WHY: The desktop `validateAspectRatioRange` forces width===4 by convention (a "4:1 to 4:10"
+ *      product decision), which makes a portrait ratio (e.g. "1:1", "3:4") impossible to
+ *      express — but a block tuned wide-and-short for a desktop row is exactly wrong for a
+ *      single narrow mobile column. The height MATH (calculateLayoutV2BlockHeight) already
+ *      works for any positive width:height pair; only the desktop validator's business rule
+ *      is width-specific, so this is a separate, more permissive validator rather than
+ *      relaxing the desktop one (which stays exactly as strict as it always was).
+ * HOW: Same "width:height" format, both components a positive integer 1-10 (no aspectWidth===4
+ *      constraint) — permits square and portrait ratios for the mobile-only override.
+ */
+export function validateMobileAspectRatioRange(
+  mobileAspectRatio: string
+): { valid: boolean; error?: string } {
+  const match = mobileAspectRatio.match(/^(\d+):(\d+)$/);
+  if (!match) {
+    return { valid: false, error: `Invalid mobile aspect ratio format: ${mobileAspectRatio}. Expected format: "width:height"` };
+  }
+
+  const width = parseInt(match[1], 10);
+  const height = parseInt(match[2], 10);
+
+  if (width < 1 || width > 10) {
+    return { valid: false, error: `Mobile aspect ratio width must be between 1 and 10. Got: ${width}` };
+  }
+
+  if (height < 1 || height > 10) {
+    return { valid: false, error: `Mobile aspect ratio height must be between 1 and 10. Got: ${height}` };
+  }
+
   return { valid: true };
 }
 
@@ -255,7 +289,14 @@ export function calculateLayoutV2BlockDimensions(
   charts: Array<{ width: number; type?: string }>,
   blockWidth: number,
   blockAspectRatio?: string,
-  tableHeightMultiplier?: number
+  tableHeightMultiplier?: number,
+  // WHAT: Optional mobile-only aspect ratio override + the caller's mobile/desktop signal.
+  // WHY: A block's desktop `blockAspectRatio` is tuned for a wide row and is wrong for a
+  //      single narrow mobile column (Report Layout #358); this lets the caller (which knows
+  //      the current viewport) supply a portrait/square ratio to use instead, on mobile only.
+  //      Both new params are trailing + optional so every existing call site is unaffected.
+  mobileAspectRatio?: string,
+  isMobileViewport?: boolean
 ): {
   valid: boolean;
   error?: string;
@@ -308,6 +349,44 @@ export function calculateLayoutV2BlockDimensions(
     }
   }
   
+  // WHAT: Mobile aspect ratio override takes precedence over blockAspectRatio, on mobile only.
+  // WHY: #358 - a block's desktop ratio is wrong for a single narrow mobile column; when the
+  //      caller reports isMobileViewport and the block has an explicit mobileAspectRatio, use
+  //      it instead. Falls through to the desktop blockAspectRatio/default path below on any
+  //      invalidation (bad format, out of range, or block content not TEXT/TABLE-only) so a
+  //      misconfigured mobile ratio degrades to existing, already-correct behavior rather than
+  //      breaking the block.
+  if (isMobileViewport && mobileAspectRatio) {
+    const mobileRangeValidation = validateMobileAspectRatioRange(mobileAspectRatio);
+    if (!mobileRangeValidation.valid) {
+      console.warn('[LayoutV2] Invalid mobile aspect ratio range:', mobileRangeValidation.error, '- falling back to desktop ratio/default');
+    } else {
+      // WHAT: Same content-type gate as the desktop override (TEXT-AREA/TABLE-only blocks).
+      // WHY: Keeps the mobile ratio's blast radius identical to the desktop one — KPI/BAR/PIE
+      //      blocks have their own internal fixed-fraction grids (#359) and are not part of
+      //      this override's scope.
+      const mobileOverrideValidation = validateAspectRatioOverride(charts);
+      if (!mobileOverrideValidation.valid) {
+        console.warn('[LayoutV2] Mobile aspect ratio override not allowed:', mobileOverrideValidation.error, '- falling back to desktop ratio/default');
+      } else {
+        const blockHeight = calculateLayoutV2BlockHeight(blockWidth, mobileAspectRatio);
+        const gridColumns = calculateLayoutV2GridColumns(charts);
+        const itemWidths = charts.map((chart, idx) => ({
+          chartIndex: idx,
+          width: calculateLayoutV2ItemWidth(chart.width || 1, capacityValidation.totalUnits, blockWidth)
+        }));
+
+        return {
+          valid: true,
+          blockHeight,
+          totalUnits: capacityValidation.totalUnits,
+          gridColumns,
+          itemWidths
+        };
+      }
+    }
+  }
+
   // WHAT: Validate aspect ratio override if provided
   // WHY: R-LAYOUT-02.1 - Override only allowed for TEXT-AREA/TABLE blocks
   if (blockAspectRatio) {

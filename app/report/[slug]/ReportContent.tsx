@@ -206,11 +206,12 @@ interface ResponsiveRowProps {
   rowIndex: number;
   unifiedTextFontSize: number | null;
   blockAspectRatio?: string; // R-LAYOUT-02.1: Optional block aspect ratio override (e.g., "4:6")
+  mobileAspectRatio?: string; // #358: Optional mobile-only aspect ratio override, used instead of blockAspectRatio on mobile
   tableHeightMultiplier?: number; // Table height control: height = blockWidth × multiplier (0.1 to 5.0)
   allowNA?: boolean; // When true (e.g. static landing), show charts even with NA/empty data
 }
 
-function ResponsiveRow({ rowCharts, chartResults, charts, rowIndex, unifiedTextFontSize, blockAspectRatio, tableHeightMultiplier, allowNA = false }: ResponsiveRowProps) {
+function ResponsiveRow({ rowCharts, chartResults, charts, rowIndex, unifiedTextFontSize, blockAspectRatio, mobileAspectRatio, tableHeightMultiplier, allowNA = false }: ResponsiveRowProps) {
   const rowRef = useRef<HTMLDivElement>(null);
   // WHAT: Initialize state with design tokens instead of hardcoded values
   // WHY: No hardcoded sizes - all values must come from design system
@@ -257,7 +258,12 @@ function ResponsiveRow({ rowCharts, chartResults, charts, rowIndex, unifiedTextF
         
         // WHAT: Calculate LayoutV2 block dimensions with optional aspect ratio override or table height multiplier
         // WHY: R-LAYOUT-02.1 - Support variable aspect ratios, or table height multiplier for TABLE-only blocks
-        const dimensions = calculateLayoutV2BlockDimensions(chartsWithTypes, width, blockAspectRatio, tableHeightMultiplier);
+        // HOW: #358 - on mobile, prefer mobileAspectRatio over blockAspectRatio (the calculator
+        //      falls back to blockAspectRatio/default on its own if mobileAspectRatio is unset
+        //      or invalid). The 768px threshold matches the CSS mobile breakpoint
+        //      (ReportContent.module.css / ReportChart.module.css @media (max-width: 768px)).
+        const isMobileViewport = typeof window !== 'undefined' && window.innerWidth <= 768;
+        const dimensions = calculateLayoutV2BlockDimensions(chartsWithTypes, width, blockAspectRatio, tableHeightMultiplier, mobileAspectRatio, isMobileViewport);
         
         if (!dimensions.valid) {
           console.error(`[LayoutV2 ResponsiveRow ${rowIndex}] ${dimensions.error}`);
@@ -294,7 +300,7 @@ function ResponsiveRow({ rowCharts, chartResults, charts, rowIndex, unifiedTextF
       resizeObserver.disconnect();
       window.removeEventListener('resize', measureAndCalculate);
     };
-  }, [rowCharts, chartResults, rowIndex, blockAspectRatio, tableHeightMultiplier]); // Re-run if charts change
+  }, [rowCharts, chartResults, rowIndex, blockAspectRatio, mobileAspectRatio, tableHeightMultiplier]); // Re-run if charts change
   
   // WHAT: Runtime validation for CSS variables (A-05: Runtime Enforcement)
   // WHY: Log violations for monitoring without crashing the report
@@ -672,6 +678,7 @@ function ReportBlock({ block, chartResults, charts, gridSettings, allowNA = fals
           rowIndex={rowIndex}
           unifiedTextFontSize={unifiedTextFontSize}
           blockAspectRatio={block.blockAspectRatio} // R-LAYOUT-02.1: Optional block aspect ratio override
+          mobileAspectRatio={block.mobileAspectRatio} // #358: Optional mobile-only aspect ratio override
           tableHeightMultiplier={block.tableHeightMultiplier} // Table height control: height = blockWidth × multiplier
           allowNA={allowNA}
         />

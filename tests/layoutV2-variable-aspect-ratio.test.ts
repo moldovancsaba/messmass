@@ -7,6 +7,7 @@ import {
   calculateLayoutV2BlockHeight,
   validateAspectRatioRange,
   validateAspectRatioOverride,
+  validateMobileAspectRatioRange,
   calculateLayoutV2BlockDimensions
 } from '@/lib/layoutV2BlockCalculator';
 
@@ -266,6 +267,82 @@ describe('R-LAYOUT-02.1: Variable Block Aspect Ratio Support', () => {
         const dimensions = calculateLayoutV2BlockDimensions(charts, width, aspectRatio);
         expect(dimensions.valid).toBe(true);
         expect(dimensions.blockHeight).toBe((width * 6) / 4); // 4:6 ratio
+      });
+    });
+  });
+
+  describe('#358: Mobile Aspect Ratio Override', () => {
+    describe('validateMobileAspectRatioRange', () => {
+      test('accepts a portrait ratio (width !== 4, unlike the desktop validator)', () => {
+        expect(validateMobileAspectRatioRange('1:2').valid).toBe(true);
+      });
+
+      test('accepts a square ratio', () => {
+        expect(validateMobileAspectRatioRange('1:1').valid).toBe(true);
+      });
+
+      test('rejects malformed input', () => {
+        expect(validateMobileAspectRatioRange('not-a-ratio').valid).toBe(false);
+      });
+
+      test('rejects width or height outside 1-10', () => {
+        expect(validateMobileAspectRatioRange('0:5').valid).toBe(false);
+        expect(validateMobileAspectRatioRange('5:11').valid).toBe(false);
+      });
+    });
+
+    describe('calculateLayoutV2BlockDimensions with mobileAspectRatio', () => {
+      const textCharts = [{ width: 1, type: 'text' }];
+
+      test('uses mobileAspectRatio over blockAspectRatio when isMobileViewport is true', () => {
+        const width = 335;
+        const dimensions = calculateLayoutV2BlockDimensions(
+          textCharts, width, '4:6', undefined, '1:1', true
+        );
+        expect(dimensions.valid).toBe(true);
+        expect(dimensions.blockHeight).toBe(width); // 1:1 → height === width
+      });
+
+      test('falls back to blockAspectRatio when isMobileViewport is false, even with mobileAspectRatio set', () => {
+        const width = 1200;
+        const dimensions = calculateLayoutV2BlockDimensions(
+          textCharts, width, '4:6', undefined, '1:1', false
+        );
+        expect(dimensions.valid).toBe(true);
+        expect(dimensions.blockHeight).toBe((width * 6) / 4); // desktop 4:6, mobile ratio ignored
+      });
+
+      test('falls back to blockAspectRatio when mobileAspectRatio is malformed', () => {
+        const width = 335;
+        const dimensions = calculateLayoutV2BlockDimensions(
+          textCharts, width, '4:6', undefined, 'garbage', true
+        );
+        expect(dimensions.valid).toBe(true);
+        expect(dimensions.blockHeight).toBe((width * 6) / 4); // desktop ratio used instead
+      });
+
+      test('falls back to default 4:1 when neither ratio is set on mobile', () => {
+        const width = 335;
+        const dimensions = calculateLayoutV2BlockDimensions(textCharts, width, undefined, undefined, undefined, true);
+        expect(dimensions.valid).toBe(true);
+        expect(dimensions.blockHeight).toBe(width / 4);
+      });
+
+      test('does not apply mobileAspectRatio to a non TEXT/TABLE-only block (same gate as desktop)', () => {
+        const width = 335;
+        const kpiCharts = [{ width: 1, type: 'kpi' }];
+        const dimensions = calculateLayoutV2BlockDimensions(
+          kpiCharts, width, undefined, undefined, '1:1', true
+        );
+        expect(dimensions.valid).toBe(true);
+        expect(dimensions.blockHeight).toBe(width / 4); // falls through to default, 1:1 rejected
+      });
+
+      test('existing callers omitting the two new trailing params are unaffected (backward compatible)', () => {
+        const width = 1200;
+        const dimensions = calculateLayoutV2BlockDimensions(textCharts, width, '4:6');
+        expect(dimensions.valid).toBe(true);
+        expect(dimensions.blockHeight).toBe((width * 6) / 4);
       });
     });
   });

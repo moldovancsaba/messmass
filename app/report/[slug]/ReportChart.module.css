@@ -1349,25 +1349,23 @@
 }
 
   .chart:not(.image) {
+    /* WHAT: Consume --block-height directly instead of height:100%. */
+    /* WHY: --block-height is now a definite, correctly-measured mobile pixel value (the .row
+     *      display:contents bug that broke this measurement is fixed in ReportContent.module.css).
+     *      height:100% still risks resolving to auto if any ancestor's own `height` property
+     *      (not just used size) is non-definite, which silently collapses every internal %
+     *      chain (KPI's icon/value/title rows, pie's title/donut/legend rows, text's centered
+     *      content) to ~content height. Reading --block-height directly, matching desktop and
+     *      matching what the pie-specific override already proved correct, removes that whole
+     *      class of collapse for every chart type, not just pie. */
     width: 100% !important;
-    height: 100% !important; /* CRITICAL: Fill parent container */
+    height: var(--block-height, 250px) !important;
     min-height: 250px !important; /* Minimum readable size */
     max-width: 100% !important;
     flex: 1 1 auto !important; /* Allow flex filling */
     overflow: visible !important; /* Layout Grammar: no clipping on content layers */
     box-sizing: border-box !important;
     container-type: size; /* Ensure container queries work on mobile */
-  }
-  
-  /* WHAT: Give the pie block an EXPLICIT height so its % chain resolves on mobile. */
-  /* WHY: The generic `.chart:not(.image) { height: 100% }` above resolves against a rowItem */
-  /*      that only has min-height (height:auto), so it computes to auto — then `.pieGrid */
-  /*      { height: 100% }` can't resolve and the grid collapses to content (~36px donut). */
-  /*      --block-height is definite (set per-row in JS), matching desktop. */
-  /* ponytail: one explicit height fixes the whole cascade; same specificity as the rule above, */
-  /*      placed after it so it wins on the pie block only. */
-  .chart.pie {
-    height: var(--block-height, 250px) !important;
   }
 
   /* WHAT: PIE chart uses CSS Grid layout on mobile (same as desktop, same as KPI charts) */
