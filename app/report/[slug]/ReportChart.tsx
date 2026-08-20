@@ -872,6 +872,18 @@ function PieChart({ result, className }: { result: ChartResult; className?: stri
     responsive: true,
     maintainAspectRatio: false,
     cutout: '50%',
+    // #369: animation disabled. chartData/options here are fresh object literals on every
+    // render (not memoized), so any unrelated parent re-render - and ReportContent's
+    // ResponsiveRow re-renders often, its ResizeObserver firing on every layout shift as the
+    // page scrolls - makes react-chartjs-2 see new prop references and call Chart.js's
+    // animated update(). That update's requestAnimationFrame-driven draw loop can race a
+    // concurrent resize()-triggered canvas clear on the same <canvas>, leaving a torn frame:
+    // reported live as a chunk missing from the donut ring with a legend swatch bleeding into
+    // the gap, reproduced on both Chrome and Safari (confirming it's a timing race, not a
+    // browser rendering quirk). This is a static report, not an interactive dashboard, so an
+    // enter/update animation has no UX value here - disabling it makes every draw synchronous
+    // and complete before the call returns, closing the race entirely.
+    animation: false,
     layout: {
       padding: 10 // WHAT: Padding to prevent hover overflow
     },
