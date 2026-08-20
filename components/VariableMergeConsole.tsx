@@ -67,6 +67,7 @@ interface VariableInfo {
 export default function VariableMergeConsole() {
   const [candidates, setCandidates] = useState<Candidate[]>([]);
   const [variables, setVariables] = useState<VariableInfo[]>([]);
+  const [protectedVars, setProtectedVars] = useState<Set<string>>(new Set());
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [selected, setSelected] = useState<Record<string, boolean>>({});
@@ -87,6 +88,7 @@ export default function VariableMergeConsole() {
       if (!res.ok || !data.success) throw new Error(data.error || 'Failed to load merge candidates');
       setCandidates(data.candidates);
       setVariables(data.variables || []);
+      setProtectedVars(new Set<string>(data.protectedVariables || []));
       const r: Record<string, ConflictRule> = {};
       for (const c of data.candidates as Candidate[]) r[c.id] = c.recommendation.rule;
       setRules(r);
@@ -128,7 +130,9 @@ export default function VariableMergeConsole() {
     }
   }
 
-  const customValid = customSource.trim() !== '' && customTarget.trim() !== '' && customSource.trim() !== customTarget.trim();
+  const sourceProtected = protectedVars.has(customSource.trim());
+  const customValid =
+    customSource.trim() !== '' && customTarget.trim() !== '' && customSource.trim() !== customTarget.trim() && !sourceProtected;
   const customMerge = () => [{ canonical: customTarget.trim(), legacy: [customSource.trim()], rule: customRule }];
   const targetExists = variables.some((v) => v.name === customTarget.trim());
 
@@ -191,7 +195,9 @@ export default function VariableMergeConsole() {
           </select>
         </label>
         <span className={styles.customHint}>
-          {customTarget.trim() && (targetExists ? 'merge into existing' : 'rename → new name')}
+          {sourceProtected
+            ? '⚠️ core clicker variable — use it as the target, not the source'
+            : customTarget.trim() && (targetExists ? 'merge into existing' : 'rename → new name')}
         </span>
         <button className="btn btn-small btn-secondary" type="button" disabled={busy || !customValid} onClick={() => run(true, customMerge())}>
           Preview

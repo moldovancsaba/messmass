@@ -9,7 +9,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import clientPromise from '@/lib/mongodb';
 import config from '@/lib/config';
 import { getAdminUser, type AdminUser } from '@/lib/auth';
-import { applyMerges, type MergeRequestItem, type ConflictRule } from '@/lib/variableMerge';
+import { applyMerges, PROTECTED_CLICKER_VARIABLES, type MergeRequestItem, type ConflictRule } from '@/lib/variableMerge';
 import { error as logError } from '@/lib/logger';
 
 export const runtime = 'nodejs';
@@ -38,6 +38,13 @@ export async function POST(request: NextRequest) {
       const rule: ConflictRule = RULES.includes(m?.rule) ? m.rule : 'copy';
       if (!canonical || legacy.length === 0 || legacy.includes(canonical)) {
         return NextResponse.json({ success: false, error: `invalid merge: ${JSON.stringify(m)}` }, { status: 400 });
+      }
+      const protectedLegacy = legacy.filter((l: string) => PROTECTED_CLICKER_VARIABLES.has(l));
+      if (protectedLegacy.length > 0) {
+        return NextResponse.json(
+          { success: false, error: `Cannot rename a core clicker variable (${protectedLegacy.join(', ')}) — it is referenced by name in the editor. Use it as the merge target instead.` },
+          { status: 400 },
+        );
       }
       merges.push({ canonical, legacy, rule });
     }

@@ -8,7 +8,7 @@ import { NextResponse } from 'next/server';
 import clientPromise from '@/lib/mongodb';
 import config from '@/lib/config';
 import { getAdminUser, type AdminUser } from '@/lib/auth';
-import { computeMergeCandidates, listVariables } from '@/lib/variableMerge';
+import { computeMergeCandidates, listVariables, PROTECTED_CLICKER_VARIABLES } from '@/lib/variableMerge';
 import { error as logError } from '@/lib/logger';
 
 export const runtime = 'nodejs';
@@ -26,7 +26,7 @@ export async function GET() {
     const client = await clientPromise;
     const db = client.db(config.dbName);
     const [candidates, variables] = await Promise.all([computeMergeCandidates(db), listVariables(db)]);
-    return NextResponse.json({ success: true, candidates, variables });
+    return NextResponse.json({ success: true, candidates, variables, protectedVariables: [...PROTECTED_CLICKER_VARIABLES] });
   } catch (e) {
     logError('merge-candidates failed', { error: e instanceof Error ? e.message : String(e) });
     return NextResponse.json({ success: false, error: 'internal_error' }, { status: 500 });

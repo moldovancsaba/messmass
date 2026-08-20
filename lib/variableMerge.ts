@@ -15,6 +15,19 @@ import { ObjectId } from 'mongodb';
 
 export const MIGRATION_BACKUP_COLLECTION = 'variable_migration_backup';
 
+// Base variables referenced by HARDCODED name in the event editor
+// (components/EditorDashboard.tsx — e.g. the indoor+outdoor→remoteFans derivation
+// and gender totals). A data migration cannot rewrite code, so these may be a
+// merge TARGET (canonical) but must never be renamed AWAY (as a legacy source),
+// or the hardcoded clicker/derivation would break. Keep in sync with the editor.
+export const PROTECTED_CLICKER_VARIABLES = new Set<string>([
+  'male', 'female', 'other',
+  'boomer', 'genX', 'genYZ', 'genAlpha',
+  'jersey', 'scarf', 'flags', 'baseballCap', 'merched',
+  'remoteImages', 'hostessImages', 'selfies',
+  'indoor', 'outdoor', 'stadium', 'remoteFans',
+]);
+
 export type MergeKind = 'casing' | 'token-reorder' | 'name-mismatch';
 export type ConflictRule = 'copy' | 'sum' | 'prefer-canonical';
 
@@ -117,11 +130,13 @@ export async function computeMergeCandidates(db: Db): Promise<MergeCandidate[]> 
     if (seen.has(sig)) return;
     seen.add(sig);
 
-    // canonical: forced, else the one used in reports, else most events
+    // canonical: forced, else a protected (clicker-hardcoded) member so it is
+    // never renamed away, else the one used in reports, else the most-used.
     const canonical =
       forcedCanonical && uniq.includes(forcedCanonical)
         ? forcedCanonical
-        : uniq.find((m) => usedInReports.has(m)) ??
+        : uniq.find((m) => PROTECTED_CLICKER_VARIABLES.has(m)) ??
+          uniq.find((m) => usedInReports.has(m)) ??
           uniq.slice().sort((a, b) => keyEvents.get(b)!.size - keyEvents.get(a)!.size)[0];
     const legacy = uniq.filter((m) => m !== canonical);
 
@@ -287,6 +302,11 @@ export async function applyMerges(
 
   for (const merge of merges) {
     const { canonical, legacy, rule } = merge;
+    // Guard: a hardcoded-clicker base variable must never be renamed away.
+    const protectedLegacy = legacy.filter((l) => PROTECTED_CLICKER_VARIABLES.has(l));
+    if (protectedLegacy.length > 0) {
+      throw new Error(`protected_variable_cannot_be_renamed:${protectedLegacy.join(',')}`);
+    }
     let eventsTouched = 0;
 
     for (const p of projects) {

@@ -17,3 +17,18 @@ describe('variable-merge token signature (word-order dedup detection)', () => {
     expect(tokens('visitFacebook')).not.toBe(tokens('visitInstagram'));
   });
 });
+
+import { PROTECTED_CLICKER_VARIABLES } from '@/lib/variableMerge';
+
+describe('protected clicker variables', () => {
+  it('includes the core hardcoded-in-editor base variables', () => {
+    for (const v of ['male', 'female', 'indoor', 'outdoor', 'remoteFans', 'baseballCap', 'boomer', 'genX']) {
+      expect(PROTECTED_CLICKER_VARIABLES.has(v)).toBe(true);
+    }
+  });
+  it('does not protect merge-safe variables (they can be renamed away)', () => {
+    for (const v of ['ventFacebook', 'totalBitlyClicks', 'Caps', 'visitTiktok']) {
+      expect(PROTECTED_CLICKER_VARIABLES.has(v)).toBe(false);
+    }
+  });
+});
