@@ -468,7 +468,15 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  container-type: size;
+  /* #369: container-type: size deliberately removed. This box holds only a <canvas> (no
+   * cqw/cqh content, and the codebase has zero @container rules anywhere), so the
+   * containment was pure cost: it forces WebKit into an independent layout+paint box with
+   * its own stacking context on an element whose size itself cascades from aspect-ratio off
+   * a JS-measured row height — which recomputes on every viewport-height change (e.g.
+   * Safari's address bar collapsing mid-scroll). That combination produced torn/partial
+   * canvas repaints on iOS Safari (a donut ring missing a rectangular chunk, with the legend
+   * swatch bleeding into the gap) - reported live on messmass.com, reproduced only on real
+   * iOS Safari during scroll, never in desktop/headless testing. */
   overflow: visible; /* WHAT: P1 1.6 - Layout Grammar: no clipping, Chart.js canvas must be fully visible */
   box-sizing: border-box;
 }
