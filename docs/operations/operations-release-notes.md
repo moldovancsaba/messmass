@@ -1,8 +1,37 @@
 # {messmass} Release Notes
 Status: Active
-Last Updated: 2026-08-19T12:00:28.000Z
+Last Updated: 2026-08-21T00:00:00.000Z
 Canonical: No
 Owner: Operations
+
+## [v12.2.1] — 2026-08-21T00:00:00.000Z
+
+### Summary
+Bumps vendored GDS `6.2.0` → `6.3.0`. GDS 6.3.0 is a purely additive
+release (new `GdsRatingDisplay`, a compact `BannerNotice` variant, a new
+`'aside'` `GdsLayoutSize` step, doc-only corrections) — confirmed against
+the upstream `CHANGELOG.md`/`DEPRECATIONS_AND_MIGRATIONS.md`, which record
+no breaking changes past the 6.0.0 `class-usa` rename. The `gds-v6.3.0`
+release-bundle GitHub Actions run had originally failed on a transient
+GitHub API 503 when publishing the release (not a build/code problem); it
+was re-run successfully before this bump.
+
+### Changed
+- `vendor/gds/*.tgz` — the four vendored `@sovereignsquad/gds-*` tarballs
+  (`admin`, `core`, `theme`, `compliance`) replaced with `gds-v6.3.0`'s
+  GitHub Release assets.
+- `package.json` — the four deps repointed to the new tarballs.
+- `gds-adoption.json` — `gdsVersion` `6.2.0` → `6.3.0`, `lastReviewedAt`
+  bumped.
+- `scripts/gds-sync-packages.sh` — default `EXPECTED_VERSION` `6.2.0` →
+  `6.3.0`.
+- `README.md`, `docs/coding-standards.md`, `HANDOVER.md`,
+  `docs/_audit/drift-register.md` — stale `6.2.0` references corrected to
+  `6.3.0`.
+
+### Testing
+`type-check`, `lint`, full test suite, `style:check`, `docs:audit`,
+`version:verify`, `npm run gds:sync`, and a clean `npm run build` all pass.
 
 ## [v12.2.0] — 2026-08-19T12:00:28.000Z
 

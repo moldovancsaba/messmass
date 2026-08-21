@@ -95,14 +95,14 @@ human operator with real admin credentials.
 
 ---
 
-## 2. GDS adoption plan — now on 6.2.0, Phase 4b/5/6 still open
+## 2. GDS adoption plan — now on 6.3.0, Phase 4b/5/6 still open
 
 Separate, older effort, still genuinely mid-flight. Full plan was at
 `/Users/chappie/.claude/plans/pure-cuddling-swan.md`, since overwritten by a
 later plan — everything you need is summarized here.
 
 **Done and pushed** (verified, CI-green): Phase 0 (baseline), Phase 1 (fixed
-3.9.0-vs-6.0.0 version drift, on GDS 6.2.0 via vendored GitHub Release
+3.9.0-vs-6.0.0 version drift, on GDS 6.3.0 via vendored GitHub Release
 tarballs under `vendor/gds/` — registry install was tried and abandoned),
 Phase 2 (`gds-adoption.json` governance manifest), Phase 3 (root
 `GdsProvider` is the only provider in the tree — no raw `MantineProvider`,

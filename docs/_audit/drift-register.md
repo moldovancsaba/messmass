@@ -29,7 +29,7 @@ current state and is fully in scope)
 - "WebSocket (ws) — real-time client-server communication" (:4129) — ws is
   installed but nothing in app/components/hooks/contexts opens a socket.
 - "No External UI Library: built from scratch" (:4137) and "TailAdmin V2"
-  (:4136) — actual mandated stack is Mantine 8 + vendored GDS 6.2.0
+  (:4136) — actual mandated stack is Mantine 8 + vendored GDS 6.3.0
   (docs/design/design-system.md:21-23,33 forbids TailAdmin).
 - "Password-Based: admin login with bcrypt" (:4153) — local login is 410 Gone
   (app/api/admin/login/route.ts:20-25); SSO OAuth is the only path.

@@ -8,7 +8,7 @@
 # undetected for three majors before an audit caught it.
 set -euo pipefail
 
-EXPECTED_VERSION="${GDS_VERSION:-6.2.0}"
+EXPECTED_VERSION="${GDS_VERSION:-6.3.0}"
 PACKAGES=(
   "@sovereignsquad/gds-theme@${EXPECTED_VERSION}"
   "@sovereignsquad/gds-core@${EXPECTED_VERSION}"
