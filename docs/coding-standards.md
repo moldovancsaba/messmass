@@ -4,7 +4,7 @@ Last Updated: 2026-06-24T13:15:00.000Z
 Canonical: No
 Owner: Architecture
 
-**Version:** 12.2.1
+**Version:** 12.2.2
 **Last Updated:** 2026-08-17T00:00:00.000Z (UTC)
 
 ---
@@ -928,4 +928,4 @@ grep -r "var(--mm-" --include="*.css" components/
 
 ---
 
-*This document is part of the {messmass} technical standards and must be followed by all contributors, including AI development tools. Version 12.1.16 - Last Updated: 2026-06-26T10:00:00.000Z*
+*This document is part of the {messmass} technical standards and must be followed by all contributors, including AI development tools. Version 12.2.2 - Last Updated: 2026-08-23T00:00:00.000Z*

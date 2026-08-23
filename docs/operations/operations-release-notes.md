@@ -1,8 +1,40 @@
 # {messmass} Release Notes
 Status: Active
-Last Updated: 2026-08-21T00:00:00.000Z
+Last Updated: 2026-08-23T00:00:00.000Z
 Canonical: No
 Owner: Operations
+
+## [v12.2.2] — 2026-08-23T00:00:00.000Z
+
+### Summary
+Environment hygiene pass. Removes two config bindings that nothing read, one
+of which carried a literal password-shaped fallback string in a public
+repository, and closes the gap between `.env.example` and what production
+actually sets.
+
+### Removed
+- `lib/config.ts` — `adminPassword` and `nextPublicWsUrl` fields and their
+  resolution bindings, plus `wsUrl` from `clientConfig()`. Nothing read any of
+  them: local admin login has been 410 Gone since the SSO cutover, and the
+  WebSocket stack was deleted in `c56e70af`. `NEXT_PUBLIC_WS_URL` was also
+  being compiled into the client bundle for no purpose.
+- `scripts/config.js` — the same two keys. Its `adminPassword` line carried a
+  hardcoded `'{messmass}Admin2025!'` fallback; dead code, but a real
+  credential-shaped literal in a public repo.
+
+### Added
+- `.env.example` — eleven keys that production sets but the example omitted:
+  `ADMIN_SESSION_SECRET`, `ADMIN_SESSION_TIMEOUT`, `SUPERADMIN_EMAIL`,
+  `IMGBB_API_KEY`, `BITLY_GROUP_GUID`, `API_FOOTBALL_KEY`,
+  `GOOGLE_SHEETS_SERVICE_ACCOUNT_EMAIL`, `GOOGLE_SHEETS_PRIVATE_KEY`,
+  `GITHUB_APP_ID`, `GITHUB_APP_INSTALL_ID`, `GITHUB_APP_PRIVATE_KEY`. A
+  deployment configured only from the example file previously booted without
+  them.
+
+### Operator action required
+`NEXT_PUBLIC_WS_URL` and `ADMIN_PASSWORD` are still set in the Vercel
+production environment and should be deleted there — this release only
+removes the code that bound them.
 
 ## [v12.2.1] — 2026-08-21T00:00:00.000Z
 

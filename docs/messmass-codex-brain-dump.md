@@ -7,7 +7,7 @@ Owner: Documentation
 **Purpose:** quick-reference notes that capture the state of this repo and how the docs/ tree is organized after today's refactor.
 
 ## Current release
-- Current shipped product version: `v12.1.16`.
+- Current shipped product version: `v12.2.2`.
 - Current delivery branch: `main`.
 - Latest shipped repo slice: Fanmass integration delivery, documentation consistency audit, and documentation contract cleanup.
 
