@@ -203,7 +203,7 @@
     "fast-xml-parser": "^5.7.2",
     "handlebars": "^4.7.9",
     "flatted": "^3.4.2",
-    "postcss": "^8.5.13",
+    "postcss": "^8.5.26",
     "qs": "^6.15.1"
   },
   "browserslist": {
