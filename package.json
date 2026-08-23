@@ -1,6 +1,6 @@
 {
   "name": "messmass",
-  "version": "12.2.2",
+  "version": "12.2.3",
   "description": "Enterprise-grade event analytics platform with comprehensive partner management, intelligent link tracking, automated event creation (Sports Match Builder), and advanced real-time statistics dashboard for sports organizations, venues, brands, and event managers",
   "keywords": [
     "event-statistics",
@@ -148,7 +148,7 @@
     "@tabler/icons-react": "^3.44.0",
     "bcryptjs": "^3.0.3",
     "chart.js": "^4.5.1",
-    "dompurify": "^3.3.1",
+    "dompurify": "^3.4.14",
     "dotenv": "^17.4.2",
     "focus-trap-react": "^11.0.4",
     "google-auth-library": "10.6.2",
@@ -160,8 +160,8 @@
     "lucide-react": "^0.562.0",
     "marked": "^16.4.1",
     "mongodb": "^6.8.0",
-    "mongoose": "^9.6.2",
-    "next": "15.5.18",
+    "mongoose": "^9.7.2",
+    "next": "15.5.21",
     "react": "^19.2.6",
     "react-chartjs-2": "^5.3.1",
     "react-dom": "^19.2.6",
@@ -171,6 +171,7 @@
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3.3.5",
+    "@sovereignsquad/gds-compliance": "file:vendor/gds/sovereignsquad-gds-compliance-6.3.0.tgz",
     "@testing-library/jest-dom": "^6.9.1",
     "@testing-library/react": "^16.3.2",
     "@types/bcryptjs": "^2.4.6",
@@ -188,7 +189,6 @@
     "eslint-plugin-jsx-a11y": "^6.10.2",
     "eslint-plugin-react": "^7.37.5",
     "eslint-plugin-react-hooks": "^5.2.0",
-    "@sovereignsquad/gds-compliance": "file:vendor/gds/sovereignsquad-gds-compliance-6.3.0.tgz",
     "fast-check": "^4.7.0",
     "is-date-object": "^1.1.0",
     "jest": "^30.4.2",

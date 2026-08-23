@@ -4,6 +4,26 @@ Last Updated: 2026-08-23T00:00:00.000Z
 Canonical: No
 Owner: Operations
 
+## [v12.2.3] — 2026-08-23T00:00:00.000Z
+
+### Summary
+Dependency security updates, applied from the five Dependabot advisories that
+opened once Dependabot was enabled on the repo. Full gate green:
+type-check, lint, 400 tests, style:check, docs:audit, build.
+
+### Changed
+- `next` `15.5.18` → `15.5.21` (kept exactly pinned, as before).
+- `mongoose` `^9.6.2` → `^9.7.2`.
+- `dompurify` `^3.3.1` → `^3.4.14`.
+- `postcss` → `8.5.26` and `nanoid` → `3.3.18` via `npm audit fix` (both
+  transitive; no direct dependency declares them).
+
+### Effect
+`scripts/check-dependency-guardrail.ts` went from 6 HIGH/CRITICAL
+vulnerabilities to 2. The remaining two need a breaking upgrade
+(`npm audit fix --force`) and are deliberately left for a maintenance window
+rather than taken here.
+
 ## [v12.2.2] — 2026-08-23T00:00:00.000Z
 
 ### Summary
