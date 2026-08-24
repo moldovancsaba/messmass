@@ -4,6 +4,51 @@ Last Updated: 2026-08-24T00:00:00.000Z
 Canonical: No
 Owner: Operations
 
+## [v12.3.1] — 2026-08-24T00:00:00.000Z
+
+### Summary
+Fixes the PDF export route erroring on the very first real production request.
+v12.3.0's own release notes flagged this as the one unverifiable piece (the
+production Chromium package cannot run on this development machine) --
+confirmed broken immediately after that release actually deployed, fixed here.
+
+### Fixed
+Production error, confirmed via Vercel's own runtime logs (not theorized):
+
+```
+The input directory "/var/task/node_modules/@sparticuz/chromium/bin" does not
+exist. If you are using a bundler (esbuild, webpack, etc.), you must
+externalize @sparticuz/chromium so it is not relocated.
+```
+
+`serverExternalPackages` (already set) stops webpack from bundling the
+package's JS. It does not make Vercel's separate output-file-tracing step
+include this package's Brotli-compressed binaries (`bin/*.br`) in the
+deployed function -- they are loaded via a runtime-constructed path inside
+`@sparticuz/chromium`'s own code, which static tracing cannot discover on
+its own.
+
+`next.config.js` now sets `outputFileTracingIncludes` to force those files
+in. Getting the object's key right was not obvious and cost two silently-
+wrong attempts locally (documented in the config's own comment so the next
+person doesn't repeat them): a key ending in `/**` never matches a route
+whose internal string has nothing after it (`/app/api/export/pdf`, confirmed
+via `normalizeAppPath` -- there is no trailing segment for `/**` to match
+against), and this repo's own build produces no local artifact that reflects
+whether the option took effect at all -- Vercel's builder runs its own
+separate tracing pass, so the only way to confirm this was fixed was a real
+deployment and a real request. The final key format
+(`/api/export/pdf/route` and `/api/export/pdf`, both without the `/app`
+prefix or a trailing glob) matches a community-confirmed working
+configuration for this exact `@sparticuz/chromium` + Vercel + App Router
+combination.
+
+### Verified
+Full gate green: type-check, lint, 400 tests, style:check, docs:audit,
+build. The actual fix could not be verified locally for the reason above --
+verification is a real request against the live production endpoint after
+this deploys.
+
 ## [v12.3.0] — 2026-08-24T00:00:00.000Z
 
 ### Summary

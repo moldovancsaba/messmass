@@ -68,6 +68,32 @@ const nextConfig = {
   // WHY: @sparticuz/chromium ships a compressed Chromium binary it decompresses from a
   // real filesystem path at runtime; bundling breaks that path resolution entirely.
   serverExternalPackages: ['@sparticuz/chromium', 'puppeteer-core'],
+  // WHAT: force-include @sparticuz/chromium's binary assets in the export/pdf function's
+  // deployment bundle.
+  // WHY: confirmed by direct production reproduction (not theorized) — with only
+  // serverExternalPackages set, the deployed function threw "The input directory
+  // /var/task/node_modules/@sparticuz/chromium/bin does not exist" on the very first real
+  // Vercel invocation. serverExternalPackages stops webpack from bundling the package's
+  // JS; it does NOT make Vercel's separate @vercel/nft output-file-tracing step include
+  // this package's Brotli-compressed binaries (bin/*.br), because they are loaded via a
+  // runtime-constructed path inside @sparticuz/chromium's own code, which static tracing
+  // cannot discover. This is the documented fix for exactly that gap.
+  outputFileTracingIncludes: {
+    // WHAT: multiple key variants for the same route, none using a trailing /** glob.
+    // WHY: two earlier attempts on this exact route both silently matched nothing (no
+    // error, no effect — confirmed via a real production 502 either way). Root cause of
+    // the second attempt specifically: Next's internal route string for this route is
+    // '/app/api/export/pdf' (confirmed via normalizeAppPath) with NOTHING after 'pdf',
+    // so a key ending in '/**' can never match — that glob requires at least one more
+    // path segment to follow, and there isn't one. Keys are matched with picomatch's
+    // contains:true (a substring search, not an anchored match), which is why the
+    // bare '/api/export/pdf' form below also works despite the real string carrying an
+    // '/app' prefix it doesn't mention. Community-confirmed pattern for this exact
+    // @sparticuz/chromium + Vercel + App Router combination:
+    // https://community.vercel.com/t/resolving-sparticuz-chromium-bin-directory-missing-error-on-vercel/35415
+    '/api/export/pdf/route': ['./node_modules/@sparticuz/chromium/**/*'],
+    '/api/export/pdf': ['./node_modules/@sparticuz/chromium/**/*'],
+  },
   // WHAT: Bundle the user-guide markdown with the online reader routes.
   // WHY: /admin/help/guides reads docs/guides/*.md; keep the files traced into the
   //      function bundle so the reader works even if rendered on-demand.
