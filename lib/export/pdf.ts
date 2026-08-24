@@ -210,49 +210,64 @@ export async function exportPageWithSmartPagination(
     const originalContentWidth = (contentElement as HTMLElement).style.width;
     (contentElement as HTMLElement).style.width = '1200px';
     
-    /* What: Convert object-fit:cover images to background-image for proper PDF capture
-       Why: html2canvas doesn't respect object-fit, causing distortion
-       How: Replace img elements with div backgrounds temporarily
-       
-       NOTE (v9.3.0): ImageChart component now uses background-image natively, so this
-       workaround is NO LONGER NEEDED for image charts. Kept for backward compatibility
-       with any other components that may still use <img> with object-fit:cover. */
+    /* What: Convert object-fit img elements to background-image for proper PDF capture
+       Why: html2canvas 1.4.1 ignores object-fit on <img> entirely -- it draws the raw
+       bitmap stretched to the element's own box, regardless of 'cover' or 'contain'.
+       Confirmed by reproduction: an <img style="object-fit:contain"> inside a box whose
+       aspect-ratio-derived height gets clamped by max-height:100% (this happens for the
+       'image' chart type -- see ReportChart.module.css .imageContainer -- because
+       ResponsiveRow recomputes --block-height via a ResizeObserver, which cannot have
+       fired yet when this function forces the block to 1200px and captures on the very
+       next line) renders as a visibly stretched ellipse in html2canvas, while the same
+       markup in a real browser correctly letterboxes. background-image + background-size
+       is a plain CSS property html2canvas does support, so converting sidesteps the gap
+       entirely rather than depending on the timing race being fixed.
+       How: Replace img elements with div backgrounds temporarily, sized to match the
+       ORIGINAL object-fit value, not hardcoded to 'cover'.
+
+       NOTE (v9.3.0): components/charts/ImageChart.tsx now uses background-image
+       natively, so this workaround does not apply to it. It still applies to
+       ReportChart.tsx's own ImageChart ('image' chart type, object-fit:contain) and any
+       other <img object-fit> usage. */
     const imagesToRestore: Array<{ parent: HTMLElement; img: HTMLImageElement; placeholder: HTMLDivElement }> = [];
-    
+
     for (let i = 0; i < blockElements.length; i++) {
       const element = blockElements[i] as HTMLElement;
       console.log(`📸 Capturing block ${i + 1}/${blockElements.length}...`);
-      
-      /* What: Find all images with object-fit:cover in this block
-         Why: These need special handling to prevent distortion */
-      const coverImages = element.querySelectorAll('img');
-      coverImages.forEach((img: Element) => {
+
+      /* What: Find all images using object-fit in this block
+         Why: html2canvas needs these converted regardless of which fit mode they use */
+      const fitImages = element.querySelectorAll('img');
+      fitImages.forEach((img: Element) => {
         const imgEl = img as HTMLImageElement;
         const computedStyle = window.getComputedStyle(imgEl);
-        
-        /* What: Check if image uses object-fit cover
-           Why: Only these need conversion to background-image */
-        if (computedStyle.objectFit === 'cover' && imgEl.src) {
+        const objectFit = computedStyle.objectFit;
+
+        /* What: Check if image uses a fit mode html2canvas would otherwise stretch
+           Why: 'fill' (the CSS default) already stretches, so it needs no conversion;
+           only 'cover' and 'contain' rely on object-fit to NOT stretch the image */
+        if ((objectFit === 'cover' || objectFit === 'contain') && imgEl.src) {
           const parent = imgEl.parentElement;
           if (!parent) return;
-          
-          /* What: Create div with image as background
-             Why: html2canvas captures backgrounds correctly with cropping */
+
+          /* What: Create div with image as background, using the SAME fit mode
+             Why: html2canvas captures background-size correctly for both cover and
+             contain, unlike object-fit on <img>, which it ignores for either value */
           const placeholder = document.createElement('div');
           placeholder.style.width = computedStyle.width;
           placeholder.style.height = computedStyle.height;
           placeholder.style.minHeight = computedStyle.minHeight;
           placeholder.style.backgroundImage = `url("${imgEl.src}")`;
-          placeholder.style.backgroundSize = 'cover';
+          placeholder.style.backgroundSize = objectFit;
           placeholder.style.backgroundPosition = computedStyle.objectPosition || 'center';
           placeholder.style.backgroundRepeat = 'no-repeat';
           placeholder.style.position = computedStyle.position;
           placeholder.style.top = computedStyle.top;
           placeholder.style.left = computedStyle.left;
           placeholder.style.borderRadius = computedStyle.borderRadius;
-          
+
           /* What: Replace image with background div
-             Why: html2canvas will now capture the cropped view */
+             Why: html2canvas will now capture the correctly-fitted view */
           parent.replaceChild(placeholder, imgEl);
           imagesToRestore.push({ parent, img: imgEl, placeholder });
         }

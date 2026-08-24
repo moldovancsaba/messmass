@@ -1,8 +1,54 @@
 # {messmass} Release Notes
 Status: Active
-Last Updated: 2026-08-23T00:00:00.000Z
+Last Updated: 2026-08-24T00:00:00.000Z
 Canonical: No
 Owner: Operations
+
+## [v12.2.4] — 2026-08-24T00:00:00.000Z
+
+### Summary
+Fixes PDF export distorting the "image" chart type (`ImageChart` in
+`app/report/[slug]/ReportChart.tsx`) — used for promo/service images such as
+partner selfie-station graphics. The image renders correctly on the live
+report page but appears squashed/stretched in the exported PDF.
+
+### Root cause
+Two mechanisms compound:
+1. `ImageChart`'s `.imageContainer` sizes itself with a CSS `aspect-ratio`
+   derived from the image's real `naturalWidth`/`naturalHeight`, but is also
+   capped by `max-height: 100%` of its `.bodyZone` parent. `.bodyZone`'s
+   height (`--chart-body-height`, ultimately `--block-height`) is
+   recalculated by `ResponsiveRow` via a `ResizeObserver` whenever the row's
+   width changes. `lib/export/pdf.ts` forces each block to `1200px` wide and
+   captures on the very next line — before that `ResizeObserver` callback (an
+   inherently async browser API) can fire and update the height. The
+   container is captured wider (new block width) but height-capped by the
+   STALE, narrower-width-derived value.
+2. html2canvas 1.4.1 does not honor `object-fit` on `<img>` elements at all —
+   confirmed by reproduction — it draws the raw bitmap stretched to the
+   element's box regardless of `cover` or `contain`. In a real browser the
+   same undersized box would just letterbox the image (correct proportions,
+   smaller); html2canvas instead stretches it, which is what turns a minor
+   sizing quirk into a visibly distorted image.
+
+### Fixed
+- `lib/export/pdf.ts` — the existing "convert `object-fit` images to
+  `background-image` before capture" workaround only handled
+  `object-fit: cover`. Extended to also handle `object-fit: contain` (what
+  `ImageChart`'s promo images use), setting `background-size` to match
+  whichever fit mode was detected rather than hardcoding `cover`.
+  `background-size` is a plain CSS property html2canvas renders correctly,
+  so this sidesteps the `object-fit` gap entirely without needing to fix the
+  `ResizeObserver` timing race.
+
+### Verified
+Reproduced with the exact CSS from `ReportChart.module.css`
+(`.bodyZone`/`.imageContainer`/`.imageContent`) and the project's installed
+html2canvas 1.4.1, using a circular test pattern (unambiguous under
+distortion) under a simulated stale `--chart-body-height`: before the fix,
+html2canvas rendered the circle as a stretched ellipse; after, it stayed
+round and correctly letterboxed. Full gate green: type-check, lint, 400
+tests, style:check, docs:audit.
 
 ## [v12.2.3] — 2026-08-23T00:00:00.000Z
 
