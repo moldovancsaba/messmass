@@ -4,7 +4,7 @@ Last Updated: 2026-06-24T13:15:00.000Z
 Canonical: No
 Owner: Architecture
 
-**Version:** 12.2.4
+**Version:** 12.3.0
 **Last Updated:** 2026-08-17T00:00:00.000Z (UTC)
 
 ---

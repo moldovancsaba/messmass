@@ -12,7 +12,6 @@ import UnifiedProjectsSection from '@/components/UnifiedProjectsSection';
 import { ReportCalculator } from '@/lib/report-calculator';
 import { useReportStyle } from '@/hooks/useReportStyle';
 import PagePasswordLogin, { isAuthenticated } from '@/components/PagePasswordLogin';
-import { exportPageWithSmartPagination } from '@/lib/export/pdf';
 import styles from '@/app/styles/report-page.module.css';
 
 interface HashtagReportData {
@@ -218,6 +217,17 @@ export default function HashtagReportPage() {
     eventDate: reportData.project.dateRange.newest,
     _id: hashtagParam
   };
+
+  // WHAT: PDF export — same server-side mechanism as the event/partner report page
+  // (see hooks/useReportExport.ts and app/api/export/pdf/route.ts).
+  // WHY: showExport was already true here with no onExportPDF handler wired, so the
+  // button silently no-opped (ReportHero's own fallback just console.warns). Not a
+  // new feature — completing wiring this page already declared it wanted.
+  const handlePDFExport = () => {
+    const filename = (reportData?.project?.eventName || hashtagParam || 'report').replace(/[^a-zA-Z0-9]/g, '_');
+    const exportUrl = `/api/export/pdf?path=${encodeURIComponent(window.location.pathname + window.location.search)}&filename=${encodeURIComponent(filename)}`;
+    window.location.href = exportUrl;
+  };
   
   return (
     <div className={styles.page}>
@@ -229,6 +239,7 @@ export default function HashtagReportPage() {
           showDate={true}
           customSubtitle={(reportData as any).reportVariant ? `${(reportData as any).reportVariant.name} · ${(reportData as any).reportVariant.period?.label || 'All Time'}` : undefined}
           showExport={true}
+          onExportPDF={handlePDFExport}
         />
         
         {/* Report Content Grid - REUSED from event reports */}

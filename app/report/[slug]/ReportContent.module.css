@@ -54,6 +54,26 @@
   background: transparent !important; /* WHAT: Force transparent - only chart cards visible */
 }
 
+/* WHAT: Keep a titled section (title + all its rows) together as one printed unit.
+   WHY: This is the same atomic chunk lib/export/pdf.ts's data-pdf-block capture already
+   treats as one piece -- matching that precedent here, natively. This is best-effort per
+   spec: a block taller than a full page is still allowed to split rather than produce a
+   broken result, and .row's own break-inside:avoid (above) still protects each individual
+   chart/image group even when that happens. */
+@media print {
+  .block {
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+
+  /* WHAT: A title must never be the last thing on a page with its content pushed to the
+     next one. break-after:avoid glues it to whatever follows. */
+  .blockTitle {
+    break-after: avoid;
+    page-break-after: avoid;
+  }
+}
+
 /* WHAT: Static landing (allowNA) - contain overflow so card text never spills into adjacent cards */
 .blockLanding {
   overflow: hidden;
@@ -96,6 +116,22 @@
   min-height: var(--row-height, var(--mm-row-height-default)); /* WHAT: Ensure minimum height for charts to render, fallback to design token (P1 1.4: explicit height cascade, no implicit fallbacks) */
 }
 
+/* WHAT: Never let the browser's print engine slice a row across a page boundary.
+   WHY: A row is one visual unit (one or more charts sized to align together) --
+   printing the top half on one page and the bottom half on the next is never
+   correct. break-inside:avoid is a native page-break primitive: if a row does not
+   fit in the remaining space on the current page, Chromium moves the WHOLE row to
+   the next page instead of splitting it. This needs no JS pagination math at all --
+   see lib/export/pdf.ts's block-by-block canvas capture, which hand-rolls exactly
+   this decision because html2canvas has no print engine to delegate it to.
+   page-break-inside is the pre-Level-4 alias; harmless to keep for older engines. */
+@media print {
+  .row {
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+}
+
 .row:last-child {
   margin-bottom: 0;
 }
@@ -118,7 +154,16 @@
 }
 
 /* Responsive Adjustments */
-@media (max-width: 768px) {
+/* WHAT: `, print` added alongside the width query — not just narrow screens.
+   WHY: Confirmed by direct reproduction: Puppeteer's page.pdf() (app/api/export/pdf/route.ts)
+   lays out width-based media queries against the @page A4 box (~793px), not the
+   page.setViewport() width the route sets before navigating — a viewport-width trick
+   cannot reliably select this breakpoint for print. A4 is always narrower than any
+   sensible desktop 3-column grid regardless of that discrepancy, so unconditionally
+   reusing this already-correct, already-tested single-column layout for print is the
+   direct fix, not a workaround: it's the same design decision this block already made
+   for narrow screens, applied to the other context where the same reasoning holds. */
+@media (max-width: 768px), print {
   /* WHAT: Flatten all blocks into single column on mobile */
   /* WHY: Simplest, most reliable layout - ignore block structure */
   

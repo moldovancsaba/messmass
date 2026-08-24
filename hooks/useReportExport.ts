@@ -6,7 +6,6 @@
 
 import { useCallback } from 'react';
 import { exportReportToCSV } from '@/lib/export/csv';
-import { exportPageWithSmartPagination } from '@/lib/export/pdf';
 import type { ProjectStats } from '@/lib/report-calculator';
 
 /**
@@ -151,64 +150,33 @@ export function useReportExport(options: UseReportExportOptions): UseReportExpor
   }, [entity, stats, chartResults, charts, reportType]);
 
   // WHAT: PDF export handler
-  // WHY: Generate A4 portrait PDF with hero on every page and no block breaks
-  // HOW: Call exportPageWithSmartPagination with hero and content IDs
+  // WHY: Generate an A4 PDF with no chart/image split across a page break
+  // HOW: Hand off to app/api/export/pdf/route.ts, which drives a real headless browser
+  // to this same page and calls its native print pipeline. A GET to a URL that responds
+  // with Content-Disposition: attachment is the download, no client-side rendering or
+  // blob handling involved — this is deliberate: that's what makes it reliable on
+  // mobile browsers, where generating and downloading a client-built PDF blob is a
+  // known-flaky pattern. See app/api/export/pdf/route.ts's top-of-file comment for the
+  // full reasoning.
   const handlePDFExport = useCallback(async () => {
     console.log(`🗔️ PDF Export clicked (${reportType})`);
     console.log('   Entity:', entity ? '✅' : '❌');
-    
+
     if (!entity) {
       const message = 'Report data not ready. Entity information is missing. Please wait for the report to fully load.';
       console.warn('⚠️ Cannot export PDF:', message);
       alert(message);
       return;
     }
-    
-    // Verify DOM elements exist
-    const heroElement = document.getElementById('report-hero');
-    const contentElement = document.getElementById('report-content');
-    
-    if (!heroElement) {
-      console.error('❌ Hero element not found (id: report-hero)');
-      alert('Cannot export PDF: Report hero section not found. Please refresh the page and try again.');
-      return;
-    }
-    
-    if (!contentElement) {
-      console.error('❌ Content element not found (id: report-content)');
-      alert('Cannot export PDF: Report content section not found. Please refresh the page and try again.');
-      return;
-    }
 
-    try {
-      console.log('📝 Starting PDF export...');
-      console.log('   Hero element:', '✅');
-      console.log('   Content element:', '✅');
-      
-      // Extract name for filename
-      const entityName = entity.name || entity.eventName || 'report';
-      const filename = filenamePrefix 
-        ? `${filenamePrefix}_${entityName.replace(/[^a-zA-Z0-9]/g, '_')}`
-        : entityName.replace(/[^a-zA-Z0-9]/g, '_');
-      
-      await exportPageWithSmartPagination(
-        'report-hero',
-        'report-content',
-        {
-          filename,
-          format: 'a4',
-          orientation: 'portrait',
-          quality: 0.95,
-          margin: 10
-        }
-      );
-      
-      console.log('✅ PDF export completed successfully');
-    } catch (error) {
-      console.error('❌ PDF export failed:', error);
-      const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
-      alert(`Failed to export PDF: ${errorMessage}\n\nPlease check the browser console for details and try again.`);
-    }
+    const entityName = entity.name || entity.eventName || 'report';
+    const filename = filenamePrefix
+      ? `${filenamePrefix}_${entityName.replace(/[^a-zA-Z0-9]/g, '_')}`
+      : entityName.replace(/[^a-zA-Z0-9]/g, '_');
+
+    const exportUrl = `/api/export/pdf?path=${encodeURIComponent(window.location.pathname + window.location.search)}&filename=${encodeURIComponent(filename)}`;
+    console.log('📝 Requesting PDF export:', exportUrl);
+    window.location.href = exportUrl;
   }, [entity, filenamePrefix, reportType]);
 
   return {

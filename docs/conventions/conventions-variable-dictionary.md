@@ -4,7 +4,7 @@ Last Updated: 2026-01-11T22:28:38.000Z
 Canonical: No
 Owner: Architecture
 
-**Version:** 12.2.4  
+**Version:** 12.3.0  
 **Created:** 2026-01-09T10:21:28.300Z  
 **Status:** Canonical (Single Source of Truth)  
 **Maintained By:** Chappie (Architect)

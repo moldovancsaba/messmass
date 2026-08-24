@@ -61,6 +61,15 @@ export const RATE_LIMITS = {
     maxRequests: 5,             // 5 submissions per 15 min per IP
     message: 'Too many contact form submissions. Please try again later.',
   },
+
+  // PDF export - launches a headless browser per request (multi-second, memory-heavy),
+  // so this needs a much tighter cap than a normal read to stop one runaway client from
+  // exhausting concurrent serverless capacity for everyone else.
+  EXPORT: {
+    windowMs: 60 * 1000,        // 1 minute
+    maxRequests: 6,             // 6 PDF generations per minute per IP
+    message: 'Too many PDF export requests. Please wait a moment and try again.',
+  },
 } as const;
 
 // WHAT: Clean up expired entries from memory store

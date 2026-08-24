@@ -4,6 +4,99 @@ Last Updated: 2026-08-24T00:00:00.000Z
 Canonical: No
 Owner: Operations
 
+## [v12.3.0] — 2026-08-24T00:00:00.000Z
+
+### Summary
+Replaces the client-side PDF export pipeline (html2canvas + jsPDF, hand-rolled
+block-by-block pagination) with a server-side one: a real headless browser
+(Puppeteer) navigates to the report page itself and calls its native print
+pipeline. This is a root-cause fix, not another patch to the old pipeline —
+v9.3.0 and v12.2.4 each fixed one html2canvas CSS-support gap (object-fit on
+`<img>`, twice); this removes the class of bug by removing html2canvas
+entirely. It also directly answers three explicit requirements: A4 with no
+chart/image ever split across a page break, working identically regardless
+of the *client's* browser, and working from a mobile browser (a native file
+download, not a client-generated blob — the flaky part of the old approach
+on memory-constrained mobile Safari).
+
+### Added
+- `app/api/export/pdf/route.ts` — GET endpoint. Validates `path` against an
+  allowlist (`/report/`, `/hashtag/`) to avoid becoming an open SSRF proxy,
+  rate-limited via a new `RATE_LIMITS.EXPORT` tier (6/min/IP — this launches
+  a full browser per request), launches Chromium (`@sparticuz/chromium` +
+  `puppeteer-core` in production; the full `puppeteer` package, dev-only, on
+  a local machine — `@sparticuz/chromium`'s binary is Linux-only), navigates
+  internally with `?pdfExport=1`, waits for the page's own existing
+  readiness contract (`#report-content` only mounts once `loading` flips
+  false — app/report/[slug]/page.tsx), then for every chart `<canvas>` to
+  stop resizing (Chart.js's own ResizeObserver is a second, chained resize
+  reaction after ResponsiveRow's), then calls `page.pdf()` with
+  `preferCSSPageSize: true`. Streams the result back with
+  `Content-Disposition: attachment`.
+- `@page` size/margin rule (app/globals.css) — page geometry read by that
+  pipeline: A4, 15mm/12mm margins.
+- `break-inside: avoid` on `.block` and `.row` (ReportContent.module.css),
+  `break-after: avoid` on `.blockTitle` — the native primitive for "never
+  split this, push it whole to the next page." Verified against a
+  deliberately-boundary-straddling synthetic page: both blocks moved whole
+  to page 2, neither split.
+- `hooks/useReportExport.ts`'s `handlePDFExport` now builds
+  `/api/export/pdf?path=<current path+search>` and does
+  `window.location.href = url` — no fetch, no blob, no client rendering.
+  `app/hashtag/[hashtag]/page.tsx` is wired to the same mechanism; its PDF
+  button had `showExport={true}` but no `onExportPDF` handler at all, so it
+  silently no-opped before this — not a new feature, completing wiring this
+  page already declared it wanted.
+
+### Fixed (found by direct reproduction against real report data, not
+### theorized)
+- **The 768px mobile breakpoint doesn't fire during PDF generation on
+  viewport width alone.** First version of this route set
+  `page.setViewport({width: 680, ...})`, reasoning that landing under the
+  app's `(max-width: 768px)` breakpoint would reuse its already-correct,
+  content-driven-height single-column layout instead of the desktop
+  3-column grid. Reproduced against a real report: it rendered the desktop
+  grid anyway, squeezed into A4's printable width — a donut chart
+  overflowing its own card into the next one. Root cause: `page.pdf()`
+  evaluates width-based media queries against the `@page` box itself
+  (~793px at 96dpi for A4), not `page.setViewport()`, which only governs
+  the pre-print DOM-measurement phase. Fix: `(max-width: 768px), print` on
+  the three affected media queries (ReportContent.module.css,
+  ReportChart.module.css, ReportHero.module.css) — the media query itself
+  now selects the layout, not a viewport-width proxy for it.
+
+### Removed
+- `lib/export/pdf.ts`, `html2canvas`, `jspdf`, `@types/html2canvas` — fully
+  dead after the swap (verified: zero remaining imports anywhere).
+
+### Verified
+Full gate green: type-check, lint, 400 tests, style:check, docs:audit,
+dependency guardrail, build. Confirmed `@sparticuz/chromium` and
+`puppeteer-core` are correctly traced into the function bundle and the full
+`puppeteer` package is correctly excluded (next.config.js
+`serverExternalPackages` / `outputFileTracingExcludes`).
+Ran the actual route against a real, DB-backed report end-to-end (local dev,
+real MongoDB): 200 OK, a real multi-page PDF, hero and all chart types
+(donut, bar-list, KPI number) rendering correctly, and the page break
+landing cleanly between blocks on real content spanning 3 pages.
+
+### Known limitation
+`@sparticuz/chromium`'s Linux binary cannot run on this machine (macOS), so
+the production code path (that exact package on real Vercel serverless
+infrastructure) could not be exercised directly — the officially-paired
+versions were used (`@sparticuz/chromium@149.0.0` /
+`puppeteer-core@25.8.0`, the widely-used combination for this exact
+Vercel/Next.js pattern) and the route fails cleanly (502 JSON, not a crash)
+if launch ever fails, but this is the one piece of the mechanism to watch
+on the first real production export.
+
+### Operator action still needed
+- Set `PUPPETEER_SKIP_DOWNLOAD=true` in Vercel's project environment
+  variables. `puppeteer` (the local-dev-only devDependency) downloads its
+  own ~150-300MB Chromium on `npm install` by default; Vercel's build never
+  executes it, only needs the package present, and does not skip
+  devDependencies for a Next.js build.
+
 ## [v12.2.4] — 2026-08-24T00:00:00.000Z
 
 ### Summary

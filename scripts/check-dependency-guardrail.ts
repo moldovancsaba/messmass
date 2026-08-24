@@ -43,9 +43,9 @@ const APPROVED_RUNTIME_DEPS = new Set([
   'focus-trap-react',
   'google-auth-library', // pinned exact version alongside googleapis; see lib/googleSheetsClient.ts's direct import
   'googleapis',
-  'html2canvas',
+  '@sparticuz/chromium', // Serverless-compatible Chromium for app/api/export/pdf/route.ts (production).
+  'puppeteer-core', // Drives the above; local dev uses the full `puppeteer` devDependency instead.
   'js-cookie',
-  'jspdf',
   'lucide-react',
   'server-only',
   'typescript',
@@ -67,9 +67,9 @@ const APPROVED_DEV_DEPS = new Set([
   '@types/dompurify',
   '@types/marked',
   '@types/expr-eval',
-  '@types/html2canvas',
   '@types/jest',
   '@types/js-cookie',
+  'puppeteer', // Local-dev-only Chromium for app/api/export/pdf/route.ts; excluded from the production bundle (next.config.js).
   '@eslint/eslintrc',
   'eslint',
   'eslint-config-next',

@@ -105,7 +105,10 @@
 }
 
 /* Responsive Adjustments */
-@media (max-width: 768px) {
+/* WHAT: `, print` added — see ReportContent.module.css for the full reasoning. Stacks the
+   hero (logos/title) vertically in print too, matching the mobile layout rather than
+   squeezing the desktop horizontal arrangement into A4's narrower printable width. */
+@media (max-width: 768px), print {
   .hero {
     padding: var(--mm-space-6) var(--mm-space-4);
   }

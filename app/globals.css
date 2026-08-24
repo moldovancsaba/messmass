@@ -2148,3 +2148,27 @@ div.unified-chart-item:has(.text-chart-container) {
 .text-right {
   text-align: right;
 }
+
+/* ===== Print / A4 PDF export ===== */
+/* WHAT: Page geometry and interactive-chrome hiding for server-generated report PDFs.
+   WHY: app/api/export/pdf/route.ts drives a real headless browser (Puppeteer) to
+   /report/[slug]?pdfExport=1 and calls the browser's native print pipeline -- this is
+   the CSS that pipeline reads. Component-level pagination rules (break-inside:avoid on
+   .block/.row) live next to those components; this file only holds page-level and
+   cross-cutting rules that have no natural component home.
+   preferCSSPageSize:true in the Puppeteer call is what makes it use this @page rule
+   instead of the format:'A4' option passed at the API layer -- keep them in sync if
+   either changes. */
+@page {
+  size: A4;
+  margin: 15mm 12mm;
+}
+
+@media print {
+  /* WHAT: Export/CSV/PDF buttons, and anything else marked print-irrelevant.
+     WHY: A PDF of a report should not contain a button to generate itself. */
+  [data-pdf-export-buttons],
+  [data-print-hide] {
+    display: none !important;
+  }
+}

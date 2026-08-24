@@ -18,6 +18,11 @@ jobs:
       # Dummy values so `next build` doesn't fail on missing runtime config.
       MONGODB_URI: ${{ secrets.MONGODB_URI || 'mongodb://localhost:27017/test' }}
       DB_NAME: ${{ secrets.DB_NAME || 'messmass_test' }}
+      # `puppeteer` (devDependency, local-dev-only PDF export fallback — see
+      # app/api/export/pdf/route.ts) downloads its own ~150-300MB Chromium build on
+      # every `npm install` by default. CI never executes it (it only needs the
+      # package present for type-checking), so skip that download here.
+      PUPPETEER_SKIP_DOWNLOAD: 'true'
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4

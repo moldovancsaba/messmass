@@ -54,8 +54,20 @@ const nextConfig = {
     '*': [
       '.next/cache/**/*',
       'node_modules/@swc/**/*',
+      // WHAT: the full `puppeteer` package (devDependency, local-dev-only PDF export
+      // fallback — see app/api/export/pdf/route.ts) bundles its own ~300MB Chromium
+      // download via a postinstall step.
+      // WHY: it is only ever imported when NOT running on Vercel, but Next's file
+      // tracer analyzes the import() target statically regardless of that runtime
+      // branch, and would otherwise ship this into every function's bundle.
+      'node_modules/puppeteer/**/*',
     ],
   },
+  // WHAT: @sparticuz/chromium and puppeteer-core (production PDF export — same route)
+  // must stay real Node `require()`s, not get webpack-bundled.
+  // WHY: @sparticuz/chromium ships a compressed Chromium binary it decompresses from a
+  // real filesystem path at runtime; bundling breaks that path resolution entirely.
+  serverExternalPackages: ['@sparticuz/chromium', 'puppeteer-core'],
   // WHAT: Bundle the user-guide markdown with the online reader routes.
   // WHY: /admin/help/guides reads docs/guides/*.md; keep the files traced into the
   //      function bundle so the reader works even if rendered on-demand.
