@@ -43,7 +43,7 @@ const APPROVED_RUNTIME_DEPS = new Set([
   'focus-trap-react',
   'google-auth-library', // pinned exact version alongside googleapis; see lib/googleSheetsClient.ts's direct import
   'googleapis',
-  '@sparticuz/chromium', // Serverless-compatible Chromium for app/api/export/pdf/route.ts (production).
+  '@sparticuz/chromium-min', // Serverless Chromium loader for app/api/export/pdf/route.ts (production); downloads its binary from a GitHub Release at runtime.
   'puppeteer-core', // Drives the above; local dev uses the full `puppeteer` devDependency instead.
   'js-cookie',
   'lucide-react',

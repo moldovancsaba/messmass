@@ -17,13 +17,15 @@
 //     it just downloads a file the server already finished generating. That is also
 //     what makes this reliable on mobile: a GET request and a native file download,
 //     nothing else.
-// HOW: Launch headless Chromium (production: @sparticuz/chromium, a Lambda/Vercel-
-//     compatible build; local dev: the full `puppeteer` package, which bundles its own
-//     Chromium for the dev machine's OS — @sparticuz/chromium's binary is Linux-only).
-//     Navigate to the report page itself with ?pdfExport=1, wait for it to finish
-//     loading by its own existing readiness contract (#report-content only mounts once
-//     the page's own `loading` state flips false — see app/report/[slug]/page.tsx),
-//     then call the browser's native print pipeline.
+// HOW: Launch headless Chromium (production: @sparticuz/chromium-min, which downloads
+//     its Chromium binary from a GitHub Release at runtime instead of bundling it — see
+//     the comment on CHROMIUM_PACK_URL below for why the full, self-contained
+//     @sparticuz/chromium package does not work here; local dev: the full `puppeteer`
+//     package, which bundles its own Chromium for the dev machine's OS). Navigate to
+//     the report page itself with ?pdfExport=1, wait for it to finish loading by its
+//     own existing readiness contract (#report-content only mounts once the page's own
+//     `loading` state flips false — see app/report/[slug]/page.tsx), then call the
+//     browser's native print pipeline.
 
 import { NextRequest, NextResponse } from 'next/server';
 import { checkRateLimit, RATE_LIMITS } from '@/lib/rateLimit';
@@ -69,17 +71,34 @@ function sanitizeFilename(name: string): string {
 const PRINT_VIEWPORT_WIDTH = 680;
 const PRINT_VIEWPORT_HEIGHT = 1400;
 
+// WHAT: the exact GitHub Release asset @sparticuz/chromium-min downloads and extracts
+// (cached to /tmp for warm starts) instead of shipping the binary in the function
+// bundle.
+// WHY: @sparticuz/chromium (the full package, bundled binary) failed on the very first
+// real production request with "input directory .../bin does not exist" — confirmed via
+// Vercel's own runtime logs. Two different next.config.js outputFileTracingIncludes
+// configurations, including one matching a community-confirmed working pattern for this
+// exact package/platform combination, made no difference; the identical error persisted.
+// -min sidesteps the whole class of problem rather than continuing to fight it: nothing
+// large needs to be traced or bundled, since the ~66MB pack downloads over the network
+// at runtime instead. This is the package author's own documented answer to "your
+// bundler won't cooperate" (README, "-min Package" section), not a workaround improvised
+// here. Bump CHROMIUM_PACK_VERSION and package.json's @sparticuz/chromium-min version
+// together when upgrading.
+const CHROMIUM_PACK_VERSION = '149.0.0';
+const CHROMIUM_PACK_URL = `https://github.com/Sparticuz/chromium/releases/download/v${CHROMIUM_PACK_VERSION}/chromium-v${CHROMIUM_PACK_VERSION}-pack.x64.tar`;
+
 async function launchBrowser() {
   const isServerless = !!process.env.VERCEL || !!process.env.AWS_LAMBDA_FUNCTION_NAME;
 
   if (isServerless) {
     const [{ default: chromium }, puppeteer] = await Promise.all([
-      import('@sparticuz/chromium'),
+      import('@sparticuz/chromium-min'),
       import('puppeteer-core'),
     ]);
     return puppeteer.launch({
       args: chromium.args,
-      executablePath: await chromium.executablePath(),
+      executablePath: await chromium.executablePath(CHROMIUM_PACK_URL),
       headless: true,
       defaultViewport: null,
     });

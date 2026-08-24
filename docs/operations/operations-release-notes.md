@@ -4,6 +4,48 @@ Last Updated: 2026-08-24T00:00:00.000Z
 Canonical: No
 Owner: Operations
 
+## [v12.3.2] — 2026-08-24T00:00:00.000Z
+
+### Summary
+v12.3.1's fix for the production PDF export failure did not work either --
+confirmed by a second real production request, identical error. Root cause
+of THAT was a genuine bug, not a config-format problem: `next.config.js`
+already declared `outputFileTracingIncludes` once, further down the same
+file (for the guides reader), and a duplicate object key later in the same
+literal silently wins in plain JavaScript -- the second declaration
+clobbered the first at parse time with no error and no warning. The
+Chromium-tracing entry was never applied, regardless of how its glob keys
+were formatted.
+
+### Changed
+Rather than merge two unrelated file-tracing needs into one object literal
+and rely on getting that exactly right a third time, switched from
+`@sparticuz/chromium` (self-contained, ~70MB bundled Chromium binary) to
+`@sparticuz/chromium-min`, which has no bundled binary to trace or bundle
+at all -- it downloads a Chromium pack from a URL at runtime instead
+(cached to `/tmp`, so only the first cold start pays the download). This
+sidesteps the entire class of problem this repo hit twice, rather than
+fixing this specific instance of it. It's the package author's own
+documented answer to "your bundler/platform tracing won't cooperate"
+(README, "-min Package" section), not an improvised workaround.
+
+`app/api/export/pdf/route.ts`'s `CHROMIUM_PACK_URL` points at the
+`chromium-v149.0.0-pack.x64.tar` asset on `@sparticuz/chromium`'s own
+GitHub Releases -- no separate hosting needed. `next.config.js`'s
+`serverExternalPackages` now lists `@sparticuz/chromium-min` in place of
+`@sparticuz/chromium`; the `outputFileTracingIncludes` entry from v12.3.1
+is removed outright (nothing left to include).
+
+### Verified
+Full gate green: type-check, lint, 400 tests, style:check, docs:audit,
+dependency guardrail, build. Confirmed the function's traced bundle is now
+4.1MB with no Chromium binary and no accidental inclusion of the local-dev-
+only full `puppeteer` package. The download URL itself was confirmed
+reachable (a live GitHub Release asset). The actual runtime download-and-
+launch sequence could not be exercised locally, for the same reason as
+before -- verification is a real request against production after this
+deploys.
+
 ## [v12.3.1] — 2026-08-24T00:00:00.000Z
 
 ### Summary
