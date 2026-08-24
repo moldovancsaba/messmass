@@ -233,21 +233,30 @@ export default function HashtagReportPage() {
     <div className={styles.page}>
       <div className={styles.container}>
         {/* Hero Section - REUSED from event reports */}
-        <ReportHero 
-          project={projectForHero}
-          emoji="🏷️"
-          showDate={true}
-          customSubtitle={(reportData as any).reportVariant ? `${(reportData as any).reportVariant.name} · ${(reportData as any).reportVariant.period?.label || 'All Time'}` : undefined}
-          showExport={true}
-          onExportPDF={handlePDFExport}
-        />
-        
+        {/* WHAT: id="report-hero"/"report-content" match app/report/[slug]/page.tsx —
+            see the matching comment in app/filter/[slug]/page.tsx for why this is load-
+            bearing for the export route's readiness check, not decorative. This page is
+            unreachable by direct navigation (next.config.js permanently redirects
+            /hashtag/* to /filter/*, already fixed), but kept consistent regardless. */}
+        <div id="report-hero">
+          <ReportHero
+            project={projectForHero}
+            emoji="🏷️"
+            showDate={true}
+            customSubtitle={(reportData as any).reportVariant ? `${(reportData as any).reportVariant.name} · ${(reportData as any).reportVariant.period?.label || 'All Time'}` : undefined}
+            showExport={true}
+            onExportPDF={handlePDFExport}
+          />
+        </div>
+
         {/* Report Content Grid - REUSED from event reports */}
-        <ReportContent 
-          blocks={blocks}
-          chartResults={chartResults}
-          gridSettings={gridSettings}
-        />
+        <div id="report-content">
+          <ReportContent
+            blocks={blocks}
+            chartResults={chartResults}
+            gridSettings={gridSettings}
+          />
+        </div>
         
         {/* Related Projects List */}
         {reportData.projects && reportData.projects.length > 0 && (

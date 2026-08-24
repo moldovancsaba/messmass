@@ -4,6 +4,57 @@ Last Updated: 2026-08-24T00:00:00.000Z
 Canonical: No
 Owner: Operations
 
+## [v12.3.3] — 2026-08-24T00:00:00.000Z
+
+### Summary
+The user asked directly whether PDF export actually works now. Answering
+that honestly meant testing the /filter/[slug] route specifically, not just
+/report/[slug] (already confirmed on production in v12.3.2) -- and testing
+it surfaced two more real, previously undetected bugs in that route family,
+plus a genuine, correctly-scoped limitation this pass does not close.
+
+### Fixed
+- `/filter/[slug]` is the route users actually reach for hashtag/multi-
+  project aggregate reports -- `next.config.js` permanently redirects
+  `/hashtag/*` to `/filter/*`, so `app/hashtag/[hashtag]/page.tsx` (wired in
+  v12.3.0) is unreachable by direct navigation. Its export button was never
+  wired at all: `showExport={true}` with no `onExportPDF` handler, silently
+  no-opping (`ReportHero`'s own fallback just `console.warn`s). Wired to the
+  same mechanism as `/report/[slug]`.
+- Neither `/filter/[slug]` nor `/hashtag/[hashtag]` rendered the
+  `id="report-hero"`/`id="report-content"` wrapper elements
+  `app/api/export/pdf/route.ts`'s readiness check depends on --
+  `app/report/[slug]/page.tsx` is the only page that had them. Confirmed by
+  direct reproduction: exporting `/filter/men` timed out after 35s with
+  "Waiting for selector #report-content failed", against data that had
+  already finished loading successfully. Added the matching wrapper
+  elements to both pages.
+- `/filter/` added to the export route's path allowlist (`ALLOWED_PATH_PREFIXES`)
+  -- it was missing entirely, so even a correctly-wired button would have
+  hit a clean 400 first.
+
+### Known, correctly-scoped limitation (not fixed here)
+`/filter/[slug]` is password-protected by default for every filter page --
+confirmed directly: `/filter/men` and `/filter/soccer` both showed the same
+"Filter Access Required" gate on a fresh, unauthenticated browser context.
+That gate has two bypass paths: an admin session (a real cookie, which
+`app/api/export/pdf/route.ts` already forwards to Puppeteer) or the page's
+own password (stored only in the browser's `sessionStorage`, which a
+server-side Puppeteer navigation has no access to at all). The admin-cookie
+path could not be verified end-to-end in this environment -- local SSO is
+not configured here, so no real admin session was available to test with;
+it is reasoned-correct from the code, not empirically confirmed. The
+page-password path will not work until the client sends proof of that
+unlock to the export endpoint for the server to inject into Puppeteer's
+page -- deliberately not attempted in this pass; flagged, not silently
+left broken without explanation.
+
+### Verified
+Full gate green: type-check, lint, 400 tests, style:check, docs:audit,
+build. `/report/[slug]` -- confirmed working on real production in
+v12.3.2, unaffected by anything in this release (no auth gate on that
+route at all).
+
 ## [v12.3.2] — 2026-08-24T00:00:00.000Z
 
 ### Summary

@@ -38,7 +38,12 @@ export const maxDuration = 60;
 // WHY: `path` becomes part of a server-side navigation target. Without this it is an
 // open SSRF proxy — accept only the app's own report routes, not query params, not a
 // scheme, not `..`.
-const ALLOWED_PATH_PREFIXES = ['/report/', '/hashtag/'];
+// WHAT: '/hashtag/' is kept even though next.config.js permanently redirects it to
+// '/filter/' — Puppeteer follows that redirect like any browser would, so it still
+// resolves to a real, correctly-rendered page. '/filter/' is the one users actually
+// reach; it was missing here entirely until this was caught by testing the export
+// button on that page specifically, not just /report/.
+const ALLOWED_PATH_PREFIXES = ['/report/', '/hashtag/', '/filter/'];
 
 function validatePath(path: string): string | null {
   if (!path.startsWith('/') || path.startsWith('//')) return null;

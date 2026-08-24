@@ -231,25 +231,49 @@ export default function FilterReportPage() {
     eventDate: reportData.project.dateRange.newest,
     _id: filterSlug
   };
-  
+
+  // WHAT: PDF export — same server-side mechanism as the event/partner report page
+  // (see hooks/useReportExport.ts and app/api/export/pdf/route.ts).
+  // WHY: showExport was already true here with no onExportPDF handler wired, so the
+  // button silently no-opped (ReportHero's own fallback just console.warns). This is
+  // the live route (/hashtag/* permanently redirects to /filter/* — next.config.js —
+  // so app/hashtag/[hashtag]/page.tsx, wired earlier, is unreachable by normal
+  // navigation; this file is where the fix actually needed to land).
+  const handlePDFExport = () => {
+    const filename = (reportData?.project?.eventName || filterSlug || 'report').replace(/[^a-zA-Z0-9]/g, '_');
+    const exportUrl = `/api/export/pdf?path=${encodeURIComponent(window.location.pathname + window.location.search)}&filename=${encodeURIComponent(filename)}`;
+    window.location.href = exportUrl;
+  };
+
   return (
     <div className={styles.page}>
       <div className={styles.container}>
         {/* Hero Section - REUSED from event reports */}
-        <ReportHero 
-          project={projectForHero}
-          emoji="🔍"
-          showDate={true}
-          customSubtitle={(reportData as any).reportVariant ? `${(reportData as any).reportVariant.name} · ${(reportData as any).reportVariant.period?.label || 'All Time'}` : undefined}
-          showExport={true}
-        />
-        
+        {/* WHAT: id="report-hero"/"report-content" match app/report/[slug]/page.tsx's
+            structure exactly. WHY: app/api/export/pdf/route.ts's readiness check waits
+            for #report-content to mount — it had no id to find here at all until this,
+            so a PDF export of this page could never succeed regardless of how fast the
+            data loaded (confirmed by direct reproduction: "Waiting for selector
+            #report-content failed" against real filter data that HAD finished loading). */}
+        <div id="report-hero">
+          <ReportHero
+            project={projectForHero}
+            emoji="🔍"
+            showDate={true}
+            customSubtitle={(reportData as any).reportVariant ? `${(reportData as any).reportVariant.name} · ${(reportData as any).reportVariant.period?.label || 'All Time'}` : undefined}
+            showExport={true}
+            onExportPDF={handlePDFExport}
+          />
+        </div>
+
         {/* Report Content Grid - REUSED from event reports */}
-        <ReportContent 
-          blocks={blocks}
-          chartResults={chartResults}
-          gridSettings={gridSettings}
-        />
+        <div id="report-content">
+          <ReportContent
+            blocks={blocks}
+            chartResults={chartResults}
+            gridSettings={gridSettings}
+          />
+        </div>
         
         {/* Related Projects List */}
         {reportData.projects && reportData.projects.length > 0 && (
