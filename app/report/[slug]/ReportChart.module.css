@@ -532,8 +532,16 @@
   /* WHAT: Legend text scaled to fit available space with responsive sizing */
   /* WHY: Make legend text readable in both large and small blocks, prevent overflow, fill available space */
   /* HOW: Use container queries for both width and height, design tokens for bounds */
-  /* WHAT: P1 1.5 Phase 2 - Use block-level typography instead of independent scaling */
-  font-size: var(--block-base-font-size);
+  /* WHAT: --block-subtitle-font-size, not --block-base-font-size.
+     WHY: A legend is a secondary reference key next to a chart, not a title -- but this
+     rule used the SAME size as the chart's own title (--block-base-font-size, 32px by
+     default). At that size a short legend often doesn't overflow its allocated space,
+     so the shrink-to-fit correction in ReportChart.tsx never has reason to fire, and
+     the legend renders at full title size, dominating the chart it's meant to
+     annotate. --block-subtitle-font-size (13px default) is this same app's own
+     existing secondary tier of the same block-level typography system (P1 1.5 Phase
+     2) -- using it here is completing that system's intent, not adding a new one. */
+  font-size: var(--block-subtitle-font-size);
   font-weight: var(--mm-font-weight-medium);
   color: var(--chartLabelColor);
   line-height: 1.2; /* WHAT: Reduced from 1.3 to 1.2 for tighter spacing in constrained blocks */

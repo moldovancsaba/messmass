@@ -4,6 +4,37 @@ Last Updated: 2026-08-25T00:00:00.000Z
 Canonical: No
 Owner: Operations
 
+## [v12.3.8] — 2026-08-25T00:00:00.000Z
+
+### Summary
+v12.3.7's generic wait fixed the overlap: a fourth screenshot showed the
+pie-legend section rendering cleanly, no bleeding into neighboring
+sections. But the legend text itself was rendering enormous — as large
+as the chart's own title — which the user correctly called out as not
+how chart legends work.
+
+### Fixed
+Root cause was not a timing issue at all this time: `.pieLegendText`
+(`ReportChart.module.css`) was styled with `font-size:
+var(--block-base-font-size)` — the same 32px-by-default size used for
+chart *titles* — instead of `--block-subtitle-font-size` (13px), this
+same app's own existing secondary tier of the same block-level
+typography system. At that size a short legend often doesn't overflow
+its allocated space, so the shrink-to-fit correction never had reason to
+fire, and the legend rendered at full title size. This affects the live
+website too, not just PDF export (the rule has no @media scoping) —
+fixed there as well, since an oversized legend is wrong in either
+context, not something specific to print.
+
+### Verified
+Full gate green: type-check, lint, style:check, 400 tests, build.
+Confirmed via the Browser pane against the live `/report/[slug]` page
+(not just a static screenshot) — legend text now reads clearly smaller
+than the chart title, appropriately secondary. Also re-exported the same
+report's PDF locally and confirmed the same sizing carries through to
+print. This is the first fix in this arc verified against BOTH the live
+site and the PDF output directly, not shipped on code-reading alone.
+
 ## [v12.3.7] — 2026-08-25T00:00:00.000Z
 
 ### Summary

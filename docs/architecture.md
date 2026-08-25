@@ -4,7 +4,7 @@ Last Updated: 2026-06-25
 Canonical: No
 Owner: Architecture
 
-Version: 12.3.7
+Version: 12.3.8
 
 > This is a current-state architecture reference, not a changelog. For dated release
 > history use [`docs/operations/operations-release-notes.md`](operations/operations-release-notes.md).
