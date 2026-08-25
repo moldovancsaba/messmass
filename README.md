@@ -187,7 +187,7 @@ Main system areas:
 
 Current UI foundation note:
 - Root Mantine runtime is now installed and active through `app/providers.tsx` and `lib/ui/mantineTheme.ts`
-- Shared GDS packages resolve from vendored `@sovereignsquad/gds-*` GitHub Release tarballs under `vendor/gds/` at `6.3.0`
+- Shared GDS packages resolve from the GitHub Packages registry (`@sovereignsquad/gds-*` at `6.3.0`, pinned exact); a `GDS_PACKAGES_TOKEN` repository secret authenticates CI installs. Previously vendored as `file:` tarballs under `vendor/gds/` (now deleted) while no working registry credential existed.
 - Legacy local wrappers and CSS systems still exist as compatibility layers until the board-tracked Mantine migration chain is completed
 - Old local `@gds/*` package folders (pre-vendoring) are no longer active package authority
 

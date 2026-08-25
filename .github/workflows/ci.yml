@@ -15,6 +15,10 @@ jobs:
     name: Verify
     runs-on: ubuntu-latest
     env:
+      # GitHub Packages install auth for @sovereignsquad/gds-* -- can't name the secret
+      # GITHUB_TOKEN directly (reserved by GitHub Actions), so GDS_PACKAGES_TOKEN is
+      # exposed to npm/.npmrc under the name it actually expects.
+      GITHUB_TOKEN: ${{ secrets.GDS_PACKAGES_TOKEN }}
       # Dummy values so `next build` doesn't fail on missing runtime config.
       MONGODB_URI: ${{ secrets.MONGODB_URI || 'mongodb://localhost:27017/test' }}
       DB_NAME: ${{ secrets.DB_NAME || 'messmass_test' }}
