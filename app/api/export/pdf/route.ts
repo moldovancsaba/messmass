@@ -240,38 +240,41 @@ export async function GET(request: NextRequest) {
       )
       .catch(() => {}); // best-effort: a chart that never settles should not hang the whole export
 
-    // WHAT: Wait for BAR-chart labels to stop resizing before printing.
-    // WHY: Confirmed by direct reproduction against a real report — a bar chart with
-    // several long, currency-suffixed labels ("Automotive (CPL: €170)") rendered
-    // overlapping the block title above it and bleeding into the next block below,
-    // producing an illegible mess in the exported PDF. Root cause:
-    // `app/report/[slug]/ReportChart.tsx`'s `BarChart` measures each `[class*="barLabel"]`
-    // cell's actual rendered height against its allocated share of the row's fixed
-    // `--block-height`, and — since Layout Grammar requires content to fit without
-    // clipping rather than growing the box — shrinks that label's font-size (down to an
-    // 8px floor) until it fits. That correction runs via `useEffect` +
-    // `ResizeObserver` + `setTimeout(fn, 0)`, i.e. it needs at least one more JS
-    // macrotask (and possibly several resize/re-render hops) after the canvas/image
-    // waits above already settled — nothing before this waited for it, so `page.pdf()`
-    // could snapshot the labels at their original, too-large, overlapping size. Same
-    // fingerprint-stability approach as the canvas wait above, targeting the exact
-    // selector (`[class*="barLabel"]`) the correction itself measures.
+    // WHAT: Wait for every content-fit correction across the whole report to settle
+    // before printing — not just bar-chart labels.
+    // WHY: A first version of this wait targeted only BAR-chart labels
+    // (`[class*="barLabel"]`), after a real report showed one overlapping the block
+    // title above it. That was too narrow: `ReportChart.tsx` has well over a dozen
+    // separate, independent instances of this same pattern — KPI value/title, pie
+    // legend text, valuechain, text-chart content, table content, and more — each its
+    // own `useEffect` + `ResizeObserver` (some also via `requestAnimationFrame`) that
+    // measures its element against its allocated space and shrinks font-size or sets a
+    // height custom property to fit, per this app's Layout Grammar rule that content
+    // must fit without clipping. A second real report immediately showed a DIFFERENT
+    // one of these (a pie-chart legend) with the exact same overlapping symptom, which
+    // the bar-label-only wait did nothing for. Rather than add one more
+    // selector-specific wait every time a different chart type turns up broken, this
+    // waits for the general mechanism ALL of them share: every one of these
+    // corrections applies itself via the element's inline `style` attribute
+    // (`el.style.fontSize = ...` / `el.style.setProperty(...)`). Fingerprinting every
+    // `[style]` element under #report-content and waiting for that fingerprint to stop
+    // changing catches all of them at once, including ones not individually identified
+    // here — the DOM sizing/positioning that produces the overlap is itself an inline
+    // style, whichever specific chart component set it.
     await page
       .waitForFunction(
         () => {
-          const labels = Array.from(document.querySelectorAll('#report-content [class*="barLabel"]'));
-          if (labels.length === 0) return true;
-          const w = window as unknown as { __pdfBarLabelSizes?: string };
-          const current = labels
-            .map((el) => `${(el as HTMLElement).scrollHeight}:${window.getComputedStyle(el).fontSize}`)
-            .join(',');
-          const stable = w.__pdfBarLabelSizes === current;
-          w.__pdfBarLabelSizes = current;
+          const styled = Array.from(document.querySelectorAll('#report-content [style]'));
+          if (styled.length === 0) return true;
+          const w = window as unknown as { __pdfStyleFingerprint?: string };
+          const current = styled.map((el) => el.getAttribute('style') || '').join('|');
+          const stable = w.__pdfStyleFingerprint === current;
+          w.__pdfStyleFingerprint = current;
           return stable;
         },
-        { timeout: 8000, polling: 200 }
+        { timeout: 10000, polling: 250 }
       )
-      .catch(() => {}); // best-effort: labels that never converge should not hang the whole export
+      .catch(() => {}); // best-effort: a correction that never converges should not hang the whole export
 
     await new Promise((resolve) => setTimeout(resolve, 250));
 

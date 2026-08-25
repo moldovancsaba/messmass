@@ -4,6 +4,52 @@ Last Updated: 2026-08-25T00:00:00.000Z
 Canonical: No
 Owner: Operations
 
+## [v12.3.7] — 2026-08-25T00:00:00.000Z
+
+### Summary
+User sent a third screenshot: the hero banner was disproportionately
+large in the portrait PDF, and a pie-chart legend ("QR Scans from
+iPhone: 71%"...) was overlapping its section title and bleeding into the
+next section — the exact same symptom class v12.3.6 fixed, just a
+different chart type.
+
+### Fixed
+- **Hero title too big.** `.heroTitle` is a static `font-size:
+  var(--mm-font-size-4xl)` (36px) — sized for the live desktop width
+  (~1200px), where most event names fit on one line. A4 portrait's
+  793px print width wraps a longer name to two lines, and two lines of
+  36px text plus 64px logos plus the hero's own padding visibly dwarfs
+  everything below it. Added a print-only `@media print` block
+  (`ReportHero.module.css`) shrinking title/date/logo/padding — does not
+  touch the live site, which had no complaint.
+- **v12.3.6's bar-label wait was too narrow.** `ReportChart.tsx` has over
+  a dozen separate instances of the same pattern as the bar-chart fix
+  (KPI value/title, pie legend, valuechain, text-chart, table-chart, and
+  more) — each an independent `useEffect` + `ResizeObserver` measuring an
+  element against its allocated space and shrinking font-size (or
+  setting a height custom property) to fit, per this app's Layout
+  Grammar rule that content must fit without clipping. The pie-legend
+  overlap in this screenshot is a DIFFERENT one of these than the bar
+  chart v12.3.6 fixed — the bar-label-only wait did nothing for it.
+  Replaced that narrow wait with a general one: every one of these
+  corrections applies itself via the element's inline `style` attribute,
+  so fingerprinting every `[style]` element under `#report-content` and
+  waiting for that fingerprint to stop changing catches all of them at
+  once, not just the ones individually identified so far.
+
+### Verified
+Full gate green: type-check, lint, style:check, 400 tests, build. Hero
+shrink confirmed locally via a rendered screenshot (same report used in
+prior releases) — noticeably smaller banner, no regression to the rest
+of the layout. **Could not reproduce the pie-legend overlap itself** —
+same access barrier as v12.3.5/12.3.6 (spent real effort this round
+trying to construct or locate a session-free real report with this
+content pattern; every viable path led back into the separate,
+unrelated org-scoped style-auth bug already flagged in v12.3.5's notes,
+not a further use of time here). The fix is shipped on the strength of
+reading every one of these correction call sites directly in source,
+not an end-to-end repro of this specific chart.
+
 ## [v12.3.6] — 2026-08-25T00:00:00.000Z
 
 ### Summary

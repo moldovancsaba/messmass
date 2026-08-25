@@ -143,3 +143,34 @@
     justify-content: center;
   }
 }
+
+/* WHAT: Print-only size reduction for the hero banner.
+   WHY: Confirmed by direct reproduction against a real report — .heroTitle's 36px
+   (--mm-font-size-4xl) is sized for the live desktop width (~1200px), where most event
+   names fit on one line. A4 portrait's print width (793px, see PRINT_VIEWPORT_WIDTH in
+   app/api/export/pdf/route.ts) is much narrower, so a longer name ("MTK Budapest x
+   Nyíregyháza FC") wraps to two lines at that size — two lines of 36px text plus the
+   64px logos plus the hero's own padding produces a banner that visibly dominates the
+   page relative to everything below it. This does not touch the live site (no
+   complaint there, and .hero's base rules are shared by both) — only @media print. */
+@media print {
+  .hero {
+    padding: var(--mm-space-4) var(--mm-space-4);
+  }
+
+  .heroLogo {
+    height: 40px;
+  }
+
+  .heroEmoji {
+    font-size: 40px;
+  }
+
+  .heroTitle {
+    font-size: var(--mm-font-size-xl);
+  }
+
+  .heroDate {
+    font-size: var(--mm-font-size-sm);
+  }
+}

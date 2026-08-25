@@ -4,7 +4,7 @@ Last Updated: 2026-01-16T11:30:00.000Z
 Canonical: Yes
 Owner: Architecture
 
-**Version:** 12.3.6
+**Version:** 12.3.7
 **Last Updated: 2026-01-16T11:30:00.000Z
 **Status:** Complete (Phase 1: 2025-12-19, Phase 2: 2025-12-25, Phase 3: 2025-12-25, Phase 4: 2026-01-02, Phase 5: 2026-01-02, Phase 6: 2026-01-15-16)
 
