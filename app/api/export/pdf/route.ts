@@ -59,8 +59,8 @@ function sanitizeFilename(name: string): string {
   return cleaned || 'report';
 }
 
-// WHAT: A4 LANDSCAPE page-box width at 96 CSS px/in — 297mm ≈ 1123px (app/globals.css
-// @page is landscape; see that comment for why).
+// WHAT: A4 PORTRAIT page-box width at 96 CSS px/in — 210mm ≈ 793px (app/globals.css
+// @page is portrait; see that comment for why v12.3.4's landscape choice was reverted).
 // WHY: page.pdf()'s print pass reflows the DOM against the @page box width for
 // width-based media queries, NOT page.setViewport() — confirmed by direct
 // reproduction. Two separate systems key off width, and both must land on "desktop"
@@ -69,15 +69,15 @@ function sanitizeFilename(name: string): string {
 // .module.css) picks single-column-mobile vs the designed grid; (2) ResponsiveRow's
 // own `isMobileViewport` (window.innerWidth <= 768) and its ResizeObserver-measured
 // `--block-height` (app/report/[slug]/ReportContent.tsx) bake per-block heights into
-// inline styles from whatever width was live when they last fired. Setting this
-// viewport to ~680px (portrait content width, the previous value) put the live page
-// in single-column-mobile mode while the print pass reflowed to the desktop grid (or
-// vice versa) — same bug either way: heights computed for one width get applied to a
-// visibly different one, which is what "images are broken, mobile layout on desktop"
-// actually was. Matching this to the landscape page-box width means the live page is
-// already laid out, and already measured, exactly as the print pass will render it —
-// no mode switch and no width jump left to race.
-const PRINT_VIEWPORT_WIDTH = 1123;
+// inline styles from whatever width was live when they last fired. A mismatched
+// viewport puts the live page in one layout mode while the print pass reflows to a
+// different one (or the same mode but a different pixel width) — heights computed for
+// one width get applied to a visibly different one. Matching this to the page-box
+// width means the live page is already laid out, and already measured, exactly as the
+// print pass will render it — no mode switch and no width jump left to race. 793px is
+// still comfortably above the 768px mobile breakpoint, so the designed grid still
+// applies (just at portrait's narrower, more cramped width than landscape would give).
+const PRINT_VIEWPORT_WIDTH = 793;
 const PRINT_VIEWPORT_HEIGHT = 1400;
 
 // WHAT: the exact GitHub Release asset @sparticuz/chromium-min downloads and extracts
@@ -239,6 +239,39 @@ export async function GET(request: NextRequest) {
         { timeout: 8000, polling: 200 }
       )
       .catch(() => {}); // best-effort: a chart that never settles should not hang the whole export
+
+    // WHAT: Wait for BAR-chart labels to stop resizing before printing.
+    // WHY: Confirmed by direct reproduction against a real report — a bar chart with
+    // several long, currency-suffixed labels ("Automotive (CPL: €170)") rendered
+    // overlapping the block title above it and bleeding into the next block below,
+    // producing an illegible mess in the exported PDF. Root cause:
+    // `app/report/[slug]/ReportChart.tsx`'s `BarChart` measures each `[class*="barLabel"]`
+    // cell's actual rendered height against its allocated share of the row's fixed
+    // `--block-height`, and — since Layout Grammar requires content to fit without
+    // clipping rather than growing the box — shrinks that label's font-size (down to an
+    // 8px floor) until it fits. That correction runs via `useEffect` +
+    // `ResizeObserver` + `setTimeout(fn, 0)`, i.e. it needs at least one more JS
+    // macrotask (and possibly several resize/re-render hops) after the canvas/image
+    // waits above already settled — nothing before this waited for it, so `page.pdf()`
+    // could snapshot the labels at their original, too-large, overlapping size. Same
+    // fingerprint-stability approach as the canvas wait above, targeting the exact
+    // selector (`[class*="barLabel"]`) the correction itself measures.
+    await page
+      .waitForFunction(
+        () => {
+          const labels = Array.from(document.querySelectorAll('#report-content [class*="barLabel"]'));
+          if (labels.length === 0) return true;
+          const w = window as unknown as { __pdfBarLabelSizes?: string };
+          const current = labels
+            .map((el) => `${(el as HTMLElement).scrollHeight}:${window.getComputedStyle(el).fontSize}`)
+            .join(',');
+          const stable = w.__pdfBarLabelSizes === current;
+          w.__pdfBarLabelSizes = current;
+          return stable;
+        },
+        { timeout: 8000, polling: 200 }
+      )
+      .catch(() => {}); // best-effort: labels that never converge should not hang the whole export
 
     await new Promise((resolve) => setTimeout(resolve, 250));
 

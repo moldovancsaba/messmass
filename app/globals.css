@@ -2160,14 +2160,13 @@ div.unified-chart-item:has(.text-chart-container) {
    instead of Puppeteer's own page.pdf({format, landscape}) options -- those are
    intentionally omitted from that call so there is only one place page geometry is
    declared.
-   WHAT: landscape, not portrait. WHY: the report's designed layout is a multi-column
-   desktop grid (~1200px wide by design). Portrait A4's page box (~793px at 96dpi) is
-   still wide enough to clear the 768px mobile breakpoint, but not wide enough to hold
-   that grid without cramming it -- landscape's ~1123px page box is a much closer match
-   to the actual design. PRINT_VIEWPORT_WIDTH in app/api/export/pdf/route.ts is set to
-   match this page box width -- see that constant's comment for why the two must agree. */
+   WHAT: portrait. WHY: v12.3.4 shipped landscape (its ~1123px page box fits the
+   designed 3-column grid better than portrait's ~793px), but the user explicitly
+   rejected that -- they want standard A4 portrait regardless of the grid-cramping
+   tradeoff. PRINT_VIEWPORT_WIDTH in app/api/export/pdf/route.ts is set to match this
+   page box width -- see that constant's comment for why the two must agree. */
 @page {
-  size: A4 landscape;
+  size: A4;
   margin: 15mm 12mm;
 }
 

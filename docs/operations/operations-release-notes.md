@@ -4,6 +4,50 @@ Last Updated: 2026-08-25T00:00:00.000Z
 Canonical: No
 Owner: Operations
 
+## [v12.3.6] — 2026-08-25T00:00:00.000Z
+
+### Summary
+User rejected v12.3.4's landscape choice outright ("Make the A4 portrait")
+and sent a screenshot of a genuinely broken PDF: a bar chart's labels
+("Automotive (CPL: €170)", "Insurance (CPL: €205)", etc.) rendering
+overlapped on top of the section title above and bleeding into an
+unrelated section below, illegible.
+
+### Fixed
+- `@page` reverted from A4 landscape back to A4 portrait
+  (`app/globals.css`); `PRINT_VIEWPORT_WIDTH` reverted from 1123px to
+  793px to match (`app/api/export/pdf/route.ts`) — same "viewport must
+  match the print page-box width" principle from v12.3.4, just the other
+  orientation. Portrait's narrower page box means the designed grid is
+  more cramped than landscape gave it, which is a real tradeoff, but it's
+  the one requested.
+- The actual overlapping-chart root cause: `ReportChart.tsx`'s `BarChart`
+  already has a real, tested correction for exactly this — it measures
+  each `[class*="barLabel"]` cell against its allocated row height and
+  shrinks the font-size (down to an 8px floor) until it fits, since Layout
+  Grammar requires content to fit without clipping rather than growing the
+  box. That correction runs via `useEffect` + `ResizeObserver` +
+  `setTimeout(fn, 0)` — genuinely async, needing at least one more JS
+  macrotask after the canvas/image waits already in the export route
+  settle. Nothing waited for it. `page.pdf()` could snapshot the labels at
+  their original, unshrunk, overlapping size. Added a third
+  fingerprint-stability wait (same pattern as the existing canvas wait)
+  targeting `[class*="barLabel"]` — the exact selector the correction
+  itself measures — so the export now waits for label sizing to converge
+  before printing.
+
+### Verified
+Full gate green: type-check, lint, style:check, 400 tests, build.
+Portrait format confirmed locally via a rendered screenshot (single page,
+3-column grid intact, charts clean) against the same report used in prior
+releases. **Could not reproduce the exact overlapping-bar-chart report
+end-to-end** — same access barrier as v12.3.5 (real reports with this
+content pattern require a session this environment doesn't have). The fix
+is shipped on the strength of the code-level diagnosis (a real, named,
+already-existing correction mechanism confirmed to run asynchronously
+with no wait for it anywhere in the export path), not an end-to-end repro
+of this specific chart.
+
 ## [v12.3.5] — 2026-08-25T00:00:00.000Z
 
 ### Summary
