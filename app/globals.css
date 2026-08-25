@@ -2164,10 +2164,19 @@ div.unified-chart-item:has(.text-chart-container) {
    designed 3-column grid better than portrait's ~793px), but the user explicitly
    rejected that -- they want standard A4 portrait regardless of the grid-cramping
    tradeoff. PRINT_VIEWPORT_WIDTH in app/api/export/pdf/route.ts is set to match this
-   page box width -- see that constant's comment for why the two must agree. */
+   page box width -- see that constant's comment for why the two must agree.
+   WHAT: margin: 0. WHY: an @page margin is a physically blank strip -- nothing,
+   including a background color, paints inside it; it's outside the printed content
+   box entirely. That's what produced the white border around the report's own gray
+   page background the user pointed out (it fills right up to the margin boundary,
+   and the margin itself is unpaintable). The visual inset readers still need now
+   comes from real CSS padding inside the content box instead (report-page.module.css
+   .page, print-only), which IS inside the paintable area, so the background can
+   extend all the way to the physical page edge while the content still isn't flush
+   against it. */
 @page {
   size: A4;
-  margin: 15mm 12mm;
+  margin: 0;
 }
 
 @media print {

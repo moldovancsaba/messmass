@@ -43,6 +43,20 @@
   }
 }
 
+/* WHAT: Recreate the print page's visual inset as real padding, not @page margin.
+   WHY: app/globals.css's @page margin is 0 for print -- an @page margin is physically
+   unpaintable (background colors can't fill it), which is what made .page's own gray
+   background stop short of the paper edge with a plain white border around it. Padding
+   is inside the paintable content box, so the same visual inset now comes with the
+   gray background filling all the way to the edge behind it. Values roughly match the
+   @page margin this replaces (15mm/12mm) so print doesn't get visibly tighter, just
+   colored where it used to be blank. */
+@media print {
+  .page {
+    padding: 15mm 12mm;
+  }
+}
+
 /* Loading State */
 .loading {
   display: flex;

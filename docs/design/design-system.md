@@ -4,7 +4,7 @@ Last Updated: 2026-08-08T16:40:43.000Z
 Canonical: Yes
 Owner: Architecture
 
-**Version**: 12.3.8
+**Version**: 12.3.9
 **Status**: Production
 
 ## Purpose

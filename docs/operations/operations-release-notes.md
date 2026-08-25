@@ -4,6 +4,34 @@ Last Updated: 2026-08-25T00:00:00.000Z
 Canonical: No
 Owner: Operations
 
+## [v12.3.9] — 2026-08-25T00:00:00.000Z
+
+### Summary
+User sent the actual downloaded PDF and pointed out the page background
+(a gray card behind the report content) stopped short of the paper edge
+with a plain white border around it, and asked for it to run edge to
+edge instead.
+
+### Fixed
+An `@page` margin is a physically blank strip -- nothing, including a
+background color, paints inside it; it's outside the printed content box
+entirely. `app/globals.css`'s `@page { margin: 15mm 12mm }` was exactly
+that: `.page`'s own gray background (`report-page.module.css`) filled
+right up to the margin boundary and could go no further, leaving the
+margin itself as plain white paper. Set `@page { margin: 0 }` and
+recreated the same visual inset as real CSS padding on `.page` instead
+(print-only, `15mm 12mm` to match what the margin used to provide) --
+padding is inside the paintable content box, so the background now
+extends to the physical page edge while the content still isn't flush
+against it.
+
+### Verified
+Full gate green: type-check, lint, style:check, 400 tests, build.
+Confirmed locally: exported the same report used throughout this arc,
+rendered the PDF, and the gray background now runs edge to edge on all
+sides with no white border, while the content itself keeps a normal,
+comfortable inset from the page edge.
+
 ## [v12.3.8] — 2026-08-25T00:00:00.000Z
 
 ### Summary
