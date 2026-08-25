@@ -1331,14 +1331,7 @@
 }
 
 /* Responsive Adjustments */
-/* WHAT: `, print` added alongside the width query — see the matching comment in
-   ReportContent.module.css for the full reasoning (Puppeteer's PDF layout uses the @page
-   box width, not page.setViewport(), so this is the reliable way to select this
-   breakpoint for print, not a viewport-width trick). This is what gives .chart:not(.image)
-   below a real, non-clamped height for its own column width, instead of a screen-oriented
-   --block-height a real headless browser's print engine never gets a chance to recompute
-   for. */
-@media (max-width: 768px), print {
+@media (max-width: 768px) {
   /* WHAT: Image container on mobile - same dynamic aspect ratio approach */
   /* WHY: Consistent behavior across breakpoints */
   .imageContainer {

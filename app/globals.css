@@ -2157,10 +2157,17 @@ div.unified-chart-item:has(.text-chart-container) {
    .block/.row) live next to those components; this file only holds page-level and
    cross-cutting rules that have no natural component home.
    preferCSSPageSize:true in the Puppeteer call is what makes it use this @page rule
-   instead of the format:'A4' option passed at the API layer -- keep them in sync if
-   either changes. */
+   instead of Puppeteer's own page.pdf({format, landscape}) options -- those are
+   intentionally omitted from that call so there is only one place page geometry is
+   declared.
+   WHAT: landscape, not portrait. WHY: the report's designed layout is a multi-column
+   desktop grid (~1200px wide by design). Portrait A4's page box (~793px at 96dpi) is
+   still wide enough to clear the 768px mobile breakpoint, but not wide enough to hold
+   that grid without cramming it -- landscape's ~1123px page box is a much closer match
+   to the actual design. PRINT_VIEWPORT_WIDTH in app/api/export/pdf/route.ts is set to
+   match this page box width -- see that constant's comment for why the two must agree. */
 @page {
-  size: A4;
+  size: A4 landscape;
   margin: 15mm 12mm;
 }
 

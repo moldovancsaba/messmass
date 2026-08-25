@@ -1,10 +1,10 @@
 # Docs Consistency Audit
 Status: Active
-Last Updated: 2026-08-24T21:37:22.193Z
+Last Updated: 2026-08-25T08:08:16.642Z
 Canonical: Yes
 Owner: Documentation
 
-Package version: 12.3.3
+Package version: 12.3.4
 Current docs scanned: 143
 Failures: 0
 

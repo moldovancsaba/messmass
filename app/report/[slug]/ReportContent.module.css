@@ -154,16 +154,7 @@
 }
 
 /* Responsive Adjustments */
-/* WHAT: `, print` added alongside the width query — not just narrow screens.
-   WHY: Confirmed by direct reproduction: Puppeteer's page.pdf() (app/api/export/pdf/route.ts)
-   lays out width-based media queries against the @page A4 box (~793px), not the
-   page.setViewport() width the route sets before navigating — a viewport-width trick
-   cannot reliably select this breakpoint for print. A4 is always narrower than any
-   sensible desktop 3-column grid regardless of that discrepancy, so unconditionally
-   reusing this already-correct, already-tested single-column layout for print is the
-   direct fix, not a workaround: it's the same design decision this block already made
-   for narrow screens, applied to the other context where the same reasoning holds. */
-@media (max-width: 768px), print {
+@media (max-width: 768px) {
   /* WHAT: Flatten all blocks into single column on mobile */
   /* WHY: Simplest, most reliable layout - ignore block structure */
   

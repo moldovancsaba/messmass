@@ -59,21 +59,25 @@ function sanitizeFilename(name: string): string {
   return cleaned || 'report';
 }
 
-// WHAT: A4 content width at 96 CSS px/in, minus the @page margin declared in
-// app/globals.css (15mm each side) — 210mm - 30mm = 180mm ≈ 680px.
-// WHY: This governs layout only for the initial page.goto()/waitForSelector phase,
-// before emulateMediaType('print') — confirmed by direct reproduction that
-// page.pdf()'s actual print layout evaluates width-based media queries against the
-// @page A4 box itself (~793px at 96dpi), not this viewport. That is genuinely wider
-// than the app's 768px mobile breakpoint, so relying on this value to select it would
-// silently render the desktop 3-column grid squeezed into A4's narrower printable
-// width — reproduced directly: a donut chart overflowing its own card into the next
-// one. The real fix lives in the CSS itself (ReportContent.module.css,
-// ReportChart.module.css, ReportHero.module.css all read `, print` alongside their
-// `(max-width: 768px)` query now), which is what actually makes the single-column,
-// content-driven-height layout apply during the print pass. This viewport just keeps
-// the pre-print DOM measurement/screenshot phase reasonably representative.
-const PRINT_VIEWPORT_WIDTH = 680;
+// WHAT: A4 LANDSCAPE page-box width at 96 CSS px/in — 297mm ≈ 1123px (app/globals.css
+// @page is landscape; see that comment for why).
+// WHY: page.pdf()'s print pass reflows the DOM against the @page box width for
+// width-based media queries, NOT page.setViewport() — confirmed by direct
+// reproduction. Two separate systems key off width, and both must land on "desktop"
+// AND at close to the same pixel width as the print pass, or they disagree:
+// (1) the CSS `(max-width: 768px)` breakpoint (ReportContent/ReportChart/ReportHero
+// .module.css) picks single-column-mobile vs the designed grid; (2) ResponsiveRow's
+// own `isMobileViewport` (window.innerWidth <= 768) and its ResizeObserver-measured
+// `--block-height` (app/report/[slug]/ReportContent.tsx) bake per-block heights into
+// inline styles from whatever width was live when they last fired. Setting this
+// viewport to ~680px (portrait content width, the previous value) put the live page
+// in single-column-mobile mode while the print pass reflowed to the desktop grid (or
+// vice versa) — same bug either way: heights computed for one width get applied to a
+// visibly different one, which is what "images are broken, mobile layout on desktop"
+// actually was. Matching this to the landscape page-box width means the live page is
+// already laid out, and already measured, exactly as the print pass will render it —
+// no mode switch and no width jump left to race.
+const PRINT_VIEWPORT_WIDTH = 1123;
 const PRINT_VIEWPORT_HEIGHT = 1400;
 
 // WHAT: the exact GitHub Release asset @sparticuz/chromium-min downloads and extracts

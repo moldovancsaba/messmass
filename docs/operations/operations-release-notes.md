@@ -1,8 +1,63 @@
 # {messmass} Release Notes
 Status: Active
-Last Updated: 2026-08-24T00:00:00.000Z
+Last Updated: 2026-08-25T00:00:00.000Z
 Canonical: No
 Owner: Operations
+
+## [v12.3.4] — 2026-08-25T00:00:00.000Z
+
+### Summary
+v12.3.0 forced print CSS to always fall back to the mobile single-column
+layout (`(max-width: 768px), print`), reasoning that A4 portrait's page box
+(~793px) was too narrow for the desktop 3-column grid anyway. That traded
+one bug for a worse one: the user reported PDF export looked mobile-stacked
+on every device, with broken images, and rejected the mobile fallback
+outright -- the design was never meant to degrade for print, and it hadn't
+been asked for.
+
+### Root cause
+Two independent systems key off width, and this route only made one of them
+print-aware. `app/report/[slug]/ReportContent.tsx`'s `ResponsiveRow` bakes
+per-block heights into inline styles from `window.innerWidth` and its own
+`ResizeObserver`-measured DOM width -- entirely separate from CSS media
+queries, and never print-aware at all. With `PRINT_VIEWPORT_WIDTH` at 680px
+(mobile) and `page.pdf()`'s print pass reflowing width-based CSS queries
+against the ~793px A4 portrait page box (desktop, confirmed by direct
+reproduction in v12.3.0), the two systems disagreed: CSS forced mobile
+layout while the JS-computed heights were, at different points in the
+lifecycle, keyed off either width -- heights computed for one context
+applied to a visibly different one. That mismatch, not any single component,
+is what "images are broken, mobile layout on desktop" actually was.
+
+### Fixed
+- Reverted the `, print` addition to the three mobile breakpoints
+  (`ReportContent.module.css`, `ReportChart.module.css`,
+  `ReportHero.module.css`) -- print now uses whatever layout its actual
+  width naturally selects, same as any other context, not a forced
+  fallback.
+- `app/globals.css`'s `@page` rule switched from A4 portrait to A4
+  **landscape**. Portrait's ~793px page box clears the 768px mobile
+  breakpoint but is still too narrow to hold the designed ~1200px 3-column
+  grid without cramming it; landscape's ~1123px page box is a close match
+  to the actual design -- still genuinely A4, just rotated, which is a
+  standard choice for wide report/dashboard layouts.
+- `PRINT_VIEWPORT_WIDTH` (`app/api/export/pdf/route.ts`) raised from 680px
+  to 1123px, matching the landscape page-box width exactly. This is the
+  real fix for the mismatch above: the live page is now laid out and
+  measured (by both CSS and `ResponsiveRow`'s JS) at the same width the
+  print pass will reflow to, so there is no mode switch and no width jump
+  left to race between the pre-print measurement phase and the final PDF
+  render.
+
+### Verified
+Full gate green: type-check, lint, style:check, build. Exported a real
+production report (`/report/485b3603-e37e-44e6-bcdc-223c115ce82b`) locally,
+rendered the resulting PDF in Chromium's own viewer, and visually confirmed
+both pages: landscape A4, the actual multi-column card grid (not mobile
+stacking), and a clean, undistorted donut chart. Not yet re-verified against
+real production -- see the pattern established in v12.3.0-v12.3.2, where
+local `next build` repeatedly proved insufficient to catch Vercel-specific
+issues in this exact feature.
 
 ## [v12.3.3] — 2026-08-24T00:00:00.000Z
 
