@@ -1,8 +1,34 @@
 # {messmass} Release Notes
 Status: Active
-Last Updated: 2026-08-25T00:00:00.000Z
+Last Updated: 2026-08-25T15:03:53.000Z
 Canonical: No
 Owner: Operations
+
+## [v12.3.10] — 2026-08-25T15:03:53.000Z
+
+### Summary
+Camera's operator UX audit found messmass and camera silently link an
+event to its camera counterpart already (`externalRefs.camera.eventId`
+on the project, written by `lib/cameraProvision.ts`) but neither admin UI
+ever surfaced it -- an operator working a messmass event had no way to
+jump to that event's camera vetting queue without hand-copying an id.
+
+### Added
+An "Open in Camera" button on each project row in
+`app/admin/events/ProjectsPageClient.tsx`, shown only when
+`externalRefs.camera.eventId` is set, linking straight to that event's
+vetting queue on camera.messmass.com.
+
+### Changed
+`app/api/projects/route.ts` now includes `externalRefs` in both project
+list response shapes (offset-based and cursor-based pagination) -- it was
+being read from the DB but dropped before reaching the client in either
+path.
+
+### Verified
+Confirmed against production data: 176 messmass projects carry an
+`externalRefs.camera.eventId`, matching real camera event UUIDs. Full
+gate green: type-check, lint, style:check, tests, build.
 
 ## [v12.3.9] — 2026-08-25T00:00:00.000Z
 

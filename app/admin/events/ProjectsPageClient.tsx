@@ -32,6 +32,11 @@ interface Project {
   categorizedHashtags?: { [categoryName: string]: string[] };
   viewSlug?: string;
   editSlug?: string;
+  // WHAT: Set by lib/cameraProvision.ts when this event is auto-provisioned into
+  // camera. WHY: messmass has known this event's camera identity since
+  // provisioning but has never shown it anywhere — this is what "Open in Camera"
+  // links with.
+  externalRefs?: { camera?: { eventId?: string } } | null;
   styleIdEnhanced?: string | null; // WHAT: Migrated from styleId to styleIdEnhanced
                                     // WHY: Align with page_styles_enhanced system
   partner1?: {
@@ -885,9 +890,23 @@ export default function ProjectsPageClient({ user }: ProjectsPageClientProps) {
                               Edit Stats
                             </button>
                           )}
-                          
+
+                          {/* Open in Camera Button */}
+                          {project.externalRefs?.camera?.eventId && (
+                            <a
+                              className="btn btn-small btn-info action-button"
+                              href={`https://camera.messmass.com/admin/tryon/vetting?eventId=${encodeURIComponent(project.externalRefs.camera.eventId)}`}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              title={`Open ${project.eventName}'s vetting queue in Camera`}
+                            >
+                              <MaterialIcon name="photo_camera" variant="outlined" className={partnerStyles.actionIcon} />
+                              Camera
+                            </a>
+                          )}
+
                           {/* Edit Project Button */}
-                          <button 
+                          <button
                             className="btn btn-small btn-primary action-button"
                             onClick={() => {
                               console.log('Edit Project button clicked for:', project.eventName);

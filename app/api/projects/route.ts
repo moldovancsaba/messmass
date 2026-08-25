@@ -332,6 +332,7 @@ export async function GET(request: NextRequest) {
           editSlug: project.editSlug,
           styleIdEnhanced: project.styleIdEnhanced ? project.styleIdEnhanced.toString() : null,
           reportTemplateId: project.reportTemplateId ? project.reportTemplateId.toString() : null,
+          externalRefs: project.externalRefs || null, // Cross-app refs (camera.eventId) set by lib/cameraProvision.ts
           createdAt: project.createdAt,
           updatedAt: project.updatedAt
         };
@@ -442,6 +443,7 @@ export async function GET(request: NextRequest) {
         editSlug: project.editSlug,
         styleIdEnhanced: project.styleIdEnhanced ? project.styleIdEnhanced.toString() : null, // Project-specific style reference
         reportTemplateId: project.reportTemplateId ? project.reportTemplateId.toString() : null, // Project-specific report template
+        externalRefs: project.externalRefs || null, // Cross-app refs (camera.eventId) set by lib/cameraProvision.ts
         createdAt: project.createdAt,
         updatedAt: project.updatedAt,
         // WHAT: Add data quality metadata for frontend consumption
