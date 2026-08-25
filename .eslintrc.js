@@ -3,6 +3,17 @@
 // UPDATED: 2025-12-20 - Added rules from technical audit (TECH_AUDIT_REPORTING_SYSTEM.md)
 
 module.exports = {
+  // WHAT: Stop ESLint's config discovery at this file.
+  // WHY: Without this, ESLint walks up past a git worktree into the parent
+  // checkout's own directory tree (a worktree under .claude/worktrees/ lives
+  // textually inside its own repo) and finds that checkout's .eslintrc.js too --
+  // both extend eslint-config-next, and once the parent has its own
+  // node_modules installed (e.g. from a concurrent session's npm ci), ESLint
+  // can no longer tell which of the two resolved @next/eslint-plugin-next
+  // copies to use and refuses to run at all ("couldn't determine the plugin
+  // '@next/next' uniquely"). root:true is the standard fix for this class of
+  // nested-config ambiguity.
+  root: true,
   extends: ["next"],
   plugins: ["react"],
   rules: {
