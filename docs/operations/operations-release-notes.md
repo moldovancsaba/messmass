@@ -4,6 +4,57 @@ Last Updated: 2026-08-25T00:00:00.000Z
 Canonical: No
 Owner: Operations
 
+## [v12.3.5] — 2026-08-25T00:00:00.000Z
+
+### Summary
+Immediately after v12.3.4 shipped, the user reported images still not
+appearing in exported PDFs at all (not distorted -- absent). Investigation
+found a real, separate gap: the export route already waited for every
+chart `<canvas>` to stop resizing before printing, but had no equivalent
+wait for `<img>` elements at all -- image-type chart blocks
+(`ReportChart.tsx`'s `ImageChart`) render a real `<img>`, not a canvas.
+
+### Fixed
+`app/api/export/pdf/route.ts` now waits for every `<img>` inside
+`#report-content` to reach `.complete` (true on either a successful load
+or a failed one, so a genuinely broken image URL cannot hang the export)
+before calling `page.pdf()`. `waitForNetworkIdle` alone is not a
+substitute: its own timeout is caught and silently ignored, so a single
+slow external image host (report images are hosted off-origin, e.g.
+i.ibb.co) could abort that wait mid-transfer, leaving `page.pdf()` to
+print a blank box where the image belonged -- not a broken-image icon,
+since a still-loading `<img>` has nothing to paint yet.
+
+### Found, not fixed here (separate root cause, flagged not fixed)
+Both real reports checked with actual image data (`/report/e64447c5-...`,
+`/report/8982e548-...`) fail to export at all for an unauthenticated
+request -- confirmed via runtime logs: `Waiting for selector
+#report-content failed`. Root cause, traced locally: both reports have a
+`styleId` pointing at a deleted style; `useReportStyle`'s 404 fallback
+calls `GET /api/report-styles` (list-all), which requires a `x-v3-org-id`
+session context and 401s for an anonymous visitor -- `Unauthorized:
+Session missing`. This is not new to the PDF export route; it affects the
+live report page itself for any anonymous visitor whenever a report's
+assigned style has been deleted. Left unfixed pending a decision on the
+right shape: either stop the anonymous fallback from calling an org-scoped
+endpoint at all, or degrade to the app's default style when the specific
+one 404s rather than substituting a random other style. Does not affect
+this release's fix or verification -- an admin's own browser session,
+which the export route already forwards to Puppeteer, satisfies this path
+today.
+
+### Verified
+Full gate green: type-check, lint, style:check, 400 tests, build. Could
+not reproduce the exact missing-image symptom end-to-end against real
+production -- every report with real image data found in the database
+hits the unrelated, separate bug above when requested without a session,
+and no admin session was available in this environment to test past it.
+The fix itself mirrors the already-proven canvas-stability wait pattern
+exactly (same bounded-timeout, best-effort structure) and closes a real,
+concretely identified gap in the print-readiness wait, independent of
+whether it turns out to be the exact mechanism behind this specific
+report.
+
 ## [v12.3.4] — 2026-08-25T00:00:00.000Z
 
 ### Summary

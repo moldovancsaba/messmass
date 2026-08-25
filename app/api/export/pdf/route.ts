@@ -189,6 +189,29 @@ export async function GET(request: NextRequest) {
     // point (e.g. an image fetched only once real content renders).
     await page.waitForNetworkIdle({ idleTime: 500, timeout: 15000 }).catch(() => {});
 
+    // WHAT: Wait for every <img> inside the report (image-type chart blocks —
+    // ReportChart.tsx's ImageChart renders a real <img>, not a canvas) to finish
+    // loading before printing.
+    // WHY: waitForNetworkIdle above is not a substitute for this: its own timeout is
+    // caught and ignored, so a single slow external image host (report images are
+    // hosted off-origin, e.g. i.ibb.co) can silently abort that wait while the image
+    // is still mid-transfer, and page.pdf() would then print whatever was on screen at
+    // that instant — a blank box where the image belongs, not a broken-image icon,
+    // since a still-loading <img> simply has nothing to paint yet. `.complete` becomes
+    // true on EITHER a successful load or a failed one (never blocks forever on a
+    // truly broken URL); this is the same "wait for the async thing to settle before
+    // snapshotting" pattern as the canvas-stability wait below, just for <img> instead
+    // of <canvas>.
+    await page
+      .waitForFunction(
+        () => {
+          const imgs = Array.from(document.querySelectorAll('#report-content img'));
+          return imgs.every((img) => (img as HTMLImageElement).complete);
+        },
+        { timeout: 12000, polling: 200 }
+      )
+      .catch(() => {}); // best-effort: a genuinely broken image URL should not hang the whole export
+
     // WHAT: Wait for every chart <canvas> to stop resizing before printing.
     // WHY: Confirmed by direct reproduction against real report data — the pie/donut
     // chart canvas rendered oversized, spilling out of its card and over the next
