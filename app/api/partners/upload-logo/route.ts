@@ -4,7 +4,7 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import { requireSession } from '@/lib/apiGuards';
-import { uploadPartnerBadge, isImgBBConfigured } from '@/lib/imgbbApi';
+import { uploadPartnerBadge, isImageStorageConfigured } from '@/lib/imgbbApi';
 
 /**
  * WHAT: Upload partner logo to ImgBB
@@ -47,12 +47,12 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // WHAT: Check ImgBB API key configuration
-    if (!isImgBBConfigured()) {
+    // WHAT: Check image storage configuration (Vercel Blob is the required primary)
+    if (!isImageStorageConfigured()) {
       return NextResponse.json(
         {
           success: false,
-          error: 'ImgBB API key not configured'
+          error: 'BLOB_READ_WRITE_TOKEN not configured'
         },
         { status: 500 }
       );

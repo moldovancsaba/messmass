@@ -125,7 +125,7 @@ export async function middleware(request: NextRequest) {
     "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com", // Allow Material Icons stylesheet from Google Fonts
     "img-src 'self' data: https:", // Allow images from same origin, data URIs, and HTTPS
     "font-src 'self' data: https://fonts.gstatic.com https://vercel.live", // Allow Material Icons fonts from Google Fonts CDN and Vercel Live fonts
-    "connect-src 'self' https://www.googletagmanager.com https://vercel.live https://*.google-analytics.com https://*.analytics.google.com wss://*.pusher.com https://api.imgbb.com", // Allow Google Analytics, Vercel Live connections, Pusher WebSockets, and direct browser-to-ImgBB uploads
+    "connect-src 'self' https://www.googletagmanager.com https://vercel.live https://*.google-analytics.com https://*.analytics.google.com wss://*.pusher.com https://api.imgbb.com https://vercel.com", // Allow Google Analytics, Vercel Live connections, Pusher WebSockets, direct browser-to-ImgBB mirror uploads, and direct browser-to-Blob primary uploads (client SDK calls vercel.com/api/blob)
     "frame-src 'self' https://vercel.live", // Allow Vercel Live feedback iframe
     "frame-ancestors 'none'", // Prevent clickjacking
     "base-uri 'self'", // Restrict base tag

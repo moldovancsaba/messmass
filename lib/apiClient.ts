@@ -24,8 +24,11 @@ function getCsrfToken(): string | null {
 }
 
 // WHAT: Fetch CSRF token from server if not in cookie
-// WHY: First request needs to get token before making state-changing requests
-async function ensureCsrfToken(): Promise<string | null> {
+// WHY: First request needs to get token before making state-changing requests.
+// Exported for callers that own their own fetch (e.g. @vercel/blob/client's
+// upload(), which only accepts a headers object, not a full fetch wrapper) and
+// so need the raw token rather than going through apiRequest below.
+export async function ensureCsrfToken(): Promise<string | null> {
   let token = getCsrfToken();
   
   if (!token) {
