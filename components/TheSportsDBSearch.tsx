@@ -3,9 +3,22 @@ import Image from 'next/image';
 import { SportsDbTeam } from '@/lib/sportsDbTypes';
 import styles from './TheSportsDBSearch.module.css';
 
+// WHAT: Partner.sportsDb documents exist in three shapes: raw TheSportsDB
+// fields (strTeam/strTeamBadge), manual-entry fields (teamName/badge/
+// venueName), and a hybrid. The linked card falls back across all of them so
+// a linked partner never renders as an empty box.
+type LinkedTeamDisplay = Partial<SportsDbTeam> & {
+  teamName?: string;
+  badge?: string;
+  leagueName?: string;
+  venueName?: string;
+  venueCapacity?: number | string;
+  country?: string;
+};
+
 interface TheSportsDBSearchProps {
   onLink: (team: SportsDbTeam) => void;
-  linkedTeam?: SportsDbTeam | null;
+  linkedTeam?: LinkedTeamDisplay | null;
   onUnlink?: () => void;
 }
 
@@ -76,27 +89,40 @@ export default function TheSportsDBSearch({ onLink, linkedTeam, onUnlink }: TheS
           </div>
           
           <div className={styles.linkedTeamContent}>
-            {linkedTeam.strTeamBadge && (
-              <Image
-                src={linkedTeam.strTeamBadge}
-                alt={linkedTeam.strTeam}
-                className={styles.linkedLogo}
-                width={80}
-                height={80}
-                unoptimized
-              />
-            )}
-            <div className={styles.linkedInfo}>
-              <h4 className={styles.linkedName}>{linkedTeam.strTeam}</h4>
-              <div className={styles.linkedMeta}>
-                {linkedTeam.strLeague && <span>🏆 {linkedTeam.strLeague}</span>}
-                {linkedTeam.strCountry && <span>🌍 {linkedTeam.strCountry}</span>}
-                {linkedTeam.strStadium && <span>🏟️ {linkedTeam.strStadium}</span>}
-                {linkedTeam.intStadiumCapacity && (
-                  <span>👥 {parseInt(linkedTeam.intStadiumCapacity).toLocaleString()} capacity</span>
-                )}
-              </div>
-            </div>
+            {(() => {
+              const badge = linkedTeam.strTeamBadge ?? linkedTeam.badge;
+              const name = linkedTeam.strTeam ?? linkedTeam.teamName ?? 'Linked team';
+              const league = linkedTeam.strLeague ?? linkedTeam.leagueName;
+              const country = linkedTeam.strCountry ?? linkedTeam.country;
+              const stadium = linkedTeam.strStadium ?? linkedTeam.venueName;
+              const capacity = linkedTeam.intStadiumCapacity ?? linkedTeam.venueCapacity;
+              const capacityNumber = capacity !== undefined && capacity !== null ? Number(capacity) : NaN;
+              return (
+                <>
+                  {badge && (
+                    <Image
+                      src={badge}
+                      alt={name}
+                      className={styles.linkedLogo}
+                      width={80}
+                      height={80}
+                      unoptimized
+                    />
+                  )}
+                  <div className={styles.linkedInfo}>
+                    <h4 className={styles.linkedName}>{name}</h4>
+                    <div className={styles.linkedMeta}>
+                      {league && <span>🏆 {league}</span>}
+                      {country && <span>🌍 {country}</span>}
+                      {stadium && <span>🏟️ {stadium}</span>}
+                      {Number.isFinite(capacityNumber) && (
+                        <span>👥 {capacityNumber.toLocaleString()} capacity</span>
+                      )}
+                    </div>
+                  </div>
+                </>
+              );
+            })()}
           </div>
         </div>
       ) : (

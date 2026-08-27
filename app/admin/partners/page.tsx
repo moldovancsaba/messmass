@@ -1139,7 +1139,9 @@ export default function PartnersAdminPageUnified() {
               }));
             }}
             onUnlink={() => {
-              setEditPartnerData(prev => ({ ...prev, sportsDb: undefined }));
+              // null, not undefined: JSON.stringify drops undefined keys, so an
+              // unlink sent as undefined never reached the API at all.
+              setEditPartnerData(prev => ({ ...prev, sportsDb: null }));
             }}
           />
           
@@ -1414,6 +1416,9 @@ export default function PartnersAdminPageUnified() {
       </FormModal>
       
       {/* Manual Sports Data Entry Modal */}
+      {/* closeOnClickOutside=false: this modal stacks on top of the edit modal,
+          and on touch devices scrolling its long form strays onto the overlay,
+          which counts as an overlay click and dismissed it mid-entry. */}
       <FormModal
         isOpen={showManualEntry}
         onClose={() => setShowManualEntry(false)}
@@ -1422,6 +1427,7 @@ export default function PartnersAdminPageUnified() {
         submitText="Save Manual Data"
         isSubmitting={sportsDbLinking}
         size="lg"
+        closeOnClickOutside={false}
       >
         <div className="form-group mb-4">
           <label className="form-label-block">Venue Name</label>

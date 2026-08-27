@@ -54,6 +54,7 @@ const db = client.db(config.dbName);
       _id: partner._id.toString(),
       name: partner.name,
       emoji: partner.emoji,
+      showEmoji: partner.showEmoji ?? true,
       logoUrl: partner.logoUrl,
       hashtags: partner.hashtags || [],
       categorizedHashtags: partner.categorizedHashtags || {},
@@ -97,7 +98,7 @@ const db = client.db(config.dbName);
 export async function PUT(request: NextRequest) {
   try {
     const body = await request.json();
-    const { partnerId, name, emoji, logoUrl, hashtags, categorizedHashtags, stats, styleId, reportTemplateId, googleSheetsUrl, clickerSetId, showEventsList, showEventsListTitle, showEventsListDetails, showOnlyTeam1Events } = body;
+    const { partnerId, name, emoji, showEmoji, logoUrl, hashtags, categorizedHashtags, stats, styleId, reportTemplateId, googleSheetsUrl, clickerSetId, sportsDb, showEventsList, showEventsListTitle, showEventsListDetails, showOnlyTeam1Events } = body;
 
     if (!partnerId) {
       return NextResponse.json(
@@ -117,7 +118,11 @@ const db = client.db(config.dbName);
 
     if (name !== undefined) updateData.name = name;
     if (emoji !== undefined) updateData.emoji = emoji;
+    if (showEmoji !== undefined) updateData.showEmoji = Boolean(showEmoji);
     if (logoUrl !== undefined) updateData.logoUrl = logoUrl;
+    // sportsDb: an object links/updates the team, explicit null unlinks it.
+    // The edit modal always sends this field, so absence means "no change".
+    if (sportsDb !== undefined) updateData.sportsDb = sportsDb || null;
     if (hashtags !== undefined) updateData.hashtags = hashtags;
     if (categorizedHashtags !== undefined) updateData.categorizedHashtags = categorizedHashtags;
     if (stats !== undefined) updateData.stats = stats;

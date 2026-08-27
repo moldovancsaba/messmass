@@ -74,6 +74,12 @@ export interface FormModalProps {
   
   /** NEW: Update button text */
   updateText?: string;
+
+  /** Allow closing by clicking/tapping the overlay (default true).
+   *  Set false for modals stacked on top of another modal: on touch devices a
+   *  scroll gesture that strays onto the overlay registers as an overlay click
+   *  and silently dismisses the modal mid-edit. */
+  closeOnClickOutside?: boolean;
 }
 
 export default function FormModal({
@@ -93,6 +99,7 @@ export default function FormModal({
   saveStatus = 'idle',
   showStatusIndicator = true,
   updateText = 'Update',
+  closeOnClickOutside = true,
 }: FormModalProps) {
   
   // Handle form submission
@@ -120,7 +127,7 @@ export default function FormModal({
       onClose={onClose}
       size={size}
       showCloseButton={true}
-      closeOnClickOutside={!isSubmitting} // Prevent accidental close during submit
+      closeOnClickOutside={closeOnClickOutside && !isSubmitting} // Prevent accidental close during submit
       closeOnEscape={!isSubmitting}
       ariaLabel={title}
     >

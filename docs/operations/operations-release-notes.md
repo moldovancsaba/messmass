@@ -1,8 +1,50 @@
 # {messmass} Release Notes
 Status: Active
-Last Updated: 2026-08-25T15:03:53.000Z
+Last Updated: 2026-08-27T11:45:00.000Z
 Canonical: No
 Owner: Operations
+
+## [v12.3.12] — 2026-08-27T11:45:00.000Z
+
+### Summary
+Partner edit's TheSportsDB section looked functional but half of it never
+persisted: Unlink and manual sports-data entry both reported success while
+the save endpoint silently ignored the field, and the manual-entry modal
+(stacked on the edit modal) dismissed itself mid-scroll on touch devices
+before the operator could reach the logo uploader.
+
+### Fixed
+- `PUT /api/partners` never read `sportsDb` at all -- it is only stored at
+  partner creation. Linking, unlinking, and manual entry from the edit modal
+  all hit this: the API returned success for a field it dropped. The handler
+  now persists `sportsDb` (an object links/updates, explicit `null` unlinks).
+- Unlink additionally never left the browser: it set `sportsDb: undefined`,
+  which `JSON.stringify` drops from the request body. It now sends `null`.
+- `showEmoji` had the same silent-drop: the edit form sent it, PUT ignored
+  it, and GET never returned it -- the checkbox always reverted to checked.
+  Both directions are wired now.
+- The "Enter Sports Data Manually" modal closed while scrolling on mobile:
+  it stacks on the edit modal and a scroll gesture straying onto the overlay
+  counted as an overlay click. `FormModal` gained a `closeOnClickOutside`
+  prop and the manual-entry modal opts out of overlay dismissal.
+- The linked-team card rendered as an empty box for manually-entered teams:
+  `partner.sportsDb` documents exist in three shapes (raw TheSportsDB
+  `strTeam`/`strTeamBadge`, manual `teamName`/`badge`/`venueName`, and a
+  hybrid) and the card only read the first. It now falls back across all
+  three.
+
+### Known gap (not addressed here)
+Bitly link selections in the same edit modal are dropped by the same PUT
+hole (`bitlyLinkIds` is sent, never persisted; the selector itself is
+read-only). Tracked separately -- the correct mapping onto the stored
+`bitlyLinks` array vs `/api/bitly/partners/associate` needs its own pass.
+
+## [v12.3.11] — 2026-08-26T00:00:00.000Z
+
+### Summary
+Vercel Blob became the primary image storage everywhere; imgbb demoted to a
+best-effort mirror. (Entry backfilled -- the release shipped without one;
+see the v12.3.11 commit for full details.)
 
 ## [v12.3.10] — 2026-08-25T15:03:53.000Z
 
