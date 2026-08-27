@@ -8,6 +8,7 @@ import config from '@/lib/config';
 import { error as logError, info as logInfo } from '@/lib/logger';
 import { generateUniquePartnerViewSlug } from '@/lib/partnerIdentifier';
 import { syncPartnerToV3Entity } from '@/lib/v3/syncEngine';
+import { requirePartnerWrite, requireSession } from '@/lib/apiGuards';
 
 export const dynamic = 'force-dynamic';
 
@@ -49,6 +50,22 @@ const db = client.db(config.dbName);
       .limit(limit)
       .toArray();
 
+    // WHAT: Resolve each partner's bitlyLinkIds to displayable link objects.
+    // WHY: bitlyLinkIds (maintained by /api/bitly/partners/associate and now
+    // by PUT below) is the real association; the stored `bitlyLinks` field is
+    // a vestigial [] written once at creation and never since, so the edit
+    // form always showed zero links regardless of actual associations.
+    const allLinkIds = partners.flatMap(partner =>
+      Array.isArray(partner.bitlyLinkIds) ? partner.bitlyLinkIds : []
+    );
+    const linkDocs = allLinkIds.length
+      ? await db.collection('bitly_links')
+          .find({ _id: { $in: allLinkIds } })
+          .project({ bitlink: 1, title: 1, long_url: 1 })
+          .toArray()
+      : [];
+    const linksById = new Map(linkDocs.map(link => [link._id.toString(), link]));
+
     // Transform partners for response
     const transformedPartners = partners.map(partner => ({
       _id: partner._id.toString(),
@@ -58,7 +75,14 @@ const db = client.db(config.dbName);
       logoUrl: partner.logoUrl,
       hashtags: partner.hashtags || [],
       categorizedHashtags: partner.categorizedHashtags || {},
-      bitlyLinks: partner.bitlyLinks || [],
+      bitlyLinks: (Array.isArray(partner.bitlyLinkIds) ? partner.bitlyLinkIds : [])
+        .map((id: ObjectId) => {
+          const link = linksById.get(id.toString());
+          return link
+            ? { _id: link._id.toString(), bitlink: link.bitlink || '', title: link.title || 'Untitled', long_url: link.long_url || '' }
+            : null;
+        })
+        .filter(Boolean),
       sportsDb: partner.sportsDb,
       styleId: partner.styleId?.toString(),
       reportTemplateId: partner.reportTemplateId?.toString(),
@@ -98,7 +122,7 @@ const db = client.db(config.dbName);
 export async function PUT(request: NextRequest) {
   try {
     const body = await request.json();
-    const { partnerId, name, emoji, showEmoji, logoUrl, hashtags, categorizedHashtags, stats, styleId, reportTemplateId, googleSheetsUrl, clickerSetId, sportsDb, showEventsList, showEventsListTitle, showEventsListDetails, showOnlyTeam1Events } = body;
+    const { partnerId, name, emoji, showEmoji, logoUrl, hashtags, categorizedHashtags, stats, styleId, reportTemplateId, googleSheetsUrl, clickerSetId, sportsDb, bitlyLinkIds, showEventsList, showEventsListTitle, showEventsListDetails, showOnlyTeam1Events } = body;
 
     if (!partnerId) {
       return NextResponse.json(
@@ -109,6 +133,13 @@ export async function PUT(request: NextRequest) {
 
     const client = await clientPromise;
 const db = client.db(config.dbName);
+
+    // F-009 straggler: this route shipped with CSRF as its only barrier, and
+    // CSRF is not authentication. Admin session OR a partner-edit page
+    // password grant for this specific partner — the partner editor saves
+    // through here and authenticates by page password, not session.
+    const denied = await requirePartnerWrite(db as any, String(partnerId));
+    if (denied) return denied;
 
     // WHAT: Build update object with only provided fields
     // WHY: Allow partial updates without overwriting other partner data
@@ -123,6 +154,14 @@ const db = client.db(config.dbName);
     // sportsDb: an object links/updates the team, explicit null unlinks it.
     // The edit modal always sends this field, so absence means "no change".
     if (sportsDb !== undefined) updateData.sportsDb = sportsDb || null;
+    // bitlyLinkIds: wholesale replacement of the association list from the
+    // edit form's selector (the same field /api/bitly/partners/associate
+    // maintains incrementally). Invalid ids are dropped, not rejected.
+    if (bitlyLinkIds !== undefined) {
+      updateData.bitlyLinkIds = (Array.isArray(bitlyLinkIds) ? bitlyLinkIds : [])
+        .filter((id: unknown): id is string => typeof id === 'string' && ObjectId.isValid(id))
+        .map((id: string) => new ObjectId(id));
+    }
     if (hashtags !== undefined) updateData.hashtags = hashtags;
     if (categorizedHashtags !== undefined) updateData.categorizedHashtags = categorizedHashtags;
     if (stats !== undefined) updateData.stats = stats;
@@ -179,6 +218,9 @@ const db = client.db(config.dbName);
 }
 
 export async function POST(request: NextRequest) {
+  const denied = await requireSession();
+  if (denied) return denied;
+
   try {
     const body = await request.json();
     const { name, emoji, hashtags, categorizedHashtags, bitlyLinkIds, styleId, reportTemplateId, sportsDb, logoUrl, googleSheetsUrl, clickerSetId } = body;
@@ -200,7 +242,9 @@ const db = client.db(config.dbName);
       emoji,
       hashtags: hashtags || [],
       categorizedHashtags: categorizedHashtags || {},
-      bitlyLinks: [],
+      bitlyLinkIds: (Array.isArray(bitlyLinkIds) ? bitlyLinkIds : [])
+        .filter((id: unknown): id is string => typeof id === 'string' && ObjectId.isValid(id))
+        .map((id: string) => new ObjectId(id)),
       sportsDb: sportsDb || undefined,
       logoUrl: logoUrl || undefined,
       googleSheetsUrl: googleSheetsUrl || undefined,
@@ -243,6 +287,9 @@ const db = client.db(config.dbName);
 }
 
 export async function DELETE(request: NextRequest) {
+  const denied = await requireSession();
+  if (denied) return denied;
+
   try {
     const { searchParams } = new URL(request.url);
     const partnerId = searchParams.get('partnerId');

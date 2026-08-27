@@ -40,6 +40,41 @@ export async function requireSession(): Promise<NextResponse | null> {
 //     (components/EditorDashboard.tsx). Requiring a session here would have broken
 //     live data collection at events — so the grant path exists and is scoped to
 //     the individual project's edit slug, never to projects in general.
+// WHAT: Require permission to modify one specific partner.
+// WHY: `PUT /api/partners` is also how the partner editor saves, and that
+//     editor authenticates by page password (components/PartnerEditorDashboard
+//     via app/partner-edit/[slug]), not by admin session. The grant is keyed
+//     to the URL slug the editor was opened with, which can be the partner's
+//     viewSlug or its raw id (findPartnerByIdentifier accepts both), so both
+//     are checked. Create/delete stay session-only — the password editor
+//     never performs them.
+export async function requirePartnerWrite(
+  db: { collection: (name: string) => { findOne: (q: Record<string, unknown>, o?: Record<string, unknown>) => Promise<Record<string, unknown> | null> } },
+  partnerId: string
+): Promise<NextResponse | null> {
+  const user = await getAdminUser();
+  if (user) return null;
+
+  if (!ObjectId.isValid(partnerId)) return unauthorized('Sign in to perform this action.');
+
+  const partner = await db.collection('partners').findOne(
+    { _id: new ObjectId(partnerId) },
+    { projection: { viewSlug: 1 } }
+  );
+  // Missing partner yields 401 rather than 404 on purpose — same id-disclosure
+  // reasoning as requireProjectWrite above.
+  if (!partner) return unauthorized('Sign in to perform this action.');
+
+  const candidates = [
+    partnerId,
+    typeof partner.viewSlug === 'string' && partner.viewSlug ? partner.viewSlug : null,
+  ].filter((value): value is string => Boolean(value));
+  for (const pageId of candidates) {
+    if (await hasPageAccess('partner-edit', pageId)) return null;
+  }
+  return unauthorized('Sign in or enter the page password to edit this partner.');
+}
+
 export async function requireProjectWrite(
   db: { collection: (name: string) => { findOne: (q: Record<string, unknown>, o?: Record<string, unknown>) => Promise<Record<string, unknown> | null> } },
   projectId: string

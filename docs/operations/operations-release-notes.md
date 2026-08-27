@@ -1,8 +1,41 @@
 # {messmass} Release Notes
 Status: Active
-Last Updated: 2026-08-27T12:15:00.000Z
+Last Updated: 2026-08-27T15:30:00.000Z
 Canonical: No
 Owner: Operations
+
+## [v12.3.14] — 2026-08-27T15:30:00.000Z
+
+### Summary
+Delivers the two items flagged in v12.3.12/13: the partner mutation API had
+no authentication, and Bitly link selections in the partner edit modal never
+persisted (nor loaded — the form always started empty).
+
+### Security
+`POST/PUT/DELETE /api/partners` now require authentication (they were on the
+F-009 known-unguarded debt list; CSRF was the only barrier). PUT uses a new
+`requirePartnerWrite` guard: an admin session OR a `partner-edit` page-password
+grant for that specific partner (checked against both the partner's viewSlug
+and raw id, since the editor URL accepts either) — so the page-password
+partner editor keeps working. POST and DELETE are session-only; the password
+editor never creates or deletes. The enforcement test's exception list drops
+`app/api/partners/route.ts`.
+
+### Fixed
+Partner Bitly links: the canonical association is `partners.bitlyLinkIds`
+(what `/api/bitly/partners/associate` maintains and what event creation
+auto-associates from), but GET returned a vestigial `bitlyLinks` field that
+was written once as `[]` at creation and never since — so the edit form
+always loaded zero links, and PUT ignored the selections it sent back. GET
+now resolves `bitlyLinkIds` to real link objects (verified: 20 partners with
+previously-invisible links), and PUT persists the selector's list wholesale
+into `bitlyLinkIds`. The two had to land together: with GET fixed but not
+PUT, saving would have wiped associations.
+
+### Verified
+Against a local dev server: all three mutations return 401 unauthenticated
+(previously 200), GET returns enriched links, full jest suite (400) passes
+including the mutation-auth enforcement test.
 
 ## [v12.3.13] — 2026-08-27T12:15:00.000Z
 

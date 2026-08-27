@@ -47,7 +47,6 @@ const KNOWN_UNGUARDED = new Set<string>([
   // [debt] called from page-password surfaces — need a scoped grant path
   'app/api/organizations/edit/[id]/route.ts',
   'app/api/partners/edit/[slug]/route.ts',
-  'app/api/partners/route.ts',
   'app/api/projects/[id]/route.ts',
   'app/api/variables-config/route.ts',
   'app/api/variables-groups/route.ts',
