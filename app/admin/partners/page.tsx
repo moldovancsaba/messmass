@@ -537,6 +537,65 @@ export default function PartnersAdminPageUnified() {
     }
   }, [loadPartners]);
   
+  // WHAT: Persist a sports-team link the moment the operator clicks Link.
+  // WHY: Link/Unlink read as live actions, but as staged form fields the
+  // change was silently lost unless the operator completed the two-step
+  // wizard ("Continue to Reporting" -> "Update Partner"). Manual entry
+  // already persists immediately; these make the whole section consistent.
+  const persistSportsDbLink = async (team: any) => {
+    if (!editingPartner) return;
+    setError('');
+    setSuccessMessage('');
+    try {
+      setSportsDbLinking(true);
+      const logoUrl = team.strTeamBadge || editPartnerData.logoUrl;
+      const data = await apiPut('/api/partners', {
+        partnerId: editingPartner._id,
+        sportsDb: team,
+        ...(logoUrl ? { logoUrl } : {}),
+      });
+      if (data.success) {
+        setEditPartnerData(prev => ({ ...prev, sportsDb: team, logoUrl: logoUrl || prev.logoUrl }));
+        setSuccessMessage(`✓ Linked to ${team.strTeam || 'team'}`);
+        loadPartners();
+      } else {
+        setError(data.error || 'Failed to link team');
+      }
+    } catch (err) {
+      setError('Network error while linking team');
+      console.error('SportsDB link error:', err);
+    } finally {
+      setSportsDbLinking(false);
+    }
+  };
+
+  const persistSportsDbUnlink = async () => {
+    if (!editingPartner) return;
+    setError('');
+    setSuccessMessage('');
+    try {
+      setSportsDbLinking(true);
+      // Explicit null: JSON.stringify drops undefined keys, and the API reads
+      // null as "unlink" (absence means "no change").
+      const data = await apiPut('/api/partners', {
+        partnerId: editingPartner._id,
+        sportsDb: null,
+      });
+      if (data.success) {
+        setEditPartnerData(prev => ({ ...prev, sportsDb: null }));
+        setSuccessMessage('✓ Team unlinked');
+        loadPartners();
+      } else {
+        setError(data.error || 'Failed to unlink team');
+      }
+    } catch (err) {
+      setError('Network error while unlinking team');
+      console.error('SportsDB unlink error:', err);
+    } finally {
+      setSportsDbLinking(false);
+    }
+  };
+
   // WHAT: Open edit modal with partner data
   // WHY: Populate form with existing partner values
   // WHAT: Handle manual SportsDB data entry with logo upload
@@ -1129,20 +1188,14 @@ export default function PartnersAdminPageUnified() {
         
         <div className="form-group mb-4">
           <label className="form-label-block">TheSportsDB</label>
+          {/* Link/Unlink persist immediately (like manual entry already does).
+              They look like live actions, and treating them as staged form
+              fields lost the change whenever the operator didn't drive the
+              two-step wizard through "Continue to Reporting" -> "Update". */}
           <TheSportsDBSearch
             linkedTeam={editPartnerData.sportsDb}
-            onLink={(team) => {
-              setEditPartnerData(prev => ({
-                ...prev,
-                sportsDb: team,
-                logoUrl: team.strTeamBadge || prev.logoUrl
-              }));
-            }}
-            onUnlink={() => {
-              // null, not undefined: JSON.stringify drops undefined keys, so an
-              // unlink sent as undefined never reached the API at all.
-              setEditPartnerData(prev => ({ ...prev, sportsDb: null }));
-            }}
+            onLink={(team) => void persistSportsDbLink(team)}
+            onUnlink={() => void persistSportsDbUnlink()}
           />
           
           {/* Manual Entry Button */}

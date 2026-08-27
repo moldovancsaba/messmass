@@ -1,8 +1,34 @@
 # {messmass} Release Notes
 Status: Active
-Last Updated: 2026-08-27T11:45:00.000Z
+Last Updated: 2026-08-27T12:15:00.000Z
 Canonical: No
 Owner: Operations
+
+## [v12.3.13] — 2026-08-27T12:15:00.000Z
+
+### Summary
+v12.3.12 fixed the API but left the UX trap that made Unlink look broken in
+the first place: the edit modal is a two-step wizard, so Link/Unlink only
+persisted if the operator then pressed "Continue to Reporting" and "Update
+Partner". Tapping Unlink and closing the modal silently lost the change —
+reported live against v12.3.12. Link and Unlink now persist immediately.
+
+### Changed
+Link and Unlink in the partner edit modal's TheSportsDB section each fire
+their own `PUT /api/partners` the moment they are clicked (mirroring how
+manual entry already saved immediately), with success/error feedback, instead
+of staging the change behind the two-step wizard's final submit.
+
+### Verified
+End-to-end against a local dev server on a throwaway partner: link persists,
+unlink (explicit null) persists, `showEmoji` persists both directions and is
+returned by GET. Cleaned up afterwards.
+
+### Security finding (flagged, not addressed here)
+`/api/partners` POST/PUT/DELETE are not authenticated: middleware only
+auth-gates `/admin` and `/dashboard` pages, and the route handlers perform no
+session check of their own — any origin that first fetches the CSRF cookie
+pair can create, modify, or delete partners. Tracked as its own task.
 
 ## [v12.3.12] — 2026-08-27T11:45:00.000Z
 
