@@ -1,8 +1,35 @@
 # {messmass} Release Notes
 Status: Active
-Last Updated: 2026-08-27T15:30:00.000Z
+Last Updated: 2026-08-27T16:50:00.000Z
 Canonical: No
 Owner: Operations
+
+## [v12.3.15] — 2026-08-27T16:50:00.000Z
+
+### Summary
+Clears both open Dependabot alerts. `npm audit` now reports zero
+vulnerabilities.
+
+### Security
+- HIGH — `sharp` (libvips CVE-2026-33327/33328/35590/35591): sharp is a
+  transitive optional dependency of Next's image optimizer, and
+  `next@15.5.21` pinned it to `^0.34.3`, below the patched 0.35.0. Next
+  bumped to 15.5.24 (patch release), whose widened range resolves
+  `sharp@0.35.4`.
+- LOW — `esbuild` dev-server arbitrary file read (Windows): `tsx` updated to
+  4.23.12, pulling `esbuild@0.28.2`. Same change as Dependabot PR #373,
+  landed locally with the full gate instead of merging that PR, because its
+  Verify check cannot pass: Dependabot-triggered workflow runs do not
+  receive the `GDS_PACKAGES_TOKEN` repository secret, so `npm ci` 401s on
+  the GitHub Packages registry for every Dependabot PR. Dependabot closes
+  the PR itself once it sees esbuild current on main.
+
+### Known gap (infrastructure, not addressed here)
+To make Dependabot PRs mergeable on their own checks, `GDS_PACKAGES_TOKEN`
+must also be added as a **Dependabot secret** (Settings → Secrets →
+Dependabot) — Actions secrets are deliberately not exposed to
+Dependabot-triggered runs. Only the repo owner can do this; the secret value
+is not readable from the existing Actions store.
 
 ## [v12.3.14] — 2026-08-27T15:30:00.000Z
 
