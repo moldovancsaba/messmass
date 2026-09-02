@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { requireSession } from '@/lib/apiGuards';
-import { generateShareableLink, getOrCreatePagePassword, validateAnyPassword } from '@/lib/pagePassword';
+import { generateShareableLink, getOrCreatePagePassword, getShareableLinkStatus, removePagePassword, validateAnyPassword } from '@/lib/pagePassword';
 import { PageType } from '@/lib/pagePassword';
 import { getAdminUser } from '@/lib/auth';
 import { cookies } from 'next/headers';
@@ -15,6 +15,49 @@ const MONGODB_DB = config.dbName;
 // through lib/pagePassword.ts. The Edge runtime does not provide Node's crypto module;
 // explicitly opting into the Node.js runtime ensures compatibility.
 export const runtime = 'nodejs';
+
+// GET /api/page-passwords?pageId=&pageType= - Read-only status: public URL + whether it's protected.
+// WHAT: Never creates anything, unlike POST. WHY: SharePopup used to call POST on open, which
+//     silently password-protects any previously-public page the moment an admin looks at Share.
+export async function GET(request: NextRequest) {
+  const denied = await requireSession();
+  if (denied) return denied;
+
+  const { searchParams } = new URL(request.url);
+  const pageId = searchParams.get('pageId');
+  const pageType = searchParams.get('pageType');
+
+  if (!pageId || !pageType) {
+    return NextResponse.json(
+      { success: false, error: 'pageId and pageType are required' },
+      { status: 400 }
+    );
+  }
+
+  const allowedPageTypes = ['event-report', 'partner-report', 'organization-report', 'edit', 'partner-edit', 'organization-edit', 'filter', 'hashtag'];
+  if (!allowedPageTypes.includes(pageType)) {
+    return NextResponse.json(
+      { success: false, error: `Invalid pageType. Must be one of: ${allowedPageTypes.join(', ')}` },
+      { status: 400 }
+    );
+  }
+
+  try {
+    const protocol = request.headers.get('x-forwarded-proto') || 'https';
+    const host = request.headers.get('host') || request.headers.get('x-forwarded-host') || 'localhost:5000';
+    const baseUrl = `${protocol}://${host}`;
+
+    const status = await getShareableLinkStatus(pageId, pageType as PageType, baseUrl);
+
+    return NextResponse.json({ success: true, ...status });
+  } catch (error) {
+    logError('Failed to read page password status', { context: 'page-passwords', pageType }, error instanceof Error ? error : new Error(String(error)));
+    return NextResponse.json(
+      { success: false, error: error instanceof Error ? error.message : 'Failed to read page status' },
+      { status: 500 }
+    );
+  }
+}
 
 // POST /api/page-passwords - Generate or retrieve page password and create shareable link
 export async function POST(request: NextRequest) {
@@ -180,10 +223,49 @@ export async function PUT(request: NextRequest) {
   } catch (error) {
     logError('Failed to validate page password', { context: 'page-passwords', pageType: pageType || 'unknown' }, error instanceof Error ? error : new Error(String(error)));
     return NextResponse.json(
-      { 
-        success: false, 
-        error: error instanceof Error ? error.message : 'Failed to validate password' 
+      {
+        success: false,
+        error: error instanceof Error ? error.message : 'Failed to validate password'
       },
+      { status: 500 }
+    );
+  }
+}
+
+// DELETE /api/page-passwords?pageId=&pageType= - Remove password protection, making the page public.
+// WHAT: The only way to do this before was a direct database delete -- POST could
+//     only ever add a password, never take one away.
+export async function DELETE(request: NextRequest) {
+  const denied = await requireSession();
+  if (denied) return denied;
+
+  const { searchParams } = new URL(request.url);
+  const pageId = searchParams.get('pageId');
+  const pageType = searchParams.get('pageType');
+
+  if (!pageId || !pageType) {
+    return NextResponse.json(
+      { success: false, error: 'pageId and pageType are required' },
+      { status: 400 }
+    );
+  }
+
+  const allowedPageTypes = ['event-report', 'partner-report', 'organization-report', 'edit', 'partner-edit', 'organization-edit', 'filter', 'hashtag'];
+  if (!allowedPageTypes.includes(pageType)) {
+    return NextResponse.json(
+      { success: false, error: `Invalid pageType. Must be one of: ${allowedPageTypes.join(', ')}` },
+      { status: 400 }
+    );
+  }
+
+  try {
+    logInfo('Removing password protection for page', { context: 'page-passwords', pageType, pageIdPrefix: pageId.substring(0, 8) });
+    const removed = await removePagePassword(pageId, pageType as PageType);
+    return NextResponse.json({ success: true, removed });
+  } catch (error) {
+    logError('Failed to remove page password', { context: 'page-passwords', pageType }, error instanceof Error ? error : new Error(String(error)));
+    return NextResponse.json(
+      { success: false, error: error instanceof Error ? error.message : 'Failed to remove page password' },
       { status: 500 }
     );
   }

@@ -59,7 +59,7 @@ function mapPagePasswordDocument(pagePassword: any): PagePassword {
   };
 }
 
-async function resolveCanonicalPageId(db: any, pageId: string, pageType: PageType): Promise<string> {
+export async function resolveCanonicalPageId(db: any, pageId: string, pageType: PageType): Promise<string> {
   if (pageType !== 'partner-report' && pageType !== 'partner-edit') {
     return pageId;
   }
@@ -291,20 +291,20 @@ export async function validateAnyPassword(
  * @param baseUrl - Base URL for the application
  * @returns Promise<ShareableLink>
  */
-export async function generateShareableLink(
-  pageId: string,
-  pageType: PageType,
-  baseUrl: string = ''
-): Promise<ShareableLink> {
-  const pagePassword = await getOrCreatePagePassword(pageId, pageType);
-  const { basePageId, variantSlug } = parseVariantPageId(pagePassword.pageId);
-  
+// WHAT: Pure URL construction for a page's public link, given its (already
+//     canonicalized) pageId. WHY: extracted out of generateShareableLink so
+//     the read-only status check below can build the same URL without
+//     going anywhere near password creation.
+export function buildShareableUrl(pageType: PageType, canonicalPageId: string, baseUrl: string = ''): string {
+  const { basePageId, variantSlug } = parseVariantPageId(canonicalPageId);
+  const rawPageId = canonicalPageId; // 'edit' uses the id as-is, no variant parsing
+
   let url = baseUrl;
   switch (pageType) {
     case 'event-report':
       // WHAT: Project/event report pages at /report/[slug]
       // WHY: Public shareable event statistics pages
-      url += `/report/${pagePassword.pageId}`;
+      url += `/report/${canonicalPageId}`;
       break;
     case 'partner-report':
       // WHAT: Partner report pages at /partner-report/[slug]
@@ -323,7 +323,7 @@ export async function generateShareableLink(
       }
       break;
     case 'edit':
-      url += `/edit/${pageId}`;
+      url += `/edit/${rawPageId}`;
       break;
     case 'partner-edit':
       // WHAT: Partner content editing pages at /partner-edit/[slug]
@@ -355,12 +355,67 @@ export async function generateShareableLink(
       break;
   }
 
+  return url;
+}
+
+export async function generateShareableLink(
+  pageId: string,
+  pageType: PageType,
+  baseUrl: string = ''
+): Promise<ShareableLink> {
+  const pagePassword = await getOrCreatePagePassword(pageId, pageType);
+  const url = buildShareableUrl(pageType, pagePassword.pageId, baseUrl);
+
   return {
     url,
     password: pagePassword.password,
     pageType,
     expiresAt: pagePassword.expiresAt
   };
+}
+
+// WHAT: Read-only status check -- the public URL and whether a password
+//     currently protects it -- with zero side effects.
+// WHY: getOrCreatePagePassword always mints a password for an unprotected
+//     page the moment it's called (by design, for the "generate password"
+//     flow), so it can't back a "what's the current state?" check. Opening
+//     the Share dialog used to call it anyway, silently password-protecting
+//     every previously-public page it was ever opened on.
+export async function getShareableLinkStatus(
+  pageId: string,
+  pageType: PageType,
+  baseUrl: string = ''
+): Promise<{ url: string; isProtected: boolean }> {
+  const client = await clientPromise;
+  const db = client.db(config.dbName);
+  const collection = db.collection('page_passwords');
+  const canonicalPageId = await resolveCanonicalPageId(db as any, pageId, pageType);
+
+  const canonicalMatch = await collection.findOne({ pageId: canonicalPageId, pageType }, { projection: { _id: 1 } });
+  const legacyMatch =
+    !canonicalMatch && canonicalPageId !== pageId
+      ? await collection.findOne({ pageId, pageType }, { projection: { _id: 1 } })
+      : null;
+
+  return {
+    url: buildShareableUrl(pageType, canonicalPageId, baseUrl),
+    isProtected: canonicalMatch !== null || legacyMatch !== null,
+  };
+}
+
+// WHAT: Removes password protection from a page entirely (both the
+//     canonical and any legacy-keyed record).
+// WHY: There was no way to undo a password once SharePopup minted one --
+//     the only path back to "public" was a direct database delete.
+export async function removePagePassword(pageId: string, pageType: PageType): Promise<boolean> {
+  const client = await clientPromise;
+  const db = client.db(config.dbName);
+  const collection = db.collection('page_passwords');
+  const canonicalPageId = await resolveCanonicalPageId(db as any, pageId, pageType);
+
+  const idsToRemove = Array.from(new Set([pageId, canonicalPageId]));
+  const result = await collection.deleteMany({ pageType, pageId: { $in: idsToRemove } });
+  return result.deletedCount > 0;
 }
 
 /**
