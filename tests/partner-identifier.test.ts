@@ -1,5 +1,10 @@
 import { ObjectId } from 'mongodb';
-import { findPartnerByIdentifier, isUuidV4 } from '@/lib/partnerIdentifier';
+import {
+  findPartnerByIdentifier,
+  generateUniquePartnerViewSlug,
+  isUuidV4,
+  resolvePartnerIdentifier,
+} from '@/lib/partnerIdentifier';
 
 function createDb(findOneImpl: (query: Record<string, unknown>) => Promise<unknown>) {
   return {
@@ -61,5 +66,37 @@ describe('partner identifier resolution', () => {
 
     const result = await findPartnerByIdentifier(db as any, hexSlug);
     expect(result).toBe(partner);
+  });
+
+  // F-MM-08: pins the invariant that keeps removePagePassword's resolveCanonicalPageId ->
+  // resolvePartnerIdentifier dispatch from ever deleting the wrong partner's password
+  // record. A generated viewSlug that happened to be ObjectId-shaped would hit the
+  // _id-first branch before the viewSlug branch -- this can only stay unreachable if
+  // generation itself never produces that shape.
+  it('never generates an ObjectId-shaped viewSlug', async () => {
+    const db = createDb(async () => null); // no existing collisions
+    for (let i = 0; i < 50; i++) {
+      const slug = await generateUniquePartnerViewSlug(db as any);
+      expect(ObjectId.isValid(slug)).toBe(false);
+    }
+  });
+
+  it('resolves a real generated viewSlug via the viewSlug branch, never the _id branch', async () => {
+    const db = createDb(async () => null);
+    const slug = await generateUniquePartnerViewSlug(db as any);
+
+    const partner = { _id: new ObjectId(), name: 'Generated Slug Partner', viewSlug: slug };
+    const idQueries: Record<string, unknown>[] = [];
+    const resolveDb = createDb(async (query) => {
+      idQueries.push(query);
+      if (query.viewSlug === slug) {
+        return partner;
+      }
+      return null;
+    });
+
+    const result = await resolvePartnerIdentifier(resolveDb as any, slug);
+    expect(result?.matchedBy).toBe('viewSlug');
+    expect(idQueries.some((query) => '_id' in query)).toBe(false);
   });
 });
