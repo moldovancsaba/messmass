@@ -9,6 +9,12 @@
  * 
  * Usage: npm run db:backup
  * Output: backups/messmass_backup_TIMESTAMP/
+ *
+ * Any future raw ad-hoc production database mutation MUST run this first --
+ * no exceptions, even under explicit user approval. See docs/operations/
+ * operations-learnings.md's 2026-09-02 entry: two raw deletions were run
+ * without a backup, and the deleted documents' prior contents can now never
+ * be reconstructed by anyone, from any artifact.
  */
 
 import { MongoClient } from 'mongodb';

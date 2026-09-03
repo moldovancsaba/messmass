@@ -1,7 +1,7 @@
 # LLD Audit — Findings Register
 
 Status: Active
-Last Updated: 2026-08-15T12:00:00.000Z
+Last Updated: 2026-09-03T00:00:00.000Z
 Canonical: Yes (findings register)
 Owner: Architecture
 
@@ -290,6 +290,22 @@ correct password.
 Verified: a protected event report returns 401 unauthenticated, an unprotected one
 still returns 200 with its data. `organization-report` (1 password) is not yet
 guarded — its client data path was not traced.
+
+**Superseded (2026-09-02).** The enforce decision above is no longer the current
+state for nearly all of the 163 passwords it describes. In the same session that
+produced F-MM-01 (`app/api/page-passwords/route.ts`'s unscoped `GET`/`DELETE`),
+the product decision was reversed to public-by-default for previously-unenforced,
+never-successfully-unlocked report passwords, and one targeted `deleteOne` plus a
+bulk `deleteMany` (`page_passwords`, `usageCount:0`) removed 164 documents in
+total (1 `event-report` by id, 163 more across `event-report`/`partner-report`/
+`organization-report`), approved explicitly by the user in real time. A production
+requery on 2026-09-02 confirms only 2 report-type `page_passwords` documents now
+exist (1 `event-report`, `usageCount:5`; 1 `partner-report`, `usageCount:2`;
+`organization-report` at 0). The "Resolved (v12.1.59)" text above remains an
+accurate historical record of that decision and is preserved unedited; it no
+longer describes current data. See F-MM-03 (this entry) and F-MM-02 (the
+permanent operational record of the deletion itself, `docs/operations/
+operations-learnings.md`).
 
 ---
 

@@ -4,6 +4,58 @@ Last Updated: 2026-02-05T21:01:23.000Z
 Canonical: No
 Owner: Architecture
 
+## [vDOCS] - 2026-09-02T00:00:00.000Z — Two Raw Production Deletions Bypassed db:backup (Permanent Record)
+
+### Context
+The escalated, user-approved decision to make previously-unenforced report page-passwords
+public-by-default (superseding the "enforce" decision recorded in `docs/audits/lld/
+findings.md` F-001, see that file's 2026-09-02 superseding entry) required removing the
+now-orphaned `page_passwords` records. Two operations were run directly against the
+production connection string as raw inline scripts:
+
+```js
+// Operation 1 (targeted)
+db.collection('page_passwords').deleteOne({
+  pageType: 'event-report',
+  pageId: '5e3e6183-009e-409b-a04c-12edaab52370'
+});
+
+// Operation 2 (bulk, 163 documents)
+db.collection('page_passwords').deleteMany({
+  pageType: { $in: ['event-report', 'partner-report', 'organization-report'] },
+  usageCount: 0
+});
+```
+
+164 documents total. Both were explicitly approved by the user in real time.
+
+### What Went Wrong
+Neither operation went through this repo's own documented convention for destructive
+database work: `npm run db:backup` (`scripts/backupDatabase.ts`), a committed script
+following the `scripts/cleanupEmptyCollections.ts` template (default `--dry-run`, a
+generated report), or a `docs/operations/operations-release-notes.md` entry. No backup
+file exists. The exact prior contents of the 164 deleted documents cannot be
+independently reconstructed by anyone, from this record or any other artifact.
+
+This is exactly the failure lesson #8 below ("Backup Everything Before Cleanup") already
+warns against — it was bypassed anyway because the mutation was run ad hoc rather than
+through the repo's own scripted path.
+
+### Fix
+No reversal (that would be a separate, deliberate decision — the deletion itself is not
+being re-litigated here). This entry is the permanent record: what was deleted (164
+`page_passwords` documents, filters above), when (2026-09-02), and why (the superseding
+public-by-default decision, approved by the user). `scripts/backupDatabase.ts`'s header
+comment now states explicitly that any future raw ad-hoc production mutation must run
+`npm run db:backup` first, no exceptions, even under explicit user approval.
+
+### Follow-up
+- No new CI gate is introduced here (that would be a separate, larger issue) -- this
+  entry only makes the expectation explicit and documented, so a future audit has a
+  known, agreed rule to point to.
+- See `docs/audits/lld/findings.md` F-001's 2026-09-02 superseding entry for the product
+  decision this record supports.
+
 ## [v11.55.6] - 2026-02-10T00:00:00.000Z — Production 500s (Edge runtime crypto crash)
 
 ### Context
