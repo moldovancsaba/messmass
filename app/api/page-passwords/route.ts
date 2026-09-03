@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { requireSession } from '@/lib/apiGuards';
 import { generateShareableLink, getOrCreatePagePassword, getShareableLinkStatus, removePagePassword, validateAnyPassword } from '@/lib/pagePassword';
 import { PageType } from '@/lib/pagePassword';
+import { requirePageResourceAccess } from '@/lib/pagePasswordAccess';
 import { getAdminUser } from '@/lib/auth';
 import { cookies } from 'next/headers';
 import { PAGE_ACCESS_COOKIE, mintPageAccessToken, pageAccessCookieOptions } from '@/lib/pageAccess';
@@ -41,6 +42,9 @@ export async function GET(request: NextRequest) {
       { status: 400 }
     );
   }
+
+  const scoped = await requirePageResourceAccess(pageId, pageType as PageType);
+  if (scoped) return scoped;
 
   try {
     const protocol = request.headers.get('x-forwarded-proto') || 'https';
@@ -257,6 +261,9 @@ export async function DELETE(request: NextRequest) {
       { status: 400 }
     );
   }
+
+  const scoped = await requirePageResourceAccess(pageId, pageType as PageType);
+  if (scoped) return scoped;
 
   try {
     logInfo('Removing password protection for page', { context: 'page-passwords', pageType, pageIdPrefix: pageId.substring(0, 8) });
