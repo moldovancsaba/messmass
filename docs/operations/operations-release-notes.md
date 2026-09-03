@@ -1,8 +1,40 @@
 # {messmass} Release Notes
 Status: Active
-Last Updated: 2026-08-27T16:50:00.000Z
+Last Updated: 2026-09-03T00:00:00.000Z
 Canonical: No
 Owner: Operations
+
+## [v12.3.16] — 2026-09-03T00:00:00.000Z
+
+### Summary
+Three commits landed on 2026-09-02 without a version bump: the public
+share-link fix, its follow-up authorization fix, and an audit-register
+correction. This entry restores the version-tracking discipline for all
+three; none contain a further behavior change of their own.
+
+### Security
+- Share links previously silently password-protected public pages the
+  first time anyone opened the Share dialog on them (`SharePopup`'s
+  auto-protect side effect); reports are now shareable via a plain URL
+  with no login, and the underlying auto-protect bug is fixed at its
+  root (commit `7418867f`).
+- The `GET`/`DELETE /api/page-passwords` endpoints that commit added
+  authorized on session alone -- any signed-in account, any role,
+  could read or strip password protection off any partner's,
+  organization's, or project's report link with no ownership check.
+  Both now require the caller have a genuine relationship to the
+  specific page (an organization member, a holder of a page-specific
+  access grant, or superadmin), failing closed on any unresolvable
+  scope (commit `f81f58d0`).
+
+### Documentation
+- `docs/audits/lld/findings.md`'s F-001 entry described 163 unenforced
+  report page-passwords as enforced; 161 of them were deleted the same
+  day under a reversed, user-approved decision. Appended a dated
+  supersession entry with the true counts (2 of 163 remain); the
+  historical text is unchanged. Also recorded the two raw deletions
+  themselves (no backup existed) and hardened `backupDatabase.ts`'s
+  header against a repeat (commit `58f0feed`).
 
 ## [v12.3.15] — 2026-08-27T16:50:00.000Z
 
