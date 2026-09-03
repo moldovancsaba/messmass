@@ -1,11 +1,11 @@
 # {messmass} Authentication & Access Control System
 Status: Active
-Last Updated: 2026-05-20T12:00:00.000Z
+Last Updated: 2026-09-03T00:00:00.000Z
 Canonical: Yes
 Owner: Security
 
 **Version:** 12.3.10
-**Last Updated:** 2026-05-20T12:00:00.000Z (UTC)
+**Last Updated:** 2026-09-03T00:00:00.000Z (UTC)
 **Status:** Production
 **Maintainer:** Warp AI Development Team
 
@@ -578,6 +578,70 @@ On successful validation, the system automatically:
 - Updates `lastUsedAt` timestamp to current time
 - Logs access event for audit trail
 
+### Check Status: `GET /api/page-passwords`
+
+**File:** `app/api/page-passwords/route.ts`
+
+Read-only -- never creates or changes anything, unlike `POST`. Added so `SharePopup` no longer
+has to call `POST` just to check whether a page is protected (that used to silently
+password-protect any previously-public page the moment an admin opened the Share dialog).
+
+**Request:**
+```
+GET /api/page-passwords?pageId=championship-final-2025&pageType=event-report
+```
+
+**Response:**
+```json
+{
+  "success": true,
+  "url": "https://messmass.com/stats/championship-final-2025",
+  "isProtected": true
+}
+```
+
+**Parameters:**
+- `pageId`: Unique identifier (slug) for the page
+- `pageType`: One of `event-report`, `partner-report`, `organization-report`, `edit`,
+  `partner-edit`, `organization-edit`, `filter`, `hashtag`
+
+**Security:**
+- ✅ Requires a signed-in session (`requireSession()`) -- returns 401 `UNAUTHENTICATED` otherwise
+- ✅ Requires the caller have a genuine relationship to the specific `pageId`+`pageType` --
+  an organization member, a holder of a page-specific access grant, or superadmin -- returns
+  403 `FORBIDDEN` otherwise (fails closed on any unresolvable scope)
+- ❌ No CSRF check needed (read-only, no state change)
+
+### Remove Password: `DELETE /api/page-passwords`
+
+**File:** `app/api/page-passwords/route.ts`
+
+Removes password protection entirely, making the page public. Used by `SharePopup`'s
+"Remove password protection" action.
+
+**Request:**
+```
+DELETE /api/page-passwords?pageId=championship-final-2025&pageType=event-report
+```
+
+**Response:**
+```json
+{
+  "success": true,
+  "removed": true
+}
+```
+`removed` distinguishes "this call actually deleted a password record" (`true`) from "there was
+nothing to delete" (`false`) -- both are a 200 success; only the boolean differs.
+
+**Parameters:**
+- `pageId` / `pageType`: same as `GET`, above.
+
+**Security:**
+- ✅ Requires a signed-in session (`requireSession()`) -- returns 401 `UNAUTHENTICATED` otherwise
+- ✅ Requires the caller have a genuine relationship to the specific `pageId`+`pageType`, same
+  scoped-access check as `GET` above -- returns 403 `FORBIDDEN` otherwise
+
 ### Password Statistics: `getPasswordStats()`
 
 **File:** `lib/pagePassword.ts`
@@ -1017,8 +1081,10 @@ if (process.env.NODE_ENV === 'development') {
 
 ### Page Password Management
 
+- `GET /api/page-passwords` - Check protection status (read-only)
 - `POST /api/page-passwords` - Generate/retrieve page password
 - `PUT /api/page-passwords` - Validate page password
+- `DELETE /api/page-passwords` - Remove password protection
 
 ### User Management (Admin Only)
 
