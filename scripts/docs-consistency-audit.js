@@ -3,6 +3,13 @@
 const { execFileSync } = require('child_process');
 const fs = require('fs');
 const path = require('path');
+const { findVersionStamps, findVerificationStamps } = require('./lib/docs-version-check');
+
+// How many commits behind HEAD a fleet-map "Verified messmass `sha`" stamp
+// can be before it's flagged as worth a fresh look. Chosen against this
+// repo's own commit velocity (dozens of commits/week) -- low enough to catch
+// real drift, high enough not to fire on every routine push.
+const CONTRACT_FRESHNESS_COMMIT_THRESHOLD = 30;
 
 const root = path.resolve(__dirname, '..');
 const packageJson = JSON.parse(fs.readFileSync(path.join(root, 'package.json'), 'utf8'));
@@ -25,6 +32,7 @@ const currentDocFiles = markdownFiles.filter((file) => {
 });
 
 const failures = [];
+const warnings = [];
 
 function read(file) {
   return fs.readFileSync(path.join(root, file), 'utf8');
@@ -32,6 +40,10 @@ function read(file) {
 
 function addFailure(file, message) {
   failures.push({ file, message });
+}
+
+function addWarning(file, message) {
+  warnings.push({ file, message });
 }
 
 const forbiddenCurrentDocPatterns = [
@@ -88,16 +100,58 @@ for (const file of currentDocFiles) {
   }
 }
 
-const versionHeaderFiles = currentDocFiles.filter((file) => {
-  const content = read(file).split('\n').slice(0, 25).join('\n');
-  return /\*\*Version:?\*\*:?\s|^Version:\s+/m.test(content);
-});
+// WHAT: Scans each doc's WHOLE content (not just the first 25 lines) for
+//     every version stamp -- header AND footer -- via scripts/lib/docs-
+//     version-check.js's shared matcher.
+// WHY: the prior 25-line window silently missed footer-only stamps entirely
+//     (docs/operations/ops-warp.md, docs/design/design-chart-height-
+//     system.md -- both frozen at 12.1.16 with zero CI signal), and the
+//     prior regex only recognized double-asterisk headers, missing the
+//     single-asterisk "*Version: X | Last Updated: ... *" footer format used
+//     by several older docs. Files can carry more than one stamp (a stale
+//     header AND a separately-stale footer); each stale stamp is reported.
+for (const file of currentDocFiles) {
+  const content = read(file);
+  for (const stamp of findVersionStamps(content)) {
+    if (stamp.value !== packageVersion) {
+      addFailure(file, `Version header ${stamp.value} does not match package version ${packageVersion}.`);
+    }
+  }
+}
 
-for (const file of versionHeaderFiles) {
-  const content = read(file).split('\n').slice(0, 25).join('\n');
-  const versionMatch = content.match(/(?:\*\*Version:?\*\*:?|^Version:)\s*`?([0-9]+\.[0-9]+\.[0-9]+)`?/m);
-  if (versionMatch && versionMatch[1] !== packageVersion) {
-    addFailure(file, `Version header ${versionMatch[1]} does not match package version ${packageVersion}.`);
+// WHAT: Contract-freshness check -- warns when the fleet map's own
+//     "Verified messmass `sha`" stamps are far behind this repo's current
+//     HEAD, i.e. long enough that the integration they describe may have
+//     drifted without anyone re-verifying.
+// WHY: messmass#354. Deliberately WARNS, never fails: (a) it can only
+//     resolve messmass's own SHA in a single-repo CI job -- camera/fanmass/
+//     try-on's cited SHAs aren't resolvable here and are skipped outright;
+//     (b) commit-count drift is a proxy for "worth a look", not proof the
+//     contract is actually wrong.
+const fleetMapPath = 'docs/_audit/fleet-architecture.md';
+const fleetMapFull = path.join(root, fleetMapPath);
+if (fs.existsSync(fleetMapFull)) {
+  const fleetMapContent = fs.readFileSync(fleetMapFull, 'utf8');
+  const seenShas = new Set();
+  for (const stamp of findVerificationStamps(fleetMapContent)) {
+    if (stamp.repo !== 'messmass' || stamp.sha === 'n/a' || seenShas.has(stamp.sha)) continue;
+    seenShas.add(stamp.sha);
+    let behindCount;
+    try {
+      behindCount = parseInt(
+        execFileSync('git', ['rev-list', '--count', `${stamp.sha}..HEAD`], { cwd: root, encoding: 'utf8' }).trim(),
+        10
+      );
+    } catch {
+      addWarning(fleetMapPath, `"Verified messmass \`${stamp.sha}\`" cites a commit not found in this repo's history -- stamp may be a typo or the branch was rewritten.`);
+      continue;
+    }
+    if (behindCount > CONTRACT_FRESHNESS_COMMIT_THRESHOLD) {
+      addWarning(
+        fleetMapPath,
+        `"Verified messmass \`${stamp.sha}\`" is ${behindCount} commits behind HEAD (over the ${CONTRACT_FRESHNESS_COMMIT_THRESHOLD}-commit freshness threshold) -- worth re-verifying this edge is still accurate.`
+      );
+    }
   }
 }
 
@@ -111,6 +165,7 @@ const reportLines = [
   `Package version: ${packageVersion}`,
   `Current docs scanned: ${currentDocFiles.length}`,
   `Failures: ${failures.length}`,
+  `Warnings: ${warnings.length}`,
   ''
 ];
 
@@ -119,12 +174,27 @@ if (failures.length) {
   for (const failure of failures) {
     reportLines.push(`- ${failure.file}: ${failure.message}`);
   }
+  reportLines.push('');
 } else {
-  reportLines.push('## Result', '', 'No current documentation consistency failures found.');
+  reportLines.push('## Result', '', 'No current documentation consistency failures found.', '');
+}
+
+if (warnings.length) {
+  reportLines.push('## Warnings (non-blocking)', '');
+  for (const warning of warnings) {
+    reportLines.push(`- ${warning.file}: ${warning.message}`);
+  }
 }
 
 const reportPath = path.join(root, 'docs/_meta/meta-docs-consistency-audit.md');
 fs.writeFileSync(reportPath, `${reportLines.join('\n')}\n`);
+
+if (warnings.length) {
+  console.warn(`Docs consistency audit: ${warnings.length} non-blocking warning(s).`);
+  for (const warning of warnings) {
+    console.warn(`- ${warning.file}: ${warning.message}`);
+  }
+}
 
 if (failures.length) {
   console.error(`Docs consistency audit failed with ${failures.length} issue(s).`);
