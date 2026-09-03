@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { PageType } from '@/lib/pagePassword';
 import { apiDelete, apiGet, apiPost } from '@/lib/apiClient';
+import { deriveRemovalInfoMessage } from '@/lib/pagePasswordRemovalMessage';
 import BaseModal from './modals/BaseModal';
 import styles from './SharePopup.module.css';
 
@@ -29,6 +30,9 @@ export default function SharePopup({ isOpen, onClose, pageId, pageType, customTi
   //     re-showing the full-dialog loading spinner.
   const [isMutatingPassword, setIsMutatingPassword] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  // WHAT: Distinct from `error` -- confirms what a mutation actually did
+  //     (e.g. "already off" vs "removed"), never blocks the rest of the dialog.
+  const [infoMessage, setInfoMessage] = useState<string | null>(null);
   const [copiedField, setCopiedField] = useState<'url' | 'password' | null>(null);
   // WHAT: Whether the password on screen was minted in this dialog session.
   // WHY: It is the only moment it can ever be shown. Everything about the UI has
@@ -45,6 +49,7 @@ export default function SharePopup({ isOpen, onClose, pageId, pageType, customTi
       setShareableData(null);
       setCopiedField(null);
       setJustGenerated(false);
+      setInfoMessage(null);
       setRecipientInfo(''); // Reset recipient field when popup opens
       fetchStatus();
     }
@@ -81,6 +86,7 @@ export default function SharePopup({ isOpen, onClose, pageId, pageType, customTi
   const generateShareableLink = async (regenerate: boolean = false) => {
     setIsMutatingPassword(true);
     setError(null);
+    setInfoMessage(null);
 
     try {
       // WHAT: Use apiPost() for automatic CSRF token handling
@@ -114,13 +120,28 @@ export default function SharePopup({ isOpen, onClose, pageId, pageType, customTi
   const removePasswordProtection = async () => {
     setIsMutatingPassword(true);
     setError(null);
+    setInfoMessage(null);
 
     try {
       const data = await apiDelete(`/api/page-passwords?pageId=${encodeURIComponent(pageId)}&pageType=${encodeURIComponent(pageType)}`);
 
       if (data.success) {
-        setShareableData((current) => (current ? { ...current, password: '', isProtected: false } : current));
         setJustGenerated(false);
+        setInfoMessage(deriveRemovalInfoMessage(data.removed));
+        // WHAT: Confirm against the server instead of trusting the DELETE
+        //     response's own optimistic shape.
+        // WHY: `removed` only says whether this call changed anything -- it
+        //     doesn't rule out a concurrent change from another admin tab.
+        try {
+          const refreshed = await apiGet(`/api/page-passwords?pageId=${encodeURIComponent(pageId)}&pageType=${encodeURIComponent(pageType)}`);
+          if (refreshed.success) {
+            setShareableData((current) => (current ? { ...current, password: '', isProtected: refreshed.isProtected } : current));
+          } else {
+            setInfoMessage((current) => `${current} Couldn't confirm current status -- reopen this dialog to check.`);
+          }
+        } catch {
+          setInfoMessage((current) => `${current} Couldn't confirm current status -- reopen this dialog to check.`);
+        }
       } else {
         setError(data.error || 'Failed to remove password protection');
       }
@@ -279,6 +300,9 @@ export default function SharePopup({ isOpen, onClose, pageId, pageType, customTi
               <label className={styles.label}>
                 🔐 Access Password
               </label>
+              {infoMessage && (
+                <p className={styles.infoText} aria-live="polite">{infoMessage}</p>
+              )}
 
               {!shareableData.isProtected ? (
                 <>
