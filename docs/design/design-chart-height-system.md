@@ -173,6 +173,6 @@ These charts maintain their aspect ratio and don't use the calculated height.
 
 ---
 
-**Version**: 12.1.16
+**Version**: 12.3.16
 **Last Updated**: 2026-01-11T22:28:38.000Z
 **Status**: Production Ready
