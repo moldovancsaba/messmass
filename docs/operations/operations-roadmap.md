@@ -470,12 +470,12 @@ Future (captured as roadmap; detailed historical plan archived):
 - Operations dashboard (real-time event metrics)
 - Partner dashboard (partner-specific performance)
 - Custom dashboard builder with drag-and-drop widgets
-- Real-time WebSocket updates for live events
+- ~~Real-time WebSocket updates for live events~~ (ABANDONED — this was built then removed in v12.2.0; live updates use REST + polling, not WebSockets)
 
 **Acceptance Criteria:**
 - 4+ pre-built dashboard templates available
 - Custom dashboards save user preferences
-- Real-time updates with < 2-second latency
+- ~~Real-time updates with < 2-second latency~~ (ABANDONED — the WebSocket path this depended on was removed in v12.2.0; updates are REST/polling)
 - Mobile-responsive dashboard layouts
 - Export dashboards as PDF reports
 

@@ -25,7 +25,7 @@ Data flows left to right: you set up an organisation and its partners, run event
 
 messmass supports three capture paths that all land in the same event record:
 
-- **Clicker / Manual editor** — the live event editor at `/edit/[event-slug]`. **Clicker Mode** gives fast button-based tallying during a live event; **Manual Mode** gives exact field-by-field entry for correction and completion. Connected collaborators see updates in realtime. See [Collecting data](guides-tutorial-collecting-data.md).
+- **Clicker / Manual editor** — the live event editor at `/edit/[event-slug]`. **Clicker Mode** gives fast button-based tallying during a live event; **Manual Mode** gives exact field-by-field entry for correction and completion. Live multi-user sync is not currently available (the real-time server was removed in v12.2.0); collaborators need to refresh to see each other's updates. See [Collecting data](guides-tutorial-collecting-data.md).
 - **Google Sheets** — a partner can connect a Google Sheet so event rows sync in both directions (Sheet to messmass and messmass to Sheet). See [Google Sheets](guides-tutorial-google-sheets.md).
 - **Fanmass** — the external capture app writes data into messmass through the write API (a user needs API write access enabled). See [Fanmass](guides-tutorial-fanmass.md).
 

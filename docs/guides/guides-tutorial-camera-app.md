@@ -1,8 +1,9 @@
 # Tutorial: Camera app integration
 Status: Active
-Last Updated: 2026-07-20T00:00:00.000Z
+Last Updated: 2026-09-04T00:00:00.000Z
 Canonical: Yes
 Owner: Documentation
+Integration flow verified against code @ 62a47a0d (messmass#349)
 
 > Audience: Operators + technical implementers · Prerequisites: You can create partners and events in messmass · Related: [Events](guides-tutorial-events.md) · [Partners](guides-tutorial-partners.md) · [Organisations](guides-tutorial-organisations.md) · [Fanmass](guides-tutorial-fanmass.md)
 
@@ -13,16 +14,37 @@ ground to take fan selfies and event photos. messmass and the Camera app both ne
 agree on *who* an event belongs to: the same organisation, the same partner, the same
 event, identified the same way in both systems.
 
-The integration solves that by making **messmass the master (the source of truth)**.
-When you create an organisation, a partner, and an event in messmass, messmass
-**provisions** those records outbound *into* the Camera app and remembers the Camera-side
-IDs it gets back. You never have to re-key the same event into the Camera app — the two
-systems stay in sync because messmass pushes the identity to the Camera app for you.
+The integration solves that by making **messmass the master for the provisioning
+chain (the source of truth for organisations and events)**. When you create an
+organisation, a partner, and an event in messmass, messmass **provisions** those
+records outbound *into* the Camera app and remembers the Camera-side IDs it gets
+back. You never have to re-key the same event into the Camera app — the two systems
+stay in sync because messmass pushes the identity to the Camera app for you.
 
-Three things make this safe to rely on:
+The link is **bidirectional**, not one-way — but the two directions carry different
+things, so there is still no "who wins?" conflict:
 
-- **One direction.** messmass writes to the Camera app; the Camera app does not create
-  organisations, partners, or events back in messmass. There is no "who wins?" question.
+- **messmass → Camera (the provisioning chain).** messmass owns organisations and
+  events and pushes them outbound; it calls the Camera app's
+  `/api/internal/messmass/{organizations,partners,events}` endpoints
+  (`lib/cameraClient.ts`, `lib/cameraProvision.ts`) and stamps the returned Camera IDs
+  onto the messmass records. The Camera app never creates organisations or events back
+  in messmass.
+- **Camera → messmass (partners + sessions).** Two inbound endpoints, both
+  authenticated by the shared `CAMERA_MESSMASS_INTERNAL_SECRET`, let the Camera app
+  write into messmass: `POST /api/integrations/camera/partners` upserts a partner that
+  was created directly in the Camera app so it also appears in messmass
+  (`app/api/integrations/camera/partners/route.ts` → `lib/cameraPartnerSync.ts`), and
+  `POST /api/integrations/camera/sso-session` mints a real messmass session (creating
+  or updating the user record) for someone who signed in on the Camera side
+  (`app/api/integrations/camera/sso-session/route.ts` → `lib/auth/mintSession.ts`). So
+  **partners** and **users/sessions** flow both ways; **organisations and events** flow
+  only messmass → Camera.
+
+Three things make the provisioning direction safe to rely on:
+
+- **messmass stays master for org/event identity.** Because only messmass creates
+  organisations and events, there is no divergence on the records that anchor a report.
 - **Shared IDs.** After provisioning, each messmass record stores the Camera app's ID
   for the same thing, so future updates target the exact same Camera record instead of
   creating duplicates.
@@ -146,13 +168,20 @@ call, so large backlogs are cleared in batches. Response reports how many events
 
 ### Authentication for the ops endpoints
 
-> Note: The two `/api/integrations/camera/...` backfill endpoints are protected by the
-> **Fanmass integration token** (`FANMASS_INTEGRATION_TOKEN`), *not* by
-> `CAMERA_MESSMASS_INTERNAL_SECRET`. The Camera secret authenticates messmass *outbound to
-> the Camera app*; the integration token authenticates operators *inbound to messmass*.
-> Send it as `Authorization: Bearer <token>` or `x-api-key: <token>`. If the token is not
-> configured the endpoints return `503`; a wrong token returns `401`. See
-> [Fanmass](guides-tutorial-fanmass.md) for how that token is set.
+> Note: The two operator **backfill** endpoints (`link-partners`, `provision-missing`)
+> are protected by the **Fanmass integration token** (`FANMASS_INTEGRATION_TOKEN`), *not*
+> by `CAMERA_MESSMASS_INTERNAL_SECRET`. Despite living under the `/api/integrations/camera/`
+> path they are operator-triggered *drivers of the outbound* messmass → Camera provisioning,
+> so they use the operator token. Send it as `Authorization: Bearer <token>` or
+> `x-api-key: <token>`. If the token is not configured the endpoints return `503`; a wrong
+> token returns `401`. See [Fanmass](guides-tutorial-fanmass.md) for how that token is set.
+>
+> The genuinely inbound Camera → messmass endpoints under the same path
+> (`partners`, `sso-session`) are a *different* auth: they use the shared
+> `CAMERA_MESSMASS_INTERNAL_SECRET`, the same secret that authenticates messmass's own
+> outbound calls to the Camera app. So that one shared secret guards traffic in **both**
+> directions between the two apps; the Fanmass integration token guards only the two
+> operator backfill endpoints.
 
 ### Day-to-day
 
@@ -177,8 +206,12 @@ in place.
   messmass after provisioning does not automatically rename it in the Camera app — the
   automatic path only ensures records *exist* and stamps IDs. Treat post-provision renames
   as a manual reconciliation if the Camera app needs them.
-- **Two tokens, two directions.** Keep them straight: the Camera secret is outbound
-  (messmass → Camera app); the integration token guards the inbound ops endpoints.
+- **Two tokens, but not one-per-direction.** Keep them straight: the shared Camera secret
+  (`CAMERA_MESSMASS_INTERNAL_SECRET`) authenticates traffic **both** ways — messmass's
+  outbound provisioning *and* the two genuine Camera → messmass inbound endpoints
+  (`partners`, `sso-session`). The Fanmass integration token guards only the two operator
+  backfill endpoints (`link-partners`, `provision-missing`), which despite their path
+  drive the outbound direction.
 - **Don't confuse products.** "Camera" here is seyu's selfie-capture app. It is not the
   messmass Clicker, not KYC variables, and not the content library — those never leave
   messmass.

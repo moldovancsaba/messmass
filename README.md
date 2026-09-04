@@ -65,13 +65,6 @@ Recommended first-run companion task:
 npm run seed:variables
 ```
 
-If you use the websocket-backed real-time flow, start the companion server separately:
-
-```bash
-cd server
-npm start
-```
-
 ## Runtime Requirements
 
 - Node.js: `24` (`>=24.0.0 <25.0.0`)

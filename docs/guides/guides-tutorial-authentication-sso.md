@@ -1,8 +1,9 @@
 # Tutorial: Authentication, roles & SSO
 Status: Active
-Last Updated: 2026-07-20T00:00:00.000Z
+Last Updated: 2026-09-04T00:00:00.000Z
 Canonical: Yes
 Owner: Documentation
+SSO/auth flow verified against code @ 62a47a0d (messmass#349)
 
 > Audience: Operators and technical implementers · Prerequisites: Admin sign-in for most tasks; environment access for setup · Related: [Sharing & access](guides-tutorial-sharing-access.md), [Organisations](guides-tutorial-organisations.md), [Bitly integration](guides-tutorial-bitly.md)
 
@@ -16,7 +17,9 @@ There are three ways to be recognised by messmass:
 2. **Page passwords** — per-page share links that let someone view or edit a single event without any admin account (recapped below; covered fully in [Sharing & access](guides-tutorial-sharing-access.md)).
 3. **API keys** — a user's password used as a Bearer token for the public REST API, so external systems can read (and, when permitted, write) data.
 
-On top of admin sign-in, an optional **DoneIsBetter SSO** flow lets an organisation use its own identity provider instead of local passwords.
+DoneIsBetter SSO is not an optional add-on layered on a local password system — it *is*
+the admin sign-in. There is no local-password path to fall back to; `/admin/login`'s only
+job now is to present the "Sign in with DoneIsBetter" button.
 
 Why it matters: these layers are the difference between "a partner can see their own event report" and "anyone can edit anyone's data." The role attached to each user, and the flags on their account, decide the blast radius.
 
@@ -62,26 +65,47 @@ When you need to give someone access to just one event — a client viewing a st
 
 > Note: A page password grants access to one page only; it is not an account and carries no role. Revoke access by regenerating that page's password.
 
-### 4. Optional: enable DoneIsBetter SSO
+### 4. How DoneIsBetter SSO sign-in works
 
-Set the environment variable **`SSO_BASE_URL`** to your DoneIsBetter instance to turn SSO on. When it is set:
+SSO is not optional or additive — it is the only interactive sign-in. It is configured
+with **`SSO_BASE_URL`** (the DoneIsBetter instance), **`SSO_CLIENT_ID`**, and
+**`SSO_CLIENT_SECRET`**. messmass runs as a **confidential OAuth2 client** by default
+(it holds a client secret; set `SSO_CONFIDENTIAL_OAUTH=0` to fall back to a public
+PKCE client). The flow is a standard **OAuth2/OIDC Authorization-Code** exchange — *not*
+the retired token-validate shortcut that earlier versions used.
 
 - The login page shows a **"Sign in with DoneIsBetter"** option.
-- `/api/auth/sso/login` redirects the user into the SSO provider.
-- `/api/auth/sso/callback` validates the returned token against `SSO_BASE_URL/api/validate`, looks the user up **by email**, and — on a match — issues the same `admin-session` cookie plus an `auth-source=sso` marker, then returns the user to `/admin` (or to another safe path that starts with `/admin`).
+- `/api/auth/sso/login` redirects the user to `SSO_BASE_URL/api/oauth/authorize` with
+  `response_type=code` and scopes `openid profile email`.
+- `/api/auth/sso/callback` exchanges the returned code for tokens at
+  `SSO_BASE_URL/api/oauth/token` (`grant_type=authorization_code`), then reads the
+  user's role and access from SSO's **central per-app permission store**
+  (`GET /api/users/{userId}/apps/{clientId}/permissions`).
 
-**SSO does not create accounts.** The email returned by the identity provider must already exist in the `users` collection; if it does not, the callback redirects to the login page with a `no_account` error. Provision the user in messmass first, then let them sign in through SSO.
+**SSO auto-provisions accounts.** The account does *not* need to pre-exist in the
+`users` collection. The callback resolves the local user by linked SSO id, then by
+email, and if neither exists it **creates the user on the fly**, with the role mapped
+from the SSO permission. The local `users` row is a cache; the SSO permission store is
+the source of truth for who may sign in and at what role.
 
-When SSO is configured, dashboard routes are held to a higher bar: `/admin/dashboard` (and the extended `/dashboard` analytics routes) require an SSO-backed session, while other admin routes still accept a local session as a fallback.
+**Access is gated on the SSO permission, and denial is `no_access`.** A user is admitted
+only when the permission store returns `hasAccess` with `status: approved`. A user who
+authenticates successfully but has no approved permission for this app is redirected to
+the login page with an **`error=no_access`** — there is no `no_account` rejection any
+more, because messmass no longer decides access from a pre-seeded local table.
+
+When SSO is configured, dashboard routes are held to a higher bar: `/admin/dashboard`
+(and the extended `/dashboard` analytics routes) require the `auth-source=sso` marker,
+enforced in `middleware.ts`.
 
 The SSO sign-in flow, end to end:
 
 1. The user clicks "Sign in with DoneIsBetter" on `/admin/login`.
-2. `/api/auth/sso/login` redirects them into the SSO provider at `SSO_BASE_URL`.
-3. After they authenticate there, the provider redirects back to `/api/auth/sso/callback` with a token.
-4. The callback validates the token against `SSO_BASE_URL/api/validate` and reads the user's email.
-5. It looks the email up in the `users` collection. **No match → redirect to login with `no_account`.**
-6. On a match it issues the `admin-session` cookie plus `auth-source=sso` and returns the user to a safe `/admin` path.
+2. `/api/auth/sso/login` redirects them to `SSO_BASE_URL/api/oauth/authorize` (`response_type=code`).
+3. After they authenticate there, the provider redirects back to `/api/auth/sso/callback` with an authorization code.
+4. The callback exchanges the code for tokens at `SSO_BASE_URL/api/oauth/token`, then reads the user's permission (`hasAccess`, `status`, `role`) from the central permission store.
+5. **No approved access → redirect to login with `no_access`.**
+6. On approved access it resolves-or-creates the local user, mints the `admin-session` cookie (a signed JWT) plus the `auth-source=sso` marker, and returns the user to a safe `/admin` path.
 
 ### 5. Optional: use the public REST API
 
@@ -128,11 +152,11 @@ The same request with a `Cookie` header would be rejected with `COOKIES_NOT_ALLO
 | A client who should only view one report | Page password | Scoped to a single page, no account needed |
 | An external system reading data | API key (read scope) | Bearer token, no console access |
 | An integration writing stats back | API key (read + write scope) | Requires both API flags, deliberately granted |
-| An organisation standardising on its own login | SSO | Central identity, but accounts must exist in messmass first |
+| An organisation standardising on its own login | SSO | Central identity; access is granted per-app in DoneIsBetter and messmass auto-provisions the local account |
 
 ## Gotchas & good practice
 
-- **SSO requires pre-provisioned accounts.** The most common SSO surprise is a valid corporate login bouncing with `no_account`. Create the user in messmass (with the exact email) before they try SSO.
+- **SSO access is granted in the permission store, not by pre-seeding messmass.** A valid corporate login that bounces does so with `no_access`, meaning the account has no approved permission for this app in DoneIsBetter — grant it there (status `approved`, with a role), not by creating a row in messmass. messmass auto-creates the local account on first successful sign-in.
 - **The API is Bearer-only.** If an API call includes a `Cookie` header it is rejected outright. Integrations must authenticate purely with the Authorization header.
 - **Read and write are separate scopes.** Enabling API read does not enable write. Grant `apiWriteEnabled` deliberately, only to accounts that must push data.
 - **Passwords are credentials and API keys at once.** Because a user's password is also their API token, treat regeneration as a key rotation and update any integration that depends on it.
@@ -144,7 +168,7 @@ The same request with a `Cookie` header would be rejected with `COOKIES_NOT_ALLO
 
 | Symptom | Likely cause | What to do |
 |---------|--------------|------------|
-| SSO login bounces with `no_account` | The email is not in the `users` collection | Create the user in messmass with the exact email, then retry |
+| SSO login bounces with `no_access` | The account has no approved permission for this app in the DoneIsBetter permission store | Grant approved access (with a role) in DoneIsBetter, then retry — messmass auto-creates the local account |
 | Signed in but redirected away from `/admin/dashboard` | SSO configured but the session is local-only | Sign in through SSO; dashboards require an SSO-backed session |
 | Production deploy will not start | A required security flag is off | Set all four `ENABLE_*` flags to `true` and redeploy |
 | API call returns `COOKIES_NOT_ALLOWED` | The request sent a cookie | Use only the `Authorization: Bearer` header, no cookies |

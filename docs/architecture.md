@@ -4,7 +4,7 @@ Last Updated: 2026-06-25
 Canonical: No
 Owner: Architecture
 
-Version: 12.3.18
+Version: 12.3.19
 
 > This is a current-state architecture reference, not a changelog. For dated release
 > history use [`docs/operations/operations-release-notes.md`](operations/operations-release-notes.md).
@@ -863,7 +863,6 @@ A centralized configuration module lives at `lib/config.ts`. It provides a singl
   - API_BASE_URL
 - Client-exposed (browser):
   - NEXT_PUBLIC_APP_URL
-  - NEXT_PUBLIC_WS_URL
 
 ### Resolution order and precedence
 1) Environment variables (authoritative for secrets)
@@ -891,9 +890,8 @@ const apiBase = process.env.API_BASE_URL; // or expose via config.get('API_BASE_
 Client (browser code):
 ```ts path=null start=null
 // Only NEXT_PUBLIC_* keys are safe on the client
-declare const process: { env: { NEXT_PUBLIC_APP_URL?: string; NEXT_PUBLIC_WS_URL?: string } };
+declare const process: { env: { NEXT_PUBLIC_APP_URL?: string } };
 const appUrl = process.env.NEXT_PUBLIC_APP_URL;
-const wsUrl = process.env.NEXT_PUBLIC_WS_URL;
 ```
 
 ### Optional Atlas overlay (non-secrets only)
@@ -905,7 +903,7 @@ const wsUrl = process.env.NEXT_PUBLIC_WS_URL;
 ### Migration plan (Step 4)
 - Replace direct `process.env.*` usages with the config module
 - Remove baked defaults for secrets
-- Remove hard-coded service base URLs (replace with APP_BASE_URL, API_BASE_URL, SSO_BASE_URL, NEXT_PUBLIC_APP_URL, NEXT_PUBLIC_WS_URL)
+- Remove hard-coded service base URLs (replace with APP_BASE_URL, API_BASE_URL, SSO_BASE_URL, NEXT_PUBLIC_APP_URL)
 
 ---
 
@@ -1598,7 +1596,7 @@ Notifications are automatically created when:
    - Type: `project-edited`
    - Message: "✏️ Project updated: {eventName}"
 
-3. **Statistics Update** (Real-time via WebSocket or API)
+3. **Statistics Update** (via API)
    - Type: `stats-updated`
    - Message: "📈 Statistics updated for: {eventName}"
 
@@ -1657,7 +1655,7 @@ await fetch(`/api/notifications/mark-read?notificationId=${id}&action=archive`, 
 
 ### Future Enhancements
 
-- **WebSocket Integration**: Real-time push notifications without polling
+- **WebSocket Integration** — abandoned (built then removed in v12.2.0; live updates use REST + polling)
 - **Notification Preferences**: User-configurable notification types
 - **Digest Mode**: Daily/weekly notification summaries
 - **Notification History**: Separate view for archived notifications
@@ -4126,7 +4124,6 @@ For complete documentation, API reference, usage patterns, and technical decisio
 | **react-chartjs-2** | 5.3.0 | React wrapper for Chart.js |
 | **html2canvas** | 1.4.1 | PNG export for charts |
 | **jsPDF** | 3.0.1 | PDF generation for exports |
-| **WebSocket (ws)** | 8.18.3 | Real-time client-server communication |
 | **js-cookie** | 3.0.5 | Client-side cookie management |
 | **uuid** | 11.1.0 | Unique identifier generation |
 
@@ -4172,7 +4169,6 @@ For complete documentation, API reference, usage patterns, and technical decisio
 | Service | Purpose |
 |---------|----------|
 | **Vercel** | Next.js app hosting (automatic deployment from GitHub main) |
-| **Railway/Heroku** | WebSocket server hosting (separate Node.js process) |
 | **MongoDB Atlas** | Cloud database (free tier or paid) |
 | **Vercel Edge Network** | CDN for static assets and API routes |
 | **GitHub** | Source control and CI/CD trigger |
@@ -4182,7 +4178,6 @@ For complete documentation, API reference, usage patterns, and technical decisio
 # Required in .env.local and Vercel Environment Variables
 MONGODB_URI=mongodb+srv://...
 MONGODB_DB=messmass
-NEXT_PUBLIC_WS_URL=wss://websocket-server.com
 ADMIN_PASSWORD=secure_password
 
 # Optional (Bitly integration)
@@ -4245,9 +4240,11 @@ const editable = await findProjectByEditSlug(editSlug);
 | `aggregation_logs` | Background job tracking (v6.26.0) | startTime, status, jobType+startTime, createdAt (TTL) |
 | `system_settings` | System configuration (v6.26.0) | key |
 
-### Real-Time Architecture
+### Real-Time Architecture (Removed in v12.2.0)
 
-**WebSocket Server** (Separate Node.js Process):
+**Removed in v12.2.0.** The separate WebSocket real-time server was deleted (the `server/` directory, `hooks/useWebSocket.ts`, and the `ws`/`@types/ws` dependencies). Live data, badge, and notification updates now happen via REST + polling only. The subsystem below is retained for historical reference and is no longer part of the stack.
+
+**WebSocket Server** (Separate Node.js Process) — removed in v12.2.0:
 - **Location**: `server/websocket-server.js`
 - **Port**: 7654 (configurable)
 - **Protocol**: WebSocket (ws library)
@@ -4257,7 +4254,7 @@ const editable = await findProjectByEditSlug(editSlug);
   - Heartbeat mechanism (ping/pong)
   - Message types: join-project, stat-update, project-update
 
-**Client-Side Integration**:
+**Client-Side Integration** — removed in v12.2.0:
 - **Hook**: `hooks/useWebSocket.ts`
 - **Auto-Reconnect**: Yes, with exponential backoff
 - **Connection URL**: `NEXT_PUBLIC_WS_URL` environment variable
@@ -4645,5 +4642,5 @@ When working with the hashtag categories system:
 ---
 
 *Last Updated: 2025-10-19T11:58:43.000Z*
-*Version: 12.3.18*
+*Version: 12.3.19*
 *Status: Production-Ready — Enterprise Event Analytics Platform with Advanced Analytics Infrastructure*

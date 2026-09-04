@@ -1,11 +1,12 @@
 # {messmass} Authentication & Access Control System
 Status: Active
-Last Updated: 2026-09-03T00:00:00.000Z
+Last Updated: 2026-09-04T00:00:00.000Z
 Canonical: Yes
 Owner: Security
+Auth flow verified against code @ 62a47a0d (messmass#349)
 
-**Version:** 12.3.18
-**Last Updated:** 2026-09-03T00:00:00.000Z (UTC)
+**Version:** 12.3.19
+**Last Updated:** 2026-09-04T00:00:00.000Z (UTC)
 **Status:** Production
 **Maintainer:** Warp AI Development Team
 
@@ -17,10 +18,13 @@ Owner: Security
 
 ### Key Features
 
-✅ **Database-Backed Admin Authentication**
-- MongoDB-stored users with email/password credentials
-- HttpOnly session cookies (7-day expiration)
-- Role-based access control (admin, super-admin)
+✅ **SSO-Only Admin Authentication**
+- Interactive sign-in is exclusively DoneIsBetter SSO (OAuth2 authorization-code). The
+  legacy local email/password login at `POST /api/admin/login` is retired and returns
+  **410 Gone** — there are no MongoDB-stored passwords to authenticate against.
+- HttpOnly `admin-session` cookie (signed JWT, 7-day expiration)
+- Role-based access control (guest, user, admin, superadmin, api), sourced from the SSO
+  central per-app permission store
 - Session validation on every request
 
 ✅ **Page-Specific Password System**
@@ -41,8 +45,16 @@ Owner: Security
 - Edge and Node.js runtime compatibility
 - Graceful error handling and recovery
 
-✅ **DoneIsBetter SSO (optional, #46)**
-- When `SSO_BASE_URL` is set, the login page exposes `Sign in with DoneIsBetter`, `/api/auth/sso/login` redirects into the SSO provider, and `/api/auth/sso/callback` validates the token and sets `admin-session` + `auth-source=sso`.
+✅ **DoneIsBetter SSO (the only interactive sign-in, #46)**
+- Configured with `SSO_BASE_URL` + `SSO_CLIENT_ID` + `SSO_CLIENT_SECRET`. The login page
+  exposes `Sign in with DoneIsBetter`; `/api/auth/sso/login` redirects to
+  `SSO_BASE_URL/api/oauth/authorize` (`response_type=code`, scopes `openid profile email`);
+  `/api/auth/sso/callback` exchanges the code at `SSO_BASE_URL/api/oauth/token`, reads the
+  user's permission from the central per-app permission store, and sets `admin-session`
+  (signed JWT) + `auth-source=sso`. This is a full OAuth2 authorization-code exchange, not
+  the retired `/api/validate` token-validate shortcut.
+- Accounts are **auto-provisioned** on first successful sign-in; a user without approved
+  access is denied with `no_access` (there is no `no_account` rejection).
 - Successful SSO login returns the user to `/admin` by default, or to another safe `/admin...` path supplied as the redirect target.
 - Page-password and share URLs unchanged.
 
@@ -57,25 +69,23 @@ Owner: Security
 
 ### 1. Admin Login (Bypasses Page Passwords)
 
-```bash
-# POST /api/admin/login
-curl -X POST https://messmass.com/api/admin/login \
-  -H "Content-Type: application/json" \
-  -d '{"email":"admin@messmass.com","password":"your-password"}'
+Interactive sign-in is DoneIsBetter SSO only. There is no email/password endpoint to
+`curl` — `POST /api/admin/login` returns **410 Gone**. Sign in by visiting any `/admin`
+route while signed out; you are redirected into the SSO authorization-code flow:
+
+```
+GET /api/auth/sso/login
+  → 307 redirect to SSO_BASE_URL/api/oauth/authorize?response_type=code&client_id=...&scope=openid+profile+email
+  → user authenticates at DoneIsBetter
+  → 307 redirect back to /api/auth/sso/callback?code=...
+  → callback exchanges the code at SSO_BASE_URL/api/oauth/token, checks the app permission,
+    and (on approved access) sets the admin-session cookie
 ```
 
-Response:
-```json
-{
-  "success": true,
-  "token": "eyJ0b2tlbiI6IjEyMzQ1...",
-  "message": "Login successful"
-}
-```
-
-- HttpOnly cookie `admin-session` issued automatically
+- HttpOnly cookie `admin-session` (signed JWT) issued by the SSO callback
 - Cookie valid for 7 days
 - Admin session bypasses all page password requirements
+- Denied (no approved permission for this app) → redirect to `/admin/login?error=no_access`
 
 ### 2. Generate Page Password (For Employees)
 
@@ -301,78 +311,55 @@ export default function PasswordGate({
 
 ## Admin Authentication
 
-### Login Endpoint: `POST /api/admin/login`
+### Login: retired local endpoint + the real SSO callback
 
-**Implementation:** `app/api/admin/login/route.ts`
+**`POST /api/admin/login` is retired (410 Gone).** `app/api/admin/login/route.ts`'s POST
+handler returns `410` with `{ error: 'Local login has been removed. Sign in with
+DoneIsBetter instead.', ssoLoginUrl: '/api/auth/sso/login' }`. There is no
+email/password verification, no local password store, and no `crypto.randomBytes` session
+token. The only live method on that route is `DELETE` (logout).
 
-**Runtime:** Node.js (required for `crypto.randomBytes()`)
+**The real interactive login is the SSO callback.**
 
-**Request:**
-```json
-{
-  "email": "admin@messmass.com",
-  "password": "a1b2c3d4e5f6789012345678901234ab"
-}
-```
+**Implementation:** `app/api/auth/sso/login/route.ts` (redirect out) and
+`app/api/auth/sso/callback/route.ts` (code exchange + session mint); OAuth client in
+`lib/auth/ssoOAuth.ts`; permission read in `lib/auth/ssoPermissions.ts`; session mint in
+`lib/auth/mintSession.ts`.
 
-**Response (Success):**
-```json
-{
-  "success": true,
-  "token": "eyJ0b2tlbiI6IjEyMzQ1Njc4OTAuLi4ifQ==",
-  "message": "Login successful"
-}
-```
+**Flow:**
+1. `GET /api/auth/sso/login` → 307 to `SSO_BASE_URL/api/oauth/authorize`
+   (`response_type=code`, scopes `openid profile email`; confidential client sends no PKCE
+   challenge, public client uses PKCE S256).
+2. `GET /api/auth/sso/callback?code=...` exchanges the code at
+   `SSO_BASE_URL/api/oauth/token` (`grant_type=authorization_code`) for access/refresh/id
+   tokens.
+3. Reads the caller's role + access from the central per-app permission store
+   (`GET /api/users/{userId}/apps/{clientId}/permissions` → `{ hasAccess, status, role }`).
+4. Approved (`hasAccess && status === 'approved'`) → resolve-or-**create** the local user
+   (`lib/auth/mintSession.ts`), mint the session, set cookies. Denied → redirect with
+   `error=no_access`.
 
-**Response (Failure):**
-```json
-{
-  "error": "Invalid credentials"
-}
-```
-
-**Key Features:**
-- Email normalization (converts to lowercase)
-- Alias support: `"admin"` → `"admin@messmass.com"`
-- Brute-force protection (800ms delay on failed attempts)
-- Cookie deletion before setting new cookie (prevents stale sessions)
-- Domain-aware cookies (`.messmass.com` in production for apex + www)
-- CORS support (echoes origin for cross-origin admin consoles)
-
-**Cookie Properties:**
+**Cookies set by the callback:**
 ```typescript
-{
-  httpOnly: true,           // Prevents JavaScript access (XSS protection)
-  secure: true,             // HTTPS-only in production
-  sameSite: 'lax',          // CSRF protection while allowing navigation
-  maxAge: 604800,           // 7 days (604800 seconds)
-  path: '/',                // Available to all routes
-  domain: '.messmass.com'   // Works on apex and www (production only)
-}
+// admin-session — the session JWT
+{ httpOnly: true, secure: true /* prod */, sameSite: 'lax', maxAge: 604800 /* 7d */,
+  path: '/', domain: '.messmass.com' /* prod; host-only otherwise */ }
+// auth-source=sso — readable by client + checked by middleware for dashboard routes (NOT httpOnly)
+// sso-tokens — HttpOnly, host-only; holds the SSO tokens for logout revocation
 ```
 
-**Session Token Structure:**
+**Session token structure (JWT, HS256):**
 ```typescript
+// Signed with JWT_SECRET (>=32 chars, required in production). The old unsigned
+// base64-JSON token was REMOVED, not just disabled, because it was forgeable (audit F-002).
 {
-  token: string,            // 32-byte random hex (cryptographically secure)
-  expiresAt: string,        // ISO 8601 timestamp (7 days from now)
-  userId: string,           // MongoDB ObjectId as string
-  role: 'admin' | 'super-admin'
+  userId: string,   // MongoDB ObjectId as string
+  role: 'guest' | 'user' | 'admin' | 'superadmin' | 'api',
+  // standard JWT claims: iat, exp (7 days)
 }
 ```
-
-**Encoding Process:**
-```typescript
-const tokenData = {
-  token: crypto.randomBytes(32).toString('hex'),
-  expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
-  userId: user._id.toString(),
-  role: user.role
-}
-
-const signedToken = Buffer.from(JSON.stringify(tokenData)).toString('base64')
-// Result: "eyJ0b2tlbiI6IjEyMzQ1Njc4OTAuLi4ifQ=="
-```
+`lib/sessionTokens.ts` (`generateSessionToken` / `validateSessionToken`) issues and
+verifies these with `jsonwebtoken` HS256.
 
 ### Session Validation: `getAdminUser()`
 
@@ -380,11 +367,11 @@ const signedToken = Buffer.from(JSON.stringify(tokenData)).toString('base64')
 
 **Process:**
 1. Read `admin-session` cookie from request
-2. Base64 decode → JSON parse
-3. Validate token structure (required fields present)
-4. Check expiration timestamp (reject if expired)
-5. Query MongoDB for user by `userId`
-6. Return sanitized `AdminUser` object
+2. Verify the JWT signature with `JWT_SECRET` (HS256) via `validateSessionToken` — a
+   tampered or unsigned token is rejected here
+3. Check expiration (`exp`); reject if expired
+4. Query MongoDB for the user by `userId`
+5. Return sanitized `AdminUser` object (or `null`)
 
 **Response Types:**
 
@@ -777,8 +764,9 @@ const allowedOrigins = [
   'https://messmass.com',
   'https://www.messmass.com',
   'https://admin.messmass.com',
-  'http://localhost:3000',    // Development
-  'http://localhost:7654'     // WebSocket server
+  'http://localhost:3000'      // Development
+  // (the former localhost:7654 WebSocket-server origin was removed with the
+  //  WebSocket stack in v12.2.0 — see lib/cors.ts for the current list)
 ]
 ```
 

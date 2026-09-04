@@ -67,7 +67,7 @@ The project maintains a **strict, minimal tech stack**. No deviations are allowe
 - Use long-term supported (LTS) versions only.
 - Dependencies must be security-audited (0 known vulnerabilities where feasible).
 - Dependencies must have no post-install warnings.
-- Stack must fit the approved architecture: Next.js App Router, Vercel, MongoDB, Tailwind, Mongoose, Socket.io (or as documented in `docs/architecture.md`).
+- Stack must fit the approved architecture: Next.js App Router, Vercel, MongoDB, Tailwind, Mongoose (or as documented in `docs/architecture.md`).
 
 **Prohibited:**
 

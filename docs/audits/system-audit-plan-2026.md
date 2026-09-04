@@ -9,7 +9,7 @@
 #### **Phase 1: Preparation & Scope Definition (1-2 Days)**
 
 1.  **Form Audit Team**: Identify key stakeholders from Architecture (Chappie), Development (Tribeca), and Product (Sultan) to oversee the audit.
-2.  **Define Specific Audit Goals**: While the overall goal is broad, each iteration or section of the audit may have specific targets (e.g., "Deep dive into WebSocket server security," "Performance bottlenecks in chart rendering").
+2.  **Define Specific Audit Goals**: While the overall goal is broad, each iteration or section of the audit may have specific targets (e.g., "Performance bottlenecks in chart rendering"). *(The "WebSocket server security" target is obsolete — the WebSocket/real-time server was removed in v12.2.0; live updates are REST/polling.)*
 3.  **Tooling & Environment Setup**:
     *   Ensure all static analysis tools (ESLint, TypeScript compiler, `npm audit`) are configured to the strictest project standards.
     *   Prepare performance monitoring tools (e.g., custom scripts, browser dev tools, MongoDB Atlas monitoring).
@@ -48,7 +48,7 @@ Prioritize investigation based on Phase 2 findings and historical problem areas.
 1.  **Architecture & Design Review**:
     *   **Layout Grammar Compliance**: Manually verify critical UI components and reports strictly adhere to "No Scrolling, No Truncation, No Clipping." Identify any violations and their root causes.
     *   **Module Coupling & Cohesion**: Evaluate module dependencies, looking for high coupling or low cohesion, especially in core logic (e.g., `lib/chartCalculator.ts`, `lib/formulaEngine.ts`).
-    *   **Scalability Review**: Assess the architecture's ability to handle increased load, focusing on the WebSocket server, database sharding strategies (if applicable), and API gateway patterns.
+    *   **Scalability Review**: Assess the architecture's ability to handle increased load, focusing on database sharding strategies (if applicable) and API gateway patterns. *(The former "WebSocket server" focus is obsolete — that subsystem was removed in v12.2.0; live updates are REST/polling.)*
     *   **Configuration vs. Code**: Examine how much behavior is driven by database configuration (templates, variables, charts) versus hardcoded logic, validating the flexibility and maintainability.
 2.  **Code Quality & Standards Adherence**:
     *   **Critical Modules Code Review**: Conduct peer reviews on high-complexity or high-churn modules. Focus on readability, adherence to project coding standards (camelCase, design tokens), and idiomatic TypeScript.
@@ -89,7 +89,7 @@ Prioritize investigation based on Phase 2 findings and historical problem areas.
 This phase directly generates the "fresh action plan" for strengthening the foundation and addressing weaknesses.
 
 1.  **Remediation Plan Development**: For each prioritized issue from Phase 4, define concrete, actionable steps to resolve it, adhering to the "Minimal fixes at correct boundary" principle.
-    *   **"Foundation Stronger"**: Architectural refactorings, hardening of core services (e.g., WebSocket stability, API resilience), improving CI/CD processes.
+    *   **"Foundation Stronger"**: Architectural refactorings, hardening of core services (e.g., API resilience, session/auth hardening), improving CI/CD processes.
     *   **"Code Flops to Face"**: Refactoring complex/brittle code, reducing technical debt, standardizing patterns.
     *   **"Errors and Weaknesses to Fix"**: Implementing missing validation, patching security vulnerabilities, optimizing performance bottlenecks, improving error handling.
 2.  **Assign Ownership**: Designate clear owners (individuals or teams) for each remediation task.

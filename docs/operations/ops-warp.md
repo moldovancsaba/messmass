@@ -87,9 +87,6 @@ git push https://${GITHUB_TOKEN}@github.com/moldovancsaba/messmass.git main
 # Main application development
 npm run dev              # Start Next.js app on :3000
 
-# WebSocket server (separate terminal)
-cd server && npm start   # WebSocket server on :7654
-
 # Production build and validation
 npm run build           # Build for production
 npm run type-check      # TypeScript validation
@@ -281,26 +278,22 @@ npm run lint
 
 ## 🏭️ System Architecture
 
-**{messmass}** is a real-time collaborative event statistics dashboard with:
+**{messmass}** is an event statistics dashboard (live updates via REST + polling) with:
 
 ### Frontend Architecture
 - **Next.js 15.5.9** with App Router (`/app` directory)
 - **TypeScript 5.6.3** with strict mode for type safety
-- **React 18** with real-time WebSocket integration
+- **React 18** with REST + polling for live updates
 - **CSS Modules** with project-wide CSS variables (see `app/styles/theme.css`) for styling
 - **Component-based architecture** with unified hashtag system
 
 ### Backend Architecture
 - **MongoDB Atlas** for data persistence
-- **Standalone WebSocket server** (Node.js) for real-time collaboration
 - **Next.js API routes** for REST operations (`/app/api`)
 - **Session-based authentication** with HTTP-only cookies
 
-### Real-Time System
-- **WebSocket server**: `server/websocket-server.js` (port 7654)
-- **Project-based rooms** for isolated collaboration
-- **Automatic reconnection** with exponential backoff
-- **Message types**: `join-project`, `stat-update`, `project-update`, `heartbeat`
+### Real-Time System (Removed in v12.2.0)
+The standalone WebSocket server (`server/websocket-server.js`, port 7654) was removed in v12.2.0. Live data/badge/notification updates now happen via REST + polling only.
 
 ## 📁 Key Directory Structure
 
@@ -318,7 +311,6 @@ messmass/
 │   ├── auth.ts           # Authentication logic
 │   └── hashtagCategoryUtils.ts
 ├── hooks/                 # Custom React hooks
-├── server/               # WebSocket server (separate service)
 ├── contexts/             # React contexts
 ├── public/               # Static assets
 └── scripts/              # Database migration scripts
@@ -366,7 +358,7 @@ The project features a **completely unified hashtag system** with consistent com
 ### Timestamp Format (Mandatory)
 **All timestamps MUST use:** `YYYY-MM-DDTHH:MM:SS.sssZ`
 - Database records (`createdAt`, `updatedAt`)
-- WebSocket messages and logs
+- Application logs
 - Documentation timestamps
 
 ### Reuse Before Creation Rule
@@ -996,22 +988,16 @@ imagesToRestore.forEach(({ parent, img, placeholder }) => {
 ### Development
 ```bash
 npm run dev               # Next.js on :5000
-cd server && npm start    # WebSocket on :7654
 ```
 
 ### Production
 - **Next.js app**: Deploy to Vercel
-- **WebSocket server**: Deploy separately (Railway, Heroku, etc.)
-- **Environment variables**: Set `NEXT_PUBLIC_WS_URL` to production WebSocket URL
 
 ### Required Environment Variables
 ```bash
 # Database
 MONGODB_URI=mongodb+srv://...
 MONGODB_DB=messmass
-
-# WebSocket (Real-time collaboration)
-NEXT_PUBLIC_WS_URL=wss://your-websocket-server.com
 
 # Authentication
 ADMIN_PASSWORD=your_secure_password
@@ -1095,11 +1081,8 @@ For detailed information, see:
 3. **Maintain** timestamp consistency with ISO 8601 format (with milliseconds)
 4. **Update** both traditional and categorized hashtag fields when relevant
 
-### Real-Time Features
-1. **Extend** existing WebSocket message types in `server/websocket-server.js`
-2. **Follow** project-room pattern for isolation
-3. **Implement** optimistic updates with server validation
-4. **Handle** reconnection and error scenarios
+### Real-Time Features (Removed in v12.2.0)
+The WebSocket server (`server/websocket-server.js`) was removed in v12.2.0. Live data/badge/notification updates now happen via REST + polling only.
 
 ---
 
@@ -1118,7 +1101,7 @@ For detailed information, see:
 
 ### Implementation
 - **Backend**: `lib/notificationUtils.ts` with MongoDB time-window query
-- **Frontend**: `components/NotificationPanel.tsx` with real-time updates
+- **Frontend**: `components/NotificationPanel.tsx` with polling-based updates
 - **Database**: `notifications` collection with `readBy` and `archivedBy` arrays
 
 ---
@@ -1381,4 +1364,4 @@ const value = stats[statsKey]; // Get current value
 
 ---
 
-*Version: 12.3.18 | Last Updated: 2026-06-26T10:00:00.000Z (UTC) | Status: Production*
+*Version: 12.3.19 | Last Updated: 2026-06-26T10:00:00.000Z (UTC) | Status: Production*

@@ -1,8 +1,41 @@
 # {messmass} Release Notes
 Status: Active
-Last Updated: 2026-09-04T06:45:00.000Z
+Last Updated: 2026-09-04T11:30:00.000Z
 Canonical: No
 Owner: Operations
+
+## [v12.3.19] — 2026-09-04T11:30:00.000Z
+
+### Summary
+messmass#349 (fleet remediation, Wave 1 — doc integration truth). Docs-only:
+three load-bearing docs were teaching a system that no longer runs. Every
+claim was re-verified against code at 62a47a0d before rewriting.
+
+### Documentation
+- **Camera integration (`guides-tutorial-camera-app.md`)** claimed the link is
+  "one direction … the Camera app does not create partners back in messmass."
+  It is bidirectional: `POST /api/integrations/camera/partners` upserts
+  camera-native partners into messmass and `POST .../sso-session` mints a
+  messmass session — both under the shared `CAMERA_MESSMASS_INTERNAL_SECRET`,
+  which guards traffic **both** ways. Rewrote the direction model and the two
+  token/direction gotchas; messmass stays master only for org/event identity.
+- **Authentication (`guides-tutorial-authentication-sso.md`,
+  `features-authentication.md`, `api-reference.md`)** taught email/password
+  login at `POST /api/admin/login` (410 Gone) and a retired `/api/validate`
+  token-validate SSO flow that denied with `no_account`. Rewrote to the real
+  OAuth2 authorization-code flow (`/api/oauth/authorize` → `/api/oauth/token`),
+  the central per-app permission store, **auto-provisioning**, `no_access`
+  denial, and JWT-HS256 sessions (the forgeable base64 token was removed in
+  F-002). Removed the dead admin-login curl examples.
+- **WebSocket stack** was described as live across ~12 docs; it was fully
+  **deleted in v12.2.0** (c56e70af). Removed or relabelled "Removed in v12.2.0"
+  every live claim — start commands, port 7654, `NEXT_PUBLIC_WS_URL`, deploy
+  targets, the never-used "Socket.io" stack item, NotificationPanel's
+  "real-time"→polling, stale settings-inventory rows, and the roadmap item
+  (relabelled abandoned, not future).
+- `docs/_audit/drift-register.md` §1b and §2 flipped to FIXED with evidence;
+  §2's own stale "server/websocket-server.js exists" line corrected.
+- The three rewritten docs are stamped "verified against code @ 62a47a0d".
 
 ## [v12.3.18] — 2026-09-04T06:45:00.000Z
 

@@ -4,7 +4,7 @@ Last Updated: 2026-05-14T10:00:00.000Z
 Canonical: Yes
 Owner: Backend
 
-**Version:** 12.3.18
+**Version:** 12.3.19
 **Last Updated:** 2026-06-26T10:00:00.000Z (UTC)
 **Status:** Production
 
@@ -20,9 +20,12 @@ https://messmass.com/api
 
 ## Authentication
 
-All admin endpoints require session authentication via HTTP-only cookie.
+All admin endpoints require session authentication via the HTTP-only `admin-session`
+cookie. Interactive sign-in is **DoneIsBetter SSO only** (OAuth2 authorization-code).
 
-**Login**: `POST /api/admin/login`
+**Login**: `GET /api/auth/sso/login` (redirects into the SSO authorization-code flow;
+the callback `/api/auth/sso/callback` mints the session). The old
+`POST /api/admin/login` is retired and returns **410 Gone**.
 **Logout**: `DELETE /api/admin/login`
 
 **See**: [AUTHENTICATION.md](../features/features-authentication.md) for details

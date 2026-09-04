@@ -67,36 +67,47 @@ current state and is fully in scope)
   (:4647) — self-contradictory. No section at all on SSO, camera, the three
   auth layers, or CSRF/CORS/rate-limit (MISSING).
 
-## 1b. WRONG — guides and feature docs
-- **docs/guides/guides-tutorial-authentication-sso.md** (worst drift): teaches
-  email+password login at /admin/login (:17,33 — returns 410) and a
-  token-validate SSO flow that auto-provisions denial (:66-83 — all wrong; real
-  flow is OAuth2 auth-code + central permission store and DOES auto-provision;
-  `no_account` replaced by `no_access`).
-- **docs/features/features-authentication.md** (Canonical:Yes, v12.1.16): curl
-  POST /api/admin/login returning a token (:58-78 — 410); POST /api/page-passwords
-  with no auth (:80-101 — now requires requireSession, the leak it caused was
-  fixed); `pageType:"stats"` (:86 — not in allowlist, correct is event-report);
-  "dual-layer" (:16 — there are three layers).
-- **docs/guides/guides-tutorial-camera-app.md:22-24** "one direction, camera
-  does not create partners back in messmass" — WRONG; POST
-  /api/integrations/camera/partners inserts new partners (lib/cameraPartnerSync.ts:77).
-  Missing: the sso-session mint edge and camera being messmass's email transport.
+## 1b. ~~WRONG~~ FIXED (messmass#349, verified @ 62a47a0d) — guides and feature docs
+- ~~**docs/guides/guides-tutorial-authentication-sso.md**~~ FIXED: Section 4
+  rewritten to the real OAuth2 authorization-code flow (login → `/api/oauth/authorize`,
+  callback → `/api/oauth/token`, central per-app permission store), auto-provisioning,
+  and `no_access` (not `no_account`); the intro, gotcha, and troubleshooting
+  `no_account`/pre-provision references were corrected too.
+- ~~**docs/features/features-authentication.md**~~ FIXED: the Executive Summary
+  ("email/password", "dual-layer"→three layers), the Quick Start "Admin Login" curl
+  (was `POST /api/admin/login` → now the SSO flow, 410 noted), and the deep "Login
+  Endpoint" section (was email/password + forgeable base64 token → now the SSO callback
+  + JWT HS256, F-002) were all corrected. The page-password/pageType items were already
+  fixed in the F-009/#376 waves.
+- ~~**docs/guides/guides-tutorial-camera-app.md:22-24**~~ FIXED: the "one direction"
+  claim replaced with the verified bidirectional model — messmass→Camera provisioning
+  (org/partner/event) plus the two Camera→messmass inbound channels
+  (`POST /api/integrations/camera/partners` upsert, `POST .../sso-session` mint), the
+  shared-secret-guards-both-directions nuance, and the operator-backfill token
+  distinction. (The sso-session mint and camera-as-email-transport edges are now named.)
 - **docs/api/api-reference.md:22-25,287-297** — admin login POST + a whole
   "WebSocket API" section, both fictional.
 - **README.md**: v12.1.88 badge (:15); websocket start instructions (:68-73);
   NEXT_PUBLIC_WS_URL required (:87); "SSO optional, uses SSO_BASE_URL" (:100 —
   mandatory, needs client id+secret). No mention of camera/fanmass.
 
-## 2. The vestigial WebSocket system — every live doc still claiming it works
-server/websocket-server.js exists (251 lines, :7654) with ZERO client
-connections anywhere. Docs asserting it is live: README.md:30,33,68-73,87;
-AGENTS.md:65; docs/architecture.md:1601,1660,4129,4175,4185,4248-4263;
-docs/api/api-reference.md:287-297; docs/operations/ops-warp.md:90-91,289-321,999;
-docs/features/features-authentication.md:717; .env.example NEXT_PUBLIC_WS_URL;
-package.json:4,13 (description + keywords); and server/.env 3.local (a tracked
-.env pointing at a Railway URL). docs/operations/operations-roadmap.md:473 lists
-it as a FUTURE item — self-contradicting all the above.
+## 2. ~~The vestigial WebSocket system~~ REMOVED (code) + docs FIXED (messmass#349)
+**Code:** the WebSocket stack was not merely vestigial — it was fully DELETED in
+commit c56e70af (v12.2.0, 2026-08-20): `server/` (incl. `server/websocket-server.js`),
+`hooks/useWebSocket.ts`, and the `ws` + `@types/ws` deps are gone; nothing opens a
+socket; `NEXT_PUBLIC_WS_URL` is consumed nowhere. Live updates are REST + polling only.
+(This register's earlier "server/websocket-server.js exists (251 lines)" line was itself
+stale — the file no longer exists.)
+**Docs (FIXED @ 62a47a0d):** the live-server claims were removed or relabelled
+"removed in v12.2.0" across README.md, docs/architecture.md (tech-stack row, deploy
+target, `NEXT_PUBLIC_WS_URL`, the Real-Time Architecture block, the stat-update path),
+docs/operations/ops-warp.md (start command, headline, deploy), docs/DEVELOPER-CONDUCT.md
+(the never-used "Socket.io" stack item), docs/guides/guides-tutorial-getting-started.md
+(realtime-collaborators claim), docs/components/components-reusable-components-inventory.md
+(NotificationPanel = polling), docs/features/features-authentication.md (the
+localhost:7654 CORS origin), docs/audits/system-audit-plan-2026.md +
+docs/audits/settings-inventory.csv (obsolete scope/rows), and
+docs/operations/operations-roadmap.md (relabelled the item as abandoned, not future).
 
 ## 3. The docs:audit gate has a hole
 scripts/docs-consistency-audit.js:93,98 version-header regex matches
