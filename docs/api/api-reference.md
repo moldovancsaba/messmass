@@ -4,11 +4,13 @@ Last Updated: 2026-05-14T10:00:00.000Z
 Canonical: Yes
 Owner: Backend
 
-**Version:** 12.3.19
+**Version:** 12.3.20
 **Last Updated:** 2026-06-26T10:00:00.000Z (UTC)
 **Status:** Production
 
 Quick API reference for {messmass}. See detailed guides for complete schemas and examples.
+
+> **Complete coverage-measured reference:** for every endpoint under `app/api/` (all 290 method-endpoints) with its auth layer, request/response shape, and side effects, see [api-reference-complete.md](api-reference-complete.md) (messmass#350). This quick reference is the curated subset.
 
 ---
 

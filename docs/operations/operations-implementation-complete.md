@@ -4,7 +4,7 @@ Last Updated: 2026-02-06T13:13:16.000Z
 Canonical: Yes
 Owner: Operations
 
-**Version:** 12.3.19  
+**Version:** 12.3.20  
 **Created:** 2026-01-12T14:27:10.000Z  
 **Reference:** [docs/archive/_archive/audits/comprehensive-system-audit-plan-2026.md](docs/archive/_archive/audits/comprehensive-system-audit-plan-2026.md)
 

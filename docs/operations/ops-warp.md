@@ -1364,4 +1364,4 @@ const value = stats[statsKey]; // Get current value
 
 ---
 
-*Version: 12.3.19 | Last Updated: 2026-06-26T10:00:00.000Z (UTC) | Status: Production*
+*Version: 12.3.20 | Last Updated: 2026-06-26T10:00:00.000Z (UTC) | Status: Production*

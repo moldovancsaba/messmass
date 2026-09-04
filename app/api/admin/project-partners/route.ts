@@ -63,6 +63,13 @@ export async function GET() {
  * Body: { projectId: string, partner1Id: string | null, partner2Id: string | null }
  */
 export async function PUT(request: NextRequest) {
+  // SECURITY (messmass#350): admin-only mutation. This gap was invisible to the
+  // file-level mutation sweep because the GET above already imports/calls
+  // requireSession — the sweep saw the primitive in-file and passed the whole
+  // file while this PUT mutated project<->partner links unauthenticated.
+  const __denied = await requireSession();
+  if (__denied) return __denied;
+
   try {
     const body = await request.json();
     const { projectId, partner1Id, partner2Id } = body;

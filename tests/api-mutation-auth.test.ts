@@ -22,6 +22,7 @@ const AUTH_PRIMITIVES = [
   'requireFanmassIntegrationAuth',
   'requireSession',
   'requireProjectWrite',
+  'requirePartnerWrite',
   'requirePageAccess',
   'validateAnyPassword',
   'validateOrganizationAccess',
@@ -142,15 +143,25 @@ function handlerSource(source: string, method: string): string | null {
   return next === -1 ? rest : rest.slice(0, next);
 }
 
-// WHAT: The GET handler's body — or, when GET merely delegates
-//     (`return POST(request)`, the Vercel-cron pattern on /api/bitly/sync),
-//     the delegate's body, since that is where the auth actually lives.
+// WHAT: One handler's body — or, when it merely delegates to a sibling handler
+//     (`return POST(request)` on the Vercel-cron GET, `return PUT(...)` on a
+//     PATCH alias, `return GET(request)` on a cron POST), the delegate's body,
+//     since that is where the auth actually lives. Any method may delegate to
+//     any other, so delegation-following is symmetric (one hop is enough in
+//     this codebase). Used by both the read and mutation sweeps so a guarded
+//     delegate is not mistaken for an unguarded alias.
+const HTTP_METHODS = ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'] as const;
+function effectiveHandlerSource(source: string, method: string): string | null {
+  const own = handlerSource(source, method);
+  if (own === null) return null;
+  const delegation = own.match(/return\s+(GET|POST|PUT|PATCH|DELETE)\s*\(/);
+  if (delegation && delegation[1] !== method) {
+    return handlerSource(source, delegation[1]) ?? own;
+  }
+  return own;
+}
 function effectiveGetSource(source: string): string | null {
-  const getSource = handlerSource(source, 'GET');
-  if (getSource === null) return null;
-  const delegation = getSource.match(/return\s+(POST|PUT|PATCH|DELETE)\s*\(/);
-  if (delegation) return handlerSource(source, delegation[1]) ?? getSource;
-  return getSource;
+  return effectiveHandlerSource(source, 'GET');
 }
 
 function findRouteFiles(dir: string, out: string[] = []): string[] {
@@ -172,14 +183,23 @@ describe('API mutation routes require authentication', () => {
     expect(routes.length).toBeGreaterThan(100);
   });
 
-  it('every mutating route checks auth or is a listed exception', () => {
+  it('every mutating handler checks auth or is a listed exception', () => {
+    // Per-handler, not per-file: a file whose GET is guarded must not shield an
+    // unguarded POST/PUT/PATCH/DELETE in the same file. messmass#350 found
+    // PUT /api/admin/project-partners open this way — the file imports
+    // requireSession for its GET, so a file-level `source.includes` passed it
+    // while the PUT mutated project<->partner links unauthenticated.
     const offenders: string[] = [];
     for (const file of routes) {
       const source = fs.readFileSync(file, 'utf8');
-      const mutates = /export\s+async\s+function\s+(POST|PUT|PATCH|DELETE)/.test(source);
-      if (!mutates) continue;
-      const guarded = AUTH_PRIMITIVES.some((p) => source.includes(p));
-      if (!guarded && !KNOWN_UNGUARDED.has(rel(file))) offenders.push(rel(file));
+      if (KNOWN_UNGUARDED.has(rel(file))) continue;
+      for (const method of ['POST', 'PUT', 'PATCH', 'DELETE'] as const) {
+        const body = effectiveHandlerSource(source, method);
+        if (body === null) continue;
+        if (!AUTH_PRIMITIVES.some((p) => body.includes(p))) {
+          offenders.push(`${rel(file)} (${method})`);
+        }
+      }
     }
     expect(offenders).toEqual([]);
   });

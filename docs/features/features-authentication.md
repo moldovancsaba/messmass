@@ -5,7 +5,7 @@ Canonical: Yes
 Owner: Security
 Auth flow verified against code @ 62a47a0d (messmass#349)
 
-**Version:** 12.3.19
+**Version:** 12.3.20
 **Last Updated:** 2026-09-04T00:00:00.000Z (UTC)
 **Status:** Production
 **Maintainer:** Warp AI Development Team

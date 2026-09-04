@@ -1,8 +1,43 @@
 # {messmass} Release Notes
 Status: Active
-Last Updated: 2026-09-04T11:30:00.000Z
+Last Updated: 2026-09-04T13:00:00.000Z
 Canonical: No
 Owner: Operations
+
+## [v12.3.20] — 2026-09-04T13:00:00.000Z
+
+### Summary
+messmass#350 (fleet remediation, Wave 1 — API reference). Produced a complete,
+coverage-measured per-endpoint reference for all 290 method-endpoints under
+`app/api/`, each derived by reading its handler. The build surfaced — and this
+release closes — two real auth gaps and hardens the sweep that missed them.
+
+### Security
+- **`PUT /api/admin/project-partners` was unguarded.** It mutates a project's
+  partner1/partner2 links but had no auth check — invisible to the mutation
+  test because the file's `GET` already imported `requireSession`, so the
+  *file-level* sweep passed the whole file. Added `requireSession()`.
+- **`content-assets` write routes used a forgeable presence check.** `POST`/`PUT`/
+  `DELETE /api/content-assets` gated on a local `hasAdminSession()` that only
+  tested whether an `admin-session` cookie was *present*
+  (`Boolean(cookies.get(...))`) — any caller sending `Cookie: admin-session=x`
+  passed. Replaced with `requireSession()` (validates the JWT). `GET` stays open
+  for `lib/formulaEngine`'s report rendering.
+- **The mutation-auth sweep is now per-handler.** `tests/api-mutation-auth.test.ts`
+  judged each file as a whole, so a guarded `GET` shielded an unguarded
+  `POST`/`PUT`/`PATCH`/`DELETE` in the same file. It now checks each handler's own
+  body (following `return OTHER(request)` delegation), matching the read-sweep fix
+  from #386, so this class of gap cannot recur. Added `requirePartnerWrite` to the
+  recognized auth primitives.
+
+### Documentation
+- New `docs/api/api-reference-complete.md`: 290 endpoints across 51 route groups,
+  each with auth layer (admin-session / page-password / machine-token /
+  cron-secret / org-scoped / public-by-design), request/response shape, and side
+  effects (DB writes + external calls). Coverage table, an auth-gaps section (9
+  remaining, all frozen `KNOWN_UNGUARDED*` debt with the reasons), and a
+  deprecation-candidates list (the two 410 SSO stubs) feeding Wave 2. The curated
+  `docs/api/api-reference.md` now links to it.
 
 ## [v12.3.19] — 2026-09-04T11:30:00.000Z
 

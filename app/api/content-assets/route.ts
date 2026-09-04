@@ -8,6 +8,7 @@ import { ObjectId } from 'mongodb';
 import clientPromise from '@/lib/mongodb';
 import config from '@/lib/config';
 import { getAdminUser } from '@/lib/auth';
+import { requireSession } from '@/lib/apiGuards';
 import {
   type ContentAsset,
   type ContentAssetQuery,
@@ -20,20 +21,16 @@ import {
 const MONGODB_DB = config.dbName;
 
 /**
- * WHAT: Admin-session gate for content-asset writes.
- * WHY: POST/PUT/DELETE mutate the content_assets collection and must not be
- *      callable unauthenticated. Mirrors app/api/hashtag-categories/route.ts.
- *      GET stays public because lib/formulaEngine.ts reads assets when rendering
- *      public reports.
+ * WHAT: Admin-session gate for content-asset writes (POST/PUT/DELETE).
+ * WHY: These mutate the content_assets collection and must not be callable
+ *      unauthenticated. GET stays public because lib/formulaEngine.ts reads
+ *      assets when rendering reports (including for anonymous report viewers).
+ * SECURITY (messmass#350): the writes now use requireSession(), which validates
+ *      the admin-session JWT. The former local hasAdminSession() only checked the
+ *      cookie's PRESENCE (`Boolean(cookies.get('admin-session'))`), so any caller
+ *      sending `Cookie: admin-session=anything` passed it — a forgeable,
+ *      presence-only gate, not authentication.
  */
-function hasAdminSession(request: NextRequest): boolean {
-  return Boolean(request.cookies.get('admin-session'));
-}
-
-const UNAUTHORIZED = NextResponse.json(
-  { success: false, error: 'Unauthorized' } as ContentAssetResponse,
-  { status: 401 }
-);
 
 /**
  * GET /api/content-assets
@@ -146,7 +143,8 @@ export async function GET(request: NextRequest) {
  */
 export async function POST(request: NextRequest) {
   try {
-    if (!hasAdminSession(request)) return UNAUTHORIZED;
+    const __denied = await requireSession();
+    if (__denied) return __denied;
     const body: ContentAssetFormData = await request.json();
     
     // WHAT: Validate required fields
@@ -288,7 +286,8 @@ export async function POST(request: NextRequest) {
  */
 export async function PUT(request: NextRequest) {
   try {
-    if (!hasAdminSession(request)) return UNAUTHORIZED;
+    const __denied = await requireSession();
+    if (__denied) return __denied;
     const body: ContentAssetFormData = await request.json();
     
     // WHAT: Identify asset by _id or slug
@@ -413,7 +412,8 @@ export async function PUT(request: NextRequest) {
  */
 export async function DELETE(request: NextRequest) {
   try {
-    if (!hasAdminSession(request)) return UNAUTHORIZED;
+    const __denied = await requireSession();
+    if (__denied) return __denied;
     const { searchParams } = new URL(request.url);
     const id = searchParams.get('id');
     const slug = searchParams.get('slug');
