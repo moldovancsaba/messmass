@@ -51,6 +51,7 @@ const APPROVED_RUNTIME_DEPS = new Set([
   'typescript',
   'uuid',
   'mongoose', // OPS-V3: Required for V3 time-series engine and multi-tenant reporting.
+  '@vercel/blob', // Primary image storage since 323cf3aa/v12.3.11 (lib/imgbbApi.ts, app/api/blob-upload-token); the dep landed without this entry, which left main's CI red until v12.3.17.
   // Add other approved deps as needed
 ]);
 

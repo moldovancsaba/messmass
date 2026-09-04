@@ -4,6 +4,45 @@ Last Updated: 2026-09-03T00:00:00.000Z
 Canonical: No
 Owner: Operations
 
+## [v12.3.17] — 2026-09-03T20:30:00.000Z
+
+### Summary
+Wave 0 security delivery for messmass#348 (fleet remediation program). The
+cron/mutation-auth findings from the 2026-08-19 audit were mostly closed by
+the messmass#347 wave already; this release closes what actually remained:
+two fail-open cron auth variants, the Bitly sync cron that never ran, and
+the read-route blind spot in the auth regression test.
+
+### Security
+- `/api/bitly/sync` compared the Authorization header against a bare
+  `` `Bearer ${process.env.CRON_SECRET}` ``, so with `CRON_SECRET` unset
+  the literal string `Bearer undefined` authenticated an anonymous caller
+  into a full Bitly sync. It now fails closed (unset secret ⇒ admin
+  session required).
+- `/api/cron/bitly-refresh` skipped authentication entirely when
+  `CRON_SECRET` was unset (`if (cronSecret && …)`); it now returns 401
+  unless the exact secret is presented, regardless of configuration.
+- `tests/security/cron-auth.test.ts` pins both fail-closed behaviors.
+- `tests/api-mutation-auth.test.ts` now also sweeps GET handlers: every
+  read route without an auth primitive must be listed in
+  `KNOWN_UNGUARDED_READS`, so a new anonymous analytics/PII read fails CI
+  instead of shipping silently (the audit's read-route blind spot).
+
+### Fixed
+- The scheduled Bitly sync has never executed once: `vercel.json` schedules
+  `GET /api/bitly/sync` (Vercel crons issue GET) but the route only exported
+  POST, so every 03:00 UTC run 405'd. A GET handler now delegates to the
+  same handler and auth. Note: with `CRON_SECRET` unset in production the
+  cron now 401s by design — set it (see `.env.example`).
+
+### Documentation
+- `docs/_audit/drift-register.md` §0 updated: three of four escalated
+  behavior findings marked resolved with evidence; the stale-SSO
+  `admin/{projects,users}` bullet remains open (fail-closed brokenness,
+  not exposure).
+- `.env.example` now states `CRON_SECRET` is required in production and
+  that cron routes fail closed without it.
+
 ## [v12.3.16] — 2026-09-03T00:00:00.000Z
 
 ### Summary

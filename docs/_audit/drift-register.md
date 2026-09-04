@@ -7,19 +7,24 @@ This file is intentionally header-less so the docs:audit version gate does
 not bind it to a version it is not about.
 
 ## 0. Behavior findings escalated out of the docs audit (see messmass#347)
-- **Cron auth bypass**: app/api/cron/analytics-aggregation/route.ts:51 uses
-  `process.env.CRON_SECRET || 'development_secret'` — any caller passing
-  `Bearer development_secret` authenticates when CRON_SECRET is unset.
-- **Unauthenticated mutating routes**: the 8 `/api/partners/[id]/google-sheet/*`
-  routes (connect/push/pull/provision/…) and `POST /api/admin/hashtag-style`
-  have no auth primitive. `tests/api-mutation-auth.test.ts` freezes a
-  `KNOWN_UNGUARDED` set (~31 mutating routes labelled [public]/[debt]) and only
-  fails CI on NEW unguarded mutating routes — read-only anonymous analytics/
-  executive/report routes are not covered at all.
-- **Bitly cron never fires**: vercel.json:3-6 schedules `/api/bitly/sync` but
-  the route exports POST only (route.ts:174) and Vercel crons issue GET → 405.
-- Four `/api/admin/{permissions,projects,projects/[id],users}` routes still
-  authenticate against the retired `{SSO_BASE_URL}/api/validate` (lib/ssoClient.ts).
+**RESOLVED via messmass#347 + messmass#348 (2026-09-03)** except the last bullet:
+- ~~**Cron auth bypass**~~ FIXED: the `'development_secret'` fallback is gone
+  (analytics-aggregation fails closed, route.ts:51-58). messmass#348 also
+  closed the two remaining fail-open variants: `/api/bitly/sync` compared
+  against a bare `` `Bearer ${process.env.CRON_SECRET}` `` (so `Bearer
+  undefined` authenticated when the secret was unset) and
+  `/api/cron/bitly-refresh` skipped auth entirely when the secret was unset.
+- ~~**Unauthenticated mutating routes**~~ FIXED: all 8
+  `/api/partners/[id]/google-sheet/*` routes and `POST /api/admin/hashtag-style`
+  call `requireSession()`. `tests/api-mutation-auth.test.ts` now also covers
+  read routes: every GET without an auth primitive must appear in
+  `KNOWN_UNGUARDED_READS`, so a new anonymous analytics/PII read fails CI.
+- ~~**Bitly cron never fires**~~ FIXED: `/api/bitly/sync` exports a GET that
+  delegates to POST, so the 03:00 UTC Vercel cron (GET) now executes with the
+  same auth (cron secret or admin session).
+- Two `/api/admin/{projects,users}` routes still authenticate against the
+  retired `{SSO_BASE_URL}/api/validate` (lib/ssoClient.ts) — fail-closed
+  brokenness, not exposure; the other two of the original four are fixed.
 
 ## 1. WRONG — docs/architecture.md architectural claims (4649 lines; the
 changelog was extracted to docs/archive on 2026-08-17, so the body claims

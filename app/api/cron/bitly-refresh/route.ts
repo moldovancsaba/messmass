@@ -45,12 +45,14 @@ export async function GET(request: NextRequest) {
   try {
     console.log(`[Bitly Cron] Starting daily metric refresh at ${timestamp}`);
 
-    // Optional: Verify cron authorization
+    // Verify cron authorization
     // WHY: Prevent unauthorized external calls to this endpoint
+    // SECURITY (messmass#348): fail CLOSED. The old `cronSecret && ...` guard
+    //     meant an unset CRON_SECRET left this route open to anyone.
     const authHeader = request.headers.get('authorization');
     const cronSecret = process.env.CRON_SECRET;
 
-    if (cronSecret && authHeader !== `Bearer ${cronSecret}`) {
+    if (!cronSecret || authHeader !== `Bearer ${cronSecret}`) {
       console.error('[Bitly Cron] Unauthorized request - invalid or missing auth token');
       return NextResponse.json(
         {

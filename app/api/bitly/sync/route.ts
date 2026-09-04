@@ -178,8 +178,11 @@ export async function POST(request: NextRequest) {
   try {
     // WHAT: Check if request is from Vercel cron
     // WHY: Cron requests have special authentication via headers
+    // SECURITY (messmass#348): fail CLOSED when CRON_SECRET is unset. The bare
+    //     template comparison made `Bearer undefined` a valid credential.
     const authHeader = request.headers.get('authorization');
-    const isCron = authHeader === `Bearer ${process.env.CRON_SECRET}`;
+    const cronSecret = process.env.CRON_SECRET;
+    const isCron = !!cronSecret && authHeader === `Bearer ${cronSecret}`;
 
     // WHAT: Verify admin authentication for manual triggers
     // WHY: Only admins can manually trigger sync
@@ -341,4 +344,17 @@ export async function POST(request: NextRequest) {
       { status: 500 }
     );
   }
+}
+
+/**
+ * GET /api/bitly/sync
+ *
+ * WHAT: Cron entry point for the daily sync.
+ * WHY: vercel.json has scheduled this path since the cron was added, but Vercel
+ *     Cron issues GET and only POST existed — every 03:00 run 405'd, so the
+ *     scheduled sync never executed once (messmass#348). Same auth as POST:
+ *     cron secret or admin session; the body parse tolerates a body-less GET.
+ */
+export async function GET(request: NextRequest) {
+  return POST(request);
 }
