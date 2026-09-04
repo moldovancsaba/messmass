@@ -1,3 +1,24 @@
+// lib/sponsorshipHub.ts
+// WHAT: The read model behind the Sponsorship Hub — a single server-side query
+//     layer that computes unified sponsorship performance for one of four
+//     scopes (portfolio | partner | organization | project) over a chosen date
+//     range (all | 30d | 90d | 365d). `getSponsorshipHubData()` is the only
+//     entry point; everything else in this file is the types it returns and the
+//     private helpers that build them (trend series, breakdown rows, top
+//     projects/partners, per-scope drilldowns, and the activation
+//     proof/recap/queue workspace).
+// WHY: The three sponsorship admin surfaces (app/admin/analytics/sponsorship,
+//     .../activation, .../activation/recap/[partnerId]) and the
+//     /api/analytics/sponsorship-hub route must all present the *same* numbers
+//     from the *same* scope/range rules. Centralising the aggregation here keeps
+//     that math in one place instead of re-deriving it per page — the reason the
+//     file is large is that it owns the whole read model, not because it is doing
+//     several unrelated things.
+// SOURCES: reads projects, partners, organizations, analytics_aggregates, and
+//     bitly_project_links; it is read-only (no writes). Partner scoping tolerates
+//     the historical partner-reference shapes (partner1/partner2 objects,
+//     partner1Id/partner2Id as ObjectId or string) — see the $or in the partner
+//     branch — because event documents were written under more than one schema.
 import { ObjectId } from 'mongodb';
 import { getDb } from '@/lib/db';
 import type { AnalyticsAggregate } from '@/lib/analytics.types';

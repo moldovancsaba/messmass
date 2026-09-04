@@ -139,22 +139,24 @@ factual accuracy.
 - AI-analytics contract-versioning, distinct()/Stable-API notes, page-password
   and integration-token internals — verified.
 
-## 6. Comment health
+## 6. ~~Comment health~~ RESOLVED (messmass#353, verified @ a30ff6ca / this wave)
 - WHAT/WHY adherence good but uneven: integration/auth surface (lib/fanmass*,
   aiRescan, apiGuards, pageAccess, app/api/integrations/**) is best-in-repo
-  (comments explain tradeoffs); older analytics/partner code is bare —
-  lib/sponsorshipHub.ts is 1432 lines with ZERO comments; app/api/partners/route.ts
-  (unauthenticated CRUD) has 5%.
+  (comments explain tradeoffs). ~~lib/sponsorshipHub.ts is 1432 lines with ZERO
+  comments~~ FIXED: it now carries a WHAT/WHY/SOURCES header explaining it is the
+  single sponsorship-hub read model behind the four scopes and three admin
+  surfaces. (app/api/partners/route.ts is now guarded — F-009/#386.)
 - 8 TODO/FIXME total across a 45k-LOC lib/; ~zero commented-out code.
-- Comments contradicting code (9): lib/auth.ts:61-63 (both ternary branches
-  identical — permissions NOT derived from role), :93 ("4-tier" — 5 roles);
-  app/api/me/route.ts:25-41 and app/api/images/route.ts:34-48 read phantom
-  cookies `admin_session`/`page_auth` (real: `admin-session`/`page-access`) so
-  both routes ALWAYS return unauthenticated/401 — dead; lib/config.ts:113-114
-  vs :124-125 (fallback that doesn't exist); drive-folders/status/route.ts:6-7
-  ("HMAC-signed callback path" that doesn't exist); cameraClient.ts:13 (wrong
-  route path); lib/v3/middleware.ts:24-26 hardcodes a production org ObjectId in
-  both ternary branches.
+- ~~Comments contradicting code (9)~~ ALL RESOLVED, re-verified this wave:
+  lib/auth.ts:61-63 now explains the identical ternary is an intentional seam
+  (not "derived from role"); :93 now says "5-role hierarchy". app/api/me and
+  app/api/images were removed (dead routes gone, phantom-cookie comments with
+  them). lib/config.ts was refactored — no contradictory fallback claim, and the
+  WS comment is gone. drive-folders/status route no longer exists.
+  cameraClient.ts's header/assert comment now names the real inbound endpoints.
+  lib/v3/middleware.ts uses symbolic constants (`DEFAULT_ORG_ID`/`MASTER_ORG_ID`)
+  in distinct branches — no hardcoded production org ObjectId. The fit-in-fleet
+  one-pager (docs/_audit/messmass-in-the-fleet.md) exists.
 
 ## 7. Obsoletion queue
 - Dead routes: app/api/me, app/api/images (phantom cookies), app/api/stats,
