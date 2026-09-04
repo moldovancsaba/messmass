@@ -1,8 +1,24 @@
 # {messmass} Release Notes
 Status: Active
-Last Updated: 2026-09-04T13:00:00.000Z
+Last Updated: 2026-09-04T14:00:00.000Z
 Canonical: No
 Owner: Operations
+
+## [v12.3.21] — 2026-09-04T14:00:00.000Z
+
+### Fixed (hotfix)
+- **The Share Edit / Share Report modal on Manage Events showed "Failed to load
+  share status" for non-superadmin admins.** `GET /api/page-passwords` (and
+  DELETE) call `requirePageResourceAccess`, whose #376 ownership-scoping
+  fast-pathed only `superadmin`; for an event's `edit`/`event-report` page
+  (project scope, which carries no organization linkage) a plain `admin` was
+  then allowed only if they held a page-access grant for that specific event —
+  which admins managing the global events list do not. Every event share modal
+  therefore 403'd for admins. The project-scope branch now allows the `admin`
+  role (events are a global admin-managed surface, not org-filtered); guest/user/
+  api roles still require a page-access grant, and the cross-org restriction on
+  partner/organization report scopes is unchanged. Regression test added
+  (`tests/page-passwords-authorization.test.ts`).
 
 ## [v12.3.20] — 2026-09-04T13:00:00.000Z
 

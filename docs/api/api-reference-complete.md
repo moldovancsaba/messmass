@@ -4,7 +4,7 @@ Last Updated: 2026-09-04T00:00:00.000Z
 Canonical: Yes
 Owner: Backend
 
-**Version:** 12.3.20
+**Version:** 12.3.21
 _messmass#350 — each entry derived by reading its handler @ 7353223e (guards re-verified @ v12.3.20)._
 
 Coverage-measured, per-endpoint reference for every route under `app/api/`. Each entry gives the auth layer, request/response shape, and side effects (DB writes + external calls). For the curated quick reference see [api-reference.md](api-reference.md).

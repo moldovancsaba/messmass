@@ -4,7 +4,7 @@ Last Updated: 2026-06-25
 Canonical: No
 Owner: Architecture
 
-Version: 12.3.20
+Version: 12.3.21
 
 > This is a current-state architecture reference, not a changelog. For dated release
 > history use [`docs/operations/operations-release-notes.md`](operations/operations-release-notes.md).
@@ -4642,5 +4642,5 @@ When working with the hashtag categories system:
 ---
 
 *Last Updated: 2025-10-19T11:58:43.000Z*
-*Version: 12.3.20*
+*Version: 12.3.21*
 *Status: Production-Ready — Enterprise Event Analytics Platform with Advanced Analytics Infrastructure*

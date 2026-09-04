@@ -306,6 +306,28 @@ describe('GET/DELETE /api/page-passwords authorization gate', () => {
     expect(deleteRes.status).toBe(403);
   });
 
+  it('allows a plain admin to manage an event edit page with no page grant (200) — the Share Edit modal', async () => {
+    // Regression for the "Failed to load share status" bug: events/projects are
+    // not org-scoped in resolveOwnerScope and the Manage Events console is a
+    // global surface, so a full 'admin' (not just superadmin) must be able to
+    // load/manage an event's share status without holding a page-access grant.
+    const project: FakeProject = { _id: new ObjectId(), editSlug: 'an-edit-slug' };
+    mockDbModules(buildMockDb({ project }));
+    mockAuthModules({
+      user: { id: 'admin-2', role: 'admin', organizationIds: [] },
+      hasPageAccess: false,
+      orgAccessGranted: false,
+    });
+
+    const { GET, DELETE } = await import('@/app/api/page-passwords/route');
+
+    const getRes = await GET(makeRequest('an-edit-slug', 'edit', 'GET'));
+    expect(getRes.status).toBe(200);
+
+    const deleteRes = await DELETE(makeRequest('an-edit-slug', 'edit', 'DELETE'));
+    expect(deleteRes.status).toBe(200);
+  });
+
   it('allows superadmin regardless of relationship, including an unresolvable scope', async () => {
     mockDbModules(buildMockDb({}));
     mockAuthModules({ user: { id: 'super-1', role: 'superadmin' }, hasPageAccess: false, orgAccessGranted: false });

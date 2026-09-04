@@ -129,7 +129,21 @@ export async function requirePageResourceAccess(
   } else if (scope.kind === 'partner' && scope.partnerId) {
     allowed = (await hasPageAccess(pageType, pageId)) || (await hasPageAccess(pageType, scope.partnerId));
   } else if (scope.kind === 'project' && scope.projectId) {
-    allowed = (await hasPageAccess(pageType, pageId)) || (await hasPageAccess(pageType, scope.projectId));
+    // WHAT: Events/projects are NOT organization-scoped in resolveOwnerScope (it
+    //     returns {kind:'project'} with no org), and the Manage Events console is
+    //     a global surface — a console admin sees and manages every event, not a
+    //     per-org subset. So a full 'admin' (or superadmin, already fast-pathed
+    //     above) may manage an event's share status; guest/user/api roles still
+    //     need a page-access grant for the specific event.
+    // WHY: #376 scoped this route to stop guest accounts stripping page passwords,
+    //     but the project branch had no admin path, so the Share Edit/Report modal
+    //     403'd for every non-superadmin admin ("Failed to load share status").
+    //     The cross-org restriction that #376 enforces still applies to the
+    //     org/partner branches above (see the "denies an admin assigned to a
+    //     different organization" test), which this does not touch.
+    allowed = user.role === 'admin'
+      || (await hasPageAccess(pageType, pageId))
+      || (await hasPageAccess(pageType, scope.projectId));
   }
 
   if (allowed) return null;
