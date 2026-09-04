@@ -5,6 +5,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { ObjectId } from 'mongodb'
 import { getDb } from '@/lib/db'
+import { requireSession } from '@/lib/apiGuards'
 
 export const runtime = 'nodejs'
 
@@ -104,6 +105,11 @@ export async function GET(req: NextRequest) {
 }
 
 export async function POST(req: NextRequest) {
+  // SECURITY (messmass#386): mutations are admin-only (callers: admin clicker
+  // manager); GET stays open for the page-password event editor.
+  const __denied = await requireSession()
+  if (__denied) return __denied
+
   try {
     const db = await getDb()
     const body = await req.json()
@@ -192,6 +198,11 @@ export async function POST(req: NextRequest) {
 }
 
 export async function DELETE(req: NextRequest) {
+  // SECURITY (messmass#386): admin-only, as above — this handler can
+  // deleteMany({}) every variable group.
+  const __denied = await requireSession()
+  if (__denied) return __denied
+
   try {
     const db = await getDb()
     const url = new URL(req.url)

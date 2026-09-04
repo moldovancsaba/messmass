@@ -19,6 +19,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { ObjectId } from 'mongodb';
 import { getDb } from '@/lib/db';
+import { requireSession } from '@/lib/apiGuards';
 import type { BitlyProjectLink } from '@/lib/bitly-junction.types';
 
 /**
@@ -66,6 +67,10 @@ export async function GET(
   request: NextRequest,
   { params }: { params: Promise<{ projectId: string }> }
 ) {
+  // SECURITY (messmass#386): require an authenticated admin session.
+  const __denied = await requireSession();
+  if (__denied) return __denied;
+
   try {
     const { projectId } = await params;
 

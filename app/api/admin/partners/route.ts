@@ -4,6 +4,7 @@
 
 import { NextResponse } from 'next/server';
 import { getDb } from '@/lib/db';
+import { requireSession } from '@/lib/apiGuards';
 
 /**
  * GET /api/admin/partners
@@ -12,6 +13,10 @@ import { getDb } from '@/lib/db';
  * WHY: Admin UI needs partners for dropdown selections
  */
 export async function GET() {
+  // SECURITY (messmass#386): require an authenticated admin session.
+  const __denied = await requireSession();
+  if (__denied) return __denied;
+
   try {
     const db = await getDb();
     const partnersCollection = db.collection('partners');

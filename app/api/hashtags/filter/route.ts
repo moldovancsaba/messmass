@@ -7,8 +7,13 @@ import {
 } from '@/lib/hashtagCategoryUtils';
 import { CategorizedHashtagMap } from '@/lib/hashtagCategoryTypes';
 import config from '@/lib/config';
+import { requireSession } from '@/lib/apiGuards';
 
 export async function GET(request: NextRequest) {
+  // SECURITY (messmass#386): require an authenticated admin session.
+  const __denied = await requireSession();
+  if (__denied) return __denied;
+
   try {
     const { searchParams } = new URL(request.url);
     const tagsParam = searchParams.get('tags');
@@ -217,6 +222,10 @@ const db = client.db(config.dbName);
 }
 
 export async function POST(request: NextRequest) {
+  // SECURITY (messmass#386): require an authenticated admin session.
+  const __denied = await requireSession();
+  if (__denied) return __denied;
+
   try {
     const body = await request.json();
     const { hashtags } = body;

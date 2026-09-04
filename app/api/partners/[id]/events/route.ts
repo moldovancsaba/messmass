@@ -7,6 +7,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { ObjectId } from 'mongodb';
 import clientPromise from '@/lib/mongodb';
 import config from '@/lib/config';
+import { requireSession } from '@/lib/apiGuards';
 
 export const runtime = 'nodejs';
 
@@ -25,6 +26,10 @@ export async function GET(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
+  // SECURITY (messmass#386): require an authenticated admin session.
+  const __denied = await requireSession();
+  if (__denied) return __denied;
+
   try {
     const { id } = await params;
     

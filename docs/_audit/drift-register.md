@@ -7,7 +7,8 @@ This file is intentionally header-less so the docs:audit version gate does
 not bind it to a version it is not about.
 
 ## 0. Behavior findings escalated out of the docs audit (see messmass#347)
-**RESOLVED via messmass#347 + messmass#348 (2026-09-03)** except the last bullet:
+**FULLY RESOLVED via messmass#347 + messmass#348 (2026-09-03) + messmass#386
+(2026-09-04)**:
 - ~~**Cron auth bypass**~~ FIXED: the `'development_secret'` fallback is gone
   (analytics-aggregation fails closed, route.ts:51-58). messmass#348 also
   closed the two remaining fail-open variants: `/api/bitly/sync` compared
@@ -19,12 +20,21 @@ not bind it to a version it is not about.
   call `requireSession()`. `tests/api-mutation-auth.test.ts` now also covers
   read routes: every GET without an auth primitive must appear in
   `KNOWN_UNGUARDED_READS`, so a new anonymous analytics/PII read fails CI.
+  messmass#386 (v12.3.18) then guarded 33 of the 37 debt entries, reclassified
+  3 as by-design editor reads (their destructive handlers guarded), found 1
+  already guarded but invisible to the primitive list, made the sweep judge
+  the GET handler's own body, and closed the 10 further anonymous GETs that
+  per-handler honesty surfaced — the list holds only by-design
+  public/editor-surface/reference routes now.
 - ~~**Bitly cron never fires**~~ FIXED: `/api/bitly/sync` exports a GET that
   delegates to POST, so the 03:00 UTC Vercel cron (GET) now executes with the
   same auth (cron secret or admin session).
-- Two `/api/admin/{projects,users}` routes still authenticate against the
-  retired `{SSO_BASE_URL}/api/validate` (lib/ssoClient.ts) — fail-closed
-  brokenness, not exposure; the other two of the original four are fixed.
+- ~~Stale-SSO admin routes~~ FIXED (messmass#386 wave, 2026-09-04): the two
+  remaining `/api/admin/{projects,users}` collection routes authenticated
+  against the retired `{SSO_BASE_URL}/api/validate` — always 401, and grep
+  found zero callers (the admin UI uses `/api/admin/users/[id]/role`), so
+  both routes and the orphaned `lib/ssoClient.ts` were deleted rather than
+  repaired. §0 is now fully resolved.
 
 ## 1. WRONG — docs/architecture.md architectural claims (4649 lines; the
 changelog was extracted to docs/archive on 2026-08-17, so the body claims

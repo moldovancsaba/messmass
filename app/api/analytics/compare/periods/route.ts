@@ -19,6 +19,7 @@ import { ObjectId } from 'mongodb';
 import clientPromise from '@/lib/mongodb';
 import config from '@/lib/config';
 import { rateLimitMiddleware, RATE_LIMITS } from '@/lib/rateLimit';
+import { requireSession } from '@/lib/apiGuards';
 
 type TimeBucket = 'daily' | 'weekly' | 'monthly' | 'yearly';
 
@@ -41,6 +42,10 @@ function periodToRange(period: string, bucket: TimeBucket): { start: string; end
 }
 
 export async function GET(request: NextRequest) {
+  // SECURITY (messmass#386): require an authenticated admin session.
+  const __denied = await requireSession();
+  if (__denied) return __denied;
+
   const startTime = Date.now();
 
   try {
@@ -147,7 +152,7 @@ export async function GET(request: NextRequest) {
       },
       {
         status: 200,
-        headers: { 'Cache-Control': 'public, s-maxage=300, stale-while-revalidate=600' },
+        headers: { 'Cache-Control': 'private, no-store' },
       }
     );
   } catch (error) {

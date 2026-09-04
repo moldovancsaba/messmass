@@ -18,6 +18,7 @@ import config from '@/lib/config';
 import { rateLimitMiddleware, RATE_LIMITS } from '@/lib/rateLimit';
 import { logRequestStart, logRequestEnd, logRequestError } from '@/lib/logger';
 import { validateProjectStats } from '@/lib/dataValidator';
+import { requireSession } from '@/lib/apiGuards';
 import type { AnalyticsAPIResponse, AnalyticsAggregate } from '@/lib/analytics.types';
 
 /**
@@ -34,6 +35,10 @@ export async function GET(
   request: NextRequest,
   { params }: { params: Promise<{ projectId: string }> }
 ) {
+  // SECURITY (messmass#386): require an authenticated admin session.
+  const __denied = await requireSession();
+  if (__denied) return __denied;
+
   // WHAT: Next.js 15 requires awaiting params Promise
   const { projectId } = await params;
   
@@ -138,7 +143,7 @@ export async function GET(
       {
         status: 200,
         headers: {
-          'Cache-Control': 'public, s-maxage=300, stale-while-revalidate=600', // 5-minute cache
+          'Cache-Control': 'private, no-store', // SECURITY (messmass#386): was public+s-maxage - a CDN must not serve authenticated analytics to anonymous callers
         },
       }
     );

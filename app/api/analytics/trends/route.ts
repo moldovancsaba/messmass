@@ -20,10 +20,15 @@ import { NextRequest, NextResponse } from 'next/server';
 import { ObjectId } from 'mongodb';
 import clientPromise from '@/lib/mongodb';
 import config from '@/lib/config';
+import { requireSession } from '@/lib/apiGuards';
 import { rateLimitMiddleware, RATE_LIMITS } from '@/lib/rateLimit';
 import { logRequestStart, logRequestEnd, logRequestError } from '@/lib/logger';
 
 export async function GET(request: NextRequest) {
+  // SECURITY (messmass#386): require an authenticated admin session.
+  const __denied = await requireSession();
+  if (__denied) return __denied;
+
   const startTime = logRequestStart({
     method: 'GET',
     pathname: '/api/analytics/trends',
@@ -202,7 +207,7 @@ export async function GET(request: NextRequest) {
       {
         status: 200,
         headers: {
-          'Cache-Control': 'public, s-maxage=300, stale-while-revalidate=600', // 5-minute cache
+          'Cache-Control': 'private, no-store', // SECURITY (messmass#386): was public+s-maxage - a CDN must not serve authenticated analytics to anonymous callers
         },
       }
     );

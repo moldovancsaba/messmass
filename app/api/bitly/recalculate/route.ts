@@ -19,6 +19,7 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import { ObjectId } from 'mongodb';
+import { requireSession } from '@/lib/apiGuards';
 import {
   recalculateLinkRanges,
   recalculateProjectLinks,
@@ -48,6 +49,10 @@ interface RecalculateResponse {
 }
 
 export async function POST(request: NextRequest) {
+  // SECURITY (messmass#386): require an authenticated admin session.
+  const __denied = await requireSession();
+  if (__denied) return __denied;
+
   try {
     const body: RecalculateRequest = await request.json();
 
@@ -169,6 +174,10 @@ export async function POST(request: NextRequest) {
  * WHY: Useful for health checks and monitoring.
  */
 export async function GET(request: NextRequest) {
+  // SECURITY (messmass#386): require an authenticated admin session.
+  const __denied = await requireSession();
+  if (__denied) return __denied;
+
   try {
     // TODO: Could add system status here (e.g., last sync time, stale associations count)
     return NextResponse.json({

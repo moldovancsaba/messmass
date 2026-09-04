@@ -39,6 +39,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { ObjectId } from 'mongodb';
 import clientPromise from '@/lib/mongodb';
 import config from '@/lib/config';
+import { requireSession } from '@/lib/apiGuards';
 import { generateEventInsights } from '@/lib/insightsEngine';
 import { rateLimitMiddleware, RATE_LIMITS } from '@/lib/rateLimit';
 import { info as logInfo, error as logError } from '@/lib/logger';
@@ -72,6 +73,10 @@ export async function GET(
   request: NextRequest,
   { params }: { params: Promise<{ projectId: string }> }
 ): Promise<NextResponse<InsightsResponse>> {
+  // SECURITY (messmass#386): require an authenticated admin session.
+  const __denied = await requireSession();
+  if (__denied) return __denied as NextResponse<InsightsResponse>;
+
   const startTime = Date.now();
 
   try {

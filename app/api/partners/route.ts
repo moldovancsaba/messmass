@@ -13,6 +13,11 @@ import { requirePartnerWrite, requireSession } from '@/lib/apiGuards';
 export const dynamic = 'force-dynamic';
 
 export async function GET(request: NextRequest) {
+  // SECURITY (messmass#386): admin-only read; the file-level sweep missed
+  // this GET because other handlers here already carried a guard.
+  const __denied = await requireSession();
+  if (__denied) return __denied;
+
   try {
     const { searchParams } = new URL(request.url);
     const limit = parseInt(searchParams.get('limit') || '20');

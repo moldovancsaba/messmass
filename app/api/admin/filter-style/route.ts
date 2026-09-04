@@ -105,6 +105,11 @@ export async function POST(request: NextRequest) {
 // WHY: Allow filter page to remember user's style choice
 // HOW: Query filter_slugs collection by normalized hashtags
 export async function GET(request: NextRequest) {
+  // SECURITY (messmass#386): admin-only read; the file-level sweep missed
+  // this GET because other handlers here already carried a guard.
+  const __denied = await requireSession();
+  if (__denied) return __denied;
+
   try {
     const { searchParams } = new URL(request.url);
     const hashtagsParam = searchParams.get('hashtags');

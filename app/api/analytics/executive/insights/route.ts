@@ -34,10 +34,15 @@ import config from '@/lib/config';
 import { rateLimitMiddleware, RATE_LIMITS } from '@/lib/rateLimit';
 import { info as logInfo, error as logError } from '@/lib/logger';
 import { generateEventInsights } from '@/lib/insightsEngine';
+import { requireSession } from '@/lib/apiGuards';
 import type { AnalyticsAggregate } from '@/lib/analytics.types';
 import type { Insight } from '@/lib/insightsEngine';
 
 export async function GET(request: NextRequest) {
+  // SECURITY (messmass#386): require an authenticated admin session.
+  const __denied = await requireSession();
+  if (__denied) return __denied;
+
   const startTime = Date.now();
 
   try {

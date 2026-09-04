@@ -3,6 +3,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { MongoClient, ObjectId } from 'mongodb'
 import clientPromise from '@/lib/mongodb'
 import config from '@/lib/config'
+import { requireSession } from '@/lib/apiGuards';
 import { error as logError, info as logInfo } from '@/lib/logger'
 
 interface RouteParams {
@@ -13,11 +14,15 @@ export async function GET(
   request: NextRequest,
   context: RouteParams
 ) {
+  // SECURITY (messmass#386): require an authenticated admin session.
+  const __denied = await requireSession();
+  if (__denied) return __denied;
+
   const client = await clientPromise
-  
+
   try {
     const { id } = await context.params
-    
+
     const db = client.db(config.dbName)
     const collection = db.collection('projects')
     
@@ -53,8 +58,12 @@ export async function PUT(
   request: NextRequest,
   context: RouteParams
 ) {
+  // SECURITY (messmass#386): require an authenticated admin session.
+  const __denied = await requireSession();
+  if (__denied) return __denied;
+
   const client = await clientPromise
-  
+
   try {
     const { id } = await context.params
     const updateData = await request.json()
@@ -145,8 +154,12 @@ export async function DELETE(
   request: NextRequest,
   context: RouteParams
 ) {
+  // SECURITY (messmass#386): require an authenticated admin session.
+  const __denied = await requireSession();
+  if (__denied) return __denied;
+
   const client = await clientPromise
-  
+
   try {
     const { id } = await context.params
     logInfo('Deleting project', { context: 'projects/[id]', projectId: id })

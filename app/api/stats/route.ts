@@ -4,6 +4,7 @@
 // HOW: Return basic stats or redirect to project-specific stats
 
 import { NextRequest, NextResponse } from 'next/server';
+import { requireSession } from '@/lib/apiGuards';
 
 export const runtime = 'nodejs';
 
@@ -21,6 +22,10 @@ export const runtime = 'nodejs';
  *   - message: string
  */
 export async function GET(request: NextRequest) {
+  // SECURITY (messmass#386): require an authenticated admin session.
+  const __denied = await requireSession();
+  if (__denied) return __denied;
+
   try {
     const { searchParams } = new URL(request.url);
     const slug = searchParams.get('slug');

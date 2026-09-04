@@ -4,7 +4,7 @@ Last Updated: 2026-01-11T22:28:38.000Z
 Canonical: Yes
 Owner: Product
 
-**Version:** 12.3.17
+**Version:** 12.3.18
 **Last Updated:** 2026-01-11T22:28:38.000Z (UTC)
 **Status:** Production
 

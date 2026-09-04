@@ -4,6 +4,43 @@ import { getDb } from '@/lib/db';
 import connectV3 from '@/lib/mongoose-v3';
 import V3Organization from '@/lib/models/v3/Organization';
 import { resolveReportVariant, listReportVariants, updateReportVariant } from '@/lib/reportVariants';
+import { getAdminUser } from '@/lib/auth';
+import { hasPageAccess, isPageProtected } from '@/lib/pageAccess';
+
+// WHAT: Page-password gate for this editor surface. The page mints its grant
+//     under `<id>` or `<id>::variant=<v>` (app/organization-edit/[id]/page.tsx,
+//     pageType 'organization-edit'); the guard checks the base key PLUS the
+//     variant-composed key when a variant param is present ('default' included,
+//     matching the client's composition).
+// WHY: A password on the base page must cover every variant of it — checking
+//     only the composed key would let a predictable variant id (e.g.
+//     virtual-default:organization:<id>, which resolveReportVariant accepts)
+//     read base data past the password, since the composed key has no
+//     page_passwords row of its own (review finding, messmass#386). Same
+//     model as /api/projects/edit/[slug] otherwise: unprotected page => open.
+async function requireOrgEditPageAccess(
+  id: string,
+  request: NextRequest
+): Promise<NextResponse | null> {
+  const variant = new URL(request.url).searchParams.get('variant');
+  const keys = variant ? [id, `${id}::variant=${variant}`] : [id];
+
+  let anyProtected = false;
+  for (const key of keys) {
+    if (await isPageProtected('organization-edit', key)) { anyProtected = true; break; }
+  }
+  if (!anyProtected) return null;
+
+  for (const key of keys) {
+    if (await hasPageAccess('organization-edit', key)) return null;
+  }
+  if (await getAdminUser()) return null;
+
+  return NextResponse.json(
+    { success: false, error: 'This page is password protected.', code: 'PAGE_PASSWORD_REQUIRED' },
+    { status: 401 }
+  );
+}
 
 export const dynamic = 'force-dynamic';
 
@@ -109,6 +146,11 @@ export async function GET(
       return NextResponse.json({ success: false, error: 'Invalid organization id' }, { status: 400 });
     }
 
+    // SECURITY (messmass#386): admin session or this page's password grant,
+    //     base + variant keys both consulted (see requireOrgEditPageAccess).
+    const __denied = await requireOrgEditPageAccess(id, request);
+    if (__denied) return __denied;
+
     const db = await getDb();
     const organization = await db.collection<OrganizationRecord>('organizations').findOne({ _id: new ObjectId(id) });
 
@@ -190,6 +232,11 @@ export async function PUT(
     if (!ObjectId.isValid(id)) {
       return NextResponse.json({ success: false, error: 'Invalid organization id' }, { status: 400 });
     }
+
+    // SECURITY (messmass#386): same gate as GET — base + variant keys both
+    //     consulted (see requireOrgEditPageAccess).
+    const __denied = await requireOrgEditPageAccess(id, request);
+    if (__denied) return __denied;
 
     const body = (await request.json().catch(() => null)) as {
       metadata?: unknown;

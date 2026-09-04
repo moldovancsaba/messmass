@@ -95,6 +95,11 @@ async function connectToDatabase() {
 
 // GET /api/projects - Fetch projects with optional pagination and search
 export async function GET(request: NextRequest) {
+  // SECURITY (messmass#386): admin-only read; the file-level sweep missed
+  // this GET because other handlers here already carried a guard.
+  const __denied = await requireSession();
+  if (__denied) return __denied;
+
   try {
     const url = new URL(request.url);
     const projectId = url.searchParams.get('projectId'); // WHAT: Single project lookup for KYC pages

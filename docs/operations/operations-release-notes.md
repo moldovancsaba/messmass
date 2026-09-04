@@ -1,8 +1,83 @@
 # {messmass} Release Notes
 Status: Active
-Last Updated: 2026-09-03T00:00:00.000Z
+Last Updated: 2026-09-04T06:45:00.000Z
 Canonical: No
 Owner: Operations
+
+## [v12.3.18] — 2026-09-04T06:45:00.000Z
+
+### Summary
+messmass#386: of the 37 read routes frozen as debt by v12.3.17's sweep,
+33 are now guarded, 3 are reclassified as by-design editor reads with
+their destructive siblings locked down, and 1 turned out to be guarded
+all along (mislabeled by the audit). The sweep itself got honest —
+per-handler instead of per-file — which surfaced and closed a second
+layer of 10 hidden anonymous GETs the file-level audit could never see.
+Also deletes the dead stale-SSO admin routes (drift-register §0 fully
+resolved) and fixes a rate-limiter timer that kept jest alive.
+
+### Security
+- 31 route files gained `requireSession()` on every exported handler:
+  the full anonymous analytics surface (executive revenue/ROI metrics,
+  trends, benchmarks, per-event/per-partner aggregates, compare
+  endpoints, Bitly project metrics), the admin-UI data loaders
+  (`/api/admin/partners` roster, chart/grid/font/sports-db config),
+  the debug/self-test endpoints (`/api/admin/email-selftest` no longer
+  leaks the superadmin address or sends mail anonymously; the
+  `/debug/hashtag-categories` dev page now requires a session), and
+  `/api/projects/[id]` (GET/PUT/DELETE — callers proved admin-only).
+  Nine of these files also carried unguarded mutating handlers frozen
+  since F-009; those POST/PUT/DELETE are guarded too and removed from
+  `KNOWN_UNGUARDED`.
+- `/api/partners/edit/[slug]` and `/api/organizations/edit/[id]`
+  (GET+PUT) now carry alias-aware page-password gates: base page key
+  AND variant-composed key are both consulted, across all of the
+  partner's identifiers (`_id`, viewSlug, legacy slugs). Unprotected
+  pages stay reachable (page-password model, as on
+  `/api/projects/edit/[slug]`); a password on the base page covers
+  every variant — the review caught that a composed-key-only check let
+  a predictable `virtual-default:…` variant id read base data (and PUT
+  stored variants) straight past a base-page password.
+- The read sweep in `tests/api-mutation-auth.test.ts` now judges the
+  GET handler's own body (with delegation-following for
+  `/api/bitly/sync`'s cron GET), not the whole file. That honesty
+  surfaced 10 GETs invisible to the old scan: 7 were genuinely open and
+  now carry `requireSession()` — `/api/projects` and `/api/partners`
+  collection listings, `/api/data-blocks`, `/api/admin/{filter-style,
+  hashtag-style,project-partners,ui-settings}` (callers verified
+  admin-only) — and 3 (`/api/admin/fanmass/*`) were already gated by a
+  local `requireAdmin()` helper the primitive list now recognizes.
+- `GET /api/variables-groups` and `GET /api/clicker-sets` stay open
+  for the page-password editors, but their destructive handlers are
+  now admin-only (anonymous `DELETE /api/variables-groups` could
+  previously `deleteMany({})` every variable group). Their GETs'
+  idempotent lazy-init writes are documented and accepted.
+- Nine formerly-`public, s-maxage` cache headers (seven analytics, two
+  sports-db) are now `private, no-store` — a CDN must not serve
+  session-guarded responses to anonymous callers.
+- Three routes stay open by design, reclassified with justification:
+  `GET /api/hashtags`, `/api/variables-groups`, `/api/clicker-sets`
+  (page-password editor surfaces, low-sensitivity UI config,
+  `variables-config` precedent), plus `GET /api/content-assets`
+  (fetched by `lib/formulaEngine` during report/editor rendering).
+  `/api/v3/organizations/report/[id]`, listed as debt by the audit,
+  was in fact guarded all along via `validateOrganizationAccess` —
+  the primitive list just couldn't see it; it now can.
+- `KNOWN_UNGUARDED_READS` holds only by-design entries;
+  `KNOWN_UNGUARDED` shrank by 13. `tests/security/read-route-auth.test.ts`
+  pins anonymous 401 at runtime for the two worst former exposures.
+
+### Removed
+- `/api/admin/projects` and `/api/admin/users` (collection routes) and
+  `lib/ssoClient.ts`: they authenticated against the retired
+  `{SSO_BASE_URL}/api/validate`, always 401'd, and had zero callers
+  (the admin UI uses `/api/admin/users/[id]/role`). Deleted rather than
+  repaired; drift-register §0 is now fully resolved.
+
+### Fixed
+- `lib/rateLimit.ts`'s hourly cleanup `setInterval` is now `unref()`'d
+  (camera's a87d78f fix, applied here): it kept any jest run that
+  imports a rate-limited route alive after all tests passed.
 
 ## [v12.3.17] — 2026-09-03T20:30:00.000Z
 

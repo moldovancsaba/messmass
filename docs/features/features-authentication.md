@@ -4,7 +4,7 @@ Last Updated: 2026-09-03T00:00:00.000Z
 Canonical: Yes
 Owner: Security
 
-**Version:** 12.3.17
+**Version:** 12.3.18
 **Last Updated:** 2026-09-03T00:00:00.000Z (UTC)
 **Status:** Production
 **Maintainer:** Warp AI Development Team

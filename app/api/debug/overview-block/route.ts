@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { requireSession } from '@/lib/apiGuards';
 import clientPromise from '@/lib/mongodb';
 import config from '@/lib/config';
 
@@ -6,6 +7,10 @@ const MONGODB_DB = config.dbName;
 
 // GET /api/debug/overview-block - Debug endpoint to show raw OVERVIEW block data
 export async function GET() {
+  // SECURITY (messmass#386): require an authenticated admin session.
+  const __denied = await requireSession();
+  if (__denied) return __denied;
+
   try {
     const client = await clientPromise;
     const db = client.db(MONGODB_DB);

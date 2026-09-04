@@ -3,6 +3,7 @@
  * HOW: MongoDB operations with validation */
 
 import { NextRequest, NextResponse } from 'next/server';
+import { requireSession } from '@/lib/apiGuards';
 import clientPromise from '@/lib/mongodb';
 import { ObjectId } from 'mongodb';
 import { AvailableFont, DEFAULT_FONTS, isValidFontName, isValidFontFamily } from '@/lib/fontTypes';
@@ -20,6 +21,10 @@ function normalizeFontName(name: string): string {
  * Fetch all available fonts (active only by default)
  */
 export async function GET(request: NextRequest) {
+  // SECURITY (messmass#386): require an authenticated admin session.
+  const __denied = await requireSession();
+  if (__denied) return __denied;
+
   try {
     const { searchParams } = new URL(request.url);
     const includeInactive = searchParams.get('includeInactive') === 'true';
@@ -90,6 +95,10 @@ export async function GET(request: NextRequest) {
  * Create new font
  */
 export async function POST(request: NextRequest) {
+  // SECURITY (messmass#386): require an authenticated admin session.
+  const __denied = await requireSession();
+  if (__denied) return __denied;
+
   try {
     const body = await request.json();
     
@@ -165,6 +174,10 @@ export async function POST(request: NextRequest) {
  * Update existing font
  */
 export async function PUT(request: NextRequest) {
+  // SECURITY (messmass#386): require an authenticated admin session.
+  const __denied = await requireSession();
+  if (__denied) return __denied;
+
   try {
     const { searchParams } = new URL(request.url);
     const id = searchParams.get('id');
@@ -259,6 +272,10 @@ export async function PUT(request: NextRequest) {
  * Delete font (soft delete by setting isActive: false, or hard delete)
  */
 export async function DELETE(request: NextRequest) {
+  // SECURITY (messmass#386): require an authenticated admin session.
+  const __denied = await requireSession();
+  if (__denied) return __denied;
+
   try {
     const { searchParams } = new URL(request.url);
     const id = searchParams.get('id');

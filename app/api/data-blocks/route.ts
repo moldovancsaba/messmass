@@ -31,6 +31,11 @@ interface DataVisualizationBlock {
 
 // GET /api/data-blocks - Get all data visualization blocks
 export async function GET() {
+  // SECURITY (messmass#386): admin-only read; the file-level sweep missed
+  // this GET because other handlers here already carried a guard.
+  const __denied = await requireSession();
+  if (__denied) return __denied;
+
   try {
     const client = await clientPromise;
     const db = client.db(MONGODB_DB);

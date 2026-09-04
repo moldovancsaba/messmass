@@ -19,6 +19,11 @@ import { AvailableFont, DEFAULT_FONTS } from '@/lib/fontTypes';
 */
 
 export async function GET(request: NextRequest) {
+  // SECURITY (messmass#386): admin-only read; the file-level sweep missed
+  // this GET because other handlers here already carried a guard.
+  const __denied = await requireSession();
+  if (__denied) return __denied;
+
   try {
     /* What: Validate admin session before reading settings
        Why: UI settings should only be accessible to authenticated admins */

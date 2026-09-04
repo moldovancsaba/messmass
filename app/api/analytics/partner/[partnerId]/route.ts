@@ -19,6 +19,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { ObjectId } from 'mongodb';
 import clientPromise from '@/lib/mongodb';
 import config from '@/lib/config';
+import { requireSession } from '@/lib/apiGuards';
 import { rateLimitMiddleware, RATE_LIMITS } from '@/lib/rateLimit';
 import { logRequestStart, logRequestEnd, logRequestError } from '@/lib/logger';
 
@@ -26,6 +27,10 @@ export async function GET(
   request: NextRequest,
   { params }: { params: Promise<{ partnerId: string }> }
 ) {
+  // SECURITY (messmass#386): require an authenticated admin session.
+  const __denied = await requireSession();
+  if (__denied) return __denied;
+
   const { partnerId } = await params;
   
   const startTime = logRequestStart({
@@ -168,7 +173,7 @@ export async function GET(
       {
         status: 200,
         headers: {
-          'Cache-Control': 'public, s-maxage=600, stale-while-revalidate=1200', // 10-minute cache
+          'Cache-Control': 'private, no-store', // SECURITY (messmass#386): was public+s-maxage - a CDN must not serve authenticated analytics to anonymous callers
         },
       }
     );

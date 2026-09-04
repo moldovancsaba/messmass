@@ -5,6 +5,7 @@
 // GET /api/sports-db/lookup?type=league&id={id}
 
 import { NextRequest, NextResponse } from 'next/server';
+import { requireSession } from '@/lib/apiGuards';
 import { lookupTeam, lookupVenue, lookupLeague } from '@/lib/sportsDbApi';
 
 /**
@@ -13,6 +14,10 @@ import { lookupTeam, lookupVenue, lookupLeague } from '@/lib/sportsDbApi';
  * REQUIRES: Admin authentication (add middleware if needed)
  */
 export async function GET(request: NextRequest) {
+  // SECURITY (messmass#386): require an authenticated admin session.
+  const __denied = await requireSession();
+  if (__denied) return __denied;
+
   try {
     // Extract query parameters
     const searchParams = request.nextUrl.searchParams;
@@ -88,7 +93,7 @@ export async function GET(request: NextRequest) {
       {
         status: 200,
         headers: {
-          'Cache-Control': 'public, s-maxage=86400, stale-while-revalidate=604800',
+          'Cache-Control': 'private, no-store' /* SECURITY (messmass#386): was public+s-maxage - a CDN must not serve session-guarded responses to anonymous callers */,
           'Content-Type': 'application/json'
         }
       }
@@ -166,6 +171,10 @@ export async function GET(request: NextRequest) {
  * WHY: Provide clear error messages for incorrect usage
  */
 export async function POST() {
+  // SECURITY (messmass#386): require an authenticated admin session.
+  const __denied = await requireSession();
+  if (__denied) return __denied;
+
   return NextResponse.json(
     {
       success: false,
@@ -177,6 +186,10 @@ export async function POST() {
 }
 
 export async function PUT() {
+  // SECURITY (messmass#386): require an authenticated admin session.
+  const __denied = await requireSession();
+  if (__denied) return __denied;
+
   return NextResponse.json(
     {
       success: false,
@@ -188,6 +201,10 @@ export async function PUT() {
 }
 
 export async function DELETE() {
+  // SECURITY (messmass#386): require an authenticated admin session.
+  const __denied = await requireSession();
+  if (__denied) return __denied;
+
   return NextResponse.json(
     {
       success: false,

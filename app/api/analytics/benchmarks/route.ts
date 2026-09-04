@@ -22,6 +22,7 @@ import clientPromise from '@/lib/mongodb';
 import config from '@/lib/config';
 import { rateLimitMiddleware, RATE_LIMITS } from '@/lib/rateLimit';
 import { logRequestStart, logRequestEnd, logRequestError } from '@/lib/logger';
+import { requireSession } from '@/lib/apiGuards';
 
 /**
  * WHAT: Calculate percentile value from sorted array
@@ -41,6 +42,10 @@ function calculatePercentile(sortedValues: number[], percentile: number): number
 }
 
 export async function GET(request: NextRequest) {
+  // SECURITY (messmass#386): require an authenticated admin session.
+  const __denied = await requireSession();
+  if (__denied) return __denied;
+
   const startTime = logRequestStart({
     method: 'GET',
     pathname: '/api/analytics/benchmarks',
@@ -190,7 +195,7 @@ export async function GET(request: NextRequest) {
       {
         status: 200,
         headers: {
-          'Cache-Control': 'public, s-maxage=1800, stale-while-revalidate=3600', // 30-minute cache
+          'Cache-Control': 'private, no-store', // SECURITY (messmass#386): was public+s-maxage - a CDN must not serve authenticated analytics to anonymous callers
         },
       }
     );

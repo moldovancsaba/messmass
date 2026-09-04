@@ -88,7 +88,10 @@ function cleanupExpiredEntries(): void {
 
 // WHAT: Run cleanup every hour
 // WHY: Keep memory usage bounded without impacting performance
-setInterval(cleanupExpiredEntries, 60 * 60 * 1000);
+// NOTE: unref'd so this housekeeping timer never keeps the process alive on
+//     its own (same fix camera applied to its rate limiter) — without it any
+//     jest run that imports a rateLimit-using route hangs after passing.
+setInterval(cleanupExpiredEntries, 60 * 60 * 1000).unref?.();
 
 // WHAT: Get client identifier for rate limiting
 // WHY: Track requests per IP address (or user session if authenticated)

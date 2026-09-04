@@ -12,11 +12,16 @@
 //      (matches "/api/health"-style diagnostics), not throwaway test code.
 
 import { NextRequest, NextResponse } from 'next/server';
+import { requireSession } from '@/lib/apiGuards';
 import { checkRateLimit, RATE_LIMITS } from '@/lib/rateLimit';
 import { env } from '@/lib/config';
 import { testEmailConfig } from '@/lib/emailNotifications';
 
 export async function GET(request: NextRequest) {
+  // SECURITY (messmass#386): require an authenticated admin session.
+  const __denied = await requireSession();
+  if (__denied) return __denied;
+
   const forwardedFor = request.headers.get('x-forwarded-for');
   const identifier = forwardedFor ? forwardedFor.split(',')[0].trim() : 'unknown';
   const rl = checkRateLimit(`email-selftest:${identifier}`, RATE_LIMITS.AUTH);

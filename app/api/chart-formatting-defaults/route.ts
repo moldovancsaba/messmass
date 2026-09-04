@@ -24,11 +24,16 @@ import { NextRequest, NextResponse } from 'next/server';
 import clientPromise from '@/lib/mongodb';
 import config from '@/lib/config';
 import { error as logError } from '@/lib/logger';
+import { requireSession } from '@/lib/apiGuards';
 
 export const dynamic = 'force-dynamic';
 
 // GET - Fetch formatting defaults
 export async function GET() {
+  // SECURITY (messmass#386): require an authenticated admin session.
+  const __denied = await requireSession();
+  if (__denied) return __denied;
+
   try {
     const client = await clientPromise;
 const db = client.db(config.dbName);
@@ -68,6 +73,10 @@ const db = client.db(config.dbName);
 
 // PUT - Update formatting defaults
 export async function PUT(request: NextRequest) {
+  // SECURITY (messmass#386): require an authenticated admin session.
+  const __denied = await requireSession();
+  if (__denied) return __denied;
+
   try {
     const body = await request.json();
     const { defaults } = body;

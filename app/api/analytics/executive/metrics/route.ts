@@ -37,6 +37,7 @@ import clientPromise from '@/lib/mongodb';
 import config from '@/lib/config';
 import { rateLimitMiddleware, RATE_LIMITS } from '@/lib/rateLimit';
 import { info as logInfo, error as logError } from '@/lib/logger';
+import { requireSession } from '@/lib/apiGuards';
 import type { AnalyticsAggregate } from '@/lib/analytics.types';
 
 interface ExecutiveMetrics {
@@ -56,6 +57,10 @@ interface ExecutiveMetrics {
 }
 
 export async function GET(request: NextRequest) {
+  // SECURITY (messmass#386): require an authenticated admin session.
+  const __denied = await requireSession();
+  if (__denied) return __denied;
+
   const startTime = Date.now();
 
   try {

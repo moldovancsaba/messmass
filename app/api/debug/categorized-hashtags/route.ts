@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { MongoClient } from 'mongodb';
+import { requireSession } from '@/lib/apiGuards';
 import config from '@/lib/config';
 
 const MONGODB_URI = process.env.MONGODB_URI || '';
@@ -28,6 +29,10 @@ async function connectToDatabase() {
 }
 
 export async function GET(request: NextRequest) {
+  // SECURITY (messmass#386): require an authenticated admin session.
+  const __denied = await requireSession();
+  if (__denied) return __denied;
+
   try {
     const client = await connectToDatabase();
     const db = client.db(config.dbName);

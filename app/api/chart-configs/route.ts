@@ -6,6 +6,7 @@
 import { NextResponse } from 'next/server';
 import clientPromise from '@/lib/mongodb';
 import config from '@/lib/config';
+import { requireSession } from '@/lib/apiGuards';
 
 const MONGODB_DB = config.dbName;
 
@@ -15,6 +16,10 @@ const MONGODB_DB = config.dbName;
  * HOW: Queries chartConfigurations collection, returns active charts only
  */
 export async function GET() {
+  // SECURITY (messmass#386): require an authenticated admin session.
+  const __denied = await requireSession();
+  if (__denied) return __denied;
+
   try {
     console.log('📊 Fetching chart configurations for visualization manager...');
     

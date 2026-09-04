@@ -6,10 +6,15 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getGridSettingsFromDb, computePercentages, DEFAULT_GRID_SETTINGS } from '@/lib/gridSettings';
 import clientPromise from '@/lib/mongodb';
 import config from '@/lib/config';
+import { requireSession } from '@/lib/apiGuards';
 
 const MONGODB_DB = config.dbName;
 
 export async function GET() {
+  // SECURITY (messmass#386): require an authenticated admin session.
+  const __denied = await requireSession();
+  if (__denied) return __denied;
+
   try {
     const settings = await getGridSettingsFromDb();
     return NextResponse.json({ success: true, settings });
@@ -19,6 +24,10 @@ export async function GET() {
 }
 
 export async function PUT(request: NextRequest) {
+  // SECURITY (messmass#386): require an authenticated admin session.
+  const __denied = await requireSession();
+  if (__denied) return __denied;
+
   try {
     // Optional: require admin auth later
     const body = await request.json();

@@ -2,12 +2,17 @@ import { NextRequest, NextResponse } from 'next/server';
 import { MongoClient } from 'mongodb';
 import clientPromise from '@/lib/mongodb';
 import config from '@/lib/config';
+import { requireSession } from '@/lib/apiGuards';
 import { v4 as uuidv4 } from 'uuid';
 import { getAllHashtagRepresentations } from '@/lib/hashtagCategoryUtils';
 
 // Use centralized Mongo client and config
 
 export async function GET(request: NextRequest) {
+  // SECURITY (messmass#386): require an authenticated admin session.
+  const __denied = await requireSession();
+  if (__denied) return __denied;
+
   try {
     console.log('📊 Fetching hashtag slugs...');
     

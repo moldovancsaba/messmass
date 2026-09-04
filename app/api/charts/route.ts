@@ -4,6 +4,7 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import { getDb } from '@/lib/db';
+import { requireSession } from '@/lib/apiGuards';
 import type { Chart } from '@/lib/report-calculator';
 
 /**
@@ -25,6 +26,10 @@ import type { Chart } from '@/lib/report-calculator';
  * }
  */
 export async function GET(request: NextRequest) {
+  // SECURITY (messmass#386): require an authenticated admin session.
+  const __denied = await requireSession();
+  if (__denied) return __denied;
+
   try {
     const { searchParams } = new URL(request.url);
     const chartIdsParam = searchParams.get('chartIds');
@@ -96,6 +101,10 @@ export async function GET(request: NextRequest) {
  * }
  */
 export async function POST(request: NextRequest) {
+  // SECURITY (messmass#386): require an authenticated admin session.
+  const __denied = await requireSession();
+  if (__denied) return __denied;
+
   try {
     const body = await request.json();
 
@@ -162,6 +171,10 @@ export async function POST(request: NextRequest) {
  * - chartId: Chart ID to delete (required)
  */
 export async function DELETE(request: NextRequest) {
+  // SECURITY (messmass#386): require an authenticated admin session.
+  const __denied = await requireSession();
+  if (__denied) return __denied;
+
   try {
     const { searchParams } = new URL(request.url);
     const chartId = searchParams.get('chartId');

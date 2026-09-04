@@ -6,6 +6,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { ObjectId } from 'mongodb';
 import clientPromise from '@/lib/mongodb';
 import config from '@/lib/config';
+import { requireSession } from '@/lib/apiGuards';
 
 export const dynamic = 'force-dynamic';
 
@@ -23,6 +24,10 @@ export const dynamic = 'force-dynamic';
  * }
  */
 export async function GET(request: NextRequest) {
+  // SECURITY (messmass#386): require an authenticated admin session.
+  const __denied = await requireSession();
+  if (__denied) return __denied;
+
   try {
     const { searchParams } = new URL(request.url);
     const countryIdParam = searchParams.get('countryId');

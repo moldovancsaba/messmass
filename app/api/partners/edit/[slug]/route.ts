@@ -8,6 +8,59 @@ import config from '@/lib/config';
 import { error as logError } from '@/lib/logger';
 import { listReportVariants, resolveReportVariant, updateReportVariant } from '@/lib/reportVariants';
 import { findPartnerByIdentifier } from '@/lib/partnerIdentifier';
+import { getAdminUser } from '@/lib/auth';
+import { hasPageAccess, isPageProtected } from '@/lib/pageAccess';
+
+// WHAT: Page-password gate for this editor surface, checked across ALL of the
+//     partner's identifiers. The page mints its grant under the URL it was
+//     opened with (PartnerEditClient passes `<slug>` or `<slug>::variant=<v>`,
+//     pageType 'partner-edit', where <slug> is usually the viewSlug) — but
+//     PartnerEditorDashboard then PUTs by raw `_id`, so a single-key check
+//     would 401 a legitimate password-holder saving, and a password keyed by
+//     viewSlug would silently not protect the `_id`-form URL at all.
+// WHY: Same page-password model as /api/projects/edit/[slug]: unprotected
+//     page => open; protected => admin session or a grant for any alias of
+//     the same page (messmass#386).
+async function requirePartnerEditPageAccess(
+  partner: { _id: { toString(): string }; viewSlug?: string; legacyViewSlugs?: string[] },
+  slugFromUrl: string,
+  request: NextRequest
+): Promise<NextResponse | null> {
+  const variant = new URL(request.url).searchParams.get('variant');
+  const identifiers = Array.from(new Set([
+    slugFromUrl,
+    partner._id.toString(),
+    ...(typeof partner.viewSlug === 'string' && partner.viewSlug ? [partner.viewSlug] : []),
+    ...(Array.isArray(partner.legacyViewSlugs) ? partner.legacyViewSlugs : []),
+  ]));
+  // WHAT: Base keys are ALWAYS in the set; variant-composed keys join them
+  //     when a variant param is present (any value — 'default' included, since
+  //     the client composes its grant key for the literal 'default' too).
+  // WHY: A password on the base page must cover every variant of it. Checking
+  //     only composed keys let ?variant=virtual-default:partner:<id> (a
+  //     predictable id resolveReportVariant accepts) read base data — and PUT
+  //     stored variants — past a base-page password, because the composed key
+  //     has no page_passwords row of its own (review finding, messmass#386).
+  const keys = variant
+    ? [...identifiers, ...identifiers.map((id) => `${id}::variant=${variant}`)]
+    : identifiers;
+
+  let anyProtected = false;
+  for (const key of keys) {
+    if (await isPageProtected('partner-edit', key)) { anyProtected = true; break; }
+  }
+  if (!anyProtected) return null;
+
+  for (const key of keys) {
+    if (await hasPageAccess('partner-edit', key)) return null;
+  }
+  if (await getAdminUser()) return null;
+
+  return NextResponse.json(
+    { success: false, error: 'This page is password protected.', code: 'PAGE_PASSWORD_REQUIRED' },
+    { status: 401 }
+  );
+}
 
 export const dynamic = 'force-dynamic';
 
@@ -49,6 +102,11 @@ const db = client.db(config.dbName);
         { status: 404 }
       );
     }
+
+    // SECURITY (messmass#386): gate after identity resolution so all of the
+    //     partner's aliases are checked (see requirePartnerEditPageAccess).
+    const __denied = await requirePartnerEditPageAccess(partner, slug, request);
+    if (__denied) return __denied;
 
     const variantSlug = new URL(request.url).searchParams.get('variant');
 
@@ -167,6 +225,11 @@ export async function PUT(
     if (!partner) {
       return NextResponse.json({ success: false, error: 'Partner not found' }, { status: 404 });
     }
+
+    // SECURITY (messmass#386): same alias-aware gate as GET — the editor PUTs
+    //     by raw _id while the page grant is keyed by the URL slug.
+    const __denied = await requirePartnerEditPageAccess(partner, slug, request);
+    if (__denied) return __denied;
 
     const variantSlug = new URL(request.url).searchParams.get('variant');
     if (!variantSlug || variantSlug === 'default') {

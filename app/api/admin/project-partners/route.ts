@@ -3,6 +3,7 @@
 // HOW: GET (list projects), PUT (update partners)
 
 import { NextRequest, NextResponse } from 'next/server';
+import { requireSession } from '@/lib/apiGuards';
 import { ObjectId } from 'mongodb';
 import { getDb } from '@/lib/db';
 import { syncProjectToV3Activity, syncPartnerToV3Entity } from '@/lib/v3/syncEngine';
@@ -16,6 +17,11 @@ import { getAdminUser } from '@/lib/auth';
  * WHY: Admin UI needs to display current relationships
  */
 export async function GET() {
+  // SECURITY (messmass#386): admin-only read; the file-level sweep missed
+  // this GET because other handlers here already carried a guard.
+  const __denied = await requireSession();
+  if (__denied) return __denied;
+
   try {
     const db = await getDb();
     const projectsCollection = db.collection('projects');
