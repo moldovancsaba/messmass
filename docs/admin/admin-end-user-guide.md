@@ -153,6 +153,15 @@ Operational rule:
 - open first when you are doing the work yourself
 - share second when you need a recipient-safe link
 
+What the recipient sees:
+
+- no password set — the link opens the report directly
+- password set (`Add password protection` in the Share dialog) — the link opens
+  an "Access Required" prompt; the password you copied from the dialog unlocks
+  it for 12 hours in that browser. A signed-in admin never sees the prompt.
+- the password cannot be shown again later (only a hash is stored); `Generate
+  new password` replaces it and revokes the old one
+
 ## Bitly, Variables, and Data Dependencies
 
 These tools are part of active delivery, not side utilities:

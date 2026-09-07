@@ -1,8 +1,44 @@
 # {messmass} Development Learnings
 Status: Active
-Last Updated: 2026-02-05T21:01:23.000Z
+Last Updated: 2026-09-07T16:00:00.000Z
 Canonical: No
 Owner: Architecture
+
+## [v12.3.22] - 2026-09-07T16:00:00.000Z — A Dead API Fallback Masked Every Protected-Report Error
+
+### Context
+Sharing a password-protected event report showed "Failed to Load Report — The
+string did not match the expected pattern" on Safari ("Unexpected token '<' … is
+not valid JSON" on Chrome). The API was behaving: `GET /api/projects/stats/[slug]`
+returned a clean 401 `PAGE_PASSWORD_REQUIRED`.
+
+### What Went Wrong
+1. `hooks/useReportData.ts` treated any non-success from the stats API as "maybe a
+   V3 activity" and fetched `/api/v3/activities/<slug>`. That route was specified
+   (`docs/V3/messmass_v3_api_specification.md`) but never built, so Next served an
+   HTML 404 and `response.json()` threw. The catch block displayed the parse error,
+   not the 401 message — every protected report, and every not-found report, was
+   reported as a JSON failure.
+2. `/report/[slug]` was the only report page with no password prompt, so even with
+   the right message a guest had nowhere to enter the password. The F-001 server-side
+   enforcement made this visible; the prompt should have shipped with it.
+
+### Fix
+Gate in the server layout (`app/report/[slug]/layout.tsx`) with the same
+`isPageProtected`/`hasPageAccess`/`ServerPageGate` check partner-report uses; delete
+the fallback. Verified on production: prompt, wrong-password 401, public report
+unaffected.
+
+### Lessons
+- Never `response.json()` a fallback response without checking `res.ok` (or the
+  content type). A missing route answers with HTML, and the parse error will hide
+  the message you actually needed.
+- Safari's wording for that parse failure is "The string did not match the expected
+  pattern" — it looks like a selector or regex bug. Check the network tab for a
+  `text/html` 404 first.
+- A speculative fallback to an unbuilt route is not resilience; it is a second
+  failure mode. Build the route or delete the caller.
+- When a data route gains an auth check, grep every page that calls it for a prompt.
 
 ## [vDOCS] - 2026-09-02T00:00:00.000Z — Two Raw Production Deletions Bypassed db:backup (Permanent Record)
 

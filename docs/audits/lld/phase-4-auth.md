@@ -1,7 +1,7 @@
 # Phase 4 — Authentication, Authorisation & Trust Boundaries (LLD draft)
 
 Status: Active
-Last Updated: 2026-08-15T01:30:00.000Z
+Last Updated: 2026-09-07T16:00:00.000Z
 Canonical: Yes (phase record)
 Owner: Architecture
 
@@ -198,6 +198,13 @@ What is established:
   a password configured.
 - 699 passwords exist across six page types. **`edit` (304) is the largest and
   gates mutation; it has not yet been tested and must be.**
+
+Later state (the bullets above are the 2026-08-15 trace, kept as written):
+F-001 was fixed with a server-issued `page-access` grant cookie
+(`lib/pageAccess.ts`, `requirePageAccess`) — see `findings.md` F-001 for the
+full resolution, the 2026-09-02 public-by-default supersession, and the
+2026-09-07 (v12.3.22) closure of the last client gap, where `/report/[slug]`
+gained its prompt via the server layout.
 
 ## Flow 4.3 — Machine-token integration auth
 

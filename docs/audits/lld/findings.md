@@ -307,6 +307,21 @@ longer describes current data. See F-MM-03 (this entry) and F-MM-02 (the
 permanent operational record of the deletion itself, `docs/operations/
 operations-learnings.md`).
 
+**Client gap closed (2026-09-07, v12.3.22).** The "Resolved (v12.1.59)" work
+guarded `GET /api/projects/stats/[slug]` but never gave `/report/[slug]` a
+prompt — the one report page type with no `PagePasswordLogin`/`ServerPageGate`
+anywhere. Worse, `hooks/useReportData.ts` answered the resulting 401 by
+"falling back" to `GET /api/v3/activities/<slug>`, a route that has never
+existed, so Next's HTML 404 hit `response.json()` and the visitor saw
+"Failed to Load Report — The string did not match the expected pattern"
+(Safari) / "Unexpected token '<'" (Chrome) instead of the API's own message.
+Found when the owner shared a freshly password-protected report on
+2026-09-07. Fixed by gating in `app/report/[slug]/layout.tsx` with the same
+`isPageProtected`/`hasPageAccess`/`ServerPageGate` check partner-report uses
+(admin bypass mirrors the API) and deleting the dead fallback. Verified on
+production: prompt renders, wrong password → 401 "Invalid password", an
+unprotected report still loads with no prompt.
+
 ---
 
 ## F-002

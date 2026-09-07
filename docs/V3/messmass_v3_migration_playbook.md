@@ -1,7 +1,7 @@
 # {messmass} v3 Migration Playbook
 
 **Status**: Operational (Phase 1 & 2 Complete)
-**Last Updated**: 2026-03-13
+**Last Updated**: 2026-09-07
 
 Purpose: Safely migrate from the legacy {messmass} model (Partner/Event/KYC) to the new Activity Intelligence architecture without breaking existing client data or reports.
 
@@ -58,7 +58,7 @@ npx tsx scripts/v3/migrate-v2-v3.ts
 **Implementation**:
 1.  **Compatibility Adapter**: `lib/v3/compatAdapter.ts` transforms V3 Entity/Activity models into V2 shapes at runtime.
 2.  **Native Resolution**: Report pages resolve templates via `/api/v3/reports/resolve` if a V3 ID is provided.
-3.  **Fallback Engine**: `useReportData` hook tries V2 Project lookup first, then falls back to V3 Activity lookup.
+3.  **Fallback Engine**: `usePartnerReportData` tries the V2 Partner lookup first, then falls back to `/api/v3/entities/{id}`. The equivalent V3 Activity fallback in `useReportData` was removed in v12.3.22 — `GET /api/v3/activities/{id}` was never built, so the fallback only ever produced an HTML 404 that masked the real error.
 
 ------------------------------------------------------------------------
 

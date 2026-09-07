@@ -481,7 +481,7 @@ import PartnerSelector from '@/components/PartnerSelector';
 - **Export Actions**: CSV and PDF export buttons
 - **Totals Summary**: Aggregate statistics across all partner events (total events, images, fans, attendees)
 - **Related Events List**: 3-column card grid with event stats (images, fans, merch, attendees)
-- **Password Protection**: Uses PagePasswordLogin component for access control
+- **Password Protection**: server component checks `isPageProtected`/`hasPageAccess` (`lib/pageAccess.ts`) and renders `ServerPageGate` before any data is read. `/report/[slug]` applies the identical gate in `app/report/[slug]/layout.tsx` (v12.3.22); its data route `GET /api/projects/stats/[slug]` enforces via `requirePageAccess`
 - **Responsive Design**: Desktop 3-column grid, mobile single column
 
 **API Endpoint**:

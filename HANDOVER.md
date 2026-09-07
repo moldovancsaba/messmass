@@ -2,6 +2,17 @@
 
 Last verified: 2026-08-17 (v12.1.89, committed/pushed).
 
+**2026-09-07 (v12.3.22, live)** — password-protected event reports work
+end-to-end for the first time: `/report/[slug]` now renders the password
+prompt via its server layout (same gate as partner-report), and the
+`useReportData` fallback to the never-built `GET /api/v3/activities/{id}`
+was deleted — it had been turning every protected report's 401 into
+"Failed to Load Report — The string did not match the expected pattern".
+Details: release notes `[v12.3.22]`, `docs/audits/lld/findings.md` F-001
+(2026-09-07 addendum), `docs/operations/operations-learnings.md`. CI's
+`Verify` job is currently failing at `npm ci` with a GitHub Packages 403
+(sovereignsquad org billing limit) — infra, not code; Vercel deploys fine.
+
 **Fanmass Unified Dashboard & Settings v1 shipped this session**
 (messmass#336–#342, plus fanmass#79–#81 in the sibling repo). `/admin/fanmass`
 went from a static five-card outbound-link grid to a native, tabbed

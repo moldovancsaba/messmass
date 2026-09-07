@@ -1,14 +1,14 @@
 # {messmass} Authentication & Access Control System
 Status: Active
-Last Updated: 2026-09-04T00:00:00.000Z
+Last Updated: 2026-09-07T16:00:00.000Z
 Canonical: Yes
 Owner: Security
 Auth flow verified against code @ 62a47a0d (messmass#349)
 
 **Version:** 12.3.22
-**Last Updated:** 2026-09-04T00:00:00.000Z (UTC)
+**Last Updated:** 2026-09-07T16:00:00.000Z (UTC)
 **Status:** Production
-**Maintainer:** Warp AI Development Team
+**Maintainer:** Security
 
 ---
 
@@ -93,7 +93,7 @@ GET /api/auth/sso/login
 # POST /api/page-passwords
 curl -X POST https://messmass.com/api/page-passwords \
   -H "Content-Type: application/json" \
-  -d '{"pageId":"my-event-slug","pageType":"stats"}'
+  -d '{"pageId":"my-event-slug","pageType":"event-report"}'
 ```
 
 Response:
@@ -193,7 +193,7 @@ export default function PasswordGate({
 │                        CLIENT LAYER                          │
 │  • Browser (Next.js App Router pages)                       │
 │  • HTTP-only cookies (admin-session, csrf-token)            │
-│  • Session storage (page password validation state)         │
+│  • page-access cookie (signed HttpOnly grant, lib/pageAccess) │
 └─────────────────────────────────────────────────────────────┘
                               ↓
 ┌─────────────────────────────────────────────────────────────┐
@@ -207,7 +207,7 @@ export default function PasswordGate({
 ┌─────────────────────────────────────────────────────────────┐
 │                   AUTHENTICATION LAYER                       │
 │  • Admin Session: lib/auth.ts (getAdminUser)                │
-│  • Page Passwords: lib/pagePassword.ts (validatePassword)   │
+│  • Page Passwords: lib/pagePassword.ts + lib/pageAccess.ts   │
 │  • Zero-Trust Rule: Admin OR valid password required        │
 └─────────────────────────────────────────────────────────────┘
                               ↓
@@ -228,6 +228,20 @@ export default function PasswordGate({
 - Never trust client-only checks; always validate server-side
 - Admin session bypasses page password requirements
 
+**Where the password prompt appears** (verified against code @ v12.3.22, 2026-09-07):
+
+| Page type | Page | Prompt rendered by | Data route enforcement |
+|---|---|---|---|
+| `event-report` | `/report/[slug]` | server layout `app/report/[slug]/layout.tsx` → `ServerPageGate` (added v12.3.22; before that the page had **no prompt at all**, so a protected share link crashed with a JSON-parse message) | `requirePageAccess('event-report', slug)` in `GET /api/projects/stats/[slug]` |
+| `partner-report` | `/partner-report/[slug]` | server component → `ServerPageGate` | server component reads the DB only after the check |
+| `organization-report` | `/organization-report/[id]` | none | none (1 password configured; not traced) |
+| `filter` | `/filter/[slug]` | client `PagePasswordLogin` | `requirePageAccess('filter', slug)` |
+| `hashtag` | `/hashtag/[hashtag]` | client `PagePasswordLogin` | none |
+| `edit` | `/edit/[slug]` | client `PagePasswordLogin` | `requirePageAccess('edit', slug)`; `PUT /api/projects` via `requireProjectWrite` |
+| `partner-edit` / `organization-edit` | `/partner-edit/[slug]`, `/organization-edit/[id]` | client `PagePasswordLogin` | `requirePartnerWrite` / gap (see `docs/_audit/api-reference.md`) |
+
+All prompts submit to `PUT /api/page-passwords`, which mints the `page-access` grant cookie; a signed-in admin bypasses every prompt and every data-route check.
+
 **Admin Session (DB-Backed):**
 - Admins log in via DoneIsBetter SSO (OAuth2). The email+password login is retired (`POST /api/admin/login` → 410 Gone); the `users` collection stores the session/role, not a login password.
 - Successful login creates base64-encoded JSON session token
@@ -235,7 +249,7 @@ export default function PasswordGate({
 - Cookie: HttpOnly, SameSite=Lax, Secure (production), 7-day expiration
 
 **Page-Specific Passwords:**
-- Each page (stats|edit|filter) can have unique MD5-style token (32 hex chars)
+- Each page (`event-report`, `partner-report`, `organization-report`, `edit`, `partner-edit`, `organization-edit`, `filter`, `hashtag`) can have a unique MD5-style token (32 hex chars)
 - Generated via `randomBytes(16).toString('hex')` (Node crypto)
 - Stored in MongoDB `pagePasswords` collection with usage tracking
 - Optional expiration date (`expiresAt`) for temporary access
