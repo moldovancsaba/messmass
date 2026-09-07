@@ -1,8 +1,28 @@
 # {messmass} Release Notes
 Status: Active
-Last Updated: 2026-09-04T14:00:00.000Z
+Last Updated: 2026-09-07T15:30:00.000Z
 Canonical: No
 Owner: Operations
+
+## [v12.3.22] — 2026-09-07T15:30:00.000Z
+
+### Fixed (hotfix)
+- **A shared, password-protected event report showed "Failed to Load Report —
+  The string did not match the expected pattern" (Safari wording; Chrome:
+  "Unexpected token '<' … is not valid JSON") instead of a password prompt.**
+  Two defects stacked. (1) `/report/[slug]` never had a password prompt at all
+  (partner-report, filter, hashtag and edit pages do), so once
+  `/api/projects/stats/[slug]` started enforcing page passwords server-side
+  (F-001) a guest holding the link and the password had nowhere to enter it.
+  (2) `hooks/useReportData.ts` answered every non-success from the stats API by
+  "falling back" to `/api/v3/activities/<slug>` — a route that has never
+  existed — so Next served its HTML 404 page and `response.json()` threw,
+  masking the API's real "This page is password protected." message. The
+  event report is now gated in its server layout (`app/report/[slug]/layout.tsx`)
+  with the same `isPageProtected`/`hasPageAccess`/`ServerPageGate` check as
+  partner-report; admins bypass exactly as the API does. The dead V3 fallback
+  is deleted, so a real 401/404 message reaches the screen. Public reports
+  (no password) are untouched by both changes.
 
 ## [v12.3.21] — 2026-09-04T14:00:00.000Z
 

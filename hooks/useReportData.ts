@@ -5,7 +5,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import type { Report } from '@/lib/report-resolver';
 import type { Chart } from '@/lib/report-calculator';
-import { mapActivityToV2Project, mapEntityToV2Partner } from '@/lib/v3/compatAdapter';
+import { mapEntityToV2Partner } from '@/lib/v3/compatAdapter';
 
 /**
  * WHAT: Project data with stats
@@ -104,38 +104,10 @@ export function useReportData(slug: string | null): UseReportDataResult {
       const projectData = await projectRes.json();
 
       if (!projectData.success) {
-        // WHAT: Fallback to V3 Activity if V2 Project not found
-        // WHY: Support V3-native activities on the same report page
-        const activityRes = await fetch(`/api/v3/activities/${slug}`, { cache: 'no-store' });
-        const activityData = await activityRes.json();
-
-        if (activityData._id) {
-          // Fetch parent entity for branding
-          const entityRes = await fetch(`/api/v3/entities/${activityData.ownerEntityId}`, { cache: 'no-store' });
-          const entityData = await entityRes.json();
-          
-          const project = mapActivityToV2Project(activityData, entityData);
-          if (!project) throw new Error('Failed to map V3 activity to report');
-
-          // Resolve V3 Report
-          const reportRes = await fetch(`/api/v3/reports/resolve?activityId=${activityData._id}`, { cache: 'no-store' });
-          const reportData = await reportRes.json();
-
-          if (!reportData.success) throw new Error('Failed to resolve V3 report');
-
-          const chartsRes = await fetch('/api/chart-config/public', { cache: 'no-store' });
-          const chartsData = await chartsRes.json();
-
-          setData({
-            project: project as any,
-            report: reportData.report,
-            charts: chartsData.configurations || [],
-            resolvedFrom: reportData.resolvedFrom,
-            source: reportData.source
-          });
-          return;
-        }
-
+        // WHAT: Surface the API's own error (401 "password protected", 404 "not found").
+        // WHY: A "fallback" to /api/v3/activities/<slug> used to sit here. That route
+        //     never existed, so every non-success answer became an HTML 404 and a JSON
+        //     parse error masked the real message on every protected report.
         throw new Error(projectData.error || 'Failed to load project');
       }
 
