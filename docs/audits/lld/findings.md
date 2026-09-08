@@ -42,7 +42,7 @@ claim is structural rather than demonstrated, it says so.
 | [F-003](#f-003) | High | Open | Middleware admin gate checks cookie presence, never validity | 4 |
 | [F-004](#f-004) | High | Open | v3 organisation scoping is not enforced | 4 |
 | [F-005](#f-005) | Medium | Open | Identical-branch ternary grants every user the same permissions | 4 |
-| [F-006](#f-006) | Medium | Open | Two routes read cookie names nothing ever sets | 4 |
+| [F-006](#f-006) | Medium | **Fixed — routes removed** | Two routes read cookie names nothing ever sets | 4 |
 | [F-007](#f-007) | Low | Open | 202 orphaned page passwords for a deleted route | 4 |
 | [F-008](#f-008) | Low | Open | `lib/authLockout.ts` is dead code | 4 |
 
@@ -1080,7 +1080,12 @@ it works.
 
 ### Two routes read cookie names nothing ever sets
 
-**Severity: Medium — functional, fails closed.**
+**Severity: Medium — functional, fails closed. Fixed — both routes removed.**
+
+Re-verified 2026-09-08: `app/api/me/route.ts` and `app/api/images/route.ts` no
+longer exist. Both were deleted in `c56e70af` (2026-08-20, "remove vestigial
+WebSocket stack + dead code"), which is on `main`. The description below is
+kept for the record and describes the code as it stood before that commit.
 
 `app/api/me/route.ts:26,41` and `app/api/images/route.ts:36,37` read
 `admin_session` and `page_auth` (underscores). The session cookie is
