@@ -26,7 +26,7 @@ unification milestone.
 - **camera**: `package.json` + its release-notes file.
 - **fanmass**: `frontend/package.json` + `app = FastAPI(version=...)`.
 - **try-on**: `package.json` + the app-server/worker version banners.
-- **savetheworld**: `package.json` + `docs/RELEASE_NOTES.md`.
+- **savetheworld**: `package.json` + its release-notes file under `docs/`.
 
 ## Rule from here
 Any release bumps ALL FIVE to the same new version in the same coordinated

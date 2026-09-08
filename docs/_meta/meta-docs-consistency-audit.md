@@ -1,15 +1,15 @@
 # Docs Consistency Audit
 Status: Active
-Last Updated: 2026-09-08T11:22:39.367Z
+Last Updated: 2026-09-08T11:23:14.495Z
 Canonical: Yes
 Owner: Documentation
 
 Package version: 12.3.31
 Current docs scanned: 145
-Failures: 1
+Failures: 0
 Warnings: 0
 
-## Failures
+## Result
 
-- docs/_audit/fleet-version-policy.md: References obsolete root governance file path.
+No current documentation consistency failures found.
 
