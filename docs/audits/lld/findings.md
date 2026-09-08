@@ -32,7 +32,7 @@ claim is structural rather than demonstrated, it says so.
 | [F-021](#f-021) | Medium | Open | The only scheduled cron has logged once in ten months | 3 |
 | [F-019](#f-019) | Medium | Open | `lib/auditLog.ts` is dead — the API write audit trail was never wired up | 3 |
 | [F-017](#f-017) | Medium | **Fixed** | Content-asset deletion guard was inert and its usage panel queried a non-existent collection | 3 |
-| [F-018](#f-018) | Low | Open | A missing report renders a JSON parse error instead of "not found" | 2 |
+| [F-018](#f-018) | Low | **Fixed** | A missing report renders a JSON parse error instead of "not found" | 2 |
 | [F-015](#f-015) | Medium | **Fixed** | Admin preview and partner report format the same number differently | 2 |
 | [F-016](#f-016) | Low | Open | `lib/layoutGrammarValidation.ts` is dead code | 2 |
 | [F-012](#f-012) | Medium | **Fixed** | CSP granted `unsafe-eval` app-wide for a reason that stopped being true | 2 |
