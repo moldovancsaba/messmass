@@ -1,8 +1,20 @@
 # {messmass} Release Notes
 Status: Active
-Last Updated: 2026-09-08T12:00:00.000Z
+Last Updated: 2026-09-08T13:30:00.000Z
 Canonical: No
 Owner: Operations
+
+## [v12.3.31] — 2026-09-08T13:30:00.000Z
+
+### Changed
+- **savetheworld joins the fleet.** `docs/_audit/fleet-architecture.md` gains
+  the sixth system and edge E7 (savetheworld pulls the pledge wall from
+  camera's `/api/internal/savetheworld/pledges` with the shared secret),
+  verified both sides; the "caller side unverified" note is gone. The version
+  policy and contract-first rule now cover five apps.
+- **Inventory scanner** finds Next.js routes under `src/app/api` as well as
+  `app/api` (savetheworld uses `src/`). Vendored copies synced.
+- Fleet version 12.3.31.
 
 ## [v12.3.30] — 2026-09-08T12:00:00.000Z
 

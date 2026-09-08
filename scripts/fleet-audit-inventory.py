@@ -83,12 +83,14 @@ def source_files(root: Path, exts: tuple[str, ...]) -> list[Path]:
 
 def scan_next_routes(repo: Path) -> list[dict]:
     routes = []
-    api_root = repo / "app" / "api"
-    if not api_root.is_dir():
+    # Next.js app router lives at app/ or src/app/ (savetheworld uses src/).
+    app_root = next((r for r in (repo / "app", repo / "src" / "app") if (r / "api").is_dir()), None)
+    if app_root is None:
         return routes
+    api_root = app_root / "api"
     for route_file in sorted(api_root.rglob("route.ts")):
         rel = route_file.relative_to(repo)
-        url = "/" + str(route_file.parent.relative_to(repo / "app")).replace("\\", "/")
+        url = "/" + str(route_file.parent.relative_to(app_root)).replace("\\", "/")
         text = route_file.read_text(errors="replace")
         methods = [m for m in HTTP_METHODS if re.search(rf"export\s+(async\s+)?function\s+{m}\b|export\s+const\s+{m}\b", text)]
         markers = sorted({m for m in AUTH_MARKERS if m in text})

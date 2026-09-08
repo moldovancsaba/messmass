@@ -1,8 +1,8 @@
 {
  "_meta": {
-  "generated": "2026-09-08T10:49:42+00:00",
+  "generated": "2026-09-08T11:22:41+00:00",
   "repo": "messmass-fleet",
-  "head": "61c27e79",
+  "head": "d059a0be",
   "counts": {
    "endpoints": 194,
    "collections": 61,

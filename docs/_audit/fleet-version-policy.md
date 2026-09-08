@@ -5,12 +5,12 @@ shared version and bump together from here. This is the "same version from now
 on" foundation.
 
 ## The unified version
-`12.3.30` — re-aligned 2026-09-08 (messmass, camera, fanmass, try-on).
+`12.3.31` — re-aligned 2026-09-08 (messmass, camera, fanmass, try-on).
 
 History: `12.2.0` was adopted by all four on 2026-08-20, but the apps then
 bumped independently (messmass reached 12.3.27, camera 12.2.24, fanmass and
 try-on 12.2.3) because the rule below was documented, not enforced. On
-2026-09-08 the three siblings rose to messmass's next number, 12.3.30, in one
+2026-09-08 the three siblings rose to messmass's next number, 12.3.31, in one
 coordinated change. Highest-wins again: messmass's `version:verify` gate only
 moves forward.
 
@@ -26,9 +26,10 @@ unification milestone.
 - **camera**: `package.json` + its release-notes file.
 - **fanmass**: `frontend/package.json` + `app = FastAPI(version=...)`.
 - **try-on**: `package.json` + the app-server/worker version banners.
+- **savetheworld**: `package.json` + `docs/RELEASE_NOTES.md`.
 
 ## Rule from here
-Any release bumps ALL FOUR to the same new version in the same coordinated
+Any release bumps ALL FIVE to the same new version in the same coordinated
 change, even if an app has no functional change that cycle (a version-only
 commit is acceptable). The fleet map's edge SHAs and this file are updated in
 the same PR. Enforced by the Wave 4 anti-rot checks (messmass#354/#355).

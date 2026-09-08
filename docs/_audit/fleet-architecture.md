@@ -8,9 +8,9 @@ camera/fanmass/try-on carry pointers to it. Header-less by design (docs:audit
 version gate).
 
 Verified messmass `44e2d007` · camera `88c6839` · fanmass `5d9a032` ·
-try-on `c8ba623` (2026-09-08).
+try-on `c8ba623` · savetheworld `2239855` (2026-09-08).
 
-## The five systems
+## The six systems
 
 | System | Repo | Runs on | Role |
 |---|---|---|---|
@@ -19,13 +19,12 @@ try-on `c8ba623` (2026-09-08).
 | **fanmass** | moldovancsaba/fanmass | local Mac (launchd supervisor, loopback-bound) | Vision-model image analysis; always the outbound caller (no public inbound address) |
 | **try-on** | moldovancsaba/try-on | local Mac (launchd: app-server + worker, loopback-bound) | Virtual try-on renders; Atlas queue worker + local render server |
 | **SSO** | moldovancsaba/sso | sso.doneisbetter.com | Shared OAuth2/OIDC identity + per-app permission store (audited consumer-side only) |
+| **savetheworld** | moldovancsaba/savetheworld | Vercel (savetheplanet.vercel.app) | "Choose better" marketplace of companies and offers; wallet passes; pledge wall pulled from camera |
 
 Two Mongo worlds: messmass and fanmass each own a database; **camera and
 try-on share one Atlas database** (the try-on job queue). fanmass reaches
-messmass and camera only over HTTP. camera additionally exposes
-`/api/internal/savetheworld/{events,partners,pledges}` (`x-savetheworld-secret`
-= `CAMERA_SAVETHEWORLD_INTERNAL_SECRET`, camera lib/savetheworld/internal.ts)
-to a savetheworld app that is outside this map — caller side unverified.
+messmass and camera only over HTTP. savetheworld owns its own
+database and reaches camera only over HTTP (E7).
 
 ## Edge contracts
 
@@ -213,6 +212,27 @@ Verified consumer-side only (SSO repo not in scope).
   YOLO; Google Drive (local mount preferred over REST); Wikipedia + TheSportsDB
   egress from the entity-logo researcher (now documented in
   docs/current-implementation.md and docs/entity-resolution.md).
+
+### E7 · savetheworld → camera (pledge wall)
+Verified camera `88c6839` · savetheworld `2239855`. Direction is savetheworld-pulls.
+- **Caller**: savetheworld `src/lib/pledges/camera.ts` — `GET
+  {CAMERA_BASE_URL}/api/internal/savetheworld/pledges?eventId=<CAMERA_PLEDGE_EVENT_ID>&limit=<n>`
+  with header `x-savetheworld-secret: CAMERA_SAVETHEWORLD_INTERNAL_SECRET`; any
+  missing variable or non-2xx answer yields an empty wall, silently (`:22`, `:33`).
+- **Callee**: camera `app/api/internal/savetheworld/pledges/route.ts` —
+  `assertInternalSavetheworldSecret` (lib/savetheworld/internal.ts) then
+  submissions matched on `eventId` or `eventIds[]`; only share-visible
+  submissions are returned, never e-mail addresses. `/events` and `/partners`
+  under the same prefix have no caller in savetheworld (deprecation candidates
+  in camera's api-reference).
+- **Capture side**: the pledge CTA links to camera's public capture page for
+  the event (`NEXT_PUBLIC_CAMERA_PLEDGE_URL`); the submission is created in
+  camera, so the wall is only as full as camera's moderation queue lets it be.
+  State on 2026-09-08: camera event `6a8dd2092eda4880debc333b`
+  ("savetheworld — Take the Pledge") exists with 0 submissions.
+- savetheworld shares SSO (E5) as a PKCE + client-secret OAuth client
+  (redirect `https://savetheplanet.vercel.app/api/oauth/callback`) and ImgBB
+  for admin uploads; it writes nothing into any other app.
 
 ## Runtime topology
 - **Vercel**: messmass, camera. Redeploy on push to main; crons via vercel.json
