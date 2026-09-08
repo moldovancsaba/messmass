@@ -270,8 +270,11 @@ def broken_links(repo: Path, md: Path, text: str) -> list[tuple[str, str]]:
         except OSError:
             resolved = candidate
         if not resolved.exists():
-            # repo-root-relative links are common in this fleet's docs
-            root_rel = (repo / t).resolve(strict=False)
+            # repo-root-relative links are common in this fleet's docs. A link that
+            # starts with "/" is always taken as repo-root-relative, never as a path on
+            # the author's machine: a machine-absolute link resolves on one laptop and
+            # on nothing else (found in CI, where /Users/... does not exist).
+            root_rel = (repo / t.lstrip("/")).resolve(strict=False)
             if root_rel.exists():
                 continue
             out.append((target, str(resolved.relative_to(repo.resolve()) if str(resolved).startswith(str(repo.resolve())) else resolved)))
@@ -310,6 +313,12 @@ def freshness_warnings(repo: Path) -> list[str]:
     warnings: list[str] = []
     seen: set[str] = set()
     me = repo_slug(repo)
+    shallow = subprocess.run(["git", "-C", str(repo), "rev-parse", "--is-shallow-repository"], capture_output=True, text=True).stdout.strip() == "true"
+    if shallow:
+        # A shallow CI checkout (fetch-depth 1) cannot count commits behind HEAD; the
+        # stamps are measured on developer machines instead of producing false alarms.
+        print("freshness: skipped on a shallow checkout (run locally on a full clone)")
+        return warnings
     for md in sorted(files):
         for named_repo, sha in STAMP_RE.findall(md.read_text(errors="replace")):
             # Stamps naming another fleet repo cannot be measured here (and a 7-char

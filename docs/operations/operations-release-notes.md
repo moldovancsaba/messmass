@@ -1,8 +1,21 @@
 # {messmass} Release Notes
 Status: Active
-Last Updated: 2026-09-08T11:30:00.000Z
+Last Updated: 2026-09-08T12:00:00.000Z
 Canonical: No
 Owner: Operations
+
+## [v12.3.30] — 2026-09-08T12:00:00.000Z
+
+### Fixed
+- **First CI run after the vendored-GDS switch caught two things the local
+  gate could not.** `AGENTS.md` linked three files by this machine's absolute
+  path (`/Users/Shared/Projects/messmass/...`), which resolves on one laptop
+  and nowhere else; the links are relative now. The docs gate treats any link
+  starting with `/` as repo-root-relative from here on, and skips the
+  contract-freshness measurement on a shallow checkout (GitHub's
+  `fetch-depth: 1` cannot count commits behind HEAD) instead of warning that
+  every stamp is unknown. Same script synced to camera, fanmass and try-on.
+  Fleet version 12.3.30.
 
 ## [v12.3.29] — 2026-09-08T11:30:00.000Z
 
