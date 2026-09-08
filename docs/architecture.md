@@ -1,6 +1,6 @@
 # {messmass} Architecture Documentation
 Status: Active
-Last Updated: 2026-06-25
+Last Updated: 2026-09-09
 Canonical: No
 Owner: Architecture
 
@@ -833,7 +833,7 @@ curl "http://localhost:3000/api/report-config/PROJECT_SLUG?type=project"
 
 ### Design System
 - All design tokens documented in [DESIGN_SYSTEM.md](docs/design/design-system.md)
-- TailAdmin V2 flat design (no glass-morphism)
+- The "TailAdmin V2 flat design" system described in this 4.2.0-era section has since been superseded by GDS (the fleet-wide General Design System — `@sovereignsquad/gds-admin`/`gds-core`/`gds-theme` on Mantine 8); see the Technology Stack section below and `docs/design/design-system.md`, which explicitly says not to rely on TailAdmin-era guidance or removed utility classes.
 - **ALL CSS card classes REMOVED**: `.glass-card`, `.content-surface`, `.section-card`, `.admin-card`
 - **ONLY USE**: `<ColoredCard>` component for all card UI
 - Current components: `ColoredCard`, `AdminLayout`, `Sidebar`, `TopHeader`
@@ -857,12 +857,15 @@ A centralized configuration module lives at `lib/config.ts`. It provides a singl
 - Server-only:
   - MONGODB_URI
   - MONGODB_DB
-  - ADMIN_PASSWORD
   - SSO_BASE_URL
+  - SSO_CLIENT_ID
+  - SSO_CLIENT_SECRET
   - APP_BASE_URL
   - API_BASE_URL
 - Client-exposed (browser):
   - NEXT_PUBLIC_APP_URL
+
+Note: `ADMIN_PASSWORD` is not a config key here — local admin login was removed; admin auth is SSO-only (see "Authentication Model" below).
 
 ### Resolution order and precedence
 1) Environment variables (authoritative for secrets)
@@ -2538,30 +2541,33 @@ The Security Enhancements system provides comprehensive API protection through r
 ### Key Components
 
 #### 1. Rate Limiting Module (`lib/rateLimit.ts`)
-- **Algorithm**: Token bucket with configurable limits per endpoint type
-- **Endpoint Types**:
-  - Authentication: 5 requests/minute (login, auth checks)
-  - Write Operations: 30 requests/minute (POST/PUT/DELETE)
-  - Read Operations: 100 requests/minute (GET)
-  - Public Pages: 100 requests/minute (stats, filter pages)
-- **Storage**: In-memory with automatic cleanup (suitable for single-instance deployment)
-- **Response Headers**: `X-RateLimit-Limit`, `X-RateLimit-Remaining`, `X-RateLimit-Reset`
-- **Cooldown**: 5-minute cooldown after rate limit exceeded
+- **Algorithm**: Fixed-window request counter per identifier (not a token bucket) — a window opens on the first request and resets once `resetTime` has passed
+- **Endpoint Types** (current `RATE_LIMITS`, one config per endpoint class):
+  - Auth (`/api/admin/login`, `/api/auth/*`, excluding DELETE/logout): 5 requests / 15 minutes
+  - Write (POST/PUT/PATCH/DELETE, generally): 30 requests/minute
+  - Read (GET, generally): 500 requests/minute
+  - Public (`/stats/*`, `/hashtag/*`): 60 requests/minute
+  - Contact form (`POST /api/contact`): 5 requests / 15 minutes
+  - PDF export (`app/api/export/pdf`): 6 requests/minute
+- **Storage**: In-memory `Map`, keyed by `<client-identifier>:<pathname>`, with automatic cleanup (suitable for single-instance deployment)
+- **Response Headers**: `X-RateLimit-Limit`, `X-RateLimit-Remaining`, `X-RateLimit-Reset` (plus `Retry-After` when a request is blocked)
+- **Retry-After**: Not a fixed cooldown — computed per request as the time remaining until that identifier's window resets
 
 **Features**:
-- Per-IP tracking (supports `X-Forwarded-For` for proxied environments)
-- Token refill based on elapsed time since last request
-- Automatic bucket cleanup (removes inactive buckets after 1 hour)
-- Production-ready logging integration
+- Per-IP tracking (`X-Forwarded-For`, falling back to `X-Real-Ip` then the `Host` header)
+- Entries older than 24 hours are swept every hour by an unref'd interval timer (so it never keeps a process, including a test run, alive on its own)
+- Structured logging integration via `lib/logger.ts` (`logRateLimitExceeded`)
 
-**Configuration**:
+**Configuration** (`RATE_LIMITS`, abbreviated):
 ```typescript
-const RATE_LIMITS = {
-  authentication: { tokens: 5, windowMs: 60000 },
-  write: { tokens: 30, windowMs: 60000 },
-  read: { tokens: 100, windowMs: 60000 },
-  public: { tokens: 100, windowMs: 60000 },
-};
+export const RATE_LIMITS = {
+  AUTH:    { windowMs: 15 * 60 * 1000, maxRequests: 5 },
+  WRITE:   { windowMs: 60 * 1000,      maxRequests: 30 },
+  READ:    { windowMs: 60 * 1000,      maxRequests: 500 },
+  PUBLIC:  { windowMs: 60 * 1000,      maxRequests: 60 },
+  CONTACT: { windowMs: 15 * 60 * 1000, maxRequests: 5 },
+  EXPORT:  { windowMs: 60 * 1000,      maxRequests: 6 },
+} as const;
 ```
 
 #### 2. CSRF Protection Module (`lib/csrf.ts`)
@@ -4117,47 +4123,55 @@ For complete documentation, API reference, usage patterns, and technical decisio
 
 | Technology | Version | Purpose |
 |------------|---------|----------|
-| **Next.js** | 15.5.4 | React framework with App Router (RSC) |
-| **React** | 18.3.1 | UI library with concurrent features |
-| **TypeScript** | 5.6.3 | Type safety and developer experience (strict mode) |
-| **Chart.js** | 4.5.0 | Chart rendering library |
-| **react-chartjs-2** | 5.3.0 | React wrapper for Chart.js |
-| **html2canvas** | 1.4.1 | PNG export for charts |
-| **jsPDF** | 3.0.1 | PDF generation for exports |
-| **js-cookie** | 3.0.5 | Client-side cookie management |
-| **uuid** | 11.1.0 | Unique identifier generation |
+| **Next.js** | 15.5.24 | React framework with App Router (RSC) |
+| **React** | ^19.2.6 | UI library with concurrent features |
+| **TypeScript** | ^5.6.3 | Type safety and developer experience (strict mode) |
+| **Chart.js** | ^4.5.1 | Chart rendering library |
+| **react-chartjs-2** | ^5.3.1 | React wrapper for Chart.js |
+| **js-cookie** | ^3.0.5 | Client-side cookie management |
+| **uuid** | ^14.0.0 | Unique identifier generation |
+
+**Chart & report export**: PNG export uses Chart.js's own `toBase64Image()` (`hooks/useChartExport.ts`) — no DOM-rasterization library involved. PDF export is server-side, driven by a real headless Chromium (`puppeteer-core` + `@sparticuz/chromium-min` in production, `puppeteer` in local dev) rendering the report's own print CSS (`app/api/export/pdf/route.ts`); there is no client-side html2canvas/jsPDF path.
 
 **Styling**:
 - **CSS Modules**: Component-scoped styling
 - **CSS Variables**: Design tokens (`--mm-*` prefix) via `app/styles/theme.css`
-- **No Tailwind**: Fully custom design system (TailAdmin V2 flat design)
-- **No External UI Library**: All components built from scratch
+- **GDS (General Design System)**: The fleet-wide design system (`@sovereignsquad/gds-admin`, `@sovereignsquad/gds-core`, `@sovereignsquad/gds-theme`, vendored under `vendor/gds/`), built on Mantine 8, with Tabler icons through GDS-compatible wrappers. UI/UX work uses GDS components and vocabulary first; local wrappers (e.g. `<ColoredCard>`) exist only to encode Messmass-specific domain behavior on top of GDS primitives. The earlier from-scratch "TailAdmin V2" design system has been retired — see `docs/design/design-system.md`.
 
 ### Backend
 
 | Technology | Version | Purpose |
 |------------|---------|----------|
-| **MongoDB** | 6.8.0 | NoSQL database (MongoDB Atlas cloud) |
-| **Next.js API Routes** | 15.5.4 | REST API endpoints (serverless functions) |
-| **Node.js** | ≥18.0.0 | JavaScript runtime (server-side) |
-| **dotenv** | 17.2.1 | Environment variable management |
+| **MongoDB** | ^6.8.0 | NoSQL database (MongoDB Atlas cloud) |
+| **Next.js API Routes** | 15.5.24 | REST API endpoints (serverless functions) |
+| **Node.js** | >=24.0.0 <25.0.0 | JavaScript runtime (server-side) |
+| **dotenv** | ^17.4.2 | Environment variable management |
 
 **External APIs**:
 - **Bitly API v4**: Link shortening and analytics
 
 **Authentication**:
-- **Custom Session-Based Auth**: HTTP-only cookies (no NextAuth.js)
-- **Password-Based**: Admin login with bcrypt hashing
-- **Page Protection**: Per-page password gates for public stats
+- **SSO-Based Admin Auth**: Interactive admin sign-in is exclusively DoneIsBetter SSO (OAuth2 authorization-code flow); the legacy local email/password login (`POST /api/admin/login`) is retired and returns **410 Gone**. Successful SSO login sets an HTTP-only, signed-JWT `admin-session` cookie (see "Authentication Model" below).
+- **Page Protection**: Per-page password gates for public stats (bcrypt-hashed, MongoDB-stored)
+
+### Authentication Model
+
+{messmass} has three independent auth layers plus one cross-app bridge — there is no single "the" auth system:
+
+1. **Admin session (SSO)** — Interactive sign-in is exclusively the DoneIsBetter SSO OAuth2 authorization-code flow: `/api/auth/sso/login` redirects to `SSO_BASE_URL/api/oauth/authorize`; `/api/auth/sso/callback` exchanges the code at `SSO_BASE_URL/api/oauth/token`, resolves the caller's role from the SSO central per-app permission store, and sets an HttpOnly, signed-JWT `admin-session` cookie (7-day expiry) plus `auth-source=sso`. The legacy local email/password login (`POST /api/admin/login`) is retired and returns **410 Gone** — there are no admin passwords stored in MongoDB to check. Protected `/admin/**` and `/dashboard/**` routes read this cookie via `getAdminUser()` (`lib/auth.ts`); `middleware.ts` itself only checks that the cookie is *present* before letting a request through, not that it is a valid, unexpired session — see "Security Measures" below and messmass#392 (LLD finding F-003).
+2. **Page passwords** — Per-page/event password gates (`lib/pagePassword.ts`, bcrypt-hashed, MongoDB-stored) let a non-admin viewer (an employee, a client) reach a specific `/stats/[slug]` or `/edit/[slug]` page without an admin session. A validated password is recorded as a server-issued `page-access` grant cookie (`lib/pageAccess.ts`), entirely independent of the `admin-session` cookie.
+3. **Machine/API tokens** — Non-browser callers authenticate with a bearer credential instead of a cookie, and both mechanisms are exempt from CSRF (which only defends cookie-borne authority): the fleet's `/api/integrations/fanmass/**` routes accept a single shared integration token (`requireFanmassIntegrationAuth`, `lib/fanmassIntegration.ts`) compared against one configured secret; the public API (`/api/public/**`) instead accepts a per-user Bearer token (`requireAPIAuth`, `lib/apiAuth.ts`) gated by that user's own `apiKeyEnabled`/`apiWriteEnabled` flags, with usage tracked per user.
+
+**Camera integration**: camera (a sibling app in the same fleet) has its own separate shared secret (`config.cameraProvisionToken`, checked by `assertCameraSecret()` in `lib/cameraClient.ts`) for its `/api/integrations/camera/**` routes. One of those, `POST /api/integrations/camera/sso-session`, lets a user who already authenticated in camera via the same DoneIsBetter SSO get a real messmass `admin-session` cookie without a second OAuth round-trip — it independently re-validates the forwarded SSO access token against `SSO_BASE_URL` (it does not trust a role or user id asserted by the caller).
 
 ### Development Tools
 
 | Tool | Version | Purpose |
 |------|---------|----------|
-| **ESLint** | 8.57.0 | JavaScript/TypeScript linting |
-| **eslint-config-next** | 15.5.4 | Next.js-specific ESLint rules |
-| **TypeScript Compiler** | 5.6.3 | Type checking (tsc --noEmit) |
-| **npm** | ≥8.0.0 | Package manager |
+| **ESLint** | ^8.57.0 | JavaScript/TypeScript linting |
+| **eslint-config-next** | ^15.5.18 | Next.js-specific ESLint rules |
+| **TypeScript Compiler** | ^5.6.3 | Type checking (tsc --noEmit) |
+| **npm** | >=8.0.0 | Package manager |
 
 **Build Tools**:
 - Next.js built-in bundler (Turbopack in dev mode)
@@ -4170,21 +4184,26 @@ For complete documentation, API reference, usage patterns, and technical decisio
 |---------|----------|
 | **Vercel** | Next.js app hosting (automatic deployment from GitHub main) |
 | **MongoDB Atlas** | Cloud database (free tier or paid) |
-| **Vercel Edge Network** | CDN for static assets and API routes |
+| **Vercel CDN** | Caching for static assets (`_next/static/*`) |
 | **GitHub** | Source control and CI/CD trigger |
+
+API routes run on Vercel's **Node.js serverless runtime**, not the Edge Network — every route that declares a runtime explicitly sets `export const runtime = 'nodejs'` (see e.g. `app/api/export/pdf/route.ts`, which needs real Node APIs for headless-Chromium PDF export), and none declare `'edge'`.
 
 **Environment Configuration**:
 ```bash
 # Required in .env.local and Vercel Environment Variables
 MONGODB_URI=mongodb+srv://...
 MONGODB_DB=messmass
-ADMIN_PASSWORD=secure_password
+SSO_BASE_URL=...
+SSO_CLIENT_ID=...
+SSO_CLIENT_SECRET=...
 
 # Optional (Bitly integration)
 BITLY_ACCESS_TOKEN=...
 BITLY_ORGANIZATION_GUID=...
 BITLY_GROUP_GUID=...
 ```
+Note: `ADMIN_PASSWORD` is no longer applicable — local admin login was removed (`POST /api/admin/login` now returns 410 Gone); admin auth is SSO-only (`SSO_BASE_URL`/`SSO_CLIENT_ID`/`SSO_CLIENT_SECRET`), see "Authentication Model" below.
 
 ### Project Slug Access Control
 
@@ -4268,18 +4287,18 @@ const editable = await findProjectByEditSlug(editSlug);
 5. **Lazy Loading**: Bitly links and large datasets loaded on-demand
 6. **CSS Modules**: Tree-shakable scoped styles (no runtime CSS-in-JS)
 7. **Image Optimization**: Next.js automatic image optimization
-8. **Edge Functions**: API routes deployed to Vercel Edge Network
+8. **Node.js Serverless Functions**: API routes run on Vercel's Node.js serverless runtime (not the Edge Network — see "Infrastructure & Deployment" above)
 
 ### Security Measures
 
 1. **HTTP-Only Cookies**: Session tokens never accessible via JavaScript
-2. **CSRF Protection**: SameSite cookie attribute
-3. **Password Hashing**: Bcrypt for admin passwords (if implemented)
+2. **CSRF Protection**: Double-submit cookie pattern (`lib/csrf.ts`), enforced in `middleware.ts` for state-changing methods
+3. **Password Hashing**: Bcrypt for page passwords (`lib/pagePassword.ts`) — admin auth has no local password to hash; see "Authentication Model" above
 4. **Environment Variables**: Secrets never committed to repository
-5. **API Authentication**: Middleware validates session on all protected routes
+5. **API Authentication**: `middleware.ts` only checks that the `admin-session` cookie is *present* before allowing `/admin/**` through, not that it is valid — actual session validation happens in each route/page via `getAdminUser()`. This gap is tracked as messmass#392 (LLD finding F-003), not yet remediated
 6. **Input Validation**: TypeScript + runtime validation on API endpoints
 7. **MongoDB Injection Prevention**: Parameterized queries via MongoDB driver
-8. **Rate Limiting**: (To be implemented) Prevent brute force attacks
+8. **Rate Limiting**: Implemented (`lib/rateLimit.ts`), applied in `middleware.ts` to all routes matched by its `config.matcher` (all `/api/**`, `/admin/**`, `/report/**`, `/partner-report/**`, `/dashboard/**`, and effectively everything else except static assets/`_next`); an in-memory, per-IP fixed-window counter with separate limits per endpoint class (auth, write, read, public, contact form, PDF export) — see the "Security Enhancements" section above for the current limits
 
 ---
 
@@ -4641,6 +4660,6 @@ When working with the hashtag categories system:
 
 ---
 
-*Last Updated: 2025-10-19T11:58:43.000Z*
+*Last Updated: 2026-09-09*
 *Version: 12.3.31*
 *Status: Production-Ready — Enterprise Event Analytics Platform with Advanced Analytics Infrastructure*
