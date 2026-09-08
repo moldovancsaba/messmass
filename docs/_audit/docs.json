@@ -1,17 +1,21 @@
 {
  "_meta": {
-  "generated": "2026-08-19T23:52:41+00:00",
-  "repo": "messmass",
-  "head": "5e82a8ae",
+  "generated": "2026-09-08T05:23:00+00:00",
+  "repo": "messmass-fleet",
+  "head": "bf0e7f04",
   "counts": {
-   "endpoints": 191,
-   "collections": 69,
-   "env": 40,
-   "outbound-hosts": 28,
-   "docs": 200
+   "endpoints": 194,
+   "collections": 61,
+   "env": 34,
+   "outbound-hosts": 30,
+   "docs": 204
   }
  },
  "items": [
+  {
+   "file": ".github/ISSUE_TEMPLATE/fleet-reaudit.md",
+   "title": "Method (do not skip)"
+  },
   {
    "file": ".github/pull_request_template.md",
    "title": "Pull Request"
@@ -133,6 +137,10 @@
    "title": "messmass API Reference"
   },
   {
+   "file": "docs/_audit/contract-first-rule.md",
+   "title": "Contract-first rule (fleet)"
+  },
+  {
    "file": "docs/_audit/drift-register.md",
    "title": "messmass drift register \u2014 fleet audit P3, first edition"
   },
@@ -147,6 +155,14 @@
   {
    "file": "docs/_audit/messmass-in-the-fleet.md",
    "title": "messmass in the SEYU fleet"
+  },
+  {
+   "file": "docs/_audit/scripts-keep-list.md",
+   "title": "scripts/ keep-list (messmass#352)"
+  },
+  {
+   "file": "docs/_audit/variable-audit.md",
+   "title": "messmass variable audit + normalization plan"
   },
   {
    "file": "docs/_meta/meta-canonical-map.md",
@@ -203,6 +219,10 @@
   {
    "file": "docs/api/api-public.md",
    "title": "{messmass} Public API"
+  },
+  {
+   "file": "docs/api/api-reference-complete.md",
+   "title": "messmass API Reference (complete)"
   },
   {
    "file": "docs/api/api-reference.md",
@@ -799,10 +819,6 @@
   {
    "file": "docs/setup/setup-google-service-account-setup.md",
    "title": "Google Service Account Setup - Quick Guide"
-  },
-  {
-   "file": "scripts/readme-partner-enrichment.md",
-   "title": "Partner SportsDB Bulk Enrichment Script"
   },
   {
    "file": "tests/fixtures/layoutV2/readme.md",

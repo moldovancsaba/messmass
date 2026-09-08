@@ -5,6 +5,8 @@ documentation audit (messmass#345; method in messmass#344). Every claim
 carries file:line evidence. Verdicts: WRONG / STALE / MISSING / CURRENT.
 This file is intentionally header-less so the docs:audit version gate does
 not bind it to a version it is not about.
+Enforcement live: CI runs `inventory:check` (`scripts/fleet-audit-inventory.py
+--check`) since 2026-09-08 (messmass#355; rule in `contract-first-rule.md`).
 
 ## 0. Behavior findings escalated out of the docs audit (see messmass#347)
 **FULLY RESOLVED via messmass#347 + messmass#348 (2026-09-03) + messmass#386
@@ -129,7 +131,7 @@ factual accuracy.
   behind a withOrgContext wrapper with a hardcoded org id.
 - ~~docs/V3/messmass_v3_api_specification.md:22 lists `GET /api/v3/activities/{id}`
   and :99 claims `useReportData` "bridges V3 Activities"~~ FIXED 2026-09-07
-  (v12.3.22): the route never existed; the hook's fallback to it was dead code
+  (v12.3.23): the route never existed; the hook's fallback to it was dead code
   that turned every protected event report's 401 into a JSON-parse crash. Spec
   and playbook now say so; fallback deleted.
 
@@ -164,18 +166,33 @@ factual accuracy.
   one-pager (docs/_audit/messmass-in-the-fleet.md) exists.
 
 ## 7. Obsoletion queue
-- Dead routes: app/api/me, app/api/images (phantom cookies), app/api/stats,
-  app/api/admin/hashtag-style, sports-db/lookup, debug/{overview-block,
-  categorized-hashtags}, the 4 legacy SSO-validate admin routes.
-- Dead components (zero importers): BlockEditor, HashtagInput, LandingReportRoot,
-  LandingValueChainSection — removing the last two also kills /api/landing-report.
-- Dead libs: lib/webhooks.ts (474 lines, zero importers, yet app/api-docs
-  advertises a webhook system); lib/shareables/** (incl. passwordAuth.ts with
-  'admin123' fallback); lib/ssoClient.ts; duplicate lib/v3/middleware.ts.
-- Dead infra: entire server/ dir + tracked macOS-duplicate files
-  (`package 3.json`, `server/.env 3.local`, etc.); ~310 of 400 scripts/
-  unreferenced incl. macOS duplicates (`add-kpi-chart 3.js` …) — pruning clears
-  the CI carve-out for 24 forbidden-color findings "all in scripts/".
+- Dead routes: ~~app/api/me, app/api/images (phantom cookies)~~ FIXED 2026-08-20
+  (c56e70af, v12.2.0); ~~the 4 legacy SSO-validate admin routes~~ FIXED
+  2026-09-04 (messmass#386, see §0). Still queued: app/api/stats,
+  app/api/admin/hashtag-style (now session-guarded, §0), sports-db/lookup,
+  debug/{overview-block, categorized-hashtags}.
+- Dead components (zero importers): ~~BlockEditor, LandingReportRoot,
+  LandingValueChainSection + /api/landing-report~~ FIXED 2026-08-20 (c56e70af,
+  v12.2.0); ~~HashtagInput~~ FIXED 2026-09-08 (messmass#351 leftovers, this
+  change — `UnifiedHashtagInput` is the live component and was never affected).
+- Dead libs: ~~lib/webhooks.ts (474 lines, zero importers)~~ FIXED 2026-08-20
+  (c56e70af); ~~app/api-docs advertised the webhook system~~ FIXED 2026-09-08
+  (messmass#351, this change — nav link, feature bullet, `#webhooks` section
+  and the "use webhooks instead of polling" tip removed); ~~lib/shareables/**
+  (incl. passwordAuth.ts with 'admin123' fallback)~~ FIXED 2026-08-20
+  (c56e70af); ~~lib/ssoClient.ts~~ FIXED 2026-09-04 (messmass#386). Still
+  queued: duplicate lib/v3/middleware.ts.
+- Dead infra: ~~entire server/ dir + tracked macOS-duplicate files
+  (`package 3.json`, `server/.env 3.local`, etc.); ws/@types/ws dependency~~
+  FIXED 2026-08-20 (c56e70af, v12.2.0; the `websocket` package.json keyword
+  followed 2026-09-08, messmass#351). ~~~310 of 400 scripts/ unreferenced incl.
+  macOS duplicates (`add-kpi-chart 3.js` …)~~ FIXED 2026-09-08 (messmass#352,
+  this change): 315 of 421 tracked scripts deleted, 106 kept; derivation and
+  the per-script reason in `scripts-keep-list.md`. The CI forbidden-color
+  carve-out did NOT clear: `gds-compliance check` still reports 71 findings,
+  only 4 of them in scripts/ (all kept seeders) and 65 in app/, components/,
+  lib/, hooks/ — the "24, all in scripts/" figure in ci.yml was already stale
+  before the prune, so `|| true` stays.
 - DO NOT treat as dead: all /api/integrations/{fanmass,camera}/** (fanmass and
   camera call them with tokens), /api/public/** (external Bearer), /api/cron/**.
 
@@ -184,8 +201,10 @@ factual accuracy.
 2. Guard/delete the 8 google-sheet + hashtag-style unauthenticated mutations.
 3. Fix the docs:audit version regex to accept `**Version:** X` (3 canonical
    docs frozen at 12.1.16 pass CI today).
-4. Delete server/, lib/webhooks.ts, lib/shareables/, 4 dead components,
+4. ~~Delete server/, lib/webhooks.ts, lib/shareables/, 4 dead components,
    app/api/{me,images}; drop ws/@types/ws; strip WebSocket claims from the 10
-   doc locations in §2.
+   doc locations in §2.~~ FIXED: code 2026-08-20 (c56e70af, v12.2.0; 3 of the
+   4 components), docs 2026-09-04 (62a47a0d, §2), HashtagInput + the api-docs
+   webhook advertisement 2026-09-08 (messmass#351, this change).
 5. Rewrite the SSO/auth guide + features-authentication.md against
    app/api/auth/sso/callback/route.ts (both instruct readers to use a 410 endpoint).

@@ -1,14 +1,14 @@
 {
  "_meta": {
-  "generated": "2026-08-19T23:52:41+00:00",
-  "repo": "messmass",
-  "head": "5e82a8ae",
+  "generated": "2026-09-08T05:23:00+00:00",
+  "repo": "messmass-fleet",
+  "head": "bf0e7f04",
   "counts": {
-   "endpoints": 191,
-   "collections": 69,
-   "env": 40,
-   "outbound-hosts": 28,
-   "docs": 200
+   "endpoints": 194,
+   "collections": 61,
+   "env": 34,
+   "outbound-hosts": 30,
+   "docs": 204
   }
  },
  "items": [
@@ -16,6 +16,7 @@
   "api.football-data.org",
   "api.imgbb.com",
   "bit.ly",
+  "camera.messmass.com",
   "dev.bitly.com",
   "docs.google.com",
   "docs.mongodb.com",
@@ -35,6 +36,7 @@
   "v1.hockey.api-sports.io",
   "v1.volleyball.api-sports.io",
   "v3.football.api-sports.io",
+  "vercel.com",
   "vercel.live",
   "www.googleapis.com",
   "www.googletagmanager.com",

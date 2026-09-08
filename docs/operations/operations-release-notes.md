@@ -1,8 +1,44 @@
 # {messmass} Release Notes
 Status: Active
-Last Updated: 2026-09-07T15:30:00.000Z
+Last Updated: 2026-09-08T06:30:00.000Z
 Canonical: No
 Owner: Operations
+
+## [v12.3.23] — 2026-09-08T06:30:00.000Z
+
+### Summary
+Fleet Remediation Program catch-up (messmass#351, #352, #355). Verified on
+2026-09-07 that most of the program had landed in code without the tracker
+being updated; this release closes the messmass leftovers.
+
+### Changed
+- **Dead code (#351)**: `components/HashtagInput.tsx` deleted (zero importers;
+  callers use `UnifiedHashtagInput`); the webhook section, nav link and
+  "use webhooks instead of polling" tip removed from `app/api-docs` — there has
+  been no webhook implementation since v12.2.0; `websocket` keyword dropped from
+  package.json. drift-register §7/§8 rows resolved.
+- **Scripts prune (#352)**: 315 unreferenced files removed from `scripts/`
+  (421 → 106). Keep-list and derivation rules in
+  `docs/_audit/scripts-keep-list.md`: a script stays if package.json, CI,
+  vercel/jest/ts config, code, README/HANDOVER/AGENTS or a current operational
+  doc runs it; mentions in release notes, learnings, audits and archives are
+  history and do not keep a script alive. Four package.json entries that already
+  pointed at missing scripts (`analytics:backfill`, `migrate-hashtags`,
+  `migrate:reports-v12`, `seed:variables`) removed. The CI `gds-compliance … ||
+  true` carve-out stays: 71 forbidden-color findings remain, 65 of them in
+  app/components/lib/hooks — the "24, all in scripts/" note in ci.yml was stale.
+- **Anti-rot enforcement (#355)**: `scripts/fleet-audit-inventory.py` gained
+  `--write` / `--check` / `--self-test`; CI runs `npm run inventory:check` after
+  docs:audit and fails when routes, collections, env vars, outbound hosts or
+  docs change without `docs/_audit/*.json` being regenerated. The same script is
+  vendored into camera, fanmass and try-on with the same CI step. Contract-first
+  rule linked from AGENTS.md and docs/_audit/README.md.
+
+### Testing
+Full local gate green: type-check, lint, 449 tests, style:check, docs:audit,
+inventory:check, both guardrails, production build. `--self-test` proves a
+stale inventory fails the check. GitHub CI still cannot run `npm ci` (GitHub
+Packages quota, see v12.3.22).
 
 ## [v12.3.22] — 2026-09-07T15:30:00.000Z
 
@@ -6057,7 +6093,7 @@ Co-Authored-By: Warp <agent@warp.dev>
   - Processed 140 partners in 12.81 seconds (avg 85ms per partner)
   - Progress logging with success/failure tracking
   - Comprehensive error handling
-- **NPM Script Added**: `npm run analytics:backfill-partners` command
+- **NPM Script Added**: `analytics:backfill` (script removed in v12.3.23, messmass#352)-partners` command
 - **Collection Populated**: `partner_analytics` collection now contains aggregated metrics for all 140 partners
 - **Automatic Updates**: Background job updates partner analytics every 5 minutes
 

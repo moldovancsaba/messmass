@@ -1,14 +1,14 @@
 {
  "_meta": {
-  "generated": "2026-08-19T23:52:41+00:00",
-  "repo": "messmass",
-  "head": "5e82a8ae",
+  "generated": "2026-09-08T05:23:00+00:00",
+  "repo": "messmass-fleet",
+  "head": "bf0e7f04",
   "counts": {
-   "endpoints": 191,
-   "collections": 69,
-   "env": 40,
-   "outbound-hosts": 28,
-   "docs": 200
+   "endpoints": 194,
+   "collections": 61,
+   "env": 34,
+   "outbound-hosts": 30,
+   "docs": 204
   }
  },
  "items": [
@@ -27,8 +27,6 @@
   "bitly_sync_logs",
   "categories",
   "chartConfigurations",
-  "chart_algorithms",
-  "chart_algorithms_backup",
   "chart_configs",
   "chart_configurations",
   "chart_formatting_defaults",
@@ -39,6 +37,7 @@
   "countries",
   "data_blocks",
   "data_visualization_blocks",
+  "derived_variable_config",
   "drive_folder_links",
   "event_comparisons",
   "fanmass_commands",
@@ -51,8 +50,6 @@
   "hashtag_colors",
   "hashtag_slugs",
   "hashtags",
-  "local_users",
-  "name",
   "notifications",
   "organizations",
   "pageStyles",
@@ -60,7 +57,6 @@
   "page_styles_enhanced",
   "partner_analytics",
   "partners",
-  "probe",
   "project_permissions",
   "projects",
   "report_styles",
@@ -73,13 +69,9 @@
   "system_settings",
   "user_preferences",
   "users",
-  "v3_activities",
-  "v3_metric_definitions",
-  "v3_metric_values",
   "variablesConfig",
   "variablesGroups",
   "variables_groups",
-  "variables_metadata",
-  "x"
+  "variables_metadata"
  ]
 }

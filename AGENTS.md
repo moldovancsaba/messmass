@@ -61,7 +61,7 @@ default behavior is not a valid reason to violate it.
 - Install: `npm install`
 - Run the app: `npm run dev`
 - Default local URL: `http://localhost:3001`
-- First-run variable seed: `npm run seed:variables`
+- First-run variable seed: `seed:variables` (script removed in v12.3.23, messmass#352)
 
 ## Core Validation
 
@@ -72,6 +72,7 @@ default behavior is not a valid reason to violate it.
 - Version check: `npm run version:verify`
 - Design token/style guardrails: `npm run style:check`
 - Style audit report: `npm run style:audit`
+- Fleet inventory drift: `npm run inventory:check` (CI-enforced; regenerate `docs/_audit/*.json` with `python3 scripts/fleet-audit-inventory.py --write`; rule in `docs/_audit/contract-first-rule.md`)
 - If `npm run type-check` fails on missing `.next/types`, run `npm run build` first and rerun the type check.
 
 ## Organization Workflow

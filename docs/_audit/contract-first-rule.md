@@ -16,8 +16,11 @@ coordinated change (`docs/_audit/fleet-version-policy.md`), even for a
 version-only commit.
 
 **Inventory rule:** regenerate `docs/_audit/*.json` with
-`scripts/fleet-audit-inventory.py` when routes/collections/env change, and commit
-the diff in the same PR (that diff IS the contract-first signal).
+`python3 scripts/fleet-audit-inventory.py --write` when routes/collections/env
+change, and commit the diff in the same PR (that diff IS the contract-first
+signal). CI runs `python3 scripts/fleet-audit-inventory.py --check` (npm alias
+`inventory:check`) in all four repos and fails when the committed JSON no longer
+matches the code, so a forgotten `--write` blocks the push (messmass#355).
 
 **Quarterly:** re-run the audit method (both-sides, code-is-truth) using the
 issue template at `.github/ISSUE_TEMPLATE/fleet-reaudit.md`.

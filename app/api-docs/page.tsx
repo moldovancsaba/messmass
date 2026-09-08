@@ -25,7 +25,6 @@ export default function APIDocsPage() {
             <li><a href="#public-api">Public API (Read)</a></li>
             <li><a href="#organizations">Organizations</a></li>
             <li><a href="#fanmass-integration">Fanmass Integration</a></li>
-            <li><a href="#webhooks">Webhooks</a></li>
             <li><a href="#error-codes">Error Codes</a></li>
             <li><a href="#rate-limiting">Rate Limiting</a></li>
             <li><a href="#examples">Code Examples</a></li>
@@ -40,7 +39,6 @@ export default function APIDocsPage() {
           <ul>
             <li><strong>Public API (Read):</strong> Retrieve event and partner data</li>
             <li><strong>Fanmass Integration:</strong> Exchange event context and analytics through dedicated integration endpoints</li>
-            <li><strong>Webhooks:</strong> Real-time notifications for event changes</li>
             <li><strong>Admin API:</strong> Internal management endpoints (admin only)</li>
           </ul>
 
@@ -282,86 +280,6 @@ export default function APIDocsPage() {
           </ul>
         </section>
 
-        <section id="webhooks" className={styles.section}>
-          <h2>🔔 Webhooks</h2>
-          
-          <h3>Overview</h3>
-          <p>
-            Webhooks allow you to receive real-time notifications when events are created or updated in {'{messmass}'}.
-          </p>
-
-          <h3>Webhook Configuration</h3>
-          <p>Contact your administrator to register a webhook with:</p>
-          <ul>
-            <li><strong>URL:</strong> HTTPS endpoint (HTTP not allowed)</li>
-            <li><strong>Event Types:</strong> <code>event.created</code>, <code>event.updated</code></li>
-            <li><strong>Secret:</strong> Auto-generated for signature verification</li>
-          </ul>
-
-          <h3>Webhook Payload</h3>
-          <div className={styles.codeBlock}>
-{`{
-  "event": "event.created",
-  "timestamp": "2024-11-26T15:30:00.000Z",
-  "data": {
-    "id": "507f1f77bcf86cd799439011",
-    "eventName": "FC Barcelona vs Real Madrid",
-    "eventDate": "2024-12-01T20:00:00Z",
-    "viewSlug": "barcelona-madrid-2024",
-    "partner": {
-      "id": "507f1f77bcf86cd799439012",
-      "name": "FC Barcelona",
-      "emoji": "⚽"
-    }
-  }
-}`}
-          </div>
-
-          <h3>Signature Verification</h3>
-          <p>Every webhook includes an <code>X-Webhook-Signature</code> header:</p>
-          <div className={styles.codeBlock}>
-{`// Node.js example
-const crypto = require('crypto');
-
-function verifyWebhookSignature(payload, signature, secret) {
-  const hmac = crypto.createHmac('sha256', secret);
-  hmac.update(JSON.stringify(payload));
-  const expectedSignature = hmac.digest('hex');
-  
-  return signature === expectedSignature;
-}
-
-// In your webhook handler:
-app.post('/webhooks/messmass', (req, res) => {
-  const signature = req.headers['x-webhook-signature'];
-  const isValid = verifyWebhookSignature(
-    req.body, 
-    signature, 
-    YOUR_WEBHOOK_SECRET
-  );
-  
-  if (!isValid) {
-    return res.status(401).json({ error: 'Invalid signature' });
-  }
-  
-  // Process webhook...
-  res.status(200).json({ received: true });
-});`}
-          </div>
-
-          <h3>Retry Logic</h3>
-          <ul>
-            <li><strong>Attempt 1:</strong> Immediate</li>
-            <li><strong>Attempt 2:</strong> After 1 second</li>
-            <li><strong>Attempt 3:</strong> After 5 seconds</li>
-            <li><strong>Attempt 4:</strong> After 15 seconds</li>
-          </ul>
-          <p>After 10 consecutive failures, the webhook is automatically disabled.</p>
-
-          <h3>Timeout</h3>
-          <p>Each delivery attempt has a 10-second timeout.</p>
-        </section>
-
         <section id="error-codes" className={styles.section}>
           <h2>⚠️ Error Codes</h2>
           
@@ -426,7 +344,6 @@ app.post('/webhooks/messmass', (req, res) => {
           <ul>
             <li>Implement exponential backoff</li>
             <li>Cache responses when possible</li>
-            <li>Use webhooks instead of polling</li>
             <li>Contact admin if you need higher limits</li>
           </ul>
         </section>

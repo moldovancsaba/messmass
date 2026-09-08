@@ -62,7 +62,7 @@ Default local app:
 Recommended first-run companion task:
 
 ```bash
-npm run seed:variables
+`seed:variables` (script removed in v12.3.23, messmass#352)
 ```
 
 ## Runtime Requirements
