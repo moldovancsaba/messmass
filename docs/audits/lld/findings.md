@@ -29,7 +29,7 @@ claim is structural rather than demonstrated, it says so.
 | [F-024](#f-024) | **High** | **Fixed** | Aggregation could only insert, never update — the real cause of the stale data | 3 |
 | [F-023](#f-023) | **High** | **Resolved** | The analytics cron writes a shape incompatible with every working reader | 3 |
 | [F-022](#f-022) | Low | **Fixed** | `/api/analytics/aggregates` queried a document shape that was never written | 3 |
-| [F-021](#f-021) | Medium | Open | The only scheduled cron has logged once in ten months | 3 |
+| [F-021](#f-021) | Medium | **Fixed** | The only scheduled cron has logged once in ten months | 3 |
 | [F-019](#f-019) | Medium | Open | `lib/auditLog.ts` is dead — the API write audit trail was never wired up | 3 |
 | [F-017](#f-017) | Medium | **Fixed** | Content-asset deletion guard was inert and its usage panel queried a non-existent collection | 3 |
 | [F-018](#f-018) | Low | **Fixed** | A missing report renders a JSON parse error instead of "not found" | 2 |
