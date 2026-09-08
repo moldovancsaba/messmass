@@ -1,8 +1,16 @@
 # {messmass} Release Notes
 Status: Active
-Last Updated: 2026-09-08T06:30:00.000Z
+Last Updated: 2026-09-08T07:10:00.000Z
 Canonical: No
 Owner: Operations
+
+## [v12.3.24] — 2026-09-08T07:10:00.000Z
+
+### Changed
+- **Inventory scanner skips test caches.** `scripts/fleet-audit-inventory.py`
+  now ignores `.pytest_cache`, `.ruff_cache` and `.mypy_cache`; without this a
+  local pytest run before `inventory:check` produced a false drift in the
+  Python repos that vendor the same script (found in try-on).
 
 ## [v12.3.23] — 2026-09-08T06:30:00.000Z
 

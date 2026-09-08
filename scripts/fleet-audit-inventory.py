@@ -37,7 +37,7 @@ from pathlib import Path
 FLEET = ["messmass", "camera", "fanmass", "try-on"]
 PROJECTS = Path("/Users/Shared/Projects")
 
-SKIP_DIRS = {"node_modules", ".next", ".git", "vendor", ".venv311", ".venv", "coverage", "queue", "outputs", "gfpgan", "__pycache__", ".claude"}
+SKIP_DIRS = {"node_modules", ".next", ".git", "vendor", ".venv311", ".venv", "coverage", "queue", "outputs", "gfpgan", "__pycache__", ".claude", ".pytest_cache", ".ruff_cache", ".mypy_cache"}
 
 # Auth markers looked for inside a route handler file. Presence is recorded
 # verbatim; absence of all of them flags the route "no-auth-marker" for the
