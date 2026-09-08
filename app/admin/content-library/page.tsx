@@ -207,7 +207,7 @@ export default function ContentLibraryPage() {
       <ReportingWorkspaceNav />
       
       {/* Filters */}
-      <ColoredCard accentColor="#10b981" hoverable={false}>
+      <ColoredCard accentColor="var(--mm-success)" hoverable={false}>
         <div className="grid gap-3 grid-1fr-1fr-1fr-1fr">
           {/* Type Filter */}
           <div>
@@ -270,14 +270,14 @@ export default function ContentLibraryPage() {
       
       {/* Assets Grid */}
       {loading && (
-        <ColoredCard accentColor="#6366f1" hoverable={false} className="text-center">
+        <ColoredCard accentColor="var(--mm-chart-indigo)" hoverable={false} className="text-center">
           <div className="text-4xl mb-4">📚</div>
           <div>Loading content library...</div>
         </ColoredCard>
       )}
       
       {!loading && filteredAssets.length === 0 && (
-        <ColoredCard accentColor="#f59e0b" hoverable={false} className="text-center">
+        <ColoredCard accentColor="var(--mm-warning)" hoverable={false} className="text-center">
           <div className="text-4xl mb-4">🔍</div>
           <div>No assets found. Try adjusting your filters or create a new asset.</div>
         </ColoredCard>
@@ -286,7 +286,7 @@ export default function ContentLibraryPage() {
       {!loading && filteredAssets.length > 0 && (
         <div className="grid gap-3 mt-3">
           {filteredAssets.map(asset => (
-            <ColoredCard key={asset._id?.toString()} accentColor="#3b82f6" hoverable={false}>
+            <ColoredCard key={asset._id?.toString()} accentColor="var(--mm-color-primary-500)" hoverable={false}>
               <AssetCard
                 asset={asset}
                 onEdit={() => setEditingAsset(asset)}

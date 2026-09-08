@@ -1,8 +1,40 @@
 # {messmass} Release Notes
 Status: Active
-Last Updated: 2026-09-08T07:40:00.000Z
+Last Updated: 2026-09-08T09:00:00.000Z
 Canonical: No
 Owner: Operations
+
+## [v12.3.26] — 2026-09-08T09:00:00.000Z
+
+### Changed
+- **GDS compliance is blocking again (messmass#387).** All 71 forbidden-color
+  findings resolved: ~411 raw colour literals in app/, components/, lib/ and
+  hooks/ replaced with existing `--mm-*` tokens (tints via `color-mix`, a few
+  GDS Mantine variables where no `--mm` match exists), and the 265 literals
+  that are data rather than theme — chart palettes stored in configurations
+  and drawn on canvas, database-persisted hashtag colours, report and page
+  style defaults, HTML e-mail inline styles, the Mantine brand scales — moved
+  into seven `lib/theme/*.ts` modules, the lane the compliance tool exempts.
+  `gds-adoption.json` lists `lib/theme/*.ts` as theme-owned. The `|| true`
+  carve-out is gone from CI. Visible deltas, all toward the token set: the
+  never-defined `--mm-color-success-500` fallback green now renders
+  `--mm-success`; two styled-jsx blocks use `--mm-color-primary-500` and
+  `--gradient-primary`; slate greys are `--mm-gray-*`.
+- **Fleet architecture map re-verified** (`docs/_audit/fleet-architecture.md`),
+  both sides, against current main of all four repos and re-stamped
+  `messmass 44e2d007 · camera 88c6839 · fanmass 5d9a032 · try-on c8ba623`.
+  Corrections: cross-app session minting between messmass and camera is
+  bidirectional; the fanmass analytics-summary pull uses a third credential
+  (`FANMASS_API_KEY`); camera never calls try-on over HTTP; Vercel Blob is the
+  primary try-on result store; the security-posture section reflects the
+  closed Wave 0 issues.
+- **Docs gate:** the contract-freshness warning measures only this repo's own
+  stamps; stamps naming a sibling repo are skipped instead of being resolved
+  against unrelated local commits with the same short prefix.
+
+### Testing
+gds-compliance 0 findings, type-check, lint, 449 tests, style:check,
+docs:audit, inventory:check (1057 links, 0 broken), build — all green locally.
 
 ## [v12.3.25] — 2026-09-08T07:40:00.000Z
 

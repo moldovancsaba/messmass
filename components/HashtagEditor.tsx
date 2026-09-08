@@ -5,6 +5,7 @@ import { useHashtagData } from '@/contexts/HashtagDataProvider';
 import ColoredCard from '@/components/ColoredCard';
 import ColoredHashtagBubble from '@/components/ColoredHashtagBubble';
 import styles from './HashtagEditor.module.css';
+import { DEFAULT_CATEGORY_COLORS, DEFAULT_HASHTAG_COLOR } from '@/lib/theme/hashtagPalette';
 
 interface HashtagColor {
   _id: string;
@@ -46,7 +47,7 @@ export default function HashtagEditor({ className = '', searchTerm = '' }: Hasht
   const [editingHashtag, setEditingHashtag] = useState<{ name: string; color: string; hasColorRecord: boolean } | null>(null);
   const [formData, setFormData] = useState({
     name: '',
-    color: '#667eea'
+    color: DEFAULT_HASHTAG_COLOR
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -177,13 +178,13 @@ export default function HashtagEditor({ className = '', searchTerm = '' }: Hasht
     
     setEditingHashtag({
       name: hashtagName,
-      color: colorRecord?.color || '#667eea',
+      color: colorRecord?.color || DEFAULT_HASHTAG_COLOR,
       hasColorRecord: !!colorRecord
     });
     
     setFormData({
       name: hashtagName,
-      color: colorRecord?.color || '#667eea'
+      color: colorRecord?.color || DEFAULT_HASHTAG_COLOR
     });
     
     setShowForm(true);
@@ -252,17 +253,13 @@ export default function HashtagEditor({ className = '', searchTerm = '' }: Hasht
   };
 
   const resetForm = () => {
-    setFormData({ name: '', color: '#667eea' });
+    setFormData({ name: '', color: DEFAULT_HASHTAG_COLOR });
     setEditingHashtag(null);
     setShowForm(false);
   };
 
   const generateRandomColor = () => {
-    const colors = [
-      '#667eea', '#764ba2', '#f093fb', '#f5576c', '#4facfe', '#00f2fe',
-      '#43e97b', '#38f9d7', '#ffecd2', '#fcb69f', '#a8edea', '#fed6e3',
-      '#d299c2', '#fef9d7', '#ebc0fd', '#d9a7c7', '#96c93d', '#00b4db'
-    ];
+    const colors = DEFAULT_CATEGORY_COLORS;
     return colors[Math.floor(Math.random() * colors.length)];
   };
 
@@ -384,7 +381,7 @@ export default function HashtagEditor({ className = '', searchTerm = '' }: Hasht
             <div className={styles.hashtagsGrid}>
               {projectHashtags.map((projectHashtag) => {
                 const colorRecord = hashtagColors.find(hc => hc.name.toLowerCase() === projectHashtag.hashtag.toLowerCase());
-                const displayColor = colorRecord?.color || '#667eea';
+                const displayColor = colorRecord?.color || DEFAULT_HASHTAG_COLOR;
                 const hasCustomColor = !!colorRecord;
                 
                 return (

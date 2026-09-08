@@ -4,7 +4,7 @@ Last Updated: 2026-06-25
 Canonical: No
 Owner: Architecture
 
-Version: 12.3.25
+Version: 12.3.26
 
 > This is a current-state architecture reference, not a changelog. For dated release
 > history use [`docs/operations/operations-release-notes.md`](operations/operations-release-notes.md).
@@ -481,7 +481,7 @@ import PartnerSelector from '@/components/PartnerSelector';
 - **Export Actions**: CSV and PDF export buttons
 - **Totals Summary**: Aggregate statistics across all partner events (total events, images, fans, attendees)
 - **Related Events List**: 3-column card grid with event stats (images, fans, merch, attendees)
-- **Password Protection**: server component checks `isPageProtected`/`hasPageAccess` (`lib/pageAccess.ts`) and renders `ServerPageGate` before any data is read. `/report/[slug]` applies the identical gate in `app/report/[slug]/layout.tsx` (v12.3.25); its data route `GET /api/projects/stats/[slug]` enforces via `requirePageAccess`
+- **Password Protection**: server component checks `isPageProtected`/`hasPageAccess` (`lib/pageAccess.ts`) and renders `ServerPageGate` before any data is read. `/report/[slug]` applies the identical gate in `app/report/[slug]/layout.tsx` (v12.3.26); its data route `GET /api/projects/stats/[slug]` enforces via `requirePageAccess`
 - **Responsive Design**: Desktop 3-column grid, mobile single column
 
 **API Endpoint**:
@@ -2798,7 +2798,7 @@ interface VariableMetadata {
 
 #### 3. Variable Seeding System
 
-**Command**: none — the `seed:variables` script was removed in v12.3.25 (scripts prune, messmass#352); variables are managed in `/admin/kyc`.
+**Command**: none — the `seed:variables` script was removed in v12.3.26 (scripts prune, messmass#352); variables are managed in `/admin/kyc`.
 
 **Purpose**: Migrate all base/derived variables from code registry to MongoDB
 
@@ -4642,5 +4642,5 @@ When working with the hashtag categories system:
 ---
 
 *Last Updated: 2025-10-19T11:58:43.000Z*
-*Version: 12.3.25*
+*Version: 12.3.26*
 *Status: Production-Ready — Enterprise Event Analytics Platform with Advanced Analytics Infrastructure*

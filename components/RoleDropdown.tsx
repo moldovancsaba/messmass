@@ -141,7 +141,7 @@ export default function RoleDropdown({
             backgroundColor: 'var(--mm-white)',
             border: '1px solid var(--mm-gray-200)',
             borderRadius: 'var(--mm-radius-md)',
-            boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
+            boxShadow: 'var(--mm-shadow-lg)',
             minWidth: '140px',
           }}
         >
@@ -199,11 +199,11 @@ export default function RoleDropdown({
  */
 function getRoleConfig(role: UserRole): { bg: string; color: string; icon: string; label: string } {
   const configs: Record<UserRole, { bg: string; color: string; icon: string; label: string }> = {
-    guest: { bg: '#f3f4f6', color: '#6b7280', icon: '👤', label: 'Guest' },
-    user: { bg: '#dbeafe', color: '#1e40af', icon: '👥', label: 'User' },
-    admin: { bg: '#d1fae5', color: '#065f46', icon: '🔧', label: 'Admin' },
-    superadmin: { bg: '#ede9fe', color: '#5b21b6', icon: '⚡', label: 'Superadmin' },
-    api: { bg: '#fef3c7', color: '#b45309', icon: '🔑', label: 'API' },
+    guest: { bg: 'var(--mm-gray-100)', color: 'var(--mm-gray-500)', icon: '👤', label: 'Guest' },
+    user: { bg: 'var(--mm-info-light)', color: 'var(--mm-color-primary-800)', icon: '👥', label: 'User' },
+    admin: { bg: 'var(--mm-success-light)', color: 'var(--mm-color-secondary-800)', icon: '🔧', label: 'Admin' },
+    superadmin: { bg: 'var(--mantine-color-violet-1)', color: 'var(--mantine-color-violet-8)', icon: '⚡', label: 'Superadmin' },
+    api: { bg: 'var(--mm-warning-light)', color: 'var(--mantine-color-messmassAmber-7)', icon: '🔑', label: 'API' },
   };
   return configs[role] || configs.guest;
 }

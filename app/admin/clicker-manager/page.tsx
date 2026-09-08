@@ -214,7 +214,7 @@ export default function ClickerManagerPage() {
       <ReportingWorkspaceNav />
 
       {/* Clicker Set Selector (mirrors report template selector UX) */}
-      <ColoredCard accentColor="#3b82f6" hoverable={false}>
+      <ColoredCard accentColor="var(--mm-color-primary-500)" hoverable={false}>
         <div className="flex flex-col gap-3">
           <div className="flex items-center justify-between flex-wrap gap-2">
             <div>
@@ -311,14 +311,14 @@ export default function ClickerManagerPage() {
       </ColoredCard>
 
       {loading && (
-        <ColoredCard accentColor="#6366f1" hoverable={false} className="text-center">
+        <ColoredCard accentColor="var(--mm-chart-indigo)" hoverable={false} className="text-center">
           <div className="text-4xl mb-4">↔️</div>
           <div>Loading clicker groups...</div>
         </ColoredCard>
       )}
 
       {!loading && groups.length === 0 && (
-        <ColoredCard accentColor="#f59e0b" hoverable={false} className="text-center">
+        <ColoredCard accentColor="var(--mm-warning)" hoverable={false} className="text-center">
           <div className="text-4xl mb-4">📋</div>
           <h3 className="mt-0">No Variable Groups Configured</h3>
           <p className="text-gray-600 mb-4">
@@ -338,7 +338,7 @@ export default function ClickerManagerPage() {
               .filter(Boolean) as Variable[];
 
             return (
-              <ColoredCard key={group.groupOrder} accentColor="#3b82f6" hoverable={false}>
+              <ColoredCard key={group.groupOrder} accentColor="var(--mm-color-primary-500)" hoverable={false}>
                 <div className="flex items-start justify-between gap-4">
                   <div className="flex-1">
                     <div className="flex items-center gap-3 mb-2">

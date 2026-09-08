@@ -45,30 +45,30 @@ export default function SaveStatusIndicator({ status, className = '' }: SaveStat
         return {
           icon: '💾',
           text: 'Saving...',
-          color: '#3b82f6', // Blue
-          bgColor: 'rgba(59, 130, 246, 0.1)'
+          color: 'var(--mm-color-primary-500)', // Blue
+          bgColor: 'color-mix(in srgb, var(--mm-color-primary-500) 10%, transparent)'
         };
       case 'saved':
         return {
           icon: '✅',
           text: 'Saved',
-          color: '#10b981', // Green
-          bgColor: 'rgba(16, 185, 129, 0.1)'
+          color: 'var(--mm-success)', // Green
+          bgColor: 'color-mix(in srgb, var(--mm-success) 10%, transparent)'
         };
       case 'error':
         return {
           icon: '❌',
           text: 'Save Error',
-          color: '#ef4444', // Red
-          bgColor: 'rgba(239, 68, 68, 0.1)'
+          color: 'var(--mm-error)', // Red
+          bgColor: 'color-mix(in srgb, var(--mm-error) 10%, transparent)'
         };
       case 'idle':
       default:
         return {
           icon: '📝',
           text: 'Ready',
-          color: '#6b7280', // Gray
-          bgColor: 'rgba(107, 114, 128, 0.1)'
+          color: 'var(--mm-gray-500)', // Gray
+          bgColor: 'color-mix(in srgb, var(--mm-gray-500) 10%, transparent)'
         };
     }
   };

@@ -271,7 +271,7 @@ describe('R-LAYOUT-02.1: Variable Block Aspect Ratio Support', () => {
     });
   });
 
-  describe('#358: Mobile Aspect Ratio Override', () => {
+  describe('Issue 358: Mobile Aspect Ratio Override', () => {
     describe('validateMobileAspectRatioRange', () => {
       test('accepts a portrait ratio (width !== 4, unlike the desktop validator)', () => {
         expect(validateMobileAspectRatioRange('1:2').valid).toBe(true);

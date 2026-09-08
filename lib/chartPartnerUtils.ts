@@ -4,6 +4,7 @@
 
 import { PartnerResponse } from './partner.types';
 import { ChartConfiguration, ChartElement } from './chartConfigTypes';
+import { CHART_COLOR } from './theme/chartPalette';
 
 /**
  * WHAT: Partner enrichment data for chart calculations
@@ -141,7 +142,7 @@ export function createCapacityUtilizationChart(
         formula: venueCapacity
           ? `([SEYUATTENDEES] / ${venueCapacity}) * 100`
           : '0', // Fallback if no capacity
-        color: '#10b981',
+        color: CHART_COLOR.green,
         description: 'Percentage of venue capacity filled by event attendees',
       }
     ]
@@ -187,7 +188,7 @@ export function createEngagementVsCapacityChart(
         id: 'engaged-fans',
         label: 'Engaged Fans',
         formula: '[SEYUTOTALFANS]',
-        color: '#3b82f6',
+        color: CHART_COLOR.blue,
         description: 'Total engaged fans (remote + stadium)',
       },
       {
@@ -196,7 +197,7 @@ export function createEngagementVsCapacityChart(
         // WHAT: Shows remaining venue capacity not filled by engaged fans
         // WHY: Visualize growth potential
         formula: `${venueCapacity} - [SEYUTOTALFANS]`,
-        color: '#9ca3af',
+        color: CHART_COLOR.gray,
         description: 'Remaining venue capacity',
       }
     ]
@@ -243,35 +244,35 @@ export function createMerchPotentialVsCapacityChart(
         id: 'current-merch',
         label: 'Current Event',
         formula: '([SEYUMERCHJERSEY] * [SEYUJERSEYPRICE]) + ([SEYUMERCHSCARF] * [SEYUSCARFPRICE]) + ([SEYUMERCHFLAGS] * [SEYUFLAGSPRICE]) + ([SEYUMERCHBASEBALLCAP] * [SEYUCAPPRICE]) + ([SEYUMERCHOTHER] * [SEYUOTHERPRICE])',
-        color: '#10b981',
+        color: CHART_COLOR.green,
         description: 'Actual merchandise sales from this event',
       },
       {
         id: 'at-25-capacity',
         label: '25% Fill',
         formula: `(${venueCapacity} * 0.25) * 0.15 * 25`, // 15% merch rate, €25 avg
-        color: '#3b82f6',
+        color: CHART_COLOR.blue,
         description: 'Projected revenue at 25% capacity',
       },
       {
         id: 'at-50-capacity',
         label: '50% Fill',
         formula: `(${venueCapacity} * 0.50) * 0.15 * 25`,
-        color: '#8b5cf6',
+        color: CHART_COLOR.purple,
         description: 'Projected revenue at 50% capacity',
       },
       {
         id: 'at-75-capacity',
         label: '75% Fill',
         formula: `(${venueCapacity} * 0.75) * 0.15 * 25`,
-        color: '#f59e0b',
+        color: CHART_COLOR.amber,
         description: 'Projected revenue at 75% capacity',
       },
       {
         id: 'at-100-capacity',
         label: '100% Fill',
         formula: `(${venueCapacity} * 1.00) * 0.15 * 25`,
-        color: '#ef4444',
+        color: CHART_COLOR.red,
         description: 'Projected revenue at full capacity',
       }
     ]

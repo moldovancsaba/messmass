@@ -137,7 +137,7 @@ export default function KycVariablesPage() {
       <VariableMergeConsole />
 
       {loading && (
-        <ColoredCard accentColor="#6366f1" hoverable={false} className="text-center">
+        <ColoredCard accentColor="var(--mm-chart-indigo)" hoverable={false} className="text-center">
           <div className="text-4xl mb-4">📊</div>
           <div>Loading KYC variables...</div>
         </ColoredCard>
@@ -147,7 +147,7 @@ export default function KycVariablesPage() {
         <>
           {/* WHAT: Filters row (sources, flags, tags) */}
           {/* WHY: Quick narrowing by data origin and usage */}
-          <ColoredCard accentColor="#10b981" hoverable={false}>
+          <ColoredCard accentColor="var(--mm-success)" hoverable={false}>
             <div className="grid gap-3 grid-1fr-1fr-1fr">
               <div>
                 <label className="form-label">Source</label>
@@ -216,7 +216,7 @@ export default function KycVariablesPage() {
             const tagsRaw = [v.category, source, v.derived ? "derived" : undefined].filter(Boolean) as string[];
             const tags = Array.from(new Set(tagsRaw));
             return (
-              <ColoredCard key={v.name} accentColor="#3b82f6" hoverable={false}>
+              <ColoredCard key={v.name} accentColor="var(--mm-color-primary-500)" hoverable={false}>
                 {/* WHAT: KYC variable row */}
                 {/* WHY: One-line overview with actions */}
                 <div className="flex items-start justify-between gap-3">

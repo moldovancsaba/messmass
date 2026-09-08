@@ -3,6 +3,8 @@
  * HOW: MongoDB-compatible schema with hex color validation */
 
 import { getFontFamilyCSS } from './fontUtils';
+import { HEX8_OPAQUE_BLACK, rgbaString } from './theme/color';
+import { DEFAULT_CARD_SHADOW, DEFAULT_REPORT_STYLE_COLORS } from './theme/reportStylePalette';
 
 /**
  * Report Style - Complete color configuration for report and landing pages
@@ -189,7 +191,7 @@ export const DIMENSION_FIELDS: DimensionFieldDefinition[] = [
   { key: 'landingDiffMax', label: 'Paragraph max width', category: 'Landing dimensions', description: 'Max width for body paragraphs (ch)', default: '65ch', placeholder: 'e.g. 65ch' },
   { key: 'landingIconSize', label: 'Landing card icon size', category: 'Landing dimensions', description: 'Value/how card icon size', default: '3rem', placeholder: 'e.g. 3rem' },
   { key: 'cardBorderRadius', label: 'Card border radius', category: 'Surfaces', description: 'Border radius for cards (landing & report)', default: '0.75rem', placeholder: 'e.g. 0.75rem' },
-  { key: 'cardShadow', label: 'Card shadow', category: 'Surfaces', description: 'Box shadow for cards', default: '0 1px 3px 0 rgba(0,0,0,0.05)', placeholder: 'e.g. 0 1px 3px 0 rgba(0,0,0,0.05)' },
+  { key: 'cardShadow', label: 'Card shadow', category: 'Surfaces', description: 'Box shadow for cards', default: DEFAULT_CARD_SHADOW, placeholder: `e.g. ${DEFAULT_CARD_SHADOW}` },
   { key: 'landingBlockBaseFontSize', label: 'Landing block title size', category: 'Landing typography', description: 'Report block title on landing', default: '2rem', placeholder: 'e.g. 2rem' },
   { key: 'landingBlockSubtitleFontSize', label: 'Landing block value size', category: 'Landing typography', description: 'Report block value/description on landing', default: '0.8125rem', placeholder: 'e.g. 0.8125rem' },
   { key: 'landingMaxIconFont', label: 'Landing block icon size', category: 'Landing typography', description: 'KPI/value chain icon on landing', default: '4rem', placeholder: 'e.g. 4rem' },
@@ -205,57 +207,7 @@ export const DEFAULT_STYLE: Omit<ReportStyle, '_id' | 'createdAt' | 'updatedAt'>
   description: '',
   fontFamily: 'Inter',
   
-  // Hero Section
-  heroBackground: '#f8fafcff',
-  headingColor: '#1f2937ff',
-  exportButtonBackground: '#ffffffff',
-  exportButtonText: '#3b82f6ff',
-  exportButtonHoverBackground: '#f9fafbff',
-  
-  // Chart Container
-  chartBackground: '#ffffffff',
-  chartBorder: '#f3f4f6ff',
-  
-  // Chart Typography
-  chartTitleColor: '#3b82f6ff',
-  chartLabelColor: '#374151ff',
-  chartValueColor: '#111827ff',
-  textColor: '#111827ff',
-  
-  // KPI Charts
-  kpiIconColor: '#3b82f6ff',
-  
-  // Bar Charts
-  barColor1: '#3b82f6ff',
-  barColor2: '#10b981ff',
-  barColor3: '#10b981ff',
-  barColor4: '#f59e0bff',
-  barColor5: '#ef4444ff',
-  
-  // Pie Charts
-  pieColor1: '#3b82f6ff',
-  pieColor2: '#10b981ff',
-  pieBorderColor: '#3b82f6ff',
-  
-  // Chart States
-  chartNoDataBackground: '#f9fafbff',
-  chartNoDataBorder: '#d1d5dbff',
-  chartNoDataText: '#6b7280ff',
-  chartErrorBackground: '#fef2f2ff',
-  chartErrorText: '#991b1bff',
-  chartTooltipBackground: '#1f2937f2',
-  chartTooltipText: '#ffffffff',
-
-  // Landing (defaults match theme.css --mm-landing-hero-*)
-  landingHeroBgStart: '#0f172aff',
-  landingHeroBgMid: '#1e293bff',
-  landingHeroBgEnd: '#0f172aff',
-  landingHeroText: '#f8fafcff',
-  landingHeroTextMuted: '#cbd5e1ff',
-  landingHeroBorder: '#475569ff',
-  landingHeroBorderHover: '#94a3b8ff',
-  landingHeroTextHover: '#f1f5f9ff',
-  landingPageBg: '#f8fafcff',
+  ...DEFAULT_REPORT_STYLE_COLORS,
 
   // Dimension defaults (match theme; optional so old styles still load)
   sectionPaddingY: '3.5rem',
@@ -268,7 +220,7 @@ export const DEFAULT_STYLE: Omit<ReportStyle, '_id' | 'createdAt' | 'updatedAt'>
   landingDiffMax: '65ch',
   landingIconSize: '3rem',
   cardBorderRadius: '0.75rem',
-  cardShadow: '0 1px 3px 0 rgba(0,0,0,0.05)',
+  cardShadow: DEFAULT_CARD_SHADOW,
   landingBlockBaseFontSize: '2rem',
   landingBlockSubtitleFontSize: '0.8125rem',
   landingMaxIconFont: '4rem',
@@ -298,7 +250,7 @@ export function isValidHexColor(hex: string): boolean {
  * WHY: Consistent format for storage and CSS injection
  */
 export function normalizeHexColor(hex: string): string {
-  if (!hex || typeof hex !== 'string') return '#000000ff';
+  if (!hex || typeof hex !== 'string') return HEX8_OPAQUE_BLACK;
   
   // Remove # if present
   let cleanHex = hex.startsWith('#') ? hex.slice(1) : hex;
@@ -326,7 +278,7 @@ export function hexToRgba(hex: string): string {
   const b = parseInt(cleanHex.slice(4, 6), 16);
   const a = parseInt(cleanHex.slice(6, 8), 16) / 255;
   
-  return `rgba(${r}, ${g}, ${b}, ${a})`;
+  return rgbaString(r, g, b, a);
 }
 
 /**

@@ -6,6 +6,7 @@ import { ChartConfiguration, ChartCalculationResult } from './chartConfigTypes';
 import { formatChartValue as sharedFormatChartValue } from './formatChartValue';
 import { evaluateFormula, evaluateFormulasBatch, evaluateFormulaSafe, validateStatsForFormula, fetchContentAssetsSync, resolveContentAssetToken } from './formulaEngine';
 import { type ContentAsset } from './contentAssetTypes';
+import { CHART_COLOR } from './theme/chartPalette';
 import { 
   validateProjectStats, 
   ensureDerivedMetrics, 
@@ -201,7 +202,7 @@ export function calculateChart(
         id: element.id || 'unknown',
         label: resolvedLabel || element.label || 'Unnamed Element',
         value: value,
-        color: element.color || '#cccccc',
+        color: element.color || CHART_COLOR.neutral,
         type: element.type, // WHAT: Legacy type for backward compatibility
         formatting: element.formatting // WHAT: New flexible formatting (preferred)
       };
@@ -216,7 +217,7 @@ export function calculateChart(
         id: element.id || 'unknown',
         label: element.label || 'Unnamed Element',
         value: 'NA' as const,
-        color: element.color || '#cccccc',
+        color: element.color || CHART_COLOR.neutral,
         type: element.type, // WHAT: Legacy type for backward compatibility
         formatting: element.formatting // WHAT: New flexible formatting (preferred)
       };

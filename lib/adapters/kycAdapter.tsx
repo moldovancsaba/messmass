@@ -80,8 +80,8 @@ export const kycAdapter: AdminPageAdapter<KYCVariableDTO> = {
             padding: '4px 8px',
             borderRadius: '4px',
             fontSize: '0.875rem',
-            backgroundColor: variable.isSystemVariable ? '#dbeafe' : '#fef3c7',
-            color: variable.isSystemVariable ? '#1e40af' : '#92400e',
+            backgroundColor: variable.isSystemVariable ? 'var(--mm-info-light)' : 'var(--mm-warning-light)',
+            color: variable.isSystemVariable ? 'var(--mm-color-primary-800)' : 'var(--mantine-color-messmassAmber-8)',
           }}>
             {variable.isSystemVariable ? 'System' : 'Custom'}
           </span>

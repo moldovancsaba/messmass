@@ -180,12 +180,12 @@ export default function OrganizationReportsWorkspacePage() {
       </div>
 
       {error && (
-        <ColoredCard accentColor="#ef4444" hoverable={false}>
+        <ColoredCard accentColor="var(--mm-error)" hoverable={false}>
           <div className={styles.errorText}>{error}</div>
         </ColoredCard>
       )}
 
-      <ColoredCard accentColor="#3b82f6" hoverable={false}>
+      <ColoredCard accentColor="var(--mm-color-primary-500)" hoverable={false}>
         <div className={styles.summaryGrid}>
           <div>
             <p className={styles.summaryLabel}>Default Report</p>
@@ -211,7 +211,7 @@ export default function OrganizationReportsWorkspacePage() {
             ? `/organization-edit/${id}`
             : `/organization-edit/${id}?variant=${encodeURIComponent(variant.slug)}`;
           return (
-            <ColoredCard key={variant._id} accentColor={variant.isDefault ? '#2563eb' : '#f59e0b'} hoverable={false}>
+            <ColoredCard key={variant._id} accentColor={variant.isDefault ? 'var(--mm-color-primary-600)' : 'var(--mm-warning)'} hoverable={false}>
               <div className={styles.variantCard}>
                 <div className={styles.variantHeader}>
                   <div>

@@ -330,18 +330,18 @@ export const ChartConfigurationComponent: React.FC<ChartConfigurationProps> = ({
           align-items: flex-start;
           margin-bottom: 2rem;
           padding-bottom: 1rem;
-          border-bottom: 2px solid rgba(255, 255, 255, 0.1);
+          border-bottom: 2px solid color-mix(in srgb, var(--mm-white) 10%, transparent);
         }
 
         .config-title h3 {
           margin: 0 0 0.5rem 0;
-          color: #1f2937;
+          color: var(--mm-gray-800);
           font-size: 1.5rem;
         }
 
         .config-title p {
           margin: 0;
-          color: #6b7280;
+          color: var(--mm-gray-500);
           font-size: 0.9rem;
         }
 
@@ -350,7 +350,7 @@ export const ChartConfigurationComponent: React.FC<ChartConfigurationProps> = ({
           flex-direction: column;
           gap: 0.25rem;
           font-size: 0.8rem;
-          color: #6b7280;
+          color: var(--mm-gray-500);
         }
 
         .config-actions {
@@ -362,16 +362,16 @@ export const ChartConfigurationComponent: React.FC<ChartConfigurationProps> = ({
         /* Buttons use global .btn variants from globals.css for uniformity across admin */
 
         .error-message {
-          background: rgba(239, 68, 68, 0.1);
-          border: 1px solid rgba(239, 68, 68, 0.3);
-          color: #dc2626;
+          background: color-mix(in srgb, var(--mm-error) 10%, transparent);
+          border: 1px solid color-mix(in srgb, var(--mm-error) 30%, transparent);
+          color: var(--mantine-color-messmassRed-6);
           padding: 1rem;
           border-radius: 8px;
           margin-bottom: 1rem;
         }
 
         .config-tabs {
-          background: rgba(255, 255, 255, 0.95);
+          background: color-mix(in srgb, var(--mm-white) 95%, transparent);
           border-radius: 12px;
           padding: 1.5rem;
           backdrop-filter: blur(10px);
@@ -381,7 +381,7 @@ export const ChartConfigurationComponent: React.FC<ChartConfigurationProps> = ({
           display: flex;
           gap: 0.5rem;
           margin-bottom: 2rem;
-          border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+          border-bottom: 1px solid color-mix(in srgb, var(--mm-black) 10%, transparent);
         }
 
         .tab-button {
@@ -391,7 +391,7 @@ export const ChartConfigurationComponent: React.FC<ChartConfigurationProps> = ({
           border-radius: 8px 8px 0 0;
           cursor: pointer;
           font-weight: 500;
-          color: #6b7280;
+          color: var(--mm-gray-500);
           transition: all 0.2s;
           display: flex;
           align-items: center;
@@ -399,17 +399,17 @@ export const ChartConfigurationComponent: React.FC<ChartConfigurationProps> = ({
         }
 
         .tab-button.active {
-          background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+          background: var(--gradient-primary);
           color: white;
         }
 
         .tab-button:hover:not(.active) {
-          background: rgba(102, 126, 234, 0.1);
-          color: #667eea;
+          background: color-mix(in srgb, var(--mm-color-primary-500) 10%, transparent);
+          color: var(--mm-color-primary-500);
         }
 
         .tab-count {
-          background: rgba(0, 0, 0, 0.2);
+          background: color-mix(in srgb, var(--mm-black) 20%, transparent);
           padding: 0.2rem 0.5rem;
           border-radius: 12px;
           font-size: 0.7rem;
@@ -417,7 +417,7 @@ export const ChartConfigurationComponent: React.FC<ChartConfigurationProps> = ({
 
         .algorithms-section h4 {
           margin: 0 0 1.5rem 0;
-          color: #1f2937;
+          color: var(--mm-gray-800);
         }
 
         .algorithms-list {
@@ -427,15 +427,15 @@ export const ChartConfigurationComponent: React.FC<ChartConfigurationProps> = ({
         }
 
         .algorithm-card {
-          border: 1px solid rgba(0, 0, 0, 0.1);
+          border: 1px solid color-mix(in srgb, var(--mm-black) 10%, transparent);
           border-radius: 8px;
           overflow: hidden;
           transition: all 0.2s;
         }
 
         .algorithm-card:hover {
-          border-color: rgba(102, 126, 234, 0.3);
-          box-shadow: 0 2px 8px rgba(102, 126, 234, 0.1);
+          border-color: color-mix(in srgb, var(--mm-color-primary-500) 30%, transparent);
+          box-shadow: 0 2px 8px color-mix(in srgb, var(--mm-color-primary-500) 10%, transparent);
         }
 
         .algorithm-header {
@@ -443,18 +443,18 @@ export const ChartConfigurationComponent: React.FC<ChartConfigurationProps> = ({
           justify-content: space-between;
           align-items: flex-start;
           padding: 1rem;
-          background: rgba(0, 0, 0, 0.02);
+          background: color-mix(in srgb, var(--mm-black) 2%, transparent);
         }
 
         .algorithm-title h4 {
           margin: 0 0 0.25rem 0;
-          color: #1f2937;
+          color: var(--mm-gray-800);
           font-size: 1rem;
         }
 
         .algorithm-description {
           margin: 0;
-          color: #6b7280;
+          color: var(--mm-gray-500);
           font-size: 0.9rem;
         }
 
@@ -484,7 +484,7 @@ export const ChartConfigurationComponent: React.FC<ChartConfigurationProps> = ({
           left: 0;
           right: 0;
           bottom: 0;
-          background-color: #ccc;
+          background-color: var(--mm-gray-300);
           transition: .4s;
           border-radius: 24px;
         }
@@ -502,7 +502,7 @@ export const ChartConfigurationComponent: React.FC<ChartConfigurationProps> = ({
         }
 
         input:checked + .toggle-slider {
-          background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+          background: var(--gradient-primary);
         }
 
         input:checked + .toggle-slider:before {
@@ -511,7 +511,7 @@ export const ChartConfigurationComponent: React.FC<ChartConfigurationProps> = ({
 
         .expand-button {
           background: none;
-          border: 1px solid rgba(0, 0, 0, 0.2);
+          border: 1px solid color-mix(in srgb, var(--mm-black) 20%, transparent);
           border-radius: 4px;
           width: 24px;
           height: 24px;
@@ -520,20 +520,20 @@ export const ChartConfigurationComponent: React.FC<ChartConfigurationProps> = ({
           align-items: center;
           justify-content: center;
           font-size: 0.8rem;
-          color: #6b7280;
+          color: var(--mm-gray-500);
           transition: all 0.2s;
         }
 
         .expand-button:hover {
-          background: rgba(102, 126, 234, 0.1);
-          border-color: rgba(102, 126, 234, 0.3);
-          color: #667eea;
+          background: color-mix(in srgb, var(--mm-color-primary-500) 10%, transparent);
+          border-color: color-mix(in srgb, var(--mm-color-primary-500) 30%, transparent);
+          color: var(--mm-color-primary-500);
         }
 
         .algorithm-details {
           padding: 1rem;
-          border-top: 1px solid rgba(0, 0, 0, 0.1);
-          background: rgba(0, 0, 0, 0.01);
+          border-top: 1px solid color-mix(in srgb, var(--mm-black) 10%, transparent);
+          background: color-mix(in srgb, var(--mm-black) 1%, transparent);
         }
 
         .formula-section {
@@ -542,24 +542,24 @@ export const ChartConfigurationComponent: React.FC<ChartConfigurationProps> = ({
 
         .formula-section h5 {
           margin: 0 0 0.5rem 0;
-          color: #1f2937;
+          color: var(--mm-gray-800);
           font-size: 0.9rem;
         }
 
         .formula-code {
-          background: rgba(0, 0, 0, 0.05);
+          background: color-mix(in srgb, var(--mm-black) 5%, transparent);
           padding: 0.75rem;
           border-radius: 6px;
           font-family: 'Monaco', 'Menlo', monospace;
           font-size: 0.85rem;
-          color: #374151;
+          color: var(--mm-gray-700);
           display: block;
-          border-left: 3px solid #667eea;
+          border-left: 3px solid var(--mm-color-primary-500);
         }
 
         .parameters-section h5 {
           margin: 0 0 1rem 0;
-          color: #1f2937;
+          color: var(--mm-gray-800);
           font-size: 0.9rem;
         }
 
@@ -577,14 +577,14 @@ export const ChartConfigurationComponent: React.FC<ChartConfigurationProps> = ({
 
         .parameter-label {
           font-weight: 500;
-          color: #374151;
+          color: var(--mm-gray-700);
           font-size: 0.9rem;
         }
 
         .parameter-description {
           display: block;
           font-weight: normal;
-          color: #6b7280;
+          color: var(--mm-gray-500);
           font-size: 0.8rem;
           margin-top: 0.25rem;
         }
@@ -598,26 +598,26 @@ export const ChartConfigurationComponent: React.FC<ChartConfigurationProps> = ({
         .parameter-input {
           flex: 1;
           padding: 0.5rem;
-          border: 1px solid rgba(0, 0, 0, 0.2);
+          border: 1px solid color-mix(in srgb, var(--mm-black) 20%, transparent);
           border-radius: 6px;
           font-size: 0.9rem;
         }
 
         .parameter-input:focus {
           outline: none;
-          border-color: #667eea;
-          box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+          border-color: var(--mm-color-primary-500);
+          box-shadow: 0 0 0 3px color-mix(in srgb, var(--mm-color-primary-500) 10%, transparent);
         }
 
         .parameter-unit {
           font-weight: 500;
-          color: #6b7280;
+          color: var(--mm-gray-500);
           min-width: 20px;
         }
 
         .parameter-range {
           font-size: 0.75rem;
-          color: #9ca3af;
+          color: var(--mm-gray-400);
         }
 
         .loading-state, .error-state {
@@ -632,8 +632,8 @@ export const ChartConfigurationComponent: React.FC<ChartConfigurationProps> = ({
         .spinner {
           width: 40px;
           height: 40px;
-          border: 4px solid #f3f4f6;
-          border-top: 4px solid #667eea;
+          border: 4px solid var(--mm-gray-100);
+          border-top: 4px solid var(--mm-color-primary-500);
           border-radius: 50%;
           animation: spin 1s linear infinite;
           margin-bottom: 1rem;

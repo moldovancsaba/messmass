@@ -17,6 +17,7 @@ import type { HashtagSuggestion, HashtagWithCount } from '@/lib/types/hashtags';
 import { normalizeHashtagResponse } from '@/lib/types/hashtags';
 import ColoredHashtagBubble from './ColoredHashtagBubble';
 import { apiPost } from '@/lib/apiClient';
+import { DEFAULT_HASHTAG_COLOR } from '@/lib/theme/hashtagPalette';
 
 interface UnifiedHashtagInputProps {
   // Traditional hashtags (General section)
@@ -282,9 +283,9 @@ export default function UnifiedHashtagInput({
   };
   
   const getCurrentCategoryColor = () => {
-    if (selectedCategory === 'general') return '#667eea'; // Default color
+    if (selectedCategory === 'general') return DEFAULT_HASHTAG_COLOR; // Default color
     const category = loadedCategories.find(cat => cat.name === selectedCategory);
-    return category?.color || '#667eea';
+    return category?.color || DEFAULT_HASHTAG_COLOR;
   };
   
   const renderHashtagGroup = (title: string, hashtags: string[], categoryName: string, categoryColor?: string) => {
@@ -304,7 +305,7 @@ export default function UnifiedHashtagInput({
                 // WHAT: Dynamic category color for visual distinction
                 // WHY: Each category has a unique color stored in MongoDB
                 // eslint-disable-next-line react/forbid-dom-props
-                style={{ backgroundColor: (typeof categoryColor === 'string' && categoryColor.trim()) ? categoryColor.trim() : '#667eea' }}
+                style={{ backgroundColor: (typeof categoryColor === 'string' && categoryColor.trim()) ? categoryColor.trim() : DEFAULT_HASHTAG_COLOR }}
               />
             )}
             <label className={styles['group-label']}>{title}</label>

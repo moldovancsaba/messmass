@@ -25,7 +25,7 @@ function StarRating({ rating }: { rating: number }) {
         // WHAT: Dynamic star color based on rating value
         // WHY: Each star's color depends on its position vs rating (legitimate dynamic style)
         // eslint-disable-next-line react/forbid-dom-props
-        <span key={i} style={{ color: i < rating ? '#f59e0b' : '#d1d5db' }}>
+        <span key={i} style={{ color: i < rating ? 'var(--mm-warning)' : 'var(--mm-gray-300)' }}>
           ★
         </span>
       ))}
@@ -99,7 +99,7 @@ export default function DataQualityInsightsComponent({
 
       {/* Insight #2: Missing Critical Metrics Alert */}
       {showInsight([2]) && insights.missingCritical.blocking && (
-        <ColoredCard accentColor="#ef4444" hoverable={false}>
+        <ColoredCard accentColor="var(--mm-error)" hoverable={false}>
           <div className={styles.insightHeader}>
             <h3 className={styles.insightTitle}>
               🚨 Missing Critical Metrics
@@ -107,7 +107,7 @@ export default function DataQualityInsightsComponent({
             {/* WHAT: Critical error badge color
                 WHY: Fixed critical color for missing metrics (legitimate semantic style) */}
             {/* eslint-disable-next-line react/forbid-dom-props */}
-            <span className={styles.qualityBadge} style={{ background: '#ef4444' }}>
+            <span className={styles.qualityBadge} style={{ background: 'var(--mm-error)' }}>
               {insights.missingCritical.count} MISSING
             </span>
           </div>
@@ -133,7 +133,7 @@ export default function DataQualityInsightsComponent({
 
       {/* Insight #3: Derived Metrics Status */}
       {showInsight([3]) && (
-        <ColoredCard accentColor="#8b5cf6" hoverable={false}>
+        <ColoredCard accentColor="var(--mm-chart-purple)" hoverable={false}>
           <div className={styles.insightHeader}>
             <h3 className={styles.insightTitle}>
               🔄 Derived Metrics
@@ -141,7 +141,7 @@ export default function DataQualityInsightsComponent({
             {/* WHAT: Derived metrics badge color
                 WHY: Fixed purple color for auto-computed metrics (legitimate semantic style) */}
             {/* eslint-disable-next-line react/forbid-dom-props */}
-            <span className={styles.qualityBadge} style={{ background: '#8b5cf6' }}>
+            <span className={styles.qualityBadge} style={{ background: 'var(--mm-chart-purple)' }}>
               AUTO-COMPUTED
             </span>
           </div>
@@ -168,7 +168,7 @@ export default function DataQualityInsightsComponent({
 
       {/* Insight #4: Optional Fields Coverage */}
       {showInsight([4]) && (
-        <ColoredCard accentColor="#3b82f6" hoverable={false}>
+        <ColoredCard accentColor="var(--mm-color-primary-500)" hoverable={false}>
           <div className={styles.insightHeader}>
             <h3 className={styles.insightTitle}>
               📈 Optional Fields Coverage
@@ -176,7 +176,7 @@ export default function DataQualityInsightsComponent({
             {/* WHAT: Optional coverage badge color
                 WHY: Fixed blue color for optional fields (legitimate semantic style) */}
             {/* eslint-disable-next-line react/forbid-dom-props */}
-            <span className={styles.qualityBadge} style={{ background: '#3b82f6' }}>
+            <span className={styles.qualityBadge} style={{ background: 'var(--mm-color-primary-500)' }}>
               {insights.optionalCoverage.percentage}%
             </span>
           </div>
@@ -200,9 +200,9 @@ export default function DataQualityInsightsComponent({
       {showInsight([5]) && (
         <ColoredCard 
           accentColor={
-            insights.bitlyStatus.status === 'synced' ? '#10b981' :
-            insights.bitlyStatus.status === 'stale' ? '#f59e0b' :
-            '#ef4444'
+            insights.bitlyStatus.status === 'synced' ? 'var(--mm-success)' :
+            insights.bitlyStatus.status === 'stale' ? 'var(--mm-warning)' :
+            'var(--mm-error)'
           } 
           hoverable={false}
         >
@@ -234,7 +234,7 @@ export default function DataQualityInsightsComponent({
 
       {/* Insight #6: Data Consistency Warnings */}
       {showInsight([6]) && insights.consistencyWarnings.length > 0 && (
-        <ColoredCard accentColor="#f59e0b" hoverable={false}>
+        <ColoredCard accentColor="var(--mm-warning)" hoverable={false}>
           <div className={styles.insightHeader}>
             <h3 className={styles.insightTitle}>
               ⚠️ Data Consistency Warnings
@@ -242,7 +242,7 @@ export default function DataQualityInsightsComponent({
             {/* WHAT: Warning badge color
                 WHY: Fixed warning color for consistency issues (legitimate semantic style) */}
             {/* eslint-disable-next-line react/forbid-dom-props */}
-            <span className={styles.qualityBadge} style={{ background: '#f59e0b' }}>
+            <span className={styles.qualityBadge} style={{ background: 'var(--mm-warning)' }}>
               {insights.consistencyWarnings.length} ISSUE{insights.consistencyWarnings.length > 1 ? 'S' : ''}
             </span>
           </div>
@@ -270,7 +270,7 @@ export default function DataQualityInsightsComponent({
 
       {/* Insight #9: Enrichment Opportunities */}
       {showInsight([9]) && insights.enrichmentOpportunities.length > 0 && (
-        <ColoredCard accentColor="#3b82f6" hoverable={false}>
+        <ColoredCard accentColor="var(--mm-color-primary-500)" hoverable={false}>
           <div className={styles.insightHeader}>
             <h3 className={styles.insightTitle}>
               💡 Data Enrichment Opportunities
@@ -278,7 +278,7 @@ export default function DataQualityInsightsComponent({
             {/* WHAT: Enrichment opportunities badge color
                 WHY: Fixed blue color for opportunities (legitimate semantic style) */}
             {/* eslint-disable-next-line react/forbid-dom-props */}
-            <span className={styles.qualityBadge} style={{ background: '#3b82f6' }}>
+            <span className={styles.qualityBadge} style={{ background: 'var(--mm-color-primary-500)' }}>
               {insights.enrichmentOpportunities.length} AVAILABLE
             </span>
           </div>
@@ -319,7 +319,7 @@ export default function DataQualityInsightsComponent({
       {/* Insight #10: Benchmarking Eligibility */}
       {showInsight([10]) && (
         <ColoredCard 
-          accentColor={insights.benchmarkingEligibility.eligible ? '#10b981' : '#ef4444'} 
+          accentColor={insights.benchmarkingEligibility.eligible ? 'var(--mm-success)' : 'var(--mm-error)'} 
           hoverable={false}
         >
           <div className={styles.insightHeader}>

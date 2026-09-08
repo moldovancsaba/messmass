@@ -18,7 +18,7 @@ function elements(labels: string[]) {
     id: `e${i}`,
     label,
     value: i,
-    color: '#000000',
+    color: 'var(--mm-black)',
   }));
 }
 

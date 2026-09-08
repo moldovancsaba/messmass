@@ -57,8 +57,8 @@ export default function UnifiedPageHero({
   // WHAT: Validate color values before injecting into CSS
   // WHY: Prevent undefined/null from appearing in CSS which causes React .trim() errors
   // HOW: Check each color value is string and non-empty before using
-  const safePrimaryTextColor = (typeof pageStyle?.typography?.primaryTextColor === 'string' && pageStyle.typography.primaryTextColor.trim()) ? pageStyle.typography.primaryTextColor.trim() : '#1f2937';
-  const safeHeadingColor = (typeof pageStyle?.typography?.headingColor === 'string' && pageStyle.typography.headingColor.trim()) ? pageStyle.typography.headingColor.trim() : '#1f2937';
+  const safePrimaryTextColor = (typeof pageStyle?.typography?.primaryTextColor === 'string' && pageStyle.typography.primaryTextColor.trim()) ? pageStyle.typography.primaryTextColor.trim() : 'var(--mm-gray-800)';
+  const safeHeadingColor = (typeof pageStyle?.typography?.headingColor === 'string' && pageStyle.typography.headingColor.trim()) ? pageStyle.typography.headingColor.trim() : 'var(--mm-gray-800)';
   
   const styleCss = pageStyle ? `
     .admin-container { 
@@ -149,7 +149,7 @@ export default function UnifiedPageHero({
                         padding: '0.5rem 1rem',
                         ...((typeof pageStyle?.colorScheme?.primary === 'string' && pageStyle.colorScheme.primary.trim()) ? {
                           backgroundColor: pageStyle.colorScheme.primary.trim(),
-                          color: '#ffffff'
+                          color: 'var(--mm-white)'
                         } : {})
                       }}
                     />
@@ -178,7 +178,7 @@ export default function UnifiedPageHero({
                             padding: '0.5rem 1rem',
                             ...((typeof pageStyle?.colorScheme?.primary === 'string' && pageStyle.colorScheme.primary.trim()) ? {
                               backgroundColor: pageStyle.colorScheme.primary.trim(),
-                              color: '#ffffff'
+                              color: 'var(--mm-white)'
                             } : {})
                           }}
                           showCategoryPrefix={true}

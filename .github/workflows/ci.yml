@@ -49,15 +49,13 @@ jobs:
       # after the vendor bump. This runs on every push now, not just when
       # someone happens to remember.
       - run: npm run gds:sync
-      # Report-only: 24 pre-existing forbidden-color findings, all in scripts/
-      # and one tests/ fixture (none in app/, components/, or lib/) predate
-      # this manifest and are real, tracked Phase 4 work, not something to
-      # block every push on today. The 111 figure once quoted here was from
-      # testing compliance.strictMode: true, not this baseline -- verified
-      # 2026-08-17, see HANDOVER.md section 2. Promote to a hard gate once
-      # this trends to zero AND Phase 5's component migrations land (strict
-      # mode alone still surfaces 486 findings across app/components/lib).
-      - run: npx gds-compliance check --manifest ./gds-adoption.json || true
+      # Blocking since v12.3.26 (messmass#387): the 71 forbidden-color findings
+      # were cleared -- UI colours moved to theme.css tokens, and the colours
+      # that are data (chart palettes, seeded style presets, hashtag colours,
+      # e-mail inline styles) live in lib/theme/*.ts, the one lane the checker
+      # exempts. A new raw hex/rgb literal outside lib/theme/ now fails CI.
+      # compliance.strictMode stays false; strict mode is separate Phase 5 work.
+      - run: npx gds-compliance check --manifest ./gds-adoption.json
       - run: npx tsx scripts/check-dependency-guardrail.ts
       - run: npx tsx scripts/check-layout-grammar-guardrail.ts
       - run: npm run build

@@ -36,28 +36,28 @@ export default function CookieTest() {
 
   if (loading) return (
     <div className="page-container">
-      <ColoredCard accentColor="#6366f1" hoverable={false} className="text-center">Loading...</ColoredCard>
+      <ColoredCard accentColor="var(--mm-chart-indigo)" hoverable={false} className="text-center">Loading...</ColoredCard>
     </div>
   )
 
   return (
     <div className="page-container font-mono">
-      <ColoredCard accentColor="#6366f1" hoverable={false} className="mb-8">
+      <ColoredCard accentColor="var(--mm-chart-indigo)" hoverable={false} className="mb-8">
         <h1 className="text-3xl font-bold mb-4">🍪 Cookie Test Page</h1>
         <p className="mb-4">Domain: {typeof window !== 'undefined' ? window.location.hostname : 'unknown'}</p>
       </ColoredCard>
       
-      <ColoredCard accentColor="#10b981" hoverable={false} className="mb-4">
+      <ColoredCard accentColor="var(--mm-success)" hoverable={false} className="mb-4">
         <h2 className="text-xl font-bold mb-2">Auth API Response:</h2>
         <pre className="bg-gray-100 p-4 rounded overflow-auto">{JSON.stringify(authStatus, null, 2)}</pre>
       </ColoredCard>
 
-      <ColoredCard accentColor="#3b82f6" hoverable={false} className="mb-4">
+      <ColoredCard accentColor="var(--mm-color-primary-500)" hoverable={false} className="mb-4">
         <h2 className="text-xl font-bold mb-2">Browser Cookies:</h2>
         <pre className="bg-gray-100 p-4 rounded overflow-auto">{document.cookie || '(no cookies)'}</pre>
       </ColoredCard>
 
-      <ColoredCard accentColor="#8b5cf6" hoverable={false}>
+      <ColoredCard accentColor="var(--mm-chart-purple)" hoverable={false}>
         <a href="/admin/login" className="btn btn-small btn-primary">
           ← Back to Login
         </a>

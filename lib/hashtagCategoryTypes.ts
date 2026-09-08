@@ -172,27 +172,9 @@ export interface CategoryValidationResult {
 /**
  * Default category colors palette
  * Provides consistent color options for new categories
+ * (literal values live in lib/theme/hashtagPalette.ts)
  */
-export const DEFAULT_CATEGORY_COLORS: string[] = [
-  '#667eea',  // Default purple
-  '#764ba2',  // Deep purple
-  '#f093fb',  // Light pink
-  '#f5576c',  // Red-pink
-  '#4facfe',  // Light blue
-  '#00f2fe',  // Cyan
-  '#43e97b',  // Green
-  '#38f9d7',  // Mint
-  '#ffecd2',  // Light orange
-  '#fcb69f',  // Peach
-  '#a8edea',  // Light mint
-  '#fed6e3',  // Light pink
-  '#d299c2',  // Soft purple
-  '#fef9d7',  // Light yellow
-  '#ebc0fd',  // Lavender
-  '#d9a7c7',  // Dusty rose
-  '#96c93d',  // Lime green
-  '#00b4db'   // Ocean blue
-];
+export { DEFAULT_CATEGORY_COLORS } from './theme/hashtagPalette';
 
 /**
  * Category name validation rules

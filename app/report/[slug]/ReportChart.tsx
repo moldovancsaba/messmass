@@ -28,6 +28,7 @@ import { safeValidate, validateCriticalCSSVariable, CRITICAL_CSS_VARIABLES } fro
 import { getUserFriendlyErrorMessage } from '@/lib/chartErrorTypes';
 import { validateChartData, formatValidationIssue } from '@/lib/export/chartValidation';
 import type { Chart } from '@/lib/report-calculator';
+import { CHART_THEME_COLORS } from '@/lib/theme/chartPalette';
 
 // Register Chart.js components for pie charts
 ChartJS.register(ArcElement, Tooltip, Legend);
@@ -861,8 +862,8 @@ function PieChart({ result, className }: { result: ChartResult; className?: stri
     const root = document.documentElement;
     const cs = getComputedStyle(root);
     return {
-      bg: cs.getPropertyValue('--chartTooltipBackground').trim() || 'rgba(31, 41, 55, 0.95)',
-      text: cs.getPropertyValue('--chartTooltipText').trim() || '#ffffff'
+      bg: cs.getPropertyValue('--chartTooltipBackground').trim() || CHART_THEME_COLORS.tooltipBackground,
+      text: cs.getPropertyValue('--chartTooltipText').trim() || CHART_THEME_COLORS.tooltipText
     };
   };
   const tooltipColors = getTooltipColors();

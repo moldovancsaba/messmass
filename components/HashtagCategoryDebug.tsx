@@ -66,14 +66,14 @@ export default function HashtagCategoryDebug({
                   // eslint-disable-next-line react/forbid-dom-props
                   style={{
                     '--badge-bg': category === 'general' 
-                      ? 'rgba(107, 114, 128, 0.1)' 
-                      : 'rgba(59, 130, 246, 0.1)',
+                      ? 'color-mix(in srgb, var(--mm-gray-500) 10%, transparent)' 
+                      : 'color-mix(in srgb, var(--mm-color-primary-500) 10%, transparent)',
                     '--badge-color': category === 'general' 
-                      ? '#6b7280' 
-                      : '#2563eb',
+                      ? 'var(--mm-gray-500)' 
+                      : 'var(--mm-color-primary-600)',
                     '--badge-border': category === 'general' 
-                      ? 'rgba(107, 114, 128, 0.2)' 
-                      : 'rgba(59, 130, 246, 0.2)'
+                      ? 'color-mix(in srgb, var(--mm-gray-500) 20%, transparent)' 
+                      : 'color-mix(in srgb, var(--mm-color-primary-500) 20%, transparent)'
                   } as React.CSSProperties}
                 >
                   {category}

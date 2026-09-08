@@ -5,6 +5,7 @@ import { ChoiceChip } from '@sovereignsquad/gds-core/client';
 import type React from 'react';
 import useHashtagColorResolver from '../hooks/useHashtagColorResolver';
 import { compareHashtagBubbleProps } from '../lib/performanceUtils';
+import { HASHTAG_BUBBLE_FALLBACK_COLOR } from '../lib/theme/hashtagPalette';
 import styles from './ColoredHashtagBubble.module.css';
 
 /* What: Hashtag bubble rendered through GDS's ChoiceChip/Badge primitive
@@ -136,7 +137,7 @@ function ColoredHashtagBubbleComponent({
 
   // WHAT: Validate backgroundColor before using in style
   // WHY: React calls .trim() on style values, will crash if undefined
-  const safeBackgroundColor = (backgroundColor && typeof backgroundColor === 'string' && backgroundColor.trim()) ? backgroundColor : '#3b82f6';
+  const safeBackgroundColor = (backgroundColor && typeof backgroundColor === 'string' && backgroundColor.trim()) ? backgroundColor : HASHTAG_BUBBLE_FALLBACK_COLOR;
 
   // WHAT: interactive chips render as a real <button> (ChoiceChip's onClick branch); a
   // removable chip that's ALSO interactive can't nest a second real <button> inside a

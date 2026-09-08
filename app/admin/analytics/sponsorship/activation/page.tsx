@@ -460,7 +460,7 @@ export default function SponsorshipActivationWorkspacePage() {
               </div>
             </AnalyticsToolbar>
 
-            <ColoredCard accentColor="var(--mm-color-success-500, #16a34a)" hoverable={false}>
+            <ColoredCard accentColor="var(--mm-success)" hoverable={false}>
               <div className={styles.sectionCard}>
                 <div className={styles.sectionHeader}>
                   <h2 className={styles.sectionTitle}>Partner Recap Packages</h2>
@@ -472,7 +472,7 @@ export default function SponsorshipActivationWorkspacePage() {
                   {filteredRecapPackages.map((partner) => (
                       <ColoredCard
                         key={partner.partnerId}
-                        accentColor="var(--mm-color-success-500, #16a34a)"
+                        accentColor="var(--mm-success)"
                         hoverable={false}
                         className={`${styles.projectResultCard} ${selectedRecapPackage?.partnerId === partner.partnerId ? styles.projectResultActive : ''}`}
                       >
@@ -557,7 +557,7 @@ export default function SponsorshipActivationWorkspacePage() {
             </ColoredCard>
 
             {selectedRecapPackage && (
-              <ColoredCard accentColor="var(--mm-color-success-500, #16a34a)" hoverable={false}>
+              <ColoredCard accentColor="var(--mm-success)" hoverable={false}>
                 <div className={styles.sectionCard}>
                   <div className={styles.sectionHeader}>
                     <h2 className={styles.sectionTitle}>Recipient-Ready Recap Brief</h2>

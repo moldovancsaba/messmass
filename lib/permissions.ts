@@ -130,11 +130,11 @@ export function getRoleDisplayName(role: UserRole): string {
  */
 export function getRoleBadgeColor(role: UserRole): string {
   const colors: Record<UserRole, string> = {
-    guest: '#9ca3af',      // Gray - limited access
-    user: '#3b82f6',       // Blue - standard access
-    admin: '#10b981',      // Green - elevated access
-    superadmin: '#8b5cf6', // Purple - full access
-    api: '#f59e0b',        // Amber - API key access
+    guest: 'var(--mm-gray-400)',      // Gray - limited access
+    user: 'var(--mm-color-primary-500)',       // Blue - standard access
+    admin: 'var(--mm-success)',      // Green - elevated access
+    superadmin: 'var(--mm-chart-purple)', // Purple - full access
+    api: 'var(--mm-warning)',        // Amber - API key access
   };
-  return colors[role] || '#6b7280';
+  return colors[role] || 'var(--mm-gray-500)';
 }

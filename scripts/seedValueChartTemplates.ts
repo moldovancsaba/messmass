@@ -33,6 +33,7 @@
 import { MongoClient, Db } from 'mongodb';
 import * as dotenv from 'dotenv';
 import * as path from 'path';
+import { CHART_COLOR } from '../lib/theme/chartPalette';
 
 // Load environment variables
 dotenv.config({ path: path.resolve(__dirname, '../.env.local') });
@@ -101,7 +102,7 @@ const VALUE_CHART_TEMPLATES: ValueChartTemplate[] = [
         id: 'email-value',
         label: 'Email',
         formula: '([SEYUREMOTEIMAGES] + [SEYUHOSTESSIMAGES] + [SEYUSELFIES]) * [PARAM:cpmEmailOptin]',
-        color: '#3b82f6',
+        color: CHART_COLOR.blue,
         description: 'Email opt-in value based on total images captured',
         parameters: {
           cpmEmailOptin: {
@@ -116,7 +117,7 @@ const VALUE_CHART_TEMPLATES: ValueChartTemplate[] = [
         id: 'social-value',
         label: 'Social',
         formula: '([SEYUREMOTEIMAGES] + [SEYUHOSTESSIMAGES] + [SEYUSELFIES]) * [PARAM:exposureRatio] * [PARAM:sharedImages] * [PARAM:avgViews] * [PARAM:cpmSocialOrganic] / 1000',
-        color: '#8b5cf6',
+        color: CHART_COLOR.purple,
         description: 'Social media organic reach value',
         parameters: {
           exposureRatio: {
@@ -149,7 +150,7 @@ const VALUE_CHART_TEMPLATES: ValueChartTemplate[] = [
         id: 'stadium-value',
         label: 'Stadium',
         formula: '[SEYUSTADIUMFANS] * [PARAM:cpmStadiumAd]',
-        color: '#10b981',
+        color: CHART_COLOR.green,
         description: 'In-stadium advertising exposure value',
         parameters: {
           cpmStadiumAd: {
@@ -164,7 +165,7 @@ const VALUE_CHART_TEMPLATES: ValueChartTemplate[] = [
         id: 'premium-value',
         label: 'Premium',
         formula: '([SEYUGENALPHAFANS] + [SEYUGENYZFANS]) * [PARAM:premiumContactValue]',
-        color: '#f59e0b',
+        color: CHART_COLOR.amber,
         description: 'Premium youth demographic contact value',
         parameters: {
           premiumContactValue: {
@@ -179,7 +180,7 @@ const VALUE_CHART_TEMPLATES: ValueChartTemplate[] = [
         id: 'reoptin-value',
         label: 'Re-optin',
         formula: '([SEYUREMOTEIMAGES] + [SEYUHOSTESSIMAGES] + [SEYUSELFIES]) * [PARAM:exposureRatio] * [PARAM:cpmEmailAddon]',
-        color: '#ec4899',
+        color: CHART_COLOR.pink,
         description: 'Additional email re-engagement value',
         parameters: {
           exposureRatio: {
@@ -222,35 +223,35 @@ const VALUE_CHART_TEMPLATES: ValueChartTemplate[] = [
         id: 'merch-revenue',
         label: 'Merchandise',
         formula: '[SEYUMERCHEDFANS] * 30',
-        color: '#3b82f6',
+        color: CHART_COLOR.blue,
         description: 'Merchandise revenue (€30 avg per fan)',
       },
       {
         id: 'ticket-revenue',
         label: 'Tickets',
         formula: '[SEYUATTENDEES] * 25',
-        color: '#10b981',
+        color: CHART_COLOR.green,
         description: 'Ticket sales revenue (€25 avg per ticket)',
       },
       {
         id: 'food-beverage',
         label: 'Food & Beverage',
         formula: '[SEYUATTENDEES] * 15',
-        color: '#f59e0b',
+        color: CHART_COLOR.amber,
         description: 'Food and beverage revenue (€15 avg per attendee)',
       },
       {
         id: 'parking',
         label: 'Parking',
         formula: '[SEYUATTENDEES] * 0.4 * 10',
-        color: '#8b5cf6',
+        color: CHART_COLOR.purple,
         description: 'Parking revenue (40% drive, €10 per car)',
       },
       {
         id: 'sponsorship',
         label: 'Sponsorship',
         formula: '[SEYUTOTALFANS] * 2',
-        color: '#ec4899',
+        color: CHART_COLOR.pink,
         description: 'Sponsorship value (€2 per fan impression)',
       },
     ],
@@ -279,35 +280,35 @@ const VALUE_CHART_TEMPLATES: ValueChartTemplate[] = [
         id: 'photo-engagement',
         label: 'Photo',
         formula: '([SEYUREMOTEIMAGES] + [SEYUHOSTESSIMAGES] + [SEYUSELFIES]) * 10',
-        color: '#3b82f6',
+        color: CHART_COLOR.blue,
         description: 'Photo capture engagement (10 pts per image)',
       },
       {
         id: 'merch-engagement',
         label: 'Merchandise',
         formula: '[SEYUMERCHEDFANS] * 50',
-        color: '#10b981',
+        color: CHART_COLOR.green,
         description: 'Merchandise purchase engagement (50 pts per fan)',
       },
       {
         id: 'social-engagement',
         label: 'Social',
         formula: '[SEYUSOCIALVISIT] * 20',
-        color: '#8b5cf6',
+        color: CHART_COLOR.purple,
         description: 'Social media engagement (20 pts per visit)',
       },
       {
         id: 'repeat-engagement',
         label: 'Repeat',
         formula: '[SEYUQRCODEVISIT] * 30',
-        color: '#f59e0b',
+        color: CHART_COLOR.amber,
         description: 'Repeat visit engagement (30 pts per QR scan)',
       },
       {
         id: 'referral-engagement',
         label: 'Referral',
         formula: '[SEYUSHORTURLVISIT] * 25',
-        color: '#ec4899',
+        color: CHART_COLOR.pink,
         description: 'Referral engagement (25 pts per link click)',
       },
     ],
@@ -336,35 +337,35 @@ const VALUE_CHART_TEMPLATES: ValueChartTemplate[] = [
         id: 'local-fans',
         label: 'Local',
         formula: '[SEYUSTADIUMFANS] * 0.6',
-        color: '#3b82f6',
+        color: CHART_COLOR.blue,
         description: 'Local city fans (60% of stadium attendance)',
       },
       {
         id: 'regional-fans',
         label: 'Regional',
         formula: '[SEYUSTADIUMFANS] * 0.25',
-        color: '#10b981',
+        color: CHART_COLOR.green,
         description: 'Regional fans (25% of stadium attendance)',
       },
       {
         id: 'national-fans',
         label: 'National',
         formula: '[SEYUSTADIUMFANS] * 0.1',
-        color: '#f59e0b',
+        color: CHART_COLOR.amber,
         description: 'National fans (10% of stadium attendance)',
       },
       {
         id: 'international-fans',
         label: 'International',
         formula: '[SEYUSTADIUMFANS] * 0.05',
-        color: '#8b5cf6',
+        color: CHART_COLOR.purple,
         description: 'International fans (5% of stadium attendance)',
       },
       {
         id: 'remote-global',
         label: 'Remote Global',
         formula: '[SEYUREMOTEFANS]',
-        color: '#ec4899',
+        color: CHART_COLOR.pink,
         description: 'Remote fans engaging globally',
       },
     ],
@@ -393,35 +394,35 @@ const VALUE_CHART_TEMPLATES: ValueChartTemplate[] = [
         id: 'brand-exposure',
         label: 'Brand Exposure',
         formula: '[SEYUTOTALFANS] * 1.5',
-        color: '#3b82f6',
+        color: CHART_COLOR.blue,
         description: 'Brand exposure value ($1.50 per fan)',
       },
       {
         id: 'digital-reach',
         label: 'Digital Reach',
         formula: '([SEYUREMOTEIMAGES] + [SEYUHOSTESSIMAGES] + [SEYUSELFIES]) * 3',
-        color: '#10b981',
+        color: CHART_COLOR.green,
         description: 'Digital content reach value ($3 per image)',
       },
       {
         id: 'event-sponsorship',
         label: 'Event Sponsorship',
         formula: '[SEYUATTENDEES] * 2',
-        color: '#f59e0b',
+        color: CHART_COLOR.amber,
         description: 'Event-level sponsorship value ($2 per attendee)',
       },
       {
         id: 'merch-visibility',
         label: 'Merchandise Visibility',
         formula: '[SEYUMERCHEDFANS] * 5',
-        color: '#8b5cf6',
+        color: CHART_COLOR.purple,
         description: 'Branded merchandise visibility value ($5 per fan)',
       },
       {
         id: 'media-coverage',
         label: 'Media Coverage',
         formula: '[SEYUSOCIALVISIT] * 4',
-        color: '#ec4899',
+        color: CHART_COLOR.pink,
         description: 'Media and social coverage value ($4 per social visit)',
       },
     ],

@@ -868,7 +868,7 @@ export default function PartnersAdminPageUnified() {
 
       {createPartnerResult && (
         <div className="mb-4">
-          <ColoredCard accentColor="var(--mm-color-success-500, #16a34a)" hoverable={false}>
+          <ColoredCard accentColor="var(--mm-success)" hoverable={false}>
             <div className="flex flex-col gap-3">
               <div>
                 <h3 className="m-0 text-lg font-semibold">Partner created: {createPartnerResult.name}</h3>

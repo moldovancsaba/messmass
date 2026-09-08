@@ -3,6 +3,7 @@
 import React from 'react';
 import ColoredHashtagBubble from './ColoredHashtagBubble';
 import useHashtags from '../hooks/useHashtags';
+import { UNCATEGORIZED_HASHTAG_COLOR } from '../lib/theme/hashtagPalette';
 
 interface CategorizedHashtagBubbleProps {
   hashtag: string;
@@ -27,7 +28,7 @@ export default function CategorizedHashtagBubble({
   const { getCategoryColor } = useHashtags();
   
   const categoryColor = category ? getCategoryColor(category) : undefined;
-  const defaultColor = '#6b7280'; // Default gray for general/unknown
+  const defaultColor = UNCATEGORIZED_HASHTAG_COLOR; // Default gray for general/unknown
   
   return (
     <div 

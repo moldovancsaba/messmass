@@ -9,6 +9,7 @@ import { getIconForEmoji } from '@/lib/iconMapping';
 import { ChartConfiguration, type AvailableVariable, type HeroBlockSettings, type BlockAlignmentSettings } from '@/lib/chartConfigTypes';
 import { validateFormula, testFormula, extractVariablesFromFormula } from '@/lib/formulaEngine';
 import { calculateChart, formatChartValue } from '@/lib/chartCalculator';
+import { CHART_COLOR, CHART_ELEMENT_COLORS } from '@/lib/theme/chartPalette';
 import PredictiveFormattingInput from './PredictiveFormattingInput';
 import SaveStatusIndicator, { SaveStatus } from './SaveStatusIndicator';
 import { apiPost, apiPut, apiDelete } from '@/lib/apiClient';
@@ -535,7 +536,7 @@ export default function ChartAlgorithmManager({ user }: ChartAlgorithmManagerPro
         order: nextOrder,
         isActive: true,
         elements: [
-          { id: 'element1', label: '', formula: '', color: '#10b981', description: '' }
+          { id: 'element1', label: '', formula: '', color: CHART_COLOR.green, description: '' }
         ],
         icon: '', // v10.4.0: Material Icon name (default empty)
         iconVariant: 'outlined', // v10.4.0: Icon variant (default outlined)
@@ -1191,7 +1192,7 @@ function ChartConfigurationEditor({ config, availableVariables, aiFillRates, onS
                   
                   // Always adjust to exact required element count
                   if (formData.elements.length !== requiredCount) {
-                    const elementColors = ['#3b82f6', '#10b981', '#f59e0b', '#8b5cf6', '#ef4444'];
+                    const elementColors = CHART_ELEMENT_COLORS;
                     const valuechainLabels = ['Title', 'Description'];
                     newElements = [];
                     
@@ -1202,7 +1203,7 @@ function ChartConfigurationEditor({ config, availableVariables, aiFillRates, onS
                         id: `element${i + 1}`,
                         label,
                         formula: i < formData.elements.length ? formData.elements[i].formula : '',
-                        color: elementColors[i] || '#6b7280',
+                        color: elementColors[i] || CHART_COLOR.grayMuted,
                         description: i < formData.elements.length ? formData.elements[i].description : ''
                       });
                     }
@@ -1745,7 +1746,7 @@ function ChartConfigurationEditor({ config, availableVariables, aiFillRates, onS
         }
 
         .form-label {
-          color: #374151;
+          color: var(--mm-gray-700);
           font-weight: 500;
           margin-bottom: 0.5rem;
           font-size: 0.875rem;
@@ -1753,25 +1754,25 @@ function ChartConfigurationEditor({ config, availableVariables, aiFillRates, onS
 
         .form-input {
           padding: 0.75rem;
-          border: 1px solid #d1d5db;
+          border: 1px solid var(--mm-gray-300);
           border-radius: 0.5rem;
           background: white;
-          color: #1f2937;
+          color: var(--mm-gray-800);
           font-size: 0.875rem;
         }
 
         .form-input:focus {
           outline: none;
-          border-color: #667eea;
-          box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+          border-color: var(--mm-color-primary-500);
+          box-shadow: 0 0 0 3px color-mix(in srgb, var(--mm-color-primary-500) 10%, transparent);
         }
 
         .element-editor {
-          border: 1px solid #e5e7eb;
+          border: 1px solid var(--mm-gray-200);
           border-radius: 0.5rem;
           padding: 1rem;
           margin-bottom: 1rem;
-          background: rgba(249, 250, 251, 0.8);
+          background: color-mix(in srgb, var(--mm-gray-50) 80%, transparent);
         }
 
         .element-header {
@@ -1782,7 +1783,7 @@ function ChartConfigurationEditor({ config, availableVariables, aiFillRates, onS
         }
 
         .element-header strong {
-          color: #374151;
+          color: var(--mm-gray-700);
           font-weight: 600;
         }
 
@@ -1795,20 +1796,20 @@ function ChartConfigurationEditor({ config, availableVariables, aiFillRates, onS
 
         .formula-input {
           font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
-          background: #f8fafc;
-          border: 1px solid #cbd5e1;
-          color: #1e293b;
+          background: var(--mm-gray-50);
+          border: 1px solid var(--mm-gray-300);
+          color: var(--mm-gray-800);
         }
 
         .formula-input:focus {
           background: white;
-          border-color: #667eea;
+          border-color: var(--mm-color-primary-500);
         }
 
         .color-input {
           width: 50px;
           height: 38px;
-          border: 1px solid #d1d5db;
+          border: 1px solid var(--mm-gray-300);
           border-radius: 0.25rem;
           cursor: pointer;
         }
@@ -1823,8 +1824,8 @@ function ChartConfigurationEditor({ config, availableVariables, aiFillRates, onS
         }
         
         .chart-type-info {
-          background: rgba(102, 126, 234, 0.1);
-          color: #667eea;
+          background: color-mix(in srgb, var(--mm-color-primary-500) 10%, transparent);
+          color: var(--mm-color-primary-500);
           padding: 0.25rem 0.5rem;
           border-radius: 0.25rem;
           font-size: 0.75rem;
@@ -1843,7 +1844,7 @@ function ChartConfigurationEditor({ config, availableVariables, aiFillRates, onS
         }
         
         .field-label {
-          color: #6b7280;
+          color: var(--mm-gray-500);
           font-size: 0.75rem;
           font-weight: 500;
           margin-bottom: 0.25rem;
@@ -1866,23 +1867,23 @@ function ChartConfigurationEditor({ config, availableVariables, aiFillRates, onS
         }
         
         .formula-error {
-          border-color: #ef4444 !important;
-          background: rgba(239, 68, 68, 0.05) !important;
+          border-color: var(--mm-error) !important;
+          background: color-mix(in srgb, var(--mm-error) 5%, transparent) !important;
         }
         
         .formula-valid {
-          border-color: #10b981 !important;
-          background: rgba(16, 185, 129, 0.05) !important;
+          border-color: var(--mm-success) !important;
+          background: color-mix(in srgb, var(--mm-success) 5%, transparent) !important;
         }
         
         .formula-error-message {
-          color: #ef4444;
+          color: var(--mm-error);
           font-size: 0.75rem;
           margin-top: 0.25rem;
         }
         
         .formula-success-message {
-          color: #10b981;
+          color: var(--mm-success);
           font-size: 0.75rem;
           margin-top: 0.25rem;
         }
@@ -1890,15 +1891,15 @@ function ChartConfigurationEditor({ config, availableVariables, aiFillRates, onS
         /* WHAT: Formatting Section Styles */
         /* WHY: Make formatting controls visually distinct and easy to use */
         .formatting-section {
-          background: rgba(249, 250, 251, 0.8);
-          border: 1px solid #e5e7eb;
+          background: color-mix(in srgb, var(--mm-gray-50) 80%, transparent);
+          border: 1px solid var(--mm-gray-200);
           border-radius: 0.75rem;
           padding: 1.5rem;
           margin-bottom: 2rem;
         }
         
         .formatting-section-title {
-          color: #374151;
+          color: var(--mm-gray-700);
           font-size: 1.125rem;
           font-weight: 600;
           margin: 0 0 1rem 0;
@@ -1906,7 +1907,7 @@ function ChartConfigurationEditor({ config, availableVariables, aiFillRates, onS
         
         .formatting-group {
           background: white;
-          border: 1px solid #e5e7eb;
+          border: 1px solid var(--mm-gray-200);
           border-radius: 0.5rem;
           padding: 1rem;
           margin-bottom: 1rem;
@@ -1917,7 +1918,7 @@ function ChartConfigurationEditor({ config, availableVariables, aiFillRates, onS
         }
         
         .formatting-group-title {
-          color: #6b7280;
+          color: var(--mm-gray-500);
           font-size: 0.875rem;
           font-weight: 600;
           margin: 0 0 0.75rem 0;
@@ -1945,7 +1946,7 @@ function ChartConfigurationEditor({ config, availableVariables, aiFillRates, onS
         }
         
         .formatting-checkbox span {
-          color: #374151;
+          color: var(--mm-gray-700);
           font-size: 0.875rem;
           font-weight: 500;
         }
@@ -1971,7 +1972,7 @@ function ChartConfigurationEditor({ config, availableVariables, aiFillRates, onS
         }
         
         .formatting-input-group label {
-          color: #6b7280;
+          color: var(--mm-gray-500);
           font-size: 0.75rem;
           font-weight: 500;
           min-width: 50px;
@@ -1992,21 +1993,21 @@ function ChartConfigurationEditor({ config, availableVariables, aiFillRates, onS
         }
 
         .element-constraint-info {
-          background: rgba(59, 130, 246, 0.05);
-          border: 1px solid rgba(59, 130, 246, 0.2);
+          background: color-mix(in srgb, var(--mm-color-primary-500) 5%, transparent);
+          border: 1px solid color-mix(in srgb, var(--mm-color-primary-500) 20%, transparent);
           border-radius: 0.5rem;
           padding: 1rem;
           margin-top: 1rem;
         }
         
         .constraint-badge {
-          color: #1e40af;
+          color: var(--mm-color-primary-800);
           font-weight: 600;
           margin-bottom: 0.5rem;
         }
         
         .constraint-note {
-          color: #6b7280;
+          color: var(--mm-gray-500);
           font-size: 0.875rem;
           font-style: italic;
         }
@@ -2025,7 +2026,7 @@ function ChartConfigurationEditor({ config, availableVariables, aiFillRates, onS
           display: flex;
           gap: 1rem;
           padding: 0 0 1rem 0;
-          border-bottom: 1px solid #e5e7eb;
+          border-bottom: 1px solid var(--mm-gray-200);
         }
         
         .variable-picker-filters input,
@@ -2043,15 +2044,15 @@ function ChartConfigurationEditor({ config, availableVariables, aiFillRates, onS
         
         .variable-picker-item {
           padding: 0.75rem;
-          border: 1px solid #e5e7eb;
+          border: 1px solid var(--mm-gray-200);
           border-radius: 0.5rem;
           cursor: pointer;
           transition: all 0.2s;
         }
         
         .variable-picker-item:hover {
-          border-color: #667eea;
-          background: rgba(102, 126, 234, 0.05);
+          border-color: var(--mm-color-primary-500);
+          background: color-mix(in srgb, var(--mm-color-primary-500) 5%, transparent);
         }
         
         .variable-picker-item-header {
@@ -2062,8 +2063,8 @@ function ChartConfigurationEditor({ config, availableVariables, aiFillRates, onS
         }
         
         .variable-picker-category {
-          background: rgba(107, 114, 128, 0.1);
-          color: #6b7280;
+          background: color-mix(in srgb, var(--mm-gray-500) 10%, transparent);
+          color: var(--mm-gray-500);
           padding: 0.125rem 0.375rem;
           border-radius: 0.25rem;
           font-size: 0.625rem;
@@ -2073,13 +2074,13 @@ function ChartConfigurationEditor({ config, availableVariables, aiFillRates, onS
         
         .variable-picker-item-name {
           font-weight: 500;
-          color: #374151;
+          color: var(--mm-gray-700);
           margin-bottom: 0.25rem;
         }
         
         .variable-picker-item-description {
           font-size: 0.875rem;
-          color: #6b7280;
+          color: var(--mm-gray-500);
           line-height: 1.4;
         }
 

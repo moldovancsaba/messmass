@@ -42,7 +42,7 @@ export default function UnauthorizedPage() {
   
   return (
     <div className="app-container">
-      <ColoredCard accentColor="#ef4444" hoverable={false} className="login-card">
+      <ColoredCard accentColor="var(--mm-error)" hoverable={false} className="login-card">
         {/* Header */}
         <div className="login-header">
           <div className="login-logo-container">
@@ -158,11 +158,11 @@ export default function UnauthorizedPage() {
  */
 function getRoleBadgeColor(role: UserRole): string {
   const colors: Record<UserRole, string> = {
-    guest: '#9ca3af',      // Gray
-    user: '#3b82f6',       // Blue
-    admin: '#10b981',      // Green
-    superadmin: '#8b5cf6', // Purple
-    api: '#f59e0b',       // Amber
+    guest: 'var(--mm-gray-400)',      // Gray
+    user: 'var(--mm-color-primary-500)',       // Blue
+    admin: 'var(--mm-success)',      // Green
+    superadmin: 'var(--mm-chart-purple)', // Purple
+    api: 'var(--mm-warning)',       // Amber
   };
-  return colors[role] || '#6b7280';
+  return colors[role] || 'var(--mm-gray-500)';
 }

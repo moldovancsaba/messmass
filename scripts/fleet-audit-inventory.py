@@ -65,7 +65,8 @@ INVENTORY_FILES = ["endpoints.json", "collections.json", "env.json", "outbound-h
 # before it is worth re-verifying the edge it describes (mirrors messmass's
 # docs-consistency-audit.js threshold).
 CONTRACT_FRESHNESS_COMMIT_THRESHOLD = 30
-STAMP_RE = re.compile(r"[Vv]erified\s+(?:@\s*|(?:messmass|camera|fanmass|try-on)\s+)?`?([0-9a-f]{7,40})`?")
+# Group 1 = the repo the stamp names (empty for the bare "verified @ <sha>" form), group 2 = the sha.
+STAMP_RE = re.compile(r"[Vv]erified\s+(?:@\s*|(messmass|camera|fanmass|try-on)\s+)?`?([0-9a-f]{7,40})`?")
 LINK_RE = re.compile(r"\[[^\]]*\]\(([^)\s]+)(?:\s+\"[^\"]*\")?\)")
 
 
@@ -295,20 +296,33 @@ def link_check(repo: Path) -> list[str]:
 # Contract freshness (warn only)
 # ---------------------------------------------------------------------------
 
+def repo_slug(repo: Path) -> str:
+    """Name of this repo as the fleet map spells it (from the origin URL, else the directory name)."""
+    proc = subprocess.run(["git", "-C", str(repo), "remote", "get-url", "origin"], capture_output=True, text=True)
+    url = proc.stdout.strip() if proc.returncode == 0 else ""
+    name = re.sub(r"\.git$", "", url.rstrip("/").split("/")[-1]) if url else repo.name
+    return name or repo.name
+
+
 def freshness_warnings(repo: Path) -> list[str]:
     files = list((repo / "docs" / "_audit").glob("*.md")) if (repo / "docs" / "_audit").is_dir() else []
     files += list((repo / "docs").glob("*CONTRACT*.md")) if (repo / "docs").is_dir() else []
     warnings: list[str] = []
     seen: set[str] = set()
+    me = repo_slug(repo)
     for md in sorted(files):
-        for sha in STAMP_RE.findall(md.read_text(errors="replace")):
+        for named_repo, sha in STAMP_RE.findall(md.read_text(errors="replace")):
+            # Stamps naming another fleet repo cannot be measured here (and a 7-char
+            # prefix may collide with an unrelated local commit), so only this repo's
+            # own stamps and the bare "verified @ <sha>" form are checked.
+            if named_repo and named_repo != me:
+                continue
             if sha in seen:
                 continue
             seen.add(sha)
             proc = subprocess.run(["git", "-C", str(repo), "rev-list", "--count", f"{sha}..HEAD"], capture_output=True, text=True)
             if proc.returncode != 0:
-                # A stamp naming another repo's commit is expected in fleet-map pointer docs; say so, do not fail.
-                warnings.append(f"{md.relative_to(repo)}: verified @ {sha} is not a commit in this repo (another fleet repo's SHA, or rewritten history)")
+                warnings.append(f"{md.relative_to(repo)}: verified @ {sha} is not a commit in this repo (rewritten history, or a stamp copied from another repo without its name)")
                 continue
             behind = int(proc.stdout.strip() or 0)
             if behind > CONTRACT_FRESHNESS_COMMIT_THRESHOLD:

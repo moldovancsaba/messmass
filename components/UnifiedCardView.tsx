@@ -47,7 +47,7 @@ export default function UnifiedCardView<T extends { _id: string }>({
   emptyMessage = 'No items found',
   emptyIcon = '📋',
   className = '',
-  accentColor = '#3b82f6',
+  accentColor = 'var(--mm-color-primary-500)',
 }: UnifiedCardViewProps<T>) {
   
   // WHAT: Render field value or custom render function

@@ -3,6 +3,9 @@
  * HOW: Extends basic PageStyle with detailed customization options
  * REPLACES: Legacy pageStyleTypes.ts with richer feature set */
 
+import { HEX_WHITE, rgbaString } from './theme/color';
+import { CHART_COLOR_NEUTRALS, DEFAULT_PAGE_STYLE_ENHANCED, DARK_THEME_SAMPLE } from './theme/pageStylePresets';
+
 /**
  * WHAT: Gradient stop with color and position
  * WHY: Define individual color stops in linear gradients
@@ -146,11 +149,11 @@ export function generateGradientCSS(background: BackgroundStyle): string {
     if (solidColor && typeof solidColor === 'string' && solidColor.trim()) {
       return solidColor;
     }
-    return '#ffffff'; // Fallback for invalid solid color
+    return HEX_WHITE; // Fallback for invalid solid color
   }
   
   if (!background.gradientStops || background.gradientStops.length < 2) {
-    return '#ffffff'; // Fallback
+    return HEX_WHITE; // Fallback
   }
   
   // WHAT: Validate all gradient stops have valid color and position values
@@ -164,7 +167,7 @@ export function generateGradientCSS(background: BackgroundStyle): string {
   );
   
   if (validStops.length < 2) {
-    return '#ffffff'; // Fallback if not enough valid stops
+    return HEX_WHITE; // Fallback if not enough valid stops
   }
   
   const angle = background.gradientAngle || 0;
@@ -185,88 +188,10 @@ export function hexToRgba(hex: string, opacity: number): string {
   const r = parseInt(cleanHex.slice(0, 2), 16);
   const g = parseInt(cleanHex.slice(2, 4), 16);
   const b = parseInt(cleanHex.slice(4, 6), 16);
-  return `rgba(${r}, ${g}, ${b}, ${opacity})`;
+  return rgbaString(r, g, b, opacity);
 }
 
-/**
- * WHAT: Default enhanced page style (system fallback)
- * WHY: Use when no custom style is selected
- */
-export const DEFAULT_PAGE_STYLE_ENHANCED: PageStyleEnhanced = {
-  name: 'System Default',
-  description: 'Clean, professional default theme',
-  isGlobalDefault: true,
-  pageBackground: {
-    type: 'solid',
-    solidColor: '#ffffff'
-  },
-  heroBackground: {
-    type: 'gradient',
-    gradientAngle: 0,
-    gradientStops: [
-      { color: '#f8fafc', position: 0 },
-      { color: '#f1f5f9', position: 100 }
-    ]
-  },
-  contentBoxBackground: {
-    type: 'solid',
-    solidColor: '#ffffff',
-    opacity: 0.95
-  },
-  typography: {
-    fontFamily: 'inter',
-    primaryTextColor: '#111827',
-    secondaryTextColor: '#6b7280',
-    headingColor: '#1f2937'
-  },
-  colorScheme: {
-    primary: '#3b82f6',
-    secondary: '#10b981',
-    success: '#10b981',
-    warning: '#f59e0b',
-    error: '#ef4444'
-  }
-};
-
-/**
- * WHAT: Sample dark theme
- * WHY: Provide alternative styling option out of the box
- */
-export const DARK_THEME_SAMPLE: PageStyleEnhanced = {
-  name: 'Dark Theme',
-  description: 'Modern dark mode theme',
-  isGlobalDefault: false,
-  pageBackground: {
-    type: 'solid',
-    solidColor: '#1f2937'
-  },
-  heroBackground: {
-    type: 'gradient',
-    gradientAngle: 135,
-    gradientStops: [
-      { color: '#111827', position: 0 },
-      { color: '#1f2937', position: 100 }
-    ]
-  },
-  contentBoxBackground: {
-    type: 'solid',
-    solidColor: '#374151',
-    opacity: 0.9
-  },
-  typography: {
-    fontFamily: 'roboto',
-    primaryTextColor: '#f9fafb',
-    secondaryTextColor: '#d1d5db',
-    headingColor: '#ffffff'
-  },
-  colorScheme: {
-    primary: '#8b5cf6',
-    secondary: '#ec4899',
-    success: '#10b981',
-    warning: '#f59e0b',
-    error: '#ef4444'
-  }
-};
+export { DEFAULT_PAGE_STYLE_ENHANCED, DARK_THEME_SAMPLE };
 
 /**
  * WHAT: Generate default chart colors from color scheme
@@ -275,11 +200,11 @@ export const DARK_THEME_SAMPLE: PageStyleEnhanced = {
  */
 export function getDefaultChartColors(colorScheme: ColorScheme): ChartColorScheme {
   return {
-    chartBackground: '#ffffff',
-    chartBorder: '#f3f4f6',
+    chartBackground: CHART_COLOR_NEUTRALS.chartBackground,
+    chartBorder: CHART_COLOR_NEUTRALS.chartBorder,
     chartTitleColor: colorScheme.primary,
-    chartLabelColor: '#374151',
-    chartValueColor: '#111827',
+    chartLabelColor: CHART_COLOR_NEUTRALS.chartLabelColor,
+    chartValueColor: CHART_COLOR_NEUTRALS.chartValueColor,
     // KPI colors
     kpiIconColor: colorScheme.primary,
     // Bar colors (use colorScheme colors in order)
@@ -292,18 +217,18 @@ export function getDefaultChartColors(colorScheme: ColorScheme): ChartColorSchem
     pieColor1: colorScheme.primary,
     pieColor2: colorScheme.secondary,
     // States
-    chartNoDataBackground: '#f9fafb',
-    chartNoDataBorder: '#d1d5db',
-    chartNoDataText: '#6b7280',
-    chartErrorBackground: '#fef2f2',
-    chartErrorText: '#991b1b',
+    chartNoDataBackground: CHART_COLOR_NEUTRALS.chartNoDataBackground,
+    chartNoDataBorder: CHART_COLOR_NEUTRALS.chartNoDataBorder,
+    chartNoDataText: CHART_COLOR_NEUTRALS.chartNoDataText,
+    chartErrorBackground: CHART_COLOR_NEUTRALS.chartErrorBackground,
+    chartErrorText: CHART_COLOR_NEUTRALS.chartErrorText,
     // Interactive
-    chartTooltipBackground: 'rgba(0, 0, 0, 0.85)',
-    chartTooltipText: '#ffffff',
+    chartTooltipBackground: CHART_COLOR_NEUTRALS.chartTooltipBackground,
+    chartTooltipText: CHART_COLOR_NEUTRALS.chartTooltipText,
     // Export button
-    exportButtonBackground: '#ffffff',
+    exportButtonBackground: CHART_COLOR_NEUTRALS.exportButtonBackground,
     exportButtonText: colorScheme.primary,
-    exportButtonHoverBackground: '#f9fafb'
+    exportButtonHoverBackground: CHART_COLOR_NEUTRALS.exportButtonHoverBackground
   };
 }
 

@@ -16,6 +16,7 @@ import {
 import { ReportStyle } from '@/lib/reportStyleTypes';
 import MaterialIcon from '@/components/MaterialIcon';
 import styles from './ReportStylePreview.module.css';
+import { CHART_THEME_COLORS, REPORT_PIE_FALLBACK_COLORS } from '@/lib/theme/chartPalette';
 
 // Register Chart.js components for pie charts
 ChartJS.register(ArcElement, Tooltip, Legend);
@@ -34,8 +35,8 @@ function PieChartPreview() {
   const getPieColors = () => {
     const root = document.documentElement;
     const cs = getComputedStyle(root);
-    const c1 = cs.getPropertyValue('--pieColor1').trim() || '#3b82f6';
-    const c2 = cs.getPropertyValue('--pieColor2').trim() || '#10b981';
+    const c1 = cs.getPropertyValue('--pieColor1').trim() || REPORT_PIE_FALLBACK_COLORS[0];
+    const c2 = cs.getPropertyValue('--pieColor2').trim() || REPORT_PIE_FALLBACK_COLORS[1];
     return [c1, c2];
   };
   
@@ -73,8 +74,8 @@ function PieChartPreview() {
     const root = document.documentElement;
     const cs = getComputedStyle(root);
     return {
-      bg: cs.getPropertyValue('--chartTooltipBackground').trim() || 'rgba(31, 41, 55, 0.95)',
-      text: cs.getPropertyValue('--chartTooltipText').trim() || '#ffffff'
+      bg: cs.getPropertyValue('--chartTooltipBackground').trim() || CHART_THEME_COLORS.tooltipBackground,
+      text: cs.getPropertyValue('--chartTooltipText').trim() || CHART_THEME_COLORS.tooltipText
     };
   };
   const tooltipColors = getTooltipColors();

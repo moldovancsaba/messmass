@@ -50,7 +50,7 @@ export default function ChartAlgorithmManagerPage() {
 if (loading) {
     return (
       <div className="page-container flex items-center justify-center min-h-screen">
-        <ColoredCard accentColor="#6366f1" hoverable={false} className="text-center">
+        <ColoredCard accentColor="var(--mm-chart-indigo)" hoverable={false} className="text-center">
           <div className="text-4xl mb-4">📊</div>
           <div className="text-gray-600">Loading...</div>
         </ColoredCard>

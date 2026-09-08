@@ -10,6 +10,7 @@ import { ChartConfiguration } from '@/lib/chartConfigTypes';
 import { error as logError, info as logInfo } from '@/lib/logger';
 
 import config from '@/lib/config';
+import { CHART_COLOR } from '@/lib/theme/chartPalette';
 const MONGODB_DB = config.dbName;
 
 // WHAT: POST /api/auto-generate-chart-block - Create or update chart block for report content
@@ -69,7 +70,7 @@ export async function POST(request: NextRequest) {
         id: `${type}-element-${index}`,
         label: chartTitle,
         formula: `stats.${variableName}`, // WHAT: Reference the stats variable
-        color: '#3b82f6', // Blue accent color (not visible for image/text charts)
+        color: CHART_COLOR.blue, // Blue accent color (not visible for image/text charts)
         type: 'number' // Placeholder type (not used for image/text)
       }],
       // WHAT: For IMAGE charts, detect aspect ratio from value (URL query param or default)

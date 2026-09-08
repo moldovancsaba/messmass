@@ -21,6 +21,7 @@ import {
   removeStyleCSS
 } from '@/lib/reportStyleTypes';
 import { useAvailableFonts } from '@/hooks/useAvailableFonts';
+import { HEX8_OPAQUE_BLACK } from '@/lib/theme/color';
 import styles from './editor.module.css';
 
 export default function StyleEditorPage() {
@@ -280,7 +281,7 @@ export default function StyleEditorPage() {
                       key={field.key}
                       label={field.label}
                       description={field.description}
-                      value={style[field.key] || '#000000ff'}
+                      value={style[field.key] || HEX8_OPAQUE_BLACK}
                       onChange={(value) => handleChange(field.key, value)}
                     />
                   ))}

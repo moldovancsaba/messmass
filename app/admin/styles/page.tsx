@@ -98,7 +98,7 @@ export default function StylesListPage() {
     return (
       <div className="page-container">
         <UnifiedAdminHeroWithSearch title="Report Themes" subtitle="Error loading themes" />
-        <ColoredCard accentColor="#ef4444">
+        <ColoredCard accentColor="var(--mm-error)">
           <div className={styles.error}>
             <MaterialIcon name="error" variant="outlined" />
             <p>{error}</p>
@@ -137,7 +137,7 @@ export default function StylesListPage() {
       <ReportingWorkspaceNav />
 
       {stylesList.length === 0 ? (
-        <ColoredCard accentColor="#3b82f6">
+        <ColoredCard accentColor="var(--mm-color-primary-500)">
           <div className={styles.empty}>
             <MaterialIcon name="palette" variant="outlined" className={styles.emptyIcon} />
             <h3>No Styles Yet</h3>
@@ -151,7 +151,7 @@ export default function StylesListPage() {
       ) : (
         <div className={styles.grid}>
           {stylesList.map((style) => (
-            <ColoredCard key={style._id} accentColor={style.chartTitleColor || '#3b82f6'} hoverable>
+            <ColoredCard key={style._id} accentColor={style.chartTitleColor || 'var(--mm-color-primary-500)'} hoverable>
               <div className={styles.card}>
                 <div className={styles.cardHeader}>
                   <h3 className={styles.cardTitle}>{style.name}</h3>

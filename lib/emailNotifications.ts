@@ -18,6 +18,7 @@
 // gracefully" contract the Resend-direct version had).
 
 import config from './config';
+import { EMAIL_PALETTE } from './theme/emailPalette';
 
 function cameraBase(): string {
   return (config.cameraBaseUrl || '').replace(/\/$/, '');
@@ -113,9 +114,9 @@ export async function sendPasswordRegeneratedEmail(params: {
     html: `
       <h2>Access Password Regenerated</h2>
       <p>A new access password has been generated for your account on {messmass}.</p>
-      <div style="background: #f3f4f6; padding: 1.5rem; border-radius: 8px; margin: 1.5rem 0; text-align: center;">
-        <p style="margin-bottom: 0.5rem; color: #4b5563; font-size: 0.875rem;">Your new password:</p>
-        <code style="font-size: 1.5rem; font-weight: bold; color: #111827; letter-spacing: 0.05em;">${params.password}</code>
+      <div style="background: ${EMAIL_PALETTE.panelBackground}; padding: 1.5rem; border-radius: 8px; margin: 1.5rem 0; text-align: center;">
+        <p style="margin-bottom: 0.5rem; color: ${EMAIL_PALETTE.mutedText}; font-size: 0.875rem;">Your new password:</p>
+        <code style="font-size: 1.5rem; font-weight: bold; color: ${EMAIL_PALETTE.text}; letter-spacing: 0.05em;">${params.password}</code>
       </div>
       <hr>
       <p><strong>Security Instructions:</strong></p>

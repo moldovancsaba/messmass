@@ -12,6 +12,7 @@ import { categoriesAdapter } from '@/lib/adapters';
 import { FormModal } from '@/components/modals';
 import { apiPost, apiPut, apiDelete } from '@/lib/apiClient';
 import type { HashtagCategory } from '@/lib/hashtagCategoryTypes';
+import { CATEGORY_FORM_DEFAULT_COLOR } from '@/lib/theme/hashtagPalette';
 import adminStyles from '@/app/styles/admin-pages.module.css';
 
 export default function CategoriesPageUnified() {
@@ -48,7 +49,7 @@ export default function CategoriesPageUnified() {
   const [editingCategory, setEditingCategory] = useState<HashtagCategory | null>(null);
   const [formData, setFormData] = useState({
     name: '',
-    color: '#3b82f6',
+    color: CATEGORY_FORM_DEFAULT_COLOR,
     order: 0
   });
 
@@ -180,7 +181,7 @@ export default function CategoriesPageUnified() {
 
   // Form helpers
   const resetForm = () => {
-    setFormData({ name: '', color: '#3b82f6', order: 0 });
+    setFormData({ name: '', color: CATEGORY_FORM_DEFAULT_COLOR, order: 0 });
     setEditingCategory(null);
   };
 
@@ -444,7 +445,7 @@ export default function CategoriesPageUnified() {
               className="form-input flex-1"
               value={formData.color}
               onChange={(e) => setFormData(prev => ({ ...prev, color: e.target.value }))}
-              placeholder="#3b82f6"
+              placeholder={CATEGORY_FORM_DEFAULT_COLOR}
             />
           </div>
         </div>
@@ -515,7 +516,7 @@ export default function CategoriesPageUnified() {
               className="form-input flex-1"
               value={formData.color}
               onChange={(e) => setFormData(prev => ({ ...prev, color: e.target.value }))}
-              placeholder="#3b82f6"
+              placeholder={CATEGORY_FORM_DEFAULT_COLOR}
             />
           </div>
         </div>

@@ -6,6 +6,7 @@
 
 import React, { useState, useEffect } from 'react';
 import styles from './ColorPickerField.module.css';
+import { HEX_BLACK } from '@/lib/theme/color';
 
 interface ColorPickerFieldProps {
   label: string;
@@ -30,7 +31,7 @@ export default function ColorPickerField({ label, description, value, onChange }
   }, [value]);
   
   // Extract RGB portion for color picker (HTML5 color input only supports 6-char hex)
-  const rgbValue = value.length >= 7 ? value.slice(0, 7) : '#000000';
+  const rgbValue = value.length >= 7 ? value.slice(0, 7) : HEX_BLACK;
   
   // Extract alpha as percentage (last 2 hex digits → 0-100)
   const alphaHex = value.length === 9 ? value.slice(7, 9) : 'ff';

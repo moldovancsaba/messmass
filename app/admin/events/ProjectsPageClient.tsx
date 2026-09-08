@@ -460,7 +460,7 @@ export default function ProjectsPageClient({ user }: ProjectsPageClientProps) {
   if (loading) {
     return (
       <div className="page-container">
-        <ColoredCard accentColor="#6366f1" hoverable={false} className="text-center">
+        <ColoredCard accentColor="var(--mm-chart-indigo)" hoverable={false} className="text-center">
           <div className="curve-spinner"></div>
           <p className="text-gray-500 mt-3">Loading projects...</p>
         </ColoredCard>

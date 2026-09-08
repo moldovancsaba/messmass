@@ -9,6 +9,8 @@
  */
 
 import { MongoClient, ObjectId } from 'mongodb';
+import { CHART_COLOR } from '../lib/theme/chartPalette';
+import { LANDING_REPORT_STYLE_COLORS } from '../lib/theme/reportStylePalette';
 
 const LANDING_EVENT_NAME = 'messmass.com';
 const LANDING_PARTNER_NAME = 'messmass.com';
@@ -77,35 +79,7 @@ async function main() {
     const reportStyles = db.collection('report_styles');
     let style = await reportStyles.findOne({ name: LANDING_STYLE_NAME });
     if (!style) {
-      const defaultColors = {
-        heroBackground: '#0f172aff',
-        headingColor: '#f8fafcff',
-        exportButtonBackground: '#3b82f6ff',
-        exportButtonText: '#ffffffff',
-        exportButtonHoverBackground: '#2563ebff',
-        chartBackground: '#ffffffff',
-        chartBorder: '#e2e8f0ff',
-        chartTitleColor: '#1e293bff',
-        chartLabelColor: '#64748bff',
-        chartValueColor: '#0f172aff',
-        textColor: '#334155ff',
-        kpiIconColor: '#3b82f6ff',
-        barColor1: '#3b82f6ff',
-        barColor2: '#10b981ff',
-        barColor3: '#f59e0bff',
-        barColor4: '#8b5cf6ff',
-        barColor5: '#ec4899ff',
-        pieColor1: '#3b82f6ff',
-        pieColor2: '#10b981ff',
-        pieBorderColor: '#e2e8f0ff',
-        chartNoDataBackground: '#f8fafcff',
-        chartNoDataBorder: '#e2e8f0ff',
-        chartNoDataText: '#64748bff',
-        chartErrorBackground: '#fef2f2ff',
-        chartErrorText: '#dc2626ff',
-        chartTooltipBackground: '#1e293bff',
-        chartTooltipText: '#f8fafcff',
-      };
+      const defaultColors = LANDING_REPORT_STYLE_COLORS;
       const res = await reportStyles.insertOne({
         name: LANDING_STYLE_NAME,
         description: 'Landing page / messmass.com',
@@ -123,20 +97,20 @@ async function main() {
     // 4. Chart configurations: ValueChain (icon + 2 text fields)
     const chartConfigs = db.collection('chart_configurations');
     const valueChainCharts = [
-      { chartId: 'kpi-valuechain-private', title: 'Private', icon: 'lock', textA: 'reportText1', textB: 'reportText2', color: '#3b82f6' },
-      { chartId: 'kpi-valuechain-actionable', title: 'Actionable', icon: 'bolt', textA: 'reportText3', textB: 'reportText4', color: '#10b981' },
-      { chartId: 'kpi-valuechain-secure', title: 'Secure', icon: 'shield', textA: 'reportText5', textB: 'reportText6', color: '#22c55e' },
+      { chartId: 'kpi-valuechain-private', title: 'Private', icon: 'lock', textA: 'reportText1', textB: 'reportText2', color: CHART_COLOR.blue },
+      { chartId: 'kpi-valuechain-actionable', title: 'Actionable', icon: 'bolt', textA: 'reportText3', textB: 'reportText4', color: CHART_COLOR.green },
+      { chartId: 'kpi-valuechain-secure', title: 'Secure', icon: 'shield', textA: 'reportText5', textB: 'reportText6', color: CHART_COLOR.greenBright },
     ];
     const problemCharts = [
-      { chartId: 'kpi-valuechain-problem1', title: 'Insight → Action gap', icon: 'trending_up', textA: 'reportText7', textB: 'reportText8', color: '#3b82f6' },
-      { chartId: 'kpi-valuechain-problem2', title: 'Compliance fear', icon: 'gpp_bad', textA: 'reportText9', textB: 'reportText10', color: '#f59e0b' },
-      { chartId: 'kpi-valuechain-problem3', title: 'The reality', icon: 'campaign', textA: 'reportText11', textB: 'reportText12', color: '#3b82f6' },
+      { chartId: 'kpi-valuechain-problem1', title: 'Insight → Action gap', icon: 'trending_up', textA: 'reportText7', textB: 'reportText8', color: CHART_COLOR.blue },
+      { chartId: 'kpi-valuechain-problem2', title: 'Compliance fear', icon: 'gpp_bad', textA: 'reportText9', textB: 'reportText10', color: CHART_COLOR.amber },
+      { chartId: 'kpi-valuechain-problem3', title: 'The reality', icon: 'campaign', textA: 'reportText11', textB: 'reportText12', color: CHART_COLOR.blue },
     ];
     const productCharts = [
-      { chartId: 'kpi-valuechain-product1', title: '1. Ingest & process', icon: 'upload', textA: 'reportText13', textB: 'reportText14', color: '#3b82f6' },
-      { chartId: 'kpi-valuechain-product2', title: '2. Interpret', icon: 'insights', textA: 'reportText15', textB: 'reportText16', color: '#3b82f6' },
-      { chartId: 'kpi-valuechain-product3', title: '3. Act', icon: 'touch_app', textA: 'reportText17', textB: 'reportText18', color: '#3b82f6' },
-      { chartId: 'kpi-valuechain-product4', title: '4. Governance', icon: 'admin_panel_settings', textA: 'reportText19', textB: 'reportText20', color: '#3b82f6' },
+      { chartId: 'kpi-valuechain-product1', title: '1. Ingest & process', icon: 'upload', textA: 'reportText13', textB: 'reportText14', color: CHART_COLOR.blue },
+      { chartId: 'kpi-valuechain-product2', title: '2. Interpret', icon: 'insights', textA: 'reportText15', textB: 'reportText16', color: CHART_COLOR.blue },
+      { chartId: 'kpi-valuechain-product3', title: '3. Act', icon: 'touch_app', textA: 'reportText17', textB: 'reportText18', color: CHART_COLOR.blue },
+      { chartId: 'kpi-valuechain-product4', title: '4. Governance', icon: 'admin_panel_settings', textA: 'reportText19', textB: 'reportText20', color: CHART_COLOR.blue },
     ];
     const allValueChainCharts = [...valueChainCharts, ...problemCharts, ...productCharts];
     for (const v of allValueChainCharts) {

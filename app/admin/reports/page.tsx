@@ -43,7 +43,7 @@ export default function ReportingHomePage() {
       <ReportingWorkspaceNav />
 
       <div className={styles.intro}>
-        <ColoredCard accentColor="#3b82f6" hoverable={false}>
+        <ColoredCard accentColor="var(--mm-color-primary-500)" hoverable={false}>
           <div className={styles.introBody}>
             <h2 className={styles.introTitle}>Choose the right reporting setup path</h2>
             <p className={styles.introText}>
@@ -59,7 +59,7 @@ export default function ReportingHomePage() {
           </div>
         </ColoredCard>
 
-        <ColoredCard accentColor="#14b8a6" hoverable={false}>
+        <ColoredCard accentColor="var(--mm-chart-teal)" hoverable={false}>
           <div className={styles.summaryCard}>
             <h2 className={styles.summaryTitle}>Reporting now has one home</h2>
             <p className={styles.summaryMeta}>The admin card grid now points to this workspace first instead of treating each reporting tool as its own top-level destination.</p>

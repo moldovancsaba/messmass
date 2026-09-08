@@ -76,7 +76,7 @@ export default function UnifiedStatsHero({
             // eslint-disable-next-line react/forbid-dom-props
             style={(typeof pageStyle?.colorScheme?.primary === 'string' && pageStyle.colorScheme.primary.trim()) ? {
               backgroundColor: pageStyle.colorScheme.primary.trim(),
-              color: '#ffffff'
+              color: 'var(--mm-white)'
             } : undefined}
           >
             📅 {formatDate(createdDate)}
@@ -90,7 +90,7 @@ export default function UnifiedStatsHero({
             // eslint-disable-next-line react/forbid-dom-props
             style={(typeof pageStyle?.colorScheme?.primary === 'string' && pageStyle.colorScheme.primary.trim()) ? {
               backgroundColor: pageStyle.colorScheme.primary.trim(),
-              color: '#ffffff'
+              color: 'var(--mm-white)'
             } : undefined}
           >
             📅 {formatDate(lastUpdatedDate)}

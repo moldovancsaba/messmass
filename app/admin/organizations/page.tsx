@@ -256,7 +256,7 @@ export default function OrganizationsAdminPage() {
       />
 
       {error && (
-        <ColoredCard accentColor="#ef4444" hoverable={false} className="mb-4">
+        <ColoredCard accentColor="var(--mm-error)" hoverable={false} className="mb-4">
           <div className="text-sm">{error}</div>
         </ColoredCard>
       )}

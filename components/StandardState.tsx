@@ -16,9 +16,9 @@ interface StandardStateProps {
 export default function StandardState({ variant, title, message, icon, children }: StandardStateProps) {
   // Map variant to accent color for ColoredCard
   const accentColor = {
-    loading: '#6366f1', // Indigo
-    empty: '#94a3b8',   // Slate
-    error: '#ef4444',   // Red
+    loading: 'var(--mm-chart-indigo)', // Indigo
+    empty: 'var(--mm-gray-400)',   // Slate
+    error: 'var(--mm-error)',   // Red
   }[variant];
 
   return (

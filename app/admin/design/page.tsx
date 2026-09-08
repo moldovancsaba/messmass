@@ -60,7 +60,7 @@ export default function AdminDesignPage() {
         subtitle="Style editor disabled — rebuilding from scratch." 
       />
       <div className={styles.section}>
-        <ColoredCard accentColor="#3b82f6">
+        <ColoredCard accentColor="var(--mm-color-primary-500)">
           <div className={styles.temporaryNotice}>
             <h3>Temporary Notice</h3>
             <p>The existing style editor and per-page style application have been removed. Reports use system defaults for now.</p>

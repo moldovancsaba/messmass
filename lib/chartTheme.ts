@@ -1,15 +1,5 @@
-const CHART_PALETTE_HEX = [
-  '#3b82f6',
-  '#10b981',
-  '#8b5cf6',
-  '#f97316',
-  '#ec4899',
-  '#06b6d4',
-  '#eab308',
-  '#ef4444',
-  '#6366f1',
-  '#14b8a6',
-] as const;
+import { CHART_PALETTE_HEX, CHART_THEME_COLORS } from './theme/chartPalette';
+import { rgbaString } from './theme/color';
 
 function hexToRgba(hex: string, alpha: number): string {
   const normalized = hex.replace('#', '');
@@ -20,7 +10,7 @@ function hexToRgba(hex: string, alpha: number): string {
   const r = (int >> 16) & 255;
   const g = (int >> 8) & 255;
   const b = int & 255;
-  return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+  return rgbaString(r, g, b, alpha);
 }
 
 // WHAT: Minimal structural type for Chart.js's external-tooltip callback
@@ -93,13 +83,7 @@ export function createTopCenterTooltipHandler(bubbleClassName: string) {
 
 export const CHART_THEME = {
   palette: CHART_PALETTE_HEX,
-  tooltipBackground: 'rgba(31, 41, 55, 0.95)',
-  tooltipBorder: '#d1d5db',
-  tooltipText: '#ffffff',
-  legendText: '#4b5563',
-  axisText: '#6b7280',
-  axisBorder: '#e5e7eb',
-  gridLine: 'rgba(229, 231, 235, 0.5)',
+  ...CHART_THEME_COLORS,
   lineGradientFadeAlpha: 0,
   fontFamily: 'inherit',
   linePalette(index: number) {

@@ -46,11 +46,11 @@
   ],
   "approvedExceptions": [],
   "compliance": {
-    "themeOwnershipPaths": ["app/providers.tsx", "lib/ui/mantineTheme.ts"],
+    "themeOwnershipPaths": ["app/providers.tsx", "lib/ui/mantineTheme.ts", "lib/theme/*.ts"],
     "protectedSurfacePaths": ["app/styles/theme.css"],
     "strictMode": false
   },
   "migrationStatus": "partial",
   "owner": "moldovancsaba",
-  "lastReviewedAt": "2026-08-21"
+  "lastReviewedAt": "2026-09-08"
 }

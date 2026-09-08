@@ -131,7 +131,7 @@ factual accuracy.
   behind a withOrgContext wrapper with a hardcoded org id.
 - ~~docs/V3/messmass_v3_api_specification.md:22 lists `GET /api/v3/activities/{id}`
   and :99 claims `useReportData` "bridges V3 Activities"~~ FIXED 2026-09-07
-  (v12.3.25): the route never existed; the hook's fallback to it was dead code
+  (v12.3.26): the route never existed; the hook's fallback to it was dead code
   that turned every protected event report's 401 into a JSON-parse crash. Spec
   and playbook now say so; fallback deleted.
 
@@ -188,11 +188,16 @@ factual accuracy.
   followed 2026-09-08, messmass#351). ~~~310 of 400 scripts/ unreferenced incl.
   macOS duplicates (`add-kpi-chart 3.js` …)~~ FIXED 2026-09-08 (messmass#352,
   this change): 315 of 421 tracked scripts deleted, 106 kept; derivation and
-  the per-script reason in `scripts-keep-list.md`. The CI forbidden-color
+  the per-script reason in `scripts-keep-list.md`. ~~The CI forbidden-color
   carve-out did NOT clear: `gds-compliance check` still reports 71 findings,
   only 4 of them in scripts/ (all kept seeders) and 65 in app/, components/,
   lib/, hooks/ — the "24, all in scripts/" figure in ci.yml was already stale
-  before the prune, so `|| true` stays.
+  before the prune, so `|| true` stays.~~ FIXED 2026-09-08 (messmass#387,
+  v12.3.26): all 71 findings cleared — UI colours swapped for theme.css
+  tokens, data colours (chart palettes, seeded style presets, hashtag
+  colours, e-mail inline styles) moved to `lib/theme/*.ts` (the checker's
+  exempt lane, now also listed in `themeOwnershipPaths`); the `|| true`
+  carve-out is gone and the step blocks CI.
 - DO NOT treat as dead: all /api/integrations/{fanmass,camera}/** (fanmass and
   camera call them with tokens), /api/public/** (external Bearer), /api/cron/**.
 

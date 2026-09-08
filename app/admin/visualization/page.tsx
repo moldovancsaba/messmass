@@ -1531,7 +1531,7 @@ export default function VisualizationPage() {
       
       {/* WHAT: Template Selector Card
           WHY: Allow selecting which template to edit */}
-      <ColoredCard accentColor="#3b82f6" hoverable={false}>
+      <ColoredCard accentColor="var(--mm-color-primary-500)" hoverable={false}>
         <div className={vizStyles.templateSelector}>
                 <div className={vizStyles.templateSelectorHeader}>
             <div className={vizStyles.templateHeaderRow}>
@@ -1887,7 +1887,7 @@ export default function VisualizationPage() {
       })()}
       
       {!selectedTemplateId && (
-        <ColoredCard accentColor="#f59e0b">
+        <ColoredCard accentColor="var(--mm-warning)">
           <div className="info-box">
             <h4 className="info-box-title">⚠️ No Template Selected</h4>
             <p>Please select a report template above to configure its visualization blocks.</p>
@@ -1898,7 +1898,7 @@ export default function VisualizationPage() {
       {/* WHAT: HERO Block Settings Section
           WHY: Allow configuring report header elements at template level */}
       {selectedTemplateId && (
-        <ColoredCard accentColor="#f59e0b" hoverable={false}>
+        <ColoredCard accentColor="var(--mm-warning)" hoverable={false}>
           <h2 className="section-title mb-6">🏒 HERO Block Settings</h2>
           <p className="section-subtitle mb-6">
             Control which elements appear in the report header for all reports using this template
@@ -2020,7 +2020,7 @@ export default function VisualizationPage() {
       {/* WHAT: Data Visualization Blocks Section
           WHY: Only show when template is selected */}
       {selectedTemplateId && (
-        <ColoredCard accentColor="#6366f1" hoverable={false}>
+        <ColoredCard accentColor="var(--mm-chart-indigo)" hoverable={false}>
           <h2 className="section-title mb-6">Data Visualization Blocks</h2>
         
         {/* Responsive Grid Info */}

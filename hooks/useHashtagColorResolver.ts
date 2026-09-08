@@ -12,6 +12,7 @@
 
 import { useCallback } from 'react';
 import { useHashtagData } from '@/contexts/HashtagDataProvider';
+import { DEFAULT_HASHTAG_COLOR } from '@/lib/theme/hashtagPalette';
 
 interface HashtagColorInfo {
   hashtag: string;
@@ -94,7 +95,7 @@ export default function useHashtagColorResolver(): UseHashtagColorResolverReturn
     }
 
     // 3. Default color
-    return '#667eea';
+    return DEFAULT_HASHTAG_COLOR;
   }, [findHashtagCategory, getCategoryColor, getHashtagColor]);
 
   /**

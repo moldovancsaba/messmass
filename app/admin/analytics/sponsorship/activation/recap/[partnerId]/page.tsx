@@ -345,7 +345,7 @@ export default function SponsorshipActivationRecapBriefPage() {
               <MetricCard title="Bitly Clicks" value={recapPackage.totalBitlyClicks} format="number" icon="🔗" />
             </div>
 
-            <ColoredCard accentColor="var(--mm-color-success-500, #16a34a)" hoverable={false}>
+            <ColoredCard accentColor="var(--mm-success)" hoverable={false}>
               <div className={styles.sectionCard}>
                 <div className={styles.sectionHeader}>
                   <h2 className={styles.sectionTitle}>

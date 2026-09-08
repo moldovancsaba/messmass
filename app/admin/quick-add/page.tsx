@@ -613,7 +613,7 @@ export default function QuickAddPage() {
       {activeTab === 'partners' && (
         <>
           {/* Instructions */}
-          <ColoredCard accentColor="#10b981" hoverable={false} className="mb-6 border-left-accent">
+          <ColoredCard accentColor="var(--mm-success)" hoverable={false} className="mb-6 border-left-accent">
             <h3 className="section-subtitle mb-4">
               🤝 Sports Match Builder
             </h3>
@@ -628,7 +628,7 @@ export default function QuickAddPage() {
           </ColoredCard>
           
           {/* Partner Selection Form */}
-          <ColoredCard accentColor="#6366f1" hoverable={false} className="mb-6">
+          <ColoredCard accentColor="var(--mm-chart-indigo)" hoverable={false} className="mb-6">
             <div className="form-group mb-4">
               <label htmlFor="partner1" className="form-label">
                 Partner 1 (Home Team): *
@@ -689,7 +689,7 @@ export default function QuickAddPage() {
           
           {/* Match Preview */}
           {matchPreview && (
-            <ColoredCard accentColor="#10b981" hoverable={false} className="mb-6 border-left-accent">
+            <ColoredCard accentColor="var(--mm-success)" hoverable={false} className="mb-6 border-left-accent">
               <h3 className="section-subtitle mb-4">
                 👀 Match Preview:
               </h3>
@@ -827,7 +827,7 @@ export default function QuickAddPage() {
       {activeTab === 'partnerEvent' && (
         <>
           {/* Instructions */}
-          <ColoredCard accentColor="#f59e0b" hoverable={false} className="mb-6 border-left-accent">
+          <ColoredCard accentColor="var(--mm-warning)" hoverable={false} className="mb-6 border-left-accent">
             <h3 className="section-subtitle mb-4">
               🎯 Partner Event Builder
             </h3>
@@ -842,7 +842,7 @@ export default function QuickAddPage() {
           </ColoredCard>
           
           {/* Partner Event Form */}
-          <ColoredCard accentColor="#6366f1" hoverable={false} className="mb-6">
+          <ColoredCard accentColor="var(--mm-chart-indigo)" hoverable={false} className="mb-6">
             <div className="form-group mb-4">
               <label htmlFor="partnerEventPartner" className="form-label">
                 Partner (Organizer): *
@@ -904,7 +904,7 @@ export default function QuickAddPage() {
           
           {/* Partner Event Preview */}
           {partnerEventPreview && (
-            <ColoredCard accentColor="#10b981" hoverable={false} className="mb-6 border-left-accent">
+            <ColoredCard accentColor="var(--mm-success)" hoverable={false} className="mb-6 border-left-accent">
               <h3 className="section-subtitle mb-4">
                 👀 Event Preview:
               </h3>
@@ -1023,7 +1023,7 @@ export default function QuickAddPage() {
       {/* Suggested Fixtures Tab Content */}
       {activeTab === 'suggested' && (
         <>
-          <ColoredCard accentColor="#f59e0b" hoverable={false} className="mb-6 border-left-accent">
+          <ColoredCard accentColor="var(--mm-warning)" hoverable={false} className="mb-6 border-left-accent">
             <h3 className="section-subtitle mb-4">⚽ Suggested Fixtures</h3>
             <p className="text-sm text-gray-600 mb-2">Select a home partner to see upcoming fixtures from TheSportsDB. Create draft events in one click.</p>
             <ul className="text-sm text-gray-600 list-disc-padded">
@@ -1033,7 +1033,7 @@ export default function QuickAddPage() {
             </ul>
           </ColoredCard>
 
-          <ColoredCard accentColor="#6366f1" hoverable={false} className="mb-6">
+          <ColoredCard accentColor="var(--mm-chart-indigo)" hoverable={false} className="mb-6">
             <div className="form-group mb-4">
               <label className="form-label">Home Partner:</label>
               <PartnerSelector
@@ -1077,13 +1077,13 @@ export default function QuickAddPage() {
           </ColoredCard>
 
           {loadingFixtures && (
-            <ColoredCard accentColor="#3b82f6" hoverable={false} className="mb-6">
+            <ColoredCard accentColor="var(--mm-color-primary-500)" hoverable={false} className="mb-6">
               <p className="m-0 text-sm text-gray-600">Loading fixtures…</p>
             </ColoredCard>
           )}
 
           {suggestFixtures.length > 0 && (
-            <ColoredCard accentColor="#10b981" hoverable={false} className="mb-6 border-left-accent">
+            <ColoredCard accentColor="var(--mm-success)" hoverable={false} className="mb-6 border-left-accent">
               <h3 className="section-subtitle mb-4">Upcoming Fixtures</h3>
               <div className="flex flex-col gap-3">
                 {suggestFixtures.map((fx: any) => (

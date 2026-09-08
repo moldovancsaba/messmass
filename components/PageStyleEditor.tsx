@@ -15,6 +15,8 @@ import {
   DEFAULT_PAGE_STYLE_ENHANCED,
   getDefaultChartColors 
 } from '@/lib/pageStyleTypesEnhanced';
+import { HEX_BLACK, HEX_WHITE } from '@/lib/theme/color';
+import { CHART_COLOR_NEUTRALS } from '@/lib/theme/pageStylePresets';
 
 interface PageStyleEditorProps {
   /* WHAT: Existing style to edit (undefined for new style)
@@ -109,12 +111,12 @@ export default function PageStyleEditor({
       updateField(`${bgKey}.type`, 'gradient');
       updateField(`${bgKey}.gradientAngle`, 135);
       updateField(`${bgKey}.gradientStops`, [
-        { color: current.solidColor || '#ffffff', position: 0 },
-        { color: '#000000', position: 100 }
+        { color: current.solidColor || HEX_WHITE, position: 0 },
+        { color: HEX_BLACK, position: 100 }
       ]);
     } else {
       updateField(`${bgKey}.type`, 'solid');
-      updateField(`${bgKey}.solidColor`, current.gradientStops?.[0]?.color || '#ffffff');
+      updateField(`${bgKey}.solidColor`, current.gradientStops?.[0]?.color || HEX_WHITE);
     }
   };
 
@@ -230,16 +232,16 @@ export default function PageStyleEditor({
                         <input
                           type="color"
                           className={styles.colorPicker}
-                          value={formData.pageBackground.solidColor || '#ffffff'}
+                          value={formData.pageBackground.solidColor || HEX_WHITE}
                           onChange={(e) => updateField('pageBackground.solidColor', e.target.value)}
                           disabled={isLoading}
                         />
                         <input
                           type="text"
                           className={styles.colorText}
-                          value={formData.pageBackground.solidColor || '#ffffff'}
+                          value={formData.pageBackground.solidColor || HEX_WHITE}
                           onChange={(e) => updateField('pageBackground.solidColor', e.target.value)}
-                          placeholder="#ffffff"
+                          placeholder={HEX_WHITE}
                           disabled={isLoading}
                         />
                       </div>
@@ -307,16 +309,16 @@ export default function PageStyleEditor({
                         <input
                           type="color"
                           className={styles.colorPicker}
-                          value={formData.heroBackground.solidColor || '#ffffff'}
+                          value={formData.heroBackground.solidColor || HEX_WHITE}
                           onChange={(e) => updateField('heroBackground.solidColor', e.target.value)}
                           disabled={isLoading}
                         />
                         <input
                           type="text"
                           className={styles.colorText}
-                          value={formData.heroBackground.solidColor || '#ffffff'}
+                          value={formData.heroBackground.solidColor || HEX_WHITE}
                           onChange={(e) => updateField('heroBackground.solidColor', e.target.value)}
-                          placeholder="#ffffff"
+                          placeholder={HEX_WHITE}
                           disabled={isLoading}
                         />
                       </div>
@@ -333,16 +335,16 @@ export default function PageStyleEditor({
                       <input
                         type="color"
                         className={styles.colorPicker}
-                        value={formData.contentBoxBackground.solidColor || '#ffffff'}
+                        value={formData.contentBoxBackground.solidColor || HEX_WHITE}
                         onChange={(e) => updateField('contentBoxBackground.solidColor', e.target.value)}
                         disabled={isLoading}
                       />
                       <input
                         type="text"
                         className={styles.colorText}
-                        value={formData.contentBoxBackground.solidColor || '#ffffff'}
+                        value={formData.contentBoxBackground.solidColor || HEX_WHITE}
                         onChange={(e) => updateField('contentBoxBackground.solidColor', e.target.value)}
-                        placeholder="#ffffff"
+                        placeholder={HEX_WHITE}
                         disabled={isLoading}
                       />
                     </div>
@@ -788,10 +790,10 @@ export default function PageStyleEditor({
                       value={formData.chartColors.chartTooltipBackground}
                       onChange={(e) => updateField('chartColors.chartTooltipBackground', e.target.value)}
                       disabled={isLoading}
-                      placeholder="e.g. rgba(0, 0, 0, 0.85)"
+                      placeholder={`e.g. ${CHART_COLOR_NEUTRALS.chartTooltipBackground}`}
                     />
                   </div>
-                  <small className={styles.hint}>Use rgba() for transparency</small>
+                  <small className={styles.hint}>Use rgba&#40;&#41; for transparency</small>
                 </div>
 
                 <div className={styles.formGroup}>

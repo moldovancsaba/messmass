@@ -4,6 +4,7 @@ import React, { memo } from 'react';
 import { compareChartProps } from '../lib/performanceUtils';
 import { PieChart, VerticalBarChart, KPICard } from './charts';
 import type { PieChartData, VerticalBarChartData, KPICardProps } from './charts';
+import { CHART_COLOR } from '../lib/theme/chartPalette';
 
 /* What: Modernized chart components using Chart.js
    Why: Replace legacy SVG charts with professional Chart.js components
@@ -118,8 +119,8 @@ const GenderCircleChartComponent: React.FC<ChartProps> = ({ stats, eventName }) 
   /* What: Prepare data for PieChart component
      Why: Transform stats into PieChartData format with original colors */
   const genderData: PieChartData[] = [
-    { label: 'Female', value: stats.female, color: '#ff6b9d' },
-    { label: 'Male', value: stats.male, color: '#4a90e2' }
+    { label: 'Female', value: stats.female, color: CHART_COLOR.femalePink },
+    { label: 'Male', value: stats.male, color: CHART_COLOR.maleBlue }
   ];
   
   return (
@@ -148,8 +149,8 @@ const FansLocationPieChartComponent: React.FC<ChartProps> = ({ stats, eventName 
   /* TRANSPARENT MIGRATION: Works with both old and new schema */
   const remoteFans = getRemoteFans(stats);
   const locationData: PieChartData[] = [
-    { label: 'Remote Fans', value: remoteFans, color: '#3b82f6' },
-    { label: 'Stadium Fans', value: stats.stadium, color: '#f59e0b' }
+    { label: 'Remote Fans', value: remoteFans, color: CHART_COLOR.blue },
+    { label: 'Stadium Fans', value: stats.stadium, color: CHART_COLOR.amber }
   ];
   
   return (
@@ -180,8 +181,8 @@ const AgeGroupsPieChartComponent: React.FC<ChartProps> = ({ stats, eventName }) 
   const over40Total = stats.genX + stats.boomer;
   
   const ageData: PieChartData[] = [
-    { label: 'Under 40', value: under40Total, color: '#06b6d4' },
-    { label: 'Over 40', value: over40Total, color: '#f97316' }
+    { label: 'Under 40', value: under40Total, color: CHART_COLOR.cyan },
+    { label: 'Over 40', value: over40Total, color: CHART_COLOR.orange }
   ];
   
   return (
@@ -213,11 +214,11 @@ const MerchandiseHorizontalBarsComponent: React.FC<ChartProps> = ({ stats, event
   const potentialSales = (totalFans - merched) * 10;
   
   const merchData: VerticalBarChartData[] = [
-    { label: 'Jersey', value: stats.jersey, color: '#7b68ee' },
-    { label: 'Scarf', value: stats.scarf, color: '#ff6b9d' },
-    { label: 'Flags', value: stats.flags, color: '#ffa726' },
-    { label: 'Baseball Cap', value: stats.baseballCap, color: '#66bb6a' },
-    { label: 'Other', value: stats.other, color: '#ef5350' }
+    { label: 'Jersey', value: stats.jersey, color: CHART_COLOR.jerseyViolet },
+    { label: 'Scarf', value: stats.scarf, color: CHART_COLOR.femalePink },
+    { label: 'Flags', value: stats.flags, color: CHART_COLOR.flagsOrange },
+    { label: 'Baseball Cap', value: stats.baseballCap, color: CHART_COLOR.capGreen },
+    { label: 'Other', value: stats.other, color: CHART_COLOR.otherRed }
   ];
   
   return (
@@ -255,8 +256,8 @@ const VisitorSourcesPieChartComponent: React.FC<ChartProps> = ({ stats, eventNam
   const otherVisits = (stats.visitWeb || 0);
   
   const visitorData: PieChartData[] = [
-    { label: 'QR + Short URL', value: qrAndShortUrl, color: '#3b82f6' },
-    { label: 'Other', value: otherVisits, color: '#f59e0b' }
+    { label: 'QR + Short URL', value: qrAndShortUrl, color: CHART_COLOR.blue },
+    { label: 'Other', value: otherVisits, color: CHART_COLOR.amber }
   ];
   
   return (
@@ -306,11 +307,11 @@ const ValueHorizontalBarsComponent: React.FC<ChartProps> = ({ stats, eventName }
   const brandAwarenessValue = totalVisitors * 1; // General Brand Awareness: Visitors × €1
   
   const valueData: VerticalBarChartData[] = [
-    { label: 'CPM', value: valuePropValue, color: '#3b82f6' },
-    { label: 'eDM', value: directValue, color: '#10b981' },
-    { label: 'Ads', value: directAdsValue, color: '#f59e0b' },
-    { label: 'U40 Eng.', value: under40EngagedValue, color: '#8b5cf6' },
-    { label: 'Branding', value: brandAwarenessValue, color: '#ef4444' }
+    { label: 'CPM', value: valuePropValue, color: CHART_COLOR.blue },
+    { label: 'eDM', value: directValue, color: CHART_COLOR.green },
+    { label: 'Ads', value: directAdsValue, color: CHART_COLOR.amber },
+    { label: 'U40 Eng.', value: under40EngagedValue, color: CHART_COLOR.purple },
+    { label: 'Branding', value: brandAwarenessValue, color: CHART_COLOR.red }
   ];
   
   const totalValue = valuePropValue + directValue + directAdsValue + under40EngagedValue + brandAwarenessValue;
@@ -353,8 +354,8 @@ const ValuePropositionHorizontalBarsComponent: React.FC<ChartProps> = ({ stats, 
   const visitedPercentage = valuePropViewed > 0 ? (valuePropPurchases / valuePropViewed) * 100 : 0;
   
   const valueData: VerticalBarChartData[] = [
-    { label: 'Viewed', value: valuePropViewed, color: '#3b82f6' },
-    { label: 'Visited', value: valuePropPurchases, color: '#10b981' }
+    { label: 'Viewed', value: valuePropViewed, color: CHART_COLOR.blue },
+    { label: 'Visited', value: valuePropPurchases, color: CHART_COLOR.green }
   ];
   
   return (
@@ -416,11 +417,11 @@ const EngagementHorizontalBarsComponent: React.FC<ChartProps> = ({ stats, eventN
   const casuals = totalFans > 0 ? (nonMerchedFans / totalFans) * 100 : 0;
   
   const engagementData: VerticalBarChartData[] = [
-    { label: 'Engaged', value: fanEngagement, color: '#8b5cf6' },
-    { label: 'Interactive', value: fanInteraction, color: '#f59e0b' },
-    { label: 'Front-runners', value: frontRunners, color: '#10b981' },
-    { label: 'Fanaticals', value: fanaticals, color: '#ef4444' },
-    { label: 'Casuals', value: casuals, color: '#06b6d4' }
+    { label: 'Engaged', value: fanEngagement, color: CHART_COLOR.purple },
+    { label: 'Interactive', value: fanInteraction, color: CHART_COLOR.amber },
+    { label: 'Front-runners', value: frontRunners, color: CHART_COLOR.green },
+    { label: 'Fanaticals', value: fanaticals, color: CHART_COLOR.red },
+    { label: 'Casuals', value: casuals, color: CHART_COLOR.cyan }
   ];
   
   // Calculate core fan team metric: (merched / fans) * event attendees
@@ -476,9 +477,9 @@ const AdvertisementValueHorizontalBarsComponent: React.FC<ChartProps> = ({ stats
   const brandAwarenessValue = totalVisitors * 1;
   
   const adData: VerticalBarChartData[] = [
-    { label: `Direct (${totalImages} × €9)`, value: directValue, color: '#3b82f6' },
-    { label: `Ads (${totalFans} × €7)`, value: directAdsValue, color: '#10b981' },
-    { label: `Awareness (${totalVisitors} × €1)`, value: brandAwarenessValue, color: '#f59e0b' }
+    { label: `Direct (${totalImages} × €9)`, value: directValue, color: CHART_COLOR.blue },
+    { label: `Ads (${totalFans} × €7)`, value: directAdsValue, color: CHART_COLOR.green },
+    { label: `Awareness (${totalVisitors} × €1)`, value: brandAwarenessValue, color: CHART_COLOR.amber }
   ];
   
   const totalAdValue = directValue + directAdsValue + brandAwarenessValue;

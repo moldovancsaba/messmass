@@ -393,7 +393,7 @@ function HashtagFilterPageContent() {
       {/* What: Centralized filter actions row showing Apply, Share, and Export controls.
            Why: Groups all filter actions together for better discoverability and consistent UX.
                 Apply button visible when hashtags selected; Share/Export appear after applying filter. */}
-      <ColoredCard accentColor="#6366f1" hoverable={false} className="p-3 mb-4">
+      <ColoredCard accentColor="var(--mm-chart-indigo)" hoverable={false} className="p-3 mb-4">
         <div className="flex gap-2 flex-wrap justify-center">
           {/* Apply Filter Button - visible when hashtags are selected */}
           {selectedHashtags.length > 0 && (
@@ -496,7 +496,7 @@ function HashtagFilterPageContent() {
       </ColoredCard>
 
       {/* Hashtag Selection and Load More */}
-      <ColoredCard accentColor="#8b5cf6" hoverable={false} className="p-4">
+      <ColoredCard accentColor="var(--mm-chart-purple)" hoverable={false} className="p-4">
         <HashtagMultiSelect
           hashtags={availableHashtags}
           selectedHashtags={selectedHashtags}
@@ -527,7 +527,7 @@ function HashtagFilterPageContent() {
 
       {/* Loading State */}
       {statsLoading && (
-        <ColoredCard accentColor="#3b82f6" hoverable={false} className="p-8 text-center">
+        <ColoredCard accentColor="var(--mm-color-primary-500)" hoverable={false} className="p-8 text-center">
           <div className="curve-spinner m-auto mt-4"></div>
         </ColoredCard>
       )}
@@ -710,7 +710,7 @@ function HashtagFilterPageContent() {
 
           {/* Projects List Section */}
           {projects.length > 0 && (
-            <ColoredCard accentColor="#8b5cf6" hoverable={false} className="mt-12">
+            <ColoredCard accentColor="var(--mm-chart-purple)" hoverable={false} className="mt-12">
               <h2 className="flex items-center gap-2 text-gray-900 font-semibold text-3xl mb-6">
                 <span className="text-gray-900">📊 Matching Projects </span>
                 <span className="project-count-badge">
@@ -719,7 +719,7 @@ function HashtagFilterPageContent() {
               </h2>
               <div className="projects-list-grid">
                 {projects.map((projectItem) => (
-                  <ColoredCard key={projectItem._id} accentColor="#6366f1" hoverable={false}>
+                  <ColoredCard key={projectItem._id} accentColor="var(--mm-chart-indigo)" hoverable={false}>
                     <h3 className="project-item-title">
                       {projectItem.viewSlug ? (
                         <a 

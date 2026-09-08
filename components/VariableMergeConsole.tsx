@@ -146,7 +146,7 @@ export default function VariableMergeConsole() {
   if (loading) return <div>Loading merge candidates…</div>;
 
   return (
-    <ColoredCard accentColor="#7c3aed" hoverable={false}>
+    <ColoredCard accentColor="var(--mm-chart-purple)" hoverable={false}>
       <h2 className={styles.heading}>🔀 Variable Merges</h2>
       <p className={styles.intro}>
         {candidates.length} candidate group(s) — {safeCount} safe (no value conflicts). Applying a

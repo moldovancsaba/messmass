@@ -833,11 +833,11 @@ export function generateDataQualityInsights(
   
   // Insight #1: Completeness
   const qualityColors = {
-    excellent: '#10b981',
-    good: '#3b82f6',
-    fair: '#f59e0b',
-    poor: '#ef4444',
-    insufficient: '#dc2626'
+    excellent: 'var(--mm-success)',
+    good: 'var(--mm-color-primary-500)',
+    fair: 'var(--mm-warning)',
+    poor: 'var(--mm-error)',
+    insufficient: 'var(--mantine-color-messmassRed-6)'
   };
   
   const qualityTiers = {

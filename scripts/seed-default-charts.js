@@ -3,6 +3,8 @@
 
 const { MongoClient } = require('mongodb');
 require('dotenv').config({ path: '.env.local' });
+// Node 24 strips the types when a plain script requires a .ts module.
+const { CHART_COLOR } = require('../lib/theme/chartPalette.ts');
 
 const DEFAULT_CHARTS = [
   // 1. Gender Distribution Pie Chart
@@ -14,8 +16,8 @@ const DEFAULT_CHARTS = [
     isActive: true,
     emoji: '👥',
     elements: [
-      { id: 'female', label: 'Female', formula: '[stats.female]', color: '#ff6b9d', description: 'Female attendees' },
-      { id: 'male', label: 'Male', formula: '[stats.male]', color: '#4a90e2', description: 'Male attendees' }
+      { id: 'female', label: 'Female', formula: '[stats.female]', color: CHART_COLOR.femalePink, description: 'Female attendees' },
+      { id: 'male', label: 'Male', formula: '[stats.male]', color: CHART_COLOR.maleBlue, description: 'Male attendees' }
     ]
   },
   
@@ -28,8 +30,8 @@ const DEFAULT_CHARTS = [
     isActive: true,
     emoji: '📍',
     elements: [
-      { id: 'remote', label: 'Remote', formula: '[stats.remoteFans]', color: '#3b82f6', description: 'Remote fans (indoor + outdoor)' },
-      { id: 'event', label: 'Event', formula: '[stats.stadium]', color: '#f59e0b', description: 'Stadium fans' }
+      { id: 'remote', label: 'Remote', formula: '[stats.remoteFans]', color: CHART_COLOR.blue, description: 'Remote fans (indoor + outdoor)' },
+      { id: 'event', label: 'Event', formula: '[stats.stadium]', color: CHART_COLOR.amber, description: 'Stadium fans' }
     ]
   },
   
@@ -42,8 +44,8 @@ const DEFAULT_CHARTS = [
     isActive: true,
     emoji: '👥',
     elements: [
-      { id: 'under-40', label: 'Under 40', formula: '[stats.genAlpha] + [stats.genYZ]', color: '#06b6d4', description: 'Gen Alpha + Gen Y/Z' },
-      { id: 'over-40', label: 'Over 40', formula: '[stats.genX] + [stats.boomer]', color: '#f97316', description: 'Gen X + Boomer' }
+      { id: 'under-40', label: 'Under 40', formula: '[stats.genAlpha] + [stats.genYZ]', color: CHART_COLOR.cyan, description: 'Gen Alpha + Gen Y/Z' },
+      { id: 'over-40', label: 'Over 40', formula: '[stats.genX] + [stats.boomer]', color: CHART_COLOR.orange, description: 'Gen X + Boomer' }
     ]
   },
   
@@ -56,8 +58,8 @@ const DEFAULT_CHARTS = [
     isActive: true,
     emoji: '🌐',
     elements: [
-      { id: 'qr-short', label: 'QR + Short URL', formula: '[stats.visitQrCode] + [stats.visitShortUrl]', color: '#3b82f6', description: 'QR code and short URL visits' },
-      { id: 'other', label: 'Other', formula: '[stats.visitWeb]', color: '#f59e0b', description: 'Other web visits' }
+      { id: 'qr-short', label: 'QR + Short URL', formula: '[stats.visitQrCode] + [stats.visitShortUrl]', color: CHART_COLOR.blue, description: 'QR code and short URL visits' },
+      { id: 'other', label: 'Other', formula: '[stats.visitWeb]', color: CHART_COLOR.amber, description: 'Other web visits' }
     ]
   },
   
@@ -72,11 +74,11 @@ const DEFAULT_CHARTS = [
     totalLabel: 'possible merch sales',
     emoji: '🛍️',
     elements: [
-      { id: 'jersey-sales', label: 'Jersey', formula: '[stats.jersey] * [PARAM:jerseyPrice]', color: '#7b68ee', description: 'Jersey sales in EUR', formatting: { rounded: true, prefix: '€', suffix: '' } },
-      { id: 'scarf-sales', label: 'Scarf', formula: '[stats.scarf] * [PARAM:scarfPrice]', color: '#ff6b9d', description: 'Scarf sales in EUR', formatting: { rounded: true, prefix: '€', suffix: '' } },
-      { id: 'flags-sales', label: 'Flags', formula: '[stats.flags] * [PARAM:flagsPrice]', color: '#ffa726', description: 'Flag sales in EUR', formatting: { rounded: true, prefix: '€', suffix: '' } },
-      { id: 'cap-sales', label: 'Baseball Cap', formula: '[stats.baseballCap] * [PARAM:capPrice]', color: '#66bb6a', description: 'Baseball cap sales in EUR', formatting: { rounded: true, prefix: '€', suffix: '' } },
-      { id: 'other-sales', label: 'Other', formula: '[stats.other] * [PARAM:otherPrice]', color: '#ef5350', description: 'Other merchandise sales in EUR', formatting: { rounded: true, prefix: '€', suffix: '' } }
+      { id: 'jersey-sales', label: 'Jersey', formula: '[stats.jersey] * [PARAM:jerseyPrice]', color: CHART_COLOR.jerseyViolet, description: 'Jersey sales in EUR', formatting: { rounded: true, prefix: '€', suffix: '' } },
+      { id: 'scarf-sales', label: 'Scarf', formula: '[stats.scarf] * [PARAM:scarfPrice]', color: CHART_COLOR.femalePink, description: 'Scarf sales in EUR', formatting: { rounded: true, prefix: '€', suffix: '' } },
+      { id: 'flags-sales', label: 'Flags', formula: '[stats.flags] * [PARAM:flagsPrice]', color: CHART_COLOR.flagsOrange, description: 'Flag sales in EUR', formatting: { rounded: true, prefix: '€', suffix: '' } },
+      { id: 'cap-sales', label: 'Baseball Cap', formula: '[stats.baseballCap] * [PARAM:capPrice]', color: CHART_COLOR.capGreen, description: 'Baseball cap sales in EUR', formatting: { rounded: true, prefix: '€', suffix: '' } },
+      { id: 'other-sales', label: 'Other', formula: '[stats.other] * [PARAM:otherPrice]', color: CHART_COLOR.otherRed, description: 'Other merchandise sales in EUR', formatting: { rounded: true, prefix: '€', suffix: '' } }
     ]
   },
   
@@ -98,35 +100,35 @@ const DEFAULT_CHARTS = [
         id: 'marketing-optin', 
         label: 'Marketing Opt-in Users', 
         formula: '([stats.remoteImages] + [stats.hostessImages] + [stats.selfies]) * 4.87',
-        color: '#3b82f6', 
+        color: CHART_COLOR.blue, 
         description: 'Every image corresponds to a GDPR-compliant opt-in fan. Each contact has measurable acquisition cost in digital marketing (€4.87 avg market cost per email opt-in in Europe, 2025)' 
       },
       { 
         id: 'value-prop-emails', 
         label: 'Value Proposition Emails', 
         formula: '([stats.remoteImages] + [stats.hostessImages] + [stats.selfies]) * 1.07',
-        color: '#10b981', 
+        color: CHART_COLOR.green, 
         description: 'Every email delivered includes branded fan photo plus sponsor offer. Add-on ad space valued at €1.07 avg CPM email value add per send' 
       },
       { 
         id: 'giant-screen-ads', 
         label: 'Ads on Giant Screen', 
         formula: '([stats.eventAttendees] / 1000) * 6 * 0.2 * ([stats.remoteImages] + [stats.hostessImages] + [stats.selfies])',
-        color: '#f59e0b', 
+        color: CHART_COLOR.amber, 
         description: 'Fans + brands shown on stadium big screen = in-stadium advertising equivalent. Stadium advertising CPM ≈ €6.00 per 1,000 attendees per 30s slot. 6s exposure = 0.2 of CPM' 
       },
       { 
         id: 'under40-engagement', 
         label: 'Under-40 Engagement', 
         formula: '([stats.genAlpha] + [stats.genYZ]) * 2.14',
-        color: '#8b5cf6', 
+        color: CHART_COLOR.purple, 
         description: '80% of engaged fans are under 40 - critical target for most brands. Each identified contact carries premium value (€2.14 avg value of youth contact vs older groups)' 
       },
       { 
         id: 'brand-awareness', 
         label: 'Brand Awareness Boost', 
         formula: '200 * 300 * 0.0145', 
-        color: '#ef4444', 
+        color: CHART_COLOR.red, 
         description: 'Organic shares amplify brand presence into social feeds. 200 shared images × 300 avg views = 60,000 impressions. Benchmarked to €14.50 CPM for social organic impressions (2025)' 
       }
     ]
@@ -142,11 +144,11 @@ const DEFAULT_CHARTS = [
     showTotal: true,
     totalLabel: 'Core Fan Team',
     elements: [
-      { id: 'engaged', label: 'Engaged', formula: '([stats.remoteFans] + [stats.stadium]) / [stats.eventAttendees] * 100', color: '#8b5cf6', description: 'Fan Engagement %', formatting: { rounded: true, prefix: '', suffix: '%' } },
-      { id: 'interactive', label: 'Interactive', formula: '([stats.socialVisit] + [stats.eventValuePropositionVisited] + [stats.eventValuePropositionPurchases]) / ([stats.remoteImages] + [stats.hostessImages] + [stats.selfies]) * 100', color: '#f59e0b', description: 'Fan Interaction %', formatting: { rounded: true, prefix: '', suffix: '%' } },
-      { id: 'front-runners', label: 'Front-runners', formula: '[stats.merched] / ([stats.remoteFans] + [stats.stadium]) * 100', color: '#10b981', description: 'Merched fans %', formatting: { rounded: true, prefix: '', suffix: '%' } },
-      { id: 'fanaticals', label: 'Fanaticals', formula: '([stats.flags] + [stats.scarf]) / [stats.merched] * 100', color: '#ef4444', description: 'Flags & scarfs of merched %', formatting: { rounded: true, prefix: '', suffix: '%' } },
-      { id: 'casuals', label: 'Casuals', formula: '(([stats.remoteFans] + [stats.stadium]) - [stats.merched]) / ([stats.remoteFans] + [stats.stadium]) * 100', color: '#06b6d4', description: 'Non-merched fans %', formatting: { rounded: true, prefix: '', suffix: '%' } }
+      { id: 'engaged', label: 'Engaged', formula: '([stats.remoteFans] + [stats.stadium]) / [stats.eventAttendees] * 100', color: CHART_COLOR.purple, description: 'Fan Engagement %', formatting: { rounded: true, prefix: '', suffix: '%' } },
+      { id: 'interactive', label: 'Interactive', formula: '([stats.socialVisit] + [stats.eventValuePropositionVisited] + [stats.eventValuePropositionPurchases]) / ([stats.remoteImages] + [stats.hostessImages] + [stats.selfies]) * 100', color: CHART_COLOR.amber, description: 'Fan Interaction %', formatting: { rounded: true, prefix: '', suffix: '%' } },
+      { id: 'front-runners', label: 'Front-runners', formula: '[stats.merched] / ([stats.remoteFans] + [stats.stadium]) * 100', color: CHART_COLOR.green, description: 'Merched fans %', formatting: { rounded: true, prefix: '', suffix: '%' } },
+      { id: 'fanaticals', label: 'Fanaticals', formula: '([stats.flags] + [stats.scarf]) / [stats.merched] * 100', color: CHART_COLOR.red, description: 'Flags & scarfs of merched %', formatting: { rounded: true, prefix: '', suffix: '%' } },
+      { id: 'casuals', label: 'Casuals', formula: '(([stats.remoteFans] + [stats.stadium]) - [stats.merched]) / ([stats.remoteFans] + [stats.stadium]) * 100', color: CHART_COLOR.cyan, description: 'Non-merched fans %', formatting: { rounded: true, prefix: '', suffix: '%' } }
     ]
   },
   
@@ -163,7 +165,7 @@ const DEFAULT_CHARTS = [
         id: 'faces-per-image-value', 
         label: 'Average faces per approved image', 
         formula: '([stats.female] + [stats.male]) / [stats.approvedImages]',
-        color: '#10b981', 
+        color: CHART_COLOR.green, 
         description: 'Calculation from your totals: total faces by gender divided by images to show authentic reach per asset. Target audience: Brand owner, media planners, sponsorship sales. Quantify how many branded faces appear per image on average. Capture the multiplier effect for on-screen brand exposure.' 
       }
     ]
@@ -182,7 +184,7 @@ const DEFAULT_CHARTS = [
         id: 'image-density-value', 
         label: 'Images per 100 fans', 
         formula: '([stats.remoteImages] + [stats.hostessImages] + [stats.selfies]) / ([stats.female] + [stats.male]) * 100',
-        color: '#3b82f6', 
+        color: CHART_COLOR.blue, 
         description: 'Show how actively fans created content. Help venues and rights holders benchmark activation performance. Derived from your counts - a simple, comparable index across events. Target audience: Event ops, sponsorship sales, client success.' 
       }
     ]

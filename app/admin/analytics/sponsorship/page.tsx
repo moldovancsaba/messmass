@@ -23,6 +23,7 @@ import type {
   SponsorshipProjectDrilldown,
 } from '@/lib/sponsorshipHub';
 import styles from './page.module.css';
+import { CHART_COLOR } from '@/lib/theme/chartPalette';
 
 interface ScopeOption {
   _id: string;
@@ -553,7 +554,7 @@ export default function SponsorshipHubPage() {
                   <div className={styles.sectionHeader}>
                     <h2 className={styles.sectionTitle}>Activation Readiness</h2>
                     <p className={styles.sectionSubtitle}>
-                      First `#788` proof-of-performance workspace slice, built from the same evidence model as the hub.
+                      First `&#35;788` proof-of-performance workspace slice, built from the same evidence model as the hub.
                     </p>
                   </div>
                   <div className={styles.insightGrid}>
@@ -592,9 +593,9 @@ export default function SponsorshipHubPage() {
                 'One server-side timeline for the current sponsorship scope.',
                 hubData.trend,
                 [
-                  { key: 'fans', label: 'Fans', color: '#2563eb', format: 'number' },
-                  { key: 'adValue', label: 'Media Value', color: '#059669', format: 'currency' },
-                  { key: 'bitlyClicks', label: 'Bitly Clicks', color: '#ea580c', format: 'number' },
+                  { key: 'fans', label: 'Fans', color: CHART_COLOR.blueDark, format: 'number' },
+                  { key: 'adValue', label: 'Media Value', color: CHART_COLOR.greenDark, format: 'currency' },
+                  { key: 'bitlyClicks', label: 'Bitly Clicks', color: CHART_COLOR.orangeDark, format: 'number' },
                 ]
               )}
               table={(
@@ -681,7 +682,7 @@ export default function SponsorshipHubPage() {
                           'Project Trend',
                           'Bitly daily clicks when available, otherwise a project snapshot point.',
                           selectedProject.trend,
-                          [{ key: 'bitlyClicks', label: 'Bitly Clicks', color: '#ea580c', format: 'number' }]
+                          [{ key: 'bitlyClicks', label: 'Bitly Clicks', color: CHART_COLOR.orangeDark, format: 'number' }]
                         )}
                     </AnalyticsSectionCard>
                   </div>
@@ -765,9 +766,9 @@ export default function SponsorshipHubPage() {
                           'Partner-attributed event performance across the selected time window.',
                           selectedPartner.trend,
                           [
-                            { key: 'fans', label: 'Fans', color: '#2563eb', format: 'number' },
-                            { key: 'adValue', label: 'Media Value', color: '#059669', format: 'currency' },
-                            { key: 'bitlyClicks', label: 'Bitly Clicks', color: '#ea580c', format: 'number' },
+                            { key: 'fans', label: 'Fans', color: CHART_COLOR.blueDark, format: 'number' },
+                            { key: 'adValue', label: 'Media Value', color: CHART_COLOR.greenDark, format: 'currency' },
+                            { key: 'bitlyClicks', label: 'Bitly Clicks', color: CHART_COLOR.orangeDark, format: 'number' },
                           ]
                         )}
                         <p className={styles.detailNote}>{selectedPartner.attributionSummary}</p>

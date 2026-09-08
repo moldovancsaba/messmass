@@ -64,8 +64,8 @@ export const chartsAdapter: AdminPageAdapter<ChartDTO> = {
                 borderRadius: '12px',
                 fontSize: '0.875rem',
                 fontWeight: 500,
-                backgroundColor: chart.enabled ? '#d1fae5' : '#fee2e2',
-                color: chart.enabled ? '#065f46' : '#991b1b',
+                backgroundColor: chart.enabled ? 'var(--mm-success-light)' : 'var(--mm-error-light)',
+                color: chart.enabled ? 'var(--mm-color-secondary-800)' : 'var(--chartErrorText)',
               }}
             >
               {chart.enabled ? 'Active' : 'Disabled'}

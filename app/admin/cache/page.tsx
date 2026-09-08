@@ -18,7 +18,7 @@ export default function CacheManagementPage() {
   if (loading) {
     return (
       <div className="page-container flex items-center justify-center min-h-screen">
-        <ColoredCard accentColor="#6366f1" hoverable={false} className="text-center">
+        <ColoredCard accentColor="var(--mm-chart-indigo)" hoverable={false} className="text-center">
           <div className="text-4xl mb-4">🗑️</div>
           <div className="text-gray-600">Loading...</div>
         </ColoredCard>
@@ -110,7 +110,7 @@ Then select "Cached images and files" and click Clear.`);
       {/* Cache Types */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
         {/* Server Build Cache */}
-        <ColoredCard accentColor="#3b82f6" hoverable={false}>
+        <ColoredCard accentColor="var(--mm-color-primary-500)" hoverable={false}>
           <div className="text-4xl mb-4">🏭️</div>
           <h3 className="text-xl font-bold text-gray-900 mb-2">
             Server Cache Revalidation
@@ -131,7 +131,7 @@ Then select "Cached images and files" and click Clear.`);
         </ColoredCard>
 
         {/* Server Routes Cache */}
-        <ColoredCard accentColor="#10b981" hoverable={false}>
+        <ColoredCard accentColor="var(--mm-success)" hoverable={false}>
           <div className="text-4xl mb-4">🔄</div>
           <h3 className="text-xl font-bold text-gray-900 mb-2">
             Routes Cache
@@ -149,7 +149,7 @@ Then select "Cached images and files" and click Clear.`);
         </ColoredCard>
 
         {/* Browser Cache */}
-        <ColoredCard accentColor="#8b5cf6" hoverable={false}>
+        <ColoredCard accentColor="var(--mm-chart-purple)" hoverable={false}>
           <div className="text-4xl mb-4">🌐</div>
           <h3 className="text-xl font-bold text-gray-900 mb-2">
             Browser Cache
@@ -256,7 +256,7 @@ Then select "Cached images and files" and click Clear.`);
       )}
 
       {/* Manual Instructions */}
-      <ColoredCard accentColor="#6366f1" hoverable={false}>
+      <ColoredCard accentColor="var(--mm-chart-indigo)" hoverable={false}>
         <h3 className="text-xl font-bold text-gray-900 mb-4">📚 Manual Cache Clearing</h3>
         <div className="space-y-4">
           <div>

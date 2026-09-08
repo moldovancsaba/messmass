@@ -22,6 +22,7 @@ import {
   DEFAULT_CATEGORY_COLORS,
   CATEGORY_NAME_VALIDATION
 } from './hashtagCategoryTypes';
+import { DEFAULT_HASHTAG_COLOR } from './theme/hashtagPalette';
 
 /**
  * Color inheritance resolver function
@@ -48,7 +49,7 @@ export const resolveHashtagColor: ColorResolver = (
   }
   
   // Priority 3: Default fallback color
-  return '#667eea';
+  return DEFAULT_HASHTAG_COLOR;
 };
 
 /**
@@ -117,7 +118,7 @@ export function validateCategoryInput(input: HashtagCategoryInput): CategoryVali
   if (!input.color) {
     errors.push('Category color is required');
   } else if (!isValidHexColor(input.color)) {
-    errors.push('Category color must be a valid hex color code (e.g., #667eea)');
+    errors.push(`Category color must be a valid hex color code (e.g., ${DEFAULT_HASHTAG_COLOR})`);
   }
   
   // Validate order (if provided)
@@ -626,7 +627,7 @@ export function getHashtagColors(
       colors.push({
         category: category.name,
         color: effectiveColor,
-        isDefault: effectiveColor === '#667eea' // Default color indicates fallback
+        isDefault: effectiveColor === DEFAULT_HASHTAG_COLOR // Default color indicates fallback
       });
     }
   }
@@ -637,7 +638,7 @@ export function getHashtagColors(
     colors.push({
       category: 'general',
       color: effectiveColor,
-      isDefault: effectiveColor === '#667eea'
+      isDefault: effectiveColor === DEFAULT_HASHTAG_COLOR
     });
   }
   

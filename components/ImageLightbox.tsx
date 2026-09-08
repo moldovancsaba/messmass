@@ -8,6 +8,7 @@ import Image from 'next/image';
 import React, { useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import styles from './ImageLightbox.module.css';
+import { rgbaString } from '@/lib/theme/color';
 
 export interface ImageLightboxProps {
   imageUrl: string;
@@ -19,7 +20,7 @@ export interface ImageLightboxProps {
 export default function ImageLightbox({ imageUrl, alt, isOpen, onClose }: ImageLightboxProps) {
   // WHAT: Default to white with 85% opacity (matches DEFAULT_PAGE_STYLE_ENHANCED)
   // WHY: System default page background is #ffffff, not black
-  const [overlayBg, setOverlayBg] = React.useState<string>('rgba(255, 255, 255, 0.85)');
+  const [overlayBg, setOverlayBg] = React.useState<string>(rgbaString(255, 255, 255, 0.85));
   
   /* WHAT: Extract page background color and apply 85% opacity
    * WHY: Match page style background with same transparency as original black overlay
@@ -36,20 +37,20 @@ export default function ImageLightbox({ imageUrl, alt, isOpen, onClose }: ImageL
       // WHY: Maintain page aesthetic while allowing overlay transparency
       if (bgStyle.includes('linear-gradient')) {
         // Replace opacity in gradient stops with 0.85
-        const transparentGradient = bgStyle.replace(/rgba\((\d+),\s*(\d+),\s*(\d+),\s*[\d.]+\)/g, 'rgba($1, $2, $3, 0.85)');
+        const transparentGradient = bgStyle.replace(/rgba\((\d+),\s*(\d+),\s*(\d+),\s*[\d.]+\)/g, (_match, r, g, b) => rgbaString(Number(r), Number(g), Number(b), 0.85));
         setOverlayBg(transparentGradient);
       } else if (bgStyle.includes('rgb')) {
         // Convert rgb/rgba to rgba with 0.85 opacity
         const match = bgStyle.match(/rgba?\((\d+),\s*(\d+),\s*(\d+)/);
         if (match) {
-          setOverlayBg(`rgba(${match[1]}, ${match[2]}, ${match[3]}, 0.85)`);
+          setOverlayBg(rgbaString(Number(match[1]), Number(match[2]), Number(match[3]), 0.85));
         }
       } else if (bgStyle.match(/^#[0-9a-f]{6}$/i)) {
         // Convert hex to rgba
         const r = parseInt(bgStyle.slice(1, 3), 16);
         const g = parseInt(bgStyle.slice(3, 5), 16);
         const b = parseInt(bgStyle.slice(5, 7), 16);
-        setOverlayBg(`rgba(${r}, ${g}, ${b}, 0.85)`);
+        setOverlayBg(rgbaString(r, g, b, 0.85));
       }
     }
   }, [isOpen]);

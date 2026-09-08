@@ -23,7 +23,7 @@ export default function StylePreview({ style, activeSection }: StylePreviewProps
    * WHY: Apply solid or gradient backgrounds dynamically */
   const getBackgroundStyle = (bg: typeof style.pageBackground) => {
     if (bg.type === 'solid') {
-      return { background: bg.solidColor || '#ffffff' };
+      return { background: bg.solidColor || 'var(--mm-white)' };
     } else if (bg.type === 'gradient' && bg.gradientStops) {
       return { background: generateGradientCSS(bg) };
     }
@@ -33,7 +33,7 @@ export default function StylePreview({ style, activeSection }: StylePreviewProps
   const pageBackgroundStyle = getBackgroundStyle(style.pageBackground);
   const heroBackgroundStyle = getBackgroundStyle(style.heroBackground);
   const contentBoxStyle = {
-    background: style.contentBoxBackground.solidColor || '#ffffff',
+    background: style.contentBoxBackground.solidColor || 'var(--mm-white)',
     opacity: style.contentBoxBackground.opacity || 1
   };
 
@@ -144,7 +144,7 @@ export default function StylePreview({ style, activeSection }: StylePreviewProps
               className={styles.mockKpi}
               style={{
                 ...contentBoxStyle,
-                border: `1px solid ${style.chartColors?.chartBorder || '#f3f4f6'}`
+                border: `1px solid ${style.chartColors?.chartBorder || 'var(--mm-gray-100)'}`
               }}
             >
               <div 
@@ -155,13 +155,13 @@ export default function StylePreview({ style, activeSection }: StylePreviewProps
               </div>
               <div 
                 className={styles.mockKpiValue}
-                style={{ color: style.chartColors?.chartValueColor || '#111827' }}
+                style={{ color: style.chartColors?.chartValueColor || 'var(--mm-gray-900)' }}
               >
                 2,531
               </div>
               <div 
                 className={styles.mockKpiLabel}
-                style={{ color: style.chartColors?.chartLabelColor || '#6b7280' }}
+                style={{ color: style.chartColors?.chartLabelColor || 'var(--mm-gray-500)' }}
               >
                 Total Fans
               </div>
@@ -172,7 +172,7 @@ export default function StylePreview({ style, activeSection }: StylePreviewProps
               className={styles.mockPie}
               style={{
                 ...contentBoxStyle,
-                border: `1px solid ${style.chartColors?.chartBorder || '#f3f4f6'}`
+                border: `1px solid ${style.chartColors?.chartBorder || 'var(--mm-gray-100)'}`
               }}
             >
               <div 
@@ -198,14 +198,14 @@ export default function StylePreview({ style, activeSection }: StylePreviewProps
                     className={styles.mockLegendDot}
                     style={{ background: style.colorScheme.primary }}
                   />
-                  <span style={{ color: style.chartColors?.chartLabelColor || '#6b7280' }}>Male 60%</span>
+                  <span style={{ color: style.chartColors?.chartLabelColor || 'var(--mm-gray-500)' }}>Male 60%</span>
                 </div>
                 <div className={styles.mockLegendItem}>
                   <div 
                     className={styles.mockLegendDot}
                     style={{ background: style.colorScheme.secondary }}
                   />
-                  <span style={{ color: style.chartColors?.chartLabelColor || '#6b7280' }}>Female 40%</span>
+                  <span style={{ color: style.chartColors?.chartLabelColor || 'var(--mm-gray-500)' }}>Female 40%</span>
                 </div>
               </div>
             </div>
@@ -215,7 +215,7 @@ export default function StylePreview({ style, activeSection }: StylePreviewProps
               className={styles.mockBar}
               style={{
                 ...contentBoxStyle,
-                border: `1px solid ${style.chartColors?.chartBorder || '#f3f4f6'}`
+                border: `1px solid ${style.chartColors?.chartBorder || 'var(--mm-gray-100)'}`
               }}
             >
               <div 
@@ -226,7 +226,7 @@ export default function StylePreview({ style, activeSection }: StylePreviewProps
               </div>
               <div className={styles.mockBarRows}>
                 <div className={styles.mockBarRow}>
-                  <span style={{ color: style.chartColors?.chartLabelColor || '#6b7280' }}>Jersey</span>
+                  <span style={{ color: style.chartColors?.chartLabelColor || 'var(--mm-gray-500)' }}>Jersey</span>
                   <div className={styles.mockBarTrack}>
                     <div 
                       className={styles.mockBarFill}
@@ -236,10 +236,10 @@ export default function StylePreview({ style, activeSection }: StylePreviewProps
                       }}
                     />
                   </div>
-                  <span style={{ color: style.chartColors?.chartValueColor || '#111827' }}>450</span>
+                  <span style={{ color: style.chartColors?.chartValueColor || 'var(--mm-gray-900)' }}>450</span>
                 </div>
                 <div className={styles.mockBarRow}>
-                  <span style={{ color: style.chartColors?.chartLabelColor || '#6b7280' }}>Scarf</span>
+                  <span style={{ color: style.chartColors?.chartLabelColor || 'var(--mm-gray-500)' }}>Scarf</span>
                   <div className={styles.mockBarTrack}>
                     <div 
                       className={styles.mockBarFill}
@@ -249,7 +249,7 @@ export default function StylePreview({ style, activeSection }: StylePreviewProps
                       }}
                     />
                   </div>
-                  <span style={{ color: style.chartColors?.chartValueColor || '#111827' }}>320</span>
+                  <span style={{ color: style.chartColors?.chartValueColor || 'var(--mm-gray-900)' }}>320</span>
                 </div>
               </div>
             </div>
