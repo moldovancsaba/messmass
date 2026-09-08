@@ -1,8 +1,20 @@
 # {messmass} Release Notes
 Status: Active
-Last Updated: 2026-09-08T09:00:00.000Z
+Last Updated: 2026-09-08T09:40:00.000Z
 Canonical: No
 Owner: Operations
+
+## [v12.3.27] — 2026-09-08T09:40:00.000Z
+
+### Fixed
+- **Public reports without an assigned style logged "Failed to fetch fallback
+  style: Unauthorized".** `hooks/useReportStyle.ts` fell back to
+  `GET /api/report-styles` and took the first row; that list is org-scoped, so
+  every anonymous viewer got a 401 (visible since the read routes were guarded
+  in v12.3.18), and even for admins "first row" was arbitrary. The fallback now
+  applies the codified system default (`DEFAULT_STYLE`) locally: deterministic,
+  no request, no error. Found while verifying v12.3.26 on the live FIFA 2026
+  report.
 
 ## [v12.3.26] — 2026-09-08T09:00:00.000Z
 

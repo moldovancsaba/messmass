@@ -5,7 +5,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { ReportStyle, injectStyleAsCSS, removeStyleCSS } from '@/lib/reportStyleTypes';
+import { DEFAULT_STYLE, ReportStyle, injectStyleAsCSS, removeStyleCSS } from '@/lib/reportStyleTypes';
 
 interface UseReportStyleOptions {
   styleId?: string | null;
@@ -80,33 +80,27 @@ export function useReportStyle({
     };
 
     const fetchFirstAvailable = async () => {
-      setLoading(true);
+      // WHAT: No usable styleId -> apply the codified system default locally.
+      // WHY: This used to fetch GET /api/report-styles and take the first row.
+      //     That list is org-scoped (withOrgContext), so every anonymous viewer
+      //     of a public report without a style got a 401 and a console error
+      //     (visible since the read routes were guarded in v12.3.18), and even
+      //     for admins "first row" was an arbitrary choice. The default is
+      //     deterministic, needs no request, and is what unstyled reports were
+      //     designed to look like.
+      const fallback = { ...DEFAULT_STYLE, name: 'System default' } as ReportStyle;
+      setStyle(fallback);
+      injectStyleAsCSS(fallback);
       setError(null);
-      try {
-        // WHAT: Fetch first available style from NEW system
-        // WHY: Fallback when no styleId specified
-        const response = await fetch('/api/report-styles', { cache: 'no-store' });
-        const data = await response.json();
-        if (!response.ok || !data.success || !Array.isArray(data.styles) || data.styles.length === 0) {
-          throw new Error(data.error || 'No styles available');
-        }
-        const firstStyle = data.styles[0];
-        setStyle(firstStyle);
-        injectStyleAsCSS(firstStyle);
-        console.log('✅ Applied first available style:', firstStyle.name);
-      } catch (err) {
-        console.error('❌ Failed to fetch fallback style:', err);
-        setError(err instanceof Error ? err.message : 'Failed to load default style');
-      } finally {
-        setLoading(false);
-      }
+      setLoading(false);
+      console.log('✅ Applied system default report style');
     };
 
     if (styleId) {
       console.log('🎨 [useReportStyle] Fetching style by id:', styleId);
       fetchById(styleId);
     } else if (fallbackToGlobal) {
-      console.log('🎨 [useReportStyle] No styleId — fetching first available style');
+      console.log('🎨 [useReportStyle] No styleId — applying system default style');
       fetchFirstAvailable();
     } else {
       console.log('🎨 [useReportStyle] No styleId and fallbackToGlobal=false — skipping style fetch');
