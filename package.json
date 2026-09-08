@@ -1,6 +1,6 @@
 {
   "name": "messmass",
-  "version": "12.3.28",
+  "version": "12.3.29",
   "description": "Enterprise-grade event analytics platform with comprehensive partner management, intelligent link tracking, automated event creation (Sports Match Builder), and advanced real-time statistics dashboard for sports organizations, venues, brands, and event managers",
   "keywords": [
     "event-statistics",
@@ -138,9 +138,9 @@
     "@mantine/hooks": "^8.3.18",
     "@mantine/modals": "^8.3.18",
     "@mantine/notifications": "^8.3.18",
-    "@sovereignsquad/gds-admin": "^6.3.0",
-    "@sovereignsquad/gds-core": "^6.3.0",
-    "@sovereignsquad/gds-theme": "^6.3.0",
+    "@sovereignsquad/gds-admin": "file:vendor/gds/sovereignsquad-gds-admin-6.3.0.tgz",
+    "@sovereignsquad/gds-core": "file:vendor/gds/sovereignsquad-gds-core-6.3.0.tgz",
+    "@sovereignsquad/gds-theme": "file:vendor/gds/sovereignsquad-gds-theme-6.3.0.tgz",
     "@sparticuz/chromium-min": "^149.0.0",
     "@tabler/icons-react": "^3.44.0",
     "@vercel/blob": "^2.8.0",
@@ -168,7 +168,7 @@
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3.3.5",
-    "@sovereignsquad/gds-compliance": "^6.3.0",
+    "@sovereignsquad/gds-compliance": "file:vendor/gds/sovereignsquad-gds-compliance-6.3.0.tgz",
     "@testing-library/jest-dom": "^6.9.1",
     "@testing-library/react": "^16.3.2",
     "@types/bcryptjs": "^2.4.6",
@@ -197,6 +197,9 @@
     "npm": ">=8.0.0"
   },
   "overrides": {
+    "@sovereignsquad/gds-core": "file:vendor/gds/sovereignsquad-gds-core-6.3.0.tgz",
+    "@sovereignsquad/gds-theme": "file:vendor/gds/sovereignsquad-gds-theme-6.3.0.tgz",
+    "@sovereignsquad/gds-admin": "file:vendor/gds/sovereignsquad-gds-admin-6.3.0.tgz",
     "fast-xml-parser": "^5.7.2",
     "handlebars": "^4.7.9",
     "flatted": "^3.4.2",

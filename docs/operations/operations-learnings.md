@@ -4,7 +4,7 @@ Last Updated: 2026-09-07T16:00:00.000Z
 Canonical: No
 Owner: Architecture
 
-## [v12.3.28] - 2026-09-07T16:00:00.000Z — A Dead API Fallback Masked Every Protected-Report Error
+## [v12.3.29] - 2026-09-07T16:00:00.000Z — A Dead API Fallback Masked Every Protected-Report Error
 
 ### Context
 Sharing a password-protected event report showed "Failed to Load Report — The
@@ -3825,7 +3825,7 @@ npm run seed:visitor-kyc
 - Upserts each variable with `isSystem: true` to `variables_metadata`
 - Creates performance indexes automatically
 - Idempotent - safe to run multiple times
-- Added `seed:variables` (script removed in v12.3.28, messmass#352) command
+- Added `seed:variables` (script removed in v12.3.29, messmass#352) command
 - **Result**: 92 variables seeded successfully
 
 **Phase 3: API Modernization**
@@ -4011,7 +4011,7 @@ const value = project.stats[normalizeKey("stats.female")];  // strips prefix
 
 **Seeding Verification**:
 ```bash
-`seed:variables` (script removed in v12.3.28, messmass#352)
+`seed:variables` (script removed in v12.3.29, messmass#352)
 ```
 - ✅ 92 variables inserted
 - ✅ All indexes created

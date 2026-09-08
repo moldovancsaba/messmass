@@ -1,8 +1,22 @@
 # {messmass} Release Notes
 Status: Active
-Last Updated: 2026-09-08T10:20:00.000Z
+Last Updated: 2026-09-08T11:30:00.000Z
 Canonical: No
 Owner: Operations
+
+## [v12.3.29] — 2026-09-08T11:30:00.000Z
+
+### Changed
+- **Design-system packages install from vendored release tarballs.**
+  `@sovereignsquad/gds-{core,theme,admin,compliance}` 6.3.0 are committed under
+  `vendor/gds/` (from the `gds-v6.3.0` GitHub Release assets) and pinned via
+  `file:` specs plus `overrides`, the mechanism fanmass already used. `.npmrc`
+  no longer points the scope at npm.pkg.github.com and CI needs no registry
+  token. Trigger: since 2026-09-07 every `npm ci` in CI failed with a 403 from
+  GitHub Packages ("account has reached its billing limit"); the lockfile now
+  contains no GitHub Packages URL, and a clean `npm ci` was verified locally.
+  `npm run gds:sync` still asserts the resolved versions.
+- Fleet version 12.3.29 (all four apps).
 
 ## [v12.3.28] — 2026-09-08T10:20:00.000Z
 
