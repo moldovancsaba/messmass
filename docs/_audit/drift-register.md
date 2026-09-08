@@ -131,7 +131,7 @@ factual accuracy.
   behind a withOrgContext wrapper with a hardcoded org id.
 - ~~docs/V3/messmass_v3_api_specification.md:22 lists `GET /api/v3/activities/{id}`
   and :99 claims `useReportData` "bridges V3 Activities"~~ FIXED 2026-09-07
-  (v12.3.24): the route never existed; the hook's fallback to it was dead code
+  (v12.3.25): the route never existed; the hook's fallback to it was dead code
   that turned every protected event report's 401 into a JSON-parse crash. Spec
   and playbook now say so; fallback deleted.
 

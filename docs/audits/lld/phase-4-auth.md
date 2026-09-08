@@ -203,7 +203,7 @@ Later state (the bullets above are the 2026-08-15 trace, kept as written):
 F-001 was fixed with a server-issued `page-access` grant cookie
 (`lib/pageAccess.ts`, `requirePageAccess`) — see `findings.md` F-001 for the
 full resolution, the 2026-09-02 public-by-default supersession, and the
-2026-09-07 (v12.3.24) closure of the last client gap, where `/report/[slug]`
+2026-09-07 (v12.3.25) closure of the last client gap, where `/report/[slug]`
 gained its prompt via the server layout.
 
 ## Flow 4.3 — Machine-token integration auth

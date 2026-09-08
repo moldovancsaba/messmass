@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Fleet audit inventory scanner + anti-rot check.
+"""Fleet audit inventory scanner + docs anti-rot check.
 
 Scans a SEYU fleet repo and writes machine-readable surface inventories to
 <repo>/docs/_audit/: endpoints, Mongo collections, env vars, outbound hosts,
@@ -7,18 +7,27 @@ and markdown docs. These files are the denominator for every coverage claim
 in the fleet documentation audit - "194 routes documented" only means
 something against a generated, committed list of routes.
 
-Modes (fleet remediation messmass#355 — the same file is vendored into every
+Modes (fleet remediation messmass#355 - the same file is vendored into every
 fleet repo so each CI runs the identical check):
 
   --write            regenerate docs/_audit/*.json for this repo (default
                      repo = the current directory; pass --repo <path>).
-  --check            rescan and compare against the committed inventories;
-                     exit 1 and print the drift when they differ. This is the
-                     CI gate: a route, collection, env var, outbound host or
-                     doc added without regenerating the inventory fails CI.
-  --self-test        prove the check can fail: mutate the fresh scan in memory
-                     and assert the comparison reports drift. Exit 0 = the
-                     gate works; exit 1 = the gate is broken (would never fail).
+  --check            the CI gate, three parts:
+                       1. inventory drift: rescan and compare against the
+                          committed inventories; a route, collection, env var,
+                          outbound host or doc added without regenerating them
+                          FAILS.
+                       2. broken links: every relative markdown link in docs/
+                          and the root *.md files must resolve; a broken one
+                          FAILS.
+                       3. contract freshness: "verified @ <sha>" /
+                          "Verified <repo> `<sha>`" stamps in docs/_audit and
+                          the contract docs are measured against HEAD; more
+                          than 30 commits behind WARNS (never fails - commit
+                          distance is a reason to look, not proof of drift).
+  --self-test        prove the gate can fail: mutate a fresh scan in memory and
+                     feed a broken link to the link resolver; exit 0 only if
+                     both are detected.
 
 Legacy fleet mode (no flag, optional repo names) still writes all four repos
 under /Users/Shared/Projects for the audit workstation.
@@ -51,6 +60,13 @@ AUTH_MARKERS = [
 
 HTTP_METHODS = ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS", "HEAD"]
 INVENTORY_FILES = ["endpoints.json", "collections.json", "env.json", "outbound-hosts.json", "docs.json"]
+
+# Contract freshness: how many commits behind HEAD a verification stamp may be
+# before it is worth re-verifying the edge it describes (mirrors messmass's
+# docs-consistency-audit.js threshold).
+CONTRACT_FRESHNESS_COMMIT_THRESHOLD = 30
+STAMP_RE = re.compile(r"[Vv]erified\s+(?:@\s*|(?:messmass|camera|fanmass|try-on)\s+)?`?([0-9a-f]{7,40})`?")
+LINK_RE = re.compile(r"\[[^\]]*\]\(([^)\s]+)(?:\s+\"[^\"]*\")?\)")
 
 
 def source_files(root: Path, exts: tuple[str, ...]) -> list[Path]:
@@ -226,16 +242,102 @@ def diff_inventory(committed: dict[str, list], fresh: dict[str, list]) -> list[s
     return lines
 
 
+# ---------------------------------------------------------------------------
+# Broken-link check
+# ---------------------------------------------------------------------------
+
+def _link_targets(text: str) -> list[str]:
+    text = re.sub(r"```[\s\S]*?```", " ", text)  # fenced code is not navigation
+    text = re.sub(r"`[^`\n]*`", " ", text)       # neither is inline code
+    return [m.group(1) for m in LINK_RE.finditer(text)]
+
+
+def broken_links(repo: Path, md: Path, text: str) -> list[tuple[str, str]]:
+    """(link, resolved-path) pairs for relative links in `text` that do not exist."""
+    out: list[tuple[str, str]] = []
+    for target in _link_targets(text):
+        t = target.strip()
+        if t.startswith(("http://", "https://", "mailto:", "#", "<")) or "://" in t:
+            continue
+        t = t.split("#", 1)[0].strip()
+        t = re.sub(r":\d+(?::\d+)?$", "", t)  # editor-style path:line[:col] references point at the file
+        if not t or t.startswith("$") or "{" in t:
+            continue
+        candidate = (repo / t.lstrip("/")) if t.startswith("/") else (md.parent / t)
+        try:
+            resolved = candidate.resolve(strict=False)
+        except OSError:
+            resolved = candidate
+        if not resolved.exists():
+            # repo-root-relative links are common in this fleet's docs
+            root_rel = (repo / t).resolve(strict=False)
+            if root_rel.exists():
+                continue
+            out.append((target, str(resolved.relative_to(repo.resolve()) if str(resolved).startswith(str(repo.resolve())) else resolved)))
+    return out
+
+
+def link_check(repo: Path) -> list[str]:
+    files = [p for p in (repo / "docs").rglob("*.md") if not any(part in SKIP_DIRS for part in p.parts)] if (repo / "docs").is_dir() else []
+    files += [p for p in repo.glob("*.md")]
+    lines: list[str] = []
+    checked = 0
+    for md in sorted(files):
+        text = md.read_text(errors="replace")
+        checked += len(_link_targets(text))
+        for link, resolved in broken_links(repo, md, text):
+            lines.append(f"{md.relative_to(repo)}: broken link {link} -> {resolved}")
+    print(f"link check: {checked} relative/absolute links in {len(files)} markdown files, {len(lines)} broken")
+    return lines
+
+
+# ---------------------------------------------------------------------------
+# Contract freshness (warn only)
+# ---------------------------------------------------------------------------
+
+def freshness_warnings(repo: Path) -> list[str]:
+    files = list((repo / "docs" / "_audit").glob("*.md")) if (repo / "docs" / "_audit").is_dir() else []
+    files += list((repo / "docs").glob("*CONTRACT*.md")) if (repo / "docs").is_dir() else []
+    warnings: list[str] = []
+    seen: set[str] = set()
+    for md in sorted(files):
+        for sha in STAMP_RE.findall(md.read_text(errors="replace")):
+            if sha in seen:
+                continue
+            seen.add(sha)
+            proc = subprocess.run(["git", "-C", str(repo), "rev-list", "--count", f"{sha}..HEAD"], capture_output=True, text=True)
+            if proc.returncode != 0:
+                # A stamp naming another repo's commit is expected in fleet-map pointer docs; say so, do not fail.
+                warnings.append(f"{md.relative_to(repo)}: verified @ {sha} is not a commit in this repo (another fleet repo's SHA, or rewritten history)")
+                continue
+            behind = int(proc.stdout.strip() or 0)
+            if behind > CONTRACT_FRESHNESS_COMMIT_THRESHOLD:
+                warnings.append(f"{md.relative_to(repo)}: verified @ {sha} is {behind} commits behind HEAD (threshold {CONTRACT_FRESHNESS_COMMIT_THRESHOLD}) - re-verify that contract")
+    return warnings
+
+
 def check(repo: Path) -> int:
+    failed = False
     drift = diff_inventory(load_committed(repo), scan_repo(repo))
-    if not drift:
+    if drift:
+        failed = True
+        print("inventory check: DRIFT - the code changed but docs/_audit/*.json was not regenerated")
+        for line in drift:
+            print("  " + line)
+        print("fix: python3 scripts/fleet-audit-inventory.py --write  (then document the change and commit both)")
+    else:
         print("inventory check: docs/_audit/*.json match the code")
-        return 0
-    print("inventory check: DRIFT - the code changed but docs/_audit/*.json was not regenerated")
-    for line in drift:
-        print("  " + line)
-    print("fix: python3 scripts/fleet-audit-inventory.py --write  (then document the change and commit both)")
-    return 1
+
+    broken = link_check(repo)
+    if broken:
+        failed = True
+        for line in broken:
+            print("  " + line)
+
+    for w in freshness_warnings(repo):
+        print("freshness warning: " + w)
+
+    return 1 if failed else 0
 
 
 def self_test(repo: Path) -> int:
@@ -245,9 +347,11 @@ def self_test(repo: Path) -> int:
     mutated["endpoints.json"] = mutated["endpoints.json"] + [{"path": "/api/__self_test__", "methods": ["GET"], "file": "x", "auth_markers": [], "no_auth_marker": True}]
     mutated["env.json"] = [e for e in mutated["env.json"] if e != mutated["env.json"][0]] if mutated["env.json"] else ["__SELF_TEST__"]
     drift = diff_inventory(fresh, mutated)
-    ok = any("__self_test__" in d for d in drift) and len(drift) >= 2
-    print(f"self-test: {'PASS' if ok else 'FAIL'} - a stale inventory {'is' if ok else 'is NOT'} detected ({len(drift)} drift lines)")
-    return 0 if ok else 1
+    drift_ok = any("__self_test__" in d for d in drift) and len(drift) >= 2
+    link_ok = broken_links(repo, repo / "docs" / "__self_test__.md", "[x](./does-not-exist-__self_test__.md) and [ok](https://example.com)") != []
+    print(f"self-test: {'PASS' if drift_ok else 'FAIL'} - a stale inventory {'is' if drift_ok else 'is NOT'} detected ({len(drift)} drift lines)")
+    print(f"self-test: {'PASS' if link_ok else 'FAIL'} - a broken markdown link {'is' if link_ok else 'is NOT'} detected")
+    return 0 if (drift_ok and link_ok) else 1
 
 
 def main() -> int:

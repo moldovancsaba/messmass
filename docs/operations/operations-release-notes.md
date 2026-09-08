@@ -1,8 +1,20 @@
 # {messmass} Release Notes
 Status: Active
-Last Updated: 2026-09-08T07:10:00.000Z
+Last Updated: 2026-09-08T07:40:00.000Z
 Canonical: No
 Owner: Operations
+
+## [v12.3.25] — 2026-09-08T07:40:00.000Z
+
+### Changed
+- **Fleet docs anti-rot gate is now complete (messmass#355).** The vendored
+  `scripts/fleet-audit-inventory.py --check` fails on inventory drift AND on
+  broken relative markdown links (docs/ plus root *.md), and warns when a
+  `verified @ <sha>` contract stamp is more than 30 commits behind HEAD. Editor
+  style `path:line` references count as links to the file. `--self-test`
+  proves both failure modes fire. The same file and CI step now run in
+  camera, fanmass and try-on, so all four repos have link check, inventory
+  drift check and contract freshness in CI.
 
 ## [v12.3.24] — 2026-09-08T07:10:00.000Z
 
