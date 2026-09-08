@@ -1,8 +1,17 @@
 # {messmass} Release Notes
 Status: Active
-Last Updated: 2026-09-08T09:40:00.000Z
+Last Updated: 2026-09-08T10:20:00.000Z
 Canonical: No
 Owner: Operations
+
+## [v12.3.28] — 2026-09-08T10:20:00.000Z
+
+### Changed
+- **Fleet version re-aligned.** All four apps carry 12.3.28 from this release
+  (camera was 12.2.24, fanmass and try-on 12.2.3): the 2026-08-20 lockstep
+  policy had drifted because nothing enforced it. `docs/_audit/fleet-version-policy.md`
+  records the history; the contract-first rule now says the version clause is a
+  convention rather than a CI check.
 
 ## [v12.3.27] — 2026-09-08T09:40:00.000Z
 

@@ -5,7 +5,7 @@ Canonical: Yes
 Owner: Security
 Auth flow verified against code @ 62a47a0d (messmass#349)
 
-**Version:** 12.3.27
+**Version:** 12.3.28
 **Last Updated:** 2026-09-07T16:00:00.000Z (UTC)
 **Status:** Production
 **Maintainer:** Security
@@ -228,11 +228,11 @@ export default function PasswordGate({
 - Never trust client-only checks; always validate server-side
 - Admin session bypasses page password requirements
 
-**Where the password prompt appears** (verified against code @ v12.3.27, 2026-09-07):
+**Where the password prompt appears** (verified against code @ v12.3.28, 2026-09-07):
 
 | Page type | Page | Prompt rendered by | Data route enforcement |
 |---|---|---|---|
-| `event-report` | `/report/[slug]` | server layout `app/report/[slug]/layout.tsx` → `ServerPageGate` (added v12.3.27; before that the page had **no prompt at all**, so a protected share link crashed with a JSON-parse message) | `requirePageAccess('event-report', slug)` in `GET /api/projects/stats/[slug]` |
+| `event-report` | `/report/[slug]` | server layout `app/report/[slug]/layout.tsx` → `ServerPageGate` (added v12.3.28; before that the page had **no prompt at all**, so a protected share link crashed with a JSON-parse message) | `requirePageAccess('event-report', slug)` in `GET /api/projects/stats/[slug]` |
 | `partner-report` | `/partner-report/[slug]` | server component → `ServerPageGate` | server component reads the DB only after the check |
 | `organization-report` | `/organization-report/[id]` | none | none (1 password configured; not traced) |
 | `filter` | `/filter/[slug]` | client `PagePasswordLogin` | `requirePageAccess('filter', slug)` |

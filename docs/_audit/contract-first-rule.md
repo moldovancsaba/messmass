@@ -13,7 +13,8 @@ SAME COMMIT:
 
 **Version rule:** every release bumps ALL FOUR apps to the same new version in one
 coordinated change (`docs/_audit/fleet-version-policy.md`), even for a
-version-only commit.
+version-only commit. Re-aligned to 12.3.28 on 2026-09-08 after a month of
+independent bumps; the rule is a convention, not a CI check.
 
 **Inventory rule:** regenerate `docs/_audit/*.json` with
 `python3 scripts/fleet-audit-inventory.py --write` when routes/collections/env
