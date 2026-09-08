@@ -5,7 +5,7 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import type { AdminUser } from './auth';
-import { findUserByPassword, updateAPIUsage } from './users';
+import { findUserByPassword, findUserByApiKeyHash, updateAPIUsage } from './users';
 import { debug, warn, error as logError } from './logger';
 
 /**
@@ -59,13 +59,22 @@ export function parseAuthorizationHeader(request: NextRequest): string | null {
  * validateAPIKey
  * WHAT: Validate Bearer token and return authenticated user
  * WHY: Core authentication logic for public API endpoints
- * 
- * SECURITY:
- *   - Token is user's password (temporary v1 design; see users.ts for roadmap)
- *   - Only users with apiKeyEnabled=true can authenticate
- *   - Usage tracking incremented on successful auth
- *   - All attempts logged with redacted tokens (last 4 chars only)
- * 
+ *
+ * SECURITY (F-011 / issue #397, option A -- decoupled API keys):
+ *   - Modern accounts carry an independent, bcrypt-hashed apiKeyHash (see
+ *     lib/users.ts generateApiKey/hashApiKey) that is checked FIRST.
+ *   - An account with no apiKeyHash falls back to the legacy behavior: the
+ *     token is compared against the login `password` field directly. This is
+ *     a non-breaking migration -- every currently-working integration keeps
+ *     authenticating exactly as before until an admin explicitly rotates that
+ *     account onto apiKeyHash (app/api/admin/local-users/[id]/api-access POST).
+ *   - Use of the legacy fallback is logged (warn level, tagged) so real usage
+ *     of the deprecated path is observable -- that log is the signal for when
+ *     it becomes safe to remove the fallback entirely.
+ *   - Only users with apiKeyEnabled=true can authenticate, either path.
+ *   - Usage tracking incremented on successful auth.
+ *   - All attempts logged with redacted tokens (last 4 chars only).
+ *
  * @param token - Bearer token from Authorization header
  * @returns APIAuthResult with user data or error details
  */
@@ -73,13 +82,29 @@ export async function validateAPIKey(token: string): Promise<APIAuthResult> {
   // WHAT: Redact token for logging (show last 4 chars only)
   // WHY: Audit trail without exposing full credentials
   const redacted = token.length > 4 ? `****${token.slice(-4)}` : '****';
-  
+
   try {
-    // WHAT: Find user by password (password = API key in v1)
-    // WHY: Reuse existing user authentication without new schema
-    // NOTE: See lib/users.ts findUserByPassword() for security considerations
-    const user = await findUserByPassword(token);
-    
+    // WHAT: Modern path first -- accounts with their own independent, hashed
+    //     API key (F-011). bcrypt.compare is constant-time per hash, unlike the
+    //     legacy direct-equality lookup below.
+    let user = await findUserByApiKeyHash(token);
+    let usedLegacyFallback = false;
+
+    if (!user) {
+      // WHAT: Legacy fallback -- only for accounts that have NOT migrated onto
+      //     apiKeyHash. An account that has rotated keeps its old `password`
+      //     value as a login credential, but that value must stop working as
+      //     an API key once apiKeyHash is set -- otherwise rotation would not
+      //     actually revoke the old key.
+      // WHY: Reuse existing user authentication without a flag-day cutover.
+      // NOTE: See lib/users.ts findUserByPassword() for security considerations.
+      const legacyCandidate = await findUserByPassword(token);
+      if (legacyCandidate && !legacyCandidate.apiKeyHash) {
+        user = legacyCandidate;
+        usedLegacyFallback = true;
+      }
+    }
+
     if (!user) {
       warn('API auth failed: invalid token', { token: redacted });
       return {
@@ -88,7 +113,19 @@ export async function validateAPIKey(token: string): Promise<APIAuthResult> {
         errorCode: 'INVALID_TOKEN'
       };
     }
-    
+
+    if (usedLegacyFallback) {
+      // WHAT: Observability signal for F-011 migration progress.
+      // WHY: Once this stops firing for an account (or for all accounts), it is
+      //     safe to consider removing the legacy password-as-key path.
+      warn('API auth used deprecated password-as-key fallback', {
+        userId: user._id?.toString(),
+        email: user.email,
+        token: redacted,
+        tags: ['api-auth', 'deprecated', 'legacy-fallback', 'F-011']
+      });
+    }
+
     // WHAT: Check if API access is enabled for this user
     // WHY: Admin control - user exists but API access may be disabled
     if (!user.apiKeyEnabled) {

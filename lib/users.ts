@@ -5,6 +5,7 @@
 
 import { ObjectId } from 'mongodb'
 import bcrypt from 'bcryptjs'
+import { randomBytes } from 'crypto'
 import getDb from './db'
 import { FEATURE_FLAGS } from './featureFlags'
 
@@ -27,6 +28,14 @@ export interface UserDoc {
   role: UserRole
   password?: string // WHAT: Legacy plaintext password (deprecated - use passwordHash instead)
   passwordHash?: string // WHAT: Bcrypt-hashed password (secure, production-ready)
+  // WHAT: Bcrypt hash of an independently-generated API key (F-011 / issue #397, option A).
+  // WHY: Decouples API keys from login passwords -- until now `password` served both as the
+  //      login credential AND (when apiKeyEnabled) the API key, so rotating one meant rotating
+  //      both and a leaked API key was also a leaked login. apiKeyHash is generated fresh via
+  //      generateApiKey() (see below), never derived from `password`/`passwordHash`, so either
+  //      credential can be rotated independently. Accounts without this field keep working via
+  //      the legacy password-as-key path in lib/apiAuth.ts until an admin explicitly rotates them.
+  apiKeyHash?: string
   lastLogin?: string // ISO 8601 with milliseconds (optional for backward compatibility)
   // WHAT: SSO subject id (OIDC `sub`) — set when this user was created or has ever
   //   logged in via sso.doneisbetter.com. WHY: lets future SSO logins resolve to
@@ -256,6 +265,87 @@ export async function findUserByPassword(password: string): Promise<UserDoc | nu
   // WHAT: Query by password field (acts as API key)
   // WHY: Bearer token in Authorization header is the user's password
   return col.findOne({ password })
+}
+
+/**
+ * generateApiKey
+ * WHAT: Generates a fresh, independently-random API key -- not derived from any
+ *       login password or existing credential.
+ * WHY: F-011 (issue #397, option A): API keys must be their own secret so they can
+ *      be rotated without touching the login password and vice versa.
+ * HOW: 32 bytes from Node's CSPRNG (crypto.randomBytes), hex-encoded to 64 chars.
+ *      Same primitive used for session tokens (lib/auth/mintSession.ts).
+ */
+export function generateApiKey(): string {
+  return randomBytes(32).toString('hex')
+}
+
+/**
+ * hashApiKey
+ * WHAT: Hash a plaintext API key using bcrypt.
+ * WHY: API keys are stored the same way passwords/page-passwords are: only the
+ *      hash is ever persisted (BCRYPT_SALT_ROUNDS matches lib/pagePassword.ts).
+ */
+export async function hashApiKey(plaintextKey: string): Promise<string> {
+  return bcrypt.hash(plaintextKey, BCRYPT_SALT_ROUNDS)
+}
+
+/**
+ * verifyApiKey
+ * WHAT: Verify a plaintext API key against a bcrypt hash.
+ */
+export async function verifyApiKey(plaintextKey: string, apiKeyHash: string): Promise<boolean> {
+  return bcrypt.compare(plaintextKey, apiKeyHash)
+}
+
+/**
+ * findUserByApiKeyHash
+ * WHAT: Finds the user whose apiKeyHash matches a supplied plaintext candidate.
+ * WHY: Unlike the legacy `password` field, apiKeyHash is a bcrypt hash -- there is
+ *      no direct equality query for "which user has this key", so every account
+ *      that has migrated onto the new format is compared in turn.
+ * SCALE NOTE: Only accounts an admin has explicitly rotated onto apiKeyHash carry
+ *      this field, so this set stays small (see lib/apiAuth.ts for the fallback
+ *      to the legacy direct-lookup path for everyone else). If/when most accounts
+ *      migrate, this should move to a keyed-prefix lookup instead of a full scan.
+ */
+export async function findUserByApiKeyHash(candidateKey: string): Promise<UserDoc | null> {
+  const col = await getUsersCollection()
+  const candidates = await col.find({ apiKeyHash: { $exists: true } }).toArray()
+  for (const candidate of candidates) {
+    if (candidate.apiKeyHash && (await bcrypt.compare(candidateKey, candidate.apiKeyHash))) {
+      return candidate
+    }
+  }
+  return null
+}
+
+/**
+ * rotateApiKey
+ * WHAT: Generates a new, independent API key for a user, stores only its hash,
+ *       and returns the plaintext exactly once.
+ * WHY: Admin-triggered "generate/rotate API key" action (F-011 step 3); mirrors
+ *      how page-password generation exposes its one-time plaintext
+ *      (lib/pagePassword.ts) -- the plaintext is never persisted or logged.
+ */
+export async function rotateApiKey(id: string): Promise<{ user: UserDoc; apiKey: string } | null> {
+  const col = await getUsersCollection()
+  if (!ObjectId.isValid(id)) return null
+
+  const apiKey = generateApiKey()
+  const apiKeyHash = await hashApiKey(apiKey)
+  const now = new Date().toISOString()
+
+  const res = await col.updateOne(
+    { _id: new ObjectId(id) },
+    { $set: { apiKeyHash, updatedAt: now } }
+  )
+  if (res.matchedCount === 0) return null
+
+  const user = await findUserById(id)
+  if (!user) return null
+
+  return { user, apiKey }
 }
 
 /**

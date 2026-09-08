@@ -4,12 +4,94 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import { getAdminUser } from '@/lib/auth';
-import { toggleAPIAccess, findUserById } from '@/lib/users';
+import { toggleAPIAccess, findUserById, rotateApiKey } from '@/lib/users';
 import { info, warn } from '@/lib/logger';
 
 // WHAT: Force Node.js runtime
 // WHY: Uses MongoDB operations that require Node.js APIs
 export const runtime = 'nodejs';
+
+/**
+ * POST /api/admin/local-users/[id]/api-access
+ * WHAT: Generates a fresh, independent API key for a user and stores only its
+ *       hash (F-011 / issue #397, option A -- decouple API keys from login
+ *       passwords).
+ * WHY: Until now the only "API key" was the user's login password. This mints
+ *      a separate secret so rotating a user's API key never touches their
+ *      login credential, and vice versa. Existing accounts are unaffected
+ *      unless an admin explicitly calls this endpoint for them.
+ *
+ * AUTH: Admin session required (getAdminUser)
+ * RETURNS: The plaintext API key exactly once -- mirrors the one-time
+ *      plaintext exposure used for page passwords (lib/pagePassword.ts) and
+ *      for login password (re)generation. It is never logged and never
+ *      stored anywhere in the clear.
+ */
+export async function POST(
+  request: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  try {
+    const { id } = await params;
+
+    const admin = await getAdminUser();
+    if (!admin) {
+      return NextResponse.json(
+        { success: false, error: 'Admin authentication required' },
+        { status: 401 }
+      );
+    }
+
+    const targetUser = await findUserById(id);
+    if (!targetUser) {
+      return NextResponse.json(
+        { success: false, error: 'User not found' },
+        { status: 404 }
+      );
+    }
+
+    const result = await rotateApiKey(id);
+    if (!result) {
+      return NextResponse.json(
+        { success: false, error: 'Failed to generate API key' },
+        { status: 500 }
+      );
+    }
+
+    // WHAT: Log the rotation for audit trail -- never the key itself.
+    info('API key rotated', {
+      adminId: admin.id,
+      adminEmail: admin.email,
+      targetUserId: id,
+      targetEmail: result.user.email,
+      tags: ['api-access', 'security', 'audit', 'api-key-rotation', 'F-011']
+    });
+
+    return NextResponse.json({
+      success: true,
+      message: 'API key generated successfully. It will only be shown this once.',
+      apiKey: result.apiKey,
+      user: {
+        id: result.user._id?.toString(),
+        email: result.user.email,
+        name: result.user.name,
+        role: result.user.role,
+        apiKeyEnabled: result.user.apiKeyEnabled,
+        updatedAt: result.user.updatedAt
+      }
+    });
+
+  } catch (error) {
+    console.error('API key rotation error:', error);
+    return NextResponse.json(
+      {
+        success: false,
+        error: error instanceof Error ? error.message : 'Failed to generate API key'
+      },
+      { status: 500 }
+    );
+  }
+}
 
 /**
  * PUT /api/admin/local-users/[id]/api-access

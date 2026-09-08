@@ -147,6 +147,17 @@ export const usersAdapter: AdminPageAdapter<UserDTO> = {
         title: 'Regenerate password',
       },
       {
+        label: 'Rotate API Key',
+        icon: 'vpn_key',
+        variant: 'secondary',
+        handler: (user) => {
+          // WHAT: Generate/rotate a fresh, independent API key (overridden by page component)
+          // WHY: F-011 (issue #397) -- decouples the API key from the login password
+          console.log('Rotate API key for:', user._id);
+        },
+        title: 'Generate a new API key independent of the login password',
+      },
+      {
         label: 'Delete',
         icon: 'delete',
         variant: 'danger',
@@ -210,6 +221,17 @@ export const usersAdapter: AdminPageAdapter<UserDTO> = {
           console.log('Regenerate password for:', user._id);
         },
         title: 'Regenerate password',
+      },
+      {
+        label: 'Rotate API Key',
+        icon: 'vpn_key',
+        variant: 'secondary',
+        handler: (user) => {
+          // WHAT: Generate/rotate a fresh, independent API key (overridden by page component)
+          // WHY: F-011 (issue #397) -- decouples the API key from the login password
+          console.log('Rotate API key for:', user._id);
+        },
+        title: 'Generate a new API key independent of the login password',
       },
       {
         label: 'Delete',

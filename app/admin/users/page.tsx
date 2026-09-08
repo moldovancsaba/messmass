@@ -181,6 +181,38 @@ export default function AdminUsersPageUnified() {
     }
   };
 
+  // WHAT: Generate/rotate a fresh, independent API key (F-011 / issue #397, option A)
+  // WHY: Until now a user's login password doubled as their API key. This mints a
+  //     separate secret (app/api/admin/local-users/[id]/api-access POST) so an admin
+  //     can rotate the API key without touching the login password, or vice versa.
+  const onRotateApiKey = async (user: AdminUser) => {
+    const ok = await confirm({
+      title: 'Generate API Key',
+      message: `Generate a new API key for ${user.email}? Any previously issued API key for this account will stop working immediately. Their login password is not affected.`,
+      danger: true,
+    });
+    if (!ok) return;
+    try {
+      const data = await apiPost(`/api/admin/local-users/${user.id}/api-access`, {});
+      if (data.success) {
+        setPasswordModal({
+          isOpen: true,
+          password: data.apiKey,
+          userEmail: user.email,
+          userId: user.id || (user as any)._id,
+          title: 'API Key Generated',
+        });
+        await refreshUsers();
+      } else {
+        setError(data.error || 'Failed to generate API key');
+      }
+    } catch (err) {
+      console.error('API key rotation error:', err);
+      const errorMessage = err instanceof Error ? err.message : 'Failed to generate API key';
+      setError(errorMessage);
+    }
+  };
+
   // Toggle API access handler
   const onToggleAPIAccess = async (user: AdminUser) => {
     const newState = !user.apiKeyEnabled
@@ -288,8 +320,10 @@ export default function AdminUsersPageUnified() {
         },
         ...usersAdapter.listConfig.rowActions?.map(action => ({
           ...action,
-          handler: action.label === 'Regenerate' 
+          handler: action.label === 'Regenerate'
             ? onRegenerate
+            : action.label === 'Rotate API Key'
+            ? onRotateApiKey
             : onDelete
         })) || []
       ],
@@ -324,8 +358,10 @@ export default function AdminUsersPageUnified() {
         },
         ...usersAdapter.cardConfig.cardActions?.map(action => ({
           ...action,
-          handler: action.label === 'Regenerate' 
+          handler: action.label === 'Regenerate'
             ? onRegenerate
+            : action.label === 'Rotate API Key'
+            ? onRotateApiKey
             : onDelete
         })) || []
       ],
