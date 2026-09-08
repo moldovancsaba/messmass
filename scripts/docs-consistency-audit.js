@@ -140,7 +140,22 @@ for (const file of currentDocFiles) {
 //     misleading -- both FAIL (addFailure).
 const fleetMapPath = 'docs/_audit/fleet-architecture.md';
 const fleetMapFull = path.join(root, fleetMapPath);
-if (fs.existsSync(fleetMapFull)) {
+// CI's actions/checkout@v4 defaults to fetch-depth 1 (shallow): git cannot
+// resolve or count ancestry for any sha older than that single commit, so a
+// perfectly legitimate, reachable stamp would otherwise misreport as
+// unresolvable and hard-fail. Skip here exactly as
+// scripts/fleet-audit-inventory.py's freshness_check does on a shallow
+// checkout -- this check runs on developer machines (full clones) instead.
+const isShallow = (() => {
+  try {
+    return execFileSync('git', ['rev-parse', '--is-shallow-repository'], { cwd: root, encoding: 'utf8' }).trim() === 'true';
+  } catch {
+    return false;
+  }
+})();
+if (isShallow) {
+  console.log('freshness: skipped on a shallow checkout (run locally on a full clone)');
+} else if (fs.existsSync(fleetMapFull)) {
   const fleetMapContent = fs.readFileSync(fleetMapFull, 'utf8');
   const seenShas = new Set();
   for (const stamp of findVerificationStamps(fleetMapContent)) {
