@@ -10,6 +10,11 @@ const { findVersionStamps, findVerificationStamps } = require('./lib/docs-versio
 // repo's own commit velocity (dozens of commits/week) -- low enough to catch
 // real drift, high enough not to fire on every routine push.
 const CONTRACT_FRESHNESS_COMMIT_THRESHOLD = 30;
+// 3x the warn threshold. A stamp this far behind HEAD has gone stale enough
+// that keeping the check green is actively misleading, not just "worth a
+// look" -- so it's a hard fail (addFailure), not a warning. Mirrors
+// scripts/fleet-audit-inventory.py's CONTRACT_FRESHNESS_FAIL_THRESHOLD.
+const CONTRACT_FRESHNESS_FAIL_THRESHOLD = 90;
 
 const root = path.resolve(__dirname, '..');
 const packageJson = JSON.parse(fs.readFileSync(path.join(root, 'package.json'), 'utf8'));
@@ -119,15 +124,20 @@ for (const file of currentDocFiles) {
   }
 }
 
-// WHAT: Contract-freshness check -- warns when the fleet map's own
+// WHAT: Contract-freshness check -- flags when the fleet map's own
 //     "Verified messmass `sha`" stamps are far behind this repo's current
 //     HEAD, i.e. long enough that the integration they describe may have
 //     drifted without anyone re-verifying.
-// WHY: messmass#354. Deliberately WARNS, never fails: (a) it can only
-//     resolve messmass's own SHA in a single-repo CI job -- camera/fanmass/
-//     try-on's cited SHAs aren't resolvable here and are skipped outright;
-//     (b) commit-count drift is a proxy for "worth a look", not proof the
-//     contract is actually wrong.
+// WHY: messmass#354 (warn), messmass#346 (hard fail). It can only resolve
+//     messmass's own SHA in a single-repo CI job -- camera/fanmass/try-on's
+//     cited SHAs aren't resolvable here and are skipped outright. Beyond
+//     that: commit-count drift alone is a proxy for "worth a look", not
+//     proof the contract is wrong, so under the fail threshold this only
+//     WARNS (addWarning). But a sha that doesn't resolve in this repo's
+//     history at all can't even be checked, let alone trusted, and one more
+//     than CONTRACT_FRESHNESS_FAIL_THRESHOLD (3x the warn threshold) commits
+//     behind has gone stale enough that keeping the check green is actively
+//     misleading -- both FAIL (addFailure).
 const fleetMapPath = 'docs/_audit/fleet-architecture.md';
 const fleetMapFull = path.join(root, fleetMapPath);
 if (fs.existsSync(fleetMapFull)) {
@@ -136,17 +146,27 @@ if (fs.existsSync(fleetMapFull)) {
   for (const stamp of findVerificationStamps(fleetMapContent)) {
     if (stamp.repo !== 'messmass' || stamp.sha === 'n/a' || seenShas.has(stamp.sha)) continue;
     seenShas.add(stamp.sha);
-    let behindCount;
+    let resolves = true;
     try {
-      behindCount = parseInt(
-        execFileSync('git', ['rev-list', '--count', `${stamp.sha}..HEAD`], { cwd: root, encoding: 'utf8' }).trim(),
-        10
-      );
+      execFileSync('git', ['cat-file', '-t', stamp.sha], { cwd: root, encoding: 'utf8' });
+      execFileSync('git', ['merge-base', '--is-ancestor', stamp.sha, 'HEAD'], { cwd: root });
     } catch {
-      addWarning(fleetMapPath, `"Verified messmass \`${stamp.sha}\`" cites a commit not found in this repo's history -- stamp may be a typo or the branch was rewritten.`);
+      resolves = false;
+    }
+    if (!resolves) {
+      addFailure(fleetMapPath, `"Verified messmass \`${stamp.sha}\`" does not resolve to a commit reachable from HEAD in this repo's history -- stamp may be a typo, cite a commit from another repo without naming it, or the branch was rewritten. This claim cannot even be checked.`);
       continue;
     }
-    if (behindCount > CONTRACT_FRESHNESS_COMMIT_THRESHOLD) {
+    const behindCount = parseInt(
+      execFileSync('git', ['rev-list', '--count', `${stamp.sha}..HEAD`], { cwd: root, encoding: 'utf8' }).trim(),
+      10
+    );
+    if (behindCount > CONTRACT_FRESHNESS_FAIL_THRESHOLD) {
+      addFailure(
+        fleetMapPath,
+        `"Verified messmass \`${stamp.sha}\`" is ${behindCount} commits behind HEAD (over the ${CONTRACT_FRESHNESS_FAIL_THRESHOLD}-commit fail threshold) -- this claim has gone stale enough that keeping the check green is actively misleading. Re-verify this edge.`
+      );
+    } else if (behindCount > CONTRACT_FRESHNESS_COMMIT_THRESHOLD) {
       addWarning(
         fleetMapPath,
         `"Verified messmass \`${stamp.sha}\`" is ${behindCount} commits behind HEAD (over the ${CONTRACT_FRESHNESS_COMMIT_THRESHOLD}-commit freshness threshold) -- worth re-verifying this edge is still accurate.`

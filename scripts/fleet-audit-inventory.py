@@ -23,8 +23,11 @@ fleet repo so each CI runs the identical check):
                        3. contract freshness: "verified @ <sha>" /
                           "Verified <repo> `<sha>`" stamps in docs/_audit and
                           the contract docs are measured against HEAD; more
-                          than 30 commits behind WARNS (never fails - commit
-                          distance is a reason to look, not proof of drift).
+                          than 30 commits behind WARNS (commit distance alone
+                          is a reason to look, not proof of drift); a sha that
+                          does not resolve in this repo's history at all, or
+                          one more than 90 commits behind HEAD, FAILS (see
+                          CONTRACT_FRESHNESS_FAIL_THRESHOLD below).
   --self-test        prove the gate can fail: mutate a fresh scan in memory and
                      feed a broken link to the link resolver; exit 0 only if
                      both are detected.
@@ -63,8 +66,16 @@ INVENTORY_FILES = ["endpoints.json", "collections.json", "env.json", "outbound-h
 
 # Contract freshness: how many commits behind HEAD a verification stamp may be
 # before it is worth re-verifying the edge it describes (mirrors messmass's
-# docs-consistency-audit.js threshold).
+# docs-consistency-audit.js threshold). 30 commits behind is "look at this
+# soon" - a warning, not proof the contract is wrong.
 CONTRACT_FRESHNESS_COMMIT_THRESHOLD = 30
+# 3x the warn threshold. A stamp this far behind HEAD has gone stale enough
+# that keeping the check green is actively misleading, not just "worth a
+# look" - so it's a hard fail, not a warning. A sha that doesn't resolve in
+# this repo's history at all (typo, rewritten history, copied from another
+# repo without naming it) fails for the same reason: the "verified" claim
+# can't even be checked, let alone trusted.
+CONTRACT_FRESHNESS_FAIL_THRESHOLD = 90
 # Group 1 = the repo the stamp names (empty for the bare "verified @ <sha>" form), group 2 = the sha.
 STAMP_RE = re.compile(r"[Vv]erified\s+(?:@\s*|(messmass|camera|fanmass|try-on)\s+)?`?([0-9a-f]{7,40})`?")
 LINK_RE = re.compile(r"\[[^\]]*\]\(([^)\s]+)(?:\s+\"[^\"]*\")?\)")
@@ -309,10 +320,25 @@ def repo_slug(repo: Path) -> str:
     return name or repo.name
 
 
-def freshness_warnings(repo: Path) -> list[str]:
+def freshness_check(repo: Path) -> tuple[list[str], list[str]]:
+    """Check "verified @ <sha>" contract stamps against HEAD.
+
+    Returns (warnings, failures):
+      - a sha that does not resolve to a commit reachable from HEAD at all
+        (typo, rewritten history, or a stamp copied from another repo
+        without naming it) FAILS - the "verified" claim can't even be
+        checked, let alone trusted.
+      - a sha that resolves but is more than CONTRACT_FRESHNESS_FAIL_THRESHOLD
+        commits behind HEAD FAILS - stale enough that keeping the check
+        green is actively misleading.
+      - anything else more than CONTRACT_FRESHNESS_COMMIT_THRESHOLD commits
+        behind HEAD WARNS only, as before (commit distance is a reason to
+        look, not proof of drift).
+    """
     files = list((repo / "docs" / "_audit").glob("*.md")) if (repo / "docs" / "_audit").is_dir() else []
     files += list((repo / "docs").glob("*CONTRACT*.md")) if (repo / "docs").is_dir() else []
     warnings: list[str] = []
+    failures: list[str] = []
     seen: set[str] = set()
     me = repo_slug(repo)
     shallow = subprocess.run(["git", "-C", str(repo), "rev-parse", "--is-shallow-repository"], capture_output=True, text=True).stdout.strip() == "true"
@@ -320,7 +346,7 @@ def freshness_warnings(repo: Path) -> list[str]:
         # A shallow CI checkout (fetch-depth 1) cannot count commits behind HEAD; the
         # stamps are measured on developer machines instead of producing false alarms.
         print("freshness: skipped on a shallow checkout (run locally on a full clone)")
-        return warnings
+        return warnings, failures
     for md in sorted(files):
         for named_repo, sha in STAMP_RE.findall(md.read_text(errors="replace")):
             # Stamps naming another fleet repo cannot be measured here (and a 7-char
@@ -331,14 +357,17 @@ def freshness_warnings(repo: Path) -> list[str]:
             if sha in seen:
                 continue
             seen.add(sha)
-            proc = subprocess.run(["git", "-C", str(repo), "rev-list", "--count", f"{sha}..HEAD"], capture_output=True, text=True)
-            if proc.returncode != 0:
-                warnings.append(f"{md.relative_to(repo)}: verified @ {sha} is not a commit in this repo (rewritten history, or a stamp copied from another repo without its name)")
+            resolves = subprocess.run(["git", "-C", str(repo), "cat-file", "-t", sha], capture_output=True, text=True).returncode == 0
+            is_ancestor = resolves and subprocess.run(["git", "-C", str(repo), "merge-base", "--is-ancestor", sha, "HEAD"], capture_output=True, text=True).returncode == 0
+            if not is_ancestor:
+                failures.append(f"{md.relative_to(repo)}: verified @ {sha} does not resolve to a commit reachable from HEAD in this repo (rewritten history, a typo, or a stamp copied from another repo without its name) - the 'verified' claim cannot even be checked")
                 continue
-            behind = int(proc.stdout.strip() or 0)
-            if behind > CONTRACT_FRESHNESS_COMMIT_THRESHOLD:
-                warnings.append(f"{md.relative_to(repo)}: verified @ {sha} is {behind} commits behind HEAD (threshold {CONTRACT_FRESHNESS_COMMIT_THRESHOLD}) - re-verify that contract")
-    return warnings
+            behind = int(subprocess.run(["git", "-C", str(repo), "rev-list", "--count", f"{sha}..HEAD"], capture_output=True, text=True).stdout.strip() or 0)
+            if behind > CONTRACT_FRESHNESS_FAIL_THRESHOLD:
+                failures.append(f"{md.relative_to(repo)}: verified @ {sha} is {behind} commits behind HEAD (fail threshold {CONTRACT_FRESHNESS_FAIL_THRESHOLD}) - this contract claim has gone stale enough that keeping the check green is actively misleading, re-verify it")
+            elif behind > CONTRACT_FRESHNESS_COMMIT_THRESHOLD:
+                warnings.append(f"{md.relative_to(repo)}: verified @ {sha} is {behind} commits behind HEAD (warn threshold {CONTRACT_FRESHNESS_COMMIT_THRESHOLD}) - re-verify that contract")
+    return warnings, failures
 
 
 def check(repo: Path) -> int:
@@ -359,8 +388,13 @@ def check(repo: Path) -> int:
         for line in broken:
             print("  " + line)
 
-    for w in freshness_warnings(repo):
+    warnings, freshness_failures = freshness_check(repo)
+    for w in warnings:
         print("freshness warning: " + w)
+    if freshness_failures:
+        failed = True
+        for f in freshness_failures:
+            print("freshness FAILURE: " + f)
 
     return 1 if failed else 0
 
