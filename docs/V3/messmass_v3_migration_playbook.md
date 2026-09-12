@@ -58,7 +58,7 @@ npx tsx scripts/v3/migrate-v2-v3.ts
 **Implementation**:
 1.  **Compatibility Adapter**: `lib/v3/compatAdapter.ts` transforms V3 Entity/Activity models into V2 shapes at runtime.
 2.  **Native Resolution**: Report pages resolve templates via `/api/v3/reports/resolve` if a V3 ID is provided.
-3.  **Fallback Engine**: `usePartnerReportData` tries the V2 Partner lookup first, then falls back to `/api/v3/entities/{id}`. The equivalent V3 Activity fallback in `useReportData` was removed in v12.3.32 — `GET /api/v3/activities/{id}` was never built, so the fallback only ever produced an HTML 404 that masked the real error.
+3.  **Fallback Engine**: `usePartnerReportData` tries the V2 Partner lookup first, then falls back to `/api/v3/entities/{id}`. The equivalent V3 Activity fallback in `useReportData` was removed in v12.3.33 — `GET /api/v3/activities/{id}` was never built, so the fallback only ever produced an HTML 404 that masked the real error.
 
 ------------------------------------------------------------------------
 

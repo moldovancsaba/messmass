@@ -1,8 +1,14 @@
 # {messmass} Release Notes
 Status: Active
-Last Updated: 2026-09-12T10:40:00.000Z
+Last Updated: 2026-09-12T11:30:00.000Z
 Canonical: No
 Owner: Operations
+
+## [v12.3.33] — 2026-09-12T11:30:00.000Z
+
+### Changed
+- Fleet version 12.3.33 (lockstep with camera's exact event lookup and
+  savetheworld's event page fix). No messmass code change.
 
 ## [v12.3.32] — 2026-09-12T10:40:00.000Z
 
