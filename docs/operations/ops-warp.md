@@ -527,7 +527,7 @@ npm run analytics:setup-indexes
 npm run analytics:aggregate
 
 # Backfill historical data (future)
-`analytics:backfill` (script removed in v12.3.33, messmass#352)
+`analytics:backfill` (script removed in v12.3.34, messmass#352)
 ```
 
 ## 🌐 API Endpoints
@@ -699,7 +699,7 @@ interface Insight {
 
 **First-time setup or after schema changes:**
 ```bash
-seed:variables (removed in v12.3.33)
+seed:variables (removed in v12.3.34)
 ```
 
 This populates the `variables_metadata` collection with all system variables.
@@ -785,7 +785,7 @@ const value = project.remoteImages;
 **Adding a New System Variable**:
 1. Add to `VARIABLES_CONFIG` in `lib/variablesConfig.ts`
 2. Add SEYU mapping to `EXPLICIT_SUFFIX_MAP` in `lib/variableRefs.ts` (if needed)
-3. Run `seed:variables` (script removed in v12.3.33; variables are managed in `/admin/kyc`) to update database
+3. Run `seed:variables` (script removed in v12.3.34; variables are managed in `/admin/kyc`) to update database
 
 **Creating Custom Variable (User)**:
 1. Go to `/admin/kyc`
@@ -1364,4 +1364,4 @@ const value = stats[statsKey]; // Get current value
 
 ---
 
-*Version: 12.3.33 | Last Updated: 2026-06-26T10:00:00.000Z (UTC) | Status: Production*
+*Version: 12.3.34 | Last Updated: 2026-06-26T10:00:00.000Z (UTC) | Status: Production*

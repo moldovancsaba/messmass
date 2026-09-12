@@ -1,8 +1,14 @@
 # {messmass} Release Notes
 Status: Active
-Last Updated: 2026-09-12T11:30:00.000Z
+Last Updated: 2026-09-12T12:10:00.000Z
 Canonical: No
 Owner: Operations
+
+## [v12.3.34] — 2026-09-12T12:10:00.000Z
+
+### Changed
+- Fleet version 12.3.34 (lockstep with camera's pledges-feed id fix). No
+  messmass code change.
 
 ## [v12.3.33] — 2026-09-12T11:30:00.000Z
 
