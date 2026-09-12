@@ -5,12 +5,12 @@ shared version and bump together from here. This is the "same version from now
 on" foundation.
 
 ## The unified version
-`12.3.31` — re-aligned 2026-09-08 (messmass, camera, fanmass, try-on).
+`12.3.32` — re-aligned 2026-09-08 (messmass, camera, fanmass, try-on).
 
 History: `12.2.0` was adopted by all four on 2026-08-20, but the apps then
 bumped independently (messmass reached 12.3.27, camera 12.2.24, fanmass and
 try-on 12.2.3) because the rule below was documented, not enforced. On
-2026-09-08 the three siblings rose to messmass's next number, 12.3.31, in one
+2026-09-08 the three siblings rose to messmass's next number, 12.3.32, in one
 coordinated change. Highest-wins again: messmass's `version:verify` gate only
 moves forward.
 

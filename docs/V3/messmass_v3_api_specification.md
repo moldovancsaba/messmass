@@ -19,7 +19,7 @@ Base path: `/api/v3`
 
 ## Activity Management
 - `GET /api/v3/activities`: List activities.
-- `GET /api/v3/activities/{id}`: **Not implemented.** No route exists at this path (only `/{id}/participants`); requests get Next's HTML 404. The `useReportData` fallback that called it was removed in v12.3.31 after it masked every protected-report error as a JSON parse failure.
+- `GET /api/v3/activities/{id}`: **Not implemented.** No route exists at this path (only `/{id}/participants`); requests get Next's HTML 404. The `useReportData` fallback that called it was removed in v12.3.32 after it masked every protected-report error as a JSON parse failure.
 - `POST /api/v3/activities`: Create a new activity (match, project).
 
 ------------------------------------------------------------------------
@@ -96,4 +96,4 @@ Base path: `/api/v3`
 # 5. Backwards Compatibility
 
 V2 endpoints (`/api/projects/stats`, `/api/partners/report`) remain active.
-Event reports (`/report/[slug]`) load V2 projects only; the V3 Activity bridge in `useReportData` was removed in v12.3.31 because its target route never existed. Partner reports (`usePartnerReportData` → `/api/v3/entities/{id}`) and organization reports still bridge V3 data through `lib/v3/compatAdapter.ts`.
+Event reports (`/report/[slug]`) load V2 projects only; the V3 Activity bridge in `useReportData` was removed in v12.3.32 because its target route never existed. Partner reports (`usePartnerReportData` → `/api/v3/entities/{id}`) and organization reports still bridge V3 data through `lib/v3/compatAdapter.ts`.
