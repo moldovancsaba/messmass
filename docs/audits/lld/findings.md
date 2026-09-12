@@ -307,7 +307,7 @@ longer describes current data. See F-MM-03 (this entry) and F-MM-02 (the
 permanent operational record of the deletion itself, `docs/operations/
 operations-learnings.md`).
 
-**Client gap closed (2026-09-07, v12.3.34).** The "Resolved (v12.1.59)" work
+**Client gap closed (2026-09-07, v12.3.35).** The "Resolved (v12.1.59)" work
 guarded `GET /api/projects/stats/[slug]` but never gave `/report/[slug]` a
 prompt — the one report page type with no `PagePasswordLogin`/`ServerPageGate`
 anywhere. Worse, `hooks/useReportData.ts` answered the resulting 401 by

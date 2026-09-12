@@ -4,7 +4,7 @@ Last Updated: 2026-01-11T22:28:38.000Z
 Canonical: No
 Owner: Architecture
 
-**Version:** 12.3.34  
+**Version:** 12.3.35  
 **Created:** 2026-01-09T10:21:28.300Z  
 **Status:** Canonical (Single Source of Truth)  
 **Maintained By:** Chappie (Architect)
@@ -68,7 +68,7 @@ interface VariableMetadata {
 - **System Variables** (`isSystem: true`):
   - Schema fields, cannot be deleted
   - Can edit metadata (label, alias, description, flags)
-  - Seeded from code registry via `seed:variables` (script removed in v12.3.34, messmass#352)
+  - Seeded from code registry via `seed:variables` (script removed in v12.3.35, messmass#352)
   - Total: 92 system variables
 
 - **Custom Variables** (`isSystem: false`):

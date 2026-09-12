@@ -131,7 +131,7 @@ factual accuracy.
   behind a withOrgContext wrapper with a hardcoded org id.
 - ~~docs/V3/messmass_v3_api_specification.md:22 lists `GET /api/v3/activities/{id}`
   and :99 claims `useReportData` "bridges V3 Activities"~~ FIXED 2026-09-07
-  (v12.3.34): the route never existed; the hook's fallback to it was dead code
+  (v12.3.35): the route never existed; the hook's fallback to it was dead code
   that turned every protected event report's 401 into a JSON-parse crash. Spec
   and playbook now say so; fallback deleted.
 
@@ -193,7 +193,7 @@ factual accuracy.
   only 4 of them in scripts/ (all kept seeders) and 65 in app/, components/,
   lib/, hooks/ — the "24, all in scripts/" figure in ci.yml was already stale
   before the prune, so `|| true` stays.~~ FIXED 2026-09-08 (messmass#387,
-  v12.3.34): all 71 findings cleared — UI colours swapped for theme.css
+  v12.3.35): all 71 findings cleared — UI colours swapped for theme.css
   tokens, data colours (chart palettes, seeded style presets, hashtag
   colours, e-mail inline styles) moved to `lib/theme/*.ts` (the checker's
   exempt lane, now also listed in `themeOwnershipPaths`); the `|| true`

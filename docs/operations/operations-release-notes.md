@@ -1,8 +1,14 @@
 # {messmass} Release Notes
 Status: Active
-Last Updated: 2026-09-12T12:10:00.000Z
+Last Updated: 2026-09-12T12:50:00.000Z
 Canonical: No
 Owner: Operations
+
+## [v12.3.35] — 2026-09-12T12:50:00.000Z
+
+### Changed
+- Fleet version 12.3.35 (lockstep with savetheworld's feed-cache change). No
+  messmass code change.
 
 ## [v12.3.34] — 2026-09-12T12:10:00.000Z
 
