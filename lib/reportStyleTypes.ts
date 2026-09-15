@@ -335,6 +335,13 @@ export function injectStyleAsCSS(style: ReportStyle): void {
     }
   }
 
+  // ponytail: heroBackground IS the report backdrop — map it to --page-bg so the
+  // html-level page background matches the report theme instead of always falling
+  // back to --mm-gray-50 (near-white).
+  if (style.heroBackground) {
+    root.style.setProperty('--page-bg', normalizeHexColor(style.heroBackground));
+  }
+
   // Inject dimension fields when set (override theme on landing/report)
   for (const field of DIMENSION_FIELDS) {
     const value = style[field.key];
@@ -354,7 +361,8 @@ export function removeStyleCSS(): void {
   
   // Remove font family
   root.style.removeProperty('--reportFontFamily');
-  
+  root.style.removeProperty('--page-bg');
+
   for (const field of COLOR_FIELDS) {
     root.style.removeProperty(`--${field.key}`);
   }
