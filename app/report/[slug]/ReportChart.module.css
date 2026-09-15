@@ -380,8 +380,10 @@
   text-align: center;
   font-weight: var(--mm-font-weight-semibold);
   color: var(--chartTitleColor);
-  /* WHAT: P1 1.5 Phase 2 - Use block-level typography instead of independent scaling */
-  font-size: var(--block-base-font-size);
+  /* ponytail: cap at 8cqh so a wide-computed --block-base-font-size doesn't claim most of
+     the card height leaving the donut nearly invisible. .chart has container-type:size, and
+     .pieTitleText has no intermediate container-type ancestor, so cqh references .chart height. */
+  font-size: min(var(--block-base-font-size, 2rem), 8cqh);
   line-height: 1.2;
 }
 
@@ -541,7 +543,11 @@
      annotate. --block-subtitle-font-size (13px default) is this same app's own
      existing secondary tier of the same block-level typography system (P1 1.5 Phase
      2) -- using it here is completing that system's intent, not adding a new one. */
-  font-size: var(--block-subtitle-font-size);
+  /* ponytail: .pieLegend has container-type:size with height:auto, so cqh inside it
+     is circular/useless. Use the inherited --block-height custom property instead:
+     CSS custom props cascade through containment boundaries. Cap at 5% of card height
+     so legend never takes more than ~14% of the card across all sizes. */
+  font-size: min(var(--block-subtitle-font-size, 0.875rem), calc(var(--block-height, var(--mm-block-height-default, 360px)) * 0.05));
   font-weight: var(--mm-font-weight-medium);
   color: var(--chartLabelColor);
   line-height: 1.2; /* WHAT: Reduced from 1.3 to 1.2 for tighter spacing in constrained blocks */
