@@ -4,6 +4,24 @@ Last Updated: 2026-09-12T12:50:00.000Z
 Canonical: No
 Owner: Operations
 
+## [v12.3.36] — 2026-09-15T10:00:00.000Z
+
+### Fixed
+- PDF export: `print-color-adjust: exact` ensures backgrounds render in
+  Puppeteer; page background moved to `html` element (single layer, covers
+  full document canvas and every PDF page box).
+- PDF export: partner-report path added to `ALLOWED_PATH_PREFIXES` so
+  partner-report PDFs no longer return `{"success":false,"error":"invalid path"}`.
+- Bar chart: `barTitle`, `CellWrapper .titleZone`, `barLabel`, `barValue`
+  font sizes capped at `cqh`-based limits so wide-card `--block-base-font-size`
+  no longer consumes most of the card height.
+- Bar chart: bar track height tied to label font scale (`6cqh`, max `1.5rem`);
+  `barTable` fills body zone via `flex:1` so rows distribute evenly with no
+  whitespace gaps.
+- Pie chart: `pieTitleText` capped at `8cqh`; `pieLegendText` capped via
+  `--block-height` custom property (avoids circular `cqh` inside auto-height
+  `container-type:size` ancestor).
+
 ## [v12.3.35] — 2026-09-12T12:50:00.000Z
 
 ### Changed
