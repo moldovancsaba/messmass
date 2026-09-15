@@ -335,11 +335,19 @@ export function injectStyleAsCSS(style: ReportStyle): void {
     }
   }
 
-  // ponytail: heroBackground IS the report backdrop — map it to --page-bg so the
-  // html-level page background matches the report theme instead of always falling
-  // back to --mm-gray-50 (near-white).
+  // ponytail: heroBackground IS the report backdrop — set both the CSS var (for
+  // the page canvas and PDF rendering) and the <meta name="theme-color"> tag (for
+  // browser chrome: title bar, tab strip, address bar).
   if (style.heroBackground) {
-    root.style.setProperty('--page-bg', normalizeHexColor(style.heroBackground));
+    const bg = normalizeHexColor(style.heroBackground);
+    root.style.setProperty('--page-bg', bg);
+    let meta = document.querySelector<HTMLMetaElement>('meta[name="theme-color"]');
+    if (!meta) {
+      meta = document.createElement('meta');
+      meta.name = 'theme-color';
+      document.head.appendChild(meta);
+    }
+    meta.content = bg;
   }
 
   // Inject dimension fields when set (override theme on landing/report)
@@ -362,6 +370,8 @@ export function removeStyleCSS(): void {
   // Remove font family
   root.style.removeProperty('--reportFontFamily');
   root.style.removeProperty('--page-bg');
+  const meta = document.querySelector<HTMLMetaElement>('meta[name="theme-color"]');
+  if (meta) meta.remove();
 
   for (const field of COLOR_FIELDS) {
     root.style.removeProperty(`--${field.key}`);
