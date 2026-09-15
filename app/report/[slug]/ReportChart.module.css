@@ -565,7 +565,7 @@
   /* HOW: Flex container with width/height constraints, table fills available space and is centered */
   /* CRITICAL: Layout Grammar - no scrolling, no truncation, no clipping on content layers */
   height: 100%; /* WHAT: Fill parent body zone height (explicit height from --chart-body-height) */
-  padding: var(--mm-space-2);
+  padding: var(--mm-space-3) var(--mm-space-2); /* ponytail: extra vertical padding for breathing room around the table */
   display: flex;
   flex-direction: column;
   align-items: center; /* WHAT: Center table horizontally in container */
@@ -667,10 +667,12 @@
   /* WHY: Track fills available space between label and value, must maintain readable thickness */
   /* HOW: 100% width of table cell, minimum height constraint, centered vertically */
   background: var(--chartNoDataBackground);
-  height: clamp(1.2rem, 22cqh, 1.44rem); /* DOUBLED: 11cqh → 22cqh */
-  min-height: clamp(1.2rem, 22cqh, 1.44rem); /* WHAT: Prevent bar collapse under vertical constraint */
+  /* ponytail: 4cqh matches the label font cap so bars scale with text; clamp keeps a
+     reasonable pill shape on very short or very tall cards */
+  height: clamp(0.75rem, 4cqh, 1rem);
+  min-height: clamp(0.75rem, 4cqh, 1rem);
   width: 100%; /* CRITICAL: Fills entire table cell */
-  border-radius: calc(clamp(1.2rem, 22cqh, 1.44rem) / 2);
+  border-radius: calc(clamp(0.75rem, 4cqh, 1rem) / 2);
   overflow: hidden; /* Layout Grammar: decorative - bar track shape only, fill is content and fully visible */
   /* WHAT: Table cell vertical-align handles centering, no align-self needed */
 }
@@ -682,7 +684,7 @@
   height: 100%;
   width: var(--bar-width, 0%);
   background-color: var(--bar-color, var(--barColor1, var(--mm-color-primary-500)));
-  border-radius: calc(clamp(1.2rem, 22cqh, 1.44rem) / 2);
+  border-radius: calc(clamp(0.75rem, 4cqh, 1rem) / 2);
   transition: width var(--transition-normal);
 }
 
