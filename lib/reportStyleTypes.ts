@@ -235,6 +235,28 @@ export const DEFAULT_STYLE: Omit<ReportStyle, '_id' | 'createdAt' | 'updatedAt'>
 };
 
 /**
+ * WHAT: Fill pageBackground / blockTitleColor from the field they fall back to at
+ *   render time, rather than from the generic DEFAULT_STYLE constant.
+ * WHY: Both were added after styles already existed. Seeding them from
+ *   DEFAULT_STYLE gives an existing style a light page background and a dark
+ *   section title regardless of its own palette, so merely opening and saving a
+ *   dark style silently rewrote it to the light default -- which is how the
+ *   Champions Hockey League style ended up with a white page and an unreadable
+ *   dark section title on its purple background.
+ * HOW: The sibling field is exactly what the CSS falls back to when these are
+ *   unset, so seeding from it preserves the style's current appearance.
+ */
+export function withEffectiveStyleDefaults<T extends Partial<ReportStyle>>(
+  style: T
+): T & Pick<ReportStyle, 'pageBackground' | 'blockTitleColor'> {
+  return {
+    ...style,
+    pageBackground: style.pageBackground || style.heroBackground,
+    blockTitleColor: style.blockTitleColor || style.headingColor,
+  };
+}
+
+/**
  * Validate hex color format
  * WHAT: Check if string is valid hex color (6 or 8 characters)
  * WHY: Prevent invalid colors from being saved

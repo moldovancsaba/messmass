@@ -14,6 +14,7 @@ import { apiPost, apiPut } from '@/lib/apiClient';
 import { 
   ReportStyle, 
   DEFAULT_STYLE, 
+  withEffectiveStyleDefaults,
   COLOR_FIELDS, 
   DIMENSION_FIELDS,
   validateStyle,
@@ -52,7 +53,7 @@ export default function StyleEditorPage() {
         throw new Error(data.error || 'Failed to fetch style');
       }
       
-      const merged = { ...DEFAULT_STYLE, ...data.style };
+      const merged = withEffectiveStyleDefaults({ ...DEFAULT_STYLE, ...data.style });
       setStyle(merged);
       injectStyleAsCSS(merged);
     } catch (err) {

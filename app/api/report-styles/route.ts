@@ -5,7 +5,7 @@
 import { NextResponse } from 'next/server';
 import clientPromise from '@/lib/mongodb';
 import { ObjectId } from 'mongodb';
-import { validateStyle, normalizeHexColor, COLOR_FIELDS, DIMENSION_FIELDS, DEFAULT_STYLE, ReportStyle } from '@/lib/reportStyleTypes';
+import { validateStyle, normalizeHexColor, withEffectiveStyleDefaults, COLOR_FIELDS, DIMENSION_FIELDS, DEFAULT_STYLE, ReportStyle } from '@/lib/reportStyleTypes';
 import { error as logError } from '@/lib/logger';
 import { withOrgContext } from '@/lib/middleware/v3/orgContext';
 
@@ -45,6 +45,7 @@ async function createStyle(request: Request) {
     const orgId = request.headers.get('x-v3-org-id');
     const body = await request.json();
     
+    const body0 = withEffectiveStyleDefaults(body);
     const validation = validateStyle(body);
     if (!validation.valid) return NextResponse.json({ success: false, error: validation.errors.join(', ') }, { status: 400 });
     
@@ -57,7 +58,7 @@ async function createStyle(request: Request) {
       name: body.name.trim(),
       description: body.description?.trim() || '',
       fontFamily: body.fontFamily || 'Inter',
-      ...Object.fromEntries(COLOR_FIELDS.map(field => [field.key, normalizeHexColor(body[field.key] ?? DEFAULT_STYLE[field.key])])),
+      ...Object.fromEntries(COLOR_FIELDS.map(field => [field.key, normalizeHexColor(body0[field.key] ?? DEFAULT_STYLE[field.key])])),
       ...Object.fromEntries(dimensionEntries),
       organizationId: new ObjectId(orgId as string),
       createdAt: new Date().toISOString(),
@@ -91,6 +92,7 @@ async function updateStyle(request: Request) {
     if (!id || !ObjectId.isValid(id)) return NextResponse.json({ success: false, error: 'Invalid style ID' }, { status: 400 });
     
     const body = await request.json();
+    const body0 = withEffectiveStyleDefaults(body);
     const validation = validateStyle(body);
     if (!validation.valid) return NextResponse.json({ success: false, error: validation.errors.join(', ') }, { status: 400 });
     
@@ -99,7 +101,7 @@ async function updateStyle(request: Request) {
       name: body.name.trim(),
       description: body.description?.trim() || '',
       fontFamily: body.fontFamily || 'Inter',
-      ...Object.fromEntries(COLOR_FIELDS.map(field => [field.key, normalizeHexColor(body[field.key] ?? DEFAULT_STYLE[field.key])])),
+      ...Object.fromEntries(COLOR_FIELDS.map(field => [field.key, normalizeHexColor(body0[field.key] ?? DEFAULT_STYLE[field.key])])),
       ...Object.fromEntries(dimensionEntries),
       updatedAt: new Date().toISOString()
     };
