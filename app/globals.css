@@ -100,9 +100,6 @@ body {
   min-height: 100vh;
   max-width: 100vw;
   overflow-x: hidden;
-  /* What: Use CSS variable for page background, flat neutral default
-     Why: TailAdmin V2 uses clean, flat neutral backgrounds instead of gradients */
-  background: var(--page-bg, var(--mm-gray-50));
   font-family: var(--mm-font-family-sans);
   font-size: var(--mm-font-size-base);
   line-height: var(--mm-line-height-md);
