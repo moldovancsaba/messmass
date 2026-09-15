@@ -57,7 +57,7 @@ async function createStyle(request: Request) {
       name: body.name.trim(),
       description: body.description?.trim() || '',
       fontFamily: body.fontFamily || 'Inter',
-      ...Object.fromEntries(COLOR_FIELDS.map(field => [field.key, normalizeHexColor(body[field.key])])),
+      ...Object.fromEntries(COLOR_FIELDS.map(field => [field.key, normalizeHexColor(body[field.key] ?? DEFAULT_STYLE[field.key])])),
       ...Object.fromEntries(dimensionEntries),
       organizationId: new ObjectId(orgId as string),
       createdAt: new Date().toISOString(),
@@ -99,7 +99,7 @@ async function updateStyle(request: Request) {
       name: body.name.trim(),
       description: body.description?.trim() || '',
       fontFamily: body.fontFamily || 'Inter',
-      ...Object.fromEntries(COLOR_FIELDS.map(field => [field.key, normalizeHexColor(body[field.key])])),
+      ...Object.fromEntries(COLOR_FIELDS.map(field => [field.key, normalizeHexColor(body[field.key] ?? DEFAULT_STYLE[field.key])])),
       ...Object.fromEntries(dimensionEntries),
       updatedAt: new Date().toISOString()
     };

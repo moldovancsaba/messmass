@@ -21,8 +21,12 @@ export interface ReportStyle {
   // Typography
   fontFamily?: string;                  // Font family for all text
   
+  // Page (1 property)
+  pageBackground?: string;              // Report page background (falls back to heroBackground)
+
   // Hero Section (5 properties)
   heroBackground: string;               // Hero card background
+  blockTitleColor?: string;             // Section/block heading above each chart group
   headingColor: string;                 // Event title color
   exportButtonBackground: string;       // PDF button background
   exportButtonText: string;             // PDF button text
@@ -109,6 +113,10 @@ export interface ColorFieldDefinition {
  * WHY: Single source of truth for form generation
  */
 export const COLOR_FIELDS: ColorFieldDefinition[] = [
+  // Page
+  { key: 'pageBackground', label: 'Page Background', category: 'Page', description: 'Background behind the whole report (also tints the browser chrome). Falls back to Hero Background when unset.' },
+  { key: 'blockTitleColor', label: 'Section Title', category: 'Page', description: 'Heading shown above each block of charts' },
+
   // Hero Section
   { key: 'heroBackground', label: 'Hero Background', category: 'Hero Section', description: 'Background color for hero card' },
   { key: 'headingColor', label: 'Heading Color', category: 'Hero Section', description: 'Event name/title color' },
@@ -335,11 +343,13 @@ export function injectStyleAsCSS(style: ReportStyle): void {
     }
   }
 
-  // ponytail: heroBackground IS the report backdrop — set both the CSS var (for
-  // the page canvas and PDF rendering) and the <meta name="theme-color"> tag (for
-  // browser chrome: title bar, tab strip, address bar).
-  if (style.heroBackground) {
-    const bg = normalizeHexColor(style.heroBackground);
+  // The page backdrop. pageBackground is the explicit field; heroBackground is
+  // the fallback so styles saved before that field existed keep their current
+  // look. Sets both the CSS var (page canvas + PDF, which has no browser chrome)
+  // and <meta name="theme-color"> (browser title bar / tab strip).
+  const pageBg = style.pageBackground || style.heroBackground;
+  if (pageBg) {
+    const bg = normalizeHexColor(pageBg);
     root.style.setProperty('--page-bg', bg);
     let meta = document.querySelector<HTMLMetaElement>('meta[name="theme-color"]');
     if (!meta) {

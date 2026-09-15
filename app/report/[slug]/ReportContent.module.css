@@ -83,7 +83,9 @@
 .blockTitle {
   font-size: var(--mm-font-size-2xl);
   font-weight: var(--mm-font-weight-bold);
-  color: var(--mm-gray-900);
+  /* Settable per report style (Section Title). Falls back to the heading colour
+     so dark page backgrounds stay readable even on styles that never set it. */
+  color: var(--blockTitleColor, var(--headingColor, var(--mm-gray-900)));
   margin: 0;
   padding-bottom: var(--mm-space-2);
   border-bottom: none; /* WHAT: No border line after title */

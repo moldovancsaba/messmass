@@ -14,6 +14,10 @@ export const DEFAULT_THEME_COLOR = '#f9fafb';
 
 /** Colour fields of DEFAULT_STYLE in lib/reportStyleTypes.ts (8-digit RRGGBBAA hex). */
 export const DEFAULT_REPORT_STYLE_COLORS = {
+  // Page
+  pageBackground: '#f8fafcff',
+  blockTitleColor: '#1f2937ff',
+
   // Hero Section
   heroBackground: '#f8fafcff',
   headingColor: '#1f2937ff',
@@ -69,6 +73,8 @@ export const DEFAULT_REPORT_STYLE_COLORS = {
 
 /** Colours of the "messmass.com" landing report style seeded by scripts/seed-messmass-landing.ts. */
 export const LANDING_REPORT_STYLE_COLORS = {
+  pageBackground: '#0f172aff',
+  blockTitleColor: '#f8fafcff',
   heroBackground: '#0f172aff',
   headingColor: '#f8fafcff',
   exportButtonBackground: '#3b82f6ff',
