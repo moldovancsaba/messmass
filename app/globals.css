@@ -89,6 +89,11 @@ html {
   /* WHAT: Apply selected font from server-side cookie via CSS variable
      WHY: Enables instant font switching without page reload */
   font-family: var(--active-font, var(--mm-font-family-sans));
+  /* ponytail: body has the background but html is the document root — when body
+     is shorter than the scroll area (or in PDF where pages extend past body
+     content), the browser's default white shows through. Setting it on html
+     too covers the full document and every PDF page. */
+  background: var(--page-bg, var(--mm-gray-50));
 }
 
 body {
