@@ -574,13 +574,13 @@ textarea::placeholder {
 /* WHAT: Critical error (authentication required)
    WHY: Red color for auth failures */
 .auth-error-critical {
-  color: #ef4444;
+  color: var(--mm-color-error-500);
 }
 
 /* WHAT: Permission error (insufficient permissions)
    WHY: Orange color for permission issues */
 .auth-error-permission {
-  color: #f59e0b;
+  color: var(--mm-color-warning-500);
 }
 
 /* ========================================
@@ -599,7 +599,7 @@ textarea::placeholder {
   width: 40px;
   height: 24px;
   border-radius: 4px;
-  border: 1px solid #e5e7eb;
+  border: 1px solid var(--mm-gray-200);
 }
 
 /* WHAT: Small color preview for card views
@@ -608,7 +608,7 @@ textarea::placeholder {
   width: 24px;
   height: 24px;
   border-radius: 4px;
-  border: 1px solid #e5e7eb;
+  border: 1px solid var(--mm-gray-200);
 }
 
 /* WHAT: Flexbox row with gap for color previews
@@ -857,7 +857,7 @@ textarea::placeholder {
 /* WHAT: Modal cancel/secondary button
    WHY: Gray background for cancel/dismiss actions */
 .btn-modal-cancel {
-  background: #6b7280;
+  background: var(--mm-gray-500);
   color: var(--mm-white);
   padding: 0.75rem 1.5rem;
   border-radius: 0.5rem;
@@ -870,7 +870,7 @@ textarea::placeholder {
 /* WHAT: Modal confirm/primary button (non-dangerous)
    WHY: Blue background for safe confirmation actions */
 .btn-modal-confirm {
-  background: #3b82f6;
+  background: var(--mm-color-primary-500);
   color: var(--mm-white);
   padding: 0.75rem 1.5rem;
   border-radius: 0.5rem;
@@ -883,7 +883,7 @@ textarea::placeholder {
 /* WHAT: Modal dangerous action button
    WHY: Red background for destructive confirmations */
 .btn-modal-danger {
-  background: #ef4444;
+  background: var(--mm-color-error-500);
   color: var(--mm-white);
   padding: 0.75rem 1.5rem;
   border-radius: 0.5rem;
@@ -902,9 +902,9 @@ textarea::placeholder {
 }
 
 /* WHAT: Error message text color
-   WHY: Red error text (#b00020) for form validation */
+   WHY: Red error text (var(--mm-color-error-800)) for form validation */
 .text-error-red {
-  color: #b00020;
+  color: var(--mm-color-error-800);
 }
 
 /* ========================================
@@ -2003,7 +2003,7 @@ textarea::placeholder {
   padding: var(--mm-space-6);
   background: var(--mm-white);
   border-radius: var(--mm-radius-lg);
-  border: 2px solid var(--mm-color-primary-500, #6366f1);
+  border: 2px solid var(--mm-color-primary-500, var(--mm-chart-indigo));
   box-shadow: var(--mm-shadow-sm);
 }
 
@@ -2051,7 +2051,7 @@ textarea::placeholder {
   padding: var(--mm-space-6);
   background: var(--mm-white);
   border-radius: var(--mm-radius-lg);
-  border: 2px solid var(--mm-color-warning, #f59e0b);
+  border: 2px solid var(--mm-color-warning, var(--mm-color-warning-500));
   box-shadow: var(--mm-shadow-sm);
 }
 

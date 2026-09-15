@@ -1,14 +1,14 @@
 .activitiesSection {
   margin-top: 3rem;
   padding-top: 2rem;
-  border-top: 1px solid var(--border-color, #eee);
+  border-top: 1px solid var(--border-color, var(--mm-gray-100));
   animation: fadeIn 0.8s ease-out;
 }
 
 .title {
   font-size: 1.5rem;
   font-weight: 700;
-  color: var(--text-primary, #111);
+  color: var(--text-primary, var(--mm-gray-900));
   margin-bottom: 1.5rem;
   letter-spacing: -0.02em;
 }
@@ -20,8 +20,8 @@
 }
 
 .activityCard {
-  background: var(--card-bg, #fff);
-  border: 1px solid var(--border-light, #f0f0f0);
+  background: var(--card-bg, var(--mm-white));
+  border: 1px solid var(--border-light, var(--mm-gray-100));
   border-radius: 16px;
   padding: 1.5rem;
   text-decoration: none;
@@ -34,7 +34,7 @@
 
 .activityCard:hover {
   transform: translateY(-4px);
-  border-color: var(--brand-color, #0070f3);
+  border-color: var(--brand-color, var(--mm-color-primary-600));
   box-shadow: 0 12px 20px -8px rgba(0, 0, 0, 0.1);
 }
 
@@ -47,13 +47,13 @@
 .activityName {
   font-size: 1.125rem;
   font-weight: 600;
-  color: var(--text-primary, #111);
+  color: var(--text-primary, var(--mm-gray-900));
   margin: 0;
 }
 
 .activityDate {
   font-size: 0.875rem;
-  color: var(--text-secondary, #666);
+  color: var(--text-secondary, var(--mm-gray-500));
   margin: 0;
 }
 
@@ -63,8 +63,8 @@
   font-weight: 600;
   padding: 2px 8px;
   border-radius: 8px;
-  background: #f3f4f6;
-  color: #4b5563;
+  background: var(--mm-gray-100);
+  color: var(--mm-gray-600);
   margin-top: 0.5rem;
   align-self: flex-start;
   text-transform: uppercase;
@@ -76,13 +76,13 @@
   align-items: center;
   justify-content: space-between;
   padding-top: 1rem;
-  border-top: 1px solid #f9fafb;
+  border-top: 1px solid var(--mm-gray-50);
 }
 
 .actionText {
   font-size: 0.875rem;
   font-weight: 600;
-  color: var(--brand-color, #0070f3);
+  color: var(--brand-color, var(--mm-color-primary-600));
 }
 
 .actionArrow {

@@ -261,7 +261,7 @@
 }
 
 .admin-btn-export:hover {
-  background: #2563eb;
+  background: var(--mm-color-primary-600);
   transform: translateY(-1px);
   box-shadow: var(--mm-shadow-sm);
 }
@@ -274,7 +274,7 @@
 }
 
 .admin-btn-delete:hover {
-  background: #dc2626;
+  background: var(--mm-color-error-600);
   transform: translateY(-1px);
   box-shadow: var(--mm-shadow-sm);
 }
@@ -447,7 +447,7 @@
 }
 
 .sm-btn-minus:hover:not(:disabled) {
-  background: #dc2626;
+  background: var(--mm-color-error-600);
   transform: scale(1.05);
 }
 
@@ -462,7 +462,7 @@
 }
 
 .sm-btn-plus:hover {
-  background: #059669;
+  background: var(--mm-color-secondary-600);
   transform: scale(1.05);
 }
 

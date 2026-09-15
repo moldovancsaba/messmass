@@ -1326,16 +1326,16 @@
   justify-content: center;
   padding: var(--mm-space-6);
   text-align: center;
-  color: var(--mm-text-secondary, #666);
-  background: var(--chartBackground, #fff);
-  border: 2px dashed var(--mm-border-color-default, #ddd);
+  color: var(--mm-text-secondary, var(--mm-gray-500));
+  background: var(--chartBackground, var(--mm-white));
+  border: 2px dashed var(--mm-border-color-default, var(--mm-gray-200));
   border-radius: var(--mm-radius-lg);
   min-height: 120px;
 }
 
 .chartErrorIcon {
   font-size: 2rem;
-  color: var(--mm-color-error, #dc3545);
+  color: var(--mm-color-error, var(--mm-color-error-600));
   margin-bottom: var(--mm-space-3);
 }
 
@@ -1343,12 +1343,12 @@
   font-size: var(--mm-font-size-base, 1rem);
   font-weight: var(--mm-font-weight-semibold, 600);
   margin-bottom: var(--mm-space-2);
-  color: var(--mm-text-primary, #333);
+  color: var(--mm-text-primary, var(--mm-gray-700));
 }
 
 .chartErrorMessage {
   font-size: var(--mm-font-size-sm, 0.875rem);
-  color: var(--mm-text-secondary, #666);
+  color: var(--mm-text-secondary, var(--mm-gray-500));
   line-height: 1.5;
   max-width: 100%;
   word-wrap: break-word;
@@ -1586,8 +1586,8 @@
 
 .presetCallout {
   padding: 1.25rem !important;
-  background: var(--mm-gray-50, #f9fafb) !important;
-  border-left: 4px solid var(--mm-color-primary-500, #6366f1) !important;
+  background: var(--mm-gray-50, var(--mm-gray-50)) !important;
+  border-left: 4px solid var(--mm-color-primary-500, var(--mm-chart-indigo)) !important;
   border-radius: 4px !important;
   font-style: italic !important;
   box-shadow: inset 0 2px 4px 0 rgba(0, 0, 0, 0.05) !important;

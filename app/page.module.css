@@ -50,7 +50,7 @@
 
 .landing {
   min-height: 100vh;
-  background: var(--landingPageBg, var(--mm-gray-50));
+  background: var(--landingPageBg, var(--page-bg, var(--mm-gray-50)));
 }
 
 /* Loading/error wrappers — theme tokens only (no inline style in TSX) */

@@ -1961,7 +1961,7 @@ div.unified-chart-item:has(.text-chart-container) {
   justify-content: center;
   min-height: 40vh;
   padding: var(--mm-space-6);
-  background: var(--mm-gray-50);
+  background: var(--page-bg, var(--mm-gray-50));
 }
 
 .loading-card {
@@ -1980,7 +1980,7 @@ div.unified-chart-item:has(.text-chart-container) {
   justify-content: center;
   min-height: 40vh;
   padding: var(--mm-space-6);
-  background: var(--mm-gray-50);
+  background: var(--page-bg, var(--mm-gray-50));
 }
 
 .error-card {

@@ -21,7 +21,7 @@
 }
 
 .modal {
-  background: var(--mm-modal-content-bg, #ffffff);
+  background: var(--mm-modal-content-bg, var(--mm-white));
   border-radius: var(--mm-modal-border-radius, 16px);
   box-shadow: var(--mm-modal-shadow, 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1));
   width: 100%;

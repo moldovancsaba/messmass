@@ -61,12 +61,12 @@
 
 .successBox {
   padding: var(--mm-space-4);
-  background: var(--mm-success-light, #d1fae5);
+  background: var(--mm-success-light, var(--mm-success-light));
   border-radius: var(--mm-radius-md);
   margin-bottom: var(--mm-space-4);
 }
 
 .successText {
-  color: var(--mm-success-dark, #065f46);
+  color: var(--mm-success-dark, var(--mm-color-secondary-800));
   margin: 0;
 }

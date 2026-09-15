@@ -3,7 +3,7 @@
 
 .container {
   min-height: 100vh;
-  background: var(--mm-gray-50);
+  background: var(--page-bg, var(--mm-gray-50));
   padding: var(--mm-space-8) var(--mm-space-4);
   font-family: var(--mm-font-family-sans);
 }

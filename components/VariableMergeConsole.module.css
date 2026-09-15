@@ -88,8 +88,8 @@
 }
 
 .pill[data-tone='primary'] {
-  background: var(--mm-color-primary-100, #ede9fe);
-  color: var(--mm-color-primary-700, #6d28d9);
+  background: var(--mm-color-primary-100, var(--mm-color-purple-100));
+  color: var(--mm-color-primary-700, var(--mm-color-purple-700));
 }
 
 .pill[data-tone='good'] {

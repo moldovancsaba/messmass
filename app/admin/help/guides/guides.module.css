@@ -10,7 +10,7 @@
 .back {
   display: inline-block;
   margin-bottom: var(--mm-space-4, 1rem);
-  color: var(--mm-gray-600, #4b5563);
+  color: var(--mm-gray-600, var(--mm-gray-600));
   font-size: var(--mm-font-size-sm, 0.875rem);
   text-decoration: none;
 }
@@ -19,7 +19,7 @@
 }
 
 .prose {
-  color: var(--mm-gray-800, #1f2937);
+  color: var(--mm-gray-800, var(--mm-gray-800));
   line-height: 1.65;
   font-size: 1rem;
   word-wrap: break-word;
@@ -35,7 +35,7 @@
   line-height: 1.25;
   margin: var(--mm-space-6, 1.5rem) 0 var(--mm-space-3, 0.75rem);
   padding-bottom: var(--mm-space-2, 0.5rem);
-  border-bottom: 1px solid var(--mm-border-color-default, #e5e7eb);
+  border-bottom: 1px solid var(--mm-border-color-default, var(--mm-gray-200));
 }
 .prose h3 {
   font-size: 1.15rem;
@@ -57,19 +57,19 @@
 }
 
 .prose a {
-  color: var(--mm-primary, #2563eb);
+  color: var(--mm-primary, var(--mm-color-primary-600));
   text-decoration: underline;
 }
 
 .prose code {
   font-family: var(--font-mono, ui-monospace, SFMono-Regular, Menlo, monospace);
   font-size: 0.875em;
-  background: var(--mm-gray-100, #f3f4f6);
+  background: var(--mm-gray-100, var(--mm-gray-100));
   padding: 0.1em 0.35em;
   border-radius: var(--mm-radius-sm, 4px);
 }
 .prose pre {
-  background: var(--mm-gray-100, #f3f4f6);
+  background: var(--mm-gray-100, var(--mm-gray-100));
   padding: var(--mm-space-4, 1rem);
   border-radius: var(--mm-radius-md, 8px);
   overflow-x: auto;
@@ -82,9 +82,9 @@
 .prose blockquote {
   margin: 0 0 var(--mm-space-4, 1rem);
   padding: var(--mm-space-2, 0.5rem) var(--mm-space-4, 1rem);
-  border-left: 3px solid var(--mm-border-color-default, #d1d5db);
-  color: var(--mm-gray-600, #4b5563);
-  background: var(--mm-gray-50, #f9fafb);
+  border-left: 3px solid var(--mm-border-color-default, var(--mm-gray-300));
+  color: var(--mm-gray-600, var(--mm-gray-600));
+  background: var(--mm-gray-50, var(--mm-gray-50));
 }
 
 /* Tables (tutorials use GFM tables) — must scroll, never break the page width */
@@ -98,18 +98,18 @@
 }
 .prose th,
 .prose td {
-  border: 1px solid var(--mm-border-color-default, #e5e7eb);
+  border: 1px solid var(--mm-border-color-default, var(--mm-gray-200));
   padding: 0.5rem 0.75rem;
   text-align: left;
   vertical-align: top;
 }
 .prose th {
-  background: var(--mm-gray-50, #f9fafb);
+  background: var(--mm-gray-50, var(--mm-gray-50));
   font-weight: var(--mm-font-weight-semibold, 600);
 }
 
 @media (prefers-color-scheme: dark) {
   .prose {
-    color: var(--mm-gray-100, #f3f4f6);
+    color: var(--mm-gray-100, var(--mm-gray-100));
   }
 }

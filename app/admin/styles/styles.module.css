@@ -113,7 +113,7 @@
 }
 
 .deleteButton:hover {
-  background: #dc2626;
+  background: var(--mm-color-error-600);
 }
 
 /* Metadata */

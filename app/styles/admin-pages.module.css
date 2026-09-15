@@ -36,16 +36,16 @@
    WHY: Highlight important information in forms */
 .warningBox {
   padding: 12px;
-  background-color: var(--mm-warning-light, #fef3c7);
+  background-color: var(--mm-warning-light, var(--mm-color-warning-100));
   border-radius: var(--mm-radius-lg);
-  border: 1px solid var(--mm-warning, #fbbf24);
+  border: 1px solid var(--mm-warning, var(--mm-color-warning-400));
 }
 
 /* WHAT: Warning box text styling
    WHY: Consistent typography in warnings */
 .warningText {
   font-size: var(--mm-font-size-sm);
-  color: #92400e;
+  color: var(--mm-color-warning-800);
   margin: 0;
 }
 

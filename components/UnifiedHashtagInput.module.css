@@ -26,7 +26,7 @@
 .selector-label {
   font-size: 0.875rem;
   font-weight: 600;
-  color: #374151;
+  color: var(--mm-gray-700);
 }
 
 .category-select {
@@ -35,7 +35,7 @@
   border: 2px solid;
   border-radius: 8px;
   background: var(--mm-white);
-  color: #1a202c;
+  color: var(--mm-gray-900);
   font-weight: 500;
   cursor: pointer;
   transition: all 0.2s ease;
@@ -68,7 +68,7 @@
   border: 2px solid;
   border-radius: 8px;
   background: var(--mm-white);
-  color: #1a202c;
+  color: var(--mm-gray-900);
   transition: all 0.2s ease;
 }
 
@@ -78,7 +78,7 @@
 }
 
 .hashtag-input::placeholder {
-  color: #9ca3af;
+  color: var(--mm-gray-400);
 }
 
 .input-loading {
@@ -120,12 +120,12 @@
 
 .hashtag-suggestion-text {
   font-weight: 500;
-  color: #1a202c;
+  color: var(--mm-gray-900);
 }
 
 .hashtag-suggestion-label {
   font-size: 0.75rem;
-  color: #6b7280;
+  color: var(--mm-gray-500);
   background: rgba(107, 114, 128, 0.1);
   padding: 0.25rem 0.5rem;
   border-radius: 4px;
@@ -136,17 +136,17 @@
 
 .hashtag-suggestion.new .hashtag-suggestion-label {
   background: rgba(34, 197, 94, 0.1);
-  color: #059669;
+  color: var(--mm-color-secondary-600);
 }
 
 .hashtag-suggestion.existing .hashtag-suggestion-label {
   background: rgba(59, 130, 246, 0.1);
-  color: #2563eb;
+  color: var(--mm-color-primary-600);
 }
 
 .target-category {
   font-size: 0.75rem;
-  color: #6b7280;
+  color: var(--mm-gray-500);
   font-weight: 500;
 }
 
@@ -183,12 +183,12 @@
 .group-label {
   font-size: 0.875rem;
   font-weight: 600;
-  color: #374151;
+  color: var(--mm-gray-700);
 }
 
 .group-count {
   font-size: 0.75rem;
-  color: #6b7280;
+  color: var(--mm-gray-500);
   font-weight: 500;
 }
 
