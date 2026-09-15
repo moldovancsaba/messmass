@@ -2,6 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import { PageType } from '@/lib/pagePassword';
+import { isLightBackground, GATE_PALETTE } from '@/lib/theme/color';
 import styles from './PagePasswordLogin.module.css';
 
 interface PagePasswordLoginProps {
@@ -65,7 +66,16 @@ export default function PagePasswordLogin({
 
         if (!cancelled) {
           const root = document.documentElement;
-          if (bg) root.style.setProperty('--page-bg', bg);
+          if (bg) {
+            root.style.setProperty('--page-bg', bg);
+            // WHAT: Pick the gate's own palette from the background's luminance.
+            // WHY: This card was authored white-on-glass, so on a light report
+            //   background its text measured 1.04:1 contrast (1.00 on white) --
+            //   an effectively invisible password prompt for the client. These
+            //   vars let the same markup stay readable on any background.
+            const palette = GATE_PALETTE[isLightBackground(bg) ? 'light' : 'dark'];
+            for (const [key, value] of Object.entries(palette)) root.style.setProperty(key, value);
+          }
           if (header) root.style.setProperty('--header-bg', header);
           // Apply content background if available
           try {
