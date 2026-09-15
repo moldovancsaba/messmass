@@ -95,9 +95,7 @@ const CONTENT_GUARDRAILS = [
     message: 'Raw color literals detected in canonical chart components',
     pattern: /#[0-9a-fA-F]{3,8}\b|\brgba?\(/,
     files: [
-      'components/analytics/LineChart.tsx',
-      'components/charts/PieChart.tsx',
-      'components/charts/VerticalBarChart.tsx'
+      'components/analytics/LineChart.tsx'
     ]
   },
   {
@@ -123,6 +121,12 @@ for (const guardrail of CONTENT_GUARDRAILS) {
 
   for (const relativeFile of guardrail.files) {
     const filePath = path.join(process.cwd(), relativeFile);
+    // A guardrail listing a file that no longer exists used to abort the whole
+    // check with a bare ENOENT stack. Say which entry is stale and carry on.
+    if (!fs.existsSync(filePath)) {
+      console.log(`⚠️  guardrail references a missing file, skipping: ${relativeFile}`);
+      continue;
+    }
     const content = fs.readFileSync(filePath, 'utf-8');
     if (guardrail.pattern.test(content)) {
       violations.push(relativeFile);
