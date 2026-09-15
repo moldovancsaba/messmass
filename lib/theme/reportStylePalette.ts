@@ -7,6 +7,11 @@
 /** Default box-shadow for landing/report cards (the `cardShadow` style field). */
 export const DEFAULT_CARD_SHADOW = '0 1px 3px 0 rgba(0,0,0,0.05)';
 
+/** Browser chrome colour for pages with no report style. Matches --mm-gray-50,
+ *  the --page-bg fallback in globals.css. Report pages overwrite the
+ *  meta[name=theme-color] at runtime from their own heroBackground. */
+export const DEFAULT_THEME_COLOR = '#f9fafb';
+
 /** Colour fields of DEFAULT_STYLE in lib/reportStyleTypes.ts (8-digit RRGGBBAA hex). */
 export const DEFAULT_REPORT_STYLE_COLORS = {
   // Hero Section

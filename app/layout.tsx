@@ -9,6 +9,7 @@ import GoogleAnalytics from '../components/GoogleAnalytics';
 import { cookies } from 'next/headers';
 import clientPromise from '@/lib/mongodb';
 import AppProviders from './providers';
+import { DEFAULT_THEME_COLOR } from '@/lib/theme/reportStylePalette';
 
 /* What: Load multiple Google Fonts for admin selection
    Why: Allows runtime font switching without full reload via CSS variables */
@@ -62,7 +63,7 @@ export const metadata: Metadata = {
 export const viewport: Viewport = {
   width: 'device-width',
   initialScale: 1,
-  themeColor: '#f9fafb', // matches --mm-gray-50 default; overridden per-report via meta tag
+  themeColor: DEFAULT_THEME_COLOR, // report pages overwrite this at runtime
 };
 
 export default async function RootLayout({
