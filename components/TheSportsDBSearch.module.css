@@ -29,7 +29,7 @@
 .searchInput:focus {
   outline: none;
   border-color: var(--mm-color-primary-600);
-  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+  box-shadow: 0 0 0 3px rgba(var(--mm-chart-indigo-rgb), 0.1);
 }
 
 .searchButton {
@@ -48,7 +48,7 @@
 .searchButton:hover:not(:disabled) {
   background: var(--mm-color-primary-700);
   transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+  box-shadow: 0 4px 12px rgba(var(--mm-chart-indigo-rgb), 0.3);
 }
 
 .searchButton:disabled {
@@ -60,8 +60,8 @@
    WHY: Clear visual feedback for failed searches */
 .errorMessage {
   padding: var(--mm-space-3) var(--mm-space-4);
-  background: rgba(239, 68, 68, 0.1);
-  border: 1px solid rgba(239, 68, 68, 0.3);
+  background: rgba(var(--mm-color-error-rgb), 0.1);
+  border: 1px solid rgba(var(--mm-color-error-rgb), 0.3);
   border-radius: var(--mm-radius-md);
   color: var(--mm-color-error-700, var(--mm-color-error-700));
   font-size: var(--mm-font-size-sm);
@@ -108,7 +108,7 @@
 
 .resultCard:hover {
   border-color: var(--mm-color-primary-400);
-  box-shadow: 0 2px 8px rgba(99, 102, 241, 0.1);
+  box-shadow: 0 2px 8px rgba(var(--mm-chart-indigo-rgb), 0.1);
 }
 
 .resultLogo {
@@ -170,8 +170,8 @@
    WHY: Show currently linked team with unlink option */
 .linkedTeam {
   padding: var(--mm-space-4);
-  background: rgba(16, 185, 129, 0.05);
-  border: 2px solid rgba(16, 185, 129, 0.3);
+  background: rgba(var(--mm-color-secondary-rgb), 0.05);
+  border: 2px solid rgba(var(--mm-color-secondary-rgb), 0.3);
   border-radius: var(--mm-radius-lg);
 }
 
@@ -187,7 +187,7 @@
   font-size: var(--mm-font-size-sm);
   font-weight: 600;
   color: var(--mm-color-success-700, var(--mm-color-secondary-700));
-  background: rgba(16, 185, 129, 0.1);
+  background: rgba(var(--mm-color-secondary-rgb), 0.1);
   border-radius: var(--mm-radius-full);
 }
 
@@ -196,16 +196,16 @@
   font-size: var(--mm-font-size-sm);
   font-weight: 500;
   color: var(--mm-color-error-700, var(--mm-color-error-700));
-  background: rgba(239, 68, 68, 0.1);
-  border: 1px solid rgba(239, 68, 68, 0.3);
+  background: rgba(var(--mm-color-error-rgb), 0.1);
+  border: 1px solid rgba(var(--mm-color-error-rgb), 0.3);
   border-radius: var(--mm-radius-md);
   cursor: pointer;
   transition: all var(--transition-fast);
 }
 
 .unlinkButton:hover {
-  background: rgba(239, 68, 68, 0.2);
-  border-color: rgba(239, 68, 68, 0.5);
+  background: rgba(var(--mm-color-error-rgb), 0.2);
+  border-color: rgba(var(--mm-color-error-rgb), 0.5);
 }
 
 .linkedTeamContent {

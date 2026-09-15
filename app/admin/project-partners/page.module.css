@@ -149,7 +149,7 @@
 
 .projectCard:hover {
   border-color: var(--mm-gray-300);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 2px 8px rgba(var(--mm-black-rgb), 0.05);
 }
 
 .projectHeader {
@@ -219,7 +219,7 @@
 .select:focus {
   outline: none;
   border-color: var(--mm-primary);
-  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+  box-shadow: 0 0 0 3px rgba(var(--mm-color-primary-rgb), 0.1);
 }
 
 .select:disabled {

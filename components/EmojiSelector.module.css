@@ -25,7 +25,7 @@
 .input:focus {
   outline: none;
   border-color: var(--mm-color-primary-600);
-  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+  box-shadow: 0 0 0 3px rgba(var(--mm-chart-indigo-rgb), 0.1);
 }
 
 /* WHAT: Grid layout for emoji selection
@@ -64,13 +64,13 @@
 .emojiButton:hover {
   transform: scale(1.1);
   border-color: var(--mm-color-primary-500);
-  box-shadow: 0 4px 12px rgba(99, 102, 241, 0.2);
+  box-shadow: 0 4px 12px rgba(var(--mm-chart-indigo-rgb), 0.2);
 }
 
 .emojiButton.selected {
   border-color: var(--mm-color-primary-600);
-  background: rgba(99, 102, 241, 0.1);
-  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
+  background: rgba(var(--mm-chart-indigo-rgb), 0.1);
+  box-shadow: 0 0 0 3px rgba(var(--mm-chart-indigo-rgb), 0.2);
   transform: scale(1.05);
 }
 
@@ -92,7 +92,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 4px rgba(var(--mm-black-rgb), 0.1);
 }
 
 .removeButton:hover {
@@ -121,7 +121,7 @@
 }
 
 .addButton:hover {
-  background: rgba(99, 102, 241, 0.05);
+  background: rgba(var(--mm-chart-indigo-rgb), 0.05);
   border-color: var(--mm-color-primary-500);
 }
 

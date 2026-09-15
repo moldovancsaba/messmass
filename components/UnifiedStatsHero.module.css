@@ -24,7 +24,7 @@
 
 /* WHAT: Created date badge */
 .createdDateBadge {
-  background: rgba(16, 185, 129, 0.1);
+  background: rgba(var(--mm-color-secondary-rgb), 0.1);
   color: var(--mm-color-secondary-600);
   padding: 0.25rem 0.75rem;
   border-radius: 12px;

@@ -142,8 +142,17 @@
   --mm-primary-dark:  var(--mm-color-primary-700);
   --mm-success-dark:  var(--mm-color-secondary-800);
   --mm-color-primary-25:   var(--mm-color-primary-50);
-  /* RGB channels of --mm-color-primary-500, for rgba() alpha tints */
-  --mm-color-primary-rgb:  59, 130, 246;
+  /* RGB channels for rgba() alpha tints. These mirror the -500 hex of each
+     ramp; CSS cannot derive channels from a hex var, so they are maintained
+     alongside it. Keep in sync when a base colour changes. */
+  --mm-color-primary-rgb:   59, 130, 246;   /* #3b82f6 */
+  --mm-color-secondary-rgb: 16, 185, 129;   /* #10b981 */
+  --mm-color-success-rgb:   16, 185, 129;   /* #10b981 */
+  --mm-color-error-rgb:     239, 68, 68;    /* #ef4444 */
+  --mm-color-warning-rgb:   245, 158, 11;   /* #f59e0b */
+  --mm-chart-indigo-rgb:    99, 102, 241;   /* #6366f1 */
+  --mm-black-rgb:           0, 0, 0;
+  --mm-white-rgb:           255, 255, 255;
   --mm-color-success:      var(--mm-color-success-500);
   --mm-color-warning:      var(--mm-color-warning-500);
   --mm-color-error-dark:   var(--mm-color-error-700);

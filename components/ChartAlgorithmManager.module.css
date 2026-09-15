@@ -117,19 +117,19 @@
 
 /* WHAT: Bar chart badge color */
 .chartTypeBadge.bar {
-  background: rgba(59, 130, 246, 0.1);
+  background: rgba(var(--mm-color-primary-rgb), 0.1);
   color: var(--color-chart-blue);
 }
 
 /* WHAT: KPI chart badge color */
 .chartTypeBadge.kpi {
-  background: rgba(16, 185, 129, 0.1);
+  background: rgba(var(--mm-color-secondary-rgb), 0.1);
   color: var(--color-success);
 }
 
 /* WHAT: Text chart badge color */
 .chartTypeBadge.text {
-  background: rgba(245, 158, 11, 0.1);
+  background: rgba(var(--mm-color-warning-rgb), 0.1);
   color: var(--color-warning);
 }
 

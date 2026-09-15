@@ -35,7 +35,7 @@
      Why: Focus attention on drawer, click to close */
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.5);
+  background: rgba(var(--mm-black-rgb), 0.5);
   z-index: calc(var(--z-modal-backdrop) - 10);
   display: none; /* Hidden on desktop */
   animation: fadeIn 0.2s ease;

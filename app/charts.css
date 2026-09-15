@@ -206,7 +206,7 @@
   font-weight: 600;
   font-size: 0.7rem;
   transition: all 0.3s ease;
-  border-top: 1px solid rgba(255, 255, 255, 0.15);
+  border-top: 1px solid rgba(var(--mm-white-rgb), 0.15);
 }
 
 .bar-segment:hover {
@@ -274,19 +274,19 @@
 
 /* Legend Color Variants */
 .legend-small.indoor { 
-  background: rgba(59, 130, 246, 0.1); 
+  background: rgba(var(--mm-color-primary-rgb), 0.1); 
   color: var(--mm-color-primary-800); 
-  border-color: rgba(59, 130, 246, 0.3);
+  border-color: rgba(var(--mm-color-primary-rgb), 0.3);
 }
 .legend-small.outdoor { 
-  background: rgba(16, 185, 129, 0.1); 
+  background: rgba(var(--mm-color-secondary-rgb), 0.1); 
   color: var(--mm-color-secondary-700); 
-  border-color: rgba(16, 185, 129, 0.3);
+  border-color: rgba(var(--mm-color-secondary-rgb), 0.3);
 }
 .legend-small.stadium { 
-  background: rgba(245, 158, 11, 0.1); 
+  background: rgba(var(--mm-color-warning-rgb), 0.1); 
   color: var(--mm-warning); 
-  border-color: rgba(245, 158, 11, 0.3);
+  border-color: rgba(var(--mm-color-warning-rgb), 0.3);
 }
 .legend-small.gen-alpha { 
   background: rgba(139, 92, 246, 0.1); 
@@ -304,9 +304,9 @@
   border-color: rgba(249, 115, 22, 0.3);
 }
 .legend-small.boomer { 
-  background: rgba(239, 68, 68, 0.1); 
+  background: rgba(var(--mm-color-error-rgb), 0.1); 
   color: var(--mm-error); 
-  border-color: rgba(239, 68, 68, 0.3);
+  border-color: rgba(var(--mm-color-error-rgb), 0.3);
 }
 
 /* ========================================

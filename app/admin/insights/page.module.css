@@ -269,9 +269,9 @@
 }
 
 .severityBadge.info {
-  background: rgba(59, 130, 246, 0.10);
+  background: rgba(var(--mm-color-primary-rgb), 0.10);
   color: rgb(29, 78, 216);
-  border-color: rgba(59, 130, 246, 0.35);
+  border-color: rgba(var(--mm-color-primary-rgb), 0.35);
 }
 
 /* WHAT: Empty state */

@@ -15,7 +15,7 @@
 
 /* WHAT: Full debug view container */
 .container {
-  background: rgba(255, 255, 255, 0.9);
+  background: rgba(var(--mm-white-rgb), 0.9);
   border: 1px solid rgba(229, 231, 235, 0.8);
   border-radius: 8px;
   padding: 1rem;

@@ -24,11 +24,11 @@
 }
 
 .successText {
-  color: green;
+  color: var(--mm-color-success-600);
 }
 
 .errorText {
-  color: red;
+  color: var(--mm-color-error-600);
 }
 
 .testButton {

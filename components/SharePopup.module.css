@@ -11,7 +11,7 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background-color: var(--mm-modal-overlay-bg, rgba(0, 0, 0, 0.5));
+  background-color: var(--mm-modal-overlay-bg, rgba(var(--mm-black-rgb), 0.5));
   display: flex;
   align-items: center;
   justify-content: center;
@@ -23,7 +23,7 @@
 .modal {
   background: var(--mm-modal-content-bg, var(--mm-white));
   border-radius: var(--mm-modal-border-radius, 16px);
-  box-shadow: var(--mm-modal-shadow, 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1));
+  box-shadow: var(--mm-modal-shadow, 0 10px 25px -5px rgba(var(--mm-black-rgb), 0.1), 0 8px 10px -6px rgba(var(--mm-black-rgb), 0.1));
   width: 100%;
   max-width: 500px;
   max-height: 90vh;

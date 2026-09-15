@@ -1590,7 +1590,7 @@
   border-left: 4px solid var(--mm-color-primary-500, var(--mm-chart-indigo)) !important;
   border-radius: 4px !important;
   font-style: italic !important;
-  box-shadow: inset 0 2px 4px 0 rgba(0, 0, 0, 0.05) !important;
+  box-shadow: inset 0 2px 4px 0 rgba(var(--mm-black-rgb), 0.05) !important;
 }
 
 .presetCallout p {

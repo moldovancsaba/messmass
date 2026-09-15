@@ -45,7 +45,7 @@
   padding: var(--mm-space-4);
   overflow: hidden;
   min-height: 400px;
-  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
+  box-shadow: inset 0 2px 4px rgba(var(--mm-black-rgb), 0.1);
 }
 
 /* WHAT: Mini page mockup
@@ -67,7 +67,7 @@
 .mockHero {
   padding: var(--mm-space-6);
   text-align: center;
-  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+  border-bottom: 1px solid rgba(var(--mm-black-rgb), 0.1);
 }
 
 .mockTitle {
@@ -234,7 +234,7 @@
 
 .mockBarTrack {
   height: 12px;
-  background: rgba(0, 0, 0, 0.05);
+  background: rgba(var(--mm-black-rgb), 0.05);
   border-radius: var(--mm-radius-sm);
   overflow: hidden;
 }
@@ -253,8 +253,8 @@
   display: flex;
   gap: var(--mm-space-2);
   padding: var(--mm-space-3);
-  background: rgba(0, 0, 0, 0.05);
-  border-top: 1px solid rgba(0, 0, 0, 0.1);
+  background: rgba(var(--mm-black-rgb), 0.05);
+  border-top: 1px solid rgba(var(--mm-black-rgb), 0.1);
 }
 
 .mockSwatch {

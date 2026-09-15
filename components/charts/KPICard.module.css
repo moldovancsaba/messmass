@@ -90,7 +90,7 @@
   align-items: center;
   gap: var(--mm-space-1);
   padding: var(--mm-space-1) var(--mm-space-2);
-  background: rgba(0, 0, 0, 0.04);
+  background: rgba(var(--mm-black-rgb), 0.04);
   border-radius: var(--mm-radius-md);
   font-size: var(--mm-font-size-sm);
   font-weight: var(--mm-font-weight-semibold);

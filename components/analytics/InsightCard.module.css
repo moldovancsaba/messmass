@@ -197,7 +197,7 @@
 .recommendationContent {
   margin-top: var(--mm-space-3);
   padding: var(--mm-space-3);
-  background: rgba(59, 130, 246, 0.05);
+  background: rgba(var(--mm-color-primary-rgb), 0.05);
   border-left: 3px solid var(--mm-info);
   border-radius: var(--mm-radius-sm);
   font-size: 0.875rem;

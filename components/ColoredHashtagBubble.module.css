@@ -11,7 +11,7 @@
   align-items: center;
   justify-content: center;
   vertical-align: middle;
-  background: rgba(255, 255, 255, 0.25);
+  background: rgba(var(--mm-white-rgb), 0.25);
   border: none;
   border-radius: 999px;
   color: inherit;
@@ -27,7 +27,7 @@
 }
 
 .removeButton:hover {
-  background: rgba(255, 255, 255, 0.4);
+  background: rgba(var(--mm-white-rgb), 0.4);
   transform: scale(1.1);
 }
 
