@@ -48,7 +48,7 @@ export const usersAdapter: AdminPageAdapter<UserDTO> = {
         key: 'email',
         label: 'Email',
         sortable: true,
-        minWidth: '200px',
+        minWidth: '160px',
         render: (user) => (
           <span className="adapter-primary-field">{user.email}</span>
         ),
@@ -57,14 +57,14 @@ export const usersAdapter: AdminPageAdapter<UserDTO> = {
         key: 'name',
         label: 'Name',
         sortable: true,
-        minWidth: '150px',
+        minWidth: '110px',
         render: (user) => user.name || <span className="adapter-empty-value">—</span>,
       },
       {
         key: 'role',
         label: 'Role',
         sortable: true,
-        width: '140px',
+        width: '120px',
         render: (user) => {
           const config = roleConfig[user.role] || roleConfig.guest;
           return <SemanticBadge tone={config.tone} icon={config.icon} label={config.label} />;
@@ -84,31 +84,6 @@ export const usersAdapter: AdminPageAdapter<UserDTO> = {
         ),
       },
       {
-        key: 'apiUsageCount',
-        label: 'API Usage',
-        sortable: true,
-        width: '110px',
-        render: (user) => (
-          <span className="adapter-meta-text">
-            {(user.apiUsageCount || 0).toLocaleString()}
-          </span>
-        ),
-      },
-      {
-        key: 'lastAPICallAt',
-        label: 'Last API Call',
-        sortable: true,
-        width: '140px',
-        render: (user) =>
-          user.lastAPICallAt ? (
-            <span className="adapter-meta-text">
-              {new Date(user.lastAPICallAt).toLocaleDateString()}
-            </span>
-          ) : (
-            <span className="adapter-empty-value">Never</span>
-          ),
-      },
-      {
         key: 'lastLogin',
         label: 'Last Login',
         sortable: true,
@@ -121,17 +96,6 @@ export const usersAdapter: AdminPageAdapter<UserDTO> = {
           ) : (
             <span className="adapter-empty-value">Never</span>
           ),
-      },
-      {
-        key: 'createdAt',
-        label: 'Created',
-        sortable: true,
-        width: '120px',
-        render: (user) => (
-          <span className="adapter-meta-text">
-            {new Date(user.createdAt).toLocaleDateString()}
-          </span>
-        ),
       },
     ],
     rowActions: [

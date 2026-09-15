@@ -95,3 +95,41 @@
 .iconStandalone {
   font-size: 1rem;
 }
+
+/* WHAT: User details modal layout.
+   WHY: API Usage / Last API Call / Created were removed from the users table so
+   it fits on screen without horizontal scrolling; this panel is where the full
+   record is still readable. */
+.detailsPanel {
+  display: flex;
+  flex-direction: column;
+  gap: var(--mm-space-md);
+}
+
+.detailsTitle {
+  margin: 0;
+  font-size: var(--mm-font-size-xl);
+  font-weight: var(--mm-font-weight-semibold);
+  color: var(--mm-gray-900);
+  overflow-wrap: anywhere;
+}
+
+.detailsGrid {
+  display: grid;
+  grid-template-columns: minmax(7rem, auto) 1fr;
+  gap: var(--mm-space-xs) var(--mm-space-md);
+  margin: 0;
+}
+
+.detailsLabel {
+  color: var(--mm-gray-500);
+  font-size: var(--mm-font-size-sm);
+  font-weight: var(--mm-font-weight-medium);
+}
+
+.detailsValue {
+  margin: 0;
+  color: var(--mm-gray-900);
+  font-size: var(--mm-font-size-sm);
+  overflow-wrap: anywhere;
+}

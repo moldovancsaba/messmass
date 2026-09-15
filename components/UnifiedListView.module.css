@@ -31,7 +31,7 @@
 }
 
 .table thead th {
-  padding: var(--mm-space-md);
+  padding: var(--mm-space-sm) var(--mm-space-sm);
   text-align: left;
   font-weight: var(--mm-font-weight-semibold);
   color: var(--mm-gray-700);
@@ -98,18 +98,27 @@
 }
 
 .table tbody td {
-  padding: var(--mm-space-md);
+  padding: var(--mm-space-sm) var(--mm-space-sm);
   color: var(--mm-gray-700);
   vertical-align: middle;
-  /* Long values (emails, names) shrink with an ellipsis rather than forcing
-     horizontal scroll. max-width is required for ellipsis to apply in a table. */
+  /* Long values shrink rather than forcing horizontal scroll. Truncation lives
+     on an inner wrapper (.cellContent) so the cell itself never clips a popover
+     -- clipping here is what hid the role dropdown behind the next row. */
   max-width: 1px;
+  white-space: nowrap;
+}
+
+.cellContent {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
-.actionsCell {
+/* Specificity must match `.table tbody td` (0,1,2) or the max-width:1px there
+   wins and the action buttons spill outside the cell, widening the scroll area
+   even though the table itself fits. */
+.table tbody td.actionsCell,
+.table thead th.actionsCell {
   width: 1%;
   /* was min-width: 240px -- a hard floor that alone could overflow a narrow
      viewport. The rail switches to icon-only buttons instead (AdminActionRail). */

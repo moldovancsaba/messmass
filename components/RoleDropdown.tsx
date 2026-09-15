@@ -5,7 +5,8 @@
 
 'use client';
 
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
+import { createPortal } from 'react-dom';
 import type { UserRole } from '@/lib/users';
 import { getRoleBadgeColor, getRoleDisplayName } from '@/lib/permissions';
 
@@ -36,11 +37,36 @@ export default function RoleDropdown({
   const [isOpen, setIsOpen] = useState(false);
   const [changing, setChanging] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
+  const triggerRef = useRef<HTMLButtonElement>(null);
+  const menuRef = useRef<HTMLDivElement>(null);
+  // WHAT: Viewport coordinates for the portalled menu.
+  // WHY: The menu used to be a positioned child of the table cell, so the row
+  //   below painted over it and the cell clipped it -- it was unusable in a
+  //   table. Rendering it into document.body with fixed coordinates removes it
+  //   from every ancestor's clipping and stacking context.
+  const [menuPos, setMenuPos] = useState<{ top: number; left: number } | null>(null);
+
+  const placeMenu = useCallback(() => {
+    const r = triggerRef.current?.getBoundingClientRect();
+    if (!r) return;
+    const MENU_W = 180;
+    const MENU_H = 220;
+    // Flip above the trigger when there is not enough room below.
+    const below = window.innerHeight - r.bottom;
+    const top = below < MENU_H && r.top > MENU_H ? r.top - MENU_H - 4 : r.bottom + 4;
+    const left = Math.max(8, Math.min(r.left, window.innerWidth - MENU_W - 8));
+    setMenuPos({ top, left });
+  }, []);
   
   // WHAT: Close dropdown when clicking outside
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+      const t = event.target as Node;
+      // the menu lives in a portal, so it is not inside dropdownRef
+      if (
+        dropdownRef.current && !dropdownRef.current.contains(t) &&
+        !(menuRef.current && menuRef.current.contains(t))
+      ) {
         setIsOpen(false);
       }
     };
@@ -48,6 +74,18 @@ export default function RoleDropdown({
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
+
+  useEffect(() => {
+    if (!isOpen) return;
+    placeMenu();
+    const onMove = () => placeMenu();
+    window.addEventListener('scroll', onMove, true);
+    window.addEventListener('resize', onMove);
+    return () => {
+      window.removeEventListener('scroll', onMove, true);
+      window.removeEventListener('resize', onMove);
+    };
+  }, [isOpen, placeMenu]);
   
   // WHAT: Check if current user is superadmin
   // WHY: Only superadmins can change roles
@@ -108,6 +146,7 @@ export default function RoleDropdown({
   return (
     <div ref={dropdownRef} style={{ position: 'relative', display: 'inline-block' }}> {/* eslint-disable-line react/forbid-dom-props */}
       <button
+        ref={triggerRef}
         type="button"
         onClick={() => !disabled && !changing && setIsOpen(!isOpen)}
         disabled={disabled || changing}
@@ -140,14 +179,15 @@ export default function RoleDropdown({
         {changing && <span style={{ marginLeft: '4px' }}>⏳</span>} {/* eslint-disable-line react/forbid-dom-props */}
       </button>
       
-      {isOpen && !disabled && !changing && (
+      {isOpen && !disabled && !changing && menuPos && createPortal(
         <div
+          ref={menuRef}
           className="role-dropdown-menu z-dropdown"
           style={{ // eslint-disable-line react/forbid-dom-props
-            position: 'absolute',
-            top: '100%',
-            left: 0,
-            marginTop: '4px',
+            position: 'fixed',
+            top: menuPos.top,
+            left: menuPos.left,
+            zIndex: 'var(--mm-z-modal, 1000)',
             backgroundColor: 'var(--mm-white)',
             border: '1px solid var(--mm-gray-200)',
             borderRadius: 'var(--mm-radius-md)',
@@ -219,7 +259,8 @@ export default function RoleDropdown({
               ↩︎ Follow SSO again
             </button>
           )}
-        </div>
+        </div>,
+        document.body
       )}
     </div>
   );

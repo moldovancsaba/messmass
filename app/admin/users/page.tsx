@@ -6,11 +6,11 @@
 // BEFORE: 400 lines with inline create form
 // AFTER: ~200 lines, fully unified with modal-based create
 
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import UnifiedAdminPage from '@/components/UnifiedAdminPage';
 import { usersAdapter } from '@/lib/adapters';
-import { FormModal } from '@/components/modals';
+import { FormModal, BaseModal } from '@/components/modals';
 import { apiPost, apiPut, apiDelete } from '@/lib/apiClient';
 import PasswordModal from '@/components/PasswordModal';
 import { useGdsConfirm } from '@sovereignsquad/gds-core/client';
@@ -30,6 +30,10 @@ export default function AdminUsersPageUnified() {
   // WHAT: Current user context for role management
   // WHY: Needed for RoleDropdown to determine if user is superadmin and prevent self-demotion
   const [currentUser, setCurrentUser] = useState<{ id: string; role: UserRole } | null>(null);
+  // WHAT: User whose full record is shown in the details modal.
+  // WHY: API Usage / Last API Call / Created were removed from the table so it
+  //   fits on screen; they are still reachable here rather than lost.
+  const [detailsUser, setDetailsUser] = useState<any | null>(null);
   
   // Create modal state
   const [showCreateModal, setShowCreateModal] = useState(false);
@@ -314,6 +318,13 @@ export default function AdminUsersPageUnified() {
       }),
       rowActions: [
         {
+          label: 'Details',
+          icon: 'info',
+          variant: 'secondary' as const,
+          handler: (user: any) => setDetailsUser(user),
+          title: 'View all user details'
+        },
+        {
           label: (user: any) => user.apiKeyEnabled ? 'Disable API' : 'Enable API',
           icon: (user: any) => user.apiKeyEnabled ? '🔒' : '🔓',
           variant: (user: any) => user.apiKeyEnabled ? 'warning' : 'success',
@@ -498,6 +509,39 @@ export default function AdminUsersPageUnified() {
         userId={passwordModal.userId}
         subtitle="Copy this password and share it securely with the user"
       />
+
+      {/* WHAT: Full user record. WHY: the table shows only what fits on screen;
+          the remaining fields live here instead of forcing horizontal scroll. */}
+      <BaseModal
+        isOpen={!!detailsUser}
+        onClose={() => setDetailsUser(null)}
+        size="md"
+        ariaLabel="User details"
+      >
+        {detailsUser && (
+          <div className={adminStyles.detailsPanel}>
+            <h2 className={adminStyles.detailsTitle}>{detailsUser.name || detailsUser.email}</h2>
+            <dl className={adminStyles.detailsGrid}>
+              {[
+                ['Email', detailsUser.email],
+                ['Name', detailsUser.name || '—'],
+                ['Role', detailsUser.role + (detailsUser.roleManagedLocally ? ' (pinned in messmass)' : ' (from SSO)')],
+                ['API Access', detailsUser.apiKeyEnabled ? 'Enabled' : 'Disabled'],
+                ['API Usage', (detailsUser.apiUsageCount || 0).toLocaleString()],
+                ['Last API Call', detailsUser.lastAPICallAt ? new Date(detailsUser.lastAPICallAt).toLocaleString() : 'Never'],
+                ['Last Login', detailsUser.lastLogin ? new Date(detailsUser.lastLogin).toLocaleString() : 'Never'],
+                ['Created', detailsUser.createdAt ? new Date(detailsUser.createdAt).toLocaleString() : '—'],
+                ['Updated', detailsUser.updatedAt ? new Date(detailsUser.updatedAt).toLocaleString() : '—'],
+              ].map(([label, value]) => (
+                <React.Fragment key={String(label)}>
+                  <dt className={adminStyles.detailsLabel}>{label}</dt>
+                  <dd className={adminStyles.detailsValue}>{value}</dd>
+                </React.Fragment>
+              ))}
+            </dl>
+          </div>
+        )}
+      </BaseModal>
     </>
   );
 }
