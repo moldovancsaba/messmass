@@ -18,6 +18,9 @@
   width: 100%;
   border-collapse: collapse;
   font-size: var(--mm-font-size-sm);
+  /* Let wide tables shrink into the viewport instead of scrolling sideways.
+     Cells opt into ellipsis below rather than forcing the table past 100%. */
+  table-layout: auto;
 }
 
 /* WHAT: Table header styling */
@@ -33,7 +36,10 @@
   font-weight: var(--mm-font-weight-semibold);
   color: var(--mm-gray-700);
   font-size: var(--mm-font-size-sm);
-  white-space: nowrap;
+  /* was nowrap: a 9-column table could not shrink below the sum of its header
+     widths, which is what pushed the users table off-screen */
+  white-space: normal;
+  overflow-wrap: anywhere;
 }
 
 .headerContent {
@@ -95,11 +101,21 @@
   padding: var(--mm-space-md);
   color: var(--mm-gray-700);
   vertical-align: middle;
+  /* Long values (emails, names) shrink with an ellipsis rather than forcing
+     horizontal scroll. max-width is required for ellipsis to apply in a table. */
+  max-width: 1px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .actionsCell {
   width: 1%;
-  min-width: 240px;
+  /* was min-width: 240px -- a hard floor that alone could overflow a narrow
+     viewport. The rail switches to icon-only buttons instead (AdminActionRail). */
+  white-space: nowrap;
+  overflow: visible;
+  max-width: none;
 }
 
 /* WHAT: Loading skeleton styling */
