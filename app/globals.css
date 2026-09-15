@@ -266,7 +266,7 @@ img {
 
 .admin-title {
   /* REMOVED: color: var(--color-gray-900); - Allow dynamic color override */
-  font-size: 2.5rem;
+  font-size: var(--mm-font-size-4xl);
   font-weight: 700;
   text-align: center;
   margin-bottom: 0.5rem;
@@ -275,7 +275,7 @@ img {
 .admin-subtitle {
   color: var(--color-gray-600);
   text-align: center;
-  font-size: 1.1rem;
+  font-size: var(--mm-font-size-xl);
   margin-bottom: 1.5rem;
 }
 
@@ -296,7 +296,7 @@ img {
 .admin-avatar {
   width: 48px;
   height: 48px;
-  background: var(--gradient-primary);
+  background: var(--mm-color-primary-600);
   border-radius: 50%;
   display: flex;
   align-items: center;
@@ -319,7 +319,7 @@ img {
 }
 
 .admin-logout-btn {
-  background: var(--gradient-error);
+  background: var(--mm-error);
   color: var(--mm-white);
   padding: 0.75rem 1.5rem;
   border-radius: 12px;
@@ -362,7 +362,7 @@ img {
 .admin-stat-icon {
   width: 48px;
   height: 48px;
-  background: var(--gradient-primary);
+  background: var(--mm-color-primary-600);
   border-radius: 12px;
   display: flex;
   align-items: center;
@@ -427,7 +427,7 @@ img {
 }
 
 .admin-btn-refresh {
-  background: var(--gradient-primary);
+  background: var(--mm-color-primary-600);
   color: var(--mm-white);
   padding: 0.75rem 1.5rem;
   border-radius: 12px;
@@ -440,7 +440,7 @@ img {
 
 .admin-btn-refresh:hover {
   transform: translateY(-2px);
-  box-shadow: 0 8px 20px rgba(102, 126, 234, 0.3);
+  box-shadow: 0 8px 20px rgba(var(--mm-color-primary-rgb), 0.3);
 }
 
 .admin-table {
@@ -469,7 +469,7 @@ img {
 }
 
 .admin-table-row:hover {
-  background: rgba(102, 126, 234, 0.05);
+  background: rgba(var(--mm-color-primary-rgb), 0.05);
 }
 
 .admin-table-cell {
@@ -544,7 +544,7 @@ img {
 }
 
 .admin-btn-export {
-  background: var(--gradient-primary);
+  background: var(--mm-info);
   color: var(--mm-white);
 }
 
@@ -554,7 +554,7 @@ img {
 }
 
 .admin-btn-delete {
-  background: var(--gradient-error);
+  background: var(--mm-error);
   color: var(--mm-white);
 }
 
@@ -614,7 +614,7 @@ img {
 .login-icon {
   width: 48px;
   height: 48px;
-  background: var(--gradient-primary);
+  background: var(--mm-color-primary-600);
   border-radius: 50%;
   display: flex;
   align-items: center;
@@ -682,7 +682,7 @@ img {
   }
   
   .admin-title {
-    font-size: 2rem;
+    font-size: var(--mm-font-size-4xl);
   }
   
   .admin-user-info {
@@ -719,7 +719,7 @@ img {
    REMOVED: .admin-branding, .admin-badge, .admin-role, .admin-level, .admin-status, .admin-overview (legacy/unused) */
 
 .section-title {
-  font-size: 1.875rem;
+  font-size: var(--mm-font-size-xl);
   font-weight: 700;
   color: var(--mm-gray-900);
   margin: 0 0 1.5rem 0;
@@ -763,9 +763,9 @@ img {
 }
 
 .stat-value-admin {
-  font-size: 2.5rem;
+  font-size: var(--mm-font-size-4xl);
   font-weight: 700;
-  color: var(--color-gray-900);
+  color: var(--mm-color-primary-700);
   margin-bottom: 0.5rem;
 }
 
@@ -831,7 +831,7 @@ img {
 }
 
 .projects-table tr:hover {
-  background: rgba(102, 126, 234, 0.05);
+  background: rgba(var(--mm-color-primary-rgb), 0.05);
 }
 
 .project-name {
@@ -863,7 +863,7 @@ img {
   color: var(--mm-color-primary-500);
   text-decoration: none;
   font-weight: 700;
-  font-size: 1.1rem;
+  font-size: var(--mm-font-size-lg);
   transition: all 0.2s ease;
   display: inline-block;
   position: relative;
@@ -898,7 +898,7 @@ img {
 
 .project-name-text {
   font-weight: 600;
-  font-size: 1.1rem;
+  font-size: var(--mm-font-size-lg);
   color: var(--mm-gray-900);
 }
 
@@ -1121,7 +1121,7 @@ img {
 .stats-subsection {
   margin-bottom: 1.5rem;
   padding: 1rem;
-  background: var(--mm-white);
+  background: var(--mm-gray-50);
   border-radius: 0.75rem;
   border: 1px solid var(--mm-border-color-default);
 }
@@ -1226,7 +1226,7 @@ img {
 /* Success Manager in Left Column - Compact */
 .success-manager-subsection {
   border-left: 4px solid var(--mm-color-primary-500);
-  background: var(--mm-gray-50);
+  background: rgba(var(--mm-color-primary-rgb), 0.05);
 }
 
 .success-manager-grid-compact {
@@ -1721,9 +1721,9 @@ div.unified-chart-item:has(.text-chart-container) {
   text-align: center;
   margin-bottom: 2rem;
   padding: 1.5rem;
-  background: rgba(102, 126, 234, 0.05);
+  background: rgba(var(--mm-color-primary-rgb), 0.05);
   border-radius: 1rem;
-  border: 2px solid rgba(102, 126, 234, 0.1);
+  border: 2px solid rgba(var(--mm-color-primary-rgb), 0.1);
 }
 
 .chart-total-value {

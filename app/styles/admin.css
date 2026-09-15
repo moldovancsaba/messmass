@@ -6,16 +6,12 @@
 ======================================== */
 
 .admin-title {
-  /* What: Flat primary color title
-     Why: Removed gradient text effect for flat design */
-  font-size: var(--text-4xl);
   /* REMOVED: color: var(--mm-color-primary-700); - Allow dynamic color override */
   margin: 0;
   line-height: var(--leading-tight);
 }
 
 .admin-subtitle {
-  font-size: var(--text-xl);
   margin: var(--space-2) 0 0 0;
   font-weight: var(--font-medium);
   line-height: var(--leading-normal);
@@ -51,7 +47,6 @@
    ADMIN STAT CARDS
 ======================================== */
 
-
 .stat-card-admin:hover {
   transform: translateY(-2px);
   box-shadow: var(--mm-shadow-md);
@@ -62,20 +57,12 @@
 }
 
 .stat-value-admin {
-  /* What: Flat text value
-     Why: Removed gradient text effect */
-  font-size: var(--text-4xl);
-  color: var(--mm-color-primary-700);
   line-height: var(--leading-tight);
 }
-
 
 /* ========================================
    ADMIN PROJECTS MANAGEMENT
 ======================================== */
-
-
-
 
 .admin-projects-title {
   line-height: var(--leading-tight);
@@ -85,11 +72,6 @@
   margin: 0;
 }
 
-.admin-btn-refresh {
-  /* What: Flat primary button
-     Why: Removed gradient */
-  background: var(--mm-color-primary-600);
-}
 
 .admin-btn-refresh:hover {
   background: var(--mm-color-primary-700);
@@ -104,7 +86,6 @@
 .project-name {
   text-align: left;
 }
-
 
 .project-link:hover {
   color: var(--color-primary-600);
@@ -130,17 +111,11 @@
   color: var(--color-primary-700);
 }
 
-
 .project-edit-link:hover {
   color: var(--color-error);
   text-decoration: underline;
   transform: translateX(2px);
 }
-
-.project-name-text {
-  font-size: var(--text-lg);
-}
-
 
 
 /* ========================================
@@ -148,23 +123,12 @@
 ======================================== */
 
 
-.admin-btn-export {
-  /* What: Flat info button
-     Why: Removed gradient */
-  background: var(--mm-info);
-}
-
 .admin-btn-export:hover {
   background: var(--mm-color-primary-600);
   transform: translateY(-1px);
   box-shadow: var(--mm-shadow-sm);
 }
 
-.admin-btn-delete {
-  /* What: Flat danger button
-     Why: Removed gradient */
-  background: var(--mm-error);
-}
 
 .admin-btn-delete:hover {
   background: var(--mm-color-error-600);
@@ -175,8 +139,6 @@
 /* ========================================
    ADMIN EMPTY STATES
 ======================================== */
-
-
 
 .admin-empty-title {
   font-size: var(--text-lg);
@@ -189,10 +151,6 @@
 /* ========================================
    PROJECT DETAILS & STATISTICS
 ======================================== */
-
-
-
-
 
 .stats-section h3 {
   font-size: var(--text-xl);
@@ -213,19 +171,10 @@
    SUCCESS MANAGER SECTION
 ======================================== */
 
-
 .success-manager-subsection {
-  background: rgba(102, 126, 234, 0.05);
+  background: rgba(var(--mm-color-primary-rgb), 0.05);
 }
 
-
-
-
-
-
-.sm-input {
-  border: 1px solid rgba(102, 126, 234, 0.3);
-}
 
 .sm-input:focus {
   /* What: Flat focus state
@@ -234,8 +183,6 @@
   border-color: var(--color-primary-500);
   box-shadow: 0 0 0 3px var(--mm-color-primary-100);
 }
-
-
 
 .sm-btn-minus:hover:not(:disabled) {
   background: var(--mm-color-error-600);
@@ -246,7 +193,6 @@
   background: var(--color-gray-400);
   cursor: not-allowed;
 }
-
 
 .sm-btn-plus:hover {
   background: var(--mm-color-secondary-600);
@@ -270,11 +216,9 @@
   border-bottom: 2px solid var(--color-primary-500);
 }
 
-
-
 .stat-item:hover {
-  background: rgba(102, 126, 234, 0.05);
-  border-color: rgba(102, 126, 234, 0.2);
+  background: rgba(var(--mm-color-primary-rgb), 0.05);
+  border-color: rgba(var(--mm-color-primary-rgb), 0.2);
 }
 
 .stat-item span:first-child {
@@ -295,24 +239,19 @@
    ADMIN EVENT INFO
 ======================================== */
 
-
 .admin-event-date {
   margin: 0;
 }
 
-
 .admin-stat-group:last-child {
   margin-bottom: 0;
 }
-
 
 .admin-stat-total.images { color: var(--color-info); }
 .admin-stat-total.fans { color: var(--color-success); }
 .admin-stat-total.merch { color: var(--color-chart-purple); }
 .admin-stat-total.gender { color: var(--color-warning); }
 .admin-stat-total.age { color: var(--color-error); }
-
-
 
 /* ========================================
    RESPONSIVE DESIGN

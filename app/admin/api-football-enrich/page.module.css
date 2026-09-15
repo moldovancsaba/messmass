@@ -65,7 +65,7 @@
 }
 
 .enrichButton {
-  background: var(--gradient-primary);
+  background: var(--mm-color-primary-600);
   color: var(--mm-white);
   border: none;
   border-radius: var(--mm-radius-lg);

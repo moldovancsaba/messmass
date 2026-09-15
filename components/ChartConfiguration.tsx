@@ -399,8 +399,8 @@ export const ChartConfigurationComponent: React.FC<ChartConfigurationProps> = ({
         }
 
         .tab-button.active {
-          background: var(--gradient-primary);
-          color: white;
+          background: var(--mm-color-primary-600);
+          color: var(--mm-white);
         }
 
         .tab-button:hover:not(.active) {
@@ -502,7 +502,7 @@ export const ChartConfigurationComponent: React.FC<ChartConfigurationProps> = ({
         }
 
         input:checked + .toggle-slider {
-          background: var(--gradient-primary);
+          background: var(--mm-color-primary-600);
         }
 
         input:checked + .toggle-slider:before {
