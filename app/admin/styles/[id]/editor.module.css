@@ -320,3 +320,62 @@
     justify-content: center;
   }
 }
+
+/* WHAT: Scope sections (Report / Landing) wrapping the collapsible categories.
+   WHY: The editor grew to 54 fields in one flat scroll with report and landing
+   settings interleaved, so finding one colour meant scanning every group. */
+.scope {
+  margin-bottom: var(--mm-space-6);
+}
+
+.scopeTitle {
+  display: flex;
+  align-items: center;
+  gap: var(--mm-space-2);
+  margin: 0 0 var(--mm-space-3);
+  padding-bottom: var(--mm-space-2);
+  border-bottom: 2px solid var(--mm-border-color-default);
+  font-size: var(--mm-font-size-base);
+  font-weight: var(--mm-font-weight-semibold);
+  color: var(--mm-gray-900);
+}
+
+.scopeCount {
+  padding: 0 var(--mm-space-2);
+  border-radius: var(--mm-radius-full);
+  background: var(--mm-gray-100);
+  color: var(--mm-gray-600);
+  font-size: var(--mm-font-size-xs);
+  font-weight: var(--mm-font-weight-medium);
+}
+
+/* .category is a <details> now; its <summary> is the click target. */
+.category > summary {
+  cursor: pointer;
+  list-style: none;
+  display: flex;
+  align-items: center;
+  gap: var(--mm-space-2);
+  padding: var(--mm-space-2) 0;
+  user-select: none;
+}
+
+.category > summary::-webkit-details-marker {
+  display: none;
+}
+
+.category > summary::before {
+  content: '▸';
+  color: var(--mm-gray-400);
+  transition: transform var(--transition-base);
+}
+
+.category[open] > summary::before {
+  transform: rotate(90deg);
+}
+
+.category > summary:focus-visible {
+  outline: 2px solid var(--mm-border-color-focus);
+  outline-offset: 2px;
+  border-radius: var(--mm-radius-sm);
+}

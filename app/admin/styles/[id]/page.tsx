@@ -32,6 +32,8 @@ export default function StyleEditorPage() {
   const isNew = id === 'new';
 
   const [style, setStyle] = useState<ReportStyle>(DEFAULT_STYLE as ReportStyle);
+  // WHAT: Free-text filter across every field's label, key and description.
+  const [fieldFilter, setFieldFilter] = useState('');
   const [loading, setLoading] = useState(!isNew);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -163,19 +165,96 @@ export default function StyleEditorPage() {
     );
   }
 
-  // Group color fields by category
-  const categories = Array.from(new Set(COLOR_FIELDS.map(f => f.category)));
-  const fieldsByCategory = categories.map(cat => ({
-    category: cat,
-    fields: COLOR_FIELDS.filter(f => f.category === cat)
-  }));
+  // WHAT: Split the 54 fields into Report and Landing scopes, then group by
+  //   category within each.
+  // WHY: Landing-only fields are irrelevant while styling a report and vice
+  //   versa, but they were interleaved in one flat scroll, so finding a single
+  //   field meant scanning every group. Scope first, then category, then filter.
+  const isLanding = (category: string) => category.toLowerCase().startsWith('landing');
 
-  // Group dimension fields by category
-  const dimensionCategories = Array.from(new Set(DIMENSION_FIELDS.map(f => f.category)));
-  const dimensionsByCategory = dimensionCategories.map(cat => ({
-    category: cat,
-    fields: DIMENSION_FIELDS.filter(f => f.category === cat)
-  }));
+  const q = fieldFilter.trim().toLowerCase();
+  type FilterableField = { category: string; label: string; key: string; description?: string };
+  const matches = (f: FilterableField) =>
+    !q || f.label.toLowerCase().includes(q) || f.key.toLowerCase().includes(q) ||
+    (f.description ?? '').toLowerCase().includes(q);
+
+  const groupBy = <T extends FilterableField>(items: readonly T[], landing: boolean) => {
+    const wanted = items.filter(f => isLanding(f.category) === landing);
+    const cats = Array.from(new Set(wanted.map(f => f.category)));
+    return cats
+      .map(cat => ({ category: cat, fields: wanted.filter(f => f.category === cat && matches(f)) }))
+      .filter(g => g.fields.length > 0);
+  };
+
+  const reportColors = groupBy(COLOR_FIELDS, false);
+  const landingColors = groupBy(COLOR_FIELDS, true);
+  const reportDims = groupBy(DIMENSION_FIELDS, false);
+  const landingDims = groupBy(DIMENSION_FIELDS, true);
+  const totalMatches =
+    [...reportColors, ...landingColors, ...reportDims, ...landingDims]
+      .reduce((n, g) => n + g.fields.length, 0);
+
+  // WHAT: One scope (Report or Landing) as collapsible category sections.
+  // WHY: <details> gives keyboard support and open/close for free; sections are
+  //   forced open while a filter is active so matches are never hidden inside a
+  //   collapsed group.
+  const renderScope = (
+    title: string,
+    colorGroups: { category: string; fields: typeof COLOR_FIELDS }[],
+    dimGroups: { category: string; fields: typeof DIMENSION_FIELDS }[]
+  ) => {
+    const count =
+      colorGroups.reduce((n, g) => n + g.fields.length, 0) +
+      dimGroups.reduce((n, g) => n + g.fields.length, 0);
+    if (count === 0) return null;
+    const forceOpen = fieldFilter.trim().length > 0;
+    return (
+      <section className={styles.scope} key={title}>
+        <h4 className={styles.scopeTitle}>{title} <span className={styles.scopeCount}>{count}</span></h4>
+        {colorGroups.map(({ category, fields }) => (
+          <details key={category} className={styles.category} open={forceOpen || !title.startsWith('Landing')}>
+            <summary className={styles.categoryTitle}>
+              {category} <span className={styles.scopeCount}>{fields.length}</span>
+            </summary>
+            <div className={styles.categoryFields}>
+              {fields.map(field => (
+                <ColorPickerField
+                  key={field.key}
+                  label={field.label}
+                  description={field.description}
+                  value={style[field.key] || HEX8_OPAQUE_BLACK}
+                  onChange={(value) => handleChange(field.key, value)}
+                />
+              ))}
+            </div>
+          </details>
+        ))}
+        {dimGroups.map(({ category, fields }) => (
+          <details key={category} className={styles.category} open={forceOpen}>
+            <summary className={styles.categoryTitle}>
+              {category} <span className={styles.scopeCount}>{fields.length}</span>
+            </summary>
+            <div className={styles.categoryFields}>
+              {fields.map(field => (
+                <div key={field.key} className={styles.formGroup}>
+                  <label className={styles.label} htmlFor={`dim-${field.key}`}>{field.label}</label>
+                  <input
+                    id={`dim-${field.key}`}
+                    type="text"
+                    value={style[field.key] ?? field.default}
+                    onChange={(e) => handleChange(field.key, e.target.value)}
+                    placeholder={field.placeholder ?? field.default}
+                    className={styles.textInput}
+                  />
+                  {field.description && <small className={styles.hint}>{field.description}</small>}
+                </div>
+              ))}
+            </div>
+          </details>
+        ))}
+      </section>
+    );
+  };
 
   return (
     <div className={styles.container}>
@@ -271,55 +350,27 @@ export default function StyleEditorPage() {
             </div>
           </div>
 
-          {/* Color Fields by Category */}
-          <div className={styles.colorFields}>
-            {fieldsByCategory.map(({ category, fields }) => (
-              <div key={category} className={styles.category}>
-                <h4 className={styles.categoryTitle}>{category}</h4>
-                <div className={styles.categoryFields}>
-                  {fields.map(field => (
-                    <ColorPickerField
-                      key={field.key}
-                      label={field.label}
-                      description={field.description}
-                      value={style[field.key] || HEX8_OPAQUE_BLACK}
-                      onChange={(value) => handleChange(field.key, value)}
-                    />
-                  ))}
-                </div>
-              </div>
-            ))}
+          {/* WHAT: One filter across all 54 fields. WHY: scrolling nine
+              categories to find a single colour was the main complaint. */}
+          <div className={styles.formGroup}>
+            <label className={styles.label} htmlFor="field-filter">Find a setting</label>
+            <input
+              id="field-filter"
+              type="search"
+              value={fieldFilter}
+              onChange={(e) => setFieldFilter(e.target.value)}
+              placeholder="e.g. background, title, bar"
+              className={styles.textInput}
+            />
+            {fieldFilter.trim() && (
+              <small className={styles.hint}>
+                {totalMatches} {totalMatches === 1 ? 'setting' : 'settings'} match
+              </small>
+            )}
           </div>
 
-          {/* Dimension & surface fields (spacing, radius, shadow, typography) */}
-          <div className={styles.dimensionFields}>
-            <h4 className={styles.dimensionSectionTitle}>Dimensions & surfaces</h4>
-            {dimensionsByCategory.map(({ category, fields }) => (
-              <div key={category} className={styles.category}>
-                <h4 className={styles.categoryTitle}>{category}</h4>
-                <div className={styles.categoryFields}>
-                  {fields.map(field => (
-                    <div key={field.key} className={styles.formGroup}>
-                      <label className={styles.label} htmlFor={`dim-${field.key}`}>
-                        {field.label}
-                      </label>
-                      <input
-                        id={`dim-${field.key}`}
-                        type="text"
-                        value={style[field.key] ?? field.default}
-                        onChange={(e) => handleChange(field.key, e.target.value)}
-                        placeholder={field.placeholder ?? field.default}
-                        className={styles.textInput}
-                      />
-                      {field.description && (
-                        <small className={styles.hint}>{field.description}</small>
-                      )}
-                    </div>
-                  ))}
-                </div>
-              </div>
-            ))}
-          </div>
+          {renderScope('Report', reportColors, reportDims)}
+          {renderScope('Landing page', landingColors, landingDims)}
         </div>
       </div>
     </div>
