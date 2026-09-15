@@ -42,7 +42,9 @@ export async function PUT(
     const paramsResolved = await context.params;
     id = paramsResolved.id;
     const body = await request.json();
-    const { newRole } = body as { newRole: UserRole };
+    // followSso: true hands the role back to SSO (clears the local pin) so this is
+    // not a one-way door. Omitted/false pins the role locally.
+    const { newRole, followSso } = body as { newRole: UserRole; followSso?: boolean };
     
     // WHAT: Validate new role (allow all canonical roles except 'api' for UI role changes; api is set via local-users)
     const validRoles: UserRole[] = USER_ROLES.filter((r) => r !== 'api');
@@ -76,7 +78,10 @@ export async function PUT(
     
     // WHAT: Check if role actually changed
     // WHY: Skip unnecessary database update
-    if (targetUser.role === newRole) {
+    // NOTE: also re-run when the local/SSO pin differs from what was asked, so
+    //       "same role, but hand it back to SSO" is not treated as a no-op.
+    const pinUnchanged = Boolean(targetUser.roleManagedLocally) === !followSso;
+    if (targetUser.role === newRole && pinUnchanged) {
       return NextResponse.json({
         success: true,
         message: 'Role unchanged',
@@ -95,16 +100,19 @@ export async function PUT(
     
     await usersCollection.updateOne(
       { _id: new ObjectId(id) },
-      { 
-        $set: { 
+      {
+        $set: {
           role: newRole,
+          // Pin the role so the next SSO sign-in does not revert it. followSso
+          // hands control back to SSO instead.
+          roleManagedLocally: !followSso,
           updatedAt: now,
-        } 
+        }
       }
     );
     
     // WHAT: Log role change for audit trail
-    logInfo('Role changed', { context: 'admin-users-role', targetUserId: id, targetUserEmail: targetUser.email, oldRole: targetUser.role, newRole, changedBy: currentUser.email });
+    logInfo('Role changed', { context: 'admin-users-role', targetUserId: id, targetUserEmail: targetUser.email, oldRole: targetUser.role, newRole, roleManagedLocally: !followSso, changedBy: currentUser.email });
     
     // WHAT: Fetch updated user
     const updatedUser = await findUserById(id);

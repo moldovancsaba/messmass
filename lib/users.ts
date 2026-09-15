@@ -42,6 +42,13 @@ export interface UserDoc {
   //   this account even if their SSO email changes; also the join key if messmass
   //   ever needs to push permission changes back to SSO like launchmass does.
   ssoUserId?: string
+  // WHAT: Set when a superadmin changes this user's role from the messmass admin UI.
+  // WHY: SSO is normally the source of truth and every login rewrites `role` to the
+  //   SSO app-permission (lib/auth/mintSession.ts). Without this flag a local role
+  //   change silently reverted on the target user's next sign-in. When true, the
+  //   login sync leaves `role` alone. It never affects ACCESS: hasAppAccess() still
+  //   gates sign-in entirely, so revoking someone in SSO still locks them out.
+  roleManagedLocally?: boolean
   // API Access fields (v10.5.1+)
   apiKeyEnabled?: boolean // Enable/disable API access for this user (default: false)
   apiUsageCount?: number // Track API calls made with this user's key

@@ -78,14 +78,24 @@ export async function mintMessmassSessionForSsoUser(
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
     });
-  } else if (user.ssoUserId !== ssoUser.id || user.role !== mappedRole) {
-    // Keep the local cache in sync with SSO (source of truth for role).
-    const col = await getUsersCollection();
-    await col.updateOne(
-      { _id: user._id },
-      { $set: { ssoUserId: ssoUser.id, role: mappedRole, updatedAt: new Date().toISOString() } }
-    );
-    user = { ...user, ssoUserId: ssoUser.id, role: mappedRole };
+  } else {
+    // SSO is the default source of truth for role, but a superadmin can pin a role
+    // locally (roleManagedLocally) and that must survive the next sign-in -- before
+    // this, the $set below silently reverted every local role change.
+    // Access is NOT affected: hasAppAccess() above still gates sign-in, so a user
+    // revoked in SSO cannot log in no matter what role is pinned here.
+    const syncRole = !user.roleManagedLocally && user.role !== mappedRole;
+    const linkSso = user.ssoUserId !== ssoUser.id;
+    if (syncRole || linkSso) {
+      const col = await getUsersCollection();
+      const update: Record<string, unknown> = {
+        ssoUserId: ssoUser.id,
+        updatedAt: new Date().toISOString(),
+      };
+      if (syncRole) update.role = mappedRole;
+      await col.updateOne({ _id: user._id }, { $set: update });
+      user = { ...user, ssoUserId: ssoUser.id, ...(syncRole ? { role: mappedRole } : {}) };
+    }
   }
 
   const tokenData: SessionTokenData = {

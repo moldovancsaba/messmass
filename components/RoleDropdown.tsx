@@ -14,7 +14,9 @@ interface RoleDropdownProps {
   currentRole: UserRole;
   currentUserRole: UserRole | undefined;
   currentUserId: string | undefined;
-  onRoleChange: (userId: string, newRole: UserRole) => Promise<void>;
+  onRoleChange: (userId: string, newRole: UserRole, followSso?: boolean) => Promise<void>;
+  /** True when a superadmin pinned this role locally, so SSO will not rewrite it. */
+  roleManagedLocally?: boolean;
   disabled?: boolean;
 }
 
@@ -28,6 +30,7 @@ export default function RoleDropdown({
   currentUserRole,
   currentUserId,
   onRoleChange,
+  roleManagedLocally = false,
   disabled = false,
 }: RoleDropdownProps) {
   const [isOpen, setIsOpen] = useState(false);
@@ -54,7 +57,7 @@ export default function RoleDropdown({
   // WHAT: Available roles for dropdown
   const roles: UserRole[] = ['guest', 'user', 'admin', 'superadmin'];
   
-  const handleRoleSelect = async (newRole: UserRole) => {
+  const handleRoleSelect = async (newRole: UserRole, followSso = false) => {
     if (newRole === currentRole) {
       setIsOpen(false);
       return;
@@ -69,7 +72,7 @@ export default function RoleDropdown({
     
     setChanging(true);
     try {
-      await onRoleChange(userId, newRole);
+      await onRoleChange(userId, newRole, followSso);
       setIsOpen(false);
     } catch (error) {
       console.error('Failed to change role:', error);
@@ -123,9 +126,16 @@ export default function RoleDropdown({
           gap: '4px',
           opacity: disabled || changing ? 0.6 : 1,
         }}
-        title={isSelf ? 'Your role (cannot demote yourself)' : 'Click to change role'}
+        title={
+          isSelf
+            ? 'Your role (cannot demote yourself)'
+            : roleManagedLocally
+              ? 'Pinned in messmass — SSO will not change it'
+              : 'Managed by SSO — resets to the SSO role at this user\'s next sign-in'
+        }
       >
         {currentConfig.icon} {currentConfig.label}
+        {roleManagedLocally && <span style={{ marginLeft: '2px' }} aria-label="pinned locally">📌</span>} {/* eslint-disable-line react/forbid-dom-props */}
         {!disabled && !changing && <span style={{ marginLeft: '4px' }}>▼</span>} {/* eslint-disable-line react/forbid-dom-props */}
         {changing && <span style={{ marginLeft: '4px' }}>⏳</span>} {/* eslint-disable-line react/forbid-dom-props */}
       </button>
@@ -187,6 +197,28 @@ export default function RoleDropdown({
               </button>
             );
           })}
+          {roleManagedLocally && !isSelf && (
+            <button
+              type="button"
+              onClick={() => handleRoleSelect(currentRole, true)}
+              className="role-dropdown-item"
+              style={{ // eslint-disable-line react/forbid-dom-props
+                display: 'block',
+                width: '100%',
+                padding: '8px 12px',
+                border: 'none',
+                borderTop: '1px solid var(--mm-gray-200)',
+                backgroundColor: 'transparent',
+                color: 'var(--mm-gray-600)',
+                fontSize: '0.8125rem',
+                textAlign: 'left',
+                cursor: 'pointer',
+              }}
+              title="Stop pinning this role; SSO sets it again at the next sign-in"
+            >
+              ↩︎ Follow SSO again
+            </button>
+          )}
         </div>
       )}
     </div>

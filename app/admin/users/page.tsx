@@ -264,10 +264,11 @@ export default function AdminUsersPageUnified() {
   
   // WHAT: Role change handler for RoleDropdown
   // WHY: Enable superadmins to promote/demote users
-  const onRoleChange = async (userId: string, newRole: UserRole) => {
+  const onRoleChange = async (userId: string, newRole: UserRole, followSso?: boolean) => {
     try {
       const data = await apiPut(`/api/admin/users/${userId}/role`, {
         newRole,
+        followSso,
       });
       
       if (data.success) {
@@ -301,6 +302,7 @@ export default function AdminUsersPageUnified() {
               <RoleDropdown
                 userId={user.id}
                 currentRole={user.role as UserRole}
+                roleManagedLocally={user.roleManagedLocally}
                 currentUserRole={currentUser?.role}
                 currentUserId={currentUser?.id}
                 onRoleChange={onRoleChange}
@@ -339,6 +341,7 @@ export default function AdminUsersPageUnified() {
               <RoleDropdown
                 userId={user.id}
                 currentRole={user.role as UserRole}
+                roleManagedLocally={user.roleManagedLocally}
                 currentUserRole={currentUser?.role}
                 currentUserId={currentUser?.id}
                 onRoleChange={onRoleChange}

@@ -85,6 +85,10 @@ export async function GET(request: NextRequest) {
         email: u.email,
         name: u.name,
         role: u.role,
+        // WHAT: Whether this role is pinned locally or synced from SSO on each login.
+        // WHY: Without it the UI cannot tell an admin that an SSO-managed role will
+        //      be rewritten at the user's next sign-in.
+        roleManagedLocally: u.roleManagedLocally || false,
         // WHAT: Include API access fields (v10.5.1+)
         // WHY: Admin UI needs to display/manage API access settings
         apiKeyEnabled: u.apiKeyEnabled || false,
