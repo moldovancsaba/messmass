@@ -121,8 +121,13 @@ export default async function RootLayout({
   // WHAT: Dynamic CSS variable for active font - WHY: Font selection must be injected as CSS variable, cannot use CSS classes
   
   return (
-    <html 
-      lang="en" 
+    <html
+      lang="en"
+      // ColorSchemeScript sets data-mantine-color-scheme on <html> from an inline
+      // script that runs before hydration, so the server markup never matches.
+      // Mantine prescribes suppressHydrationWarning here; it is scoped to this
+      // element's own attributes and hides no other mismatch.
+      suppressHydrationWarning
       className={`${inter.variable} ${roboto.variable} ${poppins.variable} ${montserrat.variable} ${pacifico.variable}`}
       data-font={selectedFont}
       // eslint-disable-next-line react/forbid-dom-props
