@@ -1326,9 +1326,11 @@
   justify-content: center;
   padding: var(--mm-space-6);
   text-align: center;
-  color: var(--mm-text-secondary, var(--mm-gray-500));
-  background: var(--chartBackground, var(--mm-white));
-  border: 2px dashed var(--mm-border-color-default, var(--mm-gray-200));
+  /* The editor already exposes chart error and no-data colours; this fallback
+     ignored them, so a failed chart stayed light-on-light regardless of theme. */
+  color: var(--chartErrorText, var(--mm-text-secondary, var(--mm-gray-500)));
+  background: var(--chartErrorBackground, var(--chartBackground, var(--mm-white)));
+  border: 2px dashed var(--chartNoDataBorder, var(--mm-border-color-default, var(--mm-gray-200)));
   border-radius: var(--mm-radius-lg);
   min-height: 120px;
 }
@@ -1343,12 +1345,12 @@
   font-size: var(--mm-font-size-base, 1rem);
   font-weight: var(--mm-font-weight-semibold, 600);
   margin-bottom: var(--mm-space-2);
-  color: var(--mm-text-primary, var(--mm-gray-700));
+  color: var(--chartErrorText, var(--mm-text-primary, var(--mm-gray-700)));
 }
 
 .chartErrorMessage {
   font-size: var(--mm-font-size-sm, 0.875rem);
-  color: var(--mm-text-secondary, var(--mm-gray-500));
+  color: var(--chartErrorText, var(--mm-text-secondary, var(--mm-gray-500)));
   line-height: 1.5;
   max-width: 100%;
   word-wrap: break-word;

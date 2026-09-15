@@ -34,13 +34,13 @@
 .emptyTitle {
   font-size: var(--mm-font-size-2xl);
   font-weight: var(--mm-font-weight-semibold);
-  color: var(--mm-gray-700);
+  color: var(--headingColor, var(--mm-gray-700));
   margin-bottom: var(--mm-space-2);
 }
 
 .emptyText {
   font-size: var(--mm-font-size-base);
-  color: var(--mm-gray-500);
+  color: var(--textColor, var(--mm-gray-500));
   max-width: 400px;
 }
 
