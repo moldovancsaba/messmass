@@ -8,38 +8,42 @@
 //     to the light default -- a dark report came back with a white page and an
 //     unreadable near-black section heading, which is the original reported bug
 //     re-introduced through the very field meant to fix it.
+// HOW: Sentinel strings rather than hex literals -- the function only copies
+//     values between fields and never parses them, so naming which field a value
+//     came from tests the behaviour more directly than a colour would (and keeps
+//     raw colour literals out of a non-theme file, which gds-compliance blocks).
 
 import { withEffectiveStyleDefaults } from '@/lib/reportStyleTypes';
 
 describe('withEffectiveStyleDefaults', () => {
-  it('seeds a dark style from its own palette, not the light default', () => {
+  it('seeds each field from its own sibling, not a generic default', () => {
     const out = withEffectiveStyleDefaults({
-      heroBackground: '#34003eff',
-      headingColor: '#ffffffff',
+      heroBackground: 'HERO',
+      headingColor: 'HEADING',
     });
-    expect(out.pageBackground).toBe('#34003eff');
-    expect(out.blockTitleColor).toBe('#ffffffff');
+    expect(out.pageBackground).toBe('HERO');
+    expect(out.blockTitleColor).toBe('HEADING');
   });
 
   it('leaves explicitly chosen values alone', () => {
     const out = withEffectiveStyleDefaults({
-      heroBackground: '#34003eff',
-      headingColor: '#ffffffff',
-      pageBackground: '#123456ff',
-      blockTitleColor: '#abcdefff',
+      heroBackground: 'HERO',
+      headingColor: 'HEADING',
+      pageBackground: 'CHOSEN_PAGE',
+      blockTitleColor: 'CHOSEN_TITLE',
     });
-    expect(out.pageBackground).toBe('#123456ff');
-    expect(out.blockTitleColor).toBe('#abcdefff');
+    expect(out.pageBackground).toBe('CHOSEN_PAGE');
+    expect(out.blockTitleColor).toBe('CHOSEN_TITLE');
   });
 
-  it('is a no-op round trip: seeding then saving cannot change appearance', () => {
-    const stored = { heroBackground: '#0f172aff', headingColor: '#f8fafcff' };
+  it('is idempotent: seeding then saving cannot change appearance', () => {
+    const stored = { heroBackground: 'HERO', headingColor: 'HEADING' };
     const once = withEffectiveStyleDefaults(stored);
     const twice = withEffectiveStyleDefaults(once);
     expect(twice).toEqual(once);
   });
 
-  it('does not invent a colour when the sibling field is missing too', () => {
+  it('does not invent a value when the sibling field is missing too', () => {
     const out = withEffectiveStyleDefaults({});
     expect(out.pageBackground).toBeUndefined();
     expect(out.blockTitleColor).toBeUndefined();
