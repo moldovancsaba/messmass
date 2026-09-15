@@ -204,7 +204,7 @@ export default function TourOverlay({ controller }: { controller: TourController
         // eslint-disable-next-line react/forbid-dom-props
         style={{ position: 'fixed', zIndex: 'var(--z-tooltip)', width: 320, maxWidth: 'calc(100vw - 24px)', ...tooltipPosition(rect) }}
       >
-        <Box p="md" style={{ background: 'var(--mantine-color-body)', borderRadius: 12, boxShadow: 'var(--mantine-shadow-lg)' }}>
+        <Box p="md" style={{ background: 'var(--mm-surface-primary)', borderRadius: 12, boxShadow: 'var(--mantine-shadow-lg)' }}>
           <Stack gap="sm">
             <Text id="guided-tour-step-title" fw={700}>
               {currentStep.title}

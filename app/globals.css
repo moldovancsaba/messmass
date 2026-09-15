@@ -96,6 +96,16 @@ html {
   background: var(--page-bg, var(--mm-gray-50));
 }
 
+/* GdsProvider's MantineProvider renders a full-viewport wrapper div with an
+   INLINE background:var(--mantine-color-body), which paints over html's
+   background. --mantine-color-body is Mantine's "page body color", so pointing
+   it at --page-bg is the intended use, not an override. Specificity must beat
+   Mantine's own :root[data-mantine-color-scheme="light"] (0,2,0) since that is
+   injected at runtime and would otherwise win on source order. */
+html:root[data-mantine-color-scheme] {
+  --mantine-color-body: var(--page-bg, var(--mm-gray-50));
+}
+
 body {
   min-height: 100vh;
   max-width: 100vw;
