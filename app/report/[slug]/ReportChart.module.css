@@ -579,7 +579,9 @@
 
 .barTitle {
   /* WHAT: P1 1.5 Phase 2 - Use block-level typography instead of independent scaling */
-  font-size: var(--block-base-font-size);
+  /* ponytail: same 8cqh cap as CellWrapper .titleZone — uncapped block-base-font-size
+     consumed most of the card height on wide cards */
+  font-size: min(var(--block-base-font-size), 8cqh);
   font-weight: var(--mm-font-weight-semibold);
   color: var(--chartTitleColor);
   margin-bottom: var(--mm-space-1);
@@ -596,7 +598,11 @@
   border-collapse: separate;
   border-spacing: 0 var(--mm-space-2); /* WHAT: Consistent row gap using border-spacing - increased for better visual separation */
   table-layout: fixed; /* WHAT: Fixed layout for consistent column widths, respects width: 100% */
-  height: auto; /* WHAT: Auto height to fit all rows - Layout Grammar: content must fit through structural changes, not clipping */
+  /* ponytail: flex:1 expands the table to fill the body zone so rows distribute evenly
+     through available height — eliminates the whitespace gap when table is shorter than
+     the zone; the parent .chartBody is a flex column so this works reliably */
+  flex: 1;
+  height: 0; /* WHAT: Required alongside flex:1 so flex sizing takes over from the table's natural height */
   margin: 0 auto; /* WHAT: Center table horizontally in flex container */
   box-sizing: border-box;
   /* WHAT: Removed max-height constraint - Layout Grammar: if content doesn't fit, apply reflow/aggregation/height increase, not clipping */
@@ -667,12 +673,12 @@
   /* WHY: Track fills available space between label and value, must maintain readable thickness */
   /* HOW: 100% width of table cell, minimum height constraint, centered vertically */
   background: var(--chartNoDataBackground);
-  /* ponytail: 4cqh matches the label font cap so bars scale with text; clamp keeps a
-     reasonable pill shape on very short or very tall cards */
-  height: clamp(0.75rem, 4cqh, 1rem);
-  min-height: clamp(0.75rem, 4cqh, 1rem);
+  /* ponytail: 6cqh — noticeably taller than the 4cqh label text (1.5× ratio),
+     capped at 1.5rem so bars stay reasonable on very tall cards */
+  height: clamp(0.875rem, 6cqh, 1.5rem);
+  min-height: clamp(0.875rem, 6cqh, 1.5rem);
   width: 100%; /* CRITICAL: Fills entire table cell */
-  border-radius: calc(clamp(0.75rem, 4cqh, 1rem) / 2);
+  border-radius: calc(clamp(0.875rem, 6cqh, 1.5rem) / 2);
   overflow: hidden; /* Layout Grammar: decorative - bar track shape only, fill is content and fully visible */
   /* WHAT: Table cell vertical-align handles centering, no align-self needed */
 }
@@ -684,7 +690,7 @@
   height: 100%;
   width: var(--bar-width, 0%);
   background-color: var(--bar-color, var(--barColor1, var(--mm-color-primary-500)));
-  border-radius: calc(clamp(0.75rem, 4cqh, 1rem) / 2);
+  border-radius: calc(clamp(0.875rem, 6cqh, 1.5rem) / 2);
   transition: width var(--transition-normal);
 }
 
