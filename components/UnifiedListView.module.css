@@ -28,7 +28,7 @@
 }
 
 .table thead th {
-  padding: var(--mm-spacing-md, 16px);
+  padding: var(--mm-space-md);
   text-align: left;
   font-weight: var(--mm-font-weight-semibold);
   color: var(--mm-gray-700);
@@ -39,7 +39,7 @@
 .headerContent {
   display: flex;
   align-items: center;
-  gap: var(--mm-spacing-xs, 8px);
+  gap: var(--mm-space-xs);
 }
 
 /* WHAT: Sortable column styling */
@@ -92,7 +92,7 @@
 }
 
 .table tbody td {
-  padding: var(--mm-spacing-md, 16px);
+  padding: var(--mm-space-md);
   color: var(--mm-gray-700);
   vertical-align: middle;
 }
@@ -132,7 +132,7 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: var(--mm-spacing-2xl, 64px) var(--mm-spacing-lg, 24px);
+  padding: var(--mm-space-2xl) var(--mm-space-lg);
   text-align: center;
   background: var(--mm-white);
   border-radius: var(--mm-radius-lg, 8px);
@@ -141,7 +141,7 @@
 
 .emptyIcon {
   font-size: 4rem;
-  margin-bottom: var(--mm-spacing-md, 16px);
+  margin-bottom: var(--mm-space-md);
   opacity: 0.5;
 }
 
@@ -149,7 +149,7 @@
   font-size: var(--mm-font-size-xl);
   font-weight: var(--mm-font-weight-semibold);
   color: var(--mm-gray-900);
-  margin-bottom: var(--mm-spacing-xs, 8px);
+  margin-bottom: var(--mm-space-xs);
 }
 
 .emptyMessage {
@@ -187,10 +187,10 @@
   
   .row {
     display: block;
-    margin-bottom: var(--mm-spacing-md, 16px);
+    margin-bottom: var(--mm-space-md);
     border: 1px solid var(--mm-gray-200);
     border-radius: var(--mm-radius-md, 6px);
-    padding: var(--mm-spacing-md, 16px);
+    padding: var(--mm-space-md);
     background: var(--mm-white);
   }
   
@@ -212,16 +212,16 @@
   }
 
   .mobilePrimary {
-    margin-bottom: var(--mm-spacing-md, 16px);
-    padding-bottom: var(--mm-spacing-md, 16px);
+    margin-bottom: var(--mm-space-md);
+    padding-bottom: var(--mm-space-md);
     border-bottom: 1px solid var(--mm-gray-200);
   }
 
   .mobileSecondary {
     display: flex !important;
     justify-content: space-between;
-    gap: var(--mm-spacing-sm, 12px);
-    margin-bottom: var(--mm-spacing-xs, 8px);
+    gap: var(--mm-space-sm);
+    margin-bottom: var(--mm-space-xs);
     color: var(--mm-gray-700);
   }
 
@@ -236,13 +236,13 @@
     width: 100% !important;
     min-width: 0;
     display: block !important;
-    margin-top: var(--mm-spacing-sm, 12px);
+    margin-top: var(--mm-space-sm);
   }
 
   .actionsCell::before {
     content: attr(data-label);
     display: block;
-    margin-bottom: var(--mm-spacing-xs, 8px);
+    margin-bottom: var(--mm-space-xs);
     color: var(--mm-gray-500);
     font-size: var(--mm-font-size-xs);
     font-weight: var(--mm-font-weight-semibold);
@@ -253,14 +253,14 @@
   /* WHAT: Loading skeleton rows */
   .skeletonRow {
     display: block;
-    margin-bottom: var(--mm-spacing-md, 16px);
+    margin-bottom: var(--mm-space-md);
     border: 1px solid var(--mm-gray-200);
     border-radius: var(--mm-radius-md, 6px);
-    padding: var(--mm-spacing-md, 16px);
+    padding: var(--mm-space-md);
   }
   
   .skeletonRow td {
     display: block;
-    margin-bottom: var(--mm-spacing-sm, 12px);
+    margin-bottom: var(--mm-space-sm);
   }
 }

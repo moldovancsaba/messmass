@@ -5,14 +5,14 @@
 .rail {
   display: flex;
   align-items: stretch;
-  gap: var(--mm-spacing-xs, 8px);
+  gap: var(--mm-space-xs);
   width: 100%;
 }
 
 .visibleActions {
   display: flex;
   align-items: stretch;
-  gap: var(--mm-spacing-xs, 8px);
+  gap: var(--mm-space-xs);
   flex: 1;
   min-width: 0;
 }
@@ -22,10 +22,10 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: var(--mm-spacing-xs, 6px);
+  gap: var(--mm-space-xs);
   min-height: 44px;
   min-width: 44px;
-  padding: var(--mm-spacing-xs, 8px) var(--mm-spacing-sm, 12px);
+  padding: var(--mm-space-xs) var(--mm-space-sm);
   border: 1px solid var(--mm-gray-300);
   border-radius: var(--mm-radius-md, 8px);
   background: var(--mm-white);
@@ -121,9 +121,9 @@
   z-index: 20;
   display: grid;
   min-width: 220px;
-  gap: var(--mm-spacing-xs, 8px);
-  margin-top: var(--mm-spacing-xs, 8px);
-  padding: var(--mm-spacing-xs, 8px);
+  gap: var(--mm-space-xs);
+  margin-top: var(--mm-space-xs);
+  padding: var(--mm-space-xs);
   border: 1px solid var(--mm-gray-200);
   border-radius: var(--mm-radius-lg, 12px);
   background: var(--mm-white);
@@ -136,7 +136,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: var(--mm-spacing-xs, 8px) var(--mm-spacing-sm, 12px);
+  padding: var(--mm-space-xs) var(--mm-space-sm);
   border: 1px dashed var(--mm-gray-300);
   border-radius: var(--mm-radius-md, 8px);
   color: var(--mm-gray-600);

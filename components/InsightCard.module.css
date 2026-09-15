@@ -11,8 +11,8 @@
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: var(--radius);
-  padding: var(--spacing-md);
-  margin-bottom: var(--spacing-md);
+  padding: var(--mm-space-md);
+  margin-bottom: var(--mm-space-md);
   transition: all 0.2s ease;
 }
 
@@ -29,8 +29,8 @@
 /* WHAT: Compact mode for dashboard overview */
 /* WHY: Space-efficient display */
 .card.compact {
-  padding: var(--spacing-sm);
-  margin-bottom: var(--spacing-sm);
+  padding: var(--mm-space-sm);
+  margin-bottom: var(--mm-space-sm);
 }
 
 .card.compact .description,
@@ -60,15 +60,15 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: var(--spacing-sm);
-  padding-bottom: var(--spacing-sm);
+  margin-bottom: var(--mm-space-sm);
+  padding-bottom: var(--mm-space-sm);
   border-bottom: 1px solid var(--border-light);
 }
 
 .typeIcon {
   display: flex;
   align-items: center;
-  gap: var(--spacing-xs);
+  gap: var(--mm-space-xs);
   font-size: var(--font-sm);
 }
 
@@ -84,7 +84,7 @@
 
 .badges {
   display: flex;
-  gap: var(--spacing-xs);
+  gap: var(--mm-space-xs);
 }
 
 /* WHAT: Severity badge styles */
@@ -127,7 +127,7 @@
 .content {
   display: flex;
   flex-direction: column;
-  gap: var(--spacing-sm);
+  gap: var(--mm-space-sm);
 }
 
 .title {
@@ -142,7 +142,7 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: var(--spacing-xs) 0;
+  padding: var(--mm-space-xs) 0;
 }
 
 .metric {
@@ -157,7 +157,7 @@
   color: var(--text-primary);
   display: flex;
   align-items: center;
-  gap: var(--spacing-xs);
+  gap: var(--mm-space-xs);
 }
 
 .change {
@@ -189,7 +189,7 @@
   display: flex;
   flex-direction: column;
   gap: 4px;
-  padding: var(--spacing-sm);
+  padding: var(--mm-space-sm);
   background: var(--surface-secondary);
   border-radius: var(--radius-sm);
 }
@@ -228,7 +228,7 @@
 /* WHAT: Recommendation box */
 /* WHY: Highlight actionable suggestions */
 .recommendation {
-  padding: var(--spacing-sm);
+  padding: var(--mm-space-sm);
   background: var(--info-light);
   border-left: 3px solid var(--info);
   border-radius: var(--radius-sm);
@@ -236,7 +236,7 @@
 
 .recommendation strong {
   display: block;
-  margin-bottom: var(--spacing-xs);
+  margin-bottom: var(--mm-space-xs);
   color: var(--info-dark);
   font-size: var(--font-sm);
 }
@@ -253,7 +253,7 @@
 .relatedEvents {
   font-size: var(--font-sm);
   color: var(--text-secondary);
-  padding: var(--spacing-xs);
+  padding: var(--mm-space-xs);
   background: var(--surface-secondary);
   border-radius: var(--radius-sm);
   display: inline-block;
@@ -262,8 +262,8 @@
 /* WHAT: Footer with timestamp */
 /* WHY: Show when insight was generated */
 .footer {
-  margin-top: var(--spacing-sm);
-  padding-top: var(--spacing-sm);
+  margin-top: var(--mm-space-sm);
+  padding-top: var(--mm-space-sm);
   border-top: 1px solid var(--border-light);
 }
 
@@ -277,18 +277,18 @@
 /* WHY: Mobile-friendly layout */
 @media (max-width: 768px) {
   .card {
-    padding: var(--spacing-sm);
+    padding: var(--mm-space-sm);
   }
 
   .header {
     flex-direction: column;
     align-items: flex-start;
-    gap: var(--spacing-xs);
+    gap: var(--mm-space-xs);
   }
 
   .metricRow {
     flex-direction: column;
     align-items: flex-start;
-    gap: var(--spacing-xs);
+    gap: var(--mm-space-xs);
   }
 }

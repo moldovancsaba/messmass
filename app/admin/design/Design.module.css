@@ -25,7 +25,7 @@
   background: var(--mm-gray-100);
   color: var(--mm-gray-700);
   font-weight: var(--mm-font-weight-medium);
-  font-size: var(--mm-text-sm);
+  font-size: var(--mm-font-size-sm);
   cursor: pointer;
   transition: all var(--transition-base);
 }
@@ -49,21 +49,21 @@
 ======================================== */
 
 .sectionTitle {
-  font-size: var(--mm-text-2xl);
+  font-size: var(--mm-font-size-2xl);
   font-weight: var(--mm-font-weight-bold);
   color: var(--mm-gray-900);
   margin-bottom: var(--mm-space-4);
 }
 
 .sectionDesc {
-  font-size: var(--mm-text-base);
+  font-size: var(--mm-font-size-base);
   color: var(--mm-gray-600);
   margin-bottom: var(--mm-space-6);
   line-height: var(--mm-line-height-md);
 }
 
 .subsectionTitle {
-  font-size: var(--mm-text-lg);
+  font-size: var(--mm-font-size-lg);
   font-weight: var(--mm-font-weight-semibold);
   color: var(--mm-gray-800);
   margin-bottom: var(--mm-space-3);
@@ -120,14 +120,14 @@
 
 .tokenName {
   font-family: var(--font-mono);
-  font-size: var(--mm-text-sm);
+  font-size: var(--mm-font-size-sm);
   color: var(--mm-color-primary-600);
   font-weight: var(--mm-font-weight-medium);
 }
 
 .tokenValue {
   font-family: var(--font-mono);
-  font-size: var(--mm-text-xs);
+  font-size: var(--mm-font-size-xs);
   color: var(--mm-gray-600);
 }
 
@@ -135,7 +135,7 @@
   border: none;
   background: transparent;
   cursor: pointer;
-  font-size: var(--mm-text-base);
+  font-size: var(--mm-font-size-base);
   padding: var(--mm-space-1);
   border-radius: var(--mm-radius-sm);
   transition: all var(--transition-fast);
@@ -163,7 +163,7 @@
   padding: var(--mm-space-4);
   border-radius: var(--mm-radius-lg);
   font-family: var(--font-mono);
-  font-size: var(--mm-text-sm);
+  font-size: var(--mm-font-size-sm);
   margin-top: var(--mm-space-4);
   overflow-x: auto;
 }
@@ -196,7 +196,7 @@
 }
 
 .warningTitle {
-  font-size: var(--mm-text-xl);
+  font-size: var(--mm-font-size-xl);
   font-weight: var(--mm-font-weight-bold);
   color: var(--mm-error);
   margin-bottom: var(--mm-space-3);
@@ -232,7 +232,7 @@
   padding: 2px 6px;
   border-radius: var(--mm-radius-sm);
   font-family: var(--font-mono);
-  font-size: var(--mm-text-sm);
+  font-size: var(--mm-font-size-sm);
 }
 
 /* ========================================

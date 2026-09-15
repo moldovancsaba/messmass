@@ -1088,8 +1088,8 @@ textarea::placeholder {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: var(--spacing-xs);
-  padding: var(--spacing-sm);
+  gap: var(--mm-space-xs);
+  padding: var(--mm-space-sm);
   border: 2px solid var(--mm-gray-200);
   border-radius: 12px;
   background: var(--mm-white);
@@ -1105,7 +1105,7 @@ textarea::placeholder {
 .hashtag-tags {
   display: flex;
   flex-wrap: wrap;
-  gap: var(--spacing-xs);
+  gap: var(--mm-space-xs);
 }
 
 .hashtag-tag {
@@ -1113,8 +1113,8 @@ textarea::placeholder {
      Why: Removed gradient, using solid primary color */
   display: inline-flex;
   align-items: center;
-  gap: var(--spacing-xs);
-  padding: 4px var(--spacing-sm);
+  gap: var(--mm-space-xs);
+  padding: 4px var(--mm-space-sm);
   background: var(--mm-color-primary-600);
   color: var(--mm-white);
   border-radius: 16px;
@@ -1157,7 +1157,7 @@ textarea::placeholder {
   font-size: 1rem;
   flex: 1;
   min-width: 120px;
-  padding: var(--spacing-xs) 0;
+  padding: var(--mm-space-xs) 0;
 }
 
 .hashtag-input::placeholder {
@@ -1178,11 +1178,11 @@ textarea::placeholder {
   z-index: var(--z-dropdown);
   max-height: 200px;
   overflow-y: auto;
-  margin-top: var(--spacing-xs);
+  margin-top: var(--mm-space-xs);
 }
 
 .hashtag-suggestion {
-  padding: var(--spacing-sm) var(--spacing-md);
+  padding: var(--mm-space-sm) var(--mm-space-md);
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -1231,8 +1231,8 @@ textarea::placeholder {
 }
 
 .hashtag-limit-warning {
-  margin-top: var(--spacing-xs);
-  padding: var(--spacing-xs) var(--spacing-sm);
+  margin-top: var(--mm-space-xs);
+  padding: var(--mm-space-xs) var(--mm-space-sm);
   background: rgba(251, 191, 36, 0.1);
   color: var(--mm-warning);
   border-radius: 8px;
@@ -1244,13 +1244,13 @@ textarea::placeholder {
 .hashtag-display {
   display: flex;
   flex-wrap: wrap;
-  gap: var(--spacing-xs);
-  margin-top: var(--spacing-xs);
+  gap: var(--mm-space-xs);
+  margin-top: var(--mm-space-xs);
 }
 
 .hashtag-display-tag {
   display: inline-block;
-  padding: 2px var(--spacing-xs);
+  padding: 2px var(--mm-space-xs);
   background: rgba(99,102,241,0.1);
   color: var(--mm-color-primary-600);
   border-radius: 12px;

@@ -242,7 +242,8 @@
   --mm-font-size-2xl: 1.5rem;      /* 24px - Section headings */
   --mm-font-size-3xl: 1.875rem;    /* 30px - Page headings */
   --mm-font-size-4xl: 2.25rem;     /* 36px - Large headings */
-  
+  --mm-font-size-5xl: 3rem;        /* 48px - Display headings */
+
   /* Legacy aliases for backward compatibility */
   --text-xs: var(--mm-font-size-xs);
   --text-sm: var(--mm-font-size-sm);
@@ -410,7 +411,17 @@
   --mm-space-16: 4rem;     /* 64px - Page sections */
   --mm-space-20: 5rem;     /* 80px - Large sections */
   --mm-space-24: 6rem;     /* 96px - Hero sections */
-  
+
+  /* Named aliases onto the numeric scale. Values taken from the fallbacks the
+     old spacing references already carried, so this is the scale those call
+     sites were written against. */
+  --mm-space-xs: var(--mm-space-2);    /* 8px */
+  --mm-space-sm: var(--mm-space-3);    /* 12px */
+  --mm-space-md: var(--mm-space-4);    /* 16px */
+  --mm-space-lg: var(--mm-space-6);    /* 24px */
+  --mm-space-xl: var(--mm-space-8);    /* 32px */
+  --mm-space-2xl: var(--mm-space-16);  /* 64px */
+
   /* Legacy aliases for backward compatibility */
   --space-1: var(--mm-space-1);
   --space-2: var(--mm-space-2);

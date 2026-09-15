@@ -55,6 +55,6 @@
   height: 100%;
   background: var(--mm-gray-100);
   color: var(--mm-gray-500);
-  font-size: var(--mm-text-sm);
+  font-size: var(--mm-font-size-sm);
   border-radius: var(--mm-radius-lg);
 }
