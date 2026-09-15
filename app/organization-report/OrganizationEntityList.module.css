@@ -1,14 +1,14 @@
 .entitiesSection {
   margin-top: var(--mm-space-12);
   padding: var(--mm-space-8);
-  background: var(--mm-gray-50);
-  border-top: 1px solid var(--mm-gray-200);
+  background: var(--textMutedBackground, var(--mm-gray-50));
+  border-top: 1px solid var(--chartBorder, var(--mm-gray-200));
 }
 
 .title {
   font-family: var(--font-pacifico);
   font-size: var(--mm-font-size-3xl);
-  color: var(--mm-gray-900);
+  color: var(--chartTitleColor, var(--mm-gray-900));
   margin-bottom: var(--mm-space-8);
   text-align: center;
 }
@@ -32,11 +32,11 @@
 }
 
 .entityCard {
-  background: var(--mm-white);
+  background: var(--chartBackground, var(--mm-white));
   border-radius: var(--mm-radius-xl);
   padding: var(--mm-space-6);
   box-shadow: var(--mm-shadow-sm);
-  border: 1px solid var(--mm-gray-100);
+  border: 1px solid var(--chartBorder, var(--mm-gray-100));
   transition: all 0.2s ease;
   text-decoration: none;
   display: flex;
@@ -47,7 +47,7 @@
 .entityCard:hover {
   transform: translateY(-4px);
   box-shadow: var(--mm-shadow-lg);
-  border-color: var(--mm-color-primary-200);
+  border-color: var(--textLinkColor, var(--mm-color-primary-200));
 }
 
 .entityHeader {
@@ -70,13 +70,13 @@
 .entityName {
   font-size: var(--mm-font-size-lg);
   font-weight: var(--mm-font-weight-bold);
-  color: var(--mm-gray-900);
+  color: var(--chartTitleColor, var(--mm-gray-900));
   margin: 0;
 }
 
 .entityType {
   font-size: var(--mm-font-size-xs);
-  color: var(--mm-color-primary-600);
+  color: var(--textLinkColor, var(--mm-color-primary-600));
   text-transform: uppercase;
   font-weight: var(--mm-font-weight-bold);
   letter-spacing: 0.05em;
@@ -87,7 +87,7 @@
   grid-template-columns: 1fr 1fr;
   gap: var(--mm-space-4);
   padding-top: var(--mm-space-4);
-  border-top: 1px solid var(--mm-gray-50);
+  border-top: 1px solid var(--chartBorder, var(--mm-gray-50));
 }
 
 .stat {
@@ -97,13 +97,13 @@
 
 .statLabel {
   font-size: var(--mm-font-size-xs);
-  color: var(--mm-gray-500);
+  color: var(--chartLabelColor, var(--mm-gray-500));
 }
 
 .statValue {
   font-size: var(--mm-font-size-base);
   font-weight: var(--mm-font-weight-semibold);
-  color: var(--mm-gray-900);
+  color: var(--chartTitleColor, var(--mm-gray-900));
 }
 
 .action {
@@ -111,7 +111,7 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  color: var(--mm-color-primary-600);
+  color: var(--textLinkColor, var(--mm-color-primary-600));
   font-size: var(--mm-font-size-sm);
   font-weight: var(--mm-font-weight-semibold);
 }

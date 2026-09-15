@@ -58,6 +58,12 @@ export function isLightBackground(hex: string): boolean {
  */
 export const GATE_PALETTE = {
   light: {
+    '--gate-focus-border': 'var(--mm-color-primary-500)',
+    '--gate-focus-ring': 'rgba(var(--mm-color-primary-rgb), 0.25)',
+    '--gate-input-bg-focus': 'var(--mm-white)',
+    '--gate-error-bg': 'var(--mm-color-error-50)',
+    '--gate-error-border': 'var(--mm-color-error-200)',
+    '--gate-error-fg': 'var(--mm-color-error-700)',
     '--gate-fg': 'var(--mm-gray-900)',
     '--gate-muted': 'var(--mm-gray-600)',
     '--gate-surface': 'rgba(var(--mm-black-rgb), 0.04)',
@@ -66,6 +72,12 @@ export const GATE_PALETTE = {
     '--gate-input-fg': 'var(--mm-gray-900)',
   },
   dark: {
+    '--gate-focus-border': 'rgba(var(--mm-white-rgb), 0.8)',
+    '--gate-focus-ring': 'rgba(var(--mm-white-rgb), 0.2)',
+    '--gate-input-bg-focus': 'rgba(var(--mm-white-rgb), 1)',
+    '--gate-error-bg': 'rgba(var(--mm-color-error-rgb), 0.2)',
+    '--gate-error-border': 'rgba(var(--mm-color-error-rgb), 0.4)',
+    '--gate-error-fg': 'var(--mm-white)',
     '--gate-fg': 'var(--mm-white)',
     '--gate-muted': 'rgba(var(--mm-white-rgb), 0.75)',
     '--gate-surface': 'rgba(var(--mm-white-rgb), 0.1)',
