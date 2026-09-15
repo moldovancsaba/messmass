@@ -17,7 +17,6 @@ const VIOLATIONS = {
     message: 'Gradient backgrounds detected',
     allowedFiles: [
       'app/styles/theme.css',  // Legacy gradient tokens (deprecated but documented)
-      'app/charts.css',        // Chart visualizations need gradients
       'app/globals.css',       // Shimmer animation uses gradient
       'app/page.module.css',   // Landing hero remains tokenized but intentionally gradient-backed
       'app/styles/utilities.css' // Shared utility fade helpers still use tokenized gradients
@@ -31,7 +30,6 @@ const VIOLATIONS = {
       'app/styles/admin.css',      // Legacy admin styles (to be cleaned)
       'app/styles/layout.css',     // Legacy layout styles (to be cleaned)
       'app/styles/components.css', // Legacy component styles (to be cleaned)
-      'app/charts.css'             // Chart components need some blur effects
     ]
   }
 };

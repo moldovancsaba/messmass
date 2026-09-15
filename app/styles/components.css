@@ -206,7 +206,6 @@
 /* WHAT: Drag handle for reorderable items
  * WHY: Provides visual indicator for drag-and-drop functionality */
 .drag-handle {
-  cursor: grab;
   font-size: 1.2rem;
 }
 
@@ -386,12 +385,7 @@ textarea::placeholder {
    TYPOGRAPHY COMPONENTS
 ======================================== */
 
-
 .section-title {
-  font-size: var(--text-3xl);
-  font-weight: var(--font-bold);
-  color: var(--color-gray-800) !important;
-  margin: 0 0 var(--space-6) 0;
   line-height: var(--leading-tight);
 }
 
@@ -404,10 +398,7 @@ textarea::placeholder {
    HOW: Remove padding, make text fill 100% width/height like image canvas */
 .text-chart-container {
   position: relative;
-  width: 100%;
-  height: 100%;
-  flex: 1; /* WHAT: Fill parent height; WHY: Removes empty space at bottom */
-  min-height: 400px;
+  flex: 1;
   background: var(--mm-white);
   border-radius: var(--mm-radius-lg);
   overflow: hidden;
@@ -993,14 +984,9 @@ textarea::placeholder {
 /* WHAT: Monospace font family for code/command text
    WHY: Technical content needs monospace for readability */
 .font-mono {
-  font-family: Monaco, Consolas, "Ubuntu Mono", monospace;
 }
 
 .section-subtitle {
-  font-size: var(--text-xl);
-  font-weight: var(--font-semibold);
-  color: var(--color-gray-700);
-  margin: var(--space-8) 0 var(--space-4) 0;
   line-height: var(--leading-tight);
 }
 
@@ -1315,11 +1301,6 @@ textarea::placeholder {
 ======================================== */
 
 .error-message {
-  background: rgba(var(--mm-color-error-rgb), 0.1);
-  border: 1px solid rgba(var(--mm-color-error-rgb), 0.2);
-  border-radius: var(--radius-lg);
-  padding: var(--space-4);
-  margin-bottom: var(--space-4);
   color: var(--color-error);
   font-size: var(--text-sm);
   font-weight: var(--font-medium);
@@ -1437,8 +1418,6 @@ textarea::placeholder {
 
 /* Success boxes */
 .success-box {
-  background: rgba(var(--mm-color-secondary-rgb), 0.05);
-  border: 1px solid rgba(var(--mm-color-secondary-rgb), 0.2);
   border-radius: 12px;
   padding: 2rem;
   margin-bottom: 2rem;
@@ -2246,7 +2225,6 @@ textarea::placeholder {
 }
 
 .flex-wrap {
-  flex-wrap: wrap;
 }
 
 /* Chart items */
@@ -2406,8 +2384,6 @@ textarea::placeholder {
 }
 
 .admin-table {
-  width: 100%;
-  border-collapse: collapse;
 }
 
 .admin-table th,
@@ -2440,15 +2416,12 @@ textarea::placeholder {
 }
 
 .text-right {
-  text-align: right;
 }
 
 .font-mono {
-  font-family: monospace;
 }
 
 .mt-6 {
-  margin-top: 1.5rem;
 }
 
 /* ========================================
@@ -2459,9 +2432,6 @@ textarea::placeholder {
    WHY: Remove all inline styles and ensure maintainable, consistent UI */
 
 .login-card {
-  width: 100%;
-  max-width: 420px;
-  padding: 2rem;
 }
 
 .login-header {
@@ -2470,9 +2440,6 @@ textarea::placeholder {
 }
 
 .login-icon {
-  margin: 0 auto 1.5rem;
-  width: 64px;
-  height: 64px;
 }
 
 .login-logo-container {
@@ -2493,12 +2460,9 @@ textarea::placeholder {
 }
 
 .login-title {
-  font-size: 2.5rem;
-  margin-bottom: 0.5rem;
 }
 
 .login-subtitle {
-  margin-bottom: 2rem;
 }
 
 .login-form {
@@ -2968,7 +2932,6 @@ textarea::placeholder {
 /* WHAT: Center-aligned text utility
    WHY: Reusable centering class */
 .text-center {
-  text-align: center;
 }
 
 /* WHAT: Hidden file input (legitimate inline style replacement)
@@ -3046,35 +3009,28 @@ textarea::placeholder {
 /* WHAT: Top margin utilities
    WHY: Consistent spacing for form elements and buttons */
 .mt-3 {
-  margin-top: var(--mm-space-3);
 }
 
 /* WHAT: Bottom margin utilities
    WHY: Consistent spacing for form elements and buttons */
 .mb-2 {
-  margin-bottom: var(--mm-space-2);
 }
 
 .mt-4 {
-  margin-top: var(--mm-space-4);
 }
 
 /* WHAT: Text color utilities
    WHY: Consistent semantic colors across app */
 .text-error {
-  color: var(--mm-error);
 }
 
 .text-gray-400 {
-  color: var(--mm-gray-400);
 }
 
 .text-gray-700 {
-  color: var(--mm-gray-700);
 }
 
 .text-sm {
-  font-size: var(--mm-font-size-sm);
 }
 
 /* WHAT: Background color utilities
@@ -3117,7 +3073,6 @@ textarea::placeholder {
 /* WHAT: Top margin utility (already have .mt-3, .mt-4, adding .mt-2)
    WHY: Consistent spacing for button groups */
 .mt-2 {
-  margin-top: var(--mm-space-2);
 }
 
 /* WHAT: Icon size utility for small icons in buttons
@@ -3139,7 +3094,6 @@ textarea::placeholder {
 /* WHAT: Bottom margin utility
    WHY: Extracted from ChartAlgorithmManager line 723 */
 .mb-6 {
-  margin-bottom: var(--mm-space-6);
 }
 
 /* WHAT: Flex row with gap and center alignment
@@ -3164,7 +3118,6 @@ textarea::placeholder {
 }
 
 .flex-1 {
-  flex: 1;
 }
 
 /* WHAT: Primary link styling

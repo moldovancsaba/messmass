@@ -21,9 +21,6 @@
    WHY: Inconsistent padding (32px vs 24px standard)
    MIGRATION: Replace with .page-container in all admin pages */
 .admin-container {
-  min-height: 100vh;
-  background: var(--page-bg, var(--mm-gray-50));
-  padding: var(--space-8);
 }
 
 /* WHAT: Standard page wrapper; OPS-ADMIN-02: inside .content-surface uses --mm-admin-content-max-width */
@@ -62,10 +59,6 @@
 }
 
 .stats-grid-admin {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: var(--space-6);
-  margin-bottom: var(--space-6);
 }
 
 /* Counter Grid */
@@ -88,12 +81,6 @@
 
 /* Charts Grid */
 .charts-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(450px, 1fr));
-  gap: var(--space-8);
-  justify-items: center;
-  align-items: start;
-  margin-top: var(--space-4);
 }
 
 /* ========================================
@@ -130,8 +117,6 @@
 
 /* Admin Header Specific */
 .admin-header {
-  margin-bottom: var(--space-8);
-  padding: var(--space-8);
 }
 
 /* WHAT: Reduce header margin when capturing for PDF
@@ -143,11 +128,7 @@
 }
 
 .admin-header-content {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
   flex-wrap: wrap;
-  gap: var(--space-4);
 }
 
 .admin-branding {
@@ -155,8 +136,6 @@
 }
 
 .admin-user-info {
-  display: flex;
-  align-items: center;
   gap: var(--space-4);
 }
 
@@ -169,26 +148,14 @@
 
 /* Projects Layout */
 .projects-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: var(--space-6);
-  flex-wrap: wrap;
-  gap: var(--space-4);
 }
 
 .projects-header-buttons {
-  display: flex;
-  gap: var(--space-4);
-  flex-wrap: wrap;
-  align-items: center;
 }
 
 /* Actions Layout */
 .actions-cell {
-  display: flex;
-  flex-direction: column; /* WHAT: Vertical list of action buttons */
-  gap: var(--space-2);
+  flex-direction: column;
   align-items: stretch; /* WHAT: Full width buttons in vertical list */
 }
 
@@ -282,18 +249,10 @@
 ======================================== */
 
 .projects-table-container {
-  /* What: Flat white table container
-     Why: Removed glass-morphism */
-  overflow-x: auto;
-  border-radius: var(--radius-xl);
-  background: var(--mm-white);
-  border: 1px solid var(--mm-border-color-default);
   box-shadow: var(--mm-shadow-sm);
 }
 
 .projects-table {
-  width: 100%;
-  border-collapse: collapse;
 }
 
 .projects-table th {
@@ -321,12 +280,9 @@
 
 /* Admin Table */
 .admin-table {
-  width: 100%;
-  border-collapse: collapse;
 }
 
 .admin-table-header {
-  background: var(--color-gray-50);
 }
 
 .admin-table-header th {
@@ -341,8 +297,6 @@
 }
 
 .admin-table-row {
-  border-bottom: 1px solid var(--color-gray-200);
-  transition: background-color var(--transition-base);
 }
 
 .admin-table-row:hover {
@@ -350,8 +304,6 @@
 }
 
 .admin-table-cell {
-  padding: var(--space-6);
-  vertical-align: top;
 }
 
 /* ========================================
@@ -677,8 +629,6 @@
 }
 
 .project-name {
-  font-weight: 600;
-  color: var(--mm-gray-900);
   margin-bottom: 0.25rem;
 }
 
@@ -905,9 +855,9 @@
 .mr-2 { margin-right: 0.5rem; }
 
 /* Text Alignment */
-.text-left { text-align: left; }
-.text-center { text-align: center; }
-.text-right { text-align: right; }
+.text-left { }
+.text-center { }
+.text-right { }
 
 /* Text Decoration */
 .no-underline { text-decoration: none; }
@@ -920,7 +870,7 @@
 .block { display: block; }
 .inline { display: inline; }
 .inline-block { display: inline-block; }
-.flex { display: flex; }
+.flex { }
 .grid { display: grid; }
 
 /* Grid Utilities */
@@ -933,18 +883,18 @@
 }
 
 /* Flex Utilities */
-.flex-col { flex-direction: column; }
+.flex-col { }
 .flex-row { flex-direction: row; }
 .flex-wrap { flex-wrap: wrap; }
-.items-center { align-items: center; }
+.items-center { }
 .items-start { align-items: flex-start; }
 .items-end { align-items: flex-end; }
-.justify-center { justify-content: center; }
-.justify-between { justify-content: space-between; }
+.justify-center { }
+.justify-between { }
 .justify-around { justify-content: space-around; }
 
 /* Width & Height */
-.w-full { width: 100%; }
+.w-full { }
 .h-full { height: 100%; }
 .min-h-screen { min-height: 100vh; }
 .w-120 { width: 120px; }
@@ -1045,10 +995,7 @@
 }
 
 .project-link {
-  color: var(--mm-color-primary-600);
-  text-decoration: none;
   border-bottom: 1px solid transparent;
-  transition: border-color 0.2s ease;
 }
 
 .project-link:hover {
