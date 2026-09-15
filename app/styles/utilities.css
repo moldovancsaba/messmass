@@ -285,9 +285,9 @@
    TRANSITION UTILITIES
 ======================================== */
 
-.transition-all { transition: all var(--mm-transition-base); }
-.transition-colors { transition: color var(--mm-transition-base), background-color var(--mm-transition-base), border-color var(--mm-transition-base); }
-.transition-transform { transition: transform var(--mm-transition-base); }
+.transition-all { transition: all var(--transition-base); }
+.transition-colors { transition: color var(--transition-base), background-color var(--transition-base), border-color var(--transition-base); }
+.transition-transform { transition: transform var(--transition-base); }
 
 /* ========================================
    COMMON COMPONENT PATTERNS
@@ -295,7 +295,7 @@
 
 /* Container with max width and centered */
 .container-centered {
-  max-width: var(--mm-max-width-container);
+  max-width: var(--mm-content-max-width);
   margin-left: auto;
   margin-right: auto;
   padding-left: var(--mm-space-4);
@@ -309,7 +309,7 @@
   border-radius: var(--mm-radius-lg);
   padding: var(--mm-space-4);
   box-shadow: var(--mm-shadow-sm);
-  transition: all var(--mm-transition-base);
+  transition: all var(--transition-base);
 }
 
 /* WHAT: Legacy .modal-overlay removed (lines 305-318)

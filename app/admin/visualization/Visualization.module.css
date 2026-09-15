@@ -18,7 +18,7 @@
   border-radius: var(--mm-radius-lg);
   padding: var(--mm-space-6);
   border: 1px solid rgba(226, 232, 240, 0.8);
-  transition: all var(--mm-transition-base);
+  transition: all var(--transition-base);
   height: 100%;
   box-sizing: border-box;
 }
@@ -78,7 +78,7 @@
   font-size: 0.875rem;
   font-weight: 600;
   cursor: pointer;
-  transition: all var(--mm-transition-base);
+  transition: all var(--transition-base);
 }
 
 .toggleButton:hover {
@@ -333,9 +333,9 @@
   margin: 0;
   padding: var(--mm-space-3) var(--mm-space-4);
   border-radius: var(--mm-radius-md);
-  background: var(--mm-amber-50);
-  color: var(--mm-amber-900);
-  border: 1px solid var(--mm-amber-200);
+  background: var(--mm-color-warning-50);
+  color: var(--mm-color-warning-900);
+  border: 1px solid var(--mm-color-warning-200);
   font-size: var(--mm-font-size-sm);
   line-height: 1.6;
 }
@@ -377,15 +377,15 @@
 }
 
 .statusSuccess {
-  background: var(--mm-green-50);
-  color: var(--mm-green-900);
-  border: 1px solid var(--mm-green-200);
+  background: var(--mm-color-success-50);
+  color: var(--mm-color-success-900);
+  border: 1px solid var(--mm-color-success-200);
 }
 
 .statusError {
-  background: var(--mm-red-50);
-  color: var(--mm-red-900);
-  border: 1px solid var(--mm-red-200);
+  background: var(--mm-color-error-50);
+  color: var(--mm-color-error-900);
+  border: 1px solid var(--mm-color-error-200);
 }
 
 /* OPS-LAYOUT-01: Layout Grammar real-time validation feedback in block edit modal */
@@ -403,9 +403,9 @@
   margin-top: var(--mm-space-4);
   padding: var(--mm-space-3);
   border-radius: var(--mm-radius-md);
-  background: var(--mm-red-50);
-  color: var(--mm-red-900);
-  border: 1px solid var(--mm-red-200);
+  background: var(--mm-color-error-50);
+  color: var(--mm-color-error-900);
+  border: 1px solid var(--mm-color-error-200);
   font-size: var(--mm-font-size-sm);
 }
 
@@ -509,7 +509,7 @@
 }
 
 .reportImageCard:hover {
-  border-color: var(--mm-blue-500);
+  border-color: var(--mm-color-primary-500);
   box-shadow: 0 2px 8px rgba(59, 130, 246, 0.2);
 }
 
@@ -644,7 +644,7 @@
 }
 
 .reportTextCard:hover {
-  border-color: var(--mm-blue-500);
+  border-color: var(--mm-color-primary-500);
   box-shadow: 0 2px 8px rgba(59, 130, 246, 0.2);
 }
 

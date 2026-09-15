@@ -24,7 +24,7 @@
   cursor: pointer;
   text-align: left;
   font: inherit;
-  transition: border-color var(--mm-transition-base), background-color var(--mm-transition-base), box-shadow var(--mm-transition-base), transform 160ms ease;
+  transition: border-color var(--transition-base), background-color var(--transition-base), box-shadow var(--transition-base), transform 160ms ease;
 }
 
 .preset:hover {

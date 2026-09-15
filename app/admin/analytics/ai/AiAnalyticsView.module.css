@@ -76,7 +76,7 @@
 .variableName {
   font-weight: 400;
   color: var(--mm-gray-500);
-  font-family: var(--mm-font-mono, monospace);
+  font-family: var(--font-mono, monospace);
 }
 
 .numeric {

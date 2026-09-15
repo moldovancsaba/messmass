@@ -282,20 +282,20 @@
 
 /* WHAT: Number type badge (blue) */
 .typeBadgeNumber {
-  background-color: var(--mm-blue-100);
-  color: var(--mm-blue-700);
+  background-color: var(--mm-color-primary-100);
+  color: var(--mm-color-primary-700);
 }
 
 /* WHAT: Text type badge (green) */
 .typeBadgeText {
-  background-color: var(--mm-green-100);
-  color: var(--mm-green-700);
+  background-color: var(--mm-color-success-100);
+  color: var(--mm-color-success-700);
 }
 
 /* WHAT: Derived type badge (purple) */
 .typeBadgeDerived {
-  background-color: var(--mm-purple-100);
-  color: var(--mm-purple-700);
+  background-color: var(--mm-color-purple-100);
+  color: var(--mm-color-purple-700);
 }
 
 /* ========================================
@@ -305,8 +305,8 @@
 /* WHAT: Warning banner container */
 .infoBanner {
   padding: var(--mm-space-6);
-  background-color: var(--mm-yellow-50);
-  border: 1px solid var(--mm-yellow-200);
+  background-color: var(--mm-color-warning-50);
+  border: 1px solid var(--mm-color-warning-200);
   margin-bottom: var(--mm-space-8);
 }
 
@@ -320,11 +320,11 @@
 /* WHAT: Banner title */
 .bannerTitle {
   font-weight: 600;
-  color: var(--mm-yellow-900);
+  color: var(--mm-color-warning-900);
 }
 
 /* WHAT: Banner description */
 .bannerDescription {
   font-size: var(--mm-font-size-sm);
-  color: var(--mm-yellow-700);
+  color: var(--mm-color-warning-700);
 }

@@ -46,7 +46,7 @@
   text-decoration: none;
   font-size: var(--mm-font-size-sm);
   font-weight: var(--mm-font-weight-semibold);
-  transition: background-color var(--mm-transition-base), color var(--mm-transition-base), border-color var(--mm-transition-base), transform 160ms ease;
+  transition: background-color var(--transition-base), color var(--transition-base), border-color var(--transition-base), transform 160ms ease;
 }
 
 .link:hover {

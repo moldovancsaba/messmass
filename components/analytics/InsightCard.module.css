@@ -14,7 +14,7 @@
   border-left-width: 4px;
   border-radius: var(--mm-radius-md);
   padding: var(--mm-space-4);
-  transition: all var(--mm-transition-normal);
+  transition: all var(--transition-base);
 }
 
 .insightCard:hover {
@@ -23,7 +23,7 @@
 
 /* Priority-based border colors */
 .priority--critical {
-  border-left-color: var(--mm-danger);
+  border-left-color: var(--mm-color-error-500);
 }
 
 .priority--high {
@@ -105,9 +105,9 @@
 }
 
 .dismissButton:hover {
-  background: var(--mm-danger);
+  background: var(--mm-color-error-500);
   color: var(--mm-white);
-  border-color: var(--mm-danger);
+  border-color: var(--mm-color-error-500);
 }
 
 /* Content */

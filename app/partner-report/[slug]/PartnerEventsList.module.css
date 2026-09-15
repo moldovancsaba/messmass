@@ -39,7 +39,7 @@
 }
 
 .eventCard:hover {
-  border-color: var(--mm-blue-500);
+  border-color: var(--mm-color-primary-500);
   transform: translateY(-2px);
   box-shadow: var(--mm-shadow-lg);
 }
@@ -105,7 +105,7 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  color: var(--mm-blue-600);
+  color: var(--mm-color-primary-600);
   font-weight: var(--mm-font-weight-medium);
 }
 

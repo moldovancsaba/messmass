@@ -31,7 +31,7 @@
 }
 
 .closeButton:focus {
-  outline: 2px solid var(--mm-blue-500, var(--mm-color-primary-500));
+  outline: 2px solid var(--mm-color-primary-500, var(--mm-color-primary-500));
   outline-offset: 2px;
 }
 

@@ -176,12 +176,12 @@
 }
 
 .text a {
-  color: var(--mm-blue-600);
+  color: var(--mm-color-primary-600);
   text-decoration: underline;
 }
 
 .text a:hover {
-  color: var(--mm-blue-700);
+  color: var(--mm-color-primary-700);
 }
 
 /* WHAT: Removed unsupported markdown features

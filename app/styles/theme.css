@@ -91,29 +91,71 @@
   --mm-color-warning-500: var(--mantine-color-messmassAmber-5, #f59e0b);
   --mm-color-warning-600: var(--mantine-color-messmassAmber-6, #d97706);
   --mm-color-warning-700: var(--mantine-color-messmassAmber-7, #b45309);
+  --mm-color-warning-300: var(--mantine-color-messmassAmber-3, #fcd34d);
+  --mm-color-warning-400: var(--mantine-color-messmassAmber-4, #fbbf24);
   --mm-color-warning-800: var(--mantine-color-messmassAmber-8, #92400e);
+  --mm-color-warning-900: var(--mantine-color-messmassAmber-9, #78350f);
 
   /* Full success ramp */
   --mm-color-success-50:  var(--mantine-color-messmassGreen-0, #f0fdf4);
   --mm-color-success-100: var(--mantine-color-messmassGreen-1, #dcfce7);
+  --mm-color-success-200: var(--mantine-color-messmassGreen-2, #bbf7d0);
+  --mm-color-success-300: var(--mantine-color-messmassGreen-3, #86efac);
   --mm-color-success-500: var(--mantine-color-messmassGreen-5, #10b981);
   --mm-color-success-600: var(--mantine-color-messmassGreen-6, #059669);
   --mm-color-success-700: var(--mantine-color-messmassGreen-7, #047857);
+  --mm-color-success-800: var(--mantine-color-messmassGreen-8, #065f46);
+  --mm-color-success-900: var(--mantine-color-messmassGreen-9, #064e3b);
+
+  /* Info ramp. KPICard builds --mm-color-<variant>-500/-100 from its `color`
+     prop, so "info" needs a ramp like the other five variants or the sparkline
+     renders with no stroke or fill. Info is the primary blue. */
+  --mm-color-info-50:  var(--mm-color-primary-50);
+  --mm-color-info-100: var(--mm-color-primary-100);
+  --mm-color-info-500: var(--mm-color-primary-500);
+  --mm-color-info-600: var(--mm-color-primary-600);
+  --mm-color-info-700: var(--mm-color-primary-700);
 
   /* Purple ramp — used by charts and badges */
+  --mm-color-purple-50:  #f5f3ff;
+  --mm-color-purple-100: #ede9fe;
+  --mm-color-purple-200: #ddd6fe;
   --mm-color-purple-500: #8b5cf6;
   --mm-color-purple-600: #7c3aed;
+  --mm-color-purple-700: #6d28d9;
+  --mm-color-purple-800: #5b21b6;
+  --mm-color-purple-900: #4c1d95;
+
+  /* Cyan ramp — Bitly link management UI */
+  --mm-color-cyan-50:  #ecfeff;
+  --mm-color-cyan-100: #cffafe;
+  --mm-color-cyan-200: #a5f3fc;
+  --mm-color-cyan-300: #67e8f9;
+  --mm-color-cyan-500: #06b6d4;
+  --mm-color-cyan-600: #0891b2;
+  --mm-color-cyan-700: #0e7490;
+  --mm-color-cyan-800: #155e75;
+  --mm-color-cyan-900: #164e63;
 
   /* Semantic shorthand aliases used by analytics/admin components */
   --mm-primary:       var(--mm-color-primary-500);
   --mm-primary-dark:  var(--mm-color-primary-700);
   --mm-success-dark:  var(--mm-color-secondary-800);
+  --mm-color-primary-25:   var(--mm-color-primary-50);
+  /* RGB channels of --mm-color-primary-500, for rgba() alpha tints */
+  --mm-color-primary-rgb:  59, 130, 246;
+  --mm-color-success:      var(--mm-color-success-500);
+  --mm-color-warning:      var(--mm-color-warning-500);
+  --mm-color-error-dark:   var(--mm-color-error-700);
+  --mm-color-warning-dark: var(--mm-color-warning-700);
 
   /* Surface / border / text semantic tokens (analytics + org-report components) */
   --mm-surface-primary:   var(--mm-white);
   --mm-surface-secondary: var(--mm-gray-50);
+  --mm-surface-tertiary:  var(--mm-gray-100);
   --mm-border-light:      var(--mm-gray-200);
   --mm-border-medium:     var(--mm-gray-300);
+  --mm-border-secondary:  var(--mm-gray-300);
   --mm-border-primary:    var(--mm-color-primary-200);
   --mm-text-primary:      var(--mm-gray-900);
   --mm-text-secondary:    var(--mm-gray-600);
@@ -130,6 +172,7 @@
 
   --mm-info: #3b82f6;
   --mm-info-light: #dbeafe;
+  --mm-info-dark: var(--mm-color-primary-700);
   
   /* What: Chart color palette for data visualization
      Why: Distinct, accessible colors for charts; maintains consistency with design system */
@@ -148,6 +191,14 @@
   --mm-chart-orange: #f97316;
   --mm-chart-indigo: #6366f1;
   --mm-chart-teal: #14b8a6;
+
+  /* Hero/text defaults for report pages (when no Page Style is applied).
+     These three are report-style field keys like the chart* set below, but had
+     no :root default, so the hero and text charts rendered unstyled until a
+     style loaded. */
+  --heroBackground: var(--mm-gray-50);
+  --headingColor: var(--mm-gray-900);
+  --textColor: var(--mm-gray-900);
 
   /* Chart defaults for report pages (when no Page Style is applied) */
   --chartBackground: var(--mm-white);
@@ -454,6 +505,7 @@
   
   /* What: Border colors using new gray scale
      Why: Semantic border colors for states */
+  --mm-border-color-light: var(--mm-gray-100);
   --mm-border-color-default: var(--mm-gray-200);
   --mm-border-color-hover: var(--mm-gray-300);
   --mm-border-color-focus: var(--mm-color-primary-500);

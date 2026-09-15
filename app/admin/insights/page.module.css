@@ -77,7 +77,7 @@
   background: var(--mm-gray-50);
   border: 2px solid var(--mm-gray-200);
   border-radius: var(--mm-radius-xl);
-  transition: all var(--mm-transition-base);
+  transition: all var(--transition-base);
 }
 
 .stat:hover {
@@ -166,7 +166,7 @@
   font-size: var(--mm-font-size-sm);
   font-weight: var(--mm-font-weight-semibold);
   cursor: pointer;
-  transition: all var(--mm-transition-base);
+  transition: all var(--transition-base);
 }
 
 .retryButton:hover {
@@ -187,9 +187,9 @@
 /* WHY: Clear, readable usage guidance */
 .helpSection {
   margin: var(--mm-space-lg) 0;
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  background: var(--surface-secondary);
+  border: 1px solid var(--mm-border-light);
+  border-radius: var(--mm-radius-md);
+  background: var(--mm-surface-secondary);
 }
 
 .helpContent {
@@ -212,9 +212,9 @@
 
 .insightTypeCard {
   padding: var(--mm-space-md);
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
+  background: var(--mm-surface-primary);
+  border: 1px solid var(--mm-border-light);
+  border-radius: var(--mm-radius-md);
 }
 
 .insightTypeHeader {
@@ -251,7 +251,7 @@
   gap: var(--mm-space-xs);
   padding: 2px 8px;
   border-radius: 999px;
-  font-size: var(--font-sm);
+  font-size: var(--mm-font-size-sm);
   font-weight: 600;
   border: 1px solid transparent;
 }

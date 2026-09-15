@@ -8,9 +8,9 @@
 /* WHAT: Base card styles */
 /* WHY: Container for insight content */
 .card {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
+  background: var(--mm-surface-primary);
+  border: 1px solid var(--mm-border-light);
+  border-radius: var(--mm-radius-md);
   padding: var(--mm-space-md);
   margin-bottom: var(--mm-space-md);
   transition: all 0.2s ease;
@@ -23,7 +23,7 @@
 .card.clickable:hover {
   transform: translateY(-2px);
   box-shadow: var(--shadow-lg);
-  border-color: var(--primary);
+  border-color: var(--mm-primary);
 }
 
 /* WHAT: Compact mode for dashboard overview */
@@ -43,15 +43,15 @@
 /* WHAT: Severity-based border colors */
 /* WHY: Visual priority indication */
 .card.critical {
-  border-left: 4px solid var(--error);
+  border-left: 4px solid var(--mm-color-error-500);
 }
 
 .card.warning {
-  border-left: 4px solid var(--warning);
+  border-left: 4px solid var(--mm-color-warning-500);
 }
 
 .card.info {
-  border-left: 4px solid var(--info);
+  border-left: 4px solid var(--mm-info);
 }
 
 /* WHAT: Header with type and badges */
@@ -69,11 +69,11 @@
   display: flex;
   align-items: center;
   gap: var(--mm-space-xs);
-  font-size: var(--font-sm);
+  font-size: var(--mm-font-size-sm);
 }
 
 .typeIcon span:first-child {
-  font-size: var(--font-lg);
+  font-size: var(--mm-font-size-lg);
 }
 
 .typeLabel {
@@ -99,18 +99,18 @@
 }
 
 .severityBadge.critical {
-  background: var(--error-light);
-  color: var(--error-dark);
+  background: var(--mm-color-error-50);
+  color: var(--mm-color-error-700);
 }
 
 .severityBadge.warning {
-  background: var(--warning-light);
-  color: var(--warning-dark);
+  background: var(--mm-color-warning-50);
+  color: var(--mm-color-warning-700);
 }
 
 .severityBadge.info {
-  background: var(--info-light);
-  color: var(--info-dark);
+  background: var(--mm-info-light);
+  color: var(--mm-info-dark);
 }
 
 .actionableBadge {
@@ -118,8 +118,8 @@
   border-radius: 12px;
   font-size: 11px;
   font-weight: 600;
-  background: var(--success-light);
-  color: var(--success-dark);
+  background: var(--mm-color-success-50);
+  color: var(--mm-color-success-700);
 }
 
 /* WHAT: Content area */
@@ -131,7 +131,7 @@
 }
 
 .title {
-  font-size: var(--font-lg);
+  font-size: var(--mm-font-size-lg);
   font-weight: 600;
   color: var(--text-primary);
   margin: 0;
@@ -146,13 +146,13 @@
 }
 
 .metric {
-  font-size: var(--font-sm);
+  font-size: var(--mm-font-size-sm);
   font-weight: 500;
   color: var(--text-secondary);
 }
 
 .value {
-  font-size: var(--font-md);
+  font-size: var(--mm-font-size-base);
   font-weight: 600;
   color: var(--text-primary);
   display: flex;
@@ -161,23 +161,23 @@
 }
 
 .change {
-  font-size: var(--font-sm);
+  font-size: var(--mm-font-size-sm);
   padding: 2px 6px;
   border-radius: 4px;
 }
 
 .change.positive {
-  background: var(--success-light);
-  color: var(--success-dark);
+  background: var(--mm-color-success-50);
+  color: var(--mm-color-success-700);
 }
 
 .change.negative {
-  background: var(--error-light);
-  color: var(--error-dark);
+  background: var(--mm-color-error-50);
+  color: var(--mm-color-error-700);
 }
 
 .description {
-  font-size: var(--font-sm);
+  font-size: var(--mm-font-size-sm);
   color: var(--text-secondary);
   line-height: 1.6;
   margin: 0;
@@ -190,12 +190,12 @@
   flex-direction: column;
   gap: 4px;
   padding: var(--mm-space-sm);
-  background: var(--surface-secondary);
+  background: var(--mm-surface-secondary);
   border-radius: var(--radius-sm);
 }
 
 .confidenceLabel {
-  font-size: var(--font-xs);
+  font-size: var(--mm-font-size-xs);
   font-weight: 500;
   color: var(--text-secondary);
   text-transform: uppercase;
@@ -203,7 +203,7 @@
 }
 
 .confidenceValue {
-  font-size: var(--font-sm);
+  font-size: var(--mm-font-size-sm);
   font-weight: 600;
   color: var(--text-primary);
 }
@@ -211,14 +211,14 @@
 .confidenceBar {
   width: 100%;
   height: 4px;
-  background: var(--border);
+  background: var(--mm-border-light);
   border-radius: 2px;
   overflow: hidden;
 }
 
 .confidenceProgress {
   height: 100%;
-  background: linear-gradient(90deg, var(--warning), var(--success));
+  background: linear-gradient(90deg, var(--mm-color-warning-500), var(--mm-color-success-500));
   /* WHAT: Use CSS variable for dynamic width
      WHY: Avoids inline style prop, set via style attribute as CSS variable */
   width: var(--confidence-width, 0%);
@@ -229,21 +229,21 @@
 /* WHY: Highlight actionable suggestions */
 .recommendation {
   padding: var(--mm-space-sm);
-  background: var(--info-light);
-  border-left: 3px solid var(--info);
+  background: var(--mm-info-light);
+  border-left: 3px solid var(--mm-info);
   border-radius: var(--radius-sm);
 }
 
 .recommendation strong {
   display: block;
   margin-bottom: var(--mm-space-xs);
-  color: var(--info-dark);
-  font-size: var(--font-sm);
+  color: var(--mm-info-dark);
+  font-size: var(--mm-font-size-sm);
 }
 
 .recommendation p {
   margin: 0;
-  font-size: var(--font-sm);
+  font-size: var(--mm-font-size-sm);
   color: var(--text-secondary);
   line-height: 1.5;
 }
@@ -251,10 +251,10 @@
 /* WHAT: Related events indicator */
 /* WHY: Show connections to other events */
 .relatedEvents {
-  font-size: var(--font-sm);
+  font-size: var(--mm-font-size-sm);
   color: var(--text-secondary);
   padding: var(--mm-space-xs);
-  background: var(--surface-secondary);
+  background: var(--mm-surface-secondary);
   border-radius: var(--radius-sm);
   display: inline-block;
 }
@@ -268,8 +268,8 @@
 }
 
 .timestamp {
-  font-size: var(--font-xs);
-  color: var(--text-tertiary);
+  font-size: var(--mm-font-size-xs);
+  color: var(--mm-text-tertiary);
   font-style: italic;
 }
 

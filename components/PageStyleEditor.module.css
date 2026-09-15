@@ -151,8 +151,8 @@
 
 .sectionHint {
   padding: var(--mm-space-3);
-  background: var(--mm-blue-50);
-  border-left: 4px solid var(--mm-blue-500);
+  background: var(--mm-color-primary-50);
+  border-left: 4px solid var(--mm-color-primary-500);
   border-radius: var(--mm-radius-md);
   font-size: var(--mm-font-size-sm);
   color: var(--mm-gray-700);

@@ -445,7 +445,7 @@ textarea::placeholder {
 
 .text-chart-text {
   font-size: var(--mm-font-size-lg);
-  line-height: var(--mm-line-height-relaxed);
+  line-height: var(--mm-line-height-lg);
   color: var(--mm-gray-900);
   white-space: pre-wrap;
   word-wrap: break-word;
@@ -1712,7 +1712,7 @@ textarea::placeholder {
 }
 
 .chart-builder-variable-meta .chart-builder-registry-name {
-  font-family: var(--mm-font-mono, monospace);
+  font-family: var(--font-mono, monospace);
   color: var(--mm-gray-500);
   margin-left: var(--mm-space-1);
 }
@@ -1798,7 +1798,7 @@ textarea::placeholder {
   font-size: var(--mm-font-size-xs);
   color: var(--mm-gray-500);
   margin: 0 0 var(--mm-space-3);
-  font-family: var(--mm-font-mono, monospace);
+  font-family: var(--font-mono, monospace);
   min-width: 0;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -3109,7 +3109,7 @@ textarea::placeholder {
    WHY: Extracted from ImageUploader lines 161-166 (4 properties) */
 .upload-error-box {
   padding: var(--mm-space-2);
-  background-color: var(--mm-red-50);
+  background-color: var(--mm-color-error-50);
   border-radius: var(--mm-radius-md);
   width: 100%;
 }

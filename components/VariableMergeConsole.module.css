@@ -93,12 +93,12 @@
 }
 
 .pill[data-tone='good'] {
-  background: var(--mm-success-bg, #e2f0ec);
+  background: var(--mm-color-success-50, #e2f0ec);
   color: var(--mm-success, #0e7c66);
 }
 
 .pill[data-tone='warn'] {
-  background: var(--mm-warning-bg, #f7efd9);
+  background: var(--mm-color-warning-50, #f7efd9);
   color: var(--mm-warning, #a06a0c);
 }
 

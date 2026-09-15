@@ -85,7 +85,7 @@
   padding: 0;
   border: none;
   border-radius: 50%;
-  background: var(--mm-red-500, var(--mm-error));
+  background: var(--mm-color-error-500, var(--mm-error));
   color: var(--mm-white);
   cursor: pointer;
   transition: all var(--transition-fast);
@@ -96,7 +96,7 @@
 }
 
 .removeButton:hover {
-  background: var(--mm-red-600, var(--mm-error));
+  background: var(--mm-color-error-600, var(--mm-error));
   transform: scale(1.1);
 }
 
@@ -163,12 +163,12 @@
 }
 
 .confirmButton {
-  background: var(--mm-green-500, var(--mm-color-secondary-500));
+  background: var(--mm-color-success-500, var(--mm-color-secondary-500));
   color: var(--mm-white);
 }
 
 .confirmButton:hover {
-  background: var(--mm-green-600, var(--mm-color-secondary-600));
+  background: var(--mm-color-success-600, var(--mm-color-secondary-600));
 }
 
 .cancelButton {
