@@ -9,7 +9,6 @@
   /* What: Flat primary color title
      Why: Removed gradient text effect for flat design */
   font-size: var(--text-4xl);
-  font-weight: var(--font-bold);
   /* REMOVED: color: var(--mm-color-primary-700); - Allow dynamic color override */
   margin: 0;
   line-height: var(--leading-tight);
@@ -17,7 +16,6 @@
 
 .admin-subtitle {
   font-size: var(--text-xl);
-  color: var(--color-gray-600);
   margin: var(--space-2) 0 0 0;
   font-weight: var(--font-medium);
   line-height: var(--leading-normal);
@@ -53,17 +51,6 @@
    ADMIN STAT CARDS
 ======================================== */
 
-.stat-card-admin {
-  /* What: Flat white card
-     Why: Removed glass-morphism for TailAdmin V2 */
-  background: var(--mm-white);
-  border: 1px solid var(--mm-border-color-default);
-  border-radius: var(--radius-2xl);
-  padding: var(--space-6);
-  text-align: center;
-  transition: all var(--transition-slow);
-  box-shadow: var(--mm-shadow-sm);
-}
 
 .stat-card-admin:hover {
   transform: translateY(-2px);
@@ -78,58 +65,23 @@
   /* What: Flat text value
      Why: Removed gradient text effect */
   font-size: var(--text-4xl);
-  font-weight: var(--font-bold);
   color: var(--mm-color-primary-700);
-  margin-bottom: var(--space-2);
   line-height: var(--leading-tight);
 }
 
-.stat-label-admin {
-  font-size: var(--text-base);
-  color: var(--color-gray-600);
-  font-weight: var(--font-medium);
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-}
 
 /* ========================================
    ADMIN PROJECTS MANAGEMENT
 ======================================== */
 
-.admin-projects {
-  margin-bottom: var(--space-8);
-  padding: var(--space-8);
-}
 
-.admin-projects-container {
-  /* What: Flat white container
-     Why: Removed glass-morphism */
-  background: var(--mm-white);
-  border: 1px solid var(--mm-border-color-default);
-  border-radius: var(--border-radius);
-  box-shadow: var(--shadow);
-  overflow: hidden;
-}
 
-.admin-projects-header {
-  padding: var(--space-8);
-  border-bottom: 1px solid var(--color-gray-200);
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
 
 .admin-projects-title {
-  color: var(--color-gray-900);
-  font-size: var(--text-2xl);
-  font-weight: var(--font-semibold);
-  margin-bottom: var(--space-2);
   line-height: var(--leading-tight);
 }
 
 .admin-projects-subtitle {
-  color: var(--color-gray-600);
-  font-size: var(--text-sm);
   margin: 0;
 }
 
@@ -137,14 +89,6 @@
   /* What: Flat primary button
      Why: Removed gradient */
   background: var(--mm-color-primary-600);
-  color: var(--color-white);
-  padding: var(--space-3) var(--space-6);
-  border-radius: var(--radius-xl);
-  border: none;
-  font-size: var(--text-sm);
-  font-weight: var(--font-medium);
-  cursor: pointer;
-  transition: all var(--transition-base);
 }
 
 .admin-btn-refresh:hover {
@@ -158,19 +102,9 @@
 ======================================== */
 
 .project-name {
-  font-weight: var(--font-semibold);
-  color: var(--color-gray-900);
   text-align: left;
 }
 
-.project-link {
-  color: var(--color-primary-500);
-  text-decoration: none;
-  font-weight: var(--font-semibold);
-  transition: all var(--transition-base);
-  display: inline-block;
-  position: relative;
-}
 
 .project-link:hover {
   color: var(--color-primary-600);
@@ -183,13 +117,7 @@
 }
 
 .project-title-link {
-  color: var(--color-primary-500);
-  text-decoration: none;
-  font-weight: var(--font-bold);
   font-size: var(--text-lg);
-  transition: all var(--transition-base);
-  display: inline-block;
-  position: relative;
 }
 
 .project-title-link:hover {
@@ -202,16 +130,6 @@
   color: var(--color-primary-700);
 }
 
-.project-edit-link {
-  color: var(--color-error);
-  text-decoration: none;
-  font-weight: var(--font-medium);
-  font-size: var(--text-sm);
-  transition: all var(--transition-base);
-  display: inline-flex;
-  align-items: center;
-  gap: var(--space-1);
-}
 
 .project-edit-link:hover {
   color: var(--color-error);
@@ -220,44 +138,20 @@
 }
 
 .project-name-text {
-  font-weight: var(--font-semibold);
   font-size: var(--text-lg);
-  color: var(--color-gray-900);
 }
 
-.no-edit-link {
-  color: var(--color-gray-400);
-  font-style: italic;
-  font-size: var(--text-xs);
-}
 
-.stat-number {
-  font-weight: var(--font-semibold);
-  color: var(--color-primary-500);
-}
 
 /* ========================================
    ADMIN BUTTONS & ACTIONS
 ======================================== */
 
-.admin-btn {
-  padding: var(--space-2) var(--space-4);
-  border-radius: var(--radius-lg);
-  font-size: var(--text-xs);
-  font-weight: var(--font-medium);
-  border: none;
-  cursor: pointer;
-  transition: all var(--transition-base);
-  display: inline-flex;
-  align-items: center;
-  gap: var(--space-1);
-}
 
 .admin-btn-export {
   /* What: Flat info button
      Why: Removed gradient */
   background: var(--mm-info);
-  color: var(--color-white);
 }
 
 .admin-btn-export:hover {
@@ -270,7 +164,6 @@
   /* What: Flat danger button
      Why: Removed gradient */
   background: var(--mm-error);
-  color: var(--color-white);
 }
 
 .admin-btn-delete:hover {
@@ -283,29 +176,13 @@
    ADMIN EMPTY STATES
 ======================================== */
 
-.admin-empty-state {
-  text-align: center;
-  padding: var(--space-12);
-  color: var(--color-gray-600);
-}
 
-.admin-empty-icon {
-  width: 64px;
-  height: 64px;
-  margin: 0 auto var(--space-4);
-  color: var(--color-gray-300);
-}
 
 .admin-empty-title {
-  font-weight: var(--font-semibold);
-  color: var(--color-gray-900);
-  margin-bottom: var(--space-2);
   font-size: var(--text-lg);
 }
 
 .admin-empty-subtitle {
-  color: var(--color-gray-600);
-  font-size: var(--text-sm);
   margin: 0;
 }
 
@@ -313,34 +190,9 @@
    PROJECT DETAILS & STATISTICS
 ======================================== */
 
-.project-details {
-  padding: var(--space-8);
-}
 
-.project-details-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: var(--space-8);
-  flex-wrap: wrap;
-  gap: var(--space-4);
-}
 
-.project-stats-grid {
-  display: grid;
-  grid-template-columns: 1fr 2fr;
-  gap: var(--space-8);
-}
 
-.stats-section {
-  /* What: Flat white section
-     Why: Removed glass-morphism */
-  background: var(--mm-white);
-  border-radius: var(--radius-xl);
-  padding: var(--space-6);
-  border: 1px solid var(--mm-border-color-default);
-  box-shadow: var(--mm-shadow-sm);
-}
 
 .stats-section h3 {
   font-size: var(--text-xl);
@@ -361,62 +213,18 @@
    SUCCESS MANAGER SECTION
 ======================================== */
 
-.success-manager-section {
-  border-left: 4px solid var(--color-primary-500);
-}
 
 .success-manager-subsection {
-  border-left: 4px solid var(--color-primary-500);
   background: rgba(102, 126, 234, 0.05);
 }
 
-.success-manager-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-  gap: var(--space-4);
-}
 
-.success-manager-grid-compact {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-  gap: var(--space-3);
-}
 
-.success-manager-input {
-  /* What: Flat white input container
-     Why: Removed transparency */
-  background: var(--mm-white);
-  border-radius: var(--radius-lg);
-  padding: var(--space-4);
-  border: 1px solid var(--mm-border-color-default);
-}
 
-.sm-label {
-  display: block;
-  font-size: var(--text-sm);
-  font-weight: var(--font-semibold);
-  color: var(--color-gray-800);
-  margin-bottom: var(--space-2);
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-}
 
-.sm-input-container {
-  display: flex;
-  align-items: center;
-  gap: var(--space-2);
-}
 
 .sm-input {
-  flex: 1;
-  padding: var(--space-2);
   border: 1px solid rgba(102, 126, 234, 0.3);
-  border-radius: var(--radius-md);
-  text-align: center;
-  font-weight: var(--font-semibold);
-  color: var(--color-gray-900);
-  background: var(--color-white);
-  font-size: var(--text-base);
 }
 
 .sm-input:focus {
@@ -427,24 +235,7 @@
   box-shadow: 0 0 0 3px var(--mm-color-primary-100);
 }
 
-.sm-btn {
-  width: 2rem;
-  height: 2rem;
-  border: none;
-  border-radius: var(--radius-md);
-  font-weight: var(--font-bold);
-  font-size: var(--text-base);
-  cursor: pointer;
-  transition: all var(--transition-base);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
 
-.sm-btn-minus {
-  background: var(--color-error);
-  color: var(--color-white);
-}
 
 .sm-btn-minus:hover:not(:disabled) {
   background: var(--mm-color-error-600);
@@ -456,10 +247,6 @@
   cursor: not-allowed;
 }
 
-.sm-btn-plus {
-  background: var(--color-success);
-  color: var(--color-white);
-}
 
 .sm-btn-plus:hover {
   background: var(--mm-color-secondary-600);
@@ -471,13 +258,7 @@
 ======================================== */
 
 .stats-subsection {
-  /* What: Flat white subsection
-     Why: Removed transparency */
-  margin-bottom: var(--space-6);
-  padding: var(--space-4);
   background: var(--mm-gray-50);
-  border-radius: var(--radius-xl);
-  border: 1px solid var(--mm-border-color-default);
 }
 
 .stats-subsection h4 {
@@ -489,24 +270,7 @@
   border-bottom: 2px solid var(--color-primary-500);
 }
 
-.stats-breakdown {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: var(--space-2);
-}
 
-.stat-item {
-  /* What: Flat stat item
-     Why: Removed transparency */
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: var(--space-2) var(--space-3);
-  background: var(--mm-white);
-  border-radius: var(--radius-lg);
-  border: 1px solid var(--mm-border-color-default);
-  transition: all var(--transition-base);
-}
 
 .stat-item:hover {
   background: rgba(102, 126, 234, 0.05);
@@ -531,32 +295,16 @@
    ADMIN EVENT INFO
 ======================================== */
 
-.admin-event-name {
-  font-weight: var(--font-semibold);
-  color: var(--color-gray-900);
-  font-size: var(--text-sm);
-  margin-bottom: var(--space-1);
-}
 
 .admin-event-date {
-  color: var(--color-gray-600);
-  font-size: var(--text-xs);
   margin: 0;
 }
 
-.admin-stat-group {
-  margin-bottom: var(--space-4);
-}
 
 .admin-stat-group:last-child {
   margin-bottom: 0;
 }
 
-.admin-stat-total {
-  font-weight: var(--font-semibold);
-  font-size: var(--text-sm);
-  margin-bottom: var(--space-2);
-}
 
 .admin-stat-total.images { color: var(--color-info); }
 .admin-stat-total.fans { color: var(--color-success); }
@@ -564,18 +312,7 @@
 .admin-stat-total.gender { color: var(--color-warning); }
 .admin-stat-total.age { color: var(--color-error); }
 
-.admin-stat-breakdown {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-1);
-}
 
-.admin-stat-item {
-  color: var(--color-gray-600);
-  font-size: var(--text-xs);
-  display: flex;
-  justify-content: space-between;
-}
 
 /* ========================================
    RESPONSIVE DESIGN
@@ -815,35 +552,26 @@
 .font-bold { font-weight: var(--mm-font-weight-bold); }
 
 /* Alignment Utilities */
-.text-left { text-align: left; }
-.text-center { text-align: center; }
-.text-right { text-align: right; }
 
 /* Display Utilities */
 .block { display: block; }
 .inline { display: inline; }
 .inline-block { display: inline-block; }
 .inline-flex { display: inline-flex; }
-.flex { display: flex; }
 .grid { display: grid; }
 .hidden { display: none; }
 
 /* Flex Utilities */
 .flex-row { flex-direction: row; }
-.flex-col { flex-direction: column; }
 .flex-wrap { flex-wrap: wrap; }
 .flex-1 { flex: 1 1 0%; }
 .items-start { align-items: flex-start; }
-.items-center { align-items: center; }
 .items-end { align-items: flex-end; }
 .justify-start { justify-content: flex-start; }
-.justify-center { justify-content: center; }
 .justify-end { justify-content: flex-end; }
-.justify-between { justify-content: space-between; }
 .justify-around { justify-content: space-around; }
 
 /* Width & Height Utilities */
-.w-full { width: 100%; }
 .h-full { height: 100%; }
 .min-h-screen { min-height: 100vh; }
 
