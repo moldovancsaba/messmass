@@ -43,7 +43,7 @@ export const maxDuration = 60;
 // resolves to a real, correctly-rendered page. '/filter/' is the one users actually
 // reach; it was missing here entirely until this was caught by testing the export
 // button on that page specifically, not just /report/.
-const ALLOWED_PATH_PREFIXES = ['/report/', '/hashtag/', '/filter/'];
+const ALLOWED_PATH_PREFIXES = ['/report/', '/hashtag/', '/filter/', '/partner-report/'];
 
 function validatePath(path: string): string | null {
   if (!path.startsWith('/') || path.startsWith('//')) return null;

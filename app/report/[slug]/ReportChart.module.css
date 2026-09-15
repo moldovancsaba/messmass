@@ -628,7 +628,9 @@
   /* HOW: Standard table cell with natural text wrapping, right-aligned, no forced line limits */
   /* WHAT: P1 1.5 Phase 2 - Use block-level typography instead of independent scaling */
   /* A-03.3: Enhanced to prevent label clipping with measured layout logic */
-  font-size: var(--block-base-font-size);
+  /* ponytail: cap at 4cqh (cqh references .chart, the nearest container-type ancestor)
+     so 5 rows of 2-line labels never exceed ~48% of card height. */
+  font-size: min(var(--block-base-font-size, 1rem), 4cqh);
   color: var(--chartLabelColor);
   font-weight: var(--mm-font-weight-medium);
   text-align: right;
@@ -692,7 +694,7 @@
   padding-right: var(--mm-space-1);
   width: auto; /* WHAT: Value column auto-width based on content, remaining space goes to track */
   min-width: fit-content; /* WHAT: Ensure value text is never clipped */
-  font-size: var(--block-base-font-size); /* WHAT: Same font size as label for consistency */
+  font-size: min(var(--block-base-font-size, 1rem), 4cqh); /* ponytail: same 4cqh cap as .barLabel */
   font-weight: var(--mm-font-weight-bold);
   color: var(--chartValueColor);
   text-align: left;
