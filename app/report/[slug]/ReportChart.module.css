@@ -949,13 +949,13 @@
 }
 
 .textMarkdown a { 
-  color: var(--mm-color-primary-600) !important; 
+  color: var(--textLinkColor, var(--mm-color-primary-600)) !important; 
   text-decoration: underline !important;
   display: inline !important; /* Links stay inline */
 }
 
 .textMarkdown a:hover { 
-  color: var(--mm-color-primary-700) !important; 
+  color: var(--textLinkColor, var(--mm-color-primary-700)) !important; 
 }
 
 /* CRITICAL: Ensure all markdown content is block-level by default */
@@ -1021,8 +1021,8 @@
   display: block !important;
   margin: 0.5em 0 !important;
   padding: 0.5em 1em !important;
-  border-left: 3px solid var(--mm-gray-300) !important;
-  background: var(--mm-gray-50) !important;
+  border-left: 3px solid var(--chartBorder, var(--mm-gray-300)) !important;
+  background: var(--textMutedBackground, var(--mm-gray-100)) !important;
   border-radius: var(--mm-radius-sm) !important;
   font-style: italic !important;
   width: 100% !important;
@@ -1039,7 +1039,7 @@
   display: block !important;
   margin: 0.5em 0 !important;
   padding: 0.5em !important;
-  background: var(--mm-gray-100) !important;
+  background: var(--textMutedBackground, var(--mm-gray-100)) !important;
   border-radius: var(--mm-radius-sm) !important;
   /* WHAT: Wrap long lines instead of scrolling - Layout Grammar compliance */
   /* WHY: Content must fit without scrolling; no clipping on content layers */
@@ -1058,7 +1058,7 @@
 .textMarkdown code {
   font-family: 'Courier New', Courier, monospace !important;
   font-size: 0.9em !important;
-  background: var(--mm-gray-100) !important;
+  background: var(--textMutedBackground, var(--mm-gray-100)) !important;
   padding: 0.15em 0.3em !important;
   border-radius: var(--mm-radius-sm) !important;
   display: inline !important;
@@ -1079,7 +1079,7 @@
 .textMarkdown s {
   text-decoration: line-through !important;
   display: inline !important;
-  color: var(--mm-gray-500) !important;
+  color: var(--chartLabelColor, var(--mm-gray-500)) !important;
 }
 
 /* WHAT: Horizontal rule styling */
@@ -1087,7 +1087,7 @@
 .textMarkdown hr {
   display: block !important;
   border: none !important;
-  border-top: 1px solid var(--mm-gray-300) !important;
+  border-top: 1px solid var(--chartBorder, var(--mm-gray-300)) !important;
   margin: 1em 0 !important;
   width: 100% !important;
   box-sizing: border-box !important;
@@ -1206,7 +1206,7 @@
 }
 
 .tableMarkdown table tbody tr:hover {
-  background: var(--mm-gray-50);
+  background: var(--textMutedBackground, var(--mm-gray-100));
 }
 
 .tableMarkdown table tbody tr:last-child td {
@@ -1337,7 +1337,7 @@
 
 .chartErrorIcon {
   font-size: 2rem;
-  color: var(--mm-color-error, var(--mm-color-error-600));
+  color: var(--chartErrorText, var(--mm-color-error, var(--mm-color-error-600)));
   margin-bottom: var(--mm-space-3);
 }
 
@@ -1578,7 +1578,7 @@
   font-size: 1.25rem !important;
   font-weight: 500 !important;
   line-height: 1.6 !important;
-  color: var(--color-gray-900) !important;
+  color: var(--textColor, var(--color-gray-900)) !important;
 }
 
 .presetHero h1, .presetHero h2, .presetHero h3 {
@@ -1588,8 +1588,8 @@
 
 .presetCallout {
   padding: 1.25rem !important;
-  background: var(--mm-gray-50, var(--mm-gray-50)) !important;
-  border-left: 4px solid var(--mm-color-primary-500, var(--mm-chart-indigo)) !important;
+  background: var(--textMutedBackground, var(--mm-gray-100)) !important;
+  border-left: 4px solid var(--kpiIconColor, var(--mm-color-primary-500, var(--mm-chart-indigo))) !important;
   border-radius: 4px !important;
   font-style: italic !important;
   box-shadow: inset 0 2px 4px 0 rgba(var(--mm-black-rgb), 0.05) !important;

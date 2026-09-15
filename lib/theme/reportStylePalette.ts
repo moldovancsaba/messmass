@@ -17,6 +17,8 @@ export const DEFAULT_REPORT_STYLE_COLORS = {
   // Page
   pageBackground: '#f8fafcff',
   blockTitleColor: '#1f2937ff',
+  textLinkColor: '#2563ebff',
+  textMutedBackground: '#f3f4f6ff',
 
   // Hero Section
   heroBackground: '#f8fafcff',
@@ -75,6 +77,8 @@ export const DEFAULT_REPORT_STYLE_COLORS = {
 export const LANDING_REPORT_STYLE_COLORS = {
   pageBackground: '#0f172aff',
   blockTitleColor: '#f8fafcff',
+  textLinkColor: '#60a5faff',
+  textMutedBackground: '#1e293bff',
   heroBackground: '#0f172aff',
   headingColor: '#f8fafcff',
   exportButtonBackground: '#3b82f6ff',

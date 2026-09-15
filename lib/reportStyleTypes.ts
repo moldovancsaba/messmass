@@ -41,6 +41,8 @@ export interface ReportStyle {
   chartLabelColor: string;              // Labels and legends
   chartValueColor: string;              // Numbers and values
   textColor: string;                    // TEXT chart content
+  textLinkColor?: string;               // Links inside TEXT chart markdown
+  textMutedBackground?: string;         // Blockquote / code / pre surface in TEXT charts
   
   // KPI Charts (1 property)
   kpiIconColor: string;                 // Icon color
@@ -132,6 +134,8 @@ export const COLOR_FIELDS: ColorFieldDefinition[] = [
   { key: 'chartTitleColor', label: 'Chart Title', category: 'Chart Typography', description: 'Chart heading color' },
   { key: 'chartLabelColor', label: 'Chart Label', category: 'Chart Typography', description: 'Axis labels, legends' },
   { key: 'chartValueColor', label: 'Chart Value', category: 'Chart Typography', description: 'Numbers, KPI values' },
+  { key: 'textLinkColor', label: 'Text Link', category: 'Chart Typography', description: 'Links inside TEXT chart content' },
+  { key: 'textMutedBackground', label: 'Text Code / Quote BG', category: 'Chart Typography', description: 'Background for blockquotes and code in TEXT charts' },
   { key: 'textColor', label: 'Text Content', category: 'Chart Typography', description: 'TEXT chart body text' },
   
   // KPI Charts
