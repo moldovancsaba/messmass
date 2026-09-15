@@ -6,7 +6,7 @@
      Why: Full viewport height with proper overflow handling */
   min-height: 100vh;
   display: flex;
-  background: var(--mm-gray-50);
+  background: var(--page-bg, var(--mm-gray-50));
 }
 
 /* OPS-ADMIN-01: Skip link – visually hidden until focused (WCAG 2.4.1) */

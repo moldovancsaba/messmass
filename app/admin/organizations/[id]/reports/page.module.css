@@ -23,7 +23,7 @@
   font-weight: 700;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: #64748b;
+  color: var(--mm-gray-500);
 }
 
 .title {
@@ -36,7 +36,7 @@
   margin: 0;
   max-width: 760px;
   font-size: 1rem;
-  color: #475569;
+  color: var(--mm-gray-600);
 }
 
 .headerActions {
@@ -54,18 +54,18 @@
   min-height: 44px;
   padding: 0 16px;
   border-radius: 14px;
-  border: 1px solid #cbd5e1;
-  background: white;
-  color: #0f172a;
+  border: 1px solid var(--mm-gray-300);
+  background: var(--mm-white);
+  color: var(--mm-gray-900);
   text-decoration: none;
   font-weight: 600;
   cursor: pointer;
 }
 
 .primaryButton {
-  background: #2563eb;
-  border-color: #2563eb;
-  color: white;
+  background: var(--mm-color-primary-600);
+  border-color: var(--mm-color-primary-600);
+  color: var(--mm-white);
 }
 
 .inlineButton {
@@ -84,7 +84,7 @@
   font-size: 0.82rem;
   text-transform: uppercase;
   letter-spacing: 0.06em;
-  color: #64748b;
+  color: var(--mm-gray-500);
 }
 
 .summaryValue {
@@ -131,18 +131,18 @@
 }
 
 .defaultBadge {
-  background: #dbeafe;
-  color: #1d4ed8;
+  background: var(--mm-color-primary-100);
+  color: var(--mm-color-primary-700);
 }
 
 .variantBadge {
-  background: #fef3c7;
-  color: #b45309;
+  background: var(--mm-color-warning-100);
+  color: var(--mm-color-warning-700);
 }
 
 .statusBadge {
-  background: #e2e8f0;
-  color: #334155;
+  background: var(--mm-gray-200);
+  color: var(--mm-gray-700);
   text-transform: capitalize;
 }
 
@@ -153,7 +153,7 @@
 
 .variantMeta {
   margin: 0;
-  color: #475569;
+  color: var(--mm-gray-600);
 }
 
 .variantActions,

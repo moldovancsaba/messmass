@@ -49,7 +49,7 @@
 }
 
 .closeBtn:hover {
-  background: white;
+  background: var(--mm-white);
   color: var(--mm-gray-900);
 }
 

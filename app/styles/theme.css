@@ -70,6 +70,64 @@
   --mm-warning-light: var(--mantine-color-messmassAmber-1, #fef3c7);
   --mm-error: var(--mantine-color-messmassRed-5, #ef4444);
   --mm-error-light: var(--mantine-color-messmassRed-1, #fee2e2);
+
+  /* Full error ramp — used by components referencing --mm-color-error-* */
+  --mm-color-error-50:  var(--mantine-color-messmassRed-0, #fef2f2);
+  --mm-color-error-100: var(--mantine-color-messmassRed-1, #fee2e2);
+  --mm-color-error-200: var(--mantine-color-messmassRed-2, #fecaca);
+  --mm-color-error-300: var(--mantine-color-messmassRed-3, #fca5a5);
+  --mm-color-error-400: var(--mantine-color-messmassRed-4, #f87171);
+  --mm-color-error-500: var(--mantine-color-messmassRed-5, #ef4444);
+  --mm-color-error-600: var(--mantine-color-messmassRed-6, #dc2626);
+  --mm-color-error-700: var(--mantine-color-messmassRed-7, #b91c1c);
+  --mm-color-error-800: var(--mantine-color-messmassRed-8, #991b1b);
+  --mm-color-error-900: var(--mantine-color-messmassRed-9, #7f1d1d);
+  --mm-color-error:     var(--mm-color-error-500); /* shorthand alias */
+
+  /* Full warning ramp */
+  --mm-color-warning-50:  var(--mantine-color-messmassAmber-0, #fffbeb);
+  --mm-color-warning-100: var(--mantine-color-messmassAmber-1, #fef3c7);
+  --mm-color-warning-200: var(--mantine-color-messmassAmber-2, #fde68a);
+  --mm-color-warning-500: var(--mantine-color-messmassAmber-5, #f59e0b);
+  --mm-color-warning-600: var(--mantine-color-messmassAmber-6, #d97706);
+  --mm-color-warning-700: var(--mantine-color-messmassAmber-7, #b45309);
+  --mm-color-warning-800: var(--mantine-color-messmassAmber-8, #92400e);
+
+  /* Full success ramp */
+  --mm-color-success-50:  var(--mantine-color-messmassGreen-0, #f0fdf4);
+  --mm-color-success-100: var(--mantine-color-messmassGreen-1, #dcfce7);
+  --mm-color-success-500: var(--mantine-color-messmassGreen-5, #10b981);
+  --mm-color-success-600: var(--mantine-color-messmassGreen-6, #059669);
+  --mm-color-success-700: var(--mantine-color-messmassGreen-7, #047857);
+
+  /* Purple ramp — used by charts and badges */
+  --mm-color-purple-500: #8b5cf6;
+  --mm-color-purple-600: #7c3aed;
+
+  /* Semantic shorthand aliases used by analytics/admin components */
+  --mm-primary:       var(--mm-color-primary-500);
+  --mm-primary-dark:  var(--mm-color-primary-700);
+  --mm-success-dark:  var(--mm-color-secondary-800);
+
+  /* Surface / border / text semantic tokens (analytics + org-report components) */
+  --mm-surface-primary:   var(--mm-white);
+  --mm-surface-secondary: var(--mm-gray-50);
+  --mm-border-light:      var(--mm-gray-200);
+  --mm-border-medium:     var(--mm-gray-300);
+  --mm-border-primary:    var(--mm-color-primary-200);
+  --mm-text-primary:      var(--mm-gray-900);
+  --mm-text-secondary:    var(--mm-gray-600);
+  --mm-text-tertiary:     var(--mm-gray-400);
+  --mm-transition-fast:   150ms ease;
+
+  /* OrganizationActivitiesList legacy vars — map to canonical tokens */
+  --card-bg:       var(--mm-white);
+  --border-color:  var(--mm-gray-200);
+  --border-light:  var(--mm-gray-100);
+  --brand-color:   var(--mm-color-primary-500);
+  --text-primary:  var(--mm-gray-900);
+  --text-secondary: var(--mm-gray-500);
+
   --mm-info: #3b82f6;
   --mm-info-light: #dbeafe;
   

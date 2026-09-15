@@ -86,7 +86,7 @@
   border: none;
   border-radius: 50%;
   background: var(--mm-red-500, var(--mm-error));
-  color: white;
+  color: var(--mm-white);
   cursor: pointer;
   transition: all var(--transition-fast);
   display: flex;
@@ -164,7 +164,7 @@
 
 .confirmButton {
   background: var(--mm-green-500, var(--mm-color-secondary-500));
-  color: white;
+  color: var(--mm-white);
 }
 
 .confirmButton:hover {

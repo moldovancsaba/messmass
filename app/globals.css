@@ -114,8 +114,8 @@ body {
 .admin-projects-container,
 .login-card,
 [style*="background: rgba(255, 255, 255"],
-[style*="background: white"],
-[style*="background-color: white"],
+[style*="background: var(--mm-white)"],
+[style*="background-color: var(--mm-white)"],
 [style*="background-color: rgba(255, 255, 255"] {
   color: var(--mm-black) !important;
 }
@@ -290,7 +290,7 @@ img {
   display: flex;
   align-items: center;
   justify-content: center;
-  color: white;
+  color: var(--mm-white);
   font-weight: 600;
   font-size: 1.2rem;
 }
@@ -309,7 +309,7 @@ img {
 
 .admin-logout-btn {
   background: var(--gradient-error);
-  color: white;
+  color: var(--mm-white);
   padding: 0.75rem 1.5rem;
   border-radius: 12px;
   border: none;
@@ -362,7 +362,7 @@ img {
 .admin-stat-icon svg {
   width: 24px;
   height: 24px;
-  color: white;
+  color: var(--mm-white);
 }
 
 .admin-stat-label {
@@ -417,7 +417,7 @@ img {
 
 .admin-btn-refresh {
   background: var(--gradient-primary);
-  color: white;
+  color: var(--mm-white);
   padding: 0.75rem 1.5rem;
   border-radius: 12px;
   border: none;
@@ -534,7 +534,7 @@ img {
 
 .admin-btn-export {
   background: var(--gradient-primary);
-  color: white;
+  color: var(--mm-white);
 }
 
 .admin-btn-export:hover {
@@ -544,7 +544,7 @@ img {
 
 .admin-btn-delete {
   background: var(--gradient-error);
-  color: white;
+  color: var(--mm-white);
 }
 
 .admin-btn-delete:hover {
@@ -614,7 +614,7 @@ img {
 .login-icon svg {
   width: 24px;
   height: 24px;
-  color: white;
+  color: var(--mm-white);
 }
 
 .login-title {
@@ -1000,7 +1000,7 @@ img {
   text-align: center;
   font-weight: 600;
   color: var(--mm-gray-900);
-  background: white;
+  background: var(--mm-white);
   font-size: 1rem;
 }
 
@@ -1026,7 +1026,7 @@ img {
 
 .sm-btn-minus {
   background: var(--mm-error);
-  color: white;
+  color: var(--mm-white);
 }
 
 .sm-btn-minus:hover:not(:disabled) {
@@ -1041,7 +1041,7 @@ img {
 
 .sm-btn-plus {
   background: var(--mm-color-secondary-500);
-  color: white;
+  color: var(--mm-white);
 }
 
 .sm-btn-plus:hover {
@@ -1312,7 +1312,7 @@ img {
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  background: white;
+  background: var(--mm-white);
   border-radius: 50%;
   width: 90px;
   height: 90px;
@@ -1440,7 +1440,7 @@ img {
   display: flex;
   align-items: center;
   justify-content: center;
-  color: white;
+  color: var(--mm-white);
   font-weight: 600;
   font-size: 0.7rem;
   text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
@@ -1453,7 +1453,7 @@ img {
 
 .bar-label {
   position: absolute;
-  color: white;
+  color: var(--mm-white);
   font-weight: 600;
   font-size: 0.7rem;
   text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
@@ -1563,7 +1563,7 @@ img {
 }
 
 .horizontal-bar-value {
-  color: white;
+  color: var(--mm-white);
   font-weight: 600;
   font-size: 0.75rem;
   text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
@@ -1986,7 +1986,7 @@ div.unified-chart-item:has(.text-chart-container) {
 /* WHAT: Page background utilities
    WHY: Consistent neutral backgrounds for flat design */
 .page-bg-gray {
-  background: var(--mm-gray-50);
+  background: var(--page-bg, var(--mm-gray-50));
   min-height: 100vh;
 }
 

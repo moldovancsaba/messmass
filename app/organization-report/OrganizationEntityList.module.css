@@ -32,7 +32,7 @@
 }
 
 .entityCard {
-  background: white;
+  background: var(--mm-white);
   border-radius: var(--mm-radius-xl);
   padding: var(--mm-space-6);
   box-shadow: var(--mm-shadow-sm);

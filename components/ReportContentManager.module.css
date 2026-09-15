@@ -39,13 +39,13 @@
 }
 
 .btnPrimary {
-  background: var(--mm-primary-500);
+  background: var(--mm-color-primary-500);
   color: var(--mm-white);
   border-color: var(--mm-primary-600);
 }
 
 .btnDanger {
-  background: var(--mm-red-500);
+  background: var(--mm-color-error-500);
   color: var(--mm-white);
   border-color: var(--mm-red-600);
 }

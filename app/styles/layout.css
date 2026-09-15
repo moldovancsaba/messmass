@@ -544,7 +544,7 @@
 .metric-card {
   /* What: Flat card with solid colors
      Why: TailAdmin V2 migration - removed gradients */
-  color: white;
+  color: var(--mm-white);
   padding: 1.5rem;
   border-radius: 12px;
   text-align: center;
@@ -613,7 +613,7 @@
 
 .tab-button-active {
   background: var(--mm-color-primary-600);
-  color: white;
+  color: var(--mm-white);
   border-radius: 8px 8px 0 0;
 }
 
@@ -990,7 +990,7 @@
   /* What: Flat primary badge
      Why: TailAdmin V2 - removed gradient */
   background: var(--mm-color-primary-600);
-  color: white;
+  color: var(--mm-white);
   padding: 0.5rem 1rem;
   border-radius: 8px;
   font-size: 1rem;

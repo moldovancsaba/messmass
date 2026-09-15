@@ -6,7 +6,7 @@
 /* Page Container */
 .page {
   min-height: 100vh;
-  background: var(--mm-gray-100); /* WHAT: Gray background for card contrast */
+  background: var(--page-bg, var(--mm-gray-100)); /* WHAT: Themed page background; falls back to gray for contrast */
   padding: var(--mm-space-6) var(--mm-space-4);
   /* WHAT: Apply custom font from report style (v11.49.0)
      WHY: Allow per-style font customization

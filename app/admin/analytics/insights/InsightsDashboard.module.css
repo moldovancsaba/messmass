@@ -83,7 +83,7 @@
 
 .actionButton:hover {
   background: var(--mm-primary);
-  color: white;
+  color: var(--mm-white);
   border-color: var(--mm-primary);
 }
 

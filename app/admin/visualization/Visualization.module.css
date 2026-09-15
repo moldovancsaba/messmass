@@ -72,7 +72,7 @@
   margin-top: var(--mm-space-4);
   margin-bottom: var(--mm-space-4);
   background: var(--mm-color-primary-500);
-  color: white;
+  color: var(--mm-white);
   border: none;
   border-radius: var(--mm-radius-md);
   font-size: 0.875rem;

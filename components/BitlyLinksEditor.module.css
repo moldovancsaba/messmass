@@ -31,7 +31,7 @@
 
 .addButton {
   background: var(--mm-color-primary-500);
-  color: white;
+  color: var(--mm-white);
   border: none;
   padding: 0.5rem 1rem;
   border-radius: 6px;
@@ -91,7 +91,7 @@
 
 .submitButton {
   background: var(--mm-success);
-  color: white;
+  color: var(--mm-white);
   border: none;
   padding: 0.75rem 1.5rem;
   border-radius: 6px;

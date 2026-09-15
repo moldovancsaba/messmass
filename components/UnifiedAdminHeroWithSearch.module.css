@@ -40,7 +40,7 @@
 .heroTitle {
   font-size: var(--mm-font-size-3xl);
   font-weight: var(--mm-font-weight-bold);
-  color: white;
+  color: var(--mm-white);
   margin: 0;
   line-height: var(--mm-line-height-sm);
 }

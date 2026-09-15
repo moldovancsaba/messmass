@@ -202,7 +202,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  color: white;
+  color: var(--mm-white);
   font-weight: 600;
   font-size: 0.7rem;
   transition: all 0.3s ease;
@@ -218,7 +218,7 @@
   /* What: Flat bar label
      Why: Removed text-shadow */
   position: absolute;
-  color: white;
+  color: var(--mm-white);
   font-weight: 700;
   font-size: 0.7rem;
   z-index: 1;
@@ -373,7 +373,7 @@
 .horizontal-bar-value {
   /* What: Flat value label
      Why: Removed text-shadow for flat design */
-  color: white;
+  color: var(--mm-white);
   font-weight: 700;
   font-size: 0.75rem;
   z-index: 1;

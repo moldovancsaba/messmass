@@ -18,7 +18,7 @@
 }
 
 .codeBlock {
-  background: white;
+  background: var(--mm-white);
   padding: 10px;
   overflow: auto;
 }
@@ -38,7 +38,7 @@
 }
 
 .resultBlock {
-  background: white;
+  background: var(--mm-white);
   padding: 10px;
   overflow: auto;
   margin-top: 10px;

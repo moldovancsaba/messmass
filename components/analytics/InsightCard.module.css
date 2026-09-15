@@ -100,13 +100,13 @@
 
 .actionButton:hover {
   background: var(--mm-success);
-  color: white;
+  color: var(--mm-white);
   border-color: var(--mm-success);
 }
 
 .dismissButton:hover {
   background: var(--mm-danger);
-  color: white;
+  color: var(--mm-white);
   border-color: var(--mm-danger);
 }
 

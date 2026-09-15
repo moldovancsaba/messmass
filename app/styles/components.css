@@ -858,7 +858,7 @@ textarea::placeholder {
    WHY: Gray background for cancel/dismiss actions */
 .btn-modal-cancel {
   background: #6b7280;
-  color: white;
+  color: var(--mm-white);
   padding: 0.75rem 1.5rem;
   border-radius: 0.5rem;
   border: none;
@@ -871,7 +871,7 @@ textarea::placeholder {
    WHY: Blue background for safe confirmation actions */
 .btn-modal-confirm {
   background: #3b82f6;
-  color: white;
+  color: var(--mm-white);
   padding: 0.75rem 1.5rem;
   border-radius: 0.5rem;
   border: none;
@@ -884,7 +884,7 @@ textarea::placeholder {
    WHY: Red background for destructive confirmations */
 .btn-modal-danger {
   background: #ef4444;
-  color: white;
+  color: var(--mm-white);
   padding: 0.75rem 1.5rem;
   border-radius: 0.5rem;
   border: none;
@@ -1116,7 +1116,7 @@ textarea::placeholder {
   gap: var(--spacing-xs);
   padding: 4px var(--spacing-sm);
   background: var(--mm-color-primary-600);
-  color: white;
+  color: var(--mm-white);
   border-radius: 16px;
   font-size: 0.875rem;
   font-weight: 500;
@@ -1131,7 +1131,7 @@ textarea::placeholder {
 .hashtag-remove {
   background: none;
   border: none;
-  color: white;
+  color: var(--mm-white);
   font-size: 1.2rem;
   line-height: 1;
   cursor: pointer;
@@ -1207,7 +1207,7 @@ textarea::placeholder {
 }
 
 .hashtag-suggestion-text {
-  color: white;
+  color: var(--mm-white);
   font-weight: 500;
 }
 
@@ -1274,7 +1274,7 @@ textarea::placeholder {
   /* Background will be set via inline styles for managed colors */
   /* Default fallback for hashtags without managed colors */
   background: var(--mm-color-primary-600);
-  color: white;
+  color: var(--mm-white);
   border-radius: 50px;
   font-weight: 500;
   font-size: 0.875rem;
@@ -2548,7 +2548,7 @@ textarea::placeholder {
   width: 16px;
   height: 16px;
   border: 2px solid rgba(255,255,255,0.3);
-  border-top-color: white;
+  border-top-color: var(--mm-white);
   border-radius: 50%;
   animation: spin 1s linear infinite;
 }

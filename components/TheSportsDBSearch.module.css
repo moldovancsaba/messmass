@@ -36,7 +36,7 @@
   padding: var(--mm-space-3) var(--mm-space-4);
   font-size: var(--mm-font-size-base);
   font-weight: 600;
-  color: white;
+  color: var(--mm-white);
   background: var(--mm-color-primary-600);
   border: none;
   border-radius: var(--mm-radius-lg);
@@ -150,7 +150,7 @@
   padding: var(--mm-space-2) var(--mm-space-4);
   font-size: var(--mm-font-size-sm);
   font-weight: 600;
-  color: white;
+  color: var(--mm-white);
   background: var(--mm-green-600, var(--mm-color-secondary-600));
   border: none;
   border-radius: var(--mm-radius-md);

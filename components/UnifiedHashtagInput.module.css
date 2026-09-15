@@ -34,7 +34,7 @@
   font-size: 1rem;
   border: 2px solid;
   border-radius: 8px;
-  background: white;
+  background: var(--mm-white);
   color: #1a202c;
   font-weight: 500;
   cursor: pointer;
@@ -67,7 +67,7 @@
   font-size: 1rem;
   border: 2px solid;
   border-radius: 8px;
-  background: white;
+  background: var(--mm-white);
   color: #1a202c;
   transition: all 0.2s ease;
 }
@@ -92,7 +92,7 @@
   top: 100%;
   left: 0;
   right: 0;
-  background: white;
+  background: var(--mm-white);
   border: 1px solid rgba(229, 231, 235, 0.8);
   border-radius: 8px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);

@@ -83,7 +83,7 @@
 
 /* Submit button */
 .submitButton {
-  color: white;
+  color: var(--mm-white);
 }
 
 .submitButton:disabled {
@@ -92,7 +92,7 @@
 
 /* Update button (between Cancel and Save) */
 .updateButton {
-  color: white;
+  color: var(--mm-white);
   opacity: 0.85; /* Slightly dimmed to differentiate from Save */
 }
 
@@ -106,7 +106,7 @@
   width: 1rem;
   height: 1rem;
   border: 2px solid rgba(255, 255, 255, 0.3);
-  border-top-color: white;
+  border-top-color: var(--mm-white);
   border-radius: 50%;
   animation: spin 0.6s linear infinite;
 }
