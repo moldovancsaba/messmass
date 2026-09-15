@@ -2186,4 +2186,28 @@ div.unified-chart-item:has(.text-chart-container) {
   [data-print-hide] {
     display: none !important;
   }
+
+  /* WHAT: Force background colors and images to print on every element.
+     WHY: Chromium's default print behavior strips background-color and
+     background-image from elements with no explicit print-color-adjust, producing
+     a white page even when printBackground:true is passed to page.pdf(). That flag
+     tells Puppeteer to emit the background layer; this CSS property tells the CSS
+     engine to preserve each element's declared background instead of substituting
+     white. Without both, the report's page background (--mm-gray-100), card
+     backgrounds (--chartBackground), icon colors, and bar fills all vanish. */
+  * {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  /* WHAT: Strip all box-shadows inside the report content area.
+     WHY: Chromium renders shadows in the PDF but they bleed outside the card's
+     border-radius clip producing a visible grey halo that reads as a "dark grey
+     border". This belt-and-suspenders rule catches any shadow set via inline style
+     or a per-report-style --cardShadow CSS variable that the component-level
+     @media print rules cannot see (CSS Modules generate hashed class names that
+     make global selectors unreliable; the ID selector is stable). */
+  #report-content * {
+    box-shadow: none !important;
+  }
 }

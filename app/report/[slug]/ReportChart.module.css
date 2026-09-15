@@ -1338,6 +1338,41 @@
   word-wrap: break-word;
 }
 
+/* WHAT: Print overrides for PDF export.
+   WHY — three separate concerns:
+   (1) box-shadow: none — Chromium renders shadows in PDF but they bleed outside the
+       card's border-radius clip, producing a visible grey halo that the user reads as
+       "dark grey borders". Removing shadows in print eliminates them. Cards are still
+       visually delineated by their white/coloured background against the grey page.
+       Applied to every element inside #report-content so table cards and image
+       containers (which have their own box-shadow, not .chart) are also covered.
+   (2) overflow: hidden on .chart — chart containers use overflow:visible in screen mode
+       so that font-scaling resize-observers can measure text past the container boundary.
+       In print there is no further interaction; clipping to the card boundary prevents
+       text that is still slightly oversized from spilling into an adjacent card or over
+       a page border.
+   (3) overflow: hidden on inner rows — same rationale applied to the fixed-height grid
+       rows inside KPI, valuechain and pie charts, and the label column in bar charts. */
+@media print {
+  .chart,
+  .table,
+  .imageContainer {
+    box-shadow: none !important;
+    overflow: hidden !important;
+  }
+
+  .kpiValueRow,
+  .kpiTitle,
+  .valuechainTitleRow,
+  .valuechainDescRow,
+  .pieLegend,
+  .barLabel,
+  .textContent,
+  .textMarkdown {
+    overflow: hidden !important;
+  }
+}
+
 /* Responsive Adjustments */
 @media (max-width: 768px) {
   /* WHAT: Image container on mobile - same dynamic aspect ratio approach */

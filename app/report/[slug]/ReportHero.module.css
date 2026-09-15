@@ -156,6 +156,7 @@
 @media print {
   .hero {
     padding: var(--mm-space-4) var(--mm-space-4);
+    box-shadow: none !important; /* Same grey-halo fix as ReportChart.module.css .chart */
   }
 
   .heroLogo {
