@@ -6,13 +6,19 @@
 import React from 'react';
 
 export interface AdminSurfaceAction<T> {
-  label: string;
-  mobileLabel?: string;
-  icon?: string;
-  variant?: 'primary' | 'secondary' | 'danger';
+  // WHAT: label/icon/variant/title may be computed per row.
+  // WHY: Call sites already passed functions here (the users page toggles
+  //   "Enable API"/"Disable API" per row), but the type said string and the
+  //   renderer used the value directly -- React renders nothing for a function
+  //   child, so those buttons appeared as blank boxes. Widened to match how
+  //   ariaLabel/disabled already worked, and resolved in AdminActionRail.
+  label: string | ((item: T) => string);
+  mobileLabel?: string | ((item: T) => string);
+  icon?: string | ((item: T) => string);
+  variant?: 'primary' | 'secondary' | 'danger' | ((item: T) => 'primary' | 'secondary' | 'danger');
   priority?: 'primary' | 'secondary' | 'overflow' | 'danger';
   handler: (item: T) => void;
-  title?: string;
+  title?: string | ((item: T) => string);
   ariaLabel?: string | ((item: T) => string);
   disabled?: boolean | ((item: T) => boolean);
   className?: string;

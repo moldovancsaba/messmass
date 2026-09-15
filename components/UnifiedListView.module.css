@@ -101,14 +101,12 @@
   padding: var(--mm-space-sm) var(--mm-space-sm);
   color: var(--mm-gray-700);
   vertical-align: middle;
-  /* Long values shrink rather than forcing horizontal scroll. Truncation lives
-     on an inner wrapper (.cellContent) so the cell itself never clips a popover
-     -- clipping here is what hid the role dropdown behind the next row. */
+  /* Long values truncate rather than forcing horizontal scroll. max-width is
+     what makes text-overflow apply inside a table; without the overflow rule
+     the content simply spilled over the next column instead.
+     Safe to clip here: the role dropdown's menu renders in a portal on
+     document.body, so it is no longer inside this box. */
   max-width: 1px;
-  white-space: nowrap;
-}
-
-.cellContent {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;

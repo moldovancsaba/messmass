@@ -94,6 +94,11 @@ export async function GET(request: NextRequest) {
         apiKeyEnabled: u.apiKeyEnabled || false,
         apiUsageCount: u.apiUsageCount || 0,
         lastAPICallAt: u.lastAPICallAt,
+        // WHAT: Last successful sign-in.
+        // WHY: updateUserLastLogin() has always written this on every SSO login,
+        //      but it was missing from this projection, so the Last Login column
+        //      read undefined and showed "Never" for every user regardless.
+        lastLogin: u.lastLogin,
         createdAt: u.createdAt,
         updatedAt: u.updatedAt
       })),

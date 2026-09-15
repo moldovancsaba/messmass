@@ -172,22 +172,8 @@
   }
 }
 
-/* WHAT: Icon-only row actions in dense tables.
-   WHY: A users row carries four labelled actions ("Regenerate", "Rotate API
-   Key", ...), which alone were wider than the remaining columns and pushed the
-   table into horizontal scroll. Every button already sets title and aria-label,
-   so dropping the visible label loses no information for either pointer or
-   screen-reader users.
-   HOW: Only in list-row mode and only below the width where full labels fit;
-   card and detail modes keep their labels. */
-@media (max-width: 1400px) {
-  .mode-list-row .label {
-    display: none;
-  }
-  .mode-list-row .actionButton {
-    padding: var(--mm-space-xs);
-  }
-  .mode-list-row .visibleActions {
-    flex-wrap: nowrap;
-  }
-}
+/* WHAT: Row actions stay labelled.
+   WHY: An earlier attempt hid the labels below 1400px to save width, but the
+   rail already caps visible actions at 2 and moves the rest behind "More", so
+   the only effect was unreadable buttons -- any action whose icon did not
+   render became a blank box. Density is the rail's job, not the label's. */

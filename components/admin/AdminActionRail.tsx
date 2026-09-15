@@ -31,7 +31,8 @@ function isMaterialIconName(icon: string): boolean {
   return /^[a-z0-9_]+$/.test(icon);
 }
 
-function renderIcon(icon: AdminSurfaceAction<unknown>['icon']) {
+// Takes the already-resolved icon string, not the possibly-function field.
+function renderIcon(icon: string | undefined) {
   if (!icon) return null;
 
   return isMaterialIconName(icon) ? (
@@ -94,20 +95,27 @@ export default function AdminActionRail<T>({
 
   const renderButton = (action: AdminSurfaceAction<T>, location: 'visible' | 'overflow') => {
     const disabled = Boolean(resolveValue(action.disabled, item));
-    const ariaLabel = resolveValue(action.ariaLabel, item) || action.title || action.label;
+    // Every per-row field must be resolved before it reaches the DOM: a raw
+    // function renders as nothing, which is what made these buttons look blank.
+    const label = resolveValue(action.label, item);
+    const mobileLabel = resolveValue(action.mobileLabel, item);
+    const title = resolveValue(action.title, item);
+    const icon = resolveValue(action.icon, item);
+    const variant = resolveValue(action.variant, item) || 'secondary';
+    const ariaLabel = resolveValue(action.ariaLabel, item) || title || label;
     const priority = getPriority(action);
 
     return (
       <button
-        key={`${location}-${action.label}`}
+        key={`${location}-${label}`}
         type="button"
         className={`
           ${styles.actionButton}
-          ${styles[`variant-${action.variant || 'secondary'}`]}
+          ${styles[`variant-${variant}`]}
           ${styles[`priority-${priority}`]}
           ${action.className || ''}
         `}
-        title={action.title || action.label}
+        title={title || label}
         aria-label={ariaLabel}
         disabled={disabled}
         onClick={(event) => {
@@ -117,8 +125,8 @@ export default function AdminActionRail<T>({
           }
         }}
       >
-        {renderIcon(action.icon)}
-        <span className={styles.label}>{action.mobileLabel || action.label}</span>
+        {renderIcon(icon)}
+        <span className={styles.label}>{mobileLabel || label}</span>
       </button>
     );
   };
