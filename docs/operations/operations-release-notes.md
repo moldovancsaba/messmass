@@ -22,10 +22,10 @@ Owner: Operations
   `--block-height` custom property (avoids circular `cqh` inside auto-height
   `container-type:size` ancestor).
 
-## [v12.3.35] — 2026-09-12T12:50:00.000Z
+## [v12.3.36] — 2026-09-12T12:50:00.000Z
 
 ### Changed
-- Fleet version 12.3.35 (lockstep with savetheworld's feed-cache change). No
+- Fleet version 12.3.36 (lockstep with savetheworld's feed-cache change). No
   messmass code change.
 
 ## [v12.3.34] — 2026-09-12T12:10:00.000Z
