@@ -26,7 +26,7 @@ current-HEAD markers, not fresh reads of those edges.
 |---|---|---|---|
 | **messmass** | moldovancsaba/messmass | Vercel | Master of partners/events/organizations; event reports; analytics UI over fanmass results |
 | **camera** | moldovancsaba/camera | Vercel | Fan photo capture; try-on job producer + moderation; the fleet's only email sender |
-| **fanmass** | moldovancsaba/fanmass | local Mac (launchd supervisor, loopback-bound) | Vision-model image analysis; always the outbound caller (no public inbound address) |
+| **fanmass** | moldovancsaba/fanmass | local Mac (launchd supervisor, loopback-bound) | Vision-model image analysis; the outbound caller on every channel but one (see E2's analytics-summary pull) |
 | **try-on** | moldovancsaba/try-on | local Mac (launchd: app-server + worker, loopback-bound) | Virtual try-on renders; Atlas queue worker + local render server |
 | **SSO** | moldovancsaba/sso | sso.doneisbetter.com | Shared OAuth2/OIDC identity + per-app permission store (audited consumer-side only) |
 | **savetheworld** | moldovancsaba/savetheworld | Vercel (savetheplanet.vercel.app) | "Choose better" marketplace of companies and offers; wallet passes; pledge wall pulled from camera |
@@ -72,8 +72,10 @@ flowchart LR
 ```
 
 Solid arrows carry data; dotted arrows are identity. Direction is the direction
-of the **call**, not of the data: fanmass and try-on have no public inbound
-address, so every edge they participate in is one they dial out on.
+of the **call**, not of the data: try-on has no public inbound address, and
+fanmass dials out on every channel except one — the blocking analytics-summary
+pull messmass makes in E2, which is the single place messmass depends on
+fanmass being reachable.
 
 ## Edge contracts
 
@@ -125,7 +127,11 @@ Verified messmass n/a · camera `88c6839` · try-on `c8ba623`.
   base64, white compositing — are now in it).
 
 ### E2 · fanmass → messmass (six push channels + two poll/ack channels)
-Verified messmass `8843a535` · fanmass `db2657e` (both sides re-read 2026-09-16). fanmass is always the caller.
+Verified messmass `8843a535` · fanmass `db2657e` (both sides re-read 2026-09-16).
+fanmass is the caller on every channel **except one**: the blocking
+analytics-summary pull in the last bullet, which messmass initiates. The
+summary line here used to read "fanmass is always the caller", which the
+same section then contradicted four bullets down — corrected 2026-09-16.
 - **Auth**: fanmass sends Bearer + `x-api-key` = FANMASS_INTEGRATION_TOKEN
   (fanmass services/messmass_client.py:28-29); messmass verifies via
   requireFanmassIntegrationAuth (messmass lib/fanmassIntegration.ts:74-87 —
