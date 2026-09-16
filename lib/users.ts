@@ -13,13 +13,11 @@ import { FEATURE_FLAGS } from './featureFlags'
 // WHY: OWASP recommends minimum 12 rounds for production (balance between security and performance)
 const BCRYPT_SALT_ROUNDS = 12
 
-// WHAT: Canonical role set for the app (OPS-SEC-03: single source of truth)
-// WHY: Support guest registration, user promotion, admin/API operations, and superadmin management
-// ROLES: guest (docs only) → user (basic access) → admin (content mgmt) → superadmin (system admin) | api (API-key users)
-export type UserRole = 'guest' | 'user' | 'admin' | 'superadmin' | 'api'
-
-/** All valid roles; use for validation and dropdowns. */
-export const USER_ROLES: UserRole[] = ['guest', 'user', 'admin', 'superadmin', 'api']
+// The role set now lives in lib/roles.ts, which imports nothing. Re-exported
+// here so existing importers keep working; prefer lib/roles.ts for new code,
+// especially anywhere a mongodb client at module load would be unwelcome.
+export { USER_ROLES, type UserRole } from './roles'
+import type { UserRole } from './roles'
 
 export interface UserDoc {
   _id?: ObjectId

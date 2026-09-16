@@ -8,6 +8,7 @@ import { rateLimitMiddleware, getRateLimitConfig } from '@/lib/rateLimit';
 import { csrfProtectionMiddleware, setCsrfTokenCookie, generateCsrfToken } from '@/lib/csrf';
 import { logRequestEnd, logRateLimitExceeded, logCsrfViolation, warn } from '@/lib/logger';
 import { buildCorsHeaders } from '@/lib/cors';
+import { verifyEdgeSessionToken } from '@/lib/edgeSessionToken';
 
 // WHAT: Main middleware function (runs on every request)
 // WHY: Apply security controls before request reaches route handlers
@@ -22,11 +23,16 @@ export async function middleware(request: NextRequest) {
   const isPublicRoute = publicAdminRoutes.some(route => pathname.startsWith(route));
   
   if (pathname.startsWith('/admin') && !isPublicRoute) {
-    // WHAT: Step 1 - Check authentication (user has valid session)
-    // WHY: Protect admin routes from unauthorized access
+    // Step 1 - the session cookie must carry a signature this server minted and
+    // must not have expired. This used to test only that the cookie was
+    // non-empty, so `admin-session=x` satisfied it (F-003). What it still does
+    // NOT check is whether that user exists, is still enabled, or holds the
+    // role the page needs -- that requires the database, which the Edge runtime
+    // cannot reach. Authorisation remains getAdminUser / requireAdmin in the
+    // route handler; this gate only keeps forged and stale cookies out.
     const adminSession = request.cookies.get('admin-session');
-    
-    if (!adminSession?.value) {
+
+    if (!adminSession?.value || !(await verifyEdgeSessionToken(adminSession.value))) {
       warn('Unauthenticated admin access attempt', { pathname });
       return NextResponse.redirect(new URL('/admin/login', request.url));
     }
@@ -46,7 +52,7 @@ export async function middleware(request: NextRequest) {
   // WHY: Extended report access requires SSO when SSO_BASE_URL is set
   if (pathname.startsWith('/dashboard')) {
     const adminSession = request.cookies.get('admin-session');
-    if (!adminSession?.value) {
+    if (!adminSession?.value || !(await verifyEdgeSessionToken(adminSession.value))) {
       warn('Unauthenticated dashboard access attempt', { pathname });
       return NextResponse.redirect(new URL('/admin/login', request.url));
     }

@@ -113,7 +113,7 @@ it drifts. Do not edit between the markers.
 | Category | Count | Location |
 |----------|-------|----------|
 | **UI Components** | 104 | `components/` |
-| **Utility Modules** | 202 | `lib/` |
+| **Utility Modules** | 204 | `lib/` |
 | **Hooks** | 12 | `hooks/` |
 | **Design Tokens** | 408 | `app/styles/theme.css` |
 | **Utility CSS classes** | 192 | `app/styles/utilities.css` |
@@ -128,7 +128,7 @@ largest, and the ones to read first:
 | `lib/config.ts` | 107 | 204 |
 | `lib/mongodb.ts` | 93 | 112 |
 | `lib/logger.ts` | 85 | 392 |
-| `lib/auth.ts` | 84 | 119 |
+| `lib/auth.ts` | 84 | 118 |
 | `lib/apiGuards.ts` | 54 | 121 |
 | `lib/apiClient.ts` | 44 | 258 |
 | `components/ColoredCard.tsx` | 43 | 52 |
@@ -139,7 +139,7 @@ largest, and the ones to read first:
 | `hooks/useAdminAuth.ts` | 18 | 65 |
 | `lib/permissions.ts` | 18 | 141 |
 | `lib/mongoose-v3.ts` | 18 | 53 |
-| `lib/users.ts` | 17 | 446 |
+| `lib/report-calculator.ts` | 17 | 727 |
 
 Importers are counted by resolved import specifier, not by symbol name, so
 a re-export through a barrel file counts for the barrel. A module missing

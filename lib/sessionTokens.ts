@@ -13,7 +13,7 @@
 //     signed and no user is logged out by this change.
 
 import jwt from 'jsonwebtoken';
-import { type UserRole, USER_ROLES } from './users';
+import { type UserRole, USER_ROLES } from './roles';
 
 /**
  * Session Token Data Structure

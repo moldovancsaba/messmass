@@ -21,7 +21,14 @@ export async function withOrgContext(req: Request, handler: (req: Request) => Pr
     // Resolve Organization ID
     // 1. Check user metadata for organizationId (future)
     // 2. Default to a global 'MASTER_ORG_ID' for superadmins or 'DEFAULT_ORG_ID'
-    const v3OrgId = user.permissions?.includes('superadmin') 
+    // Both branches are the same org, so this selects nothing -- every caller
+    // gets Master. That is the open F-004 finding (#395), left as-is here.
+    // The condition itself was tested against `permissions`, which has never
+    // contained 'superadmin' ('superadmin' is a role, not a permission), so it
+    // was always false; now that permissions are actually narrowed per role
+    // (F-005), a condition that reads as a privilege check but cannot be true
+    // is worse than one that says what it means.
+    const v3OrgId = user.role === 'superadmin'
       ? '69b322e0cb8e841f95de9aa1' // Real Master Organization ID
       : '69b322e0cb8e841f95de9aa1'; // Defaulting to Master for MVP phase
 

@@ -3,7 +3,11 @@
 // WHY: Introduce multiple users with email+password while preserving simple cookie session model
 
 import { cookies } from 'next/headers'
-import { findUserById, type UserRole } from './users'
+import { findUserById } from './users'
+import { permissionsForRole, type UserRole } from './roles'
+
+// Re-exported: callers that already reach for it through lib/auth keep working.
+export { permissionsForRole }
 import { validateSessionToken, type SessionTokenData } from './sessionTokens'
 import { debug, warn } from './logger'
 
@@ -58,12 +62,7 @@ export async function getAdminUser(): Promise<AdminUser | null> {
   
   debug('User authenticated', { email: user.email })
 
-  // Map DB user to AdminUser view model.
-  // NOTE: permissions are currently the SAME for every authenticated role - the
-  // ternary below is intentionally identical on both sides (kept as a seam for
-  // future per-role narrowing). Do not read this as 'permissions derived from role'.
-  const basePermissions = ['read', 'write', 'delete', 'manage-users']
-  const permissions = basePermissions
+  const permissions = permissionsForRole(user.role)
 
   return {
     id: user._id!.toString(),
