@@ -7,8 +7,18 @@ developer reads first. Canonical copy lives here in messmass;
 camera/fanmass/try-on carry pointers to it. Header-less by design (docs:audit
 version gate).
 
-Verified messmass `44e2d007` · camera `88c6839` · fanmass `5d9a032` ·
-try-on `c8ba623` · savetheworld `2239855` (2026-09-08).
+Verified messmass `8843a535` · camera `06f3029` · fanmass `db2657e` ·
+try-on `1ccd284` · savetheworld `4427b6e` (2026-09-16).
+
+**What that stamp covers.** The 2026-09-16 pass re-read the messmass side of
+every edge in full, and re-checked the counterpart surface of E2 and E4 on the
+camera and fanmass sides: the eight `integrations/fanmass/*` channels fanmass
+calls against the eight routes messmass serves and their guards, and camera's
+`app/api/internal/messmass/{events,organizations,partners,sso-session}`,
+`assertInternalMessmassSecret`, its partner push to
+`/api/integrations/camera/partners`, and `app/api/internal/email/send`. E1, E3,
+E6 and E7 carry their earlier both-sides verification; their SHAs above are
+current-HEAD markers, not fresh reads of those edges.
 
 ## The six systems
 
@@ -25,6 +35,45 @@ Two Mongo worlds: messmass and fanmass each own a database; **camera and
 try-on share one Atlas database** (the try-on job queue). fanmass reaches
 messmass and camera only over HTTP. savetheworld owns its own
 database and reaches camera only over HTTP (E7).
+
+## The map
+
+```mermaid
+flowchart LR
+  subgraph vercel["Vercel"]
+    MM["messmass<br/>master data · reports"]
+    CAM["camera<br/>capture · try-on producer<br/>only email sender"]
+    STW["savetheworld<br/>marketplace · wallet passes"]
+  end
+
+  subgraph localmac["local Mac · launchd · loopback-bound"]
+    FAN["fanmass<br/>vision analysis"]
+    TRY["try-on<br/>render worker"]
+  end
+
+  SSO["SSO<br/>sso.doneisbetter.com"]
+  ATLAS[("shared Atlas DB<br/>tryon_jobs, garments,<br/>setups, heartbeats")]
+
+  CAM <-->|"E1 · queue + completion webhook"| ATLAS
+  ATLAS <--> TRY
+  FAN -->|"E2 · 6 push + 2 poll/ack channels<br/>requireFanmassIntegrationAuth"| MM
+  FAN -->|"E3 · media pull"| CAM
+  MM <-->|"E4 · master data · cross-app session · email<br/>shared internal secret"| CAM
+  STW -->|"E7 · pledge wall"| CAM
+
+  MM -.->|"E5 · confidential client"| SSO
+  CAM -.->|"E5 · public PKCE"| SSO
+  FAN -.->|"E5 · public PKCE"| SSO
+
+  EXT["E6 · external tail<br/>Segmind · FASHN · ImgBB<br/>Resend · Google Drive"]
+  CAM --> EXT
+  TRY --> EXT
+  FAN --> EXT
+```
+
+Solid arrows carry data; dotted arrows are identity. Direction is the direction
+of the **call**, not of the data: fanmass and try-on have no public inbound
+address, so every edge they participate in is one they dial out on.
 
 ## Edge contracts
 
@@ -76,7 +125,7 @@ Verified messmass n/a · camera `88c6839` · try-on `c8ba623`.
   base64, white compositing — are now in it).
 
 ### E2 · fanmass → messmass (six push channels + two poll/ack channels)
-Verified messmass `44e2d007` · fanmass `5d9a032`. fanmass is always the caller.
+Verified messmass `8843a535` · fanmass `db2657e` (both sides re-read 2026-09-16). fanmass is always the caller.
 - **Auth**: fanmass sends Bearer + `x-api-key` = FANMASS_INTEGRATION_TOKEN
   (fanmass services/messmass_client.py:28-29); messmass verifies via
   requireFanmassIntegrationAuth (messmass lib/fanmassIntegration.ts:74-87 —
@@ -136,7 +185,7 @@ Verified camera `88c6839` · fanmass `5d9a032`. Direction is fanmass-pulls.
   holds the cursor back so nothing is skipped.
 
 ### E4 · messmass ↔ camera (master data + session + email)
-Verified messmass `44e2d007` · camera `88c6839`. **Bidirectional.**
+Verified messmass `8843a535` · camera `06f3029` (both sides re-read 2026-09-16). **Bidirectional.**
 - **messmass → camera (master, outbound)**: messmass is master; provisions
   organizations/partners/events into camera via
   `/api/internal/messmass/{organizations,partners,events}`, writing back
