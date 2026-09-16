@@ -1,11 +1,11 @@
 {
  "_meta": {
-  "generated": "2026-09-16T20:57:26+00:00",
+  "generated": "2026-09-16T21:19:11+00:00",
   "repo": "messmass",
-  "head": "77c62e7c",
+  "head": "9b9c785f",
   "counts": {
-   "endpoints": 195,
-   "collections": 61,
+   "endpoints": 198,
+   "collections": 62,
    "env": 33,
    "outbound-hosts": 29,
    "docs": 205
@@ -722,6 +722,24 @@
     "GET"
    ],
    "file": "app/api/auth/sso/login/route.ts",
+   "auth_markers": [],
+   "no_auth_marker": true
+  },
+  {
+   "path": "/api/auth/sso/stakeholder-callback",
+   "methods": [
+    "GET"
+   ],
+   "file": "app/api/auth/sso/stakeholder-callback/route.ts",
+   "auth_markers": [],
+   "no_auth_marker": true
+  },
+  {
+   "path": "/api/auth/sso/stakeholder-login",
+   "methods": [
+    "GET"
+   ],
+   "file": "app/api/auth/sso/stakeholder-login/route.ts",
    "auth_markers": [],
    "no_auth_marker": true
   },
@@ -2010,6 +2028,18 @@
    "file": "app/api/sports-db/sync/route.ts",
    "auth_markers": [
     "getAdminUser"
+   ],
+   "no_auth_marker": false
+  },
+  {
+   "path": "/api/stakeholder/invite",
+   "methods": [
+    "POST"
+   ],
+   "file": "app/api/stakeholder/invite/route.ts",
+   "auth_markers": [
+    "getAdminUser",
+    "requireAdmin"
    ],
    "no_auth_marker": false
   },

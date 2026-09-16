@@ -2,7 +2,7 @@
 
 Generated for the fleet audit (messmass#350); measured against `docs/_audit/endpoints.json` (head 6d28c7f3, 194 endpoints). Every route below was verified by reading its `route.ts` handler, not just the marker scan.
 
-Coverage: 195 of 195 routes documented, enforced by
+Coverage: 198 of 198 routes documented, enforced by
 `tests/api-reference-covers-every-route.test.ts` — five routes were missing when
 that claim was last made by hand.
 
@@ -115,6 +115,8 @@ All reads; the aggregation store is `analytics_aggregates` / `partner_analytics`
 | /api/auth/sso/callback | GET | none (public-by-design: OAuth callback) | `?code&state&error` | 302 redirect | outbound SSO token exchange; sets session + `sso-tokens` cookies; best-effort camera SSO propagation |
 | /api/auth/sso/config | GET | none (public-by-design) | — | public SSO client config | none |
 | /api/auth/sso/login | GET | none (public-by-design: OAuth initiation) | `?redirect_uri&from_logout` | 302 to SSO authorize URL | sets state/PKCE cookies |
+| /api/auth/sso/stakeholder-callback | GET | none (public-by-design: OAuth callback) | `?code&state&error` | 302 redirect | exchanges code, checks `stakeholder_grants` by verified email, mints `stakeholder-session` (messmass#231) |
+| /api/auth/sso/stakeholder-login | GET | none (public-by-design: OAuth initiation) | — | 302 to SSO authorize URL | sets stakeholder pending-state cookie (messmass#231) |
 
 ## /api/bitly (9 routes)
 
@@ -316,6 +318,7 @@ All wrapped in `withOrgContext` (getAdminUser + `x-v3-org-id` injection) except 
 | /api/organizations/report/[id]/activities | GET | none (public-by-design: shareable org report) | `?variant` | org activities | reads `organizations`, `partners`, `projects` |
 | /api/organizations/report/[id] | GET | none (public-by-design: shareable org report) | `?variant` | org report | reads `organizations`, `partners`, `projects` |
 | /api/page-passwords | POST, PUT | POST requireSession (minting/revealing passwords — F-009 fix documented in-file); PUT none (public-by-design: PUT *is* the password check; admin session bypasses) | `{pageId,pageType,password?/regenerate?}` | `{success,…grant}` | reads/writes page-password store; PUT sets access grant |
+| /api/stakeholder/invite | POST | requireAdmin | `{email,role,scopeType,scopeId}` | `{success,grant,loginUrl}` | writes `stakeholder_grants` (messmass#231) |
 | /api/stats | GET | none (public-by-design: redirect helper into the guarded stats route) | `?slug\|id` | redirect or basic info | none |
 | /api/user-preferences | GET, PUT | getAdminUser | PUT preferences body | `{success,preferences}` | upserts `user_preferences` |
 | /api/variables-config | GET, POST, PUT, DELETE | GET none (read-only metadata); writes **none — GAP** | bodies; `?action`/`?name` | `{success,variables[]}` | update/delete `variables_metadata` store |
@@ -329,10 +332,10 @@ CSRF is never counted as a guard: any anonymous caller can fetch the token from
 
 | | routes |
 |---|---:|
-| Fully guarded (every method) | **165** |
+| Fully guarded (every method) | **166** |
 | Open write method, public by design | **5** |
-| Open GET only, writes guarded or absent | **25** |
-| **Total** | **195** |
+| Open GET only, writes guarded or absent | **27** |
+| **Total** | **198** |
 
 The previous run of this section (2026-08) listed 40 GAP routes, 21 of them
 unauthenticated writes. Those are closed: messmass#347 and #386 took the first
@@ -354,7 +357,7 @@ whenever an `admin-session` cookie was merely *present*.
 | `/api/client-error` | POST | Records a crash report. A logged-out visitor can crash too. |
 | `/api/contact` | POST | Public contact form, rate-limited by middleware. |
 
-### Open GET only (25)
+### Open GET only (27)
 
 Each serves an anonymously-reachable surface, or is pre-auth. Where a route
 also exposes writes, those writes are guarded — the asymmetry is deliberate:
@@ -365,6 +368,8 @@ the page-password editors read these without a session.
 | `/api/auth/sso/callback` | — (read-only route) |
 | `/api/auth/sso/config` | — (read-only route) |
 | `/api/auth/sso/login` | — (read-only route) |
+| `/api/auth/sso/stakeholder-callback` | — (read-only route) |
+| `/api/auth/sso/stakeholder-login` | — (read-only route) |
 | `/api/chart-config/public` | — (read-only route) |
 | `/api/clicker-sets` | POST, PUT, DELETE |
 | `/api/content-assets` | POST, PUT, DELETE |

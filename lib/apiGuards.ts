@@ -11,10 +11,12 @@
 //     session — so that guard accepts an admin session OR an edit grant for the
 //     specific project, and nothing else.
 
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import { ObjectId } from 'mongodb';
 import { getAdminUser } from './auth';
 import { hasPageAccess, hasAnyEditGrant } from './pageAccess';
+import { getStakeholderSession, type StakeholderSessionData } from './auth/stakeholderSession';
+import type { StakeholderRole } from './stakeholderGrants';
 
 function unauthorized(message: string): NextResponse {
   return NextResponse.json(
@@ -54,6 +56,30 @@ export async function requireAdmin(): Promise<NextResponse | null> {
     );
   }
   return null;
+}
+
+// WHAT: Require a stakeholder-session cookie (messmass#231), scoped to one
+//     report and restricted to specific roles. Returns the session data so
+//     the route can confirm the request's own scopeId matches -- this guard
+//     only checks that SOME valid grant exists with an allowed role; it does
+//     not know which resource the caller is asking for.
+// WHY: A sponsor's stakeholder-session should read that sponsor's report and
+//     nothing else. Role alone isn't a scope check: two different sponsors
+//     both hold role 'sponsor', so the calling route must still compare
+//     session.scopeId against the resource id in the URL/body.
+export async function requireStakeholderRole(
+  request: NextRequest,
+  roles: StakeholderRole[]
+): Promise<{ session: StakeholderSessionData } | NextResponse> {
+  const session = getStakeholderSession(request);
+  if (!session) return unauthorized('Sign in to view this report.');
+  if (!roles.includes(session.role)) {
+    return NextResponse.json(
+      { success: false, error: 'This access role cannot view this report.', code: 'FORBIDDEN' },
+      { status: 403 }
+    );
+  }
+  return { session };
 }
 
 // WHAT: Require an admin session OR an unlocked page editor.

@@ -58,6 +58,18 @@ export function getOAuthCallbackRedirectUri(request: NextRequest): string {
   return new URL('/api/auth/sso/callback', origin).href;
 }
 
+// WHAT: Same OIDC client, a second redirect_uri for the stakeholder login flow
+//     (see app/api/auth/sso/stakeholder-*). WHY: messmass#231 -- external
+//     stakeholders authenticate via the same SSO OAuth client (identity is
+//     identity), but land on a different callback that checks
+//     lib/stakeholderGrants.ts instead of provisioning an admin user. This
+//     redirect_uri must be added to messmass's client registration on SSO
+//     alongside the existing one -- that's an SSO-side config step, not code.
+export function getStakeholderOAuthCallbackRedirectUri(request: NextRequest): string {
+  const origin = getPublicOriginFromRequest(request);
+  return new URL('/api/auth/sso/stakeholder-callback', origin).href;
+}
+
 function getSSOEndpoints() {
   const c = getSSOConfig();
   return {

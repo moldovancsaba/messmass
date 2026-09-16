@@ -108,6 +108,8 @@ const KNOWN_UNGUARDED_READS = new Set<string>([
   'app/api/auth/sso/callback/route.ts',
   'app/api/auth/sso/config/route.ts',
   'app/api/auth/sso/login/route.ts',
+  'app/api/auth/sso/stakeholder-callback/route.ts',
+  'app/api/auth/sso/stakeholder-login/route.ts',
   'app/api/csrf-token/route.ts',
   'app/api/chart-config/public/route.ts',
   'app/api/derived-variable-config/route.ts',

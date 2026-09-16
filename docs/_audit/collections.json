@@ -1,11 +1,11 @@
 {
  "_meta": {
-  "generated": "2026-09-16T20:57:26+00:00",
+  "generated": "2026-09-16T21:19:11+00:00",
   "repo": "messmass",
-  "head": "77c62e7c",
+  "head": "9b9c785f",
   "counts": {
-   "endpoints": 195,
-   "collections": 61,
+   "endpoints": 198,
+   "collections": 62,
    "env": 33,
    "outbound-hosts": 29,
    "docs": 205
@@ -65,6 +65,7 @@
   "reports",
   "settings",
   "sportsdb_fixtures",
+  "stakeholder_grants",
   "styles",
   "system_settings",
   "user_preferences",

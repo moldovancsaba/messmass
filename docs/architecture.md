@@ -113,23 +113,23 @@ it drifts. Do not edit between the markers.
 | Category | Count | Location |
 |----------|-------|----------|
 | **UI Components** | 105 | `components/` |
-| **Utility Modules** | 201 | `lib/` |
+| **Utility Modules** | 204 | `lib/` |
 | **Hooks** | 12 | `hooks/` |
 | **Design Tokens** | 408 | `app/styles/theme.css` |
 | **Utility CSS classes** | 192 | `app/styles/utilities.css` |
 | **App routes (pages)** | 71 | `app/**/page.tsx` |
-| **API routes** | 195 | `app/api/**/route.ts` |
+| **API routes** | 198 | `app/api/**/route.ts` |
 
 The modules with the most importers — the ones whose change radius is
 largest, and the ones to read first:
 
 | Module | Importers | Lines |
 |--------|-----------|-------|
-| `lib/config.ts` | 108 | 204 |
-| `lib/mongodb.ts` | 94 | 112 |
-| `lib/logger.ts` | 88 | 392 |
-| `lib/auth.ts` | 84 | 118 |
-| `lib/apiGuards.ts` | 60 | 137 |
+| `lib/config.ts` | 111 | 204 |
+| `lib/mongodb.ts` | 95 | 112 |
+| `lib/logger.ts` | 89 | 392 |
+| `lib/auth.ts` | 85 | 118 |
+| `lib/apiGuards.ts` | 61 | 163 |
 | `lib/apiClient.ts` | 43 | 258 |
 | `components/ColoredCard.tsx` | 42 | 52 |
 | `lib/db.ts` | 38 | 17 |
@@ -1073,7 +1073,7 @@ shows up here on the next regeneration, which is the point.
 | `/terms` | `app/terms/page.tsx` |
 | `/test-csrf` | `app/test-csrf/page.tsx` |
 
-### API routes (195)
+### API routes (198)
 
 `auth` is the guard symbol the route actually calls. A blank cell
 means the route calls none — public by construction, or a gap.
@@ -1161,6 +1161,8 @@ means the route calls none — public by construction, or a gap.
 | `/api/auth/sso/callback` | GET | — |
 | `/api/auth/sso/config` | GET | — |
 | `/api/auth/sso/login` | GET | — |
+| `/api/auth/sso/stakeholder-callback` | GET | — |
+| `/api/auth/sso/stakeholder-login` | GET | — |
 
 #### `/api/auto-generate-chart-block`
 
@@ -1486,6 +1488,12 @@ means the route calls none — public by construction, or a gap.
 | `/api/sports-db/lookup` | GET, POST, PUT, DELETE | `requireSession` |
 | `/api/sports-db/search` | GET, POST, PUT, DELETE | `requireSession` |
 | `/api/sports-db/sync` | POST | `getAdminUser` |
+
+#### `/api/stakeholder`
+
+| Route | Methods | Auth |
+|-------|---------|------|
+| `/api/stakeholder/invite` | POST | `getAdminUser, requireAdmin` |
 
 #### `/api/stats`
 
