@@ -486,7 +486,7 @@ export default function SponsorshipHubPage() {
             <div className={styles.metricGrid}>
               <MetricCard title="Tracked Events" value={hubData.summary.eventCount} format="number" loading={loading} icon="📅" />
               <MetricCard title="Total Fans" value={hubData.summary.totalFans} format="number" loading={loading} icon="👥" />
-              <MetricCard title="Media Value" value={hubData.summary.totalAdValue} format="currency" loading={loading} icon="💶" />
+              <MetricCard title="Media Value (Est.)" value={hubData.summary.totalAdValue} format="currency" loading={loading} icon="💶" />
               <MetricCard title="Bitly Clicks" value={hubData.summary.totalBitlyClicks} format="number" loading={loading} icon="🔗" />
               <MetricCard title="Avg Engagement" value={hubData.summary.avgEngagementRate} format="percentage" loading={loading} icon="📈" />
               <MetricCard title="Partners in Scope" value={hubData.summary.partnerCount} format="number" loading={loading} icon="🤝" />

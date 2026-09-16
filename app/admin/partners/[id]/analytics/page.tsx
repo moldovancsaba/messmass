@@ -289,12 +289,12 @@ function OverviewTab({ data }: { data: PartnerAnalyticsData }) {
         </div>
 
         <div className="stat-card-admin">
-          <div className="stat-label-admin">Total Ad Value</div>
+          <div className="stat-label-admin">Total Ad Value (Est.)</div>
           <div className="stat-value-admin">
             €{Math.round(data.summary.totalAdValue).toLocaleString()}
           </div>
           <div className="stat-subtitle">
-            Avg: €{Math.round(data.summary.totalAdValue / data.summary.totalEvents).toLocaleString()} per event
+            Avg: €{Math.round(data.summary.totalAdValue / data.summary.totalEvents).toLocaleString()} per event · estimated from engagement, not measured ad spend
           </div>
         </div>
 
@@ -385,7 +385,7 @@ function EventsTab({ data }: { data: PartnerAnalyticsData }) {
                 <th>Location</th>
                 <th>Fans</th>
                 <th>Merched</th>
-                <th>Ad Value</th>
+                <th>Ad Value (Est.)</th>
                 <th>Engagement</th>
               </tr>
             </thead>
@@ -604,7 +604,7 @@ function ComparisonsTab({ partnerId }: { partnerId: string }) {
               <div className={styles.statsList}>
                 <StatRow label="Avg Fans" value={Math.round(homeAwayStats.homeGames.avgFans).toLocaleString()} />
                 <StatRow label="Avg Merched" value={Math.round(homeAwayStats.homeGames.avgMerched).toLocaleString()} />
-                <StatRow label="Avg Ad Value" value={`€${Math.round(homeAwayStats.homeGames.avgAdValue).toLocaleString()}`} />
+                <StatRow label="Avg Ad Value (Est.)" value={`€${Math.round(homeAwayStats.homeGames.avgAdValue).toLocaleString()}`} />
                 <StatRow label="Avg Engagement" value={`${(homeAwayStats.homeGames.avgEngagement * 100).toFixed(1)}%`} />
               </div>
             </div>
@@ -617,7 +617,7 @@ function ComparisonsTab({ partnerId }: { partnerId: string }) {
               <div className={styles.statsList}>
                 <StatRow label="Avg Fans" value={Math.round(homeAwayStats.awayGames.avgFans).toLocaleString()} />
                 <StatRow label="Avg Merched" value={Math.round(homeAwayStats.awayGames.avgMerched).toLocaleString()} />
-                <StatRow label="Avg Ad Value" value={`€${Math.round(homeAwayStats.awayGames.avgAdValue).toLocaleString()}`} />
+                <StatRow label="Avg Ad Value (Est.)" value={`€${Math.round(homeAwayStats.awayGames.avgAdValue).toLocaleString()}`} />
                 <StatRow label="Avg Engagement" value={`${(homeAwayStats.awayGames.avgEngagement * 100).toFixed(1)}%`} />
               </div>
             </div>

@@ -178,7 +178,7 @@ export function ExecutiveDashboardView({
       <div className={styles.metricsGrid}>
         <MetricCard title="Total Fans" value={metrics?.totalFans || 0} previousValue={metrics?.previousPeriod?.totalFans} format="number" icon="👥" loading={loading} periodLabel={period} />
         <MetricCard title="Total Revenue" value={metrics?.totalRevenue || 0} previousValue={metrics?.previousPeriod?.totalRevenue} format="currency" icon="💰" loading={loading} periodLabel={period} />
-        <MetricCard title="Total ROI" value={metrics?.totalROI || 0} previousValue={metrics?.previousPeriod?.totalROI} format="currency" icon="📈" loading={loading} periodLabel={period} />
+        <MetricCard title="Total ROI (Est.)" value={metrics?.totalROI || 0} previousValue={metrics?.previousPeriod?.totalROI} format="currency" icon="📈" loading={loading} periodLabel={period} />
         <MetricCard title="Avg Engagement" value={metrics?.avgEngagement || 0} previousValue={metrics?.previousPeriod?.avgEngagement} format="percentage" icon="🎯" loading={loading} periodLabel={period} />
         <MetricCard title="Events Tracked" value={metrics?.eventCount || 0} previousValue={metrics?.previousPeriod?.eventCount} format="number" icon="📅" loading={loading} periodLabel={period} />
         <MetricCard title="Period Growth" value={metrics?.growth || 0} format="percentage" trend={metrics ? (metrics.growth > 0 ? 'up' : metrics.growth < 0 ? 'down' : 'neutral') : undefined} icon="🚀" loading={loading} periodLabel={period} />
