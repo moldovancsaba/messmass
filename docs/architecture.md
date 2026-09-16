@@ -113,7 +113,7 @@ it drifts. Do not edit between the markers.
 | Category | Count | Location |
 |----------|-------|----------|
 | **UI Components** | 104 | `components/` |
-| **Utility Modules** | 204 | `lib/` |
+| **Utility Modules** | 201 | `lib/` |
 | **Hooks** | 12 | `hooks/` |
 | **Design Tokens** | 408 | `app/styles/theme.css` |
 | **Utility CSS classes** | 192 | `app/styles/utilities.css` |
@@ -132,7 +132,7 @@ largest, and the ones to read first:
 | `lib/apiGuards.ts` | 59 | 137 |
 | `lib/apiClient.ts` | 44 | 258 |
 | `components/ColoredCard.tsx` | 43 | 52 |
-| `lib/db.ts` | 39 | 17 |
+| `lib/db.ts` | 37 | 17 |
 | `components/MaterialIcon.tsx` | 33 | 119 |
 | `lib/fanmassIntegration.ts` | 30 | 441 |
 | `components/UnifiedAdminHeroWithSearch.tsx` | 26 | 192 |

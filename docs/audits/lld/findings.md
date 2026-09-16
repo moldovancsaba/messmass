@@ -33,21 +33,21 @@ claim is structural rather than demonstrated, it says so.
 | [F-023](#f-023) | **High** | **Resolved** | The analytics cron writes a shape incompatible with every working reader | 3 |
 | [F-022](#f-022) | Low | **Fixed** | `/api/analytics/aggregates` queried a document shape that was never written | 3 |
 | [F-021](#f-021) | Medium | **Fixed** | The only scheduled cron has logged once in ten months | 3 |
-| [F-019](#f-019) | Medium | Open | `lib/auditLog.ts` is dead — the API write audit trail was never wired up | 3 |
+| [F-019](#f-019) | Medium | **Fixed — deleted** | `lib/auditLog.ts` is dead — the API write audit trail was never wired up | 3 |
 | [F-017](#f-017) | Medium | **Fixed** | Content-asset deletion guard was inert and its usage panel queried a non-existent collection | 3 |
 | [F-018](#f-018) | Low | **Fixed** | A missing report renders a JSON parse error instead of "not found" | 2 |
 | [F-015](#f-015) | Medium | **Fixed** | Admin preview and partner report format the same number differently | 2 |
-| [F-016](#f-016) | Low | Open | `lib/layoutGrammarValidation.ts` is dead code | 2 |
+| [F-016](#f-016) | Low | **Fixed — deleted** | `lib/layoutGrammarValidation.ts` is dead code | 2 |
 | [F-012](#f-012) | Medium | **Fixed** | CSP granted `unsafe-eval` app-wide for a reason that stopped being true | 2 |
 | [F-013](#f-013) | Medium | Open | Page gate prompts for pages that have no password | 2 |
 | [F-014](#f-014) | Low | Open | Documented formula-parser rollback has no effect | 2 |
 | [F-011](#f-011) | High | Open — needs your decision | Public API keys are users' plaintext passwords | 4 |
-| [F-003](#f-003) | High | Open | Middleware admin gate checks cookie presence, never validity | 4 |
+| [F-003](#f-003) | High | **Fixed** `71b5e23f` | Middleware admin gate checks cookie presence, never validity | 4 |
 | [F-004](#f-004) | High | Open | v3 organisation scoping is not enforced | 4 |
-| [F-005](#f-005) | Medium | Open | Identical-branch ternary grants every user the same permissions | 4 |
+| [F-005](#f-005) | Medium | **Fixed** `71b5e23f` | Identical-branch ternary grants every user the same permissions | 4 |
 | [F-006](#f-006) | Medium | **Fixed — routes removed** | Two routes read cookie names nothing ever sets | 4 |
 | [F-007](#f-007) | Low | Open | 202 orphaned page passwords for a deleted route | 4 |
-| [F-008](#f-008) | Low | Open | `lib/authLockout.ts` is dead code | 4 |
+| [F-008](#f-008) | Low | **Fixed — deleted** | `lib/authLockout.ts` is dead code | 4 |
 | [F-025](#f-025) | **High** | **Fixed** — [#400](https://github.com/moldovancsaba/messmass/issues/400) `c02f4b6f` | Routes documented "admin only" enforce no role check | 5 |
 | [F-033](#f-033) | Medium | **Fixed** — [#408](https://github.com/moldovancsaba/messmass/issues/408) `b43ecbfc` | architecture.md documents APIs, hooks and a parser that do not exist | 5 |
 | [F-028](#f-028) | Medium | **Fixed** — [#403](https://github.com/moldovancsaba/messmass/issues/403) `49565f21` | Password gate lost its theming; a 404 from a deleted route is swallowed | 5 |

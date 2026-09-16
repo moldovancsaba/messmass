@@ -1,11 +1,11 @@
 {
  "_meta": {
-  "generated": "2026-09-16T08:51:24+00:00",
+  "generated": "2026-09-16T08:56:26+00:00",
   "repo": "messmass",
-  "head": "71b5e23f",
+  "head": "7d3ef3bb",
   "counts": {
    "endpoints": 194,
-   "collections": 61,
+   "collections": 60,
    "env": 34,
    "outbound-hosts": 29,
    "docs": 205
@@ -17,7 +17,6 @@
   "ai_analysis_summaries",
   "ai_rescan_requests",
   "analytics_aggregates",
-  "api_audit_logs",
   "api_football_enrichment_log",
   "audit_logs",
   "available_fonts",

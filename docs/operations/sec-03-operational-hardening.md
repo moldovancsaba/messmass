@@ -16,15 +16,17 @@ Owner: Operations / Security
 - **Prod/preview:** Set `ALLOWED_ORIGINS` to the exact origins that may access the API (e.g. `https://messmass.com,https://preview.messmass.com`). No wildcards; one origin per entry.
 - **Credentials:** `Access-Control-Allow-Credentials: true` is set only when the request Origin is in the allowlist.
 
-## 3. Account lockout policy (done)
+## 3. Account lockout policy (not applicable — no local password login)
 
 - **Goal:** After 5 failed login attempts (per identifier), lock for 15 minutes; do not reveal whether the account exists.
-- **Implementation:** `lib/authLockout.ts` — MongoDB collection `auth_lockout` keyed by email; `isLockedOut`, `recordFailedAttempt`, `clearLockout`. Login route checks lock first (same 401 “Invalid credentials”), records failure on invalid password, clears on success. Policy: 5 attempts → 15 min lock.
+- **Status (2026-09-16):** There is nothing here to lock out. `POST /api/admin/login` returns **410 Gone**; authentication is SSO-only, so brute-forcing a local password is not a reachable attack against this app. Rate limiting still applies to every route via `middleware.ts`.
+- **What this section used to claim:** an implementation in `lib/authLockout.ts` with a MongoDB `auth_lockout` collection, and a login route that "checks lock first". That module had zero importers for its entire life — the lockout was never wired to any login path, and the collection was never created. It was deleted on 2026-09-16 (F-008, messmass#388) rather than left as dead code implying a control that did not exist.
+- **If local login ever returns,** lockout comes back with it, and the control belongs at the SSO service in the meantime — see `sso.doneisbetter.com`, not this repo.
 
 ## 4. Role naming standardization (done)
 
 - **Goal:** Single canonical enum/source for roles; migrate all usages to that source.
-- **Done:** Canonical type is `UserRole` in `lib/users.ts` including `'api'`; exported `USER_ROLES` array for validation. `lib/sessionTokens`, `lib/auth`, `lib/permissions`, login route, and role API use `UserRole`. UI (RoleDropdown, unauthorized page) and permissions (ROLE_HIERARCHY, getRoleDisplayName, getRoleBadgeColor) include `api`.
+- **Done:** Canonical type is `UserRole` in `lib/roles.ts` (it lived in `lib/users.ts` until 2026-09-16; moved so that knowing the role names no longer costs a mongodb client at module load) including `'api'`; exported `USER_ROLES` array for validation. `lib/sessionTokens`, `lib/auth`, `lib/permissions`, login route, and role API use `UserRole`. UI (RoleDropdown, unauthorized page) and permissions (ROLE_HIERARCHY, getRoleDisplayName, getRoleBadgeColor) include `api`.
 
 ## 5. Audit logging for auth-sensitive events (done)
 
