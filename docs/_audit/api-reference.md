@@ -2,7 +2,7 @@
 
 Generated for the fleet audit (messmass#350); measured against `docs/_audit/endpoints.json` (head 6d28c7f3, 194 endpoints). Every route below was verified by reading its `route.ts` handler, not just the marker scan.
 
-Coverage: 194 of 194 routes documented, enforced by
+Coverage: 195 of 195 routes documented, enforced by
 `tests/api-reference-covers-every-route.test.ts` — five routes were missing when
 that claim was last made by hand.
 
@@ -294,7 +294,8 @@ All wrapped in `withOrgContext` (getAdminUser + `x-v3-org-id` injection) except 
 | /api/countries/[code] | GET | none (public-by-design: reference data) | path code | country | country service |
 | /api/countries | GET | none (public-by-design: reference data) | `?region` | country list | country service |
 | /api/csrf-token | GET | none (public-by-design: CSRF bootstrap) | — | `{token}` + cookie | sets CSRF cookie |
-| /api/data-blocks | GET, POST, PUT, DELETE | GET none (public read for report rendering); POST/PUT/DELETE requireSession | bodies; `?id` | `{success,blocks[]}` | insert/update/delete `data_blocks` |
+| /api/data-blocks | GET, POST, PUT, DELETE | requireAdmin, all methods (messmass#386 admin-only read; #400 admin role) | bodies; `?id` | `{success,blocks[]}` | insert/update/delete `data_blocks` |
+| /api/data-blocks/duplicate | POST | requireAdmin | `{sourceBlockId,name?}` | `{success,blockId,block}` | inserts a `data_blocks` copy with `sourceBlockId` lineage (messmass#230) |
 | /api/debug/categorized-hashtags | GET | **none — GAP** (debug endpoint) | — | hashtag migration debug data | reads `projects` |
 | /api/debug/notifications | GET | getAdminUser | — | notification debug data | reads `notifications` |
 | /api/debug/overview-block | GET | **none — GAP** (debug endpoint) | — | data-block debug dump | reads `data_blocks` |
@@ -328,10 +329,10 @@ CSRF is never counted as a guard: any anonymous caller can fetch the token from
 
 | | routes |
 |---|---:|
-| Fully guarded (every method) | **164** |
+| Fully guarded (every method) | **165** |
 | Open write method, public by design | **5** |
 | Open GET only, writes guarded or absent | **25** |
-| **Total** | **194** |
+| **Total** | **195** |
 
 The previous run of this section (2026-08) listed 40 GAP routes, 21 of them
 unauthenticated writes. Those are closed: messmass#347 and #386 took the first

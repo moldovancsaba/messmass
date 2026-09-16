@@ -1,10 +1,10 @@
 {
  "_meta": {
-  "generated": "2026-09-16T20:44:34+00:00",
+  "generated": "2026-09-16T20:57:26+00:00",
   "repo": "messmass",
-  "head": "e0ed3196",
+  "head": "77c62e7c",
   "counts": {
-   "endpoints": 194,
+   "endpoints": 195,
    "collections": 61,
    "env": 33,
    "outbound-hosts": 29,
@@ -1050,6 +1050,17 @@
    "file": "app/api/csrf-token/route.ts",
    "auth_markers": [],
    "no_auth_marker": true
+  },
+  {
+   "path": "/api/data-blocks/duplicate",
+   "methods": [
+    "POST"
+   ],
+   "file": "app/api/data-blocks/duplicate/route.ts",
+   "auth_markers": [
+    "requireAdmin"
+   ],
+   "no_auth_marker": false
   },
   {
    "path": "/api/data-blocks",
