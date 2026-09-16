@@ -22,6 +22,7 @@ import { requireAdmin } from '@/lib/apiGuards';
 import clientPromise from '@/lib/mongodb';
 import { error as logError } from '@/lib/logger';
 import config from '@/lib/config';
+import { resolveSourceBlockId } from '@/lib/dataBlockLineage';
 
 const MONGODB_DB = config.dbName;
 
@@ -60,7 +61,7 @@ export async function POST(request: NextRequest) {
       name: name || `${source.name} (copy)`,
       // The lineage this issue was missing. Optional and additive: nothing
       // reads it yet, so no existing block or report changes behaviour.
-      sourceBlockId: source.sourceBlockId ? String(source.sourceBlockId) : String(source._id),
+      sourceBlockId: resolveSourceBlockId(source),
       createdAt: now,
       updatedAt: now,
     };

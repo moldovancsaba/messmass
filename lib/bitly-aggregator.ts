@@ -262,7 +262,7 @@ function aggregateReferrers(
  * @param filteredClicks - Total clicks in the filtered date range
  * @param totalClicks - Total clicks for the entire link lifetime
  */
-function estimateDeviceClicks(
+export function estimateDeviceClicks(
   devices: Array<{ device_type: string; clicks: number }>,
   filteredClicks: number,
   totalClicks: number

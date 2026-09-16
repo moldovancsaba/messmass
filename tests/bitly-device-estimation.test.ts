@@ -6,37 +6,18 @@
 //     /v4/bitlinks/{bitlink}/devices exists and simply was never called. Those
 //     zeros reached the project-metrics API presented as a device breakdown,
 //     which reads as "nobody used a phone" rather than "not measured".
-// HOW: The estimator is not exported (it is an implementation detail of
-//     aggregateMetricsForDateRange), so these assert the arithmetic contract it
-//     implements, the same proportional rule aggregateCountries and
-//     aggregateReferrers already use. If that rule changes, this is the file
-//     that should force the conversation.
+// HOW: Calls the real estimateDeviceClicks from lib/bitly-aggregator.ts directly
+//     -- it was previously not exported, so this file asserted against a hand-
+//     mirrored copy of the arithmetic instead of the shipped function, which
+//     could not have caught a divergence between them. Exporting it (additive;
+//     nothing about its behaviour changed) closes that gap.
 //
 // NOTE ON BROWSERS: there is deliberately no browser equivalent here or in the
 //     code. Bitly's v4 API exposes no per-bitlink browser endpoint, so the
 //     browser half of #283 has no data source. The field was removed rather
 //     than left returning zeros.
 
-type DeviceTotals = { mobile: number; desktop: number; tablet: number; other: number };
-
-/** The rule estimateDeviceClicks implements, mirrored for assertion. */
-function estimate(
-  devices: Array<{ device_type: string; clicks: number }>,
-  filteredClicks: number,
-  totalClicks: number
-): DeviceTotals {
-  const empty: DeviceTotals = { mobile: 0, desktop: 0, tablet: 0, other: 0 };
-  if (!devices.length || totalClicks <= 0 || filteredClicks <= 0) return empty;
-  const ratio = filteredClicks / totalClicks;
-  return devices.reduce((acc, entry) => {
-    const scaled = Math.round((entry.clicks || 0) * ratio);
-    if (scaled <= 0) return acc;
-    const key = String(entry.device_type || '').toLowerCase();
-    if (key === 'mobile' || key === 'desktop' || key === 'tablet') acc[key] += scaled;
-    else acc.other += scaled;
-    return acc;
-  }, { ...empty });
-}
+import { estimateDeviceClicks as estimate } from '@/lib/bitly-aggregator';
 
 const LIFETIME = [
   { device_type: 'mobile', clicks: 600 },

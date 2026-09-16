@@ -5,13 +5,19 @@
 //     flipped a badge and left the variant resolving on its public URL. The
 //     workspace also counts `status === 'published'` and presents that as the
 //     number of live reports, which was unrelated to what was actually served.
-// HOW: These exercise the selection rules directly rather than through the DB,
+// HOW: Calls the real selectServableVariant from lib/reportVariants.ts (the
+//     function resolveReportVariant itself calls) rather than through the DB,
 //     because the rules are the thing that was wrong: which variant a slug
 //     picks, which one an absent slug picks, and what happens when the default
-//     itself is archived. The draft case is asserted as *servable* on purpose —
-//     see the note in resolveReportVariant; it is a recorded open question, and
-//     a test that quietly assumed the opposite would hide it.
+//     itself is archived. It was previously a hand-mirrored copy of the rule
+//     in this file, which could not have caught a divergence from the real
+//     one; selectServableVariant was extracted out of resolveReportVariant
+//     specifically to close that gap. The draft case is asserted as
+//     *servable* on purpose — see the note on selectServableVariant; it is a
+//     recorded open question, and a test that quietly assumed the opposite
+//     would hide it.
 
+import { selectServableVariant as select } from '@/lib/reportVariants';
 import type { ReportVariant, ReportVariantStatus } from '@/lib/reportVariants';
 
 function variant(over: Partial<ReportVariant> & { slug: string }): ReportVariant {
@@ -30,14 +36,6 @@ function variant(over: Partial<ReportVariant> & { slug: string }): ReportVariant
     updatedAt: '2026-01-01T00:00:00.000Z',
     ...over,
   } as ReportVariant;
-}
-
-/** The selection rules as resolveReportVariant applies them. */
-function select(variants: ReportVariant[], slug?: string | null): ReportVariant | undefined {
-  const servable = variants.filter((v) => v.status !== 'archived');
-  return slug
-    ? servable.find((v) => v.slug === slug || v._id === slug)
-    : servable.find((v) => v.isDefault) || servable[0];
 }
 
 describe('report variant runtime resolution', () => {

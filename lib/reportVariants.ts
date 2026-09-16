@@ -291,6 +291,36 @@ export async function listReportVariants(
   };
 }
 
+/**
+ * WHAT: Pick which variant a slug (or its absence) resolves to.
+ * WHY: Pulled out of resolveReportVariant so tests exercise this exact
+ *     function instead of a hand-mirrored copy of its rule -- a prior version
+ *     of tests/report-variant-resolution.test.ts asserted against its own
+ *     reimplementation, which could not have caught a divergence from this one.
+ *
+ * Archived variants are not served. The admin workspace offers an
+ * Archive/Publish toggle, and until this filter existed pressing Archive
+ * changed a badge and nothing else -- the variant kept resolving on its
+ * public URL. `listReportVariants` deliberately still returns every status,
+ * because the workspace has to show archived ones in order to un-archive
+ * them; the exclusion belongs here, at the runtime edge.
+ *
+ * `draft` is NOT excluded, and that is a live question rather than an
+ * oversight: the spec defines status as `active | archived` with no draft
+ * state, but the implementation creates every variant as `draft`, so every
+ * variant in production is one. Excluding drafts here would 404 all of them
+ * at once. Recorded on messmass#244 for a decision.
+ */
+export function selectServableVariant(
+  variants: ReportVariant[],
+  variantSlug?: string | null
+): ReportVariant | undefined {
+  const servable = variants.filter((variant) => variant.status !== 'archived');
+  return variantSlug
+    ? servable.find((variant) => variant.slug === variantSlug || variant._id === variantSlug)
+    : servable.find((variant) => variant.isDefault) || servable[0];
+}
+
 export async function resolveReportVariant(
   db: Db,
   ownerType: ReportVariantOwnerType,
@@ -298,24 +328,7 @@ export async function resolveReportVariant(
   variantSlug?: string | null
 ): Promise<ResolvedReportVariant> {
   const { baseSource, variants } = await listReportVariants(db, ownerType, ownerId);
-
-  // Archived variants are not served. The admin workspace offers an
-  // Archive/Publish toggle, and until this filter existed pressing Archive
-  // changed a badge and nothing else -- the variant kept resolving on its
-  // public URL. `listReportVariants` deliberately still returns every status,
-  // because the workspace has to show archived ones in order to un-archive
-  // them; the exclusion belongs here, at the runtime edge.
-  //
-  // `draft` is NOT excluded, and that is a live question rather than an
-  // oversight: the spec defines status as `active | archived` with no draft
-  // state, but the implementation creates every variant as `draft`, so every
-  // variant in production is one. Excluding drafts here would 404 all of them
-  // at once. Recorded on messmass#244 for a decision.
-  const servable = variants.filter((variant) => variant.status !== 'archived');
-
-  const selectedVariant = variantSlug
-    ? servable.find((variant) => variant.slug === variantSlug || variant._id === variantSlug)
-    : servable.find((variant) => variant.isDefault) || servable[0];
+  const selectedVariant = selectServableVariant(variants, variantSlug);
 
   if (!selectedVariant) {
     // 404, not 500. A slug that names an archived or non-existent variant is a
