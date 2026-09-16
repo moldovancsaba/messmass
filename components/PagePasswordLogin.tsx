@@ -227,28 +227,20 @@ export default function PagePasswordLogin({
   );
 }
 
-// Helper function to check if user is authenticated for a specific page
-export function isAuthenticated(pageId: string, pageType: PageType): boolean {
-  if (typeof window === 'undefined') return false;
-  
-  try {
-    const sessionKey = `auth_${pageType}_${pageId}`;
-    const authData = sessionStorage.getItem(sessionKey);
-    
-    if (!authData) return false;
-    
-    const parsed = JSON.parse(authData);
-    const now = Date.now();
-    const sessionAge = now - parsed.timestamp;
-    
-    // Session expires after 24 hours for page passwords, 7 days for admin
-    const maxAge = parsed.isAdmin ? 7 * 24 * 60 * 60 * 1000 : 24 * 60 * 60 * 1000;
-    
-    return sessionAge < maxAge;
-  } catch {
-    return false;
-  }
-}
+/* isAuthenticated() was removed here on 2026-09-16 (F-013, messmass#393).
+ * Five pages called it on mount and rendered this prompt whenever it returned
+ * false -- which it does on every first visit, sessionStorage being empty --
+ * so a page with NO password configured showed a gate nobody could pass, while
+ * its API would have returned 200. A client-side flag was never able to answer
+ * "is this page protected"; only the server knows, and it already says so with
+ * 401 PAGE_PASSWORD_REQUIRED. The pages now fetch first and let that response
+ * raise the gate.
+ *
+ * The sessionStorage entry is still written on a successful unlock and cleared
+ * by clearAuthentication() below, but it is a UI convenience, not the access
+ * decision. The real grant is the httpOnly `page-access` cookie in
+ * lib/pageAccess.ts.
+ */
 
 // Helper function to clear authentication for a specific page
 export function clearAuthentication(pageId: string, pageType: PageType): void {

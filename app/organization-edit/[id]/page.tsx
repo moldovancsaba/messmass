@@ -3,7 +3,7 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import { useParams, useSearchParams } from 'next/navigation';
 import OrganizationEditorDashboard from '@/components/OrganizationEditorDashboard';
-import PagePasswordLogin, { isAuthenticated } from '@/components/PagePasswordLogin';
+import PagePasswordLogin, { clearAuthentication } from '@/components/PagePasswordLogin';
 import { useReportStyle } from '@/hooks/useReportStyle';
 import styles from '@/app/styles/editor-states.module.css';
 
@@ -36,6 +36,13 @@ export default function OrganizationEditPage() {
       const response = await fetch(`/api/organizations/edit/${id}${query}`, { cache: 'no-store' });
       const data = await response.json();
 
+      if (response.status === 401 && data?.code === 'PAGE_PASSWORD_REQUIRED') {
+        clearAuthentication(variant ? `${id}::variant=${variant}` : id, 'organization-edit');
+        setIsAuthorized(false);
+        setLoading(false);
+        return;
+      }
+
       if (data.success) {
         setOrganization(data.organization);
         setLoading(false);
@@ -61,13 +68,13 @@ export default function OrganizationEditPage() {
       return;
     }
 
-      const authenticated = isAuthenticated(variant ? `${id}::variant=${variant}` : id, 'organization-edit');
-    setIsAuthorized(authenticated);
+    // Ask the server, not sessionStorage (F-013). The sessionStorage flag is
+    // empty on every first visit, so an organization with NO password
+    // configured showed a gate that could not be passed. A protected page
+    // answers 401 PAGE_PASSWORD_REQUIRED, and that is what raises the gate now.
+    setIsAuthorized(true);
     setCheckingAuth(false);
-
-    if (authenticated) {
-      loadOrganization();
-    }
+    loadOrganization();
   }, [id, loadOrganization, variant]);
 
   useEffect(() => {

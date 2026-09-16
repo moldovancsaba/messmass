@@ -138,7 +138,6 @@ The same request with a `Cookie` header would be rejected with `COOKIES_NOT_ALLO
   - `ENABLE_BCRYPT_AUTH` — hash passwords with bcrypt instead of storing them in plaintext.
   - `ENABLE_JWT_SESSIONS` — issue cryptographically signed session tokens instead of unsigned ones.
   - `ENABLE_HTML_SANITIZATION` — sanitise rendered HTML to block XSS.
-  - `ENABLE_SAFE_FORMULA_PARSER` — evaluate chart formulas with the safe parser instead of a raw function constructor.
   A startup check lists exactly which flags are missing and how to fix them, so a misconfigured production deploy fails loudly rather than running insecurely.
 - **User management** is done from the admin console (create users, regenerate a user's password, toggle API and write access, delete users). Passwords double as API keys, so regenerating a password also rotates that user's API key.
 - **Middleware runs on every request.** Before a request reaches a route handler, the middleware enforces admin-route protection, rate limiting, CSRF checks on state-changing methods, and CORS. This is why direct `fetch` POST/PUT/DELETE calls from the browser need the CSRF token that the app's own API client attaches automatically — hand-rolled requests without it are refused.

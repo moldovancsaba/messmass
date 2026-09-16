@@ -3,7 +3,7 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import { useParams } from 'next/navigation';
 import EditorDashboard from '../../../components/EditorDashboard';
-import PagePasswordLogin, { isAuthenticated, clearAuthentication } from '@/components/PagePasswordLogin';
+import PagePasswordLogin, { clearAuthentication } from '@/components/PagePasswordLogin';
 import { useReportStyle } from '@/hooks/useReportStyle';
 import styles from '@/app/styles/editor-states.module.css';
 
@@ -113,14 +113,16 @@ export default function EditPage() {
   // Check authentication on component mount
   useEffect(() => {
     if (slug) {
-      const authenticated = isAuthenticated(slug, 'edit');
-      setIsAuthorized(authenticated);
+      // Ask the server, not sessionStorage. This used to read a
+      // sessionStorage flag and render the password prompt whenever it was
+      // absent -- which is always, on a first visit -- so an event with NO
+      // password configured showed a gate that could not be passed (F-013).
+      // loadProjectForEditing already handles the 401
+      // PAGE_PASSWORD_REQUIRED that a genuinely protected page returns, and
+      // that is now what raises the gate.
+      setIsAuthorized(true);
       setCheckingAuth(false);
-      
-      // Only load data if authenticated
-      if (authenticated) {
-        loadProjectForEditing();
-      }
+      loadProjectForEditing();
     }
   }, [slug, loadProjectForEditing]);
 

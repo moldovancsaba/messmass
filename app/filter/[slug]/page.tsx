@@ -11,7 +11,7 @@ import ReportContent from '@/app/report/[slug]/ReportContent';
 import UnifiedProjectsSection from '@/components/UnifiedProjectsSection';
 import { ReportCalculator } from '@/lib/report-calculator';
 import { useReportStyle } from '@/hooks/useReportStyle';
-import PagePasswordLogin, { isAuthenticated, clearAuthentication } from '@/components/PagePasswordLogin';
+import PagePasswordLogin, { clearAuthentication } from '@/components/PagePasswordLogin';
 import styles from '@/app/styles/report-page.module.css';
 
 interface FilterReportData {
@@ -101,11 +101,19 @@ export default function FilterReportPage() {
       }
       
       setReportData(data);
-      
+
       // Step 2: Fetch report template (v12 system)
       const template = data.report;
       if (!template) {
-        throw new Error('Failed to load report template');
+        // A filter that matches no events comes back success:true with an empty
+        // `projects` array and no report. That is an empty result, not a
+        // failure, and "Failed to Load Report" told the visitor their link was
+        // broken when it was merely unproductive.
+        throw new Error(
+          data.projects?.length === 0
+            ? data.message || 'No events match this filter yet.'
+            : 'Failed to load report template'
+        );
       }
       setBlocks(template.layout?.blocks || []);
       setGridSettings(template.layout?.gridColumns || { desktop: 3, tablet: 2, mobile: 1 });
@@ -132,13 +140,18 @@ export default function FilterReportPage() {
 
   useEffect(() => {
     if (filterSlug) {
-      const authenticated = isAuthenticated(variant ? `${filterSlug}::variant=${variant}` : filterSlug, 'filter');
-      setIsAuthorized(authenticated);
+      // Ask the server, not sessionStorage. This used to read a
+      // sessionStorage flag and render the password prompt whenever it was
+      // absent -- which is always, on a first visit -- so a page with NO
+      // password configured showed a gate that could not be passed, while the
+      // API would have returned 200 (F-013). The server is the only thing that
+      // knows whether a page is protected: fetch, and let a 401
+      // PAGE_PASSWORD_REQUIRED put the gate up. The sessionStorage flag is
+      // still written on a successful unlock, but it is a convenience now, not
+      // the access decision.
+      setIsAuthorized(true);
       setCheckingAuth(false);
-      
-      if (authenticated) {
-        fetchFilterData();
-      }
+      fetchFilterData();
     }
   }, [fetchFilterData, filterSlug, variant]);
   
@@ -199,11 +212,16 @@ export default function FilterReportPage() {
   
   // Error state
   if (error) {
+    // A filter matching nothing is an empty result, not a broken link. Heading
+    // and icon follow the body text so the two do not contradict each other.
+    const isEmpty = error.startsWith('No projects found') || error.startsWith('No events');
     return (
       <div className={styles.page}>
         <div className={styles.error}>
-          <span className={styles.errorIcon}>⚠️</span>
-          <h2 className={styles.errorTitle}>Failed to Load Report</h2>
+          <span className={styles.errorIcon}>{isEmpty ? '🔍' : '⚠️'}</span>
+          <h2 className={styles.errorTitle}>
+            {isEmpty ? 'No Matching Events' : 'Failed to Load Report'}
+          </h2>
           <p className={styles.errorText}>{error}</p>
         </div>
       </div>

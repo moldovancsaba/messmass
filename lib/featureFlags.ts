@@ -44,13 +44,17 @@ export const FEATURE_FLAGS = {
    */
   USE_SANITIZED_HTML: process.env.ENABLE_HTML_SANITIZATION === 'true',
 
-  /**
-   * WHAT: Enable safe formula parser instead of Function() constructor
-   * WHY: Prevent code injection via formula evaluation
-   * DEFAULT: false (legacy Function() until migration complete)
-   * ROLLBACK: Set ENABLE_SAFE_FORMULA_PARSER=false in Vercel
+  /* USE_SAFE_FORMULA_PARSER was removed on 2026-09-16 (F-014, messmass#389).
+   * It documented "ROLLBACK: Set ENABLE_SAFE_FORMULA_PARSER=false in Vercel",
+   * but lib/formulaEngine.ts never read the flag -- the safe parser is the only
+   * code path and there is no `new Function` or `eval` left in first-party
+   * source to fall back to. So the rollback did nothing, and someone following
+   * it during an incident would have set the variable, seen no change, and lost
+   * time. It was also listed as a REQUIRED production flag below, meaning an
+   * unset variable would crash a deploy over a control that does not exist.
+   * The other flags here are real: each is read by lib/users.ts,
+   * lib/auth/mintSession.ts and lib/sanitize.ts respectively.
    */
-  USE_SAFE_FORMULA_PARSER: process.env.ENABLE_SAFE_FORMULA_PARSER === 'true',
 } as const;
 
 /**
@@ -62,7 +66,6 @@ export function getFeatureFlagStatus(): Record<string, boolean> {
     USE_BCRYPT_AUTH: FEATURE_FLAGS.USE_BCRYPT_AUTH,
     USE_JWT_SESSIONS: FEATURE_FLAGS.USE_JWT_SESSIONS,
     USE_SANITIZED_HTML: FEATURE_FLAGS.USE_SANITIZED_HTML,
-    USE_SAFE_FORMULA_PARSER: FEATURE_FLAGS.USE_SAFE_FORMULA_PARSER,
   };
 }
 
@@ -93,7 +96,6 @@ export function validateSecurityFeatureFlags(): void {
     { envVar: 'ENABLE_BCRYPT_AUTH', flag: FEATURE_FLAGS.USE_BCRYPT_AUTH, name: 'Password Security (bcrypt)' },
     { envVar: 'ENABLE_JWT_SESSIONS', flag: FEATURE_FLAGS.USE_JWT_SESSIONS, name: 'Session Security (JWT)' },
     { envVar: 'ENABLE_HTML_SANITIZATION', flag: FEATURE_FLAGS.USE_SANITIZED_HTML, name: 'XSS Protection (HTML sanitization)' },
-    { envVar: 'ENABLE_SAFE_FORMULA_PARSER', flag: FEATURE_FLAGS.USE_SAFE_FORMULA_PARSER, name: 'Formula Security (safe parser)' },
   ] as const;
 
   const missingFlags: Array<{ envVar: string; name: string }> = [];

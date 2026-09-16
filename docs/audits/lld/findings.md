@@ -39,8 +39,8 @@ claim is structural rather than demonstrated, it says so.
 | [F-015](#f-015) | Medium | **Fixed** | Admin preview and partner report format the same number differently | 2 |
 | [F-016](#f-016) | Low | **Fixed — deleted** | `lib/layoutGrammarValidation.ts` is dead code | 2 |
 | [F-012](#f-012) | Medium | **Fixed** | CSP granted `unsafe-eval` app-wide for a reason that stopped being true | 2 |
-| [F-013](#f-013) | Medium | Open | Page gate prompts for pages that have no password | 2 |
-| [F-014](#f-014) | Low | Open | Documented formula-parser rollback has no effect | 2 |
+| [F-013](#f-013) | Medium | **Fixed** | Page gate prompts for pages that have no password | 2 |
+| [F-014](#f-014) | Low | **Fixed** | Documented formula-parser rollback has no effect | 2 |
 | [F-011](#f-011) | High | Open — needs your decision | Public API keys are users' plaintext passwords | 4 |
 | [F-003](#f-003) | High | **Fixed** `71b5e23f` | Middleware admin gate checks cookie presence, never validity | 4 |
 | [F-004](#f-004) | High | Open | v3 organisation scoping is not enforced | 4 |

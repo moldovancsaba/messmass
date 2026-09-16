@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState, useCallback } from 'react';
 import PartnerEditorDashboard from '@/components/PartnerEditorDashboard';
-import PagePasswordLogin, { isAuthenticated } from '@/components/PagePasswordLogin';
+import PagePasswordLogin, { clearAuthentication } from '@/components/PagePasswordLogin';
 import { useReportStyle } from '@/hooks/useReportStyle';
 import styles from '@/app/styles/editor-states.module.css';
 
@@ -53,6 +53,13 @@ export default function PartnerEditClient({ slug, variantSlug }: PartnerEditClie
       const response = await fetch(`/api/partners/edit/${slug}${query}`, { cache: 'no-store' });
       const data = await response.json();
 
+      if (response.status === 401 && data?.code === 'PAGE_PASSWORD_REQUIRED') {
+        clearAuthentication(variantSlug ? `${slug}::variant=${variantSlug}` : slug, 'partner-edit');
+        setIsAuthorized(false);
+        setLoading(false);
+        return;
+      }
+
       if (data.success) {
         setPartner(data.partner);
         setLoading(false);
@@ -73,14 +80,14 @@ export default function PartnerEditClient({ slug, variantSlug }: PartnerEditClie
 
   useEffect(() => {
     if (slug) {
-      const pageId = variantSlug ? `${slug}::variant=${variantSlug}` : slug;
-      const authenticated = isAuthenticated(pageId, 'partner-edit');
-      setIsAuthorized(authenticated);
+      // Ask the server, not sessionStorage (F-013). The sessionStorage flag
+      // is empty on every first visit, so a partner with NO password
+      // configured showed a gate that could not be passed. A protected page
+      // answers 401 PAGE_PASSWORD_REQUIRED, and that is what raises the gate
+      // now.
+      setIsAuthorized(true);
       setCheckingAuth(false);
-
-      if (authenticated) {
-        loadPartnerForEditing();
-      }
+      loadPartnerForEditing();
     }
   }, [slug, variantSlug, loadPartnerForEditing]);
 

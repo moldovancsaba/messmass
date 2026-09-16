@@ -11,7 +11,7 @@ import ReportContent from '@/app/report/[slug]/ReportContent';
 import UnifiedProjectsSection from '@/components/UnifiedProjectsSection';
 import { ReportCalculator } from '@/lib/report-calculator';
 import { useReportStyle } from '@/hooks/useReportStyle';
-import PagePasswordLogin, { isAuthenticated } from '@/components/PagePasswordLogin';
+import PagePasswordLogin, { clearAuthentication } from '@/components/PagePasswordLogin';
 import styles from '@/app/styles/report-page.module.css';
 
 interface HashtagReportData {
@@ -81,7 +81,18 @@ export default function HashtagReportPage() {
         cache: 'no-store'
       });
       const data = await dataRes.json();
-      
+
+      // A protected page answers 401 PAGE_PASSWORD_REQUIRED. Re-prompting is
+      // the correct response to that, not an error screen -- and since the
+      // gate is now driven by this response rather than by sessionStorage
+      // (F-013), it is also how the gate goes up in the first place.
+      if (dataRes.status === 401 && data?.code === 'PAGE_PASSWORD_REQUIRED') {
+        clearAuthentication(variant ? `${hashtagParam}::variant=${variant}` : hashtagParam, 'hashtag');
+        setIsAuthorized(false);
+        setLoading(false);
+        return;
+      }
+
       if (!data.success) {
         throw new Error(data.error || 'Failed to load hashtag statistics');
       }
@@ -118,13 +129,18 @@ export default function HashtagReportPage() {
 
   useEffect(() => {
     if (hashtagParam) {
-      const authenticated = isAuthenticated(variant ? `${hashtagParam}::variant=${variant}` : hashtagParam, 'hashtag');
-      setIsAuthorized(authenticated);
+      // Ask the server, not sessionStorage. This used to read a
+      // sessionStorage flag and render the password prompt whenever it was
+      // absent -- which is always, on a first visit -- so a page with NO
+      // password configured showed a gate that could not be passed, while the
+      // API would have returned 200 (F-013). The server is the only thing that
+      // knows whether a page is protected: fetch, and let a 401
+      // PAGE_PASSWORD_REQUIRED put the gate up. The sessionStorage flag is
+      // still written on a successful unlock, but it is a convenience now, not
+      // the access decision.
+      setIsAuthorized(true);
       setCheckingAuth(false);
-      
-      if (authenticated) {
-        fetchHashtagData();
-      }
+      fetchHashtagData();
     }
   }, [fetchHashtagData, hashtagParam, variant]);
   
