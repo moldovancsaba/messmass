@@ -62,11 +62,21 @@ export interface InsightsReport {
 }
 
 /**
- * WHAT: Generate unique insight ID
- * WHY: Track and deduplicate insights
+ * WHAT: Generate a stable insight ID.
+ * WHY: The comment above this function has always said "track and
+ *     deduplicate insights", but the id included Date.now() -- so the same
+ *     anomaly, on the same metric, computed a second later, produced a
+ *     different id every time. Nothing could ever have recognised "this is
+ *     the same insight as last time" (messmass#233 audit). It is used only as
+ *     a React key today, so nothing broke visibly; it would have silently
+ *     defeated the first dedup or dismiss-persistence feature built on it.
+ * HOW: category + metric is unique within one report (one project, one
+ *     generation pass), which is all a React key needs, and is stable across
+ *     repeated generations for the same project -- which is the property any
+ *     future per-project dismiss/seen tracking would key off.
  */
 function generateInsightId(category: InsightCategory, metric: string): string {
-  return `${category}-${metric}-${Date.now()}`;
+  return `${category}-${metric}`;
 }
 
 /**
