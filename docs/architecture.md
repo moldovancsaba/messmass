@@ -112,12 +112,12 @@ it drifts. Do not edit between the markers.
 
 | Category | Count | Location |
 |----------|-------|----------|
-| **UI Components** | 104 | `components/` |
+| **UI Components** | 105 | `components/` |
 | **Utility Modules** | 201 | `lib/` |
 | **Hooks** | 12 | `hooks/` |
 | **Design Tokens** | 408 | `app/styles/theme.css` |
 | **Utility CSS classes** | 192 | `app/styles/utilities.css` |
-| **App routes (pages)** | 69 | `app/**/page.tsx` |
+| **App routes (pages)** | 71 | `app/**/page.tsx` |
 | **API routes** | 194 | `app/api/**/route.ts` |
 
 The modules with the most importers — the ones whose change radius is
@@ -130,15 +130,15 @@ largest, and the ones to read first:
 | `lib/logger.ts` | 85 | 392 |
 | `lib/auth.ts` | 84 | 118 |
 | `lib/apiGuards.ts` | 59 | 137 |
-| `lib/apiClient.ts` | 44 | 258 |
-| `components/ColoredCard.tsx` | 43 | 52 |
+| `lib/apiClient.ts` | 43 | 258 |
+| `components/ColoredCard.tsx` | 42 | 52 |
 | `lib/db.ts` | 37 | 17 |
 | `components/MaterialIcon.tsx` | 33 | 119 |
 | `lib/fanmassIntegration.ts` | 30 | 441 |
 | `components/UnifiedAdminHeroWithSearch.tsx` | 26 | 192 |
-| `hooks/useAdminAuth.ts` | 18 | 65 |
 | `lib/permissions.ts` | 18 | 141 |
 | `lib/mongoose-v3.ts` | 18 | 53 |
+| `hooks/useAdminAuth.ts` | 17 | 65 |
 | `lib/report-calculator.ts` | 17 | 727 |
 
 Importers are counted by resolved import specifier, not by symbol name, so
@@ -997,7 +997,7 @@ shows up here on the next regeneration, which is the point.
 
 <!-- GENERATED:routes -->
 
-### Pages (69)
+### Pages (71)
 
 | Route | File |
 |-------|------|
@@ -1028,7 +1028,9 @@ shows up here on the next regeneration, which is the point.
 | `/admin/events/[id]/kyc-data` | `app/admin/events/[id]/kyc-data/page.tsx` |
 | `/admin/fanmass` | `app/admin/fanmass/page.tsx` |
 | `/admin/filter` | `app/admin/filter/page.tsx` |
+| `/admin/filter/[slug]/reports` | `app/admin/filter/[slug]/reports/page.tsx` |
 | `/admin/hashtags` | `app/admin/hashtags/page.tsx` |
+| `/admin/hashtags/[hashtag]/reports` | `app/admin/hashtags/[hashtag]/reports/page.tsx` |
 | `/admin/help` | `app/admin/help/page.tsx` |
 | `/admin/help/guides` | `app/admin/help/guides/page.tsx` |
 | `/admin/help/guides/[slug]` | `app/admin/help/guides/[slug]/page.tsx` |

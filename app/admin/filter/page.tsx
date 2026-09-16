@@ -483,6 +483,34 @@ function HashtagFilterPageContent() {
                     >
                       🔗 Share Filter
                     </button>
+                    <button
+                      onClick={async () => {
+                        // A filter's variants are keyed on its slug, and the
+                        // slug is only minted when you ask for one — this page
+                        // is a builder, not a list of saved filters. So the
+                        // Reports workspace needs the same call the Share
+                        // button makes before it has an id to navigate to.
+                        // (messmass#244 Phase B.)
+                        try {
+                          const data = await apiPost('/api/filter-slug', {
+                            hashtags: selectedHashtags,
+                            styleId: selectedStyleId || null
+                          });
+                          if (data.success) {
+                            window.location.href = `/admin/filter/${encodeURIComponent(data.slug)}/reports`;
+                          } else {
+                            alert('Failed to open reports: ' + data.error);
+                          }
+                        } catch (error) {
+                          console.error('Error opening filter reports:', error);
+                          alert('Failed to open reports');
+                        }
+                      }}
+                      className="btn btn-small btn-secondary"
+                      title="Manage time-period report variants for this filter"
+                    >
+                      📄 Reports
+                    </button>
                     <button 
                       onClick={exportFilteredCSV}
                       className="btn btn-small btn-success"

@@ -107,6 +107,17 @@ export const hashtagsAdapter: AdminPageAdapter<HashtagDTO> = {
           window.location.href = `/admin/filter?hashtag=${encodeURIComponent(hashtag.hashtag)}`;
         },
       },
+      {
+        // messmass#244 Phase B. The variant backend has always accepted
+        // ownerType 'hashtag'; without this link the workspace existed but
+        // could not be reached, which is the same as not existing.
+        label: 'Reports',
+        icon: '📄',
+        variant: 'secondary',
+        handler: (hashtag) => {
+          window.location.href = `/admin/hashtags/${encodeURIComponent(hashtag.hashtag)}/reports`;
+        },
+      },
     ],
   },
 
