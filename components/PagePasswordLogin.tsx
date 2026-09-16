@@ -3,6 +3,7 @@
 import React, { useEffect, useState } from 'react';
 import { PageType } from '@/lib/pagePassword';
 import { isLightBackground, GATE_PALETTE } from '@/lib/theme/color';
+import { DEFAULT_REPORT_STYLE_COLORS } from '@/lib/theme/reportStylePalette';
 import styles from './PagePasswordLogin.module.css';
 
 interface PagePasswordLoginProps {
@@ -30,35 +31,44 @@ export default function PagePasswordLogin({
     let cancelled = false;
     const applyStyle = async () => {
       try {
-        let bg: string | null = null;
-        let header: string | null = null;
+        // WHAT: Resolve the report's own background so the gate matches the page
+        //   behind it, via the same chain the report itself uses:
+        //   report-config -> styleId -> report-styles.
+        // WHY: This previously called /api/page-config, a route that no longer
+        //   exists. Guarded by `if (res.ok)`, the 404 failed silently and the
+        //   gate simply never got a background (F-028). A second defect hid
+        //   behind it: page-config returned a `linear-gradient(...)` string,
+        //   which isLightBackground() cannot parse, so the light/dark choice
+        //   below would always have fallen through to dark. The style's flat
+        //   colour is what makes that decision work at all.
+        const CONFIG_TYPE: Partial<Record<typeof pageType, 'project' | 'partner' | 'hashtag' | 'filter'>> = {
+          'event-report': 'project', 'edit': 'project',
+          'partner-report': 'partner', 'partner-edit': 'partner',
+          'filter': 'filter', 'hashtag': 'hashtag',
+        };
 
-        if (pageType === 'event-report' || pageType === 'partner-report' || pageType === 'edit') {
-          const qs = `?projectId=${encodeURIComponent(pageId)}`;
-          const res = await fetch(`/api/page-config${qs}`, { cache: 'no-store' });
-          if (res.ok) {
-            const data = await res.json();
-            if (data?.success && data?.config?.pageStyle) {
-              bg = `linear-gradient(${data.config.pageStyle.backgroundGradient})`;
-              header = `linear-gradient(${data.config.pageStyle.headerBackgroundGradient})`;
-            }
-          }
-        } else if (pageType === 'filter') {
-          // Resolve style via filter slug -> styleId or hashtags
-          const fRes = await fetch(`/api/hashtags/filter-by-slug/${encodeURIComponent(pageId)}`, { cache: 'no-store' });
-          if (fRes.ok) {
-            const fData = await fRes.json();
-            let qs = '';
-            if (fData?.styleId) qs = `?styleId=${encodeURIComponent(fData.styleId)}`;
-            else if (Array.isArray(fData?.hashtags) && fData.hashtags.length > 0) qs = `?hashtags=${encodeURIComponent(fData.hashtags.join(','))}`;
-            if (qs) {
-              const pRes = await fetch(`/api/page-config${qs}`, { cache: 'no-store' });
-              if (pRes.ok) {
-                const pData = await pRes.json();
-                if (pData?.success && pData?.config?.pageStyle) {
-                  bg = `linear-gradient(${pData.config.pageStyle.backgroundGradient})`;
-                  header = `linear-gradient(${pData.config.pageStyle.headerBackgroundGradient})`;
-                }
+        // Default to the system style's own backdrop, so the gate is themed even
+        // when the report has no style or points at a deleted one -- leaving it
+        // unset is what produced the white-on-glass, 1.0:1 prompt.
+        let bg: string = DEFAULT_REPORT_STYLE_COLORS.heroBackground;
+        const configType = CONFIG_TYPE[pageType];
+
+        if (configType) {
+          const cfgRes = await fetch(
+            `/api/report-config/${encodeURIComponent(pageId)}?type=${configType}`,
+            { cache: 'no-store' }
+          );
+          if (cfgRes.ok) {
+            const cfg = await cfgRes.json();
+            const styleId = cfg?.template?.styleId;
+            if (styleId) {
+              const sRes = await fetch(
+                `/api/report-styles/${encodeURIComponent(String(styleId))}`,
+                { cache: 'no-store' }
+              );
+              if (sRes.ok) {
+                const s = await sRes.json();
+                bg = s?.style?.pageBackground || s?.style?.heroBackground || bg;
               }
             }
           }
@@ -66,31 +76,13 @@ export default function PagePasswordLogin({
 
         if (!cancelled) {
           const root = document.documentElement;
-          if (bg) {
-            root.style.setProperty('--page-bg', bg);
-            // WHAT: Pick the gate's own palette from the background's luminance.
-            // WHY: This card was authored white-on-glass, so on a light report
-            //   background its text measured 1.04:1 contrast (1.00 on white) --
-            //   an effectively invisible password prompt for the client. These
-            //   vars let the same markup stay readable on any background.
-            const palette = GATE_PALETTE[isLightBackground(bg) ? 'light' : 'dark'];
-            for (const [key, value] of Object.entries(palette)) root.style.setProperty(key, value);
-          }
-          if (header) root.style.setProperty('--header-bg', header);
-          // Apply content background if available
-          try {
-            // Attempt to fetch full page config to pull content background color
-            const cfgRes = await fetch('/api/page-config' + (
-              pageType === 'event-report' || pageType === 'partner-report' || pageType === 'edit' ? `?projectId=${encodeURIComponent(pageId)}` : ''
-            ), { cache: 'no-store' });
-            if (cfgRes.ok) {
-              const cfgData = await cfgRes.json();
-              const cbg = cfgData?.config?.pageStyle?.contentBackgroundColor;
-              if (cbg) root.style.setProperty('--content-bg', cbg);
-            }
-          } catch {
-            // ignore, fall back to default content surface
-          }
+          root.style.setProperty('--page-bg', bg);
+          // WHAT: Pick the gate's own palette from the background's luminance.
+          // WHY: This card was authored white-on-glass, so on a light report
+          //   background its text measured 1.04:1 contrast (1.00 on white) --
+          //   an effectively invisible password prompt for the client.
+          const palette = GATE_PALETTE[isLightBackground(bg) ? 'light' : 'dark'];
+          for (const [key, value] of Object.entries(palette)) root.style.setProperty(key, value);
         }
       } catch {
         // graceful fallback to defaults
