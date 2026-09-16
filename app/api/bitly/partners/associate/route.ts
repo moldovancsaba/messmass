@@ -33,6 +33,15 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // Authorisation, not just authentication: this route promises
+    // admin-only and enforced nothing (F-025 / #400).
+    if (user.role !== 'admin' && user.role !== 'superadmin') {
+      return NextResponse.json(
+        { success: false, error: 'Administrator access required.' },
+        { status: 403 }
+      );
+    }
+
     // WHAT: Parse and validate request body
     const body = await request.json();
     const { bitlyLinkId, partnerId } = body;
@@ -126,6 +135,15 @@ export async function DELETE(request: NextRequest) {
       return NextResponse.json(
         { success: false, error: 'Unauthorized' },
         { status: 401 }
+      );
+    }
+
+    // Authorisation, not just authentication: this route promises
+    // admin-only and enforced nothing (F-025 / #400).
+    if (user.role !== 'admin' && user.role !== 'superadmin') {
+      return NextResponse.json(
+        { success: false, error: 'Administrator access required.' },
+        { status: 403 }
       );
     }
 

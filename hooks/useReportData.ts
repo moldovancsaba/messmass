@@ -191,7 +191,7 @@ export interface PartnerReportData {
     createdAt: string;
     updatedAt: string;
   }>;
-  // WHAT: Pre-aggregated stats computed on server (Phase 2 - v12.4.0)
+  // WHAT: Pre-aggregated stats computed on the server
   // WHY: Eliminates client-side aggregation for better performance
   aggregatedStats: Record<string, number | string>;
   report: Report;
@@ -275,7 +275,7 @@ export function usePartnerReportData(slug: string | null, variantSlug?: string |
         throw new Error(chartsData.error || 'Failed to load charts');
       }
 
-      // Bundle data (Phase 2 - v12.4.0)
+      // Bundle data
       // WHAT: Extract pre-aggregated stats from API response
       // WHY: Server now computes aggregation, eliminating client-side work
       setData({

@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse, after } from 'next/server';
-import { requireSession, requireProjectWrite } from '@/lib/apiGuards';
+import { requireAdmin, requireProjectWrite } from '@/lib/apiGuards';
 import { ObjectId, Db } from 'mongodb';
 import { generateProjectSlugs } from '@/lib/slugUtils';
 import clientPromise from '@/lib/mongodb';
@@ -97,7 +97,7 @@ async function connectToDatabase() {
 export async function GET(request: NextRequest) {
   // SECURITY (messmass#386): admin-only read; the file-level sweep missed
   // this GET because other handlers here already carried a guard.
-  const __denied = await requireSession();
+  const __denied = await requireAdmin();
   if (__denied) return __denied;
 
   try {
@@ -518,7 +518,7 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   // F-009: creating events is admin-only. The page-password editor updates an
   // existing event and never creates one, so no grant path applies here.
-  const denied = await requireSession();
+  const denied = await requireAdmin();
   if (denied) return denied;
 
   try {
@@ -1030,7 +1030,7 @@ export async function DELETE(request: NextRequest) {
   // F-009: this handler was reachable unauthenticated — a CSRF token is public,
   // and nothing else stood between the request and deleteOne(). Deletion is
   // admin-only; a page password must never be able to destroy an event.
-  const deleteDenied = await requireSession();
+  const deleteDenied = await requireAdmin();
   if (deleteDenied) return deleteDenied;
 
   let projectId: string | null = null;

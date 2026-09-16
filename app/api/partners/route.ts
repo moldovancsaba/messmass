@@ -8,14 +8,14 @@ import config from '@/lib/config';
 import { error as logError, info as logInfo } from '@/lib/logger';
 import { generateUniquePartnerViewSlug } from '@/lib/partnerIdentifier';
 import { syncPartnerToV3Entity } from '@/lib/v3/syncEngine';
-import { requirePartnerWrite, requireSession } from '@/lib/apiGuards';
+import { requirePartnerWrite, requireAdmin } from '@/lib/apiGuards';
 
 export const dynamic = 'force-dynamic';
 
 export async function GET(request: NextRequest) {
   // SECURITY (messmass#386): admin-only read; the file-level sweep missed
   // this GET because other handlers here already carried a guard.
-  const __denied = await requireSession();
+  const __denied = await requireAdmin();
   if (__denied) return __denied;
 
   try {
@@ -223,7 +223,7 @@ const db = client.db(config.dbName);
 }
 
 export async function POST(request: NextRequest) {
-  const denied = await requireSession();
+  const denied = await requireAdmin();
   if (denied) return denied;
 
   try {
@@ -292,7 +292,7 @@ const db = client.db(config.dbName);
 }
 
 export async function DELETE(request: NextRequest) {
-  const denied = await requireSession();
+  const denied = await requireAdmin();
   if (denied) return denied;
 
   try {

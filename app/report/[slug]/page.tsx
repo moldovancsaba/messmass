@@ -1,4 +1,4 @@
-// WHAT: Event Report Page (v12.4.0 - Phase 3)
+// WHAT: Event Report Page
 // WHY: Clean, performant report rendering using new v12 architecture with shared styles
 // HOW: Uses useReportData and useReportLayout hooks with ReportCalculator
 

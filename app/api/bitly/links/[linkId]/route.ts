@@ -42,6 +42,15 @@ export async function PUT(
       );
     }
 
+    // Authorisation, not just authentication: this route promises
+    // admin-only and enforced nothing (F-025 / #400).
+    if (user.role !== 'admin' && user.role !== 'superadmin') {
+      return NextResponse.json(
+        { success: false, error: 'Administrator access required.' },
+        { status: 403 }
+      );
+    }
+
     // WHAT: Validate linkId parameter
     const { linkId } = await context.params;
     if (!ObjectId.isValid(linkId)) {
@@ -157,6 +166,15 @@ export async function DELETE(
       return NextResponse.json(
         { success: false, error: 'Unauthorized' },
         { status: 401 }
+      );
+    }
+
+    // Authorisation, not just authentication: this route promises
+    // admin-only and enforced nothing (F-025 / #400).
+    if (user.role !== 'admin' && user.role !== 'superadmin') {
+      return NextResponse.json(
+        { success: false, error: 'Administrator access required.' },
+        { status: 403 }
       );
     }
 

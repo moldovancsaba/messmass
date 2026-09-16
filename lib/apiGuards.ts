@@ -34,6 +34,28 @@ export async function requireSession(): Promise<NextResponse | null> {
   return null;
 }
 
+// WHAT: Require an authenticated admin or superadmin session.
+// WHY: requireSession() above authenticates and deliberately stops there, but
+//     around twenty routes carried comments promising "admin-only" and enforced
+//     nothing -- F-009 closed the anonymous hole by adding requireSession() and
+//     the authorisation half was never built (F-025 / #400). getAdminUser()
+//     grants the same permission array to every role, so the role field is the
+//     only thing that distinguishes callers.
+// NOTE: This is for session-authenticated routes only. API-key callers (camera,
+//     fanmass) authenticate through the Bearer path in lib/apiAuth.ts and never
+//     reach this guard, so gating here cannot break the fleet integrations.
+export async function requireAdmin(): Promise<NextResponse | null> {
+  const user = await getAdminUser();
+  if (!user) return unauthorized('Sign in to perform this action.');
+  if (user.role !== 'admin' && user.role !== 'superadmin') {
+    return NextResponse.json(
+      { success: false, error: 'Administrator access required.', code: 'FORBIDDEN' },
+      { status: 403 }
+    );
+  }
+  return null;
+}
+
 // WHAT: Require permission to modify one specific project.
 // WHY: `PUT /api/projects` is how the event editor saves clicker and stats data,
 //     and that editor authenticates by page password, not by admin session

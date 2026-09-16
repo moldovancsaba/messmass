@@ -39,6 +39,15 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // Authorisation, not just authentication: this route promises
+    // admin-only and enforced nothing (F-025 / #400).
+    if (user.role !== 'admin' && user.role !== 'superadmin') {
+      return NextResponse.json(
+        { success: false, error: 'Administrator access required.' },
+        { status: 403 }
+      );
+    }
+
     // WHAT: Parse request body for optional parameters
     const body = await request.json().catch(() => ({}));
     const limit = body.limit || 100; // Default to 100 links (fast batch import)

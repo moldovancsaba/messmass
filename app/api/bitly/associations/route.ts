@@ -31,6 +31,15 @@ export async function DELETE(request: NextRequest) {
       );
     }
 
+    // Authorisation, not just authentication: this route promises
+    // admin-only and enforced nothing (F-025 / #400).
+    if (user.role !== 'admin' && user.role !== 'superadmin') {
+      return NextResponse.json(
+        { success: false, error: 'Administrator access required.' },
+        { status: 403 }
+      );
+    }
+
     // WHAT: Parse query parameters
     const { searchParams } = new URL(request.url);
     const bitlyLinkId = searchParams.get('bitlyLinkId');

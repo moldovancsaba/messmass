@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { ObjectId } from 'mongodb';
 import { getDb } from '@/lib/db';
-import { requireSession } from '@/lib/apiGuards';
+import { requireAdmin } from '@/lib/apiGuards';
 
 export const runtime = 'nodejs';
 
@@ -59,7 +59,7 @@ export async function GET() {
 export async function POST(req: NextRequest) {
   // SECURITY (messmass#386): mutations are admin-only (callers: admin clicker
   // manager); GET stays open for the page-password organization editor.
-  const __denied = await requireSession();
+  const __denied = await requireAdmin();
   if (__denied) return __denied;
 
   try {
@@ -103,7 +103,7 @@ export async function POST(req: NextRequest) {
 
 export async function PUT(req: NextRequest) {
   // SECURITY (messmass#386): admin-only, as above.
-  const __denied = await requireSession();
+  const __denied = await requireAdmin();
   if (__denied) return __denied;
 
   try {
@@ -132,7 +132,7 @@ export async function PUT(req: NextRequest) {
 
 export async function DELETE(req: NextRequest) {
   // SECURITY (messmass#386): admin-only, as above.
-  const __denied = await requireSession();
+  const __denied = await requireAdmin();
   if (__denied) return __denied;
 
   try {

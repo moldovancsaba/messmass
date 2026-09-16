@@ -929,7 +929,9 @@ export function formatChartValue(
   
   // WHAT: Legacy type-based formatting for backward compatibility
   // WHY: Support charts that haven't been migrated to new formatting system yet
-  // NOTE: This branch will be removed after migration in v8.17.0
+  // NOTE: Removable once no chart config reaches here without
+  //     options.formatting. It was promised for v8.17.0 and is still live at
+  //     12.3.36, so the condition -- not a release -- is what to check.
   const decimals = options.decimals ?? 0;
   
   switch (options.type) {

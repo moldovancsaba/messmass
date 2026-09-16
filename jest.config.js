@@ -29,7 +29,10 @@ const customJestConfig = {
     '!**/.next/**',
   ],
   moduleDirectories: ['node_modules', '<rootDir>/'],
-  testPathIgnorePatterns: ['/node_modules/', '/.next/'],
+  // .claude/worktrees holds detached checkouts of other branches and sibling
+  // repos. Their tests are not this tree's tests, and running them locally
+  // produces failures CI never sees, since CI checks out clean.
+  testPathIgnorePatterns: ['/node_modules/', '/.next/', '/.claude/'],
   transformIgnorePatterns: [
     '/node_modules/',
     '^.+\\.module\\.(css|sass|scss)$',

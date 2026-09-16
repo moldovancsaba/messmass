@@ -20,6 +20,15 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
+    // Authorisation, not just authentication: this route promises
+    // admin-only and enforced nothing (F-025 / #400).
+    if (user.role !== 'admin' && user.role !== 'superadmin') {
+      return NextResponse.json(
+        { success: false, error: 'Administrator access required.' },
+        { status: 403 }
+      );
+    }
+
     const url = new URL(request.url);
     const competitionId = url.searchParams.get('competitionId');
     const partnerId = url.searchParams.get('partnerId');

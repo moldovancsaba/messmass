@@ -3,7 +3,7 @@
 // HOW: GET (list projects), PUT (update partners)
 
 import { NextRequest, NextResponse } from 'next/server';
-import { requireSession } from '@/lib/apiGuards';
+import { requireAdmin } from '@/lib/apiGuards';
 import { ObjectId } from 'mongodb';
 import { getDb } from '@/lib/db';
 import { syncProjectToV3Activity, syncPartnerToV3Entity } from '@/lib/v3/syncEngine';
@@ -19,7 +19,7 @@ import { getAdminUser } from '@/lib/auth';
 export async function GET() {
   // SECURITY (messmass#386): admin-only read; the file-level sweep missed
   // this GET because other handlers here already carried a guard.
-  const __denied = await requireSession();
+  const __denied = await requireAdmin();
   if (__denied) return __denied;
 
   try {
@@ -67,7 +67,7 @@ export async function PUT(request: NextRequest) {
   // file-level mutation sweep because the GET above already imports/calls
   // requireSession — the sweep saw the primitive in-file and passed the whole
   // file while this PUT mutated project<->partner links unauthenticated.
-  const __denied = await requireSession();
+  const __denied = await requireAdmin();
   if (__denied) return __denied;
 
   try {

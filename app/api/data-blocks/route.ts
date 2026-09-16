@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { requireSession } from '@/lib/apiGuards';
+import { requireAdmin } from '@/lib/apiGuards';
 import { ObjectId } from 'mongodb';
 import clientPromise from '@/lib/mongodb';
 import { error as logError } from '@/lib/logger';
@@ -33,7 +33,7 @@ interface DataVisualizationBlock {
 export async function GET() {
   // SECURITY (messmass#386): admin-only read; the file-level sweep missed
   // this GET because other handlers here already carried a guard.
-  const __denied = await requireSession();
+  const __denied = await requireAdmin();
   if (__denied) return __denied;
 
   try {
@@ -66,7 +66,7 @@ export async function POST(request: NextRequest) {
   // F-009: this handler had no authentication. Caller analysis shows only the
   // admin UI invokes it, so a session is the correct guard — no page-password
   // grant path applies here.
-  const denied = await requireSession();
+  const denied = await requireAdmin();
   if (denied) return denied;
 
   try {
@@ -120,7 +120,7 @@ export async function PUT(request: NextRequest) {
   // F-009: this handler had no authentication. Caller analysis shows only the
   // admin UI invokes it, so a session is the correct guard — no page-password
   // grant path applies here.
-  const denied = await requireSession();
+  const denied = await requireAdmin();
   if (denied) return denied;
 
   try {
@@ -196,7 +196,7 @@ export async function DELETE(request: NextRequest) {
   // F-009: this handler had no authentication. Caller analysis shows only the
   // admin UI invokes it, so a session is the correct guard — no page-password
   // grant path applies here.
-  const denied = await requireSession();
+  const denied = await requireAdmin();
   if (denied) return denied;
 
   try {

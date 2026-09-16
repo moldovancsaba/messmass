@@ -145,7 +145,7 @@ const db = client.db(config.dbName);
         // HOW: Pass partner.stats to frontend for merging with aggregated event data
         stats: useLegacyAllTimeAggregation ? partner.stats || {} : resolvedVariant.variant.statsOverrides || {}
       },
-      // WHAT: Pre-aggregated stats computed on server (Phase 2 - v12.4.0)
+      // WHAT: Pre-aggregated stats computed on the server
       // WHY: Eliminates client-side computation, improves performance
       // HOW: Sum all numeric event stats + merge partner-level stats (reportText*, reportImage*)
       aggregatedStats,

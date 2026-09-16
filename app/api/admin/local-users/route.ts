@@ -40,6 +40,15 @@ export async function GET(request: NextRequest) {
     const admin = await getAdminUser()
     if (!admin) return NextResponse.json({ success: false, error: 'Admin authentication required' }, { status: 401 })
 
+    // Authorisation, not just authentication: this route promises
+    // admin-only and enforced nothing (F-025 / #400).
+    if (admin.role !== 'admin' && admin.role !== 'superadmin') {
+      return NextResponse.json(
+        { success: false, error: 'Administrator access required.' },
+        { status: 403 }
+      )
+    }
+
     // WHAT: Parse pagination and search parameters from query string
     // WHY: Follows established pattern from /api/hashtags and /api/hashtag-categories
     const { searchParams } = new URL(request.url)
@@ -122,6 +131,15 @@ export async function POST(request: NextRequest) {
   try {
     const admin = await getAdminUser()
     if (!admin) return NextResponse.json({ success: false, error: 'Admin authentication required' }, { status: 401 })
+
+    // Authorisation, not just authentication: this route promises
+    // admin-only and enforced nothing (F-025 / #400).
+    if (admin.role !== 'admin' && admin.role !== 'superadmin') {
+      return NextResponse.json(
+        { success: false, error: 'Administrator access required.' },
+        { status: 403 }
+      )
+    }
 
     const body = await request.json()
     const emailRaw = (body?.email || '').toString()

@@ -38,6 +38,15 @@ export async function POST(req: NextRequest) {
       );
     }
 
+    // Authorisation, not just authentication: this route promises
+    // admin-only and enforced nothing (F-025 / #400).
+    if (adminUser.role !== 'admin' && adminUser.role !== 'superadmin') {
+      return NextResponse.json(
+        { success: false, error: 'Administrator access required.' },
+        { status: 403 }
+      );
+    }
+
     const body = await req.json();
     const { templateId, projectIds, partnerIds } = body;
 
@@ -141,6 +150,15 @@ export async function DELETE(req: NextRequest) {
       return NextResponse.json(
         { success: false, error: 'Authentication required' },
         { status: 401 }
+      );
+    }
+
+    // Authorisation, not just authentication: this route promises
+    // admin-only and enforced nothing (F-025 / #400).
+    if (adminUser.role !== 'admin' && adminUser.role !== 'superadmin') {
+      return NextResponse.json(
+        { success: false, error: 'Administrator access required.' },
+        { status: 403 }
       );
     }
 

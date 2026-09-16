@@ -25,6 +25,15 @@ export async function GET(request: NextRequest) {
       );
     }
 
+    // Authorisation, not just authentication: this route promises
+    // admin-only and enforced nothing (F-025 / #400).
+    if (user.role !== 'admin' && user.role !== 'superadmin') {
+      return NextResponse.json(
+        { success: false, error: 'Administrator access required.' },
+        { status: 403 }
+      );
+    }
+
     const { searchParams } = new URL(request.url);
     const statusParam = searchParams.get('status');
     if (statusParam && !VALID_STATUSES.includes(statusParam as AiEventStatus)) {
