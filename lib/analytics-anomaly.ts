@@ -10,7 +10,7 @@
  * - Moving Average Method: Deviation from rolling average
  */
 
-import { calculateMean, calculateStdDev } from './statistics';
+import { calculateMean, calculateStdDev, calculatePercentile } from './statistics';
 
 // ============================================================================
 // TYPES
@@ -304,19 +304,6 @@ function detectMovingAvgAnomalies(
 // ============================================================================
 // STATISTICAL HELPER FUNCTIONS
 // ============================================================================
-
-/**
- * WHAT: Calculate percentile of sorted values
- * WHY: Required for IQR method (Q1, Q3, median)
- */
-function calculatePercentile(sortedValues: number[], percentile: number): number {
-  if (sortedValues.length === 0) return 0;
-  const index = (percentile / 100) * (sortedValues.length - 1);
-  const lower = Math.floor(index);
-  const upper = Math.ceil(index);
-  const weight = index - lower;
-  return sortedValues[lower] * (1 - weight) + sortedValues[upper] * weight;
-}
 
 // ============================================================================
 // SEVERITY CLASSIFICATION

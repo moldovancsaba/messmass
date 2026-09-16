@@ -12,8 +12,18 @@
 //     needs a live DB) is covered by the direct calculateStdDev unit tests
 //     below instead of a dedicated integration test -- same formula, same
 //     call shape (single-arg, no precomputed mean).
+//
+// Quartiles are the one piece of #414 that IS a deliberate behavior change:
+// anomalyDetection.ts's Q1/Q3 moved from Tukey's hinges to the same linear-
+// interpolation percentile analytics-anomaly.ts already used (now shared as
+// calculatePercentile/calculateQuartiles). The two methods give different Q1/
+// Q3 numbers -- checked against real production data (fan/merch/jersey counts,
+// n=138-276) before making this change, not assumed safe, and every metric
+// checked flagged the exact same outliers under both methods. The IQR test
+// below pins the new canonical numbers directly, so a future change to which
+// quartile method is used shows up here.
 
-import { calculateMean, calculateStdDev } from '@/lib/statistics';
+import { calculateMean, calculateStdDev, calculatePercentile, calculateQuartiles } from '@/lib/statistics';
 import { detectZScoreAnomaly, detectIQRAnomaly } from '@/lib/anomalyDetection';
 import { detectAnomalies, type TimeSeriesDataPoint } from '@/lib/analytics-anomaly';
 
@@ -32,6 +42,18 @@ describe('lib/statistics primitives', () => {
   it('calculateStdDev derives the mean itself when one is not passed', () => {
     const values = [10, 20, 30];
     expect(calculateStdDev(values)).toBe(calculateStdDev(values, calculateMean(values)));
+  });
+
+  it('calculatePercentile is linear-interpolation (R type 7 / numpy default)', () => {
+    const sorted = [10, 20, 30, 40, 50, 60, 70, 80];
+    expect(calculatePercentile(sorted, 25)).toBe(27.5);
+    expect(calculatePercentile(sorted, 75)).toBe(62.5);
+    expect(calculatePercentile(sorted, 50)).toBe(45);
+  });
+
+  it('calculateQuartiles matches calculatePercentile at 25/75', () => {
+    const sorted = [10, 20, 30, 40, 50, 60, 70, 80];
+    expect(calculateQuartiles(sorted)).toEqual({ q1: 27.5, q3: 62.5, iqr: 35 });
   });
 });
 
@@ -52,11 +74,12 @@ describe('anomalyDetection.ts output is unchanged after switching to lib/statist
     expect(result.isAnomaly).toBe(false);
   });
 
-  it('IQR detection still resolves quartiles and flags outliers', () => {
+  it('IQR detection resolves quartiles via the new canonical percentile method', () => {
     const result = detectIQRAnomaly(500, [10, 20, 30, 40, 50, 60, 70, 80], 'merch');
     expect(result.isAnomaly).toBe(true);
-    expect(result.context.q1).toBeDefined();
-    expect(result.context.q3).toBeDefined();
+    // Was Tukey's hinges (q1=25, q3=65) before #414's quartile unification.
+    expect(result.context.q1).toBe(27.5);
+    expect(result.context.q3).toBe(62.5);
   });
 });
 

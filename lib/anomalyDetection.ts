@@ -9,7 +9,7 @@
  * Created: 2025-10-19T12:43:10.000Z
  */
 
-import { calculateMean, calculateStdDev } from './statistics';
+import { calculateMean, calculateStdDev, calculatePercentile, calculateQuartiles } from './statistics';
 
 export type AnomalyType = 'positive' | 'negative' | 'neutral';
 export type AnomalyMethod = 'z-score' | 'iqr' | 'percent-change';
@@ -32,41 +32,6 @@ export interface AnomalyResult {
     baseline?: number;
   };
   message: string;
-}
-
-/**
- * WHAT: Calculate median of an array
- * WHY: Required for IQR calculation (more robust than mean)
- */
-function calculateMedian(sortedValues: number[]): number {
-  if (sortedValues.length === 0) return 0;
-  const mid = Math.floor(sortedValues.length / 2);
-  if (sortedValues.length % 2 === 0) {
-    return (sortedValues[mid - 1] + sortedValues[mid]) / 2;
-  }
-  return sortedValues[mid];
-}
-
-/**
- * WHAT: Calculate quartiles (Q1, Q3) and IQR
- * WHY: Required for IQR anomaly detection method
- */
-function calculateIQR(sortedValues: number[]): { q1: number; q3: number; iqr: number } {
-  if (sortedValues.length < 4) {
-    return { q1: sortedValues[0] || 0, q3: sortedValues[sortedValues.length - 1] || 0, iqr: 0 };
-  }
-  
-  const mid = Math.floor(sortedValues.length / 2);
-  const lowerHalf = sortedValues.slice(0, mid);
-  const upperHalf = sortedValues.length % 2 === 0 
-    ? sortedValues.slice(mid) 
-    : sortedValues.slice(mid + 1);
-  
-  const q1 = calculateMedian(lowerHalf);
-  const q3 = calculateMedian(upperHalf);
-  const iqr = q3 - q1;
-  
-  return { q1, q3, iqr };
 }
 
 /**
@@ -223,8 +188,8 @@ export function detectIQRAnomaly(
   }
   
   const sortedValues = [...historicalValues].sort((a, b) => a - b);
-  const { q1, q3, iqr } = calculateIQR(sortedValues);
-  const median = calculateMedian(sortedValues);
+  const { q1, q3, iqr } = calculateQuartiles(sortedValues);
+  const median = calculatePercentile(sortedValues, 50);
   
   const lowerBound = q1 - multiplier * iqr;
   const upperBound = q3 + multiplier * iqr;

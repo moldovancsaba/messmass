@@ -28,3 +28,31 @@ export function calculateStdDev(values: number[], mean?: number): number {
   const variance = squaredDiffs.reduce((sum, val) => sum + val, 0) / values.length;
   return Math.sqrt(variance);
 }
+
+// WHAT: Linear-interpolation percentile (R's "type 7" / numpy's default) --
+//     `sortedValues` must already be sorted ascending.
+// WHY: messmass#414. anomalyDetection.ts computed Q1/Q3 via Tukey's hinges
+//     (split the set in half, median of each half); analytics-anomaly.ts used
+//     this linear-interpolation method. They do not agree numerically in
+//     general, so this is the one piece of #414 that IS a real behavior
+//     choice, not a mechanical merge -- checked empirically against messmass's
+//     own production data (fan counts, merch counts, jersey counts: n=138-276)
+//     before picking it, rather than assumed safe: both methods flagged the
+//     exact same set of outliers on every metric checked, zero disagreements.
+//     Picked this method as canonical because it already generalizes to any
+//     percentile (used here for Q1/Q3 and, at p=50, as the median), where
+//     Tukey's hinges is Q1/Q3-only.
+export function calculatePercentile(sortedValues: number[], percentile: number): number {
+  if (sortedValues.length === 0) return 0;
+  const index = (percentile / 100) * (sortedValues.length - 1);
+  const lower = Math.floor(index);
+  const upper = Math.ceil(index);
+  const weight = index - lower;
+  return sortedValues[lower] * (1 - weight) + sortedValues[upper] * weight;
+}
+
+export function calculateQuartiles(sortedValues: number[]): { q1: number; q3: number; iqr: number } {
+  const q1 = calculatePercentile(sortedValues, 25);
+  const q3 = calculatePercentile(sortedValues, 75);
+  return { q1, q3, iqr: q3 - q1 };
+}
