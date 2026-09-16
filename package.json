@@ -48,6 +48,7 @@
     "comments:versions": "node scripts/check-comment-versions.js",
     "architecture:generate": "node scripts/generate-architecture-sections.js",
     "architecture:check": "node scripts/generate-architecture-sections.js --check",
+    "preflight": "bash scripts/preflight.sh",
     "migrate-slugs": "node migrate-slugs.js",
     "migrate-stats-v2.13.0": "node scripts/migrate-stats-v2.13.0.js",
     "migrate:layout-grammar": "tsx -r dotenv/config scripts/migrate-layout-grammar.ts dotenv_config_path=.env.local",
