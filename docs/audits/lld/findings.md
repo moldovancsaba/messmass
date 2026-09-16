@@ -41,9 +41,9 @@ claim is structural rather than demonstrated, it says so.
 | [F-012](#f-012) | Medium | **Fixed** | CSP granted `unsafe-eval` app-wide for a reason that stopped being true | 2 |
 | [F-013](#f-013) | Medium | **Fixed** | Page gate prompts for pages that have no password | 2 |
 | [F-014](#f-014) | Low | **Fixed** | Documented formula-parser rollback has no effect | 2 |
-| [F-011](#f-011) | High | Open — needs your decision | Public API keys are users' plaintext passwords | 4 |
+| [F-011](#f-011) | High | Open — rotation only; `apiKeyHash` path already built, neither key ever used | Public API keys are users' plaintext passwords | 4 |
 | [F-003](#f-003) | High | **Fixed** `71b5e23f` | Middleware admin gate checks cookie presence, never validity | 4 |
-| [F-004](#f-004) | High | Open | v3 organisation scoping is not enforced | 4 |
+| [F-004](#f-004) | High | Partly fixed `71b5e23f` — predicate corrected; org resolution blocked on tenancy policy | v3 organisation scoping is not enforced | 4 |
 | [F-005](#f-005) | Medium | **Fixed** `71b5e23f` | Identical-branch ternary grants every user the same permissions | 4 |
 | [F-006](#f-006) | Medium | **Fixed — routes removed** | Two routes read cookie names nothing ever sets | 4 |
 | [F-007](#f-007) | Low | Open | 202 orphaned page passwords for a deleted route | 4 |
