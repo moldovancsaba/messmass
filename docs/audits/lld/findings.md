@@ -41,12 +41,12 @@ claim is structural rather than demonstrated, it says so.
 | [F-012](#f-012) | Medium | **Fixed** | CSP granted `unsafe-eval` app-wide for a reason that stopped being true | 2 |
 | [F-013](#f-013) | Medium | **Fixed** | Page gate prompts for pages that have no password | 2 |
 | [F-014](#f-014) | Low | **Fixed** | Documented formula-parser rollback has no effect | 2 |
-| [F-011](#f-011) | High | Open — rotation only; `apiKeyHash` path already built, neither key ever used | Public API keys are users' plaintext passwords | 4 |
+| [F-011](#f-011) | High | **Fixed** — plaintext removed from all accounts; legacy password-as-key path deleted | Public API keys are users' plaintext passwords | 4 |
 | [F-003](#f-003) | High | **Fixed** `71b5e23f` | Middleware admin gate checks cookie presence, never validity | 4 |
 | [F-004](#f-004) | High | Partly fixed `71b5e23f` — predicate corrected; org resolution blocked on tenancy policy | v3 organisation scoping is not enforced | 4 |
 | [F-005](#f-005) | Medium | **Fixed** `71b5e23f` | Identical-branch ternary grants every user the same permissions | 4 |
 | [F-006](#f-006) | Medium | **Fixed — routes removed** | Two routes read cookie names nothing ever sets | 4 |
-| [F-007](#f-007) | Low | Open | 202 orphaned page passwords for a deleted route | 4 |
+| [F-007](#f-007) | Low | **Fixed** — 202 rows removed with backup | 202 orphaned page passwords for a deleted route | 4 |
 | [F-008](#f-008) | Low | **Fixed — deleted** | `lib/authLockout.ts` is dead code | 4 |
 | [F-025](#f-025) | **High** | **Fixed** — [#400](https://github.com/moldovancsaba/messmass/issues/400) `c02f4b6f` | Routes documented "admin only" enforce no role check | 5 |
 | [F-033](#f-033) | Medium | **Fixed** — [#408](https://github.com/moldovancsaba/messmass/issues/408) `b43ecbfc` | architecture.md documents APIs, hooks and a parser that do not exist | 5 |

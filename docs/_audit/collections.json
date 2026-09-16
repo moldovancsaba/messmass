@@ -1,11 +1,11 @@
 {
  "_meta": {
-  "generated": "2026-09-16T12:31:40+00:00",
+  "generated": "2026-09-16T12:42:55+00:00",
   "repo": "messmass",
-  "head": "db24ef6a",
+  "head": "e098deaa",
   "counts": {
    "endpoints": 194,
-   "collections": 60,
+   "collections": 61,
    "env": 33,
    "outbound-hosts": 29,
    "docs": 205
@@ -49,6 +49,7 @@
   "hashtag_colors",
   "hashtag_slugs",
   "hashtags",
+  "local_users",
   "notifications",
   "organizations",
   "pageStyles",

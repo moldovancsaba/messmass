@@ -1,27 +1,24 @@
 // tests/api-key-decoupling.test.ts
 // WHAT: Coverage for F-011 (issue messmass#397, option A) -- decoupling API keys
 //     from login passwords in lib/apiAuth.ts's validateAPIKey.
-// WHY: Until now a user's login `password` doubled as their API key. This pins
-//     the non-breaking migration behavior:
-//       - an account with no apiKeyHash still authenticates via the legacy
-//         password-as-key path (existing integrations keep working unchanged)
-//       - an account with apiKeyHash set authenticates via the new hashed key
-//         and no longer accepts its old password value as a key
-//       - a wrong key is rejected in both modes
-//     It also pins that the legacy fallback path logs a warning when used, per
-//     the F-011 requirement that use of the deprecated path be observable.
+// WHY: A user's login `password` used to double as their API key --
+//     validateAPIKey fell back to `findOne({ password })`, which is why that
+//     field existed in the clear. The migration is finished: the two accounts
+//     that held one had never authenticated a request, the field is gone from
+//     every document, and the fallback with it.
+//     This file used to pin the two-path behaviour. It now pins the single
+//     path, including the negative that matters most -- a plaintext password
+//     value must NOT authenticate, because that is the whole finding.
 
 import type { UserDoc } from '@/lib/users';
 
 function mockUsers(overrides: Partial<{
   findUserByApiKeyHash: (key: string) => Promise<UserDoc | null>;
-  findUserByPassword: (key: string) => Promise<UserDoc | null>;
 }> = {}) {
   const updateAPIUsage = jest.fn(async () => {});
   jest.doMock('@/lib/users', () => ({
     __esModule: true,
     findUserByApiKeyHash: overrides.findUserByApiKeyHash ?? jest.fn(async () => null),
-    findUserByPassword: overrides.findUserByPassword ?? jest.fn(async () => null),
     updateAPIUsage,
   }));
   return { updateAPIUsage };
@@ -57,36 +54,11 @@ afterEach(() => {
 });
 
 describe('F-011: decoupled API key validation (lib/apiAuth.ts validateAPIKey)', () => {
-  it('legacy account (no apiKeyHash) still authenticates via password-as-key, and logs the deprecated-path usage', async () => {
-    const legacyUser = makeUser(); // no apiKeyHash field at all
-    const { warn } = mockLogger();
+  it('authenticates only through the hashed key', async () => {
+    const user = makeUser({ apiKeyHash: 'bcrypt-hash-stand-in' });
+    mockLogger();
     mockUsers({
-      findUserByApiKeyHash: jest.fn(async () => null), // no account has migrated
-      findUserByPassword: jest.fn(async (key: string) => (key === 'legacy-password-token' ? legacyUser : null)),
-    });
-
-    const { validateAPIKey } = await import('@/lib/apiAuth');
-    const result = await validateAPIKey('legacy-password-token');
-
-    expect(result.success).toBe(true);
-    expect(result.user?.email).toBe('integration@example.com');
-    // The fallback must be observable -- this is the signal for when it's safe
-    // to remove the legacy path later.
-    expect(warn).toHaveBeenCalledWith(
-      'API auth used deprecated password-as-key fallback',
-      expect.objectContaining({ email: 'integration@example.com' })
-    );
-  });
-
-  it('migrated account (apiKeyHash set) authenticates via the new key and does not use the legacy fallback', async () => {
-    const migratedUser = makeUser({ apiKeyHash: 'bcrypt-hash-stand-in' });
-    const { warn } = mockLogger();
-    const findUserByPassword = jest.fn(async () => {
-      throw new Error('should not be called when apiKeyHash matches');
-    });
-    mockUsers({
-      findUserByApiKeyHash: jest.fn(async (key: string) => (key === 'new-independent-key' ? migratedUser : null)),
-      findUserByPassword,
+      findUserByApiKeyHash: jest.fn(async (key: string) => (key === 'new-independent-key' ? user : null)),
     });
 
     const { validateAPIKey } = await import('@/lib/apiAuth');
@@ -94,36 +66,34 @@ describe('F-011: decoupled API key validation (lib/apiAuth.ts validateAPIKey)', 
 
     expect(result.success).toBe(true);
     expect(result.user?.email).toBe('integration@example.com');
-    expect(findUserByPassword).not.toHaveBeenCalled();
-    // No deprecated-path warning for the modern path.
-    expect(warn).not.toHaveBeenCalledWith(
-      'API auth used deprecated password-as-key fallback',
-      expect.anything()
-    );
   });
 
-  it('a migrated account no longer accepts its old password value as an API key (rotation actually revokes the old key)', async () => {
-    const migratedUser = makeUser({ apiKeyHash: 'bcrypt-hash-stand-in' });
+  it('rejects a plaintext password value presented as a key', async () => {
+    // The finding itself. `findOne({ password })` used to make this succeed,
+    // which is why the field had to be stored in the clear. Nothing looks at a
+    // password on this path any more, so the hashed lookup is the only chance a
+    // token gets -- and it misses.
     mockLogger();
-    mockUsers({
-      findUserByApiKeyHash: jest.fn(async () => null), // the presented token isn't the new key
-      // The old password value still matches on direct lookup, but the account
-      // has apiKeyHash set, so it must not be accepted as a key any more.
-      findUserByPassword: jest.fn(async (key: string) => (key === 'old-password-value' ? migratedUser : null)),
-    });
+    mockUsers({ findUserByApiKeyHash: jest.fn(async () => null) });
 
     const { validateAPIKey } = await import('@/lib/apiAuth');
-    const result = await validateAPIKey('old-password-value');
+    const result = await validateAPIKey('old-plaintext-password-value');
 
     expect(result.success).toBe(false);
     expect(result.errorCode).toBe('INVALID_TOKEN');
   });
 
-  it('a wrong key is rejected when no account has migrated (legacy-only world)', async () => {
+  it('never consults a password field, whatever the token', async () => {
+    // Guards against the fallback being reintroduced: lib/users no longer
+    // exports findUserByPassword, so a reinstated call would fail here first.
+    const users = await import('@/lib/users');
+    expect((users as Record<string, unknown>).findUserByPassword).toBeUndefined();
+  });
+
+  it('rejects a wrong key when no account matches', async () => {
     mockLogger();
     mockUsers({
       findUserByApiKeyHash: jest.fn(async () => null),
-      findUserByPassword: jest.fn(async () => null),
     });
 
     const { validateAPIKey } = await import('@/lib/apiAuth');
@@ -133,11 +103,10 @@ describe('F-011: decoupled API key validation (lib/apiAuth.ts validateAPIKey)', 
     expect(result.errorCode).toBe('INVALID_TOKEN');
   });
 
-  it('a wrong key is rejected against a migrated account (modern-only world)', async () => {
+  it('rejects a wrong key against an account that has a hashed key', async () => {
     mockLogger();
     mockUsers({
       findUserByApiKeyHash: jest.fn(async () => null), // wrong key never matches the hash
-      findUserByPassword: jest.fn(async () => null),
     });
 
     const { validateAPIKey } = await import('@/lib/apiAuth');
@@ -147,12 +116,13 @@ describe('F-011: decoupled API key validation (lib/apiAuth.ts validateAPIKey)', 
     expect(result.errorCode).toBe('INVALID_TOKEN');
   });
 
-  it('rejects a correctly-identified account with apiKeyEnabled=false, in both modes', async () => {
+  it('rejects a correctly-identified account with apiKeyEnabled=false', async () => {
+    // Identification succeeds and authorisation still refuses: a valid key on a
+    // disabled account must not authenticate.
     mockLogger();
-    const disabledLegacyUser = makeUser({ apiKeyEnabled: false });
+    const disabledUser = makeUser({ apiKeyEnabled: false, apiKeyHash: 'bcrypt-hash-stand-in' });
     mockUsers({
-      findUserByApiKeyHash: jest.fn(async () => null),
-      findUserByPassword: jest.fn(async (key: string) => (key === 'disabled-user-key' ? disabledLegacyUser : null)),
+      findUserByApiKeyHash: jest.fn(async (key: string) => (key === 'disabled-user-key' ? disabledUser : null)),
     });
 
     const { validateAPIKey } = await import('@/lib/apiAuth');

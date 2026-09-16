@@ -5,7 +5,7 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import type { AdminUser } from './auth';
-import { findUserByPassword, findUserByApiKeyHash, updateAPIUsage } from './users';
+import { findUserByApiKeyHash, updateAPIUsage } from './users';
 import { debug, warn, error as logError } from './logger';
 
 /**
@@ -84,26 +84,16 @@ export async function validateAPIKey(token: string): Promise<APIAuthResult> {
   const redacted = token.length > 4 ? `****${token.slice(-4)}` : '****';
 
   try {
-    // WHAT: Modern path first -- accounts with their own independent, hashed
-    //     API key (F-011). bcrypt.compare is constant-time per hash, unlike the
-    //     legacy direct-equality lookup below.
-    let user = await findUserByApiKeyHash(token);
-    let usedLegacyFallback = false;
-
-    if (!user) {
-      // WHAT: Legacy fallback -- only for accounts that have NOT migrated onto
-      //     apiKeyHash. An account that has rotated keeps its old `password`
-      //     value as a login credential, but that value must stop working as
-      //     an API key once apiKeyHash is set -- otherwise rotation would not
-      //     actually revoke the old key.
-      // WHY: Reuse existing user authentication without a flag-day cutover.
-      // NOTE: See lib/users.ts findUserByPassword() for security considerations.
-      const legacyCandidate = await findUserByPassword(token);
-      if (legacyCandidate && !legacyCandidate.apiKeyHash) {
-        user = legacyCandidate;
-        usedLegacyFallback = true;
-      }
-    }
+    // Hashed API keys are the only path. A fallback to
+    // findUserByPassword(token) stood here for accounts that had not migrated
+    // onto apiKeyHash -- which meant the Bearer token WAS the user's plaintext
+    // login password, stored in the clear so a direct-equality lookup could
+    // find it (F-011, #397). It is gone along with the two plaintext passwords
+    // it served: neither had ever authenticated a request (apiUsageCount was
+    // absent, not zero, and updateAPIUsage's $inc would have created it), and
+    // the fleet integrations never used this path -- camera authenticates with
+    // assertCameraSecret, and requireAPIAuth backs only /api/public/*.
+    const user = await findUserByApiKeyHash(token);
 
     if (!user) {
       warn('API auth failed: invalid token', { token: redacted });
@@ -112,18 +102,6 @@ export async function validateAPIKey(token: string): Promise<APIAuthResult> {
         error: 'Invalid API key',
         errorCode: 'INVALID_TOKEN'
       };
-    }
-
-    if (usedLegacyFallback) {
-      // WHAT: Observability signal for F-011 migration progress.
-      // WHY: Once this stops firing for an account (or for all accounts), it is
-      //     safe to consider removing the legacy password-as-key path.
-      warn('API auth used deprecated password-as-key fallback', {
-        userId: user._id?.toString(),
-        email: user.email,
-        token: redacted,
-        tags: ['api-auth', 'deprecated', 'legacy-fallback', 'F-011']
-      });
     }
 
     // WHAT: Check if API access is enabled for this user

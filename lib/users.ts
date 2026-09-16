@@ -246,31 +246,15 @@ export async function listUsers(): Promise<UserDoc[]> {
   return docs
 }
 
-/**
- * findUserByPassword
- * WHAT: Finds a user by their password token (used as API key)
- * WHY: Enables Bearer token authentication for public API endpoints
- * 
- * SECURITY NOTE: This is a temporary design pattern for v1 Unified Access Management.
- * Password serves dual purpose: login credential + API key when apiKeyEnabled=true.
- * 
- * ROADMAP: In v2, migrate to dedicated hashed API keys stored separately from login passwords.
- * This will enable:
- *   - Separate key rotation without affecting login
- *   - Multiple keys per user with scopes
- *   - Granular revocation
- * 
- * Current implementation prioritizes:
- *   - Immediate user attribution (know exactly who called what)
- *   - Zero new storage concepts (reuse existing password field)
- *   - Fast delivery with audit trail
+/* findUserByPassword() was removed here (F-011, messmass#397). It did
+ * `col.findOne({ password })` -- the public API's Bearer token WAS the user's
+ * plaintext login password, which is why that field had to exist in the clear.
+ * Its last two holders had never authenticated a single request, and the field
+ * is now gone from every document in both `users` and `local_users`.
+ * API keys are independently generated and bcrypt-hashed: see generateApiKey
+ * and findUserByApiKeyHash below.
  */
-export async function findUserByPassword(password: string): Promise<UserDoc | null> {
-  const col = await getUsersCollection()
-  // WHAT: Query by password field (acts as API key)
-  // WHY: Bearer token in Authorization header is the user's password
-  return col.findOne({ password })
-}
+
 
 /**
  * generateApiKey
