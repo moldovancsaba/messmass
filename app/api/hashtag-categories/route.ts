@@ -33,27 +33,23 @@ import {
   normalizeCategoryName,
   isValidHexColor
 } from '@/lib/hashtagCategoryUtils';
+import { requireAdmin } from '@/lib/apiGuards';
 
 // Use centralized Mongo client and config
 
-/**
- * Validates the current admin-session cookie gate for category writes.
- * This does not perform role lookup; add role validation before documenting stricter RBAC.
+/* This file used to define validateAdminAccess(), which returned true whenever
+ * an `admin-session` cookie was *present* -- no signature check, no user lookup.
+ * The same bug as F-003 in middleware.ts, re-implemented here under a name that
+ * reads like a real check. Verified live before the fix: an anonymous caller who
+ * fetched a CSRF token from the public /api/csrf-token endpoint and sent
+ * `admin-session=x` reached the DELETE handler's database lookup, which answered
+ * "Category not found" -- against a real id it would have deleted the category.
+ *
+ * The mutating handlers now call requireAdmin() from lib/apiGuards directly.
+ * Inlined rather than wrapped: a route-local wrapper is what hid the problem
+ * from tests/api-mutation-auth.test.ts, which scans handler bodies for a known
+ * guard name.
  */
-async function validateAdminAccess(request: NextRequest): Promise<boolean> {
-  try {
-    const sessionCookie = request.cookies.get('admin-session');
-    
-    if (!sessionCookie) {
-      return false;
-    }
-
-    return true;
-  } catch (error) {
-    logError('Admin validation error', { context: 'hashtag-categories' }, error instanceof Error ? error : new Error(String(error)));
-    return false;
-  }
-}
 
 /**
  * GET /api/hashtag-categories
@@ -180,13 +176,8 @@ export async function GET(request: NextRequest): Promise<NextResponse<HashtagCat
 export async function POST(request: NextRequest): Promise<NextResponse<HashtagCategoryApiResponse>> {
   try {
     // Validate admin access
-    const hasAccess = await validateAdminAccess(request);
-    if (!hasAccess) {
-      return NextResponse.json(
-        { success: false, error: 'Admin access required' },
-        { status: 401 }
-      );
-    }
+    const denied = await requireAdmin();
+    if (denied) return denied as NextResponse<HashtagCategoryApiResponse>;
 
     const body = await request.json();
     const { name, color, order }: HashtagCategoryInput = body;
@@ -281,13 +272,8 @@ export async function POST(request: NextRequest): Promise<NextResponse<HashtagCa
 export async function PUT(request: NextRequest): Promise<NextResponse<HashtagCategoryApiResponse>> {
   try {
     // Validate admin access
-    const hasAccess = await validateAdminAccess(request);
-    if (!hasAccess) {
-      return NextResponse.json(
-        { success: false, error: 'Admin access required' },
-        { status: 401 }
-      );
-    }
+    const denied = await requireAdmin();
+    if (denied) return denied as NextResponse<HashtagCategoryApiResponse>;
 
     const body = await request.json();
     const { id, name, color, order } = body;
@@ -394,13 +380,8 @@ export async function PUT(request: NextRequest): Promise<NextResponse<HashtagCat
 export async function DELETE(request: NextRequest): Promise<NextResponse<HashtagCategoryApiResponse>> {
   try {
     // Validate admin access
-    const hasAccess = await validateAdminAccess(request);
-    if (!hasAccess) {
-      return NextResponse.json(
-        { success: false, error: 'Admin access required' },
-        { status: 401 }
-      );
-    }
+    const denied = await requireAdmin();
+    if (denied) return denied as NextResponse<HashtagCategoryApiResponse>;
 
     const { searchParams } = new URL(request.url);
     const categoryId = searchParams.get('id');

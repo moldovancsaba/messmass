@@ -129,7 +129,7 @@ largest, and the ones to read first:
 | `lib/mongodb.ts` | 93 | 112 |
 | `lib/logger.ts` | 85 | 392 |
 | `lib/auth.ts` | 84 | 118 |
-| `lib/apiGuards.ts` | 54 | 121 |
+| `lib/apiGuards.ts` | 59 | 137 |
 | `lib/apiClient.ts` | 44 | 258 |
 | `components/ColoredCard.tsx` | 43 | 52 |
 | `lib/db.ts` | 39 | 17 |
@@ -1164,7 +1164,7 @@ means the route calls none — public by construction, or a gap.
 
 | Route | Methods | Auth |
 |-------|---------|------|
-| `/api/auto-generate-chart-block` | POST | — |
+| `/api/auto-generate-chart-block` | POST | `requireAdmin` |
 
 #### `/api/available-fonts`
 
@@ -1331,19 +1331,19 @@ means the route calls none — public by construction, or a gap.
 
 | Route | Methods | Auth |
 |-------|---------|------|
-| `/api/hashtag-categories` | GET, POST, PUT, DELETE | — |
+| `/api/hashtag-categories` | GET, POST, PUT, DELETE | `requireAdmin` |
 
 #### `/api/hashtag-colors`
 
 | Route | Methods | Auth |
 |-------|---------|------|
-| `/api/hashtag-colors` | GET, POST, PUT, DELETE | — |
+| `/api/hashtag-colors` | GET, POST, PUT, DELETE | `requireAdmin` |
 
 #### `/api/hashtags`
 
 | Route | Methods | Auth |
 |-------|---------|------|
-| `/api/hashtags` | GET, POST, DELETE | — |
+| `/api/hashtags` | GET, POST, DELETE | `requireAdmin` |
 | `/api/hashtags/[hashtag]` | GET | — |
 | `/api/hashtags/filter` | GET, POST | `requireSession` |
 | `/api/hashtags/filter-by-slug/[slug]` | GET | `requirePageAccess` |
@@ -1517,7 +1517,7 @@ means the route calls none — public by construction, or a gap.
 
 | Route | Methods | Auth |
 |-------|---------|------|
-| `/api/variables-config` | GET, POST, PUT, DELETE | — |
+| `/api/variables-config` | GET, POST, PUT, DELETE | `requireAdmin` |
 
 #### `/api/variables-groups`
 

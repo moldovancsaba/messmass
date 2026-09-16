@@ -11,6 +11,7 @@ import { error as logError, info as logInfo } from '@/lib/logger';
 
 import config from '@/lib/config';
 import { CHART_COLOR } from '@/lib/theme/chartPalette';
+import { requireEditorAccess } from '@/lib/apiGuards';
 const MONGODB_DB = config.dbName;
 
 // WHAT: POST /api/auto-generate-chart-block - Create or update chart block for report content
@@ -18,6 +19,15 @@ const MONGODB_DB = config.dbName;
 // HOW: Detect if block exists (chartId = report-image-N or report-text-N), create or update
 export async function POST(request: NextRequest) {
   try {
+    // This route had no guard at all. Verified live before the fix: an
+    // anonymous caller who fetched a CSRF token from the public
+    // /api/csrf-token endpoint reached this handler and created both a
+    // chart_configurations and a data_blocks document.
+    // Not requireAdmin: ReportContentManager calls this from EditorDashboard,
+    // which an event operator opens with a page password, not an admin session.
+    const denied = await requireEditorAccess();
+    if (denied) return denied;
+
     const body = await request.json();
     const { type, index, value } = body;
 

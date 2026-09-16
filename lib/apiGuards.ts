@@ -14,7 +14,7 @@
 import { NextResponse } from 'next/server';
 import { ObjectId } from 'mongodb';
 import { getAdminUser } from './auth';
-import { hasPageAccess } from './pageAccess';
+import { hasPageAccess, hasAnyEditGrant } from './pageAccess';
 
 function unauthorized(message: string): NextResponse {
   return NextResponse.json(
@@ -54,6 +54,22 @@ export async function requireAdmin(): Promise<NextResponse | null> {
     );
   }
   return null;
+}
+
+// WHAT: Require an admin session OR an unlocked page editor.
+// WHY: For the handful of routes the page-password editor drives that are not
+//     scoped to one project. POST /api/auto-generate-chart-block is the case:
+//     it writes a global chart configuration and accepts no project id, but
+//     ReportContentManager calls it from EditorDashboard, which an event
+//     operator reaches by page password. It had no guard at all -- verified
+//     live, an anonymous caller with a CSRF token from the public
+//     /api/csrf-token endpoint created a chart_configurations and a data_blocks
+//     document. requireAdmin would have closed that and broken event editing
+//     with it.
+export async function requireEditorAccess(): Promise<NextResponse | null> {
+  if (await getAdminUser()) return null;
+  if (await hasAnyEditGrant()) return null;
+  return unauthorized('Sign in or open an event editor to perform this action.');
 }
 
 // WHAT: Require permission to modify one specific project.

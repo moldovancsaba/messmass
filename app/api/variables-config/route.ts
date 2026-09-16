@@ -6,6 +6,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getDb } from '@/lib/db'
 import { error as logError, info as logInfo, debug as logDebug } from '@/lib/logger'
+import { requireAdmin } from '@/lib/apiGuards';
 
 export const runtime = 'nodejs'
 
@@ -211,6 +212,13 @@ export async function GET() {
 // 2) Update existing: { name: 'female', label: 'Women', flags: { visibleInClicker: true } }
 export async function POST(request: NextRequest) {
   try {
+    // Authentication, which this route had none of (F-003 follow-up).
+    // Verified live before the fix: an anonymous caller who fetched a CSRF
+    // token from the public /api/csrf-token endpoint reached this handler and
+    // wrote to the database.
+    const denied = await requireAdmin();
+    if (denied) return denied;
+
     const db = await getDb();
     const body = await request.json();
     const now = new Date().toISOString();
@@ -402,6 +410,13 @@ export async function POST(request: NextRequest) {
 // WHY: Allow immediate refresh when variables are added/updated in KYC
 export async function PUT(request: NextRequest) {
   try {
+    // Authentication, which this route had none of (F-003 follow-up).
+    // Verified live before the fix: an anonymous caller who fetched a CSRF
+    // token from the public /api/csrf-token endpoint reached this handler and
+    // wrote to the database.
+    const denied = await requireAdmin();
+    if (denied) return denied;
+
     const { searchParams } = new URL(request.url);
     const action = searchParams.get('action');
 
@@ -433,6 +448,13 @@ export async function PUT(request: NextRequest) {
 // RESTRICTION: Only custom variables (isSystem=false) can be deleted
 export async function DELETE(request: NextRequest) {
   try {
+    // Authentication, which this route had none of (F-003 follow-up).
+    // Verified live before the fix: an anonymous caller who fetched a CSRF
+    // token from the public /api/csrf-token endpoint reached this handler and
+    // wrote to the database.
+    const denied = await requireAdmin();
+    if (denied) return denied;
+
     const { searchParams } = new URL(request.url);
     const name = searchParams.get('name');
 

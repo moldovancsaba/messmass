@@ -4,6 +4,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { ObjectId } from 'mongodb';
 import { v4 as uuidv4 } from 'uuid';
 import getDb from '@/lib/db';
+import { requireAdmin } from '@/lib/apiGuards';
 
 interface HashtagColor {
   _id?: ObjectId;
@@ -47,6 +48,13 @@ export async function GET() {
 // POST /api/hashtag-colors - Create new hashtag color
 export async function POST(request: NextRequest) {
   try {
+    // Authentication, which this route had none of (F-003 follow-up).
+    // Verified live before the fix: an anonymous caller who fetched a CSRF
+    // token from the public /api/csrf-token endpoint reached this handler and
+    // wrote to the database.
+    const denied = await requireAdmin();
+    if (denied) return denied;
+
     const { name, color } = await request.json();
 
     if (!name || !color) {
@@ -105,6 +113,13 @@ export async function POST(request: NextRequest) {
 // PUT /api/hashtag-colors - Update hashtag color
 export async function PUT(request: NextRequest) {
   try {
+    // Authentication, which this route had none of (F-003 follow-up).
+    // Verified live before the fix: an anonymous caller who fetched a CSRF
+    // token from the public /api/csrf-token endpoint reached this handler and
+    // wrote to the database.
+    const denied = await requireAdmin();
+    if (denied) return denied;
+
     const { _id, name, color } = await request.json();
 
     const db = await getDb();
@@ -200,6 +215,13 @@ export async function PUT(request: NextRequest) {
 // DELETE /api/hashtag-colors - Delete hashtag color
 export async function DELETE(request: NextRequest) {
   try {
+    // Authentication, which this route had none of (F-003 follow-up).
+    // Verified live before the fix: an anonymous caller who fetched a CSRF
+    // token from the public /api/csrf-token endpoint reached this handler and
+    // wrote to the database.
+    const denied = await requireAdmin();
+    if (denied) return denied;
+
     const { searchParams } = new URL(request.url);
     const id = searchParams.get('id');
 

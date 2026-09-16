@@ -33,6 +33,7 @@ const AUTH_PRIMITIVES = [
   // Local admin gate in the admin/fanmass routes (getAdminUser + role check
   // inside a module-level helper, invisible to a handler-scoped scan).
   'requireAdmin(',
+  'requireEditorAccess',
   'isAdmin(',
   'CRON_SECRET',
 ];
@@ -58,14 +59,22 @@ const KNOWN_UNGUARDED = new Set<string>([
   //     partners/edit got alias-aware page-access gates; projects/[id] and
   //     hashtags/filter proved admin-only-consumed and got requireSession;
   //     variables-groups and clicker-sets got requireSession on their
-  //     mutating handlers only, GET staying open for the editors. The four
-  //     below remain genuinely shared with page-password editors.)
-  'app/api/variables-config/route.ts',
-  'app/api/hashtags/route.ts',
-  'app/api/hashtag-categories/route.ts',
-  'app/api/hashtag-colors/route.ts',
-  // [debt] admin-facing, not yet verified free of non-admin callers
-  'app/api/auto-generate-chart-block/route.ts',
+  //     mutating handlers only, GET staying open for the editors.)
+  //
+  //     The five that remained in this category are now guarded, and the
+  //     decision that was blocking them is made: requireEditorAccess in
+  //     lib/apiGuards.ts accepts an admin session OR any page-access edit
+  //     grant, for the routes the page-password editor genuinely drives but
+  //     which take no project id. It was needed by exactly two of them --
+  //     POST /api/hashtags (UnifiedHashtagInput inside EditorDashboard) and
+  //     POST /api/auto-generate-chart-block (ReportContentManager, same
+  //     surface). The rest proved admin-only-consumed and took requireAdmin,
+  //     with their GETs left open in KNOWN_UNGUARDED_READS below.
+  //
+  //     They were not theoretical debt. Verified live against the running app
+  //     before the fix: an anonymous caller who fetched a CSRF token from
+  //     /api/csrf-token created a hashtag colour and a chart configuration,
+  //     and reached the hashtag-category DELETE handler's database lookup.
   // [debt] machine integrations — verify their own token handling, then remove
   'app/api/integrations/camera/partners/route.ts',
   'app/api/integrations/camera/sso-session/route.ts',

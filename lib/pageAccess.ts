@@ -96,6 +96,21 @@ export async function hasPageAccess(pageType: PageType | string, pageId: string)
   return readGrants(token).includes(grantKey(pageType, pageId));
 }
 
+// WHAT: Does this request hold an edit grant for ANY page?
+// WHY: A few routes are driven by the page-password editor but are not scoped to
+//     one project -- POST /api/auto-generate-chart-block writes a global chart
+//     configuration and takes no project id, yet ReportContentManager calls it
+//     from inside EditorDashboard, which an event operator reaches by page
+//     password rather than an admin session. Requiring an admin session there
+//     would break live editing at events; requiring nothing left it open to
+//     anonymous callers. This is the middle answer: prove you unlocked *some*
+//     editor, which is strictly more than the route asked for before.
+export async function hasAnyEditGrant(): Promise<boolean> {
+  const store = await cookies();
+  const grants = readGrants(store.get(PAGE_ACCESS_COOKIE)?.value);
+  return grants.some((g) => g.startsWith('edit:') || g.startsWith('partner-edit:'));
+}
+
 // WHAT: Is this page protected at all?
 // WHY: Most pages have no password configured, and those must stay reachable.
 //     Requiring a grant for an unprotected page would break every public report.

@@ -4,6 +4,7 @@ import clientPromise from '@/lib/mongodb';
 import config from '@/lib/config';
 import { cachedResponse, generateETag, checkIfNoneMatch, notModifiedResponse, CACHE_PRESETS } from '@/lib/api/caching';
 import { error as logError } from '@/lib/logger';
+import { requireAdmin, requireEditorAccess } from '@/lib/apiGuards';
 
 // Use centralized Mongo client and config
 
@@ -103,6 +104,15 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
   try {
+    // This route had no guard at all: an anonymous caller with a CSRF token
+    // from the public /api/csrf-token endpoint could create hashtags.
+    // Not requireAdmin: UnifiedHashtagInput creates a hashtag from inside
+    // EditorDashboard, which an event operator opens with a page password.
+    // DELETE below is admin-only -- it is reached only from /admin/hashtags
+    // and its cascade mode removes the tag from every project.
+    const denied = await requireEditorAccess();
+    if (denied) return denied;
+
     const { hashtag } = await request.json();
     
     if (!hashtag || typeof hashtag !== 'string') {
@@ -146,6 +156,13 @@ export async function POST(request: NextRequest) {
 
 export async function DELETE(request: NextRequest) {
   try {
+    // Authentication, which this route had none of (F-003 follow-up).
+    // Verified live before the fix: an anonymous caller who fetched a CSRF
+    // token from the public /api/csrf-token endpoint reached this handler and
+    // wrote to the database.
+    const denied = await requireAdmin();
+    if (denied) return denied;
+
     const { searchParams } = new URL(request.url);
     const rawHashtag = searchParams.get('hashtag');
     const mode = (searchParams.get('mode') || '').toLowerCase(); // 'cascade' to remove everywhere
