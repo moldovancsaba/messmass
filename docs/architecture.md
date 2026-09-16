@@ -127,12 +127,12 @@ largest, and the ones to read first:
 |--------|-----------|-------|
 | `lib/config.ts` | 107 | 204 |
 | `lib/mongodb.ts` | 93 | 112 |
-| `lib/logger.ts` | 85 | 392 |
+| `lib/logger.ts` | 86 | 392 |
 | `lib/auth.ts` | 84 | 118 |
 | `lib/apiGuards.ts` | 59 | 137 |
 | `lib/apiClient.ts` | 43 | 258 |
 | `components/ColoredCard.tsx` | 42 | 52 |
-| `lib/db.ts` | 37 | 17 |
+| `lib/db.ts` | 38 | 17 |
 | `components/MaterialIcon.tsx` | 33 | 119 |
 | `lib/fanmassIntegration.ts` | 30 | 441 |
 | `components/UnifiedAdminHeroWithSearch.tsx` | 26 | 192 |
