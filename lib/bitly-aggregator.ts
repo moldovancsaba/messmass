@@ -97,15 +97,11 @@ export async function aggregateMetricsByDateRange(
     linkDoc.click_summary.total || 0
   );
 
-  // Device and browser data
-  // NOTE: Device/browser data is NOT collected yet — these return placeholder zeros,
-  // not measurements. Do not present them as real breakdowns. Real collection is
-  // tracked as future work (Bitly device/browser timeseries are not in our schema).
+  // Device distribution, estimated proportionally like countries and referrers
+  // above: Bitly returns a lifetime total per device type, so a filtered date
+  // range gets that total scaled by the range's share of lifetime clicks.
   const deviceClicks = estimateDeviceClicks(
-    totalClicks,
-    linkDoc.click_summary.total || 0
-  );
-  const browserClicks = estimateBrowserClicks(
+    linkDoc.devices || [],
     totalClicks,
     linkDoc.click_summary.total || 0
   );
@@ -117,7 +113,6 @@ export async function aggregateMetricsByDateRange(
     topCountries,
     topReferrers,
     deviceClicks,
-    browserClicks,
     dailyClicks: includeTimeseries ? filteredTimeseries : [],
   };
 
@@ -251,17 +246,24 @@ function aggregateReferrers(
 
 /**
  * Estimate device distribution for the filtered date range.
- * 
- * WHY: Bitly doesn't store historical device timeseries data in our current schema.
- * For now, we return zero values. Future enhancement: store device data in bitly_links.
- * 
- * TODO: Implement actual device data storage and proportional estimation
- * 
- * @param filteredClicks - Total clicks in filtered date range
- * @param totalClicks - Total clicks for entire link lifetime
- * @returns Device click distribution (currently placeholder zeros)
+ *
+ * WHY: Bitly's /devices endpoint reports lifetime totals per device type, not a
+ *     timeseries — the same shape as /countries and /referrers. So a filtered
+ *     range gets each device's lifetime total scaled by that range's share of
+ *     lifetime clicks, exactly as aggregateCountries and aggregateReferrers do.
+ *     This used to return hardcoded zeros with a TODO claiming the data was not
+ *     in our schema; the data was always available, nothing fetched it
+ *     (messmass#283).
+ *
+ * NOTE: An unrecognised device_type lands in `other` rather than being dropped,
+ *     so the parts still sum to the whole if Bitly adds a category.
+ *
+ * @param devices - Lifetime per-device totals as stored on the link document
+ * @param filteredClicks - Total clicks in the filtered date range
+ * @param totalClicks - Total clicks for the entire link lifetime
  */
 function estimateDeviceClicks(
+  devices: Array<{ device_type: string; clicks: number }>,
   filteredClicks: number,
   totalClicks: number
 ): {
@@ -270,48 +272,32 @@ function estimateDeviceClicks(
   tablet: number;
   other: number;
 } {
-  // TODO: Implement device data storage and estimation
-  // For now, return zeros since device data not yet collected
-  return {
-    mobile: 0,
-    desktop: 0,
-    tablet: 0,
-    other: 0,
-  };
+  const empty = { mobile: 0, desktop: 0, tablet: 0, other: 0 };
+  if (!devices.length || totalClicks <= 0 || filteredClicks <= 0) {
+    return empty;
+  }
+
+  const ratio = filteredClicks / totalClicks;
+  return devices.reduce((acc, entry) => {
+    const scaled = Math.round((entry.clicks || 0) * ratio);
+    if (scaled <= 0) return acc;
+    const key = String(entry.device_type || '').toLowerCase();
+    if (key === 'mobile' || key === 'desktop' || key === 'tablet') {
+      acc[key] += scaled;
+    } else {
+      acc.other += scaled;
+    }
+    return acc;
+  }, { ...empty });
 }
 
-/**
- * Estimate browser distribution for the filtered date range.
- * 
- * WHY: Bitly doesn't store historical browser timeseries data in our current schema.
- * For now, we return zero values. Future enhancement: store browser data in bitly_links.
- * 
- * TODO: Implement actual browser data storage and proportional estimation
- * 
- * @param filteredClicks - Total clicks in filtered date range
- * @param totalClicks - Total clicks for entire link lifetime
- * @returns Browser click distribution (currently placeholder zeros)
+/* estimateBrowserClicks was removed here (messmass#283). It returned hardcoded
+ * zeros behind a TODO to "implement actual browser data storage and
+ * proportional estimation". That work cannot be done from this source: Bitly's
+ * v4 API has no per-bitlink browser endpoint, so there is nothing to store.
+ * The zeros travelled all the way to the project-metrics API as a
+ * "browser breakdown", which reads as a measurement rather than an absence.
  */
-function estimateBrowserClicks(
-  filteredClicks: number,
-  totalClicks: number
-): {
-  chrome: number;
-  firefox: number;
-  safari: number;
-  edge: number;
-  other: number;
-} {
-  // TODO: Implement browser data storage and estimation
-  // For now, return zeros since browser data not yet collected
-  return {
-    chrome: 0,
-    firefox: 0,
-    safari: 0,
-    edge: 0,
-    other: 0,
-  };
-}
 
 /**
  * Batch aggregate metrics for multiple link-project associations.
@@ -357,13 +343,6 @@ export function getEmptyMetrics(): BitlyProjectMetrics {
       mobile: 0,
       desktop: 0,
       tablet: 0,
-      other: 0,
-    },
-    browserClicks: {
-      chrome: 0,
-      firefox: 0,
-      safari: 0,
-      edge: 0,
       other: 0,
     },
     dailyClicks: [],

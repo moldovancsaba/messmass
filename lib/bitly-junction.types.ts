@@ -83,15 +83,15 @@ export interface BitlyProjectMetrics {
     other: number;
   };
   
-  // Browser distribution
-  browserClicks: {
-    chrome: number;
-    firefox: number;
-    safari: number;
-    edge: number;
-    other: number;
-  };
-  
+  /* `browserClicks` was removed here (messmass#283). It was declared, plumbed
+   * through the aggregator, the recalculator and the project-metrics API, and
+   * was always {chrome:0, firefox:0, safari:0, edge:0, other:0} — because
+   * Bitly's v4 API has no per-bitlink browser endpoint, so there is no source
+   * for it. A field that can only ever be zeros reads as "this audience uses no
+   * browsers", which is worse than its absence. `deviceClicks` above is real:
+   * /v4/bitlinks/{bitlink}/devices exists and is now fetched.
+   */
+
   // Timeseries data (daily clicks within date range)
   // Useful for charting trends within the event period
   dailyClicks: Array<{

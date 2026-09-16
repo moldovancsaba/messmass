@@ -90,6 +90,17 @@ export interface BitlyLinkDocument {
     clicks: number;
   }>;
   
+  // WHAT: Click distribution by device type.
+  // WHY: messmass#283. Populated from GET /v4/bitlinks/{bitlink}/devices during
+  //     sync. Absent on documents synced before that call existed, which is why
+  //     every reader treats it as optional rather than assuming zero.
+  // NOTE: There is no browser counterpart, and there cannot be — Bitly's v4 API
+  //     exposes no per-bitlink browser endpoint.
+  devices?: Array<{
+    device_type: string; // 'desktop' | 'mobile' | 'tablet' | anything Bitly adds
+    clicks: number;
+  }>;
+
   // WHAT: Sync control fields
   // WHY: Manages incremental sync and prevents redundant API calls
   lastSyncAt: string; // ISO 8601 with milliseconds - last successful sync timestamp

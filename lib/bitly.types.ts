@@ -94,6 +94,32 @@ export interface BitlyCountryMetric {
  * WHAT: Geographic distribution of clicks by country
  * WHY: Powers geographic analytics and heat maps in event dashboards
  */
+/**
+ * Individual device click metric.
+ * WHAT: Click count for one device type.
+ * WHY: GET /v4/bitlinks/{bitlink}/devices is the only per-bitlink segmentation
+ *     Bitly offers beyond geography and referrers. There is deliberately no
+ *     browser equivalent here: the v4 API exposes no browser endpoint for a
+ *     bitlink, which is why estimateBrowserClicks was removed rather than
+ *     implemented (messmass#283).
+ * NOTE: `device_type` is a free string in Bitly's schema, not an enum. Values
+ *     seen are 'desktop' | 'mobile' | 'tablet', but it is normalised rather
+ *     than trusted — an unrecognised value lands in `other` instead of being
+ *     dropped, so clicks are never silently lost.
+ */
+export interface BitlyDeviceMetric {
+  device_type: string;
+  clicks: number;
+}
+
+export interface BitlyDevicesResponse {
+  metrics: BitlyDeviceMetric[];
+  unit_reference?: string;
+  units?: number;
+  unit?: 'day' | 'week' | 'month';
+  facet?: string;
+}
+
 export interface BitlyCountriesResponse {
   metrics: BitlyCountryMetric[]; // Array of country-level click metrics
   unit_reference?: string; // ISO 8601 date reference

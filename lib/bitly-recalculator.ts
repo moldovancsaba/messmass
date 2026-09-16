@@ -25,6 +25,7 @@
 import { ObjectId } from 'mongodb';
 import { getDb } from './db';
 import { calculateDateRanges } from './bitly-date-calculator';
+import { info as logInfo } from './logger';
 import {
   aggregateMetricsByDateRange,
   batchAggregateMetrics,
@@ -77,9 +78,31 @@ export async function recalculateLinkRanges(
     )
     .toArray();
 
+  // Orphan cleanup (messmass#283). An association whose project has been deleted
+  // can never be recalculated: it has no event date to derive a range from, and
+  // its cached metrics describe a window nothing owns. Until now they were
+  // detected and left — and only in the all-gone case, so a link associated with
+  // five projects where four were deleted kept four dead rows indefinitely, each
+  // still counted by the project-metrics API.
+  const livingProjectIds = new Set(projects.map((p) => p._id.toString()));
+  const orphaned = existingAssociations.filter(
+    (assoc) => !livingProjectIds.has(assoc.projectId.toString())
+  );
+
+  if (orphaned.length > 0) {
+    await junctionCollection.deleteMany({
+      _id: { $in: orphaned.map((assoc) => assoc._id!) },
+    });
+    logInfo('Removed orphaned bitly associations', {
+      context: 'bitly-recalculator',
+      bitlyLinkId: bitlyLinkId.toString(),
+      removed: orphaned.length,
+      projectIds: orphaned.map((assoc) => assoc.projectId.toString()),
+    });
+  }
+
   if (projects.length === 0) {
-    // Projects no longer exist, should delete orphaned associations
-    // TODO: Handle orphaned associations cleanup
+    // Every associated project is gone; the orphan sweep above removed them all.
     return [];
   }
 
@@ -280,7 +303,6 @@ export async function createLinkAssociation(
       topCountries: [],
       topReferrers: [],
       deviceClicks: { mobile: 0, desktop: 0, tablet: 0, other: 0 },
-      browserClicks: { chrome: 0, firefox: 0, safari: 0, edge: 0, other: 0 },
       dailyClicks: [],
     },
     createdAt: now,

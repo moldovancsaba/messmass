@@ -48,13 +48,6 @@ interface ProjectBitlyMetricsResponse {
         tablet: number;
         other: number;
       };
-      browserClicks: {
-        chrome: number;
-        firefox: number;
-        safari: number;
-        edge: number;
-        other: number;
-      };
       dailyClicks?: Array<{ date: string; clicks: number }>;
     };
     lastSyncedAt: string | null;
@@ -146,7 +139,6 @@ export async function GET(
           topCountries: assoc.cachedMetrics.topCountries,
           topReferrers: assoc.cachedMetrics.topReferrers,
           deviceClicks: assoc.cachedMetrics.deviceClicks,
-          browserClicks: assoc.cachedMetrics.browserClicks,
           dailyClicks: assoc.cachedMetrics.dailyClicks,
         },
         lastSyncedAt: assoc.lastSyncedAt,

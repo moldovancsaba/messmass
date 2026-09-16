@@ -54,7 +54,7 @@ async function syncSingleLink(
     // WHAT: Fetch all analytics from Bitly API in parallel
     // WHY: Minimizes total sync time and reduces sequential API calls
     const analytics = await getFullAnalytics(link.bitlink);
-    apiCalls = 5; // summary + series + countries + referrers + referring_domains
+    apiCalls = 6; // summary + series + countries + referrers + referring_domains + devices
 
     // WHAT: Map API responses to MongoDB structures
     const updatedClickSummary = mapClicksSummary(analytics.summary);
@@ -62,6 +62,13 @@ async function syncSingleLink(
     const updatedCountries = mapCountries(analytics.countries);
     const updatedReferrers = mapReferrers(analytics.referrers);
     const updatedReferringDomains = mapReferringDomains(analytics.referring_domains);
+    // Device totals, newly collected (messmass#283). getFullAnalytics tolerates
+    // a failure on this one call, so an empty array here means "the plan did not
+    // return devices", not "no clicks" -- which is why it is only written when
+    // non-empty, leaving any previously stored breakdown intact.
+    const updatedDevices = (analytics.devices?.metrics || [])
+      .map((m) => ({ device_type: String(m.device_type || 'other'), clicks: m.clicks || 0 }))
+      .filter((d) => d.clicks > 0);
 
     // WHAT: Merge new timeseries with existing data
     // WHY: Preserves historical data while adding new days
@@ -83,6 +90,7 @@ async function syncSingleLink(
           'geo.countries': updatedCountries,
           referrers: updatedReferrers,
           referring_domains: updatedReferringDomains,
+          ...(updatedDevices.length > 0 ? { devices: updatedDevices } : {}),
           lastSyncAt: now,
           lastClicksSyncedUntil,
           updatedAt: now,

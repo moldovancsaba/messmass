@@ -10,6 +10,7 @@ import type {
   BitlyClicksSummary,
   BitlyClicksTimeseries,
   BitlyCountriesResponse,
+  BitlyDevicesResponse,
   BitlyReferrersResponse,
   BitlyReferringDomainsResponse,
   BitlyErrorResponse,
@@ -442,23 +443,55 @@ export async function getReferringDomains(
 }
 
 /**
+ * WHAT: Fetch click distribution by device type.
+ * WHY: messmass#283 — device breakdown was stubbed to zeros with a TODO saying
+ *     "Bitly doesn't store historical device timeseries data in our current
+ *     schema". The data was always available; nothing fetched it.
+ * REF: GET /v4/bitlinks/{bitlink}/devices
+ * NOTE: There is no browser counterpart. Bitly's v4 API has no per-bitlink
+ *     browser endpoint, so the browser half of that issue is not implementable
+ *     from this source at all.
+ */
+export async function getDevices(
+  bitlink: string,
+  options: { unit?: 'day' | 'week' | 'month'; units?: number; unit_reference?: string } = {}
+): Promise<BitlyDevicesResponse> {
+  const normalized = normalizeBitlink(bitlink);
+  const params = new URLSearchParams();
+
+  if (options.unit) params.append('unit', options.unit);
+  if (options.units) params.append('units', options.units.toString());
+  if (options.unit_reference) params.append('unit_reference', options.unit_reference);
+
+  const queryString = params.toString() ? `?${params.toString()}` : '';
+  const { data } = await bitlyRequest<BitlyDevicesResponse>(
+    `/bitlinks/${normalized}/devices${queryString}`
+  );
+
+  return data;
+}
+
+/**
  * WHAT: Convenience function to fetch all analytics for a bitlink in one call
  * WHY: Reduces API call count and simplifies sync operations
  * 
  * STRATEGY: Fetch all analytics endpoints in parallel for efficiency
- * ENDPOINTS: summary, timeseries, countries, referrers, referring_domains
+ * ENDPOINTS: summary, timeseries, countries, referrers, referring_domains, devices
  */
 export async function getFullAnalytics(bitlink: string) {
   const normalized = normalizeBitlink(bitlink);
   
   // WHAT: Fetch all analytics data in parallel
   // WHY: Minimizes total time and respects rate limits by batching
-  const [summary, series, countries, referrers, referring_domains] = await Promise.all([
+  const [summary, series, countries, referrers, referring_domains, devices] = await Promise.all([
     getClicksSummary(normalized, { unit: 'day', units: -1 }), // All-time summary
     getClicksSeries(normalized, { unit: 'day', units: 90 }), // Last 90 days of daily data
     getCountries(normalized, { unit: 'day', units: -1 }), // All-time by country
     getReferrers(normalized, { unit: 'day', units: -1 }), // All-time referrers (platform-level)
     getReferringDomains(normalized, { unit: 'day', units: -1 }), // All-time domains (granular)
+    // Tolerated separately: devices is the newest of these calls, and a plan
+    // that does not expose it must not take the whole sync down with it.
+    getDevices(normalized, { unit: 'day', units: -1 }).catch(() => ({ metrics: [] } as BitlyDevicesResponse)),
   ]);
 
   return {
@@ -467,5 +500,6 @@ export async function getFullAnalytics(bitlink: string) {
     countries,
     referrers,
     referring_domains,
+    devices,
   };
 }

@@ -20,6 +20,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { ObjectId } from 'mongodb';
 import { requireSession } from '@/lib/apiGuards';
+import { getDb } from '@/lib/db';
 import {
   recalculateLinkRanges,
   recalculateProjectLinks,
@@ -179,12 +180,65 @@ export async function GET(request: NextRequest) {
   if (__denied) return __denied;
 
   try {
-    // TODO: Could add system status here (e.g., last sync time, stale associations count)
+    // Real status, not just "ready" (messmass#283). The two numbers an operator
+    // actually needs before triggering a recalculation are how stale the data is
+    // and whether anything is left to clean up.
+    const db = await getDb();
+    const [links, associations, newestSync] = await Promise.all([
+      db.collection('bitly_links').countDocuments(),
+      db.collection('bitly_project_links').countDocuments(),
+      db.collection('bitly_links')
+        .find({ lastSyncAt: { $exists: true } })
+        .sort({ lastSyncAt: -1 })
+        .limit(1)
+        .project({ lastSyncAt: 1 })
+        .toArray(),
+    ]);
+
+    // Orphan count, reported rather than silently waiting to be cleaned.
+    // recalculateLinkRanges removes orphans for the links it touches, but an
+    // untouched link keeps its dead rows, so an operator needs to see the
+    // backlog without having to run a recalculation to discover it.
+    const referencedProjectIds = await db
+      .collection('bitly_project_links')
+      .distinct('projectId');
+    const livingCount = referencedProjectIds.length
+      ? await db.collection('projects').countDocuments({ _id: { $in: referencedProjectIds } })
+      : 0;
+    const orphanedAssociations = referencedProjectIds.length
+      ? await db.collection('bitly_project_links').countDocuments({
+          projectId: {
+            $nin: (
+              await db
+                .collection('projects')
+                .find({ _id: { $in: referencedProjectIds } })
+                .project({ _id: 1 })
+                .toArray()
+            ).map((p) => p._id),
+          },
+        })
+      : 0;
+
+    const lastSyncAt = newestSync[0]?.lastSyncAt ?? null;
+    const staleAfterHours = 24;
+    const isStale = lastSyncAt
+      ? Date.now() - new Date(lastSyncAt).getTime() > staleAfterHours * 60 * 60 * 1000
+      : true;
+
     return NextResponse.json({
       status: 'ready',
       modes: ['bitlink', 'project', 'all'],
       endpoint: '/api/bitly/recalculate',
       method: 'POST',
+      links,
+      associations,
+      orphanedAssociations,
+      deletedProjectsReferenced: referencedProjectIds.length - livingCount,
+      lastSyncAt,
+      // A link synced within the cadence is fresh; never-synced counts as stale
+      // rather than unknown, because "unknown" is what got ignored before.
+      isStale,
+      staleAfterHours,
     });
   } catch (error) {
     logError('Recalculate API GET error', { context: 'bitly-recalculate' }, error instanceof Error ? error : new Error(String(error)));
