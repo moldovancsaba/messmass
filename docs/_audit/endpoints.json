@@ -1,14 +1,14 @@
 {
  "_meta": {
-  "generated": "2026-09-12T14:54:13+00:00",
-  "repo": "messmass-fleet",
-  "head": "c5342896",
+  "generated": "2026-09-16T08:30:39+00:00",
+  "repo": "messmass",
+  "head": "b43ecbfc",
   "counts": {
    "endpoints": 194,
    "collections": 61,
    "env": 34,
    "outbound-hosts": 29,
-   "docs": 204
+   "docs": 205
   }
  },
  "items": [
@@ -122,7 +122,7 @@
    ],
    "file": "app/api/admin/filter-style/route.ts",
    "auth_markers": [
-    "requireSession"
+    "requireAdmin"
    ],
    "no_auth_marker": false
   },
@@ -145,7 +145,7 @@
    ],
    "file": "app/api/admin/hashtag-style/route.ts",
    "auth_markers": [
-    "requireSession"
+    "requireAdmin"
    ],
    "no_auth_marker": false
   },
@@ -320,6 +320,7 @@
    "file": "app/api/admin/project-partners/route.ts",
    "auth_markers": [
     "getAdminUser",
+    "requireAdmin",
     "requireSession"
    ],
    "no_auth_marker": false
@@ -372,7 +373,7 @@
    ],
    "file": "app/api/admin/ui-settings/route.ts",
    "auth_markers": [
-    "requireSession"
+    "requireAdmin"
    ],
    "no_auth_marker": false
   },
@@ -942,7 +943,7 @@
    ],
    "file": "app/api/clicker-sets/route.ts",
    "auth_markers": [
-    "requireSession"
+    "requireAdmin"
    ],
    "no_auth_marker": false
   },
@@ -1058,7 +1059,7 @@
    ],
    "file": "app/api/data-blocks/route.ts",
    "auth_markers": [
-    "requireSession"
+    "requireAdmin"
    ],
    "no_auth_marker": false
   },
@@ -1739,7 +1740,7 @@
    ],
    "file": "app/api/partners/route.ts",
    "auth_markers": [
-    "requireSession"
+    "requireAdmin"
    ],
    "no_auth_marker": false
   },
@@ -1788,7 +1789,7 @@
    ],
    "file": "app/api/projects/route.ts",
    "auth_markers": [
-    "requireSession"
+    "requireAdmin"
    ],
    "no_auth_marker": false
   },
@@ -2149,7 +2150,7 @@
    ],
    "file": "app/api/variables-groups/route.ts",
    "auth_markers": [
-    "requireSession"
+    "requireAdmin"
    ],
    "no_auth_marker": false
   }
