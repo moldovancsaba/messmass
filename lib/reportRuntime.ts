@@ -1,6 +1,7 @@
 import { ObjectId } from 'mongodb';
 import type { Db } from 'mongodb';
 import type { Report } from '@/lib/report-resolver';
+import { warn as logWarn } from './logger';
 
 type DataBlockReference = {
   blockId: ObjectId | string;
@@ -67,7 +68,20 @@ async function convertTemplateToRuntimeReport(db: Db, template: ReportTemplateRe
         ? blocks.find((candidate) => candidate._id.toString() === blockId.toString())
         : null;
 
-      if (!block) return null;
+      if (!block) {
+        // A template referencing a deleted block used to render one section
+        // shorter with no signal at all — no error, no log — so nobody could
+        // tell a removed section from a vanished one (messmass#236 audit).
+        // Not thrown: a live report losing one section must not become a blank
+        // page. Logged, so the drift is discoverable before it matters.
+        logWarn('Report template references a data block that no longer exists', {
+          context: 'report-runtime',
+          templateId: template._id.toString(),
+          templateName: template.name,
+          blockId: String(reference.blockId),
+        });
+        return null;
+      }
 
       return {
         id: block._id.toString(),
