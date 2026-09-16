@@ -12,7 +12,7 @@ import type { BlockHeightResolution, HeightResolutionInput, CellConfiguration } 
 import { validateElementFit } from './elementFitValidator';
 import type { ElementFitValidation } from './layoutGrammar';
 import type { AspectRatio, CellWidth } from './chartConfigTypes';
-import { isValidAspectRatio } from './aspectRatioUtils';
+import { isValidAspectRatio } from './chartConfigTypes';
 
 // Re-export types from layout grammar for editor use
 export type HeightResolutionResult = BlockHeightResolution;

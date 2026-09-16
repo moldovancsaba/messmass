@@ -1,178 +1,90 @@
 # Chart Block Height System
 Status: Active
-Last Updated: 2026-01-11T22:28:38.000Z
+Last Updated: 2026-09-16
 Canonical: Yes
 Owner: Architecture
 
 ## Overview
 
-Chart blocks consist of **three independent layers** that stack vertically:
+Every cell in a report block shares one height, `H`. The block is given a width
+by its container; the solver divides that width among the cells and derives the
+single height that makes them fit it exactly.
+
+This document described a different system until 2026-09-16 — a lookup table
+mapping unit counts to height multipliers, in `lib/chartHeightCalculator.ts`,
+applied by `components/UnifiedDataVisualization.tsx`. Neither file exists, and
+the table had no importers. What follows is read off the code that runs.
+
+## The solver
+
+`solveBlockHeightWithImages(cells, blockWidthPx)` in
+[`lib/blockHeightCalculator.ts`](../../lib/blockHeightCalculator.ts).
+
+Each cell contributes **effective units** — how many multiples of `H` its width
+comes to:
+
+| Cell | Effective units |
+|------|-----------------|
+| IMAGE | its aspect ratio as a number (`16:9` → 1.778) |
+| BAR / PIE / KPI in a row of 1–2 cells | `(3 / cellCount) × cellWidth` |
+| Anything else (3+ cell rows, TEXT) | `cellWidth` |
+
+Then:
 
 ```
-┌─────────────────────────┐
-│  Title (4rem fixed)     │ ← Alignment layer (optional)
-├─────────────────────────┤
-│  Subtitle (2rem fixed)  │ ← Alignment layer (optional)
-├─────────────────────────┤
-│  Chart Graphic Area     │ ← Calculated height (our system)
-│  (calculated dynamically)│
-└─────────────────────────┘
+H = blockWidth / totalEffectiveUnits
 ```
 
-## Chart Graphic Area Height Calculation
+The derivation is just the width identity: an IMAGE cell is `aspectRatio × H`
+wide and every other cell is `cellWidth × H` wide, so the widths sum to
+`H × totalEffectiveUnits`, which must equal `blockWidth`.
 
-### Rules (Desktop)
+The 1–2 cell case exists to stop a nearly-empty row from becoming extremely
+tall: the multiplier makes the **whole row** about 3:1, split across however
+many cells are in it — one cell takes 3×, two take 1.5× each.
 
-The **chart graphic area** height is calculated based on the total grid units in a block:
+`H` is then clamped to `--mm-block-height-min` and `--mm-block-height-max`
+(150px / 800px when the tokens cannot be read, as during SSR) and rounded.
+An empty block falls back to `--mm-block-height-default`.
 
-| Total Units | Height Multiplier | Formula | Example Result |
-|-------------|-------------------|---------|----------------|
-| 1 unit      | 0.5×             | `unitWidth × 0.5` | 2:1 aspect ratio |
-| 2 units     | 1×               | `unitWidth × 1` | 2:1 aspect ratio |
-| 3 units     | 1×               | `unitWidth × 1` | 3:1 aspect ratio |
-| 4 units     | 1.5×             | `unitWidth × 1.5` | Individual 1-unit elements: 2:3 |
-| 5+ units    | 1.5×             | `unitWidth × 1.5` | Individual 1-unit elements: 2:3 |
+## Height resolution priorities
 
-### Calculation Steps
+`resolveBlockHeightWithDetails(input)` wraps the solver and can override its
+answer. Priorities are declared in
+[`lib/layoutGrammar.ts`](../../lib/layoutGrammar.ts) as
+`HeightResolutionPriority`:
 
-1. **Calculate unit width**: `unitWidth = blockWidth / totalUnits`
-2. **Get multiplier**: Based on total units (see table above)
-3. **Calculate height**: `chartHeight = unitWidth × multiplier`
-4. **Apply caps**:
-   - Minimum: 200px
-   - Maximum: 800px or 80vh (whichever is smaller)
+1. **INTRINSIC_MEDIA** — a cell with `bodyType: 'image'` and
+   `imageMode: 'setIntrinsic'` dictates the height from its own aspect ratio,
+   overriding the solver.
+2. **BLOCK_ASPECT_RATIO** — an explicit `blockAspectRatio` on the input. The
+   `isSoftConstraint` flag says whether it may be exceeded.
+3. **READABILITY_ENFORCEMENT** — `validateElementFit`
+   ([`lib/elementFitValidator.ts`](../../lib/elementFitValidator.ts)) raises the
+   height when content would otherwise fall below the minimum font size.
+4. **STRUCTURAL_FAILURE** — nothing fits; the result sets `requiresSplit`.
 
-### Example
+The returned `BlockHeightResolution` carries `heightPx`, the `priority` that
+decided it, a human-readable `reason`, and the `canIncrease` / `requiresSplit`
+flags callers use to react.
 
-**Scenario**: Block with 4 units, container width = 1200px
+## Who calls it
 
-```javascript
-unitWidth = 1200 / 4 = 300px
-heightMultiplier = 1.5 (for 4 units)
-chartHeight = 300 × 1.5 = 450px
-```
+- [`lib/editorValidationAPI.ts`](../../lib/editorValidationAPI.ts) —
+  `resolveBlockHeightWithDetails`, validating a block as it is edited.
 
-**Result**: Each chart graphic area = 450px tall
+That is the only importer. Report rendering measures its own widths in
+`app/report/[slug]/ReportContent.tsx`; if you are chasing a height problem on a
+rendered report, start there, not here.
 
-## Title & Subtitle Heights (Alignment)
+## Aspect ratios
 
-When alignment is enabled (`alignTitles` or `alignDescriptions`):
+`getAspectRatioValue` in
+[`lib/aspectRatioResolver.ts`](../../lib/aspectRatioResolver.ts) converts an
+`AspectRatio` (`'16:9' | '9:16' | '1:1'`, defined in
+[`lib/chartConfigTypes.ts`](../../lib/chartConfigTypes.ts)) to the number the
+solver multiplies by.
 
-- **Title area**: `4rem` (or `minElementHeight` if specified)
-- **Subtitle area**: `2rem` (or `0.5 × minElementHeight`)
-- **Gap between sections**: `0.75rem`
-
-### Total Block Height
-
-```
-Total = titleHeight + subtitleHeight + chartHeight + (2 × gap)
-```
-
-Example with alignment enabled:
-```
-Total = 4rem + 2rem + 450px + (2 × 0.75rem)
-Total = 6rem + 450px + 1.5rem
-Total = 7.5rem + 450px ≈ 570px (assuming 1rem = 16px)
-```
-
-## Implementation Files
-
-### Core Utility
-- **`lib/chartHeightCalculator.ts`** - Height calculation logic
-  - `getHeightMultiplier(totalUnits)` - Returns multiplier for unit count
-  - `calculateBlockHeight(blockWidth, totalUnits, maxHeight)` - Full calculation
-  - `getHeightCalculationDebug()` - Debug info
-
-### Application
-- **`components/UnifiedDataVisualization.tsx`** - Applies height to blocks
-  - Uses `calculateBlockHeight()` in ResizeObserver
-  - Sets `--block-chart-height` CSS variable
-  - Grid layout with three distinct rows: title, subtitle, chart
-
-### CSS Structure
-
-```css
-.chart-item {
-  display: grid;
-  grid-template-rows:
-    4rem                          /* Title */
-    2rem                          /* Subtitle */
-    var(--block-chart-height)     /* Chart graphic - CALCULATED */
-  ;
-  gap: 0.75rem;
-  height: auto; /* Sum of all three sections */
-}
-
-/* Chart graphic containers use exact calculated height */
-.chartGraphicArea,
-.pieChartSide,
-.barChartSide,
-.kpiContainer {
-  height: var(--block-chart-height) !important;
-  min-height: 200px;
-  max-height: 80vh;
-}
-```
-
-## Debug Console Output
-
-When charts load, the console shows detailed calculation info:
-
-```javascript
-📊 Block height calc: {
-  blockWidth: 1200,
-  totalUnits: 4,
-  unitWidth: 300,
-  heightMultiplier: 1.5,
-  targetHeight: 450,
-  aspectRatio: "4:1.5",
-  finalHeight: "450px",
-  capped: false
-}
-```
-
-## Chart Types
-
-### Standard Charts (use calculated height)
-- **KPI**: Single metric display
-- **PIE**: Circular segments
-- **BAR**: Horizontal bars
-
-All standard charts share the same calculated height within a block.
-
-### Aspect Ratio Charts (use native ratio)
-- **IMAGE**: Uses `aspectRatio` from configuration (16:9, 9:16, 1:1)
-- **TEXT**: Uses natural text flow
-
-These charts maintain their aspect ratio and don't use the calculated height.
-
-## Responsive Behavior
-
-### Tablet (< 1024px)
-- Grid auto-wraps at 300px minimum width
-- Height calculation continues to work per-row
-
-### Mobile (< 768px)
-- Single column layout (all charts full width)
-- Height calculation adjusts to mobile width
-- Each chart still maintains proper aspect ratio
-
-## Best Practices
-
-1. **Consistent unit widths**: Use similar unit patterns across blocks for visual harmony
-2. **Alignment on**: Enable title/subtitle alignment for professional reports
-3. **Mixed layouts**: Combine different unit counts (1, 2, 3, 4+) for variety
-4. **Monitor debug**: Check console logs to verify height calculations
-
-## Migration Notes
-
-- ✅ **Backward compatible**: Existing charts work unchanged
-- ✅ **Opt-in alignment**: Title/subtitle alignment is optional
-- ✅ **Auto-calculation**: Heights update automatically on resize
-- ✅ **No manual CSS**: All height logic is centralized
-
----
-
-**Version**: 12.3.36
-**Last Updated**: 2026-01-11T22:28:38.000Z
-**Status**: Production Ready
+Ratios do **not** map to fixed grid widths. A unit is `1 | 2`
+(`app/admin/visualization/page.tsx`); documentation claiming ratios map to 1–3
+units described a module that was deleted on 2026-09-16.

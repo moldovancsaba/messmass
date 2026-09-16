@@ -181,54 +181,12 @@
   color: var(--mm-gray-700);
 }
 
-.charts-section {
-  margin-bottom: var(--mm-space-8);
-}
-
-.charts-section .section-title {
-  font-size: var(--mm-font-size-2xl);
-  font-weight: var(--mm-font-weight-bold);
-  margin: 0 0 var(--mm-space-8) 0;
-  color: var(--mm-gray-900);
-  text-align: center;
-  padding-bottom: var(--mm-space-3);
-  border-bottom: 3px solid var(--mm-color-primary-500);
-}
-
-.charts-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(450px, 1fr));
-  gap: var(--mm-space-8);
-  justify-items: center;
-  align-items: stretch; /* WHAT: Stretch items to fill grid row height; WHY: Removes empty space at bottom */
-}
-
-.chart-item {
-  width: 100%;
-  max-width: 500px;
-  min-height: 380px;
-  display: flex; /* WHAT: Make chart item flexbox; WHY: Allow child to fill 100% height */
-  flex-direction: column;
-}
-
 .footer {
   text-align: center;
   margin-top: var(--mm-space-12);
   padding: var(--mm-space-8);
   color: var(--mm-gray-600);
   font-size: var(--mm-font-size-sm);
-}
-
-@media (max-width: 1024px) {
-  .charts-grid {
-    grid-template-columns: 1fr;
-    gap: var(--mm-space-6);
-  }
-  
-  .chart-item {
-    min-width: 100%;
-    max-width: 600px;
-  }
 }
 
 @media (max-width: 768px) {
@@ -277,22 +235,6 @@
     font-size: var(--mm-font-size-2xl);
   }
   
-  .charts-grid {
-    grid-template-columns: 1fr;
-    gap: var(--mm-space-4);
-  }
-  
-  .chart-item {
-    min-height: 300px;
-  }
-  
-  /* WHAT: Override min-height for TextChart components */
-  /* WHY: TextChart needs aspect-ratio to work, min-height breaks it */
-  .chart-item:has(.text-chart-container),
-  .chart-item.chart-item-text {
-    min-height: 0 !important;
-    height: auto !important;
-  }
 }
 
 @media (max-width: 480px) {

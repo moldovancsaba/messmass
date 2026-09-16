@@ -16,6 +16,20 @@ export type CellWidth = 1 | 2;
 export type AspectRatio = '16:9' | '9:16' | '1:1';
 
 /**
+ * Narrow an untrusted value to AspectRatio.
+ *
+ * Lives beside the type on purpose. It used to sit in a deleted aspect-ratio
+ * utilities module, alongside a grid-width table mapping these to 1-3 units -- a
+ * spec no live code implemented, duplicated in two other modules, and
+ * contradicted by the real model in app/admin/visualization/page.tsx, where a
+ * unit is 1 or 2. The table and its two copies are gone; this narrowing was
+ * the only part anything imported.
+ */
+export function isValidAspectRatio(value: unknown): value is AspectRatio {
+  return value === '16:9' || value === '9:16' || value === '1:1';
+}
+
+/**
  * Chart configuration element for PieChart (always 2 elements), HorizontalBar (always 5 elements), or KPI (1 element)
  * Each element represents a segment/bar with its label, formula, and color
  * For KPI charts, only one element is used with the main calculation formula

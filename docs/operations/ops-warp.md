@@ -868,15 +868,15 @@ ReportChart (app/report/[slug]/ReportChart.tsx)
 
 ### Image Layout System (v9.3.0)
 
-**Aspect Ratio Support**:
-- **9:16** (Portrait) - 1 grid unit width (narrow, mobile-first content)
-- **1:1** (Square) - 2 grid units width (medium, social media format)
-- **16:9** (Landscape) - 3 grid units width (wide, event banners)
+**Aspect Ratio Support**: `16:9`, `9:16` and `1:1`, defined as the
+`AspectRatio` type in `lib/chartConfigTypes.ts`.
 
-**Automatic Width Calculation**:
-- IMAGE charts derive width from `aspectRatio` field automatically
-- Utility: `calculateImageWidth(aspectRatio)` in `lib/imageLayoutUtils.ts`
-- Result: Consistent row heights across mixed-ratio grids
+**Automatic Width Calculation**: an IMAGE cell's ratio is not a grid width. It
+is the cell's *effective unit count* in the block height solver
+(`lib/blockHeightCalculator.ts`), which derives one shared height for the row
+from the block's width. A grid unit is `1 | 2`; the ratios-to-1-3-units mapping
+that earlier revisions of this file described belonged to a module deleted on
+2026-09-16. See `docs/design/design-chart-height-system.md`.
 
 **Background-Image Rendering**:
 - IMAGE charts use `background-image` CSS (not `<img>` tag)
@@ -903,85 +903,43 @@ interface ChartConfiguration {
 - **`app/report/[slug]/ReportContent.tsx`** - Grid layout and block management
 - **`lib/report-calculator.ts`** - Formula evaluation and result calculation
 
-**Chart Type Implementations:**
-- **`components/charts/KPICard.tsx`** - KPI display (350 lines)
-- **`components/charts/PieChart.tsx`** - Circular charts (300 lines)
-- **`components/charts/VerticalBarChart.tsx`** - Bar charts (400 lines)
-- **`components/charts/ImageChart.tsx`** - Background-image rendering (200 lines)
-- **`components/charts/TextChart.tsx`** - Text formatting (150 lines)
+**Chart Type Implementations:** all six types are local functions inside
+`app/report/[slug]/ReportChart.tsx`. The per-type components under
+`components/charts/` were deleted on 2026-09-16.
 
 **Utilities:**
-- **`lib/imageLayoutUtils.ts`** - Aspect ratio calculations
 - **`lib/blockHeightCalculator.ts`** - Responsive height solver
+- **`lib/aspectRatioResolver.ts`** - Aspect ratio to numeric value
 - **`lib/formulaEngine.ts`** - Formula parsing and evaluation
 - **`lib/chartCalculator.ts`** - Chart-specific calculations
 
-**Export:**
-- **`lib/export/pdf.ts`** - Smart pagination PDF export with html2canvas
-- Supports hero repetition, aspect ratio preservation, 3-column grid layout
+**Export:** `app/api/export/pdf/route.ts` renders the report in server-side
+Chromium. There is no client-side html2canvas/jsPDF path; neither library is a
+dependency.
 
 **Current renderer:**
 - `app/report/[slug]/ReportChart.tsx`
 
 ## 📄 PDF Export System
 
-### Image Rendering Strategy (v9.3.0 Update)
+Export is server-side. `GET app/api/export/pdf/route.ts` launches headless
+Chromium, navigates it to the report's own URL with `?pdfExport=1`, waits for
+the page's readiness contract (`#report-content` only mounts once the page's
+`loading` state flips false), and calls the browser's native `page.pdf()`.
 
-**Current Implementation**: IMAGE charts natively use `background-image` CSS rendering, eliminating the need for runtime DOM manipulation during PDF export.
+- **Chromium**: `@sparticuz/chromium-min` + `puppeteer-core` in production,
+  the full `puppeteer` package locally.
+- **Pagination** is print CSS, not JavaScript: `@page` in `app/globals.css`,
+  `break-inside: avoid` on `.block` / `.row` in `ReportContent.module.css`.
+- **SSRF**: the route allowlists same-origin report paths only — no scheme, no
+  query params, no `..`.
 
-**Background**: Previous versions used `<img>` tags with `object-fit: cover`, which required a workaround to convert images to background divs before `html2canvas` capture.
-
-**Status (v9.3.0)**:
-- ✅ IMAGE charts: Native `background-image` rendering (no workaround needed)
-- ⚠️ Legacy workaround: Preserved in `lib/export/pdf.ts` for backward compatibility
-- 📋 Deprecation: Workaround marked for removal in v10.0.0
-
-### Legacy Object-Fit Cover Handling (DEPRECATED)
-
-**Note**: This workaround is NO LONGER USED by core IMAGE charts as of v9.3.0, but remains for backward compatibility with custom components.
-
-**Problem**: `html2canvas` captures the full image (e.g., 100x100px) even when CSS crops it with `object-fit: cover` (e.g., to 100x60px center). This causes distortion in PDFs.
-
-**Legacy Solution** (deprecated in `lib/export/pdf.ts`):
-1. Before capture: Find all `img` elements with `object-fit: cover`
-2. Replace with `div` elements using `background-image` + `background-size: cover`
-3. Capture with `html2canvas` (backgrounds crop correctly)
-4. After capture: Restore original `img` elements
-
-**Code Pattern**:
-```typescript
-// Convert images to background divs before capture
-const imagesToRestore = [];
-const coverImages = element.querySelectorAll('img');
-coverImages.forEach((img) => {
-  if (getComputedStyle(img).objectFit === 'cover') {
-    const placeholder = document.createElement('div');
-    placeholder.style.backgroundImage = `url("${img.src}")`;
-    placeholder.style.backgroundSize = 'cover';
-    placeholder.style.backgroundPosition = 'center';
-    // ... copy all relevant styles
-    parent.replaceChild(placeholder, img);
-    imagesToRestore.push({ parent, img, placeholder });
-  }
-});
-
-// Capture with html2canvas
-await html2canvas(element, options);
-
-// Restore original images
-imagesToRestore.forEach(({ parent, img, placeholder }) => {
-  parent.replaceChild(img, placeholder);
-});
-```
-
-**When to Apply**:
-- ✅ All PDF exports using `html2canvas`
-- ✅ Any component with `object-fit: cover` images
-- ✅ Image charts, hero images, background images
-
-**Key Files**:
-- **`lib/export/pdf.ts`** - PDF export with object-fit handling
-- **`app/styles/components.css`** - `.image-chart-img` uses `object-fit: cover`
+There is no client-side rendering path. html2canvas and jsPDF were removed and
+are not dependencies; documentation describing `lib/export/pdf.ts`, an
+object-fit workaround, or hand-written "does this block fit" pagination math
+describes a system that no longer exists. Its history is in the release notes
+(v9.3.0 and v12.2.4 both fixed image distortion in that pipeline) and in the
+route's own header comment, which explains why it was replaced.
 
 ## 🚀 Deployment Architecture
 

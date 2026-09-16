@@ -240,7 +240,6 @@ img {
 .charts-grid { display: grid; gap: 1.5rem; width: 100%; }
 /* Enforce a single configurable height for all chart tiles */
 :root { --chart-tile-height: 360px; }
-.chart-item-min { min-height: var(--chart-tile-height); }
 .chart-config-item { padding: var(--mm-space-3); border: 1px dashed rgba(var(--mm-chart-indigo-rgb),0.25); border-radius: var(--mm-radius-md); }
 
 .admin-dashboard {
@@ -1604,42 +1603,6 @@ img {
   margin-top: var(--mm-space-4);
 }
 
-.chart-item {
-  width: 100%;
-  max-width: 500px;
-  min-height: 380px;
-}
-
-/* WHAT: Override chart-item styles for TextChart components */
-/* WHY: TextChart needs aspect-ratio to work, min-height breaks it */
-/* HOW: Use higher specificity to override .chart-item min-height constraint */
-.chart-item:has(.text-chart-container),
-.chart-item.chart-item-text,
-.unified-chart-item:has(.text-chart-container),
-.chart-item:has(.text-chart-override),
-div.chart-item:has(.text-chart-container),
-div.unified-chart-item:has(.text-chart-container) {
-  min-height: 0 !important;
-  height: auto !important;
-  max-height: none !important;
-  display: flex !important;
-  flex-direction: column !important;
-  align-items: stretch !important;
-  justify-content: stretch !important;
-  padding: 0 !important;
-  background: transparent !important;
-  border: none !important;
-}
-
-/* WHAT: Ensure TextChart container gets proper height from aspect-ratio */
-/* WHY: aspect-ratio needs container to have defined width to calculate height */
-.text-chart-container {
-  width: 100% !important;
-  height: auto !important;
-  min-height: 0 !important;
-  max-height: none !important;
-}
-
 .section-title {
   font-size: 1.75rem;
   font-weight: 700;
@@ -1668,11 +1631,6 @@ div.unified-chart-item:has(.text-chart-container) {
   .charts-grid {
     grid-template-columns: 1fr;
     gap: 1.5rem;
-  }
-  
-  .chart-item {
-    min-width: 100%;
-    max-width: 600px;
   }
 }
 

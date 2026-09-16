@@ -9,7 +9,7 @@
 
 import { validateBlocksForEditor, checkPublishValidity, type EditorBlockInput, type BlockValidationResult } from './editorValidationAPI';
 import type { AspectRatio, ChartCalculationResult } from './chartConfigTypes';
-import { isValidAspectRatio } from './aspectRatioUtils';
+import { isValidAspectRatio } from './chartConfigTypes';
 
 // Types for editor data structures (these should match actual editor types)
 export interface EditorBlock {

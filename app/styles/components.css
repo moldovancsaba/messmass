@@ -453,13 +453,12 @@ textarea::placeholder {
   margin: 0;
 }
 
-/* WHAT: Image chart global class for UnifiedDataVisualization :has() selector
-   WHY: UnifiedDataVisualization needs to detect image charts to remove padding
-   HOW: Minimal global class, actual styling in ImageChart.module.css
-   DATE: 2025-10-30 - Professional cleanup */
+/* Marker class for a :has() selector that no longer exists. Its consumer was
+   UnifiedDataVisualization and its styling lived in ImageChart.module.css;
+   both were deleted. No TSX applies this class -- kept only because
+   `display: contents` on an unapplied class is inert, and removing it belongs
+   with the wider dead-CSS sweep rather than here. */
 .image-chart-container {
-  /* WHAT: Marker class only - styling in CSS module
-     WHY: Allow :has() selector detection while keeping styles in module */
   display: contents;
 }
 
@@ -467,8 +466,8 @@ textarea::placeholder {
    CHART COMPONENTS - WRAPPERS & BUILDERS
 ======================================== */
 
-/* WHAT: Vertical wrapper for KPI + Chart pairs
-   WHY: Consistent spacing between chart components in StatsCharts */
+/* Vertical wrapper for KPI + Chart pairs. It was written for StatsCharts,
+   which is gone; nothing applies it today. */
 .chart-wrapper-vertical {
   display: flex;
   flex-direction: column;
