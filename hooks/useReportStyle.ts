@@ -20,7 +20,7 @@ interface UseReportStyleReturn {
 }
 
 /**
- * WHAT: Custom hook to fetch and apply NEW report styles (26 colors)
+ * WHAT: Custom hook to fetch and apply report styles
  * WHY: Reports need custom theming based on report.styleId
  * HOW: Fetch from /api/report-styles, inject CSS variables via injectStyleAsCSS
  * 
@@ -63,7 +63,7 @@ export function useReportStyle({
         }
         setStyle(data.style);
         injectStyleAsCSS(data.style);
-        console.log('✅ Applied report style:', data.style.name, 'with 26 colors');
+        console.log('✅ Applied report style:', data.style.name);
       } catch (err) {
         console.error('❌ Failed to fetch report style by id, falling back to first available:', err);
         // WHAT: Fallback instead of throwing error

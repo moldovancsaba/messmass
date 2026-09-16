@@ -1,5 +1,7 @@
 /* WHAT: TypeScript types for Report Style Editor system
- * WHY: Single place to control report + landing colors (35 color properties)
+ * WHY: Single place to control report + landing colours. The field set is
+ *      COLOR_FIELDS + DIMENSION_FIELDS below -- deliberately not restated as a
+ *      number here, because every count written into these headers has drifted.
  * HOW: MongoDB-compatible schema with hex color validation */
 
 import { getFontFamilyCSS } from './fontUtils';
@@ -9,7 +11,7 @@ import { DEFAULT_CARD_SHADOW, DEFAULT_REPORT_STYLE_COLORS } from './theme/report
 /**
  * Report Style - Complete color configuration for report and landing pages
  *
- * WHAT: Report colors (26) + Landing colors (9) matching CSS variables exactly
+ * WHAT: Report and landing colours, each matching a CSS variable of the same name
  * WHY: Style editor drives both report and landing; when a style is applied, landing uses these if set
  * HOW: All fields use 8-character hex codes (#RRGGBBAA) for transparency support
  */
@@ -110,7 +112,7 @@ export interface ColorFieldDefinition {
 }
 
 /**
- * All 26 color fields with metadata
+ * Every colour field, with the metadata the editor renders from
  * WHAT: Defines order, labels, and categories for UI rendering
  * WHY: Single source of truth for form generation
  */

@@ -1,13 +1,16 @@
 # LLD Audit — Findings Register
 
 Status: Active
-Last Updated: 2026-09-03T00:00:00.000Z
+Last Updated: 2026-09-16T00:00:00.000Z
 Canonical: Yes (findings register)
 Owner: Architecture
 
-**Version:** 12.1.68
+**Version:** 12.3.36
 
-Findings from the LLD deep audit (`docs/audits/lld-audit-plan-2026-08-14.md`).
+Findings from the LLD deep audit (`docs/audits/lld-audit-plan-2026-08-14.md`),
+phases 0-4. **Phase 5 is the documentation audit of 2026-09-16** — every
+falsifiable claim in `docs/architecture.md` and in module comments, tested
+against the code it describes.
 Per rule R5 findings are recorded here and **not fixed on the audit branch**; per
 R6 they become board issues. Per R1 every finding carries evidence, and where a
 claim is structural rather than demonstrated, it says so.
@@ -45,6 +48,18 @@ claim is structural rather than demonstrated, it says so.
 | [F-006](#f-006) | Medium | **Fixed — routes removed** | Two routes read cookie names nothing ever sets | 4 |
 | [F-007](#f-007) | Low | Open | 202 orphaned page passwords for a deleted route | 4 |
 | [F-008](#f-008) | Low | Open | `lib/authLockout.ts` is dead code | 4 |
+| [F-025](#f-025) | **High** | Open — [#400](https://github.com/moldovancsaba/messmass/issues/400) | Routes documented "admin only" enforce no role check | 5 |
+| [F-033](#f-033) | Medium | Open — [#408](https://github.com/moldovancsaba/messmass/issues/408) | architecture.md documents APIs, hooks and a parser that do not exist | 5 |
+| [F-028](#f-028) | Medium | Open — [#403](https://github.com/moldovancsaba/messmass/issues/403) | Password gate lost its theming; a 404 from a deleted route is swallowed | 5 |
+| [F-026](#f-026) | Medium | Open — [#401](https://github.com/moldovancsaba/messmass/issues/401) | Design page tells users the style editor is disabled while it is live | 5 |
+| [F-027](#f-027) | Medium | Open — [#402](https://github.com/moldovancsaba/messmass/issues/402) | Help page and metadata promise real-time collaboration deleted in v12.2.0 | 5 |
+| [F-036](#f-036) | Low | Open — [#411](https://github.com/moldovancsaba/messmass/issues/411) | Dead layout-unit trio and dead CSS carry authoritative-sounding comments | 5 |
+| [F-034](#f-034) | Low | Open — [#409](https://github.com/moldovancsaba/messmass/issues/409) | ~900 changelog lines sit inside the living architecture document | 5 |
+| [F-035](#f-035) | Low | Open — [#410](https://github.com/moldovancsaba/messmass/issues/410) | Route inventory and module catalogue are hand-maintained and ~85% wrong | 5 |
+| [F-029](#f-029) | Low | Open — [#404](https://github.com/moldovancsaba/messmass/issues/404) | No gate stops a comment citing a file path that no longer resolves | 5 |
+| [F-030](#f-030) | Low | Open — [#405](https://github.com/moldovancsaba/messmass/issues/405) | Hardcoded counts in comments drift from the collections they describe | 5 |
+| [F-031](#f-031) | Low | Open — [#406](https://github.com/moldovancsaba/messmass/issues/406) | Version stamps and tombstone comments are never revisited | 5 |
+| [F-032](#f-032) | Low | Open — [#407](https://github.com/moldovancsaba/messmass/issues/407) | Security comments state a policy without naming the guard enforcing it | 5 |
 
 **Deviation from rule R6, declared.** R6 says findings become issues and are not
 fixed on the audit branch. F-001, F-002 and F-009 were fixed immediately on the
@@ -1130,3 +1145,201 @@ by the Phase 0 graph.
 credential brute-forcing is the identity provider's concern. Recorded for removal,
 not remediation. Deliberately not filed as a missing-control finding, because
 asserting that would have been wrong.
+
+---
+
+# Phase 5 — Documentation audit, 2026-09-16
+
+Scope: every falsifiable claim in `docs/architecture.md` (4,665 lines) and in
+module comments across `app/`, `components/`, `lib/`, `hooks/`, tested against
+the code it describes. 43 claims in the architecture document were verified
+false; roughly 85% of its tested file-path and line-count claims failed. Around
+145 comment sites were proven false.
+
+**Deviation from rule R6, declared.** One cluster was fixed during the audit
+rather than left for an issue: the hardcoded colour-count comments in
+`lib/reportStyleTypes.ts`, `app/admin/styles/[id]/page.tsx` and
+`hooks/useReportStyle.ts`, which had drifted to 26/35 against an actual 40 and
+which the same session had made worse by adding fields without updating them.
+Those headers now state no count at all. F-030 covers preventing recurrence.
+
+## F-025
+
+### Routes documented "admin only" enforce no role check
+
+**Severity: High — verified in code, impact latent.**
+
+Around twenty routes carry comments asserting admin-only access while calling
+`requireSession()`, which documents at `lib/apiGuards.ts:28` that it
+"deliberately does not check role". `app/api/projects/route.ts:1032` reads
+"admin-only; a page password must never be able to destroy an event"; the
+`DELETE` handler calls `requireSession()` and nothing further. Only 18 of 194
+route files contain any role check.
+
+**This is the unfinished half of [F-009](#f-009), not a new finding.** That
+remediation (messmass#386) closed the anonymous hole by adding
+`requireSession()`; several of these comments cite messmass#386 directly and
+describe the policy it intended to reach. Authorisation was never built.
+
+Compounded by [F-005](#f-005): `lib/auth.ts:65` grants
+`['read','write','delete','manage-users']` to every authenticated role.
+
+Established by reading the guard chain, not by execution — deleting a production
+event to demonstrate it is not a test worth running. Whether this is presently
+exploitable depends on whether any non-admin account holds messmass access in
+SSO, which is the first thing the issue asks to check. Note `mintSession`
+auto-provisions a local account at role `user` on first SSO sign-in.
+
+→ [#400](https://github.com/moldovancsaba/messmass/issues/400)
+
+## F-026
+
+### Design page tells users the style editor is disabled while it is live
+
+**Severity: Medium.** `app/admin/design/page.tsx:60,65` renders "Style editor
+disabled — rebuilding from scratch" and "per-page style application have been
+removed". The editor is live at `app/admin/styles/[id]`, linked from
+`lib/adminNavigation.ts:132`, and `hooks/useReportStyle.ts` applies styles on
+every report. User-facing copy, not a comment.
+
+→ [#401](https://github.com/moldovancsaba/messmass/issues/401)
+
+## F-027
+
+### Help page and metadata promise real-time collaboration deleted in v12.2.0
+
+**Severity: Medium.** `app/admin/help/page.tsx:220` states "Connected
+collaborators see changes instantly". No socket dependency exists and no
+WebSocket code remains. `app/layout.tsx:54-55` ships "Real-time collaborative"
+as page metadata, so the claim reaches link previews.
+
+→ [#402](https://github.com/moldovancsaba/messmass/issues/402)
+
+## F-028
+
+### Password gate lost its theming; a 404 from a deleted route is swallowed
+
+**Severity: Medium — demonstrated against the running app.**
+
+`components/PagePasswordLogin.tsx` fetches `/api/page-config` at lines 38, 55
+and 83. That route does not exist; it returns 404 with `content-type: text/html`
+(confirmed by request). Each call is guarded by `if (res.ok)`, so the failure is
+silent, and both assignments to `bg` sit behind it — the gate's background is
+always null.
+
+This also rendered inert the contrast fix shipped the same day (`b1405633`):
+the luminance-derived palette is correct in mechanism and measured from 1.00:1
+to 16.24:1, but runs only inside `if (bg)`. The measurement tested the palette,
+not the rendered gate. `docs/architecture.md:1174, 842, 1514` still documents
+the route as live, which is why the regression went unnoticed.
+
+→ [#403](https://github.com/moldovancsaba/messmass/issues/403)
+
+## F-029
+
+### No gate stops a comment citing a file path that no longer resolves
+
+**Severity: Low — hygiene, high leverage.** Every deletion this repository has
+made left present-tense comments pointing at the removed code:
+`UnifiedDataVisualization` (4 sites, including an API response shape justified
+by a deleted consumer), `StatsCharts`, `components/charts/*`,
+`lib/export/pdf.ts`, the WebSocket server. A ~10-line CI check resolving every
+path cited in a comment catches all of them.
+
+→ [#404](https://github.com/moldovancsaba/messmass/issues/404)
+
+## F-030
+
+### Hardcoded counts in comments drift from the collections they describe
+
+**Severity: Low.** `lib/reportStyleTypes.ts` claimed 26 and 35 colour fields
+against an actual 40, and the wrong number was copied into a hook, an editor
+header and a runtime `console.log`. Also `lib/apiGuards.ts:3` "40 route files"
+(now 57), `RATE_LIMITS.READ` documented as 100/min in five routes (actually
+500), and a seven-member union described as three types. Every drifted count
+was a number `.length` could have produced.
+
+→ [#405](https://github.com/moldovancsaba/messmass/issues/405)
+
+## F-031
+
+### Version stamps and tombstone comments are never revisited
+
+**Severity: Low.** `lib/chartCalculator.ts:932` marks a branch "will be removed
+after migration in v8.17.0" — still live four majors later. `v12.4.0`, a version
+that never shipped, is stamped as done in five files. Tombstones were false in
+every case audited: `app/styles/admin.css:551` declares `.content-surface` and
+`.admin-card` removed while both are defined and applied.
+
+→ [#406](https://github.com/moldovancsaba/messmass/issues/406)
+
+## F-032
+
+### Security comments state a policy without naming the guard enforcing it
+
+**Severity: Low — but it is the mechanism behind [F-025](#f-025).** A comment
+reading "admin-only" sits above a call to `requireSession()`, and nothing
+connects the two, so neither breaks when the other changes. Requiring the
+comment to name its enforcing function makes weakening that guard visible.
+
+→ [#407](https://github.com/moldovancsaba/messmass/issues/407)
+
+## F-033
+
+### architecture.md documents APIs, hooks and a parser that do not exist
+
+**Severity: Medium — engineers and agents read this file as truth.**
+
+Roughly 1,200 lines where nothing verifies. The Page Styles System (484 lines):
+every endpoint, the hook `hooks/usePageStyle.ts`, and the admin location are
+fiction. Formula Validation and the `[SEYU*]` token table: `lib/formulaEngine.ts`
+parses direct field names and `components/FormulaEditor.tsx` does not exist. The
+PDF section describes `lib/export/pdf.ts` with html2canvas and jsPDF — absent
+file, neither library in `package.json` — while **line 4134 of the same document
+describes the real Puppeteer pipeline correctly.**
+
+The chart-type table maps each type to `components/charts/*`; `ReportChart.tsx`
+imports nothing from there and defines all six locally. That mapping was
+misleading before those files were deleted on 2026-09-16, not because of it.
+
+→ [#408](https://github.com/moldovancsaba/messmass/issues/408)
+
+## F-034
+
+### ~900 changelog lines sit inside the living architecture document
+
+**Severity: Low.** Dated fixes with commit hashes, migration status, debugging
+narratives, past QA checklists and nine "Future Enhancements" lists targeting
+versions already shipped. An extraction begun 2026-08-17 (header note, lines
+9-14) was left half-done.
+
+→ [#409](https://github.com/moldovancsaba/messmass/issues/409)
+
+## F-035
+
+### Route inventory and module catalogue are hand-maintained and ~85% wrong
+
+**Severity: Low.** The module catalogue — the section read first — cites line
+ranges that are wrong in roughly 85% of tested cases (FormModal "1-148" is 219;
+ReportChart "400" is 2,203). The URL/API reference mixes real and dead routes
+with no marker. Both are derivable from the filesystem, and `npm run docs:audit`
+already exists to gate them.
+
+→ [#410](https://github.com/moldovancsaba/messmass/issues/410)
+
+## F-036
+
+### Dead layout-unit trio and dead CSS carry authoritative-sounding comments
+
+**Severity: Low.** `lib/chartHeightCalculator.ts` and `lib/imageLayoutUtils.ts`
+have zero importers yet document a unit spec ("3 units → 3:1", "Landscape (3
+units)") superseded by `LayoutUnit = 1 | 2`; the same wrong table is duplicated
+in `lib/aspectRatioUtils.ts`, so a reader finds it twice. Alongside them, a
+six-selector `!important` block in `app/globals.css:1613-1641` is commented as
+overriding live layout for selectors used in zero components.
+
+Reachability here must be settled by repo-wide symbol search plus a full
+`next build`, not by grepping import paths: during this audit a relative barrel
+import hid a live dependency from a path-based grep twice.
+
+→ [#411](https://github.com/moldovancsaba/messmass/issues/411)

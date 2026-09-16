@@ -1,5 +1,5 @@
 /* WHAT: Report Style Editor with Live Preview
- * WHY: Edit all 26 color properties with real-time visual feedback
+ * WHY: Edit every field in COLOR_FIELDS/DIMENSION_FIELDS with live feedback
  * HOW: Split layout - preview left, color fields right */
 
 'use client';
@@ -165,7 +165,7 @@ export default function StyleEditorPage() {
     );
   }
 
-  // WHAT: Split the 54 fields into Report and Landing scopes, then group by
+  // WHAT: Split every field into Report and Landing scopes, then group by
   //   category within each.
   // WHY: Landing-only fields are irrelevant while styling a report and vice
   //   versa, but they were interleaved in one flat scroll, so finding a single
@@ -350,7 +350,7 @@ export default function StyleEditorPage() {
             </div>
           </div>
 
-          {/* WHAT: One filter across all 54 fields. WHY: scrolling nine
+          {/* WHAT: One filter across every field. WHY: scrolling the
               categories to find a single colour was the main complaint. */}
           <div className={styles.formGroup}>
             <label className={styles.label} htmlFor="field-filter">Find a setting</label>
