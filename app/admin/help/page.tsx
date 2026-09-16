@@ -195,7 +195,7 @@ export default function HelpPage() {
             <li>Create a new event or edit an existing one.</li>
             <li>Complete <strong>Event Basics</strong> first.</li>
             <li>Continue into <strong>Reporting</strong> or <strong>Reporting &amp; Distribution</strong>.</li>
-            <li>Use <strong>Open Editor</strong> for live data capture and <strong>Open Report</strong> for output review.</li>
+            <li>Use <strong>Open Editor</strong> on an event for live data capture, and <strong>Reports</strong> on a partner or organization to open, edit or share any of its report variants.</li>
           </ol>
 
           <h3>Partner Setup and Editing</h3>

@@ -36,24 +36,23 @@ export const partnersEntityConfig: AdminEntityConfig<PartnerResponse> = {
         getHref: (partner) => `/admin/partners/${partner._id}/reports`,
       },
     },
-    {
-      id: 'partner-open-editor',
-      label: 'Open Editor',
-      mobileLabel: 'Editor',
-      icon: 'bar_chart',
-      variant: 'secondary',
-      // ponytail: demoted primary→secondary so `Reports` is the singular primary entry (#252 AC#1),
-      // matching the organizations pattern. NOT deleted — `/partner-edit` is partner data-capture with no
-      // parity in the reports workspace; removal awaits product confirmation of that parity.
-      priority: 'secondary',
-      requiredCapabilities: ['edit-content'],
-      requiredPermissions: ['admin'],
-      execution: {
-        kind: 'route',
-        getHref: (partner) => `/partner-edit/${partner.viewSlug || partner._id}`,
-        target: '_blank',
-      },
-    },
+    /* The 'partner-open-editor' action was removed here (messmass#244 Phase E,
+     * "remove Open Editor dependency from list views after parity is proven").
+     *
+     * Its predecessor comment said /partner-edit had "no parity in the reports
+     * workspace". That is no longer true, and was the thing to check rather
+     * than inherit: the workspace renders an Edit Report link per variant, and
+     * for the default variant it resolves to exactly the URL this action used —
+     * /partner-edit/{viewSlug} — while every other variant gets
+     * ?variant={slug}, which this action could never reach. The workspace is a
+     * strict superset, so the list view now has one primary entry instead of
+     * two that disagree about which report you are editing.
+     *
+     * This does NOT extend to events. /edit/{editSlug} in projectsAdapter stays:
+     * events are not a report-variant owner type, there is no events workspace,
+     * and that editor is live data capture at events. Removing it there would
+     * not be finishing Phase E, it would be deleting the capture workflow.
+     */
     {
       id: 'partner-report-share',
       label: 'Share Report',
