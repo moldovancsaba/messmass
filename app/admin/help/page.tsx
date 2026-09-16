@@ -217,7 +217,7 @@ export default function HelpPage() {
           <ul>
             <li><strong>Clicker Mode:</strong> Fast button-based entry during live execution</li>
             <li><strong>Manual Mode:</strong> Exact field-based entry and cleanup</li>
-            <li><strong>Realtime updates:</strong> Connected collaborators see changes instantly</li>
+            <li><strong>Shared entry:</strong> Several people can collect on the same event; the dashboard refreshes on load and on save, not live</li>
             <li><strong>Best default:</strong> Use Clicker live, then Manual for correction and completion</li>
           </ul>
         </section>

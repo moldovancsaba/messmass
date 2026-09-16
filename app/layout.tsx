@@ -51,8 +51,8 @@ const pacifico = Pacifico({
 
 export const metadata: Metadata = {
   title: '{messmass} - Event Statistics Dashboard',
-  description: 'Real-time collaborative event statistics tracking',
-  keywords: ['Event Statistics', 'Real-time Collaboration', 'Dashboard', 'Next.js'],
+  description: 'Collaborative event statistics tracking and reporting',
+  keywords: ['Event Statistics', 'Reporting', 'Dashboard', 'Next.js'],
   authors: [{ name: '{messmass} Team' }],
   icons: {
     icon: `/favicon.png?v=${Date.now()}`,

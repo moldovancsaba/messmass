@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import Link from 'next/link';
 import UnifiedAdminHeroWithSearch from '@/components/UnifiedAdminHeroWithSearch';
 import ColoredCard from '@/components/ColoredCard';
 import styles from './Design.module.css';
@@ -57,13 +58,17 @@ export default function AdminDesignPage() {
     <div className={styles.container}>
       <UnifiedAdminHeroWithSearch 
         title="Design & Styles" 
-        subtitle="Style editor disabled — rebuilding from scratch." 
+        subtitle="Global typography. Per-report colours live in Report Styles." 
       />
       <div className={styles.section}>
         <ColoredCard accentColor="var(--mm-color-primary-500)">
           <div className={styles.temporaryNotice}>
-            <h3>Temporary Notice</h3>
-            <p>The existing style editor and per-page style application have been removed. Reports use system defaults for now.</p>
+            <h3>Looking for report colours?</h3>
+            <p>
+              This page sets the global font. Colours, spacing and typography for an
+              individual report are edited per style under{' '}
+              <Link href="/admin/styles">Report Styles</Link>.
+            </p>
           </div>
         </ColoredCard>
       </div>
