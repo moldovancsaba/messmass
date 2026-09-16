@@ -2,7 +2,9 @@
 
 Generated for the fleet audit (messmass#350); measured against `docs/_audit/endpoints.json` (head 6d28c7f3, 194 endpoints). Every route below was verified by reading its `route.ts` handler, not just the marker scan.
 
-Coverage: 194 of 194 routes documented.
+Coverage: 194 of 194 routes documented, enforced by
+`tests/api-reference-covers-every-route.test.ts` — five routes were missing when
+that claim was last made by hand.
 
 ## Cross-cutting behavior (middleware.ts)
 
@@ -13,7 +15,9 @@ Every request passes through, in order: rate limiting, CSRF protection, CORS. CS
 | Guard | Source | What it proves |
 |---|---|---|
 | `getAdminUser` | `lib/auth` | Valid admin-session cookie (SSO-backed). Role checks are per-route. |
-| `requireSession` | `lib/apiGuards` | Same as getAdminUser, returns 401 response object (F-009 retrofit guard). |
+| `requireSession` | `lib/apiGuards` | Same as getAdminUser, returns 401 response object (F-009 retrofit guard). Authentication only — it documents that it checks no role. |
+| `requireAdmin` | `lib/apiGuards` | Authenticated **and** role is admin or superadmin; 403 otherwise (F-025 / #400). |
+| `requireEditorAccess` | `lib/apiGuards` | Admin session **or** any page-access edit grant. For the two routes the page-password editor drives that carry no project id to scope against. |
 | `requireProjectWrite` | `lib/apiGuards` | Admin session OR page-password edit grant for that one project. |
 | `requirePageAccess` | `lib/pageAccess` | Page password grant (or admin session) for a protected page slug. |
 | `requireFanmassIntegrationAuth` | `lib/fanmassIntegration` | `FANMASS_INTEGRATION_TOKEN` via Bearer or `x-api-key`; 503 when unconfigured. |
@@ -24,10 +28,12 @@ Every request passes through, in order: rate limiting, CSRF protection, CORS. CS
 | `withOrgContext` | `lib/middleware/v3/orgContext`, `lib/v3/middleware` | getAdminUser + injects `x-v3-org-id` scoping header. |
 | `validateOrganizationAccess` | `lib/auth/orgGuard` | getAdminUser + org membership check for the requested org. |
 
-## /api/admin (35 routes)
+## /api/admin (37 routes)
 
 | Path | Methods | Auth | Request | Response | Side effects |
 |---|---|---|---|---|---|
+| /api/admin/variables/merge | POST | getAdminUser + admin/superadmin role | `{sourceId,targetId}` | `{success,merged}` | rewrites variable references, deletes the source |
+| /api/admin/variables/merge-candidates | GET | getAdminUser + admin/superadmin role | — | `{success,candidates[]}` | reads variable registry |
 | /api/admin/auth | GET | getAdminUser | — | `{success,user}` | none |
 | /api/admin/clear-cache | POST | getAdminUser | `{type}` | `{success,message}` | clears in-process caches |
 | /api/admin/clear-cookies | GET, POST | none (public-by-design) | — | `{success,message}` | deletes caller's own `admin-session` cookie |
@@ -270,10 +276,13 @@ All wrapped in `withOrgContext` (getAdminUser + `x-v3-org-id` injection) except 
 | /api/v3/reporting/export/[entityId] | GET | withOrgContext | path entity id | CSV download | aggregates V3MetricValue |
 | /api/v3/reports/resolve | GET | withOrgContext | `?activityId\|entityId` | resolved template | reads v3 report config |
 
-## Remaining root routes (34 routes)
+## Remaining root routes (37 routes)
 
 | Path | Methods | Auth | Request | Response | Side effects |
 |---|---|---|---|---|---|
+| /api/blob-upload-token | POST | requireSession | `{pathname,contentType}` | Vercel Blob client token | none (mints an upload token) |
+| /api/derived-variable-config | GET | none (public-by-design) | — | `{success,config}` | reads derived-variable definitions for report rendering |
+| /api/export/pdf | GET | none (same-origin path allowlist + rate limit) | `?path=/report/<slug>` | `application/pdf` | launches headless Chromium, renders the report page |
 | /api/auto-generate-chart-block | POST | **none — GAP** | `{variable,…}` | `{success,chartId,blockId?}` | insert/update `chart_configurations`, `data_blocks` |
 | /api/available-fonts | GET, POST, PUT, DELETE | GET none (public font list for rendering); writes **none — GAP** | `?includeInactive`; bodies; `?id&hardDelete` | `{success,fonts[]}` | insert/update/delete `available_fonts` |
 | /api/cities | GET | none (public-by-design: reference data) | `?countryId` | city list | reads `cities` |
@@ -313,64 +322,73 @@ All wrapped in `withOrgContext` (getAdminUser + `x-v3-org-id` injection) except 
 
 ## Adjudication of routes with no auth guard
 
-Every route with at least one unauthenticated method was adjudicated. CSRF alone was never counted as a guard (any anonymous caller can obtain the token). Total: 34 public-by-design, 40 GAP, 120 fully guarded.
+Re-run 2026-09-16 against current code, per HTTP method rather than per file.
+CSRF is never counted as a guard: any anonymous caller can fetch the token from
+`GET /api/csrf-token`, which is the whole reason `lib/apiGuards.ts` exists.
 
-### Public-by-design (34 routes)
+| | routes |
+|---|---:|
+| Fully guarded (every method) | **164** |
+| Open write method, public by design | **5** |
+| Open GET only, writes guarded or absent | **25** |
+| **Total** | **194** |
 
-Auth lifecycle and stubs: `/api/admin/login` (410 + self-logout), `/api/admin/register` (410), `/api/admin/clear-cookies` (self-service), `/api/auth/sso/login`, `/api/auth/sso/callback`, `/api/auth/sso/config`, `/api/csrf-token`, `/api/me`, `/api/page-passwords` (PUT is the gate itself), `/api/admin/email-selftest` (fixed recipient, rate-limited, documented).
+The previous run of this section (2026-08) listed 40 GAP routes, 21 of them
+unauthenticated writes. Those are closed: messmass#347 and #386 took the first
+tranche, #400 added role checks to routes that authenticated but authorised
+nothing, and 7d3ef3bb closed the last five — `/api/hashtag-colors`,
+`/api/hashtags`, `/api/hashtag-categories`, `/api/variables-config` and
+`/api/auto-generate-chart-block`, three of which were demonstrated live,
+not inferred. Of those, `/api/hashtag-categories` was the instructive one: it
+was not unguarded, it had a local `validateAdminAccess()` that returned true
+whenever an `admin-session` cookie was merely *present*.
 
-Public report/landing rendering (read-only): `/api/chart-config/public`, `/api/chart-configs`, `/api/data-blocks` (GET), `/api/report-config/[identifier]`, `/api/report-styles/[id]`, `/api/reports/resolve`, `/api/images`, `/api/landing-report`, `/api/landing-static`, `/api/stats`, `/api/bitly/project-metrics/[projectId]`, `/api/hashtags/filter`, `/api/admin/filter-style` (GET), `/api/admin/hashtag-style` (GET).
+### Open write methods — all public by design (5)
 
-Shareable slug/id-keyed report pages: `/api/partners/report/[slug]`, `/api/partners/[id]/events`, `/api/organizations/report/[id]`, `/api/organizations/report/[id]/activities`.
+| Route | Methods | Why it is open |
+|---|---|---|
+| `/api/admin/login` | POST, DELETE | Returns 410 Gone; auth is SSO-only. DELETE is self-logout. |
+| `/api/admin/register` | POST | Returns 410 Gone. |
+| `/api/admin/clear-cookies` | POST | Deletes the caller's own cookies; nothing to protect. |
+| `/api/client-error` | POST | Records a crash report. A logged-out visitor can crash too. |
+| `/api/contact` | POST | Public contact form, rate-limited by middleware. |
 
-Reference data and public forms: `/api/countries`, `/api/countries/[code]`, `/api/cities`, `/api/google-sheets/template`, `/api/contact`, `/api/client-error`.
+### Open GET only (25)
 
-### GAP — deprecation/hardening candidates (40 routes)
+Each serves an anonymously-reachable surface, or is pre-auth. Where a route
+also exposes writes, those writes are guarded — the asymmetry is deliberate:
+the page-password editors read these without a session.
 
-Unauthenticated writes (highest priority):
-1. `/api/partners` — full CRUD on partners with no guard.
-2. `/api/projects/[id]` — GET/PUT/DELETE with no guard; the F-009 retrofit covered `/api/projects` but not this id-variant. Anyone can update or delete any event by id.
-3. `/api/organizations/edit/[id]` — unauthenticated org content editing ('organization-edit' page-password type exists but is not enforced here).
-4. `/api/partners/edit/[slug]` — unauthenticated partner content editing ('partner-edit' type exists but is not enforced here).
-5. `/api/admin/project-partners` — endpoints.json marks it getAdminUser, but the import is never called; PUT rewrites project↔partner links unauthenticated.
-6. `/api/hashtags` — POST/DELETE unauthenticated; DELETE cascades across `projects`, `partners`, `hashtag_colors`, `hashtags`, `hashtag_slugs`.
-7. `/api/auto-generate-chart-block` — unauthenticated writes to `chart_configurations`/`data_blocks`.
-8. `/api/charts` — POST/DELETE unauthenticated.
-9. `/api/report-styles` — POST/PUT/DELETE unauthenticated.
-10. `/api/hashtag-categories` — writes unauthenticated.
-11. `/api/hashtag-colors` — writes unauthenticated.
-12. `/api/available-fonts` — writes unauthenticated.
-13. `/api/clicker-sets` — writes unauthenticated.
-14. `/api/variables-config` — writes unauthenticated.
-15. `/api/variables-groups` — writes unauthenticated.
-16. `/api/chart-formatting-defaults` — PUT unauthenticated (public GET is fine).
-17. `/api/grid-settings` — PUT unauthenticated (in-file comment concedes auth was deferred).
-18. `/api/content-assets` — PUT/DELETE unauthenticated (POST is guarded; asymmetry looks accidental).
-19. `/api/bitly/recalculate` — unauthenticated trigger for expensive recalculation (write side effects via recalculator).
-20. `/api/hashtags/slugs` — lazily inserts slug docs AND discloses slugs that function as capability URLs for protected pages.
-21. `/api/cron/bitly-refresh` — guarded only when CRON_SECRET is set; open when unset (contrast: the sheets-sync cron fails closed in production — same treatment needed).
+| Route | Guarded methods on the same route |
+|---|---|
+| `/api/auth/sso/callback` | — (read-only route) |
+| `/api/auth/sso/config` | — (read-only route) |
+| `/api/auth/sso/login` | — (read-only route) |
+| `/api/chart-config/public` | — (read-only route) |
+| `/api/clicker-sets` | POST, PUT, DELETE |
+| `/api/content-assets` | POST, PUT, DELETE |
+| `/api/countries` | — (read-only route) |
+| `/api/countries/[code]` | — (read-only route) |
+| `/api/csrf-token` | — (read-only route) |
+| `/api/derived-variable-config` | — (read-only route) |
+| `/api/export/pdf` | — (read-only route) |
+| `/api/google-sheets/template` | — (read-only route) |
+| `/api/hashtag-categories` | POST, PUT, DELETE |
+| `/api/hashtag-colors` | POST, PUT, DELETE |
+| `/api/hashtags` | POST, DELETE |
+| `/api/hashtags/[hashtag]` | — (read-only route) |
+| `/api/landing-static` | — (read-only route) |
+| `/api/organizations/report/[id]` | — (read-only route) |
+| `/api/organizations/report/[id]/activities` | — (read-only route) |
+| `/api/partners/report/[slug]` | — (read-only route) |
+| `/api/report-config/[identifier]` | — (read-only route) |
+| `/api/report-styles/[id]` | — (read-only route) |
+| `/api/reports/resolve` | — (read-only route) |
+| `/api/variables-config` | POST, PUT, DELETE |
+| `/api/variables-groups` | POST, DELETE |
 
-Unauthenticated reads exposing business data (medium priority):
-22. `/api/analytics/benchmarks`
-23. `/api/analytics/compare`
-24. `/api/analytics/compare/partners`
-25. `/api/analytics/compare/periods`
-26. `/api/analytics/event/[projectId]`
-27. `/api/analytics/executive/insights`
-28. `/api/analytics/executive/metrics`
-29. `/api/analytics/executive/top-events`
-30. `/api/analytics/insights/[projectId]`
-31. `/api/analytics/partner/[partnerId]`
-32. `/api/analytics/trends`
-   — eleven analytics routes serve aggregated business KPIs with no session, while the sibling `/api/analytics/insights*` and `/api/analytics/aggregates*` routes all require getAdminUser. The split looks accidental, not designed.
-33. `/api/projects` — GET lists every event unauthenticated (writes are guarded).
-34. `/api/admin/partners` — unauthenticated partner list under the /admin prefix.
-35. `/api/hashtags/[hashtag]` — raw-name hashtag stats bypass the page-password layer that `/api/hashtags/filter-by-slug/[slug]` enforces.
-36. `/api/debug/categorized-hashtags` — debug endpoint left open.
-37. `/api/debug/overview-block` — debug endpoint left open.
-38. `/api/content-assets/usage` — low-severity read-only admin helper.
-39. `/api/sports-db/lookup` — unauthenticated proxy spending the server's TheSportsDB quota.
-40. `/api/sports-db/search` — same proxy concern.
+Page passwords, where they apply, are enforced by the routes that serve the
+protected data via `requirePageAccess` — not by these.
 
 ### Corrections to endpoints.json markers found during this pass
 

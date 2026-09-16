@@ -69,7 +69,7 @@ current state and is fully in scope)
   (:4647) — self-contradictory. No section at all on SSO, camera, the three
   auth layers, or CSRF/CORS/rate-limit (MISSING).
 
-## 1b. ~~WRONG~~ FIXED (messmass#349, verified @ 62a47a0d) — guides and feature docs
+## 1b. ~~WRONG~~ FIXED (messmass#349, re-verified @ 8843a535, 2026-09-16) — guides and feature docs
 - ~~**docs/guides/guides-tutorial-authentication-sso.md**~~ FIXED: Section 4
   rewritten to the real OAuth2 authorization-code flow (login → `/api/oauth/authorize`,
   callback → `/api/oauth/token`, central per-app permission store), auto-provisioning,
@@ -146,7 +146,7 @@ factual accuracy.
 - AI-analytics contract-versioning, distinct()/Stable-API notes, page-password
   and integration-token internals — verified.
 
-## 6. ~~Comment health~~ RESOLVED (messmass#353, verified @ a30ff6ca / this wave)
+## 6. ~~Comment health~~ RESOLVED (messmass#353, re-verified @ 8843a535, 2026-09-16)
 - WHAT/WHY adherence good but uneven: integration/auth surface (lib/fanmass*,
   aiRescan, apiGuards, pageAccess, app/api/integrations/**) is best-in-repo
   (comments explain tradeoffs). ~~lib/sponsorshipHub.ts is 1432 lines with ZERO
@@ -154,9 +154,13 @@ factual accuracy.
   single sponsorship-hub read model behind the four scopes and three admin
   surfaces. (app/api/partners/route.ts is now guarded — F-009/#386.)
 - 8 TODO/FIXME total across a 45k-LOC lib/; ~zero commented-out code.
-- ~~Comments contradicting code (9)~~ ALL RESOLVED, re-verified this wave:
-  lib/auth.ts:61-63 now explains the identical ternary is an intentional seam
-  (not "derived from role"); :93 now says "5-role hierarchy". app/api/me and
+- ~~Comments contradicting code (9)~~ ALL RESOLVED, re-verified 2026-09-16.
+  **This entry had itself drifted**: it recorded that lib/auth.ts explained its
+  identical-branch ternary as "an intentional seam". That comment is gone --
+  F-005 (#391) replaced the flat permission constant with a per-role table in
+  lib/roles.ts, so there is no seam left to explain. A register entry that
+  certifies a comment which no longer exists is the same failure the register
+  was built to catch; it is corrected rather than re-stamped. app/api/me and
   app/api/images were removed (dead routes gone, phantom-cookie comments with
   them). lib/config.ts was refactored — no contradictory fallback claim, and the
   WS comment is gone. drive-folders/status route no longer exists.
@@ -213,3 +217,49 @@ factual accuracy.
    webhook advertisement 2026-09-08 (messmass#351, this change).
 5. Rewrite the SSO/auth guide + features-authentication.md against
    app/api/auth/sso/callback/route.ts (both instruct readers to use a 410 endpoint).
+
+## 9. Wave 2026-09-16 — documentation audit (Phase 5) and the sweeps it triggered
+
+Twelve findings (F-025 … F-036) closed, plus four earlier security findings.
+Recorded here because several corrected claims this register had certified.
+
+**architecture.md: 4,665 → 3,799 lines.** 43 falsifiable claims were verified
+false; roughly 85% of its file-path and line-count claims failed. Deleted as
+fiction: the Page Styles System (487 lines of invented endpoints and a hook),
+the Formula Validation System (built on a component that does not exist), the
+PDF export section describing html2canvas and jsPDF (neither is a dependency),
+the chart-type-to-component mapping, and nine "Future Enhancements" blocks.
+293 lines of narrative moved to `docs/archive/architecture-changelog-2026-09.md`.
+Its route inventory and module catalogue are now **generated**, not written —
+`npm run architecture:check` fails when they drift.
+
+**Five CI gates came out of it**, each bound to how this documentation actually
+went wrong, so the drift fails a build instead of accumulating:
+
+| Gate | Catches |
+|---|---|
+| `npm run comments:check` | a comment citing a path that no longer resolves |
+| `npm run comments:versions` | a comment claiming an unshipped version or an overdue removal |
+| `npm run architecture:check` | the generated sections drifting from the filesystem |
+| `tests/comment-counts-match-code.test.ts` | a stated cardinality contradicting the live collection |
+| `tests/admin-only-comments-are-enforced.test.ts` | a route claiming admin-only while guarding on session alone |
+
+**Security posture moved materially.** F-003: the middleware `/admin/**` gate
+tested cookie *presence* — `admin-session=x` passed. It now verifies HS256 via
+Web Crypto (`lib/edgeSessionToken.ts`; the existing validator cannot load in the
+Edge runtime). F-025: 26 routes documented admin-only and enforced no role.
+Five routes accepted anonymous writes, three demonstrated live against the
+running app, not inferred — including `/api/hashtag-categories`, which was not
+unguarded but carried a local `validateAdminAccess()` returning true whenever an
+`admin-session` cookie was merely present, i.e. F-003 re-implemented in one file.
+
+**Dead code**: 1,610 lines across five modules, each with authoritative-sounding
+comments and zero importers. Plus 70 unreachable CSS selectors, and 86 applied
+classes that styled nothing — Tailwind names in a repo with no Tailwind, which
+is why every `alert alert-danger` banner rendered as bare text.
+
+**Still open, deliberately**: F-011 (rotate the two service-account API keys —
+`apiKeyHash` already exists and neither key has ever been used), F-004 (v3 org
+scoping needs a tenancy policy before it can resolve from `organizationIds`),
+F-007 (202 orphaned `page_passwords` rows — a production delete).
+
