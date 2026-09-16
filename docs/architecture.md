@@ -127,7 +127,7 @@ largest, and the ones to read first:
 |--------|-----------|-------|
 | `lib/config.ts` | 107 | 204 |
 | `lib/mongodb.ts` | 93 | 112 |
-| `lib/logger.ts` | 86 | 392 |
+| `lib/logger.ts` | 87 | 392 |
 | `lib/auth.ts` | 84 | 118 |
 | `lib/apiGuards.ts` | 59 | 137 |
 | `lib/apiClient.ts` | 43 | 258 |
