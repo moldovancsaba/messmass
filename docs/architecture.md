@@ -35,12 +35,12 @@ Version: 12.3.36
 **NEVER create custom implementations without checking existing patterns first.**
 
 **Reference Files:**
-- **Modals**: `components/modals/FormModal.tsx` (lines 1-148)
-- **Cards**: `components/ColoredCard.tsx` (lines 1-89)
-- **Forms**: `app/admin/projects/ProjectsPageClient.tsx` (lines 916-960)
-- **Hashtags**: `components/UnifiedHashtagInput.tsx` (lines 1-298)
-- **Partners**: `components/PartnerSelector.tsx` (lines 1-234)
-- **Admin Layout**: `components/UnifiedAdminHeroWithSearch.tsx` (lines 1-450)
+- **Modals**: `components/modals/FormModal.tsx`
+- **Cards**: `components/ColoredCard.tsx`
+- **Forms**: `app/admin/projects/ProjectsPageClient.tsx`
+- **Hashtags**: `components/UnifiedHashtagInput.tsx`
+- **Partners**: `components/PartnerSelector.tsx`
+- **Admin Layout**: `components/UnifiedAdminHeroWithSearch.tsx`
 
 ### Rule 2: Use Design Tokens Exclusively
 
@@ -80,7 +80,7 @@ import FormModal from '@/components/modals/FormModal';
 </FormModal>
 ```
 
-**Real Implementation:** See `app/admin/partners/page.tsx` lines 298-387 for complete example.
+**Real Implementation:** See `app/admin/partners/page.tsx` for complete example.
 
 ### Rule 4: Consequences of Non-Compliance
 
@@ -105,19 +105,47 @@ import FormModal from '@/components/modals/FormModal';
 
 ### Module Inventory & Catalog
 
-**Complete Reference**: `REUSABLE_COMPONENTS_INVENTORY.md`
+Generated from the filesystem by `npm run architecture:generate`; CI fails when
+it drifts. Do not edit between the markers.
 
-**Module Categories** (210+ total modules):
+<!-- GENERATED:modules -->
 
-| Category | Count | Location | Examples |
-|----------|-------|----------|----------|
-| **UI Components** | 60+ | `components/` | FormModal, ColoredCard, UnifiedHashtagInput |
-| **Design Tokens** | 200+ | `app/styles/theme.css` | `--mm-color-primary-500`, `--mm-space-4` |
-| **Utility Functions** | 50+ | `lib/` | `formulaEngine`, `chartCalculator`, `analytics*` |
-| **Utility CSS** | 100+ | `app/styles/utilities.css` | `.flex-center`, `.text-bold`, `.p-4` |
-| **Hooks** | 10+ | `hooks/`, `lib/shareables/` | `usePageStyle`, `useHashtags`, `useAuth` |
-| **Type Definitions** | 20+ | `lib/types/` | API types, hashtag types, chart types |
+| Category | Count | Location |
+|----------|-------|----------|
+| **UI Components** | 104 | `components/` |
+| **Utility Modules** | 202 | `lib/` |
+| **Hooks** | 12 | `hooks/` |
+| **Design Tokens** | 408 | `app/styles/theme.css` |
+| **Utility CSS classes** | 192 | `app/styles/utilities.css` |
+| **App routes (pages)** | 69 | `app/**/page.tsx` |
+| **API routes** | 194 | `app/api/**/route.ts` |
 
+The modules with the most importers — the ones whose change radius is
+largest, and the ones to read first:
+
+| Module | Importers | Lines |
+|--------|-----------|-------|
+| `lib/config.ts` | 107 | 204 |
+| `lib/mongodb.ts` | 93 | 112 |
+| `lib/logger.ts` | 85 | 392 |
+| `lib/auth.ts` | 84 | 119 |
+| `lib/apiGuards.ts` | 54 | 121 |
+| `lib/apiClient.ts` | 44 | 258 |
+| `components/ColoredCard.tsx` | 43 | 52 |
+| `lib/db.ts` | 39 | 17 |
+| `components/MaterialIcon.tsx` | 33 | 119 |
+| `lib/fanmassIntegration.ts` | 30 | 441 |
+| `components/UnifiedAdminHeroWithSearch.tsx` | 26 | 192 |
+| `hooks/useAdminAuth.ts` | 18 | 65 |
+| `lib/permissions.ts` | 18 | 141 |
+| `lib/mongoose-v3.ts` | 18 | 53 |
+| `lib/users.ts` | 17 | 446 |
+
+Importers are counted by resolved import specifier, not by symbol name, so
+a re-export through a barrel file counts for the barrel. A module missing
+from this table has few importers or none; that is not on its own proof it
+is dead — settle reachability with a symbol search and a build.
+<!-- /GENERATED:modules -->
 ### Module Dependency Map
 
 **Critical Dependencies** (update with care):
@@ -172,11 +200,10 @@ grep -r "FormModal" app/ components/ --include="*.tsx" | wc -l
 - **Primary**: `components/modals/FormModal.tsx`
 - **Dependent**: 12 admin pages
   - app/admin/partners/page.tsx
-  - app/admin/variables/page.tsx
   - app/admin/kyc/page.tsx
   - app/admin/categories/page.tsx
-  - app/admin/hashtags/page.tsx
-  - [... 7 more]
+  - app/admin/users/page.tsx
+  - [... the rest; `grep -rl FormModal app/admin` is the live list]
 
 ### Impact Level: HIGH
 - Core component used system-wide
@@ -432,7 +459,6 @@ import PartnerSelector from '@/components/PartnerSelector';
 
 **Unified Admin System Integration** (v10.7.0):
 - Partners page fully migrated to UnifiedAdminPage component
-- Reduced codebase from 1,431 lines (hardcoded HTML table) to 621 lines
 - Uses `partnersAdapter` from `lib/adapters/partnersAdapter.tsx`
 - Server-side search, sort, pagination (matches projects page pattern)
 - Card/list view toggle with localStorage persistence
@@ -517,10 +543,10 @@ import PartnerSelector from '@/components/PartnerSelector';
 **Example Report URL**: `https://messmass.app/partner-report/abc-123-partner-name`
 
 **Files**:
-- `app/partner-report/[slug]/page.tsx` (294 lines) - Report page component
+- `app/partner-report/[slug]/page.tsx` - Report page component
 - `app/styles/report-page.module.css` - Shared report page styles
-- `app/api/partners/report/[slug]/route.ts` (88 lines) - Report API endpoint
-- `lib/adapters/partnersAdapter.tsx` - Report button definition (lines 155-169, 239-250)
+- `app/api/partners/report/[slug]/route.ts` - Report API endpoint
+- `lib/adapters/partnersAdapter.tsx` - Report button definition
 
 #### 6. Database Integration
 
@@ -732,7 +758,7 @@ curl "http://localhost:3000/api/report-config/PROJECT_SLUG?type=project"
 - Current components: `ColoredCard`, `AdminLayout`, `Sidebar`, `TopHeader`
 - All card styling uses `<ColoredCard>` component ONLY (component-based architecture)
 - Admin: `app/admin/layout.tsx` provides AdminLayout wrapper with sidebar navigation
-- Public: `components/PagePasswordLogin.tsx` resolves page style via `/api/page-config`
+- Public: `components/PagePasswordLogin.tsx` resolves page style via `/api/report-config/[id]?type=…` then `/api/report-styles/[styleId]`
 
 ## Configuration Loader
 
@@ -964,100 +990,543 @@ The system supports sophisticated filtering with both traditional and categorize
 
 ## URL Structure and Routing
 
-### Public Pages
-- `/stats/[slug]` - Individual project statistics (password protected)
-- `/edit/[slug]` - Project editing interface (password protected)
-- `/filter/[slug]` - Hashtag filtering and statistics (supports both filter slugs and direct hashtag names)
-- `/hashtag/[hashtag]` - Aggregated statistics for a single hashtag (resurfaced; leverages the same style system)
-- `/partner-report/[slug]` - **Partner report page (v10.7.0)** (password protected, shows profile + related events)
+Generated from `app/` and from `docs/_audit/endpoints.json` (itself gated by
+`npm run inventory:check`) by `npm run architecture:generate`. CI fails when it
+drifts. Do not edit between the markers: a route added, renamed or deleted
+shows up here on the next regeneration, which is the point.
 
-### Admin Pages
-- `/admin` - Admin dashboard with navigation cards
-- `/admin/projects` - **Project management (v10.1.0 - Unified)** (CRUD, card/list toggle, server-side search, CSV export, partner support)
-- `/admin/partners` - **Partner management (v6.0.0)** (CRUD, pagination, search)
-- `/admin/quick-add` - **Sports Match Builder + Sheet Import (v6.0.0)**
-- `/admin/bitly` - Bitly link management and sync
-- `/admin/hashtags` - Hashtag color management
-- `/admin/categories` - **Hashtag category management (v9.3.0 - Unified)** (Card/list toggle, modal CRUD)
-- `/admin/users` - **User management (v9.3.0 - Unified)** (Card/list toggle, modal CRUD)
-- `/admin/filter` - Advanced hashtag filtering tool
-- `/admin/variables` - Variable & metrics configuration
-- `/admin/charts` - Chart configuration management
-- `/admin/design` - UI design customization
-- `/admin/visualization` - Data visualization settings
+<!-- GENERATED:routes -->
 
-### API Endpoints
+### Pages (69)
 
-**Projects** (v10.1.0 - Enhanced Search)
-- `GET /api/projects` - List projects with pagination, search, and sorting
-  - Default mode: cursor pagination by updatedAt desc (nextCursor)
-  - Sort/Search mode: offset pagination with totalMatched/nextOffset
-  - Search: Searches eventName, viewSlug, editSlug, hashtags, categorizedHashtags
-  - **Fixed v10.1.0**: MongoDB regex bug ($regex object + $options conflict)
-  - sortField: eventName | eventDate | images | fans | attendees
-  - sortOrder: asc | desc
-  - Includes partner data population (partner1, partner2 with logos/emojis)
-- `POST /api/projects` - Create new project
-- `PUT /api/projects` - Update existing project
-- `DELETE /api/projects` - Delete project
+| Route | File |
+|-------|------|
+| `/` | `app/page.tsx` |
+| `/admin` | `app/admin/page.tsx` |
+| `/admin/analytics` | `app/admin/analytics/page.tsx` |
+| `/admin/analytics/ai` | `app/admin/analytics/ai/page.tsx` |
+| `/admin/analytics/ai/[eventId]` | `app/admin/analytics/ai/[eventId]/page.tsx` |
+| `/admin/analytics/executive` | `app/admin/analytics/executive/page.tsx` |
+| `/admin/analytics/insights` | `app/admin/analytics/insights/page.tsx` |
+| `/admin/analytics/marketing` | `app/admin/analytics/marketing/page.tsx` |
+| `/admin/analytics/operations` | `app/admin/analytics/operations/page.tsx` |
+| `/admin/analytics/sponsorship` | `app/admin/analytics/sponsorship/page.tsx` |
+| `/admin/analytics/sponsorship/activation` | `app/admin/analytics/sponsorship/activation/page.tsx` |
+| `/admin/analytics/sponsorship/activation/recap/[partnerId]` | `app/admin/analytics/sponsorship/activation/recap/[partnerId]/page.tsx` |
+| `/admin/api-football-enrich` | `app/admin/api-football-enrich/page.tsx` |
+| `/admin/bitly` | `app/admin/bitly/page.tsx` |
+| `/admin/cache` | `app/admin/cache/page.tsx` |
+| `/admin/categories` | `app/admin/categories/page.tsx` |
+| `/admin/charts` | `app/admin/charts/page.tsx` |
+| `/admin/clear-session` | `app/admin/clear-session/page.tsx` |
+| `/admin/clicker-manager` | `app/admin/clicker-manager/page.tsx` |
+| `/admin/content-library` | `app/admin/content-library/page.tsx` |
+| `/admin/cookie-test` | `app/admin/cookie-test/page.tsx` |
+| `/admin/dashboard` | `app/admin/dashboard/page.tsx` |
+| `/admin/design` | `app/admin/design/page.tsx` |
+| `/admin/events` | `app/admin/events/page.tsx` |
+| `/admin/events/[id]/kyc-data` | `app/admin/events/[id]/kyc-data/page.tsx` |
+| `/admin/fanmass` | `app/admin/fanmass/page.tsx` |
+| `/admin/filter` | `app/admin/filter/page.tsx` |
+| `/admin/hashtags` | `app/admin/hashtags/page.tsx` |
+| `/admin/help` | `app/admin/help/page.tsx` |
+| `/admin/help/guides` | `app/admin/help/guides/page.tsx` |
+| `/admin/help/guides/[slug]` | `app/admin/help/guides/[slug]/page.tsx` |
+| `/admin/insights` | `app/admin/insights/page.tsx` |
+| `/admin/kyc` | `app/admin/kyc/page.tsx` |
+| `/admin/login` | `app/admin/login/page.tsx` |
+| `/admin/mainpage` | `app/admin/mainpage/page.tsx` |
+| `/admin/messages` | `app/admin/messages/page.tsx` |
+| `/admin/organizations` | `app/admin/organizations/page.tsx` |
+| `/admin/organizations/[id]/reports` | `app/admin/organizations/[id]/reports/page.tsx` |
+| `/admin/partners` | `app/admin/partners/page.tsx` |
+| `/admin/partners/[id]` | `app/admin/partners/[id]/page.tsx` |
+| `/admin/partners/[id]/analytics` | `app/admin/partners/[id]/analytics/page.tsx` |
+| `/admin/partners/[id]/kyc-data` | `app/admin/partners/[id]/kyc-data/page.tsx` |
+| `/admin/partners/[id]/reports` | `app/admin/partners/[id]/reports/page.tsx` |
+| `/admin/project-partners` | `app/admin/project-partners/page.tsx` |
+| `/admin/projects` | `app/admin/projects/page.tsx` |
+| `/admin/quick-add` | `app/admin/quick-add/page.tsx` |
+| `/admin/register` | `app/admin/register/page.tsx` |
+| `/admin/reports` | `app/admin/reports/page.tsx` |
+| `/admin/styles` | `app/admin/styles/page.tsx` |
+| `/admin/styles/[id]` | `app/admin/styles/[id]/page.tsx` |
+| `/admin/unauthorized` | `app/admin/unauthorized/page.tsx` |
+| `/admin/users` | `app/admin/users/page.tsx` |
+| `/admin/visualization` | `app/admin/visualization/page.tsx` |
+| `/dashboard/filter/[filterSlug]` | `app/dashboard/filter/[filterSlug]/page.tsx` |
+| `/dashboard/hashtag/[hashtag]` | `app/dashboard/hashtag/[hashtag]/page.tsx` |
+| `/dashboard/partner/[partnerId]` | `app/dashboard/partner/[partnerId]/page.tsx` |
+| `/debug/hashtag-categories` | `app/debug/hashtag-categories/page.tsx` |
+| `/edit/[slug]` | `app/edit/[slug]/page.tsx` |
+| `/examples/password-gate-demo` | `app/examples/password-gate-demo/page.tsx` |
+| `/filter/[slug]` | `app/filter/[slug]/page.tsx` |
+| `/hashtag/[hashtag]` | `app/hashtag/[hashtag]/page.tsx` |
+| `/organization-edit/[id]` | `app/organization-edit/[id]/page.tsx` |
+| `/organization-report/[id]` | `app/organization-report/[id]/page.tsx` |
+| `/partner-edit/[slug]` | `app/partner-edit/[slug]/page.tsx` |
+| `/partner-report/[slug]` | `app/partner-report/[slug]/page.tsx` |
+| `/privacy` | `app/privacy/page.tsx` |
+| `/report/[slug]` | `app/report/[slug]/page.tsx` |
+| `/terms` | `app/terms/page.tsx` |
+| `/test-csrf` | `app/test-csrf/page.tsx` |
 
-**Partners** (v6.0.0 / v10.7.0 Enhanced)
-- `GET /api/partners` - List partners with pagination, search, and sorting
-- `POST /api/partners` - Create new partner (auto-generates viewSlug in v10.7.0)
-- `PUT /api/partners` - Update existing partner (auto-generates viewSlug if missing in v10.7.0)
-- `DELETE /api/partners` - Delete partner
-- `GET /api/partners/report/[slug]` - **Fetch partner report data (v10.7.0)** (by viewSlug, includes related events)
+### API routes (194)
 
-**Bitly Integration**
-- `GET /api/bitly/links` - List Bitly links with pagination and search
-- `POST /api/bitly/links` - Create or associate Bitly link
-- `PUT /api/bitly/links` - Update Bitly link metadata
-- `DELETE /api/bitly/links` - Delete Bitly link
-- `POST /api/bitly/pull` - Bulk import links from Bitly account
-- `POST /api/bitly/sync` - Sync analytics data for all links
-- `POST /api/bitly/sync/[linkId]` - Sync analytics for specific link
-- `GET /api/bitly/associations` - Get link-project associations
-- `POST /api/bitly/associations` - Create link-project association
-- `DELETE /api/bitly/associations` - Remove link-project association
+`auth` is the guard symbol the route actually calls. A blank cell
+means the route calls none — public by construction, or a gap.
 
-**Hashtags & Filtering**
-- `GET /api/hashtags` - List hashtags with counts (supports search + pagination)
-- `POST /api/hashtags/filter` - Admin hashtag filtering
-- `GET /api/hashtags/filter-by-slug/[slug]` - Public filtering (slugs or direct queries)
-- `GET /api/hashtags/slugs` - Available hashtag listing
-- `GET /api/hashtags/[hashtag]` - Aggregated stats for single hashtag
+#### `/api/admin`
 
-**Hashtag Categories**
-- `GET /api/hashtag-categories` - List categories with search and pagination
-- `POST /api/hashtag-categories` - Create category; requires `admin-session`
-- `PUT /api/hashtag-categories` - Update category by `id` in the request body; requires `admin-session`
-- `DELETE /api/hashtag-categories?id=<categoryId>` - Delete category; requires `admin-session`
+| Route | Methods | Auth |
+|-------|---------|------|
+| `/api/admin/auth` | GET | `getAdminUser` |
+| `/api/admin/clear-cache` | POST | `getAdminUser` |
+| `/api/admin/clear-cookies` | GET, POST | — |
+| `/api/admin/contact-inquiries` | GET | `getAdminUser` |
+| `/api/admin/email-selftest` | GET | `requireSession` |
+| `/api/admin/fanmass/commands` | POST | `getAdminUser` |
+| `/api/admin/fanmass/events` | GET | `getAdminUser, requireAdmin` |
+| `/api/admin/fanmass/events/[eventId]` | GET, POST | `getAdminUser, requireAdmin` |
+| `/api/admin/fanmass/snapshot` | GET | `getAdminUser, requireAdmin` |
+| `/api/admin/filter-style` | GET, POST | `requireAdmin` |
+| `/api/admin/fix-mojibake-text` | GET | `getAdminUser` |
+| `/api/admin/hashtag-style` | GET, POST | `requireAdmin` |
+| `/api/admin/landing-projects` | GET | `getAdminUser` |
+| `/api/admin/landing-settings` | GET, PUT | `getAdminUser` |
+| `/api/admin/landing-static-generate` | POST | `getAdminUser` |
+| `/api/admin/local-users` | GET, POST | `getAdminUser` |
+| `/api/admin/local-users/[id]` | PUT, DELETE | `getAdminUser` |
+| `/api/admin/local-users/[id]/api-access` | POST, PUT | `getAdminUser` |
+| `/api/admin/local-users/[id]/send-email` | POST | `getAdminUser` |
+| `/api/admin/login` | POST, DELETE | — |
+| `/api/admin/organizations` | GET, POST | `getAdminUser` |
+| `/api/admin/organizations/[id]` | GET, PUT, PATCH, DELETE | `getAdminUser` |
+| `/api/admin/organizations/[id]/members` | GET, PUT | `getAdminUser` |
+| `/api/admin/partners` | GET | `requireSession` |
+| `/api/admin/permissions` | GET, POST, DELETE | — |
+| `/api/admin/project-partners` | GET, PUT | `getAdminUser, requireAdmin, requireSession` |
+| `/api/admin/project-partners/auto-suggest` | POST | `requireSession` |
+| `/api/admin/projects/[id]` | DELETE | — |
+| `/api/admin/register` | POST | — |
+| `/api/admin/sync-events-to-camera` | GET | `getAdminUser` |
+| `/api/admin/sync-partners-to-camera` | GET | `getAdminUser` |
+| `/api/admin/ui-settings` | GET, PUT | `requireAdmin` |
+| `/api/admin/users/[id]/role` | PUT | `getAdminUser` |
+| `/api/admin/variables/merge` | POST | `getAdminUser` |
+| `/api/admin/variables/merge-candidates` | GET | `getAdminUser` |
 
-**Variables & Metrics**
-- `GET /api/variables-config` - Fetch all variables with flags and ordering
-- `POST /api/variables-config` - Create/update variable metadata and flags
-- `DELETE /api/variables-config` - Delete custom variable
-- `GET /api/variables-groups` - Fetch variable groups
-- `POST /api/variables-groups` - Create/update group or seed defaults
-- `DELETE /api/variables-groups` - Delete all groups
+#### `/api/analytics`
 
-**Notifications**
-- `GET /api/notifications` - Fetch notifications for current user
-- `POST /api/notifications` - Create notification (internal)
-- `PUT /api/notifications/mark-read` - Mark as read or archive
+| Route | Methods | Auth |
+|-------|---------|------|
+| `/api/analytics/aggregates` | GET | `getAdminUser` |
+| `/api/analytics/aggregates/partners` | GET | `getAdminUser` |
+| `/api/analytics/ai/coverage` | GET | `getAdminUser` |
+| `/api/analytics/ai/events` | GET | `getAdminUser` |
+| `/api/analytics/ai/events/[eventId]/drive-sync` | POST | `getAdminUser` |
+| `/api/analytics/ai/events/[eventId]/rescan` | GET, POST | `getAdminUser` |
+| `/api/analytics/ai/events/[eventId]/summary` | GET | `getAdminUser` |
+| `/api/analytics/ai/variables` | GET | `getAdminUser` |
+| `/api/analytics/benchmarks` | GET | `requireSession` |
+| `/api/analytics/compare` | GET | `requireSession` |
+| `/api/analytics/compare/partners` | GET | `requireSession` |
+| `/api/analytics/compare/periods` | GET | `requireSession` |
+| `/api/analytics/event/[projectId]` | GET | `requireSession` |
+| `/api/analytics/executive/insights` | GET | `requireSession` |
+| `/api/analytics/executive/metrics` | GET | `requireSession` |
+| `/api/analytics/executive/top-events` | GET | `requireSession` |
+| `/api/analytics/insights` | GET | `getAdminUser` |
+| `/api/analytics/insights/[projectId]` | GET | `requireSession` |
+| `/api/analytics/insights/organizations/[orgId]` | GET | `getAdminUser` |
+| `/api/analytics/insights/partners/[partnerId]` | GET | `getAdminUser` |
+| `/api/analytics/insights/summary` | GET | `getAdminUser` |
+| `/api/analytics/partner/[partnerId]` | GET | `requireSession` |
+| `/api/analytics/sponsorship-hub` | GET | `getAdminUser` |
+| `/api/analytics/trends` | GET | `requireSession` |
 
-**Configuration**
-- `GET /api/page-config` - Page styling configuration
-- `GET /api/chart-config` - Chart configuration
-- `GET /api/hashtag-colors` - Hashtag color management
+#### `/api/api-football`
 
-### URL Notes (v2.6.0 → v2.10.0)
-- v2.6.0: Hashtag pages were deprecated in favor of the unified filter system
-- v2.10.0: `/hashtag/[hashtag]` is available for single-hashtag aggregated stats (shares styling and components with filter/stats pages)
-- Redirect behavior may exist for legacy routes, but the hashtag page is supported and styled
+| Route | Methods | Auth |
+|-------|---------|------|
+| `/api/api-football/enrich-partners` | GET, POST | `getAdminUser` |
+
+#### `/api/auth`
+
+| Route | Methods | Auth |
+|-------|---------|------|
+| `/api/auth/check` | GET | `getAdminUser` |
+| `/api/auth/sso/callback` | GET | — |
+| `/api/auth/sso/config` | GET | — |
+| `/api/auth/sso/login` | GET | — |
+
+#### `/api/auto-generate-chart-block`
+
+| Route | Methods | Auth |
+|-------|---------|------|
+| `/api/auto-generate-chart-block` | POST | — |
+
+#### `/api/available-fonts`
+
+| Route | Methods | Auth |
+|-------|---------|------|
+| `/api/available-fonts` | GET, POST, PUT, DELETE | `requireSession` |
+
+#### `/api/bitly`
+
+| Route | Methods | Auth |
+|-------|---------|------|
+| `/api/bitly/analytics/[linkId]` | GET | `getAdminUser` |
+| `/api/bitly/associations` | DELETE | `getAdminUser` |
+| `/api/bitly/links` | GET, POST | `getAdminUser` |
+| `/api/bitly/links/[linkId]` | PUT, DELETE | `getAdminUser` |
+| `/api/bitly/partners/associate` | POST, DELETE | `getAdminUser` |
+| `/api/bitly/project-metrics/[projectId]` | GET | `requireSession` |
+| `/api/bitly/pull` | POST | `getAdminUser` |
+| `/api/bitly/recalculate` | GET, POST | `requireSession` |
+| `/api/bitly/sync` | GET, POST | `getAdminUser` |
+
+#### `/api/blob-upload-token`
+
+| Route | Methods | Auth |
+|-------|---------|------|
+| `/api/blob-upload-token` | POST | `requireSession` |
+
+#### `/api/chart-config`
+
+| Route | Methods | Auth |
+|-------|---------|------|
+| `/api/chart-config` | GET, POST, PUT, DELETE | `getAdminUser` |
+| `/api/chart-config/public` | GET | — |
+
+#### `/api/chart-configs`
+
+| Route | Methods | Auth |
+|-------|---------|------|
+| `/api/chart-configs` | GET | `requireSession` |
+
+#### `/api/chart-formatting-defaults`
+
+| Route | Methods | Auth |
+|-------|---------|------|
+| `/api/chart-formatting-defaults` | GET, PUT | `requireSession` |
+
+#### `/api/charts`
+
+| Route | Methods | Auth |
+|-------|---------|------|
+| `/api/charts` | GET, POST, DELETE | `requireSession` |
+
+#### `/api/cities`
+
+| Route | Methods | Auth |
+|-------|---------|------|
+| `/api/cities` | GET | `requireSession` |
+
+#### `/api/clicker-sets`
+
+| Route | Methods | Auth |
+|-------|---------|------|
+| `/api/clicker-sets` | GET, POST, PUT, DELETE | `requireAdmin` |
+
+#### `/api/client-error`
+
+| Route | Methods | Auth |
+|-------|---------|------|
+| `/api/client-error` | POST | — |
+
+#### `/api/contact`
+
+| Route | Methods | Auth |
+|-------|---------|------|
+| `/api/contact` | POST | — |
+
+#### `/api/content-assets`
+
+| Route | Methods | Auth |
+|-------|---------|------|
+| `/api/content-assets` | GET, POST, PUT, DELETE | `getAdminUser, requireSession` |
+| `/api/content-assets/usage` | GET | `requireSession` |
+
+#### `/api/countries`
+
+| Route | Methods | Auth |
+|-------|---------|------|
+| `/api/countries` | GET | — |
+| `/api/countries/[code]` | GET | — |
+
+#### `/api/cron`
+
+| Route | Methods | Auth |
+|-------|---------|------|
+| `/api/cron/analytics-aggregation` | GET, POST | `getAdminUser` |
+| `/api/cron/bitly-refresh` | GET, POST | — |
+| `/api/cron/google-sheets-sync` | GET | — |
+
+#### `/api/csrf-token`
+
+| Route | Methods | Auth |
+|-------|---------|------|
+| `/api/csrf-token` | GET | — |
+
+#### `/api/data-blocks`
+
+| Route | Methods | Auth |
+|-------|---------|------|
+| `/api/data-blocks` | GET, POST, PUT, DELETE | `requireAdmin` |
+
+#### `/api/debug`
+
+| Route | Methods | Auth |
+|-------|---------|------|
+| `/api/debug/categorized-hashtags` | GET | `requireSession` |
+| `/api/debug/notifications` | GET | `getAdminUser` |
+| `/api/debug/overview-block` | GET | `requireSession` |
+
+#### `/api/derived-variable-config`
+
+| Route | Methods | Auth |
+|-------|---------|------|
+| `/api/derived-variable-config` | GET | — |
+
+#### `/api/drive-folders`
+
+| Route | Methods | Auth |
+|-------|---------|------|
+| `/api/drive-folders` | GET, POST | `getAdminUser` |
+| `/api/drive-folders/[linkId]` | PATCH, DELETE | `getAdminUser` |
+
+#### `/api/export`
+
+| Route | Methods | Auth |
+|-------|---------|------|
+| `/api/export/pdf` | GET | — |
+
+#### `/api/filter-slug`
+
+| Route | Methods | Auth |
+|-------|---------|------|
+| `/api/filter-slug` | POST | `requireSession` |
+
+#### `/api/football-data`
+
+| Route | Methods | Auth |
+|-------|---------|------|
+| `/api/football-data/fixtures` | GET | `getAdminUser` |
+| `/api/football-data/sync` | POST | `getAdminUser` |
+
+#### `/api/google-sheets`
+
+| Route | Methods | Auth |
+|-------|---------|------|
+| `/api/google-sheets/template` | GET | — |
+
+#### `/api/grid-settings`
+
+| Route | Methods | Auth |
+|-------|---------|------|
+| `/api/grid-settings` | GET, PUT | `requireSession` |
+
+#### `/api/hashtag-categories`
+
+| Route | Methods | Auth |
+|-------|---------|------|
+| `/api/hashtag-categories` | GET, POST, PUT, DELETE | — |
+
+#### `/api/hashtag-colors`
+
+| Route | Methods | Auth |
+|-------|---------|------|
+| `/api/hashtag-colors` | GET, POST, PUT, DELETE | — |
+
+#### `/api/hashtags`
+
+| Route | Methods | Auth |
+|-------|---------|------|
+| `/api/hashtags` | GET, POST, DELETE | — |
+| `/api/hashtags/[hashtag]` | GET | — |
+| `/api/hashtags/filter` | GET, POST | `requireSession` |
+| `/api/hashtags/filter-by-slug/[slug]` | GET | `requirePageAccess` |
+| `/api/hashtags/slugs` | GET | `requireSession` |
+
+#### `/api/integrations`
+
+| Route | Methods | Auth |
+|-------|---------|------|
+| `/api/integrations/camera/link-partners` | POST | `requireFanmassIntegrationAuth` |
+| `/api/integrations/camera/partners` | POST | — |
+| `/api/integrations/camera/provision-missing` | POST | `requireFanmassIntegrationAuth` |
+| `/api/integrations/camera/sso-session` | POST | — |
+| `/api/integrations/fanmass/callbacks` | POST | `requireFanmassIntegrationAuth` |
+| `/api/integrations/fanmass/commands` | GET | `requireFanmassIntegrationAuth` |
+| `/api/integrations/fanmass/commands/[commandId]` | DELETE | `requireFanmassIntegrationAuth` |
+| `/api/integrations/fanmass/dashboard-snapshot` | POST | `requireFanmassIntegrationAuth` |
+| `/api/integrations/fanmass/drive-folders` | GET | `requireFanmassIntegrationAuth` |
+| `/api/integrations/fanmass/drive-folders/pending-sync` | GET | `requireFanmassIntegrationAuth` |
+| `/api/integrations/fanmass/events` | POST | `requireFanmassIntegrationAuth` |
+| `/api/integrations/fanmass/events/[eventId]/analysis-summary` | POST | `requireFanmassIntegrationAuth` |
+| `/api/integrations/fanmass/events/[eventId]/context` | GET | `requireFanmassIntegrationAuth` |
+| `/api/integrations/fanmass/events/[eventId]/drive-folders/status` | POST | `requireFanmassIntegrationAuth` |
+| `/api/integrations/fanmass/events/[eventId]/link` | GET, POST | `requireFanmassIntegrationAuth` |
+| `/api/integrations/fanmass/events/[eventId]/stats` | POST | `requireFanmassIntegrationAuth` |
+| `/api/integrations/fanmass/events/[eventId]/sync` | GET, POST | `requireFanmassIntegrationAuth` |
+| `/api/integrations/fanmass/partners` | GET, POST | `requireFanmassIntegrationAuth` |
+| `/api/integrations/fanmass/partners/[partnerId]/events` | GET | `requireFanmassIntegrationAuth` |
+| `/api/integrations/fanmass/rescan-requests` | GET | `requireFanmassIntegrationAuth` |
+| `/api/integrations/fanmass/rescan-requests/[eventId]` | DELETE | `requireFanmassIntegrationAuth` |
+| `/api/integrations/fanmass/variables` | GET, POST | `requireFanmassIntegrationAuth` |
+
+#### `/api/landing-static`
+
+| Route | Methods | Auth |
+|-------|---------|------|
+| `/api/landing-static` | GET | — |
+
+#### `/api/notifications`
+
+| Route | Methods | Auth |
+|-------|---------|------|
+| `/api/notifications` | GET | `getAdminUser` |
+| `/api/notifications/mark-read` | PUT | `getAdminUser` |
+
+#### `/api/organizations`
+
+| Route | Methods | Auth |
+|-------|---------|------|
+| `/api/organizations/edit/[id]` | GET, PUT | `getAdminUser` |
+| `/api/organizations/report/[id]` | GET | — |
+| `/api/organizations/report/[id]/activities` | GET | — |
+
+#### `/api/page-passwords`
+
+| Route | Methods | Auth |
+|-------|---------|------|
+| `/api/page-passwords` | GET, POST, PUT, DELETE | `getAdminUser, requireSession` |
+
+#### `/api/partners`
+
+| Route | Methods | Auth |
+|-------|---------|------|
+| `/api/partners` | GET, POST, PUT, DELETE | `requireAdmin` |
+| `/api/partners/[id]/bitly-kyc` | GET | `getAdminUser` |
+| `/api/partners/[id]/events` | GET | `requireSession` |
+| `/api/partners/[id]/google-sheet/connect` | POST | `requireSession` |
+| `/api/partners/[id]/google-sheet/disconnect` | DELETE | `requireSession` |
+| `/api/partners/[id]/google-sheet/provision` | POST | `requireSession` |
+| `/api/partners/[id]/google-sheet/pull` | POST | `requireSession` |
+| `/api/partners/[id]/google-sheet/push` | POST | `requireSession` |
+| `/api/partners/[id]/google-sheet/rename` | POST | `requireSession` |
+| `/api/partners/[id]/google-sheet/setup` | POST | `requireSession` |
+| `/api/partners/[id]/google-sheet/status` | GET | `requireSession` |
+| `/api/partners/edit/[slug]` | GET, PUT | `getAdminUser` |
+| `/api/partners/link-football-data` | POST | `getAdminUser` |
+| `/api/partners/report/[slug]` | GET | — |
+| `/api/partners/upload-logo` | POST | `requireSession` |
+
+#### `/api/projects`
+
+| Route | Methods | Auth |
+|-------|---------|------|
+| `/api/projects` | GET, POST, PUT, DELETE | `requireAdmin` |
+| `/api/projects/[id]` | GET, PUT, DELETE | `requireSession` |
+| `/api/projects/edit/[slug]` | GET | `requirePageAccess` |
+| `/api/projects/stats/[slug]` | GET | `requirePageAccess` |
+
+#### `/api/public`
+
+| Route | Methods | Auth |
+|-------|---------|------|
+| `/api/public/events/[id]` | GET, OPTIONS | — |
+| `/api/public/partners` | GET, OPTIONS | — |
+| `/api/public/partners/[id]` | GET, OPTIONS | — |
+| `/api/public/partners/[id]/events` | GET, OPTIONS | — |
+
+#### `/api/report-config`
+
+| Route | Methods | Auth |
+|-------|---------|------|
+| `/api/report-config/[identifier]` | GET | — |
+
+#### `/api/report-styles`
+
+| Route | Methods | Auth |
+|-------|---------|------|
+| `/api/report-styles` | GET, POST, PUT, DELETE | — |
+| `/api/report-styles/[id]` | GET | — |
+
+#### `/api/report-templates`
+
+| Route | Methods | Auth |
+|-------|---------|------|
+| `/api/report-templates` | GET, POST, PUT, DELETE | `getAdminUser` |
+| `/api/report-templates/assign` | POST, DELETE | `getAdminUser` |
+
+#### `/api/report-variants`
+
+| Route | Methods | Auth |
+|-------|---------|------|
+| `/api/report-variants` | GET, POST | `getAdminUser` |
+| `/api/report-variants/[id]` | GET, PUT | `getAdminUser` |
+
+#### `/api/reports`
+
+| Route | Methods | Auth |
+|-------|---------|------|
+| `/api/reports/resolve` | GET | — |
+
+#### `/api/sports-db`
+
+| Route | Methods | Auth |
+|-------|---------|------|
+| `/api/sports-db/fixtures` | GET | `getAdminUser` |
+| `/api/sports-db/fixtures/draft` | POST | `getAdminUser` |
+| `/api/sports-db/lookup` | GET, POST, PUT, DELETE | `requireSession` |
+| `/api/sports-db/search` | GET, POST, PUT, DELETE | `requireSession` |
+| `/api/sports-db/sync` | POST | `getAdminUser` |
+
+#### `/api/stats`
+
+| Route | Methods | Auth |
+|-------|---------|------|
+| `/api/stats` | GET | `requireSession` |
+
+#### `/api/user-preferences`
+
+| Route | Methods | Auth |
+|-------|---------|------|
+| `/api/user-preferences` | GET, PUT | `getAdminUser` |
+
+#### `/api/v3`
+
+| Route | Methods | Auth |
+|-------|---------|------|
+| `/api/v3/activities` | GET | — |
+| `/api/v3/activities/[id]/participants` | GET, POST | — |
+| `/api/v3/activities/[id]/participants/[entityId]` | DELETE | — |
+| `/api/v3/entities` | GET | — |
+| `/api/v3/entities/[id]` | GET | — |
+| `/api/v3/health` | GET, POST | — |
+| `/api/v3/metrics/record` | POST | — |
+| `/api/v3/organizations/report/[id]` | GET | — |
+| `/api/v3/organizations/report/[id]/activities` | GET | `getAdminUser` |
+| `/api/v3/reporting/dashboard` | GET | — |
+| `/api/v3/reporting/export/[entityId]` | GET | — |
+| `/api/v3/reports/resolve` | GET | — |
+
+#### `/api/variables-config`
+
+| Route | Methods | Auth |
+|-------|---------|------|
+| `/api/variables-config` | GET, POST, PUT, DELETE | — |
+
+#### `/api/variables-groups`
+
+| Route | Methods | Auth |
+|-------|---------|------|
+| `/api/variables-groups` | GET, POST, DELETE | `requireAdmin` |
+<!-- /GENERATED:routes -->
 
 ---
-
 ## 📊 Reporting System v12 Architecture
 **Last Updated: 2026-01-16T11:30:00.000Z
 **Status:** Production (v12.0.0 migration in progress)
@@ -1097,14 +1566,14 @@ ReportChart (app/report/[slug]/ReportChart.tsx)
 #### 2. Core Components
 
 **Primary Renderer:**
-- **`app/report/[slug]/ReportChart.tsx`** - Unified v12 chart renderer (400 lines)
+- **`app/report/[slug]/ReportChart.tsx`** - Unified v12 chart renderer
   - Supports all 6 chart types
   - Atomic component design
   - Type-safe props interface
   - No-data state handling
 
 **Layout Management:**
-- **`app/report/[slug]/ReportContent.tsx`** - Grid layout & block rendering (350 lines)
+- **`app/report/[slug]/ReportContent.tsx`** - Grid layout & block rendering
   - Responsive row system
   - Width measurement with ResizeObserver
   - Height calculation via blockHeightCalculator
@@ -1118,7 +1587,7 @@ ReportChart (app/report/[slug]/ReportChart.tsx)
   - Type conversion
 
 **Formula Engine:**
-- **`lib/formulaEngine.ts`** - Formula parsing & evaluation (735 lines)
+- **`lib/formulaEngine.ts`** - Formula parsing & evaluation
   - Stats variable resolution
   - PARAM token support (marketing multipliers)
   - MANUAL token support (aggregated data)
@@ -1149,7 +1618,7 @@ block height solver. See
   solver multiplies by.
 
 #### 4. Builder Mode
-**Component:** `components/BuilderMode.tsx` (226 lines)
+**Component:** `components/BuilderMode.tsx`
 
 **Purpose:** Visual report template editor with inline inputs
 
@@ -1163,11 +1632,11 @@ BuilderMode
 │   ├── /api/chart-config/public
 │   └── All chart definitions loaded
 ├── Chart Builders (Type-Specific)
-│   ├── ChartBuilderKPI.tsx (92 lines) - 1 numeric input
-│   ├── ChartBuilderBar.tsx (125 lines) - 5 inputs with colors
-│   ├── ChartBuilderPie.tsx (163 lines) - 2 inputs with percentages
-│   ├── ChartBuilderImage.tsx (57 lines) - Image uploader
-│   └── ChartBuilderText.tsx (57 lines) - Textarea editor
+│   ├── ChartBuilderKPI.tsx - 1 numeric input
+│   ├── ChartBuilderBar.tsx - 5 inputs with colors
+│   ├── ChartBuilderPie.tsx - 2 inputs with percentages
+│   ├── ChartBuilderImage.tsx - Image uploader
+│   └── ChartBuilderText.tsx - Textarea editor
 └── Save Mechanism
     └── Parent EditorDashboard.saveProject()
 ```
@@ -1186,7 +1655,7 @@ BuilderMode
 4. Hardcoded fallback (empty state)
 
 #### 5. Report Content Manager
-**Component:** `components/ReportContentManager.tsx` (350 lines)
+**Component:** `components/ReportContentManager.tsx`
 
 **Purpose:** Manage reportImageN and reportTextN slots (1-500)
 
@@ -2068,7 +2537,7 @@ interface VariableMetadata {
 - Shows alias if set: "Women" (badge)
 - Lock icon for system variables (cannot delete)
 
-#### 5. Clicker Variables Manager (`/app/admin/variables/page.tsx`)
+#### 5. Clicker Variables Manager (`app/admin/clicker-manager/page.tsx`)
 
 **Purpose**: Control which variables appear in Editor clicker and their button order
 
@@ -2860,7 +3329,7 @@ migration plan for removing a workaround from a file that had already been delet
 {messmass} has three independent auth layers plus one cross-app bridge — there is no single "the" auth system:
 
 1. **Admin session (SSO)** — Interactive sign-in is exclusively the DoneIsBetter SSO OAuth2 authorization-code flow: `/api/auth/sso/login` redirects to `SSO_BASE_URL/api/oauth/authorize`; `/api/auth/sso/callback` exchanges the code at `SSO_BASE_URL/api/oauth/token`, resolves the caller's role from the SSO central per-app permission store, and sets an HttpOnly, signed-JWT `admin-session` cookie (7-day expiry) plus `auth-source=sso`. The legacy local email/password login (`POST /api/admin/login`) is retired and returns **410 Gone** — there are no admin passwords stored in MongoDB to check. Protected `/admin/**` and `/dashboard/**` routes read this cookie via `getAdminUser()` (`lib/auth.ts`); `middleware.ts` itself only checks that the cookie is *present* before letting a request through, not that it is a valid, unexpired session — see "Security Measures" below and messmass#392 (LLD finding F-003).
-2. **Page passwords** — Per-page/event password gates (`lib/pagePassword.ts`, bcrypt-hashed, MongoDB-stored) let a non-admin viewer (an employee, a client) reach a specific `/stats/[slug]` or `/edit/[slug]` page without an admin session. A validated password is recorded as a server-issued `page-access` grant cookie (`lib/pageAccess.ts`), entirely independent of the `admin-session` cookie.
+2. **Page passwords** — Per-page/event password gates (`lib/pagePassword.ts`, bcrypt-hashed, MongoDB-stored) let a non-admin viewer (an employee, a client) reach a specific `/report/[slug]` or `/edit/[slug]` page without an admin session. A validated password is recorded as a server-issued `page-access` grant cookie (`lib/pageAccess.ts`), entirely independent of the `admin-session` cookie.
 3. **Machine/API tokens** — Non-browser callers authenticate with a bearer credential instead of a cookie, and both mechanisms are exempt from CSRF (which only defends cookie-borne authority): the fleet's `/api/integrations/fanmass/**` routes accept a single shared integration token (`requireFanmassIntegrationAuth`, `lib/fanmassIntegration.ts`) compared against one configured secret; the public API (`/api/public/**`) instead accepts a per-user Bearer token (`requireAPIAuth`, `lib/apiAuth.ts`) gated by that user's own `apiKeyEnabled`/`apiWriteEnabled` flags, with usage tracked per user.
 
 **Camera integration**: camera (a sibling app in the same fleet) has its own separate shared secret (`config.cameraProvisionToken`, checked by `assertCameraSecret()` in `lib/cameraClient.ts`) for its `/api/integrations/camera/**` routes. One of those, `POST /api/integrations/camera/sso-session`, lets a user who already authenticated in camera via the same DoneIsBetter SSO get a real messmass `admin-session` cookie without a second OAuth round-trip — it independently re-validates the forwarded SSO access token against `SSO_BASE_URL` (it does not trust a role or user id asserted by the caller).
@@ -2911,7 +3380,7 @@ Note: `ADMIN_PASSWORD` is no longer applicable — local admin login was removed
 **Purpose:** UUID-based slugs for secure, password-less access to projects.
 
 **Implementation:**
-- **`viewSlug`** (UUID v4): Read-only public access to `/stats/[slug]`
+- **`viewSlug`** (UUID v4): Read-only public access to `/report/[slug]`
 - **`editSlug`** (UUID v4): Editor access to `/edit/[slug]`
 
 **Key Features:**

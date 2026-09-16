@@ -62,6 +62,10 @@ jobs:
       # ...nor claim a version that never shipped, nor a removal already
       # overdue (F-031, #406).
       - run: npm run comments:versions
+      # The route inventory and module catalogue in architecture.md are
+      # generated, not written. Add a route, rename a component, and this
+      # fails until they are regenerated (F-035, #410).
+      - run: npm run architecture:check
       - run: npx tsx scripts/check-dependency-guardrail.ts
       - run: npx tsx scripts/check-layout-grammar-guardrail.ts
       - run: npm run build
