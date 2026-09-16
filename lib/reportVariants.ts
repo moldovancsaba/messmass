@@ -298,18 +298,46 @@ export async function resolveReportVariant(
   variantSlug?: string | null
 ): Promise<ResolvedReportVariant> {
   const { baseSource, variants } = await listReportVariants(db, ownerType, ownerId);
+
+  // Archived variants are not served. The admin workspace offers an
+  // Archive/Publish toggle, and until this filter existed pressing Archive
+  // changed a badge and nothing else -- the variant kept resolving on its
+  // public URL. `listReportVariants` deliberately still returns every status,
+  // because the workspace has to show archived ones in order to un-archive
+  // them; the exclusion belongs here, at the runtime edge.
+  //
+  // `draft` is NOT excluded, and that is a live question rather than an
+  // oversight: the spec defines status as `active | archived` with no draft
+  // state, but the implementation creates every variant as `draft`, so every
+  // variant in production is one. Excluding drafts here would 404 all of them
+  // at once. Recorded on messmass#244 for a decision.
+  const servable = variants.filter((variant) => variant.status !== 'archived');
+
   const selectedVariant = variantSlug
-    ? variants.find((variant) => variant.slug === variantSlug || variant._id === variantSlug)
-    : variants.find((variant) => variant.isDefault) || variants[0];
+    ? servable.find((variant) => variant.slug === variantSlug || variant._id === variantSlug)
+    : servable.find((variant) => variant.isDefault) || servable[0];
 
   if (!selectedVariant) {
-    throw new Error('Report variant not found');
+    // 404, not 500. A slug that names an archived or non-existent variant is a
+    // bad request for a thing that is not there -- routes surface a thrown
+    // error as 500 unless it carries a status, and "Archive this report" ending
+    // in a server error would read as the archive having broken something.
+    throw Object.assign(new Error('Report variant not found'), {
+      status: 404,
+      code: 'REPORT_VARIANT_NOT_FOUND',
+    });
   }
 
   const runtimeReport = await resolveRuntimeReportById(
     db,
     selectedVariant.reportTemplateId || baseSource.reportTemplateId,
-    ownerType === 'organization' ? 'partner' : 'partner'
+    // 'partner' for every owner type, stated plainly. This was written as
+    // `ownerType === 'organization' ? 'partner' : 'partner'` -- identical on
+    // both branches, the third instance of that pattern found in this codebase
+    // (see F-004, F-005). It reads as a decision and never was one:
+    // resolveRuntimeReportById's parameter only accepts 'event' | 'partner',
+    // so there is no organization value to choose.
+    'partner'
   );
 
   if (runtimeReport.report) {

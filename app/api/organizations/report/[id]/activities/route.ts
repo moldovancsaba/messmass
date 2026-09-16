@@ -131,6 +131,6 @@ export async function GET(
     return NextResponse.json({
       success: false,
       error: error instanceof Error ? error.message : 'Failed to fetch organization activities',
-    }, { status: 500 });
+    }, { status: (error as { status?: number })?.status ?? 500 });
   }
 }

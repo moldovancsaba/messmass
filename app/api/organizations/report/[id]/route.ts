@@ -216,10 +216,16 @@ export async function GET(
       totalEntities: entities.length,
     });
   } catch (error) {
-    console.error('Failed to fetch organization report:', error);
+    // Honour a status the thrown error carries (resolveReportVariant marks a
+    // missing or archived variant 404); only an unlabelled error is a 500.
+    const status = (error as { status?: number })?.status ?? 500;
+    if (status >= 500) {
+      console.error('Failed to fetch organization report:', error);
+    }
     return NextResponse.json({
       success: false,
       error: error instanceof Error ? error.message : 'Failed to fetch organization report',
-    }, { status: 500 });
+      code: (error as { code?: string })?.code,
+    }, { status });
   }
 }

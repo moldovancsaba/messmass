@@ -184,7 +184,7 @@ const db = client.db(config.dbName);
         success: false, 
         error: error instanceof Error ? error.message : 'Failed to fetch partner report' 
       },
-      { status: 500 }
+      { status: (error as { status?: number })?.status ?? 500 }
     );
   }
 }
