@@ -9,6 +9,8 @@
  * Created: 2025-10-19T12:43:10.000Z
  */
 
+import { calculateMean, calculateStdDev } from './statistics';
+
 export type AnomalyType = 'positive' | 'negative' | 'neutral';
 export type AnomalyMethod = 'z-score' | 'iqr' | 'percent-change';
 export type AnomalySeverity = 'critical' | 'warning' | 'info';
@@ -30,26 +32,6 @@ export interface AnomalyResult {
     baseline?: number;
   };
   message: string;
-}
-
-/**
- * WHAT: Calculate mean of an array
- * WHY: Required for Z-Score calculation
- */
-function calculateMean(values: number[]): number {
-  if (values.length === 0) return 0;
-  return values.reduce((sum, val) => sum + val, 0) / values.length;
-}
-
-/**
- * WHAT: Calculate standard deviation
- * WHY: Required for Z-Score calculation
- */
-function calculateStdDev(values: number[], mean: number): number {
-  if (values.length === 0) return 0;
-  const squaredDiffs = values.map((val) => Math.pow(val - mean, 2));
-  const variance = squaredDiffs.reduce((sum, val) => sum + val, 0) / values.length;
-  return Math.sqrt(variance);
 }
 
 /**

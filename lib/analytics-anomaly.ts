@@ -10,6 +10,8 @@
  * - Moving Average Method: Deviation from rolling average
  */
 
+import { calculateMean, calculateStdDev } from './statistics';
+
 // ============================================================================
 // TYPES
 // ============================================================================
@@ -302,27 +304,6 @@ function detectMovingAvgAnomalies(
 // ============================================================================
 // STATISTICAL HELPER FUNCTIONS
 // ============================================================================
-
-/**
- * WHAT: Calculate arithmetic mean of values
- * WHY: Central tendency measure for Z-score and moving average
- */
-function calculateMean(values: number[]): number {
-  if (values.length === 0) return 0;
-  return values.reduce((sum, val) => sum + val, 0) / values.length;
-}
-
-/**
- * WHAT: Calculate standard deviation
- * WHY: Measure of spread for Z-score method
- */
-function calculateStdDev(values: number[], mean?: number): number {
-  if (values.length === 0) return 0;
-  const avg = mean ?? calculateMean(values);
-  const squaredDiffs = values.map((val) => Math.pow(val - avg, 2));
-  const variance = squaredDiffs.reduce((sum, val) => sum + val, 0) / values.length;
-  return Math.sqrt(variance);
-}
 
 /**
  * WHAT: Calculate percentile of sorted values

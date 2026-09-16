@@ -15,6 +15,7 @@ import clientPromise from './mongodb';
 import config from './config';
 import { TrendAnalysis, analyzeTrend } from './analytics-trends';
 import { TimeSeriesDataPoint } from './analytics-anomaly';
+import { calculateStdDev } from './statistics';
 
 // ============================================================================
 // TYPES
@@ -432,13 +433,6 @@ function calculateStandardError(events: any[], metric: string): number {
  * WHAT: Calculate standard deviation
  * WHY: Measure of spread for confidence intervals
  */
-function calculateStdDev(values: number[]): number {
-  if (values.length === 0) return 0;
-  const mean = values.reduce((sum, v) => sum + v, 0) / values.length;
-  const variance = values.reduce((sum, v) => sum + Math.pow(v - mean, 2), 0) / values.length;
-  return Math.sqrt(variance);
-}
-
 // ============================================================================
 // PREDICTION VALIDATION
 // ============================================================================
