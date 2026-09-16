@@ -48,18 +48,18 @@ claim is structural rather than demonstrated, it says so.
 | [F-006](#f-006) | Medium | **Fixed — routes removed** | Two routes read cookie names nothing ever sets | 4 |
 | [F-007](#f-007) | Low | Open | 202 orphaned page passwords for a deleted route | 4 |
 | [F-008](#f-008) | Low | Open | `lib/authLockout.ts` is dead code | 4 |
-| [F-025](#f-025) | **High** | Open — [#400](https://github.com/moldovancsaba/messmass/issues/400) | Routes documented "admin only" enforce no role check | 5 |
-| [F-033](#f-033) | Medium | Open — [#408](https://github.com/moldovancsaba/messmass/issues/408) | architecture.md documents APIs, hooks and a parser that do not exist | 5 |
-| [F-028](#f-028) | Medium | Open — [#403](https://github.com/moldovancsaba/messmass/issues/403) | Password gate lost its theming; a 404 from a deleted route is swallowed | 5 |
-| [F-026](#f-026) | Medium | Open — [#401](https://github.com/moldovancsaba/messmass/issues/401) | Design page tells users the style editor is disabled while it is live | 5 |
-| [F-027](#f-027) | Medium | Open — [#402](https://github.com/moldovancsaba/messmass/issues/402) | Help page and metadata promise real-time collaboration deleted in v12.2.0 | 5 |
-| [F-036](#f-036) | Low | Open — [#411](https://github.com/moldovancsaba/messmass/issues/411) | Dead layout-unit trio and dead CSS carry authoritative-sounding comments | 5 |
-| [F-034](#f-034) | Low | Open — [#409](https://github.com/moldovancsaba/messmass/issues/409) | ~900 changelog lines sit inside the living architecture document | 5 |
-| [F-035](#f-035) | Low | Open — [#410](https://github.com/moldovancsaba/messmass/issues/410) | Route inventory and module catalogue are hand-maintained and ~85% wrong | 5 |
-| [F-029](#f-029) | Low | Open — [#404](https://github.com/moldovancsaba/messmass/issues/404) | No gate stops a comment citing a file path that no longer resolves | 5 |
-| [F-030](#f-030) | Low | Open — [#405](https://github.com/moldovancsaba/messmass/issues/405) | Hardcoded counts in comments drift from the collections they describe | 5 |
-| [F-031](#f-031) | Low | Open — [#406](https://github.com/moldovancsaba/messmass/issues/406) | Version stamps and tombstone comments are never revisited | 5 |
-| [F-032](#f-032) | Low | Open — [#407](https://github.com/moldovancsaba/messmass/issues/407) | Security comments state a policy without naming the guard enforcing it | 5 |
+| [F-025](#f-025) | **High** | **Fixed** — [#400](https://github.com/moldovancsaba/messmass/issues/400) `c02f4b6f` | Routes documented "admin only" enforce no role check | 5 |
+| [F-033](#f-033) | Medium | **Fixed** — [#408](https://github.com/moldovancsaba/messmass/issues/408) `b43ecbfc` | architecture.md documents APIs, hooks and a parser that do not exist | 5 |
+| [F-028](#f-028) | Medium | **Fixed** — [#403](https://github.com/moldovancsaba/messmass/issues/403) `49565f21` | Password gate lost its theming; a 404 from a deleted route is swallowed | 5 |
+| [F-026](#f-026) | Medium | **Fixed** — [#401](https://github.com/moldovancsaba/messmass/issues/401) `86bb9469` | Design page tells users the style editor is disabled while it is live | 5 |
+| [F-027](#f-027) | Medium | **Fixed** — [#402](https://github.com/moldovancsaba/messmass/issues/402) `6b00f974` | Help page and metadata promise real-time collaboration deleted in v12.2.0 | 5 |
+| [F-036](#f-036) | Low | **Fixed** — [#411](https://github.com/moldovancsaba/messmass/issues/411) `1c76c2c9` | Dead layout-unit trio and dead CSS carry authoritative-sounding comments | 5 |
+| [F-034](#f-034) | Low | **Fixed** — [#409](https://github.com/moldovancsaba/messmass/issues/409) `b43ecbfc` | ~900 changelog lines sit inside the living architecture document | 5 |
+| [F-035](#f-035) | Low | **Fixed** — [#410](https://github.com/moldovancsaba/messmass/issues/410) `31494edc` | Route inventory and module catalogue are hand-maintained and ~85% wrong | 5 |
+| [F-029](#f-029) | Low | **Fixed** — [#404](https://github.com/moldovancsaba/messmass/issues/404) `158fe78c` | No gate stops a comment citing a file path that no longer resolves | 5 |
+| [F-030](#f-030) | Low | **Fixed** — [#405](https://github.com/moldovancsaba/messmass/issues/405) `158fe78c` | Hardcoded counts in comments drift from the collections they describe | 5 |
+| [F-031](#f-031) | Low | **Fixed** — [#406](https://github.com/moldovancsaba/messmass/issues/406) `c02f4b6f` | Version stamps and tombstone comments are never revisited | 5 |
+| [F-032](#f-032) | Low | **Fixed** — [#407](https://github.com/moldovancsaba/messmass/issues/407) `c02f4b6f` | Security comments state a policy without naming the guard enforcing it | 5 |
 
 **Deviation from rule R6, declared.** R6 says findings become issues and are not
 fixed on the audit branch. F-001, F-002 and F-009 were fixed immediately on the
@@ -1162,6 +1162,30 @@ rather than left for an issue: the hardcoded colour-count comments in
 `hooks/useReportStyle.ts`, which had drifted to 26/35 against an actual 40 and
 which the same session had made worse by adding fields without updating them.
 Those headers now state no count at all. F-030 covers preventing recurrence.
+
+## Phase 5 outcome — delivered 2026-09-16
+
+All twelve findings (F-025 through F-036) are fixed and their issues closed.
+`docs/architecture.md` went from 4,665 lines to 3,799, of which two sections
+totalling ~430 lines are now generated rather than written, and 293 lines of
+narrative moved to `docs/archive/architecture-changelog-2026-09.md`.
+
+Four CI gates came out of it, each bound to the specific way this documentation
+went wrong, so the same drift fails a build instead of accumulating:
+
+| Gate | What it catches | Finding |
+|------|-----------------|---------|
+| `npm run comments:check` | a comment citing a path that no longer resolves | F-029 |
+| `npm run comments:versions` | a comment claiming an unshipped version or an overdue removal | F-031 |
+| `npm run architecture:check` | the route inventory or module catalogue drifting from the filesystem | F-035 |
+| `tests/comment-counts-match-code.test.ts` | a stated cardinality contradicting the live collection | F-030 |
+| `tests/admin-only-comments-are-enforced.test.ts` | a route claiming admin-only while guarding on session alone | F-032 / F-025 |
+
+Two findings were widened during delivery, both recorded on their issues:
+F-025's enforcement test found 14 routes the original sweep missed, and F-036's
+verification surfaced ~100 unreachable selectors in `app/styles/components.css`,
+filed as [#412](https://github.com/moldovancsaba/messmass/issues/412) rather
+than swept in on grep evidence alone.
 
 ## F-025
 
