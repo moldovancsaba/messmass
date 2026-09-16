@@ -150,7 +150,7 @@ export default function PasswordModal({
                 {sendingEmail ? '⌛ Sending...' : emailSent ? '✅ Email Sent Successfully!' : '📧 Send via email'}
               </button>
               {emailError && (
-                <p className="text-red-500 text-xs mt-2 text-center">
+                <p className="text-error text-xs mt-2 text-center">
                   ⚠️ {emailError}
                 </p>
               )}

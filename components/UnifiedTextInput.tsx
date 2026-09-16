@@ -81,8 +81,8 @@ export default function UnifiedTextInput({
 
   const labelNode = label ? (
     <>
-      {label} {required && <span className="text-danger">*</span>}
-      {isSaving && <span className="text-muted ml-2">💾 Saving...</span>}
+      {label} {required && <span className="text-error">*</span>}
+      {isSaving && <span className="text-muted mx-2">💾 Saving...</span>}
     </>
   ) : undefined;
 

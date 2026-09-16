@@ -103,8 +103,8 @@ export default function GoogleSheetsSyncButtons({
 
   if (!isConnected) {
     return (
-      <div className="bg-yellow-50 border border-yellow-200 rounded-md p-4">
-        <p className="text-sm text-yellow-900">
+      <div className="alert alert-warning">
+        <p className="text-sm">
           🔗 <strong>Connect a Google Sheet first</strong> to enable sync operations
         </p>
       </div>
@@ -112,7 +112,7 @@ export default function GoogleSheetsSyncButtons({
   }
 
   return (
-    <div className="space-y-3">
+    <div className="flex flex-col gap-3">
       {/* Sync Buttons */}
       <div className="flex gap-2">
         <button
@@ -136,7 +136,7 @@ export default function GoogleSheetsSyncButtons({
         </button>
 
         {/* Dry Run Toggle */}
-        <label className="flex items-center gap-2 px-3 py-2 bg-gray-100 rounded-md cursor-pointer hover:bg-gray-200 transition">
+        <label className="flex items-center gap-2 px-3 py-2 bg-gray-100 rounded-md cursor-pointer transition-all">
           <input
             type="checkbox"
             checked={showDryRun}
@@ -150,7 +150,7 @@ export default function GoogleSheetsSyncButtons({
 
       {/* Dry Run Mode Notice */}
       {showDryRun && (
-        <div className="bg-blue-50 border border-blue-200 rounded-md p-3 text-sm text-blue-900">
+        <div className="alert alert-info text-sm">
           <p>
             <strong>🔍 Dry Run Mode:</strong> Preview changes without making any actual modifications.
             Click the buttons above to see what would be synced.
@@ -172,7 +172,7 @@ export default function GoogleSheetsSyncButtons({
       )}
 
       {/* Help Text */}
-      <div className="bg-gray-50 border border-gray-200 rounded-md p-3 text-xs text-gray-700">
+      <div className="bg-gray-50 border rounded-md p-3 text-xs text-gray-700">
         <p className="mb-2">
           <strong>Pull:</strong> Import events from your Google Sheet into {'{messmass}'}
         </p>

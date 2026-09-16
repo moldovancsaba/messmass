@@ -180,7 +180,7 @@ export default function PartnerDetailPage({
   };
 
   return (
-    <div className="admin-container space-y-6">
+    <div className="admin-container flex flex-col gap-6">
       {/* Header */}
       <div className="card card-md p-lg">
         <div className="flex items-start justify-between">
@@ -203,7 +203,7 @@ export default function PartnerDetailPage({
       <div className="card card-md p-lg">
         <h2 className="section-title mb-4">📊 Google Sheets Integration</h2>
 
-        <div className="space-y-4">
+        <div className="flex flex-col gap-4">
           {/* Sync Status Display */}
           {isConnected && partnerId && (
             <GoogleSheetsSyncStatus
@@ -227,8 +227,8 @@ export default function PartnerDetailPage({
 
           {/* Connect Button */}
           {!isConnected && (
-            <div className="bg-blue-50 border border-blue-200 rounded-md p-4">
-              <p className="text-sm text-blue-900 mb-3">
+            <div className="alert alert-info">
+              <p className="text-sm mb-3">
                 <strong>🔗 Ready to connect a Google Sheet?</strong>
               </p>
               <button
@@ -256,22 +256,22 @@ export default function PartnerDetailPage({
         {/* Quick Links */}
         <div className="card card-md p-lg">
           <h3 className="font-semibold text-gray-900 mb-3">🔗 Quick Links</h3>
-          <div className="space-y-2">
+          <div className="flex flex-col gap-2">
             <a
               href={`/admin/partners/${partnerId}/analytics`}
-              className="block text-blue-600 hover:text-blue-800 text-sm"
+              className="block text-info text-sm"
             >
               📈 View Analytics →
             </a>
             <a
               href={`/admin/partners/${partnerId}/kyc-data`}
-              className="block text-blue-600 hover:text-blue-800 text-sm"
+              className="block text-info text-sm"
             >
               📋 KYC Data →
             </a>
             <a
               href={`/admin/partners`}
-              className="block text-blue-600 hover:text-blue-800 text-sm"
+              className="block text-info text-sm"
             >
               🤝 Back to Partners →
             </a>
@@ -281,7 +281,7 @@ export default function PartnerDetailPage({
         {/* Info Box */}
         <div className="card card-md p-lg">
           <h3 className="font-semibold text-gray-900 mb-3">ℹ️ Integration Info</h3>
-          <p className="text-xs text-gray-600 space-y-1">
+          <p className="text-xs text-gray-600 flex flex-col gap-1">
             <p>• Pull: Sync events from your Google Sheet into {'{messmass}'}</p>
             <p>• Push: Export {'{messmass}'} events to your Google Sheet</p>
             <p>• Manual: Control syncs with buttons (no automatic background jobs)</p>

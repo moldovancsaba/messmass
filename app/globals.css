@@ -229,6 +229,64 @@ img {
 .badge-success { background: var(--mm-color-success-500); color: var(--mm-white); }
 .badge-warning { background: var(--mm-color-warning-500); color: var(--mm-white); }
 .badge-danger { background: var(--mm-color-error-500); color: var(--mm-white); }
+/* .badge-info completes the set: .btn-info already exists, so markup reasonably
+   reached for the badge equivalent and got an unstyled span instead (#413). */
+.badge-info { background: var(--mm-color-info-500); color: var(--mm-white); }
+
+/* WHAT: Alert banners.
+   WHY: `<div className="alert alert-danger">` is used for the error and success
+   banners on /admin/bitly, /admin/partners and in EditorDashboard, and not one
+   of those four classes existed -- so every one of those banners rendered as
+   bare paragraph text with no background, border or padding (#413). An error
+   banner that does not look like an error is worse than no banner, because the
+   page still claims to have told the user.
+   HOW: Tinted surface + matching border, keyed to the same semantic tokens the
+   badges above use, so the two systems cannot drift apart. */
+.alert {
+  padding: var(--mm-space-4);
+  border-radius: var(--mm-radius-lg);
+  border: 1px solid var(--mm-gray-300);
+  background: var(--mm-gray-50);
+  color: var(--mm-gray-800);
+  font-size: var(--mm-font-size-sm);
+  line-height: var(--mm-line-height-normal, 1.5);
+}
+.alert-danger {
+  border-color: var(--mm-color-error-500);
+  background: color-mix(in srgb, var(--mm-color-error-500) 8%, var(--mm-white));
+  color: var(--mm-color-error-700, var(--mm-color-error-500));
+}
+.alert-success {
+  border-color: var(--mm-color-success-500);
+  background: color-mix(in srgb, var(--mm-color-success-500) 8%, var(--mm-white));
+  color: var(--mm-color-success-700, var(--mm-color-success-500));
+}
+.alert-warning {
+  border-color: var(--mm-color-warning-500);
+  background: color-mix(in srgb, var(--mm-color-warning-500) 10%, var(--mm-white));
+  color: var(--mm-color-warning-700, var(--mm-color-warning-500));
+}
+.alert-info {
+  border-color: var(--mm-color-info-500);
+  background: color-mix(in srgb, var(--mm-color-info-500) 8%, var(--mm-white));
+  color: var(--mm-color-info-700, var(--mm-color-info-500));
+}
+
+/* WHAT: The three generic utilities the system was missing.
+   WHY: Markup reached for `grid-cols-2` and `list-disc list-inside` and got
+   nothing, because those are Tailwind names and this repo has no Tailwind
+   (#413). Rather than leave six files broken or install a framework for six
+   declarations, the names the markup already uses are defined here, once. */
+.grid-cols-1 { grid-template-columns: 1fr; }
+.grid-cols-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+/* Three admin surfaces ask for these by name and got a single column, because
+   the classes were never defined: the variable groups on /admin/clicker-manager
+   and /admin/kyc, and the asset grid on /admin/content-library. */
+.grid-1fr-1fr-1fr { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.grid-1fr-1fr-1fr-1fr { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+.list-disc { list-style-type: disc; }
+.list-decimal { list-style-type: decimal; }
+.list-inside { list-style-position: inside; }
 
 /* WHAT: Redundant utility classes removed
    WHY: Now covered by comprehensive utility system in admin.css

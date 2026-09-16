@@ -631,7 +631,7 @@ ${errors.length > 0 ? '\n\nErrors:\n' + errors.join('\n') : '\n✅ All formulas 
   if (loading) {
     return (
       <ColoredCard>
-        <div className="loading-spinner">Loading chart configurations...</div>
+        <div className="spinner">Loading chart configurations...</div>
       </ColoredCard>
     );
   }

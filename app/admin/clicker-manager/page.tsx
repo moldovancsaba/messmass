@@ -347,7 +347,7 @@ export default function ClickerManagerPage() {
                         {group.titleOverride && ` - ${group.titleOverride}`}
                       </h3>
                       {group.specialType === 'report-content' ? (
-                        <span className="badge badge-purple">📦 Report Content</span>
+                        <span className="badge badge-secondary">📦 Report Content</span>
                       ) : (
                         <span className="badge badge-info">{(group.variables?.length || 0)} variables</span>
                       )}
@@ -887,7 +887,7 @@ function GroupForm({
             return (
               <div
                 key={varName}
-                className={`flex items-center justify-between gap-3 p-3 bg-white rounded border border-gray-300 ${styles.variableItem}`}
+                className={`flex items-center justify-between gap-3 p-3 bg-white rounded border ${styles.variableItem}`}
               >
                 <div className="flex items-center gap-3 flex-1">
                   <span className={`text-sm font-mono text-gray-500 ${styles.orderNum}`}>#{index + 1}</span>
@@ -935,18 +935,18 @@ function GroupForm({
           value={search}
           onChange={(e) => setSearch(e.target.value)}
         />
-        <div className={`grid gap-2 max-h-300 overflow-y-auto ${styles.variableListContainer}`}>
+        <div className={`grid gap-2 overflow-y-auto ${styles.variableListContainer}`}>
           {availableVars.map((v) => (
             <button
               key={v.name}
-              className={`flex items-center justify-between gap-3 p-3 bg-white border border-gray-300 rounded hover:bg-blue-50 hover:border-blue-400 text-left transition-colors ${styles.variableItem}`}
+              className={`flex items-center justify-between gap-3 p-3 bg-white border rounded text-left transition-colors ${styles.variableItem}`}
               onClick={() => addVariable(v.name)}
             >
               <div className="flex-1">
                 <span className="font-medium text-gray-900 block">{v.label}</span>
                 <code className={`variable-ref text-xs text-gray-600 ${styles.varCode}`}>{v.name}</code>
               </div>
-              <span className="text-green-600 font-semibold whitespace-nowrap">+ Add</span>
+              <span className="text-success font-semibold whitespace-nowrap">+ Add</span>
             </button>
           ))}
           {availableVars.length === 0 && (

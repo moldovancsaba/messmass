@@ -86,7 +86,7 @@ export default function Error({ error, reset }: ErrorProps) {
           <>
             {/* WHAT: Development-only error details box with wrapping styles - WHY: Ensure long error messages wrap properly in error box */}
             {/* eslint-disable-next-line react/forbid-dom-props */}
-            <div className="bg-gray-50 border border-gray-300 p-md mb-lg text-left text-sm text-gray-700 font-mono" style={{borderRadius: 'var(--mm-radius-md)', whiteSpace: 'pre-wrap', overflowWrap: 'break-word'}}>
+            <div className="alert mb-4 text-left text-sm text-gray-700 font-mono" style={{borderRadius: 'var(--mm-radius-md)', whiteSpace: 'pre-wrap', overflowWrap: 'break-word'}}>
               {error.message}
               {error.digest && (
                 <div className="mt-sm text-gray-600">

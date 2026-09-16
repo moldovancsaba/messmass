@@ -341,7 +341,7 @@ function HashtagFilterPageContent() {
     return (
       <div className="loading-centered-container">
         <div className="loading-card">
-          <div className="curve-spinner"></div>
+          <div className="spinner"></div>
         </div>
       </div>
     );
@@ -528,7 +528,7 @@ function HashtagFilterPageContent() {
       {/* Loading State */}
       {statsLoading && (
         <ColoredCard accentColor="var(--mm-color-primary-500)" hoverable={false} className="p-8 text-center">
-          <div className="curve-spinner m-auto mt-4"></div>
+          <div className="spinner m-auto mt-4"></div>
         </ColoredCard>
       )}
 
@@ -787,7 +787,7 @@ function HashtagFilterLoading() {
   return (
     <div className="loading-centered-container">
       <div className="loading-card">
-        <div className="curve-spinner"></div>
+        <div className="spinner"></div>
       </div>
 
     </div>

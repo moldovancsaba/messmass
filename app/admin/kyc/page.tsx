@@ -155,7 +155,7 @@ export default function KycVariablesPage() {
                   {(["manual","system","derived","text"] as const).map(k => (
                     <label key={k} className="flex items-center gap-2">
                       <input type="checkbox" checked={sourceFilter[k]} onChange={(e) => setSourceFilter(prev => ({ ...prev, [k]: e.target.checked }))} />
-                      <span className="text-sm capitalize">{k}</span>
+                      <span className="text-sm uppercase">{k}</span>
                     </label>
                   ))}
                 </div>

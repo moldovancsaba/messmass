@@ -155,7 +155,7 @@ export default function PartnerKYCDataPage() {
     return (
       <div className="page-container">
         <div className="error-card">
-          <MaterialIcon name="error" className="text-red-500 text-4xl mb-4" />
+          <MaterialIcon name="error" className="text-error text-4xl mb-4" />
           <div className="text-lg">{error || 'Partner not found'}</div>
           <button onClick={() => router.back()} className="btn-primary mt-4">
             Go Back
@@ -248,7 +248,7 @@ export default function PartnerKYCDataPage() {
       {events.length === 0 && (
         <div className={`card ${styles.infoBanner}`}>
           <div className={styles.bannerContent}>
-            <MaterialIcon name="info" className="text-yellow-600" />
+            <MaterialIcon name="info" className="" />
             <div>
               <div className={styles.bannerTitle}>No Events Found</div>
               <div className={styles.bannerDescription}>
@@ -262,7 +262,7 @@ export default function PartnerKYCDataPage() {
       {/* KYC Data Table */}
       {Object.keys(groupedVariables).length === 0 ? (
         <div className="empty-state">
-          <MaterialIcon name="search_off" className="text-gray-400 text-6xl mb-4" />
+          <MaterialIcon name="search_off" className="text-gray-400 text-5xl mb-4" />
           <div className="text-lg text-gray-600">No variables match your search</div>
         </div>
       ) : (

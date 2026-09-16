@@ -1203,7 +1203,7 @@ export default function PartnersAdminPageUnified() {
             <button
               type="button"
               onClick={() => setShowManualEntry(true)}
-              className="btn btn-sm btn-secondary mb-2"
+              className="btn btn-small btn-secondary mb-2"
             >
               🖊️ Can&apos;t find it? Enter manually
             </button>
@@ -1422,7 +1422,7 @@ export default function PartnersAdminPageUnified() {
 
           {/* Pull / Push buttons */}
           {(editingPartner as any)?._id && (
-            <span className="inline-flex gap-2 align-middle ml-2">
+            <span className="inline-flex gap-2 mx-2">
               <button
                 type="button"
                 className="btn btn-primary"
@@ -1451,7 +1451,7 @@ export default function PartnersAdminPageUnified() {
         <div className="form-group mb-2">
           <button
             type="button"
-            className="btn btn-ghost"
+            className="btn btn-secondary"
             onClick={async () => {
               try {
                 const data = await apiPost(`/api/partners/${(editingPartner as any)?._id}/google-sheet/rename`, {});

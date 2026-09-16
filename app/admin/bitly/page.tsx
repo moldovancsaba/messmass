@@ -1130,7 +1130,7 @@ export default function BitlyAdminPage() {
        * WHY: Provides help text about sync operations and many-to-many system */}
       <div className="mt-6">
         <h3 className="section-title mb-4">Sync Information</h3>
-        <div className="space-y-3">
+        <div className="flex flex-col gap-3">
           <p className="text-sm">
             <strong className="text-primary">🔄 Auto-Sync (Daily):</strong> All link analytics sync automatically every night at 3:00 AM UTC. This is the recommended way to keep data fresh.
           </p>
@@ -1149,7 +1149,7 @@ export default function BitlyAdminPage() {
         </div>
         
         <h3 className="section-title mt-6 mb-4">Many-to-Many Link System</h3>
-        <div className="space-y-3">
+        <div className="flex flex-col gap-3">
           <p className="text-sm">
             <strong className="text-primary">🔗 Shared Links:</strong> Bitly links can now be associated with multiple events. Analytics are automatically split by temporal boundaries so each event gets accurate attribution.
           </p>

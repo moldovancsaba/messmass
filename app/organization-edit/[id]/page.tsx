@@ -97,7 +97,7 @@ export default function OrganizationEditPage() {
     return (
       <div className={styles.centerContainer}>
         <div className={styles.stateCard}>
-          <div className="curve-spinner"></div>
+          <div className="spinner"></div>
           <p className={styles.stateMessage}>Checking authentication...</p>
         </div>
       </div>
@@ -120,7 +120,7 @@ export default function OrganizationEditPage() {
     return (
       <div className={styles.centerContainer}>
         <div className={styles.stateCard}>
-          <div className="curve-spinner"></div>
+          <div className="spinner"></div>
           <p className={styles.stateMessage}>Loading organization editor...</p>
         </div>
       </div>

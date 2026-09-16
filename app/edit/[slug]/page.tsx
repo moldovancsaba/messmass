@@ -152,7 +152,7 @@ export default function EditPage() {
     return (
       <div className={styles.centerContainer}>
         <div className={styles.stateCard}>
-          <div className="curve-spinner"></div>
+          <div className="spinner"></div>
           <p className={styles.stateMessage}>Checking authentication...</p>
         </div>
       </div>
@@ -176,7 +176,7 @@ export default function EditPage() {
     return (
       <div className={styles.centerContainer}>
         <div className={styles.stateCard}>
-          <div className="curve-spinner"></div>
+          <div className="spinner"></div>
           <p className={styles.stateMessage}>Loading project editor...</p>
         </div>
       </div>

@@ -155,7 +155,7 @@ function LandingPageStatic({
           </p>
           <div className={styles.heroCtas}>
             <Link href="/admin/login" className="btn btn-primary">Go to Dashboard</Link>
-            <a href="#how-it-works" className="btn btn-outline-light">See how it works</a>
+            <a href="#how-it-works" className={`btn ${styles['btn-outline-light']}`}>See how it works</a>
           </div>
           <p className={styles.heroMicrocopy}>
             Built for teams handling KYC, onboarding, fraud, compliance, and sensitive customer intelligence.
@@ -455,7 +455,7 @@ function LandingPageLive({ slug, version }: { slug: string; version?: string | n
           <p className={styles.heroSub}>{heroSub}</p>
           <div className={styles.heroCtas}>
             <Link href="/admin/login" className="btn btn-primary">Go to Dashboard</Link>
-            <a href="#report-content" className="btn btn-outline-light">See how it works</a>
+            <a href="#report-content" className={`btn ${styles['btn-outline-light']}`}>See how it works</a>
           </div>
         </div>
       </header>

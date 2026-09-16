@@ -111,7 +111,7 @@ export default function EventKYCDataPage() {
     return (
       <div className="page-container">
         <div className="error-card">
-          <MaterialIcon name="error" className="text-red-500 text-4xl mb-4" />
+          <MaterialIcon name="error" className="text-error text-4xl mb-4" />
           <div className="text-lg">{error || 'Event not found'}</div>
           <button onClick={() => router.back()} className="btn-primary mt-4">
             Go Back
@@ -196,7 +196,7 @@ export default function EventKYCDataPage() {
       {/* KYC Data Table */}
       {Object.keys(groupedVariables).length === 0 ? (
         <div className="empty-state">
-          <MaterialIcon name="search_off" className="text-gray-400 text-6xl mb-4" />
+          <MaterialIcon name="search_off" className="text-gray-400 text-5xl mb-4" />
           <div className="text-lg text-gray-600">No variables match your search</div>
         </div>
       ) : (

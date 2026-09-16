@@ -786,7 +786,7 @@ export default function QuickAddPage() {
                           href={`https://${link.bitlink}`}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="text-sm text-blue-600 hover:text-blue-800"
+                          className="text-sm text-info"
                         >
                           {link.bitlink} - {link.title}
                         </a>
@@ -987,7 +987,7 @@ export default function QuickAddPage() {
                           href={`https://${link.bitlink}`}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="text-sm text-blue-600 hover:text-blue-800"
+                          className="text-sm text-info"
                         >
                           {link.bitlink} - {link.title}
                         </a>
@@ -1087,9 +1087,9 @@ export default function QuickAddPage() {
               <h3 className="section-subtitle mb-4">Upcoming Fixtures</h3>
               <div className="flex flex-col gap-3">
                 {suggestFixtures.map((fx: any) => (
-                  <div key={fx.eventId} className="flex items-center justify-between p-3 rounded-md border border-gray-200 bg-white">
+                  <div key={fx.eventId} className="flex items-center justify-between p-3 rounded-md border bg-white">
                     <div className="flex items-center gap-3">
-                      <span className="text-gray-700 text-sm w-28">{fx.date}</span>
+                      <span className="text-gray-700 text-sm">{fx.date}</span>
                       <span className="text-gray-900 font-medium">{fx.homeTeam?.name || 'Home'} x {fx.awayTeam?.name || 'Away'}</span>
                       {fx.leagueName && (
                         <span className="text-xs text-gray-500">{fx.leagueName}</span>
@@ -1097,7 +1097,7 @@ export default function QuickAddPage() {
                     </div>
                     <div className="flex items-center gap-2">
                       <button
-                        className="btn btn-tiny btn-success"
+                        className="btn btn-small btn-success"
                         onClick={async () => {
                           setIsCreating(true); setError(''); setSuccess('');
                           try {

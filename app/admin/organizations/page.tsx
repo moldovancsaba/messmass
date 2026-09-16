@@ -308,7 +308,7 @@ export default function OrganizationsAdminPage() {
           Select the members that belong to this organization. Changes are only applied when you save.
         </p>
 
-        {membersError && <div className="text-sm text-red-600 mb-3">{membersError}</div>}
+        {membersError && <div className="text-sm text-error mb-3">{membersError}</div>}
 
         {partnersLoading ? (
           <div className="text-sm text-gray-500 py-8 text-center">Loading members…</div>

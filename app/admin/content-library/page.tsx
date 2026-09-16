@@ -376,7 +376,7 @@ export default function ContentLibraryPage() {
               </div>
             </div>
             
-            <p className="text-red-600 font-bold">
+            <p className="text-error font-bold">
               Deleting this asset will break these charts. Are you sure?
             </p>
           </div>

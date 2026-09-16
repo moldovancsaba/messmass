@@ -108,7 +108,7 @@ Then select "Cached images and files" and click Clear.`);
       />
 
       {/* Cache Types */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+      <div className="grid grid-cols-1 grid-cols-2 gap-6 mb-8">
         {/* Server Build Cache */}
         <ColoredCard accentColor="var(--mm-color-primary-500)" hoverable={false}>
           <div className="text-4xl mb-4">🏭️</div>
@@ -198,7 +198,7 @@ Then select "Cached images and files" and click Clear.`);
               <h3 className="text-xl font-bold text-gray-900 mb-2">Success!</h3>
               <p className="text-gray-600 mb-4">{result.message}</p>
               {result.details && (
-                <div className="space-y-3">
+                <div className="flex flex-col gap-3">
                   {result.details.timestamp && (
                     <div className="text-sm text-gray-600">
                       <strong>Cleared at:</strong> {new Date(result.details.timestamp).toLocaleString()}
@@ -212,7 +212,7 @@ Then select "Cached images and files" and click Clear.`);
                   )}
                   
                   {result.details.message && (
-                    <div className="bg-blue-50 border border-blue-200 p-3 rounded text-sm text-blue-800">
+                    <div className="border p-3 rounded text-sm">
                       ℹ️ {result.details.message}
                     </div>
                   )}
@@ -222,9 +222,9 @@ Then select "Cached images and files" and click Clear.`);
                       <summary className="cursor-pointer font-semibold text-sm text-gray-700 mb-2">
                         View All Revalidated Routes ({result.details.revalidatedRoutes.length})
                       </summary>
-                      <ul className="list-disc list-inside text-sm text-gray-600 space-y-1 mt-2">
+                      <ul className="list-disc list-inside text-sm text-gray-600 flex flex-col gap-1 mt-2">
                         {result.details.revalidatedRoutes.map((route: string, idx: number) => (
-                          <li key={idx}><code className="bg-white px-1 py-0.5 rounded">{route}</code></li>
+                          <li key={idx}><code className="bg-white px-1 py-2 rounded">{route}</code></li>
                         ))}
                       </ul>
                     </details>
@@ -258,13 +258,13 @@ Then select "Cached images and files" and click Clear.`);
       {/* Manual Instructions */}
       <ColoredCard accentColor="var(--mm-chart-indigo)" hoverable={false}>
         <h3 className="text-xl font-bold text-gray-900 mb-4">📚 Manual Cache Clearing</h3>
-        <div className="space-y-4">
+        <div className="flex flex-col gap-4">
           <div>
             <h4 className="font-bold text-gray-800 mb-2">Browser Cache (All Users)</h4>
             <p className="text-gray-600 mb-2">
               Users can manually clear their browser cache using keyboard shortcuts:
             </p>
-            <ul className="list-disc list-inside text-gray-600 space-y-1">
+            <ul className="list-disc list-inside text-gray-600 flex flex-col gap-1">
               <li><strong>Chrome/Edge (Mac):</strong> Cmd + Shift + Delete</li>
               <li><strong>Chrome/Edge (Windows):</strong> Ctrl + Shift + Delete</li>
               <li><strong>Safari:</strong> Cmd + Option + E</li>
@@ -277,7 +277,7 @@ Then select "Cached images and files" and click Clear.`);
             <p className="text-gray-600 mb-2">
               For a quick refresh without clearing all cache:
             </p>
-            <ul className="list-disc list-inside text-gray-600 space-y-1">
+            <ul className="list-disc list-inside text-gray-600 flex flex-col gap-1">
               <li><strong>Mac:</strong> Cmd + Shift + R</li>
               <li><strong>Windows:</strong> Ctrl + Shift + R or Ctrl + F5</li>
             </ul>

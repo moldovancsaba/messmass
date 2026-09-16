@@ -112,11 +112,11 @@ export default function GoogleSheetsConnectModal({
       title="Connect Google Sheet"
       size="lg"
     >
-      <div className="space-y-4">
+      <div className="flex flex-col gap-4">
         {/* Instructions */}
-        <div className="bg-blue-50 border border-blue-200 rounded-md p-3 text-sm text-blue-900">
+        <div className="alert alert-info text-sm">
           <p className="font-semibold mb-1">📋 How to connect:</p>
-          <ol className="list-decimal list-inside space-y-1 text-xs">
+          <ol className="list-decimal list-inside flex flex-col gap-1 text-xs">
             <li>Open your Google Sheet</li>
             <li>Copy the sheet URL from your browser</li>
             <li>Paste it below or just enter the sheet ID</li>
@@ -166,7 +166,7 @@ export default function GoogleSheetsConnectModal({
           <label className="form-label-block">
             Sync Mode
           </label>
-          <div className="space-y-2">
+          <div className="flex flex-col gap-2">
             <label className="flex items-center">
               <input
                 type="radio"
@@ -200,14 +200,14 @@ export default function GoogleSheetsConnectModal({
 
         {/* Error Message */}
         {error && (
-          <div className="bg-red-50 border border-red-200 rounded-md p-3 text-sm text-red-900">
+          <div className="alert alert-danger text-sm">
             <p className="font-semibold">❌ Connection Error</p>
             <p className="mt-1">{error}</p>
           </div>
         )}
 
         {/* Partner Info */}
-        <div className="bg-gray-50 border border-gray-200 rounded-md p-3 text-sm">
+        <div className="bg-gray-50 border rounded-md p-3 text-sm">
           <p className="text-gray-700">
             <strong>Connecting to:</strong> {partnerName}
           </p>
@@ -220,7 +220,7 @@ export default function GoogleSheetsConnectModal({
           type="button"
           onClick={onClose}
           disabled={isSubmitting || isLoading}
-          className="btn btn-ghost"
+          className="btn btn-secondary"
         >
           Cancel
         </button>
