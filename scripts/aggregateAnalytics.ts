@@ -8,7 +8,7 @@
  * Performance Target: Process 100+ projects within 5-minute window
  * 
  * Usage:
- *   node scripts/aggregateAnalytics.js                    # One-time run
+ *   node scripts/aggregateAnalytics.ts                    # One-time run
  *   (cron) star-slash-5 * * * * node scripts/...         # Cron: every 5 minutes
  * 
  * Version: 6.25.0 (Phase 1 - Data Aggregation Infrastructure)

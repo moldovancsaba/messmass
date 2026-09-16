@@ -6,7 +6,7 @@
 //     upsertPartner() hybrid-match logic (lib/messmass/provision.ts on the
 //     camera side) so both directions behave the same way: link an existing
 //     partner by camera id, else by case-insensitive name, else create one.
-// LOOP SAFETY: this never calls back into lib/cameraProvision.ts/cameraClient.ts
+// LOOP SAFETY: this never calls back into lib/cameraProvision.ts or lib/cameraClient.ts
 //     to push the result back to camera -- that's what prevents ping-pong.
 //     Partners synced messmass->camera already carry `source: 'messmass'` on
 //     camera's side, and camera only pushes back partners where

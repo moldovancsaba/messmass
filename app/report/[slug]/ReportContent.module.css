@@ -55,8 +55,10 @@
 }
 
 /* WHAT: Keep a titled section (title + all its rows) together as one printed unit.
-   WHY: This is the same atomic chunk lib/export/pdf.ts's data-pdf-block capture already
-   treats as one piece -- matching that precedent here, natively. This is best-effort per
+   WHY: This is the same atomic chunk the old html2canvas exporter captured as one
+   piece via data-pdf-block. That exporter is gone -- PDF export is now the
+   browser's own print pipeline (app/api/export/pdf/route.ts) -- but the unit it
+   chose was right, so the rule is kept and expressed natively. This is best-effort per
    spec: a block taller than a full page is still allowed to split rather than produce a
    broken result, and .row's own break-inside:avoid (above) still protects each individual
    chart/image group even when that happens. */
@@ -124,8 +126,10 @@
    correct. break-inside:avoid is a native page-break primitive: if a row does not
    fit in the remaining space on the current page, Chromium moves the WHOLE row to
    the next page instead of splitting it. This needs no JS pagination math at all --
-   see lib/export/pdf.ts's block-by-block canvas capture, which hand-rolls exactly
-   this decision because html2canvas has no print engine to delegate it to.
+   the former html2canvas exporter hand-rolled exactly
+   this decision because html2canvas had no print engine to delegate it to. That
+   exporter has since been replaced by app/api/export/pdf/route.ts, which drives
+   Chromium's native print pipeline and reads the rules in this file.
    page-break-inside is the pre-Level-4 alias; harmless to keep for older engines. */
 @media print {
   .row {

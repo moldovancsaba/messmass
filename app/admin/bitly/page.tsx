@@ -191,7 +191,7 @@ export default function BitlyAdminPage() {
 
   // WHAT: Load links during search/sort operations (no full loading screen)
   // WHY: Prevents white flash reload effect during search - updates results inline
-  // PATTERN: Matches app/admin/projects/ProjectsPageClient.tsx search behavior
+  // PATTERN: Matches app/admin/events/ProjectsPageClient.tsx search behavior
   const loadSearch = useCallback(async () => {
     try {
       setIsSearching(true);

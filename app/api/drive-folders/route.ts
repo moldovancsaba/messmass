@@ -14,7 +14,7 @@ import { addDriveFolder, listDriveFolders } from '@/lib/driveFolders';
 import { error as logError } from '@/lib/logger';
 
 // Same admin-role check used by other admin-scoped routes (e.g.
-// app/api/admin/projects/route.ts) — getAdminUser() only proves a valid
+// app/api/admin/projects/[id]/route.ts) — getAdminUser() only proves a valid
 // session exists, not that the role is actually admin (UserRole also
 // includes 'guest'/'user'/'api').
 function isAdmin(user: AdminUser | null): user is AdminUser {

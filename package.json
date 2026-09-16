@@ -1,10 +1,10 @@
 {
   "name": "messmass",
   "version": "12.3.36",
-  "description": "Enterprise-grade event analytics platform with comprehensive partner management, intelligent link tracking, automated event creation (Sports Match Builder), and advanced real-time statistics dashboard for sports organizations, venues, brands, and event managers",
+  "description": "Enterprise-grade event analytics platform with comprehensive partner management, intelligent link tracking, automated event creation (Sports Match Builder), and an advanced statistics dashboard for sports organizations, venues, brands, and event managers",
   "keywords": [
     "event-statistics",
-    "real-time-collaboration",
+    "collaboration",
     "dashboard",
     "admin-panel",
     "next.js",
@@ -44,6 +44,7 @@
     "clean": "rm -rf .next out",
     "style:audit": "node scripts/audit-styles.js",
     "style:check": "node scripts/check-design-violations.js",
+    "comments:check": "node scripts/check-comment-paths.js",
     "migrate-slugs": "node migrate-slugs.js",
     "migrate-stats-v2.13.0": "node scripts/migrate-stats-v2.13.0.js",
     "migrate:layout-grammar": "tsx -r dotenv/config scripts/migrate-layout-grammar.ts dotenv_config_path=.env.local",

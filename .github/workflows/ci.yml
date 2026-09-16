@@ -56,6 +56,9 @@ jobs:
       # exempts. A new raw hex/rgb literal outside lib/theme/ now fails CI.
       # compliance.strictMode stays false; strict mode is separate Phase 5 work.
       - run: npx gds-compliance check --manifest ./gds-adoption.json
+      # Comments must not cite files that no longer exist (F-029, #404). Every
+      # deletion this repo has made left present-tense references behind.
+      - run: npm run comments:check
       - run: npx tsx scripts/check-dependency-guardrail.ts
       - run: npx tsx scripts/check-layout-grammar-guardrail.ts
       - run: npm run build
