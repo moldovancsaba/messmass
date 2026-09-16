@@ -176,26 +176,19 @@
 
 /* WHAT: Mobile action contract for legacy/custom admin surfaces
  * WHY: Portrait layouts must keep every action visible, full-width, and at least 44px tall */
-.mobile-action-stack {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--mm-space-2);
-  align-items: stretch;
-}
 
 @media (max-width: 640px) {
-  .action-buttons-container,
-  .mobile-action-stack {
+  .action-buttons-container {
     width: 100%;
     flex-direction: column !important;
     align-items: stretch !important;
   }
 
+  /* `.mobile-action-stack .btn` was a third selector here. Its own rules went
+     with the rest of the dead sweep; nothing applies that class, so the
+     descendant selector could never have matched either. */
   .action-buttons-container .btn,
-  .action-button,
-  .mobile-action-stack .btn,
-  .mobile-action-stack button,
-  .mobile-action-stack a {
+  .action-button {
     width: 100%;
     min-height: 44px;
     justify-content: center;
@@ -292,12 +285,6 @@ select:focus,
 }
 
 /* Form Input Variants */
-.form-input-error {
-  /* What: Flat error state
-     Why: Using design tokens */
-  border-color: var(--color-error);
-  box-shadow: 0 0 0 3px var(--mm-error-light, rgba(var(--mm-color-error-rgb), 0.1));
-}
 
 /* Input card wrapper: used for numeric inputs with labels - Flat Design */
 .input-card {
@@ -313,18 +300,6 @@ select:focus,
 }
 
 /* Calculated value row with muted styling */
-.calc-row {
-  /* What: Flat calculated value row
-     Why: Removed transparency */
-  background: var(--mm-gray-50);
-  border-radius: var(--border-radius);
-  padding: 1rem;
-  border: 1px solid var(--mm-border-color-default);
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-  opacity: 0.9;
-}
 
 /* Fixed-width numeric pill for totals */
 .value-pill {
@@ -337,13 +312,6 @@ select:focus,
   text-align: center;
   color: var(--mm-gray-500);
   background-color: var(--mm-gray-50);
-}
-
-.form-input-success {
-  /* What: Flat success state
-     Why: Using design tokens */
-  border-color: var(--color-success);
-  box-shadow: 0 0 0 3px var(--mm-success-light, rgba(var(--mm-color-secondary-rgb), 0.1));
 }
 
 /* Global input text color fix to prevent white text on white backgrounds */
@@ -458,9 +426,6 @@ textarea::placeholder {
    both were deleted. No TSX applies this class -- kept only because
    `display: contents` on an unapplied class is inert, and removing it belongs
    with the wider dead-CSS sweep rather than here. */
-.image-chart-container {
-  display: contents;
-}
 
 /* ========================================
    CHART COMPONENTS - WRAPPERS & BUILDERS
@@ -553,25 +518,12 @@ textarea::placeholder {
 
 /* WHAT: Auth/permission error message container
    WHY: Consistent error display for authentication failures */
-.auth-error-message {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  min-height: 200px;
-  font-size: 1.1rem;
-}
 
 /* WHAT: Critical error (authentication required)
    WHY: Red color for auth failures */
-.auth-error-critical {
-  color: var(--mm-color-error-500);
-}
 
 /* WHAT: Permission error (insufficient permissions)
    WHY: Orange color for permission issues */
-.auth-error-permission {
-  color: var(--mm-color-warning-500);
-}
 
 /* ========================================
    ADAPTER COMPONENTS (LIST/CARD VIEWS)
@@ -837,12 +789,6 @@ textarea::placeholder {
 
 /* WHAT: Modal button action row layout
    WHY: Consistent spacing for confirm/cancel button groups */
-.modal-actions {
-  display: flex;
-  gap: 1rem;
-  justify-content: flex-end;
-  margin-top: 1rem;
-}
 
 /* WHAT: Modal cancel/secondary button
    WHY: Gray background for cancel/dismiss actions */
@@ -909,18 +855,9 @@ textarea::placeholder {
 
 /* WHAT: Category indicator flex layout
    WHY: Consistent spacing for category header with color dot */
-.category-header-flex {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-}
 
 /* WHAT: Icon with small right margin
    WHY: Consistent spacing for Material Icons in action buttons */
-.icon-sm-mr {
-  font-size: 1rem !important;
-  margin-right: 0.25rem !important;
-}
 
 /* WHAT: Pagination stats flex layout
    WHY: Consistent layout for showing X of Y items in admin lists */
@@ -945,40 +882,15 @@ textarea::placeholder {
 
 /* WHAT: Flex row with small gap for inline controls
    WHY: Common pattern in LiveDemo controls and buttons */
-.flex-controls {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-}
 
 /* WHAT: Full width/height wrapper for reset containers
    WHY: Reset key wrapper in LiveDemo needs 100% fill */
-.full-size-wrapper {
-  width: 100%;
-  height: 100%;
-}
 
 /* WHAT: Fixed overlay for drag operations
    WHY: Prevents text selection during resize in LiveDemo */
-.resize-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  cursor: nw-resize;
-  z-index: var(--mm-z-lightbox);
-  background: transparent;
-}
 
 /* WHAT: Rounded overflow wrapper for mobile previews
    WHY: Inner frame for MobileDemo phone simulation */
-.mobile-inner-frame {
-  width: 100%;
-  height: 100%;
-  border-radius: 26px;
-  overflow: hidden;
-}
 
 /* WHAT: Monospace font family for code/command text
    WHY: Technical content needs monospace for readability */
@@ -1064,76 +976,6 @@ textarea::placeholder {
    HASHTAG COMPONENTS
 ======================================== */
 
-.hashtag-input-container {
-  position: relative;
-  width: 100%;
-}
-
-.hashtag-input-wrapper {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: var(--mm-space-xs);
-  padding: var(--mm-space-sm);
-  border: 2px solid var(--mm-gray-200);
-  border-radius: 12px;
-  background: var(--mm-white);
-  min-height: 48px;
-  transition: var(--transition-base);
-}
-
-.hashtag-input-wrapper:focus-within {
-  border-color: var(--mm-color-primary-600);
-  box-shadow: 0 0 0 3px var(--mm-color-primary-100);
-}
-
-.hashtag-tags {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--mm-space-xs);
-}
-
-.hashtag-tag {
-  /* What: Flat hashtag pill
-     Why: Removed gradient, using solid primary color */
-  display: inline-flex;
-  align-items: center;
-  gap: var(--mm-space-xs);
-  padding: 4px var(--mm-space-sm);
-  background: var(--mm-color-primary-600);
-  color: var(--mm-white);
-  border-radius: 16px;
-  font-size: 0.875rem;
-  font-weight: 500;
-  transition: var(--transition-base);
-}
-
-.hashtag-tag:hover {
-  transform: translateY(-1px);
-  box-shadow: var(--shadow-sm);
-}
-
-.hashtag-remove {
-  background: none;
-  border: none;
-  color: var(--mm-white);
-  font-size: 1.2rem;
-  line-height: 1;
-  cursor: pointer;
-  padding: 0;
-  width: 16px;
-  height: 16px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 50%;
-  transition: var(--transition-base);
-}
-
-.hashtag-remove:hover {
-  background: rgba(var(--mm-white-rgb), 0.2);
-}
-
 .hashtag-input {
   background: none;
   border: none;
@@ -1215,40 +1057,7 @@ textarea::placeholder {
   color: var(--mm-warning);
 }
 
-.hashtag-limit-warning {
-  margin-top: var(--mm-space-xs);
-  padding: var(--mm-space-xs) var(--mm-space-sm);
-  background: rgba(251, 191, 36, 0.1);
-  color: var(--mm-warning);
-  border-radius: 8px;
-  font-size: 0.875rem;
-  font-weight: 500;
-}
-
 /* Hashtag Display (for showing hashtags in read-only contexts) */
-.hashtag-display {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--mm-space-xs);
-  margin-top: var(--mm-space-xs);
-}
-
-.hashtag-display-tag {
-  display: inline-block;
-  padding: 2px var(--mm-space-xs);
-  background: rgba(var(--mm-chart-indigo-rgb),0.1);
-  color: var(--mm-color-primary-600);
-  border-radius: 12px;
-  font-size: 0.75rem;
-  font-weight: 500;
-  border: 1px solid rgba(var(--mm-chart-indigo-rgb),0.2);
-  transition: var(--transition-base);
-}
-
-.hashtag-display-tag:hover {
-  background: rgba(var(--mm-chart-indigo-rgb),0.2);
-  transform: translateY(-1px);
-}
 
 /* Hashtag Bubble Styles */
 .hashtag {
@@ -1281,12 +1090,6 @@ textarea::placeholder {
   box-shadow: 0 4px 8px rgba(var(--mm-black-rgb), 0.15);
 }
 
-.hashtag-small {
-  padding: 0.25rem 0.5rem;
-  font-size: 0.75rem;
-  border-radius: 12px;
-}
-
 /* Project hashtags container */
 .project-hashtags {
   display: flex;
@@ -1305,69 +1108,9 @@ textarea::placeholder {
   font-weight: var(--font-medium);
 }
 
-.success-message {
-  background: rgba(var(--mm-color-secondary-rgb), 0.1);
-  border: 1px solid rgba(var(--mm-color-secondary-rgb), 0.2);
-  border-radius: var(--radius-lg);
-  padding: var(--space-4);
-  margin-bottom: var(--space-4);
-  color: var(--color-success);
-  font-size: var(--text-sm);
-  font-weight: var(--font-medium);
-}
-
-.warning-message {
-  background: rgba(var(--mm-color-warning-rgb), 0.1);
-  border: 1px solid rgba(var(--mm-color-warning-rgb), 0.2);
-  border-radius: var(--radius-lg);
-  padding: var(--space-4);
-  margin-bottom: var(--space-4);
-  color: var(--color-warning);
-  font-size: var(--text-sm);
-  font-weight: var(--font-medium);
-}
-
-.info-message {
-  background: rgba(var(--mm-color-primary-rgb), 0.1);
-  border: 1px solid rgba(var(--mm-color-primary-rgb), 0.2);
-  border-radius: var(--radius-lg);
-  padding: var(--space-4);
-  margin-bottom: var(--space-4);
-  color: var(--color-info);
-  font-size: var(--text-sm);
-  font-weight: var(--font-medium);
-}
-
 /* ========================================
    STATUS INDICATORS
 ======================================== */
-
-.connection-status {
-  position: fixed;
-  top: var(--space-4);
-  right: var(--space-4);
-  padding: var(--space-2) var(--space-4);
-  border-radius: var(--radius-lg);
-  font-size: var(--text-sm);
-  font-weight: var(--font-medium);
-  z-index: var(--z-toast);
-  transition: all var(--transition-base);
-}
-
-.connection-connected {
-  background: rgba(34, 197, 94, 0.9);
-  color: var(--color-white);
-}
-
-.connection-connecting {
-  background: rgba(234, 179, 8, 0.9);
-  color: var(--color-white);
-}
-
-.connection-disconnected {
-  background: rgba(var(--mm-color-error-rgb), 0.9);
-  color: var(--color-white);
-}
 
 /* ========================================
    ADMIN UTILITY CLASSES
@@ -1509,13 +1252,6 @@ textarea::placeholder {
   display: grid;
   grid-template-columns: 2fr 1fr;
   gap: 1rem;
-}
-
-.form-actions {
-  display: flex;
-  gap: 1rem;
-  justify-content: flex-end;
-  margin-top: 2rem;
 }
 
 /* WHAT: Legacy modal classes removed (lines 972-1030) */
@@ -2196,26 +1932,6 @@ textarea::placeholder {
 }
 
 /* Age section grid (3 columns desktop, auto-fit smaller) */
-.age-grid {
-  display: grid;
-  gap: 1rem;
-  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-}
-@media (min-width: 1024px) {
-  .age-grid { grid-template-columns: repeat(3, 1fr); }
-}
-
-.grid-2 {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 1rem;
-}
-
-.grid-3 {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 1rem;
-}
 
 .flex-row {
   display: flex;
@@ -2299,88 +2015,14 @@ textarea::placeholder {
 }
 
 /* Color input styling */
-.form-color-input {
-  width: 100%;
-  height: 3rem;
-  border: 1px solid var(--mm-gray-300);
-  border-radius: 6px;
-  cursor: pointer;
-}
 
 /* Design form specific styles */
-.design-form-container {
-  background: rgba(248, 250, 252, 0.8);
-  padding: 2rem;
-  border-radius: 12px;
-  margin-bottom: 2rem;
-}
-
-.design-form-title {
-  margin-bottom: 1.5rem;
-  color: var(--mm-gray-700);
-}
-
-.style-list-container {
-  margin-bottom: 1.5rem;
-  color: var(--mm-gray-700);
-}
-
-.style-item {
-  background: rgba(var(--mm-white-rgb), 0.8);
-  padding: 1.5rem;
-  border-radius: 8px;
-  border: 1px solid rgba(var(--mm-chart-indigo-rgb), 0.2);
-}
-
-.style-item-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.style-grid {
-  display: grid;
-  gap: 1rem;
-}
-
-.empty-text {
-  color: var(--mm-gray-500);
-  font-style: italic;
-}
 
 /* Loading animations removed - section kept for documentation */
 
 /* ========================================
    ADMIN USERS PAGE STYLES
 ======================================== */
-
-.user-create-form {
-  display: grid;
-  gap: 0.75rem;
-  grid-template-columns: 1fr 1fr auto;
-}
-
-.password-generated {
-  margin-top: 1rem;
-  border-color: var(--mm-color-secondary-500);
-}
-
-.password-generated-content {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.password-label {
-  font-weight: var(--mm-font-weight-semibold);
-  color: var(--mm-color-secondary-600);
-  margin-bottom: var(--mm-space-2);
-}
-
-.password-code {
-  font-family: monospace;
-  font-size: var(--mm-font-size-base);
-}
 
 .admin-table {
 }
@@ -2404,14 +2046,6 @@ textarea::placeholder {
 
 .admin-table tbody tr:hover {
   background: var(--mm-gray-50);
-}
-
-.table-wrapper {
-  overflow-x: auto;
-}
-
-.error-text {
-  color: var(--mm-error);
 }
 
 .text-right {
@@ -2450,79 +2084,14 @@ textarea::placeholder {
   margin-bottom: 1.5rem;
 }
 
-.login-logo {
-  /* What: {messmass} logo image styling
-     Why: Appropriate size for login page branding */
-  height: 80px;
-  width: auto;
-  object-fit: contain;
-}
-
 .login-title {
 }
 
 .login-subtitle {
 }
 
-.login-form {
-  margin-bottom: 2rem;
-}
-
-.login-input {
-  text-align: center;
-  font-size: 1.05rem;
-}
-
-.login-error {
-  background: rgba(var(--mm-color-error-rgb), 0.1);
-  border: 1px solid rgba(var(--mm-color-error-rgb), 0.3);
-  padding: 1rem;
-  margin-bottom: 1.5rem;
-  border-radius: 12px;
-}
-
-.login-error-content {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-}
-
-.login-error-icon {
-  color: var(--mm-error);
-}
-
-.login-error-text {
-  color: var(--mm-error);
-  font-weight: 500;
-  font-size: 0.875rem;
-}
-
-.login-button {
-  margin-bottom: 1rem;
-}
-
-.login-loading {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-}
-
-.login-spinner {
-  width: 16px;
-  height: 16px;
-  border: 2px solid rgba(var(--mm-white-rgb),0.3);
-  border-top-color: var(--mm-white);
-  border-radius: 50%;
-  animation: spin 1s linear infinite;
-}
-
 @keyframes spin {
   to { transform: rotate(360deg); }
-}
-
-.login-back {
-  text-align: center;
-  margin-bottom: 2rem;
 }
 
 .login-footer {
@@ -2574,29 +2143,7 @@ textarea::placeholder {
 ======================================== */
 
 /* Variables Admin Grid and Cards */
-.vars-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-  gap: 1rem;
-}
-
-.variable-card {
-  /* Uniform card sizing */
-  min-height: 240px;
-  display: flex;
-  flex-direction: column;
-}
-
-.variable-header { margin-bottom: 0.5rem; }
-.variable-title { margin: 0 0 0.25rem 0; font-size: 1.125rem; font-weight: 600; }
 .variable-ref { font-size: 0.8rem; background: rgba(107,114,128,0.1); padding: 0.125rem 0.5rem; border-radius: 4px; }
-
-.variable-details { margin: 0.5rem 0; }
-
-.variable-flags { display: flex; flex-direction: column; gap: 0.25rem; margin-top: 0.25rem; }
-.variable-flag { display: flex; align-items: center; gap: 0.5rem; }
-
-.variable-type-line { margin-top: auto; font-weight: 700; font-size: 0.875rem; color: var(--mm-gray-700); }
 
 /* Full width container for stats sections */
 .stats-layout-container {
@@ -2922,11 +2469,6 @@ textarea::placeholder {
 
 /* WHAT: Inline form input (small width)
    WHY: For inline numeric inputs in forms */
-.form-input-inline {
-  width: auto;
-  min-width: 100px;
-  display: inline-block;
-}
 
 /* WHAT: Center-aligned text utility
    WHY: Reusable centering class */
