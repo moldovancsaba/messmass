@@ -1131,15 +1131,22 @@ function ChartConfigurationEditor({ config, availableVariables, aiFillRates, onS
         
         return { error: null, result: roundedResult };
       } catch (evalError) {
-        // WHAT: Fallback to legacy Function() if safe evaluation fails
-        // WHY: Graceful degradation during migration
-        // TODO: Remove after migration complete
-        try {
-          const result = Function('"use strict"; return (' + testFormula + ')')();
-          return { error: null, result: typeof result === 'number' ? Math.round(result * 100) / 100 : 'NA' as 'NA' };
-        } catch (legacyError) {
-          return { error: 'Invalid formula syntax', result: null };
-        }
+        // A `Function('"use strict"; return (' + testFormula + ')')()` fallback
+        // stood here, marked "remove after migration complete" (messmass#286).
+        // Three reasons it is gone rather than kept:
+        //   1. It evaluated whatever the admin typed into the formula field as
+        //      JavaScript, in their own browser.
+        //   2. It could not run in production anyway -- middleware.ts grants
+        //      'unsafe-eval' in development only, so the CSP threw EvalError
+        //      here and the catch below swallowed it. Dev and production
+        //      disagreed about the same formula.
+        //   3. middleware.ts justifies dropping 'unsafe-eval' from the
+        //      production CSP by asserting there is no `new Function` or `eval`
+        //      anywhere in first-party source. This was the one place that made
+        //      that assertion false.
+        // The safe parser in lib/formulaEngine.ts is the only evaluator now, so
+        // a formula it rejects is genuinely invalid.
+        return { error: 'Invalid formula syntax', result: null };
       }
     } catch (error) {
       return { error: 'Invalid formula syntax', result: null };

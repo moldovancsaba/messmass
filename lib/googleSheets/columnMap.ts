@@ -65,8 +65,32 @@ export function generateSheetHeaderLabels(): Record<string, string> {
 /**
  * DEPRECATED: SHEET_HEADER_LABELS is computed at runtime now
  * WHY: Headers are based on FIELD_DEFINITIONS
+ * NOTE: Its keys are FIELD_DEFINITIONS keys (`remoteImages`), NOT column
+ *     letters. Treating them as letters is what broke partner sheet
+ *     provisioning — see getSheetHeaderRow below.
  */
 export const SHEET_HEADER_LABELS: Record<string, string> = generateSheetHeaderLabels();
+
+/**
+ * WHAT: The sheet's header row, in column order.
+ * WHY: partnerSheetOps built this itself by reading SHEET_HEADER_LABELS' keys
+ *     and passing each through columnLetterToIndex(), on the assumption that
+ *     they were column letters. They are field names, so `remoteImages` was
+ *     read as a base-26 number and the computed max index came out at 1.5e41 —
+ *     the loop that followed threw `RangeError: Invalid array length`, and
+ *     provisioning a partner sheet crashed at "write headers" before it wrote
+ *     anything. (messmass#286.)
+ * HOW: FIELD_DEFINITIONS' declaration order IS the column order — that is the
+ *     same assumption generateDynamicColumnMap makes when it reads a header row
+ *     back, so producing the row from that order is what makes the two halves
+ *     round-trip. Header text is the field path minus the `stats.` prefix,
+ *     which is exactly what that reader normalises against.
+ */
+export function getSheetHeaderRow(): string[] {
+  return Object.values(DEFS).map((def) =>
+    def.field.startsWith('stats.') ? def.field.slice('stats.'.length) : def.field
+  );
+}
 
 /**
  * WHAT: Get sheet range string for API calls

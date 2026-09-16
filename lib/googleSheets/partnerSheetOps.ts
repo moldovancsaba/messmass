@@ -8,27 +8,22 @@ import clientPromise from '@/lib/mongodb';
 import config from '@/lib/config';
 import { info as logInfo, error as logError } from '@/lib/logger';
 import { createDriveClient, createSheetsClient, createSheetsClientWithDriveAccess } from './client';
-import { columnIndexToLetter, columnLetterToIndex, SHEET_HEADER_LABELS } from './columnMap';
+import { columnIndexToLetter, getSheetHeaderRow } from './columnMap';
+import { generateDynamicColumnMap } from './dynamicMapping';
 import { eventToRow } from './rowMapper';
 import { countSheetDataRows } from './metrics';
 
 const DEFAULT_SHEET_NAME = 'Events';
 const MIN_COLUMNS = 300; // supports extended variables
 
-function getSheetHeaders(): string[] {
-  const headers: string[] = [];
-  const cols = Object.keys(SHEET_HEADER_LABELS);
-  let maxIndex = 0;
-  cols.forEach((col) => {
-    const idx = columnLetterToIndex(col);
-    if (idx > maxIndex) maxIndex = idx;
-  });
-  for (let i = 0; i <= maxIndex; i++) {
-    const letter = columnIndexToLetter(i);
-    headers.push(SHEET_HEADER_LABELS[letter] || '');
-  }
-  return headers;
-}
+/* The local getSheetHeaders() that used to live here read
+ * SHEET_HEADER_LABELS' KEYS as column letters. They are field names, so
+ * columnLetterToIndex('remoteImages') returned ~1.5e41 and the loop that
+ * followed threw RangeError: Invalid array length — provisioning crashed at
+ * step 4 before writing a single header (messmass#286). getSheetHeaderRow()
+ * derives the row from FIELD_DEFINITIONS' declaration order, which is the
+ * order generateDynamicColumnMap assumes when reading a header row back. */
+const getSheetHeaders = getSheetHeaderRow;
 
 export async function setupPartnerSheet(params: { partnerId: string; sheetId: string; sheetName?: string }): Promise<{
   sheetUrl: string;
@@ -139,12 +134,15 @@ export async function setupPartnerSheet(params: { partnerId: string; sheetId: st
 
   let eventsWritten = 0;
   if (events.length > 0) {
+    // Without this map eventToRow falls back to an empty one and returns [''],
+    // so every event row was written blank (messmass#286).
+    const columnMap = generateDynamicColumnMap(headers);
     const rows = events.map((event: any) => {
       if (!event.partnerName && !event.partner1Name) {
         if (event.partner2Id) event.partner1Name = partner.name;
         else event.partnerName = partner.name;
       }
-      return eventToRow(event);
+      return eventToRow(event, columnMap);
     });
 
     const dataLastCol = columnIndexToLetter(Math.max(headers.length - 1, MIN_COLUMNS - 1));

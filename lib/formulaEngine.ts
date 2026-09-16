@@ -944,7 +944,10 @@ function evaluateTokenizedExpression(tokens: FormulaToken[]): number {
  * @param expression - Mathematical expression to evaluate
  * @returns Numeric result or 'NA' for errors
  * 
- * SECURITY: Uses safe parser when feature flag enabled, falls back to Function() for migration
+ * SECURITY: The internal safe parser is the only evaluator. There is no
+ * Function()/eval fallback and no feature flag gating it -- both were
+ * removed, the last of them in messmass#286. An expression this rejects is
+ * invalid, not merely unsupported.
  */
 function evaluateSimpleExpression(expression: string): number | 'NA' {
   try {

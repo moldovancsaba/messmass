@@ -9,10 +9,13 @@ import type { IndexBasedColumnMap } from './dynamicMapping';
 import { detectEventType, hasValidEventDate } from './eventTypeDetector';
 import type { SheetColumnMap } from './types';
 
-// WHAT: Default empty map for backward compatibility
-// WHY: Old code might pass undefined
-// TODO: Remove this after full migration to index-based mapping
-const DEFAULT_COLUMN_MAP: IndexBasedColumnMap = {};
+/* DEFAULT_COLUMN_MAP -- an empty index map defaulted into all four mappers
+ * "until full migration to index-based mapping" -- was removed here
+ * (messmass#286). It was not inert: with an empty map, eventToRow computes
+ * maxColIndex = 0 and iterates nothing, so it returns [''] — one blank cell.
+ * partnerSheetOps called eventToRow(event) with no map and wrote a block of
+ * blank rows to the partner's sheet, silently. The parameter is required now,
+ * so the same omission is a compile error rather than an empty spreadsheet. */
 
 /**
  * WHAT: Convert 0-based column index to Excel column letter
@@ -42,7 +45,7 @@ function indexToColumnLetter(index: number): string {
  */
 export function rowToEvent(
   row: unknown[],
-  columnMap: IndexBasedColumnMap = DEFAULT_COLUMN_MAP
+  columnMap: IndexBasedColumnMap
 ): Partial<any> {
   // WHAT: Validate row has required event date
   // WHY: Prevent creating events without dates
@@ -127,7 +130,7 @@ export function rowToEvent(
  */
 export function eventToRow(
   event: any,
-  columnMap: IndexBasedColumnMap = DEFAULT_COLUMN_MAP
+  columnMap: IndexBasedColumnMap
 ): unknown[] {
   // WHAT: Calculate row array size dynamically
   // WHY: No more hardcoded 300 - use actual max column index
@@ -327,7 +330,7 @@ export function updateRowFormulas(row: unknown[], rowNumber: number): unknown[] 
  */
 export function rowsToEvents(
   rows: unknown[][],
-  columnMap: IndexBasedColumnMap = DEFAULT_COLUMN_MAP
+  columnMap: IndexBasedColumnMap
 ): { events: any[]; errors: Array<{ row: number; error: string }> } {
   const events: any[] = [];
   const errors: Array<{ row: number; error: string }> = [];
@@ -358,7 +361,7 @@ export function rowsToEvents(
  */
 export function eventsToRows(
   events: any[],
-  columnMap: IndexBasedColumnMap = DEFAULT_COLUMN_MAP
+  columnMap: IndexBasedColumnMap
 ): unknown[][] {
   return events.map(event => eventToRow(event, columnMap));
 }
