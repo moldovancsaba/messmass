@@ -6,12 +6,25 @@ Owner: Architecture
 
 Version: 12.3.36
 
-> This is a current-state architecture reference, not a changelog. For dated release
-> history use [`docs/operations/operations-release-notes.md`](operations/operations-release-notes.md).
-> A dated update log and a flat version-history list that used to sit here (no unique
-> current-state content, fully superseded by release notes) were extracted to
-> [`docs/archive/architecture-changelog-pre-2026-08.md`](archive/architecture-changelog-pre-2026-08.md)
-> on 2026-08-17.
+> **Scope.** This file describes how messmass works *now*: the modules that exist,
+> the routes that are served, the contracts between them. It is not a changelog,
+> not a plan, and not a record of how anything came to be that way.
+>
+> - Dated release history: [`docs/operations/operations-release-notes.md`](operations/operations-release-notes.md)
+> - Extracted narrative: [`docs/archive/architecture-changelog-pre-2026-08.md`](archive/architecture-changelog-pre-2026-08.md) (2026-08-17)
+>   and [`docs/archive/architecture-changelog-2026-09.md`](archive/architecture-changelog-2026-09.md) (2026-09-16)
+>
+> **What does not belong here:** migration plans and their status, "future
+> enhancements", debugging narratives, manual-QA checklists, before/after
+> performance tables, and version stamps on section headings. An audit on
+> 2026-09-16 tested this document's falsifiable claims against the code: 43 were
+> false, and roughly 85% of its file-path and line-count claims failed. Fiction
+> in an architecture document is worse than no document, because it is trusted.
+> Roughly 1,300 lines were deleted and 900 archived as a result (issues #408-#410).
+>
+> **If you change code that this file describes, change this file in the same
+> commit.** If you find a claim here that is not true, delete it -- do not
+> annotate it.
 
 ## 🔍 MANDATORY: Implementation Standards
 
@@ -276,8 +289,7 @@ or the extracted list in
 
 ---
 
-## Partners Management System (Version 6.0.0 / v10.7.0 Enhanced)
-
+## Partners Management System
 ### Overview
 
 The Partners Management System provides comprehensive infrastructure for managing organizational entities (clubs, federations, venues, brands) that participate in or host events. Partners serve as the foundation for rapid event creation via the Sports Match Builder and maintain associations with Bitly tracking links for attribution.
@@ -470,8 +482,7 @@ import PartnerSelector from '@/components/PartnerSelector';
 }
 ```
 
-#### 5. Partner Report Pages (v10.7.0)
-
+#### 5. Partner Report Pages
 **Purpose**: Shareable public reporting pages for partners showing profile and related events
 
 **Route**: `/partner-report/[slug]/page.tsx`
@@ -543,19 +554,7 @@ bitly_links (N) ----< (N) projects (via bitly_project_links junction)
 4. **Cached Partners**: Partner list cached during Sports Match Builder session
 5. **Indexed Fields**: MongoDB indexes on `name` and `createdAt` for fast queries
 
-### Future Enhancements
-
-- **Partner Types**: Add explicit type field (club, federation, venue, brand)
-- **Partner Logos**: Upload and display partner logos
-- **Partner Statistics**: Aggregate event stats per partner
-- **Partner Relationships**: Parent-child relationships (federation > clubs)
-- **Bulk Import**: CSV/Excel import for large partner datasets
-- **Partner API Keys**: Allow partners to access their own event data
-
----
-
-## Template System Architecture (v11.29.0)
-
+## Template System Architecture
 ### Overview
 
 The Template System provides hierarchical report visualization management across the {messmass} platform. It enables customization of how data is displayed in event reports, partner reports, and global dashboards through a database-driven template and data block architecture.
@@ -639,111 +638,6 @@ interface ReportTemplate {
 - Chart configuration and preview
 - Real-time chart preview with sample data
 
-### Recent Fixes & Troubleshooting (v11.29.0)
-
-#### Template Dropdown Race Condition Fix
-
-**Problem** (discovered 2025-12-16):
-- Template dropdown in Visualization Admin loaded before authentication check completed
-- Race condition caused "Forbidden" errors when accessing `/api/report-templates`
-- dropdown showed "No templates found" despite templates existing in database
-
-**Root Cause**:
-```typescript
-// Bad pattern - templates fetched immediately on mount
-useEffect(() => {
-  loadTemplates(); // Race: may run before auth complete
-}, []);
-```
-
-**Solution**:
-```typescript
-// Good pattern - wait for authenticated user
-useEffect(() => {
-  if (user) {
-    loadTemplates(); // Only fetch when auth confirmed
-  }
-}, [user]);
-```
-
-**Files Modified**:
-- `app/admin/visualization/page.tsx` - Added user dependency to template loading
-- Authentication state now gates all API calls
-
-#### Partner Template Connection Fix
-
-**Problem** (discovered 2025-12-15):
-- Partner-level content (reportImage/reportText variables) not visible on partner reports
-- Content uploaded via partner edit page disappeared when viewing `/partner-report/[slug]`
-- Event cards within partner report used wrong template
-
-**Root Cause**:
-1. **Content Visibility**: Partner report page only checked project-specific content, ignored partner-level content
-2. **Template Selection**: Event cards forced project template instead of respecting partner fallback
-3. **API Query**: Missing partner ID filter when fetching content from projects
-
-**Solution**:
-```typescript
-// 1. Fetch partner-owned content separately
-const partnerContent = await db.collection('projects').findOne({
-  partnerId: partner._id,  // Filter by partner owner
-  'stats.reportImage1': { $exists: true }
-});
-
-// 2. Use special __default_event__ identifier for event cards
-const cardTemplateResponse = await fetch(
-  `/api/report-config/__default_event__?type=project`
-);
-
-// 3. Merge partner content with event content
-const allContent = [...partnerContent, ...eventContent];
-```
-
-**Files Modified**:
-- `app/partner-report/[slug]/page.tsx` - Added partner content fetching logic
-- `app/api/report-config/[identifier]/route.ts` - Added `__default_event__` special case
-- Partner reports now show both partner-level AND event-level content
-
-#### TextChart Vertical Centering Fix
-
-**Problem** (commit cb867f5):
-- TEXT chart content not vertically centered in grid cells
-- Different aspect ratios caused misalignment
-- Chart looked "floated" to top of container
-
-**Solution**:
-```css
-/* Added to TextChart component */
-.textChartContainer {
-  display: flex;
-  align-items: center;     /* Vertical center */
-  justify-content: center; /* Horizontal center */
-  min-height: 100%;
-  aspect-ratio: var(--chart-aspect-ratio); /* Respect template settings */
-}
-```
-
-**Files Modified**:
-- `components/charts/TextChart.tsx` - Added flex centering
-- `components/charts/TextChart.module.css` - Updated layout styles
-
-#### Report Image Variables Fix
-
-**Problem** (commit 880e439):
-- Chart configurations referenced wrong variable names for report images
-- `reportImage` vs `reportImage1` naming inconsistency
-- Broken image display in reports
-
-**Solution**:
-- Standardized ALL report variables to numbered format: `reportImage1`, `reportImage2`, ... `reportImage10`
-- Updated chart configurations to match: `stats.reportImage3` (not `stats.reportImage`)
-- Migrated existing data to new naming convention
-
-**Files Modified**:
-- `scripts/fix-report-image-variables.ts` - Database migration script
-- Updated 30+ chart configurations in database
-- `lib/variablesConfig.ts` - Variable naming registry
-
 ### Template System Best Practices
 
 #### When to Create New Template vs Reuse
@@ -815,8 +709,7 @@ curl "http://localhost:3000/api/report-config/PROJECT_SLUG?type=project"
 
 ---
 
-## Styling Architecture (4.2.0)
-
+## Styling Architecture
 ### Overview
 - Introduced a design-managed content surface to unify the main content block across admin and public pages.
 - Centralized theming via CSS variables to eliminate hard-coded per-page styles.
@@ -841,9 +734,9 @@ curl "http://localhost:3000/api/report-config/PROJECT_SLUG?type=project"
 - Admin: `app/admin/layout.tsx` provides AdminLayout wrapper with sidebar navigation
 - Public: `components/PagePasswordLogin.tsx` resolves page style via `/api/page-config`
 
-## Configuration Loader (4.2.x)
+## Configuration Loader
 
-### Admin Filter Search & Paging (v5.0.0)
+### Admin Filter Search & Paging
 - Hashtags API now supports server-side search + pagination for efficient selection in /admin/filter
 - Endpoint: GET /api/hashtags
   - Query params: `search?`, `offset` (number), `limit` (default 20)
@@ -903,15 +796,7 @@ const appUrl = process.env.NEXT_PUBLIC_APP_URL;
 - Caching: in-process TTL (e.g., 300000 ms) with manual bust method
 - Reference: see `docs/operations/operations-learnings.md` entry “2025-09-24T11:07:46.000Z — Atlas settings collection plan”
 
-### Migration plan (Step 4)
-- Replace direct `process.env.*` usages with the config module
-- Remove baked defaults for secrets
-- Remove hard-coded service base URLs (replace with APP_BASE_URL, API_BASE_URL, SSO_BASE_URL, NEXT_PUBLIC_APP_URL)
-
----
-
-## Hashtag Categories System (Version 2.2.0)
-
+## Hashtag Categories System
 ### Overview
 
 The hashtag categories system allows users to organize hashtags into categories and filter projects using both traditional hashtags and category-prefixed hashtags (e.g., "country:hungary", "period:summer"). This enables better organization and more precise filtering capabilities.
@@ -1077,15 +962,6 @@ The system supports sophisticated filtering with both traditional and categorize
 4. **Backward Compatibility**: No disruption to existing workflows
 5. **Future-Proof**: Extensible architecture for additional categorization features
 
-### Migration and Compatibility
-
-- **Zero-Downtime Migration**: Existing projects continue working without changes
-- **Gradual Adoption**: Users can adopt categorized hashtags at their own pace
-- **Data Integrity**: Validation prevents duplicate hashtags within the same category
-- **API Compatibility**: All existing API endpoints maintain backward compatibility
-
----
-
 ## URL Structure and Routing
 
 ### Public Pages
@@ -1182,8 +1058,7 @@ The system supports sophisticated filtering with both traditional and categorize
 
 ---
 
-## 📊 Reporting System v12 Architecture (v11.37.0+)
-
+## 📊 Reporting System v12 Architecture
 **Last Updated: 2026-01-16T11:30:00.000Z
 **Status:** Production (v12.0.0 migration in progress)
 **Technical Audit:** See `docs/audits/documentation-consistency-audit-2026-06-26.md` for current documentation consistency analysis.
@@ -1215,11 +1090,8 @@ ReportContent (app/report/[slug]/ReportContent.tsx)
   ↓ Layouts blocks with CSS Grid
   ↓ Manages responsive breakpoints
 ReportChart (app/report/[slug]/ReportChart.tsx)
-  ↓ Renders individual chart types
+  ↓ Renders individual chart types (all six are local to this file)
   ↓ Handles no-data states
-Chart Type Components (components/charts/*)
-  ↓ KPICard, PieChart, VerticalBarChart, etc.
-  ↓ Final render with styling
 ```
 
 #### 2. Core Components
@@ -1248,36 +1120,35 @@ Chart Type Components (components/charts/*)
 **Formula Engine:**
 - **`lib/formulaEngine.ts`** - Formula parsing & evaluation (735 lines)
   - Stats variable resolution
-  - SEYU token support
   - PARAM token support (marketing multipliers)
   - MANUAL token support (aggregated data)
   - Arithmetic operations
 
 #### 3. Chart Types System
 
-| Type | Purpose | Elements | Grid Units | Component |
-|------|---------|----------|------------|----------|
-| **KPI** | Large metric display | 1 | 1 | components/charts/KPICard.tsx |
-| **PIE** | Circular percentage | 2 | 2 | components/charts/PieChart.tsx |
-| **BAR** | Horizontal bars | 5 | 3 | components/charts/VerticalBarChart.tsx |
-| **TEXT** | Formatted text | 1 | 2 | components/charts/TextChart.tsx |
-| **IMAGE** | Aspect ratio images | 1 | 1-3* | components/charts/ImageChart.tsx |
-| **VALUE** | Composite (KPI+BAR) | Variable | 2 | Fragment with 2 grid items |
+| Type | Purpose | Elements |
+|------|---------|----------|
+| **KPI** | Large metric display | 1 |
+| **PIE** | Circular percentage | 2 |
+| **BAR** | Horizontal bars | 5 |
+| **TEXT** | Formatted text | 1 |
+| **IMAGE** | Aspect ratio images | 1 |
+| **VALUE** | Composite (KPI+BAR) | Variable |
 
-*IMAGE width determined by aspect ratio:
-- **9:16** (Portrait) → 1 unit
-- **1:1** (Square) → 2 units
-- **16:9** (Landscape) → 3 units
+All six render from local functions inside `ReportChart.tsx`. There is no
+per-type component file; the `components/charts/` directory holds only
+`ChartBase`.
+
+A cell's width is a `LayoutUnit` -- `1 | 2` (`app/admin/visualization/page.tsx`).
+An IMAGE cell's aspect ratio is not a width: it is that cell's weight in the
+block height solver. See
+[`docs/design/design-chart-height-system.md`](design/design-chart-height-system.md).
 
 **Aspect Ratio Utilities:**
-- **`lib/aspectRatioUtils.ts`** - Centralized aspect ratio calculations (243 lines)
-  - `calculateImageWidth()` - Grid unit conversion
-  - `calculatePixelHeight()` - PDF export dimensions
-  - `getAspectRatioConfig()` - Full configuration
-  - 10 utility functions total
+- **`lib/aspectRatioResolver.ts`** - ratio to the numeric weight the height
+  solver multiplies by.
 
-#### 4. Builder Mode (v11.10.0)
-
+#### 4. Builder Mode
 **Component:** `components/BuilderMode.tsx` (226 lines)
 
 **Purpose:** Visual report template editor with inline inputs
@@ -1314,8 +1185,7 @@ BuilderMode
 3. Default global template
 4. Hardcoded fallback (empty state)
 
-#### 5. Report Content Manager (v11.9.0)
-
+#### 5. Report Content Manager
 **Component:** `components/ReportContentManager.tsx` (350 lines)
 
 **Purpose:** Manage reportImageN and reportTextN slots (1-500)
@@ -1343,43 +1213,6 @@ BuilderMode
 - `reportImage1` through `reportImage500` - ImgBB URLs
 - `reportText1` through `reportText500` - Text content
 - All stored in `project.stats` (Single Reference System)
-
-#### 6. PDF Export System
-
-**Implementation:** `lib/export/pdf.ts` (456 lines)
-
-**Strategy:**
-- **html2canvas**: DOM to canvas conversion
-- **jsPDF**: PDF generation with multi-page support
-- **Smart Pagination**: Prevents chart splitting across pages
-- **Hero Repetition**: Hero appears on every page
-
-**Export Flow:**
-```
-1. Hide UI elements (badges, export buttons)
-2. Capture hero separately
-3. Find all blocks with data-pdf-block="true"
-4. Set desktop width (1200px) for consistent capture
-5. Capture each block as canvas
-6. Calculate page layout (hero + available space)
-7. Place blocks intelligently:
-   - If block fits on current page → place it
-   - If block doesn't fit → new page + hero + block
-8. Generate PDF with all pages
-9. Trigger browser download
-```
-
-**Image Handling (v9.3.0):**
-- IMAGE charts use `background-image` CSS natively
-- No runtime DOM manipulation needed
-- Aspect ratios preserved automatically
-- Legacy object-fit workaround kept for backward compatibility
-
-**Performance:**
-- 10 blocks: ~5-8 seconds
-- 3-column desktop layout preserved
-- Aspect ratio maintenance
-- File size: ~2-5MB for typical report
 
 #### 7. Chart Configuration System
 
@@ -1423,28 +1256,6 @@ interface ReportTemplate {
 }
 ```
 
-### Migration Status
-
-#### v11.37.0 → v12.0.0 Transition
-
-**Removed Components:**
-- **Legacy chart wrapper** - The old `DynamicChart` renderer has been removed from the active component tree. Historical migration notes remain in archive docs only.
-
-**Deprecated Components:**
-- ⚠️ **`components/UnifiedDataVisualization.tsx`** - Old visualization system
-  - Status: Deprecated
-  - Replacement: ReportChart + ReportContent
-
-**Current Architecture (v12):**
-- ✅ **`app/report/[slug]/ReportChart.tsx`** - Primary renderer
-- ✅ **`app/report/[slug]/ReportContent.tsx`** - Layout manager
-- ✅ All v12 reports use new system
-- ✅ Imports of removed chart wrappers should fail during review and documentation audit
-
-**Migration Status:**
-- Report rendering uses `ReportChart` and `ReportContent`
-- Remaining work is documentation cleanup and removal of historical references from active docs
-
 ### Performance Characteristics
 
 **Rendering:**
@@ -1452,12 +1263,6 @@ interface ReportTemplate {
 - Builder mode load: ~1-2 seconds (template + chart config fetch)
 - Chart rendering: <100ms per chart
 - Grid layout: Instant (CSS Grid native)
-
-**PDF Export:**
-- 10 blocks: 5-8 seconds
-- 20 blocks: 10-15 seconds
-- Bottleneck: html2canvas capture
-- Optimization: Desktop width cached, single capture per block
 
 **Formula Evaluation:**
 - Simple formula: <1ms
@@ -1486,7 +1291,7 @@ interface ReportTemplate {
 
 - **Technical Audit:** `docs/audits/documentation-consistency-audit-2026-06-26.md`
 - **Operations Notes:** `docs/operations/ops-warp.md`
-- **Aspect Ratios:** `lib/aspectRatioUtils.ts` JSDoc comments
+- **Block Heights & Aspect Ratios:** `docs/design/design-chart-height-system.md`
 - **Coding Standards:** `docs/coding-standards.md` Component patterns
 
 ### Core vs Partner Resolution (2026-03-10)
@@ -1506,16 +1311,15 @@ Report template, style, and clicker set are resolved in a **project → partner 
 
 ## Visualization Grid System (Stats/Admin Parity)
 
-- Shared Component: components/UnifiedDataVisualization.tsx is the single source of truth for rendering blocks and charts across Admin Visualization, /stats, /filter, and /hashtag pages.
+- Shared Component: `app/report/[slug]/ReportContent.tsx` renders blocks and charts. `app/admin/visualization/page.tsx` is the builder that authors the layout it renders. (This line named `components/UnifiedDataVisualization.tsx` and the `/stats` route, both deleted.)
 - Desktop Layout: Each chart defines its width in grid columns (1-N). Charts automatically wrap when their combined widths exceed the block's total available units.
 - Tablet/Mobile Layout: Uses global tabletUnits and mobileUnits from page-config grid settings. Chart spans are clamped at each breakpoint to available units.
 - CSS Grid System: Uses explicit `fr` units calculated from chart widths, with responsive wrapping via media queries.
 - Aspect Ratio Handling: Image charts use CSS `aspect-ratio` property to maintain correct height within their allocated width.
-- Data Flow: gridSettings are served by /api/page-config and passed to pages, then forwarded to UnifiedDataVisualization as gridUnits.
+- Data Flow: `gridSettings` (`desktopUnits` / `tabletUnits` / `mobileUnits`) live on the report template and are read by the visualization builder. There is no `/api/page-config` endpoint.
 ---
 
-## Multi-User Notification System (Version 5.48.0+)
-
+## Multi-User Notification System
 ### Overview
 
 The multi-user notification system tracks and displays project-related activities (creation, edits, statistics updates) to all users while maintaining independent read and archive states per user. This ensures team-wide visibility with personal notification management.
@@ -1656,15 +1460,6 @@ await fetch(`/api/notifications/mark-read?notificationId=${id}&action=archive`, 
 4. **Audit Trail**: Complete history of project activities preserved
 5. **Extensible**: Easy to add new notification types and triggers
 
-### Future Enhancements
-
-- **WebSocket Integration** — abandoned (built then removed in v12.2.0; live updates use REST + polling)
-- **Notification Preferences**: User-configurable notification types
-- **Digest Mode**: Daily/weekly notification summaries
-- **Notification History**: Separate view for archived notifications
-- **Rich Notifications**: Include change details and diffs
-- **User Mentions**: @mention functionality in project notes
-
 ### Troubleshooting
 
 For production issues:
@@ -1676,8 +1471,7 @@ For production issues:
 
 ---
 
-## Unified Admin System (Version 9.3.0+ / v10.1.0 Enhanced)
-
+## Unified Admin System
 ### Overview
 
 The Unified Admin System provides a consistent, reusable architecture for admin pages with card/list toggle, server-side search, modal CRUD operations, and responsive design. It eliminates code duplication across admin pages while maintaining flexibility for page-specific features.
@@ -1772,8 +1566,7 @@ export const projectsAdapter: AdminPageAdapter<ProjectDTO> = {
 - Primary action button ("Add New")
 - Optional back button
 
-### Server-Side Search Pattern (v10.1.0)
-
+### Server-Side Search Pattern
 **Problem**: Projects page needed database search, not client-side filtering
 
 **Solution**:
@@ -1807,36 +1600,6 @@ return (
 );
 ```
 
-### Key Learnings
-
-**1. Conflicting useEffects Are Silent Killers**
-- Problem: Initial load effect depended on `[user, loadProjects]`, search effect on `[debouncedSearchQuery]`
-- When search changed, `loadProjects` recreated, initial load fired again
-- Solution: Initial load only depends on `[user]`, search effect owns all data loading
-
-**2. Double Debouncing = Broken Search**
-- Problem: Parent debounced (300ms) + UnifiedAdminPage debounced (300ms) = 600ms + search never fired
-- Solution: Server-side mode skips component debouncing
-
-**3. MongoDB Regex: Object vs String**
-```typescript
-// ❌ WRONG: Can't mix RegExp object + $options
-{ $regex: new RegExp(query, 'i'), $options: 'i' }
-
-// ✅ CORRECT: RegExp already has flags
-{ $regex: new RegExp(query, 'i') }
-```
-
-### Migration Status
-
-| Page | Status | Version | Features |
-|------|--------|---------|----------|
-| Categories | ✅ Migrated | v9.3.0 | Card/list, modal CRUD, client search |
-| Users | ✅ Migrated | v9.3.0 | Card/list, modal CRUD, client search |
-| Projects | ✅ Migrated | v10.1.0 | Card/list, modal CRUD, **server search**, partner logos, CSV export |
-| Partners | ✅ Migrated | v10.7.0 | Card/list, modal CRUD, **server search**, Report button, 810 lines removed |
-| Hashtags | 🔄 Pending | - | Custom implementation (to be migrated) |
-
 ### Files
 
 **Core Components**:
@@ -1867,8 +1630,7 @@ return (
 
 ---
 
-## Admin Layout & Navigation System (Version 5.49.3+)
-
+## Admin Layout & Navigation System
 ### Overview
 
 The Admin Layout & Navigation System provides a comprehensive, responsive layout framework for all {messmass} admin pages. It features a collapsible sidebar navigation, top header with user info and notifications, and adaptive behavior across desktop, tablet, and mobile devices.
@@ -1981,21 +1743,7 @@ const { isCollapsed, setIsCollapsed } = useSidebar();
 - ✅ CSS Modules tree-shakable
 - ✅ No heavy dependencies
 
-### Future Enhancements
-
-See `docs/operations/operations-roadmap.md` for planned improvements:
-1. Tokenize sidebar widths and breakpoints (High priority)
-2. Add tooltips for collapsed sidebar (Medium priority)
-3. Add skip-to-content link (Medium priority)
-4. Persist sidebar state with localStorage (Low priority)
-5. Implement focus trap in mobile overlay (Low priority)
-
-For complete documentation, usage examples, troubleshooting, and technical details, see [ADMIN_LAYOUT_SYSTEM (archived)](archive/_archive/deprecated-guides-2025/archive-legacy-guides-pack.md#legacy-admin_layout_system).
-
----
-
-## Guided Tour System (Version 12.1.38)
-
+## Guided Tour System
 ### Overview
 
 A manually-triggered spotlight/backdrop product tour for the admin panel — a dark backdrop with a cutout highlighting one nav item at a time, plus a step-by-step tooltip. No auto-start: a "Guided tours" entry point in `TopHeader.tsx` opens a menu offering a short welcome tour (introduces the six sidebar sections) and one tour per section (Operations, Entities, Reports, Data, Analytics, System). No equivalent existed anywhere in this codebase or its dependencies before this — see `components/tour/`, `lib/tour/`.
@@ -2042,495 +1790,7 @@ The only DOM-targeting-attribute convention in this codebase so far (no prior `d
 
 ---
 
-## Page Styles System — Custom Theming Engine (Version 6.42.0)
-
-### Overview
-
-The Page Styles System is a complete custom theming engine that allows administrators to create, manage, and apply visual themes to projects dynamically. It provides full control over backgrounds (solid/gradient), typography, and color schemes for public project pages, enabling white-label deployments, per-client branding, and dark mode support.
-
-**Status**: Production-Ready
-**Documentation**: Complete implementation with 5 default themes included
-**Complexity**: 2,887 lines of production code across 11 files
-
-### Key Features
-
-- **Visual Theme Editor**: Tabbed modal interface with live preview
-- **Background Customization**: Solid colors or CSS gradients for page, hero, and content boxes
-- **Typography Control**: Font family, size, color, and weight configuration
-- **Color Schemes**: Primary, secondary, accent, success, warning, error palettes
-- **Global Default Theme**: System-wide fallback when no project-specific style assigned
-- **Project Assignment**: Many-to-many relationship (one style → multiple projects)
-- **Dynamic CSS Injection**: Client-side style application without page reload
-- **5 Professional Themes**: Clean Light, Dark Mode, Sports Blue, Vibrant Gradient, Minimal Gray
-
-### Architecture Components
-
-#### 1. Data Model
-
-**Page Styles Collection** (`page_styles_enhanced`)
-```typescript
-interface PageStyleEnhanced {
-  _id: ObjectId;
-  name: string;                          // Style name (e.g., "Dark Mode")
-  description?: string;                  // Optional description
-  isGlobalDefault: boolean;              // Only one can be true
-  pageBackground: BackgroundStyle;       // Page-level background
-  heroBackground: BackgroundStyle;       // Hero section background
-  contentBoxBackground: ContentBoxBackground; // Content boxes
-  typography: Typography;                // Font settings
-  colorScheme: ColorScheme;              // Color palette
-  createdAt: Date;                       // ISO 8601 with milliseconds
-  updatedAt: Date;                       // ISO 8601 with milliseconds
-  createdBy?: string;                    // Admin user email
-  projectIds?: string[];                 // Assigned project ObjectIds
-}
-
-interface BackgroundStyle {
-  type: 'solid' | 'gradient';
-  color?: string;                        // Hex color for solid
-  gradient?: string;                     // CSS gradient for gradient type
-}
-
-interface ContentBoxBackground {
-  backgroundColor: string;
-  borderColor?: string;
-  borderWidth?: string;
-  borderRadius?: string;
-}
-
-interface Typography {
-  fontFamily: string;                    // 'Inter' | 'Roboto' | 'Poppins'
-  fontSize: string;
-  headingColor: string;
-  textColor: string;
-  fontWeight?: string;
-}
-
-interface ColorScheme {
-  primary: string;
-  secondary: string;
-  accent: string;
-  success: string;
-  warning: string;
-  error: string;
-}
-```
-
-**MongoDB Indexes**:
-1. `{ name: 1 }` - Unique index for style names
-2. `{ isGlobalDefault: 1 }` - Fast lookup for global default
-3. `{ projectIds: 1 }` - Efficient project-to-style queries
-
-**Example Style Document**:
-```json
-{
-  "_id": ObjectId("..."),
-  "name": "Dark Mode",
-  "description": "Modern dark theme with vibrant accents",
-  "isGlobalDefault": false,
-  "pageBackground": {
-    "type": "solid",
-    "color": "#1a1a1a"
-  },
-  "heroBackground": {
-    "type": "gradient",
-    "gradient": "linear-gradient(135deg, #667eea 0%, #764ba2 100%)"
-  },
-  "contentBoxBackground": {
-    "backgroundColor": "#2a2a2a",
-    "borderColor": "#3a3a3a",
-    "borderWidth": "1px",
-    "borderRadius": "8px"
-  },
-  "typography": {
-    "fontFamily": "Inter",
-    "fontSize": "16px",
-    "headingColor": "#ffffff",
-    "textColor": "#e0e0e0",
-    "fontWeight": "400"
-  },
-  "colorScheme": {
-    "primary": "#667eea",
-    "secondary": "#764ba2",
-    "accent": "#f093fb",
-    "success": "#4ade80",
-    "warning": "#fbbf24",
-    "error": "#f87171"
-  },
-  "createdAt": "2025-01-22T19:00:00.000Z",
-  "updatedAt": "2025-01-22T19:00:00.000Z",
-  "projectIds": ["65a1b2c3d4e5f6789abc0001", "65a1b2c3d4e5f6789abc0002"]
-}
-```
-
-#### 2. API Endpoints
-
-**Style Management**
-- `GET /api/page-styles-enhanced` - List all styles (admin auth required)
-  - Response: `{ success: true, styles: [...] }`
-
-- `POST /api/page-styles-enhanced` - Create new style
-  - Body: Complete `PageStyleEnhanced` object (without `_id`)
-  - Validation: Name uniqueness, only one global default
-  - Returns: Created style with `_id`
-
-- `PUT /api/page-styles-enhanced?styleId=X` - Update existing style
-  - Body: Partial `PageStyleEnhanced` object
-  - Updates `updatedAt` timestamp automatically
-  - Prevents duplicate global defaults
-
-- `DELETE /api/page-styles-enhanced?styleId=X` - Delete style
-  - Removes style from all assigned projects
-  - Returns: `{ success: true, deletedCount: 1 }`
-
-**Migration Note** (v6.44.0):
-- **Database Field**: Projects use `styleIdEnhanced` field (migrated from deprecated `styleId`)
-- **API Parameter**: Endpoints still accept `styleId` param for backward compatibility
-- **Internal Conversion**: Backend converts `styleId` → `styleIdEnhanced` before database operations
-
-**Global Default Management**
-- `POST /api/page-styles-enhanced/set-global` - Set style as global default
-  - Body: `{ styleId: ObjectId }`
-  - Atomically unsets previous global default
-  - Only one global default allowed at any time
-
-**Project Assignment**
-- `POST /api/page-styles-enhanced/assign-project` - Assign style to project
-  - Body: `{ styleId: ObjectId, projectId: ObjectId }`
-  - Bidirectional linking: Updates both collections
-  - Updates: `style.projectIds[]` and `project.styleIdEnhanced` (database field name)
-
-- `DELETE /api/page-styles-enhanced/assign-project` - Remove assignment
-  - Body: `{ styleId: ObjectId, projectId: ObjectId }`
-  - Cleans up both collections
-
-**Public Endpoint**
-- `GET /api/page-style?projectId=X` - Fetch style for public page (no auth)
-  - Logic: `project.styleIdEnhanced` → global default → hardcoded fallback
-  - Returns: Complete `PageStyleEnhanced` object
-  - Performance: <200ms response time
-  - **Note**: Uses `styleIdEnhanced` field from projects collection
-
-#### 3. Admin UI Components
-
-**Page Styles Tab** (`/admin/design` 6th tab)
-- **Layout**: Grid of style cards with Add button
-- **Cards Display**: Style name, description, preview swatches, action buttons
-- **Actions per Card**:
-  - Edit: Opens PageStyleEditor modal
-  - Delete: Confirmation dialog with safety check (removes project assignments)
-  - Set as Global Default: Button to designate system-wide default
-
-**PageStyleEditor Component** (`components/PageStyleEditor.tsx`, 556 lines)
-- **Pattern**: Modal overlay with split-screen layout (1400px width)
-- **Layout**: Form (left) + Live Preview (right) on desktop; stacks on mobile
-- **Sections** (4 tabs):
-  1. **General**: Name, description, global default checkbox
-  2. **Backgrounds**: Page, hero, content box (solid/gradient toggle)
-  3. **Typography**: Font family, size, colors, weight
-  4. **Colors**: Primary, secondary, accent, success, warning, error
-- **Features**:
-  - Native HTML5 color pickers with hex text inputs
-  - Background type toggle (solid ↔ gradient)
-  - Form validation (name required, colors hex format)
-  - Live preview updates on every change
-  - Save/Cancel actions
-
-**StylePreview Component** (`components/StylePreview.tsx`, 187 lines)
-- **Purpose**: Real-time visual feedback while editing
-- **Content**: Mini page mockup with hero section, content boxes, text samples
-- **Updates**: Instant (<50ms) when form changes
-- **Rendering**: Applies all style properties to preview elements
-- **Elements Shown**: Hero header, body text, buttons, cards, color swatches
-
-**Design System Integration**:
-- Uses CSS Modules for scoped styling
-- Modal follows admin panel patterns (consistent with Projects, Bitly pages)
-- Color pickers use native `<input type="color">` for OS integration
-- Responsive breakpoints: Desktop (≥1024px), Tablet (≥768px), Mobile (<768px)
-
-#### 4. Style Application System
-
-**usePageStyle Hook** (`hooks/usePageStyle.ts`, 170 lines)
-- **Purpose**: Fetch and apply page style dynamically on public pages
-- **Usage**:
-  ```typescript
-  // In app/stats/[slug]/page.tsx
-  usePageStyle({ projectId: slug });
-  ```
-- **Flow**:
-  1. Fetches style via `/api/page-style?projectId=X`
-  2. Generates CSS from style object
-  3. Injects `<style id="page-style-enhanced">` into document head
-  4. Cleans up on component unmount
-- **CSS Targets**:
-  - `body` - Page background
-  - `.stats-hero` - Hero section background
-  - `.stats-content-box` - Content boxes styling
-  - `h1, h2, h3, h4, h5, h6` - Typography
-  - `.primary`, `.secondary`, `.accent`, `.success`, `.warning`, `.error` - Semantic color classes
-- **Performance**: CSS injection <10ms, style fetch <200ms
-
-**CSS Generation Strategy**:
-- Converts JSON style object to CSS rules
-- Supports both solid colors and gradients
-- Applies typography with fallback fonts
-- Injects semantic color CSS variables
-- Handles border, border-radius, shadows
-
-#### 5. Default Themes (Seed Script)
-
-**Script**: `scripts/seedPageStyles.ts` (260 lines)
-**Command**: `npm run seed:page-styles`
-
-**Included Themes**:
-
-1. **Clean Light** (Global Default)
-   - Page: White (#ffffff)
-   - Hero: Subtle gradient (blue to indigo)
-   - Content: Light gray boxes
-   - Font: Inter, 16px
-   - Use case: Professional, corporate events
-
-2. **Dark Mode**
-   - Page: Dark gray (#1a1a1a)
-   - Hero: Vibrant purple gradient
-   - Content: Charcoal boxes with accent borders
-   - Font: Inter, 16px
-   - Use case: Night events, esports
-
-3. **Sports Blue**
-   - Page: Light blue gradient
-   - Hero: Bold blue-to-cyan gradient
-   - Content: White boxes with blue borders
-   - Font: Poppins, 16px
-   - Use case: Sports teams, stadiums
-
-4. **Vibrant Gradient**
-   - Page: Yellow-to-pink gradient
-   - Hero: Neon gradient (pink-orange-yellow)
-   - Content: White boxes, strong shadows
-   - Font: Poppins, 17px
-   - Use case: Festivals, youth events
-
-5. **Minimal Gray**
-   - Page: Pure white
-   - Hero: Grayscale gradient
-   - Content: Light gray boxes, minimal borders
-   - Font: Roboto, 15px
-   - Use case: Minimalist brands, art galleries
-
-**Seeding Process**:
-1. Checks if styles already exist (by name)
-2. Inserts only missing themes
-3. Sets "Clean Light" as global default
-4. Logs created styles with `_id`
-5. Safe to run multiple times (idempotent)
-
-### Integration Guide
-
-#### Step 1: Seed Default Themes (One-time)
-```bash
-npm run seed:page-styles
-```
-
-#### Step 2: Manage Themes in Admin UI
-1. Navigate to `/admin/design`
-2. Click "Page Styles" tab
-3. Create/edit/delete themes as needed
-4. Set global default theme
-
-#### Step 3: Assign Theme to Project
-
-**Via API**:
-```typescript
-await fetch('/api/page-styles-enhanced/assign-project', {
-  method: 'POST',
-  headers: { 'Content-Type': 'application/json' },
-  body: JSON.stringify({
-    styleId: '65a1b2c3d4e5f6789abc0000',
-    projectId: '65a1b2c3d4e5f6789abc0001'
-  })
-});
-```
-
-**Via Admin UI** (future enhancement):
-- Project edit modal will include style dropdown selector
-
-#### Step 4: Apply Styles to Public Pages
-
-**Add one line to stats pages**:
-```typescript
-// app/stats/[slug]/page.tsx
-import { usePageStyle } from '@/hooks/usePageStyle';
-
-export default function StatsPage({ params }: { params: { slug: string } }) {
-  usePageStyle({ projectId: params.slug }); // Add this line
-
-  // Rest of component code...
-}
-```
-
-**Result**: Page automatically loads project-specific style or global default
-
-### Style Resolution Logic
-
-```
-1. Fetch project by ID
-2. If project.styleIdEnhanced exists:
-   → Load that specific style
-3. Else:
-   → Load style where isGlobalDefault === true
-4. Else:
-   → Use hardcoded system default (Clean Light equivalent)
-```
-
-**Fallback Hierarchy**: Project Style → Global Default → System Hardcoded
-
-### Performance Characteristics
-
-- **Admin UI Load**: <100ms (style list fetch + render)
-- **Modal Open**: <50ms (no API call, form initialization)
-- **Live Preview**: <50ms per change (instant React re-render)
-- **Style Fetch (Public)**: <200ms (MongoDB query + response)
-- **CSS Injection**: <10ms (DOM manipulation)
-- **Total Public Page Load Impact**: <210ms added latency
-
-### File Structure
-
-```
-messmass/
-├── components/
-│   ├── PageStyleEditor.tsx              (556 lines) - Modal form
-│   ├── PageStyleEditor.module.css       (389 lines) - Modal styles
-│   ├── StylePreview.tsx                 (187 lines) - Live preview
-│   └── StylePreview.module.css          (195 lines) - Preview styles
-├── app/api/
-│   ├── page-styles-enhanced/
-│   │   ├── route.ts                     (257 lines) - CRUD operations
-│   │   ├── set-global/route.ts          (67 lines)  - Global default
-│   │   └── assign-project/route.ts      (167 lines) - Project linking
-│   └── page-style/route.ts              (113 lines) - Public endpoint
-├── hooks/
-│   └── usePageStyle.ts                  (170 lines) - Style application
-├── lib/
-│   └── pageStyleTypesEnhanced.ts        (266 lines) - TypeScript types
-└── scripts/
-    └── seedPageStyles.ts                (260 lines) - Default themes
-```
-
-**Total**: 11 files, 2,887 lines of production code
-
-### Benefits
-
-1. **White-Label Deployments**: Different visual identities per client without code changes
-2. **Brand Consistency**: Match partner/client brand guidelines automatically
-3. **Dark Mode Support**: Built-in theme switching (e.g., night events)
-4. **No Code Changes**: Admins create themes via UI, no developer involvement
-5. **Real-Time Preview**: See changes instantly before saving
-6. **Flexible**: Supports gradients, custom fonts, complete color palettes
-7. **Performance**: Minimal impact on page load (<210ms)
-8. **Maintainable**: Centralized theming system with type safety
-
-### Future Enhancements
-
-See `docs/operations/operations-roadmap.md` for planned improvements:
-1. **Enhanced Color Picker**: Gradient builder UI (vs. manual CSS input)
-2. **Theme Import/Export**: JSON export for sharing themes across instances
-3. **Theme Preview URL**: Shareable preview link before applying to production
-4. **Animation Controls**: Transition timing, hover effects
-5. **Responsive Typography**: Different font sizes per breakpoint
-6. **Admin UI Assignment**: Dropdown in project edit modal to assign styles
-7. **Theme Categories**: Organize themes by industry/use case
-8. **Font Upload**: Custom font file support (vs. pre-defined fonts)
-9. **CSS Variables Export**: Generate CSS custom properties for external use
-10. **A/B Testing**: Compare multiple themes on same project
-
-### Usage Examples
-
-**Creating a Custom Theme via API**:
-```typescript
-const newStyle = await fetch('/api/page-styles-enhanced', {
-  method: 'POST',
-  headers: { 'Content-Type': 'application/json' },
-  body: JSON.stringify({
-    name: 'Corporate Red',
-    description: 'Red-themed corporate branding',
-    isGlobalDefault: false,
-    pageBackground: { type: 'solid', color: '#f8f8f8' },
-    heroBackground: { type: 'gradient', gradient: 'linear-gradient(to right, #dc2626, #b91c1c)' },
-    contentBoxBackground: {
-      backgroundColor: '#ffffff',
-      borderColor: '#dc2626',
-      borderWidth: '2px',
-      borderRadius: '8px'
-    },
-    typography: {
-      fontFamily: 'Poppins',
-      fontSize: '16px',
-      headingColor: '#111827',
-      textColor: '#374151',
-      fontWeight: '500'
-    },
-    colorScheme: {
-      primary: '#dc2626',
-      secondary: '#b91c1c',
-      accent: '#f59e0b',
-      success: '#10b981',
-      warning: '#f59e0b',
-      error: '#ef4444'
-    }
-  })
-});
-```
-
-**Fetching All Styles**:
-```typescript
-const response = await fetch('/api/page-styles-enhanced');
-const { styles } = await response.json();
-// Returns array of PageStyleEnhanced objects
-```
-
-**Setting Global Default**:
-```typescript
-await fetch('/api/page-styles-enhanced/set-global', {
-  method: 'POST',
-  headers: { 'Content-Type': 'application/json' },
-  body: JSON.stringify({ styleId: '65a1b2c3d4e5f6789abc0000' })
-});
-// Atomically unsets previous default and sets new one
-```
-
-### Troubleshooting
-
-**Style Not Applying**:
-1. Verify `usePageStyle({ projectId })` called in component
-2. Check project has `styleIdEnhanced` field or global default exists
-3. Inspect browser console for fetch errors
-4. Check network tab: `/api/page-style?projectId=X` should return 200
-
-**CSS Not Visible**:
-1. Inspect DOM: Look for `<style id="page-style-enhanced">` in `<head>`
-2. Verify CSS rules target correct classes (`.stats-hero`, `.stats-content-box`)
-3. Check CSS specificity (inline styles may override)
-4. Disable browser extensions that modify CSS
-
-**Admin UI Not Loading**:
-1. Verify authentication (must be logged in as admin)
-2. Check MongoDB connection
-3. Run seed script: `npm run seed:page-styles` to ensure collection exists
-4. Check browser console for API errors
-
-**Multiple Global Defaults**:
-1. Should never happen (API prevents this)
-2. If corrupted data: Manually set `isGlobalDefault: false` for all but one style
-3. Run: `db.page_styles_enhanced.updateMany({ isGlobalDefault: true }, { $set: { isGlobalDefault: false } })`
-4. Then set desired default via API
-
----
-
-## Security Enhancements — API Protection & Observability (Version 6.22.3)
-
+## Security Enhancements — API Protection & Observability
 ### Overview
 
 The Security Enhancements system provides comprehensive API protection through rate limiting, CSRF protection, and centralized logging. These layers work together to protect against abuse, ensure request authenticity, and provide operational visibility.
@@ -2653,29 +1913,6 @@ export async function apiRequest<T>(url: string, options: RequestInit): Promise<
 4. **Attack Detection**: Security violations logged for monitoring
 5. **Performance Monitoring**: Request duration tracking identifies bottlenecks
 
-### Performance Impact
-
-| Metric | Before | After | Change |
-|--------|--------|-------|--------|
-| **Request Latency** | 50ms | 52ms | +2ms (negligible) |
-| **First Request** | 50ms | 150ms | +100ms (CSRF token fetch, one-time) |
-| **Memory Usage** | 100MB | 101MB | +1MB (rate limit store) |
-| **Client Bundle** | 500KB | 502KB | +2KB (apiClient) |
-
-**Conclusion**: Minimal performance impact with significant security gains.
-
-### Production Scaling Plan
-
-**Current Architecture**:
-- In-memory rate limiting (suitable for single-instance)
-- No external dependencies
-
-**Future Scaling**:
-- Redis adapter for distributed rate limiting
-- External logging service integration (Datadog, CloudWatch)
-- Configurable limits per user/tier
-- IP whitelist/blacklist support
-
 ### Troubleshooting
 
 **Common Issues**:
@@ -2702,8 +1939,7 @@ See [security-migration-guide.md](security/security-migration-guide.md) for step
 
 ---
 
-## Admin Variables & Metrics Management System (Version 7.0.0)
-
+## Admin Variables & Metrics Management System
 ### Overview
 
 **🚀 MAJOR ARCHITECTURE CHANGE**: The Variable System has been completely migrated to a **database-first architecture** with **Single Reference System** using full database paths.
@@ -2903,17 +2139,6 @@ interface VariableGroup {
 - Manual mode for post-event data entry (all base stats)
 - Derived/text variables are computed or non-numeric
 
-### SEYU Token Examples
-
-| Variable Name | Registry Label | SEYU Token | Normalization Rule |
-|---------------|---------------|------------|--------------------|
-| `allImages` | Total Images | `[SEYUTOTALIMAGES]` | ALL → TOTAL |
-| `visitShortUrl` | Short URL Visits | `[SEYUSHORTURLVISIT]` | VISIT* → *VISIT |
-| `eventValuePropositionVisited` | Value Prop Visited | `[SEYUPROPOSITIONVISIT]` | VISITED → VISIT |
-| `stadium` | Location | `[SEYUSTADIUMFANS]` | Add FANS suffix |
-| `merched` | People with Merch | `[SEYUMERCHEDFANS]` | Explicit mapping |
-| `jersey` | Jerseys | `[SEYUMERCHERSEY]` | MERCH prefix |
-
 ### Variable Groups Manager
 
 **Purpose**: Controls Editor dashboard layout by organizing variables into themed sections with optional KPI charts.
@@ -2946,195 +2171,7 @@ interface VariableGroup {
 
 ---
 
-## Formula Validation System (Version 6.9.2)
-
-### Overview
-
-The Formula Validation System provides real-time validation for chart formulas in the Admin Charts interface, preventing invalid formulas from entering the system and guiding admins toward consistent token usage.
-
-**Status**: Production-Ready
-**Components**: FormulaEditor component, validation functions, Validate All feature
-
-### Key Components
-
-#### 1. FormulaEditor Component (`components/FormulaEditor.tsx`)
-- **Role**: Reusable formula input with live validation feedback
-- **Features**:
-  - 300ms debounced validation as user types
-  - Variable picker dropdown with search and category filtering
-  - Real-time error/warning/success status display
-  - Syntax highlighting for variable tokens
-  - Deprecation warnings for non-SEYU tokens
-  - Division-by-zero detection
-  - Click-outside handling for variable picker
-  - Keyboard navigation support
-
-**Usage Example**:
-```typescript
-import FormulaEditor from '@/components/FormulaEditor';
-
-<FormulaEditor
-  formula={element.formula}
-  onChange={(newFormula) => updateElement(index, 'formula', newFormula)}
-  onValidate={(result) => handleValidation(index, result)}
-  placeholder="Enter formula..."
-/>
-```
-
-#### 2. Validation Functions (`lib/formulaEngine.ts`)
-
-**Exported Functions**:
-```typescript
-// Validates formula syntax and variables
-export function validateFormula(formula: string): FormulaValidationResult
-
-// Extracts all variable tokens from formula
-export function extractVariablesFromFormula(formula: string): string[]
-```
-
-**Validation Result Interface**:
-```typescript
-interface FormulaValidationResult {
-  isValid: boolean;
-  error?: string;
-  usedVariables: string[];
-  evaluatedResult?: number | 'NA';
-}
-```
-
-**Validation Rules**:
-- ❌ **Error**: Unknown variables (not in VARIABLE_MAPPINGS or computed set)
-- ❌ **Error**: Unbalanced parentheses
-- ⚠️ **Warning**: Non-SEYU tokens (deprecated format)
-- ⚠️ **Warning**: Division by zero risk (regex: `/\/ *0(?!\d)/`)
-- ✅ **Success**: Valid formula with test evaluation result
-
-#### 3. Validate All Feature (ChartAlgorithmManager)
-
-**Location**: Admin Charts page header
-**Button**: "✓ Validate All"
-
-**Functionality**:
-- Validates all formulas across all chart configurations
-- Counts: total formulas, valid, errors, warnings
-- Lists specific error messages by chart and element
-- Displays summary alert with results
-
-**Implementation**:
-```typescript
-const validateAllFormulas = () => {
-  configurations.forEach(config => {
-    config.elements.forEach((element, idx) => {
-      const result = validateFormula(element.formula);
-      // Count errors, warnings, check for deprecated tokens
-    });
-  });
-  // Display summary alert
-};
-```
-
-### Validation Process
-
-**Step 1: Token Extraction**
-```typescript
-const variableRegex = /\[([A-Z_]+)\]/g;
-const variables = extractVariablesFromFormula(formula);
-// Example: "[SEYUFEMALE] + [SEYUMALE]" → ["SEYUFEMALE", "SEYUMALE"]
-```
-
-**Step 2: Variable Validation**
-- Normalize tokens (strip SEYU prefix, remove underscores)
-- Check against VARIABLE_MAPPINGS and computed set
-- Flag unknown variables as errors
-
-**Step 3: Syntax Validation**
-- Check balanced parentheses (track open/close count)
-- Detect unclosed or premature closing parentheses
-
-**Step 4: Deprecation Check**
-- Identify tokens without SEYU prefix (e.g., `[FEMALE]` vs `[SEYUFEMALE]`)
-- Emit warnings to guide migration
-
-**Step 5: Division-by-Zero Check**
-- Regex match: `/\/ *0(?!\d)/` (literal division by zero)
-- Emit warning (formula will evaluate to NA at runtime)
-
-**Step 6: Test Evaluation**
-- Substitute variables with sample values (all = 1)
-- Evaluate formula safely via `Function` constructor
-- Return numeric result or 'NA'
-
-### Variable Picker UI
-
-**Design**: Dropdown overlay with search and category filter
-
-**Features**:
-- **Search**: Live filter by variable name, display name, or description
-- **Category Filter**: Dropdown to filter by Images, Fans, Demographics, etc.
-- **Variable Cards**: Display name, SEYU token, description, example usage
-- **Click to Insert**: Inserts `[TOKEN]` at cursor position
-- **Keyboard Support**: Escape to close, arrow navigation
-
-**Categories Available**:
-- All (no filter)
-- Images
-- Location
-- Demographics
-- Merchandise
-- Moderation
-- Engagement
-- Social Media
-- Event
-- Merchandise Pricing
-
-### Error Messages
-
-**Common Errors**:
-- `"Invalid variables: [INVALIDTOKEN]"` — Unknown variable token
-- `"Unbalanced parentheses: closing parenthesis without opening"` — Syntax error
-- `"Unbalanced parentheses: unclosed opening parenthesis"` — Missing close paren
-
-**Common Warnings**:
-- `"Variable [FEMALE] uses deprecated format. Consider using SEYU-prefixed tokens."` — Migration guidance
-- `"Potential division by zero detected. Formula will return NA if denominator is 0."` — Safety warning
-
-### Integration Points
-
-**ChartAlgorithmManager** (`components/ChartAlgorithmManager.tsx`):
-- Validates formulas on element edit
-- Blocks save if any formula has errors
-- Shows validation status per element
-
-**Future Integration** (planned for parameterization):
-- Support `[PARAM:parameterName]` tokens
-- Support `[MANUAL:key]` tokens for aggregated data
-- Extended validation for new token types
-
-### Performance
-
-**Debouncing**: 300ms delay prevents validation on every keystroke
-**Caching**: Validation results stored in component state
-**Efficiency**: Single-pass regex for token extraction
-
-### Accessibility
-
-- ✅ Keyboard navigation (Tab, Enter, Escape)
-- ✅ ARIA labels for validation status
-- ✅ Color + icon + text for error states (WCAG compliant)
-- ✅ Focus management (auto-focus search, return focus after insert)
-
-### Future Enhancements
-
-- Add inline formula autocomplete (as-you-type suggestions)
-- Syntax highlighting with color-coded tokens
-- Formula templates library (common patterns)
-- Semantic validation (e.g., warn if mixing counts with percentages)
-- Historical formula validation (check all existing charts on DB schema change)
-
----
-
-## Chart System Enhancement Phase B (Version 6.10.0)
-
+## Chart System Enhancement Phase B
 ### Overview
 
 Chart System Enhancement Phase B transforms the Chart Algorithm Manager from hardcoded formulas to a fully flexible, data-driven system with parameterized values, Bitly enrichment charts, and support for aggregated analytics.
@@ -3151,12 +2188,12 @@ Enables marketing teams to tune CPM values and multipliers without code changes 
 
 **Before** (Hardcoded):
 ```typescript
-formula: "([SEYUREMOTEIMAGES] + [SEYUHOSTESSIMAGES] + [SEYUSELFIES]) * 4.87"
+formula: "([remoteImages] + [hostessImages] + [selfies]) * 4.87"
 ```
 
 **After** (Parameterized):
 ```typescript
-formula: "([SEYUREMOTEIMAGES] + [SEYUHOSTESSIMAGES] + [SEYUSELFIES]) * [PARAM:cpmEmailOptin]",
+formula: "([remoteImages] + [hostessImages] + [selfies]) * [PARAM:cpmEmailOptin]",
 parameters: {
   cpmEmailOptin: {
     value: 4.87,
@@ -3239,8 +2276,8 @@ Three new charts visualize Bitly clickstream data (device types, traffic sources
   type: 'pie',
   emoji: '📱',
   elements: [
-    { label: 'Mobile', formula: '[SEYUBITLYMOBILECLICKS]', color: '#3b82f6' },
-    { label: 'Desktop + Tablet', formula: '[SEYUBITLYDESKTOPCLICKS] + [SEYUBITLYTABLETCLICKS]', color: '#8b5cf6' }
+    { label: 'Mobile', formula: '[bitlyMobileClicks]', color: '#3b82f6' },
+    { label: 'Desktop + Tablet', formula: '[bitlyDesktopClicks] + [bitlyTabletClicks]', color: '#8b5cf6' }
   ]
 }
 ```
@@ -3252,11 +2289,11 @@ Three new charts visualize Bitly clickstream data (device types, traffic sources
   title: 'Bitly Referrers',
   type: 'bar',
   elements: [
-    { label: 'QR Code', formula: '[SEYUBITLYQRCODECLICKS]', color: '#10b981' },
-    { label: 'Instagram', formula: '[SEYUBITLYINSTAGRAMMOBILECLICKS] + [SEYUBITLYINSTAGRAMWEBCLICKS]', color: '#ec4899' },
-    { label: 'Facebook', formula: '[SEYUBITLYFACEBOOKMOBILECLICKS] + [SEYUBITLYFACEBOOKMESSENGERCLICKS]', color: '#3b82f6' },
-    { label: 'Other Social', formula: '[SEYUBITLYSOCIALCLICKS]', color: '#8b5cf6' },
-    { label: 'Direct', formula: '[SEYUBITLYDIRECTCLICKS]', color: '#6b7280' }
+    { label: 'QR Code', formula: '[bitlyQrCodeClicks]', color: '#10b981' },
+    { label: 'Instagram', formula: '[bitlyInstagramMobileClicks] + [bitlyInstagramWebClicks]', color: '#ec4899' },
+    { label: 'Facebook', formula: '[bitlyFacebookMobileClicks] + [bitlyFacebookMessengerClicks]', color: '#3b82f6' },
+    { label: 'Other Social', formula: '[bitlySocialClicks]', color: '#8b5cf6' },
+    { label: 'Direct', formula: '[bitlyDirectClicks]', color: '#6b7280' }
   ]
 }
 ```
@@ -3269,7 +2306,7 @@ Three new charts visualize Bitly clickstream data (device types, traffic sources
   type: 'kpi',
   emoji: '🌍',
   elements: [
-    { label: 'Countries Reached', formula: '[SEYUBITLYCOUNTRYCOUNT]', color: '#3b82f6' }
+    { label: 'Countries Reached', formula: '[bitlyCountryCount]', color: '#3b82f6' }
   ]
 }
 ```
@@ -3351,7 +2388,7 @@ manualData: {
 
 **Partner Benchmarks** (Future):
 ```typescript
-formula: "[MANUAL:avgFansPerEvent] / [SEYUTOTALFANS] * 100",
+formula: "[MANUAL:avgFansPerEvent] / [totalFans] * 100",
 manualData: {
   avgFansPerEvent: 4200 // Computed across all partner events
 }
@@ -3371,41 +2408,7 @@ const manualValues = element.manualData;
 const value = evaluateFormula(element.formula, stats, paramValues, manualValues);
 ```
 
-### Testing
-
-**Validation**:
-- ✅ Type-check passes (all types updated)
-- ✅ Build passes (production-ready)
-- ✅ Parameter substitution verified in dev environment
-- ✅ 3 Bitly charts created in MongoDB Atlas
-
-**Manual Testing Required**:
-- Value chart displays parameterized values correctly
-- Bitly charts render when Bitly data present
-- Charts show "NA" gracefully when data missing
-- Parameter editing via MongoDB updates chart values
-
-### Future Enhancements
-
-**Parameter Editor UI** (v6.11.0+):
-- Admin page to edit chart parameters without MongoDB access
-- Historical parameter value tracking
-- Parameter inheritance across chart families
-
-**Hashtag Analytics Charts** (v6.11.0+):
-- Sport share pie chart with `[MANUAL:sportCounts]`
-- Seasonality timeline with `[MANUAL:quarterCounts]`
-- Partner filter dropdown for benchmark comparisons
-
-**Bitly Data Aggregator** (v6.12.0+):
-- Automated Bitly API polling
-- `project.stats` population with Bitly metrics
-- Cache layer to reduce API calls
-
----
-
-## Advanced Chart Formatting System with VALUE Chart Type (Version 8.17.0)
-
+## Advanced Chart Formatting System with VALUE Chart Type
 ### Overview
 
 The Advanced Chart Formatting System replaces hardcoded type-based formatting with a flexible, configurable interface supporting custom prefix/suffix combinations and decimal precision control. This enables white-label deployments with multiple currencies and custom units without code changes.
@@ -3474,11 +2477,11 @@ interface ChartValueFormatting {
     suffix: ''
   },
   elements: [
-    { label: 'Email', formula: '[SEYUALLIMAGES] * [PARAM:cpmEmailOptin]', ... },
-    { label: 'Social', formula: '[SEYUALLIMAGES] * [PARAM:cpmSocialOrganic]', ... },
-    { label: 'Stadium', formula: '[SEYUINDOORFANS] * [PARAM:cpmStadiumAd]', ... },
-    { label: 'Premium', formula: '[SEYUYOUTHFANS] * [PARAM:premiumContactValue]', ... },
-    { label: 'Reoptin', formula: '[SEYUALLIMAGES] * [PARAM:cpmEmailAddon]', ... }
+    { label: 'Email', formula: '[allImages] * [PARAM:cpmEmailOptin]', ... },
+    { label: 'Social', formula: '[allImages] * [PARAM:cpmSocialOrganic]', ... },
+    { label: 'Stadium', formula: '[indoor] * [PARAM:cpmStadiumAd]', ... },
+    { label: 'Premium', formula: '[genYZ] * [PARAM:premiumContactValue]', ... },
+    { label: 'Reoptin', formula: '[allImages] * [PARAM:cpmEmailAddon]', ... }
   ]
 }
 ```
@@ -3601,34 +2604,6 @@ function validateFormatting(
 { "error": "kpiFormatting.rounded must be a boolean" }
 ```
 
-### Migration Path
-
-**No Database Migration Required**:
-- Existing charts with `type` field continue to work (legacy mode)
-- New charts can use `formatting` object (preferred)
-- Mixed usage supported (some charts legacy, some new)
-
-**Gradual Migration Strategy**:
-1. **Phase 1**: Deploy v8.17.0 with backward compatibility
-2. **Phase 2**: Create new VALUE charts with dual formatting
-3. **Phase 3**: Optionally migrate existing charts to use `formatting` field
-4. **Phase 4**: Deprecate `type` field in future major version (v9.0.0+)
-
-**Migration Script** (optional, for bulk updates):
-```javascript
-// Example: Migrate all currency-type KPI charts to formatting object
-db.chart_configurations.updateMany(
-  { type: 'kpi', 'elements.type': 'currency' },
-  {
-    $set: {
-      'elements.$[elem].formatting': { rounded: false, prefix: '€', suffix: '' }
-    },
-    $unset: { 'elements.$[elem].type': '' }
-  },
-  { arrayFilters: [{ 'elem.type': 'currency' }] }
-);
-```
-
 ### Integration Points
 
 **Chart Calculator** (`lib/chartCalculator.ts`):
@@ -3655,37 +2630,7 @@ db.chart_configurations.updateMany(
 - ✅ **Color Independence**: Value formatting doesn't rely on color
 - ✅ **Form Labels**: All inputs have associated labels
 
-### Testing
-
-**Validation**:
-- ✅ TypeScript type-check passes (strict mode)
-- ✅ Next.js production build successful
-- ✅ VALUE chart type appears in dropdown
-- ✅ Formatting controls display for VALUE type only
-- ✅ API validation enforces VALUE requirements
-- ✅ Backward compatibility with legacy `type` field
-- ✅ All chart types render correctly
-
-**Manual Testing**:
-- Create VALUE chart with dual formatting
-- Verify KPI and bars use separate formatting
-- Test prefix/suffix combinations (€, $, %, pts)
-- Test rounded vs. 2-decimal modes
-- Verify 5-element requirement blocks save with <5 or >5 elements
-
-### Future Enhancements
-
-**Planned for v8.18.0+**:
-1. **Default Chart Configurations**: Seed VALUE chart templates with common formats
-2. **Formatting Presets**: Quick-select buttons (Currency €, Currency $, Percentage, Count)
-3. **Element-Level Formatting Override**: Per-element formatting for mixed units (e.g., € + %)
-4. **Locale-Aware Formatting**: Use user's locale for number separators
-5. **Custom Decimal Places**: Allow 0, 1, 2, 3, or 4 decimal places (not just rounded vs. 2)
-
----
-
-## Pie Chart Percentage Visibility Control (Version 11.43.0)
-
+## Pie Chart Percentage Visibility Control
 ### Overview
 
 The Pie Chart Percentage Visibility Control adds a configurable `showPercentages` field to pie charts, allowing admins to toggle percentage display in legends and tooltips on a per-chart basis. This provides flexibility for cleaner chart designs when percentages are not needed.
@@ -3808,269 +2753,38 @@ callbacks: {
 
 ---
 
-## Image Layout System with Aspect Ratio Support (Version 9.3.0)
+## Image Layout System with Aspect Ratio Support
 
-### Overview
+An IMAGE chart declares one of three aspect ratios -- `16:9`, `9:16`, `1:1` --
+as the `AspectRatio` type in
+[`lib/chartConfigTypes.ts`](../lib/chartConfigTypes.ts), narrowed at runtime by
+`isValidAspectRatio` in the same file.
 
-The Image Layout System introduces flexible aspect ratio configuration for IMAGE charts, enabling consistent visual presentation across landscape, portrait, and square formats. This system ensures predictable grid layouts, maintains image cropping quality, and guarantees WYSIWYG PDF exports.
+**Where it is set.** `components/ChartAlgorithmManager.tsx` for the chart
+configuration; `app/admin/visualization/page.tsx` for the layout; both persist
+it on the chart document.
 
-**Status**: Production-Ready
-**Release**: v9.3.0 (2025-11-01)
-**Components**: aspectRatio field, automatic width calculation, background-image rendering
+**What it does.** The ratio is *not* a grid width. It is the cell's weight in
+the block height solver, which derives one shared height for every cell in a
+row from the block's width. A cell's width is a `LayoutUnit`, `1 | 2`. The
+solver, its four priority levels and its bounds are documented in
+[`docs/design/design-chart-height-system.md`](design/design-chart-height-system.md).
 
-### Key Features
+**Rendering.** IMAGE cells paint through `background-image` with
+`background-size: cover`, not an `<img>` with `object-fit`. That was originally
+a workaround for the client-side rasteriser; export is now server-side Chromium
+(`app/api/export/pdf/route.ts`), which renders either correctly, but the
+background approach stayed.
 
-#### 1. Aspect Ratio Configuration
+**Pass-through.** `lib/chartCalculator.ts` carries `aspectRatio` into the
+calculation result for `image`, `text` and `table` charts.
 
-**Supported Ratios**:
-- **16:9** (Landscape) - Wide format for panoramic images, event banners
-- **9:16** (Portrait) - Tall format for mobile-first content, vertical posters
-- **1:1** (Square) - Balanced format for social media, profile images
-
-**Database Schema Extension** (`lib/chartConfigTypes.ts`):
-```typescript
-interface ChartConfiguration {
-  chartId: string;
-  title: string;
-  type: 'pie' | 'bar' | 'kpi' | 'text' | 'image' | 'value';
-  aspectRatio?: '16:9' | '9:16' | '1:1'; // ✅ NEW: For IMAGE type only
-  // ... other fields
-}
-```
-
-**Admin UI Integration** (`app/admin/chart-algorithms/page.tsx`):
-- Aspect ratio dropdown appears when `type === 'image'`
-- Default: 16:9 (landscape) for new IMAGE charts
-- Saved to MongoDB on chart creation/update
-
-#### 2. Automatic Width Calculation
-
-**Problem Solved**: Manual width management causes inconsistent row heights when mixing aspect ratios.
-
-**Solution**: `calculateImageWidth()` utility automatically derives grid width from aspect ratio to maintain consistent row heights.
-
-**Implementation** (`lib/imageLayoutUtils.ts`):
-```typescript
-export function calculateImageWidth(aspectRatio: '16:9' | '9:16' | '1:1'): number {
-  // Grid height = 1 unit (portrait chart: 100% of CSS grid row height)
-  // Calculate width to maintain aspect ratio
-
-  switch (aspectRatio) {
-    case '9:16': return 1;   // Portrait: 1 grid unit (narrow, baseline)
-    case '1:1':  return 2;   // Square: 2 grid units (medium width)
-    case '16:9': return 3;   // Landscape: 3 grid units (wide)
-    default:     return 3;   // Fallback to landscape
-  }
-}
-```
-
-**Helper Functions**:
-- `getAspectRatioLabel(aspectRatio)` - Returns "16:9 Landscape", "9:16 Portrait", "1:1 Square"
-- `getCSSAspectRatio(aspectRatio)` - Returns "16/9", "9/16", "1/1" for CSS `aspect-ratio` property
-- `isValidAspectRatio(value)` - Type guard for runtime validation
-
-**Integration** (`components/UnifiedDataVisualization.tsx`):
-```typescript
-// Automatic width derivation for IMAGE charts
-const chartWidth = useMemo(() => {
-  if (chart.type === 'image' && chart.aspectRatio) {
-    return calculateImageWidth(chart.aspectRatio);
-  }
-  return chart.chartWidth || 1; // Fallback for other chart types
-}, [chart.type, chart.aspectRatio, chart.chartWidth]);
-```
-
-**Result**:
-- ✅ IMAGE charts automatically sized based on aspect ratio
-- ✅ Consistent row heights across mixed-ratio grids
-- ✅ No manual width management required
-- ✅ Backward compatible (charts without aspectRatio default to 16:9)
-
-#### 3. Background-Image Rendering
-
-**Problem**: `<img>` elements with `object-fit: cover` cause distortion in PDF exports when processed by `html2canvas`.
-
-**Solution**: Native `background-image` CSS rendering with `background-size: cover`.
-
-**Before** (Legacy):
-```tsx
-<img
-  src={imageUrl}
-  alt={title}
-  style={{ objectFit: 'cover' }}
-/>
-```
-
-**After** (v9.3.0):
-```tsx
-<div
-  className={styles.imageChartImg}
-  style={{ '--image-url': `url("${imageUrl}")` } as React.CSSProperties}
-/>
-```
-
-**CSS Implementation** (`components/charts/ImageChart.module.css`):
-```css
-.imageChartImg {
-  width: 100%;
-  height: 100%;
-  background-image: var(--image-url);
-  background-size: cover;      /* Maintains cropping */
-  background-position: center; /* Centers image */
-  background-repeat: no-repeat;
-  border-radius: var(--mm-radius-lg);
-  transition: transform var(--transition-base);
-}
-
-.imageChartImg:hover {
-  transform: scale(1.02); /* Subtle zoom effect */
-}
-```
-
-**Benefits**:
-- ✅ **PDF Export Compatibility**: No runtime DOM manipulation required
-- ✅ **WYSIWYG**: UI and PDF exports render identically
-- ✅ **Performance**: Eliminates `html2canvas` workaround overhead
-- ✅ **Maintainability**: Simpler codebase without image-to-div conversion logic
-
-#### 4. PDF Export Simplification
-
-**Deprecated Workaround** (`lib/export/pdf.ts`):
-```typescript
-// DEPRECATED (v9.3.0+): ImageChart now uses background-image natively
-// This workaround is NO LONGER NECESSARY but kept for backward compatibility
-// with custom components that may still use <img> with object-fit: cover
-```
-
-**Legacy Code Path**: Preserved for backward compatibility with external custom components, but not used by core IMAGE charts.
-
-**Migration Strategy**:
-- Phase 1 (v9.3.0): ImageChart uses background-image, PDF workaround marked deprecated
-- Phase 2 (v10.0.0): Remove PDF workaround entirely (breaking change)
-
-### Database Migration
-
-**Script**: `scripts/migrations/add-aspect-ratio-to-image-charts.ts`
-
-**Purpose**: Assign default `aspectRatio: '16:9'` to all existing IMAGE charts.
-
-**Execution**:
-```bash
-npx tsx -r dotenv/config scripts/migrations/add-aspect-ratio-to-image-charts.ts dotenv_config_path=.env.local
-```
-
-**Safety**:
-- ✅ Only updates charts with `type: 'image'`
-- ✅ Skips charts that already have `aspectRatio` field
-- ✅ Dry-run mode available (set `DRY_RUN=true`)
-- ✅ Logs all changes for audit trail
-
-### Layout Examples
-
-**Mixed Aspect Ratio Grid**:
-```
-┌─────────────────────────┬────────┬────────┐
-│ 16:9 Landscape (2 units)│ 1:1    │ 9:16   │
-│ Image Chart             │ Square │ Port.  │
-└─────────────────────────┴────────┴────────┘
-  ↑ 2 grid columns          ↑ 1      ↑ 0.5
-```
-
-**Consistent Row Heights**:
-- All charts maintain **1 unit height** (portrait chart height as baseline)
-- Widths calculated automatically: 9:16 → 1 unit, 1:1 → 2 units, 16:9 → 3 units
-- CSS Grid handles integer units for clean layout math
-
-### Chart Calculator Integration
-
-**Type Extension** (`lib/chartConfigTypes.ts`):
-```typescript
-interface ChartCalculationResult {
-  chartId: string;
-  title: string;
-  type: ChartType;
-  emoji?: string;
-  elements: Array<{ label: string; value: number | 'NA'; formattedValue: string; color: string; }>;
-  total?: number;
-  formattedTotal?: string;
-  imageUrl?: string;
-  aspectRatio?: '16:9' | '9:16' | '1:1'; // ✅ NEW: Passed through for IMAGE charts
-}
-```
-
-**Implementation** (`lib/chartCalculator.ts`):
-```typescript
-if (config.type === 'image') {
-  return {
-    // ... other fields
-    imageUrl: config.elements[0]?.imageUrl,
-    aspectRatio: config.aspectRatio || '16:9', // Default to landscape
-  };
-}
-```
-
-### Validation & Error Handling
-
-**Type Safety**:
-- ✅ `aspectRatio` union type enforces valid values at compile time
-- ✅ `isValidAspectRatio()` guards against invalid runtime values
-- ✅ TypeScript strict mode enabled across entire codebase
-
-**Fallback Behavior**:
-- Missing `aspectRatio` → defaults to `'16:9'` (backward compatible)
-- Invalid `aspectRatio` → falls back to `'16:9'` with console warning
-- IMAGE charts without `aspectRatio` → width calculated as 2 (landscape)
-
-### Performance
-
-- **Width Calculation**: O(1) switch statement, <0.1ms per chart
-- **Background Rendering**: Native CSS, no JavaScript overhead
-- **PDF Export**: Eliminates ~10-50ms per image (no DOM manipulation)
-- **Grid Layout**: CSS Grid handles fractional widths efficiently
-
-### Accessibility
-
-- ✅ **Aspect Ratio Dropdown**: Keyboard accessible, ARIA labels
-- ✅ **Background Images**: Decorative images don't interfere with screen readers
-- ✅ **Alt Text Equivalent**: Chart title provides context via semantic HTML
-
-### Testing
-
-**Validation**:
-- ✅ TypeScript type-check passes (strict mode)
-- ✅ Next.js production build successful
-- ✅ Aspect ratio dropdown appears for IMAGE type only
-- ✅ Width calculation accurate for all 3 ratios
-- ✅ Background-image rendering works in all major browsers
-- ✅ PDF export quality matches UI rendering
-
-**Manual Testing Checklist**:
-- Create IMAGE chart with 16:9 aspect ratio
-- Create IMAGE chart with 9:16 aspect ratio
-- Create IMAGE chart with 1:1 aspect ratio
-- Verify consistent row heights in mixed-ratio grids
-- Export page to PDF and verify image cropping
-- Test on mobile (portrait) and desktop (landscape)
-- Verify hover effects work on background-image
-
-### Future Enhancements
-
-**Planned for v9.4.0+**:
-1. **Additional Aspect Ratios**: 4:3 (classic), 21:9 (ultrawide), 3:2 (photography)
-2. **Custom Aspect Ratios**: Admin-defined ratios via "Custom: W:H" input
-3. **Focal Point Selection**: Click to set center point for background-position
-4. **Image Cropping Tool**: Visual editor for adjusting background-position (top/center/bottom)
-5. **Responsive Aspect Ratios**: Different ratios for mobile vs. desktop
-6. **Image Optimization**: Automatic WebP conversion and lazy loading
-7. **Placeholder System**: Low-res preview while high-res loads
-
-### Related Documentation
-
-- **WARP.md**: PDF Export System section (object-fit handling)
-- **REUSABLE_COMPONENTS_INVENTORY.md**: ImageChart component catalog
-- **docs/coding-standards.md**: Background-image vs. img element guidelines
-
----
+This section previously described `lib/imageLayoutUtils.ts`,
+`components/UnifiedDataVisualization.tsx`, `components/charts/ImageChart.module.css`,
+`app/admin/chart-algorithms/page.tsx`, `lib/export/pdf.ts` and
+`scripts/migrations/add-aspect-ratio-to-image-charts.ts` -- none of which exist --
+along with a ratios-to-1-3-grid-units mapping no code implemented, and a v10.0.0
+migration plan for removing a workaround from a file that had already been deleted.
 
 ## Admin Variables & Metrics System
 
@@ -4082,12 +2796,12 @@ if (config.type === 'image') {
 - Runtime configuration without code deploys
 - Flexible Editor UI tailored to project needs
 - Consistent variable referencing across formulas and charts
-- Multi-tenancy ready with SEYU namespace
 
 ### Roadmap Compliance
 
 ✅ **Milestone: Admin Variables — Org-Prefixed References & Card Layout**
-- SEYU-prefixed reference tokens with normalization
+- Lowercase field-name tokens (`[totalFans]`), migrated from the
+  SEYU-prefixed uppercase syntax by scripts/migrateChartFormulasToLowercase.ts
 - Card layout enforces exact line order (Label → REF → Flags → TYPE) and equal heights
 - Derived label standardized to "Total Images"
 
@@ -4103,19 +2817,6 @@ if (config.type === 'image') {
 - ✅ Client-side filtering and ordering (no repeated API calls)
 - ✅ MongoDB indexes on `name` for fast lookups
 - ✅ CSS Modules for scoped, tree-shakable styling
-
-### Future Enhancements
-
-See `docs/operations/operations-roadmap.md` for planned improvements:
-1. Bulk variable operations (enable/disable multiple)
-2. Variable templates (predefined sets for common event types)
-3. Formula validation in UI for derived variables
-4. Export/import variable configurations
-5. Variable usage analytics (which variables are edited most)
-
-For complete documentation, API reference, usage patterns, and technical decisions, see [ADMIN_VARIABLES_SYSTEM.md (archived)](archive/_archive/legacy-variable-system/archive-admin-variables-system.md).
-
----
 
 ## Technology Stack
 
@@ -4302,8 +3003,7 @@ const editable = await findProjectByEditSlug(editSlug);
 
 ---
 
-## Analytics Infrastructure (Version 6.26.0)
-
+## Analytics Infrastructure
 ### Overview
 
 The Analytics Infrastructure provides **pre-computed, high-performance analytics** for event metrics, partner performance, time-series trends, and industry benchmarking. Phase 1 implements the core data aggregation pipeline with 5 API endpoints serving sub-second query response times.
@@ -4501,30 +3201,7 @@ npm run analytics:aggregate
 - Query execution: <10ms with proper indexes
 - Concurrent queries: Supports 100+ simultaneous API requests
 
-### Future Enhancements (Phase 2+)
-
-**Phase 2: Insights Engine** (Q1-Q2 2026)
-- Predictive attendance modeling
-- Anomaly detection for unusual metrics
-- Automated insights generation
-- Recommendation engine for improvement
-
-**Phase 3: Advanced Dashboards** (Q2 2026)
-- Executive summary dashboards
-- Partner performance scorecards
-- Trend visualization widgets
-- Custom report builder
-
-**Phase 4: Reporting & Export** (Q2 2026)
-- PDF report generation
-- Excel export with formatting
-- Scheduled email reports
-- White-label partner reports
-
----
-
-## AI Analytics & Fanmass Analysis Pipeline (Version 12.1.53)
-
+## AI Analytics & Fanmass Analysis Pipeline
 ### Why this exists
 
 AI-derived analytics already existed on ~155 events but were **invisible in the
@@ -4631,20 +3308,6 @@ this applies to any new code in this subsystem, not just the existing calls.
 - `app/admin/analytics/ai/` — workspace and per-event report
 - `app/api/analytics/ai/` — read endpoints
 - `app/api/integrations/fanmass/` — producer-side ingest
-
----
-
-## Future Enhancements
-
-### Planned Features (Version 2.3.0+)
-- **Shareables Component Library** - Extract reusable components for other projects
-- **Import/Export** - Category-aware project data migration tools
-- **Team Collaboration** - Shared category definitions across team projects
-
-### Technical Debt
-- Consider MongoDB aggregation pipelines for complex filtering scenarios
-- Implement caching layer for frequently accessed hashtag categories
-- Add comprehensive error handling for category-related operations
 
 ---
 

@@ -586,11 +586,16 @@ export default function ChartAlgorithmManager({ user }: ChartAlgorithmManagerPro
           errors.push(`${config.title} - Element ${idx + 1} (${element.label}): ${result.error}`);
         }
         
-        // Check for deprecation warnings
+        // Deprecation warnings: SEYU-prefixed tokens are the OLD syntax.
+        // scripts/migrateChartFormulasToLowercase.ts rewrote every one of them
+        // to a lowercase field name, so a surviving SEYU token is what deserves
+        // a warning. This test was inverted, which meant it warned on every
+        // variable in every formula post-migration and on none of the ones it
+        // was written to catch.
         const usedVariables = extractVariablesFromFormula(element.formula);
         usedVariables.forEach(variable => {
           const normalized = variable.replace(/_/g, '');
-          if (!normalized.startsWith('SEYU')) {
+          if (normalized.startsWith('SEYU')) {
             warningCount++;
           }
         });
