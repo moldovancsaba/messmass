@@ -1,17 +1,19 @@
 {
  "_meta": {
-  "generated": "2026-09-17T08:18:46+00:00",
+  "generated": "2026-09-17T08:26:31+00:00",
   "repo": "messmass",
-  "head": "4250a981",
+  "head": "a071999d",
   "counts": {
-   "endpoints": 205,
-   "collections": 65,
+   "endpoints": 208,
+   "collections": 67,
    "env": 33,
    "outbound-hosts": 29,
    "docs": 205
   }
  },
  "items": [
+  "activation_participations",
+  "activation_templates",
   "aggregation_jobs",
   "aggregation_logs",
   "ai_analysis_summaries",

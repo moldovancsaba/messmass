@@ -2,7 +2,7 @@
 
 Generated for the fleet audit (messmass#350); measured against `docs/_audit/endpoints.json` (head 6d28c7f3, 194 endpoints). Every route below was verified by reading its `route.ts` handler, not just the marker scan.
 
-Coverage: 205 of 205 routes documented, enforced by
+Coverage: 208 of 208 routes documented, enforced by
 `tests/api-reference-covers-every-route.test.ts` — five routes were missing when
 that claim was last made by hand.
 
@@ -279,10 +279,13 @@ All wrapped in `withOrgContext` (getAdminUser + `x-v3-org-id` injection) except 
 | /api/v3/reporting/export/[entityId] | GET | withOrgContext | path entity id | CSV download | aggregates V3MetricValue |
 | /api/v3/reports/resolve | GET | withOrgContext | `?activityId\|entityId` | resolved template | reads v3 report config |
 
-## Remaining root routes (37 routes)
+## Remaining root routes (40 routes)
 
 | Path | Methods | Auth | Request | Response | Side effects |
 |---|---|---|---|---|---|
+| /api/activation-templates | GET, POST | requireAdmin | POST `{name,description?,partnerId?,dataFields[]}` | `{success,template\|templates}` | reads/writes `activation_templates` (messmass#228) |
+| /api/activation-templates/[id] | GET | requireAdmin | — | `{success,template,yield}` | reads `activation_templates`; computes yield from `activation_participations` |
+| /api/activation-templates/[id]/participations | GET, POST | requireAdmin | POST `{fanIdentityId,responses,occurredAt?}` | `{success,participation\|participations}` | writes `activation_participations` + a `fan_identity_link` (messmass#227) |
 | /api/blob-upload-token | POST | requireSession | `{pathname,contentType}` | Vercel Blob client token | none (mints an upload token) |
 | /api/derived-variable-config | GET | none (public-by-design) | — | `{success,config}` | reads derived-variable definitions for report rendering |
 | /api/export/pdf | GET | none (same-origin path allowlist + rate limit) | `?path=/report/<slug>` | `application/pdf` | launches headless Chromium, renders the report page |
@@ -339,10 +342,10 @@ CSRF is never counted as a guard: any anonymous caller can fetch the token from
 
 | | routes |
 |---|---:|
-| Fully guarded (every method) | **173** |
+| Fully guarded (every method) | **176** |
 | Open write method, public by design | **5** |
 | Open GET only, writes guarded or absent | **27** |
-| **Total** | **205** |
+| **Total** | **208** |
 
 The previous run of this section (2026-08) listed 40 GAP routes, 21 of them
 unauthenticated writes. Those are closed: messmass#347 and #386 took the first
