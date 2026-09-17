@@ -1,0 +1,93 @@
+.page {
+  padding: var(--mm-space-6);
+  max-width: 1400px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: var(--mm-space-6);
+}
+
+.introMeta {
+  margin: 0;
+  font-size: var(--mm-font-size-sm);
+  line-height: var(--mm-line-height-md);
+  color: var(--mm-gray-600);
+}
+
+.metricGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: var(--mm-space-4);
+}
+
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--mm-space-3);
+}
+
+.card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--mm-space-2);
+  padding: var(--mm-space-4);
+}
+
+.cardHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--mm-space-3);
+}
+
+.title {
+  margin: 0;
+  font-size: var(--mm-font-size-md);
+  font-weight: 600;
+  color: var(--mm-text-primary);
+}
+
+.badges {
+  display: flex;
+  gap: var(--mm-space-2);
+  flex-shrink: 0;
+}
+
+.badge {
+  padding: 2px var(--mm-space-2);
+  border-radius: var(--mm-radius-sm);
+  font-size: 0.75rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.sourceExecutive {
+  background: var(--mm-color-primary-100);
+  color: var(--mm-color-primary-700);
+}
+
+.sourceAnalytics {
+  background: var(--mm-color-warning-100);
+  color: var(--mm-color-warning-700);
+}
+
+.message {
+  margin: 0;
+  font-size: var(--mm-font-size-sm);
+  color: var(--mm-gray-700);
+  line-height: var(--mm-line-height-md);
+}
+
+.metaRow {
+  display: flex;
+  gap: var(--mm-space-4);
+  font-size: 0.8rem;
+  color: var(--mm-gray-500);
+  flex-wrap: wrap;
+}
+
+.empty {
+  padding: var(--mm-space-8);
+  text-align: center;
+  color: var(--mm-gray-500);
+}

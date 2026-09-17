@@ -113,33 +113,33 @@ it drifts. Do not edit between the markers.
 | Category | Count | Location |
 |----------|-------|----------|
 | **UI Components** | 105 | `components/` |
-| **Utility Modules** | 207 | `lib/` |
+| **Utility Modules** | 208 | `lib/` |
 | **Hooks** | 12 | `hooks/` |
 | **Design Tokens** | 408 | `app/styles/theme.css` |
 | **Utility CSS classes** | 192 | `app/styles/utilities.css` |
-| **App routes (pages)** | 71 | `app/**/page.tsx` |
-| **API routes** | 198 | `app/api/**/route.ts` |
+| **App routes (pages)** | 72 | `app/**/page.tsx` |
+| **API routes** | 199 | `app/api/**/route.ts` |
 
 The modules with the most importers — the ones whose change radius is
 largest, and the ones to read first:
 
 | Module | Importers | Lines |
 |--------|-----------|-------|
-| `lib/config.ts` | 111 | 204 |
-| `lib/mongodb.ts` | 95 | 112 |
-| `lib/logger.ts` | 89 | 392 |
+| `lib/config.ts` | 112 | 204 |
+| `lib/mongodb.ts` | 96 | 112 |
+| `lib/logger.ts` | 90 | 392 |
 | `lib/auth.ts` | 85 | 118 |
-| `lib/apiGuards.ts` | 61 | 163 |
+| `lib/apiGuards.ts` | 62 | 163 |
 | `lib/apiClient.ts` | 43 | 258 |
-| `components/ColoredCard.tsx` | 42 | 52 |
+| `components/ColoredCard.tsx` | 43 | 52 |
 | `lib/db.ts` | 38 | 17 |
 | `components/MaterialIcon.tsx` | 33 | 119 |
 | `lib/fanmassIntegration.ts` | 30 | 441 |
-| `components/UnifiedAdminHeroWithSearch.tsx` | 26 | 192 |
-| `lib/permissions.ts` | 18 | 141 |
+| `components/UnifiedAdminHeroWithSearch.tsx` | 27 | 192 |
+| `lib/permissions.ts` | 18 | 142 |
 | `lib/mongoose-v3.ts` | 18 | 53 |
 | `hooks/useAdminAuth.ts` | 17 | 65 |
-| `lib/report-calculator.ts` | 17 | 727 |
+| `lib/rateLimit.ts` | 17 | 275 |
 
 Importers are counted by resolved import specifier, not by symbol name, so
 a re-export through a barrel file counts for the barrel. A module missing
@@ -997,7 +997,7 @@ shows up here on the next regeneration, which is the point.
 
 <!-- GENERATED:routes -->
 
-### Pages (71)
+### Pages (72)
 
 | Route | File |
 |-------|------|
@@ -1006,6 +1006,7 @@ shows up here on the next regeneration, which is the point.
 | `/admin/analytics` | `app/admin/analytics/page.tsx` |
 | `/admin/analytics/ai` | `app/admin/analytics/ai/page.tsx` |
 | `/admin/analytics/ai/[eventId]` | `app/admin/analytics/ai/[eventId]/page.tsx` |
+| `/admin/analytics/combined-insights` | `app/admin/analytics/combined-insights/page.tsx` |
 | `/admin/analytics/executive` | `app/admin/analytics/executive/page.tsx` |
 | `/admin/analytics/insights` | `app/admin/analytics/insights/page.tsx` |
 | `/admin/analytics/marketing` | `app/admin/analytics/marketing/page.tsx` |
@@ -1073,7 +1074,7 @@ shows up here on the next regeneration, which is the point.
 | `/terms` | `app/terms/page.tsx` |
 | `/test-csrf` | `app/test-csrf/page.tsx` |
 
-### API routes (198)
+### API routes (199)
 
 `auth` is the guard symbol the route actually calls. A blank cell
 means the route calls none — public by construction, or a gap.
@@ -1140,6 +1141,7 @@ means the route calls none — public by construction, or a gap.
 | `/api/analytics/executive/top-events` | GET | `requireSession` |
 | `/api/analytics/insights` | GET | `getAdminUser` |
 | `/api/analytics/insights/[projectId]` | GET | `requireSession` |
+| `/api/analytics/insights/combined` | GET | `requireSession` |
 | `/api/analytics/insights/organizations/[orgId]` | GET | `getAdminUser` |
 | `/api/analytics/insights/partners/[partnerId]` | GET | `getAdminUser` |
 | `/api/analytics/insights/summary` | GET | `getAdminUser` |

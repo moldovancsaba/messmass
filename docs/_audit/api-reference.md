@@ -2,7 +2,7 @@
 
 Generated for the fleet audit (messmass#350); measured against `docs/_audit/endpoints.json` (head 6d28c7f3, 194 endpoints). Every route below was verified by reading its `route.ts` handler, not just the marker scan.
 
-Coverage: 198 of 198 routes documented, enforced by
+Coverage: 199 of 199 routes documented, enforced by
 `tests/api-reference-covers-every-route.test.ts` — five routes were missing when
 that claim was last made by hand.
 
@@ -92,6 +92,7 @@ All reads; the aggregation store is `analytics_aggregates` / `partner_analytics`
 | /api/analytics/executive/insights | GET | **none — GAP** | `?priority&limit&period` | executive insights | reads `analytics_aggregates` |
 | /api/analytics/executive/metrics | GET | **none — GAP** | `?period` | portfolio KPIs | reads `analytics_aggregates` |
 | /api/analytics/executive/top-events | GET | **none — GAP** | `?period&limit&sortBy` | top events | reads `analytics_aggregates` |
+| /api/analytics/insights/combined | GET | requireSession | `?limit` | merged executive + analytics insights | reads `analytics_aggregates`, `projects` (messmass#414) |
 | /api/analytics/insights/[projectId] | GET | **none — GAP** | `?includeRecommendations&severity` | per-event insights | reads `analytics_aggregates` |
 | /api/analytics/insights/organizations/[orgId] | GET | getAdminUser | — | org insights | computed via insights engine |
 | /api/analytics/insights/partners/[partnerId] | GET | getAdminUser | — | partner insights | computed via insights engine |
@@ -332,10 +333,10 @@ CSRF is never counted as a guard: any anonymous caller can fetch the token from
 
 | | routes |
 |---|---:|
-| Fully guarded (every method) | **166** |
+| Fully guarded (every method) | **167** |
 | Open write method, public by design | **5** |
 | Open GET only, writes guarded or absent | **27** |
-| **Total** | **198** |
+| **Total** | **199** |
 
 The previous run of this section (2026-08) listed 40 GAP routes, 21 of them
 unauthenticated writes. Those are closed: messmass#347 and #386 took the first

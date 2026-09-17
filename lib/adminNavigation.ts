@@ -266,6 +266,14 @@ export const adminNavSections: AdminNavSection[] = [
         showInAdminWorkspace: false,
       },
       {
+        label: 'Combined Insights',
+        path: '/admin/analytics/combined-insights',
+        icon: 'merge',
+        description: 'Both insight pipelines -- Executive Dashboard and Analytics Insights -- merged into one feed.',
+        accentColor: navAccent.warning,
+        showInAdminWorkspace: false,
+      },
+      {
         label: 'Fanmass',
         path: '/admin/fanmass',
         icon: 'query_stats',
