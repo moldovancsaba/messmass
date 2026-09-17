@@ -4,7 +4,7 @@
 // HOW: Uses withOrgContext wrapper and returns the injected header
 
 import { NextResponse } from 'next/server';
-import { withOrgContext } from '@/lib/v3/middleware';
+import { withOrgContext } from '@/lib/middleware/v3/orgContext';
 
 async function handler(req: Request) {
   const v3OrgId = req.headers.get('x-v3-org-id');

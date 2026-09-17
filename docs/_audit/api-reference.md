@@ -2,7 +2,7 @@
 
 Generated for the fleet audit (messmass#350); measured against `docs/_audit/endpoints.json` (head 6d28c7f3, 194 endpoints). Every route below was verified by reading its `route.ts` handler, not just the marker scan.
 
-Coverage: 212 of 212 routes documented, enforced by
+Coverage: 213 of 213 routes documented, enforced by
 `tests/api-reference-covers-every-route.test.ts` — five routes were missing when
 that claim was last made by hand.
 
@@ -28,7 +28,7 @@ Every request passes through, in order: rate limiting, CSRF protection, CORS. CS
 | `withOrgContext` | `lib/middleware/v3/orgContext`, `lib/v3/middleware` | getAdminUser + injects `x-v3-org-id` scoping header. |
 | `validateOrganizationAccess` | `lib/auth/orgGuard` | getAdminUser + org membership check for the requested org. |
 
-## /api/admin (37 routes)
+## /api/admin (38 routes)
 
 | Path | Methods | Auth | Request | Response | Side effects |
 |---|---|---|---|---|---|
@@ -67,6 +67,7 @@ Every request passes through, in order: rate limiting, CSRF protection, CORS. CS
 | /api/admin/sync-events-to-camera | GET | getAdminUser | — | `{success,synced}` | reads `projects`; outbound POSTs to camera internal API |
 | /api/admin/sync-partners-to-camera | GET | getAdminUser | — | `{success,synced}` | reads `partners`; outbound POSTs to camera internal API |
 | /api/admin/ui-settings | GET, PUT | GET isAuthenticated (admin session); PUT requireSession | PUT `{fontFamily,…}` | `{success,settings}` | updates `settings` (typography), reads `available_fonts` |
+| /api/admin/users/[id]/organizations | PUT | getAdminUser + superadmin role | `{organizationIds[]}` | `{success,user}` | updates `users.organizationIds`, validated against `organizations` (messmass#395) |
 | /api/admin/users/[id]/role | PUT | getAdminUser (role-checked) | `{role}` | `{success}` | updates `users` |
 | /api/admin/users | GET, PUT | SSO bearer | PUT `{userId,role,…}` | proxied SSO response | proxies to SSO `/api/admin/users` (outbound) |
 
@@ -346,10 +347,10 @@ CSRF is never counted as a guard: any anonymous caller can fetch the token from
 
 | | routes |
 |---|---:|
-| Fully guarded (every method) | **180** |
+| Fully guarded (every method) | **181** |
 | Open write method, public by design | **5** |
 | Open GET only, writes guarded or absent | **27** |
-| **Total** | **212** |
+| **Total** | **213** |
 
 The previous run of this section (2026-08) listed 40 GAP routes, 21 of them
 unauthenticated writes. Those are closed: messmass#347 and #386 took the first

@@ -113,20 +113,20 @@ it drifts. Do not edit between the markers.
 | Category | Count | Location |
 |----------|-------|----------|
 | **UI Components** | 104 | `components/` |
-| **Utility Modules** | 211 | `lib/` |
+| **Utility Modules** | 210 | `lib/` |
 | **Hooks** | 12 | `hooks/` |
 | **Design Tokens** | 408 | `app/styles/theme.css` |
 | **Utility CSS classes** | 192 | `app/styles/utilities.css` |
 | **App routes (pages)** | 72 | `app/**/page.tsx` |
-| **API routes** | 212 | `app/api/**/route.ts` |
+| **API routes** | 213 | `app/api/**/route.ts` |
 
 The modules with the most importers — the ones whose change radius is
 largest, and the ones to read first:
 
 | Module | Importers | Lines |
 |--------|-----------|-------|
-| `lib/config.ts` | 115 | 204 |
-| `lib/mongodb.ts` | 99 | 112 |
+| `lib/config.ts` | 117 | 204 |
+| `lib/mongodb.ts` | 101 | 112 |
 | `lib/auth.ts` | 90 | 118 |
 | `lib/logger.ts` | 90 | 392 |
 | `lib/apiGuards.ts` | 75 | 180 |
@@ -139,7 +139,7 @@ largest, and the ones to read first:
 | `lib/permissions.ts` | 18 | 141 |
 | `lib/mongoose-v3.ts` | 18 | 53 |
 | `hooks/useAdminAuth.ts` | 17 | 65 |
-| `lib/rateLimit.ts` | 17 | 275 |
+| `lib/users.ts` | 17 | 428 |
 
 Importers are counted by resolved import specifier, not by symbol name, so
 a re-export through a barrel file counts for the barrel. A module missing
@@ -1074,7 +1074,7 @@ shows up here on the next regeneration, which is the point.
 | `/terms` | `app/terms/page.tsx` |
 | `/test-csrf` | `app/test-csrf/page.tsx` |
 
-### API routes (212)
+### API routes (213)
 
 `auth` is the guard symbol the route actually calls. A blank cell
 means the route calls none — public by construction, or a gap.
@@ -1123,6 +1123,7 @@ means the route calls none — public by construction, or a gap.
 | `/api/admin/sync-events-to-camera` | GET | `getAdminUser` |
 | `/api/admin/sync-partners-to-camera` | GET | `getAdminUser` |
 | `/api/admin/ui-settings` | GET, PUT | `requireAdmin` |
+| `/api/admin/users/[id]/organizations` | PUT | `getAdminUser` |
 | `/api/admin/users/[id]/role` | PUT | `getAdminUser` |
 | `/api/admin/variables/merge` | POST | `getAdminUser` |
 | `/api/admin/variables/merge-candidates` | GET | `getAdminUser` |
