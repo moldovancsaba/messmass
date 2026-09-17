@@ -2,7 +2,7 @@
 
 Generated for the fleet audit (messmass#350); measured against `docs/_audit/endpoints.json` (head 6d28c7f3, 194 endpoints). Every route below was verified by reading its `route.ts` handler, not just the marker scan.
 
-Coverage: 218 of 218 routes documented, enforced by
+Coverage: 220 of 220 routes documented, enforced by
 `tests/api-reference-covers-every-route.test.ts` — five routes were missing when
 that claim was last made by hand.
 
@@ -249,7 +249,7 @@ All require `requireAPIAuth` (Bearer machine token, cookies rejected). OPTIONS i
 | /api/report-templates | GET, POST, PUT, DELETE | withOrgContext → getAdminUser (all methods) | `?type&includeDefault&includeAssociations`; bodies; `?templateId` | `{success,templates[]}` | insert/update/delete `report_templates` |
 | /api/report-variants/[id] | GET, PUT | getAdminUser | PUT variant body | `{success,variant}` | reads/updates `report_variants` |
 | /api/report-variants | GET, POST | getAdminUser | `?ownerType&ownerId`; POST variant body | `{success,variants[]}` | inserts `report_variants` |
-| /api/reports/resolve | GET | none (public-by-design: report resolution for rendering) | `?projectId\|partnerId` | `{success,report,resolvedFrom}` | reads template hierarchy |
+| /api/reports/resolve | GET | none (public-by-design: report resolution for rendering) | `?projectId\|partnerId&pack?` | `{success,report,resolvedFrom}` | reads template hierarchy; `?pack=` filters blocks to an audience pack's allowlist (messmass#236), omitted = unchanged |
 
 ## /api/sports-db (5 routes)
 
@@ -282,11 +282,13 @@ All wrapped in `withOrgContext` (getAdminUser + `x-v3-org-id` injection) except 
 | /api/v3/reporting/export/[entityId] | GET | withOrgContext | path entity id | CSV download | aggregates V3MetricValue |
 | /api/v3/reports/resolve | GET | withOrgContext | `?activityId\|entityId` | resolved template | reads v3 report config |
 
-## Remaining root routes (46 routes)
+## Remaining root routes (48 routes)
 
 | Path | Methods | Auth | Request | Response | Side effects |
 |---|---|---|---|---|---|
 | /api/activation-templates | GET, POST | requireAdmin | POST `{name,description?,partnerId?,dataFields[]}` | `{success,template\|templates}` | reads/writes `activation_templates` (messmass#228) |
+| /api/audience-packs | GET | requireAdmin | — | `{success,packs[]}` | seeds + reads `audience_packs` (messmass#236) |
+| /api/audience-packs/[key] | GET, PUT | requireAdmin | PUT `{allowedBlockIds[]}` | `{success,pack}` | reads/writes `audience_packs` |
 | /api/activation-templates/[id] | GET | requireAdmin | — | `{success,template,yield}` | reads `activation_templates`; computes yield from `activation_participations` |
 | /api/activation-templates/[id]/participations | GET, POST | requireAdmin | POST `{fanIdentityId,responses,occurredAt?}` | `{success,participation\|participations}` | writes `activation_participations` + a `fan_identity_link` (messmass#227) |
 | /api/blob-upload-token | POST | requireSession | `{pathname,contentType}` | Vercel Blob client token | none (mints an upload token) |
@@ -352,10 +354,10 @@ CSRF is never counted as a guard: any anonymous caller can fetch the token from
 
 | | routes |
 |---|---:|
-| Fully guarded (every method) | **186** |
+| Fully guarded (every method) | **188** |
 | Open write method, public by design | **5** |
 | Open GET only, writes guarded or absent | **27** |
-| **Total** | **218** |
+| **Total** | **220** |
 
 The previous run of this section (2026-08) listed 40 GAP routes, 21 of them
 unauthenticated writes. Those are closed: messmass#347 and #386 took the first

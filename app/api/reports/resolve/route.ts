@@ -5,6 +5,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getDb } from '@/lib/db';
 import { createReportResolver } from '@/lib/report-resolver';
+import { getAudiencePack, filterReportByAudiencePack } from '@/lib/audiencePacks';
 
 /**
  * GET /api/reports/resolve
@@ -15,6 +16,10 @@ import { createReportResolver } from '@/lib/report-resolver';
  * Query Parameters:
  * - projectId: Project ID or slug (resolves: project → partner → default)
  * - partnerId: Partner ID or slug (resolves: partner → default)
+ * - pack: optional audience pack key (sponsor|executive|board|operator,
+ *   messmass#236) -- when given, the resolved report's blocks are filtered
+ *   to that pack's allowlist. Omitted entirely, every existing caller's
+ *   behavior is unchanged.
  * 
  * Response:
  * {
@@ -60,9 +65,21 @@ export async function GET(request: NextRequest) {
       resolved = await resolver.resolveForPartner(partnerId!);
     }
 
+    // Additive: no ?pack= means every existing caller's response is
+    // byte-for-byte what it always was (messmass#236).
+    const packKey = searchParams.get('pack');
+    let report = resolved.report;
+    if (packKey && report) {
+      const pack = await getAudiencePack(packKey);
+      if (!pack) {
+        return NextResponse.json({ success: false, error: `Unknown audience pack: ${packKey}` }, { status: 400 });
+      }
+      report = filterReportByAudiencePack(report, pack);
+    }
+
     return NextResponse.json({
       success: true,
-      report: resolved.report,
+      report,
       resolvedFrom: resolved.resolvedFrom,
       source: resolved.source
     });

@@ -113,23 +113,23 @@ it drifts. Do not edit between the markers.
 | Category | Count | Location |
 |----------|-------|----------|
 | **UI Components** | 104 | `components/` |
-| **Utility Modules** | 213 | `lib/` |
+| **Utility Modules** | 214 | `lib/` |
 | **Hooks** | 12 | `hooks/` |
 | **Design Tokens** | 408 | `app/styles/theme.css` |
 | **Utility CSS classes** | 192 | `app/styles/utilities.css` |
 | **App routes (pages)** | 72 | `app/**/page.tsx` |
-| **API routes** | 218 | `app/api/**/route.ts` |
+| **API routes** | 220 | `app/api/**/route.ts` |
 
 The modules with the most importers — the ones whose change radius is
 largest, and the ones to read first:
 
 | Module | Importers | Lines |
 |--------|-----------|-------|
-| `lib/config.ts` | 118 | 204 |
-| `lib/mongodb.ts` | 102 | 112 |
+| `lib/config.ts` | 119 | 204 |
+| `lib/mongodb.ts` | 103 | 112 |
 | `lib/auth.ts` | 91 | 118 |
 | `lib/logger.ts` | 90 | 392 |
-| `lib/apiGuards.ts` | 80 | 180 |
+| `lib/apiGuards.ts` | 82 | 180 |
 | `lib/apiClient.ts` | 43 | 258 |
 | `components/ColoredCard.tsx` | 43 | 52 |
 | `lib/db.ts` | 38 | 17 |
@@ -1074,7 +1074,7 @@ shows up here on the next regeneration, which is the point.
 | `/terms` | `app/terms/page.tsx` |
 | `/test-csrf` | `app/test-csrf/page.tsx` |
 
-### API routes (218)
+### API routes (220)
 
 `auth` is the guard symbol the route actually calls. A blank cell
 means the route calls none — public by construction, or a gap.
@@ -1163,6 +1163,13 @@ means the route calls none — public by construction, or a gap.
 | Route | Methods | Auth |
 |-------|---------|------|
 | `/api/api-football/enrich-partners` | GET, POST | `getAdminUser` |
+
+#### `/api/audience-packs`
+
+| Route | Methods | Auth |
+|-------|---------|------|
+| `/api/audience-packs` | GET | `requireAdmin` |
+| `/api/audience-packs/[key]` | GET, PUT | `requireAdmin` |
 
 #### `/api/auth`
 
