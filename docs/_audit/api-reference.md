@@ -2,7 +2,7 @@
 
 Generated for the fleet audit (messmass#350); measured against `docs/_audit/endpoints.json` (head 6d28c7f3, 194 endpoints). Every route below was verified by reading its `route.ts` handler, not just the marker scan.
 
-Coverage: 199 of 199 routes documented, enforced by
+Coverage: 205 of 205 routes documented, enforced by
 `tests/api-reference-covers-every-route.test.ts` — five routes were missing when
 that claim was last made by hand.
 
@@ -286,6 +286,12 @@ All wrapped in `withOrgContext` (getAdminUser + `x-v3-org-id` injection) except 
 | /api/blob-upload-token | POST | requireSession | `{pathname,contentType}` | Vercel Blob client token | none (mints an upload token) |
 | /api/derived-variable-config | GET | none (public-by-design) | — | `{success,config}` | reads derived-variable definitions for report rendering |
 | /api/export/pdf | GET | none (same-origin path allowlist + rate limit) | `?path=/report/<slug>` | `application/pdf` | launches headless Chromium, renders the report page |
+| /api/fan-identities | GET, POST | requireAdmin | POST `{consent}` | `{success,identity\|identities}` | reads/writes `fan_identities` (messmass#227) |
+| /api/fan-identities/[id] | GET, DELETE | requireAdmin | — | `{success,identity,links}` | reads `fan_identities`+`fan_identity_links`; DELETE removes both permanently (right-to-deletion) |
+| /api/fan-identities/[id]/links | GET, POST | requireAdmin | POST `{linkType,sourceRef,occurredAt,evidence?}` | `{success,link\|links}` | reads/writes `fan_identity_links` |
+| /api/fan-identities/merge-candidates | GET, POST | requireAdmin | POST `{identityIdA,identityIdB,evidence}` | `{success,candidate\|candidates}` | reads/writes `fan_identity_merge_candidates` -- flags only, never merges |
+| /api/fan-identities/merge-candidates/[id]/approve | POST | requireSuperadmin | — | `{success}` | the one action that actually merges two identities |
+| /api/fan-identities/merge-candidates/[id]/reject | POST | requireAdmin | — | `{success}` | closes the candidate without merging |
 | /api/auto-generate-chart-block | POST | **none — GAP** | `{variable,…}` | `{success,chartId,blockId?}` | insert/update `chart_configurations`, `data_blocks` |
 | /api/available-fonts | GET, POST, PUT, DELETE | GET none (public font list for rendering); writes **none — GAP** | `?includeInactive`; bodies; `?id&hardDelete` | `{success,fonts[]}` | insert/update/delete `available_fonts` |
 | /api/cities | GET | none (public-by-design: reference data) | `?countryId` | city list | reads `cities` |
@@ -333,10 +339,10 @@ CSRF is never counted as a guard: any anonymous caller can fetch the token from
 
 | | routes |
 |---|---:|
-| Fully guarded (every method) | **167** |
+| Fully guarded (every method) | **173** |
 | Open write method, public by design | **5** |
 | Open GET only, writes guarded or absent | **27** |
-| **Total** | **199** |
+| **Total** | **205** |
 
 The previous run of this section (2026-08) listed 40 GAP routes, 21 of them
 unauthenticated writes. Those are closed: messmass#347 and #386 took the first

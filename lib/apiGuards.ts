@@ -58,6 +58,23 @@ export async function requireAdmin(): Promise<NextResponse | null> {
   return null;
 }
 
+// WHAT: Require superadmin specifically, not admin-or-superadmin.
+// WHY: messmass#227. Approving a fan-identity merge is the one action that can
+//     misattribute one real person's data to another if it's wrong -- the
+//     issue's own constraint ("identity confidence and merge rules must be
+//     governed") is why this is narrower than requireAdmin.
+export async function requireSuperadmin(): Promise<NextResponse | null> {
+  const user = await getAdminUser();
+  if (!user) return unauthorized('Sign in to perform this action.');
+  if (user.role !== 'superadmin') {
+    return NextResponse.json(
+      { success: false, error: 'Superadmin access required.', code: 'FORBIDDEN' },
+      { status: 403 }
+    );
+  }
+  return null;
+}
+
 // WHAT: Require a stakeholder-session cookie (messmass#231), scoped to one
 //     report and restricted to specific roles. Returns the session data so
 //     the route can confirm the request's own scopeId matches -- this guard

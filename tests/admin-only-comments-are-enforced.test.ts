@@ -20,6 +20,7 @@ const API_DIR = path.join(ROOT, 'app', 'api');
 /** Guards that genuinely establish authorisation, not merely authentication. */
 const ROLE_GUARDS = [
   'requireAdmin',
+  'requireSuperadmin',    // messmass#227: superadmin-only, narrower than requireAdmin
   "role !== 'superadmin'",
   "role === 'superadmin'",
   'requireProjectWrite',   // scoped to one project's edit slug

@@ -1,11 +1,11 @@
 {
  "_meta": {
-  "generated": "2026-09-17T02:14:53+00:00",
+  "generated": "2026-09-17T08:18:46+00:00",
   "repo": "messmass",
-  "head": "df7f8913",
+  "head": "4250a981",
   "counts": {
-   "endpoints": 199,
-   "collections": 62,
+   "endpoints": 205,
+   "collections": 65,
    "env": 33,
    "outbound-hosts": 29,
    "docs": 205
@@ -1179,6 +1179,78 @@
    "file": "app/api/export/pdf/route.ts",
    "auth_markers": [],
    "no_auth_marker": true
+  },
+  {
+   "path": "/api/fan-identities/[id]/links",
+   "methods": [
+    "GET",
+    "POST"
+   ],
+   "file": "app/api/fan-identities/[id]/links/route.ts",
+   "auth_markers": [
+    "requireAdmin"
+   ],
+   "no_auth_marker": false
+  },
+  {
+   "path": "/api/fan-identities/[id]",
+   "methods": [
+    "GET",
+    "DELETE"
+   ],
+   "file": "app/api/fan-identities/[id]/route.ts",
+   "auth_markers": [
+    "requireAdmin"
+   ],
+   "no_auth_marker": false
+  },
+  {
+   "path": "/api/fan-identities/merge-candidates/[id]/approve",
+   "methods": [
+    "POST"
+   ],
+   "file": "app/api/fan-identities/merge-candidates/[id]/approve/route.ts",
+   "auth_markers": [
+    "getAdminUser"
+   ],
+   "no_auth_marker": false
+  },
+  {
+   "path": "/api/fan-identities/merge-candidates/[id]/reject",
+   "methods": [
+    "POST"
+   ],
+   "file": "app/api/fan-identities/merge-candidates/[id]/reject/route.ts",
+   "auth_markers": [
+    "getAdminUser",
+    "requireAdmin"
+   ],
+   "no_auth_marker": false
+  },
+  {
+   "path": "/api/fan-identities/merge-candidates",
+   "methods": [
+    "GET",
+    "POST"
+   ],
+   "file": "app/api/fan-identities/merge-candidates/route.ts",
+   "auth_markers": [
+    "getAdminUser",
+    "requireAdmin"
+   ],
+   "no_auth_marker": false
+  },
+  {
+   "path": "/api/fan-identities",
+   "methods": [
+    "GET",
+    "POST"
+   ],
+   "file": "app/api/fan-identities/route.ts",
+   "auth_markers": [
+    "requireAdmin"
+   ],
+   "no_auth_marker": false
   },
   {
    "path": "/api/filter-slug",
