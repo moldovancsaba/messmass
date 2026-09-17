@@ -113,31 +113,31 @@ it drifts. Do not edit between the markers.
 | Category | Count | Location |
 |----------|-------|----------|
 | **UI Components** | 104 | `components/` |
-| **Utility Modules** | 210 | `lib/` |
+| **Utility Modules** | 212 | `lib/` |
 | **Hooks** | 12 | `hooks/` |
 | **Design Tokens** | 408 | `app/styles/theme.css` |
 | **Utility CSS classes** | 192 | `app/styles/utilities.css` |
 | **App routes (pages)** | 72 | `app/**/page.tsx` |
-| **API routes** | 213 | `app/api/**/route.ts` |
+| **API routes** | 215 | `app/api/**/route.ts` |
 
 The modules with the most importers — the ones whose change radius is
 largest, and the ones to read first:
 
 | Module | Importers | Lines |
 |--------|-----------|-------|
-| `lib/config.ts` | 117 | 204 |
-| `lib/mongodb.ts` | 101 | 112 |
+| `lib/config.ts` | 118 | 204 |
+| `lib/mongodb.ts` | 102 | 112 |
 | `lib/auth.ts` | 90 | 118 |
 | `lib/logger.ts` | 90 | 392 |
-| `lib/apiGuards.ts` | 75 | 180 |
+| `lib/apiGuards.ts` | 77 | 180 |
 | `lib/apiClient.ts` | 43 | 258 |
 | `components/ColoredCard.tsx` | 43 | 52 |
 | `lib/db.ts` | 38 | 17 |
 | `components/MaterialIcon.tsx` | 33 | 119 |
 | `lib/fanmassIntegration.ts` | 30 | 441 |
 | `components/UnifiedAdminHeroWithSearch.tsx` | 26 | 192 |
+| `lib/mongoose-v3.ts` | 21 | 66 |
 | `lib/permissions.ts` | 18 | 141 |
-| `lib/mongoose-v3.ts` | 18 | 53 |
 | `hooks/useAdminAuth.ts` | 17 | 65 |
 | `lib/users.ts` | 17 | 428 |
 
@@ -1074,7 +1074,7 @@ shows up here on the next regeneration, which is the point.
 | `/terms` | `app/terms/page.tsx` |
 | `/test-csrf` | `app/test-csrf/page.tsx` |
 
-### API routes (213)
+### API routes (215)
 
 `auth` is the guard symbol the route actually calls. A blank cell
 means the route calls none — public by construction, or a gap.
@@ -1548,7 +1548,9 @@ means the route calls none — public by construction, or a gap.
 | `/api/v3/entities` | GET | — |
 | `/api/v3/entities/[id]` | GET | — |
 | `/api/v3/health` | GET, POST | — |
+| `/api/v3/metrics/export` | GET | `requireAdmin` |
 | `/api/v3/metrics/record` | POST | — |
+| `/api/v3/metrics/sync` | POST | `requireAdmin` |
 | `/api/v3/organizations/report/[id]` | GET | — |
 | `/api/v3/organizations/report/[id]/activities` | GET | `getAdminUser` |
 | `/api/v3/reporting/dashboard` | GET | — |

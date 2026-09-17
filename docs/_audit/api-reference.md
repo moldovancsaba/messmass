@@ -2,7 +2,7 @@
 
 Generated for the fleet audit (messmass#350); measured against `docs/_audit/endpoints.json` (head 6d28c7f3, 194 endpoints). Every route below was verified by reading its `route.ts` handler, not just the marker scan.
 
-Coverage: 213 of 213 routes documented, enforced by
+Coverage: 215 of 215 routes documented, enforced by
 `tests/api-reference-covers-every-route.test.ts` — five routes were missing when
 that claim was last made by hand.
 
@@ -273,7 +273,9 @@ All wrapped in `withOrgContext` (getAdminUser + `x-v3-org-id` injection) except 
 | /api/v3/entities/[id] | GET | withOrgContext | path id | entity | reads V3Entity |
 | /api/v3/entities | GET | withOrgContext | `?type&parentEntityId` | entities | reads V3Entity |
 | /api/v3/health | GET, POST | withOrgContext | — | `{status,context}` | none |
+| /api/v3/metrics/export | GET | requireAdmin + withOrgContext | `?orgId` (superadmin only, validated) | `{success,contractVersion,metrics[]}` | reads `v3_metric_values`+`v3_metric_definitions`+`v3_entities`+`v3_activities` (messmass#232) |
 | /api/v3/metrics/record | POST | withOrgContext + rate limit | `{dataPoints[]}` | `{inserted}` | insertMany V3MetricValue |
+| /api/v3/metrics/sync | POST | requireAdmin | — | `{success,definitionsWritten,activitiesEligible,activitiesMaterialized,skipped[]}` | seeds `v3_metric_definitions`, writes `v3_metric_values` from synced activity stats (messmass#232) |
 | /api/v3/organizations/report/[id]/activities | GET | validateOrganizationAccess | path org id | org activities | reads V3Activity, V3ActivityParticipant |
 | /api/v3/organizations/report/[id] | GET | validateOrganizationAccess | path org id | org report (metrics + layout) | reads V3Organization, V3Entity, metric aggregates |
 | /api/v3/reporting/dashboard | GET | withOrgContext | `?entityId&metrics&startDate&endDate` | aggregated metrics | reads V3MetricValue |
@@ -347,10 +349,10 @@ CSRF is never counted as a guard: any anonymous caller can fetch the token from
 
 | | routes |
 |---|---:|
-| Fully guarded (every method) | **181** |
+| Fully guarded (every method) | **183** |
 | Open write method, public by design | **5** |
 | Open GET only, writes guarded or absent | **27** |
-| **Total** | **213** |
+| **Total** | **215** |
 
 The previous run of this section (2026-08) listed 40 GAP routes, 21 of them
 unauthenticated writes. Those are closed: messmass#347 and #386 took the first

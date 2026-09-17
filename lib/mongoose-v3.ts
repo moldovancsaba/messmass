@@ -26,10 +26,23 @@ async function connectV3() {
       throw new Error('Please define the MONGODB_URI environment variable inside lib/config.ts');
     }
 
+    // WHAT: dbName pinned explicitly -- messmass#232.
+    // WHY: config.mongodbUri carries no database path segment
+    //     (mongodb+srv://.../?appName=...), so mongoose.connect() without an
+    //     explicit dbName silently defaults to a database literally named
+    //     "test" -- confirmed on this cluster: `test` exists, is empty, and
+    //     every real v3 collection (459 activities, 310 entities) lives in
+    //     `messmass`, reachable only by the raw MongoDB driver elsewhere in
+    //     this codebase, which always calls `client.db(config.dbName)`
+    //     explicitly. Every Mongoose-based v3 route (entities, activities,
+    //     health, reports/resolve, and this issue's own new metrics routes)
+    //     has been silently querying an empty database, not a subtly wrong
+    //     one -- there was nothing to notice failing.
     const opts = {
       bufferCommands: false,
       maxPoolSize: 10,
       serverSelectionTimeoutMS: 15000,
+      dbName: config.dbName,
     };
 
     console.log('📡 Connecting to MongoDB V3 via Mongoose...');
