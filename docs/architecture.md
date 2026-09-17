@@ -113,29 +113,29 @@ it drifts. Do not edit between the markers.
 | Category | Count | Location |
 |----------|-------|----------|
 | **UI Components** | 104 | `components/` |
-| **Utility Modules** | 214 | `lib/` |
+| **Utility Modules** | 215 | `lib/` |
 | **Hooks** | 12 | `hooks/` |
 | **Design Tokens** | 408 | `app/styles/theme.css` |
 | **Utility CSS classes** | 192 | `app/styles/utilities.css` |
-| **App routes (pages)** | 72 | `app/**/page.tsx` |
-| **API routes** | 220 | `app/api/**/route.ts` |
+| **App routes (pages)** | 73 | `app/**/page.tsx` |
+| **API routes** | 221 | `app/api/**/route.ts` |
 
 The modules with the most importers — the ones whose change radius is
 largest, and the ones to read first:
 
 | Module | Importers | Lines |
 |--------|-----------|-------|
-| `lib/config.ts` | 119 | 204 |
-| `lib/mongodb.ts` | 103 | 112 |
+| `lib/config.ts` | 120 | 204 |
+| `lib/mongodb.ts` | 104 | 112 |
 | `lib/auth.ts` | 91 | 118 |
 | `lib/logger.ts` | 90 | 392 |
-| `lib/apiGuards.ts` | 82 | 180 |
+| `lib/apiGuards.ts` | 83 | 180 |
+| `components/ColoredCard.tsx` | 44 | 52 |
 | `lib/apiClient.ts` | 43 | 258 |
-| `components/ColoredCard.tsx` | 43 | 52 |
 | `lib/db.ts` | 38 | 17 |
 | `components/MaterialIcon.tsx` | 33 | 119 |
 | `lib/fanmassIntegration.ts` | 30 | 441 |
-| `components/UnifiedAdminHeroWithSearch.tsx` | 26 | 192 |
+| `components/UnifiedAdminHeroWithSearch.tsx` | 27 | 192 |
 | `lib/mongoose-v3.ts` | 21 | 66 |
 | `lib/permissions.ts` | 18 | 141 |
 | `hooks/useAdminAuth.ts` | 17 | 65 |
@@ -997,7 +997,7 @@ shows up here on the next regeneration, which is the point.
 
 <!-- GENERATED:routes -->
 
-### Pages (72)
+### Pages (73)
 
 | Route | File |
 |-------|------|
@@ -1046,6 +1046,7 @@ shows up here on the next regeneration, which is the point.
 | `/admin/partners/[id]` | `app/admin/partners/[id]/page.tsx` |
 | `/admin/partners/[id]/analytics` | `app/admin/partners/[id]/analytics/page.tsx` |
 | `/admin/partners/[id]/kyc-data` | `app/admin/partners/[id]/kyc-data/page.tsx` |
+| `/admin/partners/[id]/lifecycle` | `app/admin/partners/[id]/lifecycle/page.tsx` |
 | `/admin/partners/[id]/reports` | `app/admin/partners/[id]/reports/page.tsx` |
 | `/admin/project-partners` | `app/admin/project-partners/page.tsx` |
 | `/admin/projects` | `app/admin/projects/page.tsx` |
@@ -1074,7 +1075,7 @@ shows up here on the next regeneration, which is the point.
 | `/terms` | `app/terms/page.tsx` |
 | `/test-csrf` | `app/test-csrf/page.tsx` |
 
-### API routes (220)
+### API routes (221)
 
 `auth` is the guard symbol the route actually calls. A blank cell
 means the route calls none — public by construction, or a gap.
@@ -1469,6 +1470,7 @@ means the route calls none — public by construction, or a gap.
 | `/api/partners/[id]/google-sheet/rename` | POST | `requireSession` |
 | `/api/partners/[id]/google-sheet/setup` | POST | `requireSession` |
 | `/api/partners/[id]/google-sheet/status` | GET | `requireSession` |
+| `/api/partners/[id]/lifecycle` | GET, PUT | `requireAdmin` |
 | `/api/partners/edit/[slug]` | GET, PUT | `getAdminUser` |
 | `/api/partners/link-football-data` | POST | `getAdminUser` |
 | `/api/partners/report/[slug]` | GET | — |

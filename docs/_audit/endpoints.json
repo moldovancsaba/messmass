@@ -1,10 +1,10 @@
 {
  "_meta": {
-  "generated": "2026-09-17T10:01:23+00:00",
+  "generated": "2026-09-17T12:56:02+00:00",
   "repo": "messmass",
-  "head": "1bcaedbf",
+  "head": "f7ca4e63",
   "counts": {
-   "endpoints": 220,
+   "endpoints": 221,
    "collections": 71,
    "env": 33,
    "outbound-hosts": 29,
@@ -1967,6 +1967,18 @@
    "file": "app/api/partners/[id]/google-sheet/status/route.ts",
    "auth_markers": [
     "requireSession"
+   ],
+   "no_auth_marker": false
+  },
+  {
+   "path": "/api/partners/[id]/lifecycle",
+   "methods": [
+    "GET",
+    "PUT"
+   ],
+   "file": "app/api/partners/[id]/lifecycle/route.ts",
+   "auth_markers": [
+    "requireAdmin"
    ],
    "no_auth_marker": false
   },

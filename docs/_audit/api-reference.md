@@ -2,7 +2,7 @@
 
 Generated for the fleet audit (messmass#350); measured against `docs/_audit/endpoints.json` (head 6d28c7f3, 194 endpoints). Every route below was verified by reading its `route.ts` handler, not just the marker scan.
 
-Coverage: 220 of 220 routes documented, enforced by
+Coverage: 221 of 221 routes documented, enforced by
 `tests/api-reference-covers-every-route.test.ts` — five routes were missing when
 that claim was last made by hand.
 
@@ -212,6 +212,7 @@ All 15 use `requireFanmassIntegrationAuth` (Bearer/`x-api-key` shared token) and
 | /api/partners/[id]/google-sheet/rename | POST | requireSession | `{title}` | `{success}` | outbound Google Sheets; updates `partners` |
 | /api/partners/[id]/google-sheet/setup | POST | requireSession | setup body | `{success}` | outbound Google Sheets; updates `partners` |
 | /api/partners/[id]/google-sheet/status | GET | requireSession | `?checkHealth` | connection status + sheet URL | reads `partners`; optional outbound health probe |
+| /api/partners/[id]/lifecycle | GET, PUT | requireAdmin | PUT `{override: 'proposal'\|'postmortem'\|null}` | `{success,lifecycle}` | reads `partners`,`projects`; PUT sets/clears `partners.lifecycleStageOverride` (messmass#235) |
 | /api/partners/edit/[slug] | GET, PUT | **none — GAP** (no requirePageAccess despite 'partner-edit' page-password type existing) | PUT content body; `?variant` | partner edit data | PUT updates partner content |
 | /api/partners/link-football-data | POST | getAdminUser | `{partnerId,teamId,…}` | `{success}` | updates `partners` |
 | /api/partners/report/[slug] | GET | none (public-by-design: shareable slug-keyed report) | `?variant` | partner report data | reads `projects` |
@@ -354,10 +355,10 @@ CSRF is never counted as a guard: any anonymous caller can fetch the token from
 
 | | routes |
 |---|---:|
-| Fully guarded (every method) | **188** |
+| Fully guarded (every method) | **189** |
 | Open write method, public by design | **5** |
 | Open GET only, writes guarded or absent | **27** |
-| **Total** | **220** |
+| **Total** | **221** |
 
 The previous run of this section (2026-08) listed 40 GAP routes, 21 of them
 unauthenticated writes. Those are closed: messmass#347 and #386 took the first
