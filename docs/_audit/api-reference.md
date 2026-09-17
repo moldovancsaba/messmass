@@ -2,7 +2,7 @@
 
 Generated for the fleet audit (messmass#350); measured against `docs/_audit/endpoints.json` (head 6d28c7f3, 194 endpoints). Every route below was verified by reading its `route.ts` handler, not just the marker scan.
 
-Coverage: 208 of 208 routes documented, enforced by
+Coverage: 212 of 212 routes documented, enforced by
 `tests/api-reference-covers-every-route.test.ts` — five routes were missing when
 that claim was last made by hand.
 
@@ -279,7 +279,7 @@ All wrapped in `withOrgContext` (getAdminUser + `x-v3-org-id` injection) except 
 | /api/v3/reporting/export/[entityId] | GET | withOrgContext | path entity id | CSV download | aggregates V3MetricValue |
 | /api/v3/reports/resolve | GET | withOrgContext | `?activityId\|entityId` | resolved template | reads v3 report config |
 
-## Remaining root routes (40 routes)
+## Remaining root routes (43 routes)
 
 | Path | Methods | Auth | Request | Response | Side effects |
 |---|---|---|---|---|---|
@@ -292,6 +292,7 @@ All wrapped in `withOrgContext` (getAdminUser + `x-v3-org-id` injection) except 
 | /api/fan-identities | GET, POST | requireAdmin | POST `{consent}` | `{success,identity\|identities}` | reads/writes `fan_identities` (messmass#227) |
 | /api/fan-identities/[id] | GET, DELETE | requireAdmin | — | `{success,identity,links}` | reads `fan_identities`+`fan_identity_links`; DELETE removes both permanently (right-to-deletion) |
 | /api/fan-identities/[id]/links | GET, POST | requireAdmin | POST `{linkType,sourceRef,occurredAt,evidence?}` | `{success,link\|links}` | reads/writes `fan_identity_links` |
+| /api/fan-identities/[id]/loyalty-balance | GET | requireAdmin | — | `{success,balance}` | reads `loyalty_completions` (messmass#229) |
 | /api/fan-identities/merge-candidates | GET, POST | requireAdmin | POST `{identityIdA,identityIdB,evidence}` | `{success,candidate\|candidates}` | reads/writes `fan_identity_merge_candidates` -- flags only, never merges |
 | /api/fan-identities/merge-candidates/[id]/approve | POST | requireSuperadmin | — | `{success}` | the one action that actually merges two identities |
 | /api/fan-identities/merge-candidates/[id]/reject | POST | requireAdmin | — | `{success}` | closes the candidate without merging |
@@ -322,6 +323,9 @@ All wrapped in `withOrgContext` (getAdminUser + `x-v3-org-id` injection) except 
 | /api/landing-report | GET | none (public-by-design: landing page content) | — | landing report payload | reads `projects`, `report_templates`, `data_blocks`, `chart_configurations`, `report_styles`, `partners` |
 | /api/landing-static | GET | none (public-by-design: pre-generated landing snapshot) | — | `{staticSnapshot,generatedAt}` | reads `settings` |
 | /api/me | GET | none (public-by-design: session probe, returns cookie-derived booleans only) | — | `{authenticated,user?}` | none |
+| /api/loyalty-missions | GET, POST | requireAdmin | POST `{name,type,pointsPerCompletion,repeatable,partnerId?}` | `{success,mission\|missions}` | reads/writes `loyalty_missions` (messmass#229) |
+| /api/loyalty-missions/[id] | GET | requireAdmin | — | `{success,mission,participation}` | reads `loyalty_missions`; computes participation from `loyalty_completions` |
+| /api/loyalty-missions/[id]/completions | GET, POST | requireAdmin | POST `{fanIdentityId,occurredAt?}` | `{success,completion\|completions}` | writes `loyalty_completions` + a `fan_identity_link` (messmass#227) |
 | /api/notifications/mark-read | PUT | getAdminUser | `{ids?\|all}` | `{success,modified}` | updateMany `notifications` |
 | /api/notifications | GET | getAdminUser | `?limit&offset&unreadOnly&archivedOnly&excludeArchived` | notifications | reads `notifications` |
 | /api/organizations/edit/[id] | GET, PUT | **none — GAP** (no requirePageAccess despite 'organization-edit' page-password type existing) | `?variant`; PUT `{name,metadata,…}` | org edit payload | PUT updates `organizations` |
@@ -342,10 +346,10 @@ CSRF is never counted as a guard: any anonymous caller can fetch the token from
 
 | | routes |
 |---|---:|
-| Fully guarded (every method) | **176** |
+| Fully guarded (every method) | **180** |
 | Open write method, public by design | **5** |
 | Open GET only, writes guarded or absent | **27** |
-| **Total** | **208** |
+| **Total** | **212** |
 
 The previous run of this section (2026-08) listed 40 GAP routes, 21 of them
 unauthenticated writes. Those are closed: messmass#347 and #386 took the first

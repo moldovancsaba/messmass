@@ -1,11 +1,11 @@
 {
  "_meta": {
-  "generated": "2026-09-17T08:26:31+00:00",
+  "generated": "2026-09-17T08:35:13+00:00",
   "repo": "messmass",
-  "head": "a071999d",
+  "head": "596f3a5b",
   "counts": {
-   "endpoints": 208,
-   "collections": 67,
+   "endpoints": 212,
+   "collections": 69,
    "env": 33,
    "outbound-hosts": 29,
    "docs": 205
@@ -1229,6 +1229,17 @@
    "no_auth_marker": false
   },
   {
+   "path": "/api/fan-identities/[id]/loyalty-balance",
+   "methods": [
+    "GET"
+   ],
+   "file": "app/api/fan-identities/[id]/loyalty-balance/route.ts",
+   "auth_markers": [
+    "requireAdmin"
+   ],
+   "no_auth_marker": false
+  },
+  {
    "path": "/api/fan-identities/[id]",
    "methods": [
     "GET",
@@ -1676,6 +1687,42 @@
    "file": "app/api/landing-static/route.ts",
    "auth_markers": [],
    "no_auth_marker": true
+  },
+  {
+   "path": "/api/loyalty-missions/[id]/completions",
+   "methods": [
+    "GET",
+    "POST"
+   ],
+   "file": "app/api/loyalty-missions/[id]/completions/route.ts",
+   "auth_markers": [
+    "requireAdmin"
+   ],
+   "no_auth_marker": false
+  },
+  {
+   "path": "/api/loyalty-missions/[id]",
+   "methods": [
+    "GET"
+   ],
+   "file": "app/api/loyalty-missions/[id]/route.ts",
+   "auth_markers": [
+    "requireAdmin"
+   ],
+   "no_auth_marker": false
+  },
+  {
+   "path": "/api/loyalty-missions",
+   "methods": [
+    "GET",
+    "POST"
+   ],
+   "file": "app/api/loyalty-missions/route.ts",
+   "auth_markers": [
+    "getAdminUser",
+    "requireAdmin"
+   ],
+   "no_auth_marker": false
   },
   {
    "path": "/api/notifications/mark-read",

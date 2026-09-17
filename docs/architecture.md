@@ -113,23 +113,23 @@ it drifts. Do not edit between the markers.
 | Category | Count | Location |
 |----------|-------|----------|
 | **UI Components** | 104 | `components/` |
-| **Utility Modules** | 210 | `lib/` |
+| **Utility Modules** | 211 | `lib/` |
 | **Hooks** | 12 | `hooks/` |
 | **Design Tokens** | 408 | `app/styles/theme.css` |
 | **Utility CSS classes** | 192 | `app/styles/utilities.css` |
 | **App routes (pages)** | 72 | `app/**/page.tsx` |
-| **API routes** | 208 | `app/api/**/route.ts` |
+| **API routes** | 212 | `app/api/**/route.ts` |
 
 The modules with the most importers — the ones whose change radius is
 largest, and the ones to read first:
 
 | Module | Importers | Lines |
 |--------|-----------|-------|
-| `lib/config.ts` | 114 | 204 |
-| `lib/mongodb.ts` | 98 | 112 |
+| `lib/config.ts` | 115 | 204 |
+| `lib/mongodb.ts` | 99 | 112 |
+| `lib/auth.ts` | 90 | 118 |
 | `lib/logger.ts` | 90 | 392 |
-| `lib/auth.ts` | 89 | 118 |
-| `lib/apiGuards.ts` | 71 | 180 |
+| `lib/apiGuards.ts` | 75 | 180 |
 | `lib/apiClient.ts` | 43 | 258 |
 | `components/ColoredCard.tsx` | 43 | 52 |
 | `lib/db.ts` | 38 | 17 |
@@ -1074,7 +1074,7 @@ shows up here on the next regeneration, which is the point.
 | `/terms` | `app/terms/page.tsx` |
 | `/test-csrf` | `app/test-csrf/page.tsx` |
 
-### API routes (208)
+### API routes (212)
 
 `auth` is the guard symbol the route actually calls. A blank cell
 means the route calls none — public by construction, or a gap.
@@ -1324,6 +1324,7 @@ means the route calls none — public by construction, or a gap.
 | `/api/fan-identities` | GET, POST | `requireAdmin` |
 | `/api/fan-identities/[id]` | GET, DELETE | `requireAdmin` |
 | `/api/fan-identities/[id]/links` | GET, POST | `requireAdmin` |
+| `/api/fan-identities/[id]/loyalty-balance` | GET | `requireAdmin` |
 | `/api/fan-identities/merge-candidates` | GET, POST | `getAdminUser, requireAdmin` |
 | `/api/fan-identities/merge-candidates/[id]/approve` | POST | `getAdminUser` |
 | `/api/fan-identities/merge-candidates/[id]/reject` | POST | `getAdminUser, requireAdmin` |
@@ -1407,6 +1408,14 @@ means the route calls none — public by construction, or a gap.
 | Route | Methods | Auth |
 |-------|---------|------|
 | `/api/landing-static` | GET | — |
+
+#### `/api/loyalty-missions`
+
+| Route | Methods | Auth |
+|-------|---------|------|
+| `/api/loyalty-missions` | GET, POST | `getAdminUser, requireAdmin` |
+| `/api/loyalty-missions/[id]` | GET | `requireAdmin` |
+| `/api/loyalty-missions/[id]/completions` | GET, POST | `requireAdmin` |
 
 #### `/api/notifications`
 
