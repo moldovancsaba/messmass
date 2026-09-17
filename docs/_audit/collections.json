@@ -1,11 +1,11 @@
 {
  "_meta": {
-  "generated": "2026-09-17T09:30:19+00:00",
+  "generated": "2026-09-17T09:46:39+00:00",
   "repo": "messmass",
-  "head": "e0f0643f",
+  "head": "2961e47a",
   "counts": {
-   "endpoints": 215,
-   "collections": 69,
+   "endpoints": 218,
+   "collections": 70,
    "env": 33,
    "outbound-hosts": 29,
    "docs": 205
@@ -62,6 +62,7 @@
   "pageStyles",
   "page_passwords",
   "page_styles_enhanced",
+  "paid_campaigns",
   "partner_analytics",
   "partners",
   "project_permissions",

@@ -1,11 +1,11 @@
 {
  "_meta": {
-  "generated": "2026-09-17T09:30:19+00:00",
+  "generated": "2026-09-17T09:46:39+00:00",
   "repo": "messmass",
-  "head": "e0f0643f",
+  "head": "2961e47a",
   "counts": {
-   "endpoints": 215,
-   "collections": 69,
+   "endpoints": 218,
+   "collections": 70,
    "env": 33,
    "outbound-hosts": 29,
    "docs": 205
@@ -1799,6 +1799,41 @@
    "auth_markers": [
     "getAdminUser",
     "requireSession"
+   ],
+   "no_auth_marker": false
+  },
+  {
+   "path": "/api/paid-campaigns/[id]/measurement",
+   "methods": [
+    "GET"
+   ],
+   "file": "app/api/paid-campaigns/[id]/measurement/route.ts",
+   "auth_markers": [
+    "requireAdmin"
+   ],
+   "no_auth_marker": false
+  },
+  {
+   "path": "/api/paid-campaigns/[id]",
+   "methods": [
+    "DELETE"
+   ],
+   "file": "app/api/paid-campaigns/[id]/route.ts",
+   "auth_markers": [
+    "requireAdmin"
+   ],
+   "no_auth_marker": false
+  },
+  {
+   "path": "/api/paid-campaigns",
+   "methods": [
+    "GET",
+    "POST"
+   ],
+   "file": "app/api/paid-campaigns/route.ts",
+   "auth_markers": [
+    "getAdminUser",
+    "requireAdmin"
    ],
    "no_auth_marker": false
   },

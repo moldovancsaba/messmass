@@ -2,7 +2,7 @@
 
 Generated for the fleet audit (messmass#350); measured against `docs/_audit/endpoints.json` (head 6d28c7f3, 194 endpoints). Every route below was verified by reading its `route.ts` handler, not just the marker scan.
 
-Coverage: 215 of 215 routes documented, enforced by
+Coverage: 218 of 218 routes documented, enforced by
 `tests/api-reference-covers-every-route.test.ts` — five routes were missing when
 that claim was last made by hand.
 
@@ -282,7 +282,7 @@ All wrapped in `withOrgContext` (getAdminUser + `x-v3-org-id` injection) except 
 | /api/v3/reporting/export/[entityId] | GET | withOrgContext | path entity id | CSV download | aggregates V3MetricValue |
 | /api/v3/reports/resolve | GET | withOrgContext | `?activityId\|entityId` | resolved template | reads v3 report config |
 
-## Remaining root routes (43 routes)
+## Remaining root routes (46 routes)
 
 | Path | Methods | Auth | Request | Response | Side effects |
 |---|---|---|---|---|---|
@@ -335,6 +335,9 @@ All wrapped in `withOrgContext` (getAdminUser + `x-v3-org-id` injection) except 
 | /api/organizations/report/[id]/activities | GET | none (public-by-design: shareable org report) | `?variant` | org activities | reads `organizations`, `partners`, `projects` |
 | /api/organizations/report/[id] | GET | none (public-by-design: shareable org report) | `?variant` | org report | reads `organizations`, `partners`, `projects` |
 | /api/page-passwords | POST, PUT | POST requireSession (minting/revealing passwords — F-009 fix documented in-file); PUT none (public-by-design: PUT *is* the password check; admin session bypasses) | `{pageId,pageType,password?/regenerate?}` | `{success,…grant}` | reads/writes page-password store; PUT sets access grant |
+| /api/paid-campaigns | GET, POST | requireAdmin | POST `{name,platform,projectId,spend,currency,notes?}` | `{success,campaign\|campaigns}` | reads/writes `paid_campaigns` (messmass#226) |
+| /api/paid-campaigns/[id] | DELETE | requireAdmin | — | `{success}` | deletes from `paid_campaigns` |
+| /api/paid-campaigns/[id]/measurement | GET | requireAdmin | — | `{success,campaign,organicEvidence,costPerBitlyClick}` | reads `paid_campaigns`, `projects`, `bitly_project_links` -- paid spend juxtaposed with real organic evidence, not attributed |
 | /api/stakeholder/invite | POST | requireAdmin | `{email,role,scopeType,scopeId}` | `{success,grant,loginUrl}` | writes `stakeholder_grants` (messmass#231) |
 | /api/stats | GET | none (public-by-design: redirect helper into the guarded stats route) | `?slug\|id` | redirect or basic info | none |
 | /api/user-preferences | GET, PUT | getAdminUser | PUT preferences body | `{success,preferences}` | upserts `user_preferences` |
@@ -349,10 +352,10 @@ CSRF is never counted as a guard: any anonymous caller can fetch the token from
 
 | | routes |
 |---|---:|
-| Fully guarded (every method) | **183** |
+| Fully guarded (every method) | **186** |
 | Open write method, public by design | **5** |
 | Open GET only, writes guarded or absent | **27** |
-| **Total** | **215** |
+| **Total** | **218** |
 
 The previous run of this section (2026-08) listed 40 GAP routes, 21 of them
 unauthenticated writes. Those are closed: messmass#347 and #386 took the first

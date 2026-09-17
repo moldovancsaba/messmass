@@ -25,20 +25,8 @@ import { ObjectId } from 'mongodb';
 import connectV3 from '@/lib/mongoose-v3';
 import V3Activity from '@/lib/models/v3/Activity';
 import V3MetricValue from '@/lib/models/v3/MetricValue';
-import clientPromise from '@/lib/mongodb';
-import config from '@/lib/config';
 import { calculateFanMetrics, calculateAdMetrics, type ProjectStats } from '@/lib/analyticsCalculator';
-
-async function getBitlyClicksForProject(projectId: string): Promise<number> {
-  const client = await clientPromise;
-  const db = client.db(config.dbName);
-  const links = await db
-    .collection('bitly_project_links')
-    .find({ projectId: new ObjectId(projectId) })
-    .project({ 'cachedMetrics.clicks': 1 })
-    .toArray();
-  return links.reduce((sum, link: any) => sum + (link.cachedMetrics?.clicks || 0), 0);
-}
+import { getBitlyClicksForProject } from '@/lib/bitly-aggregator';
 
 const REQUIRED_NUMERIC_FIELDS: (keyof ProjectStats)[] = [
   'remoteImages', 'hostessImages', 'selfies', 'stadium',

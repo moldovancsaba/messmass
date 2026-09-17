@@ -113,12 +113,12 @@ it drifts. Do not edit between the markers.
 | Category | Count | Location |
 |----------|-------|----------|
 | **UI Components** | 104 | `components/` |
-| **Utility Modules** | 212 | `lib/` |
+| **Utility Modules** | 213 | `lib/` |
 | **Hooks** | 12 | `hooks/` |
 | **Design Tokens** | 408 | `app/styles/theme.css` |
 | **Utility CSS classes** | 192 | `app/styles/utilities.css` |
 | **App routes (pages)** | 72 | `app/**/page.tsx` |
-| **API routes** | 215 | `app/api/**/route.ts` |
+| **API routes** | 218 | `app/api/**/route.ts` |
 
 The modules with the most importers — the ones whose change radius is
 largest, and the ones to read first:
@@ -127,9 +127,9 @@ largest, and the ones to read first:
 |--------|-----------|-------|
 | `lib/config.ts` | 118 | 204 |
 | `lib/mongodb.ts` | 102 | 112 |
-| `lib/auth.ts` | 90 | 118 |
+| `lib/auth.ts` | 91 | 118 |
 | `lib/logger.ts` | 90 | 392 |
-| `lib/apiGuards.ts` | 77 | 180 |
+| `lib/apiGuards.ts` | 80 | 180 |
 | `lib/apiClient.ts` | 43 | 258 |
 | `components/ColoredCard.tsx` | 43 | 52 |
 | `lib/db.ts` | 38 | 17 |
@@ -1074,7 +1074,7 @@ shows up here on the next regeneration, which is the point.
 | `/terms` | `app/terms/page.tsx` |
 | `/test-csrf` | `app/test-csrf/page.tsx` |
 
-### API routes (215)
+### API routes (218)
 
 `auth` is the guard symbol the route actually calls. A blank cell
 means the route calls none — public by construction, or a gap.
@@ -1438,6 +1438,14 @@ means the route calls none — public by construction, or a gap.
 | Route | Methods | Auth |
 |-------|---------|------|
 | `/api/page-passwords` | GET, POST, PUT, DELETE | `getAdminUser, requireSession` |
+
+#### `/api/paid-campaigns`
+
+| Route | Methods | Auth |
+|-------|---------|------|
+| `/api/paid-campaigns` | GET, POST | `getAdminUser, requireAdmin` |
+| `/api/paid-campaigns/[id]` | DELETE | `requireAdmin` |
+| `/api/paid-campaigns/[id]/measurement` | GET | `requireAdmin` |
 
 #### `/api/partners`
 

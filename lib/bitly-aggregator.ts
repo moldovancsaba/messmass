@@ -333,6 +333,24 @@ export async function batchAggregateMetrics(
  * 
  * @returns Empty metrics structure with zero values
  */
+/**
+ * WHAT: Total real (measured) clicks across every Bitly link associated with
+ *     one project, from each association's own cached period metrics.
+ * WHY: Shared by messmass#232 (v3 metric materialization) and messmass#226
+ *     (paid/organic juxtaposition) -- both needed "how many real clicks did
+ *     this project get", and it was written inline in the first of the two
+ *     before being pulled out here so the second didn't duplicate it.
+ */
+export async function getBitlyClicksForProject(projectId: string): Promise<number> {
+  const db = await getDb();
+  const links = await db
+    .collection('bitly_project_links')
+    .find({ projectId: new ObjectId(projectId) })
+    .project({ 'cachedMetrics.clicks': 1 })
+    .toArray();
+  return links.reduce((sum, link: any) => sum + (link.cachedMetrics?.clicks || 0), 0);
+}
+
 export function getEmptyMetrics(): BitlyProjectMetrics {
   return {
     clicks: 0,
