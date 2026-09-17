@@ -144,7 +144,7 @@ export function ExecutiveDashboardView({
           {
             label: 'Open Insights',
             icon: 'lightbulb',
-            onClick: () => router.push('/admin/analytics/insights'),
+            onClick: () => router.push('/admin/analytics/combined-insights'),
             variant: 'secondary',
           },
         ]}

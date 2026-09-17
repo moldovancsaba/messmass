@@ -258,14 +258,6 @@ export const adminNavSections: AdminNavSection[] = [
         showInAdminWorkspace: false,
       },
       {
-        label: 'Insights',
-        path: '/admin/analytics/insights',
-        icon: 'lightbulb',
-        description: 'Review anomaly detection, trends, and broader analytics insights.',
-        accentColor: navAccent.warning,
-        showInAdminWorkspace: false,
-      },
-      {
         label: 'Combined Insights',
         path: '/admin/analytics/combined-insights',
         icon: 'merge',

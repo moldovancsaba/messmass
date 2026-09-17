@@ -63,7 +63,6 @@ export const MENU_PERMISSIONS: Record<string, UserRole[]> = {
   'Executive Dashboard': ['admin', 'superadmin'],
   'Marketing Dashboard': ['admin', 'superadmin'],
   'Operations Dashboard': ['admin', 'superadmin'],
-  'Insights': ['superadmin'],
   'Combined Insights': ['superadmin'],
   'Fanmass': ['admin', 'superadmin'],
 

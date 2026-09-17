@@ -25,7 +25,8 @@ export const ROUTE_PROTECTION: Record<string, UserRole> = {
   
   // WHAT: Management features - admin level required
   '/admin/analytics': 'admin',
-  '/admin/analytics/insights': 'superadmin',
+  '/admin/analytics/insights': 'superadmin', // retired redirect stub (messmass#414), same pattern as /admin/insights below
+  '/admin/analytics/combined-insights': 'superadmin',
   '/admin/reports': 'admin',
   '/admin/kyc': 'admin',
   '/admin/charts': 'admin',

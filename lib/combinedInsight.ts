@@ -117,3 +117,21 @@ export function combinedInsightRank(insight: CombinedInsight): number {
   }
   return 0;
 }
+
+/** The union of both sources' category/type vocabularies, for a single "kind" filter. */
+export const COMBINED_INSIGHT_KINDS = [
+  'performance',
+  'anomaly',
+  'trend',
+  'benchmark',
+  'opportunity',
+  'risk',
+  'prediction',
+  'recommendation',
+] as const;
+export type CombinedInsightKind = (typeof COMBINED_INSIGHT_KINDS)[number];
+
+/** insightsEngine.ts's `category` or analytics-insights.ts's `type` -- whichever this insight has. */
+export function combinedInsightKind(insight: CombinedInsight): CombinedInsightKind | undefined {
+  return insight.executive?.category ?? insight.analytics?.type;
+}
