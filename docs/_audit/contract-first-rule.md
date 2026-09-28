@@ -14,15 +14,18 @@ SAME COMMIT:
 
 **Version rule:** every release bumps ALL FIVE apps to the same new version in one
 coordinated change (`docs/_audit/fleet-version-policy.md`), even for a
-version-only commit. Re-aligned to 12.3.36 on 2026-09-08 after a month of
+version-only commit. Re-aligned to 12.3.28 on 2026-09-08 after a month of
 independent bumps; the rule is a convention, not a CI check.
 
 **Inventory rule:** regenerate `docs/_audit/*.json` with
 `python3 scripts/fleet-audit-inventory.py --write` when routes/collections/env
 change, and commit the diff in the same PR (that diff IS the contract-first
 signal). CI runs `python3 scripts/fleet-audit-inventory.py --check` (npm alias
-`inventory:check`) in all four repos and fails when the committed JSON no longer
-matches the code, so a forgotten `--write` blocks the push (messmass#355).
+`inventory:check`) in all five repos and fails when the committed JSON no longer
+matches the code (messmass#355). A red check does not stop a direct push to
+`main` or a Vercel deploy: Vercel deploys without waiting for CI, and
+camera/savetheworld commits have gone live with this check red. Run it before
+pushing.
 
 **Quarterly:** re-run the audit method (both-sides, code-is-truth) using the
 issue template at `.github/ISSUE_TEMPLATE/fleet-reaudit.md`.

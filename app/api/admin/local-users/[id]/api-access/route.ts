@@ -231,7 +231,8 @@ export async function PUT(
     let recommendation: string | undefined;
     
     if (enabled) {
-      recommendation = 'Security tip: Regenerate password to create a long random API key';
+      // The login password stopped working as an API key in #397; only a generated key does.
+      recommendation = 'Use Generate API Key to issue this account\'s API key. The login password does not work as an API key.';
     }
     
     return NextResponse.json({

@@ -10,7 +10,7 @@ Owner: Backend
 
 Quick API reference for {messmass}. See detailed guides for complete schemas and examples.
 
-> **Complete coverage-measured reference:** for every endpoint under `app/api/` (all 290 method-endpoints) with its auth layer, request/response shape, and side effects, see [api-reference-complete.md](api-reference-complete.md) (messmass#350). This quick reference is the curated subset.
+> **Complete coverage-measured reference:** for every endpoint under `app/api/` (all 333 method-endpoints across 221 route files) with its auth layer, request/response shape, and side effects, see [api-reference-complete.md](api-reference-complete.md) (messmass#350). This quick reference is the curated subset.
 
 ---
 
@@ -30,6 +30,46 @@ the callback `/api/auth/sso/callback` mints the session). The old
 `POST /api/admin/login` is retired and returns **410 Gone**.
 **Logout**: `DELETE /api/admin/login`
 
+Being signed in is not always enough. `requireAdmin` in `lib/apiGuards.ts` also requires role
+`admin` or `superadmin` (403 otherwise), and some routes are superadmin-only.
+
+### Public API Bearer keys (`/api/public/*` only)
+
+`requireAPIAuth` in `lib/apiAuth.ts` guards the four `/api/public/*` routes and nothing else.
+Send `Authorization: Bearer <api-key>`. The key is matched against the user's bcrypt
+`apiKeyHash`, and the account must have `apiKeyEnabled: true`. A request that carries any
+`Cookie` header is rejected (401 `COOKIES_NOT_ALLOWED`). Login passwords are not accepted as
+API keys (6f31990d, #397). Keys are issued by `POST /api/admin/local-users/[id]/api-access`,
+which is admin/superadmin only; only a superadmin can manage a superadmin's key. The plaintext
+key is returned once. `PUT` on the same path toggles `apiKeyEnabled`. `apiWriteEnabled` gates
+writes through `requireAPIWriteAuth` (403 `WRITE_ACCESS_DISABLED`), but no route calls it at
+dd34e229: every `/api/public/*` route is read-only. Full flow and error codes:
+[api-public.md](api-public.md).
+
+### Stakeholder session (#231)
+
+External stakeholders (sponsor, agency, media, operator) sign in through the same SSO client,
+but on a separate flow that never creates an admin session:
+
+1. An admin records the invite with `POST /api/stakeholder/invite`
+   (`{ email, role, scopeType, scopeId }`, admin/superadmin). This upserts a
+   `stakeholder_grants` row and returns `loginUrl: /api/auth/sso/stakeholder-login`.
+   Nothing is emailed.
+2. `GET /api/auth/sso/stakeholder-login` redirects to SSO. It is rate-limited to 5 per 15 min
+   per client and sets the `messmass_stakeholder_pending` state cookie.
+3. `GET /api/auth/sso/stakeholder-callback` exchanges the code and looks up the verified email
+   in `stakeholder_grants`, ignoring revoked grants. It does not check SSO staff permission.
+   On a match it marks the grant `active` and sets the `stakeholder-session` cookie, then
+   redirects to the granted report (`/partner-report/…`, `/organization-report/…`,
+   `/hashtag/…` or `/filter/…`). The cookie is an HS256 JWT signed with `JWT_SECRET`, lasts
+   30 days and carries `grantId, email, role, scopeType, scopeId`. If no grant matches, the
+   callback redirects to `/stakeholder-access?error=not_invited`.
+
+The guard for this session is `requireStakeholderRole(request, roles)` in `lib/apiGuards.ts`.
+It returns 401 without a valid session and 403 when the role is not allowed. The calling
+route must still compare `session.scopeId` with the resource it serves. At dd34e229 no API
+route calls this guard, so a stakeholder session does not unlock any endpoint yet.
+
 **See**: [AUTHENTICATION.md](../features/features-authentication.md) for details
 
 ---
@@ -39,7 +79,7 @@ the callback `/api/auth/sso/callback` mints the session). The old
 ### GET /api/projects
 List projects with pagination, search, and sorting.
 
-**Query Params**: `limit`, `offset`, `search`, `sortField`, `sortOrder`, `nextCursor`
+**Query Params**: `limit`, `cursor`, `q` (search), `offset`, `sortField`, `sortOrder`, `projectId` (single-project lookup)
 
 ### POST /api/projects
 Create new project.
@@ -143,8 +183,8 @@ Bulk import links from Bitly organization.
 ### GET /api/bitly/project-metrics/[projectId]
 Get Bitly metrics for specific project.
 
-### POST /api/bitly/associations
-Create link-project association.
+### POST /api/bitly/links
+Import a link and associate it with a project (`/api/bitly/associations` has no POST handler).
 
 ### DELETE /api/bitly/associations
 Remove link-project association.
@@ -201,17 +241,17 @@ Create/update groups.
 List hashtag categories with optional `search`, `limit`, and `offset` query parameters. This read route is public because category labels are used on public and login-facing screens.
 
 ### POST /api/hashtag-categories
-Create a category. Requires the `admin-session` cookie.
+Create a category. Requires an `admin-session` with role `admin` or `superadmin` (`requireAdmin`).
 
 **Body**: `{ name: string, color: string, order?: number }`
 
 ### PUT /api/hashtag-categories
-Update a category. Requires the `admin-session` cookie.
+Update a category. Requires an `admin-session` with role `admin` or `superadmin` (`requireAdmin`).
 
 **Body**: `{ id: string, name?: string, color?: string, order?: number }`
 
 ### DELETE /api/hashtag-categories
-Delete a category. Requires the `admin-session` cookie.
+Delete a category. Requires an `admin-session` with role `admin` or `superadmin` (`requireAdmin`).
 
 **Query**: `id=<categoryId>`
 
@@ -296,17 +336,17 @@ Two pagination modes supported:
 
 ### Cursor-Based (Default)
 ```
-GET /api/projects?limit=20&nextCursor=abc123
+GET /api/projects?limit=20&cursor=abc123
 ```
 
-Returns: `{ projects: [...], nextCursor: "def456" }`
+Returns: `{ projects: [...], pagination: { mode: "cursor", nextCursor: "def456", ... } }`. Pass `pagination.nextCursor` back as `cursor`.
 
 ### Offset-Based (Search/Sort)
 ```
 GET /api/projects?limit=20&offset=40&sortField=eventDate&sortOrder=desc
 ```
 
-Returns: `{ projects: [...], totalMatched: 150, nextOffset: 60 }`
+Returns: `{ projects: [...], pagination: { mode: "sort", totalMatched: 150, nextOffset: 60, ... } }` (`mode: "search"` when `q` is set)
 
 ---
 

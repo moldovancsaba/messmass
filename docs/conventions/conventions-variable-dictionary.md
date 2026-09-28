@@ -68,7 +68,7 @@ interface VariableMetadata {
 - **System Variables** (`isSystem: true`):
   - Schema fields, cannot be deleted
   - Can edit metadata (label, alias, description, flags)
-  - Seeded from code registry via `seed:variables` (script removed in v12.3.36, messmass#352)
+  - Seeded from code registry via `seed:variables` (script removed in v12.3.23, messmass#352)
   - Total: 92 system variables
 
 - **Custom Variables** (`isSystem: false`):

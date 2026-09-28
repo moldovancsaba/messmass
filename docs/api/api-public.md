@@ -31,9 +31,33 @@ Authorization: Bearer YOUR_API_KEY
 
 Important behavior:
 
-- public routes do **not** accept browser admin session cookies as the auth mechanism
-- requests are CORS-enabled through the server CORS helper
-- all responses are JSON
+- The guard is `requireAPIAuth` in `lib/apiAuth.ts`. It protects the four `/api/public/*` routes and nothing else.
+- Any request that carries a `Cookie` header is rejected with 401 `COOKIES_NOT_ALLOWED`, even if it also has a valid Bearer key. Call from a server, or from a browser with credentials omitted.
+- The key is matched against the account's bcrypt `apiKeyHash` (`findUserByApiKeyHash` in `lib/users.ts`). **Login passwords are not API keys.** The old fallback that accepted a user's login password as the Bearer token was removed in 6f31990d (#397, F-011). An account with no `apiKeyHash` cannot authenticate until an admin rotates a key for it.
+- The account must also have `apiKeyEnabled: true`. Each successful call increments `apiUsageCount` and sets `lastAPICallAt`.
+- Requests are CORS-enabled through `lib/cors.ts`, for origins in `ALLOWED_ORIGINS` (or localhost when that variable is unset).
+- All responses are JSON.
+
+### Getting an API key
+
+1. An admin opens the admin users page (`/admin/users`) and uses the **Rotate API Key** row action (label from `lib/adapters/usersAdapter.tsx`). This calls `POST /api/admin/local-users/[id]/api-access`.
+2. That endpoint accepts only role `admin` or `superadmin` (403 otherwise). Only a superadmin can rotate a superadmin's key (dd34e229).
+3. The endpoint generates a random 32-byte hex key and stores only its bcrypt hash in `users.apiKeyHash`. The plaintext `apiKey` is returned once, shown in the "API Key Generated" modal, and never stored or logged. Rotating again replaces the hash, so the previous key stops working immediately. The user's login password is not affected.
+4. Access is switched on and off separately, with the **Enable API** / **Disable API** row action (`PUT /api/admin/local-users/[id]/api-access`, body `{ "enabled": true|false }`, same role rules). This sets `apiKeyEnabled`. Disabling is refused with 409 if the account made an API call in the last 5 minutes.
+5. `apiWriteEnabled` is a separate flag that gates writes through `requireAPIWriteAuth`. No `/api/public/*` route writes, and no route calls `requireAPIWriteAuth` at dd34e229. There is also no admin endpoint that sets `apiWriteEnabled`: `toggleAPIWriteAccess` in `lib/users.ts` has no route caller.
+
+### Authentication error codes
+
+Every auth failure returns `{ "success": false, "error": "...", "errorCode": "..." }` with a `WWW-Authenticate: Bearer realm="{messmass} API"` header:
+
+| `errorCode` | HTTP | Cause (`lib/apiAuth.ts`) |
+|---|---|---|
+| `COOKIES_NOT_ALLOWED` | 401 | The request carried a `Cookie` header |
+| `MISSING_TOKEN` | 401 | No `Authorization: Bearer <key>` header, or an empty one |
+| `INVALID_TOKEN` | 401 | No account's `apiKeyHash` matches the key |
+| `API_ACCESS_DISABLED` | 401 | The key matched, but the account has `apiKeyEnabled` false |
+| `AUTH_ERROR` | 401 | Unexpected error while validating the key |
+| `WRITE_ACCESS_DISABLED` | 403 | Only from `requireAPIWriteAuth` (account lacks `apiWriteEnabled`); not reachable from any current route |
 
 ## Rate Limiting
 
@@ -208,7 +232,7 @@ All current public partner routes support `OPTIONS` for browser preflight handli
 
 Common patterns:
 
-- `401` — missing or invalid Bearer token
+- `401` — authentication failed; see the `errorCode` table under [Authentication error codes](#authentication-error-codes)
 - `400` — invalid partner ID format or invalid request parameters
 - `404` — partner not found
 - `500` — server error

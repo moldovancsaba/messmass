@@ -223,7 +223,7 @@ export default function AdminUsersPageUnified() {
     const ok = await confirm({
       title: newState ? 'Enable API Access' : 'Disable API Access',
       message: newState
-        ? `Enable API access for ${user.email}? They can immediately use their password as an API key.`
+        ? `Enable API access for ${user.email}? Requests authenticate with the key from Generate API Key; their login password is not an API key.`
         : `Disable API access for ${user.email}? Active integrations may break.`,
       danger: !newState,
     });

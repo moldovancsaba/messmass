@@ -61,7 +61,7 @@ default behavior is not a valid reason to violate it.
 - Install: `npm install`
 - Run the app: `npm run dev`
 - Default local URL: `http://localhost:3001`
-- First-run variable seed: `seed:variables` (script removed in v12.3.23, messmass#352)
+- Variables are managed in `/admin/kyc`; there is no first-run seed (`seed:variables` removed in v12.3.23, messmass#352).
 
 ## Core Validation
 
@@ -73,6 +73,11 @@ default behavior is not a valid reason to violate it.
 - Design token/style guardrails: `npm run style:check`
 - Style audit report: `npm run style:audit`
 - Fleet inventory drift: `npm run inventory:check` (CI-enforced; regenerate `docs/_audit/*.json` with `python3 scripts/fleet-audit-inventory.py --write`; rule in `docs/_audit/contract-first-rule.md`)
+- Docs consistency: `npm run docs:audit` (rewrites the report timestamps under `docs/_meta/` on every run; commit or discard those)
+- Comment gates: `npm run comments:check` (comments citing paths that no longer resolve) and `npm run comments:versions` (comments claiming unshipped versions or overdue removals)
+- Generated architecture sections: `npm run architecture:check`
+- Whole CI gate list in one command: `npm run preflight` (regenerates the inventories and architecture sections, then runs every `ci.yml` gate including `build`, stopping at the first failure)
+- Version bumps: set `package.json`, then `npm run version:update` only (syncs the lockfile and every current doc's `Version:` stamp line; never find-and-replace the old version string), then add a release-notes entry
 - If `npm run type-check` fails on missing `.next/types`, run `npm run build` first and rerun the type check.
 
 ## Organization Workflow
@@ -94,7 +99,7 @@ Current organization management behavior verified in code:
 
 - Bootstrap the V3 master organization: `npx tsx scripts/v3/bootstrap-org.ts`
 - Verify V3 organization RBAC logic: `npx tsx scripts/v3/test-permissions.ts`
-- Verify the V3 middleware checklist: `npx tsx scripts/verify-v3-middleware.ts`
+- V3 organization scoping (`resolveV3OrgId`, `lib/middleware/v3/orgContext.ts`): `npx jest tests/v3-org-scoping.test.ts`. (`scripts/verify-v3-middleware.ts` no longer runs: it imports `lib/v3/middleware.ts`, deleted in e0f0643f.)
 
 ## Report And Data Diagnostics
 

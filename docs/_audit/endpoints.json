@@ -1,8 +1,8 @@
 {
  "_meta": {
-  "generated": "2026-09-28T09:08:32+00:00",
+  "generated": "2026-09-28T09:32:43+00:00",
   "repo": "messmass",
-  "head": "5668dde3",
+  "head": "dd34e229",
   "counts": {
    "endpoints": 221,
    "collections": 71,
@@ -1488,8 +1488,10 @@
     "POST"
    ],
    "file": "app/api/integrations/camera/partners/route.ts",
-   "auth_markers": [],
-   "no_auth_marker": true
+   "auth_markers": [
+    "assertCameraSecret"
+   ],
+   "no_auth_marker": false
   },
   {
    "path": "/api/integrations/camera/provision-missing",
@@ -1508,8 +1510,10 @@
     "POST"
    ],
    "file": "app/api/integrations/camera/sso-session/route.ts",
-   "auth_markers": [],
-   "no_auth_marker": true
+   "auth_markers": [
+    "assertCameraSecret"
+   ],
+   "no_auth_marker": false
   },
   {
    "path": "/api/integrations/fanmass/callbacks",
@@ -2024,7 +2028,8 @@
    ],
    "file": "app/api/partners/route.ts",
    "auth_markers": [
-    "requireAdmin"
+    "requireAdmin",
+    "requirePartnerWrite"
    ],
    "no_auth_marker": false
   },
@@ -2073,7 +2078,8 @@
    ],
    "file": "app/api/projects/route.ts",
    "auth_markers": [
-    "requireAdmin"
+    "requireAdmin",
+    "requireProjectWrite"
    ],
    "no_auth_marker": false
   },
@@ -2407,7 +2413,8 @@
    ],
    "file": "app/api/v3/organizations/report/[id]/activities/route.ts",
    "auth_markers": [
-    "getAdminUser"
+    "getAdminUser",
+    "validateOrganizationAccess"
    ],
    "no_auth_marker": false
   },
@@ -2417,8 +2424,10 @@
     "GET"
    ],
    "file": "app/api/v3/organizations/report/[id]/route.ts",
-   "auth_markers": [],
-   "no_auth_marker": true
+   "auth_markers": [
+    "validateOrganizationAccess"
+   ],
+   "no_auth_marker": false
   },
   {
    "path": "/api/v3/reporting/dashboard",

@@ -139,7 +139,7 @@ largest, and the ones to read first:
 | `lib/mongoose-v3.ts` | 21 | 66 |
 | `lib/permissions.ts` | 18 | 141 |
 | `hooks/useAdminAuth.ts` | 17 | 65 |
-| `lib/users.ts` | 17 | 428 |
+| `lib/users.ts` | 17 | 430 |
 
 Importers are counted by resolved import specifier, not by symbol name, so
 a re-export through a barrel file counts for the barrel. A module missing
@@ -518,7 +518,7 @@ import PartnerSelector from '@/components/PartnerSelector';
 - **Export Actions**: CSV and PDF export buttons
 - **Totals Summary**: Aggregate statistics across all partner events (total events, images, fans, attendees)
 - **Related Events List**: 3-column card grid with event stats (images, fans, merch, attendees)
-- **Password Protection**: server component checks `isPageProtected`/`hasPageAccess` (`lib/pageAccess.ts`) and renders `ServerPageGate` before any data is read. `/report/[slug]` applies the identical gate in `app/report/[slug]/layout.tsx` (v12.3.36); its data route `GET /api/projects/stats/[slug]` enforces via `requirePageAccess`
+- **Password Protection**: server component checks `isPageProtected`/`hasPageAccess` (`lib/pageAccess.ts`) and renders `ServerPageGate` before any data is read. `/report/[slug]` applies the identical gate in `app/report/[slug]/layout.tsx` (v12.3.22); its data route `GET /api/projects/stats/[slug]` enforces via `requirePageAccess`
 - **Responsive Design**: Desktop 3-column grid, mobile single column
 
 **API Endpoint**:
@@ -1390,9 +1390,9 @@ means the route calls none — public by construction, or a gap.
 | Route | Methods | Auth |
 |-------|---------|------|
 | `/api/integrations/camera/link-partners` | POST | `requireFanmassIntegrationAuth` |
-| `/api/integrations/camera/partners` | POST | — |
+| `/api/integrations/camera/partners` | POST | `assertCameraSecret` |
 | `/api/integrations/camera/provision-missing` | POST | `requireFanmassIntegrationAuth` |
-| `/api/integrations/camera/sso-session` | POST | — |
+| `/api/integrations/camera/sso-session` | POST | `assertCameraSecret` |
 | `/api/integrations/fanmass/callbacks` | POST | `requireFanmassIntegrationAuth` |
 | `/api/integrations/fanmass/commands` | GET | `requireFanmassIntegrationAuth` |
 | `/api/integrations/fanmass/commands/[commandId]` | DELETE | `requireFanmassIntegrationAuth` |
@@ -1459,7 +1459,7 @@ means the route calls none — public by construction, or a gap.
 
 | Route | Methods | Auth |
 |-------|---------|------|
-| `/api/partners` | GET, POST, PUT, DELETE | `requireAdmin` |
+| `/api/partners` | GET, POST, PUT, DELETE | `requireAdmin, requirePartnerWrite` |
 | `/api/partners/[id]/bitly-kyc` | GET | `getAdminUser` |
 | `/api/partners/[id]/events` | GET | `requireSession` |
 | `/api/partners/[id]/google-sheet/connect` | POST | `requireSession` |
@@ -1480,7 +1480,7 @@ means the route calls none — public by construction, or a gap.
 
 | Route | Methods | Auth |
 |-------|---------|------|
-| `/api/projects` | GET, POST, PUT, DELETE | `requireAdmin` |
+| `/api/projects` | GET, POST, PUT, DELETE | `requireAdmin, requireProjectWrite` |
 | `/api/projects/[id]` | GET, PUT, DELETE | `requireSession` |
 | `/api/projects/edit/[slug]` | GET | `requirePageAccess` |
 | `/api/projects/stats/[slug]` | GET | `requirePageAccess` |
@@ -1568,8 +1568,8 @@ means the route calls none — public by construction, or a gap.
 | `/api/v3/metrics/export` | GET | `requireAdmin` |
 | `/api/v3/metrics/record` | POST | — |
 | `/api/v3/metrics/sync` | POST | `requireAdmin` |
-| `/api/v3/organizations/report/[id]` | GET | — |
-| `/api/v3/organizations/report/[id]/activities` | GET | `getAdminUser` |
+| `/api/v3/organizations/report/[id]` | GET | `validateOrganizationAccess` |
+| `/api/v3/organizations/report/[id]/activities` | GET | `getAdminUser, validateOrganizationAccess` |
 | `/api/v3/reporting/dashboard` | GET | — |
 | `/api/v3/reporting/export/[entityId]` | GET | — |
 | `/api/v3/reports/resolve` | GET | — |
@@ -2570,7 +2570,7 @@ interface VariableMetadata {
 
 #### 3. Variable Seeding System
 
-**Command**: none — the `seed:variables` script was removed in v12.3.36 (scripts prune, messmass#352); variables are managed in `/admin/kyc`.
+**Command**: none — the `seed:variables` script was removed in v12.3.23 (scripts prune, messmass#352); variables are managed in `/admin/kyc`.
 
 **Purpose**: Migrate all base/derived variables from code registry to MongoDB
 
@@ -3387,11 +3387,12 @@ migration plan for removing a workaround from a file that had already been delet
 
 ### Authentication Model
 
-{messmass} has three independent auth layers plus one cross-app bridge — there is no single "the" auth system:
+{messmass} has four independent auth layers plus one cross-app bridge — there is no single "the" auth system:
 
-1. **Admin session (SSO)** — Interactive sign-in is exclusively the DoneIsBetter SSO OAuth2 authorization-code flow: `/api/auth/sso/login` redirects to `SSO_BASE_URL/api/oauth/authorize`; `/api/auth/sso/callback` exchanges the code at `SSO_BASE_URL/api/oauth/token`, resolves the caller's role from the SSO central per-app permission store, and sets an HttpOnly, signed-JWT `admin-session` cookie (7-day expiry) plus `auth-source=sso`. The legacy local email/password login (`POST /api/admin/login`) is retired and returns **410 Gone** — there are no admin passwords stored in MongoDB to check. Protected `/admin/**` and `/dashboard/**` routes read this cookie via `getAdminUser()` (`lib/auth.ts`); `middleware.ts` itself only checks that the cookie is *present* before letting a request through, not that it is a valid, unexpired session — see "Security Measures" below and messmass#392 (LLD finding F-003).
+1. **Admin session (SSO)** — Interactive sign-in is exclusively the DoneIsBetter SSO OAuth2 authorization-code flow: `/api/auth/sso/login` redirects to `SSO_BASE_URL/api/oauth/authorize`; `/api/auth/sso/callback` exchanges the code at `SSO_BASE_URL/api/oauth/token`, resolves the caller's role from the SSO central per-app permission store, and sets an HttpOnly, signed-JWT `admin-session` cookie (7-day expiry) plus `auth-source=sso`. The legacy local email/password login (`POST /api/admin/login`) is retired and returns **410 Gone** — there are no admin passwords stored in MongoDB to check. Protected `/admin/**` and `/dashboard/**` routes read this cookie via `getAdminUser()` (`lib/auth.ts`); `middleware.ts` first verifies the cookie's HS256 signature and expiry with Web Crypto (`lib/edgeSessionToken.ts`, F-003/messmass#392, 71b5e23f) and redirects to `/admin/login` if it fails. Middleware cannot reach the database, so user existence and role stay with `getAdminUser()`/`requireAdmin()` in each route.
 2. **Page passwords** — Per-page/event password gates (`lib/pagePassword.ts`, bcrypt-hashed, MongoDB-stored) let a non-admin viewer (an employee, a client) reach a specific `/report/[slug]` or `/edit/[slug]` page without an admin session. A validated password is recorded as a server-issued `page-access` grant cookie (`lib/pageAccess.ts`), entirely independent of the `admin-session` cookie.
-3. **Machine/API tokens** — Non-browser callers authenticate with a bearer credential instead of a cookie, and both mechanisms are exempt from CSRF (which only defends cookie-borne authority): the fleet's `/api/integrations/fanmass/**` routes accept a single shared integration token (`requireFanmassIntegrationAuth`, `lib/fanmassIntegration.ts`) compared against one configured secret; the public API (`/api/public/**`) instead accepts a per-user Bearer token (`requireAPIAuth`, `lib/apiAuth.ts`) gated by that user's own `apiKeyEnabled`/`apiWriteEnabled` flags, with usage tracked per user.
+3. **Machine/API tokens** — Non-browser callers authenticate with a bearer credential instead of a cookie, and both mechanisms are exempt from CSRF (which only defends cookie-borne authority): the fleet's `/api/integrations/fanmass/**` routes accept a single shared integration token (`requireFanmassIntegrationAuth`, `lib/fanmassIntegration.ts`) compared against one configured secret; the public API (`/api/public/**`) instead accepts a per-user Bearer token (`requireAPIAuth`, `lib/apiAuth.ts`) gated by that user's own `apiKeyEnabled`/`apiWriteEnabled` flags, with usage tracked per user. Public API keys are stored only as a bcrypt `apiKeyHash`, issued through the admin rotate action (`POST /api/admin/local-users/[id]/api-access`, admin/superadmin only; the plaintext is returned once). Login passwords are not accepted as keys (6f31990d, #397).
+4. **Stakeholder session** (messmass#231, 35bc7e3d) — an external sponsor/agency/media/operator signs in through the same SSO client via `/api/auth/sso/stakeholder-login`; `/api/auth/sso/stakeholder-callback` looks the verified email up in the local `stakeholder_grants` collection (grants created by admins via `POST /api/stakeholder/invite`) instead of the SSO per-app permission store, and sets a separate HS256 `stakeholder-session` cookie (`lib/auth/stakeholderSession.ts`, 30 days). The `requireStakeholderRole` guard (`lib/apiGuards.ts`) exists, but no route consumes it yet, and the callback's `stakeholder-callback` redirect_uri must be registered on SSO before the flow is reachable.
 
 **Camera integration**: camera (a sibling app in the same fleet) has its own separate shared secret (`config.cameraProvisionToken`, checked by `assertCameraSecret()` in `lib/cameraClient.ts`) for its `/api/integrations/camera/**` routes. One of those, `POST /api/integrations/camera/sso-session`, lets a user who already authenticated in camera via the same DoneIsBetter SSO get a real messmass `admin-session` cookie without a second OAuth round-trip — it independently re-validates the forwarded SSO access token against `SSO_BASE_URL` (it does not trust a role or user id asserted by the caller).
 
@@ -3526,7 +3527,7 @@ const editable = await findProjectByEditSlug(editSlug);
 2. **CSRF Protection**: Double-submit cookie pattern (`lib/csrf.ts`), enforced in `middleware.ts` for state-changing methods
 3. **Password Hashing**: Bcrypt for page passwords (`lib/pagePassword.ts`) — admin auth has no local password to hash; see "Authentication Model" above
 4. **Environment Variables**: Secrets never committed to repository
-5. **API Authentication**: `middleware.ts` only checks that the `admin-session` cookie is *present* before allowing `/admin/**` through, not that it is valid — actual session validation happens in each route/page via `getAdminUser()`. This gap is tracked as messmass#392 (LLD finding F-003), not yet remediated
+5. **API Authentication**: `middleware.ts` verifies the `admin-session` cookie's HS256 signature and expiry (`lib/edgeSessionToken.ts`) before allowing `/admin/**` through (F-003/messmass#392, fixed in 71b5e23f); user existence and role are checked in each route/page via `getAdminUser()`/`requireAdmin()`
 6. **Input Validation**: TypeScript + runtime validation on API endpoints
 7. **MongoDB Injection Prevention**: Parameterized queries via MongoDB driver
 8. **Rate Limiting**: Implemented (`lib/rateLimit.ts`), applied in `middleware.ts` to all routes matched by its `config.matcher` (all `/api/**`, `/admin/**`, `/report/**`, `/partner-report/**`, `/dashboard/**`, and effectively everything else except static assets/`_next`); an in-memory, per-IP fixed-window counter with separate limits per endpoint class (auth, write, read, public, contact form, PDF export) — see the "Security Enhancements" section above for the current limits

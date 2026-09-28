@@ -1,6 +1,6 @@
 # {messmass}
 Status: Active
-Last Updated: 2026-08-14T15:00:00.000Z
+Last Updated: 2026-09-28T12:00:00.000Z
 Canonical: No
 Owner: Product
 
@@ -12,7 +12,7 @@ Owner: Product
 <p align="center"><strong>Enterprise event analytics, partner reporting, reporting operations, and admin workflow tooling for sports organizations, venues, and brands.</strong></p>
 
 <p align="center">
-  <img src="https://img.shields.io/badge/version-v12.2.2-2563EB?style=for-the-badge" alt="Version">
+  <img src="https://img.shields.io/badge/version-v12.3.37-2563EB?style=for-the-badge" alt="Version">
   <img src="https://img.shields.io/badge/platform-Web%20App-0F172A?style=for-the-badge" alt="Platform">
   <img src="https://img.shields.io/badge/stack-Next.js%20%7C%20MongoDB%20%7C%20Mantine-0EA5E9?style=for-the-badge" alt="Stack">
 </p>
@@ -40,6 +40,7 @@ Core capabilities:
 - Bitly link attribution and click analytics across events and partners
 - Sports fixture enrichment and quick event creation workflows
 - Variable-driven data capture with reusable clicker-set configuration
+- Sponsorship platform, Phase A (mostly API-first; issues open): partnership lifecycle workspace (`/admin/partners/[id]/lifecycle`), audience report packs, paid-vs-organic measurement, v3 metric warehouse export, consented fan identity graph, loyalty missions, activation templates, stakeholder access via SSO invite
 
 ## Why It Exists
 
@@ -59,11 +60,7 @@ npm run dev
 Default local app:
 - App: `http://localhost:3001`
 
-Recommended first-run companion task:
-
-```bash
-`seed:variables` (script removed in v12.3.23, messmass#352)
-```
+Variables are managed in `/admin/kyc` (the `seed:variables` script was removed in v12.3.23, messmass#352).
 
 ## Runtime Requirements
 
@@ -85,11 +82,16 @@ SPORTSDB_BASE_URL=https://www.thesportsdb.com/api/v1/json
 FANMASS_BASE_URL=http://127.0.0.1:8787
 FANMASS_API_KEY=shared-fanmass-api-key
 FANMASS_INTEGRATION_TOKEN=shared-messmass-fanmass-token
+SSO_BASE_URL=https://sso.doneisbetter.com
+SSO_CLIENT_ID=your_sso_client_id
+SSO_CLIENT_SECRET=your_sso_client_secret
+JWT_SECRET=long_random_session_signing_secret
+CRON_SECRET=long_random_cron_bearer_secret
 ```
 
 Notes:
-- admin authentication is DB-backed through the `users` collection; there is no canonical env-based `ADMIN_PASSWORD` login path anymore
-- optional DoneIsBetter SSO uses `SSO_BASE_URL` and related runtime configuration
+- Admin sign-in is DoneIsBetter SSO only (OAuth2 authorization code; messmass is a confidential client, so `SSO_BASE_URL`, `SSO_CLIENT_ID` and `SSO_CLIENT_SECRET` are required). `POST /api/admin/login` returns 410. The `users` collection holds the auto-provisioned profile and role. Sessions are HS256 JWTs signed with `JWT_SECRET`.
+- `CRON_SECRET` is the Bearer secret Vercel Cron sends to the cron routes.
 
 Many scripts expect `.env.local`. Prefer the existing `npm run ...` aliases instead of ad hoc command variants.
 
@@ -102,14 +104,14 @@ The current internal product map is organized by job, not by legacy route names:
 - `Analytics Workspace` at `/admin/analytics` owns sponsorship, activation, executive, and insight workflows
 
 Main admin areas:
-- `Operations`: Events, Quick Add, Messages
+- `Operations`: Events, Partner Activation, Quick Add, Messages
 - `Entities`: Partners, Organizations, Project-Partner relationships
 - `Reports`: Report Builder, Report Themes, Content Library, Chart Algorithms, KYC Variables, Clicker Sets
 - `Data`: Bitly Links, filters, and supporting integrations
-- `Analytics`: AI Analytics, Sponsorship Hub, Partner Activation, Executive, Marketing, Operations, Insights
+- `Analytics`: Analytics Home, AI Analytics, Sponsorship Hub, Executive, Marketing, Operations, Combined Insights, Fanmass (Partner Activation lives under `Operations`)
 - `System`: Users, Main Page, Cache, Help
 
-Legacy routes such as `/admin/dashboard` and `/admin/insights` are retained only as redirects into the canonical workspace structure.
+Legacy routes such as `/admin/dashboard` and `/admin/insights` are retained only as redirects into the canonical workspace structure; `/admin/analytics/insights` redirects to `/admin/analytics/combined-insights` (#414).
 
 ## Operations and Validation
 
@@ -125,13 +127,22 @@ npm run style:check
 npm run style:audit
 npm run gds:sync
 npm run audit:report-variant-periods
+npm run docs:audit
+npm run inventory:check
+npm run preflight
 ```
+
+`npm run preflight` regenerates the derived docs and runs the whole CI gate list with one exit code. `npm run docs:audit` rewrites the report timestamps under `docs/_meta/`.
 
 Important repo note:
 - If `npm run type-check` fails on missing `.next/types`, run `npm run build` first and rerun the type check.
 
 Current release version:
-- `v12.2.2`
+- `v12.3.37`
+
+## Fleet
+
+messmass is the master app of a five-app fleet (camera, fanmass, try-on, savetheworld) that shares one SSO. The canonical map of every cross-app edge is [docs/_audit/fleet-architecture.md](docs/_audit/fleet-architecture.md).
 
 ## Fanmass Integration
 
@@ -165,7 +176,7 @@ See `docs/api/api-analytics.md` and the "AI Analytics & Fanmass Analysis Pipelin
 section of `docs/architecture.md`.
 
 Live product:
-- Website: [messmass.doneisbetter.com](https://messmass.doneisbetter.com)
+- Website: [www.messmass.com](https://www.messmass.com) (aliases messmass.com, messmass.doneisbetter.com)
 - Repository: [github.com/moldovancsaba/messmass](https://github.com/moldovancsaba/messmass)
 
 ## Architecture Snapshot
@@ -180,7 +191,7 @@ Main system areas:
 
 Current UI foundation note:
 - Root Mantine runtime is now installed and active through `app/providers.tsx` and `lib/ui/mantineTheme.ts`
-- Shared GDS packages resolve from the GitHub Packages registry (`@sovereignsquad/gds-*` at `6.3.0`, pinned exact); a `GDS_PACKAGES_TOKEN` repository secret authenticates CI installs. Previously vendored as `file:` tarballs under `vendor/gds/` (now deleted) while no working registry credential existed.
+- GDS 6.3.0 (`@sovereignsquad/gds-{core,theme,admin,compliance}`) installs from vendored release tarballs under `vendor/gds/` via `file:` specs plus `overrides` in `package.json`; CI needs no registry token (v12.3.29, 61c27e79).
 - Legacy local wrappers and CSS systems still exist as compatibility layers until the board-tracked Mantine migration chain is completed
 - Old local `@gds/*` package folders (pre-vendoring) are no longer active package authority
 
@@ -208,7 +219,7 @@ Canonical entrypoints:
 - [docs/architecture.md](docs/architecture.md) — technical architecture
 - [docs/low-level-design.md](docs/low-level-design.md) — implementation-level contracts for current high-risk flows
 - [docs/coding-standards.md](docs/coding-standards.md) — code and styling rules
-- [docs/operations/operations-action-plan.md](docs/operations/operations-action-plan.md) — active execution queue
+- [docs/operations/operations-action-plan.md](docs/operations/operations-action-plan.md) — former execution queue (historical, last updated 2026-05-20)
 - [docs/operations/operations-release-notes.md](docs/operations/operations-release-notes.md) — shipped version history
 
 Key system docs:

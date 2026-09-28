@@ -61,17 +61,15 @@ export function parseAuthorizationHeader(request: NextRequest): string | null {
  * WHY: Core authentication logic for public API endpoints
  *
  * SECURITY (F-011 / issue #397, option A -- decoupled API keys):
- *   - Modern accounts carry an independent, bcrypt-hashed apiKeyHash (see
- *     lib/users.ts generateApiKey/hashApiKey) that is checked FIRST.
- *   - An account with no apiKeyHash falls back to the legacy behavior: the
- *     token is compared against the login `password` field directly. This is
- *     a non-breaking migration -- every currently-working integration keeps
- *     authenticating exactly as before until an admin explicitly rotates that
- *     account onto apiKeyHash (app/api/admin/local-users/[id]/api-access POST).
- *   - Use of the legacy fallback is logged (warn level, tagged) so real usage
- *     of the deprecated path is observable -- that log is the signal for when
- *     it becomes safe to remove the fallback entirely.
- *   - Only users with apiKeyEnabled=true can authenticate, either path.
+ *   - The token is checked only against the account's independent,
+ *     bcrypt-hashed apiKeyHash (see lib/users.ts generateApiKey/hashApiKey).
+ *     Keys are issued by the admin rotate action
+ *     (app/api/admin/local-users/[id]/api-access POST); the plaintext is shown
+ *     once and never stored.
+ *   - Login passwords are never accepted as API keys. The legacy
+ *     password-as-key fallback was removed (6f31990d); an account without an
+ *     apiKeyHash cannot authenticate here until an admin rotates a key for it.
+ *   - Only users with apiKeyEnabled=true can authenticate.
  *   - Usage tracking incremented on successful auth.
  *   - All attempts logged with redacted tokens (last 4 chars only).
  *
