@@ -5,7 +5,7 @@ Canonical: Yes
 Owner: Backend
 
 **Version:** 12.3.37
-_messmass#350 — each entry derived by reading its handler @ 7353223e (guards re-verified @ v12.3.20)._
+_messmass#350 — each entry derived by reading its handler @ 7353223e (guards re-verified @ v12.3.20). Missing routes added and UNGUARDED-GAP rows re-verified @ dd34e229 (2026-09-28)._
 
 Coverage-measured, per-endpoint reference for every route under `app/api/`. Each entry gives the auth layer, request/response shape, and side effects (DB writes + external calls). For the curated quick reference see [api-reference.md](api-reference.md).
 
@@ -13,19 +13,30 @@ Coverage-measured, per-endpoint reference for every route under `app/api/`. Each
 
 ## Coverage
 
-- Endpoints documented: **290** across 51 route groups.
-- Auth adjudication: 198 admin-session, 9 page-password, 30 machine-token, 7 cron-secret, 3 org-scoped, 34 public-by-design, 9 UNGUARDED-GAP.
+- Endpoints documented: **333** across 57 route groups. That is every exported HTTP method handler (including the 4 CORS `OPTIONS` handlers under `/api/public`) in the 221 `route.ts` files under `app/api/` @ dd34e229 (`find app/api -name route.ts | wc -l` = 221).
+- Auth adjudication: 242 admin-session, 11 page-password, 30 machine-token, 7 cron-secret, 3 org-scoped, 40 public-by-design, 0 stakeholder-session, 0 UNGUARDED-GAP.
 - Deprecation candidates (stub/410/dead): **2** (see the end).
 
 ## Auth layers
 
-- **admin-session** — `getAdminUser`/`requireSession` (DoneIsBetter SSO session cookie).
-- **page-password** — `requirePageAccess`/`requireProjectWrite`/`requirePartnerWrite`/`require*EditPageAccess` (per-page grant or admin session).
-- **machine-token** — `requireFanmassIntegrationAuth` (Fanmass token) / `assertCameraSecret` (camera shared secret) / `requireAPIAuth` (public REST Bearer).
+- **admin-session** — `getAdminUser`/`requireSession` (DoneIsBetter SSO session cookie; authentication only). `requireAdmin` additionally requires role admin or superadmin (403 otherwise) and `requireSuperadmin` requires superadmin (`lib/apiGuards.ts`); several `getAdminUser` routes role-check inline. Summaries note "superadmin only" where that applies.
+- **page-password** — `requirePageAccess`/`requireProjectWrite`/`requirePartnerWrite`/`require*EditPageAccess` (per-page grant or admin session); `requireEditorAccess` (admin session or any page-access edit grant, for editor-driven routes that carry no project id).
+- **machine-token** — `requireFanmassIntegrationAuth` (Fanmass token) / `assertCameraSecret` (camera shared secret) / `requireAPIAuth` (public REST Bearer, `lib/apiAuth.ts`: backs `/api/public/*` only; the key is matched against the user's bcrypt `apiKeyHash` and needs `apiKeyEnabled`; any request carrying a `Cookie` header is rejected; login passwords are not accepted as keys since 6f31990d).
 - **cron-secret** — `CRON_SECRET` bearer (Vercel Cron).
 - **org-scoped** — `validateOrganizationAccess` (V3 multi-tenant).
+- **stakeholder-session** — `stakeholder-session` cookie: an HS256 JWT signed with `JWT_SECRET`, 30-day lifetime, carrying `{grantId, email, role, scopeType, scopeId}`. It is minted by `mintStakeholderSession` (`lib/auth/stakeholderSession.ts`) in `GET /api/auth/sso/stakeholder-callback`, only after SSO has verified the email and a non-revoked `stakeholder_grants` row exists for it (`lib/stakeholderGrants.ts`). The guard is `requireStakeholderRole(request, roles)` in `lib/apiGuards.ts`: 401 without a valid session, 403 when the role is not allowed. The calling route must also compare `session.scopeId` with the requested resource. At dd34e229 no route calls `requireStakeholderRole`, so no row below uses this label.
 - **public-by-design** — intentionally anonymous.
 - **UNGUARDED-GAP** — no guard where one is warranted (tracked; see gaps list).
+
+## /activation-templates
+
+| Method | Path | Auth | Summary | Request | Response | Side effects |
+|--------|------|------|---------|---------|----------|--------------|
+| GET | `/api/activation-templates/:id/participations` | admin-session | List the recorded fan participations for one activation template, newest first. | path: id | {success, participations[] (_id, templateId, fanIdentityId, responses, occurredAt, createdAt)} | read-only (reads activation_participations) |
+| POST | `/api/activation-templates/:id/participations` | admin-session | Record one fan's participation after validating the responses against the template's dataFields, and link it into the fan identity graph. | path: id; body: fanIdentityId (required), responses (object), occurredAt? (ISO, defaults to now) | {success, participation}; 400 INVALID_RESPONSES; 404 TEMPLATE_NOT_FOUND / IDENTITY_NOT_FOUND | writes activation_participations (insertOne) + fan_identity_links (insertOne, linkType 'activation') |
+| GET | `/api/activation-templates/:id` | admin-session | Read one activation template with its yield summary (participation count + per-field fill rate). | path: id | {success, template, yield{participationCount, fieldFillRates}}; 404 if missing | read-only (reads activation_templates, activation_participations) |
+| GET | `/api/activation-templates` | admin-session | List activation templates, newest first. | none | {success, templates[]} | read-only (reads activation_templates) |
+| POST | `/api/activation-templates` | admin-session | Create a sponsor-linked activation template (status 'draft'). | body: name (required), dataFields[] (required, non-empty; each {key, label, type: 'text'\|'select'\|'boolean'\|'number', required, options?}), description?, partnerId? | {success, template}; 400 on missing name / invalid dataFields | writes activation_templates (insertOne) |
 
 ## /admin
 
@@ -51,7 +62,8 @@ Coverage-measured, per-endpoint reference for every route under `app/api/`. Each
 | GET | `/api/admin/landing-settings` | admin-session | Reads landing-page settings (which report slug, optional static-snapshot metadata). | none | {success, settings:{landingReportSlug,...}} | read-only |
 | PUT | `/api/admin/landing-settings` | admin-session | Updates the landing report slug. | body: {landingReportSlug: string} | {success}; 400 if slug missing | writes landing settings store (setLandingReportSlug) |
 | POST | `/api/admin/landing-static-generate` | admin-session | Generates a static snapshot (blocks + computed chart results) from the current landing report and persists it to settings. | none (uses configured landingReportSlug) | {success, generatedAt, blocksCount, verified, readBackBlocks}; 404/400 on missing project/template | writes landing settings static snapshot (setLandingStaticSnapshot); reads projects/report_templates/data_blocks/chart_configurations; external HTTP fetch to own /api/report-config |
-| PUT | `/api/admin/local-users/:id/api-access` | admin-session | Enables or disables Bearer-token API access for a user; blocks disable if the user made API calls within the last 5 minutes. | path: id; body: {enabled: boolean} | {success, message, recommendation?, user}; 409 if recent API activity; 404 if missing | writes users collection (toggleAPIAccess) |
+| POST | `/api/admin/local-users/:id/api-access` | admin-session | Rotates (generates) a user's independent Bearer API key. Admin or superadmin only; only a superadmin can act on a superadmin's key (dd34e229). | path: id; no body | {success, message, apiKey (plaintext, returned this once only), user{id,email,name,role,apiKeyEnabled,updatedAt}}; 401 unauthenticated; 403 wrong role or non-superadmin targeting a superadmin; 404 if missing | writes users (rotateApiKey: $set apiKeyHash = bcrypt hash of a new 32-byte random hex key, updatedAt); the previous key stops working; the plaintext is never stored or logged |
+| PUT | `/api/admin/local-users/:id/api-access` | admin-session | Enables or disables Bearer-token API access (apiKeyEnabled) for a user. Admin or superadmin only; only a superadmin can act on a superadmin (dd34e229). Refuses to disable if the user made API calls within the last 5 minutes. | path: id; body: {enabled: boolean} | {success, message, recommendation?, user}; 400 if enabled is not boolean; 401/403 as POST; 409 if recent API activity; 404 if missing | writes users collection (toggleAPIAccess: apiKeyEnabled, updatedAt) |
 | POST | `/api/admin/local-users/:id/send-email` | admin-session | Emails a (regenerated) password to a user (superadmin only). | path: id; body: {password} | {success, message}; 400 missing password/invalid id; 404 if missing | no DB writes; external email send via camera email service (sendPasswordRegeneratedEmail) |
 | DELETE | `/api/admin/local-users/:id` | admin-session | Deletes a user (superadmin only; cannot delete self). | path: id | {success, message}; 400 self-delete/invalid id; 404 if missing | deletes from users collection (deleteOne) |
 | PUT | `/api/admin/local-users/:id` | admin-session | Regenerates a user's password (superadmin only). | path: id; body: {regeneratePassword: true} | {success, password, message}; 400 if no action; 404 if user missing | writes users collection (updateOne sets new password + updatedAt) |
@@ -73,13 +85,14 @@ Coverage-measured, per-endpoint reference for every route under `app/api/`. Each
 | POST | `/api/admin/permissions` | admin-session | Grant or update a project permission (owner/editor/viewer). | Authorization: Bearer header; body: projectId, userId, role | success, message, permission (+ permissionId on create) | writes project_permissions (insertOne or updateOne); external HTTP to SSO validate |
 | POST | `/api/admin/project-partners/auto-suggest` | admin-session | Bulk auto-match partner1/partner2 from 'Home x Away' event names for projects missing partner1. | none (no body) | success, updated, total | writes projects collection (updateOne $set partner1/partner2 for high-confidence matches) |
 | GET | `/api/admin/project-partners` | admin-session | List the 100 newest projects with their partner1/partner2 ids. | none | success, projects[] (_id, eventName, editSlug, partner1, partner2, createdAt) | read-only (reads projects) |
-| PUT | `/api/admin/project-partners` | admin-session | Update a project's partner1/partner2 relationships (a real auth gap — no session check). | body: projectId, partner1Id (nullable), partner2Id (nullable) | success, updated (modifiedCount) | writes projects collection (updateOne $set/$unset partner1/partner2) + syncProjectToV3Activity (V3 activities) |
+| PUT | `/api/admin/project-partners` | admin-session | Update a project's partner1/partner2 relationships (was an unguarded gap; now requireAdmin). | body: projectId, partner1Id (nullable), partner2Id (nullable) | success, updated (modifiedCount) | writes projects collection (updateOne $set/$unset partner1/partner2) + syncProjectToV3Activity (V3 activities) |
 | DELETE | `/api/admin/projects/:id` | admin-session | Delete a project by id and write an audit log entry (admin/superadmin only). | Authorization: Bearer header; path :id | success, message, deletedProject (or 404) | writes projects (deleteOne) + audit_logs (insertOne, stores full deleted project copy); external HTTP to SSO validate |
 | POST | `/api/admin/register` | public-by-design | Removed self-registration stub — always returns 410 pointing users to SSO login. | none | error message, ssoLoginUrl='/api/auth/sso/login' (status 410) | read-only (no DB access) |
 | GET | `/api/admin/sync-events-to-camera` | admin-session | One-click batched backfill pushing unsynced projects (no externalRefs.camera) into camera. | none | success, processedThisCall, provisioned, failed, remaining, note, failures[] | writes projects (externalRefs.camera via provisionCameraEventForProject); external HTTP to camera; returns 503 if camera not configured |
 | GET | `/api/admin/sync-partners-to-camera` | admin-session | One-click batched backfill linking partners without cameraPartnerId into camera. | none | success, processedThisCall, linked, failed, remaining, note, failures[] | writes partners (cameraPartnerId via ensureCameraPartner); external HTTP to camera; returns 503 if camera not configured |
 | GET | `/api/admin/ui-settings` | admin-session | Read typography/font UI settings (defaults to Inter if unset). | none | settings doc (key, fontFamily, createdAt, updatedAt) | read-only (reads settings) |
 | PUT | `/api/admin/ui-settings` | admin-session | Update the selected font family after validating against available_fonts; sets mm_font cookie. | body: fontFamily (validated against available_fonts / DEFAULT_FONTS) | success, fontFamily, updatedAt (+ mm_font cookie) | writes settings collection (updateOne upsert key='typography'); reads available_fonts |
+| PUT | `/api/admin/users/:id/organizations` | admin-session | Assign a user to one or more organizations for V3 org scoping (superadmin only); every id must exist in organizations. | path :id; body: organizationIds (string[]) | success, user (id, email, organizationIds); 400 on a malformed or unknown org id / bad body; 401/403; 404 if user missing | writes users collection (updateOne $set organizationIds/updatedAt); reads organizations; audit line via logger |
 | PUT | `/api/admin/users/:id/role` | admin-session | Change a user's role (superadmin only); blocks self-demotion. | path :id; body: newRole (any USER_ROLE except 'api') | success, message, user (id, email, name, role) | writes users collection (updateOne role/updatedAt) |
 | GET | `/api/admin/variables/merge-candidates` | admin-session | Read-only list of variable-merge candidates plus all variables and protected clicker vars. | none | success, candidates, variables, protectedVariables | read-only (computeMergeCandidates + listVariables) |
 | POST | `/api/admin/variables/merge` | admin-session | Apply approved variable merges over event stats; dry-run by default, protects core clicker vars. | body: merges[] ({canonical, legacy[], rule:'copy'\|'sum'\|'prefer-canonical'}), dryRun? (defaults true) | success, result (from applyMerges) | writes event stat fields + backups via applyMerges (lib/variableMerge over projects) only when dryRun:false; read-only in dry-run |
@@ -106,6 +119,7 @@ Coverage-measured, per-endpoint reference for every route under `app/api/`. Each
 | GET | `/api/analytics/executive/metrics` | admin-session | Executive KPI totals with period-over-period growth. | query period ('30d'\|'90d') | { success, data: { totalFans, totalRevenue, totalROI, avgEngagement, eventCount, growth, previousPeriod } } | read-only (reads analytics_aggregates) |
 | GET | `/api/analytics/executive/top-events` | admin-session | Top events ranked by composite performance score. | query period ('30d'\|'90d'\|'all'), limit (default 5, max 20), sortBy ('fans'\|'revenue'\|'engagement'\|'composite') | { success, data: TopEvent[] } | read-only (reads analytics_aggregates) |
 | GET | `/api/analytics/insights/:projectId` | admin-session | Auto-generated prioritized insights for one event (anomaly/trend/benchmark). | path :projectId; query includeRecommendations (default true), severity ('critical'\|'warning'\|'info') | { success, data: { projectId, eventName, eventDate, summary, insights, context } } | read-only (reads analytics_aggregates) |
+| GET | `/api/analytics/insights/combined` | admin-session | Merge insights from both pipelines (insightsEngine executive insights + analytics-insights per-event insights) into one ranked list. | query: limit (1-50, default 20); rate-limited (RATE_LIMITS.READ) | { success, data: { insights, summary: { total, fromExecutive, fromAnalytics } } } | read-only (reads analytics_aggregates, projects) |
 | GET | `/api/analytics/insights/organizations/:orgId` | admin-session | Organization-level insights across the org's member-partner events. | path :orgId (24-hex ObjectId) | InsightsReport (from generateOrganizationInsights) | read-only |
 | GET | `/api/analytics/insights/partners/:partnerId` | admin-session | Partner-level insights across all of a partner's events. | path :partnerId (24-hex ObjectId) | InsightsReport (from generatePartnerInsights) | read-only |
 | GET | `/api/analytics/insights/summary` | admin-session | Lightweight insight counts by priority and category for dashboards. | query partnerId (optional), period ('7d'\|'30d'\|'90d'), maxEvents (1-100, default 50) | { success, data: { totalInsights, criticalCount, highCount, mediumCount, lowCount, byCategory, eventsAnalyzed } } | read-only (reads analytics_aggregates) |
@@ -121,6 +135,14 @@ Coverage-measured, per-endpoint reference for every route under `app/api/`. Each
 | GET | `/api/api-football/enrich-partners` | admin-session | Report enrichment status: whether it can run, count remaining, last run. | none | { success, canRun, remaining, lastRun, nextAvailable, hoursRemaining } | read-only (reads partners, api_football_enrichment_log) |
 | POST | `/api/api-football/enrich-partners` | admin-session | Trigger API-Football enrichment of the next 5 unenriched partners (24h cooldown). | none (body ignored) | { success, enriched, processed, remaining, nextAvailable } or cooldown error | Writes partners (sets enrichedData.apiFootball, updatedAt) and inserts into api_football_enrichment_log; external HTTP to API-Football (client.searchTeam per sport). |
 
+## /audience-packs
+
+| Method | Path | Auth | Summary | Request | Response | Side effects |
+|--------|------|------|---------|---------|----------|--------------|
+| GET | `/api/audience-packs/:key` | admin-session | Read one audience pack (sponsor\|executive\|board\|operator) and its report-block allowlist. | path: key | {success, pack{key, name, allowedBlockIds[], createdAt, updatedAt}}; 404 for an unknown key | read-only (reads audience_packs) |
+| PUT | `/api/audience-packs/:key` | admin-session | Replace the set of report blocks an audience pack includes. | path: key; body: allowedBlockIds (string[]) | {success, pack}; 400 if allowedBlockIds is not a string array; 404 for an unknown key | writes audience_packs (updateOne upsert) |
+| GET | `/api/audience-packs` | admin-session | List the four audience packs. Any pack that does not exist yet is first seeded with an empty allowlist. | none | {success, packs[]} | writes audience_packs on first use (insertOne per missing pack via seedAudiencePacks; never overwrites an existing allowlist); otherwise read-only |
+
 ## /auth
 
 | Method | Path | Auth | Summary | Request | Response | Side effects |
@@ -129,12 +151,14 @@ Coverage-measured, per-endpoint reference for every route under `app/api/`. Each
 | GET | `/api/auth/sso/callback` | public-by-design | OAuth2/OIDC callback: exchange code, check messmass app permission, auto-provision + mint session, redirect. | query code, state, error; pending-OAuth cookie (state/codeVerifier) | 302 redirect to safe /admin target on success, or /admin/login?error=... on failure; sets session cookie | Mints admin session and auto-provisions/updates the local user record (writes users via mintMessmassSessionForSsoUser); external HTTP to SSO (token exchange, userinfo, getAppPermission) and best-effort camera (pushSsoSessionToCamera). |
 | GET | `/api/auth/sso/config` | public-by-design | Public login-page config: whether SSO is enabled and the login path. | none | { ssoEnabled, ssoLoginPath } | read-only |
 | GET | `/api/auth/sso/login` | public-by-design | Initiate OAuth2/OIDC (Authorization Code + optional PKCE) login; redirect to SSO. | query redirect_uri (must start /admin), from_logout; cookie post-logout | 302 redirect to SSO authorization URL; sets pending-OAuth cookie (state/codeVerifier) | Sets pending-OAuth cookie and clears post-logout cookie; no DB write; redirects to SSO (no server-side HTTP call). |
+| GET | `/api/auth/sso/stakeholder-callback` | public-by-design | Stakeholder OAuth2/OIDC callback (#231). Exchanges the code, matches the verified email to a non-revoked stakeholder_grants row, mints the stakeholder session and redirects to the granted report. It does not call getAppPermission, so no SSO staff permission is needed. | query code, state, error; messmass_stakeholder_pending cookie (state, codeVerifier) | 302 to /partner-report/:id, /organization-report/:id, /hashtag/:id or /filter/:id per the grant's scopeType. On failure, 302 to /stakeholder-access?error=sso_not_configured\|sso_oauth_error\|missing_code\|session_expired\|no_email\|not_invited\|auth_failed; no page exists at that path in app/ @ dd34e229 | writes stakeholder_grants (activateGrant: status 'active', activatedAt, ssoUserId); sets stakeholder-session cookie, clears pending cookie; external HTTP to SSO (token exchange; userinfo when the id_token lacks a usable email) |
+| GET | `/api/auth/sso/stakeholder-login` | public-by-design | Start the stakeholder OAuth2/OIDC login (#231). Same SSO client and protocol as admin login, with the stakeholder callback as redirect URI; rate-limited. | none | 302 to the SSO authorization URL; 503 if SSO is not configured; 429 when rate-limited (RATE_LIMITS.AUTH: 5 per 15 min per client) | sets messmass_stakeholder_pending cookie (state, plus PKCE codeVerifier unless confidential OAuth; 15 min); no DB write; no server-side HTTP call |
 
 ## /auto-generate-chart-block
 
 | Method | Path | Auth | Summary | Request | Response | Side effects |
 |--------|------|------|---------|---------|----------|--------------|
-| POST | `/api/auto-generate-chart-block` | UNGUARDED-GAP | Create or update a chart_configurations doc (+ data_blocks wrapper) for a report image/text slot. | body { type: 'image'\|'text', index, value } | { success, action: 'created'\|'updated', chartId, blockId?, message } | Writes chart_configurations (insert/update) and inserts data_blocks wrapper — unauthenticated mutation of report configuration. |
+| POST | `/api/auto-generate-chart-block` | page-password | Create or update a chart_configurations doc (+ data_blocks wrapper) for a report image/text slot. Guarded by requireEditorAccess (admin session or any page-access edit grant) because EditorDashboard's ReportContentManager calls it (7d3ef3bb). | body { type: 'image'\|'text', index, value } | { success, action: 'created'\|'updated', chartId, blockId?, message }; 401 without a session or edit grant | Writes chart_configurations (insert/update) and inserts data_blocks wrapper. |
 
 ## /available-fonts
 
@@ -212,7 +236,7 @@ Coverage-measured, per-endpoint reference for every route under `app/api/`. Each
 | Method | Path | Auth | Summary | Request | Response | Side effects |
 |--------|------|------|---------|---------|----------|--------------|
 | DELETE | `/api/clicker-sets` | admin-session | Delete a clicker set (blocked if it is default or in use by partners), plus its variable groups. | query: clickerSetId (required ObjectId) | { success } or error (400/404) | writes clickerSets collection (delete) + variablesGroups (deleteMany) |
-| GET | `/api/clicker-sets` | UNGUARDED-GAP | List all clicker sets with partner usage counts; lazily creates a default set if none exists. | none | { success, sets: [{ _id, name, isDefault, ...timestamps, usage: { partnerCount } }] } | writes clickerSets collection (ensureDefaultSet insertOne on first call); otherwise reads clickerSets + partners |
+| GET | `/api/clicker-sets` | public-by-design | List all clicker sets with partner usage counts; lazily creates a default set if none exists. Open for the page-password OrganizationEditorDashboard; the lazy-init insert is accepted as bounded init (`KNOWN_UNGUARDED_READS` [editor] in tests/api-mutation-auth.test.ts). | none | { success, sets: [{ _id, name, isDefault, ...timestamps, usage: { partnerCount } }] } | writes clickerSets collection (ensureDefaultSet insertOne on first call); otherwise reads clickerSets + partners |
 | POST | `/api/clicker-sets` | admin-session | Create a clicker set, optionally cloning variable groups from an existing set. | body: name (required), cloneFromId? (ObjectId) | { success, set: { ...doc, _id } } | writes clickerSets collection (insert); may insert into variablesGroups (clone) |
 | PUT | `/api/clicker-sets` | admin-session | Update a clicker set's name / default flag (setting default unsets others). | body: clickerSetId (required ObjectId), name?, isDefault? | { success, set: { ...doc, _id } } | writes clickerSets collection (updateMany to clear isDefault + updateOne) |
 
@@ -265,6 +289,7 @@ Coverage-measured, per-endpoint reference for every route under `app/api/`. Each
 
 | Method | Path | Auth | Summary | Request | Response | Side effects |
 |--------|------|------|---------|---------|----------|--------------|
+| POST | `/api/data-blocks/duplicate` | admin-session | Duplicate a data block, recording lineage in sourceBlockId (the source's own sourceBlockId if it has one, else its _id). | body: sourceBlockId (required ObjectId), name? (defaults to "<source name> (copy)") | { success, blockId, block }; 400 invalid sourceBlockId; 404 source missing | writes data_blocks collection (insertOne copy with sourceBlockId) |
 | DELETE | `/api/data-blocks` | admin-session | Delete a data visualization block by id. | query: id (required) | { success, message } or 404 | writes data_blocks collection (delete) |
 | GET | `/api/data-blocks` | admin-session | List all data visualization blocks ordered by order. | none | { success, blocks: DataVisualizationBlock[] } | read-only (data_blocks collection) |
 | POST | `/api/data-blocks` | admin-session | Create a data visualization block. | body: name (required), charts?, order?, isActive?, showTitle? | { success, blockId, block } | writes data_blocks collection (insert) |
@@ -298,6 +323,22 @@ Coverage-measured, per-endpoint reference for every route under `app/api/`. Each
 | Method | Path | Auth | Summary | Request | Response | Side effects |
 |--------|------|------|---------|---------|----------|--------------|
 | GET | `/api/export/pdf` | public-by-design | Server-side A4 PDF export of a report/filter page rendered by real headless Chromium. | query: path (required, allowlisted same-origin report path), filename (optional) | application/pdf binary attachment (Content-Disposition), or JSON error (400/429/502) | read-only DB; launches headless Chromium and navigates same-origin to the report page (?pdfExport=1); external HTTP: downloads @sparticuz/chromium-min Chromium pack from GitHub Releases at runtime, and the report page itself fetches off-origin report images (e.g. i.ibb.co) during render |
+
+## /fan-identities
+
+| Method | Path | Auth | Summary | Request | Response | Side effects |
+|--------|------|------|---------|---------|----------|--------------|
+| GET | `/api/fan-identities/:id/links` | admin-session | List the behavior links for one fan identity, newest occurredAt first. | path: id | {success, links[]} | read-only (reads fan_identity_links) |
+| POST | `/api/fan-identities/:id/links` | admin-session | Attach a behavior link (ticketing\|activation\|engagement\|report-interaction) to a fan identity. | path: id; body: linkType (required), sourceRef{collection, id} (required), occurredAt? (defaults to now), evidence? {type, value} | {success, link}; 400 invalid linkType / sourceRef; 404 identity missing | writes fan_identity_links (insertOne) |
+| GET | `/api/fan-identities/:id/loyalty-balance` | admin-session | A fan's accumulated loyalty points and completion count. | path: id | {success, balance{totalPoints, completionCount}}; 404 identity missing | read-only (reads fan_identities, loyalty_completions) |
+| DELETE | `/api/fan-identities/:id` | admin-session | Permanently delete a fan identity and all of its links (right-to-deletion; not a status flag). | path: id | {success}; 404 if missing | deletes fan_identity_links (deleteMany by fanIdentityId) + fan_identities (deleteOne) |
+| GET | `/api/fan-identities/:id` | admin-session | Read one fan identity with its links. | path: id | {success, identity, links[]}; 404 if missing | read-only (reads fan_identities, fan_identity_links) |
+| POST | `/api/fan-identities/merge-candidates/:id/approve` | admin-session | Approve a pending merge candidate: the one action that merges two identities (superadmin only, requireSuperadmin). | path: id | {success}; 404 if not found or already reviewed | writes fan_identity_links (updateMany: second identity's links moved to the first), fan_identities (updateOne: second set status 'merged' + mergedIntoId), fan_identity_merge_candidates (status 'approved', reviewedBy/reviewedAt) |
+| POST | `/api/fan-identities/merge-candidates/:id/reject` | admin-session | Reject a pending merge candidate; both identities stay separate. | path: id | {success}; 404 if not found or already reviewed | writes fan_identity_merge_candidates (updateOne status 'rejected', reviewedBy/reviewedAt) |
+| GET | `/api/fan-identities/merge-candidates` | admin-session | List merge candidates by review status. | query: status ('pending'\|'approved'\|'rejected', default pending) | {success, candidates[]} | read-only (reads fan_identity_merge_candidates) |
+| POST | `/api/fan-identities/merge-candidates` | admin-session | Flag two identities as possibly the same fan for human review; merges nothing. | body: identityIdA, identityIdB, evidence (all required) | {success, candidate}; 400 on missing fields or invalid/identical ids | writes fan_identity_merge_candidates (insertOne, status 'pending') |
+| GET | `/api/fan-identities` | admin-session | List fan identities, newest first. | query: limit (default 50, clamped 1-200) | {success, identities[]} | read-only (reads fan_identities) |
+| POST | `/api/fan-identities` | admin-session | Create a canonical fan identity; a consent record is mandatory. | body: consent{source, consentedAt, scope[] (non-empty)} | {success, identity}; 400 MISSING_CONSENT | writes fan_identities (insertOne, status 'active') |
 
 ## /filter-slug
 
@@ -338,10 +379,10 @@ Coverage-measured, per-endpoint reference for every route under `app/api/`. Each
 
 | Method | Path | Auth | Summary | Request | Response | Side effects |
 |--------|------|------|---------|---------|----------|--------------|
-| DELETE | `/api/hashtag-colors` | UNGUARDED-GAP | Delete a hashtag color by id. | query: id (required) | success, message / 400 / 404 | deletes hashtag_colors (deleteOne) |
+| DELETE | `/api/hashtag-colors` | admin-session | Delete a hashtag color by id (requireAdmin since 7d3ef3bb). | query: id (required) | success, message / 400 / 404 | deletes hashtag_colors (deleteOne) |
 | GET | `/api/hashtag-colors` | public-by-design | Fetch all hashtag color definitions. | none | success, hashtagColors[]{_id,uuid,name,color,createdAt,updatedAt} | read-only (reads hashtag_colors collection) |
-| POST | `/api/hashtag-colors` | UNGUARDED-GAP | Create a new hashtag color (rejects duplicate name). | body: name (required), color (required) | success, hashtagColor / 400 / 409 | writes hashtag_colors (insertOne) |
-| PUT | `/api/hashtag-colors` | UNGUARDED-GAP | Update a hashtag color by _id or by name. | body: _id (optional), name, color | success, hashtagColor / 400 / 404 / 409 | writes hashtag_colors (updateOne) |
+| POST | `/api/hashtag-colors` | admin-session | Create a new hashtag color (rejects duplicate name; requireAdmin since 7d3ef3bb). | body: name (required), color (required) | success, hashtagColor / 400 / 409 | writes hashtag_colors (insertOne) |
+| PUT | `/api/hashtag-colors` | admin-session | Update a hashtag color by _id or by name (requireAdmin since 7d3ef3bb). | body: _id (optional), name, color | success, hashtagColor / 400 / 404 / 409 | writes hashtag_colors (updateOne) |
 
 ## /hashtags
 
@@ -352,9 +393,9 @@ Coverage-measured, per-endpoint reference for every route under `app/api/`. Each
 | GET | `/api/hashtags/filter` | admin-session | Aggregate stats across projects matching ALL supplied hashtags (AND logic), supporting category-prefixed tags. | query: tags (comma-separated, required) | success, project (aggregated), projects[], filter{hashtags,logic:'AND',matchCount}, debug / 404 | read-only (loads all projects and filters in-memory) |
 | POST | `/api/hashtags/filter` | admin-session | Same aggregation as GET but takes hashtags in the body; normalizes them and delegates to the GET handler. | body: hashtags[] (required) | same shape as GET / 400 | read-only (delegates to GET) |
 | GET | `/api/hashtags/slugs` | admin-session | Lists every unique hashtag (incl. category-prefixed) with its usage count and a stable UUID slug, creating slugs on demand. | none | success, hashtags[] ({ hashtag, slug, count } sorted by count desc); or empty hashtags[] with debug info | writes hashtag_slugs (insertOne for any hashtag lacking a slug); reads projects |
-| DELETE | `/api/hashtags` | UNGUARDED-GAP | Verify a hashtag is unused (default) or, with mode=cascade, remove it everywhere. | query: hashtag (required), mode ('cascade' to remove everywhere) | success, message, result{projects, partners, deleted counts} | non-cascade: read-only (counts projects+partners usage). cascade: writes projects, partners (updateMany $pull + categorizedHashtags rewrite) and deletes from hashtag_colors, hashtags, hashtag_slugs (deleteMany) |
+| DELETE | `/api/hashtags` | admin-session | Verify a hashtag is unused (default) or, with mode=cascade, remove it everywhere (requireAdmin since 7d3ef3bb). | query: hashtag (required), mode ('cascade' to remove everywhere) | success, message, result{projects, partners, deleted counts} | non-cascade: read-only (counts projects+partners usage). cascade: writes projects, partners (updateMany $pull + categorizedHashtags rewrite) and deletes from hashtag_colors, hashtags, hashtag_slugs (deleteMany) |
 | GET | `/api/hashtags` | public-by-design | List distinct hashtags across all projects (traditional + categorized) with usage counts, paginated. | query: search, limit (default 20, max 100), offset | success, hashtags[{hashtag,count}], pagination{mode:'aggregation',limit,offset,nextOffset,totalMatched}; ETag cached | read-only (aggregation over projects collection) |
-| POST | `/api/hashtags` | public-by-design | Validate and normalize a single hashtag string (strip #, lowercase, enforce [a-z0-9_]). | body: hashtag (string) | success, hashtag (cleaned) / 400 | read-only (no DB access) |
+| POST | `/api/hashtags` | page-password | Validate and normalize a single hashtag string (strip #, lowercase, enforce [a-z0-9_]). Guarded by requireEditorAccess (admin session or any page-access edit grant) because EditorDashboard's UnifiedHashtagInput calls it (7d3ef3bb). | body: hashtag (string) | success, hashtag (cleaned) / 400; 401 without a session or edit grant | read-only (no DB access) |
 
 ## /integrations
 
@@ -393,6 +434,16 @@ Coverage-measured, per-endpoint reference for every route under `app/api/`. Each
 |--------|------|------|---------|---------|----------|--------------|
 | GET | `/api/landing-static` | public-by-design | Return the pre-generated static snapshot + landing report slug for the public main page. | none | success, staticSnapshot, generatedAt, landingReportSlug | read-only (getLandingSettings) |
 
+## /loyalty-missions
+
+| Method | Path | Auth | Summary | Request | Response | Side effects |
+|--------|------|------|---------|---------|----------|--------------|
+| GET | `/api/loyalty-missions/:id/completions` | admin-session | List a mission's completions, newest first. | path: id | {success, completions[]} | read-only (reads loyalty_completions) |
+| POST | `/api/loyalty-missions/:id/completions` | admin-session | Record a fan completing a mission and award its points. A fan can complete a non-repeatable mission only once. | path: id; body: fanIdentityId (required), occurredAt? (defaults to now) | {success, completion}; 404 MISSION_NOT_FOUND / IDENTITY_NOT_FOUND; 409 ALREADY_COMPLETED | writes loyalty_completions (insertOne, pointsAwarded) + fan_identity_links (insertOne, linkType 'engagement') |
+| GET | `/api/loyalty-missions/:id` | admin-session | Read one mission with its participation summary. | path: id | {success, mission, participation{completionCount, uniqueFanCount, totalPointsAwarded}}; 404 if missing | read-only (reads loyalty_missions, loyalty_completions) |
+| GET | `/api/loyalty-missions` | admin-session | List loyalty missions, newest first. | none | {success, missions[]} | read-only (reads loyalty_missions) |
+| POST | `/api/loyalty-missions` | admin-session | Create a loyalty mission (status 'draft'). | body: name (required), type ('scan-in'\|'attendance'\|'sponsor-mission'\|'digital-participation'), pointsPerCompletion (number >= 0), repeatable?, description?, partnerId? | {success, mission}; 400 on validation | writes loyalty_missions (insertOne) |
+
 ## /notifications
 
 | Method | Path | Auth | Summary | Request | Response | Side effects |
@@ -418,6 +469,15 @@ Coverage-measured, per-endpoint reference for every route under `app/api/`. Each
 | POST | `/api/page-passwords` | admin-session | Generate or retrieve a page password and build a shareable link (fix for prior unauthenticated key leak). | body: pageId, pageType, regenerate | success, shareableLink{...,password}, pagePassword{pageId,pageType,password,createdAt,usageCount} | writes page_passwords collection (getOrCreatePagePassword/generateShareableLink) |
 | PUT | `/api/page-passwords` | public-by-design | Validate a page password (or admin session) and mint the signed HttpOnly page-access grant cookie. | body: pageId, pageType, password | success, isValid, isAdmin, message; sets PAGE_ACCESS_COOKIE | read-only re DB; sets page-access cookie |
 
+## /paid-campaigns
+
+| Method | Path | Auth | Summary | Request | Response | Side effects |
+|--------|------|------|---------|---------|----------|--------------|
+| GET | `/api/paid-campaigns/:id/measurement` | admin-session | One campaign's manually entered spend shown side by side with the project's organic evidence. No clicks or fans are attributed to the campaign. | path: id | {success, campaign, organicEvidence{totalFans, totalMerched, bitlyClicks, estimatedOrganicValue}, costPerBitlyClick (null when there are no clicks)}; 404 if missing | read-only (reads paid_campaigns, projects, bitly_project_links) |
+| DELETE | `/api/paid-campaigns/:id` | admin-session | Delete one paid campaign. | path: id | {success}; 404 if missing | deletes from paid_campaigns (deleteOne) |
+| GET | `/api/paid-campaigns` | admin-session | List the paid campaigns recorded for one project, newest first. | query: projectId (required ObjectId) | {success, campaigns[]}; 400 if projectId is invalid | read-only (reads paid_campaigns) |
+| POST | `/api/paid-campaigns` | admin-session | Record a manually entered paid campaign against a project (no ad-platform integration exists). | body: name, platform ('facebook'\|'google'\|'other'), projectId (ObjectId), spend (number >= 0), currency (all required), notes? | {success, campaign}; 400 on validation | writes paid_campaigns (insertOne) |
+
 ## /partners
 
 | Method | Path | Auth | Summary | Request | Response | Side effects |
@@ -432,6 +492,8 @@ Coverage-measured, per-endpoint reference for every route under `app/api/`. Each
 | POST | `/api/partners/:id/google-sheet/rename` | admin-session | Prefix a partner's connected spreadsheet title with the partner UUID for traceability. | path: id; body: prefixUuid? | success, name (or message when already prefixed) | writes partners collection (googleSheetConfig.lastRenamedAt) + external Google Drive API (drive.files.get/update) |
 | POST | `/api/partners/:id/google-sheet/setup` | admin-session | Auto-configure a blank Google Sheet for event sync (rename tab, add columns, write headers/events). | path: id; body: sheetId | success, eventsWritten, sheetUrl, message | writes partners collection + external Google Sheets API (setupPartnerSheet) |
 | GET | `/api/partners/:id/google-sheet/status` | admin-session | Report a partner's Google Sheets connection/sync status, with optional live health check. | path: id; query: checkHealth | success, connected, config, stats, healthCheck?, info | read-only (partners) + external Google Sheets API when checkHealth=true (testConnection/countSheetDataRows) |
+| GET | `/api/partners/:id/lifecycle` | admin-session | Computed partnership lifecycle stage (proposal\|activation\|renewal\|postmortem) from the partner's events, or the admin override. | path: id | success, lifecycle{stage, isOverridden, projectCount, mostRecentEventDate, monthsSinceLastEvent, reportingAvailable}; 404 if partner missing | read-only (reads partners, projects) |
+| PUT | `/api/partners/:id/lifecycle` | admin-session | Set or clear the admin lifecycle override (only proposal and postmortem can be overridden). | path: id; body: override ('proposal'\|'postmortem'\|null) | success, lifecycle; 400 invalid override; 404 if partner missing | writes partners collection ($set / $unset lifecycleStageOverride) |
 | GET | `/api/partners/edit/:slug` | page-password | Fetch partner content (base or report-variant overrides) for the partner-edit surface, resolved by any identifier. | path: slug; query: variant | success, partner{...content fields, stats, reportVariant?} | read-only (partners collection) |
 | PUT | `/api/partners/edit/:slug` | page-password | Update a partner's custom report variant overrides (rejects base/default variant). | path: slug; query: variant (required, non-default); body: metadata | success, partner (with reportVariant) | writes report variants (updateReportVariant) |
 | POST | `/api/partners/link-football-data` | admin-session | Link a partner to a Football-Data.org team, enriching hashtags, crest logo, and footballData metadata. | body: partnerId, footballDataTeamId | success, partner (updated) | writes partners collection + external Football-Data.org API (fetchTeam/fetchCompetitions) + ImgBB upload (uploadImageFromUrl) |
@@ -461,9 +523,13 @@ Coverage-measured, per-endpoint reference for every route under `app/api/`. Each
 | Method | Path | Auth | Summary | Request | Response | Side effects |
 |--------|------|------|---------|---------|----------|--------------|
 | GET | `/api/public/events/:id` | machine-token | Public third-party API: full details for one event/project including optional full stats. | path :id (project ObjectId); query includeStats (default true); header Authorization: Bearer | success, event{id,eventName,eventDate,slugs,hashtags,partner,matchContext,stats?}, timestamp | read-only |
+| OPTIONS | `/api/public/events/:id` | public-by-design | CORS preflight; sets CORS headers only when the Origin is allowlisted (ALLOWED_ORIGINS, else localhost; lib/cors.ts). | none (Origin header) | 204, no body | none |
 | GET | `/api/public/partners/:id/events` | machine-token | Public third-party API: list a partner's events (projects) with summary stats and pagination. | path :id (partner ObjectId); query limit (max 100), offset, sortOrder (asc\|desc); header Authorization: Bearer | success, events[]{id,eventName,eventDate,slugs,matchContext,summary}, partner{id,name,emoji}, pagination, timestamp | read-only |
+| OPTIONS | `/api/public/partners/:id/events` | public-by-design | CORS preflight; sets CORS headers only when the Origin is allowlisted (ALLOWED_ORIGINS, else localhost; lib/cors.ts). | none (Origin header) | 204, no body | none |
 | GET | `/api/public/partners/:id` | machine-token | Public third-party API: details for a single partner (sanitized public fields). | path :id (partner ObjectId); header Authorization: Bearer | success, partner{id,name,emoji,logoUrl,hashtags,categorizedHashtags,sportsDb}, timestamp | read-only |
+| OPTIONS | `/api/public/partners/:id` | public-by-design | CORS preflight; sets CORS headers only when the Origin is allowlisted (ALLOWED_ORIGINS, else localhost; lib/cors.ts). | none (Origin header) | 204, no body | none |
 | GET | `/api/public/partners` | machine-token | Public third-party API: list partners with search, sort and pagination (sensitive fields stripped). | query search, limit (max 100), offset, sortField (name\|createdAt), sortOrder (asc\|desc); header Authorization: Bearer | success, partners[]{id,name,emoji,logoUrl,hashtags,sportsDb}, pagination{total,limit,offset,hasMore}, timestamp | read-only |
+| OPTIONS | `/api/public/partners` | public-by-design | CORS preflight; sets CORS headers only when the Origin is allowlisted (ALLOWED_ORIGINS, else localhost; lib/cors.ts). | none (Origin header) | 204, no body | none |
 
 ## /report-config
 
@@ -523,6 +589,12 @@ Coverage-measured, per-endpoint reference for every route under `app/api/`. Each
 | PUT | `/api/sports-db/search` | admin-session | Method guard: session-checks then returns 405 (GET-only endpoint). | none | 405 {success:false, error:'Method not allowed'} | read-only |
 | POST | `/api/sports-db/sync` | admin-session | Sync upcoming SportsDB events for all partners with a teamId, then partner-match fixtures. | none | {success, sync, matched, timestamp} | writes sportsdb_fixtures (reads partners); external HTTP to TheSportsDB |
 
+## /stakeholder
+
+| Method | Path | Auth | Summary | Request | Response | Side effects |
+|--------|------|------|---------|---------|----------|--------------|
+| POST | `/api/stakeholder/invite` | admin-session | Invite an external stakeholder (#231) by recording which email may sign in, with which role and report scope. No token is minted and no email is sent; the admin shares the returned login link. | body: email (required), role ('sponsor'\|'agency'\|'media'\|'operator'), scopeType ('organization'\|'partner'\|'hashtag'\|'filter'), scopeId (all required) | {success, grant, loginUrl: '/api/auth/sso/stakeholder-login'}; 400 on validation | writes stakeholder_grants (findOneAndUpdate upsert keyed on lowercased email + scopeType + scopeId; status 'invited', invitedBy, invitedAt) |
+
 ## /stats
 
 | Method | Path | Auth | Summary | Request | Response | Side effects |
@@ -548,7 +620,9 @@ Coverage-measured, per-endpoint reference for every route under `app/api/`. Each
 | GET | `/api/v3/entities` | admin-session | List v3 entities filtered by type/parent, scoped by injected org id. | query type, parentEntityId ('null' matches top-level) | {count, entities[]} | read-only (reads v3 entities) |
 | GET | `/api/v3/health` | admin-session | V3 health/context check; echoes injected x-v3-org-id. | none | {status:'ok', v3:true, context:{organizationId}, timestamp} | read-only |
 | POST | `/api/v3/health` | admin-session | Same handler as GET: V3 health/context check echoing injected org id. | none | {status:'ok', v3:true, context:{organizationId}, timestamp} | read-only |
+| GET | `/api/v3/metrics/export` | admin-session | Pull-based BI feed of curated sponsorship metrics (METRIC_CATALOG keys only) for the caller's resolved org (#232); requireAdmin + withOrgContext. | query: orgId? (honoured only for a superadmin and only when that organization exists; otherwise the user's first organizationId, else the master org) | {success, contractVersion:'messmass.v3-sponsorship-export.v1', organizationId, generatedAt, rowCount, metrics[] (metricKey, metricName, metricType, classification, value, timestamp, entity, activity)}; at most 1000 rows, newest first | read-only (reads v3_metric_values, v3_metric_definitions, v3_entities, v3_activities via mongoose) |
 | POST | `/api/v3/metrics/record` | admin-session | Bulk-record metric values for the org (unordered insertMany). | JSON body {dataPoints[]} (non-empty array; each may carry timestamp) | 201 {message, insertedCount} | writes v3 metric values (insertMany, ordered:false) |
+| POST | `/api/v3/metrics/sync` | admin-session | Seed the metric catalog and materialize catalog MetricValues for every eligible activity (has stats and an owner entity) (#232). Org-agnostic data-pipeline run. | none | {success, definitionsWritten, activitiesEligible, activitiesMaterialized, skipped[] (activityId, reason)}; 500 on failure | writes v3_metric_definitions (findOneAndUpdate upsert per catalog key) and v3_metric_values (findOneAndUpdate upsert per activity + metricKey); reads v3_activities, bitly_project_links |
 | GET | `/api/v3/organizations/report/:id/activities` | org-scoped | Aggregated activities for an org: owned activities plus ones its entities participate in, date-sorted. | path :id (organization id) | {success, activities[]} | read-only (reads v3 activities + activity participants) |
 | GET | `/api/v3/organizations/report/:id` | org-scoped | Aggregate stats + resolve report layout for a V3 organization, with its top-level entities. | path :id (organization id) | {success, organization, entities[], report, resolvedFrom, source, aggregatedStats, totalEntities} | read-only (reads v3 organizations/entities + report config) |
 | GET | `/api/v3/reporting/dashboard` | admin-session | Aggregate one or more metrics for an entity hierarchy over an optional date range. | query entityId (required), metrics (required, comma-separated keys), startDate, endDate (ISO) | {entityId, timestamp, metrics[]} | read-only (aggregates v3 metric values via V3ReportingResolver) |
@@ -559,10 +633,10 @@ Coverage-measured, per-endpoint reference for every route under `app/api/`. Each
 
 | Method | Path | Auth | Summary | Request | Response | Side effects |
 |--------|------|------|---------|---------|----------|--------------|
-| DELETE | `/api/variables-config` | UNGUARDED-GAP | Deletes a custom variable by name; refuses deletion of system variables (isSystem=true). | query: name (required) | { success, message }; 404 not found; 403 system var; 500 on error | writes (deletes from) variables_metadata; invalidates in-memory cache |
+| DELETE | `/api/variables-config` | admin-session | Deletes a custom variable by name; refuses deletion of system variables (isSystem=true). requireAdmin since 7d3ef3bb. | query: name (required) | { success, message }; 404 not found; 403 system var; 500 on error | writes (deletes from) variables_metadata; invalidates in-memory cache |
 | GET | `/api/variables-config` | public-by-design | Returns all variable definitions from variables_metadata with a 5-minute in-memory cache and legacy-schema normalization. | none | { success, variables[], count?, cached } | read-only from DB; mutates in-memory module cache only (no collection writes, no external calls) |
-| POST | `/api/variables-config` | UNGUARDED-GAP | Upserts (create or update) a variable in variables_metadata; blocks renaming system variables. | body: name (required, camelCase, stats. prefix stripped); for new vars also label+type+category required; optional description, unit, derived, formula, flags{visibleInClicker,editableInManual}, order, alias | { success, variable, created }; 400 invalid name / missing fields; 403 renaming system var; 500 on error | writes variables_metadata (updateOne upsert, plus a second updateOne to strip legacy stats. prefix); invalidates in-memory cache |
-| PUT | `/api/variables-config` | UNGUARDED-GAP | Force-invalidates the in-memory variables cache (only ?action=invalidateCache is honored). | query: action=invalidateCache (required) | { success, message }; 400 for unknown action; 500 on error | in-memory cache only (no DB write, no external calls) |
+| POST | `/api/variables-config` | admin-session | Upserts (create or update) a variable in variables_metadata; blocks renaming system variables. requireAdmin since 7d3ef3bb. | body: name (required, camelCase, stats. prefix stripped); for new vars also label+type+category required; optional description, unit, derived, formula, flags{visibleInClicker,editableInManual}, order, alias | { success, variable, created }; 400 invalid name / missing fields; 403 renaming system var; 500 on error | writes variables_metadata (updateOne upsert, plus a second updateOne to strip legacy stats. prefix); invalidates in-memory cache |
+| PUT | `/api/variables-config` | admin-session | Force-invalidates the in-memory variables cache (only ?action=invalidateCache is honored). requireAdmin since 7d3ef3bb. | query: action=invalidateCache (required) | { success, message }; 400 for unknown action; 500 on error | in-memory cache only (no DB write, no external calls) |
 
 ## /variables-groups
 
@@ -574,17 +648,15 @@ Coverage-measured, per-endpoint reference for every route under `app/api/`. Each
 
 ## Auth gaps (UNGUARDED-GAP)
 
-Every one of these is frozen in `tests/api-mutation-auth.test.ts` (in `KNOWN_UNGUARDED` for the mutations, `KNOWN_UNGUARDED_READS` for the `GET /api/clicker-sets` lazy-init read) — tracked debt, not undiscovered. Most are consumed by page-password editor surfaces and need a scoped grant path rather than a blanket session guard (the same trap as `PUT /api/projects`); `PUT /api/variables-config` is only a cache-invalidation with a trivial blast radius. Closing them is the Wave-2/enforcement follow-up. (The one genuinely-*new* gap this reference surfaced — `PUT /api/admin/project-partners`, open because its sibling `GET` was guarded so the old file-level sweep passed the whole file — was fixed in this same wave, and the mutation sweep is now per-handler so the class cannot recur.)
+**None open @ dd34e229.** The nine rows this section used to list have all been closed or reclassified. Verified by reading each handler:
 
-- `POST /api/auto-generate-chart-block` — Create or update a chart_configurations doc (+ data_blocks wrapper) for a report image/text slot. (No auth guard of any kind — handler begins with request.json() at auto-generate-chart-block/route.ts:18-21 and mutates the DB unauthenticated)
-- `GET /api/clicker-sets` — List all clicker sets with partner usage counts; lazily creates a default set if none exists. (no guard call; comment at app/api/clicker-sets/route.ts:60-61 says GET is intentionally left open for the page-password org editor, but NO requirePageAccess/requireSession is invoked. Also mutates via ensureDefaultSet() (insertOne) at route.ts:26,40)
-- `POST /api/hashtag-colors` — Create a new hashtag color (rejects duplicate name). (no auth guard of any kind on this write handler (app/api/hashtag-colors/route.ts:48))
-- `PUT /api/hashtag-colors` — Update a hashtag color by _id or by name. (no auth guard of any kind on this write handler (app/api/hashtag-colors/route.ts:106))
-- `DELETE /api/hashtag-colors` — Delete a hashtag color by id. (no auth guard of any kind on this delete handler (app/api/hashtag-colors/route.ts:201))
-- `DELETE /api/hashtags` — Verify a hashtag is unused (default) or, with mode=cascade, remove it everywhere. (no auth guard of any kind (app/api/hashtags/route.ts:147); default mode is a read-only usage check, but mode=cascade performs unauthenticated destructive multi-collection writes)
-- `POST /api/variables-config` — Upserts (create or update) a variable in variables_metadata; blocks renaming system variables. (No session/token/page-password check anywhere; handler begins at app/api/variables-config/route.ts:212 and goes straight to DB mutation. Real gap: anonymous callers can create/modify variable metadata.)
-- `PUT /api/variables-config` — Force-invalidates the in-memory variables cache (only ?action=invalidateCache is honored). (No guard; handler at app/api/variables-config/route.ts:403. Unguarded state-changing endpoint, though blast radius is limited to forcing a cache refetch.)
-- `DELETE /api/variables-config` — Deletes a custom variable by name; refuses deletion of system variables (isSystem=true). (No guard; handler at app/api/variables-config/route.ts:434. Anonymous callers can delete custom variables.)
+- `POST /api/auto-generate-chart-block` — now `requireEditorAccess` (app/api/auto-generate-chart-block/route.ts:28): admin session or any page-access edit grant, because EditorDashboard's ReportContentManager calls it (7d3ef3bb).
+- `POST`/`PUT`/`DELETE /api/hashtag-colors` — now `requireAdmin` (app/api/hashtag-colors/route.ts:55, :120, :222; 7d3ef3bb).
+- `DELETE /api/hashtags` — now `requireAdmin` (app/api/hashtags/route.ts:163; 7d3ef3bb). `POST /api/hashtags` also gained `requireEditorAccess` (route.ts:113).
+- `POST`/`PUT`/`DELETE /api/variables-config` — now `requireAdmin` (app/api/variables-config/route.ts:219, :417, :455; 7d3ef3bb).
+- `GET /api/clicker-sets` — still has no guard (app/api/clicker-sets/route.ts:37). This is deliberate: the page-password OrganizationEditorDashboard reads it. Its lazy `ensureDefaultSet` insert is accepted as bounded init and frozen in `KNOWN_UNGUARDED_READS` [editor] (tests/api-mutation-auth.test.ts). It is now labelled public-by-design, matching `GET /api/variables-groups`.
+
+`KNOWN_UNGUARDED` in tests/api-mutation-auth.test.ts now holds only the five public-by-design write routes (admin/clear-cookies, admin/login, admin/register, contact, client-error) plus two machine-integration entries (integrations/camera/partners and camera/sso-session) whose own token handling is documented above as machine-token. The mutation sweep is per-handler, so a new unguarded handler fails CI. (`PUT /api/admin/project-partners` was the one new gap this reference originally surfaced. It was fixed in the same wave and is `requireAdmin` today.)
 
 ## Deprecation candidates (evidence-backed, feed Wave 2)
 

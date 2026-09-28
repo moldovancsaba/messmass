@@ -27,6 +27,29 @@ Fleet release 12.3.37 (messmass, camera, fanmass, try-on, savetheworld) from the
   across `docs/`, which silently re-dated past fixes to the newest version
   ("added in v12.3.22" became "v12.3.36"). The audit and the bump share one
   definition of a current doc (`isCurrentDocFile()`).
+- **API-access copy described the retired password-as-key behaviour.** The
+  Enable API Access confirmation said the user could "use their password as an
+  API key", and the enable response recommended "Regenerate password"; both
+  have been false since #397. They now point to Generate API Key.
+
+### Docs
+- **Re-dated history restored.** Past fixes that earlier blind bumps had moved
+  to "v12.3.36" are back on their real versions: the `/report/[slug]` password
+  gate and the removed V3 activity fallback (v12.3.22), the `seed:variables`
+  removal (v12.3.23), the GDS compliance gate (v12.3.26), the 2026-09-08 fleet
+  re-alignment (12.3.28), and the 2026-09-12 release-notes entry (v12.3.35).
+- README, HANDOVER, AGENTS, PROJECT_MANAGEMENT, the fleet map, version policy,
+  drift register, authentication doc and API references re-verified against
+  dd34e229: SSO-only auth with four layers (stakeholder sessions added), hashed
+  API keys only, vendored GDS, savetheworld as a live E7 caller, the security
+  wave and Phase A routes.
+- Stale comments in `lib/apiAuth.ts` and `lib/users.ts` no longer describe the
+  removed password-as-key fallback.
+- The fleet inventory scanner knows savetheworld (fleet list and verification
+  stamps) and five more guard names (`assertCameraSecret`,
+  `assertInternalSavetheworldSecret`, `requirePartnerWrite`,
+  `requireProjectWrite`, `validateOrganizationAccess`); routes with no
+  recognised guard went from 47 to 44.
 
 ### Fleet (other repos, same release)
 - camera: `POST /api/internal/savetheworld/events/[eventId]/publish-selfies` was
@@ -36,6 +59,71 @@ Fleet release 12.3.37 (messmass, camera, fanmass, try-on, savetheworld) from the
 - fanmass: the local web API had been crash-looping since 2026-09-15 (~7,000
   supervisor restarts): `/api/health` counted `jobs` with a full collection
   scan (~13s, twice per probe) against a 15s probe budget. Now metadata counts.
+- camera: the savetheworld pledge wall admitted submissions it could not show
+  (only `imageUrl`/`originalImageUrl`), sending blank tiles; 7 of 918 eligible
+  in production. It now returns `previewImageUrl || finalImageUrl || imageUrl`
+  and never the raw photo.
+
+### Also shipped since v12.3.36 (2026-09-15 → 09-17, previously unrecorded)
+The 80 commits after 85ac9011 up to 5668dde3 went to `main` without release
+notes or a version bump. Recorded here by group.
+
+**Security**
+- Admin-session cookie is HS256-verified in middleware and permissions are
+  narrowed by role (F-003/F-005, #392/#391; 71b5e23f).
+- Five routes that accepted anonymous writes closed (7d3ef3bb).
+- Admin-only claims already stated in comments are now enforced
+  (#400/#406/#407; c02f4b6f).
+- The server decides whether a page is protected (#393/#389; 8bb4ad2a).
+- 202 orphaned `page_passwords` for the deleted `/stats` route removed
+  (#390/F-007; e098deaa).
+- Login passwords no longer work as API keys; only the hashed `apiKeyHash` is
+  accepted (#397/F-011; 6f31990d).
+- v3 organization scoping enforced, plus
+  `PUT /api/admin/users/[id]/organizations` (#395/F-004; e0f0643f).
+- Three dead modules deleted, with the security-doc claim one of them backed
+  (#388/#394/#396; 09ac52f3).
+- All 8 Dependabot alerts cleared via overrides (23e346f4).
+
+**Added — sponsorship platform, Phase A (issues still OPEN)**
+- Report variants workspace for hashtags and filters (#244; 37045299,
+  9724fb9f, ab1706ae).
+- Data-block duplication with lineage (#230; 9b9c785f).
+- External stakeholder access via the existing SSO OAuth flow (#231; 35bc7e3d).
+- Fan identity graph (#227; a071999d).
+- Activation templates (#228; 596f3a5b).
+- Loyalty missions: quests, scan-ins, sponsor missions (#229; 941450b3).
+- Sponsorship metric warehouse (#232; 2961e47a).
+- Paid campaigns juxtaposed with organic evidence; "ROI"/"Ad Value" disclosed
+  as estimates (#226; 1bcaedbf, 77c62e7c).
+- Audience report packs (#236; f7ca4e63).
+- Partnership lifecycle workspace (#235; 5668dde3).
+
+**Changed**
+- Bitly device breakdown and orphaned-association cleanup (#283; 423894e2).
+- The two anomaly pipelines merged; `/admin/analytics/insights` retired into
+  combined-insights (#414; 903e7c2a..4250a981).
+- Partner sheet provisioning repaired, legacy fallbacks dropped (#286; db24ef6a).
+- Report-style theming of every client-facing surface, CSS token audit, admin
+  users-table fixes including locally pinned roles (bc07d83e..4957f043,
+  ba372fe6).
+- Dead CSS selectors removed (#412; c743b4a5); 61 applied-but-unstyled
+  classes fixed (#413; 2b26ce24).
+
+**Docs / CI**
+- `architecture.md`: fiction deleted and changelog archived (#408/#409;
+  b43ecbfc); route inventory and module catalogue generated from code (#410;
+  31494edc).
+- `comments:check` gate fails on comments citing paths that no longer resolve
+  (6b00f974); `comments:versions` gate added (c02f4b6f).
+- `npm run preflight` runs the whole CI gate list with one exit code (508d5fc0).
+- Fleet architecture map re-verified with a system diagram (#344; 85313661);
+  every route re-adjudicated (#345; d157b8ed).
+
+### Process
+- Pushes to `main` bypass the branch ruleset (PR + Verify required), which is
+  how the commits above landed unrecorded. Version bumps are made only with
+  `npm run version:update`.
 
 ## [v12.3.36] — 2026-09-15T10:00:00.000Z
 
@@ -55,10 +143,10 @@ Fleet release 12.3.37 (messmass, camera, fanmass, try-on, savetheworld) from the
   `--block-height` custom property (avoids circular `cqh` inside auto-height
   `container-type:size` ancestor).
 
-## [v12.3.36] — 2026-09-12T12:50:00.000Z
+## [v12.3.35] — 2026-09-12T12:50:00.000Z
 
 ### Changed
-- Fleet version 12.3.36 (lockstep with savetheworld's feed-cache change). No
+- Fleet version 12.3.35 (lockstep with savetheworld's feed-cache change). No
   messmass code change.
 
 ## [v12.3.34] — 2026-09-12T12:10:00.000Z

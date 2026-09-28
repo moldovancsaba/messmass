@@ -1,6 +1,35 @@
 # Session Handover — messmass
 
-Last verified: 2026-08-17 (v12.1.89, committed/pushed).
+Last verified: 2026-09-28 (v12.3.37, dd34e229 = production).
+
+**2026-09-28 addendum (what happened after the 2026-09-07 entry below)**
+- **2026-09-08 remediation**: scripts prune and dead-code removal (#352),
+  fleet inventory-drift CI gate (#355), all 71 GDS forbidden-color findings
+  cleared and the compliance check made blocking (#387, v12.3.26), GDS
+  installed from vendored tarballs (v12.3.29), fleet version re-aligned
+  (12.3.28), savetheworld added to the fleet map (v12.3.31).
+- **2026-09-09**: API keys decoupled from login passwords (643a3241, #397);
+  the docs gate hard-fails on stale or unresolvable contract stamps (#346).
+- **2026-09-16/17**: sponsorship platform Phase A (#226–#236, #244) and a
+  security wave (#388–#397, #400/#406/#407) went to `main` as 80 commits
+  without release notes; they are recorded under "Also shipped since
+  v12.3.36" in the `[v12.3.37]` entry of
+  [docs/operations/operations-release-notes.md](docs/operations/operations-release-notes.md).
+- **2026-09-28 alignment audit (v12.3.37)**: fanmass web crash-loop fixed
+  (fanmass 7268cf7), camera publish-selfies scoped to its event (camera
+  ccd77d5), API-key management role-gated (admin/superadmin only), version
+  bumps no longer rewrite doc history (`npm run version:update` edits stamp
+  lines only).
+- **Open**: messmass#343 (needs a live SSO browser session; fanmass is healthy
+  again); the stakeholder flow needs its `stakeholder-callback` redirect_uri
+  registered on SSO before it is reachable (35bc7e3d), no route consumes the
+  `stakeholder-session` yet, and its error redirect `/stakeholder-access` has
+  no page; fanmass has no `apiKey` configured, so its key-gated routes
+  (including the analytics-summary pull messmass makes) answer 401
+  `api_key_not_configured` (see the fleet map's 2026-09-28 notes); two dead
+  routes still call the retired SSO `/api/validate` (drift register §7);
+  pushes to `main` bypass the branch ruleset (PR + Verify); Dependabot alerts
+  in the sibling repos.
 
 **2026-09-07 (v12.3.22, live)** — password-protected event reports work
 end-to-end for the first time: `/report/[slug]` now renders the password
@@ -10,17 +39,19 @@ was deleted — it had been turning every protected report's 401 into
 "Failed to Load Report — The string did not match the expected pattern".
 Details: release notes `[v12.3.22]`, `docs/audits/lld/findings.md` F-001
 (2026-09-07 addendum), `docs/operations/operations-learnings.md`. CI's
-`Verify` job is currently failing at `npm ci` with a GitHub Packages 403
-(sovereignsquad org billing limit) — infra, not code; Vercel deploys fine.
+`Verify` job was failing at `npm ci` with a GitHub Packages 403
+(sovereignsquad org billing limit); resolved in v12.3.29 (61c27e79) by
+installing GDS from vendored tarballs under `vendor/gds/`.
 
 **Fanmass Unified Dashboard & Settings v1 shipped this session**
 (messmass#336–#342, plus fanmass#79–#81 in the sibling repo). `/admin/fanmass`
 went from a static five-card outbound-link grid to a native, tabbed
 dashboard (Executive Dashboard, Analytics, Run Control, Entity Curation,
 Settings) fed by a new asynchronous push/poll channel — Fanmass has no
-public URL and is always the outbound caller in both directions, exactly
-mirroring the existing `ai_rescan_requests` pattern rather than inventing a
-new mechanism. See `docs/operations/operations-release-notes.md`'s
+public URL and is the caller on every channel except one: messmass's
+`/sync` and `/callbacks` pull the analytics summary from `FANMASS_BASE_URL`
+(blocking, 15s timeout; b109bcd9). The new channel mirrors the existing
+`ai_rescan_requests` pattern rather than inventing a new mechanism. See `docs/operations/operations-release-notes.md`'s
 `[v12.1.89]` entry for the full file list and known limitations.
 
 **Two coordination gaps found and closed while implementing, not left as
@@ -81,6 +112,8 @@ human operator with real admin credentials.
   (already 12.1.88) but are a **manual** bump, not automated by
   `scripts/update-version.js` — that script only touches the lockfile and
   release notes. Don't assume "ran version:update" covers doc headers.
+  (Superseded in v12.3.37: `version:update` now also bumps the `Version:`
+  stamp line of every current doc, and nothing else.)
 
 ---
 
@@ -88,8 +121,10 @@ human operator with real admin credentials.
 
 - **Every push to `origin/main` gets a version bump.** Not optional, not
   something to ask about — established as a hard rule after explicit user
-  correction earlier in this engagement. See step 7 above for the exact
-  mechanics.
+  correction earlier in this engagement. Mechanics: set the new version in
+  `package.json`, run `npm run version:update` (syncs the lockfile and every
+  current doc's `Version:` stamp; never a find-and-replace of the old version
+  string), add a release-notes entry, then run `npm run preflight`.
 - **Every push gets watched to completion in CI**
   (`gh run watch <id> --exit-status`), never assumed green from a
   successful `git push`.
@@ -100,17 +135,18 @@ human operator with real admin credentials.
 - **AI-branding ban**: no `Co-Authored-By`, no assistant names, no session
   links anywhere — commits, PRs, code, docs, UI, logs, config.
 - messmass's real quality gate is `.github/workflows/ci.yml`:
-  `type-check`, `lint`, `test`, `build`, `version:verify`, `style:check`,
-  `docs:audit`, `gds:sync`, `gds-compliance check` (non-blocking),
-  dependency + layout-grammar guardrails.
+  `type-check`, `lint`, `test`, `style:check`, `version:verify`,
+  `docs:audit`, `inventory:check`, `gds:sync`, `gds-compliance check`
+  (blocking since v12.3.26), `comments:check`, `comments:versions`,
+  `architecture:check`, dependency + layout-grammar guardrails, `build`.
+  `npm run preflight` runs the same list locally with one exit code.
 
 ---
 
 ## 2. GDS adoption plan — now on 6.3.0, Phase 4b/5/6 still open
 
-Separate, older effort, still genuinely mid-flight. Full plan was at
-`/Users/chappie/.claude/plans/pure-cuddling-swan.md`, since overwritten by a
-later plan — everything you need is summarized here.
+Separate, older effort, still genuinely mid-flight. The original plan file
+no longer exists; this section is the record.
 
 **Done and pushed** (verified, CI-green): Phase 0 (baseline), Phase 1 (fixed
 3.9.0-vs-6.0.0 version drift, on GDS 6.3.0 via vendored GitHub Release
@@ -122,8 +158,7 @@ values aliased to GDS/Mantine CSS variables — the ones verified
 byte-identical; the rest have no exact GDS equivalent, Tailwind-derived vs.
 Open Color-derived palettes), Phase 5 component 1 of 10
 (`ConfirmDialog` retired for `GdsConfirmProvider`/`useGdsConfirm`).
-camera is also on GDS 6.2.0 (its own vendored tarballs, v2.24.0) — the two
-apps aren't required to move in lockstep, but currently do.
+camera 12.3.37 is also on GDS 6.3.0 via its own vendored tarballs.
 
 **Open — Phase 4b**: token bridge, remainder. Most of `theme.css`'s
 remaining ~63 color values have no exact GDS match — retiring them needs a
@@ -150,30 +185,15 @@ whole admin section, largest blast radius);
 Deferred/out of scope: `GdsAccessGate` for
 `ServerPageGate.tsx`/`PagePasswordLogin.tsx`.
 
-**Open — Phase 6, gate readiness verified this session (corrects a stale
-number)**: CI's non-blocking `npx gds-compliance check` currently reports
-**24** `forbidden-color` findings, not the "111" figure previously quoted
-in this file and the CI comment — that 111 turns out to be the count under
-`compliance.strictMode: true`, not the real baseline. Tested `strictMode:
-true` directly this session (scratch edit to `gds-adoption.json`, reverted,
-never committed): it surfaces **486** findings across 12 rule families
-(`strict.raw-color` 110, `strict.raw-control` 105, `strict.inline-style`
-46, `strict.browser-dialog` 42, `strict.import.mantine-core` 22,
-`strict.raw-table` 14, and more) — confirming Phase 6 is genuinely blocked
-on Phase 5 landing, not just unstarted paperwork. The current 24
-non-strict findings are all in `scripts/` and one `tests/` fixture file —
-zero in `app/`, `components/`, or `lib/`. They **cannot** be scoped out via
-`gds-adoption.json`'s `approvedExceptions`: read the vendored
-`node_modules/@sovereignsquad/gds-compliance/index.js` directly and
-confirmed `forbidden-color` (unlike the `strict.*` family) is pushed
-unconditionally from `scanSourceFile()`, with no exception-suppression
-path, and the file walker's `IGNORED_DIRS` (`node_modules`, `.git`,
-`.next`, `dist`, `coverage`) is a hardcoded constant, not manifest-
-configurable — `scripts/`/`tests/` can't be excluded from the walk either.
-Zeroing these out for real means either editing each of the ~23 files
-(raw hex literals in one-off debug/seed/test scripts — low value, since
-none of it is shipped UI) or asking upstream GDS to add a
-scripts/tests-exclusion mechanism. Don't add `@sovereignsquad/gds-eslint-config`
+**Open — Phase 6, strict mode only**: the non-strict `npx gds-compliance
+check` baseline is 0 and blocking in CI. All 71 `forbidden-color` findings
+were cleared in v12.3.26 (2f1f50ef, #387): UI colours moved to `theme.css`
+tokens and data colours to `lib/theme/*.ts`, the checker's exempt lane.
+Strict mode (`compliance.strictMode: true`; **~486** findings across 12 rule
+families on 2026-08-17 — `strict.raw-color` 110, `strict.raw-control` 105,
+`strict.inline-style` 46, `strict.browser-dialog` 42,
+`strict.import.mantine-core` 22, `strict.raw-table` 14, and more) stays
+blocked on Phase 5 landing. Don't add `@sovereignsquad/gds-eslint-config`
 yet either (needs ESLint 9/10, messmass is on 8.57.0 — separate migration).
 
 ---
@@ -251,7 +271,7 @@ ask before building it.
   meant against live data. When a user says "I want to know the actual
   status," that means read the real database/API response, don't infer
   from what the code appears to compute.
-- **A plan file gets overwritten by the next `EnterPlanMode` session** —
+- **A plan file gets overwritten by the next planning session** —
   if there's a still-relevant old plan (like the GDS one), its content
   needs to be captured somewhere durable (like this handover) *before*
   starting a new planning session, or it's gone.

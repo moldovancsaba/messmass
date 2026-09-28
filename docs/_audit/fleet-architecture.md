@@ -4,13 +4,22 @@ Fleet audit P1. Written 2026-08-19 from code read on BOTH sides of every edge;
 re-verified in full on 2026-09-08 against current code, both sides. Each edge
 is stamped with the SHAs it was verified against. This is the doc a new
 developer reads first. Canonical copy lives here in messmass;
-camera/fanmass/try-on carry pointers to it. Header-less by design (docs:audit
-version gate).
+camera/fanmass/try-on/savetheworld carry pointers to it
+(savetheworld: `docs/_audit/savetheworld-in-the-fleet.md`). Header-less by
+design (docs:audit version gate).
 
-Verified messmass `8843a535` · camera `06f3029` · fanmass `db2657e` ·
-try-on `1ccd284` · savetheworld `4427b6e` (2026-09-16).
+Verified messmass `dd34e229` · camera `ccd77d5` · fanmass `7268cf7` ·
+try-on `1ccd284` · savetheworld `d87c776` (2026-09-28).
 
-**What that stamp covers.** The 2026-09-16 pass re-read the messmass side of
+**2026-09-28 pass.** Re-read on the messmass side: E2's analytics-summary pull
+(`lib/fanmassIntegration.ts:258`, `:343`), the E5 stakeholder login added by
+35bc7e3d, and the 2026-09-16/17 security wave (below). Re-read on both sides:
+E7 (savetheworld `src/lib/pledges/camera.ts`, `src/lib/camera/adminList.ts`,
+`src/lib/sportEvents/actions.ts`; camera `app/api/internal/savetheworld/**`,
+`lib/savetheworld/provision.ts`). Everything else carries the 2026-09-16
+coverage described next.
+
+**What the 2026-09-16 pass covered.** It re-read the messmass side of
 every edge in full, and re-checked the counterpart surface of E2 and E4 on the
 camera and fanmass sides: the eight `integrations/fanmass/*` channels fanmass
 calls against the eight routes messmass serves and their guards, and camera's
@@ -19,6 +28,23 @@ calls against the eight routes messmass serves and their guards, and camera's
 `/api/integrations/camera/partners`, and `app/api/internal/email/send`. E1, E3,
 E6 and E7 carry their earlier both-sides verification; their SHAs above are
 current-HEAD markers, not fresh reads of those edges.
+
+## 2026-09-28 operational notes
+- **fanmass web crash-loop, 2026-09-15 → 09-28.** `/api/health` counted `jobs`
+  with a full collection scan (~13s, twice per probe) against a 15s probe
+  budget, so the supervisor restarted the web process ~7,000 times. Fixed in
+  fanmass 7268cf7 (metadata counts; the supervisor also catches `OSError`).
+  `GET /api/health` answered 200 on 2026-09-28 (14.5s).
+- **fanmass `apiKey` is unset.** `settings.json` has `apiKey: null` and neither
+  `.env` nor the supervisor plist sets `FANMASS_API_KEY`, so `require_api_key`
+  fails closed: a read-only probe of
+  `GET /api/integrations/messmass/batches/{id}/analytics-summary` returned
+  401 `api_key_not_configured` (2026-09-28). Every key-gated fanmass route
+  therefore rejects `x-api-key` callers, including messmass's E2
+  analytics-summary pull. Not verified: whether production messmass reaches
+  this loopback-bound service at all (its Vercel `FANMASS_BASE_URL` was not
+  inspected), so it is unconfirmed whether that pull is failing today or was
+  already unreachable.
 
 ## The six systems
 
@@ -127,7 +153,10 @@ Verified messmass n/a · camera `88c6839` · try-on `c8ba623`.
   base64, white compositing — are now in it).
 
 ### E2 · fanmass → messmass (six push channels + two poll/ack channels)
-Verified messmass `8843a535` · fanmass `db2657e` (both sides re-read 2026-09-16).
+Verified messmass `dd34e229` · fanmass `db2657e` (both sides re-read 2026-09-16;
+messmass side re-checked 2026-09-28: no commit since 8843a535 touches this
+edge's files, all 18 `integrations/fanmass/*` routes still call
+`requireFanmassIntegrationAuth`).
 fanmass is the caller on every channel **except one**: the blocking
 analytics-summary pull in the last bullet, which messmass initiates. The
 summary line here used to read "fanmass is always the caller", which the
@@ -171,7 +200,7 @@ same section then contradicted four bullets down — corrected 2026-09-16.
   distinct from FANMASS_INTEGRATION_TOKEN; lib/fanmassIntegration.ts:258-265,
   :343; lib/config.ts:141-142). fanmass gates it with require_api_key
   (app.py:1098-1102). This is the one place messmass has a runtime dependency
-  on fanmass reachability (contradicts architecture.md:4529).
+  on fanmass reachability (contradicts architecture.md:3755-3756).
 
 ### E3 · fanmass → camera (media pull)
 Verified camera `88c6839` · fanmass `5d9a032`. Direction is fanmass-pulls.
@@ -191,7 +220,9 @@ Verified camera `88c6839` · fanmass `5d9a032`. Direction is fanmass-pulls.
   holds the cursor back so nothing is skipped.
 
 ### E4 · messmass ↔ camera (master data + session + email)
-Verified messmass `8843a535` · camera `06f3029` (both sides re-read 2026-09-16). **Bidirectional.**
+Verified messmass `dd34e229` · camera `06f3029` (both sides re-read 2026-09-16;
+messmass side re-checked 2026-09-28: no commit since 8843a535 touches this
+edge's files). **Bidirectional.**
 - **messmass → camera (master, outbound)**: messmass is master; provisions
   organizations/partners/events into camera via
   `/api/internal/messmass/{organizations,partners,events}`, writing back
@@ -235,6 +266,14 @@ Verified consumer-side only (SSO repo not in scope).
   (app/api/admin/projects/[id]/route.ts:16, app/api/admin/permissions/route.ts:16
   — obsoletion candidates); the two collection routes and lib/ssoClient.ts were
   deleted under messmass#386.
+- **messmass stakeholder login** (messmass#231, 35bc7e3d): a second flow on the
+  SAME confidential client — `/api/auth/sso/stakeholder-login` →
+  `/api/auth/sso/stakeholder-callback` (`getStakeholderOAuthCallbackRedirectUri`
+  in lib/auth/ssoOAuth.ts). It does not consult the SSO per-app permission
+  store; access is gated by messmass's local `stakeholder_grants` collection
+  (invites via `POST /api/stakeholder/invite`) and yields a separate
+  `stakeholder-session` cookie. Its redirect_uri must be registered on the SSO
+  client before the flow is reachable (not verifiable from this side).
 - **camera**: PUBLIC PKCE client by default (confidential only when
   SSO_CONFIDENTIAL_OAUTH=1 + secret set, lib/auth/sso.ts:8-9, :103-110);
   redirect_uri derived per-request from forwarded host (sso.ts:37-44). Session
@@ -268,8 +307,9 @@ Verified consumer-side only (SSO repo not in scope).
   egress from the entity-logo researcher (now documented in
   docs/current-implementation.md and docs/entity-resolution.md).
 
-### E7 · savetheworld → camera (pledge wall)
-Verified camera `88c6839` · savetheworld `2239855`. Direction is savetheworld-pulls.
+### E7 · savetheworld ↔ camera (pledge wall, provisioning, selfie publishing)
+Verified camera `ccd77d5` · savetheworld `d87c776` (both sides re-read 2026-09-28).
+Mostly savetheworld-calls, plus one browser redirect camera → savetheworld.
 - **Caller**: savetheworld `src/lib/pledges/camera.ts` — `GET
   {CAMERA_BASE_URL}/api/internal/savetheworld/pledges?eventId=<CAMERA_PLEDGE_EVENT_ID>&limit=<n>`
   with header `x-savetheworld-secret: CAMERA_SAVETHEWORLD_INTERNAL_SECRET`; any
@@ -277,9 +317,25 @@ Verified camera `88c6839` · savetheworld `2239855`. Direction is savetheworld-p
 - **Callee**: camera `app/api/internal/savetheworld/pledges/route.ts` —
   `assertInternalSavetheworldSecret` (lib/savetheworld/internal.ts) then
   submissions matched on `eventId` or `eventIds[]`; only share-visible
-  submissions are returned, never e-mail addresses. `/events` and `/partners`
-  under the same prefix have no caller in savetheworld (deprecation candidates
-  in camera's api-reference).
+  submissions are returned, never e-mail addresses.
+- **Provisioning (savetheworld → camera, writes)**: savetheworld's admin
+  sport-event flow (`src/lib/sportEvents/actions.ts:63`, `:70`) POSTs to camera
+  `/api/internal/savetheworld/partners` and `/api/internal/savetheworld/events`
+  to create the camera partner and event; `src/lib/camera/adminList.ts:34`,
+  `:60` GET the same two routes to list them. Both are live callers, not
+  deprecation candidates. Same `x-savetheworld-secret` header.
+- **Selfie publishing (savetheworld → camera, writes)**:
+  `publishEventSelfies()` (`src/lib/sportEvents/actions.ts:106-118`) POSTs
+  `/api/internal/savetheworld/events/{eventId}/publish-selfies`, which sets
+  `isShareVisible` on that event's submissions. Scoped to the event since
+  camera 12.3.37 (ccd77d5); before that a second `$or` key overwrote the event
+  filter, so a call would have published not-yet-visible selfies across all
+  events. Production forensics showed it had never been triggered.
+- **Post-selfie redirect (camera → savetheworld, browser)**: when
+  `SAVETHEWORLD_APP_URL` is set, camera's provisioned event gets a CTA custom
+  page that sends the fan to `SAVETHEWORLD_APP_URL/take-action/for/<eventId>`
+  after their selfie (camera `lib/savetheworld/provision.ts:58`). No
+  server-to-server call; with the variable unset, `customPages` stays empty.
 - **Capture side**: the pledge CTA links to camera's public capture page for
   the event (`NEXT_PUBLIC_CAMERA_PLEDGE_URL`); the submission is created in
   camera, so the wall is only as full as camera's moderation queue lets it be.
@@ -287,11 +343,17 @@ Verified camera `88c6839` · savetheworld `2239855`. Direction is savetheworld-p
   ("savetheworld — Take the Pledge") exists with 0 submissions.
 - savetheworld shares SSO (E5) as a PKCE + client-secret OAuth client
   (redirect `https://savetheplanet.vercel.app/api/oauth/callback`) and ImgBB
-  for admin uploads; it writes nothing into any other app.
+  for admin uploads. Its only writes into another app are the camera
+  provisioning and selfie-publishing calls above.
 
 ## Runtime topology
-- **Vercel**: messmass, camera. Redeploy on push to main; crons via vercel.json
-  (camera: the 5-min try-on sync; messmass: analytics-aggregation, bitly).
+- **Vercel**: messmass (www.messmass.com), camera (go.messmass.com),
+  savetheworld (savetheplanet.vercel.app), sso (sso.doneisbetter.com).
+  Production auto-deploys from git on every push to `main` and does not wait
+  for GitHub Actions CI (verified 2026-09-28 via the Vercel API: the production
+  SHA equalled `origin/main` for all four). Crons via vercel.json (camera: the
+  5-min try-on sync; messmass: analytics-aggregation, bitly, google-sheets
+  sync).
 - **Local Mac (launchd)**: fanmass under a single `com.fanmass.supervisor`
   agent (scripts/install_supervisor_agent.sh → scripts/fanmass_supervisor.py)
   that forks web+worker — the old `com.fanmass.web`/`com.fanmass.worker` plists
@@ -305,7 +367,7 @@ Verified camera `88c6839` · savetheworld `2239855`. Direction is savetheworld-p
   (try-on#40; exact wording unverified in this pass).
 
 ## Security posture — cross-cutting (each tracked as its own issue)
-State as of 2026-09-08; every item below is closed except fanmass#87.
+State as of 2026-09-28; every item below is closed.
 - **fanmass**: fanmass#83 (0.0.0.0 bind + CORS `*` + 44 unauthenticated routes
   incl. raw fan photos and a mutating status GET) — CLOSED via fanmass#84
   (10613ab, v12.2.0): bound to 127.0.0.1 with loopback-only CORS,
@@ -313,8 +375,7 @@ State as of 2026-09-08; every item below is closed except fanmass#87.
   `GET /api/run-control/status` to a credentialed POST; then v12.2.1 (da82c5a)
   put require_api_key on the 23 data GETs and require_image_access on the 6
   image-byte routes. Rotating the short api_key remains an operator step.
-  **fanmass#87 (dead pre-SPA templates/scripts cleanup) is the only OPEN item**
-  — partially landed in 0c9080b/1b49141.
+  fanmass#87 (dead pre-SPA templates/scripts cleanup) — CLOSED 2026-09-08.
 - **try-on**: try-on#41 (zero auth on 31 routes incl. arbitrary-path file write
   and launchd control) — CLOSED via try-on#42: origin-guard middleware (403 on
   cross-origin) + output path contained to the project root (0ddb882), then
@@ -335,6 +396,16 @@ State as of 2026-09-08; every item below is closed except fanmass#87.
   + lib/ssoClient.ts deleted. Page-password-protected pages now issue a signed
   HttpOnly grant cookie and their data routes call requirePageAccess
   (lib/pageAccess.ts:2-12, :125).
+- **messmass security wave 2026-09-16/17** (#388–#397, all CLOSED):
+  admin-session cookie HS256-verified in middleware and permissions narrowed by
+  role (#392/#391, 71b5e23f); the server decides page protection (#393/#389,
+  8bb4ad2a); 202 orphaned `page_passwords` removed (#390, e098deaa); three dead
+  modules deleted (#388/#394/#396, 09ac52f3); v3 organization scoping enforced
+  (#395, e0f0643f); login passwords no longer work as API keys (#397,
+  6f31990d). Alongside: five anonymous-write routes closed (7d3ef3bb) and
+  admin-only comments enforced (#400/#406/#407, c02f4b6f). 12.3.37 then
+  role-gated API-key management (`/api/admin/local-users/[id]/api-access`,
+  dd34e229).
 
 ## How to keep this true (P6)
 Any change to a shared collection, cross-app endpoint, or integration token

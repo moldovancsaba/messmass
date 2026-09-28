@@ -1,6 +1,6 @@
 # messmass API Reference
 
-Generated for the fleet audit (messmass#350); measured against `docs/_audit/endpoints.json` (head 6d28c7f3, 194 endpoints). Every route below was verified by reading its `route.ts` handler, not just the marker scan.
+Generated for the fleet audit (messmass#350); measured against `docs/_audit/endpoints.json` (inventory head dd34e229, 221 endpoints). Every route below was verified by reading its `route.ts` handler, not just the marker scan; the Auth column was re-verified against the handlers @ dd34e229 (2026-09-28).
 
 Coverage: 221 of 221 routes documented, enforced by
 `tests/api-reference-covers-every-route.test.ts` — five routes were missing when
@@ -17,18 +17,21 @@ Every request passes through, in order: rate limiting, CSRF protection, CORS. CS
 | `getAdminUser` | `lib/auth` | Valid admin-session cookie (SSO-backed). Role checks are per-route. |
 | `requireSession` | `lib/apiGuards` | Same as getAdminUser, returns 401 response object (F-009 retrofit guard). Authentication only — it documents that it checks no role. |
 | `requireAdmin` | `lib/apiGuards` | Authenticated **and** role is admin or superadmin; 403 otherwise (F-025 / #400). |
+| `requireSuperadmin` | `lib/apiGuards` | Authenticated **and** role is superadmin; 403 otherwise (messmass#227). |
 | `requireEditorAccess` | `lib/apiGuards` | Admin session **or** any page-access edit grant. For the two routes the page-password editor drives that carry no project id to scope against. |
 | `requireProjectWrite` | `lib/apiGuards` | Admin session OR page-password edit grant for that one project. |
 | `requirePageAccess` | `lib/pageAccess` | Page password grant (or admin session) for a protected page slug. |
+| `requireOrgEditPageAccess` / `requirePartnerEditPageAccess` | route-local (`organizations/edit/[id]`, `partners/edit/[slug]`) | If the page (or any alias / variant key of it) is password-protected: admin session or an `organization-edit` / `partner-edit` grant for one of those keys; an unprotected page is open (messmass#386). |
 | `requireFanmassIntegrationAuth` | `lib/fanmassIntegration` | `FANMASS_INTEGRATION_TOKEN` via Bearer or `x-api-key`; 503 when unconfigured. |
 | `assertCameraSecret` | `lib/cameraClient` | Camera provision token via Bearer or `x-camera-secret`; 503 when unconfigured. |
-| `requireAPIAuth` | `lib/apiAuth` | Machine Bearer token; rejects any request carrying cookies. |
+| `requireAPIAuth` | `lib/apiAuth` | Machine Bearer key matched against the user's bcrypt `apiKeyHash` and requiring `apiKeyEnabled`; rejects any request carrying cookies. Backs `/api/public/*` only; login passwords are not accepted (6f31990d). |
 | `CRON_SECRET` | env, inline | `Authorization: Bearer <CRON_SECRET>`. |
 | SSO bearer | inline, `POST <SSO_BASE_URL>/api/validate` | SSO access token validated against the SSO service. |
 | `withOrgContext` | `lib/middleware/v3/orgContext`, `lib/v3/middleware` | getAdminUser + injects `x-v3-org-id` scoping header. |
 | `validateOrganizationAccess` | `lib/auth/orgGuard` | getAdminUser + org membership check for the requested org. |
+| `requireStakeholderRole` | `lib/apiGuards`, `lib/auth/stakeholderSession` | Valid `stakeholder-session` cookie (HS256 JWT, `JWT_SECRET`, 30 days, minted by `/api/auth/sso/stakeholder-callback` from a non-revoked `stakeholder_grants` row) with an allowed role; the route must compare `session.scopeId` itself (messmass#231). No route calls it @ dd34e229. |
 
-## /api/admin (38 routes)
+## /api/admin (36 routes)
 
 | Path | Methods | Auth | Request | Response | Side effects |
 |---|---|---|---|---|---|
@@ -38,18 +41,18 @@ Every request passes through, in order: rate limiting, CSRF protection, CORS. CS
 | /api/admin/clear-cache | POST | getAdminUser | `{type}` | `{success,message}` | clears in-process caches |
 | /api/admin/clear-cookies | GET, POST | none (public-by-design) | — | `{success,message}` | deletes caller's own `admin-session` cookie |
 | /api/admin/contact-inquiries | GET | getAdminUser | — | `{success,inquiries[]}` | reads `contact_inquiries` |
-| /api/admin/email-selftest | GET | none (public-by-design; rate-limited) | — | `{sent,recipient}` | sends diagnostic email to SUPERADMIN_EMAIL via camera email service |
+| /api/admin/email-selftest | GET | requireSession; rate-limited | — | `{sent,recipient}` | sends diagnostic email to SUPERADMIN_EMAIL via camera email service |
 | /api/admin/fanmass/commands | POST | getAdminUser + role check | `{type,payload?}` | `{success,command}` | inserts `fanmass_commands` |
 | /api/admin/fanmass/events/[eventId] | GET, POST | getAdminUser + role check | POST `{fanmassBatchId?,status?,action?('sync'\|'dry-run'),force?}` | `{success,link,sync?}` | upserts `fanmass_event_links`; sync writes project stats |
 | /api/admin/fanmass/events | GET | getAdminUser + role check | — | `{success,events[]}` | reads `fanmass_event_links`/`projects` |
 | /api/admin/fanmass/snapshot | GET | getAdminUser + role check | `?eventId` | `{success,snapshot}` | reads `fanmass_dashboard_snapshot` |
-| /api/admin/filter-style | GET, POST | GET none (public style read); POST requireSession | GET `?hashtags=a,b`; POST `{hashtags[],styleId}` | `{success,styleId…}` | insert/update `filter_slugs` |
+| /api/admin/filter-style | GET, POST | requireAdmin (both methods) | GET `?hashtags=a,b`; POST `{hashtags[],styleId}` | `{success,styleId…}` | insert/update `filter_slugs` |
 | /api/admin/fix-mojibake-text | GET | getAdminUser | `?apply=1` (dry-run default) | scan/repair report | updates mojibake text across multiple collections when applied |
-| /api/admin/hashtag-style | GET, POST | GET none (public style read); POST requireSession | GET `?hashtag=`; POST `{hashtag,styleId}` | `{success,styleId…}` | updates `hashtag_slugs` |
+| /api/admin/hashtag-style | GET, POST | requireAdmin (both methods) | GET `?hashtag=`; POST `{hashtag,styleId}` | `{success,styleId…}` | updates `hashtag_slugs` |
 | /api/admin/landing-projects | GET | getAdminUser | — | `{success,projects[]}` | reads `projects` |
 | /api/admin/landing-settings | GET, PUT | getAdminUser | PUT `{landingReportSlug,…}` | `{success,settings}` | updates `settings` (landing doc) |
 | /api/admin/landing-static-generate | POST | getAdminUser | — | `{success,generatedAt}` | reads `report_templates`,`data_blocks`,`partners`,`chart_configurations`; self-fetch of own config API; writes snapshot into `settings` |
-| /api/admin/local-users/[id]/api-access | PUT | getAdminUser | `{apiAccessEnabled}` | `{success,user}` | updates `users` |
+| /api/admin/local-users/[id]/api-access | POST, PUT | getAdminUser + admin/superadmin role; a superadmin's key only by a superadmin (dd34e229) | POST none (rotate key); PUT `{enabled: boolean}` | POST `{success,apiKey (plaintext, shown once),user}`; PUT `{success,message,recommendation?,user}` (409 if API calls in the last 5 min) | POST sets `users.apiKeyHash` (bcrypt of a new random key); PUT sets `users.apiKeyEnabled` |
 | /api/admin/local-users/[id] | PUT, DELETE | getAdminUser | PUT `{name,role,…}` | `{success}` | update/delete `users` |
 | /api/admin/local-users/[id]/send-email | POST | getAdminUser | `{…email params}` | `{success}` | reads `users`; outbound email via camera service |
 | /api/admin/local-users | GET, POST | getAdminUser | GET `?search&limit&offset`; POST `{email,name,role,…}` | `{success,users[]/user}` | inserts `users` |
@@ -57,21 +60,19 @@ Every request passes through, in order: rate limiting, CSRF protection, CORS. CS
 | /api/admin/organizations/[id]/members | GET, PUT | getAdminUser | PUT `{memberPartnerIds[]}` | `{success,members}` | updates `organizations`, `partners.updateMany`, V3Entity.updateMany |
 | /api/admin/organizations/[id] | GET, PUT, PATCH, DELETE | getAdminUser | PUT/PATCH `{name,metadata,…}` | `{success,organization}` | update/delete `organizations`; detaches `partners` on delete |
 | /api/admin/organizations | GET, POST | getAdminUser | POST `{name,…}` | `{success,organizations[]/organization}` | inserts `organizations` |
-| /api/admin/partners | GET | **none — GAP** | — | `{success,partners[]}` (name + reportTemplateId) | reads `partners` |
+| /api/admin/partners | GET | requireSession | — | `{success,partners[]}` (name + reportTemplateId) | reads `partners` |
 | /api/admin/permissions | GET, POST, DELETE | SSO bearer (validated via SSO `/api/validate`) | POST `{userId,projectId,role,…}`; DELETE `?projectId&userId` | `{success,…}` | writes `project_permissions`, `audit_logs` |
 | /api/admin/project-partners/auto-suggest | POST | requireSession | — | `{success,updated}` | matches partners to projects by hashtag, updates `projects` |
-| /api/admin/project-partners | GET, PUT | **none — GAP** (getAdminUser imported but never called) | PUT `{projectId,partnerIds…}` | `{success,…}` | PUT updates `projects` partner links |
+| /api/admin/project-partners | GET, PUT | requireAdmin (both methods) | PUT `{projectId,partnerIds…}` | `{success,…}` | PUT updates `projects` partner links |
 | /api/admin/projects/[id] | DELETE | SSO bearer | path id | `{success}` | deletes from `projects`, inserts `audit_logs` |
-| /api/admin/projects | GET, POST | SSO bearer | POST `{eventName,…}` | `{success,projects[]/project}` | inserts `projects` |
 | /api/admin/register | POST | none (public-by-design) | — | **410 Gone** (SSO-only) | none |
 | /api/admin/sync-events-to-camera | GET | getAdminUser | — | `{success,synced}` | reads `projects`; outbound POSTs to camera internal API |
 | /api/admin/sync-partners-to-camera | GET | getAdminUser | — | `{success,synced}` | reads `partners`; outbound POSTs to camera internal API |
-| /api/admin/ui-settings | GET, PUT | GET isAuthenticated (admin session); PUT requireSession | PUT `{fontFamily,…}` | `{success,settings}` | updates `settings` (typography), reads `available_fonts` |
+| /api/admin/ui-settings | GET, PUT | requireAdmin (both methods) | PUT `{fontFamily,…}` | `{success,settings}` | updates `settings` (typography), reads `available_fonts` |
 | /api/admin/users/[id]/organizations | PUT | getAdminUser + superadmin role | `{organizationIds[]}` | `{success,user}` | updates `users.organizationIds`, validated against `organizations` (messmass#395) |
 | /api/admin/users/[id]/role | PUT | getAdminUser (role-checked) | `{role}` | `{success}` | updates `users` |
-| /api/admin/users | GET, PUT | SSO bearer | PUT `{userId,role,…}` | proxied SSO response | proxies to SSO `/api/admin/users` (outbound) |
 
-## /api/analytics (24 routes)
+## /api/analytics (25 routes)
 
 All reads; the aggregation store is `analytics_aggregates` / `partner_analytics` (written by the cron aggregation job, not by these routes).
 
@@ -85,23 +86,23 @@ All reads; the aggregation store is `analytics_aggregates` / `partner_analytics`
 | /api/analytics/ai/events/[eventId]/summary | GET | getAdminUser | — | `{success,summary}` | reads `ai_analysis_summaries` |
 | /api/analytics/ai/events | GET | getAdminUser | `?status&limit` | `{success,events[]}` | reads fanmass-linked events |
 | /api/analytics/ai/variables | GET | getAdminUser | — | `{success,variables[]}` | reads `variables_metadata` |
-| /api/analytics/benchmarks | GET | **none — GAP** | `?category&metric&period` | benchmark stats | reads `analytics_aggregates` |
-| /api/analytics/compare/partners | GET | **none — GAP** | `?partnerIds&metrics` | comparison series | reads `partner_analytics` |
-| /api/analytics/compare/periods | GET | **none — GAP** | `?periodA&periodB&bucket&partnerId` | period deltas | reads `analytics_aggregates` |
-| /api/analytics/compare | GET | **none — GAP** | `?projectIds&metrics` | comparison series | reads `analytics_aggregates` |
-| /api/analytics/event/[projectId] | GET | **none — GAP** | `?includeBitly&includeRaw` | event analytics | reads `analytics_aggregates` |
-| /api/analytics/executive/insights | GET | **none — GAP** | `?priority&limit&period` | executive insights | reads `analytics_aggregates` |
-| /api/analytics/executive/metrics | GET | **none — GAP** | `?period` | portfolio KPIs | reads `analytics_aggregates` |
-| /api/analytics/executive/top-events | GET | **none — GAP** | `?period&limit&sortBy` | top events | reads `analytics_aggregates` |
+| /api/analytics/benchmarks | GET | requireSession | `?category&metric&period` | benchmark stats | reads `analytics_aggregates` |
+| /api/analytics/compare/partners | GET | requireSession | `?partnerIds&metrics` | comparison series | reads `partner_analytics` |
+| /api/analytics/compare/periods | GET | requireSession | `?periodA&periodB&bucket&partnerId` | period deltas | reads `analytics_aggregates` |
+| /api/analytics/compare | GET | requireSession | `?projectIds&metrics` | comparison series | reads `analytics_aggregates` |
+| /api/analytics/event/[projectId] | GET | requireSession | `?includeBitly&includeRaw` | event analytics | reads `analytics_aggregates` |
+| /api/analytics/executive/insights | GET | requireSession | `?priority&limit&period` | executive insights | reads `analytics_aggregates` |
+| /api/analytics/executive/metrics | GET | requireSession | `?period` | portfolio KPIs | reads `analytics_aggregates` |
+| /api/analytics/executive/top-events | GET | requireSession | `?period&limit&sortBy` | top events | reads `analytics_aggregates` |
 | /api/analytics/insights/combined | GET | requireSession | `?limit` | merged executive + analytics insights | reads `analytics_aggregates`, `projects` (messmass#414) |
-| /api/analytics/insights/[projectId] | GET | **none — GAP** | `?includeRecommendations&severity` | per-event insights | reads `analytics_aggregates` |
+| /api/analytics/insights/[projectId] | GET | requireSession | `?includeRecommendations&severity` | per-event insights | reads `analytics_aggregates` |
 | /api/analytics/insights/organizations/[orgId] | GET | getAdminUser | — | org insights | computed via insights engine |
 | /api/analytics/insights/partners/[partnerId] | GET | getAdminUser | — | partner insights | computed via insights engine |
 | /api/analytics/insights | GET | getAdminUser | `?type&severity&limit&since` | portfolio insights | reads `projects` |
 | /api/analytics/insights/summary | GET | getAdminUser | `?partnerId&period&maxEvents` | insight summary | reads `analytics_aggregates` |
-| /api/analytics/partner/[partnerId] | GET | **none — GAP** | `?timeframe&includeEvents` | partner analytics | reads `analytics_aggregates`, `partners` |
+| /api/analytics/partner/[partnerId] | GET | requireSession | `?timeframe&includeEvents` | partner analytics | reads `analytics_aggregates`, `partners` |
 | /api/analytics/sponsorship-hub | GET | getAdminUser | `?scopeType&scopeId&rangePreset` | sponsorship hub data | reads via `lib/sponsorshipHub` |
-| /api/analytics/trends | GET | **none — GAP** | `?startDate&endDate&partnerId&metrics&groupBy` | trend series | reads `analytics_aggregates` |
+| /api/analytics/trends | GET | requireSession | `?startDate&endDate&partnerId&metrics&groupBy` | trend series | reads `analytics_aggregates` |
 
 ## /api/api-football (1 route)
 
@@ -109,7 +110,7 @@ All reads; the aggregation store is `analytics_aggregates` / `partner_analytics`
 |---|---|---|---|---|---|
 | /api/api-football/enrich-partners | GET, POST | getAdminUser | POST triggers enrichment | `{success,log/status}` | outbound API-Football; updates `partners`, inserts `api_football_enrichment_log` |
 
-## /api/auth (4 routes)
+## /api/auth (6 routes)
 
 | Path | Methods | Auth | Request | Response | Side effects |
 |---|---|---|---|---|---|
@@ -129,10 +130,10 @@ All reads; the aggregation store is `analytics_aggregates` / `partner_analytics`
 | /api/bitly/links/[linkId] | PUT, DELETE | getAdminUser | PUT `UpdateLinkInput`; DELETE `?hard` | `{success,link?}` | updates/deletes `bitly_links` (soft-delete default) |
 | /api/bitly/links | GET, POST | getAdminUser | GET `?search&projectId&includeAnalytics&…`; POST `AssociateLinkInput` | `{success,links[]/link}` | inserts `bitly_links`; reads `projects`, `bitly_project_links`, `partners` |
 | /api/bitly/partners/associate | POST, DELETE | getAdminUser | POST `{bitlyLinkId,partnerId}`; DELETE query params | `{success}` | updates `partners` |
-| /api/bitly/project-metrics/[projectId] | GET | none (public-by-design: report page metrics) | path id | per-project bitly metrics | reads `projects`, `bitly_project_links`, `bitly_links` |
+| /api/bitly/project-metrics/[projectId] | GET | requireSession | path id | per-project bitly metrics | reads `projects`, `bitly_project_links`, `bitly_links` |
 | /api/bitly/pull | POST | getAdminUser | `{groupGuid?,…}` | `{success,imported}` | outbound Bitly; insertMany `bitly_links` |
-| /api/bitly/recalculate | GET, POST | **none — GAP** | POST `{mode:'bitlink'\|'project'\|'all',bitlyLinkId?,projectId?}` | `{success,…counts}` | recalculates date ranges/cached metrics (writes via `lib/bitly-recalculator`) |
-| /api/bitly/sync | POST | CRON_SECRET bearer OR getAdminUser | `{…options}` | `{success,synced}` | outbound Bitly; updates `bitly_links`, inserts `bitly_sync_logs` |
+| /api/bitly/recalculate | GET, POST | requireSession (both methods) | POST `{mode:'bitlink'\|'project'\|'all',bitlyLinkId?,projectId?}` | `{success,…counts}` | recalculates date ranges/cached metrics (writes via `lib/bitly-recalculator`) |
+| /api/bitly/sync | GET, POST | CRON_SECRET bearer OR getAdminUser (GET forwards to POST for Vercel Cron) | `{…options}` | `{success,synced}` | outbound Bitly; updates `bitly_links`, inserts `bitly_sync_logs` |
 
 ## Charts and chart config (5 routes)
 
@@ -140,16 +141,16 @@ All reads; the aggregation store is `analytics_aggregates` / `partner_analytics`
 |---|---|---|---|---|---|
 | /api/chart-config/public | GET | none (public-by-design: report rendering) | — | active chart configs | reads `chart_configurations` |
 | /api/chart-config | GET, POST, PUT, DELETE | getAdminUser (all methods) | `?search&limit&offset&sort…`; POST/PUT config body; DELETE `?configurationId` | `{success,…}` | insert/update/delete `chart_configurations` |
-| /api/chart-configs | GET | none (public-by-design: report rendering) | — | chart config list | reads `chart_configurations` |
-| /api/chart-formatting-defaults | GET, PUT | GET none (public read); PUT **none — GAP** | PUT `{defaults}` | `{success,defaults}` | updates `chart_formatting_defaults` |
-| /api/charts | GET, POST, DELETE | GET none (read); POST/DELETE **none — GAP** | GET `?chartIds&isActive&type`; POST chart body; DELETE `?chartId` | `{success,charts[]}` | upserts/deletes `charts` |
+| /api/chart-configs | GET | requireSession | — | chart config list | reads `chart_configurations` |
+| /api/chart-formatting-defaults | GET, PUT | requireSession (both methods) | PUT `{defaults}` | `{success,defaults}` | updates `chart_formatting_defaults` |
+| /api/charts | GET, POST, DELETE | requireSession (all methods) | GET `?chartIds&isActive&type`; POST chart body; DELETE `?chartId` | `{success,charts[]}` | upserts/deletes `charts` |
 
 ## /api/cron (3 routes)
 
 | Path | Methods | Auth | Request | Response | Side effects |
 |---|---|---|---|---|---|
 | /api/cron/analytics-aggregation | GET, POST | CRON_SECRET bearer OR getAdminUser (requires admin when secret unset — fails closed) | POST `?force`; GET `?limit` (job history) | `{success,job/jobs}` | inserts/updates `aggregation_jobs`; rebuilds `analytics_aggregates` |
-| /api/cron/bitly-refresh | GET, POST | CRON_SECRET **only when set — open when unset (GAP caveat)** | — | `{success,refreshed}` | refreshes bitly cached metrics (writes via lib) |
+| /api/cron/bitly-refresh | GET, POST | CRON_SECRET (401 when unset or wrong — fails closed, messmass#348) | — | `{success,refreshed}` | refreshes bitly cached metrics (writes via lib) |
 | /api/cron/google-sheets-sync | GET | CRON_SECRET (503 in production when unset — fails closed) | — | `{success,synced}` | outbound Google Sheets API; insert/update `projects`, updates `partners` sync state |
 
 ## /api/integrations/camera (4 routes)
@@ -161,9 +162,9 @@ All reads; the aggregation store is `analytics_aggregates` / `partner_analytics`
 | /api/integrations/camera/provision-missing | POST | requireFanmassIntegrationAuth | `?limit` | `{success,provisioned}` | outbound camera provisioning API; updates `partners` |
 | /api/integrations/camera/sso-session | POST | assertCameraSecret | session payload | `{success}` | mints/propagates SSO session state (camera to messmass) |
 
-## /api/integrations/fanmass (15 routes)
+## /api/integrations/fanmass (18 routes)
 
-All 15 use `requireFanmassIntegrationAuth` (Bearer/`x-api-key` shared token) and are CSRF-exempt. Store: `fanmass_event_links`, `fanmass_commands`, `fanmass_dashboard_snapshot`, `drive_folder_links`, `ai_rescan_requests`, `ai_analysis_summaries`, `variables_metadata`, plus `projects`/`partners`/`organizations`.
+All 18 use `requireFanmassIntegrationAuth` (Bearer/`x-api-key` shared token) and are CSRF-exempt. Store: `fanmass_event_links`, `fanmass_commands`, `fanmass_dashboard_snapshot`, `drive_folder_links`, `ai_rescan_requests`, `ai_analysis_summaries`, `variables_metadata`, plus `projects`/`partners`/`organizations`.
 
 | Path | Methods | Request | Response | Side effects |
 |---|---|---|---|---|
@@ -190,20 +191,20 @@ All 15 use `requireFanmassIntegrationAuth` (Bearer/`x-api-key` shared token) and
 
 | Path | Methods | Auth | Request | Response | Side effects |
 |---|---|---|---|---|---|
-| /api/hashtag-categories | GET, POST, PUT, DELETE | GET none (public read for rendering); writes **none — GAP** | `?search&limit&offset`; bodies; DELETE `?id` | `{success,categories[]}` | insert/update/delete `hashtag_categories`; reads `projects` |
-| /api/hashtag-colors | GET, POST, PUT, DELETE | GET none (public read); writes **none — GAP** | POST `{name,color}`; PUT `{_id,name,color}`; DELETE `?id` | `{success,colors[]}` | insert/update/delete `hashtag_colors` |
-| /api/hashtags/[hashtag] | GET | **none — GAP** (bypasses the page-password layer that filter-by-slug enforces) | `?variant` | aggregated hashtag stats | reads `projects`, `hashtag_slugs` |
-| /api/hashtags/filter | GET, POST | none (public-by-design: filter page stats, read-only) | GET `?tags=`; POST `{hashtags[]}` | filtered aggregate stats | reads `projects` |
+| /api/hashtag-categories | GET, POST, PUT, DELETE | GET none (public read for rendering); POST/PUT/DELETE requireAdmin (7d3ef3bb) | `?search&limit&offset`; bodies; DELETE `?id` | `{success,categories[]}` | insert/update/delete `hashtag_categories`; reads `projects` |
+| /api/hashtag-colors | GET, POST, PUT, DELETE | GET none (public read); POST/PUT/DELETE requireAdmin (7d3ef3bb) | POST `{name,color}`; PUT `{_id,name,color}`; DELETE `?id` | `{success,colors[]}` | insert/update/delete `hashtag_colors` |
+| /api/hashtags/[hashtag] | GET | none (public-by-design per `KNOWN_UNGUARDED_READS`; note it applies no page password, unlike filter-by-slug) | `?variant` | aggregated hashtag stats | reads `projects`, `hashtag_slugs` |
+| /api/hashtags/filter | GET, POST | requireSession (both methods) | GET `?tags=`; POST `{hashtags[]}` | filtered aggregate stats | reads `projects` |
 | /api/hashtags/filter-by-slug/[slug] | GET | requirePageAccess('filter', slug) | `?variant` | filter stats | reads `projects` |
-| /api/hashtags | GET, POST, DELETE | GET none (read-only counts); POST/DELETE **none — GAP** (DELETE cascades) | GET `?search&limit&offset`; POST `{hashtag}`; DELETE `?hashtag&mode=cascade` | `{success,hashtags[]}` | DELETE cascade: updateMany `projects`/`partners`, deletes `hashtag_colors`, `hashtags`, `hashtag_slugs` |
-| /api/hashtags/slugs | GET | **none — GAP** (discloses slugs that act as capability URLs; lazily inserts) | — | hashtag→slug map | reads `projects`; inserts missing `hashtag_slugs` |
+| /api/hashtags | GET, POST, DELETE | GET none (read-only counts, editor autocomplete); POST requireEditorAccess; DELETE requireAdmin (cascade-capable) (7d3ef3bb) | GET `?search&limit&offset`; POST `{hashtag}`; DELETE `?hashtag&mode=cascade` | `{success,hashtags[]}` | DELETE cascade: updateMany `projects`/`partners`, deletes `hashtag_colors`, `hashtags`, `hashtag_slugs` |
+| /api/hashtags/slugs | GET | requireSession (lazily inserts missing slugs) | — | hashtag→slug map | reads `projects`; inserts missing `hashtag_slugs` |
 
-## /api/partners (17 routes)
+## /api/partners (16 routes)
 
 | Path | Methods | Auth | Request | Response | Side effects |
 |---|---|---|---|---|---|
 | /api/partners/[id]/bitly-kyc | GET | getAdminUser | path id | KYC metrics | reads `projects` |
-| /api/partners/[id]/events | GET | none (public-by-design: partner report page) | path id | partner's events | reads `partners`, `projects` |
+| /api/partners/[id]/events | GET | requireSession | path id | partner's events | reads `partners`, `projects` |
 | /api/partners/[id]/google-sheet/connect | POST | requireSession | `ConnectRequest` | `{success}` | outbound Google Sheets; updates `partners` |
 | /api/partners/[id]/google-sheet/disconnect | DELETE | requireSession | path id | `{success}` | updates `partners` (removes config) |
 | /api/partners/[id]/google-sheet/provision | POST | requireSession | options | `{success,sheetId}` | outbound Google Sheets (creates sheet); updates `partners` |
@@ -213,19 +214,19 @@ All 15 use `requireFanmassIntegrationAuth` (Bearer/`x-api-key` shared token) and
 | /api/partners/[id]/google-sheet/setup | POST | requireSession | setup body | `{success}` | outbound Google Sheets; updates `partners` |
 | /api/partners/[id]/google-sheet/status | GET | requireSession | `?checkHealth` | connection status + sheet URL | reads `partners`; optional outbound health probe |
 | /api/partners/[id]/lifecycle | GET, PUT | requireAdmin | PUT `{override: 'proposal'\|'postmortem'\|null}` | `{success,lifecycle}` | reads `partners`,`projects`; PUT sets/clears `partners.lifecycleStageOverride` (messmass#235) |
-| /api/partners/edit/[slug] | GET, PUT | **none — GAP** (no requirePageAccess despite 'partner-edit' page-password type existing) | PUT content body; `?variant` | partner edit data | PUT updates partner content |
+| /api/partners/edit/[slug] | GET, PUT | requirePartnerEditPageAccess (route-local: when protected, admin session or a 'partner-edit' grant for any alias of the partner, variant keys included; messmass#386) | PUT content body; `?variant` | partner edit data | PUT updates partner content |
 | /api/partners/link-football-data | POST | getAdminUser | `{partnerId,teamId,…}` | `{success}` | updates `partners` |
 | /api/partners/report/[slug] | GET | none (public-by-design: shareable slug-keyed report) | `?variant` | partner report data | reads `projects` |
-| /api/partners | GET, POST, PUT, DELETE | **none — GAP** (full unauthenticated CRUD) | GET `?limit&offset&sort&search`; POST/PUT bodies; DELETE `?partnerId` | `{success,partners[]}` | insert/update/delete `partners` |
+| /api/partners | GET, POST, PUT, DELETE | GET/POST/DELETE requireAdmin; PUT requirePartnerWrite (admin session OR 'partner-edit' page grant for that partner) | GET `?limit&offset&sort&search`; POST/PUT bodies; DELETE `?partnerId` | `{success,partners[]}` | insert/update/delete `partners` |
 | /api/partners/upload-logo | POST | requireSession | `{badgeUrl,partnerName}` | `{success,logoUrl}` | outbound ImgBB upload |
 
 ## /api/projects (4 routes)
 
 | Path | Methods | Auth | Request | Response | Side effects |
 |---|---|---|---|---|---|
-| /api/projects/[id] | GET, PUT, DELETE | **none — GAP** (the guarded path is /api/projects; this id-variant never got the F-009 retrofit) | PUT full update body | `{success,project}` | update/delete `projects` |
+| /api/projects/[id] | GET, PUT, DELETE | requireSession (all methods; messmass#386) | PUT full update body | `{success,project}` | update/delete `projects` |
 | /api/projects/edit/[slug] | GET | requirePageAccess('edit', slug) | path slug | editor payload | none |
-| /api/projects | GET, POST, PUT, DELETE | GET **none — GAP** (lists all events); POST requireSession; PUT requireProjectWrite (admin OR page-password edit grant); DELETE requireSession | GET `?projectId&limit&cursor&q&offset&sort…`; POST/PUT project bodies; DELETE `?projectId` | `{success,projects[]/project}` | insert/update/delete `projects`; maintains `hashtags` counts; reads `partners`, `report_styles` |
+| /api/projects | GET, POST, PUT, DELETE | GET/POST/DELETE requireAdmin (c02f4b6f); PUT requireProjectWrite (admin OR page-password edit grant) | GET `?projectId&limit&cursor&q&offset&sort…`; POST/PUT project bodies; DELETE `?projectId` | `{success,projects[]/project}` | insert/update/delete `projects`; maintains `hashtags` counts; reads `partners`, `report_styles` |
 | /api/projects/stats/[slug] | GET | requirePageAccess('event-report', slug) | path slug | event stats payload | none |
 
 ## /api/public (4 routes) — machine-token API
@@ -245,7 +246,7 @@ All require `requireAPIAuth` (Bearer machine token, cookies rejected). OPTIONS i
 |---|---|---|---|---|---|
 | /api/report-config/[identifier] | GET | none (public-by-design: report rendering config) | `?type=project\|partner\|hashtag\|filter` | resolved report config | reads `report_templates`, `projects`, `partners`, `data_blocks` |
 | /api/report-styles/[id] | GET | none (public-by-design: report styling) | path id | style object | reads `report_styles` |
-| /api/report-styles | GET, POST, PUT, DELETE | GET none (public read); writes **none — GAP** | POST/PUT style bodies; `?id` | `{success,styles[]}` | insert/update/delete `report_styles` |
+| /api/report-styles | GET, POST, PUT, DELETE | withOrgContext → getAdminUser (all methods) | POST/PUT style bodies; `?id` | `{success,styles[]}` | insert/update/delete `report_styles` |
 | /api/report-templates/assign | POST, DELETE | getAdminUser | POST `{templateId,projectIds?,partnerIds?}`; DELETE `?projectIds&partnerIds` | `{success,updated}` | updateMany `projects`, `partners` |
 | /api/report-templates | GET, POST, PUT, DELETE | withOrgContext → getAdminUser (all methods) | `?type&includeDefault&includeAssociations`; bodies; `?templateId` | `{success,templates[]}` | insert/update/delete `report_templates` |
 | /api/report-variants/[id] | GET, PUT | getAdminUser | PUT variant body | `{success,variant}` | reads/updates `report_variants` |
@@ -258,11 +259,11 @@ All require `requireAPIAuth` (Bearer machine token, cookies rejected). OPTIONS i
 |---|---|---|---|---|---|
 | /api/sports-db/fixtures/draft | POST | getAdminUser | fixture draft body | `{success,draft}` | creates draft events from fixtures |
 | /api/sports-db/fixtures | GET | getAdminUser | `?partnerId&homeOnly&teamId&dateFrom&dateTo&status&limit&offset` | fixtures list | reads `sportsdb_fixtures` |
-| /api/sports-db/lookup | GET, POST, PUT, DELETE | GET **none — GAP** (unauthenticated proxy spends server API quota); POST/PUT/DELETE are 405 stubs | `?type&id` | TheSportsDB lookup result | outbound TheSportsDB |
-| /api/sports-db/search | GET, POST, PUT, DELETE | GET **none — GAP** (same proxy concern); POST/PUT/DELETE are 405 stubs | `?type&query` | TheSportsDB search result | outbound TheSportsDB |
+| /api/sports-db/lookup | GET, POST, PUT, DELETE | requireSession (all methods); POST/PUT/DELETE are 405 stubs | `?type&id` | TheSportsDB lookup result | outbound TheSportsDB |
+| /api/sports-db/search | GET, POST, PUT, DELETE | requireSession (all methods); POST/PUT/DELETE are 405 stubs | `?type&query` | TheSportsDB search result | outbound TheSportsDB |
 | /api/sports-db/sync | POST | getAdminUser | — | `{success,sync,matched}` | outbound TheSportsDB; writes `sportsdb_fixtures`, matches to `partners` |
 
-## /api/v3 (12 routes)
+## /api/v3 (14 routes)
 
 All wrapped in `withOrgContext` (getAdminUser + `x-v3-org-id` injection) except the two org-report routes, which use `validateOrganizationAccess` (getAdminUser + org membership). Data layer is Mongoose (v3_* models).
 
@@ -283,7 +284,7 @@ All wrapped in `withOrgContext` (getAdminUser + `x-v3-org-id` injection) except 
 | /api/v3/reporting/export/[entityId] | GET | withOrgContext | path entity id | CSV download | aggregates V3MetricValue |
 | /api/v3/reports/resolve | GET | withOrgContext | `?activityId\|entityId` | resolved template | reads v3 report config |
 
-## Remaining root routes (48 routes)
+## Remaining root routes (56 routes)
 
 | Path | Methods | Auth | Request | Response | Side effects |
 |---|---|---|---|---|---|
@@ -302,54 +303,52 @@ All wrapped in `withOrgContext` (getAdminUser + `x-v3-org-id` injection) except 
 | /api/fan-identities/merge-candidates | GET, POST | requireAdmin | POST `{identityIdA,identityIdB,evidence}` | `{success,candidate\|candidates}` | reads/writes `fan_identity_merge_candidates` -- flags only, never merges |
 | /api/fan-identities/merge-candidates/[id]/approve | POST | requireSuperadmin | — | `{success}` | the one action that actually merges two identities |
 | /api/fan-identities/merge-candidates/[id]/reject | POST | requireAdmin | — | `{success}` | closes the candidate without merging |
-| /api/auto-generate-chart-block | POST | **none — GAP** | `{variable,…}` | `{success,chartId,blockId?}` | insert/update `chart_configurations`, `data_blocks` |
-| /api/available-fonts | GET, POST, PUT, DELETE | GET none (public font list for rendering); writes **none — GAP** | `?includeInactive`; bodies; `?id&hardDelete` | `{success,fonts[]}` | insert/update/delete `available_fonts` |
-| /api/cities | GET | none (public-by-design: reference data) | `?countryId` | city list | reads `cities` |
-| /api/clicker-sets | GET, POST, PUT, DELETE | GET none (read); writes **none — GAP** | bodies; `?clickerSetId` | `{success,sets[]}` | insert/update/delete clicker sets + groups collections |
+| /api/auto-generate-chart-block | POST | requireEditorAccess (7d3ef3bb) | `{variable,…}` | `{success,chartId,blockId?}` | insert/update `chart_configurations`, `data_blocks` |
+| /api/available-fonts | GET, POST, PUT, DELETE | requireSession (all methods) | `?includeInactive`; bodies; `?id&hardDelete` | `{success,fonts[]}` | insert/update/delete `available_fonts` |
+| /api/cities | GET | requireSession | `?countryId` | city list | reads `cities` |
+| /api/clicker-sets | GET, POST, PUT, DELETE | GET none (page-password editor read; lazily inserts the default set); POST/PUT/DELETE requireAdmin | bodies; `?clickerSetId` | `{success,sets[]}` | insert/update/delete clicker sets + groups collections |
 | /api/client-error | POST | none (public-by-design: anonymous crash reporting, documented in-file) | error report body | `{success}` | server-side structured log only |
 | /api/contact | POST | none (public-by-design: public contact form; sanitized + size-limited) | `{name,email,message}` | `{success}` | inserts `contact_inquiries` |
-| /api/content-assets | GET, POST, PUT, DELETE | GET none (public asset read for reports); POST getAdminUser; PUT/DELETE **none — GAP** | GET `?type&category&tags&search&sort…`; bodies; DELETE `?id\|slug&force` | `{success,assets[]}` | insert/update/delete `content_assets`; reads `chart_configurations` on delete |
-| /api/content-assets/usage | GET | **none — GAP** (low: read-only usage lookup) | `?slug` | usage refs | reads `chart_configurations` |
+| /api/content-assets | GET, POST, PUT, DELETE | GET none (public asset read for reports); POST/PUT/DELETE requireSession | GET `?type&category&tags&search&sort…`; bodies; DELETE `?id\|slug&force` | `{success,assets[]}` | insert/update/delete `content_assets`; reads `chart_configurations` on delete |
+| /api/content-assets/usage | GET | requireSession | `?slug` | usage refs | reads `chart_configurations` |
 | /api/countries/[code] | GET | none (public-by-design: reference data) | path code | country | country service |
 | /api/countries | GET | none (public-by-design: reference data) | `?region` | country list | country service |
 | /api/csrf-token | GET | none (public-by-design: CSRF bootstrap) | — | `{token}` + cookie | sets CSRF cookie |
 | /api/data-blocks | GET, POST, PUT, DELETE | requireAdmin, all methods (messmass#386 admin-only read; #400 admin role) | bodies; `?id` | `{success,blocks[]}` | insert/update/delete `data_blocks` |
 | /api/data-blocks/duplicate | POST | requireAdmin | `{sourceBlockId,name?}` | `{success,blockId,block}` | inserts a `data_blocks` copy with `sourceBlockId` lineage (messmass#230) |
-| /api/debug/categorized-hashtags | GET | **none — GAP** (debug endpoint) | — | hashtag migration debug data | reads `projects` |
+| /api/debug/categorized-hashtags | GET | requireSession | — | hashtag migration debug data | reads `projects` |
 | /api/debug/notifications | GET | getAdminUser | — | notification debug data | reads `notifications` |
-| /api/debug/overview-block | GET | **none — GAP** (debug endpoint) | — | data-block debug dump | reads `data_blocks` |
+| /api/debug/overview-block | GET | requireSession | — | data-block debug dump | reads `data_blocks` |
 | /api/drive-folders/[linkId] | PATCH, DELETE | getAdminUser | `?projectId`; PATCH body | `{success}` | update/delete `drive_folder_links` |
 | /api/drive-folders | GET, POST | getAdminUser | `?projectId`; POST folder body | `{success,folders[]}` | reads/inserts `drive_folder_links` |
 | /api/filter-slug | POST | requireSession | `{hashtags[]}` | `{success,slug}` | mints filter slug (`filter_slugs`) |
 | /api/football-data/fixtures | GET | getAdminUser | `?competitionId&partnerId&status&dateFrom&dateTo&limit&offset` | fixtures | reads `football_data_fixtures` |
 | /api/football-data/sync | POST | getAdminUser | `{…options}` | `{success,synced}` | outbound football-data.org; writes `football_data_fixtures` |
 | /api/google-sheets/template | GET | none (public-by-design: static CSV template) | `?context` | CSV attachment | none |
-| /api/grid-settings | GET, PUT | GET none (public layout config); PUT **none — GAP** (in-file comment admits auth deferred) | PUT `{desktopUnits,tabletUnits,mobileUnits}` | `{success,settings}` | updates `settings` |
-| /api/images | GET | none (public-by-design: report images) | `?projectId\|slug` | image URL list | reads `projects` |
-| /api/landing-report | GET | none (public-by-design: landing page content) | — | landing report payload | reads `projects`, `report_templates`, `data_blocks`, `chart_configurations`, `report_styles`, `partners` |
+| /api/grid-settings | GET, PUT | requireSession (both methods) | PUT `{desktopUnits,tabletUnits,mobileUnits}` | `{success,settings}` | updates `settings` |
 | /api/landing-static | GET | none (public-by-design: pre-generated landing snapshot) | — | `{staticSnapshot,generatedAt}` | reads `settings` |
-| /api/me | GET | none (public-by-design: session probe, returns cookie-derived booleans only) | — | `{authenticated,user?}` | none |
 | /api/loyalty-missions | GET, POST | requireAdmin | POST `{name,type,pointsPerCompletion,repeatable,partnerId?}` | `{success,mission\|missions}` | reads/writes `loyalty_missions` (messmass#229) |
 | /api/loyalty-missions/[id] | GET | requireAdmin | — | `{success,mission,participation}` | reads `loyalty_missions`; computes participation from `loyalty_completions` |
 | /api/loyalty-missions/[id]/completions | GET, POST | requireAdmin | POST `{fanIdentityId,occurredAt?}` | `{success,completion\|completions}` | writes `loyalty_completions` + a `fan_identity_link` (messmass#227) |
 | /api/notifications/mark-read | PUT | getAdminUser | `{ids?\|all}` | `{success,modified}` | updateMany `notifications` |
 | /api/notifications | GET | getAdminUser | `?limit&offset&unreadOnly&archivedOnly&excludeArchived` | notifications | reads `notifications` |
-| /api/organizations/edit/[id] | GET, PUT | **none — GAP** (no requirePageAccess despite 'organization-edit' page-password type existing) | `?variant`; PUT `{name,metadata,…}` | org edit payload | PUT updates `organizations` |
+| /api/organizations/edit/[id] | GET, PUT | requireOrgEditPageAccess (route-local: when protected, admin session or an 'organization-edit' grant for the base or variant key; messmass#386) | `?variant`; PUT `{name,metadata,…}` | org edit payload | PUT updates `organizations` |
 | /api/organizations/report/[id]/activities | GET | none (public-by-design: shareable org report) | `?variant` | org activities | reads `organizations`, `partners`, `projects` |
 | /api/organizations/report/[id] | GET | none (public-by-design: shareable org report) | `?variant` | org report | reads `organizations`, `partners`, `projects` |
-| /api/page-passwords | POST, PUT | POST requireSession (minting/revealing passwords — F-009 fix documented in-file); PUT none (public-by-design: PUT *is* the password check; admin session bypasses) | `{pageId,pageType,password?/regenerate?}` | `{success,…grant}` | reads/writes page-password store; PUT sets access grant |
+| /api/page-passwords | GET, POST, PUT, DELETE | GET/POST/DELETE requireSession (status read / minting-revealing / removal — F-009 fix documented in-file); PUT none (public-by-design: PUT *is* the password check; admin session bypasses) | GET/DELETE `?pageId&pageType`; POST `{pageId,pageType,regenerate?}`; PUT `{pageId,pageType,password}` | `{success,…grant}` | reads/writes page-password store (DELETE removes protection); PUT sets access grant |
 | /api/paid-campaigns | GET, POST | requireAdmin | POST `{name,platform,projectId,spend,currency,notes?}` | `{success,campaign\|campaigns}` | reads/writes `paid_campaigns` (messmass#226) |
 | /api/paid-campaigns/[id] | DELETE | requireAdmin | — | `{success}` | deletes from `paid_campaigns` |
 | /api/paid-campaigns/[id]/measurement | GET | requireAdmin | — | `{success,campaign,organicEvidence,costPerBitlyClick}` | reads `paid_campaigns`, `projects`, `bitly_project_links` -- paid spend juxtaposed with real organic evidence, not attributed |
 | /api/stakeholder/invite | POST | requireAdmin | `{email,role,scopeType,scopeId}` | `{success,grant,loginUrl}` | writes `stakeholder_grants` (messmass#231) |
-| /api/stats | GET | none (public-by-design: redirect helper into the guarded stats route) | `?slug\|id` | redirect or basic info | none |
+| /api/stats | GET | requireSession | `?slug\|id` | redirect or basic info | none |
 | /api/user-preferences | GET, PUT | getAdminUser | PUT preferences body | `{success,preferences}` | upserts `user_preferences` |
-| /api/variables-config | GET, POST, PUT, DELETE | GET none (read-only metadata); writes **none — GAP** | bodies; `?action`/`?name` | `{success,variables[]}` | update/delete `variables_metadata` store |
-| /api/variables-groups | GET, POST, DELETE | GET none (read); writes **none — GAP** | `?clickerSetId`; POST body; DELETE `?clickerSetId&groupOrder` | `{success,groups[]}` | insert/update/delete variable groups (+ clicker-set seed) |
+| /api/variables-config | GET, POST, PUT, DELETE | GET none (read-only metadata, editor read); POST/PUT/DELETE requireAdmin (7d3ef3bb) | bodies; `?action`/`?name` | `{success,variables[]}` | update/delete `variables_metadata` store |
+| /api/variables-groups | GET, POST, DELETE | GET none (editor read; lazy default-set insert + legacy backfill); POST/DELETE requireAdmin | `?clickerSetId`; POST body; DELETE `?clickerSetId&groupOrder` | `{success,groups[]}` | insert/update/delete variable groups (+ clicker-set seed) |
 
 ## Adjudication of routes with no auth guard
 
 Re-run 2026-09-16 against current code, per HTTP method rather than per file.
+Buckets re-checked @ dd34e229 (2026-09-28): unchanged.
 CSRF is never counted as a guard: any anonymous caller can fetch the token from
 `GET /api/csrf-token`, which is the whole reason `lib/apiGuards.ts` exists.
 
@@ -421,8 +420,8 @@ protected data via `requirePageAccess` — not by these.
 
 ### Corrections to endpoints.json markers found during this pass
 
-- `/api/admin/project-partners`: marker says getAdminUser, but the function is imported and never called — both methods are unauthenticated.
-- `/api/content-assets`: marker says getAdminUser, but only POST calls it; PUT and DELETE are unauthenticated.
-- `/api/admin/permissions`, `/api/admin/projects`, `/api/admin/projects/[id]`, `/api/admin/users`: marker scan shows none/getAdminUser, but these actually validate an SSO bearer token against the SSO service — they are guarded.
+- `/api/admin/project-partners`: marker said getAdminUser, but the function was imported and never called — both methods were unauthenticated. Since fixed: both are requireAdmin.
+- `/api/content-assets`: marker said getAdminUser, but only POST called it; PUT and DELETE were unauthenticated. Since fixed: POST/PUT/DELETE are requireSession.
+- `/api/admin/permissions`, `/api/admin/projects/[id]`: marker scan shows none/getAdminUser, but these actually validate an SSO bearer token against the SSO service — they are guarded. (`/api/admin/projects` and `/api/admin/users` were deleted in 62a47a0d.)
 - `/api/report-templates` and all `/api/v3/*` routes: guarded via `withOrgContext`/`validateOrganizationAccess` wrappers (both call getAdminUser), which marker scans that look for direct calls can miss.
-- `/api/admin/filter-style`, `/api/admin/hashtag-style`, `/api/admin/ui-settings`, `/api/data-blocks`, `/api/filter-slug`, `/api/partners/upload-logo`, `/api/partners/[id]/google-sheet/*`: guarded by `requireSession` (marker list did not track that guard).
+- `/api/admin/filter-style`, `/api/admin/hashtag-style`, `/api/admin/ui-settings`, `/api/data-blocks`, `/api/filter-slug`, `/api/partners/upload-logo`, `/api/partners/[id]/google-sheet/*`: guarded by `requireSession` (marker list did not track that guard). The first four have since moved to `requireAdmin` (#400).

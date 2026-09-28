@@ -31,8 +31,9 @@ export interface UserDoc {
   //      login credential AND (when apiKeyEnabled) the API key, so rotating one meant rotating
   //      both and a leaked API key was also a leaked login. apiKeyHash is generated fresh via
   //      generateApiKey() (see below), never derived from `password`/`passwordHash`, so either
-  //      credential can be rotated independently. Accounts without this field keep working via
-  //      the legacy password-as-key path in lib/apiAuth.ts until an admin explicitly rotates them.
+  //      credential can be rotated independently. It is the only credential lib/apiAuth.ts
+  //      accepts: the legacy password-as-key path is gone (6f31990d), so an account without
+  //      this field has no working API key until an admin rotates one for it.
   apiKeyHash?: string
   lastLogin?: string // ISO 8601 with milliseconds (optional for backward compatibility)
   // WHAT: SSO subject id (OIDC `sub`) — set when this user was created or has ever
@@ -294,9 +295,10 @@ export async function verifyApiKey(plaintextKey: string, apiKeyHash: string): Pr
  *      no direct equality query for "which user has this key", so every account
  *      that has migrated onto the new format is compared in turn.
  * SCALE NOTE: Only accounts an admin has explicitly rotated onto apiKeyHash carry
- *      this field, so this set stays small (see lib/apiAuth.ts for the fallback
- *      to the legacy direct-lookup path for everyone else). If/when most accounts
- *      migrate, this should move to a keyed-prefix lookup instead of a full scan.
+ *      this field, so this set stays small (there is no other API-key path; the
+ *      legacy direct-lookup fallback was removed in 6f31990d). If most accounts
+ *      ever carry a key, this should move to a keyed-prefix lookup instead of a
+ *      full scan.
  */
 export async function findUserByApiKeyHash(candidateKey: string): Promise<UserDoc | null> {
   const col = await getUsersCollection()

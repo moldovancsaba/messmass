@@ -71,8 +71,14 @@ gh issue comment <ISSUE_NUMBER> --repo moldovancsaba/messmass --body-file /tmp/s
 ```
 
 ## 8. {messmass} Canonical Delivery Docs
+- [HANDOVER.md](../HANDOVER.md) — current repo truth and latest delivery state
 - [index.md](index.md) — canonical docs entrypoint
-- [messmass-codex-brain-dump.md](messmass-codex-brain-dump.md) — quick repo refresher
-- [operations-action-plan.md](operations/operations-action-plan.md) — execution queue and state memory
-- [operations-delivery-focus.md](operations/operations-delivery-focus.md) — board-derived priority view
-- [NEXT_AGENT_PROMPT.md](NEXT_AGENT_PROMPT.md) — next-agent continuation package
+- [operations-release-notes.md](operations/operations-release-notes.md) — shipped version history
+- [fleet-architecture.md](_audit/fleet-architecture.md) — canonical map of every cross-app edge in the fleet
+- [drift-register.md](_audit/drift-register.md) — doc-vs-code drift found by audits and its status
+
+Historical (reference only, not current delivery truth):
+- [messmass-codex-brain-dump.md](messmass-codex-brain-dump.md) — repo refresher from the 2026-06 docs refactor
+- [operations-action-plan.md](operations/operations-action-plan.md) — former execution queue (last updated 2026-05-20)
+- [operations-delivery-focus.md](operations/operations-delivery-focus.md) — former board-derived priority view (last updated 2026-06-25)
+- [NEXT_AGENT_PROMPT.md](NEXT_AGENT_PROMPT.md) — former continuation package, superseded by HANDOVER.md

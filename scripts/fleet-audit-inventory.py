@@ -32,7 +32,7 @@ fleet repo so each CI runs the identical check):
                      feed a broken link to the link resolver; exit 0 only if
                      both are detected.
 
-Legacy fleet mode (no flag, optional repo names) still writes all four repos
+Legacy fleet mode (no flag, optional repo names) still writes all five repos
 under /Users/Shared/Projects for the audit workstation.
 """
 
@@ -46,7 +46,7 @@ import sys
 from datetime import datetime, timezone
 from pathlib import Path
 
-FLEET = ["messmass", "camera", "fanmass", "try-on"]
+FLEET = ["messmass", "camera", "fanmass", "try-on", "savetheworld"]
 PROJECTS = Path("/Users/Shared/Projects")
 
 SKIP_DIRS = {"node_modules", ".next", ".git", "vendor", ".venv311", ".venv", "coverage", "queue", "outputs", "gfpgan", "__pycache__", ".claude", ".pytest_cache", ".ruff_cache", ".mypy_cache"}
@@ -59,6 +59,8 @@ AUTH_MARKERS = [
     "requireCameraIntegrationAuth", "getServerSession", "isGlobalAdminSession", "getAdminUser",
     "validateApiKey", "require_api_key", "api_key", "verifyMachineToken", "checkAuth",
     "withErrorHandler", "assertAdmin", "requireSession", "requireAdmin",
+    "assertInternalSavetheworldSecret", "assertCameraSecret", "requirePartnerWrite",
+    "requireProjectWrite", "validateOrganizationAccess",
 ]
 
 HTTP_METHODS = ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS", "HEAD"]
@@ -77,7 +79,7 @@ CONTRACT_FRESHNESS_COMMIT_THRESHOLD = 30
 # can't even be checked, let alone trusted.
 CONTRACT_FRESHNESS_FAIL_THRESHOLD = 90
 # Group 1 = the repo the stamp names (empty for the bare "verified @ <sha>" form), group 2 = the sha.
-STAMP_RE = re.compile(r"[Vv]erified\s+(?:@\s*|(messmass|camera|fanmass|try-on)\s+)?`?([0-9a-f]{7,40})`?")
+STAMP_RE = re.compile(r"[Vv]erified\s+(?:@\s*|(messmass|camera|fanmass|try-on|savetheworld)\s+)?`?([0-9a-f]{7,40})`?")
 LINK_RE = re.compile(r"\[[^\]]*\]\(([^)\s]+)(?:\s+\"[^\"]*\")?\)")
 
 

@@ -1,12 +1,12 @@
 # {messmass} Authentication & Access Control System
 Status: Active
-Last Updated: 2026-09-07T16:00:00.000Z
+Last Updated: 2026-09-28T12:00:00.000Z
 Canonical: Yes
 Owner: Security
-Auth flow verified against code @ 62a47a0d (messmass#349)
+Auth flow verified against code @ dd34e229 (messmass#349; re-verified 2026-09-28)
 
 **Version:** 12.3.37
-**Last Updated:** 2026-09-07T16:00:00.000Z (UTC)
+**Last Updated:** 2026-09-28T12:00:00.000Z (UTC)
 **Status:** Production
 **Maintainer:** Security
 
@@ -14,7 +14,7 @@ Auth flow verified against code @ 62a47a0d (messmass#349)
 
 ## Executive Summary
 
-{messmass} implements a **zero-trust, dual-layer authentication system** for enterprise event analytics with granular access control:
+{messmass} has **four independent auth layers**, each checked server-side: the admin session (DoneIsBetter SSO), page passwords, machine/API tokens, and stakeholder sessions (see "Core Concepts" below):
 
 ### Key Features
 
@@ -100,7 +100,7 @@ Response:
 ```json
 {
   "shareableLink": {
-    "url": "https://messmass.com/stats/my-event-slug",
+    "url": "https://messmass.com/report/my-event-slug",
     "password": "a1b2c3d4e5f6789012345678901234ab"
   }
 }
@@ -116,7 +116,7 @@ Response:
 # PUT /api/page-passwords
 curl -X PUT https://messmass.com/api/page-passwords \
   -H "Content-Type: application/json" \
-  -d '{"pageId":"my-event-slug","pageType":"stats","password":"a1b2c3d4..."}'
+  -d '{"pageId":"my-event-slug","pageType":"event-report","password":"a1b2c3d4..."}'
 ```
 
 Response:
@@ -144,7 +144,7 @@ export default function PasswordGate({
   pageType
 }: {
   pageId: string
-  pageType: 'stats'|'edit'|'filter'
+  pageType: 'event-report'|'edit'|'filter'
 }) {
   const [pwd, setPwd] = useState('')
   const [ok, setOk] = useState<boolean | null>(null)
@@ -214,7 +214,7 @@ export default function PasswordGate({
 ┌─────────────────────────────────────────────────────────────┐
 │                      DATA ACCESS LAYER                       │
 │  • MongoDB: Users collection (admin credentials)            │
-│  • MongoDB: pagePasswords collection (access tokens)        │
+│  • MongoDB: page_passwords collection (access tokens)       │
 │  • MongoDB: Projects, Partners, Analytics (business data)   │
 └─────────────────────────────────────────────────────────────┘
 ```
@@ -228,30 +228,37 @@ export default function PasswordGate({
 - Never trust client-only checks; always validate server-side
 - Admin session bypasses page password requirements
 
-**Where the password prompt appears** (verified against code @ v12.3.36, 2026-09-07):
+**Where the password prompt appears** (verified against code @ v12.3.22, 2026-09-07):
 
 | Page type | Page | Prompt rendered by | Data route enforcement |
 |---|---|---|---|
-| `event-report` | `/report/[slug]` | server layout `app/report/[slug]/layout.tsx` → `ServerPageGate` (added v12.3.36; before that the page had **no prompt at all**, so a protected share link crashed with a JSON-parse message) | `requirePageAccess('event-report', slug)` in `GET /api/projects/stats/[slug]` |
+| `event-report` | `/report/[slug]` | server layout `app/report/[slug]/layout.tsx` → `ServerPageGate` (added v12.3.22; before that the page had **no prompt at all**, so a protected share link crashed with a JSON-parse message) | `requirePageAccess('event-report', slug)` in `GET /api/projects/stats/[slug]` |
 | `partner-report` | `/partner-report/[slug]` | server component → `ServerPageGate` | server component reads the DB only after the check |
 | `organization-report` | `/organization-report/[id]` | none | none (1 password configured; not traced) |
 | `filter` | `/filter/[slug]` | client `PagePasswordLogin` | `requirePageAccess('filter', slug)` |
 | `hashtag` | `/hashtag/[hashtag]` | client `PagePasswordLogin` | none |
 | `edit` | `/edit/[slug]` | client `PagePasswordLogin` | `requirePageAccess('edit', slug)`; `PUT /api/projects` via `requireProjectWrite` |
-| `partner-edit` / `organization-edit` | `/partner-edit/[slug]`, `/organization-edit/[id]` | client `PagePasswordLogin` | `requirePartnerWrite` / gap (see `docs/_audit/api-reference.md`) |
+| `partner-edit` / `organization-edit` | `/partner-edit/[slug]`, `/organization-edit/[id]` | client `PagePasswordLogin` | `requirePartnerWrite` / `requireOrgEditPageAccess` (`app/api/organizations/edit/[id]/route.ts:21`, called by GET :151 and PUT :238; admin session or this page's grant, base + variant keys) |
 
 All prompts submit to `PUT /api/page-passwords`, which mints the `page-access` grant cookie; a signed-in admin bypasses every prompt and every data-route check.
 
-**Admin Session (DB-Backed):**
-- Admins log in via DoneIsBetter SSO (OAuth2). The email+password login is retired (`POST /api/admin/login` → 410 Gone); the `users` collection stores the session/role, not a login password.
-- Successful login creates base64-encoded JSON session token
-- Token contains: `{token, expiresAt, userId, role}`
+**Admin Session (SSO):**
+- Admins log in via DoneIsBetter SSO (OAuth2). The email+password login is retired (`POST /api/admin/login` → 410 Gone); the `users` collection holds the auto-provisioned profile and role, not a login credential.
+- Successful login mints a JWT signed HS256 with `JWT_SECRET` (`lib/sessionTokens.ts:2`); the old unsigned base64 format was removed (F-002)
+- Payload: `{userId, role, expiresAt, token}` plus the standard `iat`/`exp` claims
 - Cookie: HttpOnly, SameSite=Lax, Secure (production), 7-day expiration
+- `middleware.ts` verifies the signature and expiry of this cookie with Web Crypto (`lib/edgeSessionToken.ts`) before any `/admin/**` page loads (F-003, #392, 71b5e23f); user existence and role are checked per route by `getAdminUser()` / `requireAdmin()`
+
+**Stakeholder Session (messmass#231, 35bc7e3d):**
+- An admin invites an external sponsor/agency/media/operator with `POST /api/stakeholder/invite`, which writes a grant (email, role, scope) to the `stakeholder_grants` collection (`lib/stakeholderGrants.ts`).
+- The stakeholder signs in through the same SSO client via `GET /api/auth/sso/stakeholder-login`; `GET /api/auth/sso/stakeholder-callback` exchanges the code exactly like the admin callback, then looks the verified email up in `stakeholder_grants` instead of the SSO per-app permission store, so no SSO staff permission is needed.
+- On a match it sets a separate HttpOnly `stakeholder-session` cookie (JWT HS256, `JWT_SECRET`, 30 days; `lib/auth/stakeholderSession.ts`) scoped to one report.
+- `requireStakeholderRole` (`lib/apiGuards.ts`) is the guard for it; as of dd34e229 no route consumes it yet. The `stakeholder-callback` redirect_uri must be registered on SSO before the flow is reachable.
 
 **Page-Specific Passwords:**
 - Each page (`event-report`, `partner-report`, `organization-report`, `edit`, `partner-edit`, `organization-edit`, `filter`, `hashtag`) can have a unique MD5-style token (32 hex chars)
 - Generated via `randomBytes(16).toString('hex')` (Node crypto)
-- Stored in MongoDB `pagePasswords` collection with usage tracking
+- Stored in MongoDB `page_passwords` collection with usage tracking
 - Optional expiration date (`expiresAt`) for temporary access
 
 ---
@@ -261,12 +268,25 @@ All prompts submit to `PUT /api/page-passwords`, which mints the `page-access` g
 ### Users Collection (`users`)
 
 ```typescript
+// UserDoc in lib/users.ts; roles from lib/roles.ts:13
 {
   _id: ObjectId,                    // MongoDB auto-generated ID
   email: string,                     // Unique, lowercase, indexed
   name: string,                      // Display name (e.g., "John Doe")
-  role: 'admin' | 'super-admin',    // Permission level
-  password: string,                  // MD5-style random token (32 hex chars)
+  role: 'guest' | 'user' | 'admin' | 'superadmin' | 'api',
+  password?: string,                 // Legacy plaintext local password (deprecated)
+  passwordHash?: string,             // Bcrypt hash of the local password
+  apiKeyHash?: string,               // Bcrypt hash of the public API key (the only API credential)
+  apiKeyEnabled?: boolean,           // Public API access on/off (default false)
+  apiUsageCount?: number,
+  lastAPICallAt?: string,
+  apiWriteEnabled?: boolean,         // Public API write access on/off (default false)
+  apiWriteCount?: number,
+  lastAPIWriteAt?: string,
+  ssoUserId?: string,                // SSO subject id (OIDC sub)
+  roleManagedLocally?: boolean,      // Role pinned in messmass; SSO login leaves it alone
+  organizationIds?: string[],        // V3 organization scoping
+  lastLogin?: string,
   createdAt: string,                 // ISO 8601 with milliseconds (UTC)
   updatedAt: string                  // ISO 8601 with milliseconds (UTC)
 }
@@ -281,20 +301,20 @@ All prompts submit to `PUT /api/page-passwords`, which mints the `page-access` g
   "_id": "507f1f77bcf86cd799439011",
   "email": "admin@messmass.com",
   "name": "System Administrator",
-  "role": "super-admin",
-  "password": "a1b2c3d4e5f6789012345678901234ab",
+  "role": "superadmin",
   "createdAt": "2025-01-27T10:00:00.000Z",
   "updatedAt": "2025-01-27T12:00:00.000Z"
 }
 ```
 
-### Page Passwords Collection (`pagePasswords`)
+### Page Passwords Collection (`page_passwords`)
 
 ```typescript
 {
   _id: ObjectId,                     // MongoDB auto-generated ID
   pageId: string,                     // Project slug, edit slug, or filter hash
-  pageType: 'stats' | 'edit' | 'filter',  // Type of protected resource
+  pageType: 'event-report' | 'partner-report' | 'organization-report' | 'edit'
+          | 'partner-edit' | 'organization-edit' | 'filter' | 'hashtag',  // lib/pagePassword.ts PageType
   password: string,                   // MD5-style random token (32 hex chars)
   createdAt: string,                  // ISO 8601 with milliseconds (UTC)
   expiresAt?: string,                 // Optional expiration (null = never expires)
@@ -312,7 +332,7 @@ All prompts submit to `PUT /api/page-passwords`, which mints the `page-access` g
 {
   "_id": "507f191e810c19729de860ea",
   "pageId": "championship-final-2025",
-  "pageType": "stats",
+  "pageType": "event-report",
   "password": "d4e5f6a1b2c3789012345678901234cd",
   "createdAt": "2025-01-27T12:00:00.000Z",
   "expiresAt": null,
@@ -484,7 +504,7 @@ export async function DELETE() {
 ```json
 {
   "pageId": "championship-final-2025",
-  "pageType": "stats",
+  "pageType": "event-report",
   "regenerate": false
 }
 ```
@@ -494,14 +514,14 @@ export async function DELETE() {
 {
   "success": true,
   "shareableLink": {
-    "url": "https://messmass.com/stats/championship-final-2025",
+    "url": "https://messmass.com/report/championship-final-2025",
     "password": "d4e5f6a1b2c3789012345678901234cd",
-    "pageType": "stats",
+    "pageType": "event-report",
     "expiresAt": null
   },
   "pagePassword": {
     "pageId": "championship-final-2025",
-    "pageType": "stats",
+    "pageType": "event-report",
     "password": "d4e5f6a1b2c3789012345678901234cd",
     "createdAt": "2025-01-27T16:00:00.000Z",
     "usageCount": 0
@@ -511,7 +531,8 @@ export async function DELETE() {
 
 **Parameters:**
 - `pageId`: Unique identifier (slug) for the page
-- `pageType`: One of `'stats'`, `'edit'`, or `'filter'`
+- `pageType`: One of `event-report`, `partner-report`, `organization-report`, `edit`,
+  `partner-edit`, `organization-edit`, `filter`, `hashtag`
 - `regenerate`: If `true`, creates new password (invalidates old one)
 
 **Security:**
@@ -525,7 +546,7 @@ export async function DELETE() {
 ```json
 {
   "pageId": "championship-final-2025",
-  "pageType": "stats",
+  "pageType": "event-report",
   "password": "d4e5f6a1b2c3789012345678901234cd"
 }
 ```
@@ -596,7 +617,7 @@ GET /api/page-passwords?pageId=championship-final-2025&pageType=event-report
 ```json
 {
   "success": true,
-  "url": "https://messmass.com/stats/championship-final-2025",
+  "url": "https://messmass.com/report/championship-final-2025",
   "isProtected": true
 }
 ```
@@ -661,7 +682,7 @@ const globalStats = await getPasswordStats()
 //   neverUsed: 52,
 //   mostUsed: {
 //     pageId: "championship-final-2025",
-//     pageType: "stats",
+//     pageType: "event-report",
 //     usageCount: 247,
 //     lastUsedAt: "2025-01-27T16:25:00.000Z"
 //   }
@@ -1094,6 +1115,8 @@ if (process.env.NODE_ENV === 'development') {
 - `POST /api/admin/local-users` - Create new admin user
 - `PUT /api/admin/local-users/[id]` - Regenerate user password
 - `DELETE /api/admin/local-users/[id]` - Delete admin user
+- `POST /api/admin/local-users/[id]/api-access` - Rotate the user's API key (admin/superadmin; plaintext returned once)
+- `PUT /api/admin/local-users/[id]/api-access` - Enable/disable the user's API access (`{ enabled }`)
 
 ---
 
@@ -1143,53 +1166,47 @@ if (process.env.NODE_ENV === 'development') {
 
 ### Planned (Medium Priority)
 
-5. **Role-Based Permissions**
-   - Granular permissions (read-only, editor, manager)
-   - Resource-level permissions (per-project access)
+5. **Resource-Level Permissions**
+   - Per-role permissions already exist (`lib/roles.ts` `ROLE_PERMISSIONS`, F-005/#391):
+     superadmin read/write/delete/manage-users, admin read/write/delete, api/user/guest
+     read. Still planned: per-project/resource-level permissions.
 
-6. **OAuth Integration**
-   - Google Sign-In
-   - Microsoft Azure AD
-   - SSO for enterprise customers
-
-7. **Email Notifications**
+6. **Email Notifications**
    - Login from new device
    - Password change confirmation
 
-8. **API Keys**
-   - Generate API keys for automation
-   - Scope-limited keys
+DoneIsBetter SSO (OAuth2) is not planned work: it is already the only interactive sign-in
+(see "Admin Authentication" above).
 
 ---
 
-## Conclusion
+## Machine API Keys
 
-The {messmass} authentication system represents a **production-ready, enterprise-grade security implementation** with:
+Public REST callers (`/api/public/*` only) authenticate with a per-user Bearer key checked by
+`requireAPIAuth` (`lib/apiAuth.ts`).
 
-✅ **Zero known security vulnerabilities**
-✅ **100% test coverage on critical auth flows**
-✅ **Professional-grade code documentation**
-✅ **Comprehensive troubleshooting guides**
-✅ **Clear path for future enhancements**
-
-**System Reliability:**
-- 99.9% uptime in production
-- Zero authentication failures in 1000+ test iterations
-- Sub-20ms average authentication latency
-- Scales to 1000+ concurrent users without optimization
-
-**Code Quality:**
-- TypeScript strict mode (zero type errors)
-- ESLint compliant (zero critical warnings)
-- Full inline documentation (what + why comments)
-- Test-driven architecture (ready for automated testing)
+- **Issuing / rotating**: the admin users page's "Rotate API Key" action calls
+  `POST /api/admin/local-users/[id]/api-access`. Since 12.3.37 it requires an `admin` or
+  `superadmin` session, and only a superadmin can act on a superadmin's key. A fresh key is
+  generated, only its bcrypt hash is stored (`apiKeyHash`), and the plaintext is returned
+  exactly once.
+- **Enable / disable**: `PUT` on the same route with `{ enabled: boolean }` toggles
+  `apiKeyEnabled` (same role rule). `apiWriteEnabled` is checked only by
+  `requireAPIWriteAuth`, which no route calls as of dd34e229, and no admin endpoint
+  sets it (`toggleAPIWriteAccess` in `lib/users.ts` has no route caller).
+- **No password fallback**: login passwords are never accepted as API keys; the legacy
+  password-as-key path was removed (6f31990d, #397/F-011). An account without an
+  `apiKeyHash` has no working key until an admin rotates one.
+- **Error codes** (`lib/apiAuth.ts`): `MISSING_TOKEN`, `INVALID_TOKEN`,
+  `API_ACCESS_DISABLED`, `AUTH_ERROR` and `COOKIES_NOT_ALLOWED` (all 401),
+  `WRITE_ACCESS_DISABLED` (403).
 
 ---
 
 **Document Status:** ✅ Production-Ready
 **Review Date:** 2025-01-27T12:31:36.000Z
 **Approved For:** Professional Code Review, Enterprise Deployment, Team Onboarding
-**Maintained By:** Warp AI Development Team
+**Maintained By:** Security
 
 ---
 
