@@ -11,6 +11,24 @@ import { info, warn } from '@/lib/logger';
 // WHY: Uses MongoDB operations that require Node.js APIs
 export const runtime = 'nodejs';
 
+// SECURITY: getAdminUser() returns ANY signed-in account -- SSO auto-provisions
+// guest/user/api roles too -- so on its own it let any of them mint (and receive
+// the plaintext of) another user's API key, or switch API access on or off.
+// Managing API keys is credential issuance: require the same admin/superadmin
+// bar as the users list (/api/admin/local-users) that exposes these buttons, and
+// never let a non-superadmin act on a superadmin's key.
+function forbidden(error: string) {
+  return NextResponse.json({ success: false, error }, { status: 403 });
+}
+
+function isKeyManager(role: string | undefined): boolean {
+  return role === 'admin' || role === 'superadmin';
+}
+
+function canManageKeyOf(actorRole: string | undefined, targetRole: string | undefined): boolean {
+  return targetRole !== 'superadmin' || actorRole === 'superadmin';
+}
+
 /**
  * POST /api/admin/local-users/[id]/api-access
  * WHAT: Generates a fresh, independent API key for a user and stores only its
@@ -41,6 +59,10 @@ export async function POST(
         { status: 401 }
       );
     }
+    if (!isKeyManager(admin.role)) {
+      warn('API key rotation denied: insufficient role', { adminId: admin.id, role: admin.role, targetUserId: id });
+      return forbidden('Admin role required to manage API keys');
+    }
 
     const targetUser = await findUserById(id);
     if (!targetUser) {
@@ -48,6 +70,10 @@ export async function POST(
         { success: false, error: 'User not found' },
         { status: 404 }
       );
+    }
+    if (!canManageKeyOf(admin.role, targetUser.role)) {
+      warn('API key rotation denied: non-superadmin targeting a superadmin', { adminId: admin.id, targetUserId: id });
+      return forbidden("Only a superadmin can manage a superadmin's API key");
     }
 
     const result = await rotateApiKey(id);
@@ -123,7 +149,11 @@ export async function PUT(
         { status: 401 }
       );
     }
-    
+    if (!isKeyManager(admin.role)) {
+      warn('API access toggle denied: insufficient role', { adminId: admin.id, role: admin.role, targetUserId: id });
+      return forbidden('Admin role required to manage API keys');
+    }
+
     // WHAT: Parse request body
     const body = await request.json();
     const { enabled } = body;
@@ -143,6 +173,10 @@ export async function PUT(
         { success: false, error: 'User not found' },
         { status: 404 }
       );
+    }
+    if (!canManageKeyOf(admin.role, targetUser.role)) {
+      warn('API access toggle denied: non-superadmin targeting a superadmin', { adminId: admin.id, targetUserId: id });
+      return forbidden("Only a superadmin can manage a superadmin's API key");
     }
     
     // WHAT: Check if disabling user with recent API activity

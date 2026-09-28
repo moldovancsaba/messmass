@@ -1,8 +1,41 @@
 # {messmass} Release Notes
 Status: Active
-Last Updated: 2026-09-12T12:50:00.000Z
+Last Updated: 2026-09-28T12:00:00.000Z
 Canonical: No
 Owner: Operations
+
+## [v12.3.37] — 2026-09-28T12:00:00.000Z
+
+Fleet release 12.3.37 (messmass, camera, fanmass, try-on, savetheworld) from the
+2026-09-28 alignment audit (local ↔ GitHub ↔ production).
+
+### Security
+- **API-key management had no role check.** `POST` (rotate) and `PUT` (toggle)
+  on `/api/admin/local-users/[id]/api-access` only required `getAdminUser()`,
+  which returns any signed-in account — SSO auto-provisions `guest`, `user` and
+  `api` roles too. Any of them could mint another user's API key, receive the
+  plaintext once, and act as that account on `/api/public/*`. Both handlers now
+  require `admin` or `superadmin` (the same bar as the users list that shows
+  these buttons), and only a superadmin can act on a superadmin's key.
+  Regression test: `tests/security/api-access-role.test.ts`.
+
+### Fixed
+- **Version bumps no longer rewrite history.** `npm run version:update` now bumps
+  the `Version:` stamp lines of every current doc itself
+  (`bumpVersionStamps()` in `scripts/lib/docs-version-check.js`), touching
+  nothing else. Bumps used to be a hand-run find-and-replace of the old version
+  across `docs/`, which silently re-dated past fixes to the newest version
+  ("added in v12.3.22" became "v12.3.36"). The audit and the bump share one
+  definition of a current doc (`isCurrentDocFile()`).
+
+### Fleet (other repos, same release)
+- camera: `POST /api/internal/savetheworld/events/[eventId]/publish-selfies` was
+  not scoped to its event (a second `$or` key overwrote the event `$or`), so one
+  click would have published every not-yet-visible selfie across all events.
+  Fixed and tested; production forensics showed it had never run.
+- fanmass: the local web API had been crash-looping since 2026-09-15 (~7,000
+  supervisor restarts): `/api/health` counted `jobs` with a full collection
+  scan (~13s, twice per probe) against a 15s probe budget. Now metadata counts.
 
 ## [v12.3.36] — 2026-09-15T10:00:00.000Z
 

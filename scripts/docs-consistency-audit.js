@@ -3,7 +3,7 @@
 const { execFileSync } = require('child_process');
 const fs = require('fs');
 const path = require('path');
-const { findVersionStamps, findVerificationStamps } = require('./lib/docs-version-check');
+const { findVersionStamps, findVerificationStamps, isCurrentDocFile } = require('./lib/docs-version-check');
 
 // How many commits behind HEAD a fleet-map "Verified messmass `sha`" stamp
 // can be before it's flagged as worth a fresh look. Chosen against this
@@ -26,15 +26,8 @@ const trackedFiles = execFileSync('git', ['ls-files'], { cwd: root, encoding: 'u
   .filter(Boolean);
 
 const markdownFiles = trackedFiles.filter((file) => /\.(md|mdx)$/.test(file));
-const currentDocFiles = markdownFiles.filter((file) => {
-  if (!file.startsWith('docs/') && file !== 'README.md' && file !== 'READMEDEV.md') return false;
-  if (file.startsWith('docs/archive/')) return false;
-  if (file.startsWith('docs/audits/')) return false;
-  if (file === 'docs/operations/operations-release-notes.md') return false;
-  if (file === 'docs/operations/operations-learnings.md') return false;
-  if (file === 'docs/operations/operations-action-plan.md') return false;
-  return true;
-});
+// Same set version:update bumps (scripts/lib/docs-version-check.js).
+const currentDocFiles = markdownFiles.filter(isCurrentDocFile);
 
 const failures = [];
 const warnings = [];

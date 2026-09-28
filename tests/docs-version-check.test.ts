@@ -3,7 +3,48 @@ import {
   hasVersionStamp,
   findVerificationStamps,
   nonFencedLines,
+  bumpVersionStamps,
+  isCurrentDocFile,
 } from '@/scripts/lib/docs-version-check';
+
+describe('bumpVersionStamps', () => {
+  const doc = [
+    '# Title',
+    '**Version:** 12.3.36',
+    '',
+    'The password gate was added in v12.3.22 and reworked in 12.3.36.',
+    '```',
+    'Version: 12.3.36 -> 12.3.37 (example)',
+    '```',
+    '*Version: 12.3.36 | Last Updated: 2026-09-17*',
+  ].join('\n');
+
+  it('rewrites only real stamp lines, never prose or fenced examples', () => {
+    const { content, changed } = bumpVersionStamps(doc, '12.3.37');
+    expect(changed).toBe(2);
+    expect(content).toContain('**Version:** 12.3.37');
+    expect(content).toContain('*Version: 12.3.37 | Last Updated: 2026-09-17*');
+    // History and code examples are untouched.
+    expect(content).toContain('added in v12.3.22 and reworked in 12.3.36.');
+    expect(content).toContain('Version: 12.3.36 -> 12.3.37 (example)');
+  });
+
+  it('is a no-op when stamps already match', () => {
+    const current = '**Version:** 12.3.37\n';
+    expect(bumpVersionStamps(current, '12.3.37')).toEqual({ content: current, changed: 0 });
+  });
+});
+
+describe('isCurrentDocFile', () => {
+  it('includes current docs and excludes archives and append-only logs', () => {
+    expect(isCurrentDocFile('README.md')).toBe(true);
+    expect(isCurrentDocFile('docs/architecture.md')).toBe(true);
+    expect(isCurrentDocFile('docs/archive/2025/old.md')).toBe(false);
+    expect(isCurrentDocFile('docs/audits/lld/findings.md')).toBe(false);
+    expect(isCurrentDocFile('docs/operations/operations-release-notes.md')).toBe(false);
+    expect(isCurrentDocFile('HANDOVER.md')).toBe(false);
+  });
+});
 
 describe('findVersionStamps', () => {
   it('matches **Version**: X (colon outside closing stars)', () => {

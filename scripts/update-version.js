@@ -73,6 +73,26 @@ if (!packageLock.packages['']) {
 packageLock.packages[''].version = version;
 writeJson('package-lock.json', packageLock);
 
+// WHAT: Bump the Version: stamp lines of every current doc (the set the docs
+//     audit enforces) -- and nothing else in those files.
+// WHY: Doing this by hand with a repo-wide find-and-replace of the old version
+//     rewrote history: prose like "fixed in v12.3.22" silently became the new
+//     version on every bump. bumpVersionStamps() only edits stamp lines.
+const { execFileSync } = require('child_process');
+const { isCurrentDocFile, bumpVersionStamps } = require('./lib/docs-version-check');
+const trackedDocs = execFileSync('git', ['ls-files'], { cwd: root, encoding: 'utf8' })
+  .split('\n')
+  .filter((file) => file && isCurrentDocFile(file));
+let bumpedFiles = 0;
+for (const file of trackedDocs) {
+  const { content, changed } = bumpVersionStamps(readText(file), version);
+  if (changed > 0) {
+    writeText(file, content);
+    bumpedFiles += 1;
+  }
+}
+console.log(`Bumped Version: stamps in ${bumpedFiles} current doc(s) to ${version}`);
+
 const releaseNotes = readText(releaseNotesPath);
 if (!releaseNotes.includes(`[v${version}]`)) {
   console.warn(`Warning: ${releaseNotesPath} does not contain an entry for v${version}`);
