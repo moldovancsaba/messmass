@@ -1,11 +1,11 @@
 # 📡 API Reference
 Status: Active
-Last Updated: 2026-05-14T10:00:00.000Z
+Last Updated: 2026-09-28T12:00:00.000Z
 Canonical: Yes
 Owner: Backend
 
 **Version:** 12.3.37
-**Last Updated:** 2026-06-26T10:00:00.000Z (UTC)
+**Last Updated:** 2026-09-28T12:00:00.000Z (UTC)
 **Status:** Production
 
 Quick API reference for {messmass}. See detailed guides for complete schemas and examples.
@@ -87,9 +87,13 @@ Create new project.
 **Body**: `{ eventName, eventDate, stats, hashtags?, categorizedHashtags? }`
 
 ### PUT /api/projects
-Update existing project.
+Update existing project. This is the event editor's save.
 
-**Body**: `{ _id, eventName?, eventDate?, stats?, hashtags?, categorizedHashtags? }`
+**Body**: `{ projectId, statsChanges?, statsRemoved?, statsIncrements?, hashtags?, categorizedHashtags?, tabId?, clientSeq? }`, or the older whole-`stats` form (never both). Every field is optional except `projectId` (the 24-hex id, as a string): a field left out keeps its stored value. `statsChanges` sets or (null) removes single stats, `statsIncrements` adds a whole number to a counter (the editor's clicker taps; needs `tabId` + `clientSeq`). Admin and superadmin sessions may also send `eventName`, `eventDate`, `styleId`, `reportTemplateId`, `partner1Id`, `partner2Id`.
+
+**Auth**: admin session, or the `page-access` grant for this event's edit link (issued by its edit password, or by opening an editor that has no password through its edit link). Anyone but an admin or superadmin -- a grant holder, or a signed-in account with another role -- changes stats and hashtags only; the other fields in the body are ignored. Without either: 401 `EDIT_ACCESS_REQUIRED`.
+
+**Checks**: malformed hashtag lists (not a list of non-empty texts; a category that is not a list) are refused with 400 before anything is written. With `tabId` + `clientSeq`, a save older than one already stored from the same tab, or the same save arriving twice, stores nothing and answers `{ success: true, stale: true }`. Full rules: [api-reference-complete.md](api-reference-complete.md).
 
 ### DELETE /api/projects
 Delete project.
@@ -109,7 +113,9 @@ List partners with pagination and search.
 Create new partner.
 
 ### PUT /api/partners
-Update partner.
+Update partner. Also the partner editor's save.
+
+**Auth**: admin session (every field), or a `partner-edit` grant from the partner-edit password (report content, logo, emoji, style, template and events-list switches only). An unprotected partner editor gives no grant: its link is the public report link. Without either: 401 `EDIT_ACCESS_REQUIRED`.
 
 ### DELETE /api/partners
 Delete partner.
@@ -309,6 +315,9 @@ All API endpoints return JSON with consistent structure:
 | Code | HTTP Status | Description |
 |------|-------------|-------------|
 | `UNAUTHORIZED` | 401 | No valid session |
+| `EDIT_ACCESS_REQUIRED` | 401 | An editor save or editor-driven write without an admin session or a current edit grant; reopen the edit link, enter the password, or sign in |
+| `PAGE_PASSWORD_REQUIRED` | 401 | The page is password protected and the caller holds no current grant for it |
+| `EDIT_LINK_REQUIRED` | 403 | `GET /api/projects/edit/<_id>`: the event editor was opened by its public id instead of its edit link |
 | `FORBIDDEN` | 403 | Insufficient permissions |
 | `NOT_FOUND` | 404 | Resource not found |
 | `VALIDATION_ERROR` | 400 | Invalid request data |
@@ -318,8 +327,14 @@ All API endpoints return JSON with consistent structure:
 
 ## Rate Limiting
 
-- **Admin APIs**: 100 requests/minute per session
-- **Public APIs**: 60 requests/minute per IP
+Counted per client IP + path in `middleware.ts` (`lib/rateLimit.ts`), first match wins:
+
+- **Auth** (`/api/admin/login`, `/api/auth/*`, except DELETE): 5 requests / 15 minutes
+- **Contact form** (`POST /api/contact`): 5 requests / 15 minutes
+- **Public pages** (`/stats/*`, `/hashtag/*`): 60 requests/minute
+- **Editor saves** (`PUT /api/projects`, `PUT /api/partners`, `PUT /api/partners/edit/<id-or-slug>`): 120 requests/minute
+- **Other writes** (POST, PUT, PATCH, DELETE): 30 requests/minute
+- **Reads** (GET): 500 requests/minute
 - **Bitly Sync**: 50 requests/minute (Bitly API limit)
 
 **Headers**:

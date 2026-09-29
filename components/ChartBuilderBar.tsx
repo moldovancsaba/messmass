@@ -4,9 +4,10 @@
 
 'use client';
 
-import { useState, useEffect, useMemo } from 'react';
+import { useMemo } from 'react';
 import MaterialIcon from './MaterialIcon';
 import { extractVariablesFromFormula } from '@/lib/formulaEngine';
+import { isBuilderEditableVariable, numericBuilderValue, useBuilderStatInputs } from '@/hooks/useBuilderStatInputs';
 
 interface ChartBuilderBarProps {
   chart: {
@@ -44,32 +45,14 @@ export default function ChartBuilderBar({ chart, stats, onSave }: ChartBuilderBa
     [elements]
   );
 
-  const [tempValues, setTempValues] = useState<Record<string, string>>(() => {
-    const initial: Record<string, string> = {};
-    variables.forEach((key) => {
-      const val = stats[key];
-      initial[key] = val !== undefined && val !== null ? String(val) : '0';
-    });
-    return initial;
-  });
-
-  useEffect(() => {
-    const next: Record<string, string> = {};
-    variables.forEach((key) => {
-      const val = stats[key];
-      next[key] = val !== undefined && val !== null ? String(val) : '0';
-    });
-    setTempValues((prev) => ({ ...prev, ...next }));
-  }, [stats, chart.chartId, variables]);
+  // Committed on blur only when changed there (see useBuilderStatInputs).
+  const { texts: tempValues, setText, onFocus, takeEdit } = useBuilderStatInputs(stats, variables, '0');
 
   const handleBlur = (key: string) => {
-    const raw = tempValues[key] ?? '0';
-    const num = raw === '' ? 0 : Math.max(0, parseFloat(raw) || 0);
-    const current = stats[key];
-    const currentNum = typeof current === 'number' ? current : parseFloat(String(current));
-    if (Number.isNaN(currentNum) || num !== currentNum) {
-      onSave(key, num);
-    }
+    const edited = takeEdit(key);
+    if (edited === null) return;
+    const num = numericBuilderValue(edited, stats[key]);
+    if (num !== null) onSave(key, num);
   };
 
   if (variables.length === 0) {
@@ -114,8 +97,10 @@ export default function ChartBuilderBar({ chart, stats, onSave }: ChartBuilderBa
                 id={`bar-${chart.chartId}-${key}`}
                 type="number"
                 value={tempValues[key] ?? '0'}
-                onChange={(e) => setTempValues((prev) => ({ ...prev, [key]: e.target.value }))}
+                onChange={(e) => setText(key, e.target.value)}
+                onFocus={() => onFocus(key)}
                 onBlur={() => handleBlur(key)}
+                readOnly={!isBuilderEditableVariable(key)}
                 min="0"
                 step="any"
                 className="form-input chart-builder-input"

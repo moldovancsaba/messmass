@@ -398,13 +398,16 @@ export default function ProjectsPageClient({ user }: ProjectsPageClientProps) {
     setIsUpdatingProject(true);
     
     try {
+      // WHAT: No `stats` in the body: this form never edits them.
+      // WHY: A body with `stats` replaces the stored stats whole with the copy
+      //     taken when this list loaded, undoing everything the event editor and
+      //     fanmass stored since. PUT /api/projects keeps a field the body leaves out.
       const requestBody = {
         projectId: editingProject._id,
         eventName: editProjectData.eventName.trim(),
         eventDate: editProjectData.eventDate,
         hashtags: editProjectData.hashtags,
         categorizedHashtags: editProjectData.categorizedHashtags,
-        stats: editingProject.stats,
         styleId: editProjectData.styleId || null // WHAT: API param still named styleId (backend converts to styleIdEnhanced)
       };
       

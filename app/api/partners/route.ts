@@ -8,9 +8,23 @@ import config from '@/lib/config';
 import { error as logError, info as logInfo } from '@/lib/logger';
 import { generateUniquePartnerViewSlug } from '@/lib/partnerIdentifier';
 import { syncPartnerToV3Entity } from '@/lib/v3/syncEngine';
-import { requirePartnerWrite, requireAdmin } from '@/lib/apiGuards';
+import { requirePartnerWriteAccess, requireAdmin, pickWritableFields, PARTNER_EDITOR_WRITABLE_FIELDS } from '@/lib/apiGuards';
+import {
+  parseStatsFieldChanges,
+  applyStatsFieldChanges,
+  statsUpdateOperators,
+  parseEditorSequence,
+  editorSequenceGuard,
+} from '@/lib/statsFieldChanges';
 
 export const dynamic = 'force-dynamic';
+
+// WHAT: Upper bound on one invocation of these handlers, in seconds.
+// WHY: The partner editor gives a save 25 seconds before it treats the request
+//     as lost and sends it again (SAVE_REQUEST_TIMEOUT_MS, lib/editorSaveQueue.ts).
+//     A save the platform let run past that could land after the retry had,
+//     so the function must be stopped first. Same limit as PUT /api/projects.
+export const maxDuration = 20;
 
 export async function GET(request: NextRequest) {
   // SECURITY (messmass#386): admin-only read; the file-level sweep missed
@@ -127,11 +141,17 @@ const db = client.db(config.dbName);
 export async function PUT(request: NextRequest) {
   try {
     const body = await request.json();
-    const { partnerId, name, emoji, showEmoji, logoUrl, hashtags, categorizedHashtags, stats, styleId, reportTemplateId, googleSheetsUrl, clickerSetId, sportsDb, bitlyLinkIds, showEventsList, showEventsListTitle, showEventsListDetails, showOnlyTeam1Events } = body;
+    const { partnerId } = body ?? {};
 
     if (!partnerId) {
       return NextResponse.json(
         { success: false, error: 'Partner ID is required' },
+        { status: 400 }
+      );
+    }
+    if (typeof partnerId !== 'string' || !/^[0-9a-f]{24}$/i.test(partnerId)) {
+      return NextResponse.json(
+        { success: false, error: 'Invalid partner ID' },
         { status: 400 }
       );
     }
@@ -141,16 +161,83 @@ const db = client.db(config.dbName);
 
     // F-009 straggler: this route shipped with CSRF as its only barrier, and
     // CSRF is not authentication. Admin session OR a partner-edit page
-    // password grant for this specific partner — the partner editor saves
-    // through here and authenticates by page password, not session.
-    const denied = await requirePartnerWrite(db as any, String(partnerId));
-    if (denied) return denied;
+    // grant for this specific partner — the partner editor saves through
+    // here and authenticates by page password, not session. Holding the
+    // editor's link alone is not enough: it is the public report slug.
+    const access = await requirePartnerWriteAccess(db as any, String(partnerId));
+    if (!access.allowed) return access.response;
+
+    // WHAT: Anyone but an administrator may change only the partner editor's
+    //     fields.
+    // WHY: See PARTNER_EDITOR_WRITABLE_FIELDS -- neither a page grant nor a
+    //     signed-in account below admin (guest, user; POST and DELETE here
+    //     refuse both) may unlock admin settings the partner-edit route itself
+    //     never writes. Other fields in the body are ignored rather than
+    //     rejected. The partner editor sends only its own fields now, but a tab
+    //     opened before that change still runs the old editor, which sends
+    //     name, hashtags and categorizedHashtags back unchanged with every
+    //     save; rejecting them would fail every save from such a tab.
+    const writable = access.isAdmin
+      ? body
+      : pickWritableFields(body, PARTNER_EDITOR_WRITABLE_FIELDS);
+    const { name, emoji, showEmoji, logoUrl, hashtags, categorizedHashtags, stats, styleId, reportTemplateId, googleSheetsUrl, clickerSetId, sportsDb, bitlyLinkIds, showEventsList, showEventsListTitle, showEventsListDetails, showOnlyTeam1Events } = writable;
+
+    // WHAT: Report content either whole (`stats`: the admin form, and partner
+    //     editor tabs opened before field-level saves) or field-level
+    //     (`statsChanges` / `statsRemoved`: the partner editor), never both.
+    // WHY: The partner editor sends only the report slots it changed since its
+    //     last confirmed save, and only those are written (stats.<key>), so a
+    //     slot another tab or an admin saved since this editor loaded is not
+    //     put back to this tab's old copy.
+    const statsFieldChanges = parseStatsFieldChanges(writable);
+    if (!statsFieldChanges.ok) {
+      return NextResponse.json({ success: false, error: statsFieldChanges.error }, { status: 400 });
+    }
+    if (statsFieldChanges.value && stats !== undefined) {
+      return NextResponse.json(
+        { success: false, error: 'Send either stats or statsChanges/statsRemoved, not both' },
+        { status: 400 }
+      );
+    }
+
+    // WHAT: The late-write guard (lib/statsFieldChanges.ts): the partner
+    //     editor names its tab and numbers its saves, and the write below is
+    //     conditional on no save from that tab with the same or a higher number
+    //     having landed first.
+    // WHY: A save the editor gave up on (25 s) and sent again could otherwise
+    //     land after the newer one and put the older content back. Read from
+    //     the body itself: these are not partner fields.
+    const sequence = parseEditorSequence(body);
+    if (!sequence.ok) {
+      return NextResponse.json({ success: false, error: sequence.error }, { status: 400 });
+    }
 
     // WHAT: Build update object with only provided fields
     // WHY: Allow partial updates without overwriting other partner data
     const updateData: any = {
       updatedAt: new Date().toISOString()
     };
+    let unsetData: Record<string, ''> = {};
+    if (statsFieldChanges.value) {
+      const stored = await db.collection('partners').findOne(
+        { _id: new ObjectId(partnerId) },
+        { projection: { stats: 1 } }
+      );
+      if (!stored) {
+        return NextResponse.json(
+          { success: false, error: 'Partner not found' },
+          { status: 404 }
+        );
+      }
+      const { set, unset } = statsUpdateOperators(
+        'stats',
+        stored.stats,
+        applyStatsFieldChanges(stored.stats, statsFieldChanges.value),
+        statsFieldChanges.value.removed
+      );
+      Object.assign(updateData, set);
+      unsetData = unset;
+    }
 
     if (name !== undefined) updateData.name = name;
     if (emoji !== undefined) updateData.emoji = emoji;
@@ -181,12 +268,26 @@ const db = client.db(config.dbName);
 
     // WHAT: Update partner document
     // WHY: Persist partner-level content changes
+    const updateFilter: Record<string, unknown> = { _id: new ObjectId(partnerId) };
+    if (sequence.value) {
+      const guard = editorSequenceGuard(sequence.value);
+      Object.assign(updateFilter, guard.filter);
+      Object.assign(updateData, guard.set);
+    }
     const result = await db.collection('partners').updateOne(
-      { _id: new ObjectId(partnerId) },
-      { $set: updateData }
+      updateFilter,
+      Object.keys(unsetData).length > 0 ? { $set: updateData, $unset: unsetData } : { $set: updateData }
     );
 
     if (result.matchedCount === 0) {
+      // WHAT: With the guard, nothing matched because a save from the same
+      //     tab with the same or a later number is already stored -- unless the
+      //     partner was deleted meanwhile.
+      // WHY: 200 with `stale: true`: that save carried everything this one
+      //     did, so the editor counts it as done (see sendJsonForSave).
+      if (sequence.value && (await db.collection('partners').findOne({ _id: new ObjectId(partnerId) }, { projection: { _id: 1 } }))) {
+        return NextResponse.json({ success: true, stale: true });
+      }
       return NextResponse.json(
         { success: false, error: 'Partner not found' },
         { status: 404 }

@@ -87,3 +87,87 @@
   transform: translateY(-2px);
   box-shadow: var(--mm-shadow-md);
 }
+
+/* Editor save status
+   WHAT: Styling for the event editor's save problem states.
+   WHY: A failed save must stay visible until the data is stored (2026-09-27:
+   saves failed for hours behind a status that reverted to "Ready" after 3 s). */
+
+/* The header status line is success-coloured by default; a failure must not be. */
+.saveStatusProblem {
+  color: var(--mm-error);
+}
+
+/* Rendered as the last element of the editor and pinned with sticky: it stays
+   in view while scrolling through the clicker grid, and it also takes its own
+   space at the end of the page, so the last row of cards (and the Report
+   Content controls) can always be scrolled clear of it. A fixed banner covered
+   them on phones, where its text wraps. Colours come from the global
+   .alert-danger. */
+.saveBanner {
+  position: sticky;
+  bottom: var(--mm-space-4);
+  z-index: var(--z-sticky);
+  margin-top: var(--mm-space-4);
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--mm-space-3);
+  box-shadow: var(--mm-shadow-lg);
+}
+
+/* The read-only notice (the server says this caller cannot save). First element
+   of the editor, above the header and every input, and pinned to the top while
+   scrolling: the operator must see it wherever they are on the page, not only
+   before the first scroll. Colours come from the global .alert-warning. */
+.readOnlyNotice {
+  position: sticky;
+  top: var(--mm-space-2);
+  z-index: var(--z-sticky);
+  margin-bottom: var(--mm-space-4);
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--mm-space-3);
+  box-shadow: var(--mm-shadow-lg);
+}
+
+.noticeRow {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--mm-space-3);
+}
+
+.bannerText {
+  flex: 1 1 16rem;
+  margin: 0;
+}
+
+.noticeActions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--mm-space-2);
+}
+
+/* Wraps the editor's inputs so a read-only editor (the server says this caller
+   cannot save) disables all of them at once. Layout-neutral: no border, padding
+   or minimum width of its own. */
+.editorFieldset {
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+/* A report text in the read-only Report Content view: line breaks kept, long
+   words and links wrapped inside the card. */
+.slotText {
+  margin: 0;
+  font-size: var(--mm-font-size-sm);
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}

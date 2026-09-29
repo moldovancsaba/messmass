@@ -174,13 +174,16 @@ Current event fields returned:
 - `eventName`
 - `eventDate`
 - `viewSlug`
-- `editSlug`
 - `hashtags`
 - `categorizedHashtags`
 - `matchContext`
 - `summary`
 - `createdAt`
 - `updatedAt`
+
+Neither public event route returns the event's edit link. API keys are
+read-only, and the edit link of an event editor with no password lets whoever
+holds it save the event.
 
 `summary` currently includes:
 

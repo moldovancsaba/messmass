@@ -113,8 +113,8 @@ it drifts. Do not edit between the markers.
 | Category | Count | Location |
 |----------|-------|----------|
 | **UI Components** | 104 | `components/` |
-| **Utility Modules** | 215 | `lib/` |
-| **Hooks** | 12 | `hooks/` |
+| **Utility Modules** | 218 | `lib/` |
+| **Hooks** | 13 | `hooks/` |
 | **Design Tokens** | 408 | `app/styles/theme.css` |
 | **Utility CSS classes** | 192 | `app/styles/utilities.css` |
 | **App routes (pages)** | 73 | `app/**/page.tsx` |
@@ -127,11 +127,11 @@ largest, and the ones to read first:
 |--------|-----------|-------|
 | `lib/config.ts` | 120 | 204 |
 | `lib/mongodb.ts` | 104 | 112 |
-| `lib/auth.ts` | 91 | 118 |
+| `lib/auth.ts` | 92 | 118 |
 | `lib/logger.ts` | 90 | 392 |
-| `lib/apiGuards.ts` | 83 | 180 |
+| `lib/apiGuards.ts` | 85 | 390 |
 | `components/ColoredCard.tsx` | 44 | 52 |
-| `lib/apiClient.ts` | 43 | 258 |
+| `lib/apiClient.ts` | 42 | 258 |
 | `lib/db.ts` | 38 | 17 |
 | `components/MaterialIcon.tsx` | 33 | 119 |
 | `lib/fanmassIntegration.ts` | 30 | 441 |
@@ -1471,7 +1471,7 @@ means the route calls none — public by construction, or a gap.
 | `/api/partners/[id]/google-sheet/setup` | POST | `requireSession` |
 | `/api/partners/[id]/google-sheet/status` | GET | `requireSession` |
 | `/api/partners/[id]/lifecycle` | GET, PUT | `requireAdmin` |
-| `/api/partners/edit/[slug]` | GET, PUT | `getAdminUser` |
+| `/api/partners/edit/[slug]` | GET, PUT | `getAdminUser, requirePageAccess, requirePartnerWrite` |
 | `/api/partners/link-football-data` | POST | `getAdminUser` |
 | `/api/partners/report/[slug]` | GET | — |
 | `/api/partners/upload-logo` | POST | `requireSession` |
@@ -1482,7 +1482,7 @@ means the route calls none — public by construction, or a gap.
 |-------|---------|------|
 | `/api/projects` | GET, POST, PUT, DELETE | `requireAdmin, requireProjectWrite` |
 | `/api/projects/[id]` | GET, PUT, DELETE | `requireSession` |
-| `/api/projects/edit/[slug]` | GET | `requirePageAccess` |
+| `/api/projects/edit/[slug]` | GET | `getAdminUser, requirePageAccess, requireProjectWrite` |
 | `/api/projects/stats/[slug]` | GET | `requirePageAccess` |
 
 #### `/api/public`
@@ -2332,13 +2332,15 @@ The Security Enhancements system provides comprehensive API protection through r
 
 #### 1. Rate Limiting Module (`lib/rateLimit.ts`)
 - **Algorithm**: Fixed-window request counter per identifier (not a token bucket) — a window opens on the first request and resets once `resetTime` has passed
-- **Endpoint Types** (current `RATE_LIMITS`, one config per endpoint class):
+- **Endpoint Types** (current `RATE_LIMITS`, one config per endpoint class; `getRateLimitConfig` checks them in this order, first match wins):
   - Auth (`/api/admin/login`, `/api/auth/*`, excluding DELETE/logout): 5 requests / 15 minutes
-  - Write (POST/PUT/PATCH/DELETE, generally): 30 requests/minute
-  - Read (GET, generally): 500 requests/minute
-  - Public (`/stats/*`, `/hashtag/*`): 60 requests/minute
   - Contact form (`POST /api/contact`): 5 requests / 15 minutes
-  - PDF export (`app/api/export/pdf`): 6 requests/minute
+  - Public (`/stats/*`, `/hashtag/*`): 60 requests/minute
+  - Editor save (`PUT` on exactly `/api/projects`, `/api/partners`, or `/api/partners/edit/<id-or-slug>`): 120 requests/minute
+  - Write (POST/PUT/PATCH/DELETE, everything else): 30 requests/minute
+  - Read (GET, generally): 500 requests/minute
+  - PDF export (`app/api/export/pdf`, applied inside the route with `checkRateLimit`, not by `getRateLimitConfig`): 6 requests/minute
+- **Editor save budget** (`EDITOR_SAVE`): the live data-entry editors save through these paths. An event operator clicks counters for hours, and the generic Write budget (30/min, one save per 2 s) is below what a fast operator produces. Both editors coalesce saves through `lib/editorSaveQueue.ts` (700 ms debounce, 3 s max wait, one request in flight, retries backed off from 2 s), so one open editor sends at most one save per ~0.7 s (~85/min) and fewer when clicking faster (one per 3 s). 120/min covers that worst case with room for retries and still caps a runaway client at 2 requests per second. Only `PUT` on those exact paths gets it: creating or deleting events and partners (`POST`/`DELETE`) and sibling routes such as `PUT /api/projects/<id>` stay on the Write budget. Because the key is IP + path and every event saves through the same `/api/projects` path, operators behind one venue IP share this budget; a refused save is not lost, since the 429 carries `Retry-After` and the editor's save queue keeps the change and retries after it.
 - **Storage**: In-memory `Map`, keyed by `<client-identifier>:<pathname>`, with automatic cleanup (suitable for single-instance deployment)
 - **Response Headers**: `X-RateLimit-Limit`, `X-RateLimit-Remaining`, `X-RateLimit-Reset` (plus `Retry-After` when a request is blocked)
 - **Retry-After**: Not a fixed cooldown — computed per request as the time remaining until that identifier's window resets
@@ -2351,12 +2353,13 @@ The Security Enhancements system provides comprehensive API protection through r
 **Configuration** (`RATE_LIMITS`, abbreviated):
 ```typescript
 export const RATE_LIMITS = {
-  AUTH:    { windowMs: 15 * 60 * 1000, maxRequests: 5 },
-  WRITE:   { windowMs: 60 * 1000,      maxRequests: 30 },
-  READ:    { windowMs: 60 * 1000,      maxRequests: 500 },
-  PUBLIC:  { windowMs: 60 * 1000,      maxRequests: 60 },
-  CONTACT: { windowMs: 15 * 60 * 1000, maxRequests: 5 },
-  EXPORT:  { windowMs: 60 * 1000,      maxRequests: 6 },
+  AUTH:        { windowMs: 15 * 60 * 1000, maxRequests: 5 },
+  WRITE:       { windowMs: 60 * 1000,      maxRequests: 30 },
+  EDITOR_SAVE: { windowMs: 60 * 1000,      maxRequests: 120 },
+  READ:        { windowMs: 60 * 1000,      maxRequests: 500 },
+  PUBLIC:      { windowMs: 60 * 1000,      maxRequests: 60 },
+  CONTACT:     { windowMs: 15 * 60 * 1000, maxRequests: 5 },
+  EXPORT:      { windowMs: 60 * 1000,      maxRequests: 6 },
 } as const;
 ```
 
@@ -3390,7 +3393,7 @@ migration plan for removing a workaround from a file that had already been delet
 {messmass} has four independent auth layers plus one cross-app bridge — there is no single "the" auth system:
 
 1. **Admin session (SSO)** — Interactive sign-in is exclusively the DoneIsBetter SSO OAuth2 authorization-code flow: `/api/auth/sso/login` redirects to `SSO_BASE_URL/api/oauth/authorize`; `/api/auth/sso/callback` exchanges the code at `SSO_BASE_URL/api/oauth/token`, resolves the caller's role from the SSO central per-app permission store, and sets an HttpOnly, signed-JWT `admin-session` cookie (7-day expiry) plus `auth-source=sso`. The legacy local email/password login (`POST /api/admin/login`) is retired and returns **410 Gone** — there are no admin passwords stored in MongoDB to check. Protected `/admin/**` and `/dashboard/**` routes read this cookie via `getAdminUser()` (`lib/auth.ts`); `middleware.ts` first verifies the cookie's HS256 signature and expiry with Web Crypto (`lib/edgeSessionToken.ts`, F-003/messmass#392, 71b5e23f) and redirects to `/admin/login` if it fails. Middleware cannot reach the database, so user existence and role stay with `getAdminUser()`/`requireAdmin()` in each route.
-2. **Page passwords** — Per-page/event password gates (`lib/pagePassword.ts`, bcrypt-hashed, MongoDB-stored) let a non-admin viewer (an employee, a client) reach a specific `/report/[slug]` or `/edit/[slug]` page without an admin session. A validated password is recorded as a server-issued `page-access` grant cookie (`lib/pageAccess.ts`), entirely independent of the `admin-session` cookie.
+2. **Page passwords** — Per-page/event password gates (`lib/pagePassword.ts`, bcrypt-hashed, MongoDB-stored) let a non-admin viewer (an employee, a client) reach a specific `/report/[slug]` or `/edit/[slug]` page without an admin session. A validated password is recorded as a server-issued `page-access` grant cookie (`lib/pageAccess.ts`), entirely independent of the `admin-session` cookie. An event editor with no password gets the same grant from its loader when opened by its UUID edit link; a partner editor never does, because its slug is the public report slug, so every partner save, custom report variants (`PUT /api/partners/edit/[slug]?variant=`) included, needs an admin session or a current `partner-edit` grant from a password, even on a partner with no password (v12.3.38; the variant route used to write for anyone its read gate admitted). Details: [features-authentication.md](features/features-authentication.md), "Page-access grants and editor saves".
 3. **Machine/API tokens** — Non-browser callers authenticate with a bearer credential instead of a cookie, and both mechanisms are exempt from CSRF (which only defends cookie-borne authority): the fleet's `/api/integrations/fanmass/**` routes accept a single shared integration token (`requireFanmassIntegrationAuth`, `lib/fanmassIntegration.ts`) compared against one configured secret; the public API (`/api/public/**`) instead accepts a per-user Bearer token (`requireAPIAuth`, `lib/apiAuth.ts`) gated by that user's own `apiKeyEnabled`/`apiWriteEnabled` flags, with usage tracked per user. Public API keys are stored only as a bcrypt `apiKeyHash`, issued through the admin rotate action (`POST /api/admin/local-users/[id]/api-access`, admin/superadmin only; the plaintext is returned once). Login passwords are not accepted as keys (6f31990d, #397).
 4. **Stakeholder session** (messmass#231, 35bc7e3d) — an external sponsor/agency/media/operator signs in through the same SSO client via `/api/auth/sso/stakeholder-login`; `/api/auth/sso/stakeholder-callback` looks the verified email up in the local `stakeholder_grants` collection (grants created by admins via `POST /api/stakeholder/invite`) instead of the SSO per-app permission store, and sets a separate HS256 `stakeholder-session` cookie (`lib/auth/stakeholderSession.ts`, 30 days). The `requireStakeholderRole` guard (`lib/apiGuards.ts`) exists, but no route consumes it yet, and the callback's `stakeholder-callback` redirect_uri must be registered on SSO before the flow is reachable.
 

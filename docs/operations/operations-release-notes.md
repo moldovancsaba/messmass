@@ -1,8 +1,155 @@
 # {messmass} Release Notes
 Status: Active
-Last Updated: 2026-09-28T12:00:00.000Z
+Last Updated: 2026-09-29T12:00:00.000Z
 Canonical: No
 Owner: Operations
+
+## [v12.3.38] — 2026-09-29T12:00:00.000Z
+
+Event editor data-loss fix. On 2026-09-27 an event operator entered data for
+hours into an event editor that had no edit password. The editor opened
+normally, but the server refused every save (401), the editor hid the refusals,
+and nothing was stored. A reload would have thrown the typed values away.
+
+### Fixed
+- **Editor saves on events without an edit password.** Saving checks for a
+  page-access grant, and until now only a correct password issued one, so an
+  editor with no password could be opened but never saved. Opening such an
+  editor by its edit link now issues the grant (`GET /api/projects/edit/[slug]`).
+  Each editor load also renews the grants the visitor already holds, and each
+  grant now expires 12 hours after it was last issued, on its own, so an
+  editor left open through a long event keeps saving. Setting or regenerating
+  a page's password still cuts off everyone who got in before it. Opening an
+  editor by the event's public ID, without signing in or a current grant, now
+  asks for the edit link (403 `EDIT_LINK_REQUIRED`) instead of opening an editor that cannot save.
+- **Editors that cannot save are read-only.** Both editor loaders now tell the
+  page whether this visitor's saves will be accepted (`canSave`). When they
+  will not be, every input is disabled and a notice pinned at the top says so
+  ("You can view this event but not save changes."; the partner editor says
+  "this partner"), instead of a form that silently stores nothing.
+- **Unsaved values are kept and retried.** The event and partner editors save
+  through one queue (`lib/editorSaveQueue.ts`): one request at a time, rapid
+  changes combined into the latest values, and a failed save retried with
+  backoff until the server confirms it. Unsaved values are also kept in the
+  browser's local storage, so a reload or a closed tab no longer loses them
+  (where the browser blocks storage, the editor says to keep the page open
+  instead). The status line
+  stays on "Not saved" (retrying, offline or access needed) with a Retry now
+  button until a save succeeds; it used to show "Save Error" for three seconds
+  and then "Ready". A save refused for access (401 `EDIT_ACCESS_REQUIRED`)
+  pauses the queue, re-fetches the editor's data to renew the grant (or shows
+  the password prompt), and then resumes. Two overlapping saves can no longer land out of
+  order and overwrite newer values with older ones.
+- The partner editor sends only what it edits: the report slots it changed
+  (`statsChanges` / `statsRemoved`, written as single `stats.<key>` paths), and
+  the logo and events-list switches only when changed, so a save retried
+  minutes later cannot put back a slot, logo or switch changed elsewhere since.
+  A custom report variant now loads its own `showOnlyTeam1Events` value, not
+  the partner's.
+- **Clicker taps from several devices all count.** A +1/-1 tap is sent as a
+  count (`statsIncrements`), which `PUT /api/projects` adds to the stored value
+  (`$inc`), instead of this device's running total. Two gates counting the
+  same stat used to overwrite each other's taps, and a device coming back
+  online put its older total back. A count taken below zero by two devices is
+  set back to 0.
+- **Late or repeated saves never undo newer ones.** Every editor save names its
+  tab and number (`tabId`, `clientSeq`); `PUT /api/projects`, `PUT /api/partners`
+  and `PUT /api/partners/edit/<id>?variant=` write it only while no newer save
+  from that tab is stored, and answer `{ success: true, stale: true }`
+  otherwise. A failed save is retried unchanged under the same number, so a
+  copy that was stored after all is not counted twice. All three routes stop a
+  request after 20 seconds, before the editor gives up on it at 25.
+- **One refused save no longer stops every later one.** A save the server
+  refuses for good (400, 404, 413, 422) is kept apart and shown ("Not saved -
+  refused by the server", with Retry now); later changes are saved on their
+  own. The editor also never queues a value the server cannot store, and splits
+  a very large change into several saves. Builder mode used to save nested
+  `[fanmass.x]` tokens as flat keys, which the server refuses, and held every
+  later save behind them.
+- **Leaving a field without changing it saves nothing.** Builder-mode chart
+  inputs and Report Content text slots save only when their text was changed
+  there. Before, leaving a Builder input wrote 0 over a stat the editor had no
+  copy of, and a report text slot typed into earlier kept its older text after
+  another device changed the slot, and wrote it back when tapped. Nested
+  `[fanmass.x]` tokens are shown read-only in Builder mode.
+- **Admin event edits no longer revert editor saves.** The Edit Event form in
+  `/admin/events` sent the stats it loaded with the list, which replaced
+  everything the event editor and fanmass had stored since. It no longer sends
+  stats.
+- **fanmass analysis pushes no longer revert editor saves.** `pushEventStats`
+  wrote the whole stats object it had read; an editor save landing in between
+  was undone. It now writes only the values it pushes and the totals they
+  change.
+
+### Security
+- **Partner variant saves need admin or password.** `PUT /api/partners/edit/[slug]?variant=`
+  saved for anyone its read gate let in. On a partner with no partner-edit
+  password that was anyone holding the public report link, who could overwrite
+  that variant's report text, images and logo. It now needs an admin session or
+  a current partner-edit grant, the same as the default report
+  (`PUT /api/partners`). A partner editor with no password issues no grant,
+  because its link is the public report link, so it opens read-only unless the
+  visitor is signed in.
+- A page-grant holder can change only what its editor saves: hashtags and
+  stats on events; report content, emoji, logo, style, template and the
+  events-list switches on partners. An event's name, date, partner, style and
+  template links, and a partner's name, hashtags, clicker set and
+  integrations, stay with admin and superadmin sessions -- a signed-in account
+  with another role (guest, user) is limited like a grant holder, as it already
+  was on POST and DELETE. Other fields in such a save are ignored.
+- **Hashtag lists are checked before they are stored.** `PUT /api/projects`
+  (and `POST`) refuse a malformed `hashtags` or `categorizedHashtags` with 400
+  and write nothing. A number in a list, or a category that was not a list,
+  used to be stored and then made every filter report, the hashtag lists and
+  the admin events list answer 500 until the event was repaired by hand.
+- **`projectId` must be the event id as a 24-hex string.** An id wrapped in an
+  object reached the write while an edit password on the event's id was left
+  out of the access check.
+- **One edit password per event editor.** Creating, regenerating or removing an
+  event's edit password now acts on both of its addresses (edit link and event
+  id), and Share reports the editor protected when either has one. Removing the
+  current password used to bring back an older one left on the other address,
+  with write access, while Share showed the editor as unprotected.
+- **Editor links are kept out of Google Analytics.** The tag is not loaded on
+  editor pages and is switched off while one is shown; an unprotected editor's
+  link grants write access, and page views sent it to the analytics property.
+
+### Performance
+- **Saves no longer scan every project.** Every event save ran a hashtag
+  clean-up that loaded every project in the database. A save now updates
+  hashtag counts only for hashtags it added or removed, and checks at most 20
+  removed ones for remaining use; a save that changes only numbers does no
+  hashtag work. Deleting an event uses the same targeted clean-up.
+- **Editor save rate budget.** `PUT /api/projects`, `PUT /api/partners` and
+  `PUT /api/partners/edit/<id-or-slug>` have their own limit of 120 requests
+  per minute per IP and path. They were on the general write limit of 30 per
+  minute, which is below what a fast operator produces. A save refused by the
+  limit (429) is kept and retried after its `Retry-After` time.
+
+### Docs
+- API references (`docs/api/api-reference-complete.md`, `docs/api/api-reference.md`,
+  `docs/_audit/api-reference.md`), the authentication doc and the architecture
+  doc describe the editor load and save rules above: `canSave`, the
+  `EDIT_ACCESS_REQUIRED`, `PAGE_PASSWORD_REQUIRED` and `EDIT_LINK_REQUIRED`
+  codes, the `page-access` cookie, the editor save rate budget, field-level
+  saves, counts and the late-write guard.
+- The in-app API documentation (`/api-docs`) no longer lists `editSlug` in the
+  `GET /api/public/events/[id]` response, which stopped returning it.
+
+### Testing
+- `tests/security/editor-write-access.test.ts` (grants, `canSave`, write
+  access, field limits by role, id form, partner late-write guard),
+  `tests/projects-put-save-path.test.ts` (targeted hashtag clean-up, editor
+  save rate budget), `tests/projects-put-field-level.test.ts` (field-level
+  saves, counts, hashtag checks, late-write guard),
+  `tests/editor-save-queue.test.ts` (queue ordering, retries, refused saves,
+  drafts), `tests/editor-dashboard-save.test.tsx` and
+  `tests/partner-editor-save.test.tsx` (editor save, read-only and recovery
+  behaviour), `tests/builder-and-report-text-commits.test.tsx`,
+  `tests/fanmass-push-event-stats.test.ts`,
+  `tests/security/event-edit-password-addresses.test.ts`,
+  `tests/security/analytics-no-edit-urls.test.tsx` and
+  `tests/security/public-api-no-editslug.test.ts`.
 
 ## [v12.3.37] — 2026-09-28T12:00:00.000Z
 

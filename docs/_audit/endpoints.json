@@ -1,13 +1,13 @@
 {
  "_meta": {
-  "generated": "2026-09-28T09:32:43+00:00",
+  "generated": "2026-09-28T19:10:08+00:00",
   "repo": "messmass",
-  "head": "dd34e229",
+  "head": "410042ff",
   "counts": {
    "endpoints": 221,
    "collections": 71,
    "env": 33,
-   "outbound-hosts": 29,
+   "outbound-hosts": 30,
    "docs": 205
   }
  },
@@ -1994,7 +1994,9 @@
    ],
    "file": "app/api/partners/edit/[slug]/route.ts",
    "auth_markers": [
-    "getAdminUser"
+    "getAdminUser",
+    "requirePageAccess",
+    "requirePartnerWrite"
    ],
    "no_auth_marker": false
   },
@@ -2064,7 +2066,9 @@
    ],
    "file": "app/api/projects/edit/[slug]/route.ts",
    "auth_markers": [
-    "requirePageAccess"
+    "getAdminUser",
+    "requirePageAccess",
+    "requireProjectWrite"
    ],
    "no_auth_marker": false
   },
