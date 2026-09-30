@@ -1,6 +1,29 @@
 # Session Handover — messmass
 
-Last verified: 2026-09-28 (v12.3.37, dd34e229 = production).
+Last verified: 2026-09-30 (v12.3.39, a5d453d1 = production).
+
+**2026-09-30 addendum (v12.3.39 and v12.3.40)**
+- **Event editor incident and fix (v12.3.39, PR #417).** An event with no edit
+  password opened its editor for the operator, but every `PUT /api/projects`
+  answered 401 and the editor showed "Save Error" for 3 seconds, then "Ready"
+  (PZPN x Bosnia and Herzegovina, 2026-09-27; the cause landed in 8bb4ad2a on
+  09-16). The loader now issues a signed grant when the editor is opened by its
+  edit link and has no password, editors show a persistent "Not saved" status and
+  keep unsaved values on the device, an editor that cannot save is read-only,
+  saves are field-level, and partner editors need an admin session or a password.
+  Details: release notes `[v12.3.39]`, `docs/features/features-authentication.md`
+  "Page-access grants and editor saves".
+- **Vercel deploys failed 2026-09-28** with "Resource provisioning failed" until a
+  suspended Atlas Marketplace resource connected to the project was disconnected
+  (see the memory note "vercel-resource-provisioning-failed" or the release notes).
+- **Owner decisions 2026-09-30:** try-on and fanmass are paused (local services
+  stopped on purpose; `tryOn.enabled` off on every camera event); messmass and
+  camera keep separate logins (`client_credentials` not enabled for their SSO
+  clients); the fan-selfie consent question is closed with no change; branch
+  protection on `main` now applies to admins and blocks force-pushes in messmass,
+  camera and sso (the old bypass list for the owner, the ChatGPT Codex connector
+  and Cursor was removed from messmass).
+- v12.3.40 is version-only here (camera removed its try-on sync cron).
 
 **2026-09-28 addendum (what happened after the 2026-09-07 entry below)**
 - **2026-09-08 remediation**: scripts prune and dead-code removal (#352),
@@ -20,16 +43,15 @@ Last verified: 2026-09-28 (v12.3.37, dd34e229 = production).
   ccd77d5), API-key management role-gated (admin/superadmin only), version
   bumps no longer rewrite doc history (`npm run version:update` edits stamp
   lines only).
-- **Open**: messmass#343 (needs a live SSO browser session; fanmass is healthy
-  again); the stakeholder flow needs its `stakeholder-callback` redirect_uri
+- **Open**: messmass#343 (needs a live SSO browser session; fanmass is paused
+  by the owner); the stakeholder flow needs its `stakeholder-callback` redirect_uri
   registered on SSO before it is reachable (35bc7e3d), no route consumes the
   `stakeholder-session` yet, and its error redirect `/stakeholder-access` has
   no page; fanmass has no `apiKey` configured, so its key-gated routes
   (including the analytics-summary pull messmass makes) answer 401
   `api_key_not_configured` (see the fleet map's 2026-09-28 notes); two dead
   routes still call the retired SSO `/api/validate` (drift register §7);
-  pushes to `main` bypass the branch ruleset (PR + Verify); Dependabot alerts
-  in the sibling repos.
+  Dependabot alerts in sso and fanmass (camera has been at 0 since 2026-09-29).
 
 **2026-09-07 (v12.3.22, live)** — password-protected event reports work
 end-to-end for the first time: `/report/[slug]` now renders the password

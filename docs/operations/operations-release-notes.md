@@ -1,8 +1,24 @@
 # {messmass} Release Notes
 Status: Active
-Last Updated: 2026-09-29T12:00:00.000Z
+Last Updated: 2026-09-30T14:00:00.000Z
 Canonical: No
 Owner: Operations
+
+## [v12.3.40] — 2026-09-30T14:00:00.000Z
+
+Fleet release 12.3.40 (messmass, camera, fanmass, try-on, savetheworld).
+Version-only in messmass: camera removed its try-on sync cron while try-on is
+paused, and nothing changed in this repo's code.
+
+### Docs
+- `HANDOVER.md` records the editor incident and fix (v12.3.39), the Vercel
+  "Resource provisioning failed" cause, and the owner decisions of 2026-09-30:
+  try-on and fanmass paused on purpose, separate messmass and camera logins,
+  fan-selfie consent question closed with no change, and branch protection on
+  `main` enforced for admins with force-pushes off in messmass, camera and sso.
+- GitHub side, not in the repo: the messmass `main` rule no longer lets the owner,
+  the ChatGPT Codex connector app or the Cursor app force-push, and admins can no
+  longer bypass the pull request and `Verify` requirements.
 
 ## [v12.3.39] — 2026-09-30T12:00:00.000Z
 
