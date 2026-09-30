@@ -1,13 +1,12 @@
 import { NextRequest, NextResponse, after } from 'next/server';
-import { requireAdmin, requireProjectWrite } from '@/lib/apiGuards';
+import { requireAdmin, requireProjectWriteAccess, pickWritableFields, EVENT_EDITOR_WRITABLE_FIELDS } from '@/lib/apiGuards';
 import { ObjectId, Db } from 'mongodb';
 import { generateProjectSlugs } from '@/lib/slugUtils';
 import clientPromise from '@/lib/mongodb';
 import { createNotification, getCurrentActor } from '@/lib/notificationUtils';
 import { error as logError, info as logInfo, warn as logWarn, debug as logDebug } from '@/lib/logger';
 
-// Import hashtag category types for categorized hashtags support
-import { CategorizedHashtagMap } from '@/lib/hashtagCategoryTypes';
+// Import hashtag category helpers for categorized hashtags support
 import { 
   mergeHashtagSystems, 
   expandHashtagsWithCategories,
@@ -18,55 +17,303 @@ import { validateProjectStats, prepareStatsForAnalytics, type ValidationResult }
 
 // Import Bitly recalculation services for many-to-many link management
 import { recalculateProjectLinks, handleProjectDeletion, createLinkAssociation } from '@/lib/bitly-recalculator';
+import {
+  MAX_EVENT_STAT_CHANGES,
+  isWritableEventStatKey,
+  isWritableEventStatValue,
+  isWritableEventStatIncrement,
+  eventHashtagsProblem,
+  eventCategorizedHashtagsProblem,
+} from '@/lib/eventSaveRules';
+import { parseEditorSequence, editorSequenceGuard } from '@/lib/statsFieldChanges';
 
-// Define project interface for type safety
-// Enhanced to support both traditional and categorized hashtags
-interface ProjectDocument {
-  _id?: ObjectId;
-  hashtags?: string[];                    // Traditional hashtags (maintained for backward compatibility)
-  categorizedHashtags?: CategorizedHashtagMap; // New field for category-hashtag mapping
-  [key: string]: unknown;
+// WHAT: Upper bound on one invocation of these handlers, in seconds.
+// WHY: The event editor gives a save 25 seconds before it treats the request
+//     as lost and sends it again (lib/editorSaveQueue.ts). A save the platform
+//     let run past that could still land after the retry had, so the function
+//     must be stopped first. 20 s leaves the margin; a normal save is well
+//     under a second. Applies to every handler in this file.
+export const maxDuration = 20;
+
+// ---------------------------------------------------------------------------
+// Field-level event editor saves (PUT /api/projects)
+// ---------------------------------------------------------------------------
+// The limits on one save and the key, value and increment rules are shared
+// with the event editor (lib/eventSaveRules.ts), which filters by the same
+// rules before it queues a save.
+
+interface EventStatsChanges {
+  /** Stat values this save sets, by key. */
+  set: Record<string, number | string>;
+  /** Stat keys this save removes (a null in statsChanges, or statsRemoved). */
+  removed: string[];
+  /** Counter keys this save adds to (clicker taps), by how much. */
+  increments: Record<string, number>;
 }
 
-// Hashtag cleanup utility function
-async function cleanupUnusedHashtags(db: Db) {
+type Parsed<T> = { ok: true; value: T } | { ok: false; error: string };
+
+const isPlainObject = (value: unknown): value is Record<string, unknown> =>
+  !!value && typeof value === 'object' && !Array.isArray(value);
+
+const hasOwn = (object: object, key: string) => Object.prototype.hasOwnProperty.call(object, key);
+
+const quoteKey = (key: string) => JSON.stringify(key.slice(0, 60));
+
+// WHAT: A project id as PUT accepts it: 24 hex characters, nothing else.
+// WHY: ObjectId.isValid() also passes an object such as { id: '<24 hex>' },
+//     and new ObjectId() resolves it to the right event, but the write guard's
+//     password check compares ids as strings and dropped it: a password set on
+//     the event's _id to cut off earlier grants was left out, and the save
+//     went through. Every later use gets the canonical lowercase form.
+const PROJECT_ID_PATTERN = /^[0-9a-f]{24}$/i;
+
+// WHAT: Read the field-level stats of a PUT body: `statsChanges` (a value per
+//     key; null removes the key), `statsRemoved` (for editor tabs that send
+//     removals separately) and `statsIncrements` (clicker counts to add).
+//     null when the body has none of them.
+// WHY: A key or value that cannot be stored as one stat refuses the whole
+//     save with a 400 rather than being dropped, so the editor never confirms
+//     a value that was not written. A key may appear in only one of them: a
+//     save either states a value or counts on from the stored one.
+function parseEventStatsChanges(body: Record<string, unknown>): Parsed<EventStatsChanges | null> {
+  const rawChanges = body.statsChanges;
+  const rawRemoved = body.statsRemoved;
+  const rawIncrements = body.statsIncrements;
+  if (rawChanges === undefined && rawRemoved === undefined && rawIncrements === undefined) {
+    return { ok: true, value: null };
+  }
+
+  if (rawChanges !== undefined && !isPlainObject(rawChanges)) {
+    return { ok: false, error: 'statsChanges must be an object of stat values' };
+  }
+  if (rawRemoved !== undefined && !(Array.isArray(rawRemoved) && rawRemoved.every((k) => typeof k === 'string'))) {
+    return { ok: false, error: 'statsRemoved must be an array of stat keys' };
+  }
+  if (rawIncrements !== undefined && !isPlainObject(rawIncrements)) {
+    return { ok: false, error: 'statsIncrements must be an object of whole numbers' };
+  }
+
+  const entries = Object.entries((rawChanges ?? {}) as Record<string, unknown>);
+  const removedList = (rawRemoved ?? []) as string[];
+  const incrementEntries = Object.entries((rawIncrements ?? {}) as Record<string, unknown>);
+  if (entries.length + removedList.length + incrementEntries.length > MAX_EVENT_STAT_CHANGES) {
+    return { ok: false, error: `Too many stat changes in one save (max ${MAX_EVENT_STAT_CHANGES})` };
+  }
+
+  const set: Record<string, number | string> = {};
+  const removed = new Set<string>();
+  const increments: Record<string, number> = {};
+  for (const [key, value] of entries) {
+    if (!isWritableEventStatKey(key)) return { ok: false, error: `Invalid stat key: ${quoteKey(key)}` };
+    if (!isWritableEventStatValue(value)) return { ok: false, error: `Invalid value for stat ${quoteKey(key)}` };
+    if (value === null) removed.add(key);
+    else set[key] = value as number | string;
+  }
+  for (const key of removedList) {
+    if (!isWritableEventStatKey(key)) return { ok: false, error: `Invalid stat key: ${quoteKey(key)}` };
+    if (hasOwn(set, key)) return { ok: false, error: `Stat key both changed and removed: ${quoteKey(key)}` };
+    removed.add(key);
+  }
+  for (const [key, value] of incrementEntries) {
+    if (!isWritableEventStatKey(key)) return { ok: false, error: `Invalid stat key: ${quoteKey(key)}` };
+    if (!isWritableEventStatIncrement(value)) return { ok: false, error: `Invalid increment for stat ${quoteKey(key)}` };
+    if (hasOwn(set, key) || removed.has(key)) {
+      return { ok: false, error: `Stat key both set and counted in one save: ${quoteKey(key)}` };
+    }
+    increments[key] = value;
+  }
+  return { ok: true, value: { set, removed: Array.from(removed), increments } };
+}
+
+// WHAT: A stored stat as a number to count on from: a number as it is, a
+//     numeric text as its number (older events), anything else as 0.
+function countableNumber(value: unknown): number {
+  if (typeof value === 'number') return Number.isFinite(value) ? value : 0;
+  if (typeof value === 'string' && value.trim() !== '' && Number.isFinite(Number(value))) return Number(value);
+  return 0;
+}
+
+// WHAT: The update paths for a field-level stats save.
+// HOW: Every key the save names is written as `stats.<key>` -- set, or unset
+//     for a removal -- whatever the stored value, because the save is the
+//     operator's latest word on it. A counted key is added to with $inc, so
+//     taps another device stored meanwhile are kept rather than overwritten;
+//     where the stored value is not a number $inc could add to (a text, null),
+//     it is set to that value counted on instead. Derived totals are then
+//     computed on the stored stats with the changes applied
+//     (prepareStatsForAnalytics), and only a derived key whose value that
+//     changed is written too. Nothing else is touched, so a value another
+//     writer stores between this read and this write (fanmass results, a
+//     sheet pull, an admin, another device) survives. A removed key the
+//     derivation fills back in (a total) is set to that value instead of
+//     unset: one path cannot be in both $set and $unset.
+// NOTE: A document whose `stats` is present but not an object (null on some
+//     old events) has nothing a dotted path can address, so there the whole
+//     field is set. A missing `stats` is fine: MongoDB creates it.
+//     `decremented` lists the counted keys that went down, which the route
+//     keeps from going below zero once the write is done.
+function fieldLevelStatsUpdate(
+  current: unknown,
+  changes: EventStatsChanges
+): {
+  set: Record<string, unknown>;
+  unset: Record<string, ''>;
+  inc: Record<string, number>;
+  decremented: string[];
+  validation: ValidationResult;
+} {
+  const stored = isPlainObject(current) ? current : {};
+  const merged: Record<string, unknown> = { ...stored };
+  for (const key of changes.removed) delete merged[key];
+  Object.assign(merged, changes.set);
+  for (const [key, delta] of Object.entries(changes.increments)) {
+    merged[key] = countableNumber(merged[key]) + delta;
+  }
+
+  const prepared = prepareStatsForAnalytics(merged as never);
+  const enriched = prepared.stats as unknown as Record<string, unknown>;
+  const decremented = Object.entries(changes.increments).filter(([, delta]) => delta < 0).map(([key]) => key);
+
+  if (current !== undefined && !isPlainObject(current)) {
+    return { set: { stats: enriched }, unset: {}, inc: {}, decremented, validation: prepared.validation };
+  }
+
+  const named = new Set([...Object.keys(changes.set), ...changes.removed, ...Object.keys(changes.increments)]);
+  const set: Record<string, unknown> = {};
+  const unset: Record<string, ''> = {};
+  const inc: Record<string, number> = {};
+  for (const [key, value] of Object.entries(changes.set)) set[`stats.${key}`] = value;
+  for (const key of changes.removed) {
+    if (hasOwn(enriched, key) && enriched[key] !== undefined) set[`stats.${key}`] = enriched[key];
+    else unset[`stats.${key}`] = '';
+  }
+  for (const [key, delta] of Object.entries(changes.increments)) {
+    const storedValue = hasOwn(stored, key) ? stored[key] : undefined;
+    if (storedValue === undefined || (typeof storedValue === 'number' && Number.isFinite(storedValue))) {
+      inc[`stats.${key}`] = delta;
+    } else {
+      set[`stats.${key}`] = merged[key];
+    }
+  }
+  for (const [key, value] of Object.entries(enriched)) {
+    if (named.has(key)) continue;
+    if (value !== (hasOwn(stored, key) ? stored[key] : undefined)) set[`stats.${key}`] = value;
+  }
+  return { set, unset, inc, decremented, validation: prepared.validation };
+}
+
+// WHAT: Project fields only an admin or superadmin session may change through PUT.
+// WHY: An edit grant comes from the edit password or from holding an
+//     unprotected editor's edit link, and a signed-in account with another
+//     role (guest, user) is not an administrator either -- POST and DELETE on
+//     this route refuse it. The event's name and date (a date change re-runs
+//     the Bitly recalculation), its style and template, and its partner
+//     references (re-pointing one changes what another partner's report
+//     aggregates) stay with admins. The route drops these for every other
+//     caller on its own, whatever the shared EVENT_EDITOR_WRITABLE_FIELDS list
+//     says, so the rule cannot drift away from this handler.
+const ADMIN_ONLY_PROJECT_FIELDS = ['eventName', 'eventDate', 'styleId', 'reportTemplateId', 'partner1Id', 'partner2Id'] as const;
+
+// WHAT: Case-insensitive exact match for one hashtag value. On an array field
+//     it matches when any element matches (same idiom as lib/cameraPartnerSync.ts).
+function exactCaseInsensitive(value: string) {
+  return { $regex: `^${value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}$`, $options: 'i' };
+}
+
+// WHAT: Filter matching any project that still produces `representation` under
+//     the rules getAllHashtagRepresentations uses to build it:
+//       "tag"      <- a plain `hashtags` entry equal to "tag" (any case)
+//       "cat:tag"  <- a `categorizedHashtags.cat` entry equal to "tag" (any case)
+//     A representation with a colon is checked both ways, because a plain
+//     hashtag containing a colon produces the same string.
+// WHY: Category names are stored lowercase (CATEGORY_NAME_VALIDATION.PATTERN,
+//     normalizeCategoryName), so the category is matched as the literal field
+//     key. A category part that is not a safe field path cannot be queried, so
+//     it returns null and the caller keeps that representation.
+function representationInUseFilter(representation: string): Record<string, unknown> | null {
+  const clauses: Record<string, unknown>[] = [{ hashtags: exactCaseInsensitive(representation) }];
+  const colonIndex = representation.indexOf(':');
+  if (colonIndex > 0) {
+    const category = representation.slice(0, colonIndex);
+    const value = representation.slice(colonIndex + 1);
+    if (category.includes('.') || category.startsWith('$')) return null;
+    clauses.push({ [`categorizedHashtags.${category}`]: exactCaseInsensitive(value) });
+  }
+  return clauses.length === 1 ? clauses[0] : { $or: clauses };
+}
+
+// WHAT: Most removed representations one request checks for remaining use.
+// WHY: Each check is a case-insensitive regex (an $or of two for "cat:tag")
+//     that no index serves, so it is a scan of the projects collection -- a
+//     full one for a representation nothing uses any more. The checks run one
+//     at a time, so a request never has more than one such scan open, and this
+//     cap bounds how many scans one request can start in total. Removing a few
+//     hashtags in one edit, the normal case, is always checked in full; a body
+//     that drops hundreds of hashtags cannot turn one save into hundreds of
+//     collection scans.
+// NOTE: A representation past the cap is skipped, not deleted: its count doc
+//     stays at its decremented count. That is harmless -- nothing displays the
+//     `hashtags` counts collection (GET /api/hashtags aggregates from the
+//     projects themselves), and deleting a hashtag from /admin/hashtags still
+//     removes its count docs.
+const MAX_HASHTAG_CLEANUP_CHECKS = 20;
+
+// WHAT: Delete the `hashtags` count docs for the representations a request just
+//     dropped, but only those no project uses any more.
+// WHY: The previous cleanupUnusedHashtags(db) ran on EVERY save and loaded every
+//     project document in full (find({}).toArray()) to rebuild the used set. The
+//     live editor saves on every click, so each click read the whole projects
+//     collection. Only a representation this request removed can have become
+//     unused, so only those need checking.
+// HOW: One existence check per removed representation, sequentially and at most
+//     MAX_HASHTAG_CLEANUP_CHECKS of them (countDocuments with limit 1: the scan
+//     stops at the first hit and only a number comes back), then a single
+//     deleteMany over the ones with no remaining use.
+//     Two deliberate differences from the old full sweep: a "cat:tag" doc that
+//     is still in use is kept (the old used-set held only unprefixed values, so
+//     it deleted every prefixed doc on every save), and docs this request did
+//     not touch are left alone.
+// NOTE: Must run AFTER the project write, so the project being saved or deleted
+//     no longer counts as a user of what it dropped. Failures are logged and
+//     never fail the save, as before.
+async function cleanupRemovedHashtags(db: Db, removedRepresentations: string[]): Promise<number> {
+  const candidates = Array.from(new Set(removedRepresentations.map((h) => h.toLowerCase())));
+  if (candidates.length === 0) return 0;
+
   try {
-    logDebug('Starting hashtag cleanup', { context: 'projects' });
-    
     const projectsCollection = db.collection('projects');
-    const hashtagsCollection = db.collection('hashtags');
-    
-    // Get all hashtags currently used in projects
-    // Enhanced to include both traditional and categorized hashtags
-    const projects = await projectsCollection.find({}).toArray();
-    const usedHashtags = new Set<string>();
-    
-    projects.forEach((project: ProjectDocument) => {
-      // Add traditional hashtags (for backward compatibility)
-      if (project.hashtags && Array.isArray(project.hashtags)) {
-        project.hashtags.forEach((hashtag: string) => {
-          usedHashtags.add(hashtag.toLowerCase());
-        });
+    const unused: string[] = [];
+    let checked = 0;
+    let skipped = 0;
+
+    // Sequential on purpose: one scan at a time (see MAX_HASHTAG_CLEANUP_CHECKS).
+    for (const representation of candidates) {
+      const filter = representationInUseFilter(representation);
+      if (!filter) continue; // not queryable: keep it, costs nothing
+      if (checked >= MAX_HASHTAG_CLEANUP_CHECKS) {
+        skipped += 1;
+        continue;
       }
-      
-      // Add categorized hashtags (new feature)
-      if (project.categorizedHashtags) {
-        Object.values(project.categorizedHashtags).forEach((categoryHashtags) => {
-          if (Array.isArray(categoryHashtags)) {
-            categoryHashtags.forEach((hashtag: string) => {
-              usedHashtags.add(hashtag.toLowerCase());
-            });
-          }
-        });
+      checked += 1;
+      if ((await projectsCollection.countDocuments(filter, { limit: 1 })) === 0) {
+        unused.push(representation);
       }
-    });
-    
-    // Delete hashtags that are no longer used
-    const deleteResult = await hashtagsCollection.deleteMany({
-      hashtag: { $not: { $in: Array.from(usedHashtags) } }
-    });
-    
-    logInfo('Cleaned up unused hashtags', { context: 'projects', deletedCount: deleteResult.deletedCount });
+    }
+
+    if (skipped > 0) {
+      logWarn('Hashtag cleanup capped; skipped representations keep their count docs', {
+        context: 'projects',
+        checked,
+        skipped,
+        limit: MAX_HASHTAG_CLEANUP_CHECKS,
+      });
+    }
+
+    if (unused.length === 0) return 0;
+
+    const deleteResult = await db.collection('hashtags').deleteMany({ hashtag: { $in: unused } });
+    logInfo('Cleaned up unused hashtags', { context: 'projects', checked, deletedCount: deleteResult.deletedCount });
     return deleteResult.deletedCount;
   } catch (error) {
     logError('Failed to cleanup hashtags', { context: 'projects' }, error instanceof Error ? error : new Error(String(error)));
@@ -533,6 +780,13 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // Same hashtag shape rule as PUT (lib/eventSaveRules.ts): a malformed list
+    // stored on one event breaks every page that reads all events' hashtags.
+    const hashtagProblem = eventHashtagsProblem(hashtags) ?? eventCategorizedHashtagsProblem(categorizedHashtags);
+    if (hashtagProblem) {
+      return NextResponse.json({ success: false, error: hashtagProblem }, { status: 400 });
+    }
+
     // WHAT: Validate and enrich stats before saving
     // WHY: Ensure data quality and add derived metrics
     const { stats: enrichedStats, validation } = prepareStatsForAnalytics(stats);
@@ -768,25 +1022,107 @@ export async function PUT(request: NextRequest) {
   let projectId: string | undefined;
   try {
     const body = await request.json();
-    // Enhanced to support both traditional and categorized hashtags + styleId + reportTemplateId + partner references
-    let { projectId: bodyProjectId, eventName, eventDate, hashtags = [], categorizedHashtags = {}, stats, styleId, reportTemplateId, partner1Id, partner2Id } = body;
-    projectId = bodyProjectId;
 
-    if (!projectId || !ObjectId.isValid(projectId)) {
+    // WHAT: The event, by its 24-hex id only; from here on its canonical form.
+    // WHY: See PROJECT_ID_PATTERN: an id in any other form reached the write
+    //     while the password on the event's _id was left out of the guard.
+    const rawProjectId: unknown = body?.projectId;
+    if (typeof rawProjectId !== 'string' || !PROJECT_ID_PATTERN.test(rawProjectId)) {
       return NextResponse.json(
         { success: false, error: 'Invalid project ID' },
         { status: 400 }
       );
     }
+    projectId = new ObjectId(rawProjectId).toHexString();
 
-    // F-009: admin session, or a page-password grant for THIS project's edit
-    // slug. Scoped per project so a grant for one event cannot modify another.
+    // F-009: admin session, or an edit grant for THIS project's edit slug (from
+    // the edit password, or from loading an unprotected editor by its edit
+    // link). Scoped per project so a grant for one event cannot modify another.
     // Placed after the id validation so the guard always has a usable id, and
     // before any write so nothing is mutated on the unauthorised path.
+    let writable: Record<string, any> = body;
     {
       const guardClient = await connectToDatabase();
-      const denied = await requireProjectWrite(guardClient.db(MONGODB_DB), projectId);
-      if (denied) return denied;
+      const access = await requireProjectWriteAccess(guardClient.db(MONGODB_DB), projectId);
+      if (!access.allowed) return access.response;
+
+      // WHAT: Anyone but an administrator may change only what the event
+      //     editor saves.
+      // WHY: See EVENT_EDITOR_WRITABLE_FIELDS and ADMIN_ONLY_PROJECT_FIELDS.
+      //     Grants are also issued to whoever opens an unprotected editor by
+      //     its edit link, and neither that, an edit password, nor a signed-in
+      //     account with a role below admin is an admin credential: partner,
+      //     style and template references, and the event's name and date (the
+      //     editor cannot change them; a date change re-runs the Bitly
+      //     recalculation), stay with admin and superadmin sessions. Other
+      //     fields are ignored rather than rejected, as in PUT /api/partners.
+      if (!access.isAdmin) {
+        writable = pickWritableFields(body, EVENT_EDITOR_WRITABLE_FIELDS);
+        for (const field of ADMIN_ONLY_PROJECT_FIELDS) delete writable[field];
+      }
+    }
+
+    // Enhanced to support both traditional and categorized hashtags + styleId + reportTemplateId + partner references
+    // WHAT: Every field is optional: a field the body leaves out keeps its
+    //     stored value. Stats come either whole (`stats`, editor tabs opened
+    //     before field-level saves) or field-level (`statsChanges`, where null
+    //     removes a key, plus `statsRemoved` and the clicker counts in
+    //     `statsIncrements`; the event editor), never both.
+    // WHY: The event editor sends only what it changed since its last confirmed
+    //     save (see EditorSavePayload in components/EditorDashboard.tsx). A
+    //     field it does not send must not be reset: before, a body without
+    //     hashtags stored [] and one without stats stored empty totals.
+    let { eventName, eventDate, hashtags, categorizedHashtags, stats, styleId, reportTemplateId, partner1Id, partner2Id } = writable;
+    const statsChanges = parseEventStatsChanges(writable);
+    if (!statsChanges.ok) {
+      return NextResponse.json({ success: false, error: statsChanges.error }, { status: 400 });
+    }
+    if (statsChanges.value && stats !== undefined) {
+      return NextResponse.json(
+        { success: false, error: 'Send either stats or statsChanges/statsRemoved/statsIncrements, not both' },
+        { status: 400 }
+      );
+    }
+    if (stats !== undefined && !isPlainObject(stats)) {
+      return NextResponse.json({ success: false, error: 'stats must be an object of stat values' }, { status: 400 });
+    }
+
+    // WHAT: The hashtag lists must have the shape every reader expects, for
+    //     every caller and both body forms, before anything is written.
+    // WHY: They were stored as sent and only read afterwards: a list holding
+    //     a number, or a category that was not a list, was written, then the
+    //     hashtag bookkeeping threw a 500 -- and from then on every page that
+    //     reads all events' hashtags (filter reports, the hashtag lists, the
+    //     admin events list) answered 500 too, until the document was
+    //     repaired by hand. The weakest writer is anyone holding an
+    //     unprotected editor's link. See lib/eventSaveRules.ts.
+    const hashtagProblem = eventHashtagsProblem(hashtags) ?? eventCategorizedHashtagsProblem(categorizedHashtags);
+    if (hashtagProblem) {
+      return NextResponse.json({ success: false, error: hashtagProblem }, { status: 400 });
+    }
+
+    // WHAT: The late-write guard: which editor tab sent this save, and its
+    //     place in that tab's sequence of saves (lib/statsFieldChanges.ts).
+    // WHY: A save can outlive the editor's patience with it -- a slow request
+    //     is given up on and sent again -- and then land after a newer one,
+    //     putting the older values back, or land twice. The write below is
+    //     conditional on no save from the same tab with the same or a higher
+    //     number having landed first. Read from the body itself: these are not
+    //     project fields, so they pass for grant holders too.
+    const sequence = parseEditorSequence(body);
+    if (!sequence.ok) {
+      return NextResponse.json({ success: false, error: sequence.error }, { status: 400 });
+    }
+    // WHAT: Counts (statsIncrements) only with the guard.
+    // WHY: A set value sent twice stores the same value; a count sent twice
+    //     counts twice. The editor retries a save whose answer never came with
+    //     the same tabId and clientSeq, and the guard turns the second copy
+    //     away, so each tap is counted once.
+    if (statsChanges.value && Object.keys(statsChanges.value.increments).length > 0 && !sequence.value) {
+      return NextResponse.json(
+        { success: false, error: 'statsIncrements must be sent with tabId and clientSeq' },
+        { status: 400 }
+      );
     }
 
     logInfo('Updating project', { context: 'projects', projectId, styleId });
@@ -802,7 +1138,10 @@ export async function PUT(request: NextRequest) {
       }
     }
 
-    const client = await connectToDatabase();
+    // WHAT: Reuse the client the guard block above already connected and pinged.
+    // WHY: connectToDatabase() pings the cluster; a second ping in the same
+    //     request was one more round trip on every editor save.
+    const client = await clientPromise;
     const db = client.db(MONGODB_DB);
     const collection = db.collection('projects');
     
@@ -829,29 +1168,47 @@ export async function PUT(request: NextRequest) {
       );
     }
 
-    // WHAT: Validate and enrich stats before updating
-    // WHY: Ensure data quality and add derived metrics
-    const { stats: enrichedStats, validation } = prepareStatsForAnalytics(stats);
-    
-    // WHAT: Warn if data quality is poor (but don't reject)
-    // WHY: Allow updates with incomplete data but flag for admin attention
-    if (!validation.hasMinimumData) {
-      logWarn('Updating project with insufficient data quality', { context: 'projects', projectId, dataQuality: validation.dataQuality, completeness: validation.completeness, missingRequired: validation.missingRequired });
-    }
-    
     // Enhanced update data to include categorized hashtags
     const setData: any = {
-      eventName,
-      eventDate,
-      hashtags: hashtags || [],                        // Traditional hashtags (backward compatibility)
-      categorizedHashtags: categorizedHashtags || {},  // New categorized hashtags field
-      stats: enrichedStats, // Already enriched with derived metrics
       updatedAt: new Date().toISOString()
     };
-    
+    let unsetData: any = {};
+    if (eventName !== undefined) setData.eventName = eventName;
+    if (eventDate !== undefined) setData.eventDate = eventDate;
+    if (hashtags !== undefined) setData.hashtags = hashtags || [];                                   // Traditional hashtags (backward compatibility)
+    if (categorizedHashtags !== undefined) setData.categorizedHashtags = categorizedHashtags || {};  // New categorized hashtags field
+
+    // WHAT: Validate and enrich stats before updating
+    // WHY: Ensure data quality and add derived metrics
+    // HOW: Field-level: only the keys this save names, and the derived totals
+    //     they change, are written (as stats.<key>; see fieldLevelStatsUpdate),
+    //     so a value another writer stored since the editor loaded -- fanmass
+    //     results, a sheet pull, an admin, another device -- is left as it is.
+    //     Whole: replaced as before.
+    let validation: ValidationResult | null = null;
+    let incData: Record<string, number> = {};
+    let decremented: string[] = [];
+    if (statsChanges.value) {
+      const fieldLevel = fieldLevelStatsUpdate(currentProject.stats, statsChanges.value);
+      validation = fieldLevel.validation;
+      Object.assign(setData, fieldLevel.set);
+      Object.assign(unsetData, fieldLevel.unset);
+      incData = fieldLevel.inc;
+      decremented = fieldLevel.decremented;
+    } else if (stats !== undefined) {
+      const prepared = prepareStatsForAnalytics(stats);
+      validation = prepared.validation;
+      setData.stats = prepared.stats; // Already enriched with derived metrics
+    }
+
+    // WHAT: Warn if data quality is poor (but don't reject)
+    // WHY: Allow updates with incomplete data but flag for admin attention
+    if (validation && !validation.hasMinimumData) {
+      logWarn('Updating project with insufficient data quality', { context: 'projects', projectId, dataQuality: validation.dataQuality, completeness: validation.completeness, missingRequired: validation.missingRequired });
+    }
+
     // WHAT: Handle styleIdEnhanced assignment/removal strategically
     // WHY: Migrated from old styleId to new styleIdEnhanced field name
-    let unsetData: any = {};
     
     if (styleId === null || styleId === 'null') {
       // Remove styleIdEnhanced to use global/default style
@@ -903,12 +1260,64 @@ export async function PUT(request: NextRequest) {
       logDebug('Setting partner2Id', { context: 'projects', projectId, partner2Id, method: 'PUT' });
     }
     
+    // WHAT: The write, conditional on no newer save from the same editor tab
+    //     having landed (see `sequence` above), and recording this one.
+    // HOW: editorSequenceGuard: of two saves from one tab the one with the
+    //     higher number wins whichever order they arrive in, and a save that
+    //     arrives twice is written once, in one atomic update.
+    const updateFilter: Record<string, unknown> = { _id: new ObjectId(projectId) };
+    if (sequence.value) {
+      const guard = editorSequenceGuard(sequence.value);
+      Object.assign(updateFilter, guard.filter);
+      Object.assign(setData, guard.set);
+    }
+
     // Build the update operation object
     const updateOperation: any = { $set: setData };
     if (Object.keys(unsetData).length > 0) {
       updateOperation.$unset = unsetData;
     }
-    
+    if (Object.keys(incData).length > 0) {
+      updateOperation.$inc = incData;
+    }
+
+    const result = await collection.updateOne(updateFilter, updateOperation);
+
+    if (result.matchedCount === 0) {
+      // WHAT: Nothing matched. With the guard, that is a newer save from this
+      //     tab already stored, or this same save stored by an earlier copy of
+      //     it (a retry goes out under the same clientSeq) -- unless the event
+      //     was deleted meanwhile.
+      // WHY: 200 with `stale: true`, not an error: what this save carried is
+      //     already stored or superseded, so the editor treats it as done, and
+      //     a count is not added twice. Nothing else below runs for it -- no
+      //     hashtag counts, no Bitly recalculation, no notification -- because
+      //     nothing was written.
+      if (sequence.value && (await collection.findOne({ _id: new ObjectId(projectId) }, { projection: { _id: 1 } }))) {
+        logInfo('Ignored a late editor save; a newer save from the same tab is stored', {
+          context: 'projects',
+          projectId,
+          clientSeq: sequence.value.clientSeq,
+        });
+        return NextResponse.json({ success: true, stale: true });
+      }
+      return NextResponse.json({ success: false, error: 'Project not found' }, { status: 404 });
+    }
+
+    logInfo('Project updated successfully', { context: 'projects', projectId });
+
+    // WHAT: A count taken down below zero goes back to zero.
+    // WHY: Each device lets -1 through only while it shows more than zero, but
+    //     two devices can both take the last one away: counted on the server,
+    //     that is -1, which no count can be. Only a key this save took down is
+    //     checked, and only a negative value is changed.
+    for (const key of decremented) {
+      await collection.updateOne(
+        { _id: new ObjectId(projectId), [`stats.${key}`]: { $lt: 0 } },
+        { $set: { [`stats.${key}`]: 0 } }
+      );
+    }
+
     // Enhanced hashtag change handling for both traditional and categorized hashtags
     // Use all hashtag representations (including category-prefixed versions)
     const currentAllHashtagRepresentations = getAllHashtagRepresentations({
@@ -916,9 +1325,10 @@ export async function PUT(request: NextRequest) {
       categorizedHashtags: currentProject.categorizedHashtags || {}
     }).map((h: string) => h.toLowerCase());
     
+    // A hashtag list the body leaves out keeps its stored value.
     const newAllHashtagRepresentations = getAllHashtagRepresentations({
-      hashtags: hashtags || [],
-      categorizedHashtags: categorizedHashtags || {}
+      hashtags: (hashtags !== undefined ? hashtags : currentProject.hashtags) || [],
+      categorizedHashtags: (categorizedHashtags !== undefined ? categorizedHashtags : currentProject.categorizedHashtags) || {}
     }).map((h: string) => h.toLowerCase());
     
     const hashtagsCollection = db.collection('hashtags');
@@ -930,6 +1340,8 @@ export async function PUT(request: NextRequest) {
     const hashtagsToRemove = currentAllHashtagRepresentations.filter((h: string) => !newAllHashtagRepresentations.includes(h));
     
     // Update hashtag counts
+    // NOTE: After the project write, not before it: a save the late-write
+    //     guard turned away stored nothing, so it must count nothing either.
     if (hashtagsToAdd.length > 0) {
       // Process each hashtag individually to avoid conflicts
       for (const hashtag of hashtagsToAdd) {
@@ -968,16 +1380,9 @@ export async function PUT(request: NextRequest) {
       logInfo('Decremented count for hashtags', { context: 'projects', projectId, hashtagCount: hashtagsToRemove.length });
     }
 
-    const result = await collection.updateOne(
-      { _id: new ObjectId(projectId) },
-      updateOperation
-    );
-
-    logInfo('Project updated successfully', { context: 'projects', projectId });
-    
     // WHAT: Trigger Bitly recalculation if eventDate changed
     // WHY: Date changes affect temporal boundaries for Bitly analytics attribution
-    if (currentProject.eventDate !== eventDate) {
+    if (eventDate !== undefined && currentProject.eventDate !== eventDate) {
       logInfo('Event date changed, triggering Bitly recalculation', { context: 'projects', projectId });
       try {
         const bitlinksAffected = await recalculateProjectLinks(new ObjectId(projectId));
@@ -997,7 +1402,7 @@ export async function PUT(request: NextRequest) {
         actorId: actor.id,
         actorName: actor.name,
         projectId: projectId,
-        projectName: eventName,
+        projectName: eventName !== undefined ? eventName : currentProject.eventName,
         projectSlug: currentProject.viewSlug || null
       });
     } catch (notifError) {
@@ -1005,8 +1410,13 @@ export async function PUT(request: NextRequest) {
       // Don't fail the request if notification fails
     }
     
-    // Clean up unused hashtags
-    await cleanupUnusedHashtags(db);
+    // WHAT: Hashtag cleanup only when this save dropped a representation, and
+    //     only for those representations.
+    // WHY: The editor saves on every click with the hashtags unchanged; those
+    //     saves must not pay for any hashtag work.
+    if (hashtagsToRemove.length > 0) {
+      await cleanupRemovedHashtags(db, hashtagsToRemove);
+    }
 
     return NextResponse.json({
       success: true,
@@ -1096,8 +1506,9 @@ export async function DELETE(request: NextRequest) {
       
       logInfo('Decremented count for hashtag representations', { context: 'projects', projectId, hashtagCount: allDeletedHashtagRepresentations.length });
       
-      // Clean up unused hashtags
-      await cleanupUnusedHashtags(db);
+      // WHAT: Same targeted cleanup as PUT, for this event's representations only
+      //     (it used to share the full-collection sweep).
+      await cleanupRemovedHashtags(db, allDeletedHashtagRepresentations);
     }
 
     return NextResponse.json({ success: true });

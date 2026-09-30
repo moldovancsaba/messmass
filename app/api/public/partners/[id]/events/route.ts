@@ -108,12 +108,13 @@ export async function GET(
     
     // WHAT: Sanitize project data for public API
     // WHY: Remove internal fields, keep essential event information
+    // SECURITY: No editSlug -- it is a write credential for an editor with no
+    //     password, and this API key is read-only (see /api/public/events/[id]).
     const sanitizedEvents = projects.map(project => ({
       id: project._id.toString(),
       eventName: project.eventName,
       eventDate: project.eventDate,
       viewSlug: project.viewSlug,
-      editSlug: project.editSlug,
       hashtags: project.hashtags || [],
       categorizedHashtags: project.categorizedHashtags || {},
       // WHAT: Include match context if available (from Sports Match Builder)

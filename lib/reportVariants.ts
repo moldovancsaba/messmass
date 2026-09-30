@@ -10,6 +10,13 @@ import {
 import { normalizeReportPeriodInput, normalizeReportPeriodUpdate } from '@/lib/reportPeriodValidation';
 import { resolveRuntimeReportById, type RuntimeReportResolution } from '@/lib/reportRuntime';
 import { findPartnerByIdentifier } from '@/lib/partnerIdentifier';
+import {
+  applyStatsFieldChanges,
+  editorSequenceGuard,
+  statsUpdateOperators,
+  type EditorSequence,
+  type StatsFieldChanges,
+} from '@/lib/statsFieldChanges';
 
 export type ReportVariantOwnerType = 'organization' | 'partner' | 'hashtag' | 'filter';
 export type ReportVariantStatus = 'draft' | 'published' | 'archived';
@@ -431,11 +438,43 @@ export async function createReportVariant(
   return normalizeVariantRecord({ ...document, _id: result.insertedId });
 }
 
+// WHAT: A report variant update: a field left undefined is kept, a field set
+//     to null is removed from the stored variant.
+// WHY: A variant field the variant does not have falls back to the owner's
+//     value (resolveReportVariant, the partner-edit loader's `??`), so removal
+//     is how a variant goes back to inheriting -- e.g. a custom variant's own
+//     logo removed so the partner's shows again. Undefined could not say that:
+//     it was skipped, so the removal was silently dropped.
+export type ReportVariantUpdates = { [K in keyof ReportVariant]?: ReportVariant[K] | null };
+
+// WHAT: How the partner editor's save reaches a custom variant: the report
+//     content it changed (field-level) and the late-write guard of its tab.
+// WHY: The editor used to send the variant's whole report content, and a save
+//     given up on (25 s) and sent again could land after the newer one and
+//     put the older content back; another device's slot saved meanwhile was
+//     overwritten too. Here only the changed slots are written, as
+//     `statsOverrides.<key>` paths, and the write is conditional on no newer
+//     save from the same tab having landed (lib/statsFieldChanges.ts).
+export interface ReportVariantEditorWrite {
+  statsOverridesChanges?: StatsFieldChanges | null;
+  sequence?: EditorSequence | null;
+}
+
+/** Update a variant. */
+export async function updateReportVariant(db: Db, variantId: string, updates: ReportVariantUpdates): Promise<ReportVariant>;
+/** An editor save: resolves null when the late-write guard turned it away (a newer save from its tab is stored). */
 export async function updateReportVariant(
   db: Db,
   variantId: string,
-  updates: Partial<ReportVariant>
-): Promise<ReportVariant> {
+  updates: ReportVariantUpdates,
+  editor: ReportVariantEditorWrite
+): Promise<ReportVariant | null>;
+export async function updateReportVariant(
+  db: Db,
+  variantId: string,
+  updates: ReportVariantUpdates,
+  editor?: ReportVariantEditorWrite
+): Promise<ReportVariant | null> {
   if (!ObjectId.isValid(variantId)) {
     throw new Error('Invalid report variant id');
   }
@@ -449,10 +488,12 @@ export async function updateReportVariant(
   const normalizedUpdates: Record<string, unknown> = {
     updatedAt: new Date().toISOString(),
   };
+  const removedFields: Record<string, ''> = {};
 
   for (const [key, value] of Object.entries(updates)) {
     if (key === '_id' || key === 'ownerType' || key === 'ownerId' || value === undefined) continue;
-    normalizedUpdates[key] = value;
+    if (value === null) removedFields[key] = '';
+    else normalizedUpdates[key] = value;
   }
 
   if (typeof updates.name === 'string' && updates.name.trim()) {
@@ -486,7 +527,40 @@ export async function updateReportVariant(
     );
   }
 
-  await collection.updateOne({ _id: existing._id }, { $set: normalizedUpdates });
+  // A field the normalisation above sets (the period pair, updatedAt) is not
+  // also removed: MongoDB refuses $set and $unset on the same path.
+  for (const key of Object.keys(normalizedUpdates)) delete removedFields[key];
+
+  // Field-level report content: only the keys that differ from the stored
+  // variant, as dotted paths, so a slot another writer stored between this
+  // read and this write is kept.
+  if (editor?.statsOverridesChanges) {
+    const { set, unset } = statsUpdateOperators(
+      'statsOverrides',
+      existing.statsOverrides,
+      applyStatsFieldChanges(existing.statsOverrides, editor.statsOverridesChanges),
+      editor.statsOverridesChanges.removed
+    );
+    Object.assign(normalizedUpdates, set);
+    Object.assign(removedFields, unset);
+  }
+
+  const filter: Record<string, unknown> = { _id: existing._id };
+  if (editor?.sequence) {
+    const guard = editorSequenceGuard(editor.sequence);
+    Object.assign(filter, guard.filter);
+    Object.assign(normalizedUpdates, guard.set);
+  }
+
+  const update: Record<string, unknown> = { $set: normalizedUpdates };
+  if (Object.keys(removedFields).length > 0) update.$unset = removedFields;
+
+  const result = await collection.updateOne(filter, update);
+  if (editor?.sequence && result.matchedCount === 0) {
+    // Turned away by the guard -- unless the variant was deleted meanwhile.
+    if (await collection.findOne({ _id: existing._id }, { projection: { _id: 1 } })) return null;
+    throw new Error('Report variant not found');
+  }
   const updated = await collection.findOne({ _id: existing._id });
   if (!updated) {
     throw new Error('Updated report variant could not be loaded');

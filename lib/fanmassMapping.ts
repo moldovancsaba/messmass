@@ -253,11 +253,18 @@ export async function pushEventStats(eventId: string, statsPartial: Record<strin
   const clean: Record<string, unknown> = {};
   for (const [k, v] of Object.entries(statsPartial)) {
     if (derivedNames.has(k)) continue;
+    // Each pushed value is written as its own `stats.<name>` path (below), so
+    // a name that is not a plain field name -- a dot would address a nested
+    // field, a leading `$` is an operator -- is left out, and not listed in
+    // `applied`.
+    if (!k || k.includes('.') || k.startsWith('$') || k.includes('\0') || k === '__proto__') continue;
     clean[k] = v;
     applied.push(k);
   }
 
-  const mergedStats = addDerivedMetrics({ ...(event.stats || {}), ...clean } as any);
+  const storedStats: Record<string, unknown> =
+    event.stats && typeof event.stats === 'object' && !Array.isArray(event.stats) ? event.stats : {};
+  const mergedStats = addDerivedMetrics({ ...storedStats, ...clean } as any);
   // WHAT: Stamp when AI analytics last landed on this event.
   // WHY: Nothing recorded it, so "100% analysed" read identically whether it
   //     happened this morning or three weeks ago — for a live event that is the
@@ -267,9 +274,30 @@ export async function pushEventStats(eventId: string, statsPartial: Record<strin
   //     or a replayed request cannot overstate freshness. Stored beside `stats`
   //     rather than inside it, so it is never mistaken for a chart variable.
   const receivedAt = new Date().toISOString();
-  await db.collection('projects').updateOne(
-    { _id: oid },
-    { $set: { stats: mergedStats, aiLastAnalyzedAt: receivedAt, updatedAt: receivedAt } },
-  );
+  // WHAT: Write only the pushed values and the totals derived from them, each
+  //     as its own `stats.<name>` path -- the way lib/fanmassIntegration.ts
+  //     writes results -- never the whole stats object.
+  // WHY: This push runs during live events, about once a minute, while the
+  //     event editor saves roughly once a second. Writing the whole object read
+  //     at the top of this function put back every value the editor stored
+  //     between that read and this write: an operator's last taps, or a report
+  //     text, were lost while the editor showed them as saved. A total is
+  //     written only when it changes, so one derived from values the editor
+  //     changed meanwhile is not rewritten needlessly.
+  // NOTE: Where `stats` is present but not an object (null on some old
+  //     events) a dotted path has nothing to address, so the whole field is
+  //     set, as before.
+  const set: Record<string, unknown> = { aiLastAnalyzedAt: receivedAt, updatedAt: receivedAt };
+  if (event.stats !== undefined && event.stats !== storedStats) {
+    set.stats = mergedStats;
+  } else {
+    for (const [k, v] of Object.entries(clean)) set[`stats.${k}`] = v;
+    for (const total of ['allImages', 'totalFans'] as const) {
+      if (!Object.prototype.hasOwnProperty.call(clean, total) && mergedStats[total] !== storedStats[total]) {
+        set[`stats.${total}`] = mergedStats[total];
+      }
+    }
+  }
+  await db.collection('projects').updateOne({ _id: oid }, { $set: set });
   return { eventId, stats: mergedStats, applied, aiLastAnalyzedAt: receivedAt };
 }

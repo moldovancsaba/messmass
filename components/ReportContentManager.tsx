@@ -5,7 +5,7 @@
 // WHY: Bulk upload images to ImgBB, bulk add texts, keep stable slot references for charts
 // HOW: Uploads directly to ImgBB from the browser and EditorDashboard saveProject()
 
-import React, { useMemo, useRef, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import Image from 'next/image';
 import { apiPost } from '@/lib/apiClient';
 import { uploadImageToImgbb } from '@/lib/imgbbClientUpload';
@@ -84,6 +84,51 @@ async function autoGenerateChartBlocks(newStats: Record<string, any>, oldStats: 
     // WHAT: Non-blocking error - content is saved, just chart blocks may need manual creation
     // WHY: Don't interrupt user workflow if chart block creation fails
   }
+}
+
+// WHAT: One report text slot: shows the stored text, and records it when it
+//     loses focus -- only when it was changed there.
+// WHY: The slots were uncontrolled boxes that recorded their text on every
+//     blur. Once typed into, a box no longer took a newer stored text from
+//     React, so after another device (or a sheet pull, or "Use this device's
+//     values") changed that slot, this box still showed its own older text --
+//     and simply tapping into it and out again wrote that older text back over
+//     the newer one.
+// HOW: The text the box shows when it gains focus is remembered, and the blur
+//     records the box only if its text differs from that. While the box is not
+//     being edited, a newer stored text replaces what it shows; a newer text
+//     that arrives while it is being edited is shown on blur if the operator
+//     changed nothing.
+function ReportTextSlot({ value, onSave }: { value: string; onSave: (text: string) => void }) {
+  const boxRef = useRef<HTMLTextAreaElement>(null);
+  // The box's text when it gained focus; null while it is not being edited.
+  const focusTextRef = useRef<string | null>(null);
+
+  useEffect(() => {
+    const box = boxRef.current;
+    if (box && focusTextRef.current === null && box.value !== value) box.value = value;
+  }, [value]);
+
+  return (
+    <textarea
+      ref={boxRef}
+      className="form-input textarea-min"
+      defaultValue={value}
+      onFocus={(e) => {
+        focusTextRef.current = e.currentTarget.value;
+      }}
+      onBlur={(e) => {
+        const atFocus = focusTextRef.current;
+        focusTextRef.current = null;
+        const text = e.currentTarget.value;
+        if (text !== (atFocus ?? value)) {
+          onSave(text);
+        } else if (text !== value) {
+          e.currentTarget.value = value;
+        }
+      }}
+    />
+  );
 }
 
 export default function ReportContentManager({ stats, onCommit, maxSlots = 500 }: ReportContentManagerProps) {
@@ -353,11 +398,7 @@ export default function ReportContentManager({ stats, onCommit, maxSlots = 500 }
                     <button className="btn btn-small btn-secondary" onClick={() => clearSlot('reportText', index)}>Clear</button>
                   </div>
                 </div>
-                <textarea
-                  className="form-input textarea-min"
-                  defaultValue={value}
-                  onBlur={(e) => saveTextAt(index, e.currentTarget.value)}
-                />
+                <ReportTextSlot value={value} onSave={(text) => saveTextAt(index, text)} />
               </div>
             ))}
           </div>

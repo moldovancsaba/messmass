@@ -106,12 +106,17 @@ export async function GET(
     }
     
     // WHAT: Sanitize event data for public API
+    // SECURITY: No editSlug. An API key here is read-only, but the edit slug of
+    //     an editor with no password is a write credential: GET
+    //     /api/projects/edit/<editSlug> issues an edit grant for it, and that
+    //     grant saves through PUT /api/projects (see isBearerSlug in
+    //     lib/pageAccess.ts). Returning it here turned read access into write
+    //     access for every unprotected event.
     const sanitizedEvent: any = {
       id: project._id.toString(),
       eventName: project.eventName,
       eventDate: project.eventDate,
       viewSlug: project.viewSlug,
-      editSlug: project.editSlug,
       hashtags: project.hashtags || [],
       categorizedHashtags: project.categorizedHashtags || {},
       partner: partnerInfo,

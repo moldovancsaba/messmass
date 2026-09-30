@@ -4,7 +4,7 @@ Last Updated: 2026-05-20
 Canonical: Yes
 Owner: Architecture
 
-**Version:** 12.3.37
+**Version:** 12.3.39
 **Base URL:** `https://messmass.com`
 **Local development base URL:** `http://localhost:3001`
 
@@ -174,13 +174,16 @@ Current event fields returned:
 - `eventName`
 - `eventDate`
 - `viewSlug`
-- `editSlug`
 - `hashtags`
 - `categorizedHashtags`
 - `matchContext`
 - `summary`
 - `createdAt`
 - `updatedAt`
+
+Neither public event route returns the event's edit link. API keys are
+read-only, and the edit link of an event editor with no password lets whoever
+holds it save the event.
 
 `summary` currently includes:
 

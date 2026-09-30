@@ -1,5 +1,5 @@
 // lib/pagePasswordAccess.ts
-// WHAT: Resource-scoped authorization gate for GET/DELETE /api/page-passwords.
+// WHAT: Resource-scoped authorization gate for GET/POST/DELETE /api/page-passwords.
 // WHY: Finding F-MM-01 -- requireSession() only proves the caller is signed in,
 //     not that they have any relationship to the specific pageId+pageType being
 //     read or unprotected. Every role, including guest, passed identically.
@@ -106,8 +106,9 @@ function forbidden(): NextResponse {
 }
 
 // WHAT: Require the caller to have a genuine relationship to pageId+pageType.
-// WHY: Called after requireSession() succeeds and before the route reads or
-//     removes the page's password. Returns null to proceed, or a 403 response.
+// WHY: Called after requireSession() succeeds and before the route reads,
+//     sets or removes the page's password. Returns null to proceed, or a 403
+//     response.
 // NOTE: Fails closed -- an owner scope that cannot be resolved at all denies
 //     everyone but superadmin, it never falls back to allowing the request.
 export async function requirePageResourceAccess(

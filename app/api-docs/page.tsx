@@ -116,7 +116,6 @@ export default function APIDocsPage() {
     "eventName": "FC Barcelona vs Real Madrid",
     "eventDate": "2024-12-01T20:00:00Z",
     "viewSlug": "barcelona-madrid-2024",
-    "editSlug": "edit-barcelona-madrid-2024",
     "hashtags": ["soccer", "laliga"],
     "partner": {
       "id": "507f1f77bcf86cd799439012",

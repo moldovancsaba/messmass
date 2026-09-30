@@ -40,6 +40,26 @@ export const RATE_LIMITS = {
     maxRequests: 30,            // 30 writes per minute
     message: 'Too many requests. Please slow down.',
   },
+
+  // Editor saves (PUT /api/projects, PUT /api/partners, PUT /api/partners/edit/<id-or-slug>)
+  // WHY: These are the live data-entry editors. An event operator clicks
+  //     counters for hours; the generic WRITE budget of 30/min (one save per
+  //     2 s) was sized for admin forms and is below what a fast operator
+  //     produces. Both editors coalesce saves through lib/editorSaveQueue.ts
+  //     (700 ms debounce, 3 s max wait, one request in flight, retries backed
+  //     off from 2 s), so one open editor sends at most one save per ~0.7 s
+  //     (~85/min, clicks just over 0.7 s apart) and fewer when clicking faster
+  //     (one per 3 s). 120/min covers that worst case with room for retries,
+  //     and still caps a runaway client at 2 requests/s.
+  // NOTE: The key is IP + path, and every event saves through the same
+  //     /api/projects path, so operators behind one venue IP share this budget.
+  //     A refused save is not lost: the 429 carries Retry-After, and the
+  //     editor's save queue keeps the change and retries after it.
+  EDITOR_SAVE: {
+    windowMs: 60 * 1000,        // 1 minute
+    maxRequests: 120,           // 120 saves per minute per IP + path (2 per second)
+    message: 'Too many saves in a short time. Wait a few seconds and try again.',
+  },
   
   // Read operations (GET) - generous limits
   READ: {
@@ -229,6 +249,16 @@ export async function rateLimitMiddleware(
   return null;
 }
 
+// WHAT: The paths the event and partner editors save through.
+// WHY: Exact matches only, so a sibling route (e.g. /api/projects/<id>) keeps the
+//     generic WRITE budget.
+const PARTNER_EDIT_SAVE_PATH = /^\/api\/partners\/edit\/[^/]+$/;
+function isEditorSavePath(pathname: string): boolean {
+  return pathname === '/api/projects'
+    || pathname === '/api/partners'
+    || PARTNER_EDIT_SAVE_PATH.test(pathname);
+}
+
 // WHAT: Helper to determine rate limit config based on request
 // WHY: Automatically select appropriate limits for each endpoint type
 export function getRateLimitConfig(request: NextRequest): RateLimitConfig {
@@ -252,6 +282,13 @@ export function getRateLimitConfig(request: NextRequest): RateLimitConfig {
     return RATE_LIMITS.PUBLIC;
   }
   
+  // WHAT: Editor save path - its own budget, checked before the generic write one
+  // WHY: See RATE_LIMITS.EDITOR_SAVE. PUT only: creating or deleting events and
+  //     partners stays on the WRITE budget.
+  if (method === 'PUT' && isEditorSavePath(pathname)) {
+    return RATE_LIMITS.EDITOR_SAVE;
+  }
+
   // WHAT: Write operations - moderate limits
   if (method === 'POST' || method === 'PUT' || method === 'DELETE' || method === 'PATCH') {
     return RATE_LIMITS.WRITE;

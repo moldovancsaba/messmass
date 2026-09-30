@@ -1,13 +1,13 @@
 {
  "_meta": {
-  "generated": "2026-09-28T09:32:43+00:00",
+  "generated": "2026-09-30T09:49:56+00:00",
   "repo": "messmass",
-  "head": "dd34e229",
+  "head": "6dea81c5",
   "counts": {
    "endpoints": 221,
    "collections": 71,
    "env": 33,
-   "outbound-hosts": 29,
+   "outbound-hosts": 30,
    "docs": 205
   }
  },
@@ -40,6 +40,7 @@
   "www.googleapis.com",
   "www.googletagmanager.com",
   "www.messmass.com",
-  "www.thesportsdb.com"
+  "www.thesportsdb.com",
+  "www.w3.org"
  ]
 }

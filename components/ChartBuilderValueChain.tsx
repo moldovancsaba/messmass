@@ -4,9 +4,10 @@
 
 'use client';
 
-import { useState, useEffect, useMemo } from 'react';
+import { useMemo } from 'react';
 import { extractVariablesFromFormula } from '@/lib/formulaEngine';
 import MaterialIcon from './MaterialIcon';
+import { isBuilderEditableVariable, numericBuilderValue, useBuilderStatInputs } from '@/hooks/useBuilderStatInputs';
 
 interface ChartBuilderValueChainProps {
   chart: {
@@ -50,34 +51,18 @@ export default function ChartBuilderValueChain({ chart, stats, onSave }: ChartBu
     [chart.elements]
   );
 
-  const [tempValues, setTempValues] = useState<Record<string, string>>(() => {
-    const initial: Record<string, string> = {};
-    variables.forEach((key) => {
-      const val = stats[key];
-      initial[key] = val !== undefined && val !== null ? String(val) : '';
-    });
-    return initial;
-  });
-
-  useEffect(() => {
-    const next: Record<string, string> = {};
-    variables.forEach((key) => {
-      const val = stats[key];
-      next[key] = val !== undefined && val !== null ? String(val) : '';
-    });
-    setTempValues((prev) => ({ ...prev, ...next }));
-  }, [stats, chart.chartId, variables]);
+  // Committed on blur only when changed there (see useBuilderStatInputs).
+  const { texts: tempValues, setText, onFocus, takeEdit } = useBuilderStatInputs(stats, variables, '');
 
   const handleBlur = (key: string, isText: boolean) => {
-    const raw = tempValues[key] ?? '';
+    const edited = takeEdit(key);
+    if (edited === null) return;
     if (isText) {
-      if (raw !== (stats[key] ?? '')) onSave(key, raw);
+      if (edited !== (stats[key] ?? '')) onSave(key, edited);
       return;
     }
-    const num = raw === '' ? 0 : (parseFloat(raw) || 0);
-    const current = stats[key];
-    const currentNum = typeof current === 'number' ? current : parseFloat(String(current));
-    if (Number.isNaN(currentNum) || num !== currentNum) onSave(key, num);
+    const num = numericBuilderValue(edited, stats[key], true);
+    if (num !== null) onSave(key, num);
   };
 
   if (variables.length === 0) {
@@ -124,8 +109,10 @@ export default function ChartBuilderValueChain({ chart, stats, onSave }: ChartBu
                   <input
                     type="text"
                     value={tempValues[key] ?? ''}
-                    onChange={(e) => setTempValues((prev) => ({ ...prev, [key]: e.target.value }))}
+                    onChange={(e) => setText(key, e.target.value)}
+                    onFocus={() => onFocus(key)}
                     onBlur={() => handleBlur(key, true)}
+                    readOnly={!isBuilderEditableVariable(key)}
                     className="form-input chart-builder-input"
                     placeholder={key}
                     aria-label={key}
@@ -134,8 +121,10 @@ export default function ChartBuilderValueChain({ chart, stats, onSave }: ChartBu
                   <input
                     type="number"
                     value={tempValues[key] ?? ''}
-                    onChange={(e) => setTempValues((prev) => ({ ...prev, [key]: e.target.value }))}
+                    onChange={(e) => setText(key, e.target.value)}
+                    onFocus={() => onFocus(key)}
                     onBlur={() => handleBlur(key, false)}
+                    readOnly={!isBuilderEditableVariable(key)}
                     min="0"
                     step="any"
                     className="form-input chart-builder-input"

@@ -474,13 +474,18 @@ export default function ProjectsPageUnified() {
     setIsUpdatingProject(true);
     
     try {
+      // WHAT: No `stats` in the body: this modal never edits them.
+      // WHY: A body with `stats` replaces the stored stats whole, and
+      //     editingProject.stats is the copy taken when this list loaded. Saving
+      //     the name or style hours into an event put back every count and text
+      //     the event editor (and fanmass) had stored since. PUT /api/projects
+      //     keeps a field the body leaves out.
       const payload = {
         projectId: editingProject._id,
         eventName: finalEventName,
         eventDate: editProjectData.eventDate,
         hashtags: editProjectData.hashtags,
         categorizedHashtags: editProjectData.categorizedHashtags,
-        stats: editingProject.stats,
         styleId: editProjectData.styleId || null,
         reportTemplateId: editProjectData.reportTemplateId || null,
         partner1Id: editProjectData.partner1Id || null,

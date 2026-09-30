@@ -2,9 +2,10 @@
 
 import bcrypt from 'bcryptjs';
 import { randomBytes } from 'crypto';
+import { ObjectId } from 'mongodb';
 import clientPromise from '@/lib/mongodb';
 import config from '@/lib/config';
-import { resolvePartnerIdentifier } from './partnerIdentifier';
+import { isUuidV4, resolvePartnerIdentifier } from './partnerIdentifier';
 
 /**
  * Page password types and interfaces for {messmass} authentication system
@@ -59,7 +60,25 @@ function mapPagePasswordDocument(pagePassword: any): PagePassword {
   };
 }
 
+// WHAT: The key an event editor's `edit` password is stored and looked up
+//     under: the pageId as given, with an event _id (24 hex digits) in
+//     lowercase.
+// WHY: An ObjectId matches in either case -- findProjectByEditSlug and
+//     eventEditAddresses open the same event for an _id in capitals -- but
+//     page_passwords matches pageId exactly. A password set on the _id in
+//     capitals was stored under a key the editor gate never reads (it reads
+//     the event's own String(_id), which is lowercase), and the rows on the
+//     event's other addresses were deleted in favour of it: the editor was
+//     left with no password anyone could enter or see.
+function canonicalEditPageId(pageId: string): string {
+  return /^[0-9a-f]{24}$/i.test(pageId) ? pageId.toLowerCase() : pageId;
+}
+
 export async function resolveCanonicalPageId(db: any, pageId: string, pageType: PageType): Promise<string> {
+  if (pageType === 'edit') {
+    return canonicalEditPageId(pageId);
+  }
+
   if (pageType !== 'partner-report' && pageType !== 'partner-edit') {
     return pageId;
   }
@@ -197,6 +216,25 @@ const db = client.db(config.dbName);
       { upsert: true }
     );
 
+    // WHAT: An event editor keeps one `edit` password: the one just set.
+    //     Rows on its other address (the _id when this is the editSlug, or
+    //     the other way round) are deleted.
+    // WHY: A row left there was only overruled while it was older than this
+    //     one. Once this one was removed it came back into force -- a password
+    //     rotated away from someone let them in again, and write access with
+    //     it -- while Share, which reads one address, called the editor
+    //     unprotected and offered no way to remove it. Deleted after the new
+    //     row is stored, so the editor is never without a password between the
+    //     two writes. The addresses are read from the pageId as given, so a
+    //     row left under an _id in capitals (from before canonicalEditPageId)
+    //     goes too; the row kept is the canonical one.
+    if (pageType === 'edit') {
+      const others = (await eventEditAddresses(db, pageId)).filter((id) => id !== canonicalPageId);
+      if (others.length > 0) {
+        await collection.deleteMany({ pageType: 'edit', pageId: { $in: others } });
+      }
+    }
+
     const savedPassword = await collection.findOne({ pageId: canonicalPageId, pageType });
     return { ...mapPagePasswordDocument(savedPassword!), password: plaintext };
 
@@ -206,9 +244,78 @@ const db = client.db(config.dbName);
   }
 }
 
+// WHAT: A page_passwords createdAt as epoch milliseconds; 0 when unreadable.
+// WHY: Same reading as lib/pageAccess.ts (passwordSetAtSeconds): a legacy row
+//     without a createdAt counts as the oldest, never as the newest.
+function passwordCreatedAtMs(createdAt: unknown): number {
+  const ms =
+    createdAt instanceof Date ? createdAt.getTime()
+      : typeof createdAt === 'string' ? Date.parse(createdAt)
+        : NaN;
+  return Number.isFinite(ms) ? ms : 0;
+}
+
+// WHAT: Every address one event editor answers to: the pageId given, plus the
+//     event's _id and its editSlug when the pageId names an event.
+// WHY: Edit shares were keyed `editSlug || _id`, so an event's `edit` password
+//     can sit under either address, and the editor gate
+//     (GET /api/projects/edit/[slug]) treats a password on any of them as
+//     protecting the editor. Creating, regenerating, removing and reporting
+//     an edit password all have to see the same set of addresses, or a
+//     password the admin UI no longer shows keeps working.
+// NOTE: The lookup mirrors findProjectByEditSlug: a 24-hex pageId is an _id,
+//     a UUID is an editSlug. Anything else is the pageId alone. The pageId is
+//     listed as given and in its canonical form (canonicalEditPageId): rows
+//     are stored under the canonical one, and one left under an _id in
+//     capitals before that is still found and retired.
+async function eventEditAddresses(db: any, pageId: string): Promise<string[]> {
+  const canonical = canonicalEditPageId(pageId);
+  const addresses = [canonical, pageId];
+  const byId = /^[0-9a-f]{24}$/.test(canonical);
+  if (byId || isUuidV4(pageId)) {
+    const project = await db.collection('projects').findOne(
+      byId ? { _id: new ObjectId(canonical) } : { editSlug: pageId },
+      { projection: { _id: 1, editSlug: 1 } }
+    );
+    if (project) {
+      addresses.push(String(project._id));
+      if (typeof project.editSlug === 'string' && project.editSlug) addresses.push(project.editSlug);
+    }
+  }
+  return Array.from(new Set(addresses));
+}
+
+// WHAT: The `edit` password rows a password entered for this event editor is
+//     checked against: of the rows stored under any address of the event --
+//     the pageId it was entered on, the event's editSlug and its _id -- the
+//     newest (several only when they tie, e.g. legacy rows with no createdAt).
+// WHY: Edit shares were keyed `editSlug || _id`, so an older event's password
+//     can sit on its _id while the editor is opened by its edit link, or the
+//     other way round. The page gate (GET /api/projects/edit/[slug]) already
+//     treats a password on any address as protecting the editor, but this
+//     check looked only under the address the password was typed on, so an
+//     operator holding the correct password was refused and could never get
+//     in. Only the newest row counts because the gate measures grants against
+//     the newest password on any address: regenerating the edit password
+//     retires an older one left on the other address, instead of leaving it a
+//     way back in with no way to remove it.
+//     Since getOrCreatePagePassword and removePagePassword act on every
+//     address, a second row only remains from before they did.
+async function currentEventEditPasswords(db: any, pageId: string): Promise<any[]> {
+  const collection = db.collection('page_passwords');
+  const rows = (
+    await Promise.all(
+      (await eventEditAddresses(db, pageId)).map((id) => collection.findOne({ pageId: id, pageType: 'edit' }))
+    )
+  ).filter(Boolean);
+  if (rows.length === 0) return [];
+  const newest = Math.max(...rows.map((row: any) => passwordCreatedAtMs(row.createdAt)));
+  return rows.filter((row: any) => passwordCreatedAtMs(row.createdAt) === newest);
+}
+
 /**
  * Validate page-specific password
- * 
+ *
  * @param pageId - Page identifier
  * @param pageType - Type of page
  * @param providedPassword - Password provided by user
@@ -224,21 +331,37 @@ export async function validatePagePassword(
 const db = client.db(config.dbName);
     const collection = db.collection('page_passwords');
 
-    let pagePassword = await collection.findOne({ pageId, pageType });
+    let pagePassword: any = null;
+    let isValid = false;
 
-    if (!pagePassword) {
-      const canonicalPageId = await resolveCanonicalPageId(db as any, pageId, pageType);
-      if (canonicalPageId !== pageId) {
-        pagePassword = await collection.findOne({ pageId: canonicalPageId, pageType });
+    if (pageType === 'edit') {
+      // An event editor answers to its editSlug and its _id (see
+      // currentEventEditPasswords); the password may sit on either.
+      for (const candidate of await currentEventEditPasswords(db, pageId)) {
+        if (await verifyPagePassword(candidate as { passwordHash?: string }, providedPassword)) {
+          pagePassword = candidate;
+          isValid = true;
+          break;
+        }
       }
-    }
-    
-    if (!pagePassword) {
-      return false;
-    }
+      if (!pagePassword) return false;
+    } else {
+      pagePassword = await collection.findOne({ pageId, pageType });
 
-    // Check if password matches (constant-time, hash-based)
-    const isValid = await verifyPagePassword(pagePassword as { passwordHash?: string }, providedPassword);
+      if (!pagePassword) {
+        const canonicalPageId = await resolveCanonicalPageId(db as any, pageId, pageType);
+        if (canonicalPageId !== pageId) {
+          pagePassword = await collection.findOne({ pageId: canonicalPageId, pageType });
+        }
+      }
+
+      if (!pagePassword) {
+        return false;
+      }
+
+      // Check if password matches (constant-time, hash-based)
+      isValid = await verifyPagePassword(pagePassword as { passwordHash?: string }, providedPassword);
+    }
 
     if (isValid) {
       // Update usage statistics
@@ -391,29 +514,40 @@ export async function getShareableLinkStatus(
   const collection = db.collection('page_passwords');
   const canonicalPageId = await resolveCanonicalPageId(db as any, pageId, pageType);
 
-  const canonicalMatch = await collection.findOne({ pageId: canonicalPageId, pageType }, { projection: { _id: 1 } });
-  const legacyMatch =
-    !canonicalMatch && canonicalPageId !== pageId
-      ? await collection.findOne({ pageId, pageType }, { projection: { _id: 1 } })
-      : null;
+  // An event editor is protected by a password on any of its addresses, as
+  // the editor gate sees it (see eventEditAddresses).
+  const addresses =
+    pageType === 'edit'
+      ? await eventEditAddresses(db, pageId)
+      : Array.from(new Set([canonicalPageId, pageId]));
+  const matches = await Promise.all(
+    addresses.map((id) => collection.findOne({ pageId: id, pageType }, { projection: { _id: 1 } }))
+  );
 
   return {
     url: buildShareableUrl(pageType, canonicalPageId, baseUrl),
-    isProtected: canonicalMatch !== null || legacyMatch !== null,
+    isProtected: matches.some((match) => match !== null),
   };
 }
 
 // WHAT: Removes password protection from a page entirely (both the
-//     canonical and any legacy-keyed record).
+//     canonical and any legacy-keyed record; for an event editor, the rows on
+//     every address it answers to).
 // WHY: There was no way to undo a password once SharePopup minted one --
-//     the only path back to "public" was a direct database delete.
+//     the only path back to "public" was a direct database delete. An event
+//     editor's older password left on its other address came back into force
+//     when only the row at the given address was removed (see
+//     eventEditAddresses).
 export async function removePagePassword(pageId: string, pageType: PageType): Promise<boolean> {
   const client = await clientPromise;
   const db = client.db(config.dbName);
   const collection = db.collection('page_passwords');
   const canonicalPageId = await resolveCanonicalPageId(db as any, pageId, pageType);
 
-  const idsToRemove = Array.from(new Set([pageId, canonicalPageId]));
+  const idsToRemove =
+    pageType === 'edit'
+      ? await eventEditAddresses(db, pageId)
+      : Array.from(new Set([pageId, canonicalPageId]));
   const result = await collection.deleteMany({ pageType, pageId: { $in: idsToRemove } });
   return result.deletedCount > 0;
 }

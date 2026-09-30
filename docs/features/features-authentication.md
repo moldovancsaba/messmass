@@ -5,7 +5,7 @@ Canonical: Yes
 Owner: Security
 Auth flow verified against code @ dd34e229 (messmass#349; re-verified 2026-09-28)
 
-**Version:** 12.3.37
+**Version:** 12.3.39
 **Last Updated:** 2026-09-28T12:00:00.000Z (UTC)
 **Status:** Production
 **Maintainer:** Security
@@ -129,7 +129,7 @@ Response:
 }
 ```
 
-- If valid, access granted for current session
+- If valid, the response sets the signed HttpOnly `page-access` cookie with a grant for this page (see "Page-access grants" below). Each grant expires 12 hours after it was last issued.
 - Usage counter incremented automatically
 - `lastUsedAt` timestamp updated
 
@@ -160,7 +160,8 @@ export default function PasswordGate({
     const data = await res.json()
     if (res.ok && data.success && data.isValid) {
       setOk(true)
-      sessionStorage.setItem(`page-${pageId}`, 'validated')
+      // The response set the page-access grant cookie; the page's data routes
+      // now accept this browser. Nothing needs storing client-side.
     } else {
       setError(data?.error || 'Invalid password')
     }
@@ -224,7 +225,7 @@ export default function PasswordGate({
 **Zero-Trust Model:**
 - Protected endpoints require EITHER:
   1. Valid admin session (HttpOnly cookie), OR
-  2. Valid page-specific password
+  2. Valid page-specific password, held as a `page-access` grant (for an event editor with no password, opening its UUID edit link issues that grant; see "Page-access grants and editor saves" below)
 - Never trust client-only checks; always validate server-side
 - Admin session bypasses page password requirements
 
@@ -237,10 +238,24 @@ export default function PasswordGate({
 | `organization-report` | `/organization-report/[id]` | none | none (1 password configured; not traced) |
 | `filter` | `/filter/[slug]` | client `PagePasswordLogin` | `requirePageAccess('filter', slug)` |
 | `hashtag` | `/hashtag/[hashtag]` | client `PagePasswordLogin` | none |
-| `edit` | `/edit/[slug]` | client `PagePasswordLogin` | `requirePageAccess('edit', slug)`; `PUT /api/projects` via `requireProjectWrite` |
-| `partner-edit` / `organization-edit` | `/partner-edit/[slug]`, `/organization-edit/[id]` | client `PagePasswordLogin` | `requirePartnerWrite` / `requireOrgEditPageAccess` (`app/api/organizations/edit/[id]/route.ts:21`, called by GET :151 and PUT :238; admin session or this page's grant, base + variant keys) |
+| `edit` | `/edit/[slug]` | client `PagePasswordLogin` | `GET /api/projects/edit/[slug]` via `requirePageAccessDecision('edit', [slug, editSlug, _id])`; `PUT /api/projects` via `requireProjectWriteAccess` |
+| `partner-edit` / `organization-edit` | `/partner-edit/[slug]`, `/organization-edit/[id]` | client `PagePasswordLogin` | `GET`/`PUT /api/partners/edit/[slug]` (route-local gate + write check) and `PUT /api/partners` via `requirePartnerWriteAccess` / `requireOrgEditPageAccess` (`app/api/organizations/edit/[id]/route.ts:21`, called by GET :151 and PUT :238; admin session or this page's grant, base + variant keys) |
 
 All prompts submit to `PUT /api/page-passwords`, which mints the `page-access` grant cookie; a signed-in admin bypasses every prompt and every data-route check.
+
+**Page-access grants and editor saves** (`lib/pageAccess.ts`, `lib/apiGuards.ts`; incident 2026-09-27):
+- A grant is a `<pageType>:<pageId>` entry in the signed HttpOnly `page-access` cookie (HS256, `JWT_SECRET`, at most 40 grants, oldest dropped first).
+- Grants are issued in two places:
+  - `PUT /api/page-passwords`, for a correct password. It also mints one, without a password, for a caller with an admin session; no editor shows its prompt to a signed-in admin, because every gate lets the session through.
+  - `GET /api/projects/edit/[slug]`, when it serves an event editor with no `edit` password on any of its addresses and the caller opened it by its UUID edit link. The grant is keyed `edit:<editSlug>`. Before this, only a password issued grants, so an unprotected editor loaded for its operator and then refused every save with 401.
+  - The editor loaders never convert an admin session into a grant: the session already authorises saves, and a grant would outlive a sign-out on a shared event device. The event editor opened by its public `_id` issues no new grant: without a session or a current grant it answers 403 `EDIT_LINK_REQUIRED`.
+- Expiry is per grant: 12 hours from when that grant was last issued. The editor loaders (`GET /api/projects/edit/[slug]`, `GET /api/partners/edit/[slug]`) re-issue the grants the caller already holds for the page they serve. An editor that re-fetches (tab focus, access re-check after a refused save) therefore keeps saving past 12 hours. Renewing one page never extends another page's grant.
+- Setting or regenerating a page's password cuts off earlier holders. The loaders and the write guards count a grant only if it was issued no earlier than the newest password on any of the page's addresses. An older grant is neither honoured nor renewed, so its holder gets the password prompt on the next load and 401 `EDIT_ACCESS_REQUIRED` on the next save. `requireEditorAccess` (`POST /api/hashtags`, `POST /api/auto-generate-chart-block`) names no page, so it cannot make this check: a cut-off grant still passes there until its own 12 hours end.
+- Partners: an unprotected partner editor issues no grant. Its slug is the partner's public report slug, so holding it proves nothing. Saving a partner (`PUT /api/partners`, `PUT /api/partners/edit/[slug]?variant=`) needs an admin session or a current grant from the partner-edit password; a custom variant also accepts a grant from that variant's own password. This holds on partners with no password too: a custom-variant save used to write for anyone the read gate let in, which on an unprotected partner meant anyone holding the public report link. Without one, `GET /api/partners/edit/[slug]` answers `canSave: false` and the editor opens read-only.
+- A grant holder may change only what its editor saves, and so may a signed-in account whose role is not admin or superadmin (guest, user, api). `PUT /api/projects` accepts `EVENT_EDITOR_WRITABLE_FIELDS` from them: stats (field-level `statsChanges` / `statsRemoved` / `statsIncrements`, or whole `stats`), hashtags and categorizedHashtags; the event's name and date and its partner, style and template references are ignored. `PUT /api/partners` accepts `PARTNER_EDITOR_WRITABLE_FIELDS`: report content, emoji, logo, style, template and the events-list switches. Other fields are ignored and stay with admin and superadmin sessions, the role `requireAdmin` asks for on POST and DELETE of the same routes.
+- An event editor has one `edit` password, whichever of its addresses (editSlug, `_id`) it is set on. `getOrCreatePagePassword` deletes the row on the other address when it creates or regenerates one; `removePagePassword` removes the rows on both; `GET /api/page-passwords` reports the editor protected when either has one. Before, removing the current password brought an older one left on the other address back into force, while Share called the editor unprotected.
+- Editor URLs never reach Google Analytics (`components/GoogleAnalytics.tsx`): an unprotected editor's `/edit/<editSlug>` link is a write credential. The tag is not loaded on `/edit/*`, `/partner-edit/*` or `/organization-edit/*`, measurement is switched off while one is shown after client-side navigation, and a page location that names one is reported as `/edit/[slug]`.
+- Both editor loaders return `canSave`, computed by the same rule as the save routes. With `canSave: false` the editor is read-only (every input disabled, a notice at the top), not a form that silently stores nothing. A refused save answers 401 `EDIT_ACCESS_REQUIRED`. The editor keeps the change queued and in a local draft, re-loads the page to renew or re-issue the grant (or shows the password prompt), and resumes saving.
 
 **Admin Session (SSO):**
 - Admins log in via DoneIsBetter SSO (OAuth2). The email+password login is retired (`POST /api/admin/login` → 410 Gone); the `users` collection holds the auto-provisioned profile and role, not a login credential.
@@ -714,10 +729,11 @@ const pageStats = await getPasswordStats('championship-final-2025')
 
 | Endpoint Type | Window | Max Requests | Use Case |
 |---------------|--------|--------------|----------|
-| Authentication | 15 min | 5 | Login, password validation |
-| Write Operations | 1 min | 30 | POST, PUT, DELETE |
-| Read Operations | 1 min | 100 | GET requests |
-| Public Pages | 1 min | 60 | Stats pages, public API |
+| Authentication | 15 min | 5 | `/api/admin/login`, `/api/auth/*` (not DELETE) |
+| Editor Saves | 1 min | 120 | `PUT /api/projects`, `PUT /api/partners`, `PUT /api/partners/edit/<id-or-slug>` |
+| Write Operations | 1 min | 30 | Other POST, PUT, PATCH, DELETE (including `PUT /api/page-passwords`) |
+| Read Operations | 1 min | 500 | GET requests |
+| Public Pages | 1 min | 60 | `/stats/*`, `/hashtag/*` |
 
 **Response Headers:**
 ```http
