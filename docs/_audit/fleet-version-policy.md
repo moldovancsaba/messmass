@@ -5,7 +5,7 @@ shared version and bump together from here. This is the "same version from now
 on" foundation.
 
 ## The unified version
-`12.3.37` — fleet release 2026-09-28 (messmass, camera, fanmass, try-on,
+`12.3.39` — fleet release 2026-09-30 (messmass, camera, fanmass, try-on,
 savetheworld).
 
 History: `12.2.0` was adopted by all four on 2026-08-20, but the apps then
@@ -16,6 +16,9 @@ coordinated change (a2e6cb39). Highest-wins again: messmass's `version:verify`
 gate only moves forward. savetheworld joined the fleet at 12.3.31. The rule
 slipped once more: 12.3.36 (2026-09-14/15) reached messmass, camera and
 savetheworld but not fanmass or try-on, which stayed on 12.3.35 until 12.3.37.
+12.3.38 (2026-09-29) was a camera-only security release (dependency
+advisories reachable in production); the other four went from 12.3.37 straight
+to 12.3.39, the next fleet release.
 
 Rationale: messmass was already the furthest ahead (12.1.95) and its
 `version:verify` gate enforces a monotonic-forward guarantee, so the only

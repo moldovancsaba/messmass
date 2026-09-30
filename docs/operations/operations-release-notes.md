@@ -4,7 +4,10 @@ Last Updated: 2026-09-29T12:00:00.000Z
 Canonical: No
 Owner: Operations
 
-## [v12.3.38] — 2026-09-29T12:00:00.000Z
+## [v12.3.39] — 2026-09-30T12:00:00.000Z
+
+Fleet release 12.3.39 (messmass, camera, fanmass, try-on, savetheworld).
+12.3.38 was a camera-only security release; messmass goes from 12.3.37 to 12.3.39.
 
 Event editor data-loss fix. On 2026-09-27 an event operator entered data for
 hours into an event editor that had no edit password. The editor opened
