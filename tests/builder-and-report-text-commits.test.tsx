@@ -157,6 +157,26 @@ describe('Builder-mode chart inputs', () => {
     expect(onSave).toHaveBeenCalledWith('female', 8);
   });
 
+  it('a newer stored value that arrives while an input has focus shows on blur if nothing was typed; a later edit starts from it', async () => {
+    const onSave = jest.fn();
+    const chart = kpi('[female]');
+    const { container, rerender } = await mount(<ChartBuilderKPI chart={chart} stats={{ female: 3 }} onSave={onSave} />);
+    const field = inputFor(container, 'female');
+
+    await focus(field);
+    await rerender(<ChartBuilderKPI chart={chart} stats={{ female: 5 }} onSave={onSave} />);
+    expect(field.value).toBe('3');
+    await leave(field);
+    expect(onSave).not.toHaveBeenCalled();
+    expect(field.value).toBe('5');
+
+    // Setting it back to 3 is a change from what it shows now: saved.
+    await focus(field);
+    await type(field, '3');
+    await leave(field);
+    expect(onSave).toHaveBeenCalledWith('female', 3);
+  });
+
   it('a value-chain text is saved only when edited', async () => {
     const onSave = jest.fn();
     const chart = { chartId: 'vc-1', title: 'Chain', elements: [{ formula: '[reportText1]' }] };

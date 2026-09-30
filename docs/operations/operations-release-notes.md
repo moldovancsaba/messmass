@@ -51,7 +51,14 @@ and nothing was stored. A reload would have thrown the typed values away.
   (`$inc`), instead of this device's running total. Two gates counting the
   same stat used to overwrite each other's taps, and a device coming back
   online put its older total back. A count taken below zero by two devices is
-  set back to 0.
+  set back to 0. Taps not confirmed yet stay counts in the local copy too:
+  after a reload they are added to the stored value again, never put back as
+  this device's old total or offered as a value to choose, and a request
+  whose answer was lost goes again under its own `tabId` and `clientSeq`, so
+  it is stored at most once. A re-fetch while a count is out without an answer
+  keeps this device's number for that stat until the answer comes, instead of
+  adding the count to a copy that may hold it already (a stored +3 showed as
+  +6).
 - **Late or repeated saves never undo newer ones.** Every editor save names its
   tab and number (`tabId`, `clientSeq`); `PUT /api/projects`, `PUT /api/partners`
   and `PUT /api/partners/edit/<id>?variant=` write it only while no newer save
@@ -71,7 +78,8 @@ and nothing was stored. A reload would have thrown the typed values away.
   there. Before, leaving a Builder input wrote 0 over a stat the editor had no
   copy of, and a report text slot typed into earlier kept its older text after
   another device changed the slot, and wrote it back when tapped. Nested
-  `[fanmass.x]` tokens are shown read-only in Builder mode.
+  `[fanmass.x]` tokens are shown read-only in Builder mode. A value stored
+  while a Builder input had focus shows once it is left unchanged.
 - **Admin event edits no longer revert editor saves.** The Edit Event form in
   `/admin/events` sent the stats it loaded with the list, which replaced
   everything the event editor and fanmass had stored since. It no longer sends
@@ -109,7 +117,13 @@ and nothing was stored. A reload would have thrown the typed values away.
   event's edit password now acts on both of its addresses (edit link and event
   id), and Share reports the editor protected when either has one. Removing the
   current password used to bring back an older one left on the other address,
-  with write access, while Share showed the editor as unprotected.
+  with write access, while Share showed the editor as unprotected. An event id
+  given in capitals is the same address: a password set on it is stored under
+  the id the editor gate reads, where it used to leave the editor with none.
+- **Setting a page password needs a relationship to the page.**
+  `POST /api/page-passwords` (set or regenerate) runs the same check as `GET`
+  and `DELETE`. Any signed-in account, a guest included, could regenerate any
+  page's password.
 - **Editor links are kept out of Google Analytics.** The tag is not loaded on
   editor pages and is switched off while one is shown; an unprotected editor's
   link grants write access, and page views sent it to the analytics property.
@@ -148,6 +162,7 @@ and nothing was stored. A reload would have thrown the typed values away.
   behaviour), `tests/builder-and-report-text-commits.test.tsx`,
   `tests/fanmass-push-event-stats.test.ts`,
   `tests/security/event-edit-password-addresses.test.ts`,
+  `tests/page-passwords-authorization.test.ts`,
   `tests/security/analytics-no-edit-urls.test.tsx` and
   `tests/security/public-api-no-editslug.test.ts`.
 

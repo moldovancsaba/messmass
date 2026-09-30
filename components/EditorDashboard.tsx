@@ -19,6 +19,7 @@ import {
 } from '@/lib/hashtagCategoryUtils';
 import {
   addSentValues,
+  countedDraftFields,
   createSaveQueue,
   createAccessRecovery,
   createTabId,
@@ -32,12 +33,16 @@ import {
   sameFieldValue,
   sendJsonForSave,
   whenAllSaved,
+  withoutDraftCounts,
   writeDraft,
   type AccessCheckResult,
   type AccessRecovery,
+  type DraftCounts,
   type DraftFields,
   type DraftRestorePlan,
   type HeldBackDraft,
+  type OutstandingCounts,
+  type SaveAttempt,
   type SaveQueue,
   type SaveQueueSnapshot,
   type SentValues,
@@ -188,7 +193,14 @@ export interface ReloadedProject {
 //     tab's own running total, and a device that came back online put its
 //     older total back over everything counted meanwhile. A tap on a stat
 //     with no stored number yet (the remote-fans fallback formula, a stat
-//     never counted) is sent as a value.
+//     never counted) is sent as a value. Counts not confirmed yet are kept
+//     as counts in the draft too, and restored as counts after a reload
+//     (see draftCountsOfQueue and COUNTS in lib/editorSaveQueue.ts).
+// RESEND: A request restored from a draft that went out once without an
+//     answer carries the tabId and clientSeq it went out under, and is sent
+//     again under them instead of this tab's own: if it was stored, the
+//     server's late-write guard turns the copy away (stale) instead of
+//     counting it twice. It is never merged with another payload.
 // NOTE: Every field here must be one a page-grant holder may write
 //     (EVENT_EDITOR_WRITABLE_FIELDS in lib/apiGuards.ts). The event's name and
 //     date are never sent: the editor has no control for either.
@@ -198,6 +210,13 @@ export interface EditorSavePayload {
   statsIncrements?: Record<string, number>;
   hashtags?: string[];
   categorizedHashtags?: CategorizedHashtags;
+  resend?: EditorSequence;
+}
+
+/** The late-write guard's name for one request: the editor tab and its place in that tab's saves. */
+export interface EditorSequence {
+  tabId: string;
+  clientSeq: number;
 }
 
 // WHAT: The PUT /api/projects body: a payload plus who sent it and in what
@@ -210,13 +229,10 @@ export interface EditorSavePayload {
 //     clientSeq has landed, and answers the late copy { success: true, stale:
 //     true } (see sendJsonForSave). Retrying under the same number is what
 //     keeps a count from being added twice.
-export interface EditorSaveRequestBody extends EditorSavePayload {
-  tabId: string;
-  clientSeq: number;
-}
+export interface EditorSaveRequestBody extends Omit<EditorSavePayload, 'resend'>, EditorSequence {}
 
 /** A local change, before it is addressed to the event. */
-type EditorChange = Omit<EditorSavePayload, 'projectId'>;
+type EditorChange = Omit<EditorSavePayload, 'projectId' | 'resend'>;
 
 const isEmptyChange = (change: EditorChange) =>
   Object.keys(change.statsChanges).length === 0 &&
@@ -250,6 +266,8 @@ function changeTextLength(change: EditorChange): number {
 
 // WHAT: May `newer` join `older` in one save request (the queue's canCoalesce)?
 export function canMergeEditorSavePayloads(older: EditorSavePayload, newer: EditorSavePayload): boolean {
+  // A request sent again under its own tabId and clientSeq must go as it went.
+  if (older.resend || newer.resend) return false;
   if (new Set([...changeKeys(older), ...changeKeys(newer)]).size > EDITOR_SAVE_MAX_KEYS) return false;
   return changeTextLength(older) + changeTextLength(newer) <= EDITOR_SAVE_MAX_TEXT;
 }
@@ -452,31 +470,102 @@ function changesFromBase(content: EditorContent, base: DraftFields): EditorChang
   return change;
 }
 
-// WHAT: The draft fields a payload names, with undefined for a removed stat.
-//     A counted stat is the base value counted on by the payload's count.
-// WHY: What the base moves to once the server confirms the payload -- for
-//     exactly these keys -- and what the draft records as sent. For a count,
-//     the server's value is the base value plus the count only while nobody
-//     else counted meanwhile; either way the next re-fetch with nothing
-//     unsaved takes the server's value.
-function payloadFields(payload: EditorChange, base: DraftFields): DraftFields {
+// WHAT: The draft fields a payload sets as values (its counts left out), with
+//     undefined for a removed stat.
+// WHY: What the draft records as sent: the restore rule's own-write shortcut
+//     is for values only. A counted stat's number is the base plus the count;
+//     the server can hold that same number because another device counted,
+//     and taking it for this device's write turned the next count into a
+//     value that overwrote the other device's taps.
+function payloadValueFields(payload: EditorChange): DraftFields {
   const fields: DraftFields = {};
   for (const [stat, value] of Object.entries(payload.statsChanges)) {
     fields[STAT_FIELD + stat] = value === null ? undefined : value;
-  }
-  for (const [stat, delta] of Object.entries(payload.statsIncrements ?? {})) {
-    const before = base[STAT_FIELD + stat];
-    fields[STAT_FIELD + stat] = (typeof before === 'number' ? before : 0) + delta;
   }
   if (payload.hashtags !== undefined) fields.hashtags = payload.hashtags;
   if (payload.categorizedHashtags !== undefined) fields.categorizedHashtags = payload.categorizedHashtags;
   return fields;
 }
 
+// WHAT: The draft fields a payload names: its values (payloadValueFields),
+//     and a counted stat as the base value counted on by the payload's count.
+// WHY: What the base moves to once the server confirms the payload -- for
+//     exactly these keys. For a count, the server's value is the base value
+//     plus the count only while nobody else counted meanwhile; either way the
+//     next re-fetch with nothing unsaved takes the server's value.
+function payloadFields(payload: EditorChange, base: DraftFields): DraftFields {
+  const fields = payloadValueFields(payload);
+  for (const [stat, delta] of Object.entries(payload.statsIncrements ?? {})) {
+    const before = base[STAT_FIELD + stat];
+    fields[STAT_FIELD + stat] = (typeof before === 'number' ? before : 0) + delta;
+  }
+  return fields;
+}
+
+// WHAT: The counts the save queue holds, as the draft keeps them (COUNTS in
+//     lib/editorSaveQueue.ts): the counts of a request that went out without
+//     an answer, under the tabId and clientSeq it went out under, and every
+//     other count added up per stat.
+// WHY: The draft used to keep only the number on screen, so a reload sent
+//     back base-plus-taps as a value, over whatever other devices counted
+//     since. A stat some waiting payload sets is left out: the operator typed
+//     its value (counted on by later taps), which the draft keeps in its
+//     fields, and taps before it are overwritten by it anyway.
+// HOW: `own` is the sequence this tab sent its last request under. The one
+//     payload whose outcome is unknown (`sent`) went out under it, unless it
+//     is a resend, which names its own.
+export function draftCountsOfQueue(
+  entries: Array<{ payload: EditorSavePayload; attempt: SaveAttempt; sent: boolean }>,
+  own: EditorSequence & { attemptId: number }
+): { counts: DraftCounts; outstanding: OutstandingCounts[] } {
+  const setStats = new Set<string>();
+  for (const { payload } of entries) for (const stat of Object.keys(payload.statsChanges)) setStats.add(stat);
+  const counts: DraftCounts = {};
+  const outstanding: OutstandingCounts[] = [];
+  for (const { payload, attempt, sent } of entries) {
+    const picked: DraftCounts = {};
+    for (const [stat, delta] of Object.entries(payload.statsIncrements ?? {})) {
+      if (!setStats.has(stat) && delta !== 0) picked[STAT_FIELD + stat] = delta;
+    }
+    if (Object.keys(picked).length === 0) continue;
+    const sequence =
+      payload.resend ??
+      (sent && attempt.id === own.attemptId ? { tabId: own.tabId, clientSeq: own.clientSeq } : null);
+    if (sequence) {
+      outstanding.push({ tabId: sequence.tabId, clientSeq: sequence.clientSeq, counts: picked });
+    } else {
+      for (const [key, delta] of Object.entries(picked)) counts[key] = (counts[key] ?? 0) + delta;
+    }
+  }
+  for (const key of Object.keys(counts)) if (counts[key] === 0) delete counts[key];
+  return { counts, outstanding };
+}
+
+// WHAT: The draft fields of the stats counted by a request whose outcome is
+//     unknown: the one out without an answer (or failed and waiting to go
+//     again under the same clientSeq), and a restored request sent again
+//     under its own sequence (RESEND at EditorSavePayload).
+// WHY: Such a request may be stored already, so a copy loaded meanwhile may
+//     or may not hold its counts, and nothing in the copy tells which. Added
+//     on top of it, a written but unanswered +3 showed 16 for a stat the
+//     server held at 13, and once the answer came the base moved on from 13
+//     as well (see applyServerCopy).
+function maybeStoredCountFields(entries: Array<{ payload: EditorSavePayload; sent: boolean }>): Set<string> {
+  const fields = new Set<string>();
+  for (const { payload, sent } of entries) {
+    if (!sent && !payload.resend) continue;
+    for (const [stat, delta] of Object.entries(payload.statsIncrements ?? {})) {
+      if (delta !== 0) fields.add(STAT_FIELD + stat);
+    }
+  }
+  return fields;
+}
+
 // WHAT: A draft without fields for stats this editor cannot store.
 // WHY: A draft written before the editor filtered them (Builder mode stored
 //     'stats:fanmass.peopleCount') put the value back on every load, and the
-//     save it queued was refused every time.
+//     save it queued was refused every time. A count the server would refuse
+//     is dropped the same way.
 function writableDraft(draft: StoredDraft): StoredDraft {
   const keep = (key: string) => !key.startsWith(STAT_FIELD) || isWritableEventStatKey(key.slice(STAT_FIELD.length));
   const pick = <T,>(source: Record<string, T>): Record<string, T> => {
@@ -484,8 +573,17 @@ function writableDraft(draft: StoredDraft): StoredDraft {
     for (const [key, value] of Object.entries(source)) if (keep(key)) out[key] = value;
     return out;
   };
+  const pickCounts = (source: DraftCounts): DraftCounts => {
+    const out: DraftCounts = {};
+    for (const [key, delta] of Object.entries(source)) {
+      if (key.startsWith(STAT_FIELD) && keep(key) && isWritableEventStatIncrement(delta)) out[key] = delta;
+    }
+    return out;
+  };
   const cleaned: StoredDraft = { ...draft, base: pick(draft.base), fields: pick(draft.fields) };
   if (draft.sent) cleaned.sent = pick(draft.sent);
+  if (draft.counts) cleaned.counts = pickCounts(draft.counts);
+  if (draft.outstanding) cleaned.outstanding = draft.outstanding.map((out) => ({ ...out, counts: pickCounts(out.counts) }));
   return cleaned;
 }
 
@@ -550,15 +648,35 @@ interface EditorBootstrap {
   draftsLeft: boolean;
   /** Read-only load: what the notice says about them, or null when none holds anything unsaved. */
   kept: KeptDrafts | null;
+  /** Restored counts never sent, per stat: sent as counts (statsIncrements). */
+  counts: Record<string, number>;
+  /** Restored requests whose answer was lost: sent again under their own tabId and clientSeq. */
+  resends: Array<EditorSequence & { increments: Record<string, number> }>;
+  /**
+   * Each stat shown with restored counts on top: its value without them,
+   * which is what is compared with the server to find a value to send.
+   */
+  countedValues: Record<string, unknown>;
+}
+
+// Draft-field counts (`stats:female`) as stat counts (`female`).
+function statCounts(counts: DraftCounts): Record<string, number> {
+  const out: Record<string, number> = {};
+  for (const [key, delta] of Object.entries(counts)) {
+    if (key.startsWith(STAT_FIELD)) out[key.slice(STAT_FIELD.length)] = delta;
+  }
+  return out;
 }
 
 // WHAT: Initial editor state: the server copy, plus every unsaved value from
 //     this device's drafts that can be put back without overwriting a later
-//     change.
-// WHY: See the RESTORE RULE in lib/editorSaveQueue.ts. In short, per value: a
-//     value a draft changed is restored when the server still has the value the
-//     draft started from (or one this device sent); a value changed on both
-//     sides waits for the operator, and only that value waits.
+//     change, and every unsaved count added to the server's value.
+// WHY: See the RESTORE RULE and COUNTS in lib/editorSaveQueue.ts. In short,
+//     per value: a value a draft changed is restored when the server still
+//     has the value the draft started from (or one this device sent); a value
+//     changed on both sides waits for the operator, and only that value
+//     waits. A count is never a value: it is added to whatever the server
+//     holds, other devices' taps included, and never waits.
 // READ-ONLY: When the server says this caller cannot save, nothing is restored
 //     and the drafts stay as they are: they could not be saved from here, and
 //     unsaved numbers shown in a view that cannot change them would read as the
@@ -575,6 +693,9 @@ function bootstrapFromServer(server: Project, readOnly: boolean): EditorBootstra
     conflict: null,
     draftsLeft: false,
     kept: null,
+    counts: {},
+    resends: [],
+    countedValues: {},
   };
   const drafts = readDrafts(getDraftStorage(), server._id).map(writableDraft);
   if (drafts.length === 0) return plain;
@@ -595,9 +716,16 @@ function bootstrapFromServer(server: Project, readOnly: boolean): EditorBootstra
       editedAt: Math.max(...plan.conflicted.map((c) => c.draft.editedAt)),
     };
   }
-  if (plan.restored.length === 0) return { ...plain, obsolete: plan.obsolete, conflict };
+  // Nothing to send: no value differs, no count waits.
+  if (plan.restoredEditedAt === null) return { ...plain, obsolete: plan.obsolete, conflict };
 
   const content = fromFields(plan.fields);
+  const countedValues: Record<string, unknown> = {};
+  for (const key of Object.keys({ ...plan.fields, ...plan.values })) {
+    if (key.startsWith(STAT_FIELD) && !sameFieldValue(plan.fields[key], plan.values[key])) {
+      countedValues[key.slice(STAT_FIELD.length)] = plan.values[key];
+    }
+  }
   return {
     project: { ...server, ...content },
     hashtags: content.hashtags,
@@ -608,7 +736,46 @@ function bootstrapFromServer(server: Project, readOnly: boolean): EditorBootstra
     conflict,
     draftsLeft: false,
     kept: null,
+    counts: statCounts(plan.counts),
+    resends: plan.outstanding.map((out) => ({ tabId: out.tabId, clientSeq: out.clientSeq, increments: statCounts(out.counts) })),
+    countedValues,
   };
+}
+
+// WHAT: The saves a restored bootstrap needs, in the order they go: each
+//     request whose answer was lost, again under its own tabId and clientSeq;
+//     then every value that differs from the base (a counted stat at its
+//     value without the counts) together with the counts never sent.
+// WHY: A count restored as the number on screen was sent as a value and
+//     overwrote what other devices counted meanwhile. A value and a count of
+//     the same stat (an older draft typed it, a newer one tapped on) go as
+//     that value counted on, one save naming it once (mergeEditorSavePayloads).
+function restoredSaves(boot: EditorBootstrap, content: EditorContent, base: DraftFields): EditorSavePayload[] {
+  const projectId = boot.project._id;
+  const saves: EditorSavePayload[] = [];
+  for (const resend of boot.resends) {
+    const { change } = writableEditorChange({ statsChanges: {}, statsIncrements: resend.increments });
+    if (!change.statsIncrements) continue;
+    saves.push({
+      projectId,
+      statsChanges: {},
+      statsIncrements: change.statsIncrements,
+      resend: { tabId: resend.tabId, clientSeq: resend.clientSeq },
+    });
+  }
+  const stats: Record<string, unknown> = { ...content.stats };
+  for (const [stat, value] of Object.entries(boot.countedValues)) {
+    if (value === undefined) delete stats[stat];
+    else stats[stat] = value;
+  }
+  const values = changesFromBase({ ...content, stats: stats as ProjectStats }, base);
+  const merged = mergeEditorSavePayloads(
+    { projectId, ...values },
+    { projectId, statsChanges: {}, statsIncrements: boot.counts }
+  );
+  const { change } = writableEditorChange(merged);
+  if (!isEmptyChange(change)) for (const part of splitEditorChange(change)) saves.push({ projectId, ...part });
+  return saves;
 }
 
 // WHAT: What the conflict notice calls a draft field, and how it shows a value.
@@ -1086,6 +1253,17 @@ export default function EditorDashboard({
   const [tabId] = useState<string>(createTabId);
   // clientSeq of the last request sent; one higher on every request, retries included.
   const clientSeqRef = useRef<number>(0);
+  // The attempt id of the last request this tab sent under its own tabId, and
+  // the clientSeq it went out under (a retry of it repeats both). Kept per
+  // queue: the draft names that request's sequence while its answer is missing.
+  const lastAttemptRef = useRef<{ id: number; clientSeq: number }>({ id: 0, clientSeq: 0 });
+  // WHAT: What a disposed save queue still held, for the queue that replaces
+  //     it on the same event (React runs the queue effect twice on mount in
+  //     development, and again if its inputs change).
+  // WHY: The restored saves go into the first queue, which sends one of them
+  //     as it is torn down. Queued again from the bootstrap, a count it sent
+  //     would be counted twice; dropped, one it did not send would be lost.
+  const carryOverRef = useRef<{ projectId: string; saves: EditorSavePayload[] } | null>(null);
   const [project, setProject] = useState<Project>(bootstrap.project);
   const [hashtags, setHashtags] = useState<string[]>(bootstrap.hashtags);
   const [categorizedHashtags, setCategorizedHashtags] = useState<CategorizedHashtags>(bootstrap.categorizedHashtags);
@@ -1181,7 +1359,10 @@ export default function EditorDashboard({
     onReloadRef.current = onReload;
   }, [onReload]);
 
-  // WHAT: Store this tab's draft: the newest local content and its base.
+  // WHAT: Store this tab's draft: the newest local content and its base, and
+  //     the counts the save queue holds (draftCountsOfQueue).
+  // NOTE: The counts are read from the queue, so a change is queued before
+  //     this runs for it.
   // RETURNS: false when this device could not store it (the banner then says
   //     the changes exist only on this page).
   const persistDraft = useCallback((): boolean => {
@@ -1197,6 +1378,17 @@ export default function EditorDashboard({
       fields: toDraftFields(latestContent(latest)),
     };
     if (Object.keys(sentRef.current).length > 0) draft.sent = sentRef.current;
+    const queue = queueRef.current;
+    if (queue) {
+      const last = lastAttemptRef.current;
+      const { counts, outstanding } = draftCountsOfQueue(queue.unconfirmedPayloads(), {
+        tabId,
+        attemptId: last.id,
+        clientSeq: last.clientSeq,
+      });
+      if (Object.keys(counts).length > 0) draft.counts = counts;
+      if (outstanding.length > 0) draft.outstanding = outstanding;
+    }
     const stored = writeDraft(getDraftStorage(), draft);
     setDraftStored(stored);
     return stored;
@@ -1221,6 +1413,11 @@ export default function EditorDashboard({
   //       what the base holds (0 -> 1 -> 0) -- so the screen shows what the
   //       queue is about to store. Nothing is queued for the values taken:
   //       the queue holds only what changed here, so it cannot undo them.
+  //       A count waiting to be sent is shown on top of the server's value.
+  //       A stat counted by a request that may be stored already
+  //       (maybeStoredCountFields) keeps its local number and its base until
+  //       that request is answered: the copy may hold the count already, and
+  //       the answer moves the base on by it.
   //     - Nothing unsaved: take the server copy.
   //     A successful load also renewed (or issued) this page's save access, so a
   //     queue paused on a 401 resumes -- unless the server said this caller
@@ -1248,17 +1445,37 @@ export default function EditorDashboard({
         const localFields = toDraftFields(local);
         const { merged } = mergeFieldChanges(serverFields, baseFieldsRef.current, localFields, 'take-local');
         const queued = queue?.unconfirmed();
-        for (const key of Object.keys(queued ? payloadFields(queued, baseFieldsRef.current) : {})) {
+        // Also a stat whose counts add up to nothing in `queued` (a +1 out,
+        // then a -1 waiting): the copy may hold the +1.
+        const maybeStored = maybeStoredCountFields(queue?.unconfirmedPayloads() ?? []);
+        const keepLocal = new Set([
+          ...Object.keys(queued ? payloadFields(queued, baseFieldsRef.current) : {}),
+          ...maybeStored,
+        ]);
+        for (const key of keepLocal) {
           if (localFields[key] === undefined) delete merged[key];
           else merged[key] = localFields[key];
         }
-        // A count still on its way is added to the server's value, not shown
+        // A count not sent yet is added to the server's value, not shown
         // instead of it: the server's value holds other devices' taps too.
+        // Not on a stat a request out without an answer counts: the copy may
+        // hold that request's count already, so the local number (set above)
+        // stays until it is answered.
         for (const [stat, delta] of Object.entries(queued?.statsIncrements ?? {})) {
+          if (maybeStored.has(STAT_FIELD + stat)) continue;
           const serverValue = serverFields[STAT_FIELD + stat];
           merged[STAT_FIELD + stat] = (typeof serverValue === 'number' ? serverValue : 0) + delta;
         }
-        baseFieldsRef.current = serverFields;
+        // Those stats keep their base too. The answer moves the base on by the
+        // request's count (onSaved); moved on from a copy that already held
+        // it, the base counted it twice.
+        const base: DraftFields = { ...serverFields };
+        for (const key of maybeStored) {
+          const before = baseFieldsRef.current[key];
+          if (before === undefined) delete base[key];
+          else base[key] = before;
+        }
+        baseFieldsRef.current = base;
         tookServerChanges = !sameFieldValue(merged, localFields);
         content = tookServerChanges ? fromFields(merged) : local;
       } else {
@@ -1307,26 +1524,41 @@ export default function EditorDashboard({
   //     keys go -- unless this device could not store it. Drafts with
   //     held-back values keep only those, so "Keep saved values" can drop
   //     exactly them.
-  // HOW: What is queued is every value that differs from the base
-  //     (changesFromBase): the restored ones, and any change recorded before
-  //     this queue existed. A held-back value shows the server's, so it is
-  //     not sent.
+  // HOW: What is queued (restoredSaves) is every value that differs from the
+  //     base (changesFromBase) -- the restored ones, and any change recorded
+  //     before this queue existed -- and the restored counts, as counts. A
+  //     held-back value shows the server's, so it is not sent. Queued before
+  //     this tab's draft is stored, which reads the counts from the queue.
+  //     `queued` is false when the queue already holds them (carried over
+  //     from the queue it replaces).
+  //     If this tab's draft cannot be stored, the old drafts keep their values
+  //     (sending a value twice is harmless) but lose their counts: this page
+  //     sends them now, and a later load would count them a second time.
   const settleBootstrapDrafts = useCallback(
-    (boot: EditorBootstrap, queue: SaveQueue<EditorSavePayload>) => {
+    (boot: EditorBootstrap, queue: SaveQueue<EditorSavePayload>, queued = false) => {
       const storage = getDraftStorage();
       const scope = boot.project._id;
       for (const draft of boot.obsolete) removeDraft(storage, scope, draft.tabId, draft.editedAt);
+      if (hasUnsavedRef.current && !queued) {
+        const saves = restoredSaves(boot, latestContent(latestRef.current), baseFieldsRef.current);
+        // Nothing differs from what the server holds and no count waits:
+        // nothing is unsaved (a draft left behind is found obsolete by the next load).
+        if (saves.length === 0) hasUnsavedRef.current = false;
+        for (const save of saves) queue.enqueue(save);
+      }
       const ownDraftHoldsRestored = hasUnsavedRef.current ? persistDraft() : true;
+      const heldBack = boot.conflict?.held ?? [];
       if (ownDraftHoldsRestored) {
         for (const draft of boot.adopted) removeDraft(storage, scope, draft.tabId, draft.editedAt);
-        for (const { draft, held } of boot.conflict?.held ?? []) replaceDraft(storage, held, draft.editedAt);
+        for (const { draft, held } of heldBack) replaceDraft(storage, held, draft.editedAt);
+      } else {
+        for (const draft of [...boot.adopted, ...heldBack.map((h) => h.draft)]) {
+          if (countedDraftFields(draft).size === 0) continue;
+          if (!replaceDraft(storage, withoutDraftCounts(draft), draft.editedAt)) {
+            removeDraft(storage, scope, draft.tabId, draft.editedAt);
+          }
+        }
       }
-      if (!hasUnsavedRef.current) return;
-      const change = writableEditorChange(changesFromBase(latestContent(latestRef.current), baseFieldsRef.current)).change;
-      // Nothing differs from what the server holds: nothing is unsaved (a draft
-      // left behind is found obsolete by the next load).
-      if (isEmptyChange(change)) hasUnsavedRef.current = false;
-      else for (const part of splitEditorChange(change)) queue.enqueue({ projectId: scope, ...part });
     },
     [persistDraft]
   );
@@ -1352,7 +1584,37 @@ export default function EditorDashboard({
     });
     // The attempt id of the last request sent and the clientSeq it went out
     // under: a retry of the same payload goes out under the same number.
-    let lastAttempt = { id: 0, clientSeq: 0 };
+    // Per queue: attempt ids start again with every queue.
+    lastAttemptRef.current = { id: 0, clientSeq: 0 };
+    // WHAT: Restored requests (RESEND at EditorSavePayload) the server
+    //     answered stale, and whether to load the event again once nothing
+    //     is waiting.
+    // WHY: Stale means the request was stored before -- possibly before this
+    //     page loaded the event, whose values then already held its counts,
+    //     which the page also shows on top (planDraftRestore). Only a load
+    //     after that tells. Waiting until nothing is unconfirmed lets that
+    //     load be taken as it is (applyServerCopy).
+    const staleResends = new WeakSet<EditorSavePayload>();
+    let reloadWhenSaved = false;
+    const reloadAfterStaleResend = () => {
+      const run = () => {
+        if (queueRef.current !== queue) return; // replaced or unmounted
+        // A load is merged only when it left after the last confirmed save.
+        if (Date.now() <= lastBaseMoveAtRef.current) {
+          setTimeout(run, 1);
+          return;
+        }
+        const reload = onReloadRef.current;
+        if (!reload) return;
+        reload().then(
+          (copy) => {
+            if (copy && queueRef.current === queue) applyServerCopy(copy.project, copy.fetchStartedAt, copy.canSave);
+          },
+          () => {}
+        );
+      };
+      setTimeout(run, 0);
+    };
     const queue = createSaveQueue<EditorSavePayload>({
       // Payloads name only what changed: merge, never replace (see EditorSavePayload).
       coalesce: mergeEditorSavePayloads,
@@ -1363,17 +1625,31 @@ export default function EditorDashboard({
       // retry away as stale instead of adding its counts a second time.
       retryFailedAlone: true,
       send: (payload, attempt) => {
+        // A restored request goes under the sequence it first went out under.
+        let sequence: EditorSequence;
+        if (payload.resend) {
+          sequence = payload.resend;
+        } else {
+          if (attempt.id !== lastAttemptRef.current.id) {
+            clientSeqRef.current += 1;
+            lastAttemptRef.current = { id: attempt.id, clientSeq: clientSeqRef.current };
+          }
+          sequence = { tabId, clientSeq: lastAttemptRef.current.clientSeq };
+        }
         // Written down before the request leaves: if its answer never arrives
         // (reload, discarded tab, dropped connection) while the save itself
-        // went through, the next load recognises the value as this device's.
-        sentRef.current = addSentValues(sentRef.current, baseFieldsRef.current, payloadFields(payload, baseFieldsRef.current));
+        // went through, the next load recognises a value as this device's, and
+        // sends the counts again under this sequence (draftCountsOfQueue).
+        sentRef.current = addSentValues(sentRef.current, baseFieldsRef.current, payloadValueFields(payload));
         persistDraft();
-        if (attempt.id !== lastAttempt.id) {
-          clientSeqRef.current += 1;
-          lastAttempt = { id: attempt.id, clientSeq: clientSeqRef.current };
-        }
-        const body: EditorSaveRequestBody = { ...payload, tabId, clientSeq: lastAttempt.clientSeq };
-        return sendJsonForSave('/api/projects', body);
+        const { resend, ...fields } = payload;
+        const body: EditorSaveRequestBody = { ...fields, ...sequence };
+        const request = sendJsonForSave('/api/projects', body);
+        if (!resend) return request;
+        return request.then((answer) => {
+          if ((answer as { stale?: unknown } | null)?.stale === true) staleResends.add(payload);
+          return answer;
+        });
       },
       // Also after a { stale: true } answer: this very request (same clientSeq)
       // was stored before, by an earlier copy whose answer never arrived. A
@@ -1396,10 +1672,15 @@ export default function EditorDashboard({
         }
         baseFieldsRef.current = base;
         sentRef.current = sent;
+        if (staleResends.has(payload)) reloadWhenSaved = true;
         if (pendingCount === 0) {
           // Every change made here is confirmed: the draft is safe to drop.
           hasUnsavedRef.current = false;
           removeDraft(storage, projectId, tabId);
+          if (reloadWhenSaved) {
+            reloadWhenSaved = false;
+            reloadAfterStaleResend();
+          }
         } else {
           // Newer changes are still waiting: store them against the new base,
           // so a reload does not mistake this tab's own save for someone else's.
@@ -1412,18 +1693,38 @@ export default function EditorDashboard({
     queueRef.current = queue;
     setSaveQueue(queue);
 
-    // Restored drafts (or edits made before this queue existed) still need saving.
-    settleBootstrapDrafts(bootstrap, queue);
+    // Restored drafts (or edits made before this queue existed) still need
+    // saving -- unless the queue this one replaces held them: then they are
+    // taken over from it, as they were left there.
+    const carried = carryOverRef.current;
+    carryOverRef.current = null;
+    if (carried && carried.projectId === projectId) {
+      for (const save of carried.saves) queue.enqueue(save);
+      settleBootstrapDrafts(bootstrap, queue, true);
+    } else {
+      settleBootstrapDrafts(bootstrap, queue);
+    }
 
     return () => {
       // Send what is waiting before letting go; the draft stays until confirmed.
       queue.flush();
+      // What is still unconfirmed, for a queue that replaces this one. The
+      // request out without an answer goes again under its own sequence.
+      const last = lastAttemptRef.current;
+      carryOverRef.current = {
+        projectId,
+        saves: queue.unconfirmedPayloads().map(({ payload, attempt, sent }) =>
+          !payload.resend && sent && attempt.id === last.id
+            ? { ...payload, resend: { tabId, clientSeq: last.clientSeq } }
+            : payload
+        ),
+      };
       queue.dispose();
       recovery.dispose();
       if (queueRef.current === queue) queueRef.current = null;
       if (accessRecoveryRef.current === recovery) accessRecoveryRef.current = null;
     };
-  }, [projectId, tabId, bootstrap, persistDraft, settleBootstrapDrafts]);
+  }, [projectId, tabId, bootstrap, persistDraft, settleBootstrapDrafts, applyServerCopy]);
 
   // WHAT: Restore the drafts a read-only load kept, as soon as the editor may
   //     save (a re-fetch answered canSave: true, or the password prompt was
@@ -1685,6 +1986,9 @@ export default function EditorDashboard({
   //     of exactly what it changed (the queue merges it with what is waiting).
   // WHY: The draft is written before the request, so a refused or lost save can
   //     no longer lose the data; it is removed only once the server confirms it.
+  // HOW: Queued first, then the draft is stored: the draft reads its counts
+  //     from the queue. Queuing does not send at once -- and when it does (a
+  //     closed payload was waiting), the send stores the draft first itself.
   // RETURNS: whether this device stored the draft.
   // Only what the server can store is queued (writableEditorChange), split
   // into saves of a size it accepts (splitEditorChange).
@@ -1695,11 +1999,10 @@ export default function EditorDashboard({
       if (isEmptyChange(writable)) return true;
       hasUnsavedRef.current = true;
       lastEditAtRef.current = Date.now();
-      const stored = persistDraft();
       for (const part of splitEditorChange(writable)) {
         queueRef.current?.enqueue({ projectId: latestRef.current.project._id, ...part });
       }
-      return stored;
+      return persistDraft();
     },
     [persistDraft]
   );

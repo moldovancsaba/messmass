@@ -229,8 +229,18 @@ function makeRequest(pageId: string, pageType: string, method: 'GET' | 'DELETE')
   );
 }
 
-describe('GET/DELETE /api/page-passwords authorization gate', () => {
+function postRequest(body: Record<string, unknown>) {
+  return new NextRequest('http://localhost/api/page-passwords', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(body),
+  });
+}
+
+describe('GET/POST/DELETE /api/page-passwords authorization gate', () => {
   afterEach(() => {
+    // The POST tests stub the password store; a mock outlives resetModules.
+    jest.dontMock('@/lib/pagePassword');
     jest.resetModules();
     jest.clearAllMocks();
   });
@@ -343,6 +353,48 @@ describe('GET/DELETE /api/page-passwords authorization gate', () => {
     expect(deleteRes.status).toBe(200);
     const deleteBody = await deleteRes.json();
     expect(deleteBody.success).toBe(true);
+  });
+
+  it('denies POST (set or regenerate) to a guest with no relationship to the page (403), before anything is written', async () => {
+    // Regenerating an event editor's password also deletes the rows on its
+    // other addresses; a session alone used to be enough for any account.
+    const project: FakeProject = { _id: new ObjectId(), editSlug: 'an-edit-slug' };
+    mockDbModules(buildMockDb({ project }));
+    mockAuthModules({ user: { id: 'guest-4', role: 'guest' }, hasPageAccess: false, orgAccessGranted: false });
+    const getOrCreatePagePassword = jest.fn();
+    jest.doMock('@/lib/pagePassword', () => ({
+      __esModule: true,
+      ...jest.requireActual('@/lib/pagePassword'),
+      getOrCreatePagePassword,
+    }));
+
+    const { POST } = await import('@/app/api/page-passwords/route');
+    const res = await POST(postRequest({ pageId: project._id.toString().toUpperCase(), pageType: 'edit', regenerate: true }));
+
+    expect(res.status).toBe(403);
+    expect(await res.json()).toEqual({ success: false, error: 'You do not have access to this page.', code: 'FORBIDDEN' });
+    expect(getOrCreatePagePassword).not.toHaveBeenCalled();
+  });
+
+  it('allows POST to a plain admin for an event editor, as Share does (200)', async () => {
+    const project: FakeProject = { _id: new ObjectId(), editSlug: 'an-edit-slug' };
+    mockDbModules(buildMockDb({ project }));
+    mockAuthModules({ user: { id: 'admin-3', role: 'admin', organizationIds: [] }, hasPageAccess: false, orgAccessGranted: false });
+    const minted = { pageId: 'an-edit-slug', pageType: 'edit', password: 'f'.repeat(32), createdAt: '2026-09-29T00:00:00.000Z', usageCount: 0 };
+    jest.doMock('@/lib/pagePassword', () => ({
+      __esModule: true,
+      ...jest.requireActual('@/lib/pagePassword'),
+      getOrCreatePagePassword: jest.fn(async () => minted),
+      generateShareableLink: jest.fn(async () => ({ url: 'https://www.messmass.com/edit/an-edit-slug', password: '', pageType: 'edit' })),
+    }));
+
+    const { POST } = await import('@/app/api/page-passwords/route');
+    const res = await POST(postRequest({ pageId: 'an-edit-slug', pageType: 'edit', regenerate: true }));
+
+    expect(res.status).toBe(200);
+    const body = await res.json();
+    expect(body.success).toBe(true);
+    expect(body.shareableLink.password).toBe(minted.password);
   });
 
   it('leaves the unauthenticated 401 UNAUTHENTICATED path unchanged', async () => {

@@ -9,7 +9,7 @@
 // HOW: The component is rendered with renderToStaticMarkup for a given
 //     pathname (next/navigation mocked; next/script rendered as a plain
 //     <script>), and the inline config script is run against a fake window
-//     to see the page_location it reports.
+//     to see what it hands gtag.
 
 import React from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
@@ -23,7 +23,7 @@ jest.mock('next/script', () => ({
     require('react').createElement('script', { id, src, dangerouslySetInnerHTML }),
 }));
 
-import GoogleAnalytics, { isAnalyticsExcludedPath, redactAnalyticsLocation } from '@/components/GoogleAnalytics';
+import GoogleAnalytics, { isAnalyticsExcludedPath } from '@/components/GoogleAnalytics';
 
 const EDIT_SLUG = '2f1c7a4e-8b3d-4c5e-9f6a-1b2c3d4e5f60';
 
@@ -32,9 +32,9 @@ function render(path: string): string {
   return renderToStaticMarkup(<GoogleAnalytics />);
 }
 
-// Run the inline config script as a page at `href` would, and return what
-// gtag('config') was given.
-function configuredLocation(html: string, href: string): string {
+// Run the inline config script as a page at `href` would, and return the
+// arguments gtag('config') was given.
+function configCall(html: string, href: string): unknown[] {
   const inline = html.match(/<script id="google-analytics">([\s\S]*?)<\/script>/);
   expect(inline).not.toBeNull();
   const url = new URL(href);
@@ -42,8 +42,7 @@ function configuredLocation(html: string, href: string): string {
   sandbox.dataLayer = [];
   sandbox.window.dataLayer = sandbox.dataLayer;
   vm.runInNewContext(inline![1].replace(/window\.dataLayer = window\.dataLayer \|\| \[\];/, ''), sandbox);
-  const config = sandbox.dataLayer.map((args: IArguments) => Array.from(args)).find((args: unknown[]) => args[0] === 'config');
-  return config[2].page_location;
+  return sandbox.dataLayer.map((args: IArguments) => Array.from(args)).find((args: unknown[]) => args[0] === 'config');
 }
 
 describe('GoogleAnalytics: no editor URL is measured', () => {
@@ -58,19 +57,13 @@ describe('GoogleAnalytics: no editor URL is measured', () => {
     }
   );
 
-  it('renders the tag on other pages, with the page location as it is', () => {
+  it('renders the tag on other pages, and hands gtag no page location: it reads each page\'s own', () => {
+    // A page_location given to gtag is reported by the page views after it,
+    // so every page view after the first carried an earlier page's address.
     const html = render('/admin/events');
     expect(html).toContain('googletagmanager.com/gtag/js?id=G-19NWMWNH18');
-    expect(configuredLocation(html, 'https://www.messmass.com/admin/events?tab=2')).toBe(
-      'https://www.messmass.com/admin/events?tab=2'
-    );
-  });
-
-  it('the config script itself reports an editor URL as its route pattern, never the slug', () => {
-    const html = render('/admin/events');
-    const reported = configuredLocation(html, `https://www.messmass.com/edit/${EDIT_SLUG}?x=1`);
-    expect(reported).toBe('https://www.messmass.com/edit/[slug]');
-    expect(reported).not.toContain(EDIT_SLUG);
+    expect(configCall(html, 'https://www.messmass.com/admin/events?tab=2')).toEqual(['config', 'G-19NWMWNH18']);
+    expect(html).not.toContain('page_location');
   });
 
   it('switches measurement off while an editor is shown and on again elsewhere', () => {
@@ -88,7 +81,5 @@ describe('GoogleAnalytics: no editor URL is measured', () => {
     expect(isAnalyticsExcludedPath('/editor-guide')).toBe(false);
     expect(isAnalyticsExcludedPath('/report/abc')).toBe(false);
     expect(isAnalyticsExcludedPath(null)).toBe(false);
-    expect(redactAnalyticsLocation(`https://www.messmass.com/edit/${EDIT_SLUG}#top`)).toBe('https://www.messmass.com/edit/[slug]');
-    expect(redactAnalyticsLocation('https://www.messmass.com/report/abc')).toBe('https://www.messmass.com/report/abc');
   });
 });

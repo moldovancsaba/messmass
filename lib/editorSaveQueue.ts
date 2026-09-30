@@ -135,6 +135,15 @@ export interface SaveQueue<P> {
    * flight coalesced with the pending one), or null when nothing is waiting.
    */
   unconfirmed(): P | null;
+  /**
+   * The payloads unconfirmed() combines, one by one, oldest first, each with
+   * its attempt. `sent` marks the one whose outcome is unknown: handed to
+   * send() without an answer yet, or failed and waiting to go out again under
+   * the same attempt id (retryFailedAlone, or too large to combine). It may
+   * have been stored. A payload refused for good is not `sent`: the server
+   * stored nothing of it.
+   */
+  unconfirmedPayloads(): Array<{ payload: P; attempt: SaveAttempt; sent: boolean }>;
   /** Send now: skips the debounce and any scheduled retry wait. No effect while paused for access. */
   flush(): void;
   /** Leave the needs-access pause and send what is waiting immediately. */
@@ -279,6 +288,8 @@ export function createSaveQueue<P>(options: SaveQueueOptions<P>): SaveQueue<P> {
   // The open payload new changes are combined into.
   let pending: Entry<P> | null = null;
   let inFlight: Entry<P> | null = null;
+  // The attempt id last handed to send(); see unconfirmedPayloads().
+  let sentId = 0;
   // Refused for good: kept and counted, not sent until retryRejected().
   let rejected: Array<{ entry: Entry<P>; error: string }> = [];
   let firstPendingAt: number | null = null;
@@ -361,6 +372,7 @@ export function createSaveQueue<P>(options: SaveQueueOptions<P>): SaveQueue<P> {
     if (!next) return;
     const sending = next;
     inFlight = sending;
+    sentId = sending.id;
     emit();
 
     let request: Promise<unknown>;
@@ -549,6 +561,19 @@ export function createSaveQueue<P>(options: SaveQueueOptions<P>): SaveQueue<P> {
       let merged: P | null = null;
       for (const e of entries) merged = merged === null ? e.payload : coalesce(merged, e.payload);
       return merged;
+    },
+
+    unconfirmedPayloads() {
+      // Same order as unconfirmed(). Entry ids are unique, so only the entry
+      // last handed to send() -- in flight, or put back to go out again --
+      // carries sentId; a refused one keeps its id but is known not stored.
+      const refused = rejected.map((r) => ({ payload: r.entry.payload, attempt: { id: r.entry.id }, sent: false }));
+      const open = [...(inFlight ? [inFlight] : []), ...ready, ...(pending ? [pending] : [])].map((e) => ({
+        payload: e.payload,
+        attempt: { id: e.id },
+        sent: e.id === sentId,
+      }));
+      return [...refused, ...open];
     },
 
     flush,
@@ -763,6 +788,17 @@ export function createAccessRecovery(options: AccessRecoveryOptions): AccessReco
 //     "keep the saved values" discards those and nothing else.
 //     Timestamps are not used to decide: the device clock and the server clock
 //     differ, and this editor's own saves move the server's updatedAt too.
+// COUNTS: A counted field (a clicker tap, +1/-1) is not a value: two devices
+//     counting the same stat both count, so the server adds each count to what
+//     it holds. The draft keeps counts apart from values -- `counts`, never
+//     sent, and `outstanding`, the counts of a request that went out and was
+//     never answered, with the tabId and clientSeq it went out under. A field
+//     in either is left out of the value rule above (its `fields` entry is only
+//     what the page showed): it is restored as the server's value plus the
+//     counts, never held back, and its counts are sent again as counts -- an
+//     outstanding request under its own tabId and clientSeq, so the server's
+//     late-write guard stores it at most once. Restored as a value instead, a
+//     count overwrote whatever another device counted meanwhile.
 // TWO TABS: Each editor instance writes its own key (scope + tab id), so two
 //     tabs never overwrite or delete each other's drafts. A later load adopts
 //     every restorable draft into its own and removes the adopted keys, but
@@ -773,6 +809,19 @@ export type DraftFields = Record<string, unknown>;
 
 /** Per field, the values this device sent since `base` without a confirmation, oldest first. */
 export type SentValues = Record<string, unknown[]>;
+
+/** Per field, a count to add to the server's value (clicker taps added up). */
+export type DraftCounts = Record<string, number>;
+
+/**
+ * The counts of a request that went out and was never answered: it may or may
+ * not have been stored. Sent again under the same tabId and clientSeq.
+ */
+export interface OutstandingCounts {
+  tabId: string;
+  clientSeq: number;
+  counts: DraftCounts;
+}
 
 export interface StoredDraft {
   v: 1;
@@ -788,6 +837,10 @@ export interface StoredDraft {
   fields: DraftFields;
   /** Values sent to the server since `base` whose confirmation never arrived. */
   sent?: SentValues;
+  /** Counts never sent (see COUNTS above). */
+  counts?: DraftCounts;
+  /** Counts of requests that went out without an answer (see COUNTS above). */
+  outstanding?: OutstandingCounts[];
 }
 
 // WHAT: How many unconfirmed values are remembered per field.
@@ -866,10 +919,65 @@ function parseDraft(raw: string | null, scope: string, tabId: string): StoredDra
     if (isPlainObject(draft.sent) && Object.values(draft.sent).every(Array.isArray)) {
       parsed.sent = draft.sent as SentValues;
     }
+    // Counts likewise: a bad entry is dropped, and its field is then restored
+    // by the value rule, as before counts were kept apart.
+    if (isDraftCounts(draft.counts)) parsed.counts = draft.counts;
+    if (Array.isArray(draft.outstanding)) {
+      const outstanding = draft.outstanding.filter(isOutstandingCounts);
+      if (outstanding.length > 0) parsed.outstanding = outstanding;
+    }
     return parsed;
   } catch {
     return null;
   }
+}
+
+function isDraftCounts(value: unknown): value is DraftCounts {
+  return isPlainObject(value) && Object.values(value).every((n) => typeof n === 'number' && Number.isFinite(n));
+}
+
+function isOutstandingCounts(value: unknown): value is OutstandingCounts {
+  return (
+    isPlainObject(value) &&
+    typeof value.tabId === 'string' &&
+    value.tabId.length > 0 &&
+    typeof value.clientSeq === 'number' &&
+    Number.isSafeInteger(value.clientSeq) &&
+    value.clientSeq >= 0 &&
+    isDraftCounts(value.counts)
+  );
+}
+
+/** The fields a draft counts (in `counts` or `outstanding`), which the value rule leaves alone. */
+export function countedDraftFields(draft: Pick<StoredDraft, 'counts' | 'outstanding'>): Set<string> {
+  const keys = new Set(Object.keys(draft.counts ?? {}));
+  for (const out of draft.outstanding ?? []) for (const key of Object.keys(out.counts)) keys.add(key);
+  return keys;
+}
+
+/**
+ * The draft without its counts, and without the fields it counts (their
+ * `fields` entry is only the number the page showed). What the value rule
+ * reads, and what is left of a draft whose counts another page took over
+ * (and now sends) while its values stay: a later load must not count them a
+ * second time. Sending a value again is harmless; a count is not.
+ */
+export function withoutDraftCounts(draft: StoredDraft): StoredDraft {
+  const counted = countedDraftFields(draft);
+  const part: StoredDraft = { ...draft };
+  delete part.counts;
+  delete part.outstanding;
+  if (counted.size === 0) return part;
+  part.base = withoutKeys(draft.base, counted);
+  part.fields = withoutKeys(draft.fields, counted);
+  if (draft.sent) part.sent = withoutKeys(draft.sent, counted);
+  return part;
+}
+
+function withoutKeys<T>(source: Record<string, T>, drop: Set<string>): Record<string, T> {
+  const out: Record<string, T> = {};
+  for (const [key, value] of Object.entries(source)) if (!drop.has(key)) out[key] = value;
+  return out;
 }
 
 /** Every readable draft for this scope, oldest first. Never throws. */
@@ -977,9 +1085,12 @@ export function discardDraftFields(storage: DraftStorage | null, draft: StoredDr
       const sent = without(current.sent);
       if (Object.keys(sent).length > 0) next.sent = sent;
     }
-    const stillChanged = Object.keys({ ...next.base, ...next.fields }).some(
-      (k) => !sameFieldValue(next.fields[k], next.base[k])
-    );
+    // Counts are never held back for a choice, so none is named here; they stay.
+    if (current.counts) next.counts = current.counts;
+    if (current.outstanding) next.outstanding = current.outstanding;
+    const stillChanged =
+      countedDraftFields(next).size > 0 ||
+      Object.keys({ ...next.base, ...next.fields }).some((k) => !sameFieldValue(next.fields[k], next.base[k]));
     if (stillChanged) storage.setItem(key, JSON.stringify(next));
     else storage.removeItem(key);
     return true;
@@ -1063,18 +1174,30 @@ export interface HeldBackDraft {
 }
 
 export interface DraftRestorePlan {
-  /** The server fields with every conflict-free change of every draft applied, oldest draft first. */
+  /**
+   * The server fields with every conflict-free change of every draft applied,
+   * oldest draft first, and every restored count added on top.
+   */
   fields: DraftFields;
+  /** `fields` before any count was added: what to compare with the server to find the values to send. */
+  values: DraftFields;
   /** Fields whose value in `fields` came from a draft. */
   restored: string[];
-  /** Newest editedAt among the drafts that put back at least one value, or null. */
+  /**
+   * Newest editedAt among the drafts that put back at least one value or
+   * count, or null when none did.
+   */
   restoredEditedAt: number | null;
-  /** Drafts entirely contained in `fields`. */
+  /** Drafts entirely contained in `fields`, `counts` and `outstanding`. */
   adopted: StoredDraft[];
   /** Drafts with at least one held-back field; their other changes are in `fields`. */
   conflicted: HeldBackDraft[];
   /** Drafts holding nothing the server lacks: safe to remove. */
   obsolete: StoredDraft[];
+  /** Counts never sent, per field: to send as counts. */
+  counts: DraftCounts;
+  /** Requests to send again under their own tabId and clientSeq (each once). */
+  outstanding: OutstandingCounts[];
 }
 
 // WHAT: The draft's base, with each field the server now holds at one of the
@@ -1116,29 +1239,90 @@ function narrowDraft(draft: StoredDraft, base: DraftFields, keys: string[]): Sto
   return narrowed;
 }
 
-/** Decide, per field, what a fresh load restores. See RESTORE RULE above. */
+const addCount = (target: DraftCounts, key: string, n: number) => {
+  target[key] = (target[key] ?? 0) + n;
+};
+
+/** Decide, per field, what a fresh load restores. See RESTORE RULE and COUNTS above. */
 export function planDraftRestore(server: DraftFields, drafts: StoredDraft[]): DraftRestorePlan {
-  let fields = server;
+  let values = server;
   const adopted: StoredDraft[] = [];
   const conflicted: HeldBackDraft[] = [];
   const obsolete: StoredDraft[] = [];
+  // Counts never sent; and every count shown on top of `values` (those plus the outstanding ones).
+  const counts: DraftCounts = {};
+  const shown: DraftCounts = {};
+  const outstanding: OutstandingCounts[] = [];
+  const planned = new Set<string>();
   let restoredEditedAt: number | null = null;
   for (const draft of [...drafts].sort((a, b) => a.editedAt - b.editedAt)) {
-    const base = baseWithOwnWrites(draft, server);
-    const result = mergeFieldChanges(fields, base, draft.fields, 'keep-current');
+    // A counted field's `fields` entry is the base value plus the taps;
+    // compared with the base it would read as a value this device set.
+    const valueDraft = withoutDraftCounts(draft);
+    const base = baseWithOwnWrites(valueDraft, server);
+    const result = mergeFieldChanges(values, base, valueDraft.fields, 'keep-current');
     // Conflict-free values go in whatever else the draft holds.
-    fields = result.merged;
-    if (result.applied.length > 0) restoredEditedAt = Math.max(restoredEditedAt ?? draft.editedAt, draft.editedAt);
+    values = result.merged;
+    // A value this newer draft set replaces what older drafts counted on it
+    // (an outstanding request still goes: the value is sent after it).
+    for (const key of result.applied) {
+      delete counts[key];
+      delete shown[key];
+    }
+    let countsRestored = false;
+    for (const [key, n] of Object.entries(draft.counts ?? {})) {
+      if (n === 0) continue;
+      addCount(counts, key, n);
+      addCount(shown, key, n);
+      countsRestored = true;
+    }
+    for (const out of draft.outstanding ?? []) {
+      const nonZero = Object.entries(out.counts).filter(([, n]) => n !== 0);
+      const id = `${out.tabId}\n${out.clientSeq}`;
+      // Two drafts can hold the same request (one page took it over from
+      // another and kept both): it is one request, sent and shown once.
+      if (nonZero.length === 0 || planned.has(id)) continue;
+      planned.add(id);
+      outstanding.push({ tabId: out.tabId, clientSeq: out.clientSeq, counts: Object.fromEntries(nonZero) });
+      for (const [key, n] of nonZero) addCount(shown, key, n);
+      countsRestored = true;
+    }
+    const restoresSomething = result.applied.length > 0 || countsRestored;
+    if (restoresSomething) restoredEditedAt = Math.max(restoredEditedAt ?? draft.editedAt, draft.editedAt);
     if (result.conflicts.length > 0) {
-      conflicted.push({ draft, conflicts: result.conflicts, held: narrowDraft(draft, base, result.conflicts) });
-    } else if (result.applied.length === 0) {
+      conflicted.push({ draft, conflicts: result.conflicts, held: narrowDraft(valueDraft, base, result.conflicts) });
+    } else if (!restoresSomething) {
       obsolete.push(draft);
     } else {
       adopted.push(draft);
     }
   }
+  // Shown as if no outstanding request was stored yet. One whose answer was
+  // lost may have been, before `server` was read; the server says so only
+  // when the request is sent again (answered stale), and the caller then
+  // loads the event again (the event editor does, see EditorDashboard).
+  const fields: DraftFields = { ...values };
+  for (const [key, n] of Object.entries(shown)) {
+    if (n === 0) continue;
+    const value = values[key];
+    fields[key] = (typeof value === 'number' && Number.isFinite(value) ? value : 0) + n;
+  }
+  for (const key of Object.keys(counts)) if (counts[key] === 0) delete counts[key];
   const restored = Object.keys({ ...server, ...fields }).filter((key) => !sameFieldValue(fields[key], server[key]));
-  return { fields, restored, restoredEditedAt: restored.length > 0 ? restoredEditedAt : null, adopted, conflicted, obsolete };
+  // Counts that add up to nothing on screen still have to be sent: an
+  // outstanding +1 may have been stored, and the -1 after it was not.
+  const toSend = restored.length > 0 || Object.keys(counts).length > 0 || outstanding.length > 0;
+  return {
+    fields,
+    values,
+    restored,
+    restoredEditedAt: toSend ? restoredEditedAt : null,
+    adopted,
+    conflicted,
+    obsolete,
+    counts,
+    outstanding,
+  };
 }
 
 // WHAT: Longest one save request may take, from the CSRF lookup to the answer.

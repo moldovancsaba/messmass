@@ -13,7 +13,8 @@
  * HOW: A nested (dotted) variable is shown read-only, from its nested value.
  *     The text an input shows when it gains focus is remembered; on blur the
  *     input commits only if its text differs from that. The focused input is
- *     not overwritten when the stats change. */
+ *     not overwritten when the stats change; left unchanged, it shows the
+ *     stored value again on blur. */
 
 'use client';
 
@@ -84,15 +85,24 @@ export function useBuilderStatInputs(stats: Record<string, unknown>, variables: 
 
   // The text to commit when `key` loses focus, or null when the operator did
   // not change it (or it is not editable).
+  // WHAT: Left unchanged, the input shows the stored value again.
+  // WHY: The sync above skips the focused input, so a newer value that
+  //     arrived while it had focus was never shown: the input kept the older
+  //     text, the next focus took that as its starting point, and typing the
+  //     stored-over number back in counted as no change and saved nothing.
+  //     Same rule as ReportTextSlot in components/ReportContentManager.tsx.
   const takeEdit = useCallback(
     (key: string): string | null => {
       const focused = focusedRef.current;
       focusedRef.current = null;
-      if (!isBuilderEditableVariable(key) || !focused || focused.key !== key) return null;
+      if (!focused || focused.key !== key) return null;
       const text = texts[key] ?? emptyText;
-      return text === focused.text ? null : text;
+      if (isBuilderEditableVariable(key) && text !== focused.text) return text;
+      const stored = textOf(readBuilderStat(stats, key), emptyText);
+      if (text !== stored) setTexts((prev) => ({ ...prev, [key]: stored }));
+      return null;
     },
-    [texts, emptyText]
+    [texts, stats, emptyText]
   );
 
   return { texts, setText, onFocus, takeEdit };

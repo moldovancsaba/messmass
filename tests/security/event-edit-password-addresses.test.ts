@@ -3,6 +3,8 @@
 //     addresses (editSlug, _id) it was set on: creating or regenerating it
 //     deletes the row on the other address, removing it removes every row,
 //     and Share reports the editor protected when either address has one.
+//     An _id given in capitals is the same address: the row is kept under
+//     the event's own (lowercase) _id, which is what the editor gate reads.
 // WHY: validatePagePassword accepts the newest `edit` password across both
 //     addresses, and the editor gate treats a password on either as
 //     protecting the editor -- but create, regenerate, remove and the Share
@@ -155,6 +157,52 @@ describe('event edit password: one password across the editor\'s addresses', () 
     expect(rows.map((r) => r.pageId)).toEqual([id]);
     expect(await lib.validatePagePassword(EDIT_SLUG, 'edit', onSlug.password)).toBe(false);
     expect(await lib.validatePagePassword(EDIT_SLUG, 'edit', onId.password)).toBe(true);
+  });
+
+  it('a password set on the _id in capitals is stored under the event\'s own _id, and the editor stays protected', async () => {
+    // Letters in it, so the capitalised address differs from the stored one.
+    const project = { _id: new ObjectId('66f6a0000000000000000abc'), editSlug: EDIT_SLUG };
+    const id = String(project._id);
+    const upper = id.toUpperCase();
+    const { rows } = world(project);
+    const lib = await import('@/lib/pagePassword');
+    const { requirePageAccessDecision } = await import('@/lib/pageAccess');
+
+    await lib.getOrCreatePagePassword(EDIT_SLUG, 'edit');
+    // Regenerated through the API with the _id typed in capitals. Stored under
+    // that spelling, the row was one the editor gate never reads, and the
+    // editSlug row it replaced was deleted: the editor had no password.
+    nowMs = START + HOUR_MS;
+    const current = await lib.getOrCreatePagePassword(upper, 'edit', true);
+    expect(current.pageId).toBe(id);
+    expect(rows.map((r) => r.pageId)).toEqual([id]);
+
+    // The editor gate, as GET /api/projects/edit/<editSlug> asks it.
+    const gate = await requirePageAccessDecision('edit', [EDIT_SLUG, EDIT_SLUG, id]);
+    expect(gate.allowed).toBe(false);
+    for (const address of [EDIT_SLUG, id, upper]) {
+      expect(await lib.validatePagePassword(address, 'edit', current.password)).toBe(true);
+      expect((await lib.getShareableLinkStatus(address, 'edit')).isProtected).toBe(true);
+    }
+
+    // Removed by any spelling, it is gone from every address.
+    expect(await lib.removePagePassword(upper, 'edit')).toBe(true);
+    expect(rows).toEqual([]);
+  });
+
+  it('a row left under the _id in capitals is retired by the next password set on that spelling', async () => {
+    const project = { _id: new ObjectId('66f6a0000000000000000abc'), editSlug: EDIT_SLUG };
+    const id = String(project._id);
+    const upper = id.toUpperCase();
+    const { rows } = world(project);
+    rows.push({ pageId: upper, pageType: 'edit', passwordHash: 'x', createdAt: new Date(START - HOUR_MS).toISOString() });
+    const lib = await import('@/lib/pagePassword');
+
+    expect((await lib.getShareableLinkStatus(upper, 'edit')).isProtected).toBe(true);
+    const current = await lib.getOrCreatePagePassword(upper, 'edit', true);
+
+    expect(rows.map((r) => r.pageId)).toEqual([id]);
+    expect(await lib.validatePagePassword(EDIT_SLUG, 'edit', current.password)).toBe(true);
   });
 
   it('other page types keep their rows per address', async () => {

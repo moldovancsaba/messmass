@@ -30,22 +30,7 @@ export function isAnalyticsExcludedPath(pathname: string | null | undefined): bo
   return typeof pathname === 'string' && EDITOR_PATH.test(pathname);
 }
 
-// WHAT: The page location as analytics may see it: an editor URL cut down to
-//     its route pattern ('/edit/[slug]'), with no query string or fragment.
-// WHY: Defence in depth for the moments measurement is not already switched
-//     off: a page_location set here is what later events carry.
-export function redactAnalyticsLocation(href: string): string {
-  try {
-    const url = new URL(href);
-    const match = url.pathname.match(EDITOR_PATH);
-    if (!match) return href;
-    return `${url.origin}/${match[1]}/[slug]`;
-  } catch {
-    return href;
-  }
-}
-
-type GtagWindow = Window & { gtag?: (...args: unknown[]) => void } & Record<string, unknown>;
+type GtagWindow = Window & Record<string, unknown>;
 
 export default function GoogleAnalytics() {
   const pathname = usePathname();
@@ -64,16 +49,19 @@ export default function GoogleAnalytics() {
     (window as unknown as GtagWindow)[GA_DISABLE_FLAG] = excluded;
   }
 
-  // Keep the location later events report in step with the route, redacted.
+  // The committed route's answer, in case a render thrown away set it last.
   useEffect(() => {
-    const w = window as unknown as GtagWindow;
-    w[GA_DISABLE_FLAG] = excluded;
-    if (typeof w.gtag === 'function') {
-      w.gtag('set', { page_location: redactAnalyticsLocation(window.location.href) });
-    }
-  }, [pathname, excluded]);
+    (window as unknown as GtagWindow)[GA_DISABLE_FLAG] = excluded;
+  }, [excluded]);
 
   // A page opened directly on an editor never loads the tag at all.
+  // WHY no page_location in the config below: a location handed to gtag -- in
+  // the config, or by gtag('set') from an effect, which runs after GA4 has
+  // sent the navigation's page view -- is reported by the page views after
+  // it, so they carried an earlier page's address instead of their own. gtag
+  // reads the address itself, and an editor's address never reaches it: the
+  // tag is not loaded on an editor landing, and measurement is off (the flag
+  // above) while an editor is shown after a client-side navigation.
   if (excluded) return null;
 
   return (
@@ -91,12 +79,7 @@ export default function GoogleAnalytics() {
             window.dataLayer = window.dataLayer || [];
             function gtag(){dataLayer.push(arguments);}
             gtag('js', new Date());
-            gtag('config', '${GA_MEASUREMENT_ID}', {
-              page_location: (function (href) {
-                var match = window.location.pathname.match(${EDITOR_PATH.toString()});
-                return match ? window.location.origin + '/' + match[1] + '/[slug]' : href;
-              })(window.location.href)
-            });
+            gtag('config', '${GA_MEASUREMENT_ID}');
           `,
         }}
       />

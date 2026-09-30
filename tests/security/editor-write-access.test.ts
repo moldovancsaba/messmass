@@ -1227,7 +1227,13 @@ describe('PUT /api/projects: what an event edit grant may change', () => {
     const source = fs.readFileSync(path.join(process.cwd(), 'components/EditorDashboard.tsx'), 'utf8');
     const block = source.match(/interface EditorSavePayload\s*\{([^}]*)\}/);
     expect(block).not.toBeNull();
-    const sent = Array.from(block![1].matchAll(/^\s*(\w+)\??:/gm), (m) => m[1]).filter((f) => f !== 'projectId');
+    // `resend` never reaches the body: the editor takes it off and sends its
+    // tabId and clientSeq instead, which the route reads apart from the
+    // project fields (parseEditorSequence).
+    expect(source).toMatch(/const \{ resend, \.\.\.fields \} = payload;/);
+    const sent = Array.from(block![1].matchAll(/^\s*(\w+)\??:/gm), (m) => m[1]).filter(
+      (f) => f !== 'projectId' && f !== 'resend'
+    );
     expect(sent.length).toBeGreaterThan(0);
     const { EVENT_EDITOR_WRITABLE_FIELDS } = await import('@/lib/apiGuards');
     expect(sent.filter((f) => !(EVENT_EDITOR_WRITABLE_FIELDS as readonly string[]).includes(f))).toEqual([]);

@@ -97,6 +97,14 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // WHAT: The same relationship check as GET and DELETE: a signed-in caller
+    //     must be able to manage this page to set or regenerate its password.
+    // WHY: A session alone let any account, a guest included, regenerate any
+    //     page's password -- locking out everyone holding the current one --
+    //     and for an event editor also delete the rows on its other addresses.
+    const scoped = await requirePageResourceAccess(pageId, pageType as PageType);
+    if (scoped) return scoped;
+
     logInfo('Generating password for page', { context: 'page-passwords', pageType: pageType, pageIdPrefix: pageId.substring(0, 8) });
 
     // Generate or retrieve password

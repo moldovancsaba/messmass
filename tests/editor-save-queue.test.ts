@@ -29,6 +29,7 @@ import {
   sameFieldValue,
   sendJsonForSave,
   whenAllSaved,
+  withoutDraftCounts,
   writeDraft,
   EDITOR_DRAFT_KEY_PREFIX,
   MAX_SENT_VALUES_PER_FIELD,
@@ -669,6 +670,40 @@ describe('createSaveQueue: retryFailedAlone', () => {
     await settle();
     expect(calls[2].payload).toEqual({ male: 2 });
   });
+
+  it('unconfirmedPayloads() tells apart the payload that went out without an answer from those never sent', async () => {
+    // The event editor's draft keeps the counts of the one that went out under
+    // its clientSeq (it may be stored), and the rest as counts never sent.
+    const { send, calls } = controlledSendWithAttempts<Changes>();
+    const queue = createSaveQueue<Changes>({ send, debounceMs: 0, retryDelaysMs: [1000], coalesce: merge, retryFailedAlone: true });
+    queue.enqueue({ female: 1 });
+    await settle();
+    queue.enqueue({ female: 1 });
+    // In flight.
+    expect(queue.unconfirmedPayloads()).toEqual([
+      { payload: { female: 1 }, attempt: { id: calls[0].id }, sent: true },
+      { payload: { female: 1 }, attempt: { id: expect.any(Number) }, sent: false },
+    ]);
+
+    // Failed, waiting to go out again under the same attempt: still unknown.
+    calls[0].reject(new SaveRequestError('No connection to the server', { offline: true }));
+    await settle();
+    expect(queue.unconfirmedPayloads().map((p) => [p.payload, p.sent])).toEqual([
+      [{ female: 1 }, true],
+      [{ female: 1 }, false],
+    ]);
+
+    // Refused for good: known not stored, so no longer `sent`.
+    await jest.advanceTimersByTimeAsync(1000);
+    calls[1].reject(new SaveRequestError('refused', { status: 400 }));
+    await settle();
+    expect(queue.unconfirmedPayloads().find((p) => p.attempt.id === calls[0].id)).toMatchObject({ sent: false });
+
+    // Confirmed: gone.
+    calls[2].resolve();
+    await settle();
+    expect(queue.unconfirmedPayloads().map((p) => [p.payload, p.sent])).toEqual([[{ female: 1 }, false]]);
+  });
 });
 
 describe('createSaveQueue: canCoalesce', () => {
@@ -1102,6 +1137,119 @@ describe('planDraftRestore', () => {
     expect(plan.obsolete).toEqual([d]);
     expect(plan.adopted).toEqual([]);
     expect(plan.conflicted).toEqual([]);
+  });
+});
+
+describe('planDraftRestore: counts', () => {
+  // Gate A counted female from 100 while saving failed: its first +1 went out
+  // and was never answered (outstanding), four more taps never went out.
+  const gateA = (fields: Record<string, unknown> = { 'stats:female': 105 }) =>
+    draft({
+      tabId: 'gate-a',
+      editedAt: 9,
+      base: { 'stats:female': 100 },
+      fields,
+      counts: { 'stats:female': 4 },
+      outstanding: [{ tabId: 'gate-a', clientSeq: 3, counts: { 'stats:female': 1 } }],
+    });
+
+  it("adds counts to the server's value, other devices' taps included, and never holds them back", () => {
+    // Gate B counted 30 meanwhile. As a value, 105 was a conflict against 130,
+    // and either choice lost someone's taps.
+    const plan = planDraftRestore({ 'stats:female': 130 }, [gateA()]);
+    expect(plan.conflicted).toEqual([]);
+    expect(plan.fields).toEqual({ 'stats:female': 135 });
+    expect(plan.values).toEqual({ 'stats:female': 130 });
+    expect(plan.counts).toEqual({ 'stats:female': 4 });
+    expect(plan.outstanding).toEqual([{ tabId: 'gate-a', clientSeq: 3, counts: { 'stats:female': 1 } }]);
+    expect(plan.restoredEditedAt).toBe(9);
+    expect(plan.adopted.map((d) => d.tabId)).toEqual(['gate-a']);
+  });
+
+  it("does not take another device's +1 for this device's own write", () => {
+    // Gate B's single tap made the server 101 -- the number this device's
+    // lost +1 would have made. Recorded as a sent value, 105 went back as a
+    // value and B's tap was gone. As counts, both are kept: 106.
+    const withSent = { ...gateA(), sent: { 'stats:female': [101] } };
+    const plan = planDraftRestore({ 'stats:female': 101 }, [withSent]);
+    expect(plan.fields).toEqual({ 'stats:female': 106 });
+    expect(plan.counts).toEqual({ 'stats:female': 4 });
+    expect(plan.outstanding).toHaveLength(1);
+  });
+
+  it('plans a request two drafts hold once, and a draft holding only that one as obsolete', () => {
+    const copy = draft({
+      tabId: 'later-tab',
+      editedAt: 10,
+      base: { 'stats:female': 100 },
+      fields: { 'stats:female': 101 },
+      outstanding: [{ tabId: 'gate-a', clientSeq: 3, counts: { 'stats:female': 1 } }],
+    });
+    const plan = planDraftRestore({ 'stats:female': 100 }, [gateA(), copy]);
+    expect(plan.outstanding).toHaveLength(1);
+    expect(plan.fields).toEqual({ 'stats:female': 105 });
+    expect(plan.obsolete.map((d) => d.tabId)).toEqual(['later-tab']);
+  });
+
+  it('a value a newer draft set replaces what older drafts counted on it', () => {
+    const typed = draft({ tabId: 'b', editedAt: 20, base: { 'stats:female': 100 }, fields: { 'stats:female': 50 } });
+    const plan = planDraftRestore({ 'stats:female': 100 }, [gateA(), typed]);
+    expect(plan.fields).toEqual({ 'stats:female': 50 });
+    expect(plan.counts).toEqual({});
+    // The request that may be stored still goes, before the value.
+    expect(plan.outstanding).toHaveLength(1);
+  });
+
+  it('restores counts that add up to nothing on screen: the outstanding +1 may be stored, the -1 is not', () => {
+    const d = draft({
+      tabId: 'a',
+      editedAt: 4,
+      base: { 'stats:female': 7 },
+      fields: { 'stats:female': 7 },
+      counts: { 'stats:female': -1 },
+      outstanding: [{ tabId: 'a', clientSeq: 1, counts: { 'stats:female': 1 } }],
+    });
+    const plan = planDraftRestore({ 'stats:female': 7 }, [d]);
+    expect(plan.restored).toEqual([]);
+    expect(plan.restoredEditedAt).toBe(4);
+    expect(plan.adopted).toEqual([d]);
+    expect(plan.counts).toEqual({ 'stats:female': -1 });
+  });
+
+  it('keeps the value rule for the fields a draft does not count', () => {
+    const d = { ...gateA({ 'stats:female': 105, 'stats:male': 40 }), base: { 'stats:female': 100, 'stats:male': 0 } };
+    const plan = planDraftRestore({ 'stats:female': 100, 'stats:male': 12 }, [d]);
+    // male was typed here and changed on the server: held back; female counts on.
+    expect(plan.conflicted.map((c) => c.conflicts)).toEqual([['stats:male']]);
+    expect(plan.fields).toEqual({ 'stats:female': 105, 'stats:male': 12 });
+    // What stays in storage for the choice holds no counts: they are sent now.
+    expect(plan.conflicted[0].held).not.toHaveProperty('counts');
+    expect(plan.conflicted[0].held).not.toHaveProperty('outstanding');
+  });
+
+  it('reads counts back from storage, and drops malformed ones', () => {
+    const storage = memoryStorage();
+    writeDraft(storage, gateA());
+    expect(readDrafts(storage, 'p1')[0]).toMatchObject({
+      counts: { 'stats:female': 4 },
+      outstanding: [{ tabId: 'gate-a', clientSeq: 3, counts: { 'stats:female': 1 } }],
+    });
+    storage.setItem(
+      `${EDITOR_DRAFT_KEY_PREFIX}p1:gate-a`,
+      JSON.stringify({ ...gateA(), counts: { 'stats:female': 'four' }, outstanding: [{ tabId: 'gate-a', clientSeq: -1, counts: {} }] })
+    );
+    const [read] = readDrafts(storage, 'p1');
+    expect(read).not.toHaveProperty('counts');
+    expect(read).not.toHaveProperty('outstanding');
+  });
+
+  it('"Keep saved values" keeps the counts of a draft it narrows', () => {
+    const storage = memoryStorage();
+    const d = { ...gateA({ 'stats:female': 105, 'stats:male': 40 }), base: { 'stats:female': 100, 'stats:male': 0 } };
+    writeDraft(storage, d);
+    expect(discardDraftFields(storage, d, ['stats:male'])).toBe(true);
+    expect(readDrafts(storage, 'p1')[0]).toMatchObject({ counts: { 'stats:female': 4 }, outstanding: [{ clientSeq: 3 }] });
+    expect(withoutDraftCounts(d)).not.toHaveProperty('counts');
   });
 });
 

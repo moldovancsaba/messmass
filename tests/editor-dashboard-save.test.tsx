@@ -400,6 +400,7 @@ describe('EditorReadOnlyNotice', () => {
     return {
       enqueue() {},
       unconfirmed: () => null,
+      unconfirmedPayloads: () => [],
       flush() {},
       resume() {},
       retryRejected() {},
@@ -795,6 +796,11 @@ describe('EditorDashboard mounted', () => {
   const draftField = (field: string) => {
     const [key] = storedDrafts();
     return key ? JSON.parse(storage().getItem(key) as string).fields[field] : undefined;
+  };
+  // What the draft records the server as holding for a field (its base).
+  const draftBase = (field: string) => {
+    const [key] = storedDrafts();
+    return key ? JSON.parse(storage().getItem(key) as string).base[field] : undefined;
   };
 
   // The tab is hidden: the editor sends what is waiting at once (as it does
@@ -1308,16 +1314,60 @@ describe('EditorDashboard mounted', () => {
       await sendWaiting(); // +1 is out
       await editor.click(byClass(container, 'stat-decrement')[0]); // -1, waiting
 
-      // Another device stored 5 meanwhile: this tab's taps add up to nothing.
+      // Another device stored 5 meanwhile -- or 4, and the +1 out is stored
+      // too: the copy cannot tell. This tab's number stays until the +1 is
+      // answered, rather than show a count that may be in the copy already.
       await editor.reload(serverProject({ female: 5, male: 0 }), { canSave: true });
-      expect(femaleOnCard(container)).toBe('5');
+      expect(femaleOnCard(container)).toBe('0');
 
       api.saveGate = null;
       await act(async () => land());
       await settle();
       await sendWaiting();
       expect(api.saves.map((s) => s.statsIncrements)).toEqual([{ female: 1 }, { female: -1 }]);
+      expect(storedDrafts()).toHaveLength(0);
+
+      // With nothing waiting, the next load is taken as it is.
+      await editor.reload(serverProject({ female: 5, male: 0 }), { canSave: true, fetchStartedAt: Date.now() + 1000 });
       expect(femaleOnCard(container)).toBe('5');
+    });
+
+    it('a count stored but not answered yet is not added again to a re-fetched copy that holds it', async () => {
+      const editor = await mountEditor(serverProject({ female: 10, male: 0 }), { canSave: true });
+      const { container } = editor;
+      const [femaleCard, maleCard] = byClass(container, 'stat-card');
+
+      let land: () => void = () => {};
+      api.saveGate = new Promise<void>((resolve) => {
+        land = resolve;
+      });
+      for (let i = 0; i < 3; i++) await editor.click(femaleCard);
+      await sendWaiting();
+      expect(api.saves.map((s) => s.statsIncrements)).toEqual([{ female: 3 }]); // out, not answered
+
+      // The +3 is written; the tab re-loads the event before its answer comes.
+      await editor.reload(serverProject({ female: 13, male: 0 }), { canSave: true });
+      expect(femaleOnCard(container)).toBe('13'); // not 16
+
+      // A tap on another stat keeps the draft (and the base it stores) past
+      // the answer. The answer moves the base on from 10, not from the 13
+      // that already held the +3.
+      await editor.click(maleCard);
+      api.saveGate = null;
+      await act(async () => land());
+      await settle();
+      expect(draftBase('stats:female')).toBe(13);
+      expect(draftField('stats:female')).toBe(13);
+      expect(femaleOnCard(container)).toBe('13');
+
+      // Later taps count on from there, still as counts.
+      await editor.click(femaleCard);
+      await sendWaiting();
+      expect(femaleOnCard(container)).toBe('14');
+      expect(api.saves.map((s) => [s.statsChanges, s.statsIncrements])).toEqual([
+        [{}, { female: 3 }],
+        [{}, { male: 1, female: 1 }],
+      ]);
       expect(storedDrafts()).toHaveLength(0);
     });
 
@@ -1371,6 +1421,145 @@ describe('EditorDashboard mounted', () => {
       expect(api.saves).toHaveLength(1);
       expect(api.saves[0].statsChanges).toEqual({ male: 388, female: 412 });
       expect(storedDrafts()).toHaveLength(0);
+    });
+  });
+
+  describe('clicker counts across a reload', () => {
+    // Gate A counts female from 100 while saving fails: its first +1 goes out
+    // and is never answered; `more` taps wait behind it. Then the page goes
+    // (a discarded tab, or the operator reloads) and its draft stays.
+    async function tapWhileSavingFails(more: number): Promise<EditorSaveRequestBody> {
+      const editor = await mountEditor(serverProject({ female: 100, male: 0 }), { canSave: true });
+      const femaleCard = byClass(editor.container, 'stat-card')[0];
+      api.saveReply = { status: 500, body: { success: false, error: 'Database unavailable' } };
+      await editor.click(femaleCard);
+      await sendWaiting();
+      for (let i = 0; i < more; i++) await editor.click(femaleCard);
+      expect(femaleOnCard(editor.container)).toBe(String(101 + more));
+      const lost = api.saves[0];
+      expect(lost.statsIncrements).toEqual({ female: 1 });
+
+      await unmountCurrent?.();
+      unmountCurrent = null;
+      // The draft keeps the taps as counts, apart from the number shown; the
+      // one that went out, under the sequence it went out under.
+      const [key] = storedDrafts();
+      const draft = JSON.parse(storage().getItem(key) as string) as StoredDraft;
+      expect(draft.counts).toEqual({ 'stats:female': more });
+      expect(draft.outstanding).toEqual([{ tabId: lost.tabId, clientSeq: lost.clientSeq, counts: { 'stats:female': 1 } }]);
+      expect(draft.sent).toBeUndefined();
+
+      api.saves = [];
+      api.saveReply = { status: 200, body: { success: true } };
+      return lost;
+    }
+
+    it("sends restored taps as counts, so another device's +1 is kept, not taken for this device's own", async () => {
+      const lost = await tapWhileSavingFails(4);
+      // Gate B tapped once meanwhile: the server holds 101 -- the number A's
+      // lost +1 would have made. Restored as a value, 105 went back over it.
+      const editor = await mountEditor(serverProject({ female: 101, male: 0 }), { canSave: true });
+      expect(femaleOnCard(editor.container)).toBe('106');
+      expect(editor.container.textContent).toContain('Restored unsaved changes from this device');
+      expect(editor.container.textContent).not.toContain('not restored');
+
+      await sendWaiting();
+      // The lost request again, unchanged and under its own tabId and
+      // clientSeq (stored already? the server turns it away), then the rest.
+      expect(api.saves).toEqual([
+        { projectId: PROJECT_ID, statsChanges: {}, statsIncrements: { female: 1 }, tabId: lost.tabId, clientSeq: lost.clientSeq },
+        { projectId: PROJECT_ID, statsChanges: {}, statsIncrements: { female: 4 }, tabId: expect.any(String), clientSeq: 1 },
+      ]);
+      expect(api.saves[1].tabId).not.toBe(lost.tabId);
+      expect(statusLine(editor.container)).toBe('✅ Saved');
+      expect(storedDrafts()).toHaveLength(0);
+    });
+
+    it("never offers a count as a value to choose: what another device counted meanwhile is kept", async () => {
+      await tapWhileSavingFails(4);
+      // Gate B counted 30 meanwhile. As values, this was a conflict whose
+      // either answer lost someone's taps (150 or 130, never 135).
+      const editor = await mountEditor(serverProject({ female: 130, male: 0 }), { canSave: true });
+      expect(editor.container.textContent).not.toContain('not restored');
+      expect(buttonLabelled(editor.container, 'Use this device')).toBeNull();
+      expect(femaleOnCard(editor.container)).toBe('135');
+
+      await sendWaiting();
+      expect(api.saves.map((s) => [s.statsChanges, s.statsIncrements])).toEqual([
+        [{}, { female: 1 }],
+        [{}, { female: 4 }],
+      ]);
+    });
+
+    it('loads the event again once a request sent again turns out stored, so its tap is not shown twice', async () => {
+      await tapWhileSavingFails(4);
+      // The lost +1 was stored after all, before this load read the event.
+      // The server says so only when it is sent again (stale).
+      api.saveReply = { status: 200, body: { success: true, stale: true } };
+      const onReload = jest.fn(async () => ({
+        project: serverProject({ female: 105, male: 0 }),
+        fetchStartedAt: Date.now() + 60_000,
+        canSave: true,
+      }));
+      const editor = await mountEditor(serverProject({ female: 101, male: 0 }), { canSave: true, onReload });
+      expect(api.saves).toHaveLength(1); // sent at once: nothing may go before it
+      expect(femaleOnCard(editor.container)).toBe('106');
+      expect(onReload).not.toHaveBeenCalled(); // not while a change still waits
+
+      api.saveReply = { status: 200, body: { success: true } };
+      await sendWaiting();
+      await settle();
+      expect(api.saves.map((s) => s.statsIncrements)).toEqual([{ female: 1 }, { female: 4 }]);
+      expect(onReload).toHaveBeenCalledTimes(1);
+      expect(femaleOnCard(editor.container)).toBe('105');
+    });
+
+    it('sends restored counts under one sequence when React runs the save effect twice (development)', async () => {
+      const earlier: StoredDraft = {
+        ...storedDraft(serverProject({ female: 100 }), serverProject({ female: 104 }), 5),
+        counts: { 'stats:female': 4 },
+      };
+      storage().setItem(`${EDITOR_DRAFT_KEY_PREFIX}${earlier.scope}:${earlier.tabId}`, JSON.stringify(earlier));
+      const { container } = await mount(
+        <React.StrictMode>
+          <EditorDashboard project={serverProject({ female: 100, male: 0 })} fetchStartedAt={Date.now()} canSave />
+        </React.StrictMode>
+      );
+      expect(femaleOnCard(container)).toBe('104');
+      await sendWaiting();
+
+      const counted = api.saves.filter((s) => s.statsIncrements?.female === 4);
+      expect(counted.length).toBeGreaterThan(0);
+      // However many copies went, one tabId and clientSeq: stored once.
+      expect(new Set(counted.map((s) => `${s.tabId}:${s.clientSeq}`)).size).toBe(1);
+      expect(api.saves.every((s) => !s.statsChanges.female)).toBe(true);
+    });
+
+    it("takes the counts out of a draft it could not replace with its own, so a later load does not count them again", async () => {
+      const oldKey = `${EDITOR_DRAFT_KEY_PREFIX}${PROJECT_ID}:earlier-tab`;
+      const earlier: StoredDraft = {
+        ...storedDraft(serverProject({ female: 100 }), serverProject({ female: 104, jersey: 3 }), 5),
+        counts: { 'stats:female': 4 },
+      };
+      const full = memoryStorage({ [oldKey]: JSON.stringify(earlier) });
+      const setItem = full.setItem;
+      // Storage is full: only the entry already there can be rewritten.
+      full.setItem = (key: string, value: string) => {
+        if (key !== oldKey) throw new Error('QuotaExceededError');
+        setItem(key, value);
+      };
+      (g.window as { localStorage: unknown }).localStorage = full;
+      jest.spyOn(console, 'warn').mockImplementation(() => {});
+
+      const editor = await mountEditor(serverProject({ female: 100, male: 0 }), { canSave: true });
+      expect(femaleOnCard(editor.container)).toBe('104');
+      const left = JSON.parse(full.getItem(oldKey) as string) as StoredDraft;
+      expect(left).not.toHaveProperty('counts');
+      expect(left.fields).not.toHaveProperty('stats:female');
+      expect(left.fields['stats:jersey']).toBe(3); // a value: sending it again is harmless
+
+      await sendWaiting();
+      expect(api.saves.map((s) => [s.statsChanges, s.statsIncrements])).toEqual([[{ jersey: 3 }, { female: 4 }]]);
     });
   });
 
@@ -1535,7 +1724,7 @@ describe('EditorDashboard event writes', () => {
     // can overtake or be dropped against another. A second direct writer to
     // this route would reintroduce both.
     expect(code.match(/['"`]\/api\/projects['"`]/g)).toHaveLength(1);
-    expect(code).toMatch(/return sendJsonForSave\('\/api\/projects', body\);/);
+    expect(code).toMatch(/const request = sendJsonForSave\('\/api\/projects', body\);/);
     expect(code).not.toMatch(/\bapiPut\b/);
   });
 

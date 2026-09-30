@@ -60,7 +60,25 @@ function mapPagePasswordDocument(pagePassword: any): PagePassword {
   };
 }
 
+// WHAT: The key an event editor's `edit` password is stored and looked up
+//     under: the pageId as given, with an event _id (24 hex digits) in
+//     lowercase.
+// WHY: An ObjectId matches in either case -- findProjectByEditSlug and
+//     eventEditAddresses open the same event for an _id in capitals -- but
+//     page_passwords matches pageId exactly. A password set on the _id in
+//     capitals was stored under a key the editor gate never reads (it reads
+//     the event's own String(_id), which is lowercase), and the rows on the
+//     event's other addresses were deleted in favour of it: the editor was
+//     left with no password anyone could enter or see.
+function canonicalEditPageId(pageId: string): string {
+  return /^[0-9a-f]{24}$/i.test(pageId) ? pageId.toLowerCase() : pageId;
+}
+
 export async function resolveCanonicalPageId(db: any, pageId: string, pageType: PageType): Promise<string> {
+  if (pageType === 'edit') {
+    return canonicalEditPageId(pageId);
+  }
+
   if (pageType !== 'partner-report' && pageType !== 'partner-edit') {
     return pageId;
   }
@@ -207,9 +225,11 @@ const db = client.db(config.dbName);
     //     it -- while Share, which reads one address, called the editor
     //     unprotected and offered no way to remove it. Deleted after the new
     //     row is stored, so the editor is never without a password between the
-    //     two writes.
+    //     two writes. The addresses are read from the pageId as given, so a
+    //     row left under an _id in capitals (from before canonicalEditPageId)
+    //     goes too; the row kept is the canonical one.
     if (pageType === 'edit') {
-      const others = (await eventEditAddresses(db, canonicalPageId)).filter((id) => id !== canonicalPageId);
+      const others = (await eventEditAddresses(db, pageId)).filter((id) => id !== canonicalPageId);
       if (others.length > 0) {
         await collection.deleteMany({ pageType: 'edit', pageId: { $in: others } });
       }
@@ -244,13 +264,17 @@ function passwordCreatedAtMs(createdAt: unknown): number {
 //     an edit password all have to see the same set of addresses, or a
 //     password the admin UI no longer shows keeps working.
 // NOTE: The lookup mirrors findProjectByEditSlug: a 24-hex pageId is an _id,
-//     a UUID is an editSlug. Anything else is the pageId alone.
+//     a UUID is an editSlug. Anything else is the pageId alone. The pageId is
+//     listed as given and in its canonical form (canonicalEditPageId): rows
+//     are stored under the canonical one, and one left under an _id in
+//     capitals before that is still found and retired.
 async function eventEditAddresses(db: any, pageId: string): Promise<string[]> {
-  const addresses = [pageId];
-  const byId = /^[0-9a-f]{24}$/i.test(pageId);
+  const canonical = canonicalEditPageId(pageId);
+  const addresses = [canonical, pageId];
+  const byId = /^[0-9a-f]{24}$/.test(canonical);
   if (byId || isUuidV4(pageId)) {
     const project = await db.collection('projects').findOne(
-      byId ? { _id: new ObjectId(pageId) } : { editSlug: pageId },
+      byId ? { _id: new ObjectId(canonical) } : { editSlug: pageId },
       { projection: { _id: 1, editSlug: 1 } }
     );
     if (project) {
@@ -494,7 +518,7 @@ export async function getShareableLinkStatus(
   // the editor gate sees it (see eventEditAddresses).
   const addresses =
     pageType === 'edit'
-      ? await eventEditAddresses(db, canonicalPageId)
+      ? await eventEditAddresses(db, pageId)
       : Array.from(new Set([canonicalPageId, pageId]));
   const matches = await Promise.all(
     addresses.map((id) => collection.findOne({ pageId: id, pageType }, { projection: { _id: 1 } }))
@@ -522,7 +546,7 @@ export async function removePagePassword(pageId: string, pageType: PageType): Pr
 
   const idsToRemove =
     pageType === 'edit'
-      ? await eventEditAddresses(db, canonicalPageId)
+      ? await eventEditAddresses(db, pageId)
       : Array.from(new Set([pageId, canonicalPageId]));
   const result = await collection.deleteMany({ pageType, pageId: { $in: idsToRemove } });
   return result.deletedCount > 0;
