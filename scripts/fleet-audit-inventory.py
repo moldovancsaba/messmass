@@ -60,6 +60,7 @@ AUTH_MARKERS = [
     "validateApiKey", "require_api_key", "api_key", "verifyMachineToken", "checkAuth",
     "withErrorHandler", "assertAdmin", "requireSession", "requireAdmin",
     "assertInternalSavetheworldSecret", "assertCameraSecret", "requirePartnerWrite",
+    "assertImageDirectCallbackSecret",
     "requireProjectWrite", "validateOrganizationAccess",
 ]
 

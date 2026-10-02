@@ -1,6 +1,44 @@
 # Session Handover — messmass
 
-Last verified: 2026-09-30 (v12.3.39, a5d453d1 = production).
+Last verified: 2026-10-02 (v12.3.40, 3e3fc847 = production).
+
+**2026-10-02 status (verified against git, GitHub, Vercel and the local Mac)**
+- **Versions and production.** messmass, camera, fanmass, try-on and savetheworld
+  are on 12.3.40 (sso 5.41.0). messmass `3e3fc847`, savetheworld `052ef84` and
+  sso `d6c385be` are what production serves; CI is green on every `main`. camera
+  `main` is at `bdd2d7b` (live) with five commits after 12.3.40 and no version bump
+  (see "image.direct" below).
+- **Editor fix is working in use.** 32 saves landed on the second event that had
+  been all zeros after the 2026-09-30 deploy; it now holds 18 non-zero values.
+  Tracked on the board as #421 (done).
+- **Paused on purpose (owner):** the try-on and fanmass services on this Mac
+  (stopped and disabled, ports closed) and try-on on every camera event. messmass's
+  `fanmass_dashboard_snapshot` documents therefore stopped updating (newest push
+  received 2026-09-29 10:21 UTC). Restart steps: the memory note "tryon-fanmass-paused" or the try-on and
+  fanmass RUNBOOKs.
+- **Protection.** `main` in messmass, camera and sso requires a PR and a passing
+  check, applies to admins, and blocks force-pushes. Every change to those repos
+  goes through a PR. camera also has a Vercel Firewall rule rate-limiting
+  `POST /api/submissions` (100 a minute per IP).
+- **Open dependency alerts:** messmass 5 (undici high, brace-expansion dev), sso 16
+  (two critical `next`, high `sharp` and `nodemailer`), fanmass 5, camera 0. Each
+  has clean Dependabot PRs open: messmass #416 and #420, sso #95, #113, #114 and
+  #117, fanmass #103 and #104. The sso ones are framework bumps on the identity
+  provider, so check login after merging.
+- **image.direct (new, separate repo).** camera is being connected to a separate
+  renderer app that is meant to replace the local try-on worker. Camera's callback
+  handler is implemented and default-disabled; dispatch is not built; no event uses
+  it. Contract: camera `docs/IMAGE_DIRECT_INTEGRATION.md`; fleet map edge E8;
+  tracking in camera #162 to #166 and #170. An earlier idea of a camera-hosted
+  gateway for third-party renderers (design draft on the local `try-on` and
+  `camera` branches `feature/tryon-partner-gateway`) is not being built.
+- **Stale items:** messmass #299 and fanmass #69 ("Adopt existing camera
+  partners/events", reverse backfill) are old open PRs; camera's equivalent #88 was
+  closed on 2026-09-30. camera #118 (fleet audit P2+P3) is delivered and can be
+  closed.
+- **Board.** Project 8: #421 and #422 added as done; #343 (fanmass release gate)
+  moved to Backlog while fanmass is paused; #356 (fleet epic) stays open as the
+  tracker.
 
 **2026-09-30 addendum (v12.3.39 and v12.3.40)**
 - **Event editor incident and fix (v12.3.39, PR #417).** An event with no edit

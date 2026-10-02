@@ -46,7 +46,36 @@ current-HEAD markers, not fresh reads of those edges.
   inspected), so it is unconfirmed whether that pull is failing today or was
   already unreachable.
 
-## The six systems
+## 2026-10-02 operational notes
+- **try-on and fanmass are paused on purpose** (owner, 2026-09-29/30): the
+  launchd jobs are stopped and disabled and ports 7860, 8787, 27017 and 11434
+  are closed. Effects: E1's queue is unprocessed (no job has been created since
+  2026-09-11 and camera now has `tryOn.enabled` off on every event); E3's media
+  pull and E2's six push channels have stopped, so messmass's
+  `fanmass_dashboard_snapshot` documents (233) stopped updating (newest `receivedAt`
+  2026-09-29T10:21Z);
+  E2's analytics-summary pull was already failing (401, see 2026-09-28).
+- **camera no longer runs a cron.** The `*/5` try-on sync backstop was removed
+  from `vercel.json` in 12.3.40 (it got a 403 on every run because
+  `CRON_SECRET` was never set). E1's completion now relies on the worker's own
+  webhook only; the route is unchanged and the steps to restore the cron are in
+  camera `RUNBOOK.md`.
+- **Protection changed (2026-09-30).** `main` in messmass, camera and sso now
+  applies to admins and blocks force-pushes (messmass also lost a force-push
+  bypass list that named the owner and two third-party apps). camera has a
+  Vercel Firewall rule rate-limiting `POST /api/submissions` to 100 requests a
+  minute per IP, because its in-app limiter counts per serverless instance
+  (Upstash is not configured). savetheworld reaches camera through
+  `camera.doneisbetter.com` (E7); that domain must stay attached.
+- **Dependency alerts, 2026-10-02:** camera 0; messmass 5, sso 16 (two critical
+  `next`), fanmass 5, each with clean Dependabot PRs open (messmass #416 and
+  #420, sso #95/#113/#114/#117, fanmass #103/#104).
+- **New edge E8 (camera ↔ image.direct), planned and gated off.** See E8 below.
+  camera `main` carries five commits after 12.3.40 (the image.direct callback,
+  setup-owned prompts, docs) with no version bump; whether they count as a
+  lockstep release is an open owner decision.
+
+## The seven systems
 
 | System | Repo | Runs on | Role |
 |---|---|---|---|
@@ -56,11 +85,13 @@ current-HEAD markers, not fresh reads of those edges.
 | **try-on** | moldovancsaba/try-on | local Mac (launchd: app-server + worker, loopback-bound) | Virtual try-on renders; Atlas queue worker + local render server |
 | **SSO** | moldovancsaba/sso | sso.doneisbetter.com | Shared OAuth2/OIDC identity + per-app permission store (audited consumer-side only) |
 | **savetheworld** | moldovancsaba/savetheworld | Vercel (savetheplanet.vercel.app) | "Choose better" marketplace of companies and offers; wallet passes; pledge wall pulled from camera |
+| **image.direct** | moldovancsaba/image.direct (private) | Vercel (imagedirect.vercel.app) + local Mac worker + R2 | Renderer app meant to replace the try-on worker. Own Atlas database and credentials. Camera-facing routes exist but are gated off (E8). Not one of the five lockstep apps |
 
 Two Mongo worlds: messmass and fanmass each own a database; **camera and
 try-on share one Atlas database** (the try-on job queue). fanmass reaches
 messmass and camera only over HTTP. savetheworld owns its own
-database and reaches camera only over HTTP (E7).
+database and reaches camera only over HTTP (E7). image.direct owns a third database with separate
+credentials and meets camera only over authenticated HTTP (E8).
 
 ## The map
 
@@ -77,6 +108,7 @@ flowchart LR
     TRY["try-on<br/>render worker"]
   end
 
+  IMD["image.direct<br/>renderer · own Atlas · R2<br/>Mac worker · planned"]
   SSO["SSO<br/>sso.doneisbetter.com"]
   ATLAS[("shared Atlas DB<br/>tryon_jobs, garments,<br/>setups, heartbeats")]
 
@@ -86,6 +118,7 @@ flowchart LR
   FAN -->|"E3 · media pull"| CAM
   MM <-->|"E4 · master data · cross-app session · email<br/>shared internal secret"| CAM
   STW -->|"E7 · pledge wall"| CAM
+  CAM ==>|"E8 · planned, gated off"| IMD
 
   MM -.->|"E5 · confidential client"| SSO
   CAM -.->|"E5 · public PKCE"| SSO
@@ -97,7 +130,8 @@ flowchart LR
   FAN --> EXT
 ```
 
-Solid arrows carry data; dotted arrows are identity. Direction is the direction
+Solid arrows carry data; dotted arrows are identity; the thick arrow (E8) is
+planned and gated off. Direction is the direction
 of the **call**, not of the data: try-on has no public inbound address, and
 fanmass dials out on every channel except one — the blocking analytics-summary
 pull messmass makes in E2, which is the single place messmass depends on
@@ -346,14 +380,44 @@ Mostly savetheworld-calls, plus one browser redirect camera → savetheworld.
   for admin uploads. Its only writes into another app are the camera
   provisioning and selfie-publishing calls above.
 
+### E8 · camera ↔ image.direct (renderer; planned, default-disabled)
+Camera side read at `bdd2d7b` (contract `docs/IMAGE_DIRECT_INTEGRATION.md`, callback
+route, env gate, release notes). The image.direct side is taken from that contract
+and its commit log at `d19ec26`; its code was not read in this pass.
+- **Purpose.** Replace the local try-on worker and the shared-Atlas queue (E1) with
+  a separate renderer app. Camera keeps the product lifecycle (`tryon_jobs`,
+  moderation, publication). image.direct keeps a subordinate execution record, a
+  Mac worker lease and the inference, and publishes the result to immutable R2
+  storage. The two use separate database credentials and write no collections of
+  each other.
+- **Planned flow.** Camera dispatches an immutable job snapshot to image.direct
+  (`POST /api/integrations/camera/v1/jobs`, bearer `IMAGE_DIRECT_INTEGRATION_TOKEN`,
+  idempotent on the camera job id). image.direct validates it; its Mac worker claims
+  a fenced lease (`POST /api/worker/integrations/camera/jobs/claim`), fetches the
+  approved inputs, renders locally (no hosted-provider fallback), stores the result
+  in R2, and calls camera's `POST /api/internal/image-direct/complete` with
+  `X-Camera-Image-Direct-Callback-Token`. Camera then creates the result under its
+  existing moderation policy (hidden and pending by default).
+- **State on 2026-10-02.** camera's callback handler exists and is default-denied
+  (`CAMERA_IMAGE_DIRECT_CALLBACK_ENABLED=false`, result hosts restricted by
+  `IMAGE_DIRECT_RESULT_ALLOWED_HOSTS`). Camera's dispatch is not built (camera#162),
+  and result acceptance, rollout controls, readiness checks and the canary are open
+  (camera#163 to #166). No event dispatches to image.direct, and try-on is off on
+  every event. The legacy path (E1) is not retired.
+- **Prompts.** Camera setups own positive and negative prompt text; each new job
+  stores a versioned, hashed snapshot that reruns can override with an audited
+  reason (camera release notes, 2026-10-01). Nothing consumes the snapshots in
+  inference yet.
+- **Consent.** Source and garment CDN URLs are public, so every job carries
+  per-job public-delivery consent; withdrawal blocks new work.
+
 ## Runtime topology
 - **Vercel**: messmass (www.messmass.com), camera (go.messmass.com),
   savetheworld (savetheplanet.vercel.app), sso (sso.doneisbetter.com).
   Production auto-deploys from git on every push to `main` and does not wait
   for GitHub Actions CI (verified 2026-09-28 via the Vercel API: the production
-  SHA equalled `origin/main` for all four). Crons via vercel.json (camera: the
-  5-min try-on sync; messmass: analytics-aggregation, bitly, google-sheets
-  sync).
+  SHA equalled `origin/main` for all four). Crons via vercel.json (camera: none since 12.3.40; messmass:
+  analytics-aggregation, bitly, google-sheets sync).
 - **Local Mac (launchd)**: fanmass under a single `com.fanmass.supervisor`
   agent (scripts/install_supervisor_agent.sh → scripts/fanmass_supervisor.py)
   that forks web+worker — the old `com.fanmass.web`/`com.fanmass.worker` plists
@@ -362,6 +426,9 @@ Mostly savetheworld-calls, plus one browser redirect camera → savetheworld.
   agents (`com.tryon.app-server` on `127.0.0.1:7860`, `com.tryon.camera-worker`).
   All local services `KeepAlive=true`; secrets from `.env.*` files, never the
   plists.
+  **Both are stopped and disabled since 2026-09-29/30 (owner decision).**
+- **image.direct** (planned renderer, E8): Vercel app `imagedirect.vercel.app`, a
+  local Mac worker, R2 for results, its own Atlas database.
 - **Restart lessons**: the try-on worker can respawn-loop on a held lock; a
   stale worker can run week-old code after a push — try-on RUNBOOK.md §Restart
   (try-on#40; exact wording unverified in this pass).
