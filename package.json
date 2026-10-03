@@ -151,7 +151,7 @@
     "@vercel/blob": "^2.8.0",
     "bcryptjs": "^3.0.3",
     "chart.js": "^4.5.1",
-    "dompurify": "^3.4.14",
+    "dompurify": "^3.4.16",
     "dotenv": "^17.4.2",
     "focus-trap-react": "^11.0.4",
     "google-auth-library": "10.6.2",
