@@ -67,9 +67,10 @@ current-HEAD markers, not fresh reads of those edges.
   minute per IP, because its in-app limiter counts per serverless instance
   (Upstash is not configured). savetheworld reaches camera through
   `camera.doneisbetter.com` (E7); that domain must stay attached.
-- **Dependency alerts, 2026-10-02:** camera 0; messmass 5, sso 16 (two critical
-  `next`), fanmass 5, each with clean Dependabot PRs open (messmass #416 and
-  #420, sso #95/#113/#114/#117, fanmass #103/#104).
+- **Dependency alerts, 2026-10-04:** 0 open in messmass, camera, sso and fanmass
+  (on 2026-10-02: camera 0, messmass 5, sso 16 with two critical `next`, fanmass
+  5). The sso login service now runs `next` 15.5.26, `sharp` 0.35.5 and
+  `nodemailer` 10.0.9; its production dependency tree audits clean.
 - **New edge E8 (camera ↔ image.direct), planned and gated off.** See E8 below.
   camera `main` carries five commits after 12.3.40 (the image.direct callback,
   setup-owned prompts, docs) with no version bump; whether they count as a

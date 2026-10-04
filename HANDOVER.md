@@ -1,6 +1,6 @@
 # Session Handover — messmass
 
-Last verified: 2026-10-02 (v12.3.40, 3e3fc847 = production).
+Last verified: 2026-10-04 (v12.3.40, 68cdee0b = production).
 
 **2026-10-02 status (verified against git, GitHub, Vercel and the local Mac)**
 - **Versions and production.** messmass, camera, fanmass, try-on and savetheworld
@@ -20,11 +20,17 @@ Last verified: 2026-10-02 (v12.3.40, 3e3fc847 = production).
   check, applies to admins, and blocks force-pushes. Every change to those repos
   goes through a PR. camera also has a Vercel Firewall rule rate-limiting
   `POST /api/submissions` (100 a minute per IP).
-- **Open dependency alerts:** messmass 5 (undici high, brace-expansion dev), sso 16
-  (two critical `next`, high `sharp` and `nodemailer`), fanmass 5, camera 0. Each
-  has clean Dependabot PRs open: messmass #416 and #420, sso #95, #113, #114 and
-  #117, fanmass #103 and #104. The sso ones are framework bumps on the identity
-  provider, so check login after merging.
+- **Dependency alerts: 0 open in messmass, camera, sso and fanmass (2026-10-04).**
+  They were messmass 5, sso 16 (two critical `next`), fanmass 5 and camera 11 on
+  2026-09-28 to 10-02. Cleared by merging the Dependabot fixes and, where
+  Dependabot could not, by hand: `sharp` (the `next` bump in sso only widened its
+  allowed range, so the lockfile had stayed on the vulnerable 0.34.5) and
+  `@tiptap/*` (a dead transitive dependency of the vendored design-system
+  package, pinned through `overrides` in sso, camera and fanmass). sso moved to
+  `nodemailer` 10, checked against its pooled SMTP usage with a local fake server
+  before merging. `npm audit --omit=dev` is 0 in sso and camera. The `npm audit`
+  highs that remain in sso are its jest and eslint dev toolchain, which ships
+  nothing. New advisories appear daily, so re-check after merges.
 - **image.direct (new, separate repo).** camera is being connected to a separate
   renderer app that is meant to replace the local try-on worker. Camera's callback
   handler is implemented and default-disabled; dispatch is not built; no event uses
