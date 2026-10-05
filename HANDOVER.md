@@ -1,6 +1,6 @@
 # Session Handover — messmass
 
-Last verified: 2026-10-04 (v12.3.40, 68cdee0b = production).
+Last verified: 2026-10-05 (v12.3.40, 68cdee0b = production).
 
 **2026-10-02 status (verified against git, GitHub, Vercel and the local Mac)**
 - **Versions and production.** messmass, camera, fanmass, try-on and savetheworld
@@ -38,10 +38,12 @@ Last verified: 2026-10-04 (v12.3.40, 68cdee0b = production).
   tracking in camera #162 to #166 and #170. An earlier idea of a camera-hosted
   gateway for third-party renderers (design draft on the local `try-on` and
   `camera` branches `feature/tryon-partner-gateway`) is not being built.
-- **Stale items:** messmass #299 and fanmass #69 ("Adopt existing camera
-  partners/events", reverse backfill) are old open PRs; camera's equivalent #88 was
-  closed on 2026-09-30. camera #118 (fleet audit P2+P3) is delivered and can be
-  closed.
+- **Closed 2026-10-05:** messmass #299 and fanmass #69 (the one-off "adopt existing
+  camera partners and events" backfill, already run once in production and verified;
+  never merged) and camera #118 (fleet audit P2+P3, delivered). The branch
+  `feat/camera-adopt-reverse` is kept in both repos. camera's equivalent #88 was
+  closed on 2026-09-30. fanmass #69 also holds a standalone idea worth reviving if
+  fanmass returns: reuse a batch by `cameraEventId` in `_ensure_project_for_event`.
 - **Board.** Project 8: #421 and #422 added as done; #343 (fanmass release gate)
   moved to Backlog while fanmass is paused; #356 (fleet epic) stays open as the
   tracker.
