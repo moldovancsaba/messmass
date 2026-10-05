@@ -244,3 +244,7 @@ This repo runs with strict documentation and SSOT discipline:
 
 - The README is a product-level entrypoint, not the canonical full rulebook.
 - For active work, always follow [docs/PROJECT_MANAGEMENT.md](docs/PROJECT_MANAGEMENT.md) and [HANDOVER.md](HANDOVER.md).
+
+## License
+
+MIT. See [LICENSE](LICENSE).
