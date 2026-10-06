@@ -7,6 +7,7 @@ import clientPromise from '@/lib/mongodb';
 import { ObjectId } from 'mongodb';
 import { validateStyle, normalizeHexColor, withEffectiveStyleDefaults, COLOR_FIELDS, DIMENSION_FIELDS, DEFAULT_STYLE, ReportStyle } from '@/lib/reportStyleTypes';
 import { error as logError } from '@/lib/logger';
+import { notifyCameraThemeChanged } from '@/lib/cameraThemeNotify';
 import { withOrgContext } from '@/lib/middleware/v3/orgContext';
 
 const DB_NAME = process.env.MONGODB_DB || 'messmass';
@@ -114,6 +115,8 @@ async function updateStyle(request: Request) {
     );
     
     if (result.matchedCount === 0) return NextResponse.json({ success: false, error: 'Style not found' }, { status: 404 });
+    // camera follows the look of its events: tell it a style changed (best-effort, bounded)
+    await notifyCameraThemeChanged({ scope: 'all' });
     return NextResponse.json({ success: true, style: { ...updates, _id: id } });
   } catch (error) {
     logError('Failed to update report style', { context: 'report-styles' }, error instanceof Error ? error : new Error(String(error)));
@@ -140,6 +143,8 @@ async function deleteStyle(request: Request) {
     });
     
     if (result.deletedCount === 0) return NextResponse.json({ success: false, error: 'Style not found' }, { status: 404 });
+    // events that used this style now show the default: tell camera
+    await notifyCameraThemeChanged({ scope: 'all' });
     return NextResponse.json({ success: true, message: 'Style deleted successfully' });
   } catch (error) {
     logError('Failed to delete report style', { context: 'report-styles' }, error instanceof Error ? error : new Error(String(error)));

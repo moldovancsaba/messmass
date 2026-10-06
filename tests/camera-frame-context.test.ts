@@ -5,7 +5,7 @@
 // HOW: a tiny in-memory fake of the few Mongo calls the module issues (findOne by _id or isDefault, find().toArray()).
 
 import { ObjectId } from 'mongodb';
-import { buildCameraFrameContext } from '@/lib/cameraFrameContext';
+import { buildCameraFrameContext, pageStyleOf } from '@/lib/cameraFrameContext';
 import { DEFAULT_STYLE } from '@/lib/reportStyleTypes';
 import { DEFAULT_REPORT_STYLE_COLORS as PALETTE } from '@/lib/theme/reportStylePalette';
 
@@ -155,6 +155,7 @@ test('nothing selected anywhere: no template and the system default style, Inter
     fontFile: null,
     headingColor: DEFAULT_STYLE.headingColor,
     heroBackground: DEFAULT_STYLE.heroBackground,
+    page: pageStyleOf(null),
   });
 });
 
@@ -194,4 +195,49 @@ test('an unknown or malformed event id has no context', async () => {
   const db = fakeDb({ projects: [], partners: [] });
   expect(await buildCameraFrameContext(db, String(oid()))).toBeNull();
   expect(await buildCameraFrameContext(db, 'not-an-id')).toBeNull();
+});
+
+
+test('the style carries the page colours of the report: page and card surfaces, text, button, accent, link and card radius', async () => {
+  const p = project({ styleIdEnhanced: styleA });
+  const custom = {
+    pageBackground: PALETTE.chartLabelColor,
+    textColor: PALETTE.chartValueColor,
+    chartBackground: PALETTE.exportButtonText,
+    chartBorder: PALETTE.chartTitleColor,
+    exportButtonBackground: PALETTE.chartTitleColor,
+    exportButtonText: PALETTE.chartLabelColor,
+    barColor1: PALETTE.barColor2,
+    textLinkColor: PALETTE.barColor4,
+    cardBorderRadius: '1.5rem',
+  };
+  const ctx = await buildCameraFrameContext(fakeDb({ projects: [p], partners: [home, visitor], report_styles: [style(styleA, custom)] }), String(p._id));
+  expect(ctx?.style.page).toEqual({
+    pageBackground: custom.pageBackground,
+    textColor: custom.textColor,
+    cardBackground: custom.chartBackground,
+    cardBorder: custom.chartBorder,
+    buttonBackground: custom.exportButtonBackground,
+    buttonText: custom.exportButtonText,
+    accentColor: custom.barColor1,
+    linkColor: custom.textLinkColor,
+    cardRadius: '1.5rem',
+  });
+});
+
+test('a style without a page background uses its hero background, and any missing colour falls back to the system default', async () => {
+  const p = project({ styleIdEnhanced: styleA });
+  const ctx = await buildCameraFrameContext(fakeDb({ projects: [p], partners: [home, visitor], report_styles: [style(styleA)] }), String(p._id));
+  expect(ctx?.style.page.pageBackground).toBe(FIXTURE_HERO);
+  expect(ctx?.style.page.textColor).toBe(DEFAULT_STYLE.textColor);
+  expect(ctx?.style.page.buttonBackground).toBe(DEFAULT_STYLE.exportButtonBackground);
+  expect(ctx?.style.page.cardRadius).toBe(DEFAULT_STYLE.cardBorderRadius);
+});
+
+test('an event with no style gets the system default page colours', async () => {
+  const p = project();
+  const ctx = await buildCameraFrameContext(fakeDb({ projects: [p], partners: [home, visitor] }), String(p._id));
+  expect(ctx?.style.resolvedFrom).toBe('system-default');
+  expect(ctx?.style.page.pageBackground).toBe(DEFAULT_STYLE.pageBackground);
+  expect(ctx?.style.page.accentColor).toBe(DEFAULT_STYLE.barColor1);
 });

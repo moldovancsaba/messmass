@@ -37,7 +37,30 @@ export interface CameraFrameContext {
     /** Colours are #RRGGBBAA. */
     headingColor: string;
     heroBackground: string;
+    /**
+     * The colours camera's guest pages (login, selfie, photo) are drawn with, from the same style: what the report page shows
+     * behind and on its cards. Each falls back to the system default style when the style does not set it.
+     */
+    page: CameraPageStyle;
   };
+}
+
+/** The part of a report style a page around a photo needs; colours are #RRGGBBAA, `cardRadius` a CSS length. */
+export interface CameraPageStyle {
+  /** Page background (the style's `pageBackground`, else its hero background, as the report page does). */
+  pageBackground: string;
+  /** Text on the page background. */
+  textColor: string;
+  /** Card background and border (the report's chart cards). */
+  cardBackground: string;
+  cardBorder: string;
+  /** Primary button: the report's export button. */
+  buttonBackground: string;
+  buttonText: string;
+  /** Accent, links. */
+  accentColor: string;
+  linkColor: string;
+  cardRadius: string;
 }
 
 type Doc = Record<string, any>;
@@ -153,6 +176,23 @@ export async function buildCameraFrameContext(db: Db, messmassEventId: string): 
       ...font,
       headingColor: text(style?.headingColor) ?? DEFAULT_STYLE.headingColor,
       heroBackground: text(style?.heroBackground) ?? DEFAULT_STYLE.heroBackground,
+      page: pageStyleOf(style),
     },
+  };
+}
+
+/** The page colours of a style (or of the system default when there is no style), each falling back to the default's. */
+export function pageStyleOf(style: Doc | null): CameraPageStyle {
+  const heroBackground = text(style?.heroBackground) ?? DEFAULT_STYLE.heroBackground;
+  return {
+    pageBackground: text(style?.pageBackground) ?? (style ? heroBackground : DEFAULT_STYLE.pageBackground ?? heroBackground),
+    textColor: text(style?.textColor) ?? DEFAULT_STYLE.textColor,
+    cardBackground: text(style?.chartBackground) ?? DEFAULT_STYLE.chartBackground,
+    cardBorder: text(style?.chartBorder) ?? DEFAULT_STYLE.chartBorder,
+    buttonBackground: text(style?.exportButtonBackground) ?? DEFAULT_STYLE.exportButtonBackground,
+    buttonText: text(style?.exportButtonText) ?? DEFAULT_STYLE.exportButtonText,
+    accentColor: text(style?.barColor1) ?? DEFAULT_STYLE.barColor1,
+    linkColor: text(style?.textLinkColor) ?? DEFAULT_STYLE.textLinkColor ?? DEFAULT_STYLE.barColor1,
+    cardRadius: text(style?.cardBorderRadius) ?? DEFAULT_STYLE.cardBorderRadius ?? '0.75rem',
   };
 }

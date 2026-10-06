@@ -8,6 +8,7 @@ import config from '@/lib/config';
 import { error as logError, info as logInfo } from '@/lib/logger';
 import { generateUniquePartnerViewSlug } from '@/lib/partnerIdentifier';
 import { syncPartnerToV3Entity } from '@/lib/v3/syncEngine';
+import { notifyCameraPartnerChanged } from '@/lib/cameraThemeNotify';
 import { requirePartnerWriteAccess, requireAdmin, pickWritableFields, PARTNER_EDITOR_WRITABLE_FIELDS } from '@/lib/apiGuards';
 import {
   parseStatsFieldChanges,
@@ -295,6 +296,9 @@ const db = client.db(config.dbName);
     }
 
     logInfo('Partner updated successfully', { context: 'partners', partnerId });
+
+    // camera follows the logo and look of its events: tell it which events this partner is part of (best-effort, bounded)
+    await notifyCameraPartnerChanged(db as any, partnerId, writable);
 
     // WHAT: Sync to V3
     // WHY: Ensure V3 Entity is updated when legacy Partner is edited

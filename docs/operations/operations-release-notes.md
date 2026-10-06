@@ -4,6 +4,17 @@ Last Updated: 2026-09-30T14:00:00.000Z
 Canonical: No
 Owner: Operations
 
+## Unreleased — camera follows the theme of its events
+
+- **Added:** the camera frame-context answer carries `style.page`: the page colours of the effective report style (page background,
+  text, card background and border, button background and text, accent, link colour, card radius), each falling back to the system
+  default style. camera draws its guest pages (login, selfie, photo) with them, as it already draws the generated frame with the
+  style's heading and hero colours.
+- **Added:** `lib/cameraThemeNotify.ts`. Editing or deleting a report style, or changing a partner's logo, name, style, template,
+  emoji or team data, posts a best-effort notice (4 s timeout, never fails the save) to camera's
+  `/api/internal/messmass/theme-updated`, so camera takes a new snapshot of the affected events: all events for a style change, the
+  events the partner is part of for a partner change. camera also refreshes a stale snapshot by itself.
+
 ## [v12.3.40] — 2026-09-30T14:00:00.000Z
 
 Fleet release 12.3.40 (messmass, camera, fanmass, try-on, savetheworld).
