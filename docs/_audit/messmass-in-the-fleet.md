@@ -6,8 +6,10 @@ messmass is the master of partner/event/organization data and the event-report
 - **messmass ↔ camera** (bidirectional): messmass provisions orgs/partners/events
   INTO camera (`lib/cameraProvision.ts` → camera `/api/internal/messmass/*`).
   camera calls BACK to mint sessions (`/api/integrations/camera/sso-session`) and
-  push native partners (`/api/integrations/camera/partners`). camera is also
-  messmass's email transport.
+  push native partners (`/api/integrations/camera/partners`). camera also reads
+  the resolved theme of an event (`/api/integrations/camera/events/[id]/frame-context`:
+  partner and team logos, effective report template and style, font) to build the
+  event's default frame. camera is also messmass's email transport.
 - **messmass ← fanmass**: fanmass is the caller on every channel except the
   analytics-summary pull (below). messmass exposes
   18 `/api/integrations/fanmass/*` routes (dashboard snapshots, command queue,

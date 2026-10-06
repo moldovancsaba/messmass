@@ -20,6 +20,8 @@ const AUTH_PRIMITIVES = [
   'getAdminUser',
   'requireAPIAuth',
   'requireFanmassIntegrationAuth',
+  // camera's shared secret (CAMERA_MESSMASS_INTERNAL_SECRET), checked at the top of each camera integration handler
+  'assertCameraSecret',
   'requireSession',
   'requireProjectWrite',
   'requirePartnerWrite',
@@ -75,9 +77,6 @@ const KNOWN_UNGUARDED = new Set<string>([
   //     before the fix: an anonymous caller who fetched a CSRF token from
   //     /api/csrf-token created a hashtag colour and a chart configuration,
   //     and reached the hashtag-category DELETE handler's database lookup.
-  // [debt] machine integrations — verify their own token handling, then remove
-  'app/api/integrations/camera/partners/route.ts',
-  'app/api/integrations/camera/sso-session/route.ts',
 ]);
 
 // WHAT: Read routes whose GET handler checks no auth primitive. Same contract
