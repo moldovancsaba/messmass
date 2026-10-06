@@ -113,7 +113,7 @@ it drifts. Do not edit between the markers.
 | Category | Count | Location |
 |----------|-------|----------|
 | **UI Components** | 104 | `components/` |
-| **Utility Modules** | 219 | `lib/` |
+| **Utility Modules** | 220 | `lib/` |
 | **Hooks** | 13 | `hooks/` |
 | **Design Tokens** | 408 | `app/styles/theme.css` |
 | **Utility CSS classes** | 192 | `app/styles/utilities.css` |
@@ -125,10 +125,10 @@ largest, and the ones to read first:
 
 | Module | Importers | Lines |
 |--------|-----------|-------|
-| `lib/config.ts` | 120 | 204 |
+| `lib/config.ts` | 121 | 204 |
 | `lib/mongodb.ts` | 104 | 112 |
 | `lib/auth.ts` | 92 | 118 |
-| `lib/logger.ts` | 91 | 392 |
+| `lib/logger.ts` | 92 | 392 |
 | `lib/apiGuards.ts` | 85 | 390 |
 | `components/ColoredCard.tsx` | 44 | 52 |
 | `lib/apiClient.ts` | 42 | 258 |
