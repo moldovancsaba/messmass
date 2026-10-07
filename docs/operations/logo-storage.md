@@ -43,4 +43,11 @@ for uploads) and nothing is moved.
 - Camera accepts only this exact address for logos (`LOGO_STORAGE_HOST` in camera `lib/imgbb/url.ts`); change both together.
 - Only logos. Report images and fan selfies of events stay where they are.
 
+## The existing logos
+
+On 2026-10-07 the 144 partner logos of messmass (and camera's copies) were moved to the bucket: 160 distinct links, 351 references, every one
+verified through its public address. The dead imgbb link of OTP Bank - PICK Szeged was replaced by the partner's TheSportsDB badge
+(`sportsDb.strBadge`). Records and an undo script: `/Users/Shared/Projects/logo-migration-2026-10-07/` on the machine that ran it. Details
+and the follow-up for the other images on imgbb: camera `docs/LOGO_STORAGE.md`, camera#305 and camera#306.
+
 See also camera `docs/LOGO_STORAGE.md`.

@@ -4,6 +4,12 @@ Last Updated: 2026-09-30T14:00:00.000Z
 Canonical: No
 Owner: Operations
 
+## Unreleased — the partner logos are on Cloudflare R2 (data)
+
+- **Changed (data, 2026-10-07):** the `logoUrl` of all 144 partners that had an imgbb link now points to the logo bucket on R2 (verified through the
+  public address); the dead link of OTP Bank - PICK Szeged was replaced by the partner's TheSportsDB badge. `updatedAt` of the partners was set.
+  No code change. See `docs/operations/logo-storage.md`.
+
 ## Unreleased — partner logos are stored on Cloudflare R2
 
 - **Added:** `lib/logoStorage.ts` and the settings `MESSMASS_R2_ACCOUNT_ID`, `MESSMASS_R2_API_TOKEN`, `MESSMASS_R2_LOGOS_BUCKET`,
