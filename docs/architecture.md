@@ -113,12 +113,12 @@ it drifts. Do not edit between the markers.
 | Category | Count | Location |
 |----------|-------|----------|
 | **UI Components** | 104 | `components/` |
-| **Utility Modules** | 221 | `lib/` |
+| **Utility Modules** | 222 | `lib/` |
 | **Hooks** | 13 | `hooks/` |
 | **Design Tokens** | 408 | `app/styles/theme.css` |
 | **Utility CSS classes** | 192 | `app/styles/utilities.css` |
 | **App routes (pages)** | 73 | `app/**/page.tsx` |
-| **API routes** | 222 | `app/api/**/route.ts` |
+| **API routes** | 223 | `app/api/**/route.ts` |
 
 The modules with the most importers — the ones whose change radius is
 largest, and the ones to read first:
@@ -127,12 +127,12 @@ largest, and the ones to read first:
 |--------|-----------|-------|
 | `lib/config.ts` | 121 | 204 |
 | `lib/mongodb.ts` | 104 | 112 |
+| `lib/logger.ts` | 93 | 392 |
 | `lib/auth.ts` | 92 | 118 |
-| `lib/logger.ts` | 92 | 392 |
 | `lib/apiGuards.ts` | 85 | 390 |
 | `components/ColoredCard.tsx` | 44 | 52 |
 | `lib/apiClient.ts` | 42 | 258 |
-| `lib/db.ts` | 39 | 17 |
+| `lib/db.ts` | 40 | 17 |
 | `components/MaterialIcon.tsx` | 33 | 119 |
 | `lib/fanmassIntegration.ts` | 30 | 441 |
 | `components/UnifiedAdminHeroWithSearch.tsx` | 27 | 192 |
@@ -1075,7 +1075,7 @@ shows up here on the next regeneration, which is the point.
 | `/terms` | `app/terms/page.tsx` |
 | `/test-csrf` | `app/test-csrf/page.tsx` |
 
-### API routes (222)
+### API routes (223)
 
 `auth` is the guard symbol the route actually calls. A blank cell
 means the route calls none — public by construction, or a gap.
@@ -1390,6 +1390,7 @@ means the route calls none — public by construction, or a gap.
 | Route | Methods | Auth |
 |-------|---------|------|
 | `/api/integrations/camera/events/[messmassEventId]/frame-context` | GET | `assertCameraSecret` |
+| `/api/integrations/camera/events/[messmassEventId]/link-stats` | POST | `assertCameraSecret` |
 | `/api/integrations/camera/link-partners` | POST | `requireFanmassIntegrationAuth` |
 | `/api/integrations/camera/partners` | POST | `assertCameraSecret` |
 | `/api/integrations/camera/provision-missing` | POST | `requireFanmassIntegrationAuth` |
@@ -3398,7 +3399,7 @@ migration plan for removing a workaround from a file that had already been delet
 3. **Machine/API tokens** — Non-browser callers authenticate with a bearer credential instead of a cookie, and both mechanisms are exempt from CSRF (which only defends cookie-borne authority): the fleet's `/api/integrations/fanmass/**` routes accept a single shared integration token (`requireFanmassIntegrationAuth`, `lib/fanmassIntegration.ts`) compared against one configured secret; the public API (`/api/public/**`) instead accepts a per-user Bearer token (`requireAPIAuth`, `lib/apiAuth.ts`) gated by that user's own `apiKeyEnabled`/`apiWriteEnabled` flags, with usage tracked per user. Public API keys are stored only as a bcrypt `apiKeyHash`, issued through the admin rotate action (`POST /api/admin/local-users/[id]/api-access`, admin/superadmin only; the plaintext is returned once). Login passwords are not accepted as keys (6f31990d, #397).
 4. **Stakeholder session** (messmass#231, 35bc7e3d) — an external sponsor/agency/media/operator signs in through the same SSO client via `/api/auth/sso/stakeholder-login`; `/api/auth/sso/stakeholder-callback` looks the verified email up in the local `stakeholder_grants` collection (grants created by admins via `POST /api/stakeholder/invite`) instead of the SSO per-app permission store, and sets a separate HS256 `stakeholder-session` cookie (`lib/auth/stakeholderSession.ts`, 30 days). The `requireStakeholderRole` guard (`lib/apiGuards.ts`) exists, but no route consumes it yet, and the callback's `stakeholder-callback` redirect_uri must be registered on SSO before the flow is reachable.
 
-**Camera integration**: camera (a sibling app in the same fleet) has its own separate shared secret (`config.cameraProvisionToken`, checked by `assertCameraSecret()` in `lib/cameraClient.ts`) for its `/api/integrations/camera/**` routes. One of those, `POST /api/integrations/camera/sso-session`, lets a user who already authenticated in camera via the same DoneIsBetter SSO get a real messmass `admin-session` cookie without a second OAuth round-trip — it independently re-validates the forwarded SSO access token against `SSO_BASE_URL` (it does not trust a role or user id asserted by the caller).
+**Camera integration**: camera (a sibling app in the same fleet) has its own separate shared secret (`config.cameraProvisionToken`, checked by `assertCameraSecret()` in `lib/cameraClient.ts`) for its `/api/integrations/camera/**` routes. One of those, `POST /api/integrations/camera/sso-session`, lets a user who already authenticated in camera via the same DoneIsBetter SSO get a real messmass `admin-session` cookie without a second OAuth round-trip — it independently re-validates the forwarded SSO access token against `SSO_BASE_URL` (it does not trust a role or user id asserted by the caller). Another, `POST /api/integrations/camera/events/[messmassEventId]/link-stats` (camera#320), receives the scan and click totals camera counts on its tracked short links (the QR codes on the giant screen, posters and emails) and sets the event stats `visitQrCode`, `visitShortUrl`, `qrscanAndroid` and `qrscanIphone` to the value each held at camera's first report plus camera's total (`lib/cameraLinkStats.ts`; the baseline is kept on the event as `cameraLinkStats`, so numbers typed in or imported are never overwritten, and a repeated or late report changes nothing). The update ran correctly against a scratch collection of the real database (baseline kept once, idempotent, two first reports at once).
 
 ### Development Tools
 
