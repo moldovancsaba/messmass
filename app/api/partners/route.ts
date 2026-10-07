@@ -9,6 +9,7 @@ import { error as logError, info as logInfo } from '@/lib/logger';
 import { generateUniquePartnerViewSlug } from '@/lib/partnerIdentifier';
 import { syncPartnerToV3Entity } from '@/lib/v3/syncEngine';
 import { notifyCameraPartnerChanged } from '@/lib/cameraThemeNotify';
+import { rehostLogo } from '@/lib/logoStorage';
 import { requirePartnerWriteAccess, requireAdmin, pickWritableFields, PARTNER_EDITOR_WRITABLE_FIELDS } from '@/lib/apiGuards';
 import {
   parseStatsFieldChanges,
@@ -243,7 +244,8 @@ const db = client.db(config.dbName);
     if (name !== undefined) updateData.name = name;
     if (emoji !== undefined) updateData.emoji = emoji;
     if (showEmoji !== undefined) updateData.showEmoji = Boolean(showEmoji);
-    if (logoUrl !== undefined) updateData.logoUrl = logoUrl;
+    // A logo from anywhere public is kept in the logo bucket (lib/logoStorage.ts); when it cannot be moved the link stays as it was.
+    if (logoUrl !== undefined) updateData.logoUrl = await rehostLogo(logoUrl);
     // sportsDb: an object links/updates the team, explicit null unlinks it.
     // The edit modal always sends this field, so absence means "no change".
     if (sportsDb !== undefined) updateData.sportsDb = sportsDb || null;
@@ -356,7 +358,7 @@ const db = client.db(config.dbName);
         .filter((id: unknown): id is string => typeof id === 'string' && ObjectId.isValid(id))
         .map((id: string) => new ObjectId(id)),
       sportsDb: sportsDb || undefined,
-      logoUrl: logoUrl || undefined,
+      logoUrl: (await rehostLogo(logoUrl)) || undefined,
       googleSheetsUrl: googleSheetsUrl || undefined,
       viewSlug,
       createdAt: new Date().toISOString(),

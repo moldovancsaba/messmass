@@ -7,6 +7,7 @@
 
 import { put } from '@vercel/blob';
 import sharp from 'sharp';
+import { isLogoStorageConfigured, rehostLogo, isStoredLogoUrl } from '@/lib/logoStorage';
 
 const IMGBB_API_URL = 'https://api.imgbb.com/1/upload';
 
@@ -207,6 +208,12 @@ export async function uploadPartnerBadge(
   const imageName = `partner-${sanitizedName}`;
 
   console.log(`🖼️  Uploading badge for partner: ${partnerName}`);
+
+  // The logo bucket on Cloudflare R2 first (lib/logoStorage.ts); Blob stays the way when it is not set up or cannot take the file.
+  if (isLogoStorageConfigured()) {
+    const stored = await rehostLogo(badgeUrl);
+    if (stored && isStoredLogoUrl(stored)) return stored;
+  }
 
   const result = await uploadImageFromUrl(badgeUrl, imageName);
 
