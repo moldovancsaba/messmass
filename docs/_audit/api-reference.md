@@ -1,8 +1,8 @@
 # messmass API Reference
 
-Generated for the fleet audit (messmass#350); measured against `docs/_audit/endpoints.json` (inventory head dd34e229, 222 endpoints; the frame-context route added 2026-10-06). Every route below was verified by reading its `route.ts` handler, not just the marker scan; the Auth column was re-verified against the handlers @ dd34e229 (2026-09-28).
+Generated for the fleet audit (messmass#350); measured against `docs/_audit/endpoints.json` (inventory head dd34e229, 223 endpoints; the frame-context route added 2026-10-06, the link-stats route 2026-10-07). Every route below was verified by reading its `route.ts` handler, not just the marker scan; the Auth column was re-verified against the handlers @ dd34e229 (2026-09-28).
 
-Coverage: 222 of 222 routes documented, enforced by
+Coverage: 223 of 223 routes documented, enforced by
 `tests/api-reference-covers-every-route.test.ts` — five routes were missing when
 that claim was last made by hand.
 
@@ -159,6 +159,7 @@ All reads; the aggregation store is `analytics_aggregates` / `partner_analytics`
 | Path | Methods | Auth | Request | Response | Side effects |
 |---|---|---|---|---|---|
 | /api/integrations/camera/events/[messmassEventId]/frame-context | GET | assertCameraSecret | path ObjectId | `{success,event,partner,template,style}` (`style.page` = the page colours of the style for camera's guest pages); 400 invalid id, 404 unknown event | reads `projects`, `partners`, `report_templates`, `report_styles`, `available_fonts`; resolves the effective template and style for camera's default event frame (camera#231), including the system default style |
+| /api/integrations/camera/events/[messmassEventId]/link-stats | POST | assertCameraSecret | path ObjectId; `{totals:{visitQrCode,visitShortUrl,qrscanAndroid,qrscanIphone}}` (whole numbers 0 to 1e9) | `{success,totals}`; 400 invalid id or totals, 404 unknown event | writes `projects`: the four stats become the value they held at camera's first report plus camera's total (`cameraLinkStats.baseline` and `.totals` keep both; a repeated report changes nothing); `lib/cameraLinkStats.ts` |
 | /api/integrations/camera/link-partners | POST | requireFanmassIntegrationAuth | link payload | `{success,…}` | links partners to camera orgs (writes `partners`) |
 | /api/integrations/camera/partners | POST | assertCameraSecret | partner payload | `{success,partner}` | upserts partner link data from camera |
 | /api/integrations/camera/provision-missing | POST | requireFanmassIntegrationAuth | `?limit` | `{success,provisioned}` | outbound camera provisioning API; updates `partners` |
@@ -356,10 +357,10 @@ CSRF is never counted as a guard: any anonymous caller can fetch the token from
 
 | | routes |
 |---|---:|
-| Fully guarded (every method) | **190** |
+| Fully guarded (every method) | **191** |
 | Open write method, public by design | **5** |
 | Open GET only, writes guarded or absent | **27** |
-| **Total** | **222** |
+| **Total** | **223** |
 
 The previous run of this section (2026-08) listed 40 GAP routes, 21 of them
 unauthenticated writes. Those are closed: messmass#347 and #386 took the first
