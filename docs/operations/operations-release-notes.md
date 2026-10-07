@@ -4,6 +4,15 @@ Last Updated: 2026-09-30T14:00:00.000Z
 Canonical: No
 Owner: Operations
 
+## Unreleased — partner logos are stored on Cloudflare R2
+
+- **Added:** `lib/logoStorage.ts` and the settings `MESSMASS_R2_ACCOUNT_ID`, `MESSMASS_R2_API_TOKEN`, `MESSMASS_R2_LOGOS_BUCKET`,
+  `MESSMASS_R2_LOGOS_PUBLIC_BASE_URL`. When they are set, saving a partner (`PUT` / `POST /api/partners`) or uploading a badge
+  (`/api/partners/upload-logo`) stores the logo in the public R2 bucket `messmass-logos` under its SHA-256 and saves that link, whichever
+  address it came from (imgbb, Vercel Blob, TheSportsDB, any public https address). The download is limited to public https names (no IP
+  addresses, no private or loopback addresses, at most three redirects, 5 MB, image types only). A logo that cannot be moved keeps its link,
+  so a save never fails because of it. Without the settings nothing changes. See `docs/operations/logo-storage.md`.
+
 ## Unreleased — camera follows the theme of its events
 
 - **Added:** the camera frame-context answer carries `style.page`: the page colours of the effective report style (page background,

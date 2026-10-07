@@ -5,6 +5,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { requireSession } from '@/lib/apiGuards';
 import { uploadPartnerBadge, isImageStorageConfigured } from '@/lib/imgbbApi';
+import { isLogoStorageConfigured } from '@/lib/logoStorage';
 
 /**
  * WHAT: Upload partner logo to ImgBB
@@ -48,11 +49,11 @@ export async function POST(request: NextRequest) {
     }
 
     // WHAT: Check image storage configuration (Vercel Blob is the required primary)
-    if (!isImageStorageConfigured()) {
+    if (!isImageStorageConfigured() && !isLogoStorageConfigured()) {
       return NextResponse.json(
         {
           success: false,
-          error: 'BLOB_READ_WRITE_TOKEN not configured'
+          error: 'No image storage configured (MESSMASS_R2_* or BLOB_READ_WRITE_TOKEN)'
         },
         { status: 500 }
       );
