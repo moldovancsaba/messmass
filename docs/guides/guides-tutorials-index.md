@@ -1,6 +1,6 @@
 # messmass Tutorials — Learning Path
 Status: Active
-Last Updated: 2026-07-20T00:00:00.000Z
+Last Updated: 2026-10-08T00:00:00.000Z
 Canonical: Yes
 Owner: Documentation
 
@@ -45,17 +45,19 @@ Data is captured against an **event** (via the Clicker/Manual editor, Google She
 
 ### Phase 3 — Integrations & connections
 15. [Camera app integration](guides-tutorial-camera-app.md) — provisioning orgs/partners/events into the selfie-capture app.
-16. [Fanmass integration](guides-tutorial-fanmass.md) — image-intelligence analytics and the mapping API.
-17. [Bitly integration](guides-tutorial-bitly.md) — short-link click analytics attributed to events/partners.
-18. [Sport databases](guides-tutorial-sport-databases.md) — Football-Data.org, API-Football, and TheSportsDB enrichment.
-19. [Google Sheets sync](guides-tutorial-google-sheets.md) — managing a partner's events from a spreadsheet.
-20. [Authentication, roles & SSO](guides-tutorial-authentication-sso.md) — sign-in, roles, SSO, and API keys.
+16. [Approving photos at an event](guides-tutorial-approving-photos.md) — how the person approving photos live works the Vetting tab of the camera app (English and Hungarian).
+17. [Fanmass integration](guides-tutorial-fanmass.md) — image-intelligence analytics and the mapping API.
+18. [Bitly integration](guides-tutorial-bitly.md) — short-link click analytics attributed to events/partners.
+19. [Sport databases](guides-tutorial-sport-databases.md) — Football-Data.org, API-Football, and TheSportsDB enrichment.
+20. [Google Sheets sync](guides-tutorial-google-sheets.md) — managing a partner's events from a spreadsheet.
+21. [Authentication, roles & SSO](guides-tutorial-authentication-sso.md) — sign-in, roles, SSO, and API keys.
 
 ## Quick start by role
 
 - **New operator** → Getting Started → Organisations → Partners → Events → Collecting data → Building reports → Sharing.
 - **Report designer** → Variables → Charts → Content Library → Building reports → Themes → Variants.
 - **Integrations / setup** → Authentication & SSO → Camera → Fanmass → Bitly → Sport databases → Google Sheets.
+- **Photo approver at a live event** → Approving photos at an event (sign in, the Vetting tab, approve and reject).
 
 ## Notes on scope
 
