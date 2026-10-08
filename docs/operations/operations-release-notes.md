@@ -4,6 +4,10 @@ Last Updated: 2026-09-30T14:00:00.000Z
 Canonical: No
 Owner: Operations
 
+## Unreleased — the help guides are readable on a computer in dark mode (messmass#437)
+
+- **Fixed (owner report, 2026-10-08, with a screenshot):** on a computer set to dark mode the title, headings and paragraphs of every guide at `/admin/help/guides/<slug>` were almost white (contrast 1.1:1) on the white admin page; only the block quote was readable. `guides.module.css` switched the text of `.prose` to `--mm-gray-100` for dark computers, but the admin has no dark theme. The override is removed, so the text stays dark (14.7:1) whatever the computer prefers. The links in the guides use the darker blue (6.7:1 instead of 3.7:1). Measured in a real browser with the colour scheme emulated as dark and as light, for every kind of text of a guide. No code outside the stylesheet changed.
+
 ## Unreleased — guide: approving photos at an event (camera app)
 
 - **Added (docs):** `docs/guides/guides-tutorial-approving-photos.md`, a tutorial in English and Hungarian for the person who approves photos live in the camera app: access (the Manager role for Events on the partner), the Vetting tab, approve, reject with a reason, bulk approve, what to do when something goes wrong, and a rehearsal on a throw-away event. It is linked from the guides index and readable online at `/admin/help/guides/approving-photos`. No code change.
