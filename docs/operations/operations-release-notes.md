@@ -4,6 +4,10 @@ Last Updated: 2026-09-30T14:00:00.000Z
 Canonical: No
 Owner: Operations
 
+## Unreleased — guide: approving photos at an event (camera app)
+
+- **Added (docs):** `docs/guides/guides-tutorial-approving-photos.md`, a tutorial in English and Hungarian for the person who approves photos live in the camera app: access (the Manager role for Events on the partner), the Vetting tab, approve, reject with a reason, bulk approve, what to do when something goes wrong, and a rehearsal on a throw-away event. It is linked from the guides index and readable online at `/admin/help/guides/approving-photos`. No code change.
+
 ## Unreleased — the partner logos are on Cloudflare R2 (data)
 
 - **Changed (data, 2026-10-07):** the `logoUrl` of all 144 partners that had an imgbb link now points to the logo bucket on R2 (verified through the
