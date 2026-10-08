@@ -57,7 +57,8 @@
 }
 
 .prose a {
-  color: var(--mm-primary, var(--mm-color-primary-600));
+  /* The darker blue: the base blue is 3.7:1 on white, under the 4.5:1 a link in running text needs. */
+  color: var(--mm-primary-dark, var(--mm-color-primary-700));
   text-decoration: underline;
 }
 
@@ -108,8 +109,5 @@
   font-weight: var(--mm-font-weight-semibold, 600);
 }
 
-@media (prefers-color-scheme: dark) {
-  .prose {
-    color: var(--mm-gray-100, var(--mm-gray-100));
-  }
-}
+/* The admin has no dark theme (app/styles/theme.css), so its pages stay light whatever the computer prefers: the text stays dark too. A light text on the
+   light page made every guide unreadable on a computer in dark mode (messmass#437). When a dark admin theme exists, follow that theme here. */
