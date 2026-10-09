@@ -4,6 +4,11 @@ Last Updated: 2026-09-30T14:00:00.000Z
 Canonical: No
 Owner: Operations
 
+## Unreleased — guide: the giant screen's own controls, the event's colours behind it, and broken pictures hidden
+
+- **Changed (docs):** `docs/guides/guides-tutorial-camera-giant-screen.md`: the controls are the transparent bottom bar that fades like a media player's (not a corner button), the keys, iPhone Safari and Add to Home Screen, the event's theme behind the pictures, and the rule that a picture that is gone is never shown, with the **Broken pictures** card, English and Hungarian.
+- **Verified:** written from the camera app code and its release notes (camera#510 and the hidden-pictures change). The player was checked in a production build with a mocked playlist; not checked on a real phone.
+
 ## Unreleased — guides: the default frame slots of a partner and everybody, and the screen-sized pictures button
 
 - **Changed (docs):** `docs/guides/guides-tutorial-camera-frame-slots.md` gets **Defaults for a partner and for everybody** (the order event, partner, general, built-in; no copy; how the events that follow are redrawn; the preview on a real event), and `docs/guides/guides-tutorial-camera-giant-screen.md` gets the **Screen-sized pictures** card on the Slideshows page (make the lighter pictures of the existing photos, 24 at a time), English and Hungarian.
