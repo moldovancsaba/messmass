@@ -4,6 +4,11 @@ Last Updated: 2026-09-30T14:00:00.000Z
 Canonical: No
 Owner: Operations
 
+## Unreleased — guides: the giant screen and the CTA page of the camera app
+
+- **Added (docs):** `docs/guides/guides-tutorial-camera-giant-screen.md` (the default screen with the call to action and the address under the photos, full screen with the corner button, double-click and F, how it plays, the crossfade switch (off until tried), how the screen recovers by itself, the reload every 3 hours and the **Reload the screen** button, the checklist for the venue's computer, `?debug=1`) and `docs/guides/guides-tutorial-camera-cta-page.md` (the picture fits the page, hide the title, text and buttons, the whole picture as a link, what a tap does, no zoom on the journey pages), both in English and Hungarian, in the tutorials index (items 19 and 20, the later ones renumbered) and the quick start by role.
+- **Verified:** written from the camera app code and its release notes (camera#476, #487, #491, #490); the buttons and checkboxes are named as in the admin. Not checked against screenshots (the guides carry none yet).
+
 ## Unreleased — the help guides are readable on a computer in dark mode (messmass#437)
 
 - **Fixed (owner report, 2026-10-08, with a screenshot):** on a computer set to dark mode the title, headings and paragraphs of every guide at `/admin/help/guides/<slug>` were almost white (contrast 1.1:1) on the white admin page; only the block quote was readable. `guides.module.css` switched the text of `.prose` to `--mm-gray-100` for dark computers, but the admin has no dark theme. The override is removed, so the text stays dark (14.7:1) whatever the computer prefers. The links in the guides use the darker blue (6.7:1 instead of 3.7:1). Measured in a real browser with the colour scheme emulated as dark and as light, for every kind of text of a guide. No code outside the stylesheet changed.
