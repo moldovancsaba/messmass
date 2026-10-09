@@ -1,14 +1,14 @@
 {
  "_meta": {
-  "generated": "2026-10-09T14:04:55+00:00",
+  "generated": "2026-10-09T15:31:11+00:00",
   "repo": "messmass",
-  "head": "66d409fe",
+  "head": "7afa4fc3",
   "counts": {
    "endpoints": 223,
    "collections": 71,
    "env": 33,
    "outbound-hosts": 31,
-   "docs": 211
+   "docs": 212
   }
  },
  "items": [
@@ -579,6 +579,10 @@
   {
    "file": "docs/guides/guides-tutorial-camera-emails.md",
    "title": "Tutorial: The e-mails to the users (camera app)"
+  },
+  {
+   "file": "docs/guides/guides-tutorial-camera-event-gallery.md",
+   "title": "Tutorial: The event gallery (camera app)"
   },
   {
    "file": "docs/guides/guides-tutorial-camera-giant-screen.md",

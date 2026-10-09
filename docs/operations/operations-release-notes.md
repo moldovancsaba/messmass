@@ -4,6 +4,11 @@ Last Updated: 2026-09-30T14:00:00.000Z
 Canonical: No
 Owner: Operations
 
+## Unreleased — guide: the event gallery of the camera app
+
+- **Added (docs):** `docs/guides/guides-tutorial-camera-event-gallery.md` (the Gallery page and its menu entry, uploading photos with the event's frame, selecting many photos with Shift, Ctrl/Cmd, a dragged box, Select mode, Ctrl/Cmd+A and Esc, removing and framing the selection, the 100-photo page, what to check before the event), English and Hungarian, in the tutorials index and the camera-app path.
+- **Verified:** written from the camera app code and its release notes (camera#488, #499, #500); the buttons are named as in the admin. Not checked against screenshots, and the Select mode was not tried on a real phone.
+
 ## Unreleased — guides: the giant screen and the CTA page of the camera app
 
 - **Added (docs):** `docs/guides/guides-tutorial-camera-giant-screen.md` (the default screen with the call to action and the address under the photos, full screen with the corner button, double-click and F, how it plays, the crossfade switch (off until tried), how the screen recovers by itself, the reload every 3 hours and the **Reload the screen** button, the checklist for the venue's computer, `?debug=1`) and `docs/guides/guides-tutorial-camera-cta-page.md` (the picture fits the page, hide the title, text and buttons, the whole picture as a link, what a tap does, no zoom on the journey pages), both in English and Hungarian, in the tutorials index (items 19 and 20, the later ones renumbered) and the quick start by role.
