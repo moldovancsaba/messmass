@@ -50,6 +50,7 @@ Data is captured against an **event** (via the Clicker/Manual editor, Google She
 18. [Layouts, messages and the dark area (camera app)](guides-tutorial-camera-layouts-messages.md) — which message goes on which design, how people get the layout and the message, the dark area (English and Hungarian).
 19. [The giant screen (camera app slideshow)](guides-tutorial-camera-giant-screen.md) — the default screen, full screen, how it plays, the crossfade, how it recovers and reloads, the venue checklist (English and Hungarian).
 20. [The CTA page with a picture (camera app)](guides-tutorial-camera-cta-page.md) — the picture fits the page, hide the text and buttons, make the whole picture a link (English and Hungarian).
+21. [The event gallery (camera app)](guides-tutorial-camera-event-gallery.md) — the Gallery page, uploading photos with the event's frame, selecting many at once with Shift, Ctrl and a dragged box, removing and framing the selection (English and Hungarian).
 21. [Fanmass integration](guides-tutorial-fanmass.md) — image-intelligence analytics and the mapping API.
 22. [Bitly integration](guides-tutorial-bitly.md) — short-link click analytics attributed to events/partners.
 23. [Sport databases](guides-tutorial-sport-databases.md) — Football-Data.org, API-Football, and TheSportsDB enrichment.
@@ -62,7 +63,7 @@ Data is captured against an **event** (via the Clicker/Manual editor, Google She
 - **Report designer** → Variables → Charts → Content Library → Building reports → Themes → Variants.
 - **Integrations / setup** → Authentication & SSO → Camera → Fanmass → Bitly → Sport databases → Google Sheets.
 - **Photo approver at a live event** → Approving photos at an event (sign in, the Vetting tab, approve and reject).
-- **Event editor in the camera app** → Layouts, messages and the dark area → E-mails to the users → The CTA page with a picture (the Frames page, the Emails page, the pages editor).
+- **Event editor in the camera app** → Layouts, messages and the dark area → E-mails to the users → The CTA page with a picture → The event gallery (the Frames page, the Emails page, the pages editor, the Gallery page).
 - **Person running the giant screen at the venue** → The giant screen (full screen, the checklist, Reload the screen).
 
 ## Notes on scope
