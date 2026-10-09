@@ -4,6 +4,12 @@ Last Updated: 2026-09-30T14:00:00.000Z
 Canonical: No
 Owner: Operations
 
+## Unreleased — guide: frame slots of the camera app, and the picture in the e-mails
+
+- **Added (docs):** `docs/guides/guides-tutorial-camera-frame-slots.md` (up to twelve optional text and picture slots at six positions, the text sources, corner pictures and bars, several pictures and which message uses which, how the slots lie on the frame, the preview and its notes, saving, the MTK x Vasas pink month example with the club's strips, crest and ribbon), English and Hungarian, in the tutorials index and the camera-app path.
+- **Changed (docs):** `docs/guides/guides-tutorial-camera-emails.md` gets the **Picture** button of the message editor (choose or upload, what it shows, where a tap goes, only the app's own storage), English and Hungarian.
+- **Verified:** written from the camera app code and its release notes (camera#502, camera#376); the buttons and fields are named as in the admin. The frame slots panel was checked in a production build with real DOM events and the club's real strips were drawn through the code (a contact sheet); not checked against screenshots of the live admin.
+
 ## Unreleased — guide: the event gallery of the camera app
 
 - **Added (docs):** `docs/guides/guides-tutorial-camera-event-gallery.md` (the Gallery page and its menu entry, uploading photos with the event's frame, selecting many photos with Shift, Ctrl/Cmd, a dragged box, Select mode, Ctrl/Cmd+A and Esc, removing and framing the selection, the 100-photo page, what to check before the event), English and Hungarian, in the tutorials index and the camera-app path.

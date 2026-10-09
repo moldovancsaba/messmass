@@ -1,14 +1,14 @@
 {
  "_meta": {
-  "generated": "2026-10-09T15:31:11+00:00",
+  "generated": "2026-10-09T16:03:57+00:00",
   "repo": "messmass",
-  "head": "7afa4fc3",
+  "head": "b7d0e91e",
   "counts": {
    "endpoints": 223,
    "collections": 71,
    "env": 33,
    "outbound-hosts": 31,
-   "docs": 212
+   "docs": 213
   }
  },
  "items": [
@@ -583,6 +583,10 @@
   {
    "file": "docs/guides/guides-tutorial-camera-event-gallery.md",
    "title": "Tutorial: The event gallery (camera app)"
+  },
+  {
+   "file": "docs/guides/guides-tutorial-camera-frame-slots.md",
+   "title": "Tutorial: Frame slots, composing the frame of an event (camera app)"
   },
   {
    "file": "docs/guides/guides-tutorial-camera-giant-screen.md",
