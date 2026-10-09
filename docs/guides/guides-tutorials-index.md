@@ -48,11 +48,13 @@ Data is captured against an **event** (via the Clicker/Manual editor, Google She
 16. [Approving photos at an event](guides-tutorial-approving-photos.md) — how the person approving photos live works the Vetting tab of the camera app (English and Hungarian).
 17. [E-mails to the users (camera app)](guides-tutorial-camera-emails.md) — the five e-mails (welcome, arrived, approved, declined, follow up), the toolbar editor, variables, the legal part with three levels, the preview and the test e-mail (English and Hungarian).
 18. [Layouts, messages and the dark area (camera app)](guides-tutorial-camera-layouts-messages.md) — which message goes on which design, how people get the layout and the message, the dark area (English and Hungarian).
-19. [Fanmass integration](guides-tutorial-fanmass.md) — image-intelligence analytics and the mapping API.
-20. [Bitly integration](guides-tutorial-bitly.md) — short-link click analytics attributed to events/partners.
-21. [Sport databases](guides-tutorial-sport-databases.md) — Football-Data.org, API-Football, and TheSportsDB enrichment.
-22. [Google Sheets sync](guides-tutorial-google-sheets.md) — managing a partner's events from a spreadsheet.
-23. [Authentication, roles & SSO](guides-tutorial-authentication-sso.md) — sign-in, roles, SSO, and API keys.
+19. [The giant screen (camera app slideshow)](guides-tutorial-camera-giant-screen.md) — the default screen, full screen, how it plays, the crossfade, how it recovers and reloads, the venue checklist (English and Hungarian).
+20. [The CTA page with a picture (camera app)](guides-tutorial-camera-cta-page.md) — the picture fits the page, hide the text and buttons, make the whole picture a link (English and Hungarian).
+21. [Fanmass integration](guides-tutorial-fanmass.md) — image-intelligence analytics and the mapping API.
+22. [Bitly integration](guides-tutorial-bitly.md) — short-link click analytics attributed to events/partners.
+23. [Sport databases](guides-tutorial-sport-databases.md) — Football-Data.org, API-Football, and TheSportsDB enrichment.
+24. [Google Sheets sync](guides-tutorial-google-sheets.md) — managing a partner's events from a spreadsheet.
+25. [Authentication, roles & SSO](guides-tutorial-authentication-sso.md) — sign-in, roles, SSO, and API keys.
 
 ## Quick start by role
 
@@ -60,7 +62,8 @@ Data is captured against an **event** (via the Clicker/Manual editor, Google She
 - **Report designer** → Variables → Charts → Content Library → Building reports → Themes → Variants.
 - **Integrations / setup** → Authentication & SSO → Camera → Fanmass → Bitly → Sport databases → Google Sheets.
 - **Photo approver at a live event** → Approving photos at an event (sign in, the Vetting tab, approve and reject).
-- **Event editor in the camera app** → Layouts, messages and the dark area → E-mails to the users (the Frames page, the Emails page).
+- **Event editor in the camera app** → Layouts, messages and the dark area → E-mails to the users → The CTA page with a picture (the Frames page, the Emails page, the pages editor).
+- **Person running the giant screen at the venue** → The giant screen (full screen, the checklist, Reload the screen).
 
 ## Notes on scope
 
