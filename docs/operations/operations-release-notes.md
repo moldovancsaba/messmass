@@ -4,6 +4,11 @@ Last Updated: 2026-09-30T14:00:00.000Z
 Canonical: No
 Owner: Operations
 
+## Unreleased — guides: the default frame slots of a partner and everybody, and the screen-sized pictures button
+
+- **Changed (docs):** `docs/guides/guides-tutorial-camera-frame-slots.md` gets **Defaults for a partner and for everybody** (the order event, partner, general, built-in; no copy; how the events that follow are redrawn; the preview on a real event), and `docs/guides/guides-tutorial-camera-giant-screen.md` gets the **Screen-sized pictures** card on the Slideshows page (make the lighter pictures of the existing photos, 24 at a time), English and Hungarian.
+- **Verified:** written from the camera app code and its release notes (camera#502 segment 5, camera#476 step S7); the buttons are named as in the admin. Not checked against screenshots of the live admin.
+
 ## Unreleased — guide: frame slots of the camera app, and the picture in the e-mails
 
 - **Added (docs):** `docs/guides/guides-tutorial-camera-frame-slots.md` (up to twelve optional text and picture slots at six positions, the text sources, corner pictures and bars, several pictures and which message uses which, how the slots lie on the frame, the preview and its notes, saving, the MTK x Vasas pink month example with the club's strips, crest and ribbon), English and Hungarian, in the tutorials index and the camera-app path.
