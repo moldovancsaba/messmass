@@ -3,7 +3,7 @@ Status: Active
 Last Updated: 2026-10-09T00:00:00.000Z
 Canonical: Yes
 Owner: Documentation
-Verified against the Camera app code @ 2e6d10d (camera#463)
+Verified against the Camera app code @ 2e6d10d (camera#463); the picture button @ ad7d2ba (camera#376)
 
 > Audience: The people who set up an event in the Camera app (editors, operators) · Prerequisites: The event exists in the Camera app, and your e-mail address has the **Manager** role for its partner (a global admin can do everything here) · Related: [Approving photos at an event](guides-tutorial-approving-photos.md), [Layouts, messages and the dark area](guides-tutorial-camera-layouts-messages.md), [Camera app integration](guides-tutorial-camera-app.md)
 
@@ -46,6 +46,7 @@ Each card has a **Subject** and a **Message** with a toolbar:
 - **B** bold, **I** italic;
 - **Title**, **Large**, **Small**: make the paragraph under the cursor a title, large text or small print (press again to turn it back to a normal paragraph);
 - **Link**: select some words, press Link and give the address (it must start with `https://`, or be `{link}`, `{terms}` or `{eventlink}`); the link is drawn bold and underlined;
+- **Picture** (on the **Message** only): adds a picture as a paragraph of its own under the paragraph you are in. Choose it from the event's images or upload it there (PNG or JPEG: e-mail apps do not all draw WebP or SVG), say **what it shows** (read out for people who cannot see it, and shown where the e-mail app does not load pictures), and, if you want, **where a tap on the picture goes** (an `https://` address, or `{link}`, `{terms}` or `{eventlink}`). The picture is centred and as wide as the e-mail at most. Only pictures from the app's own storage are drawn: any other address is **left out of the e-mail** and the preview says "Picture left out".
 - **Variable…**: puts the name of a thing in the text (see the table below).
 
 What you type is the whole text: paragraphs are separated by a blank line. Under the hood the editor writes a few simple marks (`**bold**`, `*italic*`, `# title`, `-# small`, `[label](https://address)`), and **nothing else is ever treated as formatting**: raw HTML never reaches an e-mail. A text with no marks reads as plain text, exactly as before.
@@ -116,7 +117,7 @@ Az eseményhez tartozó e-maileket az esemény menüjében az **Emails** (E-mail
 **Hogyan állítsd be**
 
 1. Nyisd meg az eseményt, majd az **Emails** menüt. Minden e-mailnél látod az állapotot (**On · default** = alapértelmezett, vagy **chosen** = általad választott). Amit nem érintesz, az az alapértelmezést követi.
-2. A **Subject** (tárgy) és a **Message** (üzenet) mezőben eszköztár van: **B** félkövér, **I** dőlt, **Title / Large / Small** (cím, nagy, kicsi szöveg), **Link** (a cím `https://`-sel kezdődjön, vagy `{link}`, `{terms}`, `{eventlink}`), és a **Variable…** menü. A változók: `{name}` név, `{event}` esemény neve, `{partner}`, `{home}`, `{visitor}`, `{teams}` csapatok, `{date}` az esemény dátuma az esemény nyelvén, `{location}` helyszín, `{eventlink}` az esemény linkje (ha van URL-slug, a **rövid link**), `{link}` a fotó linkje, `{terms}` a szabályzat linkje. Ha egy változónak nincs értéke az eseményen, kimarad az e-mailből, és az előnézet jelzi.
+2. A **Subject** (tárgy) és a **Message** (üzenet) mezőben eszköztár van: **B** félkövér, **I** dőlt, **Title / Large / Small** (cím, nagy, kicsi szöveg), **Link** (a cím `https://`-sel kezdődjön, vagy `{link}`, `{terms}`, `{eventlink}`), a **Picture** gomb (csak az üzenetben: a képet az esemény képei közül választod vagy feltöltöd, PNG vagy JPEG; megadod, **mit mutat** a kép, és ha akarod, **hová vezet** egy rákoppintás; a kép középre kerül, legfeljebb az e-mail szélességében; csak az alkalmazás saját tárhelyén lévő kép jelenik meg, minden más kimarad, és az előnézet „Picture left out” üzenettel jelzi), és a **Variable…** menü. A változók: `{name}` név, `{event}` esemény neve, `{partner}`, `{home}`, `{visitor}`, `{teams}` csapatok, `{date}` az esemény dátuma az esemény nyelvén, `{location}` helyszín, `{eventlink}` az esemény linkje (ha van URL-slug, a **rövid link**), `{link}` a fotó linkje, `{terms}` a szabályzat linkje. Ha egy változónak nincs értéke az eseményen, kimarad az e-mailből, és az előnézet jelzi.
 3. Jobb oldalon az **előnézet** telefon szélességben, az esemény színeivel. A **Send me a test e-mail** gomb a saját címedre küldi el pontosan ezt az e-mailt (a tárgyban `[Test]`), hogy telefonon megnézhesd.
 4. A **jogi rész** (Legal part) minden e-mail alján kis betűs szöveg. Három szintje van: **általános** (Settings, Emails), **partner** (a partner menü, Emails), **esemény**. Az esemény a partnerét követi, a partner az általánosat, amíg valaki sajátot nem ír. A **Start from the standard line** gomb a szokásos sort írja be, a **Follow the level above** a saját szöveget törli.
 5. A **Save the e-mails** gombbal mentesz.
