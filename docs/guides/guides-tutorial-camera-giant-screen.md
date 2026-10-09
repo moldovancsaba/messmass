@@ -75,7 +75,7 @@ Minden új eseményhez automatikusan készül egy **alapértelmezett vetítés**
 
 **Jó tudni**
 
-- **Képernyőméretű képek:** a kijelző a fotók könnyebb változatát kapja (legfeljebb 1920 px, WebP), amely a fotó jóváhagyásakor készül. A már meglévő fotóknál egy globális admin a camera alkalmazás **Slideshows** oldalán a **Screen-sized pictures** kártyán látja, hány fotó használ még teljes méretű képet, és a **Make the screen pictures** gombbal elkészítteti (egyszerre 24, látható haladással, megállítható és újra indítható). Csak egy képet ad a fotó mellé, eredetit nem módosít és nem töröl.
+- **Képernyőméretű képek:** a kijelző a fotók könnyebb változatát kapja (legfeljebb 1920 px, WebP), amely a fotó jóváhagyásakor készül. A már meglévő fotóknál egy globális admin a camera alkalmazás **Slideshows** oldalán a **Screen-sized pictures** kártyán látja, hány fotó használ még teljes méretű képet, és a **Make the screen pictures** gombbal elkészíttetheti (egyszerre 24, látható haladással, megállítható és újra indítható). Csak egy képet ad a fotó mellé, eredetit nem módosít és nem töröl.
 - A helyszíni gép: teljes képernyő, **semmi ne takarja az ablakot** (a letakart ablakot a böngésző rejtettnek veszi, és lassítja), nincs képernyővédő, nincs felugró értesítés, nincs időzített böngészőfrissítés a rendezvény alatt; a lassú kijelző leggyakoribb oka a gyenge vagy megosztott internet, a vezetékes kapcsolat segít a legtöbbet.
 - A **Reload the screen** egy pillanatra újraindítja a vetítést (betöltő kép látszik): ne nyomd meg gól ünneplése közben.
 - Ha a kijelző mégis megáll, jegyezd fel az időpontot: a camera alkalmazás rövid naplót vezet arról, mit csinált a kijelző, az időpont megmondja a fejlesztőknek, hol keressék.
