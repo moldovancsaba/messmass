@@ -4,6 +4,11 @@ Last Updated: 2026-09-30T14:00:00.000Z
 Canonical: No
 Owner: Operations
 
+## Unreleased — guide: the acceptance on the "Who are you" page
+
+- **Added (docs):** `docs/guides/guides-tutorial-camera-journey-acceptance.md` (English and Hungarian, number 23 in the tutorials index; the later entries moved down by one): the consent page as **one small checkbox with one sentence** on the Who-are-you page, everything off until it is ticked; the one setting that both page editors show (**Show acceptance** = **Show it on Who-are-you**, saved with Save all), when it applies (both pages active and before the photo; default pages need **Customise** first), the sentence and its wording, what is recorded, the sign-in, and the privacy caution.
+- **Verified:** written from the camera app code and its release notes (camera#523, PR 527); the page was looked at at phone size before and after ticking. Not checked on a real phone with a real sign-in.
+
 ## Unreleased — guides: the giant screen follows every save, the line fills its box, and the gallery's frame button
 
 - **Changed (docs):** `docs/guides/guides-tutorial-camera-giant-screen.md` (English and Hungarian): a text with **Fill the box** always fills the box width exactly (the Size field is greyed out; the earlier text said the size was the largest it may take, which was true for one day), a QR address typed without `https://` gets it, a refused save names the part that is wrong; **saving the slideshow reloads the open screens**; the welcome page's giant screen is the default slideshow's screen drawn as a picture and is drawn again on every save. `docs/guides/guides-tutorial-camera-event-gallery.md` (English and Hungarian): the frame button confirms in the page, works five photos at a time with progress, says why and how far it stopped, and the banner "photos uploaded here have no frame" has its own button.

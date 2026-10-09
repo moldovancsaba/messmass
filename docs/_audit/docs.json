@@ -1,14 +1,14 @@
 {
  "_meta": {
-  "generated": "2026-10-09T18:07:31+00:00",
+  "generated": "2026-10-09T21:27:46+00:00",
   "repo": "messmass",
-  "head": "ec337bbc",
+  "head": "9ae5344d",
   "counts": {
    "endpoints": 223,
    "collections": 71,
    "env": 33,
    "outbound-hosts": 31,
-   "docs": 213
+   "docs": 214
   }
  },
  "items": [
@@ -591,6 +591,10 @@
   {
    "file": "docs/guides/guides-tutorial-camera-giant-screen.md",
    "title": "Tutorial: The giant screen (camera app slideshow)"
+  },
+  {
+   "file": "docs/guides/guides-tutorial-camera-journey-acceptance.md",
+   "title": "Tutorial: The acceptance on the \"Who are you\" page (camera app)"
   },
   {
    "file": "docs/guides/guides-tutorial-camera-layouts-messages.md",
