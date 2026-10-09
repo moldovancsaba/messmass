@@ -4,6 +4,11 @@ Last Updated: 2026-09-30T14:00:00.000Z
 Canonical: No
 Owner: Operations
 
+## Unreleased — guide: the address under the photos on the default giant screen is one line, the event's own
+
+- **Changed (docs):** `docs/guides/guides-tutorial-camera-giant-screen.md` (English and Hungarian): the default slideshow's band under the photos is one line, the written address, which is the event's own short address when it has one (for example `go.messmass.com/mtk-vasas`) and otherwise the tracked link's; the line is as wide as the photo window and scaled to fill it; the call to action line is gone from the default; a text typed in the slideshow editor is placed under the window with **Fill the box** ticked.
+- **Verified:** written from the camera app code and its release notes (camera#516, issue 515); the real stage component was measured in a browser and the live MTK x Vasas screen was looked at after the change.
+
 ## Unreleased — guide: the giant screen's own controls, the event's colours behind it, and broken pictures hidden
 
 - **Changed (docs):** `docs/guides/guides-tutorial-camera-giant-screen.md`: the controls are the transparent bottom bar that fades like a media player's (not a corner button), the keys, iPhone Safari and Add to Home Screen, the event's theme behind the pictures, and the rule that a picture that is gone is never shown, with the **Broken pictures** card, English and Hungarian.
