@@ -4,6 +4,11 @@ Last Updated: 2026-09-30T14:00:00.000Z
 Canonical: No
 Owner: Operations
 
+## Unreleased — guides: the giant screen follows every save, the line fills its box, and the gallery's frame button
+
+- **Changed (docs):** `docs/guides/guides-tutorial-camera-giant-screen.md` (English and Hungarian): a text with **Fill the box** always fills the box width exactly (the Size field is greyed out; the earlier text said the size was the largest it may take, which was true for one day), a QR address typed without `https://` gets it, a refused save names the part that is wrong; **saving the slideshow reloads the open screens**; the welcome page's giant screen is the default slideshow's screen drawn as a picture and is drawn again on every save. `docs/guides/guides-tutorial-camera-event-gallery.md` (English and Hungarian): the frame button confirms in the page, works five photos at a time with progress, says why and how far it stopped, and the banner "photos uploaded here have no frame" has its own button.
+- **Verified:** written from the camera app code and its release notes (camera#516, #518, #519 and the welcome page change, issues 515, 520 and 488); the screens and the banner were looked at in a browser.
+
 ## Unreleased — guide: the address under the photos on the default giant screen is one line, the event's own
 
 - **Changed (docs):** `docs/guides/guides-tutorial-camera-giant-screen.md` (English and Hungarian): the default slideshow's band under the photos is one line, the written address, which is the event's own short address when it has one (for example `go.messmass.com/mtk-vasas`) and otherwise the tracked link's; the line is as wide as the photo window and scaled to fill it; the call to action line is gone from the default; a text typed in the slideshow editor is placed under the window with **Fill the box** ticked.

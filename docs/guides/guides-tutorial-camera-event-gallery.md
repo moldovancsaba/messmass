@@ -43,7 +43,8 @@ Selected photos have an outline, and the number selected is announced to screen 
 ### 3. Do something with the selection
 
 - **Remove selected (N)**: asks to confirm, then removes the photos from the event.
-- **Add the frame to N selected**: gives the frame to photos **you uploaded earlier without it**. Only photos that **an editor uploaded here** and that **have no frame yet** are changed: the users' photos were framed when they were taken, and a photo is framed once, so pressing it twice does nothing. The answer says how many were framed and why the others were left. Up to **25 at a time**; the plain upload is kept.
+- **Add the frame to N selected**: gives the frame to photos **you uploaded earlier without it**. Only photos that **an editor uploaded here** and that **have no frame yet** are changed: the users' photos were framed when they were taken, and a photo is framed once, so pressing it twice does nothing. It first asks you to confirm in the page (a card with **Add the frame** and **Cancel**), then works **five photos at a time** and shows how far it is (**Adding the frame… 10 of 20**). The answer says how many were framed and why the others were left. If it stops (the server took too long, the connection dropped), the message says why and how many were done before it; press the button again and it carries on with the rest, because a photo that has a frame is skipped. The plain upload is kept.
+- **The banner "N photos uploaded here have no frame"** (above the gallery actions, when the event has a frame and some uploads have none) has one button, **Add the frame to the uploaded photos**, that does the same for all of them: the same confirmation, the same five at a time, the same messages, which appear right under the banner.
 
 ## Managing it
 
@@ -84,7 +85,8 @@ A **Gallery** (galéria) az esemény oldala, ahol az összes fotó van: amit a f
 **3. Mit lehet a kijelöléssel.**
 
 - **Remove selected (N)**: megerősítést kér, majd eltávolítja a fotókat az eseményből.
-- **Add the frame to N selected**: keretet ad a **korábban keret nélkül feltöltött** fotókra. Csak az **itt, szerkesztő által feltöltött**, **még keret nélküli** fotók változnak: a felhasználók fotói a készítésükkor megkapták a keretet, és egy fotó csak egyszer kap keretet, ezért a gomb kétszeri megnyomása nem csinál semmit. A válasz megmondja, hány fotó kapott keretet, és a többit miért hagyta ki. Egyszerre legfeljebb **25**; a sima feltöltés megmarad.
+- **Add the frame to N selected**: keretet ad a **korábban keret nélkül feltöltött** fotókra. Csak az **itt, szerkesztő által feltöltött**, **még keret nélküli** fotók változnak: a felhasználók fotói a készítésükkor megkapták a keretet, és egy fotó csak egyszer kap keretet, ezért a gomb kétszeri megnyomása nem csinál semmit. Előbb az oldalon kér megerősítést (egy kártya **Add the frame** és **Cancel** gombbal), aztán **egyszerre öt fotóval** dolgozik, és kiírja, hol tart (**Adding the frame… 10 of 20**). A válasz megmondja, hány fotó kapott keretet, és a többit miért hagyta ki. Ha megáll (a szerver túl sokáig tartott, megszakadt a kapcsolat), az üzenet megmondja, miért, és hányat csinált meg előtte; nyomd meg újra a gombot, és a maradékkal folytatja, mert a már keretes fotót kihagyja. A sima feltöltés megmarad.
+- **Az "N photos uploaded here have no frame" sáv** (a galéria műveletei fölött, ha az eseménynek van kerete, és néhány feltöltésnek nincs) egyetlen gombbal, **Add the frame to the uploaded photos**, ugyanezt végzi el mindegyikre: ugyanaz a megerősítés, ugyanaz az egyszerre öt fotó, ugyanazok az üzenetek, amelyek közvetlenül a sáv alatt jelennek meg.
 
 **Jó tudni**
 
