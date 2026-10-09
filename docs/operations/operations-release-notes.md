@@ -8,6 +8,10 @@ Owner: Operations
 
 - **Fixed (owner report, 2026-10-08, with a screenshot):** on a computer set to dark mode the title, headings and paragraphs of every guide at `/admin/help/guides/<slug>` were almost white (contrast 1.1:1) on the white admin page; only the block quote was readable. `guides.module.css` switched the text of `.prose` to `--mm-gray-100` for dark computers, but the admin has no dark theme. The override is removed, so the text stays dark (14.7:1) whatever the computer prefers. The links in the guides use the darker blue (6.7:1 instead of 3.7:1). Measured in a real browser with the colour scheme emulated as dark and as light, for every kind of text of a guide. No code outside the stylesheet changed.
 
+## Unreleased — guides: the e-mails to the users and the layouts and messages of the camera app
+
+- **Added (docs):** `docs/guides/guides-tutorial-camera-emails.md` (the five e-mails: welcome, arrived, approved, declined, follow up, with their defaults; the toolbar editor, the variables, the legal part with three levels, the preview and the test e-mail; English and Hungarian) and `docs/guides/guides-tutorial-camera-layouts-messages.md` (which message goes on which design, how people get the layout and the message, the dark area; English and Hungarian), both for the people who set up an event in the camera app, verified against camera epics #463 and #444. Listed in `guides-tutorials-index.md`. No code change.
+
 ## Unreleased — guide: approving photos at an event (camera app)
 
 - **Added (docs):** `docs/guides/guides-tutorial-approving-photos.md`, a tutorial in English and Hungarian for the person who approves photos live in the camera app: access (the Manager role for Events on the partner), the Vetting tab, approve, reject with a reason, bulk approve, what to do when something goes wrong, and a rehearsal on a throw-away event. It is linked from the guides index and readable online at `/admin/help/guides/approving-photos`. No code change.
