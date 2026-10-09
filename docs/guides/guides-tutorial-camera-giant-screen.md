@@ -47,6 +47,7 @@ To **look inside** before the event, open the screen's address with `?debug=1` a
 
 - **The venue's computer:** full screen, **nothing laid over the window** (a covered window counts as hidden and its timers slow down or stop), no screen saver, no pop-up notifications, no scheduled browser updates during the event. A weak or shared internet link is the usual cause of a slow screen: a wired connection helps most.
 - **New photos** reach the screen when the queue next asks for a picture, about every picture; hidden, rejected and not yet approved photos never show.
+- **Screen-sized pictures:** the screen is sent a lighter version of each photo (at most 1920 px, WebP), made when a photo is approved. For photos that already existed, a global admin opens **Slideshows** in the Camera app: the card **Screen-sized pictures** says how many photos on slideshow events still use the full-size picture, and **Make the screen pictures** makes them (24 at a time, with the progress shown; you can stop and press again). It only adds a picture next to each photo; no original is changed or deleted.
 - **The picture on a new event:** the QR code points to a tracked link, so the first real scan after launch is the proof that it reaches the report.
 
 ## Gotchas & good practice
@@ -74,6 +75,7 @@ Minden új eseményhez automatikusan készül egy **alapértelmezett vetítés**
 
 **Jó tudni**
 
+- **Képernyőméretű képek:** a kijelző a fotók könnyebb változatát kapja (legfeljebb 1920 px, WebP), amely a fotó jóváhagyásakor készül. A már meglévő fotóknál egy globális admin a camera alkalmazás **Slideshows** oldalán a **Screen-sized pictures** kártyán látja, hány fotó használ még teljes méretű képet, és a **Make the screen pictures** gombbal elkészítteti (egyszerre 24, látható haladással, megállítható és újra indítható). Csak egy képet ad a fotó mellé, eredetit nem módosít és nem töröl.
 - A helyszíni gép: teljes képernyő, **semmi ne takarja az ablakot** (a letakart ablakot a böngésző rejtettnek veszi, és lassítja), nincs képernyővédő, nincs felugró értesítés, nincs időzített böngészőfrissítés a rendezvény alatt; a lassú kijelző leggyakoribb oka a gyenge vagy megosztott internet, a vezetékes kapcsolat segít a legtöbbet.
 - A **Reload the screen** egy pillanatra újraindítja a vetítést (betöltő kép látszik): ne nyomd meg gól ünneplése közben.
 - Ha a kijelző mégis megáll, jegyezd fel az időpontot: a camera alkalmazás rövid naplót vezet arról, mit csinált a kijelző, az időpont megmondja a fejlesztőknek, hol keressék.
