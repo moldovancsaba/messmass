@@ -53,11 +53,13 @@ Data is captured against an **event** (via the Clicker/Manual editor, Google She
 21. [The event gallery (camera app)](guides-tutorial-camera-event-gallery.md) — the Gallery page, uploading photos with the event's frame, selecting many at once with Shift, Ctrl and a dragged box, removing and framing the selection (English and Hungarian).
 22. [Frame slots, composing the frame of an event (camera app)](guides-tutorial-camera-frame-slots.md) — up to twelve optional text and picture slots, bars and corner pictures, strips chosen by message, the preview, the MTK pink month example (English and Hungarian).
 23. [The acceptance on the "Who are you" page (camera app)](guides-tutorial-camera-journey-acceptance.md) — the consent page as one checkbox with one sentence on the Who-are-you page, everything off until it is ticked, one setting in both editors, the records and the sign-in (English and Hungarian).
-24. [Fanmass integration](guides-tutorial-fanmass.md) — image-intelligence analytics and the mapping API.
-25. [Bitly integration](guides-tutorial-bitly.md) — short-link click analytics attributed to events/partners.
-26. [Sport databases](guides-tutorial-sport-databases.md) — Football-Data.org, API-Football, and TheSportsDB enrichment.
-27. [Google Sheets sync](guides-tutorial-google-sheets.md) — managing a partner's events from a spreadsheet.
-28. [Authentication, roles & SSO](guides-tutorial-authentication-sso.md) — sign-in, roles, SSO, and API keys.
+24. [The order of the pages, and Take photo + Submit (camera app)](guides-tutorial-camera-journey-order.md) — up and down on every page including the default ones, and the checkbox that lets a login or a CTA come between taking the photo and saving it (English and Hungarian).
+25. [Sample selfies and the photo window of the welcome page screen (camera app)](guides-tutorial-camera-sample-selfies.md) — the general sample selfies, a partner's own, the event's choice (a sample selfie, a photo of the event, or the stand-in), Pick another (English and Hungarian).
+26. [Fanmass integration](guides-tutorial-fanmass.md) — image-intelligence analytics and the mapping API.
+27. [Bitly integration](guides-tutorial-bitly.md) — short-link click analytics attributed to events/partners.
+28. [Sport databases](guides-tutorial-sport-databases.md) — Football-Data.org, API-Football, and TheSportsDB enrichment.
+29. [Google Sheets sync](guides-tutorial-google-sheets.md) — managing a partner's events from a spreadsheet.
+30. [Authentication, roles & SSO](guides-tutorial-authentication-sso.md) — sign-in, roles, SSO, and API keys.
 
 ## Quick start by role
 

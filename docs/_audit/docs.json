@@ -1,14 +1,14 @@
 {
  "_meta": {
-  "generated": "2026-10-09T21:27:46+00:00",
+  "generated": "2026-10-10T13:18:30+00:00",
   "repo": "messmass",
-  "head": "9ae5344d",
+  "head": "4f3aa67e",
   "counts": {
    "endpoints": 223,
    "collections": 71,
    "env": 33,
    "outbound-hosts": 31,
-   "docs": 214
+   "docs": 216
   }
  },
  "items": [
@@ -597,8 +597,16 @@
    "title": "Tutorial: The acceptance on the \"Who are you\" page (camera app)"
   },
   {
+   "file": "docs/guides/guides-tutorial-camera-journey-order.md",
+   "title": "Tutorial: The order of the pages, and Take photo + Submit (camera app)"
+  },
+  {
    "file": "docs/guides/guides-tutorial-camera-layouts-messages.md",
    "title": "Tutorial: Layouts, messages and the dark area at an event (camera app)"
+  },
+  {
+   "file": "docs/guides/guides-tutorial-camera-sample-selfies.md",
+   "title": "Tutorial: Sample selfies and the photo window of the welcome page screen (camera app)"
   },
   {
    "file": "docs/guides/guides-tutorial-charts-formulas.md",
