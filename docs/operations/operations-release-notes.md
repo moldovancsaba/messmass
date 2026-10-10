@@ -4,6 +4,11 @@ Last Updated: 2026-09-30T14:00:00.000Z
 Canonical: No
 Owner: Operations
 
+## Unreleased — guides: the camera has four ways, and marking the people is required on the Waiting cards too
+
+- **Changed (docs):** `docs/guides/guides-tutorial-camera-mode.md` (English and Hungarian) now describes the four ways to take the photo (automatic, the live camera with view buttons, the live camera with a real sensor photo, the live camera with the screen picture) as a selector on the partner and the event; `docs/guides/guides-tutorial-approving-photos.md` (English and Hungarian) says that with marking on the Waiting cards have one **Review** button that opens the big view, with no quick Approve or Reject and no bulk approval, and that the Rejected list keeps its Approve (camera#547, camera#542, owner answers 267 and 272).
+- **Verified:** written from the camera app changes and their browser checks. Not checked at a live event.
+
 ## [v12.3.41] — 2026-10-10T12:00:00.000Z
 
 Fleet release 12.3.41 (messmass, camera, fanmass, try-on; savetheworld has carried 12.3.41 since 2026-10-05).

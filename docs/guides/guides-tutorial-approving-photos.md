@@ -3,7 +3,7 @@ Status: Active
 Last Updated: 2026-10-10T00:00:00.000Z
 Canonical: Yes
 Owner: Documentation
-Verified against the Camera app code @ 75c595b (camera#373); marking the people with camera#542 (on for every event and required, answers 262 to 264)
+Verified against the Camera app code @ 75c595b (camera#373); marking the people with camera#542 (on for every event and required, answers 262 to 264 and 267)
 
 > Audience: The person who approves photos live at an event, and the operators who give them access · Prerequisites: The event exists in the Camera app with photo approval switched on, and your e-mail address has the **Manager** role for Events on the event's partner · Related: [Camera app integration](guides-tutorial-camera-app.md) · [Events](guides-tutorial-events.md) · [Partners](guides-tutorial-partners.md) · [Authentication, roles & SSO](guides-tutorial-authentication-sso.md) · Magyar változat: [lent / below](#magyar-valtozat)
 
@@ -48,9 +48,9 @@ Approve by default and reject only what you would not want next to the organiser
 
 ## Marking the people in a photo (when the event uses it)
 
-In **Review one by one**, the reviewer **marks the people in each photo before deciding**. It is on for every event; a global admin can switch it off for one event on the Vetting tab (**Marking the people is on**), and then the big view is only the photo and the decision. The **Approve** and **Reject** buttons on the cards of the list decide without marking (the quick way), so a photo decided there has no marks. The marks are saved with the photo and used for the analytics: how many people, how old, how they feel, what they wear.
+With marking on (it is on for every event; a global admin can switch it off for one event on the Vetting tab, **Marking the people is on**), **every waiting photo is decided in the big view**, after the people in it are marked. On the **Waiting** list a card has one button, **Review**, which opens that photo big; there is no quick **Approve** or **Reject**, no checkboxes and no **Approve selected**, and the server refuses a decision that skips the marking. The **Rejected** list keeps its **Approve** (a photo rejected before can be approved again). An event with marking switched off works as before: quick buttons and **Approve selected**. The marks are saved with the photo and used for the analytics: how many people, how old, how they feel, what they wear.
 
-Press **Review one by one** on the Vetting tab. The oldest waiting photo opens **big**, one at a time:
+Press **Review** on a card (or **Review one by one** on the top line, which starts with the oldest). The photo opens **big**, one at a time:
 
 1. Press **Clicker**, then **draw a rectangle around one person**: press, drag and let go (a mouse or a finger). A tap is not a rectangle. **Retry** draws it again.
 2. Press **Next**. Sixteen buttons appear: the top two rows say **who it is** (first row women and girls, second row men and boys: kid, young, adult, old), the third row the **emotion** (sad, unamused, happy, angry), the last row any **merchandise** (cap, scarf, jersey, flag). Choose **who** (needed), then the emotion and the merchandise if you can (optional; more than one merchandise is fine).
@@ -102,9 +102,9 @@ Alapból hagyd jóvá, és csak azt utasítsd el, amit nem szeretnél a szervez�
 
 ### Az emberek megjelölése egy fotón (ha az esemény használja)
 
-A **Review one by one** nézetben a jóváhagyó **döntés előtt megjelöli az embereket minden fotón**. Ez minden eseményen be van kapcsolva; egy globális admin egy eseményre kikapcsolhatja a Vetting fülön (**Marking the people is on**), ilyenkor a nagy nézet csak a fotó és a döntés. A lista kártyáin lévő **Approve** és **Reject** gombok jelölés nélkül döntenek (ez a gyors út), ezért az ott eldöntött fotón nincs jelölés. A jelölések a fotóval együtt mentődnek, és az elemzésekhez kellenek: hány ember van rajta, milyen idős, milyen kedvű, mi van rajta.
+Bekapcsolt jelölésnél (minden eseményen be van kapcsolva; egy globális admin egy eseményre kikapcsolhatja a Vetting fülön, **Marking the people is on**) **minden várakozó fotót a nagy nézetben döntesz el**, miután megjelölted rajta az embereket. A **Waiting** listán a kártyán egy gomb van, a **Review**, ez nagyban megnyitja a fotót; nincs gyors **Approve** vagy **Reject**, nincsenek jelölőnégyzetek és **Approve selected**, a szerver pedig elutasítja a jelölést kihagyó döntést. A **Rejected** lista megtartja az **Approve** gombot (egy korábban elutasított fotót újra jóvá lehet hagyni). A kikapcsolt jelölésű esemény a régi módon működik: gyors gombok és **Approve selected**. A jelölések a fotóval együtt mentődnek, és az elemzésekhez kellenek: hány ember van rajta, milyen idős, milyen kedvű, mi van rajta.
 
-Nyomd meg a Vetting fülön a **Review one by one** gombot. A legrégebbi várakozó fotó **nagyban** nyílik meg, egyesével:
+Nyomd meg a kártyán a **Review** gombot (vagy a felső sorban a **Review one by one** gombot, ami a legrégebbivel kezd). A fotó **nagyban** nyílik meg, egyesével:
 
 1. Nyomd meg a **Clicker** gombot, majd **rajzolj egy téglalapot egy személy köré**: nyomd le, húzd, engedd el (egérrel vagy ujjal). Egy koppintás nem téglalap. A **Retry** újrarajzoltat.
 2. Nyomd meg a **Next** gombot. Tizenhat gomb jelenik meg: a felső két sor azt mondja meg, **ki az**: az első sor a nők és lányok, a második a férfiak és fiúk (kicsi, fiatal, felnőtt, idős); a harmadik sor az **érzelem** (szomorú, rosszkedvű, vidám, dühös); az utolsó sor az esetleges **kellékek** (sapka, sál, mez, zászló). Válaszd ki, **ki az** (kötelező), majd ha tudod, az érzelmet és a kellékeket (nem kötelező; több kellék is lehet).
