@@ -1,14 +1,14 @@
 {
  "_meta": {
-  "generated": "2026-10-10T10:44:40+00:00",
+  "generated": "2026-10-10T13:18:30+00:00",
   "repo": "messmass",
-  "head": "1a66d1a4",
+  "head": "4f3aa67e",
   "counts": {
    "endpoints": 223,
    "collections": 71,
    "env": 33,
    "outbound-hosts": 31,
-   "docs": 215
+   "docs": 216
   }
  },
  "items": [
@@ -603,6 +603,10 @@
   {
    "file": "docs/guides/guides-tutorial-camera-layouts-messages.md",
    "title": "Tutorial: Layouts, messages and the dark area at an event (camera app)"
+  },
+  {
+   "file": "docs/guides/guides-tutorial-camera-sample-selfies.md",
+   "title": "Tutorial: Sample selfies and the photo window of the welcome page screen (camera app)"
   },
   {
    "file": "docs/guides/guides-tutorial-charts-formulas.md",
