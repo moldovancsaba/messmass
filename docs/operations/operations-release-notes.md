@@ -4,6 +4,11 @@ Last Updated: 2026-09-30T14:00:00.000Z
 Canonical: No
 Owner: Operations
 
+## Unreleased — guide: the Analytics view of an event (camera app)
+
+- **Added (docs):** `docs/guides/guides-tutorial-camera-analytics.md` (English and Hungarian, number 27 in the tutorials index; the later entries moved down by one): where the event's and all events' Analytics are, the tabs, the days and clock filters, the CSV, what is not measured yet, and the counters for messmass that are prepared and switched off (camera#521, phase 1, PRs 567 and 572).
+- **Verified:** written from the camera app's `docs/ANALYTICS.md` and the browser checks of the view. Not checked on a live event.
+
 ## Unreleased — guide: the gallery permission sentence says "public campaign wall"
 
 - **Changed (docs):** the acceptance guide (English and Hungarian) quotes the new default sentence ("public campaign wall", camera#554, owner answer 289) and says what the box controls: savetheworld's public pledge wall and galleries only; the giant screen, the user's own share link and the e-mails follow the approval rule.

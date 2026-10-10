@@ -56,11 +56,12 @@ Data is captured against an **event** (via the Clicker/Manual editor, Google She
 24. [The order of the pages, and Take photo + Submit (camera app)](guides-tutorial-camera-journey-order.md) — up and down on every page including the default ones, and the checkbox that lets a login or a CTA come between taking the photo and saving it (English and Hungarian).
 25. [Sample selfies and the photo window of the welcome page screen (camera app)](guides-tutorial-camera-sample-selfies.md) — the general sample selfies, a partner's own, the event's choice (a sample selfie, a photo of the event, or the stand-in), Pick another (English and Hungarian).
 26. [Which camera the photo page uses (camera app)](guides-tutorial-camera-mode.md) — the four ways to take the photo (automatic, live with view buttons, live with a real sensor photo, live with the screen picture), chosen for all events of a partner or per event (English and Hungarian).
-27. [Fanmass integration](guides-tutorial-fanmass.md) — image-intelligence analytics and the mapping API.
-28. [Bitly integration](guides-tutorial-bitly.md) — short-link click analytics attributed to events/partners.
-29. [Sport databases](guides-tutorial-sport-databases.md) — Football-Data.org, API-Football, and TheSportsDB enrichment.
-30. [Google Sheets sync](guides-tutorial-google-sheets.md) — managing a partner's events from a spreadsheet.
-31. [Authentication, roles & SSO](guides-tutorial-authentication-sso.md) — sign-in, roles, SSO, and API keys.
+27. [The Analytics view of an event (camera app)](guides-tutorial-camera-analytics.md) — the event's and all events' numbers on the data that exists: photos, decisions, users, people marked, screens, links, e-mails, consents; days and clock filters, CSV, and what is not measured yet (English and Hungarian).
+28. [Fanmass integration](guides-tutorial-fanmass.md) — image-intelligence analytics and the mapping API.
+29. [Bitly integration](guides-tutorial-bitly.md) — short-link click analytics attributed to events/partners.
+30. [Sport databases](guides-tutorial-sport-databases.md) — Football-Data.org, API-Football, and TheSportsDB enrichment.
+31. [Google Sheets sync](guides-tutorial-google-sheets.md) — managing a partner's events from a spreadsheet.
+32. [Authentication, roles & SSO](guides-tutorial-authentication-sso.md) — sign-in, roles, SSO, and API keys.
 
 ## Quick start by role
 

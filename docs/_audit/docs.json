@@ -1,14 +1,14 @@
 {
  "_meta": {
-  "generated": "2026-10-10T17:33:29+00:00",
+  "generated": "2026-10-10T20:57:51+00:00",
   "repo": "messmass",
-  "head": "c07bcd2f",
+  "head": "f66fbea3",
   "counts": {
    "endpoints": 223,
    "collections": 71,
    "env": 33,
    "outbound-hosts": 31,
-   "docs": 218
+   "docs": 219
   }
  },
  "items": [
@@ -567,6 +567,10 @@
   {
    "file": "docs/guides/guides-tutorial-bitly.md",
    "title": "Tutorial: Bitly integration"
+  },
+  {
+   "file": "docs/guides/guides-tutorial-camera-analytics.md",
+   "title": "Tutorial: The Analytics view of an event (camera app)"
   },
   {
    "file": "docs/guides/guides-tutorial-camera-app.md",
