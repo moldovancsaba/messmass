@@ -206,7 +206,7 @@
     "@sovereignsquad/gds-theme": "file:vendor/gds/sovereignsquad-gds-theme-6.3.0.tgz",
     "@sovereignsquad/gds-admin": "file:vendor/gds/sovereignsquad-gds-admin-6.3.0.tgz",
     "fast-xml-parser": "^5.7.2",
-    "handlebars": "^4.7.9",
+    "handlebars": "^4.7.10",
     "flatted": "^3.4.2",
     "postcss": "^8.5.13",
     "qs": "^6.16.0",
