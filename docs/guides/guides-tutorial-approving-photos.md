@@ -3,7 +3,7 @@ Status: Active
 Last Updated: 2026-10-10T00:00:00.000Z
 Canonical: Yes
 Owner: Documentation
-Verified against the Camera app code @ 75c595b (camera#373); marking the people with camera#542
+Verified against the Camera app code @ 75c595b (camera#373); marking the people with camera#542 (on for every event and required, answers 262 to 264)
 
 > Audience: The person who approves photos live at an event, and the operators who give them access · Prerequisites: The event exists in the Camera app with photo approval switched on, and your e-mail address has the **Manager** role for Events on the event's partner · Related: [Camera app integration](guides-tutorial-camera-app.md) · [Events](guides-tutorial-events.md) · [Partners](guides-tutorial-partners.md) · [Authentication, roles & SSO](guides-tutorial-authentication-sso.md) · Magyar változat: [lent / below](#magyar-valtozat)
 
@@ -48,14 +48,14 @@ Approve by default and reject only what you would not want next to the organiser
 
 ## Marking the people in a photo (when the event uses it)
 
-An event can ask the reviewer to **mark the people in each photo before deciding**. It is switched on by a global admin on the Vetting tab (**Marking the people is on**); **until it is on, nothing in this guide changes**. The marks are saved with the photo and used for the analytics: how many people, how old, how they feel, what they wear.
+In **Review one by one**, the reviewer **marks the people in each photo before deciding**. It is on for every event; a global admin can switch it off for one event on the Vetting tab (**Marking the people is on**), and then the big view is only the photo and the decision. The **Approve** and **Reject** buttons on the cards of the list decide without marking (the quick way), so a photo decided there has no marks. The marks are saved with the photo and used for the analytics: how many people, how old, how they feel, what they wear.
 
 Press **Review one by one** on the Vetting tab. The oldest waiting photo opens **big**, one at a time:
 
 1. Press **Clicker**, then **draw a rectangle around one person**: press, drag and let go (a mouse or a finger). A tap is not a rectangle. **Retry** draws it again.
-2. Press **Next**. Sixteen buttons appear: the top two rows say **who it is** (first row women and girls, second row men and boys: kid, young, adult, old), the third row the **emotion** (sad, unamused, happy, angry), the last row any **merchandise** (cap, other merchandise, jersey or shirt, flag). Choose **who** (needed), then the emotion and the merchandise if you can (optional; more than one merchandise is fine).
+2. Press **Next**. Sixteen buttons appear: the top two rows say **who it is** (first row women and girls, second row men and boys: kid, young, adult, old), the third row the **emotion** (sad, unamused, happy, angry), the last row any **merchandise** (cap, scarf, jersey, flag). Choose **who** (needed), then the emotion and the merchandise if you can (optional; more than one merchandise is fine).
 3. Press **Done**. The person is marked with a coloured rectangle (yellow, blue, ...). Press **Clicker** again for the next person, **Remove** takes the last one off, **Cancel** throws away the one you are marking.
-4. When you have marked what you can (nobody is also fine), press **Next**. The people are saved, and you decide: **Approve**, or **Reject** (with a reason if you want). The next photo opens at once. **Skip this photo** leaves it for later.
+4. Marking is required: mark at least one person and press **Next**, or, if nobody is in the photo, press **Nobody in this photo** (that is also saved: it tells the analytics you looked). The people are saved, and you decide: **Approve**, or **Reject** (with a reason if you want). The next photo opens at once. **Skip this photo** leaves it for later.
 
 On a phone held upright the sixteen buttons are under the photo; on a computer they are over it. If you are not sure about someone, leave the emotion empty and choose the closest **who**.
 
@@ -102,14 +102,14 @@ Alapból hagyd jóvá, és csak azt utasítsd el, amit nem szeretnél a szervez�
 
 ### Az emberek megjelölése egy fotón (ha az esemény használja)
 
-Egy esemény kérheti, hogy a jóváhagyó **döntés előtt jelölje meg az embereket minden fotón**. Ezt egy globális admin kapcsolja be a Vetting fülön (**Marking the people is on**); **amíg nincs bekapcsolva, az útmutató többi része semmit sem változik**. A jelölések a fotóval együtt mentődnek, és az elemzésekhez kellenek: hány ember van rajta, milyen idős, milyen kedvű, mi van rajta.
+A **Review one by one** nézetben a jóváhagyó **döntés előtt megjelöli az embereket minden fotón**. Ez minden eseményen be van kapcsolva; egy globális admin egy eseményre kikapcsolhatja a Vetting fülön (**Marking the people is on**), ilyenkor a nagy nézet csak a fotó és a döntés. A lista kártyáin lévő **Approve** és **Reject** gombok jelölés nélkül döntenek (ez a gyors út), ezért az ott eldöntött fotón nincs jelölés. A jelölések a fotóval együtt mentődnek, és az elemzésekhez kellenek: hány ember van rajta, milyen idős, milyen kedvű, mi van rajta.
 
 Nyomd meg a Vetting fülön a **Review one by one** gombot. A legrégebbi várakozó fotó **nagyban** nyílik meg, egyesével:
 
 1. Nyomd meg a **Clicker** gombot, majd **rajzolj egy téglalapot egy személy köré**: nyomd le, húzd, engedd el (egérrel vagy ujjal). Egy koppintás nem téglalap. A **Retry** újrarajzoltat.
-2. Nyomd meg a **Next** gombot. Tizenhat gomb jelenik meg: a felső két sor azt mondja meg, **ki az**: az első sor a nők és lányok, a második a férfiak és fiúk (kicsi, fiatal, felnőtt, idős); a harmadik sor az **érzelem** (szomorú, rosszkedvű, vidám, dühös); az utolsó sor az esetleges **kellékek** (sapka, egyéb kellék, mez vagy póló, zászló). Válaszd ki, **ki az** (kötelező), majd ha tudod, az érzelmet és a kellékeket (nem kötelező; több kellék is lehet).
+2. Nyomd meg a **Next** gombot. Tizenhat gomb jelenik meg: a felső két sor azt mondja meg, **ki az**: az első sor a nők és lányok, a második a férfiak és fiúk (kicsi, fiatal, felnőtt, idős); a harmadik sor az **érzelem** (szomorú, rosszkedvű, vidám, dühös); az utolsó sor az esetleges **kellékek** (sapka, sál, mez, zászló). Válaszd ki, **ki az** (kötelező), majd ha tudod, az érzelmet és a kellékeket (nem kötelező; több kellék is lehet).
 3. Nyomd meg a **Done** gombot. A személy színes téglalapot kap (sárga, kék, ...). A **Clicker** gombbal jön a következő személy, a **Remove** az utolsót leveszi, a **Cancel** eldobja azt, amelyiket éppen jelölsz.
-4. Ha megjelöltél mindent, amit tudsz (az is rendben van, ha senki), nyomd meg a **Next** gombot. Az emberek mentődnek, és döntesz: **Approve**, vagy **Reject** (ha szeretnél, indoklással). Rögtön megnyílik a következő fotó. A **Skip this photo** későbbre hagyja.
+4. A jelölés kötelező: jelölj meg legalább egy embert, és nyomd meg a **Next** gombot, vagy ha senki sincs a fotón, nyomd meg a **Nobody in this photo** gombot (ez is mentődik: jelzi az elemzésnek, hogy megnézted). Az emberek mentődnek, és döntesz: **Approve**, vagy **Reject** (ha szeretnél, indoklással). Rögtön megnyílik a következő fotó. A **Skip this photo** későbbre hagyja.
 
 Telefonon, álló helyzetben a tizenhat gomb a fotó alatt van, számítógépen a fotó fölött. Ha nem vagy biztos valakiben, hagyd üresen az érzelmet, és válaszd a legközelebbi **ki az** gombot.
 
