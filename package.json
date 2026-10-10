@@ -162,7 +162,7 @@
     "marked": "^16.4.1",
     "mongodb": "^6.8.0",
     "mongoose": "^9.7.2",
-    "next": "15.5.24",
+    "next": "15.5.27",
     "puppeteer-core": "^25.8.0",
     "react": "^19.2.6",
     "react-chartjs-2": "^5.3.1",
