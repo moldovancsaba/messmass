@@ -4,6 +4,11 @@ Last Updated: 2026-09-30T14:00:00.000Z
 Canonical: No
 Owner: Operations
 
+## Unreleased — guide: the order of the pages, and Take photo + Submit
+
+- **Added (docs):** `docs/guides/guides-tutorial-camera-journey-order.md` (English and Hungarian, number 24 in the tutorials index; the later entries moved down by one): up and down on every page of the journey including the default ones (welcome, consent, Who are you), and the checkbox **Submit is part of this page** on the Take Photo page that lets a login or a CTA come between taking the photo and saving it (camera#535).
+- **Verified:** written from the camera app code and release notes (camera#535, steps 1 and 2); the editor and the capture flow were checked in a browser against a production build with the API mocked. Not checked on a real phone with a real event.
+
 ## Unreleased — guide: the acceptance on the "Who are you" page
 
 - **Added (docs):** `docs/guides/guides-tutorial-camera-journey-acceptance.md` (English and Hungarian, number 23 in the tutorials index; the later entries moved down by one): the consent page as **one small checkbox with one sentence** on the Who-are-you page, everything off until it is ticked; the one setting that both page editors show (**Show acceptance** = **Show it on Who-are-you**, saved with Save all), when it applies (both pages active and before the photo; default pages need **Customise** first), the sentence and its wording, what is recorded, the sign-in, and the privacy caution.
