@@ -4,6 +4,11 @@ Last Updated: 2026-09-30T14:00:00.000Z
 Canonical: No
 Owner: Operations
 
+## Unreleased — guide: the gallery permission sentence says "public campaign wall"
+
+- **Changed (docs):** the acceptance guide (English and Hungarian) quotes the new default sentence ("public campaign wall", camera#554, owner answer 289) and says what the box controls: savetheworld's public pledge wall and galleries only; the giant screen, the user's own share link and the e-mails follow the approval rule.
+- **Verified:** written from the camera app change. Not checked at a live event.
+
 ## Unreleased — guide: the public gallery permission as a setting (camera issue 554)
 
 - **Changed (docs):** `docs/guides/guides-tutorial-camera-journey-acceptance.md` (English and Hungarian) gets a section **A separate permission for the public gallery**: the partner's default and the event's choice (Same as the partner / Ask / Do not ask, in the consent page settings), the one optional unticked checkbox above Continue when an event asks, only a ticked box puts the photo on the wall, the evidence kept with the photo, and the Dictionary texts to adapt (camera#555, owner answer 283).
