@@ -4,6 +4,11 @@ Last Updated: 2026-09-30T14:00:00.000Z
 Canonical: No
 Owner: Operations
 
+## Unreleased — guide: marking the people in a photo at vetting
+
+- **Added (docs):** a section **Marking the people in a photo** (English and Hungarian) in `docs/guides/guides-tutorial-approving-photos.md`: **Review one by one**, Clicker, drawing a rectangle, the sixteen buttons (who, emotion, merchandise), Done, then Approve or Reject; off by default per event, so nothing else in the guide changes (camera#542).
+- **Verified:** written from the camera app code and release notes (camera#542); the view was driven in a real browser with real pointer drags at desktop and phone size. Not checked with a real photo at an event.
+
 ## Unreleased — guide: sample selfies and the photo window of the welcome page screen
 
 - **Added (docs):** `docs/guides/guides-tutorial-camera-sample-selfies.md` (English and Hungarian, number 25 in the tutorials index; the later entries moved down by one): the general sample selfies (Libraries > Sample selfies), a partner's own (Pictures), and the event's choice on the card Welcome page screen (a sample selfie with Pick another, a photo of the event, or the stand-in); nothing changes until a sample selfie is uploaded (camera#540).
