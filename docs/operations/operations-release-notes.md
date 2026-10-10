@@ -4,6 +4,16 @@ Last Updated: 2026-09-30T14:00:00.000Z
 Canonical: No
 Owner: Operations
 
+## [v12.3.41] — 2026-10-10T12:00:00.000Z
+
+Fleet release 12.3.41 (messmass, camera, fanmass, try-on; savetheworld has carried 12.3.41 since 2026-10-05).
+Version-only in messmass code: the changes since 12.3.40 are the guides below (the dated "Unreleased" entries are part of this release), written for what the
+camera app shipped: marking the people in each photo at vetting (on for every event and required), the camera mode setting for partners and events, the order
+of the journey pages and Take photo + Submit, the sample selfies and the photo window of the welcome page screen, broken pictures hidden everywhere.
+
+### Docs
+- `docs/_audit/fleet-version-policy.md` records 12.3.41 and the savetheworld-first case: when one app has already taken the next number alone, the others rise to it (highest wins).
+
 ## Unreleased — guide: which camera the photo page uses (camera app)
 
 - **Added (docs):** `docs/guides/guides-tutorial-camera-mode.md` (English and Hungarian, number 26 in the tutorials index; the later entries moved down by one): the phone's own camera app or the live camera with the view buttons, ticked on the partner (**Camera of the events**) or chosen on the event (**Camera**: Same as the partner, the phone's own camera app, the live camera), and `?views=1` to try it (camera#547).
