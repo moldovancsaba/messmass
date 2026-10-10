@@ -1,6 +1,8 @@
 # Session Handover — messmass
 
-Last verified: 2026-10-05 (v12.3.40, 68cdee0b = production).
+Last verified: 2026-10-10 (v12.3.41 fleet release).
+
+**2026-10-10:** messmass, camera, fanmass and try-on are on 12.3.41 (savetheworld since 2026-10-05); camera carries the work of the week (vetting with marking the people, the camera mode setting, sample selfies, the journey page order), messmass the matching guides in `docs/guides`.
 
 **2026-10-02 status (verified against git, GitHub, Vercel and the local Mac)**
 - **Versions and production.** messmass, camera, fanmass, try-on and savetheworld
