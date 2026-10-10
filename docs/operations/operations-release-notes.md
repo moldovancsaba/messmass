@@ -4,6 +4,11 @@ Last Updated: 2026-09-30T14:00:00.000Z
 Canonical: No
 Owner: Operations
 
+## Unreleased — guide: which camera the photo page uses (camera app)
+
+- **Added (docs):** `docs/guides/guides-tutorial-camera-mode.md` (English and Hungarian, number 26 in the tutorials index; the later entries moved down by one): the phone's own camera app or the live camera with the view buttons, ticked on the partner (**Camera of the events**) or chosen on the event (**Camera**: Same as the partner, the phone's own camera app, the live camera), and `?views=1` to try it (camera#547).
+- **Verified:** written from the camera app code and its browser checks (the capture page on a phone and a desktop in both modes, both editors). Not checked on a real phone with a live event.
+
 ## Unreleased — guide: marking people is on for every event and required; scarf instead of other merchandise
 
 - **Changed (docs):** the section **Marking the people in a photo** in `docs/guides/guides-tutorial-approving-photos.md` (English and Hungarian) now says marking is on for every event (a global admin can switch it off per event), is required in **Review one by one** (mark at least one person, or press **Nobody in this photo**), that the cards' Approve and Reject buttons decide without marking, and that the merchandise buttons are cap, scarf, jersey and flag (camera#542, owner answers 262 to 264).
