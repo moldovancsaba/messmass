@@ -4,6 +4,11 @@ Last Updated: 2026-09-30T14:00:00.000Z
 Canonical: No
 Owner: Operations
 
+## Unreleased — guide: the public gallery permission as a setting (camera issue 554)
+
+- **Changed (docs):** `docs/guides/guides-tutorial-camera-journey-acceptance.md` (English and Hungarian) gets a section **A separate permission for the public gallery**: the partner's default and the event's choice (Same as the partner / Ask / Do not ask, in the consent page settings), the one optional unticked checkbox above Continue when an event asks, only a ticked box puts the photo on the wall, the evidence kept with the photo, and the Dictionary texts to adapt (camera#555, owner answer 283).
+- **Verified:** written from the camera app change and its browser checks. Not checked at a live event; the wording is for the club or the privacy adviser to validate.
+
 ## Unreleased — guides: the camera has four ways, and marking the people is required on the Waiting cards too
 
 - **Changed (docs):** `docs/guides/guides-tutorial-camera-mode.md` (English and Hungarian) now describes the four ways to take the photo (automatic, the live camera with view buttons, the live camera with a real sensor photo, the live camera with the screen picture) as a selector on the partner and the event; `docs/guides/guides-tutorial-approving-photos.md` (English and Hungarian) says that with marking on the Waiting cards have one **Review** button that opens the big view, with no quick Approve or Reject and no bulk approval, and that the Rejected list keeps its Approve (camera#547, camera#542, owner answers 267 and 272).
