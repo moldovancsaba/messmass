@@ -4,6 +4,11 @@ Last Updated: 2026-09-30T14:00:00.000Z
 Canonical: No
 Owner: Operations
 
+## Unreleased — guide: every checkbox is shown or not and required or optional (camera issue 558)
+
+- **Changed (docs):** the acceptance guide (`docs/guides/guides-tutorial-camera-journey-acceptance.md`, English and Hungarian) now describes the checkbox settings (camera#558, PRs 566, 569, 571; owner answer 297): where they are (the partner editor's **Checkboxes of the events**, the journey editor's **Consent page settings**, the **Shown** and **Required** toggles on each checkbox of an own consent page, the landing page's cookie box), the choices for each kind (the three documents, the acceptance on Who-are-you, the public gallery permission), that the server checks what an editor required, and the public gallery permission as one of them; the old "Show acceptance" and "Show it on Who-are-you" controls it replaced are no longer mentioned.
+- **Verified:** written from the camera app code (the labels of `components/admin/CheckboxSettingsFields.tsx`). Not checked at a live event.
+
 ## Unreleased — guide: the Analytics view of an event (camera app)
 
 - **Added (docs):** `docs/guides/guides-tutorial-camera-analytics.md` (English and Hungarian, number 27 in the tutorials index; the later entries moved down by one): where the event's and all events' Analytics are, the tabs, the days and clock filters, the CSV, what is not measured yet, and the counters for messmass that are prepared and switched off (camera#521, phase 1, PRs 567 and 572).
