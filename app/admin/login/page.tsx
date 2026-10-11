@@ -14,7 +14,6 @@ import { Button, Stack, Text } from '@mantine/core'
 const ERROR_MESSAGES = new Map<string, string>([
   ['sso_required', 'Please sign in with DoneIsBetter to access the dashboard.'],
   ['no_access', 'Your account does not have access to {messmass} yet. Contact an admin to request access.'],
-  ['no_account', 'No {messmass} account for this identity yet. Contact an admin to request access.'],
   ['invalid_sso', 'Sign-in session expired or invalid. Please try again.'],
   ['session_expired', 'Sign-in session expired or invalid. Please try again.'],
   ['auth_failed', 'Sign-in session expired or invalid. Please try again.'],
