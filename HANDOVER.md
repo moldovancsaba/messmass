@@ -1,6 +1,8 @@
 # Session Handover — messmass
 
-Last verified: 2026-10-10 (v12.3.41 fleet release).
+Last verified: 2026-10-11 (v12.3.42 fleet release).
+
+**2026-10-11:** messmass, camera, fanmass, try-on and savetheworld are on 12.3.42 (version only everywhere except camera); camera carries the work of 2026-10-10 to 2026-10-11 (journey analytics, no IP addresses stored with photos, a shown/required setting for every checkbox, the public-gallery permission as a setting, the four-way camera mode, the try-on integration removed from the app), messmass the matching guides and clean-up.
 
 **2026-10-10:** messmass, camera, fanmass and try-on are on 12.3.41 (savetheworld since 2026-10-05); camera carries the work of the week (vetting with marking the people, the camera mode setting, sample selfies, the journey page order), messmass the matching guides in `docs/guides`.
 

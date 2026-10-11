@@ -4,6 +4,14 @@ Last Updated: 2026-09-30T14:00:00.000Z
 Canonical: No
 Owner: Operations
 
+## [v12.3.42] — 2026-10-11T12:00:00.000Z
+
+Version only. Fleet release 12.3.42 (2026-10-11): camera ships the journey analytics and the stop of storing IP addresses with photos, a shown/required setting for every checkbox, the public-gallery permission as a setting, the four-way camera mode, the removal of the try-on integration from the app (documented in camera docs/TRYON_REMOVED.md; the try-on repo itself is unchanged), a documentation and deprecation clean-up, the pull-request playbook and tooling; messmass the matching guides and clean-up. No behaviour change in this repo.
+The dated "Unreleased" entries below it, up to the v12.3.41 entry, are part of this release.
+
+### Docs
+- `docs/_audit/fleet-version-policy.md` records 12.3.42.
+
 ## Unreleased — guide: every checkbox is shown or not and required or optional (camera issue 558)
 
 - **Changed (docs):** the acceptance guide (`docs/guides/guides-tutorial-camera-journey-acceptance.md`, English and Hungarian) now describes the checkbox settings (camera#558, PRs 566, 569, 571; owner answer 297): where they are (the partner editor's **Checkboxes of the events**, the journey editor's **Consent page settings**, the **Shown** and **Required** toggles on each checkbox of an own consent page, the landing page's cookie box), the choices for each kind (the three documents, the acceptance on Who-are-you, the public gallery permission), that the server checks what an editor required, and the public gallery permission as one of them; the old "Show acceptance" and "Show it on Who-are-you" controls it replaced are no longer mentioned.
