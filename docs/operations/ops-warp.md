@@ -281,9 +281,9 @@ npm run lint
 **{messmass}** is an event statistics dashboard (live updates via REST + polling) with:
 
 ### Frontend Architecture
-- **Next.js 15.5.9** with App Router (`/app` directory)
-- **TypeScript 5.6.3** with strict mode for type safety
-- **React 18** with REST + polling for live updates
+- **Next.js 15.5.27** with App Router (`/app` directory)
+- **TypeScript ^5.6.3** (5.9.3 installed) with strict mode for type safety
+- **React ^19.2.6** with REST + polling for live updates
 - **CSS Modules** with project-wide CSS variables (see `app/styles/theme.css`) for styling
 - **Component-based architecture** with unified hashtag system
 
