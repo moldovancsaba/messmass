@@ -95,6 +95,7 @@ Notes:
 5.3 Template inheritance note
 - UI: app/admin/project-partners/page.tsx
 - Explicit hierarchy shown in UI: Project -> Partner -> Default -> Hardcoded.
+- That page (app/api/admin/project-partners/route.ts) writes the legacy projects.partner1 / partner2 fields; events created or edited in /admin/events store partner1Id / partner2Id. Template resolution accepts both (partner1Id first).
 
 6 Selection Rules (Runtime Resolution)
 
@@ -102,7 +103,7 @@ Canonical logic: app/api/report-config/[identifier]/route.ts
 
 6.1 Event report (entityType: project)
 1) Project-specific template (projects.reportTemplateId)
-2) Partner template via partner1 (partners.reportTemplateId) - partner2 is not used for template resolution
+2) Partner template via the event's partner (partners.reportTemplateId): projects.partner1Id, else the legacy projects.partner1 that older documents and /admin/project-partners still carry (lib/projectPartnerRef.ts, messmass#430); partner2Id / partner2 is not used for template resolution
 3) Default template (report_templates where isDefault = true)
 4) Hardcoded fallback (HARDCODED_DEFAULT_TEMPLATE)
 

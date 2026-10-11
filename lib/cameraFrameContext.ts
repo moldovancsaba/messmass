@@ -6,14 +6,14 @@
 //     chain or guess the fallback, which messmass applies in the browser (hooks/useReportStyle.ts).
 // HOW: Same chain as app/api/report-config/[identifier]/route.ts: template = event, then the event's partner,
 //     then the default template, then none; style = event.styleIdEnhanced, then partner.styleId, then
-//     template.styleId, then DEFAULT_STYLE. One deliberate difference: the partner is found through
-//     partner1Id (what projects actually store), because report-config reads the legacy `partner1` field,
-//     which no project writes any more (see messmass issue for that gap). Takes a Db so it is unit-tested
-//     with a small fake.
+//     template.styleId, then DEFAULT_STYLE. The partner is found the same way report-config finds it
+//     (lib/projectPartnerRef.ts: partner1Id, else the legacy partner1 field; messmass#430). Takes a Db so it is
+//     unit-tested with a small fake.
 
 import { ObjectId, type Db } from 'mongodb';
 import { DEFAULT_STYLE } from '@/lib/reportStyleTypes';
 import { DEFAULT_FONTS } from '@/lib/fontTypes';
+import { projectPartnerId } from '@/lib/projectPartnerRef';
 
 export interface CameraFrameTeam {
   id: string;
@@ -108,10 +108,8 @@ export async function buildCameraFrameContext(db: Db, messmassEventId: string): 
   const project = (await db.collection('projects').findOne({ _id: projectId })) as Doc | null;
   if (!project) return null;
 
-  const homeRef = project.partner1Id ?? project.partner1;
-  const visitorRef = project.partner2Id ?? project.partner2;
-  const home = await findPartner(db, homeRef);
-  const visitor = await findPartner(db, visitorRef);
+  const home = await findPartner(db, projectPartnerId(project, 'home'));
+  const visitor = await findPartner(db, projectPartnerId(project, 'visitor'));
   // The partner of the event: the home team, or the organiser of an event without teams.
   const partner = home ?? (await findPartner(db, project.partnerId));
 

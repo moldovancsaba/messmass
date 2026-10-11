@@ -4,10 +4,11 @@ import { getDb } from '@/lib/db';
 import { ReportTemplate, ResolvedTemplate, HARDCODED_DEFAULT_TEMPLATE } from '@/lib/reportTemplateTypes';
 import { error as logError, info as logInfo, warn as logWarn, debug as logDebug } from '@/lib/logger';
 import { findPartnerByIdentifier } from '@/lib/partnerIdentifier';
+import { projectPartnerId } from '@/lib/projectPartnerRef';
 
 // WHAT: Report configuration resolution endpoint (v11.0.0)
 // WHY: Central API for resolving report templates with hierarchy support
-// HOW: Project → Partner → Default → Hardcoded fallback
+// HOW: Project → Partner → Default → Hardcoded fallback. A project's partner is read through lib/projectPartnerRef.ts.
 
 /**
  * WHAT: Resolve report template for given entity
@@ -140,12 +141,11 @@ async function resolveReportTemplate(
       // ==========================================
       // LEVEL 2: Partner Template (via project's partner)
       // ==========================================
-      if (project?.partner1) {
-        const partnerId = typeof project.partner1 === 'object' && '_id' in project.partner1
-          ? project.partner1._id
-          : project.partner1;
-        
-        const partner = await partnersCollection.findOne({ _id: partnerId });
+      // WHAT: The event's partner is its home team: partner1Id, else the legacy partner1 field.
+      // WHY: Projects store partner1Id; only older documents and /admin/project-partners carry partner1 (messmass#430).
+      const eventPartnerId = projectPartnerId(project);
+      if (project && eventPartnerId) {
+        const partner = await partnersCollection.findOne({ _id: eventPartnerId });
         if (partner?.reportTemplateId) {
           const templateId = typeof partner.reportTemplateId === 'string' && ObjectId.isValid(partner.reportTemplateId)
             ? new ObjectId(partner.reportTemplateId)

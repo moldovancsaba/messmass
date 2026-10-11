@@ -113,7 +113,7 @@ it drifts. Do not edit between the markers.
 | Category | Count | Location |
 |----------|-------|----------|
 | **UI Components** | 104 | `components/` |
-| **Utility Modules** | 222 | `lib/` |
+| **Utility Modules** | 223 | `lib/` |
 | **Hooks** | 13 | `hooks/` |
 | **Design Tokens** | 408 | `app/styles/theme.css` |
 | **Utility CSS classes** | 192 | `app/styles/utilities.css` |
@@ -602,7 +602,7 @@ The Template System provides hierarchical report visualization management across
 **For Event Reports (projects):**
 ```typescript
 1. Project-Specific Template (project.reportTemplateId)
-2. Partner Template via project.partner1 (partner.reportTemplateId)
+2. Partner Template via the event's partner: project.partner1Id, else the legacy project.partner1 (partner.reportTemplateId)
 3. Special Case: __default_event__ identifier forces default event template
 4. Default Template (isDefault: true, ANY type - no type filter)
 5. Hardcoded Fallback (emergency system template from lib/reportTemplateTypes.ts)
@@ -617,7 +617,7 @@ The Template System provides hierarchical report visualization management across
 
 **Key Implementation Details:**
 - Default template lookup does NOT filter by type (code: `findOne({ isDefault: true })`)
-- Partner template resolution follows project.partner1 reference automatically
+- Partner template resolution follows the event's partner automatically: `partner1Id` (what projects store), else the legacy `partner1` field that older documents and `/admin/project-partners` still write (`lib/projectPartnerRef.ts`; before messmass#430 only `partner1` was read, so events stored with `partner1Id` skipped this level). `partner2Id` (the visitor) is never used. When a document carries both and they differ, `partner1Id` wins. The same rule serves `lib/report-resolver.ts` and the camera frame context.
 - Special `__default_event__` identifier used by partner report system for card layouts
 - Hardcoded fallback defined in `HARDCODED_DEFAULT_TEMPLATE` constant
 - All resolution handled by `/api/report-config/[identifier]?type=project|partner`
@@ -711,7 +711,7 @@ curl "http://localhost:3000/api/report-config/PROJECT_SLUG?type=project"
 
 **Partner Template Not Applying:**
 1. Verify `partner.reportTemplateId` field exists in database
-2. Check `project.partner1` references correct partner ObjectId
+2. Check `project.partner1Id` (or, on an older document, the legacy `project.partner1`) references the correct partner ObjectId
 3. Test resolution: Query `/api/report-config/[projectSlug]?type=project`
 4. Check logs: Server console shows resolution path
 
