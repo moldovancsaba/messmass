@@ -1,9 +1,9 @@
 # Tutorial: The e-mails to the users (camera app)
 Status: Active
-Last Updated: 2026-10-09T00:00:00.000Z
+Last Updated: 2026-10-11T00:00:00.000Z
 Canonical: Yes
 Owner: Documentation
-Verified against the Camera app code @ 2e6d10d (camera#463); the picture button @ ad7d2ba (camera#376)
+Verified against the Camera app code @ 2e6d10d (camera#463); the picture button @ ad7d2ba (camera#376); the follow-up e-mail and the removal of the two try-on e-mails @ c40aad85 (camera#559, camera#557)
 
 > Audience: The people who set up an event in the Camera app (editors, operators) · Prerequisites: The event exists in the Camera app, and your e-mail address has the **Manager** role for its partner (a global admin can do everything here) · Related: [Approving photos at an event](guides-tutorial-approving-photos.md), [Layouts, messages and the dark area](guides-tutorial-camera-layouts-messages.md), [Camera app integration](guides-tutorial-camera-app.md)
 
@@ -17,7 +17,7 @@ The Camera app sends e-mails to the people who take part in an event. There are 
 | **Arrived** | When somebody submits a photo (later: other media). "We got it." It has no button, because there is nothing to open yet. | No |
 | **Approved** | When the photo is approved, with the link to it. At once for an event without photo approval, when the approver presses Approve for an event with it. | **Yes** |
 | **Declined** | When the approver declines a photo (events with photo approval): a short note with a link to take another one. | **Yes** |
-| **Follow up** | One week after the event, to look back at the memory. | No. **Not sent yet**: the text and the switch are saved, the daily job that sends it is added later. |
+| **Follow up** | One week after the event, to look back at the memory. Once to each user who has an approved photo, gave an e-mail address and agreed to the terms. The event needs a **date**. | No. Switch it on for an event (or as the partner's default) to use it. |
 
 You decide the words, the look comes from the event (its colours, font and logo), and one **legal part** (the small print about terms and policies) is shared by all e-mails, so it is written once.
 
@@ -89,7 +89,7 @@ Press **Save the e-mails** at the top. What is the default is not stored.
 
 - **Sender and terms:** the sender display name and the link behind `{terms}` are per event; empty means the default.
 - **Links to the event use the short link.** If the event has a **URL slug** (in Edit and pages), `{eventlink}` and the "take another photo" link of the declined e-mail are its short link, not the long capture address.
-- **Try-on events** also show two older e-mails (when the related photos are ready, and after an approved resubmitted result), kept as they were.
+- **The follow-up e-mail** is sent by a daily job: from the 7th day after the date of the event and, if a run was missed, until the 21st day (the card shows both days for the event), never before or after, and once for each address and event. The card of the e-mail says from which day it is sent, and warns when the event has no date. The daily job works once the service's scheduled jobs are switched on; until then a global admin counts what it would send (a dry run that sends nothing) and sends it by hand in **Settings, Emails, Follow-up e-mails**.
 - **The footer picture** of the e-mails is still set with the other pictures (the event's Edit and pages, and the partner's Pictures).
 - **Welcome** is sent to the address the person typed, which is not verified, so it only says welcome and gives the link to the event.
 
@@ -98,7 +98,7 @@ Press **Save the e-mails** at the top. What is the default is not stored.
 - Unsaved changes are lost if you leave the page: save first. The page says "You have unsaved changes."
 - A text that is the same as the default is not stored: you cannot tell the difference, and a later change of the default reaches you.
 - Try the e-mail with **Send me a test e-mail** and open it **on the phone** before the event.
-- The preview shows what the saved settings and the legal part give; the follow up has no preview of a send because it is not sent yet.
+- The preview shows what the saved settings and the legal part give; it sends nothing. The **follow up** is off for every event until somebody switches it on, so check its text and its date before you do.
 
 <a id="magyar-valtozat"></a>
 
@@ -112,7 +112,7 @@ Az eseményhez tartozó e-maileket az esemény menüjében az **Emails** (E-mail
 - **Arrived (megérkezett):** amikor valaki beküld egy fotót. Gomb nélküli értesítés. Alapból **ki van kapcsolva**.
 - **Approved (jóváhagyva):** amikor a fotót jóváhagyják, a hozzá vezető linkekkel. Alapból **be van kapcsolva**.
 - **Declined (elutasítva):** amikor a fotót elutasítják; rövid üzenet egy linkkel egy új fotó készítéséhez. Alapból **be van kapcsolva**.
-- **Follow up (utánkövetés):** egy héttel az esemény után, az emlék visszanézésére. Alapból **ki van kapcsolva**, és **még nem megy ki**: a szöveg és a kapcsoló mentődik, a napi feladat később kerül be.
+- **Follow up (utánkövetés):** egy héttel az esemény után, az emlék felidézésére; minden olyan felhasználónak egyszer megy ki, akinek van jóváhagyott fotója, megadta az e-mail-címét, és elfogadta a feltételeket. Az eseménynek **dátummal** kell rendelkeznie. Alapból **ki van kapcsolva**. Egy napi feladat küldi az esemény napját követő 7. naptól (ha egy futás kimaradt, legkésőbb a 21. napig), és egy címre eseményenként csak egyszer megy ki.
 
 **Hogyan állítsd be**
 
@@ -125,4 +125,5 @@ Az eseményhez tartozó e-maileket az esemény menüjében az **Emails** (E-mail
 **Jó tudni**
 
 - Ha az eseménynek van URL-slugja, az e-mailekben az esemény linkje a **rövid link**.
+- A **Follow up** napi feladata akkor működik, ha a szolgáltatás ütemezett feladatai be vannak kapcsolva; addig egy globális admin a **Settings, Emails, Follow-up e-mails** kártyán megszámolhatja, mit küldene (próbafutás, semmit nem küld), és kézzel el is küldheti.
 - Mentés előtt ne hagyd el az oldalt. A tesztet mindig nézd meg telefonon az esemény előtt.

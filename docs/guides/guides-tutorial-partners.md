@@ -1,6 +1,6 @@
 # Tutorial: Partners
 Status: Active
-Last Updated: 2026-07-20T00:00:00.000Z
+Last Updated: 2026-10-11T00:00:00.000Z
 Canonical: Yes
 Owner: Documentation
 
@@ -98,7 +98,7 @@ See [Report variants](guides-tutorial-report-variants.md).
 
 ### Enriching a partner from a sports database
 
-In the partner modal, use the **TheSportsDB** search to find and link the club. Linking pulls in the badge (logo), venue, league, country, and founding year. If the team is not found (the free API has gaps), click **Can't find it? Enter manually** and fill **Venue Name**, **Venue Capacity**, **League Name**, **Country**, **Founded Year**, and a **Logo URL** (or upload a file — uploaded logos are hosted on ImgBB and the hosted URL is stored back). See [Sport databases](guides-tutorial-sport-databases.md).
+In the partner modal, use the **TheSportsDB** search to find and link the club. Linking pulls in the badge (logo), venue, league, country, and founding year. If the team is not found (the free API has gaps), click **Can't find it? Enter manually** and fill **Venue Name**, **Venue Capacity**, **League Name**, **Country**, **Founded Year**, and a **Logo URL** (or upload a file — the file goes to ImgBB first; when the partner is saved and the logo bucket on Cloudflare R2 is set up, the logo is copied there and the bucket address is stored instead, so a logo does not depend on ImgBB staying up; see [Logo storage](../operations/logo-storage.md)). See [Sport databases](guides-tutorial-sport-databases.md).
 
 ### Connecting a Google Sheet
 

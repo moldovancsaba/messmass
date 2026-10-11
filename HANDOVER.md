@@ -5,6 +5,7 @@ Last verified: 2026-10-10 (v12.3.41 fleet release).
 **2026-10-10:** messmass, camera, fanmass and try-on are on 12.3.41 (savetheworld since 2026-10-05); camera carries the work of the week (vetting with marking the people, the camera mode setting, sample selfies, the journey page order), messmass the matching guides in `docs/guides`.
 
 **2026-10-02 status (verified against git, GitHub, Vercel and the local Mac)**
+*(Since 2026-10-10 camera has no try-on integration and no image.direct callback any more, camera issue 557, so the try-on and image.direct statements in this block are history; see the 2026-10-11 pass in `docs/_audit/fleet-architecture.md`.)*
 - **Versions and production.** messmass, camera, fanmass, try-on and savetheworld
   are on 12.3.40 (sso 5.41.0). messmass `3e3fc847`, savetheworld `052ef84` and
   sso `d6c385be` are what production serves; CI is green on every `main`. camera
@@ -228,7 +229,7 @@ values aliased to GDS/Mantine CSS variables — the ones verified
 byte-identical; the rest have no exact GDS equivalent, Tailwind-derived vs.
 Open Color-derived palettes), Phase 5 component 1 of 10
 (`ConfirmDialog` retired for `GdsConfirmProvider`/`useGdsConfirm`).
-camera 12.3.37 is also on GDS 6.3.0 via its own vendored tarballs.
+camera was also on GDS 6.3.0 at 12.3.37; it has since moved to 6.8.0 (camera 12.3.41, its own vendored tarballs), messmass stays on 6.3.0.
 
 **Open — Phase 4b**: token bridge, remainder. Most of `theme.css`'s
 remaining ~63 color values have no exact GDS match — retiring them needs a
