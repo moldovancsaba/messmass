@@ -1,7 +1,13 @@
 // lib/rateLimit.ts
 // WHAT: Rate limiting middleware to prevent DDoS and brute-force attacks
 // WHY: Critical security control - limits requests per IP to prevent abuse
-// HOW: In-memory token bucket algorithm with sliding window tracking
+// HOW: In-memory fixed-window counter per client and path: the first request opens a window of windowMs,
+//     requests inside it are counted, and the counter starts again once resetTime has passed (no token
+//     refill, no sliding window).
+// KEY: `<client IP>:<exact URL pathname>` (see rateLimitMiddleware). The query string is not part of it, a
+//     path with an id in it (/api/projects/edit/<slug>) is a bucket of its own, and a path shared by every
+//     event (/api/chart-config/public) is one bucket for everyone behind the same IP. The store is per
+//     server instance, so on serverless each warm instance counts on its own and the limits are approximate.
 
 import { NextRequest, NextResponse } from 'next/server';
 
@@ -61,17 +67,33 @@ export const RATE_LIMITS = {
     message: 'Too many saves in a short time. Wait a few seconds and try again.',
   },
   
-  // Read operations (GET) - generous limits
+  // Read operations (GET and anything else that is not a write) per client IP and path.
+  // WHY 120: this was 500 "temporarily, for testing". What reads legitimately do, from the code:
+  //   - no page polls. The event report loads once (no timer, no refetch on focus); the hottest shared
+  //     path is /api/chart-config/public, fetched twice per load (hooks/useReportData.ts,
+  //     app/report/[slug]/page.tsx), the other report calls once each.
+  //   - the one fast poller is the fanmass dashboard, 12/min per open tab on one path
+  //     (components/fanmass/FanmassDashboardTabs.tsx, 5 s); the fanmass worker polls its endpoints
+  //     (rescan-requests, commands) every 5 s (12/min per path); the admin header polls notifications every 30 s (2/min per tab).
+  //   - the event editor reloads /api/projects/edit/<slug> each time its tab becomes visible.
+  //   Worst case on one path behind one office IP: 10 people with 3 tabs each opening one report in
+  //   the same minute is 30 loads = 60 hits on /api/chart-config/public (2x headroom under 120); five
+  //   open fanmass dashboard tabs are 60/min (2x); five editors refocusing six times a minute are 30 (4x).
+  //   A 429 here is recoverable: Retry-After is at most 60 s and the report page has a Retry button.
   READ: {
     windowMs: 60 * 1000,        // 1 minute
-    maxRequests: 500,           // 500 reads per minute (TEMPORARY - increased for testing)
+    maxRequests: 120,           // 120 reads per minute per IP + path (2 per second)
     message: 'Too many requests. Please slow down.',
   },
-  
-  // Public stats pages - very generous limits
+
+  // Public report pages (the page document, not the API calls the page makes; those take READ).
+  // WHY 60: one load of a report is one document request, so 60 is 60 loads of the same report per
+  //   minute from one IP. The office worst case above (10 people x 3 tabs = 30 loads) leaves 2x headroom;
+  //   the report's /api/chart-config/public calls (2 per load, READ 120) run out at the same 60 loads,
+  //   so the page and its data agree. Which paths count: see isPublicPagePath.
   PUBLIC: {
     windowMs: 60 * 1000,        // 1 minute
-    maxRequests: 60,            // 60 requests per minute
+    maxRequests: 60,            // 60 page requests per minute per IP + path
     message: 'Rate limit exceeded. Please try again shortly.',
   },
 
@@ -138,8 +160,9 @@ export function getClientIdentifier(request: NextRequest): string {
 }
 
 // WHAT: Check if request exceeds rate limit
-// WHY: Core rate limiting logic with sliding window algorithm
-// HOW: Token bucket - refill tokens at reset time
+// WHY: Core rate limiting logic
+// HOW: Fixed window - the first request opens a window, requests in it are counted, and the counter
+//     starts again at 1 once the window's resetTime has passed
 export function checkRateLimit(
   identifier: string,
   config: RateLimitConfig
@@ -259,8 +282,21 @@ function isEditorSavePath(pathname: string): boolean {
     || PARTNER_EDIT_SAVE_PATH.test(pathname);
 }
 
+// WHAT: The public report page families, matched by the start of the pathname.
+// WHY: They are the pages anyone holding a link can open (middleware.ts lists /report/ and /partner-report/
+//     as "public report pages"). This used to be /stats/, the report's old name; app/stats no longer exists,
+//     so event reports fell through to the read budget. /filter/ is where the old /hashtag/ pages live now:
+//     next.config.js redirects /hashtag/* to /filter/* before middleware runs, so the /hashtag/ entry is
+//     inert today and stays only so the old name is not left unguarded if that redirect goes.
+const PUBLIC_PAGE_PREFIXES = ['/report/', '/partner-report/', '/filter/', '/hashtag/'] as const;
+export function isPublicPagePath(pathname: string): boolean {
+  return PUBLIC_PAGE_PREFIXES.some((prefix) => pathname.startsWith(prefix));
+}
+
 // WHAT: Helper to determine rate limit config based on request
 // WHY: Automatically select appropriate limits for each endpoint type
+// ORDER: first match wins -- AUTH, CONTACT, PUBLIC pages, EDITOR_SAVE, WRITE, READ. EXPORT is not chosen
+//     here: app/api/export/pdf applies it inside the route.
 export function getRateLimitConfig(request: NextRequest): RateLimitConfig {
   const { pathname } = request.nextUrl;
   const method = request.method;
@@ -277,8 +313,9 @@ export function getRateLimitConfig(request: NextRequest): RateLimitConfig {
     return RATE_LIMITS.CONTACT;
   }
   
-  // WHAT: Public stats pages - generous limits
-  if (pathname.startsWith('/stats/') || pathname.startsWith('/hashtag/')) {
+  // WHAT: Public report pages - their own, tighter budget than other reads
+  // WHY: Only GET and HEAD, so a state-changing request to one of these paths keeps the WRITE budget.
+  if ((method === 'GET' || method === 'HEAD') && isPublicPagePath(pathname)) {
     return RATE_LIMITS.PUBLIC;
   }
   
@@ -294,7 +331,7 @@ export function getRateLimitConfig(request: NextRequest): RateLimitConfig {
     return RATE_LIMITS.WRITE;
   }
   
-  // WHAT: Read operations - generous limits
+  // WHAT: Read operations (everything else, GET in practice)
   return RATE_LIMITS.READ;
 }
 
