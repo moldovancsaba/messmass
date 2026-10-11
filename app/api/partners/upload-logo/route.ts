@@ -1,6 +1,6 @@
 // app/api/partners/upload-logo/route.ts
-// WHAT: API endpoint for uploading partner logos to ImgBB
-// WHY: Handle badge upload from TheSportsDB to permanent ImgBB hosting
+// WHAT: API endpoint for storing partner logos (the logo bucket on Cloudflare R2, else Vercel Blob)
+// WHY: Handle badge upload from TheSportsDB to permanent hosting (see lib/imgbbApi.ts uploadPartnerBadge, lib/logoStorage.ts)
 
 import { NextRequest, NextResponse } from 'next/server';
 import { requireSession } from '@/lib/apiGuards';
@@ -8,8 +8,8 @@ import { uploadPartnerBadge, isImageStorageConfigured } from '@/lib/imgbbApi';
 import { isLogoStorageConfigured } from '@/lib/logoStorage';
 
 /**
- * WHAT: Upload partner logo to ImgBB
- * WHY: Store partner badges on ImgBB CDN for permanent, reliable access
+ * WHAT: Store a partner logo: the R2 logo bucket when it is set up, else Vercel Blob (with an ImgBB mirror, best effort)
+ * WHY: Store partner badges on our own storage for permanent, reliable access
  * 
  * POST /api/partners/upload-logo
  * Body: { badgeUrl: string, partnerName: string }
@@ -62,8 +62,8 @@ export async function POST(request: NextRequest) {
     console.log(`🖼️  Uploading logo for partner: ${partnerName}`);
     console.log(`📥 Source URL: ${badgeUrl}`);
 
-    // WHAT: Upload badge to ImgBB
-    // WHY: Convert TheSportsDB badge to permanent ImgBB-hosted URL
+    // WHAT: Store the badge
+    // WHY: Convert the TheSportsDB badge to a permanent, self-hosted URL
     const logoUrl = await uploadPartnerBadge(badgeUrl, partnerName);
 
     if (!logoUrl) {

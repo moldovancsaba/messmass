@@ -12,7 +12,7 @@ Owner: Product
 <p align="center"><strong>Enterprise event analytics, partner reporting, reporting operations, and admin workflow tooling for sports organizations, venues, and brands.</strong></p>
 
 <p align="center">
-  <img src="https://img.shields.io/badge/version-v12.3.37-2563EB?style=for-the-badge" alt="Version">
+  <img src="https://img.shields.io/badge/version-v12.3.41-2563EB?style=for-the-badge" alt="Version">
   <img src="https://img.shields.io/badge/platform-Web%20App-0F172A?style=for-the-badge" alt="Platform">
   <img src="https://img.shields.io/badge/stack-Next.js%20%7C%20MongoDB%20%7C%20Mantine-0EA5E9?style=for-the-badge" alt="Stack">
 </p>
@@ -138,11 +138,11 @@ Important repo note:
 - If `npm run type-check` fails on missing `.next/types`, run `npm run build` first and rerun the type check.
 
 Current release version:
-- `v12.3.37`
+- `v12.3.41`
 
 ## Fleet
 
-messmass is the master app of a five-app fleet (camera, fanmass, try-on, savetheworld) that shares one SSO. The canonical map of every cross-app edge is [docs/_audit/fleet-architecture.md](docs/_audit/fleet-architecture.md).
+messmass is the master app of a five-app fleet (camera, fanmass, try-on, savetheworld) that shares one SSO. The canonical map of every cross-app edge is [docs/_audit/fleet-architecture.md](docs/_audit/fleet-architecture.md). (The camera app no longer has a try-on integration since 2026-10-10; the try-on service stays a separate fleet member. The camera app runs GDS 6.8.0, messmass stays on 6.3.0.)
 
 ## Fanmass Integration
 

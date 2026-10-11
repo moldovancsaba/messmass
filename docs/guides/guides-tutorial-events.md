@@ -1,6 +1,6 @@
 # Tutorial: Events
 Status: Active
-Last Updated: 2026-07-20T00:00:00.000Z
+Last Updated: 2026-10-11T00:00:00.000Z
 Canonical: Yes
 Owner: Documentation
 
@@ -91,6 +91,7 @@ This is **fire-and-forget and non-blocking**: if camera provisioning fails or is
 - **Load more** — the list pages in batches; use **"Load 20 More Events"** until you see "— All N events loaded —".
 - **Export CSV** — export a single event's variables (name, dates, and every stat) to a `.csv` for offline analysis.
 - **Quick Add** — the **"Quick Add 🤝 Sports Match"** button opens `/admin/quick-add`, a faster builder for match events and bulk import.
+- **Camera** — an event that is linked to the Camera app (see step 6) has a **Camera** button on its row. It opens that event's **Vetting** tab in the Camera app (`https://camera.messmass.com/admin/vetting?eventId=…`), where the photos waiting for approval are decided (see [Approving photos](guides-tutorial-approving-photos.md)). The shortcut works for global admins; anybody else lands on the Camera app's start page and opens the event from **Events**, then **Vetting**.
 - **Fanmass Sync** — a per-event action opens the Fanmass modal, where you link a Fanmass batch and sync its analytics into the event's variables (see [Fanmass](guides-tutorial-fanmass.md)).
 - **Delete** — removing an event deletes the project record. Treat this as permanent; export first if you might need the numbers.
 

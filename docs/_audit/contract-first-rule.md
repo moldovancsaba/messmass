@@ -6,7 +6,10 @@ Enforced from 2026-08-20 (fleet remediation #355). Applies to all five repos
 **Rule:** any change to a cross-app surface must update its contract doc IN THE
 SAME COMMIT:
 - a shared MongoDB collection or its shape → update `docs/_audit/fleet-architecture.md`
-  (canonical, in messmass) and, for camera/try-on, `docs/TRYON_ATLAS_CONTRACT.md`.
+  (canonical, in messmass) and, for a collection shared with the try-on service,
+  that repository's `docs/TRYON_ATLAS_CONTRACT.md` (camera shared its queue with
+  try-on until 2026-10-10 and no longer reads or writes those collections,
+  camera issue 557).
 - a cross-app endpoint or integration token → update the fleet map's affected
   edge card and re-stamp its `verified @ <sha>` on both sides.
 - an env var that gates a cross-app call → update the repo's

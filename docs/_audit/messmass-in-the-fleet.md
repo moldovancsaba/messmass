@@ -9,7 +9,13 @@ messmass is the master of partner/event/organization data and the event-report
   push native partners (`/api/integrations/camera/partners`). camera also reads
   the resolved theme of an event (`/api/integrations/camera/events/[id]/frame-context`:
   partner and team logos, effective report template and style, font) to build the
-  event's default frame. camera is also messmass's email transport.
+  event's default frame, and posts the scans it counts on an event's tracked links
+  (`/api/integrations/camera/events/[id]/link-stats`). messmass tells camera when a
+  report style or a partner's look changed (`lib/cameraThemeNotify.ts` → camera
+  `/api/internal/messmass/theme-updated`). The events list links an event that has
+  a camera id to camera's `/admin/vetting?eventId=…`. camera is also messmass's email
+  transport. The try-on integration of camera is gone (camera issue 557); it was
+  never a messmass edge.
 - **messmass ← fanmass**: fanmass is the caller on every channel except the
   analytics-summary pull (below). messmass exposes
   18 `/api/integrations/fanmass/*` routes (dashboard snapshots, command queue,
@@ -25,5 +31,5 @@ messmass is the master of partner/event/organization data and the event-report
   stakeholder sessions (#231).
 
 Canonical cross-app map: `docs/_audit/fleet-architecture.md`.
-API surface: `docs/_audit/api-reference.md` (221 route files under `app/api`,
-verified @ dd34e229, 2026-09-28).
+API surface: `docs/_audit/api-reference.md` (223 route files under `app/api`,
+measured against `endpoints.json`; its header carries the verification stamp).

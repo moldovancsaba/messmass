@@ -1,6 +1,7 @@
 # GDS fix handover: messmass
 Date 2026-10-02. Read against messmass `main` at `2552240b` (working tree: five modified `docs/_audit/*.json`, no styling file uncommitted).
 messmass runs the 6.3.0 line (all four `@sovereignsquad/*` packages); the current line is 6.7.0 (released), with 6.8.0 work on GDS `main` (`a8048f4c`).
+*(Update 2026-10-11: GDS 6.8.0 has since been released and the camera app runs it; messmass is still on 6.3.0, and this plan still targets 6.7.0. Re-read the 6.8.0 changelog before following the upgrade steps.)*
 Tracking issue: https://github.com/sovereignsquad/general-design-system/issues/746
 
 Conventions: paths are relative to the messmass root unless prefixed `GDS:` (GDS repo root) or `nm:` (`node_modules/`). "This lane" means `createPublicBrandTheme` without a preset (lib/ui/mantineTheme.ts:9), which emits no `--gds-*` variables (checked: `createPublicBrandTheme({overrides:{}}).other` is empty on installed 6.3.0 and on GDS `main` `dist`). Severity: blocker = makes later steps unsafe or unverifiable; high = authority fork or WCAG AA failure; medium = parallel system or missed GDS export; low = hygiene. Rows marked "static reading" were not run in a browser.

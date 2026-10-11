@@ -1,6 +1,6 @@
 # Tutorial: Approving photos at an event (camera app)
 Status: Active
-Last Updated: 2026-10-10T00:00:00.000Z
+Last Updated: 2026-10-11T00:00:00.000Z
 Canonical: Yes
 Owner: Documentation
 Verified against the Camera app code @ 75c595b (camera#373); marking the people with camera#542 (on for every event and required, answers 262 to 264 and 267)
@@ -19,9 +19,9 @@ A **Manager** (or a global admin) can approve and reject. A **Viewer** can open 
 
 Do this once, at least a day before.
 
-1. **Give the approver access (operator).** In the Camera app's admin open the partner of the event, find the **Partner users** panel, and add the approver's e-mail address with the app **Events** and the role **Manager**.
+1. **Give the approver access (operator).** In the Camera app's admin open the partner of the event, find the **Partner User Access** panel, and add the approver's e-mail address with the app **Events** and the role **Manager**.
 2. **Sign in (approver).** Open the Camera app admin (`/admin` on the Camera app's address) and sign in with that e-mail address, through the same single sign-on the other seyu tools use.
-3. **Find the tab.** Open **Events**, choose the event, then the **Vetting** tab. (The tabs of an event are Overview, Vetting, Queue and Analytics.)
+3. **Find the tab.** Open **Events**, choose the event, then the **Vetting** tab. (The event menu also has Overview, Edit and pages, Gallery, Analytics and the other editors; an approver only needs Vetting. There is no Queue tab: the photos wait on the Vetting tab, in the list **Waiting**.)
 
 You should see three lists, each with a count: **Waiting**, **Rejected**, **Approved**.
 
@@ -83,7 +83,7 @@ Annak szól, aki egy eseményen élőben jóváhagyja a fotókat. Telefon vagy l
 
 **Az esemény előtt (egyszer, legalább egy nappal korábban)**
 
-1. Az operátor az esemény partnerének oldalán, a **Partner users** panelen felveszi az e-mail-címedet az **Events** alkalmazáshoz **Manager** (menedzser) szereppel.
+1. Az operátor az esemény partnerének oldalán, a **Partner User Access** panelen felveszi az e-mail-címedet az **Events** alkalmazáshoz **Manager** (menedzser) szereppel.
 2. Nyisd meg a camera alkalmazás admin felületét (`/admin`), és jelentkezz be ezzel az e-mail-címmel.
 3. Nyisd meg az **Events** menüt, válaszd ki az eseményt, majd a **Vetting** fület.
 

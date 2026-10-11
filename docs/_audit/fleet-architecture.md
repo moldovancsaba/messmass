@@ -8,8 +8,34 @@ camera/fanmass/try-on/savetheworld carry pointers to it
 (savetheworld: `docs/_audit/savetheworld-in-the-fleet.md`). Header-less by
 design (docs:audit version gate).
 
-Verified messmass `dd34e229` · camera `ccd77d5` · fanmass `7268cf7` ·
-try-on `1ccd284` · savetheworld `d87c776` (2026-09-28).
+Verified messmass `5cc610c2` (E2 and E4 only, 2026-10-11, see below) · camera
+`ccd77d5` · fanmass `7268cf7` · try-on `1ccd284` · savetheworld `d87c776`
+(2026-09-28). Everything else on the messmass side was last read at `dd34e229`.
+
+**2026-10-11 pass (camera 12.3.41, `c40aad85`; the other repos were not re-read).**
+camera removed the try-on integration (camera issue 557; record: camera
+`docs/TRYON_REMOVED.md`, git tag `tryon-integration-final`). Gone from camera:
+every `/admin/tryon/*` page, `/api/admin/tryon-*`, `/api/internal/tryon/*`,
+`/api/internal/image-direct/*`, the try-on e-mails, the share-page try-on
+switches and the try-on cron. Still in camera on purpose until phase R3, which is
+held until after the match of 2026-10-16: the garment selector of the capture
+page, the try-on fields of `POST /api/submissions` and `GET /api/tryon/suits`
+(no event has try-on enabled, so no user meets them). What that means for this
+map: **E1 (camera ↔ try-on) and E8 (camera ↔ image.direct) are removed edges**,
+kept below as a historical record with a banner; camera and the try-on service
+no longer talk to each other, and try-on and image.direct stay in the fleet as
+separate repositories and services. camera's try-on collections stay in its
+database, unreferenced. The cross-event vetting page moved from
+`/admin/tryon/vetting` to `/admin/vetting` (the old address redirects to it, and
+the link on messmass's events list now points to it directly). E3 (the media
+feed), E4 (new calls both ways, below), the camera lines of E6 and the crons in
+the runtime topology were re-read. On the messmass side, E2's files have no
+commit since `dd34e229` (checked with `git log`) and E4's line references were
+re-checked and still hold; the camera, fanmass, try-on and savetheworld sides of E2
+and E5, and E7, were not re-read (E7 only for the try-on lines), and the messmass
+line references of E5 and of the security notes (`lib/auth/ssoOAuth.ts`,
+`lib/pageAccess.ts`, `lib/apiGuards.ts`) may have moved since `dd34e229`. Their
+earlier stamps stand.
 
 **2026-09-28 pass.** Re-read on the messmass side: E2's analytics-summary pull
 (`lib/fanmassIntegration.ts:258`, `:343`), the E5 stakeholder login added by
@@ -47,6 +73,10 @@ current-HEAD markers, not fresh reads of those edges.
   already unreachable.
 
 ## 2026-10-02 operational notes
+*(State as of 2026-10-02. Since then, on 2026-10-10, the try-on integration and the
+image.direct callback were removed from camera, and camera runs three crons again;
+see the 2026-10-11 pass above. The try-on and fanmass services were not re-checked.)*
+
 - **try-on and fanmass are paused on purpose** (owner, 2026-09-29/30): the
   launchd jobs are stopped and disabled and ports 7860, 8787, 27017 and 11434
   are closed. Effects: E1's queue is unprocessed (no job has been created since
@@ -81,18 +111,20 @@ current-HEAD markers, not fresh reads of those edges.
 | System | Repo | Runs on | Role |
 |---|---|---|---|
 | **messmass** | moldovancsaba/messmass | Vercel | Master of partners/events/organizations; event reports; analytics UI over fanmass results |
-| **camera** | moldovancsaba/camera | Vercel | Fan photo capture; try-on job producer + moderation; the fleet's only email sender |
+| **camera** | moldovancsaba/camera | Vercel | Fan photo capture, photo vetting, event screens and short links; the fleet's only email sender. (Until issue 557 also the try-on job producer and moderation.) |
 | **fanmass** | moldovancsaba/fanmass | local Mac (launchd supervisor, loopback-bound) | Vision-model image analysis; the outbound caller on every channel but one (see E2's analytics-summary pull) |
-| **try-on** | moldovancsaba/try-on | local Mac (launchd: app-server + worker, loopback-bound) | Virtual try-on renders; Atlas queue worker + local render server |
+| **try-on** | moldovancsaba/try-on | local Mac (launchd: app-server + worker, loopback-bound) | Virtual try-on renders; Atlas queue worker + local render server. No live edge to camera since issue 557 (E1 removed); to be rebuilt later as a separate add-on |
 | **SSO** | moldovancsaba/sso | sso.doneisbetter.com | Shared OAuth2/OIDC identity + per-app permission store (audited consumer-side only) |
 | **savetheworld** | moldovancsaba/savetheworld | Vercel (savetheplanet.vercel.app) | "Choose better" marketplace of companies and offers; wallet passes; pledge wall pulled from camera |
-| **image.direct** | moldovancsaba/image.direct (private) | Vercel (imagedirect.vercel.app) + local Mac worker + R2 | Renderer app meant to replace the try-on worker. Own Atlas database and credentials. Camera-facing routes exist but are gated off (E8). Not one of the five lockstep apps |
+| **image.direct** | moldovancsaba/image.direct (private) | Vercel (imagedirect.vercel.app) + local Mac worker + R2 | Renderer app that was meant to replace the try-on worker. Own Atlas database and credentials. Its camera integration was never live and camera's side was removed (E8, issue 557). Not one of the five lockstep apps |
 
-Two Mongo worlds: messmass and fanmass each own a database; **camera and
-try-on share one Atlas database** (the try-on job queue). fanmass reaches
-messmass and camera only over HTTP. savetheworld owns its own
-database and reaches camera only over HTTP (E7). image.direct owns a third database with separate
-credentials and meets camera only over authenticated HTTP (E8).
+Mongo worlds: messmass, fanmass and camera each own a database. **Until issue 557
+camera and try-on shared camera's Atlas database** (the try-on job queue, E1);
+camera no longer reads or writes those collections, which stay in the database
+unreferenced. fanmass reaches messmass and camera only over HTTP. savetheworld
+owns its own database and reaches camera only over HTTP (E7). image.direct owns a
+further database with separate credentials and has no live edge to camera (E8
+removed).
 
 ## The map
 
@@ -100,39 +132,36 @@ credentials and meets camera only over authenticated HTTP (E8).
 flowchart LR
   subgraph vercel["Vercel"]
     MM["messmass<br/>master data · reports"]
-    CAM["camera<br/>capture · try-on producer<br/>only email sender"]
+    CAM["camera<br/>capture · vetting · screens<br/>only email sender"]
     STW["savetheworld<br/>marketplace · wallet passes"]
   end
 
   subgraph localmac["local Mac · launchd · loopback-bound"]
     FAN["fanmass<br/>vision analysis"]
-    TRY["try-on<br/>render worker"]
+    TRY["try-on<br/>render worker<br/>no live edge to camera"]
   end
 
-  IMD["image.direct<br/>renderer · own Atlas · R2<br/>Mac worker · planned"]
+  IMD["image.direct<br/>renderer · own Atlas · R2<br/>Mac worker · no live edge"]
   SSO["SSO<br/>sso.doneisbetter.com"]
-  ATLAS[("shared Atlas DB<br/>tryon_jobs, garments,<br/>setups, heartbeats")]
 
-  CAM <-->|"E1 · queue + completion webhook"| ATLAS
-  ATLAS <--> TRY
   FAN -->|"E2 · 6 push + 2 poll/ack channels<br/>requireFanmassIntegrationAuth"| MM
   FAN -->|"E3 · media pull"| CAM
-  MM <-->|"E4 · master data · cross-app session · email<br/>shared internal secret"| CAM
+  MM <-->|"E4 · master data · cross-app session · email<br/>look changes · link stats · frame context<br/>shared internal secret"| CAM
   STW -->|"E7 · pledge wall"| CAM
-  CAM ==>|"E8 · planned, gated off"| IMD
 
   MM -.->|"E5 · confidential client"| SSO
   CAM -.->|"E5 · public PKCE"| SSO
   FAN -.->|"E5 · public PKCE"| SSO
 
-  EXT["E6 · external tail<br/>Segmind · FASHN · ImgBB<br/>Resend · Google Drive"]
+  EXT["E6 · external tail<br/>ImgBB · R2 · Resend · Google Drive<br/>(try-on only: Segmind · FASHN)"]
   CAM --> EXT
   TRY --> EXT
   FAN --> EXT
 ```
 
-Solid arrows carry data; dotted arrows are identity; the thick arrow (E8) is
-planned and gated off. Direction is the direction
+Solid arrows carry data; dotted arrows are identity. E1 (camera ↔ try-on, a
+shared Atlas queue) and E8 (camera ↔ image.direct) no longer exist on camera's
+side and are not drawn. Direction is the direction
 of the **call**, not of the data: try-on has no public inbound address, and
 fanmass dials out on every channel except one — the blocking analytics-summary
 pull messmass makes in E2, which is the single place messmass depends on
@@ -140,7 +169,17 @@ fanmass being reachable.
 
 ## Edge contracts
 
-### E1 · camera ↔ try-on (shared Atlas + completion webhook)
+### E1 · camera ↔ try-on (shared Atlas + completion webhook) — REMOVED
+> **Removed from camera on 2026-10-10 (issue 557).** Camera no longer has the queue,
+> the completion route `/api/internal/tryon/complete`, the sync route
+> `/api/internal/tryon/sync`, the in-repo worker, the garment and setup admin, the
+> try-on moderation or the 5-minute cron; its collections named below stay in its
+> database, unreferenced, and a stored `tryon_result` photo is never public. What
+> follows is the contract as it was at the stamps below (camera tag
+> `tryon-integration-final`, camera `docs/TRYON_REMOVED.md`), kept as the record from
+> which a separate add-on will be rebuilt. The try-on repository keeps its own
+> contract document (`docs/TRYON_ATLAS_CONTRACT.md` there).
+
 Verified messmass n/a · camera `88c6839` · try-on `c8ba623`.
 - **Transport**: shared Atlas DB only — **camera never calls try-on over HTTP**
   (no try-on host/port anywhere in camera lib/app/scripts) and nothing in the
@@ -188,10 +227,12 @@ Verified messmass n/a · camera `88c6839` · try-on `c8ba623`.
   base64, white compositing — are now in it).
 
 ### E2 · fanmass → messmass (six push channels + two poll/ack channels)
-Verified messmass `dd34e229` · fanmass `db2657e` (both sides re-read 2026-09-16;
-messmass side re-checked 2026-09-28: no commit since 8843a535 touches this
-edge's files, all 18 `integrations/fanmass/*` routes still call
-`requireFanmassIntegrationAuth`).
+Verified messmass `5cc610c2` · fanmass `db2657e` (both sides re-read 2026-09-16;
+messmass side re-checked 2026-09-28 and again 2026-10-11: no commit since
+`dd34e229` touches this edge's files (`lib/fanmassIntegration.ts`,
+`lib/fanmassCommands.ts`, `lib/aiRescan.ts`, `lib/csrf.ts`, `lib/config.ts`,
+`app/api/integrations/fanmass`, `app/api/admin/fanmass`); all 18
+`integrations/fanmass/*` routes still call `requireFanmassIntegrationAuth`).
 fanmass is the caller on every channel **except one**: the blocking
 analytics-summary pull in the last bullet, which messmass initiates. The
 summary line here used to read "fanmass is always the caller", which the
@@ -245,8 +286,12 @@ Verified camera `88c6839` · fanmass `5d9a032`. Direction is fanmass-pulls.
 - **Auth**: header `x-fanmass-secret` = cameraApiKey + Bearer
   (camera_client.py:70-71); camera verifies via assertInternalFanmassSecret
   (camera lib/fanmass/internal.ts:11-25, CAMERA_FANMASS_INTERNAL_SECRET,
-  fail-closed). Media excludes `submissionKind:'tryon_result'` and requires
-  originalImageUrl (camera media route:37-38, :53).
+  fail-closed). The media query is `buildMediaFeedPipeline`
+  (camera lib/fanmass/media-feed.ts, re-read at camera `c40aad85`): it excludes
+  `submissionKind:'tryon_result'`, requires `originalImageUrl`, leaves out photos
+  that are waiting for approval or rejected, and orders and cuts by the moment a
+  photo became available (`approvedAt` for a vetted photo, else `createdAt`), so a
+  photo approved after fanmass moved its cursor still arrives.
 - The returned i.ibb.co URLs are then fetched by fanmass **unauthenticated**
   (public host) — deliberate (camera_client.py:17, :129).
 - camera never calls fanmass (no FANMASS_BASE_URL in camera). Cadence
@@ -255,21 +300,24 @@ Verified camera `88c6839` · fanmass `5d9a032`. Direction is fanmass-pulls.
   holds the cursor back so nothing is skipped.
 
 ### E4 · messmass ↔ camera (master data + session + email)
-Verified messmass `dd34e229` · camera `06f3029` (both sides re-read 2026-09-16;
-messmass side re-checked 2026-09-28: no commit since 8843a535 touches this
-edge's files). **Bidirectional.**
+Verified messmass `5cc610c2` · camera `06f3029` (both sides re-read 2026-09-16;
+messmass side re-checked 2026-09-28; re-read 2026-10-11 at messmass `5cc610c2`:
+the line references below still hold, the only changes are the additions listed
+under "Added since"; camera side re-read 2026-10-11 at `c40aad85` for
+`lib/messmassClient.ts` and `app/api/internal/messmass/*`). **Bidirectional.**
 - **messmass → camera (master, outbound)**: messmass is master; provisions
   organizations/partners/events into camera via
   `/api/internal/messmass/{organizations,partners,events}`, writing back
   cameraOrganizationId/cameraPartnerId/externalRefs.camera (messmass
   lib/cameraProvision.ts:13-56, lib/cameraClient.ts:99-109). Auth
   `x-messmass-secret` (or Bearer) = CAMERA_MESSMASS_INTERNAL_SECRET, camera
-  verifies via assertInternalMessmassSecret (lib/messmass/internal.ts:9-21,
+  verifies via assertInternalMessmassSecret (lib/messmass/internal.ts:14-25,
   fail-closed).
 - **camera → messmass (reverse, outbound from camera)**: camera pushes
   partners it creates natively → messmass `POST /api/integrations/camera/partners`
   (INSERTS new partners, messmass lib/cameraPartnerSync.ts:77; callers camera
-  app/api/partners/route.ts + [partnerId]/route.ts via lib/messmassClient.ts:77-82,
+  app/api/partners/route.ts + [partnerId]/route.ts via lib/messmassClient.ts
+  `pushPartnerToMessmass` (:113-132),
   header `x-camera-secret` + Bearer = the SAME CAMERA_MESSMASS_INTERNAL_SECRET;
   messmass verifies via assertCameraSecret, lib/cameraClient.ts:16). The former
   "reverse direction does not exist" doc error is fixed: messmass
@@ -279,10 +327,33 @@ edge's files). **Bidirectional.**
   them against SSO (getUserInfo + getAppPermission — never trusting the
   caller's identity claim) and mints its own cookie. camera →
   messmass `POST /api/integrations/camera/sso-session` (camera
-  app/api/auth/callback/route.ts:29 → messmassClient.ts:49; messmass route
-  :35, :60, :70, :81). messmass → camera `POST /api/internal/messmass/sso-session`
+  app/api/auth/callback/route.ts:45 → lib/messmassClient.ts `pushSsoSessionToMessmass`
+  :59-78; messmass route :35, :60, :70, :81). messmass → camera `POST /api/internal/messmass/sso-session`
   (messmass app/api/auth/sso/callback → lib/cameraClient.ts:76-80; camera route
-  :36, :47, :55, :70). Shared cookie domain via SESSION_COOKIE_DOMAIN on camera.
+  :36, :47, :67). Shared cookie domain via SESSION_COOKIE_DOMAIN on camera.
+- **Added since the 2026-09-16 read (re-read at messmass `5cc610c2` and camera
+  `c40aad85`, 2026-10-11)**, all with the same shared secret:
+  - *camera → messmass*: `GET /api/integrations/camera/events/{id}/frame-context`
+    (the event's resolved look for camera's default frame: teams with logos,
+    partner, report template and style, font; messmass
+    lib/cameraFrameContext.ts, camera lib/messmassClient.ts `fetchFrameContext`)
+    and `POST .../events/{id}/link-stats` (the scans and clicks camera counts on an
+    event's tracked links, added to the event's visit stats; messmass
+    lib/cameraLinkStats.ts, camera `pushLinkStatsToMessmass`).
+  - *messmass → camera*: `POST /api/internal/messmass/theme-updated` (a report
+    style or a partner's logo, name or style changed; best effort, messmass
+    lib/cameraThemeNotify.ts). camera also serves
+    `POST /api/internal/messmass/frame-backfill` for an operator holding the
+    secret; nothing in messmass calls it.
+  - *prepared, switched off*: camera can push photo and vetting counters to
+    `POST /api/integrations/camera/events/{id}/photo-stats`
+    (`pushPhotoStatsToMessmass`). **messmass has no such route**, so a push would
+    be refused; the pipeline is off and has no trigger (camera `docs/ANALYTICS.md`).
+  - The messmass events list links an event that has a camera id to
+    `https://camera.messmass.com/admin/vetting?eventId=<camera event uuid>`; camera
+    redirects the old `/admin/tryon/vetting` address to it, and `/admin/vetting`
+    sends an `eventId` to that event's own Vetting tab (global admins only; any other
+    user lands on `/admin`).
 - **Email**: camera is the only sender. messmass calls camera
   `POST /api/internal/email/send` with `x-messmass-secret` + Bearer
   (lib/emailNotifications.ts:45-50; skipped when CAMERA_BASE_URL /
@@ -332,9 +403,13 @@ Verified consumer-side only (SSO repo not in scope).
   (fal.run, queue.fal.run), google-edge (local), local CatVTON. fal is the only
   provider with automatic fallback ladders. Circuit breaker under all calls.
 - **Vercel Blob / ImgBB**: try-on publishes results to Vercel Blob (required)
-  with ImgBB as optional mirror; camera result upload (lib/imgbb/upload.ts);
+  with ImgBB as optional mirror; camera photo upload (lib/imgbb/upload.ts);
   messmass browser-direct upload (NEXT_PUBLIC_IMGBB_API_KEY,
   lib/imgbbClientUpload.ts).
+- **Cloudflare R2 (logos)**: partner logos live in one public bucket,
+  `messmass-logos`, written by messmass (`lib/logoStorage.ts`, Cloudflare REST API
+  at `api.cloudflare.com`; `docs/operations/logo-storage.md`). camera accepts only
+  that exact address for logos (`LOGO_STORAGE_HOST`, camera `lib/imgbb/url.ts`).
 - **messmass enrichment**: Bitly, Google Sheets+Drive, football-data.org,
   api-sports.io, thesportsdb.com (docs/_audit/outbound-hosts.json).
 - **fanmass**: Ollama/qwen2.5vl (default) or local Gemma/LiteRT fallback; local
@@ -381,7 +456,14 @@ Mostly savetheworld-calls, plus one browser redirect camera → savetheworld.
   for admin uploads. Its only writes into another app are the camera
   provisioning and selfie-publishing calls above.
 
-### E8 · camera ↔ image.direct (renderer; planned, default-disabled)
+### E8 · camera ↔ image.direct (renderer; planned, default-disabled) — REMOVED
+> **Removed from camera on 2026-10-10 (issue 557); it was never live.** Camera no
+> longer has the callback route `/api/internal/image-direct/complete`, the
+> `CAMERA_IMAGE_DIRECT_*` gates or the dispatch plans; camera `docs/IMAGE_DIRECT_INTEGRATION.md`
+> is kept there as a record only. The image.direct repository and service are
+> untouched and meet no other fleet app. The text below is the plan and state as of
+> 2026-10-02.
+
 Camera side read at `bdd2d7b` (contract `docs/IMAGE_DIRECT_INTEGRATION.md`, callback
 route, env gate, release notes). The image.direct side is taken from that contract
 and its commit log at `d19ec26`; its code was not read in this pass.
@@ -413,12 +495,16 @@ and its commit log at `d19ec26`; its code was not read in this pass.
   per-job public-delivery consent; withdrawal blocks new work.
 
 ## Runtime topology
-- **Vercel**: messmass (www.messmass.com), camera (go.messmass.com),
-  savetheworld (savetheplanet.vercel.app), sso (sso.doneisbetter.com).
+- **Vercel**: messmass (www.messmass.com), camera (camera.messmass.com; its
+  short links on go.messmass.com), savetheworld (savetheplanet.vercel.app), sso
+  (sso.doneisbetter.com).
   Production auto-deploys from git on every push to `main` and does not wait
   for GitHub Actions CI (verified 2026-09-28 via the Vercel API: the production
-  SHA equalled `origin/main` for all four). Crons via vercel.json (camera: none since 12.3.40; messmass:
-  analytics-aggregation, bitly, google-sheets sync).
+  SHA equalled `origin/main` for all four). Crons via vercel.json (messmass:
+  bitly sync and refresh, analytics-aggregation, google-sheets sync; camera, re-read
+  2026-10-11: the weekly activity export, the daily picture check and the daily
+  follow-up e-mail, each of which answers 403 and does nothing until `CRON_SECRET`
+  is set on the Vercel project).
 - **Local Mac (launchd)**: fanmass under a single `com.fanmass.supervisor`
   agent (scripts/install_supervisor_agent.sh → scripts/fanmass_supervisor.py)
   that forks web+worker — the old `com.fanmass.web`/`com.fanmass.worker` plists
@@ -428,8 +514,9 @@ and its commit log at `d19ec26`; its code was not read in this pass.
   All local services `KeepAlive=true`; secrets from `.env.*` files, never the
   plists.
   **Both are stopped and disabled since 2026-09-29/30 (owner decision).**
-- **image.direct** (planned renderer, E8): Vercel app `imagedirect.vercel.app`, a
-  local Mac worker, R2 for results, its own Atlas database.
+- **image.direct** (renderer, no live edge to camera since E8 was removed): Vercel
+  app `imagedirect.vercel.app`, a local Mac worker, R2 for results, its own Atlas
+  database.
 - **Restart lessons**: the try-on worker can respawn-loop on a held lock; a
   stale worker can run week-old code after a push — try-on RUNBOOK.md §Restart
   (try-on#40; exact wording unverified in this pass).
@@ -451,7 +538,8 @@ State as of 2026-09-28; every item below is closed.
   `POST /api/worker/service-action` (28a76c2); the other routes stay
   loopback+origin-guard by design.
 - **camera**: camera#119 — CLOSED (2f0c088): sync GET requires the try-on
-  secret or Bearer CRON_SECRET; `PATCH /api/submissions/[submissionId]` allows
+  secret or Bearer CRON_SECRET (the route itself was removed with the try-on
+  integration, issue 557); `PATCH /api/submissions/[submissionId]` allows
   the public first write only, admin appRole thereafter. camera#122 — CLOSED
   (74265ba, v12.2.23): session cookie HMAC-signed, unsigned cookies rejected.
 - **messmass**: messmass#347 — CLOSED (52cff59e): `development_secret` cron

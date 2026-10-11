@@ -29,8 +29,6 @@ interface BitlyLinksSelectorProps {
   placeholder?: string;
   // WHAT: Optional flag to disable the selector
   disabled?: boolean;
-  // WHAT: DEPRECATED - no longer used (server-side search instead)
-  availableLinks?: BitlyLink[];
 }
 
 // WHAT: Main BitlyLinksSelector component with SERVER-SIDE search
