@@ -24,7 +24,7 @@ export type PageType =
 export interface PagePassword {
   _id?: string;
   pageId: string;           // Project slug, edit slug, or filter hash
-  pageType: PageType;       // Type of page (stats, edit, filter)
+  pageType: PageType;       // Type of page: one of the PageType values above
   password: string;         // Generated MD5-style password
   createdAt: string;        // When password was generated
   expiresAt?: string;       // Optional expiration (null = never expires)

@@ -331,10 +331,10 @@ Counted per client IP + path in `middleware.ts` (`lib/rateLimit.ts`), first matc
 
 - **Auth** (`/api/admin/login`, `/api/auth/*`, except DELETE): 5 requests / 15 minutes
 - **Contact form** (`POST /api/contact`): 5 requests / 15 minutes
-- **Public pages** (`/stats/*`, `/hashtag/*`): 60 requests/minute
+- **Public report pages** (`GET`/`HEAD` of `/report/*`, `/partner-report/*`, `/filter/*`, `/hashtag/*`; the page, not its API calls): 60 requests/minute
 - **Editor saves** (`PUT /api/projects`, `PUT /api/partners`, `PUT /api/partners/edit/<id-or-slug>`): 120 requests/minute
 - **Other writes** (POST, PUT, PATCH, DELETE): 30 requests/minute
-- **Reads** (GET): 500 requests/minute
+- **Reads** (GET): 120 requests/minute
 - **Bitly Sync**: 50 requests/minute (Bitly API limit)
 
 **Headers**:

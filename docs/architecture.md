@@ -2334,14 +2334,16 @@ The Security Enhancements system provides comprehensive API protection through r
 
 #### 1. Rate Limiting Module (`lib/rateLimit.ts`)
 - **Algorithm**: Fixed-window request counter per identifier (not a token bucket) — a window opens on the first request and resets once `resetTime` has passed
-- **Endpoint Types** (current `RATE_LIMITS`, one config per endpoint class; `getRateLimitConfig` checks them in this order, first match wins):
+- **Endpoint Types** (current `RATE_LIMITS`: seven classes, six chosen by `getRateLimitConfig` in this order, first match wins, plus the PDF export class applied inside its route):
   - Auth (`/api/admin/login`, `/api/auth/*`, excluding DELETE/logout): 5 requests / 15 minutes
   - Contact form (`POST /api/contact`): 5 requests / 15 minutes
-  - Public (`/stats/*`, `/hashtag/*`): 60 requests/minute
+  - Public report pages (`GET`/`HEAD` of `/report/*`, `/partner-report/*`, `/filter/*`, `/hashtag/*`; the page document only): 60 requests/minute. `/stats/*`, the old name of the event report, no longer exists and does not match. `/hashtag/*` is redirected to `/filter/*` by `next.config.js` before middleware runs.
   - Editor save (`PUT` on exactly `/api/projects`, `/api/partners`, or `/api/partners/edit/<id-or-slug>`): 120 requests/minute
   - Write (POST/PUT/PATCH/DELETE, everything else): 30 requests/minute
-  - Read (GET, generally): 500 requests/minute
+  - Read (everything else, GET in practice; the API calls a report page makes are reads): 120 requests/minute (it was 500, a value marked "temporary - increased for testing")
   - PDF export (`app/api/export/pdf`, applied inside the route with `checkRateLimit`, not by `getRateLimitConfig`): 6 requests/minute
+- **Why the Read and Public numbers** (from the code, `lib/rateLimit.ts` has the derivation): no report page polls or refetches on focus; an event report load makes one request per path except `/api/chart-config/public`, which it fetches twice. Read legitimately peaks on one path at: five open fanmass dashboard tabs (12/min each, 5 s poll) = 60; the fanmass worker's poll paths (`rescan-requests`, `commands`, 5 s each, `docs/_audit/fleet-architecture.md` edge E2) 12 each; ten people with three tabs on one report in a minute = 60 hits on `/api/chart-config/public` and 30 page loads. 120 / 60 leave at least 2x headroom for those.
+- **Key**: `<client-identifier>:<exact pathname>`, so the limit is per client and per path. The query string is not part of it, a path that contains an id is a bucket of its own, and a path shared by all events (for example `/api/chart-config/public`) is one bucket for everyone behind the same IP.
 - **Editor save budget** (`EDITOR_SAVE`): the live data-entry editors save through these paths. An event operator clicks counters for hours, and the generic Write budget (30/min, one save per 2 s) is below what a fast operator produces. Both editors coalesce saves through `lib/editorSaveQueue.ts` (700 ms debounce, 3 s max wait, one request in flight, retries backed off from 2 s), so one open editor sends at most one save per ~0.7 s (~85/min) and fewer when clicking faster (one per 3 s). 120/min covers that worst case with room for retries and still caps a runaway client at 2 requests per second. Only `PUT` on those exact paths gets it: creating or deleting events and partners (`POST`/`DELETE`) and sibling routes such as `PUT /api/projects/<id>` stay on the Write budget. Because the key is IP + path and every event saves through the same `/api/projects` path, operators behind one venue IP share this budget; a refused save is not lost, since the 429 carries `Retry-After` and the editor's save queue keeps the change and retries after it.
 - **Storage**: In-memory `Map`, keyed by `<client-identifier>:<pathname>`, with automatic cleanup (suitable for single-instance deployment)
 - **Response Headers**: `X-RateLimit-Limit`, `X-RateLimit-Remaining`, `X-RateLimit-Reset` (plus `Retry-After` when a request is blocked)
@@ -2358,7 +2360,7 @@ export const RATE_LIMITS = {
   AUTH:        { windowMs: 15 * 60 * 1000, maxRequests: 5 },
   WRITE:       { windowMs: 60 * 1000,      maxRequests: 30 },
   EDITOR_SAVE: { windowMs: 60 * 1000,      maxRequests: 120 },
-  READ:        { windowMs: 60 * 1000,      maxRequests: 500 },
+  READ:        { windowMs: 60 * 1000,      maxRequests: 120 },
   PUBLIC:      { windowMs: 60 * 1000,      maxRequests: 60 },
   CONTACT:     { windowMs: 15 * 60 * 1000, maxRequests: 5 },
   EXPORT:      { windowMs: 60 * 1000,      maxRequests: 6 },
@@ -2425,20 +2427,28 @@ export async function apiRequest<T>(url: string, options: RequestInit): Promise<
 
 #### 5. Security Middleware (`middleware.ts`)
 - **Integration**: Next.js middleware pipeline
-- **Applied To**: All API routes, admin pages, public stats pages
-- **Excluded**: Static assets (/_next/*, /favicon.ico, etc.)
+- **Applied To**: whatever `config.matcher` selects: `/api/**`, `/admin/**`, `/report/**`, `/partner-report/**`, `/dashboard/**`, and, through its catch-all pattern, every other path except `_next/static`, `_next/image`, `favicon.ico` and `.png`/`.jpg`/`.jpeg`/`.gif`/`.svg`/`.ico` files
 
 **Execution Order**:
-1. Rate limiting check
-2. CSRF token validation (for state-changing requests)
-3. Request logging (start)
-4. Route handler execution
-5. Request logging (end)
+1. For `/admin/**` (except `/admin/login`, `/admin/register`, `/admin/clear-session`) and `/dashboard/**`: verify the signed `admin-session` cookie and, where SSO is configured, the SSO source; otherwise redirect to `/admin/login`
+2. Rate limiting check (429 with `Retry-After` when exceeded)
+3. CSRF token validation (for state-changing requests; 403 on failure)
+4. CORS preflight: an `OPTIONS` request is answered here with 204 and the CORS headers
+5. Route handler execution
+6. On the response: CORS headers, the Content Security Policy and the other security headers (`X-Content-Type-Options`, `X-Frame-Options`, `Referrer-Policy`)
+7. Request logging (end)
 
 **Response Modifications**:
-- Sets CSRF cookie if missing
-- Adds rate limit headers
-- Logs security violations
+- Adds rate limit headers to a 429 answer (`X-RateLimit-*`, `Retry-After`); allowed requests are not given them (see `rateLimitMiddleware`: "Headers should be added to actual response by caller", and no caller does)
+- Adds CORS headers (below) and the security headers to downstream responses; the early 429 and 403 answers carry no CORS headers
+- Logs security violations (rate limit exceeded, CSRF violation)
+- Does not set the CSRF cookie: that moved to `GET /api/csrf-token` (`lib/apiClient.ts` fetches it on first use)
+
+#### 6. CORS (`lib/cors.ts`)
+- **Allowlist**: `ALLOWED_ORIGINS` is a comma-separated list of exact origins (no wildcards; one origin per entry). When it is unset, only `localhost` and `127.0.0.1` origins (any port) are allowed.
+- **Headers** (`buildCorsHeaders`): for a request whose `Origin` is allowed, the response gets `Access-Control-Allow-Origin` (that origin), `Vary: Origin`, `Access-Control-Allow-Credentials: true`, `Access-Control-Allow-Methods: GET,POST,PUT,DELETE,PATCH,OPTIONS` and `Access-Control-Allow-Headers: Content-Type, X-CSRF-Token, Authorization`. For any other origin, or none, no CORS header is added.
+- **Where it applies**: `middleware.ts` for every path it matches (preflight answered there, headers added to the downstream response), and `applyCorsHeaders` in the four `app/api/public/**` routes (`partners`, `partners/[id]`, `partners/[id]/events`, `events/[id]`), which also answer `OPTIONS` themselves.
+- **What it is not**: CORS is enforced by browsers only. Server-to-server callers (camera, fanmass) send no `Origin` and are unaffected; each route's own guard (session, page grant, integration token, API key) still decides who may call it. See also [api-public.md](api/api-public.md) and [operations/sec-03-operational-hardening.md](operations/sec-03-operational-hardening.md).
 
 ### Security Benefits
 
@@ -3457,18 +3467,18 @@ Note: `ADMIN_PASSWORD` is no longer applicable — local admin login was removed
 
 ### Project Slug Access Control
 
-**Purpose:** UUID-based slugs for secure, password-less access to projects.
+**Purpose:** UUID-based slugs make an event's report and editor addresses hard to guess. A slug is a bearer link: it opens its page by itself only while that page has no password. Once a page password is set, the link alone is not enough (see "Page passwords" below).
 
 **Implementation:**
-- **`viewSlug`** (UUID v4): Read-only public access to `/report/[slug]`
-- **`editSlug`** (UUID v4): Editor access to `/edit/[slug]`
+- **`viewSlug`** (UUID v4): the report address, `/report/[slug]`
+- **`editSlug`** (UUID v4): the editor address, `/edit/[slug]`
 
 **Key Features:**
-1. **Auto-Generated**: Created on project creation via `lib/slugUtils.ts`
-2. **Unique Constraint**: Both slugs indexed as unique in database
+1. **Auto-Generated**: Created once, when the event is created (`generateProjectSlugs` in `lib/slugUtils.ts`, called by `POST /api/projects`)
+2. **Unique Constraint**: Both slugs have unique indexes (`scripts/createMissingIndexes.ts`)
 3. **Security**: UUIDs provide ~2^122 combinations (brute-force resistant)
-4. **No Passwords Required**: Direct URL access without additional authentication
-5. **Revocable**: Can regenerate slugs to revoke access
+4. **Page passwords are optional, and enforced on the server**: with no password the slug alone opens the report and (through its edit link) the editor. With a password set (`page_passwords`, page types `event-report` for `/report/[slug]` and `edit` for `/edit/[slug]`), `app/report/[slug]/layout.tsx` renders the password gate, and `GET /api/projects/stats/[slug]` (`requirePageAccess`) and `GET /api/projects/edit/[slug]` (`requirePageAccessDecision`) answer 401 unless the caller holds a valid `page-access` grant cookie (`lib/pageAccess.ts`, 12 hours) or an admin session. The editor opened by the event `_id` instead of its edit link loads only for a signed-in user or a grant holder (403 `EDIT_LINK_REQUIRED` otherwise). See "Authentication Model" above.
+5. **Not revocable from the app**: nothing regenerates a slug after the event is created. To cut off a shared link, set or change the page password; doing so ends every grant issued before it.
 
 **Usage Pattern:**
 ```typescript
@@ -3482,16 +3492,17 @@ const editable = await findProjectByEditSlug(editSlug);
 ```
 
 **Why UUID Slugs:**
-- Eliminates need for separate password management per project
-- Shareable URLs (e.g., for clients, stakeholders)
-- Stateless - no session/auth required for project access
-- Simple revocation: regenerate slug → old URL invalid
+- Shareable URLs (e.g., for clients, stakeholders) that need no account
+- An optional page password adds a shared secret without per-user accounts
+- A page without a password needs no session; a page with one needs the grant cookie or an admin session
 
 **Example URLs:**
-- View: `https://messmass.com/stats/00825405-0018-4483-8854-e18c25f7607d`
+- View: `https://messmass.com/report/00825405-0018-4483-8854-e18c25f7607d`
 - Edit: `https://messmass.com/edit/8fffdaa5-838c-4bf3-a382-0ba62a589faf`
 
 ### Database Schema Summary
+
+The core collections, with the indexes `scripts/createMissingIndexes.ts` creates. This table is not the whole schema: the code opens 46 more collections, listed in the second table. The complete, CI-checked list of every collection name the repo opens (scripts included) is `docs/_audit/collections.json` (`npm run inventory:check`).
 
 | Collection | Purpose | Indexes |
 |------------|---------|----------|
@@ -3502,12 +3513,63 @@ const editable = await findProjectByEditSlug(editSlug);
 | `hashtag_categories` | Category definitions with colors | name |
 | `hashtags` | Hashtag usage tracking | _id (hashtag text) |
 | `notifications` | Multi-user notifications | createdAt, archivedBy |
-| `variablesConfig` | Variable flags and overrides | name |
-| `variableGroups` | Editor layout groups | groupOrder |
+| `variables_metadata` | Variable definitions, flags and overrides (what `/api/variables-config` reads; the older `variablesConfig` collection was folded into it by `scripts/consolidateVariablesConfig.ts`) | name (unique), category, isSystemVariable |
+| `variablesGroups` | Editor and clicker variable groups (`/api/variables-groups`, `app/admin/clicker-manager`); `lib/variableMerge.ts` also rewrites `variables_groups`, the name the index script creates `groupOrder_sort` on | groupOrder |
 | `users` | Admin users | email (unique) |
 | `analytics_aggregates` | Pre-computed event analytics (v6.26.0) | projectId, eventDate, partnerId+eventDate, updatedAt |
-| `aggregation_logs` | Background job tracking (v6.26.0) | startTime, status, jobType+startTime, createdAt (TTL) |
+| `aggregation_jobs` | Background job tracking written by the analytics cron (`app/api/cron/analytics-aggregation/route.ts`); `aggregation_logs`, which `lib/analytics.types.ts` and the index script describe, is not opened by any app code | none created by the index script |
 | `system_settings` | System configuration (v6.26.0) | key |
+
+**Other collections the code opens** (names from a scan of `.collection('<name>')` calls in `app/`, `lib/`, `components/` and `hooks/`; the second column is one file that opens it, usually the one that owns it):
+
+| Collection | Opened in |
+|---|---|
+| `activation_participations` | `lib/activationBuilder.ts` |
+| `activation_templates` | `lib/activationBuilder.ts` |
+| `ai_analysis_summaries` | `lib/aiAnalytics.ts` |
+| `ai_rescan_requests` | `lib/aiRescan.ts` |
+| `api_football_enrichment_log` | `app/api/api-football/enrich-partners/route.ts` |
+| `audience_packs` | `lib/audiencePacks.ts` |
+| `audit_logs` | `app/api/admin/permissions/route.ts` |
+| `available_fonts` | `lib/cameraFrameContext.ts` |
+| `bitly_sync_logs` | `app/api/bitly/sync/route.ts` |
+| `categories` | `lib/api/caching.ts` |
+| `chart_configurations` | `app/api/chart-config/route.ts` |
+| `chart_formatting_defaults` | `app/api/chart-formatting-defaults/route.ts` |
+| `charts` | `app/api/charts/route.ts` |
+| `cities` | `app/api/cities/route.ts` |
+| `content_assets` | `app/api/content-assets/route.ts` |
+| `countries` | `lib/countryService.ts` |
+| `data_blocks` | `lib/reportRuntime.ts` |
+| `derived_variable_config` | `lib/variableMerge.ts` |
+| `drive_folder_links` | `lib/aiAnalytics.ts` |
+| `fan_identities` | `lib/fanIdentity.ts` |
+| `fan_identity_links` | `lib/fanIdentity.ts` |
+| `fan_identity_merge_candidates` | `lib/fanIdentity.ts` |
+| `fanmass_commands` | `lib/fanmassCommands.ts` |
+| `fanmass_dashboard_snapshot` | `lib/fanmassDashboardSnapshot.ts` |
+| `fanmass_event_links` | `lib/fanmassIntegration.ts` |
+| `filter_slugs` | `lib/slugUtils.ts` |
+| `football_data_fixtures` | `lib/fixtureImporter.ts` |
+| `hashtag_colors` | `app/api/hashtags/route.ts` |
+| `hashtag_slugs` | `lib/hashtagUtils.ts` |
+| `loyalty_completions` | `lib/loyaltyHub.ts` |
+| `loyalty_missions` | `lib/loyaltyHub.ts` |
+| `organizations` | `lib/sponsorshipHub.ts` |
+| `pageStyles` | `app/admin/layout.tsx` |
+| `page_passwords` | `lib/pageAccess.ts` |
+| `paid_campaigns` | `lib/paidCampaigns.ts` |
+| `partner_analytics` | `lib/analytics-aggregator.ts` |
+| `project_permissions` | `app/api/admin/permissions/route.ts` |
+| `report_styles` | `app/api/projects/route.ts` |
+| `report_templates` | `lib/reportRuntime.ts` |
+| `report_variants` | `lib/reportVariants.ts` |
+| `reports` | `lib/reportRuntime.ts` |
+| `settings` | `lib/gridSettings.ts` |
+| `sportsdb_fixtures` | `lib/sportsdbFixtureImporter.ts` |
+| `stakeholder_grants` | `lib/stakeholderGrants.ts` |
+| `user_preferences` | `app/api/user-preferences/route.ts` |
+| `variables_groups` | `lib/variableMerge.ts` |
 
 ### Real-Time Architecture (Removed in v12.2.0)
 
@@ -3548,7 +3610,7 @@ const editable = await findProjectByEditSlug(editSlug);
 5. **API Authentication**: `middleware.ts` verifies the `admin-session` cookie's HS256 signature and expiry (`lib/edgeSessionToken.ts`) before allowing `/admin/**` through (F-003/messmass#392, fixed in 71b5e23f); user existence and role are checked in each route/page via `getAdminUser()`/`requireAdmin()`
 6. **Input Validation**: TypeScript + runtime validation on API endpoints
 7. **MongoDB Injection Prevention**: Parameterized queries via MongoDB driver
-8. **Rate Limiting**: Implemented (`lib/rateLimit.ts`), applied in `middleware.ts` to all routes matched by its `config.matcher` (all `/api/**`, `/admin/**`, `/report/**`, `/partner-report/**`, `/dashboard/**`, and effectively everything else except static assets/`_next`); an in-memory, per-IP fixed-window counter with separate limits per endpoint class (auth, write, read, public, contact form, PDF export) — see the "Security Enhancements" section above for the current limits
+8. **Rate Limiting**: Implemented (`lib/rateLimit.ts`), applied in `middleware.ts` to all routes matched by its `config.matcher` (all `/api/**`, `/admin/**`, `/report/**`, `/partner-report/**`, `/dashboard/**`, and effectively everything else except static assets/`_next`); an in-memory, per-IP fixed-window counter with separate limits per endpoint class (seven: auth, contact form, public report pages, editor save, write, read, PDF export) — see the "Security Enhancements" section above for the current limits
 
 ---
 
@@ -3770,21 +3832,50 @@ camera.messmass.com ──┘      Ollama vision + MediaPipe + YOLO      (this r
 
 messmass **does not analyse images**. It owns events and variables, hands fanmass
 the context for an event, and ingests what fanmass sends back. fanmass runs on the
-operator's own hardware and is not cloud-deployed; messmass must therefore never
-have a runtime dependency on fanmass being reachable. Every read surface described
-below is an aggregation over collections messmass already owns.
+operator's own hardware and is not cloud-deployed, so it has no public URL and can
+be offline. It is the caller on every channel below except one pull (see "The one
+blocking call"). Every read surface described below is an aggregation over
+collections messmass already owns, so reports, editors and the AI workspace keep
+working while fanmass is down.
 
-### Two channels across the boundary
+### Channels across the boundary
+
+All of them live under `app/api/integrations/fanmass/**` (18 route files) and call
+`requireFanmassIntegrationAuth` (`lib/fanmassIntegration.ts`), one shared integration
+token; the whole `/api/integrations/*` tree is CSRF-exempt.
 
 | Channel | Endpoint | Carries |
 |---|---|---|
-| Stats push | `POST /api/integrations/fanmass/events/[eventId]/stats` | Flat scalars → `projects.stats.fanmass*` |
-| Summary push | `POST /api/integrations/fanmass/events/[eventId]/analysis-summary` | The whole structured document → `ai_analysis_summaries` |
+| Event context | `GET .../events/[eventId]/context` | The event's context, which fanmass pulls on demand |
+| Legacy analytics callback | `POST .../callbacks` | "A batch is ready or partial"; messmass then pulls the summary (see below) |
+| Stats push | `POST .../events/[eventId]/stats` | Flat scalars → `projects.stats.fanmass*` |
+| Summary push | `POST .../events/[eventId]/analysis-summary` | The whole structured document → `ai_analysis_summaries` |
+| Dashboard snapshot | `POST .../dashboard-snapshot` | The four `/admin/fanmass` tabs' snapshot, stored in `fanmass_dashboard_snapshot` and read server-side |
+| Drive-folder status | `POST .../events/[eventId]/drive-folders/status` | Status write-back for one linked Drive folder (`drive_folder_links`) |
+| Rescan requests (poll and ack) | `GET .../rescan-requests`, `DELETE .../rescan-requests/[eventId]` | Operator-requested rescans fanmass picks up, then acknowledges |
+| Commands (poll and ack) | `GET .../commands`, `DELETE .../commands/[commandId]` | Operator commands fanmass picks up, then acknowledges |
+
+Around those: `GET .../drive-folders` (bulk discovery of events with linked Drive
+folders) and `GET .../drive-folders/pending-sync` (the cheap "check now" poll),
+`GET/POST .../events/[eventId]/link` and `GET/POST .../events/[eventId]/sync`
+(`/sync` is the blocking call below), and provisioning (`GET/POST .../partners`,
+`GET .../partners/[partnerId]/events`, `POST .../events`, `GET/POST .../variables`).
+`docs/_audit/fleet-architecture.md` (edge E2) records the fanmass side of each.
 
 The summary channel exists because the stats push carries only flat scalars, so
 everything list-shaped — twenty brand mentions, twenty club mentions, demographic
-projections — was discarded at the boundary. The two are **failure-isolated**: a
-summary push that fails must not cost the event its stats.
+projections — was discarded at the boundary. The stats and summary pushes are
+**failure-isolated**: a summary push that fails must not cost the event its stats.
+
+### The one blocking call
+
+`POST .../events/[eventId]/sync` and `POST .../callbacks` call `syncFanmassAnalytics`
+(`lib/fanmassIntegration.ts`), which GETs the batch's analytics summary from
+`FANMASS_BASE_URL` (`fanmassFetch`, 15-second timeout, `FANMASS_API_KEY` sent as
+`x-api-key`: a third credential, distinct from `FANMASS_INTEGRATION_TOKEN`). It is
+the only place messmass depends on fanmass being reachable: with the URL unset the
+route answers 503 `FANMASS_NOT_CONFIGURED`, and with fanmass unreachable or slow it
+fails after at most 15 seconds (500 `INTERNAL_ERROR`). Nothing else waits on it.
 
 Summaries are stored as a document, not as stats keys. Stats names are chart
 variables with registration semantics, and twenty brand rows are not twenty

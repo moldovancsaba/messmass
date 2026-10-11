@@ -276,7 +276,8 @@ same section then contradicted four bullets down — corrected 2026-09-16.
   distinct from FANMASS_INTEGRATION_TOKEN; lib/fanmassIntegration.ts:258-265,
   :343; lib/config.ts:141-142). fanmass gates it with require_api_key
   (app.py:1098-1102). This is the one place messmass has a runtime dependency
-  on fanmass reachability (contradicts architecture.md:3755-3756).
+  on fanmass reachability (architecture.md, "The one blocking call", now says
+  the same; it used to claim messmass had no such dependency).
 
 ### E3 · fanmass → camera (media pull)
 Verified camera `88c6839` · fanmass `5d9a032`. Direction is fanmass-pulls.
