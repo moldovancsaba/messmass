@@ -312,7 +312,7 @@ All dependencies must:
 
 	•	Be security-audited (0 vulnerabilities)
 	•	Have no post-install warnings
-	•	Fit the approved architecture (Next.js App Router, Vercel, MongoDB, Tailwind, Mongoose, Socket.io)
+	•	Fit the approved architecture (Next.js App Router, Vercel, MongoDB, Mongoose, and GDS on Mantine 8 for the UI; see `docs/architecture.md`)
 
 If in doubt, do not install — ask first.
 

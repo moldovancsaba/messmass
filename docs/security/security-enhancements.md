@@ -14,7 +14,7 @@ Owner: Security
 ## Implemented Controls
 1) Rate limiting
 - Module: `lib/rateLimit.ts`
-- Approach: Token bucket with per-endpoint limits (auth/write/read/public).
+- Approach: Fixed-window counter per client IP and path (not a token bucket), with per-endpoint-class limits (auth, contact form, public report pages, editor save, write, read, PDF export).
 - Output: Standard rate limit headers (`X-RateLimit-Limit`, `X-RateLimit-Remaining`, `X-RateLimit-Reset`).
 
 2) CSRF protection

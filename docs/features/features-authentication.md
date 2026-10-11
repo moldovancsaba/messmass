@@ -723,7 +723,7 @@ const pageStats = await getPasswordStats('championship-final-2025')
 
 **Implementation:** `lib/rateLimit.ts`
 
-**Algorithm:** Token bucket with sliding window
+**Algorithm:** Fixed-window counter per client IP and path (not a token bucket, no sliding window)
 
 **Rate Limits:**
 
@@ -732,8 +732,8 @@ const pageStats = await getPasswordStats('championship-final-2025')
 | Authentication | 15 min | 5 | `/api/admin/login`, `/api/auth/*` (not DELETE) |
 | Editor Saves | 1 min | 120 | `PUT /api/projects`, `PUT /api/partners`, `PUT /api/partners/edit/<id-or-slug>` |
 | Write Operations | 1 min | 30 | Other POST, PUT, PATCH, DELETE (including `PUT /api/page-passwords`) |
-| Read Operations | 1 min | 500 | GET requests |
-| Public Pages | 1 min | 60 | `/stats/*`, `/hashtag/*` |
+| Read Operations | 1 min | 120 | GET requests, including the API calls a report page makes |
+| Public Pages | 1 min | 60 | `GET`/`HEAD` of `/report/*`, `/partner-report/*`, `/filter/*`, `/hashtag/*` (the page document) |
 
 **Response Headers:**
 ```http
@@ -809,17 +809,7 @@ const response = await apiPost('/api/projects', {
 
 **Implementation:** `lib/cors.ts`
 
-**Allowed Origins:**
-```typescript
-const allowedOrigins = [
-  'https://messmass.com',
-  'https://www.messmass.com',
-  'https://admin.messmass.com',
-  'http://localhost:3000'      // Development
-  // (the former localhost:7654 WebSocket-server origin was removed with the
-  //  WebSocket stack in v12.2.0 — see lib/cors.ts for the current list)
-]
-```
+**Allowed Origins:** there is no hard-coded list. `ALLOWED_ORIGINS` (environment variable) holds a comma-separated list of exact origins, for example `https://messmass.com,https://preview.messmass.com`, with no wildcards. When it is unset, only `localhost` and `127.0.0.1` origins (any port) are allowed (`isOriginAllowed` in `lib/cors.ts`). The architecture overview has a short CORS section: [architecture.md](../architecture.md), "6. CORS".
 
 **Response Headers:**
 ```http
