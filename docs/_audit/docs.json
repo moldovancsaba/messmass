@@ -155,6 +155,7 @@
   {"file": "docs/guides/guides-tutorial-camera-layouts-messages.md", "title": "Tutorial: Layouts, messages and the dark area at an event (camera app)"},
   {"file": "docs/guides/guides-tutorial-camera-mode.md", "title": "Tutorial: Which camera the photo page uses (camera app)"},
   {"file": "docs/guides/guides-tutorial-camera-sample-selfies.md", "title": "Tutorial: Sample selfies and the photo window of the welcome page screen (camera app)"},
+  {"file": "docs/guides/guides-tutorial-camera-stadium-backgrounds-qr-texts.md", "title": "Tutorial: Stadium backgrounds and QR texts for the stage of the default slideshow (camera app)"},
   {"file": "docs/guides/guides-tutorial-charts-formulas.md", "title": "Tutorial: Charts & formulas"},
   {"file": "docs/guides/guides-tutorial-clicker-sets.md", "title": "Tutorial: Clicker sets & variable groups"},
   {"file": "docs/guides/guides-tutorial-collecting-data.md", "title": "Tutorial: Collecting event data (Clicker & Manual)"},

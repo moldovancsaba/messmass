@@ -48,20 +48,21 @@ Data is captured against an **event** (via the Clicker/Manual editor, Google She
 16. [Approving photos at an event](guides-tutorial-approving-photos.md) — how the person approving photos live works the Vetting tab of the camera app (English and Hungarian).
 17. [E-mails to the users (camera app)](guides-tutorial-camera-emails.md) — the five e-mails (welcome, arrived, approved, declined, follow up), the toolbar editor, variables, the legal part with three levels, the preview and the test e-mail (English and Hungarian).
 18. [Layouts, messages and the dark area (camera app)](guides-tutorial-camera-layouts-messages.md) — which message goes on which design, how people get the layout and the message, the dark area (English and Hungarian).
-19. [The giant screen (camera app slideshow)](guides-tutorial-camera-giant-screen.md) — the default screen, full screen, how it plays, the crossfade, how it recovers and reloads, the venue checklist (English and Hungarian).
+19. [The giant screen (camera app slideshow)](guides-tutorial-camera-giant-screen.md) — the default screen, full screen, how it plays, looking at the crossfade with ?crossfade=1, how it recovers and reloads (and waits while offline), the welcome page picture that is drawn again by itself, the card for existing events, the venue checklist (English and Hungarian).
 20. [The CTA page with a picture (camera app)](guides-tutorial-camera-cta-page.md) — the picture fits the page, hide the text and buttons, make the whole picture a link (English and Hungarian).
 21. [The event gallery (camera app)](guides-tutorial-camera-event-gallery.md) — the Gallery page, uploading photos with the event's frame, selecting many at once with Shift, Ctrl and a dragged box, removing and framing the selection (English and Hungarian).
 22. [Frame slots, composing the frame of an event (camera app)](guides-tutorial-camera-frame-slots.md) — up to twelve optional text and picture slots, bars and corner pictures, strips chosen by message, the preview, the MTK pink month example (English and Hungarian).
 23. [The acceptance on the "Who are you" page (camera app)](guides-tutorial-camera-journey-acceptance.md) — the consent page as one checkbox with one sentence on the Who-are-you page, everything off until it is ticked, one setting in both editors, the records and the sign-in (English and Hungarian).
 24. [The order of the pages, and Take photo + Submit (camera app)](guides-tutorial-camera-journey-order.md) — up and down on every page including the default ones, and the checkbox that lets a login or a CTA come between taking the photo and saving it (English and Hungarian).
 25. [Sample selfies and the photo window of the welcome page screen (camera app)](guides-tutorial-camera-sample-selfies.md) — the general sample selfies, a partner's own, the event's choice (a sample selfie, a photo of the event, or the stand-in), Pick another (English and Hungarian).
-26. [Which camera the photo page uses (camera app)](guides-tutorial-camera-mode.md) — the four ways to take the photo (automatic, live with view buttons, live with a real sensor photo, live with the screen picture), chosen for all events of a partner or per event (English and Hungarian).
-27. [The Analytics view of an event (camera app)](guides-tutorial-camera-analytics.md) — the event's and all events' numbers: photos, decisions, users, people marked, screens, links, e-mails, consents, and the Journey tab from an anonymous recording of the capture pages (the 30 days, the kill switch); days and clock filters, CSV, and what is not measured yet (English and Hungarian).
-28. [Fanmass integration](guides-tutorial-fanmass.md) — image-intelligence analytics and the mapping API.
-29. [Bitly integration](guides-tutorial-bitly.md) — short-link click analytics attributed to events/partners.
-30. [Sport databases](guides-tutorial-sport-databases.md) — Football-Data.org, API-Football, and TheSportsDB enrichment.
-31. [Google Sheets sync](guides-tutorial-google-sheets.md) — managing a partner's events from a spreadsheet.
-32. [Authentication, roles & SSO](guides-tutorial-authentication-sso.md) — sign-in, roles, SSO, and API keys.
+26. [Stadium backgrounds and QR texts for the stage of the default slideshow (camera app)](guides-tutorial-camera-stadium-backgrounds-qr-texts.md) — the two global libraries, a partner's and an event's own stadium backgrounds, the Default stage card (Draw the stage again, Pick another), the random pick made once, the QR text above the QR code that the slideshow editor can change, and what never changes by itself (English and Hungarian).
+27. [Which camera the photo page uses (camera app)](guides-tutorial-camera-mode.md) — the four ways to take the photo (automatic, live with view buttons, live with a real sensor photo, live with the screen picture), chosen for all events of a partner or per event (English and Hungarian).
+28. [The Analytics view of an event (camera app)](guides-tutorial-camera-analytics.md) — the event's and all events' numbers: photos, decisions, users, people marked, screens, links, e-mails, consents, and the Journey tab from an anonymous recording of the capture pages (the 30 days, the kill switch); days and clock filters, CSV, and what is not measured yet (English and Hungarian).
+29. [Fanmass integration](guides-tutorial-fanmass.md) — image-intelligence analytics and the mapping API.
+30. [Bitly integration](guides-tutorial-bitly.md) — short-link click analytics attributed to events/partners.
+31. [Sport databases](guides-tutorial-sport-databases.md) — Football-Data.org, API-Football, and TheSportsDB enrichment.
+32. [Google Sheets sync](guides-tutorial-google-sheets.md) — managing a partner's events from a spreadsheet.
+33. [Authentication, roles & SSO](guides-tutorial-authentication-sso.md) — sign-in, roles, SSO, and API keys.
 
 ## Quick start by role
 
@@ -71,6 +72,7 @@ Data is captured against an **event** (via the Clicker/Manual editor, Google She
 - **Photo approver at a live event** → Approving photos at an event (sign in, the Vetting tab, approve and reject).
 - **Event editor in the camera app** → Layouts, messages and the dark area → E-mails to the users → The CTA page with a picture → The event gallery → Frame slots (the Frames page, the Emails page, the pages editor, the Gallery page).
 - **Person running the giant screen at the venue** → The giant screen (full screen, the checklist, Reload the screen).
+- **Event editor who dresses the stage of the giant screen** → Stadium backgrounds and QR texts (the Default stage card) → Sample selfies → The giant screen.
 
 ## Notes on scope
 
