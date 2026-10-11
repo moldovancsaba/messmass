@@ -3,6 +3,7 @@
 // HOW: Project-specific report → System default (partner inheritance handled at data level)
 
 import { ObjectId } from 'mongodb';
+import { projectPartnerId } from '@/lib/projectPartnerRef';
 
 /**
  * WHAT: Report configuration from database
@@ -53,6 +54,9 @@ export interface ProjectReference {
   _id: ObjectId | string;
   eventName: string;
   reportId?: ObjectId | string;
+  /** What projects store: the home partner. */
+  partner1Id?: ObjectId | string;
+  /** Legacy home partner link (older documents and /admin/project-partners); used only when partner1Id is absent. */
   partner1?: ObjectId | string | { _id: ObjectId | string };
 }
 
@@ -140,12 +144,10 @@ export class ReportResolver {
     }
 
     // Level 2: Check partner default report
-    if (projectDoc.partner1) {
-      const partnerId = typeof projectDoc.partner1 === 'object' && '_id' in projectDoc.partner1
-        ? projectDoc.partner1._id
-        : projectDoc.partner1;
-
-      const partner = await partnersCollection.findOne({ _id: partnerId });
+    // The event's partner is partner1Id (what projects store), else the legacy partner1 field (messmass#430).
+    const eventPartnerId = projectPartnerId(projectDoc as unknown as Record<string, unknown>);
+    if (eventPartnerId) {
+      const partner = await partnersCollection.findOne({ _id: eventPartnerId });
       
       if (partner?.reportId) {
         const reportId = typeof partner.reportId === 'string'

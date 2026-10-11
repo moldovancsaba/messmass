@@ -5,6 +5,7 @@
 
 import { getDb } from '../lib/db';
 import { ObjectId } from 'mongodb';
+import { projectPartnerId } from '../lib/projectPartnerRef';
 
 interface DiagnosticResult {
   testName: string;
@@ -71,19 +72,17 @@ async function testProjectTemplateResolution() {
   for (const project of projects.slice(0, 3)) {
     if (project.reportTemplateId) continue; // Skip explicit templates
     
-    if (!project.partner1) {
+    // Same lookup as app/api/report-config: partner1Id, else the legacy partner1 field.
+    const partnerId = projectPartnerId(project);
+    if (!partnerId) {
       logResult({
         testName: `Project "${project.eventName}" partner fallback`,
         status: 'WARN',
-        message: 'No partner1 set, cannot inherit partner template',
+        message: 'No partner1Id (or legacy partner1) set, cannot inherit partner template',
         details: { projectId: project._id.toString() }
       });
       continue;
     }
-    
-    const partnerId = typeof project.partner1 === 'object' && '_id' in project.partner1
-      ? project.partner1._id
-      : project.partner1;
     
     const partner = await db.collection('partners').findOne({ _id: partnerId });
     
