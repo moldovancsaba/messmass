@@ -1,11 +1,11 @@
 # Docs Consistency Audit
 Status: Active
-Last Updated: 2026-10-10T16:07:42.748Z
+Last Updated: 2026-10-11T07:05:40.723Z
 Canonical: Yes
 Owner: Documentation
 
 Package version: 12.3.41
-Current docs scanned: 157
+Current docs scanned: 158
 Failures: 0
 Warnings: 1
 
@@ -15,4 +15,4 @@ No current documentation consistency failures found.
 
 ## Warnings (non-blocking)
 
-- docs/_audit/fleet-architecture.md: "Verified messmass `dd34e229`" is 34 commits behind HEAD (over the 30-commit freshness threshold) -- worth re-verifying this edge is still accurate.
+- docs/_audit/fleet-architecture.md: "Verified messmass `dd34e229`" is 42 commits behind HEAD (over the 30-commit freshness threshold) -- worth re-verifying this edge is still accurate.

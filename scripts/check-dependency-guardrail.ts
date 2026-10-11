@@ -17,7 +17,6 @@ interface PackageJson {
 const APPROVED_RUNTIME_DEPS = new Set([
   '@mantine/core',
   '@mantine/dates', // Required as of GDS 6.0.0: @sovereignsquad/gds-core declares it as a peer dependency.
-  '@mantine/form',
   '@mantine/hooks',
   '@mantine/modals',
   '@mantine/notifications',
@@ -29,25 +28,18 @@ const APPROVED_RUNTIME_DEPS = new Set([
   'react',
   'react-dom',
   'mongodb',
-  'ws',
-  'bcrypt',
   'bcryptjs',
   'jsonwebtoken',
   'dotenv',
-  'winston',
   'marked',
   'dompurify',
-  'isomorphic-dompurify',
   'chart.js',
   'react-chartjs-2',
-  'focus-trap-react',
   'google-auth-library', // pinned exact version alongside googleapis; see lib/googleSheetsClient.ts's direct import
   'googleapis',
   '@sparticuz/chromium-min', // Serverless Chromium loader for app/api/export/pdf/route.ts (production); downloads its binary from a GitHub Release at runtime.
   'puppeteer-core', // Drives the above; local dev uses the full `puppeteer` devDependency instead.
-  'js-cookie',
-  'lucide-react',
-  'server-only',
+  'sharp', // Image metadata in lib/imgbbApi.ts and lib/logoStorage.ts; declared directly (it used to resolve only through next's optional dependency).
   'typescript',
   'uuid',
   'mongoose', // OPS-V3: Required for V3 time-series engine and multi-tenant reporting.
@@ -61,29 +53,17 @@ const APPROVED_DEV_DEPS = new Set([
   '@types/node',
   '@types/react',
   '@types/react-dom',
-  '@types/bcrypt',
-  '@types/bcryptjs',
   '@types/jsonwebtoken',
-  '@types/ws',
-  '@types/dompurify',
-  '@types/marked',
-  '@types/expr-eval',
   '@types/jest',
-  '@types/js-cookie',
   'puppeteer', // Local-dev-only Chromium for app/api/export/pdf/route.ts; excluded from the production bundle (next.config.js).
-  '@eslint/eslintrc',
   'eslint',
   'eslint-config-next',
   'eslint-plugin-jsx-a11y',
   'eslint-plugin-react',
   'eslint-plugin-react-hooks',
   'jest',
-  '@testing-library/react',
   '@testing-library/jest-dom',
-  'ts-jest',
   'tsx',
-  'fast-check',
-  'is-date-object',
   '@sovereignsquad/gds-compliance', // gds-adoption.json drift/exception checker; see CI's non-blocking check step
   // Add other approved dev deps as needed
 ]);

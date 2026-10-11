@@ -3359,13 +3359,12 @@ migration plan for removing a workaround from a file that had already been delet
 
 | Technology | Version | Purpose |
 |------------|---------|----------|
-| **Next.js** | 15.5.24 | React framework with App Router (RSC) |
+| **Next.js** | 15.5.27 | React framework with App Router (RSC) |
 | **React** | ^19.2.6 | UI library with concurrent features |
 | **TypeScript** | ^5.6.3 | Type safety and developer experience (strict mode) |
 | **Chart.js** | ^4.5.1 | Chart rendering library |
 | **react-chartjs-2** | ^5.3.1 | React wrapper for Chart.js |
-| **js-cookie** | ^3.0.5 | Client-side cookie management |
-| **uuid** | ^14.0.0 | Unique identifier generation |
+| **uuid** | ^14.0.3 | Unique identifier generation |
 
 **Chart & report export**: PNG export uses Chart.js's own `toBase64Image()` (`hooks/useChartExport.ts`) — no DOM-rasterization library involved. PDF export is server-side, driven by a real headless Chromium (`puppeteer-core` + `@sparticuz/chromium-min` in production, `puppeteer` in local dev) rendering the report's own print CSS (`app/api/export/pdf/route.ts`); there is no client-side html2canvas/jsPDF path.
 
@@ -3379,9 +3378,10 @@ migration plan for removing a workaround from a file that had already been delet
 | Technology | Version | Purpose |
 |------------|---------|----------|
 | **MongoDB** | ^6.8.0 | NoSQL database (MongoDB Atlas cloud) |
-| **Next.js API Routes** | 15.5.24 | REST API endpoints (serverless functions) |
+| **Next.js API Routes** | 15.5.27 | REST API endpoints (serverless functions) |
 | **Node.js** | >=24.0.0 <25.0.0 | JavaScript runtime (server-side) |
 | **dotenv** | ^17.4.2 | Environment variable management |
+| **sharp** | ^0.35.5 | Reads format and size of uploaded pictures and logos (`lib/logoStorage.ts`, `lib/imgbbApi.ts`); declared directly since 2026-10-11 (it used to resolve only through Next's optional dependency) |
 
 **External APIs**:
 - **Bitly API v4**: Link shortening and analytics
@@ -3406,7 +3406,7 @@ migration plan for removing a workaround from a file that had already been delet
 | Tool | Version | Purpose |
 |------|---------|----------|
 | **ESLint** | ^8.57.0 | JavaScript/TypeScript linting |
-| **eslint-config-next** | ^15.5.18 | Next.js-specific ESLint rules |
+| **eslint-config-next** | ^15.5.27 | Next.js-specific ESLint rules |
 | **TypeScript Compiler** | ^5.6.3 | Type checking (tsc --noEmit) |
 | **npm** | >=8.0.0 | Package manager |
 
@@ -3414,6 +3414,19 @@ migration plan for removing a workaround from a file that had already been delet
 - Next.js built-in bundler (Turbopack in dev mode)
 - TypeScript compiler for type checking
 - ESLint for code quality enforcement
+
+### Dependency audit (2026-10-11)
+
+The fleet-wide dependency check (camera has the long form in its `docs/DEPENDENCIES.md`). Installed on Node 24 with `npm ci`; the full CI chain was green after the changes.
+
+- **Security.** `npm audit --omit=dev` finds **0** advisories, so nothing that ships to production is affected. `npm audit` (everything) lists 29 packages (19 moderate, 10 high) that come from **two advisories with no patched release, both in development tools**: `braces` <= 3.0.3 (GHSA-vfj7-8cjw-p6xm, deeply nested brace patterns exhaust the stack; 3.0.3 is the newest release; reached through `eslint-config-next` > `@next/eslint-plugin-next` > `fast-glob` > `micromatch`, and the nested `fast-glob` of `@typescript-eslint`) and `sprintf-js` <= 1.1.3 (GHSA-hp3w-g68c-fv3c, unbounded precision; 1.1.3 is the newest release; reached through `jest` > `@jest/transform` > `babel-plugin-istanbul` > `@istanbuljs/load-nyc-config` > `js-yaml` 3 > `argparse` 1). Both run only inside `eslint` and `jest` on our own files and never see outside input. npm's suggested "fix" is a downgrade (`eslint-config-next@14`, `jest@25`), which is not done. Re-check when `braces` or `sprintf-js` publishes a patched release.
+- **Removed (nothing imports them, checked by a script over every import, `require`, config file, npm script and workflow, then by hand):** `@mantine/form`, `focus-trap-react`, `lucide-react` (`gds_fix_handover.md` item 26 had flagged these three; `lucide-react` is also on GDS's forbidden-import list), `js-cookie` with `@types/js-cookie`, `server-only`, `@eslint/eslintrc` (the config is the classic `.eslintrc.js`), `@testing-library/react` (tests render with `react-dom/server` and `react-dom/client`; only `jest-dom` is used), `ts-jest` (jest runs through `next/jest`), `fast-check`, `is-date-object`, and the stub type packages `@types/bcryptjs`, `@types/dompurify` and `@types/expr-eval` (the packages ship their own types; `expr-eval` is not installed). The two `overrides` for `handlebars` (only `ts-jest` used it) and `fast-xml-parser` (not in the tree) went with them, and `scripts/check-dependency-guardrail.ts` lost the allow-list lines for these and for packages that were never installed (`ws`, `bcrypt`, `winston`, `isomorphic-dompurify`, `@types/bcrypt`, `@types/ws`, `@types/marked`).
+- **Declared:** `sharp` ^0.35.5 (imported by `lib/logoStorage.ts` and `lib/imgbbApi.ts` but not in `package.json`; it resolved only because Next lists it as an optional dependency). The installed version did not change.
+- **Updated (patch and minor, same lines):** `@tabler/icons-react` 3.49.0, `@vercel/blob` 2.8.1, `uuid` 14.0.3, `tsx` 4.23.15, `jest` 30.5.2, `eslint-config-next` 15.5.27 (matches the installed Next), `@types/node` 22.20.5, and the transitive `@ungap/structured-clone` 1.4.0 (its 1.3.0 was marked deprecated for CWE-502).
+- **Kept although nothing imports it directly:** `@sovereignsquad/gds-admin` (part of the GDS set that `npm run gds:sync` checks and `gds-adoption.json` lists), `@mantine/dates` and `@mantine/modals` (peers of the GDS packages), `@types/jest` (global test types), `@types/node`, `eslint-plugin-react` and `eslint-plugin-react-hooks` (named in `.eslintrc.js`), `eslint-plugin-jsx-a11y` (used through `eslint-config-next`).
+- **Deprecated:** `eslint` 8.57.1 ("no longer supported"; with it `@humanwhocodes/config-array`, `@humanwhocodes/object-schema`, `rimraf` 3, `glob` 7 and `inflight`, all dev only) and `node-domexception` 1.0.0 (a shim; production, reached through `google-auth-library` > `gaxios` > `node-fetch` 3). Both go away with the majors below.
+- **Not done (major lines, owner decision):** Next 15.5 to 16.4 and React 19.2 to 19.3 with `@types/react*` 19.3 (framework lines); Mantine 8.3 to 9.7 and GDS 6.3.0 to 6.8.0 (design lines; camera is already on 6.8.0 and the vendored tarballs here are still 6.3.0); ESLint 8 to 10 (rewrite `.eslintrc.js` as a flat config, then `eslint-config-next` 16 and `eslint-plugin-react-hooks` 7); `google-auth-library` 10 to 11 together with `googleapis` 171 to 185 (the exact pin of `google-auth-library` is deliberate, see the guardrail comment); `mongodb` 6 to 7 (the lock holds 6.18.0 although camera runs 6.21.0, and `mongoose` 9.7.2 to 9.11.1; both touch the database, so they need a run against a disposable database, not done in the audit); `puppeteer` and `puppeteer-core` 25.8 to 25.13 with `@sparticuz/chromium-min` 149 to 153 (the PDF export needs a matched browser, test it as one set); `dotenv` 18; `marked` 18; `@testing-library/jest-dom` 7; `typescript` 5.9 to 7; `@types/node` 22 to 24 (engines say Node 24).
+- **Repeat the audit:** `npm ci`, `npm audit --omit=dev`, `npm audit`, `npm outdated`, `npm view <name> deprecated` for each direct dependency (and `npm view <name>@<installed> deprecated` for the installed version), and a scan of every import against `package.json`; then the CI chain (`type-check`, `lint`, `test`, `style:check`, `version:verify`, `docs:audit`, `inventory:check`, `gds:sync`, `comments:check`, `comments:versions`, `architecture:check`, `scripts/check-dependency-guardrail.ts`, `build`). Keep the `libc` entries in `package-lock.json`: the npm 10.9 found on some machines drops them, the npm in CI keeps them, so check `git diff package-lock.json` after any install.
 
 ### Infrastructure & Deployment
 
