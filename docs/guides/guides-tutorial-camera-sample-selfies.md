@@ -1,9 +1,9 @@
 # Tutorial: Sample selfies and the photo window of the welcome page screen (camera app)
 Status: Active
-Last Updated: 2026-10-10T00:00:00.000Z
+Last Updated: 2026-10-11T00:00:00.000Z
 Canonical: Yes
 Owner: Documentation
-Verified against the Camera app code (camera#540, steps 1 to 5)
+Verified against the Camera app code (camera#540, steps 1 to 5); the automatic redraw read from the Camera app docs @ 80f5a394 (camera#327, PR 587)
 
 > Audience: Global admins (the general sample selfies), partner managers (their own), and the people who set up an event (the welcome page screen) · Prerequisites: The event exists in the Camera app, and your e-mail address has the **Manager** role for its partner (a global admin can do everything here) · Related: [The giant screen (camera app slideshow)](guides-tutorial-camera-giant-screen.md), [The event gallery (camera app)](guides-tutorial-camera-event-gallery.md)
 
@@ -46,6 +46,7 @@ Open the event, **Slideshows**, and the card **Welcome page screen**. It shows t
 
 - **A photo that can no longer be shown** (rejected, hidden, removed, or its picture is gone) is replaced by a sample selfie, and if there is none by the stand-in. Nobody sees an error.
 - **A new general sample selfie does not change an event that already has its pick.** Press **Pick another** to see others.
+- **The picture is drawn again by itself** a few seconds after you change the event's own sample selfies or its choice, or the partner's own sample selfies, but only for an event that already has its welcome page screen picture (see step 4 of [The giant screen](guides-tutorial-camera-giant-screen.md)).
 - **The welcome page keeps a picture of its own:** a welcome page whose editor set its own giant screen picture keeps it; the welcome page screen drawn here is used only by a welcome page without a picture of its own.
 
 ## Gotchas & good practice
@@ -89,6 +90,7 @@ Mi lehet az ablakban:
 
 - **Egy fotó, amely már nem mutatható** (elutasított, rejtett, eltávolított, vagy a képe eltűnt) helyett minta-szelfi lesz, ha az sincs, a helyettesítő. Hibát senki nem lát.
 - **Egy új általános minta-szelfi nem változtatja meg** azt az eseményt, amelynek már van kiválasztott képe. A **Pick another** más képeket mutat.
+- **A kép magától újra lerajzolódik**, néhány másodperccel azután, hogy megváltoztatod az esemény saját minta-szelfijeit vagy a választását, vagy a partner saját minta-szelfijeit, de csak olyan eseménynél, amelynek már van kezdőoldali képernyőképe (lásd: [Az óriáskijelző](guides-tutorial-camera-giant-screen.md) 4. lépése).
 - **A kezdőoldal megtartja a saját képét:** az a kezdőoldal, amelynek szerkesztője saját nagy kijelző-képet állított be, megtartja; az itt rajzolt képernyőt csak a saját kép nélküli kezdőoldal használja.
 
 ### Jó tudni
