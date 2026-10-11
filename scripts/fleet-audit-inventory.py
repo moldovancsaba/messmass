@@ -34,6 +34,26 @@ fleet repo so each CI runs the identical check):
 
 Legacy fleet mode (no flag, optional repo names) still writes all five repos
 under /Users/Shared/Projects for the audit workstation.
+
+Stable output (parallel branches, git worktrees). Many branches are prepared at
+once, each in its own `git worktree`, and each regenerates these files. Three
+rules keep the files identical wherever the checkout lives and keep two branches
+from conflicting on anything but a real, same-place edit:
+
+  * The repo name written to `_meta.repo` comes from the git remote
+    (`origin`, last path segment without `.git`), then the folder name. A
+    worktree folder such as `camera-b` therefore does not leak into the files.
+  * A directory is skipped (node_modules, .next, .git, .claude, ...) only when
+    it is *below the repo root*. Where the checkout itself lives never matters:
+    a worktree under `.claude/worktrees/<name>` scans exactly like a clone.
+  * The committed files carry nothing that describes the run: no timestamp, no
+    commit, no counts (the count of a list is `len(items)`, and a changed count
+    line is a guaranteed merge conflict between two branches that add a
+    different number of items). `_meta` is just the repo name and the command to
+    regenerate. Every item sits on its own line, so two branches that add
+    different items merge without a conflict. `--check` has only ever compared
+    `items` (never `_meta`), so none of this changes what the gate verifies, and
+    files in the older format (with `generated`, `head`, `counts`) still pass.
 """
 
 from __future__ import annotations
@@ -43,12 +63,13 @@ import json
 import re
 import subprocess
 import sys
-from datetime import datetime, timezone
 from pathlib import Path
 
 FLEET = ["messmass", "camera", "fanmass", "try-on", "savetheworld"]
 PROJECTS = Path("/Users/Shared/Projects")
 
+# Directory names that are never scanned. They are matched against the path *below the
+# repo root* only (see is_skipped), never against where the checkout itself lives.
 SKIP_DIRS = {"node_modules", ".next", ".git", "vendor", ".venv311", ".venv", "coverage", "queue", "outputs", "gfpgan", "__pycache__", ".claude", ".pytest_cache", ".ruff_cache", ".mypy_cache"}
 
 # Auth markers looked for inside a route handler file. Presence is recorded
@@ -89,12 +110,24 @@ LINK_RE = re.compile(r"\[[^\]]*\]\(([^)\s]+)(?:\s+\"[^\"]*\")?\)")
 SKIP_FILES = {"next-env.d.ts"}
 
 
+def is_skipped(path: Path, root: Path) -> bool:
+    """True when `path` is inside a skipped directory *below the repo root*.
+
+    Only the part of the path under `root` is judged. The absolute path is not:
+    an agent's git worktree lives under `.claude/worktrees/<name>`, so `.claude`
+    is in the absolute path of every file in it, and judging by the absolute path
+    skipped the whole repo there (every collection, variable and document came
+    out as gone, and a regeneration would have committed empty inventories).
+    """
+    return any(part in SKIP_DIRS for part in path.relative_to(root).parts)
+
+
 def source_files(root: Path, exts: tuple[str, ...]) -> list[Path]:
     out = []
     for path in root.rglob("*"):
         if path.suffix not in exts or not path.is_file() or path.name in SKIP_FILES:
             continue
-        if any(part in SKIP_DIRS for part in path.parts):
+        if is_skipped(path, root):
             continue
         out.append(path)
     return out
@@ -185,7 +218,7 @@ def scan_outbound(repo: Path) -> list[str]:
 def scan_docs(repo: Path) -> list[dict]:
     docs = []
     for md in sorted(repo.rglob("*.md")):
-        if any(part in SKIP_DIRS for part in md.parts):
+        if is_skipped(md, repo):
             continue
         first_heading = ""
         for line in md.read_text(errors="replace").splitlines():
@@ -196,9 +229,19 @@ def scan_docs(repo: Path) -> list[dict]:
     return docs
 
 
-def git_head(repo: Path) -> str:
-    return subprocess.run(["git", "-C", str(repo), "rev-parse", "--short", "HEAD"],
-                          capture_output=True, text=True).stdout.strip()
+def repo_slug(repo: Path) -> str:
+    """Name of this repo as the fleet map spells it: the last path segment of the
+    `origin` URL without `.git`, else the directory name.
+
+    The remote is shared by every worktree of a repo, so the answer is the same in
+    `camera`, in `camera-b` and in `.claude/worktrees/anything`; the directory name
+    is only the fallback for a repo that has no `origin`.
+    """
+    proc = subprocess.run(["git", "-C", str(repo), "remote", "get-url", "origin"], capture_output=True, text=True)
+    url = proc.stdout.strip() if proc.returncode == 0 else ""
+    # https://host/org/camera.git, git@host:org/camera.git and git@host:camera.git all end in the name.
+    name = re.sub(r"\.git$", "", re.split(r"[/:]", url.rstrip("/"))[-1]) if url else repo.name
+    return name or repo.name
 
 
 def scan_repo(repo: Path) -> dict[str, list]:
@@ -212,20 +255,35 @@ def scan_repo(repo: Path) -> dict[str, list]:
     }
 
 
-def write_inventory(repo: Path, name: str, inventory: dict[str, list]) -> dict:
+REGENERATE_COMMAND = "python3 scripts/fleet-audit-inventory.py --write"
+
+
+def render_inventory(name: str, items: list) -> str:
+    """The exact text of one committed inventory file.
+
+    Nothing in it depends on the run (no timestamp, no commit, no counts), and every
+    item is on its own line, so regenerating on two branches gives the same bytes for
+    the same code and two branches that add different items merge without a conflict.
+    """
+    meta = {"repo": name, "regenerate": REGENERATE_COMMAND}
+    prefix = '{\n "_meta": {\n  "repo": %s,\n  "regenerate": %s\n },\n' % (json.dumps(meta["repo"]), json.dumps(meta["regenerate"]))
+    if not items:
+        return prefix + ' "items": []\n}\n'
+    body = ",\n".join("  " + json.dumps(item) for item in items)
+    return prefix + ' "items": [\n' + body + "\n ]\n}\n"
+
+
+def write_inventory(repo: Path, name: str | None, inventory: dict[str, list]) -> dict:
+    """Write the five inventory files; `name` defaults to the repo's name from its git remote."""
+    name = name or repo_slug(repo)
     out_dir = repo / "docs" / "_audit"
     out_dir.mkdir(parents=True, exist_ok=True)
-    meta = {
-        "generated": datetime.now(timezone.utc).isoformat(timespec="seconds"),
-        "repo": name,
-        "head": git_head(repo),
-        "counts": {k.split(".")[0]: len(v) for k, v in inventory.items()},
-    }
     for filename, payload in inventory.items():
-        (out_dir / filename).write_text(json.dumps({"_meta": meta, "items": payload}, indent=1) + "\n")
+        (out_dir / filename).write_text(render_inventory(name, payload))
+    counts = {k.split(".")[0]: len(v) for k, v in inventory.items()}
     no_auth = [r for r in inventory["endpoints.json"] if r.get("no_auth_marker")]
-    print(f"{name} @ {meta['head']}: {meta['counts']} | routes without auth marker: {len(no_auth)}")
-    return meta
+    print(f"{name}: {counts} | routes without auth marker: {len(no_auth)}")
+    return {"repo": name, "counts": counts}
 
 
 def load_committed(repo: Path) -> dict[str, list]:
@@ -303,7 +361,7 @@ def broken_links(repo: Path, md: Path, text: str) -> list[tuple[str, str]]:
 
 
 def link_check(repo: Path) -> list[str]:
-    files = [p for p in (repo / "docs").rglob("*.md") if not any(part in SKIP_DIRS for part in p.parts)] if (repo / "docs").is_dir() else []
+    files = [p for p in (repo / "docs").rglob("*.md") if not is_skipped(p, repo)] if (repo / "docs").is_dir() else []
     files += [p for p in repo.glob("*.md")]
     lines: list[str] = []
     checked = 0
@@ -319,14 +377,6 @@ def link_check(repo: Path) -> list[str]:
 # ---------------------------------------------------------------------------
 # Contract freshness (warn only)
 # ---------------------------------------------------------------------------
-
-def repo_slug(repo: Path) -> str:
-    """Name of this repo as the fleet map spells it (from the origin URL, else the directory name)."""
-    proc = subprocess.run(["git", "-C", str(repo), "remote", "get-url", "origin"], capture_output=True, text=True)
-    url = proc.stdout.strip() if proc.returncode == 0 else ""
-    name = re.sub(r"\.git$", "", url.rstrip("/").split("/")[-1]) if url else repo.name
-    return name or repo.name
-
 
 def freshness_check(repo: Path) -> tuple[list[str], list[str]]:
     """Check "verified @ <sha>" contract stamps against HEAD.
@@ -436,7 +486,7 @@ def main() -> int:
             return self_test(repo)
         if args.check:
             return check(repo)
-        write_inventory(repo, repo.name, scan_repo(repo))
+        write_inventory(repo, None, scan_repo(repo))
         return 0
 
     for name in args.fleet or FLEET:
