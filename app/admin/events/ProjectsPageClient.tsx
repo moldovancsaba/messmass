@@ -898,7 +898,7 @@ export default function ProjectsPageClient({ user }: ProjectsPageClientProps) {
                           {project.externalRefs?.camera?.eventId && (
                             <a
                               className="btn btn-small btn-info action-button"
-                              href={`https://camera.messmass.com/admin/tryon/vetting?eventId=${encodeURIComponent(project.externalRefs.camera.eventId)}`}
+                              href={`https://camera.messmass.com/admin/vetting?eventId=${encodeURIComponent(project.externalRefs.camera.eventId)}`}
                               target="_blank"
                               rel="noopener noreferrer"
                               title={`Open ${project.eventName}'s vetting queue in Camera`}

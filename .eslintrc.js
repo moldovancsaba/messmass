@@ -29,26 +29,6 @@ module.exports = {
       ]
     }],
 
-    // WHAT: Warn about deprecated imports
-    // WHY: DynamicChart.tsx is deprecated as of v11.37.0, will be removed in v12.0.0
-    // See: TECH_AUDIT_REPORTING_SYSTEM.md Part 2.1
-    "no-restricted-imports": ["warn", {
-      "paths": [
-        {
-          "name": "@/components/DynamicChart",
-          "message": "DynamicChart is deprecated as of v11.37.0. Use ReportChart from app/report/[slug]/ReportChart.tsx instead. Will be removed in v12.0.0."
-        },
-        {
-          "name": "../components/DynamicChart",
-          "message": "DynamicChart is deprecated as of v11.37.0. Use ReportChart from app/report/[slug]/ReportChart.tsx instead. Will be removed in v12.0.0."
-        },
-        {
-          "name": "./DynamicChart",
-          "message": "DynamicChart is deprecated as of v11.37.0. Use ReportChart from app/report/[slug]/ReportChart.tsx instead. Will be removed in v12.0.0."
-        }
-      ]
-    }],
-
     // WHAT: Encourage best practices
     // WHY: Maintain code quality and consistency
     "react-hooks/exhaustive-deps": "warn",
