@@ -34,8 +34,7 @@ These root files are expected and valid:
 - `.env.example`
 - `.npmrc`
 - `.nvmrc`
-- `.eslintignore`
-- `.eslintrc.js`
+- `eslint.config.mjs`
 - `.stylelintrc.json`
 - `next.config.js`
 - `next-env.d.ts`
