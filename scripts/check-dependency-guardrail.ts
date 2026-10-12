@@ -56,6 +56,7 @@ const APPROVED_DEV_DEPS = new Set([
   '@types/jest',
   'puppeteer', // Local-dev-only Chromium for app/api/export/pdf/route.ts; excluded from the production bundle (next.config.js).
   'eslint',
+  '@eslint/eslintrc', // FlatCompat in eslint.config.mjs: eslint-config-next 15 is still a classic (eslintrc) config.
   'eslint-config-next',
   'eslint-plugin-react',
   'eslint-plugin-react-hooks',

@@ -254,7 +254,7 @@ grep -r 'style={{' --include="*.tsx" components/ app/
 
 ### Automated Enforcement
 
-**ESLint Rules Active** (`.eslintrc.js`):
+**ESLint Rules Active** (`eslint.config.mjs`):
 - ✅ `react/forbid-dom-props` - Blocks inline `style` prop (ERROR)
 - ✅ React hooks exhaustive-deps
 - ✅ Next.js Image component enforcement
