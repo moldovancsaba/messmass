@@ -1,9 +1,10 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { PageType } from '@/lib/pagePassword';
 import { apiDelete, apiGet, apiPost } from '@/lib/apiClient';
 import { deriveRemovalInfoMessage } from '@/lib/pagePasswordRemovalMessage';
+import { copyTextToClipboard } from '@/lib/clipboard';
 import BaseModal from './modals/BaseModal';
 import styles from './SharePopup.module.css';
 
@@ -34,6 +35,11 @@ export default function SharePopup({ isOpen, onClose, pageId, pageType, customTi
   //     (e.g. "already off" vs "removed"), never blocks the rest of the dialog.
   const [infoMessage, setInfoMessage] = useState<string | null>(null);
   const [copiedField, setCopiedField] = useState<'url' | 'password' | null>(null);
+  // WHAT: Which field the browser refused to copy. The text is selected in its box
+  //     and the button says so, because the person then has to press the shortcut.
+  const [copyFailedField, setCopyFailedField] = useState<'url' | 'password' | null>(null);
+  const urlInputRef = useRef<HTMLInputElement>(null);
+  const passwordInputRef = useRef<HTMLInputElement>(null);
   // WHAT: Whether the password on screen was minted in this dialog session.
   // WHY: It is the only moment it can ever be shown. Everything about the UI has
   //     to distinguish "here is your password, copy it now" from "a password
@@ -154,22 +160,18 @@ export default function SharePopup({ isOpen, onClose, pageId, pageType, customTi
   };
 
   const copyToClipboard = async (text: string, field: 'url' | 'password') => {
-    try {
-      await navigator.clipboard.writeText(text);
+    if (await copyTextToClipboard(text)) {
+      setCopyFailedField(null);
       setCopiedField(field);
       setTimeout(() => setCopiedField(null), 2000);
-    } catch (error) {
-      console.error('Failed to copy to clipboard:', error);
-      // Fallback for browsers that don't support clipboard API
-      const textarea = document.createElement('textarea');
-      textarea.value = text;
-      document.body.appendChild(textarea);
-      textarea.select();
-      document.execCommand('copy');
-      document.body.removeChild(textarea);
-      setCopiedField(field);
-      setTimeout(() => setCopiedField(null), 2000);
+      return;
     }
+    // The Clipboard API is unavailable or refused. The value is already on screen
+    // in a read-only box: select it so Ctrl/Cmd+C finishes the job.
+    (field === 'url' ? urlInputRef : passwordInputRef).current?.select();
+    setCopiedField(null);
+    setCopyFailedField(field);
+    setTimeout(() => setCopyFailedField(null), 4000);
   };
 
   const getPageTypeDisplay = () => {
@@ -259,6 +261,7 @@ export default function SharePopup({ isOpen, onClose, pageId, pageType, customTi
               </label>
               <div className={styles.inputGroup}>
                 <input
+                  ref={urlInputRef}
                   type="text"
                   value={shareableData.url}
                   readOnly
@@ -268,7 +271,7 @@ export default function SharePopup({ isOpen, onClose, pageId, pageType, customTi
                   onClick={() => copyToClipboard(shareableData.url, 'url')}
                   className={`${styles.copyBtn} ${copiedField === 'url' ? styles.copyBtnCopied : ''}`}
                 >
-                  {copiedField === 'url' ? '✅ Copied!' : '📋 Copy'}
+                  {copiedField === 'url' ? '✅ Copied!' : copyFailedField === 'url' ? '⚠️ Press Ctrl/Cmd+C' : '📋 Copy'}
                 </button>
                 {/* WHAT: Quick access to the shared page.
                     WHY: Users asked for a direct Visit button alongside Copy to open in a new tab. */}
@@ -323,6 +326,7 @@ export default function SharePopup({ isOpen, onClose, pageId, pageType, customTi
                 <>
                   <div className={styles.inputGroup}>
                     <input
+                      ref={passwordInputRef}
                       type="text"
                       value={shareableData.password}
                       readOnly
@@ -332,7 +336,7 @@ export default function SharePopup({ isOpen, onClose, pageId, pageType, customTi
                       onClick={() => copyToClipboard(shareableData.password, 'password')}
                       className={`${styles.copyBtn} ${styles.copyBtnPassword} ${copiedField === 'password' ? styles.copyBtnCopied : ''}`}
                     >
-                      {copiedField === 'password' ? '✅ Copied!' : '📋 Copy'}
+                      {copiedField === 'password' ? '✅ Copied!' : copyFailedField === 'password' ? '⚠️ Press Ctrl/Cmd+C' : '📋 Copy'}
                     </button>
                   </div>
                   {justGenerated && (
