@@ -35,7 +35,6 @@ const APPROVED_RUNTIME_DEPS = new Set([
   'dompurify',
   'chart.js',
   'react-chartjs-2',
-  'google-auth-library', // pinned exact version alongside googleapis; see lib/googleSheetsClient.ts's direct import
   'googleapis',
   '@sparticuz/chromium-min', // Serverless Chromium loader for app/api/export/pdf/route.ts (production); downloads its binary from a GitHub Release at runtime.
   'puppeteer-core', // Drives the above; local dev uses the full `puppeteer` devDependency instead.
@@ -57,12 +56,11 @@ const APPROVED_DEV_DEPS = new Set([
   '@types/jest',
   'puppeteer', // Local-dev-only Chromium for app/api/export/pdf/route.ts; excluded from the production bundle (next.config.js).
   'eslint',
+  '@eslint/eslintrc', // FlatCompat in eslint.config.mjs: eslint-config-next 15 is still a classic (eslintrc) config.
   'eslint-config-next',
-  'eslint-plugin-jsx-a11y',
   'eslint-plugin-react',
   'eslint-plugin-react-hooks',
   'jest',
-  '@testing-library/jest-dom',
   'tsx',
   '@sovereignsquad/gds-compliance', // gds-adoption.json drift/exception checker; see CI's non-blocking check step
   // Add other approved dev deps as needed

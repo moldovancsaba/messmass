@@ -56,7 +56,7 @@ Related planning/execution: `docs/operations/operations-action-plan.md`.
 
 ## ESLint guardrail (OPS-STYLE-01)
 
-- **Rule:** `react/forbid-dom-props` forbids the `style` prop (`.eslintrc.js`).
+- **Rule:** `react/forbid-dom-props` forbids the `style` prop (`eslint.config.mjs`).
 - **Exception:** Dynamic values allowed with `// WHAT/WHY` comment. Use CSS modules or utility classes (e.g. `.z-dropdown`); prefer design tokens in CSS.
 
 ---
@@ -66,4 +66,4 @@ Related planning/execution: `docs/operations/operations-action-plan.md`.
 - OPS-STYLE-01: `docs/operations/operations-action-plan.md`
 - Theme tokens: `app/styles/theme.css`
 - Utilities: `app/styles/utilities.css`
-- ESLint: `.eslintrc.js` (forbid-dom-props)
+- ESLint: `eslint.config.mjs` (forbid-dom-props)

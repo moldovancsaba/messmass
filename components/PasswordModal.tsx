@@ -1,6 +1,7 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useRef, useState } from 'react';
+import { copyTextToClipboard } from '@/lib/clipboard';
 import styles from './SharePopup.module.css';
 
 interface PasswordModalProps {
@@ -28,27 +29,26 @@ export default function PasswordModal({
   userId
 }: PasswordModalProps) {
   const [copied, setCopied] = useState(false);
+  // WHAT: The browser refused to copy; the password is selected in its box instead.
+  const [copyFailed, setCopyFailed] = useState(false);
+  const passwordInputRef = useRef<HTMLInputElement>(null);
   const [sendingEmail, setSendingEmail] = useState(false);
   const [emailSent, setEmailSent] = useState(false);
   const [emailError, setEmailError] = useState<string | null>(null);
 
   const copyToClipboard = async () => {
-    try {
-      await navigator.clipboard.writeText(password);
+    if (await copyTextToClipboard(password)) {
+      setCopyFailed(false);
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
-    } catch (error) {
-      console.error('Failed to copy to clipboard:', error);
-      // Fallback for browsers that don't support clipboard API
-      const textarea = document.createElement('textarea');
-      textarea.value = password;
-      document.body.appendChild(textarea);
-      textarea.select();
-      document.execCommand('copy');
-      document.body.removeChild(textarea);
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
+      return;
     }
+    // The Clipboard API is unavailable or refused. The password is already on
+    // screen in a read-only box: select it so Ctrl/Cmd+C finishes the job.
+    passwordInputRef.current?.select();
+    setCopied(false);
+    setCopyFailed(true);
+    setTimeout(() => setCopyFailed(false), 4000);
   };
 
   const sendViaEmail = async () => {
@@ -125,6 +125,7 @@ export default function PasswordModal({
               </label>
               <div className={styles.inputGroup}>
                 <input
+                  ref={passwordInputRef}
                   type="text"
                   value={password}
                   readOnly
@@ -134,7 +135,7 @@ export default function PasswordModal({
                   onClick={copyToClipboard}
                   className={`${styles.copyBtn} ${styles.copyBtnPassword} ${copied ? styles.copyBtnCopied : ''}`}
                 >
-                  {copied ? '✅ Copied!' : '📋 Copy'}
+                  {copied ? '✅ Copied!' : copyFailed ? '⚠️ Press Ctrl/Cmd+C' : '📋 Copy'}
                 </button>
               </div>
             </div>
