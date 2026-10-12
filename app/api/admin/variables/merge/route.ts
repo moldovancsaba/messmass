@@ -9,7 +9,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import clientPromise from '@/lib/mongodb';
 import config from '@/lib/config';
 import { getAdminUser, type AdminUser } from '@/lib/auth';
-import { applyMerges, PROTECTED_CLICKER_VARIABLES, type MergeRequestItem, type ConflictRule } from '@/lib/variableMerge';
+import { applyMerges, isReservedVariable, PROTECTED_CLICKER_VARIABLES, type MergeRequestItem, type ConflictRule } from '@/lib/variableMerge';
 import { error as logError } from '@/lib/logger';
 
 export const runtime = 'nodejs';
@@ -43,6 +43,13 @@ export async function POST(request: NextRequest) {
       if (protectedLegacy.length > 0) {
         return NextResponse.json(
           { success: false, error: `Cannot rename a core clicker variable (${protectedLegacy.join(', ')}) — it is referenced by name in the editor. Use it as the merge target instead.` },
+          { status: 400 },
+        );
+      }
+      const reserved = [canonical, ...legacy].filter((name: string) => isReservedVariable(name));
+      if (reserved.length > 0) {
+        return NextResponse.json(
+          { success: false, error: `Cannot merge a variable camera writes (${reserved.join(', ')}); its counters are rewritten by every push from camera.` },
           { status: 400 },
         );
       }

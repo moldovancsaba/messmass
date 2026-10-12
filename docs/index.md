@@ -67,6 +67,7 @@ Task-oriented, end-user tutorials for creating and managing the core objects and
 - [features-bitly-integration-guide.md](features/features-bitly-integration-guide.md) — Bitly integration architecture, endpoints, and operations.
 - [features-google-sheets-integration.md](features/features-google-sheets-integration.md) — Google Sheets integration, auth, sync behavior, and troubleshooting.
 - [features-hashtag-system.md](features/features-hashtag-system.md) — Hashtag system behavior and APIs.
+- [features-camera-photo-counters.md](features/features-camera-photo-counters.md) — The `camera_` counters camera sends per event (photos, people marked, journey): how they arrive, the catalog entries, the mapping to the existing variables, and what to know when building reports.
 - [features/features-reporting-builder.md](features/features-reporting-builder.md) — Reporting & Builder mode (clicker): variable inputs per chart on `/edit/[slug]`.
 
 ## Admin & Templates

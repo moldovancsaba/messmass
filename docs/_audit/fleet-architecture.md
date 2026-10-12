@@ -346,10 +346,17 @@ under "Added since"; camera side re-read 2026-10-11 at `c40aad85` for
     lib/cameraThemeNotify.ts). camera also serves
     `POST /api/internal/messmass/frame-backfill` for an operator holding the
     secret; nothing in messmass calls it.
-  - *prepared, switched off*: camera can push photo and vetting counters to
+  - *prepared, switched off*: camera can push photo, people and journey counters to
     `POST /api/integrations/camera/events/{id}/photo-stats`
-    (`pushPhotoStatsToMessmass`). **messmass has no such route**, so a push would
-    be refused; the pipeline is off and has no trigger (camera `docs/ANALYTICS.md`).
+    (`pushPhotoStatsToMessmass`). messmass has the receiving route since 2026-10-12
+    (lib/cameraPhotoStats.ts): every counter is written to `projects.stats` under a
+    name that starts with `camera_` as camera's whole running total (a repeated push
+    changes nothing, a lost one is repaired by the next) and registered in
+    `variables_metadata` (category Camera, created once, never overwritten); no stat
+    without the prefix is ever written. The pipeline in camera is still off and has
+    no trigger (camera `docs/ANALYTICS.md`), so nothing arrives until the owner
+    decides. The names and their mapping to the existing variables:
+    `docs/features/features-camera-photo-counters.md`.
   - The messmass events list links an event that has a camera id to
     `https://camera.messmass.com/admin/vetting?eventId=<camera event uuid>`; camera
     redirects the old `/admin/tryon/vetting` address to it, and `/admin/vetting`
