@@ -137,7 +137,7 @@ Each mark is saved with the photo: the people with their rectangles, the options
 ## Gotchas & good practice
 
 - **A red message says the photo was not approved or rejected, or that the people could not be saved.** The photo stays on the screen (or the card stays in the list). Press the button again; if it fails again, tell the operator what the message says.
-- **An e-mail could not be sent.** On the list of cards a message says so: the photo is approved, but the person did not get the e-mail. The one-photo screen does not show this; it always says "The user gets the link by email". If someone says no e-mail arrived, tell the operator the time and the e-mail address you saw at the top of the photo.
+- **An e-mail could not be sent.** The photo is decided, but the person did not get the e-mail. The one-photo screen says so in an orange line after the decision (for example "Photo approved, but the e-mail with the link to the user could not be sent."); on the list of cards a message says it too. If someone says no e-mail arrived, tell the operator the time and the e-mail address you saw at the top of the photo.
 - **The message says "No answer arrived from the server".** The decision may have gone through anyway. Reload the page, which shows what the server holds now, and check **Approved** and **Rejected** before you try again.
 - **A choice is missing.** If the screen says no gender, age or reason is offered, or a word you need is not on the list, ask the operator to change the vetting words of the event or the partner.
 - **The page asks you to sign in again.** Sign in with the same e-mail address and open the Vetting tab again.
@@ -251,7 +251,7 @@ Minden jelölés a fotóval együtt mentődik: az emberek a téglalapjaikkal, a 
 **Ha valami elromlik**
 
 - **Piros üzenet jelzi, hogy a fotó nincs jóváhagyva vagy elutasítva, vagy hogy az embereket nem sikerült menteni.** A fotó a képernyőn marad (a kártya a listán). Nyomd meg újra a gombot. Ha megint nem sikerül, mondd el az operátornak, mit ír az üzenet.
-- **Egy e-mailt nem sikerült elküldeni.** A kártyák listáján erről üzenet szól: a fotó jóvá van hagyva, de a fotós nem kapta meg az e-mailt. Az egyesével nézet ezt nem mutatja, mindig azt írja: „The user gets the link by email”. Ha valaki azt mondja, nem kapott e-mailt, mondd meg az operátornak az időpontot és a fotó tetején látott e-mail-címet.
+- **Egy e-mailt nem sikerült elküldeni.** A fotó el van döntve, de a fotós nem kapta meg az e-mailt. Az egyesével nézet a döntés után narancssárga sorban jelzi (például: „Photo approved, but the e-mail with the link to the user could not be sent.”), a kártyák listáján is üzenet szól erről. Ha valaki azt mondja, nem kapott e-mailt, mondd meg az operátornak az időpontot és a fotó tetején látott e-mail-címet.
 - **Az üzenet szerint nem érkezett válasz a szervertől (No answer arrived).** A döntés lehet, hogy mégis megtörtént. Töltsd újra az oldalt, az azt mutatja, amit a szerver most tárol, és nézd meg az Approved és a Rejected listát, mielőtt újra próbálkozol.
 - **Hiányzik egy választási lehetőség.** Ha a képernyő azt írja, hogy nincs nem, kor vagy ok kínálva, vagy egy szükséges szó nincs a listán, kérd meg az operátort, hogy változtassa meg az esemény vagy a partner Vetting words listáját.
 - **Egy ideig senki sem tud jóváhagyni.** Semmi sem vész el. A fotók várnak, és a fotósok továbbra is a várakozó üzenetet látják. A jóváhagyást az eseményre csak egy globális admin tudja kikapcsolni.
