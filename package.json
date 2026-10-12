@@ -168,6 +168,7 @@
     "uuid": "^14.0.3"
   },
   "devDependencies": {
+    "@eslint/eslintrc": "^3.3.7",
     "@sovereignsquad/gds-compliance": "file:vendor/gds/sovereignsquad-gds-compliance-6.3.0.tgz",
     "@testing-library/jest-dom": "^6.9.1",
     "@types/jest": "^30.0.0",
@@ -175,7 +176,7 @@
     "@types/node": "^22.20.5",
     "@types/react": "^19.0.0",
     "@types/react-dom": "^19.0.0",
-    "eslint": "^8.57.0",
+    "eslint": "^9.39.5",
     "eslint-config-next": "^15.5.27",
     "eslint-plugin-jsx-a11y": "^6.10.2",
     "eslint-plugin-react": "^7.37.5",
@@ -199,9 +200,7 @@
     "browserslist": "^4.28.7",
     "baseline-browser-mapping": "^2.11.0",
     "js-yaml": "^4.3.2",
-    "@istanbuljs/load-nyc-config": {
-      "js-yaml": "^3.15.2"
-    }
+    "test-exclude": "^8.0.0"
   },
   "browserslist": {
     "production": [
