@@ -3440,6 +3440,28 @@ The fleet-wide dependency check (camera has the long form in its `docs/DEPENDENC
 - **Not done (major lines, owner decision):** Next 15.5 to 16.4 and React 19.2 to 19.3 with `@types/react*` 19.3 (framework lines); Mantine 8.3 to 9.7 and GDS 6.3.0 to 6.8.0 (design lines; camera is already on 6.8.0 and the vendored tarballs here are still 6.3.0); ESLint 9 to 10 (the only non-deprecated ESLint line, but blocked: `eslint-plugin-react` 7.37.5, `eslint-plugin-jsx-a11y` 6.10.2 and `eslint-plugin-import` 2.32.0, which `eslint-config-next` pulls in, declare peer ranges that stop at ESLint 9, so it needs those plugins to release first, plus `eslint-config-next` 16 and `eslint-plugin-react-hooks` 7); `google-auth-library` 10 to 11 together with `googleapis` 171 to 185 (the exact pin of `google-auth-library` is deliberate, see the guardrail comment); `mongodb` 6 to 7 (the lock holds 6.18.0 although camera runs 6.21.0, and `mongoose` 9.7.2 to 9.11.1; both touch the database, so they need a run against a disposable database, not done in the audit); `puppeteer` and `puppeteer-core` 25.8 to 25.13 with `@sparticuz/chromium-min` 149 to 153 (the PDF export needs a matched browser, test it as one set); `dotenv` 18; `marked` 18; `@testing-library/jest-dom` 7; `typescript` 5.9 to 7; `@types/node` 22 to 24 (engines say Node 24).
 - **Repeat the audit:** `npm ci`, `npm audit --omit=dev`, `npm audit`, `npm outdated`, `npm view <name> deprecated` for each direct dependency (and `npm view <name>@<installed> deprecated` for the installed version), and a scan of every import against `package.json`; then the CI chain (`type-check`, `lint`, `test`, `style:check`, `version:verify`, `docs:audit`, `inventory:check`, `gds:sync`, `comments:check`, `comments:versions`, `architecture:check`, `scripts/check-dependency-guardrail.ts`, `build`). Keep the `libc` entries in `package-lock.json`: the npm 10.9 found on some machines drops them, the npm in CI keeps them, so check `git diff package-lock.json` after any install.
 
+### Jest worker crash (2026-10-12)
+
+**Symptom.** Now and then one jest worker dies with `A jest worker process (pid=...) was terminated by another process: signal=SIGSEGV`, in whichever suite it was running (seen in `tests/security/editor-write-access.test.ts`, `tests/api-key-decoupling.test.ts` and `tests/projects-put-field-level.test.ts`). The suite passes alone and on rerun. It was seen on a local macOS machine; CI (Linux) has not reported it.
+
+**Cause: the JavaScript engine, not a test.** The macOS crash reports of nineteen separate crashes (the original one and eighteen reproduced on purpose) have the same native stack on the main thread of the worker: `v8::internal::ClearStaleLeftTrimmedPointerVisitor::VisitRootPointers` called from `InternalFrame::Iterate`, `Isolate::Iterate` and `MarkCompactCollector::MarkRoots`, that is, a full garbage collection walking the stack, with `EXC_BAD_ACCESS` at address 0x6, reached from a Sparkplug (baseline compiler) frame. The Node here is 24.19.0 (V8 13.6.233.17-node.51, macOS arm64). No native module of ours (`sharp`, `unrs-resolver`) is on the crashing stack, and the test file is whichever one the worker happened to be running.
+
+**Measured on this machine** (full `jest` runs, 1053 to 1087 tests each, 10 cores):
+
+| How jest was started | Runs | Crashed |
+|---|---|---|
+| plain `jest` (before) | 80 | 9 (11%) |
+| plain `jest` after the Mongo mock below | 40 | 1 |
+| `--maxWorkers=4` | 30 | 3 |
+| `--runInBand` (no workers: the parent crashes, exit code 139) | 16 | 4 |
+| `node --no-maglev` | 30 | 1 |
+| `node --no-sparkplug` | 90 | 0 |
+| `npm test` as committed (`--no-sparkplug` plus the Mongo mock) | 50 | 0 |
+
+**What was done.** `npm test`, `test:watch` and `test:coverage` run jest as `node --no-sparkplug node_modules/jest/bin/jest.js` (jest-worker passes the flag on to its workers). It is a workaround for an engine bug, not a fix of it. `npx jest` run directly does not carry the flag. To remove the flag, install a newer Node 24 patch (24.21.0 was current on 2026-10-12, same V8 line, so it is not known to help), then run 40 full runs without the flag and see whether any crash.
+
+**A separate test-setup defect found on the way.** `lib/mongodb.ts` calls `getClientPromise()` when it is imported and `lib/db.ts` imports it, so nine suites that reach `getDb()` transitively opened a real connection to the dummy `MONGODB_URI`, waited out the 15 second server-selection timeout and left a live timer behind. That is the "A worker process has failed to exit gracefully and has been force exited" line in every full run, and with `--runInBand` an unhandled `MongoServerSelectionError` after the run (exit code 1 although all tests passed). `jest.setup.js` now mocks `@/lib/mongodb` for every suite (three suites already did it one by one); a suite that needs other behaviour calls `jest.mock('@/lib/mongodb', ...)` itself. It did not stop the crash (the crash happens without any Mongo activity), so the two findings are independent.
+
 ### Infrastructure & Deployment
 
 | Service | Purpose |
