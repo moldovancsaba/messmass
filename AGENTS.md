@@ -65,7 +65,7 @@ default behavior is not a valid reason to violate it.
 
 ## Core Validation
 
-- Test suite: `npm test`
+- Test suite: `npm test` (runs jest through `node --no-sparkplug`: Node 24.19.0's V8 intermittently crashes jest workers with SIGSEGV in the garbage collector; on 24.19.0 the flag took the crash rate from 9 in 80 full runs to 0 in 140. Plain `npx jest` still works but can hit the crash. Drop the flag when a Node release has the V8 fix; see `docs/architecture.md`, "Jest worker crash")
 - Type check: `npm run type-check`
 - Lint: `npm run lint`
 - Production build: `npm run build`
