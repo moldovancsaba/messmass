@@ -1,9 +1,9 @@
 # Tutorial: The Analytics view of an event (camera app)
 Status: Active
-Last Updated: 2026-10-11T00:00:00.000Z
+Last Updated: 2026-10-12T00:00:00.000Z
 Canonical: Yes
 Owner: Documentation
-Verified against the Camera app code @ c40aad85 (camera#521, phase 1: the numbers of the existing data; phase 2: the Journey tab and its anonymous recording)
+Verified against the Camera app code @ c40aad85 (camera#521, phase 1: the numbers of the existing data; phase 2: the Journey tab and its anonymous recording); the decline reasons from the list and the vetting words @ a991758c (camera#628, camera pull request 629, not merged yet)
 
 > Audience: The people who run an event in the Camera app (event managers, operators) · Prerequisites: The event exists in the Camera app, and your e-mail address has the **Manager** role for its partner (or you are a global admin) · Related: [Approving photos at an event](guides-tutorial-approving-photos.md) · Magyar változat: [lent / below](#magyar-valtozat)
 
@@ -20,15 +20,16 @@ The old **Try-On Analytics** report is gone with the try-on integration; its old
 
 ## What you see
 
-The tabs are **Overview** (the key figures, photos per day and per hour of the day, and the list **Not measured yet**), **Journey** (one event only: visits, the steps reached, photos saved, camera permission, retakes, consent left, shares and downloads), **Photos and users** (different users, signed in or gave an e-mail, devices, frames, messages and layouts chosen), **Vetting and people** (waiting, approved, declined, time to the first decision, who decided, the decline reasons as written, and the people marked: who, age, emotion, merchandise), **Screens** (plays and photos shown), **Sources** (visits by link, phone kind and day; one event only), **E-mails and consent** (the e-mails by type and the consents by their exact wording, including the public gallery permission), and for global admins on one event **Messmass** (a read-only preview of the counters that could be sent to messmass).
+The tabs are **Overview** (the key figures, photos per day and per hour of the day, and the list **Not measured yet**), **Journey** (one event only: visits, the steps reached, photos saved, camera permission, retakes, consent left, shares and downloads), **Photos and users** (different users, signed in or gave an e-mail, devices, frames, messages and layouts chosen), **Vetting and people** (waiting, approved, declined, time to the first decision, who decided, why photos were declined (the reasons the reviewer chose from the list, and the words written beside them), and the people marked: gender, age, emotion, items and who marked how many photos), **Screens** (plays and photos shown), **Sources** (visits by link, phone kind and day; one event only), **E-mails and consent** (the e-mails by type and the consents by their exact wording, including the public gallery permission), and for global admins on one event **Messmass** (a read-only preview of the counters that could be sent to messmass).
 
 **The filters:** choose the **days** (both the first and the last day are included) and the **clock** (Budapest or UTC; Budapest is the default for a Hungarian event). The tab, the days and the clock are in the address, so you can send the report as a link. **Download CSV** gives every figure of every tab (`section, item, value`) for the same days and clock.
 
 ## Managing it
 
-- **A figure that is not counted yet is never shown as a zero.** The list **Not measured yet** says what is missing and why: the counts per decline reason (the reason is free text today), country and city, plays per hour or per screen, sign-ins by provider, e-mail opens and clicks, and which QR code or poster a photo came from.
+- **A figure that is not counted yet is never shown as a zero.** The list **Not measured yet** says what is missing and why: country and city, plays per hour or per screen, sign-ins by provider, e-mail opens and clicks, and which QR code or poster a photo came from.
 - **The numbers for messmass are prepared and switched off.** The Messmass tab shows what would be sent (counters only, never a person, and including the journey counters once there is a recording); nothing is sent to messmass until the owner decides.
 - **Time to the first decision** counts from the moment the photo was saved to the first decision of an approver; a later change of mind does not count again.
+- **The people and the decline reasons use the event's vetting words.** The lists are in the words the event's vetting screen offers (see [Approving photos at an event](guides-tutorial-approving-photos.md), "The words on the screen"). An option that was hidden or deleted later still counts, and a photo declined before the list of reasons existed has no reason from the list (the panel says how many).
 - **Very large events** can take a moment to load, because every photo of the event is read once.
 
 ### The journey recording
@@ -57,15 +58,16 @@ Az esemény **Analytics** nézete azt mondja el, amit a **már meglévő adatok*
 
 **Hol találod.** Egy eseménynél: nyisd meg az eseményt a camera admin felületen, és válaszd a menü **Analytics** pontját (esemény-menedzserek és globális adminok). Az összes eseményre együtt (globális adminoknak): az Operations menü **Analytics** pontja, eseményenként egy sorral; az esemény nevére kattintva annak az eseménynek az Analytics nézete nyílik meg. A régi **Try-On Analytics** jelentés a try-on integrációval együtt megszűnt; a régi címe az Operations **Analytics** (az összes esemény) oldalra vezet.
 
-**Mit látsz.** A fülek: **Overview** (a fő számok, a fotók száma naponta és a nap óráiban, és a **Not measured yet** lista), **Journey** (csak egy eseménynél: látogatások, elért lépések, mentett fotók, kameraengedély, újrafotózások, a hozzájárulás elhagyása, megosztások és letöltések), **Photos and users** (különböző felhasználók, belépett vagy e-mailt adott meg, eszközök, választott keretek, üzenetek és elrendezések), **Vetting and people** (várakozó, jóváhagyott, elutasított, az első döntésig eltelt idő, ki döntött, az elutasítás indokai úgy, ahogy megírták, és a megjelölt emberek: ki, kor, érzelem, kellék), **Screens** (lejátszások és megjelent fotók), **Sources** (látogatások link, telefontípus és nap szerint; csak egy eseménynél), **E-mails and consent** (az e-mailek típus szerint és a hozzájárulások pontos szövegük szerint, a nyilvános galéria engedélyével együtt), globális adminoknak egy eseménynél pedig a **Messmass** (a messmassnak küldhető számlálók csak olvasható előnézete).
+**Mit látsz.** A fülek: **Overview** (a fő számok, a fotók száma naponta és a nap óráiban, és a **Not measured yet** lista), **Journey** (csak egy eseménynél: látogatások, elért lépések, mentett fotók, kameraengedély, újrafotózások, a hozzájárulás elhagyása, megosztások és letöltések), **Photos and users** (különböző felhasználók, belépett vagy e-mailt adott meg, eszközök, választott keretek, üzenetek és elrendezések), **Vetting and people** (várakozó, jóváhagyott, elutasított, az első döntésig eltelt idő, ki döntött, miért utasítottak el fotókat (azok az indokok, amelyeket a jóváhagyó a listából választott, és a mellé írt szavak), és a megjelölt emberek: nem, kor, érzelem, kellékek, valamint hogy ki hány fotót jelölt meg), **Screens** (lejátszások és megjelent fotók), **Sources** (látogatások link, telefontípus és nap szerint; csak egy eseménynél), **E-mails and consent** (az e-mailek típus szerint és a hozzájárulások pontos szövegük szerint, a nyilvános galéria engedélyével együtt), globális adminoknak egy eseménynél pedig a **Messmass** (a messmassnak küldhető számlálók csak olvasható előnézete).
 
 **A szűrők.** Válaszd ki a **napokat** (az első és az utolsó nap is benne van) és az **órát** (budapesti vagy UTC; magyar eseménynél a budapesti az alapértelmezett). A fül, a napok és az óra benne vannak a címben, ezért a jelentést linkként is elküldheted. A **Download CSV** az összes fül minden számát letölti (`section, item, value`) ugyanarra a időszakra és órára.
 
 **Jó tudni**
 
-- **Ami még nincs számolva, azt soha nem mutatjuk nullaként.** A **Not measured yet** lista megmondja, mi hiányzik és miért: az elutasítási indokok szerinti darabszám (az indok ma szabad szöveg), az ország és a város, a lejátszások óránként vagy kijelzőnként, a belépések szolgáltató szerint, az e-mail megnyitások és kattintások, és hogy egy fotó melyik QR-kódból vagy plakátról jött.
+- **Ami még nincs számolva, azt soha nem mutatjuk nullaként.** A **Not measured yet** lista megmondja, mi hiányzik és miért: az ország és a város, a lejátszások óránként vagy kijelzőnként, a belépések szolgáltató szerint, az e-mail megnyitások és kattintások, és hogy egy fotó melyik QR-kódból vagy plakátról jött.
 - **A messmassnak szánt számok elő vannak készítve, de ki vannak kapcsolva.** A Messmass fül megmutatja, mi menne el (csak számlálók, soha nem személy, és ha van rögzítés, az útvonal számlálói is); a messmassnak semmi nem megy el, amíg a tulajdonos nem dönt.
 - **Az első döntésig eltelt idő** a fotó mentésétől az első jóváhagyói döntésig tart; egy későbbi meggondolás nem számít újra.
+- **Az emberek és az elutasítási indokok az esemény vetting szavait használják.** A listák azokkal a szavakkal készülnek, amelyeket az esemény vetting képernyője kínál (lásd: [Fotók jóváhagyása egy eseményen](guides-tutorial-approving-photos.md), „A képernyő szavai”). Egy később elrejtett vagy törölt lehetőség is tovább számít, a még az indoklista bevezetése előtt elutasított fotónak pedig nincs a listából választott indoka (a panel megmondja, hány ilyen van).
 - **A nagyon nagy események** betöltése egy kis ideig tarthat, mert az esemény minden fotóját egyszer beolvassuk.
 - A try-on eredmények nem tartoznak ennek a jelentésnek a fotói közé, és a camera alkalmazásnak már nincs try-on jelentése.
 

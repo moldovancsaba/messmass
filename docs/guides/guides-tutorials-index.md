@@ -1,6 +1,6 @@
 # messmass Tutorials — Learning Path
 Status: Active
-Last Updated: 2026-10-11T00:00:00.000Z
+Last Updated: 2026-10-12T00:00:00.000Z
 Canonical: Yes
 Owner: Documentation
 
@@ -45,7 +45,7 @@ Data is captured against an **event** (via the Clicker/Manual editor, Google She
 
 ### Phase 3 — Integrations & connections
 15. [Camera app integration](guides-tutorial-camera-app.md) — provisioning orgs/partners/events into the selfie-capture app.
-16. [Approving photos at an event](guides-tutorial-approving-photos.md) — how the person approving photos live works the Vetting tab of the camera app (English and Hungarian).
+16. [Approving photos at an event](guides-tutorial-approving-photos.md) — how the person approving photos live works the Vetting tab of the camera app: one photo at a time on one screen, drawing a rectangle around each person, gender and age, the reasons for a rejection, the list of cards, and the vetting words that the general level, a partner and an event can change (English and Hungarian).
 17. [E-mails to the users (camera app)](guides-tutorial-camera-emails.md) — the five e-mails (welcome, arrived, approved, declined, follow up), the toolbar editor, variables, the legal part with three levels, the preview and the test e-mail (English and Hungarian).
 18. [Layouts, messages and the dark area (camera app)](guides-tutorial-camera-layouts-messages.md) — which message goes on which design, how people get the layout and the message, the dark area (English and Hungarian).
 19. [The giant screen (camera app slideshow)](guides-tutorial-camera-giant-screen.md) — the default screen, full screen, how it plays, looking at the crossfade with ?crossfade=1, how it recovers and reloads (and waits while offline), the welcome page picture that is drawn again by itself, the card for existing events, the venue checklist (English and Hungarian).
@@ -69,7 +69,7 @@ Data is captured against an **event** (via the Clicker/Manual editor, Google She
 - **New operator** → Getting Started → Organisations → Partners → Events → Collecting data → Building reports → Sharing.
 - **Report designer** → Variables → Charts → Content Library → Building reports → Themes → Variants.
 - **Integrations / setup** → Authentication & SSO → Camera → Fanmass → Bitly → Sport databases → Google Sheets.
-- **Photo approver at a live event** → Approving photos at an event (sign in, the Vetting tab, approve and reject).
+- **Photo approver at a live event** → Approving photos at an event (sign in, the Vetting tab, mark the people, approve and reject, the vetting words).
 - **Event editor in the camera app** → Layouts, messages and the dark area → E-mails to the users → The CTA page with a picture → The event gallery → Frame slots (the Frames page, the Emails page, the pages editor, the Gallery page).
 - **Person running the giant screen at the venue** → The giant screen (full screen, the checklist, Reload the screen).
 - **Event editor who dresses the stage of the giant screen** → Stadium backgrounds and QR texts (the Default stage card) → Sample selfies → The giant screen.
