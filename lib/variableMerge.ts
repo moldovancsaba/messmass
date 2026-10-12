@@ -26,6 +26,15 @@ export const MIGRATION_BACKUP_COLLECTION = 'variable_migration_backup';
 // re-introduced.
 export const PROTECTED_CLICKER_VARIABLES = new Set<string>([]);
 
+// Stat names that belong to one producer and are neither merged away nor merged into by an operator: the counters camera writes under `camera_`
+// (lib/cameraPhotoStats.ts). Camera sends whole totals under these names on every push, so a merge could only fight its next write, and a name that
+// merely looks like another variable (camera_gender_female next to female) is a different measurement of the same thing, not a duplicate of it.
+export const RESERVED_VARIABLE_PREFIXES: readonly string[] = ['camera_'];
+
+export function isReservedVariable(name: string): boolean {
+  return RESERVED_VARIABLE_PREFIXES.some((prefix) => name.startsWith(prefix));
+}
+
 export type MergeKind = 'casing' | 'token-reorder' | 'name-mismatch';
 export type ConflictRule = 'copy' | 'sum' | 'prefer-canonical';
 
@@ -98,7 +107,7 @@ export async function computeMergeCandidates(db: Db): Promise<MergeCandidate[]> 
       keyEvents.get(k)!.add(id);
     }
   }
-  const keys = [...keyEvents.keys()];
+  const keys = [...keyEvents.keys()].filter((k) => !isReservedVariable(k));
 
   // which variable names are referenced by any chart/report/template
   const refCols = ['chart_configurations', 'charts', 'report_templates', 'report_variants', 'reports', 'reports_v12'];
@@ -124,7 +133,7 @@ export async function computeMergeCandidates(db: Db): Promise<MergeCandidate[]> 
   const candidates: MergeCandidate[] = [];
 
   const pushGroup = (members: string[], kind: MergeKind, forcedCanonical?: string) => {
-    const uniq = [...new Set(members)].filter((m) => keyEvents.has(m));
+    const uniq = [...new Set(members)].filter((m) => keyEvents.has(m) && !isReservedVariable(m));
     if (uniq.length < 2) return;
     const sig = uniq.slice().sort().join('|');
     if (seen.has(sig)) return;
@@ -201,7 +210,10 @@ export async function listVariables(db: Db): Promise<Array<{ name: string; event
   const projects = await db.collection('projects').find({}, { projection: { stats: 1 } }).toArray();
   const count = new Map<string, number>();
   for (const p of projects) for (const k of Object.keys(p.stats || {})) count.set(k, (count.get(k) || 0) + 1);
-  return [...count.entries()].map(([name, events]) => ({ name, events })).sort((a, b) => a.name.localeCompare(b.name));
+  return [...count.entries()]
+    .filter(([name]) => !isReservedVariable(name))
+    .map(([name, events]) => ({ name, events }))
+    .sort((a, b) => a.name.localeCompare(b.name));
 }
 
 export interface MergeResult {
@@ -345,6 +357,11 @@ export async function applyMerges(
 
   for (const merge of merges) {
     const { canonical, legacy, rule } = merge;
+    // Guard: a reserved producer namespace is never part of a merge, in either direction.
+    const reserved = [canonical, ...legacy].filter(isReservedVariable);
+    if (reserved.length > 0) {
+      throw new Error(`reserved_variable_cannot_be_merged:${reserved.join(',')}`);
+    }
     // Guard: a hardcoded-clicker base variable must never be renamed away.
     const protectedLegacy = legacy.filter((l) => PROTECTED_CLICKER_VARIABLES.has(l));
     if (protectedLegacy.length > 0) {

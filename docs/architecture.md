@@ -113,12 +113,12 @@ it drifts. Do not edit between the markers.
 | Category | Count | Location |
 |----------|-------|----------|
 | **UI Components** | 104 | `components/` |
-| **Utility Modules** | 223 | `lib/` |
+| **Utility Modules** | 224 | `lib/` |
 | **Hooks** | 13 | `hooks/` |
 | **Design Tokens** | 408 | `app/styles/theme.css` |
 | **Utility CSS classes** | 192 | `app/styles/utilities.css` |
 | **App routes (pages)** | 73 | `app/**/page.tsx` |
-| **API routes** | 223 | `app/api/**/route.ts` |
+| **API routes** | 224 | `app/api/**/route.ts` |
 
 The modules with the most importers — the ones whose change radius is
 largest, and the ones to read first:
@@ -127,12 +127,12 @@ largest, and the ones to read first:
 |--------|-----------|-------|
 | `lib/config.ts` | 121 | 204 |
 | `lib/mongodb.ts` | 104 | 112 |
-| `lib/logger.ts` | 93 | 392 |
+| `lib/logger.ts` | 94 | 392 |
 | `lib/auth.ts` | 92 | 118 |
 | `lib/apiGuards.ts` | 85 | 390 |
 | `components/ColoredCard.tsx` | 44 | 52 |
 | `lib/apiClient.ts` | 42 | 258 |
-| `lib/db.ts` | 40 | 17 |
+| `lib/db.ts` | 41 | 17 |
 | `components/MaterialIcon.tsx` | 33 | 119 |
 | `lib/fanmassIntegration.ts` | 30 | 441 |
 | `components/UnifiedAdminHeroWithSearch.tsx` | 27 | 192 |
@@ -1075,7 +1075,7 @@ shows up here on the next regeneration, which is the point.
 | `/terms` | `app/terms/page.tsx` |
 | `/test-csrf` | `app/test-csrf/page.tsx` |
 
-### API routes (223)
+### API routes (224)
 
 `auth` is the guard symbol the route actually calls. A blank cell
 means the route calls none — public by construction, or a gap.
@@ -1391,6 +1391,7 @@ means the route calls none — public by construction, or a gap.
 |-------|---------|------|
 | `/api/integrations/camera/events/[messmassEventId]/frame-context` | GET | `assertCameraSecret` |
 | `/api/integrations/camera/events/[messmassEventId]/link-stats` | POST | `assertCameraSecret` |
+| `/api/integrations/camera/events/[messmassEventId]/photo-stats` | POST | `assertCameraSecret` |
 | `/api/integrations/camera/link-partners` | POST | `requireFanmassIntegrationAuth` |
 | `/api/integrations/camera/partners` | POST | `assertCameraSecret` |
 | `/api/integrations/camera/provision-missing` | POST | `requireFanmassIntegrationAuth` |

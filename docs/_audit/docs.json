@@ -130,6 +130,7 @@
   {"file": "docs/documentation-governance.md", "title": "Documentation Governance"},
   {"file": "docs/features/features-authentication.md", "title": "{messmass} Authentication & Access Control System"},
   {"file": "docs/features/features-bitly-integration-guide.md", "title": "Bitly Integration Guide"},
+  {"file": "docs/features/features-camera-photo-counters.md", "title": "Camera Photo Counters - Variables and Mapping"},
   {"file": "docs/features/features-google-sheets-integration.md", "title": "Google Sheets Integration - Feature Guide (v12.0.0)"},
   {"file": "docs/features/features-hashtag-system.md", "title": "{messmass} Unified Hashtag System Documentation"},
   {"file": "docs/features/features-landing-main-page.md", "title": "Landing / Main Page (messmass.com)"},
