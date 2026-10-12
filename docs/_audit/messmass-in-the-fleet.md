@@ -10,7 +10,9 @@ messmass is the master of partner/event/organization data and the event-report
   the resolved theme of an event (`/api/integrations/camera/events/[id]/frame-context`:
   partner and team logos, effective report template and style, font) to build the
   event's default frame, and posts the scans it counts on an event's tracked links
-  (`/api/integrations/camera/events/[id]/link-stats`). messmass tells camera when a
+  (`/api/integrations/camera/events/[id]/link-stats`), and, once the owner switches it on,
+  the photo, people and journey counters of an event as `camera_`-prefixed stats
+  (`/api/integrations/camera/events/[id]/photo-stats`). messmass tells camera when a
   report style or a partner's look changed (`lib/cameraThemeNotify.ts` → camera
   `/api/internal/messmass/theme-updated`). The events list links an event that has
   a camera id to camera's `/admin/vetting?eventId=…`. camera is also messmass's email

@@ -30,7 +30,7 @@ things, so there is still no "who wins?" conflict:
   (`lib/cameraClient.ts`, `lib/cameraProvision.ts`) and stamps the returned Camera IDs
   onto the messmass records. The Camera app never creates organisations or events back
   in messmass.
-- **Camera → messmass (partners, sessions and numbers).** Four inbound endpoints, all
+- **Camera → messmass (partners, sessions and numbers).** Five inbound endpoints, all
   authenticated by the shared `CAMERA_MESSMASS_INTERNAL_SECRET`.
   `POST /api/integrations/camera/partners` upserts a partner that
   was created directly in the Camera app so it also appears in messmass
@@ -38,20 +38,25 @@ things, so there is still no "who wins?" conflict:
   `POST /api/integrations/camera/sso-session` mints a real messmass session (creating
   or updating the user record) for someone who signed in on the Camera side
   (`app/api/integrations/camera/sso-session/route.ts` → `lib/auth/mintSession.ts`).
-  The other two carry no records: `POST /api/integrations/camera/events/{id}/link-stats`
+  The other three carry no records: `POST /api/integrations/camera/events/{id}/link-stats`
   adds the scans the Camera app counts on an event's tracked links (QR codes, short
-  addresses) to the event's visit statistics (`lib/cameraLinkStats.ts`), and
+  addresses) to the event's visit statistics (`lib/cameraLinkStats.ts`),
   `GET /api/integrations/camera/events/{id}/frame-context` lets the Camera app read the
   event's resolved look (teams with logos, partner, report template and style, font) to
-  build the event's default frame (`lib/cameraFrameContext.ts`). So
+  build the event's default frame (`lib/cameraFrameContext.ts`), and
+  `POST /api/integrations/camera/events/{id}/photo-stats` stores the photo, people and
+  journey counters of an event under names that start with `camera_` (`lib/cameraPhotoStats.ts`;
+  the names and what they correspond to are in
+  [Camera photo counters](../features/features-camera-photo-counters.md)). So
   **partners** and **users/sessions** flow both ways; **organisations and events** flow
   only messmass → Camera.
 - **Look changes (messmass → Camera).** When a report style or a partner's logo, name or
   style changes, messmass tells the Camera app (`POST /api/internal/messmass/theme-updated`,
   best effort, `lib/cameraThemeNotify.ts`), so the colours, logo and generated frame of the
   affected events follow messmass. The Camera app also prepares photo and vetting counters
-  for messmass, but that sending is switched off and messmass has no route to receive
-  them yet, so nothing arrives today.
+  for messmass, and messmass has a route to receive them (they are stored under names that
+  start with `camera_`, never in an existing variable), but the sending is switched off, so
+  nothing arrives today.
 
 Three things make the provisioning direction safe to rely on:
 
