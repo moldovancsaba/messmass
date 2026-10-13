@@ -1,9 +1,9 @@
 # Tutorial: Approving photos at an event (camera app)
 Status: Active
-Last Updated: 2026-10-12T00:00:00.000Z
+Last Updated: 2026-10-13T12:26:58.000Z
 Canonical: Yes
 Owner: Documentation
-Verified against the Camera app code @ a991758c (camera#628, camera pull request 629, not merged yet: one photo at a time on one screen, the vetting words at three levels; this guide describes the screen as it will be after that merge); the lists of cards and the access @ 75c595b (camera#373)
+Verified against Camera app main @ 2cc1174b (camera#639: the rejection step remains pending until **Reject photo** is pressed); the lists of cards and the access @ 75c595b (camera#373)
 
 > Audience: The person who approves photos live at an event, and the operators who give them access and set the words of the vetting screen · Prerequisites: The event exists in the Camera app with photo approval switched on, and your e-mail address has the **Manager** role for Events on the event's partner · Related: [Camera app integration](guides-tutorial-camera-app.md) · [Events](guides-tutorial-events.md) · [Partners](guides-tutorial-partners.md) · [Authentication, roles & SSO](guides-tutorial-authentication-sso.md) · [The Analytics view of an event](guides-tutorial-camera-analytics.md) · Magyar változat: [lent / below](#magyar-valtozat)
 
@@ -45,12 +45,12 @@ With marking on (it is on for every event; a global admin can switch it off for 
 3. **If you can, add the emotion and the items.** Under **How the person looks (optional)** one choice is possible; press it again to clear it. Under **What the person wears or holds (optional)** as many as apply. If you are not sure about someone, leave the emotion empty, choose the closest age and, if the list has it, **Not sure** for the gender.
 4. **Next person.** Draw the next rectangle: it is added and selected. To change someone, press their row in the list, or tap their rectangle. **Remove person** takes the selected one away.
 5. **Nobody there?** Press **Nobody in this photo**. It is only possible while no rectangle is drawn, and drawing one switches it off again. If you remove the last person, press it again.
-6. **Decide.** The line above the buttons says what is still missing ("Draw a rectangle around each person, or choose Nobody in this photo.", "2 people need gender and age."). **Approve** opens when every person has gender and age, or **Nobody in this photo** is pressed.
+6. **Decide.** The line above the buttons says what is still missing ("Draw a rectangle around each person, or choose Nobody in this photo.", "2 people need gender and age."). **Approve** opens when every person has gender and age, or **Nobody in this photo** is pressed. **Reject…** opens the reason step; the photo is still waiting until a reason is selected and **Reject photo** is pressed. The step says when people marking is still missing.
 
 | You want to | Do this | What happens |
 | --- | --- | --- |
 | Approve the photo | Mark the people (or press **Nobody in this photo**), then press **Approve** | The people are saved with the photo, the photo is approved, and the next waiting photo opens. The person gets an e-mail with the link to their finished photo. |
-| Reject the photo | Mark the people the same way, press **Reject**, choose at least one reason under **Why is it rejected? Choose one or more.**, write a note if you want to (**Note (optional)**), then press **Confirm reject** (or **Cancel**) | The next waiting photo opens. The person gets a short note by e-mail and can take another photo. The photo stays private. The reasons and the note are kept for your records and the analytics and are not sent to the person. |
+| Reject the photo | Mark the people the same way, press **Reject…**, choose at least one reason, write a note if you want to (**Note (optional)**), then press **Reject photo** (or **Cancel rejection**) | **Reject…** only opens the rejection step: the photo stays in **Waiting** until you press **Reject photo**. The next waiting photo then opens. The person gets a short note by e-mail and can take another photo. The photo stays private. The reasons and the note are kept for your records and the analytics and are not sent to the person. |
 | Leave a photo for later | Press **Skip for now** | The photo goes to the back of the waiting photos and comes round again. It does not work when only one photo is waiting. |
 
 A rejected photo is marked too, exactly like an approved one: the analytics count the people in every photo that was looked at. If the people cannot be saved, the photo is not approved or rejected, and a red message says so: press the button again.
@@ -63,7 +63,7 @@ Drawing needs a mouse or a finger. There is no keyboard way to draw a rectangle 
 
 ### Marking switched off for an event
 
-A global admin can switch marking off for one event (on the Vetting tab, under the photos: **Marking the people is on for this event**, button **Turn marking off**). The screen is then only the photo, the reasons and the decision: no list of people and no drawing, **Approve** is open at once, and **Reject** still needs a reason. The line at the top says "Look at the photo, then approve or reject it. A rejection needs a reason."
+A global admin can switch marking off for one event (on the Vetting tab, under the photos: **Marking the people is on for this event**, button **Turn marking off**). The screen is then only the photo, the reasons and the decision: no list of people and no drawing, **Approve** is open at once, and **Reject…** opens the reason step. The photo stays in **Waiting** until a reason is selected and **Reject photo** is pressed. The line at the top says "Look at the photo, then approve or reject it. A rejection needs a reason."
 
 ### The list of cards (Show the list), Rejected and Approved
 
@@ -164,7 +164,7 @@ A Vetting fül a **Waiting** listán nyílik, és rögtön megmutatja az első v
 
 A Vetting fület tartsd nyitva a **Waiting** listán. A legrégebbi várakozó fotót nyitja meg rögtön, egyesével, akkorában, amekkorát az ablak enged. A képernyő 10 másodpercenként magától megnézi, jött-e új fotó, de csak amíg az oldal látszik, és soha nem akkor, amikor éppen egy döntést mentesz. Ha valaha elakadni látszik, töltsd újra az oldalt. Ha nem vár fotó, azt írja: **Nothing is waiting**.
 
-Felül például ez áll: **Photo 3 of 12 waiting** (a 12 várakozó fotóból a 3.), mellette, ha van, a fotós e-mail-címe. A fotó balra van; mellette (telefonon vagy keskeny ablakban alatta) a panel: **People in this photo** (az emberek a fotón), a kijelölt személy választási lehetőségei, a **Nobody in this photo** gomb, legalul pedig az **Approve**, a **Reject** és a **Skip for now** gomb, amelyek munka közben is látszanak. Nincsenek lépések és külön oldalak: rajzolsz, választasz és döntesz ugyanazon a képernyőn. A gombokon sima szöveg van, képek nélkül; ezek az esemény szólistájának szavai (lásd „A képernyő szavai”), ezért az eseményeden mások is lehetnek, mint lent.
+Felül például ez áll: **Photo 3 of 12 waiting** (a 12 várakozó fotóból a 3.), mellette, ha van, a fotós e-mail-címe. A fotó balra van; mellette (telefonon vagy keskeny ablakban alatta) a panel: **People in this photo** (az emberek a fotón), a kijelölt személy választási lehetőségei, a **Nobody in this photo** gomb, legalul pedig az **Approve**, a **Reject…** és a **Skip for now** gomb, amelyek munka közben is látszanak. Nincsenek lépések és külön oldalak: rajzolsz, választasz és döntesz ugyanazon a képernyőn. A gombokon sima szöveg van, képek nélkül; ezek az esemény szólistájának szavai (lásd „A képernyő szavai”), ezért az eseményeden mások is lehetnek, mint lent.
 
 **Az emberek megjelölése, aztán a döntés**
 
@@ -175,10 +175,10 @@ Bekapcsolt jelölésnél (minden eseményen be van kapcsolva; egy globális admi
 3. **Ha tudod, add meg az érzelmet és a kellékeket.** A **How the person looks (optional)** alatt egy választás lehet; újra megnyomva törlődik. A **What the person wears or holds (optional)** alatt annyi, amennyi igaz. Ha nem vagy biztos valakiben, hagyd üresen az érzelmet, válaszd a legközelebbi kort, a nemnél pedig, ha a lista kínálja, a **Not sure** gombot.
 4. **Következő személy.** Rajzold meg a következő téglalapot: felkerül, és ki van jelölve. Ha valakin változtatni akarsz, nyomd meg a sorát a listán, vagy koppints a téglalapjára. A **Remove person** a kijelöltet leveszi.
 5. **Senki sincs a fotón?** Nyomd meg a **Nobody in this photo** gombot. Csak akkor lehet, ha nincs megrajzolt téglalap, és ha rajzolsz egyet, kikapcsol. Ha az utolsó személyt is levetted, nyomd meg újra.
-6. **Dönts.** A gombok fölötti sor megmondja, mi hiányzik még (például: „2 people need gender and age.”). Az **Approve** akkor nyílik meg, ha mindenkinek van neme és kora, vagy megnyomtad a **Nobody in this photo** gombot.
+6. **Dönts.** A gombok fölötti sor megmondja, mi hiányzik még (például: „2 people need gender and age.”). Az **Approve** akkor nyílik meg, ha mindenkinek van neme és kora, vagy megnyomtad a **Nobody in this photo** gombot. A **Reject…** megnyitja az elutasítási lépést; a fotó még **Waiting** állapotban van, amíg ki nem választasz legalább egy okot és meg nem nyomod a **Reject photo** gombot. A lépés jelzi, ha az emberek megjelölése még hiányzik.
 
 - **Approve (jóváhagyás):** jelöld meg az embereket (vagy nyomd meg a **Nobody in this photo** gombot), majd nyomd meg az **Approve** gombot. Az emberek mentődnek a fotóval, a fotó jóvá van hagyva, és megnyílik a következő várakozó fotó. A fotós e-mailben megkapja a linket a kész fotójához.
-- **Reject (elutasítás):** jelöld meg az embereket ugyanígy, nyomd meg a **Reject** gombot, válassz legalább egy okot a **Why is it rejected? Choose one or more.** alatt, ha szeretnél, írj megjegyzést (**Note (optional)**), majd nyomd meg a **Confirm reject** gombot (vagy a **Cancel** gombot). Megnyílik a következő fotó. A fotós rövid értesítést kap e-mailben, a fotó pedig privát marad. Készíthet másikat. Az okok és a megjegyzés a saját nyilvántartásodnak és az elemzésnek szólnak, nem mennek ki a fotósnak.
+- **Reject (elutasítás):** jelöld meg az embereket ugyanígy, nyomd meg a **Reject…** gombot, válassz legalább egy okot a **Select at least one rejection reason.** alatt, ha szeretnél, írj megjegyzést (**Note (optional)**), majd nyomd meg a **Reject photo** gombot (vagy a **Cancel rejection** gombot). A **Reject…** még nem utasítja el a fotót: az a **Waiting** listán marad, amíg a **Reject photo** gombot meg nem nyomod. Ezután megnyílik a következő fotó. A fotós rövid értesítést kap e-mailben, a fotó pedig privát marad. Készíthet másikat. Az okok és a megjegyzés a saját nyilvántartásodnak és az elemzésnek szólnak, nem mennek ki a fotósnak.
 - **Későbbre hagyás:** a **Skip for now** a fotót a várakozók végére teszi, és újra előjön. Ha csak egy fotó vár, nem működik.
 
 Az elutasított fotót is meg kell jelölni, pontosan úgy, mint a jóváhagyottat: az elemzés minden megnézett fotó embereit számolja. Ha az emberek mentése nem sikerül, a fotót nem hagyja jóvá és nem utasítja el, és egy piros üzenet ezt jelzi: nyomd meg újra a gombot.
@@ -189,7 +189,7 @@ Alapból hagyd jóvá, és csak azt utasítsd el, amit nem szeretnél a szervez�
 
 A rajzoláshoz egér vagy ujj kell. Téglalapot billentyűzettel még nem lehet rajzolni.
 
-**Kikapcsolt jelölés.** Egy globális admin egy eseményre kikapcsolhatja a jelölést (a Vetting fülön, a fotók alatt: **Marking the people is on for this event**, gomb: **Turn marking off**). A képernyő ilyenkor csak a fotó, az okok és a döntés: nincs emberlista és nincs rajzolás, az **Approve** azonnal nyitva van, a **Reject** pedig továbbra is okot kér. A felső sor ezt írja: „Look at the photo, then approve or reject it. A rejection needs a reason.”
+**Kikapcsolt jelölés.** Egy globális admin egy eseményre kikapcsolhatja a jelölést (a Vetting fülön, a fotók alatt: **Marking the people is on for this event**, gomb: **Turn marking off**). A képernyő ilyenkor csak a fotó, az okok és a döntés: nincs emberlista és nincs rajzolás, az **Approve** azonnal nyitva van. A **Reject…** továbbra is megnyitja az okválasztást, és a fotó a **Waiting** listán marad, amíg egy ok kiválasztása után a **Reject photo** gombot meg nem nyomod. A felső sor ezt írja: „Look at the photo, then approve or reject it. A rejection needs a reason.”
 
 **A kártyák listája (Show the list), a Rejected és az Approved**
 
