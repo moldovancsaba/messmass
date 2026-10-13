@@ -1,9 +1,9 @@
 # Tutorial: Approving photos at an event (camera app)
 Status: Active
-Last Updated: 2026-10-13T12:26:58.000Z
+Last Updated: 2026-10-13T13:34:19.000Z
 Canonical: Yes
 Owner: Documentation
-Verified against Camera app main @ 2cc1174b (camera#639: the rejection step remains pending until **Reject photo** is pressed); the lists of cards and the access @ 75c595b (camera#373)
+Verified against Camera app PR #642 @ fda10916 (return to vetting and analysis-only flows); rejection confirmation @ 2cc1174b (camera#639); the lists and access @ 75c595b (camera#373)
 
 > Audience: The person who approves photos live at an event, and the operators who give them access and set the words of the vetting screen · Prerequisites: The event exists in the Camera app with photo approval switched on, and your e-mail address has the **Manager** role for Events on the event's partner · Related: [Camera app integration](guides-tutorial-camera-app.md) · [Events](guides-tutorial-events.md) · [Partners](guides-tutorial-partners.md) · [Authentication, roles & SSO](guides-tutorial-authentication-sso.md) · [The Analytics view of an event](guides-tutorial-camera-analytics.md) · Magyar változat: [lent / below](#magyar-valtozat)
 
@@ -59,6 +59,8 @@ Approve by default and reject only what you would not want next to the organiser
 
 **What the person sees while they wait:** "Thank you! Your photo is waiting for approval. We will email you the link as soon as it is approved." (in the language of the event).
 
+When a previously public photo is returned to vetting, its existing link shows only: “Thank you for visiting. We need to review this photo further. We will let you know the result by email.” The photo stays unavailable until the decision is complete. The person receives an email when the change affects whether the photo is public; reopening an already-hidden rejected photo does not send a duplicate visibility email. The English and Hungarian wording can be adjusted in the event editor under **Public result page**.
+
 Drawing needs a mouse or a finger. There is no keyboard way to draw a rectangle yet.
 
 ### Marking switched off for an event
@@ -76,9 +78,11 @@ With marking on, a **Waiting** card has one button, **Review**. It opens that ph
 | Approve one photo | Press **Approve** on the card | The card leaves the list. The person gets an e-mail with the link to their finished photo. |
 | Reject one photo | Press **Reject**, choose at least one reason, write a note if you want to, then **Confirm reject** (or **Cancel**) | The person gets a short note by e-mail and can take another photo. The photo stays private. The reasons and the note are kept for your records and are not sent. |
 | Approve many | Tick the cards, or press **Select all**, then **Approve selected** | The button shows how far it is ("Approving 3 of 20…"). It works through the photos two at a time, so leave the page open until it says **Approve selected** again. |
-| Change a decision | Open **Rejected** and press **Approve** | A rejected photo can still be approved. An approved photo cannot be taken back on this page, so look before you press **Approve**. |
+| Return a decided photo to review | On an approved photo in Gallery, or an approved/rejected card under **Vetting**, press **Back to vetting** | The photo goes to **Waiting** and follows the normal review flow. The guest's link shows a further-review message and no photo while it waits. |
+| Correct people analysis only | On an approved card under **Vetting**, press **Update analysis**, edit the marks, then **Save analysis** | The photo stays approved and visible. This technical update does not email the guest. |
+| Change a rejection | Open **Rejected**, then press **Back to vetting** and review it again | The photo returns to **Waiting**. A manager can approve it, or reject it again. |
 
-The list of cards looks for new photos by itself every 10 seconds too, and it pauses while you are deciding or choosing the reasons of a rejection.
+The list of cards looks for new photos by itself every 10 seconds too, and it pauses while you are deciding or choosing the reasons of a rejection. When a photo is under review again, it is not shown on public pages, in downloads, or in link previews. Its existing share link shows only the further-review notice and refreshes until the decision is complete. The English and Hungarian notice can be changed in the event editor under **Public result page**.
 
 ## The words on the screen (Vetting words)
 
@@ -131,7 +135,7 @@ Each mark is saved with the photo: the people with their rectangles, the options
 ## Managing it
 
 - **Nobody can approve for a while.** Nothing is lost. The photos wait, and people keep seeing the waiting message. Only a global admin can switch approval off for the event (the setting on the Vetting tab).
-- **Counts.** The three lists show how many photos are waiting, rejected and approved. **Approved** lists are view-only.
+- **Counts.** The three lists show how many photos are waiting, rejected and approved. Managers can return decided photos to review and update people analysis on approved photos.
 - **Who can do what.** Approving and rejecting needs the Manager role for the event's partner (or a global admin). The settings that switch approval, and marking the people, on or off for an event are for global admins only. Who can change the vetting words is in the table above.
 
 ## Gotchas & good practice
@@ -187,6 +191,8 @@ Alapból hagyd jóvá, és csak azt utasítsd el, amit nem szeretnél a szervez�
 
 **Mit lát a fotós, amíg vár:** „Köszönjük! A fotód jóváhagyásra vár. Amint jóváhagyták, e-mailben elküldjük neked a linkjét.” (az esemény nyelvén).
 
+Ha egy korábban nyilvános fotót visszaküldesz ellenőrzésre, az eredeti linkjén a fotós csak ezt az üzenetet látja: „Köszönjük, hogy ellátogattál az oldalra. Ezt a fotót még ellenőriznünk kell. Az eredményről e-mailben értesítünk.” A fotó a döntésig nem érhető el. E-mail akkor megy, ha változik a fotó nyilvános állapota; egy már elrejtett, elutasított fotó újbóli ellenőrzésekor nem küldünk ismételt értesítést. Az eseményszerkesztő **Public result page** részében mindkét nyelv szövege finomítható.
+
 A rajzoláshoz egér vagy ujj kell. Téglalapot billentyűzettel még nem lehet rajzolni.
 
 **Kikapcsolt jelölés.** Egy globális admin egy eseményre kikapcsolhatja a jelölést (a Vetting fülön, a fotók alatt: **Marking the people is on for this event**, gomb: **Turn marking off**). A képernyő ilyenkor csak a fotó, az okok és a döntés: nincs emberlista és nincs rajzolás, az **Approve** azonnal nyitva van. A **Reject…** továbbra is megnyitja az okválasztást, és a fotó a **Waiting** listán marad, amíg egy ok kiválasztása után a **Reject photo** gombot meg nem nyomod. A felső sor ezt írja: „Look at the photo, then approve or reject it. A rejection needs a reason.”
@@ -200,7 +206,9 @@ Bekapcsolt jelölésnél a **Waiting** kártyákon egyetlen gomb van, a **Review
 - **Egy fotó jóváhagyása:** nyomd meg a kártyán az **Approve** gombot. A kártya eltűnik a listából, és a fotós e-mailben megkapja a linket.
 - **Egy fotó elutasítása:** nyomd meg a **Reject** gombot, válassz legalább egy okot, ha szeretnél, írj megjegyzést, majd **Confirm reject** (vagy **Cancel**). A fotós rövid értesítést kap, a fotó privát marad, az okok és a megjegyzés nem mennek ki.
 - **Egyszerre sok fotó:** pipáld be a kártyákat, vagy nyomd meg a **Select all** gombot, majd az **Approve selected** gombot. A gomb mutatja, hol tart. Egyszerre két fotót dolgoz fel, ezért hagyd nyitva az oldalt, amíg újra az Approve selected felirat nem áll rajta.
-- **Meggondoltad magad:** a **Rejected** listán lévő fotót még jóváhagyhatod. A jóváhagyott fotót ezen az oldalon nem lehet visszavonni, ezért nézd meg, mielőtt az Approve gombra nyomsz.
+- **Korábbi döntés visszavonása:** a Gallery approved fotóján, vagy a Vetting **Approved**/**Rejected** listáján nyomd meg a **Back to vetting** gombot. A fotó visszakerül a **Waiting** listára, és a szokásos folyamatban újra elbírálható. Amíg vár, a fotós meglévő linkjén csak további ellenőrzésről szóló üzenet látszik, a fotó nem. Az esemény angol és magyar szövege az eseményszerkesztő **Public result page** részében állítható.
+- **Csak az emberek elemzésének javítása:** az **Approved** listán nyomd meg az **Update analysis** gombot, módosítsd a jelöléseket, majd nyomd meg a **Save analysis** gombot. A fotó jóváhagyott és látható marad; a technikai módosításról nem megy e-mail.
+- **Újra elbírált elutasított fotó:** a **Rejected** listán nyomd meg a **Back to vetting** gombot. A fotó visszakerül a **Waiting** listára, ahol a menedzser újra jóváhagyhatja vagy elutasíthatja.
 
 A kártyák listája is 10 másodpercenként magától megnézi, jött-e új fotó, és megáll, amíg döntesz vagy egy elutasítás okait választod.
 
