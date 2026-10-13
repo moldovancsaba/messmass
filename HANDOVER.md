@@ -1,8 +1,17 @@
 # Session Handover — messmass
 
-Last verified: 2026-10-12 (v12.3.42 fleet release plus the work of 2026-10-12).
+Last verified: 2026-10-13 (v12.3.42 fleet release plus the work of 2026-10-12 and 2026-10-13).
 
 **2026-10-11:** messmass, camera, fanmass, try-on and savetheworld are on 12.3.42 (version only everywhere except camera); camera carries the work of 2026-10-10 to 2026-10-11 (journey analytics, no IP addresses stored with photos, a shown/required setting for every checkbox, the public-gallery permission as a setting, the four-way camera mode, the try-on integration removed from the app), messmass the matching guides and clean-up.
+
+**2026-10-13: what messmass did since the 2026-10-12 pass, what is next, what is open.** This supersedes item 2 of the 2026-10-12 pass below (the route for the camera counters is no longer open). The camera handover (`HANDOVER.md` in the camera repo, "Status 2026-10-12, end of day", item 16) is the one page for the whole fleet; this is messmass's part.
+1. **Done (merged, deployed):**
+   - PR 481: `POST /api/integrations/camera/events/[messmassEventId]/photo-stats` (`lib/cameraPhotoStats.ts`). Only names that match `^camera_[a-z0-9_]{1,80}$` are accepted (one other name refuses the whole request); each value is written as `stats.<name>` with one `$set`, with an audit copy in `cameraPhotoStats`; each name is registered once in `variables_metadata` (category Camera, not offered in the clicker, not editable in manual mode, never overwritten). The merge console and `applyMerges` skip and refuse the `camera_` namespace. Looked at on 2026-10-13, read only: `POST https://www.messmass.com/api/integrations/camera/events/<id>/photo-stats` without the secret answers 401 `invalid_camera_secret`, like `link-stats`. **Nothing has been sent to it: camera's push is off, and camera has no switch for it yet** (camera handover, section 3, item 2). The route was tested with fakes only, never against a database.
+   - PRs 482 and 483: the approving-photos guide (English and Hungarian) and the camera analytics guide for the one-photo screen, the vetting words and the counters; `docs/features/features-camera-photo-counters.md` lists the counters and how they map to the older variables (`female`, `scarf`, `genAlpha` ...).
+2. **Next:** nothing in messmass is needed for the match on 2026-10-16. When camera's push is switched on, watch the first push on one real event.
+3. **Open:**
+   - The Google Sheets sync replaces the whole `stats` of a sheet-linked event: both the bulk pull and the single-event pull in `lib/googleSheets/pullEvents.ts` write `stats` as the object built from the sheet's columns (cron `30 4 * * *` in `vercel.json`), which removes `camera_*` there until camera's next push. The owner said to leave it for now.
+   - The hashtag report route `app/api/hashtags/[hashtag]` adds a fixed list of keys, so it does not add `camera_*`. The owner said to leave it for now. How the partner, organisation and filter reports, the CSV export and the KYC source tag treat the new variables is in `docs/features/features-camera-photo-counters.md` ("Things to know when building reports"); it was not re-read in this pass.
 
 **2026-10-12, end of day: what messmass did, what is next, what is open.** The camera handover (`HANDOVER.md` in the camera repo, "Status 2026-10-12, end of day") is the one page for the whole fleet; this is messmass's part.
 1. **Done since the 2026-10-11 pass (merged, live):**
