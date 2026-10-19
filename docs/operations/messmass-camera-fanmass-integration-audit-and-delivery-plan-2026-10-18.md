@@ -1,7 +1,7 @@
 # Messmass, Camera and Fanmass integration audit and delivery plan
 
 **Date:** 2026-10-18
-**Status:** Accepted for delivery on 2026-10-19; implementation in progress. The first Camera/Fanmass cursor-reliability changes are on feature branches and are not deployed. Local runtime operations were completed 2026-10-18; no production configuration or data has been changed.
+**Status:** Accepted for delivery on 2026-10-19; implementation is in review on paired Camera/Fanmass feature branches, with the cross-app audit and delivery order tracked in this document. These branches are not merged or deployed. Local runtime operations were completed 2026-10-18; no production configuration or data has been changed.
 **Purpose:** Establish a reliable, privacy-aware integration for photo capture, human vetting, AI-assisted analysis, correction, learning and reporting.
 
 ## 1. Executive recommendation
@@ -68,7 +68,7 @@ The shared local checkouts were behind those refs (Messmass 28 commits; Fanmass 
 
 Fanmass's public health endpoint and worker heartbeat are healthy, but this is not a production canary: no Camera/Messmass credential was exercised and no new processing purpose or event scope was enabled. The current-user LaunchAgent needs the user GUI session; if the service must survive logout or user-session failure, move it to a managed always-on local host/service account. The worker is active and the free disk reserve is low, so watch queue activity and disk growth.
 
-**Gate 0 — local runtime readiness, before CF-02/CF-03 or any production pilot:**
+**Gate 0 — local runtime readiness, before merging/enabling CF-02/CF-03 for a production pilot:**
 
 1. Confirm this Mac (or an explicitly designated always-on local host) is the supported Fanmass worker; reconcile its five-commit drift to the approved release and verify outbound Camera/Messmass access.
 2. Resolve disk capacity, retention and log rotation. Define a minimum free-space stop threshold before unattended image ingestion.
@@ -594,13 +594,13 @@ The owner accepted this plan for implementation. Work is being delivered as sepa
 | Work package | State | Evidence / remaining gate |
 |---|---|---|
 | CF-01 — cross-app authority and contract | In progress | Accepted ownership boundaries and event-mode defaults are recorded here; API schemas and least-privilege credentials remain to be delivered before image exchange expands. |
-| CF-02 — Camera durable work queue/private media | Not started | The existing compatibility feed now enforces Camera's shared public-visibility rules. It still exposes stored image URLs to the authorized Fanmass caller; private media retrieval and durable claim/ack remain open. |
-| CF-03 — reliable Fanmass intake | In progress | Compound `(availability time, submission id)` cursor, stop-on-first-fetch-failure, atomic staging writes, and recovery of staged files without a live job are implemented on paired feature branches. Polling now defaults to one minute, but remains polling; durable claim/lease/ack is still open. |
+| CF-02 — Camera durable work queue/private media | In progress | Paired draft PRs add versioned, per-event submission leases, a private lease-bound image route, idempotent stage/retry acknowledgements, event-active checks, and published-photo eligibility. Leases expire after ten minutes. Unsupported/oversized files can be marked terminally failed. Deletion/withdrawal propagation remains a pilot blocker. |
+| CF-03 — reliable Fanmass intake | In progress | Fanmass consumes the versioned durable claim path, acknowledges only after durable analysis-job staging, and retains the compound-cursor fallback for older Camera builds. Stable intake job IDs use source, batch, analysis depth, and sorted capture filenames; Camera tracks each event separately for multi-event submissions. Permanent media rejection is not retried forever. The default poll is one minute, so suggestions are not immediate or guaranteed before review. |
 | CF-04 — per-photo AI result/provenance | Not started | Existing Fanmass batch summaries do not yet provide the complete Camera per-submission revision contract. |
 | CF-05/06 — Camera suggestions, analysis worklist, human revisions | Partly present in Camera | Human vetting and the separate photo-analysis worklist exist; AI suggestions and append-only human correction delivery are still open. |
 | CF-07 — scoped learning/evaluation | Not started | No cross-partner personal recognition or automatic model-weight training is enabled by this plan. |
 | CF-08 — Messmass aggregates/health | Partly present | Camera photo counters and Fanmass aggregate routes exist; full lifecycle and sync-health read model remain open. |
-| CF-09/10 — access, privacy, operations/docs | In progress | Existing separate shared-secret routes are documented; scoped machine identities, private media, retention propagation, alerts and runbooks remain open. |
+| CF-09/10 — access, privacy, operations/docs | In progress | The new media fetch requires the existing distinct Fanmass service secret plus a per-photo, per-event lease and allows only ImgBB/Vercel Blob sources. Terminal media failures are recorded, but an operator recovery surface, scoped credential rotation, deletion propagation, operational alerts and runbooks remain open. |
 | CF-12 — exclusive local inference slot | Not started | Fanmass is running locally and Image.direct is stopped, but the host still has only the documented manual handoff. |
 | CF-11 — shadow/pilot/rollout | Blocked on prerequisites | Do not enable pre-vetting photo analysis or automate inference alternation until legal purpose, retention, host capacity and recovery gates pass. |
 
@@ -610,7 +610,7 @@ The owner accepted this plan for implementation. Work is being delivered as sepa
 2. **CF-09 in parallel with contract work:** settle human and service identities before opening any new photo route.
 3. **Gate 0:** qualify the designated local Fanmass runtime: approved release, disk/retention reserve, backfill scope, API credentials, supervisor/dependencies, fresh health/heartbeat and network reachability. The requested local restart is complete, but the 9.9 GiB free-space headroom, five-commit source drift and unverified cross-app credentials mean production Gate 0 is still open.
 4. **CF-12 before automated model switching or pilot:** deliver the exclusive host inference lease and graceful Fanmass/Image.direct handoff; until then keep the current manual one-at-a-time procedure.
-5. **CF-02 and CF-03:** implement Camera's private durable analysis queue and Fanmass's reliable consumer. The first cursor-loss and staged-file recovery safeguards are in progress; do not treat the current minute poll or public-visibility feed as the durable queue/private-media solution. Keep Camera capture/vetting available during Fanmass downtime.
+5. **CF-02 and CF-03:** complete review and release of Camera's private durable queue and Fanmass's leased consumer. The current implementation is on paired draft PRs; do not treat the one-minute poll as immediate suggestions. Keep Camera capture/vetting available during Fanmass downtime.
 6. **CF-04:** return per-photo suggestions with model/taxonomy provenance, confidence, uncertainty, partial/failure states and idempotent revisions.
 7. **CF-05:** show advisory AI findings on Camera vetting; add a separate Analyse worklist for deferred images. Keep human vetting and analysis decisions separate.
 8. **CF-06 then CF-07:** capture attributable correction revisions first; then apply event/partner-scoped feedback and quality evaluation. Do not train shared weights directly from clicks.
