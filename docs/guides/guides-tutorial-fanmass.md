@@ -115,10 +115,34 @@ read the current link back with `GET` on the same path.
 
 - `projects.stats.fanmass` — the canonical Fanmass block: `peopleCount`, `projectedReach`,
   `imageCount`, `analyzedImageCount`, `confidence`, `brands`, `clubs`, `merchandise`,
-  `gender`, `age`, `warnings`, and sync metadata.
+  `gender`, `age`, `emotion`, `accessories`, `smilingPct`, `warnings`, and sync metadata.
 - **Flat mirrors** under `projects.stats.*` for report-friendly, single-value access:
-  `fanmassPeopleCount`, `fanmassProjectedReach`, `fanmassImageCount`,
-  `fanmassAnalyzedImageCount`, `fanmassConfidence`, `fanmassBrandCount`,
+  canonical progress variables `fanmassImages`, `fanmassAnalyzedImages`, and numeric
+  `fanmassStatus` (0–100%). The readable state (`ready`, `partial`, `running`) is
+  `fanmassAnalysisState`; it is not stored in the numeric progress variable.
+  Existing `fanmassImageCount` and `fanmassAnalyzedImageCount` remain as compatibility
+  aliases. Other flat measures include `fanmassPeopleCount`, `fanmassProjectedReach`,
+  `fanmassConfidence`, `fanmassDemographicsAnalyzed`, `fanmassBrandCount`,
+  `fanmassBrandMentionCount`, `fanmassClubCount`, and `fanmassClubMentionCount`.
+  Gender, age-generation, emotion, accessory, and merchandise categories are mirrored
+  as count variables and, where applicable, percentages (for example
+  `fanmassGenderFemaleCount`, `fanmassGenderFemalePct`,
+  `fanmassAccessoryWithCapCount`, and `fanmassMerchandiseJerseyCount`). These known
+  variables are registered in `/admin/kyc` without enabling clicker or manual editing;
+  existing admin labels and flags are preserved.
+  The nested `brands` and `clubs` lists retain names and per-name counts. The flat
+  `fanmassBrandCount`/`fanmassClubCount` values count distinct names, while the
+  `...MentionCount` values sum appearances.
+
+People counts are detections across photos, not deduplicated unique attendees.
+`fanmassProjectedReach` estimates detections across the event's eligible photo set;
+it is not a verified audience count. Camera's human-reviewed counters keep their own
+`camera_` names so they cannot overwrite Fanmass estimates.
+
+The durable Camera feed leases and stages exactly one photo per claim. Fanmass analyzes
+its own staged image records; the event summary and metrics above flow to Messmass.
+Fanmass's per-photo detail is not currently returned to Camera's vetting UI for a
+human correction/feedback loop.
   `fanmassTopBrandName`, `fanmassTopBrandCount`, `fanmassClubCount`, `fanmassTopClubName`,
   `fanmassTopClubCount`, `fanmassWarningCount`, `fanmassSourceRunCount`,
   `fanmassStatus`, `fanmassBatchId`, and `fanmassLastSyncedAt`.

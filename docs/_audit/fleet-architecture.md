@@ -279,26 +279,45 @@ same section then contradicted four bullets down — corrected 2026-09-16.
   on fanmass reachability (architecture.md, "The one blocking call", now says
   the same; it used to claim messmass had no such dependency).
 
+- **Analytics datapoints**: `fanmass.messmass.analytics-summary.v1` carries
+  image totals/coverage, measured and projected people, gender, generation,
+  emotion, accessory, smiling, merchandise-type, and named brand/club counts.
+  Messmass stores the complete document in `ai_analysis_summaries` and mirrors
+  reportable numeric fields to registered `fanmass*` variables. The numeric
+  progress variable is `fanmassStatus` (0–100); the textual state is
+  `fanmassAnalysisState`. Brand/club names and their counts remain in the nested
+  summary rather than becoming unstable variable keys. Camera's human analysis
+  counters stay under `camera_` so the sources and denominators remain distinct.
+  See the Fanmass analytics-summary contract and Messmass Fanmass tutorial for
+  the field-level mapping.
+
 ### E3 · fanmass → camera (media pull)
-Verified camera `88c6839` · fanmass `5d9a032`. Direction is fanmass-pulls.
-- fanmass `GET {cameraBaseUrl}/api/internal/fanmass/events` and
-  `.../events/{eventId}/media?since=` (fanmass services/camera_client.py:12-16,
-  :120).
+Direction is fanmass-pulls. The durable implementation uses
+`camera.fanmass.media-jobs.v1`:
+- Fanmass lists active Camera events, then uses
+  `POST /api/internal/fanmass/events/{eventId}/media/claim`,
+  `GET .../media/{captureId}`, and `POST .../media/{captureId}/ack`. Each claim
+  returns at most one photo; Camera enforces the cap and Fanmass always requests
+  one.
 - **Auth**: header `x-fanmass-secret` = cameraApiKey + Bearer
   (camera_client.py:70-71); camera verifies via assertInternalFanmassSecret
   (camera lib/fanmass/internal.ts:11-25, CAMERA_FANMASS_INTERNAL_SECRET,
-  fail-closed). The media query is `buildMediaFeedPipeline`
-  (camera lib/fanmass/media-feed.ts, re-read at camera `c40aad85`): it excludes
-  `submissionKind:'tryon_result'`, requires `originalImageUrl`, leaves out photos
-  that are waiting for approval or rejected, and orders and cuts by the moment a
-  photo became available (`approvedAt` for a vetted photo, else `createdAt`), so a
-  photo approved after fanmass moved its cursor still arrives.
-- The returned i.ibb.co URLs are then fetched by fanmass **unauthenticated**
-  (public host) — deliberate (camera_client.py:17, :129).
-- camera never calls fanmass (no FANMASS_BASE_URL in camera). Cadence
-  camera_poll_minutes (15). Cursor per event in system_state
-  (`camera_cursor:<eventId>`, camera_sync.py:39-40, :87); a broken media URL
-  holds the cursor back so nothing is skipped.
+  fail-closed). The private fetch requires both the service secret and per-photo
+  lease token; Camera rechecks visibility, storage host, MIME type, and size.
+  URLs, emails, identity, and consent text are not returned to Fanmass.
+- Only approved/public, consent-complete, non-hidden original photos enter the
+  durable feed. Waiting, rejected, erasure-pending, and otherwise non-public
+  records stay excluded. This is not a pre-vetting AI feedback path.
+- Fanmass fetches one image, stages it under a stable capture ID, queues analysis,
+  then acknowledges after durable staging. It waits for that Camera-linked
+  full local analysis job to finish before claiming another image; each poll
+  also stages at most one image total across active Camera events. Camera retries
+  expired/failed leases. On completion, Fanmass pushes the event aggregate and
+  report variables to Messmass before releasing the intake backpressure; the
+  scheduled sync repairs missed pushes. Polling cadence is `camera_poll_minutes`
+  (default one minute), not immediate push.
+- The legacy timestamp feed remains for older Camera builds. Deletion/withdrawal
+  propagation for already-staged Fanmass copies remains a privacy release gate.
 
 ### E4 · messmass ↔ camera (master data + session + email)
 Verified messmass `5cc610c2` · camera `06f3029` (both sides re-read 2026-09-16;
