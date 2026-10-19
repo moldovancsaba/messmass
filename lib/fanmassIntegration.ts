@@ -3,6 +3,8 @@ import { NextRequest, NextResponse } from 'next/server';
 import clientPromise from '@/lib/mongodb';
 import config from '@/lib/config';
 import { info, warn, error as logError } from '@/lib/logger';
+import { deriveCompleteFanmassReportStats } from './aiDemographicStats';
+import { ensureFanmassAnalyticsVariables } from './fanmassAnalyticsVariables';
 
 const DB_NAME = config.dbName;
 export const EVENT_CONTEXT_CONTRACT = 'messmass.fanmass.event-context.v1';
@@ -290,6 +292,9 @@ function mapFanmassSummaryToStats(summary: any) {
     merchandise: summary.merchandiseCounts || {},
     gender: summary.genderProjection || {},
     age: summary.ageProjection || {},
+    emotion: summary.emotionProjection || {},
+    accessories: summary.accessoryProjection || {},
+    smilingPct: typeof summary.smilingPct === 'number' ? summary.smilingPct : null,
     warnings: Array.isArray(summary.warnings) ? summary.warnings : [],
     sourceRunIds: Array.isArray(summary.sourceRunIds) ? summary.sourceRunIds : [],
     lastSyncedAt: nowIso(),
@@ -313,10 +318,19 @@ function firstNamedCount(items: unknown[], nameKeys: string[]): { name: string; 
 export function mapFanmassStatsToFlatStats(fanmassStats: ReturnType<typeof mapFanmassSummaryToStats>) {
   const topBrand = firstNamedCount(fanmassStats.brands, ['brandName', 'brand', 'name', 'label']);
   const topClub = firstNamedCount(fanmassStats.clubs, ['clubName', 'club', 'name', 'label']);
+  const analysisProgress = fanmassStats.imageCount > 0
+    ? Math.round(Math.min(100, (fanmassStats.analyzedImageCount / fanmassStats.imageCount) * 100) * 10) / 10
+    : 0;
 
   return {
     fanmassBatchId: String(fanmassStats.batchId || ''),
-    fanmassStatus: String(fanmassStats.status || ''),
+    // `fanmassStatus` is the established numeric progress variable. Keep the
+    // textual ready/partial/running state in a separate, unambiguous key.
+    fanmassStatus: analysisProgress,
+    fanmassAnalysisState: String(fanmassStats.status || ''),
+    fanmassImages: fanmassStats.imageCount,
+    fanmassAnalyzedImages: fanmassStats.analyzedImageCount,
+    // Preserve the older count aliases for existing charts during migration.
     fanmassImageCount: fanmassStats.imageCount,
     fanmassAnalyzedImageCount: fanmassStats.analyzedImageCount,
     fanmassPeopleCount: fanmassStats.peopleCount,
@@ -363,12 +377,21 @@ export async function syncFanmassAnalytics(eventId: string, correlationId: strin
     });
   }
   const fanmassStats = mapFanmassSummaryToStats(summary);
-  const fanmassFlatStats = mapFanmassStatsToFlatStats(fanmassStats);
+  const fanmassFlatStats = {
+    ...mapFanmassStatsToFlatStats(fanmassStats),
+    ...deriveCompleteFanmassReportStats(summary),
+  };
   if (options?.dryRun) {
     return { dryRun: true, link, fanmassStats, fanmassFlatStats, summary };
   }
 
   const db = await getDb();
+  try {
+    await ensureFanmassAnalyticsVariables(db, Object.keys(fanmassFlatStats));
+  } catch {
+    // Metric values still sync; the next sync retries catalog registration.
+    warn('fanmass_variable_catalog_sync_failed', { eventId, correlationId });
+  }
   const existing = await db.collection('projects').findOne({ _id: new ObjectId(eventId) }, { projection: { stats: 1 } });
   const previousFanmass = (existing?.stats as any)?.fanmass;
   const timestamp = nowIso();

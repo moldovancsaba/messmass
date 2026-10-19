@@ -83,6 +83,7 @@ interface SummaryDoc {
     ageProjection?: Record<string, number>;
     merchandiseCounts?: Record<string, number>;
     emotionProjection?: Record<string, number>;
+    accessoryProjection?: Record<string, number>;
     smilingPct?: number | null;
     brandMentions?: Mention[];
     clubMentions?: Mention[];
@@ -555,6 +556,8 @@ export default function AiEventReportView() {
         <CountsTable counts={s.ageProjection || {}} caption="Age projection" nameHeader="Age group" />
         <h3 className={styles.srOnly}>Emotions</h3>
         <CountsTable counts={s.emotionProjection || {}} caption="Emotions detected on analysed faces" nameHeader="Emotion" />
+        <h3 className={styles.srOnly}>Accessories</h3>
+        <CountsTable counts={s.accessoryProjection || {}} caption="Accessory estimates on analysed people" nameHeader="Accessory" />
       </AnalyticsSectionCard>
     </div>
   );

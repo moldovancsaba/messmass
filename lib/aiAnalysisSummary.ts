@@ -18,7 +18,8 @@
 import { ObjectId } from 'mongodb';
 import { getDb } from './fanmassIntegration';
 import { pushEventStats } from './fanmassMapping';
-import { deriveFanmassDemographicStats } from './aiDemographicStats';
+import { deriveCompleteFanmassReportStats } from './aiDemographicStats';
+import { ensureFanmassAnalyticsVariables } from './fanmassAnalyticsVariables';
 
 // WHAT: The contract family this store accepts.
 // WHY: Major-version gate. A same-major producer may add fields (stored as-is);
@@ -109,8 +110,15 @@ export async function storeAnalysisSummary(
   // Best-effort: a report-variable derivation failing must never fail the
   // summary push itself — fanmass has no retry path for this half of the
   // write, and the summary document (the source of truth) already landed.
-  const derived = deriveFanmassDemographicStats(summary);
+  const rawState = String(summary.status || '');
+  const analysisState = ['ready', 'partial', 'running'].includes(rawState) ? rawState : 'running';
+  const derived = { ...deriveCompleteFanmassReportStats(summary), fanmassAnalysisState: analysisState };
   if (Object.keys(derived).length > 0) {
+    try {
+      await ensureFanmassAnalyticsVariables(db, Object.keys(derived));
+    } catch {
+      // Catalog registration is retried on the next summary push.
+    }
     try {
       await pushEventStats(eventId, derived);
     } catch {
