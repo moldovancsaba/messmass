@@ -186,7 +186,9 @@ generated view slug.
 **Events.**
 
 ```
-POST /api/integrations/fanmass/events   { eventName, eventDate?, partner1Id?, stats? }
+POST /api/integrations/fanmass/events   { eventName, eventDate?: string | null, partner1Id?, stats? }
+
+Pass `eventDate: null` when the source event has no known date; omit `eventDate` to use the existing current-date default.
 ```
 
 Creates a messmass event (a "project") optionally attached to a partner. Any `stats`

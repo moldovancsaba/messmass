@@ -121,7 +121,7 @@ export async function listPartnerEvents(partnerId: string): Promise<MMEvent[]> {
   return events.map(toEvent);
 }
 
-export async function createEvent(input: { eventName: string; eventDate?: string; partner1Id?: string; stats?: Record<string, unknown> }): Promise<MMEvent> {
+export async function createEvent(input: { eventName: string; eventDate?: string | null; partner1Id?: string; stats?: Record<string, unknown> }): Promise<MMEvent> {
   const eventName = String(input.eventName || '').trim();
   if (!eventName) throw Object.assign(new Error('eventName is required'), { status: 400, code: 'EVENT_NAME_REQUIRED' });
   const db = await getDb();
@@ -129,7 +129,9 @@ export async function createEvent(input: { eventName: string; eventDate?: string
   const prepared = prepareStatsForAnalytics((input.stats ?? {}) as any);
   const doc: Record<string, unknown> = {
     eventName,
-    eventDate: String(input.eventDate || nowIso()),
+    // Explicit null means the source event has no known date; only an omitted
+    // field receives the historical default of now.
+    ...(input.eventDate === null ? {} : { eventDate: String(input.eventDate || nowIso()) }),
     stats: prepared.stats,
     hashtags: [],
     categorizedHashtags: {},

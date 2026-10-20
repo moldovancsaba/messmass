@@ -187,7 +187,7 @@ All 18 use `requireFanmassIntegrationAuth` (Bearer/`x-api-key` shared token) and
 | /api/integrations/fanmass/events/[eventId]/link | GET, POST | POST link body | `{success,link}` | reads/upserts `fanmass_event_links` |
 | /api/integrations/fanmass/events/[eventId]/stats | POST | stats body | `{success}` | writes event stats into `projects` |
 | /api/integrations/fanmass/events/[eventId]/sync | GET, POST | `?dryRun&force` | sync status/result | runs analytics sync; writes `projects`/links |
-| /api/integrations/fanmass/events | POST | event resolve body | `{success,event}` | resolves/creates event links |
+| /api/integrations/fanmass/events | POST | `{eventName,eventDate?:string|null,partner1Id?,stats?}`; explicit `null` preserves an unknown date, omission keeps the existing default | `{success,event}` | creates a `projects` event |
 | /api/integrations/fanmass/partners/[partnerId]/events | GET | path id | partner's events | reads `projects` |
 | /api/integrations/fanmass/partners | GET, POST | POST partner body | `{success,partners[]}` | reads/links `partners` |
 | /api/integrations/fanmass/rescan-requests/[eventId] | DELETE | path id | `{success}` | removes from `ai_rescan_requests` |

@@ -2,7 +2,8 @@ import { NextRequest } from 'next/server';
 import { handleRouteError, jsonSuccess, requireFanmassIntegrationAuth } from '@/lib/fanmassIntegration';
 import { createEvent } from '@/lib/fanmassMapping';
 
-// POST /api/integrations/fanmass/events  { eventName, eventDate?, partner1Id?, stats? }
+// POST /api/integrations/fanmass/events  { eventName, eventDate?: string|null, partner1Id?, stats? }
+// An explicit null keeps the source date unknown; omission retains the default date.
 // Creates a messmass event (project) linked to the given partner.
 export async function POST(request: NextRequest) {
   const authError = requireFanmassIntegrationAuth(request);
