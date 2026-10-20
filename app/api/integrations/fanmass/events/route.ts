@@ -1,23 +1,13 @@
-import { NextRequest } from 'next/server';
-import { handleRouteError, jsonSuccess, requireFanmassIntegrationAuth } from '@/lib/fanmassIntegration';
-import { createEvent } from '@/lib/fanmassMapping';
+import { NextRequest, NextResponse } from 'next/server';
+import { requireFanmassIntegrationAuth } from '@/lib/fanmassIntegration';
 
-// POST /api/integrations/fanmass/events  { eventName, eventDate?: string|null, partner1Id?, stats? }
-// An explicit null keeps the source date unknown; omission retains the default date.
-// Creates a messmass event (project) linked to the given partner.
+// Messmass owns event creation. Fanmass receives source event identifiers with
+// each photo task and returns photo-scoped results only.
 export async function POST(request: NextRequest) {
   const authError = requireFanmassIntegrationAuth(request);
   if (authError) return authError;
-  try {
-    const body = await request.json().catch(() => ({}));
-    const event = await createEvent({
-      eventName: body.eventName,
-      eventDate: body.eventDate,
-      partner1Id: body.partner1Id || body.partnerId,
-      stats: body.stats,
-    });
-    return jsonSuccess({ event }, 201);
-  } catch (err) {
-    return handleRouteError(err);
-  }
+  return NextResponse.json(
+    { success: false, error: { code: 'MESSMASS_OWNS_EVENTS', message: 'Events are created in Messmass and linked one-to-one with Camera. Fanmass accepts photo-analysis tasks and returns photo results.' } },
+    { status: 410 },
+  );
 }

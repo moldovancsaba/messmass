@@ -1,564 +1,251 @@
 'use client';
 
-/**
- * AI event report
- *
- * WHAT: The full fanmass analysis for one event — brand mentions, club and
- *      federation mentions, merchandise, demographics, people counts, confidence
- *      and freshness — reached from the AI Analytics event list.
- * WHY: This report previously existed only on the fanmass machine. The summary
- *      transport (v12.1.50) brings the document across; this page renders it.
- * HOW: Pure consumer. Mentions arrive pre-ranked by fanmass and are rendered in
- *      that order; any share shown is share of detections in the same list —
- *      re-ranking or re-computing here would let two systems disagree about the
- *      same numbers.
- */
-
 import { useCallback, useEffect, useState } from 'react';
-import Link from 'next/link';
 import { useParams } from 'next/navigation';
+import Link from 'next/link';
 import AnalyticsSectionCard from '@/components/analytics/AnalyticsSectionCard';
 import AnalyticsStatePanel from '@/components/analytics/AnalyticsStatePanel';
-import { apiPatch, apiPost } from '@/lib/apiClient';
 import styles from './AiEventReport.module.css';
 
-interface DriveFolderLink {
-  _id: string;
-  folderUrl: string;
-  label?: string;
-  status: 'pending' | 'analyzing' | 'complete' | 'empty' | 'error' | 'verified';
-  lastError?: string;
-  imagesDiscovered?: number;
-  imagesAnalyzed?: number;
-  paused?: boolean;
-  syncRequestedAt?: string;
-}
-
-const DRIVE_STATUS_LABEL: Record<DriveFolderLink['status'], string> = {
-  pending: 'Waiting to be read',
-  analyzing: 'Analysing',
-  complete: 'Images complete',
-  empty: 'No images found',
-  error: 'Failed',
-  verified: 'Read, analysis unknown',
-};
-
-type RescanModuleId = 'demographics' | 'brands' | 'poster_faces' | 'all';
-
-interface RescanRequest {
-  moduleId: RescanModuleId;
-  requestedAt: string;
-}
-
-const RESCAN_LABEL: Record<RescanModuleId, string> = {
-  demographics: 'Rescan demographics',
-  brands: 'Rescan brands, clubs & merchandise',
-  poster_faces: 'Rescan poster faces',
-  all: 'Restart everything',
-};
-
+type Counts = Record<string, number>;
 interface Mention { name: string; count: number }
-
-interface SummaryWarning {
-  code: string;
-  severity: 'info' | 'warning' | 'error';
-  message: string;
+interface Moderation {
+  status?: string;
+  flagged?: boolean;
+  severity?: string;
+  flags?: string[];
 }
-
+interface PhotoResult {
+  cameraPhotoId: string;
+  analyzedAt: string | null;
+  summary: {
+    peopleCounts?: { measured?: number };
+    brandMentions?: Mention[];
+    clubMentions?: Mention[];
+    merchandiseCounts?: Counts;
+    genderProjection?: Counts;
+    ageProjection?: Counts;
+    emotionProjection?: Counts;
+    accessoryProjection?: Counts;
+    moderation?: Moderation;
+  };
+  boxes: { people: Array<Record<string, unknown>>; faces: Array<Record<string, unknown>> };
+}
 interface SummaryDoc {
   eventId: string;
-  batchId: string;
-  contractVersion: string;
   receivedAt: string;
-  generatedAt: string | null;
   summary: {
-    // WHAT: fanmass's own status for this full analysis run.
-    // WHY: The base-pass image count can read 100% while this still says
-    //     'partial' — the deep modules (brands/merch/demographics) run
-    //     behind the image count, not alongside it.
-    status?: 'ready' | 'partial' | 'running';
-    imageCounts?: { total?: number; analyzed?: number };
-    peopleCounts?: { measured?: number; projected?: number };
-    genderProjection?: Record<string, number>;
-    ageProjection?: Record<string, number>;
-    merchandiseCounts?: Record<string, number>;
-    emotionProjection?: Record<string, number>;
-    accessoryProjection?: Record<string, number>;
+    photoResultsReceived?: number;
+    lastAnalyzedAt?: string | null;
+    peopleCounts?: { measured?: number };
+    personBoxes?: number;
+    faceBoxes?: number;
+    genderProjection?: Counts;
+    ageProjection?: Counts;
+    emotionProjection?: Counts;
+    accessoryProjection?: Counts;
+    merchandiseCounts?: Counts;
     smilingPct?: number | null;
     brandMentions?: Mention[];
     clubMentions?: Mention[];
-    confidence?: number;
-    // Was previously typed string[] and never rendered anywhere — the real
-    // shape fanmass actually sends is structured objects, not strings.
-    warnings?: SummaryWarning[];
+    brandAppearanceTypes?: Counts;
+    moderationPhotosReviewed?: number;
+    moderationFlaggedPhotos?: number;
+    moderationSeverityCounts?: Counts;
+    prohibitedContentCounts?: Counts;
   };
 }
 
-interface EventRow {
-  eventId: string;
-  eventName: string;
-  status: string;
-  progressPercent: number | null;
-  lastAnalyzedAt: string | null;
-  isStale: boolean;
+const LABELS: Record<string, string> = {
+  nudity: 'Nudity', sexualContent: 'Sexual content', middleFinger: 'Obscene gesture',
+  hateSymbols: 'Hate symbols', hateWords: 'Hate words or text', alcohol: 'Alcohol',
+  drugs: 'Drugs', violence: 'Violence', weapons: 'Weapons', other: 'Other',
+  clothing: 'Clothing', shoes: 'Shoes', bag: 'Bags', accessory: 'Accessories', logo: 'Logos',
+  male: 'Male', female: 'Female', unknown: 'Unknown',
+  silent: 'Silent Generation', boomer: 'Baby boomers', genX: 'Generation X',
+  millennial: 'Millennials', genZ: 'Generation Z', genAlpha: 'Generation Alpha', genBeta: 'Generation Beta',
+  happy: 'Happy', sad: 'Sad', angry: 'Angry', surprised: 'Surprised', neutral: 'Neutral',
+  fearful: 'Fearful', disgusted: 'Disgusted', withCap: 'With cap', withoutCap: 'Without cap',
+  withGlasses: 'With glasses', withoutGlasses: 'Without glasses', jersey: 'Jerseys', kit: 'Kits',
+  scarf: 'Scarves', cap: 'Caps and hats', flag: 'Flags', banner: 'Banners',
+  none: 'None', low: 'Low', medium: 'Medium', high: 'High',
+};
+
+function formatDate(value: string | null | undefined): string {
+  if (!value) return 'Not recorded';
+  const date = new Date(value);
+  return Number.isNaN(date.getTime()) ? 'Not recorded' : new Intl.DateTimeFormat(undefined, {
+    dateStyle: 'medium',
+    timeStyle: 'short',
+  }).format(date);
 }
 
-// WHAT: Rows shown before the list collapses behind "Show all".
-// WHY: Twenty rows of brands would bury the header; the tail is one action away.
-const VISIBLE_ROWS = 8;
-
-function sumValues(counts: Record<string, number> | undefined): number {
-  if (!counts) return 0;
-  return Object.values(counts).reduce((sum, n) => sum + (n || 0), 0);
+function mentionTotal(items: Mention[] | undefined): number {
+  return (items || []).reduce((sum, item) => sum + (Number.isFinite(item.count) ? Math.max(0, item.count) : 0), 0);
 }
 
-// WHAT: The same "based on X of Y analysed" caveat the demographics section
-//     already had, generalised so Brands/Clubs/Merchandise can carry it too.
-// WHY: Brand and merchandise detections run on the same base image pass as
-//     everything else — without this line, "30 brands detected" reads as
-//     final even when it's drawn from a handful of an event's images.
-// HOW: `deepStatus` is fanmass's own status for the deep-analysis pass,
-//     separate from the image/people fraction below it — the fraction can
-//     read 100% while fanmass itself says the deep pass ('partial') is not
-//     actually done. Saying "(100%)" in that case is a direct contradiction
-//     of a near-empty table right below it, so deepStatus wins.
-function imageProgressNote(
-  analyzed: number | undefined,
-  total: number | undefined,
-  unit = 'images analysed',
-  deepStatus?: 'ready' | 'partial' | 'running' | null
-): string {
-  if (deepStatus && deepStatus !== 'ready') return 'Deep analysis still running — figures below are partial.';
-  if (!total) return `No ${unit} yet for this event.`;
-  const pct = Math.round(((analyzed ?? 0) / total) * 100);
-  return `Based on ${analyzed ?? 0} of ${total} ${unit} (${pct}%).`;
+function countTotal(counts: Counts | undefined): number {
+  return Object.values(counts || {}).reduce((sum, count) => sum + (Number.isFinite(count) ? Math.max(0, count) : 0), 0);
 }
 
-function relativeTime(iso: string | null): string {
-  if (!iso) return 'Not recorded';
-  const ms = Date.now() - Date.parse(iso);
-  if (Number.isNaN(ms)) return 'Not recorded';
-  const minutes = Math.floor(ms / 60000);
-  if (minutes < 1) return 'Just now';
-  if (minutes < 60) return `${minutes} min ago`;
-  const hours = Math.floor(minutes / 60);
-  if (hours < 24) return `${hours} h ago`;
-  const days = Math.floor(hours / 24);
-  return days <= 7 ? `${days} d ago` : new Date(iso).toISOString().slice(0, 10);
-}
-
-function MentionTable({ title, caption, mentions }: { title: string; caption: string; mentions: Mention[] }) {
-  const [showAll, setShowAll] = useState(false);
-  if (mentions.length === 0) {
-    return <p className={styles.emptyNote}>None detected.</p>;
-  }
-  const total = mentions.reduce((sum, m) => sum + (m.count || 0), 0);
-  const visible = showAll ? mentions : mentions.slice(0, VISIBLE_ROWS);
+function CountsTable({ title, counts }: { title: string; counts: Counts | undefined }) {
+  const entries = Object.entries(counts || {}).filter(([, count]) => Number.isFinite(count) && count > 0)
+    .sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]));
   return (
-    <>
-      <div className={styles.tableScroll}>
-        <table className={styles.table}>
-          <caption className={styles.srOnly}>{caption}</caption>
-          <thead>
-            <tr>
-              <th scope="col">{title}</th>
-              <th scope="col" className={styles.numeric}>Detections</th>
-              <th scope="col" className={styles.numeric}>Share</th>
-            </tr>
-          </thead>
-          <tbody>
-            {visible.map((m) => (
-              <tr key={m.name}>
-                <th scope="row">{m.name}</th>
-                <td className={styles.numeric}>{m.count}</td>
-                <td className={styles.numeric}>{total > 0 ? `${Math.round((m.count / total) * 100)}%` : '—'}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-      {/* Share of detections, not of attendees — conflating the two is the
-          obvious misreading, so the label says which it is. */}
-      <p className={styles.shareNote}>Share is of {total} detections in this list, not of attendees.</p>
-      {mentions.length > VISIBLE_ROWS && (
-        <button type="button" className={`btn btn-secondary ${styles.showAll}`} onClick={() => setShowAll((v) => !v)}>
-          {showAll ? 'Show fewer' : `Show all ${mentions.length}`}
-        </button>
+    <AnalyticsSectionCard title={title}>
+      {entries.length === 0 ? <p className={styles.shareNote}>No detections in the received photo results.</p> : (
+        <div className={styles.tableScroll}>
+          <table className={styles.table}>
+            <thead><tr><th scope="col">Label</th><th scope="col" className={styles.numeric}>Detections</th></tr></thead>
+            <tbody>{entries.map(([name, count]) => <tr key={name}><th scope="row">{LABELS[name] || name}</th><td className={styles.numeric}>{count}</td></tr>)}</tbody>
+          </table>
+        </div>
       )}
-    </>
+    </AnalyticsSectionCard>
   );
 }
 
-function CountsTable({ counts, caption, nameHeader }: { counts: Record<string, number>; caption: string; nameHeader: string }) {
-  const entries = Object.entries(counts).sort((a, b) => b[1] - a[1]);
-  if (entries.length === 0) {
-    return <p className={styles.emptyNote}>Not available for this event.</p>;
-  }
+function MentionTable({ title, mentions }: { title: string; mentions: Mention[] | undefined }) {
+  const entries = (mentions || []).filter((item) => item.name && item.count > 0)
+    .sort((a, b) => b.count - a.count || a.name.localeCompare(b.name));
   return (
-    <div className={styles.tableScroll}>
-      <table className={styles.table}>
-        <caption className={styles.srOnly}>{caption}</caption>
-        <thead>
-          <tr>
-            <th scope="col">{nameHeader}</th>
-            <th scope="col" className={styles.numeric}>Count</th>
-          </tr>
-        </thead>
-        <tbody>
-          {entries.map(([name, count]) => (
-            <tr key={name}>
-              <th scope="row">{name}</th>
-              <td className={styles.numeric}>{count}</td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-    </div>
+    <AnalyticsSectionCard title={title}>
+      {entries.length === 0 ? <p className={styles.shareNote}>No detections in the received photo results.</p> : (
+        <div className={styles.tableScroll}>
+          <table className={styles.table}>
+            <thead><tr><th scope="col">Label</th><th scope="col" className={styles.numeric}>Appearances</th></tr></thead>
+            <tbody>{entries.map((item) => <tr key={item.name}><th scope="row">{item.name}</th><td className={styles.numeric}>{item.count}</td></tr>)}</tbody>
+          </table>
+        </div>
+      )}
+    </AnalyticsSectionCard>
   );
 }
 
 export default function AiEventReportView() {
   const params = useParams();
   const eventId = String(params?.eventId || '');
-  const [doc, setDoc] = useState<SummaryDoc | null>(null);
-  const [eventRow, setEventRow] = useState<EventRow | null>(null);
+  const [summaryDoc, setSummaryDoc] = useState<SummaryDoc | null>(null);
+  const [photos, setPhotos] = useState<PhotoResult[]>([]);
   const [loading, setLoading] = useState(true);
-  const [noSummary, setNoSummary] = useState(false);
   const [unauthenticated, setUnauthenticated] = useState(false);
+  const [notFound, setNotFound] = useState(false);
   const [error, setError] = useState('');
-  const [rescanPending, setRescanPending] = useState<RescanRequest | null>(null);
-  const [rescanBusy, setRescanBusy] = useState<RescanModuleId | null>(null);
-  const [rescanError, setRescanError] = useState('');
-  const [folderLinks, setFolderLinks] = useState<DriveFolderLink[]>([]);
-  const [folderError, setFolderError] = useState('');
-  const [folderBusy, setFolderBusy] = useState<string | null>(null);
-
-  const loadRescanStatus = useCallback(async () => {
-    try {
-      const res = await fetch(`/api/analytics/ai/events/${eventId}/rescan`, { cache: 'no-store' });
-      if (!res.ok) return;
-      const body = await res.json();
-      setRescanPending(body.data || null);
-    } catch {
-      // Non-critical: the rescan buttons still work without knowing the
-      // pending state, they just won't show "requested" until the next load.
-    }
-  }, [eventId]);
-
-  // WHAT: Same Drive folder links the event editor's Drive Folders panel
-  //     shows, reused here with Check now / Pause. Same endpoints, same data
-  //     — this is the second place that data is worth acting on, not a
-  //     separate system.
-  const loadFolderLinks = useCallback(async () => {
-    try {
-      const res = await fetch(`/api/drive-folders?projectId=${eventId}`, { cache: 'no-store' });
-      if (!res.ok) return;
-      const body = await res.json();
-      if (body.success && Array.isArray(body.links)) setFolderLinks(body.links);
-    } catch {
-      // Non-critical: the report itself still renders without folder status.
-    }
-  }, [eventId]);
+  const [photoOffset, setPhotoOffset] = useState(0);
+  const [photoTotal, setPhotoTotal] = useState(0);
 
   const load = useCallback(async () => {
     setLoading(true);
     setError('');
-    setNoSummary(false);
     setUnauthenticated(false);
+    setNotFound(false);
     try {
-      const [sRes, eRes] = await Promise.all([
+      const [summaryResponse, photosResponse] = await Promise.all([
         fetch(`/api/analytics/ai/events/${eventId}/summary`, { cache: 'no-store' }),
-        fetch('/api/analytics/ai/events?limit=500', { cache: 'no-store' }),
+        fetch(`/api/analytics/ai/events/${eventId}/photos?limit=100&offset=${photoOffset}`, { cache: 'no-store' }),
       ]);
-      if (sRes.status === 401 || eRes.status === 401) {
+      if (summaryResponse.status === 401 || photosResponse.status === 401) {
         setUnauthenticated(true);
         return;
       }
-      if (eRes.ok) {
-        const e = await eRes.json();
-        setEventRow((e.data?.events || []).find((row: EventRow) => row.eventId === eventId) || null);
-      }
-      if (sRes.status === 404) {
-        setNoSummary(true);
+      if (summaryResponse.status === 404) {
+        setNotFound(true);
         return;
       }
-      if (!sRes.ok) throw new Error('Could not load the analysis summary.');
-      const s = await sRes.json();
-      setDoc(s.data);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Could not load the analysis summary.');
+      if (!summaryResponse.ok || !photosResponse.ok) throw new Error('Could not load this event’s photo results.');
+      const [summaryBody, photosBody] = await Promise.all([summaryResponse.json(), photosResponse.json()]);
+      setSummaryDoc(summaryBody.data || null);
+      setPhotos(Array.isArray(photosBody.data?.photos) ? photosBody.data.photos : []);
+      setPhotoTotal(Number(photosBody.data?.total) || 0);
+    } catch (cause) {
+      setError(cause instanceof Error ? cause.message : 'Could not load this event’s photo results.');
     } finally {
       setLoading(false);
     }
-  }, [eventId]);
+  }, [eventId, photoOffset]);
 
-  useEffect(() => {
-    load();
-    loadRescanStatus();
-    loadFolderLinks();
-  }, [load, loadRescanStatus, loadFolderLinks]);
+  useEffect(() => { void load(); }, [load]);
 
-  async function handleFolderAction(linkId: string, action: 'pause' | 'resume' | 'sync') {
-    setFolderError('');
-    setFolderBusy(linkId);
-    try {
-      const data = await apiPatch(`/api/drive-folders/${linkId}?projectId=${eventId}`, { action });
-      if (data.success) {
-        loadFolderLinks();
-      } else {
-        setFolderError(data.error || `Failed to ${action} this folder.`);
-      }
-    } catch (err) {
-      setFolderError(err instanceof Error ? err.message : 'Network error. Please try again.');
-    } finally {
-      setFolderBusy(null);
-    }
+  if (loading) return <AnalyticsStatePanel variant="loading" title="Loading photo results" description="Reading this event’s saved one-photo analyses and boxes." />;
+  if (unauthenticated) return <AnalyticsStatePanel variant="empty" title="Sign in to view these results" description="Photo analysis is available to administrators." />;
+  if (error) return <AnalyticsStatePanel variant="error" title="Could not load the photo results" description={error} action={<button type="button" className="btn btn-secondary" onClick={() => void load()}>Retry</button>} />;
+  if (notFound || !summaryDoc) {
+    return <div className={styles.wrapper}><Link className={styles.backLink} href="/admin/analytics/ai">← AI analytics</Link><AnalyticsStatePanel variant="empty" title="No photo results stored" description="Messmass has not received a completed Fanmass photo analysis for this event." /></div>;
   }
 
-  async function handleRescan(moduleId: RescanModuleId) {
-    setRescanError('');
-    setRescanBusy(moduleId);
-    try {
-      const data = await apiPost(`/api/analytics/ai/events/${eventId}/rescan`, { moduleId });
-      if (data.success) {
-        setRescanPending(data.data);
-      } else {
-        setRescanError(data.error?.message || `Failed to request a rescan.`);
-      }
-    } catch (err) {
-      setRescanError(err instanceof Error ? err.message : 'Network error. Please try again.');
-    } finally {
-      setRescanBusy(null);
-    }
-  }
-
-  // WHAT: One rescan button, disabled while a request is in flight or while
-  //     any request for this event is already pending.
-  // WHY: fanmass only picks up a rescan request on its next poll tick — a
-  //     second click before that happens would just overwrite the pending
-  //     request with an identical one, not speed anything up.
-  function RescanButton({ moduleId }: { moduleId: RescanModuleId }) {
-    const pendingThis = rescanPending?.moduleId === moduleId;
-    const anyPending = rescanPending !== null;
-    return (
-      <button
-        type="button"
-        className={styles.rescanButton}
-        disabled={rescanBusy !== null || anyPending}
-        onClick={() => handleRescan(moduleId)}
-        title={anyPending && !pendingThis ? 'Another rescan is already pending for this event' : undefined}
-      >
-        {pendingThis ? 'Requested…' : rescanBusy === moduleId ? 'Requesting…' : RESCAN_LABEL[moduleId]}
-      </button>
-    );
-  }
-
-  if (loading) {
-    return <AnalyticsStatePanel variant="loading" title="Loading AI report" description="Reading the analysis summary for this event." />;
-  }
-  if (unauthenticated) {
-    return <AnalyticsStatePanel variant="empty" title="Sign in to view this report" description="AI reports are available to any signed-in user." />;
-  }
-  if (noSummary) {
-    return (
-      <div className={styles.wrapper}>
-        <Link className={styles.backLink} href="/admin/analytics/ai">← AI Analytics</Link>
-        <AnalyticsStatePanel
-          variant="empty"
-          title="No analysis summary yet"
-          description={`${eventRow?.eventName || 'This event'} has no stored AI analysis. Either its analysis has not completed a push yet, or it was analysed before summaries were transported (fanmass re-sends on its next scheduled push).`}
-        />
-      </div>
-    );
-  }
-  if (error || !doc) {
-    return (
-      <AnalyticsStatePanel
-        variant="error"
-        title="Could not load the AI report"
-        description={error || 'Unknown error.'}
-        action={<button type="button" className="btn btn-secondary" onClick={load}>Retry</button>}
-      />
-    );
-  }
-
-  const s = doc.summary || {};
-  const people = s.peopleCounts || {};
-  const images = s.imageCounts || {};
-
-  // WHAT: How many analysed people actually got a demographic label.
-  // WHY: "Images analysed" counts the base pass (person/brand/merch detection),
-  //     but gender/age/emotion come from a separate, narrower pass over those
-  //     same images — a batch can show every image analysed while only a
-  //     fraction of its measured people carry a demographic label. Summing one
-  //     projection gives that true count instead of leaving it implied by a
-  //     table that just looks sparse. The three projections should agree since
-  //     they label the same detected faces; if they don't, the largest is the
-  //     most complete one to anchor on.
-  const demographicsAnalyzed = Math.max(
-    sumValues(s.genderProjection),
-    sumValues(s.ageProjection),
-    sumValues(s.emotionProjection)
-  );
+  const summary = summaryDoc.summary;
+  const resultCount = summary.photoResultsReceived ?? photos.length;
 
   return (
     <div className={styles.wrapper}>
-      <Link className={styles.backLink} href="/admin/analytics/ai">← AI Analytics</Link>
-
-      <AnalyticsSectionCard
-        title={eventRow?.eventName || 'AI event report'}
-        subtitle="AI analysis of this event's images"
-      >
-        <div className={styles.headerMeta}>
-          <span>
-            Last analysed:{' '}
-            <time dateTime={doc.receivedAt}>{relativeTime(doc.receivedAt)}</time>
-            {eventRow?.isStale ? ' · stale' : ''}
-          </span>
-          {typeof s.confidence === 'number' && <span>Confidence: {Math.round(s.confidence * 100)}%</span>}
-          {typeof s.smilingPct === 'number' && <span>Smiling: {s.smilingPct}%</span>}
-          {eventRow?.progressPercent !== null && eventRow?.progressPercent !== undefined && (
-            <span>Analysis progress: {eventRow.progressPercent}%</span>
-          )}
-          {s.status && (
-            <span>
-              Deep analysis: {s.status === 'ready' ? 'Done' : s.status === 'partial' ? 'Still running' : 'Just started'}
-            </span>
-          )}
-        </div>
-        {(s.warnings || []).map((w) => (
-          <div key={w.code} className={`${styles.warningBanner} ${w.severity === 'error' ? styles.warningBannerError : ''}`}>
-            <p>{w.message}</p>
-          </div>
-        ))}
-        {rescanError && <p className={styles.errorDetail}>{rescanError}</p>}
-        <div className={styles.rescanRow}>
-          <RescanButton moduleId="all" />
-        </div>
+      <Link className={styles.backLink} href="/admin/analytics/ai">← AI analytics</Link>
+      <AnalyticsSectionCard title="Photo analysis results" subtitle="Messmass combines the stored results from individual Camera photos. No event-wide completion or audience projection is inferred.">
         <dl className={styles.metricsGrid}>
-          <div className={styles.metricItem}>
-            <dt className={styles.metricLabel}>People (measured)</dt>
-            <dd className={styles.metricValue}>{people.measured ?? '—'}</dd>
-          </div>
-          <div className={styles.metricItem}>
-            <dt className={styles.metricLabel}>People (projected)</dt>
-            <dd className={styles.metricValue}>{people.projected ?? '—'}</dd>
-          </div>
-          <div className={styles.metricItem}>
-            <dt className={styles.metricLabel}>Images analysed</dt>
-            <dd className={styles.metricValue}>{images.analyzed ?? '—'}</dd>
-          </div>
-          <div className={styles.metricItem}>
-            <dt className={styles.metricLabel}>Images total</dt>
-            <dd className={styles.metricValue}>{images.total ?? '—'}</dd>
-          </div>
+          <div className={styles.metricItem}><dt className={styles.metricLabel}>Photo results received</dt><dd className={styles.metricValue}>{resultCount}</dd></div>
+          <div className={styles.metricItem}><dt className={styles.metricLabel}>People detections</dt><dd className={styles.metricValue}>{summary.peopleCounts?.measured ?? 0}</dd></div>
+          <div className={styles.metricItem}><dt className={styles.metricLabel}>Person boxes</dt><dd className={styles.metricValue}>{summary.personBoxes ?? 0}</dd></div>
+          <div className={styles.metricItem}><dt className={styles.metricLabel}>Face boxes</dt><dd className={styles.metricValue}>{summary.faceBoxes ?? 0}</dd></div>
+        </dl>
+        <p className={styles.shareNote}>Latest individual photo analysis received: {formatDate(summary.lastAnalyzedAt || summaryDoc.receivedAt)}. People counts are detections, not unique attendees.</p>
+      </AnalyticsSectionCard>
+
+      <MentionTable title="Brands" mentions={summary.brandMentions} />
+      <MentionTable title="Clubs and federations" mentions={summary.clubMentions} />
+      <CountsTable title="Brand appearance item types" counts={summary.brandAppearanceTypes} />
+      <CountsTable title="Merchandise" counts={summary.merchandiseCounts} />
+      <CountsTable title="Gender detections" counts={summary.genderProjection} />
+      <CountsTable title="Age detections" counts={summary.ageProjection} />
+      <CountsTable title="Emotion detections" counts={summary.emotionProjection} />
+      <CountsTable title="Accessory detections" counts={summary.accessoryProjection} />
+      <AnalyticsSectionCard title="Prohibited content checks" subtitle="Counts cover only received photos with a completed check. A photo can match more than one category.">
+        <dl className={styles.metricsGrid}>
+          <div className={styles.metricItem}><dt className={styles.metricLabel}>Photos checked</dt><dd className={styles.metricValue}>{summary.moderationPhotosReviewed ?? 0}</dd></div>
+          <div className={styles.metricItem}><dt className={styles.metricLabel}>Photos flagged</dt><dd className={styles.metricValue}>{summary.moderationFlaggedPhotos ?? 0}</dd></div>
+          <div className={styles.metricItem}><dt className={styles.metricLabel}>Flagged share of checked photos</dt><dd className={styles.metricValue}>{summary.moderationPhotosReviewed ? `${Math.round(((summary.moderationFlaggedPhotos || 0) / summary.moderationPhotosReviewed) * 1000) / 10}%` : 'Not available'}</dd></div>
         </dl>
       </AnalyticsSectionCard>
+      <CountsTable title="Flagged categories" counts={summary.prohibitedContentCounts} />
+      <CountsTable title="Check severity" counts={summary.moderationSeverityCounts} />
 
-      {folderLinks.length > 0 && (
-        <AnalyticsSectionCard title="Drive folders" subtitle="Ingestion status for this event's linked folders">
-          {folderError && <p className={styles.errorDetail}>{folderError}</p>}
-          <div className={styles.folderList}>
-            {folderLinks.map((link) => (
-              <div key={link._id} className={styles.folderRow}>
-                <div className={styles.folderInfo}>
-                  <a href={link.folderUrl} target="_blank" rel="noopener noreferrer" className={styles.folderUrl}>
-                    {link.label || link.folderUrl}
-                  </a>
-                  <div className={styles.folderMeta}>
-                    <span className={styles.folderStatusBadge}>{DRIVE_STATUS_LABEL[link.status] || 'Unknown state'}</span>
-                    {typeof link.imagesDiscovered === 'number' && (
-                      <>
-                        <span aria-hidden="true">·</span>
-                        <span>{link.imagesAnalyzed ?? 0} of {link.imagesDiscovered} images</span>
-                      </>
-                    )}
-                    {link.paused && (
-                      <>
-                        <span aria-hidden="true">·</span>
-                        <span>Paused — not checked by fanmass</span>
-                      </>
-                    )}
-                    {!link.paused && link.syncRequestedAt && (
-                      <>
-                        <span aria-hidden="true">·</span>
-                        <span>Check requested…</span>
-                      </>
-                    )}
-                    {link.status === 'error' && link.lastError && (
-                      <>
-                        <span aria-hidden="true">·</span>
-                        <span className={styles.errorDetail}>{link.lastError}</span>
-                      </>
-                    )}
-                  </div>
+      <AnalyticsSectionCard title="Results by photo" subtitle={`Showing ${photos.length ? photoOffset + 1 : 0}–${Math.min(photoOffset + photos.length, photoTotal)} of ${photoTotal} individual results, each saved with its detection boxes.`}>
+        {photos.length === 0 ? <p className={styles.shareNote}>No active photo rows were found.</p> : (
+          <div className={styles.photoResultList}>
+            {photos.map((photo) => (
+              <article className={styles.photoResult} key={photo.cameraPhotoId}>
+                <div className={styles.photoResultHeader}>
+                  <h3>Camera photo {photo.cameraPhotoId}</h3>
+                  <time>{formatDate(photo.analyzedAt)}</time>
                 </div>
-                <div className={styles.folderActions}>
-                  {!link.paused && (
-                    <button
-                      type="button"
-                      className={styles.rescanButton}
-                      disabled={folderBusy !== null || Boolean(link.syncRequestedAt)}
-                      onClick={() => handleFolderAction(link._id, 'sync')}
-                    >
-                      {link.syncRequestedAt ? 'Requested…' : 'Check now'}
-                    </button>
-                  )}
-                  <button
-                    type="button"
-                    className={styles.rescanButton}
-                    disabled={folderBusy !== null}
-                    onClick={() => handleFolderAction(link._id, link.paused ? 'resume' : 'pause')}
-                  >
-                    {link.paused ? 'Resume' : 'Pause'}
-                  </button>
-                </div>
-              </div>
+                <dl className={styles.photoResultMetrics}>
+                  <div><dt>People detected</dt><dd>{photo.summary.peopleCounts?.measured ?? 0}</dd></div>
+                  <div><dt>Person boxes</dt><dd>{photo.boxes.people?.length ?? 0}</dd></div>
+                  <div><dt>Face boxes</dt><dd>{photo.boxes.faces?.length ?? 0}</dd></div>
+                  <div><dt>Brand appearances</dt><dd>{mentionTotal(photo.summary.brandMentions)}</dd></div>
+                  <div><dt>Club appearances</dt><dd>{mentionTotal(photo.summary.clubMentions)}</dd></div>
+                  <div><dt>Merchandise detections</dt><dd>{countTotal(photo.summary.merchandiseCounts)}</dd></div>
+                </dl>
+                {photo.summary.moderation?.status === 'completed' && (
+                  <p className={styles.shareNote}>
+                    Content check: {photo.summary.moderation.flagged ? 'Flagged for review' : 'No prohibited content detected'}
+                    {photo.summary.moderation.flags?.length ? ` — ${photo.summary.moderation.flags.map((flag) => LABELS[flag] || flag).join(', ')}` : ''}
+                  </p>
+                )}
+                <details>
+                  <summary>View saved detection boxes</summary>
+                  <pre className={styles.boxesJson}>{JSON.stringify(photo.boxes, null, 2)}</pre>
+                </details>
+              </article>
             ))}
           </div>
-        </AnalyticsSectionCard>
-      )}
-
-      <AnalyticsSectionCard title="Brands" subtitle="Brand detections across this event's images">
-        {/* Brands, Clubs & federations, and Merchandise are all read from one
-            pair of fanmass modules (sports_merchandise + fashion_brands) — one
-            button covers all three sections, rather than three buttons that
-            would request the same rescan three times. */}
-        <div className={styles.rescanRow}>
-          <RescanButton moduleId="brands" />
-        </div>
-        <p className={styles.shareNote}>{imageProgressNote(images.analyzed, images.total, 'images analysed', s.status)}</p>
-        <MentionTable title="Brand" caption="Brand detections ranked by count" mentions={s.brandMentions || []} />
+        )}
+        {photoTotal > 100 && (
+          <div className={styles.paginationRow}>
+            <button type="button" className={styles.paginationButton} disabled={photoOffset === 0} onClick={() => setPhotoOffset((current) => Math.max(0, current - 100))}>Previous 100</button>
+            <button type="button" className={styles.paginationButton} disabled={photoOffset + photos.length >= photoTotal} onClick={() => setPhotoOffset((current) => current + 100)}>Next 100</button>
+          </div>
+        )}
       </AnalyticsSectionCard>
-
-      <AnalyticsSectionCard title="Clubs & federations" subtitle="Club and federation detections">
-        <p className={styles.shareNote}>{imageProgressNote(images.analyzed, images.total, 'images analysed', s.status)}</p>
-        <MentionTable title="Club / federation" caption="Club and federation detections ranked by count" mentions={s.clubMentions || []} />
-      </AnalyticsSectionCard>
-
-      <AnalyticsSectionCard title="Merchandise" subtitle="Merchandise kinds detected on fans">
-        <p className={styles.shareNote}>{imageProgressNote(images.analyzed, images.total, 'images analysed', s.status)}</p>
-        <CountsTable counts={s.merchandiseCounts || {}} caption="Merchandise detections by kind" nameHeader="Kind" />
-      </AnalyticsSectionCard>
-
-      <AnalyticsSectionCard title="Fan demographics" subtitle="Projections from analysed faces">
-        <div className={styles.rescanRow}>
-          <RescanButton moduleId="demographics" />
-        </div>
-        {/* people.measured is every person detected in the base pass; the
-            demographic pass runs over a subset of those, so this is the number
-            that actually backs the tables below — not the images/people totals
-            shown at the top, which would overstate coverage here. */}
-        <p className={styles.shareNote}>{imageProgressNote(demographicsAnalyzed, people.measured, 'people analysed for demographics', s.status)}</p>
-        <h3 className={styles.srOnly}>Gender projection</h3>
-        <CountsTable counts={s.genderProjection || {}} caption="Gender projection" nameHeader="Gender" />
-        <h3 className={styles.srOnly}>Age projection</h3>
-        <CountsTable counts={s.ageProjection || {}} caption="Age projection" nameHeader="Age group" />
-        <h3 className={styles.srOnly}>Emotions</h3>
-        <CountsTable counts={s.emotionProjection || {}} caption="Emotions detected on analysed faces" nameHeader="Emotion" />
-        <h3 className={styles.srOnly}>Accessories</h3>
-        <CountsTable counts={s.accessoryProjection || {}} caption="Accessory estimates on analysed people" nameHeader="Accessory" />
-      </AnalyticsSectionCard>
+      <div><button type="button" className="btn btn-secondary" onClick={() => void load()}>Refresh results</button></div>
     </div>
   );
 }

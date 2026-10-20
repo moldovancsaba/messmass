@@ -140,7 +140,7 @@ Directories remaining: `scripts/`, `scripts/lib/`, `scripts/migrations/`,
 | scripts/update-version.js | version:update, version:verify |
 | scripts/validate-input-patterns.sh | validate:inputs |
 | scripts/validateDataQuality.ts | data:audit, data:audit:verbose, data:fix, data:fix:verbose |
-| scripts/verify-fanmass-integration-contracts.ts | test:fanmass |
+| scripts/verify-fanmass-integration-contracts.ts | fanmass:contract:check |
 | scripts/verify-production-flags.ts | security:verify-production-flags |
 
 Four `package.json` entries point at scripts that were already missing

@@ -170,29 +170,29 @@ All reads; the aggregation store is `analytics_aggregates` / `partner_analytics`
 
 ## /api/integrations/fanmass (19 routes)
 
-All 18 use `requireFanmassIntegrationAuth` (Bearer/`x-api-key` shared token) and are CSRF-exempt. Store: `fanmass_event_links`, `fanmass_commands`, `fanmass_dashboard_snapshot`, `drive_folder_links`, `ai_rescan_requests`, `ai_analysis_summaries`, `variables_metadata`, plus `projects`/`partners`/`organizations`.
+All routes use `requireFanmassIntegrationAuth` (Bearer/`x-api-key` shared token) and are CSRF-exempt. The Camera photo lane accepts one per-photo result or tombstone, then derives report values from saved photo rows. Legacy event-context, partner/variable lookups, batch links, event stats/summaries, callbacks, rescans, and dashboard snapshots return 410. Separate Drive-folder ingestion and the operator command channel remain active.
 
 | Path | Methods | Request | Response | Side effects |
 |---|---|---|---|---|
-| /api/integrations/fanmass/callbacks | POST | callback envelope | `{success}` | records callback, updates `fanmass_event_links` |
+| /api/integrations/fanmass/callbacks | POST | callback envelope | 410 `EVENT_LEVEL_CALLBACK_RETIRED` | no reads or writes |
 | /api/integrations/fanmass/commands/[commandId] | DELETE | path id | `{success}` | acks/removes from `fanmass_commands` |
 | /api/integrations/fanmass/commands | GET | — | pending commands | reads `fanmass_commands` |
-| /api/integrations/fanmass/dashboard-snapshot | POST | snapshot body | `{success}` | upserts `fanmass_dashboard_snapshot` |
+| /api/integrations/fanmass/dashboard-snapshot | POST | snapshot body | 410 `FANMASS_DASHBOARD_EXPORT_RETIRED` | no reads or writes |
 | /api/integrations/fanmass/drive-folders/pending-sync | GET | — | folders pending sync | reads `drive_folder_links` |
 | /api/integrations/fanmass/drive-folders | GET | — | drive folder links | reads `drive_folder_links` |
-| /api/integrations/fanmass/events/[eventId]/analysis-summary | POST | summary body | `{success}` | upserts `ai_analysis_summaries` |
+| /api/integrations/fanmass/events/[eventId]/analysis-summary | POST | summary body | 410 `EVENT_LEVEL_EXPORT_RETIRED` | no reads or writes |
 | /api/integrations/fanmass/events/[eventId]/photos/[photoId] | POST, DELETE | requireFanmassIntegrationAuth | POST one photo result; DELETE tombstone, each with partner/event/photo IDs and generation | `{success,data:{status}}` | upserts one `fanmass_camera_photo_analyses` row; rebuilds the per-photo event summary and report stats; ignores stale generations |
-| /api/integrations/fanmass/events/[eventId]/context | GET | path id | event context | reads `projects`/links |
+| /api/integrations/fanmass/events/[eventId]/context | GET | path id | 410 `EVENT_CONTEXT_RETIRED`; Camera supplies routing IDs with each photo task | none |
 | /api/integrations/fanmass/events/[eventId]/drive-folders/status | POST | status body | `{success}` | updates `drive_folder_links` status |
-| /api/integrations/fanmass/events/[eventId]/link | GET, POST | POST link body | `{success,link}` | reads/upserts `fanmass_event_links` |
-| /api/integrations/fanmass/events/[eventId]/stats | POST | stats body | `{success}` | writes event stats into `projects` |
-| /api/integrations/fanmass/events/[eventId]/sync | GET, POST | `?dryRun&force` | sync status/result | runs analytics sync; writes `projects`/links |
-| /api/integrations/fanmass/events | POST | `{eventName,eventDate?:string|null,partner1Id?,stats?}`; explicit `null` preserves an unknown date, omission keeps the existing default | `{success,event}` | creates a `projects` event |
-| /api/integrations/fanmass/partners/[partnerId]/events | GET | path id | partner's events | reads `projects` |
-| /api/integrations/fanmass/partners | GET, POST | POST partner body | `{success,partners[]}` | reads/links `partners` |
-| /api/integrations/fanmass/rescan-requests/[eventId] | DELETE | path id | `{success}` | removes from `ai_rescan_requests` |
-| /api/integrations/fanmass/rescan-requests | GET | — | pending rescans | reads `ai_rescan_requests` |
-| /api/integrations/fanmass/variables | GET, POST | POST variables body | `{success,variables}` | reads/writes `variables_metadata` |
+| /api/integrations/fanmass/events/[eventId]/link | GET, POST | legacy batch-link body | 410 `EVENT_BATCH_LINKS_RETIRED` | no reads or writes |
+| /api/integrations/fanmass/events/[eventId]/stats | POST | legacy stats body | 410 `EVENT_LEVEL_EXPORT_RETIRED` | no writes |
+| /api/integrations/fanmass/events/[eventId]/sync | GET, POST | legacy sync query/body | 410 `EVENT_LEVEL_SYNC_RETIRED` | no reads or writes |
+| /api/integrations/fanmass/events | POST | legacy event body | 410 `MESSMASS_OWNS_EVENTS` | no reads or writes |
+| /api/integrations/fanmass/partners/[partnerId]/events | GET | path id | 410 `PARTNER_EVENT_LOOKUP_RETIRED`; Camera supplies IDs with each task | no reads or writes |
+| /api/integrations/fanmass/partners | GET, POST | legacy partner body | GET 410 `PARTNER_LOOKUP_RETIRED`; POST 410 `MESSMASS_OWNS_PARTNERS` | no reads or writes |
+| /api/integrations/fanmass/rescan-requests/[eventId] | DELETE | path id | 410 `EVENT_RESCAN_RETIRED` | no reads or writes |
+| /api/integrations/fanmass/rescan-requests | GET | — | 410 `EVENT_RESCAN_RETIRED` | no reads or writes |
+| /api/integrations/fanmass/variables | GET, POST | legacy variable body | GET 410 `REPORT_VARIABLE_LOOKUP_RETIRED`; POST 410 `MESSMASS_OWNS_REPORT_SCHEMA` | no reads or writes |
 
 ## /api/hashtags and hashtag config (7 routes)
 

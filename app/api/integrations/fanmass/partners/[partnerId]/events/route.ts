@@ -1,19 +1,11 @@
 import { NextRequest } from 'next/server';
-import { handleRouteError, jsonSuccess, requireFanmassIntegrationAuth } from '@/lib/fanmassIntegration';
-import { listPartnerEvents } from '@/lib/fanmassMapping';
+import { requireFanmassIntegrationAuth, retiredFanmassEndpoint } from '@/lib/fanmassIntegration';
 
-// GET /api/integrations/fanmass/partners/[partnerId]/events — list a messmass partner's events
 export async function GET(
   request: NextRequest,
   { params }: { params: Promise<{ partnerId: string }> },
 ) {
   const authError = requireFanmassIntegrationAuth(request);
   if (authError) return authError;
-  try {
-    const { partnerId } = await params;
-    const events = await listPartnerEvents(partnerId);
-    return jsonSuccess({ partnerId, events });
-  } catch (err) {
-    return handleRouteError(err);
-  }
+  return retiredFanmassEndpoint('PARTNER_EVENT_LOOKUP_RETIRED', 'Camera provides the Camera and Messmass event IDs on each eligible photo task.');
 }

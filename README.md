@@ -1,6 +1,6 @@
 # {messmass}
 Status: Active
-Last Updated: 2026-09-28T12:00:00.000Z
+Last Updated: 2026-10-20T16:53:00.000Z
 Canonical: No
 Owner: Product
 
@@ -12,7 +12,7 @@ Owner: Product
 <p align="center"><strong>Enterprise event analytics, partner reporting, reporting operations, and admin workflow tooling for sports organizations, venues, and brands.</strong></p>
 
 <p align="center">
-  <img src="https://img.shields.io/badge/version-v12.3.42-2563EB?style=for-the-badge" alt="Version">
+  <img src="https://img.shields.io/badge/version-v12.3.43-2563EB?style=for-the-badge" alt="Version">
   <img src="https://img.shields.io/badge/platform-Web%20App-0F172A?style=for-the-badge" alt="Platform">
   <img src="https://img.shields.io/badge/stack-Next.js%20%7C%20MongoDB%20%7C%20Mantine-0EA5E9?style=for-the-badge" alt="Stack">
 </p>
@@ -138,7 +138,7 @@ Important repo note:
 - If `npm run type-check` fails on missing `.next/types`, run `npm run build` first and rerun the type check.
 
 Current release version:
-- `v12.3.42`
+- `v12.3.43`
 
 ## Fleet
 
@@ -146,34 +146,24 @@ messmass is the master app of a five-app fleet (camera, fanmass, try-on, savethe
 
 ## Fanmass Integration
 
-Messmass exposes a production API boundary for Fanmass event/image analytics:
-
-- `GET /api/integrations/fanmass/events/{eventId}/context`
-- `GET|POST /api/integrations/fanmass/events/{eventId}/link`
-- `GET|POST /api/integrations/fanmass/events/{eventId}/sync`
-- `POST /api/integrations/fanmass/callbacks`
-
-Admin operators can manage event links through `POST /api/admin/fanmass/events/{eventId}` from the Events action rail. The admin endpoint uses the authenticated admin session and never exposes the shared integration token to the browser.
-
-Fanmass-derived analytics are stored under `project.stats.fanmass` and mirrored into flat report variables such as `[fanmassPeopleCount]`, `[fanmassProjectedReach]`, and `[fanmassTopBrandName]`. Nested formulas such as `[fanmass.peopleCount]` are also supported. Existing clicker/manual stats must not be overwritten. See `docs/operations/messmass-fanmass-integration-delivery-plan-2026-06-25.md`.
+For Camera photos, Messmass accepts one identity-free photo result or tombstone
+at a time. The payload carries the exact Messmass event ID plus Camera partner,
+event, and photo IDs, the source revision and generation, per-photo findings,
+and image-relative detection boxes. Messmass validates the event/partner link,
+stores the photo row, and rebuilds report values mechanically from active rows.
+Fanmass does not fetch Messmass event context or send event totals, progress,
+projected reach, or attendee identities. See
+[the current Fanmass guide](docs/guides/guides-tutorial-fanmass.md) and
+[analytics API reference](docs/api/api-analytics.md).
 
 ### AI Analytics surfaces
 
-`/admin/analytics/ai` shows which events have AI analytics, how far each has got,
-and how completely each `fanmass*` variable is populated across the estate — the
-figure that decides whether a variable is safe to build into a report template.
-Clicking an event opens its AI report (brands, clubs/federations, merchandise,
-demographics). Both are open to **any authenticated role**, unlike the admin-only
-analytics dashboards, because the audience is report authors.
-
-Beside the stats push, Fanmass sends the full structured analysis to
-`POST /api/integrations/fanmass/events/{eventId}/analysis-summary`, stored per
-event in `ai_analysis_summaries` under the `fanmass.messmass.analytics-summary.v1`
-contract. The two channels are failure-isolated: a failed summary push must not
-cost the event its stats.
-
-See `docs/api/api-analytics.md` and the "AI Analytics & Fanmass Analysis Pipeline"
-section of `docs/architecture.md`.
+`/admin/analytics/ai` shows events with received photo results and the measures
+present in those photos. Event pages let an operator inspect individual saved
+results and their boxes. The figures describe received photos only; they are not
+unique people, event coverage, completion, or projected audience. Analytics
+reads require an administrator session. Legacy event-level summaries, mapped
+stats pushes, context/lookup routes, and dashboard snapshots return HTTP 410.
 
 Live product:
 - Website: [www.messmass.com](https://www.messmass.com) (aliases messmass.com, messmass.doneisbetter.com)

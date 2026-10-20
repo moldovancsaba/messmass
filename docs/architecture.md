@@ -4,7 +4,7 @@ Last Updated: 2026-09-09
 Canonical: No
 Owner: Architecture
 
-Version: 12.3.42
+Version: 12.3.43
 
 > **Scope.** This file describes how messmass works *now*: the modules that exist,
 > the routes that are served, the contracts between them. It is not a changelog,
@@ -113,12 +113,12 @@ it drifts. Do not edit between the markers.
 | Category | Count | Location |
 |----------|-------|----------|
 | **UI Components** | 104 | `components/` |
-| **Utility Modules** | 226 | `lib/` |
+| **Utility Modules** | 225 | `lib/` |
 | **Hooks** | 13 | `hooks/` |
 | **Design Tokens** | 408 | `app/styles/theme.css` |
 | **Utility CSS classes** | 192 | `app/styles/utilities.css` |
 | **App routes (pages)** | 73 | `app/**/page.tsx` |
-| **API routes** | 227 | `app/api/**/route.ts` |
+| **API routes** | 228 | `app/api/**/route.ts` |
 
 The modules with the most importers — the ones whose change radius is
 largest, and the ones to read first:
@@ -127,14 +127,14 @@ largest, and the ones to read first:
 |--------|-----------|-------|
 | `lib/config.ts` | 121 | 204 |
 | `lib/mongodb.ts` | 104 | 112 |
-| `lib/logger.ts` | 94 | 392 |
-| `lib/auth.ts` | 92 | 118 |
+| `lib/auth.ts` | 93 | 118 |
+| `lib/logger.ts` | 93 | 392 |
 | `lib/apiGuards.ts` | 85 | 390 |
 | `components/ColoredCard.tsx` | 44 | 52 |
-| `lib/apiClient.ts` | 42 | 258 |
 | `lib/db.ts` | 41 | 17 |
-| `lib/fanmassIntegration.ts` | 34 | 478 |
+| `lib/apiClient.ts` | 40 | 258 |
 | `components/MaterialIcon.tsx` | 33 | 119 |
+| `lib/fanmassIntegration.ts` | 30 | 478 |
 | `components/UnifiedAdminHeroWithSearch.tsx` | 27 | 192 |
 | `lib/mongoose-v3.ts` | 21 | 66 |
 | `lib/permissions.ts` | 18 | 141 |
@@ -1075,7 +1075,7 @@ shows up here on the next regeneration, which is the point.
 | `/terms` | `app/terms/page.tsx` |
 | `/test-csrf` | `app/test-csrf/page.tsx` |
 
-### API routes (227)
+### API routes (228)
 
 `auth` is the guard symbol the route actually calls. A blank cell
 means the route calls none — public by construction, or a gap.
@@ -1098,9 +1098,9 @@ means the route calls none — public by construction, or a gap.
 | `/api/admin/contact-inquiries` | GET | `getAdminUser` |
 | `/api/admin/email-selftest` | GET | `requireSession` |
 | `/api/admin/fanmass/commands` | POST | `getAdminUser` |
-| `/api/admin/fanmass/events` | GET | `getAdminUser, requireAdmin` |
-| `/api/admin/fanmass/events/[eventId]` | GET, POST | `getAdminUser, requireAdmin` |
-| `/api/admin/fanmass/snapshot` | GET | `getAdminUser, requireAdmin` |
+| `/api/admin/fanmass/events` | GET | `getAdminUser` |
+| `/api/admin/fanmass/events/[eventId]` | GET, POST | `getAdminUser` |
+| `/api/admin/fanmass/snapshot` | GET | `getAdminUser` |
 | `/api/admin/filter-style` | GET, POST | `requireAdmin` |
 | `/api/admin/fix-mojibake-text` | GET | `getAdminUser` |
 | `/api/admin/hashtag-style` | GET, POST | `requireAdmin` |
@@ -1138,6 +1138,7 @@ means the route calls none — public by construction, or a gap.
 | `/api/analytics/ai/coverage` | GET | `getAdminUser` |
 | `/api/analytics/ai/events` | GET | `getAdminUser` |
 | `/api/analytics/ai/events/[eventId]/drive-sync` | POST | `getAdminUser` |
+| `/api/analytics/ai/events/[eventId]/photos` | GET | `getAdminUser` |
 | `/api/analytics/ai/events/[eventId]/rescan` | GET, POST | `getAdminUser` |
 | `/api/analytics/ai/events/[eventId]/summary` | GET | `getAdminUser` |
 | `/api/analytics/ai/variables` | GET | `getAdminUser` |
@@ -3555,7 +3556,6 @@ The core collections, with the indexes `scripts/createMissingIndexes.ts` creates
 | `activation_participations` | `lib/activationBuilder.ts` |
 | `activation_templates` | `lib/activationBuilder.ts` |
 | `ai_analysis_summaries` | `lib/aiAnalytics.ts` |
-| `ai_rescan_requests` | `lib/aiRescan.ts` |
 | `api_football_enrichment_log` | `app/api/api-football/enrich-partners/route.ts` |
 | `audience_packs` | `lib/audiencePacks.ts` |
 | `audit_logs` | `app/api/admin/permissions/route.ts` |
@@ -3840,142 +3840,72 @@ npm run analytics:aggregate
 - Query execution: <10ms with proper indexes
 - Concurrent queries: Supports 100+ simultaneous API requests
 
-## AI Analytics & Fanmass Analysis Pipeline
-### Why this exists
+## AI Analytics & Fanmass Photo Analysis
 
-AI-derived analytics already existed on ~155 events but were **invisible in the
-product**. A report author had no way to tell whether an AI variable was safe to
-put in a template — one present on 3% of events renders empty for almost everyone,
-and they find out from a customer. This subsystem makes coverage, freshness, and
-fill rate visible, and renders the structured analysis that previously never
-crossed the integration boundary at all.
+The earlier coverage/freshness/fill-rate and event-summary design is retired.
+The current contract is photo-first: Messmass owns partners, events and report
+aggregation; Camera owns capture, identity, consent, retention and vetting; Fanmass
+reads eligible Camera Atlas photos, analyzes one photo at a time, saves photo-level
+findings and boxes, and sends one result per photo. It does not create Messmass
+events or event reports.
 
-### The fleet boundary
+### Photo-level image analysis and Messmass reports
 
-```
-Google Drive folder ──┐
-                      ├──► fanmass (user hardware, local AI)  ──► messmass
-camera.messmass.com ──┘      Ollama vision + MediaPipe + YOLO      (this repo)
-```
+The active integration is photo-first and ID-bound:
 
-messmass **does not analyse images**. It owns events and variables, hands fanmass
-the context for an event, and ingests what fanmass sends back. fanmass runs on the
-operator's own hardware and is not cloud-deployed, so it has no public URL and can
-be offline. It is the caller on every channel below except one pull (see "The one
-blocking call"). Every read surface described below is an aggregation over
-collections messmass already owns, so reports, editors and the AI workspace keep
-working while fanmass is down.
+- Messmass owns partner and event records. Each Camera event links to exactly
+  one Messmass event through `projects.externalRefs.camera.eventId`; the linked
+  Camera partner is checked before a result is accepted.
+- Camera owns capture, consent, contact data, retention and vetting. Camera
+  stores partner/event/photo IDs and does not enqueue or call Fanmass.
+- Fanmass reads eligible, vetted Camera records through its read-only Atlas
+  connection, holds a single global photo lease, analyzes one image at a time,
+  stores the photo analysis and image-relative boxes in its own database, then
+  delivers one photo result through its durable outbox.
+- Messmass validates the exact Messmass event, Camera event, Camera partner and
+  photo IDs; stores each result in `fanmass_camera_photo_analyses`; and rebuilds
+  its event summary and report-variable projections from the active photo rows.
+  Fanmass does not create Messmass events or event reports.
 
-### Channels across the boundary
+The result contract is `fanmass.messmass.photo-analysis.v1`. It is identity-free
+and includes normalized photo findings, boxes, source revision and analysis
+generation. A per-photo tombstone removes a deleted or newly ineligible photo
+from the Messmass aggregate. A successful acknowledgement is sent only after
+both the per-photo record and its derived report projection are stored.
 
-All of them live under `app/api/integrations/fanmass/**` (18 route files) and call
-`requireFanmassIntegrationAuth` (`lib/fanmassIntegration.ts`), one shared integration
-token; the whole `/api/integrations/*` tree is CSRF-exempt.
+Event totals are sums/distributions across received photo results only. They do
+not claim total event coverage, completion, projected audience, or unique
+attendees: Messmass does not receive an eligible-photo denominator. The AI
+Analytics workspace therefore presents received photo-result counts, actual
+detections, categories and individual photo details/boxes. It does not show
+coverage, event progress, fill rates or projected reach.
 
-| Channel | Endpoint | Carries |
-|---|---|---|
-| Event context | `GET .../events/[eventId]/context` | The event's context, which fanmass pulls on demand |
-| Legacy analytics callback | `POST .../callbacks` | "A batch is ready or partial"; messmass then pulls the summary (see below) |
-| Stats push | `POST .../events/[eventId]/stats` | Flat scalars → `projects.stats.fanmass*` |
-| Summary push | `POST .../events/[eventId]/analysis-summary` | The whole structured document → `ai_analysis_summaries` |
-| Dashboard snapshot | `POST .../dashboard-snapshot` | The four `/admin/fanmass` tabs' snapshot, stored in `fanmass_dashboard_snapshot` and read server-side |
-| Drive-folder status | `POST .../events/[eventId]/drive-folders/status` | Status write-back for one linked Drive folder (`drive_folder_links`) |
-| Rescan requests (poll and ack) | `GET .../rescan-requests`, `DELETE .../rescan-requests/[eventId]` | Operator-requested rescans fanmass picks up, then acknowledges |
-| Commands (poll and ack) | `GET .../commands`, `DELETE .../commands/[commandId]` | Operator commands fanmass picks up, then acknowledges |
-
-Around those: `GET .../drive-folders` (bulk discovery of events with linked Drive
-folders) and `GET .../drive-folders/pending-sync` (the cheap "check now" poll),
-`GET/POST .../events/[eventId]/link` and `GET/POST .../events/[eventId]/sync`
-(`/sync` is the blocking call below), and provisioning (`GET/POST .../partners`,
-`GET .../partners/[partnerId]/events`, `POST .../events`, `GET/POST .../variables`).
-`docs/_audit/fleet-architecture.md` (edge E2) records the fanmass side of each.
-
-The summary channel exists because the stats push carries only flat scalars, so
-everything list-shaped — twenty brand mentions, twenty club mentions, demographic
-projections — was discarded at the boundary. The stats and summary pushes are
-**failure-isolated**: a summary push that fails must not cost the event its stats.
-
-### The one blocking call
-
-`POST .../events/[eventId]/sync` and `POST .../callbacks` call `syncFanmassAnalytics`
-(`lib/fanmassIntegration.ts`), which GETs the batch's analytics summary from
-`FANMASS_BASE_URL` (`fanmassFetch`, 15-second timeout, `FANMASS_API_KEY` sent as
-`x-api-key`: a third credential, distinct from `FANMASS_INTEGRATION_TOKEN`). It is
-the only place messmass depends on fanmass being reachable: with the URL unset the
-route answers 503 `FANMASS_NOT_CONFIGURED`, and with fanmass unreachable or slow it
-fails after at most 15 seconds (500 `INTERNAL_ERROR`). Nothing else waits on it.
-
-Summaries are stored as a document, not as stats keys. Stats names are chart
-variables with registration semantics, and twenty brand rows are not twenty
-variables.
-
-### Contract versioning
-
-`fanmass.messmass.analytics-summary.v1`, enforced as a **major-version gate** in
-`lib/aiAnalysisSummary.ts`:
-
-- Same major, extra fields → **stored untouched**. This is what let
-  `emotionProjection` and `smilingPct` reach production with no messmass schema
-  change; only the rendering needed a release.
-- Different major → **rejected `409`**. The shape itself changed, and storing it
-  silently would hand the report undefined behaviour.
-
-### AI variable identity
-
-An AI-owned variable is one whose name begins with `fanmass`.
-`isAiVariableName()` in `lib/aiAnalytics.ts` is the single authority — widening the
-definition later (a category, a second producer) is one function rather than a
-sweep across call sites.
-
-`fanmassStatus` is registered with **`derived: false`** on purpose. In messmass,
-`derived: true` means "computed by the formula engine, don't let external writes
-clobber it" — which made `pushEventStats` skip the field silently. The producer
-owns this value, so it must not be marked derived.
-
-### Status and freshness derivation
-
-`deriveEventStatus()` must agree with the Drive folder badge already shipped, or
-the same event reads differently in two places. It prefers the producer's own
-`fanmassStatus` and falls back to analysed/discovered counts for events pushed
-before that field existed.
-
-`isStale()` treats an **unknown** timestamp as NOT stale. The estate carries ~155
-events analysed before freshness was recorded; flagging all of them on day one
-would train operators to ignore the signal entirely.
-
-### Surfaces
-
-| Route | What it is |
+| Surface | What it is |
 |---|---|
-| `/admin/analytics/ai` | Workspace: coverage, per-event status list, variable catalogue with fill rates |
-| `/admin/analytics/ai/[eventId]` | Per-event AI report: brands, clubs/federations, merchandise, demographics |
-| Chart formula picker | Inline fill-rate hint next to every AI variable |
+| `/admin/analytics/ai` | Admin-only list of events with stored photo results |
+| `/admin/analytics/ai/[eventId]` | Admin-only per-event totals and photo-result cards with boxes |
+| `POST .../events/{eventId}/photos/{photoId}` | Authenticated one-photo result ingestion |
+| `DELETE .../events/{eventId}/photos/{photoId}` | Authenticated per-photo tombstone ingestion |
 
-**Access posture:** authenticated session, **any role** — deliberately unlike the
-admin-only analytics dashboards. The audience is report authors deciding what to
-build into a template. Note that `canAccessMenuItem` returns false for any label
-absent from `MENU_PERMISSIONS`, so a new nav item is invisible to *everyone* until
-registered there; `tests/nav-menu-permissions.test.ts` guards this.
+Legacy event-summary, event-stats, event-batch sync, callback, dashboard
+snapshot, event-link, and manual “Fanmass Sync” surfaces are retired for this
+workflow. Their write endpoints return `410 Gone`; `/admin/fanmass` redirects
+to the canonical AI Analytics workspace. Obsolete summary documents, event
+batch links, dashboard snapshots, old Fanmass project-stat fields and old
+variable definitions are archived before removal from active collections.
 
-**Default view hides zero-image events.** Most of the estate is camera-provisioned
-events still waiting for photos, so the unfiltered list was 152 rows of
-"Analysing · 0%" burying the few with real analysis. Two exceptions are load-bearing:
-failed events stay visible regardless of image count, and an explicit status filter
-overrides the hide entirely.
-
-### Query constraint
-
-The Mongo client runs **Stable API v1 with `strict: true`**. `distinct()` is not
-part of that API and fails with `APIStrictError`. Use `$group` aggregation instead —
-this applies to any new code in this subsystem, not just the existing calls.
+The Mongo client uses Stable API v1 with strict mode. `distinct()` is not part
+of that API; use `$group` aggregation.
 
 ### Related implementation files
 
-- `lib/aiAnalytics.ts` — read model (coverage, events, variables, staleness)
-- `lib/aiAnalysisSummary.ts` — summary storage, contract and size gates
-- `app/admin/analytics/ai/` — workspace and per-event report
-- `app/api/analytics/ai/` — read endpoints
-- `app/api/integrations/fanmass/` — producer-side ingest
+- `lib/fanmassPhotoAnalyses.ts` — photo result validation, storage and report rebuild
+- `lib/fanmassAnalyticsVariables.ts` — canonical photo-result report variables
+- `lib/aiAnalytics.ts` — photo-result-only read model
+- `lib/aiAnalysisSummary.ts` — mechanically rebuilt photo summary
+- `app/admin/analytics/ai/` — workspace and per-event photo detail
+- `app/api/analytics/ai/` — admin read endpoints
+- `app/api/integrations/fanmass/events/[eventId]/photos/` — photo result and tombstone intake
 
 ---
 
@@ -3992,5 +3922,5 @@ When working with the hashtag categories system:
 ---
 
 *Last Updated: 2026-09-09*
-*Version: 12.3.42*
+*Version: 12.3.43*
 *Status: Production-Ready — Enterprise Event Analytics Platform with Advanced Analytics Infrastructure*

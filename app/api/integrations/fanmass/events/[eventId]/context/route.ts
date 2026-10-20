@@ -1,11 +1,5 @@
 import { NextRequest } from 'next/server';
-import {
-  getCorrelationId,
-  handleRouteError,
-  jsonSuccess,
-  loadEventContext,
-  requireFanmassIntegrationAuth,
-} from '@/lib/fanmassIntegration';
+import { requireFanmassIntegrationAuth, retiredFanmassEndpoint } from '@/lib/fanmassIntegration';
 
 export async function GET(
   request: NextRequest,
@@ -14,11 +8,8 @@ export async function GET(
   const authError = requireFanmassIntegrationAuth(request);
   if (authError) return authError;
 
-  try {
-    const { eventId } = await params;
-    const context = await loadEventContext(eventId, getCorrelationId(request));
-    return jsonSuccess(context);
-  } catch (err) {
-    return handleRouteError(err);
-  }
+  return retiredFanmassEndpoint(
+    'EVENT_CONTEXT_RETIRED',
+    'Fanmass receives Camera photo IDs and the linked Messmass event ID with each photo task; it does not fetch event or partner context from Messmass.',
+  );
 }

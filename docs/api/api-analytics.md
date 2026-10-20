@@ -1,10 +1,10 @@
 # Analytics API
 Status: Active
-Last Updated: 2026-08-14T15:00:00.000Z
+Last Updated: 2026-10-20T16:53:00.000Z
 Canonical: Yes
 Owner: Backend
 
-**Version:** 12.3.42
+**Version:** 12.3.43
 
 ## Purpose
 
@@ -24,18 +24,22 @@ There are two access patterns in the current code:
 - `GET /api/analytics/insights/summary`
 - `GET /api/analytics/sponsorship-hub`
 
-### Any-authenticated-role endpoints (AI Analytics)
+### Admin endpoints (AI Analytics)
 
-The AI Analytics endpoints deliberately require a session but **no particular
-role**. Their audience is report authors deciding which AI variables are
-populated widely enough to build into a report, and that is not an admin-only
-job. Do not add a role check to these without changing the product decision
-behind it.
+AI Analytics contains event-level views mechanically derived from stored
+per-photo Fanmass results. All reads require an administrator session.
+For Camera photo analysis, Fanmass does not read Messmass reports or event
+metadata. Each result carries the exact Camera partner/event/photo IDs and
+linked Messmass event ID; this API validates those links and stores one
+photo-level result. Messmass is the only owner of event report aggregation.
 
-- `GET /api/analytics/ai/coverage`
 - `GET /api/analytics/ai/events`
 - `GET /api/analytics/ai/events/[eventId]/summary`
-- `GET /api/analytics/ai/variables`
+- `GET /api/analytics/ai/events/[eventId]/photos`
+
+The former coverage and variable-catalogue endpoints return `410 Gone`; they
+reported event completion or fill-rate concepts that the photo-result contract
+cannot establish.
 
 ### Rate-limited compare/trend endpoints
 
@@ -257,128 +261,76 @@ These are active in code but are not the main focus of this document:
 
 ## AI Analytics Endpoints
 
-Read model behind `/admin/analytics/ai`. All four are read-only aggregations over
-existing collections — no new schema, and no runtime dependency on fanmass being
-reachable. Implementation: `lib/aiAnalytics.ts` and `lib/aiAnalysisSummary.ts`.
-
-An AI-owned variable is one whose name starts with `fanmass`. `isAiVariableName()`
-in `lib/aiAnalytics.ts` is the single authority for that test; widen the definition
-there rather than at call sites.
-
-### `GET /api/analytics/ai/coverage`
-
-Estate-level counts.
-
-```json
-{ "success": true, "data": {
-  "totalEvents": 369, "connected": 155, "analyzing": 152,
-  "complete": 3, "notConnected": 214, "stale": 0
-} }
-```
-
-`stale` counts connected events whose analytics are older than
-`STALE_AFTER_HOURS` (24). An event with **no** freshness stamp is deliberately
-NOT stale: ~155 events were analysed before freshness was recorded, and flagging
-all of them on day one would train operators to ignore the signal.
+`/admin/analytics/ai` and its APIs are now based only on active, completed rows in
+`fanmass_camera_photo_analyses`. The page reports event groups and sums of photo
+results, person/face boxes, and observed labels. It does not infer event progress,
+freshness, complete coverage, or audience reach because Messmass does not hold
+Camera's eligible-photo denominator.
 
 ### `GET /api/analytics/ai/events`
 
-Per-event status rows. Optional `status` and `limit` (default 200, max 500).
-
-| Field | Meaning |
-|---|---|
-| `status` | `not_connected` \| `analyzing` \| `complete` \| `error` |
-| `progressPercent` | Producer's own `fanmassStatus`, falling back to analysed/discovered |
-| `imagesAnalyzed` / `imagesDiscovered` | Counts behind the progress figure |
-| `sources` | `drive`, `camera`, or both — inferred from `drive_folder_links` |
-| `lastAnalyzedAt` / `isStale` | Freshness stamp and its derived flag |
-| `lastError` | Present only when a linked Drive folder is in `error` |
-
-Status derivation (`deriveEventStatus`) must match the Drive folder badge already
-shipped, or the same event reads differently in two places.
+Returns events that have at least one active photo result, plus totals summed from
+those same result rows. `limit` is clamped to 1–500. Each event includes
+`photoResultsReceived`, photo-level detections, bounding-box counts, observed
+brand/club/merchandise detections, completed moderation-check and flagged-photo
+counts, and the last photo analysis timestamp.
 
 ### `GET /api/analytics/ai/events/[eventId]/summary`
 
-The stored structured analysis for one event — brand mentions, club/federation
-mentions, merchandise, and demographic projections. `404` with a distinct code
-when the event exists but has never received a summary push; that is not the same
-as an invalid event id.
+Returns Messmass's derived roll-up only when its source is the current
+`camera_photo_pipeline`. The roll-up includes received results, people and
+boxes, brand/club/merchandise labels, brand-appearance item types, and the
+moderation check count, flagged-photo count, severity and prohibited-content
+category counts. Old producer event summaries are not read.
 
-### `GET /api/analytics/ai/variables`
+### `GET /api/analytics/ai/events/[eventId]/photos`
 
-Every AI-owned variable with its fill rate across connected events, plus the
-`formulaToken` to paste into a chart formula.
+Returns up to 100 per-photo rows by offset, including the identity-free result
+summary, per-photo prohibited-content outcome, and saved image-relative
+person/face boxes. `limit` and `offset` support pagination so large events do
+not load every box into a single response.
 
-The result is the **union** of registered `variables_metadata` and keys actually
-present on events. A key present on events but absent from metadata is exactly the
-case a report author trips over, so it surfaces with `registered: false` rather
-than being filtered out.
+### Retired endpoints
 
-Fill rate is the number that decides whether a variable belongs in a template: the
-merch variables sit at 1.3% (2 of 155 events), so a report built on one renders
-empty almost everywhere. The same figure is surfaced inline in the chart-formula
-picker; see `tests/ai-variable-hint.test.ts` for the hint's exact wording rules.
+`GET /api/analytics/ai/coverage` returns `410 EVENT_COVERAGE_UNAVAILABLE`, because
+the result set does not contain the eligible Camera photo denominator.
+`GET /api/analytics/ai/variables` returns `410 AI_VARIABLE_FILL_RATES_RETIRED`;
+the former cross-event fill rates mixed obsolete batch data with per-photo data.
+The chart variable picker no longer shows those misleading hints.
 
-> Implementation note: these aggregations use `$group`, never `distinct()`. The
-> Mongo client runs Stable API v1 with `strict: true`, and `distinct` is not part
-> of that API — it fails with `APIStrictError`.
+> Implementation note: aggregations use `$group`, not `distinct()`. Mongo's
+> Stable API v1 strict mode does not support `distinct()`.
 
-## Fanmass Ingest Endpoint
-
-### Camera photo results (one photo per call)
+## Fanmass photo result boundary
 
 `POST` and `DELETE /api/integrations/fanmass/events/[eventId]/photos/[photoId]`
+are the only Fanmass analytics write operations. Fanmass independently reads
+Camera Atlas, chooses one eligible photo, analyzes that photo locally, then
+sends one identity-free result containing the Messmass event ID and Camera
+partner/event/photo IDs, source revision, generation, normalized findings, and
+image-relative person/face boxes. Fanmass sends no image bytes, image URL,
+guest identity, event report, event status, audience projection, or dashboard
+snapshot.
 
-These routes are the result boundary for Camera photos. Fanmass independently
-discovers and analyzes Camera photos one at a time; Camera does not enqueue work
-or call Fanmass. Fanmass sends only a completed single-photo result, with
-`cameraPartnerId`, `cameraEventId`, and `cameraPhotoId` routing IDs, a source
-revision and analysis generation, normalized summary facts, image-relative
-boxes, and allowlisted per-photo analysis. The request has no source image URL,
-image bytes, or guest identity/contact fields.
+Messmass stores one current row per `(Messmass event ID, Camera photo ID)` in
+`fanmass_camera_photo_analyses`. Repeated deliveries are idempotent and stale
+source revisions cannot replace newer results. A deletion writes a tombstone;
+Messmass then regenerates the event roll-up without that photo. Both report
+totals and the AI Analytics page are derived from active, completed per-photo
+rows. The page shows how many results Messmass received, the detections and
+boxes in those rows, completed moderation checks and flagged outcomes, and the
+saved box coordinates per photo. Zero moderation category counts mean no such
+flags were returned among completed checks; unreturned categories remain
+distinct from a completed negative check.
 
-Messmass stores one row per `{eventId, cameraPhotoId}` in
-`fanmass_camera_photo_analyses`. `POST` idempotently upserts the row and
-`DELETE` stores a tombstone and clears its analysis fields. Older generations,
-changed source revisions at the same generation, and attempts to resurrect a
-tombstone are acknowledged as `ignored_stale`; they cannot overwrite a newer
-photo state. Each accepted write rebuilds `ai_analysis_summaries` and the fixed
-Fanmass report-variable projection from the current non-tombstoned photo rows.
-If either projection cannot be saved, the endpoint returns an error so Fanmass's
-durable outbox retries the same idempotent operation.
+The contract has no event photo denominator, completion percentage, stale
+status, or projected audience. Messmass does not own Camera's eligible-photo
+denominator, and photo-level people detections are not unique attendees.
 
-This path reports facts from rows received so far. It has no Camera queue
-denominator, so it records `fanmassPhotoResultsReceived` and the actual analysed
-photo count, leaves completion percentage/coverage/projected reach unset, and
-marks the aggregate `partial` while rows exist. It never represents “all
-received rows analyzed” as “the whole event is 100% complete.” Legacy event
-summary and stats endpoints reject writes once a Camera photo result owns the
-event.
-
-The existing event-level endpoint below remains for non-Camera/legacy Fanmass
-batches. It is not the Camera photo path, and Camera-photo events must not also
-receive its aggregate pushes.
-
-`POST /api/integrations/fanmass/events/[eventId]/analysis-summary`
-
-Not an analytics read endpoint, but the producer side of the summary above.
-Authenticated with the fanmass integration token (`requireFanmassIntegrationAuth`),
-the same token as the stats push, and failure-isolated from it.
-
-- **Contract gate:** `contractVersion` must start with
-  `fanmass.messmass.analytics-summary.v1`. A same-major producer may add fields
-  and they are stored untouched; a different major is rejected `409`, because
-  silent storage would hand the report undefined behaviour.
-- **Size gate:** `MAX_SUMMARY_BYTES` = 1MB, ~50x observed real size. The lists are
-  producer-controlled, so the bound is not optional.
-- **Latest wins:** one document per event in `ai_analysis_summaries`. The summary
-  is a snapshot of the batch's current analysis, not an event log.
-- **`receivedAt` is server-assigned**, never producer-supplied. `generatedAt` is
-  the producer's own stamp and is informational only.
-
-Stored as a document rather than stats keys on purpose: stats names are chart
-variables with registration semantics, and twenty brand rows are not twenty
-variables.
+Event-level `/analysis-summary`, `/stats`, `/sync`, callback, and
+`/dashboard-snapshot` writes are retired and return HTTP 410. The former
+`fanmass.messmass.analytics-summary.v1` and dashboard-snapshot contracts are
+historical only; they must not be used for Camera photo analytics.
 
 ## Common Failure Modes
 

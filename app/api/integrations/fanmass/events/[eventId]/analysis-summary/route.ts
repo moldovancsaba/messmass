@@ -1,14 +1,8 @@
-// app/api/integrations/fanmass/events/[eventId]/analysis-summary/route.ts
-// WHAT: Receive the full per-event analysis summary from fanmass.
-// WHY: The stats push carries only flat scalars; the structured analysis — brand
-//     and club mentions, demographics — was discarded at the boundary. This is the
-//     channel that brings the whole contract document across, beside the stats
-//     push and failure-isolated from it.
-// AUTH: requireFanmassIntegrationAuth, same token as the stats push.
+// Retired event-level write route. Messmass now rebuilds event reports from
+// validated, stored per-photo results.
 
-import { NextRequest } from 'next/server';
-import { handleRouteError, jsonSuccess, requireFanmassIntegrationAuth } from '@/lib/fanmassIntegration';
-import { storeAnalysisSummary } from '@/lib/aiAnalysisSummary';
+import { NextRequest, NextResponse } from 'next/server';
+import { requireFanmassIntegrationAuth } from '@/lib/fanmassIntegration';
 
 export async function POST(
   request: NextRequest,
@@ -16,18 +10,8 @@ export async function POST(
 ) {
   const authError = requireFanmassIntegrationAuth(request);
   if (authError) return authError;
-  try {
-    const { eventId } = await params;
-    const body = (await request.json().catch(() => null)) as Record<string, unknown> | null;
-    if (!body || typeof body !== 'object') {
-      throw Object.assign(new Error('A JSON summary body is required.'), {
-        status: 400,
-        code: 'INVALID_SUMMARY',
-      });
-    }
-    const result = await storeAnalysisSummary(eventId, body);
-    return jsonSuccess(result);
-  } catch (err) {
-    return handleRouteError(err);
-  }
+  return NextResponse.json(
+    { success: false, error: { code: 'EVENT_LEVEL_EXPORT_RETIRED', message: 'Fanmass delivers one photo result at a time. Messmass derives event reports from those photo results.' } },
+    { status: 410 },
+  );
 }

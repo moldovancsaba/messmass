@@ -11,6 +11,12 @@ import { pushEventStats } from './fanmassMapping';
 export const PHOTO_ANALYSIS_CONTRACT = 'fanmass.messmass.photo-analysis.v1';
 export const PHOTO_ANALYSIS_COLLECTION = 'fanmass_camera_photo_analyses';
 export const MAX_PHOTO_ANALYSIS_BYTES = 2_000_000;
+const PROHIBITED_CONTENT_CATEGORIES = [
+  'nudity', 'sexualContent', 'middleFinger', 'hateSymbols', 'hateWords',
+  'alcohol', 'drugs', 'violence', 'weapons', 'other',
+] as const;
+const MODERATION_SEVERITIES = ['none', 'low', 'medium', 'high'] as const;
+const BRAND_APPEARANCE_ITEM_TYPES = ['clothing', 'shoes', 'bag', 'accessory', 'logo', 'other'] as const;
 type PhotoAnalysisRecord = Record<string, unknown> & { _id: string };
 
 type PhotoInput = {
@@ -93,6 +99,36 @@ function stableRecordId(eventId: string, cameraPhotoId: string): string {
   return createHash('sha256').update(`${eventId}\n${cameraPhotoId}`).digest('hex');
 }
 
+async function requireExactCameraEventLink(
+  db: Awaited<ReturnType<typeof getDb>>,
+  messmassEventId: string,
+  cameraEventId: string,
+  cameraPartnerId: string,
+): Promise<void> {
+  if (!ObjectId.isValid(messmassEventId)) invalid(422, 'INVALID_EVENT_ID', 'Invalid Messmass event id.');
+  const event = await db.collection('projects').findOne(
+    { _id: new ObjectId(messmassEventId) },
+    { projection: { externalRefs: 1, partnerId: 1, partner1Id: 1, partner2Id: 1 } },
+  );
+  if (!event) invalid(404, 'EVENT_NOT_FOUND', 'Messmass event was not found.');
+
+  const externalRefs = record(event.externalRefs) || {};
+  const cameraLink = record(externalRefs.camera) || {};
+  if (cameraLink.eventId !== cameraEventId) {
+    invalid(409, 'CAMERA_EVENT_ID_MISMATCH', 'The Camera event id is not linked to this Messmass event.');
+  }
+
+  const partnerObjectIds = [event.partner1Id, event.partner2Id, event.partnerId]
+    .map((value) => value instanceof ObjectId ? value : (typeof value === 'string' && ObjectId.isValid(value) ? new ObjectId(value) : null))
+    .filter((value): value is ObjectId => value !== null);
+  if (!partnerObjectIds.length || !await db.collection('partners').findOne(
+    { _id: { $in: partnerObjectIds }, cameraPartnerId },
+    { projection: { _id: 1 } },
+  )) {
+    invalid(409, 'CAMERA_PARTNER_ID_MISMATCH', 'The Camera partner id is not linked to this Messmass event.');
+  }
+}
+
 function number(value: unknown): number {
   return typeof value === 'number' && Number.isFinite(value) ? Math.max(0, value) : 0;
 }
@@ -144,23 +180,57 @@ function aggregatePhotos(eventId: string, photos: Array<Record<string, unknown>>
   const emotions: Record<string, number> = {};
   const accessories: Record<string, number> = {};
   const merchandise: Record<string, number> = {};
+  const prohibitedContent: Record<string, number> = Object.fromEntries(PROHIBITED_CONTENT_CATEGORIES.map((key) => [key, 0]));
+  const moderationSeverity: Record<string, number> = Object.fromEntries(MODERATION_SEVERITIES.map((key) => [key, 0]));
+  const brandAppearanceTypes: Record<string, number> = Object.fromEntries(BRAND_APPEARANCE_ITEM_TYPES.map((key) => [key, 0]));
   const brands = new Map<string, number>();
   const clubs = new Map<string, number>();
   let measuredPeople = 0;
+  let personBoxes = 0;
+  let faceBoxes = 0;
   let smilingCount = 0;
-  let ageSample = 0;
+  let moderationPhotosReviewed = 0;
+  let moderationFlaggedPhotos = 0;
   let latestAnalysisAt = '';
 
   for (const photo of photos) {
     const summary = record(photo.summary) || {};
+    const boxes = record(photo.boxes) || {};
     const people = record(summary.peopleCounts) || {};
     measuredPeople += number(people.measured);
+    personBoxes += Array.isArray(boxes.people) ? boxes.people.length : 0;
+    faceBoxes += Array.isArray(boxes.faces) ? boxes.faces.length : 0;
     countMapAdd(genders, summary.genderProjection);
     countMapAdd(emotions, summary.emotionProjection);
     countMapAdd(accessories, summary.accessoryProjection);
     countMapAdd(merchandise, summary.merchandiseCounts);
     namedCountsAdd(brands, summary.brandMentions);
     namedCountsAdd(clubs, summary.clubMentions);
+    const moderation = record(summary.moderation) || {};
+    if (moderation.status === 'completed') {
+      moderationPhotosReviewed++;
+      if (moderation.flagged === true) moderationFlaggedPhotos++;
+      const severity = typeof moderation.severity === 'string' ? moderation.severity : '';
+      if (Object.prototype.hasOwnProperty.call(moderationSeverity, severity)) moderationSeverity[severity]++;
+      const flags = Array.isArray(moderation.flags)
+        ? moderation.flags.filter((value): value is string => typeof value === 'string')
+        : Object.entries(record(moderation.categories) || {})
+          .filter(([, value]) => record(value)?.detected === true)
+          .map(([key]) => key);
+      for (const flag of new Set(flags)) {
+        if (Object.prototype.hasOwnProperty.call(prohibitedContent, flag)) prohibitedContent[flag]++;
+      }
+    }
+    const fashionBrands = record(summary.fashionBrands) || {};
+    if (Array.isArray(fashionBrands.items)) {
+      for (const rawItem of fashionBrands.items) {
+        const item = record(rawItem);
+        if (!item) continue;
+        const itemType = typeof item.itemType === 'string' ? item.itemType.trim() : '';
+        const key = Object.prototype.hasOwnProperty.call(brandAppearanceTypes, itemType) ? itemType : 'other';
+        brandAppearanceTypes[key] += Math.max(1, Math.round(number(item.count) || 1));
+      }
+    }
     const ageHistogram = record(summary.ageHistogram) || {};
     for (const [age, raw] of Object.entries(ageHistogram)) {
       const count = typeof raw === 'number' ? raw : number(record(raw)?.count);
@@ -171,28 +241,24 @@ function aggregatePhotos(eventId: string, photos: Array<Record<string, unknown>>
     }
     const oneSmilingCount = number(summary.smilingCount);
     smilingCount += oneSmilingCount;
-    ageSample += Math.max(
-      Object.values(record(summary.genderProjection) || {}).reduce<number>((n, v) => n + number(record(v)?.count ?? v), 0),
-      Object.values(record(summary.emotionProjection) || {}).reduce<number>((n, v) => n + number(record(v)?.count ?? v), 0),
-    );
     const analyzedAt = typeof photo.analyzedAt === 'string' ? photo.analyzedAt : '';
     if (analyzedAt > latestAnalysisAt) latestAnalysisAt = analyzedAt;
   }
 
   const imageCount = photos.length;
-  const smilingPct = measuredPeople > 0 ? Math.round((smilingCount / measuredPeople) * 1000) / 10 : null;
+  const demographicSample = Math.max(
+    Object.values(genders).reduce((sum, value) => sum + value, 0),
+    Object.values(generations).reduce((sum, value) => sum + value, 0),
+    Object.values(emotions).reduce((sum, value) => sum + value, 0),
+  );
+  const smilingPct = demographicSample > 0 ? Math.round((smilingCount / demographicSample) * 1000) / 10 : null;
   return {
-    contractVersion: 'fanmass.messmass.analytics-summary.v1',
+    contractVersion: 'messmass.camera-photo-results.v1',
     messmassEventId: eventId,
-    batchId: 'camera-photo-results',
-    // Messmass only sees completed rows arriving from Fanmass. It cannot know
-    // Camera's eligible-photo denominator, so "partial" avoids claiming the
-    // event is complete merely because every received row is analyzed.
-    status: imageCount > 0 ? 'partial' : 'running',
-    generatedAt: new Date().toISOString(),
     lastAnalyzedAt: latestAnalysisAt || null,
-    sourceScope: 'eligible_camera_photos_with_completed_analysis',
-    imageCounts: { total: imageCount, analyzed: imageCount },
+    photoResultsReceived: imageCount,
+    personBoxes,
+    faceBoxes,
     peopleCounts: { measured: measuredPeople },
     genderProjection: genders,
     ageProjection: generations,
@@ -201,21 +267,22 @@ function aggregatePhotos(eventId: string, photos: Array<Record<string, unknown>>
     smilingCount,
     smilingPct,
     merchandiseCounts: merchandise,
+    brandAppearanceTypes,
     brandMentions: namedCounts(brands),
     clubMentions: namedCounts(clubs),
-    demographicsAnalyzed: ageSample,
-    warnings: imageCount === 0
-      ? [{ code: 'no_completed_photo_results', severity: 'info', message: 'No eligible completed Camera photo results are stored for this event yet.' }]
-      : [{ code: 'received_results_only', severity: 'info', message: 'Image totals include completed photo results received by Messmass; Camera queue totals and event completion are not inferred.' }],
-    sourceRunIds: [],
+    demographicPeopleMeasured: demographicSample,
+    moderationPhotosReviewed,
+    moderationFlaggedPhotos,
+    moderationSeverityCounts: moderationSeverity,
+    prohibitedContentCounts: prohibitedContent,
   };
 }
 
-async function rebuildEventSummary(eventId: string) {
+export async function rebuildFanmassPhotoEventSummary(eventId: string) {
   const db = await getDb();
   const photos = await db.collection<PhotoAnalysisRecord>(PHOTO_ANALYSIS_COLLECTION)
     .find({ eventId, tombstone: { $ne: true }, status: 'completed' }, {
-      projection: { _id: 0, summary: 1, analyzedAt: 1 },
+      projection: { _id: 0, summary: 1, boxes: 1, analyzedAt: 1 },
     })
     .toArray() as Array<Record<string, unknown>>;
   const summary = aggregatePhotos(eventId, photos);
@@ -228,7 +295,6 @@ async function rebuildEventSummary(eventId: string) {
         sourceType: 'camera_photo_pipeline',
         contractVersion: summary.contractVersion,
         receivedAt: new Date().toISOString(),
-        generatedAt: summary.generatedAt,
         summary,
       },
     },
@@ -236,22 +302,20 @@ async function rebuildEventSummary(eventId: string) {
   );
 
   const stats: Record<string, unknown> = { ...deriveCompleteFanmassReportStats(summary) };
-  // Per-photo results contain no eligible-event denominator. Do not publish
-  // false 100% progress, coverage, or projected audience values on Camera
-  // events. A dedicated received-result count is accurate and auditable.
-  const unavailableMetrics = [
-    'fanmassImages', 'fanmassImageCount', 'fanmassStatus', 'fanmassConfidence', 'fanmassProjectedReach',
-  ];
-  for (const key of unavailableMetrics) delete stats[key];
-  stats.fanmassAnalyzedImages = photos.length;
-  stats.fanmassAnalyzedImageCount = photos.length;
   stats.fanmassPhotoResultsReceived = photos.length;
-  stats.fanmassAnalysisState = summary.status;
+  const project = await db.collection('projects').findOne(
+    { _id: new ObjectId(eventId) },
+    { projection: { stats: 1 } },
+  );
+  const currentStats = record(project?.stats) || {};
+  const obsoleteStats = Object.keys(currentStats).filter(
+    (name) => name.startsWith('fanmass') && !Object.prototype.hasOwnProperty.call(stats, name),
+  );
   // A successful HTTP acknowledgement means both the durable per-photo record
   // and its current report projections landed. If either projection fails, let
   // Fanmass's idempotent outbox retry this same generation.
   await ensureFanmassAnalyticsVariables(db, Object.keys(stats));
-  await pushEventStats(eventId, stats, { cameraPhotoPipeline: true, unset: unavailableMetrics });
+  await pushEventStats(eventId, stats, { cameraPhotoPipeline: true, unset: obsoleteStats });
   return { eventId, imageCount: photos.length, receivedAt: new Date().toISOString() };
 }
 
@@ -266,8 +330,7 @@ export async function storeFanmassPhotoAnalysis(
     invalid(400, 'PHOTO_ID_MISMATCH', 'The path photo id and payload photo id must match.');
   }
   const db = await getDb();
-  const event = await db.collection('projects').findOne({ _id: new ObjectId(eventId) }, { projection: { _id: 1 } });
-  if (!event) invalid(404, 'EVENT_NOT_FOUND', 'Messmass event was not found.');
+  await requireExactCameraEventLink(db, eventId, input.cameraEventId, input.cameraPartnerId);
   const collection = db.collection<PhotoAnalysisRecord>(PHOTO_ANALYSIS_COLLECTION);
   await collection.createIndex({ eventId: 1, cameraPhotoId: 1 }, { unique: true, name: 'fanmass_camera_photo_event_unique' });
   await collection.createIndex({ eventId: 1, tombstone: 1, status: 1 }, { name: 'fanmass_camera_photo_report_read' });
@@ -313,7 +376,7 @@ export async function storeFanmassPhotoAnalysis(
     if (!stale) invalid(409, 'PHOTO_RESULT_CONFLICT', 'The photo result could not be safely upserted.');
   }
 
-  const aggregate = await rebuildEventSummary(eventId);
+  const aggregate = await rebuildFanmassPhotoEventSummary(eventId);
   return {
     eventId,
     cameraPhotoId: input.cameraPhotoId,
@@ -342,8 +405,7 @@ export async function tombstoneFanmassPhotoAnalysis(
   }
 
   const db = await getDb();
-  const event = await db.collection('projects').findOne({ _id: new ObjectId(eventId) }, { projection: { _id: 1 } });
-  if (!event) invalid(404, 'EVENT_NOT_FOUND', 'Messmass event was not found.');
+  await requireExactCameraEventLink(db, eventId, cameraEventId, cameraPartnerId);
   const collection = db.collection<PhotoAnalysisRecord>(PHOTO_ANALYSIS_COLLECTION);
   await collection.createIndex({ eventId: 1, cameraPhotoId: 1 }, { unique: true, name: 'fanmass_camera_photo_event_unique' });
   await collection.createIndex({ eventId: 1, tombstone: 1, status: 1 }, { name: 'fanmass_camera_photo_report_read' });
@@ -389,11 +451,44 @@ export async function tombstoneFanmassPhotoAnalysis(
     if (!stale) invalid(409, 'PHOTO_TOMBSTONE_CONFLICT', 'The photo tombstone could not be safely stored.');
   }
 
-  const aggregate = await rebuildEventSummary(eventId);
+  const aggregate = await rebuildFanmassPhotoEventSummary(eventId);
   return {
     eventId,
     cameraPhotoId,
     status: deleted ? 'deleted' : 'ignored_stale',
     receivedAt: aggregate.receivedAt,
+  };
+}
+
+/** Admin read model for the photo-by-photo results and saved detection boxes. */
+export async function listFanmassPhotoAnalysisDetails(eventId: string, options: { offset?: number; limit?: number } = {}) {
+  if (!ObjectId.isValid(eventId)) invalid(422, 'INVALID_EVENT_ID', 'Invalid Messmass event id.');
+  const db = await getDb();
+  const collection = db.collection<PhotoAnalysisRecord>(PHOTO_ANALYSIS_COLLECTION);
+  const filter = { eventId, status: 'completed', tombstone: { $ne: true } };
+  const total = await collection.countDocuments(filter);
+  const requestedLimit = Number.isFinite(options.limit) ? Math.trunc(options.limit as number) : 100;
+  const requestedOffset = Number.isFinite(options.offset) ? Math.trunc(options.offset as number) : 0;
+  const limit = Math.min(Math.max(requestedLimit, 1), 100);
+  const offset = Math.max(requestedOffset, 0);
+  const rows = await collection
+    .find(
+      filter,
+      { projection: { _id: 0, cameraPhotoId: 1, analyzedAt: 1, summary: 1, boxes: 1 } },
+    )
+    .sort({ analyzedAt: -1, cameraPhotoId: 1 })
+    .skip(offset)
+    .limit(limit)
+    .toArray();
+  return {
+    total,
+    limit,
+    offset,
+    photos: rows.map((row) => ({
+      cameraPhotoId: String(row.cameraPhotoId || ''),
+      analyzedAt: typeof row.analyzedAt === 'string' ? row.analyzedAt : null,
+      summary: record(row.summary) || {},
+      boxes: record(row.boxes) || { people: [], faces: [] },
+    })),
   };
 }

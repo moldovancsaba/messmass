@@ -2,9 +2,9 @@
 // WHAT: Read the stored AI analysis summary for one event.
 // WHY: The AI event report renders this — brands, clubs/federations, merchandise,
 //     demographics — instead of only the scalar variables.
-// AUTH: Authenticated session, ANY role. Same deliberate posture as the other AI
-//     analytics endpoints: report authors of any role are the audience. Do not add
-//     a role check without changing the product decision behind it.
+// AUTH: Administrator session. The response contains event-level analysis results
+//     and saved detection boxes, so it follows the same access rule as the AI
+//     analytics workspace and per-photo endpoint.
 
 import { NextRequest, NextResponse } from 'next/server';
 import { getAdminUser } from '@/lib/auth';
@@ -20,6 +20,12 @@ export async function GET(
       return NextResponse.json(
         { success: false, error: { code: 'UNAUTHENTICATED', message: 'Sign in to view AI analytics.' } },
         { status: 401 }
+      );
+    }
+    if (user.role !== 'admin' && user.role !== 'superadmin') {
+      return NextResponse.json(
+        { success: false, error: 'Administrator access required.' },
+        { status: 403 }
       );
     }
     const { eventId } = await params;

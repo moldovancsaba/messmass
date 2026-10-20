@@ -1,6 +1,6 @@
 # Tutorial: Collecting event data (Clicker & Manual)
 Status: Active
-Last Updated: 2026-07-20T00:00:00.000Z
+Last Updated: 2026-10-20T16:53:00.000Z
 Canonical: Yes
 Owner: Documentation
 
@@ -9,19 +9,19 @@ Owner: Documentation
 ## What it is & why it matters
 Every chart on a report is fed by the event's `stats{}` — the numbers and text captured during and after an activation. This tutorial covers how those stats get in, and the single most important rule: **the different data sources never overwrite each other.**
 
-There are **three ways stats enter an event**:
+There are **three ways report data enters an event**:
 
 1. **The Editor (Clicker / Manual / Builder)** at `/edit/{editSlug}` — hands-on counting and typing.
 2. **Google Sheets sync** — pull/push numbers from a connected sheet.
-3. **Fanmass** — image/person/brand analytics synced into dedicated variables.
+3. **Camera photo analysis** — Fanmass findings from each eligible photo are saved as per-photo facts and mechanically summarized by Messmass.
 
-Each source writes to its own variables, so counting attendees in the clicker will not be clobbered by a Fanmass sync, and a Google Sheets pull will not wipe your clicker totals. Understanding which source owns which variable keeps your data clean.
+Each source writes to its own data. Clicker/manual values are not overwritten by photo analysis, and a Google Sheets pull will not wipe clicker totals. Photo detections describe the received images; they are not deduplicated attendees or a complete event count.
 
 | Source | Where you use it | Typical variables it owns |
 |---|---|---|
 | Clicker / Manual editor | `/edit/{editSlug}` | Core counts — images, fans, gender, generations, merch, visits, event outcome |
 | Google Sheets | Editor sync (pull/push) | Whatever the connected sheet maps to |
-| Fanmass | `/admin/events` → Fanmass Sync | `[fanmass.*]` and `[fanmass*]` analytics variables |
+| Camera photo analysis | `/admin/analytics/ai` | Received-photo, detection-box, demographic, brand, club, and merchandise measures |
 
 ## Before you start
 - Get into the editor one of two ways:
@@ -53,7 +53,13 @@ Switch to **Builder** when you need to populate the text, tables, and images tha
 If the event is connected to a Google Sheet, the editor exposes an event-level sync (pull/push). Use it to bring spreadsheet-maintained numbers into the event or push the event's numbers out. See [Google Sheets](guides-tutorial-google-sheets.md) and the [Google Sheets integration feature guide](../features/features-google-sheets-integration.md).
 
 ### 6. Sync Fanmass analytics (optional)
-From `/admin/events`, the per-event **Fanmass Sync** action links a Fanmass batch and imports its analytics into the event. Fanmass writes to its **own** variables — nested ones like `[fanmass.peopleCount]`, `[fanmass.projectedReach]`, `[fanmass.brands]`, and flat ones like `[fanmassPeopleCount]`, `[fanmassProjectedReach]`, `[fanmassTopBrandName]` — so it never overwrites clicker or manual stats. See [Fanmass](guides-tutorial-fanmass.md).
+For Camera photos, Fanmass reads eligible images from Camera Atlas one at a
+time and sends one photo's findings and boxes to Messmass. Messmass validates
+the Camera partner/event/photo IDs and linked Messmass event ID, then rebuilds
+report values from the active photo rows it has received. These values describe
+the analyzed photos only; there is no Fanmass batch link, event sync button,
+projected reach, or event-completion percentage in this workflow. See
+[Fanmass](guides-tutorial-fanmass.md).
 
 ## Managing it
 **How clicker sets and variable groups decide what you see.**

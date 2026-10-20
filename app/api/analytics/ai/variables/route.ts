@@ -1,20 +1,8 @@
-/**
- * AI Analytics — variable catalogue
- *
- * WHAT: Every AI-owned variable with how completely it is populated across
- *      connected events, plus the token to paste into a chart formula.
- * WHY: This is the endpoint that makes AI analytics usable in reports. Fill rate
- *      is the number that decides whether a variable belongs in a template: on the
- *      current estate the merch variables sit at 1.3% (2 of 155 events), so a
- *      report built on one renders empty almost everywhere.
- *
- * AUTH: Authenticated session, ANY role — see the coverage route for why this
- *      deliberately differs from the admin-only analytics endpoints.
- */
+/** Retired: cross-event variable fill rates mixed old batch aggregates with
+ * photo results and are not valid without Camera's eligible-photo denominator. */
 
 import { NextResponse } from 'next/server';
 import { getAdminUser } from '@/lib/auth';
-import { getAiVariables } from '@/lib/aiAnalytics';
 
 export async function GET() {
   try {
@@ -26,8 +14,8 @@ export async function GET() {
       );
     }
 
-    // Authorisation, not just authentication: this route promises
-    // admin-only and enforced nothing (F-025 / #400).
+    // Keep the retired response behind the same administrator access rule as
+    // the active AI photo-results endpoints.
     if (user.role !== 'admin' && user.role !== 'superadmin') {
       return NextResponse.json(
         { success: false, error: 'Administrator access required.' },
@@ -35,8 +23,10 @@ export async function GET() {
       );
     }
 
-    const variables = await getAiVariables();
-    return NextResponse.json({ success: true, data: { variables } });
+    return NextResponse.json(
+      { success: false, error: { code: 'AI_VARIABLE_FILL_RATES_RETIRED', message: 'Event-wide AI variable fill rates are misleading without the eligible-photo denominator. Report variables remain available from per-photo results.' } },
+      { status: 410 },
+    );
   } catch (error) {
     console.error('AI analytics variables failed:', error);
     return NextResponse.json(

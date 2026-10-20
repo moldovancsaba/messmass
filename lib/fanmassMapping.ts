@@ -239,7 +239,7 @@ export async function pushEventStats(
   eventId: string,
   statsPartial: Record<string, unknown>,
   options: { unset?: string[]; cameraPhotoPipeline?: boolean } = {},
-): Promise<{ eventId: string; stats: Record<string, unknown>; applied: string[]; aiLastAnalyzedAt: string }> {
+): Promise<{ eventId: string; stats: Record<string, unknown>; applied: string[]; photoResultReceivedAt: string }> {
   if (!ObjectId.isValid(eventId)) {
     throw Object.assign(new Error('Invalid event id'), { status: 422, code: 'INVALID_EVENT_ID' });
   }
@@ -290,29 +290,11 @@ export async function pushEventStats(
   for (const key of unset) delete mergeBase[key];
   const mergedStats = addDerivedMetrics({ ...mergeBase, ...clean } as any);
   const replaceWholeStats = event.stats !== undefined && event.stats !== storedStats;
-  // WHAT: Stamp when AI analytics last landed on this event.
-  // WHY: Nothing recorded it, so "100% analysed" read identically whether it
-  //     happened this morning or three weeks ago — for a live event that is the
-  //     difference between usable and misleading. `updatedAt` cannot stand in: it
-  //     moves for any edit to the project.
-  // HOW: Server-assigned on receipt, never taken from the producer, so clock skew
-  //     or a replayed request cannot overstate freshness. Stored beside `stats`
-  //     rather than inside it, so it is never mistaken for a chart variable.
+  // This records receipt time for the latest individual photo result. It does
+  // not indicate event progress or completion.
   const receivedAt = new Date().toISOString();
-  // WHAT: Write only the pushed values and the totals derived from them, each
-  //     as its own `stats.<name>` path -- the way lib/fanmassIntegration.ts
-  //     writes results -- never the whole stats object.
-  // WHY: This push runs during live events, about once a minute, while the
-  //     event editor saves roughly once a second. Writing the whole object read
-  //     at the top of this function put back every value the editor stored
-  //     between that read and this write: an operator's last taps, or a report
-  //     text, were lost while the editor showed them as saved. A total is
-  //     written only when it changes, so one derived from values the editor
-  //     changed meanwhile is not rewritten needlessly.
-  // NOTE: Where `stats` is present but not an object (null on some old
-  //     events) a dotted path has nothing to address, so the whole field is
-  //     set, as before.
-  const set: Record<string, unknown> = { aiLastAnalyzedAt: receivedAt, updatedAt: receivedAt };
+  // Write only received metric fields, leaving editor-owned event data intact.
+  const set: Record<string, unknown> = { fanmassPhotoResultReceivedAt: receivedAt, updatedAt: receivedAt };
   const remove: Record<string, ''> = Object.fromEntries(unset.map((key) => [`stats.${key}`, '']));
   if (replaceWholeStats) {
     set.stats = mergedStats;
@@ -328,5 +310,5 @@ export async function pushEventStats(
     $set: set,
     ...(Object.keys(remove).length && !replaceWholeStats ? { $unset: remove } : {}),
   });
-  return { eventId, stats: mergedStats, applied, aiLastAnalyzedAt: receivedAt };
+  return { eventId, stats: mergedStats, applied, photoResultReceivedAt: receivedAt };
 }

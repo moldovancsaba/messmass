@@ -1,8 +1,15 @@
 # {messmass} Release Notes
 Status: Active
-Last Updated: 2026-09-30T14:00:00.000Z
+Last Updated: 2026-10-20T16:45:17.000Z
 Canonical: No
 Owner: Operations
+
+## [v12.3.43] — 2026-10-20T16:45:17.000Z — AI Analytics shows exact per-photo results
+
+- **Changed:** `/admin/analytics/ai` and its event reports now read completed, non-deleted Camera photo results stored by Messmass. They show received result counts, per-photo detections and boxes, brand/club/merchandise findings, and completed moderation checks. They no longer show misleading event coverage, completion, freshness, audience projection, or old cross-event variable fill rates.
+- **Changed:** Fanmass sends one identity-free result for one Camera photo with the exact Messmass event, Camera partner, Camera event, and Camera photo IDs. Messmass validates that link and mechanically rebuilds its own report from active photo rows. Event-level Fanmass exports are retired.
+- **Data cleanup:** deployment cleanup archives obsolete event-level summaries, dashboard snapshots, legacy project stats, and variable definitions outside the active report path; keeps valid photo results and rebuilds their event summaries. The verified cleanup counts will be recorded after the production migration completes.
+- **Verification:** production audit found 438 of 438 Messmass events linked to one unique Camera event, with no missing event, ID mismatch, partner mismatch, duplicate link, or eligible unlinked event. Messmass type-check and build passed; production cleanup remains a post-deployment step.
 
 ## Unreleased — guides: vetting is one photo at a time on one screen, and the vetting words (camera issue 628)
 
