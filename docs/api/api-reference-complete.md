@@ -1,11 +1,11 @@
 # messmass API Reference (complete)
 Status: Active
-Last Updated: 2026-09-28T12:00:00.000Z
+Last Updated: 2026-10-20T17:30:00.000Z
 Canonical: Yes
 Owner: Backend
 
 **Version:** 12.3.43
-_messmass#350 — each entry derived by reading its handler @ 7353223e (guards re-verified @ v12.3.20). Missing routes added and UNGUARDED-GAP rows re-verified @ dd34e229 (2026-09-28). Editor load/save rows (`/api/projects/edit/:slug`, `PUT /api/projects`, `/api/partners/edit/:slug`, `PUT /api/partners`, `POST /api/hashtags`, `POST /api/auto-generate-chart-block`) re-derived from their handlers for the editor save-access fix (2026-09-28)._
+_messmass#350 — each entry derived by reading its handler. Auth and route coverage refreshed against the inventory and photo-result analytics refactor on 2026-10-20._
 
 Coverage-measured, per-endpoint reference for every route under `app/api/`. Each entry gives the auth layer, request/response shape, and side effects (DB writes + external calls). For the curated quick reference see [api-reference.md](api-reference.md).
 
@@ -13,9 +13,9 @@ Coverage-measured, per-endpoint reference for every route under `app/api/`. Each
 
 ## Coverage
 
-- Endpoints documented: **338** across 57 route groups. That is every exported HTTP method handler (including the 4 CORS `OPTIONS` handlers under `/api/public`) in the 225 `route.ts` files under `app/api/` (counted 2026-10-20; additions since the 2026-09-28 pass include the camera `frame-context`, `link-stats`, and `photo-stats` routes plus Fanmass per-photo POST/DELETE ingestion).
-- Auth adjudication: 242 admin-session, 11 page-password, 33 machine-token, 7 cron-secret, 3 org-scoped, 40 public-by-design, 0 stakeholder-session, 0 UNGUARDED-GAP.
-- Deprecation candidates (stub/410/dead): **2** (see the end).
+- Endpoints documented: **341** exported HTTP methods across 57 route groups in **228** `route.ts` files under `app/api/` (inventory refreshed 2026-10-20).
+- Auth adjudication by route: **196** guarded routes, **5** intentionally public write routes, and **27** intentional open-GET routes; all 228 paths are accounted for in [the checked API reference](../_audit/api-reference.md).
+- Compatibility endpoints that return HTTP 410 are documented inline with their replacement or retirement reason; they perform no legacy event-level analytics reads or writes.
 
 ## Auth layers
 
@@ -105,11 +105,11 @@ Coverage-measured, per-endpoint reference for every route under `app/api/`. Each
 | GET | `/api/analytics/aggregates` | admin-session | Query pre-aggregated time-bucketed analytics metrics with filters and pagination. | query: bucket, startDate, endDate, partnerId, partnerIds (csv), hashtag, year, month, limit (max 1000), offset, sortBy, sortOrder | data[], metadata (totalRecords, returnedRecords, hasMore, nextOffset, aggregatedAt, queryTimeMs) | read-only (reads analytics_aggregates) |
 | GET | `/api/analytics/ai/coverage` | admin-session | Retired coverage/completion summary; this photo-result contract has no event denominator. | none | 410 `EVENT_COVERAGE_UNAVAILABLE` | no writes |
 | POST | `/api/analytics/ai/events/:eventId/drive-sync` | admin-session | Check-now / pause / resume every Drive folder linked to one event. | path :eventId; body { action: 'sync'\|'pause'\|'resume' } | { success, updated } (count of folders affected) | Writes drive folder link docs via lib/driveFolders (requestDriveFolderSyncForEvent sets a sync-request flag; setDriveFolderPausedForEvent toggles paused). No direct external HTTP. |
-| GET | `/api/analytics/ai/events/:eventId/rescan` | admin-session | Retired event-wide rescan status. | path :eventId | 410 `EVENT_RESCAN_RETIRED` | no writes |
-| POST | `/api/analytics/ai/events/:eventId/rescan` | admin-session | Retired event-wide rescan request; Fanmass discovers eligible photos individually. | path :eventId | 410 `EVENT_RESCAN_RETIRED` | no writes |
-| GET | `/api/analytics/ai/events/:eventId/summary` | admin-session | Read the current photo-derived summary (brands, clubs, merchandise, demographics, item types and prohibited-content results) for one event. | path :eventId; no query/body | { success, data: summaryDoc } or 404 SUMMARY_NOT_FOUND | read-only |
+| GET | `/api/analytics/ai/events/[eventId]/rescan` | admin-session | Retired event-wide rescan status. | path eventId | 410 `EVENT_RESCAN_RETIRED` | no writes |
+| POST | `/api/analytics/ai/events/[eventId]/rescan` | admin-session | Retired event-wide rescan request; Fanmass independently discovers eligible Camera photos one at a time. | path eventId | 410 `EVENT_RESCAN_RETIRED` | no writes |
+| GET | `/api/analytics/ai/events/[eventId]/summary` | admin-session | Read the Messmass-derived roll-up from current per-photo results (brands, clubs, merchandise, demographics, item types and prohibited-content outcomes). | path eventId; no query/body | { success, data: summaryDoc } or 404 SUMMARY_NOT_FOUND | reads `ai_analysis_summaries` only when its source is `camera_photo_pipeline` |
 | GET | `/api/analytics/ai/events` | admin-session | Events with stored photo-level analysis results and actual moderation totals; no progress or coverage claims. | query: limit? (max 500, default 200) | success, data (event list and received result, detection, box and moderation totals) | read-only |
-| GET | `/api/analytics/ai/events/:eventId/photos` | admin-session | Page stored photo-level analysis details, including normalized results, moderation outcomes and detection boxes. | path :eventId; query: limit?, offset? | success, data { photos[], total, limit, offset } | read-only |
+| GET | `/api/analytics/ai/events/[eventId]/photos` | admin-session | Page stored photo-level analysis details, including identity-free results, moderation outcomes and detection boxes. | path eventId; query limit? (1–500, default 100), offset? (default 0) | 200 { success, data:{ eventId, photos[], total, limit, offset } }; 401/403; 400 invalid event ID | read-only from `fanmass_camera_photo_analyses` |
 | GET | `/api/analytics/ai/variables` | admin-session | Retired event fill-rate catalogue; current photo-result variables are documented in the Fanmass integration guide. | none | 410 `AI_VARIABLE_FILL_RATES_RETIRED` | no writes |
 | GET | `/api/analytics/benchmarks` | admin-session | Percentile/average benchmark stats and top performers across analytics aggregates. | query category, metric, period ('all'\|'year'\|'quarter'\|'month') | { success, data: { category, period, sampleSize, benchmarks, topPerformers } } | read-only (reads analytics_aggregates) |
 | GET | `/api/analytics/compare/partners` | admin-session | Compare aggregated metrics across 2-5 partners with rankings and deltas. | query partnerIds (csv, 2-5), metrics (csv, optional) | { success, data: { partners, metrics, rankings, deltas }, metadata } | read-only (reads partner_analytics) |

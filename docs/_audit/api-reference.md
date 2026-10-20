@@ -1,8 +1,8 @@
 # messmass API Reference
 
-Generated for the fleet audit (messmass#350); measured against `docs/_audit/endpoints.json` (227 endpoints at the 2026-10-20 reconciliation audit; includes the Camera event sync and explicit-link routes added 2026-10-20). Every route below was verified by reading its `route.ts` handler, not just the marker scan; existing Auth adjudication was re-verified against the handlers @ dd34e229 (2026-09-28), and the new routes use `requireFanmassIntegrationAuth`.
+Generated for the fleet audit (messmass#350); measured against `docs/_audit/endpoints.json` (228 endpoints at the 2026-10-20 reconciliation audit; includes the Camera event sync and explicit-link routes added 2026-10-20 and the per-event photo-results read route). Every route below was verified by reading its `route.ts` handler, not just the marker scan; existing Auth adjudication was re-verified against the handlers @ dd34e229 (2026-09-28), and the new integration writes use `requireFanmassIntegrationAuth`.
 
-Coverage: 227 of 227 routes documented, enforced by
+Coverage: 228 of 228 routes documented, enforced by
 `tests/api-reference-covers-every-route.test.ts` — five routes were missing when
 that claim was last made by hand.
 
@@ -44,9 +44,9 @@ Every request passes through, in order: rate limiting, CSRF protection, CORS. CS
 | /api/admin/contact-inquiries | GET | getAdminUser | — | `{success,inquiries[]}` | reads `contact_inquiries` |
 | /api/admin/email-selftest | GET | requireSession; rate-limited | — | `{sent,recipient}` | sends diagnostic email to SUPERADMIN_EMAIL via camera email service |
 | /api/admin/fanmass/commands | POST | getAdminUser + role check | `{type,payload?}` | `{success,command}` | inserts `fanmass_commands` |
-| /api/admin/fanmass/events/[eventId] | GET, POST | getAdminUser + role check | POST `{fanmassBatchId?,status?,action?('sync'\|'dry-run'),force?}` | `{success,link,sync?}` | upserts `fanmass_event_links`; sync writes project stats |
-| /api/admin/fanmass/events | GET | getAdminUser + role check | — | `{success,events[]}` | reads `fanmass_event_links`/`projects` |
-| /api/admin/fanmass/snapshot | GET | getAdminUser + role check | `?eventId` | `{success,snapshot}` | reads `fanmass_dashboard_snapshot` |
+| /api/admin/fanmass/events/[eventId] | GET, POST | getAdminUser + admin/superadmin role | — | 401 unauthenticated; 403 wrong role; 410 `EVENT_LEVEL_SYNC_RETIRED` | no reads or writes |
+| /api/admin/fanmass/events | GET | getAdminUser + admin/superadmin role | — | 410 `FANMASS_EVENT_DASHBOARD_RETIRED` | no reads or writes |
+| /api/admin/fanmass/snapshot | GET | getAdminUser + admin/superadmin role | `?eventId` | 410 `FANMASS_EVENT_DASHBOARD_RETIRED` | no reads or writes |
 | /api/admin/filter-style | GET, POST | requireAdmin (both methods) | GET `?hashtags=a,b`; POST `{hashtags[],styleId}` | `{success,styleId…}` | insert/update `filter_slugs` |
 | /api/admin/fix-mojibake-text | GET | getAdminUser | `?apply=1` (dry-run default) | scan/repair report | updates mojibake text across multiple collections when applied |
 | /api/admin/hashtag-style | GET, POST | requireAdmin (both methods) | GET `?hashtag=`; POST `{hashtag,styleId}` | `{success,styleId…}` | updates `hashtag_slugs` |
@@ -81,12 +81,13 @@ All reads; the aggregation store is `analytics_aggregates` / `partner_analytics`
 |---|---|---|---|---|---|
 | /api/analytics/aggregates/partners | GET | getAdminUser | `?partnerId&limit&offset&sortBy&sortOrder` | `{success,aggregates[]}` | reads `partner_analytics` |
 | /api/analytics/aggregates | GET | getAdminUser | `?bucket&startDate&endDate&partnerId(s)&hashtag&year&month&limit&offset&sort…` | `{success,aggregates[]}` | reads `analytics_aggregates` |
-| /api/analytics/ai/coverage | GET | getAdminUser | — | `{success,coverage}` | reads AI-analytics state (projects/fanmass links) |
+| /api/analytics/ai/coverage | GET | getAdminUser | — | 410 `EVENT_COVERAGE_UNAVAILABLE` | no reads or writes; Camera's eligible-photo denominator is not available in Messmass |
 | /api/analytics/ai/events/[eventId]/drive-sync | POST | getAdminUser | `{…options}` | `{success,command}` | enqueues drive-sync (`fanmass_commands`, `drive_folder_links`) |
-| /api/analytics/ai/events/[eventId]/rescan | GET, POST | getAdminUser | POST `{…options}` | `{success,request}` | writes `ai_rescan_requests` |
-| /api/analytics/ai/events/[eventId]/summary | GET | getAdminUser | — | `{success,summary}` | reads `ai_analysis_summaries` |
-| /api/analytics/ai/events | GET | getAdminUser | `?status&limit` | `{success,events[]}` | reads fanmass-linked events |
-| /api/analytics/ai/variables | GET | getAdminUser | — | `{success,variables[]}` | reads `variables_metadata` |
+| /api/analytics/ai/events/[eventId]/rescan | GET, POST | getAdminUser | — | 401 unauthenticated; 410 `EVENT_RESCAN_RETIRED` | no reads or writes |
+| /api/analytics/ai/events/[eventId]/summary | GET | getAdminUser + admin role | — | `{success,data}` or 404 `SUMMARY_NOT_FOUND` | reads the Messmass roll-up derived from active per-photo results |
+| /api/analytics/ai/events/[eventId]/photos | GET | getAdminUser + admin role | `?limit&offset` | `{success,data:{eventId,photos[],total,limit,offset}}` | reads identity-free per-photo findings, moderation outcomes, and boxes from `fanmass_camera_photo_analyses` |
+| /api/analytics/ai/events | GET | getAdminUser + admin role | `?limit` | `{success,data[]}` | derives event analytics rows and counts from active per-photo results; no coverage/progress claims |
+| /api/analytics/ai/variables | GET | getAdminUser + admin role | — | 410 `AI_VARIABLE_FILL_RATES_RETIRED` | no reads or writes |
 | /api/analytics/benchmarks | GET | requireSession | `?category&metric&period` | benchmark stats | reads `analytics_aggregates` |
 | /api/analytics/compare/partners | GET | requireSession | `?partnerIds&metrics` | comparison series | reads `partner_analytics` |
 | /api/analytics/compare/periods | GET | requireSession | `?periodA&periodB&bucket&partnerId` | period deltas | reads `analytics_aggregates` |
@@ -362,10 +363,10 @@ CSRF is never counted as a guard: any anonymous caller can fetch the token from
 
 | | routes |
 |---|---:|
-| Fully guarded (every method) | **195** |
+| Fully guarded (every method) | **196** |
 | Open write method, public by design | **5** |
 | Open GET only, writes guarded or absent | **27** |
-| **Total** | **227** |
+| **Total** | **228** |
 
 The previous run of this section (2026-08) listed 40 GAP routes, 21 of them
 unauthenticated writes. Those are closed: messmass#347 and #386 took the first

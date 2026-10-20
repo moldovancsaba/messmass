@@ -1,7 +1,6 @@
 // tests/fanmass-push-event-stats.test.ts
-// WHAT: pushEventStats (fanmass analysis pushes during live events) writes
-//     only the values it pushes and the totals they change, each as its own
-//     `stats.<name>` path.
+// WHAT: The per-photo result projection writes only the values it derives and
+//     the totals they change, each as its own `stats.<name>` path.
 // WHY: It used to read the event's stats, look up the derived variables, and
 //     write the whole stats object back. An event editor save landing between
 //     that read and that write -- an operator's taps, a report text -- was put
@@ -101,13 +100,17 @@ describe('pushEventStats', () => {
       fake.projects[0].stats.reportText1 = 'final text';
     });
 
-    const result = await pushEventStats(String(eventId), { fanmassGenderMalePct: 55, fanmassDemographicsAnalyzed: 400 });
+    const result = await pushEventStats(
+      String(eventId),
+      { fanmassGenderMalePct: 55, fanmassDemographicsAnalyzed: 400 },
+      { cameraPhotoPipeline: true },
+    );
 
     expect(result.applied).toEqual(['fanmassGenderMalePct', 'fanmassDemographicsAnalyzed']);
     const update = fake.projectsCollection.updateOne.mock.calls[0][1];
     expect(update.$set).not.toHaveProperty('stats');
     expect(update.$set).toMatchObject({ 'stats.fanmassGenderMalePct': 55, 'stats.fanmassDemographicsAnalyzed': 400 });
-    expect(update.$set).toHaveProperty('aiLastAnalyzedAt');
+    expect(update.$set).toHaveProperty('fanmassPhotoResultReceivedAt');
     expect(fake.projects[0].stats).toMatchObject({
       female: 212,
       reportText1: 'final text',
@@ -120,7 +123,7 @@ describe('pushEventStats', () => {
     const fake = fakeDb({ _id: eventId, stats: { remoteImages: 2, hostessImages: 1, selfies: 0, allImages: 3, totalFans: 0 } });
     const { pushEventStats } = await load(fake);
 
-    await pushEventStats(String(eventId), { selfies: 4 });
+    await pushEventStats(String(eventId), { selfies: 4 }, { cameraPhotoPipeline: true });
 
     const set = fake.projectsCollection.updateOne.mock.calls[0][1].$set;
     expect(set).toMatchObject({ 'stats.selfies': 4, 'stats.allImages': 7 });
@@ -131,7 +134,11 @@ describe('pushEventStats', () => {
     const fake = fakeDb({ _id: eventId, stats: { female: 1 } }, ['totalGender']);
     const { pushEventStats } = await load(fake);
 
-    const result = await pushEventStats(String(eventId), { totalGender: 9, 'fanmass.fans': 3, $bad: 1, fanmassFans: 3 });
+    const result = await pushEventStats(
+      String(eventId),
+      { totalGender: 9, 'fanmass.fans': 3, $bad: 1, fanmassFans: 3 },
+      { cameraPhotoPipeline: true },
+    );
 
     expect(result.applied).toEqual(['fanmassFans']);
     const set = fake.projectsCollection.updateOne.mock.calls[0][1].$set;
@@ -142,7 +149,7 @@ describe('pushEventStats', () => {
     const fake = fakeDb({ _id: eventId, stats: null });
     const { pushEventStats } = await load(fake);
 
-    await pushEventStats(String(eventId), { fanmassFans: 3 });
+    await pushEventStats(String(eventId), { fanmassFans: 3 }, { cameraPhotoPipeline: true });
 
     const set = fake.projectsCollection.updateOne.mock.calls[0][1].$set;
     expect(set.stats).toMatchObject({ fanmassFans: 3 });
