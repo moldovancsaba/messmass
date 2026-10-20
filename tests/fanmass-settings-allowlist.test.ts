@@ -8,7 +8,7 @@ import { FANMASS_SETTINGS_ALLOWLIST, findDisallowedSettingsKeys, isFanmassSettin
 
 describe('findDisallowedSettingsKeys', () => {
   it('accepts a payload of only allowlisted keys', () => {
-    expect(findDisallowedSettingsKeys({ yoloConfidence: 0.5, cameraBackfill: true })).toEqual([]);
+    expect(findDisallowedSettingsKeys({ yoloConfidence: 0.5, gdriveBackfill: true })).toEqual([]);
   });
 
   it('rejects a credential-shaped key even mixed with allowed keys', () => {
@@ -42,6 +42,14 @@ describe('findDisallowedSettingsKeys', () => {
     ];
     for (const field of credentials) {
       expect(isFanmassSettingsField(field)).toBe(false);
+    }
+  });
+
+  it('does not allow Camera Atlas connection or scheduling through the UI', () => {
+    const cameraFields = ['cameraAtlasUri', 'cameraAtlasDatabase', 'cameraPipelineDatabase', 'cameraAtlasPollSeconds', 'cameraPollMinutes', 'cameraBackfill'];
+    for (const field of cameraFields) {
+      expect(isFanmassSettingsField(field)).toBe(false);
+      expect(findDisallowedSettingsKeys({ [field]: 'untrusted' })).toEqual([field]);
     }
   });
 });

@@ -1,43 +1,100 @@
 # Messmass, Camera and Fanmass integration audit and delivery plan
 
 **Date:** 2026-10-18
-**Status:** Accepted for delivery on 2026-10-19; implementation is in review on paired Camera/Fanmass feature branches, with the cross-app audit and delivery order tracked in this document. These branches are not merged or deployed. Local runtime operations were completed 2026-10-18; no production configuration or data has been changed.
+**Status:** The original HTTP-feed recommendation below was superseded by the owner on 2026-10-20. The replacement Atlas-owned Fanmass discovery/queue refactor is staged across Camera, Fanmass and Messmass worktrees; it is not merged or deployed. No production Atlas permission, configuration, or data has been changed by this update.
 **Purpose:** Establish a reliable, privacy-aware integration for photo capture, human vetting, AI-assisted analysis, correction, learning and reporting.
+
+## 0. Superseding owner decision — 2026-10-20
+
+The owner explicitly rejected the Camera-produced HTTP queue as the integration
+model. Camera must not create Fanmass work, call Fanmass, upload to Fanmass, or
+receive analysis callbacks. This is a boundary refactor, not a smaller change to
+the former poller.
+
+| System | Required responsibility |
+|---|---|
+| **Camera** | Capture, identity and consent, retention/erasure, human vetting, and Camera's own audit trail. It writes its normal event/submission records and otherwise does not manage AI work. |
+| **Fanmass** | Independently reads eligible Camera records from Atlas with a read-only source role; owns its durable queue, discovery/reconciliation, global one-photo lease, retries, full analysis/results/boxes, and deletion of its derived local copies. |
+| **Messmass** | Receives event aggregates from Fanmass using the existing authenticated reporting integration. It does not receive guest contact data or individual photo records. |
+
+Required lifecycle:
+
+1. Camera saves a submission and later records its consent, identity, retention,
+   and human publication decision. A no-login capture is excluded and remains
+   under Camera's 24-hour erasure policy.
+2. Fanmass discovers eligible source documents directly in Camera Atlas through
+   a narrow projection that does not return email/name/login fields. A change
+   stream is the low-latency path; bounded, resumable scans recover missed
+   changes and source deletions.
+3. Fanmass creates exactly one queue identity per source photo, regardless of
+   event links. Fanmass alone acquires a global lease and processes one image at
+   a time. It rechecks eligibility before download and before result commit.
+4. Fanmass persists the complete normalized analysis and image-relative boxes
+   in its own Atlas database. It retries transient errors and fences stale
+   workers; a crash may cause recomputation, but cannot publish a stale result.
+5. Fanmass sends aggregate analytics to Messmass through the existing
+   authenticated integration. On source withdrawal/deletion/ineligibility, it
+   removes the result and queues retryable deletion of local image/derived data.
+
+The staged implementation is documented in Fanmass
+`docs/CAMERA_ATLAS_QUEUE_CONTRACT.md`. The former CF-02 Camera queue/private
+media API and CF-03 Fanmass claim/ack consumer are retired as the target design;
+the legacy feed routes are removed from the staged Camera branch. Release order
+is: provision least-privilege Atlas access, deploy and observe Fanmass discovery
+and result persistence, then deploy Camera's route removal, then reconcile the
+event backlog and verify withdrawal/erasure. Production access and deployment
+remain explicit release gates.
 
 ## 1. Executive recommendation
 
-Keep the three apps and make their boundaries explicit:
+Keep the three systems and make their ownership explicit:
 
 | System | Owns |
 |---|---|
-| **Messmass** | Organizations, partners, events, report templates, report access, report composition and cross-event reporting |
-| **Camera** | Guest capture, contact details and consent receipts, original photo lifecycle, publication visibility, human vetting decision, human annotation and reviewer audit trail |
-| **Fanmass** | AI analysis runs, model and prompt versions, confidence/uncertainty, analysis output, evaluation, and governed use of human corrections |
+| **Messmass** | Organizations, partners, events, reports, report access, and event-level analytics presentation |
+| **Camera** | Capture, guest identity and consent, retention/erasure, publication visibility, human vetting, and its own audit history |
+| **Fanmass** | Independent Camera Atlas discovery, durable queue, one-photo scheduling, local AI analysis, full result/boxes, retries, provenance, and derived-data cleanup |
 
-Use a versioned API as the only integration boundary. Do not connect the apps to each other’s databases. For the first reliable version, use a **durable Camera work queue that Fanmass claims by outbound API calls**. Fanmass is currently documented as a local, loopback-bound service, so a Camera webhook cannot reliably call it. Fanmass should poll/claim queued jobs frequently, lease them, fetch photos through a private, authorized Camera endpoint, and post versioned results back to Camera. This keeps Fanmass offline-friendly and makes retries explicit.
+The integration boundary is the MongoDB Atlas cluster with separate database
+permissions. Fanmass receives read-only access to the Camera database and
+read/write access to its own pipeline database. Camera does not create Fanmass
+jobs, send images, call Fanmass, or receive result callbacks. Messmass continues
+to receive aggregate analytics through its authenticated Fanmass API.
 
-The target flow is:
+The target lifecycle is:
 
-1. A guest submits a photo to Camera. Camera records the consent version, photo, event and capture ID. A typed email is saved in one canonical contact field, separate from social-login identity and legacy display placeholders; `anonymous@event` is never treated as a real recipient. Approval/rejection notification status stays in Camera and uses the actual user-provided address when present.
-2. If the documented purpose and eligibility rules permit analysis, Camera writes a durable analysis-work item. Otherwise it records an explicit ineligible/excluded state. This happens independently of the human publication decision and does not delay capture or vetting.
-3. Fanmass claims the work item, privately fetches the original image, analyzes it locally, and returns suggestions, confidence, warnings and model provenance.
-4. Camera shows those suggestions beside the original to the reviewer. **AI never approves or rejects a photo.** The reviewer remains responsible for the publication decision and can correct, remove or add labels.
-5. Camera records the final human decision and every label correction as an append-only, attributable revision. Fanmass receives only the corrected analysis payload needed for its governed learning workflow.
-6. Fanmass applies corrections first within the correct event/partner scope. Cross-partner learning or model-weight training requires a separately approved promotion and evaluation step.
-7. Messmass receives versioned event aggregates and integration-health state. It remains the reporting destination; it does not receive guest contact details or individual photo labels by default.
+1. Camera persists capture, identity, consent, retention, and human publication
+   state. An incomplete/no-login journey is excluded from review and AI, then
+   erased by Camera after its 24-hour identity window.
+2. Fanmass independently discovers source records through Atlas change streams
+   and bounded resumable reconciliation. It receives only a minimal field
+   projection; Atlas computes a real-identity boolean without returning contact
+   data.
+3. Fanmass gives each source photo one queue key derived from its source Mongo
+   `_id`. A single global Atlas lease permits one queue photo to be analyzed at a
+   time. Fanmass rechecks eligibility and source revision before download and
+   before result persistence.
+4. Fanmass writes the complete normalized analysis, provenance, summary, and
+   image-relative people/face boxes to its own Atlas database. Fenced retries
+   are at-least-once: failures can cause recomputation, but stale workers cannot
+   publish results.
+5. Fanmass sends event aggregates to Messmass using the existing authenticated
+   API. Consent withdrawal, erasure, source deletion, or a changed eligibility
+   state cancels output and triggers retryable Fanmass cleanup of its staged
+   image and derived local data.
 
-This is not one “approved” flag. Keep three separate state machines:
+This architecture does not include AI suggestions in Camera's vetting UI or
+Camera-authored corrections back to Fanmass. Those would be a separate,
+explicitly designed product surface and data boundary; they must not reintroduce
+Camera as the analysis queue owner.
 
-| State | Example values | Owner | Meaning |
-|---|---|---|---|
-| Publication review | waiting, approved, rejected, deleted | Camera | Whether the photo may be published and who decided |
-| AI analysis | not eligible, queued, running, partial, complete, failed, stale, withdrawn | Fanmass, mirrored by Camera | Whether a particular version of analysis exists and whether policy permits it |
-| Permission and retention | permitted purpose/version, restricted, withdrawn, expired | Camera | Whether a given processing purpose remains allowed and how long its data may remain |
-| Decision notification | not applicable, pending, sent, failed, bounced | Camera | Whether the approval/rejection email was sent to the real typed contact; never infer success from a moderation status |
+Keep distinct state machines for publication review, Fanmass analysis, Camera
+permission/retention, and decision-email delivery. A single `approved` state
+must never stand in for consent, analysis completion, or email success.
 
 ## 2. Scope and evidence limits
 
-This is a source/documentation audit plus the explicitly requested local runtime operation: Fanmass's historical Drive backfill flag was turned off, the Image.direct inference listener was gracefully stopped, and Fanmass was started and health-checked. No production database or deployment was changed; secret values were not read or displayed. Production processing regions, actual storage copies, email delivery and current retention execution have not been independently verified. Confirm those operational facts before enabling pre-vetting image transfer.
+This is a source/documentation audit plus the explicitly requested local runtime operation: Fanmass's historical Drive backfill flag was turned off, the Image.direct inference listener was gracefully stopped, and Fanmass was started and health-checked. No production database or deployment was changed; secret values were not read or displayed. Production processing regions, actual storage copies, email delivery and current retention execution have not been independently verified. Confirm those operational facts before enabling production Atlas discovery.
 
 The source baseline checked was the repository remote-main refs available on 2026-10-18:
 
@@ -53,7 +110,7 @@ The shared local checkouts were behind those refs (Messmass 28 commits; Fanmass 
 
 ### 2.1 Local Fanmass runtime prerequisite — refreshed 2026-10-18 after restart
 
-**Decision: Fanmass is running locally as requested, with Image.direct's inference listener stopped and Google Drive historical backfill disabled. This proves the current checkout can start, but does not qualify the Mac for unattended production integration.** Fanmass remains local-only: Camera and Messmass must not call a public Fanmass endpoint; Fanmass should initiate outbound polling/claims and private image retrieval from this machine.
+**Decision: Fanmass is running locally as requested, with Image.direct's inference listener stopped and Google Drive historical backfill disabled. This proves the current checkout can start, but does not qualify the Mac for unattended production integration.** Fanmass remains local-only: Camera and Messmass do not call a public Fanmass endpoint. Fanmass initiates the read-only Atlas connection from this machine; the existing outbound Messmass analytics delivery remains separate.
 
 | Check | Observed after the requested operation | Readiness |
 |---|---|---|
@@ -63,19 +120,19 @@ The shared local checkouts were behind those refs (Messmass 28 commits; Fanmass 
 | Supervisor and services | `com.fanmass.supervisor` is enabled and running in the current user's launchd domain. Fanmass `/api/health` returned HTTP 200 with `status=ok`, database connected, and vision, semantic, full and analytics capabilities ready. MongoDB, Ollama, web and worker listeners/processes are present. Supervisor state is fresh (`running`, web healthy, worker heartbeat about 13 seconds old). | Pass for this local restart. The LaunchAgent still depends on the logged-in user's GUI session. |
 | API access | No Fanmass API key is configured. Camera/Messmass credential fields exist; secret values and live authentication were not inspected. | Local health is public and working, but protected dashboard/API access and cross-app credentials remain unverified. No key was generated as part of restart. |
 | Disk headroom | Free space was about 12 GiB before start, fell to 9.9 GiB during startup, then read about 15 GiB at the final recheck; volume usage fluctuated between 97% and 98%. Existing Fanmass uploads, MongoDB data/logs and model caches remain intact. | **Production blocker.** The changing, low reserve needs investigation and a defined stop threshold, retention and log rotation. No cleanup or data deletion was performed. |
-| Drive backfill | `.config/settings.json` now has `gdriveBackfill=false`; `cameraBackfill=false`; no `GDRIVE_BACKFILL` override exists in the checked process environment, `.env`, or LaunchAgent. | Historical Drive backfill is paused. The ordinary incremental Drive poll remains enabled by the current configuration and is separate from full-history backfill. |
+| Drive backfill | `.config/settings.json` had `gdriveBackfill=false`; no `GDRIVE_BACKFILL` override existed in the checked process environment, `.env`, or LaunchAgent. The then-present `cameraBackfill=false` value was a legacy setting and is not used by the Atlas-owned queue. | Historical Drive backfill was paused at the time of the 2026-10-18 check. The ordinary incremental Drive poll was separate from full-history backfill. |
 | Repository age | Local Fanmass checkout remains 5 commits behind the fetched `origin/main` baseline from the audit; it was not pulled or changed during restart. | Agree the release and reconcile the checkout before production integration. |
 
 Fanmass's public health endpoint and worker heartbeat are healthy, but this is not a production canary: no Camera/Messmass credential was exercised and no new processing purpose or event scope was enabled. The current-user LaunchAgent needs the user GUI session; if the service must survive logout or user-session failure, move it to a managed always-on local host/service account. The worker is active and the free disk reserve is low, so watch queue activity and disk growth.
 
-**Gate 0 — local runtime readiness, before merging/enabling CF-02/CF-03 for a production pilot:**
+**Gate 0 — local runtime readiness, before enabling the Fanmass Atlas reader in production:**
 
 1. Confirm this Mac (or an explicitly designated always-on local host) is the supported Fanmass worker; reconcile its five-commit drift to the approved release and verify outbound Camera/Messmass access.
 2. Resolve disk capacity, retention and log rotation. Define a minimum free-space stop threshold before unattended image ingestion.
 3. Keep `gdriveBackfill=false`; separately decide whether ordinary incremental Drive polling should continue. Confirm event/partner scope. Provision a scoped Fanmass API key if operators need protected dashboard/API routes; validate outbound credentials without exposing values.
 4. Keep Fanmass and Image.direct under one local inference lease coordinator (Section 2.4) before any automated switching. For a manual handoff, stop/unload the current model first, verify it released the listener/model and check memory pressure before starting the next.
 5. Verify launchd state, `/api/health`, dependencies, fresh worker heartbeat, protected API access if required, and a non-mutating Camera/Messmass canary. Confirm restart and network-recovery behavior without enabling historical backfill.
-6. Agree on worker availability and queue-age targets. Camera's current 15-minute poll is not on-the-fly; implement frequent lease polling or a durable event queue before promising immediate suggestions.
+6. Agree on worker availability and queue-age targets. Fanmass discovers independently from Atlas on a five-second scheduler with change streams for low latency; actual production Atlas connectivity and observed discovery latency remain unverified until deployed.
 
 ### 2.2 Local memory, inference and scheduled-job inventory — checked 2026-10-18
 
@@ -98,7 +155,7 @@ Disk is an additional capacity concern for a local model host: free space was ab
 
 The requested local handoff was completed on 2026-10-18:
 
-1. Set `gdriveBackfill=false` in Fanmass settings before starting it. No overriding `GDRIVE_BACKFILL` value was found in the checked environment, `.env`, or LaunchAgent. `cameraBackfill` remains false.
+1. Set `gdriveBackfill=false` in Fanmass settings before starting it. No overriding `GDRIVE_BACKFILL` value was found in the checked environment, `.env`, or LaunchAgent. The historical `cameraBackfill` value was false but is obsolete; Atlas discovery no longer has a Camera-backfill setting.
 2. Sent SIGTERM to the Image.direct Python process verified as the sole listener on `127.0.0.1:8001`. It exited cleanly and the port is closed. No force-kill was used.
 3. Enabled and bootstrapped `com.fanmass.supervisor` using launchd. MongoDB and Ollama came up, then the web and detection worker. Startup took about two minutes as MongoDB initialized and models/modules warmed.
 4. Verified Fanmass `/api/health` returned `status=ok`, MongoDB connected, and vision/semantic/full/analytics capabilities ready; the live supervisor file reported `running`, `webHealthy=true`, MongoDB/Ollama ready, and a fresh worker heartbeat. The local model slot is now assigned to Fanmass; Image.direct's inference listener remains stopped.
@@ -122,62 +179,57 @@ Implement this after the business contract and before automated alternating sche
 
 ## 3. Current architecture and what it already does well
 
-### 3.1 Existing connections
+### 3.1 Current connections after the owner decision
 
-- Messmass provisions organizations, partners and events into Camera through internal HTTP routes. Camera also has inbound service routes for frame context, link statistics, photo statistics and shared-session workflows.
-- Camera provides Fanmass with an internal event list and a per-event media feed. Fanmass is the caller and keeps a per-event cursor.
-- Messmass and Fanmass already use versioned event-context and analytics-summary contracts. Messmass stores Fanmass sync state and the Fanmass aggregate in its own event/report data.
-- Camera photo statistics have a distinct Camera namespace in Messmass. Camera sends event-level totals rather than per-photo names, emails, reviewer identities or people labels. The photo-stat feature is off by default.
-- Fanmass processes image work in asynchronous, resumable chunks, persists results, tracks runs and exposes progress separately from its dashboard.
-- Fanmass has human review feedback, region labels and teaching templates. Human corrections can affect future analyses; that is a real foundation for learning from review.
-- Camera has human review history, structured rejection reasons, consent receipts, annotation vocabulary versions, and event-level analytic totals.
-- The apps use separate databases and HTTP boundaries. Preserve this.
+- Messmass provisions organizations, partners and events into Camera through its internal APIs and receives Camera event-level counters.
+- Camera writes captures, consent/identity, retention and vetting state to its own Atlas source database. It has no Fanmass image-feed or analysis callback route in the staged design.
+- Fanmass initiates a least-privilege Atlas connection: read-only on Camera's source database and read/write only on Fanmass's pipeline database. It independently discovers, validates, queues and analyzes eligible photos.
+- Fanmass sends normalized event aggregates to Messmass through the existing authenticated reporting API. Messmass does not receive per-photo records or guest contact data.
+- Fanmass's local analysis engine is serialized for this Camera queue: one durable source-photo item under one global Atlas lease at a time.
 
 ### 3.1.1 Source surfaces reviewed
 
-| Repository | Main code/doc surfaces |
+| Repository | Current implementation/doc surfaces |
 |---|---|
-| Camera | app/api/internal/messmass/*; app/api/internal/fanmass/events/*; lib/fanmass/internal.ts; lib/fanmass/media-feed.ts; app/api/admin/submissions/[submissionId]/review/route.ts; app/admin/events/[id]/vetting/review/page.tsx; app/admin/events/[id]/analysis/review/page.tsx; docs/MESSMASS_FANMASS_INTEGRATION.md; docs/AUTHORIZATION.md; docs/PRIVACY_DATA.md; docs/ANALYTICS_DATA_DICTIONARY.md; docs/AI_TRAINING_PURPOSE_AND_CONSENT_DRAFT.md. |
-| Messmass | lib/cameraClient.ts; lib/cameraPhotoStats.ts; lib/fanmassIntegration.ts; lib/fanmassCommands.ts; lib/roles.ts; lib/pageAccess.ts; docs/operations/messmass-fanmass-integration-delivery-plan-2026-06-25.md; docs/_audit/fleet-architecture.md. |
-| Fanmass | config.py; services/camera_client.py; services/camera_sync.py; services/messmass_integration.py; services/batch_review.py; services/region_feedback.py; services/memory_store.py; services/visual_memory.py; docs/current-implementation.md; docs/analytics-workflow.md; docs/RUNBOOK.md. |
+| Camera | submission capture/admin/retention routes; `lib/photo-vetting/*`; `lib/submissions/visibility.ts`; `docs/MESSMASS_FANMASS_INTEGRATION.md`; `docs/AUTHORIZATION.md`; `docs/PRIVACY_DATA.md`; generated endpoint inventory. The old `app/api/internal/fanmass/events/**` feed and `lib/fanmass/media-feed.ts` are removed in the staged branch. |
+| Messmass | `components/fanmass/SettingsTab.tsx`; `lib/fanmassSettingsAllowlist.ts`; Fanmass aggregate routes; `docs/_audit/fleet-architecture.md`; Fanmass guide; integration delivery plan. |
+| Fanmass | `config.py`; `services/camera_atlas.py`; `services/camera_sync.py`; `services/camera_analysis_sync.py`; `services/messmass_integration.py`; `services/background_jobs.py`; `workers/detection_worker.py`; Atlas queue contract and runbook. The former `services/camera_client.py` is removed. |
 
-This list identifies the source paths behind the findings; it is not a complete route-by-route security test or a live deployment inspection.
+This is a code/documentation review of staged branches, not a production Atlas permission or live-deployment inspection.
 
 ### 3.2 Current selfie-to-analysis path
 
-The implemented Camera-to-Fanmass media route is an incremental feed, not a real-time job interface:
+1. Camera saves its capture and records consent, identity, retention, and publication/vetting state. A capture without an identity is excluded from vetting and Fanmass analysis, then erased under Camera's 24-hour rule.
+2. Fanmass independently observes Camera Atlas changes and performs recurring bounded scans. It receives a narrow projection; identity is evaluated in Atlas as a boolean, so contact values do not cross into Fanmass.
+3. Fanmass creates or reconciles one durable queue record per source Mongo `_id`, independent of event associations. It rechecks the source before download and before saving results.
+4. Fanmass obtains one global Atlas lease, downloads/stages one eligible source image, runs the full local analysis, stores normalized output and people/face boxes in Fanmass-owned Atlas, and only then releases that work item.
+5. Fanmass pushes event aggregates to Messmass. Source deletion, lost consent, erasure or lost eligibility removes the Fanmass result and queues deletion of local image-derived material.
 
-1. Fanmass polls for active events and media. The default poll interval is 15 minutes.
-2. Camera returns original fan photos that became available since the cursor. If vetting is required, waiting and rejected photos are omitted; the photo enters the feed after approval.
-3. Camera returns a public image URL for the approved photo. Current Camera storage may serve a Vercel Blob URL or a legacy ImgBB URL; Fanmass fetches the URL without the integration secret.
-4. Fanmass downloads the photo and stages it into an event-linked batch. A separate worker then analyzes it in chunks.
-5. Fanmass publishes aggregate analytics to Messmass. Messmass also has an analysis command queue and can request work in Fanmass.
-
-This design is useful for post-event reporting but cannot provide the requested live vetting assistance: waiting photos are deliberately withheld, the poll can be 15 minutes late, analysis runs asynchronously, and no per-photo result is returned to Camera.
+Camera has no Fanmass scheduler, queue, image transfer, analysis callback or AI state to keep synchronized. Discovery and analysis continue or recover independently from Camera's normal source records.
 
 ### 3.3 What the current three human/AI surfaces mean
 
 The source contains distinct annotation stores:
 
 - Camera’s reviewer data is stored on the submission, including people, people-review metadata and rejection reasons.
-- Fanmass’s per-image analysis and user feedback are stored in its batch/image records.
+- Fanmass’s per-image analysis is stored in its batch/image records and, for Camera-source images, in the durable Fanmass-owned Atlas result record. Fanmass feedback remains separate from Camera’s publication/vetting history.
 - Messmass imports Fanmass summaries and provides event/report integrations. Its existing integration is centered on aggregates, batch links and run/entity commands, not a canonical per-photo review record shared with Camera.
 
 Therefore “the same image can be analysed in Camera, Messmass and Fanmass” is not yet a safe shared workflow. There is no single per-image analysis revision with one owner, a shared correction protocol, or a rule for resolving disagreements. The integration must not silently overwrite Camera annotations with Fanmass output or vice versa.
 
-### 3.3.1 Required event workflow: vetting and analysis are independent
+### 3.3.1 Required event workflow: Camera publication first, Fanmass discovery second
 
-Model event policy with two independent concerns: **whether human vetting gates publication** and **when the required analysis work is done**. Do not use one combined “vetting/analysis enabled” switch.
+Model event policy with two independent concerns: **whether human vetting gates publication** and **whether an eligible photo is due for Fanmass analysis**. Camera never schedules or transmits that analysis. Fanmass discovers eligible records from Atlas after Camera publication and consent rules are satisfied.
 
 | Event mode | Human publication rule | Analysis workflow |
 |---|---|---|
-| Vetting required; real-time assistance | Photo stays private until a human approves it. | Camera queues an eligible submission immediately; Fanmass returns advisory suggestions while the vetter works. Human decision always wins; slow or unavailable Fanmass never blocks Camera vetting. |
-| Vetting required; deferred analysis | Photo stays private until a human approves it. | Vetting proceeds without waiting for analysis. A separate Analyse worklist later handles eligible vetted photos; rejected/private photos remain excluded unless the event purpose explicitly permits their processing. |
-| Vetting not required; deferred analysis | “No vetting” means no human moderation is required before publication; apply consent, deletion and other configured publication rules normally. | Every eligible, non-deleted submission is queued for post-event analysis and appears in the Analyse worklist. There is no hidden moderation step. |
+| Vetting required | Photo stays private until a human approves it. | Camera completes its own human decision first. Fanmass independently discovers only eligible, approved submissions from Atlas. There is no pre-vetting analysis, Camera queue or callback. |
+| Vetting required; analysis happens later | Photo stays private until a human approves it. | Fanmass independently discovers the eligible, approved photo from Atlas and handles it in its own queue. Camera remains uninvolved. |
+| Vetting not required | No human moderation is required before publication; apply consent, identity, retention and other configured publication rules normally. | Fanmass independently discovers each otherwise eligible submission from Atlas. There is no hidden moderation step or Camera queue. |
 
-Analysis remains an expected event deliverable in all three modes. The event setting controls whether suggestions must be available during vetting or can be completed later; it must not silently disable analysis. Represent this explicitly (for example, `vettingRequired` plus `analysisTiming=live|deferred`) and expose per-photo states `not_eligible`, `queued`, `running`, `complete`, `failed`, and `withdrawn`. If product later needs an event to skip analysis entirely, add a separately named, owner-approved policy instead of overloading either control.
+Analysis remains a separate event deliverable. `vettingRequired` controls Camera publication only; it does not start or stop Fanmass. With vetting enabled, Fanmass can discover a photo only after approval. With vetting disabled, every photo that meets the consent, identity, retention and publication rules is eligible. Fanmass exposes per-photo states `not_eligible`, `queued`, `running`, `complete`, `failed`, and `withdrawn`; an event-level analysis opt-out, if needed later, must be a separate owner-approved policy.
 
-Camera owns the submission and consent receipts. Required terms/privacy consent, optional marketing opt-in, permission to analyze for the event/report, and any future model-training purpose are distinct purposes and records. The optional marketing selection must never block capture and must not be treated as permission for AI analysis or model training. Fanmass receives only the minimum eligibility/purpose token and photo needed for the approved analysis; it does not receive the guest's typed email or social-login identity. Messmass gets event aggregates and sync status, not attendee contact data.
+Camera owns the submission and consent receipts. Required terms/privacy consent, optional marketing opt-in, permission to analyze for the event/report, and any future model-training purpose are distinct purposes and records. The optional marketing selection must never block capture and must not be treated as permission for AI analysis or model training. Fanmass reads only the minimum eligible source projection and approved photo through Atlas; it does not receive the guest's typed email or social-login identity. Messmass gets event aggregates and sync status, not attendee contact data.
 
 ### 3.4 Rights, reports and link-based clickers
 
@@ -191,33 +243,35 @@ The access models are useful but are not interchangeable:
 
 Keep public report sharing and low-friction clickers as valid product features. Do not reuse their slugs, passwords or page-access cookies for service-to-service API access. For staff operations, use the authenticated partner/event assignment. For a clicker link, retain the narrow editor field allowlist and add explicit link revocation/expiry expectations, access logging that does not record the secret itself, and a way to rotate a compromised link. For a vetter, grant only review and annotation actions on assigned events. These distinctions should appear in the admin UI and onboarding language so a shared link is never mistaken for staff identity.
 
-## 4. Findings and issues to address
+## 4. Baseline findings and current disposition
 
-### P0 — Current pull can lose media
+The findings below were recorded against the 2026-10-18 HTTP-feed baseline. The owner replaced that design on 2026-10-20 with Fanmass-owned Atlas discovery. Treat old feed/cursor findings as historical unless the disposition says they remain open; the current implementation contract is [Fanmass's Atlas queue contract](../../../../fanmass/docs/CAMERA_ATLAS_QUEUE_CONTRACT.md) where that cross-repository path is available in the checkout.
+
+### P0 — Timestamp feed could lose media — superseded and addressed in staged Atlas queue
 
 Fanmass advances its cursor to the largest timestamp it successfully fetched. If an earlier media download fails but a later one succeeds in the same poll, the cursor can move beyond the failed image. The next poll will not request that earlier timestamp again. The comment in the code says the failed item will retry, but that is not true in that case.
 
 There is a second cursor risk: Camera filters with a strict “availableAt greater than since” comparison and sorts only by availableAt. If more records share the cursor timestamp than fit in a response, advancing to that timestamp can skip the rest. The response does not contain a stable tie-breaker or a continuation token.
 
-**Required fix:** replace the timestamp-only checkpoint with a stable, ordered cursor (availableAt plus submission ID, or an opaque continuation token), and persist an independent per-submission state. A failed image must remain retryable regardless of later successful images. Acknowledge an item only after Fanmass has durably staged it.
+**Disposition (2026-10-20):** this HTTP cursor design is retired. Fanmass now discovers source records directly, keys work by Camera submission Mongo `_id`, uses change streams plus a repeatable bounded census, and persists independent retry/terminal state for each source photo. The one-photo queue and reconciliation contract is staged, not production-verified.
 
-### P0 — Existing media cannot drive on-the-fly vetting
+### P0 — Pre-vetting image access — rejected by the owner
 
-The current feed only returns photos already approved for publication. It cannot provide suggestions to the reviewer while a photo is waiting. Also, the normal feed exposes a fetchable image address. Do not expand that public feed to include unapproved images.
+The former feed exposed storage URLs for eligible records and withheld waiting/rejected photos. That HTTP feed is removed from the staged operating path.
 
-**Required fix:** add a separate private pre-vetting retrieval path authorized to Fanmass, returning only the original asset and the minimum event context. Use the existing private pending-photo copy or a controlled private storage path; do not create a public URL for waiting or rejected images. Never include contact email, social identity, session tokens, consent text or reviewer identity in the Fanmass payload.
+**Disposition (2026-10-20):** no pre-vetting image path will be added. Camera records consent, identity and the human publication decision first; Fanmass then reads eligible records through its least-privilege Atlas role. Contact details are excluded from the source projection.
 
-### P0 — No per-photo result or correction loop
+### P0 — Per-photo analysis result — partially addressed; correction loop remains open
 
 Fanmass currently exports batch/event summaries to Messmass. There is no corresponding versioned per-photo result delivery to Camera, and no common record connecting Camera submission ID, Fanmass image ID, batch ID, run ID, model version and the human correction revision.
 
-**Required fix:** make Camera’s submission ID the cross-system photo key. Store Fanmass IDs as source references, not competing canonical identities. Version analysis separately from review status. Use idempotency and revision numbers so late or duplicate AI results cannot overwrite later reviewer corrections.
+**Disposition:** staged Fanmass implementation uses the source submission Mongo `_id` as one queue/result identity, stores full results and boxes in Fanmass Atlas, and fences writes by source revision and lease generation. Camera callbacks are deliberately absent. A shared human-correction protocol and correction UI remain future work; they must not make Camera an analysis queue owner.
 
-### P0 — Human analysis appears in multiple apps without a declared authority
+### P0 — Human annotation authority across apps — still open for future correction UX
 
 Camera’s human labels and Fanmass’s user feedback are separate datasets. The current Messmass integration is aggregate-oriented. If a vetter changes the same photo in two places, no explicit precedence or reconciliation policy is apparent in the contracts reviewed.
 
-**Required fix:** make Camera’s per-photo review and annotation revision authoritative for the user-facing Camera workflow. Fanmass owns machine output and model provenance. A human correction entered through any approved UI must be submitted as a Camera-owned correction event, even if the UI is hosted in another app. The UI can link or embed Fanmass tools, but it must not create a second master annotation.
+**Disposition:** Camera owns human publication decisions; Fanmass owns AI output. No correction callback or shared annotation editor is part of the current Atlas discovery contract. If human AI corrections are later added in another app, persist the authoritative correction through a separately designed Camera-owned record/contract, not through an analysis callback.
 
 ### P1 — Role permissions are broader or differently shaped than the workflow needs
 
@@ -234,13 +288,13 @@ Fanmass stores user feedback and persists confirmed visual teaching templates. T
 
 **Required fix:** start with scoped learning: event-local, then partner-local if explicitly enabled. Make cross-partner reuse opt-in and limited to curated public entities such as a sponsor logo or team mark. Never put attendee faces, face embeddings, names, ages, apparent gender or emotion into a shared global memory. No identity matching across user submissions. Do not train model weights directly from one click; first version feedback, retain provenance, run holdout evaluation and require an explicit promotion decision with rollback.
 
-### P1 — Consent, purpose and image retention need to be resolved before pre-vetting analysis
+### P1 — Consent, purpose and image retention must be validated before production Atlas discovery
 
 Camera’s data inventory says waiting/rejected images remain in the private pending store, while approved originals are copied to ImgBB and become publicly addressable. It also says the planned 90-day ImgBB deletion is not yet automated. The AI-training-purpose document remains a draft and says no labeled-photo training export should occur until legal confirms that the accepted terms cover it. Camera’s inventory says annotations are not exported or used to train anything.
 
-Real-time analysis and model training are separate purposes. An approved image being available to Fanmass after vetting does not establish that sending a waiting image to Fanmass before vetting is already disclosed or authorized. Likewise, permission to analyze an image for an event report does not automatically establish permission to retain image/labels for future model training.
+Event analysis and model training are separate purposes. An image being available to Fanmass after Camera has approved it does not establish permission to retain it for future model training.
 
-**Required fix:** before enabling the pre-vetting queue, document controller/processor roles, the exact purpose and lawful basis, notice shown to guests, retention/deletion, subprocessors and data location, and handling of withdrawals. Legal/DPO review must decide whether the current notice covers event-local AI analysis and whether any separate optional permission is needed for training reuse. A deletion or withdrawal must propagate to Camera, Fanmass source image, derived crops, embeddings/templates, cached files and queued jobs as applicable. Do not assume deletion of trained weights is possible; describe the actual training policy honestly.
+**Release gate:** before production Atlas discovery, confirm controller/processor roles, event-analysis purpose, guest notice, retention/deletion, subprocessors, data location and withdrawal handling. Legal/DPO review must separately decide whether future training reuse is permitted. The queue does not enable model training. A deletion or withdrawal must propagate to Camera, Fanmass source image, derived crops, embeddings/templates, cached files and queued jobs as applicable. Do not assume deletion of trained weights is possible; describe the actual training policy honestly.
 
 ### P1 — Photo analytics and subject attributes need clear limits
 
@@ -252,74 +306,40 @@ Fanmass and Camera work with photos of real attendees, including children. Curre
 
 The audit found concrete documentation mismatches:
 
-| Location | Mismatch | Action |
-|---|---|---|
-| Fanmass services/camera_client.py | Describes media URLs as public ImgBB only; Camera’s current feed can return Vercel Blob or legacy ImgBB URLs. | Correct comment and document supported host/storage behavior. |
-| Camera media route comment | Says ImgBB URLs are publicly fetchable, while the deployed source can also return public Blob URLs. | Replace the storage-specific statement with the actual response contract and an explicit warning that this feed is only for already-eligible photos. |
-| Fanmass services/camera_sync.py | Says a broken URL remains behind the cursor and retries, but a later successful image can advance the cursor past it. | Fix behavior and comment together; document retry/ack semantics. |
-| Camera media-feed.ts and Fanmass cursor docs | Describe an ISO timestamp cursor as sufficient, while the route uses strict timestamp comparison and does not tie-break equal availableAt values. | Define the stable pagination contract before implementation. |
+| Location | Mismatch | Disposition |
+| Fanmass legacy services/camera_client.py and Camera media feed | Described the former HTTP feed and public URL transport. | Removed from the staged operating path; Atlas read-only projection is the current contract. |
+| Camera media route | Former image feed exposed storage URLs to Fanmass. | Route removed in the staged branch; Fanmass reads source Atlas under a database-scoped role. |
+| Fanmass legacy timestamp cursor | Could skip failed or same-timestamp photos. | Replaced by one queue row per source Mongo `_id`, durable retries, change streams and bounded reconciliation. |
+| Fanmass Atlas queue | Queue/result records and lease behavior need a stable, versioned contract. | Documented in `docs/CAMERA_ATLAS_QUEUE_CONTRACT.md`; production setup and release gates remain unverified. |
 | Camera AI training draft and privacy inventory | Training draft describes a future possible labeled-photo use; privacy inventory currently says no export/training and the draft is unapproved. | Keep these statements synchronized; no training export until approval and the workflow is implemented. |
 | Messmass integration delivery plan | Describes the original Messmass–Fanmass MVP and says it is delivered. | Keep it as historical baseline; link this new plan as follow-up work instead of reopening old MVP issues. |
 | Fleet architecture audit | Contains dated operational notes that Fanmass was paused and a Fanmass key was unset. | Re-verify runtime facts before rollout and stamp each cross-app edge with current source SHAs after implementation. |
 
-All integration comments should state: owner of the data, direction of the call, authorization used, whether data can include photos or PII, idempotency/retry semantics, and the linked contract/version. Delete comments that claim an operation is safe or retried unless the code enforces it.
+All current integration comments should state data ownership, direction, authorization, PII/image scope, idempotency/retry semantics and contract version. Retired HTTP-feed findings above are historical; they must not be restated as current implementation gaps.
 
-## 5. Recommended API and event design
+## 5. Current transport and future contract extensions
 
-### 5.1 Transport shape
+The API/event recommendations in the original 2026-10-18 draft assumed a Camera-produced work API. The owner rejected that boundary on 2026-10-20. The current transport is the Atlas contract below; proposed Camera claim/fetch/ack APIs are not implementation tasks.
 
-Use an API boundary with three complementary parts:
+### 5.1 Current transport
 
-1. **OpenAPI description** for request/response endpoints, error codes, auth schemes, scopes and versioning.
-2. **CloudEvents-style envelope** for asynchronous work and state-change records, or an equivalent documented envelope. Keep the domain payload separate from event metadata.
-3. **Durable polling/lease endpoints** for the current Fanmass deployment. Do not depend on webhook delivery to a local-only Fanmass host. A future hosted Fanmass worker can use signed webhook notification as an acceleration, while the queue remains the source of truth.
+Camera writes source event/submission records and owns consent, identity, retention and human vetting. It does not call Fanmass or create analysis work. Fanmass reads a minimal Camera Atlas projection using a read-only source role; Atlas computes an identity boolean so contact fields do not cross the boundary. Fanmass writes queue, lease, retry, result and privacy-cleanup state only into its separate pipeline database. Change streams accelerate discovery; bounded scans and reconciliation provide recovery. A global Atlas lease permits one source photo at a time. Fanmass sends event aggregates to Messmass through its existing authenticated API.
 
-Every work item/result/correction should include:
+The current Fanmass operator contract is authenticated `GET /api/integrations/camera/atlas-queue` and per-photo `POST /api/integrations/camera/atlas-queue/retry/{queueKey}`. Neither route accepts images from Camera.
 
-- contract version and event type;
-- stable Camera submission ID, Camera event ID, Messmass event ID, partner ID;
-- analysis/review revision, idempotency key, correlation ID and event time;
-- consent/purpose eligibility reference and schema/taxonomy version, but not the full consent text or guest identity;
-- Fanmass batch ID, image ID, run ID, model/provider version, prompt/config version, and analysis status;
-- normalized findings with label source (model or human), confidence where meaningful, evidence/reference and an explicit unknown/abstain state.
+### 5.2 Future per-photo correction, if approved
 
-### 5.2 Proposed API families
-
-Names are illustrative. Agree exact paths in the contract issue before implementation.
-
-**Camera → Fanmass work discovery**
-
-- List/claim eligible submissions for analysis; claim creates a short lease and increments attempt count.
-- Extend lease for long analysis.
-- Fetch original image through a private Camera route with service authorization and event/submission-level checks.
-- Acknowledge the result or mark a retryable/permanent failure.
-
-**Fanmass → Camera**
-
-- Submit a versioned AI suggestion for one submission and analysis revision.
-- Report progress/partial results and bounded failure codes.
-- Receive the canonical current review revision so Fanmass can detect stale work.
-
-**Fanmass → Camera human correction discovery**
-
-- Fanmass claims the complete corrected annotation snapshot or a versioned correction event with a monotonic revision from Camera. Prefer snapshot plus source metadata so Fanmass can recover after missed incremental events. This remains an outbound pull from Fanmass while its worker is local-only.
-- Provide correction acceptance/rejection status, not a mutation of Fanmass model weights.
-
-**Fanmass → Messmass**
-
-- Keep the current aggregate summary contract and Camera counters separate.
-- Add per-event sync health/readiness and new metric families only through explicit versioned mapping. Messmass must never combine Camera’s review totals with Fanmass’s AI prediction totals under an ambiguous name.
+Any future correction record should include contract version, stable photo/event IDs, analysis and review revisions, idempotency/correlation metadata, schema/taxonomy/model provenance and normalized findings. It must not include guest identity or raw consent text. It must not turn Camera into Fanmass's queue producer or result callback receiver.
 
 ### 5.3 Resilience and authorization requirements
 
-- Stable cursor or queue lease with retryable state; no destructive timestamp-only checkpoint.
-- Idempotency on each submission and analysis revision; duplicate delivery returns the same result without creating duplicate images or labels.
-- Bounded retries with exponential backoff and a visible dead-letter/error state; operator replay must be safe.
-- Route-level, event-level and action-level authorization; object-level checks on every submission/event ID; strict request and response schemas.
-- Separate service credentials for Camera↔Fanmass, Camera↔Messmass, and Fanmass↔Messmass. Rotate independently. Never expose credentials to the browser or send them to image hosts.
-- Separate credentials by caller/direction as well as app pair; the current Messmass↔Camera shared provisioning token is reused for calls in both directions, which increases the impact of a leak.
-- Start with short-lived service credentials and explicit event/action scopes. If the existing SSO platform supports a suitable client-credentials grant and scopes, use it; otherwise use a separately rotated machine identity with key ID, expiry/rotation procedure, replay controls and least-privilege endpoint checks. Do not imply that a shared API key is user authentication.
-- Rate/size limits, MIME verification, image byte and pixel limits, safe URL/host validation, timeouts, backpressure and audit of job claims/results. Avoid arbitrary URL fetching; the retrieval route should bind a requested submission to an authorized event and issue only the Camera-controlled source.
+- Stable photo identity, durable queue state, one global lease, source-revision fences, bounded retries and visible terminal failures are implemented in the staged Fanmass Atlas contract. Change-stream resume tokens are backed by periodic bounded scans.
+- Idempotency applies per source submission and source revision; event associations do not create extra queue jobs.
+- Fanmass rechecks source eligibility before download and result persistence; operator replay reloads the source and revalidates it.
+- Atlas permissions must be database-scoped: read-only on Camera and read/write on the Fanmass pipeline database. No Camera image or queue API is exposed for Fanmass.
+- Camera→Fanmass photo access is governed by a least-privilege Atlas database role, not an HTTP service credential: read Camera source collections only; write Fanmass pipeline collections only.
+- Keep Camera↔Messmass provisioning credentials and Fanmass→Messmass reporting credentials distinct, independently rotated, and unavailable to browsers or image hosts. Treat them as machine credentials, not human authentication.
+- The Fanmass fetcher enforces allowed storage hosts, response limits, supported image types and timeouts; it does not accept arbitrary URLs from a client. The global lease and one-item local worker provide backpressure.
 - Redact tokens, signed URLs, emails, image bytes, face coordinates and raw model prompts from logs. Record event ID, submission ID where permitted, service identity, contract version, action, status, duration, retry count and correlation ID.
 
 ## 6. AI quality, learning and human review policy
@@ -394,59 +414,57 @@ The IDs below are **plan identifiers**, not GitHub issue numbers. The old Messma
 
 ### CF-01 — Define cross-app authority, data purpose and versioned contracts
 
-**Lead:** Messmass; contributors: Camera, Fanmass  
-**Priority:** P0, blocks pre-vetting transfer  
-**Scope:** Agree data ownership, status machines, IDs, consent/purpose eligibility, event envelope, per-photo payload, correction contract, errors, idempotency, cursor/lease semantics, sync/deletion events and roles. Add the canonical OpenAPI and event schemas in the agreed shared location; copy pointers and contract version references into all three repos.
+**Lead:** Messmass; contributors: Camera, Fanmass
+**Priority:** P0, blocks production Atlas discovery
+**Scope:** Record the accepted ownership, eligibility and status contracts across repositories, including source photo identity, Atlas projections/permissions, lease and retry semantics, result schema, aggregate mapping, privacy cleanup and operational failure states. Keep code, docs and generated API inventories aligned.
 
 **Acceptance criteria**
 
-- The schema defines event/submission/partner/Messmass mapping IDs, analysis revision, source/model/taxonomy versions, timestamps, idempotency, correlation and bounded failure states.
+- The contracts define event/submission/partner/Messmass mapping IDs, analysis revision, source/model/taxonomy versions, timestamps, idempotency, correlation and bounded failure states.
 - Camera review status, AI status and purpose/retention status are separate.
-- Event policy has an independent `vettingRequired` publication gate and analysis timing (`live` or `deferred`); deferred means the Analyse queue still completes eligible work. “No vetting” publishes without moderation, subject to consent and deletion rules.
+- Event policy has an independent `vettingRequired` publication gate. Camera publication state determines Fanmass eligibility; Fanmass analysis timing is queue-owned and is not an event setting controlled by Camera. “No vetting” publishes without moderation, subject to consent, identity and deletion rules.
 - Required privacy/terms acceptance, optional marketing opt-in, event-analysis permission and any future training permission are distinct. Marketing opt-in is never a gate for the capture flow and is not reused as AI/training consent.
 - The exact fields prohibited from Fanmass/Messmass (guest email, social identity, session token, full consent text, raw IP/device fingerprint) are documented.
 - Data controller/processor assumptions, allowed purpose, notice, transfer, retention, deletion and child-photo rules are reviewed by the owner’s legal/DPO contact.
 - A permission matrix separates human reviewer, event editor, event manager, admin and service identities.
-- Current API shapes are recorded as compatibility contracts; migration and deprecation rules are approved.
+- Current Atlas and aggregate API shapes are recorded as compatibility contracts; retired Camera image-feed APIs are not reinstated.
 
-### CF-02 — Camera durable analysis outbox and private image retrieval
+### CF-02 — Camera source privacy and eligibility contract
 
 **Lead:** Camera  
 **Priority:** P0  
 **Depends on:** CF-01  
-**Scope:** On a new eligible submission, create durable idempotent analysis work without delaying capture. Add claimable job records, lease/attempt state and a Fanmass-authorized private way to retrieve the original image while it remains in quarantine. Preserve Camera's separate typed-contact and approval/rejection email outbox: store the address before accepting the submission, never use `anonymous@event` as a recipient, and track actual provider outcomes. Do not widen the existing approved-photo public feed.
+**Scope:** On a submission, persist identity, consent, retention and publication state consistently. Camera must not create Fanmass analysis jobs or expose a feed. Preserve Camera's separate typed-contact and approval/rejection email outbox: store the address before accepting the submission, never use `anonymous@event` as a recipient, and track actual provider outcomes.
 
 **Acceptance criteria**
 
-- A submission creates at most one logical analysis job per requested analysis revision.
-- Fanmass can only claim jobs for authorized, enabled events and fetch that submission’s original image; no public media URL is returned for waiting/rejected photos.
-- Response includes only minimum event context and stable identifiers; no guest contact or identity.
-- A typed email survives capture, social-login differences, vetting, analysis and admin display in Camera's canonical contact field; placeholder/legacy identity fields cannot overwrite it. Approval/rejection email retries are idempotent and distinguish sent, failed and bounced outcomes without leaking the address into Fanmass or Messmass.
-- Analysis failure, consent ineligibility, deletion, expiry and cancellation have explicit job states and do not change publication review.
-- Job records are recoverable after a server restart and visible in Camera operations/admin state.
+- A submission creates no Fanmass job and makes no outbound Fanmass request.
+- A capture without identity is excluded from vetting/publication/AI and is erased on the configured 24-hour policy; races and cleanup retries are covered.
+- Fanmass Atlas projection exposes no guest contact or social identity; Atlas role scope is documented and verified before production enablement.
+- A typed email remains Camera-owned and survives capture, social-login differences, vetting, and admin display without being copied into Fanmass or Messmass.
 
-### CF-03 — Fanmass reliable Camera intake and cursor migration
+### CF-03 — Fanmass-owned Atlas discovery and one-photo queue
 
 **Lead:** Fanmass  
 **Priority:** P0  
 **Depends on:** CF-01, CF-02  
-**Scope:** Replace the timestamp-only incremental media poll as the live workflow with claim/lease/ack intake. Preserve a safe transition path for the existing approved-only backfill. Fix failed-fetch and same-timestamp loss.
+**Scope:** Fanmass independently discovers eligible Camera records through Atlas; Camera does not produce or acknowledge queue work. Use change streams for speed and repeatable bounded census/reconciliation for recovery. Persist one job per source Mongo `_id` in the separate Fanmass pipeline database.
 
 **Acceptance criteria**
 
-- A failed item remains pending/retryable even when later items succeed.
-- Duplicate claim/delivery cannot create duplicate intake records or analyses.
-- A job is acknowledged only once the image and provenance are durably staged.
-- Expired leases are reclaimed; retryable and permanent failures are distinguishable and operators can safely replay a job.
-- Cursor migration can resume from a known checkpoint and reconcile every Camera submission against a Fanmass intake record.
-- Existing backfill remains available without implicitly importing all old images when an event is first linked.
+- A unique queue record exists per source submission `_id`, independent of event associations.
+- One Fanmass-owned global Atlas lease permits at most one Camera-source photo to be active at a time; a second claim cannot start until the first analysis is durably saved or cancelled.
+- A failure of one photo cannot advance past or hide it; retryable and permanent failures remain visible and distinguishable.
+- Expired leases recover after worker failure, while generation/token fences prevent stale workers from publishing.
+- Bounded source, queue, event and result reconciliation resumes after restart and accounts for each eligible source as queued, active, complete, failed, excluded or privacy-cleaned.
+- Bootstrap scope, queue age, discovery health and terminal failures are visible to operators. Event links never create duplicate analysis jobs.
 
 ### CF-04 — Fanmass per-photo analysis result and provenance contract
 
 **Lead:** Fanmass  
 **Priority:** P0  
 **Depends on:** CF-01, CF-03  
-**Scope:** Return a per-submission analysis record as a versioned artifact. Normalize people count, person regions/attributes, brands/teams, item categories, emotion/apparent expression if approved, quality signals and moderation suggestions. Keep batch analytics as a derived aggregate.
+**Scope:** Persist one complete, versioned per-photo analysis result in Fanmass-owned Atlas, including people count, normalized people/face regions, approved attribute modules, quality signals and provenance. Keep batch/event analytics as derived aggregates. Do not add a Camera result callback.
 
 **Acceptance criteria**
 
@@ -457,38 +475,38 @@ The IDs below are **plan identifiers**, not GitHub issue numbers. The old Messma
 - Results are idempotent per analysis revision; old results cannot replace newer results.
 - A replay of the same submission and same model/config revision produces an auditable result without duplicate rows.
 
-### CF-05 — Camera reviewer UI for Fanmass suggestions
+### CF-05 — Future Fanmass analysis review UI, if approved
 
-**Lead:** Camera  
-**Priority:** P0  
-**Depends on:** CF-02, CF-04, CF-09  
-**Scope:** Show AI output in the existing vetting workflow beside the correct original image. Keep the human approve/reject action separate. Provide image count, people regions, person/brand/item suggestions, flags, uncertainty and analysis status. Add a separate Analyse worklist for deferred eligible photos. Analysis cards show the number of analyzed people; the analysis image is the original photo with annotation regions, never a generated frame composited over it.
+**Lead:** Fanmass
+**Priority:** P1
+**Depends on:** CF-03, CF-04, CF-09
+**Scope:** If later approved, build an authorized review surface for Fanmass-owned output. Camera remains responsible for human publication decisions and is not an AI queue, result, or correction owner. Show people count, regions, person/brand/item findings, uncertainty and provenance using the original source image, never a generated frame.
 
 **Acceptance criteria**
 
 - The UI clearly labels AI suggestions and human-confirmed values; it shows model/revision and timestamp.
 - Reviewers can correct, add, remove or mark unsure without losing the original AI output or earlier human revisions.
-- Approve/reject remains possible while analysis is pending/failed; the AI never changes publication status.
+- Camera approve/reject remains independent while analysis is pending/failed; the AI never changes publication status.
 - A stale suggestion cannot overwrite a later reviewer edit.
 - The page works on mobile and desktop, supports keyboard/accessibility, and displays degraded/offline states without blocking vetting.
 - The reviewer can see why something was flagged and can leave a correction reason where operationally useful.
-- The Analyse worklist includes approved/vetted photos when vetting is required, and all eligible non-deleted submissions when vetting is not required; it does not create a hidden moderation gate.
+- The Fanmass Analyse worklist includes only Camera-published, consented, identified, otherwise eligible photos; it does not create a hidden moderation gate.
 - Analyzed-photo cards show the analyzed people count and analysis completion/provenance. Analysis opens the original without a frame overlay; missing/unknown analysis is explicit, not shown as zero people.
 
-### CF-06 — Camera annotation revisions and correction delivery
+### CF-06 — Future Fanmass analysis corrections and review revisions, if approved
 
-**Lead:** Camera  
+**Lead:** Fanmass
 **Priority:** P1  
 **Depends on:** CF-01, CF-05  
-**Scope:** Make Camera the authoritative human annotation store for the connected per-photo workflow. Keep append-only revision history and enqueue correction snapshots for Fanmass.
+**Scope:** Keep Fanmass AI output immutable and store human analysis corrections as append-only Fanmass-owned revisions. This future review workflow must not send work/results through Camera or let AI corrections change Camera publication decisions. Consent withdrawal and deletion continue to be detected from Camera Atlas and handled through Fanmass privacy cleanup.
 
 **Acceptance criteria**
 
 - Each save records reviewer identity/role, time, schema version, prior revision and current revision.
-- The complete current annotation snapshot can be resent after missed messages.
-- Corrections never mutate the publication decision unless the reviewer separately changes it.
-- Human changes made through any approved surface are written through the same Camera authority API.
-- Deletion/withdrawal invalidates queued correction work and sends an auditable deletion instruction to Fanmass.
+- Each correction records reviewer identity/role, time, schema/model/taxonomy version, prior revision, current revision and reason.
+- Corrections never mutate Camera’s publication decision.
+- The original AI result and every human revision remain inspectable; a later model run cannot overwrite a human revision.
+- Deletion/withdrawal invalidates queued correction work and removes Fanmass-owned derivatives through the privacy-cleanup process.
 
 ### CF-07 — Fanmass scoped learning, correction application and quality gates
 
@@ -585,47 +603,47 @@ The IDs below are **plan identifiers**, not GitHub issue numbers. The old Messma
 - Reconciliation proves each eligible Camera submission is either pending, analyzed, intentionally excluded, deleted or in a visible error state.
 - The owner reviews latency, queue reliability, privacy, reviewer overrides, classification quality and event report totals before expanding.
 - A rollback returns to the current Camera-only vetting path without loss of review history or photo links.
-- Old polling feed is retired only after reconciliation, backfill and compatibility evidence meet the agreed threshold.
+- The retired Camera HTTP feed stays removed. Atlas census, durable queue state, and reconciliation prove source-to-result accounting before rollout expands.
 
-## 9. Implementation tracking (2026-10-19)
+## 9. Implementation tracking (updated 2026-10-20)
 
-The owner accepted this plan for implementation. Work is being delivered as separate repository pull requests from fetched `origin/main` branches; the original local checkouts and their uncommitted audit notes are preserved. No change is deployed by this work.
+The owner accepted the Atlas-owned boundary. This refactor is staged across three repository branches/worktrees; no change has been merged, deployed, or granted production Atlas access by this work.
 
 | Work package | State | Evidence / remaining gate |
 |---|---|---|
-| CF-01 — cross-app authority and contract | In progress | Accepted ownership boundaries and event-mode defaults are recorded here; API schemas and least-privilege credentials remain to be delivered before image exchange expands. |
-| CF-02 — Camera durable work queue/private media | In progress | Paired draft PRs add versioned, per-event submission leases, a private lease-bound image route, idempotent stage/retry acknowledgements, event-active checks, and published-photo eligibility. Leases expire after ten minutes. Unsupported/oversized files can be marked terminally failed. Deletion/withdrawal propagation remains a pilot blocker. |
-| CF-03 — reliable Fanmass intake | In progress | Fanmass consumes the versioned durable claim path, acknowledges only after durable analysis-job staging, and retains the compound-cursor fallback for older Camera builds. Stable intake job IDs use source, batch, analysis depth, and sorted capture filenames; Camera tracks each event separately for multi-event submissions. Permanent media rejection is not retried forever. The default poll is one minute, so suggestions are not immediate or guaranteed before review. |
-| CF-04 — per-photo AI result/provenance | Not started | Existing Fanmass batch summaries do not yet provide the complete Camera per-submission revision contract. |
-| CF-05/06 — Camera suggestions, analysis worklist, human revisions | Partly present in Camera | Human vetting and the separate photo-analysis worklist exist; AI suggestions and append-only human correction delivery are still open. |
+| CF-01 — ownership and Atlas contract | Staged, not released | Owner decision above supersedes the former shared HTTP work-queue design. Fanmass reads a PII-minimized Camera projection with source read-only permissions and writes to its own pipeline database. Atlas roles/env are not provisioned or production-verified. |
+| CF-02 — Camera capture/identity/consent/retention | In progress | Camera stores explicit consent and identity status, excludes no-login captures from vetting/analysis, and marks them for 24-hour erasure. Camera does not create Fanmass jobs or transfer image data. Retention rollout and production behavior remain release gates. |
+| CF-03 — Fanmass discovery and one-photo queue | Staged, not released | Fanmass owns Atlas change-stream discovery, resumable bounded census/reconciliation, source-photo deduplication, global lease, retries, local analysis staging and privacy cleanup. Exactly one source photo is claimable at a time. This replaces the former Camera claim/ack feed and its one-minute polling model. |
+| CF-04 — per-photo AI result/provenance | Staged, not released | Fanmass persists required full-analysis modules, normalized summary and face/person boxes beside its queue in Fanmass-owned Atlas. Result writes are revision-, lease-token- and generation-fenced. |
+| CF-05/06 — future Fanmass analysis review and correction UX | Not started | Camera’s publication/vetting UI remains independent. Fanmass review UI and append-only AI correction revisions are future work; there is no Camera result/correction callback. |
 | CF-07 — scoped learning/evaluation | Not started | No cross-partner personal recognition or automatic model-weight training is enabled by this plan. |
 | CF-08 — Messmass aggregates/health | Partly present | Camera photo counters and Fanmass aggregate routes exist; full lifecycle and sync-health read model remain open. |
-| CF-09/10 — access, privacy, operations/docs | In progress | The new media fetch requires the existing distinct Fanmass service secret plus a per-photo, per-event lease and allows only ImgBB/Vercel Blob sources. Terminal media failures are recorded, but an operator recovery surface, scoped credential rotation, deletion propagation, operational alerts and runbooks remain open. |
+| CF-09/10 — access, privacy, operations/docs | In progress | Source identity is reduced to a boolean in Atlas before it crosses the read boundary; contact details are not projected. Fanmass's Atlas role must be source read-only/pipeline read-write. Eligibility, withdrawal/deletion reconciliation, local derivative cleanup, Atlas outage recovery and operator alerts still need the release gates listed below. |
 | CF-12 — exclusive local inference slot | Not started | Fanmass is running locally and Image.direct is stopped, but the host still has only the documented manual handoff. |
-| CF-11 — shadow/pilot/rollout | Blocked on prerequisites | Do not enable pre-vetting photo analysis or automate inference alternation until legal purpose, retention, host capacity and recovery gates pass. |
+| CF-11 — shadow/pilot/rollout | Blocked on prerequisites | Do not enable production Atlas discovery until legal purpose, retention, host capacity and recovery gates pass; automated inference alternation remains a separate open item. |
 
-## 10. Recommended delivery order
+## 10. Recommended delivery order (Atlas-owned design)
 
-1. **CF-01:** agree authority, data purpose, the independent vetting/analysis modes, status/state contract, permission matrix and versioned API schemas. Resolve lawful purpose, guest notice and retention before enabling live photo transfer.
-2. **CF-09 in parallel with contract work:** settle human and service identities before opening any new photo route.
+1. **CF-01:** record the accepted authority, eligibility, status/state contract, Atlas projection/permissions, result schema and operational failure behavior. Resolve lawful purpose, guest notice and retention before production Atlas discovery.
+2. **CF-09 in parallel with contract work:** settle human roles and service identities; production Fanmass source access is an Atlas database role, not a photo route.
 3. **Gate 0:** qualify the designated local Fanmass runtime: approved release, disk/retention reserve, backfill scope, API credentials, supervisor/dependencies, fresh health/heartbeat and network reachability. The requested local restart is complete, but the 9.9 GiB free-space headroom, five-commit source drift and unverified cross-app credentials mean production Gate 0 is still open.
 4. **CF-12 before automated model switching or pilot:** deliver the exclusive host inference lease and graceful Fanmass/Image.direct handoff; until then keep the current manual one-at-a-time procedure.
-5. **CF-02 and CF-03:** complete review and release of Camera's private durable queue and Fanmass's leased consumer. The current implementation is on paired draft PRs; do not treat the one-minute poll as immediate suggestions. Keep Camera capture/vetting available during Fanmass downtime.
-6. **CF-04:** return per-photo suggestions with model/taxonomy provenance, confidence, uncertainty, partial/failure states and idempotent revisions.
-7. **CF-05:** show advisory AI findings on Camera vetting; add a separate Analyse worklist for deferred images. Keep human vetting and analysis decisions separate.
-8. **CF-06 then CF-07:** capture attributable correction revisions first; then apply event/partner-scoped feedback and quality evaluation. Do not train shared weights directly from clicks.
+5. **CF-02 and CF-03:** complete Camera consent/identity/retention gates and provision least-privilege Atlas credentials. Deploy Fanmass first; verify independent discovery, the single global claim, result/box persistence, restart recovery and privacy reconciliation. Then deploy removal of Camera's obsolete feed routes. Keep capture and vetting available during Fanmass downtime.
+6. **CF-04:** persist per-photo results with model/taxonomy provenance, confidence, uncertainty, partial/failure states and idempotent revisions. Any UI that later presents those results is a separate future product/API decision.
+7. **CF-05:** only after a separately approved product decision, design a Fanmass-owned analysis-review UI around Fanmass-owned results. Keep Camera’s publication/vetting path independent.
+8. **CF-06 then CF-07:** capture attributable Fanmass correction revisions first; then apply event/partner-scoped feedback and quality evaluation. Do not train shared weights directly from clicks.
 9. **CF-08:** send source-attributed event aggregates, report inputs and integration/sync health to Messmass; preserve distinct human-vetting, AI-analysis, deleted and retention counts.
 10. **CF-10:** continuously update comments, inventories, runbooks, deletion/withdrawal behavior, dashboards, alerts and capacity controls with each implementation PR.
-11. **CF-11:** shadow, reconcile, then pilot event by event with a fallback and rollback. Retire legacy polling only after parity and recovery are proven.
+11. **CF-11:** shadow, reconcile, then pilot event by event with a fallback and rollback. Keep the former feed disabled/removed; use Fanmass Atlas status and reconciliation to prove source-to-result accounting before expansion.
 
-## 11. Release gates and measures
+## 11. Release gates and measures (Atlas-owned discovery)
 
-No pre-vetting Fanmass access should launch until:
+Do not enable production Fanmass Atlas discovery until:
 
 - Gate 0 passes on the designated local host, including health, worker heartbeat, disk reserve, backfill scope, the required outbound/inbound authentication checks and recovery checks;
 - only one local inference owner holds the lease, and graceful handoff, crash recovery, low-disk/memory blocking and queue persistence have been demonstrated;
-- event and submission access checks are verified across all three services;
-- private image retrieval is proven not to produce public links or leak credentials;
+- event/submission eligibility is independently rechecked by Fanmass, and the Atlas role boundary is verified;
+- Fanmass Atlas read access is verified to expose only the minimum source projection, and its write role cannot mutate Camera collections;
 - the agreed purpose, guest notice, processor terms, retention and child-photo rules are approved;
 - every job/result can be replayed without loss or duplicate analysis;
 - deletion and withdrawal propagate to Fanmass derivatives;
@@ -635,8 +653,8 @@ No pre-vetting Fanmass access should launch until:
 
 Track these operational and quality measures by event and analysis revision:
 
-- submission-to-first-suggestion median and p95 latency;
-- percentage of photos with suggestions before the vetter first opens them;
+- submission-to-discovery and submission-to-analysis-completion median/p95 latency;
+- percentage of eligible photos accounted for in a terminal or visible queue state;
 - queue age, retries, dead letters, missing-image fetches, duplicate jobs and reconciliation mismatches;
 - reviewer override/correction rate by field and by confidence band;
 - human/model agreement and adjudicated precision/recall per field;
@@ -647,20 +665,19 @@ Track these operational and quality measures by event and analysis revision:
 
 Do not use one composite “AI accuracy” number as the go-live decision.
 
-## 12. Decisions required before implementation
+## 12. Remaining product and legal decisions
 
-These are product/legal choices to resolve inside CF-01, not open questions that block this audit:
+The ownership and eligibility boundary was resolved by the owner on 2026-10-20: Camera does not send images or jobs to Fanmass. With vetting required, Fanmass discovers a photo only after Camera approves it. With vetting disabled, analysis still requires identity, consent, retention and publication eligibility. Waiting/rejected/private and no-identity photos are excluded. Remaining decisions are:
 
-1. Confirm the analysis eligibility boundary in CF-01. Recommendation: in vetting mode, live analysis of waiting photos requires an explicitly approved purpose; deferred analysis defaults to vetted/approved photos; when vetting is off, analyze all eligible, non-deleted submissions. Keep rejected/private images excluded unless their processing purpose is separately approved.
-2. Are age, apparent gender and expression necessary for each event’s business purpose? Which fields are optional or removed?
-3. Is reuse of human corrections limited to one event, one partner or a curated shared catalog? Recommendation: event/partner only by default; curated shared public entities require explicit promotion.
-4. What is the retention period for Camera originals, Fanmass downloads, crops/embeddings, analysis outputs and training/evaluation data? The current Camera privacy inventory states that the planned ImgBB 90-day deletion is not automated.
-5. Which identity provider/grant can issue machine credentials with event/action scopes, and who owns rotation and emergency revocation?
-6. Should Messmass display only event aggregates, or also per-photo links back to Camera? Recommendation: aggregates plus a permission-checked Camera deep link; never copy guest email/photo/face labels into Messmass by default.
+1. Are age, apparent gender and expression necessary for each event’s business purpose? Which fields are optional or removed?
+2. Is reuse of human corrections limited to one event, one partner or a curated shared catalog? Recommendation: event/partner only by default; curated shared public entities require explicit promotion.
+3. What is the retention period for Camera originals, Fanmass downloads, crops/embeddings, analysis outputs and training/evaluation data? The current Camera privacy inventory states that the planned ImgBB 90-day deletion is not automated.
+4. Which identity provider/grant should secure the remaining Fanmass→Messmass reporting API, and who owns credential rotation/emergency revocation? Camera→Fanmass uses the database-scoped Atlas role.
+5. Should Messmass display only event aggregates, or also per-photo links back to Camera? Recommendation: aggregates plus a permission-checked Camera deep link; never copy guest email/photo/face labels into Messmass by default.
 
 ## 13. References
 
 - Camera integration and data map: docs/MESSMASS_FANMASS_INTEGRATION.md, docs/PRIVACY_DATA.md, docs/ANALYTICS_DATA_DICTIONARY.md, docs/AI_TRAINING_PURPOSE_AND_CONSENT_DRAFT.md, docs/AUTHORIZATION.md.
 - Messmass–Fanmass baseline: docs/operations/messmass-fanmass-integration-delivery-plan-2026-06-25.md; docs/_audit/fleet-architecture.md; lib/fanmassIntegration.ts; lib/cameraPhotoStats.ts.
-- Fanmass processing and feedback: docs/current-implementation.md, docs/analytics-workflow.md, docs/RUNBOOK.md, services/camera_sync.py, services/camera_client.py, services/batch_review.py, services/memory_store.py.
+- Fanmass processing and feedback: docs/current-implementation.md, docs/analytics-workflow.md, docs/RUNBOOK.md, docs/CAMERA_ATLAS_QUEUE_CONTRACT.md, services/camera_sync.py, services/camera_atlas.py, services/batch_review.py, services/memory_store.py.
 - Legal/standards links are listed in Section 7. This plan is not legal advice or a claim of regulatory compliance.
