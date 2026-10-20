@@ -37,6 +37,7 @@
   "fan_identities",
   "fan_identity_links",
   "fan_identity_merge_candidates",
+  "fanmass_camera_photo_analyses",
   "fanmass_commands",
   "fanmass_dashboard_snapshot",
   "fanmass_event_links",

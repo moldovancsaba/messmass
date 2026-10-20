@@ -10,6 +10,7 @@ function add(name: string, label: string, type: MetricType, description: string,
 }
 
 add('fanmassImages', 'Images in event', 'count', 'Total eligible images in the Fanmass batch.');
+add('fanmassPhotoResultsReceived', 'Camera photo results received', 'count', 'Completed per-photo Fanmass results received and stored by Messmass; this is not the Camera event total.');
 add('fanmassAnalyzedImages', 'Images analysed by Fanmass', 'count', 'Images with a completed Fanmass base analysis.');
 add('fanmassImageCount', 'Images in event (legacy alias)', 'count', 'Compatibility alias for fanmassImages.');
 add('fanmassAnalyzedImageCount', 'Images analysed by Fanmass (legacy alias)', 'count', 'Compatibility alias for fanmassAnalyzedImages.');

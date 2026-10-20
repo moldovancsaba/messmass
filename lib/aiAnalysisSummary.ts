@@ -35,6 +35,7 @@ export const MAX_SUMMARY_BYTES = 1_000_000;
 export interface AiAnalysisSummaryDoc {
   eventId: string;
   batchId: string;
+  sourceType?: 'camera_photo_pipeline' | string;
   contractVersion: string;
   receivedAt: string;         // server-assigned on receipt, never producer-supplied
   generatedAt: string | null; // producer's own stamp, informational only
@@ -81,6 +82,16 @@ export async function storeAnalysisSummary(
   }
 
   const db = await getDb();
+  const photoPipelineOwnsEvent = await db.collection('fanmass_camera_photo_analyses').findOne(
+    { eventId },
+    { projection: { _id: 1 } },
+  ) || await db.collection('ai_analysis_summaries').findOne(
+    { eventId, sourceType: 'camera_photo_pipeline' },
+    { projection: { _id: 1 } },
+  );
+  if (photoPipelineOwnsEvent) {
+    invalid(409, 'CAMERA_PHOTO_PIPELINE_OWNS_ANALYTICS', 'This event is reported from per-photo Camera results; event-summary pushes are disabled.');
+  }
   const event = await db
     .collection('projects')
     .findOne({ _id: new ObjectId(eventId) }, { projection: { _id: 1 } });
