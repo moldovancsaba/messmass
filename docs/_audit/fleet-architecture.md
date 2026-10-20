@@ -12,22 +12,18 @@ Verified messmass `5cc610c2` (E2 and E4 only, 2026-10-11, see below) · camera
 `ccd77d5` · fanmass `7268cf7` · try-on `1ccd284` · savetheworld `d87c776`
 (2026-09-28). Everything else on the messmass side was last read at `dd34e229`.
 
-**2026-10-20 integration architecture update (implementation staged, not released).**
-The former Camera HTTP media-feed contract below is retired by the current
-Camera/Fanmass source branches. Camera writes its normal event/submission data
-and owns consent, identity, retention, and vetting. It has no Fanmass queue,
-call, or callback. Fanmass independently discovers eligible records through a
-read-only Camera Atlas connection, claims one source photo under a single global
-lease, analyzes that one image locally, and persists its per-photo result and
-boxes in Fanmass-owned storage. Fanmass then sends one result per photo, with
-Camera partner/event/photo IDs, through a durable authenticated outbox to
-Messmass. Messmass upserts each result and mechanically rebuilds its event
-summary and report variables from the current photo rows. It does not receive
-Fanmass-built reports for this Camera-photo path. Legacy event-summary pushes
-remain for non-Camera Fanmass batches and are disabled for Camera-photo batches.
-This describes the staged source implementation; no production deployment or
-production data migration has been verified. Source branches at this contract
-update are Messmass `056f5e30`, Fanmass `fac7fe8`, and Camera `921637dd`.
+**2026-10-20 integration architecture update.** Camera owns event/submission
+records, consent, identity, retention, and vetting; Camera does not enqueue or
+call Fanmass. Fanmass independently discovers eligible Camera Atlas records,
+claims one photo under a single global lease, analyzes it locally, stores the
+per-photo result and boxes, and sends that result through a durable authenticated
+outbox to Messmass. Messmass checks exact partner/event/photo routing IDs, stores
+the individual result, and mechanically rebuilds reports from current photo rows.
+Production currently contains 90 photo results across 7 events (71 for MTK); the
+current Messmass changes add stricter ID verification and retire remaining
+event-level analytics surfaces. The production archive cleanup has not yet been
+applied. Event matching was verified at 438/438 linked events with no duplicate
+or unmatched Camera event IDs.
 
 **2026-10-11 pass (camera 12.3.41, `c40aad85`; the other repos were not re-read).**
 camera removed the try-on integration (camera issue 557; record: camera
@@ -245,77 +241,30 @@ Verified messmass n/a · camera `88c6839` · try-on `c8ba623`.
   docs/TRYON_ATLAS_CONTRACT.md:66-73 (the two former omissions — Segmind
   base64, white compositing — are now in it).
 
-### E2 · fanmass → messmass (six push channels + two poll/ack channels)
-Verified messmass `5cc610c2` · fanmass `db2657e` (both sides re-read 2026-09-16;
-messmass side re-checked 2026-09-28 and again 2026-10-11: no commit since
-`dd34e229` touches this edge's files (`lib/fanmassIntegration.ts`,
-`lib/fanmassCommands.ts`, `lib/aiRescan.ts`, `lib/csrf.ts`, `lib/config.ts`,
-`app/api/integrations/fanmass`, `app/api/admin/fanmass`); all 18
-`integrations/fanmass/*` routes still call `requireFanmassIntegrationAuth`).
-fanmass is the caller on every channel **except one**: the blocking
-analytics-summary pull in the last bullet, which messmass initiates. The
-summary line here used to read "fanmass is always the caller", which the
-same section then contradicted four bullets down — corrected 2026-09-16.
-- **Auth**: fanmass sends Bearer + `x-api-key` = FANMASS_INTEGRATION_TOKEN
-  (fanmass services/messmass_client.py:28-29); messmass verifies via
-  requireFanmassIntegrationAuth (messmass lib/fanmassIntegration.ts:74-87 —
-  503 if unset, 401 on mismatch, plain string compare). All /api/integrations/*
-  is CSRF-exempt (lib/csrf.ts:179).
-- **Push (fanmass → messmass)**, messmass route ← fanmass caller:
-  1. event-context pull GET `.../events/{id}/context` (fanmass on-demand,
-     messmass_integration.py:104)
-  2. legacy analytics callback POST `messmass_callback_url` (HMAC-SHA256-signed
-     when `messmass_callback_secret` is set, :642-668; dark when the URL is
-     unset — live-box state unverified here)
-  3. mapped scalar stats POST `.../events/{id}/stats` (messmass_client.py:84)
-  4. analysis-summary POST `.../events/{id}/analysis-summary`
-     (contract `fanmass.messmass.analytics-summary.v1`, :72-79)
-  5. dashboard-snapshot POST `.../dashboard-snapshot` (fire-and-forget, :86-91;
-     contract `fanmass.messmass.dashboard-snapshot.v1`)
-  6. drive-folder status POST `.../events/{id}/drive-folders/status` (:148)
-  messmass_client.py also creates partners/events/variables via
-  `POST /api/integrations/fanmass/{partners,events,variables}`. Cadence
-  messmass_push_minutes default 60 via services/camera_sync.py tick (:177).
-- **Poll/ack (messmass → fanmass, inverted to outbound polls)**: fanmass runs a
-  dedicated 5s `fanmass-rescan` thread on `GET/DELETE /api/integrations/fanmass/
-  rescan-requests[/{eventId}]` and a 5s `fanmass-command` thread on
-  `GET/DELETE .../commands[/{commandId}]` (fanmass workers/detection_worker.py:
-  221-275; messmass lib/aiRescan.ts, lib/fanmassCommands.ts). Ack is
-  after-apply (messmass_integration.py:477); unknown command type is left
-  pending, not errored (:466). Command types (lib/fanmassCommands.ts:24-31):
-  run_control.start/stop_batch, entity.confirm/reject_cluster/rename/merge,
-  settings.update, settings.rotateApiKey.
-- **Admin-enqueue (messmass side)**: `POST /api/admin/fanmass/commands` and the
-  rescan/drive-sync routes use the ADMIN SESSION (getAdminUser + role check),
-  never the integration token — do not confuse the two credentials.
-- **Blocking outbound (messmass → fanmass)**: `/sync` and `/callbacks` call
-  syncFanmassAnalytics, which pulls
-  `GET {FANMASS_BASE_URL}/api/integrations/messmass/batches/{batchId}/analytics-summary`
-  with a 15s timeout, sending `x-api-key` = FANMASS_API_KEY (a THIRD credential,
-  distinct from FANMASS_INTEGRATION_TOKEN; lib/fanmassIntegration.ts:258-265,
-  :343; lib/config.ts:141-142). fanmass gates it with require_api_key
-  (app.py:1098-1102). This is the one place messmass has a runtime dependency
-  on fanmass reachability (architecture.md, "The one blocking call", now says
-  the same; it used to claim messmass had no such dependency).
+### E2 · fanmass → messmass — per-photo analytics contract
 
-- **Analytics datapoints**: `fanmass.messmass.analytics-summary.v1` carries
-  image totals/coverage, measured and projected people, gender, generation,
-  emotion, accessory, smiling, merchandise-type, and named brand/club counts.
-  Messmass stores the complete document in `ai_analysis_summaries` and mirrors
-  reportable numeric fields to registered `fanmass*` variables. The numeric
-  progress variable is `fanmassStatus` (0–100); the textual state is
-  `fanmassAnalysisState`. Brand/club names and their counts remain in the nested
-  summary rather than becoming unstable variable keys. Camera's human analysis
-  counters stay under `camera_` so the sources and denominators remain distinct.
-  See the Fanmass analytics-summary contract and Messmass Fanmass tutorial for
-  the field-level mapping. This event-level summary is retained for non-Camera
-  Fanmass batches; it is not the Camera-photo reporting path. Camera-photo
-  batches are marked in Fanmass and skipped by this legacy aggregate exporter.
+For Camera-photo analytics, the only Fanmass result write is one photo at a time:
+`POST /api/integrations/fanmass/events/{messmassEventId}/photos/{cameraPhotoId}`;
+Camera deletion/ineligibility uses the matching photo tombstone. Authentication
+uses `FANMASS_INTEGRATION_TOKEN`. Messmass checks the exact Camera event ID and
+partner ID against the linked Messmass event before it stores the result.
 
-### E3 · Camera Atlas source → Fanmass queue → Messmass photo results (staged)
-**Replaces the former Camera HTTP media pull. Implementation is staged on the
-current feature branches, not merged or deployed.** Camera owns the source event
-and submission documents. Fanmass independently reads a narrow projection from
+Fanmass does not create Messmass events, partners, report variables or event
+summaries. It does not send projected reach, completion, or coverage values.
+Messmass owns the event aggregate and report variables, derived from received
+photo rows only. Event-summary, event-stat, callback, dashboard-snapshot,
+event-batch link, event-wide rescan, and manual batch-sync flows are retired;
+their remaining compatibility routes return `410 Gone`. The old `/admin/fanmass`
+event dashboard redirects to the canonical photo-level AI Analytics page.
+
+Fanmass's separate operational command queue remains an operations channel; it
+is not an analytics result channel. Camera photo delivery has its own durable
+single-photo outbox and does not depend on that command queue.
+
+### E3 · Camera Atlas source → Fanmass queue → Messmass photo results
+**Replaces the former Camera HTTP media pull. The production photo lane has
+returned results; the current source change adds exact-link enforcement and
+retires event-level surfaces.** Camera owns the source event and submission documents. Fanmass independently reads a narrow projection from
 Camera Atlas using a read-only source role, and writes queue, lease, cursor,
 result, delivery-outbox, and cleanup records only in its own
 `fanmass_camera_pipeline` database. There is no Camera queue producer or Camera
@@ -350,11 +299,9 @@ the authenticated per-photo API; it does not call Camera back.
   stale generations without overwriting current data, and derives its event
   aggregate in `ai_analysis_summaries` and `projects.stats` from those rows. A
   matching `DELETE` creates a tombstone and removes the photo from report
-  aggregation. Fanmass sends no event report for this path. No guest contact
-  fields or raw Camera documents cross the source projection. Since Messmass
-  does not know Camera's eligible-photo denominator, this aggregate stays
-  `partial` while rows exist and does not claim event-level completion,
-  percentage coverage, or projected reach.
+  aggregation. Fanmass sends no event report for this path. No guest contact fields or raw
+  Camera documents cross the source projection. Messmass does not know Camera's
+  eligible-photo denominator, so it makes no event-completion or coverage claim.
 - **Privacy cleanup:** Fanmass reconciles deletions and newly ineligible source
   records, cancels jobs, removes results, and queues retryable deletion of local
   staged images and image-specific derived memory. Camera never requests that
@@ -363,7 +310,9 @@ the authenticated per-photo API; it does not call Camera back.
   the Messmass per-photo receiver and Fanmass outbox together, then enable the
   Fanmass delivery worker. Confirm an upsert and deletion tombstone with IDs,
   boxes, report projection, retry behavior, and stale-generation fencing before
-  treating the lane as operational. Production behavior is not verified.
+  treating the tightened ID checks and archived cleanup as deployed. Existing
+  production photo results are present; this branch's stricter validation and
+  data cleanup still require coordinated release.
 
 **Historical contract (retired 2026-10-20):** Older builds used the
 `camera.fanmass.media-jobs.v1` HTTP feed: Camera exposed event listing,

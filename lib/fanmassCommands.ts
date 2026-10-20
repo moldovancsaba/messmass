@@ -2,19 +2,11 @@
 // WHAT: Generic operator-command queue for actions Messmass needs Fanmass to
 //      apply — run control (start/stop batch), entity curation
 //      (rename/merge/reclassify/reject), and settings write-back.
-// WHY: Generalizes the proven "flag the next poll notices" pattern already
-//      used by ai_rescan_requests (lib/aiRescan.ts) from a single
-//      rescan-specific flag into a typed, appendable, multi-pending-command
-//      queue — one collection instead of a new bespoke flag collection per
-//      new action type.
-// HOW: Same poll-target shape as ai_rescan_requests (fanmass polls messmass,
-//      never the other way around — fanmass has no reachable address of its
-//      own), but a real departure on ack: a hard delete (clearRescanRequest's
-//      approach) would destroy ackResult the instant it existed, and some
-//      command outcomes (e.g. settings.update's restart-required flag) live
-//      nowhere else. Ack here transitions status -> 'applied' with ackResult
-//      attached, retained until a TTL index sweeps it — messmass keeps the
-//      result long enough to be useful, the collection still self-cleans.
+// WHY: Keep operator commands in one durable, typed queue rather than adding
+//      a separate collection for each command type.
+// HOW: Fanmass polls Messmass because this local service has no public inbound
+//      address. Applying a command marks it as applied and retains its result
+//      until the TTL index removes it, so an operator can inspect outcomes.
 
 import { Db } from 'mongodb';
 import { randomUUID } from 'crypto';

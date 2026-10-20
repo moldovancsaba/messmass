@@ -1,341 +1,73 @@
-# Tutorial: Fanmass integration
+# Fanmass photo-analysis integration
 Status: Active
 Last Updated: 2026-10-20T00:00:00.000Z
 Canonical: Yes
 Owner: Documentation
 
-> Audience: Operators + technical implementers · Prerequisites: You can create events and open the Events admin · Related: [Events](guides-tutorial-events.md) · [Reports](guides-tutorial-reports.md) · [Collecting data](guides-tutorial-collecting-data.md) · [Camera app](guides-tutorial-camera-app.md)
+> Audience: operators and implementers · Related: [Camera app](guides-tutorial-camera-app.md), [Events](guides-tutorial-events.md), [Reports](guides-tutorial-reports.md)
 
-## What it is & why it matters
+## Responsibility boundary
 
-Fanmass is seyu's image-intelligence service. It analyses the photos from an event and
-returns normalized analytics — how many **people** it counted, projected **reach**, which
-**brands** and **clubs** appeared, **merchandise**, and demographic projections. messmass
-does not analyse images itself; it hands Fanmass the context for an event and then ingests
-the numbers Fanmass sends back so they appear in your reports alongside your own metrics.
+| System | Owns |
+| --- | --- |
+| Messmass | Partners, events, report-variable definitions, report aggregation and report presentation. A Messmass event is linked to exactly one Camera event. |
+| Camera | Photo capture, consent, contact details, retention and human vetting. It stores the Camera partner, event and photo identifiers. Camera does not create Fanmass jobs or call Fanmass. |
+| Fanmass | Read-only discovery of eligible Camera Atlas photos, one-photo-at-a-time local analysis, image-relative detection boxes, durable retries and delivery of one result for that photo. Fanmass does not create events, identify users, or create event reports. |
 
-The integration has **two layers**, both sitting behind **one shared machine-auth token**:
+The photo task carries only what analysis needs: the source image, Camera partner/event/photo IDs, the already-linked Messmass event ID, source revision and analysis generation. Fanmass reads the Messmass event ID from Camera's `events.messmassEventId` field; it does not query Messmass for event context before analyzing a Camera photo. Guest names, email addresses, login identifiers, consent text and raw Camera documents are not sent to Fanmass. Publication, consent, retention, deletion and vetting fields are used only to decide eligibility. No-login submissions awaiting erasure are ineligible.
 
-- **(A) Analytics** — messmass exposes an event's context to Fanmass, Fanmass runs its
-  analysis, and the results flow back into the event's stats under a dedicated `fanmass`
-  namespace. **Your Clicker and manual numbers are never overwritten.**
-- **(B) Mapping API** — Fanmass can also act *as if it were an operator*: create partners
-  and events, define variables, and push stat values into messmass through the same kinds
-  of writes the admin UI uses. This lets Fanmass seed data it discovered, not just report
-  on data you entered.
+## Runtime flow
 
-The key principle: **messmass stays the source of truth** for organisations, partners,
-events, report templates, and report consumption. Camera stays the source of truth for
-capture, identity/consent, retention, and human vetting. Fanmass owns image analysis,
-its durable queue, and its results. The explicit Camera-to-Fanmass source boundary is a
-read-only Atlas role: Fanmass discovers eligible Camera records without asking Camera to
-enqueue or upload anything, then writes only to its own pipeline database. Fanmass sends
-event aggregates to Messmass through authenticated APIs; the apps do not share writable
-database ownership.
+1. Camera stores the submission and vetting decision in Atlas. Camera does not enqueue, upload, or notify Fanmass.
+2. Fanmass independently reads Camera Atlas through its read-only source connection. It selects only photos that meet Camera's publication, consent, retention, deletion and vetting rules.
+3. Fanmass claims one source photo under a global lease. It does not start another photo analysis until the active photo has been persisted or released. Retries are idempotent and fenced by source revision and analysis generation.
+4. Fanmass stores the complete photo analysis and image-relative people/face boxes in its own pipeline database, then places that single result in its durable delivery outbox.
+5. Fanmass sends the result to `POST /api/integrations/fanmass/events/{messmassEventId}/photos/{cameraPhotoId}` with contract `fanmass.messmass.photo-analysis.v1`. The payload includes the four routing IDs (Messmass event ID and Camera partner/event/photo IDs), source revision, generation, analysis timestamp, and findings for that one image: people and face boxes, person counts, gender/age/emotion/accessory observations, brand and club labels, merchandise and brand-appearance item types, and prohibited-content status, severity and flags. It contains no user identity and no image bytes or URL.
+6. Messmass validates the Messmass event ID against its linked Camera event ID and partner ID. It stores one record in `fanmass_camera_photo_analyses`, keyed by the Messmass event and Camera photo, and acknowledges only after storage and report projections succeed.
+7. Messmass mechanically rebuilds the event summary and report variables from the active per-photo rows. It never accepts Fanmass event totals as the source for this workflow. A Camera deletion is delivered as a per-photo tombstone and excluded from the rebuilt aggregate.
 
-## Before you start
+## What the analytics mean
 
-Fanmass integration needs environment variables configured by an administrator (ops
-setup). There are **two directions**, and they use **different credentials**:
+The canonical source is the set of completed per-photo records in `fanmass_camera_photo_analyses`. Event-level cards and report variables are sums or distributions over those received records only. They are not unique attendee counts, complete-event totals, projections, coverage percentages or a claim that all event photos have been analyzed. Messmass cannot calculate an event-completion denominator from this contract.
 
-| Direction | Environment variable | Purpose |
+The AI Analytics event view shows the number of received photo results, actual person detections, people/face boxes, brand appearances, club appearances, merchandise, and the completed prohibited-content checks. Photo cards expose each stored result and its boxes so an operator can check the analysis. A category count of zero means no matching detection in the received sample; a missing observation means the analysis did not return that value. Neither means Fanmass completed the event.
+
+Canonical report variables use the `fanmass` prefix and are defined in `lib/fanmassAnalyticsVariables.ts`. They cover:
+
+- received photo-result count, people detections, person boxes and face boxes;
+- measured people and smiling count/share;
+- gender, age group, emotion and accessory counts/shares;
+- merchandise and commercial-brand appearance item types;
+- completed moderation checks, flagged-photo count/share, severity and prohibited-content categories;
+- distinct brand and club labels and their appearance counts.
+
+Percentages use the returned sample for that attribute. Person counts are detections across photos, not deduplicated people. Boxes remain attached to each photo result; event-level report variables do not replace photo detail.
+
+## Removed legacy analytics
+
+Event/batch links, event-level summaries and stats pushes, dashboard snapshots, projected reach, coverage/completion progress, and the manual “Fanmass Sync” action are retired from the Camera-photo workflow. Legacy write endpoints return `410 Gone`; they must not be restored as a second source of report data. The old `/admin/fanmass` dashboard redirects to the canonical `/admin/analytics/ai` surface.
+
+The one-photo endpoints are authenticated with the Fanmass integration token (`FANMASS_INTEGRATION_TOKEN`, with the documented Messmass fallback). Never put token values in documentation or logs.
+
+### Camera-photo data boundary
+
+For this workflow, Camera is Fanmass's only source of image tasks. The Atlas source projection reads:
+
+| Camera record | Fields | Why Fanmass reads them |
 | --- | --- | --- |
-| Fanmass → messmass (inbound) | `FANMASS_INTEGRATION_TOKEN` | The shared token that authenticates Fanmass's calls into messmass. (`MESSMASS_FANMASS_TOKEN` is accepted as a fallback name.) |
-| messmass → Fanmass (outbound) | `FANMASS_BASE_URL` | Base URL of the Fanmass service messmass calls to pull analytics. |
-| messmass → Fanmass (outbound) | `FANMASS_API_KEY` | Sent as `x-api-key` on messmass's outbound calls to Fanmass. |
+| `submissions` | `_id`, `submissionId`, `eventId`, `eventIds`, `partnerId` | Stable photo key and exact Camera routing IDs. |
+| `submissions` | `originalImageUrl`, `imageUrl`, `finalImageUrl`, `mimeType` | Fetch the source image and decode it. The URL stays inside Fanmass and is never sent to Messmass. |
+| `submissions` | `submissionKind`, `method`, `reviewStatus`, `consentStatus`, `retentionStatus`, `isArchived`, `analyticsDeletion`, `hiddenFromEvents`, `mediaHealth.broken` | Recheck publication, consent, retention, deletion and image-health eligibility before analysis. |
+| `events` | `eventId`, `partnerId`, `partnerName`, `name`, `messmassEventId`, `photoVetting.required` | Confirm the event association, publication gate and exact Messmass route. Names are local operational labels only. |
 
-Behaviour depending on configuration:
+Fanmass does not read partner profiles, event descriptions, reports, contact information or identities from Messmass. Messmass receives the completed per-photo findings and uses the IDs to attach them to the correct event and rebuild reports.
 
-- If `FANMASS_INTEGRATION_TOKEN` is **not set**, every inbound integration endpoint returns
-  `503 FANMASS_INTEGRATION_NOT_CONFIGURED`.
-- If a caller presents the **wrong** token, endpoints return `401 INVALID_INTEGRATION_TOKEN`.
-- If `FANMASS_BASE_URL` is **not set**, a sync (messmass pulling from Fanmass) fails with
-  `503 FANMASS_NOT_CONFIGURED`.
+Other Fanmass inputs, such as Google Drive images or event context used to run a Drive batch, are separate workflows. They must not change the Camera photo contract or make Fanmass an event-report owner.
 
-> Note: Never paste token or key values into documents or tickets — only the variable
-> names belong in written material.
+## Operator checks
 
-**How Fanmass authenticates every inbound call:** it sends the shared token either as
-`Authorization: Bearer <token>` **or** as `x-api-key: <token>`. Both are accepted and are
-equivalent.
-
-All inbound responses share a common envelope: success is
-`{ "success": true, "data": ... }` and failure is
-`{ "success": false, "error": { "code", "message", ... } }`.
-
-## Step by step
-
-### Layer A — Analytics
-
-The analytics loop links one messmass event to one Fanmass **batch** (a batch is Fanmass's
-unit of "the images for this event") and then syncs the results.
-
-**1. Fanmass reads the event context.**
-
-```
-GET /api/integrations/fanmass/events/{eventId}/context
-```
-
-Returns everything Fanmass needs to analyse correctly: the event name and date, the
-organisation, the partner IDs and names, the event's hashtags and categorized hashtags, and
-the report template / style IDs. The payload is versioned with the contract
-`messmass.fanmass.event-context.v1`.
-
-**2. Link the event to a Fanmass batch.**
-
-```
-POST /api/integrations/fanmass/events/{eventId}/link
-```
-
-Records the `fanmassBatchId` for the event in the `fanmass_event_links` registry, with a
-status. Link status moves through a defined set as work progresses: `linked`, `importing`,
-`analyzing`, `ready`, `partial`, `failed`, `stale`, `unauthorized`, `unavailable`. You can
-read the current link back with `GET` on the same path.
-
-**3. Analytics come back — via callback or sync.**
-
-- **Callback (Fanmass pushes):**
-
-  ```
-  POST /api/integrations/fanmass/callbacks
-  ```
-
-  Fanmass posts `{ messmassEventId, batchId, status }`. When the status is `ready` or
-  `partial`, messmass immediately pulls the full analytics summary and writes it in.
-
-- **Sync (messmass pulls):**
-
-  ```
-  POST /api/integrations/fanmass/events/{eventId}/sync
-  ```
-
-  messmass calls Fanmass for the batch's analytics summary, validates it against the
-  contract `fanmass.messmass.analytics-summary.v1`, and writes the results. Add
-  `?dryRun=true` to compute and preview the mapping **without** writing, or `?force=true`
-  to sync regardless of cached state. `GET` on the same path returns the link plus the last
-  sync snapshot.
-
-**Where the numbers land.** A successful sync writes:
-
-- `projects.stats.fanmass` — the canonical Fanmass block: `peopleCount`, `projectedReach`,
-  `imageCount`, `analyzedImageCount`, `confidence`, `brands`, `clubs`, `merchandise`,
-  `gender`, `age`, `emotion`, `accessories`, `smilingPct`, `warnings`, and sync metadata.
-- **Flat mirrors** under `projects.stats.*` for report-friendly, single-value access:
-  canonical progress variables `fanmassImages`, `fanmassAnalyzedImages`, and numeric
-  `fanmassStatus` (0–100%). The readable state (`ready`, `partial`, `running`) is
-  `fanmassAnalysisState`; it is not stored in the numeric progress variable.
-  Existing `fanmassImageCount` and `fanmassAnalyzedImageCount` remain as compatibility
-  aliases. Other flat measures include `fanmassPeopleCount`, `fanmassProjectedReach`,
-  `fanmassConfidence`, `fanmassDemographicsAnalyzed`, `fanmassBrandCount`,
-  `fanmassBrandMentionCount`, `fanmassClubCount`, and `fanmassClubMentionCount`.
-  Gender, age-generation, emotion, accessory, and merchandise categories are mirrored
-  as count variables and, where applicable, percentages (for example
-  `fanmassGenderFemaleCount`, `fanmassGenderFemalePct`,
-  `fanmassAccessoryWithCapCount`, and `fanmassMerchandiseJerseyCount`). These known
-  variables are registered in `/admin/kyc` without enabling clicker or manual editing;
-  existing admin labels and flags are preserved.
-  The nested `brands` and `clubs` lists retain names and per-name counts. The flat
-  `fanmassBrandCount`/`fanmassClubCount` values count distinct names, while the
-  `...MentionCount` values sum appearances.
-
-People counts are detections across photos, not deduplicated unique attendees.
-`fanmassProjectedReach` estimates detections across the event's eligible photo set;
-it is not a verified audience count. Camera's human-reviewed counters keep their own
-`camera_` names so they cannot overwrite Fanmass estimates.
-
-Fanmass independently discovers eligible Camera Atlas records and gives each source
-photo one durable queue identity, even if the Camera record links to multiple events.
-Fanmass owns the global one-photo lease, local analysis, retries, complete result and
-image-relative boxes. It pushes event aggregates through the authenticated Messmass API.
-Camera is not called and does not maintain Fanmass job state. A camera-side AI review
-surface is outside this one-way discovery and reporting contract.
-  `fanmassTopBrandName`, `fanmassTopBrandCount`, `fanmassClubCount`, `fanmassTopClubName`,
-  `fanmassTopClubCount`, `fanmassWarningCount`, `fanmassSourceRunCount`,
-  `fanmassStatus`, `fanmassBatchId`, and `fanmassLastSyncedAt`.
-
-Crucially, the write only touches the `fanmass` namespace and these `fanmass*` keys — it
-does **not** overwrite your Clicker or manual stats.
-
-**4. Operators: use the "Fanmass Sync" button.**
-
-You don't need a terminal for day-to-day work. The **Events admin** action rail has a
-**Fanmass Sync** control on each event. It opens a panel where you can enter the Fanmass
-batch ID and run three actions — **link**, **dry-run**, and **sync** — backed by an
-admin-only route (`GET|POST /api/admin/fanmass/events/{eventId}`) that requires an
-authenticated admin (or superadmin) session. The panel reports the resulting status back to
-you (for example, "Fanmass analytics synced. Status: ready.").
-
-### Layer B — Mapping API
-
-These endpoints let Fanmass create and populate messmass records the same way the admin UI
-does. Records created this way are tagged with `source: "fanmass"` but are otherwise
-identical to hand-created ones (same slug generation, same derived-metric handling).
-
-**Partners.**
-
-```
-GET  /api/integrations/fanmass/partners?search=&limit=&offset=
-POST /api/integrations/fanmass/partners        { name, emoji?, logoUrl?, hashtags? }
-GET  /api/integrations/fanmass/partners/{partnerId}/events
-```
-
-List or create partners, and list a partner's events. A created partner gets an emoji
-(defaulting to a camera emoji if none is supplied, since messmass requires one) and a
-generated view slug.
-
-**Events.**
-
-```
-POST /api/integrations/fanmass/events   { eventName, eventDate?: string | null, partner1Id?, stats? }
-
-Pass `eventDate: null` when the source event has no known date; omit `eventDate` to use the existing current-date default.
-```
-
-Creates a messmass event (a "project") optionally attached to a partner. Any `stats`
-provided are prepared the same way the app prepares them, and the event gets view/edit
-slugs automatically.
-
-**Variables.**
-
-```
-GET  /api/integrations/fanmass/variables
-POST /api/integrations/fanmass/variables   { name, label?, type?, category?, unit?, description? }
-```
-
-List or upsert variable definitions. In messmass a **variable's `name` is the stats key**,
-so names must be camelCase (start with a letter, letters and digits only); a leading
-`stats.` prefix is stripped. Creating a new variable returns `201`; updating an existing one
-returns `200` and only touches the fields you supplied.
-
-**Push stat values.**
-
-```
-POST /api/integrations/fanmass/events/{eventId}/stats   { stats: { <variableName>: value, ... } }
-```
-
-Partial-merges values into the event's stats. It accepts either `{ stats: { ... } }` or a
-bare `{ ... }` map. **Derived (formula) variables are skipped** — you cannot push a value
-onto a variable whose value is computed from a formula; those are recalculated for you after
-the merge. The response lists which keys were `applied`.
-
-## Watching it: the AI Analytics workspace
-
-Everything above describes how the numbers get in. **AI Analytics**
-(sidebar → Analytics → AI Analytics, or `/admin/analytics/ai`) is where you see what
-arrived. Any signed-in user can open it — you do not need to be an admin, because the
-audience is whoever is building a report.
-
-Three things live there:
-
-**1. Coverage.** How many events have AI analytics at all, how many are still analysing,
-how many are complete, and how many have gone stale (analytics older than 24 hours).
-
-**2. The event list.** One row per event: status, progress, images analysed out of images
-discovered, whether the photos came from Drive or the Camera app, and when it was last
-analysed. **Click an event's name** to open its full AI report.
-
-> By default the list **hides events with no images**. Most events are provisioned for the
-> Camera app long before any photo is taken, and 150 rows of "Analysing · 0%" bury the few
-> with real analysis. Tick **"Show events without images"** to see them — the label tells you
-> how many are hidden. Two exceptions: failed events always show, and picking an explicit
-> status from the dropdown ignores the hide.
-
-**3. The variable catalogue.** Every `fanmass*` variable, its **fill rate** across connected
-events, and the token to paste into a chart formula.
-
-Fill rate is the number that matters when you are authoring a report. A variable filled on
-2 of 155 events will render an empty chart for almost every partner who opens their report.
-The same warning appears inline next to AI variables in the chart formula picker, so you get
-it at the moment you would make the mistake — but a variable under 50% is flagged in words,
-not blocked. It is your call.
-
-## Reading an event's AI report
-
-Clicking an event name in AI Analytics opens its report — the structured analysis that does
-*not* fit in flat variables:
-
-- **Brands** and **clubs / federations** — what the analysis recognised, ranked by mentions.
-  The share shown is of detections *in that list*, not of attendees.
-- **Merchandise** — jerseys, scarves, and the rest, counted across analysed photos.
-- **Fan demographics** — gender, age group, and emotion projections from analysed faces,
-  plus the share of faces smiling.
-
-Two things to keep in mind when reading it:
-
-- **These are projections from analysed faces, not a headcount.** They describe the faces the
-  analysis could resolve, which is a subset of everyone present.
-- **Demographics are batch-wide.** A partner-scoped slice deliberately shows no demographic
-  projection rather than reusing the batch figure, because attributing a whole event's
-  demographics to one partner would be quietly wrong.
-
-If an event shows "No AI analysis summary", it either predates the summary channel or its
-analysis has not yet completed a push — it is not an error.
-
-## Managing it
-
-- **Operators** live in the Events admin **Fanmass Sync** panel: link a batch, dry-run to
-  preview, then sync. Statuses like `ready` and `partial` tell you whether Fanmass finished
-  or is still working.
-- **Implementers** integrating Fanmass hit the token-authed endpoints above. Use the
-  `context` endpoint to read, `link` to associate a batch, `callbacks`/`sync` for analytics
-  (Layer A), and the `partners`/`events`/`variables`/`stats` endpoints to write (Layer B).
-- **Retries and errors** are tracked per event. The `fanmass_event_links` registry keeps
-  retry counts, the last error code/message, sync snapshots, and an audit trail — so a
-  failed sync doesn't just disappear. A `GET` on the `sync` or `link` endpoint surfaces the
-  current state.
-- **Dry-run first.** Before a real sync into a live event, run `?dryRun=true` (or the
-  dry-run button) to see the mapped values without writing them.
-
-## Gotchas & good practice
-
-- **Your metrics are safe.** Analytics sync writes only the `fanmass` namespace and
-  `fanmass*` flat mirrors. Clicker and manual numbers are never overwritten. See
-  [Collecting data](guides-tutorial-collecting-data.md).
-- **Contract versions are enforced.** A sync rejects an analytics summary whose
-  `contractVersion` is not `fanmass.messmass.analytics-summary.v1` (`409`). Keep both sides
-  on matching contract versions.
-- **Two credentials, two directions.** `FANMASS_INTEGRATION_TOKEN` guards Fanmass's calls
-  *into* messmass; `FANMASS_API_KEY` + `FANMASS_BASE_URL` are what messmass uses to call
-  *out to* Fanmass. A "not configured" error tells you which side is missing.
-- **Camel-case variable names only.** The mapping API rejects names that aren't camelCase
-  (`400 INVALID_VARIABLE_NAME`). Remember the name *is* the stats key.
-- **You can't push derived variables.** Formula-computed variables are ignored on a stats
-  push and recomputed automatically — don't expect a pushed value to "stick" on one.
-- **A partner is optional on a mapped event, but useful.** A Fanmass-created event without a
-  partner still exists, but partner-scoped views and Camera-app provisioning both key off
-  the partner. See [Partners](guides-tutorial-partners.md) and
-  [Camera app](guides-tutorial-camera-app.md).
-- **A new Fanmass field can arrive without a messmass release.** The summary contract accepts
-  unknown fields from a same-major producer and stores them untouched. They will not *render*
-  until the report is taught to show them, but no data is lost in the meantime.
-- **Timeouts.** Outbound calls to Fanmass are time-bounded, so a slow Fanmass surfaces as a
-  failed sync you can retry, not a hung request.
-
-## How it connects
-
-- **[Events](guides-tutorial-events.md)** — every Fanmass link, sync, and stat push targets
-  one event; the "Fanmass Sync" control lives on the Events admin.
-- **[Reports](guides-tutorial-reports.md)** and
-  **[Report variants](guides-tutorial-report-variants.md)** — Fanmass metrics become report
-  variables. Report formulas can reference the nested tokens like `[fanmass.peopleCount]`
-  and `[fanmass.brands]`, or the flat mirrors such as `[fanmassPeopleCount]`.
-- **[Collecting data](guides-tutorial-collecting-data.md)** — Fanmass analytics sit
-  *beside* your Clicker/manual data in the same event stats, not on top of it.
-- **[Charts & formulas](guides-tutorial-charts-formulas.md)** — where fill rate stops being
-  trivia: the picker shows it next to every AI variable as you write the formula.
-- **[Camera app](guides-tutorial-camera-app.md)** — the sibling integration. The Camera app
-  captures the photos; Fanmass analyses them. Both share `FANMASS_INTEGRATION_TOKEN` for
-  their operator/ingest endpoints.
-
-## Screenshots
-_Screenshots to be added._
-
-## Related tutorials
-
-- [Getting started](guides-tutorial-getting-started.md)
-- [Events](guides-tutorial-events.md)
-- [Partners](guides-tutorial-partners.md)
-- [Reports](guides-tutorial-reports.md)
-- [Report variants](guides-tutorial-report-variants.md)
-- [Collecting data](guides-tutorial-collecting-data.md)
-- [Camera app integration](guides-tutorial-camera-app.md)
+- Check `/admin/analytics/ai` for received-result totals and per-photo details.
+- Open a photo card to inspect the stored normalized analysis and boxes.
+- Compare a result to the original image and correct it through the supported human-review workflow; do not write event-level totals by hand.
+- If a photo is deleted or becomes ineligible, confirm its tombstone is delivered and the event summary recalculates without it.
+- If a result is missing, inspect the Fanmass single-photo queue/outbox and exact event/partner/photo identifiers. Do not use a batch sync or event-summary retry.

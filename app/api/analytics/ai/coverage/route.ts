@@ -1,34 +1,21 @@
-/**
- * AI Analytics — coverage summary
- *
- * WHAT: How much of the estate has AI analytics, and how much of that is stale.
- * WHY: The entry number for the AI Analytics workspace — the interesting figure is
- *      `notConnected`, because that is the gap nobody could see before.
- *
- * AUTH: Authenticated session, ANY role. This is deliberate and differs from the
- *      other analytics endpoints, which are admin-only: report authors of any role
- *      need this to decide which AI variables are safe to build into a report.
- *      Do not add a role check here without changing the product decision behind it.
- */
+/** Retired: Messmass does not own Camera's eligible-photo denominator, so it
+ * cannot report event processing coverage or completion percentages. */
 
 import { NextResponse } from 'next/server';
 import { getAdminUser } from '@/lib/auth';
-import { getAiCoverage } from '@/lib/aiAnalytics';
 
 export async function GET() {
   try {
     const user = await getAdminUser();
     if (!user) {
-      // Distinguishable from an empty result so the UI can prompt a sign-in
-      // rather than claiming there is no data.
       return NextResponse.json(
         { success: false, error: { code: 'UNAUTHENTICATED', message: 'Sign in to view AI analytics.' } },
         { status: 401 }
       );
     }
 
-    // Authorisation, not just authentication: this route promises
-    // admin-only and enforced nothing (F-025 / #400).
+    // Keep the retired response behind the same administrator access rule as
+    // the active AI photo-results endpoints.
     if (user.role !== 'admin' && user.role !== 'superadmin') {
       return NextResponse.json(
         { success: false, error: 'Administrator access required.' },
@@ -36,8 +23,10 @@ export async function GET() {
       );
     }
 
-    const data = await getAiCoverage();
-    return NextResponse.json({ success: true, data });
+    return NextResponse.json(
+      { success: false, error: { code: 'EVENT_COVERAGE_UNAVAILABLE', message: 'Messmass has no Camera eligible-photo denominator. Use stored per-photo results; event completion and coverage are not inferred.' } },
+      { status: 410 },
+    );
   } catch (error) {
     console.error('AI analytics coverage failed:', error);
     return NextResponse.json(

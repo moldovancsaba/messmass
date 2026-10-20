@@ -88,6 +88,13 @@ export function requireFanmassIntegrationAuth(request: NextRequest): NextRespons
   return null;
 }
 
+export function retiredFanmassEndpoint(code: string, message: string): NextResponse {
+  return NextResponse.json(
+    { success: false, error: { code, message } },
+    { status: 410 },
+  );
+}
+
 export async function getDb(): Promise<Db> {
   const client = await clientPromise;
   return client.db(DB_NAME);

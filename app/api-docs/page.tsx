@@ -38,7 +38,7 @@ export default function APIDocsPage() {
           <p>{'{messmass}'} provides several API endpoints for different use cases:</p>
           <ul>
             <li><strong>Public API (Read):</strong> Retrieve event and partner data</li>
-            <li><strong>Fanmass Integration:</strong> Exchange event context and analytics through dedicated integration endpoints</li>
+            <li><strong>Fanmass Integration:</strong> Store one validated Camera photo result at a time; Messmass builds event reports from those photo records</li>
             <li><strong>Admin API:</strong> Internal management endpoints (admin only)</li>
           </ul>
 
@@ -219,63 +219,56 @@ export default function APIDocsPage() {
           
           <h3>Overview</h3>
           <p>
-            The Fanmass integration exchanges event context and analytics through versioned integration endpoints. Fanmass data is stored under the event <code>stats.fanmass</code> namespace and mirrored into report-friendly <code>fanmass*</code> flat fields.
+            The Fanmass integration accepts one identity-free Camera photo analysis at a time. Each result includes the Messmass event ID, Camera partner/event/photo IDs, normalized findings, and image-relative detection boxes. Messmass stores the photo result and derives event reports from those rows. Fanmass does not create event reports, completion percentages, or audience projections.
           </p>
 
           <h3>Implemented Routes</h3>
           <div className={styles.codeBlock}>
-            GET /api/integrations/fanmass/events/[eventId]/context<br />
-            GET /api/integrations/fanmass/events/[eventId]/link<br />
-            POST /api/integrations/fanmass/events/[eventId]/link<br />
-            GET /api/integrations/fanmass/events/[eventId]/sync<br />
-            POST /api/integrations/fanmass/events/[eventId]/sync<br />
-            POST /api/integrations/fanmass/callbacks<br />
-            GET /api/admin/fanmass/events/[eventId]<br />
-            POST /api/admin/fanmass/events/[eventId]
+            POST /api/integrations/fanmass/events/[eventId]/photos/[photoId]<br />
+            DELETE /api/integrations/fanmass/events/[eventId]/photos/[photoId]<br />
+            GET /api/analytics/ai/events/[eventId]/photos
           </div>
 
           <h4>Authentication</h4>
           <p>
-            Integration endpoints use the shared Fanmass integration token configured through <code>FANMASS_INTEGRATION_TOKEN</code> or <code>MESSMASS_FANMASS_TOKEN</code>. Admin sync controls use the authenticated admin session.
+            Fanmass photo writes use the shared integration token configured through <code>FANMASS_INTEGRATION_TOKEN</code> or <code>MESSMASS_FANMASS_TOKEN</code>. AI analytics reads require an administrator session. Retired event-summary, dashboard-snapshot, context, partner, and variable lookup routes return HTTP 410.
           </p>
 
-          <h4>Event Context Contract</h4>
-          <div className={styles.codeBlock}>
-{`{
-  "contract": "messmass.fanmass.event-context.v1",
-  "event": { "id": "507f1f77bcf86cd799439011", "eventName": "Example Event" },
-  "partner": { "id": "507f1f77bcf86cd799439012", "name": "Example Partner" },
-  "organization": { "id": "507f1f77bcf86cd799439013", "name": "Example Organization" }
-}`}
-          </div>
+          <p>
+            Camera supplies the routing IDs with each photo task. Fanmass does not look up event, partner, report, or user context from Messmass.
+            Separate Google Drive folder ingestion remains a distinct source workflow.
+          </p>
 
-          <h4>Analytics Summary Contract</h4>
+          <h4>Photo Analysis Contract</h4>
           <div className={styles.codeBlock}>
 {`{
-  "contract": "fanmass.messmass.analytics-summary.v1",
-  "success": true,
-  "batchId": "fanmass-batch-123",
+  "contractVersion": "fanmass.messmass.photo-analysis.v1",
+  "messmassEventId": "messmass-event-id",
+  "cameraPartnerId": "partner-id",
+  "cameraEventId": "camera-event-id",
+  "cameraPhotoId": "photo-id",
+  "sourceRevision": "sha256-digest",
+  "analysisGeneration": 1,
   "status": "completed",
-  "peopleCount": 1250,
-  "projectedReach": 84000,
-  "brands": [{ "name": "Example Brand", "count": 42 }],
-  "warnings": []
+  "summary": { "peopleCounts": { "measured": 2 }, "brandMentions": [] },
+  "boxes": { "people": [], "faces": [] },
+  "analysis": {}
 }`}
           </div>
 
           <h3>Report Variables</h3>
-          <p>Synced Fanmass analytics are exposed to reports through nested and flat variables:</p>
+          <p>Messmass projects received photo results into flat report variables. Counts describe detections in received photos; they are not unique attendees or event coverage:</p>
           <ul>
-            <li><code>[fanmass.peopleCount]</code>, <code>[fanmass.projectedReach]</code>, <code>[fanmass.brands]</code></li>
-            <li><code>[fanmassPeopleCount]</code>, <code>[fanmassProjectedReach]</code>, <code>[fanmassTopBrandName]</code></li>
+            <li><code>[fanmassPhotoResultsReceived]</code>, <code>[fanmassPeopleDetections]</code>, <code>[fanmassPersonBoxes]</code>, <code>[fanmassFaceBoxes]</code></li>
+            <li><code>[fanmassBrandAppearances]</code>, <code>[fanmassClubAppearances]</code>, and the <code>fanmassGender*</code>, <code>fanmassAge*</code>, <code>fanmassEmotion*</code>, and <code>fanmassMerchandise*</code> categories</li>
           </ul>
 
           <h3>Operational Behavior</h3>
           <ul>
-            <li>Sync calls are idempotent by Messmass event ID and Fanmass batch ID.</li>
-            <li>Fanmass fetches use a server-side timeout and record failures on the link record.</li>
-            <li>Callbacks are token-protected and non-blocking for Fanmass processing.</li>
-            <li>Manual clicker stats are not overwritten; Fanmass data is stored in its own namespace.</li>
+            <li>Fanmass processes one source photo at a time and retries the same result generation idempotently.</li>
+            <li>Messmass persists the result and bounding boxes, then regenerates event totals from active per-photo rows.</li>
+            <li>Event totals do not imply all Camera photos have been analyzed; the eligible-photo denominator stays with Camera.</li>
+            <li>Event-summary, event-stats, callback-sync, and dashboard-snapshot endpoints are retired and return HTTP 410.</li>
           </ul>
         </section>
 
@@ -366,7 +359,7 @@ const response = await fetch(
 const data = await response.json();
 console.log(data.event);
 
-// Fanmass sync is performed through /api/integrations/fanmass/* or the admin Fanmass sync controls.`}
+// Fanmass submits one photo result at a time; Messmass builds event reports from those results.`}
           </div>
 
           <h3>Python</h3>
@@ -385,7 +378,7 @@ response = requests.get(
 data = response.json()
 print(data['event'])
 
-# Fanmass sync is performed through /api/integrations/fanmass/* or the admin Fanmass sync controls.`}
+# Fanmass submits one photo result at a time; Messmass builds event reports from those results.`}
           </div>
 
           <h3>cURL</h3>
@@ -396,7 +389,7 @@ curl -X GET \\
   -H 'Authorization: Bearer YOUR_TOKEN_HERE' \\
   -H 'Content-Type: application/json'
 
-# Fanmass sync is performed through /api/integrations/fanmass/* or the admin Fanmass sync controls.`}
+# Fanmass submits one photo result at a time; Messmass builds event reports from those results.`}
           </div>
         </section>
 

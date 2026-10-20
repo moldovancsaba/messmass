@@ -1,40 +1,40 @@
 #!/usr/bin/env tsx
 
-import {
-  EVENT_CONTEXT_CONTRACT,
-  FANMASS_SUMMARY_CONTRACT,
-} from '../lib/fanmassIntegration';
+import { readFileSync } from 'node:fs';
+import { resolve } from 'node:path';
+import { PHOTO_ANALYSIS_CONTRACT } from '../lib/fanmassPhotoAnalyses';
 
-const requiredEnv = [
-  'FANMASS_BASE_URL',
-  'FANMASS_API_KEY',
-  'FANMASS_INTEGRATION_TOKEN',
-] as const;
+const requiredPhotoRoute = resolve(
+  process.cwd(),
+  'app/api/integrations/fanmass/events/[eventId]/photos/[photoId]/route.ts',
+);
+const retiredRoutes = [
+  'app/api/integrations/fanmass/events/[eventId]/context/route.ts',
+  'app/api/integrations/fanmass/partners/route.ts',
+  'app/api/integrations/fanmass/partners/[partnerId]/events/route.ts',
+  'app/api/integrations/fanmass/variables/route.ts',
+];
 
-function main() {
-  const missing = requiredEnv.filter((name) => !process.env[name]);
-  const checks = {
-    eventContextContract: EVENT_CONTEXT_CONTRACT,
-    analyticsSummaryContract: FANMASS_SUMMARY_CONTRACT,
-    routeSurface: [
-      '/api/integrations/fanmass/events/{eventId}/context',
-      '/api/integrations/fanmass/events/{eventId}/link',
-      '/api/integrations/fanmass/events/{eventId}/sync',
-      '/api/integrations/fanmass/callbacks',
-      '/api/integrations/fanmass/drive-folders',
-      '/api/integrations/fanmass/events/{eventId}/drive-folders/status',
-    ],
-    missingOptionalRuntimeEnv: missing,
-  };
-
-  if (EVENT_CONTEXT_CONTRACT !== 'messmass.fanmass.event-context.v1') {
-    throw new Error(`Unexpected event context contract: ${EVENT_CONTEXT_CONTRACT}`);
-  }
-  if (FANMASS_SUMMARY_CONTRACT !== 'fanmass.messmass.analytics-summary.v1') {
-    throw new Error(`Unexpected Fanmass summary contract: ${FANMASS_SUMMARY_CONTRACT}`);
-  }
-
-  console.log(JSON.stringify({ ok: true, checks }, null, 2));
+const photoRouteSource = readFileSync(requiredPhotoRoute, 'utf8');
+if (PHOTO_ANALYSIS_CONTRACT !== 'fanmass.messmass.photo-analysis.v1') {
+  throw new Error(`Unexpected photo result contract: ${PHOTO_ANALYSIS_CONTRACT}`);
+}
+if (!photoRouteSource.includes('storeFanmassPhotoAnalysis') || !photoRouteSource.includes('tombstoneFanmassPhotoAnalysis')) {
+  throw new Error('The active Fanmass photo route must support one photo result and its tombstone.');
 }
 
-main();
+const missingRetirements = retiredRoutes.filter((route) => {
+  const source = readFileSync(resolve(process.cwd(), route), 'utf8');
+  return !source.includes('retiredFanmassEndpoint');
+});
+if (missingRetirements.length) {
+  throw new Error(`Legacy Fanmass lookup routes are not retired: ${missingRetirements.join(', ')}`);
+}
+
+console.log(JSON.stringify({
+  ok: true,
+  cameraPhotoResultContract: PHOTO_ANALYSIS_CONTRACT,
+  photoResultRoute: 'POST and DELETE one photo per request',
+  retiredLookupRoutes: retiredRoutes,
+  cameraPhotoFlowReadsMessmassContext: false,
+}, null, 2));
