@@ -1,8 +1,8 @@
 # messmass API Reference
 
-Generated for the fleet audit (messmass#350); measured against `docs/_audit/endpoints.json` (inventory head 056f5e30, 225 endpoints; the frame-context route added 2026-10-06, the link-stats route 2026-10-07, the photo-stats route 2026-10-12, and the Fanmass per-photo result route added 2026-10-20). Every route below was verified by reading its `route.ts` handler, not just the marker scan; existing Auth adjudication was re-verified against the handlers @ dd34e229 (2026-09-28), and the new route uses `requireFanmassIntegrationAuth`.
+Generated for the fleet audit (messmass#350); measured against `docs/_audit/endpoints.json` (227 endpoints at the 2026-10-20 reconciliation audit; includes the Camera event sync and explicit-link routes added 2026-10-20). Every route below was verified by reading its `route.ts` handler, not just the marker scan; existing Auth adjudication was re-verified against the handlers @ dd34e229 (2026-09-28), and the new routes use `requireFanmassIntegrationAuth`.
 
-Coverage: 225 of 225 routes documented, enforced by
+Coverage: 227 of 227 routes documented, enforced by
 `tests/api-reference-covers-every-route.test.ts` — five routes were missing when
 that claim was last made by hand.
 
@@ -154,7 +154,7 @@ All reads; the aggregation store is `analytics_aggregates` / `partner_analytics`
 | /api/cron/bitly-refresh | GET, POST | CRON_SECRET (401 when unset or wrong — fails closed, messmass#348) | — | `{success,refreshed}` | refreshes bitly cached metrics (writes via lib) |
 | /api/cron/google-sheets-sync | GET | CRON_SECRET (503 in production when unset — fails closed) | — | `{success,synced}` | outbound Google Sheets API; insert/update `projects`, updates `partners` sync state |
 
-## /api/integrations/camera (6 routes)
+## /api/integrations/camera (8 routes)
 
 | Path | Methods | Auth | Request | Response | Side effects |
 |---|---|---|---|---|---|
@@ -164,6 +164,8 @@ All reads; the aggregation store is `analytics_aggregates` / `partner_analytics`
 | /api/integrations/camera/link-partners | POST | requireFanmassIntegrationAuth | link payload | `{success,…}` | links partners to camera orgs (writes `partners`) |
 | /api/integrations/camera/partners | POST | assertCameraSecret | partner payload | `{success,partner}` | upserts partner link data from camera |
 | /api/integrations/camera/provision-missing | POST | requireFanmassIntegrationAuth | `?limit` | `{success,provisioned}` | outbound camera provisioning API; updates `partners` |
+| /api/integrations/camera/sync-linked | POST | requireFanmassIntegrationAuth | `?limit=20&offset=0` (maximum limit 20) | `{success,synced,failed,...}` | refreshes one bounded page of linked Camera event mirrors from Messmass source project title, date, and exact partner mapping; reports per-event failures |
+| /api/integrations/camera/link-existing | POST | requireFanmassIntegrationAuth | `{messmassEventId,cameraEventId,replaceMessmassEventId?}` | `{success,messmassEventId,cameraEventId,linked}` | explicitly links a verified existing Camera event without replacing the Camera event or its submissions; optional old Messmass id is accepted only when that source project no longer exists |
 | /api/integrations/camera/sso-session | POST | assertCameraSecret | session payload | `{success}` | mints/propagates SSO session state (camera to messmass) |
 
 ## /api/integrations/fanmass (19 routes)
@@ -353,16 +355,17 @@ All wrapped in `withOrgContext` (getAdminUser + `x-v3-org-id` injection) except 
 ## Adjudication of routes with no auth guard
 
 Re-run 2026-09-16 against current code, per HTTP method rather than per file.
-Buckets re-checked @ dd34e229 (2026-09-28): unchanged.
+Existing buckets re-checked @ dd34e229 (2026-09-28); the two Camera reconciliation
+endpoints added 2026-10-20 are fully guarded by `requireFanmassIntegrationAuth`.
 CSRF is never counted as a guard: any anonymous caller can fetch the token from
 `GET /api/csrf-token`, which is the whole reason `lib/apiGuards.ts` exists.
 
 | | routes |
 |---|---:|
-| Fully guarded (every method) | **193** |
+| Fully guarded (every method) | **195** |
 | Open write method, public by design | **5** |
 | Open GET only, writes guarded or absent | **27** |
-| **Total** | **225** |
+| **Total** | **227** |
 
 The previous run of this section (2026-08) listed 40 GAP routes, 21 of them
 unauthenticated writes. Those are closed: messmass#347 and #386 took the first
