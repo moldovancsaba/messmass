@@ -13,7 +13,7 @@ Coverage-measured, per-endpoint reference for every route under `app/api/`. Each
 
 ## Coverage
 
-- Endpoints documented: **336** across 57 route groups. That is every exported HTTP method handler (including the 4 CORS `OPTIONS` handlers under `/api/public`) in the 224 `route.ts` files under `app/api/` (`find app/api -name route.ts | wc -l` = 224, counted 2026-10-12; the three added since the 2026-09-28 pass are the camera `frame-context`, `link-stats` and `photo-stats` routes).
+- Endpoints documented: **338** across 57 route groups. That is every exported HTTP method handler (including the 4 CORS `OPTIONS` handlers under `/api/public`) in the 225 `route.ts` files under `app/api/` (counted 2026-10-20; additions since the 2026-09-28 pass include the camera `frame-context`, `link-stats`, and `photo-stats` routes plus Fanmass per-photo POST/DELETE ingestion).
 - Auth adjudication: 242 admin-session, 11 page-password, 33 machine-token, 7 cron-secret, 3 org-scoped, 40 public-by-design, 0 stakeholder-session, 0 UNGUARDED-GAP.
 - Deprecation candidates (stub/410/dead): **2** (see the end).
 
