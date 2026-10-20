@@ -1,6 +1,6 @@
 # {messmass} Release Notes
 Status: Active
-Last Updated: 2026-10-20T16:45:17.000Z
+Last Updated: 2026-10-20T17:26:56.000Z
 Canonical: No
 Owner: Operations
 
@@ -8,8 +8,8 @@ Owner: Operations
 
 - **Changed:** `/admin/analytics/ai` and its event reports now read completed, non-deleted Camera photo results stored by Messmass. They show received result counts, per-photo detections and boxes, brand/club/merchandise findings, and completed moderation checks. They no longer show misleading event coverage, completion, freshness, audience projection, or old cross-event variable fill rates.
 - **Changed:** Fanmass sends one identity-free result for one Camera photo with the exact Messmass event, Camera partner, Camera event, and Camera photo IDs. Messmass validates that link and mechanically rebuilds its own report from active photo rows. Event-level Fanmass exports are retired.
-- **Data cleanup:** deployment cleanup archives obsolete event-level summaries, dashboard snapshots, legacy project stats, and variable definitions outside the active report path; keeps valid photo results and rebuilds their event summaries. The verified cleanup counts will be recorded after the production migration completes.
-- **Verification:** production audit found 438 of 438 Messmass events linked to one unique Camera event, with no missing event, ID mismatch, partner mismatch, duplicate link, or eligible unlinked event. Messmass type-check and build passed; production cleanup remains a post-deployment step.
+- **Data cleanup (production, verified 2026-10-20):** archived 221 historical event summaries, 261 obsolete dashboard snapshots, 220 prior project-stat snapshots, and replaced 90 old Fanmass variable records with 88 canonical photo-result definitions. No obsolete event-link or rescan records existed. Kept all 90 valid photo results and rebuilt 7 current summaries. Validation found no missing photo routing IDs or boxes, no event/partner link mismatches, no non-canonical Fanmass report fields, and no legacy progress timestamps. The 397 remaining materialized Fanmass report fields are the canonical per-photo values Messmass uses in reports.
+- **Verification:** production audit found 438 of 438 Messmass events linked to one unique Camera event, with no missing event, ID mismatch, partner mismatch, duplicate link, or eligible unlinked event. All 90 photo results have exact event/partner links, routing IDs, and box arrays. Production cleanup and post-cleanup checks completed; the event-level dashboard/rescan collections and obsolete metric fields are no longer active. Messmass main CI and the Vercel production deployment passed.
 
 ## Unreleased — guides: vetting is one photo at a time on one screen, and the vetting words (camera issue 628)
 
