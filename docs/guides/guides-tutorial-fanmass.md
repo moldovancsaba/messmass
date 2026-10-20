@@ -1,6 +1,6 @@
 # Tutorial: Fanmass integration
 Status: Active
-Last Updated: 2026-08-14T15:00:00.000Z
+Last Updated: 2026-10-20T00:00:00.000Z
 Canonical: Yes
 Owner: Documentation
 
@@ -25,9 +25,13 @@ The integration has **two layers**, both sitting behind **one shared machine-aut
   on data you entered.
 
 The key principle: **messmass stays the source of truth** for organisations, partners,
-events, report templates, and report consumption. Fanmass stays the source of truth for
-image intake and analysis. They talk over versioned APIs, never by reaching into each
-other's database.
+events, report templates, and report consumption. Camera stays the source of truth for
+capture, identity/consent, retention, and human vetting. Fanmass owns image analysis,
+its durable queue, and its results. The explicit Camera-to-Fanmass source boundary is a
+read-only Atlas role: Fanmass discovers eligible Camera records without asking Camera to
+enqueue or upload anything, then writes only to its own pipeline database. Fanmass sends
+event aggregates to Messmass through authenticated APIs; the apps do not share writable
+database ownership.
 
 ## Before you start
 
@@ -139,10 +143,12 @@ People counts are detections across photos, not deduplicated unique attendees.
 it is not a verified audience count. Camera's human-reviewed counters keep their own
 `camera_` names so they cannot overwrite Fanmass estimates.
 
-The durable Camera feed leases and stages exactly one photo per claim. Fanmass analyzes
-its own staged image records; the event summary and metrics above flow to Messmass.
-Fanmass's per-photo detail is not currently returned to Camera's vetting UI for a
-human correction/feedback loop.
+Fanmass independently discovers eligible Camera Atlas records and gives each source
+photo one durable queue identity, even if the Camera record links to multiple events.
+Fanmass owns the global one-photo lease, local analysis, retries, complete result and
+image-relative boxes. It pushes event aggregates through the authenticated Messmass API.
+Camera is not called and does not maintain Fanmass job state. A camera-side AI review
+surface is outside this one-way discovery and reporting contract.
   `fanmassTopBrandName`, `fanmassTopBrandCount`, `fanmassClubCount`, `fanmassTopClubName`,
   `fanmassTopClubCount`, `fanmassWarningCount`, `fanmassSourceRunCount`,
   `fanmassStatus`, `fanmassBatchId`, and `fanmassLastSyncedAt`.

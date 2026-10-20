@@ -1,7 +1,7 @@
 'use client';
 
 // components/fanmass/SettingsTab.tsx
-// WHAT: Settings tab content for /admin/fanmass — edit fanmass's 16
+// WHAT: Settings tab content for /admin/fanmass — edit fanmass's 14
 //     allowlisted operational settings (lib/fanmassSettingsAllowlist.ts) and
 //     rotate its API key, sourced from sections.settings on the
 //     fanmass_dashboard_snapshot the parent tab shell already polls.
@@ -45,10 +45,8 @@ const FIELD_META: Record<FanmassSettingsField, { label: string; kind: FieldKind;
   defaultPrompt: { label: 'Default prompt', kind: 'textarea' },
   batchUploadChunkSize: { label: 'Batch upload chunk size', kind: 'number', min: 1 },
   maxUploadBytes: { label: 'Max upload bytes', kind: 'number', min: 1 },
-  cameraPollMinutes: { label: 'Camera poll interval (minutes)', kind: 'number', min: 1 },
   messmassPushMinutes: { label: 'Messmass push interval (minutes)', kind: 'number', min: 1 },
   gdrivePollMinutes: { label: 'Google Drive poll interval (minutes)', kind: 'number', min: 1 },
-  cameraBackfill: { label: 'Camera backfill', kind: 'boolean' },
   gdriveBackfill: { label: 'Google Drive backfill', kind: 'boolean' },
 };
 

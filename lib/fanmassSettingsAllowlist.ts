@@ -23,18 +23,15 @@ export type FanmassSettingsField =
   | 'defaultPrompt'
   | 'batchUploadChunkSize'
   | 'maxUploadBytes'
-  | 'cameraPollMinutes'
   | 'messmassPushMinutes'
   | 'gdrivePollMinutes'
-  | 'cameraBackfill'
   | 'gdriveBackfill';
 
 export const FANMASS_SETTINGS_ALLOWLIST: FanmassSettingsField[] = [
   'vlmProvider', 'vlmModel', 'ollamaBaseUrl', 'ollamaTimeoutSeconds',
   'semanticModelId', 'semanticModelRepo', 'semanticModelFile',
   'yoloConfidence', 'defaultPrompt', 'batchUploadChunkSize',
-  'maxUploadBytes', 'cameraPollMinutes', 'messmassPushMinutes',
-  'gdrivePollMinutes', 'cameraBackfill', 'gdriveBackfill',
+  'maxUploadBytes', 'messmassPushMinutes', 'gdrivePollMinutes', 'gdriveBackfill',
 ];
 
 export type FanmassSettingsValues = Partial<Record<FanmassSettingsField, string | number | boolean>>;
