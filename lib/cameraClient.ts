@@ -103,8 +103,15 @@ export const cameraClient = {
     const q = new URLSearchParams();
     if (params.name) q.set('name', params.name);
     if (params.messmassPartnerId) q.set('messmassPartnerId', params.messmassPartnerId);
-    return req('GET', `/api/internal/messmass/partners?${q.toString()}`).then((d) => (d.partners as Array<{ partnerId: string; name: string }>) || []);
+    return req('GET', `/api/internal/messmass/partners?${q.toString()}`).then((d) => (d.partners as Array<{ partnerId: string; name: string; messmassPartnerId?: string | null }>) || []);
   },
-  provisionEvent: (input: { messmassEventId: string; partnerId: string; eventName: string; eventDate?: string }) =>
+  provisionEvent: (input: {
+    messmassEventId: string;
+    partnerId: string;
+    eventName: string;
+    eventDate: string | null;
+    cameraEventId?: string;
+    replaceMessmassEventId?: string;
+  }) =>
     req('POST', '/api/internal/messmass/events', input).then((d) => d.event as { eventId: string; mongoId: string; created: boolean }),
 };
