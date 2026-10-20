@@ -113,12 +113,12 @@ it drifts. Do not edit between the markers.
 | Category | Count | Location |
 |----------|-------|----------|
 | **UI Components** | 104 | `components/` |
-| **Utility Modules** | 225 | `lib/` |
+| **Utility Modules** | 226 | `lib/` |
 | **Hooks** | 13 | `hooks/` |
 | **Design Tokens** | 408 | `app/styles/theme.css` |
 | **Utility CSS classes** | 192 | `app/styles/utilities.css` |
 | **App routes (pages)** | 73 | `app/**/page.tsx` |
-| **API routes** | 224 | `app/api/**/route.ts` |
+| **API routes** | 225 | `app/api/**/route.ts` |
 
 The modules with the most importers — the ones whose change radius is
 largest, and the ones to read first:
@@ -134,7 +134,7 @@ largest, and the ones to read first:
 | `lib/apiClient.ts` | 42 | 258 |
 | `lib/db.ts` | 41 | 17 |
 | `components/MaterialIcon.tsx` | 33 | 119 |
-| `lib/fanmassIntegration.ts` | 30 | 464 |
+| `lib/fanmassIntegration.ts` | 32 | 478 |
 | `components/UnifiedAdminHeroWithSearch.tsx` | 27 | 192 |
 | `lib/mongoose-v3.ts` | 21 | 66 |
 | `lib/permissions.ts` | 18 | 141 |
@@ -1075,7 +1075,7 @@ shows up here on the next regeneration, which is the point.
 | `/terms` | `app/terms/page.tsx` |
 | `/test-csrf` | `app/test-csrf/page.tsx` |
 
-### API routes (224)
+### API routes (225)
 
 `auth` is the guard symbol the route actually calls. A blank cell
 means the route calls none — public by construction, or a gap.
@@ -1407,6 +1407,7 @@ means the route calls none — public by construction, or a gap.
 | `/api/integrations/fanmass/events/[eventId]/context` | GET | `requireFanmassIntegrationAuth` |
 | `/api/integrations/fanmass/events/[eventId]/drive-folders/status` | POST | `requireFanmassIntegrationAuth` |
 | `/api/integrations/fanmass/events/[eventId]/link` | GET, POST | `requireFanmassIntegrationAuth` |
+| `/api/integrations/fanmass/events/[eventId]/photos/[photoId]` | POST, DELETE | `requireFanmassIntegrationAuth` |
 | `/api/integrations/fanmass/events/[eventId]/stats` | POST | `requireFanmassIntegrationAuth` |
 | `/api/integrations/fanmass/events/[eventId]/sync` | GET, POST | `requireFanmassIntegrationAuth` |
 | `/api/integrations/fanmass/partners` | GET, POST | `requireFanmassIntegrationAuth` |

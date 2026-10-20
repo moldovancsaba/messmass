@@ -50,6 +50,12 @@ function fakeDb(project: Doc, derived: string[] = []) {
   const db = {
     collection: (name: string) => {
       if (name === 'projects') return projectsCollection;
+      if (name === 'fanmass_camera_photo_analyses') {
+        return { countDocuments: jest.fn(async () => 0), findOne: jest.fn(async () => null) };
+      }
+      if (name === 'ai_analysis_summaries') {
+        return { findOne: jest.fn(async () => null) };
+      }
       if (name === 'variables_metadata') {
         return { find: () => ({ toArray: async () => derived.map((n) => ({ name: n })) }) };
       }

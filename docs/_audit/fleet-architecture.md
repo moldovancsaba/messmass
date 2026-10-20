@@ -13,15 +13,21 @@ Verified messmass `5cc610c2` (E2 and E4 only, 2026-10-11, see below) · camera
 (2026-09-28). Everything else on the messmass side was last read at `dd34e229`.
 
 **2026-10-20 integration architecture update (implementation staged, not released).**
-The old E3 HTTP media-feed contract below is retired by the current Camera and
-Fanmass feature branches. Fanmass now independently discovers eligible Camera
-submissions through a read-only Atlas role, and writes queue/lease/result state
-only to its own Atlas database. Camera does not create Fanmass jobs, send image
-requests, or receive analysis callbacks. Fanmass claims one source photo under
-one global lease, performs local analysis, persists the result and boxes, and
-sends aggregate analytics to Messmass through its existing authenticated
-integration. This documents the staged architecture; no production Atlas role,
-environment, data migration, or deployment has been verified by this update.
+The former Camera HTTP media-feed contract below is retired by the current
+Camera/Fanmass source branches. Camera writes its normal event/submission data
+and owns consent, identity, retention, and vetting. It has no Fanmass queue,
+call, or callback. Fanmass independently discovers eligible records through a
+read-only Camera Atlas connection, claims one source photo under a single global
+lease, analyzes that one image locally, and persists its per-photo result and
+boxes in Fanmass-owned storage. Fanmass then sends one result per photo, with
+Camera partner/event/photo IDs, through a durable authenticated outbox to
+Messmass. Messmass upserts each result and mechanically rebuilds its event
+summary and report variables from the current photo rows. It does not receive
+Fanmass-built reports for this Camera-photo path. Legacy event-summary pushes
+remain for non-Camera Fanmass batches and are disabled for Camera-photo batches.
+This describes the staged source implementation; no production deployment or
+production data migration has been verified. Source branches at this contract
+update are Messmass `056f5e30`, Fanmass `fac7fe8`, and Camera `921637dd`.
 
 **2026-10-11 pass (camera 12.3.41, `c40aad85`; the other repos were not re-read).**
 camera removed the try-on integration (camera issue 557; record: camera
@@ -157,9 +163,9 @@ flowchart LR
   IMD["image.direct<br/>renderer · own Atlas · R2<br/>Mac worker · no live edge"]
   SSO["SSO<br/>sso.doneisbetter.com"]
 
-  FAN -->|"E2 · existing analytics integration<br/>requireFanmassIntegrationAuth"| MM
+  FAN -->|"E3 · one-photo result or tombstone<br/>requireFanmassIntegrationAuth"| MM
   CAM -.->|"E3 · read-only Atlas source"| FAN
-  FAN -->|"E3 · Fanmass-owned queue, lease, results<br/>one source photo per analysis"| FANDB["fanmass_camera_pipeline<br/>queue · results · cursors"]
+  FAN -->|"E3 · Fanmass-owned queue, lease, results, delivery outbox<br/>one source photo per analysis"| FANDB["fanmass_camera_pipeline<br/>queue · results · outbox · cursors"]
   MM <-->|"E4 · master data · cross-app session · email<br/>look changes · link stats · frame context<br/>shared internal secret"| CAM
   STW -->|"E7 · pledge wall"| CAM
 
@@ -177,8 +183,8 @@ Solid arrows carry data; dotted arrows are identity. E1 (camera ↔ try-on, a
 shared Atlas queue) and E8 (camera ↔ image.direct) no longer exist on camera's
 side and are not drawn. Direction is the direction
 of the **call**, not of the data: try-on has no public inbound address, and
-Fanmass reads Camera Atlas and sends analytics to Messmass. The older E3 HTTP
-media feed is retained only as a historical contract below.
+Fanmass reads Camera Atlas and sends one photo result or tombstone at a time to
+Messmass. E2's event-summary integration remains for non-Camera Fanmass batches.
 
 ## Edge contracts
 
@@ -302,27 +308,31 @@ same section then contradicted four bullets down — corrected 2026-09-16.
   summary rather than becoming unstable variable keys. Camera's human analysis
   counters stay under `camera_` so the sources and denominators remain distinct.
   See the Fanmass analytics-summary contract and Messmass Fanmass tutorial for
-  the field-level mapping.
+  the field-level mapping. This event-level summary is retained for non-Camera
+  Fanmass batches; it is not the Camera-photo reporting path. Camera-photo
+  batches are marked in Fanmass and skipped by this legacy aggregate exporter.
 
-### E3 · Camera Atlas source → Fanmass-owned Atlas queue (staged replacement)
-**Replaces the former Camera HTTP media pull. Implementation is present on the
+### E3 · Camera Atlas source → Fanmass queue → Messmass photo results (staged)
+**Replaces the former Camera HTTP media pull. Implementation is staged on the
 current feature branches, not merged or deployed.** Camera owns the source event
 and submission documents. Fanmass independently reads a narrow projection from
 Camera Atlas using a read-only source role, and writes queue, lease, cursor,
-result, and cleanup records only in its own `fanmass_camera_pipeline` database.
-There is no Camera queue producer, Camera image-feed route, or Fanmass result
-callback in this contract.
+result, delivery-outbox, and cleanup records only in its own
+`fanmass_camera_pipeline` database. There is no Camera queue producer or Camera
+image-feed route. Fanmass delivers individual analysis results to Messmass over
+the authenticated per-photo API; it does not call Camera back.
 
 - **Discovery and recovery:** Fanmass uses Atlas change streams for low latency
   and bounded resumable source/queue/result scans for recovery after missed
   events, expired tokens, restarts, or unavailable change streams. Discovery is
   idempotent and creates one queue identity per Camera submission Mongo `_id`,
   regardless of timestamp display IDs or event associations.
-- **Eligibility:** Fanmass rechecks consent, identity presence, retention,
-  deletion, visibility, image health, and the event's vetting policy before
-  download and before publishing results. New photos require a completed
-  consent record and real identity; anonymous/no-login captures remain outside
-  vetting and analysis and are handled by Camera's 24-hour erasure lifecycle.
+- **Eligibility:** Fanmass rechecks the minimum consent, retention,
+  publication, deletion, visibility, image-health, and event-policy flags
+  required before download and before publishing results. It does not read or
+  infer a person's name, email, social-login ID, or other user identity. Camera
+  alone enforces the no-login 24-hour erasure lifecycle; those submissions
+  never become Fanmass work.
 - **Serial processing:** Fanmass acquires one Atlas global lease, claims one
   photo, downloads only from approved storage hosts, runs its full local
   analysis, and persists the result and image-relative people/face boxes before
@@ -330,18 +340,30 @@ callback in this contract.
   workers. Retries are at-least-once; the source-photo key makes result writes
   idempotent. This is one active queue analysis, not a promise that a crash can
   never cause recomputation.
-- **Result and reporting:** per-photo detail and boxes live in Fanmass's own
-  database/local store. Event aggregates continue to Messmass through the
-  existing authenticated analytics APIs. No guest contact fields or raw Camera
-  documents cross the source projection.
+- **Result and reporting:** per-photo detail and boxes are stored in Fanmass,
+  then sent individually to
+  `POST /api/integrations/fanmass/events/{eventId}/photos/{photoId}`. The
+  `fanmass.messmass.photo-analysis.v1` payload includes Camera partner/event/
+  photo IDs, source revision, analysis generation, normalized report values,
+  boxes, and allowlisted per-photo analysis. A durable outbox retries failed
+  sends. Messmass stores a row in `fanmass_camera_photo_analyses`, acknowledges
+  stale generations without overwriting current data, and derives its event
+  aggregate in `ai_analysis_summaries` and `projects.stats` from those rows. A
+  matching `DELETE` creates a tombstone and removes the photo from report
+  aggregation. Fanmass sends no event report for this path. No guest contact
+  fields or raw Camera documents cross the source projection. Since Messmass
+  does not know Camera's eligible-photo denominator, this aggregate stays
+  `partial` while rows exist and does not claim event-level completion,
+  percentage coverage, or projected reach.
 - **Privacy cleanup:** Fanmass reconciles deletions and newly ineligible source
   records, cancels jobs, removes results, and queues retryable deletion of local
   staged images and image-specific derived memory. Camera never requests that
   cleanup over HTTP or writes Fanmass state.
-- **Deployment gate:** provision the separate Atlas role, configure Fanmass's
-  environment-only source URI and database names, deploy Fanmass first, and
-  confirm queue/status/results/boxes before deploying Camera's retired-feed
-  removal. Production permissions and runtime behavior are not yet verified.
+- **Deployment gate:** keep the configured Atlas user and connection. Deploy
+  the Messmass per-photo receiver and Fanmass outbox together, then enable the
+  Fanmass delivery worker. Confirm an upsert and deletion tombstone with IDs,
+  boxes, report projection, retry behavior, and stale-generation fencing before
+  treating the lane as operational. Production behavior is not verified.
 
 **Historical contract (retired 2026-10-20):** Older builds used the
 `camera.fanmass.media-jobs.v1` HTTP feed: Camera exposed event listing,

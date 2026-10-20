@@ -1,8 +1,8 @@
 # messmass API Reference
 
-Generated for the fleet audit (messmass#350); measured against `docs/_audit/endpoints.json` (inventory head dd34e229, 224 endpoints; the frame-context route added 2026-10-06, the link-stats route 2026-10-07, the photo-stats route 2026-10-12). Every route below was verified by reading its `route.ts` handler, not just the marker scan; the Auth column was re-verified against the handlers @ dd34e229 (2026-09-28).
+Generated for the fleet audit (messmass#350); measured against `docs/_audit/endpoints.json` (inventory head 056f5e30, 225 endpoints; the frame-context route added 2026-10-06, the link-stats route 2026-10-07, the photo-stats route 2026-10-12, and the Fanmass per-photo result route added 2026-10-20). Every route below was verified by reading its `route.ts` handler, not just the marker scan; existing Auth adjudication was re-verified against the handlers @ dd34e229 (2026-09-28), and the new route uses `requireFanmassIntegrationAuth`.
 
-Coverage: 224 of 224 routes documented, enforced by
+Coverage: 225 of 225 routes documented, enforced by
 `tests/api-reference-covers-every-route.test.ts` — five routes were missing when
 that claim was last made by hand.
 
@@ -166,7 +166,7 @@ All reads; the aggregation store is `analytics_aggregates` / `partner_analytics`
 | /api/integrations/camera/provision-missing | POST | requireFanmassIntegrationAuth | `?limit` | `{success,provisioned}` | outbound camera provisioning API; updates `partners` |
 | /api/integrations/camera/sso-session | POST | assertCameraSecret | session payload | `{success}` | mints/propagates SSO session state (camera to messmass) |
 
-## /api/integrations/fanmass (18 routes)
+## /api/integrations/fanmass (19 routes)
 
 All 18 use `requireFanmassIntegrationAuth` (Bearer/`x-api-key` shared token) and are CSRF-exempt. Store: `fanmass_event_links`, `fanmass_commands`, `fanmass_dashboard_snapshot`, `drive_folder_links`, `ai_rescan_requests`, `ai_analysis_summaries`, `variables_metadata`, plus `projects`/`partners`/`organizations`.
 
@@ -179,6 +179,7 @@ All 18 use `requireFanmassIntegrationAuth` (Bearer/`x-api-key` shared token) and
 | /api/integrations/fanmass/drive-folders/pending-sync | GET | — | folders pending sync | reads `drive_folder_links` |
 | /api/integrations/fanmass/drive-folders | GET | — | drive folder links | reads `drive_folder_links` |
 | /api/integrations/fanmass/events/[eventId]/analysis-summary | POST | summary body | `{success}` | upserts `ai_analysis_summaries` |
+| /api/integrations/fanmass/events/[eventId]/photos/[photoId] | POST, DELETE | requireFanmassIntegrationAuth | POST one photo result; DELETE tombstone, each with partner/event/photo IDs and generation | `{success,data:{status}}` | upserts one `fanmass_camera_photo_analyses` row; rebuilds the per-photo event summary and report stats; ignores stale generations |
 | /api/integrations/fanmass/events/[eventId]/context | GET | path id | event context | reads `projects`/links |
 | /api/integrations/fanmass/events/[eventId]/drive-folders/status | POST | status body | `{success}` | updates `drive_folder_links` status |
 | /api/integrations/fanmass/events/[eventId]/link | GET, POST | POST link body | `{success,link}` | reads/upserts `fanmass_event_links` |
@@ -358,10 +359,10 @@ CSRF is never counted as a guard: any anonymous caller can fetch the token from
 
 | | routes |
 |---|---:|
-| Fully guarded (every method) | **192** |
+| Fully guarded (every method) | **193** |
 | Open write method, public by design | **5** |
 | Open GET only, writes guarded or absent | **27** |
-| **Total** | **224** |
+| **Total** | **225** |
 
 The previous run of this section (2026-08) listed 40 GAP routes, 21 of them
 unauthenticated writes. Those are closed: messmass#347 and #386 took the first

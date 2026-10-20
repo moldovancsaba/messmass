@@ -325,6 +325,40 @@ picker; see `tests/ai-variable-hint.test.ts` for the hint's exact wording rules.
 
 ## Fanmass Ingest Endpoint
 
+### Camera photo results (one photo per call)
+
+`POST` and `DELETE /api/integrations/fanmass/events/[eventId]/photos/[photoId]`
+
+These routes are the result boundary for Camera photos. Fanmass independently
+discovers and analyzes Camera photos one at a time; Camera does not enqueue work
+or call Fanmass. Fanmass sends only a completed single-photo result, with
+`cameraPartnerId`, `cameraEventId`, and `cameraPhotoId` routing IDs, a source
+revision and analysis generation, normalized summary facts, image-relative
+boxes, and allowlisted per-photo analysis. The request has no source image URL,
+image bytes, or guest identity/contact fields.
+
+Messmass stores one row per `{eventId, cameraPhotoId}` in
+`fanmass_camera_photo_analyses`. `POST` idempotently upserts the row and
+`DELETE` stores a tombstone and clears its analysis fields. Older generations,
+changed source revisions at the same generation, and attempts to resurrect a
+tombstone are acknowledged as `ignored_stale`; they cannot overwrite a newer
+photo state. Each accepted write rebuilds `ai_analysis_summaries` and the fixed
+Fanmass report-variable projection from the current non-tombstoned photo rows.
+If either projection cannot be saved, the endpoint returns an error so Fanmass's
+durable outbox retries the same idempotent operation.
+
+This path reports facts from rows received so far. It has no Camera queue
+denominator, so it records `fanmassPhotoResultsReceived` and the actual analysed
+photo count, leaves completion percentage/coverage/projected reach unset, and
+marks the aggregate `partial` while rows exist. It never represents “all
+received rows analyzed” as “the whole event is 100% complete.” Legacy event
+summary and stats endpoints reject writes once a Camera photo result owns the
+event.
+
+The existing event-level endpoint below remains for non-Camera/legacy Fanmass
+batches. It is not the Camera photo path, and Camera-photo events must not also
+receive its aggregate pushes.
+
 `POST /api/integrations/fanmass/events/[eventId]/analysis-summary`
 
 Not an analytics read endpoint, but the producer side of the summary above.

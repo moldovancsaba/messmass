@@ -233,7 +233,11 @@ export async function createVariable(input: { name: string; label?: string; type
 // Push stats — partial merge into an event's stats (never touches derived vars)
 // ---------------------------------------------------------------------------
 
-export async function pushEventStats(eventId: string, statsPartial: Record<string, unknown>): Promise<{ eventId: string; stats: Record<string, unknown>; applied: string[]; aiLastAnalyzedAt: string }> {
+export async function pushEventStats(
+  eventId: string,
+  statsPartial: Record<string, unknown>,
+  options: { unset?: string[]; cameraPhotoPipeline?: boolean } = {},
+): Promise<{ eventId: string; stats: Record<string, unknown>; applied: string[]; aiLastAnalyzedAt: string }> {
   if (!ObjectId.isValid(eventId)) {
     throw Object.assign(new Error('Invalid event id'), { status: 422, code: 'INVALID_EVENT_ID' });
   }
@@ -242,6 +246,19 @@ export async function pushEventStats(eventId: string, statsPartial: Record<strin
   }
   const db = await getDb();
   const oid = new ObjectId(eventId);
+  const cameraPhotoPipelineOwnsEvent = !options.cameraPhotoPipeline && (
+    await db.collection('fanmass_camera_photo_analyses').countDocuments({ eventId }, { limit: 1 }) > 0
+    || Boolean(await db.collection('ai_analysis_summaries').findOne(
+      { eventId, sourceType: 'camera_photo_pipeline' },
+      { projection: { _id: 1 } },
+    ))
+  );
+  if (cameraPhotoPipelineOwnsEvent) {
+    throw Object.assign(new Error('Per-photo Camera results own this event analytics projection.'), {
+      status: 409,
+      code: 'CAMERA_PHOTO_PIPELINE_OWNS_ANALYTICS',
+    });
+  }
   const event = await db.collection('projects').findOne({ _id: oid }, { projection: { stats: 1 } });
   if (!event) throw Object.assign(new Error('Event not found'), { status: 404, code: 'EVENT_NOT_FOUND' });
 
@@ -261,10 +278,16 @@ export async function pushEventStats(eventId: string, statsPartial: Record<strin
     clean[k] = v;
     applied.push(k);
   }
+  const unset = [...new Set(options.unset || [])].filter((key) =>
+    key && !key.includes('.') && !key.startsWith('$') && !key.includes('\0') && key !== '__proto__' && !derivedNames.has(key) && !Object.prototype.hasOwnProperty.call(clean, key),
+  );
 
   const storedStats: Record<string, unknown> =
     event.stats && typeof event.stats === 'object' && !Array.isArray(event.stats) ? event.stats : {};
-  const mergedStats = addDerivedMetrics({ ...storedStats, ...clean } as any);
+  const mergeBase = { ...storedStats };
+  for (const key of unset) delete mergeBase[key];
+  const mergedStats = addDerivedMetrics({ ...mergeBase, ...clean } as any);
+  const replaceWholeStats = event.stats !== undefined && event.stats !== storedStats;
   // WHAT: Stamp when AI analytics last landed on this event.
   // WHY: Nothing recorded it, so "100% analysed" read identically whether it
   //     happened this morning or three weeks ago — for a live event that is the
@@ -288,7 +311,8 @@ export async function pushEventStats(eventId: string, statsPartial: Record<strin
   //     events) a dotted path has nothing to address, so the whole field is
   //     set, as before.
   const set: Record<string, unknown> = { aiLastAnalyzedAt: receivedAt, updatedAt: receivedAt };
-  if (event.stats !== undefined && event.stats !== storedStats) {
+  const remove: Record<string, ''> = Object.fromEntries(unset.map((key) => [`stats.${key}`, '']));
+  if (replaceWholeStats) {
     set.stats = mergedStats;
   } else {
     for (const [k, v] of Object.entries(clean)) set[`stats.${k}`] = v;
@@ -298,6 +322,9 @@ export async function pushEventStats(eventId: string, statsPartial: Record<strin
       }
     }
   }
-  await db.collection('projects').updateOne({ _id: oid }, { $set: set });
+  await db.collection('projects').updateOne({ _id: oid }, {
+    $set: set,
+    ...(Object.keys(remove).length && !replaceWholeStats ? { $unset: remove } : {}),
+  });
   return { eventId, stats: mergedStats, applied, aiLastAnalyzedAt: receivedAt };
 }

@@ -349,6 +349,20 @@ export function mapFanmassStatsToFlatStats(fanmassStats: ReturnType<typeof mapFa
 }
 
 export async function syncFanmassAnalytics(eventId: string, correlationId: string, options?: { dryRun?: boolean; force?: boolean }) {
+  const ownershipDb = await getDb();
+  const photoPipelineOwnsEvent = await ownershipDb.collection('fanmass_camera_photo_analyses').findOne(
+    { eventId },
+    { projection: { _id: 1 } },
+  ) || await ownershipDb.collection('ai_analysis_summaries').findOne(
+    { eventId, sourceType: 'camera_photo_pipeline' },
+    { projection: { _id: 1 } },
+  );
+  if (photoPipelineOwnsEvent) {
+    throw Object.assign(new Error('This event is reported from per-photo Camera results; aggregate Fanmass sync is disabled.'), {
+      status: 409,
+      code: 'CAMERA_PHOTO_PIPELINE_OWNS_ANALYTICS',
+    });
+  }
   const link = await loadFanmassLink(eventId);
   if (!link) {
     throw Object.assign(new Error('Fanmass link was not found for event.'), { status: 404, code: 'FANMASS_LINK_NOT_FOUND' });
