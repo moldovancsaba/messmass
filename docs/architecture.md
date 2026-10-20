@@ -134,7 +134,7 @@ largest, and the ones to read first:
 | `lib/db.ts` | 41 | 17 |
 | `lib/apiClient.ts` | 40 | 258 |
 | `components/MaterialIcon.tsx` | 33 | 119 |
-| `lib/fanmassIntegration.ts` | 30 | 478 |
+| `lib/fanmassIntegration.ts` | 30 | 485 |
 | `components/UnifiedAdminHeroWithSearch.tsx` | 27 | 192 |
 | `lib/mongoose-v3.ts` | 21 | 66 |
 | `lib/permissions.ts` | 18 | 141 |
