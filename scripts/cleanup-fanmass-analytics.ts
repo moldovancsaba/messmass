@@ -132,14 +132,18 @@ async function main() {
     .toArray();
   const projectsToClean = projectRows.flatMap((project) => {
     const stats = plainObject(project.stats) || {};
-    const obsoleteStats = Object.fromEntries(Object.entries(stats).filter(([key]) => key.startsWith('fanmass')));
+    const obsoleteStats = Object.fromEntries(Object.entries(stats).filter(([key]) =>
+      key.startsWith('fanmass') && !FANMASS_PHOTO_VARIABLE_NAMES.has(key),
+    ));
     return Object.keys(obsoleteStats).length || project.aiLastAnalyzedAt || project.fanmassPhotoResultReceivedAt
       ? [{ project, obsoleteStats }]
       : [];
   });
 
   const variableCollection = db.collection<SourceDocument>('variables_metadata');
-  const variableRows = await variableCollection.find({ name: /^fanmass/ }).toArray();
+  const variableRows = await variableCollection.find({
+    name: { $regex: '^fanmass', $nin: [...FANMASS_PHOTO_VARIABLE_NAMES] },
+  }).toArray();
   const summaryCounts = await summaries.aggregate([
     { $group: { _id: { sourceType: '$sourceType', contractVersion: '$contractVersion' }, count: { $sum: 1 } } },
     { $sort: { count: -1 } },
@@ -252,12 +256,21 @@ async function main() {
   const activeVariables = await variableCollection.countDocuments({ name: /^fanmass/ });
   const canonicalVariables = await variableCollection.countDocuments({ name: { $in: [...FANMASS_PHOTO_VARIABLE_NAMES] } });
   const finalArchivedProjectStats = await projectArchive.countDocuments({ sourceCollection: 'projects.stats' });
-  const leftoverLegacyStats = await db.collection('projects').aggregate([
-    { $project: { pairs: { $objectToArray: { $cond: [{ $eq: [{ $type: '$stats' }, 'object'] }, '$stats', {}] } } } },
-    { $unwind: '$pairs' },
-    { $match: { 'pairs.k': /^fanmass/ } },
-    { $group: { _id: null, count: { $sum: 1 } } },
-  ]).toArray();
+  const remainingProjectRows = await db.collection('projects')
+    .find({}, { projection: { stats: 1, aiLastAnalyzedAt: 1, fanmassPhotoResultReceivedAt: 1 } })
+    .toArray();
+  let leftoverLegacyStatFields = 0;
+  let canonicalPhotoReportStatFields = 0;
+  let remainingLegacyProgressFields = 0;
+  for (const project of remainingProjectRows) {
+    const stats = plainObject(project.stats) || {};
+    for (const key of Object.keys(stats)) {
+      if (!key.startsWith('fanmass')) continue;
+      if (FANMASS_PHOTO_VARIABLE_NAMES.has(key)) canonicalPhotoReportStatFields++;
+      else leftoverLegacyStatFields++;
+    }
+    if (project.aiLastAnalyzedAt || project.fanmassPhotoResultReceivedAt) remainingLegacyProgressFields++;
+  }
   const final = {
     archivedSummaryDocuments: summaryRows.length,
     retainedPhotoResults: activePhotos,
@@ -270,13 +283,16 @@ async function main() {
     activeFanmassVariableDefinitions: activeVariables,
     canonicalFanmassVariableDefinitions: canonicalVariables,
     archivedProjectsWithLegacyStats: finalArchivedProjectStats,
-    leftoverLegacyProjectStatFields: Number(leftoverLegacyStats[0]?.count || 0),
+    canonicalPhotoReportStatFields,
+    leftoverLegacyProjectStatFields: leftoverLegacyStatFields,
+    remainingLegacyProgressFields,
   };
   process.stdout.write(`${JSON.stringify({ result: final }, null, 2)}\n`);
   if (remainingSummaryCount !== eventIds.length || rebuiltSummaryCount !== eventIds.length
     || remainingSnapshots !== 0 || remainingEventLinks !== 0 || remainingRescanRequests !== 0
     || activeVariables !== canonicalVariables || canonicalVariables !== FANMASS_PHOTO_VARIABLE_NAMES.size
-    || finalArchivedProjectStats < projectsToClean.length || Number(leftoverLegacyStats[0]?.count || 0) !== 0) {
+    || finalArchivedProjectStats < projectsToClean.length || leftoverLegacyStatFields !== 0
+    || remainingLegacyProgressFields !== 0) {
     throw new Error('Post-cleanup verification failed; stop and inspect the archive before further changes.');
   }
 }
