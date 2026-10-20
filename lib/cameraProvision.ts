@@ -140,12 +140,22 @@ export async function provisionMissingEvents(
   if (!cameraConfigured()) return { provisioned: 0, scanned: 0, failed: 0, failures: [] };
   const projects = await db.collection('projects')
     .find({
-      'externalRefs.camera': { $exists: false },
-      $or: [
-        { partner1Id: { $exists: true } },
-        { partnerId: { $exists: true } },
-        { partner2Id: { $exists: true } },
-        { 'partnerIds.0': { $exists: true } },
+      $and: [
+        {
+          $or: [
+            { 'externalRefs.camera.eventId': { $exists: false } },
+            { 'externalRefs.camera.eventId': { $in: [null, ''] } },
+            { 'externalRefs.camera.eventId': { $regex: '^\\s*$' } },
+          ],
+        },
+        {
+          $or: [
+            { partner1Id: { $exists: true } },
+            { partnerId: { $exists: true } },
+            { partner2Id: { $exists: true } },
+            { 'partnerIds.0': { $exists: true } },
+          ],
+        },
       ],
     })
     .limit(limit).toArray();
