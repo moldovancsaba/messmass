@@ -1,6 +1,6 @@
 # messmass API Reference (complete)
 Status: Active
-Last Updated: 2026-10-20T17:30:00.000Z
+Last Updated: 2026-10-20T17:10:00.000Z
 Canonical: Yes
 Owner: Backend
 
