@@ -110,7 +110,7 @@ describe('pushEventStats', () => {
     const update = fake.projectsCollection.updateOne.mock.calls[0][1];
     expect(update.$set).not.toHaveProperty('stats');
     expect(update.$set).toMatchObject({ 'stats.fanmassGenderMalePct': 55, 'stats.fanmassDemographicsAnalyzed': 400 });
-    expect(update.$set).toHaveProperty('fanmassPhotoResultReceivedAt');
+    expect(update.$set).not.toHaveProperty('fanmassPhotoResultReceivedAt');
     expect(fake.projects[0].stats).toMatchObject({
       female: 212,
       reportText1: 'final text',

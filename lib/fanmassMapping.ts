@@ -239,7 +239,7 @@ export async function pushEventStats(
   eventId: string,
   statsPartial: Record<string, unknown>,
   options: { unset?: string[]; cameraPhotoPipeline?: boolean } = {},
-): Promise<{ eventId: string; stats: Record<string, unknown>; applied: string[]; photoResultReceivedAt: string }> {
+): Promise<{ eventId: string; stats: Record<string, unknown>; applied: string[] }> {
   if (!ObjectId.isValid(eventId)) {
     throw Object.assign(new Error('Invalid event id'), { status: 422, code: 'INVALID_EVENT_ID' });
   }
@@ -290,11 +290,11 @@ export async function pushEventStats(
   for (const key of unset) delete mergeBase[key];
   const mergedStats = addDerivedMetrics({ ...mergeBase, ...clean } as any);
   const replaceWholeStats = event.stats !== undefined && event.stats !== storedStats;
-  // This records receipt time for the latest individual photo result. It does
-  // not indicate event progress or completion.
-  const receivedAt = new Date().toISOString();
+  // This is only a write timestamp. Per-photo receipt and analysis times live
+  // on the photo result rows, not as a duplicate event-level progress field.
+  const writeAt = new Date().toISOString();
   // Write only received metric fields, leaving editor-owned event data intact.
-  const set: Record<string, unknown> = { fanmassPhotoResultReceivedAt: receivedAt, updatedAt: receivedAt };
+  const set: Record<string, unknown> = { updatedAt: writeAt };
   const remove: Record<string, ''> = Object.fromEntries(unset.map((key) => [`stats.${key}`, '']));
   if (replaceWholeStats) {
     set.stats = mergedStats;
@@ -310,5 +310,5 @@ export async function pushEventStats(
     $set: set,
     ...(Object.keys(remove).length && !replaceWholeStats ? { $unset: remove } : {}),
   });
-  return { eventId, stats: mergedStats, applied, photoResultReceivedAt: receivedAt };
+  return { eventId, stats: mergedStats, applied };
 }
