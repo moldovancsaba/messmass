@@ -245,7 +245,7 @@ Keep public report sharing and low-friction clickers as valid product features. 
 
 ## 4. Baseline findings and current disposition
 
-The findings below were recorded against the 2026-10-18 HTTP-feed baseline. The owner replaced that design on 2026-10-20 with Fanmass-owned Atlas discovery. Treat old feed/cursor findings as historical unless the disposition says they remain open; the current implementation contract is [Fanmass's Atlas queue contract](../../../../fanmass/docs/CAMERA_ATLAS_QUEUE_CONTRACT.md) where that cross-repository path is available in the checkout.
+The findings below were recorded against the 2026-10-18 HTTP-feed baseline. The owner replaced that design on 2026-10-20 with Fanmass-owned Atlas discovery. Treat old feed/cursor findings as historical unless the disposition says they remain open; the current implementation contract is [Fanmass's Atlas queue contract](https://github.com/moldovancsaba/fanmass/blob/main/docs/CAMERA_ATLAS_QUEUE_CONTRACT.md).
 
 ### P0 — Timestamp feed could lose media — superseded and addressed in staged Atlas queue
 
