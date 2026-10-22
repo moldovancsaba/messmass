@@ -103,8 +103,20 @@ export function deriveCompleteFanmassReportStats(summary: Record<string, unknown
 
   const brands = Array.isArray(summary.brandMentions) ? summary.brandMentions : [];
   const clubs = Array.isArray(summary.clubMentions) ? summary.clubMentions : [];
+  const brandRegions = Array.isArray(summary.brandRegionMentions) ? summary.brandRegionMentions : [];
   result.fanmassBrandTypesDetected = brands.length;
   result.fanmassBrandAppearances = sumMentionCounts(brands);
+  result.fanmassBrandRegionDetections = typeof summary.brandRegionCount === 'number' && Number.isFinite(summary.brandRegionCount)
+    ? Math.max(0, Math.round(summary.brandRegionCount))
+    : 0;
+  result.fanmassBrandRegionNamesDetected = brandRegions.length;
+  result.fanmassBrandRegionNamedAppearances = sumMentionCounts(brandRegions);
+  for (const [prefix, field, categories] of [
+    ['BrandRegionType', 'brandRegionTypes', ['sports', 'fashion', 'unknown']],
+    ['BrandRegionItemType', 'brandRegionItemTypes', ['jersey', 'kit', 'scarf', 'cap', 'flag', 'banner', 'shoes', 'clothing', 'bag', 'accessory', 'logo', 'other']],
+  ] as const) {
+    Object.assign(result, countFields(prefix, summary[field], [...categories]));
+  }
   result.fanmassClubTypesDetected = clubs.length;
   result.fanmassClubAppearances = sumMentionCounts(clubs);
 
