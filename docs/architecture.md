@@ -3867,7 +3867,7 @@ The active integration is photo-first and ID-bound:
   its event summary and report-variable projections from the active photo rows.
   Fanmass does not create Messmass events or event reports.
 
-The result contract is `fanmass.messmass.photo-analysis.v1`. It is identity-free
+The result contract is `fanmass.messmass.photo-analysis.v2`. It is identity-free
 and includes normalized photo findings, boxes, source revision and analysis
 generation. A per-photo tombstone removes a deleted or newly ineligible photo
 from the Messmass aggregate. A successful acknowledgement is sent only after

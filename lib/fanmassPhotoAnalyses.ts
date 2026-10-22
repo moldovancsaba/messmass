@@ -8,7 +8,7 @@ import { ensureFanmassAnalyticsVariables } from './fanmassAnalyticsVariables';
 import { getDb } from './fanmassIntegration';
 import { pushEventStats } from './fanmassMapping';
 
-export const PHOTO_ANALYSIS_CONTRACT = 'fanmass.messmass.photo-analysis.v1';
+export const PHOTO_ANALYSIS_CONTRACT = 'fanmass.messmass.photo-analysis.v2';
 export const PHOTO_ANALYSIS_COLLECTION = 'fanmass_camera_photo_analyses';
 export const MAX_PHOTO_ANALYSIS_BYTES = 2_000_000;
 const PROHIBITED_CONTENT_CATEGORIES = [
@@ -20,16 +20,21 @@ const BRAND_APPEARANCE_ITEM_TYPES = ['clothing', 'shoes', 'bag', 'accessory', 'l
 type PhotoAnalysisRecord = Record<string, unknown> & { _id: string };
 
 type PhotoInput = {
+  messmassEventId: string;
   cameraPartnerId: string;
   cameraEventId: string;
   cameraPhotoId: string;
   sourceRevision: string;
   analysisGeneration: number;
+  analysisStage: 'deep';
+  analysisModules: string[];
+  analysisModuleStatuses: Record<string, string>;
   analyzedAt?: string;
   status: 'completed';
   summary: Record<string, unknown>;
   boxes: Record<string, unknown>;
   analysis: Record<string, unknown>;
+  humanReview: Record<string, unknown> | null;
 };
 
 function invalid(status: number, code: string, message: string): never {
@@ -49,9 +54,17 @@ function nonEmpty(value: unknown, field: string, max = 160): string {
   return value.trim();
 }
 
-function parseInput(body: Record<string, unknown>): PhotoInput {
+const REQUIRED_CAMERA_ANALYSIS_MODULES = [
+  'scan', 'faces', 'people', 'poster', 'moderation', 'sports_merchandise', 'fashion_brands', 'brand_scan',
+] as const;
+
+function parseInput(body: Record<string, unknown>, expectedMessmassEventId: string): PhotoInput {
   if (body.contractVersion !== PHOTO_ANALYSIS_CONTRACT) {
     invalid(409, 'CONTRACT_MISMATCH', `Expected ${PHOTO_ANALYSIS_CONTRACT}.`);
+  }
+  const messmassEventId = nonEmpty(body.messmassEventId, 'messmassEventId');
+  if (messmassEventId !== expectedMessmassEventId) {
+    invalid(409, 'MESSMASS_EVENT_ID_MISMATCH', 'The body Messmass event id must match the request path.');
   }
   const cameraPartnerId = nonEmpty(body.cameraPartnerId, 'cameraPartnerId');
   const cameraEventId = nonEmpty(body.cameraEventId, 'cameraEventId');
@@ -67,14 +80,57 @@ function parseInput(body: Record<string, unknown>): PhotoInput {
   if (body.status !== 'completed') {
     invalid(400, 'INVALID_PHOTO_ANALYSIS', 'Only completed per-photo analyses can be stored.');
   }
+  if (body.analysisStage !== 'deep') {
+    invalid(400, 'INVALID_PHOTO_ANALYSIS', 'analysisStage must be deep before a result is delivered.');
+  }
+  const analysisModules = body.analysisModules;
+  if (!Array.isArray(analysisModules) || REQUIRED_CAMERA_ANALYSIS_MODULES.some((module) => !analysisModules.includes(module))) {
+    invalid(400, 'INVALID_PHOTO_ANALYSIS', 'analysisModules must include every required Camera photo analysis module.');
+  }
+  const analysisModuleStatuses = record(body.analysisModuleStatuses);
+  if (!analysisModuleStatuses || REQUIRED_CAMERA_ANALYSIS_MODULES.some((module) => analysisModuleStatuses[module] !== 'completed')) {
+    invalid(400, 'INVALID_PHOTO_ANALYSIS', 'Every required analysis module must have a completed status before a photo result is accepted.');
+  }
   const summary = record(body.summary);
   const boxes = record(body.boxes);
   const analysis = record(body.analysis);
   if (!summary || !boxes || !analysis) {
     invalid(400, 'INVALID_PHOTO_ANALYSIS', 'summary, boxes, and analysis objects are required.');
   }
-  if (!Array.isArray(boxes.people) || !Array.isArray(boxes.faces)) {
-    invalid(400, 'INVALID_PHOTO_ANALYSIS', 'boxes.people and boxes.faces must be arrays.');
+  if (!Array.isArray(boxes.people) || !Array.isArray(boxes.faces) || !Array.isArray(boxes.brandRegions)) {
+    invalid(400, 'INVALID_PHOTO_ANALYSIS', 'boxes.people, boxes.faces, and boxes.brandRegions must be arrays.');
+  }
+
+  const rawReview = body.humanReview;
+  let humanReview: Record<string, unknown> | null = null;
+  if (rawReview !== undefined && rawReview !== null) {
+    const review = record(rawReview);
+    const reviewStatus = review?.status;
+    if (!review || (reviewStatus !== 'corrected' && reviewStatus !== 'confirmed')
+      || review.sourceRevision !== sourceRevision || Number(review.analysisGeneration) !== analysisGeneration
+      || typeof review.updatedAt !== 'string' || !review.updatedAt.trim()) {
+      invalid(400, 'INVALID_PHOTO_REVIEW', 'Human review must match this photo revision and generation and include its update time.');
+    }
+    let correction: Record<string, unknown> | null = null;
+    if (review.correction !== undefined && review.correction !== null) {
+      correction = record(review.correction);
+      const correctionBoxes = record(correction?.boxes);
+      if (!record(correction?.summary) || !record(correction?.analysis) || !correctionBoxes
+        || !Array.isArray(correctionBoxes.people) || !Array.isArray(correctionBoxes.faces)
+        || !Array.isArray(correctionBoxes.brandRegions)) {
+        invalid(400, 'INVALID_PHOTO_REVIEW', 'Human corrections must contain summary, analysis, and all image-relative box arrays.');
+      }
+    }
+    if (reviewStatus === 'corrected' && !correction) {
+      invalid(400, 'INVALID_PHOTO_REVIEW', 'A corrected photo review must include the corrected result.');
+    }
+    humanReview = {
+      status: reviewStatus,
+      sourceRevision,
+      analysisGeneration,
+      updatedAt: review.updatedAt.trim(),
+      ...(correction ? { correction } : {}),
+    };
   }
 
   const size = Buffer.byteLength(JSON.stringify(body), 'utf8');
@@ -82,16 +138,21 @@ function parseInput(body: Record<string, unknown>): PhotoInput {
     invalid(413, 'PHOTO_ANALYSIS_TOO_LARGE', `Photo analysis is ${size} bytes; limit is ${MAX_PHOTO_ANALYSIS_BYTES}.`);
   }
   return {
+    messmassEventId,
     cameraPartnerId,
     cameraEventId,
     cameraPhotoId,
     sourceRevision,
     analysisGeneration,
+    analysisStage: 'deep',
+    analysisModules: analysisModules.map((module) => String(module)),
+    analysisModuleStatuses: Object.fromEntries(REQUIRED_CAMERA_ANALYSIS_MODULES.map((module) => [module, 'completed'])),
     analyzedAt: typeof body.analyzedAt === 'string' ? body.analyzedAt : undefined,
     status: 'completed',
     summary,
     boxes,
     analysis,
+    humanReview,
   };
 }
 
@@ -183,19 +244,33 @@ function aggregatePhotos(eventId: string, photos: Array<Record<string, unknown>>
   const prohibitedContent: Record<string, number> = Object.fromEntries(PROHIBITED_CONTENT_CATEGORIES.map((key) => [key, 0]));
   const moderationSeverity: Record<string, number> = Object.fromEntries(MODERATION_SEVERITIES.map((key) => [key, 0]));
   const brandAppearanceTypes: Record<string, number> = Object.fromEntries(BRAND_APPEARANCE_ITEM_TYPES.map((key) => [key, 0]));
+  const brandRegionTypes: Record<string, number> = { sports: 0, fashion: 0, unknown: 0 };
+  const brandRegionItemTypes: Record<string, number> = {};
   const brands = new Map<string, number>();
   const clubs = new Map<string, number>();
+  const brandRegionNames = new Map<string, number>();
   let measuredPeople = 0;
   let personBoxes = 0;
   let faceBoxes = 0;
   let smilingCount = 0;
   let moderationPhotosReviewed = 0;
   let moderationFlaggedPhotos = 0;
+  let humanConfirmedPhotos = 0;
+  let humanCorrectedPhotos = 0;
   let latestAnalysisAt = '';
 
   for (const photo of photos) {
-    const summary = record(photo.summary) || {};
-    const boxes = record(photo.boxes) || {};
+    const aiSummary = record(photo.summary) || {};
+    const aiBoxes = record(photo.boxes) || {};
+    const humanReview = record(photo.humanReview) || {};
+    const reviewMatches = humanReview.status === 'confirmed'
+      && humanReview.sourceRevision === photo.sourceRevision
+      && Number(humanReview.analysisGeneration) === Number(photo.analysisGeneration);
+    const correction = reviewMatches ? record(humanReview.correction) : null;
+    const summary = correction ? record(correction.summary) || aiSummary : aiSummary;
+    const boxes = correction ? record(correction.boxes) || aiBoxes : aiBoxes;
+    if (reviewMatches) humanConfirmedPhotos++;
+    if (reviewMatches && correction) humanCorrectedPhotos++;
     const people = record(summary.peopleCounts) || {};
     measuredPeople += number(people.measured);
     personBoxes += Array.isArray(boxes.people) ? boxes.people.length : 0;
@@ -206,6 +281,13 @@ function aggregatePhotos(eventId: string, photos: Array<Record<string, unknown>>
     countMapAdd(merchandise, summary.merchandiseCounts);
     namedCountsAdd(brands, summary.brandMentions);
     namedCountsAdd(clubs, summary.clubMentions);
+    for (const [key, value] of Object.entries(record(summary.brandRegionTypes) || {})) {
+      if (typeof value === 'number' && Number.isFinite(value) && value > 0) {
+        brandRegionTypes[key] = (brandRegionTypes[key] || 0) + Math.round(value);
+      }
+    }
+    countMapAdd(brandRegionItemTypes, summary.brandRegionItemTypes);
+    namedCountsAdd(brandRegionNames, summary.brandRegionMentions);
     const moderation = record(summary.moderation) || {};
     if (moderation.status === 'completed') {
       moderationPhotosReviewed++;
@@ -268,6 +350,12 @@ function aggregatePhotos(eventId: string, photos: Array<Record<string, unknown>>
     smilingPct,
     merchandiseCounts: merchandise,
     brandAppearanceTypes,
+    brandRegionCount: photos.reduce((sum, photo) => sum + number(record(photo.summary)?.brandRegionCount), 0),
+    brandRegionTypes,
+    brandRegionItemTypes,
+    brandRegionMentions: namedCounts(brandRegionNames),
+    humanConfirmedPhotos,
+    humanCorrectedPhotos,
     brandMentions: namedCounts(brands),
     clubMentions: namedCounts(clubs),
     demographicPeopleMeasured: demographicSample,
@@ -282,7 +370,7 @@ export async function rebuildFanmassPhotoEventSummary(eventId: string) {
   const db = await getDb();
   const photos = await db.collection<PhotoAnalysisRecord>(PHOTO_ANALYSIS_COLLECTION)
     .find({ eventId, tombstone: { $ne: true }, status: 'completed' }, {
-      projection: { _id: 0, summary: 1, boxes: 1, analyzedAt: 1 },
+      projection: { _id: 0, summary: 1, boxes: 1, analyzedAt: 1, sourceRevision: 1, analysisGeneration: 1, humanReview: 1 },
     })
     .toArray() as Array<Record<string, unknown>>;
   const summary = aggregatePhotos(eventId, photos);
@@ -303,6 +391,8 @@ export async function rebuildFanmassPhotoEventSummary(eventId: string) {
 
   const stats: Record<string, unknown> = { ...deriveCompleteFanmassReportStats(summary) };
   stats.fanmassPhotoResultsReceived = photos.length;
+  stats.fanmassHumanConfirmedPhotos = Number(summary.humanConfirmedPhotos || 0);
+  stats.fanmassHumanCorrectedPhotos = Number(summary.humanCorrectedPhotos || 0);
   const project = await db.collection('projects').findOne(
     { _id: new ObjectId(eventId) },
     { projection: { stats: 1 } },
@@ -325,7 +415,7 @@ export async function storeFanmassPhotoAnalysis(
   body: Record<string, unknown>,
 ): Promise<{ eventId: string; cameraPhotoId: string; status: 'stored' | 'ignored_stale'; receivedAt: string }> {
   if (!ObjectId.isValid(eventId)) invalid(422, 'INVALID_EVENT_ID', 'Invalid Messmass event id.');
-  const input = parseInput(body);
+  const input = parseInput(body, eventId);
   if (input.cameraPhotoId !== cameraPhotoIdFromPath) {
     invalid(400, 'PHOTO_ID_MISMATCH', 'The path photo id and payload photo id must match.');
   }
@@ -339,11 +429,15 @@ export async function storeFanmassPhotoAnalysis(
   const id = stableRecordId(eventId, input.cameraPhotoId);
   const update = {
     eventId,
+    messmassEventId: input.messmassEventId,
     cameraPartnerId: input.cameraPartnerId,
     cameraEventId: input.cameraEventId,
     cameraPhotoId: input.cameraPhotoId,
     sourceRevision: input.sourceRevision,
     analysisGeneration: input.analysisGeneration,
+    analysisStage: input.analysisStage,
+    analysisModules: input.analysisModules,
+    analysisModuleStatuses: input.analysisModuleStatuses,
     contractVersion: PHOTO_ANALYSIS_CONTRACT,
     status: 'completed',
     tombstone: false,
@@ -352,6 +446,7 @@ export async function storeFanmassPhotoAnalysis(
     summary: input.summary,
     boxes: input.boxes,
     analysis: input.analysis,
+    humanReview: input.humanReview,
   };
   const filter = {
     _id: id,
@@ -394,6 +489,10 @@ export async function tombstoneFanmassPhotoAnalysis(
   if (body.contractVersion !== PHOTO_ANALYSIS_CONTRACT) {
     invalid(409, 'CONTRACT_MISMATCH', `Expected ${PHOTO_ANALYSIS_CONTRACT}.`);
   }
+  const messmassEventId = nonEmpty(body.messmassEventId, 'messmassEventId');
+  if (messmassEventId !== eventId) {
+    invalid(409, 'MESSMASS_EVENT_ID_MISMATCH', 'The body Messmass event id must match the request path.');
+  }
   const cameraPartnerId = nonEmpty(body.cameraPartnerId, 'cameraPartnerId');
   const cameraEventId = nonEmpty(body.cameraEventId, 'cameraEventId');
   const cameraPhotoId = nonEmpty(body.cameraPhotoId, 'cameraPhotoId');
@@ -424,6 +523,7 @@ export async function tombstoneFanmassPhotoAnalysis(
       {
         $set: {
           eventId,
+          messmassEventId,
           cameraPartnerId,
           cameraEventId,
           cameraPhotoId,

@@ -16,7 +16,7 @@ const retiredRoutes = [
 ];
 
 const photoRouteSource = readFileSync(requiredPhotoRoute, 'utf8');
-if (PHOTO_ANALYSIS_CONTRACT !== 'fanmass.messmass.photo-analysis.v1') {
+if (PHOTO_ANALYSIS_CONTRACT !== 'fanmass.messmass.photo-analysis.v2') {
   throw new Error(`Unexpected photo result contract: ${PHOTO_ANALYSIS_CONTRACT}`);
 }
 if (!photoRouteSource.includes('storeFanmassPhotoAnalysis') || !photoRouteSource.includes('tombstoneFanmassPhotoAnalysis')) {

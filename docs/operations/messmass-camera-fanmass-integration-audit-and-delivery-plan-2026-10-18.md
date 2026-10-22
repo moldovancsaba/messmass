@@ -1,7 +1,7 @@
 # Messmass, Camera and Fanmass integration audit and delivery plan
 
-**Audit baseline:** 2026-10-18; delivery status reconciled 2026-10-20
-**Status:** The staged-design findings below are historical. The Atlas-owned, one-photo contract and Messmass per-photo result/report flow are merged and deployed. See **Current verified implementation** first; use the linked operator/API guides as the live contract.
+**Audit baseline:** 2026-10-18; delivery status reconciled 2026-10-22
+**Status:** The v1 Atlas-owned, one-photo contract and Messmass per-photo reporting were verified as deployed on 2026-10-20. The v2 strict-completion and human-review pull changes are being validated in the current worktrees and are **not yet live**. Messmass remains on a separate production Atlas cluster until its data is backed up, migrated, and parity-checked. See **Current verified implementation** for the deployed baseline and the open delivery gates.
 **Purpose:** Establish a reliable, privacy-aware integration for photo capture, human vetting, AI-assisted analysis, correction, learning and reporting.
 
 ## Current verified implementation — 2026-10-20
@@ -24,7 +24,9 @@ Production verification on 2026-10-20:
 - **Obsolete data:** 799 obsolete analytics documents were permanently removed, including 228 archived summaries, 261 dashboard snapshots, 220 project-stat snapshots, and 90 legacy variable definitions. The internal archive now contains zero documents. The active store retains only the 90 valid per-photo results, 88 canonical variable definitions, and 7 rebuilt current summaries.
 - **AI Analytics:** the page now presents received photo results, detections, boxes, brands/clubs, merchandise, and completed moderation checks. It does not imply event-wide completion, coverage, freshness, unique people, or projected audience totals.
 
-The remaining product work is the separate human review/correction and quality-learning loop. The current result view is feedback evidence; it is not an AI approval step, a Camera vetting action, or automatic model training.
+The remaining product work is to release the v2 review loop and complete cluster/image-backup operations. The v2 path writes human corrections on the Camera photo, lets Fanmass pull the revision-bound review from Atlas, stores it beside Fanmass's per-photo result, and redelivers through Fanmass's outbox. A correction does not trigger another model run. Confirmed human corrections can affect Messmass report values; this does **not** retrain or update model weights. Automatic model learning remains a separately governed, unimplemented capability.
+
+The owner approved one Atlas cluster with separate app databases and chose to keep the original AtlasAdmin account. That means the databases are logically separate but privileges are **not** isolated. Production Messmass still points to its existing cluster; do not switch it to an empty target. Back up and migrate the full `messmass` database, compare collection counts and key event/partner relationships, then cut over with a rollback window. The Camera image-backup bucket exists but has no verified backup objects or working writer credential; image backup remains open.
 
 ## 0. Original owner decision — 2026-10-20 (implemented with the per-photo contract below)
 
@@ -36,7 +38,7 @@ the former poller.
 | System | Required responsibility |
 |---|---|
 | **Camera** | Capture, identity and consent, retention/erasure, human vetting, and Camera's own audit trail. It writes its normal event/submission records and otherwise does not manage AI work. |
-| **Fanmass** | Independently reads eligible Camera records from Atlas with a read-only source role; owns its durable queue, discovery/reconciliation, global one-photo lease, retries, full analysis/results/boxes, and deletion of its derived local copies. |
+| **Fanmass** | Independently reads eligible Camera records from Atlas using the existing AtlasAdmin credential; owns its durable queue, discovery/reconciliation, global one-photo lease, retries, full analysis/results/boxes, review ingestion, and deletion of its derived local copies. |
 | **Messmass** | Receives one identity-free photo result at a time through the authenticated integration, stores it against the exact event/photo IDs, and derives event aggregates and reports. It does not receive guest contact data. |
 
 Required lifecycle:
@@ -62,7 +64,7 @@ Required lifecycle:
 The implemented source-discovery contract is documented in Fanmass
 `docs/CAMERA_ATLAS_QUEUE_CONTRACT.md`. The former Camera queue/private-media API
 and claim/ack consumer are not part of the design. The current Messmass result
-contract is `fanmass.messmass.photo-analysis.v1`; the one-photo endpoints and
+deployed contract is `fanmass.messmass.photo-analysis.v1`; the one-photo endpoints and
 the exact Camera↔Messmass event mapping are deployed. Retired event-level
 Fanmass write routes remain unavailable and return `410 Gone`.
 
@@ -204,7 +206,7 @@ Implement this after the business contract and before automated alternating sche
 
 - Messmass provisions organizations, partners and events into Camera through its internal APIs and receives Camera event-level counters.
 - Camera writes captures, consent/identity, retention and vetting state to its own Atlas source database. It has no Fanmass image-feed or analysis callback route in the staged design.
-- Fanmass initiates a least-privilege Atlas connection: read-only on Camera's source database and read/write only on Fanmass's pipeline database. It independently discovers, validates, queues and analyzes eligible photos.
+- Fanmass uses the existing AtlasAdmin connection, as approved by the owner. Separate Camera and Fanmass databases are used, but this account does not enforce database-level isolation. Fanmass independently discovers, validates, queues and analyzes eligible photos. Replacing it with a least-privilege account is deferred security hardening.
 - Fanmass sends one normalized, identity-free result per Camera photo to Messmass through the authenticated integration. Messmass stores the per-photo record and builds event aggregates; guest contact data is excluded.
 - Fanmass's local analysis engine is serialized for this Camera queue: one durable source-photo item under one global Atlas lease at a time.
 
@@ -344,21 +346,27 @@ The API/event recommendations in the original 2026-10-18 draft assumed a Camera-
 
 ### 5.1 Current transport
 
-Camera writes source event/submission records and owns consent, identity, retention and human vetting. It does not call Fanmass or create analysis work. Fanmass reads a minimal Camera Atlas projection using a read-only source role; Atlas computes an identity boolean so contact fields do not cross the boundary. Fanmass writes queue, lease, retry, result and privacy-cleanup state only into its separate pipeline database. Change streams accelerate discovery; bounded scans and reconciliation provide recovery. A global Atlas lease permits one source photo at a time. Fanmass delivers one photo result or tombstone to Messmass through the authenticated per-photo endpoint.
+Camera writes source event/submission records and owns consent, identity, retention and human vetting. It does not call Fanmass or create analysis work. Fanmass reads a minimal Camera Atlas projection through the existing AtlasAdmin credential; the projection keeps contact fields out of Fanmass. Fanmass writes queue, lease, retry, result and privacy-cleanup state into its separate pipeline database. Change streams accelerate discovery; bounded scans and reconciliation provide recovery. A global Atlas lease permits one source photo at a time. Camera writes human review on the source photo; the v2 Fanmass path pulls the review into the per-photo result and then delivers that result to Messmass through the authenticated outbox.
 
 The Fanmass operator contract is authenticated `GET /api/integrations/camera/atlas-queue` and per-photo `POST /api/integrations/camera/atlas-queue/retry/{queueKey}`. Neither route accepts images from Camera. Fanmass's result endpoint delivers one photo result to Messmass; see the API reference for the exact route and schema.
 
-### 5.2 Future per-photo correction, if approved
+### 5.2 Per-photo correction and confirmation
 
-Any future correction record should include contract version, stable photo/event IDs, analysis and review revisions, idempotency/correlation metadata, schema/taxonomy/model provenance and normalized findings. It must not include guest identity or raw consent text. It must not turn Camera into Fanmass's queue producer or result callback receiver.
+The v2 review is stored on the Camera source photo with its source revision and
+Fanmass analysis generation. Fanmass discovers the change, strips reviewer
+identity, stores the status/update time and optional corrected summary, analysis
+and boxes on its own per-photo result, then requeues the same photo's result
+outbox. It does not rerun the AI for a correction. Messmass applies the
+correction only after a matching `confirmed` review. Model-weight training is
+not part of this delivery and requires a separate privacy and quality design.
 
 ### 5.3 Resilience and authorization requirements
 
 - Stable photo identity, durable queue state, one global lease, source-revision fences, bounded retries and visible terminal failures are implemented in Fanmass's merged Atlas contract. Change-stream resume tokens are backed by periodic bounded scans.
 - Idempotency applies per source submission and source revision; event associations do not create extra queue jobs.
 - Fanmass rechecks source eligibility before download and result persistence; operator replay reloads the source and revalidates it.
-- Atlas permissions must be database-scoped: read-only on Camera and read/write on the Fanmass pipeline database. No Camera image or queue API is exposed for Fanmass.
-- Camera→Fanmass photo access is governed by a least-privilege Atlas database role, not an HTTP service credential: read Camera source collections only; write Fanmass pipeline collections only.
+- The chosen Atlas account is the existing AtlasAdmin user. Separate app databases are retained, but access privileges are broad and not database-scoped. A dedicated least-privilege user is a later security improvement, not a prerequisite the owner approved for this release.
+- Camera→Fanmass photo access is governed by the Atlas connection, not an HTTP image/queue API. Fanmass reads Camera source records and writes its pipeline collections; Camera does not create Fanmass jobs or send Fanmass callbacks.
 - Keep Camera↔Messmass provisioning credentials and Fanmass→Messmass reporting credentials distinct, independently rotated, and unavailable to browsers or image hosts. Treat them as machine credentials, not human authentication.
 - The Fanmass fetcher enforces allowed storage hosts, response limits, supported image types and timeouts; it does not accept arbitrary URLs from a client. The global lease and one-item local worker provide backpressure.
 - Redact tokens, signed URLs, emails, image bytes, face coordinates and raw model prompts from logs. Record event ID, submission ID where permitted, service identity, contract version, action, status, duration, retry count and correlation ID.
