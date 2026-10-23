@@ -71,4 +71,5 @@ Other Fanmass inputs, such as Google Drive images or event context used to run a
 - Open a photo card to inspect the stored normalized analysis and boxes.
 - Compare a result to the original image and correct it through the supported human-review workflow; do not write event-level totals by hand.
 - If a photo is deleted or becomes ineligible, confirm its tombstone is delivered and the event summary recalculates without it.
+- Tombstone delivery remains valid after the Messmass event record is removed. Messmass verifies the original Camera event/partner identity against any stored photo row, clears that exact row, and rebuilds the per-photo summary; if the project no longer exists, it skips only the unavailable project-stat projection. A first-seen deletion for a removed event creates a tombstone so a later stale result cannot recreate the photo.
 - If a result is missing, inspect the Fanmass single-photo queue/outbox and exact event/partner/photo identifiers. Do not use a batch sync or event-summary retry.
