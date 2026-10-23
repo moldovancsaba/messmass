@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import config from '@/lib/config';
 import { tombstoneFanmassPhotoAnalysisForErasure } from '@/lib/fanmassPhotoAnalyses';
+import { resolveMessmassEventForCameraPhotoErasure } from '@/lib/privacy/cameraPhotoErasure';
 import { requireMessmassPrivacyErasureSecret } from '@/lib/privacy/messmassErasureAuth';
 
 export const runtime = 'nodejs';
@@ -24,7 +25,9 @@ export async function DELETE(request: NextRequest) {
   }
 
   const input = body as Record<string, unknown>;
-  const allowed = new Set(['request_id', 'messmass_event_id', 'camera_partner_id', 'camera_event_id', 'camera_photo_id']);
+  // Camera IDs are the cross-product identity contract. Messmass resolves its
+  // own event id from the exact Camera event/partner link and rejects ambiguity.
+  const allowed = new Set(['request_id', 'camera_partner_id', 'camera_event_id', 'camera_photo_id']);
   if (Object.keys(input).some((key) => !allowed.has(key)) ||
       Object.keys(input).length !== allowed.size ||
       Object.values(input).some((value) => typeof value !== 'string' || value.length === 0 || value.trim() !== value)) {
@@ -32,9 +35,13 @@ export async function DELETE(request: NextRequest) {
   }
 
   try {
+    const messmassEventId = await resolveMessmassEventForCameraPhotoErasure({
+      cameraPartnerId: input.camera_partner_id as string,
+      cameraEventId: input.camera_event_id as string,
+    });
     const result = await tombstoneFanmassPhotoAnalysisForErasure({
       requestId: input.request_id as string,
-      messmassEventId: input.messmass_event_id as string,
+      messmassEventId,
       cameraPartnerId: input.camera_partner_id as string,
       cameraEventId: input.camera_event_id as string,
       cameraPhotoId: input.camera_photo_id as string,

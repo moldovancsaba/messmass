@@ -113,7 +113,7 @@ it drifts. Do not edit between the markers.
 | Category | Count | Location |
 |----------|-------|----------|
 | **UI Components** | 104 | `components/` |
-| **Utility Modules** | 226 | `lib/` |
+| **Utility Modules** | 227 | `lib/` |
 | **Hooks** | 13 | `hooks/` |
 | **Design Tokens** | 408 | `app/styles/theme.css` |
 | **Utility CSS classes** | 192 | `app/styles/utilities.css` |
@@ -134,7 +134,7 @@ largest, and the ones to read first:
 | `lib/db.ts` | 41 | 17 |
 | `lib/apiClient.ts` | 40 | 258 |
 | `components/MaterialIcon.tsx` | 33 | 119 |
-| `lib/fanmassIntegration.ts` | 30 | 485 |
+| `lib/fanmassIntegration.ts` | 31 | 485 |
 | `components/UnifiedAdminHeroWithSearch.tsx` | 27 | 192 |
 | `lib/mongoose-v3.ts` | 21 | 66 |
 | `lib/permissions.ts` | 18 | 141 |

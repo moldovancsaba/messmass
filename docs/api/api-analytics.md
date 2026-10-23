@@ -331,12 +331,13 @@ denominator, and photo-level people detections are not unique attendees.
 
 SSO has a separate, exact-reference privacy boundary:
 `DELETE /api/integrations/privacy/erase-camera-photo` accepts only
-`request_id`, `messmass_event_id`, `camera_partner_id`, `camera_event_id`, and
-`camera_photo_id`, authenticated with `X-SSO-Privacy-Secret` using the
-dedicated `MESSMASS_PRIVACY_ERASURE_SECRET`. The endpoint verifies the exact
-Camera event/partner link, writes an irreversible tombstone even when no
-analysis row exists, and rebuilds the event roll-up. It never accepts identity,
-image URLs, or arbitrary event/photo selectors. Missing credentials fail closed.
+`request_id`, `camera_partner_id`, `camera_event_id`, and `camera_photo_id`,
+authenticated with `X-SSO-Privacy-Secret` using the dedicated
+`MESSMASS_PRIVACY_ERASURE_SECRET`. Messmass resolves its own event id through
+the exact Camera event and partner links; missing or duplicate event links fail
+closed. The endpoint writes an irreversible tombstone even when no analysis row
+exists and rebuilds the event roll-up. It never accepts identity, image URLs,
+or a client-selected Messmass event id. Missing credentials fail closed.
 
 Event-level `/analysis-summary`, `/stats`, `/sync`, callback, and
 `/dashboard-snapshot` writes are retired and return HTTP 410. The former
