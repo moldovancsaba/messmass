@@ -314,8 +314,10 @@ snapshot.
 
 Messmass stores one current row per `(Messmass event ID, Camera photo ID)` in
 `fanmass_camera_photo_analyses`. Repeated deliveries are idempotent and stale
-source revisions cannot replace newer results. A deletion writes a tombstone;
-Messmass then regenerates the event roll-up without that photo. Both report
+source revisions cannot replace newer results. A deletion writes a permanent
+tombstone for that exact event/photo key; no later result generation can
+recreate it. Messmass then regenerates the event roll-up without that photo.
+Both report
 totals and the AI Analytics page are derived from active, completed per-photo
 rows. The page shows how many results Messmass received, the detections and
 boxes in those rows, completed moderation checks and flagged outcomes, and the
@@ -326,6 +328,15 @@ distinct from a completed negative check.
 The contract has no event photo denominator, completion percentage, stale
 status, or projected audience. Messmass does not own Camera's eligible-photo
 denominator, and photo-level people detections are not unique attendees.
+
+SSO has a separate, exact-reference privacy boundary:
+`DELETE /api/integrations/privacy/erase-camera-photo` accepts only
+`request_id`, `messmass_event_id`, `camera_partner_id`, `camera_event_id`, and
+`camera_photo_id`, authenticated with `X-SSO-Privacy-Secret` using the
+dedicated `MESSMASS_PRIVACY_ERASURE_SECRET`. The endpoint verifies the exact
+Camera event/partner link, writes an irreversible tombstone even when no
+analysis row exists, and rebuilds the event roll-up. It never accepts identity,
+image URLs, or arbitrary event/photo selectors. Missing credentials fail closed.
 
 Event-level `/analysis-summary`, `/stats`, `/sync`, callback, and
 `/dashboard-snapshot` writes are retired and return HTTP 410. The former

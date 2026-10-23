@@ -151,6 +151,8 @@ at a time. The payload carries the exact Messmass event ID plus Camera partner,
 event, and photo IDs, the source revision and generation, per-photo findings,
 and image-relative detection boxes. Messmass validates the event/partner link,
 stores the photo row, and rebuilds report values mechanically from active rows.
+Deletion permanently fences the exact event/photo key so delayed analysis
+delivery cannot recreate the erased result.
 Fanmass does not fetch Messmass event context or send event totals, progress,
 projected reach, or attendee identities. See
 [the current Fanmass guide](docs/guides/guides-tutorial-fanmass.md) and

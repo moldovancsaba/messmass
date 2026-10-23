@@ -2,7 +2,7 @@
 
 Generated for the fleet audit (messmass#350); measured against `docs/_audit/endpoints.json` (228 endpoints at the 2026-10-20 reconciliation audit; includes the Camera event sync and explicit-link routes added 2026-10-20 and the per-event photo-results read route). Every route below was verified by reading its `route.ts` handler, not just the marker scan; existing Auth adjudication was re-verified against the handlers @ dd34e229 (2026-09-28), and the new integration writes use `requireFanmassIntegrationAuth`.
 
-Coverage: 228 of 228 routes documented, enforced by
+Coverage: 229 of 229 routes documented, enforced by
 `tests/api-reference-covers-every-route.test.ts` — five routes were missing when
 that claim was last made by hand.
 
@@ -195,6 +195,12 @@ All routes use `requireFanmassIntegrationAuth` (Bearer/`x-api-key` shared token)
 | /api/integrations/fanmass/rescan-requests | GET | — | 410 `EVENT_RESCAN_RETIRED` | no reads or writes |
 | /api/integrations/fanmass/variables | GET, POST | legacy variable body | GET 410 `REPORT_VARIABLE_LOOKUP_RETIRED`; POST 410 `MESSMASS_OWNS_REPORT_SCHEMA` | no reads or writes |
 
+## /api/integrations/privacy (1 route)
+
+| Path | Methods | Auth | Request | Response | Side effects |
+|---|---|---|---|---|---|
+| /api/integrations/privacy/erase-camera-photo | DELETE | `requireMessmassPrivacyErasureSecret` (`MESSMASS_PRIVACY_ERASURE_SECRET`) | exact SSO case id + Messmass event, Camera partner, event, and photo IDs | `{status:"deleted",received_at}` or fail-closed error | tombstones the exact photo result and rebuilds event analytics; no identity or media URL accepted |
+
 ## /api/hashtags and hashtag config (7 routes)
 
 | Path | Methods | Auth | Request | Response | Side effects |
@@ -363,10 +369,10 @@ CSRF is never counted as a guard: any anonymous caller can fetch the token from
 
 | | routes |
 |---|---:|
-| Fully guarded (every method) | **196** |
+| Fully guarded (every method) | **197** |
 | Open write method, public by design | **5** |
 | Open GET only, writes guarded or absent | **27** |
-| **Total** | **228** |
+| **Total** | **229** |
 
 The previous run of this section (2026-08) listed 40 GAP routes, 21 of them
 unauthenticated writes. Those are closed: messmass#347 and #386 took the first

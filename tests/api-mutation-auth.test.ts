@@ -20,6 +20,7 @@ const AUTH_PRIMITIVES = [
   'getAdminUser',
   'requireAPIAuth',
   'requireFanmassIntegrationAuth',
+  'requireMessmassPrivacyErasureSecret',
   // camera's shared secret (CAMERA_MESSMASS_INTERNAL_SECRET), checked at the top of each camera integration handler
   'assertCameraSecret',
   'requireSession',

@@ -5,7 +5,7 @@ import { createHash } from 'node:crypto';
 import { ObjectId } from 'mongodb';
 import { deriveCompleteFanmassReportStats } from './aiDemographicStats';
 import { ensureFanmassAnalyticsVariables } from './fanmassAnalyticsVariables';
-import { getDb } from './fanmassIntegration';
+import { getDb, nowIso } from './fanmassIntegration';
 import { pushEventStats } from './fanmassMapping';
 
 export const PHOTO_ANALYSIS_CONTRACT = 'fanmass.messmass.photo-analysis.v2';
@@ -18,6 +18,18 @@ const PROHIBITED_CONTENT_CATEGORIES = [
 const MODERATION_SEVERITIES = ['none', 'low', 'medium', 'high'] as const;
 const BRAND_APPEARANCE_ITEM_TYPES = ['clothing', 'shoes', 'bag', 'accessory', 'logo', 'other'] as const;
 type PhotoAnalysisRecord = Record<string, unknown> & { _id: string };
+
+export function isPhotoAnalysisWriteStale(
+  existing: { analysisGeneration?: unknown; sourceRevision?: unknown; tombstone?: unknown } | null,
+  incoming: { analysisGeneration: number; sourceRevision: string },
+): boolean {
+  if (!existing) return false;
+  // A deletion is a permanent fence for this exact event/photo key. No
+  // delayed or retried analysis generation may recreate erased findings.
+  if (existing.tombstone === true) return true;
+  return Number(existing.analysisGeneration) > incoming.analysisGeneration
+    || (Number(existing.analysisGeneration) === incoming.analysisGeneration && existing.sourceRevision !== incoming.sourceRevision);
+}
 
 type PhotoInput = {
   messmassEventId: string;
@@ -450,6 +462,7 @@ export async function storeFanmassPhotoAnalysis(
   };
   const filter = {
     _id: id,
+    tombstone: { $ne: true },
     $or: [
       { analysisGeneration: { $lt: input.analysisGeneration } },
       { analysisGeneration: input.analysisGeneration, sourceRevision: input.sourceRevision, tombstone: { $ne: true } },
@@ -464,10 +477,7 @@ export async function storeFanmassPhotoAnalysis(
   }
   if (!stored) {
     const existing = await collection.findOne({ _id: id }, { projection: { analysisGeneration: 1, sourceRevision: 1, tombstone: 1 } });
-    const stale = Boolean(existing && (
-      Number(existing.analysisGeneration) > input.analysisGeneration
-      || (Number(existing.analysisGeneration) === input.analysisGeneration && (existing.tombstone === true || existing.sourceRevision !== input.sourceRevision))
-    ));
+    const stale = isPhotoAnalysisWriteStale(existing as Record<string, unknown> | null, input);
     if (!stale) invalid(409, 'PHOTO_RESULT_CONFLICT', 'The photo result could not be safely upserted.');
   }
 
@@ -513,13 +523,7 @@ export async function tombstoneFanmassPhotoAnalysis(
   let deleted = false;
   try {
     const result = await collection.updateOne(
-      {
-        _id: id,
-        $or: [
-          { analysisGeneration: { $lt: analysisGeneration } },
-          { analysisGeneration, sourceRevision },
-        ],
-      },
+      { _id: id },
       {
         $set: {
           eventId,
@@ -527,14 +531,23 @@ export async function tombstoneFanmassPhotoAnalysis(
           cameraPartnerId,
           cameraEventId,
           cameraPhotoId,
-          sourceRevision,
-          analysisGeneration,
           contractVersion: PHOTO_ANALYSIS_CONTRACT,
           status: 'deleted',
           tombstone: true,
           receivedAt,
         },
-        $unset: { analyzedAt: '', summary: '', boxes: '', analysis: '' },
+        $unset: {
+          analyzedAt: '',
+          analysisStage: '',
+          analysisModules: '',
+          analysisModuleStatuses: '',
+          summary: '',
+          boxes: '',
+          analysis: '',
+          humanReview: '',
+          sourceRevision: '',
+          analysisGeneration: '',
+        },
       },
       { upsert: true },
     );
@@ -543,12 +556,10 @@ export async function tombstoneFanmassPhotoAnalysis(
     if ((err as { code?: number }).code !== 11000) throw err;
   }
   if (!deleted) {
-    const existing = await collection.findOne({ _id: id }, { projection: { analysisGeneration: 1, sourceRevision: 1 } });
-    const stale = Boolean(existing && (
-      Number(existing.analysisGeneration) > analysisGeneration
-      || (Number(existing.analysisGeneration) === analysisGeneration && existing.sourceRevision !== sourceRevision)
-    ));
-    if (!stale) invalid(409, 'PHOTO_TOMBSTONE_CONFLICT', 'The photo tombstone could not be safely stored.');
+    // An idempotent tombstone always wins over analysis delivery for this
+    // exact event/photo key, even when requests arrive concurrently.
+    const existing = await collection.findOne({ _id: id }, { projection: { tombstone: 1 } });
+    if (existing?.tombstone !== true) invalid(409, 'PHOTO_TOMBSTONE_CONFLICT', 'The photo tombstone could not be safely stored.');
   }
 
   const aggregate = await rebuildFanmassPhotoEventSummary(eventId);
@@ -558,6 +569,71 @@ export async function tombstoneFanmassPhotoAnalysis(
     status: deleted ? 'deleted' : 'ignored_stale',
     receivedAt: aggregate.receivedAt,
   };
+}
+
+/**
+ * Accept a verified privacy deletion using Camera's event/photo references.
+ * The coordinator must not need Fanmass generations or analysis revisions to
+ * erase a photo: privacy tombstones always win and remove every saved finding.
+ */
+export async function tombstoneFanmassPhotoAnalysisForErasure(input: {
+  messmassEventId: string;
+  cameraPartnerId: string;
+  cameraEventId: string;
+  cameraPhotoId: string;
+  requestId: string;
+}, dependencies: {
+  getDb?: typeof getDb;
+  now?: () => string;
+  rebuildSummary?: typeof rebuildFanmassPhotoEventSummary;
+} = {}): Promise<{ status: 'deleted'; receivedAt: string }> {
+  const messmassEventId = nonEmpty(input.messmassEventId, 'messmassEventId');
+  const cameraPartnerId = nonEmpty(input.cameraPartnerId, 'cameraPartnerId');
+  const cameraEventId = nonEmpty(input.cameraEventId, 'cameraEventId');
+  const cameraPhotoId = nonEmpty(input.cameraPhotoId, 'cameraPhotoId').toLowerCase();
+  const requestId = nonEmpty(input.requestId, 'requestId');
+  if (!/^[0-9a-f]{24}$/.test(cameraPhotoId)) invalid(400, 'INVALID_PHOTO_ID', 'Invalid Camera photo id.');
+  if (!/^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(requestId)) {
+    invalid(400, 'INVALID_PRIVACY_REQUEST', 'Invalid privacy request id.');
+  }
+
+  const db = await (dependencies.getDb || getDb)();
+  await requireExactCameraEventLink(db, messmassEventId, cameraEventId, cameraPartnerId);
+  const collection = db.collection<PhotoAnalysisRecord>('fanmass_camera_photo_analyses');
+  await collection.createIndex({ eventId: 1, tombstone: 1, status: 1 }, { name: 'fanmass_camera_photo_report_read' });
+  const receivedAt = (dependencies.now || nowIso)();
+  const id = stableRecordId(messmassEventId, cameraPhotoId);
+  await collection.updateOne(
+    { _id: id },
+    {
+      $set: {
+        eventId: messmassEventId,
+        cameraPartnerId,
+        cameraEventId,
+        cameraPhotoId,
+        contractVersion: PHOTO_ANALYSIS_CONTRACT,
+        status: 'deleted',
+        tombstone: true,
+        privacyErasure: { requestId, receivedAt },
+        receivedAt,
+      },
+      $unset: {
+        analyzedAt: '',
+        analysisStage: '',
+        analysisModules: '',
+        analysisModuleStatuses: '',
+        summary: '',
+        boxes: '',
+        analysis: '',
+        humanReview: '',
+        sourceRevision: '',
+        analysisGeneration: '',
+      },
+    },
+    { upsert: true },
+  );
+  await (dependencies.rebuildSummary || rebuildFanmassPhotoEventSummary)(messmassEventId);
+  return { status: 'deleted', receivedAt };
 }
 
 /** Admin read model for the photo-by-photo results and saved detection boxes. */
