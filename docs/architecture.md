@@ -113,19 +113,19 @@ it drifts. Do not edit between the markers.
 | Category | Count | Location |
 |----------|-------|----------|
 | **UI Components** | 104 | `components/` |
-| **Utility Modules** | 225 | `lib/` |
+| **Utility Modules** | 227 | `lib/` |
 | **Hooks** | 13 | `hooks/` |
 | **Design Tokens** | 408 | `app/styles/theme.css` |
 | **Utility CSS classes** | 192 | `app/styles/utilities.css` |
 | **App routes (pages)** | 73 | `app/**/page.tsx` |
-| **API routes** | 228 | `app/api/**/route.ts` |
+| **API routes** | 229 | `app/api/**/route.ts` |
 
 The modules with the most importers — the ones whose change radius is
 largest, and the ones to read first:
 
 | Module | Importers | Lines |
 |--------|-----------|-------|
-| `lib/config.ts` | 121 | 204 |
+| `lib/config.ts` | 122 | 207 |
 | `lib/mongodb.ts` | 104 | 112 |
 | `lib/auth.ts` | 93 | 118 |
 | `lib/logger.ts` | 93 | 392 |
@@ -134,7 +134,7 @@ largest, and the ones to read first:
 | `lib/db.ts` | 41 | 17 |
 | `lib/apiClient.ts` | 40 | 258 |
 | `components/MaterialIcon.tsx` | 33 | 119 |
-| `lib/fanmassIntegration.ts` | 30 | 485 |
+| `lib/fanmassIntegration.ts` | 31 | 485 |
 | `components/UnifiedAdminHeroWithSearch.tsx` | 27 | 192 |
 | `lib/mongoose-v3.ts` | 21 | 66 |
 | `lib/permissions.ts` | 18 | 141 |
@@ -1075,7 +1075,7 @@ shows up here on the next regeneration, which is the point.
 | `/terms` | `app/terms/page.tsx` |
 | `/test-csrf` | `app/test-csrf/page.tsx` |
 
-### API routes (228)
+### API routes (229)
 
 `auth` is the guard symbol the route actually calls. A blank cell
 means the route calls none — public by construction, or a gap.
@@ -1418,6 +1418,7 @@ means the route calls none — public by construction, or a gap.
 | `/api/integrations/fanmass/rescan-requests` | GET | `requireFanmassIntegrationAuth` |
 | `/api/integrations/fanmass/rescan-requests/[eventId]` | DELETE | `requireFanmassIntegrationAuth` |
 | `/api/integrations/fanmass/variables` | GET, POST | `requireFanmassIntegrationAuth` |
+| `/api/integrations/privacy/erase-camera-photo` | DELETE | — |
 
 #### `/api/landing-static`
 
@@ -3869,8 +3870,9 @@ The active integration is photo-first and ID-bound:
 
 The result contract is `fanmass.messmass.photo-analysis.v2`. It is identity-free
 and includes normalized photo findings, boxes, source revision and analysis
-generation. A per-photo tombstone removes a deleted or newly ineligible photo
-from the Messmass aggregate. A successful acknowledgement is sent only after
+generation. A per-photo tombstone permanently fences the exact event/photo
+key so no later analysis generation can recreate a deleted or newly ineligible
+photo. A successful acknowledgement is sent only after
 both the per-photo record and its derived report projection are stored.
 
 Event totals are sums/distributions across received photo results only. They do

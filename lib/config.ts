@@ -67,6 +67,8 @@ export type AppConfig = {
   // messmass -> camera provisioning (messmass is master for orgs/partners/events)
   cameraBaseUrl?: string;
   cameraProvisionToken?: string;
+  /** Dedicated SSO-to-Messmass credential for exact photo erasure. */
+  privacyErasureSecret?: string;
 };
 
 function getEnv(name: string): string | undefined {
@@ -144,6 +146,7 @@ function initializeConfig(): AppConfig {
     fanmassAppUrl: getEnv('FANMASS_APP_URL'),
     cameraBaseUrl: getEnv('CAMERA_BASE_URL'),
     cameraProvisionToken: getEnv('CAMERA_MESSMASS_INTERNAL_SECRET'),
+    privacyErasureSecret: getEnv('MESSMASS_PRIVACY_ERASURE_SECRET'),
   };
 
   return cachedConfig;
