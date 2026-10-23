@@ -378,7 +378,10 @@ function aggregatePhotos(eventId: string, photos: Array<Record<string, unknown>>
   };
 }
 
-export async function rebuildFanmassPhotoEventSummary(eventId: string) {
+export async function rebuildFanmassPhotoEventSummary(
+  eventId: string,
+  options: { allowMissingProject?: boolean } = {},
+) {
   const db = await getDb();
   const photos = await db.collection<PhotoAnalysisRecord>(PHOTO_ANALYSIS_COLLECTION)
     .find({ eventId, tombstone: { $ne: true }, status: 'completed' }, {
@@ -386,6 +389,14 @@ export async function rebuildFanmassPhotoEventSummary(eventId: string) {
     })
     .toArray() as Array<Record<string, unknown>>;
   const summary = aggregatePhotos(eventId, photos);
+  const project = await db.collection('projects').findOne(
+    { _id: new ObjectId(eventId) },
+    { projection: { stats: 1 } },
+  );
+  if (!project && !options.allowMissingProject) {
+    invalid(404, 'EVENT_NOT_FOUND', 'Messmass event was not found while rebuilding photo analytics.');
+  }
+
   await db.collection('ai_analysis_summaries').updateOne(
     { eventId },
     {
@@ -401,14 +412,17 @@ export async function rebuildFanmassPhotoEventSummary(eventId: string) {
     { upsert: true },
   );
 
+  // Event deletion or relinking must not prevent an exact photo tombstone from
+  // being acknowledged. The per-photo record and aggregate summary are still
+  // rebuilt above, but there is no project report projection to update.
+  if (!project) {
+    return { eventId, imageCount: photos.length, receivedAt: new Date().toISOString() };
+  }
+
   const stats: Record<string, unknown> = { ...deriveCompleteFanmassReportStats(summary) };
   stats.fanmassPhotoResultsReceived = photos.length;
   stats.fanmassHumanConfirmedPhotos = Number(summary.humanConfirmedPhotos || 0);
   stats.fanmassHumanCorrectedPhotos = Number(summary.humanCorrectedPhotos || 0);
-  const project = await db.collection('projects').findOne(
-    { _id: new ObjectId(eventId) },
-    { projection: { stats: 1 } },
-  );
   const currentStats = record(project?.stats) || {};
   const obsoleteStats = Object.keys(currentStats).filter(
     (name) => name.startsWith('fanmass') && !Object.prototype.hasOwnProperty.call(stats, name),
@@ -417,7 +431,14 @@ export async function rebuildFanmassPhotoEventSummary(eventId: string) {
   // and its current report projections landed. If either projection fails, let
   // Fanmass's idempotent outbox retry this same generation.
   await ensureFanmassAnalyticsVariables(db, Object.keys(stats));
-  await pushEventStats(eventId, stats, { cameraPhotoPipeline: true, unset: obsoleteStats });
+  try {
+    await pushEventStats(eventId, stats, { cameraPhotoPipeline: true, unset: obsoleteStats });
+  } catch (error) {
+    // The event can be removed between the existence check and this projection
+    // write. A delete is still complete because the per-photo tombstone and
+    // rebuilt summary are durable; ordinary result upserts continue to fail.
+    if (!options.allowMissingProject || record(error)?.code !== 'EVENT_NOT_FOUND') throw error;
+  }
   return { eventId, imageCount: photos.length, receivedAt: new Date().toISOString() };
 }
 
@@ -514,11 +535,32 @@ export async function tombstoneFanmassPhotoAnalysis(
   }
 
   const db = await getDb();
-  await requireExactCameraEventLink(db, eventId, cameraEventId, cameraPartnerId);
   const collection = db.collection<PhotoAnalysisRecord>(PHOTO_ANALYSIS_COLLECTION);
   await collection.createIndex({ eventId: 1, cameraPhotoId: 1 }, { unique: true, name: 'fanmass_camera_photo_event_unique' });
   await collection.createIndex({ eventId: 1, tombstone: 1, status: 1 }, { name: 'fanmass_camera_photo_report_read' });
   const id = stableRecordId(eventId, cameraPhotoId);
+  const existingPhoto = await collection.findOne(
+    { _id: id },
+    { projection: { cameraEventId: 1, cameraPartnerId: 1 } },
+  );
+  if (existingPhoto) {
+    // A delete can arrive after an event was deleted or its Camera route was
+    // changed. Bind the tombstone to the original stored source identity so a
+    // stale/misrouted delete cannot erase another event's photo record.
+    if (existingPhoto.cameraEventId !== cameraEventId || existingPhoto.cameraPartnerId !== cameraPartnerId) {
+      invalid(409, 'CAMERA_PHOTO_IDENTITY_MISMATCH', 'The deletion identity does not match the stored Camera photo.');
+    }
+  } else {
+    // For a first-seen tombstone, retain the live route check when the event
+    // still exists. If the project itself has already been removed, the exact
+    // authenticated (event, photo) key is sufficient to create a no-resurrection
+    // tombstone; any later upsert still has to pass the live-link check.
+    const event = await db.collection('projects').findOne(
+      { _id: new ObjectId(eventId) },
+      { projection: { _id: 1 } },
+    );
+    if (event) await requireExactCameraEventLink(db, eventId, cameraEventId, cameraPartnerId);
+  }
   const receivedAt = new Date().toISOString();
   let deleted = false;
   try {
@@ -562,7 +604,7 @@ export async function tombstoneFanmassPhotoAnalysis(
     if (existing?.tombstone !== true) invalid(409, 'PHOTO_TOMBSTONE_CONFLICT', 'The photo tombstone could not be safely stored.');
   }
 
-  const aggregate = await rebuildFanmassPhotoEventSummary(eventId);
+  const aggregate = await rebuildFanmassPhotoEventSummary(eventId, { allowMissingProject: true });
   return {
     eventId,
     cameraPhotoId,
