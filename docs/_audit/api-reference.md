@@ -1,8 +1,8 @@
 # messmass API Reference
 
-Generated for the fleet audit (messmass#350); measured against `docs/_audit/endpoints.json` (228 endpoints at the 2026-10-20 reconciliation audit; includes the Camera event sync and explicit-link routes added 2026-10-20 and the per-event photo-results read route). Every route below was verified by reading its `route.ts` handler, not just the marker scan; existing Auth adjudication was re-verified against the handlers @ dd34e229 (2026-09-28), and the new integration writes use `requireFanmassIntegrationAuth`.
+Generated for the fleet audit (messmass#350); measured against `docs/_audit/endpoints.json` (230 endpoints, including the Camera partner style-context route added 2026-10-30). Existing Auth adjudication was re-verified against the handlers @ dd34e229 (2026-09-28); the new Camera style-context read uses `assertCameraSecret`.
 
-Coverage: 229 of 229 routes documented, enforced by
+Coverage: 230 of 230 routes documented, enforced by
 `tests/api-reference-covers-every-route.test.ts` — five routes were missing when
 that claim was last made by hand.
 
@@ -155,11 +155,12 @@ All reads; the aggregation store is `analytics_aggregates` / `partner_analytics`
 | /api/cron/bitly-refresh | GET, POST | CRON_SECRET (401 when unset or wrong — fails closed, messmass#348) | — | `{success,refreshed}` | refreshes bitly cached metrics (writes via lib) |
 | /api/cron/google-sheets-sync | GET | CRON_SECRET (503 in production when unset — fails closed) | — | `{success,synced}` | outbound Google Sheets API; insert/update `projects`, updates `partners` sync state |
 
-## /api/integrations/camera (8 routes)
+## /api/integrations/camera (9 routes)
 
 | Path | Methods | Auth | Request | Response | Side effects |
 |---|---|---|---|---|---|
 | /api/integrations/camera/events/[messmassEventId]/frame-context | GET | assertCameraSecret | path ObjectId | `{success,event,partner,template,style}` (`style.page` = the page colours of the style for camera's guest pages); 400 invalid id, 404 unknown event | reads `projects`, `partners`, `report_templates`, `report_styles`, `available_fonts`; resolves the effective template and style for camera's default event frame (camera#231), including the system default style |
+| /api/integrations/camera/partners/[messmassPartnerId]/style-context | GET | assertCameraSecret | path ObjectId | `{success,partner,template,style}` | reads the current partner-owned Messmass style (or its template/system fallback) and guest-page palette for Camera's partner style panel; event overrides are excluded |
 | /api/integrations/camera/events/[messmassEventId]/link-stats | POST | assertCameraSecret | path ObjectId; `{totals:{visitQrCode,visitShortUrl,qrscanAndroid,qrscanIphone}}` (whole numbers 0 to 1e9) | `{success,totals}`; 400 invalid id or totals, 404 unknown event | writes `projects`: the four stats become the value they held at camera's first report plus camera's total (`cameraLinkStats.baseline` and `.totals` keep both; a repeated report changes nothing); `lib/cameraLinkStats.ts` |
 | /api/integrations/camera/events/[messmassEventId]/photo-stats | POST | assertCameraSecret | path ObjectId (24 hex); `{totals:{camera_*:int},averages?:{camera_*:number},labels?:{camera_*:string}}` (every name `^camera_[a-z0-9_]{1,80}$`, a name in one map only, at most 300 names; totals whole numbers 0 to 1e9, averages 0 to 1e9 with at most 4 decimals; no other top-level field) | `{success,totals,averages,catalog:'registered'\|'failed'}`; 400 invalid id or body (`detail` says which), 404 unknown event, 500 write failed | writes `projects` in one `$set`: `stats.<name>` for every counter (camera's whole running total, so a repeated push changes nothing; no other key is touched or removed) and the audit copy `cameraPhotoStats`; then upserts one `variables_metadata` entry per name with `$setOnInsert` only (category Camera, clicker and manual flags off; an existing entry is never changed); `lib/cameraPhotoStats.ts`, names in `docs/features/features-camera-photo-counters.md` |
 | /api/integrations/camera/link-partners | POST | requireFanmassIntegrationAuth | link payload | `{success,…}` | links partners to camera orgs (writes `partners`) |
@@ -369,10 +370,10 @@ CSRF is never counted as a guard: any anonymous caller can fetch the token from
 
 | | routes |
 |---|---:|
-| Fully guarded (every method) | **197** |
+| Fully guarded (every method) | **198** |
 | Open write method, public by design | **5** |
 | Open GET only, writes guarded or absent | **27** |
-| **Total** | **229** |
+| **Total** | **230** |
 
 The previous run of this section (2026-08) listed 40 GAP routes, 21 of them
 unauthenticated writes. Those are closed: messmass#347 and #386 took the first
