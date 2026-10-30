@@ -118,7 +118,7 @@ it drifts. Do not edit between the markers.
 | **Design Tokens** | 408 | `app/styles/theme.css` |
 | **Utility CSS classes** | 192 | `app/styles/utilities.css` |
 | **App routes (pages)** | 73 | `app/**/page.tsx` |
-| **API routes** | 229 | `app/api/**/route.ts` |
+| **API routes** | 230 | `app/api/**/route.ts` |
 
 The modules with the most importers — the ones whose change radius is
 largest, and the ones to read first:
@@ -127,11 +127,11 @@ largest, and the ones to read first:
 |--------|-----------|-------|
 | `lib/config.ts` | 122 | 207 |
 | `lib/mongodb.ts` | 104 | 112 |
+| `lib/logger.ts` | 94 | 392 |
 | `lib/auth.ts` | 93 | 118 |
-| `lib/logger.ts` | 93 | 392 |
 | `lib/apiGuards.ts` | 85 | 390 |
 | `components/ColoredCard.tsx` | 44 | 52 |
-| `lib/db.ts` | 41 | 17 |
+| `lib/db.ts` | 42 | 17 |
 | `lib/apiClient.ts` | 40 | 258 |
 | `components/MaterialIcon.tsx` | 33 | 119 |
 | `lib/fanmassIntegration.ts` | 31 | 485 |
@@ -1075,7 +1075,7 @@ shows up here on the next regeneration, which is the point.
 | `/terms` | `app/terms/page.tsx` |
 | `/test-csrf` | `app/test-csrf/page.tsx` |
 
-### API routes (229)
+### API routes (230)
 
 `auth` is the guard symbol the route actually calls. A blank cell
 means the route calls none — public by construction, or a gap.
@@ -1396,6 +1396,7 @@ means the route calls none — public by construction, or a gap.
 | `/api/integrations/camera/link-existing` | POST | `requireFanmassIntegrationAuth` |
 | `/api/integrations/camera/link-partners` | POST | `requireFanmassIntegrationAuth` |
 | `/api/integrations/camera/partners` | POST | `assertCameraSecret` |
+| `/api/integrations/camera/partners/[messmassPartnerId]/style-context` | GET | `assertCameraSecret` |
 | `/api/integrations/camera/provision-missing` | POST | `requireFanmassIntegrationAuth` |
 | `/api/integrations/camera/sso-session` | POST | `assertCameraSecret` |
 | `/api/integrations/camera/sync-linked` | POST | `requireFanmassIntegrationAuth` |
