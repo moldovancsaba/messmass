@@ -45,6 +45,13 @@ export interface CameraFrameContext {
   };
 }
 
+/** The partner-owned report style Camera should show as the inherited default for the partner's events. */
+export interface CameraPartnerStyleContext {
+  partner: { id: string; name: string; logoUrl: string | null };
+  template: { id: string | null; name: string; resolvedFrom: 'partner' | 'default' | 'hardcoded' };
+  style: CameraFrameContext['style'];
+}
+
 /** The part of a report style a page around a photo needs; colours are #RRGGBBAA, `cardRadius` a CSS length. */
 export interface CameraPageStyle {
   /** Page background (the style's `pageBackground`, else its hero background, as the report page does). */
@@ -170,6 +177,55 @@ export async function buildCameraFrameContext(db: Db, messmassEventId: string): 
       id: style ? String(style._id) : null,
       name: style ? (text(style.name) ?? 'Style') : 'System default',
       resolvedFrom: styleFrom,
+      fontFamily,
+      ...font,
+      headingColor: text(style?.headingColor) ?? DEFAULT_STYLE.headingColor,
+      heroBackground: text(style?.heroBackground) ?? DEFAULT_STYLE.heroBackground,
+      page: pageStyleOf(style),
+    },
+  };
+}
+
+/**
+ * Resolve only the partner-owned default style for Camera's partner workspace.
+ * Event style overrides are deliberately excluded; event pages use
+ * buildCameraFrameContext so the two levels cannot be confused in the UI.
+ */
+export async function buildCameraPartnerStyleContext(db: Db, messmassPartnerId: string): Promise<CameraPartnerStyleContext | null> {
+  const partner = await findPartner(db, messmassPartnerId);
+  if (!partner || !text(partner.name)) return null;
+
+  let template: Doc | null = null;
+  let templateFrom: CameraPartnerStyleContext['template']['resolvedFrom'] = 'hardcoded';
+  if (partner.reportTemplateId) {
+    template = await findById(db, 'report_templates', partner.reportTemplateId);
+    if (template) templateFrom = 'partner';
+  }
+  if (!template) {
+    template = (await db.collection('report_templates').findOne({ isDefault: true })) as Doc | null;
+    if (template) templateFrom = 'default';
+  }
+
+  // The partner's own style wins; its template supplies a style only when the
+  // partner has not selected one, matching event-level report resolution.
+  const styleRef = partner.styleId || template?.styleId;
+  const styleFrom: CameraFrameContext['style']['resolvedFrom'] = partner.styleId ? 'partner' : template?.styleId ? 'template' : 'system-default';
+  const style = styleRef ? await findById(db, 'report_styles', styleRef) : null;
+  const resolvedFrom = style ? styleFrom : 'system-default';
+  const fontFamily = text(style?.fontFamily) ?? DEFAULT_STYLE.fontFamily ?? 'Inter';
+  const font = await resolveFont(db, fontFamily);
+
+  return {
+    partner: { id: String(partner._id), name: partner.name.trim(), logoUrl: text(partner.logoUrl) },
+    template: {
+      id: template ? String(template._id) : null,
+      name: template ? (text(template.name) ?? 'Template') : 'System Default',
+      resolvedFrom: templateFrom,
+    },
+    style: {
+      id: style ? String(style._id) : null,
+      name: style ? (text(style.name) ?? 'Style') : 'System default',
+      resolvedFrom,
       fontFamily,
       ...font,
       headingColor: text(style?.headingColor) ?? DEFAULT_STYLE.headingColor,
