@@ -140,6 +140,7 @@
   {"path": "/api/integrations/camera/events/[messmassEventId]/photo-stats", "methods": ["POST"], "file": "app/api/integrations/camera/events/[messmassEventId]/photo-stats/route.ts", "auth_markers": ["assertCameraSecret"], "no_auth_marker": false},
   {"path": "/api/integrations/camera/link-existing", "methods": ["POST"], "file": "app/api/integrations/camera/link-existing/route.ts", "auth_markers": ["requireFanmassIntegrationAuth"], "no_auth_marker": false},
   {"path": "/api/integrations/camera/link-partners", "methods": ["POST"], "file": "app/api/integrations/camera/link-partners/route.ts", "auth_markers": ["requireFanmassIntegrationAuth"], "no_auth_marker": false},
+  {"path": "/api/integrations/camera/partners/[messmassPartnerId]/style-context", "methods": ["GET"], "file": "app/api/integrations/camera/partners/[messmassPartnerId]/style-context/route.ts", "auth_markers": ["assertCameraSecret"], "no_auth_marker": false},
   {"path": "/api/integrations/camera/partners", "methods": ["POST"], "file": "app/api/integrations/camera/partners/route.ts", "auth_markers": ["assertCameraSecret"], "no_auth_marker": false},
   {"path": "/api/integrations/camera/provision-missing", "methods": ["POST"], "file": "app/api/integrations/camera/provision-missing/route.ts", "auth_markers": ["requireFanmassIntegrationAuth"], "no_auth_marker": false},
   {"path": "/api/integrations/camera/sso-session", "methods": ["POST"], "file": "app/api/integrations/camera/sso-session/route.ts", "auth_markers": ["assertCameraSecret"], "no_auth_marker": false},
