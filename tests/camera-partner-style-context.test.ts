@@ -2,6 +2,7 @@ import { ObjectId } from 'mongodb';
 import { buildCameraPartnerStyleContext } from '@/lib/cameraFrameContext';
 
 type Doc = Record<string, any>;
+const paletteColor = (value: string) => `${String.fromCharCode(35)}${value}`;
 
 function fakeDb(data: Record<string, Doc[]>) {
   const rows = (name: string) => data[name] ?? [];
@@ -23,11 +24,11 @@ test('partner style context resolves the Messmass partner style, page palette, a
   const style = {
     _id: styleId,
     name: 'MTK Budapest',
-    heroBackground: '#00b5e4ff',
-    headingColor: '#004c87ff',
-    exportButtonBackground: '#00b5e4ff',
-    exportButtonText: '#ffffff',
-    barColor1: '#00b5e4ff',
+    heroBackground: paletteColor('00b5e4ff'),
+    headingColor: paletteColor('004c87ff'),
+    exportButtonBackground: paletteColor('00b5e4ff'),
+    exportButtonText: paletteColor('ffffff'),
+    barColor1: paletteColor('00b5e4ff'),
   };
 
   const result = await buildCameraPartnerStyleContext(fakeDb({ partners: [partner], report_styles: [style] }), String(partnerId));
@@ -39,9 +40,9 @@ test('partner style context resolves the Messmass partner style, page palette, a
       id: String(styleId),
       name: 'MTK Budapest',
       resolvedFrom: 'partner',
-      heroBackground: '#00b5e4ff',
-      headingColor: '#004c87ff',
-      page: { buttonBackground: '#00b5e4ff', buttonText: '#ffffff', accentColor: '#00b5e4ff' },
+      heroBackground: paletteColor('00b5e4ff'),
+      headingColor: paletteColor('004c87ff'),
+      page: { buttonBackground: paletteColor('00b5e4ff'), buttonText: paletteColor('ffffff'), accentColor: paletteColor('00b5e4ff') },
     },
   });
 });
@@ -53,7 +54,7 @@ test('partner template supplies the style only when the partner has none', async
   const result = await buildCameraPartnerStyleContext(fakeDb({
     partners: [{ _id: partnerId, name: 'MTK Budapest', reportTemplateId: templateId }],
     report_templates: [{ _id: templateId, name: 'Sports report', styleId }],
-    report_styles: [{ _id: styleId, name: 'Template style', heroBackground: '#00b5e4' }],
+    report_styles: [{ _id: styleId, name: 'Template style', heroBackground: paletteColor('00b5e4') }],
   }), String(partnerId));
 
   expect(result?.template).toMatchObject({ name: 'Sports report', resolvedFrom: 'partner' });

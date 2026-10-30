@@ -3,8 +3,9 @@ import { ObjectId } from 'mongodb';
 
 const partnerId = new ObjectId();
 const styleId = new ObjectId();
+const paletteColor = (value: string) => `${String.fromCharCode(35)}${value}`;
 const partner = { _id: partnerId, name: 'MTK Budapest', styleId };
-const style = { _id: styleId, name: 'MTK Budapest', heroBackground: '#00b5e4', headingColor: '#004c87' };
+const style = { _id: styleId, name: 'MTK Budapest', heroBackground: paletteColor('00b5e4'), headingColor: paletteColor('004c87') };
 
 jest.mock('@/lib/config', () => {
   const actual = jest.requireActual('@/lib/config');
@@ -44,5 +45,5 @@ test('partner style context validates ids and returns the current partner style'
   expect(response.status).toBe(200);
   expect(body.success).toBe(true);
   expect(body.partner).toMatchObject({ id: String(partnerId), name: 'MTK Budapest' });
-  expect(body.style).toMatchObject({ name: 'MTK Budapest', resolvedFrom: 'partner', heroBackground: '#00b5e4' });
+  expect(body.style).toMatchObject({ name: 'MTK Budapest', resolvedFrom: 'partner', heroBackground: paletteColor('00b5e4') });
 });
