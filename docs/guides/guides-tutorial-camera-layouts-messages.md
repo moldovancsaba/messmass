@@ -1,9 +1,9 @@
 # Tutorial: Layouts, messages and the dark area at an event (camera app)
 Status: Active
-Last Updated: 2026-10-09T00:00:00.000Z
+Last Updated: 2026-11-02T00:00:00.000Z
 Canonical: Yes
 Owner: Documentation
-Verified against the Camera app code @ 2e6d10d (camera#444)
+Verified against the Camera app code @ 9696a554 (camera#776).
 
 > Audience: The people who set up an event in the Camera app (editors, operators) · Prerequisites: The event exists in the Camera app, and your e-mail address has the **Manager** role for its partner · Related: [E-mails to the users](guides-tutorial-camera-emails.md), [Approving photos at an event](guides-tutorial-approving-photos.md), [Camera app integration](guides-tutorial-camera-app.md)
 
@@ -24,6 +24,10 @@ Each design covers the picture differently, so each has its own **dark area**: t
 1. Sign in to the Camera app admin and open the event, then **Frames** in the event menu.
 2. Have the designs ready as frames (see the Libraries): a **complete frame** is one finished picture the person can pick; a **text-free frame with a message area** carries the messages (you mark the area where the text goes, and the header and footer boxes that are the dark area).
 3. Write the messages in the **Generated default frame** panel (up to 10; they can use `{partner1}` and `{partner2}` for the two teams).
+
+### Add the message while uploading an event frame
+
+On **Event → Frames**, enter a **Frame name users see in the chooser**. This is the frame's label; it is not printed on the selfie. In the same upload form, you can leave the frame without a message, choose an existing event message, or add a new event message. The new message is saved to that event and linked to the uploaded frame. Its text area starts at the lower center; after uploading, use **Message area** to place it correctly on the design. Global and Partner frame uploads intentionally stay reusable and do not collect event-specific messages. Uploading a frame does not turn on the **Generated default frame**; when that feature is off, the upload reports that the message is saved and linked, and you can generate the default later if needed.
 
 ## Step by step
 
@@ -73,6 +77,10 @@ A kész kép három részből áll: a **szelfi**, egy **elrendezés** (a körül
 **Három mód** külön az elrendezésre és külön az üzenetre: **te választod** (egy rögzített), **véletlenszerű** (minden fotónál új sorsolás, soha nem kétszer ugyanaz egymás után), vagy **a felhasználó választ**. Ha mindkettőt a felhasználó választja, a sorrend: **először a dizájn, aztán az üzenet**, utána jön a fotó.
 
 **Lépések**
+
+### Üzenet hozzáadása eseménykeret feltöltésekor
+
+Az **Event → Frames** oldalon add meg az **A keret neve a választóban** mezőt. Ez a keret neve a választóban; nem ez kerül a szelfire. Ugyanebben a feltöltési űrlapban a **Felirat** listából választhatsz meglévő eseményfeliratot, hozzáadhatsz újat, vagy felirat nélkül töltheted fel a keretet. Az új üzenet az eseményhez mentődik, és a feltöltött kerethez kapcsolódik. A szövegterület alapértelmezésben alul, középen van; feltöltés után a **Message area** vezérlővel igazíthatod a grafikához. A Global és Partner szintű keretfeltöltések újrahasználható elemek maradnak, ezért nem tartalmaznak eseményspecifikus szöveget. A feltöltés nem kapcsolja be automatikusan a **Generated default frame** funkciót; ha az ki van kapcsolva, az üzenet mentéséről és hozzárendeléséről visszajelzést kapsz, és később külön generálhatod a keretet.
 
 1. **Melyik üzenet melyik dizájnon.** A *Generated default frame* panel *Which message goes on which design* táblázatában pipáld be, melyik üzenet melyik dizájnra kerülhet (egyre, többre vagy mindre). Pipa nélkül az üzenet a generált elrendezésre kerül. Minden pipa egy kép, a **Save messages** gombbal készül el (legfeljebb 40 kép eseményenként).
 2. **Hogyan kapják.** A *How users get the layout and the message* panelen az elrendezéshez és az üzenethez is válaszd ki: **You choose**, **Random**, **The user chooses**, majd **Save**. A **Back to as before** visszaállítja a korábbi működést. Amíg nem mentesz, az esemény a régi módon működik.
