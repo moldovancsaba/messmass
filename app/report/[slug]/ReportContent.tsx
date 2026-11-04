@@ -46,11 +46,8 @@ function hasValidChartData(result: ChartResult | undefined): boolean {
     case 'pie':
     case 'bar':
     case 'value':
-      if (!result.elements || result.elements.length === 0) return false;
-      const total = result.elements.reduce((sum, el) => 
-        sum + (typeof el.value === 'number' ? el.value : 0), 0
-      );
-      return total > 0;
+      // Valid if it has elements defined, preserving grid stability even when values sum to 0
+      return Array.isArray(result.elements) && result.elements.length > 0;
     
     case 'valuechain':
       // Show valuechain whenever it has the required structure (2 elements); content can be empty

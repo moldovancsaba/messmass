@@ -151,11 +151,8 @@ export default function ReportChart({ result, chart, width, blockHeight, unified
       case 'pie':
       case 'bar':
       case 'value':
-        if (!result.elements || result.elements.length === 0) return false;
-        const total = result.elements.reduce((sum, el) => 
-          sum + (typeof el.value === 'number' ? el.value : 0), 0
-        );
-        return total > 0;
+        // Valid if it has elements defined, preserving grid stability even when values sum to 0
+        return Array.isArray(result.elements) && result.elements.length > 0;
       
       case 'valuechain':
         // Always show valuechain when it has icon + 2 elements (title + description); content can be empty
@@ -799,30 +796,41 @@ function PieChart({ result, className }: { result: ChartResult; className?: stri
   const elements = result.elements ?? [];
   const total = elements.reduce((sum, el) => sum + (typeof el.value === 'number' ? el.value : 0), 0);
   
-  // WHAT: Read individual pie slice colors from CSS variables
-  // WHY: Use custom style colors for each pie slice (granular control)
-  // HOW: getComputedStyle reads --pieColor1/--pieColor2 from Style editor, fallback to design tokens only
+  // WHAT: Read pie slice colors with accessible multi-slice palette support
+  // WHY: Granular style control for 2 to 6 slices, preventing color collision
   const getPieColors = () => {
     const root = document.documentElement;
     const cs = getComputedStyle(root);
-    // WHAT: No hardcoded colors - only CSS variables from Style editor or design tokens
-    // WHY: All colors must come from Style editor or design system, no hardcoded fallbacks
+    
+    // Check if custom slice colors --pieColor1 through --pieColor6 are provided
+    const customColors: string[] = [];
+    for (let i = 1; i <= 6; i++) {
+      const c = cs.getPropertyValue(`--pieColor${i}`).trim();
+      if (c) customColors.push(c);
+    }
+    if (customColors.length >= 2) {
+      return customColors;
+    }
+
     const primary = cs.getPropertyValue('--pieColor1').trim() || 
                     cs.getPropertyValue('--primary').trim() || 
                     cs.getPropertyValue('--mm-color-primary-500').trim() || 
-                    ''; // WHAT: Empty string if no color available - will be handled by CSS fallback
+                    '#3B82F6';
     const secondary = cs.getPropertyValue('--pieColor2').trim() || 
                       cs.getPropertyValue('--secondary').trim() || 
                       cs.getPropertyValue('--mm-color-secondary-500').trim() || 
-                      ''; // WHAT: Empty string if no color available - will be handled by CSS fallback
-    // WHAT: Return design token fallback if colors are empty
-    // WHY: Ensure we always have valid colors from design system
+                      '#EC4899';
+
+    // 8-color accessible categorical palette
     return [
-      primary || cs.getPropertyValue('--mm-color-primary-500').trim(),
-      secondary || cs.getPropertyValue('--mm-color-secondary-500').trim(),
-      primary || cs.getPropertyValue('--mm-color-primary-500').trim(),
-      secondary || cs.getPropertyValue('--mm-color-secondary-500').trim(),
-      primary || cs.getPropertyValue('--mm-color-primary-500').trim()
+      primary,
+      secondary,
+      '#10B981', // emerald
+      '#F59E0B', // amber
+      '#8B5CF6', // purple
+      '#06B6D4', // cyan
+      '#EF4444', // red
+      '#64748B'  // slate
     ];
   };
   
@@ -838,21 +846,18 @@ function PieChart({ result, className }: { result: ChartResult; className?: stri
   const pieBorderColor = getPieBorderColor();
   
   // Prepare Chart.js data
-  // WHAT: Force theme colors to override any element.color
-  // WHY: Style must overwrite each and every color (user requirement)
+  const isZeroTotal = total === 0;
   const chartData = {
     labels: elements.map(el => el.label),
     datasets: [{
       label: result.title,
-      data: elements.map(el => typeof el.value === 'number' ? el.value : 0),
-      backgroundColor: elements.map((_, idx) => 
-        pieColors[idx % pieColors.length]
-      ),
-      // WHAT: Use pieBorderColor from Style Editor, fallback to first pie color
-      // WHY: Border color should be editable in Style Editor
-      borderColor: pieBorderColor,
+      data: isZeroTotal ? elements.map(() => 1) : elements.map(el => typeof el.value === 'number' ? el.value : 0),
+      backgroundColor: isZeroTotal
+        ? elements.map((_, i) => (i % 2 === 0 ? '#E2E8F0' : '#CBD5E1'))
+        : elements.map((_, idx) => pieColors[idx % pieColors.length]),
+      borderColor: isZeroTotal ? '#94A3B8' : pieBorderColor,
       borderWidth: 2,
-      hoverOffset: 6 // WHAT: Reduced from 8 to prevent overflow
+      hoverOffset: 6
     }]
   };
   
@@ -954,8 +959,8 @@ function PieChart({ result, className }: { result: ChartResult; className?: stri
             const decimals = getDecimalsFromFormatting(result.formatting);
             const percentage = total > 0 ? ((numValue / total) * 100).toFixed(decimals) : '0';
             const protectedLabel = preventPhraseBreaks(element.label);
-            // WHAT: Use CSS var refs so legend dots update when report style loads or changes
-            const pieColorVar = `var(--pieColor${(idx % 2) + 1})`;
+            // WHAT: Use palette colors so legend dots cycle without adjacent collisions
+            const pieColorVar = pieColors[idx % pieColors.length];
             return (
               <div 
                 key={idx} 
@@ -963,7 +968,7 @@ function PieChart({ result, className }: { result: ChartResult; className?: stri
                 // eslint-disable-next-line react/forbid-dom-props
                 style={{
                   '--dot-color': pieColorVar,
-                  '--dot-border-color': 'var(--pieColor1)'
+                  '--dot-border-color': pieBorderColor
                 } as React.CSSProperties}
               >
                 <div className={styles.pieLegendDot} />

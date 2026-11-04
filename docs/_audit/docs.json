@@ -127,6 +127,8 @@
   {"file": "docs/design/design-overview.md", "title": "Design Overview"},
   {"file": "docs/design/design-report-layout-v2-contract.md", "title": "Report Layout V2 Renderer Contract"},
   {"file": "docs/design/design-system.md", "title": "{messmass} Design System"},
+  {"file": "docs/designs/concepts_brief_kyc_algorithms_charts.md", "title": "Concept Brief: Unification & Hardening of KYC, Algorithms, and Charts"},
+  {"file": "docs/designs/synthesis_kyc_algorithms_charts.md", "title": "Master Synthesis & Action Plan: KYC, Algorithms, and Charts Unification"},
   {"file": "docs/documentation-governance.md", "title": "Documentation Governance"},
   {"file": "docs/features/features-authentication.md", "title": "{messmass} Authentication & Access Control System"},
   {"file": "docs/features/features-bitly-integration-guide.md", "title": "Bitly Integration Guide"},

@@ -2364,7 +2364,7 @@ export default function EditorDashboard({
   const totalHashtagCount = allHashtagRepresentations.length;
 
   const chartById = (id?: string) => charts.find((c: any) => c.chartId === id)
-  const computeKpiValue = (cfg: any): number | 'NA' => {
+  const computeKpiValue = (cfg: any): number | string | 'NA' => {
     if (!cfg || cfg.type !== 'kpi' || !cfg.elements?.[0]) return 'NA'
     const formula = cfg.elements[0].formula as string
     return evaluateFormula(formula, project.stats as any)

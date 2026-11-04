@@ -5,6 +5,10 @@
 import { evaluateFormula } from './formulaEngine';
 import type { ChartError } from './chartErrorTypes';
 import { createChartError, getUserFriendlyErrorMessage } from './chartErrorTypes';
+import type { ContentAsset } from './contentAssetTypes';
+import type { ChartConfiguration } from './chartConfigTypes';
+import { ensureDerivedMetrics } from './dataValidator';
+import { isContentSlot, resolveContentSlot } from './contentSlots';
 
 /**
  * WHAT: Chart configuration from database
@@ -20,9 +24,18 @@ export interface Chart {
   isActive: boolean;
   order: number;
   elements?: Array<{
+    id?: string;
     label: string;
     formula: string;
     color?: string;
+    formatting?: {
+      rounded?: boolean;
+      prefix?: string;
+      suffix?: string;
+    };
+    type?: string;
+    parameters?: Record<string, any>;
+    manualData?: Record<string, any>;
   }>;
   formatting?: {
     rounded?: boolean; // true = whole numbers (0 decimals), false = 2 decimals
@@ -51,14 +64,24 @@ export interface ChartResult {
   chartId: string;
   type: Chart['type'];
   title: string;
+  subtitle?: string;
+  totalLabel?: string;
   icon?: string; // Optional - not all charts have icons
   iconVariant?: 'outlined' | 'rounded'; // Material Icons variant
   kpiValue?: number | string;
   elements?: Array<{
+    id?: string;
     label: string;
     value: number | string;
     color?: string;
+    formatting?: {
+      rounded?: boolean;
+      prefix?: string;
+      suffix?: string;
+    };
+    type?: string;
   }>;
+  total?: number | 'NA';
   formatting?: Chart['formatting'];
   aspectRatio?: Chart['aspectRatio'];
   showTitle?: boolean; // Controls whether title/subtitle appear in rendered chart
@@ -67,6 +90,41 @@ export interface ChartResult {
   preset?: Chart['preset']; // Markdown rendering preset (v12.2.0, Issue #48)
   /** A-R-11: Structured error information with type and context */
   chartError?: ChartError;
+  hasErrors?: boolean;
+}
+
+/**
+ * Normalizes Chart or ChartConfiguration into standard Chart interface
+ */
+export function normalizeToChart(input: Chart | ChartConfiguration): Chart {
+  const chartId = (input as Chart).chartId || (input as any).id || 'chart';
+  const elements = (input.elements || []).map((el: any) => ({
+    id: el.id,
+    label: el.label,
+    formula: el.formula,
+    color: el.color,
+    formatting: el.formatting,
+    parameters: el.parameters,
+    manualData: el.manualData,
+    type: el.type
+  }));
+
+  return {
+    chartId,
+    title: input.title,
+    type: input.type as Chart['type'],
+    formula: (input as Chart).formula || (elements[0]?.formula ?? ''),
+    icon: input.icon,
+    iconVariant: input.iconVariant,
+    isActive: input.isActive ?? true,
+    order: (input as any).order ?? 0,
+    elements,
+    formatting: (input as any).formatting,
+    aspectRatio: (input as any).aspectRatio,
+    showTitle: (input as any).showTitle,
+    showPercentages: (input as any).showPercentages,
+    preset: (input as any).preset
+  };
 }
 
 /**
@@ -83,14 +141,41 @@ export interface ChartResult {
 export class ReportCalculator {
   private charts: Map<string, Chart>;
   private stats: ProjectStats;
+  private contentAssets: ContentAsset[];
 
   /**
    * WHAT: Initialize calculator with chart configurations and project stats
    * WHY: Pre-load data for fast repeated calculations
    */
-  constructor(charts: Chart[], stats: ProjectStats) {
+  constructor(charts: Chart[], stats: ProjectStats, contentAssets?: ContentAsset[]) {
     this.charts = new Map(charts.map(c => [c.chartId, c]));
-    this.stats = stats;
+    this.stats = ensureDerivedMetrics(stats as any) as ProjectStats;
+    this.contentAssets = contentAssets || [];
+  }
+
+  /**
+   * WHAT: Calculate a single chart directly (Unified Adapter for admin previews and standalone runs)
+   * WHY: Replaces separate lib/chartCalculator.ts with zero drift
+   */
+  public static calculateSingleChart(
+    chart: Chart | ChartConfiguration,
+    stats: Partial<ProjectStats> | Record<string, any>,
+    contentAssets?: ContentAsset[],
+    parameters?: Record<string, number>,
+    manualData?: Record<string, number>
+  ): ChartResult {
+    const normalized = normalizeToChart(chart);
+    const calculator = new ReportCalculator([normalized], stats as ProjectStats, contentAssets);
+    const result = calculator.calculateChart(normalized.chartId);
+    if (!result) {
+      return {
+        chartId: normalized.chartId,
+        type: normalized.type,
+        title: normalized.title,
+        error: 'Chart calculation failed'
+      };
+    }
+    return result;
   }
 
   /**
@@ -341,6 +426,29 @@ export class ReportCalculator {
   }
 
   /**
+   * Helper to resolve dynamic label replacement (e.g., {{stats.bitlyCountry1}})
+   */
+  private resolveDynamicLabel(rawLabel: string): string {
+    if (!rawLabel || !rawLabel.includes('{{') || !rawLabel.includes('}}')) {
+      return rawLabel || '';
+    }
+    const fieldMatch = rawLabel.match(/\{\{([^}]+)\}\}/);
+    if (fieldMatch && fieldMatch[1]) {
+      let fieldName = fieldMatch[1].trim();
+      if (fieldName.startsWith('stats.')) {
+        fieldName = fieldName.substring(6);
+      }
+      const fieldValue = (this.stats as any)[fieldName];
+      if (fieldValue !== undefined && fieldValue !== null) {
+        return rawLabel.replace(/\{\{[^}]+\}\}/, String(fieldValue));
+      } else {
+        return rawLabel.replace(/\{\{[^}]+\}\}/, 'N/A');
+      }
+    }
+    return rawLabel;
+  }
+
+  /**
    * WHAT: Calculate multi-element charts (pie, bar)
    * WHY: These charts have multiple labeled segments
    * HOW: Evaluate each element formula, build elements array
@@ -348,11 +456,23 @@ export class ReportCalculator {
   private calculateMultiElement(chart: Chart): ChartResult {
     const elements = (chart.elements || [])
       .filter(el => el.formula) // WHAT: Skip elements without formulas
-      .map(el => ({
-        label: el.label,
-        value: this.evaluateFormula(el.formula!),
-        color: el.color
-      }));
+      .map(el => {
+        const paramValues: Record<string, number> | undefined = (el as any).parameters
+          ? Object.fromEntries(
+              Object.entries((el as any).parameters).map(([k, v]) => [k, (v as any)?.value ?? 0])
+            )
+          : undefined;
+        const manualValues: Record<string, number> | undefined = (el as any).manualData;
+
+        return {
+          id: (el as any).id,
+          label: this.resolveDynamicLabel(el.label),
+          value: this.evaluateFormula(el.formula!, paramValues, manualValues),
+          color: el.color,
+          formatting: (el as any).formatting,
+          type: (el as any).type
+        };
+      });
 
     // Filter out invalid elements (non-numeric or negative)
     const validElements = elements.filter(el => 
@@ -379,8 +499,6 @@ export class ReportCalculator {
    * HOW: For simple variable references, access directly; for plain text, return as-is; otherwise evaluate formula
    */
   private calculateText(chart: Chart): ChartResult {
-    // WHAT: Use chart.formula or elements[0].formula for text calculation
-    // WHY: Some text charts store their formula in the first element
     const formulaToEvaluate = chart.formula || (chart.elements && chart.elements.length > 0 ? chart.elements[0].formula : '');
     if (!formulaToEvaluate) {
       return {
@@ -394,15 +512,24 @@ export class ReportCalculator {
       };
     }
     
-    // WHAT: Detect simple variable reference (e.g., "[reportText1]", "stats.reportText1", or "reportText1")
-    // WHY: Direct access preserves string values, bypasses numeric evaluation
-    // HOW: Check if formula is [fieldName], stats.fieldName, or just fieldName pattern without operators
-    const bracketMatch = formulaToEvaluate.match(/^\[([a-zA-Z0-9_]+)\]$/);
+    // Stage 1: Content slot fast path
+    if (isContentSlot(formulaToEvaluate)) {
+      const slotVal = resolveContentSlot(formulaToEvaluate, this.stats, this.contentAssets);
+      return {
+        chartId: chart.chartId,
+        type: 'text',
+        title: chart.title,
+        icon: chart.icon,
+        iconVariant: chart.iconVariant,
+        kpiValue: slotVal !== 'NA' ? slotVal : '',
+        showTitle: chart.showTitle,
+        preset: chart.preset
+      };
+    }
+
+    const bracketMatch = formulaToEvaluate.match(/^\[([a-zA-Z0-9_.-]+)\]$/);
     const simpleVarMatch = formulaToEvaluate.match(/^(?:stats\.)?([a-zA-Z0-9_]+)$/);
     
-    // WHAT: Detect if formula is plain text (no mathematical operators, no brackets, not a variable reference)
-    // WHY: Plain text should be returned as-is without formula evaluation to avoid CSP errors
-    // HOW: Check for absence of operators, brackets, and variable patterns
     const hasOperators = /[+\-*/()]/.test(formulaToEvaluate);
     const hasBrackets = /\[|\]/.test(formulaToEvaluate);
     const isPlainText = !hasOperators && !hasBrackets && !bracketMatch && !simpleVarMatch;
@@ -410,22 +537,16 @@ export class ReportCalculator {
     let value: string | number | 'NA';
     
     if (bracketMatch) {
-      // Direct access for [fieldName] format
-      const fieldName = bracketMatch[1];
-      const fieldValue = this.stats[fieldName];
+      const fieldName = bracketMatch[1].startsWith('stats.') ? bracketMatch[1].substring(6) : bracketMatch[1];
+      const fieldValue = (this.stats as any)[fieldName];
       value = fieldValue !== undefined && fieldValue !== null ? String(fieldValue) : '';
     } else if (simpleVarMatch) {
-      // Direct access for simple variable references (stats.fieldName or fieldName)
       const fieldName = simpleVarMatch[1];
-      const fieldValue = this.stats[fieldName];
+      const fieldValue = (this.stats as any)[fieldName];
       value = fieldValue !== undefined && fieldValue !== null ? String(fieldValue) : '';
     } else if (isPlainText) {
-      // WHAT: Return plain text as-is without evaluation
-      // WHY: Avoids CSP errors from trying to evaluate plain text as a formula
-      // HOW: Directly return the formula string as the value
       value = formulaToEvaluate;
     } else {
-      // Complex formula evaluation (only for actual mathematical expressions)
       value = this.evaluateFormula(formulaToEvaluate);
     }
     
@@ -435,7 +556,7 @@ export class ReportCalculator {
       title: chart.title,
       icon: chart.icon,
       iconVariant: chart.iconVariant,
-      kpiValue: typeof value === 'string' && value !== 'NA' ? value : '',
+      kpiValue: typeof value === 'string' && value !== 'NA' ? value : (typeof value === 'number' ? String(value) : ''),
       showTitle: chart.showTitle,
       preset: chart.preset
     };
@@ -450,23 +571,35 @@ export class ReportCalculator {
     const elements = (chart.elements || []).slice(0, 2).map((el, i) => {
       const formula = el.formula?.trim() || '';
       let value: string = '';
-      const bracketMatch = formula.match(/^\[([a-zA-Z0-9_]+)\]$/);
-      const simpleVarMatch = formula.match(/^(?:stats\.)?([a-zA-Z0-9_]+)$/);
-      if (bracketMatch) {
-        const fieldName = bracketMatch[1];
-        const v = this.stats[fieldName];
-        value = v !== undefined && v !== null ? String(v) : '';
-      } else if (simpleVarMatch) {
-        const fieldName = simpleVarMatch[1];
-        const v = this.stats[fieldName];
-        value = v !== undefined && v !== null ? String(v) : '';
+
+      if (isContentSlot(formula)) {
+        const slotVal = resolveContentSlot(formula, this.stats, this.contentAssets);
+        value = slotVal !== 'NA' ? slotVal : '';
+      } else {
+        const bracketMatch = formula.match(/^\[([a-zA-Z0-9_.-]+)\]$/);
+        const simpleVarMatch = formula.match(/^(?:stats\.)?([a-zA-Z0-9_]+)$/);
+        if (bracketMatch) {
+          const fieldName = bracketMatch[1].startsWith('stats.') ? bracketMatch[1].substring(6) : bracketMatch[1];
+          const v = (this.stats as any)[fieldName];
+          value = v !== undefined && v !== null ? String(v) : '';
+        } else if (simpleVarMatch) {
+          const fieldName = simpleVarMatch[1];
+          const v = (this.stats as any)[fieldName];
+          value = v !== undefined && v !== null ? String(v) : '';
+        } else if (formula) {
+          const res = this.evaluateFormula(formula);
+          value = res !== 'NA' ? String(res) : '';
+        }
       }
+
       return {
+        id: (el as any).id,
         label: el.label || '',
         value,
         color: el.color
       };
     });
+
     return {
       chartId: chart.chartId,
       type: 'valuechain',
@@ -485,8 +618,6 @@ export class ReportCalculator {
    * HOW: For simple variable references, access directly; otherwise evaluate formula
    */
   private calculateTable(chart: Chart): ChartResult {
-    // WHAT: Use chart.formula or elements[0].formula for table calculation
-    // WHY: Some table charts store their formula in the first element
     const formulaToEvaluate = chart.formula || (chart.elements && chart.elements.length > 0 ? chart.elements[0].formula : '');
     if (!formulaToEvaluate) {
       return {
@@ -500,26 +631,34 @@ export class ReportCalculator {
       };
     }
     
-    // WHAT: Detect simple variable reference (e.g., "[reportTable1]", "stats.reportTable1", or "reportTable1")
-    // WHY: Direct access preserves string values, bypasses numeric evaluation
-    // HOW: Check if formula is [fieldName], stats.fieldName, or just fieldName pattern without operators
-    const bracketMatch = formulaToEvaluate.match(/^\[([a-zA-Z0-9_]+)\]$/);
+    if (isContentSlot(formulaToEvaluate)) {
+      const slotVal = resolveContentSlot(formulaToEvaluate, this.stats, this.contentAssets);
+      return {
+        chartId: chart.chartId,
+        type: 'table',
+        title: chart.title,
+        icon: chart.icon,
+        iconVariant: chart.iconVariant,
+        kpiValue: slotVal !== 'NA' ? slotVal : '',
+        showTitle: chart.showTitle,
+        preset: chart.preset
+      };
+    }
+
+    const bracketMatch = formulaToEvaluate.match(/^\[([a-zA-Z0-9_.-]+)\]$/);
     const simpleVarMatch = formulaToEvaluate.match(/^(?:stats\.)?([a-zA-Z0-9_]+)$/);
     
     let value: string | number | 'NA';
     
     if (bracketMatch) {
-      // Direct access for [fieldName] format
-      const fieldName = bracketMatch[1];
-      const fieldValue = this.stats[fieldName];
+      const fieldName = bracketMatch[1].startsWith('stats.') ? bracketMatch[1].substring(6) : bracketMatch[1];
+      const fieldValue = (this.stats as any)[fieldName];
       value = fieldValue !== undefined && fieldValue !== null ? String(fieldValue) : '';
     } else if (simpleVarMatch) {
-      // Direct access for simple variable references (stats.fieldName or fieldName)
       const fieldName = simpleVarMatch[1];
-      const fieldValue = this.stats[fieldName];
+      const fieldValue = (this.stats as any)[fieldName];
       value = fieldValue !== undefined && fieldValue !== null ? String(fieldValue) : '';
     } else {
-      // Complex formula evaluation
       value = this.evaluateFormula(formulaToEvaluate);
     }
     
@@ -541,27 +680,38 @@ export class ReportCalculator {
    * HOW: For simple variable references, access directly; otherwise evaluate formula
    */
   private calculateImage(chart: Chart): ChartResult {
-    // WHAT: Detect simple variable reference (e.g., "[reportImage1]", "stats.reportImage1", or "reportImage1")
-    // WHY: Direct access preserves string values, bypasses numeric evaluation
-    // HOW: Check if formula is [fieldName], stats.fieldName, or just fieldName pattern without operators
-    const bracketMatch = chart.formula?.match(/^\[([a-zA-Z0-9_]+)\]$/);
-    const simpleVarMatch = chart.formula?.match(/^(?:stats\.)?([a-zA-Z0-9_]+)$/);
+    const formulaToEvaluate = chart.formula || (chart.elements && chart.elements.length > 0 ? chart.elements[0].formula : '');
+    
+    if (isContentSlot(formulaToEvaluate)) {
+      const slotVal = resolveContentSlot(formulaToEvaluate, this.stats, this.contentAssets);
+      return {
+        chartId: chart.chartId,
+        type: 'image',
+        title: chart.title,
+        icon: chart.icon,
+        iconVariant: chart.iconVariant,
+        kpiValue: slotVal !== 'NA' ? slotVal : '',
+        aspectRatio: chart.aspectRatio || '16:9',
+        showTitle: chart.showTitle,
+        preset: chart.preset
+      };
+    }
+
+    const bracketMatch = formulaToEvaluate?.match(/^\[([a-zA-Z0-9_.-]+)\]$/);
+    const simpleVarMatch = formulaToEvaluate?.match(/^(?:stats\.)?([a-zA-Z0-9_]+)$/);
     
     let value: string | number | 'NA';
     
     if (bracketMatch) {
-      // Direct access for [fieldName] format
-      const fieldName = bracketMatch[1];
-      const fieldValue = this.stats[fieldName];
+      const fieldName = bracketMatch[1].startsWith('stats.') ? bracketMatch[1].substring(6) : bracketMatch[1];
+      const fieldValue = (this.stats as any)[fieldName];
       value = fieldValue !== undefined && fieldValue !== null ? String(fieldValue) : '';
     } else if (simpleVarMatch) {
-      // Direct access for simple variable references (stats.fieldName or fieldName)
       const fieldName = simpleVarMatch[1];
-      const fieldValue = this.stats[fieldName];
+      const fieldValue = (this.stats as any)[fieldName];
       value = fieldValue !== undefined && fieldValue !== null ? String(fieldValue) : '';
     } else {
-      // Complex formula evaluation
-      value = this.evaluateFormula(chart.formula);
+      value = this.evaluateFormula(formulaToEvaluate);
     }
     
     return {
@@ -588,9 +738,12 @@ export class ReportCalculator {
     const kpiValue = this.evaluateFormula(chart.formula);
     
     const elements = (chart.elements || []).map(el => ({
-      label: el.label,
+      id: (el as any).id,
+      label: this.resolveDynamicLabel(el.label),
       value: this.evaluateFormula(el.formula),
-      color: el.color
+      color: el.color,
+      formatting: (el as any).formatting,
+      type: (el as any).type
     }));
 
     return {
@@ -613,9 +766,15 @@ export class ReportCalculator {
    * HOW: Use existing formulaEngine, catch and log errors
    * 
    * @param formula - Formula string (e.g., "stats.remoteFans + stats.stadium")
+   * @param parameters - Optional parameters for [PARAM:x] tokens
+   * @param manualData - Optional manual data for [MANUAL:x] tokens
    * @returns Evaluated result (number or string) or 'NA' on error
    */
-  private evaluateFormula(formula: string): number | string {
+  private evaluateFormula(
+    formula: string,
+    parameters?: Record<string, number>,
+    manualData?: Record<string, number>
+  ): number | string {
     // Safety check: handle null/undefined formulas
     if (!formula || typeof formula !== 'string') {
       console.warn(`[ReportCalculator] Invalid formula: ${formula}`);
@@ -623,7 +782,7 @@ export class ReportCalculator {
     }
     
     try {
-      const result = evaluateFormula(formula, this.stats as any);
+      const result = evaluateFormula(formula, this.stats as any, parameters, manualData, this.contentAssets);
       // WHAT: Debug logging for complex formulas with division
       // WHY: Help diagnose why formulas like ([marketingOptin]+1)/([uniqueUsers]+1)*100 fail
       if (formula.includes('/') && formula.includes('(') && (result === 'NA' || result === null || result === undefined)) {
@@ -723,4 +882,36 @@ export class ReportCalculator {
   public getAllCharts(): Chart[] {
     return Array.from(this.charts.values());
   }
+}
+
+/**
+ * WHAT: Calculate all active charts for an array of configurations
+ * WHY: Drop-in replacement for calculateActiveCharts in lib/chartCalculator.ts
+ */
+export function calculateActiveCharts(
+  configurations: (Chart | ChartConfiguration)[],
+  stats: Partial<ProjectStats> | Record<string, any>
+): (ChartResult & { hasErrors: boolean })[] {
+  const activeConfigurations = configurations.filter(config => {
+    const configWithActive = config as any;
+    if (configWithActive.active !== undefined) return configWithActive.active === true;
+    if (config.isActive !== undefined) return config.isActive === true;
+    return true;
+  });
+
+  return activeConfigurations.map(config => {
+    const res = ReportCalculator.calculateSingleChart(config, stats);
+    const hasErrors = !!(
+      res.chartError ||
+      res.error ||
+      (res.elements && res.elements.some(e => e.value === 'NA')) ||
+      res.total === 'NA' ||
+      res.kpiValue === 'NA'
+    );
+    return {
+      elements: [],
+      ...res,
+      hasErrors
+    };
+  });
 }

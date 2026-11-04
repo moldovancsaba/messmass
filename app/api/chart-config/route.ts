@@ -135,13 +135,13 @@ function validateChartConfiguration(config: Partial<ChartConfiguration>): { isVa
     return { isValid: false, error: 'Elements must be an array' };
   }
   
-  // Element count validation based on chart type
-  if (config.type === 'pie' && config.elements.length !== 2) {
-    return { isValid: false, error: 'Pie charts must have exactly 2 elements' };
+  // Element count validation based on chart type (relaxed bounds: Pie 2..6, Bar 1..7)
+  if (config.type === 'pie' && (config.elements.length < 2 || config.elements.length > 6)) {
+    return { isValid: false, error: 'Pie charts must have between 2 and 6 elements' };
   }
   
-  if (config.type === 'bar' && config.elements.length !== 5) {
-    return { isValid: false, error: 'Bar charts must have exactly 5 elements' };
+  if (config.type === 'bar' && (config.elements.length < 1 || config.elements.length > 7)) {
+    return { isValid: false, error: 'Bar charts must have between 1 and 7 elements' };
   }
   
   if (config.type === 'kpi' && config.elements.length !== 1) {

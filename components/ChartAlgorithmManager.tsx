@@ -8,7 +8,7 @@ import MaterialIcon from './MaterialIcon';
 import { getIconForEmoji } from '@/lib/iconMapping';
 import { ChartConfiguration, type AvailableVariable, type HeroBlockSettings, type BlockAlignmentSettings } from '@/lib/chartConfigTypes';
 import { validateFormula, testFormula, extractVariablesFromFormula } from '@/lib/formulaEngine';
-import { calculateChart, formatChartValue } from '@/lib/chartCalculator';
+import { isContentSlot } from '@/lib/contentSlots';
 import { CHART_COLOR, CHART_ELEMENT_COLORS } from '@/lib/theme/chartPalette';
 import PredictiveFormattingInput from './PredictiveFormattingInput';
 import SaveStatusIndicator, { SaveStatus } from './SaveStatusIndicator';
@@ -809,10 +809,22 @@ function ChartConfigurationEditor({ config, availableVariables, onSave, onUpdate
       return false;
     }
     
-    const requiredCount = getRequiredElementCount(formData.type);
-    if (formData.elements.length !== requiredCount) {
-      alert(`${formData.type.toUpperCase()} charts must have exactly ${requiredCount} element${requiredCount !== 1 ? 's' : ''}`);
-      return false;
+    if (formData.type === 'pie') {
+      if (formData.elements.length < 2 || formData.elements.length > 6) {
+        alert('PIE charts must have between 2 and 6 elements');
+        return false;
+      }
+    } else if (formData.type === 'bar') {
+      if (formData.elements.length < 1 || formData.elements.length > 7) {
+        alert('BAR charts must have between 1 and 7 elements');
+        return false;
+      }
+    } else {
+      const requiredCount = getRequiredElementCount(formData.type);
+      if (formData.elements.length !== requiredCount) {
+        alert(`${formData.type.toUpperCase()} charts must have exactly ${requiredCount} element${requiredCount !== 1 ? 's' : ''}`);
+        return false;
+      }
     }
     
     const missingData = formData.elements.find((element) => !String(element.label || '').trim() || !String(element.formula || '').trim());
@@ -885,6 +897,29 @@ function ChartConfigurationEditor({ config, availableVariables, onSave, onUpdate
     if (field === 'formula') {
       validateFormula(index, value);
     }
+  };
+
+  const addElement = () => {
+    const maxCount = formData.type === 'pie' ? 6 : formData.type === 'bar' ? 7 : 1;
+    if (formData.elements.length >= maxCount) return;
+
+    const newIndex = formData.elements.length;
+    const defaultColor = CHART_ELEMENT_COLORS[newIndex % CHART_ELEMENT_COLORS.length] || CHART_COLOR.blue;
+    const newEl = {
+      id: `element${newIndex + 1}`,
+      label: `Element ${newIndex + 1}`,
+      formula: '',
+      color: defaultColor
+    };
+    setFormData({ ...formData, elements: [...formData.elements, newEl] });
+  };
+
+  const removeElement = (indexToRemove: number) => {
+    const minCount = formData.type === 'pie' ? 2 : formData.type === 'bar' ? 1 : 1;
+    if (formData.elements.length <= minCount) return;
+
+    const newElements = formData.elements.filter((_, i) => i !== indexToRemove);
+    setFormData({ ...formData, elements: newElements });
   };
 
   const validateFormula = (elementIndex: number, formula: string) => {
@@ -979,26 +1014,26 @@ function ChartConfigurationEditor({ config, availableVariables, onSave, onUpdate
     
     // WHAT: Check if all variables exist in KYC system or are valid report content fields
     // WHY: Prevent invalid formulas from being saved
-    // NOTE: PARAM: and MANUAL: tokens are always valid (handled separately)
+    // NOTE: PARAM: and MANUAL: tokens and Content Slots are always valid
     const invalidVariables = variables.filter(variable => {
       // Skip special tokens
       if (variable.startsWith('PARAM:') || variable.startsWith('MANUAL:')) return false;
       
-      // WHAT: Allow reportImage1-100 and reportText1-100 without KYC validation
-      // WHY: These are content fields, not KYC variables
-      if (/^reportImage\d+$/.test(variable) || /^reportText\d+$/.test(variable)) {
-        return false; // Valid - don't mark as invalid
+      // WHAT: Allow reportImage1..N, reportText1..N, [MEDIA:*], [TEXT:*] without KYC validation
+      if (isContentSlot(variable)) {
+        return false;
       }
       
       // WHAT: Handle fieldName format (no prefix)
       // WHY: Formulas use [female] and KYC stores as "female"
-      const variableNameShort = variable;
+      const variableNameShort = variable.startsWith('stats.') ? variable.substring(6) : variable;
       
       // Check if variable exists in KYC (dynamic from database)
       // Accept both bare and prefixed names in availableVariables (DB may store either)
       const matches = availableVariables.some(v => {
         const vName = String(v.name || '');
-        return vName === variableNameShort;
+        const normVName = vName.startsWith('stats.') ? vName.substring(6) : vName;
+        return normVName === variableNameShort;
       });
       return !matches;
     });
@@ -1028,48 +1063,33 @@ function ChartConfigurationEditor({ config, availableVariables, onSave, onUpdate
         sampleData[`reportText${i}`] = `Sample text content ${i}`;
       }
       
-      // WHAT: Handle simple field name formulas (e.g., reportImage2)
-      // WHY: Image/text charts use simple field names, not complex expressions
-      if (variables.length === 1 && testFormula.trim() === variables[0]) {
-        const variable = variables[0];
-        if (variable.startsWith('reportImage')) {
-          return { error: null, result: 'https://example.com/image.jpg' as any };
-        } else if (variable.startsWith('reportText')) {
-          return { error: null, result: 'Sample text content' as any };
-        }
+      // Fast-path: Content slot formula
+      if (isContentSlot(testFormula.trim())) {
+        return { error: null, result: 'Sample content' as any };
       }
       
       // Replace variables with sample values for complex formulas
       variables.forEach(variable => {
-        let value = sampleData[variable] || sampleData[`stats.${variable}`] || 1;
+        const normVar = variable.startsWith('stats.') ? variable.substring(6) : variable;
+        let value = sampleData[normVar] || sampleData[variable] || sampleData[`stats.${variable}`] || 1;
         
         // Handle bracketed format [variable]
         if (testFormula.includes(`[${variable}]`)) {
           const escapedVariable = variable.replace(/\./g, '\\.');
-          testFormula = testFormula.replace(new RegExp(`\\[${escapedVariable}\\]`, 'g'), value.toString());
+          testFormula = testFormula.replace(new RegExp(`\\[${escapedVariable}\\]`, 'g'), String(value));
         }
       });
       
       // WHAT: Evaluate the formula safely using formulaEngine
-      // WHY: Use centralized safe evaluation instead of Function() constructor
-      // HOW: Import evaluateFormula from formulaEngine
-      // SECURITY: Uses safe parser when feature flag enabled
       try {
-        // WHAT: Use evaluateFormula with empty stats (formula already has values substituted)
-        // WHY: Reuse safe evaluation logic from formulaEngine
-        // HOW: Create a minimal stats object, formula should already have numeric values
-        // Note: require() is acceptable here for conditional loading
         const { evaluateFormula } = require('@/lib/formulaEngine');
-        const result = evaluateFormula(testFormula, {});
+        const result = evaluateFormula(testFormula, sampleData);
         
-        // WHAT: Round to 2 decimal places for display
-        // WHY: Consistent formatting with existing behavior
-        // HOW: Check if result is number (not 'NA' string literal)
-        const roundedResult = typeof result === 'number' 
+        const formattedResult = typeof result === 'number' 
           ? Math.round(result * 100) / 100 
-          : 'NA' as 'NA';
+          : (typeof result === 'string' ? result : ('NA' as 'NA'));
         
-        return { error: null, result: roundedResult };
+        return { error: null, result: formattedResult as any };
       } catch (evalError) {
         // A `Function('"use strict"; return (' + testFormula + ')')()` fallback
         // stood here, marked "remove after migration complete" (messmass#286).
@@ -1500,7 +1520,27 @@ function ChartConfigurationEditor({ config, availableVariables, onSave, onUpdate
           )}
 
           <div className="form-group">
-            <label className="form-label">Elements (Required: {getRequiredElementCount(formData.type)})</label>
+            <div className={styles.elementsHeader}>
+              <label className={`form-label ${styles.elementsLabel}`}>
+                Elements (
+                {formData.type === 'pie'
+                  ? '2 to 6 slices'
+                  : formData.type === 'bar'
+                  ? '1 to 7 bars'
+                  : `Required: ${getRequiredElementCount(formData.type)}`}
+                )
+              </label>
+              {(formData.type === 'pie' || formData.type === 'bar') && (
+                <button
+                  type="button"
+                  className="button button-sm button-secondary"
+                  onClick={addElement}
+                  disabled={formData.type === 'pie' ? formData.elements.length >= 6 : formData.elements.length >= 7}
+                >
+                  + Add Element
+                </button>
+              )}
+            </div>
             {formData.type === 'valuechain' && (
               <div className={styles.valuechainIntro}>
                 <strong>Icon</strong> (above) + <strong>Element 1</strong> = visible title, <strong>Element 2</strong> = visible description. Labels are fixed.
@@ -1510,6 +1550,8 @@ function ChartConfigurationEditor({ config, availableVariables, onSave, onUpdate
               const validation = formulaValidation[index];
               const isValuechain = formData.type === 'valuechain';
               const valuechainLabel = index === 0 ? 'Title' : 'Description';
+              const canRemove = (formData.type === 'pie' && formData.elements.length > 2) ||
+                                (formData.type === 'bar' && formData.elements.length > 1);
               return (
                 <div key={element.id} className="element-editor">
                   <div className="element-header">
@@ -1520,8 +1562,17 @@ function ChartConfigurationEditor({ config, availableVariables, onSave, onUpdate
                       {formData.type === 'image' && <span className="chart-type-info">🖼️ Image URL</span>}
                       {formData.type === 'table' && <span className="chart-type-info">📋 Markdown Table</span>}
                       {isValuechain && <span className="chart-type-info">🔗 Label (FIXED): {valuechainLabel}</span>}
-                      {formData.type === 'pie' && <span className="chart-type-info">🥧 {index === 0 ? 'Segment 1' : 'Segment 2'}</span>}
+                      {formData.type === 'pie' && <span className="chart-type-info">🥧 Segment {index + 1}</span>}
                       {formData.type === 'bar' && <span className="chart-type-info">📊 Bar {index + 1}</span>}
+                      {canRemove && (
+                        <button
+                          type="button"
+                          className={`button button-sm button-danger ${styles.removeElementButton}`}
+                          onClick={() => removeElement(index)}
+                        >
+                          Remove
+                        </button>
+                      )}
                     </div>
                   </div>
                   

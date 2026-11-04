@@ -169,10 +169,11 @@ export function calculateBlockFontSizeForBarCharts(
     const barCount = barCharts.length > 0 ? barChart.labels.length : 0;
     if (barCount === 0) continue;
     
-    // WHAT: Calculate available height per row
+    // WHAT: Calculate available height per row (clamped to prevent collapse on >5 bars)
     // WHY: Each row needs space for label + bar track + spacing
-    // HOW: (chartBodyHeight - padding) / barCount - spacing per gap
-    const availableHeightPerRow = (chartBodyHeight - chartBodyPaddingPx) / barCount - rowSpacingPx;
+    // HOW: (chartBodyHeight - padding) / barCount - spacing per gap, clamped to min 16px
+    const rawAvailableHeight = (chartBodyHeight - chartBodyPaddingPx) / barCount - rowSpacingPx;
+    const availableHeightPerRow = Math.max(16, rawAvailableHeight);
     
     // WHAT: Calculate label width (40% of table width) with improved accuracy
     // WHY: Labels use 40% of table width (from CSS: .barLabel { width: 40%; })

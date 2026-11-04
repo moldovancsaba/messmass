@@ -17,6 +17,8 @@ import {
   type ValidationResult as DataValidationResult
 } from './dataValidator';
 import { type ContentAsset } from './contentAssetTypes';
+export type { ContentAsset };
+import { isContentSlot, resolveContentSlot } from './contentSlots';
 
 /**
  * DYNAMIC VARIABLE CACHE - KYC as Single Source of Truth
@@ -299,6 +301,46 @@ const MATH_FUNCTIONS = {
   ABS: (value: number): number | 'NA' => {
     if (typeof value !== 'number' || isNaN(value)) return 'NA';
     return Math.abs(value);
+  },
+  
+  /**
+   * Rounds a number down to the nearest integer
+   * Example: FLOOR(10.7) returns 10
+   */
+  FLOOR: (value: number): number | 'NA' => {
+    if (typeof value !== 'number' || isNaN(value)) return 'NA';
+    return Math.floor(value);
+  },
+  
+  /**
+   * Rounds a number up to the nearest integer
+   * Example: CEIL(10.2) returns 11
+   */
+  CEIL: (value: number): number | 'NA' => {
+    if (typeof value !== 'number' || isNaN(value)) return 'NA';
+    return Math.ceil(value);
+  },
+  
+  /**
+   * Sums all valid numeric arguments
+   * Example: SUM(10, 20, 30) returns 60
+   */
+  SUM: (...args: number[]): number | 'NA' => {
+    if (args.length === 0) return 'NA';
+    const validArgs = args.filter(arg => typeof arg === 'number' && !isNaN(arg));
+    if (validArgs.length === 0) return 'NA';
+    return validArgs.reduce((sum, val) => sum + val, 0);
+  },
+  
+  /**
+   * Averages all valid numeric arguments
+   * Example: AVG(10, 20, 30) returns 20
+   */
+  AVG: (...args: number[]): number | 'NA' => {
+    if (args.length === 0) return 'NA';
+    const validArgs = args.filter(arg => typeof arg === 'number' && !isNaN(arg));
+    if (validArgs.length === 0) return 'NA';
+    return validArgs.reduce((sum, val) => sum + val, 0) / validArgs.length;
   }
 };
 
@@ -342,11 +384,13 @@ interface ProjectStats {
 }
 
 function resolveStatsPath(stats: ProjectStats, fieldPath: string): unknown {
-  if (!fieldPath.includes('.')) {
-    return (stats as Record<string, unknown>)[fieldPath];
+  const normalizedPath = fieldPath.startsWith('stats.') ? fieldPath.substring(6) : fieldPath;
+
+  if (!normalizedPath.includes('.')) {
+    return (stats as Record<string, unknown>)[normalizedPath];
   }
 
-  return fieldPath.split('.').reduce<unknown>((current, key) => {
+  return normalizedPath.split('.').reduce<unknown>((current, key) => {
     if (current === null || current === undefined) {
       return undefined;
     }
@@ -550,36 +594,37 @@ function substituteVariables(
   processedFormula = processedFormula.replace(/\[([a-zA-Z0-9_.-]+)\]/g, (_match, fieldName) => {
     // WHAT: Direct field access from stats object
     // WHY: stats parameter is already project.stats, so we access stats[fieldName] directly
-    // HOW: No prefix needed - fieldName is the actual field name
+    // HOW: Strip leading "stats." if present for legacy compatibility
+    const normalizedName = fieldName.startsWith('stats.') ? fieldName.substring(6) : fieldName;
     
     // Handle special derived/computed fields
-    if (fieldName === 'totalFans') {
+    if (normalizedName === 'totalFans') {
       const remoteFans = (stats as any).remoteFans ?? 
                         ((stats as any).indoor || 0) + ((stats as any).outdoor || 0);
       const stadium = (stats as any).stadium || 0;
       return String(remoteFans + stadium);
     }
     
-    if (fieldName === 'remoteFans') {
+    if (normalizedName === 'remoteFans') {
       const remoteFans = (stats as any).remoteFans ?? 
                         ((stats as any).indoor || 0) + ((stats as any).outdoor || 0);
       return String(remoteFans);
     }
     
-    if (fieldName === 'allImages') {
+    if (normalizedName === 'allImages') {
       const remoteImages = (stats as any).remoteImages || 0;
       const hostessImages = (stats as any).hostessImages || 0;
       const selfies = (stats as any).selfies || 0;
       return String(remoteImages + hostessImages + selfies);
     }
     
-    if (fieldName === 'totalUnder40') {
+    if (normalizedName === 'totalUnder40') {
       const genAlpha = (stats as any).genAlpha || 0;
       const genYZ = (stats as any).genYZ || 0;
       return String(genAlpha + genYZ);
     }
     
-    if (fieldName === 'totalOver40') {
+    if (normalizedName === 'totalOver40') {
       const genX = (stats as any).genX || 0;
       const boomer = (stats as any).boomer || 0;
       return String(genX + boomer);
@@ -587,7 +632,7 @@ function substituteVariables(
     
     // WHAT: Direct field access from stats object
     // WHY: stats parameter is already project.stats, so access stats[fieldName] directly
-    const value = resolveStatsPath(stats, fieldName);
+    const value = resolveStatsPath(stats, normalizedName);
     return stringifyFormulaValue(value);
   });
   
@@ -600,7 +645,7 @@ function substituteVariables(
     // HOW: Only process if it looks like a variable (not a number, not an operator)
     
     // Skip if it's a mathematical operator or function
-    if (['MAX', 'MIN', 'SUM', 'AVG', 'ROUND', 'FLOOR', 'CEIL'].includes(fieldName.toUpperCase())) {
+    if (['MAX', 'MIN', 'SUM', 'AVG', 'ROUND', 'FLOOR', 'CEIL', 'ABS'].includes(fieldName.toUpperCase())) {
       return _match; // Keep as-is
     }
     
@@ -693,6 +738,7 @@ function processMathFunctions(formula: string): string {
 
 type FormulaToken =
   | { type: 'number'; value: number }
+  | { type: 'string'; value: string }
   | { type: 'operator'; value: string }
   | { type: 'paren'; value: '(' | ')' }
   | { type: 'question'; value: '?' }
@@ -712,6 +758,32 @@ function tokenizeExpression(expression: string): FormulaToken[] {
 
     if (/\s/.test(char)) {
       index++;
+      continue;
+    }
+
+    // Quoted string literals ("..." or '...')
+    if (char === '"' || char === "'") {
+      const quoteChar = char;
+      let end = index + 1;
+      let escaped = false;
+      while (end < expression.length) {
+        if (expression[end] === '\\' && !escaped) {
+          escaped = true;
+          end++;
+          continue;
+        }
+        if (expression[end] === quoteChar && !escaped) {
+          break;
+        }
+        escaped = false;
+        end++;
+      }
+      if (end >= expression.length) {
+        throw new Error(`Unterminated string literal in expression: ${expression}`);
+      }
+      const strVal = expression.slice(index + 1, end).replace(/\\"/g, '"').replace(/\\'/g, "'");
+      tokens.push({ type: 'string', value: strVal });
+      index = end + 1;
       continue;
     }
 
@@ -803,6 +875,12 @@ function evaluateTokenizedExpression(tokens: FormulaToken[]): number {
     if (token.type === 'number') {
       advance();
       return token.value;
+    }
+
+    if (token.type === 'string') {
+      advance();
+      const num = Number(token.value);
+      return isNaN(num) ? NaN : num;
     }
 
     if (token.type === 'paren' && token.value === '(') {
@@ -949,10 +1027,19 @@ function evaluateTokenizedExpression(tokens: FormulaToken[]): number {
  * removed, the last of them in messmass#286. An expression this rejects is
  * invalid, not merely unsupported.
  */
-function evaluateSimpleExpression(expression: string): number | 'NA' {
+function evaluateSimpleExpression(expression: string): number | string | 'NA' {
   try {
     const cleanExpression = normalizeExpressionOperators(expression).replace(/\s+/g, '');
     
+    // Fast-path: clean expression is purely a quoted string literal
+    if (/^"(?:[^"\\]|\\.)*"$/.test(cleanExpression) || /^'(?:[^'\\]|\\.)*'$/.test(cleanExpression)) {
+      const unquoted = cleanExpression.slice(1, -1).replace(/\\"/g, '"').replace(/\\'/g, "'");
+      if (unquoted === 'NA') return 'NA';
+      const num = Number(unquoted);
+      if (!isNaN(num) && isFinite(num) && String(num) === unquoted) return num;
+      return unquoted;
+    }
+
     // WHAT: Debug logging for complex expressions
     // WHY: Help diagnose evaluation failures
     const isComplex = cleanExpression.includes('/') && cleanExpression.includes('(');
@@ -973,7 +1060,17 @@ function evaluateSimpleExpression(expression: string): number | 'NA' {
     }
     
     try {
-      const result = evaluateTokenizedExpression(tokenizeExpression(cleanExpression));
+      const tokens = tokenizeExpression(cleanExpression);
+
+      // Fast-path: single string literal token
+      if (tokens.length === 2 && tokens[0].type === 'string' && tokens[1].type === 'eof') {
+        const strVal = tokens[0].value;
+        if (strVal === 'NA') return 'NA';
+        const numVal = Number(strVal);
+        return (!isNaN(numVal) && isFinite(numVal) && String(numVal) === strVal.trim()) ? numVal : strVal;
+      }
+
+      const result = evaluateTokenizedExpression(tokens);
 
       if (cleanExpression.includes('/') && cleanExpression.includes('(')) {
         console.log('[formulaEngine] Internal parser result:', {
@@ -1022,7 +1119,7 @@ function evaluateSimpleExpression(expression: string): number | 'NA' {
  * @param parameters - Optional parameters for [PARAM:x] token resolution
  * @param manualData - Optional manual data for [MANUAL:x] token resolution (aggregated analytics)
  * @param contentAssets - Optional content assets for [MEDIA:slug] and [TEXT:slug] token resolution
- * @returns Numeric result or 'NA' for errors/invalid results
+ * @returns Numeric/string result or 'NA' for errors/invalid results
  */
 export function evaluateFormula(
   formula: string, 
@@ -1030,16 +1127,36 @@ export function evaluateFormula(
   parameters?: Record<string, number>,
   manualData?: Record<string, number>,
   contentAssets?: ContentAsset[]
-): number | 'NA' {
+): number | string | 'NA' {
   try {
+    const trimmedFormula = formula.trim();
+
+    // STAGE 1: Content Slot Fast-Path Resolution (Decoupled from Math AST)
+    if (isContentSlot(trimmedFormula)) {
+      const slotVal = resolveContentSlot(trimmedFormula, stats as any, contentAssets);
+      if (slotVal === 'NA') return 'NA';
+      const numVal = parseFloat(slotVal);
+      if (!isNaN(numVal) && isFinite(numVal) && String(numVal) === slotVal.trim()) {
+        return numVal;
+      }
+      return slotVal;
+    }
+
     // WHAT: Handle simple single-variable formulas directly
     // WHY: Formulas like [fieldName] should return the value directly without evaluation
     // HOW: Check if formula is just [fieldName] pattern
-    const singleVarMatch = formula.trim().match(/^\[([a-zA-Z0-9_.-]+)\]$/);
+    const singleVarMatch = trimmedFormula.match(/^\[([a-zA-Z0-9_.-]+)\]$/);
     if (singleVarMatch) {
       const fieldName = singleVarMatch[1];
       const value = resolveStatsPath(stats, fieldName);
       if (value !== undefined && value !== null) {
+        if (typeof value === 'string') {
+          const numValue = parseFloat(value);
+          if (!isNaN(numValue) && isFinite(numValue) && String(numValue) === value.trim()) {
+            return numValue;
+          }
+          return value;
+        }
         const normalizedValue = Array.isArray(value) ? value.length : value;
         const numValue = typeof normalizedValue === 'number' ? normalizedValue : parseFloat(String(normalizedValue));
         if (!isNaN(numValue) && isFinite(numValue)) {
@@ -1052,6 +1169,18 @@ export function evaluateFormula(
     
     // Step 1: Substitute variables with actual values (including parameters, manual data, and content assets)
     const formulaWithValues = substituteVariables(formula, stats, parameters, manualData, contentAssets);
+    const trimmedWithValues = formulaWithValues.trim();
+
+    // Fast-path: substituted formula is a quoted string literal
+    if (/^"(?:[^"\\]|\\.)*"$/.test(trimmedWithValues) || /^'(?:[^'\\]|\\.)*'$/.test(trimmedWithValues)) {
+      const unquoted = trimmedWithValues.slice(1, -1).replace(/\\"/g, '"').replace(/\\'/g, "'");
+      if (unquoted === 'NA') return 'NA';
+      const num = parseFloat(unquoted);
+      if (!isNaN(num) && isFinite(num) && String(num) === unquoted.trim()) {
+        return num;
+      }
+      return unquoted;
+    }
     
     // WHAT: Debug logging for complex formulas
     // WHY: Help diagnose formula evaluation issues
@@ -1114,7 +1243,7 @@ export function evaluateFormula(
 export function evaluateFormulasBatch(
   formulas: string[], 
   stats: ProjectStats
-): (number | 'NA')[] {
+): (number | string | 'NA')[] {
   return formulas.map(formula => evaluateFormula(formula, stats));
 }
 
@@ -1259,7 +1388,7 @@ export function evaluateFormulaSafe(
   parameters?: Record<string, number>,
   manualData?: Record<string, number>,
   contentAssets?: ContentAsset[]
-): number | 'NA' {
+): number | string | 'NA' {
   try {
     // WHAT: Ensure derived metrics exist
     // WHY: Prevent 'NA' from missing totalFans, allImages, remoteFans
@@ -1286,7 +1415,7 @@ export function evaluateFormulaSafe(
 export function evaluateFormulaBatchSafe(
   formulas: string[],
   stats: Partial<ProjectStats>
-): Array<{ result: number | 'NA'; valid: boolean; formula: string }> {
+): Array<{ result: number | string | 'NA'; valid: boolean; formula: string }> {
   // WHAT: Enrich stats once for all formulas
   // WHY: More efficient than enriching per formula
   const enriched = ensureDerivedMetrics(stats);
@@ -1309,7 +1438,7 @@ export function evaluateFormulaBatchSafe(
  * @param formula - Formula to test
  * @returns Test result with sample data
  */
-export function testFormula(formula: string): { result: number | 'NA'; sampleData: ProjectStats } {
+export function testFormula(formula: string): { result: number | string | 'NA'; sampleData: ProjectStats } {
   const sampleData: ProjectStats = {
     remoteImages: 10, hostessImages: 25, selfies: 15,
     indoor: 50, outdoor: 30, stadium: 200,

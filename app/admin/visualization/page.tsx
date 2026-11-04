@@ -4,7 +4,7 @@ import React, { useState, useEffect, useCallback, useMemo, useRef } from 'react'
 import { useRouter } from 'next/navigation';
 import ReportChart from '@/app/report/[slug]/ReportChart';
 import { ChartConfiguration, ChartCalculationResult, HeroBlockSettings, BlockAlignmentSettings } from '@/lib/chartConfigTypes';
-import { calculateActiveCharts } from '@/lib/chartCalculator';
+import { calculateActiveCharts } from '@/lib/report-calculator';
 import UnifiedAdminHeroWithSearch from '@/components/UnifiedAdminHeroWithSearch';
 import ReportingWorkspaceNav from '@/components/ReportingWorkspaceNav';
 import ColoredCard from '@/components/ColoredCard';
@@ -1117,7 +1117,7 @@ export default function VisualizationPage() {
       
       // Normalize into a map for quick lookup by chartId
       const map: Record<string, ChartCalculationResult> = {};
-      results.forEach(r => { map[r.chartId] = r; });
+      results.forEach((r: any) => { map[r.chartId] = r; });
       console.log('📊 Preview results map:', Object.keys(map));
       setPreviewResults(prev => ({ ...prev, ...map }));
     } catch (err) {
