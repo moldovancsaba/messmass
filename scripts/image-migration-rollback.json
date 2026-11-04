@@ -1,0 +1,3632 @@
+{
+  "migratedAt": "2026-11-04T11:16:03.754Z",
+  "totalUpdates": 518,
+  "rollback": [
+    {
+      "collection": "partners",
+      "docId": "68ef5e1a6a32609c5247510a",
+      "fieldPath": "sportsDb.badge",
+      "oldUrl": "https://i.ibb.co/0pRhnq1L/budaifarkasokrev.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/e027993c78e49c4cfc953c5553cd1dac0cd9f9dece0a8dda328923aec63fd2f9.png"
+    },
+    {
+      "collection": "partners",
+      "docId": "68f6258c6d0f41c3f6a4c84d",
+      "fieldPath": "stats.reportImage1",
+      "oldUrl": "https://i.ibb.co/wNhtmJB9/1c1eef676aae.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/1371150effe422bd88290c15fb06d4521c443f4fd8b8cb5ed3293ed772da137f.jpg"
+    },
+    {
+      "collection": "partners",
+      "docId": "68f6258c6d0f41c3f6a4c84d",
+      "fieldPath": "stats.reportImage7",
+      "oldUrl": "https://i.ibb.co/KjnbZ1fx/c73c96dab260.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/e3d4ba2c6341e29ab99bf7deddaa08e1741606352ba8973723b70a72f4aecce2.jpg"
+    },
+    {
+      "collection": "partners",
+      "docId": "68f6258c6d0f41c3f6a4c84d",
+      "fieldPath": "stats.reportImage8",
+      "oldUrl": "https://i.ibb.co/JRb8yNL0/3e4aad84541d.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/6bf5b55e004a33bfa57abe881a870696e1ac587db5445029bc4187562acaaf8d.jpg"
+    },
+    {
+      "collection": "partners",
+      "docId": "68f6268feaea906244f28923",
+      "fieldPath": "stats.reportImage1",
+      "oldUrl": "https://i.ibb.co/7J0Cpw9t/39be3abe89a0.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/30853004c20b82194fdfb7437fac6266cd0f7cb047d7ff147751345f6ff47772.jpg"
+    },
+    {
+      "collection": "partners",
+      "docId": "68f6268feaea906244f28923",
+      "fieldPath": "stats.reportImage2",
+      "oldUrl": "https://i.ibb.co/FqmwK2bY/e4d4b5173df7.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/fed27611b0829e591dfa81d3c1171562224249fae3922e8bfcb99c7dee5fc6e4.png"
+    },
+    {
+      "collection": "partners",
+      "docId": "68f6268feaea906244f28923",
+      "fieldPath": "stats.reportImage3",
+      "oldUrl": "https://i.ibb.co/21dv8Q0K/81f576c0cd1e.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/48b69bc958dfcaabf5aecca79fb11e309ab6ed3fbc9e6a07ee35e6f409a19902.png"
+    },
+    {
+      "collection": "partners",
+      "docId": "68f6268feaea906244f28923",
+      "fieldPath": "stats.reportImage4",
+      "oldUrl": "https://i.ibb.co/m5TS6PYC/bab8d41fbce3.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/17c92cbba5ca3bc3e72d3cf9d79aba218d3eec33a900e5c5872f957a30c000c3.jpg"
+    },
+    {
+      "collection": "partners",
+      "docId": "68f6268feaea906244f28923",
+      "fieldPath": "stats.reportImage5",
+      "oldUrl": "https://i.ibb.co/dwdH58ZX/93c52f1669a1.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/d7f9845d17ddcd1bf5c513d521d82e0e39521ceb99b8cd8c1037aa168e66e673.jpg"
+    },
+    {
+      "collection": "partners",
+      "docId": "68f6268feaea906244f28923",
+      "fieldPath": "stats.reportImage6",
+      "oldUrl": "https://i.ibb.co/NnKpvnL5/4285d1872aaa.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/703617bd87b53a7501c3127ecd0607e744c590f7f0482a0c467e3b2808732db4.jpg"
+    },
+    {
+      "collection": "partners",
+      "docId": "68f626b4eaea906244f28925",
+      "fieldPath": "stats.reportImage2",
+      "oldUrl": "https://i.ibb.co/s8zdXRD/7be0c2400144.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/43bbde28c10bba6d6a74936609fd3c8c2a9850939469930d6d13a9ee1b3f5698.jpg"
+    },
+    {
+      "collection": "partners",
+      "docId": "68f626b4eaea906244f28925",
+      "fieldPath": "stats.reportImage4",
+      "oldUrl": "https://i.ibb.co/G4vYfTsX/b3a97403cd79.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/42df6d26178f832d6d7d302908e1dfba876a85984cf8943cbbbad32a1fe0f57a.jpg"
+    },
+    {
+      "collection": "partners",
+      "docId": "68f626b4eaea906244f28925",
+      "fieldPath": "stats.reportImage10",
+      "oldUrl": "https://i.ibb.co/4RSSw1Tc/ecb50a47e34b.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/87760a3168affc59965092865fe25bcf054444d294ed2e0bb384cc36bbe79a53.jpg"
+    },
+    {
+      "collection": "partners",
+      "docId": "68f628ff36dae2424f1d13cb",
+      "fieldPath": "sportsDb.badge",
+      "oldUrl": "https://i.ibb.co/PzWczngc/Partner-BKG-Prima-Szigetszentmikl-s-Kos-rlabda.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/127d3df02665526dbd816600a0403c6b453632b715734cbeaf7b589698df9b3a.png"
+    },
+    {
+      "collection": "partners",
+      "docId": "68f6295736dae2424f1d13cc",
+      "fieldPath": "stats.reportImage2",
+      "oldUrl": "https://i.ibb.co/QvVWR29L/05b70a5bfc31.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/10bb60c0c8f209ba0fdf261c5881cf828d11d4fb7618419e614c9ddc3e150076.jpg"
+    },
+    {
+      "collection": "partners",
+      "docId": "68f6295736dae2424f1d13cc",
+      "fieldPath": "stats.reportImage4",
+      "oldUrl": "https://i.ibb.co/L4Nnw4g/ed8736f90b96.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/d456251cb816e51373dde4469921e0d49b0018f4fc1ce1482fa5de3bf2cf7c8d.jpg"
+    },
+    {
+      "collection": "partners",
+      "docId": "68f77d549d48f546efb9de9f",
+      "fieldPath": "sportsDb.badge",
+      "oldUrl": "https://i.ibb.co/HLtFXwVP/Partner-Budapesti-Vasutas-Zuglo.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/f7643fbd05e31c89bf76e392bd630e11a0a4741fa03c4a3fce6f320624264d1f.png"
+    },
+    {
+      "collection": "partners",
+      "docId": "68f78ec93ced8e1a321f4656",
+      "fieldPath": "sportsDb.badge",
+      "oldUrl": "https://i.ibb.co/sJgnM7fz/64075-Mosonmagyar-v-r-300x300.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/2fcab26b0d5502da8ceb17f4ad3762701ab9ac6c13e1bc9eef79a98b5007a764.png"
+    },
+    {
+      "collection": "partners",
+      "docId": "68f791365a7f97910b39fc31",
+      "fieldPath": "sportsDb.badge",
+      "oldUrl": "https://i.ibb.co/hRRRLnPW/partner-ftc-rail-cargo-hung-ria.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/629ccc28b720cc6aa6a4da762f7c34e957e10d7462257cb1e8ed834cd4bd2354.png"
+    },
+    {
+      "collection": "partners",
+      "docId": "68ff45b75473ed0e88defa53",
+      "fieldPath": "stats.reportImage1",
+      "oldUrl": "https://i.ibb.co/C5NZwCkK/9db9626c0094.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/4a30af215685cdbf596f495287fcb18a08685bea2faf12e8a132c7bf93654c09.jpg"
+    },
+    {
+      "collection": "partners",
+      "docId": "68ff45b75473ed0e88defa53",
+      "fieldPath": "stats.reportImage5",
+      "oldUrl": "https://i.ibb.co/r2tyQ4Jx/09ce7852f9ac.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/945e5e2154ed7d7d0e3b7407e54e8adee1fadecd7912ae44b5c0108fb2381037.jpg"
+    },
+    {
+      "collection": "partners",
+      "docId": "690b2f5d176fe66095c37111",
+      "fieldPath": "sportsDb.badge",
+      "oldUrl": "https://i.ibb.co/JFHSJddr/Szigetszentmikl-si-KSK.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/3193ad7356eecc9832d024a944916a66f2cbbe512f5ddc4e73772c450a4baf2c.png"
+    },
+    {
+      "collection": "partners",
+      "docId": "694a96990ad78323bea10660",
+      "fieldPath": "stats.reportImage2",
+      "oldUrl": "https://i.ibb.co/Cs0K1rQs/1c7761dfa616.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/17cde33d6ca9ad085de23ed589602a15f4652924bc26ace0e30b84e9e459b35c.jpg"
+    },
+    {
+      "collection": "partners",
+      "docId": "69a54b6de24f1f9ca024a321",
+      "fieldPath": "stats.reportImage2",
+      "oldUrl": "https://i.ibb.co/s9nnG7Sp/66075b9e8755.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/e3270db4f10f2e7c77be8907acb325d9156388b0e3af03554cf6beb2990b11c3.png"
+    },
+    {
+      "collection": "partners",
+      "docId": "69f9e1299d7c0c1ee36819fd",
+      "fieldPath": "stats.reportImage4",
+      "oldUrl": "https://i.ibb.co/0pSrBqXY/b2dcd6769182.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/a8a2cdcbd3d4f7871874ecfc4078c7e07a875ed12cc881b6261fb4736ef19a27.png"
+    },
+    {
+      "collection": "partners",
+      "docId": "69f9e1299d7c0c1ee36819fd",
+      "fieldPath": "stats.reportImage6",
+      "oldUrl": "https://i.ibb.co/x8mtZrgJ/dfefc2996231.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/57c03b52e195e246e4760a19eda489b16b062033dc430eb885d4bc280590b647.jpg"
+    },
+    {
+      "collection": "partners",
+      "docId": "6a048012fe440d910605e906",
+      "fieldPath": "stats.reportImage2",
+      "oldUrl": "https://i.ibb.co/R4ytQBSK/d3b03ce56af5.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/293b472a4ab729f1d9464b72bf0dea799d1713fb5fb30ea967a37fd8eea4c37f.jpg"
+    },
+    {
+      "collection": "partners",
+      "docId": "6a048012fe440d910605e906",
+      "fieldPath": "stats.reportImage4",
+      "oldUrl": "https://i.ibb.co/4w2NgqV8/8916973f6000.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/53564772db36414e6d66a304be7cce5f38dc754ebf0977465697b74bf1a07700.jpg"
+    },
+    {
+      "collection": "partners",
+      "docId": "6a05b394767174e927c63141",
+      "fieldPath": "stats.reportImage3",
+      "oldUrl": "https://i.ibb.co/ccGBJZ5t/9b23ee7b8a40.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/407d48b18d0cdc036a39733d195a9bc89420ca8e74504334a26e8bc46db6951e.jpg"
+    },
+    {
+      "collection": "partners",
+      "docId": "6a3e27377e717981c9da0978",
+      "fieldPath": "stats.reportImage1",
+      "oldUrl": "https://i.ibb.co/xtGPXQZ3/8cc82380079c.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/5ed18036e2c5889f17e939138f8142fa9ddc67f44743c0b0437457211eff26d4.jpg"
+    },
+    {
+      "collection": "v3_activities",
+      "docId": "69b3bbbe986239b6475dea0b",
+      "fieldPath": "metadata.stats.reportImage1",
+      "oldUrl": "https://i.ibb.co/svPGr1p0/46a13127dd8c.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/016ff4d88f2213f01c59164022f8fb3be23d16618d43dac51c1cefffca2cffa9.jpg"
+    },
+    {
+      "collection": "v3_activities",
+      "docId": "69b3bbbe986239b6475dea0b",
+      "fieldPath": "metadata.originalData.stats.reportImage1",
+      "oldUrl": "https://i.ibb.co/svPGr1p0/46a13127dd8c.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/016ff4d88f2213f01c59164022f8fb3be23d16618d43dac51c1cefffca2cffa9.jpg"
+    },
+    {
+      "collection": "v3_activities",
+      "docId": "69b3bbbf986239b6475dea3b",
+      "fieldPath": "metadata.stats.fanSelfieSquare3",
+      "oldUrl": "https://i.ibb.co/Q3bR70ch/5009a5d4c801.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/f17f858f1e8519a5983e4776f81e17b718cb707d0619c0846e137319bbcf0530.png"
+    },
+    {
+      "collection": "v3_activities",
+      "docId": "69b3bbbf986239b6475dea3b",
+      "fieldPath": "metadata.originalData.stats.fanSelfieSquare3",
+      "oldUrl": "https://i.ibb.co/Q3bR70ch/5009a5d4c801.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/f17f858f1e8519a5983e4776f81e17b718cb707d0619c0846e137319bbcf0530.png"
+    },
+    {
+      "collection": "v3_activities",
+      "docId": "69b3bbbf986239b6475dea4b",
+      "fieldPath": "metadata.stats.reportImage4",
+      "oldUrl": "https://i.ibb.co/mfJMd1c/e3756e942a86.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/c12592231b9c5761e4677e7d526ba3f98dcb4fea65522d88269157239b9d7fa2.jpg"
+    },
+    {
+      "collection": "v3_activities",
+      "docId": "69b3bbbf986239b6475dea4b",
+      "fieldPath": "metadata.originalData.stats.reportImage4",
+      "oldUrl": "https://i.ibb.co/mfJMd1c/e3756e942a86.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/c12592231b9c5761e4677e7d526ba3f98dcb4fea65522d88269157239b9d7fa2.jpg"
+    },
+    {
+      "collection": "v3_activities",
+      "docId": "69b3bbc2986239b6475dead3",
+      "fieldPath": "metadata.stats.fanSelfieLandscape2",
+      "oldUrl": "https://i.ibb.co/JjYHT2PM/a1422f4cfe2c.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/7a205f6efa487d9f2b10ce22288bae296d4b672ea049218cdb93909548260cad.jpg"
+    },
+    {
+      "collection": "v3_activities",
+      "docId": "69b3bbc2986239b6475dead3",
+      "fieldPath": "metadata.stats.reportImage5",
+      "oldUrl": "https://i.ibb.co/YBfqD6L6/48a56691af28.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/28a6fe1416d2de36b2f6f4bbcc93063387142a93c376bfa7f6e28c0480c4eabe.jpg"
+    },
+    {
+      "collection": "v3_activities",
+      "docId": "69b3bbc2986239b6475dead3",
+      "fieldPath": "metadata.stats.fanSelfieSquare3",
+      "oldUrl": "https://i.ibb.co/V01mdCG7/417110188bdd.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/1f8da33abd7b0827cce2b0dde9fe5fb94af50dc9362f5f914a379f99e40dde5d.png"
+    },
+    {
+      "collection": "v3_activities",
+      "docId": "69b3bbc2986239b6475dead3",
+      "fieldPath": "metadata.stats.reportImage9",
+      "oldUrl": "https://i.ibb.co/DXJcbf4/c59d67b6fcec.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/98b3d88c659d25b80fab95f6ca33f3426b28d762e47e15eae6d3e70f29b6e1c9.jpg"
+    },
+    {
+      "collection": "v3_activities",
+      "docId": "69b3bbc2986239b6475dead3",
+      "fieldPath": "metadata.stats.reportImage10",
+      "oldUrl": "https://i.ibb.co/9dVsRBy/2dc0abba4cda.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/d76bf8025cc9f665507a4d36197735f103d7469ff410686c876a78a9c06545a9.jpg"
+    },
+    {
+      "collection": "v3_activities",
+      "docId": "69b3bbc2986239b6475dead3",
+      "fieldPath": "metadata.originalData.stats.fanSelfieLandscape2",
+      "oldUrl": "https://i.ibb.co/JjYHT2PM/a1422f4cfe2c.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/7a205f6efa487d9f2b10ce22288bae296d4b672ea049218cdb93909548260cad.jpg"
+    },
+    {
+      "collection": "v3_activities",
+      "docId": "69b3bbc2986239b6475dead3",
+      "fieldPath": "metadata.originalData.stats.reportImage5",
+      "oldUrl": "https://i.ibb.co/YBfqD6L6/48a56691af28.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/28a6fe1416d2de36b2f6f4bbcc93063387142a93c376bfa7f6e28c0480c4eabe.jpg"
+    },
+    {
+      "collection": "v3_activities",
+      "docId": "69b3bbc2986239b6475dead3",
+      "fieldPath": "metadata.originalData.stats.fanSelfieSquare3",
+      "oldUrl": "https://i.ibb.co/V01mdCG7/417110188bdd.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/1f8da33abd7b0827cce2b0dde9fe5fb94af50dc9362f5f914a379f99e40dde5d.png"
+    },
+    {
+      "collection": "v3_activities",
+      "docId": "69b3bbc2986239b6475dead3",
+      "fieldPath": "metadata.originalData.stats.reportImage9",
+      "oldUrl": "https://i.ibb.co/DXJcbf4/c59d67b6fcec.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/98b3d88c659d25b80fab95f6ca33f3426b28d762e47e15eae6d3e70f29b6e1c9.jpg"
+    },
+    {
+      "collection": "v3_activities",
+      "docId": "69b3bbc2986239b6475dead3",
+      "fieldPath": "metadata.originalData.stats.reportImage10",
+      "oldUrl": "https://i.ibb.co/9dVsRBy/2dc0abba4cda.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/d76bf8025cc9f665507a4d36197735f103d7469ff410686c876a78a9c06545a9.jpg"
+    },
+    {
+      "collection": "v3_activities",
+      "docId": "69b3bbc8986239b6475dec19",
+      "fieldPath": "metadata.stats.reportImage1",
+      "oldUrl": "https://i.ibb.co/7xc4w441/08bec7554922.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/ff128e8a16a91e87f8d7e9ac32852e8c17867f35d60b47af75568f021ddb1b50.png"
+    },
+    {
+      "collection": "v3_activities",
+      "docId": "69b3bbc8986239b6475dec19",
+      "fieldPath": "metadata.originalData.stats.reportImage1",
+      "oldUrl": "https://i.ibb.co/7xc4w441/08bec7554922.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/ff128e8a16a91e87f8d7e9ac32852e8c17867f35d60b47af75568f021ddb1b50.png"
+    },
+    {
+      "collection": "report_variants",
+      "docId": "6a105467e9240c6395b17698",
+      "fieldPath": "logoUrl",
+      "oldUrl": "https://i.ibb.co/r2yBLxCG/partner-as-roma.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/c913df29a4740c33fa340af3ceb5b50a65d615b6a0665fa1d20348d1a1295bec.png"
+    },
+    {
+      "collection": "report_variants",
+      "docId": "6a105467e9240c6395b17698",
+      "fieldPath": "statsOverrides.reportImage1",
+      "oldUrl": "https://i.ibb.co/7J0Cpw9t/39be3abe89a0.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/30853004c20b82194fdfb7437fac6266cd0f7cb047d7ff147751345f6ff47772.jpg"
+    },
+    {
+      "collection": "report_variants",
+      "docId": "6a105467e9240c6395b17698",
+      "fieldPath": "statsOverrides.reportImage3",
+      "oldUrl": "https://i.ibb.co/21dv8Q0K/81f576c0cd1e.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/48b69bc958dfcaabf5aecca79fb11e309ab6ed3fbc9e6a07ee35e6f409a19902.png"
+    },
+    {
+      "collection": "report_variants",
+      "docId": "6a105467e9240c6395b17698",
+      "fieldPath": "statsOverrides.reportImage4",
+      "oldUrl": "https://i.ibb.co/m5TS6PYC/bab8d41fbce3.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/17c92cbba5ca3bc3e72d3cf9d79aba218d3eec33a900e5c5872f957a30c000c3.jpg"
+    },
+    {
+      "collection": "report_variants",
+      "docId": "6a105467e9240c6395b17698",
+      "fieldPath": "statsOverrides.reportImage5",
+      "oldUrl": "https://i.ibb.co/dwdH58ZX/93c52f1669a1.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/d7f9845d17ddcd1bf5c513d521d82e0e39521ceb99b8cd8c1037aa168e66e673.jpg"
+    },
+    {
+      "collection": "report_variants",
+      "docId": "6ac4a797d1d7d4a6c2c6ac49",
+      "fieldPath": "logoUrl",
+      "oldUrl": "https://i.ibb.co/JFKRCVL8/partner-hungary-soccer-men.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/0522c8b2b8765d1b70f19f29115868e993a47b902a0d0f76c49da128e8237dc2.png"
+    },
+    {
+      "collection": "report_variants",
+      "docId": "6ac4a80425105170ded544cf",
+      "fieldPath": "logoUrl",
+      "oldUrl": "https://i.ibb.co/JFKRCVL8/partner-hungary-soccer-men.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/0522c8b2b8765d1b70f19f29115868e993a47b902a0d0f76c49da128e8237dc2.png"
+    },
+    {
+      "collection": "report_variants",
+      "docId": "6ac4a96b0b880fcd3a09d665",
+      "fieldPath": "logoUrl",
+      "oldUrl": "https://i.ibb.co/JFKRCVL8/partner-hungary-soccer-men.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/0522c8b2b8765d1b70f19f29115868e993a47b902a0d0f76c49da128e8237dc2.png"
+    },
+    {
+      "collection": "report_variants",
+      "docId": "6ac4ba5900f430108a272e36",
+      "fieldPath": "logoUrl",
+      "oldUrl": "https://i.ibb.co/JFKRCVL8/partner-hungary-soccer-men.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/0522c8b2b8765d1b70f19f29115868e993a47b902a0d0f76c49da128e8237dc2.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "69b32308914476820959acf8",
+      "fieldPath": "metadata.originalData.logoUrl",
+      "oldUrl": "https://i.ibb.co/R5M0Lx1/partner-jpest-fc.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/b092597f4715b4265259f20cc06d0fe7d692bf287f421afbf9533547aa623bcd.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "69b32308914476820959acff",
+      "fieldPath": "metadata.originalData.logoUrl",
+      "oldUrl": "https://i.ibb.co/0RBxBcqF/partner-ferencv-rosi-tc.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/589533fcc0ad5be7ac35317d2feb5f40c3ddf8f2b0a540df2108f5652fdb908f.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "69b32308914476820959ad04",
+      "fieldPath": "metadata.originalData.logoUrl",
+      "oldUrl": "https://i.ibb.co/JFKRCVL8/partner-hungary-soccer-men.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/0522c8b2b8765d1b70f19f29115868e993a47b902a0d0f76c49da128e8237dc2.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "69b32308914476820959ad09",
+      "fieldPath": "metadata.originalData.logoUrl",
+      "oldUrl": "https://i.ibb.co/DDJ1Tq91/partner-hungary-basketball-men.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/58bc83108cac375d625edb1bcb1b7763593051d4799b1aeaed0c581504c6e5ea.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "69b32308914476820959ad0e",
+      "fieldPath": "metadata.originalData.logoUrl",
+      "oldUrl": "https://i.ibb.co/JWKw47MN/partner-mtk.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/393a11b8b6c22d3004ab235f5065c5c9adb29c7098aafe56b32920b810843175.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "69b32308914476820959ad13",
+      "fieldPath": "metadata.originalData.logoUrl",
+      "oldUrl": "https://i.ibb.co/xQMjLZ8/partner-alba-feh-rv-r-kos-rlabda.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/01368c40867c8a3f13896e58fedc07ea1c8b3712755a95d37cf7091bdcb2e15a.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "69b32308914476820959ad18",
+      "fieldPath": "metadata.originalData.logoUrl",
+      "oldUrl": "https://i.ibb.co/35Xd95Mf/partner-atomer-m-se.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/eda83b68992f9683e3a329ce2e6026f2fe6250b4a39a31c4880c32ae5f47a878.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "69b32309914476820959ad1d",
+      "fieldPath": "metadata.originalData.logoUrl",
+      "oldUrl": "https://i.ibb.co/GfWpDFMw/partner-balatonf-redi-kse.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/c6abcd7c70e81bcb9109fcd0f786cd5b0c57ae04730463d04a9552f1aac8e405.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "69b32309914476820959ad22",
+      "fieldPath": "metadata.originalData.logoUrl",
+      "oldUrl": "https://i.ibb.co/233g9rfj/partner-budai-farkasok-r-v.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/e027993c78e49c4cfc953c5553cd1dac0cd9f9dece0a8dda328923aec63fd2f9.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "69b32309914476820959ad22",
+      "fieldPath": "metadata.originalData.sportsDb.badge",
+      "oldUrl": "https://i.ibb.co/0pRhnq1L/budaifarkasokrev.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/e027993c78e49c4cfc953c5553cd1dac0cd9f9dece0a8dda328923aec63fd2f9.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "69b32309914476820959ad27",
+      "fieldPath": "metadata.originalData.logoUrl",
+      "oldUrl": "https://i.ibb.co/Nd5nv0JW/partner-eto-university-handball-team.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/18d62cad81922cc8331f370657697003da7ea267725a76e921ec94a8033b3a62.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "69b32309914476820959ad2c",
+      "fieldPath": "metadata.originalData.logoUrl",
+      "oldUrl": "https://i.ibb.co/sJQZgYQN/partner-one-veszpr-m-hc.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/62fd8c616f60f7bba31bfbc7e467e8ea7ede8e137927ee6598149f5f5f650338.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "69b32309914476820959ad36",
+      "fieldPath": "metadata.originalData.logoUrl",
+      "oldUrl": "https://i.ibb.co/WRmP9NG/partner-orlen-wisla-plock.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/48cc182a0f13a1ebbcb2f084b6cc618857d2e391b0ec322a8f5d268f42ee4a47.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "69b32309914476820959ad3b",
+      "fieldPath": "metadata.originalData.logoUrl",
+      "oldUrl": "https://i.ibb.co/wrd02y3Y/partner-industria-kielce.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/7f5df6bbff89064a36fbf19e545107a4b039bd762f461525e430d4377cee66d2.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "69b3230a914476820959ad40",
+      "fieldPath": "metadata.originalData.logoUrl",
+      "oldUrl": "https://i.ibb.co/4g1RV6t2/partner-cs-dinamo-bucure-ti.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/d94a31cd0c5a348018807c84cb313a1ed6c885841a3ecfd0d0d17e3d62691980.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "69b3230a914476820959ad45",
+      "fieldPath": "metadata.originalData.logoUrl",
+      "oldUrl": "https://i.ibb.co/Jw0HShtv/partner-hc-zagreb.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/c5b05012a37bfc56dcdbf2eaa6df8dd55841888c53fc36cfc0f01b2e3bb42bb3.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "69b3230a914476820959ad4a",
+      "fieldPath": "metadata.originalData.logoUrl",
+      "oldUrl": "https://i.ibb.co/whJjWKNK/partner-armenia.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/e6aec205ae2043b1088a37e2848e9facfafd2b2110f9d8d8f04f01e2f28028ff.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "69b3230a914476820959ad4f",
+      "fieldPath": "metadata.originalData.logoUrl",
+      "oldUrl": "https://i.ibb.co/XrWpqFG3/partner-paris-saint-germain.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/6c4bb465a5a94f227c2f4108ae132574da06a6706fa4ce7e604b0149d84dbd91.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "69b3230a914476820959ad54",
+      "fieldPath": "metadata.originalData.logoUrl",
+      "oldUrl": "https://i.ibb.co/TM1yy0SJ/partner-sc-magdeburg.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/72686ab9d31ed4e7624c8616a62836ca50a87e24b3eb55442673161bf0b4e216.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "69b3230a914476820959ad59",
+      "fieldPath": "metadata.originalData.logoUrl",
+      "oldUrl": "https://i.ibb.co/Kp4k0G0H/partner-hbc-nantes.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/d01e3c1707a63b28398879e5a10843b6d4cf007e96e91dd9b0c6c5f6e59f1b60.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "69b3230a914476820959ad5e",
+      "fieldPath": "metadata.originalData.logoUrl",
+      "oldUrl": "https://i.ibb.co/XfGcjrYY/partner-gog-h-ndbold.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/96288ea2c4942ce938abb7475c55eaa6dfa9de73a4af98c2c411067cd07fe463.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "69b3230b914476820959ad63",
+      "fieldPath": "metadata.originalData.logoUrl",
+      "oldUrl": "https://i.ibb.co/4whKLRfC/partner-sporting-clube-de-portugal.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/24c2694abe92c0be161716a84aaa5d8c8f02715443d22b187943cb414b01d6a1.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "69b3230b914476820959ad68",
+      "fieldPath": "metadata.originalData.logoUrl",
+      "oldUrl": "https://i.ibb.co/tM6ZtPD7/partner-f-chse-berlin.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/bfc27f0f33bb13af86bb69e401a2a6c1a7736e971a7f9d12e3eb19e02cdc27a9.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "69b3230b914476820959ad6d",
+      "fieldPath": "metadata.originalData.logoUrl",
+      "oldUrl": "https://i.ibb.co/Wv2QPYVT/partner-kolstad-h-ndball.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/a4b9c4a2ea803ca23eb1543a46364d3658aabdfc6999dd9e455d1580631bda8d.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "69b3230b914476820959ad72",
+      "fieldPath": "metadata.originalData.logoUrl",
+      "oldUrl": "https://i.ibb.co/GynC0YP/partner-aalborg-h-ndbold.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/2811cf6955e856c4df011c4fcfdffc0be23c2681df95cf5b45a5a523124fa787.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "69b3230b914476820959ad77",
+      "fieldPath": "metadata.originalData.logoUrl",
+      "oldUrl": "https://i.ibb.co/Q39wRNj4/partner-hc-eurofarm-pelister.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/e2cd677c6757657be3718543e4b9b65c948cca0c821fb5075839740941a68884.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "69b3230b914476820959ad7c",
+      "fieldPath": "metadata.originalData.logoUrl",
+      "oldUrl": "https://i.ibb.co/0166Pg7/partner-bar-a.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/ad5de647e9f8a6e4252e25cdfbb2430f6c0099bdaf6dabe67eb38df24536ae13.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "69b3230b914476820959ad81",
+      "fieldPath": "metadata.originalData.logoUrl",
+      "oldUrl": "https://i.ibb.co/Kpbn48c7/partner-ny-regyh-za-fc.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/72205351ecc371d8623c702657761b77244905f81d725764df8ed9b8c3aac221.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "69b3230c914476820959ad86",
+      "fieldPath": "metadata.originalData.logoUrl",
+      "oldUrl": "https://i.ibb.co/1YKFSPcc/partner-mez-k-vesd-zs-ry-fc.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/11f7f950c2b32a8c9e7df5c6e9dafb090a2e3351269c87102eb2826952b03018.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "69b3230c914476820959ad8b",
+      "fieldPath": "metadata.originalData.logoUrl",
+      "oldUrl": "https://i.ibb.co/22KzVtL/partner-budafoki-mte.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/8f91677da339b3604e40eb44cead615c8535521199085b83e055a0bd6993e423.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "69b3230c914476820959ad90",
+      "fieldPath": "metadata.originalData.logoUrl",
+      "oldUrl": "https://i.ibb.co/XrRHNNKB/partner-finland-basketball-women.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/758a12330ea0d2372eed97551980dac52320490ab72e3f29162701603e26967c.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "69b3230c914476820959ad95",
+      "fieldPath": "metadata.originalData.logoUrl",
+      "oldUrl": "https://i.ibb.co/XrwMLcx5/partner-hungary-basketball-women.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/bac54c59d40a3c17d0c5da3da3990678391acc7f4b4b0d16f53eda67af1cdda4.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "69b3230c914476820959ad9a",
+      "fieldPath": "metadata.originalData.logoUrl",
+      "oldUrl": "https://i.ibb.co/Myrz9XDR/partner-hc-fribourg-gott-ron.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/fc2504e49a77fc5ef09f3f114764ead995bd06567fd906d93bd7f370aee250a8.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "69b3230c914476820959ad9f",
+      "fieldPath": "metadata.originalData.logoUrl",
+      "oldUrl": "https://i.ibb.co/tMn8848c/partner-lausanne-hc-lausanne-hc.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/6afc8c4f66ec12391ff6fa10a18b983efdefb32ec2efb71cfaa9d02fdfb5f0de.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "69b3230c914476820959ada4",
+      "fieldPath": "metadata.originalData.logoUrl",
+      "oldUrl": "https://i.ibb.co/Y4Y75GJ7/partner-storhammar-hamar.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/209d3bf997822e109407b75cb7b35a0f73dc0e07523616c9c1c2c9befa877393.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "69b3230d914476820959ada9",
+      "fieldPath": "metadata.originalData.logoUrl",
+      "oldUrl": "https://i.ibb.co/1J9QSrPJ/partner-fischtown-pinguins-bremerhaven.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/f5e882cfc8058470db72d2e7fdead64acea876358c2db5a1e4c66ba8a93d2310.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "69b3230d914476820959adae",
+      "fieldPath": "metadata.originalData.logoUrl",
+      "oldUrl": "https://i.ibb.co/ynv7Wm4X/partner-kometa-kvgy-kaposv-ri-kk.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/cc805b0e1c50da2bfee7ac216acef7dc92ef6705b24d12f7356cddf95dadbd7c.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "69b3230d914476820959adb3",
+      "fieldPath": "metadata.originalData.logoUrl",
+      "oldUrl": "https://i.ibb.co/PZXJ1s6L/partner-deac.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/9886552dfede6a9e1f530d28b83f5292c09c54a57077f2a1a5e978993c33432b.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "69b3230d914476820959adb8",
+      "fieldPath": "metadata.originalData.logoUrl",
+      "oldUrl": "https://i.ibb.co/60bcMpb1/partner-european-aquatics.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/9b7c792ba1fe95f09a4ccd5bd11c351dc89784870b5c5414a244bd0dda7e4f0f.jpg"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "69b3230d914476820959adb8",
+      "fieldPath": "metadata.originalData.stats.reportImage1",
+      "oldUrl": "https://i.ibb.co/wNhtmJB9/1c1eef676aae.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/1371150effe422bd88290c15fb06d4521c443f4fd8b8cb5ed3293ed772da137f.jpg"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "69b3230d914476820959adb8",
+      "fieldPath": "metadata.originalData.stats.reportImage7",
+      "oldUrl": "https://i.ibb.co/KjnbZ1fx/c73c96dab260.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/e3d4ba2c6341e29ab99bf7deddaa08e1741606352ba8973723b70a72f4aecce2.jpg"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "69b3230d914476820959adb8",
+      "fieldPath": "metadata.originalData.stats.reportImage8",
+      "oldUrl": "https://i.ibb.co/JRb8yNL0/3e4aad84541d.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/6bf5b55e004a33bfa57abe881a870696e1ac587db5445029bc4187562acaaf8d.jpg"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "69b3230d914476820959adbd",
+      "fieldPath": "metadata.originalData.logoUrl",
+      "oldUrl": "https://i.ibb.co/7JpZnk7C/partner-duna-aszfalt-dtkh-kecskem-t.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/fc9ff2f38d5777b4a63cb3e4fc44408a18195a52852b86cb1b479ece0bda9358.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "69b3230d914476820959adc2",
+      "fieldPath": "metadata.originalData.logoUrl",
+      "oldUrl": "https://i.ibb.co/4ws0kW1Z/partner-egis-k-rmend.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/5f497efaca6b300bfe9e3adf790c99595e2299de95abf075b7fb18dac31f13c3.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "69b3230d914476820959adc7",
+      "fieldPath": "metadata.originalData.logoUrl",
+      "oldUrl": "https://i.ibb.co/rfbdBhKW/partner-endo-plus-service-honv-d.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/653f1f9e15eda7c29d2f5405e522f580b4c41f189643298ecaa26b1b7cccc281.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "69b3230e914476820959adcc",
+      "fieldPath": "metadata.originalData.logoUrl",
+      "oldUrl": "https://i.ibb.co/yFktJPCL/partner-falco-vulcano-energia-kc-szombathely.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/3a06154b53514766aa4a8e9b37e1c4cfe16419affc75e5c173670a2259119e6c.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "69b3230e914476820959add1",
+      "fieldPath": "metadata.originalData.logoUrl",
+      "oldUrl": "https://i.ibb.co/s9kgN9zR/partner-mvm-ose-lions.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/196293a321265dda9c58ab8f19b1b91fb22b42ea5774d40132e778208e13c718.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "69b3230e914476820959add6",
+      "fieldPath": "metadata.originalData.logoUrl",
+      "oldUrl": "https://i.ibb.co/BKvdLkbh/partner-nhsz-szolnoki-olajb-ny-sz.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/52deb2f9fac976fe744e671b02bae3064ca7e1605b9536beace61855b966277e.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "69b3230e914476820959addb",
+      "fieldPath": "metadata.originalData.logoUrl",
+      "oldUrl": "https://i.ibb.co/hRHs53bN/partner-nka-universitas-p-cs.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/e60fa84ff82f37601230090c69ebbe7886c3be35e287c290db0f6a3df4c892ae.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "69b3230e914476820959ade0",
+      "fieldPath": "metadata.originalData.logoUrl",
+      "oldUrl": "https://i.ibb.co/whT1Dvfy/partner-wukf.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/97018b20fb2b793357e92bc83ca4416b781e5c7434849560dc8e96b2c68038c2.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "69b3230e914476820959ade5",
+      "fieldPath": "metadata.originalData.logoUrl",
+      "oldUrl": "https://i.ibb.co/r2yBLxCG/partner-as-roma.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/c913df29a4740c33fa340af3ceb5b50a65d615b6a0665fa1d20348d1a1295bec.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "69b3230e914476820959ade5",
+      "fieldPath": "metadata.originalData.stats.reportImage1",
+      "oldUrl": "https://i.ibb.co/7J0Cpw9t/39be3abe89a0.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/30853004c20b82194fdfb7437fac6266cd0f7cb047d7ff147751345f6ff47772.jpg"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "69b3230e914476820959ade5",
+      "fieldPath": "metadata.originalData.stats.reportImage3",
+      "oldUrl": "https://i.ibb.co/21dv8Q0K/81f576c0cd1e.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/48b69bc958dfcaabf5aecca79fb11e309ab6ed3fbc9e6a07ee35e6f409a19902.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "69b3230e914476820959ade5",
+      "fieldPath": "metadata.originalData.stats.reportImage4",
+      "oldUrl": "https://i.ibb.co/m5TS6PYC/bab8d41fbce3.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/17c92cbba5ca3bc3e72d3cf9d79aba218d3eec33a900e5c5872f957a30c000c3.jpg"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "69b3230e914476820959ade5",
+      "fieldPath": "metadata.originalData.stats.reportImage5",
+      "oldUrl": "https://i.ibb.co/dwdH58ZX/93c52f1669a1.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/d7f9845d17ddcd1bf5c513d521d82e0e39521ceb99b8cd8c1037aa168e66e673.jpg"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "69b3230e914476820959ade5",
+      "fieldPath": "metadata.originalData.stats.reportImage6",
+      "oldUrl": "https://i.ibb.co/NnKpvnL5/4285d1872aaa.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/703617bd87b53a7501c3127ecd0607e744c590f7f0482a0c467e3b2808732db4.jpg"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "69b3230f914476820959adea",
+      "fieldPath": "metadata.originalData.logoUrl",
+      "oldUrl": "https://i.ibb.co/6c3r2fJG/partner-sopron-kc.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/dc42c4625bbdd4acd8aacb8aad05b42dc878677663614d114a477f9ee82fe31a.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "69b3230f914476820959adef",
+      "fieldPath": "metadata.originalData.logoUrl",
+      "oldUrl": "https://i.ibb.co/6JW0K3JS/partner-swiss-ice-hockey-federation-sihf.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/48edd9877a856f743c3158ea53f5bf16a563ff09f4839689687c0fccf157c1e4.jpg"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "69b3230f914476820959adef",
+      "fieldPath": "metadata.originalData.stats.reportImage2",
+      "oldUrl": "https://i.ibb.co/s8zdXRD/7be0c2400144.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/43bbde28c10bba6d6a74936609fd3c8c2a9850939469930d6d13a9ee1b3f5698.jpg"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "69b3230f914476820959adef",
+      "fieldPath": "metadata.originalData.stats.reportImage4",
+      "oldUrl": "https://i.ibb.co/G4vYfTsX/b3a97403cd79.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/42df6d26178f832d6d7d302908e1dfba876a85984cf8943cbbbad32a1fe0f57a.jpg"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "69b3230f914476820959adef",
+      "fieldPath": "metadata.originalData.stats.reportImage10",
+      "oldUrl": "https://i.ibb.co/4RSSw1Tc/ecb50a47e34b.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/87760a3168affc59965092865fe25bcf054444d294ed2e0bb384cc36bbe79a53.jpg"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "69b3230f914476820959adf4",
+      "fieldPath": "metadata.originalData.logoUrl",
+      "oldUrl": "https://i.ibb.co/JW30BBZX/partner-szte-szeged-k.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/cafd2817707d0c30545b828d4ad2c49c78befb39cf41e3381833567e88d35c70.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "69b3230f914476820959adf9",
+      "fieldPath": "metadata.originalData.logoUrl",
+      "oldUrl": "https://i.ibb.co/dwSBFr2X/partner-zalaker-mia-zte-kk.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/4292e7ea63e46337b060b341fbfa92caa7a5429b9f2b5b725a072fd52cd23199.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "69b3230f914476820959adfe",
+      "fieldPath": "metadata.originalData.logoUrl",
+      "oldUrl": "https://i.ibb.co/XxCqXBrg/partner-bkg-prima-szigetszentmikl-s.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/127d3df02665526dbd816600a0403c6b453632b715734cbeaf7b589698df9b3a.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "69b3230f914476820959adfe",
+      "fieldPath": "metadata.originalData.sportsDb.badge",
+      "oldUrl": "https://i.ibb.co/PzWczngc/Partner-BKG-Prima-Szigetszentmikl-s-Kos-rlabda.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/127d3df02665526dbd816600a0403c6b453632b715734cbeaf7b589698df9b3a.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "69b3230f914476820959ae03",
+      "fieldPath": "metadata.originalData.logoUrl",
+      "oldUrl": "https://i.ibb.co/gZy4Rsy9/partner-csata-tkk.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/22f550cc9e3ec3a12aaa7d38d7ff5b325320039224653d67734cb9d7e81861dd.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "69b3230f914476820959ae08",
+      "fieldPath": "metadata.originalData.logoUrl",
+      "oldUrl": "https://i.ibb.co/5gYzXG6w/partner-d-vid-korn-l-kos-rlabda-akad-mia.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/31c0dfe77a27ea0d40d14a6aa999b7285dada184a88c292ccd64f9279707130f.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "69b3230f914476820959ae0d",
+      "fieldPath": "metadata.originalData.logoUrl",
+      "oldUrl": "https://i.ibb.co/7d2GQvW9/partner-dvtk-huntherm.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/0cae857e9d744db61b89b59dcb2a0dbedefdfc499492beca1f494cc38e28dba9.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "69b32310914476820959ae12",
+      "fieldPath": "metadata.originalData.logoUrl",
+      "oldUrl": "https://i.ibb.co/nNYggMSv/partner-elte-beac-jbuda.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/e8f73f1a19ae4a8bd8d61122c93e6286a34213725a0cb61434dd1bd043fa8ee1.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "69b32310914476820959ae17",
+      "fieldPath": "metadata.originalData.logoUrl",
+      "oldUrl": "https://i.ibb.co/hRHs53bN/partner-nka-universitas-p-cs.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/e60fa84ff82f37601230090c69ebbe7886c3be35e287c290db0f6a3df4c892ae.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "69b32310914476820959ae1c",
+      "fieldPath": "metadata.originalData.logoUrl",
+      "oldUrl": "https://i.ibb.co/yFDt9wgg/partner-sopron-basket.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/4318846574659dca8a2e526e68bb5c76b8ed70d4a972274e5881db78b877ef70.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "69b32310914476820959ae21",
+      "fieldPath": "metadata.originalData.logoUrl",
+      "oldUrl": "https://i.ibb.co/JRD1P0nD/partner-tarr-ksc-szeksz-rd.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/028035d2f3cab040e05013074166e8fd18bf4363a4f3e823cf7da6d871a6f0f5.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "69b32310914476820959ae26",
+      "fieldPath": "metadata.originalData.logoUrl",
+      "oldUrl": "https://i.ibb.co/gZCgv7R0/partner-tfse.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/003fa16a153e4dced01d7036d16e02b982cfe63c7e3c4b96fb455984c7c65f5d.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "69b32310914476820959ae2b",
+      "fieldPath": "metadata.originalData.logoUrl",
+      "oldUrl": "https://i.ibb.co/RT3XN7Hn/partner-uni-gy-r.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/22a95c5663e73cdf265adefe6a65c1eccf5e2bd5d890dd3fb73d430317b278b0.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "69b32311914476820959ae30",
+      "fieldPath": "metadata.originalData.logoUrl",
+      "oldUrl": "https://i.ibb.co/jvyXNmmB/partner-vasas-akad-mia.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/cad305f0ec6c86d49203a1de18e92329a99325dc4b57ebf5e67f19169994daa4.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "69b32311914476820959ae35",
+      "fieldPath": "metadata.originalData.logoUrl",
+      "oldUrl": "https://i.ibb.co/nMV5xhDS/partner-vbw-cekk-cegl-d.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/f5f9d708bb8b56f53245a18c8639b264d91c171bb7a8128e686b5b2c3c2daaa9.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "69b32311914476820959ae3a",
+      "fieldPath": "metadata.originalData.logoUrl",
+      "oldUrl": "https://i.ibb.co/Z1RyTCMk/partner-kolorcity-kazincbarcika.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/b9c65244632572d669bdf95413146cfeec10471c088c1b5c0d67f91b26016874.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "69b32311914476820959ae3f",
+      "fieldPath": "metadata.originalData.logoUrl",
+      "oldUrl": "https://i.ibb.co/TqR26x7w/partner-eto-fc-gy-r.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/3393e8d0c8ab5b080fca3f3fdea3bb2e235f3fa6b10c08ae7733840f994a3e04.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "69b32311914476820959ae44",
+      "fieldPath": "metadata.originalData.logoUrl",
+      "oldUrl": "https://i.ibb.co/ZRqh24YK/partner-duna-jv-rosi-koh-sz-k-zilabda-akad-mia.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/78fcb639af8ce7c73d8980f21863cacab850ad2eb68b0d2db2cfd803493193e2.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "69b32311914476820959ae49",
+      "fieldPath": "metadata.originalData.logoUrl",
+      "oldUrl": "https://i.ibb.co/7tPhLjpn/partner-mol-esztergom.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/a2621b3ac81d5fb8c72a80b857b682c47d41694d7b848334cc3aa8a149fba192.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "69b32311914476820959ae4e",
+      "fieldPath": "metadata.originalData.logoUrl",
+      "oldUrl": "https://i.ibb.co/ycN21vFp/partner-fc-ajka.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/7a67bdc1b359a648045fcbea59ff58330b5f13e3a3ab61ab3129f733d4ec6680.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "69b32311914476820959ae53",
+      "fieldPath": "metadata.originalData.logoUrl",
+      "oldUrl": "https://i.ibb.co/zhNzGfqC/partner-vasas-fc.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/4ae94635c24b6237ada6be1ef36037e8bbd8ecafbf0af4079ab8bf22778b6e00.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "69b32312914476820959ae58",
+      "fieldPath": "metadata.originalData.logoUrl",
+      "oldUrl": "https://i.ibb.co/8nBGz2Xr/partner-deac-j-gkorong.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/24286e5cf8fa93076038cf864d98d70783df66e1e0c15d2eb29fdf976c354e85.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "69b32312914476820959ae5d",
+      "fieldPath": "metadata.originalData.logoUrl",
+      "oldUrl": "https://i.ibb.co/JRjw0bbC/partner-budapesti-vasutas-sc-zugl.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/f7643fbd05e31c89bf76e392bd630e11a0a4741fa03c4a3fce6f320624264d1f.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "69b32312914476820959ae5d",
+      "fieldPath": "metadata.originalData.sportsDb.badge",
+      "oldUrl": "https://i.ibb.co/HLtFXwVP/Partner-Budapesti-Vasutas-Zuglo.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/f7643fbd05e31c89bf76e392bd630e11a0a4741fa03c4a3fce6f320624264d1f.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "69b32312914476820959ae62",
+      "fieldPath": "metadata.originalData.logoUrl",
+      "oldUrl": "https://i.ibb.co/C3Qzr7Dv/partner-karcagi-se.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/5288c84753df4a69327eee4dcba75ef870ed23da84833f91cce6b1fc83708017.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "69b32312914476820959ae67",
+      "fieldPath": "metadata.originalData.logoUrl",
+      "oldUrl": "https://i.ibb.co/b5PBQFTt/partner-hr-rent-koz-rmisleny.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/5a7380154657aefef1db559b47ec8858d7222fd466fcda076323ab7db6cc4610.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "69b32312914476820959ae6c",
+      "fieldPath": "metadata.originalData.logoUrl",
+      "oldUrl": "https://i.ibb.co/jvdNVfZj/partner-szeged-csan-d-grosics-akad-mia.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/7855dacd8d0a795ac45077f10ceced11eb014fa3ba62116282a30f8e44681dc0.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "69b32312914476820959ae71",
+      "fieldPath": "metadata.originalData.logoUrl",
+      "oldUrl": "https://i.ibb.co/mVGJRtMJ/partner-soroks-r-sc.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/fc39513b8f58708fa3850866fd434a9fbaac59e61aa3f4ed140e878af435cff2.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "69b32312914476820959ae76",
+      "fieldPath": "metadata.originalData.logoUrl",
+      "oldUrl": "https://i.ibb.co/HDC9YPDB/partner-tiszak-cskei-lc.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/81066e063d15f8280900e7490f63659c65fb21c20e7c51bc3906e037219cd3ba.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "69b32313914476820959ae7b",
+      "fieldPath": "metadata.originalData.logoUrl",
+      "oldUrl": "https://i.ibb.co/27p0K141/partner-dvtk.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/319a7bd93fc62291d4a7ce0ead5b328047b64095c264d069a8b623a90a832bd4.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "69b32313914476820959ae80",
+      "fieldPath": "metadata.originalData.logoUrl",
+      "oldUrl": "https://i.ibb.co/rfm7tHgS/partner-dvsc.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/4afabb8440f2dd8397775da1689030f29898cdb6bb80a7edc607a093aef2e3d6.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "69b32313914476820959ae85",
+      "fieldPath": "metadata.originalData.logoUrl",
+      "oldUrl": "https://i.ibb.co/v64zTN1H/partner-kisv-rda-fc.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/4207b8b46303d0fef6228ea4d323efd660a775541f2ac07e7839aacd093bf6b4.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "69b32313914476820959ae8a",
+      "fieldPath": "metadata.originalData.logoUrl",
+      "oldUrl": "https://i.ibb.co/vCCf8S3f/partner-paksi-fc.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/8f898d0aa46b6bc201c97a31c4c385068a8ff1bb03a0165f0a423585f0593271.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "69b32313914476820959ae8f",
+      "fieldPath": "metadata.originalData.logoUrl",
+      "oldUrl": "https://i.ibb.co/gMzSQnF4/partner-pusk-s-akad-mia-fc.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/3a78995a711458cf8c9238959d4d144af90605e72344681161e49edef3c2bbb6.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "69b32313914476820959ae99",
+      "fieldPath": "metadata.originalData.logoUrl",
+      "oldUrl": "https://i.ibb.co/mrgXQCSF/partner-aquital-fc-cs-kv-r.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/9e89edd02e24a24cd6ff9b0625f4a18d7a2bb376d7ccefe0d5ae0bd27a4754ca.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "69b32314914476820959ae9e",
+      "fieldPath": "metadata.originalData.logoUrl",
+      "oldUrl": "https://i.ibb.co/SDpBVYdV/partner-b-k-scsaba-1912-el-re.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/c5f409f60fa1c808d3ba95ef42ec7e89dd713f853dccd9b48d1100edcbb87042.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "69b32314914476820959aea3",
+      "fieldPath": "metadata.originalData.logoUrl",
+      "oldUrl": "https://i.ibb.co/0RznwVnp/partner-budapest-honv-d-fc.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/b34f9eb8232169b45bcee0d814cf5cf94635092c66ec8567bbd33ac2d7dc8cf8.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "69b32314914476820959aea8",
+      "fieldPath": "metadata.originalData.logoUrl",
+      "oldUrl": "https://i.ibb.co/0VCvk4LL/partner-kecskem-ti-te.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/3d6ee333dd19e6b6f1239d0105283bdb10c9ea07c470e3af24a1fb138eff205f.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "69b32314914476820959aead",
+      "fieldPath": "metadata.originalData.logoUrl",
+      "oldUrl": "https://i.ibb.co/ZzWcY5Dc/partner-szentl-rinc-se.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/56da780569d7a2ef50add3b6518418c9911a42453d36189b22f0eaffe0ddaaef.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "69b32314914476820959aeb2",
+      "fieldPath": "metadata.originalData.logoUrl",
+      "oldUrl": "https://i.ibb.co/1Gjq3H45/partner-videoton-fc-feh-rv-r.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/8d871fd3a6a4ed47232aa9cc9707e853a1c7221e6305126fbc8f5a55df4b600f.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "69b32314914476820959aeb7",
+      "fieldPath": "metadata.originalData.logoUrl",
+      "oldUrl": "https://i.ibb.co/4gscCtbX/partner-alba-feh-rv-r-k-zilabda.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/0abf7e37e249d7164e7760ba14000310c0461208f67b042df0cf33b41c9b87ab.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "69b32314914476820959aebc",
+      "fieldPath": "metadata.originalData.logoUrl",
+      "oldUrl": "https://i.ibb.co/whjmLn28/partner-dvsc-schaffler.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/e46cead2c4781da6b86a99f87b642e00e25253991fa56bb052b66e6829003ad6.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "69b32315914476820959aec1",
+      "fieldPath": "metadata.originalData.logoUrl",
+      "oldUrl": "https://i.ibb.co/hRRRLnPW/partner-ftc-rail-cargo-hung-ria.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/629ccc28b720cc6aa6a4da762f7c34e957e10d7462257cb1e8ed834cd4bd2354.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "69b32315914476820959aec6",
+      "fieldPath": "metadata.originalData.logoUrl",
+      "oldUrl": "https://i.ibb.co/CpD1zKGZ/partner-gy-ri-audi-eto-kc.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/b3686f51cbea686f0b1a2bbfdc80236f606d34af24fd450b27767405a33ea572.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "69b32315914476820959aecb",
+      "fieldPath": "metadata.originalData.logoUrl",
+      "oldUrl": "https://i.ibb.co/V05MjWKz/partner-kisv-rda-master-good-se.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/05fae8af68042bd06688df980ec4f210cb7a0957e3ab453e900237f431f280e8.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "69b32315914476820959aed0",
+      "fieldPath": "metadata.originalData.logoUrl",
+      "oldUrl": "https://i.ibb.co/mV5GxsdJ/partner-koz-rmisleny-ka.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/650991e5a196c3fbbe3d53c7c3acf2a83539774b93935ed01233e8f2070bf10c.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "69b32315914476820959aed5",
+      "fieldPath": "metadata.originalData.logoUrl",
+      "oldUrl": "https://i.ibb.co/GDPQDzD/partner-mosonmagyar-v-ri-kc-se.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/2fcab26b0d5502da8ceb17f4ad3762701ab9ac6c13e1bc9eef79a98b5007a764.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "69b32315914476820959aed5",
+      "fieldPath": "metadata.originalData.sportsDb.badge",
+      "oldUrl": "https://i.ibb.co/sJgnM7fz/64075-Mosonmagyar-v-r-300x300.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/2fcab26b0d5502da8ceb17f4ad3762701ab9ac6c13e1bc9eef79a98b5007a764.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "69b32316914476820959aedf",
+      "fieldPath": "metadata.originalData.logoUrl",
+      "oldUrl": "https://i.ibb.co/6J8K5rY3/partner-szombathelyi-k-zilabda-klub-s-akad-mia.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/11cc6f9de1da7d22ac3f6947dd612baf2ba6f0c55285def640ca4ecd753692d5.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "69b32316914476820959aee4",
+      "fieldPath": "metadata.originalData.logoUrl",
+      "oldUrl": "https://i.ibb.co/CpMwnwPz/partner-v-ci-nkse.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/93455e9204743c59ec9322781edcb83a620296bf540b53a88c3d4068e94ef99e.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "69b32316914476820959aee9",
+      "fieldPath": "metadata.originalData.logoUrl",
+      "oldUrl": "https://i.ibb.co/dJ4STLY9/partner-vasas-sc.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/f40602b5fe5c2d5f219d721a9f6b9ebb3e07a6a1fb543457c4bd5efb830334ad.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "69b32316914476820959aeee",
+      "fieldPath": "metadata.originalData.logoUrl",
+      "oldUrl": "https://i.ibb.co/ZzWyWB27/partner-carbonex-koml.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/79f3f516a55eaad85c4e37bcbeb726545743fb08816d31c1b1e260c00b3bc2f6.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "69b32316914476820959aef3",
+      "fieldPath": "metadata.originalData.logoUrl",
+      "oldUrl": "https://i.ibb.co/HTwjT7fx/partner-cyeb-budakal-sz.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/fcdf81d6a9d1ef3677ffce3f7a56ec12a537ed3bf86585699d515f99a1316e6a.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "69b32316914476820959aef8",
+      "fieldPath": "metadata.originalData.logoUrl",
+      "oldUrl": "https://i.ibb.co/prJYBxqk/partner-csugr-i-kk.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/05632d2b4b8b1050101ce355978e23c2ba23cf6573d01cc2b0d25d96cbf01f4c.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "69b32316914476820959aefd",
+      "fieldPath": "metadata.originalData.logoUrl",
+      "oldUrl": "https://i.ibb.co/hRRRLnPW/Ferencv-rosi-Torna-Club-K-zilabda.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/629ccc28b720cc6aa6a4da762f7c34e957e10d7462257cb1e8ed834cd4bd2354.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "69b32316914476820959aefd",
+      "fieldPath": "metadata.originalData.sportsDb.badge",
+      "oldUrl": "https://i.ibb.co/hRRRLnPW/partner-ftc-rail-cargo-hung-ria.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/629ccc28b720cc6aa6a4da762f7c34e957e10d7462257cb1e8ed834cd4bd2354.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "69b32317914476820959af07",
+      "fieldPath": "metadata.originalData.logoUrl",
+      "oldUrl": "https://i.ibb.co/gZJQMBVL/partner-duna-jv-rosi-ac-lbik-k.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/5fde06a287fdb49145fc20be0137084dc8a8a25f7371c73b656b066136e1f9a9.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "69b32317914476820959af0c",
+      "fieldPath": "metadata.originalData.logoUrl",
+      "oldUrl": "https://i.ibb.co/ZpjfLBX9/partner-sport-club-cs-kszereda.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/f0b964160319f151e1f2d23025a29948045878a9cd5567207374920c58905812.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "69b32317914476820959af11",
+      "fieldPath": "metadata.originalData.logoUrl",
+      "oldUrl": "https://i.ibb.co/mVWSZ2cJ/partner-budapest-j-gkorong-akad-mia-hc.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/59bc7313aebc1604a54b08f885f3cb226412a444b751149db4c547d299bf43c1.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "69b32317914476820959af16",
+      "fieldPath": "metadata.originalData.logoUrl",
+      "oldUrl": "https://i.ibb.co/FvRJJ89/partner-asc-corona-bra-ov.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/a428787e3b13b4dd30afe45cf87862efa92118e74e705a9ba3f44e401a709494.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "69b32317914476820959af1b",
+      "fieldPath": "metadata.originalData.logoUrl",
+      "oldUrl": "https://i.ibb.co/nMKSv4X7/partner-dvtk-jegesmedv-k.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/2456fd48ad6b3e20a2c3981436a677f8add3b4c0e64c38c0958fed2cb2c5d9fa.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "69b32317914476820959af20",
+      "fieldPath": "metadata.originalData.logoUrl",
+      "oldUrl": "https://i.ibb.co/HftCzDXp/partner-feha19.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/892b76bfa7e156f6166bf1239036b981bedb19948dca92da6128efb968ddf521.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "69b32318914476820959af25",
+      "fieldPath": "metadata.originalData.logoUrl",
+      "oldUrl": "https://i.ibb.co/MD8TpFks/partner-ftc-telekom-j-gkorong.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/a927e912ee394913ce92c9b4a7f5bbca763e508aaffece2f8804b1893087ebf4.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "69b32318914476820959af2a",
+      "fieldPath": "metadata.originalData.logoUrl",
+      "oldUrl": "https://i.ibb.co/Fkt2n5GB/partner-gyergy-i-hoki-klub.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/2f74cb5335ce92e57606a9bf30dde8436ba4a4f90b488c3ac81f935b57d22ff6.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "69b32318914476820959af34",
+      "fieldPath": "metadata.originalData.logoUrl",
+      "oldUrl": "https://i.ibb.co/dw0wd27h/partner-ute-j-gkorong.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/18d2fcb93b5510146328de8a85d1a09a99a114deeb7579dbd6a3898dafcfdea2.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "69b32318914476820959af39",
+      "fieldPath": "metadata.originalData.logoUrl",
+      "oldUrl": "https://i.ibb.co/nsqm9mhb/partner-he-do-b-braun-gy-ngy-s.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/f2d5ec72f857d38065acbfffed634f2da293cb5359d583e6865b54c05a4fd316.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "69b32318914476820959af3e",
+      "fieldPath": "metadata.originalData.logoUrl",
+      "oldUrl": "https://i.ibb.co/9Hbpg52d/partner-neka-men.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/8a9e189c3e669d505418c43f8587680d10416c3c3597cc1807555a2d8e1ed15c.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "69b32318914476820959af43",
+      "fieldPath": "metadata.originalData.logoUrl",
+      "oldUrl": "https://i.ibb.co/35CKz8sz/partner-pler-budapest.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/2ce8c6bc92d86efc8e0c97c62428cd810e4a447b5708c1207c1a07bd1e50055d.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "69b32319914476820959af48",
+      "fieldPath": "metadata.originalData.logoUrl",
+      "oldUrl": "https://i.ibb.co/KxmzpVcW/partner-szigetszentmikl-si-ksk.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/3193ad7356eecc9832d024a944916a66f2cbbe512f5ddc4e73772c450a4baf2c.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "69b32319914476820959af48",
+      "fieldPath": "metadata.originalData.sportsDb.badge",
+      "oldUrl": "https://i.ibb.co/JFHSJddr/Szigetszentmikl-si-KSK.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/3193ad7356eecc9832d024a944916a66f2cbbe512f5ddc4e73772c450a4baf2c.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "69b32319914476820959af4d",
+      "fieldPath": "metadata.originalData.logoUrl",
+      "oldUrl": "https://i.ibb.co/HpXWS1hx/partner-mol-tatab-nya.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/f4dc08918afb1e6d7c7d90770ee3fd5f39b74cd25d3cfc488d8854cd63b2f0b1.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "69b32319914476820959af52",
+      "fieldPath": "metadata.originalData.logoUrl",
+      "oldUrl": "https://i.ibb.co/gbTRcxHW/partner-red-bull-salzburg.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/40c1f2ce4ab2853e3692aecbd74b1d7b73964d0a5bcd944aa5f0b0f4701ed8a2.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "69b32319914476820959af57",
+      "fieldPath": "metadata.originalData.logoUrl",
+      "oldUrl": "https://i.ibb.co/gbF9rHH2/partner-erc-ingolstadt.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/110907b094c3ea0fc11b68eb9cf9338d137751d734b2c6fd8f434d332431a7f3.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "69b32319914476820959af5c",
+      "fieldPath": "metadata.originalData.logoUrl",
+      "oldUrl": "https://i.ibb.co/RkBhQgR8/partner-udinese-calcio.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/f9d94fe84cfbb971d252d5044a4cead640182dde7efa7f5bf394809375870c12.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "69b3231a914476820959af7a",
+      "fieldPath": "metadata.originalData.logoUrl",
+      "oldUrl": "https://i.ibb.co/mVCXTzdp/partner-brynas-if.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/2e263b9805a8935909c287358053ea6b294c88bf6fd5bb8bc17b8594a206e36a.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "69b3231a914476820959af7f",
+      "fieldPath": "metadata.originalData.logoUrl",
+      "oldUrl": "https://i.ibb.co/Sbtwhst/partner-ac-milan.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/789e73ed709f015e9d1868ad0beff1f3b0f604cb9760689e63cdc6df43771682.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "69b3231b914476820959af9d",
+      "fieldPath": "metadata.originalData.logoUrl",
+      "oldUrl": "https://i.ibb.co/nNmTVcJp/partner-czech-ice-hockey.webp",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/2f2514d8e9f70996a345a6e63b3614716d16a62742111a3706dea22b8e39f471.webp"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "69b3231b914476820959afa2",
+      "fieldPath": "metadata.originalData.logoUrl",
+      "oldUrl": "https://i.ibb.co/r27TgMX3/partner-finland-ice-hockey.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/d53821dbf4523e965da92c3821083e75dafde8ec0c28b35a683fe854d239c307.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "69b3231b914476820959afa7",
+      "fieldPath": "metadata.originalData.logoUrl",
+      "oldUrl": "https://i.ibb.co/Q3LSpL3G/partner-como-1907.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/c615ed1cd109b11e2ea1a70fa83059995012bd8bbf6aab820241beadf841cf7a.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "69b3231b914476820959afac",
+      "fieldPath": "metadata.originalData.logoUrl",
+      "oldUrl": "https://i.ibb.co/nMDHxXWL/partner-szerencsej-t-k-zrt.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/1810c22848a55b1f5fe4fbb80bee5804a2c7c7b00a16f2bfbca5f50b97cc7d69.jpg"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "69b3231b914476820959afac",
+      "fieldPath": "metadata.originalData.stats.reportImage2",
+      "oldUrl": "https://i.ibb.co/Cs0K1rQs/1c7761dfa616.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/17cde33d6ca9ad085de23ed589602a15f4652924bc26ace0e30b84e9e459b35c.jpg"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "69b3231c914476820959afb6",
+      "fieldPath": "metadata.originalData.logoUrl",
+      "oldUrl": "https://i.ibb.co/HL4SrJhF/partner-acf-fiorentina.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/e2a3d0af507cc17420d88812d7aacf0ae617020b98144141194beab2aed3c626.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "69b3231c914476820959afbb",
+      "fieldPath": "metadata.originalData.logoUrl",
+      "oldUrl": "https://i.ibb.co/v49BSWgP/partner-ac-monza.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/a83543e72e6d37e2f4393267a65bb8859eefab20ff1f2e2e70815fc827e90a59.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "69b3231c914476820959afc0",
+      "fieldPath": "metadata.originalData.logoUrl",
+      "oldUrl": "https://i.ibb.co/4ZMCB4Ts/partner-sevilla-fc.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/5a62a7d722284bd208f0aeff1893c35bd9efc5ea18635c978e05f99dc2c27553.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "69b3231d914476820959afed",
+      "fieldPath": "metadata.originalData.stats.reportImage2",
+      "oldUrl": "https://i.ibb.co/s9nnG7Sp/66075b9e8755.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/e3270db4f10f2e7c77be8907acb325d9156388b0e3af03554cf6beb2990b11c3.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "68eea86df5fff60e66413ab9",
+      "fieldPath": "metadata.logoUrl",
+      "oldUrl": "https://i.ibb.co/R5M0Lx1/partner-jpest-fc.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/b092597f4715b4265259f20cc06d0fe7d692bf287f421afbf9533547aa623bcd.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "68eea86df5fff60e66413ab9",
+      "fieldPath": "metadata.originalData.logoUrl",
+      "oldUrl": "https://i.ibb.co/R5M0Lx1/partner-jpest-fc.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/b092597f4715b4265259f20cc06d0fe7d692bf287f421afbf9533547aa623bcd.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "68eea8f3f5fff60e66413aba",
+      "fieldPath": "metadata.logoUrl",
+      "oldUrl": "https://i.ibb.co/0RBxBcqF/partner-ferencv-rosi-tc.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/589533fcc0ad5be7ac35317d2feb5f40c3ddf8f2b0a540df2108f5652fdb908f.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "68eea8f3f5fff60e66413aba",
+      "fieldPath": "metadata.originalData.logoUrl",
+      "oldUrl": "https://i.ibb.co/0RBxBcqF/partner-ferencv-rosi-tc.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/589533fcc0ad5be7ac35317d2feb5f40c3ddf8f2b0a540df2108f5652fdb908f.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "68eea956482bab8ad7af9428",
+      "fieldPath": "metadata.logoUrl",
+      "oldUrl": "https://i.ibb.co/JFKRCVL8/partner-hungary-soccer-men.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/0522c8b2b8765d1b70f19f29115868e993a47b902a0d0f76c49da128e8237dc2.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "68eea956482bab8ad7af9428",
+      "fieldPath": "metadata.originalData.logoUrl",
+      "oldUrl": "https://i.ibb.co/JFKRCVL8/partner-hungary-soccer-men.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/0522c8b2b8765d1b70f19f29115868e993a47b902a0d0f76c49da128e8237dc2.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "68eea983482bab8ad7af9429",
+      "fieldPath": "metadata.logoUrl",
+      "oldUrl": "https://i.ibb.co/DDJ1Tq91/partner-hungary-basketball-men.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/58bc83108cac375d625edb1bcb1b7763593051d4799b1aeaed0c581504c6e5ea.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "68eea983482bab8ad7af9429",
+      "fieldPath": "metadata.originalData.logoUrl",
+      "oldUrl": "https://i.ibb.co/DDJ1Tq91/partner-hungary-basketball-men.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/58bc83108cac375d625edb1bcb1b7763593051d4799b1aeaed0c581504c6e5ea.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "68eeac2d482bab8ad7af942a",
+      "fieldPath": "metadata.logoUrl",
+      "oldUrl": "https://i.ibb.co/JWKw47MN/partner-mtk.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/393a11b8b6c22d3004ab235f5065c5c9adb29c7098aafe56b32920b810843175.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "68eeac2d482bab8ad7af942a",
+      "fieldPath": "metadata.originalData.logoUrl",
+      "oldUrl": "https://i.ibb.co/JWKw47MN/partner-mtk.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/393a11b8b6c22d3004ab235f5065c5c9adb29c7098aafe56b32920b810843175.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "68ef5a0110eddb9737ecda59",
+      "fieldPath": "metadata.logoUrl",
+      "oldUrl": "https://i.ibb.co/xQMjLZ8/partner-alba-feh-rv-r-kos-rlabda.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/01368c40867c8a3f13896e58fedc07ea1c8b3712755a95d37cf7091bdcb2e15a.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "68ef5a0110eddb9737ecda59",
+      "fieldPath": "metadata.originalData.logoUrl",
+      "oldUrl": "https://i.ibb.co/xQMjLZ8/partner-alba-feh-rv-r-kos-rlabda.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/01368c40867c8a3f13896e58fedc07ea1c8b3712755a95d37cf7091bdcb2e15a.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "68ef5a71da117b7f18de2c61",
+      "fieldPath": "metadata.logoUrl",
+      "oldUrl": "https://i.ibb.co/35Xd95Mf/partner-atomer-m-se.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/eda83b68992f9683e3a329ce2e6026f2fe6250b4a39a31c4880c32ae5f47a878.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "68ef5a71da117b7f18de2c61",
+      "fieldPath": "metadata.originalData.logoUrl",
+      "oldUrl": "https://i.ibb.co/35Xd95Mf/partner-atomer-m-se.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/eda83b68992f9683e3a329ce2e6026f2fe6250b4a39a31c4880c32ae5f47a878.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "68ef5abbfd0f22362e4b768f",
+      "fieldPath": "metadata.logoUrl",
+      "oldUrl": "https://i.ibb.co/GfWpDFMw/partner-balatonf-redi-kse.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/c6abcd7c70e81bcb9109fcd0f786cd5b0c57ae04730463d04a9552f1aac8e405.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "68ef5abbfd0f22362e4b768f",
+      "fieldPath": "metadata.originalData.logoUrl",
+      "oldUrl": "https://i.ibb.co/GfWpDFMw/partner-balatonf-redi-kse.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/c6abcd7c70e81bcb9109fcd0f786cd5b0c57ae04730463d04a9552f1aac8e405.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "68ef5e1a6a32609c5247510a",
+      "fieldPath": "metadata.logoUrl",
+      "oldUrl": "https://i.ibb.co/233g9rfj/partner-budai-farkasok-r-v.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/e027993c78e49c4cfc953c5553cd1dac0cd9f9dece0a8dda328923aec63fd2f9.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "68ef5e1a6a32609c5247510a",
+      "fieldPath": "metadata.sportsDb.badge",
+      "oldUrl": "https://i.ibb.co/0pRhnq1L/budaifarkasokrev.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/e027993c78e49c4cfc953c5553cd1dac0cd9f9dece0a8dda328923aec63fd2f9.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "68ef5e1a6a32609c5247510a",
+      "fieldPath": "metadata.originalData.logoUrl",
+      "oldUrl": "https://i.ibb.co/233g9rfj/partner-budai-farkasok-r-v.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/e027993c78e49c4cfc953c5553cd1dac0cd9f9dece0a8dda328923aec63fd2f9.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "68ef5e1a6a32609c5247510a",
+      "fieldPath": "metadata.originalData.sportsDb.badge",
+      "oldUrl": "https://i.ibb.co/0pRhnq1L/budaifarkasokrev.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/e027993c78e49c4cfc953c5553cd1dac0cd9f9dece0a8dda328923aec63fd2f9.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "68ef5f846a32609c5247510b",
+      "fieldPath": "metadata.logoUrl",
+      "oldUrl": "https://i.ibb.co/Nd5nv0JW/partner-eto-university-handball-team.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/18d62cad81922cc8331f370657697003da7ea267725a76e921ec94a8033b3a62.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "68ef5f846a32609c5247510b",
+      "fieldPath": "metadata.originalData.logoUrl",
+      "oldUrl": "https://i.ibb.co/Nd5nv0JW/partner-eto-university-handball-team.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/18d62cad81922cc8331f370657697003da7ea267725a76e921ec94a8033b3a62.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "68ef5fec012e9f51ae782133",
+      "fieldPath": "metadata.logoUrl",
+      "oldUrl": "https://i.ibb.co/sJQZgYQN/partner-one-veszpr-m-hc.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/62fd8c616f60f7bba31bfbc7e467e8ea7ede8e137927ee6598149f5f5f650338.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "68ef5fec012e9f51ae782133",
+      "fieldPath": "metadata.originalData.logoUrl",
+      "oldUrl": "https://i.ibb.co/sJQZgYQN/partner-one-veszpr-m-hc.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/62fd8c616f60f7bba31bfbc7e467e8ea7ede8e137927ee6598149f5f5f650338.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "68ef60e4012e9f51ae782141",
+      "fieldPath": "metadata.logoUrl",
+      "oldUrl": "https://i.ibb.co/WRmP9NG/partner-orlen-wisla-plock.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/48cc182a0f13a1ebbcb2f084b6cc618857d2e391b0ec322a8f5d268f42ee4a47.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "68ef60e4012e9f51ae782141",
+      "fieldPath": "metadata.originalData.logoUrl",
+      "oldUrl": "https://i.ibb.co/WRmP9NG/partner-orlen-wisla-plock.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/48cc182a0f13a1ebbcb2f084b6cc618857d2e391b0ec322a8f5d268f42ee4a47.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "68ef60fc012e9f51ae782145",
+      "fieldPath": "metadata.logoUrl",
+      "oldUrl": "https://i.ibb.co/wrd02y3Y/partner-industria-kielce.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/7f5df6bbff89064a36fbf19e545107a4b039bd762f461525e430d4377cee66d2.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "68ef60fc012e9f51ae782145",
+      "fieldPath": "metadata.originalData.logoUrl",
+      "oldUrl": "https://i.ibb.co/wrd02y3Y/partner-industria-kielce.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/7f5df6bbff89064a36fbf19e545107a4b039bd762f461525e430d4377cee66d2.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "68ef612a012e9f51ae782148",
+      "fieldPath": "metadata.logoUrl",
+      "oldUrl": "https://i.ibb.co/4g1RV6t2/partner-cs-dinamo-bucure-ti.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/d94a31cd0c5a348018807c84cb313a1ed6c885841a3ecfd0d0d17e3d62691980.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "68ef612a012e9f51ae782148",
+      "fieldPath": "metadata.originalData.logoUrl",
+      "oldUrl": "https://i.ibb.co/4g1RV6t2/partner-cs-dinamo-bucure-ti.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/d94a31cd0c5a348018807c84cb313a1ed6c885841a3ecfd0d0d17e3d62691980.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "68ef6150012e9f51ae78214c",
+      "fieldPath": "metadata.logoUrl",
+      "oldUrl": "https://i.ibb.co/Jw0HShtv/partner-hc-zagreb.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/c5b05012a37bfc56dcdbf2eaa6df8dd55841888c53fc36cfc0f01b2e3bb42bb3.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "68ef6150012e9f51ae78214c",
+      "fieldPath": "metadata.originalData.logoUrl",
+      "oldUrl": "https://i.ibb.co/Jw0HShtv/partner-hc-zagreb.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/c5b05012a37bfc56dcdbf2eaa6df8dd55841888c53fc36cfc0f01b2e3bb42bb3.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "68ef7c344f5ff9d34f6c7357",
+      "fieldPath": "metadata.logoUrl",
+      "oldUrl": "https://i.ibb.co/whJjWKNK/partner-armenia.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/e6aec205ae2043b1088a37e2848e9facfafd2b2110f9d8d8f04f01e2f28028ff.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "68ef7c344f5ff9d34f6c7357",
+      "fieldPath": "metadata.originalData.logoUrl",
+      "oldUrl": "https://i.ibb.co/whJjWKNK/partner-armenia.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/e6aec205ae2043b1088a37e2848e9facfafd2b2110f9d8d8f04f01e2f28028ff.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "68ef837870382b9e35f567e9",
+      "fieldPath": "metadata.logoUrl",
+      "oldUrl": "https://i.ibb.co/XrWpqFG3/partner-paris-saint-germain.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/6c4bb465a5a94f227c2f4108ae132574da06a6706fa4ce7e604b0149d84dbd91.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "68ef837870382b9e35f567e9",
+      "fieldPath": "metadata.originalData.logoUrl",
+      "oldUrl": "https://i.ibb.co/XrWpqFG3/partner-paris-saint-germain.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/6c4bb465a5a94f227c2f4108ae132574da06a6706fa4ce7e604b0149d84dbd91.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "68ef839470382b9e35f567ea",
+      "fieldPath": "metadata.logoUrl",
+      "oldUrl": "https://i.ibb.co/TM1yy0SJ/partner-sc-magdeburg.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/72686ab9d31ed4e7624c8616a62836ca50a87e24b3eb55442673161bf0b4e216.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "68ef839470382b9e35f567ea",
+      "fieldPath": "metadata.originalData.logoUrl",
+      "oldUrl": "https://i.ibb.co/TM1yy0SJ/partner-sc-magdeburg.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/72686ab9d31ed4e7624c8616a62836ca50a87e24b3eb55442673161bf0b4e216.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "68ef83aa70382b9e35f567eb",
+      "fieldPath": "metadata.logoUrl",
+      "oldUrl": "https://i.ibb.co/Kp4k0G0H/partner-hbc-nantes.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/d01e3c1707a63b28398879e5a10843b6d4cf007e96e91dd9b0c6c5f6e59f1b60.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "68ef83aa70382b9e35f567eb",
+      "fieldPath": "metadata.originalData.logoUrl",
+      "oldUrl": "https://i.ibb.co/Kp4k0G0H/partner-hbc-nantes.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/d01e3c1707a63b28398879e5a10843b6d4cf007e96e91dd9b0c6c5f6e59f1b60.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "68ef8b2f642b6684a3c80561",
+      "fieldPath": "metadata.logoUrl",
+      "oldUrl": "https://i.ibb.co/XfGcjrYY/partner-gog-h-ndbold.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/96288ea2c4942ce938abb7475c55eaa6dfa9de73a4af98c2c411067cd07fe463.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "68ef8b2f642b6684a3c80561",
+      "fieldPath": "metadata.originalData.logoUrl",
+      "oldUrl": "https://i.ibb.co/XfGcjrYY/partner-gog-h-ndbold.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/96288ea2c4942ce938abb7475c55eaa6dfa9de73a4af98c2c411067cd07fe463.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "68ef8b50642b6684a3c80562",
+      "fieldPath": "metadata.logoUrl",
+      "oldUrl": "https://i.ibb.co/4whKLRfC/partner-sporting-clube-de-portugal.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/24c2694abe92c0be161716a84aaa5d8c8f02715443d22b187943cb414b01d6a1.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "68ef8b50642b6684a3c80562",
+      "fieldPath": "metadata.originalData.logoUrl",
+      "oldUrl": "https://i.ibb.co/4whKLRfC/partner-sporting-clube-de-portugal.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/24c2694abe92c0be161716a84aaa5d8c8f02715443d22b187943cb414b01d6a1.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "68ef8b612d764adf38d5a27d",
+      "fieldPath": "metadata.logoUrl",
+      "oldUrl": "https://i.ibb.co/tM6ZtPD7/partner-f-chse-berlin.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/bfc27f0f33bb13af86bb69e401a2a6c1a7736e971a7f9d12e3eb19e02cdc27a9.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "68ef8b612d764adf38d5a27d",
+      "fieldPath": "metadata.originalData.logoUrl",
+      "oldUrl": "https://i.ibb.co/tM6ZtPD7/partner-f-chse-berlin.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/bfc27f0f33bb13af86bb69e401a2a6c1a7736e971a7f9d12e3eb19e02cdc27a9.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "68ef8b742d764adf38d5a27e",
+      "fieldPath": "metadata.logoUrl",
+      "oldUrl": "https://i.ibb.co/Wv2QPYVT/partner-kolstad-h-ndball.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/a4b9c4a2ea803ca23eb1543a46364d3658aabdfc6999dd9e455d1580631bda8d.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "68ef8b742d764adf38d5a27e",
+      "fieldPath": "metadata.originalData.logoUrl",
+      "oldUrl": "https://i.ibb.co/Wv2QPYVT/partner-kolstad-h-ndball.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/a4b9c4a2ea803ca23eb1543a46364d3658aabdfc6999dd9e455d1580631bda8d.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "68ef8b9b2d764adf38d5a27f",
+      "fieldPath": "metadata.logoUrl",
+      "oldUrl": "https://i.ibb.co/GynC0YP/partner-aalborg-h-ndbold.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/2811cf6955e856c4df011c4fcfdffc0be23c2681df95cf5b45a5a523124fa787.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "68ef8b9b2d764adf38d5a27f",
+      "fieldPath": "metadata.originalData.logoUrl",
+      "oldUrl": "https://i.ibb.co/GynC0YP/partner-aalborg-h-ndbold.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/2811cf6955e856c4df011c4fcfdffc0be23c2681df95cf5b45a5a523124fa787.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "68ef8bb42d764adf38d5a280",
+      "fieldPath": "metadata.logoUrl",
+      "oldUrl": "https://i.ibb.co/Q39wRNj4/partner-hc-eurofarm-pelister.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/e2cd677c6757657be3718543e4b9b65c948cca0c821fb5075839740941a68884.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "68ef8bb42d764adf38d5a280",
+      "fieldPath": "metadata.originalData.logoUrl",
+      "oldUrl": "https://i.ibb.co/Q39wRNj4/partner-hc-eurofarm-pelister.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/e2cd677c6757657be3718543e4b9b65c948cca0c821fb5075839740941a68884.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "68ef8bc62d764adf38d5a281",
+      "fieldPath": "metadata.logoUrl",
+      "oldUrl": "https://i.ibb.co/0166Pg7/partner-bar-a.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/ad5de647e9f8a6e4252e25cdfbb2430f6c0099bdaf6dabe67eb38df24536ae13.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "68ef8bc62d764adf38d5a281",
+      "fieldPath": "metadata.originalData.logoUrl",
+      "oldUrl": "https://i.ibb.co/0166Pg7/partner-bar-a.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/ad5de647e9f8a6e4252e25cdfbb2430f6c0099bdaf6dabe67eb38df24536ae13.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "68f120783e9851f15e2afe8b",
+      "fieldPath": "metadata.logoUrl",
+      "oldUrl": "https://i.ibb.co/Kpbn48c7/partner-ny-regyh-za-fc.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/72205351ecc371d8623c702657761b77244905f81d725764df8ed9b8c3aac221.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "68f120783e9851f15e2afe8b",
+      "fieldPath": "metadata.originalData.logoUrl",
+      "oldUrl": "https://i.ibb.co/Kpbn48c7/partner-ny-regyh-za-fc.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/72205351ecc371d8623c702657761b77244905f81d725764df8ed9b8c3aac221.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "68f12192d3db48e18cd809df",
+      "fieldPath": "metadata.logoUrl",
+      "oldUrl": "https://i.ibb.co/1YKFSPcc/partner-mez-k-vesd-zs-ry-fc.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/11f7f950c2b32a8c9e7df5c6e9dafb090a2e3351269c87102eb2826952b03018.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "68f12192d3db48e18cd809df",
+      "fieldPath": "metadata.originalData.logoUrl",
+      "oldUrl": "https://i.ibb.co/1YKFSPcc/partner-mez-k-vesd-zs-ry-fc.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/11f7f950c2b32a8c9e7df5c6e9dafb090a2e3351269c87102eb2826952b03018.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "68f1220fd3db48e18cd809e1",
+      "fieldPath": "metadata.logoUrl",
+      "oldUrl": "https://i.ibb.co/22KzVtL/partner-budafoki-mte.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/8f91677da339b3604e40eb44cead615c8535521199085b83e055a0bd6993e423.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "68f1220fd3db48e18cd809e1",
+      "fieldPath": "metadata.originalData.logoUrl",
+      "oldUrl": "https://i.ibb.co/22KzVtL/partner-budafoki-mte.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/8f91677da339b3604e40eb44cead615c8535521199085b83e055a0bd6993e423.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "68f25682efe14c2e19c4fc8d",
+      "fieldPath": "metadata.logoUrl",
+      "oldUrl": "https://i.ibb.co/XrRHNNKB/partner-finland-basketball-women.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/758a12330ea0d2372eed97551980dac52320490ab72e3f29162701603e26967c.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "68f25682efe14c2e19c4fc8d",
+      "fieldPath": "metadata.originalData.logoUrl",
+      "oldUrl": "https://i.ibb.co/XrRHNNKB/partner-finland-basketball-women.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/758a12330ea0d2372eed97551980dac52320490ab72e3f29162701603e26967c.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "68f2570fefe14c2e19c4fc8e",
+      "fieldPath": "metadata.logoUrl",
+      "oldUrl": "https://i.ibb.co/XrwMLcx5/partner-hungary-basketball-women.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/bac54c59d40a3c17d0c5da3da3990678391acc7f4b4b0d16f53eda67af1cdda4.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "68f2570fefe14c2e19c4fc8e",
+      "fieldPath": "metadata.originalData.logoUrl",
+      "oldUrl": "https://i.ibb.co/XrwMLcx5/partner-hungary-basketball-women.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/bac54c59d40a3c17d0c5da3da3990678391acc7f4b4b0d16f53eda67af1cdda4.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "68f258becb107e78f6c141d4",
+      "fieldPath": "metadata.logoUrl",
+      "oldUrl": "https://i.ibb.co/Myrz9XDR/partner-hc-fribourg-gott-ron.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/fc2504e49a77fc5ef09f3f114764ead995bd06567fd906d93bd7f370aee250a8.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "68f258becb107e78f6c141d4",
+      "fieldPath": "metadata.originalData.logoUrl",
+      "oldUrl": "https://i.ibb.co/Myrz9XDR/partner-hc-fribourg-gott-ron.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/fc2504e49a77fc5ef09f3f114764ead995bd06567fd906d93bd7f370aee250a8.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "68f2597c12c39121b229dcd7",
+      "fieldPath": "metadata.logoUrl",
+      "oldUrl": "https://i.ibb.co/tMn8848c/partner-lausanne-hc-lausanne-hc.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/6afc8c4f66ec12391ff6fa10a18b983efdefb32ec2efb71cfaa9d02fdfb5f0de.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "68f2597c12c39121b229dcd7",
+      "fieldPath": "metadata.originalData.logoUrl",
+      "oldUrl": "https://i.ibb.co/tMn8848c/partner-lausanne-hc-lausanne-hc.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/6afc8c4f66ec12391ff6fa10a18b983efdefb32ec2efb71cfaa9d02fdfb5f0de.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "68f25c1c72d0890a6f8ebfa6",
+      "fieldPath": "metadata.logoUrl",
+      "oldUrl": "https://i.ibb.co/Y4Y75GJ7/partner-storhammar-hamar.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/209d3bf997822e109407b75cb7b35a0f73dc0e07523616c9c1c2c9befa877393.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "68f25c1c72d0890a6f8ebfa6",
+      "fieldPath": "metadata.originalData.logoUrl",
+      "oldUrl": "https://i.ibb.co/Y4Y75GJ7/partner-storhammar-hamar.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/209d3bf997822e109407b75cb7b35a0f73dc0e07523616c9c1c2c9befa877393.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "68f25ce68894db3cbca8a1f5",
+      "fieldPath": "metadata.logoUrl",
+      "oldUrl": "https://i.ibb.co/1J9QSrPJ/partner-fischtown-pinguins-bremerhaven.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/f5e882cfc8058470db72d2e7fdead64acea876358c2db5a1e4c66ba8a93d2310.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "68f25ce68894db3cbca8a1f5",
+      "fieldPath": "metadata.originalData.logoUrl",
+      "oldUrl": "https://i.ibb.co/1J9QSrPJ/partner-fischtown-pinguins-bremerhaven.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/f5e882cfc8058470db72d2e7fdead64acea876358c2db5a1e4c66ba8a93d2310.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "68f276da306a309512e230e2",
+      "fieldPath": "metadata.logoUrl",
+      "oldUrl": "https://i.ibb.co/ynv7Wm4X/partner-kometa-kvgy-kaposv-ri-kk.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/cc805b0e1c50da2bfee7ac216acef7dc92ef6705b24d12f7356cddf95dadbd7c.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "68f276da306a309512e230e2",
+      "fieldPath": "metadata.originalData.logoUrl",
+      "oldUrl": "https://i.ibb.co/ynv7Wm4X/partner-kometa-kvgy-kaposv-ri-kk.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/cc805b0e1c50da2bfee7ac216acef7dc92ef6705b24d12f7356cddf95dadbd7c.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "68f625856d0f41c3f6a4c84c",
+      "fieldPath": "metadata.logoUrl",
+      "oldUrl": "https://i.ibb.co/PZXJ1s6L/partner-deac.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/9886552dfede6a9e1f530d28b83f5292c09c54a57077f2a1a5e978993c33432b.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "68f625856d0f41c3f6a4c84c",
+      "fieldPath": "metadata.originalData.logoUrl",
+      "oldUrl": "https://i.ibb.co/PZXJ1s6L/partner-deac.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/9886552dfede6a9e1f530d28b83f5292c09c54a57077f2a1a5e978993c33432b.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "68f6258c6d0f41c3f6a4c84d",
+      "fieldPath": "metadata.logoUrl",
+      "oldUrl": "https://i.ibb.co/60bcMpb1/partner-european-aquatics.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/9b7c792ba1fe95f09a4ccd5bd11c351dc89784870b5c5414a244bd0dda7e4f0f.jpg"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "68f6258c6d0f41c3f6a4c84d",
+      "fieldPath": "metadata.originalData.logoUrl",
+      "oldUrl": "https://i.ibb.co/60bcMpb1/partner-european-aquatics.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/9b7c792ba1fe95f09a4ccd5bd11c351dc89784870b5c5414a244bd0dda7e4f0f.jpg"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "68f6258c6d0f41c3f6a4c84d",
+      "fieldPath": "metadata.originalData.stats.reportImage1",
+      "oldUrl": "https://i.ibb.co/wNhtmJB9/1c1eef676aae.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/1371150effe422bd88290c15fb06d4521c443f4fd8b8cb5ed3293ed772da137f.jpg"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "68f6258c6d0f41c3f6a4c84d",
+      "fieldPath": "metadata.originalData.stats.reportImage7",
+      "oldUrl": "https://i.ibb.co/KjnbZ1fx/c73c96dab260.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/e3d4ba2c6341e29ab99bf7deddaa08e1741606352ba8973723b70a72f4aecce2.jpg"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "68f6258c6d0f41c3f6a4c84d",
+      "fieldPath": "metadata.originalData.stats.reportImage8",
+      "oldUrl": "https://i.ibb.co/JRb8yNL0/3e4aad84541d.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/6bf5b55e004a33bfa57abe881a870696e1ac587db5445029bc4187562acaaf8d.jpg"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "68f625976d0f41c3f6a4c84e",
+      "fieldPath": "metadata.logoUrl",
+      "oldUrl": "https://i.ibb.co/7JpZnk7C/partner-duna-aszfalt-dtkh-kecskem-t.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/fc9ff2f38d5777b4a63cb3e4fc44408a18195a52852b86cb1b479ece0bda9358.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "68f625976d0f41c3f6a4c84e",
+      "fieldPath": "metadata.originalData.logoUrl",
+      "oldUrl": "https://i.ibb.co/7JpZnk7C/partner-duna-aszfalt-dtkh-kecskem-t.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/fc9ff2f38d5777b4a63cb3e4fc44408a18195a52852b86cb1b479ece0bda9358.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "68f625ae6d0f41c3f6a4c84f",
+      "fieldPath": "metadata.logoUrl",
+      "oldUrl": "https://i.ibb.co/4ws0kW1Z/partner-egis-k-rmend.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/5f497efaca6b300bfe9e3adf790c99595e2299de95abf075b7fb18dac31f13c3.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "68f625ae6d0f41c3f6a4c84f",
+      "fieldPath": "metadata.originalData.logoUrl",
+      "oldUrl": "https://i.ibb.co/4ws0kW1Z/partner-egis-k-rmend.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/5f497efaca6b300bfe9e3adf790c99595e2299de95abf075b7fb18dac31f13c3.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "68f625c96d0f41c3f6a4c850",
+      "fieldPath": "metadata.logoUrl",
+      "oldUrl": "https://i.ibb.co/rfbdBhKW/partner-endo-plus-service-honv-d.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/653f1f9e15eda7c29d2f5405e522f580b4c41f189643298ecaa26b1b7cccc281.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "68f625c96d0f41c3f6a4c850",
+      "fieldPath": "metadata.originalData.logoUrl",
+      "oldUrl": "https://i.ibb.co/rfbdBhKW/partner-endo-plus-service-honv-d.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/653f1f9e15eda7c29d2f5405e522f580b4c41f189643298ecaa26b1b7cccc281.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "68f625e56d0f41c3f6a4c851",
+      "fieldPath": "metadata.logoUrl",
+      "oldUrl": "https://i.ibb.co/yFktJPCL/partner-falco-vulcano-energia-kc-szombathely.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/3a06154b53514766aa4a8e9b37e1c4cfe16419affc75e5c173670a2259119e6c.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "68f625e56d0f41c3f6a4c851",
+      "fieldPath": "metadata.originalData.logoUrl",
+      "oldUrl": "https://i.ibb.co/yFktJPCL/partner-falco-vulcano-energia-kc-szombathely.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/3a06154b53514766aa4a8e9b37e1c4cfe16419affc75e5c173670a2259119e6c.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "68f626106d0f41c3f6a4c853",
+      "fieldPath": "metadata.logoUrl",
+      "oldUrl": "https://i.ibb.co/s9kgN9zR/partner-mvm-ose-lions.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/196293a321265dda9c58ab8f19b1b91fb22b42ea5774d40132e778208e13c718.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "68f626106d0f41c3f6a4c853",
+      "fieldPath": "metadata.originalData.logoUrl",
+      "oldUrl": "https://i.ibb.co/s9kgN9zR/partner-mvm-ose-lions.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/196293a321265dda9c58ab8f19b1b91fb22b42ea5774d40132e778208e13c718.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "68f62632f1081bc59a724bf8",
+      "fieldPath": "metadata.logoUrl",
+      "oldUrl": "https://i.ibb.co/BKvdLkbh/partner-nhsz-szolnoki-olajb-ny-sz.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/52deb2f9fac976fe744e671b02bae3064ca7e1605b9536beace61855b966277e.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "68f62632f1081bc59a724bf8",
+      "fieldPath": "metadata.originalData.logoUrl",
+      "oldUrl": "https://i.ibb.co/BKvdLkbh/partner-nhsz-szolnoki-olajb-ny-sz.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/52deb2f9fac976fe744e671b02bae3064ca7e1605b9536beace61855b966277e.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "68f62647f1081bc59a724bf9",
+      "fieldPath": "metadata.logoUrl",
+      "oldUrl": "https://i.ibb.co/hRHs53bN/partner-nka-universitas-p-cs.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/e60fa84ff82f37601230090c69ebbe7886c3be35e287c290db0f6a3df4c892ae.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "68f62647f1081bc59a724bf9",
+      "fieldPath": "metadata.originalData.logoUrl",
+      "oldUrl": "https://i.ibb.co/hRHs53bN/partner-nka-universitas-p-cs.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/e60fa84ff82f37601230090c69ebbe7886c3be35e287c290db0f6a3df4c892ae.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "68f62648f1081bc59a724bfa",
+      "fieldPath": "metadata.logoUrl",
+      "oldUrl": "https://i.ibb.co/whT1Dvfy/partner-wukf.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/97018b20fb2b793357e92bc83ca4416b781e5c7434849560dc8e96b2c68038c2.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "68f62648f1081bc59a724bfa",
+      "fieldPath": "metadata.originalData.logoUrl",
+      "oldUrl": "https://i.ibb.co/whT1Dvfy/partner-wukf.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/97018b20fb2b793357e92bc83ca4416b781e5c7434849560dc8e96b2c68038c2.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "68f6268feaea906244f28923",
+      "fieldPath": "metadata.logoUrl",
+      "oldUrl": "https://i.ibb.co/r2yBLxCG/partner-as-roma.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/c913df29a4740c33fa340af3ceb5b50a65d615b6a0665fa1d20348d1a1295bec.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "68f6268feaea906244f28923",
+      "fieldPath": "metadata.originalData.logoUrl",
+      "oldUrl": "https://i.ibb.co/r2yBLxCG/partner-as-roma.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/c913df29a4740c33fa340af3ceb5b50a65d615b6a0665fa1d20348d1a1295bec.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "68f6268feaea906244f28923",
+      "fieldPath": "metadata.originalData.stats.reportImage1",
+      "oldUrl": "https://i.ibb.co/7J0Cpw9t/39be3abe89a0.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/30853004c20b82194fdfb7437fac6266cd0f7cb047d7ff147751345f6ff47772.jpg"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "68f6268feaea906244f28923",
+      "fieldPath": "metadata.originalData.stats.reportImage3",
+      "oldUrl": "https://i.ibb.co/21dv8Q0K/81f576c0cd1e.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/48b69bc958dfcaabf5aecca79fb11e309ab6ed3fbc9e6a07ee35e6f409a19902.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "68f6268feaea906244f28923",
+      "fieldPath": "metadata.originalData.stats.reportImage4",
+      "oldUrl": "https://i.ibb.co/m5TS6PYC/bab8d41fbce3.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/17c92cbba5ca3bc3e72d3cf9d79aba218d3eec33a900e5c5872f957a30c000c3.jpg"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "68f6268feaea906244f28923",
+      "fieldPath": "metadata.originalData.stats.reportImage5",
+      "oldUrl": "https://i.ibb.co/dwdH58ZX/93c52f1669a1.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/d7f9845d17ddcd1bf5c513d521d82e0e39521ceb99b8cd8c1037aa168e66e673.jpg"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "68f6268feaea906244f28923",
+      "fieldPath": "metadata.originalData.stats.reportImage6",
+      "oldUrl": "https://i.ibb.co/NnKpvnL5/4285d1872aaa.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/703617bd87b53a7501c3127ecd0607e744c590f7f0482a0c467e3b2808732db4.jpg"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "68f626a7eaea906244f28924",
+      "fieldPath": "metadata.logoUrl",
+      "oldUrl": "https://i.ibb.co/6c3r2fJG/partner-sopron-kc.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/dc42c4625bbdd4acd8aacb8aad05b42dc878677663614d114a477f9ee82fe31a.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "68f626a7eaea906244f28924",
+      "fieldPath": "metadata.originalData.logoUrl",
+      "oldUrl": "https://i.ibb.co/6c3r2fJG/partner-sopron-kc.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/dc42c4625bbdd4acd8aacb8aad05b42dc878677663614d114a477f9ee82fe31a.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "68f626b4eaea906244f28925",
+      "fieldPath": "metadata.logoUrl",
+      "oldUrl": "https://i.ibb.co/XZ7rsHnH/Seyu-Women-s-Euro-hockey-Logo-white.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/ca5503601631d0ee84a63e4349ee9198e146e89f4aa0c308ca9fe091065db30a.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "68f626b4eaea906244f28925",
+      "fieldPath": "metadata.sportsDb.badge",
+      "oldUrl": "https://i.ibb.co/XZ7rsHnH/Seyu-Women-s-Euro-hockey-Logo-white.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/ca5503601631d0ee84a63e4349ee9198e146e89f4aa0c308ca9fe091065db30a.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "68f626b4eaea906244f28925",
+      "fieldPath": "metadata.originalData.logoUrl",
+      "oldUrl": "https://i.ibb.co/6JW0K3JS/partner-swiss-ice-hockey-federation-sihf.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/48edd9877a856f743c3158ea53f5bf16a563ff09f4839689687c0fccf157c1e4.jpg"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "68f626b4eaea906244f28925",
+      "fieldPath": "metadata.originalData.stats.reportImage2",
+      "oldUrl": "https://i.ibb.co/s8zdXRD/7be0c2400144.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/43bbde28c10bba6d6a74936609fd3c8c2a9850939469930d6d13a9ee1b3f5698.jpg"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "68f626b4eaea906244f28925",
+      "fieldPath": "metadata.originalData.stats.reportImage4",
+      "oldUrl": "https://i.ibb.co/G4vYfTsX/b3a97403cd79.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/42df6d26178f832d6d7d302908e1dfba876a85984cf8943cbbbad32a1fe0f57a.jpg"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "68f626b4eaea906244f28925",
+      "fieldPath": "metadata.originalData.stats.reportImage10",
+      "oldUrl": "https://i.ibb.co/4RSSw1Tc/ecb50a47e34b.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/87760a3168affc59965092865fe25bcf054444d294ed2e0bb384cc36bbe79a53.jpg"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "68f626b7eaea906244f28926",
+      "fieldPath": "metadata.logoUrl",
+      "oldUrl": "https://i.ibb.co/JW30BBZX/partner-szte-szeged-k.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/cafd2817707d0c30545b828d4ad2c49c78befb39cf41e3381833567e88d35c70.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "68f626b7eaea906244f28926",
+      "fieldPath": "metadata.originalData.logoUrl",
+      "oldUrl": "https://i.ibb.co/JW30BBZX/partner-szte-szeged-k.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/cafd2817707d0c30545b828d4ad2c49c78befb39cf41e3381833567e88d35c70.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "68f626e0eaea906244f28928",
+      "fieldPath": "metadata.logoUrl",
+      "oldUrl": "https://i.ibb.co/dwSBFr2X/partner-zalaker-mia-zte-kk.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/4292e7ea63e46337b060b341fbfa92caa7a5429b9f2b5b725a072fd52cd23199.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "68f626e0eaea906244f28928",
+      "fieldPath": "metadata.originalData.logoUrl",
+      "oldUrl": "https://i.ibb.co/dwSBFr2X/partner-zalaker-mia-zte-kk.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/4292e7ea63e46337b060b341fbfa92caa7a5429b9f2b5b725a072fd52cd23199.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "68f628ff36dae2424f1d13cb",
+      "fieldPath": "metadata.logoUrl",
+      "oldUrl": "https://i.ibb.co/XxCqXBrg/partner-bkg-prima-szigetszentmikl-s.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/127d3df02665526dbd816600a0403c6b453632b715734cbeaf7b589698df9b3a.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "68f628ff36dae2424f1d13cb",
+      "fieldPath": "metadata.sportsDb.badge",
+      "oldUrl": "https://i.ibb.co/PzWczngc/Partner-BKG-Prima-Szigetszentmikl-s-Kos-rlabda.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/127d3df02665526dbd816600a0403c6b453632b715734cbeaf7b589698df9b3a.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "68f628ff36dae2424f1d13cb",
+      "fieldPath": "metadata.originalData.logoUrl",
+      "oldUrl": "https://i.ibb.co/XxCqXBrg/partner-bkg-prima-szigetszentmikl-s.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/127d3df02665526dbd816600a0403c6b453632b715734cbeaf7b589698df9b3a.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "68f628ff36dae2424f1d13cb",
+      "fieldPath": "metadata.originalData.sportsDb.badge",
+      "oldUrl": "https://i.ibb.co/PzWczngc/Partner-BKG-Prima-Szigetszentmikl-s-Kos-rlabda.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/127d3df02665526dbd816600a0403c6b453632b715734cbeaf7b589698df9b3a.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "68f6290f3ce24b9fe4684673",
+      "fieldPath": "metadata.logoUrl",
+      "oldUrl": "https://i.ibb.co/gZy4Rsy9/partner-csata-tkk.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/22f550cc9e3ec3a12aaa7d38d7ff5b325320039224653d67734cb9d7e81861dd.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "68f6290f3ce24b9fe4684673",
+      "fieldPath": "metadata.originalData.logoUrl",
+      "oldUrl": "https://i.ibb.co/gZy4Rsy9/partner-csata-tkk.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/22f550cc9e3ec3a12aaa7d38d7ff5b325320039224653d67734cb9d7e81861dd.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "68f629483ce24b9fe4684674",
+      "fieldPath": "metadata.logoUrl",
+      "oldUrl": "https://i.ibb.co/5gYzXG6w/partner-d-vid-korn-l-kos-rlabda-akad-mia.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/31c0dfe77a27ea0d40d14a6aa999b7285dada184a88c292ccd64f9279707130f.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "68f629483ce24b9fe4684674",
+      "fieldPath": "metadata.originalData.logoUrl",
+      "oldUrl": "https://i.ibb.co/5gYzXG6w/partner-d-vid-korn-l-kos-rlabda-akad-mia.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/31c0dfe77a27ea0d40d14a6aa999b7285dada184a88c292ccd64f9279707130f.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "68f6295736dae2424f1d13cc",
+      "fieldPath": "metadata.logoUrl",
+      "oldUrl": "https://i.ibb.co/7d2GQvW9/partner-dvtk-huntherm.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/0cae857e9d744db61b89b59dcb2a0dbedefdfc499492beca1f494cc38e28dba9.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "68f6295736dae2424f1d13cc",
+      "fieldPath": "metadata.originalData.logoUrl",
+      "oldUrl": "https://i.ibb.co/7d2GQvW9/partner-dvtk-huntherm.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/0cae857e9d744db61b89b59dcb2a0dbedefdfc499492beca1f494cc38e28dba9.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "68f6297236dae2424f1d13cd",
+      "fieldPath": "metadata.logoUrl",
+      "oldUrl": "https://i.ibb.co/nNYggMSv/partner-elte-beac-jbuda.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/e8f73f1a19ae4a8bd8d61122c93e6286a34213725a0cb61434dd1bd043fa8ee1.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "68f6297236dae2424f1d13cd",
+      "fieldPath": "metadata.originalData.logoUrl",
+      "oldUrl": "https://i.ibb.co/nNYggMSv/partner-elte-beac-jbuda.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/e8f73f1a19ae4a8bd8d61122c93e6286a34213725a0cb61434dd1bd043fa8ee1.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "68f6299536dae2424f1d13ce",
+      "fieldPath": "metadata.logoUrl",
+      "oldUrl": "https://i.ibb.co/hRHs53bN/partner-nka-universitas-p-cs.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/e60fa84ff82f37601230090c69ebbe7886c3be35e287c290db0f6a3df4c892ae.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "68f6299536dae2424f1d13ce",
+      "fieldPath": "metadata.originalData.logoUrl",
+      "oldUrl": "https://i.ibb.co/hRHs53bN/partner-nka-universitas-p-cs.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/e60fa84ff82f37601230090c69ebbe7886c3be35e287c290db0f6a3df4c892ae.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "68f629a536dae2424f1d13cf",
+      "fieldPath": "metadata.logoUrl",
+      "oldUrl": "https://i.ibb.co/yFDt9wgg/partner-sopron-basket.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/4318846574659dca8a2e526e68bb5c76b8ed70d4a972274e5881db78b877ef70.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "68f629a536dae2424f1d13cf",
+      "fieldPath": "metadata.originalData.logoUrl",
+      "oldUrl": "https://i.ibb.co/yFDt9wgg/partner-sopron-basket.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/4318846574659dca8a2e526e68bb5c76b8ed70d4a972274e5881db78b877ef70.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "68f629b236dae2424f1d13d0",
+      "fieldPath": "metadata.logoUrl",
+      "oldUrl": "https://i.ibb.co/JRD1P0nD/partner-tarr-ksc-szeksz-rd.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/028035d2f3cab040e05013074166e8fd18bf4363a4f3e823cf7da6d871a6f0f5.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "68f629b236dae2424f1d13d0",
+      "fieldPath": "metadata.originalData.logoUrl",
+      "oldUrl": "https://i.ibb.co/JRD1P0nD/partner-tarr-ksc-szeksz-rd.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/028035d2f3cab040e05013074166e8fd18bf4363a4f3e823cf7da6d871a6f0f5.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "68f629f636dae2424f1d13d1",
+      "fieldPath": "metadata.logoUrl",
+      "oldUrl": "https://i.ibb.co/gZCgv7R0/partner-tfse.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/003fa16a153e4dced01d7036d16e02b982cfe63c7e3c4b96fb455984c7c65f5d.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "68f629f636dae2424f1d13d1",
+      "fieldPath": "metadata.originalData.logoUrl",
+      "oldUrl": "https://i.ibb.co/gZCgv7R0/partner-tfse.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/003fa16a153e4dced01d7036d16e02b982cfe63c7e3c4b96fb455984c7c65f5d.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "68f62a0736dae2424f1d13d2",
+      "fieldPath": "metadata.logoUrl",
+      "oldUrl": "https://i.ibb.co/RT3XN7Hn/partner-uni-gy-r.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/22a95c5663e73cdf265adefe6a65c1eccf5e2bd5d890dd3fb73d430317b278b0.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "68f62a0736dae2424f1d13d2",
+      "fieldPath": "metadata.originalData.logoUrl",
+      "oldUrl": "https://i.ibb.co/RT3XN7Hn/partner-uni-gy-r.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/22a95c5663e73cdf265adefe6a65c1eccf5e2bd5d890dd3fb73d430317b278b0.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "68f62a1c36dae2424f1d13d3",
+      "fieldPath": "metadata.logoUrl",
+      "oldUrl": "https://i.ibb.co/jvyXNmmB/partner-vasas-akad-mia.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/cad305f0ec6c86d49203a1de18e92329a99325dc4b57ebf5e67f19169994daa4.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "68f62a1c36dae2424f1d13d3",
+      "fieldPath": "metadata.originalData.logoUrl",
+      "oldUrl": "https://i.ibb.co/jvyXNmmB/partner-vasas-akad-mia.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/cad305f0ec6c86d49203a1de18e92329a99325dc4b57ebf5e67f19169994daa4.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "68f62a2f36dae2424f1d13d4",
+      "fieldPath": "metadata.logoUrl",
+      "oldUrl": "https://i.ibb.co/nMV5xhDS/partner-vbw-cekk-cegl-d.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/f5f9d708bb8b56f53245a18c8639b264d91c171bb7a8128e686b5b2c3c2daaa9.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "68f62a2f36dae2424f1d13d4",
+      "fieldPath": "metadata.originalData.logoUrl",
+      "oldUrl": "https://i.ibb.co/nMV5xhDS/partner-vbw-cekk-cegl-d.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/f5f9d708bb8b56f53245a18c8639b264d91c171bb7a8128e686b5b2c3c2daaa9.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "68f776ea9d48f546efb9de98",
+      "fieldPath": "metadata.logoUrl",
+      "oldUrl": "https://i.ibb.co/Z1RyTCMk/partner-kolorcity-kazincbarcika.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/b9c65244632572d669bdf95413146cfeec10471c088c1b5c0d67f91b26016874.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "68f776ea9d48f546efb9de98",
+      "fieldPath": "metadata.originalData.logoUrl",
+      "oldUrl": "https://i.ibb.co/Z1RyTCMk/partner-kolorcity-kazincbarcika.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/b9c65244632572d669bdf95413146cfeec10471c088c1b5c0d67f91b26016874.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "68f779099d48f546efb9de99",
+      "fieldPath": "metadata.logoUrl",
+      "oldUrl": "https://i.ibb.co/TqR26x7w/partner-eto-fc-gy-r.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/3393e8d0c8ab5b080fca3f3fdea3bb2e235f3fa6b10c08ae7733840f994a3e04.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "68f779099d48f546efb9de99",
+      "fieldPath": "metadata.originalData.logoUrl",
+      "oldUrl": "https://i.ibb.co/TqR26x7w/partner-eto-fc-gy-r.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/3393e8d0c8ab5b080fca3f3fdea3bb2e235f3fa6b10c08ae7733840f994a3e04.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "68f77b589d48f546efb9de9a",
+      "fieldPath": "metadata.logoUrl",
+      "oldUrl": "https://i.ibb.co/ZRqh24YK/partner-duna-jv-rosi-koh-sz-k-zilabda-akad-mia.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/78fcb639af8ce7c73d8980f21863cacab850ad2eb68b0d2db2cfd803493193e2.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "68f77b589d48f546efb9de9a",
+      "fieldPath": "metadata.originalData.logoUrl",
+      "oldUrl": "https://i.ibb.co/ZRqh24YK/partner-duna-jv-rosi-koh-sz-k-zilabda-akad-mia.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/78fcb639af8ce7c73d8980f21863cacab850ad2eb68b0d2db2cfd803493193e2.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "68f77bed9d48f546efb9de9b",
+      "fieldPath": "metadata.logoUrl",
+      "oldUrl": "https://i.ibb.co/7tPhLjpn/partner-mol-esztergom.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/a2621b3ac81d5fb8c72a80b857b682c47d41694d7b848334cc3aa8a149fba192.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "68f77bed9d48f546efb9de9b",
+      "fieldPath": "metadata.originalData.logoUrl",
+      "oldUrl": "https://i.ibb.co/7tPhLjpn/partner-mol-esztergom.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/a2621b3ac81d5fb8c72a80b857b682c47d41694d7b848334cc3aa8a149fba192.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "68f77c499d48f546efb9de9c",
+      "fieldPath": "metadata.logoUrl",
+      "oldUrl": "https://i.ibb.co/ycN21vFp/partner-fc-ajka.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/7a67bdc1b359a648045fcbea59ff58330b5f13e3a3ab61ab3129f733d4ec6680.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "68f77c499d48f546efb9de9c",
+      "fieldPath": "metadata.originalData.logoUrl",
+      "oldUrl": "https://i.ibb.co/ycN21vFp/partner-fc-ajka.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/7a67bdc1b359a648045fcbea59ff58330b5f13e3a3ab61ab3129f733d4ec6680.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "68f77c8b9d48f546efb9de9d",
+      "fieldPath": "metadata.logoUrl",
+      "oldUrl": "https://i.ibb.co/zhNzGfqC/partner-vasas-fc.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/4ae94635c24b6237ada6be1ef36037e8bbd8ecafbf0af4079ab8bf22778b6e00.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "68f77c8b9d48f546efb9de9d",
+      "fieldPath": "metadata.originalData.logoUrl",
+      "oldUrl": "https://i.ibb.co/zhNzGfqC/partner-vasas-fc.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/4ae94635c24b6237ada6be1ef36037e8bbd8ecafbf0af4079ab8bf22778b6e00.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "68f77ce09d48f546efb9de9e",
+      "fieldPath": "metadata.logoUrl",
+      "oldUrl": "https://i.ibb.co/8nBGz2Xr/partner-deac-j-gkorong.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/24286e5cf8fa93076038cf864d98d70783df66e1e0c15d2eb29fdf976c354e85.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "68f77ce09d48f546efb9de9e",
+      "fieldPath": "metadata.originalData.logoUrl",
+      "oldUrl": "https://i.ibb.co/8nBGz2Xr/partner-deac-j-gkorong.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/24286e5cf8fa93076038cf864d98d70783df66e1e0c15d2eb29fdf976c354e85.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "68f77d549d48f546efb9de9f",
+      "fieldPath": "metadata.logoUrl",
+      "oldUrl": "https://i.ibb.co/JRjw0bbC/partner-budapesti-vasutas-sc-zugl.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/f7643fbd05e31c89bf76e392bd630e11a0a4741fa03c4a3fce6f320624264d1f.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "68f77d549d48f546efb9de9f",
+      "fieldPath": "metadata.sportsDb.badge",
+      "oldUrl": "https://i.ibb.co/HLtFXwVP/Partner-Budapesti-Vasutas-Zuglo.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/f7643fbd05e31c89bf76e392bd630e11a0a4741fa03c4a3fce6f320624264d1f.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "68f77d549d48f546efb9de9f",
+      "fieldPath": "metadata.originalData.logoUrl",
+      "oldUrl": "https://i.ibb.co/JRjw0bbC/partner-budapesti-vasutas-sc-zugl.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/f7643fbd05e31c89bf76e392bd630e11a0a4741fa03c4a3fce6f320624264d1f.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "68f77d549d48f546efb9de9f",
+      "fieldPath": "metadata.originalData.sportsDb.badge",
+      "oldUrl": "https://i.ibb.co/HLtFXwVP/Partner-Budapesti-Vasutas-Zuglo.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/f7643fbd05e31c89bf76e392bd630e11a0a4741fa03c4a3fce6f320624264d1f.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "68f77d909d48f546efb9dea0",
+      "fieldPath": "metadata.logoUrl",
+      "oldUrl": "https://i.ibb.co/C3Qzr7Dv/partner-karcagi-se.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/5288c84753df4a69327eee4dcba75ef870ed23da84833f91cce6b1fc83708017.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "68f77d909d48f546efb9dea0",
+      "fieldPath": "metadata.originalData.logoUrl",
+      "oldUrl": "https://i.ibb.co/C3Qzr7Dv/partner-karcagi-se.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/5288c84753df4a69327eee4dcba75ef870ed23da84833f91cce6b1fc83708017.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "68f77dde9d48f546efb9dea1",
+      "fieldPath": "metadata.logoUrl",
+      "oldUrl": "https://i.ibb.co/b5PBQFTt/partner-hr-rent-koz-rmisleny.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/5a7380154657aefef1db559b47ec8858d7222fd466fcda076323ab7db6cc4610.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "68f77dde9d48f546efb9dea1",
+      "fieldPath": "metadata.originalData.logoUrl",
+      "oldUrl": "https://i.ibb.co/b5PBQFTt/partner-hr-rent-koz-rmisleny.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/5a7380154657aefef1db559b47ec8858d7222fd466fcda076323ab7db6cc4610.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "68f77e309d48f546efb9dea2",
+      "fieldPath": "metadata.logoUrl",
+      "oldUrl": "https://i.ibb.co/jvdNVfZj/partner-szeged-csan-d-grosics-akad-mia.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/7855dacd8d0a795ac45077f10ceced11eb014fa3ba62116282a30f8e44681dc0.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "68f77e309d48f546efb9dea2",
+      "fieldPath": "metadata.originalData.logoUrl",
+      "oldUrl": "https://i.ibb.co/jvdNVfZj/partner-szeged-csan-d-grosics-akad-mia.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/7855dacd8d0a795ac45077f10ceced11eb014fa3ba62116282a30f8e44681dc0.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "68f77e679d48f546efb9dea3",
+      "fieldPath": "metadata.logoUrl",
+      "oldUrl": "https://i.ibb.co/mVGJRtMJ/partner-soroks-r-sc.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/fc39513b8f58708fa3850866fd434a9fbaac59e61aa3f4ed140e878af435cff2.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "68f77e679d48f546efb9dea3",
+      "fieldPath": "metadata.originalData.logoUrl",
+      "oldUrl": "https://i.ibb.co/mVGJRtMJ/partner-soroks-r-sc.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/fc39513b8f58708fa3850866fd434a9fbaac59e61aa3f4ed140e878af435cff2.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "68f77eab9d48f546efb9dea4",
+      "fieldPath": "metadata.logoUrl",
+      "oldUrl": "https://i.ibb.co/HDC9YPDB/partner-tiszak-cskei-lc.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/81066e063d15f8280900e7490f63659c65fb21c20e7c51bc3906e037219cd3ba.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "68f77eab9d48f546efb9dea4",
+      "fieldPath": "metadata.originalData.logoUrl",
+      "oldUrl": "https://i.ibb.co/HDC9YPDB/partner-tiszak-cskei-lc.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/81066e063d15f8280900e7490f63659c65fb21c20e7c51bc3906e037219cd3ba.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "68f77ede9d48f546efb9dea5",
+      "fieldPath": "metadata.logoUrl",
+      "oldUrl": "https://i.ibb.co/27p0K141/partner-dvtk.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/319a7bd93fc62291d4a7ce0ead5b328047b64095c264d069a8b623a90a832bd4.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "68f77ede9d48f546efb9dea5",
+      "fieldPath": "metadata.originalData.logoUrl",
+      "oldUrl": "https://i.ibb.co/27p0K141/partner-dvtk.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/319a7bd93fc62291d4a7ce0ead5b328047b64095c264d069a8b623a90a832bd4.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "68f77f339d48f546efb9dea6",
+      "fieldPath": "metadata.logoUrl",
+      "oldUrl": "https://i.ibb.co/rfm7tHgS/partner-dvsc.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/4afabb8440f2dd8397775da1689030f29898cdb6bb80a7edc607a093aef2e3d6.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "68f77f339d48f546efb9dea6",
+      "fieldPath": "metadata.originalData.logoUrl",
+      "oldUrl": "https://i.ibb.co/rfm7tHgS/partner-dvsc.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/4afabb8440f2dd8397775da1689030f29898cdb6bb80a7edc607a093aef2e3d6.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "68f77fe69d7e63a072225c10",
+      "fieldPath": "metadata.logoUrl",
+      "oldUrl": "https://i.ibb.co/v64zTN1H/partner-kisv-rda-fc.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/4207b8b46303d0fef6228ea4d323efd660a775541f2ac07e7839aacd093bf6b4.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "68f77fe69d7e63a072225c10",
+      "fieldPath": "metadata.originalData.logoUrl",
+      "oldUrl": "https://i.ibb.co/v64zTN1H/partner-kisv-rda-fc.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/4207b8b46303d0fef6228ea4d323efd660a775541f2ac07e7839aacd093bf6b4.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "68f780219d7e63a072225c11",
+      "fieldPath": "metadata.logoUrl",
+      "oldUrl": "https://i.ibb.co/vCCf8S3f/partner-paksi-fc.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/8f898d0aa46b6bc201c97a31c4c385068a8ff1bb03a0165f0a423585f0593271.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "68f780219d7e63a072225c11",
+      "fieldPath": "metadata.originalData.logoUrl",
+      "oldUrl": "https://i.ibb.co/vCCf8S3f/partner-paksi-fc.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/8f898d0aa46b6bc201c97a31c4c385068a8ff1bb03a0165f0a423585f0593271.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "68f780639d7e63a072225c12",
+      "fieldPath": "metadata.logoUrl",
+      "oldUrl": "https://i.ibb.co/gMzSQnF4/partner-pusk-s-akad-mia-fc.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/3a78995a711458cf8c9238959d4d144af90605e72344681161e49edef3c2bbb6.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "68f780639d7e63a072225c12",
+      "fieldPath": "metadata.originalData.logoUrl",
+      "oldUrl": "https://i.ibb.co/gMzSQnF4/partner-pusk-s-akad-mia-fc.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/3a78995a711458cf8c9238959d4d144af90605e72344681161e49edef3c2bbb6.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "68f781bc9d7e63a072225c14",
+      "fieldPath": "metadata.logoUrl",
+      "oldUrl": "https://i.ibb.co/mrgXQCSF/partner-aquital-fc-cs-kv-r.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/9e89edd02e24a24cd6ff9b0625f4a18d7a2bb376d7ccefe0d5ae0bd27a4754ca.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "68f781bc9d7e63a072225c14",
+      "fieldPath": "metadata.originalData.logoUrl",
+      "oldUrl": "https://i.ibb.co/mrgXQCSF/partner-aquital-fc-cs-kv-r.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/9e89edd02e24a24cd6ff9b0625f4a18d7a2bb376d7ccefe0d5ae0bd27a4754ca.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "68f782019d7e63a072225c15",
+      "fieldPath": "metadata.logoUrl",
+      "oldUrl": "https://i.ibb.co/SDpBVYdV/partner-b-k-scsaba-1912-el-re.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/c5f409f60fa1c808d3ba95ef42ec7e89dd713f853dccd9b48d1100edcbb87042.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "68f782019d7e63a072225c15",
+      "fieldPath": "metadata.originalData.logoUrl",
+      "oldUrl": "https://i.ibb.co/SDpBVYdV/partner-b-k-scsaba-1912-el-re.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/c5f409f60fa1c808d3ba95ef42ec7e89dd713f853dccd9b48d1100edcbb87042.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "68f7824a9d7e63a072225c16",
+      "fieldPath": "metadata.logoUrl",
+      "oldUrl": "https://i.ibb.co/0RznwVnp/partner-budapest-honv-d-fc.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/b34f9eb8232169b45bcee0d814cf5cf94635092c66ec8567bbd33ac2d7dc8cf8.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "68f7824a9d7e63a072225c16",
+      "fieldPath": "metadata.originalData.logoUrl",
+      "oldUrl": "https://i.ibb.co/0RznwVnp/partner-budapest-honv-d-fc.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/b34f9eb8232169b45bcee0d814cf5cf94635092c66ec8567bbd33ac2d7dc8cf8.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "68f783829d7e63a072225c17",
+      "fieldPath": "metadata.logoUrl",
+      "oldUrl": "https://i.ibb.co/0VCvk4LL/partner-kecskem-ti-te.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/3d6ee333dd19e6b6f1239d0105283bdb10c9ea07c470e3af24a1fb138eff205f.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "68f783829d7e63a072225c17",
+      "fieldPath": "metadata.originalData.logoUrl",
+      "oldUrl": "https://i.ibb.co/0VCvk4LL/partner-kecskem-ti-te.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/3d6ee333dd19e6b6f1239d0105283bdb10c9ea07c470e3af24a1fb138eff205f.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "68f783fe9d7e63a072225c18",
+      "fieldPath": "metadata.logoUrl",
+      "oldUrl": "https://i.ibb.co/ZzWcY5Dc/partner-szentl-rinc-se.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/56da780569d7a2ef50add3b6518418c9911a42453d36189b22f0eaffe0ddaaef.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "68f783fe9d7e63a072225c18",
+      "fieldPath": "metadata.originalData.logoUrl",
+      "oldUrl": "https://i.ibb.co/ZzWcY5Dc/partner-szentl-rinc-se.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/56da780569d7a2ef50add3b6518418c9911a42453d36189b22f0eaffe0ddaaef.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "68f784499d7e63a072225c19",
+      "fieldPath": "metadata.logoUrl",
+      "oldUrl": "https://i.ibb.co/1Gjq3H45/partner-videoton-fc-feh-rv-r.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/8d871fd3a6a4ed47232aa9cc9707e853a1c7221e6305126fbc8f5a55df4b600f.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "68f784499d7e63a072225c19",
+      "fieldPath": "metadata.originalData.logoUrl",
+      "oldUrl": "https://i.ibb.co/1Gjq3H45/partner-videoton-fc-feh-rv-r.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/8d871fd3a6a4ed47232aa9cc9707e853a1c7221e6305126fbc8f5a55df4b600f.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "68f78d013ced8e1a321f4650",
+      "fieldPath": "metadata.logoUrl",
+      "oldUrl": "https://i.ibb.co/4gscCtbX/partner-alba-feh-rv-r-k-zilabda.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/0abf7e37e249d7164e7760ba14000310c0461208f67b042df0cf33b41c9b87ab.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "68f78d013ced8e1a321f4650",
+      "fieldPath": "metadata.originalData.logoUrl",
+      "oldUrl": "https://i.ibb.co/4gscCtbX/partner-alba-feh-rv-r-k-zilabda.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/0abf7e37e249d7164e7760ba14000310c0461208f67b042df0cf33b41c9b87ab.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "68f78d5b3ced8e1a321f4651",
+      "fieldPath": "metadata.logoUrl",
+      "oldUrl": "https://i.ibb.co/whjmLn28/partner-dvsc-schaffler.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/e46cead2c4781da6b86a99f87b642e00e25253991fa56bb052b66e6829003ad6.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "68f78d5b3ced8e1a321f4651",
+      "fieldPath": "metadata.originalData.logoUrl",
+      "oldUrl": "https://i.ibb.co/whjmLn28/partner-dvsc-schaffler.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/e46cead2c4781da6b86a99f87b642e00e25253991fa56bb052b66e6829003ad6.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "68f78dca3ced8e1a321f4652",
+      "fieldPath": "metadata.logoUrl",
+      "oldUrl": "https://i.ibb.co/hRRRLnPW/partner-ftc-rail-cargo-hung-ria.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/629ccc28b720cc6aa6a4da762f7c34e957e10d7462257cb1e8ed834cd4bd2354.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "68f78dca3ced8e1a321f4652",
+      "fieldPath": "metadata.originalData.logoUrl",
+      "oldUrl": "https://i.ibb.co/hRRRLnPW/partner-ftc-rail-cargo-hung-ria.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/629ccc28b720cc6aa6a4da762f7c34e957e10d7462257cb1e8ed834cd4bd2354.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "68f78e0e3ced8e1a321f4653",
+      "fieldPath": "metadata.logoUrl",
+      "oldUrl": "https://i.ibb.co/CpD1zKGZ/partner-gy-ri-audi-eto-kc.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/b3686f51cbea686f0b1a2bbfdc80236f606d34af24fd450b27767405a33ea572.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "68f78e0e3ced8e1a321f4653",
+      "fieldPath": "metadata.originalData.logoUrl",
+      "oldUrl": "https://i.ibb.co/CpD1zKGZ/partner-gy-ri-audi-eto-kc.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/b3686f51cbea686f0b1a2bbfdc80236f606d34af24fd450b27767405a33ea572.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "68f78e473ced8e1a321f4654",
+      "fieldPath": "metadata.logoUrl",
+      "oldUrl": "https://i.ibb.co/V05MjWKz/partner-kisv-rda-master-good-se.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/05fae8af68042bd06688df980ec4f210cb7a0957e3ab453e900237f431f280e8.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "68f78e473ced8e1a321f4654",
+      "fieldPath": "metadata.originalData.logoUrl",
+      "oldUrl": "https://i.ibb.co/V05MjWKz/partner-kisv-rda-master-good-se.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/05fae8af68042bd06688df980ec4f210cb7a0957e3ab453e900237f431f280e8.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "68f78e823ced8e1a321f4655",
+      "fieldPath": "metadata.logoUrl",
+      "oldUrl": "https://i.ibb.co/mV5GxsdJ/partner-koz-rmisleny-ka.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/650991e5a196c3fbbe3d53c7c3acf2a83539774b93935ed01233e8f2070bf10c.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "68f78e823ced8e1a321f4655",
+      "fieldPath": "metadata.originalData.logoUrl",
+      "oldUrl": "https://i.ibb.co/mV5GxsdJ/partner-koz-rmisleny-ka.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/650991e5a196c3fbbe3d53c7c3acf2a83539774b93935ed01233e8f2070bf10c.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "68f78ec93ced8e1a321f4656",
+      "fieldPath": "metadata.logoUrl",
+      "oldUrl": "https://i.ibb.co/GDPQDzD/partner-mosonmagyar-v-ri-kc-se.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/2fcab26b0d5502da8ceb17f4ad3762701ab9ac6c13e1bc9eef79a98b5007a764.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "68f78ec93ced8e1a321f4656",
+      "fieldPath": "metadata.sportsDb.badge",
+      "oldUrl": "https://i.ibb.co/sJgnM7fz/64075-Mosonmagyar-v-r-300x300.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/2fcab26b0d5502da8ceb17f4ad3762701ab9ac6c13e1bc9eef79a98b5007a764.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "68f78ec93ced8e1a321f4656",
+      "fieldPath": "metadata.originalData.logoUrl",
+      "oldUrl": "https://i.ibb.co/GDPQDzD/partner-mosonmagyar-v-ri-kc-se.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/2fcab26b0d5502da8ceb17f4ad3762701ab9ac6c13e1bc9eef79a98b5007a764.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "68f78ec93ced8e1a321f4656",
+      "fieldPath": "metadata.originalData.sportsDb.badge",
+      "oldUrl": "https://i.ibb.co/sJgnM7fz/64075-Mosonmagyar-v-r-300x300.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/2fcab26b0d5502da8ceb17f4ad3762701ab9ac6c13e1bc9eef79a98b5007a764.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "68f78f843ced8e1a321f4659",
+      "fieldPath": "metadata.logoUrl",
+      "oldUrl": "https://i.ibb.co/6J8K5rY3/partner-szombathelyi-k-zilabda-klub-s-akad-mia.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/11cc6f9de1da7d22ac3f6947dd612baf2ba6f0c55285def640ca4ecd753692d5.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "68f78f843ced8e1a321f4659",
+      "fieldPath": "metadata.originalData.logoUrl",
+      "oldUrl": "https://i.ibb.co/6J8K5rY3/partner-szombathelyi-k-zilabda-klub-s-akad-mia.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/11cc6f9de1da7d22ac3f6947dd612baf2ba6f0c55285def640ca4ecd753692d5.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "68f78fc23ced8e1a321f465a",
+      "fieldPath": "metadata.logoUrl",
+      "oldUrl": "https://i.ibb.co/CpMwnwPz/partner-v-ci-nkse.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/93455e9204743c59ec9322781edcb83a620296bf540b53a88c3d4068e94ef99e.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "68f78fc23ced8e1a321f465a",
+      "fieldPath": "metadata.originalData.logoUrl",
+      "oldUrl": "https://i.ibb.co/CpMwnwPz/partner-v-ci-nkse.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/93455e9204743c59ec9322781edcb83a620296bf540b53a88c3d4068e94ef99e.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "68f790073ced8e1a321f465b",
+      "fieldPath": "metadata.logoUrl",
+      "oldUrl": "https://i.ibb.co/dJ4STLY9/partner-vasas-sc.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/f40602b5fe5c2d5f219d721a9f6b9ebb3e07a6a1fb543457c4bd5efb830334ad.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "68f790073ced8e1a321f465b",
+      "fieldPath": "metadata.originalData.logoUrl",
+      "oldUrl": "https://i.ibb.co/dJ4STLY9/partner-vasas-sc.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/f40602b5fe5c2d5f219d721a9f6b9ebb3e07a6a1fb543457c4bd5efb830334ad.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "68f7906e3ced8e1a321f465c",
+      "fieldPath": "metadata.logoUrl",
+      "oldUrl": "https://i.ibb.co/ZzWyWB27/partner-carbonex-koml.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/79f3f516a55eaad85c4e37bcbeb726545743fb08816d31c1b1e260c00b3bc2f6.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "68f7906e3ced8e1a321f465c",
+      "fieldPath": "metadata.originalData.logoUrl",
+      "oldUrl": "https://i.ibb.co/ZzWyWB27/partner-carbonex-koml.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/79f3f516a55eaad85c4e37bcbeb726545743fb08816d31c1b1e260c00b3bc2f6.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "68f790a83ced8e1a321f465d",
+      "fieldPath": "metadata.logoUrl",
+      "oldUrl": "https://i.ibb.co/HTwjT7fx/partner-cyeb-budakal-sz.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/fcdf81d6a9d1ef3677ffce3f7a56ec12a537ed3bf86585699d515f99a1316e6a.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "68f790a83ced8e1a321f465d",
+      "fieldPath": "metadata.originalData.logoUrl",
+      "oldUrl": "https://i.ibb.co/HTwjT7fx/partner-cyeb-budakal-sz.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/fcdf81d6a9d1ef3677ffce3f7a56ec12a537ed3bf86585699d515f99a1316e6a.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "68f790df3ced8e1a321f465e",
+      "fieldPath": "metadata.logoUrl",
+      "oldUrl": "https://i.ibb.co/prJYBxqk/partner-csugr-i-kk.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/05632d2b4b8b1050101ce355978e23c2ba23cf6573d01cc2b0d25d96cbf01f4c.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "68f790df3ced8e1a321f465e",
+      "fieldPath": "metadata.originalData.logoUrl",
+      "oldUrl": "https://i.ibb.co/prJYBxqk/partner-csugr-i-kk.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/05632d2b4b8b1050101ce355978e23c2ba23cf6573d01cc2b0d25d96cbf01f4c.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "68f791365a7f97910b39fc31",
+      "fieldPath": "metadata.logoUrl",
+      "oldUrl": "https://i.ibb.co/hRRRLnPW/Ferencv-rosi-Torna-Club-K-zilabda.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/629ccc28b720cc6aa6a4da762f7c34e957e10d7462257cb1e8ed834cd4bd2354.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "68f791365a7f97910b39fc31",
+      "fieldPath": "metadata.sportsDb.badge",
+      "oldUrl": "https://i.ibb.co/hRRRLnPW/partner-ftc-rail-cargo-hung-ria.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/629ccc28b720cc6aa6a4da762f7c34e957e10d7462257cb1e8ed834cd4bd2354.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "68f791365a7f97910b39fc31",
+      "fieldPath": "metadata.originalData.logoUrl",
+      "oldUrl": "https://i.ibb.co/hRRRLnPW/Ferencv-rosi-Torna-Club-K-zilabda.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/629ccc28b720cc6aa6a4da762f7c34e957e10d7462257cb1e8ed834cd4bd2354.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "68f791365a7f97910b39fc31",
+      "fieldPath": "metadata.originalData.sportsDb.badge",
+      "oldUrl": "https://i.ibb.co/hRRRLnPW/partner-ftc-rail-cargo-hung-ria.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/629ccc28b720cc6aa6a4da762f7c34e957e10d7462257cb1e8ed834cd4bd2354.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "68ff6e8ba2b0252e38f37cff",
+      "fieldPath": "metadata.logoUrl",
+      "oldUrl": "https://i.ibb.co/gZJQMBVL/partner-duna-jv-rosi-ac-lbik-k.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/5fde06a287fdb49145fc20be0137084dc8a8a25f7371c73b656b066136e1f9a9.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "68ff6e8ba2b0252e38f37cff",
+      "fieldPath": "metadata.originalData.logoUrl",
+      "oldUrl": "https://i.ibb.co/gZJQMBVL/partner-duna-jv-rosi-ac-lbik-k.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/5fde06a287fdb49145fc20be0137084dc8a8a25f7371c73b656b066136e1f9a9.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "68ff6e9da2b0252e38f37d00",
+      "fieldPath": "metadata.logoUrl",
+      "oldUrl": "https://i.ibb.co/ZpjfLBX9/partner-sport-club-cs-kszereda.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/f0b964160319f151e1f2d23025a29948045878a9cd5567207374920c58905812.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "68ff6e9da2b0252e38f37d00",
+      "fieldPath": "metadata.originalData.logoUrl",
+      "oldUrl": "https://i.ibb.co/ZpjfLBX9/partner-sport-club-cs-kszereda.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/f0b964160319f151e1f2d23025a29948045878a9cd5567207374920c58905812.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "68ff6ec6a2b0252e38f37d01",
+      "fieldPath": "metadata.logoUrl",
+      "oldUrl": "https://i.ibb.co/mVWSZ2cJ/partner-budapest-j-gkorong-akad-mia-hc.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/59bc7313aebc1604a54b08f885f3cb226412a444b751149db4c547d299bf43c1.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "68ff6ec6a2b0252e38f37d01",
+      "fieldPath": "metadata.originalData.logoUrl",
+      "oldUrl": "https://i.ibb.co/mVWSZ2cJ/partner-budapest-j-gkorong-akad-mia-hc.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/59bc7313aebc1604a54b08f885f3cb226412a444b751149db4c547d299bf43c1.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "68ff6ed6a2b0252e38f37d02",
+      "fieldPath": "metadata.logoUrl",
+      "oldUrl": "https://i.ibb.co/FvRJJ89/partner-asc-corona-bra-ov.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/a428787e3b13b4dd30afe45cf87862efa92118e74e705a9ba3f44e401a709494.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "68ff6ed6a2b0252e38f37d02",
+      "fieldPath": "metadata.originalData.logoUrl",
+      "oldUrl": "https://i.ibb.co/FvRJJ89/partner-asc-corona-bra-ov.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/a428787e3b13b4dd30afe45cf87862efa92118e74e705a9ba3f44e401a709494.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "68ff6ef8a2b0252e38f37d03",
+      "fieldPath": "metadata.logoUrl",
+      "oldUrl": "https://i.ibb.co/nMKSv4X7/partner-dvtk-jegesmedv-k.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/2456fd48ad6b3e20a2c3981436a677f8add3b4c0e64c38c0958fed2cb2c5d9fa.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "68ff6ef8a2b0252e38f37d03",
+      "fieldPath": "metadata.originalData.logoUrl",
+      "oldUrl": "https://i.ibb.co/nMKSv4X7/partner-dvtk-jegesmedv-k.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/2456fd48ad6b3e20a2c3981436a677f8add3b4c0e64c38c0958fed2cb2c5d9fa.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "68ff6f05a2b0252e38f37d04",
+      "fieldPath": "metadata.logoUrl",
+      "oldUrl": "https://i.ibb.co/HftCzDXp/partner-feha19.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/892b76bfa7e156f6166bf1239036b981bedb19948dca92da6128efb968ddf521.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "68ff6f05a2b0252e38f37d04",
+      "fieldPath": "metadata.originalData.logoUrl",
+      "oldUrl": "https://i.ibb.co/HftCzDXp/partner-feha19.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/892b76bfa7e156f6166bf1239036b981bedb19948dca92da6128efb968ddf521.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "68ff6f16a2b0252e38f37d05",
+      "fieldPath": "metadata.logoUrl",
+      "oldUrl": "https://i.ibb.co/MD8TpFks/partner-ftc-telekom-j-gkorong.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/a927e912ee394913ce92c9b4a7f5bbca763e508aaffece2f8804b1893087ebf4.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "68ff6f16a2b0252e38f37d05",
+      "fieldPath": "metadata.originalData.logoUrl",
+      "oldUrl": "https://i.ibb.co/MD8TpFks/partner-ftc-telekom-j-gkorong.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/a927e912ee394913ce92c9b4a7f5bbca763e508aaffece2f8804b1893087ebf4.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "68ff6f26a2b0252e38f37d06",
+      "fieldPath": "metadata.logoUrl",
+      "oldUrl": "https://i.ibb.co/Fkt2n5GB/partner-gyergy-i-hoki-klub.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/2f74cb5335ce92e57606a9bf30dde8436ba4a4f90b488c3ac81f935b57d22ff6.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "68ff6f26a2b0252e38f37d06",
+      "fieldPath": "metadata.originalData.logoUrl",
+      "oldUrl": "https://i.ibb.co/Fkt2n5GB/partner-gyergy-i-hoki-klub.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/2f74cb5335ce92e57606a9bf30dde8436ba4a4f90b488c3ac81f935b57d22ff6.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "68ff6f56a2b0252e38f37d08",
+      "fieldPath": "metadata.logoUrl",
+      "oldUrl": "https://i.ibb.co/dw0wd27h/partner-ute-j-gkorong.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/18d2fcb93b5510146328de8a85d1a09a99a114deeb7579dbd6a3898dafcfdea2.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "68ff6f56a2b0252e38f37d08",
+      "fieldPath": "metadata.originalData.logoUrl",
+      "oldUrl": "https://i.ibb.co/dw0wd27h/partner-ute-j-gkorong.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/18d2fcb93b5510146328de8a85d1a09a99a114deeb7579dbd6a3898dafcfdea2.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "690b2d5c7cb441f56bdda56f",
+      "fieldPath": "metadata.logoUrl",
+      "oldUrl": "https://i.ibb.co/nsqm9mhb/partner-he-do-b-braun-gy-ngy-s.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/f2d5ec72f857d38065acbfffed634f2da293cb5359d583e6865b54c05a4fd316.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "690b2d5c7cb441f56bdda56f",
+      "fieldPath": "metadata.originalData.logoUrl",
+      "oldUrl": "https://i.ibb.co/nsqm9mhb/partner-he-do-b-braun-gy-ngy-s.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/f2d5ec72f857d38065acbfffed634f2da293cb5359d583e6865b54c05a4fd316.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "690b2dd02bda0be324f1c8f3",
+      "fieldPath": "metadata.logoUrl",
+      "oldUrl": "https://i.ibb.co/9Hbpg52d/partner-neka-men.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/8a9e189c3e669d505418c43f8587680d10416c3c3597cc1807555a2d8e1ed15c.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "690b2dd02bda0be324f1c8f3",
+      "fieldPath": "metadata.originalData.logoUrl",
+      "oldUrl": "https://i.ibb.co/9Hbpg52d/partner-neka-men.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/8a9e189c3e669d505418c43f8587680d10416c3c3597cc1807555a2d8e1ed15c.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "690b2e952bda0be324f1c8f6",
+      "fieldPath": "metadata.logoUrl",
+      "oldUrl": "https://i.ibb.co/35CKz8sz/partner-pler-budapest.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/2ce8c6bc92d86efc8e0c97c62428cd810e4a447b5708c1207c1a07bd1e50055d.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "690b2e952bda0be324f1c8f6",
+      "fieldPath": "metadata.originalData.logoUrl",
+      "oldUrl": "https://i.ibb.co/35CKz8sz/partner-pler-budapest.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/2ce8c6bc92d86efc8e0c97c62428cd810e4a447b5708c1207c1a07bd1e50055d.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "690b2f5d176fe66095c37111",
+      "fieldPath": "metadata.logoUrl",
+      "oldUrl": "https://i.ibb.co/KxmzpVcW/partner-szigetszentmikl-si-ksk.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/3193ad7356eecc9832d024a944916a66f2cbbe512f5ddc4e73772c450a4baf2c.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "690b2f5d176fe66095c37111",
+      "fieldPath": "metadata.sportsDb.badge",
+      "oldUrl": "https://i.ibb.co/JFHSJddr/Szigetszentmikl-si-KSK.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/3193ad7356eecc9832d024a944916a66f2cbbe512f5ddc4e73772c450a4baf2c.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "690b2f5d176fe66095c37111",
+      "fieldPath": "metadata.originalData.logoUrl",
+      "oldUrl": "https://i.ibb.co/KxmzpVcW/partner-szigetszentmikl-si-ksk.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/3193ad7356eecc9832d024a944916a66f2cbbe512f5ddc4e73772c450a4baf2c.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "690b2f5d176fe66095c37111",
+      "fieldPath": "metadata.originalData.sportsDb.badge",
+      "oldUrl": "https://i.ibb.co/JFHSJddr/Szigetszentmikl-si-KSK.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/3193ad7356eecc9832d024a944916a66f2cbbe512f5ddc4e73772c450a4baf2c.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "690b2fc4a9ae1682cbc211ce",
+      "fieldPath": "metadata.logoUrl",
+      "oldUrl": "https://i.ibb.co/HpXWS1hx/partner-mol-tatab-nya.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/f4dc08918afb1e6d7c7d90770ee3fd5f39b74cd25d3cfc488d8854cd63b2f0b1.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "690b2fc4a9ae1682cbc211ce",
+      "fieldPath": "metadata.originalData.logoUrl",
+      "oldUrl": "https://i.ibb.co/HpXWS1hx/partner-mol-tatab-nya.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/f4dc08918afb1e6d7c7d90770ee3fd5f39b74cd25d3cfc488d8854cd63b2f0b1.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "690b7b709d4379f4a6f10ace",
+      "fieldPath": "metadata.logoUrl",
+      "oldUrl": "https://i.ibb.co/gbTRcxHW/partner-red-bull-salzburg.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/40c1f2ce4ab2853e3692aecbd74b1d7b73964d0a5bcd944aa5f0b0f4701ed8a2.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "690b7b709d4379f4a6f10ace",
+      "fieldPath": "metadata.originalData.logoUrl",
+      "oldUrl": "https://i.ibb.co/gbTRcxHW/partner-red-bull-salzburg.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/40c1f2ce4ab2853e3692aecbd74b1d7b73964d0a5bcd944aa5f0b0f4701ed8a2.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "690b7be28aa91a654900dbf0",
+      "fieldPath": "metadata.logoUrl",
+      "oldUrl": "https://i.ibb.co/gbF9rHH2/partner-erc-ingolstadt.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/110907b094c3ea0fc11b68eb9cf9338d137751d734b2c6fd8f434d332431a7f3.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "690b7be28aa91a654900dbf0",
+      "fieldPath": "metadata.originalData.logoUrl",
+      "oldUrl": "https://i.ibb.co/gbF9rHH2/partner-erc-ingolstadt.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/110907b094c3ea0fc11b68eb9cf9338d137751d734b2c6fd8f434d332431a7f3.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "69119f5d04dd4fce07491992",
+      "fieldPath": "metadata.logoUrl",
+      "oldUrl": "https://i.ibb.co/RkBhQgR8/partner-udinese-calcio.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/f9d94fe84cfbb971d252d5044a4cead640182dde7efa7f5bf394809375870c12.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "69119f5d04dd4fce07491992",
+      "fieldPath": "metadata.originalData.logoUrl",
+      "oldUrl": "https://i.ibb.co/RkBhQgR8/partner-udinese-calcio.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/f9d94fe84cfbb971d252d5044a4cead640182dde7efa7f5bf394809375870c12.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "6912f35a5f70cd35acc56bcb",
+      "fieldPath": "metadata.logoUrl",
+      "oldUrl": "https://i.ibb.co/mVCXTzdp/partner-brynas-if.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/2e263b9805a8935909c287358053ea6b294c88bf6fd5bb8bc17b8594a206e36a.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "6912f35a5f70cd35acc56bcb",
+      "fieldPath": "metadata.originalData.logoUrl",
+      "oldUrl": "https://i.ibb.co/mVCXTzdp/partner-brynas-if.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/2e263b9805a8935909c287358053ea6b294c88bf6fd5bb8bc17b8594a206e36a.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "6918b5fcb3044c9228d4db0f",
+      "fieldPath": "metadata.logoUrl",
+      "oldUrl": "https://i.ibb.co/Sbtwhst/partner-ac-milan.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/789e73ed709f015e9d1868ad0beff1f3b0f604cb9760689e63cdc6df43771682.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "6918b5fcb3044c9228d4db0f",
+      "fieldPath": "metadata.originalData.logoUrl",
+      "oldUrl": "https://i.ibb.co/Sbtwhst/partner-ac-milan.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/789e73ed709f015e9d1868ad0beff1f3b0f604cb9760689e63cdc6df43771682.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "693fe06537db12beeb821772",
+      "fieldPath": "metadata.logoUrl",
+      "oldUrl": "https://i.ibb.co/nNmTVcJp/partner-czech-ice-hockey.webp",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/2f2514d8e9f70996a345a6e63b3614716d16a62742111a3706dea22b8e39f471.webp"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "693fe06537db12beeb821772",
+      "fieldPath": "metadata.originalData.logoUrl",
+      "oldUrl": "https://i.ibb.co/nNmTVcJp/partner-czech-ice-hockey.webp",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/2f2514d8e9f70996a345a6e63b3614716d16a62742111a3706dea22b8e39f471.webp"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "693fe240976edb6d33d5f26a",
+      "fieldPath": "metadata.logoUrl",
+      "oldUrl": "https://i.ibb.co/r27TgMX3/partner-finland-ice-hockey.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/d53821dbf4523e965da92c3821083e75dafde8ec0c28b35a683fe854d239c307.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "693fe240976edb6d33d5f26a",
+      "fieldPath": "metadata.originalData.logoUrl",
+      "oldUrl": "https://i.ibb.co/r27TgMX3/partner-finland-ice-hockey.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/d53821dbf4523e965da92c3821083e75dafde8ec0c28b35a683fe854d239c307.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "69414011e82806d5ea6d89dd",
+      "fieldPath": "metadata.logoUrl",
+      "oldUrl": "https://i.ibb.co/Q3LSpL3G/partner-como-1907.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/c615ed1cd109b11e2ea1a70fa83059995012bd8bbf6aab820241beadf841cf7a.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "69414011e82806d5ea6d89dd",
+      "fieldPath": "metadata.originalData.logoUrl",
+      "oldUrl": "https://i.ibb.co/Q3LSpL3G/partner-como-1907.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/c615ed1cd109b11e2ea1a70fa83059995012bd8bbf6aab820241beadf841cf7a.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "694a96990ad78323bea10660",
+      "fieldPath": "metadata.logoUrl",
+      "oldUrl": "https://i.ibb.co/nMDHxXWL/partner-szerencsej-t-k-zrt.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/1810c22848a55b1f5fe4fbb80bee5804a2c7c7b00a16f2bfbca5f50b97cc7d69.jpg"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "694a96990ad78323bea10660",
+      "fieldPath": "metadata.originalData.logoUrl",
+      "oldUrl": "https://i.ibb.co/nMDHxXWL/partner-szerencsej-t-k-zrt.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/1810c22848a55b1f5fe4fbb80bee5804a2c7c7b00a16f2bfbca5f50b97cc7d69.jpg"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "694a96990ad78323bea10660",
+      "fieldPath": "metadata.originalData.stats.reportImage2",
+      "oldUrl": "https://i.ibb.co/Cs0K1rQs/1c7761dfa616.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/17cde33d6ca9ad085de23ed589602a15f4652924bc26ace0e30b84e9e459b35c.jpg"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "694f4f9f23a20bce037225af",
+      "fieldPath": "metadata.logoUrl",
+      "oldUrl": "https://i.ibb.co/HL4SrJhF/partner-acf-fiorentina.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/e2a3d0af507cc17420d88812d7aacf0ae617020b98144141194beab2aed3c626.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "694f4f9f23a20bce037225af",
+      "fieldPath": "metadata.originalData.logoUrl",
+      "oldUrl": "https://i.ibb.co/HL4SrJhF/partner-acf-fiorentina.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/e2a3d0af507cc17420d88812d7aacf0ae617020b98144141194beab2aed3c626.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "694f50a05c89d594d0f47d09",
+      "fieldPath": "metadata.logoUrl",
+      "oldUrl": "https://i.ibb.co/v49BSWgP/partner-ac-monza.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/a83543e72e6d37e2f4393267a65bb8859eefab20ff1f2e2e70815fc827e90a59.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "694f50a05c89d594d0f47d09",
+      "fieldPath": "metadata.originalData.logoUrl",
+      "oldUrl": "https://i.ibb.co/v49BSWgP/partner-ac-monza.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/a83543e72e6d37e2f4393267a65bb8859eefab20ff1f2e2e70815fc827e90a59.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "694f511023a20bce037225b1",
+      "fieldPath": "metadata.logoUrl",
+      "oldUrl": "https://i.ibb.co/4ZMCB4Ts/partner-sevilla-fc.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/5a62a7d722284bd208f0aeff1893c35bd9efc5ea18635c978e05f99dc2c27553.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "694f511023a20bce037225b1",
+      "fieldPath": "metadata.originalData.logoUrl",
+      "oldUrl": "https://i.ibb.co/4ZMCB4Ts/partner-sevilla-fc.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/logos/5a62a7d722284bd208f0aeff1893c35bd9efc5ea18635c978e05f99dc2c27553.png"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "69a54b6de24f1f9ca024a321",
+      "fieldPath": "metadata.originalData.stats.reportImage2",
+      "oldUrl": "https://i.ibb.co/s9nnG7Sp/66075b9e8755.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/e3270db4f10f2e7c77be8907acb325d9156388b0e3af03554cf6beb2990b11c3.png"
+    },
+    {
+      "collection": "settings",
+      "docId": "landingPage",
+      "fieldPath": "staticSnapshot.chartResults[12].result.kpiValue",
+      "oldUrl": "https://i.ibb.co/7xc4w441/08bec7554922.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/ff128e8a16a91e87f8d7e9ac32852e8c17867f35d60b47af75568f021ddb1b50.png"
+    },
+    {
+      "collection": "settings",
+      "docId": "landingPage",
+      "fieldPath": "staticSnapshot.projectStats.reportImage1",
+      "oldUrl": "https://i.ibb.co/7xc4w441/08bec7554922.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/ff128e8a16a91e87f8d7e9ac32852e8c17867f35d60b47af75568f021ddb1b50.png"
+    },
+    {
+      "collection": "projects",
+      "docId": "68e38a7b68f7cf79a92d7ccc",
+      "fieldPath": "stats.reportImage1",
+      "oldUrl": "https://i.ibb.co/svPGr1p0/46a13127dd8c.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/016ff4d88f2213f01c59164022f8fb3be23d16618d43dac51c1cefffca2cffa9.jpg"
+    },
+    {
+      "collection": "projects",
+      "docId": "68f75aca59e5555d8ad05c17",
+      "fieldPath": "stats.fanSelfieSquare3",
+      "oldUrl": "https://i.ibb.co/Q3bR70ch/5009a5d4c801.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/f17f858f1e8519a5983e4776f81e17b718cb707d0619c0846e137319bbcf0530.png"
+    },
+    {
+      "collection": "projects",
+      "docId": "68f8b821ea10e29ce9651ecb",
+      "fieldPath": "stats.reportImage4",
+      "oldUrl": "https://i.ibb.co/mfJMd1c/e3756e942a86.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/c12592231b9c5761e4677e7d526ba3f98dcb4fea65522d88269157239b9d7fa2.jpg"
+    },
+    {
+      "collection": "projects",
+      "docId": "69119f99e3f88d34a9ff8aad",
+      "fieldPath": "stats.fanSelfieLandscape2",
+      "oldUrl": "https://i.ibb.co/JjYHT2PM/a1422f4cfe2c.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/7a205f6efa487d9f2b10ce22288bae296d4b672ea049218cdb93909548260cad.jpg"
+    },
+    {
+      "collection": "projects",
+      "docId": "69119f99e3f88d34a9ff8aad",
+      "fieldPath": "stats.reportImage5",
+      "oldUrl": "https://i.ibb.co/YBfqD6L6/48a56691af28.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/28a6fe1416d2de36b2f6f4bbcc93063387142a93c376bfa7f6e28c0480c4eabe.jpg"
+    },
+    {
+      "collection": "projects",
+      "docId": "69119f99e3f88d34a9ff8aad",
+      "fieldPath": "stats.fanSelfieSquare3",
+      "oldUrl": "https://i.ibb.co/V01mdCG7/417110188bdd.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/1f8da33abd7b0827cce2b0dde9fe5fb94af50dc9362f5f914a379f99e40dde5d.png"
+    },
+    {
+      "collection": "projects",
+      "docId": "69119f99e3f88d34a9ff8aad",
+      "fieldPath": "stats.reportImage9",
+      "oldUrl": "https://i.ibb.co/DXJcbf4/c59d67b6fcec.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/98b3d88c659d25b80fab95f6ca33f3426b28d762e47e15eae6d3e70f29b6e1c9.jpg"
+    },
+    {
+      "collection": "projects",
+      "docId": "69119f99e3f88d34a9ff8aad",
+      "fieldPath": "stats.reportImage10",
+      "oldUrl": "https://i.ibb.co/9dVsRBy/2dc0abba4cda.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/d76bf8025cc9f665507a4d36197735f103d7469ff410686c876a78a9c06545a9.jpg"
+    },
+    {
+      "collection": "projects",
+      "docId": "6999b6c92dde5e2c4c80d819",
+      "fieldPath": "stats.reportImage1",
+      "oldUrl": "https://i.ibb.co/7xc4w441/08bec7554922.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/ff128e8a16a91e87f8d7e9ac32852e8c17867f35d60b47af75568f021ddb1b50.png"
+    },
+    {
+      "collection": "projects",
+      "docId": "69d8e593737eb729c4a77cf5",
+      "fieldPath": "stats.reportImage2",
+      "oldUrl": "https://i.ibb.co/cch5j5SN/a7db3397144c.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/c7b99e703b23ea26179e039f91e28f908a6898b1d7484c94128d4f5369475718.jpg"
+    },
+    {
+      "collection": "projects",
+      "docId": "69e74bf0ffa85be54ed87885",
+      "fieldPath": "stats.reportImage5",
+      "oldUrl": "https://i.ibb.co/WWDp3YXD/aad3702c6446.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/670634887955218fdb4a6e5a36d5803a11203a3d6d5fc7295e6a6c13dc1df60a.jpg"
+    },
+    {
+      "collection": "projects",
+      "docId": "69f348e9a3850ec5a195e21c",
+      "fieldPath": "stats.reportImage1",
+      "oldUrl": "https://i.ibb.co/SXrTrkg9/a905f502d998.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/9d97e3761c5d3c50a6ffd69d7bb20c6e730571888695a6dfef6ff0e7c4dc7472.jpg"
+    },
+    {
+      "collection": "projects",
+      "docId": "69f9e51579264c4da700b26f",
+      "fieldPath": "stats.reportImage3",
+      "oldUrl": "https://i.ibb.co/wrLLQ7Mf/9c58a970fc65.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/305b99dde638d6ff8bcc438f0917d61b1d22a35eae8831147e09f4c14e4e0511.png"
+    },
+    {
+      "collection": "projects",
+      "docId": "69fc87a240ef991305cf0199",
+      "fieldPath": "stats.reportImage1",
+      "oldUrl": "https://i.ibb.co/rKCT88G0/fe02bf947de5.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/fed27611b0829e591dfa81d3c1171562224249fae3922e8bfcb99c7dee5fc6e4.png"
+    },
+    {
+      "collection": "projects",
+      "docId": "69fc87a240ef991305cf0199",
+      "fieldPath": "stats.reportImage3",
+      "oldUrl": "https://i.ibb.co/SzBtNCD/4a3914e3e4f6.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/dcb7c452e3c6712209c008eb79a9202011b40dd85c9144a999c8305a03ea0567.png"
+    },
+    {
+      "collection": "projects",
+      "docId": "69fc87a240ef991305cf0199",
+      "fieldPath": "stats.reportImage5",
+      "oldUrl": "https://i.ibb.co/0jGyQxxs/ebd700be045a.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/95f2813083c01e125bdd46c878803b720ed53f6691bdb6e9c0504a499c4aee35.jpg"
+    },
+    {
+      "collection": "projects",
+      "docId": "6a00552309b14bdfc3d3c9d7",
+      "fieldPath": "stats.reportImage3",
+      "oldUrl": "https://i.ibb.co/k2Lmrb8h/646610fb0aa3.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/db4d4c9eb4cd364aabbdee97b57b5a93f11fb227bcc40b8001b6509be71663e9.png"
+    },
+    {
+      "collection": "projects",
+      "docId": "6a00552309b14bdfc3d3c9d7",
+      "fieldPath": "stats.reportImage6",
+      "oldUrl": "https://i.ibb.co/TMbM2yt7/3d8033595067.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/1a9ec67b54bd10f169cef1e6a20ce334395ea5afb7f01b7c15abdb6feff33462.jpg"
+    },
+    {
+      "collection": "projects",
+      "docId": "6a0c119b2e90f89f221dde2e",
+      "fieldPath": "stats.reportImage6",
+      "oldUrl": "https://i.ibb.co/27kPqD5j/37ba6c63d5e5.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/bc0e3cfbeeb1e4a36eb57b0a65ae5effb0167d83c19664b58c21e8dd12d51739.jpg"
+    },
+    {
+      "collection": "projects",
+      "docId": "6a214813ab2496e096bf189e",
+      "fieldPath": "stats.reportImage2",
+      "oldUrl": "https://i.ibb.co/jZJ9YCp5/97c7bd22308b.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/dbfa353c6cbb584ae7b6c12a8982ca8be7d00856771258bb092a4b3b25c49742.png"
+    },
+    {
+      "collection": "projects",
+      "docId": "6a214813ab2496e096bf189e",
+      "fieldPath": "stats.reportImage3",
+      "oldUrl": "https://i.ibb.co/JW6HMwHd/ac0ebbb005f8.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/1b8aa7677865ce3b82020f27446b9de32c74b3eeba5eddf922990524289af250.png"
+    },
+    {
+      "collection": "projects",
+      "docId": "6a30ffce76e772178de65916",
+      "fieldPath": "stats.reportImage1",
+      "oldUrl": "https://i.ibb.co/kswNTV0V/b0a811f8d143.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/4465e7d31e494e04923d6e4df78283caa21c38c8194f12c6b70f31a0a8709e81.jpg"
+    },
+    {
+      "collection": "projects",
+      "docId": "6a30ffce76e772178de65916",
+      "fieldPath": "stats.reportImage2",
+      "oldUrl": "https://i.ibb.co/tPks7hh5/90383ee150e7.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/4c02319d92467d2fb51a24b8a3b11d43354701347f60f0715d77bd42b2727c80.jpg"
+    },
+    {
+      "collection": "projects",
+      "docId": "6a30ffce76e772178de65916",
+      "fieldPath": "stats.reportImage4",
+      "oldUrl": "https://i.ibb.co/yBp7KXbv/371d6500486e.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/951ca8bccb6067e40a7fcb97c8ed2ccda8bbbd0c64d22cf337b79f296fa9f535.png"
+    },
+    {
+      "collection": "projects",
+      "docId": "6a30ffce76e772178de65916",
+      "fieldPath": "stats.reportImage9",
+      "oldUrl": "https://i.ibb.co/WW6ZWZ6S/ee5b5c6e4bbc.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/65a8a2a7d2099775e88b86bd015d407fca881a0d924039d92b7040a62ab8c8da.jpg"
+    },
+    {
+      "collection": "projects",
+      "docId": "6a562c43c98af6f75c87e39a",
+      "fieldPath": "stats.reportImage2",
+      "oldUrl": "https://i.ibb.co/r23rsRLQ/1782078934230-cube-1.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/6aded145873edaaa8bdce15a8ece19c1ee37331660850ce75ec8152954c937cf.jpg"
+    },
+    {
+      "collection": "projects",
+      "docId": "6a562c43c98af6f75c87e39a",
+      "fieldPath": "stats.reportImage3",
+      "oldUrl": "https://i.ibb.co/v6YjP74r/1781550564236-cube.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/8cdb9dc3fd2ffd5448e53e23511126d9c755216b7cd3b5405e5a8f1f8ae25dd5.jpg"
+    },
+    {
+      "collection": "projects",
+      "docId": "6a6c98a45aaf3f98e5aa9b49",
+      "fieldPath": "stats.reportImage7",
+      "oldUrl": "https://i.ibb.co/W4Nj67Dd/Seyu-EA30-Bio-Tech-USA-Wallet-phone-mockup.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/daae88c9da58cfac8f2c366d11083fdbb1bd6fa4ed79b609d23fdbe131585afb.png"
+    },
+    {
+      "collection": "projects",
+      "docId": "6a7204bb1c4b8a4dc0e7fb0f",
+      "fieldPath": "stats.reportImage6",
+      "oldUrl": "https://i.ibb.co/CKzd73MP/1786544642056-cube.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/e695e3bb20c6ad692d346feae520f5036397f71e71d6aaf25d828dd1275719e0.jpg"
+    },
+    {
+      "collection": "projects",
+      "docId": "6a7f1d5d4b74a0452eed8fce",
+      "fieldPath": "stats.reportImage2",
+      "oldUrl": "https://i.ibb.co/zTyP0wzX/1787414625646-cube.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/4db21c6752ef251f592b2b18ef79f014c1bf500e1372f495c3daba4277c77bc8.jpg"
+    },
+    {
+      "collection": "projects",
+      "docId": "6a7f1d5d4b74a0452eed8fce",
+      "fieldPath": "stats.reportImage3",
+      "oldUrl": "https://i.ibb.co/8pmZhZh/1787415920058-cube.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/982c2cc324694e4a57e756a53805436154f1c38944dead55af6fd82b71f90304.jpg"
+    },
+    {
+      "collection": "projects",
+      "docId": "6a8c078e2a55c5ba28f8a5b3",
+      "fieldPath": "stats.reportImage3",
+      "oldUrl": "https://i.ibb.co/gM9wrjrc/1787407296482-cube.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/9762b0944c5a17dc279d3c0c20f5e40d4bd5ac214ff1e7cbb38dc2c52c263038.jpg"
+    },
+    {
+      "collection": "projects",
+      "docId": "6a8c078e2a55c5ba28f8a5b3",
+      "fieldPath": "stats.reportImage4",
+      "oldUrl": "https://i.ibb.co/fVpcN3H6/Seyu-Women-s-Euro-hockey-Pop-up.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/196f95d9a7d258d736e88cbbfd37a1d8da907991ca1cf172c825b55110fef850.png"
+    }
+  ]
+}
