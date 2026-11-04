@@ -139,11 +139,14 @@ async function uploadToR2(bytes, ext) {
   return { publicUrl, key, sha256 };
 }
 
-async function fetchAndMigrateUrl(url, retries = 0) {
+async function fetchAndMigrateUrl(url, retries = 2) {
   for (let attempt = 0; attempt <= retries; attempt++) {
     try {
+      if (attempt > 0) {
+        await new Promise(r => setTimeout(r, attempt * 1500));
+      }
       const res = await fetch(url, {
-        signal: AbortSignal.timeout(12000),
+        signal: AbortSignal.timeout(30000),
         headers: { 'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7)' },
       });
 
@@ -152,7 +155,7 @@ async function fetchAndMigrateUrl(url, retries = 0) {
       }
 
       if (!res.ok) {
-        if (attempt === retries) return { dead: true, reason: `HTTP ${res.status}` };
+        if (attempt === retries) return { dead: false, failed: true, reason: `HTTP ${res.status}` };
         continue;
       }
 
@@ -180,7 +183,7 @@ async function fetchAndMigrateUrl(url, retries = 0) {
       };
     } catch (e) {
       if (attempt === retries) {
-        return { dead: true, reason: e.message };
+        return { dead: false, failed: true, reason: e.message };
       }
     }
   }
@@ -212,7 +215,7 @@ async function main() {
   console.log(`URLs requiring network fetch/upload: ${toFetch.length}\n`);
 
   // Download & upload in controlled concurrency
-  const CONCURRENCY = 15;
+  const CONCURRENCY = 4;
   let fetchedCount = 0;
   let newR2Count = 0;
   let newDeadCount = 0;
@@ -229,10 +232,12 @@ async function main() {
         cache[url] = result;
         newR2Count++;
         console.log(`[${fetchedCount}/${toFetch.length}] ✓ Migrated: ${url} -> ${result.r2Url}`);
-      } else {
+      } else if (result.dead) {
         dead[url] = { reason: result.reason, checkedAt: new Date().toISOString() };
         newDeadCount++;
         console.log(`[${fetchedCount}/${toFetch.length}] ✗ Dead (${result.reason}): ${url}`);
+      } else {
+        console.warn(`[${fetchedCount}/${toFetch.length}] ⚠️ Transient issue (${result.reason}): ${url}`);
       }
 
       // Save checkpoints every 10 items
