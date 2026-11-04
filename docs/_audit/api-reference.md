@@ -159,6 +159,7 @@ All reads; the aggregation store is `analytics_aggregates` / `partner_analytics`
 
 | Path | Methods | Auth | Request | Response | Side effects |
 |---|---|---|---|---|---|
+| /api/integrations/camera/partners/[messmassPartnerId]/style-context | GET | assertCameraSecret | path ObjectId | `{success,partner,style}` | reads `partners`, `report_styles`; resolves partner style context for camera |
 | /api/integrations/camera/events/[messmassEventId]/frame-context | GET | assertCameraSecret | path ObjectId | `{success,event,partner,template,style}` (`style.page` = the page colours of the style for camera's guest pages); 400 invalid id, 404 unknown event | reads `projects`, `partners`, `report_templates`, `report_styles`, `available_fonts`; resolves the effective template and style for camera's default event frame (camera#231), including the system default style |
 | /api/integrations/camera/partners/[messmassPartnerId]/style-context | GET | assertCameraSecret | path ObjectId | `{success,partner,template,style}` | reads the current partner-owned Messmass style (or its template/system fallback) and guest-page palette for Camera's partner style panel; event overrides are excluded |
 | /api/integrations/camera/events/[messmassEventId]/link-stats | POST | assertCameraSecret | path ObjectId; `{totals:{visitQrCode,visitShortUrl,qrscanAndroid,qrscanIphone}}` (whole numbers 0 to 1e9) | `{success,totals}`; 400 invalid id or totals, 404 unknown event | writes `projects`: the four stats become the value they held at camera's first report plus camera's total (`cameraLinkStats.baseline` and `.totals` keep both; a repeated report changes nothing); `lib/cameraLinkStats.ts` |
@@ -309,6 +310,7 @@ All wrapped in `withOrgContext` (getAdminUser + `x-v3-org-id` injection) except 
 | /api/activation-templates/[id] | GET | requireAdmin | — | `{success,template,yield}` | reads `activation_templates`; computes yield from `activation_participations` |
 | /api/activation-templates/[id]/participations | GET, POST | requireAdmin | POST `{fanIdentityId,responses,occurredAt?}` | `{success,participation\|participations}` | writes `activation_participations` + a `fan_identity_link` (messmass#227) |
 | /api/blob-upload-token | POST | requireSession | `{pathname,contentType}` | Vercel Blob client token | none (mints an upload token) |
+| /api/media/upload | POST | requireSession | FormData `{file, folder?}` or JSON `{data, name?, folder?}` | `{success,url,thumbnail,key,sha256,mirrorUrl?,deleteUrl?}` | stores image to Cloudflare R2 bucket with sha256 key and immutable cache headers |
 | /api/derived-variable-config | GET | none (public-by-design) | — | `{success,config}` | reads derived-variable definitions for report rendering |
 | /api/export/pdf | GET | none (same-origin path allowlist + rate limit) | `?path=/report/<slug>` | `application/pdf` | launches headless Chromium, renders the report page |
 | /api/fan-identities | GET, POST | requireAdmin | POST `{consent}` | `{success,identity\|identities}` | reads/writes `fan_identities` (messmass#227) |

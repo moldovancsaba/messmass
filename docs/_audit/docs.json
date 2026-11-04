@@ -208,6 +208,7 @@
   {"file": "docs/operations/ops-google-sheets-deployment-checklist.md", "title": "Google Sheets Partner Sync \u2013 Deployment & E2E Validation Checklist"},
   {"file": "docs/operations/ops-warp.md", "title": "WARP Guidance"},
   {"file": "docs/operations/partner-report-monitoring.md", "title": "Partner Report Monitoring"},
+  {"file": "docs/operations/r2-image-storage.md", "title": "Image and Media Storage (Cloudflare R2)"},
   {"file": "docs/operations/report-variants-time-period-spec-2026-05-22.md", "title": "Report Variants And Time-Period Selection Spec"},
   {"file": "docs/operations/sec-02-code-injection-audit.md", "title": "OPS-SEC-02: Code injection hardening \u2013 audit"},
   {"file": "docs/operations/sec-03-operational-hardening.md", "title": "OPS-SEC-03: Operational hardening"},
