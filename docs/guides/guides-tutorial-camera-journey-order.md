@@ -1,9 +1,9 @@
 # Tutorial: The order of the pages, and Take photo + Submit (camera app)
 Status: Active
-Last Updated: 2026-10-10T00:00:00.000Z
+Last Updated: 2026-11-04T00:00:00.000Z
 Canonical: Yes
 Owner: Documentation
-Verified against the Camera app code (camera#535, steps 1 and 2)
+Verified against the Camera app code (camera#535, steps 1 and 2; camera#788 journey versions)
 
 > Audience: The people who set up an event in the Camera app (editors, operators) · Prerequisites: The event exists in the Camera app, and your e-mail address has the **Manager** role for its partner · Related: [The acceptance on the "Who are you" page](guides-tutorial-camera-journey-acceptance.md), [The CTA page with a picture](guides-tutorial-camera-cta-page.md), [Camera app integration](guides-tutorial-camera-app.md)
 
@@ -13,6 +13,14 @@ The list **Pages of the user journey** in the event's page editor is the journey
 
 1. **The order of every page**, including the pages marked **Default** (the welcome page, **Before we start** (consent) and **Who are you?**). They have the up and down buttons like your own pages. A default page stays a default: its words still come from the Dictionary and the text levels; only its **place** is yours.
 2. **Take photo and Submit.** By default the photo is saved when the user presses **Continue** after the reframe screen: saving is part of the Take Photo page. If you want the user to **take the photo first and then log in (or see a CTA) before the photo is saved**, untick **Submit is part of this page** on the Take Photo page. A **[Submit]** step appears right after Take Photo; the pages you put between the two run after the photo is taken and before it is saved.
+
+## Choose which journey guests see
+
+Global, Partner and Event User Journey settings can keep more than one named journey version. Creating a version only adds it to the available list; it does not change what guests see. At Global or Partner level, select the version you want as that level's default and save. A child that follows its parent receives that default; a Partner or Event that selects its own version keeps that choice when the parent changes.
+
+In **Event User Journey**, choose **Follow the parent default**, one of the Event's own versions, or **Use this event's own pages**, then save. The page shows the journey currently live and the Event's capture URL and short link. The Event's QR code and existing public URLs keep the same addresses; after the selection is saved, those addresses serve the selected journey. Use the public capture link to check the flow on a phone before the event.
+
+Creating an Event version and selecting it are separate actions. If you create another version, choose it in **Journey shown to event guests** and save when you are ready to publish it for that Event.
 
 ## Before you start
 
@@ -57,6 +65,14 @@ Az esemény oldalszerkesztőjében a **Pages of the user journey** lista a felha
 
 1. **Minden oldal sorrendjét**, a **Default** jelölésű oldalakét is (az üdvözlő oldal, a **Before we start** (hozzájárulás) és a **Who are you?**). Nekik is van fel és le gombjuk, mint a saját oldalaknak. Egy alapértelmezett oldal alapértelmezett marad: a szövegei továbbra is a Szótárból és a szövegszintekből jönnek, csak a **helye** a tiéd.
 2. **Fotózás és Beküldés.** Alapesetben a fotó akkor mentődik, amikor a felhasználó a kép igazítása után a **Continue** gombot nyomja: a mentés a Take Photo oldal része. Ha azt szeretnéd, hogy a felhasználó **előbb lefotózza magát, és csak utána jelentkezzen be (vagy lásson egy CTA oldalt), mielőtt a fotó mentődik**, vedd ki a pipát a **Submit is part of this page** jelölőnégyzetből a Take Photo oldalon. Egy **[Submit]** lépés jelenik meg közvetlenül a Take Photo után; a kettő közé tett oldalak a fotó elkészülte után és a mentés előtt jelennek meg.
+
+## Annak kiválasztása, melyik utat látják a vendégek
+
+A Global, Partner és Event User Journey beállításokban több, névvel ellátott útverziót is megtarthatsz. Az új verzió létrehozása csak hozzáadja azt a választható listához; önmagában nem változtatja meg, mit látnak a vendégek. Global vagy Partner szinten válaszd ki, melyik verzió legyen az adott szint alapértelmezett útja, majd mentsd el. A szülő útját követő gyermek megkapja ezt az alapértelmezést; a saját verziót választó Partner vagy Event választása nem változik, amikor a szülő módosul.
+
+Az **Event User Journey** részen válaszd a **Follow the parent default** lehetőséget, az Event egyik saját verzióját vagy a **Use this event's own pages** lehetőséget, majd mentsd el. Az oldal megmutatja, melyik út van éppen használatban, valamint az Event fotózó linkjét és rövid linkjét. Az Event QR-kódjának és a már létező nyilvános linkeknek a címe nem változik; a mentés után ezek a kiválasztott utat jelenítik meg. Az esemény előtt telefonon is ellenőrizd a nyilvános fotózó linken.
+
+Az Event-verzió létrehozása és kiválasztása két külön művelet. Ha újabb verziót hozol létre, válaszd ki a **Journey shown to event guests** mezőben, és akkor mentsd el, amikor készen állsz arra, hogy az adott Event vendégei ezt lássák.
 
 ### Mit kell előtte tudni?
 
