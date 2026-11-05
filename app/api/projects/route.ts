@@ -1511,6 +1511,21 @@ export async function DELETE(request: NextRequest) {
       await cleanupRemovedHashtags(db, allDeletedHashtagRepresentations);
     }
 
+    // Cascading cleanup of dependent analyses (UJ-010)
+    // Prevent orphaned AI summaries and mark photo analyses as tombstoned
+    try {
+      await Promise.all([
+        db.collection('ai_analysis_summaries').deleteMany({ eventId: projectId }),
+        db.collection('fanmass_camera_photo_analyses').updateMany(
+          { eventId: projectId },
+          { $set: { tombstone: true, tombstonedAt: new Date() } }
+        ),
+      ]);
+      logInfo('Cascaded deletion to AI analysis summaries and tombstoned photo analyses', { context: 'projects', projectId });
+    } catch (cleanupError) {
+      logWarn('Failed to cascade cleanup for dependent analyses', { context: 'projects', projectId }, cleanupError instanceof Error ? cleanupError : new Error(String(cleanupError)));
+    }
+
     return NextResponse.json({ success: true });
 
   } catch (error) {

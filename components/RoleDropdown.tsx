@@ -8,7 +8,7 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { createPortal } from 'react-dom';
 import type { UserRole } from '@/lib/users';
-import { getRoleBadgeColor, getRoleDisplayName } from '@/lib/permissions';
+import { getRoleBadgeColor, getRoleDisplayName, hasMinimumRole } from '@/lib/permissions';
 
 interface RoleDropdownProps {
   userId: string;
@@ -89,7 +89,7 @@ export default function RoleDropdown({
   
   // WHAT: Check if current user is superadmin
   // WHY: Only superadmins can change roles
-  const isSuperadmin = currentUserRole === 'superadmin';
+  const isSuperadmin = hasMinimumRole(currentUserRole, 'superadmin');
   const isSelf = userId === currentUserId;
   
   // WHAT: Available roles for dropdown

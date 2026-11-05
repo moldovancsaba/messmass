@@ -399,7 +399,7 @@ function buildScopeActions(
 ): SponsorshipActionLinks {
   if (scopeType === 'partner' && scopeId) {
     return {
-      reportUrl: partner?.viewSlug ? `/partner-report/${partner.viewSlug}` : null,
+      reportUrl: partner?.viewSlug ? `/partner-report/${partner.viewSlug}` : `/partner-report/${scopeId}`,
       adminUrl: `/admin/partners/${scopeId}/analytics`,
       activationUrl: buildActivationUrl(scopeType, scopeId, rangePreset),
     };
@@ -415,7 +415,7 @@ function buildScopeActions(
 
   if (scopeType === 'project' && scopeId) {
     return {
-      reportUrl: project?.viewSlug ? `/report/${project.viewSlug}` : null,
+      reportUrl: project?.viewSlug ? `/report/${project.viewSlug}` : `/report/${scopeId}`,
       adminUrl: '/admin/events',
       activationUrl: buildActivationUrl(scopeType, scopeId, rangePreset),
     };
@@ -960,7 +960,7 @@ export async function getSponsorshipHubData({
         adValue: aggregate.adMetrics?.totalROI || 0,
         bitlyClicks: bitly.clicks,
         engagementRate: aggregate.fanMetrics?.engagementRate || 0,
-        reportUrl: project?.viewSlug ? `/report/${project.viewSlug}` : null,
+        reportUrl: project?.viewSlug ? `/report/${project.viewSlug}` : (projectId ? `/report/${projectId}` : null),
       });
       partnerActivity.set(resolvedPartnerId, partner);
     }
@@ -1078,7 +1078,7 @@ export async function getSponsorshipHubData({
       topReferrers: summarizeMap(bitly.topReferrers),
       trend: finalizeTrendSeries(projectTrendMap),
       actions: {
-        reportUrl: project.viewSlug ? `/report/${project.viewSlug}` : null,
+        reportUrl: project.viewSlug ? `/report/${project.viewSlug}` : `/report/${project.projectId}`,
         adminUrl: project.editSlug ? `/edit/${project.editSlug}` : '/admin/events',
         activationUrl: buildActivationUrl('project', project.projectId, rangePreset),
       },
@@ -1147,7 +1147,7 @@ export async function getSponsorshipHubData({
         attributedProjects: [...partner.attributedProjects].sort((a, b) => (b.eventDate || '').localeCompare(a.eventDate || '')),
         attributionSummary: `${partner.eventCount} project aggregates are attributed through analytics_aggregates.partnerContext.partnerId, with project partner1 fallback only when explicit aggregate context is missing.`,
         actions: {
-          reportUrl: partnerDoc?.viewSlug ? `/partner-report/${partnerDoc.viewSlug}` : null,
+          reportUrl: partnerDoc?.viewSlug ? `/partner-report/${partnerDoc.viewSlug}` : `/partner-report/${partner.partnerId}`,
           adminUrl: `/admin/partners/${partner.partnerId}/analytics`,
           activationUrl: buildActivationUrl('partner', partner.partnerId, rangePreset),
         },
@@ -1219,7 +1219,7 @@ export async function getSponsorshipHubData({
         projectAdminUrl: editorUrl || '/admin/events',
         editorUrl,
         partnerAnalyticsUrl: project.primaryPartnerId ? `/admin/partners/${project.primaryPartnerId}/analytics` : null,
-        partnerReportUrl: partnerDoc?.viewSlug ? `/partner-report/${partnerDoc.viewSlug}` : null,
+        partnerReportUrl: partnerDoc?.viewSlug ? `/partner-report/${partnerDoc.viewSlug}` : (project.primaryPartnerId ? `/partner-report/${project.primaryPartnerId}` : null),
         activationUrl: project.actions.activationUrl,
         recommendedActionLabel,
         recommendedActionUrl,
