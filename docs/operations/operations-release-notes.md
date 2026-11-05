@@ -1,8 +1,13 @@
 # {messmass} Release Notes
 Status: Active
-Last Updated: 2026-10-20T17:50:29.000Z
+Last Updated: 2026-11-04T12:00:00.000Z
 Canonical: No
 Owner: Operations
+
+## [v12.3.44] — 2026-11-04 — Camera journey version guide
+
+- **Added (docs):** the Camera journey guide (English and Hungarian) explains named Global, Partner and Event journey versions, explicit activation, inheritance, and selecting the journey served by an event's stable capture URL, short link and QR code. The tutorial index describes the expanded coverage.
+- **Verification:** guide links and bilingual content checked; `npm run inventory:check`, `npm run docs:audit`, and `npm run version:verify` passed. No Messmass application code or production data changed.
 
 ## [v12.3.43] — 2026-10-20T16:45:17.000Z — AI Analytics shows exact per-photo results
 
