@@ -94,8 +94,13 @@ const PRINT_VIEWPORT_HEIGHT = 1400;
 // bundler won't cooperate" (README, "-min Package" section), not a workaround improvised
 // here. Bump CHROMIUM_PACK_VERSION and package.json's @sparticuz/chromium-min version
 // together when upgrading.
-const CHROMIUM_PACK_VERSION = '149.0.0';
-const CHROMIUM_PACK_URL = `https://github.com/Sparticuz/chromium/releases/download/v${CHROMIUM_PACK_VERSION}/chromium-v${CHROMIUM_PACK_VERSION}-pack.x64.tar`;
+const CHROMIUM_PACK_VERSION = '153.0.0';
+const CHROMIUM_ARCH = process.arch === 'arm64' ? 'arm64' : 'x64';
+const CHROMIUM_PACK_URLS = [
+  process.env.CHROMIUM_PACK_URL,
+  `https://github.com/Sparticuz/chromium/releases/download/v${CHROMIUM_PACK_VERSION}/chromium-v${CHROMIUM_PACK_VERSION}-pack.${CHROMIUM_ARCH}.tar`,
+  `https://github.com/Sparticuz/chromium/releases/download/v152.0.0/chromium-v152.0.0-pack.${CHROMIUM_ARCH}.tar`,
+].filter(Boolean) as string[];
 
 async function launchBrowser() {
   const isServerless = !!process.env.VERCEL || !!process.env.AWS_LAMBDA_FUNCTION_NAME;
@@ -105,9 +110,26 @@ async function launchBrowser() {
       import('@sparticuz/chromium-min'),
       import('puppeteer-core'),
     ]);
+
+    let executablePath: string | null = null;
+    let lastError: unknown = null;
+
+    for (const packUrl of CHROMIUM_PACK_URLS) {
+      try {
+        executablePath = await chromium.executablePath(packUrl);
+        if (executablePath) break;
+      } catch (err) {
+        lastError = err;
+      }
+    }
+
+    if (!executablePath) {
+      throw lastError || new Error('Could not resolve chromium executable path');
+    }
+
     return puppeteer.launch({
       args: chromium.args,
-      executablePath: await chromium.executablePath(CHROMIUM_PACK_URL),
+      executablePath,
       headless: true,
       defaultViewport: null,
     });

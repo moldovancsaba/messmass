@@ -151,13 +151,8 @@ export function useReportExport(options: UseReportExportOptions): UseReportExpor
 
   // WHAT: PDF export handler
   // WHY: Generate an A4 PDF with no chart/image split across a page break
-  // HOW: Hand off to app/api/export/pdf/route.ts, which drives a real headless browser
-  // to this same page and calls its native print pipeline. A GET to a URL that responds
-  // with Content-Disposition: attachment is the download, no client-side rendering or
-  // blob handling involved — this is deliberate: that's what makes it reliable on
-  // mobile browsers, where generating and downloading a client-built PDF blob is a
-  // known-flaky pattern. See app/api/export/pdf/route.ts's top-of-file comment for the
-  // full reasoning.
+  // HOW: Hands off to app/api/export/pdf/route.ts via fetch so errors do not navigate away
+  // to raw JSON. Downloads file blob if successful, falls back to native window.print() if server fails.
   const handlePDFExport = useCallback(async () => {
     console.log(`🗔️ PDF Export clicked (${reportType})`);
     console.log('   Entity:', entity ? '✅' : '❌');
@@ -176,7 +171,31 @@ export function useReportExport(options: UseReportExportOptions): UseReportExpor
 
     const exportUrl = `/api/export/pdf?path=${encodeURIComponent(window.location.pathname + window.location.search)}&filename=${encodeURIComponent(filename)}`;
     console.log('📝 Requesting PDF export:', exportUrl);
-    window.location.href = exportUrl;
+
+    try {
+      const response = await fetch(exportUrl);
+      if (response.ok) {
+        const contentType = response.headers.get('content-type');
+        if (contentType && contentType.includes('application/pdf')) {
+          const blob = await response.blob();
+          const downloadUrl = window.URL.createObjectURL(blob);
+          const link = document.createElement('a');
+          link.href = downloadUrl;
+          link.download = `${filename}.pdf`;
+          document.body.appendChild(link);
+          link.click();
+          link.remove();
+          window.URL.revokeObjectURL(downloadUrl);
+          return;
+        }
+      }
+      // If serverless Chromium export fails or returns an error, fallback to client-side print
+      console.warn('⚠️ Server-side PDF export returned non-PDF or error, using browser print fallback');
+      window.print();
+    } catch (err) {
+      console.warn('⚠️ Server-side PDF export fetch failed, falling back to browser print dialog', err);
+      window.print();
+    }
   }, [entity, filenamePrefix, reportType]);
 
   return {
