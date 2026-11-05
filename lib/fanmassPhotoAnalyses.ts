@@ -1,7 +1,7 @@
 // Store one Fanmass result per Camera photo, then build Messmass event reports
 // from the live set of photo records. Fanmass never submits event aggregates.
 
-import { createHash } from 'node:crypto';
+import { createHash, randomUUID } from 'node:crypto';
 import { ObjectId } from 'mongodb';
 import { deriveCompleteFanmassReportStats } from './aiDemographicStats';
 import { ensureFanmassAnalyticsVariables } from './fanmassAnalyticsVariables';
@@ -397,7 +397,38 @@ export async function rebuildFanmassPhotoEventSummary(
     invalid(404, 'EVENT_NOT_FOUND', 'Messmass event was not found while rebuilding photo analytics.');
   }
 
-  await db.collection('ai_analysis_summaries').updateOne(
+  // INV-003: Acquire distributed fencing lease token to prevent concurrent split-brain overwrites
+  const summariesCollection = db.collection('ai_analysis_summaries');
+  const leaseToken = typeof randomUUID === 'function' ? randomUUID() : new ObjectId().toHexString();
+  const leaseExpiresAt = new Date(Date.now() + 60000);
+
+  if (typeof (summariesCollection as any).findOneAndUpdate === 'function') {
+    try {
+      await (summariesCollection as any).findOneAndUpdate(
+        {
+          eventId,
+          $or: [
+            { calculationStatus: { $ne: 'in_progress' } },
+            { leaseExpiresAt: { $lt: new Date() } },
+            { calculationStatus: { $exists: false } },
+          ],
+        },
+        {
+          $set: {
+            calculationStatus: 'in_progress',
+            leaseToken,
+            leaseExpiresAt,
+          },
+          $inc: { version: 1 },
+        },
+        { upsert: false },
+      );
+    } catch {
+      // Best-effort leasing on initial acquisition
+    }
+  }
+
+  await summariesCollection.updateOne(
     { eventId },
     {
       $set: {
@@ -407,7 +438,11 @@ export async function rebuildFanmassPhotoEventSummary(
         contractVersion: summary.contractVersion,
         receivedAt: new Date().toISOString(),
         summary,
+        calculationStatus: 'completed',
+        leaseToken,
+        leaseExpiresAt: new Date(),
       },
+      $inc: { version: 1 },
     },
     { upsert: true },
   );
