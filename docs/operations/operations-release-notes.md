@@ -8,7 +8,8 @@ Owner: Operations
 
 - **Changed (guide):** the Camera journey guide now explains Global User Journey (GUJ), Partner User Journey (PUJ), and Event User Journey (EUJ), the one-selected-journey fallback chain, explicit activation, propagation only to inheriting children, preservation of legacy event pages, and stable capture/short/QR addresses. English and Hungarian instructions are included.
 - **Maintenance:** report chart defaults now reference the central chart palette, preserving the existing colors while satisfying the GDS color-token gate. The parity fixture and test comment use the same centralized palette / scanner-safe issue references.
-- **Verified:** guide wording reconciled with the Camera journey selection contract. This is a documentation and coordinated fleet-version update; no Messmass runtime behavior changed.
+- **Maintenance:** Inter, Roboto, Poppins, Montserrat, and Pacifico are served from licensed local WOFF2 subsets, removing the production build's network dependency on Google Fonts while preserving font selection.
+- **Verified:** guide wording reconciled with the Camera journey selection contract; production build passed with local font assets. No report or analytics behavior changed.
 
 ## [v12.3.43] — 2026-10-20T16:45:17.000Z — AI Analytics shows exact per-photo results
 

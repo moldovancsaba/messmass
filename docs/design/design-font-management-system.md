@@ -159,7 +159,7 @@ const fonts = await db.collection('available_fonts')
 ### Google Fonts
 - **Category:** `google`
 - **fontFamily:** Uses CSS variable (e.g., `var(--font-inter)`)
-- **Note:** Must be loaded via `next/font/google` in `app/layout.tsx`
+- **Note:** The supported families are self-hosted as WOFF2 subsets in `public/fonts/google/` and declared in `app/styles/local-google-fonts.css`. This keeps builds independent of Google Fonts network availability. License files are included alongside the assets.
 
 ### Custom Fonts
 - **Category:** `custom`
