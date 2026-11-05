@@ -4,7 +4,7 @@ Last Updated: 2026-01-11T22:28:38.000Z
 Canonical: Yes
 Owner: Architecture
 
-**Version:** 12.3.43
+**Version:** 12.3.45
 **Last Updated: 2026-01-11T22:28:38.000Z
 **Status:** ✅ Complete
 
@@ -159,7 +159,7 @@ const fonts = await db.collection('available_fonts')
 ### Google Fonts
 - **Category:** `google`
 - **fontFamily:** Uses CSS variable (e.g., `var(--font-inter)`)
-- **Note:** Must be loaded via `next/font/google` in `app/layout.tsx`
+- **Note:** The supported families are self-hosted as WOFF2 subsets in `public/fonts/google/` and declared in `app/styles/local-google-fonts.css`. This keeps builds independent of Google Fonts network availability. License files are included alongside the assets.
 
 ### Custom Fonts
 - **Category:** `custom`

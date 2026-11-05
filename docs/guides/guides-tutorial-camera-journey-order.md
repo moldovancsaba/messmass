@@ -1,13 +1,33 @@
 # Tutorial: The order of the pages, and Take photo + Submit (camera app)
 Status: Active
-Last Updated: 2026-10-10T00:00:00.000Z
+Last Updated: 2026-11-05T00:00:00.000Z
 Canonical: Yes
 Owner: Documentation
-Verified against the Camera app code (camera#535, steps 1 and 2)
+Verified against the Camera app code (camera#788 follow-up)
 
 > Audience: The people who set up an event in the Camera app (editors, operators) · Prerequisites: The event exists in the Camera app, and your e-mail address has the **Manager** role for its partner · Related: [The acceptance on the "Who are you" page](guides-tutorial-camera-journey-acceptance.md), [The CTA page with a picture](guides-tutorial-camera-cta-page.md), [Camera app integration](guides-tutorial-camera-app.md)
 
 ## What it is & why it matters
+
+### Choose the journey that guests will see
+
+Camera can keep multiple named journeys at each level. Each level has one selected default:
+
+- **Global User Journey (GUJ)** is the fallback for partners that follow the global default.
+- **Partner User Journey (PUJ)** is the fallback for that partner's events that follow the partner default.
+- **Event User Journey (EUJ)** is the flow selected for one event.
+
+An event serves **one complete journey**: its selected EUJ, otherwise its partner's selected PUJ, otherwise the selected GUJ. These journeys do not stack or merge page-by-page. A partner can choose a different PUJ without changing the GUJ; an event can choose a different EUJ without changing the partner's choice. Parent changes flow only to children still following that parent choice.
+
+Open **Global User Journey**, **Partner User Journey**, or **Event User Journey** from the matching scope's Content navigation. The list shows saved versions and the selected default. **Create** saves another named version but does not make it live. Select the version and save the choice to change the default guests receive. Editing the selected parent journey updates children that still inherit it; a child that selected its own journey stays on that journey.
+
+Existing events with their own legacy pages keep those pages until an editor saves them as a named Event Journey and selects it. Event capture links, short links, and QR codes keep their existing addresses and serve the currently effective journey.
+
+Branding, colors, logos, frames, welcome artwork, consent, and event-specific content remain owned by their existing settings; a reusable journey controls the page flow and supported journey settings only.
+
+### A journey example
+
+If the global default is **Standard**, a new partner follows **Standard**. The partner can select **Club version** as its PUJ, and its inheriting events then serve **Club version**. An event can select **Matchday version** as its EUJ; later edits to **Club version** will not change that event. At every step only the one selected effective journey is served.
 
 The list **Pages of the user journey** in the event's page editor is the journey in the order a user goes through it. Two things in it can be changed, and neither changes anything for an event until you do it:
 
@@ -50,6 +70,26 @@ Tick **Submit is part of this page** again and press **Save all**: the **[Submit
 - Words on the pages are edited as always: the page editor, the Dictionary and the text levels.
 
 ## Magyar változat
+
+### Válaszd ki, melyik utat látják a szurkolók
+
+A Camera minden szinten több, névvel ellátott utat tud tárolni. Mindegyik szinten egy kiválasztott alapértelmezés van:
+
+- A **Global User Journey (GUJ)** az alapértelmezését követő partnerek tartalék útja.
+- A **Partner User Journey (PUJ)** az alapértelmezését követő partner eseményeinek tartalék útja.
+- Az **Event User Journey (EUJ)** egy eseményhez kiválasztott út.
+
+Egy esemény **egyetlen teljes utat** szolgál ki: a kiválasztott EUJ-t, ennek hiányában a partner kiválasztott PUJ-jét, ennek hiányában a kiválasztott GUJ-t. Ezek az utak nem rakódnak egymásra, és nem olvadnak össze oldalanként. A partner választhat másik PUJ-t a GUJ módosítása nélkül; az esemény választhat másik EUJ-t a partner választásának módosítása nélkül. A szülő módosításai csak azokra a gyermekekre jutnak tovább, amelyek továbbra is azt a szülői választást követik.
+
+Nyisd meg a megfelelő szint **Global User Journey**, **Partner User Journey** vagy **Event User Journey** oldalát a Content menüben. A lista mutatja az elmentett változatokat és a kiválasztott alapértelmezést. A létrehozás új, névvel ellátott változatot ment, de nem teszi aktívvá. A vendégeknek szánt út megváltoztatásához válaszd ki a változatot, majd mentsd a választást. A kiválasztott szülői út szerkesztése módosítja az azt továbbra is öröklő gyermekek útját; a saját utat választó gyermekeké nem változik.
+
+A saját, régi oldalakkal rendelkező események megtartják ezeket, amíg egy szerkesztő el nem menti azokat névvel ellátott Event Journey-ként, és ki nem választja őket. Az esemény rögzítési linkjei, rövid linkjei és QR-kódjai megtartják a címüket, és mindig az aktuálisan érvényes utat szolgálják ki.
+
+A már meglévő beállításaikban marad a márka, a szín, a logó, a keret, az üdvözlő kép, a hozzájárulás és az eseményspecifikus tartalom; az újrahasználható út csak az oldalfolyamot és az út támogatott beállításait szabályozza.
+
+### Példa
+
+Ha a globális alapértelmezés a **Standard**, az új partner ezt követi. A partner kiválaszthatja a **Club version** PUJ-t, amelyet ezután az ezt követő eseményei használnak. Egy esemény kiválaszthatja a **Matchday version** EUJ-t; a **Club version** későbbi módosításai nem változtatják meg ennek az eseménynek az útját. Minden szinten csak az egyetlen kiválasztott, érvényes út jelenik meg.
 
 ### Mi ez, és miért jó?
 

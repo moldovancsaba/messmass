@@ -4,7 +4,7 @@ Last Updated: 2026-10-20T17:10:00.000Z
 Canonical: Yes
 Owner: Backend
 
-**Version:** 12.3.43
+**Version:** 12.3.45
 _messmass#350 — each entry derived by reading its handler. Auth and route coverage refreshed against the inventory and photo-result analytics refactor on 2026-10-20._
 
 Coverage-measured, per-endpoint reference for every route under `app/api/`. Each entry gives the auth layer, request/response shape, and side effects (DB writes + external calls). For the curated quick reference see [api-reference.md](api-reference.md).

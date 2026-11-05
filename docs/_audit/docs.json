@@ -228,6 +228,7 @@
   {"file": "docs/security/security-overview.md", "title": "Security Overview"},
   {"file": "docs/setup/setup-google-service-account-setup.md", "title": "Google Service Account Setup - Quick Guide"},
   {"file": "gds_fix_handover.md", "title": "GDS fix handover: messmass"},
+  {"file": "public/fonts/google/README.md", "title": "Self-hosted Google Fonts"},
   {"file": "tests/fixtures/layoutV2/readme.md", "title": "LayoutV2 Contract Conformance Fixtures (X-LAYOUT-01)"},
   {"file": "tests/fixtures/layoutV2/validation-checklist.md", "title": "LayoutV2 Validation Checklist (X-LAYOUT-01)"}
  ]

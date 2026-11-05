@@ -1,6 +1,5 @@
 import type { Metadata, Viewport } from 'next';
 import { ColorSchemeScript } from '@mantine/core';
-import { Inter, Roboto, Poppins, Montserrat, Pacifico } from 'next/font/google';
 import '@mantine/core/styles.css';
 import '@mantine/notifications/styles.css';
 import '@sovereignsquad/gds-theme/styles.css';
@@ -10,44 +9,6 @@ import { cookies } from 'next/headers';
 import clientPromise from '@/lib/mongodb';
 import AppProviders from './providers';
 import { DEFAULT_THEME_COLOR } from '@/lib/theme/reportStylePalette';
-
-/* What: Load multiple Google Fonts for admin selection
-   Why: Allows runtime font switching without full reload via CSS variables */
-const inter = Inter({ 
-  subsets: ['latin'],
-  variable: '--font-inter',
-  display: 'swap', // What: Minimize FOUT by showing fallback until font loads
-});
-
-const roboto = Roboto({ 
-  subsets: ['latin'],
-  weight: ['300', '400', '500', '700'],
-  variable: '--font-roboto',
-  display: 'swap',
-});
-
-const poppins = Poppins({ 
-  subsets: ['latin'],
-  weight: ['400', '500', '600', '700'],
-  variable: '--font-poppins',
-  display: 'swap',
-});
-
-const montserrat = Montserrat({
-  subsets: ['latin'],
-  weight: ['400', '500', '600', '700'],
-  variable: '--font-montserrat',
-  display: 'swap',
-});
-
-/* What: Pacifico font for {messmass} branding
-   Why: User-requested font for logo text next to icon */
-const pacifico = Pacifico({
-  subsets: ['latin'],
-  weight: ['400'],
-  variable: '--font-pacifico',
-  display: 'swap',
-});
 
 export const metadata: Metadata = {
   title: '{messmass} - Event Statistics Dashboard',
@@ -128,7 +89,6 @@ export default async function RootLayout({
       // Mantine prescribes suppressHydrationWarning here; it is scoped to this
       // element's own attributes and hides no other mismatch.
       suppressHydrationWarning
-      className={`${inter.variable} ${roboto.variable} ${poppins.variable} ${montserrat.variable} ${pacifico.variable}`}
       data-font={selectedFont}
       // eslint-disable-next-line react/forbid-dom-props
       style={{ ['--active-font' as string]: fontMap[selectedFont] || fontMap.inter } as React.CSSProperties}
@@ -149,7 +109,7 @@ export default async function RootLayout({
         {/* WHAT: Google Material Icons font families
             WHY: Replace emoji with Material Icons throughout the app
             HOW: Load all variants (base, outlined, round) with display=swap for performance
-            NOTE: Material Icons must be loaded via stylesheet (not next/font/google)
+            NOTE: Material Icons must be loaded via a stylesheet, not as a text font
                   because they are icon fonts requiring CSS class mapping.
                   App Router loads these globally (correct), but ESLint rule
                   @next/next/no-page-custom-font is designed for Pages Router only. */}

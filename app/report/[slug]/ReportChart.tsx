@@ -28,7 +28,7 @@ import { safeValidate, validateCriticalCSSVariable, CRITICAL_CSS_VARIABLES } fro
 import { getUserFriendlyErrorMessage } from '@/lib/chartErrorTypes';
 import { validateChartData, formatValidationIssue } from '@/lib/export/chartValidation';
 import type { Chart } from '@/lib/report-calculator';
-import { CHART_THEME_COLORS } from '@/lib/theme/chartPalette';
+import { CHART_COLOR, CHART_THEME_COLORS } from '@/lib/theme/chartPalette';
 
 // Register Chart.js components for pie charts
 ChartJS.register(ArcElement, Tooltip, Legend);
@@ -815,22 +815,22 @@ function PieChart({ result, className }: { result: ChartResult; className?: stri
     const primary = cs.getPropertyValue('--pieColor1').trim() || 
                     cs.getPropertyValue('--primary').trim() || 
                     cs.getPropertyValue('--mm-color-primary-500').trim() || 
-                    '#3B82F6';
+                    CHART_COLOR.blue;
     const secondary = cs.getPropertyValue('--pieColor2').trim() || 
                       cs.getPropertyValue('--secondary').trim() || 
                       cs.getPropertyValue('--mm-color-secondary-500').trim() || 
-                      '#EC4899';
+                      CHART_COLOR.pink;
 
     // 8-color accessible categorical palette
     return [
       primary,
       secondary,
-      '#10B981', // emerald
-      '#F59E0B', // amber
-      '#8B5CF6', // purple
-      '#06B6D4', // cyan
-      '#EF4444', // red
-      '#64748B'  // slate
+      CHART_COLOR.green,
+      CHART_COLOR.amber,
+      CHART_COLOR.purple,
+      CHART_COLOR.cyan,
+      CHART_COLOR.red,
+      CHART_COLOR.grayMuted,
     ];
   };
   
@@ -853,9 +853,13 @@ function PieChart({ result, className }: { result: ChartResult; className?: stri
       label: result.title,
       data: isZeroTotal ? elements.map(() => 1) : elements.map(el => typeof el.value === 'number' ? el.value : 0),
       backgroundColor: isZeroTotal
-        ? elements.map((_, i) => (i % 2 === 0 ? '#E2E8F0' : '#CBD5E1'))
+        ? elements.map((_, i) => (
+            i % 2 === 0
+              ? CHART_THEME_COLORS.zeroSeriesBackgroundA
+              : CHART_THEME_COLORS.zeroSeriesBackgroundB
+          ))
         : elements.map((_, idx) => pieColors[idx % pieColors.length]),
-      borderColor: isZeroTotal ? '#94A3B8' : pieBorderColor,
+      borderColor: isZeroTotal ? CHART_THEME_COLORS.zeroSeriesBorder : pieBorderColor,
       borderWidth: 2,
       hoverOffset: 6
     }]
