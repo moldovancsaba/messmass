@@ -1533,7 +1533,7 @@ function ChartConfigurationEditor({ config, availableVariables, onSave, onUpdate
               {(formData.type === 'pie' || formData.type === 'bar') && (
                 <button
                   type="button"
-                  className="button button-sm button-secondary"
+                  className="btn btn-small btn-secondary"
                   onClick={addElement}
                   disabled={formData.type === 'pie' ? formData.elements.length >= 6 : formData.elements.length >= 7}
                 >
@@ -1567,7 +1567,7 @@ function ChartConfigurationEditor({ config, availableVariables, onSave, onUpdate
                       {canRemove && (
                         <button
                           type="button"
-                          className={`button button-sm button-danger ${styles.removeElementButton}`}
+                          className={`btn btn-small btn-danger ${styles.removeElementButton}`}
                           onClick={() => removeElement(index)}
                         >
                           Remove

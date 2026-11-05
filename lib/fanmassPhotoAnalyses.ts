@@ -391,7 +391,7 @@ export async function rebuildFanmassPhotoEventSummary(
   const summary = aggregatePhotos(eventId, photos);
   const project = await db.collection('projects').findOne(
     { _id: new ObjectId(eventId) },
-    { projection: { stats: 1 } },
+    { projection: { stats: 1, slug: 1 } },
   );
   if (!project && !options.allowMissingProject) {
     invalid(404, 'EVENT_NOT_FOUND', 'Messmass event was not found while rebuilding photo analytics.');
@@ -438,6 +438,17 @@ export async function rebuildFanmassPhotoEventSummary(
     // write. A delete is still complete because the per-photo tombstone and
     // rebuilt summary are durable; ordinary result upserts continue to fail.
     if (!options.allowMissingProject || record(error)?.code !== 'EVENT_NOT_FOUND') throw error;
+  }
+  try {
+    const { revalidatePath } = await import('next/cache');
+    revalidatePath('/report', 'layout');
+    revalidatePath('/partner-report', 'layout');
+    const slug = (project as Record<string, unknown>)?.slug;
+    if (typeof slug === 'string' && slug) {
+      revalidatePath(`/report/${slug}`);
+    }
+  } catch {
+    // Cache revalidation is best-effort when running outside a Next.js request context
   }
   return { eventId, imageCount: photos.length, receivedAt: new Date().toISOString() };
 }
@@ -500,13 +511,19 @@ export async function storeFanmassPhotoAnalysis(
     const existing = await collection.findOne({ _id: id }, { projection: { analysisGeneration: 1, sourceRevision: 1, tombstone: 1 } });
     const stale = isPhotoAnalysisWriteStale(existing as Record<string, unknown> | null, input);
     if (!stale) invalid(409, 'PHOTO_RESULT_CONFLICT', 'The photo result could not be safely upserted.');
+    return {
+      eventId,
+      cameraPhotoId: input.cameraPhotoId,
+      status: 'ignored_stale',
+      receivedAt: new Date().toISOString(),
+    };
   }
 
   const aggregate = await rebuildFanmassPhotoEventSummary(eventId);
   return {
     eventId,
     cameraPhotoId: input.cameraPhotoId,
-    status: stored ? 'stored' : 'ignored_stale',
+    status: 'stored',
     receivedAt: aggregate.receivedAt,
   };
 }
