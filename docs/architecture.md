@@ -115,7 +115,7 @@ it drifts. Do not edit between the markers.
 | **UI Components** | 104 | `components/` |
 | **Utility Modules** | 230 | `lib/` |
 | **Hooks** | 13 | `hooks/` |
-| **Design Tokens** | 408 | `app/styles/theme.css` |
+| **Design Tokens** | 410 | `app/styles/theme.css` |
 | **Utility CSS classes** | 192 | `app/styles/utilities.css` |
 | **App routes (pages)** | 73 | `app/**/page.tsx` |
 | **API routes** | 231 | `app/api/**/route.ts` |

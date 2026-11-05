@@ -221,6 +221,8 @@
   --barColor3: var(--mm-success);
   --barColor4: var(--mm-warning);
   --barColor5: var(--mm-error);
+  --chartBarTrackBackground: var(--mm-gray-100);
+  --chartTrackBackground: var(--mm-gray-100);
   --pieColor1: var(--mm-color-primary-600);
   --pieColor2: var(--mm-color-secondary-500);
   --chartNoDataBackground: var(--mm-gray-50);

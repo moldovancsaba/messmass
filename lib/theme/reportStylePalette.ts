@@ -46,6 +46,7 @@ export const DEFAULT_REPORT_STYLE_COLORS = {
   barColor3: '#10b981ff',
   barColor4: '#f59e0bff',
   barColor5: '#ef4444ff',
+  chartBarTrackBackground: '#f3f4f6ff',
 
   // Pie Charts
   pieColor1: '#3b82f6ff',
@@ -96,6 +97,7 @@ export const LANDING_REPORT_STYLE_COLORS = {
   barColor3: '#f59e0bff',
   barColor4: '#8b5cf6ff',
   barColor5: '#ec4899ff',
+  chartBarTrackBackground: '#f1f5f9ff',
   pieColor1: '#3b82f6ff',
   pieColor2: '#10b981ff',
   pieBorderColor: '#e2e8f0ff',

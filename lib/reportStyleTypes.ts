@@ -49,12 +49,13 @@ export interface ReportStyle {
   // KPI Charts (1 property)
   kpiIconColor: string;                 // Icon color
   
-  // Bar Charts (5 properties)
+  // Bar Charts
   barColor1: string;                    // First bar
   barColor2: string;                    // Second bar
   barColor3: string;                    // Third bar
   barColor4: string;                    // Fourth bar
   barColor5: string;                    // Fifth bar
+  chartBarTrackBackground?: string;    // Bar track background (neutral)
   
   // Pie Charts (3 properties)
   pieColor1: string;                    // First slice
@@ -149,6 +150,7 @@ export const COLOR_FIELDS: ColorFieldDefinition[] = [
   { key: 'barColor3', label: 'Bar Color 3', category: 'Bar Charts', description: 'Third bar color' },
   { key: 'barColor4', label: 'Bar Color 4', category: 'Bar Charts', description: 'Fourth bar color' },
   { key: 'barColor5', label: 'Bar Color 5', category: 'Bar Charts', description: 'Fifth bar color' },
+  { key: 'chartBarTrackBackground', label: 'Bar Track Background', category: 'Bar Charts', description: 'Subtle background track behind bars. Falls back to neutral gray.' },
   
   // Pie Charts
   { key: 'pieColor1', label: 'Pie Color 1', category: 'Pie Charts', description: 'First pie slice fill' },
@@ -254,11 +256,12 @@ export const DEFAULT_STYLE: Omit<ReportStyle, '_id' | 'createdAt' | 'updatedAt'>
  */
 export function withEffectiveStyleDefaults<T extends Partial<ReportStyle>>(
   style: T
-): T & Pick<ReportStyle, 'pageBackground' | 'blockTitleColor'> {
+): T & Pick<ReportStyle, 'pageBackground' | 'blockTitleColor' | 'chartBarTrackBackground'> {
   return {
     ...style,
     pageBackground: style.pageBackground || style.heroBackground,
     blockTitleColor: style.blockTitleColor || style.headingColor,
+    chartBarTrackBackground: style.chartBarTrackBackground || DEFAULT_REPORT_STYLE_COLORS.chartBarTrackBackground,
   };
 }
 
