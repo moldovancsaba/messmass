@@ -9,31 +9,14 @@ import styles from './AiEventReport.module.css';
 
 type Counts = Record<string, number>;
 interface Mention { name: string; count: number }
-interface Moderation {
-  status?: string;
-  flagged?: boolean;
-  severity?: string;
-  flags?: string[];
-}
-interface PhotoResult {
-  cameraPhotoId: string;
-  analyzedAt: string | null;
-  summary: {
-    peopleCounts?: { measured?: number };
-    brandMentions?: Mention[];
-    clubMentions?: Mention[];
-    merchandiseCounts?: Counts;
-    genderProjection?: Counts;
-    ageProjection?: Counts;
-    emotionProjection?: Counts;
-    accessoryProjection?: Counts;
-    moderation?: Moderation;
-  };
-  boxes: { people: Array<Record<string, unknown>>; faces: Array<Record<string, unknown>> };
-}
 interface SummaryDoc {
   eventId: string;
   receivedAt: string;
+  cameraEvent?: {
+    eventId: string | null;
+    mongoId: string | null;
+    analysisUrl: string | null;
+  };
   summary: {
     photoResultsReceived?: number;
     lastAnalyzedAt?: string | null;
@@ -80,14 +63,6 @@ function formatDate(value: string | null | undefined): string {
   }).format(date);
 }
 
-function mentionTotal(items: Mention[] | undefined): number {
-  return (items || []).reduce((sum, item) => sum + (Number.isFinite(item.count) ? Math.max(0, item.count) : 0), 0);
-}
-
-function countTotal(counts: Counts | undefined): number {
-  return Object.values(counts || {}).reduce((sum, count) => sum + (Number.isFinite(count) ? Math.max(0, count) : 0), 0);
-}
-
 function CountsTable({ title, counts }: { title: string; counts: Counts | undefined }) {
   const entries = Object.entries(counts || {}).filter(([, count]) => Number.isFinite(count) && count > 0)
     .sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]));
@@ -126,13 +101,10 @@ export default function AiEventReportView() {
   const params = useParams();
   const eventId = String(params?.eventId || '');
   const [summaryDoc, setSummaryDoc] = useState<SummaryDoc | null>(null);
-  const [photos, setPhotos] = useState<PhotoResult[]>([]);
   const [loading, setLoading] = useState(true);
   const [unauthenticated, setUnauthenticated] = useState(false);
   const [notFound, setNotFound] = useState(false);
   const [error, setError] = useState('');
-  const [photoOffset, setPhotoOffset] = useState(0);
-  const [photoTotal, setPhotoTotal] = useState(0);
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -140,33 +112,28 @@ export default function AiEventReportView() {
     setUnauthenticated(false);
     setNotFound(false);
     try {
-      const [summaryResponse, photosResponse] = await Promise.all([
-        fetch(`/api/analytics/ai/events/${eventId}/summary`, { cache: 'no-store' }),
-        fetch(`/api/analytics/ai/events/${eventId}/photos?limit=100&offset=${photoOffset}`, { cache: 'no-store' }),
-      ]);
-      if (summaryResponse.status === 401 || photosResponse.status === 401) {
+      const response = await fetch(`/api/analytics/ai/events/${eventId}/summary`, { cache: 'no-store' });
+      if (response.status === 401) {
         setUnauthenticated(true);
         return;
       }
-      if (summaryResponse.status === 404) {
+      if (response.status === 404) {
         setNotFound(true);
         return;
       }
-      if (!summaryResponse.ok || !photosResponse.ok) throw new Error('Could not load this event’s photo results.');
-      const [summaryBody, photosBody] = await Promise.all([summaryResponse.json(), photosResponse.json()]);
-      setSummaryDoc(summaryBody.data || null);
-      setPhotos(Array.isArray(photosBody.data?.photos) ? photosBody.data.photos : []);
-      setPhotoTotal(Number(photosBody.data?.total) || 0);
+      if (!response.ok) throw new Error('Could not load this event’s photo results.');
+      const body = await response.json();
+      setSummaryDoc(body.data || null);
     } catch (cause) {
       setError(cause instanceof Error ? cause.message : 'Could not load this event’s photo results.');
     } finally {
       setLoading(false);
     }
-  }, [eventId, photoOffset]);
+  }, [eventId]);
 
   useEffect(() => { void load(); }, [load]);
 
-  if (loading) return <AnalyticsStatePanel variant="loading" title="Loading photo results" description="Reading this event’s saved one-photo analyses and boxes." />;
+  if (loading) return <AnalyticsStatePanel variant="loading" title="Loading photo results" description="Reading this event’s saved photo analysis rollups." />;
   if (unauthenticated) return <AnalyticsStatePanel variant="empty" title="Sign in to view these results" description="Photo analysis is available to administrators." />;
   if (error) return <AnalyticsStatePanel variant="error" title="Could not load the photo results" description={error} action={<button type="button" className="btn btn-secondary" onClick={() => void load()}>Retry</button>} />;
   if (notFound || !summaryDoc) {
@@ -174,7 +141,7 @@ export default function AiEventReportView() {
   }
 
   const summary = summaryDoc.summary;
-  const resultCount = summary.photoResultsReceived ?? photos.length;
+  const resultCount = summary.photoResultsReceived ?? 0;
 
   return (
     <div className={styles.wrapper}>
@@ -182,11 +149,11 @@ export default function AiEventReportView() {
       <AnalyticsSectionCard title="Photo analysis results" subtitle="Messmass combines the stored results from individual Camera photos. No event-wide completion or audience projection is inferred.">
         <dl className={styles.metricsGrid}>
           <div className={styles.metricItem}><dt className={styles.metricLabel}>Photo results received</dt><dd className={styles.metricValue}>{resultCount}</dd></div>
-          <div className={styles.metricItem}><dt className={styles.metricLabel}>People detections</dt><dd className={styles.metricValue}>{summary.peopleCounts?.measured ?? 0}</dd></div>
+          <div className={styles.metricItem}><dt className={styles.metricLabel}>People model estimate (summed)</dt><dd className={styles.metricValue}>{summary.peopleCounts?.measured ?? 0}</dd></div>
           <div className={styles.metricItem}><dt className={styles.metricLabel}>Person boxes</dt><dd className={styles.metricValue}>{summary.personBoxes ?? 0}</dd></div>
           <div className={styles.metricItem}><dt className={styles.metricLabel}>Face boxes</dt><dd className={styles.metricValue}>{summary.faceBoxes ?? 0}</dd></div>
         </dl>
-        <p className={styles.shareNote}>Latest individual photo analysis received: {formatDate(summary.lastAnalyzedAt || summaryDoc.receivedAt)}. People counts are detections, not unique attendees.</p>
+        <p className={styles.shareNote}>Latest individual photo analysis received: {formatDate(summary.lastAnalyzedAt || summaryDoc.receivedAt)}. People count is a summed model estimate across photos, distinct from bounding boxes and attendee counts.</p>
       </AnalyticsSectionCard>
 
       <MentionTable title="Brands" mentions={summary.brandMentions} />
@@ -207,44 +174,33 @@ export default function AiEventReportView() {
       <CountsTable title="Flagged categories" counts={summary.prohibitedContentCounts} />
       <CountsTable title="Check severity" counts={summary.moderationSeverityCounts} />
 
-      <AnalyticsSectionCard title="Results by photo" subtitle={`Showing ${photos.length ? photoOffset + 1 : 0}–${Math.min(photoOffset + photos.length, photoTotal)} of ${photoTotal} individual results, each saved with its detection boxes.`}>
-        {photos.length === 0 ? <p className={styles.shareNote}>No active photo rows were found.</p> : (
-          <div className={styles.photoResultList}>
-            {photos.map((photo) => (
-              <article className={styles.photoResult} key={photo.cameraPhotoId}>
-                <div className={styles.photoResultHeader}>
-                  <h3>Camera photo {photo.cameraPhotoId}</h3>
-                  <time>{formatDate(photo.analyzedAt)}</time>
-                </div>
-                <dl className={styles.photoResultMetrics}>
-                  <div><dt>People detected</dt><dd>{photo.summary.peopleCounts?.measured ?? 0}</dd></div>
-                  <div><dt>Person boxes</dt><dd>{photo.boxes.people?.length ?? 0}</dd></div>
-                  <div><dt>Face boxes</dt><dd>{photo.boxes.faces?.length ?? 0}</dd></div>
-                  <div><dt>Brand appearances</dt><dd>{mentionTotal(photo.summary.brandMentions)}</dd></div>
-                  <div><dt>Club appearances</dt><dd>{mentionTotal(photo.summary.clubMentions)}</dd></div>
-                  <div><dt>Merchandise detections</dt><dd>{countTotal(photo.summary.merchandiseCounts)}</dd></div>
-                </dl>
-                {photo.summary.moderation?.status === 'completed' && (
-                  <p className={styles.shareNote}>
-                    Content check: {photo.summary.moderation.flagged ? 'Flagged for review' : 'No prohibited content detected'}
-                    {photo.summary.moderation.flags?.length ? ` — ${photo.summary.moderation.flags.map((flag) => LABELS[flag] || flag).join(', ')}` : ''}
-                  </p>
-                )}
-                <details>
-                  <summary>View saved detection boxes</summary>
-                  <pre className={styles.boxesJson}>{JSON.stringify(photo.boxes, null, 2)}</pre>
-                </details>
-              </article>
-            ))}
+      <AnalyticsSectionCard
+        title="Per-photo results and human review"
+        subtitle="Individual photo inspection, bounding boxes, processing progress, and human review are managed directly in the Camera workspace."
+      >
+        <div className={styles.cameraLinkSection}>
+          <p className={styles.shareNote}>
+            Messmass aggregates and retains event-level rollups from durable photo results. To inspect one-photo cards, verify detection boxes, or confirm human reviews, open this event in Camera.
+          </p>
+          <div className={styles.actionRow}>
+            {summaryDoc.cameraEvent?.analysisUrl ? (
+              <a
+                href={summaryDoc.cameraEvent.analysisUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="btn btn-primary"
+              >
+                Open Camera Fanmass workspace ↗
+              </a>
+            ) : (
+              <p className={styles.unlinkedNote}>
+                This Messmass event is not linked to a Camera event workspace.
+              </p>
+            )}
           </div>
-        )}
-        {photoTotal > 100 && (
-          <div className={styles.paginationRow}>
-            <button type="button" className={styles.paginationButton} disabled={photoOffset === 0} onClick={() => setPhotoOffset((current) => Math.max(0, current - 100))}>Previous 100</button>
-            <button type="button" className={styles.paginationButton} disabled={photoOffset + photos.length >= photoTotal} onClick={() => setPhotoOffset((current) => current + 100)}>Next 100</button>
-          </div>
-        )}
+        </div>
       </AnalyticsSectionCard>
+
       <div><button type="button" className="btn btn-secondary" onClick={() => void load()}>Refresh results</button></div>
     </div>
   );

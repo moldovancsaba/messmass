@@ -110,7 +110,7 @@ export default function AiAnalyticsView() {
         <dl className={styles.metricsGrid}>
           <div className={styles.coverageItem}><dt className={styles.coverageLabel}>Events with results</dt><dd className={styles.coverageValue}>{totals.eventsWithResults}</dd></div>
           <div className={styles.coverageItem}><dt className={styles.coverageLabel}>Photo results received</dt><dd className={styles.coverageValue}>{totals.photoResultsReceived}</dd></div>
-          <div className={styles.coverageItem}><dt className={styles.coverageLabel}>People detections</dt><dd className={styles.coverageValue}>{totals.peopleDetections}</dd></div>
+          <div className={styles.coverageItem}><dt className={styles.coverageLabel}>People model estimates (summed)</dt><dd className={styles.coverageValue}>{totals.peopleDetections}</dd></div>
           <div className={styles.coverageItem}><dt className={styles.coverageLabel}>Person boxes</dt><dd className={styles.coverageValue}>{totals.personBoxes}</dd></div>
           <div className={styles.coverageItem}><dt className={styles.coverageLabel}>Face boxes</dt><dd className={styles.coverageValue}>{totals.faceBoxes}</dd></div>
           <div className={styles.coverageItem}><dt className={styles.coverageLabel}>Brand appearances</dt><dd className={styles.coverageValue}>{totals.brandAppearances}</dd></div>
@@ -120,7 +120,7 @@ export default function AiAnalyticsView() {
           <div className={styles.coverageItem}><dt className={styles.coverageLabel}>Photos flagged for review</dt><dd className={styles.coverageValue}>{totals.moderationFlaggedPhotos}</dd></div>
         </dl>
         <p className={styles.note}>
-          People detections are photo-level detections, not unique attendees. The result count is how many analyses Messmass received; it is not the number of eligible Camera photos and does not imply event completion.
+          People model estimates are photo-level summed estimates, distinct from bounding boxes and unique attendee counts. The result count is how many analyses Messmass received; it is not the number of eligible Camera photos and does not imply event completion.
         </p>
       </AnalyticsSectionCard>
 
@@ -137,7 +137,7 @@ export default function AiAnalyticsView() {
                 <p className={styles.eventDate}>{event.eventDate || 'Event date not set'}</p>
                 <dl className={styles.eventMetrics}>
                   <div><dt>Photo results received</dt><dd>{event.photoResultsReceived}</dd></div>
-                  <div><dt>People detections</dt><dd>{event.peopleDetections}</dd></div>
+                  <div><dt>People model estimate (summed)</dt><dd>{event.peopleDetections}</dd></div>
                   <div><dt>Person boxes</dt><dd>{event.personBoxes}</dd></div>
                   <div><dt>Face boxes</dt><dd>{event.faceBoxes}</dd></div>
                   <div><dt>Brand appearances</dt><dd>{event.brandAppearances}</dd></div>
