@@ -178,7 +178,7 @@ export default function ClickerManagerPage() {
       <UnifiedAdminHeroWithSearch
         title="↔️ Clicker Sets"
         subtitle="Configure reusable clicker layouts, variable groups, and editor ordering"
-        backLink="/admin/reports"
+        backLink="/admin"
         actionButtons={[
           { label: 'New Group', onClick: () => setCreateOpen(true), variant: 'primary', icon: '➕', disabled: !selectedSetId },
           { label: 'Add Report Content', onClick: async () => {

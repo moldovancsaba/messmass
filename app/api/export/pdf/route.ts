@@ -99,6 +99,7 @@ const CHROMIUM_ARCH = process.arch === 'arm64' ? 'arm64' : 'x64';
 const CHROMIUM_PACK_URLS = [
   process.env.CHROMIUM_PACK_URL,
   `https://github.com/Sparticuz/chromium/releases/download/v${CHROMIUM_PACK_VERSION}/chromium-v${CHROMIUM_PACK_VERSION}-pack.${CHROMIUM_ARCH}.tar`,
+  `https://github.com/Sparticuz/chromium/releases/download/v149.0.0/chromium-v149.0.0-pack.${CHROMIUM_ARCH}.tar`,
   `https://github.com/Sparticuz/chromium/releases/download/v152.0.0/chromium-v152.0.0-pack.${CHROMIUM_ARCH}.tar`,
 ].filter(Boolean) as string[];
 

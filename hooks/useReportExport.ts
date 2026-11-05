@@ -6,6 +6,7 @@
 
 import { useCallback } from 'react';
 import { exportReportToCSV } from '@/lib/export/csv';
+import { exportReportToPDF } from '@/lib/export/pdf';
 import type { ProjectStats } from '@/lib/report-calculator';
 
 /**
@@ -169,33 +170,13 @@ export function useReportExport(options: UseReportExportOptions): UseReportExpor
       ? `${filenamePrefix}_${entityName.replace(/[^a-zA-Z0-9]/g, '_')}`
       : entityName.replace(/[^a-zA-Z0-9]/g, '_');
 
-    const exportUrl = `/api/export/pdf?path=${encodeURIComponent(window.location.pathname + window.location.search)}&filename=${encodeURIComponent(filename)}`;
-    console.log('📝 Requesting PDF export:', exportUrl);
+    const pathAndQuery = window.location.pathname + window.location.search;
+    console.log('📝 Requesting PDF export for path:', pathAndQuery);
 
-    try {
-      const response = await fetch(exportUrl);
-      if (response.ok) {
-        const contentType = response.headers.get('content-type');
-        if (contentType && contentType.includes('application/pdf')) {
-          const blob = await response.blob();
-          const downloadUrl = window.URL.createObjectURL(blob);
-          const link = document.createElement('a');
-          link.href = downloadUrl;
-          link.download = `${filename}.pdf`;
-          document.body.appendChild(link);
-          link.click();
-          link.remove();
-          window.URL.revokeObjectURL(downloadUrl);
-          return;
-        }
-      }
-      // If serverless Chromium export fails or returns an error, fallback to client-side print
-      console.warn('⚠️ Server-side PDF export returned non-PDF or error, using browser print fallback');
-      window.print();
-    } catch (err) {
-      console.warn('⚠️ Server-side PDF export fetch failed, falling back to browser print dialog', err);
-      window.print();
-    }
+    await exportReportToPDF({
+      pathAndQuery,
+      filename,
+    });
   }, [entity, filenamePrefix, reportType]);
 
   return {
