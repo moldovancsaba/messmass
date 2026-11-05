@@ -21,6 +21,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 import { useAdminAuth } from '@/hooks/useAdminAuth';
 import styles from './analytics.module.css';
 
@@ -326,12 +327,12 @@ function OverviewTab({ data }: { data: PartnerAnalyticsData }) {
                     {bestEvent.fans.toLocaleString()} fans • €{Math.round(bestEvent.adValue).toLocaleString()} ad value
                   </p>
                 </div>
-                <a
+                <Link
                   href="/admin/events"
                   className={`btn btn-primary btn-small ${styles.linkClean}`}
                 >
                   Open Events
-                </a>
+                </Link>
               </div>
             );
           })()}

@@ -117,7 +117,7 @@ it drifts. Do not edit between the markers.
 | **Hooks** | 13 | `hooks/` |
 | **Design Tokens** | 410 | `app/styles/theme.css` |
 | **Utility CSS classes** | 192 | `app/styles/utilities.css` |
-| **App routes (pages)** | 73 | `app/**/page.tsx` |
+| **App routes (pages)** | 74 | `app/**/page.tsx` |
 | **API routes** | 231 | `app/api/**/route.ts` |
 
 The modules with the most importers — the ones whose change radius is
@@ -133,13 +133,13 @@ largest, and the ones to read first:
 | `components/ColoredCard.tsx` | 44 | 52 |
 | `lib/db.ts` | 42 | 17 |
 | `lib/apiClient.ts` | 40 | 258 |
-| `components/MaterialIcon.tsx` | 33 | 119 |
+| `components/MaterialIcon.tsx` | 34 | 119 |
 | `lib/fanmassIntegration.ts` | 31 | 485 |
 | `components/UnifiedAdminHeroWithSearch.tsx` | 27 | 192 |
 | `lib/mongoose-v3.ts` | 21 | 66 |
 | `lib/permissions.ts` | 19 | 141 |
 | `lib/report-calculator.ts` | 19 | 918 |
-| `hooks/useAdminAuth.ts` | 17 | 65 |
+| `hooks/useAdminAuth.ts` | 18 | 65 |
 
 Importers are counted by resolved import specifier, not by symbol name, so
 a re-export through a barrel file counts for the barrel. A module missing
@@ -997,7 +997,7 @@ shows up here on the next regeneration, which is the point.
 
 <!-- GENERATED:routes -->
 
-### Pages (73)
+### Pages (74)
 
 | Route | File |
 |-------|------|
@@ -1026,6 +1026,7 @@ shows up here on the next regeneration, which is the point.
 | `/admin/dashboard` | `app/admin/dashboard/page.tsx` |
 | `/admin/design` | `app/admin/design/page.tsx` |
 | `/admin/events` | `app/admin/events/page.tsx` |
+| `/admin/events/[id]` | `app/admin/events/[id]/page.tsx` |
 | `/admin/events/[id]/kyc-data` | `app/admin/events/[id]/kyc-data/page.tsx` |
 | `/admin/fanmass` | `app/admin/fanmass/page.tsx` |
 | `/admin/filter` | `app/admin/filter/page.tsx` |
