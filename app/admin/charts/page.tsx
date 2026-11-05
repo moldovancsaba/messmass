@@ -3,6 +3,7 @@
 import ChartAlgorithmManager from '@/components/ChartAlgorithmManager';
 import ColoredCard from '@/components/ColoredCard';
 import ReportingWorkspaceNav from '@/components/ReportingWorkspaceNav';
+import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 
@@ -67,7 +68,7 @@ if (loading) {
           <h2 className="text-2xl font-bold text-gray-900 mb-3">Access Denied</h2>
           <p className="text-base text-gray-600 mb-2">You don&apos;t have permission to access the Chart Algorithm Manager.</p>
           <p className="text-sm text-gray-500 mb-6">Only administrators can manage chart configurations.</p>
-          <a href="/admin" className="btn btn-small btn-primary">← Back to Admin Dashboard</a>
+          <Link href="/admin" className="btn btn-small btn-primary">← Back to Admin Dashboard</Link>
         </ColoredCard>
         </div>
       </div>

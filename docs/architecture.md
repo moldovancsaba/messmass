@@ -127,9 +127,9 @@ largest, and the ones to read first:
 |--------|-----------|-------|
 | `lib/config.ts` | 122 | 207 |
 | `lib/mongodb.ts` | 104 | 112 |
+| `lib/auth.ts` | 94 | 118 |
 | `lib/logger.ts` | 94 | 392 |
-| `lib/auth.ts` | 93 | 118 |
-| `lib/apiGuards.ts` | 86 | 390 |
+| `lib/apiGuards.ts` | 85 | 390 |
 | `components/ColoredCard.tsx` | 44 | 52 |
 | `lib/db.ts` | 42 | 17 |
 | `lib/apiClient.ts` | 40 | 258 |
@@ -137,8 +137,8 @@ largest, and the ones to read first:
 | `lib/fanmassIntegration.ts` | 31 | 485 |
 | `components/UnifiedAdminHeroWithSearch.tsx` | 27 | 192 |
 | `lib/mongoose-v3.ts` | 21 | 66 |
+| `lib/permissions.ts` | 19 | 141 |
 | `lib/report-calculator.ts` | 19 | 918 |
-| `lib/permissions.ts` | 18 | 141 |
 | `hooks/useAdminAuth.ts` | 17 | 65 |
 
 Importers are counted by resolved import specifier, not by symbol name, so
@@ -1156,7 +1156,7 @@ means the route calls none — public by construction, or a gap.
 | `/api/analytics/insights/organizations/[orgId]` | GET | `getAdminUser` |
 | `/api/analytics/insights/partners/[partnerId]` | GET | `getAdminUser` |
 | `/api/analytics/insights/summary` | GET | `getAdminUser` |
-| `/api/analytics/partner/[partnerId]` | GET | `requireSession` |
+| `/api/analytics/partner/[partnerId]` | GET | `getAdminUser` |
 | `/api/analytics/sponsorship-hub` | GET | `getAdminUser` |
 | `/api/analytics/trends` | GET | `requireSession` |
 

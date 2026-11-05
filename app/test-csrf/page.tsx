@@ -1,9 +1,14 @@
 'use client';
 
+import { notFound } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import styles from './page.module.css';
 
 export default function TestCSRFPage() {
+  if (process.env.NODE_ENV === 'production') {
+    notFound();
+  }
+
   const [cookieValue, setCookieValue] = useState<string>('');
   const [apiToken, setApiToken] = useState<string>('');
   const [testResult, setTestResult] = useState<string>('');

@@ -66,7 +66,7 @@
   {"path": "/api/analytics/insights/partners/[partnerId]", "methods": ["GET"], "file": "app/api/analytics/insights/partners/[partnerId]/route.ts", "auth_markers": ["getAdminUser"], "no_auth_marker": false},
   {"path": "/api/analytics/insights", "methods": ["GET"], "file": "app/api/analytics/insights/route.ts", "auth_markers": ["getAdminUser"], "no_auth_marker": false},
   {"path": "/api/analytics/insights/summary", "methods": ["GET"], "file": "app/api/analytics/insights/summary/route.ts", "auth_markers": ["getAdminUser"], "no_auth_marker": false},
-  {"path": "/api/analytics/partner/[partnerId]", "methods": ["GET"], "file": "app/api/analytics/partner/[partnerId]/route.ts", "auth_markers": ["requireSession"], "no_auth_marker": false},
+  {"path": "/api/analytics/partner/[partnerId]", "methods": ["GET"], "file": "app/api/analytics/partner/[partnerId]/route.ts", "auth_markers": ["getAdminUser"], "no_auth_marker": false},
   {"path": "/api/analytics/sponsorship-hub", "methods": ["GET"], "file": "app/api/analytics/sponsorship-hub/route.ts", "auth_markers": ["getAdminUser"], "no_auth_marker": false},
   {"path": "/api/analytics/trends", "methods": ["GET"], "file": "app/api/analytics/trends/route.ts", "auth_markers": ["requireSession"], "no_auth_marker": false},
   {"path": "/api/api-football/enrich-partners", "methods": ["GET", "POST"], "file": "app/api/api-football/enrich-partners/route.ts", "auth_markers": ["getAdminUser"], "no_auth_marker": false},

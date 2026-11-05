@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import { notFound } from 'next/navigation';
 import HashtagCategoryDebug from '@/components/HashtagCategoryDebug';
 
 interface ProjectData {
@@ -27,6 +28,10 @@ interface DebugResponse {
 }
 
 export default function HashtagCategoriesDebugPage() {
+  if (process.env.NODE_ENV === 'production') {
+    notFound();
+  }
+
   const [data, setData] = useState<DebugResponse | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
