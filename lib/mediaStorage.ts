@@ -24,11 +24,11 @@ export interface MediaStorageConfig {
 }
 
 export function mediaStorageConfig(env: NodeJS.ProcessEnv = process.env): MediaStorageConfig | null {
-  const accountId = (env.MESSMASS_R2_ACCOUNT_ID || env.R2_ACCOUNT_ID)?.trim();
-  const apiToken = (env.MESSMASS_R2_API_TOKEN || env.R2_API_TOKEN)?.trim();
-  const bucket = (env.MESSMASS_R2_LOGOS_BUCKET || env.R2_BUCKET)?.trim();
+  const accountId = (env.MESSMASS_R2_ACCOUNT_ID || env.R2_ACCOUNT_ID || env.CLOUDFLARE_ACCOUNT_ID)?.trim();
+  const apiToken = (env.MESSMASS_R2_API_TOKEN || env.R2_API_TOKEN || env.CLOUDFLARE_R2_API_TOKEN)?.trim();
+  const bucket = (env.MESSMASS_R2_LOGOS_BUCKET || env.R2_BUCKET || env.CLOUDFLARE_R2_BUCKET)?.trim();
   let base: URL | null = null;
-  const rawBase = (env.MESSMASS_R2_LOGOS_PUBLIC_BASE_URL || env.R2_PUBLIC_BASE_URL)?.trim();
+  const rawBase = (env.MESSMASS_R2_LOGOS_PUBLIC_BASE_URL || env.R2_PUBLIC_BASE_URL || env.CLOUDFLARE_R2_PUBLIC_BASE_URL)?.trim();
   try {
     base = rawBase ? new URL(rawBase) : null;
   } catch {

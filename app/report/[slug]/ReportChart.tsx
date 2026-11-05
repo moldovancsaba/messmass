@@ -2119,8 +2119,10 @@ function TableChart({ result, className }: { result: ChartResult; className?: st
  * UPDATED: Detects real image dimensions and uses them for aspect ratio
  */
 function ImageChart({ result, className }: { result: ChartResult; className?: string }) {
+  const FALLBACK_PLACEHOLDER = 'https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg';
   const formattedValue = formatValue(result.kpiValue, result.formatting);
   const [actualAspectRatio, setActualAspectRatio] = React.useState<string | null>(null);
+  const [hasError, setHasError] = React.useState(false);
   const imgRef = React.useRef<HTMLImageElement>(null);
   
   // WHAT: Detect actual image aspect ratio when image loads
@@ -2196,12 +2198,15 @@ function ImageChart({ result, className }: { result: ChartResult; className?: st
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img 
           ref={imgRef}
-        className={styles.imageContent}
-        src={formattedValue}
-        alt={result.title}
+          className={styles.imageContent}
+          src={hasError || !formattedValue ? FALLBACK_PLACEHOLDER : formattedValue}
+          alt={result.title}
           onLoad={handleImageLoad}
-        onError={(e) => console.error('[ImageChart] Image failed to load:', result.title, e)}
-      />
+          onError={() => {
+            console.error('[ImageChart] Image failed to load, falling back to placeholder:', result.title);
+            if (!hasError) setHasError(true);
+          }}
+        />
       </div>
     </CellWrapper>
   );
