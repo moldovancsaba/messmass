@@ -4,6 +4,12 @@ Last Updated: 2026-11-05T00:00:00.000Z
 Canonical: No
 Owner: Operations
 
+## [v12.3.46] — 2026-11-05 — One journey editor at every Camera scope
+
+- **Changed (guide):** the Camera journey guide now documents the same full journey editor at Global, Partner, and Event scope. It clarifies journey ownership, the single selected effective journey, parent defaults flowing only to children that still inherit them, and the child-owned copy created when a Partner or Event customizes an inherited journey.
+- **Changed (guide):** English and Hungarian instructions explain that partners cannot edit a GUJ in place and events cannot edit an inherited GUJ or PUJ in place; they customize into their own PUJ/EUJ using the shared editor and existing scope-aware content libraries.
+- **Verified:** reconciled against Camera issue #793 and the corresponding local implementation. Camera release checks passed before merge; this Messmass change updates guidance only and does not change runtime behavior.
+
 ## [v12.3.45] — 2026-11-05 — Camera journey inheritance contract
 
 - **Changed (guide):** the Camera journey guide now explains Global User Journey (GUJ), Partner User Journey (PUJ), and Event User Journey (EUJ), the one-selected-journey fallback chain, explicit activation, propagation only to inheriting children, preservation of legacy event pages, and stable capture/short/QR addresses. English and Hungarian instructions are included.

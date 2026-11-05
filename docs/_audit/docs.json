@@ -154,7 +154,7 @@
   {"file": "docs/guides/guides-tutorial-camera-frame-slots.md", "title": "Tutorial: Frame slots, composing the frame of an event (camera app)"},
   {"file": "docs/guides/guides-tutorial-camera-giant-screen.md", "title": "Tutorial: The giant screen (camera app slideshow)"},
   {"file": "docs/guides/guides-tutorial-camera-journey-acceptance.md", "title": "Tutorial: The acceptance on the \"Who are you\" page (camera app)"},
-  {"file": "docs/guides/guides-tutorial-camera-journey-order.md", "title": "Tutorial: The order of the pages, and Take photo + Submit (camera app)"},
+  {"file": "docs/guides/guides-tutorial-camera-journey-order.md", "title": "Tutorial: Choose, edit and order Camera journeys (camera app)"},
   {"file": "docs/guides/guides-tutorial-camera-layouts-messages.md", "title": "Tutorial: Layouts, messages and the dark area at an event (camera app)"},
   {"file": "docs/guides/guides-tutorial-camera-mode.md", "title": "Tutorial: Which camera the photo page uses (camera app)"},
   {"file": "docs/guides/guides-tutorial-camera-sample-selfies.md", "title": "Tutorial: Sample selfies and the photo window of the welcome page screen (camera app)"},
