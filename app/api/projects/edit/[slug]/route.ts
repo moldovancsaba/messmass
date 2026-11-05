@@ -45,12 +45,11 @@ export async function GET(
     //     password -- and issued a write grant for it below.
     const access = await requirePageAccessDecision('edit', [slug, editSlug ?? '', projectId]);
 
-    // Resolved at most once, and not at all when the gate already answered it:
-    // the gate checks for a session before it refuses.
-    let signedIn: boolean | null = !access.allowed ? false : access.via === 'admin' ? true : null;
+    // Resolved at most once: check admin session
+    let adminUser: Awaited<ReturnType<typeof getAdminUser>> | undefined;
     const isSignedIn = async (): Promise<boolean> => {
-      if (signedIn === null) signedIn = Boolean(await getAdminUser());
-      return signedIn;
+      if (adminUser === undefined) adminUser = await getAdminUser();
+      return Boolean(adminUser);
     };
 
     // WHAT: A project _id opens the editor only for a signed-in user, or for a
@@ -62,7 +61,8 @@ export async function GET(
     //     have turned a report link into edit access. A password stored on the
     //     _id itself can still be entered here, so that case gets the
     //     password prompt rather than a dead end.
-    if (!openedByEditSlug && !(access.allowed && access.via === 'grant') && !(await isSignedIn())) {
+    const userIsAdmin = await isSignedIn();
+    if (!openedByEditSlug && !(access.allowed && access.via === 'grant') && !userIsAdmin) {
       if (!access.allowed && (await isPageProtected('edit', slug))) return access.response;
       return NextResponse.json(
         {
@@ -73,7 +73,7 @@ export async function GET(
         { status: 403 }
       );
     }
-    if (!access.allowed) return access.response;
+    if (!access.allowed && !userIsAdmin) return access.response;
 
     // WHAT: Which grants to issue with this response.
     // WHY: PUT /api/projects authorises a non-admin save by an edit grant for
@@ -94,12 +94,12 @@ export async function GET(
     //     address (edit shares were keyed `editSlug || _id`). Without this,
     //     that operator loaded the editor and could not save it.
     const grantPageIds =
-      access.via === 'grant'
+      access.allowed && access.via === 'grant'
         ? Array.from(new Set([
             ...access.heldPageIds,
             ...(editSlug && access.heldPageIds.includes(projectId) ? [editSlug] : []),
           ]))
-        : access.via === 'unprotected' && openedByEditSlug && isBearerSlug(slug)
+        : access.allowed && access.via === 'unprotected' && openedByEditSlug && isBearerSlug(slug)
           ? [slug]
           : [];
 

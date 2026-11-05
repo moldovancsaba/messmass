@@ -19,7 +19,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { ObjectId } from 'mongodb';
 import clientPromise from '@/lib/mongodb';
 import config from '@/lib/config';
-import { requireSession } from '@/lib/apiGuards';
+import { getAdminUser } from '@/lib/auth';
 import { rateLimitMiddleware, RATE_LIMITS } from '@/lib/rateLimit';
 import { logRequestStart, logRequestEnd, logRequestError } from '@/lib/logger';
 
@@ -27,9 +27,11 @@ export async function GET(
   request: NextRequest,
   { params }: { params: Promise<{ partnerId: string }> }
 ) {
-  // SECURITY (messmass#386): require an authenticated admin session.
-  const __denied = await requireSession();
-  if (__denied) return __denied;
+  // SECURITY (INV-001): require authenticated session and enforce tenant isolation
+  const user = await getAdminUser();
+  if (!user) {
+    return NextResponse.json({ success: false, error: 'Sign in to perform this action.' }, { status: 401 });
+  }
 
   const { partnerId } = await params;
   
@@ -85,6 +87,23 @@ export async function GET(
         },
         { status: 404 }
       );
+    }
+
+    // Multi-tenant authorization guard (INV-001)
+    if (user.role !== 'superadmin' && Array.isArray(user.organizationIds) && user.organizationIds.length > 0) {
+      const partnerOrgId = (partner as any).organizationId ? String((partner as any).organizationId) : null;
+      if (!partnerOrgId || !user.organizationIds.includes(partnerOrgId)) {
+        logRequestEnd(startTime, { method: 'GET', pathname: `/api/analytics/partner/${partnerId}` }, 403);
+        return NextResponse.json(
+          {
+            success: false,
+            error: 'Access denied: cross-tenant access prohibited',
+            code: 'CROSS_TENANT_ACCESS_DENIED',
+            timestamp: new Date().toISOString(),
+          },
+          { status: 403 }
+        );
+      }
     }
     
     // Query all aggregates for this partner
