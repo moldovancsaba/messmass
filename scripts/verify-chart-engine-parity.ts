@@ -10,6 +10,7 @@ import * as fs from 'fs';
 import { calculateChartSafe } from '../lib/chartCalculator';
 import { ReportCalculator } from '../lib/report-calculator';
 import type { ChartConfiguration } from '../lib/chartConfigTypes';
+import { CHART_COLOR } from '../lib/theme/chartPalette';
 
 // Load environment variables
 const envPathLocal = path.resolve(__dirname, '../.env.local');
@@ -130,8 +131,8 @@ async function runParityGate() {
         title: 'Gender Demographics',
         type: 'pie',
         elements: [
-          { id: 'e1', label: 'Female', formula: '[female]', color: '#EC4899' },
-          { id: 'e2', label: 'Male', formula: '[male]', color: '#3B82F6' }
+          { id: 'e1', label: 'Female', formula: '[female]', color: CHART_COLOR.pink },
+          { id: 'e2', label: 'Male', formula: '[male]', color: CHART_COLOR.blue }
         ]
       },
       {
@@ -139,11 +140,11 @@ async function runParityGate() {
         title: 'Age Distribution',
         type: 'bar',
         elements: [
-          { id: 'b1', label: 'Gen Alpha', formula: '[genAlpha]', color: '#10B981' },
-          { id: 'b2', label: 'Gen Y/Z', formula: '[genYZ]', color: '#6366F1' },
-          { id: 'b3', label: 'Gen X', formula: '[genX]', color: '#F59E0B' },
-          { id: 'b4', label: 'Boomer', formula: '[boomer]', color: '#EF4444' },
-          { id: 'b5', label: 'Other', formula: '0', color: '#64748B' }
+          { id: 'b1', label: 'Gen Alpha', formula: '[genAlpha]', color: CHART_COLOR.green },
+          { id: 'b2', label: 'Gen Y/Z', formula: '[genYZ]', color: CHART_COLOR.indigo },
+          { id: 'b3', label: 'Gen X', formula: '[genX]', color: CHART_COLOR.amber },
+          { id: 'b4', label: 'Boomer', formula: '[boomer]', color: CHART_COLOR.red },
+          { id: 'b5', label: 'Other', formula: '0', color: CHART_COLOR.grayMuted }
         ]
       },
       {
@@ -151,21 +152,21 @@ async function runParityGate() {
         title: 'Total Remote Fans',
         type: 'kpi',
         formula: '[remoteFans]',
-        elements: [{ id: 'k1', label: 'Fans', formula: '[remoteFans]', color: '#2563EB' }]
+        elements: [{ id: 'k1', label: 'Fans', formula: '[remoteFans]', color: CHART_COLOR.blueDark }]
       },
       {
         id: 'text-demo',
         title: 'Report Summary',
         type: 'text',
         formula: '[reportText1]',
-        elements: [{ id: 't1', label: 'Summary', formula: '[reportText1]', color: '#000000' }]
+        elements: [{ id: 't1', label: 'Summary', formula: '[reportText1]', color: CHART_COLOR.black }]
       },
       {
         id: 'image-demo',
         title: 'Hero Cover',
         type: 'image',
         formula: '[reportImage1]',
-        elements: [{ id: 'i1', label: 'Hero', formula: '[reportImage1]', color: '#000000' }]
+        elements: [{ id: 'i1', label: 'Hero', formula: '[reportImage1]', color: CHART_COLOR.black }]
       }
     ] as any[];
   }

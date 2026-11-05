@@ -4,7 +4,7 @@ Last Updated: 2026-10-20T16:53:00.000Z
 Canonical: Yes
 Owner: Backend
 
-**Version:** 12.3.43
+**Version:** 12.3.45
 
 ## Purpose
 

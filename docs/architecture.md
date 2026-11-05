@@ -4,7 +4,7 @@ Last Updated: 2026-09-09
 Canonical: No
 Owner: Architecture
 
-Version: 12.3.43
+Version: 12.3.45
 
 > **Scope.** This file describes how messmass works *now*: the modules that exist,
 > the routes that are served, the contracts between them. It is not a changelog,
@@ -113,12 +113,12 @@ it drifts. Do not edit between the markers.
 | Category | Count | Location |
 |----------|-------|----------|
 | **UI Components** | 104 | `components/` |
-| **Utility Modules** | 227 | `lib/` |
+| **Utility Modules** | 230 | `lib/` |
 | **Hooks** | 13 | `hooks/` |
 | **Design Tokens** | 408 | `app/styles/theme.css` |
 | **Utility CSS classes** | 192 | `app/styles/utilities.css` |
 | **App routes (pages)** | 73 | `app/**/page.tsx` |
-| **API routes** | 230 | `app/api/**/route.ts` |
+| **API routes** | 231 | `app/api/**/route.ts` |
 
 The modules with the most importers — the ones whose change radius is
 largest, and the ones to read first:
@@ -129,7 +129,7 @@ largest, and the ones to read first:
 | `lib/mongodb.ts` | 104 | 112 |
 | `lib/logger.ts` | 94 | 392 |
 | `lib/auth.ts` | 93 | 118 |
-| `lib/apiGuards.ts` | 85 | 390 |
+| `lib/apiGuards.ts` | 86 | 390 |
 | `components/ColoredCard.tsx` | 44 | 52 |
 | `lib/db.ts` | 42 | 17 |
 | `lib/apiClient.ts` | 40 | 258 |
@@ -137,9 +137,9 @@ largest, and the ones to read first:
 | `lib/fanmassIntegration.ts` | 31 | 485 |
 | `components/UnifiedAdminHeroWithSearch.tsx` | 27 | 192 |
 | `lib/mongoose-v3.ts` | 21 | 66 |
+| `lib/report-calculator.ts` | 19 | 918 |
 | `lib/permissions.ts` | 18 | 141 |
 | `hooks/useAdminAuth.ts` | 17 | 65 |
-| `lib/users.ts` | 17 | 430 |
 
 Importers are counted by resolved import specifier, not by symbol name, so
 a re-export through a barrel file counts for the barrel. A module missing
@@ -1075,7 +1075,7 @@ shows up here on the next regeneration, which is the point.
 | `/terms` | `app/terms/page.tsx` |
 | `/test-csrf` | `app/test-csrf/page.tsx` |
 
-### API routes (230)
+### API routes (231)
 
 `auth` is the guard symbol the route actually calls. A blank cell
 means the route calls none — public by construction, or a gap.
@@ -1434,6 +1434,12 @@ means the route calls none — public by construction, or a gap.
 | `/api/loyalty-missions` | GET, POST | `getAdminUser, requireAdmin` |
 | `/api/loyalty-missions/[id]` | GET | `requireAdmin` |
 | `/api/loyalty-missions/[id]/completions` | GET, POST | `requireAdmin` |
+
+#### `/api/media`
+
+| Route | Methods | Auth |
+|-------|---------|------|
+| `/api/media/upload` | POST | `requireSession` |
 
 #### `/api/notifications`
 
@@ -3925,5 +3931,5 @@ When working with the hashtag categories system:
 ---
 
 *Last Updated: 2026-09-09*
-*Version: 12.3.43*
+*Version: 12.3.45*
 *Status: Production-Ready — Enterprise Event Analytics Platform with Advanced Analytics Infrastructure*

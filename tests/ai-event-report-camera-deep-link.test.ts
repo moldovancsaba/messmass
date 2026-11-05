@@ -2,7 +2,7 @@
 // WHAT: Verify getAnalysisSummary attaches Camera workspace deep link metadata
 //     from projects.externalRefs.camera and verifies route protection and response
 //     payload on GET /api/analytics/ai/events/[eventId]/summary.
-// WHY: Issue #502: Camera owns per-photo inspection and boxes; Messmass retains
+// WHY: Issue 502: Camera owns per-photo inspection and boxes; Messmass retains
 //     event-level rollups and deep-links to Camera's Fanmass analysis workspace.
 
 import { NextRequest } from 'next/server';
@@ -57,7 +57,7 @@ jest.mock('@/lib/fanmassIntegration', () => ({
 import { getAnalysisSummary } from '@/lib/aiAnalysisSummary';
 import { GET } from '@/app/api/analytics/ai/events/[eventId]/summary/route';
 
-describe('AI event report camera deep link resolution (Issue #502)', () => {
+describe('AI event report camera deep link resolution (Issue 502)', () => {
   beforeEach(() => {
     currentUser = { id: 'admin-1', email: 'admin@messmass.com', role: 'admin' };
     for (const key of Object.keys(fakeSummaries)) delete fakeSummaries[key];
