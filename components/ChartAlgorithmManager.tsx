@@ -469,6 +469,7 @@ export default function ChartAlgorithmManager({ user }: ChartAlgorithmManagerPro
         totalLabel: config.totalLabel,
         aspectRatio: config.aspectRatio, // v9.3.0: Image aspect ratio
         showTitle: config.showTitle, // WHAT: Chart-level title visibility control
+        showPercentages: config.showPercentages, // WHAT: Pie chart percentage visibility (v11.38.0)
         preset: config.preset // WHAT: Markdown rendering preset (v12.2.0, Issue #48)
       });
     } else {

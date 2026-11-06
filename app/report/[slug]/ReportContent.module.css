@@ -83,16 +83,18 @@
 }
 
 .blockTitle {
-  font-size: var(--mm-font-size-2xl);
-  font-weight: var(--mm-font-weight-bold);
+  font-size: 1.125rem;
+  font-weight: 600;
+  letter-spacing: -0.015em;
+  line-height: 1.35;
   /* Settable per report style (Section Title). Falls back to the heading colour
      so dark page backgrounds stay readable even on styles that never set it. */
   color: var(--blockTitleColor, var(--headingColor, var(--mm-gray-900)));
   margin: 0;
-  padding-bottom: var(--mm-space-2);
-  border-bottom: none; /* WHAT: No border line after title */
-  background: transparent; /* WHAT: Transparent background for block title */
-  text-align: center; /* WHAT: Center align block titles */
+  padding: var(--mm-space-1) 0;
+  border-bottom: none;
+  background: transparent;
+  text-align: left;
 }
 
 /* WHAT: Row-Based Layout System (v12.1.0)

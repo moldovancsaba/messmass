@@ -484,13 +484,27 @@ export interface CoalescedReportBlock {
 }
 
 /**
- * WHAT: Coalesce consecutive untitled blocks into cohesive multi-row sections
- * WHY: Editors create secondary rows as separate blocks with showTitle: false
+ * WHAT: Strip trailing sequence numbers or Roman numerals from continuation block titles
+ * WHY: Editors created fake continuation blocks named "Overview 2", "Fan data and general 2",
+ *      or "Future Opportunities II" due to legacy 1-row-per-block limits.
+ */
+export function normalizeSectionTitle(rawTitle?: string): string {
+  if (!rawTitle || typeof rawTitle !== 'string') return '';
+  return rawTitle
+    .trim()
+    .replace(/\s+(?:[2-9]|\d{2,}|II|III|IV|V|VI)$/i, '')
+    .trim();
+}
+
+/**
+ * WHAT: Coalesce consecutive untitled or continuation blocks into cohesive multi-row sections
+ * WHY: Editors create secondary rows as separate blocks with showTitle: false or "Section 2" / "II"
  *      (e.g., "Overview 2", "Fan data and general 2", "Future Opportunities II").
  *      Treating them as isolated blocks causes massive 32px gaps, broken layout rhythm,
  *      and orphaned rows in print exports.
- * HOW: Group untitled blocks following a titled block into that block's row list.
- *      Also auto-wrap rows if charts exceed maximum modular capacity (6 units).
+ * HOW: Group untitled or matching-stem blocks following a titled block into that block's row list.
+ *      Also auto-wrap rows if charts exceed maximum modular capacity (6 units) and rebalance
+ *      trailing 1-card orphan rows when possible.
  */
 export function coalesceReportBlocks<T extends {
   id: string;
@@ -507,6 +521,16 @@ export function coalesceReportBlocks<T extends {
 
   for (const block of rawBlocks) {
     const isUntitled = block.showTitle === false;
+    const normalizedCurrentTitle = normalizeSectionTitle(block.title);
+    const prevBlock = coalesced.length > 0 ? coalesced[coalesced.length - 1] : null;
+    const prevNormalizedTitle = prevBlock ? normalizeSectionTitle(prevBlock.title) : '';
+    const isContinuationByTitle = Boolean(
+      prevBlock &&
+      normalizedCurrentTitle &&
+      prevNormalizedTitle &&
+      normalizedCurrentTitle.toLowerCase() === prevNormalizedTitle.toLowerCase()
+    );
+
     const sortedCharts = [...(block.charts || [])].sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
     
     // Chunk charts if the block's own charts exceed row capacity
@@ -539,14 +563,47 @@ export function coalesceReportBlocks<T extends {
       });
     }
 
+    // Rebalance trailing 1-card orphan when a single block wrapped into >= 2 rows
+    // e.g. [3 cards] + [1 small card] where prevRow has >= 4 cards -> [3 cards] + [2 cards]
+    if (chunkedRows.length >= 2) {
+      const lastIdx = chunkedRows.length - 1;
+      const lastRow = chunkedRows[lastIdx];
+      const prevRow = chunkedRows[lastIdx - 1];
+      if (lastRow.charts.length === 1 && prevRow.charts.length >= 4) {
+        const moved = prevRow.charts.pop()!;
+        lastRow.charts.unshift(moved);
+      }
+    }
+
     // Decide whether to attach to previous block or start a new section
-    if (isUntitled && coalesced.length > 0) {
-      const prev = coalesced[coalesced.length - 1];
-      prev.rows.push(...chunkedRows);
+    if ((isUntitled || isContinuationByTitle) && prevBlock) {
+      prevBlock.rows.push(...chunkedRows);
+      // If the newly added row is a single narrow card (width <= 2) and the preceding row has >= 3 cards,
+      // or if the preceding row has room (<= maxRowCapacity - singleCard.width), rebalance so no 1-card orphan remains
+      if (prevBlock.rows.length >= 2) {
+        const lastIdx = prevBlock.rows.length - 1;
+        const lastR = prevBlock.rows[lastIdx];
+        const prevR = prevBlock.rows[lastIdx - 1];
+        const canRebalanceRows =
+          !lastR.blockAspectRatio &&
+          !prevR.blockAspectRatio &&
+          !lastR.tableHeightMultiplier &&
+          !prevR.tableHeightMultiplier;
+        if (canRebalanceRows && lastR.charts.length === 1 && lastR.charts[0].width <= 2) {
+          const prevSum = prevR.charts.reduce((s, c) => s + (c.width || 1), 0);
+          if (prevSum + lastR.charts[0].width <= maxRowCapacity && prevR.charts.length <= 3) {
+            prevR.charts.push(lastR.charts[0]);
+            prevBlock.rows.pop();
+          } else if (prevR.charts.length >= 3) {
+            const moved = prevR.charts.pop()!;
+            lastR.charts.unshift(moved);
+          }
+        }
+      }
     } else {
       coalesced.push({
         id: block.id,
-        title: block.title,
+        title: normalizedCurrentTitle || block.title,
         showTitle: block.showTitle !== false,
         blockAspectRatio: block.blockAspectRatio,
         mobileAspectRatio: block.mobileAspectRatio,

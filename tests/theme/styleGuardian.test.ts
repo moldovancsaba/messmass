@@ -69,13 +69,31 @@ describe('styleGuardian', () => {
     expect(uniqueColors.size).toBe(5);
   });
 
-  test('softens harsh saturated card borders to subtle semi-transparent borders', () => {
+  test('softens harsh saturated card borders to subtle neutral hairline borders', () => {
     const rawStyle = {
       chartBorder: '#99248dff',
+      chartTitleColor: '#99248dff',
+      pieBorderColor: '#99248dff',
+      chartBackground: '#ffffffff',
     };
 
     const guarded = guardReportStyle(rawStyle);
-    expect(guarded.chartBorder).toContain('rgba(');
-    expect(guarded.chartBorder).toContain('0.18');
+    expect(guarded.chartBorder).toBe('rgba(15, 23, 42, 0.08)');
+    expect(guarded.chartTitleColor).toBe('#334155ff');
+    expect(guarded.pieBorderColor).toBe('#ffffffff');
+  });
+
+  test('replaces clashing 5-color rainbow bar palettes with a cohesive tonal brand ramp', () => {
+    const rawStyle = {
+      barColor1: '#2563ebff', // blue
+      barColor2: '#8b5cf6ff', // purple
+      barColor3: '#ef4444ff', // red
+      barColor4: '#f59e0bff', // amber
+      barColor5: '#10b981ff', // emerald
+    };
+
+    const guarded = guardReportStyle(rawStyle);
+    expect(guarded.barColor3).not.toBe('#ef4444ff');
+    expect(guarded.barColor4).not.toBe('#f59e0bff');
   });
 });

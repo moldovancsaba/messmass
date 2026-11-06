@@ -10,43 +10,33 @@
   box-sizing: border-box;
 }
 
-/* Title Zone - fixed height, centered, max 2 lines (Layout Grammar: title zone) */
+/* Title Zone - editorial left-aligned card header, max 2 lines (Layout Grammar: title zone) */
 .titleZone {
   display: flex;
   align-items: center;
-  justify-content: center;
-  text-align: center;
+  justify-content: flex-start;
+  text-align: left;
   overflow: hidden; /* Layout Grammar: title 2-line clamp */
   flex-shrink: 0;
-  /* ponytail: same height-proportional cap as .pieTitleText. CellWrapper is always inside
-     .chart (container-type:size) in report context, so cqh references the card height.
-     In non-report contexts cqh falls back to the viewport/ICB — large enough not to cap. */
-  font-size: min(var(--block-base-font-size), 8cqh);
+  padding: 16px 20px 6px;
+  font-size: var(--block-base-font-size, 0.9375rem);
   height: var(--title-height); /* WHAT: Use CSS custom property for dynamic height */
 }
 
 .title {
   margin: 0;
   padding: 0;
-  line-height: 1.25;
-  /* WHAT: Remove ellipsis display - text should fit or wrap naturally (Layout Grammar: title 2-line clamp) */
-  /* WHY: Ellipsis (...) hides content which is prohibited per requirements */
-  /* HOW: Use overflow: hidden without text-overflow, allow natural wrapping */
+  line-height: 1.3;
+  letter-spacing: -0.01em;
   overflow: hidden; /* Layout Grammar: title 2-line clamp */
-  /* WHAT: Proper word wrapping without breaking words */
-  /* WHY: Words must stay intact, only wrap at word boundaries */
   word-wrap: normal;
   word-break: normal;
   overflow-wrap: break-word;
   hyphens: none;
   white-space: normal;
   font-weight: 600;
-  /* WHAT: Use chartTitleColor from Style Editor, fallback to design token */
-  /* WHY: Chart titles should respect custom style colors */
   color: var(--chartTitleColor, var(--mm-gray-900));
-  /* WHAT: Allow up to 3 lines for titles if needed */
-  /* WHY: Better to show full text than truncate with ellipsis */
-  max-height: calc(1.25em * 3); /* 3 lines max */
+  max-height: calc(1.3em * 3); /* 3 lines max */
 }
 
 /* Subtitle Zone - fixed height, centered, max 2 lines (Layout Grammar: subtitle zone) */

@@ -46,6 +46,9 @@ export interface Chart {
   showTitle?: boolean; // Controls whether title/subtitle appear in rendered chart
   showPercentages?: boolean; // Controls whether pie charts show percentages in legend (v11.38.0)
   preset?: 'standard' | 'compact' | 'hero' | 'callout'; // Markdown rendering preset (v12.2.0, Issue #48)
+  subtitle?: string;
+  showTotal?: boolean;
+  totalLabel?: string;
 }
 
 /**
@@ -119,11 +122,14 @@ export function normalizeToChart(input: Chart | ChartConfiguration): Chart {
     isActive: input.isActive ?? true,
     order: (input as any).order ?? 0,
     elements,
-    formatting: (input as any).formatting,
+    formatting: (input as any).formatting ?? (input as any).kpiFormatting ?? elements[0]?.formatting,
     aspectRatio: (input as any).aspectRatio,
     showTitle: (input as any).showTitle,
     showPercentages: (input as any).showPercentages,
-    preset: (input as any).preset
+    preset: (input as any).preset,
+    subtitle: (input as any).subtitle,
+    showTotal: (input as any).showTotal,
+    totalLabel: (input as any).totalLabel
   };
 }
 
@@ -735,26 +741,37 @@ export class ReportCalculator {
    * NOTE: VALUE charts are deprecated in new system but kept for backward compatibility
    */
   private calculateValue(chart: Chart): ChartResult {
-    const kpiValue = this.evaluateFormula(chart.formula);
-    
     const elements = (chart.elements || []).map(el => ({
       id: (el as any).id,
       label: this.resolveDynamicLabel(el.label),
       value: this.evaluateFormula(el.formula),
       color: el.color,
-      formatting: (el as any).formatting,
+      formatting: (el as any).formatting || (chart as any).barFormatting || chart.formatting,
       type: (el as any).type
     }));
+
+    const validElements = elements.filter(el => typeof el.value === 'number' && el.value >= 0);
+    const elementsTotal = validElements.reduce(
+      (sum, el) => sum + (typeof el.value === 'number' ? el.value : 0),
+      0
+    );
+    const hasDedicatedFormula = Boolean(
+      chart.formula && (!chart.elements?.[0] || chart.formula !== chart.elements[0].formula)
+    );
+    const rawKpi = hasDedicatedFormula ? this.evaluateFormula(chart.formula) : elementsTotal;
 
     return {
       chartId: chart.chartId,
       type: 'value',
       title: chart.title,
+      subtitle: chart.subtitle,
+      totalLabel: chart.totalLabel,
       icon: chart.icon,
       iconVariant: chart.iconVariant,
-      kpiValue: typeof kpiValue === 'number' ? kpiValue : 0,
-      elements: elements.filter(el => typeof el.value === 'number' && el.value >= 0),
-      formatting: chart.formatting,
+      kpiValue: typeof rawKpi === 'number' ? rawKpi : elementsTotal,
+      total: elementsTotal,
+      elements: validElements,
+      formatting: (chart as any).kpiFormatting || chart.formatting,
       showTitle: chart.showTitle,
       preset: chart.preset
     };

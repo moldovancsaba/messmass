@@ -138,7 +138,7 @@ largest, and the ones to read first:
 | `components/UnifiedAdminHeroWithSearch.tsx` | 27 | 192 |
 | `lib/mongoose-v3.ts` | 21 | 66 |
 | `lib/permissions.ts` | 19 | 141 |
-| `lib/report-calculator.ts` | 19 | 918 |
+| `lib/report-calculator.ts` | 19 | 935 |
 | `hooks/useAdminAuth.ts` | 18 | 65 |
 
 Importers are counted by resolved import specifier, not by symbol name, so

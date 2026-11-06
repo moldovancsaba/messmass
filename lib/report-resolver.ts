@@ -23,6 +23,9 @@ export interface Report {
       title: string;
       showTitle: boolean;
       order: number;
+      blockAspectRatio?: string;
+      mobileAspectRatio?: string;
+      tableHeightMultiplier?: number;
       charts: Array<{
         chartId: string;
         width: number;

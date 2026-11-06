@@ -124,10 +124,10 @@ function validateChartConfiguration(config: Partial<ChartConfiguration>): { isVa
     return { isValid: false, error: 'Missing required fields: chartId, title, or type' };
   }
   
-  // WHAT: Chart type validation including text/image/table/valuechain
-  // WHY: Support new chart types for reportText*, reportImage*, valuechain (icon + 2 text)
-  if (!['pie', 'bar', 'kpi', 'text', 'image', 'table', 'valuechain'].includes(config.type)) {
-    return { isValid: false, error: 'Chart type must be "pie", "bar", "kpi", "text", "image", "table", or "valuechain"' };
+  // WHAT: Chart type validation including text/image/table/value/valuechain
+  // WHY: Support new chart types for reportText*, reportImage*, value, valuechain (icon + 2 text)
+  if (!['pie', 'bar', 'kpi', 'text', 'image', 'table', 'value', 'valuechain'].includes(config.type)) {
+    return { isValid: false, error: 'Chart type must be "pie", "bar", "kpi", "text", "image", "table", "value", or "valuechain"' };
   }
   
   // Elements validation

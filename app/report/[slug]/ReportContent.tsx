@@ -49,8 +49,12 @@ function hasValidChartData(result: ChartResult | undefined): boolean {
     case 'pie':
     case 'bar':
     case 'value':
-      // Valid if it has elements defined, preserving grid stability even when values sum to 0
-      return Array.isArray(result.elements) && result.elements.length > 0;
+      // Valid if it has elements defined and at least one non-zero value
+      return (
+        Array.isArray(result.elements) &&
+        result.elements.length > 0 &&
+        result.elements.some((el) => typeof el.value === 'number' && el.value > 0)
+      );
     
     case 'valuechain':
       // Show valuechain whenever it has the required structure (2 elements); content can be empty
@@ -121,9 +125,20 @@ export default function ReportContent({
     } : null
   });
   
-  // WHAT: Coalesce consecutive untitled blocks into structured multi-row sections
-  // WHY: Eliminate disjointed vertical gaps, broken layout rhythm, and orphaned print rows
-  const coalescedBlocks = useMemo(() => coalesceReportBlocks(blocks, 6), [blocks]);
+  // WHAT: Pre-filter invalid/empty charts BEFORE coalescing blocks into structured multi-row sections
+  // WHY: Prevents post-pack filtering from leaving 1-card orphans and eliminates disjointed vertical gaps
+  const coalescedBlocks = useMemo(() => {
+    const filteredBlocks = blocks
+      .map((block) => ({
+        ...block,
+        charts: (block.charts || []).filter((chart) => {
+          const result = chartResults.get(String(chart.chartId));
+          return allowNA ? !!(result && !result.chartError) : hasValidChartData(result);
+        }),
+      }))
+      .filter((block) => block.charts.length > 0);
+    return coalesceReportBlocks(filteredBlocks, 6);
+  }, [blocks, chartResults, allowNA]);
 
   if (blocks.length === 0) {
     return (
@@ -283,8 +298,15 @@ function ResponsiveRow({ rowCharts, chartResults, charts, rowIndex, unifiedTextF
           return;
         }
         
-        const height = dimensions.blockHeight;
-        const aspectRatioUsed = blockAspectRatio || '4:1';
+        const isCompactMetricRow =
+          !isMobileViewport &&
+          !blockAspectRatio &&
+          !tableHeightMultiplier &&
+          chartsWithTypes.length > 0 &&
+          chartsWithTypes.every((c) => c.type === 'kpi' || c.type === 'valuechain');
+
+        const height = isCompactMetricRow ? Math.min(dimensions.blockHeight, 152) : dimensions.blockHeight;
+        const aspectRatioUsed = blockAspectRatio || (isCompactMetricRow ? 'compact-kpi' : '4:1');
         console.log(`[LayoutV2 ResponsiveRow ${rowIndex}] Height calculated:`, height, 'from width:', width, 'aspect ratio:', aspectRatioUsed);
         
         setRowHeight(height);
@@ -380,14 +402,11 @@ function ResponsiveRow({ rowCharts, chartResults, charts, rowIndex, unifiedTextF
           return null;
         }
         
-        // WHAT: Force remount when dimensions change significantly
-        // WHY: Container queries cache container size, need remount for single full-width charts
-        const dimensionKey = `${chart.chartId}-${Math.round(rowWidth / 100)}-${Math.round(rowHeight / 100)}`;
         if (!result) return null;
 
         return (
           <div 
-            key={dimensionKey}
+            key={chart.chartId}
             className={styles.rowItem}
           >
             <ReportChart 
@@ -566,20 +585,19 @@ function ReportBlock({ block, chartResults, charts, allowNA = false, showBlockTi
         );
       }
       
-      // WHAT: Decouple block title typography from child bar chart label sizes
-      // WHY: Bar chart label wrapping must never drag down block or sibling chart titles
-      setBlockBarFontSize(barChartFontSize);
+      setBlockBarFontSize(allowNA ? barChartFontSize : 13);
       let finalFontSize = syncedFonts.titlePx;
       // WHAT: When allowNA (static landing), force title to 32px so wrapper's large title isn't overridden by calculation
       // WHY: Block sets --block-base-font-size; a smaller calculated value would override the wrapper's 32px
       if (allowNA) {
         finalFontSize = MAX_BLOCK_FONT_PX;
-      } else if (finalFontSize > MAX_BLOCK_FONT_PX) {
-        finalFontSize = MAX_BLOCK_FONT_PX;
+      } else {
+        // Editorial standard: locked 15px card titles across the entire report
+        finalFontSize = 15;
       }
       const subtitlePx = allowNA
         ? Math.min(syncedFonts.subtitlePx, MAX_SUBTITLE_FONT_PX)
-        : syncedFonts.subtitlePx;
+        : 12;
       
       console.log(`[ReportBlock] Block-level typography calculated:`, {
         blockTitle: block.title || 'Untitled',

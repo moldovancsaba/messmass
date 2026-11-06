@@ -32,6 +32,9 @@ type DataBlockRecord = {
   _id: ObjectId;
   name: string;
   showTitle?: boolean;
+  blockAspectRatio?: string;
+  mobileAspectRatio?: string;
+  tableHeightMultiplier?: number;
   charts?: Array<{
     chartId: string;
     width?: number;
@@ -88,6 +91,9 @@ async function convertTemplateToRuntimeReport(db: Db, template: ReportTemplateRe
         title: block.name,
         showTitle: block.showTitle !== false,
         order: reference.order,
+        blockAspectRatio: block.blockAspectRatio,
+        mobileAspectRatio: block.mobileAspectRatio,
+        tableHeightMultiplier: block.tableHeightMultiplier,
         charts: (block.charts || []).map((chart, chartIndex) => ({
           chartId: chart.chartId,
           width: typeof chart.width === 'number' ? chart.width : 1,

@@ -13,9 +13,10 @@ export const CONTENT_SLOT_PATTERNS = {
   reportImage: /^reportImage\d+$/,
   reportText: /^reportText\d+$/,
   reportTable: /^reportTable\d+$/,
+  fanSelfie: /^fanSelfie[A-Za-z0-9_]+$/,
   cmsMedia: /^MEDIA:[a-zA-Z0-9_-]+$/,
   cmsText: /^TEXT:[a-zA-Z0-9_-]+$/,
-  bracketedSlot: /^\[(reportImage\d+|reportText\d+|reportTable\d+|MEDIA:[a-zA-Z0-9_-]+|TEXT:[a-zA-Z0-9_-]+)\]$/
+  bracketedSlot: /^\[(reportImage\d+|reportText\d+|reportTable\d+|fanSelfie[A-Za-z0-9_]+|MEDIA:[a-zA-Z0-9_-]+|TEXT:[a-zA-Z0-9_-]+)\]$/
 };
 
 /**
@@ -35,6 +36,7 @@ export function isContentSlot(identifier: string): boolean {
     CONTENT_SLOT_PATTERNS.reportImage.test(normalized) ||
     CONTENT_SLOT_PATTERNS.reportText.test(normalized) ||
     CONTENT_SLOT_PATTERNS.reportTable.test(normalized) ||
+    CONTENT_SLOT_PATTERNS.fanSelfie.test(normalized) ||
     CONTENT_SLOT_PATTERNS.cmsMedia.test(normalized) ||
     CONTENT_SLOT_PATTERNS.cmsText.test(normalized)
   );
@@ -66,19 +68,38 @@ export function resolveContentSlot(
 
   // CMS Token Resolution: MEDIA:slug or TEXT:slug
   if (slotKey.startsWith('MEDIA:') || slotKey.startsWith('TEXT:')) {
-    if (!contentAssets || contentAssets.length === 0) {
-      return 'NA';
-    }
     const [prefix, slug] = slotKey.split(':');
-    const asset = contentAssets.find(a => a.slug === slug);
-    if (!asset) return 'NA';
+    const asset = contentAssets?.find(a => a.slug === slug);
 
-    if (prefix === 'MEDIA' && asset.type === 'image') {
-      return asset.content.url || 'NA';
+    if (asset) {
+      // Check linkedVariable on stats first (e.g., reportImage1 / reportText1)
+      const linkedKey = (asset as any).linkedVariable;
+      if (linkedKey && stats[linkedKey] !== undefined && stats[linkedKey] !== null && stats[linkedKey] !== '') {
+        return String(stats[linkedKey]);
+      }
+      if (prefix === 'MEDIA' && asset.type === 'image' && asset.content?.url) {
+        return asset.content.url;
+      }
+      if (prefix === 'TEXT' && asset.type === 'text' && asset.content?.text) {
+        return asset.content.text;
+      }
     }
-    if (prefix === 'TEXT' && asset.type === 'text') {
-      return asset.content.text || 'NA';
+
+    // Fallback for legacy report-image-N / report-text-N / report-table-N slugs
+    const legacyMatch = slug?.match(/^report-(image|text|table)-(\d+)$/i);
+    if (legacyMatch) {
+      const kind = legacyMatch[1].toLowerCase();
+      const idx = legacyMatch[2];
+      const mappedKey =
+        kind === 'image' ? `reportImage${idx}` :
+        kind === 'text' ? `reportText${idx}` :
+        `reportTable${idx}`;
+      const mappedVal = stats[mappedKey];
+      if (mappedVal !== undefined && mappedVal !== null && mappedVal !== '') {
+        return String(mappedVal);
+      }
     }
+
     return 'NA';
   }
 

@@ -611,7 +611,7 @@ function substituteVariables(
       return String(remoteFans);
     }
     
-    if (normalizedName === 'allImages') {
+    if (normalizedName === 'allImages' || normalizedName === 'totalImages') {
       const remoteImages = (stats as any).remoteImages || 0;
       const hostessImages = (stats as any).hostessImages || 0;
       const selfies = (stats as any).selfies || 0;
@@ -628,6 +628,16 @@ function substituteVariables(
       const genX = (stats as any).genX || 0;
       const boomer = (stats as any).boomer || 0;
       return String(genX + boomer);
+    }
+
+    if (normalizedName === 'socialVisit' && (stats as any).socialVisit === undefined) {
+      const socialSum =
+        ((stats as any).visitFacebook || 0) +
+        ((stats as any).visitInstagram || 0) +
+        ((stats as any).visitYoutube || 0) +
+        ((stats as any).visitTiktok || 0) +
+        ((stats as any).visitX || 0);
+      return String(socialSum);
     }
     
     // WHAT: Direct field access from stats object
@@ -1147,7 +1157,38 @@ export function evaluateFormula(
     // HOW: Check if formula is just [fieldName] pattern
     const singleVarMatch = trimmedFormula.match(/^\[([a-zA-Z0-9_.-]+)\]$/);
     if (singleVarMatch) {
-      const fieldName = singleVarMatch[1];
+      const rawFieldName = singleVarMatch[1];
+      const fieldName = rawFieldName.startsWith('stats.') ? rawFieldName.substring(6) : rawFieldName;
+      if (fieldName === 'totalFans') {
+        const remoteFans = (stats as any).remoteFans ?? (((stats as any).indoor || 0) + ((stats as any).outdoor || 0));
+        return remoteFans + ((stats as any).stadium || 0);
+      }
+      if (fieldName === 'remoteFans') {
+        return (stats as any).remoteFans ?? (((stats as any).indoor || 0) + ((stats as any).outdoor || 0));
+      }
+      if (fieldName === 'allImages' || fieldName === 'totalImages') {
+        return (
+          (stats as any).allImages ??
+          (stats as any).totalImages ??
+          (((stats as any).remoteImages || 0) + ((stats as any).hostessImages || 0) + ((stats as any).selfies || 0))
+        );
+      }
+      if (fieldName === 'totalUnder40') {
+        return (stats as any).totalUnder40 ?? (((stats as any).genAlpha || 0) + ((stats as any).genYZ || 0));
+      }
+      if (fieldName === 'totalOver40') {
+        return (stats as any).totalOver40 ?? (((stats as any).genX || 0) + ((stats as any).boomer || 0));
+      }
+      if (fieldName === 'socialVisit') {
+        return (
+          (stats as any).socialVisit ??
+          (((stats as any).visitFacebook || 0) +
+            ((stats as any).visitInstagram || 0) +
+            ((stats as any).visitYoutube || 0) +
+            ((stats as any).visitTiktok || 0) +
+            ((stats as any).visitX || 0))
+        );
+      }
       const value = resolveStatsPath(stats, fieldName);
       if (value !== undefined && value !== null) {
         if (typeof value === 'string') {

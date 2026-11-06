@@ -125,46 +125,73 @@ export function hslToHex(h: number, s: number, l: number, a: number = 1): string
 }
 
 /**
- * Generate a harmonious 5-tier categorical color ramp from a base hue.
- * Guarantees distinct colors for charts when custom themes configure identical bar colors.
+ * Generate a cohesive 5-tier tonal/analogous brand color ramp from a base hue.
+ * Guarantees 5 distinct, harmonious shades without rainbow hue clashes.
  */
 export function generateCategoricalBarPalette(primaryHex: string): [string, string, string, string, string] {
   const rgb = hexToRgb(primaryHex);
   const hsl = rgbToHsl(rgb);
 
-  // Stepped hues around the color wheel with balanced saturation and lightness
-  const hues = [
-    hsl.h,
-    (hsl.h + 50) % 360,
-    (hsl.h + 160) % 360,
-    (hsl.h + 210) % 360,
-    (hsl.h + 290) % 360
+  // Subtle analogous progression (+0..+24 deg) with stepped lightness (38% -> 62%)
+  // Produces an executive monochromatic/analogous gradient instead of a jarring rainbow
+  const steps = [
+    { hOffset: 0, sScale: 1.0, l: 0.40 },
+    { hOffset: 6, sScale: 0.92, l: 0.46 },
+    { hOffset: 12, sScale: 0.85, l: 0.52 },
+    { hOffset: 18, sScale: 0.78, l: 0.58 },
+    { hOffset: 24, sScale: 0.70, l: 0.64 },
   ];
 
-  return hues.map((hue, index) => {
-    // Keep lightness in readable 42%-55% band for crisp contrast on light cards
-    const l = 0.44 + (index % 3) * 0.04;
-    const s = Math.max(0.65, Math.min(0.88, hsl.s));
-    return hslToHex(hue, s, l);
+  const baseSat = Math.max(0.50, Math.min(0.82, hsl.s || 0.68));
+  return steps.map((step) => {
+    const hue = (hsl.h + step.hOffset) % 360;
+    const sat = Math.max(0.35, Math.min(0.85, baseSat * step.sScale));
+    return hslToHex(hue, sat, step.l);
   }) as [string, string, string, string, string];
+}
+
+/**
+ * Compute maximum angular distance (0..180) between any two hues in an array.
+ */
+function maxHueSpread(hexColors: string[]): number {
+  const hues = hexColors
+    .map(c => rgbToHsl(hexToRgb(c)))
+    .filter(hsl => hsl.s > 0.15)
+    .map(hsl => hsl.h);
+  if (hues.length < 2) return 0;
+  let maxDist = 0;
+  for (let i = 0; i < hues.length; i++) {
+    for (let j = i + 1; j < hues.length; j++) {
+      const diff = Math.abs(hues[i] - hues[j]) % 360;
+      const angular = diff > 180 ? 360 - diff : diff;
+      if (angular > maxDist) maxDist = angular;
+    }
+  }
+  return maxDist;
 }
 
 /**
  * Guard and sanitize any report style object before CSS injection.
  * Enforces WCAG AA contrast (≥ 4.5:1), resolves blind states (text == background),
- * prevents monochromatic bar tracks, and softens harsh saturated card borders.
+ * enforces a strict 3-tier neutral ink hierarchy (preventing magenta/neon card titles),
+ * replaces rainbow bar series with cohesive tonal brand ramps, and softens card borders.
  */
 export function guardReportStyle<T extends Record<string, any>>(rawStyle: T): T {
   if (!rawStyle || typeof rawStyle !== 'object') return rawStyle;
 
   const style: Record<string, any> = { ...rawStyle };
 
+  // 0. Determine Page & Card Surface Polarity
+  const pageBg = style.pageBackground || style.heroBackground || '#f8fafcff';
+  const cardBg = style.chartBackground || '#ffffffff';
+  const isDarkPage = calculateLuminance(hexToRgb(pageBg)) < 0.25;
+  const isDarkCard = calculateLuminance(hexToRgb(cardBg)) < 0.25;
+
   // 1. Guard PDF Export Button Contrast (WCAG AA: min 4.5:1)
   const exportBg = style.exportButtonBackground || style.heroBackground || '#00012eff';
   const exportText = style.exportButtonText || '#ffffffff';
   if (calculateContrastRatio(exportBg, exportText) < 4.5) {
     const bgLum = calculateLuminance(hexToRgb(exportBg));
-    // If background is dark, use crisp white text; if light, use dark slate text
     style.exportButtonText = bgLum < 0.4 ? '#ffffffff' : '#0f172aff';
   }
 
@@ -184,7 +211,58 @@ export function guardReportStyle<T extends Record<string, any>>(rawStyle: T): T 
     style.chartErrorText = '#b91c1cff';
   }
 
-  // 3. Guard Monochromatic Bar Series (Check if barColor1..5 are identical)
+  // 3. Enforce Neutral Editorial Ink Hierarchy (No Magenta/Chromatic Card Titles!)
+  if (style.blockTitleColor) {
+    const hsl = rgbToHsl(hexToRgb(style.blockTitleColor));
+    if (hsl.s > 0.35 || calculateContrastRatio(pageBg, style.blockTitleColor) < 4.5) {
+      style.blockTitleColor = isDarkPage ? '#f8fafcff' : '#0f172aff';
+    }
+  } else {
+    style.blockTitleColor = isDarkPage ? '#f8fafcff' : '#0f172aff';
+  }
+
+  if (style.headingColor) {
+    const hsl = rgbToHsl(hexToRgb(style.headingColor));
+    if (hsl.s > 0.35 || calculateContrastRatio(pageBg, style.headingColor) < 4.5) {
+      style.headingColor = isDarkPage ? '#f8fafcff' : '#0f172aff';
+    }
+  }
+
+  if (style.chartTitleColor) {
+    const hsl = rgbToHsl(hexToRgb(style.chartTitleColor));
+    // Never allow saturated chromatic colors (e.g. #99248d magenta) on card headers
+    if (hsl.s > 0.22 || calculateContrastRatio(cardBg, style.chartTitleColor) < 4.5) {
+      style.chartTitleColor = isDarkCard ? '#cbd5e1ff' : '#334155ff';
+    }
+  } else {
+    style.chartTitleColor = isDarkCard ? '#cbd5e1ff' : '#334155ff';
+  }
+
+  if (style.chartValueColor) {
+    const hsl = rgbToHsl(hexToRgb(style.chartValueColor));
+    if (hsl.s > 0.25 || calculateContrastRatio(cardBg, style.chartValueColor) < 6.0) {
+      style.chartValueColor = isDarkCard ? '#f8fafcff' : '#0f172aff';
+    }
+  } else {
+    style.chartValueColor = isDarkCard ? '#f8fafcff' : '#0f172aff';
+  }
+
+  if (style.chartLabelColor) {
+    const hsl = rgbToHsl(hexToRgb(style.chartLabelColor));
+    if (hsl.s > 0.22 || calculateContrastRatio(cardBg, style.chartLabelColor) < 4.5) {
+      style.chartLabelColor = isDarkCard ? '#94a3b8ff' : '#475569ff';
+    }
+  } else {
+    style.chartLabelColor = isDarkCard ? '#94a3b8ff' : '#475569ff';
+  }
+
+  if (style.textColor) {
+    if (calculateContrastRatio(cardBg, style.textColor) < 4.5) {
+      style.textColor = isDarkCard ? '#e2e8f0ff' : '#1e293bff';
+    }
+  }
+
+  // 4. Guard Bar Series: Replace Monochromatic OR Clashing Rainbow Bars with Tonal Brand Ramp
   const b1 = style.barColor1 ? normalizeHexColor(style.barColor1) : null;
   const b2 = style.barColor2 ? normalizeHexColor(style.barColor2) : null;
   const b3 = style.barColor3 ? normalizeHexColor(style.barColor3) : null;
@@ -193,9 +271,11 @@ export function guardReportStyle<T extends Record<string, any>>(rawStyle: T): T 
 
   const colors = [b1, b2, b3, b4, b5].filter(Boolean) as string[];
   const allIdentical = colors.length >= 2 && colors.every(c => c === colors[0]);
+  const isRainbowClash = colors.length >= 3 && maxHueSpread(colors) > 75;
 
-  if (allIdentical && b1) {
-    const [c1, c2, c3, c4, c5] = generateCategoricalBarPalette(b1);
+  if ((allIdentical || isRainbowClash) && b1) {
+    const seedHex = b1;
+    const [c1, c2, c3, c4, c5] = generateCategoricalBarPalette(seedHex);
     style.barColor1 = c1;
     style.barColor2 = c2;
     style.barColor3 = c3;
@@ -203,13 +283,18 @@ export function guardReportStyle<T extends Record<string, any>>(rawStyle: T): T 
     style.barColor5 = c5;
   }
 
-  // 4. Soften Saturated Card Borders to Prevent Visual Cage Clutter
-  if (style.chartBorder) {
+  // 5. Enforce Clean Donut Slice Separator Border (Match Card Background — Never Magenta!)
+  style.pieBorderColor = normalizeHexColor(cardBg);
+
+  // 6. Soften Saturated Card Borders to Prevent Visual Cage Clutter
+  if (style.chartBorder && typeof style.chartBorder === 'string' && style.chartBorder.startsWith('#')) {
     const borderRgb = hexToRgb(style.chartBorder);
     const borderLum = calculateLuminance(borderRgb);
-    // If border is intensely dark or saturated, soften opacity to 18% so it frames cleanly
-    if (borderLum < 0.3 || (borderRgb.r > 120 && borderRgb.b > 120)) {
-      style.chartBorder = `rgba(${borderRgb.r}, ${borderRgb.g}, ${borderRgb.b}, 0.18)`;
+    const borderHsl = rgbToHsl(borderRgb);
+    if (borderLum < 0.3 || borderHsl.s > 0.15) {
+      style.chartBorder = isDarkCard
+        ? 'rgba(255, 255, 255, 0.10)'
+        : 'rgba(15, 23, 42, 0.08)';
     }
   }
 
