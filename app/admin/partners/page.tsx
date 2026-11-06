@@ -26,7 +26,7 @@ import ColoredCard from '@/components/ColoredCard';
 
 const PAGE_SIZE = 20;
 
-const isImgBbHostedUrl = (url: string) => /imgbb\.com|i\.ibb\.co|ibb\.co/i.test(url);
+const isR2HostedUrl = (url: string) => /\.r2\.dev\//i.test(url);
 
 interface BitlyLinkOption {
   _id: string;
@@ -612,8 +612,8 @@ export default function PartnersAdminPageUnified() {
       // Create SportsDB data object from manual input
       let finalLogoUrl = manualEntryData.logoUrl || undefined;
 
-      if (manualEntryData.logoUrl && !isImgBbHostedUrl(manualEntryData.logoUrl)) {
-        console.log('🖼️ Uploading manually provided logo to ImgBB...');
+      if (manualEntryData.logoUrl && !isR2HostedUrl(manualEntryData.logoUrl)) {
+        console.log('🖼️ Uploading manually provided logo to R2...');
         try {
           const imgbbData = await apiPost('/api/partners/upload-logo', {
             badgeUrl: manualEntryData.logoUrl,

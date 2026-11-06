@@ -141,7 +141,12 @@ export default function ReportChart({ result, chart, width, blockHeight, unified
         return typeof result.kpiValue === 'string' && result.kpiValue.length > 0 && result.kpiValue !== 'NA';
       
       case 'image':
-        return typeof result.kpiValue === 'string' && result.kpiValue.length > 0 && result.kpiValue !== 'NA';
+        return (
+          typeof result.kpiValue === 'string' &&
+          result.kpiValue.length > 0 &&
+          result.kpiValue !== 'NA' &&
+          !result.kpiValue.includes('/placeholders/image-missing.svg')
+        );
       
       case 'table':
         return typeof result.kpiValue === 'string' && result.kpiValue.length > 0 && result.kpiValue !== 'NA';
@@ -1334,7 +1339,7 @@ function ImageChart({ result, className }: { result: ChartResult; className?: st
     result.title?.toLowerCase().includes('qr') ||
     isPortrait;
 
-  if (hasError || !formattedValue || formattedValue === 'NA') {
+  if (hasError || !formattedValue || formattedValue === 'NA' || formattedValue.includes('/placeholders/image-missing.svg')) {
     return null;
   }
 

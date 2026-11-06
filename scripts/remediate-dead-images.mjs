@@ -39,6 +39,7 @@ const publicBase = env.MESSMASS_R2_LOGOS_PUBLIC_BASE_URL;
 const PLACEHOLDER_URL = `${publicBase}/reports/placeholders/image-missing.svg`;
 const INVENTORY_FILE = path.join(__dirname, 'image-inventory.json');
 const CACHE_FILE = path.join(__dirname, 'r2-migration-cache.json');
+const DEAD_FILE = path.join(__dirname, 'r2-dead-images.json');
 const ROLLBACK_FILE = path.join(__dirname, 'dead-images-remediation-rollback.json');
 
 async function main() {
@@ -51,9 +52,10 @@ async function main() {
 
   const inventory = JSON.parse(fs.readFileSync(INVENTORY_FILE, 'utf8'));
   const cache = JSON.parse(fs.readFileSync(CACHE_FILE, 'utf8'));
+  const dead = fs.existsSync(DEAD_FILE) ? JSON.parse(fs.readFileSync(DEAD_FILE, 'utf8')) : {};
 
-  // Find all occurrences that were NOT migrated to R2 (i.e. dead on ImgBB)
-  const deadFindings = inventory.imgbbFindings.filter(f => !cache[f.url]);
+  // Find only occurrences confirmed dead (HTTP 404 / 1031-byte placeholder) and not in R2 cache
+  const deadFindings = inventory.imgbbFindings.filter(f => dead[f.url] && !cache[f.url]);
   console.log(`Found ${deadFindings.length} document occurrences pointing to dead ImgBB URLs.`);
 
   const rollbackEntries = [];

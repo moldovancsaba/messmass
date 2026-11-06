@@ -38,7 +38,12 @@ function hasValidChartData(result: ChartResult | undefined): boolean {
       return typeof result.kpiValue === 'string' && result.kpiValue.length > 0 && result.kpiValue !== 'NA';
     
     case 'image':
-      return typeof result.kpiValue === 'string' && result.kpiValue.length > 0 && result.kpiValue !== 'NA';
+      return (
+        typeof result.kpiValue === 'string' &&
+        result.kpiValue.length > 0 &&
+        result.kpiValue !== 'NA' &&
+        !result.kpiValue.includes('/placeholders/image-missing.svg')
+      );
     
     case 'table':
       return typeof result.kpiValue === 'string' && result.kpiValue.length > 0 && result.kpiValue !== 'NA';
