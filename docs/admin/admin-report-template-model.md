@@ -1,8 +1,8 @@
 # Admin Report Template Model and Selection Rules
 Status: Active
-Spec Version: 1.0.0
+Spec Version: 1.1.0
 Created: 2026-01-16T11:09:32.000Z
-Last Updated: 2026-01-16T11:09:32.000Z
+Last Updated: 2026-11-06T18:30:00.000Z
 Canonical: Yes
 Owner: Admin (Katja)
 Audience: Admin operators, developers
@@ -37,7 +37,7 @@ Fields used by the Admin Visualization Editor:
 
 Notes:
 - The Admin UI does not currently set blockLayoutMode, fontSyncSettings, or styleId.
-- gridSettings defaults to 4/2/1 when templates are created in the Visualization Editor.
+- `gridSettings` uses `desktopUnits: 6, tabletUnits: 3, mobileUnits: 1` (KPI rows automatically render in a 2-column `.metricRow` grid on mobile viewports `<=768px`).
 - isDefault is enforced server-side as unique (existing default is cleared when a new default is created).
 
 3.2 DataVisualizationBlock (data_blocks collection)
@@ -52,8 +52,8 @@ Fields used by the Admin Visualization Editor:
 BlockChart fields (stored in data_blocks):
 - chartId: string (references chart_configurations)
 - order: number (horizontal order inside the block)
-- width: number (legacy; kept in sync with unitSize)
-- unitSize?: 1 | 2 (LayoutV2 unit allocation)
+- width: number (kept in sync with unitSize on the 6-unit desktop grid: `1` for KPI/ValueChain, `2` for Image, `3` for Bar/Pie, `6` for Text/Table)
+- unitSize?: 1 | 2 | 3 | 4 | 6 (LayoutV2 unit allocation)
 - aspectRatio?: '1:1' | '2:1' | '16:9' | '9:16'
 
 Notes:

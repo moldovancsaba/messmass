@@ -1,6 +1,6 @@
 # Tutorial: Content Library (images & text)
 Status: Active
-Last Updated: 2026-07-20T00:00:00.000Z
+Last Updated: 2026-11-06T18:30:00.000Z
 Canonical: Yes
 Owner: Documentation
 
@@ -90,7 +90,8 @@ To put a sponsor logo on every report and a per-event hero photo on each one:
 - **Categorise and tag as you go.** The filters are only as useful as the metadata you enter.
 
 ## How it connects
-- **Where tokens are used:** `[MEDIA:slug]` and `[TEXT:slug]` are referenced inside [Charts & formulas](guides-tutorial-charts-formulas.md), typically by image/text/table charts.
+- **Where tokens are used:** `[MEDIA:slug]` and `[TEXT:slug]` are referenced inside [Charts & formulas](guides-tutorial-charts-formulas.md), typically by image/text/table charts. Legacy numbered slot tokens (`[IMAGE_1]`..`[IMAGE_20]`, `[TEXT_1]`..`[TEXT_20]`) are also resolved automatically to `reportImage1`..`20` and `reportText1`..`20` by `lib/contentSlots.ts`.
+- **Cloudflare R2 CDN storage:** All uploaded images in the Content Library and report editors are content-hashed (SHA-256) and stored on Cloudflare R2 (`https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/<sha256>.<ext>`); see [r2-image-storage.md](../operations/r2-image-storage.md).
 - **Per-event content:** Variable Definitions are filled during [Collecting data](guides-tutorial-collecting-data.md) (Builder mode) and surface on [Reports](guides-tutorial-reports.md).
 - **The wider catalog:** numeric and short text variables live in [Variables (KYC)](guides-tutorial-variables-kyc.md); the Content Library focuses on images and longer text.
 

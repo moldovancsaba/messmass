@@ -1,11 +1,19 @@
 # {messmass} Release Notes
 Status: Active
-Last Updated: 2026-11-06T00:00:00.000Z
+Last Updated: 2026-11-06T18:30:00.000Z
 Canonical: No
 Owner: Operations
 
-## [v12.3.47] — 2026-11-06 — Camera journey editor live preview
+## [v12.3.47] — 2026-11-06 — Editorial report system redesign, Cloudflare R2 cold-storage recovery & Camera journey editor live preview
 
+- **Changed (reports & layout):** redesigned the reporting pipeline across Report Builder, Report Themes, Content Library, Chart Algorithm Manager, and KYC Variables (`9d6ca192`, `be37b3ec`):
+  - **6-unit editorial grid & row coalescing:** LayoutV2 now uses a 6-unit desktop grid (`desktopUnits: 6`, `MAX_BLOCK_UNITS = 6` in `lib/layoutV2BlockCalculator.ts`) with automatic multi-row section coalescing (`coalesceReportBlocks` in `app/report/[slug]/ReportContent.tsx`) so section titles render once per logical group instead of repeating across split rows.
+  - **Content-driven row heights & compact mobile KPI grid:** eliminated the legacy `width / 4` square KPI distortion and `min-height: 250px` mobile vertical dead space; KPI rows now use a compact content-driven height (`124px` desktop, `min-height: 112px` card) and a 2-column `.metricRow` grid on mobile viewports (`<=768px`).
+  - **Card anatomy (`ReportChart.tsx`, `ReportChart.module.css`):** unified KPI cards (top-left uppercase label, top-right subtle icon badge, bottom-left tabular numeral), horizontal bar cards (single-row label + track + value/share% with semantic brand tint ramp), and donut cards (top-left title, centered SVG donut with center total callout, bottom horizontal legend pills).
+  - **Theme Guardian (`lib/theme/styleGuardian.ts`):** enforces a 3-tier neutral editorial ink hierarchy (`#0f172a` titles/values, `#475569` labels, `#64748b` subtitles), neutral hairline borders (`#e2e8f0`), WCAG contrast checks, and a 5-step monochromatic brand tint ramp (`deriveBrandRamp`) for bar charts.
+  - **Formula Engine & Content Slots (`lib/formulaEngine.ts`, `lib/contentSlots.ts`, `lib/report-calculator.ts`):** added on-the-fly fallback derivation for `allImages`, `totalImages`, `remoteFans`, `stadium`, `totalFans`, `totalUnder40`, `totalOver40`, and `socialVisit`; mapped legacy `[TEXT_1]`..`[TEXT_20]` and `[IMAGE_1]`..`[IMAGE_20]` tokens to `reportText1`..`20` / `reportImage1`..`20`; suppressed zero-total Pie/Bar charts automatically.
+  - **Database normalization:** sanitized 38 `report_styles` documents, normalized `data_blocks` chart unit widths (`1` for KPI/ValueChain, `2` for Image, `3` for Bar/Pie, `6` for Text/Table), and updated `report_templates` and `reports` to `desktopUnits: 6`.
+- **Fixed (Cloudflare R2 media recovery):** recovered all **224** cold-storage `i.ibb.co` images into Cloudflare R2 (`/reports/<sha256>.<ext>`), mapped all **7** legacy 404 partner badges to their authoritative R2 partner logos (`/logos/<sha256>.<ext>`), and updated all **511** affected fields across **172** MongoDB documents (`projects`: 171, `v3_activities`: 194, `v3_entities`: 90, `partners`: 48, `report_variants`: 7, `bitly_links`: 1) (`57ea68cf`). Confirmed **0** remaining `ibb.co` / `imgbb.com` URLs and **0** remaining `image-missing.svg` placeholders across all 71 collections, and added renderer guards in `ReportContent.tsx` and `ReportChart.tsx`.
 - **Changed (guide):** the Camera journey tutorial now explains the live page preview in the shared Global, Partner, and Event editor. It describes the wide two-column layout, narrow stacked layout, Mobile/Tablet/Desktop preview sizes, and updates from supported unsaved page settings.
 - **Clarified (guide):** Camera, Submit, and frame/message-selection steps are visual placeholders. The preview is read-only and is not a substitute for trying the full event capture URL.
 - **Verified:** English and Hungarian guidance matches Camera issue #797 and merged PR #798. Camera GitHub Verify, local release checks, and the focused browser check passed; documentation and version checks passed.

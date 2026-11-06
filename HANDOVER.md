@@ -1,6 +1,19 @@
 # Session Handover — messmass
 
-Last verified: 2026-10-13 (v12.3.42 fleet release plus the work of 2026-10-12 and 2026-10-13).
+Last verified: 2026-11-06 (v12.3.47: structural editorial report redesign, 6-unit LayoutV2 grid, StyleGuardian, and complete Cloudflare R2 image recovery).
+
+**2026-11-06:**
+1. **Done (merged, deployed to `messmass.com`):**
+   - **Editorial Report System Redesign (`9d6ca192`, `be37b3ec`):**
+     - Upgraded LayoutV2 block calculation (`lib/layoutV2BlockCalculator.ts`) to a 6-unit desktop grid (`MAX_BLOCK_UNITS = 6`) with content-driven row heights (`124px` compact KPI rows, `340px` bar/pie rows, `380px` image rows) and multi-row block coalescing (`coalesceReportBlocks` in `app/report/[slug]/ReportContent.tsx`).
+     - Eliminated mobile KPI vertical dead space (`min-height: 250px` bug) and activated a 2-column `.metricRow` mobile KPI grid (`app/report/[slug]/ReportContent.module.css`).
+     - Redesigned KPI, horizontal bar, and donut card anatomy (`app/report/[slug]/ReportChart.tsx`, `app/report/[slug]/ReportChart.module.css`, `components/CellWrapper.module.css`).
+     - Added `StyleGuardian` (`lib/theme/styleGuardian.ts`, `tests/theme/styleGuardian.test.ts`) enforcing a 3-tier neutral ink hierarchy, hairline borders, WCAG contrast checks, and a 5-step monochromatic brand tint ramp (`deriveBrandRamp`) for bar charts.
+     - Upgraded `evaluateFormula()` (`lib/formulaEngine.ts`) and `lib/contentSlots.ts` with on-the-fly derived KYC metrics (`allImages`, `totalImages`, `remoteFans`, `stadium`, `totalFans`, `totalUnder40`, `totalOver40`, `socialVisit`), legacy `[TEXT_1]`/`[IMAGE_1]` slot resolution, and automatic zero-total Pie/Bar suppression (`lib/report-calculator.ts`).
+     - Sanitized 38 `report_styles`, normalized chart unit widths across `data_blocks`, and updated `report_templates` and `reports` to `desktopUnits: 6` in MongoDB Atlas.
+   - **Cloudflare R2 Complete Image Recovery (`57ea68cf`):**
+     - Recovered all 224 cold-storage `i.ibb.co` URLs into Cloudflare R2 (`/reports/<sha256>.<ext>`), mapped all 7 legacy 404 partner badges to their authoritative R2 partner logos (`/logos/<sha256>.<ext>`), and updated all 511 affected fields across 172 MongoDB documents (`projects`: 171, `v3_activities`: 194, `v3_entities`: 90, `partners`: 48, `report_variants`: 7, `bitly_links`: 1).
+     - Confirmed **0** remaining `ibb.co` / `imgbb.com` URLs and **0** remaining `/assets/placeholders/image-missing.svg` references across all 71 MongoDB collections.
 
 **2026-10-11:** messmass, camera, fanmass, try-on and savetheworld are on 12.3.42 (version only everywhere except camera); camera carries the work of 2026-10-10 to 2026-10-11 (journey analytics, no IP addresses stored with photos, a shown/required setting for every checkbox, the public-gallery permission as a setting, the four-way camera mode, the try-on integration removed from the app), messmass the matching guides and clean-up.
 

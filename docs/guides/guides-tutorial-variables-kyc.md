@@ -1,6 +1,6 @@
 # Tutorial: Variables (KYC)
 Status: Active
-Last Updated: 2026-07-20T00:00:00.000Z
+Last Updated: 2026-11-06T18:30:00.000Z
 Canonical: Yes
 Owner: Documentation
 
@@ -83,7 +83,14 @@ The exact same string `vipGuests` did all four jobs. That single-name principle 
 
 **System vs custom.** Variables flagged `isSystem` (shown with the **Legacy stats.** badge and a `system` source) are engine-managed schema fields — they cannot be deleted here and their name cannot be changed. Custom variables you create can be freely renamed and deleted.
 
-**Derived variables.** A variable can carry a **formula** and be marked `derived`; its description then shows the formula and its source badge reads `derived`. Derived variables are computed rather than entered, so they typically are not clicker counters.
+**Derived variables.** A variable can carry a **formula** and be marked `derived`; its description then shows the formula and its source badge reads `derived`. Derived variables are computed rather than entered, so they typically are not clicker counters. In addition, `evaluateFormula()` (`lib/formulaEngine.ts`) computes core derived variables on the fly whenever they are missing or zero on an event's `stats`:
+- `allImages` / `totalImages` = `remoteImages + hostessImages + selfies`
+- `remoteFans` = `indoor + outdoor` (fallback when `remoteFans` is not explicitly stored)
+- `stadium` (fallback to `eventAttendees` when `stadium === 0` and `remoteFans === 0`)
+- `totalFans` = `remoteFans + stadium`
+- `totalUnder40` = `genAlpha + genYZ`
+- `totalOver40` = `genX + boomer`
+- `socialVisit` = `visitFacebook + visitInstagram + visitYoutube + visitTiktok + visitX + visitTrustpilot`
 
 **The cache.** The catalog is cached for performance (about five minutes). Every create, edit, and delete triggers a cache invalidation so the change is visible right away — but if you edited the database directly (don't), other surfaces might lag. From [Clicker sets](guides-tutorial-clicker-sets.md) and [Charts & formulas](guides-tutorial-charts-formulas.md), the **Refresh Variables** button forces the same invalidation so a newly created variable appears without waiting.
 

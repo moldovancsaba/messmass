@@ -1,6 +1,6 @@
 # {messmass}
 Status: Active
-Last Updated: 2026-10-20T16:53:00.000Z
+Last Updated: 2026-11-06T18:30:00.000Z
 Canonical: No
 Owner: Product
 
@@ -12,7 +12,7 @@ Owner: Product
 <p align="center"><strong>Enterprise event analytics, partner reporting, reporting operations, and admin workflow tooling for sports organizations, venues, and brands.</strong></p>
 
 <p align="center">
-  <img src="https://img.shields.io/badge/version-v12.3.43-2563EB?style=for-the-badge" alt="Version">
+  <img src="https://img.shields.io/badge/version-v12.3.47-2563EB?style=for-the-badge" alt="Version">
   <img src="https://img.shields.io/badge/platform-Web%20App-0F172A?style=for-the-badge" alt="Platform">
   <img src="https://img.shields.io/badge/stack-Next.js%20%7C%20MongoDB%20%7C%20Mantine-0EA5E9?style=for-the-badge" alt="Stack">
 </p>
@@ -87,6 +87,10 @@ SSO_CLIENT_ID=your_sso_client_id
 SSO_CLIENT_SECRET=your_sso_client_secret
 JWT_SECRET=long_random_session_signing_secret
 CRON_SECRET=long_random_cron_bearer_secret
+MESSMASS_R2_ACCOUNT_ID=your_cloudflare_account_id
+MESSMASS_R2_API_TOKEN=your_r2_object_read_write_token
+MESSMASS_R2_LOGOS_BUCKET=messmass-logos
+MESSMASS_R2_LOGOS_PUBLIC_BASE_URL=https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev
 ```
 
 Notes:
@@ -138,7 +142,7 @@ Important repo note:
 - If `npm run type-check` fails on missing `.next/types`, run `npm run build` first and rerun the type check.
 
 Current release version:
-- `v12.3.43`
+- `v12.3.47`
 
 ## Fleet
 

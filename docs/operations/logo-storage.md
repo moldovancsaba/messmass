@@ -1,7 +1,7 @@
 # Logo storage (Cloudflare R2)
 
 Status: Active
-Last Updated: 2026-10-07
+Last Updated: 2026-11-06
 Canonical: Yes
 Owner: Operations
 
@@ -14,7 +14,7 @@ Szeged logo did on 2026-10-07).
 `PUT` and `POST /api/partners` (and the TheSportsDB badge upload, `/api/partners/upload-logo`) pass the logo link through
 `lib/logoStorage.ts` (`rehostLogo`). If the four `MESSMASS_R2_*` settings exist and the link is not already in the bucket, the file is
 downloaded, checked, stored as `logos/<sha256>.<ext>` and the stored link is saved instead. A logo from imgbb, Vercel Blob, TheSportsDB
-or any public address ends up in the bucket whichever screen it was entered on. When anything fails the link stays as it was, so a save
+or any public address ends up in the bucket whichever screen it was entered on. In `/admin/partners` (`app/admin/partners/page.tsx`), manual logo URL entries also check `isR2HostedUrl` so any external link (including `ibb.co`) is rehosted to R2. When anything fails the link stays as it was, so a save
 never fails because of the logo.
 
 - The download accepts a public `https` name only: no credentials, no IP address, no `localhost`, every address the name resolves to (and
@@ -41,13 +41,13 @@ for uploads) and nothing is moved.
   long-cached. A custom domain needs a DNS zone in the Cloudflare account (there is none); the stored links are keyed by hash, so they can
   be rewritten if the address ever changes.
 - Camera accepts only this exact address for logos (`LOGO_STORAGE_HOST` in camera `lib/imgbb/url.ts`); change both together.
-- Only logos. Report images and fan selfies of events stay where they are.
+- Report images and fan selfies of events also live in the same `messmass-logos` bucket under `reports/<sha256>.<ext>`; see [r2-image-storage.md](r2-image-storage.md).
 
 ## The existing logos
 
 On 2026-10-07 the 144 partner logos of messmass (and camera's copies) were moved to the bucket: 160 distinct links, 351 references, every one
 verified through its public address. The dead imgbb link of OTP Bank - PICK Szeged was replaced by the partner's TheSportsDB badge
-(`sportsDb.strBadge`). Records and an undo script: `/Users/Shared/Projects/logo-migration-2026-10-07/` on the machine that ran it. Details
-and the follow-up for the other images on imgbb: camera `docs/LOGO_STORAGE.md`, camera#305 and camera#306.
+(`sportsDb.strBadge`). On 2026-11-06, all remaining legacy `sportsDb.badge` / `partner1.sportsDb.badge` references across `partners`, `projects`, and `v3_entities` were reconciled to their authoritative R2 `logos/<sha256>.png` URLs. Records and an undo script: `/Users/Shared/Projects/logo-migration-2026-10-07/` on the machine that ran it. Details
+and the full R2 media migration: [r2-image-storage.md](r2-image-storage.md), camera `docs/LOGO_STORAGE.md`, camera#305 and camera#306.
 
 See also camera `docs/LOGO_STORAGE.md`.

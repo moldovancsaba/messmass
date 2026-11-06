@@ -1,10 +1,10 @@
 # Style Model and Assignment Rules
 Status: Active
-Last Updated: 2026-02-04T00:00:00.000Z
+Last Updated: 2026-11-06T18:30:00.000Z
 Canonical: Yes
 Owner: Admin (Katja)
 
-Spec Version: 1.0.0
+Spec Version: 1.1.0
 Audience: Product + Engineering
 
 ---
@@ -12,6 +12,7 @@ Audience: Product + Engineering
 ## 1. Purpose
 
 - Define the **report style model** (themes, colors, typography) and where it is stored.
+- Define **runtime style governance** (`StyleGuardian` in `lib/theme/styleGuardian.ts`).
 - Define **assignment rules** for how styles are applied across the hierarchy: global → partner → event → filter.
 
 ---
@@ -24,7 +25,18 @@ Audience: Product + Engineering
 - It holds CSS custom properties (e.g. `--mm-color-primary-500`, `--block-base-font-size`) that the report renderer injects into the page.
 - Each style has: `_id`, `name`, and a set of key-value pairs (design tokens) used by the Reporting layer.
 
-### 2.2 Where Styles Are Stored
+### 2.2 Runtime Governance (`StyleGuardian` — `lib/theme/styleGuardian.ts`)
+
+Before any style is injected by `hooks/useReportStyle.ts`, `sanitizeReportStyle()` normalizes it so partner branding never degrades report legibility:
+- **3-Tier Neutral Editorial Ink Hierarchy:**
+  - `chartTitleColor`, `chartValueColor`, `textColor` → `#0f172a` (primary dark slate ink) unless the card surface is dark.
+  - `chartLabelColor` → `#475569` (secondary neutral ink).
+  - `chartSubtitleColor`, `chartNoDataText` → `#64748b` (muted neutral ink).
+- **Neutral Hairline Borders:** `chartBorder` is normalized to `#e2e8f0` on light surfaces so neon or saturated partner borders do not clash with chart data.
+- **Monochromatic Brand Tint Ramp (`deriveBrandRamp`):** When a theme's 5 bar colors (`barColor1`..`barColor5`) use conflicting rainbow hues, `StyleGuardian` derives a harmonious 5-step monochromatic tint ramp from the primary brand color (`barColor1`).
+- **WCAG Contrast Enforcement:** Ensuring >= 4.5:1 contrast ratio on text/labels and >= 3.0:1 on large numerals.
+
+### 2.3 Where Styles Are Stored
 
 - **Collection:** `report_styles`
 - **API:** `/api/report-styles` (CRUD), `/api/report-styles/[id]` (get one)
