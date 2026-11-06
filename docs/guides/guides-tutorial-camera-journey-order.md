@@ -1,9 +1,9 @@
 # Tutorial: Choose, edit and order Camera journeys (camera app)
 Status: Active
-Last Updated: 2026-11-05T00:00:00.000Z
+Last Updated: 2026-11-06T00:00:00.000Z
 Canonical: Yes
 Owner: Documentation
-Verified against the Camera journey implementation for issue camera#793 (code and local release checks; Camera merge pending at documentation time)
+Verified against the Camera journey implementation in issue camera#797 and merged PR #798 (GitHub Verify passed; release checks and focused browser check passed)
 
 > Audience: The people who set up an event in the Camera app (editors, operators) · Prerequisites: The event exists in the Camera app, and your e-mail address has the **Manager** role for its partner · Related: [The acceptance on the "Who are you" page](guides-tutorial-camera-journey-acceptance.md), [The CTA page with a picture](guides-tutorial-camera-cta-page.md), [Camera app integration](guides-tutorial-camera-app.md)
 
@@ -28,6 +28,8 @@ A journey can only be edited at the level that owns it. A Partner cannot edit th
 Existing events with their own legacy pages keep those pages until an editor saves them as a named Event Journey and selects it. Event capture links, short links, and QR codes keep their existing addresses and serve the currently effective journey.
 
 The editor is the same at Global, Partner, and Event scope. It edits that journey's page flow, page settings, and supported text/message settings, and uses the existing scope-aware image, frame, logo, and text resources. It does not make a second copy of those libraries. Branding, consent policy, and other event-specific settings stay with their existing owners; the event supplies its own applicable visual assets and policy when the inherited page flow is shown.
+
+The shared editor includes a read-only live preview of the page you are editing. On a wide screen, page settings and preview appear in two columns; on a narrow screen, they stack. Choose Mobile, Tablet, or Desktop to change the preview's stage size. Supported page edits appear in the preview before you save. Camera, Submit, and frame/message-selection steps use placeholders because they need a live device or event state. The preview does not submit a photo or test the complete journey; use the event's capture URL in a separate session for that.
 
 ### A journey example
 
@@ -108,6 +110,8 @@ Ha a globális alapértelmezés a **Standard**, az új partner ezt követi. A pa
 ### Az út oldalainak szerkesztése
 
 Nyisd meg a saját Global, Partner vagy Event utadat a megfelelő szint User Journey listájából. Az egységes szerkesztő a vendégoldalakat sorrendben mutatja. Az oldalak **Edit** vezérlőjével módosíthatod a támogatott beállításokat és szövegeket; itt adhatsz hozzá, rejthetsz el vagy rendezhetsz át oldalakat, majd nyomd meg a **Save Pages** gombot. Az üdvözlő oldal vizuális összeállítója ugyanebből a folyamatból nyílik meg, és az adott út szintjének képtárát használja.
+
+Az egységes szerkesztő az éppen szerkesztett oldalról egy csak megtekintésre használható élő előnézetet is mutat. Széles képernyőn az oldalbeállítások és az előnézet két oszlopban jelennek meg; keskeny képernyőn egymás alá kerülnek. A Mobile, Tablet vagy Desktop választóval módosíthatod az előnézet méretét. A támogatott oldalak módosításai mentés előtt megjelennek az előnézetben. A Camera, Submit, valamint a keret-/üzenetválasztó lépések helyőrzőt mutatnak, mert élő eszközt vagy eseményállapotot igényelnek. Az előnézet nem küld be fotót és nem próbálja végig a teljes utat; ehhez külön munkamenetben használd az esemény rögzítési URL-jét.
 
 A kiválasztott út módosítása frissíti az élő vendégfolyamot és azokat a leszármazottakat, amelyek továbbra is ezt öröklik. Egy ki nem választott út szerkesztése csak a mentett változatot módosítja; az adott szint tulajdonosának kell kiválasztania az élő használathoz. A gyermek csak akkor szerkeszthet örökölt utat, ha előbb saját tulajdonú úttá alakítja. Az oldalfolyam elhelyezi a hozzájárulási és azonosítási lépéseket, de a hozzájárulási szöveg, az azonosítási követelmény és más eseményszintű szabályzat továbbra is az eseménynél állítható.
 

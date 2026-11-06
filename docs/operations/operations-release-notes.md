@@ -1,8 +1,14 @@
 # {messmass} Release Notes
 Status: Active
-Last Updated: 2026-11-05T00:00:00.000Z
+Last Updated: 2026-11-06T00:00:00.000Z
 Canonical: No
 Owner: Operations
+
+## [v12.3.47] — 2026-11-06 — Camera journey editor live preview
+
+- **Changed (guide):** the Camera journey tutorial now explains the live page preview in the shared Global, Partner, and Event editor. It describes the wide two-column layout, narrow stacked layout, Mobile/Tablet/Desktop preview sizes, and updates from supported unsaved page settings.
+- **Clarified (guide):** Camera, Submit, and frame/message-selection steps are visual placeholders. The preview is read-only and is not a substitute for trying the full event capture URL.
+- **Verified:** English and Hungarian guidance matches Camera issue #797 and merged PR #798. Camera GitHub Verify, local release checks, and the focused browser check passed; documentation and version checks passed.
 
 ## [v12.3.46] — 2026-11-05 — One journey editor at every Camera scope
 
