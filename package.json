@@ -151,7 +151,7 @@
     "@vercel/blob": "^2.8.1",
     "bcryptjs": "^3.0.3",
     "chart.js": "^4.5.1",
-    "dompurify": "^3.4.16",
+    "dompurify": "^3.4.17",
     "dotenv": "^17.4.2",
     "googleapis": "^171.4.0",
     "jsonwebtoken": "^9.0.3",
