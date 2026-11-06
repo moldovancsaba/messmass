@@ -3,7 +3,7 @@ Status: Active
 Last Updated: 2026-11-06T00:00:00.000Z
 Canonical: Yes
 Owner: Documentation
-Verified against the Camera journey implementation in issue camera#797 and PR #798 (local release checks passed; GitHub Verify is running)
+Verified against the Camera journey implementation in issue camera#797 and merged PR #798 (GitHub Verify passed; release checks and focused browser check passed)
 
 > Audience: The people who set up an event in the Camera app (editors, operators) · Prerequisites: The event exists in the Camera app, and your e-mail address has the **Manager** role for its partner · Related: [The acceptance on the "Who are you" page](guides-tutorial-camera-journey-acceptance.md), [The CTA page with a picture](guides-tutorial-camera-cta-page.md), [Camera app integration](guides-tutorial-camera-app.md)
 
