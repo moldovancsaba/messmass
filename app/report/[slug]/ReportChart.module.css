@@ -1207,37 +1207,99 @@
 }
 
 /* WHAT: Image container with dynamic aspect ratio from actual image dimensions */
-/* WHY: Use real image dimensions instead of configured aspect ratio for accurate display */
-/* HOW: Container uses CSS custom property --image-aspect-ratio set dynamically from image naturalWidth/naturalHeight */
+/* Image Chart Presentation Engine (Phase 2 Standard) */
 .imageContainer {
-  background: var(--chartBackground) !important;
-  border-radius: var(--mm-radius-lg); /* Rounded corners for image container */
-  box-shadow: var(--mm-shadow-sm);
-  overflow: hidden !important; /* Layout Grammar: decorative - clip image to rounded corners */
+  position: relative;
+  width: 100%;
+  height: 100%;
+  flex: 1;
   display: flex;
   align-items: center;
   justify-content: center;
-  /* WHAT: Container fills width, height constrained by actual image aspect ratio */
-  /* WHY: Body zone is flex container with center alignment, image should fill available width */
-  width: 100%; /* Fill available width in body zone */
-  max-width: 100%; /* Don't exceed body zone width */
-  max-height: 100%; /* Don't exceed body zone height */
-  height: auto; /* Height calculated from aspect ratio */
-  /* WHAT: Use CSS custom property for dynamic aspect ratio */
-  /* WHY: Aspect ratio is detected from actual image dimensions, not configured value */
-  aspect-ratio: var(--image-aspect-ratio, 16 / 9); /* Fallback to 16:9 if not set */
+  overflow: hidden !important;
+  border-radius: calc(var(--cardBorderRadius, var(--mm-radius-lg)) - 2px);
+  cursor: zoom-in;
+  background: transparent !important;
+  min-height: 200px;
 }
 
-/* WHAT: <img> element fills container completely */
-/* WHY: Image should fill the aspect-ratio-constrained container */
-/* HOW: Use object-fit: contain to show full image without cropping, maintaining aspect ratio */
-.imageContent {
+.imageCover {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
   display: block;
-  width: 100%; /* Fill container width */
-  height: 100%; /* Fill container height */
-  object-fit: contain; /* Show full image without cropping, maintaining aspect ratio */
-  object-position: center; /* Center the image */
-  border-radius: var(--mm-radius-lg); /* Match container rounded corners */
+  transition: transform 0.25s ease;
+}
+
+.imageCover:hover {
+  transform: scale(1.02);
+}
+
+.imageContainWithBackdrop {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  background: rgba(241, 245, 249, 0.5);
+}
+
+.ambientBackdrop {
+  position: absolute;
+  inset: -12px;
+  background-size: cover;
+  background-position: center;
+  filter: blur(24px) opacity(0.38);
+  transform: scale(1.15);
+  pointer-events: none;
+}
+
+.imageContain {
+  position: relative;
+  z-index: 1;
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+  object-position: center;
+  display: block;
+  transition: transform 0.25s ease;
+}
+
+.imageContain:hover {
+  transform: scale(1.02);
+}
+
+.imageZoomBadge {
+  position: absolute;
+  bottom: 0.5rem;
+  right: 0.5rem;
+  z-index: 2;
+  background: rgba(15, 23, 42, 0.85);
+  color: #ffffff;
+  padding: 0.25rem 0.5rem;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+  pointer-events: none;
+}
+
+.imageContainer:hover .imageZoomBadge {
+  opacity: 1;
+}
+
+@media print {
+  .imageZoomBadge,
+  .ambientBackdrop {
+    display: none !important;
+  }
 }
 
 
@@ -1352,6 +1414,8 @@
   .imageContainer {
     box-shadow: none !important;
     overflow: hidden !important;
+    break-inside: avoid;
+    page-break-inside: avoid;
   }
 
   .kpiValueRow,

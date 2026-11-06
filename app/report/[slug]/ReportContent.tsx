@@ -18,7 +18,10 @@ import {
   calculateLayoutV2BlockHeight, 
   validateLayoutV2BlockCapacity,
   calculateLayoutV2GridColumns,
-  calculateLayoutV2BlockDimensions
+  calculateLayoutV2BlockDimensions,
+  coalesceReportBlocks,
+  type CoalescedReportBlock,
+  type LayoutV2BlockRow
 } from '@/lib/layoutV2BlockCalculator';
 
 /**
@@ -118,6 +121,10 @@ export default function ReportContent({
     } : null
   });
   
+  // WHAT: Coalesce consecutive untitled blocks into structured multi-row sections
+  // WHY: Eliminate disjointed vertical gaps, broken layout rhythm, and orphaned print rows
+  const coalescedBlocks = useMemo(() => coalesceReportBlocks(blocks, 6), [blocks]);
+
   if (blocks.length === 0) {
     return (
       <div className={styles.emptyState}>
@@ -132,7 +139,7 @@ export default function ReportContent({
 
   return (
     <div className={`${styles.content} report-content ${className || ''}`} data-report-section="content">
-      {blocks.map((block) => (
+      {coalescedBlocks.map((block) => (
         <ReportBlock 
           key={block.id}
           block={block}
@@ -150,7 +157,7 @@ export default function ReportContent({
  * Single Report Block with charts (row-based layout)
  */
 interface ReportBlockProps {
-  block: ReportBlock;
+  block: CoalescedReportBlock;
   chartResults: Map<string, ChartResult>;
   charts?: Map<string, Chart> | null; // A-R-13: Chart configs for validation
   allowNA?: boolean;
@@ -408,8 +415,9 @@ function ReportBlock({ block, chartResults, charts, allowNA = false, showBlockTi
   // IMPORTANT: Hooks must be called before any early returns (React Rules of Hooks)
   const blockRef = useRef<HTMLDivElement>(null!);
   
-  // Sort charts by order
-  const sortedCharts = [...block.charts].sort((a, b) => a.order - b.order);
+  // Flatten charts across all rows in the block and sort by order
+  const allCharts = block.rows.flatMap(r => r.charts);
+  const sortedCharts = [...allCharts].sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
   
   // WHAT: Filter out charts with no data (v11.48.0); when allowNA (static landing), show any result without error
   // WHY: Hide empty cells in live reports; on static landing show structure even if values are NA
@@ -635,17 +643,29 @@ function ReportBlock({ block, chartResults, charts, allowNA = false, showBlockTi
     return null; // Skip empty blocks
   }
 
-  // Group charts into rows based on desktop column count
-  const rows = groupChartsIntoRows(validCharts);
+  // Pre-filter rows to ensure each has valid displayable charts
+  const activeRows = block.rows
+    .map((row) => ({
+      ...row,
+      charts: row.charts.filter(c => {
+        const result = chartResults.get(String(c.chartId));
+        return allowNA ? !!(result && !result.chartError) : (result && hasValidChartData(result));
+      })
+    }))
+    .filter(row => row.charts.length > 0);
+
+  if (activeRows.length === 0) {
+    return null;
+  }
   
   // DEBUG: Log rendering for specific blocks
   if (block.title && (block.title.includes('OVERVIEW') || block.title.includes('Overview'))) {
     console.log(`🔍 [ReportBlock] Rendering "${block.title}":`, {
       validCharts: validCharts.length,
       chartIds: validCharts.map(c => c.chartId),
-      rows: rows.length,
-      rowSizes: rows.map(r => r.length),
-      gridColumns: rows.map(r => calculateGridColumns(r))
+      rows: activeRows.length,
+      rowSizes: activeRows.map(r => r.charts.length),
+      gridColumns: activeRows.map(r => calculateGridColumns(r.charts))
     });
   }
 
@@ -669,20 +689,18 @@ function ReportBlock({ block, chartResults, charts, allowNA = false, showBlockTi
         <h2 className={styles.blockTitle}>{block.title}</h2>
       )}
       
-      {/* Render each row with responsive height calculation */}
-      {/* WHAT: P1 1.5 Phase 3 - Removed blockTitleFontSize and blockSubtitleFontSize props */}
-      {/* WHY: CSS now uses --block-base-font-size and --block-subtitle-font-size directly (Phase 2) */}
-      {rows.map((rowCharts, rowIndex) => (
+      {/* Render each active row with responsive height calculation */}
+      {activeRows.map((row, rowIndex) => (
         <ResponsiveRow
           key={`row-${rowIndex}`}
-          rowCharts={rowCharts}
+          rowCharts={row.charts}
           chartResults={chartResults}
           charts={charts} // A-R-13: Pass chart configs for validation
           rowIndex={rowIndex}
           unifiedTextFontSize={unifiedTextFontSize}
-          blockAspectRatio={block.blockAspectRatio} // R-LAYOUT-02.1: Optional block aspect ratio override
-          mobileAspectRatio={block.mobileAspectRatio} // #358: Optional mobile-only aspect ratio override
-          tableHeightMultiplier={block.tableHeightMultiplier} // Table height control: height = blockWidth × multiplier
+          blockAspectRatio={row.blockAspectRatio || block.blockAspectRatio}
+          mobileAspectRatio={row.mobileAspectRatio || block.mobileAspectRatio}
+          tableHeightMultiplier={row.tableHeightMultiplier || block.tableHeightMultiplier}
           allowNA={allowNA}
         />
       ))}

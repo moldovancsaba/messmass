@@ -7,6 +7,7 @@
 import { getFontFamilyCSS } from './fontUtils';
 import { HEX8_OPAQUE_BLACK, rgbaString } from './theme/color';
 import { DEFAULT_CARD_SHADOW, DEFAULT_REPORT_STYLE_COLORS } from './theme/reportStylePalette';
+import { guardReportStyle } from './theme/styleGuardian';
 
 /**
  * Report Style - Complete color configuration for report and landing pages
@@ -352,8 +353,9 @@ export function validateStyle(style: Partial<ReportStyle>): { valid: boolean; er
  * WHAT: Apply style to document root
  * WHY: Make colors available to all report components
  */
-export function injectStyleAsCSS(style: ReportStyle): void {
+export function injectStyleAsCSS(rawStyle: ReportStyle): void {
   const root = document.documentElement;
+  const style = guardReportStyle(rawStyle);
   
   // WHAT: Inject font family if specified, converting name to CSS font-family value
   // WHY: Report styles store font name (e.g., "Aquatic"), but CSS needs full value (e.g., '"Aquatic", sans-serif')
@@ -370,7 +372,11 @@ export function injectStyleAsCSS(style: ReportStyle): void {
   for (const field of COLOR_FIELDS) {
     const value = style[field.key];
     if (value) {
-      root.style.setProperty(`--${field.key}`, normalizeHexColor(value));
+      // If already a CSS functional expression (e.g. rgba(...)), pass through directly; otherwise normalize hex
+      const cssVal = typeof value === 'string' && !value.startsWith('#')
+        ? value
+        : normalizeHexColor(value);
+      root.style.setProperty(`--${field.key}`, cssVal);
     }
   }
 

@@ -65,22 +65,37 @@ export function calculateLayoutV2BlockHeight(
 }
 
 /**
+ * WHAT: Sanitize chart width to valid integer or 1-decimal grid unit
+ * WHY: Guard against legacy database anomalies (e.g. width: 10 or fractional 3.16)
+ * HOW: Clamp to 1..6 and round cleanly
+ */
+export function sanitizeChartWidth(rawWidth: any): number {
+  if (typeof rawWidth !== 'number' || isNaN(rawWidth) || rawWidth <= 0) {
+    return 1;
+  }
+  const clamped = Math.max(1, Math.min(6, rawWidth));
+  return Math.round(clamped * 10) / 10;
+}
+
+/**
  * WHAT: Validate block unit capacity per LayoutV2 contract
- * WHY: Blocks must not exceed 4 units total
- * HOW: Sum all chart widths and check if ≤ 4
+ * WHY: Blocks must not exceed max unit capacity (default 4 for legacy, up to 6 for modular grid)
+ * HOW: Sum all chart widths and check if ≤ maxCapacity
  * 
  * @param charts - Array of charts with width property
+ * @param maxCapacity - Maximum allowed unit capacity (default: 4)
  * @returns Validation result with error message if invalid
  */
 export function validateLayoutV2BlockCapacity(
-  charts: Array<{ width: number }>
+  charts: Array<{ width: number }>,
+  maxCapacity: number = 4
 ): { valid: boolean; error?: string; totalUnits: number } {
-  const totalUnits = charts.reduce((sum, chart) => sum + (chart.width || 1), 0);
+  const totalUnits = charts.reduce((sum, chart) => sum + sanitizeChartWidth(chart.width), 0);
   
-  if (totalUnits > 4) {
+  if (totalUnits > maxCapacity) {
     return {
       valid: false,
-      error: `Block capacity exceeded: sum of chart widths (${totalUnits}) exceeds maximum (4 units)`,
+      error: `Block capacity exceeded: sum of chart widths (${totalUnits}) exceeds maximum (${maxCapacity} units)`,
       totalUnits
     };
   }
@@ -123,10 +138,9 @@ export function calculateLayoutV2GridColumns(
 ): string {
   if (charts.length === 0) return '1fr';
   
-  // WHAT: Use chart widths as fr units for deterministic packing
-  // WHY: LayoutV2 contract: unit-based width allocation
-  // HOW: Each width becomes a fr unit (e.g., width: 2 → 2fr)
-  const weights = charts.map(c => c.width || 1);
+  // WHAT: Use sanitized chart widths as fr units for deterministic packing
+  // WHY: LayoutV2 contract: unit-based width allocation, guard against fractional or overflow units
+  const weights = charts.map(c => sanitizeChartWidth(c.width));
   return weights.map(w => `${w}fr`).join(' ');
 }
 
@@ -306,8 +320,9 @@ export function calculateLayoutV2BlockDimensions(
   itemWidths: Array<{ chartIndex: number; width: number }>;
 } {
   // WHAT: Validate block capacity
-  // WHY: LayoutV2 contract requires sum(itemUnits) ≤ 4
-  const capacityValidation = validateLayoutV2BlockCapacity(charts);
+  // WHY: LayoutV2 contract requires sum(itemUnits) ≤ 4 (or up to 6 for modular multi-card rows)
+  const allowedUnits = Math.max(4, charts.length > 4 ? 6 : 4);
+  const capacityValidation = validateLayoutV2BlockCapacity(charts, allowedUnits);
   if (!capacityValidation.valid) {
     return {
       valid: false,
@@ -443,4 +458,110 @@ export function calculateLayoutV2BlockDimensions(
     gridColumns,
     itemWidths
   };
+}
+
+/**
+ * Unified row representation within a block
+ */
+export interface LayoutV2BlockRow {
+  charts: Array<{ chartId: string; width: number; order: number }>;
+  blockAspectRatio?: string;
+  mobileAspectRatio?: string;
+  tableHeightMultiplier?: number;
+}
+
+/**
+ * Coalesced block structure containing one or more visual rows
+ */
+export interface CoalescedReportBlock {
+  id: string;
+  title?: string;
+  showTitle: boolean;
+  blockAspectRatio?: string;
+  mobileAspectRatio?: string;
+  tableHeightMultiplier?: number;
+  rows: LayoutV2BlockRow[];
+}
+
+/**
+ * WHAT: Coalesce consecutive untitled blocks into cohesive multi-row sections
+ * WHY: Editors create secondary rows as separate blocks with showTitle: false
+ *      (e.g., "Overview 2", "Fan data and general 2", "Future Opportunities II").
+ *      Treating them as isolated blocks causes massive 32px gaps, broken layout rhythm,
+ *      and orphaned rows in print exports.
+ * HOW: Group untitled blocks following a titled block into that block's row list.
+ *      Also auto-wrap rows if charts exceed maximum modular capacity (6 units).
+ */
+export function coalesceReportBlocks<T extends {
+  id: string;
+  title?: string;
+  showTitle?: boolean;
+  charts: Array<{ chartId: string; width: number; order?: number }>;
+  blockAspectRatio?: string;
+  mobileAspectRatio?: string;
+  tableHeightMultiplier?: number;
+}>(rawBlocks: T[], maxRowCapacity: number = 6): CoalescedReportBlock[] {
+  if (!rawBlocks || rawBlocks.length === 0) return [];
+
+  const coalesced: CoalescedReportBlock[] = [];
+
+  for (const block of rawBlocks) {
+    const isUntitled = block.showTitle === false;
+    const sortedCharts = [...(block.charts || [])].sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
+    
+    // Chunk charts if the block's own charts exceed row capacity
+    const chunkedRows: LayoutV2BlockRow[] = [];
+    let currentRow: Array<{ chartId: string; width: number; order: number }> = [];
+    let currentUnits = 0;
+
+    for (const c of sortedCharts) {
+      const sanitized = sanitizeChartWidth(c.width);
+      if (currentRow.length > 0 && currentUnits + sanitized > maxRowCapacity) {
+        chunkedRows.push({
+          charts: currentRow,
+          blockAspectRatio: block.blockAspectRatio,
+          mobileAspectRatio: block.mobileAspectRatio,
+          tableHeightMultiplier: block.tableHeightMultiplier,
+        });
+        currentRow = [{ chartId: c.chartId, width: sanitized, order: c.order ?? 0 }];
+        currentUnits = sanitized;
+      } else {
+        currentRow.push({ chartId: c.chartId, width: sanitized, order: c.order ?? 0 });
+        currentUnits += sanitized;
+      }
+    }
+    if (currentRow.length > 0) {
+      chunkedRows.push({
+        charts: currentRow,
+        blockAspectRatio: block.blockAspectRatio,
+        mobileAspectRatio: block.mobileAspectRatio,
+        tableHeightMultiplier: block.tableHeightMultiplier,
+      });
+    }
+
+    // Decide whether to attach to previous block or start a new section
+    if (isUntitled && coalesced.length > 0) {
+      const prev = coalesced[coalesced.length - 1];
+      prev.rows.push(...chunkedRows);
+    } else {
+      coalesced.push({
+        id: block.id,
+        title: block.title,
+        showTitle: block.showTitle !== false,
+        blockAspectRatio: block.blockAspectRatio,
+        mobileAspectRatio: block.mobileAspectRatio,
+        tableHeightMultiplier: block.tableHeightMultiplier,
+        rows: chunkedRows.length > 0 ? chunkedRows : [
+          {
+            charts: [],
+            blockAspectRatio: block.blockAspectRatio,
+            mobileAspectRatio: block.mobileAspectRatio,
+            tableHeightMultiplier: block.tableHeightMultiplier,
+          }
+        ]
+      });
+    }
+  }
+
+  return coalesced;
 }

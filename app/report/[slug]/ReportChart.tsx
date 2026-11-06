@@ -19,6 +19,7 @@ import { preventPhraseBreaks } from '@/lib/chartLabelUtils';
 import { replaceEmDashes } from '@/lib/contentFormat';
 import MaterialIcon from '@/components/MaterialIcon';
 import CellWrapper from '@/components/CellWrapper';
+import ImageLightboxModal from '@/components/report/ImageLightboxModal';
 import { ChartErrorBoundary } from '@/components/ChartErrorBoundary';
 import styles from './ReportChart.module.css';
 import { parseMarkdown } from '@/lib/markdownUtils';
@@ -1328,99 +1329,97 @@ function TableChart({ result, className }: { result: ChartResult; className?: st
 }
 
 /**
- * Image Chart - Uses actual image aspect ratio
- * UPDATED: Detects real image dimensions and uses them for aspect ratio
+ * Image Chart - Standardized Presentation Engine (Phase 2)
+ * WHAT: Full-bleed cover for showcase photos, ambient blur backdrop for screenshots/QR codes
+ * WHY: Eliminate letterboxing dead space, redundant inner boxes, and layout shift
+ * HOW: Immediate deterministic aspect-ratio, fit-mode switching, and interactive Lightbox modal
  */
 function ImageChart({ result, className }: { result: ChartResult; className?: string }) {
   const FALLBACK_PLACEHOLDER = 'https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg';
   const formattedValue = formatValue(result.kpiValue, result.formatting);
-  const [actualAspectRatio, setActualAspectRatio] = React.useState<string | null>(null);
   const [hasError, setHasError] = React.useState(false);
-  const imgRef = React.useRef<HTMLImageElement>(null);
-  
-  // WHAT: Detect actual image aspect ratio when image loads
-  // WHY: Use real image dimensions instead of configured aspect ratio
-  // HOW: Calculate from naturalWidth/naturalHeight and apply dynamically
-  const handleImageLoad = (e: React.SyntheticEvent<HTMLImageElement>) => {
-    const img = e.currentTarget;
-    if (img.naturalWidth && img.naturalHeight) {
-      const ratio = img.naturalWidth / img.naturalHeight;
-      setActualAspectRatio(`${img.naturalWidth}:${img.naturalHeight}`);
-      console.log('[ImageChart] Actual aspect ratio detected:', {
-        title: result.title,
-        naturalWidth: img.naturalWidth,
-        naturalHeight: img.naturalHeight,
-        ratio: ratio.toFixed(4),
-        aspectRatio: `${img.naturalWidth}:${img.naturalHeight}`
-      });
-    }
-  };
-  
-  // DEBUG: Log image rendering
-  console.log('[ImageChart] Rendering:', {
-    title: result.title,
-    kpiValue: result.kpiValue,
-    formattedValue,
-    configuredAspectRatio: result.aspectRatio || '16:9',
-    actualAspectRatio,
-    hasValue: !!formattedValue
-  });
-  
-  // WHAT: Check if title should be shown (default: true for backward compatibility)
+  const [isLightboxOpen, setIsLightboxOpen] = React.useState(false);
+
   const showTitle = result.showTitle !== false;
-  
-  // WHAT: Use actual aspect ratio if available, otherwise fallback to configured
-  // WHY: Prefer real image dimensions, but have fallback for initial render
-  const aspectRatio = actualAspectRatio || result.aspectRatio || '16:9';
-  
-  // WHAT: Calculate aspect ratio value for CSS
-  // WHY: CSS aspect-ratio property needs numeric ratio (width/height)
-  const aspectRatioValue = React.useMemo(() => {
-    if (actualAspectRatio) {
-      const [w, h] = actualAspectRatio.split(':').map(Number);
-      if (w && h) return w / h;
-    }
-    // Fallback to configured aspect ratio
-    const configured = result.aspectRatio || '16:9';
-    const map: Record<string, number> = {
-      '16:9': 16 / 9,
-      '9:16': 9 / 16,
-      '1:1': 1
-    };
-    return map[configured] || 16 / 9;
-  }, [actualAspectRatio, result.aspectRatio]);
+  const imageSrc = hasError || !formattedValue ? FALLBACK_PLACEHOLDER : formattedValue;
+
+  // Detect whether image is portrait screenshot / QR code vs atmospheric photo
+  const isPortrait = (result.aspectRatio as string) === '9:16' || (result.aspectRatio as string) === '3:4';
+  const isQrOrEvidence =
+    result.chartId?.toLowerCase().includes('qr') ||
+    result.title?.toLowerCase().includes('qr') ||
+    isPortrait;
+
+  const handleOpenLightbox = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setIsLightboxOpen(true);
+  };
 
   return (
-    <CellWrapper
-      title={showTitle ? result.title : undefined}
-      // WHAT: P1 1.5 Phase 3 - Removed titleFontSize and subtitleFontSize props
-      // WHY: CSS now uses --block-base-font-size and --block-subtitle-font-size directly (Phase 2)
-      className={`${styles.chart} ${styles.image} report-chart ${className || ''}`}
-    >
-      {/* WHAT: Image container with dynamic aspect ratio from actual image dimensions */}
-      {/* WHY: Use real image dimensions instead of configured aspect ratio */}
-      <div 
-        className={styles.imageContainer}
-        // eslint-disable-next-line react/forbid-dom-props
-        style={{
-          '--image-aspect-ratio': aspectRatioValue.toString()
-        } as React.CSSProperties}
+    <>
+      <CellWrapper
+        title={showTitle ? result.title : undefined}
+        className={`${styles.chart} ${styles.image} report-chart ${className || ''}`}
       >
-        {/* WHAT: Use actual <img> tag and detect real dimensions */}
-        {/* WHY: Browser provides naturalWidth/naturalHeight for actual aspect ratio */}
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img 
-          ref={imgRef}
-          className={styles.imageContent}
-          src={hasError || !formattedValue ? FALLBACK_PLACEHOLDER : formattedValue}
-          alt={result.title}
-          onLoad={handleImageLoad}
-          onError={() => {
-            console.error('[ImageChart] Image failed to load, falling back to placeholder:', result.title);
-            if (!hasError) setHasError(true);
+        <div
+          className={styles.imageContainer}
+          onClick={handleOpenLightbox}
+          title="Click to view full image"
+          role="button"
+          tabIndex={0}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+              e.preventDefault();
+              setIsLightboxOpen(true);
+            }
           }}
-        />
-      </div>
-    </CellWrapper>
+        >
+          {isQrOrEvidence ? (
+            <div className={styles.imageContainWithBackdrop}>
+              <div
+                className={styles.ambientBackdrop}
+                // WHAT: Dynamic background image for frosted ambient blur effect
+                // WHY: Image URL is dynamic and loaded per report chart
+                // eslint-disable-next-line react/forbid-dom-props
+                style={{ backgroundImage: `url(${imageSrc})` }}
+                aria-hidden="true"
+              />
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                className={styles.imageContain}
+                src={imageSrc}
+                alt={result.title}
+                onError={() => {
+                  if (!hasError) setHasError(true);
+                }}
+              />
+            </div>
+          ) : (
+            /* eslint-disable-next-line @next/next/no-img-element */
+            <img
+              className={styles.imageCover}
+              src={imageSrc}
+              alt={result.title}
+              onError={() => {
+                if (!hasError) setHasError(true);
+              }}
+            />
+          )}
+
+          <div className={styles.imageZoomBadge}>
+            <span>🔍</span>
+            <span>Zoom</span>
+          </div>
+        </div>
+      </CellWrapper>
+
+      <ImageLightboxModal
+        isOpen={isLightboxOpen}
+        onClose={() => setIsLightboxOpen(false)}
+        imageUrl={imageSrc}
+        altText={result.title}
+        title={result.title}
+      />
+    </>
   );
 }
