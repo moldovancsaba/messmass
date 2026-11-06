@@ -116,8 +116,8 @@
   align-items: start;
   justify-items: stretch;
   background: transparent !important; /* WHAT: Force transparent row background */
-  height: var(--row-height, var(--mm-row-height-default)); /* WHAT: Use calculated row height from Layout Grammar, fallback to design token (P1 1.4: explicit height cascade, no implicit fallbacks) */
-  min-height: var(--row-height, var(--mm-row-height-default)); /* WHAT: Ensure minimum height for charts to render, fallback to design token (P1 1.4: explicit height cascade, no implicit fallbacks) */
+  height: auto; /* WHAT: Allow natural row expansion so content is never squished or forced to shrink */
+  min-height: var(--row-height, var(--mm-row-height-default)); /* WHAT: Ensure minimum height for charts to render, fallback to design token */
 }
 
 /* WHAT: Never let the browser's print engine slice a row across a page boundary.

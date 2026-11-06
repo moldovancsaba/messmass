@@ -17,8 +17,9 @@
   
   /* UNIFIED NAMING: --chartBackground matches database property */
   background: var(--chartBackground) !important;
+  border: 1px solid var(--chartBorder, rgba(226, 232, 240, 0.8)) !important;
   border-radius: var(--cardBorderRadius, var(--mm-radius-lg));
-  box-shadow: var(--cardShadow, var(--mm-shadow-sm));
+  box-shadow: var(--cardShadow, 0 1px 3px 0 rgba(0, 0, 0, 0.04), 0 1px 2px -1px rgba(0, 0, 0, 0.02));
   padding: 0; /* WHAT: Remove padding, add to header/body instead */
   overflow: visible; /* WHAT: Layout Grammar - no clipping on content layers; height resolution ensures fit */
   box-sizing: border-box !important;
@@ -146,10 +147,10 @@
 }
 
 .kpiIcon {
-  /* WHAT: Material Icons scale by font-size, 85% of icon row */
-  /* WHY: Visual impact - large icon dominates top 40% */
+  /* WHAT: Material Icons scale by font-size, balanced proportion */
+  /* WHY: Visual impact - supportive icon above metric value */
   /* HOW: Container query on .kpiIconRow; --landing-max-font caps size on main page */
-  font-size: clamp(2.5rem, 85cqh, var(--landing-max-icon-font, var(--landing-max-font, 7rem))) !important; /* 85% of icon row height; --landing-max-icon-font for main page */
+  font-size: clamp(2rem, 60cqh, var(--landing-max-icon-font, var(--landing-max-font, 4.5rem))) !important;
   height: auto !important;
   width: auto !important;
   color: var(--kpiIconColor) !important;
@@ -160,23 +161,22 @@
 }
 
 .kpiValueRow {
-  /* WHAT: Grid row 2 (30%) for value */
-  /* WHY: Middle row of 4fr-3fr-3fr grid */
+  /* WHAT: Grid row 2 for value */
+  /* WHY: Middle row of 3fr-4fr-3fr grid */
   /* HOW: Flex centering for responsive value scaling, fully vertically centered */
-  /* P1 2.5.1: Increased scaling from min(18cqh, 20cqw) to min(30cqh, 25cqw), max from 5rem to 6rem */
-  /* A-03.2: Enhanced to prevent value clipping */
   display: flex;
   align-items: center;
   justify-content: center;
   width: 100%;
   height: 100%;
-  /* When --landing-max-font is set (e.g. 13px), cap at that size; otherwise use clamp (min 1.25rem, max 6rem) */
-  font-size: var(--landing-value-font, clamp(1.25rem, min(30cqh, 25cqw), 6rem));
+  /* Stable, bold numeric metric with tabular numbers and clean bounds */
+  font-size: var(--landing-value-font, clamp(1.75rem, min(24cqh, 18cqw), 3.25rem));
   font-weight: var(--mm-font-weight-bold);
+  font-variant-numeric: tabular-nums;
   color: var(--chartValueColor);
-  line-height: 0.85;
+  line-height: 1;
   text-align: center;
-  letter-spacing: -0.04em;
+  letter-spacing: -0.02em;
   /* WHAT: A-03.2 - Allow wrapping instead of truncation - Layout Grammar: no truncation on content */
   /* WHY: Content must fit through wrapping/reflow, not truncation */
   /* HOW: Enhanced wrapping properties to ensure multi-line values fit */
@@ -192,11 +192,9 @@
 }
 
 .kpi .kpiTitle {
-  /* WHAT: 3rd grid row (30%) - title at bottom of KPI */
-  /* WHY: Grid row 3 = bottom 30% of cell */
+  /* WHAT: 3rd grid row - title at bottom of KPI */
+  /* WHY: Grid row 3 = bottom of cell */
   /* HOW: Flex with center alignment - fully vertically centered */
-  /* P1 2.5.1: Increased scaling from 8cqh to 15cqh, max from 1.125rem to 1.5rem */
-  /* A-03.2: Enhanced to prevent title clipping */
   display: flex;
   align-items: center;
   justify-content: center;
@@ -204,22 +202,16 @@
   width: 100%;
   height: 100%;
   padding: var(--mm-space-2);
-  /* WHAT: P1 1.5 Phase 2 - Use block-level typography instead of independent scaling */
-  font-size: var(--block-base-font-size);
+  /* Balanced, legible label typography */
+  font-size: clamp(0.875rem, 3.5cqw, 1.125rem);
   font-weight: var(--mm-font-weight-medium);
   color: var(--chartLabelColor);
-  line-height: 1.1;
-  /* WHAT: A-03.2 - Enhanced wrapping to ensure title fits */
-  /* WHY: Title must fit within allocated row height (clamped to 2 lines per Layout Grammar) */
-  /* HOW: Enhanced wrapping properties */
+  line-height: 1.25;
   word-break: normal !important;
   word-wrap: normal !important;
   overflow-wrap: break-word !important;
   hyphens: none !important; /* Prevents awkward syllable breaks like En-gaged */
   text-wrap: balance;
-  /* WHAT: A-03.2 - Ensure title fits within row height */
-  /* WHY: Title is clamped to 2 lines per Layout Grammar, but must fit within allocated height */
-  /* HOW: Use min-height: 0 to allow flex shrinking, overflow: hidden to prevent overflow */
   min-height: 0 !important; /* CRITICAL: Allow flex shrinking to fit content */
   overflow: visible !important; /* A-03.2: Prevent overflow - title MUST be fully visible (Layout Grammar) */
 }
@@ -516,19 +508,14 @@
 }
 
 .pieLegendDot {
-  /* WHAT: Colored SQUARE (not dot) matching pie slice color */
-  /* WHY: Visual indicator of which legend item corresponds to which pie slice */
-  /* HOW: Square shape scaled to fit available space, no border radius */
-  width: clamp(0.7rem, 6cqh, 1rem); /* Reduced: 10cqh → 6cqh to prevent overflow */
-  height: clamp(0.7rem, 6cqh, 1rem);
-  border-radius: 0; /* SQUARE, not circle */
+  /* WHAT: Circular pill dot matching pie slice color */
+  width: 8px;
+  height: 8px;
+  border-radius: var(--mm-radius-full);
   flex-shrink: 0;
   box-sizing: border-box;
-  /* WHAT: Dynamic colors from CSS custom properties set on parent */
-  /* WHY: Colors come from chart data, cannot use static CSS classes */
   background-color: var(--dot-color, var(--pieColor1, var(--mm-color-primary-500)));
-  /* WHAT: Border color and width match pie chart border (2px solid first pie color) */
-  border: 2px solid var(--dot-border-color, var(--pieColor1, var(--mm-color-primary-500)));
+  border: none;
 }
 
 .pieLegendText {
@@ -633,11 +620,8 @@
   /* WHAT: Bar label table cell - wraps naturally, row expands automatically */
   /* WHY: Table cells naturally expand row height when content wraps (Layout Grammar: no clipping) */
   /* HOW: Standard table cell with natural text wrapping, right-aligned, no forced line limits */
-  /* WHAT: P1 1.5 Phase 2 - Use block-level typography instead of independent scaling */
-  /* A-03.3: Enhanced to prevent label clipping with measured layout logic */
-  /* ponytail: cap at 4cqh (cqh references .chart, the nearest container-type ancestor)
-     so 5 rows of 2-line labels never exceed ~48% of card height. */
-  font-size: min(var(--block-base-font-size, 1rem), 4cqh);
+  /* WHAT: Generous, readable label column width - 32% of table width */
+  font-size: min(var(--bar-label-font-size, 0.875rem), 4.5cqh);
   color: var(--chartLabelColor);
   font-weight: var(--mm-font-weight-medium);
   text-align: right;
@@ -645,10 +629,10 @@
   overflow-wrap: anywhere !important; /* WHAT: Break words if needed to prevent overflow */
   word-break: break-word !important; /* WHAT: Break long words if needed */
   hyphens: auto !important; /* A-03.3: Allow hyphenation for better label fitting */
-  line-height: 1.2; /* WHAT: Comfortable line-height for readability */
-  padding-right: var(--mm-space-2);
+  line-height: 1.25; /* WHAT: Comfortable line-height for readability */
+  padding-right: var(--mm-space-3);
   padding-left: var(--mm-space-1);
-  width: 40%; /* WHAT: Generous label column width - 40% of table width for full label visibility */
+  width: 32%;
   vertical-align: middle; /* WHAT: Center label vertically in row with bar and value */
   box-sizing: border-box;
   /* WHAT: A-03.3 - Ensure labels fit without clipping */
@@ -661,53 +645,43 @@
 
 .barTrackCell {
   /* WHAT: Bar track table cell - contains the bar visualization */
-  /* WHY: Table cell provides natural column structure */
-  /* HOW: Standard table cell, contains barTrack div - fills remaining space after label and value */
   padding: 0 var(--mm-space-2);
-  width: 1fr; /* WHAT: Track column fills remaining space (with fixed layout, auto width fills remaining) */
+  width: 53%;
   vertical-align: middle; /* WHAT: Center bar vertically in row */
   box-sizing: border-box;
 }
 
 .barTrack {
-  /* WHAT: Bar track visualization - fills available space in table cell (Layout Grammar: decorative clipping) */
-  /* WHY: Track fills available space between label and value, must maintain readable thickness */
-  /* HOW: 100% width of table cell, minimum height constraint, centered vertically */
+  /* WHAT: Sleek capsule bar track */
   background: var(--chartBarTrackBackground, var(--chartTrackBackground, var(--mm-gray-100, #f3f4f6)));
-  /* ponytail: 6cqh — noticeably taller than the 4cqh label text (1.5× ratio),
-     capped at 1.5rem so bars stay reasonable on very tall cards */
-  height: clamp(0.875rem, 6cqh, 1.5rem);
-  min-height: clamp(0.875rem, 6cqh, 1.5rem);
+  height: clamp(10px, 3.5cqh, 16px);
+  min-height: clamp(10px, 3.5cqh, 16px);
   width: 100%; /* CRITICAL: Fills entire table cell */
-  border-radius: calc(clamp(0.875rem, 6cqh, 1.5rem) / 2);
-  overflow: hidden; /* Layout Grammar: decorative - bar track shape only, fill is content and fully visible */
-  /* WHAT: Table cell vertical-align handles centering, no align-self needed */
+  border-radius: var(--mm-radius-full);
+  overflow: hidden;
 }
 
 .barFill {
   /* WHAT: Fills track based on percentage of max value */
-  /* WHY: Visual representation of bar data */
-  /* HOW: Width and color set via CSS custom properties from parent */
   height: 100%;
   width: var(--bar-width, 0%);
   background-color: var(--bar-color, var(--barColor1, var(--mm-color-primary-500)));
-  border-radius: calc(clamp(0.875rem, 6cqh, 1.5rem) / 2);
+  border-radius: var(--mm-radius-full);
   transition: width var(--transition-base);
 }
 
 .barValue {
   /* WHAT: Bar value table cell - displays formatted number */
-  /* WHY: Table cell provides natural column structure */
-  /* HOW: Standard table cell, left-aligned text - same font size as label */
   padding-left: var(--mm-space-2);
   padding-right: var(--mm-space-1);
-  width: auto; /* WHAT: Value column auto-width based on content, remaining space goes to track */
+  width: 15%;
   min-width: fit-content; /* WHAT: Ensure value text is never clipped */
-  font-size: min(var(--block-base-font-size, 1rem), 4cqh); /* ponytail: same 4cqh cap as .barLabel */
+  font-size: min(var(--bar-label-font-size, 0.875rem), 4.5cqh);
   font-weight: var(--mm-font-weight-bold);
+  font-variant-numeric: tabular-nums;
   color: var(--chartValueColor);
   text-align: left;
-  line-height: 1.2; /* WHAT: Match label line-height */
+  line-height: 1.25;
   white-space: nowrap; /* WHAT: Values should not wrap (single line) */
   vertical-align: middle; /* WHAT: Center value vertically in row */
   box-sizing: border-box;

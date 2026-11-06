@@ -43,7 +43,7 @@ export const maxDuration = 60;
 // resolves to a real, correctly-rendered page. '/filter/' is the one users actually
 // reach; it was missing here entirely until this was caught by testing the export
 // button on that page specifically, not just /report/.
-const ALLOWED_PATH_PREFIXES = ['/report/', '/hashtag/', '/filter/', '/partner-report/'];
+const ALLOWED_PATH_PREFIXES = ['/report/', '/hashtag/', '/filter/', '/partner-report/', '/organization-report/'];
 
 function validatePath(path: string): string | null {
   if (!path.startsWith('/') || path.startsWith('//')) return null;
@@ -131,7 +131,7 @@ async function launchBrowser() {
     return puppeteer.launch({
       args: chromium.args,
       executablePath,
-      headless: true,
+      headless: 'shell' as any,
       defaultViewport: null,
     });
   }
@@ -206,7 +206,7 @@ export async function GET(request: NextRequest) {
     // WHAT: #report-content only mounts once the page's own `loading` state flips
     // false (app/report/[slug]/page.tsx) — the app's own existing readiness contract,
     // not a new one invented for this route.
-    await page.waitForSelector('#report-content', { timeout: 20000 });
+    await page.waitForSelector('#report-content', { timeout: 30000 });
 
     // WHAT: Best-effort settle for anything that started loading after that mount
     // point (e.g. an image fetched only once real content renders).

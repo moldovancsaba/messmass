@@ -33,208 +33,7 @@ export default function CellWrapper({
   children,
   className = ''
 }: CellWrapperProps) {
-  const titleZoneRef = useRef<HTMLDivElement>(null);
-  const subtitleZoneRef = useRef<HTMLDivElement>(null);
   const cellWrapperRef = useRef<HTMLDivElement>(null);
-
-  // WHAT: Enhanced measurement and font size reduction for CellWrapper titles
-  // WHY: Titles must fit within allocated space per Layout Grammar, with better accuracy
-  // HOW: Use more accurate measurements and smarter font size reduction
-  useEffect(() => {
-    if (title && titleZoneRef.current && typeof window !== 'undefined') {
-      const measureAndReduceFontSize = () => {
-        try {
-          const titleZone = titleZoneRef.current;
-          const titleElement = titleZone?.querySelector(`.${styles.title}`) as HTMLElement;
-          if (!titleZone || !titleElement) return;
-
-          const zoneHeight = titleZone.offsetHeight;
-          if (zoneHeight <= 0) return;
-
-          // WHAT: More accurate height measurement accounting for line-height
-          // WHY: Need to consider actual text rendering, not just element height
-          // HOW: Use scrollHeight for actual content height, account for line-height
-          const actualTitleHeight = titleElement.scrollHeight;
-          const computedStyle = window.getComputedStyle(titleZone);
-          const paddingTop = parseFloat(computedStyle.paddingTop) || 0;
-          const paddingBottom = parseFloat(computedStyle.paddingBottom) || 0;
-          const availableTitleHeight = zoneHeight - paddingTop - paddingBottom;
-
-          // WHAT: Tighter tolerance for better fit
-          // WHY: Reduce chance of overflow while allowing natural text flow
-          const tolerance = 1;
-          if (actualTitleHeight > availableTitleHeight + tolerance && availableTitleHeight > 0) {
-            const titleComputedStyle = window.getComputedStyle(titleElement);
-            const currentFontSize = parseFloat(titleComputedStyle.fontSize) || 16;
-
-            // WHAT: More conservative scaling with better minimum
-            // WHY: Prevent text from becoming too small while ensuring fit
-            // HOW: Use 0.9 safety margin and higher minimum font size
-            const safetyMargin = 0.9;
-            const scaleFactor = (availableTitleHeight / actualTitleHeight) * safetyMargin;
-            const newFontSize = currentFontSize * scaleFactor;
-
-            // WHAT: Higher minimum font size for better readability
-            // WHY: 8px is too small, 10px is more readable
-            const minFontSize = 10;
-            if (scaleFactor < 0.95 && newFontSize >= minFontSize) {
-              titleElement.style.setProperty('font-size', `${Math.max(minFontSize, newFontSize)}px`, 'important');
-
-              // Keep this as warn (not log) to avoid noisy console.log in production.
-              console.warn(
-                `[CellWrapper] Title font reduced: "${title}" from ${currentFontSize}px to ${Math.max(minFontSize, newFontSize)}px`
-              );
-            } else if (newFontSize < minFontSize) {
-              // #364: content still doesn't fit even at the minimum readable font size, and
-              // Layout Grammar prohibits ellipsis/truncation (see .title's own comment: "text
-              // should fit or wrap naturally... Ellipsis hides content which is prohibited").
-              // Both the zone (fixed height) and .title itself (max-height: 3 lines) clip via
-              // overflow:hidden, so both must be defeated or the title still cuts off mid-word
-              // with zero indication text is missing. Let it overflow visibly instead — the
-              // same "never hide content" resolution used everywhere else in this codebase
-              // (text/table/pie all use overflow:visible for the same reason).
-              titleZone.style.setProperty('overflow', 'visible', 'important');
-              titleElement.style.setProperty('overflow', 'visible', 'important');
-              titleElement.style.setProperty('max-height', 'none', 'important');
-              console.warn(
-                `[CellWrapper] Title "${title}" still exceeds its zone at the ${minFontSize}px floor — showing in full instead of clipping (Layout Grammar: no truncation).`
-              );
-            }
-          }
-        } catch (error) {
-          console.error('[CellWrapper] Unexpected error during title font size reduction:', error);
-        }
-      };
-
-      // WHAT: Immediate measurement plus delayed measurement for layout stability
-      // WHY: Some layouts need time to stabilize before accurate measurement
-      measureAndReduceFontSize();
-      const timeoutId = setTimeout(measureAndReduceFontSize, 100);
-
-      const resizeObserver = new ResizeObserver(() => {
-        requestAnimationFrame(measureAndReduceFontSize);
-      });
-
-      if (titleZoneRef.current) {
-        resizeObserver.observe(titleZoneRef.current);
-      }
-
-      const mutationObserver = new MutationObserver(() => {
-        requestAnimationFrame(measureAndReduceFontSize);
-      });
-
-      if (titleZoneRef.current) {
-        mutationObserver.observe(titleZoneRef.current, {
-          childList: true,
-          subtree: true,
-          characterData: true
-        });
-      }
-
-      return () => {
-        clearTimeout(timeoutId);
-        resizeObserver.disconnect();
-        mutationObserver.disconnect();
-      };
-    }
-  }, [title]);
-
-  // WHAT: Enhanced measurement and font size reduction for CellWrapper subtitles
-  // WHY: Subtitles must fit within allocated space per Layout Grammar, with better accuracy
-  // HOW: Use more accurate measurements and smarter font size reduction
-  useEffect(() => {
-    if (subtitle && subtitleZoneRef.current && typeof window !== 'undefined') {
-      const measureAndReduceFontSize = () => {
-        try {
-          const subtitleZone = subtitleZoneRef.current;
-          const subtitleElement = subtitleZone?.querySelector(`.${styles.subtitle}`) as HTMLElement;
-          if (!subtitleZone || !subtitleElement) return;
-
-          const zoneHeight = subtitleZone.offsetHeight;
-          if (zoneHeight <= 0) return;
-
-          // WHAT: More accurate height measurement accounting for line-height
-          // WHY: Need to consider actual text rendering, not just element height
-          // HOW: Use scrollHeight for actual content height, account for line-height
-          const actualSubtitleHeight = subtitleElement.scrollHeight;
-          const computedStyle = window.getComputedStyle(subtitleZone);
-          const paddingTop = parseFloat(computedStyle.paddingTop) || 0;
-          const paddingBottom = parseFloat(computedStyle.paddingBottom) || 0;
-          const availableSubtitleHeight = zoneHeight - paddingTop - paddingBottom;
-
-          // WHAT: Tighter tolerance for better fit
-          // WHY: Reduce chance of overflow while allowing natural text flow
-          const tolerance = 1;
-          if (actualSubtitleHeight > availableSubtitleHeight + tolerance && availableSubtitleHeight > 0) {
-            const subtitleComputedStyle = window.getComputedStyle(subtitleElement);
-            const currentFontSize = parseFloat(subtitleComputedStyle.fontSize) || 16;
-
-            // WHAT: More conservative scaling with better minimum
-            // WHY: Prevent text from becoming too small while ensuring fit
-            // HOW: Use 0.9 safety margin and higher minimum font size
-            const safetyMargin = 0.9;
-            const scaleFactor = (availableSubtitleHeight / actualSubtitleHeight) * safetyMargin;
-            const newFontSize = currentFontSize * scaleFactor;
-
-            // WHAT: Higher minimum font size for better readability
-            // WHY: 8px is too small, 9px is more readable for subtitles
-            const minFontSize = 9;
-            if (scaleFactor < 0.95 && newFontSize >= minFontSize) {
-              subtitleElement.style.setProperty('font-size', `${Math.max(minFontSize, newFontSize)}px`, 'important');
-
-              // WHAT: Log when font size reduction occurs for debugging
-              // WHY: Help identify problematic subtitles that need attention
-              console.log(`[CellWrapper] Subtitle font reduced: "${subtitle}" from ${currentFontSize}px to ${Math.max(minFontSize, newFontSize)}px`);
-            } else if (newFontSize < minFontSize) {
-              // #364: same "never hide content" resolution as the title effect above — content
-              // still doesn't fit at the minimum readable font size, so defeat both the zone's
-              // and .subtitle's own overflow:hidden/max-height clamp instead of silently
-              // clipping (Layout Grammar prohibits ellipsis/truncation).
-              subtitleZone.style.setProperty('overflow', 'visible', 'important');
-              subtitleElement.style.setProperty('overflow', 'visible', 'important');
-              subtitleElement.style.setProperty('max-height', 'none', 'important');
-              console.warn(
-                `[CellWrapper] Subtitle "${subtitle}" still exceeds its zone at the ${minFontSize}px floor — showing in full instead of clipping (Layout Grammar: no truncation).`
-              );
-            }
-          }
-        } catch (error) {
-          console.error('[CellWrapper] Unexpected error during subtitle font size reduction:', error);
-        }
-      };
-
-      // WHAT: Immediate measurement plus delayed measurement for layout stability
-      // WHY: Some layouts need time to stabilize before accurate measurement
-      measureAndReduceFontSize();
-      const timeoutId = setTimeout(measureAndReduceFontSize, 100);
-
-      const resizeObserver = new ResizeObserver(() => {
-        requestAnimationFrame(measureAndReduceFontSize);
-      });
-
-      if (subtitleZoneRef.current) {
-        resizeObserver.observe(subtitleZoneRef.current);
-      }
-
-      const mutationObserver = new MutationObserver(() => {
-        requestAnimationFrame(measureAndReduceFontSize);
-      });
-
-      if (subtitleZoneRef.current) {
-        mutationObserver.observe(subtitleZoneRef.current, {
-          childList: true,
-          subtree: true,
-          characterData: true
-        });
-      }
-
-      return () => {
-        clearTimeout(timeoutId);
-        resizeObserver.disconnect();
-        mutationObserver.disconnect();
-      };
-    }
-  }, [subtitle]);
 
   return (
     <div 
@@ -253,14 +52,14 @@ export default function CellWrapper({
     >
       {/* Title Zone - max 2 lines, synced font size */}
       {title && (
-        <div ref={titleZoneRef} className={styles.titleZone}>
+        <div className={styles.titleZone}>
           <h3 className={styles.title}>{title}</h3>
         </div>
       )}
 
       {/* Subtitle Zone - max 2 lines, synced font size */}
       {subtitle && (
-        <div ref={subtitleZoneRef} className={styles.subtitleZone}>
+        <div className={styles.subtitleZone}>
           <p className={styles.subtitle}>{subtitle}</p>
         </div>
       )}

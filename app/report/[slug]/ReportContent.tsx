@@ -460,6 +460,7 @@ function ReportBlock({ block, chartResults, charts, allowNA = false, showBlockTi
   const MAX_SUBTITLE_FONT_PX = 13;
   const [blockBaseFontSize, setBlockBaseFontSize] = useState<number | null>(allowNA ? MAX_BLOCK_FONT_PX : null);
   const [blockSubtitleFontSize, setBlockSubtitleFontSize] = useState<number | null>(allowNA ? MAX_SUBTITLE_FONT_PX : null);
+  const [blockBarFontSize, setBlockBarFontSize] = useState<number | null>(null);
   
   // WHAT: Calculate block-level typography when block width is known
   // WHY: Font size calculation needs block width (not row width)
@@ -557,12 +558,10 @@ function ReportBlock({ block, chartResults, charts, allowNA = false, showBlockTi
         );
       }
       
-      // WHAT: Use minimum of title font size and BAR chart font size
-      // WHY: Block-level typography must work for all elements (titles and BAR labels)
-      // HOW: Take minimum to ensure all content fits
-      let finalFontSize = barChartFontSize !== null
-        ? Math.min(syncedFonts.titlePx, barChartFontSize)
-        : syncedFonts.titlePx;
+      // WHAT: Decouple block title typography from child bar chart label sizes
+      // WHY: Bar chart label wrapping must never drag down block or sibling chart titles
+      setBlockBarFontSize(barChartFontSize);
+      let finalFontSize = syncedFonts.titlePx;
       // WHAT: When allowNA (static landing), force title to 32px so wrapper's large title isn't overridden by calculation
       // WHY: Block sets --block-base-font-size; a smaller calculated value would override the wrapper's 32px
       if (allowNA) {
@@ -662,7 +661,8 @@ function ReportBlock({ block, chartResults, charts, allowNA = false, showBlockTi
       style={{
         ...(unifiedTextFontSize ? { '--unified-text-font-size': `${unifiedTextFontSize}rem` } : {}),
         ...(blockBaseFontSize ? { '--block-base-font-size': `${blockBaseFontSize}px` } : {}),
-        ...(blockSubtitleFontSize ? { '--block-subtitle-font-size': `${blockSubtitleFontSize}px` } : {})
+        ...(blockSubtitleFontSize ? { '--block-subtitle-font-size': `${blockSubtitleFontSize}px` } : {}),
+        ...(blockBarFontSize ? { '--bar-label-font-size': `${blockBarFontSize}px` } : {})
       } as React.CSSProperties}
     >
       {showBlockTitles && block.showTitle && block.title && (

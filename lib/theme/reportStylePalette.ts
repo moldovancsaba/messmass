@@ -29,29 +29,29 @@ export const DEFAULT_REPORT_STYLE_COLORS = {
 
   // Chart Container
   chartBackground: '#ffffffff',
-  chartBorder: '#f3f4f6ff',
+  chartBorder: '#e2e8f0ff',
 
   // Chart Typography
-  chartTitleColor: '#3b82f6ff',
-  chartLabelColor: '#374151ff',
-  chartValueColor: '#111827ff',
-  textColor: '#111827ff',
+  chartTitleColor: '#1e293bff',
+  chartLabelColor: '#475569ff',
+  chartValueColor: '#0f172aff',
+  textColor: '#1e293bff',
 
   // KPI Charts
   kpiIconColor: '#3b82f6ff',
 
   // Bar Charts
   barColor1: '#3b82f6ff',
-  barColor2: '#10b981ff',
-  barColor3: '#10b981ff',
-  barColor4: '#f59e0bff',
-  barColor5: '#ef4444ff',
+  barColor2: '#06b6d4ff',
+  barColor3: '#6366f1ff',
+  barColor4: '#8b5cf6ff',
+  barColor5: '#ec4899ff',
   chartBarTrackBackground: '#f3f4f6ff',
 
   // Pie Charts
   pieColor1: '#3b82f6ff',
-  pieColor2: '#10b981ff',
-  pieBorderColor: '#3b82f6ff',
+  pieColor2: '#06b6d4ff',
+  pieBorderColor: '#ffffffff',
 
   // Chart States
   chartNoDataBackground: '#f9fafbff',
