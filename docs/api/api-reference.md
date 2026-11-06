@@ -4,7 +4,7 @@ Last Updated: 2026-09-28T12:00:00.000Z
 Canonical: Yes
 Owner: Backend
 
-**Version:** 12.3.46
+**Version:** 12.3.47
 **Last Updated:** 2026-09-28T12:00:00.000Z (UTC)
 **Status:** Production
 
