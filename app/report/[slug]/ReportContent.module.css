@@ -115,11 +115,16 @@
   max-width: 100% !important;
   box-sizing: border-box !important;
   margin-bottom: var(--mm-space-4);
-  align-items: start;
+  align-items: stretch;
   justify-items: stretch;
   background: transparent !important; /* WHAT: Force transparent row background */
   height: auto; /* WHAT: Allow natural row expansion so content is never squished or forced to shrink */
   min-height: var(--row-height, var(--mm-row-height-default)); /* WHAT: Ensure minimum height for charts to render, fallback to design token */
+}
+
+.metricRow {
+  min-height: 0 !important;
+  height: auto !important;
 }
 
 /* WHAT: Never let the browser's print engine slice a row across a page boundary.
@@ -191,40 +196,26 @@
   }
   
   .row {
-    /* WHAT: Keep a real box (flex column) instead of display:contents.
-     * WHY: display:contents generates NO box, so ResponsiveRow's `rowRef.current.offsetWidth`
-     *      (ReportContent.tsx) reads 0 — the height calculator's width<=0 guard then returns
-     *      its 300px fallback, which cascades via custom-property inheritance to every card
-     *      in the row (KPI/bar/table/text/pie), sizing them off a number with no relation to
-     *      the phone's actual column width. flex-column produces the identical single-column
-     *      stack visually while keeping a measurable box, so --row-height/--block-height are
-     *      finally computed from the real mobile width.
-     */
-    display: flex !important;
-    flex-direction: column !important;
+    display: grid !important;
+    grid-template-columns: 1fr !important;
+    gap: var(--mm-space-3) !important;
     width: 100% !important;
-    /* WHAT: Let the row's box grow to fit its child, don't force the calculated height.
-     * WHY: The base rule (line 95-96) pins height AND min-height to the same rigid
-     *      --row-height value. --row-height is width/4 with no floor (e.g. 335px÷4≈84px),
-     *      but the chart inside enforces its OWN 250px min-height floor independently
-     *      (ReportChart.module.css .chart:not(.image)). When the chart's real rendered
-     *      height (250px, from its floor) exceeds the row's rigid box (84px), the chart
-     *      visually overflows past the row's bottom edge into the next row — the two
-     *      cards render on top of each other. auto height lets the row's box match
-     *      whatever height the chart actually renders at.
-     */
     height: auto !important;
     min-height: 0 !important;
+    margin-bottom: var(--mm-space-3) !important;
   }
   
+  /* When a mobile row contains 2 to 6 compact metric cards (KPI/ValueChain), lay them out in a 2-column grid */
+  .metricRow:has(> .rowItem:nth-child(2)) {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  }
+
   .rowItem {
-    /* WHAT: All cells become direct children of .content */
-    /* WHY: Must maintain defined height for container queries to work */
     display: flex !important;
     flex-direction: column !important;
     width: 100% !important;
-    min-height: 250px !important; /* CRITICAL: Minimum height for charts */
-    margin-bottom: var(--mm-space-4) !important;
+    min-height: 0 !important;
+    margin-bottom: 0 !important;
   }
   
   /* WHAT: Ensure charts fill rowItem height on mobile */

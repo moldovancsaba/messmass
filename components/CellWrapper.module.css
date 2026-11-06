@@ -10,6 +10,12 @@
   box-sizing: border-box;
 }
 
+@media (max-width: 768px) {
+  .cellWrapper {
+    height: auto !important;
+  }
+}
+
 /* Title Zone - editorial left-aligned card header, max 2 lines (Layout Grammar: title zone) */
 .titleZone {
   display: flex;

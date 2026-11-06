@@ -92,13 +92,14 @@
 
 /* KPI Chart - Executive Metric Card (Left-Aligned Header + Top-Right Icon Badge + Hero Tabular Number) */
 .kpi {
-  height: var(--block-height, var(--row-height, var(--mm-block-height-default)));
+  height: auto !important;
+  min-height: 112px;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
   align-items: stretch;
   padding: 18px 20px;
-  gap: 10px;
+  gap: 12px;
   width: 100%;
   box-sizing: border-box;
 }
@@ -191,13 +192,14 @@
 
 /* ValueChain Chart - Executive Summary Card */
 .valuechain {
-  height: var(--block-height, var(--row-height, var(--mm-block-height-default)));
+  height: auto !important;
+  min-height: 112px;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
   align-items: stretch;
   padding: 18px 20px;
-  gap: 8px;
+  gap: 10px;
   width: 100%;
   box-sizing: border-box;
 }
@@ -1173,12 +1175,19 @@
   .chart:not(.image) {
     width: 100% !important;
     height: auto !important;
-    min-height: 132px !important;
+    min-height: 0 !important;
     max-width: 100% !important;
     flex: 1 1 auto !important;
     overflow: visible !important;
     box-sizing: border-box !important;
     container-type: inline-size;
+  }
+
+  .kpi,
+  .valuechain {
+    min-height: 108px !important;
+    padding: 16px 18px !important;
+    gap: 10px !important;
   }
 
   .pieBodyLayout {

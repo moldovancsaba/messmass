@@ -292,20 +292,22 @@ function ResponsiveRow({ rowCharts, chartResults, charts, rowIndex, unifiedTextF
         
         if (!dimensions.valid) {
           console.error(`[LayoutV2 ResponsiveRow ${rowIndex}] ${dimensions.error}`);
-          // WHAT: Still use calculated height for fallback rendering
-          // WHY: Don't break rendering, but log error for Admin to fix
-          setRowHeight(dimensions.blockHeight);
+          const isFallbackCompact =
+            !blockAspectRatio &&
+            !tableHeightMultiplier &&
+            chartsWithTypes.length > 0 &&
+            chartsWithTypes.every((c) => c.type === 'kpi' || c.type === 'valuechain');
+          setRowHeight(isFallbackCompact ? Math.min(dimensions.blockHeight, 136) : dimensions.blockHeight);
           return;
         }
         
         const isCompactMetricRow =
-          !isMobileViewport &&
           !blockAspectRatio &&
           !tableHeightMultiplier &&
           chartsWithTypes.length > 0 &&
           chartsWithTypes.every((c) => c.type === 'kpi' || c.type === 'valuechain');
 
-        const height = isCompactMetricRow ? Math.min(dimensions.blockHeight, 152) : dimensions.blockHeight;
+        const height = isCompactMetricRow ? Math.min(dimensions.blockHeight, 136) : dimensions.blockHeight;
         const aspectRatioUsed = blockAspectRatio || (isCompactMetricRow ? 'compact-kpi' : '4:1');
         console.log(`[LayoutV2 ResponsiveRow ${rowIndex}] Height calculated:`, height, 'from width:', width, 'aspect ratio:', aspectRatioUsed);
         
@@ -366,11 +368,16 @@ function ResponsiveRow({ rowCharts, chartResults, charts, rowIndex, unifiedTextF
   // HOW: Convert chart widths to fr units (e.g., [2,1,1] → "2fr 1fr 1fr")
   const gridColumns = calculateLayoutV2GridColumns(rowCharts);
   
+  const isMetricGridRow = rowCharts.length >= 1 && rowCharts.every(chart => {
+    const t = chartResults.get(String(chart.chartId))?.type;
+    return t === 'kpi' || t === 'valuechain';
+  });
+
   return (
     <div 
       ref={rowRef}
       key={`row-${rowIndex}`}
-      className={`${styles.row} report-content`}
+      className={`${styles.row} ${isMetricGridRow ? styles.metricRow : ''} report-content`}
       data-report-section="content"
       // WHAT: Set CSS custom properties for dynamic values (centrally managed)
       // WHY: CSS variables are meant to be set dynamically, eliminates direct property inline styles
