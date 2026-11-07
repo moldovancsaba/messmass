@@ -354,14 +354,18 @@ export function guardReportStyle<T extends Record<string, any>>(rawStyle: T): T 
   style.pieBorderColor = normalizeHexColor(cardBg);
 
   // 6. Soften Saturated Card Borders to Prevent Visual Cage Clutter
-  if (style.chartBorder && typeof style.chartBorder === 'string' && style.chartBorder.startsWith('#')) {
-    const borderRgb = hexToRgb(style.chartBorder);
-    const borderLum = calculateLuminance(borderRgb);
-    const borderHsl = rgbToHsl(borderRgb);
-    if (borderLum < 0.3 || borderHsl.s > 0.15) {
-      style.chartBorder = isDarkCard
-        ? 'rgba(255, 255, 255, 0.10)'
-        : 'rgba(15, 23, 42, 0.08)';
+  if (style.chartBorder && typeof style.chartBorder === 'string') {
+    if (style.chartBorder.startsWith('#')) {
+      const borderRgb = hexToRgb(style.chartBorder);
+      const borderLum = calculateLuminance(borderRgb);
+      const borderHsl = rgbToHsl(borderRgb);
+      if (borderLum < 0.3 || borderHsl.s > 0.15) {
+        style.chartBorder = isDarkCard
+          ? 'rgba(255, 255, 255, 0.10)'
+          : 'rgba(15, 23, 42, 0.08)';
+      }
+    } else if (!isDarkCard && style.chartBorder.includes('255, 255, 255')) {
+      style.chartBorder = 'rgba(15, 23, 42, 0.08)';
     }
   }
 
