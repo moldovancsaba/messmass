@@ -122,9 +122,15 @@
   min-height: var(--row-height, var(--mm-row-height-default)); /* WHAT: Ensure minimum height for charts to render, fallback to design token */
 }
 
-.metricRow {
+.metricRow,
+.autoHeightRow {
   min-height: 0 !important;
   height: auto !important;
+}
+
+.autoHeightRow .rowItem {
+  height: 100% !important;
+  min-height: 0 !important;
 }
 
 /* WHAT: Never let the browser's print engine slice a row across a page boundary.

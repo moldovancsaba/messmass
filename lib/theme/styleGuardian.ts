@@ -181,10 +181,43 @@ export function guardReportStyle<T extends Record<string, any>>(rawStyle: T): T 
 
   const style: Record<string, any> = { ...rawStyle };
 
-  // 0. Determine Page & Card Surface Polarity
-  const pageBg = style.pageBackground || style.heroBackground || '#f8fafcff';
-  const cardBg = style.chartBackground || '#ffffffff';
-  const isDarkPage = calculateLuminance(hexToRgb(pageBg)) < 0.25;
+  // 0. Determine Page, Hero & Card Surface Polarity
+  const heroBg = style.heroBackground || '#ffffffff';
+  const rawPageBg = style.pageBackground || '#f8fafcff';
+  const rawCardBg = style.chartBackground || '#ffffffff';
+  const isDarkHero = calculateLuminance(hexToRgb(heroBg)) < 0.35;
+  const isDarkPage = calculateLuminance(hexToRgb(rawPageBg)) < 0.25;
+
+  // Identify a reliable brand accent color (non-white, non-near-white) for fallback use on light cards
+  const brandCandidates = [
+    rawStyle.heroBackground,
+    rawStyle.chartBackground,
+    rawStyle.exportButtonBackground,
+    rawStyle.barColor1,
+    rawStyle.pieColor1,
+    rawStyle.kpiIconColor,
+  ].filter((c): c is string => typeof c === 'string' && c.startsWith('#'));
+  const brandSeed =
+    brandCandidates.find((c) => {
+      const lum = calculateLuminance(hexToRgb(c));
+      return lum > 0.02 && lum < 0.72;
+    }) || '#2563ebff';
+
+  // Normalize light-mode page & card surfaces so chromatic/muddy card slabs become clean editorial white cards
+  if (!isDarkPage) {
+    if (calculateLuminance(hexToRgb(rawPageBg)) > 0.98) {
+      style.pageBackground = '#f8fafcff';
+    }
+    const cardRgb = hexToRgb(rawCardBg);
+    const cardLum = calculateLuminance(cardRgb);
+    const cardHsl = rgbToHsl(cardRgb);
+    if (cardLum < 0.92 || cardHsl.s > 0.12) {
+      style.chartBackground = '#ffffffff';
+    }
+  }
+
+  const pageBg = style.pageBackground || rawPageBg;
+  const cardBg = style.chartBackground || rawCardBg;
   const isDarkCard = calculateLuminance(hexToRgb(cardBg)) < 0.25;
 
   // 1. Guard PDF Export Button Contrast (WCAG AA: min 4.5:1)
@@ -223,8 +256,16 @@ export function guardReportStyle<T extends Record<string, any>>(rawStyle: T): T 
 
   if (style.headingColor) {
     const hsl = rgbToHsl(hexToRgb(style.headingColor));
-    if (hsl.s > 0.35 || calculateContrastRatio(pageBg, style.headingColor) < 4.5) {
-      style.headingColor = isDarkPage ? '#f8fafcff' : '#0f172aff';
+    if (hsl.s > 0.35 || calculateContrastRatio(heroBg, style.headingColor) < 4.5) {
+      style.headingColor = isDarkHero ? '#f8fafcff' : '#0f172aff';
+    }
+  } else if (style.heroBackground) {
+    style.headingColor = isDarkHero ? '#f8fafcff' : '#0f172aff';
+  }
+
+  if (style.subtitleColor) {
+    if (calculateContrastRatio(heroBg, style.subtitleColor) < 3.5) {
+      style.subtitleColor = isDarkHero ? '#cbd5e1ff' : '#475569ff';
     }
   }
 
@@ -262,6 +303,31 @@ export function guardReportStyle<T extends Record<string, any>>(rawStyle: T): T 
     }
   }
 
+  // 3b. Guard KPI Icon, Pie Slices & Bar Seed Against White-on-White Invisible Accents on Light Cards
+  if (!isDarkCard) {
+    if (style.kpiIconColor && calculateLuminance(hexToRgb(style.kpiIconColor)) > 0.78) {
+      style.kpiIconColor = brandSeed;
+    }
+    if (style.barColor1 && calculateLuminance(hexToRgb(style.barColor1)) > 0.78) {
+      style.barColor1 = brandSeed;
+    }
+    if (style.pieColor1 && calculateLuminance(hexToRgb(style.pieColor1)) > 0.78) {
+      style.pieColor1 = brandSeed;
+    }
+    if (style.pieColor2) {
+      const p2Lum = calculateLuminance(hexToRgb(style.pieColor2));
+      const p1Hex = normalizeHexColor(style.pieColor1 || brandSeed);
+      const p2Hex = normalizeHexColor(style.pieColor2);
+      if (p2Lum > 0.80 || p1Hex === p2Hex) {
+        const p1Hsl = rgbToHsl(hexToRgb(p1Hex));
+        style.pieColor2 =
+          p1Hsl.s > 0.15
+            ? hslToHex((p1Hsl.h + 24) % 360, Math.max(0.38, p1Hsl.s * 0.72), 0.64)
+            : '#94a3b8ff';
+      }
+    }
+  }
+
   // 4. Guard Bar Series: Replace Monochromatic OR Clashing Rainbow Bars with Tonal Brand Ramp
   const b1 = style.barColor1 ? normalizeHexColor(style.barColor1) : null;
   const b2 = style.barColor2 ? normalizeHexColor(style.barColor2) : null;
@@ -272,8 +338,9 @@ export function guardReportStyle<T extends Record<string, any>>(rawStyle: T): T 
   const colors = [b1, b2, b3, b4, b5].filter(Boolean) as string[];
   const allIdentical = colors.length >= 2 && colors.every(c => c === colors[0]);
   const isRainbowClash = colors.length >= 3 && maxHueSpread(colors) > 75;
+  const hasWhiteBarOnLightCard = !isDarkCard && colors.some(c => calculateLuminance(hexToRgb(c)) > 0.80);
 
-  if ((allIdentical || isRainbowClash) && b1) {
+  if ((allIdentical || isRainbowClash || hasWhiteBarOnLightCard) && b1) {
     const seedHex = b1;
     const [c1, c2, c3, c4, c5] = generateCategoricalBarPalette(seedHex);
     style.barColor1 = c1;

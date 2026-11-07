@@ -23,8 +23,8 @@
   padding: 0; /* WHAT: Remove padding, add to header/body instead */
   overflow: visible; /* WHAT: Layout Grammar - no clipping on content layers; height resolution ensures fit */
   box-sizing: border-box !important;
-  /* Enable container queries for inner scaling (width + height) */
-  container-type: size;
+  /* Enable inline container queries without block-axis size containment so height:auto cards size to their content */
+  container-type: inline-size;
   /* REMOVED: transition - interferes with container query recalculation */
 }
 
@@ -96,7 +96,7 @@
   min-height: 112px;
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
+  justify-content: center;
   align-items: stretch;
   padding: 18px 20px;
   gap: 12px;
@@ -109,7 +109,7 @@
 }
 
 .kpiNoIcon {
-  justify-content: space-between;
+  justify-content: center;
 }
 
 .kpiOnlyValue {
@@ -196,7 +196,7 @@
   min-height: 112px;
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
+  justify-content: center;
   align-items: stretch;
   padding: 18px 20px;
   gap: 10px;
@@ -205,7 +205,7 @@
 }
 
 .valuechainNoIcon {
-  justify-content: space-between;
+  justify-content: center;
 }
 
 .valuechainNoDesc {
@@ -408,10 +408,10 @@
 .barStackList {
   display: flex;
   flex-direction: column;
-  justify-content: space-around;
-  gap: 10px;
+  justify-content: center;
+  gap: 12px;
   width: 100%;
-  height: 100%;
+  height: auto;
   box-sizing: border-box;
 }
 
@@ -482,7 +482,17 @@
   height: 100% !important; /* WHAT: Fill parent row height from layout grammar */
   /* CRITICAL: Ensure children stack vertically */
   position: relative !important;
-  min-height: 0 !important; /* CRITICAL: Allow flex shrinking */
+  min-height: 128px !important;
+}
+
+.textNoTitle .textContentWrapper,
+.textNoTitle .textContent,
+.textNoTitle .textMarkdown {
+  justify-content: center !important;
+}
+
+.textNoTitle .textContentWrapper {
+  padding: 20px 22px !important;
 }
 
 .textTitleWrapper {
@@ -514,10 +524,11 @@
 
 .textContentWrapper {
   display: flex !important;
+  flex: 1 1 auto !important;
   align-items: flex-start !important;
   justify-content: flex-start !important;
   width: 100% !important;
-  height: var(--text-content-height, var(--mm-block-height-default));
+  height: auto !important;
   padding: 8px 20px 18px !important;
   box-sizing: border-box !important;
   min-height: 0 !important;
@@ -525,18 +536,19 @@
   clear: both !important;
   float: none !important;
   position: relative !important;
-  container-type: size !important;
+  container-type: inline-size !important;
 }
 
 .textContent {
   display: flex !important;
+  flex: 1 1 auto !important;
   flex-direction: column !important;
   align-items: flex-start !important;
   justify-content: flex-start !important;
   width: 100% !important;
   max-width: 100% !important;
-  height: 100% !important;
-  max-height: 100% !important;
+  height: auto !important;
+  max-height: none !important;
   min-height: 0 !important;
   overflow: visible !important;
   font-size: 0.9375rem !important;
@@ -548,7 +560,7 @@
   word-wrap: break-word !important;
   overflow-wrap: break-word !important;
   hyphens: none !important;
-  container-type: size !important;
+  container-type: inline-size !important;
 }
 
 /* WHAT: Markdown element styles inside text content
@@ -931,8 +943,14 @@
 /* Image Chart - Container */
 /* WHAT: Chart container for image charts */
 .image {
-  background: transparent !important; /* WHAT: No background on chart container, image container has background */
-  padding: 0; /* WHAT: No padding, image container handles spacing */
+  background: var(--chartBackground) !important;
+  padding: 0;
+  overflow: hidden;
+}
+
+.imageNaturalCard {
+  height: 100% !important;
+  min-height: 0 !important;
 }
 
 /* WHAT: Image container with dynamic aspect ratio from actual image dimensions */
@@ -941,7 +959,7 @@
   position: relative;
   width: 100%;
   height: 100%;
-  flex: 1;
+  flex: 1 1 auto;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -949,7 +967,29 @@
   border-radius: calc(var(--cardBorderRadius, var(--mm-radius-lg)) - 2px);
   cursor: zoom-in;
   background: transparent !important;
-  min-height: 200px;
+  min-height: 180px;
+}
+
+.imageNaturalCard .imageContainer {
+  height: auto !important;
+  min-height: 0 !important;
+  padding: 8px 12px 12px;
+  box-sizing: border-box;
+}
+
+.imageNatural {
+  width: 100%;
+  height: auto;
+  max-height: 440px;
+  object-fit: contain;
+  object-position: center;
+  display: block;
+  border-radius: calc(var(--cardBorderRadius, var(--mm-radius-lg)) - 4px);
+  transition: transform 0.25s ease;
+}
+
+.imageNatural:hover {
+  transform: scale(1.015);
 }
 
 .imageCover {
@@ -1161,15 +1201,41 @@
 
 /* Responsive Adjustments */
 @media (max-width: 768px) {
-  /* WHAT: Image container on mobile - same dynamic aspect ratio approach */
-  /* WHY: Consistent behavior across breakpoints */
-  .imageContainer {
+  .image,
+  .imageNaturalCard {
     width: 100% !important;
-    height: auto !important; /* Let aspect-ratio determine height */
-    min-height: 0 !important; /* Remove min-height constraint */
+    height: auto !important;
+    min-height: 0 !important;
     max-width: 100% !important;
-    max-height: 100% !important;
-    aspect-ratio: var(--image-aspect-ratio, 16 / 9) !important; /* Use actual image aspect ratio */
+    display: flex !important;
+    flex-direction: column !important;
+    overflow: hidden !important;
+  }
+
+  .imageContainer,
+  .imageContainWithBackdrop {
+    flex: 0 0 auto !important;
+    width: 100% !important;
+    height: auto !important;
+    min-height: 0 !important;
+    max-width: 100% !important;
+    max-height: none !important;
+    aspect-ratio: auto !important;
+    padding: 8px 12px 12px !important;
+    box-sizing: border-box !important;
+  }
+
+  .imageCover,
+  .imageContain,
+  .imageNatural,
+  .imageContent {
+    width: 100% !important;
+    height: auto !important;
+    max-height: 420px !important;
+    object-fit: contain !important;
+    object-position: center !important;
+    display: block !important;
+    border-radius: calc(var(--cardBorderRadius, var(--mm-radius-lg)) - 4px);
   }
 
   .chart:not(.image) {
@@ -1185,9 +1251,17 @@
 
   .kpi,
   .valuechain {
-    min-height: 108px !important;
+    min-height: 96px !important;
     padding: 16px 18px !important;
     gap: 10px !important;
+    justify-content: center !important;
+  }
+
+  .textContentWrapper,
+  .textContent,
+  .textMarkdown {
+    height: auto !important;
+    max-height: none !important;
   }
 
   .pieBodyLayout {
@@ -1207,43 +1281,6 @@
     width: 100% !important;
     max-width: 260px !important;
     margin: 0 auto !important;
-  }
-  
-  /* WHAT: Image charts respect aspect ratio on mobile
-   * WHY: Images must maintain proper proportions without distortion
-   * HOW: Use aspect-ratio CSS property for reliable sizing */
-  .image {
-    width: 100% !important;
-    height: auto !important; /* Let aspect-ratio determine height */
-    min-height: 0 !important; /* Remove min-height constraint */
-    max-width: 100% !important;
-    display: flex !important;
-    flex-direction: column !important;
-    overflow: hidden !important; /* Layout Grammar: decorative - image container rounded corners */
-  }
-  
-  /* WHAT: Aspect ratio classes for image containers on mobile */
-  .image.aspect169 {
-    aspect-ratio: 16 / 9;
-  }
-  
-  .image.aspect916 {
-    aspect-ratio: 9 / 16;
-  }
-  
-  .image.aspect11 {
-    aspect-ratio: 1 / 1;
-  }
-  
-  .imageContent {
-    /* WHAT: Image fills container maintaining aspect ratio
-     * WHY: object-fit: contain shows full image without cropping
-     * HOW: Same behavior as desktop - consistent across breakpoints */
-    width: 100% !important;
-    height: 100% !important;
-    object-fit: contain !important; /* Show full image without cropping, maintaining aspect ratio */
-    object-position: center !important;
-    display: block !important;
   }
 }
 

@@ -378,11 +378,21 @@ function ResponsiveRow({ rowCharts, chartResults, charts, rowIndex, unifiedTextF
     return t === 'kpi' || t === 'valuechain';
   });
 
+  const isImageOnlyRow = rowCharts.length >= 1 && rowCharts.every(chart => {
+    return chartResults.get(String(chart.chartId))?.type === 'image';
+  });
+
+  const isTextOnlyRow = rowCharts.length >= 1 && rowCharts.every(chart => {
+    return chartResults.get(String(chart.chartId))?.type === 'text';
+  });
+
+  const isAutoHeightRow = !blockAspectRatio && !tableHeightMultiplier && (isMetricGridRow || isImageOnlyRow || isTextOnlyRow);
+
   return (
     <div 
       ref={rowRef}
       key={`row-${rowIndex}`}
-      className={`${styles.row} ${isMetricGridRow ? styles.metricRow : ''} report-content`}
+      className={`${styles.row} ${isMetricGridRow ? styles.metricRow : ''} ${isAutoHeightRow ? styles.autoHeightRow : ''} report-content`}
       data-report-section="content"
       // WHAT: Set CSS custom properties for dynamic values (centrally managed)
       // WHY: CSS variables are meant to be set dynamically, eliminates direct property inline styles
@@ -431,6 +441,7 @@ function ResponsiveRow({ rowCharts, chartResults, charts, rowIndex, unifiedTextF
               // WHY: CSS now uses --block-base-font-size and --block-subtitle-font-size directly (Phase 2)
               unifiedTextFontSize={unifiedTextFontSize}
               allowNA={allowNA}
+              isImageOnlyRow={isImageOnlyRow}
             />
           </div>
         );

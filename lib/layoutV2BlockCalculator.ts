@@ -598,6 +598,15 @@ export function coalesceReportBlocks<T extends {
             const moved = prevR.charts.pop()!;
             lastR.charts.unshift(moved);
           }
+        } else if (canRebalanceRows && prevR.charts.length === 1 && prevR.charts[0].width <= 2) {
+          const lastSum = lastR.charts.reduce((s, c) => s + (c.width || 1), 0);
+          if (prevR.charts[0].width + lastSum <= maxRowCapacity && lastR.charts.length <= 3) {
+            prevR.charts.push(...lastR.charts);
+            prevBlock.rows.pop();
+          } else if (lastR.charts.length >= 3) {
+            const moved = lastR.charts.shift()!;
+            prevR.charts.push(moved);
+          }
         }
       }
     } else {

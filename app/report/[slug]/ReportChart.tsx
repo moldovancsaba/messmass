@@ -74,6 +74,9 @@ interface ReportChartProps {
 
   /** When true (e.g. static landing), KPI value row gets 40% height so description copy doesn't truncate */
   allowNA?: boolean;
+
+  /** When true, all charts in this row are images so the card can size naturally without cropping */
+  isImageOnlyRow?: boolean;
 }
 
 /**
@@ -90,7 +93,7 @@ interface ReportChartProps {
  * - IMAGE: Aspect ratio-aware image display
  * - VALUE: Composite (KPI + BAR) - renders both components
  */
-export default function ReportChart({ result, chart, width, blockHeight, unifiedTextFontSize, className, allowNA = false }: ReportChartProps) {
+export default function ReportChart({ result, chart, width, blockHeight, unifiedTextFontSize, className, allowNA = false, isImageOnlyRow = false }: ReportChartProps) {
   // WHAT: A-R-11 - Check for calculation errors first
   // WHY: Display error messages to users instead of hiding charts
   // HOW: Show error placeholder if chartError or error exists
@@ -199,7 +202,7 @@ export default function ReportChart({ result, chart, width, blockHeight, unified
         return <TextChart result={result} unifiedTextFontSize={unifiedTextFontSize} className={className} />;
     
     case 'image':
-        return <ImageChart result={result} className={className} />;
+        return <ImageChart result={result} className={className} isImageOnlyRow={isImageOnlyRow} />;
     
     case 'table':
         return <TableChart result={result} className={className} />;
@@ -450,7 +453,7 @@ function PieChart({ result, className }: { result: ChartResult; className?: stri
   const options: ChartOptions<'doughnut'> = {
     responsive: true,
     maintainAspectRatio: false,
-    cutout: '66%',
+    cutout: '72%',
     animation: false,
     events: [],
     layout: {
@@ -503,7 +506,6 @@ function PieChart({ result, className }: { result: ChartResult; className?: stri
           {total > 0 && (
             <div className={styles.pieCenterLabel} aria-hidden="true">
               <span className={styles.pieCenterValue}>{dominantPct}%</span>
-              <span className={styles.pieCenterCaption}>{dominantElement?.label}</span>
             </div>
           )}
         </div>
@@ -951,7 +953,7 @@ function TextChart({ result, unifiedTextFontSize, className }: { result: ChartRe
   return (
     <div 
       ref={textChartRef}
-      className={`${styles.chart} ${styles.text} report-chart ${className || ''}`}
+      className={`${styles.chart} ${styles.text} ${!showTitle ? styles.textNoTitle : ''} report-chart ${className || ''}`}
       data-chart-id={result.chartId}
       // WHAT: blockHeight removed - now centrally managed via --block-height CSS custom property on row
     >
@@ -1323,7 +1325,7 @@ function TableChart({ result, className }: { result: ChartResult; className?: st
  * WHY: Eliminate letterboxing dead space, redundant inner boxes, and layout shift
  * HOW: Immediate deterministic aspect-ratio, fit-mode switching, and interactive Lightbox modal
  */
-function ImageChart({ result, className }: { result: ChartResult; className?: string }) {
+function ImageChart({ result, className, isImageOnlyRow = false }: { result: ChartResult; className?: string; isImageOnlyRow?: boolean }) {
   const FALLBACK_PLACEHOLDER = 'https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg';
   const formattedValue = formatValue(result.kpiValue, result.formatting);
   const [hasError, setHasError] = React.useState(false);
@@ -1331,13 +1333,6 @@ function ImageChart({ result, className }: { result: ChartResult; className?: st
 
   const showTitle = result.showTitle !== false;
   const imageSrc = hasError || !formattedValue ? FALLBACK_PLACEHOLDER : formattedValue;
-
-  // Detect whether image is portrait screenshot / QR code vs atmospheric photo
-  const isPortrait = (result.aspectRatio as string) === '9:16' || (result.aspectRatio as string) === '3:4';
-  const isQrOrEvidence =
-    result.chartId?.toLowerCase().includes('qr') ||
-    result.title?.toLowerCase().includes('qr') ||
-    isPortrait;
 
   if (hasError || !formattedValue || formattedValue === 'NA' || formattedValue.includes('/placeholders/image-missing.svg')) {
     return null;
@@ -1352,7 +1347,7 @@ function ImageChart({ result, className }: { result: ChartResult; className?: st
     <>
       <CellWrapper
         title={showTitle ? result.title : undefined}
-        className={`${styles.chart} ${styles.image} report-chart ${className || ''}`}
+        className={`${styles.chart} ${styles.image} ${isImageOnlyRow ? styles.imageNaturalCard : ''} report-chart ${className || ''}`}
       >
         <div
           className={styles.imageContainer}
@@ -1367,7 +1362,17 @@ function ImageChart({ result, className }: { result: ChartResult; className?: st
             }
           }}
         >
-          {isQrOrEvidence ? (
+          {isImageOnlyRow ? (
+            /* eslint-disable-next-line @next/next/no-img-element */
+            <img
+              className={styles.imageNatural}
+              src={imageSrc}
+              alt={result.title}
+              onError={() => {
+                if (!hasError) setHasError(true);
+              }}
+            />
+          ) : (
             <div className={styles.imageContainWithBackdrop}>
               <div
                 className={styles.ambientBackdrop}
@@ -1387,16 +1392,6 @@ function ImageChart({ result, className }: { result: ChartResult; className?: st
                 }}
               />
             </div>
-          ) : (
-            /* eslint-disable-next-line @next/next/no-img-element */
-            <img
-              className={styles.imageCover}
-              src={imageSrc}
-              alt={result.title}
-              onError={() => {
-                if (!hasError) setHasError(true);
-              }}
-            />
           )}
 
           <div className={styles.imageZoomBadge}>

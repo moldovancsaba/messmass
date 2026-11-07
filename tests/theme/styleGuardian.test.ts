@@ -96,4 +96,23 @@ describe('styleGuardian', () => {
     expect(guarded.barColor3).not.toBe('#ef4444ff');
     expect(guarded.barColor4).not.toBe('#f59e0bff');
   });
+
+  test('guards headingColor against heroBackground and normalizes heavy chromatic card slabs on light pages', () => {
+    const rawStyle = {
+      heroBackground: '#8e191cff',
+      pageBackground: '#f8fafcff',
+      chartBackground: '#8e191cff',
+      headingColor: '#0f172aff',
+      kpiIconColor: '#ffffffff',
+      pieColor1: '#dcac6dff',
+      pieColor2: '#ffffffff',
+      barColor1: '#ffffffff',
+    };
+
+    const guarded = guardReportStyle(rawStyle);
+    expect(guarded.headingColor).toBe('#f8fafcff');
+    expect(guarded.chartBackground).toBe('#ffffffff');
+    expect(guarded.kpiIconColor).toBe('#8e191cff');
+    expect(guarded.pieColor2).not.toBe('#ffffffff');
+  });
 });
