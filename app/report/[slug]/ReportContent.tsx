@@ -442,6 +442,7 @@ function ResponsiveRow({ rowCharts, chartResults, charts, rowIndex, unifiedTextF
               unifiedTextFontSize={unifiedTextFontSize}
               allowNA={allowNA}
               isImageOnlyRow={isImageOnlyRow}
+              isMixedRow={!isAutoHeightRow}
             />
           </div>
         );

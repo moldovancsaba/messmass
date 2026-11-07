@@ -204,14 +204,15 @@ export function guardReportStyle<T extends Record<string, any>>(rawStyle: T): T 
     }) || '#2563ebff';
 
   // Normalize light-mode page & card surfaces so chromatic/muddy card slabs become clean editorial white cards
+  const rawCardLum = calculateLuminance(hexToRgb(rawCardBg));
+  const wasDarkCardNormalizedToWhite = !isDarkPage && rawCardLum < 0.35;
   if (!isDarkPage) {
     if (calculateLuminance(hexToRgb(rawPageBg)) > 0.98) {
       style.pageBackground = '#f8fafcff';
     }
     const cardRgb = hexToRgb(rawCardBg);
-    const cardLum = calculateLuminance(cardRgb);
     const cardHsl = rgbToHsl(cardRgb);
-    if (cardLum < 0.92 || cardHsl.s > 0.12) {
+    if (rawCardLum < 0.92 || cardHsl.s > 0.12) {
       style.chartBackground = '#ffffffff';
     }
   }
@@ -303,8 +304,23 @@ export function guardReportStyle<T extends Record<string, any>>(rawStyle: T): T 
     }
   }
 
-  // 3b. Guard KPI Icon, Pie Slices & Bar Seed Against White-on-White Invisible Accents on Light Cards
+  // 3b. Guard KPI Icon, Pie Slices & Bar Seed Against White-on-White or Low-Contrast Accents on Light Cards
   if (!isDarkCard) {
+    if (wasDarkCardNormalizedToWhite) {
+      // When a legacy dark-colored card (e.g. PZPN #8e191c or FTC #1b6b3d) is normalized to white (#ffffff),
+      // promote the dark card brand color to primary data ink and keep the old light accent as secondary pie slice
+      const oldAccent = rawStyle.pieColor1 || rawStyle.kpiIconColor;
+      style.kpiIconColor = brandSeed;
+      style.barColor1 = brandSeed;
+      style.pieColor1 = brandSeed;
+      if (oldAccent && typeof oldAccent === 'string' && oldAccent.startsWith('#')) {
+        const oldLum = calculateLuminance(hexToRgb(oldAccent));
+        if (oldLum > 0.25 && oldLum < 0.80) {
+          style.pieColor2 = normalizeHexColor(oldAccent);
+        }
+      }
+    }
+
     if (style.kpiIconColor && calculateLuminance(hexToRgb(style.kpiIconColor)) > 0.78) {
       style.kpiIconColor = brandSeed;
     }
@@ -315,15 +331,24 @@ export function guardReportStyle<T extends Record<string, any>>(rawStyle: T): T 
       style.pieColor1 = brandSeed;
     }
     if (style.pieColor2) {
-      const p2Lum = calculateLuminance(hexToRgb(style.pieColor2));
       const p1Hex = normalizeHexColor(style.pieColor1 || brandSeed);
       const p2Hex = normalizeHexColor(style.pieColor2);
-      if (p2Lum > 0.80 || p1Hex === p2Hex) {
+      const p1Lum = calculateLuminance(hexToRgb(p1Hex));
+      const p2Lum = calculateLuminance(hexToRgb(p2Hex));
+      const sliceContrast = calculateContrastRatio(p1Hex, p2Hex);
+      if (p2Lum > 0.80 || p1Hex === p2Hex || sliceContrast < 1.55) {
         const p1Hsl = rgbToHsl(hexToRgb(p1Hex));
-        style.pieColor2 =
-          p1Hsl.s > 0.15
-            ? hslToHex((p1Hsl.h + 24) % 360, Math.max(0.38, p1Hsl.s * 0.72), 0.64)
-            : '#94a3b8ff';
+        if (p1Lum < 0.32) {
+          style.pieColor2 =
+            p1Hsl.s > 0.15
+              ? hslToHex((p1Hsl.h + 18) % 360, Math.max(0.32, p1Hsl.s * 0.55), 0.70)
+              : '#94a3b8ff';
+        } else {
+          style.pieColor2 =
+            p1Hsl.s > 0.15
+              ? hslToHex(p1Hsl.h, Math.max(0.45, p1Hsl.s), 0.24)
+              : '#334155ff';
+        }
       }
     }
   }
@@ -336,11 +361,11 @@ export function guardReportStyle<T extends Record<string, any>>(rawStyle: T): T 
   const b5 = style.barColor5 ? normalizeHexColor(style.barColor5) : null;
 
   const colors = [b1, b2, b3, b4, b5].filter(Boolean) as string[];
-  const allIdentical = colors.length >= 2 && colors.every(c => c === colors[0]);
+  const hasDuplicateBars = colors.length >= 2 && new Set(colors).size < Math.min(colors.length, 4);
   const isRainbowClash = colors.length >= 3 && maxHueSpread(colors) > 75;
   const hasWhiteBarOnLightCard = !isDarkCard && colors.some(c => calculateLuminance(hexToRgb(c)) > 0.80);
 
-  if ((allIdentical || isRainbowClash || hasWhiteBarOnLightCard) && b1) {
+  if ((hasDuplicateBars || isRainbowClash || hasWhiteBarOnLightCard || wasDarkCardNormalizedToWhite) && b1) {
     const seedHex = b1;
     const [c1, c2, c3, c4, c5] = generateCategoricalBarPalette(seedHex);
     style.barColor1 = c1;

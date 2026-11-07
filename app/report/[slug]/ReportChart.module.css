@@ -116,6 +116,31 @@
   justify-content: center;
 }
 
+@media (min-width: 769px) {
+  .kpiMixedRow {
+    padding: 24px 26px;
+    gap: 16px;
+  }
+
+  .kpiMixedRow .kpiValueRow {
+    font-size: var(--landing-value-font, clamp(2.25rem, 3vw, 2.85rem));
+  }
+
+  .kpiMixedRow .kpiTitle {
+    font-size: 0.9375rem;
+  }
+
+  .kpiMixedRow .kpiIconBadge {
+    width: 42px;
+    height: 42px;
+    border-radius: 11px;
+  }
+
+  .kpiMixedRow .kpiIcon {
+    font-size: 21px !important;
+  }
+}
+
 .kpiHeaderRow,
 .valuechainHeaderRow {
   display: flex;
@@ -973,18 +998,31 @@
 .imageNaturalCard .imageContainer {
   height: auto !important;
   min-height: 0 !important;
-  padding: 8px 12px 12px;
+  padding: 0;
   box-sizing: border-box;
 }
 
+.imageNaturalWithBackdrop {
+  position: relative;
+  width: 100%;
+  height: auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  border-radius: calc(var(--cardBorderRadius, var(--mm-radius-lg)) - 2px);
+  background: rgba(241, 245, 249, 0.5);
+}
+
 .imageNatural {
+  position: relative;
+  z-index: 1;
   width: 100%;
   height: auto;
   max-height: 440px;
   object-fit: contain;
   object-position: center;
   display: block;
-  border-radius: calc(var(--cardBorderRadius, var(--mm-radius-lg)) - 4px);
   transition: transform 0.25s ease;
 }
 

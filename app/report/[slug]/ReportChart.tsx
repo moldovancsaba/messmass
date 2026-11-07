@@ -77,6 +77,9 @@ interface ReportChartProps {
 
   /** When true, all charts in this row are images so the card can size naturally without cropping */
   isImageOnlyRow?: boolean;
+
+  /** When true, this chart shares a fixed-height row with a chart/image so KPI cards can scale up */
+  isMixedRow?: boolean;
 }
 
 /**
@@ -93,7 +96,7 @@ interface ReportChartProps {
  * - IMAGE: Aspect ratio-aware image display
  * - VALUE: Composite (KPI + BAR) - renders both components
  */
-export default function ReportChart({ result, chart, width, blockHeight, unifiedTextFontSize, className, allowNA = false, isImageOnlyRow = false }: ReportChartProps) {
+export default function ReportChart({ result, chart, width, blockHeight, unifiedTextFontSize, className, allowNA = false, isImageOnlyRow = false, isMixedRow = false }: ReportChartProps) {
   // WHAT: A-R-11 - Check for calculation errors first
   // WHY: Display error messages to users instead of hiding charts
   // HOW: Show error placeholder if chartError or error exists
@@ -190,7 +193,7 @@ export default function ReportChart({ result, chart, width, blockHeight, unified
     // WHY: Eliminates per-chart inline styles, better maintainability
   switch (result.type) {
     case 'kpi':
-        return <KPIChart result={result} className={className} allowNA={allowNA} />;
+        return <KPIChart result={result} className={className} allowNA={allowNA} isMixedRow={isMixedRow} />;
     
     case 'pie':
         return <PieChart result={result} className={className} />;
@@ -257,7 +260,7 @@ export default function ReportChart({ result, chart, width, blockHeight, unified
  * UPDATED: Uses CellWrapper for Report Layout Spec v2.0
  * A-03.2: Enhanced height calculation to prevent value/label clipping
  */
-function KPIChart({ result, className, allowNA = false }: { result: ChartResult; className?: string; allowNA?: boolean }) {
+function KPIChart({ result, className, allowNA = false, isMixedRow = false }: { result: ChartResult; className?: string; allowNA?: boolean; isMixedRow?: boolean }) {
   const formattedValue = replaceEmDashes(formatValue(result.kpiValue, result.formatting));
   const protectedTitle = preventPhraseBreaks(replaceEmDashes(result.title || ''));
   const iconVariant = result.iconVariant || 'outlined';
@@ -268,7 +271,7 @@ function KPIChart({ result, className, allowNA = false }: { result: ChartResult;
   return (
     <div 
       ref={kpiChartRef}
-      className={`${styles.chart} ${styles.kpi} ${!hasIcon ? (showTitle ? styles.kpiNoIcon : styles.kpiOnlyValue) : (!showTitle ? styles.kpiNoTitle : '')} report-chart ${className || ''}`}
+      className={`${styles.chart} ${styles.kpi} ${isMixedRow ? styles.kpiMixedRow : ''} ${!hasIcon ? (showTitle ? styles.kpiNoIcon : styles.kpiOnlyValue) : (!showTitle ? styles.kpiNoTitle : '')} report-chart ${className || ''}`}
       data-allow-na={allowNA ? 'true' : undefined}
     >
       <div className={styles.kpiHeaderRow}>
@@ -340,11 +343,24 @@ function PieChart({ result, className }: { result: ChartResult; className?: stri
   const pieTitleRowRef = useRef<HTMLDivElement>(null);
   const pieGridRef = useRef<HTMLDivElement>(null);
   const pieChartContainerRef = useRef<HTMLDivElement>(null);
+  const [, setStyleVersion] = useState(0);
+
+  // Re-read CSS custom properties whenever useReportStyle injects/updates <style id="report-custom-style">
+  useEffect(() => {
+    if (typeof document === 'undefined') return;
+    const bump = () => setStyleVersion((v) => v + 1);
+    bump();
+    const observer = new MutationObserver(() => {
+      bump();
+    });
+    observer.observe(document.head, { childList: true, subtree: true, characterData: true });
+    return () => observer.disconnect();
+  }, []);
   
   const hasElements = Array.isArray(result.elements) && result.elements.length > 0;
 
-  // WHAT: Check if title should be shown (default: true for backward compatibility)
-  const showTitle = result.showTitle !== false;
+  // WHAT: Check if title should be shown (only when showTitle !== false AND non-empty title exists)
+  const showTitle = result.showTitle !== false && Boolean(result.title && result.title.trim());
   
   // WHAT: Check if percentages should be shown (default: true for backward compatibility)
   // WHY: v11.38.0 - Allow hiding percentages in pie chart legends
@@ -547,8 +563,8 @@ function PieChart({ result, className }: { result: ChartResult; className?: stri
  * UPDATED: Uses CellWrapper for Report Layout Spec v2.0
  */
 function BarChart({ result, className }: { result: ChartResult; className?: string }) {
-  // WHAT: Check if title should be shown (default: true for backward compatibility)
-  const showTitle = result.showTitle !== false;
+  // WHAT: Check if title should be shown (only when showTitle !== false AND non-empty title exists)
+  const showTitle = result.showTitle !== false && Boolean(result.title && result.title.trim());
   
   // WHAT: Ref for chart body to calculate body zone height (P1 1.4 Phase 2)
   // WHY: Calculate body zone height explicitly: containerHeight - titleHeight - subtitleHeight
@@ -788,8 +804,8 @@ function TextChart({ result, unifiedTextFontSize, className }: { result: ChartRe
   const raw = typeof result.kpiValue === 'string' ? result.kpiValue : '';
   const html = raw ? parseMarkdown(raw) : '';
   
-  // WHAT: Check if title should be shown (default: true for backward compatibility)
-  const showTitle = result.showTitle !== false;
+  // WHAT: Check if title should be shown (only when showTitle !== false AND non-empty title exists)
+  const showTitle = result.showTitle !== false && Boolean(result.title && result.title.trim());
   
   // WHAT: Refs for height calculation (P1 1.4 Phase 4)
   // WHY: Calculate text content height explicitly: containerHeight - titleHeight
@@ -991,8 +1007,8 @@ function TableChart({ result, className }: { result: ChartResult; className?: st
   const raw = typeof result.kpiValue === 'string' ? result.kpiValue : '';
   const html = raw ? parseTableMarkdown(raw) : '';
   
-  // WHAT: Check if title should be shown (default: true for backward compatibility)
-  const showTitle = result.showTitle !== false;
+  // WHAT: Check if title should be shown (only when showTitle !== false AND non-empty title exists)
+  const showTitle = result.showTitle !== false && Boolean(result.title && result.title.trim());
   
   // WHAT: Ref for table content to calculate height (P1 1.4 Phase 2 + Phase 4)
   // WHY: Need to calculate body zone height and table content height explicitly
@@ -1331,7 +1347,7 @@ function ImageChart({ result, className, isImageOnlyRow = false }: { result: Cha
   const [hasError, setHasError] = React.useState(false);
   const [isLightboxOpen, setIsLightboxOpen] = React.useState(false);
 
-  const showTitle = result.showTitle !== false;
+  const showTitle = result.showTitle !== false && Boolean(result.title && result.title.trim());
   const imageSrc = hasError || !formattedValue ? FALLBACK_PLACEHOLDER : formattedValue;
 
   if (hasError || !formattedValue || formattedValue === 'NA' || formattedValue.includes('/placeholders/image-missing.svg')) {
@@ -1363,15 +1379,23 @@ function ImageChart({ result, className, isImageOnlyRow = false }: { result: Cha
           }}
         >
           {isImageOnlyRow ? (
-            /* eslint-disable-next-line @next/next/no-img-element */
-            <img
-              className={styles.imageNatural}
-              src={imageSrc}
-              alt={result.title}
-              onError={() => {
-                if (!hasError) setHasError(true);
-              }}
-            />
+            <div className={styles.imageNaturalWithBackdrop}>
+              <div
+                className={styles.ambientBackdrop}
+                // eslint-disable-next-line react/forbid-dom-props
+                style={{ backgroundImage: `url(${imageSrc})` }}
+                aria-hidden="true"
+              />
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                className={styles.imageNatural}
+                src={imageSrc}
+                alt={result.title}
+                onError={() => {
+                  if (!hasError) setHasError(true);
+                }}
+              />
+            </div>
           ) : (
             <div className={styles.imageContainWithBackdrop}>
               <div
