@@ -86,7 +86,25 @@ export interface VisionProgressData {
     topBrands: Array<{ brand: string; count: number }>;
     topClubs: Array<{ club: string; count: number }>;
     topEmotions: Array<{ emotion: string; count: number }>;
-    sportsBreakdown: Record<string, { images: number; people: number }>;
+    sportsBreakdown: Record<
+      string,
+      {
+        images: number;
+        people: number;
+        genders?: {
+          male: number;
+          female: number;
+          malePct?: number;
+          femalePct?: number;
+        };
+        ageGroups?: {
+          children: number;
+          teens: number;
+          adults: number;
+          seniors: number;
+        };
+      }
+    >;
   };
   recentImages: Array<{
     fileName: string;

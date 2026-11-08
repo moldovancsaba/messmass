@@ -69,6 +69,8 @@ export default function InteractiveReportDashboard({ initialData }: InteractiveR
             <FanmassVisionSection
               vision={data.vision}
               partnerSlug={data.partner.viewSlug || 'szrt'}
+              compact={true}
+              onExploreDashboard={() => setActiveTab('vision')}
             />
           )}
           <OverviewTab
