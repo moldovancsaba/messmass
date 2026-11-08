@@ -5,6 +5,7 @@ import React, { useEffect, useState } from 'react';
 import { VisionProgressData } from './types';
 import FanmassBrandsMatrix from './FanmassBrandsMatrix';
 import FanmassSportsDemographics from './FanmassSportsDemographics';
+import FanmassClubsMatrix from './FanmassClubsMatrix';
 import FanmassSentimentAtmosphere from './FanmassSentimentAtmosphere';
 import styles from './interactive-report.module.css';
 
@@ -22,6 +23,7 @@ export default function FanmassVisionSection({
   onExploreDashboard,
 }: FanmassVisionSectionProps) {
   const [vision, setVision] = useState<VisionProgressData>(initialVision);
+  const [selectedSport, setSelectedSport] = useState<string>('all');
 
   // Poll for live stream updates every 4 seconds while running
   useEffect(() => {
@@ -52,6 +54,15 @@ export default function FanmassVisionSection({
   const isProgressing = totalPhotosProcessed > 0 && totalPhotosProcessed < totalImages;
   const multiplier = isProgressing ? totalImages / totalPhotosProcessed : 1;
 
+  // Selected sport data slice
+  const isAll = selectedSport === 'all';
+  const activeSportData = !isAll ? aggregates.sportsBreakdown[selectedSport] : null;
+
+  const displayPeople = activeSportData ? activeSportData.people : aggregates.totalPeople;
+  const displayMalePct = activeSportData?.genders?.malePct ?? aggregates.genders.malePct;
+  const displayFemalePct = activeSportData?.genders?.femalePct ?? aggregates.genders.femalePct;
+  const displayAge = activeSportData?.ageGroups ?? aggregates.ageGroups;
+
   const totalEmotionsCount = aggregates.topEmotions.reduce((acc, e) => acc + e.count, 0);
   const positiveEmotions = aggregates.topEmotions.filter(
     (e) => e.emotion.toLowerCase() !== 'neutral' && e.emotion.toLowerCase() !== 'focused'
@@ -59,6 +70,10 @@ export default function FanmassVisionSection({
   const positiveCount = positiveEmotions.reduce((acc, e) => acc + e.count, 0);
   const celebrationValence =
     totalEmotionsCount > 0 ? ((positiveCount / totalEmotionsCount) * 100).toFixed(1) : '96.2';
+
+  const filteredRecentImages = isAll
+    ? recentImages
+    : (recentImages || []).filter((img) => img.sport.toLowerCase() === selectedSport.toLowerCase());
 
   return (
     <div className={styles.visionCard}>
@@ -107,39 +122,74 @@ export default function FanmassVisionSection({
         />
       </div>
 
+      {/* 1. League & Sport Drilldown Filter */}
+      <div className={styles.sportFilterBar}>
+        <span className={styles.sportFilterLabel}>
+          🏆 League Drilldown:
+        </span>
+        <button
+          onClick={() => setSelectedSport('all')}
+          className={`${styles.sportFilterBtn} ${
+            selectedSport === 'all' ? styles.sportFilterBtnActive : ''
+          }`}
+        >
+          All Sports <span className={styles.sportFilterBadge}>{vision.processedCount}</span>
+        </button>
+        {['Basketball', 'Football', 'Handball', 'Ice Hockey'].map((sp) => {
+          const spData = aggregates.sportsBreakdown[sp];
+          const icon = sp === 'Basketball' ? '🏀' : sp === 'Football' ? '⚽' : sp === 'Handball' ? '🤾' : '🏒';
+          return (
+            <button
+              key={sp}
+              onClick={() => setSelectedSport(sp)}
+              className={`${styles.sportFilterBtn} ${
+                selectedSport === sp ? styles.sportFilterBtnActive : ''
+              }`}
+            >
+              {icon} {sp}{' '}
+              {spData && (
+                <span className={styles.sportFilterBadge}>{spData.images}</span>
+              )}
+            </button>
+          );
+        })}
+      </div>
+
       {/* 4 Pillars Executive KPI Highlights */}
       <div className={styles.visionGrid}>
         {/* KPI 1: Spectators Identified */}
         <div className={styles.visionMiniCard}>
           <div className={styles.miniCardIcon}>👥</div>
-          <div className={styles.miniCardTitle}>Identified Spectators</div>
+          <div className={styles.miniCardTitle}>
+            {isAll ? 'Identified Spectators' : `${selectedSport} Spectators`}
+          </div>
           <div className={styles.miniCardVal}>
-            {aggregates.totalPeople.toLocaleString()}
+            {displayPeople.toLocaleString()}
             {isProgressing && (
               <span className={styles.estPill}>
-                {' '}(est. {Math.round(aggregates.totalPeople * multiplier).toLocaleString()})
+                {' '}(est. {Math.round(displayPeople * multiplier).toLocaleString()})
               </span>
             )}
           </div>
           <div className={styles.miniCardSub}>
-            {aggregates.genders.malePct}% Male / {aggregates.genders.femalePct}% Female
+            {displayMalePct}% Male / {displayFemalePct}% Female
           </div>
           <div className={styles.agePillsGroup}>
             <span className={styles.agePill}>
-              Adults: {aggregates.ageGroups.adults.toLocaleString()}
-              {isProgressing && ` (est. ${Math.round(aggregates.ageGroups.adults * multiplier).toLocaleString()})`}
+              Adults: {displayAge.adults.toLocaleString()}
+              {isProgressing && ` (est. ${Math.round(displayAge.adults * multiplier).toLocaleString()})`}
             </span>
             <span className={styles.agePill}>
-              Teens: {aggregates.ageGroups.teens.toLocaleString()}
-              {isProgressing && ` (est. ${Math.round(aggregates.ageGroups.teens * multiplier).toLocaleString()})`}
+              Teens: {displayAge.teens.toLocaleString()}
+              {isProgressing && ` (est. ${Math.round(displayAge.teens * multiplier).toLocaleString()})`}
             </span>
             <span className={styles.agePill}>
-              Children: {aggregates.ageGroups.children.toLocaleString()}
-              {isProgressing && ` (est. ${Math.round(aggregates.ageGroups.children * multiplier).toLocaleString()})`}
+              Children: {displayAge.children.toLocaleString()}
+              {isProgressing && ` (est. ${Math.round(displayAge.children * multiplier).toLocaleString()})`}
             </span>
             <span className={styles.agePill}>
-              Seniors: {aggregates.ageGroups.seniors.toLocaleString()}
-              {isProgressing && ` (est. ${Math.round(aggregates.ageGroups.seniors * multiplier).toLocaleString()})`}
+              Seniors: {displayAge.seniors.toLocaleString()}
+              {isProgressing && ` (est. ${Math.round(displayAge.seniors * multiplier).toLocaleString()})`}
             </span>
           </div>
         </div>
@@ -185,18 +235,20 @@ export default function FanmassVisionSection({
         {/* KPI 4: 4 Sponsored Sports Leagues */}
         <div className={styles.visionMiniCard}>
           <div className={styles.miniCardIcon}>🏆</div>
-          <div className={styles.miniCardTitle}>Multi-Sport Cross-Section</div>
+          <div className={styles.miniCardTitle}>
+            {isAll ? 'Multi-Sport Cross-Section' : `Active League: ${selectedSport}`}
+          </div>
           <div className={styles.miniCardVal}>
-            4 Sports Leagues
+            {isAll ? '4 Sports Leagues' : `${activeSportData?.images || 0} Photos Analyzed`}
           </div>
           <div className={styles.miniCardSub}>
-            Basketball, Football, Handball, Ice Hockey
+            {isAll ? 'Basketball, Football, Handball, Ice Hockey' : `Live empirical sample from ${selectedSport}`}
           </div>
           <div className={styles.tagChipsWrap}>
-            <span className={styles.clubChip}>🏀 Basketball</span>
-            <span className={styles.clubChip}>⚽ Football</span>
-            <span className={styles.clubChip}>🤾 Handball</span>
-            <span className={styles.clubChip}>🏒 Ice Hockey</span>
+            <span className={`${styles.clubChip} ${selectedSport === 'Basketball' ? styles.brandTagSponsor : ''}`}>🏀 Basketball</span>
+            <span className={`${styles.clubChip} ${selectedSport === 'Football' ? styles.brandTagSponsor : ''}`}>⚽ Football</span>
+            <span className={`${styles.clubChip} ${selectedSport === 'Handball' ? styles.brandTagSponsor : ''}`}>🤾 Handball</span>
+            <span className={`${styles.clubChip} ${selectedSport === 'Ice Hockey' ? styles.brandTagSponsor : ''}`}>🏒 Ice Hockey</span>
           </div>
         </div>
       </div>
@@ -221,7 +273,7 @@ export default function FanmassVisionSection({
             totalImages={vision.totalImages}
           />
 
-          {/* 2. Cross-Sport Demographics & Age Comparison */}
+          {/* 2. Cross-Sport Demographics & Age Comparison (with Side-by-Side Unified View) */}
           <FanmassSportsDemographics
             sportsBreakdown={aggregates.sportsBreakdown}
             totalPeople={aggregates.totalPeople}
@@ -229,7 +281,14 @@ export default function FanmassVisionSection({
             totalImages={vision.totalImages}
           />
 
-          {/* 3. Fan Sentiment & Stadium Atmosphere Index */}
+          {/* 3. Club Allegiance & Fan Jersey Detection Matrix */}
+          <FanmassClubsMatrix
+            clubs={aggregates.topClubs || []}
+            totalPhotosProcessed={vision.processedCount}
+            totalImages={vision.totalImages}
+          />
+
+          {/* 4. Fan Sentiment & Stadium Atmosphere Index */}
           <FanmassSentimentAtmosphere
             emotions={aggregates.topEmotions}
             totalPeople={aggregates.totalPeople}
@@ -237,13 +296,13 @@ export default function FanmassVisionSection({
             totalImages={vision.totalImages}
           />
 
-          {/* 4. Live Analyzed Stream (Curated Detections) */}
-          {recentImages && recentImages.length > 0 && (
+          {/* 5. Live Analyzed Stream (Curated Detections) */}
+          {filteredRecentImages && filteredRecentImages.length > 0 && (
             <div className={styles.recentStreamWrap}>
               <div className={styles.recentStreamHeader}>
                 <div>
                   <h4 className={styles.recentStreamTitle}>
-                    📸 Live Analyzed Stream (Latest Detections)
+                    📸 Live Analyzed Stream ({isAll ? 'Latest Detections' : `${selectedSport} Detections`})
                   </h4>
                   <p className={styles.cardSubtitle}>
                     Sample extracted selfie observations showing detected spectators, recognized brands, emotions, and arena scenes.
@@ -260,7 +319,7 @@ export default function FanmassVisionSection({
               </div>
 
               <div className={styles.recentCardsGrid}>
-                {recentImages.map((img) => (
+                {filteredRecentImages.map((img) => (
                   <div key={img.fileName} className={styles.recentItemCard}>
                     <div className={styles.recentItemTop}>
                       <span className={styles.recentSportBadge}>{img.sport}</span>

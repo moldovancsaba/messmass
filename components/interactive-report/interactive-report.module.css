@@ -1797,6 +1797,317 @@
   border-radius: var(--mm-radius-full);
 }
 
+/* League / Sport Drilldown Filter */
+.sportFilterBar {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--mm-space-2);
+  background: var(--mm-white);
+  border: 1px solid var(--mm-gray-200);
+  border-radius: var(--mm-radius-lg);
+  padding: 8px 12px;
+  margin: var(--mm-space-4) 0;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+}
+
+.sportFilterLabel {
+  font-size: var(--mm-font-size-xs);
+  font-weight: var(--mm-font-weight-semibold);
+  color: var(--mm-gray-600);
+  margin-right: var(--mm-space-2);
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.sportFilterBtn {
+  background: var(--mm-gray-50);
+  border: 1px solid var(--mm-gray-200);
+  color: var(--mm-gray-700);
+  padding: 6px 14px;
+  font-size: var(--mm-font-size-xs);
+  font-weight: var(--mm-font-weight-medium);
+  border-radius: var(--mm-radius-full);
+  cursor: pointer;
+  transition: all 0.15s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.sportFilterBtn:hover {
+  background: var(--mm-gray-100);
+  border-color: var(--mm-gray-300);
+  color: var(--mm-gray-900);
+}
+
+.sportFilterBtnActive {
+  background: #1e3a8a !important;
+  border-color: #1e3a8a !important;
+  color: var(--mm-white) !important;
+  font-weight: var(--mm-font-weight-bold);
+  box-shadow: 0 2px 6px rgba(30, 58, 138, 0.25);
+}
+
+.sportFilterBadge {
+  background: rgba(0, 0, 0, 0.08);
+  padding: 1px 6px;
+  border-radius: var(--mm-radius-full);
+  font-size: 10px;
+}
+
+.sportFilterBtnActive .sportFilterBadge {
+  background: rgba(255, 255, 255, 0.25);
+  color: var(--mm-white);
+}
+
+/* Club Allegiance & Jersey Detection Matrix */
+.clubsMatrixGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: var(--mm-space-3);
+  margin-top: var(--mm-space-4);
+}
+
+.clubMatrixCard {
+  background: var(--mm-white);
+  border: 1px solid var(--mm-gray-200);
+  border-radius: var(--mm-radius-lg);
+  padding: var(--mm-space-3) var(--mm-space-4);
+  display: flex;
+  flex-direction: column;
+  gap: var(--mm-space-2);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+}
+
+.clubMatrixCard:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  border-color: var(--mm-gray-300);
+}
+
+.clubCardTop {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--mm-space-2);
+}
+
+.clubInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.clubRankRow {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.clubRankBadge {
+  font-size: 10px;
+  font-weight: var(--mm-font-weight-bold);
+  background: var(--mm-gray-100);
+  color: var(--mm-gray-700);
+  padding: 1px 6px;
+  border-radius: var(--mm-radius-full);
+}
+
+.clubName {
+  font-size: var(--mm-font-size-sm);
+  font-weight: var(--mm-font-weight-bold);
+  color: var(--mm-gray-900);
+  margin: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.clubDomesticTag {
+  font-size: 10px;
+  font-weight: var(--mm-font-weight-semibold);
+  padding: 1px 7px;
+  border-radius: var(--mm-radius-full);
+  background: rgba(5, 150, 105, 0.1);
+  color: #047857;
+  border: 1px solid rgba(5, 150, 105, 0.2);
+}
+
+.clubIntlTag {
+  font-size: 10px;
+  font-weight: var(--mm-font-weight-semibold);
+  padding: 1px 7px;
+  border-radius: var(--mm-radius-full);
+  background: rgba(2, 132, 199, 0.1);
+  color: #0369a1;
+  border: 1px solid rgba(2, 132, 199, 0.2);
+}
+
+.clubMetricsRow {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  font-size: var(--mm-font-size-xs);
+  margin-top: 2px;
+}
+
+.clubSightingsLabel {
+  color: var(--mm-gray-500);
+  font-size: 11px;
+}
+
+.clubSightingsVal {
+  font-size: var(--mm-font-size-sm);
+  font-weight: var(--mm-font-weight-bold);
+  color: var(--mm-gray-900);
+}
+
+.clubBarTrack {
+  height: 5px;
+  background: var(--mm-gray-100);
+  border-radius: var(--mm-radius-full);
+  overflow: hidden;
+}
+
+.clubBarFill {
+  height: 100%;
+  border-radius: var(--mm-radius-full);
+  background: #059669;
+}
+
+/* Side-by-Side Comparative Demographics */
+.compChartContainer {
+  display: flex;
+  flex-direction: column;
+  gap: var(--mm-space-4);
+  margin-top: var(--mm-space-4);
+}
+
+.compSectionCard {
+  background: var(--mm-white);
+  border: 1px solid var(--mm-gray-200);
+  border-radius: var(--mm-radius-lg);
+  padding: var(--mm-space-4);
+  display: flex;
+  flex-direction: column;
+  gap: var(--mm-space-3);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+}
+
+.compSectionTitle {
+  font-size: var(--mm-font-size-sm);
+  font-weight: var(--mm-font-weight-bold);
+  color: var(--mm-gray-900);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.compRowsStack {
+  display: flex;
+  flex-direction: column;
+  gap: var(--mm-space-3);
+}
+
+.compRowItem {
+  display: grid;
+  grid-template-columns: 160px 1fr 140px;
+  align-items: center;
+  gap: var(--mm-space-3);
+}
+
+@media (max-width: 640px) {
+  .compRowItem {
+    grid-template-columns: 1fr;
+    gap: var(--mm-space-1);
+  }
+}
+
+.compSportLabelWrap {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.compSportIcon {
+  font-size: 18px;
+}
+
+.compSportName {
+  font-size: var(--mm-font-size-xs);
+  font-weight: var(--mm-font-weight-bold);
+  color: var(--mm-gray-900);
+}
+
+.compSportPhotos {
+  font-size: 10px;
+  color: var(--mm-gray-400);
+}
+
+.compBarWrapper {
+  position: relative;
+  width: 100%;
+}
+
+.compSplitBar {
+  display: flex;
+  height: 20px;
+  border-radius: var(--mm-radius-full);
+  overflow: hidden;
+  background: var(--mm-gray-100);
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.06);
+}
+
+.compParityMarkerLine {
+  position: absolute;
+  top: -4px;
+  bottom: -4px;
+  left: 50%;
+  width: 2px;
+  background: var(--mm-gray-400);
+  border-left: 1px dashed var(--mm-gray-600);
+  z-index: 2;
+  pointer-events: none;
+}
+
+.compLegendRow {
+  display: flex;
+  align-items: center;
+  gap: var(--mm-space-4);
+  font-size: 11px;
+  color: var(--mm-gray-600);
+  flex-wrap: wrap;
+}
+
+.compLegendItem {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.compLegendDot {
+  width: 10px;
+  height: 10px;
+  border-radius: 2px;
+}
+
+.compCallout {
+  background: #f0fdf4;
+  border: 1px solid #bbf7d0;
+  border-radius: var(--mm-radius-md);
+  padding: 10px 14px;
+  font-size: var(--mm-font-size-xs);
+  color: #166534;
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  line-height: 1.45;
+}
+
 @media print {
   .actionsGroup,
   .tabNav,
