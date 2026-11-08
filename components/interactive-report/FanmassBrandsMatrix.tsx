@@ -20,21 +20,52 @@ interface FanmassBrandsMatrixProps {
   totalImages?: number;
 }
 
-function getBrandCategory(brand: string): { label: string; tagClass: string; isSponsor: boolean } {
+type BrandCategoryType = 'sponsor' | 'apparel' | 'consumer';
+
+function getBrandCategory(brand: string): {
+  label: string;
+  tagClass: string;
+  isSponsor: boolean;
+  type: BrandCategoryType;
+} {
   const norm = brand.toLowerCase();
   if (norm.includes('tippmix')) {
-    return { label: 'Title Sponsor', tagClass: styles.brandTagSponsor, isSponsor: true };
+    return { label: 'Title Sponsor', tagClass: styles.brandTagSponsor, isSponsor: true, type: 'sponsor' };
   }
   if (norm.includes('szerencsejáték') || norm.includes('szerencsejatek') || norm.includes('szrt')) {
-    return { label: 'Official Partner', tagClass: styles.brandTagSponsor, isSponsor: true };
+    return { label: 'Official Partner', tagClass: styles.brandTagSponsor, isSponsor: true, type: 'sponsor' };
   }
-  if (norm.includes('novomatic') || norm.includes('veolia') || norm.includes('mvm')) {
-    return { label: 'Venue & Energy Sponsor', tagClass: styles.brandTagVenue, isSponsor: true };
+  if (
+    norm.includes('novomatic') ||
+    norm.includes('veolia') ||
+    norm.includes('mvm') ||
+    norm.includes('mol') ||
+    norm.includes('audi') ||
+    norm.includes('suzuki') ||
+    norm.includes('otp bank') ||
+    norm.includes('hydro') ||
+    norm.includes('mercedes') ||
+    norm.includes('opel') ||
+    norm.includes('hyundai') ||
+    norm.includes('mbh') ||
+    norm.includes('grand hotel')
+  ) {
+    return { label: 'Corporate & Venue Sponsor', tagClass: styles.brandTagVenue, isSponsor: true, type: 'sponsor' };
   }
-  if (norm === 'veo') {
-    return { label: 'Broadcast Tech', tagClass: styles.brandTagTech, isSponsor: true };
+  if (
+    norm.includes('coca-cola') ||
+    norm.includes('pepsi') ||
+    norm.includes('lay') ||
+    norm.includes('dreher') ||
+    norm.includes('pilsner') ||
+    norm.includes('mizo')
+  ) {
+    return { label: 'Beverage & Consumer', tagClass: styles.brandTagTech, isSponsor: true, type: 'consumer' };
   }
-  return { label: 'Kit & Apparel', tagClass: styles.brandTagApparel, isSponsor: false };
+  if (norm === 'veo' || norm.includes('sportfive') || norm.includes('foxconn') || norm.includes('pwc')) {
+    return { label: 'Tech & Media Partner', tagClass: styles.brandTagTech, isSponsor: true, type: 'sponsor' };
+  }
+  return { label: 'Kit & Apparel', tagClass: styles.brandTagApparel, isSponsor: false, type: 'apparel' };
 }
 
 export default function FanmassBrandsMatrix({
@@ -42,7 +73,9 @@ export default function FanmassBrandsMatrix({
   totalPhotosProcessed,
   totalImages = 11312,
 }: FanmassBrandsMatrixProps) {
-  const [filter, setFilter] = useState<'all' | 'sponsors' | 'apparel'>('all');
+  const [filter, setFilter] = useState<'all' | 'sponsors' | 'apparel' | 'consumer'>('all');
+  const [searchQuery, setSearchQuery] = useState('');
+  const [isExpanded, setIsExpanded] = useState(false);
 
   const maxCount = useMemo(() => {
     return brands.length > 0 ? Math.max(...brands.map((b) => b.count)) : 1;
@@ -52,14 +85,45 @@ export default function FanmassBrandsMatrix({
     return brands.reduce((acc, b) => acc + b.count, 0);
   }, [brands]);
 
+  const categoryCounts = useMemo(() => {
+    let sponsors = 0;
+    let apparel = 0;
+    let consumer = 0;
+    for (const b of brands) {
+      const cat = getBrandCategory(b.brand);
+      if (cat.type === 'sponsor') sponsors++;
+      else if (cat.type === 'consumer') consumer++;
+      else apparel++;
+    }
+    return { sponsors, apparel, consumer };
+  }, [brands]);
+
   const filteredBrands = useMemo(() => {
     return brands.filter((b) => {
       const cat = getBrandCategory(b.brand);
-      if (filter === 'sponsors') return cat.isSponsor;
-      if (filter === 'apparel') return !cat.isSponsor;
+
+      if (filter === 'sponsors' && !cat.isSponsor) return false;
+      if (filter === 'apparel' && cat.type !== 'apparel') return false;
+      if (filter === 'consumer' && cat.type !== 'consumer') return false;
+
+      if (searchQuery.trim()) {
+        const q = searchQuery.toLowerCase().trim();
+        if (!b.brand.toLowerCase().includes(q)) return false;
+      }
+
       return true;
     });
-  }, [brands, filter]);
+  }, [brands, filter, searchQuery]);
+
+  const visibleBrands = useMemo(() => {
+    if (isExpanded || searchQuery.trim().length > 0) {
+      return filteredBrands;
+    }
+    return filteredBrands.slice(0, 24);
+  }, [filteredBrands, isExpanded, searchQuery]);
+
+  const isProgressing = totalPhotosProcessed > 0 && totalPhotosProcessed < totalImages;
+  const multiplier = isProgressing ? totalImages / totalPhotosProcessed : 1;
 
   return (
     <div className={styles.reportCard}>
@@ -70,7 +134,7 @@ export default function FanmassBrandsMatrix({
               🔍 Computer Vision Results • Visual Sightings
             </span>
             <span className={styles.cardCountPill}>
-              {brands.length} Distinct Brands Detected
+              {brands.length} Distinct Brands Detected ({totalSightings.toLocaleString()} sightings)
             </span>
             <a
               href="/admin/brand-assets"
@@ -82,45 +146,93 @@ export default function FanmassBrandsMatrix({
             </a>
           </div>
           <h3 className={styles.cardTitle}>
-            🏷️ Brand Exposure & Sponsor Recognition Matrix
+            🏷️ Brand Exposure &amp; Sponsor Recognition Matrix
           </h3>
           <p className={styles.cardSubtitle}>
-            Empirical identification of sponsor emblems, jerseys, apparel, and venue signage extracted from fan selfies.
+            Exhaustive empirical identification of corporate sponsors, official partners, kit apparel, beverage brands, and arena signage extracted from fan selfies.
           </p>
         </div>
 
-        {/* Filter Buttons */}
-        <div className={styles.granularityToggle}>
-          <button
-            onClick={() => setFilter('all')}
-            className={`${styles.granularityBtn} ${
-              filter === 'all' ? styles.granularityBtnActive : ''
-            }`}
-          >
-            All Brands ({brands.length})
-          </button>
-          <button
-            onClick={() => setFilter('sponsors')}
-            className={`${styles.granularityBtn} ${
-              filter === 'sponsors' ? styles.granularityBtnActive : ''
-            }`}
-          >
-            Sponsors & Partners
-          </button>
-          <button
-            onClick={() => setFilter('apparel')}
-            className={`${styles.granularityBtn} ${
-              filter === 'apparel' ? styles.granularityBtnActive : ''
-            }`}
-          >
-            Kit & Apparel
-          </button>
+        {/* Search and Category Filter Buttons */}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', alignItems: 'flex-end' }}>
+          <div className={styles.granularityToggle}>
+            <button
+              onClick={() => setFilter('all')}
+              className={`${styles.granularityBtn} ${
+                filter === 'all' ? styles.granularityBtnActive : ''
+              }`}
+            >
+              All Brands ({brands.length})
+            </button>
+            <button
+              onClick={() => setFilter('sponsors')}
+              className={`${styles.granularityBtn} ${
+                filter === 'sponsors' ? styles.granularityBtnActive : ''
+              }`}
+            >
+              Sponsors ({categoryCounts.sponsors})
+            </button>
+            <button
+              onClick={() => setFilter('apparel')}
+              className={`${styles.granularityBtn} ${
+                filter === 'apparel' ? styles.granularityBtnActive : ''
+              }`}
+            >
+              Kit &amp; Apparel ({categoryCounts.apparel})
+            </button>
+            <button
+              onClick={() => setFilter('consumer')}
+              className={`${styles.granularityBtn} ${
+                filter === 'consumer' ? styles.granularityBtnActive : ''
+              }`}
+            >
+              Beverage &amp; Consumer ({categoryCounts.consumer})
+            </button>
+          </div>
+
+          {/* Quick Search Input */}
+          <div style={{ position: 'relative', width: '240px' }}>
+            <input
+              type="text"
+              placeholder="Search brand (e.g. Audi, Nike, MOL)..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              style={{
+                width: '100%',
+                padding: '6px 10px 6px 28px',
+                borderRadius: '8px',
+                border: '1px solid #cbd5e1',
+                fontSize: '12px',
+                outline: 'none',
+              }}
+            />
+            <span style={{ position: 'absolute', left: '8px', top: '6px', fontSize: '12px', color: '#94a3b8' }}>
+              🔍
+            </span>
+            {searchQuery && (
+              <button
+                onClick={() => setSearchQuery('')}
+                style={{
+                  position: 'absolute',
+                  right: '6px',
+                  top: '5px',
+                  border: 'none',
+                  background: 'none',
+                  cursor: 'pointer',
+                  fontSize: '12px',
+                  color: '#94a3b8',
+                }}
+              >
+                ✕
+              </button>
+            )}
+          </div>
         </div>
       </div>
 
       {/* Brands Cards Grid */}
       <div className={styles.brandsMatrixGrid}>
-        {filteredBrands.map((item, idx) => {
+        {visibleBrands.map((item, idx) => {
           const category = getBrandCategory(item.brand);
           const sharePercent = totalSightings > 0 ? ((item.count / totalSightings) * 100).toFixed(1) : '0';
           const exposureRate =
@@ -156,9 +268,9 @@ export default function FanmassBrandsMatrix({
                   <span className={styles.brandMetricLabel}>Sightings</span>
                   <span className={styles.brandMetricVal}>
                     {item.count.toLocaleString()}
-                    {totalPhotosProcessed > 0 && totalPhotosProcessed < totalImages && (
+                    {isProgressing && (
                       <span className={styles.estPill}>
-                        {' '}(est. {Math.round(item.count * (totalImages / totalPhotosProcessed)).toLocaleString()})
+                        {' '}(est. {Math.round(item.count * multiplier).toLocaleString()})
                       </span>
                     )}
                   </span>
@@ -187,6 +299,33 @@ export default function FanmassBrandsMatrix({
           );
         })}
       </div>
+
+      {/* Expand / Collapse Button if more brands are available */}
+      {filteredBrands.length > 24 && !searchQuery && (
+        <div style={{ display: 'flex', justifyContent: 'center', marginTop: '20px' }}>
+          <button
+            onClick={() => setIsExpanded(!isExpanded)}
+            style={{
+              padding: '10px 24px',
+              borderRadius: '9999px',
+              border: '1px solid #cbd5e1',
+              background: '#ffffff',
+              fontSize: '13px',
+              fontWeight: 700,
+              color: '#1e293b',
+              cursor: 'pointer',
+              boxShadow: '0 2px 6px rgba(0,0,0,0.06)',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '6px',
+            }}
+          >
+            {isExpanded
+              ? 'Collapse to Top 24 Brands ▲'
+              : `View All ${filteredBrands.length} Detected Brands (${filteredBrands.length - 24} more) ▼`}
+          </button>
+        </div>
+      )}
     </div>
   );
 }
