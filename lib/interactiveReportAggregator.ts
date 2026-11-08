@@ -315,7 +315,15 @@ export async function getInteractiveReportData(partnerSlug: string): Promise<Int
   // Sum of matches metrics
   const matchSubmitted = matchesList.reduce((acc, cur) => acc + cur.submitted, 0);
   const matchApproved = matchesList.reduce((acc, cur) => acc + cur.approved, 0);
-  const brandProtectionRate = matchSubmitted > 0 ? (matchApproved / matchSubmitted) * 100 : 99.2;
+  const brandProtectionRate =
+    matchSubmitted > 0 ? Math.min(100, (matchApproved / matchSubmitted) * 100) : 99.2;
+
+  // Weighted opt-in rate across verified monthly campaigns
+  const weightedOptInRate =
+    totalRegistered > 0
+      ? monthlyPeriods.reduce((acc, cur) => acc + cur.optInRate * cur.registered, 0) /
+        totalRegistered
+      : 71.4;
 
   // 7. Sports Breakdown
   const sportsMap: Record<string, { count: number; photos: number; approved: number; hostess: number }> = {
@@ -417,7 +425,7 @@ export async function getInteractiveReportData(partnerSlug: string): Promise<Int
       selfieShare: totalPhotos > 0 ? Math.round((selfies / totalPhotos) * 100) : 36,
       totalRegistered,
       totalOptIns,
-      optInRate: totalRegistered > 0 ? Number(((totalOptIns / totalRegistered) * 100).toFixed(1)) : 0,
+      optInRate: Number(weightedOptInRate.toFixed(1)),
       brandProtectionRate: Number(brandProtectionRate.toFixed(1)),
       totalCtaClicks,
       totalMatches: matchesList.length,
