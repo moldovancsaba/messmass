@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import { InteractiveReportData, MatchItem } from './types';
 import SzrtHeader from './SzrtHeader';
 import OverviewTab from './OverviewTab';
+import FanmassVisionSection from './FanmassVisionSection';
 import D3BubbleExplorer from './D3BubbleExplorer';
 import D3FunnelFlow from './D3FunnelFlow';
 import D3DemographicsChart from './D3DemographicsChart';
@@ -16,7 +17,9 @@ interface InteractiveReportDashboardProps {
 
 export default function InteractiveReportDashboard({ initialData }: InteractiveReportDashboardProps) {
   const [data] = useState<InteractiveReportData>(initialData);
-  const [activeTab, setActiveTab] = useState<'overview' | 'bubble' | 'funnel' | 'demographics' | 'table'>('overview');
+  const [activeTab, setActiveTab] = useState<
+    'overview' | 'vision' | 'bubble' | 'funnel' | 'demographics' | 'table'
+  >('overview');
   const [selectedPeriodId, setSelectedPeriodId] = useState<string | null>(null);
   const [selectedMatch, setSelectedMatch] = useState<MatchItem | null>(null);
 
@@ -38,12 +41,28 @@ export default function InteractiveReportDashboard({ initialData }: InteractiveR
 
       {/* Tab 1: Executive Overview */}
       {activeTab === 'overview' && (
-        <OverviewTab
-          data={data}
-          selectedPeriodId={selectedPeriodId}
-          onSelectPeriod={setSelectedPeriodId}
-          onViewBubble={() => setActiveTab('bubble')}
-          onViewFunnel={() => setActiveTab('funnel')}
+        <>
+          {data.vision && (
+            <FanmassVisionSection
+              vision={data.vision}
+              partnerSlug={data.partner.viewSlug || 'szrt'}
+            />
+          )}
+          <OverviewTab
+            data={data}
+            selectedPeriodId={selectedPeriodId}
+            onSelectPeriod={setSelectedPeriodId}
+            onViewBubble={() => setActiveTab('bubble')}
+            onViewFunnel={() => setActiveTab('funnel')}
+          />
+        </>
+      )}
+
+      {/* Tab: Dedicated Fanmass Vision AI */}
+      {activeTab === 'vision' && data.vision && (
+        <FanmassVisionSection
+          vision={data.vision}
+          partnerSlug={data.partner.viewSlug || 'szrt'}
         />
       )}
 

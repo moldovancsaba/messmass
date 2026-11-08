@@ -61,6 +61,44 @@ export interface DemographicsData {
   stadiumAtmosphere: number;
 }
 
+export interface VisionProgressData {
+  totalImages: number;
+  processedCount: number;
+  percent: number;
+  status: 'running' | 'idle' | 'completed';
+  currentSport: string;
+  currentFile: string;
+  lastUpdated: string;
+  aggregates: {
+    totalPeople: number;
+    genders: {
+      male: number;
+      female: number;
+      malePct: number;
+      femalePct: number;
+    };
+    ageGroups: {
+      children: number;
+      teens: number;
+      adults: number;
+      seniors: number;
+    };
+    topBrands: Array<{ brand: string; count: number }>;
+    topClubs: Array<{ club: string; count: number }>;
+    topEmotions: Array<{ emotion: string; count: number }>;
+    sportsBreakdown: Record<string, { images: number; people: number }>;
+  };
+  recentImages: Array<{
+    fileName: string;
+    sport: string;
+    peopleCount: number;
+    emotions: string[];
+    brands: string[];
+    clubs: string[];
+    scene: string;
+  }>;
+}
+
 export interface InteractiveReportData {
   success: boolean;
   partner: {
@@ -98,4 +136,5 @@ export interface InteractiveReportData {
   sports: SportBreakdown[];
   funnel: FunnelStep[];
   demographics: DemographicsData;
+  vision?: VisionProgressData | null;
 }

@@ -403,6 +403,35 @@ export async function getInteractiveReportData(partnerSlug: string): Promise<Int
     },
   ];
 
+  // 9. Fanmass Vision Analysis Live Stream
+  let vision = null;
+  try {
+    const visionDoc = await db.collection('szrt_vision_progress').findOne({ _id: 'szrt_progress' as any });
+    if (visionDoc) {
+      vision = {
+        totalImages: visionDoc.totalImages || 11312,
+        processedCount: visionDoc.processedCount || 0,
+        percent: visionDoc.percent || 0,
+        status: visionDoc.status || 'running',
+        currentSport: visionDoc.currentSport || '',
+        currentFile: visionDoc.currentFile || '',
+        lastUpdated: visionDoc.lastUpdated || '',
+        aggregates: visionDoc.aggregates || {
+          totalPeople: 0,
+          genders: { male: 0, female: 0, malePct: 50, femalePct: 50 },
+          ageGroups: { children: 0, teens: 0, adults: 0, seniors: 0 },
+          topBrands: [],
+          topClubs: [],
+          topEmotions: [],
+          sportsBreakdown: {},
+        },
+        recentImages: visionDoc.recentImages || [],
+      };
+    }
+  } catch (err) {
+    console.error('Failed to load vision progress:', err);
+  }
+
   return {
     success: true,
     partner: {
@@ -440,5 +469,6 @@ export async function getInteractiveReportData(partnerSlug: string): Promise<Int
     sports: sportsBreakdown,
     funnel: funnelSteps,
     demographics,
+    vision,
   };
 }
