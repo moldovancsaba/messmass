@@ -173,6 +173,13 @@ export async function getInteractiveReportData(partnerSlug: string): Promise<Int
       const approvalRate = submitted > 0 ? Math.round((safeApproved / submitted) * 100) : 100;
 
       if (!matchesMap.has(key)) {
+        const matchingProject = campaignProjects.find((cp) => {
+          const cName = (cp.eventName || '').toLowerCase();
+          const rName = rawMatchName.toLowerCase();
+          return cName.includes(rName) || rName.includes(cName);
+        });
+        const cpStats = matchingProject?.stats || {};
+
         matchesMap.set(key, {
           id: key,
           matchName: rawMatchName,
@@ -187,6 +194,14 @@ export async function getInteractiveReportData(partnerSlug: string): Promise<Int
           hostess: hostess || 0,
           selfies: Math.max(0, submitted - (hostess || 0)),
           approvalRate,
+          demographics: {
+            male: cpStats.male || 0,
+            female: cpStats.female || 0,
+            genAlpha: cpStats.genAlpha || 0,
+            genYZ: cpStats.genYZ || 0,
+            genX: cpStats.genX || 0,
+            boomer: cpStats.boomer || 0,
+          },
         });
       }
     }
@@ -233,6 +248,14 @@ export async function getInteractiveReportData(partnerSlug: string): Promise<Int
         hostess,
         selfies: Math.max(0, submitted - hostess),
         approvalRate: submitted > 0 ? Math.round((approved / submitted) * 100) : 100,
+        demographics: {
+          male: s.male || 0,
+          female: s.female || 0,
+          genAlpha: s.genAlpha || 0,
+          genYZ: s.genYZ || 0,
+          genX: s.genX || 0,
+          boomer: s.boomer || 0,
+        },
       });
     }
   }

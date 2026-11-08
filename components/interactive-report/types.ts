@@ -12,6 +12,14 @@ export interface MatchItem {
   hostess: number;
   selfies: number;
   approvalRate: number;
+  demographics?: {
+    male?: number;
+    female?: number;
+    genAlpha?: number;
+    genYZ?: number;
+    genX?: number;
+    boomer?: number;
+  };
 }
 
 export interface TimelinePeriod {
