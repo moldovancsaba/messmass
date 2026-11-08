@@ -47,6 +47,10 @@ export default function FanmassVisionSection({
 
   const { aggregates, recentImages } = vision;
   const isRunning = vision.status === 'running';
+  const totalPhotosProcessed = vision.processedCount;
+  const totalImages = vision.totalImages || 11312;
+  const isProgressing = totalPhotosProcessed > 0 && totalPhotosProcessed < totalImages;
+  const multiplier = isProgressing ? totalImages / totalPhotosProcessed : 1;
 
   const totalEmotionsCount = aggregates.topEmotions.reduce((acc, e) => acc + e.count, 0);
   const positiveEmotions = aggregates.topEmotions.filter(
@@ -111,22 +115,31 @@ export default function FanmassVisionSection({
           <div className={styles.miniCardTitle}>Identified Spectators</div>
           <div className={styles.miniCardVal}>
             {aggregates.totalPeople.toLocaleString()}
+            {isProgressing && (
+              <span className={styles.estPill}>
+                {' '}(est. {Math.round(aggregates.totalPeople * multiplier).toLocaleString()})
+              </span>
+            )}
           </div>
           <div className={styles.miniCardSub}>
             {aggregates.genders.malePct}% Male / {aggregates.genders.femalePct}% Female
           </div>
           <div className={styles.agePillsGroup}>
             <span className={styles.agePill}>
-              Adults: {aggregates.ageGroups.adults}
+              Adults: {aggregates.ageGroups.adults.toLocaleString()}
+              {isProgressing && ` (est. ${Math.round(aggregates.ageGroups.adults * multiplier).toLocaleString()})`}
             </span>
             <span className={styles.agePill}>
-              Teens: {aggregates.ageGroups.teens}
+              Teens: {aggregates.ageGroups.teens.toLocaleString()}
+              {isProgressing && ` (est. ${Math.round(aggregates.ageGroups.teens * multiplier).toLocaleString()})`}
             </span>
             <span className={styles.agePill}>
-              Children: {aggregates.ageGroups.children}
+              Children: {aggregates.ageGroups.children.toLocaleString()}
+              {isProgressing && ` (est. ${Math.round(aggregates.ageGroups.children * multiplier).toLocaleString()})`}
             </span>
             <span className={styles.agePill}>
-              Seniors: {aggregates.ageGroups.seniors}
+              Seniors: {aggregates.ageGroups.seniors.toLocaleString()}
+              {isProgressing && ` (est. ${Math.round(aggregates.ageGroups.seniors * multiplier).toLocaleString()})`}
             </span>
           </div>
         </div>
@@ -205,18 +218,23 @@ export default function FanmassVisionSection({
           <FanmassBrandsMatrix
             brands={aggregates.topBrands}
             totalPhotosProcessed={vision.processedCount}
+            totalImages={vision.totalImages}
           />
 
           {/* 2. Cross-Sport Demographics & Age Comparison */}
           <FanmassSportsDemographics
             sportsBreakdown={aggregates.sportsBreakdown}
             totalPeople={aggregates.totalPeople}
+            totalPhotosProcessed={vision.processedCount}
+            totalImages={vision.totalImages}
           />
 
           {/* 3. Fan Sentiment & Stadium Atmosphere Index */}
           <FanmassSentimentAtmosphere
             emotions={aggregates.topEmotions}
             totalPeople={aggregates.totalPeople}
+            totalPhotosProcessed={vision.processedCount}
+            totalImages={vision.totalImages}
           />
 
           {/* 4. Live Analyzed Stream (Curated Detections) */}

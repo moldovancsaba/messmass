@@ -24,6 +24,8 @@ interface SportBreakdownItem {
 interface FanmassSportsDemographicsProps {
   sportsBreakdown: Record<string, SportBreakdownItem>;
   totalPeople: number;
+  totalPhotosProcessed?: number;
+  totalImages?: number;
 }
 
 const SPORT_META: Record<string, { icon: string; color: string; label: string }> = {
@@ -36,8 +38,12 @@ const SPORT_META: Record<string, { icon: string; color: string; label: string }>
 export default function FanmassSportsDemographics({
   sportsBreakdown,
   totalPeople,
+  totalPhotosProcessed = 0,
+  totalImages = 11312,
 }: FanmassSportsDemographicsProps) {
   const [activeTab, setActiveTab] = useState<'gender' | 'age'>('gender');
+  const isProgressing = totalPhotosProcessed > 0 && totalPhotosProcessed < totalImages;
+  const multiplier = isProgressing ? totalImages / totalPhotosProcessed : 1;
 
   const sportsList = ['Basketball', 'Football', 'Handball', 'Ice Hockey'];
 
@@ -51,6 +57,7 @@ export default function FanmassSportsDemographics({
             </span>
             <span className={styles.cardCountPill}>
               {totalPeople.toLocaleString()} Spectators Analyzed
+              {isProgressing && ` (est. ${Math.round(totalPeople * multiplier).toLocaleString()})`}
             </span>
           </div>
           <h3 className={styles.cardTitle}>
@@ -120,7 +127,9 @@ export default function FanmassSportsDemographics({
                   </div>
                 </div>
                 <div className={styles.sportVolumeBadge}>
-                  <strong>{data.people.toLocaleString()}</strong> fans / {data.images} photos
+                  <strong>{data.people.toLocaleString()}</strong>
+                  {isProgressing && <span className={styles.estPill}> (est. {Math.round(data.people * multiplier).toLocaleString()})</span>} fans / {data.images.toLocaleString()}
+                  {isProgressing && <span className={styles.estPill}> (est. {Math.round(data.images * multiplier).toLocaleString()})</span>} photos
                 </div>
               </div>
 
@@ -145,13 +154,27 @@ export default function FanmassSportsDemographics({
                       <span className={styles.genderDotMale} />
                       <span className={styles.genderLabel}>Male</span>
                       <strong className={styles.genderVal}>{malePct}%</strong>
-                      <span className={styles.genderCount}>({maleCount.toLocaleString()})</span>
+                      <span className={styles.genderCount}>
+                        ({maleCount.toLocaleString()}
+                        {isProgressing && (
+                          <span className={styles.estPill}>
+                            {' '}est. {Math.round(maleCount * multiplier).toLocaleString()}
+                          </span>
+                        )})
+                      </span>
                     </div>
                     <div className={styles.genderStatItem}>
                       <span className={styles.genderDotFemale} />
                       <span className={styles.genderLabel}>Female</span>
                       <strong className={styles.genderVal}>{femalePct}%</strong>
-                      <span className={styles.genderCount}>({femaleCount.toLocaleString()})</span>
+                      <span className={styles.genderCount}>
+                        ({femaleCount.toLocaleString()}
+                        {isProgressing && (
+                          <span className={styles.estPill}>
+                            {' '}est. {Math.round(femaleCount * multiplier).toLocaleString()}
+                          </span>
+                        )})
+                      </span>
                     </div>
                   </div>
                 </div>
@@ -163,7 +186,14 @@ export default function FanmassSportsDemographics({
                     <div className={styles.ageBarRow}>
                       <div className={styles.ageBarLabelGroup}>
                         <span>Adults (19-55)</span>
-                        <strong>{adultsPct}% ({ag.adults})</strong>
+                        <strong>
+                          {adultsPct}% ({ag.adults.toLocaleString()}
+                          {isProgressing && (
+                            <span className={styles.estPill}>
+                              {' '}est. {Math.round(ag.adults * multiplier).toLocaleString()}
+                            </span>
+                          )})
+                        </strong>
                       </div>
                       <div className={styles.ageBarTrack}>
                         <div
@@ -177,7 +207,14 @@ export default function FanmassSportsDemographics({
                     <div className={styles.ageBarRow}>
                       <div className={styles.ageBarLabelGroup}>
                         <span>Teens (14-18)</span>
-                        <strong>{teensPct}% ({ag.teens})</strong>
+                        <strong>
+                          {teensPct}% ({ag.teens.toLocaleString()}
+                          {isProgressing && (
+                            <span className={styles.estPill}>
+                              {' '}est. {Math.round(ag.teens * multiplier).toLocaleString()}
+                            </span>
+                          )})
+                        </strong>
                       </div>
                       <div className={styles.ageBarTrack}>
                         <div
@@ -191,7 +228,14 @@ export default function FanmassSportsDemographics({
                     <div className={styles.ageBarRow}>
                       <div className={styles.ageBarLabelGroup}>
                         <span>Children (&lt;13)</span>
-                        <strong>{childrenPct}% ({ag.children})</strong>
+                        <strong>
+                          {childrenPct}% ({ag.children.toLocaleString()}
+                          {isProgressing && (
+                            <span className={styles.estPill}>
+                              {' '}est. {Math.round(ag.children * multiplier).toLocaleString()}
+                            </span>
+                          )})
+                        </strong>
                       </div>
                       <div className={styles.ageBarTrack}>
                         <div
@@ -205,7 +249,14 @@ export default function FanmassSportsDemographics({
                     <div className={styles.ageBarRow}>
                       <div className={styles.ageBarLabelGroup}>
                         <span>Seniors (55+)</span>
-                        <strong>{seniorsPct}% ({ag.seniors})</strong>
+                        <strong>
+                          {seniorsPct}% ({ag.seniors.toLocaleString()}
+                          {isProgressing && (
+                            <span className={styles.estPill}>
+                              {' '}est. {Math.round(ag.seniors * multiplier).toLocaleString()}
+                            </span>
+                          )})
+                        </strong>
                       </div>
                       <div className={styles.ageBarTrack}>
                         <div

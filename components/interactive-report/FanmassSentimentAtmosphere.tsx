@@ -12,6 +12,8 @@ interface EmotionStat {
 interface FanmassSentimentAtmosphereProps {
   emotions: EmotionStat[];
   totalPeople: number;
+  totalPhotosProcessed?: number;
+  totalImages?: number;
 }
 
 const EMOTION_META: Record<string, { emoji: string; color: string; label: string }> = {
@@ -26,7 +28,12 @@ const EMOTION_META: Record<string, { emoji: string; color: string; label: string
 export default function FanmassSentimentAtmosphere({
   emotions,
   totalPeople,
+  totalPhotosProcessed = 0,
+  totalImages = 11312,
 }: FanmassSentimentAtmosphereProps) {
+  const isProgressing = totalPhotosProcessed > 0 && totalPhotosProcessed < totalImages;
+  const multiplier = isProgressing ? totalImages / totalPhotosProcessed : 1;
+
   const totalDetections = useMemo(() => {
     return emotions.reduce((acc, e) => acc + e.count, 0);
   }, [emotions]);
@@ -51,6 +58,7 @@ export default function FanmassSentimentAtmosphere({
             </span>
             <span className={styles.cardCountPill}>
               {totalPeople.toLocaleString()} Spectators Scanned
+              {isProgressing && ` (est. ${Math.round(totalPeople * multiplier).toLocaleString()})`}
             </span>
           </div>
           <h3 className={styles.cardTitle}>
@@ -82,7 +90,14 @@ export default function FanmassSentimentAtmosphere({
                 <span className={styles.emotionLabel}>{meta.label}</span>
               </div>
               <div className={styles.emotionCardVal}>
-                {item.count.toLocaleString()}
+                <span>
+                  {item.count.toLocaleString()}
+                  {isProgressing && (
+                    <span className={styles.estPill}>
+                      {' '}(est. {Math.round(item.count * multiplier).toLocaleString()})
+                    </span>
+                  )}
+                </span>
                 <span className={styles.emotionCardPct}>{pct}%</span>
               </div>
               <div className={styles.emotionTrack}>

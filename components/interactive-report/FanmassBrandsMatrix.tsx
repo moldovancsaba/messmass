@@ -17,6 +17,7 @@ interface BrandStat {
 interface FanmassBrandsMatrixProps {
   brands: BrandStat[];
   totalPhotosProcessed: number;
+  totalImages?: number;
 }
 
 function getBrandCategory(brand: string): { label: string; tagClass: string; isSponsor: boolean } {
@@ -39,6 +40,7 @@ function getBrandCategory(brand: string): { label: string; tagClass: string; isS
 export default function FanmassBrandsMatrix({
   brands,
   totalPhotosProcessed,
+  totalImages = 11312,
 }: FanmassBrandsMatrixProps) {
   const [filter, setFilter] = useState<'all' | 'sponsors' | 'apparel'>('all');
 
@@ -152,7 +154,14 @@ export default function FanmassBrandsMatrix({
               <div className={styles.brandMetricsRow}>
                 <div className={styles.brandMetricItem}>
                   <span className={styles.brandMetricLabel}>Sightings</span>
-                  <span className={styles.brandMetricVal}>{item.count.toLocaleString()}</span>
+                  <span className={styles.brandMetricVal}>
+                    {item.count.toLocaleString()}
+                    {totalPhotosProcessed > 0 && totalPhotosProcessed < totalImages && (
+                      <span className={styles.estPill}>
+                        {' '}(est. {Math.round(item.count * (totalImages / totalPhotosProcessed)).toLocaleString()})
+                      </span>
+                    )}
+                  </span>
                 </div>
                 <div className={styles.brandMetricItem}>
                   <span className={styles.brandMetricLabel}>Share of Voice</span>
