@@ -166,7 +166,10 @@ export async function getInteractiveReportData(partnerSlug: string): Promise<Int
       const date = rawDate.replace(/\./g, '-').replace(/-$/, '').trim();
       const key = `${rawMatchName.toLowerCase()}__${date}`;
       const cleanName = rawMatchName.replace(/#/g, ' vs ').trim();
-      const safeApproved = approved || (submitted - rejected);
+      const safeApproved =
+        typeof approved === 'number' && !isNaN(approved) && approved > 0
+          ? approved
+          : Math.max(0, submitted - rejected);
       const approvalRate = submitted > 0 ? Math.round((safeApproved / submitted) * 100) : 100;
 
       if (!matchesMap.has(key)) {
@@ -245,10 +248,23 @@ export async function getInteractiveReportData(partnerSlug: string): Promise<Int
       const isSport = p.eventName.includes('AI Analytics');
       const type: TimelinePeriod['type'] = isMonthly ? 'monthly' : isSport ? 'sport' : 'weekly';
 
-      const shortName = p.eventName
+      let shortName = p.eventName
         .replace(' Statisztika', '')
         .replace(' AI Analytics', '')
         .replace('2026. ', '');
+
+      if (isMonthly) {
+        if (p.eventName.includes('NOVEMBER')) shortName = "Nov '25";
+        else if (p.eventName.includes('DECEMBER')) shortName = "Dec '25";
+        else if (p.eventName.includes('JANUÁR')) shortName = "Jan '26";
+        else if (p.eventName.includes('FEBRUÁR')) shortName = "Feb '26";
+      } else if (type === 'weekly') {
+        shortName = shortName
+          .replace('január', 'Jan')
+          .replace('február', 'Feb')
+          .replace(/\.$/, '')
+          .trim();
+      }
 
       const allPhotos = s.szerencsejatekAllusersAllphotos || s.allImages || 0;
       const hostessPhotos = s.szerencsejatekHostessAllphotos || 0;
@@ -401,7 +417,7 @@ export async function getInteractiveReportData(partnerSlug: string): Promise<Int
       selfieShare: totalPhotos > 0 ? Math.round((selfies / totalPhotos) * 100) : 36,
       totalRegistered,
       totalOptIns,
-      optInRate: 71.4,
+      optInRate: totalRegistered > 0 ? Number(((totalOptIns / totalRegistered) * 100).toFixed(1)) : 0,
       brandProtectionRate: Number(brandProtectionRate.toFixed(1)),
       totalCtaClicks,
       totalMatches: matchesList.length,

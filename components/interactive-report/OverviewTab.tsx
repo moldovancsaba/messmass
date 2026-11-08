@@ -22,9 +22,9 @@ const SPORT_ICONS: Record<string, string> = {
 };
 
 const SPORT_COLORS: Record<string, string> = {
-  Football: '#10b981',
+  Football: '#059669',
   'Ice Hockey': '#0284c7',
-  Basketball: '#f59e0b',
+  Basketball: '#b45309',
   Handball: '#e11d48',
 };
 
@@ -40,6 +40,22 @@ export default function OverviewTab({
   // Selected period override if active
   const activePeriod = selectedPeriodId ? timeline.find((t) => t.id === selectedPeriodId) : null;
 
+  // Dynamic touchpoint proportions
+  const totalTouchpoints =
+    summary.touchpoints.social + summary.touchpoints.url + summary.touchpoints.qr;
+  const socialPct =
+    totalTouchpoints > 0
+      ? Math.round((summary.touchpoints.social / totalTouchpoints) * 1000) / 10
+      : 36.7;
+  const urlPct =
+    totalTouchpoints > 0
+      ? Math.round((summary.touchpoints.url / totalTouchpoints) * 1000) / 10
+      : 33.1;
+  const qrPct =
+    totalTouchpoints > 0
+      ? Math.round((summary.touchpoints.qr / totalTouchpoints) * 1000) / 10
+      : 30.2;
+
   return (
     <div className={styles.funnelList}>
       {/* Active Period Filter Indicator */}
@@ -47,16 +63,32 @@ export default function OverviewTab({
         <div className={styles.periodFilterBanner}>
           <div>
             <span className={styles.filterLabel}>
-              Filtered Campaign Period:
+              Active Campaign Period:
             </span>{' '}
-            <strong className={styles.filterValue}>{activePeriod.name}</strong> ({activePeriod.date})
+            <strong className={styles.filterValue}>{activePeriod.name}</strong>
+            <div className={styles.cardSubtitle} style={{ marginTop: '4px' }}>
+              📸 {activePeriod.allPhotos.toLocaleString()} Total Photos ({activePeriod.hostessPhotos.toLocaleString()} Hostess • {activePeriod.selfies.toLocaleString()} Selfies) • 👥 {activePeriod.registered.toLocaleString()} Registered ({activePeriod.optInRate}% Opt-in)
+            </div>
           </div>
-          <button
-            onClick={() => onSelectPeriod(null)}
-            className={styles.clearFilterBtn}
-          >
-            Show All Campaigns ✕
-          </button>
+          <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+            {activePeriod.slug && (
+              <a
+                href={`/report/${activePeriod.slug}`}
+                target="_blank"
+                rel="noreferrer"
+                className={styles.resetBtn}
+                style={{ textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: '4px' }}
+              >
+                Open Period Report ↗
+              </a>
+            )}
+            <button
+              onClick={() => onSelectPeriod(null)}
+              className={styles.clearFilterBtn}
+            >
+              Show All Campaigns ✕
+            </button>
+          </div>
         </div>
       )}
 
@@ -122,7 +154,9 @@ export default function OverviewTab({
             <div>
               <div className={styles.generationHeader}>
                 <span>Social Links (Facebook, Instagram, TikTok)</span>
-                <strong>{summary.touchpoints.social.toLocaleString()} (36.7%)</strong>
+                <strong>
+                  {summary.touchpoints.social.toLocaleString()} ({socialPct}%)
+                </strong>
               </div>
               <div className={styles.genBarTrack}>
                 {/* WHAT: Dynamic percentage width for social touchpoints
@@ -130,7 +164,7 @@ export default function OverviewTab({
                 {/* eslint-disable-next-line react/forbid-dom-props */}
                 <div
                   className={styles.maleBar}
-                  style={{ width: '36.7%', height: '100%' }}
+                  style={{ width: `${socialPct}%`, height: '100%' }}
                 />
               </div>
             </div>
@@ -138,7 +172,9 @@ export default function OverviewTab({
             <div>
               <div className={styles.generationHeader}>
                 <span>Web URL & Match Links</span>
-                <strong>{summary.touchpoints.url.toLocaleString()} (33.1%)</strong>
+                <strong>
+                  {summary.touchpoints.url.toLocaleString()} ({urlPct}%)
+                </strong>
               </div>
               <div className={styles.genBarTrack}>
                 {/* WHAT: Dynamic percentage width for direct web touchpoints
@@ -146,7 +182,7 @@ export default function OverviewTab({
                 {/* eslint-disable-next-line react/forbid-dom-props */}
                 <div
                   className={styles.genBarFillHighlight}
-                  style={{ width: '33.1%', height: '100%' }}
+                  style={{ width: `${urlPct}%`, height: '100%' }}
                 />
               </div>
             </div>
@@ -154,7 +190,9 @@ export default function OverviewTab({
             <div>
               <div className={styles.generationHeader}>
                 <span>In-Stadium QR Codes (Banners & Jumbotron)</span>
-                <strong>{summary.touchpoints.qr.toLocaleString()} (30.2%)</strong>
+                <strong>
+                  {summary.touchpoints.qr.toLocaleString()} ({qrPct}%)
+                </strong>
               </div>
               <div className={styles.genBarTrack}>
                 {/* WHAT: Dynamic percentage width for QR touchpoints
@@ -162,7 +200,7 @@ export default function OverviewTab({
                 {/* eslint-disable-next-line react/forbid-dom-props */}
                 <div
                   className={styles.genBarFill}
-                  style={{ width: '30.2%', height: '100%' }}
+                  style={{ width: `${qrPct}%`, height: '100%' }}
                 />
               </div>
             </div>
@@ -176,7 +214,7 @@ export default function OverviewTab({
           </h3>
           <ul className={styles.cardSubtitle}>
             <li>
-              <strong>Exceptional Opt-In Conversion:</strong> 71.4% of all participating stadium fans opted in to Szerencsejáték Zrt. & Tippmix marketing campaigns.
+              <strong>Exceptional Opt-In Conversion:</strong> {summary.optInRate}% of all participating stadium fans opted in to Szerencsejáték Zrt. & Tippmix marketing campaigns.
             </li>
             <li>
               <strong>Dual Engagement Model:</strong> Hostesses assisted in taking 64% of photos, driving higher conversion among older demographics, while direct fan selfies accounted for 36%.

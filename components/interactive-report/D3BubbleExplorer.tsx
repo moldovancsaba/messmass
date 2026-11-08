@@ -12,9 +12,9 @@ interface D3BubbleExplorerProps {
 }
 
 const SPORT_COLORS: Record<string, string> = {
-  Football: '#10b981',
+  Football: '#059669',
   'Ice Hockey': '#0284c7',
-  Basketball: '#f59e0b',
+  Basketball: '#b45309',
   Handball: '#e11d48',
   Other: '#64748b',
 };
@@ -31,13 +31,15 @@ export default function D3BubbleExplorer({ matches, onSelectMatch }: D3BubbleExp
   }, [matches, selectedSport]);
 
   useEffect(() => {
-    if (!svgRef.current || filteredMatches.length === 0) return;
-
-    const width = 800;
-    const height = 480;
+    if (!svgRef.current) return;
 
     const svg = d3.select(svgRef.current);
     svg.selectAll('*').remove();
+
+    if (filteredMatches.length === 0) return;
+
+    const width = 800;
+    const height = 480;
     svg.attr('viewBox', `0 0 ${width} ${height}`);
 
     const maxPhotos = d3.max(filteredMatches, (d) => d.submitted) || 200;

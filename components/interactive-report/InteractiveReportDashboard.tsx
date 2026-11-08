@@ -96,7 +96,9 @@ export default function InteractiveReportDashboard({ initialData }: InteractiveR
       )}
 
       {/* Tab 3: Marketing Conversion Funnel */}
-      {activeTab === 'funnel' && <D3FunnelFlow funnel={data.funnel} />}
+      {activeTab === 'funnel' && (
+        <D3FunnelFlow funnel={data.funnel} summary={data.summary} />
+      )}
 
       {/* Tab 4: Audience Demographics */}
       {activeTab === 'demographics' && <D3DemographicsChart demographics={data.demographics} />}

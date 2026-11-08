@@ -49,7 +49,7 @@ export default function SzrtHeader({ data, activeTab, onTabChange }: SzrtHeaderP
               {partner.name}
             </h1>
             <p className={styles.partnerDescription}>
-              Consolidated fan engagement, photo activation volume, and marketing opt-in conversion metrics across 69 national sports events (Football NB1/NB2, Erste Liga Ice Hockey, Basketball & Handball).
+              Consolidated fan engagement, photo activation volume, and marketing opt-in conversion metrics across {summary.totalMatches} national sports events (Football NB1/NB2, Erste Liga Ice Hockey, Basketball & Handball).
             </p>
           </div>
 

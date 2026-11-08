@@ -7,10 +7,29 @@ import styles from './interactive-report.module.css';
 
 interface D3FunnelFlowProps {
   funnel: FunnelStep[];
+  summary?: {
+    optInRate: number;
+    totalOptIns: number;
+    brandProtectionRate: number;
+    totalCtaClicks: number;
+  };
 }
 
-export default function D3FunnelFlow({ funnel }: D3FunnelFlowProps) {
+export default function D3FunnelFlow({ funnel, summary }: D3FunnelFlowProps) {
   const maxValue = funnel[0]?.value || 1;
+
+  const optInRate =
+    summary?.optInRate ??
+    (funnel[3]?.value > 0
+      ? Number(((funnel[4]?.value / funnel[3]?.value) * 100).toFixed(1))
+      : 71.4);
+  const optInCount = summary?.totalOptIns ?? (funnel[4]?.value || 0);
+  const brandProtection =
+    summary?.brandProtectionRate ??
+    (funnel[1]?.value > 0
+      ? Number(((funnel[2]?.value / funnel[1]?.value) * 100).toFixed(1))
+      : 97.6);
+  const ctaTotal = summary?.totalCtaClicks ?? (funnel[5]?.value || 0);
 
   return (
     <div className={styles.reportCard}>
@@ -99,17 +118,19 @@ export default function D3FunnelFlow({ funnel }: D3FunnelFlowProps) {
       <div className={styles.highlightsGrid}>
         <div className={styles.highlightBoxGreen}>
           <div className={styles.highlightLabelGreen}>Tippmix Marketing Opt-In</div>
-          <div className={styles.highlightValGreen}>71.4%</div>
-          <div className={styles.highlightLabelGreen}>20,130 active consent registrations</div>
+          <div className={styles.highlightValGreen}>{optInRate}%</div>
+          <div className={styles.highlightLabelGreen}>
+            {optInCount.toLocaleString()} active consent registrations
+          </div>
         </div>
         <div className={styles.highlightBoxGray}>
           <div className={styles.highlightLabelGray}>Brand Protection Gate</div>
-          <div className={styles.highlightValGray}>97.6%</div>
+          <div className={styles.highlightValGray}>{brandProtection}%</div>
           <div className={styles.cardSubtitle}>AI & hostess content screening pass</div>
         </div>
         <div className={styles.highlightBoxGray}>
           <div className={styles.highlightLabelGray}>Total CTA Click Actions</div>
-          <div className={styles.highlightValGray}>1,435</div>
+          <div className={styles.highlightValGray}>{ctaTotal.toLocaleString()}</div>
           <div className={styles.cardSubtitle}>Direct referral to Tippmixpro portal</div>
         </div>
       </div>

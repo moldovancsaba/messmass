@@ -250,6 +250,62 @@
   background: #4f7a28;
 }
 
+.granularityToggle {
+  display: inline-flex;
+  background: var(--mm-gray-100);
+  border-radius: var(--mm-radius-full);
+  padding: 3px;
+  gap: 2px;
+}
+
+.granularityBtn {
+  border: none;
+  background: transparent;
+  padding: 5px 12px;
+  border-radius: var(--mm-radius-full);
+  font-size: var(--mm-font-size-xs);
+  font-weight: var(--mm-font-weight-semibold);
+  color: var(--mm-gray-600);
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.granularityBtnActive {
+  background: var(--mm-white);
+  color: var(--mm-gray-900);
+  font-weight: var(--mm-font-weight-bold);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.timelineTooltip {
+  position: absolute;
+  background: var(--mm-gray-900);
+  color: var(--mm-white);
+  padding: var(--mm-space-2) var(--mm-space-3);
+  border-radius: var(--mm-radius-md);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25);
+  font-size: var(--mm-font-size-xs);
+  pointer-events: none;
+  z-index: 20;
+  max-width: 260px;
+  transform: translate(-50%, -100%);
+  margin-top: -10px;
+}
+
+.timelineTooltipTitle {
+  font-weight: var(--mm-font-weight-bold);
+  margin-bottom: var(--mm-space-1);
+  color: #88ca45;
+}
+
+.timelineTooltipRow {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--mm-space-3);
+  margin-top: 2px;
+  font-size: 11px;
+}
+
 .resetBtn {
   background: var(--mm-gray-100);
   border: 1px solid var(--mm-gray-300);
@@ -516,7 +572,7 @@
 
 .stepBadgeHighlight {
   background: #88ca45;
-  color: var(--mm-white);
+  color: #1a3308;
 }
 
 .stepTitle {
@@ -573,6 +629,10 @@
   color: var(--mm-white);
   font-size: 11px;
   font-weight: var(--mm-font-weight-bold);
+}
+
+.barFillHighlight .barValInside {
+  color: #1a3308;
 }
 
 .barValOutside {
@@ -911,5 +971,31 @@
   }
   .highlightsGrid {
     grid-template-columns: 1fr;
+  }
+}
+
+@media print {
+  .actionsGroup,
+  .tabNav,
+  .searchInput,
+  .paginationBar,
+  .granularityToggle,
+  .resetBtn,
+  .clearFilterBtn {
+    display: none !important;
+  }
+
+  .dashboardContainer {
+    max-width: 100% !important;
+    padding: 0 !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  .reportCard {
+    box-shadow: none !important;
+    border: 1px solid #e2e8f0 !important;
+    break-inside: avoid;
+    page-break-inside: avoid;
   }
 }
