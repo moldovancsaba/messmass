@@ -6,8 +6,8 @@ import styles from './interactive-report.module.css';
 
 interface SzrtHeaderProps {
   data: InteractiveReportData;
-  activeTab: 'overview' | 'vision' | 'bubble' | 'funnel' | 'demographics' | 'table';
-  onTabChange: (tab: 'overview' | 'vision' | 'bubble' | 'funnel' | 'demographics' | 'table') => void;
+  activeTab: 'overview' | 'vision' | 'territory' | 'bubble' | 'funnel' | 'demographics' | 'table';
+  onTabChange: (tab: 'overview' | 'vision' | 'territory' | 'bubble' | 'funnel' | 'demographics' | 'table') => void;
 }
 
 export default function SzrtHeader({ data, activeTab, onTabChange }: SzrtHeaderProps) {
@@ -29,6 +29,7 @@ export default function SzrtHeader({ data, activeTab, onTabChange }: SzrtHeaderP
       label: `Fanmass AI Vision (${data.vision?.processedCount || 0}/${data.vision?.totalImages || 11312})`,
       icon: '🤖',
     },
+    { id: 'territory', label: 'Territory Map', icon: '🗺️' },
     { id: 'bubble', label: 'Match Explorer', icon: '🫧' },
     { id: 'funnel', label: 'Marketing Funnel', icon: '📈' },
     { id: 'demographics', label: 'Audience Demographics', icon: '👥' },

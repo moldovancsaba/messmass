@@ -7,20 +7,26 @@ import FanmassBrandsMatrix from './FanmassBrandsMatrix';
 import FanmassSportsDemographics from './FanmassSportsDemographics';
 import FanmassClubsMatrix from './FanmassClubsMatrix';
 import FanmassSentimentAtmosphere from './FanmassSentimentAtmosphere';
+import FanmassTerritoryMap from './FanmassTerritoryMap';
+import { MatchItem } from './types';
 import styles from './interactive-report.module.css';
 
 interface FanmassVisionSectionProps {
   vision: VisionProgressData;
   partnerSlug?: string;
   compact?: boolean;
+  matches?: MatchItem[];
   onExploreDashboard?: () => void;
+  onViewTerritoryMap?: () => void;
 }
 
 export default function FanmassVisionSection({
   vision: initialVision,
   partnerSlug = 'szrt',
   compact = false,
+  matches,
   onExploreDashboard,
+  onViewTerritoryMap,
 }: FanmassVisionSectionProps) {
   const [vision, setVision] = useState<VisionProgressData>(initialVision);
   const [selectedSport, setSelectedSport] = useState<string>('all');
@@ -255,7 +261,7 @@ export default function FanmassVisionSection({
 
       {/* View Full Dashboard Call-to-Action for Overview mode, or Full Suite of Visual Analytics Charts */}
       {compact ? (
-        <div style={{ display: 'flex', justifyContent: 'center', marginTop: '16px' }}>
+        <div style={{ display: 'flex', justifyContent: 'center', gap: '12px', marginTop: '16px', flexWrap: 'wrap' }}>
           <button
             onClick={onExploreDashboard}
             className={styles.viewFunnelBtn}
@@ -263,6 +269,24 @@ export default function FanmassVisionSection({
           >
             Explore Dedicated Visual Intelligence Dashboard (Brand Logos &amp; Cross-Sport Demographics) ➔
           </button>
+          {onViewTerritoryMap && (
+            <button
+              onClick={onViewTerritoryMap}
+              className={styles.resetBtn}
+              style={{
+                padding: '12px 24px',
+                fontSize: '13px',
+                borderRadius: '9999px',
+                cursor: 'pointer',
+                borderColor: '#3b82f6',
+                color: '#1d4ed8',
+                background: '#eff6ff',
+                fontWeight: 600,
+              }}
+            >
+              🗺️ Open Interactive Hungary Territory &amp; Venues Map ➔
+            </button>
+          )}
         </div>
       ) : (
         <>
@@ -296,7 +320,12 @@ export default function FanmassVisionSection({
             totalImages={vision.totalImages}
           />
 
-          {/* 5. Live Analyzed Stream (Curated Detections) */}
+          {/* 5. Geographic Activation & Territory Distribution Map (Hungary) */}
+          {matches && matches.length > 0 && (
+            <FanmassTerritoryMap matches={matches} vision={vision} />
+          )}
+
+          {/* 6. Live Analyzed Stream (Curated Detections) */}
           {filteredRecentImages && filteredRecentImages.length > 0 && (
             <div className={styles.recentStreamWrap}>
               <div className={styles.recentStreamHeader}>

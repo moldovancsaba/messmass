@@ -5,6 +5,7 @@ import { InteractiveReportData, MatchItem } from './types';
 import SzrtHeader from './SzrtHeader';
 import OverviewTab from './OverviewTab';
 import FanmassVisionSection from './FanmassVisionSection';
+import FanmassTerritoryMap from './FanmassTerritoryMap';
 import D3BubbleExplorer from './D3BubbleExplorer';
 import D3FunnelFlow from './D3FunnelFlow';
 import D3DemographicsChart from './D3DemographicsChart';
@@ -18,7 +19,7 @@ interface InteractiveReportDashboardProps {
 export default function InteractiveReportDashboard({ initialData }: InteractiveReportDashboardProps) {
   const [data, setData] = useState<InteractiveReportData>(initialData);
   const [activeTab, setActiveTab] = useState<
-    'overview' | 'vision' | 'bubble' | 'funnel' | 'demographics' | 'table'
+    'overview' | 'vision' | 'territory' | 'bubble' | 'funnel' | 'demographics' | 'table'
   >('overview');
   const [selectedPeriodId, setSelectedPeriodId] = useState<string | null>(null);
   const [selectedMatch, setSelectedMatch] = useState<MatchItem | null>(null);
@@ -70,7 +71,9 @@ export default function InteractiveReportDashboard({ initialData }: InteractiveR
               vision={data.vision}
               partnerSlug={data.partner.viewSlug || 'szrt'}
               compact={true}
+              matches={data.matches}
               onExploreDashboard={() => setActiveTab('vision')}
+              onViewTerritoryMap={() => setActiveTab('territory')}
             />
           )}
           <OverviewTab
@@ -88,6 +91,16 @@ export default function InteractiveReportDashboard({ initialData }: InteractiveR
         <FanmassVisionSection
           vision={data.vision}
           partnerSlug={data.partner.viewSlug || 'szrt'}
+          matches={data.matches}
+          onViewTerritoryMap={() => setActiveTab('territory')}
+        />
+      )}
+
+      {/* Tab: Geographic Activation & Territory Distribution Map */}
+      {activeTab === 'territory' && (
+        <FanmassTerritoryMap
+          matches={data.matches}
+          vision={data.vision}
         />
       )}
 
