@@ -15,15 +15,15 @@ interface BrandLogoProps {
 /**
  * BrandLogo
  * Displays the original, official brand logo from the unified Messmass Brand Asset Registry.
- * If no official logo has been uploaded yet, displays a clean typographic badge.
- * Never uses approximated or redrawn brand artwork.
+ * Enforces strict frame containment so ultra-wide (e.g. Macron, Pepsi) or tall SVGs
+ * never overflow outside their designated frame.
  */
 export default function BrandLogo({
   brand,
   logoUrl,
   darkLogoUrl,
   className,
-  size = 36,
+  size = 38,
   accentColor,
 }: BrandLogoProps) {
   const [imageError, setImageError] = useState(false);
@@ -36,14 +36,16 @@ export default function BrandLogo({
       <div
         className={className}
         style={{
-          display: 'inline-flex',
+          display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          height: `${size}px`,
-          minWidth: `${size * 1.2}px`,
-          padding: '2px 6px',
-          borderRadius: '6px',
-          background: 'transparent',
+          width: '100%',
+          height: '100%',
+          maxWidth: '100%',
+          maxHeight: '100%',
+          overflow: 'hidden',
+          boxSizing: 'border-box',
+          padding: '2px',
         }}
       >
         {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -52,11 +54,12 @@ export default function BrandLogo({
           alt={`${brand} official logo`}
           onError={() => setImageError(true)}
           style={{
-            maxHeight: `${size}px`,
-            maxWidth: `${Math.round(size * 2.5)}px`,
-            width: 'auto',
-            height: 'auto',
+            maxWidth: '100%',
+            maxHeight: '100%',
+            width: '100%',
+            height: '100%',
             objectFit: 'contain',
+            objectPosition: 'center',
             display: 'block',
           }}
           loading="lazy"
@@ -65,7 +68,7 @@ export default function BrandLogo({
     );
   }
 
-  // 2. Fallback: Clean, dignified typographic brand wordmark (no redrawn artwork)
+  // 2. Fallback: Clean, dignified typographic brand wordmark
   const initial = brand.trim().charAt(0).toUpperCase();
   const badgeColor = accentColor || '#1e293b';
 
@@ -73,22 +76,24 @@ export default function BrandLogo({
     <div
       className={className}
       style={{
-        display: 'inline-flex',
+        display: 'flex',
         alignItems: 'center',
-        gap: '6px',
-        padding: '3px 8px',
-        height: `${size}px`,
-        borderRadius: '6px',
-        background: '#f8fafc',
-        border: '1px solid #e2e8f0',
+        justifyContent: 'center',
+        gap: '4px',
+        width: '100%',
+        height: '100%',
+        maxWidth: '100%',
+        maxHeight: '100%',
+        overflow: 'hidden',
         boxSizing: 'border-box',
+        padding: '2px',
       }}
       title={`${brand} (Official logo pending upload in Settings)`}
     >
       <span
         style={{
-          width: `${size - 10}px`,
-          height: `${size - 10}px`,
+          width: '22px',
+          height: '22px',
           borderRadius: '4px',
           background: badgeColor,
           color: '#ffffff',
@@ -112,7 +117,7 @@ export default function BrandLogo({
           whiteSpace: 'nowrap',
           overflow: 'hidden',
           textOverflow: 'ellipsis',
-          maxWidth: '120px',
+          maxWidth: 'calc(100% - 28px)',
         }}
       >
         {brand}
