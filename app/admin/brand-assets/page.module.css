@@ -401,3 +401,96 @@
   opacity: 0.6;
   cursor: not-allowed;
 }
+
+.actionBtnSecondary {
+  background: #f1f5f9;
+  border: 1px solid #cbd5e1;
+  color: #334155;
+  padding: 6px 10px;
+  border-radius: var(--mm-radius-md);
+  font-size: var(--mm-font-size-xs);
+  font-weight: var(--mm-font-weight-medium);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  transition: all 0.15s ease;
+}
+
+.actionBtnSecondary:hover {
+  background: #e2e8f0;
+  color: #0f172a;
+}
+
+.actionBtnClub {
+  background: #fdf2f8;
+  border: 1px solid #fbcfe8;
+  color: #9d174d;
+  padding: 6px 10px;
+  border-radius: var(--mm-radius-md);
+  font-size: var(--mm-font-size-xs);
+  font-weight: var(--mm-font-weight-medium);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  transition: all 0.15s ease;
+}
+
+.actionBtnClub:hover {
+  background: #fce7f3;
+  border-color: #f472b6;
+}
+
+.batchToolbar {
+  position: fixed;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #0f172a;
+  color: #ffffff;
+  padding: 12px 24px;
+  border-radius: 9999px;
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3), 0 8px 10px -6px rgba(0, 0, 0, 0.3);
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  z-index: 999;
+}
+
+.batchBtn {
+  background: #3b82f6;
+  color: #ffffff;
+  border: none;
+  padding: 8px 18px;
+  border-radius: 9999px;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.batchBtn:hover {
+  background: #2563eb;
+}
+
+.batchDeselectBtn {
+  background: transparent;
+  color: #94a3b8;
+  border: none;
+  cursor: pointer;
+  font-size: 12px;
+}
+
+.batchDeselectBtn:hover {
+  color: #ffffff;
+}
+
+.searchBar {
+  padding: 8px 14px 8px 34px;
+  border-radius: var(--mm-radius-md);
+  border: 1px solid var(--mm-gray-300);
+  font-size: var(--mm-font-size-sm);
+  width: 280px;
+  outline: none;
+}
+

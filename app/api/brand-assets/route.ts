@@ -174,6 +174,187 @@ export async function POST(request: NextRequest) {
       }
     } else {
       const body = await request.json();
+
+      // ACTION 1: Merge duplicate brands into a canonical target brand
+      if (body.action === 'merge') {
+        const targetBrand = (body.targetBrand || '').trim();
+        const sourceBrands: string[] = Array.isArray(body.sourceBrands)
+          ? body.sourceBrands.map((s: string) => s.trim()).filter(Boolean)
+          : [];
+
+        if (!targetBrand || sourceBrands.length === 0) {
+          return NextResponse.json(
+            { success: false, error: 'targetBrand and at least one sourceBrand are required' },
+            { status: 400 }
+          );
+        }
+
+        const targetSlug = slugify(targetBrand);
+
+        // 1. Fetch or create target brand asset
+        let targetAsset = await db.collection('brand_assets').findOne({ canonicalSlug: targetSlug });
+        const existingAliases: string[] = targetAsset?.aliases || [targetBrand.toLowerCase()];
+
+        // 2. Add source brand names and their aliases to target's aliases
+        for (const src of sourceBrands) {
+          const sLower = src.toLowerCase();
+          if (!existingAliases.includes(sLower)) {
+            existingAliases.push(sLower);
+          }
+          // Save persistent alias mapping so Vision worker automatically remaps it
+          await db.collection('brand_canonical_mappings').replaceOne(
+            { alias: sLower },
+            { alias: sLower, canonical: targetBrand, updatedAt: new Date().toISOString() },
+            { upsert: true }
+          );
+        }
+
+        // Upsert target brand asset with combined aliases
+        await db.collection('brand_assets').updateOne(
+          { canonicalSlug: targetSlug },
+          {
+            $set: {
+              name: targetBrand,
+              canonicalSlug: targetSlug,
+              aliases: existingAliases,
+              updatedAt: new Date().toISOString(),
+            },
+            $setOnInsert: {
+              logoUrl: targetAsset?.logoUrl || '',
+              darkLogoUrl: targetAsset?.darkLogoUrl || '',
+              category: 'sponsor',
+              accentColor: '#1e3a8a',
+            },
+          },
+          { upsert: true }
+        );
+
+        // 3. Remove standalone brand_assets for merged source brands
+        const sourceSlugs = sourceBrands.map((s) => slugify(s));
+        await db.collection('brand_assets').deleteMany({
+          canonicalSlug: { $in: sourceSlugs.filter((s) => s !== targetSlug) },
+        });
+
+        // 4. Update image analyses in szrt_vision_analysis
+        for (const src of sourceBrands) {
+          if (src === targetBrand) continue;
+          await db.collection('szrt_vision_analysis').updateMany(
+            { brands: src },
+            { $addToSet: { brands: targetBrand } }
+          );
+          await db.collection('szrt_vision_analysis').updateMany(
+            { brands: src },
+            { $pull: { brands: src } }
+          );
+        }
+
+        // 5. Update szrt_vision_progress aggregates
+        const progressDoc = await db.collection('szrt_vision_progress').findOne({ _id: 'szrt_progress' as any });
+        if (progressDoc?.aggregates?.topBrands) {
+          const brandMap = new Map<string, number>();
+          for (const b of progressDoc.aggregates.topBrands) {
+            const bName = sourceBrands.includes(b.brand) ? targetBrand : b.brand;
+            brandMap.set(bName, (brandMap.get(bName) || 0) + (b.count || 0));
+          }
+          const updatedTopBrands = Array.from(brandMap.entries())
+            .map(([brand, count]) => ({ brand, count }))
+            .sort((a, b) => b.count - a.count);
+
+          await db.collection('szrt_vision_progress').updateOne(
+            { _id: 'szrt_progress' as any },
+            {
+              $set: {
+                'aggregates.topBrands': updatedTopBrands,
+                lastUpdated: new Date().toISOString(),
+              },
+            }
+          );
+        }
+
+        return NextResponse.json({
+          success: true,
+          message: `Successfully merged ${sourceBrands.length} brand(s) into ${targetBrand}. All past sightings and future vision detections are unified.`,
+          targetBrand,
+          aliases: existingAliases,
+        });
+      }
+
+      // ACTION 2: Move a brand entry to Clubs (Sports Club / Jersey Reclassification)
+      if (body.action === 'move-to-club') {
+        const brandName = (body.brandName || '').trim();
+        const clubName = (body.clubName || brandName).trim();
+
+        if (!brandName) {
+          return NextResponse.json({ success: false, error: 'brandName is required' }, { status: 400 });
+        }
+
+        // 1. Record in reclassified_clubs so vision worker diverts future sightings to clubs
+        await db.collection('reclassified_clubs').replaceOne(
+          { name: brandName.toLowerCase() },
+          {
+            name: brandName.toLowerCase(),
+            clubName,
+            originalBrand: brandName,
+            reclassifiedAt: new Date().toISOString(),
+          },
+          { upsert: true }
+        );
+
+        // 2. Reclassify in szrt_vision_analysis: pull from brands and add to clubs
+        const updateRes = await db.collection('szrt_vision_analysis').updateMany(
+          { brands: brandName },
+          {
+            $addToSet: { clubs: clubName },
+            $pull: { brands: brandName },
+          }
+        );
+
+        // 3. Update szrt_vision_progress aggregates
+        const progressDoc = await db.collection('szrt_vision_progress').findOne({ _id: 'szrt_progress' as any });
+        if (progressDoc?.aggregates) {
+          let movedCount = 0;
+          const updatedBrands = (progressDoc.aggregates.topBrands || []).filter((b: any) => {
+            if (b.brand === brandName) {
+              movedCount = b.count;
+              return false;
+            }
+            return true;
+          });
+
+          const clubsMap = new Map<string, number>();
+          for (const c of progressDoc.aggregates.topClubs || []) {
+            clubsMap.set(c.club, c.count);
+          }
+          clubsMap.set(clubName, (clubsMap.get(clubName) || 0) + (movedCount || 1));
+
+          const updatedClubs = Array.from(clubsMap.entries())
+            .map(([club, count]) => ({ club, count }))
+            .sort((a, b) => b.count - a.count);
+
+          await db.collection('szrt_vision_progress').updateOne(
+            { _id: 'szrt_progress' as any },
+            {
+              $set: {
+                'aggregates.topBrands': updatedBrands,
+                'aggregates.topClubs': updatedClubs,
+                lastUpdated: new Date().toISOString(),
+              },
+            }
+          );
+        }
+
+        // 4. Remove from brand_assets if present
+        await db.collection('brand_assets').deleteOne({ canonicalSlug: slugify(brandName) });
+
+        return NextResponse.json({
+          success: true,
+          message: `Successfully reclassified '${brandName}' as a Sports Club ('${clubName}'). Sightings moved from brands to clubs.`,
+          brandName,
+          clubName,
+          modifiedImages: updateRes.modifiedCount,
+        });
+      }
+
       name = body.name || '';
       logoUrl = body.logoUrl || '';
       darkLogoUrl = body.darkLogoUrl || '';
