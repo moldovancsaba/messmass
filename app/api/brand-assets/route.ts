@@ -70,9 +70,6 @@ export async function GET() {
           aliases: [brand.toLowerCase()],
           logoUrl: '',
           darkLogoUrl: '',
-          category: brand.toLowerCase().includes('tippmix') || brand.toLowerCase().includes('szerencsej')
-            ? 'sponsor'
-            : 'apparel',
           isDiscovered: true,
         });
       }
@@ -104,7 +101,7 @@ export async function POST(request: NextRequest) {
     let name = '';
     let logoUrl = '';
     let darkLogoUrl = '';
-    let category = 'sponsor';
+    let category = '';
     let accentColor = '';
     let aliases: string[] = [];
 
@@ -113,7 +110,7 @@ export async function POST(request: NextRequest) {
       name = (formData.get('name') as string) || '';
       logoUrl = (formData.get('logoUrl') as string) || '';
       darkLogoUrl = (formData.get('darkLogoUrl') as string) || '';
-      category = (formData.get('category') as string) || 'sponsor';
+      category = (formData.get('category') as string) || '';
       accentColor = (formData.get('accentColor') as string) || '';
       const rawAliases = (formData.get('aliases') as string) || '';
       aliases = rawAliases ? rawAliases.split(',').map((s) => s.trim().toLowerCase()) : [];

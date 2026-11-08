@@ -17,7 +17,7 @@ interface BrandAsset {
   aliases: string[];
   logoUrl: string;
   darkLogoUrl?: string;
-  category: string;
+  category?: string;
   accentColor?: string;
   updatedAt?: string;
   isDiscovered?: boolean;
@@ -63,7 +63,6 @@ export default function BrandAssetsAdminPage() {
       aliases: brand.aliases || [],
       logoUrl: brand.logoUrl || '',
       darkLogoUrl: brand.darkLogoUrl || '',
-      category: brand.category || 'sponsor',
       accentColor: brand.accentColor || '#1e3a8a',
     });
     setUploadFile(null);
@@ -91,7 +90,6 @@ export default function BrandAssetsAdminPage() {
       setSaving(true);
       const formData = new FormData();
       formData.append('name', editingBrand.name);
-      formData.append('category', editingBrand.category || 'sponsor');
       formData.append('accentColor', editingBrand.accentColor || '');
       formData.append('aliases', (editingBrand.aliases || []).join(','));
 
@@ -155,23 +153,6 @@ export default function BrandAssetsAdminPage() {
     }
   };
 
-  const getCategoryClass = (cat?: string) => {
-    switch (cat) {
-      case 'sponsor':
-        return styles.categorySponsor;
-      case 'partner':
-        return styles.categoryPartner;
-      case 'apparel':
-        return styles.categoryApparel;
-      case 'venue':
-        return styles.categoryVenue;
-      case 'tech':
-        return styles.categoryTech;
-      default:
-        return styles.categorySponsor;
-    }
-  };
-
   return (
     <div className={styles.container}>
       {/* Header */}
@@ -189,7 +170,7 @@ export default function BrandAssetsAdminPage() {
             🔄 Refresh
           </button>
           <button
-            onClick={() => openEditModal({ name: '', category: 'sponsor' })}
+            onClick={() => openEditModal({ name: '' })}
             className={styles.primaryBtn}
           >
             ➕ Register New Brand
@@ -220,8 +201,8 @@ export default function BrandAssetsAdminPage() {
                   <h3 className={styles.brandName}>{asset.name}</h3>
                   <span className={styles.brandSlug}>/{asset.canonicalSlug}</span>
                 </div>
-                <span className={`${styles.categoryTag} ${getCategoryClass(asset.category)}`}>
-                  {asset.category}
+                <span className={`${styles.categoryTag} ${styles.categoryPartner}`}>
+                  Official Asset
                 </span>
               </div>
 
@@ -285,8 +266,8 @@ export default function BrandAssetsAdminPage() {
                     <h3 className={styles.brandName}>{item.name}</h3>
                     <span className={styles.brandSlug}>Discovered in reports</span>
                   </div>
-                  <span className={`${styles.categoryTag} ${getCategoryClass(item.category)}`}>
-                    {item.category}
+                  <span className={`${styles.categoryTag} ${styles.categoryApparel}`}>
+                    Pending Logo
                   </span>
                 </div>
 
@@ -337,21 +318,6 @@ export default function BrandAssetsAdminPage() {
                   placeholder="e.g. Tippmix, Szerencsejáték Zrt, Nike, Puma"
                   className={styles.input}
                 />
-              </div>
-
-              <div className={styles.formGroup}>
-                <label className={styles.label}>Sponsorship Category</label>
-                <select
-                  value={editingBrand.category || 'sponsor'}
-                  onChange={(e) => setEditingBrand({ ...editingBrand, category: e.target.value })}
-                  className={styles.select}
-                >
-                  <option value="sponsor">Title Sponsor / Main Partner</option>
-                  <option value="partner">Official Partner</option>
-                  <option value="apparel">Kit, Jersey & Apparel</option>
-                  <option value="venue">Venue & Arena Partner</option>
-                  <option value="tech">Broadcast & Technology</option>
-                </select>
               </div>
 
               {/* Upload Official Logo File */}
