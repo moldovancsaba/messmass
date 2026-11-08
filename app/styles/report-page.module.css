@@ -202,6 +202,53 @@
   font-weight: var(--mm-font-weight-normal);
 }
 
+/* Interactive Report Banner */
+.interactiveReportBanner {
+  max-width: var(--mm-content-max-width);
+  margin: var(--mm-space-4) auto 0;
+  padding: var(--mm-space-3) var(--mm-space-5);
+  background: var(--mm-color-secondary-50);
+  border: 1px solid var(--mm-color-secondary-400);
+  border-radius: var(--mm-radius-lg);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: 0 2px 8px rgba(79, 122, 40, 0.08);
+}
+
+.interactiveReportBannerContent {
+  display: flex;
+  align-items: center;
+  gap: var(--mm-space-3);
+}
+
+.interactiveReportIcon {
+  font-size: var(--mm-font-size-xl);
+}
+
+.interactiveReportBannerTitle {
+  color: var(--mm-color-secondary-800);
+  font-size: var(--mm-font-size-sm);
+  font-weight: var(--mm-font-weight-bold);
+}
+
+.interactiveReportBannerText {
+  margin: 0;
+  font-size: var(--mm-font-size-xs);
+  color: var(--mm-gray-700);
+}
+
+.interactiveReportBannerButton {
+  background: var(--mm-color-secondary-700);
+  color: var(--mm-white);
+  padding: var(--mm-space-2) var(--mm-space-4);
+  border-radius: var(--mm-radius-md);
+  font-size: var(--mm-font-size-xs);
+  font-weight: var(--mm-font-weight-bold);
+  text-decoration: none;
+  white-space: nowrap;
+}
+
 /* Responsive Adjustments */
 @media (max-width: 768px) {
   .page {

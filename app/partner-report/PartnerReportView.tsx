@@ -5,6 +5,7 @@
  * WHAT: Renders partner aggregated report given a slug or partner id.
  */
 import React, { useMemo } from 'react';
+import Link from 'next/link';
 import ReportHero from '@/app/report/[slug]/ReportHero';
 import ReportContent from '@/app/report/[slug]/ReportContent';
 import PartnerEventsList from '@/app/partner-report/[slug]/PartnerEventsList';
@@ -13,6 +14,7 @@ import { useReportStyle } from '@/hooks/useReportStyle';
 import { useReportExport } from '@/hooks/useReportExport';
 import { ReportCalculator } from '@/lib/report-calculator';
 import { PublicReportShell, PublicReportState } from '@/components/reports/PublicReportShell';
+import styles from '@/app/styles/report-page.module.css';
 
 export interface PartnerReportViewProps {
   slug: string;
@@ -95,8 +97,33 @@ export function PartnerReportView({ slug, variant }: PartnerReportViewProps) {
     eventDate: new Date().toISOString(),
     _id: partner._id,
   };
+  const isSzrt =
+    partner?.name?.toLowerCase().includes('szerencsejáték') ||
+    slug === 'ec9bb989-cb0f-4d5a-b22b-c3a1829cd3fd';
+
   return (
     <PublicReportShell>
+        {isSzrt && (
+          <div className={styles.interactiveReportBanner}>
+            <div className={styles.interactiveReportBannerContent}>
+              <span className={styles.interactiveReportIcon}>🍀</span>
+              <div>
+                <strong className={styles.interactiveReportBannerTitle}>
+                  Interactive Multi-View Analytics Dashboard Available
+                </strong>
+                <p className={styles.interactiveReportBannerText}>
+                  Explore 69 activations, D3 timeline scrubber, bubble explorer, and Tippmix conversion funnel.
+                </p>
+              </div>
+            </div>
+            <Link
+              href="/interactive-report/szrt"
+              className={styles.interactiveReportBannerButton}
+            >
+              Open Interactive Report →
+            </Link>
+          </div>
+        )}
         <div id="report-hero">
           <ReportHero
             project={partnerAsProject}
