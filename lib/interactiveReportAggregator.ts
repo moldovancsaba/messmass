@@ -406,7 +406,24 @@ export async function getInteractiveReportData(partnerSlug: string): Promise<Int
   // 9. Fanmass Vision Analysis Live Stream
   let vision = null;
   try {
-    const visionDoc = await db.collection('szrt_vision_progress').findOne({ _id: 'szrt_progress' as any });
+    let visionDoc = await db
+      .collection('szrt_vision_progress')
+      .findOne({ _id: 'szrt_progress' as any });
+
+    if (!visionDoc) {
+      visionDoc = await client
+        .db('messmass')
+        .collection('szrt_vision_progress')
+        .findOne({ _id: 'szrt_progress' as any });
+    }
+
+    if (!visionDoc) {
+      visionDoc = await client
+        .db('test')
+        .collection('szrt_vision_progress')
+        .findOne({ _id: 'szrt_progress' as any });
+    }
+
     if (visionDoc) {
       vision = {
         totalImages: visionDoc.totalImages || 11312,
