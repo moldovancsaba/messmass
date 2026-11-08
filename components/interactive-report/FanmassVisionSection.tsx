@@ -322,7 +322,30 @@ export default function FanmassVisionSection({
 
           {/* 5. Geographic Activation & Territory Distribution Map (Hungary) */}
           {matches && matches.length > 0 && (
-            <FanmassTerritoryMap matches={matches} vision={vision} />
+            <div style={{ position: 'relative' }}>
+              <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '8px' }}>
+                <a
+                  href={`/interactive-report/${partnerSlug}/map`}
+                  className={styles.resetBtn}
+                  style={{
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: '6px',
+                    padding: '8px 16px',
+                    borderRadius: '9999px',
+                    background: '#0f2c4a',
+                    color: '#ffffff',
+                    fontSize: '12px',
+                    fontWeight: 700,
+                    textDecoration: 'none',
+                    boxShadow: '0 4px 10px rgba(15, 44, 74, 0.2)',
+                  }}
+                >
+                  🗺️ Launch Fullscreen Dedicated Territory Analytics Page ↗
+                </a>
+              </div>
+              <FanmassTerritoryMap matches={matches} vision={vision} />
+            </div>
           )}
 
           {/* 6. Live Analyzed Stream (Curated Detections) */}

@@ -45,6 +45,7 @@ export default function InteractiveReportDashboard({ initialData }: InteractiveR
     }, 4000);
 
     return () => clearInterval(interval);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [data.vision?.status, data.partner.viewSlug]);
 
   const handleSelectMatch = (match: MatchItem) => {

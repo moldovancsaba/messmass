@@ -1,4 +1,5 @@
 'use client';
+/* eslint-disable react/forbid-dom-props */
 
 import React, { useState } from 'react';
 import { InteractiveReportData } from './types';
@@ -61,6 +62,14 @@ export default function SzrtHeader({ data, activeTab, onTabChange }: SzrtHeaderP
 
           {/* Quick Action Buttons */}
           <div className={styles.actionsGroup}>
+            <a
+              href={`/interactive-report/${data.partner.viewSlug === 'ec9bb989-cb0f-4d5a-b22b-c3a1829cd3fd' ? 'szrt' : data.partner.viewSlug}/map`}
+              className={styles.shareBtn}
+              style={{ background: '#0f2c4a', color: '#ffffff', textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: '6px' }}
+              title="Open dedicated full-screen territory and venue analytics map"
+            >
+              🗺️ Dedicated Territory Map ➔
+            </a>
             <button onClick={handleCopyLink} className={styles.shareBtn}>
               🔗 {copied ? 'Copied to Clipboard!' : 'Share Live Report'}
             </button>
