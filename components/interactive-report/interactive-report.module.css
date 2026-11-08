@@ -1365,6 +1365,24 @@
   border-radius: var(--mm-radius-full);
 }
 
+.brandSettingsLink {
+  margin-left: auto;
+  font-size: 11px;
+  font-weight: var(--mm-font-weight-semibold);
+  color: #1e3a8a;
+  background: #eff6ff;
+  border: 1px solid #bfdbfe;
+  padding: 3px 10px;
+  border-radius: var(--mm-radius-full);
+  text-decoration: none;
+  transition: all 0.15s ease;
+}
+
+.brandSettingsLink:hover {
+  background: #dbeafe;
+  color: #1e40af;
+}
+
 /* Brands Matrix */
 .brandsMatrixGrid {
   display: grid;

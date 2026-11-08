@@ -103,6 +103,13 @@ export const adminNavSections: AdminNavSection[] = [
         description: 'Review and manage partner-to-project associations across the portfolio.',
         accentColor: navAccent.primaryStrong,
       },
+      {
+        label: 'Brand Logos',
+        path: '/admin/brand-assets',
+        icon: 'verified',
+        description: 'Upload and maintain unified official brand logos and sponsor visual assets.',
+        accentColor: navAccent.success,
+      },
     ],
   },
   {

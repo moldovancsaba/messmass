@@ -83,7 +83,14 @@ export interface VisionProgressData {
       adults: number;
       seniors: number;
     };
-    topBrands: Array<{ brand: string; count: number }>;
+    topBrands: Array<{
+      brand: string;
+      count: number;
+      logoUrl?: string;
+      darkLogoUrl?: string;
+      category?: string;
+      accentColor?: string;
+    }>;
     topClubs: Array<{ club: string; count: number }>;
     topEmotions: Array<{ emotion: string; count: number }>;
     sportsBreakdown: Record<

@@ -425,6 +425,33 @@ export async function getInteractiveReportData(partnerSlug: string): Promise<Int
     }
 
     if (visionDoc) {
+      // Fetch official brand assets for unified logo resolution
+      const brandAssets = await db.collection('brand_assets').find({}).toArray().catch(() => []);
+      const brandMap = new Map<string, any>();
+      for (const asset of brandAssets) {
+        if (asset.canonicalSlug) brandMap.set(asset.canonicalSlug, asset);
+        if (asset.name) brandMap.set(asset.name.toLowerCase().trim(), asset);
+        if (asset.aliases && Array.isArray(asset.aliases)) {
+          for (const a of asset.aliases) {
+            brandMap.set(String(a).toLowerCase().trim(), asset);
+          }
+        }
+      }
+
+      const enrichedBrands = (visionDoc.aggregates?.topBrands || []).map((b: any) => {
+        const norm = (b.brand || '').toLowerCase().trim();
+        const normSlug = norm.replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
+        const match = brandMap.get(norm) || brandMap.get(normSlug);
+        return {
+          brand: b.brand,
+          count: b.count,
+          logoUrl: match?.logoUrl || undefined,
+          darkLogoUrl: match?.darkLogoUrl || undefined,
+          category: match?.category || undefined,
+          accentColor: match?.accentColor || undefined,
+        };
+      });
+
       vision = {
         totalImages: visionDoc.totalImages || 11312,
         processedCount: visionDoc.processedCount || 0,
@@ -433,14 +460,14 @@ export async function getInteractiveReportData(partnerSlug: string): Promise<Int
         currentSport: visionDoc.currentSport || '',
         currentFile: visionDoc.currentFile || '',
         lastUpdated: visionDoc.lastUpdated || '',
-        aggregates: visionDoc.aggregates || {
-          totalPeople: 0,
-          genders: { male: 0, female: 0, malePct: 50, femalePct: 50 },
-          ageGroups: { children: 0, teens: 0, adults: 0, seniors: 0 },
-          topBrands: [],
-          topClubs: [],
-          topEmotions: [],
-          sportsBreakdown: {},
+        aggregates: {
+          totalPeople: visionDoc.aggregates?.totalPeople || 0,
+          genders: visionDoc.aggregates?.genders || { male: 0, female: 0, malePct: 50, femalePct: 50 },
+          ageGroups: visionDoc.aggregates?.ageGroups || { children: 0, teens: 0, adults: 0, seniors: 0 },
+          topBrands: enrichedBrands,
+          topClubs: visionDoc.aggregates?.topClubs || [],
+          topEmotions: visionDoc.aggregates?.topEmotions || [],
+          sportsBreakdown: visionDoc.aggregates?.sportsBreakdown || {},
         },
         recentImages: visionDoc.recentImages || [],
       };

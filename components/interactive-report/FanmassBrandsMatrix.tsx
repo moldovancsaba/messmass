@@ -8,6 +8,10 @@ import styles from './interactive-report.module.css';
 interface BrandStat {
   brand: string;
   count: number;
+  logoUrl?: string;
+  darkLogoUrl?: string;
+  category?: string;
+  accentColor?: string;
 }
 
 interface FanmassBrandsMatrixProps {
@@ -66,6 +70,14 @@ export default function FanmassBrandsMatrix({
             <span className={styles.cardCountPill}>
               {brands.length} Distinct Brands Detected
             </span>
+            <a
+              href="/admin/brand-assets"
+              target="_blank"
+              rel="noopener noreferrer"
+              className={styles.brandSettingsLink}
+            >
+              ⚙️ Manage Original Brand Logos in Settings ➔
+            </a>
           </div>
           <h3 className={styles.cardTitle}>
             🏷️ Brand Exposure & Sponsor Recognition Matrix
@@ -119,7 +131,13 @@ export default function FanmassBrandsMatrix({
             <div key={item.brand} className={styles.brandMatrixCard}>
               <div className={styles.brandCardTop}>
                 <div className={styles.brandLogoWrap}>
-                  <BrandLogo brand={item.brand} size={38} />
+                  <BrandLogo
+                    brand={item.brand}
+                    logoUrl={item.logoUrl}
+                    darkLogoUrl={item.darkLogoUrl}
+                    accentColor={item.accentColor}
+                    size={38}
+                  />
                 </div>
                 <div className={styles.brandInfo}>
                   <div className={styles.brandRankRow}>
