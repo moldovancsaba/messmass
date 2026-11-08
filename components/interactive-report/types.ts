@@ -99,7 +99,18 @@ export interface VisionProgressData {
       category?: string;
       accentColor?: string;
     }>;
-    topClubs: Array<{ club: string; count: number }>;
+    topClubs: Array<{
+      club: string;
+      count: number;
+      logoUrl?: string;
+      partnerId?: string;
+      partnerSlug?: string;
+      partnerName?: string;
+      sport?: string;
+      homeVenue?: string;
+      venueCapacity?: number;
+      website?: string;
+    }>;
     topVenues?: Array<{ venue: string; count: number }>;
     topEmotions: Array<{ emotion: string; count: number }>;
     sportsBreakdown: Record<

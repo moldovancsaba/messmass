@@ -491,6 +491,109 @@ export async function getInteractiveReportData(partnerSlug: string): Promise<Int
         return true;
       });
 
+      // Match clubs to our authoritative partner database to reuse official logos and link selfies
+      const allPartners = await db.collection('partners').find({}).toArray().catch(() => []);
+      function matchClubToPartner(club: string, partners: any[]) {
+        const low = club.toLowerCase().trim();
+        if (!low || low === 'n/a' || low === 'none') return null;
+
+        if (low.includes('dvtk')) {
+          return partners.find((p) => p.name && p.name.toLowerCase().includes('dvtk') && (p.logoUrl || p.logo)) ||
+                 partners.find((p) => p.name && p.name.toLowerCase().includes('dvtk'));
+        }
+        if (low.includes('veszprém') || low.includes('veszprem')) {
+          return partners.find((p) => p.name && (p.name.toLowerCase().includes('veszprém') || p.name.toLowerCase().includes('veszprem')));
+        }
+        if (low.includes('fehérvár fc') || low.includes('fehervar fc') || low === 'fehérvár' || low.includes('videoton')) {
+          return partners.find((p) => p.name && (p.name.toLowerCase().includes('videoton') || p.name.toLowerCase().includes('fehérvár fc')));
+        }
+        if (low.includes('hydro fehérvár') || low.includes('fehérvár av19') || low.includes('av19')) {
+          return (
+            partners.find((p) => p.name && p.name.toLowerCase().includes('av19')) ||
+            partners.find((p) => p.name && p.name.toLowerCase().includes('alba fehérvár'))
+          );
+        }
+        if (low.includes('sopron')) {
+          return (
+            partners.find((p) => p.name && p.name.toLowerCase().includes('soproni kc')) ||
+            partners.find((p) => p.name && p.name.toLowerCase().includes('sopron'))
+          );
+        }
+        if (low.includes('falco')) {
+          return partners.find((p) => p.name && p.name.toLowerCase().includes('falco'));
+        }
+        if (low.includes('körmend') || low.includes('kormend')) {
+          return partners.find((p) => p.name && (p.name.toLowerCase().includes('körmend') || p.name.toLowerCase().includes('kormend')));
+        }
+        if (low.includes('szolnok')) {
+          return partners.find((p) => p.name && p.name.toLowerCase().includes('szolnok'));
+        }
+        if (low.includes('kaposvár') || low.includes('kaposvar')) {
+          return partners.find((p) => p.name && (p.name.toLowerCase().includes('kaposvár') || p.name.toLowerCase().includes('kaposvari')));
+        }
+        if (low.includes('ose') || low.includes('oroszlány')) {
+          return partners.find((p) => p.name && p.name.toLowerCase().includes('ose lions'));
+        }
+        if (low.includes('szeged') || low.includes('pick')) {
+          return partners.find((p) => p.name && (p.name.toLowerCase().includes('pick szeged') || p.name.toLowerCase().includes('szeged')));
+        }
+        if (low.includes('ferencváros') || low.includes('fradi') || low.includes('ftc')) {
+          return partners.find((p) => p.name && (p.name.toLowerCase().includes('ferencváros') || p.name.toLowerCase().includes('ftc')));
+        }
+        if (low.includes('újpest') || low.includes('ujpest') || low.includes('ute')) {
+          return partners.find((p) => p.name && (p.name.toLowerCase().includes('újpest') || p.name.toLowerCase().includes('ujpest')));
+        }
+        if (low.includes('győr') || low.includes('gyor') || low.includes('eto')) {
+          return partners.find((p) => p.name && (p.name.toLowerCase().includes('eto') || p.name.toLowerCase().includes('győr')));
+        }
+        if (low.includes('haladás') || low.includes('haladas')) {
+          return partners.find((p) => p.name && (p.name.toLowerCase().includes('haladás') || p.name.toLowerCase().includes('haladas')));
+        }
+        if (low.includes('deac')) {
+          return partners.find((p) => p.name && p.name.toLowerCase().includes('deac'));
+        }
+        if (low.includes('atomerőmű') || low.includes('ase')) {
+          return partners.find((p) => p.name && p.name.toLowerCase().includes('atomerőmű'));
+        }
+        if (low.includes('paris') || low.includes('psg')) {
+          return partners.find((p) => p.name && p.name.toLowerCase().includes('paris saint-germain'));
+        }
+
+        const tokens = low.replace(/[^a-záéíóöőúüű0-9\s]/g, '').split(/\s+/).filter((t) => t.length > 4);
+        if (tokens.length >= 2) {
+          for (const p of partners) {
+            if (!p.name) continue;
+            const pLow = p.name.toLowerCase();
+            if (tokens.every((t) => pLow.includes(t))) {
+              return p;
+            }
+          }
+        }
+        return null;
+      }
+
+      const enrichedClubs = cleanClubs.map((c: any) => {
+        const matched = matchClubToPartner(c.club, allPartners);
+        const sport =
+          matched?.sportsDb?.strSport ||
+          (matched?.categorizedHashtags?.sport?.[0]
+            ? matched.categorizedHashtags.sport[0].charAt(0).toUpperCase() + matched.categorizedHashtags.sport[0].slice(1)
+            : undefined);
+
+        return {
+          club: c.club,
+          count: c.count,
+          logoUrl: matched?.logoUrl || matched?.logo || matched?.sportsDb?.strTeamBadge || matched?.sportsDb?.badge || undefined,
+          partnerId: matched?._id ? String(matched._id) : undefined,
+          partnerSlug: matched?.viewSlug || undefined,
+          partnerName: matched?.name || undefined,
+          sport,
+          homeVenue: matched?.sportsDb?.strStadium || undefined,
+          venueCapacity: matched?.sportsDb?.intStadiumCapacity || matched?.sportsDb?.venueCapacity || undefined,
+          website: matched?.sportsDb?.strWebsite || matched?.sportsDb?.website || undefined,
+        };
+      });
+
       vision = {
         totalImages: visionDoc.totalImages || 11312,
         processedCount: visionDoc.processedCount || 0,
@@ -504,7 +607,7 @@ export async function getInteractiveReportData(partnerSlug: string): Promise<Int
           genders: visionDoc.aggregates?.genders || { male: 0, female: 0, malePct: 50, femalePct: 50 },
           ageGroups: visionDoc.aggregates?.ageGroups || { children: 0, teens: 0, adults: 0, seniors: 0 },
           topBrands: enrichedBrands,
-          topClubs: cleanClubs,
+          topClubs: enrichedClubs,
           topVenues: visionDoc.aggregates?.topVenues || [],
           topEmotions: visionDoc.aggregates?.topEmotions || [],
           sportsBreakdown: visionDoc.aggregates?.sportsBreakdown || {},

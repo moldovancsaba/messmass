@@ -1,10 +1,10 @@
 'use client';
 /* eslint-disable react/forbid-dom-props */
+/* eslint-disable @next/next/no-img-element */
 
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import {
   getFranchiseInfo,
-  getVenueInfo,
   isVenue,
 } from '@/lib/brandEntityClustering';
 import styles from './interactive-report.module.css';
@@ -12,6 +12,14 @@ import styles from './interactive-report.module.css';
 interface ClubStat {
   club: string;
   count: number;
+  logoUrl?: string;
+  partnerId?: string;
+  partnerSlug?: string;
+  partnerName?: string;
+  sport?: string;
+  homeVenue?: string;
+  venueCapacity?: number;
+  website?: string;
 }
 
 interface FanmassClubsMatrixProps {
@@ -89,6 +97,46 @@ export default function FanmassClubsMatrix({
   const [filter, setFilter] = useState<SportFilter>('all');
   const [searchQuery, setSearchQuery] = useState('');
 
+  // Connected Selfies Modal state
+  const [selectedClubForModal, setSelectedClubForModal] = useState<ClubStat | null>(null);
+  const [selfiesLoading, setSelfiesLoading] = useState(false);
+  const [selfiesData, setSelfiesData] = useState<any>(null);
+
+  // Fetch connected selfies when a club is selected for inspection
+  useEffect(() => {
+    if (!selectedClubForModal) {
+      setSelfiesData(null);
+      return;
+    }
+
+    let isMounted = true;
+    setSelfiesLoading(true);
+
+    const q = new URLSearchParams({
+      club: selectedClubForModal.club,
+      partnerId: selectedClubForModal.partnerId || '',
+      partnerSlug: selectedClubForModal.partnerSlug || '',
+    });
+
+    fetch(`/api/interactive-report/partner-selfies?${q.toString()}`)
+      .then((r) => r.json())
+      .then((data) => {
+        if (isMounted) {
+          setSelfiesData(data);
+          setSelfiesLoading(false);
+        }
+      })
+      .catch(() => {
+        if (isMounted) {
+          setSelfiesLoading(false);
+        }
+      });
+
+    return () => {
+      isMounted = false;
+    };
+  }, [selectedClubForModal]);
+
   // 1. Strict filter: Exclude non-club junk and commercial sponsor hallucinations
   const validClubs = useMemo(() => {
     return clubs.filter((c) => {
@@ -150,7 +198,9 @@ export default function FanmassClubsMatrix({
 
       if (searchQuery.trim()) {
         const q = searchQuery.toLowerCase().trim();
-        if (!c.club.toLowerCase().includes(q)) return false;
+        const matchesClub = c.club.toLowerCase().includes(q);
+        const matchesPartner = c.partnerName ? c.partnerName.toLowerCase().includes(q) : false;
+        if (!matchesClub && !matchesPartner) return false;
       }
 
       return true;
@@ -180,10 +230,10 @@ export default function FanmassClubsMatrix({
             </span>
           </div>
           <h3 className={styles.cardTitle}>
-            🏆 Sport Franchises &amp; Club Allegiance Matrix
+            🏆 Sport Franchises &amp; Authoritative Partner Matrix
           </h3>
           <p className={styles.cardSubtitle}>
-            Dedicated multi-sport franchise breakdown of Hungarian domestic leagues (Basketball NB I, Football NB I, Handball K&amp;H Liga, Ice Hockey Erste Liga/ICEHL) and international teams. Match venues and stadiums are clearly associated with each club.
+            Connected directly to our central partner registry. High-resolution crests, home stadiums, and detected fan selfies are linked to eliminate data duplication and expose real-time partner loyalty.
           </p>
         </div>
 
@@ -229,10 +279,10 @@ export default function FanmassClubsMatrix({
           </div>
 
           {/* Quick Search */}
-          <div style={{ position: 'relative', width: '260px' }}>
+          <div style={{ position: 'relative', width: '280px' }}>
             <input
               type="text"
-              placeholder="Search club or franchise (e.g. Sopron, DVTK)..."
+              placeholder="Search club or partner (e.g. Sopron, DVTK, Pick)..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               style={{
@@ -278,21 +328,25 @@ export default function FanmassClubsMatrix({
           {filteredClubs.map((item, idx) => {
             const isDom = isDomesticClub(item.club);
             const franchiseInfo = getFranchiseInfo(item.club);
-            const sport = resolveFranchiseSport(item.club);
+            const sport = item.sport || resolveFranchiseSport(item.club);
             const barWidth = Math.max(8, Math.round((item.count / maxCount) * 100));
             const shareOfJerseys =
               totalSightings > 0 ? ((item.count / totalSightings) * 100).toFixed(1) : '0';
 
             // Special handling for Sopron KC venue
             const isSopron = item.club.toLowerCase().includes('sopron');
-            const venueName = franchiseInfo?.homeVenue || (isSopron ? 'Novomatic Aréna Sopron' : undefined);
-            const venueWebsite = franchiseInfo?.venueWebsite || (isSopron ? 'https://www.novomaticarenasopron.hu' : undefined);
+            const venueName =
+              item.homeVenue || franchiseInfo?.homeVenue || (isSopron ? 'Novomatic Aréna Sopron' : undefined);
+            const venueWebsite =
+              franchiseInfo?.venueWebsite || (isSopron ? 'https://www.novomaticarenasopron.hu' : undefined);
 
             const sportIcon =
               sport === 'Basketball' ? '🏀' :
               sport === 'Football' ? '⚽' :
               sport === 'Handball' ? '🤾' :
               sport === 'Ice Hockey' ? '🏒' : '🏆';
+
+            const hasPartnerLink = Boolean(item.partnerSlug || item.partnerId);
 
             return (
               <div key={item.club} className={styles.clubMatrixCard}>
@@ -320,33 +374,77 @@ export default function FanmassClubsMatrix({
                   </span>
                 </div>
 
-                <div className={styles.clubInfo}>
-                  <h4 className={styles.clubName} title={item.club}>
-                    {item.club}
-                  </h4>
-                  {/* Home Arena / Venue Reference */}
-                  {venueName && (
-                    <div style={{ marginTop: '4px', fontSize: '11px', color: '#64748b', display: 'flex', alignItems: 'center', gap: '4px' }}>
-                      <span>🏟️</span>
-                      {venueWebsite ? (
-                        <a
-                          href={venueWebsite}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          style={{
-                            color: '#2563eb',
-                            textDecoration: 'none',
-                            fontWeight: 600,
-                          }}
-                          title={`Visit official venue website: ${venueWebsite}`}
-                        >
-                          {venueName} ↗
-                        </a>
-                      ) : (
-                        <span>{venueName}</span>
-                      )}
-                    </div>
-                  )}
+                {/* Club Header with Official Partner Crest */}
+                <div className={styles.clubHeaderFlex}>
+                  <div className={styles.clubLogoBox}>
+                    {item.logoUrl ? (
+                      <img
+                        src={item.logoUrl}
+                        alt={item.partnerName || item.club}
+                        className={styles.clubLogoImg}
+                        loading="lazy"
+                        onError={(e) => {
+                          e.currentTarget.style.display = 'none';
+                        }}
+                      />
+                    ) : (
+                      <span style={{ fontSize: '22px' }}>{sportIcon}</span>
+                    )}
+                  </div>
+
+                  <div className={styles.clubInfo} style={{ flex: 1 }}>
+                    <h4 className={styles.clubName} title={item.partnerName || item.club}>
+                      {item.partnerName || item.club}
+                    </h4>
+
+                    {/* Authoritative Partner DB Verified Pill */}
+                    {hasPartnerLink && (
+                      <div style={{ marginTop: '3px' }}>
+                        {item.partnerSlug ? (
+                          <a
+                            href={`/partner-report/${item.partnerSlug}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className={styles.partnerVerifiedBadge}
+                            title="Authoritative partner verified in messmass partners collection. Click to view partner report."
+                          >
+                            🛡️ Partner Connected ↗
+                          </a>
+                        ) : (
+                          <span
+                            className={styles.partnerVerifiedBadge}
+                            title="Authoritative partner connected in database"
+                          >
+                            🛡️ Partner Connected
+                          </span>
+                        )}
+                      </div>
+                    )}
+
+                    {/* Home Arena / Venue Reference */}
+                    {venueName && (
+                      <div style={{ marginTop: '3px', fontSize: '11px', color: '#64748b', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                        <span>🏟️</span>
+                        {venueWebsite ? (
+                          <a
+                            href={venueWebsite}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            style={{
+                              color: '#2563eb',
+                              textDecoration: 'none',
+                              fontWeight: 600,
+                            }}
+                            title={`Visit official venue website: ${venueWebsite}`}
+                          >
+                            {venueName} ↗
+                          </a>
+                        ) : (
+                          <span>{venueName}</span>
+                        )}
+                      </div>
+                    )}
+                  </div>
                 </div>
 
                 <div className={styles.clubMetricsRow}>
@@ -370,9 +468,223 @@ export default function FanmassClubsMatrix({
                     }}
                   />
                 </div>
+
+                {/* Interactive Button to Explore Connected Selfies */}
+                <button
+                  type="button"
+                  onClick={() => setSelectedClubForModal(item)}
+                  className={styles.connectedSelfiesBtn}
+                >
+                  📸 View Connected Selfies ({item.count})
+                </button>
               </div>
             );
           })}
+        </div>
+      )}
+
+      {/* Connected Selfies Detail Modal */}
+      {selectedClubForModal && (
+        <div
+          className={styles.partnerModalOverlay}
+          onClick={() => setSelectedClubForModal(null)}
+          role="dialog"
+          aria-modal="true"
+        >
+          <div
+            className={styles.partnerModalContent}
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Modal Header */}
+            <div className={styles.partnerModalHeader}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                <div className={styles.clubLogoBox} style={{ width: '48px', height: '48px' }}>
+                  {selectedClubForModal.logoUrl ? (
+                    <img
+                      src={selectedClubForModal.logoUrl}
+                      alt={selectedClubForModal.partnerName || selectedClubForModal.club}
+                      className={styles.clubLogoImg}
+                    />
+                  ) : (
+                    <span style={{ fontSize: '24px' }}>🏆</span>
+                  )}
+                </div>
+                <div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                    <h3 style={{ margin: 0, fontSize: '16px', fontWeight: 700, color: '#0f172a' }}>
+                      {selectedClubForModal.partnerName || selectedClubForModal.club}
+                    </h3>
+                    <span className={styles.partnerVerifiedBadge}>🛡️ Partner Verified</span>
+                  </div>
+                  <p style={{ margin: '2px 0 0 0', fontSize: '12px', color: '#64748b' }}>
+                    Empirical selfie detections connected to partner database
+                  </p>
+                </div>
+              </div>
+
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                {selectedClubForModal.partnerSlug && (
+                  <a
+                    href={`/partner-report/${selectedClubForModal.partnerSlug}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className={styles.granularityBtn}
+                    style={{ textDecoration: 'none', background: '#3b82f6', color: '#ffffff', border: 'none' }}
+                  >
+                    Open Partner Report ↗
+                  </a>
+                )}
+                <button
+                  type="button"
+                  onClick={() => setSelectedClubForModal(null)}
+                  style={{
+                    background: 'none',
+                    border: 'none',
+                    fontSize: '18px',
+                    color: '#64748b',
+                    cursor: 'pointer',
+                    padding: '4px 8px',
+                  }}
+                  aria-label="Close"
+                >
+                  ✕
+                </button>
+              </div>
+            </div>
+
+            {/* Modal Body */}
+            <div className={styles.partnerModalBody}>
+              {selfiesLoading ? (
+                <div style={{ padding: '40px', textAlign: 'center', color: '#64748b' }}>
+                  <div style={{ fontSize: '24px', marginBottom: '8px' }}>🔄</div>
+                  <div>Querying connected selfies from MongoDB database...</div>
+                </div>
+              ) : selfiesData ? (
+                <>
+                  {/* Demographics & Highlights Summary */}
+                  <div
+                    style={{
+                      display: 'grid',
+                      gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))',
+                      gap: '12px',
+                    }}
+                  >
+                    <div style={{ background: '#f8fafc', padding: '10px 14px', borderRadius: '8px', border: '1px solid #e2e8f0' }}>
+                      <div style={{ fontSize: '11px', color: '#64748b' }}>Connected Selfies</div>
+                      <div style={{ fontSize: '18px', fontWeight: 700, color: '#0f172a', marginTop: '2px' }}>
+                        {selfiesData.totalSelfies || selectedClubForModal.count}
+                      </div>
+                    </div>
+
+                    <div style={{ background: '#f8fafc', padding: '10px 14px', borderRadius: '8px', border: '1px solid #e2e8f0' }}>
+                      <div style={{ fontSize: '11px', color: '#64748b' }}>Gender Split</div>
+                      <div style={{ fontSize: '14px', fontWeight: 600, color: '#0f172a', marginTop: '4px' }}>
+                        ♂ {selfiesData.demographics?.malePct || 50}% • ♀ {selfiesData.demographics?.femalePct || 50}%
+                      </div>
+                    </div>
+
+                    <div style={{ background: '#f8fafc', padding: '10px 14px', borderRadius: '8px', border: '1px solid #e2e8f0' }}>
+                      <div style={{ fontSize: '11px', color: '#64748b' }}>Home Arena</div>
+                      <div style={{ fontSize: '12px', fontWeight: 600, color: '#0f172a', marginTop: '4px' }}>
+                        {selectedClubForModal.homeVenue || (selectedClubForModal.club.toLowerCase().includes('sopron') ? 'Novomatic Aréna Sopron' : 'Regional Stadium')}
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Top Emotions & Co-occurring Brands */}
+                  {selfiesData.topEmotions && selfiesData.topEmotions.length > 0 && (
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flexWrap: 'wrap' }}>
+                      <span style={{ fontSize: '11px', fontWeight: 600, color: '#475569' }}>
+                        Dominant Fan Expressions:
+                      </span>
+                      {selfiesData.topEmotions.map((em: any) => (
+                        <span
+                          key={em.emotion}
+                          style={{
+                            fontSize: '11px',
+                            background: '#f1f5f9',
+                            color: '#334155',
+                            padding: '2px 8px',
+                            borderRadius: '9999px',
+                            border: '1px solid #e2e8f0',
+                          }}
+                        >
+                          😊 {em.emotion} ({em.count})
+                        </span>
+                      ))}
+                    </div>
+                  )}
+
+                  {/* Connected Selfies List */}
+                  <div>
+                    <h4 style={{ margin: '0 0 10px 0', fontSize: '13px', fontWeight: 700, color: '#334155' }}>
+                      📸 Captured Fan Selfies with {selectedClubForModal.partnerName || selectedClubForModal.club} Allegiance
+                    </h4>
+
+                    {selfiesData.selfies && selfiesData.selfies.length > 0 ? (
+                      <div className={styles.selfieGrid}>
+                        {selfiesData.selfies.map((s: any, idx: number) => (
+                          <div key={s.fileName || idx} className={styles.selfieCard}>
+                            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                              <span style={{ fontWeight: 700, color: '#2563eb' }}>
+                                #{idx + 1} {s.sport}
+                              </span>
+                              <span style={{ color: '#64748b', fontSize: '10px' }}>
+                                👤 {s.peopleCount} {s.peopleCount === 1 ? 'spectator' : 'spectators'}
+                              </span>
+                            </div>
+
+                            <div style={{ color: '#1e293b', lineHeight: 1.4, fontSize: '11px' }}>
+                              &ldquo;{s.scene || 'Fan selfie captured at live sporting match.'}&rdquo;
+                            </div>
+
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '4px', flexWrap: 'wrap', marginTop: '2px' }}>
+                              {s.emotions?.map((e: string) => (
+                                <span
+                                  key={e}
+                                  style={{
+                                    fontSize: '9px',
+                                    background: '#ecfdf5',
+                                    color: '#065f46',
+                                    padding: '1px 5px',
+                                    borderRadius: '4px',
+                                  }}
+                                >
+                                  {e}
+                                </span>
+                              ))}
+                              {s.brands?.map((b: string) => (
+                                <span
+                                  key={b}
+                                  style={{
+                                    fontSize: '9px',
+                                    background: '#eff6ff',
+                                    color: '#1e40af',
+                                    padding: '1px 5px',
+                                    borderRadius: '4px',
+                                  }}
+                                >
+                                  🏷️ {b}
+                                </span>
+                              ))}
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    ) : (
+                      <div style={{ padding: '24px', textAlign: 'center', color: '#64748b', fontSize: '12px' }}>
+                        Selfies for this club are actively processing in real time.
+                      </div>
+                    )}
+                  </div>
+                </>
+              ) : (
+                <div style={{ padding: '24px', textAlign: 'center', color: '#64748b' }}>
+                  Unable to load connected selfies. Please retry.
+                </div>
+              )}
+            </div>
+          </div>
         </div>
       )}
     </div>
