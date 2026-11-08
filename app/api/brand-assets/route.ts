@@ -120,25 +120,58 @@ export async function POST(request: NextRequest) {
 
       const file = formData.get('file') as File | null;
       if (file && file.size > 0) {
-        // Upload file via ImgBB / Storage
         const bytes = await file.arrayBuffer();
         const buffer = Buffer.from(bytes);
-        const apiKey = process.env.IMGBB_API_KEY || process.env.NEXT_PUBLIC_IMGBB_API_KEY;
+        const fileName = (file.name || '').toLowerCase();
+        const isSvg =
+          fileName.endsWith('.svg') ||
+          (file.type && file.type.includes('svg')) ||
+          buffer.subarray(0, 500).toString('utf8').includes('<svg');
 
-        if (apiKey) {
-          const imgbbForm = new URLSearchParams();
-          imgbbForm.append('key', apiKey);
-          imgbbForm.append('image', buffer.toString('base64'));
-          imgbbForm.append('name', `brand-logo-${slugify(name)}`);
+        // 1. Try Cloudflare R2 storage (standard CDN storage for {messmass})
+        try {
+          const { storeMedia } = await import('@/lib/mediaStorage');
+          const stored = await storeMedia(buffer, { folder: 'brand-logos' });
+          if (stored?.url) {
+            logoUrl = stored.url;
+          }
+        } catch (r2Err) {
+          console.warn('R2 storage attempt skipped/failed:', r2Err);
+        }
 
-          const uploadRes = await fetch('https://api.imgbb.com/1/upload', {
-            method: 'POST',
-            body: imgbbForm,
-            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-          });
-          const uploadJson = await uploadRes.json();
-          if (uploadJson.success && uploadJson.data?.url) {
-            logoUrl = uploadJson.data.url;
+        // 2. If R2 didn't yield a URL:
+        if (!logoUrl) {
+          if (isSvg) {
+            // Official SVG vector: embed as clean base64 data URI so it remains 100% self-contained, razor-sharp, and permanent
+            logoUrl = `data:image/svg+xml;base64,${buffer.toString('base64')}`;
+          } else {
+            // Raster image (PNG, WEBP, JPG): mirror to ImgBB if key configured
+            const apiKey = process.env.IMGBB_API_KEY || process.env.NEXT_PUBLIC_IMGBB_API_KEY;
+            if (apiKey) {
+              try {
+                const imgbbForm = new URLSearchParams();
+                imgbbForm.append('key', apiKey);
+                imgbbForm.append('image', buffer.toString('base64'));
+                imgbbForm.append('name', `brand-logo-${slugify(name)}`);
+
+                const uploadRes = await fetch('https://api.imgbb.com/1/upload', {
+                  method: 'POST',
+                  body: imgbbForm,
+                  headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                });
+                const uploadJson = await uploadRes.json();
+                if (uploadJson.success && uploadJson.data?.url) {
+                  logoUrl = uploadJson.data.url;
+                }
+              } catch (imgbbErr) {
+                console.warn('ImgBB upload skipped/failed:', imgbbErr);
+              }
+            }
+
+            if (!logoUrl) {
+              const mime = file.type || 'image/png';
+              logoUrl = `data:${mime};base64,${buffer.toString('base64')}`;
+            }
           }
         }
       }

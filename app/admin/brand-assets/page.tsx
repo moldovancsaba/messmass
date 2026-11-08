@@ -7,6 +7,7 @@
 /* eslint-disable react/forbid-dom-props */
 
 import React, { useState, useEffect, useRef } from 'react';
+import { ensureCsrfToken } from '@/lib/apiClient';
 import styles from './page.module.css';
 
 interface BrandAsset {
@@ -104,9 +105,16 @@ export default function BrandAssetsAdminPage() {
         formData.append('darkLogoUrl', editingBrand.darkLogoUrl);
       }
 
+      const csrfToken = await ensureCsrfToken();
+      const headers: Record<string, string> = {};
+      if (csrfToken) {
+        headers['X-CSRF-Token'] = csrfToken;
+      }
+
       const res = await fetch('/api/brand-assets', {
         method: 'POST',
         body: formData,
+        headers,
       });
 
       if (res.ok) {
@@ -129,7 +137,16 @@ export default function BrandAssetsAdminPage() {
   const handleDelete = async (slug: string) => {
     if (!confirm('Are you sure you want to remove this brand asset?')) return;
     try {
-      const res = await fetch(`/api/brand-assets/${slug}`, { method: 'DELETE' });
+      const csrfToken = await ensureCsrfToken();
+      const headers: Record<string, string> = {};
+      if (csrfToken) {
+        headers['X-CSRF-Token'] = csrfToken;
+      }
+
+      const res = await fetch(`/api/brand-assets/${slug}`, {
+        method: 'DELETE',
+        headers,
+      });
       if (res.ok) {
         await loadData();
       }
