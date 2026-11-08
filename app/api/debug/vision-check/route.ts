@@ -1,0 +1,28 @@
+import { NextResponse } from 'next/server';
+import clientPromise from '@/lib/mongodb';
+import config from '@/lib/config';
+
+export const dynamic = 'force-dynamic';
+
+export async function GET() {
+  try {
+    const client = await clientPromise;
+    const db = client.db(config.dbName);
+    const dbs = await client.db().admin().listDatabases();
+    const collectionsMess = await client.db('messmass').listCollections().toArray();
+    const docInMess = await client.db('messmass').collection('szrt_vision_progress').findOne();
+    const docInConfigDb = await db.collection('szrt_vision_progress').findOne();
+
+    return NextResponse.json({
+      configDbName: config.dbName,
+      databases: dbs.databases.map((d: any) => d.name),
+      collectionsMess: collectionsMess
+        .map((c: any) => c.name)
+        .filter((n: string) => n.includes('szrt') || n.includes('vision')),
+      docInMess: docInMess ? { count: docInMess.processedCount, total: docInMess.totalImages } : null,
+      docInConfigDb: docInConfigDb ? { count: docInConfigDb.processedCount } : null,
+    });
+  } catch (err: any) {
+    return NextResponse.json({ error: err?.message, stack: err?.stack });
+  }
+}
