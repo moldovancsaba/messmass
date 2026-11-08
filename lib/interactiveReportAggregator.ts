@@ -3,6 +3,7 @@ import { ObjectId } from 'mongodb';
 import config from '@/lib/config';
 import { findPartnerByIdentifier } from '@/lib/partnerIdentifier';
 import { InteractiveReportData, MatchItem, TimelinePeriod } from '@/components/interactive-report/types';
+import { isSportFranchise, isVenue, getBrandCluster } from '@/lib/brandEntityClustering';
 
 export async function getInteractiveReportData(partnerSlug: string): Promise<InteractiveReportData | null> {
   const client = await clientPromise;
@@ -461,18 +462,33 @@ export async function getInteractiveReportData(partnerSlug: string): Promise<Int
         }
       }
 
-      const enrichedBrands = (visionDoc.aggregates?.topBrands || []).map((b: any) => {
-        const norm = (b.brand || '').toLowerCase().trim();
-        const normSlug = norm.replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
-        const match = brandMap.get(norm) || brandMap.get(normSlug);
-        return {
-          brand: b.brand,
-          count: b.count,
-          logoUrl: match?.logoUrl || undefined,
-          darkLogoUrl: match?.darkLogoUrl || undefined,
-          category: match?.category || undefined,
-          accentColor: match?.accentColor || undefined,
-        };
+      const enrichedBrands = (visionDoc.aggregates?.topBrands || [])
+        .filter((b: any) => {
+          // Strict separation: never let sport franchises or venues into commercial brands
+          return !isSportFranchise(b.brand) && !isVenue(b.brand);
+        })
+        .map((b: any) => {
+          const norm = (b.brand || '').toLowerCase().trim();
+          const normSlug = norm.replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
+          const match = brandMap.get(norm) || brandMap.get(normSlug);
+          const cluster = getBrandCluster(b.brand);
+          return {
+            brand: b.brand,
+            count: b.count,
+            logoUrl: match?.logoUrl || undefined,
+            darkLogoUrl: match?.darkLogoUrl || undefined,
+            category: match?.category || cluster.label,
+            accentColor: match?.accentColor || undefined,
+          };
+        });
+
+      const cleanClubs = (visionDoc.aggregates?.topClubs || []).filter((c: any) => {
+        const norm = (c.club || '').toLowerCase().trim();
+        // Never let commercial sponsors into clubs
+        if (norm.includes('szerencsej') || norm === 'tippmix' || norm === 'mol' || norm === 'nike' || norm === 'adidas' || norm === 'puma') {
+          return false;
+        }
+        return true;
       });
 
       vision = {
@@ -488,7 +504,8 @@ export async function getInteractiveReportData(partnerSlug: string): Promise<Int
           genders: visionDoc.aggregates?.genders || { male: 0, female: 0, malePct: 50, femalePct: 50 },
           ageGroups: visionDoc.aggregates?.ageGroups || { children: 0, teens: 0, adults: 0, seniors: 0 },
           topBrands: enrichedBrands,
-          topClubs: visionDoc.aggregates?.topClubs || [],
+          topClubs: cleanClubs,
+          topVenues: visionDoc.aggregates?.topVenues || [],
           topEmotions: visionDoc.aggregates?.topEmotions || [],
           sportsBreakdown: visionDoc.aggregates?.sportsBreakdown || {},
         },

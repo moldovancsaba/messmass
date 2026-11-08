@@ -100,6 +100,7 @@ export interface VisionProgressData {
       accentColor?: string;
     }>;
     topClubs: Array<{ club: string; count: number }>;
+    topVenues?: Array<{ venue: string; count: number }>;
     topEmotions: Array<{ emotion: string; count: number }>;
     sportsBreakdown: Record<
       string,
