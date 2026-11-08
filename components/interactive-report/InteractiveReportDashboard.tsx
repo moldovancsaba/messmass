@@ -16,12 +16,35 @@ interface InteractiveReportDashboardProps {
 }
 
 export default function InteractiveReportDashboard({ initialData }: InteractiveReportDashboardProps) {
-  const [data] = useState<InteractiveReportData>(initialData);
+  const [data, setData] = useState<InteractiveReportData>(initialData);
   const [activeTab, setActiveTab] = useState<
     'overview' | 'vision' | 'bubble' | 'funnel' | 'demographics' | 'table'
   >('overview');
   const [selectedPeriodId, setSelectedPeriodId] = useState<string | null>(null);
   const [selectedMatch, setSelectedMatch] = useState<MatchItem | null>(null);
+
+  // Poll for live vision progress updates while running
+  React.useEffect(() => {
+    if (!data.vision || data.vision.status !== 'running') return;
+
+    const interval = setInterval(async () => {
+      try {
+        const slug = data.partner.viewSlug || 'szrt';
+        const res = await fetch(`/api/interactive-report/${slug}`);
+        if (res.ok) {
+          const json = await res.json();
+          const liveVision = json.vision || json.data?.vision;
+          if (liveVision) {
+            setData((prev) => ({ ...prev, vision: liveVision }));
+          }
+        }
+      } catch {
+        // Silently continue on network jitter
+      }
+    }, 4000);
+
+    return () => clearInterval(interval);
+  }, [data.vision?.status, data.partner.viewSlug]);
 
   const handleSelectMatch = (match: MatchItem) => {
     setSelectedMatch(match);

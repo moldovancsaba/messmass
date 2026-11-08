@@ -25,8 +25,9 @@ export default function FanmassVisionSection({
         const res = await fetch(`/api/interactive-report/${partnerSlug}`);
         if (res.ok) {
           const json = await res.json();
-          if (json.data?.vision) {
-            setVision(json.data.vision);
+          const liveVision = json.vision || json.data?.vision;
+          if (liveVision) {
+            setVision(liveVision);
           }
         }
       } catch {
