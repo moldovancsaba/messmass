@@ -117,7 +117,7 @@ it drifts. Do not edit between the markers.
 | **Hooks** | 13 | `hooks/` |
 | **Design Tokens** | 410 | `app/styles/theme.css` |
 | **Utility CSS classes** | 192 | `app/styles/utilities.css` |
-| **App routes (pages)** | 81 | `app/**/page.tsx` |
+| **App routes (pages)** | 79 | `app/**/page.tsx` |
 | **API routes** | 232 | `app/api/**/route.ts` |
 
 The modules with the most importers — the ones whose change radius is
@@ -997,7 +997,7 @@ shows up here on the next regeneration, which is the point.
 
 <!-- GENERATED:routes -->
 
-### Pages (81)
+### Pages (79)
 
 | Route | File |
 |-------|------|
@@ -1077,8 +1077,6 @@ shows up here on the next regeneration, which is the point.
 | `/partner-edit/[slug]` | `app/partner-edit/[slug]/page.tsx` |
 | `/partner-report/[slug]` | `app/partner-report/[slug]/page.tsx` |
 | `/privacy` | `app/privacy/page.tsx` |
-| `/report/[scopeType]/[identifier]` | `app/report/[scopeType]/[identifier]/page.tsx` |
-| `/report/[scopeType]/[identifier]/map` | `app/report/[scopeType]/[identifier]/map/page.tsx` |
 | `/report/[slug]` | `app/report/[slug]/page.tsx` |
 | `/terms` | `app/terms/page.tsx` |
 | `/test-csrf` | `app/test-csrf/page.tsx` |
