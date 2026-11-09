@@ -69,6 +69,23 @@ export interface DemographicsData {
   stadiumAtmosphere: number;
 }
 
+export interface BrandCoOccurrenceItem {
+  brand: string;
+  surfaceAreaPct: number;
+  prominenceRank: number;
+}
+
+export interface BrandExposureItem {
+  brand: string;
+  occurrences: number;
+  totalBrandsInImage: number;
+  surfaceAreaPct: number;
+  prominenceRank: number;
+  shareOfVoicePct: number;
+  weightedScore: number;
+  coOccurringBrands: BrandCoOccurrenceItem[];
+}
+
 export interface VisionProgressData {
   totalImages: number;
   processedCount: number;
@@ -98,6 +115,11 @@ export interface VisionProgressData {
       darkLogoUrl?: string;
       category?: string;
       accentColor?: string;
+      totalImpressions?: number;
+      avgSurfaceAreaPct?: number;
+      primaryBrandRate?: number;
+      avgShareOfVoicePct?: number;
+      weightedExposureScore?: number;
     }>;
     topClubs: Array<{
       club: string;
@@ -139,6 +161,7 @@ export interface VisionProgressData {
     peopleCount: number;
     emotions: string[];
     brands: string[];
+    brandMetrics?: BrandExposureItem[];
     clubs: string[];
     scene: string;
   }>;

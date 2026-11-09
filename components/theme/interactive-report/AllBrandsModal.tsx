@@ -279,7 +279,9 @@ export default function AllBrandsModal({
                       {cluster.label}
                     </span>
                     <span style={{ fontSize: '10px', fontWeight: 600, color: '#2563eb' }}>
-                      {pct}% share
+                      {b.weightedExposureScore !== undefined
+                        ? `⚖️ ${b.weightedExposureScore} pts • ${b.avgShareOfVoicePct ?? pct}% SOV`
+                        : `${pct}% share`}
                     </span>
                   </div>
                 </div>

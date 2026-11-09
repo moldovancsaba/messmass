@@ -12,6 +12,11 @@ export interface CommercialBrandStat {
   darkLogoUrl?: string;
   category?: string;
   accentColor?: string;
+  totalImpressions?: number;
+  avgSurfaceAreaPct?: number;
+  primaryBrandRate?: number;
+  avgShareOfVoicePct?: number;
+  weightedExposureScore?: number;
 }
 
 export interface ClubPodiumStat {
@@ -119,6 +124,11 @@ export default function ExecutivePodiumGrid({
                 </div>
                 <span className={styles.pedestalName}>{brand2.brand}</span>
                 <span className={styles.pedestalCount}>{brand2.count.toLocaleString()}</span>
+                {brand2.weightedExposureScore !== undefined && (
+                  <span style={{ fontSize: '10px', color: '#475569', background: '#f1f5f9', padding: '1px 6px', borderRadius: '4px', margin: '2px 0', fontWeight: 600 }}>
+                    ⚖️ {brand2.weightedExposureScore} pts • {brand2.avgShareOfVoicePct}% SOV
+                  </span>
+                )}
                 <div className={`${styles.pedestalBlock} ${styles.blockSilver}`}>
                   2
                 </div>
@@ -155,6 +165,11 @@ export default function ExecutivePodiumGrid({
                 <span className={styles.pedestalCount} style={{ color: '#b45309', fontWeight: 700 }}>
                   {brand1.count.toLocaleString()}
                 </span>
+                {brand1.weightedExposureScore !== undefined && (
+                  <span style={{ fontSize: '10px', color: '#78350f', background: '#fef3c7', padding: '1px 6px', borderRadius: '4px', margin: '2px 0', fontWeight: 700 }}>
+                    ⚖️ {brand1.weightedExposureScore} pts • {brand1.avgShareOfVoicePct}% SOV
+                  </span>
+                )}
                 <div className={`${styles.pedestalBlock} ${styles.blockGold}`}>
                   1
                 </div>
@@ -181,6 +196,11 @@ export default function ExecutivePodiumGrid({
                 </div>
                 <span className={styles.pedestalName}>{brand3.brand}</span>
                 <span className={styles.pedestalCount}>{brand3.count.toLocaleString()}</span>
+                {brand3.weightedExposureScore !== undefined && (
+                  <span style={{ fontSize: '10px', color: '#7c2d12', background: '#ffedd5', padding: '1px 6px', borderRadius: '4px', margin: '2px 0', fontWeight: 600 }}>
+                    ⚖️ {brand3.weightedExposureScore} pts • {brand3.avgShareOfVoicePct}% SOV
+                  </span>
+                )}
                 <div className={`${styles.pedestalBlock} ${styles.blockBronze}`}>
                   3
                 </div>
@@ -231,7 +251,14 @@ export default function ExecutivePodiumGrid({
                   </div>
                 </div>
                 <span className={styles.rowPercent}>{pct}%</span>
-                <span className={styles.rowCount}>{b.count.toLocaleString()}</span>
+                <span className={styles.rowCount}>
+                  {b.count.toLocaleString()}
+                  {b.weightedExposureScore !== undefined && (
+                    <span style={{ fontSize: '10px', color: '#64748b', fontWeight: 500, display: 'block' }}>
+                      {b.weightedExposureScore} pts
+                    </span>
+                  )}
+                </span>
               </div>
             );
           })}
