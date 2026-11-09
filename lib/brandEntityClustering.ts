@@ -373,3 +373,69 @@ export function getBrandCluster(brand: string): BrandClusterInfo {
     isSponsor: false,
   };
 }
+
+export interface SupporterGroupInfo {
+  group: string;
+  parentClub: string;
+  sport: 'Basketball' | 'Football' | 'Handball' | 'Ice Hockey' | 'Multi-Sport';
+  description?: string;
+}
+
+export const SUPPORTER_GROUPS_DIRECTORY: Record<string, SupporterGroupInfo> = {
+  'green monsters': { group: 'Green Monsters', parentClub: 'Ferencvárosi TC', sport: 'Football' },
+  'monsters': { group: 'Green Monsters', parentClub: 'Ferencvárosi TC', sport: 'Football' },
+  'gm05': { group: 'Green Monsters', parentClub: 'Ferencvárosi TC', sport: 'Football' },
+  'b-közép fradi': { group: 'B-Közép', parentClub: 'Ferencvárosi TC', sport: 'Football' },
+  'fradi b-közép': { group: 'B-Közép', parentClub: 'Ferencvárosi TC', sport: 'Football' },
+  '16-os szektor': { group: '16-os Szektor', parentClub: 'Ferencvárosi TC', sport: 'Football' },
+  'eastern green supporters': { group: 'Eastern Green Supporters', parentClub: 'Ferencvárosi TC', sport: 'Football' },
+  'liget clan': { group: 'Liget Clan', parentClub: 'Ferencvárosi TC', sport: 'Football' },
+
+  'ultra viola bulldogs': { group: 'Ultra Viola Bulldogs', parentClub: 'Újpest FC', sport: 'Football' },
+  'uvb': { group: 'Ultra Viola Bulldogs', parentClub: 'Újpest FC', sport: 'Football' },
+  'viola kaos': { group: 'Viola Kaos', parentClub: 'Újpest FC', sport: 'Football' },
+  'ujpest 1885': { group: 'Újpest 1885', parentClub: 'Újpest FC', sport: 'Football' },
+  'korps': { group: 'Korps', parentClub: 'Újpest FC', sport: 'Football' },
+  'angol brigád': { group: 'Angol Brigád', parentClub: 'Újpest FC', sport: 'Football' },
+
+  'carpathian brigade': { group: 'Carpathian Brigade', parentClub: 'MLSZ - Magyar Labdarúgó Szövetség', sport: 'Football' },
+  'carpathian brigade 09': { group: 'Carpathian Brigade', parentClub: 'MLSZ - Magyar Labdarúgó Szövetség', sport: 'Football' },
+  'cb09': { group: 'Carpathian Brigade', parentClub: 'MLSZ - Magyar Labdarúgó Szövetség', sport: 'Football' },
+
+  'ultras diósgyőr': { group: 'Ultras Diósgyőr', parentClub: 'DVTK Diósgyőr', sport: 'Multi-Sport' },
+  'commandos': { group: 'Commandos', parentClub: 'DVTK Diósgyőr', sport: 'Multi-Sport' },
+  'red & white warriors': { group: 'Red & White Warriors', parentClub: 'DVTK Diósgyőr', sport: 'Multi-Sport' },
+
+  'red-blue devils': { group: 'Red-Blue Devils', parentClub: 'Fehérvár FC', sport: 'Football' },
+  'rbd': { group: 'Red-Blue Devils', parentClub: 'Fehérvár FC', sport: 'Football' },
+  'we are devils': { group: 'Alba Volán Jégkorong Fan Club', parentClub: 'Hydro Fehérvár AV19', sport: 'Ice Hockey' },
+  'alba volán jégkorong fan club': { group: 'Alba Volán Jégkorong Fan Club', parentClub: 'Hydro Fehérvár AV19', sport: 'Ice Hockey' },
+
+  'soproni tigrisek': { group: 'Soproni Tigrisek', parentClub: 'Sopron KC', sport: 'Basketball' },
+  'sopron b-közép': { group: 'Soproni B-Közép', parentClub: 'Sopron KC', sport: 'Basketball' },
+  'hűségváros brigád': { group: 'Hűségváros Brigád', parentClub: 'Sopron KC', sport: 'Basketball' },
+  'soproni kosárlabda fan club': { group: 'Sopron KC Fan Club', parentClub: 'Sopron KC', sport: 'Basketball' },
+
+  'sárga-fekete szív': { group: 'Sárga-Fekete Szív', parentClub: 'Falco KC Szombathely', sport: 'Basketball' },
+  'falco b-közép': { group: 'Falco B-Közép', parentClub: 'Falco KC Szombathely', sport: 'Basketball' },
+
+  'b-közép körmend': { group: 'B-Közép Körmend', parentClub: 'Egis Körmend', sport: 'Basketball' },
+  'red devils körmend': { group: 'Red Devils Körmend', parentClub: 'Egis Körmend', sport: 'Basketball' },
+
+  'szögedi csibészek': { group: 'Szögedi Csibészek', parentClub: 'OTP Bank-Pick Szeged', sport: 'Handball' },
+  'pick kézilabda fan club': { group: 'Pick Kézilabda Fan Club', parentClub: 'OTP Bank-Pick Szeged', sport: 'Handball' },
+
+  'építők fan club': { group: 'Építők Fan Club', parentClub: 'Telekom Veszprém', sport: 'Handball' },
+  'veszprémi szurkolói egyesület': { group: 'Veszprémi Szurkolói Egyesület', parentClub: 'Telekom Veszprém', sport: 'Handball' },
+
+  'oroszlányi bányász b-közép': { group: 'Bányász B-Közép', parentClub: 'MVM-OSE Lions', sport: 'Basketball' },
+  'olaj b-közép': { group: 'Olaj B-Közép', parentClub: 'Szolnoki Olajbányász', sport: 'Basketball' },
+
+  'szívtiprók ultras debrecen': { group: 'Szívtiprók Ultras Debrecen', parentClub: 'DEAC', sport: 'Multi-Sport' },
+  'szud': { group: 'Szívtiprók Ultras Debrecen', parentClub: 'DEAC', sport: 'Multi-Sport' },
+};
+
+export function getSupporterGroupInfo(name: string): SupporterGroupInfo | undefined {
+  const norm = name.toLowerCase().trim();
+  return SUPPORTER_GROUPS_DIRECTORY[norm];
+}

@@ -101,16 +101,19 @@ export default function FanmassClubsMatrix({
   const [selectedClubForModal, setSelectedClubForModal] = useState<ClubStat | null>(null);
   const [selfiesLoading, setSelfiesLoading] = useState(false);
   const [selfiesData, setSelfiesData] = useState<any>(null);
+  const [selectedFanGroup, setSelectedFanGroup] = useState<string>('all');
 
   // Fetch connected selfies when a club is selected for inspection
   useEffect(() => {
     if (!selectedClubForModal) {
       setSelfiesData(null);
+      setSelectedFanGroup('all');
       return;
     }
 
     let isMounted = true;
     setSelfiesLoading(true);
+    setSelectedFanGroup('all');
 
     const q = new URLSearchParams({
       club: selectedClubForModal.club,
@@ -136,6 +139,16 @@ export default function FanmassClubsMatrix({
       isMounted = false;
     };
   }, [selectedClubForModal]);
+
+  const displaySelfies = useMemo(() => {
+    if (!selfiesData?.selfies) return [];
+    if (selectedFanGroup === 'all') return selfiesData.selfies;
+    return selfiesData.selfies.filter(
+      (s: any) =>
+        s.fanGroups?.some((fg: string) => fg.toLowerCase().includes(selectedFanGroup.toLowerCase())) ||
+        s.scene?.toLowerCase().includes(selectedFanGroup.toLowerCase())
+    );
+  }, [selfiesData, selectedFanGroup]);
 
   // 1. Strict filter: Exclude non-club junk and commercial sponsor hallucinations
   const validClubs = useMemo(() => {
@@ -444,6 +457,43 @@ export default function FanmassClubsMatrix({
                         )}
                       </div>
                     )}
+
+                    {/* Supporter Groups Sub-Indicator */}
+                    {item.club.toLowerCase().includes('ferencváros') && (
+                      <div style={{ marginTop: '3px', fontSize: '10px', color: '#64748b' }}>
+                        👥 Supporter Groups: Green Monsters, B-Közép
+                      </div>
+                    )}
+                    {item.club.toLowerCase().includes('újpest') && (
+                      <div style={{ marginTop: '3px', fontSize: '10px', color: '#64748b' }}>
+                        👥 Supporter Groups: Ultra Viola Bulldogs, UVB
+                      </div>
+                    )}
+                    {item.club.toLowerCase().includes('sopron') && (
+                      <div style={{ marginTop: '3px', fontSize: '10px', color: '#64748b' }}>
+                        👥 Supporter Groups: Soproni Tigrisek, B-Közép
+                      </div>
+                    )}
+                    {item.club.toLowerCase().includes('fehérvár') && (
+                      <div style={{ marginTop: '3px', fontSize: '10px', color: '#64748b' }}>
+                        👥 Supporter Groups: Red-Blue Devils, RBD
+                      </div>
+                    )}
+                    {item.club.toLowerCase().includes('dvtk') && (
+                      <div style={{ marginTop: '3px', fontSize: '10px', color: '#64748b' }}>
+                        👥 Supporter Groups: Ultras Diósgyőr, Commandos
+                      </div>
+                    )}
+                    {item.club.toLowerCase().includes('szeged') && (
+                      <div style={{ marginTop: '3px', fontSize: '10px', color: '#64748b' }}>
+                        👥 Supporter Groups: Szögedi Csibészek
+                      </div>
+                    )}
+                    {item.club.toLowerCase().includes('veszprém') && (
+                      <div style={{ marginTop: '3px', fontSize: '10px', color: '#64748b' }}>
+                        👥 Supporter Groups: Építők Fan Club
+                      </div>
+                    )}
                   </div>
                 </div>
 
@@ -615,15 +665,66 @@ export default function FanmassClubsMatrix({
                     </div>
                   )}
 
+                  {/* Supporter Groups Filter Chips */}
+                  {selfiesData.fanGroups && selfiesData.fanGroups.length > 0 && (
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flexWrap: 'wrap' }}>
+                      <span style={{ fontSize: '11px', fontWeight: 700, color: '#334155' }}>
+                        🏴 Supporter Groups:
+                      </span>
+                      <button
+                        type="button"
+                        onClick={() => setSelectedFanGroup('all')}
+                        style={{
+                          padding: '3px 10px',
+                          fontSize: '11px',
+                          fontWeight: 600,
+                          borderRadius: '9999px',
+                          border: '1px solid',
+                          borderColor: selectedFanGroup === 'all' ? '#1d4ed8' : '#cbd5e1',
+                          background: selectedFanGroup === 'all' ? '#dbeafe' : '#ffffff',
+                          color: selectedFanGroup === 'all' ? '#1e40af' : '#475569',
+                          cursor: 'pointer',
+                        }}
+                      >
+                        All Allegiance ({selfiesData.totalSelfies || selectedClubForModal.count})
+                      </button>
+                      {selfiesData.fanGroups.map((fg: any) => (
+                        <button
+                          key={fg.group}
+                          type="button"
+                          onClick={() => setSelectedFanGroup(fg.group)}
+                          style={{
+                            padding: '3px 10px',
+                            fontSize: '11px',
+                            fontWeight: 600,
+                            borderRadius: '9999px',
+                            border: '1px solid',
+                            borderColor: selectedFanGroup === fg.group ? '#1d4ed8' : '#cbd5e1',
+                            background: selectedFanGroup === fg.group ? '#dbeafe' : '#ffffff',
+                            color: selectedFanGroup === fg.group ? '#1e40af' : '#475569',
+                            cursor: 'pointer',
+                          }}
+                        >
+                          🏴‍☠️ {fg.group} ({fg.count})
+                        </button>
+                      ))}
+                    </div>
+                  )}
+
                   {/* Connected Selfies List */}
                   <div>
                     <h4 style={{ margin: '0 0 10px 0', fontSize: '13px', fontWeight: 700, color: '#334155' }}>
                       📸 Captured Fan Selfies with {selectedClubForModal.partnerName || selectedClubForModal.club} Allegiance
+                      {selectedFanGroup !== 'all' && (
+                        <span style={{ marginLeft: '6px', fontSize: '11px', color: '#1e40af', fontWeight: 600 }}>
+                          • Filtered to {selectedFanGroup} ({displaySelfies.length})
+                        </span>
+                      )}
                     </h4>
 
-                    {selfiesData.selfies && selfiesData.selfies.length > 0 ? (
+                    {displaySelfies.length > 0 ? (
                       <div className={styles.selfieGrid}>
-                        {selfiesData.selfies.map((s: any, idx: number) => (
+                        {displaySelfies.map((s: any, idx: number) => (
                           <div key={s.fileName || idx} className={styles.selfieCard}>
                             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                               <span style={{ fontWeight: 700, color: '#2563eb' }}>
@@ -639,6 +740,22 @@ export default function FanmassClubsMatrix({
                             </div>
 
                             <div style={{ display: 'flex', alignItems: 'center', gap: '4px', flexWrap: 'wrap', marginTop: '2px' }}>
+                              {s.fanGroups?.map((fg: string) => (
+                                <span
+                                  key={fg}
+                                  style={{
+                                    fontSize: '9px',
+                                    fontWeight: 700,
+                                    background: '#fef3c7',
+                                    color: '#92400e',
+                                    padding: '1px 6px',
+                                    borderRadius: '4px',
+                                    border: '1px solid #fde68a',
+                                  }}
+                                >
+                                  🏴 {fg}
+                                </span>
+                              ))}
                               {s.emotions?.map((e: string) => (
                                 <span
                                   key={e}
@@ -673,7 +790,7 @@ export default function FanmassClubsMatrix({
                       </div>
                     ) : (
                       <div style={{ padding: '24px', textAlign: 'center', color: '#64748b', fontSize: '12px' }}>
-                        Selfies for this club are actively processing in real time.
+                        No selfies found matching this specific supporter group filter.
                       </div>
                     )}
                   </div>

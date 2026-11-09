@@ -7,7 +7,7 @@ import FanmassBrandsMatrix from './FanmassBrandsMatrix';
 import FanmassSportsDemographics from './FanmassSportsDemographics';
 import FanmassClubsMatrix from './FanmassClubsMatrix';
 import FanmassSentimentAtmosphere from './FanmassSentimentAtmosphere';
-import FanmassTerritoryMap from './FanmassTerritoryMap';
+import TerritoryMapCanvas from './TerritoryMapCanvas';
 import { MatchItem } from './types';
 import styles from './interactive-report.module.css';
 
@@ -344,7 +344,13 @@ export default function FanmassVisionSection({
                   🗺️ Launch Fullscreen Dedicated Territory Analytics Page ↗
                 </a>
               </div>
-              <FanmassTerritoryMap matches={matches} vision={vision} />
+              <TerritoryMapCanvas
+                matches={matches || []}
+                vision={vision}
+                partnerSlug={partnerSlug}
+                partnerName="Szerencsejáték Zrt."
+                embedded={true}
+              />
             </div>
           )}
 

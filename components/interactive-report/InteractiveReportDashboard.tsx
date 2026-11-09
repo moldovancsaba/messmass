@@ -5,7 +5,7 @@ import { InteractiveReportData, MatchItem } from './types';
 import SzrtHeader from './SzrtHeader';
 import OverviewTab from './OverviewTab';
 import FanmassVisionSection from './FanmassVisionSection';
-import FanmassTerritoryMap from './FanmassTerritoryMap';
+import TerritoryMapCanvas from './TerritoryMapCanvas';
 import D3BubbleExplorer from './D3BubbleExplorer';
 import D3FunnelFlow from './D3FunnelFlow';
 import D3DemographicsChart from './D3DemographicsChart';
@@ -99,9 +99,12 @@ export default function InteractiveReportDashboard({ initialData }: InteractiveR
 
       {/* Tab: Geographic Activation & Territory Distribution Map */}
       {activeTab === 'territory' && (
-        <FanmassTerritoryMap
-          matches={data.matches}
+        <TerritoryMapCanvas
+          matches={data.matches || []}
           vision={data.vision}
+          partnerSlug={data.partner.viewSlug || 'szrt'}
+          partnerName={data.partner.name}
+          embedded={true}
         />
       )}
 

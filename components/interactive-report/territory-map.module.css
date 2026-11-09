@@ -354,8 +354,24 @@
   border-color: #94a3b8;
 }
 
+/* Embedded Canvas within Executive Report */
+.embeddedRoot {
+  position: relative;
+  width: 100%;
+  height: 540px;
+  border-radius: 14px;
+  overflow: hidden;
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+  background: #f8fafc;
+  margin-top: 12px;
+}
+
 /* Responsive adjustments */
 @media (max-width: 900px) {
+  .embeddedRoot {
+    height: 600px;
+  }
   .floatingSidePanel {
     top: auto;
     left: 12px;

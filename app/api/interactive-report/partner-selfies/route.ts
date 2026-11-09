@@ -11,6 +11,7 @@ export async function GET(request: NextRequest) {
     const club = searchParams.get('club') || '';
     const partnerId = searchParams.get('partnerId') || '';
     const partnerSlug = searchParams.get('partnerSlug') || '';
+    const fanGroup = searchParams.get('fanGroup') || '';
     const limit = Math.min(100, Math.max(1, parseInt(searchParams.get('limit') || '40', 10)));
 
     if (!club && !partnerId && !partnerSlug) {
@@ -55,7 +56,21 @@ export async function GET(request: NextRequest) {
       conditions.push({ partnerNames: { $regex: club.trim(), $options: 'i' } });
     }
 
-    const query = conditions.length > 0 ? { $or: conditions } : {};
+    let query: any = conditions.length > 0 ? { $or: conditions } : {};
+    if (fanGroup) {
+      query = {
+        $and: [
+          query,
+          {
+            $or: [
+              { fanGroups: { $regex: fanGroup.trim(), $options: 'i' } },
+              { scene: { $regex: fanGroup.trim(), $options: 'i' } },
+              { clubs: { $regex: fanGroup.trim(), $options: 'i' } },
+            ],
+          },
+        ],
+      };
+    }
 
     // 3. Query szrt_vision_analysis collection
     const selfieDocs = await db
@@ -74,6 +89,7 @@ export async function GET(request: NextRequest) {
     const ageGroups = { children: 0, teens: 0, adults: 0, seniors: 0 };
     const emotionCounts: Record<string, number> = {};
     const brandCounts: Record<string, number> = {};
+    const fanGroupCounts: Record<string, number> = {};
 
     for (const doc of selfieDocs) {
       totalPeople += doc.peopleCount || 1;
@@ -89,6 +105,9 @@ export async function GET(request: NextRequest) {
       }
       for (const br of doc.brands || []) {
         brandCounts[br] = (brandCounts[br] || 0) + 1;
+      }
+      for (const fg of doc.fanGroups || []) {
+        fanGroupCounts[fg] = (fanGroupCounts[fg] || 0) + 1;
       }
     }
 
@@ -106,6 +125,10 @@ export async function GET(request: NextRequest) {
       .sort((a, b) => b.count - a.count)
       .slice(0, 8);
 
+    const topFanGroups = Object.entries(fanGroupCounts)
+      .map(([group, count]) => ({ group, count }))
+      .sort((a, b) => b.count - a.count);
+
     const selfies = selfieDocs.map((d) => ({
       fileName: d.fileName,
       sport: d.sport,
@@ -114,6 +137,7 @@ export async function GET(request: NextRequest) {
       emotions: d.emotions || [],
       brands: d.brands || [],
       clubs: d.clubs || [],
+      fanGroups: d.fanGroups || [],
       scene: d.scene || '',
       analyzedAt: d.analyzedAt,
     }));
@@ -153,6 +177,7 @@ export async function GET(request: NextRequest) {
       },
       topEmotions,
       topBrands,
+      fanGroups: topFanGroups,
       selfies,
     });
   } catch (err: any) {

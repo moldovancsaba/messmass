@@ -12,6 +12,7 @@ interface TerritoryMapCanvasProps {
   vision?: VisionProgressData | null;
   partnerSlug?: string;
   partnerName?: string;
+  embedded?: boolean;
 }
 
 export type SportFilterKey = 'all' | 'Basketball' | 'Football' | 'Handball' | 'Ice Hockey';
@@ -260,6 +261,7 @@ export default function TerritoryMapCanvas({
   vision,
   partnerSlug = 'szrt',
   partnerName = 'Szerencsejáték Zrt.',
+  embedded = false,
 }: TerritoryMapCanvasProps) {
   const mapContainerRef = useRef<HTMLDivElement>(null);
   const mapRef = useRef<MapLibreMap | null>(null);
@@ -269,45 +271,132 @@ export default function TerritoryMapCanvas({
   const [selectedVenueId, setSelectedVenueId] = useState<string>('sopron-novomatic');
   const [searchQuery, setSearchQuery] = useState<string>('');
 
+  // Connected Selfies Modal state for Venue / Club inspection
+  const [modalClub, setModalClub] = useState<{ club: string; partnerId?: string; partnerSlug?: string; logoUrl?: string; name?: string } | null>(null);
+  const [selfiesLoading, setSelfiesLoading] = useState(false);
+  const [selfiesData, setSelfiesData] = useState<any>(null);
+  const [selectedFanGroup, setSelectedFanGroup] = useState<string>('all');
+
+  useEffect(() => {
+    if (!modalClub) {
+      setSelfiesData(null);
+      setSelectedFanGroup('all');
+      return;
+    }
+
+    let isMounted = true;
+    setSelfiesLoading(true);
+    setSelectedFanGroup('all');
+
+    const q = new URLSearchParams({
+      club: modalClub.club,
+      partnerId: modalClub.partnerId || '',
+      partnerSlug: modalClub.partnerSlug || '',
+    });
+
+    fetch(`/api/interactive-report/partner-selfies?${q.toString()}`)
+      .then((r) => r.json())
+      .then((data) => {
+        if (isMounted) {
+          setSelfiesData(data);
+          setSelfiesLoading(false);
+        }
+      })
+      .catch(() => {
+        if (isMounted) setSelfiesLoading(false);
+      });
+
+    return () => {
+      isMounted = false;
+    };
+  }, [modalClub]);
+
+  const displayModalSelfies = useMemo(() => {
+    if (!selfiesData?.selfies) return [];
+    if (selectedFanGroup === 'all') return selfiesData.selfies;
+    return selfiesData.selfies.filter(
+      (s: any) =>
+        s.fanGroups?.some((fg: string) => fg.toLowerCase().includes(selectedFanGroup.toLowerCase())) ||
+        s.scene?.toLowerCase().includes(selectedFanGroup.toLowerCase())
+    );
+  }, [selfiesData, selectedFanGroup]);
+
   // 1. Synthesize live metrics for each venue from vision and match data
   const venuesWithMetrics: VenueDetail[] = useMemo(() => {
-    const totalProcessed = vision?.processedCount || 1550;
+    const totalProcessed = vision?.processedCount || 1970;
     const baseAgg = vision?.aggregates;
 
     return VENUES_DATABASE.map((v) => {
-      // Find matches associated with this city or club
-      const cityMatches = matches.filter(
-        (m) =>
-          (m.city && m.city.toLowerCase() === v.city.toLowerCase()) ||
-          v.primaryClubs.some((c) => m.name.toLowerCase().includes(c.toLowerCase()))
-      );
+      // Find matches associated with this city, venue or club
+      const cityMatches = (matches || []).filter((m) => {
+        const text = `${m.matchName || ''} ${m.cleanName || ''} ${m.partnerName || ''} ${m.venue || ''}`.toLowerCase();
+        return (
+          text.includes(v.city.toLowerCase()) ||
+          text.includes(v.name.toLowerCase()) ||
+          v.primaryClubs.some((c) => text.includes(c.toLowerCase()))
+        );
+      });
 
-      // Match selfie count
+      // Match selfie count from projects
       const matchSelfies = cityMatches.reduce((acc, m) => acc + (m.selfies || 0), 0);
-      const estTotal = matchSelfies > 0 ? matchSelfies : Math.round(totalProcessed * (v.id.includes('sopron') ? 0.08 : v.id.includes('szekes') ? 0.12 : 0.05));
+
+      // Match empirical vision sightings from vision.aggregates
+      let visionClubSightings = 0;
+      if (baseAgg?.topClubs) {
+        for (const tc of baseAgg.topClubs) {
+          if (v.primaryClubs.some((c) => tc.club.toLowerCase().includes(c.toLowerCase()))) {
+            visionClubSightings += tc.count || 0;
+          }
+        }
+      }
+      if (baseAgg?.topVenues) {
+        for (const tv of baseAgg.topVenues) {
+          if (
+            tv.venue.toLowerCase().includes(v.name.toLowerCase()) ||
+            v.name.toLowerCase().includes(tv.venue.toLowerCase())
+          ) {
+            visionClubSightings += tv.count || 0;
+          }
+        }
+      }
+
+      const totalSightings =
+        matchSelfies > 0
+          ? matchSelfies
+          : Math.max(
+              visionClubSightings,
+              Math.round(totalProcessed * (v.id.includes('sopron') ? 0.08 : v.id.includes('szekes') ? 0.12 : 0.05))
+            );
 
       // Sport specific gender ratio
       const primarySport = v.sports[0] || 'Football';
       const sportBreakdown = baseAgg?.sportsBreakdown?.[primarySport];
-      const malePct = sportBreakdown?.genders?.malePct ?? (primarySport === 'Handball' ? 44.5 : primarySport === 'Basketball' ? 52.3 : 64.2);
+      const malePct =
+        sportBreakdown?.genders?.malePct ??
+        (primarySport === 'Handball' ? 44.5 : primarySport === 'Basketball' ? 52.3 : 64.2);
       const femalePct = sportBreakdown?.genders?.femalePct ?? (100 - malePct);
 
       // Valence
-      const valence = primarySport === 'Basketball' ? 97.4 : primarySport === 'Handball' ? 96.8 : primarySport === 'Ice Hockey' ? 95.2 : 93.8;
+      const valence =
+        primarySport === 'Basketball' ? 97.4 : primarySport === 'Handball' ? 96.8 : primarySport === 'Ice Hockey' ? 95.2 : 93.8;
 
       return {
         ...v,
-        totalSightings: estTotal,
+        totalSightings,
         malePct,
         femalePct,
         valence,
         ageDistribution: {
-          adults: Math.round(estTotal * 0.72),
-          teens: Math.round(estTotal * 0.14),
-          children: Math.round(estTotal * 0.09),
-          seniors: Math.round(estTotal * 0.05),
+          adults: Math.round(totalSightings * 0.72),
+          teens: Math.round(totalSightings * 0.14),
+          children: Math.round(totalSightings * 0.09),
+          seniors: Math.round(totalSightings * 0.05),
         },
-        topBrands: ['Tippmix', 'Szerencsejáték Zrt.', primarySport === 'Ice Hockey' ? 'Hydro' : primarySport === 'Handball' ? 'MOL' : 'Audi'],
+        topBrands: [
+          'Tippmix',
+          'Szerencsejáték Zrt.',
+          primarySport === 'Ice Hockey' ? 'Hydro' : primarySport === 'Handball' ? 'MOL' : 'Audi',
+        ],
       };
     });
   }, [matches, vision]);
@@ -625,7 +714,7 @@ export default function TerritoryMapCanvas({
   };
 
   return (
-    <div className={styles.mapPageRoot}>
+    <div className={embedded ? styles.embeddedRoot : styles.mapPageRoot}>
       {/* 1. Full-bleed GPU Map Canvas */}
       <div ref={mapContainerRef} className={styles.mapCanvasContainer} />
 
@@ -633,9 +722,21 @@ export default function TerritoryMapCanvas({
       <div className={styles.floatingTopBar}>
         <div className={styles.topBarRow}>
           <div className={styles.headerBrandPill}>
-            <a href={`/interactive-report/${partnerSlug}`} className={styles.backBtn}>
-              ← Executive Report
-            </a>
+            {embedded ? (
+              <a
+                href={`/interactive-report/${partnerSlug}/map`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className={styles.backBtn}
+                style={{ background: '#1d4ed8', color: '#ffffff' }}
+              >
+                🗺️ Fullscreen Dedicated Map ↗
+              </a>
+            ) : (
+              <a href={`/interactive-report/${partnerSlug}`} className={styles.backBtn}>
+                ← Executive Report
+              </a>
+            )}
             <h1 className={styles.pageTitle}>
               <span>🗺️ Hungary Sports Venues &amp; Demographic Territory Map</span>
               <span className={styles.liveBadge}>LIVE GEOGRAPHIC INTELLIGENCE</span>
@@ -774,6 +875,42 @@ export default function TerritoryMapCanvas({
                 🌐 Visit {selectedVenue.name} Official Website ↗
               </a>
             )}
+
+            {/* Connected Selfies Action */}
+            <button
+              type="button"
+              onClick={() => {
+                const matchedClub = vision?.aggregates?.topClubs?.find((c) =>
+                  selectedVenue.primaryClubs.some((pc) => c.club.toLowerCase().includes(pc.toLowerCase()))
+                );
+                setModalClub({
+                  club: selectedVenue.primaryClubs[0] || selectedVenue.name,
+                  partnerSlug: matchedClub?.partnerSlug,
+                  partnerId: matchedClub?.partnerId,
+                  logoUrl: matchedClub?.logoUrl,
+                  name: matchedClub?.partnerName || selectedVenue.primaryClubs[0],
+                });
+              }}
+              style={{
+                marginTop: '10px',
+                width: '100%',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: '6px',
+                padding: '8px 12px',
+                borderRadius: '8px',
+                background: '#1d4ed8',
+                color: '#ffffff',
+                border: 'none',
+                fontWeight: 700,
+                fontSize: '12px',
+                cursor: 'pointer',
+                boxShadow: '0 2px 4px rgba(29, 78, 216, 0.25)',
+              }}
+            >
+              📸 View Venue &amp; Franchise Selfies ({selectedVenue.totalSightings.toLocaleString()})
+            </button>
           </div>
 
           {/* 4 Stat Highlights */}
@@ -889,6 +1026,229 @@ export default function TerritoryMapCanvas({
           −
         </button>
       </div>
+
+      {/* 5. Connected Selfies Modal from Map Inspector */}
+      {modalClub && (
+        <div
+          style={{
+            position: 'fixed',
+            inset: 0,
+            background: 'rgba(15, 23, 42, 0.65)',
+            backdropFilter: 'blur(4px)',
+            zIndex: 99999,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            padding: '16px',
+          }}
+          onClick={() => setModalClub(null)}
+          role="dialog"
+          aria-modal="true"
+        >
+          <div
+            style={{
+              background: '#ffffff',
+              borderRadius: '14px',
+              maxWidth: '720px',
+              width: '100%',
+              maxHeight: '88vh',
+              display: 'flex',
+              flexDirection: 'column',
+              boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.2)',
+              overflow: 'hidden',
+            }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Modal Header */}
+            <div
+              style={{
+                padding: '16px 20px',
+                borderBottom: '1px solid #e2e8f0',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                background: '#f8fafc',
+              }}
+            >
+              <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                {modalClub.logoUrl ? (
+                  <div style={{ width: '44px', height: '44px', background: '#fff', borderRadius: '8px', border: '1px solid #e2e8f0', padding: '3px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img src={modalClub.logoUrl} alt={modalClub.name || modalClub.club} style={{ maxWidth: '100%', maxHeight: '100%', objectFit: 'contain' }} />
+                  </div>
+                ) : (
+                  <span style={{ fontSize: '28px' }}>🏟️</span>
+                )}
+                <div>
+                  <h3 style={{ margin: 0, fontSize: '16px', fontWeight: 700, color: '#0f172a' }}>
+                    {modalClub.name || modalClub.club}
+                  </h3>
+                  <p style={{ margin: '2px 0 0 0', fontSize: '12px', color: '#64748b' }}>
+                    Fan selfies captured at {selectedVenue.name} ({selectedVenue.city})
+                  </p>
+                </div>
+              </div>
+
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                {modalClub.partnerSlug && (
+                  <a
+                    href={`/partner-report/${modalClub.partnerSlug}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    style={{
+                      textDecoration: 'none',
+                      background: '#3b82f6',
+                      color: '#ffffff',
+                      fontSize: '12px',
+                      fontWeight: 600,
+                      padding: '6px 12px',
+                      borderRadius: '8px',
+                    }}
+                  >
+                    Open Partner Report ↗
+                  </a>
+                )}
+                <button
+                  type="button"
+                  onClick={() => setModalClub(null)}
+                  style={{
+                    background: 'none',
+                    border: 'none',
+                    fontSize: '18px',
+                    color: '#64748b',
+                    cursor: 'pointer',
+                    padding: '4px 8px',
+                  }}
+                  aria-label="Close"
+                >
+                  ✕
+                </button>
+              </div>
+            </div>
+
+            {/* Modal Body */}
+            <div style={{ padding: '20px', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '16px' }}>
+              {selfiesLoading ? (
+                <div style={{ padding: '40px', textAlign: 'center', color: '#64748b' }}>
+                  <div style={{ fontSize: '24px', marginBottom: '8px' }}>🔄</div>
+                  <div>Loading connected selfies from MongoDB database...</div>
+                </div>
+              ) : selfiesData ? (
+                <>
+                  {/* Summary Demographics */}
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(130px, 1fr))', gap: '10px' }}>
+                    <div style={{ background: '#f8fafc', padding: '10px', borderRadius: '8px', border: '1px solid #e2e8f0' }}>
+                      <div style={{ fontSize: '11px', color: '#64748b' }}>Connected Selfies</div>
+                      <div style={{ fontSize: '18px', fontWeight: 700, color: '#0f172a', marginTop: '2px' }}>
+                        {selfiesData.totalSelfies || selectedVenue.totalSightings}
+                      </div>
+                    </div>
+                    <div style={{ background: '#f8fafc', padding: '10px', borderRadius: '8px', border: '1px solid #e2e8f0' }}>
+                      <div style={{ fontSize: '11px', color: '#64748b' }}>Gender Split</div>
+                      <div style={{ fontSize: '13px', fontWeight: 600, color: '#0f172a', marginTop: '4px' }}>
+                        ♂ {selfiesData.demographics?.malePct || 50}% • ♀ {selfiesData.demographics?.femalePct || 50}%
+                      </div>
+                    </div>
+                    <div style={{ background: '#f8fafc', padding: '10px', borderRadius: '8px', border: '1px solid #e2e8f0' }}>
+                      <div style={{ fontSize: '11px', color: '#64748b' }}>Venue Atmosphere</div>
+                      <div style={{ fontSize: '14px', fontWeight: 700, color: '#166534', marginTop: '3px' }}>
+                        🎉 {selectedVenue.valence}% Valence
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Supporter Groups Filter Chips */}
+                  {selfiesData.fanGroups && selfiesData.fanGroups.length > 0 && (
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flexWrap: 'wrap' }}>
+                      <span style={{ fontSize: '11px', fontWeight: 700, color: '#334155' }}>
+                        🏴 Supporter Groups:
+                      </span>
+                      <button
+                        type="button"
+                        onClick={() => setSelectedFanGroup('all')}
+                        style={{
+                          padding: '3px 10px',
+                          fontSize: '11px',
+                          fontWeight: 600,
+                          borderRadius: '9999px',
+                          border: '1px solid',
+                          borderColor: selectedFanGroup === 'all' ? '#1d4ed8' : '#cbd5e1',
+                          background: selectedFanGroup === 'all' ? '#dbeafe' : '#ffffff',
+                          color: selectedFanGroup === 'all' ? '#1e40af' : '#475569',
+                          cursor: 'pointer',
+                        }}
+                      >
+                        All Allegiance ({selfiesData.totalSelfies || selectedVenue.totalSightings})
+                      </button>
+                      {selfiesData.fanGroups.map((fg: any) => (
+                        <button
+                          key={fg.group}
+                          type="button"
+                          onClick={() => setSelectedFanGroup(fg.group)}
+                          style={{
+                            padding: '3px 10px',
+                            fontSize: '11px',
+                            fontWeight: 600,
+                            borderRadius: '9999px',
+                            border: '1px solid',
+                            borderColor: selectedFanGroup === fg.group ? '#1d4ed8' : '#cbd5e1',
+                            background: selectedFanGroup === fg.group ? '#dbeafe' : '#ffffff',
+                            color: selectedFanGroup === fg.group ? '#1e40af' : '#475569',
+                            cursor: 'pointer',
+                          }}
+                        >
+                          🏴‍☠️ {fg.group} ({fg.count})
+                        </button>
+                      ))}
+                    </div>
+                  )}
+
+                  {/* Selfies Grid */}
+                  <div>
+                    <h4 style={{ margin: '0 0 10px 0', fontSize: '13px', fontWeight: 700, color: '#334155' }}>
+                      📸 Captured Fan Selfies ({displayModalSelfies.length})
+                    </h4>
+
+                    {displayModalSelfies.length > 0 ? (
+                      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(260px, 1fr))', gap: '10px' }}>
+                        {displayModalSelfies.map((s: any, idx: number) => (
+                          <div key={s.fileName || idx} style={{ background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '8px', padding: '10px', display: 'flex', flexDirection: 'column', gap: '6px', fontSize: '11px' }}>
+                            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                              <span style={{ fontWeight: 700, color: '#2563eb' }}>#{idx + 1} {s.sport}</span>
+                              <span style={{ color: '#64748b', fontSize: '10px' }}>👤 {s.peopleCount} spectators</span>
+                            </div>
+                            <div style={{ color: '#1e293b', lineHeight: 1.4 }}>&ldquo;{s.scene || 'Fan selfie captured at match.'}&rdquo;</div>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '4px', flexWrap: 'wrap' }}>
+                              {s.fanGroups?.map((fg: string) => (
+                                <span key={fg} style={{ fontSize: '9px', fontWeight: 700, background: '#fef3c7', color: '#92400e', padding: '1px 5px', borderRadius: '4px' }}>
+                                  🏴 {fg}
+                                </span>
+                              ))}
+                              {s.emotions?.map((e: string) => (
+                                <span key={e} style={{ fontSize: '9px', background: '#ecfdf5', color: '#065f46', padding: '1px 5px', borderRadius: '4px' }}>
+                                  {e}
+                                </span>
+                              ))}
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    ) : (
+                      <div style={{ padding: '24px', textAlign: 'center', color: '#64748b', fontSize: '12px' }}>
+                        No selfies currently matching this filter.
+                      </div>
+                    )}
+                  </div>
+                </>
+              ) : (
+                <div style={{ padding: '24px', textAlign: 'center', color: '#64748b' }}>
+                  Unable to load connected selfies. Please retry.
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
