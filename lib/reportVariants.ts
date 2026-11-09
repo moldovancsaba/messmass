@@ -163,8 +163,9 @@ export async function resolveReportVariantBaseSource(
   if (ownerType === 'organization') {
     const organizations = db.collection<OrganizationRecord>('organizations');
     const organization = ObjectId.isValid(ownerId)
-      ? await organizations.findOne({ _id: new ObjectId(ownerId) })
-      : null;
+      ? (await organizations.findOne({ _id: new ObjectId(ownerId) })) ||
+        (await organizations.findOne({ slug: ownerId }))
+      : await organizations.findOne({ slug: ownerId });
 
     if (!organization) {
       throw new Error('Organization not found');

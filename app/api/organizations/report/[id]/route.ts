@@ -68,47 +68,51 @@ export async function GET(
     const { id } = await params;
     const { searchParams } = new URL(request.url);
     const variantSlug = searchParams.get('variant');
-    if (!ObjectId.isValid(id)) {
-      return NextResponse.json({ success: false, error: 'Invalid organization id' }, { status: 400 });
-    }
 
     const db = await getDb();
     const organizations = db.collection<OrganizationRecord>('organizations');
     const partnersCollection = db.collection<PartnerRecord>('partners');
     const projectsCollection = db.collection('projects');
-    const organization = await organizations.findOne({ _id: new ObjectId(id) });
+    const organization = ObjectId.isValid(id)
+      ? (await organizations.findOne({ _id: new ObjectId(id) })) ||
+        (await organizations.findOne({ slug: id }))
+      : await organizations.findOne({ slug: id });
 
     if (organization) {
+      const orgId = organization._id;
+      const orgIdStr = orgId.toString();
+
       const assignedPartners = await partnersCollection
-        .find({ organizationId: organization._id })
+        .find({ organizationId: orgId })
         .sort({ name: 1 })
         .toArray();
 
       const partnerIds = assignedPartners.map((partner) => partner._id);
-      const allProjects = partnerIds.length
-        ? await projectsCollection
-            .find({
-              $or: [
-                { partner1: { $in: partnerIds } },
-                { partner2: { $in: partnerIds } },
-                { partner1Id: { $in: partnerIds } },
-                { partner2Id: { $in: partnerIds } },
-              ],
-            })
-            .sort({ eventDate: -1 })
-            .project({
-              _id: 1,
-              eventName: 1,
-              eventDate: 1,
-              viewSlug: 1,
-              createdAt: 1,
-              updatedAt: 1,
-              stats: 1,
-            })
-            .toArray()
-        : [];
+      const matchConditions: any[] = [{ organizationId: orgId }];
+      if (partnerIds.length > 0) {
+        matchConditions.push(
+          { partner1: { $in: partnerIds } },
+          { partner2: { $in: partnerIds } },
+          { partner1Id: { $in: partnerIds } },
+          { partner2Id: { $in: partnerIds } }
+        );
+      }
 
-      const resolvedVariant = await resolveReportVariant(db, 'organization', id, variantSlug);
+      const allProjects = await projectsCollection
+        .find({ $or: matchConditions })
+        .sort({ eventDate: -1 })
+        .project({
+          _id: 1,
+          eventName: 1,
+          eventDate: 1,
+          viewSlug: 1,
+          createdAt: 1,
+          updatedAt: 1,
+          stats: 1,
+        })
+        .toArray();
+
+      const resolvedVariant = await resolveReportVariant(db, 'organization', orgIdStr, variantSlug);
       if (!resolvedVariant.runtimeReport.report) {
         throw new Error('Failed to resolve organization report');
       }
