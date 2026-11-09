@@ -15,9 +15,12 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ success: false, error: 'Administrator access required.' }, { status: 403 });
     }
 
-    const rawLimit = Number(new URL(request.url).searchParams.get('limit'));
+    const url = new URL(request.url);
+    const rawLimit = Number(url.searchParams.get('limit'));
     const limit = Number.isFinite(rawLimit) && rawLimit > 0 ? Math.min(Math.trunc(rawLimit), 500) : 200;
-    return NextResponse.json({ success: true, data: await getAiPhotoEvents(limit) });
+    const sourceParam = url.searchParams.get('source') || undefined;
+    const source = sourceParam === 'camera' || sourceParam === 'local_storage' ? sourceParam : undefined;
+    return NextResponse.json({ success: true, data: await getAiPhotoEvents(limit, source) });
   } catch (error) {
     console.error('AI photo analytics failed:', error);
     return NextResponse.json(

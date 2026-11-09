@@ -5,6 +5,7 @@ export interface AiPhotoEventRow {
   eventId: string;
   eventName: string;
   eventDate: string | null;
+  sources?: string[];
   photoResultsReceived: number;
   peopleDetections: number;
   personBoxes: number;
@@ -39,10 +40,11 @@ function finiteNumber(value: unknown): number {
  * results Messmass received, not a claim that every eligible Camera photo has
  * been processed. Camera owns that denominator and event completion status.
  */
-export async function getAiPhotoEvents(limit = 500): Promise<{
+export async function getAiPhotoEvents(limit = 500, source?: string): Promise<{
   events: AiPhotoEventRow[];
   total: number;
   totals: AiPhotoAnalyticsTotals;
+  sourceCounts: { all: number; camera: number; local_storage: number };
 }> {
   const db = await getDb();
   const toNumber = (input: unknown) => ({
@@ -71,39 +73,76 @@ export async function getAiPhotoEvents(limit = 500): Promise<{
     },
   };
 
-  const grouped = await db.collection('fanmass_camera_photo_analyses').aggregate<{
-    _id: string;
-    photoResultsReceived: number;
-    peopleDetections: number;
-    personBoxes: number;
-    faceBoxes: number;
-    brandAppearances: number;
-    clubAppearances: number;
-    merchandiseDetections: number;
-    moderationPhotosReviewed: number;
-    moderationFlaggedPhotos: number;
-    lastAnalyzedAt: string | null;
-  }>([
-    { $match: { status: 'completed', tombstone: { $ne: true } } },
-    {
-      $group: {
-        _id: '$eventId',
-        photoResultsReceived: { $sum: 1 },
-        peopleDetections: { $sum: toNumber('$summary.peopleCounts.measured') },
-        personBoxes: { $sum: { $size: safeArray('$boxes.people') } },
-        faceBoxes: { $sum: { $size: safeArray('$boxes.faces') } },
-        brandAppearances: { $sum: sumNamedCounts('$summary.brandMentions') },
-        clubAppearances: { $sum: sumNamedCounts('$summary.clubMentions') },
-        merchandiseDetections: { $sum: merchandiseSum },
-        moderationPhotosReviewed: { $sum: { $cond: [{ $eq: ['$summary.moderation.status', 'completed'] }, 1, 0] } },
-        moderationFlaggedPhotos: { $sum: { $cond: [{ $and: [
-          { $eq: ['$summary.moderation.status', 'completed'] },
-          { $eq: ['$summary.moderation.flagged', true] },
-        ] }, 1, 0] } },
-        lastAnalyzedAt: { $max: '$analyzedAt' },
+  const matchFilter: Record<string, unknown> = {
+    status: 'completed',
+    tombstone: { $ne: true },
+  };
+
+  if (source === 'camera') {
+    matchFilter.source = { $in: ['camera', null] };
+  } else if (source === 'local_storage') {
+    matchFilter.source = 'local_storage';
+  }
+
+  const [grouped, sourceAggregation] = await Promise.all([
+    db.collection('fanmass_camera_photo_analyses').aggregate<{
+      _id: string;
+      sources: string[];
+      photoResultsReceived: number;
+      peopleDetections: number;
+      personBoxes: number;
+      faceBoxes: number;
+      brandAppearances: number;
+      clubAppearances: number;
+      merchandiseDetections: number;
+      moderationPhotosReviewed: number;
+      moderationFlaggedPhotos: number;
+      lastAnalyzedAt: string | null;
+    }>([
+      { $match: matchFilter },
+      {
+        $group: {
+          _id: '$eventId',
+          sources: { $addToSet: { $ifNull: ['$source', 'camera'] } },
+          photoResultsReceived: { $sum: 1 },
+          peopleDetections: { $sum: toNumber('$summary.peopleCounts.measured') },
+          personBoxes: { $sum: { $size: safeArray('$boxes.people') } },
+          faceBoxes: { $sum: { $size: safeArray('$boxes.faces') } },
+          brandAppearances: { $sum: sumNamedCounts('$summary.brandMentions') },
+          clubAppearances: { $sum: sumNamedCounts('$summary.clubMentions') },
+          merchandiseDetections: { $sum: merchandiseSum },
+          moderationPhotosReviewed: { $sum: { $cond: [{ $eq: ['$summary.moderation.status', 'completed'] }, 1, 0] } },
+          moderationFlaggedPhotos: { $sum: { $cond: [{ $and: [
+            { $eq: ['$summary.moderation.status', 'completed'] },
+            { $eq: ['$summary.moderation.flagged', true] },
+          ] }, 1, 0] } },
+          lastAnalyzedAt: { $max: '$analyzedAt' },
+        },
       },
-    },
-  ]).toArray();
+    ]).toArray(),
+    db.collection('fanmass_camera_photo_analyses').aggregate<{
+      _id: string | null;
+      count: number;
+    }>([
+      { $match: { status: 'completed', tombstone: { $ne: true } } },
+      { $group: { _id: '$source', count: { $sum: 1 } } },
+    ]).toArray(),
+  ]);
+
+  let cameraCount = 0;
+  let localStorageCount = 0;
+  for (const row of sourceAggregation) {
+    if (row._id === 'local_storage') {
+      localStorageCount += finiteNumber(row.count);
+    } else {
+      cameraCount += finiteNumber(row.count);
+    }
+  }
+  const sourceCounts = {
+    all: cameraCount + localStorageCount,
+    camera: cameraCount,
+    local_storage: localStorageCount,
+  };
 
   const eventIds = grouped.map((row) => String(row._id)).filter(ObjectId.isValid).map((id) => new ObjectId(id));
   const projectDocs = eventIds.length
@@ -121,6 +160,7 @@ export async function getAiPhotoEvents(limit = 500): Promise<{
       eventId,
       eventName: String(project?.eventName || 'Unlinked Messmass event'),
       eventDate: project?.eventDate ? String(project.eventDate) : null,
+      sources: Array.isArray(row.sources) ? row.sources : undefined,
       photoResultsReceived: finiteNumber(row.photoResultsReceived),
       peopleDetections: finiteNumber(row.peopleDetections),
       personBoxes: finiteNumber(row.personBoxes),
@@ -158,5 +198,5 @@ export async function getAiPhotoEvents(limit = 500): Promise<{
     moderationFlaggedPhotos: 0,
   });
 
-  return { events: events.slice(0, Math.min(Math.max(limit, 1), 500)), total: events.length, totals };
+  return { events: events.slice(0, Math.min(Math.max(limit, 1), 500)), total: events.length, totals, sourceCounts };
 }
