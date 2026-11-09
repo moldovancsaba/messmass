@@ -87,9 +87,11 @@ export async function POST() {
     // Get all partners
     const partners = await partnersCollection.find({}).toArray();
 
-    // Get all projects without partner1
+    // Get all projects without partner1 (either undefined or null)
     const projects = await projectsCollection
-      .find({ partner1: { $exists: false } })
+      .find({
+        $or: [{ partner1: null }, { partner1: { $exists: false } }],
+      })
       .toArray();
 
     let updated = 0;
