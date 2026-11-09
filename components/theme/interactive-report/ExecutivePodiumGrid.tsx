@@ -43,19 +43,23 @@ export default function ExecutivePodiumGrid({
   onSelectBrand,
 }: ExecutivePodiumGridProps) {
   // Take top commercial brands (filter out nulls/empties)
-  const sortedBrands = brands.filter((b) => b.brand && b.count > 0).slice(0, 10);
+  const sortedBrands = brands.filter((b) => b.brand && b.count > 0).slice(0, 20);
+  const hasBrandPodium = sortedBrands.length >= 3;
   const brand1 = sortedBrands[0];
   const brand2 = sortedBrands[1];
   const brand3 = sortedBrands[2];
-  const remainingBrands = sortedBrands.slice(0, 8); // Top 8 in ranked list
+  // If top 3 are featured on the Olympic podium, continue the list below from Rank 4
+  const remainingBrands = hasBrandPodium ? sortedBrands.slice(3, 11) : sortedBrands;
   const maxBrandCount = brand1?.count || 1;
 
   // Take top clubs (filter out nulls/empties)
-  const sortedClubs = clubs.filter((c) => c.club && c.count > 0).slice(0, 10);
+  const sortedClubs = clubs.filter((c) => c.club && c.count > 0).slice(0, 20);
+  const hasClubPodium = sortedClubs.length >= 3;
   const club1 = sortedClubs[0];
   const club2 = sortedClubs[1];
   const club3 = sortedClubs[2];
-  const remainingClubs = sortedClubs.slice(0, 8); // Top 8 in ranked list
+  // If top 3 are featured on the Olympic podium, continue the list below from Rank 4
+  const remainingClubs = hasClubPodium ? sortedClubs.slice(3, 11) : sortedClubs;
   const maxClubCount = club1?.count || 1;
 
   return (
@@ -189,7 +193,7 @@ export default function ExecutivePodiumGrid({
                 onClick={() => onSelectBrand?.(b.brand)}
                 title={`${b.brand}: ${b.count} appearances (${pct}%)`}
               >
-                <span className={styles.rankNumber}>{idx + 1}</span>
+                <span className={styles.rankNumber}>{hasBrandPodium ? idx + 4 : idx + 1}</span>
                 <div className={styles.rowLogoWrap}>
                   {b.logoUrl ? (
                     <img
@@ -350,7 +354,7 @@ export default function ExecutivePodiumGrid({
                 onClick={() => onSelectClub(c)}
                 title={`Click to view selfies for ${c.partnerName || c.club}: ${c.count} appearances (${pct}%)`}
               >
-                <span className={styles.rankNumber}>{idx + 1}</span>
+                <span className={styles.rankNumber}>{hasClubPodium ? idx + 4 : idx + 1}</span>
                 <div className={styles.rowLogoWrap}>
                   {c.logoUrl ? (
                     <img
