@@ -2,7 +2,7 @@
 /* eslint-disable react/forbid-dom-props */
 /* eslint-disable @next/next/no-img-element */
 
-import React from 'react';
+import React, { useMemo } from 'react';
 import styles from './executive-view.module.css';
 
 export interface CommercialBrandStat {
@@ -61,8 +61,24 @@ export default function ExecutivePodiumGrid({
   const remainingBrands = hasBrandPodium ? sortedBrands.slice(3, 11) : sortedBrands;
   const maxBrandCount = brand1?.count || 1;
 
-  // Take top clubs (filter out nulls/empties)
-  const sortedClubs = clubs.filter((c) => c.club && c.count > 0).slice(0, 20);
+  // Take top clubs (filter out nulls/empties and consolidate identical display names)
+  const consolidatedClubs = useMemo(() => {
+    const map = new Map<string, ClubPodiumStat>();
+    for (const c of clubs) {
+      if (!c.club || c.count <= 0) continue;
+      const key = (c.partnerName || c.club).toLowerCase().trim();
+      const existing = map.get(key);
+      if (existing) {
+        existing.count += c.count;
+        if (!existing.logoUrl && c.logoUrl) existing.logoUrl = c.logoUrl;
+      } else {
+        map.set(key, { ...c });
+      }
+    }
+    return Array.from(map.values()).sort((a, b) => b.count - a.count);
+  }, [clubs]);
+
+  const sortedClubs = consolidatedClubs.slice(0, 20);
   const hasClubPodium = sortedClubs.length >= 3;
   const club1 = sortedClubs[0];
   const club2 = sortedClubs[1];
@@ -395,7 +411,7 @@ export default function ExecutivePodiumGrid({
 
         {/* Ranked List Below Podium */}
         <div className={styles.rankedList}>
-          {remainingClubs.map((c, idx) => {
+          {remainingClubs.map((c: ClubPodiumStat, idx: number) => {
             const pct =
               totalPhotosProcessed > 0
                 ? Math.min(100, Math.round((c.count / totalPhotosProcessed) * 1000) / 10)

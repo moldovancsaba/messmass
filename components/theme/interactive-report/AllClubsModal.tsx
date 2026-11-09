@@ -26,15 +26,25 @@ export default function AllClubsModal({
   const filteredClubs = useMemo(() => {
     // Deduplicate incoming clubs list by partner or display name
     const clubMap = new Map<string, ClubPodiumStat>();
+    const partnerIdToKey = new Map<string, string>();
     for (const c of clubs) {
       if (!c.club || c.count <= 0) continue;
-      const entityKey = c.partnerId || (c.partnerName ? c.partnerName.toLowerCase().trim() : c.club.toLowerCase().trim());
-      const existing = clubMap.get(entityKey);
+      const canonicalKey = (c.partnerName || c.club).toLowerCase().trim();
+      let targetKey = canonicalKey;
+      if (c.partnerId && partnerIdToKey.has(c.partnerId)) {
+        targetKey = partnerIdToKey.get(c.partnerId)!;
+      }
+      const existing = clubMap.get(targetKey);
       if (existing) {
         existing.count += c.count;
         if (!existing.logoUrl && c.logoUrl) existing.logoUrl = c.logoUrl;
+        if (!existing.partnerId && c.partnerId) existing.partnerId = c.partnerId;
+        if (!existing.partnerName && c.partnerName) existing.partnerName = c.partnerName;
       } else {
-        clubMap.set(entityKey, { ...c });
+        clubMap.set(targetKey, { ...c });
+        if (c.partnerId) {
+          partnerIdToKey.set(c.partnerId, targetKey);
+        }
       }
     }
     const dedupedClubs = Array.from(clubMap.values()).sort((a, b) => b.count - a.count);

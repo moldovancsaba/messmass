@@ -193,7 +193,8 @@ export async function getScopedInteractiveReportData(
         sport = 'Basketball';
       }
 
-      const cleanName = rawMatchName
+      const cleanName = rawMatchName
+
         .replace(/^[⚽ððð¤¾ð¸\s]+/, '')
         .replace(/#/g, ' vs ')
         .trim();
@@ -250,7 +251,8 @@ export async function getScopedInteractiveReportData(
       let sport: MatchItem['sport'] = 'Football';
       const combined = `${p.eventName} ${partnerName}`.toLowerCase();
       if (
-        combined.includes('jégkorong') ||
+        combined.includes('jégkorong') ||
+
         combined.includes('hoki') ||
         combined.includes('av19') ||
         combined.includes('vsv')
@@ -812,19 +814,29 @@ export async function getScopedInteractiveReportData(
 
       // Deduplicate and merge by partner or canonical display identity (INV-003, INV-001)
       const uniqueClubEntityMap = new Map<string, (typeof rawEnrichedClubs)[0]>();
+      const partnerIdToKey = new Map<string, string>();
       for (const item of rawEnrichedClubs) {
-        // Unique identity key: partnerId > partnerName > club name
-        const entityKey = item.partnerId || item.partnerName?.toLowerCase().trim() || item.club.toLowerCase().trim();
-        const existing = uniqueClubEntityMap.get(entityKey);
+        // Canonical entity key ensures items with and without partnerId merge cleanly
+        const canonicalKey = (item.partnerName || item.club).toLowerCase().trim();
+        let targetKey = canonicalKey;
+        if (item.partnerId && partnerIdToKey.has(item.partnerId)) {
+          targetKey = partnerIdToKey.get(item.partnerId)!;
+        }
+
+        const existing = uniqueClubEntityMap.get(targetKey);
         if (existing) {
           existing.count += item.count;
           if (!existing.logoUrl && item.logoUrl) existing.logoUrl = item.logoUrl;
           if (!existing.partnerName && item.partnerName) existing.partnerName = item.partnerName;
+          if (!existing.partnerId && item.partnerId) existing.partnerId = item.partnerId;
           if (!existing.partnerSlug && item.partnerSlug) existing.partnerSlug = item.partnerSlug;
           if (!existing.homeVenue && item.homeVenue) existing.homeVenue = item.homeVenue;
           if (!existing.website && item.website) existing.website = item.website;
         } else {
-          uniqueClubEntityMap.set(entityKey, { ...item });
+          uniqueClubEntityMap.set(targetKey, { ...item });
+          if (item.partnerId) {
+            partnerIdToKey.set(item.partnerId, targetKey);
+          }
         }
       }
 

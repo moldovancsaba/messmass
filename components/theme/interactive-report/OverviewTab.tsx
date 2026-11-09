@@ -157,6 +157,7 @@ export default function OverviewTab({
   const filteredClubs = useMemo(() => {
     const rawClubs = vision?.aggregates?.topClubs || [];
     const clubMap = new Map<string, ClubPodiumStat>();
+    const partnerIdToKey = new Map<string, string>();
 
     for (const c of rawClubs) {
       if (!c.club || c.count <= 0) continue;
@@ -164,18 +165,28 @@ export default function OverviewTab({
       if (!canonical) continue;
 
       const canonicalName = canonical.canonicalName;
-      // Unique identity key: partnerId > partnerName > canonicalName
-      const entityKey = c.partnerId || (c.partnerName ? c.partnerName.toLowerCase().trim() : canonicalName.toLowerCase().trim());
-      const existing = clubMap.get(entityKey);
+      const canonicalKey = canonicalName.toLowerCase().trim();
+      let targetKey = canonicalKey;
+      if (c.partnerId && partnerIdToKey.has(c.partnerId)) {
+        targetKey = partnerIdToKey.get(c.partnerId)!;
+      }
+
+      const existing = clubMap.get(targetKey);
       if (existing) {
         existing.count += c.count;
         if (!existing.logoUrl && c.logoUrl) existing.logoUrl = c.logoUrl;
+        if (!existing.partnerId && c.partnerId) existing.partnerId = c.partnerId;
+        if (!existing.partnerName && c.partnerName) existing.partnerName = c.partnerName;
+        if (!existing.partnerSlug && c.partnerSlug) existing.partnerSlug = c.partnerSlug;
       } else {
-        clubMap.set(entityKey, {
+        clubMap.set(targetKey, {
           ...c,
           club: c.partnerName || canonicalName,
           sport: c.sport || canonical.franchise?.sport,
         });
+        if (c.partnerId) {
+          partnerIdToKey.set(c.partnerId, targetKey);
+        }
       }
     }
 
