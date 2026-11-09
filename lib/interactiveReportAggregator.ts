@@ -49,6 +49,27 @@ export async function getScopedInteractiveReportData(
       organizationId: query.organizationId,
     });
     if (cached) {
+      if (cached.vision) {
+        try {
+          const liveDoc = await db.collection('szrt_vision_progress').findOne({ _id: 'szrt_progress' as any });
+          if (liveDoc) {
+            cached.vision.processedCount = liveDoc.processedCount || cached.vision.processedCount;
+            cached.vision.percent = liveDoc.percent || cached.vision.percent;
+            cached.vision.status = liveDoc.status || cached.vision.status;
+            cached.vision.currentSport = liveDoc.currentSport || cached.vision.currentSport;
+            cached.vision.currentFile = liveDoc.currentFile || cached.vision.currentFile;
+            cached.vision.lastUpdated = liveDoc.lastUpdated || cached.vision.lastUpdated;
+            if (liveDoc.aggregates?.sportsBreakdown) {
+              cached.vision.aggregates.sportsBreakdown = liveDoc.aggregates.sportsBreakdown;
+            }
+            if (liveDoc.aggregates?.totalPeople) {
+              cached.vision.aggregates.totalPeople = liveDoc.aggregates.totalPeople;
+            }
+          }
+        } catch {
+          // fallback to snapshot numbers
+        }
+      }
       return cached;
     }
   } catch (err) {

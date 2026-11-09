@@ -36,13 +36,23 @@ export default function InteractiveReportDashboard({ initialData }: InteractiveR
           const json = await res.json();
           const liveVision = json.vision || json.data?.vision;
           if (liveVision) {
-            setData((prev) => ({ ...prev, vision: liveVision }));
+            setData((prev) => ({
+              ...prev,
+              vision: {
+                ...(prev.vision || {}),
+                ...liveVision,
+                aggregates: {
+                  ...(prev.vision?.aggregates || {}),
+                  ...(liveVision.aggregates || {}),
+                },
+              },
+            }));
           }
         }
       } catch {
         // Silently continue on network jitter
       }
-    }, 4000);
+    }, 3000);
 
     return () => clearInterval(interval);
     // eslint-disable-next-line react-hooks/exhaustive-deps

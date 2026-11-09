@@ -31,7 +31,7 @@ export default function FanmassVisionSection({
   const [vision, setVision] = useState<VisionProgressData>(initialVision);
   const [selectedSport, setSelectedSport] = useState<string>('all');
 
-  // Poll for live stream updates every 4 seconds while running
+  // Poll for live stream updates every 3 seconds while running
   useEffect(() => {
     if (vision.status !== 'running') return;
 
@@ -42,13 +42,20 @@ export default function FanmassVisionSection({
           const json = await res.json();
           const liveVision = json.vision || json.data?.vision;
           if (liveVision) {
-            setVision(liveVision);
+            setVision((prev) => ({
+              ...prev,
+              ...liveVision,
+              aggregates: {
+                ...(prev.aggregates || {}),
+                ...(liveVision.aggregates || {}),
+              },
+            }));
           }
         }
       } catch {
         // Silently continue polling on network jitter
       }
-    }, 4000);
+    }, 3000);
 
     return () => clearInterval(interval);
   }, [vision.status, partnerSlug]);
