@@ -159,10 +159,16 @@
   gap: var(--mm-space-2);
   margin-top: var(--mm-space-5);
   background: var(--mm-white);
-  padding: var(--mm-space-2);
+  padding: 6px;
   border-radius: var(--mm-radius-xl);
   border: 1px solid var(--mm-gray-200);
   overflow-x: auto;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.tabNav::-webkit-scrollbar {
+  display: none;
 }
 
 .tabBtn {
@@ -170,13 +176,13 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: var(--mm-space-2);
-  padding: var(--mm-space-3) var(--mm-space-5);
+  gap: 6px;
+  padding: 8px 14px;
   border-radius: var(--mm-radius-lg);
   border: none;
   background: transparent;
   color: var(--mm-gray-600);
-  font-size: var(--mm-font-size-sm);
+  font-size: 13px;
   font-weight: var(--mm-font-weight-semibold);
   cursor: pointer;
   white-space: nowrap;
