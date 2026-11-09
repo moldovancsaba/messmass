@@ -129,9 +129,11 @@ export async function middleware(request: NextRequest) {
     "default-src 'self'",
     `script-src 'self' 'unsafe-inline'${allowEval} https://www.googletagmanager.com https://vercel.live`,
     "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com", // Allow Material Icons stylesheet from Google Fonts
-    "img-src 'self' data: https:", // Allow images from same origin, data URIs, and HTTPS
+    "img-src 'self' data: blob: https:", // Allow images from same origin, data URIs, blob URIs, and HTTPS
     "font-src 'self' data: https://fonts.gstatic.com https://vercel.live", // Allow Material Icons fonts from Google Fonts CDN and Vercel Live fonts
-    "connect-src 'self' https://www.googletagmanager.com https://vercel.live https://*.google-analytics.com https://*.analytics.google.com wss://*.pusher.com https://api.imgbb.com https://vercel.com", // Allow Google Analytics, Vercel Live connections, the Vercel toolbar's Pusher WebSocket (messmass has no Pusher code of its own; Vercel documents `wss://ws-us3.pusher.com` next to vercel.live for the toolbar and Comments on preview deployments), direct browser-to-ImgBB mirror uploads, and direct browser-to-Blob primary uploads (client SDK calls vercel.com/api/blob)
+    "connect-src 'self' https://www.googletagmanager.com https://vercel.live https://*.google-analytics.com https://*.analytics.google.com wss://*.pusher.com https://api.imgbb.com https://vercel.com https://*.tile.openstreetmap.org https://demotiles.maplibre.org https://basemaps.cartocdn.com https://*.basemaps.cartocdn.com", // Allow Google Analytics, Vercel Live connections, the Vercel toolbar's Pusher WebSocket, ImgBB, Blob, and MapLibre/Carto/OSM geographic map tiles and fonts
+    "worker-src 'self' blob:", // Allow Web Workers (MapLibre GL GPU vector/raster tiling worker)
+    "child-src 'self' blob:", // Fallback for older browsers
     "frame-src 'self' https://vercel.live", // Allow Vercel Live feedback iframe
     "frame-ancestors 'none'", // Prevent clickjacking
     "base-uri 'self'", // Restrict base tag

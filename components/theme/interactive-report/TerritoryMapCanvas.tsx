@@ -427,6 +427,7 @@ export default function TerritoryMapCanvas({
     if (!mapContainerRef.current) return;
 
     let isMounted = true;
+    let resizeHandler: (() => void) | null = null;
 
     // Dynamically import MapLibre GL
     import('maplibre-gl').then(({ Map }) => {
@@ -440,31 +441,25 @@ export default function TerritoryMapCanvas({
             basemap: {
               type: 'raster',
               tiles: [
-                'https://a.tile.openstreetmap.org/{z}/{x}/{y}.png',
-                'https://b.tile.openstreetmap.org/{z}/{x}/{y}.png',
-                'https://c.tile.openstreetmap.org/{z}/{x}/{y}.png',
+                'https://a.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png',
+                'https://b.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png',
+                'https://c.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png',
+                'https://d.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png',
               ],
               tileSize: 256,
-              attribution: '&copy; OpenStreetMap contributors',
+              attribution: '&copy; OpenStreetMap contributors &copy; CARTO',
             },
           },
+          glyphs: 'https://demotiles.maplibre.org/font/{fontstack}/{range}.pbf',
           layers: [
             {
               id: 'basemap',
               type: 'raster',
               source: 'basemap',
               paint: {
-                'raster-saturation': -0.75,
-                'raster-contrast': 0.1,
-                'raster-brightness-max': 0.95,
-              },
-            },
-            {
-              id: 'basemap-wash',
-              type: 'background',
-              paint: {
-                'background-color': '#f8fafc',
-                'background-opacity': 0.18,
+                'raster-saturation': -0.2,
+                'raster-contrast': 0.05,
+                'raster-brightness-max': 0.98,
               },
             },
           ],
@@ -482,8 +477,14 @@ export default function TerritoryMapCanvas({
         touchPitch: false,
       });
 
+      resizeHandler = () => {
+        map.resize();
+      };
+      window.addEventListener('resize', resizeHandler);
+
       map.on('load', () => {
         if (!isMounted) return;
+        map.resize();
 
         // GeoJSON source with clustering
         const geojsonFeatures = venuesWithMetrics.map((v) => ({
@@ -540,7 +541,7 @@ export default function TerritoryMapCanvas({
           layout: {
             'text-field': '{point_count_abbreviated}',
             'text-size': 12,
-            'text-font': ['Open Sans Bold', 'Arial Unicode MS Bold'],
+            'text-font': ['Open Sans Regular', 'Arial Unicode MS Regular'],
           },
           paint: {
             'text-color': '#ffffff',
@@ -605,7 +606,7 @@ export default function TerritoryMapCanvas({
             'text-size': 11,
             'text-anchor': 'top',
             'text-offset': [0, 1.2],
-            'text-font': ['Open Sans Semibold', 'Arial Unicode MS Bold'],
+            'text-font': ['Open Sans Regular', 'Arial Unicode MS Regular'],
           },
           paint: {
             'text-color': '#0f172a',
@@ -673,6 +674,9 @@ export default function TerritoryMapCanvas({
 
     return () => {
       isMounted = false;
+      if (resizeHandler) {
+        window.removeEventListener('resize', resizeHandler);
+      }
       if (mapRef.current) {
         mapRef.current.remove();
         mapRef.current = null;
