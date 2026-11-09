@@ -145,12 +145,14 @@ export default function OverviewTab({
 
   // Strict separation: Filter commercial brands vs sports clubs
   const filteredBrands = useMemo(() => {
-    const rawBrands = vision?.aggregates?.topBrands || [];
+    const rawBrands = (!isAll && activeSportBreakdown?.topBrands && activeSportBreakdown.topBrands.length > 0)
+      ? activeSportBreakdown.topBrands
+      : (vision?.aggregates?.topBrands || []);
     return rawBrands.filter((b) => {
       if (!b.brand || b.count <= 0) return false;
       return !isSportFranchise(b.brand) && !isVenue(b.brand);
     });
-  }, [vision?.aggregates?.topBrands]);
+  }, [isAll, activeSportBreakdown?.topBrands, vision?.aggregates?.topBrands]);
 
   const filteredClubs = useMemo(() => {
     const rawClubs = vision?.aggregates?.topClubs || [];

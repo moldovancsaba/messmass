@@ -76,13 +76,33 @@ export default function FanmassVisionSection({
   const displayFemalePct = activeSportData?.genders?.femalePct ?? aggregates.genders.femalePct;
   const displayAge = activeSportData?.ageGroups ?? aggregates.ageGroups;
 
-  const totalEmotionsCount = aggregates.topEmotions.reduce((acc, e) => acc + e.count, 0);
-  const positiveEmotions = aggregates.topEmotions.filter(
-    (e) => e.emotion.toLowerCase() !== 'neutral' && e.emotion.toLowerCase() !== 'focused'
-  );
-  const positiveCount = positiveEmotions.reduce((acc, e) => acc + e.count, 0);
-  const celebrationValence =
-    totalEmotionsCount > 0 ? ((positiveCount / totalEmotionsCount) * 100).toFixed(1) : '96.2';
+  // Sport-specific brands & emotions
+  const displayBrands = isAll
+    ? aggregates.topBrands
+    : (activeSportData?.topBrands && activeSportData.topBrands.length > 0
+        ? activeSportData.topBrands
+        : aggregates.topBrands);
+
+  const displayBrandCount = isAll
+    ? aggregates.topBrands.length
+    : (activeSportData?.distinctBrandsCount ?? displayBrands.length);
+
+  const displayEmotions = isAll
+    ? aggregates.topEmotions
+    : (activeSportData?.topEmotions && activeSportData.topEmotions.length > 0
+        ? activeSportData.topEmotions
+        : aggregates.topEmotions);
+
+  const celebrationValence = !isAll && activeSportData?.valence !== undefined
+    ? activeSportData.valence.toFixed(1)
+    : (() => {
+        const totalEmotionsCount = displayEmotions.reduce((acc, e) => acc + e.count, 0);
+        const positiveEmotions = displayEmotions.filter(
+          (e) => e.emotion.toLowerCase() !== 'neutral' && e.emotion.toLowerCase() !== 'focused'
+        );
+        const positiveCount = positiveEmotions.reduce((acc, e) => acc + e.count, 0);
+        return totalEmotionsCount > 0 ? ((positiveCount / totalEmotionsCount) * 100).toFixed(1) : '91.3';
+      })();
 
   const filteredRecentImages = isAll
     ? recentImages
@@ -210,15 +230,17 @@ export default function FanmassVisionSection({
         {/* KPI 2: Detected Brands & Logos */}
         <div className={styles.visionMiniCard}>
           <div className={styles.miniCardIcon}>🏷️</div>
-          <div className={styles.miniCardTitle}>Detected Brands & Logos</div>
+          <div className={styles.miniCardTitle}>
+            {isAll ? 'Detected Brands & Logos' : `${selectedSport} Brands & Logos`}
+          </div>
           <div className={styles.miniCardVal}>
-            {aggregates.topBrands.length} Brands
+            {displayBrandCount} Brands
           </div>
           <div className={styles.miniCardSub}>
-            Sponsor emblems, kits & arena partner signage
+            {isAll ? 'Sponsor emblems, kits & arena partner signage' : `Sponsor emblems & kit wear in ${selectedSport}`}
           </div>
           <div className={styles.tagChipsWrap}>
-            {aggregates.topBrands.slice(0, 5).map((b) => (
+            {displayBrands.slice(0, 5).map((b) => (
               <span key={b.brand} className={styles.brandChip}>
                 {b.brand} ({b.count})
               </span>
@@ -229,15 +251,17 @@ export default function FanmassVisionSection({
         {/* KPI 3: Stadium Valence & Atmosphere */}
         <div className={styles.visionMiniCard}>
           <div className={styles.miniCardIcon}>😊</div>
-          <div className={styles.miniCardTitle}>Atmosphere & Valence</div>
+          <div className={styles.miniCardTitle}>
+            {isAll ? 'Atmosphere & Valence' : `${selectedSport} Atmosphere`}
+          </div>
           <div className={styles.miniCardVal}>
             {celebrationValence}%
           </div>
           <div className={styles.miniCardSub}>
-            Positive celebration & cheering sentiment
+            {isAll ? 'Positive celebration & cheering sentiment' : `Empirical celebration valence in ${selectedSport}`}
           </div>
           <div className={styles.tagChipsWrap}>
-            {aggregates.topEmotions.slice(0, 4).map((e) => (
+            {displayEmotions.slice(0, 4).map((e) => (
               <span key={e.emotion} className={styles.emotionChip}>
                 {e.emotion} ({e.count})
               </span>

@@ -943,6 +943,25 @@ export async function getScopedInteractiveReportData(
 
       const enrichedClubs = Array.from(uniqueClubEntityMap.values()).sort((a, b) => b.count - a.count);
 
+      // Enrich sport-specific brand assets and metrics in sportsBreakdown
+      const rawSportsBreakdown = visionDoc.aggregates?.sportsBreakdown || {};
+      const enrichedSportsBreakdown: Record<string, any> = {};
+      for (const [sKey, sVal] of Object.entries(rawSportsBreakdown)) {
+        const valObj = sVal as any;
+        const sTopBrands = (valObj.topBrands || []).map((b: any) => {
+          const match = brandMap.get(b.brand) || brandMap.get(b.brand.toLowerCase());
+          return {
+            brand: b.brand,
+            count: b.count,
+            logoUrl: match?.logoUrl || undefined,
+          };
+        });
+        enrichedSportsBreakdown[sKey] = {
+          ...valObj,
+          topBrands: sTopBrands,
+        };
+      }
+
       vision = {
         totalImages: visionDoc.totalImages || 11312,
         processedCount: visionDoc.processedCount || 0,
@@ -970,7 +989,7 @@ export async function getScopedInteractiveReportData(
           topVenues: visionDoc.aggregates?.topVenues || [],
           topEmotions: visionDoc.aggregates?.topEmotions || [],
           merchandise: visionDoc.aggregates?.merchandise || undefined,
-          sportsBreakdown: visionDoc.aggregates?.sportsBreakdown || {},
+          sportsBreakdown: enrichedSportsBreakdown,
         },
         recentImages: latestAnalyzedImages.length > 0
           ? latestAnalyzedImages.map((img: any) => ({

@@ -153,6 +153,10 @@ export interface VisionProgressData {
           adults: number;
           seniors: number;
         };
+        topBrands?: Array<{ brand: string; count: number; logoUrl?: string }>;
+        distinctBrandsCount?: number;
+        topEmotions?: Array<{ emotion: string; count: number }>;
+        valence?: number;
       }
     >;
   };
