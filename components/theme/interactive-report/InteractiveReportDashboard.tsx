@@ -66,25 +66,14 @@ export default function InteractiveReportDashboard({ initialData }: InteractiveR
 
       {/* Tab 1: Executive Overview */}
       {activeTab === 'overview' && (
-        <>
-          {data.vision && (
-            <FanmassVisionSection
-              vision={data.vision}
-              partnerSlug={data.partner.viewSlug || 'szrt'}
-              compact={true}
-              matches={data.matches}
-              onExploreDashboard={() => setActiveTab('vision')}
-              onViewTerritoryMap={() => setActiveTab('territory')}
-            />
-          )}
-          <OverviewTab
-            data={data}
-            selectedPeriodId={selectedPeriodId}
-            onSelectPeriod={setSelectedPeriodId}
-            onViewBubble={() => setActiveTab('bubble')}
-            onViewFunnel={() => setActiveTab('funnel')}
-          />
-        </>
+        <OverviewTab
+          data={data}
+          selectedPeriodId={selectedPeriodId}
+          onSelectPeriod={setSelectedPeriodId}
+          onViewBubble={() => setActiveTab('bubble')}
+          onViewFunnel={() => setActiveTab('funnel')}
+          onViewTerritoryMap={() => setActiveTab('territory')}
+        />
       )}
 
       {/* Tab: Dedicated Fanmass Vision AI */}
