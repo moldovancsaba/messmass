@@ -8,7 +8,7 @@ camera/fanmass/try-on/savetheworld carry pointers to it
 (savetheworld: `docs/_audit/savetheworld-in-the-fleet.md`). Header-less by
 design (docs:audit version gate).
 
-Verified messmass `5cc610c2` (E2 and E4 only, 2026-10-11, see below) · camera
+Verified messmass `1f33bf54` (E2 and E4 only, 2026-11-09, see below) · camera
 `ccd77d5` · fanmass `7268cf7` · try-on `1ccd284` · savetheworld `d87c776`
 (2026-09-28). Everything else on the messmass side was last read at `dd34e229`.
 
@@ -323,7 +323,7 @@ the staged Camera/Fanmass source branches. The shared-secret email route is
 unrelated and remains.
 
 ### E4 · messmass ↔ camera (master data + session + email)
-Verified messmass `5cc610c2` · camera `06f3029` (both sides re-read 2026-09-16;
+Verified messmass `1f33bf54` · camera `06f3029` (both sides re-read 2026-09-16;
 messmass side re-checked 2026-09-28; re-read 2026-10-11 at messmass `5cc610c2`:
 the line references below still hold, the only changes are the additions listed
 under "Added since"; camera side re-read 2026-10-11 at `c40aad85` for

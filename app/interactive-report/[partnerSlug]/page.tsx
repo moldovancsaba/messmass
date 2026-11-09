@@ -1,8 +1,8 @@
 import { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { getInteractiveReportData } from '@/lib/interactiveReportAggregator';
-import InteractiveReportDashboard from '@/components/interactive-report/InteractiveReportDashboard';
-import styles from '@/components/interactive-report/interactive-report.module.css';
+import InteractiveReportDashboard from '@/components/theme/interactive-report/InteractiveReportDashboard';
+import styles from '@/components/theme/interactive-report/interactive-report.module.css';
 
 export const dynamic = 'force-dynamic';
 

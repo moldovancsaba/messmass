@@ -3,7 +3,7 @@
 
 import { notFound } from 'next/navigation';
 import { getInteractiveReportData } from '@/lib/interactiveReportAggregator';
-import TerritoryMapCanvas from '@/components/interactive-report/TerritoryMapCanvas';
+import TerritoryMapCanvas from '@/components/theme/interactive-report/TerritoryMapCanvas';
 
 export const dynamic = 'force-dynamic';
 

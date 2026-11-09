@@ -8,10 +8,10 @@ not bind it to a version it is not about.
 Enforcement live: CI runs `inventory:check` (`scripts/fleet-audit-inventory.py
 --check`) since 2026-09-08 (messmass#355; rule in `contract-first-rule.md`).
 
-**Re-verification and fixes 2026-10-11 (re-verified @ 96dd913c, v12.3.42).**
-Every entry below was checked again on origin/main at 96dd913c, 5 commits after
+**Re-verification and fixes 2026-10-11 (re-verified @ 1f33bf54, v12.3.42).**
+Every entry below was checked again on origin/main at 1f33bf54, 5 commits after
 the previous stamp (184d1e32, the earlier round of the same day). Those 5 commits
-changed no application code (`git diff --stat 184d1e32 96dd913c`: the inventory
+changed no application code (`git diff --stat 184d1e32 1f33bf54`: the inventory
 scanner and its JSON output, the CI workflow's action versions, three guides and
 the tutorials index, one hand-over paragraph and release-notes entries), so the
 claims about code were re-read where a cited file changed: `HANDOVER.md` (entry
@@ -21,7 +21,7 @@ claims about code were re-read where a cited file changed: `HANDOVER.md` (entry
 pull request that records this round (messmass#470) also fixed the documentation
 and small-comment items the previous round found (entries 13 to 17, 69 to 77 and
 79, with the new entries 84 and 85 found while doing it) and re-reads every claim
-it wrote against the code. Line numbers in this file are for 96dd913c, except for
+it wrote against the code. Line numbers in this file are for 1f33bf54, except for
 the files that pull request edited, `docs/architecture.md`, `lib/rateLimit.ts`,
 `lib/cameraClient.ts`, `app/admin/login/page.tsx` and `middleware.ts`, which are
 for its tree (the pull request adds about ninety lines to `architecture.md`). The
@@ -45,9 +45,9 @@ records this round fixes the entries marked FIXED in messmass#470 (and changes o
 documentation, comments, `lib/rateLimit.ts` and two files removed as unused); the
 entries still NEW (68, 78, 81, 82, 83) need their own code or decision.
 
-## Re-verification ledger @ 96dd913c (2026-10-11)
+## Re-verification ledger @ 1f33bf54 (2026-10-11)
 
-| No. | Entry | Status | Proof at 96dd913c |
+| No. | Entry | Status | Proof at 1f33bf54 |
 |---|---|---|---|
 | 1 | Cron fallback `development_secret` gone; bare-template variants closed (§0) | TRUE | `app/api/cron/analytics-aggregation/route.ts:51-58`; `app/api/bitly/sync/route.ts:189-193`; `app/api/cron/bitly-refresh/route.ts:51-55`. `google-sheets-sync/route.ts:31-43` fails closed in production only (an unset secret passes outside production) |
 | 2 | Mutating routes guarded: 8 google-sheet routes, hashtag-style; read sweep (§0) | CHANGED | 8 routes still call `requireSession()` (`.../google-sheet/*/route.ts`, import + one call each); hashtag-style uses `requireAdmin()` (`app/api/admin/hashtag-style/route.ts:21,64`), not `requireSession`; `KNOWN_UNGUARDED_READS` still by-design only (`tests/api-mutation-auth.test.ts:104-140`); the two camera `[debt]` entries left `KNOWN_UNGUARDED` in 0a8f6244 |
@@ -109,14 +109,14 @@ entries still NEW (68, 78, 81, 82, 83) need their own code or decision.
 | 58 | Fix 3: docs:audit regex (§8) | TRUE | same proof as entry 25 |
 | 59 | Fix 4: dead code and WebSocket claims (§8) | TRUE | same proof as entries 23, 24, 49, 50 |
 | 60 | Fix 5: SSO guide and features-authentication (§8) | TRUE | same proof as entries 18, 19 |
-| 61 | architecture.md 4,665 -> 3,799 lines; fiction deleted (§9) | CHANGED | 3,877 lines at 96dd913c, 3,968 after messmass#470 (`wc -l docs/architecture.md`) |
+| 61 | architecture.md 4,665 -> 3,799 lines; fiction deleted (§9) | CHANGED | 3,877 lines at 1f33bf54, 3,968 after messmass#470 (`wc -l docs/architecture.md`) |
 | 62 | Changelog archived (§9) | TRUE | `docs/archive/architecture-changelog-2026-09.md` exists |
 | 63 | Five CI gates (§9) | TRUE | `package.json:47,48,50`; `tests/comment-counts-match-code.test.ts`, `tests/admin-only-comments-are-enforced.test.ts`; run results in the pull request |
 | 64 | F-003 / F-025 security posture (§9) | TRUE | `middleware.ts:35,55`; `lib/edgeSessionToken.ts:2,75`; `app/api/hashtag-categories/route.ts:40-48,179,275,383` (`requireAdmin`) |
 | 65 | Dead code figures: 1,610 lines, 70 selectors, 86 classes (§9) | NOT RE-CHECKABLE | historical counts of a finished sweep; the modules and classes are not named, so there is nothing to measure again |
 | 66 | F-011, F-004, F-007 closed (§9) | TRUE | 6f31990d, e0f0643f, e098deaa exist; `lib/apiAuth.ts:65-72`; `lib/middleware/v3/orgContext.ts`; the effect of e098deaa on the production data was not re-read (no production database reads in this audit) |
 | 67 | Header: CI enforces `inventory:check` (header) | TRUE | `.github/workflows/ci.yml` step `npm run inventory:check`; `package.json:85` |
-| 68 | `GET /api/bitly/recalculate` calls `distinct()` under the strict Stable API | NEW | still open at 96dd913c (a behaviour fix, not a documentation one); see §10 |
+| 68 | `GET /api/bitly/recalculate` calls `distinct()` under the strict Stable API | NEW | still open at 1f33bf54 (a behaviour fix, not a documentation one); see §10 |
 | 69 | `lib/cameraClient.ts:12-14` names 2 of 4 camera inbound endpoints | FIXED | comment now names all four (`lib/cameraClient.ts:12-14`); see §10 |
 | 70 | `lib/rateLimit.ts:4` header contradicts the code; architecture.md lists 6 of 7 classes | FIXED | header `lib/rateLimit.ts:4-10` and the `checkRateLimit` comment (`:162-165`) now say fixed window; `docs/architecture.md:2335-2346` and `:3613` list all seven classes; see §10 |
 | 71 | public rate-limit class keyed on the deleted `/stats/` route | FIXED | `lib/rateLimit.ts:291-293,318` (`isPublicPagePath`: `/report/`, `/partner-report/`, `/filter/`, `/hashtag/`; GET and HEAD only); reads 500 -> 120 (`:85`); `tests/rate-limit-classes.test.ts`; see §10 |
@@ -142,7 +142,7 @@ and 13 NEW entries.
 
 ## 0. Behavior findings escalated out of the docs audit (see messmass#347)
 **FULLY RESOLVED via messmass#347 + messmass#348 (2026-09-03) + messmass#386
-(2026-09-04)** (re-verified @ 96dd913c, 2026-10-11; ledger 1-4):
+(2026-09-04)** (re-verified @ 1f33bf54, 2026-10-11; ledger 1-4):
 - ~~**Cron auth bypass**~~ FIXED: the `'development_secret'` fallback is gone
   (analytics-aggregation fails closed, route.ts:51-58). messmass#348 also
   closed the two remaining fail-open variants: `/api/bitly/sync` compared
@@ -177,16 +177,16 @@ and 13 NEW entries.
   against the retired `{SSO_BASE_URL}/api/validate` — always 401, and grep
   found zero callers (the admin UI uses `/api/admin/users/[id]/role`), so
   both routes and the orphaned `lib/ssoClient.ts` were deleted rather than
-  repaired. **Correction (2026-09-28, still true at 96dd913c):** two more
+  repaired. **Correction (2026-09-28, still true at 1f33bf54):** two more
   routes with the same pattern survive — `app/api/admin/permissions/route.ts:16`
   and `app/api/admin/projects/[id]/route.ts:16` still call the retired
   `{SSO_BASE_URL}/api/validate` (the endpoint found above to always 401) and
   have no in-app callers (grep over app, components, hooks, lib, contexts,
   tests and scripts, 2026-10-11). Queued for deletion in §7.
 
-## 1. docs/architecture.md architectural claims (re-verified @ 96dd913c, 2026-10-11; ledger 5-17)
+## 1. docs/architecture.md architectural claims (re-verified @ 1f33bf54, 2026-10-11; ledger 5-17)
 The file is 3,968 lines in the tree of the pull request that records this round
-(3,877 at 96dd913c, 3,859 at the stamp before; fiction deleted and the changelog
+(3,877 at 1f33bf54, 3,859 at the stamp before; fiction deleted and the changelog
 archived in #408/#409); line numbers below are for that tree.
 - ~~Dependency versions all wrong (React 18.3.1, Node ≥18, jsPDF 3.0.1, uuid
   11.1.0)~~ FIXED: React ^19.2.6 (:3373), uuid ^14.0.3 (:3377; ^14.0.0 at the
@@ -259,7 +259,7 @@ archived in #408/#409); line numbers below are for that tree.
   matches the real order of `middleware.ts` (the old text said it sets the CSRF
   cookie and logs the start of every request; it does neither, entry 84).
 
-## 1b. ~~WRONG~~ FIXED (messmass#349, re-verified @ 96dd913c, 2026-10-11) — guides and feature docs (ledger 18-22)
+## 1b. ~~WRONG~~ FIXED (messmass#349, re-verified @ 1f33bf54, 2026-10-11) — guides and feature docs (ledger 18-22)
 - ~~**docs/guides/guides-tutorial-authentication-sso.md**~~ FIXED: Section 4
   rewritten to the real OAuth2 authorization-code flow (login → `/api/oauth/authorize`,
   callback → `/api/oauth/token`, central per-app permission store; guide :78,
@@ -304,7 +304,7 @@ archived in #408/#409); line numbers below are for that tree.
   `SSO_CLIENT_ID`/`SSO_CLIENT_SECRET`/`JWT_SECRET` (:86-88, :93), and a Fleet
   section (:143) and a Fanmass Integration section (:147).
 
-## 2. ~~The vestigial WebSocket system~~ REMOVED (code) + docs FIXED (messmass#349; re-verified @ 96dd913c, 2026-10-11; ledger 23-24)
+## 2. ~~The vestigial WebSocket system~~ REMOVED (code) + docs FIXED (messmass#349; re-verified @ 1f33bf54, 2026-10-11; ledger 23-24)
 **Code:** the WebSocket stack was not merely vestigial — it was fully DELETED in
 commit c56e70af (v12.2.0, 2026-08-20): `server/` (incl. `server/websocket-server.js`),
 `hooks/useWebSocket.ts`, and the `ws` + `@types/ws` deps are gone; nothing opens a
@@ -326,7 +326,7 @@ docs/operations/operations-roadmap.md (relabelled the item as abandoned, not fut
 Re-checked 2026-10-11 at the lines in ledger 24. The cleanup missed two places that
 carry the same kind of stale stack claim, listed in §10.
 
-## 3. ~~The docs:audit gate has a hole~~ FIXED (re-verified @ 96dd913c, 2026-10-11; ledger 25)
+## 3. ~~The docs:audit gate has a hole~~ FIXED (re-verified @ 1f33bf54, 2026-10-11; ledger 25)
 ~~scripts/docs-consistency-audit.js:93,98 version-header regex matches
 `**Version**: X` and `Version: X` but NOT `**Version:** X` — the exact format in
 docs/features/features-authentication.md:7, docs/api/api-reference.md:7,
@@ -338,7 +338,7 @@ also reads only the first 25 lines (missing architecture.md:4647's footer)~~:
 content, header and footer. Still true: it checks path patterns, npm-script
 existence, version stamps and fleet-map freshness, never factual accuracy.
 
-## 4. STALE / MISSING (selected) (re-verified @ 96dd913c, 2026-10-11; ledger 26-31)
+## 4. STALE / MISSING (selected) (re-verified @ 1f33bf54, 2026-10-11; ledger 26-31)
 - docs/low-level-design.md is accurate but covers only 4 subsystems (Report Variant
   Period Selector `:11`, Mobile Admin Actions `:130`, Unified Admin Entity Forms
   `:152`, Public Report Shell `:178`) — not a low-level design of the system
@@ -369,7 +369,7 @@ existence, version stamps and fleet-map freshness, never factual accuracy.
   that turned every protected event report's 401 into a JSON-parse crash. Spec
   and playbook now say so (spec :22 "Not implemented"); fallback deleted.
 
-## 5. CURRENT (verified — the good news) (re-verified @ 96dd913c, 2026-10-11; ledger 32-34)
+## 5. CURRENT (verified — the good news) (re-verified @ 1f33bf54, 2026-10-11; ledger 32-34)
 - **docs/design/design-system.md is the most accurate major doc** (v12.3.42 now;
   GDS/Mantine/theme all verified: Mantine 8 `:21`, TailAdmin guidance rejected
   `:31`; the 12 adapter paths in the table under `:38` equal the 12
@@ -395,7 +395,7 @@ existence, version stamps and fleet-map freshness, never factual accuracy.
   (`lib/mongodb.ts:13-17`, architecture.md :3938-3942) but one route breaks it
   (§10, ledger 68).
 
-## 6. ~~Comment health~~ RESOLVED (messmass#353, re-verified @ 96dd913c, 2026-10-11; ledger 35-45)
+## 6. ~~Comment health~~ RESOLVED (messmass#353, re-verified @ 1f33bf54, 2026-10-11; ledger 35-45)
 - WHAT/WHY adherence good but uneven: integration/auth surface (lib/fanmass*,
   aiRescan, apiGuards, pageAccess, app/api/integrations/**) is best-in-repo
   (comments explain tradeoffs). ~~lib/sponsorshipHub.ts is 1432 lines with ZERO
@@ -434,7 +434,7 @@ existence, version stamps and fleet-map freshness, never factual accuracy.
   frame-context and link-stats endpoints. A tenth contradicting comment turned
   up in this round: `lib/rateLimit.ts:4` (§10, ledger 70), FIXED in messmass#470.
 
-## 7. Obsoletion queue (re-verified @ 96dd913c, 2026-10-11; ledger 46-55)
+## 7. Obsoletion queue (re-verified @ 1f33bf54, 2026-10-11; ledger 46-55)
 - Dead routes: ~~app/api/me, app/api/images (phantom cookies)~~ FIXED 2026-08-20
   (c56e70af, v12.2.0); the 4 legacy SSO-validate admin routes: 2 deleted
   2026-09-04 (`/api/admin/{projects,users}`, 62a47a0d, messmass#386, see §0),
@@ -451,7 +451,7 @@ existence, version stamps and fleet-map freshness, never factual accuracy.
   LandingValueChainSection + /api/landing-report~~ FIXED 2026-08-20 (c56e70af,
   v12.2.0); ~~HashtagInput~~ FIXED 2026-09-08 (messmass#351 leftovers, this
   change — `UnifiedHashtagInput` is the live component and was never affected).
-  All five paths are absent at 96dd913c.
+  All five paths are absent at 1f33bf54.
 - Dead libs: ~~lib/webhooks.ts (474 lines, zero importers)~~ FIXED 2026-08-20
   (c56e70af); ~~app/api-docs advertised the webhook system~~ FIXED 2026-09-08
   (messmass#351, this change — nav link, feature bullet, `#webhooks` section
@@ -469,7 +469,7 @@ existence, version stamps and fleet-map freshness, never factual accuracy.
   macOS duplicates (`add-kpi-chart 3.js` …)~~ FIXED 2026-09-08 (messmass#352,
   this change): 315 of 421 tracked scripts deleted, 106 kept; derivation and
   the per-script reason in `scripts-keep-list.md`. That is the record of one
-  prune: `scripts/` tracks 112 files at 96dd913c, 6 added since by their own
+  prune: `scripts/` tracks 112 files at 1f33bf54, 6 added since by their own
   changes (the comment, architecture and preflight gates and two one-off
   data scripts), none in the keep-list by design. ~~The CI forbidden-color
   carve-out did NOT clear: `gds-compliance check` still reports 71 findings,
@@ -491,7 +491,7 @@ existence, version stamps and fleet-map freshness, never factual accuracy.
   token that no code in messmass or in the local camera and fanmass checkouts
   calls — keep them, they are curl-only by design (camera app guide :183-196).
 
-## 8. Highest-value fixes, ranked (re-verified @ 96dd913c, 2026-10-11; ledger 56-60)
+## 8. Highest-value fixes, ranked (re-verified @ 1f33bf54, 2026-10-11; ledger 56-60)
 1. ~~Remove the `'development_secret'` cron fallback (auth bypass).~~ FIXED
    (messmass#347/#348, §0).
 2. ~~Guard/delete the 8 google-sheet + hashtag-style unauthenticated
@@ -508,12 +508,12 @@ existence, version stamps and fleet-map freshness, never factual accuracy.
    app/api/auth/sso/callback/route.ts (both instruct readers to use a 410
    endpoint).~~ FIXED (messmass#349, completed 2026-09-28; §1b).
 
-## 9. Wave 2026-09-16 — documentation audit (Phase 5) and the sweeps it triggered (re-verified @ 96dd913c, 2026-10-11; ledger 61-66)
+## 9. Wave 2026-09-16 — documentation audit (Phase 5) and the sweeps it triggered (re-verified @ 1f33bf54, 2026-10-11; ledger 61-66)
 
 Twelve findings (F-025 … F-036) closed, plus four earlier security findings.
 Recorded here because several corrected claims this register had certified.
 
-**architecture.md: 4,665 → 3,799 lines** (3,877 at 96dd913c and 3,968 after messmass#470, after the
+**architecture.md: 4,665 → 3,799 lines** (3,877 at 1f33bf54 and 3,968 after messmass#470, after the
 camera, dependency and auth sections were added). 43 falsifiable claims were verified
 false; roughly 85% of its file-path and line-count claims failed. Deleted as
 fiction: the Page Styles System (487 lines of invented endpoints and a hook),
@@ -568,7 +568,7 @@ e098deaa (#390, the 202 orphaned rows removed). The three commits exist; the
 data effect of e098deaa was not re-read, because this audit reads no
 production database.
 
-## 10. New drift found 2026-10-11 (re-verified @ 96dd913c; ledger 68-85)
+## 10. New drift found 2026-10-11 (re-verified @ 1f33bf54; ledger 68-85)
 Found while re-reading the entries above. Each has its proof. The ones marked
 FIXED were fixed by messmass#470 (the documentation and comment items, one rate
 limit change, two removals); NEW is still open.
@@ -580,7 +580,7 @@ limit change, two removals); NEW is still open.
    true }` (`lib/mongodb.ts:13-17`), architecture.md "Query constraint"
    (`docs/architecture.md:3938-3942`) says `distinct()` is not part of that API and
    fails with `APIStrictError`, and `docs/operations/operations-release-notes.md`
-   (the entry that records `APIStrictError` 323, `:3427` at 96dd913c; every open
+   (the entry that records `APIStrictError` 323, `:3427` at 1f33bf54; every open
    pull request adds an entry above it) records that failure on this connection
    (the AI analytics code was changed to `$group`).
    It is the only `.distinct(` call in app/, lib/, components/ and hooks/. Not

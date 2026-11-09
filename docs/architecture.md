@@ -112,32 +112,32 @@ it drifts. Do not edit between the markers.
 
 | Category | Count | Location |
 |----------|-------|----------|
-| **UI Components** | 105 | `components/` |
-| **Utility Modules** | 232 | `lib/` |
+| **UI Components** | 120 | `components/` |
+| **Utility Modules** | 235 | `lib/` |
 | **Hooks** | 13 | `hooks/` |
 | **Design Tokens** | 410 | `app/styles/theme.css` |
 | **Utility CSS classes** | 192 | `app/styles/utilities.css` |
-| **App routes (pages)** | 74 | `app/**/page.tsx` |
-| **API routes** | 231 | `app/api/**/route.ts` |
+| **App routes (pages)** | 79 | `app/**/page.tsx` |
+| **API routes** | 232 | `app/api/**/route.ts` |
 
 The modules with the most importers — the ones whose change radius is
 largest, and the ones to read first:
 
 | Module | Importers | Lines |
 |--------|-----------|-------|
-| `lib/config.ts` | 122 | 207 |
-| `lib/mongodb.ts` | 104 | 112 |
-| `lib/auth.ts` | 94 | 118 |
+| `lib/config.ts` | 123 | 207 |
+| `lib/mongodb.ts` | 106 | 112 |
 | `lib/logger.ts` | 94 | 392 |
+| `lib/auth.ts` | 93 | 118 |
 | `lib/apiGuards.ts` | 85 | 390 |
 | `components/ColoredCard.tsx` | 44 | 52 |
 | `lib/db.ts` | 42 | 17 |
-| `lib/apiClient.ts` | 40 | 258 |
+| `lib/apiClient.ts` | 41 | 258 |
 | `components/MaterialIcon.tsx` | 34 | 119 |
 | `lib/fanmassIntegration.ts` | 31 | 485 |
 | `components/UnifiedAdminHeroWithSearch.tsx` | 27 | 192 |
 | `lib/mongoose-v3.ts` | 21 | 66 |
-| `lib/permissions.ts` | 19 | 141 |
+| `lib/permissions.ts` | 19 | 142 |
 | `lib/report-calculator.ts` | 19 | 935 |
 | `hooks/useAdminAuth.ts` | 18 | 65 |
 
@@ -997,7 +997,7 @@ shows up here on the next regeneration, which is the point.
 
 <!-- GENERATED:routes -->
 
-### Pages (74)
+### Pages (79)
 
 | Route | File |
 |-------|------|
@@ -1016,6 +1016,7 @@ shows up here on the next regeneration, which is the point.
 | `/admin/analytics/sponsorship/activation/recap/[partnerId]` | `app/admin/analytics/sponsorship/activation/recap/[partnerId]/page.tsx` |
 | `/admin/api-football-enrich` | `app/admin/api-football-enrich/page.tsx` |
 | `/admin/bitly` | `app/admin/bitly/page.tsx` |
+| `/admin/brand-assets` | `app/admin/brand-assets/page.tsx` |
 | `/admin/cache` | `app/admin/cache/page.tsx` |
 | `/admin/categories` | `app/admin/categories/page.tsx` |
 | `/admin/charts` | `app/admin/charts/page.tsx` |
@@ -1067,6 +1068,10 @@ shows up here on the next regeneration, which is the point.
 | `/examples/password-gate-demo` | `app/examples/password-gate-demo/page.tsx` |
 | `/filter/[slug]` | `app/filter/[slug]/page.tsx` |
 | `/hashtag/[hashtag]` | `app/hashtag/[hashtag]/page.tsx` |
+| `/interactive-report` | `app/interactive-report/page.tsx` |
+| `/interactive-report/[partnerSlug]` | `app/interactive-report/[partnerSlug]/page.tsx` |
+| `/interactive-report/[partnerSlug]/map` | `app/interactive-report/[partnerSlug]/map/page.tsx` |
+| `/interactive-report/[partnerSlug]/territory` | `app/interactive-report/[partnerSlug]/territory/page.tsx` |
 | `/organization-edit/[id]` | `app/organization-edit/[id]/page.tsx` |
 | `/organization-report/[id]` | `app/organization-report/[id]/page.tsx` |
 | `/partner-edit/[slug]` | `app/partner-edit/[slug]/page.tsx` |
@@ -1076,7 +1081,7 @@ shows up here on the next regeneration, which is the point.
 | `/terms` | `app/terms/page.tsx` |
 | `/test-csrf` | `app/test-csrf/page.tsx` |
 
-### API routes (231)
+### API routes (232)
 
 `auth` is the guard symbol the route actually calls. A blank cell
 means the route calls none — public by construction, or a gap.
@@ -1217,6 +1222,13 @@ means the route calls none — public by construction, or a gap.
 |-------|---------|------|
 | `/api/blob-upload-token` | POST | `requireSession` |
 
+#### `/api/brand-assets`
+
+| Route | Methods | Auth |
+|-------|---------|------|
+| `/api/brand-assets` | GET, POST | `requireSession` |
+| `/api/brand-assets/[id]` | DELETE | `requireSession` |
+
 #### `/api/chart-config`
 
 | Route | Methods | Auth |
@@ -1300,14 +1312,6 @@ means the route calls none — public by construction, or a gap.
 |-------|---------|------|
 | `/api/data-blocks` | GET, POST, PUT, DELETE | `requireAdmin` |
 | `/api/data-blocks/duplicate` | POST | `requireAdmin` |
-
-#### `/api/debug`
-
-| Route | Methods | Auth |
-|-------|---------|------|
-| `/api/debug/categorized-hashtags` | GET | `requireSession` |
-| `/api/debug/notifications` | GET | `getAdminUser` |
-| `/api/debug/overview-block` | GET | `requireSession` |
 
 #### `/api/derived-variable-config`
 
@@ -1421,6 +1425,13 @@ means the route calls none — public by construction, or a gap.
 | `/api/integrations/fanmass/rescan-requests/[eventId]` | DELETE | `requireFanmassIntegrationAuth` |
 | `/api/integrations/fanmass/variables` | GET, POST | `requireFanmassIntegrationAuth` |
 | `/api/integrations/privacy/erase-camera-photo` | DELETE | — |
+
+#### `/api/interactive-report`
+
+| Route | Methods | Auth |
+|-------|---------|------|
+| `/api/interactive-report/[partnerSlug]` | GET | — |
+| `/api/interactive-report/partner-selfies` | GET | — |
 
 #### `/api/landing-static`
 

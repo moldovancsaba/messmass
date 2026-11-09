@@ -254,31 +254,31 @@ export default function FanmassSportsDemographics({
                     <div className={styles.compBarWrapper}>
                       <div className={styles.compSplitBar}>
                         <div
+                          title={`Children: ${childrenPct}%`}
                           style={{
                             width: `${childrenPct}%`,
                             background: '#f59e0b',
-                            title: `Children: ${childrenPct}%`,
                           }}
                         />
                         <div
+                          title={`Teens: ${teensPct}%`}
                           style={{
                             width: `${teensPct}%`,
                             background: '#0284c7',
-                            title: `Teens: ${teensPct}%`,
                           }}
                         />
                         <div
+                          title={`Adults: ${adultsPct}%`}
                           style={{
                             width: `${adultsPct}%`,
                             background: '#059669',
-                            title: `Adults: ${adultsPct}%`,
                           }}
                         />
                         <div
+                          title={`Seniors: ${seniorsPct}%`}
                           style={{
                             width: `${seniorsPct}%`,
                             background: '#8b5cf6',
-                            title: `Seniors: ${seniorsPct}%`,
                           }}
                         />
                       </div>

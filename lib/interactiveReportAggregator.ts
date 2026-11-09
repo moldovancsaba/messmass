@@ -2,8 +2,9 @@ import clientPromise from '@/lib/mongodb';
 import { ObjectId } from 'mongodb';
 import config from '@/lib/config';
 import { findPartnerByIdentifier } from '@/lib/partnerIdentifier';
-import { InteractiveReportData, MatchItem, TimelinePeriod } from '@/components/interactive-report/types';
+import { InteractiveReportData, MatchItem, TimelinePeriod } from '@/components/theme/interactive-report/types';
 import { isSportFranchise, isVenue, getBrandCluster } from '@/lib/brandEntityClustering';
+import { INTERACTIVE_REPORT_THEME } from '@/lib/theme/interactiveReportPalette';
 
 export async function getInteractiveReportData(partnerSlug: string): Promise<InteractiveReportData | null> {
   const client = await clientPromise;
@@ -629,9 +630,9 @@ export async function getInteractiveReportData(partnerSlug: string): Promise<Int
     },
     style: {
       name: style?.name || 'SZRT (GENERAL)',
-      heroBackground: style?.heroBackground || '#88ca45ff',
-      pieColor1: style?.pieColor1 || '#4f7a28ff',
-      pieColor2: style?.pieColor2 || '#86c680ff',
+      heroBackground: style?.heroBackground || INTERACTIVE_REPORT_THEME.heroBackground,
+      pieColor1: style?.pieColor1 || INTERACTIVE_REPORT_THEME.pieColor1,
+      pieColor2: style?.pieColor2 || INTERACTIVE_REPORT_THEME.pieColor2,
     },
     summary: {
       totalPhotos,

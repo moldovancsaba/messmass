@@ -4,11 +4,14 @@
   "regenerate": "python3 scripts/fleet-audit-inventory.py --write"
  },
  "items": [
+  "a.tile.openstreetmap.org",
   "api-ssl.bitly.com",
   "api.cloudflare.com",
   "api.football-data.org",
   "api.imgbb.com",
+  "b.tile.openstreetmap.org",
   "bit.ly",
+  "c.tile.openstreetmap.org",
   "camera.messmass.com",
   "cdn.messmass.com",
   "dev.bitly.com",
@@ -24,6 +27,7 @@
   "messmass.com",
   "picsum.photos",
   "preview.messmass.com",
+  "pub-....r2.dev",
   "pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev",
   "v1.basketball.api-sports.io",
   "v1.handball.api-sports.io",
@@ -35,6 +39,7 @@
   "www.googleapis.com",
   "www.googletagmanager.com",
   "www.messmass.com",
+  "www.novomaticarenasopron.hu",
   "www.thesportsdb.com",
   "www.w3.org"
  ]

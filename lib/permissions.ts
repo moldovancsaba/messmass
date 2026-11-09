@@ -34,6 +34,7 @@ export const MENU_PERMISSIONS: Record<string, UserRole[]> = {
   'Organizations': ['superadmin'],
   'Events': ['user', 'admin', 'superadmin'],
   'Project Partners': ['admin', 'superadmin'],
+  'Brand Logos': ['admin', 'superadmin'],
   
   // WHAT: Reports
   'Reporting Workspace': ['admin', 'superadmin'],

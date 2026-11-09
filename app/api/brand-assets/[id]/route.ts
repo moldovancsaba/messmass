@@ -5,6 +5,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import clientPromise from '@/lib/mongodb';
 import config from '@/lib/config';
 import { ObjectId } from 'mongodb';
+import { requireSession } from '@/lib/apiGuards';
 
 export const dynamic = 'force-dynamic';
 
@@ -12,6 +13,8 @@ export async function DELETE(
   _request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
+  const authError = await requireSession();
+  if (authError) return authError;
   try {
     const { id } = await params;
     const client = await clientPromise;

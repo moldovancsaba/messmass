@@ -7,6 +7,8 @@ import { NextRequest, NextResponse } from 'next/server';
 import clientPromise from '@/lib/mongodb';
 import config from '@/lib/config';
 import { ObjectId } from 'mongodb';
+import { requireSession } from '@/lib/apiGuards';
+import { CHART_COLOR } from '@/lib/theme/chartPalette';
 
 export const dynamic = 'force-dynamic';
 
@@ -23,6 +25,9 @@ function slugify(name: string): string {
  * Returns all registered brand assets, augmented with any brands discovered by Fanmass Vision.
  */
 export async function GET() {
+  const authError = await requireSession();
+  if (authError) return authError;
+
   try {
     const client = await clientPromise;
     const db = client.db(config.dbName);
@@ -93,6 +98,9 @@ export async function GET() {
  * Create or update a brand asset with its official logo URL.
  */
 export async function POST(request: NextRequest) {
+  const authError = await requireSession();
+  if (authError) return authError;
+
   try {
     const client = await clientPromise;
     const db = client.db(config.dbName);
@@ -223,7 +231,7 @@ export async function POST(request: NextRequest) {
               logoUrl: targetAsset?.logoUrl || '',
               darkLogoUrl: targetAsset?.darkLogoUrl || '',
               category: 'sponsor',
-              accentColor: '#1e3a8a',
+              accentColor: CHART_COLOR.blueDark,
             },
           },
           { upsert: true }
@@ -244,7 +252,7 @@ export async function POST(request: NextRequest) {
           );
           await db.collection('szrt_vision_analysis').updateMany(
             { brands: src },
-            { $pull: { brands: src } }
+            { $pull: { brands: src } as any }
           );
         }
 

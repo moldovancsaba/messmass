@@ -8,6 +8,7 @@
 
 import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { ensureCsrfToken } from '@/lib/apiClient';
+import { INTERACTIVE_REPORT_THEME } from '@/lib/theme/interactiveReportPalette';
 import styles from './page.module.css';
 
 interface BrandAsset {
@@ -112,7 +113,7 @@ export default function BrandAssetsAdminPage() {
       aliases: brand.aliases || [],
       logoUrl: brand.logoUrl || '',
       darkLogoUrl: brand.darkLogoUrl || '',
-      accentColor: brand.accentColor || '#1e3a8a',
+      accentColor: brand.accentColor || INTERACTIVE_REPORT_THEME.blueDark,
     });
     setUploadFile(null);
     setFilePreview(brand.logoUrl || '');
@@ -352,7 +353,7 @@ export default function BrandAssetsAdminPage() {
               onChange={(e) => setSearchQuery(e.target.value)}
               className={styles.searchBar}
             />
-            <span style={{ position: 'absolute', left: '10px', top: '8px', fontSize: '13px', color: '#94a3b8' }}>
+            <span style={{ position: 'absolute', left: '10px', top: '8px', fontSize: '13px', color: INTERACTIVE_REPORT_THEME.slateLight }}>
               🔍
             </span>
             {searchQuery && (
@@ -365,7 +366,7 @@ export default function BrandAssetsAdminPage() {
                   border: 'none',
                   background: 'none',
                   cursor: 'pointer',
-                  color: '#94a3b8',
+                  color: INTERACTIVE_REPORT_THEME.slateLight,
                 }}
               >
                 ✕
@@ -396,7 +397,7 @@ export default function BrandAssetsAdminPage() {
       {loading ? (
         <div className={styles.subtitle}>Loading official brand registry from MongoDB Atlas...</div>
       ) : filteredAssets.length === 0 ? (
-        <div className={styles.alertBanner} style={{ background: '#f8fafc', borderColor: '#e2e8f0', color: '#64748b' }}>
+        <div className={styles.alertBanner} style={{ background: INTERACTIVE_REPORT_THEME.slateSubtleBg, borderColor: INTERACTIVE_REPORT_THEME.slateLightBorder, color: INTERACTIVE_REPORT_THEME.slateMuted }}>
           {searchQuery
             ? `No official brand logos match "${searchQuery}".`
             : 'No official brand logos uploaded yet. Click on any discovered brand below or "Register New Brand" to upload the authentic logo file!'}
@@ -410,8 +411,8 @@ export default function BrandAssetsAdminPage() {
                 key={asset.canonicalSlug}
                 className={styles.card}
                 style={{
-                  borderColor: isChecked ? '#3b82f6' : undefined,
-                  boxShadow: isChecked ? '0 0 0 2px #3b82f6' : undefined,
+                  borderColor: isChecked ? INTERACTIVE_REPORT_THEME.blueAccent : undefined,
+                  boxShadow: isChecked ? `0 0 0 2px ${INTERACTIVE_REPORT_THEME.blueAccent}` : undefined,
                 }}
               >
                 <div className={styles.cardTop}>
@@ -435,7 +436,7 @@ export default function BrandAssetsAdminPage() {
 
                 {/* Aliases Pill Strip */}
                 {asset.aliases && asset.aliases.length > 1 && (
-                  <div style={{ fontSize: '11px', color: '#64748b', margin: '4px 0 8px 0', lineHeight: 1.3 }}>
+                  <div style={{ fontSize: '11px', color: INTERACTIVE_REPORT_THEME.slateMuted, margin: '4px 0 8px 0', lineHeight: 1.3 }}>
                     <span style={{ fontWeight: 600 }}>Trained Aliases:</span>{' '}
                     {asset.aliases.filter((al) => al.toLowerCase() !== asset.name.toLowerCase()).join(', ')}
                   </div>
@@ -501,7 +502,7 @@ export default function BrandAssetsAdminPage() {
         <>
           <div className={styles.sectionTitle} style={{ marginTop: '48px' }}>
             <span>Brands Discovered in Event Photos ({filteredUnconfigured.length})</span>
-            <span className={styles.sectionBadge} style={{ background: '#fef3c7', color: '#92400e' }}>
+            <span className={styles.sectionBadge} style={{ background: INTERACTIVE_REPORT_THEME.amberBg, color: INTERACTIVE_REPORT_THEME.amberText }}>
               Pending Official Logo or Merge
             </span>
           </div>
@@ -518,9 +519,9 @@ export default function BrandAssetsAdminPage() {
                   key={item.canonicalSlug}
                   className={styles.card}
                   style={{
-                    background: '#fafafa',
-                    borderColor: isChecked ? '#3b82f6' : undefined,
-                    boxShadow: isChecked ? '0 0 0 2px #3b82f6' : undefined,
+                    background: INTERACTIVE_REPORT_THEME.grayBg,
+                    borderColor: isChecked ? INTERACTIVE_REPORT_THEME.blueAccent : undefined,
+                    boxShadow: isChecked ? `0 0 0 2px ${INTERACTIVE_REPORT_THEME.blueAccent}` : undefined,
                   }}
                 >
                   <div className={styles.cardTop}>
@@ -542,7 +543,7 @@ export default function BrandAssetsAdminPage() {
                     </span>
                   </div>
 
-                  <div className={styles.logoPreviewArea} style={{ background: '#ffffff' }}>
+                  <div className={styles.logoPreviewArea} style={{ background: INTERACTIVE_REPORT_THEME.white }}>
                     <div className={styles.noLogoPlaceholder}>
                       <span style={{ fontSize: '20px' }}>📁</span>
                       <strong>Original Logo Needed</strong>
@@ -679,7 +680,7 @@ export default function BrandAssetsAdminPage() {
                   type="text"
                   value={editingBrand.accentColor || ''}
                   onChange={(e) => setEditingBrand({ ...editingBrand, accentColor: e.target.value })}
-                  placeholder="#1e3a8a"
+                  placeholder="e.g. 1e3a8a"
                   className={styles.input}
                 />
               </div>
@@ -734,8 +735,8 @@ export default function BrandAssetsAdminPage() {
             </div>
 
             <form onSubmit={handleExecuteMerge} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-              <div style={{ background: '#f8fafc', padding: '12px 16px', borderRadius: '8px', border: '1px solid #e2e8f0', fontSize: '13px', lineHeight: 1.5, color: '#334155' }}>
-                <div style={{ fontWeight: 700, color: '#0f172a', marginBottom: '4px' }}>
+              <div style={{ background: INTERACTIVE_REPORT_THEME.slateSubtleBg, padding: '12px 16px', borderRadius: '8px', border: `1px solid ${INTERACTIVE_REPORT_THEME.slateLightBorder}`, fontSize: '13px', lineHeight: 1.5, color: INTERACTIVE_REPORT_THEME.slateMedium }}>
+                <div style={{ fontWeight: 700, color: INTERACTIVE_REPORT_THEME.slateDark, marginBottom: '4px' }}>
                   🧠 AI Retraining &amp; Data Unification
                 </div>
                 Merging unifies all past selfie sightings, exposure rates, and photo presence under the primary target brand. The source name(s) will be permanently saved as aliases, automatically retraining the vision pipeline to map future detections to the target.
@@ -744,13 +745,13 @@ export default function BrandAssetsAdminPage() {
               {/* Source Brands Being Merged */}
               <div className={styles.formGroup}>
                 <label className={styles.label}>Source Brand(s) to be Merged ({mergeSources.length})</label>
-                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px', background: '#ffffff', padding: '8px', borderRadius: '8px', border: '1px solid #cbd5e1' }}>
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px', background: INTERACTIVE_REPORT_THEME.white, padding: '8px', borderRadius: '8px', border: `1px solid ${INTERACTIVE_REPORT_THEME.slateBorder}` }}>
                   {mergeSources.map((src) => (
                     <span
                       key={src}
                       style={{
-                        background: '#fee2e2',
-                        color: '#991b1b',
+                        background: INTERACTIVE_REPORT_THEME.redBg,
+                        color: INTERACTIVE_REPORT_THEME.redText,
                         padding: '4px 8px',
                         borderRadius: '6px',
                         fontSize: '12px',
@@ -777,10 +778,10 @@ export default function BrandAssetsAdminPage() {
                 />
 
                 {/* Quick Selection List */}
-                <div style={{ fontSize: '11px', color: '#64748b', fontWeight: 600, marginBottom: '4px' }}>
+                <div style={{ fontSize: '11px', color: INTERACTIVE_REPORT_THEME.slateMuted, fontWeight: 600, marginBottom: '4px' }}>
                   Or select an existing canonical brand:
                 </div>
-                <div style={{ maxHeight: '140px', overflowY: 'auto', border: '1px solid #e2e8f0', borderRadius: '8px', background: '#ffffff' }}>
+                <div style={{ maxHeight: '140px', overflowY: 'auto', border: `1px solid ${INTERACTIVE_REPORT_THEME.slateLightBorder}`, borderRadius: '8px', background: INTERACTIVE_REPORT_THEME.white }}>
                   {allAvailableBrands
                     .filter((b) => !mergeSources.includes(b))
                     .map((b) => (
@@ -791,10 +792,10 @@ export default function BrandAssetsAdminPage() {
                           padding: '6px 12px',
                           fontSize: '12px',
                           cursor: 'pointer',
-                          background: targetBrandName === b ? '#eff6ff' : 'transparent',
-                          color: targetBrandName === b ? '#1d4ed8' : '#1e293b',
+                          background: targetBrandName === b ? INTERACTIVE_REPORT_THEME.blueLight : 'transparent',
+                          color: targetBrandName === b ? INTERACTIVE_REPORT_THEME.bluePrimaryStrong : INTERACTIVE_REPORT_THEME.slateText,
                           fontWeight: targetBrandName === b ? 700 : 500,
-                          borderBottom: '1px solid #f1f5f9',
+                          borderBottom: `1px solid ${INTERACTIVE_REPORT_THEME.grayBorder}`,
                         }}
                       >
                         {targetBrandName === b ? '✓ ' : ''}{b}
@@ -815,7 +816,7 @@ export default function BrandAssetsAdminPage() {
                   type="submit"
                   disabled={saving || !targetBrandName.trim()}
                   className={styles.saveBtn}
-                  style={{ background: '#2563eb' }}
+                  style={{ background: INTERACTIVE_REPORT_THEME.bluePrimary }}
                 >
                   {saving ? 'Merging & Retraining...' : `Confirm Merge into "${targetBrandName || 'Target'}"`}
                 </button>
@@ -837,8 +838,8 @@ export default function BrandAssetsAdminPage() {
             </div>
 
             <form onSubmit={handleExecuteMoveToClub} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-              <div style={{ background: '#fdf2f8', padding: '12px 16px', borderRadius: '8px', border: '1px solid #fbcfe8', fontSize: '13px', lineHeight: 1.5, color: '#831843' }}>
-                <div style={{ fontWeight: 700, color: '#9d174d', marginBottom: '4px' }}>
+              <div style={{ background: INTERACTIVE_REPORT_THEME.pinkBg, padding: '12px 16px', borderRadius: '8px', border: `1px solid ${INTERACTIVE_REPORT_THEME.pinkBorder}`, fontSize: '13px', lineHeight: 1.5, color: INTERACTIVE_REPORT_THEME.pinkText }}>
+                <div style={{ fontWeight: 700, color: INTERACTIVE_REPORT_THEME.pinkDark, marginBottom: '4px' }}>
                   🏟️ Entity Reclassification (Brand ➔ Sports Club)
                 </div>
                 If &quot;<strong>{movingBrand}</strong>&quot; is actually a sports club, team, or jersey crest (rather than a corporate sponsor), moving it here will transfer all sightings into the <strong>Club Allegiance &amp; Jersey Detection Matrix</strong> and instruct the AI vision worker to classify it as a sports club in all future photos.
@@ -869,7 +870,7 @@ export default function BrandAssetsAdminPage() {
                   type="submit"
                   disabled={saving || !targetClubName.trim()}
                   className={styles.saveBtn}
-                  style={{ background: '#be185d' }}
+                  style={{ background: INTERACTIVE_REPORT_THEME.pinkDeep }}
                 >
                   {saving ? 'Reclassifying...' : `Move to Sports Clubs ➔`}
                 </button>

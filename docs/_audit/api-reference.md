@@ -1,8 +1,8 @@
 # messmass API Reference
 
-Generated for the fleet audit (messmass#350); measured against `docs/_audit/endpoints.json` (231 endpoints, including the Camera partner style-context route added 2026-10-30 and media upload route added 2026-11-04). Existing Auth adjudication was re-verified against the handlers @ dd34e229 (2026-09-28); the new Camera style-context read uses `assertCameraSecret`.
+Generated for the fleet audit (messmass#350); measured against `docs/_audit/endpoints.json` (232 endpoints, including brand assets management and interactive report routes). Existing Auth adjudication was re-verified against the handlers @ dd34e229 (2026-09-28); the new Camera style-context read uses `assertCameraSecret`.
 
-Coverage: 231 of 231 routes documented, enforced by
+Coverage: 232 of 232 routes documented, enforced by
 `tests/api-reference-covers-every-route.test.ts` — five routes were missing when
 that claim was last made by hand.
 
@@ -333,9 +333,10 @@ All wrapped in `withOrgContext` (getAdminUser + `x-v3-org-id` injection) except 
 | /api/csrf-token | GET | none (public-by-design: CSRF bootstrap) | — | `{token}` + cookie | sets CSRF cookie |
 | /api/data-blocks | GET, POST, PUT, DELETE | requireAdmin, all methods (messmass#386 admin-only read; #400 admin role) | bodies; `?id` | `{success,blocks[]}` | insert/update/delete `data_blocks` |
 | /api/data-blocks/duplicate | POST | requireAdmin | `{sourceBlockId,name?}` | `{success,blockId,block}` | inserts a `data_blocks` copy with `sourceBlockId` lineage (messmass#230) |
-| /api/debug/categorized-hashtags | GET | requireSession | — | hashtag migration debug data | reads `projects` |
-| /api/debug/notifications | GET | getAdminUser | — | notification debug data | reads `notifications` |
-| /api/debug/overview-block | GET | requireSession | — | data-block debug dump | reads `data_blocks` |
+| /api/brand-assets | GET, POST | requireSession | POST FormData `{name,file,…}` or JSON `{name,logoUrl,…}` | `{success,brandAssets[]\|brandAsset}` | reads/writes `brand_assets`, synchronizes with Fanmass Vision progress |
+| /api/brand-assets/[id] | DELETE | requireSession | path id or slug | `{success,deletedId}` | deletes from `brand_assets` |
+| /api/interactive-report/[partnerSlug] | GET | none (public-by-design: interactive client report) | path partnerSlug | `{partner,matches,vision}` | reads partner metadata, matches, and vision progress aggregates |
+| /api/interactive-report/partner-selfies | GET | none (public-by-design: interactive client report) | `?partnerName&limit&page&fanGroup` | `{selfies[],fanGroups}` | reads vision selfies matching partner or supporter group |
 | /api/drive-folders/[linkId] | PATCH, DELETE | getAdminUser | `?projectId`; PATCH body | `{success}` | update/delete `drive_folder_links` |
 | /api/drive-folders | GET, POST | getAdminUser | `?projectId`; POST folder body | `{success,folders[]}` | reads/inserts `drive_folder_links` |
 | /api/filter-slug | POST | requireSession | `{hashtags[]}` | `{success,slug}` | mints filter slug (`filter_slugs`) |
@@ -372,10 +373,10 @@ CSRF is never counted as a guard: any anonymous caller can fetch the token from
 
 | | routes |
 |---|---:|
-| Fully guarded (every method) | **199** |
+| Fully guarded (every method) | **198** |
 | Open write method, public by design | **5** |
-| Open GET only, writes guarded or absent | **27** |
-| **Total** | **231** |
+| Open GET only, writes guarded or absent | **29** |
+| **Total** | **232** |
 
 The previous run of this section (2026-08) listed 40 GAP routes, 21 of them
 unauthenticated writes. Those are closed: messmass#347 and #386 took the first

@@ -5,6 +5,8 @@
 //      2. Sport Franchises & Athletic Teams (Clubs)
 //      3. Match Venues & Arenas (e.g. Novomatic Aréna Sopron)
 
+import { INTERACTIVE_REPORT_THEME } from '@/lib/theme/interactiveReportPalette';
+
 export type BrandClusterId =
   | 'title'
   | 'apparel'
@@ -220,8 +222,8 @@ export function getBrandCluster(brand: string): BrandClusterInfo {
       id: 'title',
       label: 'Title Sponsor',
       badgeClass: 'brandTagSponsor',
-      badgeBg: 'rgba(136, 202, 69, 0.2)',
-      badgeColor: '#1b4332',
+      badgeBg: INTERACTIVE_REPORT_THEME.badges.bettingLotteryBg,
+      badgeColor: INTERACTIVE_REPORT_THEME.badges.bettingLotteryColor,
       icon: '🏆',
       isSponsor: true,
     };
@@ -231,8 +233,8 @@ export function getBrandCluster(brand: string): BrandClusterInfo {
       id: 'title',
       label: 'Official Partner',
       badgeClass: 'brandTagSponsor',
-      badgeBg: 'rgba(136, 202, 69, 0.25)',
-      badgeColor: '#1b4332',
+      badgeBg: INTERACTIVE_REPORT_THEME.badges.bettingLotteryBg25,
+      badgeColor: INTERACTIVE_REPORT_THEME.badges.bettingLotteryColor,
       icon: '🍀',
       isSponsor: true,
     };
@@ -251,8 +253,8 @@ export function getBrandCluster(brand: string): BrandClusterInfo {
       id: 'corporate',
       label: 'Corporate & Energy',
       badgeClass: 'brandTagVenue',
-      badgeBg: '#e0e7ff',
-      badgeColor: '#3730a3',
+      badgeBg: INTERACTIVE_REPORT_THEME.badges.sportswearBg,
+      badgeColor: INTERACTIVE_REPORT_THEME.badges.sportswearColor,
       icon: '⚡',
       isSponsor: true,
     };
@@ -269,8 +271,8 @@ export function getBrandCluster(brand: string): BrandClusterInfo {
       id: 'finance',
       label: 'Banking & Financial',
       badgeClass: 'brandTagVenue',
-      badgeBg: '#dcfce7',
-      badgeColor: '#166534',
+      badgeBg: INTERACTIVE_REPORT_THEME.badges.bankingBg,
+      badgeColor: INTERACTIVE_REPORT_THEME.badges.bankingColor,
       icon: '🏦',
       isSponsor: true,
     };
@@ -289,8 +291,8 @@ export function getBrandCluster(brand: string): BrandClusterInfo {
       id: 'automotive',
       label: 'Automotive',
       badgeClass: 'brandTagTech',
-      badgeBg: '#ffedd5',
-      badgeColor: '#9a3412',
+      badgeBg: INTERACTIVE_REPORT_THEME.badges.automotiveBg,
+      badgeColor: INTERACTIVE_REPORT_THEME.badges.automotiveColor,
       icon: '🚗',
       isSponsor: true,
     };
@@ -311,8 +313,8 @@ export function getBrandCluster(brand: string): BrandClusterInfo {
       id: 'fmcg',
       label: 'Beverage & FMCG',
       badgeClass: 'brandTagTech',
-      badgeBg: '#fee2e2',
-      badgeColor: '#991b1b',
+      badgeBg: INTERACTIVE_REPORT_THEME.badges.telecomBg,
+      badgeColor: INTERACTIVE_REPORT_THEME.badges.telecomColor,
       icon: '🥤',
       isSponsor: true,
     };
@@ -330,8 +332,8 @@ export function getBrandCluster(brand: string): BrandClusterInfo {
       id: 'tech',
       label: 'Tech & Media',
       badgeClass: 'brandTagTech',
-      badgeBg: '#d1fae5',
-      badgeColor: '#065f46',
+      badgeBg: INTERACTIVE_REPORT_THEME.badges.beverageBg,
+      badgeColor: INTERACTIVE_REPORT_THEME.badges.beverageColor,
       icon: '📡',
       isSponsor: true,
     };
@@ -355,8 +357,8 @@ export function getBrandCluster(brand: string): BrandClusterInfo {
       id: 'lifestyle',
       label: 'Lifestyle & Retail',
       badgeClass: 'brandTagApparel',
-      badgeBg: '#f1f5f9',
-      badgeColor: '#475569',
+      badgeBg: INTERACTIVE_REPORT_THEME.badges.defaultBg,
+      badgeColor: INTERACTIVE_REPORT_THEME.badges.defaultColor,
       icon: '🧢',
       isSponsor: false,
     };
@@ -367,8 +369,8 @@ export function getBrandCluster(brand: string): BrandClusterInfo {
     id: 'apparel',
     label: 'Kit & Equipment',
     badgeClass: 'brandTagApparel',
-    badgeBg: '#e0f2fe',
-    badgeColor: '#075985',
+    badgeBg: INTERACTIVE_REPORT_THEME.badges.venuesBg,
+    badgeColor: INTERACTIVE_REPORT_THEME.badges.venuesColor,
     icon: '👕',
     isSponsor: false,
   };
