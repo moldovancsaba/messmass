@@ -162,13 +162,16 @@ export default function OverviewTab({
       if (!canonical) continue;
 
       const canonicalName = canonical.canonicalName;
-      const existing = clubMap.get(canonicalName);
+      // Unique identity key: partnerId > partnerName > canonicalName
+      const entityKey = c.partnerId || (c.partnerName ? c.partnerName.toLowerCase().trim() : canonicalName.toLowerCase().trim());
+      const existing = clubMap.get(entityKey);
       if (existing) {
         existing.count += c.count;
+        if (!existing.logoUrl && c.logoUrl) existing.logoUrl = c.logoUrl;
       } else {
-        clubMap.set(canonicalName, {
+        clubMap.set(entityKey, {
           ...c,
-          club: canonicalName,
+          club: c.partnerName || canonicalName,
           sport: c.sport || canonical.franchise?.sport,
         });
       }

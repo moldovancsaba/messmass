@@ -40,12 +40,16 @@ describe('Canonical Sports Club Clustering & Entity Separation', () => {
       const v3 = canonicalizeClub('GYŐRI ETO KÉZILABDA CLUB');
       const v4 = canonicalizeClub('Hajrá Győr!');
       const v5 = canonicalizeClub('Audi ETO');
+      const v6 = canonicalizeClub('Győri ETO');
+      const v7 = canonicalizeClub('ETO FC Győr');
 
       expect(v1?.canonicalName).toBe('Győri Audi ETO KC');
       expect(v2?.canonicalName).toBe('Győri Audi ETO KC');
       expect(v3?.canonicalName).toBe('Győri Audi ETO KC');
       expect(v4?.canonicalName).toBe('Győri Audi ETO KC');
       expect(v5?.canonicalName).toBe('Győri Audi ETO KC');
+      expect(v6?.canonicalName).toBe('Győri Audi ETO KC');
+      expect(v7?.canonicalName).toBe('ETO FC Győr');
     });
 
     it('canonicalizes FTC Rail Cargo Hungária variations', () => {

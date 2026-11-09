@@ -828,13 +828,32 @@ export async function getScopedInteractiveReportData(
               (p.name.toLowerCase().includes('haladás') || p.name.toLowerCase().includes('haladas'))
           );
         }
+        if (low.includes('honvéd') || low.includes('honved') || low.includes('kispest')) {
+          return (
+            partners.find((p) => p.name && p.name.toLowerCase().includes('budapest honvéd')) ||
+            partners.find((p) => p.name && p.name.toLowerCase().includes('honvéd'))
+          );
+        }
         if (low.includes('eto') || low.includes('győr') || low.includes('gyor')) {
-          return partners.find(
-            (p) =>
-              p.name &&
-              (p.name.toLowerCase().includes('eto') ||
-                p.name.toLowerCase().includes('győr') ||
-                p.name.toLowerCase().includes('gyor'))
+          if (low.includes('audi') || low.includes('kc') || low.includes('kézi') || low.includes('kezi') || low.includes('handball')) {
+            return (
+              partners.find((p) => p.name && p.name.toLowerCase().includes('audi eto')) ||
+              partners.find((p) => p.name && p.name.toLowerCase().includes('eto') && p.emoji === '🤾')
+            );
+          }
+          if (low.includes('uni') || low.includes('kosár')) {
+            return partners.find((p) => p.name && p.name.toLowerCase().includes('uni győr'));
+          }
+          if (low.includes('fc') || low.includes('labdarúg') || low.includes('foci')) {
+            return (
+              partners.find((p) => p.name && (p.name.toLowerCase().includes('eto fc') || p.name.toLowerCase().includes('győr')) && p.emoji === '⚽') ||
+              partners.find((p) => p.name && p.name.toLowerCase().includes('eto fc'))
+            );
+          }
+          return (
+            partners.find((p) => p.name && p.name.toLowerCase().includes('audi eto')) ||
+            partners.find((p) => p.name && p.name.toLowerCase().includes('eto fc')) ||
+            partners.find((p) => p.name && (p.name.toLowerCase().includes('eto') || p.name.toLowerCase().includes('győr')))
           );
         }
         return null;
@@ -873,7 +892,7 @@ export async function getScopedInteractiveReportData(
         }
       }
 
-      const enrichedClubs = Array.from(canonicalClubMap.values())
+      const rawEnrichedClubs = Array.from(canonicalClubMap.values())
         .map((c) => {
           const matched = matchClubToPartner(c.club, allPartners);
           const sport =
@@ -902,8 +921,27 @@ export async function getScopedInteractiveReportData(
               matched?.sportsDb?.intStadiumCapacity || matched?.sportsDb?.venueCapacity || undefined,
             website: matched?.sportsDb?.strWebsite || matched?.sportsDb?.website || undefined,
           };
-        })
-        .sort((a, b) => b.count - a.count);
+        });
+
+      // Deduplicate and merge by partner or canonical display identity (INV-003, INV-001)
+      const uniqueClubEntityMap = new Map<string, (typeof rawEnrichedClubs)[0]>();
+      for (const item of rawEnrichedClubs) {
+        // Unique identity key: partnerId > partnerName > club name
+        const entityKey = item.partnerId || item.partnerName?.toLowerCase().trim() || item.club.toLowerCase().trim();
+        const existing = uniqueClubEntityMap.get(entityKey);
+        if (existing) {
+          existing.count += item.count;
+          if (!existing.logoUrl && item.logoUrl) existing.logoUrl = item.logoUrl;
+          if (!existing.partnerName && item.partnerName) existing.partnerName = item.partnerName;
+          if (!existing.partnerSlug && item.partnerSlug) existing.partnerSlug = item.partnerSlug;
+          if (!existing.homeVenue && item.homeVenue) existing.homeVenue = item.homeVenue;
+          if (!existing.website && item.website) existing.website = item.website;
+        } else {
+          uniqueClubEntityMap.set(entityKey, { ...item });
+        }
+      }
+
+      const enrichedClubs = Array.from(uniqueClubEntityMap.values()).sort((a, b) => b.count - a.count);
 
       vision = {
         totalImages: visionDoc.totalImages || 11312,

@@ -24,7 +24,22 @@ export default function AllClubsModal({
   const [selectedSport, setSelectedSport] = useState<string>('all');
 
   const filteredClubs = useMemo(() => {
-    return clubs.filter((c) => {
+    // Deduplicate incoming clubs list by partner or display name
+    const clubMap = new Map<string, ClubPodiumStat>();
+    for (const c of clubs) {
+      if (!c.club || c.count <= 0) continue;
+      const entityKey = c.partnerId || (c.partnerName ? c.partnerName.toLowerCase().trim() : c.club.toLowerCase().trim());
+      const existing = clubMap.get(entityKey);
+      if (existing) {
+        existing.count += c.count;
+        if (!existing.logoUrl && c.logoUrl) existing.logoUrl = c.logoUrl;
+      } else {
+        clubMap.set(entityKey, { ...c });
+      }
+    }
+    const dedupedClubs = Array.from(clubMap.values()).sort((a, b) => b.count - a.count);
+
+    return dedupedClubs.filter((c) => {
       if (selectedSport !== 'all') {
         const cSport = c.sport?.toLowerCase() || '';
         if (!cSport.includes(selectedSport.toLowerCase())) {

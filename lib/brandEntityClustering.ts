@@ -187,9 +187,10 @@ export const SPORT_FRANCHISES_DIRECTORY: Record<string, FranchiseInfo> = {
   'magyarország': { name: 'Hungary National Team', sport: 'Multi-Sport', origin: 'National Team', homeVenue: 'Puskás Aréna' },
   'magyarorszag': { name: 'Hungary National Team', sport: 'Multi-Sport', origin: 'National Team', homeVenue: 'Puskás Aréna' },
   'hungary': { name: 'Hungary National Team', sport: 'Multi-Sport', origin: 'National Team', homeVenue: 'Puskás Aréna' },
-  'győr': { name: 'Győri ETO', sport: 'Football', origin: 'Domestic', homeVenue: 'ETO Park' },
-  'győri eto': { name: 'Győri ETO', sport: 'Football', origin: 'Domestic', homeVenue: 'ETO Park' },
-  'győr mtk': { name: 'Győri ETO', sport: 'Football', origin: 'Domestic', homeVenue: 'ETO Park' },
+  'eto fc': { name: 'ETO FC Győr', sport: 'Football', origin: 'Domestic', homeVenue: 'ETO Park' },
+  'eto fc győr': { name: 'ETO FC Győr', sport: 'Football', origin: 'Domestic', homeVenue: 'ETO Park' },
+  'győri eto fc': { name: 'ETO FC Győr', sport: 'Football', origin: 'Domestic', homeVenue: 'ETO Park' },
+  'győr mtk': { name: 'ETO FC Győr', sport: 'Football', origin: 'Domestic', homeVenue: 'ETO Park' },
   'debreceni vsc': { name: 'Debreceni VSC', sport: 'Football', origin: 'Domestic', homeVenue: 'Nagyerdei Stadion' },
   'dvsc': { name: 'Debreceni VSC', sport: 'Football', origin: 'Domestic', homeVenue: 'Nagyerdei Stadion' },
   'debrecen': { name: 'Debreceni VSC', sport: 'Football', origin: 'Domestic', homeVenue: 'Nagyerdei Stadion' },
@@ -202,6 +203,9 @@ export const SPORT_FRANCHISES_DIRECTORY: Record<string, FranchiseInfo> = {
   // Handball
   'győri audi eto kc': { name: 'Győri Audi ETO KC', sport: 'Handball', origin: 'Domestic', homeVenue: 'Audi Aréna Győr' },
   'gyori audi eto kc': { name: 'Győri Audi ETO KC', sport: 'Handball', origin: 'Domestic', homeVenue: 'Audi Aréna Győr' },
+  'győri eto': { name: 'Győri Audi ETO KC', sport: 'Handball', origin: 'Domestic', homeVenue: 'Audi Aréna Győr' },
+  'gyori eto': { name: 'Győri Audi ETO KC', sport: 'Handball', origin: 'Domestic', homeVenue: 'Audi Aréna Győr' },
+  'győr': { name: 'Győri Audi ETO KC', sport: 'Handball', origin: 'Domestic', homeVenue: 'Audi Aréna Győr' },
   'győri eto kc': { name: 'Győri Audi ETO KC', sport: 'Handball', origin: 'Domestic', homeVenue: 'Audi Aréna Győr' },
   'gyori eto kc': { name: 'Győri Audi ETO KC', sport: 'Handball', origin: 'Domestic', homeVenue: 'Audi Aréna Győr' },
   'győri eto kézilabda club': { name: 'Győri Audi ETO KC', sport: 'Handball', origin: 'Domestic', homeVenue: 'Audi Aréna Győr' },
@@ -398,19 +402,17 @@ export function canonicalizeClub(rawName: string): { canonicalName: string; fran
     return { canonicalName: directHit.name, franchise: directHit };
   }
 
-  // 2. Győri Audi ETO KC (Handball) variations
+  // 2. Győri Audi ETO KC (Handball) & ETO FC variations
   if (low.includes('győr') || low.includes('gyor') || low.includes('eto')) {
-    if (
-      low.includes('audi') ||
-      low.includes('kc') ||
-      low.includes('kézilabda') ||
-      low.includes('kezilabda') ||
-      low.includes('hajrá') ||
-      low.includes('hajra')
-    ) {
-      const fr = SPORT_FRANCHISES_DIRECTORY['győri audi eto kc'];
-      return { canonicalName: 'Győri Audi ETO KC', franchise: fr };
+    if (low.includes('fc') || low.includes('labdarúg') || low.includes('foci')) {
+      const fr = SPORT_FRANCHISES_DIRECTORY['győri eto'];
+      return { canonicalName: 'ETO FC Győr', franchise: fr };
     }
+    if (low.includes('uni') || low.includes('kosár')) {
+      return { canonicalName: 'UNI Győr' };
+    }
+    const fr = SPORT_FRANCHISES_DIRECTORY['győri audi eto kc'];
+    return { canonicalName: 'Győri Audi ETO KC', franchise: fr };
   }
 
   // 3. FTC Rail Cargo Hungária (Handball) variations
