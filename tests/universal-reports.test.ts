@@ -61,6 +61,7 @@ const mockCollection = (name: string) => ({
     }),
   })),
   updateOne: jest.fn(async () => ({ upsertedId: null })),
+  replaceOne: jest.fn(async () => ({ upsertedId: null })),
 });
 
 jest.mock('@/lib/mongodb', () => ({

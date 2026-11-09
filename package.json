@@ -135,7 +135,8 @@
     "security:migrate-users-to-password-hash": "tsx -r dotenv/config scripts/migrate-users-to-password-hash.ts dotenv_config_path=.env.local",
     "ops:partner-report:logs": "node scripts/auditPartnerReportLogs.mjs",
     "ops:partner-report:logs:fail": "node scripts/auditPartnerReportLogs.mjs --fail-on-errors",
-    "seed:fanmass-status": "tsx -r dotenv/config scripts/seedFanmassStatusVariable.ts dotenv_config_path=.env.local"
+    "seed:fanmass-status": "tsx -r dotenv/config scripts/seedFanmassStatusVariable.ts dotenv_config_path=.env.local",
+    "test:snapshot-perf": "tsx --env-file=.env.local scripts/benchmark-snapshot-perf.ts"
   },
   "dependencies": {
     "@mantine/core": "^8.3.18",
