@@ -272,9 +272,10 @@ export async function runMaintenance(applyChanges = false) {
     const awayPartner = resolvePartner(teams.away);
 
     if (homePartner) {
-      const updateDoc: any = { partner1: homePartner._id };
+      const updateDoc: any = { partner1: homePartner._id, partner1Id: homePartner._id };
       if (awayPartner) {
         updateDoc.partner2 = awayPartner._id;
+        updateDoc.partner2Id = awayPartner._id;
       }
 
       if (applyChanges) {
