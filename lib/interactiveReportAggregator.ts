@@ -969,6 +969,7 @@ export async function getScopedInteractiveReportData(
           topClubs: enrichedClubs,
           topVenues: visionDoc.aggregates?.topVenues || [],
           topEmotions: visionDoc.aggregates?.topEmotions || [],
+          merchandise: visionDoc.aggregates?.merchandise || undefined,
           sportsBreakdown: visionDoc.aggregates?.sportsBreakdown || {},
         },
         recentImages: latestAnalyzedImages.length > 0

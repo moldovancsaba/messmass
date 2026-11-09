@@ -135,6 +135,7 @@ export interface VisionProgressData {
     }>;
     topVenues?: Array<{ venue: string; count: number }>;
     topEmotions: Array<{ emotion: string; count: number }>;
+    merchandise?: Array<{ item: string; count: number; percentage: number }>;
     sportsBreakdown: Record<
       string,
       {

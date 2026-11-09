@@ -1,7 +1,7 @@
 'use client';
 /* eslint-disable react/forbid-dom-props */
 
-import React from 'react';
+import React, { useState } from 'react';
 import Link from 'next/link';
 import styles from './executive-view.module.css';
 
@@ -34,6 +34,7 @@ export default function ExecutiveDemographicsQuadrant({
   partnerSlug = 'szrt',
   onViewTerritoryMap,
 }: DemographicsQuadrantProps) {
+  const [merchViewMode, setMerchViewMode] = useState<'bars' | 'pie'>('bars');
   // Age calculations
   const totalAgeCount =
     (ageGroups.children || 0) +
@@ -61,17 +62,11 @@ export default function ExecutiveDemographicsQuadrant({
       : '91.5';
   const neutralPct = (100 - parseFloat(happyPct)).toFixed(1);
 
-  // Dynamic merchandise counts (from detections or realistic baseline derived from fanmass catalog)
-  const defaultMerch = [
-    { item: 'Jersey', icon: '👕', count: Math.round(totalPeople * 0.48), pct: 58.4 },
-    { item: 'Logo', icon: '🏷️', count: Math.round(totalPeople * 0.16), pct: 19.5 },
-    { item: 'Banner', icon: '🚩', count: Math.round(totalPeople * 0.10), pct: 12.2 },
-    { item: 'Scarf', icon: '🧣', count: Math.round(totalPeople * 0.05), pct: 6.1 },
-    { item: 'Flag', icon: '🏁', count: Math.round(totalPeople * 0.02), pct: 2.4 },
-    { item: 'Cap / Hat', icon: '🧢', count: Math.round(totalPeople * 0.01), pct: 1.4 },
-  ];
-
-  const merchItems = merchandise && merchandise.length > 0
+  // Merchandise calculation:
+  // Distinct separation between:
+  // 1. Trustworthy fan adoption rate: count / totalPeople (each in its own row)
+  // 2. Merchandise ratio: count / totalMerchItems (where sum = 100% on the pie chart)
+  const rawMerchList = merchandise && merchandise.length > 0
     ? merchandise.map((m) => {
         let icon = '🏷️';
         const low = m.item.toLowerCase();
@@ -80,9 +75,80 @@ export default function ExecutiveDemographicsQuadrant({
         else if (low.includes('banner')) icon = '🚩';
         else if (low.includes('flag')) icon = '🏁';
         else if (low.includes('cap') || low.includes('hat')) icon = '🧢';
-        return { item: m.item, icon, count: m.count, pct: m.percentage };
+        return { item: m.item, icon, count: m.count };
       })
-    : defaultMerch;
+    : [
+        { item: 'Jersey', icon: '👕', count: Math.round(totalPeople * 0.48) },
+        { item: 'Logo', icon: '🏷️', count: Math.round(totalPeople * 0.16) },
+        { item: 'Banner', icon: '🚩', count: Math.round(totalPeople * 0.10) },
+        { item: 'Scarf', icon: '🧣', count: Math.round(totalPeople * 0.05) },
+        { item: 'Flag', icon: '🏁', count: Math.round(totalPeople * 0.02) },
+        { item: 'Cap / Hat', icon: '🧢', count: Math.round(totalPeople * 0.01) },
+      ];
+
+  const totalMerchCount = rawMerchList.reduce((acc, m) => acc + m.count, 0);
+
+  const MERCH_COLORS: Record<string, string> = {
+    Jersey: '#2563eb', // blue
+    Logo: '#f59e0b', // amber
+    Banner: '#ef4444', // red
+    Scarf: '#8b5cf6', // purple
+    Flag: '#10b981', // emerald
+    'Cap / Hat': '#06b6d4', // cyan
+  };
+
+  const processedMerch = rawMerchList.map((m) => {
+    // 1. Ratio between merches (summing to 100% across all merch items)
+    const sharePct = totalMerchCount > 0
+      ? Math.round((m.count / totalMerchCount) * 1000) / 10
+      : 0;
+    // 2. Trustworthy adoption rate individually relative to total visible persons
+    const fanAdoptionPct = totalPeople > 0
+      ? Math.round((m.count / totalPeople) * 1000) / 10
+      : 0;
+    const color = MERCH_COLORS[m.item] || '#64748b';
+
+    return {
+      ...m,
+      sharePct,
+      fanAdoptionPct,
+      color,
+    };
+  });
+
+  // Generate SVG donut slices for the 100% Merch Ratio view
+  let cumulativeAngle = 0;
+  const donutSlices = processedMerch.map((item) => {
+    const angle = (item.sharePct / 100) * 360;
+    const startAngle = cumulativeAngle;
+    const endAngle = cumulativeAngle + angle;
+    cumulativeAngle = endAngle;
+
+    // Convert angles (-90 deg from positive x is top)
+    const startRad = ((startAngle - 90) * Math.PI) / 180;
+    const endRad = ((endAngle - 90) * Math.PI) / 180;
+    const cx = 70;
+    const cy = 70;
+    const rOuter = 62;
+    const rInner = 38;
+
+    const x1 = cx + rOuter * Math.cos(startRad);
+    const y1 = cy + rOuter * Math.sin(startRad);
+    const x2 = cx + rOuter * Math.cos(endRad);
+    const y2 = cy + rOuter * Math.sin(endRad);
+    const x3 = cx + rInner * Math.cos(endRad);
+    const y3 = cy + rInner * Math.sin(endRad);
+    const x4 = cx + rInner * Math.cos(startRad);
+    const y4 = cy + rInner * Math.sin(startRad);
+
+    const largeArc = angle > 180 ? 1 : 0;
+    const pathD = `M ${x1} ${y1} A ${rOuter} ${rOuter} 0 ${largeArc} 1 ${x2} ${y2} L ${x3} ${y3} A ${rInner} ${rInner} 0 ${largeArc} 0 ${x4} ${y4} Z`;
+
+    return {
+      ...item,
+      pathD,
+    };
+  });
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
@@ -254,48 +320,153 @@ export default function ExecutiveDemographicsQuadrant({
           </div>
         </div>
 
-        {/* Card 3: Merchandise Item Types */}
+        {/* Card 3: Merchandise Item Types (Dual View: Trustworthy Bar Chart + 100% Pie Chart) */}
         <div className={styles.quadrantCard}>
           <div className={styles.quadrantHeader}>
             <div>
               <h4 className={styles.quadrantTitle}>
-                <span>👕 Merchandise Item Types</span>
+                <span>👕 Merchandise Analysis</span>
               </h4>
               <div className={styles.quadrantSubtitle}>
-                Detected fan wear & stadium accessories
+                {merchViewMode === 'bars'
+                  ? `Adoption rate per visible fan (${totalPeople.toLocaleString()} people)`
+                  : 'Ratio between detected item types (Sum = 100%)'}
               </div>
             </div>
-            <span style={{ fontSize: '11px', fontWeight: 700, color: '#64748b' }}>
-              Categories Only
-            </span>
+            <div className={styles.merchHeaderActions}>
+              <div className={styles.merchToggleGroup}>
+                <button
+                  type="button"
+                  className={merchViewMode === 'bars' ? styles.merchToggleActive : styles.merchToggleBtn}
+                  onClick={() => setMerchViewMode('bars')}
+                  title="True adoption rate calculated individually against total visible persons"
+                >
+                  📊 % of Fans
+                </button>
+                <button
+                  type="button"
+                  className={merchViewMode === 'pie' ? styles.merchToggleActive : styles.merchToggleBtn}
+                  onClick={() => setMerchViewMode('pie')}
+                  title="Share breakdown across detected merchandise items (Sum = 100%)"
+                >
+                  🥧 100% Pie
+                </button>
+              </div>
+            </div>
           </div>
 
-          <div className={styles.merchList}>
-            {merchItems.map((m) => (
-              <div key={m.item} className={styles.merchRow}>
-                <div className={styles.merchLabel}>
-                  <span>{m.icon}</span>
-                  <span>{m.item}</span>
-                </div>
-                <div style={{ flex: 1, height: '6px', background: '#e2e8f0', borderRadius: '9999px', overflow: 'hidden' }}>
-                  <div
-                    style={{
-                      width: `${Math.min(100, m.pct)}%`,
-                      height: '100%',
-                      background: '#3b82f6',
-                      borderRadius: '9999px',
-                    }}
-                  />
-                </div>
-                <span style={{ width: '42px', textAlign: 'right', fontSize: '11px', fontWeight: 600, color: '#64748b' }}>
-                  {m.pct}%
-                </span>
-                <span style={{ width: '48px', textAlign: 'right', fontSize: '11px', fontWeight: 700, color: '#0f2c4a' }}>
-                  {m.count.toLocaleString()}
+          {merchViewMode === 'bars' ? (
+            <div>
+              <div className={styles.merchTableHeader}>
+                <span style={{ width: '100px' }}>Item</span>
+                <span style={{ flex: 1 }}>Fan Adoption</span>
+                <span className={styles.merchPercentCol}>% Fans</span>
+                <span className={styles.merchShareTag}>Item Share</span>
+                <span className={styles.merchCountCol}>Count</span>
+              </div>
+              <div className={styles.merchList}>
+                {processedMerch.map((m) => (
+                  <div key={m.item} className={styles.merchRow}>
+                    <div className={styles.merchLabel}>
+                      <span>{m.icon}</span>
+                      <span>{m.item}</span>
+                    </div>
+                    <div className={styles.merchBarTrack}>
+                      <div
+                        className={styles.merchBarFill}
+                        style={{
+                          width: `${Math.min(100, m.fanAdoptionPct)}%`,
+                          background: m.color,
+                        }}
+                      />
+                    </div>
+                    <span className={styles.merchPercentCol}>
+                      {m.fanAdoptionPct}%
+                    </span>
+                    <span className={styles.merchShareTag} title={`${m.sharePct}% of all detected merchandise items`}>
+                      {m.sharePct}% mix
+                    </span>
+                    <span className={styles.merchCountCol}>
+                      {m.count.toLocaleString()}
+                    </span>
+                  </div>
+                ))}
+              </div>
+              <div className={styles.merchFootnote}>
+                <span>💡</span>
+                <span>
+                  <strong>Trustworthy fan adoption:</strong> Calculated individually against {totalPeople.toLocaleString()} total visible persons.
                 </span>
               </div>
-            ))}
-          </div>
+            </div>
+          ) : (
+            <div>
+              <div className={styles.pieChartContainer}>
+                <div className={styles.pieChartSvgWrap}>
+                  <svg width="140" height="140" viewBox="0 0 140 140">
+                    {donutSlices.map((slice) => (
+                      <path
+                        key={slice.item}
+                        d={slice.pathD}
+                        fill={slice.color}
+                        stroke="#ffffff"
+                        strokeWidth="1.5"
+                      >
+                        <title>{`${slice.item}: ${slice.sharePct}% (${slice.count.toLocaleString()} items)`}</title>
+                      </path>
+                    ))}
+                    <text
+                      x="70"
+                      y="66"
+                      textAnchor="middle"
+                      fontSize="16"
+                      fontWeight="800"
+                      fill="#0f2c4a"
+                    >
+                      100%
+                    </text>
+                    <text
+                      x="70"
+                      y="80"
+                      textAnchor="middle"
+                      fontSize="9"
+                      fontWeight="700"
+                      fill="#64748b"
+                    >
+                      MERCH MIX
+                    </text>
+                  </svg>
+                </div>
+
+                <div className={styles.pieLegend}>
+                  {processedMerch.map((m) => (
+                    <div key={m.item} className={styles.pieLegendItem}>
+                      <div
+                        className={styles.pieLegendDot}
+                        style={{ background: m.color }}
+                      />
+                      <div className={styles.pieLegendLabel}>
+                        <span>{m.icon}</span>
+                        <span>{m.item}</span>
+                      </div>
+                      <span className={styles.pieLegendPct}>
+                        {m.sharePct}%
+                      </span>
+                      <span className={styles.pieLegendCount}>
+                        {m.count.toLocaleString()}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+              <div className={styles.merchFootnote}>
+                <span>🥧</span>
+                <span>
+                  <strong>Merchandise ratio:</strong> Distribution across {totalMerchCount.toLocaleString()} total detected items (Sum = 100%).
+                </span>
+              </div>
+            </div>
+          )}
         </div>
       </div>
 

@@ -279,6 +279,7 @@ export default function OverviewTab({
           ageGroups={currentAgeGroups}
           totalPeople={fanAppearances}
           topEmotions={vision?.aggregates?.topEmotions || []}
+          merchandise={vision?.aggregates?.merchandise}
           partnerSlug={data.partner.viewSlug || 'szrt'}
           onViewTerritoryMap={onViewTerritoryMap}
         />
