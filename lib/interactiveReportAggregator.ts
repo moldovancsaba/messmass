@@ -22,6 +22,27 @@ import {
   saveReportSnapshot,
 } from '@/lib/reportSnapshotManager';
 
+
+export const SZRT_CAMPAIGN_NAMES = [
+  "NOVEMBER Statisztika",
+  "DECEMBER Statisztika",
+  "JANUÁR Statisztika",
+  "FEBRUÁR Statisztika",
+  "2026. január 2 - 6. Statisztika",
+  "2026. január 7 - 12. Statisztika",
+  "2026. január 13 - 20. Statisztika",
+  "2026. január 21 - 26. Statisztika",
+  "2026. január 27 - február 2. Statisztika",
+  "2026. február 3. - február 10. Statisztika",
+  "2026. február 10 - február 17. Statisztika",
+  "2026. február 18 - február 28. Statisztika",
+  "ICE Hockey AI Analytics",
+  "Handball AI Analytics",
+  "Football AI Analytics",
+  "Basketball AI Analytics",
+];
+const campaignNames = SZRT_CAMPAIGN_NAMES;
+
 export interface ReportScopeQuery {
   type: 'hashtag' | 'partner' | 'event';
   identifier: string;
@@ -76,151 +97,14 @@ export async function getScopedInteractiveReportData(
     console.warn('Snapshot cache lookup warning:', err);
   }
 
-  // 1. Resolve Scope & Target Projects
-  const isSzrtIdentifier =
-    scopeIdentifier.toLowerCase() === 'szrt' ||
-    scopeIdentifier.toLowerCase() === 'szerencsejatek' ||
-    scopeIdentifier.toLowerCase() === 'tippmixreport2026' ||
-    scopeIdentifier === 'ec9bb989-cb0f-4d5a-b22b-c3a1829cd3fd' ||
-    scopeIdentifier === '694a96990ad78323bea10660';
-
-  let partner: any = null;
-  let campaignProjects: any[] = [];
-  let scopeHeader: ScopeHeader;
-
-  const campaignNames = [
-    'NOVEMBER Statisztika',
-    'DECEMBER Statisztika',
-    'JANUÁR Statisztika',
-    'FEBRUÁR Statisztika',
-    '2026. január 2 - 6. Statisztika',
-    '2026. január 7 - 12. Statisztika',
-    '2026. január 13 - 20. Statisztika',
-    '2026. január 21 - 26. Statisztika',
-    '2026. január 27 - február 2. Statisztika',
-    '2026. február 3. - február 10. Statisztika',
-    '2026. február 10 - február 17. Statisztika',
-    '2026. február 18 - február 28. Statisztika',
-    'ICE Hockey AI Analytics',
-    'Handball AI Analytics',
-    'Football AI Analytics',
-    'Basketball AI Analytics',
-  ];
-
-  if ((scopeType === 'hashtag' && isSzrtIdentifier) || (scopeType === 'partner' && isSzrtIdentifier)) {
-    partner = await db.collection('partners').findOne({
-      $or: [
-        { viewSlug: 'ec9bb989-cb0f-4d5a-b22b-c3a1829cd3fd' },
-        { name: /szerencsejáték/i },
-        { _id: new ObjectId('694a96990ad78323bea10660') },
-      ],
-    });
-
-    const tippmixPartners = await db
-      .collection('partners')
-      .find({ name: /tippmix/i })
-      .toArray();
-    const tippmixPartnerIds = tippmixPartners.map((p) => p._id);
-    const tippmixPartnerIdStrings = tippmixPartnerIds.map((id) => id.toString());
-
-    campaignProjects = await db
-      .collection('projects')
-      .find({
-        $or: [
-          { hashtags: 'tippmixreport2026' },
-          { eventName: { $in: campaignNames } },
-          { eventName: /tippmix/i },
-          { partner1Id: { $in: [...tippmixPartnerIds, ...tippmixPartnerIdStrings] as any } },
-          { partner2Id: { $in: [...tippmixPartnerIds, ...tippmixPartnerIdStrings] as any } },
-          { partner1: { $in: [...tippmixPartnerIds, ...tippmixPartnerIdStrings] as any } },
-          { partner2: { $in: [...tippmixPartnerIds, ...tippmixPartnerIdStrings] as any } },
-        ],
-      })
-      .sort({ eventDate: 1 })
-      .toArray();
-
-    scopeHeader = {
-      type: scopeType === 'hashtag' ? 'hashtag' : 'partner',
-      id: scopeType === 'hashtag' ? 'tippmixreport2026' : (partner?.viewSlug || 'szrt'),
-      name: partner?.name || 'Szerencsejáték Zrt.',
-      viewSlug: 'szrt',
-      emoji: partner?.emoji || '🍀',
-      subtitle:
-        'Consolidated fan engagement, photo activation volume, and marketing opt-in conversion metrics across national sports events (#tippmixreport2026).',
-      organizationId: partner?.organizationId ? String(partner.organizationId) : undefined,
-    };
-  } else if (scopeType === 'hashtag') {
-    campaignProjects = await db
-      .collection('projects')
-      .find({
-        hashtags: { $regex: new RegExp(`^${scopeIdentifier}$`, 'i') },
-      })
-      .sort({ eventDate: 1 })
-      .toArray();
-
-    scopeHeader = {
-      type: 'hashtag',
-      id: scopeIdentifier,
-      name: `#${scopeIdentifier}`,
-      viewSlug: scopeIdentifier,
-      emoji: '🏷️',
-      subtitle: `Consolidated interactive analytics and audience telemetry across #${scopeIdentifier} events.`,
-    };
-  } else if (scopeType === 'partner') {
-    partner = await findPartnerByIdentifier(db as any, scopeIdentifier);
-    if (!partner) {
-      return null;
-    }
-
-    campaignProjects = await db
-      .collection('projects')
-      .find({
-        $or: [
-          { partner1Id: partner._id },
-          { partner2Id: partner._id },
-          { partner1Id: String(partner._id) },
-          { partner2Id: String(partner._id) },
-          { partner1: partner._id },
-          { partner2: partner._id },
-          { partner1: String(partner._id) },
-          { partner2: String(partner._id) },
-        ],
-      })
-      .sort({ eventDate: 1 })
-      .toArray();
-
-    scopeHeader = {
-      type: 'partner',
-      id: String(partner._id),
-      name: partner.name,
-      viewSlug: partner.viewSlug || scopeIdentifier,
-      emoji: partner.emoji || '🛡️',
-      subtitle: `Official Partner Engagement & Activation Report for ${partner.name}.`,
-      organizationId: partner.organizationId ? String(partner.organizationId) : undefined,
-    };
-  } else {
-    // Event scope
-    let project = null;
-    if (ObjectId.isValid(scopeIdentifier)) {
-      project = await db.collection('projects').findOne({ _id: new ObjectId(scopeIdentifier) });
-    }
-    if (!project) {
-      project = await db.collection('projects').findOne({ slug: scopeIdentifier });
-    }
-    if (!project) {
-      return null;
-    }
-    campaignProjects = [project];
-    scopeHeader = {
-      type: 'event',
-      id: String(project._id),
-      name: project.eventName || 'Event Analytics Report',
-      viewSlug: project.slug || scopeIdentifier,
-      emoji: '🏟️',
-      subtitle: `Match telemetry, photo activation, and attendee demographics for ${project.eventName}.`,
-      organizationId: project.organizationId ? String(project.organizationId) : undefined,
-    };
+  // 1. Resolve Scope & Target Projects via modular Scope Resolver (INV-001)
+  const resolvedScope = await resolveScopeProjectIds(scopeType, rawId, query.organizationId, db);
+  if (resolvedScope.resolvedEventIds.length === 0) {
+    if (scopeType === "partner" && !resolvedScope.partner) return null;
+    if (scopeType === "event") return null;
   }
+
+  const { partner, campaignProjects, scopeHeader } = resolvedScope;
 
   // 2. Resolve partner style
   let style = null;
@@ -309,8 +193,8 @@ export async function getScopedInteractiveReportData(
         sport = 'Basketball';
       }
 
-      const cleanName = rawMatchName
-        .replace(/^[⚽🏀🏒🤾🎸\s]+/, '')
+      const cleanName = rawMatchName
+        .replace(/^[⚽ððð¤¾ð¸\s]+/, '')
         .replace(/#/g, ' vs ')
         .trim();
 
@@ -351,7 +235,7 @@ export async function getScopedInteractiveReportData(
     if (!submitted || submitted <= 0) continue;
 
     const date = (p.eventDate || '').replace(/\./g, '-').replace(/-$/, '').trim();
-    const cleanName = p.eventName.replace(/^[⚽🏀🏒🤾🎸\s]+/, '').replace(/#/g, ' vs ').trim();
+    const cleanName = p.eventName.replace(/^[⚽ððð¤¾ð¸\s]+/, '').replace(/#/g, ' vs ').trim();
     const key = `${p.eventName.toLowerCase().replace(/[^a-z0-9]/g, '')}__${date}`;
 
     if (!matchesMap.has(key)) {
@@ -366,7 +250,7 @@ export async function getScopedInteractiveReportData(
       let sport: MatchItem['sport'] = 'Football';
       const combined = `${p.eventName} ${partnerName}`.toLowerCase();
       if (
-        combined.includes('jégkorong') ||
+        combined.includes('jégkorong') ||
         combined.includes('hoki') ||
         combined.includes('av19') ||
         combined.includes('vsv')
@@ -640,7 +524,10 @@ export async function getScopedInteractiveReportData(
       // Load recent images with full brand weighting metrics from szrt_vision_analysis
       const latestAnalyzedImages = await db
         .collection('szrt_vision_analysis')
-        .find({ 'brandMetrics.0': { $exists: true } })
+        .find({
+          'brandMetrics.0': { $exists: true },
+          ...(query.organizationId ? { organizationId: query.organizationId } : {}),
+        })
         .sort({ analyzedAt: -1 })
         .limit(24)
         .toArray()
@@ -713,7 +600,7 @@ export async function getScopedInteractiveReportData(
         return true;
       });
 
-      function matchClubToPartner(club: string, partners: any[]) {
+      const matchClubToPartner = (club: string, partners: any[]) => {
         const low = club.toLowerCase().trim();
         if (!low || low === 'n/a' || low === 'none') return null;
 
@@ -838,7 +725,7 @@ export async function getScopedInteractiveReportData(
           if (low.includes('audi') || low.includes('kc') || low.includes('kézi') || low.includes('kezi') || low.includes('handball')) {
             return (
               partners.find((p) => p.name && p.name.toLowerCase().includes('audi eto')) ||
-              partners.find((p) => p.name && p.name.toLowerCase().includes('eto') && p.emoji === '🤾')
+              partners.find((p) => p.name && p.name.toLowerCase().includes('eto') && p.emoji === 'ð¤¾')
             );
           }
           if (low.includes('uni') || low.includes('kosár')) {
@@ -1016,7 +903,7 @@ export async function getScopedInteractiveReportData(
       id: String(partner?._id || scopeHeader.id),
       name: scopeHeader.name,
       viewSlug: partner?.viewSlug || scopeHeader.viewSlug || 'szrt',
-      emoji: scopeHeader.emoji || '🍀',
+      emoji: scopeHeader.emoji || 'ð',
     },
     style: {
       name: style?.name || 'SZRT (GENERAL)',
@@ -1106,4 +993,316 @@ export async function getInteractiveReportData(
     type: 'partner',
     identifier: cleanPartnerSlug,
   });
+}
+
+
+export type ScopeType = "hashtag" | "partner" | "event";
+
+export interface ScopeResolutionResult {
+  scopeType: ScopeType;
+  identifier: string;
+  organizationId?: string;
+  resolvedEventIds: string[];
+  scopeMetadata: {
+    title: string;
+    description?: string;
+    partnerId?: string;
+    hashtag?: string;
+    totalEvents: number;
+  };
+  partner?: any;
+  campaignProjects: any[];
+  scopeHeader: ScopeHeader;
+}
+
+export interface UniversalAggregateMetrics {
+  scope: ScopeResolutionResult;
+  totalPhotos: number;
+  totalAttendeesDetected: number;
+  genderRatio: { male: number; female: number };
+  ageDistribution: Record<string, number>;
+  emotionBreakdown: Record<string, number>;
+  topClubs: Array<{ clubId: string; name: string; count: number; emvEur: number }>;
+  topSponsors: Array<{ brandId: string; name: string; count: number; emvEur: number }>;
+  generatedAt: string;
+}
+
+export async function resolveScopeProjectIds(
+  scopeType: ScopeType,
+  identifier: string,
+  organizationId?: string,
+  dbInstance?: any
+): Promise<ScopeResolutionResult> {
+  const client = await clientPromise;
+  const db = dbInstance || client.db(config.dbName);
+
+  const rawId = (identifier || "").trim();
+  const scopeIdentifier = rawId.replace(/^#/, "");
+
+  const isSzrtIdentifier =
+    scopeIdentifier.toLowerCase() === "szrt" ||
+    scopeIdentifier.toLowerCase() === "szerencsejatek" ||
+    scopeIdentifier.toLowerCase() === "tippmixreport2026" ||
+    scopeIdentifier === "ec9bb989-cb0f-4d5a-b22b-c3a1829cd3fd" ||
+    scopeIdentifier === "694a96990ad78323bea10660";
+
+  let partner: any = null;
+  let campaignProjects: any[] = [];
+  let scopeHeader: ScopeHeader;
+
+  const campaignNames = [
+    "NOVEMBER Statisztika",
+    "DECEMBER Statisztika",
+    "JANUÁR Statisztika",
+    "FEBRUÁR Statisztika",
+    "2026. január 2 - 6. Statisztika",
+    "2026. január 7 - 12. Statisztika",
+    "2026. január 13 - 20. Statisztika",
+    "2026. január 21 - 26. Statisztika",
+    "2026. január 27 - február 2. Statisztika",
+    "2026. február 3. - február 10. Statisztika",
+    "2026. február 10 - február 17. Statisztika",
+    "2026. február 18 - február 28. Statisztika",
+    "ICE Hockey AI Analytics",
+    "Handball AI Analytics",
+    "Football AI Analytics",
+    "Basketball AI Analytics",
+  ];
+
+  if ((scopeType === "hashtag" && isSzrtIdentifier) || (scopeType === "partner" && isSzrtIdentifier)) {
+    if (organizationId && organizationId !== "org_szrt") {
+      return {
+        scopeType,
+        identifier: scopeIdentifier,
+        organizationId,
+        resolvedEventIds: [],
+        scopeMetadata: {
+          title: `#${scopeIdentifier}`,
+          description: "No events accessible in this tenant partition.",
+          totalEvents: 0,
+        },
+        partner: null,
+        campaignProjects: [],
+        scopeHeader: {
+          type: scopeType === "hashtag" ? "hashtag" : "partner",
+          id: scopeIdentifier,
+          name: `#${scopeIdentifier}`,
+          viewSlug: scopeIdentifier,
+          emoji: "🔒",
+          subtitle: "Zero events accessible in this tenant partition.",
+          organizationId,
+        },
+      };
+    }
+
+    partner = await db.collection("partners").findOne({
+      $or: [
+        { viewSlug: "ec9bb989-cb0f-4d5a-b22b-c3a1829cd3fd" },
+        { name: /szerencsejáték/i },
+        ...(ObjectId.isValid("694a96990ad78323bea10660") ? [{ _id: new ObjectId("694a96990ad78323bea10660") }] : []),
+      ],
+    });
+
+    const tippmixPartners = await db
+      .collection("partners")
+      .find({ name: /tippmix/i })
+      .toArray();
+    const tippmixPartnerIds = tippmixPartners.map((p: any) => p._id);
+    const tippmixPartnerIdStrings = tippmixPartnerIds.map((id: any) => String(id));
+
+    campaignProjects = await db
+      .collection("projects")
+      .find({
+        $or: [
+          { hashtags: "tippmixreport2026" },
+          { eventName: { $in: campaignNames } },
+          { eventName: /tippmix/i },
+          { partner1Id: { $in: [...tippmixPartnerIds, ...tippmixPartnerIdStrings] as any } },
+          { partner2Id: { $in: [...tippmixPartnerIds, ...tippmixPartnerIdStrings] as any } },
+          { partner1: { $in: [...tippmixPartnerIds, ...tippmixPartnerIdStrings] as any } },
+          { partner2: { $in: [...tippmixPartnerIds, ...tippmixPartnerIdStrings] as any } },
+        ],
+      })
+      .sort({ eventDate: 1 })
+      .toArray();
+
+    scopeHeader = {
+      type: scopeType === "hashtag" ? "hashtag" : "partner",
+      id: scopeType === "hashtag" ? "tippmixreport2026" : (partner?.viewSlug || "szrt"),
+      name: partner?.name || "Szerencsejáték Zrt.",
+      viewSlug: "szrt",
+      emoji: partner?.emoji || "🎯",
+      subtitle:
+        "Consolidated fan engagement, photo activation volume, and marketing opt-in conversion metrics across national sports events (#tippmixreport2026).",
+      organizationId: partner?.organizationId ? String(partner.organizationId) : (organizationId || "org_szrt"),
+    };
+  } else if (scopeType === "hashtag") {
+    const hashtagFilter: any = {
+      $or: [
+        { hashtags: scopeIdentifier },
+        { hashtags: `#${scopeIdentifier}` },
+        { hashtags: { $regex: new RegExp(`^#?${scopeIdentifier}$`, "i") } },
+      ],
+    };
+    if (organizationId) {
+      hashtagFilter.organizationId = organizationId;
+    }
+
+    campaignProjects = await db
+      .collection("projects")
+      .find(hashtagFilter)
+      .sort({ eventDate: 1 })
+      .toArray();
+
+    scopeHeader = {
+      type: "hashtag",
+      id: scopeIdentifier,
+      name: `#${scopeIdentifier}`,
+      viewSlug: scopeIdentifier,
+      emoji: "🏷️",
+      subtitle: `Consolidated interactive analytics and audience telemetry across #${scopeIdentifier} events.`,
+      organizationId,
+    };
+  } else if (scopeType === "partner") {
+    if (organizationId) {
+      partner = await db.collection("partners").findOne({
+        organizationId,
+        $or: [
+          { viewSlug: scopeIdentifier },
+          { slug: scopeIdentifier },
+          { name: new RegExp(`^${scopeIdentifier}$`, "i") },
+          ...(ObjectId.isValid(scopeIdentifier) ? [{ _id: new ObjectId(scopeIdentifier) }] : []),
+        ],
+      });
+    } else {
+      partner = await findPartnerByIdentifier(db as any, scopeIdentifier);
+    }
+
+    if (!partner) {
+      return {
+        scopeType,
+        identifier: scopeIdentifier,
+        organizationId,
+        resolvedEventIds: [],
+        scopeMetadata: {
+          title: `Partner: ${scopeIdentifier}`,
+          description: "Partner not found.",
+          totalEvents: 0,
+        },
+        partner: null,
+        campaignProjects: [],
+        scopeHeader: {
+          type: "partner",
+          id: scopeIdentifier,
+          name: scopeIdentifier,
+          viewSlug: scopeIdentifier,
+          emoji: "🛡️",
+          subtitle: `Partner not found.`,
+          organizationId,
+        },
+      };
+    }
+
+    const partnerId = partner._id;
+    const partnerIdStr = String(partner._id);
+
+    const partnerProjectFilter: any = {
+      $or: [
+        { partner1Id: partnerId },
+        { partner2Id: partnerId },
+        { partner1Id: partnerIdStr },
+        { partner2Id: partnerIdStr },
+        { partner1: partnerId },
+        { partner2: partnerId },
+        { partner1: partnerIdStr },
+        { partner2: partnerIdStr },
+      ],
+    };
+    if (organizationId) {
+      partnerProjectFilter.organizationId = organizationId;
+    }
+
+    campaignProjects = await db
+      .collection("projects")
+      .find(partnerProjectFilter)
+      .sort({ eventDate: 1 })
+      .toArray();
+
+    scopeHeader = {
+      type: "partner",
+      id: String(partner._id),
+      name: partner.name,
+      viewSlug: partner.viewSlug || scopeIdentifier,
+      emoji: partner.emoji || "🛡️",
+      subtitle: `Official Partner Engagement & Activation Report for ${partner.name}.`,
+      organizationId: partner.organizationId ? String(partner.organizationId) : organizationId,
+    };
+  } else {
+    // Event scope
+    let project = null;
+    const eventFilter: any = {};
+    if (ObjectId.isValid(scopeIdentifier)) {
+      eventFilter._id = new ObjectId(scopeIdentifier);
+    } else {
+      eventFilter.slug = scopeIdentifier;
+    }
+    if (organizationId) {
+      eventFilter.organizationId = organizationId;
+    }
+
+    project = await db.collection("projects").findOne(eventFilter);
+
+    if (!project) {
+      return {
+        scopeType,
+        identifier: scopeIdentifier,
+        organizationId,
+        resolvedEventIds: [],
+        scopeMetadata: {
+          title: `Event: ${scopeIdentifier}`,
+          description: "Event not found.",
+          totalEvents: 0,
+        },
+        partner: null,
+        campaignProjects: [],
+        scopeHeader: {
+          type: "event",
+          id: scopeIdentifier,
+          name: scopeIdentifier,
+          viewSlug: scopeIdentifier,
+          emoji: "🏟️",
+          subtitle: `Event not found.`,
+          organizationId,
+        },
+      };
+    }
+
+    campaignProjects = [project];
+    scopeHeader = {
+      type: "event",
+      id: String(project._id),
+      name: project.eventName || "Event Analytics Report",
+      viewSlug: project.slug || scopeIdentifier,
+      emoji: "🏟️",
+      subtitle: `Match telemetry, photo activation, and attendee demographics for ${project.eventName}.`,
+      organizationId: project.organizationId ? String(project.organizationId) : organizationId,
+    };
+  }
+
+  return {
+    scopeType,
+    identifier: scopeIdentifier,
+    organizationId,
+    resolvedEventIds: campaignProjects.map((p: any) => String(p._id)),
+    scopeMetadata: {
+      title: scopeHeader.name,
+      description: scopeHeader.subtitle,
+      partnerId: partner ? String(partner._id) : undefined,
+      hashtag: scopeType === "hashtag" ? scopeIdentifier : undefined,
+      totalEvents: campaignProjects.length,
+    },
+    partner,
+    campaignProjects,
+    scopeHeader,
+  };
 }
