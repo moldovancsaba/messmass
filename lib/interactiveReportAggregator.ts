@@ -944,21 +944,38 @@ export async function getScopedInteractiveReportData(
 export async function getInteractiveReportData(
   partnerSlug: string
 ): Promise<InteractiveReportData | null> {
-  const isSzrtIdentifier =
-    partnerSlug.toLowerCase() === 'szrt' ||
-    partnerSlug.toLowerCase() === 'szerencsejatek' ||
-    partnerSlug === 'ec9bb989-cb0f-4d5a-b22b-c3a1829cd3fd' ||
-    partnerSlug === '694a96990ad78323bea10660';
+  const lower = (partnerSlug || '').toLowerCase().trim();
 
-  if (isSzrtIdentifier) {
+  // 1. Hashtag scope detection
+  if (
+    lower === 'szrt' ||
+    lower === 'szerencsejatek' ||
+    lower === 'ec9bb989-cb0f-4d5a-b22b-c3a1829cd3fd' ||
+    lower === '694a96990ad78323bea10660' ||
+    lower === 'tippmixreport2026' ||
+    lower === '#tippmixreport2026' ||
+    lower.startsWith('hashtag-') ||
+    lower.startsWith('#')
+  ) {
+    const hashtag = lower.replace(/^#|^hashtag-/, '');
     return getScopedInteractiveReportData({
       type: 'hashtag',
-      identifier: 'tippmixreport2026',
+      identifier: hashtag === 'szrt' || hashtag === 'szerencsejatek' ? 'tippmixreport2026' : hashtag,
     });
   }
 
+  // 2. Event scope detection
+  if (lower.startsWith('event-')) {
+    return getScopedInteractiveReportData({
+      type: 'event',
+      identifier: lower.replace(/^event-/, ''),
+    });
+  }
+
+  // 3. Partner scope detection
+  const cleanPartnerSlug = lower.replace(/^partner-/, '');
   return getScopedInteractiveReportData({
     type: 'partner',
-    identifier: partnerSlug,
+    identifier: cleanPartnerSlug,
   });
 }
