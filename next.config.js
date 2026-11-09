@@ -101,6 +101,27 @@ const nextConfig = {
       },
     ];
   },
+  // Universal Interactive Report routing rewrites
+  async rewrites() {
+    return [
+      {
+        source: '/interactive-report/szrt',
+        destination: '/report/hashtag/tippmixreport2026',
+      },
+      {
+        source: '/interactive-report/szrt/map',
+        destination: '/report/hashtag/tippmixreport2026/map',
+      },
+      {
+        source: '/interactive-report/:partnerSlug',
+        destination: '/report/partner/:partnerSlug',
+      },
+      {
+        source: '/interactive-report/:partnerSlug/map',
+        destination: '/report/partner/:partnerSlug/map',
+      },
+    ];
+  },
   // WHAT: Aggressive cache-busting headers for HTML and assets
   // WHY: Browser caching causes stale UI issues after deployments
   async headers() {

@@ -13,7 +13,30 @@ interface SzrtHeaderProps {
 
 export default function SzrtHeader({ data, activeTab, onTabChange }: SzrtHeaderProps) {
   const [copied, setCopied] = useState(false);
-  const { summary, partner } = data;
+  const { summary, partner, scope } = data;
+
+  const isHashtag = scope?.type === 'hashtag';
+  const isEvent = scope?.type === 'event';
+
+  const badgeText = isHashtag
+    ? `Campaign Hashtag #${scope?.id}`
+    : isEvent
+      ? 'Event Activation Report'
+      : 'Official Interactive Analytics Report';
+
+  const subBadgeText = isHashtag && scope?.id === 'tippmixreport2026'
+    ? 'Tippmix Partnership'
+    : scope?.type
+      ? `${scope.type.toUpperCase()} Scope`
+      : 'Tippmix Partnership';
+
+  const titleText = scope?.name || partner.name;
+  const descriptionText = scope?.subtitle ||
+    `Consolidated fan engagement, photo activation volume, and marketing opt-in conversion metrics across ${summary.totalMatches} national sports events (Football NB1/NB2, Erste Liga Ice Hockey, Basketball & Handball).`;
+
+  const mapHref = scope
+    ? `/report/${scope.type}/${scope.id}/map`
+    : `/interactive-report/${data.partner.viewSlug === 'ec9bb989-cb0f-4d5a-b22b-c3a1829cd3fd' ? 'szrt' : data.partner.viewSlug}/map`;
 
   const handleCopyLink = () => {
     if (typeof window !== 'undefined') {
@@ -44,26 +67,26 @@ export default function SzrtHeader({ data, activeTab, onTabChange }: SzrtHeaderP
         <div className={styles.brandTop}>
           <div>
             <div className={styles.brandTitleGroup}>
-              <span className={styles.partnerEmoji}>{partner.emoji || '🍀'}</span>
+              <span className={styles.partnerEmoji}>{scope?.emoji || partner.emoji || '🍀'}</span>
               <span className={styles.badgePill}>
-                Official Interactive Analytics Report
+                {badgeText}
               </span>
               <span className={styles.tippmixPill}>
-                Tippmix Partnership
+                {subBadgeText}
               </span>
             </div>
             <h1 className={styles.partnerTitle}>
-              {partner.name}
+              {titleText}
             </h1>
             <p className={styles.partnerDescription}>
-              Consolidated fan engagement, photo activation volume, and marketing opt-in conversion metrics across {summary.totalMatches} national sports events (Football NB1/NB2, Erste Liga Ice Hockey, Basketball & Handball).
+              {descriptionText}
             </p>
           </div>
 
           {/* Quick Action Buttons */}
           <div className={styles.actionsGroup}>
             <a
-              href={`/interactive-report/${data.partner.viewSlug === 'ec9bb989-cb0f-4d5a-b22b-c3a1829cd3fd' ? 'szrt' : data.partner.viewSlug}/map`}
+              href={mapHref}
               className={styles.shareBtn}
               style={{ background: '#0f2c4a', color: '#ffffff', textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: '6px' }}
               title="Open dedicated full-screen territory and venue analytics map"

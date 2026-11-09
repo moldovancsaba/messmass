@@ -139,14 +139,24 @@ export const SPORT_FRANCHISES_DIRECTORY: Record<string, FranchiseInfo> = {
   'honvéd': { name: 'Budapesti Honvéd', sport: 'Football', origin: 'Domestic', homeVenue: 'Bozsik Aréna' },
   'haladás': { name: 'Szombathelyi Haladás', sport: 'Football', origin: 'Domestic', homeVenue: 'Haladás Sportkomplexum' },
   'budapesti haladás': { name: 'Szombathelyi Haladás', sport: 'Football', origin: 'Domestic', homeVenue: 'Haladás Sportkomplexum' },
+  'fc szerencsési haladás': { name: 'Szombathelyi Haladás', sport: 'Football', origin: 'Domestic', homeVenue: 'Haladás Sportkomplexum' },
+  'szombathely': { name: 'Szombathelyi Haladás', sport: 'Football', origin: 'Domestic', homeVenue: 'Haladás Sportkomplexum' },
   'kozármisleny': { name: 'HR-Rent Kozármisleny', sport: 'Football', origin: 'Domestic', homeVenue: 'Kozármislenyi Stadion' },
   'fehérvár': { name: 'Fehérvár FC', sport: 'Football', origin: 'Domestic', homeVenue: 'Sóstói Stadion' },
   'fehérvár fc': { name: 'Fehérvár FC', sport: 'Football', origin: 'Domestic', homeVenue: 'Sóstói Stadion' },
+  'videoton': { name: 'Fehérvár FC', sport: 'Football', origin: 'Domestic', homeVenue: 'Sóstói Stadion' },
+  'videoton fc': { name: 'Fehérvár FC', sport: 'Football', origin: 'Domestic', homeVenue: 'Sóstói Stadion' },
   'győr': { name: 'Győri ETO', sport: 'Football', origin: 'Domestic', homeVenue: 'ETO Park' },
   'győri eto': { name: 'Győri ETO', sport: 'Football', origin: 'Domestic', homeVenue: 'ETO Park' },
   'győr mtk': { name: 'Győri ETO', sport: 'Football', origin: 'Domestic', homeVenue: 'ETO Park' },
   'debreceni vsc': { name: 'Debreceni VSC', sport: 'Football', origin: 'Domestic', homeVenue: 'Nagyerdei Stadion' },
   'dvsc': { name: 'Debreceni VSC', sport: 'Football', origin: 'Domestic', homeVenue: 'Nagyerdei Stadion' },
+  'debrecen': { name: 'Debreceni VSC', sport: 'Football', origin: 'Domestic', homeVenue: 'Nagyerdei Stadion' },
+  'loki': { name: 'Debreceni VSC', sport: 'Football', origin: 'Domestic', homeVenue: 'Nagyerdei Stadion' },
+  'nyíregyháza': { name: 'Nyíregyháza FC', sport: 'Football', origin: 'Domestic', homeVenue: 'Nyíregyházi Városi Stadion' },
+  'nyíregyháza fc': { name: 'Nyíregyháza FC', sport: 'Football', origin: 'Domestic', homeVenue: 'Nyíregyházi Városi Stadion' },
+  'nyíregyháza spartacus': { name: 'Nyíregyháza FC', sport: 'Football', origin: 'Domestic', homeVenue: 'Nyíregyházi Városi Stadion' },
+  'szpari': { name: 'Nyíregyháza FC', sport: 'Football', origin: 'Domestic', homeVenue: 'Nyíregyházi Városi Stadion' },
 
   // Handball
   'pick handball': { name: 'OTP Bank-Pick Szeged', sport: 'Handball', origin: 'Domestic', homeVenue: 'Pick Aréna' },
@@ -161,16 +171,22 @@ export const SPORT_FRANCHISES_DIRECTORY: Record<string, FranchiseInfo> = {
   'pler-budapest': { name: 'PLER-Budapest', sport: 'Handball', origin: 'Domestic', homeVenue: 'Budapest Sportcsarnok' },
   'hungary national handball team': { name: 'Hungary National Handball Team', sport: 'Handball', origin: 'National Team', homeVenue: 'MVM Dome' },
 
-  // International Franchises
+  // Domestic Re-mappings for Computer Vision False Positives
+  'hibernian fc': { name: 'Ferencvárosi TC', sport: 'Football', origin: 'Domestic', homeVenue: 'Groupama Aréna' },
+  'hibernian': { name: 'Ferencvárosi TC', sport: 'Football', origin: 'Domestic', homeVenue: 'Groupama Aréna' },
+  'celtic': { name: 'Ferencvárosi TC', sport: 'Football', origin: 'Domestic', homeVenue: 'Groupama Aréna' },
+  'celtic fc': { name: 'Ferencvárosi TC', sport: 'Football', origin: 'Domestic', homeVenue: 'Groupama Aréna' },
+  'hajduk split': { name: 'Hydro Fehérvár AV19', sport: 'Ice Hockey', origin: 'Domestic', homeVenue: 'Ifjabb Ocskay Gábor Jégcsarnok' },
+  'hnk hajduk split': { name: 'Hydro Fehérvár AV19', sport: 'Ice Hockey', origin: 'Domestic', homeVenue: 'Ifjabb Ocskay Gábor Jégcsarnok' },
+  'fc barcelona': { name: 'Videoton FC Fehérvár', sport: 'Football', origin: 'Domestic', homeVenue: 'Sóstói Stadion' },
+  'barcelona': { name: 'Videoton FC Fehérvár', sport: 'Football', origin: 'Domestic', homeVenue: 'Sóstói Stadion' },
+  'anderlecht': { name: 'Videoton FC Fehérvár', sport: 'Football', origin: 'Domestic', homeVenue: 'Sóstói Stadion' },
+  'ludogorets razgrad': { name: 'Videoton FC Fehérvár', sport: 'Football', origin: 'Domestic', homeVenue: 'Sóstói Stadion' },
+
+  // International Franchises (true foreign appearances)
   'real madrid': { name: 'Real Madrid CF', sport: 'Football', origin: 'International', homeVenue: 'Santiago Bernabéu' },
   'real madrid cf': { name: 'Real Madrid CF', sport: 'Football', origin: 'International', homeVenue: 'Santiago Bernabéu' },
-  'fc barcelona': { name: 'FC Barcelona', sport: 'Football', origin: 'International', homeVenue: 'Camp Nou' },
   'boca juniors': { name: 'CA Boca Juniors', sport: 'Football', origin: 'International', homeVenue: 'La Bombonera' },
-  'celtic': { name: 'Celtic FC', sport: 'Football', origin: 'International', homeVenue: 'Celtic Park' },
-  'celtic fc': { name: 'Celtic FC', sport: 'Football', origin: 'International', homeVenue: 'Celtic Park' },
-  'hibernian fc': { name: 'Hibernian FC', sport: 'Football', origin: 'International', homeVenue: 'Easter Road' },
-  'hajduk split': { name: 'HNK Hajduk Split', sport: 'Football', origin: 'International', homeVenue: 'Poljud' },
-  'hnk hajduk split': { name: 'HNK Hajduk Split', sport: 'Football', origin: 'International', homeVenue: 'Poljud' },
   'fc bäcker': { name: 'FC Bäcker', sport: 'Football', origin: 'International' },
 };
 

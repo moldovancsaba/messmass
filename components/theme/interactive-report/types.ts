@@ -144,8 +144,19 @@ export interface VisionProgressData {
   }>;
 }
 
+export interface ScopeHeader {
+  type: 'hashtag' | 'partner' | 'event';
+  id: string;
+  name: string;
+  viewSlug?: string;
+  emoji?: string;
+  subtitle?: string;
+  organizationId?: string;
+}
+
 export interface InteractiveReportData {
   success: boolean;
+  scope?: ScopeHeader;
   partner: {
     id: string;
     name: string;
