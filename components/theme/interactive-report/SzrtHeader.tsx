@@ -34,9 +34,7 @@ export default function SzrtHeader({ data, activeTab, onTabChange }: SzrtHeaderP
   const descriptionText = scope?.subtitle ||
     `Consolidated fan engagement, photo activation volume, and marketing opt-in conversion metrics across ${summary.totalMatches} national sports events (Football NB1/NB2, Erste Liga Ice Hockey, Basketball & Handball).`;
 
-  const mapHref = scope
-    ? `/report/${scope.type}/${scope.id}/map`
-    : `/interactive-report/${data.partner.viewSlug === 'ec9bb989-cb0f-4d5a-b22b-c3a1829cd3fd' ? 'szrt' : data.partner.viewSlug}/map`;
+  const mapHref = `/interactive-report/${data.partner.viewSlug === 'ec9bb989-cb0f-4d5a-b22b-c3a1829cd3fd' ? 'szrt' : data.partner.viewSlug}/map`;
 
   const handleCopyLink = () => {
     if (typeof window !== 'undefined') {
