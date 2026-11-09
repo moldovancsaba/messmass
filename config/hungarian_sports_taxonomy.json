@@ -1,0 +1,720 @@
+{
+  "$schema": "https://planet.brain/schemas/messmass/hungarian-sports-taxonomy.json",
+  "version": "1.0.0",
+  "exportedAt": "2026-11-09T17:20:16.010Z",
+  "domesticSports": [
+    "Basketball",
+    "Football",
+    "Handball",
+    "Ice Hockey",
+    "Multi-Sport"
+  ],
+  "canonicalClubs": {
+    "Sopron KC": {
+      "canonicalName": "Sopron KC",
+      "sport": "Basketball",
+      "origin": "Domestic",
+      "homeVenue": "Novomatic Aréna Sopron",
+      "venueWebsite": "https://www.novomaticarenasopron.hu",
+      "aliases": [
+        "sopron kc",
+        "soproni kc"
+      ]
+    },
+    "Falco KC Szombathely": {
+      "canonicalName": "Falco KC Szombathely",
+      "sport": "Basketball",
+      "origin": "Domestic",
+      "homeVenue": "Arena Savaria",
+      "aliases": [
+        "falco",
+        "falco kc"
+      ]
+    },
+    "Egis Körmend": {
+      "canonicalName": "Egis Körmend",
+      "sport": "Basketball",
+      "origin": "Domestic",
+      "homeVenue": "Körmend Városi Sportcsarnok",
+      "aliases": [
+        "körmend"
+      ]
+    },
+    "Szolnoki Olajbányász": {
+      "canonicalName": "Szolnoki Olajbányász",
+      "sport": "Basketball",
+      "origin": "Domestic",
+      "homeVenue": "Tiszaligeti Sportcsarnok",
+      "aliases": [
+        "szolnok",
+        "szolnoki olajbányász"
+      ]
+    },
+    "Kometa Kaposvári KK": {
+      "canonicalName": "Kometa Kaposvári KK",
+      "sport": "Basketball",
+      "origin": "Domestic",
+      "homeVenue": "Kaposvár Aréna",
+      "aliases": [
+        "kaposvár"
+      ]
+    },
+    "Atomerőmű SE Paks": {
+      "canonicalName": "Atomerőmű SE Paks",
+      "sport": "Basketball",
+      "origin": "Domestic",
+      "homeVenue": "ASE Sportcsarnok",
+      "aliases": [
+        "atomerőmű"
+      ]
+    },
+    "MVM-OSE Lions": {
+      "canonicalName": "MVM-OSE Lions",
+      "sport": "Basketball",
+      "origin": "Domestic",
+      "homeVenue": "Krajnyik Akác András Sportcsarnok",
+      "aliases": [
+        "mvm-ose lions",
+        "ose lions"
+      ]
+    },
+    "Hydro Fehérvár AV19": {
+      "canonicalName": "Hydro Fehérvár AV19",
+      "sport": "Ice Hockey",
+      "origin": "Domestic",
+      "homeVenue": "Ifjabb Ocskay Gábor Jégcsarnok",
+      "aliases": [
+        "fehérvár av19",
+        "fehervar av19",
+        "fehérvár hockey",
+        "fehervar avis",
+        "av19",
+        "alba volts",
+        "hajduk split",
+        "hnk hajduk split"
+      ]
+    },
+    "Budapest Jégkorong Akadémia HC": {
+      "canonicalName": "Budapest Jégkorong Akadémia HC",
+      "sport": "Ice Hockey",
+      "origin": "Domestic",
+      "homeVenue": "Vasas Jégcentrum",
+      "aliases": [
+        "bja",
+        "mac budapest"
+      ]
+    },
+    "Devil Hockey": {
+      "canonicalName": "Devil Hockey",
+      "sport": "Ice Hockey",
+      "origin": "Domestic",
+      "aliases": [
+        "devil hockey"
+      ]
+    },
+    "DEAC": {
+      "canonicalName": "DEAC",
+      "sport": "Multi-Sport",
+      "origin": "Domestic",
+      "homeVenue": "Oláh Gábor Utcai Sportcsarnok",
+      "aliases": [
+        "deac"
+      ]
+    },
+    "DVTK Diósgyőr": {
+      "canonicalName": "DVTK Diósgyőr",
+      "sport": "Multi-Sport",
+      "origin": "Domestic",
+      "homeVenue": "DVTK Stadion / Arena",
+      "aliases": [
+        "dvtk",
+        "dvtk diósgyőr",
+        "diósgyőr",
+        "vtk"
+      ]
+    },
+    "Szombathelyi Haladás": {
+      "canonicalName": "Szombathelyi Haladás",
+      "sport": "Football",
+      "origin": "Domestic",
+      "homeVenue": "Haladás Sportkomplexum",
+      "aliases": [
+        "haladás",
+        "haladas",
+        "szombathelyi haladás",
+        "szombathelyi haladas",
+        "budapesti haladás",
+        "fc szerencsési haladás",
+        "ferencvárosi haladás",
+        "szombathely"
+      ]
+    },
+    "HR-Rent Kozármisleny": {
+      "canonicalName": "HR-Rent Kozármisleny",
+      "sport": "Football",
+      "origin": "Domestic",
+      "homeVenue": "Kozármislenyi Stadion",
+      "aliases": [
+        "kozármisleny"
+      ]
+    },
+    "Videoton FC Fehérvár": {
+      "canonicalName": "Videoton FC Fehérvár",
+      "sport": "Football",
+      "origin": "Domestic",
+      "homeVenue": "Sóstói Stadion",
+      "aliases": [
+        "fehérvár",
+        "fehervar",
+        "fehérvár fc",
+        "fehervar fc",
+        "videoton",
+        "videoton fc",
+        "videoton fc fehérvár",
+        "székesfehérvár",
+        "szekesfehervar",
+        "fc barcelona",
+        "barcelona",
+        "anderlecht",
+        "ludogorets razgrad"
+      ]
+    },
+    "Újpest FC": {
+      "canonicalName": "Újpest FC",
+      "sport": "Football",
+      "origin": "Domestic",
+      "homeVenue": "Szusza Ferenc Stadion",
+      "aliases": [
+        "újpest",
+        "ujpest",
+        "újpest fc",
+        "ujpest fc",
+        "fc ujpest",
+        "fc újpest",
+        "ute"
+      ]
+    },
+    "Ferencvárosi TC": {
+      "canonicalName": "Ferencvárosi TC",
+      "sport": "Football",
+      "origin": "Domestic",
+      "homeVenue": "Groupama Aréna",
+      "aliases": [
+        "ferencváros",
+        "ferencvaros",
+        "fradi",
+        "ftc",
+        "ferencvárosi tc",
+        "fordi",
+        "hibernian fc",
+        "hibernian",
+        "celtic",
+        "celtic fc"
+      ]
+    },
+    "Paksi FC": {
+      "canonicalName": "Paksi FC",
+      "sport": "Football",
+      "origin": "Domestic",
+      "homeVenue": "Fehérvári úti Stadion",
+      "aliases": [
+        "paks",
+        "paksi fc",
+        "paks fc"
+      ]
+    },
+    "Zalaegerszegi TE": {
+      "canonicalName": "Zalaegerszegi TE",
+      "sport": "Football",
+      "origin": "Domestic",
+      "homeVenue": "ZTE Aréna",
+      "aliases": [
+        "zte",
+        "zte fc",
+        "zalaegerszeg",
+        "zalaegerszegi te"
+      ]
+    },
+    "MTK Budapest": {
+      "canonicalName": "MTK Budapest",
+      "sport": "Football",
+      "origin": "Domestic",
+      "homeVenue": "Hidegkuti Nándor Stadion",
+      "aliases": [
+        "mtk",
+        "mtk budapest"
+      ]
+    },
+    "Budapest Honvéd": {
+      "canonicalName": "Budapest Honvéd",
+      "sport": "Football",
+      "origin": "Domestic",
+      "homeVenue": "Bozsik Aréna",
+      "aliases": [
+        "honvéd",
+        "honved",
+        "budapest honvéd",
+        "budapesti honvéd",
+        "kispest"
+      ]
+    },
+    "Vasas FC": {
+      "canonicalName": "Vasas FC",
+      "sport": "Football",
+      "origin": "Domestic",
+      "homeVenue": "Illovszky Rudolf Stadion",
+      "aliases": [
+        "vasas",
+        "vasas fc"
+      ]
+    },
+    "Kecskeméti TE": {
+      "canonicalName": "Kecskeméti TE",
+      "sport": "Football",
+      "origin": "Domestic",
+      "homeVenue": "Széktói Stadion",
+      "aliases": [
+        "kecskemét",
+        "kecskemet",
+        "kte"
+      ]
+    },
+    "Kisvárda FC": {
+      "canonicalName": "Kisvárda FC",
+      "sport": "Football",
+      "origin": "Domestic",
+      "homeVenue": "Várkerti Stadion",
+      "aliases": [
+        "kisvárda",
+        "kisvarda"
+      ]
+    },
+    "DVTK Jegesmedvék": {
+      "canonicalName": "DVTK Jegesmedvék",
+      "sport": "Ice Hockey",
+      "origin": "Domestic",
+      "homeVenue": "Miskolci Jégcsarnok",
+      "aliases": [
+        "dvtk jegesmedvék",
+        "dvtk jegesmedvek"
+      ]
+    },
+    "Hungary National Team": {
+      "canonicalName": "Hungary National Team",
+      "sport": "Multi-Sport",
+      "origin": "National Team",
+      "homeVenue": "Puskás Aréna",
+      "aliases": [
+        "magyarország",
+        "magyarorszag",
+        "hungary"
+      ]
+    },
+    "ETO FC Győr": {
+      "canonicalName": "ETO FC Győr",
+      "sport": "Football",
+      "origin": "Domestic",
+      "homeVenue": "ETO Park",
+      "aliases": [
+        "eto fc",
+        "eto fc győr",
+        "győri eto fc",
+        "győr mtk"
+      ]
+    },
+    "Debreceni VSC": {
+      "canonicalName": "Debreceni VSC",
+      "sport": "Football",
+      "origin": "Domestic",
+      "homeVenue": "Nagyerdei Stadion",
+      "aliases": [
+        "debreceni vsc",
+        "dvsc",
+        "debrecen",
+        "loki"
+      ]
+    },
+    "Nyíregyháza FC": {
+      "canonicalName": "Nyíregyháza FC",
+      "sport": "Football",
+      "origin": "Domestic",
+      "homeVenue": "Nyíregyházi Városi Stadion",
+      "aliases": [
+        "nyíregyháza",
+        "nyíregyháza fc",
+        "nyíregyháza spartacus",
+        "szpari"
+      ]
+    },
+    "Győri Audi ETO KC": {
+      "canonicalName": "Győri Audi ETO KC",
+      "sport": "Handball",
+      "origin": "Domestic",
+      "homeVenue": "Audi Aréna Győr",
+      "aliases": [
+        "győri audi eto kc",
+        "gyori audi eto kc",
+        "győri eto",
+        "gyori eto",
+        "győr",
+        "győri eto kc",
+        "gyori eto kc",
+        "győri eto kézilabda club",
+        "gyori eto kezilabda club",
+        "audi eto",
+        "győri audi eto",
+        "gyori audi eto",
+        "eto kc",
+        "hajrá győr!",
+        "hajrá győr",
+        "hajra gyor"
+      ]
+    },
+    "FTC Rail Cargo Hungária": {
+      "canonicalName": "FTC Rail Cargo Hungária",
+      "sport": "Handball",
+      "origin": "Domestic",
+      "homeVenue": "Elek Gyula Aréna",
+      "aliases": [
+        "ftc rail cargo hungária",
+        "ftc rail cargo hungaria",
+        "ftc rail cargo",
+        "rail cargo hungária",
+        "rail cargo hungaria",
+        "ftc kézilabda",
+        "ftc kezilabda",
+        "ferencvárosi tc kézilabda"
+      ]
+    },
+    "One Veszprém HC": {
+      "canonicalName": "One Veszprém HC",
+      "sport": "Handball",
+      "origin": "Domestic",
+      "homeVenue": "Veszprém Aréna",
+      "aliases": [
+        "one veszprém hc",
+        "one veszprem hc",
+        "one veszprém",
+        "one veszprem",
+        "telekom veszprém",
+        "telekom veszprem",
+        "telekom veszprém kc",
+        "veszprém",
+        "veszprem",
+        "veszprém hc",
+        "veszprem hc",
+        "veszprém kse",
+        "veszprem kse",
+        "mkb veszprém kc",
+        "mkb veszprém",
+        "veszprém kft",
+        "hc veszprém kse",
+        "veszprém handball",
+        "veszprem handball",
+        "veszprém kiképző sportegyesület"
+      ]
+    },
+    "OTP Bank - PICK Szeged": {
+      "canonicalName": "OTP Bank - PICK Szeged",
+      "sport": "Handball",
+      "origin": "Domestic",
+      "homeVenue": "Pick Aréna",
+      "aliases": [
+        "pick handball",
+        "pick hands",
+        "pick",
+        "pick szeged",
+        "otp bank-pick szeged",
+        "otp bank - pick szeged",
+        "pick szeged handball",
+        "fick szeged handball",
+        "fick szeged"
+      ]
+    },
+    "PLER-Budapest": {
+      "canonicalName": "PLER-Budapest",
+      "sport": "Handball",
+      "origin": "Domestic",
+      "homeVenue": "Budapest Sportcsarnok",
+      "aliases": [
+        "pler",
+        "pler-budapest",
+        "pler budapest",
+        "pler kc"
+      ]
+    },
+    "Hungary National Handball Team": {
+      "canonicalName": "Hungary National Handball Team",
+      "sport": "Handball",
+      "origin": "National Team",
+      "homeVenue": "MVM Dome",
+      "aliases": [
+        "hungary national handball team",
+        "hungary handball team",
+        "hungary handball",
+        "hun handball",
+        "magyar kézilabda válogatott",
+        "magyar kezilabda valogatott"
+      ]
+    }
+  },
+  "venues": {
+    "novomatic arena": {
+      "name": "Novomatic Aréna Sopron",
+      "city": "Sopron",
+      "primaryClub": "Sopron KC",
+      "website": "https://www.novomaticarenasopron.hu",
+      "description": "Home arena of Sopron KC (Men NB I/A) and Sopron Basket (EuroLeague Women)."
+    },
+    "novomatic aréna": {
+      "name": "Novomatic Aréna Sopron",
+      "city": "Sopron",
+      "primaryClub": "Sopron KC",
+      "website": "https://www.novomaticarenasopron.hu",
+      "description": "Home arena of Sopron KC (Men NB I/A) and Sopron Basket (EuroLeague Women)."
+    },
+    "novomatic arena sopron": {
+      "name": "Novomatic Aréna Sopron",
+      "city": "Sopron",
+      "primaryClub": "Sopron KC",
+      "website": "https://www.novomaticarenasopron.hu",
+      "description": "Home arena of Sopron KC (Men NB I/A) and Sopron Basket (EuroLeague Women)."
+    },
+    "dvtk arena": {
+      "name": "DVTK Arena",
+      "city": "Miskolc",
+      "primaryClub": "DVTK Diósgyőr",
+      "description": "Multifunctional sports arena in Miskolc, home of DVTK basketball and ice hockey."
+    },
+    "corso kaposvár": {
+      "name": "Corso Kaposvár",
+      "city": "Kaposvár",
+      "primaryClub": "Kometa Kaposvári KK",
+      "description": "Commercial partner hub and fan meeting point in Kaposvár."
+    },
+    "grand hotel esztergom": {
+      "name": "Grand Hotel Esztergom",
+      "city": "Esztergom",
+      "primaryClub": "MOL Esztergom Kézilabda",
+      "description": "Official hospitality venue and event partner in Esztergom."
+    }
+  },
+  "supporterGroups": {
+    "green monsters": {
+      "group": "Green Monsters",
+      "parentClub": "Ferencvárosi TC",
+      "sport": "Football"
+    },
+    "monsters": {
+      "group": "Green Monsters",
+      "parentClub": "Ferencvárosi TC",
+      "sport": "Football"
+    },
+    "gm05": {
+      "group": "Green Monsters",
+      "parentClub": "Ferencvárosi TC",
+      "sport": "Football"
+    },
+    "b-közép fradi": {
+      "group": "B-Közép",
+      "parentClub": "Ferencvárosi TC",
+      "sport": "Football"
+    },
+    "fradi b-közép": {
+      "group": "B-Közép",
+      "parentClub": "Ferencvárosi TC",
+      "sport": "Football"
+    },
+    "16-os szektor": {
+      "group": "16-os Szektor",
+      "parentClub": "Ferencvárosi TC",
+      "sport": "Football"
+    },
+    "eastern green supporters": {
+      "group": "Eastern Green Supporters",
+      "parentClub": "Ferencvárosi TC",
+      "sport": "Football"
+    },
+    "liget clan": {
+      "group": "Liget Clan",
+      "parentClub": "Ferencvárosi TC",
+      "sport": "Football"
+    },
+    "ultra viola bulldogs": {
+      "group": "Ultra Viola Bulldogs",
+      "parentClub": "Újpest FC",
+      "sport": "Football"
+    },
+    "uvb": {
+      "group": "Ultra Viola Bulldogs",
+      "parentClub": "Újpest FC",
+      "sport": "Football"
+    },
+    "viola kaos": {
+      "group": "Viola Kaos",
+      "parentClub": "Újpest FC",
+      "sport": "Football"
+    },
+    "ujpest 1885": {
+      "group": "Újpest 1885",
+      "parentClub": "Újpest FC",
+      "sport": "Football"
+    },
+    "korps": {
+      "group": "Korps",
+      "parentClub": "Újpest FC",
+      "sport": "Football"
+    },
+    "angol brigád": {
+      "group": "Angol Brigád",
+      "parentClub": "Újpest FC",
+      "sport": "Football"
+    },
+    "carpathian brigade": {
+      "group": "Carpathian Brigade",
+      "parentClub": "MLSZ - Magyar Labdarúgó Szövetség",
+      "sport": "Football"
+    },
+    "carpathian brigade 09": {
+      "group": "Carpathian Brigade",
+      "parentClub": "MLSZ - Magyar Labdarúgó Szövetség",
+      "sport": "Football"
+    },
+    "cb09": {
+      "group": "Carpathian Brigade",
+      "parentClub": "MLSZ - Magyar Labdarúgó Szövetség",
+      "sport": "Football"
+    },
+    "ultras diósgyőr": {
+      "group": "Ultras Diósgyőr",
+      "parentClub": "DVTK Diósgyőr",
+      "sport": "Multi-Sport"
+    },
+    "commandos": {
+      "group": "Commandos",
+      "parentClub": "DVTK Diósgyőr",
+      "sport": "Multi-Sport"
+    },
+    "red & white warriors": {
+      "group": "Red & White Warriors",
+      "parentClub": "DVTK Diósgyőr",
+      "sport": "Multi-Sport"
+    },
+    "red-blue devils": {
+      "group": "Red-Blue Devils",
+      "parentClub": "Fehérvár FC",
+      "sport": "Football"
+    },
+    "rbd": {
+      "group": "Red-Blue Devils",
+      "parentClub": "Fehérvár FC",
+      "sport": "Football"
+    },
+    "we are devils": {
+      "group": "Alba Volán Jégkorong Fan Club",
+      "parentClub": "Hydro Fehérvár AV19",
+      "sport": "Ice Hockey"
+    },
+    "alba volán jégkorong fan club": {
+      "group": "Alba Volán Jégkorong Fan Club",
+      "parentClub": "Hydro Fehérvár AV19",
+      "sport": "Ice Hockey"
+    },
+    "soproni tigrisek": {
+      "group": "Soproni Tigrisek",
+      "parentClub": "Sopron KC",
+      "sport": "Basketball"
+    },
+    "sopron b-közép": {
+      "group": "Soproni B-Közép",
+      "parentClub": "Sopron KC",
+      "sport": "Basketball"
+    },
+    "hűségváros brigád": {
+      "group": "Hűségváros Brigád",
+      "parentClub": "Sopron KC",
+      "sport": "Basketball"
+    },
+    "soproni kosárlabda fan club": {
+      "group": "Sopron KC Fan Club",
+      "parentClub": "Sopron KC",
+      "sport": "Basketball"
+    },
+    "sárga-fekete szív": {
+      "group": "Sárga-Fekete Szív",
+      "parentClub": "Falco KC Szombathely",
+      "sport": "Basketball"
+    },
+    "falco b-közép": {
+      "group": "Falco B-Közép",
+      "parentClub": "Falco KC Szombathely",
+      "sport": "Basketball"
+    },
+    "b-közép körmend": {
+      "group": "B-Közép Körmend",
+      "parentClub": "Egis Körmend",
+      "sport": "Basketball"
+    },
+    "red devils körmend": {
+      "group": "Red Devils Körmend",
+      "parentClub": "Egis Körmend",
+      "sport": "Basketball"
+    },
+    "szögedi csibészek": {
+      "group": "Szögedi Csibészek",
+      "parentClub": "OTP Bank-Pick Szeged",
+      "sport": "Handball"
+    },
+    "pick kézilabda fan club": {
+      "group": "Pick Kézilabda Fan Club",
+      "parentClub": "OTP Bank-Pick Szeged",
+      "sport": "Handball"
+    },
+    "építők fan club": {
+      "group": "Építők Fan Club",
+      "parentClub": "Telekom Veszprém",
+      "sport": "Handball"
+    },
+    "veszprémi szurkolói egyesület": {
+      "group": "Veszprémi Szurkolói Egyesület",
+      "parentClub": "Telekom Veszprém",
+      "sport": "Handball"
+    },
+    "oroszlányi bányász b-közép": {
+      "group": "Bányász B-Közép",
+      "parentClub": "MVM-OSE Lions",
+      "sport": "Basketball"
+    },
+    "olaj b-közép": {
+      "group": "Olaj B-Közép",
+      "parentClub": "Szolnoki Olajbányász",
+      "sport": "Basketball"
+    },
+    "szívtiprók ultras debrecen": {
+      "group": "Szívtiprók Ultras Debrecen",
+      "parentClub": "DEAC",
+      "sport": "Multi-Sport"
+    },
+    "szud": {
+      "group": "Szívtiprók Ultras Debrecen",
+      "parentClub": "DEAC",
+      "sport": "Multi-Sport"
+    }
+  },
+  "foreignClubsBlacklist": [
+    "barcelona",
+    "boca juniors",
+    "ca boca juniors",
+    "celtic",
+    "celtic fc",
+    "fc barcelona",
+    "fc bäcker",
+    "hajduk",
+    "hajduk split",
+    "hibernian",
+    "hibernian fc",
+    "hnk hajduk split",
+    "real madrid",
+    "real madrid cf"
+  ]
+}
