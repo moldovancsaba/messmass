@@ -99,6 +99,11 @@ const nextConfig = {
         destination: '/filter/:hashtag',
         permanent: true, // 301 redirect for SEO preservation
       },
+      {
+        source: '/interactive-report/szrt',
+        destination: '/report/hashtag/tippmixreport2026',
+        permanent: true,
+      },
     ];
   },
   // Universal Interactive Report Aliases (Day 4 Deliverable)
