@@ -130,22 +130,63 @@ export const SPORT_FRANCHISES_DIRECTORY: Record<string, FranchiseInfo> = {
   'dvtk diósgyőr': { name: 'DVTK Diósgyőr', sport: 'Multi-Sport', origin: 'Domestic', homeVenue: 'DVTK Stadion / Arena' },
   'diósgyőr': { name: 'DVTK Diósgyőr', sport: 'Multi-Sport', origin: 'Domestic', homeVenue: 'DVTK Stadion / Arena' },
   'vtk': { name: 'DVTK Diósgyőr', sport: 'Multi-Sport', origin: 'Domestic', homeVenue: 'DVTK Stadion / Arena' },
-  'ferencváros': { name: 'Ferencvárosi TC', sport: 'Football', origin: 'Domestic', homeVenue: 'Groupama Aréna' },
-  'fradi': { name: 'Ferencvárosi TC', sport: 'Football', origin: 'Domestic', homeVenue: 'Groupama Aréna' },
-  'ftc': { name: 'Ferencvárosi TC', sport: 'Football', origin: 'Domestic', homeVenue: 'Groupama Aréna' },
-  'fordi': { name: 'Ferencvárosi TC', sport: 'Football', origin: 'Domestic', homeVenue: 'Groupama Aréna' },
-  'újpest': { name: 'Újpest FC', sport: 'Football', origin: 'Domestic', homeVenue: 'Szusza Ferenc Stadion' },
-  'ute': { name: 'Újpest FC', sport: 'Football', origin: 'Domestic', homeVenue: 'Szusza Ferenc Stadion' },
-  'honvéd': { name: 'Budapesti Honvéd', sport: 'Football', origin: 'Domestic', homeVenue: 'Bozsik Aréna' },
   'haladás': { name: 'Szombathelyi Haladás', sport: 'Football', origin: 'Domestic', homeVenue: 'Haladás Sportkomplexum' },
+  'haladas': { name: 'Szombathelyi Haladás', sport: 'Football', origin: 'Domestic', homeVenue: 'Haladás Sportkomplexum' },
+  'szombathelyi haladás': { name: 'Szombathelyi Haladás', sport: 'Football', origin: 'Domestic', homeVenue: 'Haladás Sportkomplexum' },
+  'szombathelyi haladas': { name: 'Szombathelyi Haladás', sport: 'Football', origin: 'Domestic', homeVenue: 'Haladás Sportkomplexum' },
   'budapesti haladás': { name: 'Szombathelyi Haladás', sport: 'Football', origin: 'Domestic', homeVenue: 'Haladás Sportkomplexum' },
   'fc szerencsési haladás': { name: 'Szombathelyi Haladás', sport: 'Football', origin: 'Domestic', homeVenue: 'Haladás Sportkomplexum' },
+  'ferencvárosi haladás': { name: 'Szombathelyi Haladás', sport: 'Football', origin: 'Domestic', homeVenue: 'Haladás Sportkomplexum' },
   'szombathely': { name: 'Szombathelyi Haladás', sport: 'Football', origin: 'Domestic', homeVenue: 'Haladás Sportkomplexum' },
   'kozármisleny': { name: 'HR-Rent Kozármisleny', sport: 'Football', origin: 'Domestic', homeVenue: 'Kozármislenyi Stadion' },
-  'fehérvár': { name: 'Fehérvár FC', sport: 'Football', origin: 'Domestic', homeVenue: 'Sóstói Stadion' },
-  'fehérvár fc': { name: 'Fehérvár FC', sport: 'Football', origin: 'Domestic', homeVenue: 'Sóstói Stadion' },
-  'videoton': { name: 'Fehérvár FC', sport: 'Football', origin: 'Domestic', homeVenue: 'Sóstói Stadion' },
-  'videoton fc': { name: 'Fehérvár FC', sport: 'Football', origin: 'Domestic', homeVenue: 'Sóstói Stadion' },
+  'fehérvár': { name: 'Videoton FC Fehérvár', sport: 'Football', origin: 'Domestic', homeVenue: 'Sóstói Stadion' },
+  'fehervar': { name: 'Videoton FC Fehérvár', sport: 'Football', origin: 'Domestic', homeVenue: 'Sóstói Stadion' },
+  'fehérvár fc': { name: 'Videoton FC Fehérvár', sport: 'Football', origin: 'Domestic', homeVenue: 'Sóstói Stadion' },
+  'fehervar fc': { name: 'Videoton FC Fehérvár', sport: 'Football', origin: 'Domestic', homeVenue: 'Sóstói Stadion' },
+  'videoton': { name: 'Videoton FC Fehérvár', sport: 'Football', origin: 'Domestic', homeVenue: 'Sóstói Stadion' },
+  'videoton fc': { name: 'Videoton FC Fehérvár', sport: 'Football', origin: 'Domestic', homeVenue: 'Sóstói Stadion' },
+  'videoton fc fehérvár': { name: 'Videoton FC Fehérvár', sport: 'Football', origin: 'Domestic', homeVenue: 'Sóstói Stadion' },
+  'székesfehérvár': { name: 'Videoton FC Fehérvár', sport: 'Football', origin: 'Domestic', homeVenue: 'Sóstói Stadion' },
+  'szekesfehervar': { name: 'Videoton FC Fehérvár', sport: 'Football', origin: 'Domestic', homeVenue: 'Sóstói Stadion' },
+  'újpest': { name: 'Újpest FC', sport: 'Football', origin: 'Domestic', homeVenue: 'Szusza Ferenc Stadion' },
+  'ujpest': { name: 'Újpest FC', sport: 'Football', origin: 'Domestic', homeVenue: 'Szusza Ferenc Stadion' },
+  'újpest fc': { name: 'Újpest FC', sport: 'Football', origin: 'Domestic', homeVenue: 'Szusza Ferenc Stadion' },
+  'ujpest fc': { name: 'Újpest FC', sport: 'Football', origin: 'Domestic', homeVenue: 'Szusza Ferenc Stadion' },
+  'fc ujpest': { name: 'Újpest FC', sport: 'Football', origin: 'Domestic', homeVenue: 'Szusza Ferenc Stadion' },
+  'fc újpest': { name: 'Újpest FC', sport: 'Football', origin: 'Domestic', homeVenue: 'Szusza Ferenc Stadion' },
+  'ute': { name: 'Újpest FC', sport: 'Football', origin: 'Domestic', homeVenue: 'Szusza Ferenc Stadion' },
+  'ferencváros': { name: 'Ferencvárosi TC', sport: 'Football', origin: 'Domestic', homeVenue: 'Groupama Aréna' },
+  'ferencvaros': { name: 'Ferencvárosi TC', sport: 'Football', origin: 'Domestic', homeVenue: 'Groupama Aréna' },
+  'fradi': { name: 'Ferencvárosi TC', sport: 'Football', origin: 'Domestic', homeVenue: 'Groupama Aréna' },
+  'ftc': { name: 'Ferencvárosi TC', sport: 'Football', origin: 'Domestic', homeVenue: 'Groupama Aréna' },
+  'ferencvárosi tc': { name: 'Ferencvárosi TC', sport: 'Football', origin: 'Domestic', homeVenue: 'Groupama Aréna' },
+  'fordi': { name: 'Ferencvárosi TC', sport: 'Football', origin: 'Domestic', homeVenue: 'Groupama Aréna' },
+  'paks': { name: 'Paksi FC', sport: 'Football', origin: 'Domestic', homeVenue: 'Fehérvári úti Stadion' },
+  'paksi fc': { name: 'Paksi FC', sport: 'Football', origin: 'Domestic', homeVenue: 'Fehérvári úti Stadion' },
+  'paks fc': { name: 'Paksi FC', sport: 'Football', origin: 'Domestic', homeVenue: 'Fehérvári úti Stadion' },
+  'zte': { name: 'Zalaegerszegi TE', sport: 'Football', origin: 'Domestic', homeVenue: 'ZTE Aréna' },
+  'zte fc': { name: 'Zalaegerszegi TE', sport: 'Football', origin: 'Domestic', homeVenue: 'ZTE Aréna' },
+  'zalaegerszeg': { name: 'Zalaegerszegi TE', sport: 'Football', origin: 'Domestic', homeVenue: 'ZTE Aréna' },
+  'zalaegerszegi te': { name: 'Zalaegerszegi TE', sport: 'Football', origin: 'Domestic', homeVenue: 'ZTE Aréna' },
+  'mtk': { name: 'MTK Budapest', sport: 'Football', origin: 'Domestic', homeVenue: 'Hidegkuti Nándor Stadion' },
+  'mtk budapest': { name: 'MTK Budapest', sport: 'Football', origin: 'Domestic', homeVenue: 'Hidegkuti Nándor Stadion' },
+  'honvéd': { name: 'Budapest Honvéd', sport: 'Football', origin: 'Domestic', homeVenue: 'Bozsik Aréna' },
+  'honved': { name: 'Budapest Honvéd', sport: 'Football', origin: 'Domestic', homeVenue: 'Bozsik Aréna' },
+  'budapest honvéd': { name: 'Budapest Honvéd', sport: 'Football', origin: 'Domestic', homeVenue: 'Bozsik Aréna' },
+  'budapesti honvéd': { name: 'Budapest Honvéd', sport: 'Football', origin: 'Domestic', homeVenue: 'Bozsik Aréna' },
+  'kispest': { name: 'Budapest Honvéd', sport: 'Football', origin: 'Domestic', homeVenue: 'Bozsik Aréna' },
+  'vasas': { name: 'Vasas FC', sport: 'Football', origin: 'Domestic', homeVenue: 'Illovszky Rudolf Stadion' },
+  'vasas fc': { name: 'Vasas FC', sport: 'Football', origin: 'Domestic', homeVenue: 'Illovszky Rudolf Stadion' },
+  'kecskemét': { name: 'Kecskeméti TE', sport: 'Football', origin: 'Domestic', homeVenue: 'Széktói Stadion' },
+  'kecskemet': { name: 'Kecskeméti TE', sport: 'Football', origin: 'Domestic', homeVenue: 'Széktói Stadion' },
+  'kte': { name: 'Kecskeméti TE', sport: 'Football', origin: 'Domestic', homeVenue: 'Széktói Stadion' },
+  'kisvárda': { name: 'Kisvárda FC', sport: 'Football', origin: 'Domestic', homeVenue: 'Várkerti Stadion' },
+  'kisvarda': { name: 'Kisvárda FC', sport: 'Football', origin: 'Domestic', homeVenue: 'Várkerti Stadion' },
+  'dvtk jegesmedvék': { name: 'DVTK Jegesmedvék', sport: 'Ice Hockey', origin: 'Domestic', homeVenue: 'Miskolci Jégcsarnok' },
+  'dvtk jegesmedvek': { name: 'DVTK Jegesmedvék', sport: 'Ice Hockey', origin: 'Domestic', homeVenue: 'Miskolci Jégcsarnok' },
+  'magyarország': { name: 'Hungary National Team', sport: 'Multi-Sport', origin: 'National Team', homeVenue: 'Puskás Aréna' },
+  'magyarorszag': { name: 'Hungary National Team', sport: 'Multi-Sport', origin: 'National Team', homeVenue: 'Puskás Aréna' },
+  'hungary': { name: 'Hungary National Team', sport: 'Multi-Sport', origin: 'National Team', homeVenue: 'Puskás Aréna' },
   'győr': { name: 'Győri ETO', sport: 'Football', origin: 'Domestic', homeVenue: 'ETO Park' },
   'győri eto': { name: 'Győri ETO', sport: 'Football', origin: 'Domestic', homeVenue: 'ETO Park' },
   'győr mtk': { name: 'Győri ETO', sport: 'Football', origin: 'Domestic', homeVenue: 'ETO Park' },
@@ -324,7 +365,18 @@ export function isGenericVisionDescription(rawName: string): boolean {
     low === 'mol' ||
     low === 'nike' ||
     low === 'adidas' ||
-    low === 'puma'
+    low === 'puma' ||
+    low === 'ice hockey' ||
+    low === 'hockey' ||
+    low === 'handball' ||
+    low === 'football' ||
+    low === 'soccer' ||
+    low === 'basketball' ||
+    low === 'sports' ||
+    low === 'sport' ||
+    low === 'ball' ||
+    low === 'team' ||
+    low === 'club'
   ) {
     return true;
   }
@@ -396,6 +448,95 @@ export function canonicalizeClub(rawName: string): { canonicalName: string; fran
   ) {
     const fr = SPORT_FRANCHISES_DIRECTORY['hungary national handball team'];
     return { canonicalName: 'Hungary National Handball Team', franchise: fr };
+  }
+
+  // 8. Fehérvár & Videoton variations
+  if (
+    low.includes('fehérvár') ||
+    low.includes('fehervar') ||
+    low.includes('videoton') ||
+    low.includes('székesfehérvár') ||
+    low.includes('szekesfehervar')
+  ) {
+    if (
+      low.includes('av19') ||
+      low.includes('hockey') ||
+      low.includes('hoki') ||
+      low.includes('avis') ||
+      low.includes('volts')
+    ) {
+      const fr = SPORT_FRANCHISES_DIRECTORY['fehérvár av19'];
+      return { canonicalName: 'Hydro Fehérvár AV19', franchise: fr };
+    }
+    if (low.includes('kosár') || low.includes('kosar') || low.includes('alba')) {
+      return { canonicalName: 'Alba Fehérvár Kosárlabda' };
+    }
+    const fr = SPORT_FRANCHISES_DIRECTORY['videoton fc fehérvár'];
+    return { canonicalName: 'Videoton FC Fehérvár', franchise: fr };
+  }
+
+  // 9. Ferencvárosi TC (Football)
+  if (low.includes('ferencváros') || low.includes('ferencvaros') || low.includes('fradi') || low.includes('ftc')) {
+    const fr = SPORT_FRANCHISES_DIRECTORY['ferencvárosi tc'];
+    return { canonicalName: 'Ferencvárosi TC', franchise: fr };
+  }
+
+  // 10. Újpest FC (Football)
+  if (
+    low.includes('újpest') ||
+    low.includes('ujpest') ||
+    low === 'ute' ||
+    low.includes('fc ujpest') ||
+    low.includes('fc újpest')
+  ) {
+    const fr = SPORT_FRANCHISES_DIRECTORY['újpest fc'];
+    return { canonicalName: 'Újpest FC', franchise: fr };
+  }
+
+  // 11. Debreceni VSC (Loki)
+  if (low.includes('debrecen') || low.includes('dvsc') || low.includes('loki')) {
+    if (low.includes('deac')) {
+      const fr = SPORT_FRANCHISES_DIRECTORY['deac'];
+      return { canonicalName: 'DEAC', franchise: fr };
+    }
+    const fr = SPORT_FRANCHISES_DIRECTORY['debreceni vsc'];
+    return { canonicalName: 'Debreceni VSC', franchise: fr };
+  }
+
+  // 12. DVTK Diósgyőr
+  if (low.includes('diósgyőr') || low.includes('diosgyor') || low.includes('dvtk') || low === 'vtk') {
+    if (low.includes('jeges') || low.includes('hoki') || low.includes('hockey')) {
+      const fr = SPORT_FRANCHISES_DIRECTORY['dvtk jegesmedvék'];
+      return { canonicalName: 'DVTK Jegesmedvék', franchise: fr };
+    }
+    const fr = SPORT_FRANCHISES_DIRECTORY['dvtk'];
+    return { canonicalName: 'DVTK Diósgyőr', franchise: fr };
+  }
+
+  // 13. Szombathelyi Haladás
+  if (low.includes('haladás') || low.includes('haladas') || low.includes('szombathely')) {
+    if (low.includes('falco')) {
+      const fr = SPORT_FRANCHISES_DIRECTORY['falco'];
+      return { canonicalName: 'Falco KC Szombathely', franchise: fr };
+    }
+    const fr = SPORT_FRANCHISES_DIRECTORY['haladás'];
+    return { canonicalName: 'Szombathelyi Haladás', franchise: fr };
+  }
+
+  // 14. Paksi FC / Atomerőmű
+  if (low.includes('paks') || low.includes('atomerőmű') || low.includes('atomeromu')) {
+    if (low.includes('kosár') || low.includes('ase')) {
+      const fr = SPORT_FRANCHISES_DIRECTORY['atomerőmű'];
+      return { canonicalName: 'Atomerőmű SE Paks', franchise: fr };
+    }
+    const fr = SPORT_FRANCHISES_DIRECTORY['paksi fc'];
+    return { canonicalName: 'Paksi FC', franchise: fr };
+  }
+
+  // 15. Nyíregyháza FC
+  if (low.includes('nyíregyház') || low.includes('nyiregyhaz') || low.includes('szpari')) {
+    const fr = SPORT_FRANCHISES_DIRECTORY['nyíregyháza fc'];
+    return { canonicalName: 'Nyíregyháza FC', franchise: fr };
   }
 
   // 8. Supporter group parent club mapping

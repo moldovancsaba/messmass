@@ -94,9 +94,46 @@ describe('Canonical Sports Club Clustering & Entity Separation', () => {
       expect(v3?.canonicalName).toBe('PLER-Budapest');
     });
 
-    it('returns null for generic vision captions', () => {
+    it('canonicalizes Videoton and Fehérvár variations into single entity', () => {
+      const v1 = canonicalizeClub('Videoton FC Fehérvár');
+      const v2 = canonicalizeClub('Fehérvár FC');
+      const v3 = canonicalizeClub('videoton');
+      const v4 = canonicalizeClub('Székesfehérvár');
+
+      expect(v1?.canonicalName).toBe('Videoton FC Fehérvár');
+      expect(v2?.canonicalName).toBe('Videoton FC Fehérvár');
+      expect(v3?.canonicalName).toBe('Videoton FC Fehérvár');
+      expect(v4?.canonicalName).toBe('Videoton FC Fehérvár');
+    });
+
+    it('canonicalizes Újpest variations into Újpest FC', () => {
+      const v1 = canonicalizeClub('Újpest FC');
+      const v2 = canonicalizeClub('FC Ujpest');
+      const v3 = canonicalizeClub('UTE');
+      const v4 = canonicalizeClub('ujpest');
+
+      expect(v1?.canonicalName).toBe('Újpest FC');
+      expect(v2?.canonicalName).toBe('Újpest FC');
+      expect(v3?.canonicalName).toBe('Újpest FC');
+      expect(v4?.canonicalName).toBe('Újpest FC');
+    });
+
+    it('canonicalizes Ferencvárosi TC variations', () => {
+      const v1 = canonicalizeClub('Ferencvárosi TC');
+      const v2 = canonicalizeClub('Fradi');
+      const v3 = canonicalizeClub('FTC');
+
+      expect(v1?.canonicalName).toBe('Ferencvárosi TC');
+      expect(v2?.canonicalName).toBe('Ferencvárosi TC');
+      expect(v3?.canonicalName).toBe('Ferencvárosi TC');
+    });
+
+    it('returns null for generic sports and vision captions', () => {
       expect(canonicalizeClub('Handball team with blue jersey')).toBeNull();
       expect(canonicalizeClub('Handball team wearing red and black jerseys with Tippmix')).toBeNull();
+      expect(canonicalizeClub('Ice Hockey')).toBeNull();
+      expect(canonicalizeClub('Handball')).toBeNull();
+      expect(canonicalizeClub('Football')).toBeNull();
     });
   });
 });

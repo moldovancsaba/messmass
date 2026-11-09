@@ -101,6 +101,23 @@ const nextConfig = {
       },
     ];
   },
+  // Universal Interactive Report Aliases (Day 4 Deliverable)
+  async rewrites() {
+    return [
+      {
+        source: '/report/hashtag/:hashtag*',
+        destination: '/interactive-report/hashtag/:hashtag*',
+      },
+      {
+        source: '/report/partner/:slug*',
+        destination: '/interactive-report/partner/:slug*',
+      },
+      {
+        source: '/report/event/:id*',
+        destination: '/interactive-report/event/:id*',
+      },
+    ];
+  },
   // WHAT: Aggressive cache-busting headers for HTML and assets
   // WHY: Browser caching causes stale UI issues after deployments
   async headers() {

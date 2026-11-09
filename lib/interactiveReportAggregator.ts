@@ -17,6 +17,10 @@ import {
   isGenericVisionDescription,
 } from '@/lib/brandEntityClustering';
 import { INTERACTIVE_REPORT_THEME } from '@/lib/theme/interactiveReportPalette';
+import {
+  getCachedReportSnapshot,
+  saveReportSnapshot,
+} from '@/lib/reportSnapshotManager';
 
 export interface ReportScopeQuery {
   type: 'hashtag' | 'partner' | 'event';
@@ -38,18 +42,14 @@ export async function getScopedInteractiveReportData(
 
   // 0. Check materialized snapshot cache for <50ms SSR latency (INV-001 tenant fenced)
   try {
-    const snapshotQuery: any = {
+    const cached = await getCachedReportSnapshot({
       scopeType,
-      scopeIdentifier: scopeIdentifier.toLowerCase(),
+      scopeIdentifier,
       sportFilter,
-      expiresAt: { $gt: new Date() },
-    };
-    if (query.organizationId) {
-      snapshotQuery.organizationId = new ObjectId(query.organizationId);
-    }
-    const cached = await db.collection('report_snapshots').findOne(snapshotQuery);
-    if (cached?.data) {
-      return cached.data as InteractiveReportData;
+      organizationId: query.organizationId,
+    });
+    if (cached) {
+      return cached;
     }
   } catch (err) {
     console.warn('Snapshot cache lookup warning:', err);
@@ -920,26 +920,15 @@ export async function getScopedInteractiveReportData(
 
   // Cache snapshot asynchronously for sub-50ms SSR latency
   try {
-    const snapDoc: any = {
-      scopeType,
-      scopeIdentifier: scopeIdentifier.toLowerCase(),
-      sportFilter,
-      data: finalResult,
-      calculatedAt: new Date(),
-      expiresAt: new Date(Date.now() + 3600 * 1000), // 1 hour TTL
-      version: 1,
-    };
-    if (query.organizationId) {
-      snapDoc.organizationId = new ObjectId(query.organizationId);
-    }
-    await db.collection('report_snapshots').updateOne(
+    await saveReportSnapshot(
       {
         scopeType,
-        scopeIdentifier: scopeIdentifier.toLowerCase(),
+        scopeIdentifier,
         sportFilter,
+        organizationId: query.organizationId,
       },
-      { $set: snapDoc },
-      { upsert: true }
+      finalResult,
+      3600 // 1 hour TTL
     );
   } catch (snapErr) {
     console.warn('Failed to cache report snapshot:', snapErr);
