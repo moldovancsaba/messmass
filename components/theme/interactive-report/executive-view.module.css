@@ -415,8 +415,8 @@
   font-size: 13px;
   font-weight: 700;
   color: #0f172a;
-  min-width: 130px;
-  max-width: 155px;
+  min-width: 140px;
+  max-width: 210px;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;

@@ -13,6 +13,8 @@ import {
   isVenue,
   getBrandCluster,
   getFranchiseInfo,
+  canonicalizeClub,
+  isGenericVisionDescription,
 } from '@/lib/brandEntityClustering';
 import { INTERACTIVE_REPORT_THEME } from '@/lib/theme/interactiveReportPalette';
 
@@ -782,24 +784,28 @@ export async function getScopedInteractiveReportData(
           club: string;
           count: number;
           aliases: string[];
+          sport?: string;
         }
       >();
 
       for (const c of cleanClubs) {
         if (!c.club) continue;
-        const low = c.club.toLowerCase().trim();
-        const franchise = getFranchiseInfo(low);
-        const canonicalName = franchise?.name || c.club;
+        const canonical = canonicalizeClub(c.club);
+        if (!canonical) continue; // Skip generic vision descriptions, artifacts, non-entities
 
+        const canonicalName = canonical.canonicalName;
         const existing = canonicalClubMap.get(canonicalName);
         if (existing) {
           existing.count += c.count;
-          existing.aliases.push(c.club);
+          if (!existing.aliases.includes(c.club)) {
+            existing.aliases.push(c.club);
+          }
         } else {
           canonicalClubMap.set(canonicalName, {
             club: canonicalName,
             count: c.count,
             aliases: [c.club],
+            sport: canonical.franchise?.sport,
           });
         }
       }
@@ -808,6 +814,7 @@ export async function getScopedInteractiveReportData(
         .map((c) => {
           const matched = matchClubToPartner(c.club, allPartners);
           const sport =
+            c.sport ||
             matched?.sportsDb?.strSport ||
             (matched?.categorizedHashtags?.sport?.[0]
               ? matched.categorizedHashtags.sport[0].charAt(0).toUpperCase() +

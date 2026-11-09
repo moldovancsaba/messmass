@@ -117,7 +117,7 @@ it drifts. Do not edit between the markers.
 | **Hooks** | 13 | `hooks/` |
 | **Design Tokens** | 410 | `app/styles/theme.css` |
 | **Utility CSS classes** | 192 | `app/styles/utilities.css` |
-| **App routes (pages)** | 79 | `app/**/page.tsx` |
+| **App routes (pages)** | 82 | `app/**/page.tsx` |
 | **API routes** | 232 | `app/api/**/route.ts` |
 
 The modules with the most importers — the ones whose change radius is
@@ -997,7 +997,7 @@ shows up here on the next regeneration, which is the point.
 
 <!-- GENERATED:routes -->
 
-### Pages (79)
+### Pages (82)
 
 | Route | File |
 |-------|------|
@@ -1072,6 +1072,9 @@ shows up here on the next regeneration, which is the point.
 | `/interactive-report/[partnerSlug]` | `app/interactive-report/[partnerSlug]/page.tsx` |
 | `/interactive-report/[partnerSlug]/map` | `app/interactive-report/[partnerSlug]/map/page.tsx` |
 | `/interactive-report/[partnerSlug]/territory` | `app/interactive-report/[partnerSlug]/territory/page.tsx` |
+| `/interactive-report/event/[id]` | `app/interactive-report/event/[id]/page.tsx` |
+| `/interactive-report/hashtag/[hashtag]` | `app/interactive-report/hashtag/[hashtag]/page.tsx` |
+| `/interactive-report/partner/[slug]` | `app/interactive-report/partner/[slug]/page.tsx` |
 | `/organization-edit/[id]` | `app/organization-edit/[id]/page.tsx` |
 | `/organization-report/[id]` | `app/organization-report/[id]/page.tsx` |
 | `/partner-edit/[slug]` | `app/partner-edit/[slug]/page.tsx` |

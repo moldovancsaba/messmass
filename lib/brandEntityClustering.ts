@@ -159,17 +159,71 @@ export const SPORT_FRANCHISES_DIRECTORY: Record<string, FranchiseInfo> = {
   'szpari': { name: 'Nyíregyháza FC', sport: 'Football', origin: 'Domestic', homeVenue: 'Nyíregyházi Városi Stadion' },
 
   // Handball
-  'pick handball': { name: 'OTP Bank-Pick Szeged', sport: 'Handball', origin: 'Domestic', homeVenue: 'Pick Aréna' },
-  'pick hands': { name: 'OTP Bank-Pick Szeged', sport: 'Handball', origin: 'Domestic', homeVenue: 'Pick Aréna' },
-  'pick': { name: 'OTP Bank-Pick Szeged', sport: 'Handball', origin: 'Domestic', homeVenue: 'Pick Aréna' },
-  'pick szeged': { name: 'OTP Bank-Pick Szeged', sport: 'Handball', origin: 'Domestic', homeVenue: 'Pick Aréna' },
-  'otp bank-pick szeged': { name: 'OTP Bank-Pick Szeged', sport: 'Handball', origin: 'Domestic', homeVenue: 'Pick Aréna' },
-  'veszprém': { name: 'Telekom Veszprém', sport: 'Handball', origin: 'Domestic', homeVenue: 'Veszprém Aréna' },
-  'telekom veszprém': { name: 'Telekom Veszprém', sport: 'Handball', origin: 'Domestic', homeVenue: 'Veszprém Aréna' },
-  'veszprém kse': { name: 'Telekom Veszprém', sport: 'Handball', origin: 'Domestic', homeVenue: 'Veszprém Aréna' },
+  'győri audi eto kc': { name: 'Győri Audi ETO KC', sport: 'Handball', origin: 'Domestic', homeVenue: 'Audi Aréna Győr' },
+  'gyori audi eto kc': { name: 'Győri Audi ETO KC', sport: 'Handball', origin: 'Domestic', homeVenue: 'Audi Aréna Győr' },
+  'győri eto kc': { name: 'Győri Audi ETO KC', sport: 'Handball', origin: 'Domestic', homeVenue: 'Audi Aréna Győr' },
+  'gyori eto kc': { name: 'Győri Audi ETO KC', sport: 'Handball', origin: 'Domestic', homeVenue: 'Audi Aréna Győr' },
+  'győri eto kézilabda club': { name: 'Győri Audi ETO KC', sport: 'Handball', origin: 'Domestic', homeVenue: 'Audi Aréna Győr' },
+  'gyori eto kezilabda club': { name: 'Győri Audi ETO KC', sport: 'Handball', origin: 'Domestic', homeVenue: 'Audi Aréna Győr' },
+  'audi eto': { name: 'Győri Audi ETO KC', sport: 'Handball', origin: 'Domestic', homeVenue: 'Audi Aréna Győr' },
+  'győri audi eto': { name: 'Győri Audi ETO KC', sport: 'Handball', origin: 'Domestic', homeVenue: 'Audi Aréna Győr' },
+  'gyori audi eto': { name: 'Győri Audi ETO KC', sport: 'Handball', origin: 'Domestic', homeVenue: 'Audi Aréna Győr' },
+  'eto kc': { name: 'Győri Audi ETO KC', sport: 'Handball', origin: 'Domestic', homeVenue: 'Audi Aréna Győr' },
+  'hajrá győr!': { name: 'Győri Audi ETO KC', sport: 'Handball', origin: 'Domestic', homeVenue: 'Audi Aréna Győr' },
+  'hajrá győr': { name: 'Győri Audi ETO KC', sport: 'Handball', origin: 'Domestic', homeVenue: 'Audi Aréna Győr' },
+  'hajra gyor': { name: 'Győri Audi ETO KC', sport: 'Handball', origin: 'Domestic', homeVenue: 'Audi Aréna Győr' },
+
+  'ftc rail cargo hungária': { name: 'FTC Rail Cargo Hungária', sport: 'Handball', origin: 'Domestic', homeVenue: 'Elek Gyula Aréna' },
+  'ftc rail cargo hungaria': { name: 'FTC Rail Cargo Hungária', sport: 'Handball', origin: 'Domestic', homeVenue: 'Elek Gyula Aréna' },
+  'ftc rail cargo': { name: 'FTC Rail Cargo Hungária', sport: 'Handball', origin: 'Domestic', homeVenue: 'Elek Gyula Aréna' },
+  'rail cargo hungária': { name: 'FTC Rail Cargo Hungária', sport: 'Handball', origin: 'Domestic', homeVenue: 'Elek Gyula Aréna' },
+  'rail cargo hungaria': { name: 'FTC Rail Cargo Hungária', sport: 'Handball', origin: 'Domestic', homeVenue: 'Elek Gyula Aréna' },
+  'ftc kézilabda': { name: 'FTC Rail Cargo Hungária', sport: 'Handball', origin: 'Domestic', homeVenue: 'Elek Gyula Aréna' },
+  'ftc kezilabda': { name: 'FTC Rail Cargo Hungária', sport: 'Handball', origin: 'Domestic', homeVenue: 'Elek Gyula Aréna' },
+  'ferencvárosi tc kézilabda': { name: 'FTC Rail Cargo Hungária', sport: 'Handball', origin: 'Domestic', homeVenue: 'Elek Gyula Aréna' },
+
+  'one veszprém hc': { name: 'One Veszprém HC', sport: 'Handball', origin: 'Domestic', homeVenue: 'Veszprém Aréna' },
+  'one veszprem hc': { name: 'One Veszprém HC', sport: 'Handball', origin: 'Domestic', homeVenue: 'Veszprém Aréna' },
+  'one veszprém': { name: 'One Veszprém HC', sport: 'Handball', origin: 'Domestic', homeVenue: 'Veszprém Aréna' },
+  'one veszprem': { name: 'One Veszprém HC', sport: 'Handball', origin: 'Domestic', homeVenue: 'Veszprém Aréna' },
+  'telekom veszprém': { name: 'One Veszprém HC', sport: 'Handball', origin: 'Domestic', homeVenue: 'Veszprém Aréna' },
+  'telekom veszprem': { name: 'One Veszprém HC', sport: 'Handball', origin: 'Domestic', homeVenue: 'Veszprém Aréna' },
+  'telekom veszprém kc': { name: 'One Veszprém HC', sport: 'Handball', origin: 'Domestic', homeVenue: 'Veszprém Aréna' },
+  'veszprém': { name: 'One Veszprém HC', sport: 'Handball', origin: 'Domestic', homeVenue: 'Veszprém Aréna' },
+  'veszprem': { name: 'One Veszprém HC', sport: 'Handball', origin: 'Domestic', homeVenue: 'Veszprém Aréna' },
+  'veszprém hc': { name: 'One Veszprém HC', sport: 'Handball', origin: 'Domestic', homeVenue: 'Veszprém Aréna' },
+  'veszprem hc': { name: 'One Veszprém HC', sport: 'Handball', origin: 'Domestic', homeVenue: 'Veszprém Aréna' },
+  'veszprém kse': { name: 'One Veszprém HC', sport: 'Handball', origin: 'Domestic', homeVenue: 'Veszprém Aréna' },
+  'veszprem kse': { name: 'One Veszprém HC', sport: 'Handball', origin: 'Domestic', homeVenue: 'Veszprém Aréna' },
+  'mkb veszprém kc': { name: 'One Veszprém HC', sport: 'Handball', origin: 'Domestic', homeVenue: 'Veszprém Aréna' },
+  'mkb veszprém': { name: 'One Veszprém HC', sport: 'Handball', origin: 'Domestic', homeVenue: 'Veszprém Aréna' },
+  'veszprém kft': { name: 'One Veszprém HC', sport: 'Handball', origin: 'Domestic', homeVenue: 'Veszprém Aréna' },
+  'hc veszprém kse': { name: 'One Veszprém HC', sport: 'Handball', origin: 'Domestic', homeVenue: 'Veszprém Aréna' },
+  'veszprém handball': { name: 'One Veszprém HC', sport: 'Handball', origin: 'Domestic', homeVenue: 'Veszprém Aréna' },
+  'veszprem handball': { name: 'One Veszprém HC', sport: 'Handball', origin: 'Domestic', homeVenue: 'Veszprém Aréna' },
+  'veszprém kiképző sportegyesület': { name: 'One Veszprém HC', sport: 'Handball', origin: 'Domestic', homeVenue: 'Veszprém Aréna' },
+
+  'pick handball': { name: 'OTP Bank - PICK Szeged', sport: 'Handball', origin: 'Domestic', homeVenue: 'Pick Aréna' },
+  'pick hands': { name: 'OTP Bank - PICK Szeged', sport: 'Handball', origin: 'Domestic', homeVenue: 'Pick Aréna' },
+  'pick': { name: 'OTP Bank - PICK Szeged', sport: 'Handball', origin: 'Domestic', homeVenue: 'Pick Aréna' },
+  'pick szeged': { name: 'OTP Bank - PICK Szeged', sport: 'Handball', origin: 'Domestic', homeVenue: 'Pick Aréna' },
+  'otp bank-pick szeged': { name: 'OTP Bank - PICK Szeged', sport: 'Handball', origin: 'Domestic', homeVenue: 'Pick Aréna' },
+  'otp bank - pick szeged': { name: 'OTP Bank - PICK Szeged', sport: 'Handball', origin: 'Domestic', homeVenue: 'Pick Aréna' },
+  'pick szeged handball': { name: 'OTP Bank - PICK Szeged', sport: 'Handball', origin: 'Domestic', homeVenue: 'Pick Aréna' },
+  'fick szeged handball': { name: 'OTP Bank - PICK Szeged', sport: 'Handball', origin: 'Domestic', homeVenue: 'Pick Aréna' },
+  'fick szeged': { name: 'OTP Bank - PICK Szeged', sport: 'Handball', origin: 'Domestic', homeVenue: 'Pick Aréna' },
+
   'pler': { name: 'PLER-Budapest', sport: 'Handball', origin: 'Domestic', homeVenue: 'Budapest Sportcsarnok' },
   'pler-budapest': { name: 'PLER-Budapest', sport: 'Handball', origin: 'Domestic', homeVenue: 'Budapest Sportcsarnok' },
+  'pler budapest': { name: 'PLER-Budapest', sport: 'Handball', origin: 'Domestic', homeVenue: 'Budapest Sportcsarnok' },
+  'pler kc': { name: 'PLER-Budapest', sport: 'Handball', origin: 'Domestic', homeVenue: 'Budapest Sportcsarnok' },
+
   'hungary national handball team': { name: 'Hungary National Handball Team', sport: 'Handball', origin: 'National Team', homeVenue: 'MVM Dome' },
+  'hungary handball team': { name: 'Hungary National Handball Team', sport: 'Handball', origin: 'National Team', homeVenue: 'MVM Dome' },
+  'hungary handball': { name: 'Hungary National Handball Team', sport: 'Handball', origin: 'National Team', homeVenue: 'MVM Dome' },
+  'hun handball': { name: 'Hungary National Handball Team', sport: 'Handball', origin: 'National Team', homeVenue: 'MVM Dome' },
+  'magyar kézilabda válogatott': { name: 'Hungary National Handball Team', sport: 'Handball', origin: 'National Team', homeVenue: 'MVM Dome' },
+  'magyar kezilabda valogatott': { name: 'Hungary National Handball Team', sport: 'Handball', origin: 'National Team', homeVenue: 'MVM Dome' },
 
   // Domestic Re-mappings for Computer Vision False Positives
   'hibernian fc': { name: 'Ferencvárosi TC', sport: 'Football', origin: 'Domestic', homeVenue: 'Groupama Aréna' },
@@ -224,6 +278,134 @@ export function getFranchiseInfo(rawName: string): FranchiseInfo | null {
   if (!rawName) return null;
   const norm = rawName.toLowerCase().trim();
   return SPORT_FRANCHISES_DIRECTORY[norm] || null;
+}
+
+export const GENERIC_VISION_PATTERNS: RegExp[] = [
+  /^handball team/i,
+  /^football team/i,
+  /^basketball team/i,
+  /^team wearing/i,
+  /^team with/i,
+  /^handball team name/i,
+  /^handball family/i,
+  /^red united handball/i,
+  /^royal handball/i,
+  /^red star handball/i,
+  /^handball$/i,
+  /^fc szerencsejáték/i,
+  /^fc szerencsésiak/i,
+  /^borsodi$/i,
+  /\{'name':/i,
+  /^etoile du/i,
+  /^etoile rouge/i,
+  /^győr-megyeri/i,
+  /^veszprém energy/i,
+  /^veszprém akadémiai/i,
+  /^egc máv/i,
+  /^uji győr/i,
+  /^asgyőr/i,
+  /^kosármisleny handball team/i,
+  /^kőszegi bence handball team/i,
+];
+
+/**
+ * Flags descriptive model artifacts, noise, or generic phrases that do not represent real clubs.
+ */
+export function isGenericVisionDescription(rawName: string): boolean {
+  if (!rawName) return true;
+  const norm = rawName.trim();
+  const low = norm.toLowerCase();
+  if (
+    low === 'n/a' ||
+    low === 'none' ||
+    low === 'unknown' ||
+    low.includes('szerencsej') ||
+    low === 'tippmix' ||
+    low === 'mol' ||
+    low === 'nike' ||
+    low === 'adidas' ||
+    low === 'puma'
+  ) {
+    return true;
+  }
+  return GENERIC_VISION_PATTERNS.some((p) => p.test(norm));
+}
+
+/**
+ * Canonicalizes a raw club string to its primary official entity name and franchise metadata.
+ * Returns null if the string is generic noise or a non-entity.
+ */
+export function canonicalizeClub(rawName: string): { canonicalName: string; franchise?: FranchiseInfo } | null {
+  if (isGenericVisionDescription(rawName)) return null;
+
+  const low = rawName.toLowerCase().trim();
+
+  // 1. Direct franchise directory hit
+  const directHit = SPORT_FRANCHISES_DIRECTORY[low];
+  if (directHit) {
+    return { canonicalName: directHit.name, franchise: directHit };
+  }
+
+  // 2. Győri Audi ETO KC (Handball) variations
+  if (low.includes('győr') || low.includes('gyor') || low.includes('eto')) {
+    if (
+      low.includes('audi') ||
+      low.includes('kc') ||
+      low.includes('kézilabda') ||
+      low.includes('kezilabda') ||
+      low.includes('hajrá') ||
+      low.includes('hajra')
+    ) {
+      const fr = SPORT_FRANCHISES_DIRECTORY['győri audi eto kc'];
+      return { canonicalName: 'Győri Audi ETO KC', franchise: fr };
+    }
+  }
+
+  // 3. FTC Rail Cargo Hungária (Handball) variations
+  if (
+    low.includes('rail cargo') ||
+    ((low.includes('ftc') || low.includes('ferencváros') || low.includes('ferencvaros') || low.includes('fradi')) &&
+      (low.includes('kézi') || low.includes('kezi') || low.includes('cargo') || low.includes('rail')))
+  ) {
+    const fr = SPORT_FRANCHISES_DIRECTORY['ftc rail cargo hungária'];
+    return { canonicalName: 'FTC Rail Cargo Hungária', franchise: fr };
+  }
+
+  // 4. One Veszprém HC (Handball) variations
+  if (low.includes('veszprém') || low.includes('veszprem')) {
+    const fr = SPORT_FRANCHISES_DIRECTORY['one veszprém hc'];
+    return { canonicalName: 'One Veszprém HC', franchise: fr };
+  }
+
+  // 5. OTP Bank - PICK Szeged (Handball) variations
+  if (low.includes('szeged') || low.includes('pick')) {
+    const fr = SPORT_FRANCHISES_DIRECTORY['otp bank - pick szeged'];
+    return { canonicalName: 'OTP Bank - PICK Szeged', franchise: fr };
+  }
+
+  // 6. PLER-Budapest (Handball)
+  if (low.includes('pler')) {
+    const fr = SPORT_FRANCHISES_DIRECTORY['pler-budapest'];
+    return { canonicalName: 'PLER-Budapest', franchise: fr };
+  }
+
+  // 7. Hungary National Handball Team
+  if (
+    (low.includes('hungary') || low.includes('magyar') || low.includes('hun')) &&
+    (low.includes('handball') || low.includes('kézi') || low.includes('kezi'))
+  ) {
+    const fr = SPORT_FRANCHISES_DIRECTORY['hungary national handball team'];
+    return { canonicalName: 'Hungary National Handball Team', franchise: fr };
+  }
+
+  // 8. Supporter group parent club mapping
+  const group = SUPPORTER_GROUPS_DIRECTORY[low];
+  if (group) {
+    const parentDirect = SPORT_FRANCHISES_DIRECTORY[group.parentClub.toLowerCase()];
+    return { canonicalName: group.parentClub, franchise: parentDirect };
+  }
+
+  return { canonicalName: rawName.trim() };
 }
 
 /**

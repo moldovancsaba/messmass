@@ -11,7 +11,13 @@ import ConnectedSelfiesModal from './ConnectedSelfiesModal';
 import BrandDetailModal from './BrandDetailModal';
 import AllBrandsModal from './AllBrandsModal';
 import AllClubsModal from './AllClubsModal';
-import { getFranchiseInfo, isSportFranchise, isVenue } from '@/lib/brandEntityClustering';
+import {
+  getFranchiseInfo,
+  isSportFranchise,
+  isVenue,
+  canonicalizeClub,
+  isGenericVisionDescription,
+} from '@/lib/brandEntityClustering';
 import styles from './interactive-report.module.css';
 
 interface OverviewTabProps {
@@ -64,9 +70,13 @@ function resolveClubSport(name: string, explicitSport?: string): string {
     return 'Ice Hockey';
   }
   if (
+    low.includes('győri audi') ||
+    low.includes('eto kc') ||
+    low.includes('rail cargo') ||
     low.includes('szeged') ||
     low.includes('pick') ||
     low.includes('veszprém') ||
+    low.includes('veszprem') ||
     low.includes('pler') ||
     low.includes('handball')
   ) {
@@ -144,26 +154,30 @@ export default function OverviewTab({
 
   const filteredClubs = useMemo(() => {
     const rawClubs = vision?.aggregates?.topClubs || [];
-    const validClubs = rawClubs.filter((c) => {
-      if (!c.club || c.count <= 0) return false;
-      const low = c.club.toLowerCase().trim();
-      if (
-        low === 'n/a' ||
-        low === 'none' ||
-        low.includes('szerencsej') ||
-        low === 'tippmix' ||
-        low === 'mol' ||
-        low === 'nike' ||
-        low === 'adidas' ||
-        low === 'puma'
-      ) {
-        return false;
-      }
-      return true;
-    });
+    const clubMap = new Map<string, ClubPodiumStat>();
 
-    if (isAll) return validClubs;
-    return validClubs.filter((c) => {
+    for (const c of rawClubs) {
+      if (!c.club || c.count <= 0) continue;
+      const canonical = canonicalizeClub(c.club);
+      if (!canonical) continue;
+
+      const canonicalName = canonical.canonicalName;
+      const existing = clubMap.get(canonicalName);
+      if (existing) {
+        existing.count += c.count;
+      } else {
+        clubMap.set(canonicalName, {
+          ...c,
+          club: canonicalName,
+          sport: c.sport || canonical.franchise?.sport,
+        });
+      }
+    }
+
+    const uniqueClubs = Array.from(clubMap.values()).sort((a, b) => b.count - a.count);
+
+    if (isAll) return uniqueClubs;
+    return uniqueClubs.filter((c) => {
       const sp = resolveClubSport(c.club, c.sport);
       return sp.toLowerCase() === selectedSport.toLowerCase();
     });
@@ -235,7 +249,7 @@ export default function OverviewTab({
         {/* 1. Header & Hero KPI Band */}
         <ExecutiveHeroKpis
           title={`${data.partner.name || 'Szerencsejáték Zrt.'} & Tippmix`}
-          subtitle="Executive Sponsorship & Multi-Sport Computer Vision Intelligence"
+          subtitle="Executive Marketing Value & Multi-Sport Computer Vision Intelligence"
           selectedSport={selectedSport}
           onSelectSport={setSelectedSport}
           totalAudience={totalAudience}
@@ -351,7 +365,7 @@ export default function OverviewTab({
       <div>
         <div className={styles.cardHeader}>
           <h3 className={styles.cardTitle}>
-            🏆 Performance by Sponsored Sport League
+            🏆 Marketing Performance & Audience Reach by Sport
           </h3>
           <button
             onClick={onViewBubble}

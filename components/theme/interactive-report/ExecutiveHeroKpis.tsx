@@ -26,7 +26,7 @@ const SPORT_OPTIONS = [
 
 export default function ExecutiveHeroKpis({
   title = 'Szerencsejáték Zrt. & Tippmix',
-  subtitle = 'Multi-Sport Sponsorship Intelligence & Visual Analytics',
+  subtitle = 'Multi-Sport Brand Exposure, Marketing Value & Visual Intelligence',
   selectedSport,
   onSelectSport,
   totalAudience,
