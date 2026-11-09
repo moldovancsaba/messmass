@@ -5,9 +5,12 @@ import React, { useState, useMemo } from 'react';
 import { InteractiveReportData } from './types';
 import D3TimelineScrubber from './D3TimelineScrubber';
 import ExecutiveHeroKpis from './ExecutiveHeroKpis';
-import ExecutivePodiumGrid, { ClubPodiumStat } from './ExecutivePodiumGrid';
+import ExecutivePodiumGrid, { ClubPodiumStat, CommercialBrandStat } from './ExecutivePodiumGrid';
 import ExecutiveDemographicsQuadrant from './ExecutiveDemographicsQuadrant';
 import ConnectedSelfiesModal from './ConnectedSelfiesModal';
+import BrandDetailModal from './BrandDetailModal';
+import AllBrandsModal from './AllBrandsModal';
+import AllClubsModal from './AllClubsModal';
 import { getFranchiseInfo, isSportFranchise, isVenue } from '@/lib/brandEntityClustering';
 import styles from './interactive-report.module.css';
 
@@ -104,6 +107,9 @@ export default function OverviewTab({
   // Active sport filter state for Executive View drill-down
   const [selectedSport, setSelectedSport] = useState<string>('all');
   const [selectedClubForModal, setSelectedClubForModal] = useState<ClubPodiumStat | null>(null);
+  const [selectedBrandForModal, setSelectedBrandForModal] = useState<CommercialBrandStat | null>(null);
+  const [isAllBrandsOpen, setIsAllBrandsOpen] = useState(false);
+  const [isAllClubsOpen, setIsAllClubsOpen] = useState(false);
 
   // Selected period override if active
   const activePeriod = selectedPeriodId ? timeline.find((t) => t.id === selectedPeriodId) : null;
@@ -245,6 +251,9 @@ export default function OverviewTab({
           clubs={filteredClubs}
           totalPhotosProcessed={analyzedImages}
           onSelectClub={(club) => setSelectedClubForModal(club)}
+          onSelectBrand={(brand) => setSelectedBrandForModal(brand)}
+          onViewAllBrands={() => setIsAllBrandsOpen(true)}
+          onViewAllClubs={() => setIsAllClubsOpen(true)}
         />
 
         {/* 3. Executive Demographics, Valence, Merchandise & Territory Card */}
@@ -262,6 +271,39 @@ export default function OverviewTab({
       <ConnectedSelfiesModal
         club={selectedClubForModal}
         onClose={() => setSelectedClubForModal(null)}
+      />
+
+      {/* Brand Detail Modal (Launched when any brand is clicked) */}
+      <BrandDetailModal
+        brand={selectedBrandForModal}
+        totalPhotosProcessed={analyzedImages}
+        totalAudience={totalAudience}
+        recentImages={vision?.recentImages || []}
+        onClose={() => setSelectedBrandForModal(null)}
+      />
+
+      {/* All Brands Directory Modal */}
+      <AllBrandsModal
+        isOpen={isAllBrandsOpen}
+        brands={filteredBrands}
+        totalPhotosProcessed={analyzedImages}
+        onSelectBrand={(b) => {
+          setSelectedBrandForModal(b);
+          setIsAllBrandsOpen(false);
+        }}
+        onClose={() => setIsAllBrandsOpen(false)}
+      />
+
+      {/* All Clubs Directory Modal */}
+      <AllClubsModal
+        isOpen={isAllClubsOpen}
+        clubs={filteredClubs}
+        totalPhotosProcessed={analyzedImages}
+        onSelectClub={(c) => {
+          setSelectedClubForModal(c);
+          setIsAllClubsOpen(false);
+        }}
+        onClose={() => setIsAllClubsOpen(false)}
       />
 
       {/* Active Period Filter Indicator */}

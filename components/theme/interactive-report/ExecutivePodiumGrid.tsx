@@ -32,7 +32,9 @@ interface ExecutivePodiumGridProps {
   clubs: ClubPodiumStat[];
   totalPhotosProcessed: number;
   onSelectClub: (club: ClubPodiumStat) => void;
-  onSelectBrand?: (brand: string) => void;
+  onSelectBrand?: (brand: CommercialBrandStat) => void;
+  onViewAllBrands?: () => void;
+  onViewAllClubs?: () => void;
 }
 
 export default function ExecutivePodiumGrid({
@@ -41,6 +43,8 @@ export default function ExecutivePodiumGrid({
   totalPhotosProcessed,
   onSelectClub,
   onSelectBrand,
+  onViewAllBrands,
+  onViewAllClubs,
 }: ExecutivePodiumGridProps) {
   // Take top commercial brands (filter out nulls/empties)
   const sortedBrands = brands.filter((b) => b.brand && b.count > 0).slice(0, 20);
@@ -64,20 +68,32 @@ export default function ExecutivePodiumGrid({
 
   return (
     <div className={styles.podiumGrid}>
-      {/* 1. Left Card: Top Commercial Brands */}
+      {/* 1. Left Card: Commercial Brand Visibility */}
       <div className={styles.podiumCard}>
         <div className={styles.podiumHeader}>
           <div>
             <h3 className={styles.podiumTitle}>
-              <span>🏷️ Top Commercial Brands</span>
+              <span>🏷️ Commercial Brand Visibility</span>
             </h3>
             <p className={styles.podiumSubtitle}>
-              Most-seen sponsor & corporate partner brands in fan photos
+              Commercial & apparel brands identified on stadium fans through computer vision
             </p>
           </div>
-          <span className={styles.podiumBadge}>
-            Commercial Sponsors
-          </span>
+          <div className={styles.podiumHeaderActions}>
+            <span className={styles.podiumBadge}>
+              Visual Exposure
+            </span>
+            {onViewAllBrands && (
+              <button
+                type="button"
+                onClick={onViewAllBrands}
+                className={styles.exploreAllBtn}
+                title={`Explore all ${brands.length} detected brands`}
+              >
+                View All ({brands.length}) →
+              </button>
+            )}
+          </div>
         </div>
 
         {/* Brand Olympic Pedestal Stage (#2 Left, #1 Center Gold, #3 Right) */}
@@ -87,8 +103,8 @@ export default function ExecutivePodiumGrid({
             {brand2 && (
               <div
                 className={styles.pedestalColumn}
-                onClick={() => onSelectBrand?.(brand2.brand)}
-                title={`Rank #2: ${brand2.brand} (${brand2.count} appearances)`}
+                onClick={() => onSelectBrand?.(brand2)}
+                title={`Rank #2: ${brand2.brand} (${brand2.count} appearances) - Click for marketing value breakdown`}
               >
                 <div className={styles.pedestalLogoCircle}>
                   {brand2.logoUrl ? (
@@ -113,8 +129,8 @@ export default function ExecutivePodiumGrid({
             {brand1 && (
               <div
                 className={styles.pedestalColumn}
-                onClick={() => onSelectBrand?.(brand1.brand)}
-                title={`Rank #1: ${brand1.brand} (${brand1.count} appearances)`}
+                onClick={() => onSelectBrand?.(brand1)}
+                title={`Rank #1: ${brand1.brand} (${brand1.count} appearances) - Click for marketing value breakdown`}
               >
                 <div
                   className={styles.pedestalLogoCircle}
@@ -149,8 +165,8 @@ export default function ExecutivePodiumGrid({
             {brand3 && (
               <div
                 className={styles.pedestalColumn}
-                onClick={() => onSelectBrand?.(brand3.brand)}
-                title={`Rank #3: ${brand3.brand} (${brand3.count} appearances)`}
+                onClick={() => onSelectBrand?.(brand3)}
+                title={`Rank #3: ${brand3.brand} (${brand3.count} appearances) - Click for marketing value breakdown`}
               >
                 <div className={styles.pedestalLogoCircle}>
                   {brand3.logoUrl ? (
@@ -190,8 +206,8 @@ export default function ExecutivePodiumGrid({
               <div
                 key={b.brand}
                 className={styles.rankedRow}
-                onClick={() => onSelectBrand?.(b.brand)}
-                title={`${b.brand}: ${b.count} appearances (${pct}%)`}
+                onClick={() => onSelectBrand?.(b)}
+                title={`${b.brand}: ${b.count} appearances (${pct}%) - Click for marketing value breakdown`}
               >
                 <span className={styles.rankNumber}>{hasBrandPodium ? idx + 4 : idx + 1}</span>
                 <div className={styles.rowLogoWrap}>
@@ -227,18 +243,30 @@ export default function ExecutivePodiumGrid({
         <div className={styles.podiumHeader}>
           <div>
             <h3 className={styles.podiumTitle}>
-              <span>🛡️ Top Clubs & Competitions</span>
+              <span>🛡️ Sports Clubs & Team Gear</span>
             </h3>
             <p className={styles.podiumSubtitle}>
-              Most-seen sports entities & franchises (click to inspect selfies)
+              Sports clubs & federation merch worn by attending fans (click to inspect fan selfies)
             </p>
           </div>
-          <span
-            className={styles.podiumBadge}
-            style={{ background: '#dbeafe', color: '#1e40af' }}
-          >
-            Connected Clubs
-          </span>
+          <div className={styles.podiumHeaderActions}>
+            <span
+              className={styles.podiumBadge}
+              style={{ background: '#dbeafe', color: '#1e40af' }}
+            >
+              Club Gear & Merch
+            </span>
+            {onViewAllClubs && (
+              <button
+                type="button"
+                onClick={onViewAllClubs}
+                className={styles.exploreAllBtn}
+                title={`Explore all ${clubs.length} detected sports teams`}
+              >
+                View All ({clubs.length}) →
+              </button>
+            )}
+          </div>
         </div>
 
         {/* Club Olympic Pedestal Stage (#2 Left, #1 Center Gold, #3 Right) */}

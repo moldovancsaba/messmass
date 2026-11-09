@@ -112,7 +112,7 @@ it drifts. Do not edit between the markers.
 
 | Category | Count | Location |
 |----------|-------|----------|
-| **UI Components** | 124 | `components/` |
+| **UI Components** | 127 | `components/` |
 | **Utility Modules** | 235 | `lib/` |
 | **Hooks** | 13 | `hooks/` |
 | **Design Tokens** | 410 | `app/styles/theme.css` |
