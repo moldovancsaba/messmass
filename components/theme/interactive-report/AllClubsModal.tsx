@@ -23,6 +23,20 @@ export default function AllClubsModal({
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedSport, setSelectedSport] = useState<string>('all');
 
+  // Sport filter options come from the clubs actually present in the data.
+  const sportOptions = useMemo(() => {
+    const sports = new Set<string>();
+    for (const c of clubs) {
+      if (c.sport && c.sport.trim()) sports.add(c.sport.trim());
+    }
+    return [
+      { id: 'all', label: 'All Sports' },
+      ...Array.from(sports)
+        .sort((a, b) => a.localeCompare(b))
+        .map((sport) => ({ id: sport, label: sport })),
+    ];
+  }, [clubs]);
+
   const filteredClubs = useMemo(() => {
     // Deduplicate incoming clubs list by partner or display name
     const clubMap = new Map<string, ClubPodiumStat>();
@@ -181,14 +195,8 @@ export default function AllClubsModal({
             </span>
           </div>
 
-          <div style={{ display: 'flex', gap: '6px' }}>
-            {[
-              { id: 'all', label: 'All Leagues' },
-              { id: 'Basketball', label: '🏀 Basketball' },
-              { id: 'Football', label: '⚽ Football' },
-              { id: 'Handball', label: '🤾 Handball' },
-              { id: 'Ice Hockey', label: '🏒 Ice Hockey' },
-            ].map((sp) => (
+          <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
+            {sportOptions.map((sp) => (
               <button
                 key={sp.id}
                 type="button"
@@ -218,7 +226,7 @@ export default function AllClubsModal({
             const pct =
               totalPhotosProcessed > 0
                 ? Math.round((c.count / totalPhotosProcessed) * 1000) / 10
-                : 1;
+                : null;
 
             return (
               <div
@@ -276,10 +284,10 @@ export default function AllClubsModal({
                   </div>
                   <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: '2px' }}>
                     <span style={{ fontSize: '10px', color: '#64748b', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                      {c.homeVenue || c.sport || 'Sports Arena'}
+                      {c.homeVenue || c.sport || ''}
                     </span>
                     <span style={{ fontSize: '10px', fontWeight: 600, color: '#2563eb' }}>
-                      {pct}% share
+                      {pct === null ? 'n/a' : `${pct}% share`}
                     </span>
                   </div>
                 </div>

@@ -23,7 +23,6 @@ interface BrandStat {
 interface FanmassBrandsMatrixProps {
   brands: BrandStat[];
   totalPhotosProcessed: number;
-  totalImages?: number;
 }
 
 type ClusterFilter = 'all' | BrandClusterId;
@@ -31,7 +30,6 @@ type ClusterFilter = 'all' | BrandClusterId;
 export default function FanmassBrandsMatrix({
   brands: rawBrands,
   totalPhotosProcessed,
-  totalImages = 11312,
 }: FanmassBrandsMatrixProps) {
   const [filter, setFilter] = useState<ClusterFilter>('all');
   const [searchQuery, setSearchQuery] = useState('');
@@ -102,9 +100,6 @@ export default function FanmassBrandsMatrix({
     return filteredBrands.slice(0, 24);
   }, [filteredBrands, isExpanded, searchQuery, filter]);
 
-  const isProgressing = totalPhotosProcessed > 0 && totalPhotosProcessed < totalImages;
-  const multiplier = isProgressing ? totalImages / totalPhotosProcessed : 1;
-
   return (
     <div className={styles.reportCard}>
       <div className={styles.cardHeader}>
@@ -129,7 +124,7 @@ export default function FanmassBrandsMatrix({
             🏷️ Commercial Brands &amp; Corporate Sponsor Clusters
           </h3>
           <p className={styles.cardSubtitle}>
-            Exhaustive empirical identification of corporate sponsors, title partners, kit apparel, beverage FMCG, and automotive partners. Sport franchises and match arenas (such as Novomatic Aréna Sopron) are classified separately in the Sport Franchises section below.
+            Corporate sponsors, title partners, kit apparel, beverage FMCG, and automotive brands identified in the analysed photos. Sport franchises and match arenas are classified separately in the Sport Franchises section.
           </p>
         </div>
 
@@ -153,7 +148,7 @@ export default function FanmassBrandsMatrix({
               onClick={() => setFilter('apparel')}
               className={`${styles.granularityBtn} ${filter === 'apparel' ? styles.granularityBtnActive : ''}`}
             >
-              👕 Kit &amp; Apparel ({clusterCounts.apparel})
+              🏷️ Unclassified ({clusterCounts.apparel})
             </button>
             <button
               onClick={() => setFilter('corporate')}
@@ -238,8 +233,8 @@ export default function FanmassBrandsMatrix({
             const cluster = getBrandCluster(item.brand);
             const shareOfPhotos =
               totalPhotosProcessed > 0
-                ? ((item.count / totalPhotosProcessed) * 100).toFixed(1)
-                : '0';
+                ? `${((item.count / totalPhotosProcessed) * 100).toFixed(1)}%`
+                : 'n/a';
             const barWidth = Math.max(8, Math.round((item.count / maxCount) * 100));
 
             return (
@@ -279,18 +274,11 @@ export default function FanmassBrandsMatrix({
                 <div className={styles.brandMetricsRow}>
                   <div className={styles.brandMetricItem}>
                     <span className={styles.brandMetricLabel}>Sightings</span>
-                    <span className={styles.brandMetricVal}>
-                      {item.count.toLocaleString()}
-                      {isProgressing && (
-                        <span className={styles.estPill}>
-                          {' '}(est. {Math.round(item.count * multiplier).toLocaleString()})
-                        </span>
-                      )}
-                    </span>
+                    <span className={styles.brandMetricVal}>{item.count.toLocaleString()}</span>
                   </div>
                   <div className={styles.brandMetricItem} style={{ textAlign: 'right' }}>
                     <span className={styles.brandMetricLabel}>Photo Exposure</span>
-                    <span className={styles.brandMetricVal}>{shareOfPhotos}%</span>
+                    <span className={styles.brandMetricVal}>{shareOfPhotos}</span>
                   </div>
                 </div>
 

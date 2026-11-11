@@ -12,8 +12,6 @@ interface EmotionStat {
 interface FanmassSentimentAtmosphereProps {
   emotions: EmotionStat[];
   totalPeople: number;
-  totalPhotosProcessed?: number;
-  totalImages?: number;
 }
 
 const EMOTION_META: Record<string, { emoji: string; color: string; label: string }> = {
@@ -28,12 +26,7 @@ const EMOTION_META: Record<string, { emoji: string; color: string; label: string
 export default function FanmassSentimentAtmosphere({
   emotions,
   totalPeople,
-  totalPhotosProcessed = 0,
-  totalImages = 11312,
 }: FanmassSentimentAtmosphereProps) {
-  const isProgressing = totalPhotosProcessed > 0 && totalPhotosProcessed < totalImages;
-  const multiplier = isProgressing ? totalImages / totalPhotosProcessed : 1;
-
   const totalDetections = useMemo(() => {
     return emotions.reduce((acc, e) => acc + e.count, 0);
   }, [emotions]);
@@ -46,7 +39,8 @@ export default function FanmassSentimentAtmosphere({
     return positiveEmotions.reduce((acc, e) => acc + e.count, 0);
   }, [positiveEmotions]);
 
-  const celebrationIndex = totalDetections > 0 ? ((positiveCount / totalDetections) * 100).toFixed(1) : '95.0';
+  const celebrationIndex =
+    totalDetections > 0 ? `${((positiveCount / totalDetections) * 100).toFixed(1)}%` : 'n/a';
 
   return (
     <div className={styles.reportCard}>
@@ -54,25 +48,24 @@ export default function FanmassSentimentAtmosphere({
         <div>
           <div className={styles.cardHeaderBadgeRow}>
             <span className={styles.cardSourceTag}>
-              🧠 Facial Valence AI • Biometric-Safe Sentiment Analysis
+              🧠 Facial Valence AI • Sentiment Analysis
             </span>
             <span className={styles.cardCountPill}>
-              {totalPeople.toLocaleString()} Spectators Scanned
-              {isProgressing && ` (est. ${Math.round(totalPeople * multiplier).toLocaleString()})`}
+              {totalPeople.toLocaleString()} People Detected
             </span>
           </div>
           <h3 className={styles.cardTitle}>
             😊 Fan Sentiment & Stadium Atmosphere Index
           </h3>
           <p className={styles.cardSubtitle}>
-            Aggregated emotional state and celebration valence detected across fan facial expressions at live matches.
+            Aggregated emotional state and celebration valence detected across fan facial expressions in the analysed photos.
           </p>
         </div>
 
         {/* Celebration Score Pill */}
         <div className={styles.celebrationPillBox}>
           <span className={styles.celebrationScoreLabel}>Stadium Celebration Index</span>
-          <span className={styles.celebrationScoreVal}>{celebrationIndex}%</span>
+          <span className={styles.celebrationScoreVal}>{celebrationIndex}</span>
         </div>
       </div>
 
@@ -81,7 +74,8 @@ export default function FanmassSentimentAtmosphere({
         {emotions.map((item) => {
           const norm = item.emotion.toLowerCase();
           const meta = EMOTION_META[norm] || { emoji: '✨', color: '#88ca45', label: item.emotion };
-          const pct = totalDetections > 0 ? ((item.count / totalDetections) * 100).toFixed(1) : '0';
+          const pctValue = totalDetections > 0 ? (item.count / totalDetections) * 100 : null;
+          const pct = pctValue === null ? 'n/a' : `${pctValue.toFixed(1)}%`;
 
           return (
             <div key={item.emotion} className={styles.emotionCard}>
@@ -90,20 +84,13 @@ export default function FanmassSentimentAtmosphere({
                 <span className={styles.emotionLabel}>{meta.label}</span>
               </div>
               <div className={styles.emotionCardVal}>
-                <span>
-                  {item.count.toLocaleString()}
-                  {isProgressing && (
-                    <span className={styles.estPill}>
-                      {' '}(est. {Math.round(item.count * multiplier).toLocaleString()})
-                    </span>
-                  )}
-                </span>
-                <span className={styles.emotionCardPct}>{pct}%</span>
+                <span>{item.count.toLocaleString()}</span>
+                <span className={styles.emotionCardPct}>{pct}</span>
               </div>
               <div className={styles.emotionTrack}>
                 <div
                   className={styles.emotionFill}
-                  style={{ width: `${pct}%`, backgroundColor: meta.color }}
+                  style={{ width: `${pctValue ?? 0}%`, backgroundColor: meta.color }}
                 />
               </div>
             </div>

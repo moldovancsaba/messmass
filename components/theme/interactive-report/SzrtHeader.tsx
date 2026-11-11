@@ -3,6 +3,7 @@
 
 import React, { useState } from 'react';
 import { InteractiveReportData } from './types';
+import { getReportSlug } from './reportSlug';
 import styles from './interactive-report.module.css';
 
 interface SzrtHeaderProps {
@@ -22,19 +23,20 @@ export default function SzrtHeader({ data, activeTab, onTabChange }: SzrtHeaderP
     ? `Campaign Hashtag #${scope?.id}`
     : isEvent
       ? 'Event Activation Report'
-      : 'Official Interactive Analytics Report';
+      : 'Interactive Analytics Report';
 
-  const subBadgeText = isHashtag && scope?.id === 'tippmixreport2026'
-    ? 'Tippmix Partnership'
-    : scope?.type
-      ? `${scope.type.toUpperCase()} Scope`
-      : 'Tippmix Partnership';
+  const subBadgeText = scope?.type ? `${scope.type.toUpperCase()} Scope` : null;
 
   const titleText = scope?.name || partner.name;
-  const descriptionText = scope?.subtitle ||
-    `Consolidated fan engagement, photo activation volume, and marketing opt-in conversion metrics across ${summary.totalMatches} national sports events (Football NB1/NB2, Erste Liga Ice Hockey, Basketball & Handball).`;
+  const descriptionText =
+    scope?.subtitle ||
+    (summary.totalMatches > 0
+      ? `Fan engagement, photo volume and marketing opt-in metrics across ${summary.totalMatches.toLocaleString()} ${summary.totalMatches === 1 ? 'event' : 'events'}.`
+      : null);
 
-  const mapHref = `/interactive-report/${data.partner.viewSlug === 'ec9bb989-cb0f-4d5a-b22b-c3a1829cd3fd' ? 'szrt' : data.partner.viewSlug}/map`;
+  const reportSlug = getReportSlug(data);
+  const mapHref = reportSlug ? `/interactive-report/${reportSlug}/map` : null;
+  const emoji = scope?.emoji || partner.emoji;
 
   const handleCopyLink = () => {
     if (typeof window !== 'undefined') {
@@ -44,14 +46,18 @@ export default function SzrtHeader({ data, activeTab, onTabChange }: SzrtHeaderP
     }
   };
 
+  const vision = data.vision;
+  const hasTerritoryData = (data.matches?.length ?? 0) > 0 || !!vision;
+  const visionLabel =
+    vision && vision.totalImages > 0
+      ? `Fanmass AI Vision (${vision.processedCount.toLocaleString()}/${vision.totalImages.toLocaleString()})`
+      : 'Fanmass AI Vision';
+
   const tabs: Array<{ id: typeof activeTab; label: string; icon: string }> = [
     { id: 'overview', label: 'Executive Overview', icon: '📊' },
-    {
-      id: 'vision',
-      label: `Fanmass AI Vision (${data.vision?.processedCount || 0}/${data.vision?.totalImages || 11312})`,
-      icon: '🤖',
-    },
-    { id: 'territory', label: 'Territory Map', icon: '🗺️' },
+    // The vision tab only exists for scopes that have vision data.
+    ...(vision ? [{ id: 'vision' as const, label: visionLabel, icon: '🤖' }] : []),
+    ...(hasTerritoryData ? [{ id: 'territory' as const, label: 'Territory Map', icon: '🗺️' }] : []),
     { id: 'bubble', label: 'Match Explorer', icon: '🫧' },
     { id: 'funnel', label: 'Marketing Funnel', icon: '📈' },
     { id: 'demographics', label: 'Audience Demographics', icon: '👥' },
@@ -65,32 +71,38 @@ export default function SzrtHeader({ data, activeTab, onTabChange }: SzrtHeaderP
         <div className={styles.brandTop}>
           <div>
             <div className={styles.brandTitleGroup}>
-              <span className={styles.partnerEmoji}>{scope?.emoji || partner.emoji || '🍀'}</span>
+              {emoji && <span className={styles.partnerEmoji}>{emoji}</span>}
               <span className={styles.badgePill}>
                 {badgeText}
               </span>
-              <span className={styles.tippmixPill}>
-                {subBadgeText}
-              </span>
+              {subBadgeText && (
+                <span className={styles.tippmixPill}>
+                  {subBadgeText}
+                </span>
+              )}
             </div>
             <h1 className={styles.partnerTitle}>
               {titleText}
             </h1>
-            <p className={styles.partnerDescription}>
-              {descriptionText}
-            </p>
+            {descriptionText && (
+              <p className={styles.partnerDescription}>
+                {descriptionText}
+              </p>
+            )}
           </div>
 
           {/* Quick Action Buttons */}
           <div className={styles.actionsGroup}>
-            <a
-              href={mapHref}
-              className={styles.shareBtn}
-              style={{ background: '#0f2c4a', color: '#ffffff', textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: '6px' }}
-              title="Open dedicated full-screen territory and venue analytics map"
-            >
-              🗺️ Dedicated Territory Map ➔
-            </a>
+            {mapHref && (
+              <a
+                href={mapHref}
+                className={styles.shareBtn}
+                style={{ background: '#0f2c4a', color: '#ffffff', textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: '6px' }}
+                title="Open dedicated full-screen territory and venue analytics map"
+              >
+                🗺️ Dedicated Territory Map ➔
+              </a>
+            )}
             <button onClick={handleCopyLink} className={styles.shareBtn}>
               🔗 {copied ? 'Copied to Clipboard!' : 'Share Live Report'}
             </button>
@@ -100,40 +112,54 @@ export default function SzrtHeader({ data, activeTab, onTabChange }: SzrtHeaderP
           </div>
         </div>
 
-        {/* High-level KPI Cards Strip */}
+        {/* High-level KPI Cards Strip: every value comes from the report data, n/a when nothing is stored */}
         <div className={styles.kpiGrid}>
           <div className={styles.kpiCard}>
             <span className={styles.kpiLabel}>Total Photos Taken</span>
-            <span className={styles.kpiValue}>{summary.totalPhotos.toLocaleString()}</span>
-            <span className={styles.kpiSubtext}>
-              {summary.hostessShare}% Hostess • {summary.selfieShare}% Fan Selfies
+            <span className={styles.kpiValue}>
+              {summary.totalPhotos > 0 ? summary.totalPhotos.toLocaleString() : 'n/a'}
             </span>
+            {summary.totalPhotos > 0 && summary.hostessPhotos > 0 && summary.selfies > 0 && (
+              <span className={styles.kpiSubtext}>
+                {summary.hostessShare}% Hostess • {summary.selfieShare}% Fan Selfies
+              </span>
+            )}
           </div>
 
           <div className={styles.kpiCard}>
             <span className={styles.kpiLabel}>Fan Registrations</span>
-            <span className={styles.kpiValue}>{summary.totalRegistered.toLocaleString()}</span>
-            <span className={styles.kpiSubtext}>Unique registered attendees</span>
-          </div>
-
-          <div className={styles.kpiCard}>
-            <span className={styles.kpiLabel}>Marketing Opt-In</span>
-            <span className={styles.kpiValueHighlight}>{summary.optInRate}%</span>
-            <span className={styles.kpiSubtext}>
-              {summary.totalOptIns.toLocaleString()} Tippmix consents
+            <span className={styles.kpiValue}>
+              {summary.totalRegistered > 0 ? summary.totalRegistered.toLocaleString() : 'n/a'}
             </span>
           </div>
 
           <div className={styles.kpiCard}>
-            <span className={styles.kpiLabel}>Brand Safety Pass</span>
-            <span className={styles.kpiValue}>{summary.brandProtectionRate}%</span>
-            <span className={styles.kpiSubtext}>Zero brand or PII violations</span>
+            <span className={styles.kpiLabel}>Marketing Opt-In</span>
+            <span className={styles.kpiValueHighlight}>
+              {summary.optInRate !== null ? `${summary.optInRate}%` : 'n/a'}
+            </span>
+            {summary.optInRate !== null && (
+              <span className={styles.kpiSubtext}>
+                {summary.totalOptIns.toLocaleString()} opt-ins
+              </span>
+            )}
           </div>
 
           <div className={styles.kpiCard}>
-            <span className={styles.kpiLabel}>Activated Matches</span>
-            <span className={styles.kpiValue}>{summary.totalMatches}</span>
-            <span className={styles.kpiSubtext}>4 major sports leagues</span>
+            <span className={styles.kpiLabel}>Vetting Approval</span>
+            <span className={styles.kpiValue}>
+              {summary.vettingApprovalRate !== null ? `${summary.vettingApprovalRate}%` : 'n/a'}
+            </span>
+            {summary.vettingApprovalRate !== null && (
+              <span className={styles.kpiSubtext}>Approved of submitted photos</span>
+            )}
+          </div>
+
+          <div className={styles.kpiCard}>
+            <span className={styles.kpiLabel}>Events</span>
+            <span className={styles.kpiValue}>
+              {summary.totalMatches > 0 ? summary.totalMatches.toLocaleString() : 'n/a'}
+            </span>
           </div>
         </div>
       </div>

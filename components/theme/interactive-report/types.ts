@@ -64,26 +64,8 @@ export interface DemographicsData {
   totalAudience: number;
   maleRatio: number;
   femaleRatio: number;
+  /** Age groups as measured by the vision analysis (children/teens/adults/seniors). Empty when nothing was measured. */
   generations: Array<{ label: string; percent: number; count: number }>;
-  merchAdoption: number;
-  stadiumAtmosphere: number;
-}
-
-export interface BrandCoOccurrenceItem {
-  brand: string;
-  surfaceAreaPct: number;
-  prominenceRank: number;
-}
-
-export interface BrandExposureItem {
-  brand: string;
-  occurrences: number;
-  totalBrandsInImage: number;
-  surfaceAreaPct: number;
-  prominenceRank: number;
-  shareOfVoicePct: number;
-  weightedScore: number;
-  coOccurringBrands: BrandCoOccurrenceItem[];
 }
 
 export interface VisionProgressData {
@@ -115,11 +97,6 @@ export interface VisionProgressData {
       darkLogoUrl?: string;
       category?: string;
       accentColor?: string;
-      totalImpressions?: number;
-      avgSurfaceAreaPct?: number;
-      primaryBrandRate?: number;
-      avgShareOfVoicePct?: number;
-      weightedExposureScore?: number;
     }>;
     topClubs: Array<{
       club: string;
@@ -166,7 +143,6 @@ export interface VisionProgressData {
     peopleCount: number;
     emotions: string[];
     brands: string[];
-    brandMetrics?: BrandExposureItem[];
     clubs: string[];
     scene: string;
   }>;
@@ -205,8 +181,10 @@ export interface InteractiveReportData {
     selfieShare: number;
     totalRegistered: number;
     totalOptIns: number;
-    optInRate: number;
-    brandProtectionRate: number;
+    /** Opt-ins / registered, null when there are no registrations to divide by. */
+    optInRate: number | null;
+    /** Approved / submitted in photo vetting, null when nothing was submitted. Not a brand-safety measure. */
+    vettingApprovalRate: number | null;
     totalCtaClicks: number;
     totalMatches: number;
     touchpoints: {
@@ -219,6 +197,6 @@ export interface InteractiveReportData {
   matches: MatchItem[];
   sports: SportBreakdown[];
   funnel: FunnelStep[];
-  demographics: DemographicsData;
+  demographics: DemographicsData | null;
   vision?: VisionProgressData | null;
 }

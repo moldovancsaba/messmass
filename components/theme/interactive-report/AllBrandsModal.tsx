@@ -218,7 +218,7 @@ export default function AllBrandsModal({
             const pct =
               totalPhotosProcessed > 0
                 ? Math.round((b.count / totalPhotosProcessed) * 1000) / 10
-                : 1;
+                : null;
 
             return (
               <div
@@ -238,7 +238,7 @@ export default function AllBrandsModal({
                   transition: 'all 0.15s ease',
                   boxShadow: '0 1px 3px rgba(0, 0, 0, 0.02)',
                 }}
-                title={`Click to inspect marketing exposure for ${b.brand}`}
+                title={`Click to inspect ${b.brand}`}
               >
                 <div
                   style={{
@@ -279,9 +279,7 @@ export default function AllBrandsModal({
                       {cluster.label}
                     </span>
                     <span style={{ fontSize: '10px', fontWeight: 600, color: '#2563eb' }}>
-                      {b.weightedExposureScore !== undefined
-                        ? `⚖️ ${b.weightedExposureScore} pts • ${b.avgShareOfVoicePct ?? pct}% SOV`
-                        : `${pct}% share`}
+                      {pct === null ? 'n/a' : `${pct}% share`}
                     </span>
                   </div>
                 </div>

@@ -29,14 +29,32 @@ export default function D3TimelineScrubber({
   const [containerWidth, setContainerWidth] = useState<number>(800);
   const [tooltip, setTooltip] = useState<TooltipData | null>(null);
 
-  // Filter periods by active granularity
+  // Only periods with recorded activity are drawn; counts shown in the switcher come from this list.
+  const periodsWithData = useMemo(
+    () => timeline.filter((t) => t.allPhotos > 0 || t.registered > 0),
+    [timeline]
+  );
+  const monthlyPeriods = useMemo(
+    () => periodsWithData.filter((t) => t.type === 'monthly'),
+    [periodsWithData]
+  );
+  const weeklyPeriods = useMemo(
+    () => periodsWithData.filter((t) => t.type === 'weekly'),
+    [periodsWithData]
+  );
+  const hasBothGranularities = monthlyPeriods.length > 0 && weeklyPeriods.length > 0;
+
+  // The selected granularity only applies when both exist; otherwise show whichever has data.
+  const activeGranularity: 'monthly' | 'weekly' = hasBothGranularities
+    ? granularity
+    : weeklyPeriods.length > 0 && monthlyPeriods.length === 0
+      ? 'weekly'
+      : 'monthly';
+
   const activeTimeline = useMemo(() => {
-    const list = timeline.filter(
-      (t) => t.type === granularity && (t.allPhotos > 0 || t.registered > 0)
-    );
-    // Fallback if specific type is empty
-    return list.length > 0 ? list : timeline.filter((t) => t.allPhotos > 0 || t.registered > 0);
-  }, [timeline, granularity]);
+    const list = activeGranularity === 'weekly' ? weeklyPeriods : monthlyPeriods;
+    return list.length > 0 ? list : periodsWithData;
+  }, [activeGranularity, weeklyPeriods, monthlyPeriods, periodsWithData]);
 
   // Track parent width via ResizeObserver
   useEffect(() => {
@@ -61,7 +79,7 @@ export default function D3TimelineScrubber({
     if (activeTimeline.length === 0) return;
 
     // Minimum width logic: Weekly needs min 540px so 8 bars are comfortable; Monthly fits container
-    const isWeekly = granularity === 'weekly';
+    const isWeekly = activeGranularity === 'weekly';
     const computedWidth = isWeekly ? Math.max(containerWidth, 540) : Math.max(containerWidth, 320);
     const height = isWeekly ? 210 : 190;
     const margin = isWeekly
@@ -231,7 +249,10 @@ export default function D3TimelineScrubber({
           .attr('rx', 6);
       }
     }
-  }, [activeTimeline, selectedPeriodId, onSelectPeriod, containerWidth, granularity]);
+  }, [activeTimeline, selectedPeriodId, onSelectPeriod, containerWidth, activeGranularity]);
+
+  // No period carries any activity: nothing to scrub.
+  if (periodsWithData.length === 0) return null;
 
   return (
     <div className={styles.reportCard}>
@@ -241,29 +262,31 @@ export default function D3TimelineScrubber({
             📅 Timeline & Campaign Scrubber
           </h3>
           <p className={styles.cardSubtitle}>
-            Click any period bar to filter dashboard metrics by campaign date range.
+            Click a period bar to see the totals of that period.
           </p>
         </div>
 
-        {/* View Granularity Switcher */}
-        <div className={styles.granularityToggle}>
-          <button
-            onClick={() => setGranularity('monthly')}
-            className={`${styles.granularityBtn} ${
-              granularity === 'monthly' ? styles.granularityBtnActive : ''
-            }`}
-          >
-            Monthly Cycles (4)
-          </button>
-          <button
-            onClick={() => setGranularity('weekly')}
-            className={`${styles.granularityBtn} ${
-              granularity === 'weekly' ? styles.granularityBtnActive : ''
-            }`}
-          >
-            Weekly Campaigns (8)
-          </button>
-        </div>
+        {/* View Granularity Switcher: only offered when both granularities have data */}
+        {hasBothGranularities && (
+          <div className={styles.granularityToggle}>
+            <button
+              onClick={() => setGranularity('monthly')}
+              className={`${styles.granularityBtn} ${
+                activeGranularity === 'monthly' ? styles.granularityBtnActive : ''
+              }`}
+            >
+              Monthly Cycles ({monthlyPeriods.length})
+            </button>
+            <button
+              onClick={() => setGranularity('weekly')}
+              className={`${styles.granularityBtn} ${
+                activeGranularity === 'weekly' ? styles.granularityBtnActive : ''
+              }`}
+            >
+              Weekly Campaigns ({weeklyPeriods.length})
+            </button>
+          </div>
+        )}
 
         <div className={styles.legendGroup}>
           <div className={styles.legendItem}>
@@ -319,7 +342,9 @@ export default function D3TimelineScrubber({
             <div className={styles.timelineTooltipRow}>
               <span>Marketing Opt-ins:</span>
               <strong>
-                {tooltip.period.optIns.toLocaleString()} ({tooltip.period.optInRate}%)
+                {tooltip.period.registered > 0
+                  ? `${tooltip.period.optIns.toLocaleString()} (${tooltip.period.optInRate}%)`
+                  : 'n/a'}
               </strong>
             </div>
           </div>

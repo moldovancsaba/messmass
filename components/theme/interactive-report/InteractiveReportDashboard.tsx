@@ -10,6 +10,7 @@ import D3BubbleExplorer from './D3BubbleExplorer';
 import D3FunnelFlow from './D3FunnelFlow';
 import D3DemographicsChart from './D3DemographicsChart';
 import MatchesTable from './MatchesTable';
+import { getReportSlug } from './reportSlug';
 import styles from './interactive-report.module.css';
 
 interface InteractiveReportDashboardProps {
@@ -24,14 +25,17 @@ export default function InteractiveReportDashboard({ initialData }: InteractiveR
   const [selectedPeriodId, setSelectedPeriodId] = useState<string | null>(null);
   const [selectedMatch, setSelectedMatch] = useState<MatchItem | null>(null);
 
+  // Slug the report routes understand (hashtag-<name>, event-<slug>, partner slug)
+  const reportSlug = getReportSlug(data);
+  const scopeName = data.scope?.name || data.partner.name;
+
   // Poll for live vision progress updates while running
   React.useEffect(() => {
-    if (!data.vision || data.vision.status !== 'running') return;
+    if (!reportSlug || !data.vision || data.vision.status !== 'running') return;
 
     const interval = setInterval(async () => {
       try {
-        const slug = data.partner.viewSlug || 'szrt';
-        const res = await fetch(`/api/interactive-report/${slug}`);
+        const res = await fetch(`/api/interactive-report/${reportSlug}`);
         if (res.ok) {
           const json = await res.json();
           const liveVision = json.vision || json.data?.vision;
@@ -56,7 +60,19 @@ export default function InteractiveReportDashboard({ initialData }: InteractiveR
 
     return () => clearInterval(interval);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [data.vision?.status, data.partner.viewSlug]);
+  }, [data.vision?.status, reportSlug]);
+
+  // Date range of the events in the data; only ISO-style dates are used, otherwise nothing is shown.
+  const datasetRange = React.useMemo(() => {
+    const dates = (data.matches || [])
+      .map((m) => (m.date || '').replace(/\./g, '-').replace(/-$/, '').trim())
+      .filter((d) => /^\d{4}-\d{2}-\d{2}$/.test(d))
+      .sort();
+    if (dates.length === 0) return null;
+    const first = dates[0];
+    const last = dates[dates.length - 1];
+    return first === last ? `Events on ${first}` : `Events ${first} to ${last}`;
+  }, [data.matches]);
 
   const handleSelectMatch = (match: MatchItem) => {
     setSelectedMatch(match);
@@ -90,7 +106,7 @@ export default function InteractiveReportDashboard({ initialData }: InteractiveR
       {activeTab === 'vision' && data.vision && (
         <FanmassVisionSection
           vision={data.vision}
-          partnerSlug={data.partner.viewSlug || 'szrt'}
+          partnerSlug={reportSlug ?? undefined}
           matches={data.matches}
           onViewTerritoryMap={() => setActiveTab('territory')}
         />
@@ -101,8 +117,8 @@ export default function InteractiveReportDashboard({ initialData }: InteractiveR
         <TerritoryMapCanvas
           matches={data.matches || []}
           vision={data.vision}
-          partnerSlug={data.partner.viewSlug || 'szrt'}
-          partnerName={data.partner.name}
+          partnerSlug={reportSlug ?? undefined}
+          partnerName={scopeName}
           embedded={true}
         />
       )}
@@ -166,10 +182,12 @@ export default function InteractiveReportDashboard({ initialData }: InteractiveR
       {/* Tab 5: All Match Data Table */}
       {activeTab === 'table' && <MatchesTable matches={data.matches} />}
 
-      {/* Footer / Attribution-free compliance stamp */}
+      {/* Footer: scope name and the date range of the events in the data */}
       <footer className={styles.reportFooter}>
         <div>
-          Szerencsejáték Zrt. Interactive Analytics Engine • Verified Dataset Dec 2025 – Mar 2026
+          {[scopeName ? `${scopeName} Interactive Analytics` : 'Interactive Analytics', datasetRange]
+            .filter(Boolean)
+            .join(' • ')}
         </div>
         <div>
           Powered by Messmass Interactive Reporting

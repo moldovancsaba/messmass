@@ -54,6 +54,13 @@ describe("Materialized Snapshot Cache (RFC-003 / Issue #12)", () => {
     jest.clearAllMocks();
   });
 
+  it("only reads current-schema snapshots and fences org-less lookups to the global partition", async () => {
+    await getCachedReportSnapshot({ scopeType: "hashtag", scopeIdentifier: "romania" });
+    const query = mockFindOne.mock.calls[0][0];
+    expect(query.schemaVersion).toBe(2);
+    expect(query.organizationId).toBe("global");
+  });
+
   it("stores and retrieves a snapshot with atomic replaceOne and TTL", async () => {
     const mockReport: any = {
       success: true,

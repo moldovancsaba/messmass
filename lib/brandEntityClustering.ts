@@ -705,14 +705,15 @@ export function getBrandCluster(brand: string): BrandClusterInfo {
     };
   }
 
-  // 8. Technical Kit & Athletic Apparel
+  // 8. No rule matched: the brand has no known category. The cluster id stays 'apparel'
+  // (existing filter key) but it only stands for "not classified", never for kit or equipment.
   return {
     id: 'apparel',
-    label: 'Kit & Equipment',
+    label: 'Unclassified',
     badgeClass: 'brandTagApparel',
     badgeBg: INTERACTIVE_REPORT_THEME.badges.venuesBg,
     badgeColor: INTERACTIVE_REPORT_THEME.badges.venuesColor,
-    icon: '👕',
+    icon: '🏷️',
     isSponsor: false,
   };
 }

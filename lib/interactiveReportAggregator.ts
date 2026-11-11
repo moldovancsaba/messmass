@@ -7,6 +7,8 @@ import {
   MatchItem,
   TimelinePeriod,
   ScopeHeader,
+  VisionProgressData,
+  DemographicsData,
 } from '@/components/theme/interactive-report/types';
 import {
   isSportFranchise,
@@ -43,6 +45,157 @@ export const SZRT_CAMPAIGN_NAMES = [
 ];
 const campaignNames = SZRT_CAMPAIGN_NAMES;
 
+/** Tenant that owns the SZRT / Tippmix campaign data and its vision analysis. */
+export const SZRT_ORGANIZATION_ID = 'org_szrt';
+
+/** Escapes user-supplied text before it is placed inside a RegExp. */
+function escapeRegex(text: string): string {
+  return text.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
+
+/** True when the identifier names the SZRT / Tippmix campaign scope. */
+export function isSzrtScopeIdentifier(identifier: string): boolean {
+  const id = (identifier || '').trim().replace(/^#/, '');
+  const low = id.toLowerCase();
+  return (
+    low === 'szrt' ||
+    low === 'szerencsejatek' ||
+    low === 'tippmixreport2026' ||
+    id === 'ec9bb989-cb0f-4d5a-b22b-c3a1829cd3fd' ||
+    id === '694a96990ad78323bea10660'
+  );
+}
+
+/**
+ * The vision analysis document (szrt_vision_progress) belongs to the SZRT campaign only.
+ * It may be attached to a report only when the resolved scope is that campaign and the
+ * caller is not scoped to another tenant.
+ */
+function isSzrtVisionScope(
+  scopeType: 'hashtag' | 'partner' | 'event',
+  scopeIdentifier: string,
+  organizationId?: string
+): boolean {
+  if (scopeType !== 'hashtag' && scopeType !== 'partner') return false;
+  if (organizationId && organizationId !== SZRT_ORGANIZATION_ID) return false;
+  return isSzrtScopeIdentifier(scopeIdentifier);
+}
+
+/**
+ * The vision analysis is shown only after a person has checked its content and set
+ * `publishApproved: true` on the szrt_progress document. Until then no AI-derived brand,
+ * club, people or audience figure is shown to a viewer.
+ */
+function isVisionPublishable(doc: any): boolean {
+  return Boolean(doc) && doc.publishApproved === true;
+}
+
+/** Reads a stored count; anything that is not a finite number counts as 0. */
+function toCount(value: unknown): number {
+  const n = typeof value === 'number' ? value : Number(value);
+  return Number.isFinite(n) && n > 0 ? n : 0;
+}
+
+/** Parses a count out of a markdown table cell; null when the cell holds no digits. */
+function parseCellCount(cell: string | undefined): number | null {
+  if (!cell) return null;
+  const digits = cell.replace(/\D/g, '');
+  if (!digits) return null;
+  const n = parseInt(digits, 10);
+  return Number.isFinite(n) ? n : null;
+}
+
+/** Sport label from event/partner text. Anything that is not recognised is 'Other'. */
+function detectSport(text: string): MatchItem['sport'] {
+  const combined = text.toLowerCase();
+  if (
+    combined.includes('jégkorong') ||
+    combined.includes('hoki') ||
+    combined.includes('av19') ||
+    combined.includes('erste liga') ||
+    combined.includes('titánok') ||
+    combined.includes('vsv')
+  ) {
+    return 'Ice Hockey';
+  }
+  if (
+    combined.includes('kézilabda') ||
+    combined.includes('veszprém') ||
+    combined.includes('szeged') ||
+    combined.includes('nb1 kézi') ||
+    combined.includes('handball')
+  ) {
+    return 'Handball';
+  }
+  if (
+    combined.includes('kosárlabda') ||
+    combined.includes('huntherm') ||
+    combined.includes('falco') ||
+    combined.includes('alba') ||
+    combined.includes('fiba') ||
+    combined.includes('basketball')
+  ) {
+    return 'Basketball';
+  }
+  if (
+    combined.includes('labdarúgó') ||
+    combined.includes('labdarugo') ||
+    combined.includes('futball') ||
+    combined.includes('football') ||
+    combined.includes('soccer')
+  ) {
+    return 'Football';
+  }
+  return 'Other';
+}
+
+/**
+ * Demographics from the vision model's measured gender and age counts.
+ * Returns null when no people were measured.
+ */
+function buildDemographicsFromVision(vision: VisionProgressData | null): DemographicsData | null {
+  if (!vision) return null;
+  const { genders, ageGroups, totalPeople } = vision.aggregates;
+
+  const male = toCount(genders?.male);
+  const female = toCount(genders?.female);
+  const genderTotal = male + female;
+
+  const ageCounts = {
+    children: toCount(ageGroups?.children),
+    teens: toCount(ageGroups?.teens),
+    adults: toCount(ageGroups?.adults),
+    seniors: toCount(ageGroups?.seniors),
+  };
+  const ageTotal = ageCounts.children + ageCounts.teens + ageCounts.adults + ageCounts.seniors;
+
+  if (genderTotal === 0 && ageTotal === 0) return null;
+
+  const pct = (count: number, total: number) =>
+    total > 0 ? Number(((count / total) * 100).toFixed(1)) : 0;
+
+  const generations =
+    ageTotal > 0
+      ? [
+          { label: 'Children', count: ageCounts.children },
+          { label: 'Teens', count: ageCounts.teens },
+          { label: 'Adults', count: ageCounts.adults },
+          { label: 'Seniors', count: ageCounts.seniors },
+        ].map((g) => ({ label: g.label, count: g.count, percent: pct(g.count, ageTotal) }))
+      : [];
+
+  const maleRatio = pct(male, genderTotal);
+
+  return {
+    male,
+    female,
+    totalAudience: toCount(totalPeople) || Math.max(genderTotal, ageTotal),
+    maleRatio,
+    femaleRatio: genderTotal > 0 ? Number((100 - maleRatio).toFixed(1)) : 0,
+    generations,
+  };
+}
+
 export interface ReportScopeQuery {
   type: 'hashtag' | 'partner' | 'event';
   identifier: string;
@@ -70,10 +223,14 @@ export async function getScopedInteractiveReportData(
       organizationId: query.organizationId,
     });
     if (cached) {
-      if (cached.vision) {
+      // The live vision overlay is only valid for the SZRT campaign scope
+      if (cached.vision && isSzrtVisionScope(scopeType, scopeIdentifier, query.organizationId)) {
         try {
           const liveDoc = await db.collection('szrt_vision_progress').findOne({ _id: 'szrt_progress' as any });
-          if (liveDoc) {
+          if (!isVisionPublishable(liveDoc)) {
+            cached.vision = null;
+            cached.demographics = null;
+          } else if (liveDoc) {
             cached.vision.processedCount = liveDoc.processedCount || cached.vision.processedCount;
             cached.vision.percent = liveDoc.percent || cached.vision.percent;
             cached.vision.status = liveDoc.status || cached.vision.status;
@@ -86,6 +243,14 @@ export async function getScopedInteractiveReportData(
             if (liveDoc.aggregates?.totalPeople) {
               cached.vision.aggregates.totalPeople = liveDoc.aggregates.totalPeople;
             }
+            if (liveDoc.aggregates?.genders) {
+              cached.vision.aggregates.genders = liveDoc.aggregates.genders;
+            }
+            if (liveDoc.aggregates?.ageGroups) {
+              cached.vision.aggregates.ageGroups = liveDoc.aggregates.ageGroups;
+            }
+            // Demographics are derived from the vision aggregates, so they follow the live numbers
+            cached.demographics = buildDemographicsFromVision(cached.vision);
           }
         } catch {
           // fallback to snapshot numbers
@@ -123,6 +288,8 @@ export async function getScopedInteractiveReportData(
 
   // 4. Parse matches from markdown tables and individual projects
   const matchesMap = new Map<string, MatchItem>();
+  // Matches whose approved count was actually recorded (needed for an honest approval rate)
+  const vettedMatchKeys = new Set<string>();
 
   for (const p of campaignProjects) {
     const rawTable = p.stats?.szerencsejatekTop10;
@@ -156,42 +323,17 @@ export async function getScopedInteractiveReportData(
 
       const date = colIdx.date !== -1 && cols[colIdx.date] ? cols[colIdx.date] : '';
       const partnerName = colIdx.partner !== -1 && cols[colIdx.partner] ? cols[colIdx.partner] : '';
-      const venue = colIdx.venue !== -1 && cols[colIdx.venue] ? cols[colIdx.venue] : 'Aréna / Stadion';
-      const submitted = colIdx.submitted !== -1 ? parseInt(cols[colIdx.submitted].replace(/\D/g, ''), 10) || 0 : 0;
-      const approved = colIdx.approved !== -1 ? parseInt(cols[colIdx.approved].replace(/\D/g, ''), 10) || 0 : 0;
-      const rejected = colIdx.rejected !== -1 ? parseInt(cols[colIdx.rejected].replace(/\D/g, ''), 10) || 0 : 0;
-      const hostess = colIdx.hostess !== -1 ? parseInt(cols[colIdx.hostess].replace(/\D/g, ''), 10) || 0 : 0;
+      const venue = colIdx.venue !== -1 && cols[colIdx.venue] ? cols[colIdx.venue] : '';
+      const submitted = (colIdx.submitted !== -1 ? parseCellCount(cols[colIdx.submitted]) : null) ?? 0;
+      const approvedCell = colIdx.approved !== -1 ? parseCellCount(cols[colIdx.approved]) : null;
+      const approved = approvedCell ?? 0;
+      const rejected = (colIdx.rejected !== -1 ? parseCellCount(cols[colIdx.rejected]) : null) ?? 0;
+      const hostess = (colIdx.hostess !== -1 ? parseCellCount(cols[colIdx.hostess]) : null) ?? 0;
       const selfies = Math.max(0, submitted - hostess);
-      const approvalRate = submitted > 0 ? Math.round((approved / submitted) * 100) : 100;
+      const hasVettingData = approvedCell !== null && submitted > 0;
+      const approvalRate = hasVettingData ? Math.round((approved / submitted) * 100) : 0;
 
-      let sport: MatchItem['sport'] = 'Football';
-      const combined = `${rawMatchName} ${partnerName} ${venue}`.toLowerCase();
-      if (
-        combined.includes('jégkorong') ||
-        combined.includes('hoki') ||
-        combined.includes('av19') ||
-        combined.includes('erste liga') ||
-        combined.includes('titánok')
-      ) {
-        sport = 'Ice Hockey';
-      } else if (
-        combined.includes('kézilabda') ||
-        combined.includes('veszprém') ||
-        combined.includes('szeged') ||
-        combined.includes('nb1 kézi') ||
-        combined.includes('handball')
-      ) {
-        sport = 'Handball';
-      } else if (
-        combined.includes('kosárlabda') ||
-        combined.includes('huntherm') ||
-        combined.includes('falco') ||
-        combined.includes('alba') ||
-        combined.includes('fiba') ||
-        combined.includes('basketball')
-      ) {
-        sport = 'Basketball';
-      }
+      const sport = detectSport(`${rawMatchName} ${partnerName} ${venue}`);
 
       const cleanName = rawMatchName
 
@@ -201,14 +343,17 @@ export async function getScopedInteractiveReportData(
 
       const key = `${rawMatchName.toLowerCase().replace(/[^a-z0-9]/g, '')}__${date}`;
       const cpStats = p.stats || {};
+      // A later row with the same key replaces the earlier one, so its vetting status replaces too
+      if (hasVettingData) vettedMatchKeys.add(key);
+      else vettedMatchKeys.delete(key);
 
       matchesMap.set(key, {
         id: key,
         matchName: rawMatchName,
         cleanName,
         date,
-        partnerName: partnerName || 'Tippmix Partner',
-        venue: venue || 'Aréna',
+        partnerName,
+        venue,
         sport,
         submitted,
         approved,
@@ -232,7 +377,8 @@ export async function getScopedInteractiveReportData(
   for (const p of campaignProjects) {
     if (campaignNames.includes(p.eventName)) continue;
     const s = p.stats || {};
-    const submitted = s.allImages || s.approvedImages || (s.remoteImages || 0) + (s.hostessImages || 0);
+    const submitted =
+      toCount(s.allImages) || toCount(s.approvedImages) || toCount(s.remoteImages) + toCount(s.hostessImages);
     if (!submitted || submitted <= 0) continue;
 
     const date = (p.eventDate || '').replace(/\./g, '-').replace(/-$/, '').trim();
@@ -243,36 +389,15 @@ export async function getScopedInteractiveReportData(
       const partnerName =
         partnerNameMap.get(String(p.partner1Id)) ||
         partnerNameMap.get(String(p.partner2Id)) ||
-        'Partner';
-      const hostess = s.hostessImages || s.szerencsejatekHostessAllphotos || 0;
-      const approved = s.approvedImages || submitted;
-      const rejected = s.rejectedImages || Math.max(0, submitted - approved);
+        '';
+      const hostess = toCount(s.hostessImages) || toCount(s.szerencsejatekHostessAllphotos);
+      // approved is only known when the event stored a count; it never defaults to the submitted count
+      const approved = toCount(s.approvedImages);
+      const hasVettingData = approved > 0;
+      const rejected = toCount(s.rejectedImages) || (hasVettingData ? Math.max(0, submitted - approved) : 0);
 
-      let sport: MatchItem['sport'] = 'Football';
-      const combined = `${p.eventName} ${partnerName}`.toLowerCase();
-      if (
-        combined.includes('jégkorong') ||
-
-        combined.includes('hoki') ||
-        combined.includes('av19') ||
-        combined.includes('vsv')
-      ) {
-        sport = 'Ice Hockey';
-      } else if (
-        combined.includes('kézilabda') ||
-        combined.includes('veszprém') ||
-        combined.includes('szeged')
-      ) {
-        sport = 'Handball';
-      } else if (
-        combined.includes('kosárlabda') ||
-        combined.includes('huntherm') ||
-        combined.includes('falco') ||
-        combined.includes('alba') ||
-        combined.includes('fiba')
-      ) {
-        sport = 'Basketball';
-      }
+      const sport = detectSport(`${p.eventName} ${partnerName}`);
+      if (hasVettingData) vettedMatchKeys.add(key);
 
       matchesMap.set(key, {
         id: key,
@@ -280,14 +405,14 @@ export async function getScopedInteractiveReportData(
         cleanName,
         date,
         partnerName,
-        venue: 'Arena / Stadium',
+        venue: '',
         sport,
         submitted,
         approved,
         rejected,
         hostess,
         selfies: Math.max(0, submitted - hostess),
-        approvalRate: submitted > 0 ? Math.round((approved / submitted) * 100) : 100,
+        approvalRate: hasVettingData && submitted > 0 ? Math.round((approved / submitted) * 100) : 0,
         demographics: {
           male: s.male || 0,
           female: s.female || 0,
@@ -377,46 +502,43 @@ export async function getScopedInteractiveReportData(
   const computedTotalCta1 = monthlyPeriods.reduce((acc, cur) => acc + cur.cta1, 0);
   const computedTotalCta2 = monthlyPeriods.reduce((acc, cur) => acc + cur.cta2, 0);
 
-  const qrTotal = monthlyPeriods.reduce((acc, cur) => acc + cur.qr, 0) || 5420;
-  const urlTotal = monthlyPeriods.reduce((acc, cur) => acc + cur.url, 0) || 12890;
-  const socialTotal = monthlyPeriods.reduce((acc, cur) => acc + cur.social, 0) || 8410;
+  const qrTotal = monthlyPeriods.reduce((acc, cur) => acc + cur.qr, 0);
+  const urlTotal = monthlyPeriods.reduce((acc, cur) => acc + cur.url, 0);
+  const socialTotal = monthlyPeriods.reduce((acc, cur) => acc + cur.social, 0);
 
   // Fallback for non-monthly campaign scopes
   const matchSubmitted = matchesList.reduce((acc, cur) => acc + cur.submitted, 0);
-  const matchApproved = matchesList.reduce((acc, cur) => acc + cur.approved, 0);
   const matchHostess = matchesList.reduce((acc, cur) => acc + cur.hostess, 0);
 
-  const totalPhotos = computedTotalPhotos > 0 ? computedTotalPhotos : matchSubmitted || 14569;
-  const hostessPhotos =
-    computedHostessPhotos > 0
-      ? computedHostessPhotos
-      : matchHostess || Math.round(totalPhotos * 0.64);
+  // Photo vetting: only matches that recorded an approved count take part in the rate
+  const vettedMatches = matchesList.filter((m) => vettedMatchKeys.has(m.id));
+  const vettedSubmitted = vettedMatches.reduce((acc, cur) => acc + cur.submitted, 0);
+  const vettedApproved = vettedMatches.reduce((acc, cur) => acc + cur.approved, 0);
+
+  const totalPhotos = computedTotalPhotos > 0 ? computedTotalPhotos : matchSubmitted;
+  const hostessPhotos = computedHostessPhotos > 0 ? computedHostessPhotos : matchHostess;
   const selfies = computedSelfies > 0 ? computedSelfies : Math.max(0, totalPhotos - hostessPhotos);
-  const totalRegistered =
-    computedTotalRegistered > 0 ? computedTotalRegistered : Math.round(totalPhotos * 0.93);
-  const totalOptIns =
-    computedTotalOptIns > 0 ? computedTotalOptIns : Math.round(totalRegistered * 0.72);
-  const totalCtaClicks = computedTotalCta1 + computedTotalCta2 || 4110;
+  const totalRegistered = computedTotalRegistered;
+  const totalOptIns = computedTotalOptIns;
+  const totalCtaClicks = computedTotalCta1 + computedTotalCta2;
 
-  const brandProtectionRate =
-    matchSubmitted > 0 ? Math.min(100, (matchApproved / matchSubmitted) * 100) : 99.2;
+  // Approved / submitted in photo vetting; null when no match recorded an approved count
+  const vettingApprovalRate =
+    vettedSubmitted > 0 ? Math.min(100, (vettedApproved / vettedSubmitted) * 100) : null;
 
+  // Opt-ins / registered; null when nobody registered
   const weightedOptInRate =
     computedTotalRegistered > 0
       ? monthlyPeriods.reduce((acc, cur) => acc + cur.optInRate * cur.registered, 0) /
         computedTotalRegistered
-      : 71.4;
+      : null;
 
   // 7. Sports Breakdown
+  // Only sports that occur in the scope are listed
   const sportsMap: Record<
     string,
     { count: number; photos: number; approved: number; hostess: number }
-  > = {
-    Football: { count: 0, photos: 0, approved: 0, hostess: 0 },
-    'Ice Hockey': { count: 0, photos: 0, approved: 0, hostess: 0 },
-    Basketball: { count: 0, photos: 0, approved: 0, hostess: 0 },
-    Handball: { count: 0, photos: 0, approved: 0, hostess: 0 },
-  };
+  > = {};
 
   for (const m of matchesList) {
     if (!sportsMap[m.sport]) {
@@ -437,24 +559,7 @@ export async function getScopedInteractiveReportData(
     hostessRatio: d.photos > 0 ? Math.round((d.hostess / d.photos) * 100) : 0,
   }));
 
-  // 8. Demographics rollup
-  const demographics = {
-    male: 38793,
-    female: 21873,
-    totalAudience: 60666,
-    maleRatio: 63.9,
-    femaleRatio: 36.1,
-    generations: [
-      { label: 'Gen Alpha (<13)', percent: 8.5, count: 5150 },
-      { label: 'Gen Y+Z (14-35)', percent: 57.2, count: 34700 },
-      { label: 'Gen X (36-55)', percent: 26.1, count: 15830 },
-      { label: 'Boomer (56+)', percent: 8.2, count: 4986 },
-    ],
-    merchAdoption: 48.6,
-    stadiumAtmosphere: 89.4,
-  };
-
-  // 9. Funnel steps
+  // 8. Funnel steps (every value and detail comes from stored counts)
   const funnelSteps = [
     {
       step: 'Discovery & Engagement',
@@ -467,49 +572,42 @@ export async function getScopedInteractiveReportData(
       detail: `${hostessPhotos.toLocaleString()} Hostess Assisted + ${selfies.toLocaleString()} Direct Selfies`,
     },
     {
-      step: 'Brand-Safe Verified',
-      value: Math.round(totalPhotos * 0.992),
-      detail: `${brandProtectionRate.toFixed(1)}% Brand Compliance & Moderation Pass`,
+      step: 'Approved in Photo Vetting',
+      value: vettedApproved,
+      detail:
+        vettingApprovalRate !== null
+          ? `${vettingApprovalRate.toFixed(1)}% of submitted photos approved in photo vetting`
+          : 'n/a (no photo vetting data)',
     },
     {
       step: 'Account Registrations',
       value: totalRegistered,
-      detail: `${totalRegistered.toLocaleString()} Verified Fan Accounts Created`,
+      detail: `${totalRegistered.toLocaleString()} Accounts Registered`,
     },
     {
       step: 'Marketing Opt-In',
       value: totalOptIns,
-      detail: `${weightedOptInRate.toFixed(1)}% Opt-In to Marketing Campaigns`,
+      detail:
+        weightedOptInRate !== null
+          ? `${weightedOptInRate.toFixed(1)}% Opt-In to Marketing Campaigns`
+          : 'n/a (no registrations)',
     },
     {
       step: 'CTA Click Conversions',
       value: totalCtaClicks,
-      detail: `${Math.round(totalCtaClicks * 0.65).toLocaleString()} Primary CTA + ${Math.round(totalCtaClicks * 0.35).toLocaleString()} Secondary CTA`,
+      detail: `${computedTotalCta1.toLocaleString()} Primary CTA + ${computedTotalCta2.toLocaleString()} Secondary CTA`,
     },
   ];
 
-  // 10. Fanmass Vision Analysis Live Stream
-  let vision = null;
+  // 9. Fanmass Vision Analysis. The vision document describes the SZRT campaign only,
+  // so every other scope gets no vision data at all.
+  let vision: VisionProgressData | null = null;
   try {
-    let visionDoc = await db
-      .collection('szrt_vision_progress')
-      .findOne({ _id: 'szrt_progress' as any });
+    const visionDoc = isSzrtVisionScope(scopeType, scopeIdentifier, query.organizationId)
+      ? await db.collection('szrt_vision_progress').findOne({ _id: 'szrt_progress' as any })
+      : null;
 
-    if (!visionDoc) {
-      visionDoc = await client
-        .db('messmass')
-        .collection('szrt_vision_progress')
-        .findOne({ _id: 'szrt_progress' as any });
-    }
-
-    if (!visionDoc) {
-      visionDoc = await client
-        .db('test')
-        .collection('szrt_vision_progress')
-        .findOne({ _id: 'szrt_progress' as any });
-    }
-
-    if (visionDoc) {
+    if (visionDoc && isVisionPublishable(visionDoc)) {
       // Fetch official brand assets for unified logo resolution
       const brandAssets = await db.collection('brand_assets').find({}).toArray().catch(() => []);
       const brandMap = new Map<string, any>();
@@ -523,18 +621,6 @@ export async function getScopedInteractiveReportData(
         }
       }
 
-      // Load recent images with full brand weighting metrics from szrt_vision_analysis
-      const latestAnalyzedImages = await db
-        .collection('szrt_vision_analysis')
-        .find({
-          'brandMetrics.0': { $exists: true },
-          ...(query.organizationId ? { organizationId: query.organizationId } : {}),
-        })
-        .sort({ analyzedAt: -1 })
-        .limit(24)
-        .toArray()
-        .catch(() => []);
-
       const enrichedBrands = (visionDoc.aggregates?.topBrands || [])
         .filter((b: any) => {
           return !isSportFranchise(b.brand) && !isVenue(b.brand);
@@ -545,33 +631,6 @@ export async function getScopedInteractiveReportData(
           const match = brandMap.get(norm) || brandMap.get(normSlug);
           const cluster = getBrandCluster(b.brand);
 
-          // Calculate quality exposure weight rollups from brandMetrics
-          const brandNameLow = norm;
-          const matchingMetrics = latestAnalyzedImages
-            .flatMap((img: any) => img.brandMetrics || [])
-            .filter((m: any) => m.brand && m.brand.toLowerCase().trim() === brandNameLow);
-
-          const totalImpressions = matchingMetrics.length > 0
-            ? Math.round(matchingMetrics.reduce((s: number, m: any) => s + (m.occurrences || 1), 0) * (b.count / matchingMetrics.length))
-            : Math.round(b.count * 1.8);
-
-          const avgSurfaceAreaPct = matchingMetrics.length > 0
-            ? Number((matchingMetrics.reduce((s: number, m: any) => s + (m.surfaceAreaPct || 0.45), 0) / matchingMetrics.length).toFixed(2))
-            : 0.55;
-
-          const primaryCount = matchingMetrics.filter((m: any) => m.prominenceRank === 1).length;
-          const primaryBrandRate = matchingMetrics.length > 0
-            ? Math.round((primaryCount / matchingMetrics.length) * 100)
-            : 65;
-
-          const avgShareOfVoicePct = matchingMetrics.length > 0
-            ? Number((matchingMetrics.reduce((s: number, m: any) => s + (m.shareOfVoicePct || 50), 0) / matchingMetrics.length).toFixed(1))
-            : 52.5;
-
-          const weightedExposureScore = matchingMetrics.length > 0
-            ? Number((matchingMetrics.reduce((s: number, m: any) => s + (m.weightedScore || 2.5), 0) * (b.count / matchingMetrics.length)).toFixed(1))
-            : Math.round(b.count * 2.8);
-
           return {
             brand: b.brand,
             count: b.count,
@@ -579,11 +638,6 @@ export async function getScopedInteractiveReportData(
             darkLogoUrl: match?.darkLogoUrl || undefined,
             category: match?.category || cluster.label,
             accentColor: match?.accentColor || undefined,
-            totalImpressions,
-            avgSurfaceAreaPct,
-            primaryBrandRate,
-            avgShareOfVoicePct,
-            weightedExposureScore,
           };
         });
 
@@ -862,20 +916,20 @@ export async function getScopedInteractiveReportData(
       }
 
       vision = {
-        totalImages: visionDoc.totalImages || 11312,
-        processedCount: visionDoc.processedCount || 0,
-        percent: visionDoc.percent || 0,
-        status: visionDoc.status || 'running',
+        totalImages: toCount(visionDoc.totalImages),
+        processedCount: toCount(visionDoc.processedCount),
+        percent: toCount(visionDoc.percent),
+        status: visionDoc.status || 'idle',
         currentSport: visionDoc.currentSport || '',
         currentFile: visionDoc.currentFile || '',
         lastUpdated: visionDoc.lastUpdated || '',
         aggregates: {
-          totalPeople: visionDoc.aggregates?.totalPeople || 0,
+          totalPeople: toCount(visionDoc.aggregates?.totalPeople),
           genders: visionDoc.aggregates?.genders || {
             male: 0,
             female: 0,
-            malePct: 50,
-            femalePct: 50,
+            malePct: 0,
+            femalePct: 0,
           },
           ageGroups: visionDoc.aggregates?.ageGroups || {
             children: 0,
@@ -890,23 +944,25 @@ export async function getScopedInteractiveReportData(
           merchandise: visionDoc.aggregates?.merchandise || undefined,
           sportsBreakdown: enrichedSportsBreakdown,
         },
-        recentImages: latestAnalyzedImages.length > 0
-          ? latestAnalyzedImages.map((img: any) => ({
-              fileName: img.fileName,
-              sport: img.sport,
-              peopleCount: img.peopleCount || 1,
-              emotions: img.emotions || [],
-              brands: img.brands || [],
-              brandMetrics: img.brandMetrics || [],
-              clubs: img.clubs || [],
-              scene: img.scene || '',
-            }))
-          : (visionDoc.recentImages || []),
+        recentImages: (Array.isArray(visionDoc.recentImages) ? visionDoc.recentImages : []).map(
+          (img: any) => ({
+            fileName: img.fileName,
+            sport: img.sport,
+            peopleCount: toCount(img.peopleCount),
+            emotions: img.emotions || [],
+            brands: img.brands || [],
+            clubs: img.clubs || [],
+            scene: img.scene || '',
+          })
+        ),
       };
     }
   } catch (err) {
     console.error('Failed to load vision progress:', err);
   }
+
+  // 10. Demographics come from what the vision model measured; no measurement, no demographics
+  const demographics = buildDemographicsFromVision(vision);
 
   const finalResult: InteractiveReportData = {
     success: true,
@@ -914,11 +970,11 @@ export async function getScopedInteractiveReportData(
     partner: {
       id: String(partner?._id || scopeHeader.id),
       name: scopeHeader.name,
-      viewSlug: partner?.viewSlug || scopeHeader.viewSlug || 'szrt',
+      viewSlug: partner?.viewSlug || scopeHeader.viewSlug || scopeHeader.id,
       emoji: scopeHeader.emoji || 'ð',
     },
     style: {
-      name: style?.name || 'SZRT (GENERAL)',
+      name: style?.name || 'Default',
       heroBackground: style?.heroBackground || INTERACTIVE_REPORT_THEME.heroBackground,
       pieColor1: style?.pieColor1 || INTERACTIVE_REPORT_THEME.pieColor1,
       pieColor2: style?.pieColor2 || INTERACTIVE_REPORT_THEME.pieColor2,
@@ -927,12 +983,13 @@ export async function getScopedInteractiveReportData(
       totalPhotos,
       hostessPhotos,
       selfies,
-      hostessShare: totalPhotos > 0 ? Math.round((hostessPhotos / totalPhotos) * 100) : 64,
-      selfieShare: totalPhotos > 0 ? Math.round((selfies / totalPhotos) * 100) : 36,
+      hostessShare: totalPhotos > 0 ? Math.round((hostessPhotos / totalPhotos) * 100) : 0,
+      selfieShare: totalPhotos > 0 ? Math.round((selfies / totalPhotos) * 100) : 0,
       totalRegistered,
       totalOptIns,
-      optInRate: Number(weightedOptInRate.toFixed(1)),
-      brandProtectionRate: Number(brandProtectionRate.toFixed(1)),
+      optInRate: weightedOptInRate !== null ? Number(weightedOptInRate.toFixed(1)) : null,
+      vettingApprovalRate:
+        vettingApprovalRate !== null ? Number(vettingApprovalRate.toFixed(1)) : null,
       totalCtaClicks,
       totalMatches: matchesList.length,
       touchpoints: {
@@ -1051,12 +1108,7 @@ export async function resolveScopeProjectIds(
   const rawId = (identifier || "").trim();
   const scopeIdentifier = rawId.replace(/^#/, "");
 
-  const isSzrtIdentifier =
-    scopeIdentifier.toLowerCase() === "szrt" ||
-    scopeIdentifier.toLowerCase() === "szerencsejatek" ||
-    scopeIdentifier.toLowerCase() === "tippmixreport2026" ||
-    scopeIdentifier === "ec9bb989-cb0f-4d5a-b22b-c3a1829cd3fd" ||
-    scopeIdentifier === "694a96990ad78323bea10660";
+  const isSzrtIdentifier = isSzrtScopeIdentifier(scopeIdentifier);
 
   let partner: any = null;
   let campaignProjects: any[] = [];
@@ -1082,7 +1134,7 @@ export async function resolveScopeProjectIds(
   ];
 
   if ((scopeType === "hashtag" && isSzrtIdentifier) || (scopeType === "partner" && isSzrtIdentifier)) {
-    if (organizationId && organizationId !== "org_szrt") {
+    if (organizationId && organizationId !== SZRT_ORGANIZATION_ID) {
       return {
         scopeType,
         identifier: scopeIdentifier,
@@ -1146,14 +1198,14 @@ export async function resolveScopeProjectIds(
       emoji: partner?.emoji || "🎯",
       subtitle:
         "Consolidated fan engagement, photo activation volume, and marketing opt-in conversion metrics across national sports events (#tippmixreport2026).",
-      organizationId: partner?.organizationId ? String(partner.organizationId) : (organizationId || "org_szrt"),
+      organizationId: partner?.organizationId ? String(partner.organizationId) : (organizationId || SZRT_ORGANIZATION_ID),
     };
   } else if (scopeType === "hashtag") {
     const hashtagFilter: any = {
       $or: [
         { hashtags: scopeIdentifier },
         { hashtags: `#${scopeIdentifier}` },
-        { hashtags: { $regex: new RegExp(`^#?${scopeIdentifier}$`, "i") } },
+        { hashtags: { $regex: new RegExp(`^#?${escapeRegex(scopeIdentifier)}$`, "i") } },
       ],
     };
     if (organizationId) {
@@ -1182,7 +1234,7 @@ export async function resolveScopeProjectIds(
         $or: [
           { viewSlug: scopeIdentifier },
           { slug: scopeIdentifier },
-          { name: new RegExp(`^${scopeIdentifier}$`, "i") },
+          { name: new RegExp(`^${escapeRegex(scopeIdentifier)}$`, "i") },
           ...(ObjectId.isValid(scopeIdentifier) ? [{ _id: new ObjectId(scopeIdentifier) }] : []),
         ],
       });

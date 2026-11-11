@@ -1,7 +1,7 @@
 'use client';
 /* eslint-disable react/forbid-dom-props */
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { VisionProgressData } from './types';
 import FanmassBrandsMatrix from './FanmassBrandsMatrix';
 import FanmassSportsDemographics from './FanmassSportsDemographics';
@@ -11,18 +11,44 @@ import TerritoryMapCanvas from './TerritoryMapCanvas';
 import { MatchItem } from './types';
 import styles from './interactive-report.module.css';
 
+/** A vision run counts as live only while its document was updated within this window. */
+const LIVE_WINDOW_MS = 15 * 60 * 1000;
+
 interface FanmassVisionSectionProps {
   vision: VisionProgressData;
+  /** Slug the report routes understand (hashtag scopes carry their hashtag- prefix). */
   partnerSlug?: string;
+  partnerName?: string;
   compact?: boolean;
   matches?: MatchItem[];
   onExploreDashboard?: () => void;
   onViewTerritoryMap?: () => void;
 }
 
+function sportIcon(sport: string): string {
+  const low = sport.toLowerCase();
+  if (low.includes('foot')) return '⚽';
+  if (low.includes('basket')) return '🏀';
+  if (low.includes('hockey')) return '🏒';
+  if (low.includes('hand')) return '🤾';
+  return '🏅';
+}
+
+/** Gender split from measured counts; null when nothing was measured. */
+function genderView(g?: { male: number; female: number; malePct?: number; femalePct?: number } | null) {
+  if (!g) return null;
+  const total = g.male + g.female;
+  if (total <= 0) return null;
+  return {
+    malePct: g.malePct ?? Number(((g.male / total) * 100).toFixed(1)),
+    femalePct: g.femalePct ?? Number(((g.female / total) * 100).toFixed(1)),
+  };
+}
+
 export default function FanmassVisionSection({
   vision: initialVision,
-  partnerSlug = 'szrt',
+  partnerSlug,
+  partnerName,
   compact = false,
   matches,
   onExploreDashboard,
@@ -30,14 +56,29 @@ export default function FanmassVisionSection({
 }: FanmassVisionSectionProps) {
   const [vision, setVision] = useState<VisionProgressData>(initialVision);
   const [selectedSport, setSelectedSport] = useState<string>('all');
+  const [nowMs, setNowMs] = useState<number>(() => Date.now());
+
+  const reportSlug = partnerSlug || null;
+
+  // Keep the clock current so a stalled run stops being shown as live
+  useEffect(() => {
+    const tick = setInterval(() => setNowMs(Date.now()), 30000);
+    return () => clearInterval(tick);
+  }, []);
+
+  const lastUpdatedMs = Date.parse(vision.lastUpdated);
+  const isRunning =
+    vision.status === 'running' &&
+    Number.isFinite(lastUpdatedMs) &&
+    nowMs - lastUpdatedMs <= LIVE_WINDOW_MS;
 
   // Poll for live stream updates every 3 seconds while running
   useEffect(() => {
-    if (vision.status !== 'running') return;
+    if (!isRunning || !reportSlug) return;
 
     const interval = setInterval(async () => {
       try {
-        const res = await fetch(`/api/interactive-report/${partnerSlug}`);
+        const res = await fetch(`/api/interactive-report/${reportSlug}`);
         if (res.ok) {
           const json = await res.json();
           const liveVision = json.vision || json.data?.vision;
@@ -58,51 +99,45 @@ export default function FanmassVisionSection({
     }, 3000);
 
     return () => clearInterval(interval);
-  }, [vision.status, partnerSlug]);
+  }, [isRunning, reportSlug]);
 
   const { aggregates, recentImages } = vision;
-  const isRunning = vision.status === 'running';
-  const totalPhotosProcessed = vision.processedCount;
-  const totalImages = vision.totalImages || 11312;
-  const isProgressing = totalPhotosProcessed > 0 && totalPhotosProcessed < totalImages;
-  const multiplier = isProgressing ? totalImages / totalPhotosProcessed : 1;
 
-  // Selected sport data slice
+  // Sports that actually appear in the data, largest first
+  const sportKeys = useMemo(
+    () =>
+      Object.entries(aggregates.sportsBreakdown || {})
+        .filter(([, d]) => d && d.images > 0)
+        .sort((a, b) => b[1].images - a[1].images)
+        .map(([sport]) => sport),
+    [aggregates.sportsBreakdown]
+  );
+
+  // Selected sport data slice. A sport with no figure for a block shows n/a, never the overall figure.
   const isAll = selectedSport === 'all';
-  const activeSportData = !isAll ? aggregates.sportsBreakdown[selectedSport] : null;
+  const activeSportData = !isAll ? aggregates.sportsBreakdown?.[selectedSport] ?? null : null;
 
-  const displayPeople = activeSportData ? activeSportData.people : aggregates.totalPeople;
-  const displayMalePct = activeSportData?.genders?.malePct ?? aggregates.genders.malePct;
-  const displayFemalePct = activeSportData?.genders?.femalePct ?? aggregates.genders.femalePct;
-  const displayAge = activeSportData?.ageGroups ?? aggregates.ageGroups;
+  const displayPeople = isAll ? aggregates.totalPeople : activeSportData?.people ?? null;
+  const displayGender = genderView(isAll ? aggregates.genders : activeSportData?.genders);
+  const displayAge = isAll ? aggregates.ageGroups : activeSportData?.ageGroups ?? null;
 
   // Sport-specific brands & emotions
-  const displayBrands = isAll
-    ? aggregates.topBrands
-    : (activeSportData?.topBrands && activeSportData.topBrands.length > 0
-        ? activeSportData.topBrands
-        : aggregates.topBrands);
-
+  const displayBrands = isAll ? aggregates.topBrands : activeSportData?.topBrands ?? [];
   const displayBrandCount = isAll
     ? aggregates.topBrands.length
-    : (activeSportData?.distinctBrandsCount ?? displayBrands.length);
+    : activeSportData?.distinctBrandsCount ?? displayBrands.length;
 
-  const displayEmotions = isAll
-    ? aggregates.topEmotions
-    : (activeSportData?.topEmotions && activeSportData.topEmotions.length > 0
-        ? activeSportData.topEmotions
-        : aggregates.topEmotions);
+  const displayEmotions = isAll ? aggregates.topEmotions : activeSportData?.topEmotions ?? [];
 
-  const celebrationValence = !isAll && activeSportData?.valence !== undefined
-    ? activeSportData.valence.toFixed(1)
-    : (() => {
-        const totalEmotionsCount = displayEmotions.reduce((acc, e) => acc + e.count, 0);
-        const positiveEmotions = displayEmotions.filter(
-          (e) => e.emotion.toLowerCase() !== 'neutral' && e.emotion.toLowerCase() !== 'focused'
-        );
-        const positiveCount = positiveEmotions.reduce((acc, e) => acc + e.count, 0);
-        return totalEmotionsCount > 0 ? ((positiveCount / totalEmotionsCount) * 100).toFixed(1) : '91.3';
-      })();
+  // Share of non-neutral emotions among all detected emotions
+  const celebrationValence = (() => {
+    const totalEmotionsCount = displayEmotions.reduce((acc, e) => acc + e.count, 0);
+    if (totalEmotionsCount <= 0) return 'n/a';
+    const positiveCount = displayEmotions
+      .filter((e) => e.emotion.toLowerCase() !== 'neutral' && e.emotion.toLowerCase() !== 'focused')
+      .reduce((acc, e) => acc + e.count, 0);
+    return `${((positiveCount / totalEmotionsCount) * 100).toFixed(1)}%`;
+  })();
 
   const filteredRecentImages = isAll
     ? recentImages
@@ -118,19 +153,19 @@ export default function FanmassVisionSection({
             <span className={styles.liveBadge}>
               {isRunning ? 'FANMASS AI VISION ENGINE • STREAMING' : 'FANMASS VISUAL ANALYTICS'}
             </span>
-            <span className={styles.visionSportChip}>
-              🏀 Basketball • ⚽ Football • 🤾 Handball • 🏒 Ice Hockey
-            </span>
+            {sportKeys.length > 0 && (
+              <span className={styles.visionSportChip}>
+                {sportKeys.map((sp) => `${sportIcon(sp)} ${sp}`).join(' • ')}
+              </span>
+            )}
           </div>
           <h2 className={styles.visionTitle}>
-            Computer Vision & Multi-Sport Fan Intelligence
+            Computer Vision & Fan Intelligence
           </h2>
           <p className={styles.visionSubtitle}>
-            Empirical identification of sponsor emblems, apparel brands, age demographics, and fan celebration valence extracted across 11,312 self-captured fan selfies.
+            Sponsor emblems, apparel brands, age demographics, and fan celebration valence detected in{' '}
+            {vision.totalImages > 0 ? `${vision.totalImages.toLocaleString()} fan photos` : 'the fan photos'}.
           </p>
-          <div className={styles.activeFileMeta} style={{ marginTop: '6px' }}>
-            🔒 <strong>Strict Data Isolation:</strong> These metrics reflect empirical computer vision detections and are kept distinct from manual match ticketing and registry counts.
-          </div>
         </div>
 
         {/* Live Processing Counter */}
@@ -142,7 +177,7 @@ export default function FanmassVisionSection({
             </span>
           </div>
           <div className={styles.visionCounterPercent}>
-            {vision.percent}% selfies processed
+            {vision.percent}% of photos processed
           </div>
         </div>
       </div>
@@ -151,14 +186,14 @@ export default function FanmassVisionSection({
       <div className={styles.visionTrack}>
         <div
           className={styles.visionFill}
-          style={{ width: `${Math.max(1.5, Math.min(100, vision.percent))}%` }}
+          style={{ width: `${Math.max(0, Math.min(100, vision.percent))}%` }}
         />
       </div>
 
-      {/* 1. League & Sport Drilldown Filter */}
+      {/* 1. Sport Drilldown Filter */}
       <div className={styles.sportFilterBar}>
         <span className={styles.sportFilterLabel}>
-          🏆 League Drilldown:
+          🏆 Sport Drilldown:
         </span>
         <button
           onClick={() => setSelectedSport('all')}
@@ -168,9 +203,8 @@ export default function FanmassVisionSection({
         >
           All Sports <span className={styles.sportFilterBadge}>{vision.processedCount}</span>
         </button>
-        {['Basketball', 'Football', 'Handball', 'Ice Hockey'].map((sp) => {
+        {sportKeys.map((sp) => {
           const spData = aggregates.sportsBreakdown[sp];
-          const icon = sp === 'Basketball' ? '🏀' : sp === 'Football' ? '⚽' : sp === 'Handball' ? '🤾' : '🏒';
           return (
             <button
               key={sp}
@@ -179,7 +213,7 @@ export default function FanmassVisionSection({
                 selectedSport === sp ? styles.sportFilterBtnActive : ''
               }`}
             >
-              {icon} {sp}{' '}
+              {sportIcon(sp)} {sp}{' '}
               {spData && (
                 <span className={styles.sportFilterBadge}>{spData.images}</span>
               )}
@@ -190,40 +224,31 @@ export default function FanmassVisionSection({
 
       {/* 4 Pillars Executive KPI Highlights */}
       <div className={styles.visionGrid}>
-        {/* KPI 1: Spectators Identified */}
+        {/* KPI 1: People Detected */}
         <div className={styles.visionMiniCard}>
           <div className={styles.miniCardIcon}>👥</div>
           <div className={styles.miniCardTitle}>
-            {isAll ? 'Identified Spectators' : `${selectedSport} Spectators`}
+            {isAll ? 'People Detected' : `${selectedSport} People`}
           </div>
           <div className={styles.miniCardVal}>
-            {displayPeople.toLocaleString()}
-            {isProgressing && (
-              <span className={styles.estPill}>
-                {' '}(est. {Math.round(displayPeople * multiplier).toLocaleString()})
-              </span>
-            )}
+            {displayPeople === null ? 'n/a' : displayPeople.toLocaleString()}
           </div>
           <div className={styles.miniCardSub}>
-            {displayMalePct}% Male / {displayFemalePct}% Female
+            {displayGender
+              ? `${displayGender.malePct}% Male / ${displayGender.femalePct}% Female`
+              : 'n/a'}
           </div>
           <div className={styles.agePillsGroup}>
-            <span className={styles.agePill}>
-              Adults: {displayAge.adults.toLocaleString()}
-              {isProgressing && ` (est. ${Math.round(displayAge.adults * multiplier).toLocaleString()})`}
-            </span>
-            <span className={styles.agePill}>
-              Teens: {displayAge.teens.toLocaleString()}
-              {isProgressing && ` (est. ${Math.round(displayAge.teens * multiplier).toLocaleString()})`}
-            </span>
-            <span className={styles.agePill}>
-              Children: {displayAge.children.toLocaleString()}
-              {isProgressing && ` (est. ${Math.round(displayAge.children * multiplier).toLocaleString()})`}
-            </span>
-            <span className={styles.agePill}>
-              Seniors: {displayAge.seniors.toLocaleString()}
-              {isProgressing && ` (est. ${Math.round(displayAge.seniors * multiplier).toLocaleString()})`}
-            </span>
+            {displayAge ? (
+              <>
+                <span className={styles.agePill}>Adults: {displayAge.adults.toLocaleString()}</span>
+                <span className={styles.agePill}>Teens: {displayAge.teens.toLocaleString()}</span>
+                <span className={styles.agePill}>Children: {displayAge.children.toLocaleString()}</span>
+                <span className={styles.agePill}>Seniors: {displayAge.seniors.toLocaleString()}</span>
+              </>
+            ) : (
+              <span className={styles.agePill}>Age: n/a</span>
+            )}
           </div>
         </div>
 
@@ -248,17 +273,17 @@ export default function FanmassVisionSection({
           </div>
         </div>
 
-        {/* KPI 3: Stadium Valence & Atmosphere */}
+        {/* KPI 3: Valence & Atmosphere */}
         <div className={styles.visionMiniCard}>
           <div className={styles.miniCardIcon}>😊</div>
           <div className={styles.miniCardTitle}>
             {isAll ? 'Atmosphere & Valence' : `${selectedSport} Atmosphere`}
           </div>
           <div className={styles.miniCardVal}>
-            {celebrationValence}%
+            {celebrationValence}
           </div>
           <div className={styles.miniCardSub}>
-            {isAll ? 'Positive celebration & cheering sentiment' : `Empirical celebration valence in ${selectedSport}`}
+            {isAll ? 'Share of positive emotions among detected emotions' : `Share of positive emotions in ${selectedSport}`}
           </div>
           <div className={styles.tagChipsWrap}>
             {displayEmotions.slice(0, 4).map((e) => (
@@ -269,23 +294,29 @@ export default function FanmassVisionSection({
           </div>
         </div>
 
-        {/* KPI 4: 4 Sponsored Sports Leagues */}
+        {/* KPI 4: Sports covered */}
         <div className={styles.visionMiniCard}>
           <div className={styles.miniCardIcon}>🏆</div>
           <div className={styles.miniCardTitle}>
-            {isAll ? 'Multi-Sport Cross-Section' : `Active League: ${selectedSport}`}
+            {isAll ? 'Sports Covered' : `Active Sport: ${selectedSport}`}
           </div>
           <div className={styles.miniCardVal}>
-            {isAll ? '4 Sports Leagues' : `${activeSportData?.images || 0} Photos Analyzed`}
+            {isAll
+              ? `${sportKeys.length} ${sportKeys.length === 1 ? 'Sport' : 'Sports'}`
+              : `${activeSportData ? activeSportData.images.toLocaleString() : 'n/a'} Photos Analyzed`}
           </div>
           <div className={styles.miniCardSub}>
-            {isAll ? 'Basketball, Football, Handball, Ice Hockey' : `Live empirical sample from ${selectedSport}`}
+            {isAll ? sportKeys.join(', ') || 'n/a' : `Photos analysed in ${selectedSport}`}
           </div>
           <div className={styles.tagChipsWrap}>
-            <span className={`${styles.clubChip} ${selectedSport === 'Basketball' ? styles.brandTagSponsor : ''}`}>🏀 Basketball</span>
-            <span className={`${styles.clubChip} ${selectedSport === 'Football' ? styles.brandTagSponsor : ''}`}>⚽ Football</span>
-            <span className={`${styles.clubChip} ${selectedSport === 'Handball' ? styles.brandTagSponsor : ''}`}>🤾 Handball</span>
-            <span className={`${styles.clubChip} ${selectedSport === 'Ice Hockey' ? styles.brandTagSponsor : ''}`}>🏒 Ice Hockey</span>
+            {sportKeys.map((sp) => (
+              <span
+                key={sp}
+                className={`${styles.clubChip} ${selectedSport === sp ? styles.brandTagSponsor : ''}`}
+              >
+                {sportIcon(sp)} {sp}
+              </span>
+            ))}
           </div>
         </div>
       </div>
@@ -298,7 +329,7 @@ export default function FanmassVisionSection({
             className={styles.viewFunnelBtn}
             style={{ padding: '12px 24px', fontSize: '13px', borderRadius: '9999px', cursor: 'pointer' }}
           >
-            Explore Dedicated Visual Intelligence Dashboard (Brand Logos &amp; Cross-Sport Demographics) ➔
+            Explore Dedicated Visual Intelligence Dashboard (Brand Logos &amp; Demographics) ➔
           </button>
           {onViewTerritoryMap && (
             <button
@@ -315,7 +346,7 @@ export default function FanmassVisionSection({
                 fontWeight: 600,
               }}
             >
-              🗺️ Open Interactive Hungary Territory &amp; Venues Map ➔
+              🗺️ Open Interactive Territory &amp; Venues Map ➔
             </button>
           )}
         </div>
@@ -325,61 +356,57 @@ export default function FanmassVisionSection({
           <FanmassBrandsMatrix
             brands={aggregates.topBrands}
             totalPhotosProcessed={vision.processedCount}
-            totalImages={vision.totalImages}
           />
 
           {/* 2. Cross-Sport Demographics & Age Comparison (with Side-by-Side Unified View) */}
           <FanmassSportsDemographics
             sportsBreakdown={aggregates.sportsBreakdown}
             totalPeople={aggregates.totalPeople}
-            totalPhotosProcessed={vision.processedCount}
-            totalImages={vision.totalImages}
           />
 
           {/* 3. Club Allegiance & Fan Jersey Detection Matrix */}
           <FanmassClubsMatrix
             clubs={aggregates.topClubs || []}
             totalPhotosProcessed={vision.processedCount}
-            totalImages={vision.totalImages}
           />
 
           {/* 4. Fan Sentiment & Stadium Atmosphere Index */}
           <FanmassSentimentAtmosphere
             emotions={aggregates.topEmotions}
             totalPeople={aggregates.totalPeople}
-            totalPhotosProcessed={vision.processedCount}
-            totalImages={vision.totalImages}
           />
 
-          {/* 5. Geographic Activation & Territory Distribution Map (Hungary) */}
+          {/* 5. Geographic Activation & Territory Distribution Map */}
           {matches && matches.length > 0 && (
             <div style={{ position: 'relative' }}>
-              <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '8px' }}>
-                <a
-                  href={`/interactive-report/${partnerSlug}/map`}
-                  className={styles.resetBtn}
-                  style={{
-                    display: 'inline-flex',
-                    alignItems: 'center',
-                    gap: '6px',
-                    padding: '8px 16px',
-                    borderRadius: '9999px',
-                    background: '#0f2c4a',
-                    color: '#ffffff',
-                    fontSize: '12px',
-                    fontWeight: 700,
-                    textDecoration: 'none',
-                    boxShadow: '0 4px 10px rgba(15, 44, 74, 0.2)',
-                  }}
-                >
-                  🗺️ Launch Fullscreen Dedicated Territory Analytics Page ↗
-                </a>
-              </div>
+              {reportSlug && (
+                <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '8px' }}>
+                  <a
+                    href={`/interactive-report/${reportSlug}/map`}
+                    className={styles.resetBtn}
+                    style={{
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      gap: '6px',
+                      padding: '8px 16px',
+                      borderRadius: '9999px',
+                      background: '#0f2c4a',
+                      color: '#ffffff',
+                      fontSize: '12px',
+                      fontWeight: 700,
+                      textDecoration: 'none',
+                      boxShadow: '0 4px 10px rgba(15, 44, 74, 0.2)',
+                    }}
+                  >
+                    🗺️ Launch Fullscreen Dedicated Territory Analytics Page ↗
+                  </a>
+                </div>
+              )}
               <TerritoryMapCanvas
                 matches={matches || []}
                 vision={vision}
                 partnerSlug={partnerSlug}
-                partnerName="Szerencsejáték Zrt."
+                partnerName={partnerName}
                 embedded={true}
               />
             </div>
@@ -394,7 +421,7 @@ export default function FanmassVisionSection({
                     📸 Live Analyzed Stream ({isAll ? 'Latest Detections' : `${selectedSport} Detections`})
                   </h4>
                   <p className={styles.cardSubtitle}>
-                    Sample extracted selfie observations showing detected spectators, recognized brands, emotions, and arena scenes.
+                    Sample extracted selfie observations showing detected people, recognized brands, emotions, and scenes.
                   </p>
                 </div>
                 {isRunning && (
@@ -416,9 +443,7 @@ export default function FanmassVisionSection({
                         👤 {img.peopleCount} {img.peopleCount === 1 ? 'person' : 'people'}
                       </span>
                     </div>
-                    <div className={styles.recentItemScene}>
-                      {img.scene || 'Fan selfie captured at live sporting match.'}
-                    </div>
+                    {img.scene && <div className={styles.recentItemScene}>{img.scene}</div>}
                     <div className={styles.recentItemMeta}>
                       {img.brands.length > 0 && (
                         <div className={styles.recentTagRow}>

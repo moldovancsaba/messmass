@@ -18,6 +18,7 @@ import {
   canonicalizeClub,
   isGenericVisionDescription,
 } from '@/lib/brandEntityClustering';
+import { getReportSlug } from './reportSlug';
 import styles from './interactive-report.module.css';
 
 interface OverviewTabProps {
@@ -131,17 +132,43 @@ export default function OverviewTab({
       ? vision.aggregates.sportsBreakdown[selectedSport]
       : null;
 
-  const totalAudience = summary.totalRegistered
-    ? Math.round(summary.totalRegistered * 2.6)
-    : 187420;
+  // Sports present in the vision data drive the switcher; none means no switcher.
+  const sportOptions = useMemo(() => {
+    const breakdown = vision?.aggregates?.sportsBreakdown;
+    if (!breakdown) return [];
+    return Object.entries(breakdown)
+      .filter(([, b]) => b.images > 0 || b.people > 0)
+      .sort((a, b) => b[1].images - a[1].images)
+      .map(([sport]) => sport);
+  }, [vision?.aggregates?.sportsBreakdown]);
 
-  const analyzedImages = activeSportBreakdown
-    ? activeSportBreakdown.images
-    : vision?.processedCount || summary.totalPhotos;
+  // Vision-derived figures are null when this scope has no vision data (n/a, never an estimate).
+  const analyzedImages: number | null = vision
+    ? activeSportBreakdown
+      ? activeSportBreakdown.images
+      : vision.processedCount
+    : null;
 
-  const fanAppearances = activeSportBreakdown
-    ? activeSportBreakdown.people
-    : vision?.aggregates?.totalPeople || 24180;
+  const fanAppearances: number | null = vision
+    ? activeSportBreakdown
+      ? activeSportBreakdown.people
+      : vision.aggregates?.totalPeople ?? null
+    : null;
+
+  const registeredFans = summary.totalRegistered > 0 ? summary.totalRegistered : null;
+
+  const reportSlug = getReportSlug(data);
+  const scopeName = data.scope?.name || data.partner.name || '';
+
+  // Distinct venue names of this scope's events, in order of appearance.
+  const venues = useMemo(() => {
+    const seen = new Set<string>();
+    for (const match of data.matches || []) {
+      const venue = (match.venue || '').trim();
+      if (venue) seen.add(venue);
+    }
+    return Array.from(seen);
+  }, [data.matches]);
 
   // Strict separation: Filter commercial brands vs sports clubs
   const filteredBrands = useMemo(() => {
@@ -199,101 +226,115 @@ export default function OverviewTab({
     });
   }, [vision?.aggregates?.topClubs, isAll, selectedSport]);
 
-  // Demographics slice
+  // Demographics slice: measured counts only; null when nothing was measured.
   const currentGenders = useMemo(() => {
-    if (activeSportBreakdown?.genders) {
-      return {
-        male: activeSportBreakdown.genders.male,
-        female: activeSportBreakdown.genders.female,
-        malePct: activeSportBreakdown.genders.malePct ?? 61,
-        femalePct: activeSportBreakdown.genders.femalePct ?? 39,
-      };
-    }
-    if (vision?.aggregates?.genders) {
-      return vision.aggregates.genders;
-    }
+    const source = activeSportBreakdown?.genders ?? vision?.aggregates?.genders ?? null;
+    if (!source) return null;
+    const total = source.male + source.female;
+    if (total <= 0) return null;
     return {
-      male: Math.round(fanAppearances * 0.61),
-      female: Math.round(fanAppearances * 0.39),
-      malePct: 61,
-      femalePct: 39,
+      male: source.male,
+      female: source.female,
+      malePct: source.malePct ?? Math.round((source.male / total) * 1000) / 10,
+      femalePct: source.femalePct ?? Math.round((source.female / total) * 1000) / 10,
     };
-  }, [activeSportBreakdown, vision?.aggregates?.genders, fanAppearances]);
+  }, [activeSportBreakdown, vision?.aggregates?.genders]);
 
-  const currentAgeGroups = useMemo(() => {
-    if (activeSportBreakdown?.ageGroups) {
-      return activeSportBreakdown.ageGroups;
-    }
-    if (vision?.aggregates?.ageGroups) {
-      return vision.aggregates.ageGroups;
-    }
-    return {
-      children: Math.round(fanAppearances * 0.08),
-      teens: Math.round(fanAppearances * 0.23),
-      adults: Math.round(fanAppearances * 0.52),
-      seniors: Math.round(fanAppearances * 0.17),
-    };
-  }, [activeSportBreakdown, vision?.aggregates?.ageGroups, fanAppearances]);
+  const currentAgeGroups = useMemo(
+    () => activeSportBreakdown?.ageGroups ?? vision?.aggregates?.ageGroups ?? null,
+    [activeSportBreakdown, vision?.aggregates?.ageGroups]
+  );
 
-  // Dynamic touchpoint proportions
+  // Touchpoint proportions: only computable when at least one touchpoint was recorded.
   const totalTouchpoints =
     summary.touchpoints.social + summary.touchpoints.url + summary.touchpoints.qr;
-  const socialPct =
-    totalTouchpoints > 0
-      ? Math.round((summary.touchpoints.social / totalTouchpoints) * 1000) / 10
-      : 36.7;
-  const urlPct =
-    totalTouchpoints > 0
-      ? Math.round((summary.touchpoints.url / totalTouchpoints) * 1000) / 10
-      : 33.1;
-  const qrPct =
-    totalTouchpoints > 0
-      ? Math.round((summary.touchpoints.qr / totalTouchpoints) * 1000) / 10
-      : 30.2;
+  const toPct = (count: number) => Math.round((count / totalTouchpoints) * 1000) / 10;
+  const socialPct = totalTouchpoints > 0 ? toPct(summary.touchpoints.social) : 0;
+  const urlPct = totalTouchpoints > 0 ? toPct(summary.touchpoints.url) : 0;
+  const qrPct = totalTouchpoints > 0 ? toPct(summary.touchpoints.qr) : 0;
+
+  const visibleSports = sports.filter((s) => s.matchesCount > 0 || s.photos > 0);
+
+  // Takeaways are sentences built from the stored figures; each one only appears when its data exists.
+  const takeaways: Array<{ title: string; text: string }> = [];
+  if (summary.optInRate !== null) {
+    takeaways.push({
+      title: 'Opt-In Conversion',
+      text: `${summary.optInRate}% of registered fans opted in to marketing (${summary.totalOptIns.toLocaleString()} of ${summary.totalRegistered.toLocaleString()}).`,
+    });
+  }
+  if (summary.totalPhotos > 0 && summary.hostessPhotos > 0 && summary.selfies > 0) {
+    takeaways.push({
+      title: 'Photo Sources',
+      text: `Hostesses took ${summary.hostessShare}% of the ${summary.totalPhotos.toLocaleString()} photos; fan selfies accounted for ${summary.selfieShare}%.`,
+    });
+  }
+  const topEvents = [...(data.matches || [])]
+    .filter((m) => m.submitted > 0)
+    .sort((a, b) => b.submitted - a.submitted)
+    .slice(0, 3);
+  if (topEvents.length > 0) {
+    takeaways.push({
+      title: 'Highest Photo Volume',
+      text: topEvents.map((m) => `${m.cleanName} (${m.submitted.toLocaleString()} photos)`).join(', ') + '.',
+    });
+  }
+  if (summary.vettingApprovalRate !== null) {
+    takeaways.push({
+      title: 'Photo Vetting',
+      text: `${summary.vettingApprovalRate}% of submitted photos were approved in photo vetting.`,
+    });
+  }
 
   return (
     <div className={styles.funnelList}>
       {/* =========================================================================
-          HIGH-IMPACT EXECUTIVE DASHBOARD SECTION
+          EXECUTIVE DASHBOARD SECTION
           Features:
-          1. 4-Stat Hero KPI Band with League Scope Switcher
-          2. Dual Olympic-Style Podiums (#1 Gold, #2 Silver, #3 Bronze) for Brands & Clubs
-          3. Executive Demographics & Merchandise Quadrant + Geographic Map Launcher
-          4. Interactive Connected Selfies Modal Drill-Down
+          1. Hero KPI band with sport switcher (only cards with stored data)
+          2. Dual podiums (#1 Gold, #2 Silver, #3 Bronze) for brands and clubs (vision data only)
+          3. Demographics quadrant + geographic map launcher
+          4. Interactive connected selfies modal drill-down
           ========================================================================= */}
       <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
         {/* 1. Header & Hero KPI Band */}
         <ExecutiveHeroKpis
-          title={`${data.partner.name || 'Szerencsejáték Zrt.'} & Tippmix`}
-          subtitle="Executive Marketing Value & Multi-Sport Computer Vision Intelligence"
+          title={scopeName}
+          subtitle={data.scope?.subtitle}
           selectedSport={selectedSport}
           onSelectSport={setSelectedSport}
-          totalAudience={totalAudience}
+          sportOptions={sportOptions}
+          registeredFans={registeredFans}
           analyzedImages={analyzedImages}
           fanAppearances={fanAppearances}
-          partnerScope="SZRT 2024-2026"
+          scopeLabel={scopeName}
+          eventCount={summary.totalMatches > 0 ? summary.totalMatches : null}
           isRunning={vision?.status === 'running'}
+          lastUpdated={vision?.lastUpdated ?? null}
         />
 
-        {/* 2. Dual Podiums: Commercial Brands vs Clubs & Competitions */}
-        <ExecutivePodiumGrid
-          brands={filteredBrands}
-          clubs={filteredClubs}
-          totalPhotosProcessed={analyzedImages}
-          onSelectClub={(club) => setSelectedClubForModal(club)}
-          onSelectBrand={(brand) => setSelectedBrandForModal(brand)}
-          onViewAllBrands={() => setIsAllBrandsOpen(true)}
-          onViewAllClubs={() => setIsAllClubsOpen(true)}
-        />
+        {/* 2. Dual Podiums: Commercial Brands vs Clubs & Competitions (vision scopes only) */}
+        {vision && (
+          <ExecutivePodiumGrid
+            brands={filteredBrands}
+            clubs={filteredClubs}
+            totalPhotosProcessed={analyzedImages ?? 0}
+            onSelectClub={(club) => setSelectedClubForModal(club)}
+            onSelectBrand={(brand) => setSelectedBrandForModal(brand)}
+            onViewAllBrands={() => setIsAllBrandsOpen(true)}
+            onViewAllClubs={() => setIsAllClubsOpen(true)}
+          />
+        )}
 
-        {/* 3. Executive Demographics, Valence, Merchandise & Territory Card */}
+        {/* 3. Demographics, expressions, merchandise & territory card: each part hides without data */}
         <ExecutiveDemographicsQuadrant
           genders={currentGenders}
           ageGroups={currentAgeGroups}
           totalPeople={fanAppearances}
           topEmotions={vision?.aggregates?.topEmotions || []}
           merchandise={vision?.aggregates?.merchandise}
-          partnerSlug={data.partner.viewSlug || 'szrt'}
+          venues={venues}
+          reportSlug={reportSlug}
           onViewTerritoryMap={onViewTerritoryMap}
         />
       </div>
@@ -307,8 +348,7 @@ export default function OverviewTab({
       {/* Brand Detail Modal (Launched when any brand is clicked) */}
       <BrandDetailModal
         brand={selectedBrandForModal}
-        totalPhotosProcessed={analyzedImages}
-        totalAudience={totalAudience}
+        totalPhotosProcessed={analyzedImages ?? 0}
         recentImages={vision?.recentImages || []}
         onClose={() => setSelectedBrandForModal(null)}
       />
@@ -317,7 +357,7 @@ export default function OverviewTab({
       <AllBrandsModal
         isOpen={isAllBrandsOpen}
         brands={filteredBrands}
-        totalPhotosProcessed={analyzedImages}
+        totalPhotosProcessed={analyzedImages ?? 0}
         onSelectBrand={(b) => {
           setSelectedBrandForModal(b);
           setIsAllBrandsOpen(false);
@@ -329,7 +369,7 @@ export default function OverviewTab({
       <AllClubsModal
         isOpen={isAllClubsOpen}
         clubs={filteredClubs}
-        totalPhotosProcessed={analyzedImages}
+        totalPhotosProcessed={analyzedImages ?? 0}
         onSelectClub={(c) => {
           setSelectedClubForModal(c);
           setIsAllClubsOpen(false);
@@ -346,7 +386,7 @@ export default function OverviewTab({
             </span>{' '}
             <strong className={styles.filterValue}>{activePeriod.name}</strong>
             <div className={styles.cardSubtitle} style={{ marginTop: '4px' }}>
-              📸 {activePeriod.allPhotos.toLocaleString()} Total Photos ({activePeriod.hostessPhotos.toLocaleString()} Hostess • {activePeriod.selfies.toLocaleString()} Selfies) • 👥 {activePeriod.registered.toLocaleString()} Registered ({activePeriod.optInRate}% Opt-in)
+              📸 {activePeriod.allPhotos.toLocaleString()} Total Photos ({activePeriod.hostessPhotos.toLocaleString()} Hostess • {activePeriod.selfies.toLocaleString()} Selfies) • 👥 {activePeriod.registered.toLocaleString()} Registered{activePeriod.registered > 0 ? ` (${activePeriod.optInRate}% Opt-in)` : ''}
             </div>
           </div>
           <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
@@ -378,132 +418,133 @@ export default function OverviewTab({
         onSelectPeriod={onSelectPeriod}
       />
 
-      {/* Sports Breakdown Grid */}
-      <div>
-        <div className={styles.cardHeader}>
-          <h3 className={styles.cardTitle}>
-            🏆 Marketing Performance & Audience Reach by Sport
-          </h3>
-          <button
-            onClick={onViewBubble}
-            className={styles.actionLinkBtn}
-          >
-            Explore in Bubble View →
-          </button>
-        </div>
-
-        <div className={styles.sportsGrid}>
-          {sports.map((s) => (
-            <div key={s.sport} className={styles.sportCard}>
-              <div
-                className={styles.sportTopBar}
-                style={{ background: SPORT_COLORS[s.sport] || '#64748b' }}
-              />
-              <div className={styles.sportHeader}>
-                <span className={styles.sportIcon}>{SPORT_ICONS[s.sport] || '🏅'}</span>
-                <span className={styles.matchesBadge}>
-                  {s.matchesCount} Matches
-                </span>
-              </div>
-              <h4 className={styles.sportName}>
-                {s.sport}
-              </h4>
-              <div className={styles.sportPhotos}>
-                {s.photos.toLocaleString()} <span className={styles.sportPhotosUnit}>photos</span>
-              </div>
-              <div className={styles.sportStats}>
-                <strong>{s.approved.toLocaleString()}</strong> approved • <strong>{s.hostessRatio}%</strong> hostess assist
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
-
-      {/* Discovery Touchpoints & Executive Takeaways */}
-      <div className={styles.twoColGrid}>
-        {/* Touchpoint Acquisition */}
-        <div className={styles.reportCard}>
-          <h3 className={styles.cardTitle}>
-            📱 Fan Acquisition Touchpoints
-          </h3>
-          <div className={styles.generationList}>
-            <div>
-              <div className={styles.generationHeader}>
-                <span>Social Links (Facebook, Instagram, TikTok)</span>
-                <strong>
-                  {summary.touchpoints.social.toLocaleString()} ({socialPct}%)
-                </strong>
-              </div>
-              <div className={styles.genBarTrack}>
-                <div
-                  className={styles.maleBar}
-                  style={{ width: `${socialPct}%`, height: '100%' }}
-                />
-              </div>
-            </div>
-
-            <div>
-              <div className={styles.generationHeader}>
-                <span>Web URL & Match Links</span>
-                <strong>
-                  {summary.touchpoints.url.toLocaleString()} ({urlPct}%)
-                </strong>
-              </div>
-              <div className={styles.genBarTrack}>
-                <div
-                  className={styles.genBarFillHighlight}
-                  style={{ width: `${urlPct}%`, height: '100%' }}
-                />
-              </div>
-            </div>
-
-            <div>
-              <div className={styles.generationHeader}>
-                <span>In-Stadium QR Codes (Banners & Jumbotron)</span>
-                <strong>
-                  {summary.touchpoints.qr.toLocaleString()} ({qrPct}%)
-                </strong>
-              </div>
-              <div className={styles.genBarTrack}>
-                <div
-                  className={styles.genBarFill}
-                  style={{ width: `${qrPct}%`, height: '100%' }}
-                />
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Executive Takeaways */}
-        <div className={styles.reportCard}>
-          <h3 className={styles.cardTitle}>
-            🎯 Key Strategic Takeaways
-          </h3>
-          <ul className={styles.cardSubtitle}>
-            <li>
-              <strong>Exceptional Opt-In Conversion:</strong> {summary.optInRate}% of all participating stadium fans opted in to Szerencsejáték Zrt. & Tippmix marketing campaigns.
-            </li>
-            <li>
-              <strong>Dual Engagement Model:</strong> Hostesses assisted in taking 64% of photos, driving higher conversion among older demographics, while direct fan selfies accounted for 36%.
-            </li>
-            <li>
-              <strong>Ice Hockey & Football Leadership:</strong> Hydro Fehérvár AV19, FTC Telekom, and Újpest FC matches yielded highest engagement density.
-            </li>
-            <li>
-              <strong>Flawless Brand Safety:</strong> Over 97.6% of generated fan photos passed compliance and moderation with 0 brand or KYC violations.
-            </li>
-          </ul>
-
-          <div className={styles.tableScroll}>
+      {/* Sports Breakdown Grid: only sports with recorded activity */}
+      {visibleSports.length > 0 && (
+        <div>
+          <div className={styles.cardHeader}>
+            <h3 className={styles.cardTitle}>
+              🏆 Photo Activity by Sport
+            </h3>
             <button
-              onClick={onViewFunnel}
+              onClick={onViewBubble}
               className={styles.actionLinkBtn}
             >
-              Analyze Conversion Funnel →
+              Explore in Bubble View →
             </button>
           </div>
+
+          <div className={styles.sportsGrid}>
+            {visibleSports.map((s) => (
+              <div key={s.sport} className={styles.sportCard}>
+                <div
+                  className={styles.sportTopBar}
+                  style={{ background: SPORT_COLORS[s.sport] || '#64748b' }}
+                />
+                <div className={styles.sportHeader}>
+                  <span className={styles.sportIcon}>{SPORT_ICONS[s.sport] || '🏅'}</span>
+                  <span className={styles.matchesBadge}>
+                    {s.matchesCount} {s.matchesCount === 1 ? 'Match' : 'Matches'}
+                  </span>
+                </div>
+                <h4 className={styles.sportName}>
+                  {s.sport}
+                </h4>
+                <div className={styles.sportPhotos}>
+                  {s.photos.toLocaleString()} <span className={styles.sportPhotosUnit}>photos</span>
+                </div>
+                <div className={styles.sportStats}>
+                  <strong>{s.approved.toLocaleString()}</strong> approved • <strong>{s.hostessRatio}%</strong> hostess assist
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
-      </div>
+      )}
+
+      {/* Discovery Touchpoints & Takeaways: each card only renders with stored data */}
+      {(totalTouchpoints > 0 || takeaways.length > 0) && (
+        <div className={styles.twoColGrid}>
+          {/* Touchpoint Acquisition */}
+          {totalTouchpoints > 0 && (
+            <div className={styles.reportCard}>
+              <h3 className={styles.cardTitle}>
+                📱 Fan Acquisition Touchpoints
+              </h3>
+              <div className={styles.generationList}>
+                <div>
+                  <div className={styles.generationHeader}>
+                    <span>Social Links</span>
+                    <strong>
+                      {summary.touchpoints.social.toLocaleString()} ({socialPct}%)
+                    </strong>
+                  </div>
+                  <div className={styles.genBarTrack}>
+                    <div
+                      className={styles.maleBar}
+                      style={{ width: `${socialPct}%`, height: '100%' }}
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <div className={styles.generationHeader}>
+                    <span>Web URL & Match Links</span>
+                    <strong>
+                      {summary.touchpoints.url.toLocaleString()} ({urlPct}%)
+                    </strong>
+                  </div>
+                  <div className={styles.genBarTrack}>
+                    <div
+                      className={styles.genBarFillHighlight}
+                      style={{ width: `${urlPct}%`, height: '100%' }}
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <div className={styles.generationHeader}>
+                    <span>QR Codes</span>
+                    <strong>
+                      {summary.touchpoints.qr.toLocaleString()} ({qrPct}%)
+                    </strong>
+                  </div>
+                  <div className={styles.genBarTrack}>
+                    <div
+                      className={styles.genBarFill}
+                      style={{ width: `${qrPct}%`, height: '100%' }}
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Takeaways computed from the report data */}
+          {takeaways.length > 0 && (
+            <div className={styles.reportCard}>
+              <h3 className={styles.cardTitle}>
+                🎯 Key Takeaways
+              </h3>
+              <ul className={styles.cardSubtitle}>
+                {takeaways.map((t) => (
+                  <li key={t.title}>
+                    <strong>{t.title}:</strong> {t.text}
+                  </li>
+                ))}
+              </ul>
+
+              <div className={styles.tableScroll}>
+                <button
+                  onClick={onViewFunnel}
+                  className={styles.actionLinkBtn}
+                >
+                  Analyze Conversion Funnel →
+                </button>
+              </div>
+            </div>
+          )}
+        </div>
+      )}
     </div>
   );
 }
