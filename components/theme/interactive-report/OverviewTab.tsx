@@ -386,7 +386,7 @@ export default function OverviewTab({
             </span>{' '}
             <strong className={styles.filterValue}>{activePeriod.name}</strong>
             <div className={styles.cardSubtitle} style={{ marginTop: '4px' }}>
-              📸 {activePeriod.allPhotos.toLocaleString()} Total Photos ({activePeriod.hostessPhotos.toLocaleString()} Hostess • {activePeriod.selfies.toLocaleString()} Selfies) • 👥 {activePeriod.registered.toLocaleString()} Registered{activePeriod.registered > 0 ? ` (${activePeriod.optInRate}% Opt-in)` : ''}
+              📸 {activePeriod.allPhotos.toLocaleString()} Total Photos ({activePeriod.hostessPhotos.toLocaleString()} Hostess • {activePeriod.selfies.toLocaleString()} Selfies) • 👥 {activePeriod.registered.toLocaleString()} Registered{activePeriod.optInRate !== null ? ` (${activePeriod.optInRate}% Opt-in)` : ''}
             </div>
           </div>
           <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>

@@ -343,7 +343,9 @@ export default function D3TimelineScrubber({
               <span>Marketing Opt-ins:</span>
               <strong>
                 {tooltip.period.registered > 0
-                  ? `${tooltip.period.optIns.toLocaleString()} (${tooltip.period.optInRate}%)`
+                  ? tooltip.period.optInRate !== null
+                    ? `${tooltip.period.optIns.toLocaleString()} (${tooltip.period.optInRate}%)`
+                    : tooltip.period.optIns.toLocaleString()
                   : 'n/a'}
               </strong>
             </div>

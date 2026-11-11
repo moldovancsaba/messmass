@@ -2,6 +2,7 @@ import clientPromise from '@/lib/mongodb';
 import { ObjectId } from 'mongodb';
 import config from '@/lib/config';
 import { findPartnerByIdentifier } from '@/lib/partnerIdentifier';
+import { consistentRate } from '@/lib/consistentRate';
 import {
   InteractiveReportData,
   MatchItem,
@@ -325,7 +326,9 @@ export async function getScopedInteractiveReportData(
       const partnerName = colIdx.partner !== -1 && cols[colIdx.partner] ? cols[colIdx.partner] : '';
       const venue = colIdx.venue !== -1 && cols[colIdx.venue] ? cols[colIdx.venue] : '';
       const submitted = (colIdx.submitted !== -1 ? parseCellCount(cols[colIdx.submitted]) : null) ?? 0;
-      const approvedCell = colIdx.approved !== -1 ? parseCellCount(cols[colIdx.approved]) : null;
+      const storedApproved = colIdx.approved !== -1 ? parseCellCount(cols[colIdx.approved]) : null;
+      // An approved count above the submitted count cannot be a real approval: it is dropped (0, no vetting data)
+      const approvedCell = storedApproved !== null && storedApproved <= submitted ? storedApproved : null;
       const approved = approvedCell ?? 0;
       const rejected = (colIdx.rejected !== -1 ? parseCellCount(cols[colIdx.rejected]) : null) ?? 0;
       const hostess = (colIdx.hostess !== -1 ? parseCellCount(cols[colIdx.hostess]) : null) ?? 0;
@@ -392,7 +395,9 @@ export async function getScopedInteractiveReportData(
         '';
       const hostess = toCount(s.hostessImages) || toCount(s.szerencsejatekHostessAllphotos);
       // approved is only known when the event stored a count; it never defaults to the submitted count
-      const approved = toCount(s.approvedImages);
+      // An approved count above the submitted count cannot be a real approval: it is dropped (0, no vetting data)
+      const storedApproved = toCount(s.approvedImages);
+      const approved = storedApproved <= submitted ? storedApproved : 0;
       const hasVettingData = approved > 0;
       const rejected = toCount(s.rejectedImages) || (hasVettingData ? Math.max(0, submitted - approved) : 0);
 
@@ -464,9 +469,10 @@ export async function getScopedInteractiveReportData(
       const selfies = Math.max(0, allPhotos - hostessPhotos);
       const registered = s.szerencsejatekAllRegistered || 0;
       const optIns = s.szerencsejatekMarketingOptInNumber || 0;
-      const optInRate =
-        s.szerencsejatekMarketingOptInPercentage ||
-        (registered > 0 ? Math.round((optIns / registered) * 100) : 0);
+      // Derived from the same counts that are shown next to it; the stored percentage field is
+      // not trusted because it can disagree with the stored counts. null = counts conflict.
+      const optInShare = consistentRate(optIns, registered);
+      const optInRate = optInShare !== null ? Math.round(optInShare) : null;
       const cta1 = s.szerencsejatekMarketingCTA01 || 0;
       const cta2 = s.szerencsejatekMarketingCTA02 || 0;
 
@@ -523,15 +529,12 @@ export async function getScopedInteractiveReportData(
   const totalCtaClicks = computedTotalCta1 + computedTotalCta2;
 
   // Approved / submitted in photo vetting; null when no match recorded an approved count
-  const vettingApprovalRate =
-    vettedSubmitted > 0 ? Math.min(100, (vettedApproved / vettedSubmitted) * 100) : null;
+  // (matches whose stored approved count exceeds the submitted count are left out above, so no cap is needed)
+  const vettingApprovalRate = consistentRate(vettedApproved, vettedSubmitted);
 
-  // Opt-ins / registered; null when nobody registered
-  const weightedOptInRate =
-    computedTotalRegistered > 0
-      ? monthlyPeriods.reduce((acc, cur) => acc + cur.optInRate * cur.registered, 0) /
-        computedTotalRegistered
-      : null;
+  // Opt-ins / registered, the same two counts that are printed next to it;
+  // null when nobody registered or the stored opt-ins exceed the registrations
+  const weightedOptInRate = consistentRate(totalOptIns, totalRegistered);
 
   // 7. Sports Breakdown
   // Only sports that occur in the scope are listed
@@ -590,7 +593,9 @@ export async function getScopedInteractiveReportData(
       detail:
         weightedOptInRate !== null
           ? `${weightedOptInRate.toFixed(1)}% Opt-In to Marketing Campaigns`
-          : 'n/a (no registrations)',
+          : totalRegistered > 0
+            ? 'n/a (stored opt-ins exceed stored registrations)'
+            : 'n/a (no registrations)',
     },
     {
       step: 'CTA Click Conversions',

@@ -34,7 +34,7 @@ export interface TimelinePeriod {
   selfies: number;
   registered: number;
   optIns: number;
-  optInRate: number;
+  optInRate: number | null;
   qr: number;
   url: number;
   social: number;

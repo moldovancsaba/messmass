@@ -138,11 +138,16 @@ export default function SzrtHeader({ data, activeTab, onTabChange }: SzrtHeaderP
             <span className={styles.kpiValueHighlight}>
               {summary.optInRate !== null ? `${summary.optInRate}%` : 'n/a'}
             </span>
-            {summary.optInRate !== null && (
+            {summary.optInRate !== null ? (
               <span className={styles.kpiSubtext}>
                 {summary.totalOptIns.toLocaleString()} opt-ins
               </span>
-            )}
+            ) : summary.totalOptIns > summary.totalRegistered && summary.totalRegistered > 0 ? (
+              <span className={styles.kpiSubtext}>
+                Stored opt-ins ({summary.totalOptIns.toLocaleString()}) exceed registrations (
+                {summary.totalRegistered.toLocaleString()})
+              </span>
+            ) : null}
           </div>
 
           <div className={styles.kpiCard}>
