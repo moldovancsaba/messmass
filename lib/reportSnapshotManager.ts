@@ -17,6 +17,13 @@ export interface SnapshotResult {
   timestamp: string;
 }
 
+/**
+ * Snapshots written before this version hold report values that were filled in from
+ * hardcoded fallbacks (photos, registrations, brand-safety rates, demographics, vision data
+ * of another scope). They must never be served again, so reads only accept this version.
+ */
+export const SNAPSHOT_SCHEMA_VERSION = 2;
+
 // In-flight request stampede deduplication lock (INV-003)
 const inFlightSnapshots = new Map<string, Promise<SnapshotResult>>();
 
@@ -45,8 +52,14 @@ export async function getCachedReportSnapshot(
     scopeType: query.scopeType,
     $or: [{ scopeIdentifier: cleanId }, { identifier: cleanId }],
     sportFilter: sport,
+    schemaVersion: SNAPSHOT_SCHEMA_VERSION,
     expiresAt: { $gt: new Date() },
   };
+
+  // A lookup without an organization may only ever read the 'global' partition, never another tenant's snapshot.
+  if (!query.organizationId) {
+    snapshotQuery.organizationId = "global";
+  }
 
   if (query.organizationId) {
     if (ObjectId.isValid(query.organizationId)) {
@@ -91,9 +104,7 @@ export async function saveReportSnapshot(
     sportFilter: sport,
   };
 
-  if (query.organizationId) {
-    filter.organizationId = query.organizationId;
-  }
+  filter.organizationId = query.organizationId || "global";
 
   const snapDoc: any = {
     organizationId: query.organizationId || "global",
@@ -102,6 +113,7 @@ export async function saveReportSnapshot(
     identifier: cleanId,
     sportFilter: sport,
     snapshotVersion: 1,
+    schemaVersion: SNAPSHOT_SCHEMA_VERSION,
     version: 1,
     metrics: data,
     data: data,

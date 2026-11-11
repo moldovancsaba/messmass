@@ -166,7 +166,7 @@ export default function ConnectedSelfiesModal({ club, onClose }: ConnectedSelfie
                 )}
               </div>
               <div style={{ fontSize: '12px', color: '#64748b', marginTop: '2px' }}>
-                {club.homeVenue ? `🏟️ ${club.homeVenue}` : '🏟️ Arena / Stadium'} •{' '}
+                {club.homeVenue && <>🏟️ {club.homeVenue} • </>}
                 <strong style={{ color: '#0f2c4a' }}>{club.count}</strong> appearances detected
               </div>
             </div>
@@ -223,7 +223,7 @@ export default function ConnectedSelfiesModal({ club, onClose }: ConnectedSelfie
           {selfiesLoading ? (
             <div style={{ padding: '40px', textAlign: 'center', color: '#64748b', fontSize: '13px' }}>
               <div style={{ fontSize: '28px', marginBottom: '8px' }}>⏳</div>
-              Querying verified selfies and supporter groups for <strong>{club.club}</strong>...
+              Loading selfies and supporter groups for <strong>{club.club}</strong>...
             </div>
           ) : selfiesData ? (
             <>
@@ -247,7 +247,7 @@ export default function ConnectedSelfiesModal({ club, onClose }: ConnectedSelfie
                   <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                     <span style={{ fontSize: '16px' }}>✅</span>
                     <span>
-                      Connected to official Partner DB: <strong>{selfiesData.partnerInfo.name}</strong>
+                      Linked partner record: <strong>{selfiesData.partnerInfo.name}</strong>
                       {selfiesData.partnerInfo.city && ` • ${selfiesData.partnerInfo.city}`}
                       {selfiesData.partnerInfo.venueCapacity && ` • Capacity: ${selfiesData.partnerInfo.venueCapacity.toLocaleString()}`}
                     </span>
@@ -259,7 +259,7 @@ export default function ConnectedSelfiesModal({ club, onClose }: ConnectedSelfie
                       rel="noreferrer"
                       style={{ color: '#15803d', fontWeight: 700, textDecoration: 'underline' }}
                     >
-                      Official Website ↗
+                      Website ↗
                     </a>
                   )}
                 </div>
@@ -276,21 +276,24 @@ export default function ConnectedSelfiesModal({ club, onClose }: ConnectedSelfie
                 <div style={{ background: '#f8fafc', padding: '10px 14px', borderRadius: '8px', border: '1px solid #e2e8f0' }}>
                   <div style={{ fontSize: '11px', color: '#64748b' }}>Connected Selfies</div>
                   <div style={{ fontSize: '18px', fontWeight: 700, color: '#0f2c4a', marginTop: '2px' }}>
-                    {selfiesData.totalSelfies || club.count}
+                    {selfiesData.totalSelfies ?? club.count}
                   </div>
                 </div>
 
                 <div style={{ background: '#f8fafc', padding: '10px 14px', borderRadius: '8px', border: '1px solid #e2e8f0' }}>
                   <div style={{ fontSize: '11px', color: '#64748b' }}>Gender Split</div>
                   <div style={{ fontSize: '14px', fontWeight: 600, color: '#0f2c4a', marginTop: '4px' }}>
-                    ♂ {selfiesData.demographics?.malePct || 61}% • ♀ {selfiesData.demographics?.femalePct || 39}%
+                    {typeof selfiesData.demographics?.malePct === 'number' &&
+                    typeof selfiesData.demographics?.femalePct === 'number'
+                      ? `♂ ${selfiesData.demographics.malePct}% • ♀ ${selfiesData.demographics.femalePct}%`
+                      : 'n/a'}
                   </div>
                 </div>
 
                 <div style={{ background: '#f8fafc', padding: '10px 14px', borderRadius: '8px', border: '1px solid #e2e8f0' }}>
                   <div style={{ fontSize: '11px', color: '#64748b' }}>Home Arena</div>
                   <div style={{ fontSize: '12px', fontWeight: 600, color: '#0f2c4a', marginTop: '4px' }}>
-                    {club.homeVenue || (club.club.toLowerCase().includes('sopron') ? 'Novomatic Aréna Sopron' : 'Regional Stadium')}
+                    {club.homeVenue || 'n/a'}
                   </div>
                 </div>
               </div>
@@ -340,7 +343,7 @@ export default function ConnectedSelfiesModal({ club, onClose }: ConnectedSelfie
                       cursor: 'pointer',
                     }}
                   >
-                    All Allegiance ({selfiesData.totalSelfies || club.count})
+                    All Allegiance ({selfiesData.totalSelfies ?? club.count})
                   </button>
                   {selfiesData.fanGroups.map((fg: any) => (
                     <button
@@ -385,13 +388,15 @@ export default function ConnectedSelfiesModal({ club, onClose }: ConnectedSelfie
                             #{idx + 1} {s.sport}
                           </span>
                           <span style={{ color: '#64748b', fontSize: '10px' }}>
-                            👤 {s.peopleCount} {s.peopleCount === 1 ? 'spectator' : 'spectators'}
+                            👤 {s.peopleCount} {s.peopleCount === 1 ? 'person' : 'people'}
                           </span>
                         </div>
 
-                        <div style={{ color: '#1e293b', lineHeight: 1.4, fontSize: '11px' }}>
-                          &ldquo;{s.scene || 'Fan selfie captured at live sporting match.'}&rdquo;
-                        </div>
+                        {s.scene && (
+                          <div style={{ color: '#1e293b', lineHeight: 1.4, fontSize: '11px' }}>
+                            &ldquo;{s.scene}&rdquo;
+                          </div>
+                        )}
 
                         <div style={{ display: 'flex', alignItems: 'center', gap: '4px', flexWrap: 'wrap', marginTop: '2px' }}>
                           {s.fanGroups?.map((fg: string) => (

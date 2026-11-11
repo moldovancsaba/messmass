@@ -7,50 +7,63 @@ import styles from './interactive-report.module.css';
 
 interface D3FunnelFlowProps {
   funnel: FunnelStep[];
-  summary?: {
-    optInRate: number;
+  summary: {
+    optInRate: number | null;
     totalOptIns: number;
-    brandProtectionRate: number;
+    vettingApprovalRate: number | null;
     totalCtaClicks: number;
   };
 }
 
-export default function D3FunnelFlow({ funnel, summary }: D3FunnelFlowProps) {
-  const maxValue = funnel[0]?.value || 1;
+const formatPercent = (value: number | null): string => (value === null ? 'n/a' : `${value}%`);
 
-  const optInRate =
-    summary?.optInRate ??
-    (funnel[3]?.value > 0
-      ? Number(((funnel[4]?.value / funnel[3]?.value) * 100).toFixed(1))
-      : 71.4);
-  const optInCount = summary?.totalOptIns ?? (funnel[4]?.value || 0);
-  const brandProtection =
-    summary?.brandProtectionRate ??
-    (funnel[1]?.value > 0
-      ? Number(((funnel[2]?.value / funnel[1]?.value) * 100).toFixed(1))
-      : 97.6);
-  const ctaTotal = summary?.totalCtaClicks ?? (funnel[5]?.value || 0);
+export default function D3FunnelFlow({ funnel, summary }: D3FunnelFlowProps) {
+  const maxValue = Math.max(0, ...funnel.map((item) => item.value));
+
+  // Without a single non-zero step there is nothing to chart.
+  if (maxValue <= 0) {
+    return (
+      <div className={styles.reportCard}>
+        <div className={styles.cardHeader}>
+          <div>
+            <h3 className={styles.cardTitle}>
+              📈 Marketing Conversion Funnel
+            </h3>
+            <p className={styles.cardSubtitle}>
+              No funnel measurements for this scope.
+            </p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  const { optInRate, totalOptIns, vettingApprovalRate, totalCtaClicks } = summary;
 
   return (
     <div className={styles.reportCard}>
       <div className={styles.cardHeader}>
         <div>
           <h3 className={styles.cardTitle}>
-            📈 Marketing Conversion Funnel & Sponsor Value
+            📈 Marketing Conversion Funnel
           </h3>
           <p className={styles.cardSubtitle}>
-            End-to-end fan conversion journey from stadium QR/Web touchpoints to Tippmix marketing opt-ins.
+            Fan conversion journey from first touchpoint to marketing opt-in.
           </p>
         </div>
       </div>
 
       <div className={styles.funnelList}>
         {funnel.map((item, index) => {
-          const widthPercent = Math.max(12, Math.round((item.value / maxValue) * 100));
+          // A step with no recorded value is shown as n/a with an empty bar.
+          const hasValue = item.value > 0;
+          const valueText = hasValue ? item.value.toLocaleString() : 'n/a';
+          const widthPercent = hasValue ? Math.max(12, Math.round((item.value / maxValue) * 100)) : 0;
           const prevValue = index > 0 ? funnel[index - 1].value : null;
-          const stepConversion = prevValue && prevValue > 0 ? Math.round((item.value / prevValue) * 100) : null;
-          const isOptIn = index === 4;
-          const isRegistration = index === 3;
+          const stepConversion =
+            hasValue && prevValue && prevValue > 0 ? Math.round((item.value / prevValue) * 100) : null;
+          const isOptIn = /opt-?in/i.test(item.step);
+          const isRegistration = /registration/i.test(item.step);
 
           const barColorClass = isOptIn
             ? styles.barFillHighlight
@@ -86,13 +99,13 @@ export default function D3FunnelFlow({ funnel, summary }: D3FunnelFlowProps) {
                 >
                   {widthPercent > 20 && (
                     <span className={styles.barValInside}>
-                      {item.value.toLocaleString()}
+                      {valueText}
                     </span>
                   )}
                 </div>
                 {widthPercent <= 20 && (
                   <span className={styles.barValOutside}>
-                    {item.value.toLocaleString()}
+                    {valueText}
                   </span>
                 )}
               </div>
@@ -105,7 +118,7 @@ export default function D3FunnelFlow({ funnel, summary }: D3FunnelFlowProps) {
                   </span>
                 ) : (
                   <span className={styles.cardSubtitle}>
-                    100% Baseline
+                    {index === 0 && hasValue ? '100% Baseline' : 'n/a'}
                   </span>
                 )}
               </div>
@@ -117,21 +130,29 @@ export default function D3FunnelFlow({ funnel, summary }: D3FunnelFlowProps) {
       {/* Highlights Bar */}
       <div className={styles.highlightsGrid}>
         <div className={styles.highlightBoxGreen}>
-          <div className={styles.highlightLabelGreen}>Tippmix Marketing Opt-In</div>
-          <div className={styles.highlightValGreen}>{optInRate}%</div>
+          <div className={styles.highlightLabelGreen}>Marketing Opt-In</div>
+          <div className={styles.highlightValGreen}>{formatPercent(optInRate)}</div>
           <div className={styles.highlightLabelGreen}>
-            {optInCount.toLocaleString()} active consent registrations
+            {optInRate !== null
+              ? `${totalOptIns.toLocaleString()} opt-ins recorded`
+              : 'No registrations to measure against'}
           </div>
         </div>
         <div className={styles.highlightBoxGray}>
-          <div className={styles.highlightLabelGray}>Brand Protection Gate</div>
-          <div className={styles.highlightValGray}>{brandProtection}%</div>
-          <div className={styles.cardSubtitle}>AI & hostess content screening pass</div>
+          <div className={styles.highlightLabelGray}>Vetting Approval</div>
+          <div className={styles.highlightValGray}>{formatPercent(vettingApprovalRate)}</div>
+          <div className={styles.cardSubtitle}>
+            {vettingApprovalRate !== null
+              ? 'Approved of submitted photos'
+              : 'No photo vetting data'}
+          </div>
         </div>
         <div className={styles.highlightBoxGray}>
           <div className={styles.highlightLabelGray}>Total CTA Click Actions</div>
-          <div className={styles.highlightValGray}>{ctaTotal.toLocaleString()}</div>
-          <div className={styles.cardSubtitle}>Direct referral to Tippmixpro portal</div>
+          <div className={styles.highlightValGray}>
+            {totalCtaClicks > 0 ? totalCtaClicks.toLocaleString() : 'n/a'}
+          </div>
+          <div className={styles.cardSubtitle}>Call-to-action clicks recorded</div>
         </div>
       </div>
     </div>

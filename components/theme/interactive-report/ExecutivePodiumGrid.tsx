@@ -12,11 +12,6 @@ export interface CommercialBrandStat {
   darkLogoUrl?: string;
   category?: string;
   accentColor?: string;
-  totalImpressions?: number;
-  avgSurfaceAreaPct?: number;
-  primaryBrandRate?: number;
-  avgShareOfVoicePct?: number;
-  weightedExposureScore?: number;
 }
 
 export interface ClubPodiumStat {
@@ -60,6 +55,13 @@ export default function ExecutivePodiumGrid({
   // If top 3 are featured on the Olympic podium, continue the list below from Rank 4
   const remainingBrands = hasBrandPodium ? sortedBrands.slice(3, 11) : sortedBrands;
   const maxBrandCount = brand1?.count || 1;
+
+  // Share of analysed photos, from real counts only. Null (shown as n/a) when no photos were counted.
+  const shareOfPhotos = (count: number): number | null =>
+    totalPhotosProcessed > 0
+      ? Math.min(100, Math.round((count / totalPhotosProcessed) * 1000) / 10)
+      : null;
+  const formatShare = (pct: number | null): string => (pct === null ? 'n/a' : `${pct}%`);
 
   // Take top clubs (filter out nulls/empties and consolidate identical display names)
   const consolidatedClubs = useMemo(() => {
@@ -125,7 +127,7 @@ export default function ExecutivePodiumGrid({
               <div
                 className={styles.pedestalColumn}
                 onClick={() => onSelectBrand?.(brand2)}
-                title={`Rank #2: ${brand2.brand} (${brand2.count} appearances) - Click for marketing value breakdown`}
+                title={`Rank #2: ${brand2.brand} (${brand2.count} appearances) - Click for details`}
               >
                 <div className={styles.pedestalLogoCircle}>
                   {brand2.logoUrl ? (
@@ -140,11 +142,6 @@ export default function ExecutivePodiumGrid({
                 </div>
                 <span className={styles.pedestalName}>{brand2.brand}</span>
                 <span className={styles.pedestalCount}>{brand2.count.toLocaleString()}</span>
-                {brand2.weightedExposureScore !== undefined && (
-                  <span style={{ fontSize: '10px', color: '#475569', background: '#f1f5f9', padding: '1px 6px', borderRadius: '4px', margin: '2px 0', fontWeight: 600 }}>
-                    ⚖️ {brand2.weightedExposureScore} pts • {brand2.avgShareOfVoicePct}% SOV
-                  </span>
-                )}
                 <div className={`${styles.pedestalBlock} ${styles.blockSilver}`}>
                   2
                 </div>
@@ -156,7 +153,7 @@ export default function ExecutivePodiumGrid({
               <div
                 className={styles.pedestalColumn}
                 onClick={() => onSelectBrand?.(brand1)}
-                title={`Rank #1: ${brand1.brand} (${brand1.count} appearances) - Click for marketing value breakdown`}
+                title={`Rank #1: ${brand1.brand} (${brand1.count} appearances) - Click for details`}
               >
                 <div
                   className={styles.pedestalLogoCircle}
@@ -181,11 +178,6 @@ export default function ExecutivePodiumGrid({
                 <span className={styles.pedestalCount} style={{ color: '#b45309', fontWeight: 700 }}>
                   {brand1.count.toLocaleString()}
                 </span>
-                {brand1.weightedExposureScore !== undefined && (
-                  <span style={{ fontSize: '10px', color: '#78350f', background: '#fef3c7', padding: '1px 6px', borderRadius: '4px', margin: '2px 0', fontWeight: 700 }}>
-                    ⚖️ {brand1.weightedExposureScore} pts • {brand1.avgShareOfVoicePct}% SOV
-                  </span>
-                )}
                 <div className={`${styles.pedestalBlock} ${styles.blockGold}`}>
                   1
                 </div>
@@ -197,7 +189,7 @@ export default function ExecutivePodiumGrid({
               <div
                 className={styles.pedestalColumn}
                 onClick={() => onSelectBrand?.(brand3)}
-                title={`Rank #3: ${brand3.brand} (${brand3.count} appearances) - Click for marketing value breakdown`}
+                title={`Rank #3: ${brand3.brand} (${brand3.count} appearances) - Click for details`}
               >
                 <div className={styles.pedestalLogoCircle}>
                   {brand3.logoUrl ? (
@@ -212,30 +204,22 @@ export default function ExecutivePodiumGrid({
                 </div>
                 <span className={styles.pedestalName}>{brand3.brand}</span>
                 <span className={styles.pedestalCount}>{brand3.count.toLocaleString()}</span>
-                {brand3.weightedExposureScore !== undefined && (
-                  <span style={{ fontSize: '10px', color: '#7c2d12', background: '#ffedd5', padding: '1px 6px', borderRadius: '4px', margin: '2px 0', fontWeight: 600 }}>
-                    ⚖️ {brand3.weightedExposureScore} pts • {brand3.avgShareOfVoicePct}% SOV
-                  </span>
-                )}
                 <div className={`${styles.pedestalBlock} ${styles.blockBronze}`}>
                   3
                 </div>
               </div>
             )}
           </div>
-        ) : (
+        ) : sortedBrands.length === 0 ? (
           <div style={{ padding: '24px', textAlign: 'center', color: '#64748b', fontSize: '13px' }}>
-            Analyzing commercial partner brand appearances...
+            n/a (no brand appearances counted)
           </div>
-        )}
+        ) : null}
 
         {/* Ranked List Below Podium */}
         <div className={styles.rankedList}>
           {remainingBrands.map((b, idx) => {
-            const pct =
-              totalPhotosProcessed > 0
-                ? Math.min(100, Math.round((b.count / totalPhotosProcessed) * 1000) / 10)
-                : Math.round((b.count / maxBrandCount) * 100);
+            const pct = shareOfPhotos(b.count);
             const fillWidth = Math.max(4, Math.round((b.count / maxBrandCount) * 100));
 
             return (
@@ -243,7 +227,7 @@ export default function ExecutivePodiumGrid({
                 key={b.brand}
                 className={styles.rankedRow}
                 onClick={() => onSelectBrand?.(b)}
-                title={`${b.brand}: ${b.count} appearances (${pct}%) - Click for marketing value breakdown`}
+                title={`${b.brand}: ${b.count} appearances (${formatShare(pct)}) - Click for details`}
               >
                 <span className={styles.rankNumber}>{hasBrandPodium ? idx + 4 : idx + 1}</span>
                 <div className={styles.rowLogoWrap}>
@@ -266,15 +250,8 @@ export default function ExecutivePodiumGrid({
                     />
                   </div>
                 </div>
-                <span className={styles.rowPercent}>{pct}%</span>
-                <span className={styles.rowCount}>
-                  {b.count.toLocaleString()}
-                  {b.weightedExposureScore !== undefined && (
-                    <span style={{ fontSize: '10px', color: '#64748b', fontWeight: 500, display: 'block' }}>
-                      {b.weightedExposureScore} pts
-                    </span>
-                  )}
-                </span>
+                <span className={styles.rowPercent}>{formatShare(pct)}</span>
+                <span className={styles.rowCount}>{b.count.toLocaleString()}</span>
               </div>
             );
           })}
@@ -403,19 +380,16 @@ export default function ExecutivePodiumGrid({
               </div>
             )}
           </div>
-        ) : (
+        ) : sortedClubs.length === 0 ? (
           <div style={{ padding: '24px', textAlign: 'center', color: '#64748b', fontSize: '13px' }}>
-            Analyzing sport club & franchise appearances...
+            n/a (no club appearances counted)
           </div>
-        )}
+        ) : null}
 
         {/* Ranked List Below Podium */}
         <div className={styles.rankedList}>
           {remainingClubs.map((c: ClubPodiumStat, idx: number) => {
-            const pct =
-              totalPhotosProcessed > 0
-                ? Math.min(100, Math.round((c.count / totalPhotosProcessed) * 1000) / 10)
-                : Math.round((c.count / maxClubCount) * 100);
+            const pct = shareOfPhotos(c.count);
             const fillWidth = Math.max(4, Math.round((c.count / maxClubCount) * 100));
 
             return (
@@ -423,7 +397,7 @@ export default function ExecutivePodiumGrid({
                 key={c.club}
                 className={styles.rankedRow}
                 onClick={() => onSelectClub(c)}
-                title={`Click to view selfies for ${c.partnerName || c.club}: ${c.count} appearances (${pct}%)`}
+                title={`Click to view selfies for ${c.partnerName || c.club}: ${c.count} appearances (${formatShare(pct)})`}
               >
                 <span className={styles.rankNumber}>{hasClubPodium ? idx + 4 : idx + 1}</span>
                 <div className={styles.rowLogoWrap}>
@@ -446,7 +420,7 @@ export default function ExecutivePodiumGrid({
                     />
                   </div>
                 </div>
-                <span className={styles.rowPercent}>{pct}%</span>
+                <span className={styles.rowPercent}>{formatShare(pct)}</span>
                 <span className={styles.rowCount}>{c.count.toLocaleString()}</span>
               </div>
             );

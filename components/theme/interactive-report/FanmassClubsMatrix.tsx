@@ -26,7 +26,6 @@ interface ClubStat {
 interface FanmassClubsMatrixProps {
   clubs: ClubStat[];
   totalPhotosProcessed: number;
-  totalImages?: number;
 }
 
 type SportFilter = 'all' | 'Basketball' | 'Football' | 'Handball' | 'Ice Hockey' | 'International';
@@ -93,7 +92,6 @@ function resolveFranchiseSport(name: string): 'Basketball' | 'Football' | 'Handb
 export default function FanmassClubsMatrix({
   clubs,
   totalPhotosProcessed,
-  totalImages = 11312,
 }: FanmassClubsMatrixProps) {
   const [filter, setFilter] = useState<SportFilter>('all');
   const [searchQuery, setSearchQuery] = useState('');
@@ -111,7 +109,7 @@ export default function FanmassClubsMatrix({
         return false;
       }
       // If someone passed in a standalone venue, omit from franchise list
-      if (isVenue(c.club) && !low.includes('sopron kc')) return false;
+      if (isVenue(c.club)) return false;
       return true;
     });
   }, [clubs]);
@@ -123,9 +121,6 @@ export default function FanmassClubsMatrix({
   const totalSightings = useMemo(() => {
     return validClubs.reduce((acc, c) => acc + c.count, 0);
   }, [validClubs]);
-
-  const isProgressing = totalPhotosProcessed > 0 && totalPhotosProcessed < totalImages;
-  const multiplier = isProgressing ? totalImages / totalPhotosProcessed : 1;
 
   // Counts per sport
   const sportCounts = useMemo(() => {
@@ -173,8 +168,8 @@ export default function FanmassClubsMatrix({
 
   const merchAdoptionRate =
     totalPhotosProcessed > 0
-      ? ((totalSightings / totalPhotosProcessed) * 100).toFixed(1)
-      : '32.4';
+      ? `${((totalSightings / totalPhotosProcessed) * 100).toFixed(1)}%`
+      : 'n/a';
 
   return (
     <div className={styles.reportCard}>
@@ -182,22 +177,20 @@ export default function FanmassClubsMatrix({
         <div>
           <div className={styles.cardHeaderBadgeRow}>
             <span className={styles.cardSourceTag}>
-              🏟️ Fan Allegiance • Empirical Jersey &amp; Merchandise Recognition
+              🏟️ Fan Allegiance • Jersey &amp; Merchandise Recognition
             </span>
             <span className={styles.cardCountPill}>
-              {validClubs.length} Franchises &amp; Clubs Identified • {totalSightings.toLocaleString()}
-              {isProgressing && ` (est. ${Math.round(totalSightings * multiplier).toLocaleString()})`}{' '}
-              Jerseys
+              {validClubs.length} Franchises &amp; Clubs Identified • {totalSightings.toLocaleString()} Jerseys
             </span>
             <span className={styles.cardCountPill} style={{ background: '#f0fdf4', color: '#166534' }}>
-              👕 {merchAdoptionRate}% Merchandise Presence
+              👕 {merchAdoptionRate} Merchandise Presence
             </span>
           </div>
           <h3 className={styles.cardTitle}>
-            🏆 Sport Franchises &amp; Authoritative Partner Matrix
+            🏆 Sport Franchises &amp; Partner Matrix
           </h3>
           <p className={styles.cardSubtitle}>
-            Connected directly to our central partner registry. High-resolution crests, home stadiums, and detected fan selfies are linked to eliminate data duplication and expose real-time partner loyalty.
+            Clubs and franchises identified on fan jerseys and merchandise. Where a club is linked to a partner record, its crest and detected fan selfies are shown.
           </p>
         </div>
 
@@ -246,7 +239,7 @@ export default function FanmassClubsMatrix({
           <div style={{ position: 'relative', width: '280px' }}>
             <input
               type="text"
-              placeholder="Search club or partner (e.g. Sopron, DVTK, Pick)..."
+              placeholder="Search club or partner..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               style={{
@@ -295,14 +288,10 @@ export default function FanmassClubsMatrix({
             const sport = item.sport || resolveFranchiseSport(item.club);
             const barWidth = Math.max(8, Math.round((item.count / maxCount) * 100));
             const shareOfJerseys =
-              totalSightings > 0 ? ((item.count / totalSightings) * 100).toFixed(1) : '0';
+              totalSightings > 0 ? `${((item.count / totalSightings) * 100).toFixed(1)}%` : 'n/a';
 
-            // Special handling for Sopron KC venue
-            const isSopron = item.club.toLowerCase().includes('sopron');
-            const venueName =
-              item.homeVenue || franchiseInfo?.homeVenue || (isSopron ? 'Novomatic Aréna Sopron' : undefined);
-            const venueWebsite =
-              franchiseInfo?.venueWebsite || (isSopron ? 'https://www.novomaticarenasopron.hu' : undefined);
+            const venueName = item.homeVenue || franchiseInfo?.homeVenue || undefined;
+            const venueWebsite = franchiseInfo?.venueWebsite || undefined;
 
             const sportIcon =
               sport === 'Basketball' ? '🏀' :
@@ -334,7 +323,7 @@ export default function FanmassClubsMatrix({
                     </span>
                   </div>
                   <span style={{ fontSize: '11px', color: '#64748b' }}>
-                    {shareOfJerseys}% of merch
+                    {shareOfJerseys} of merch
                   </span>
                 </div>
 
@@ -361,7 +350,7 @@ export default function FanmassClubsMatrix({
                       {item.partnerName || item.club}
                     </h4>
 
-                    {/* Authoritative Partner DB Verified Pill */}
+                    {/* Partner link pill */}
                     {hasPartnerLink && (
                       <div style={{ marginTop: '3px' }}>
                         {item.partnerSlug ? (
@@ -370,14 +359,14 @@ export default function FanmassClubsMatrix({
                             target="_blank"
                             rel="noopener noreferrer"
                             className={styles.partnerVerifiedBadge}
-                            title="Authoritative partner verified in messmass partners collection. Click to view partner report."
+                            title="Linked partner record. Click to view the partner report."
                           >
                             🛡️ Partner Connected ↗
                           </a>
                         ) : (
                           <span
                             className={styles.partnerVerifiedBadge}
-                            title="Authoritative partner connected in database"
+                            title="Linked partner record"
                           >
                             🛡️ Partner Connected
                           </span>
@@ -408,56 +397,12 @@ export default function FanmassClubsMatrix({
                         )}
                       </div>
                     )}
-
-                    {/* Supporter Groups Sub-Indicator */}
-                    {item.club.toLowerCase().includes('ferencváros') && (
-                      <div style={{ marginTop: '3px', fontSize: '10px', color: '#64748b' }}>
-                        👥 Supporter Groups: Green Monsters, B-Közép
-                      </div>
-                    )}
-                    {item.club.toLowerCase().includes('újpest') && (
-                      <div style={{ marginTop: '3px', fontSize: '10px', color: '#64748b' }}>
-                        👥 Supporter Groups: Ultra Viola Bulldogs, UVB
-                      </div>
-                    )}
-                    {item.club.toLowerCase().includes('sopron') && (
-                      <div style={{ marginTop: '3px', fontSize: '10px', color: '#64748b' }}>
-                        👥 Supporter Groups: Soproni Tigrisek, B-Közép
-                      </div>
-                    )}
-                    {item.club.toLowerCase().includes('fehérvár') && (
-                      <div style={{ marginTop: '3px', fontSize: '10px', color: '#64748b' }}>
-                        👥 Supporter Groups: Red-Blue Devils, RBD
-                      </div>
-                    )}
-                    {item.club.toLowerCase().includes('dvtk') && (
-                      <div style={{ marginTop: '3px', fontSize: '10px', color: '#64748b' }}>
-                        👥 Supporter Groups: Ultras Diósgyőr, Commandos
-                      </div>
-                    )}
-                    {item.club.toLowerCase().includes('szeged') && (
-                      <div style={{ marginTop: '3px', fontSize: '10px', color: '#64748b' }}>
-                        👥 Supporter Groups: Szögedi Csibészek
-                      </div>
-                    )}
-                    {item.club.toLowerCase().includes('veszprém') && (
-                      <div style={{ marginTop: '3px', fontSize: '10px', color: '#64748b' }}>
-                        👥 Supporter Groups: Építők Fan Club
-                      </div>
-                    )}
                   </div>
                 </div>
 
                 <div className={styles.clubMetricsRow}>
                   <span className={styles.clubSightingsLabel}>Jerseys &amp; Scarves</span>
-                  <span className={styles.clubSightingsVal}>
-                    {item.count.toLocaleString()}
-                    {isProgressing && (
-                      <span className={styles.estPill}>
-                        {' '}(est. {Math.round(item.count * multiplier).toLocaleString()})
-                      </span>
-                    )}
-                  </span>
+                  <span className={styles.clubSightingsVal}>{item.count.toLocaleString()}</span>
                 </div>
 
                 <div className={styles.clubBarTrack}>

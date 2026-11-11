@@ -2,22 +2,49 @@ import { NextRequest, NextResponse } from 'next/server';
 import clientPromise from '@/lib/mongodb';
 import config from '@/lib/config';
 import { ObjectId } from 'mongodb';
+import { SZRT_ORGANIZATION_ID } from '@/lib/interactiveReportAggregator';
 
 export const dynamic = 'force-dynamic';
+
+// szrt_vision_analysis holds the SZRT campaign's analysed selfies, so this endpoint serves
+// that tenant only.
+const MAX_FILTER_LENGTH = 100;
+
+function escapeRegex(text: string): string {
+  return text.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
+
+/** Case-insensitive "contains" matcher for user-supplied text (never a raw pattern). */
+function containsText(text: string) {
+  return { $regex: escapeRegex(text.trim()), $options: 'i' };
+}
+
+function toCount(value: unknown): number {
+  const n = typeof value === 'number' ? value : Number(value);
+  return Number.isFinite(n) && n > 0 ? n : 0;
+}
 
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
-    const club = searchParams.get('club') || '';
+    const club = (searchParams.get('club') || '').trim().slice(0, MAX_FILTER_LENGTH);
     const partnerId = searchParams.get('partnerId') || '';
     const partnerSlug = searchParams.get('partnerSlug') || '';
-    const fanGroup = searchParams.get('fanGroup') || '';
-    const limit = Math.min(100, Math.max(1, parseInt(searchParams.get('limit') || '40', 10)));
+    const fanGroup = (searchParams.get('fanGroup') || '').trim().slice(0, MAX_FILTER_LENGTH);
+    const organizationId = searchParams.get('organizationId') || '';
+    const limit = Math.min(100, Math.max(1, parseInt(searchParams.get('limit') || '40', 10) || 40));
 
     if (!club && !partnerId && !partnerSlug) {
       return NextResponse.json(
         { success: false, error: 'club, partnerId, or partnerSlug parameter is required' },
         { status: 400 }
+      );
+    }
+
+    if (organizationId && organizationId !== SZRT_ORGANIZATION_ID) {
+      return NextResponse.json(
+        { success: false, error: 'No selfies are accessible in this tenant partition' },
+        { status: 403 }
       );
     }
 
@@ -32,10 +59,7 @@ export async function GET(request: NextRequest) {
       partnerDoc = await db.collection('partners').findOne({ viewSlug: partnerSlug });
     } else if (club) {
       partnerDoc = await db.collection('partners').findOne({
-        $or: [
-          { name: { $regex: club.trim(), $options: 'i' } },
-          { 'sportsDb.strTeam': { $regex: club.trim(), $options: 'i' } },
-        ],
+        $or: [{ name: containsText(club) }, { 'sportsDb.strTeam': containsText(club) }],
       });
     }
 
@@ -48,24 +72,46 @@ export async function GET(request: NextRequest) {
       conditions.push({ partnerSlugs: partnerDoc.viewSlug });
     }
     if (partnerDoc?.name) {
-      conditions.push({ partnerNames: { $regex: partnerDoc.name, $options: 'i' } });
-      conditions.push({ clubs: { $regex: partnerDoc.name, $options: 'i' } });
+      conditions.push({ partnerNames: containsText(String(partnerDoc.name)) });
+      conditions.push({ clubs: containsText(String(partnerDoc.name)) });
     }
     if (club) {
-      conditions.push({ clubs: { $regex: club.trim(), $options: 'i' } });
-      conditions.push({ partnerNames: { $regex: club.trim(), $options: 'i' } });
+      conditions.push({ clubs: containsText(club) });
+      conditions.push({ partnerNames: containsText(club) });
     }
 
-    let query: any = conditions.length > 0 ? { $or: conditions } : {};
+    // Never run an unscoped query: without a club or partner to match there is nothing to return.
+    if (conditions.length === 0) {
+      return NextResponse.json({
+        success: true,
+        club,
+        partner: null,
+        totalSelfies: 0,
+        totalPeople: 0,
+        demographics: {
+          malePct: null,
+          femalePct: null,
+          maleCount: 0,
+          femaleCount: 0,
+          ageGroups: { children: 0, teens: 0, adults: 0, seniors: 0 },
+        },
+        topEmotions: [],
+        topBrands: [],
+        fanGroups: [],
+        selfies: [],
+      });
+    }
+
+    let query: any = { $or: conditions };
     if (fanGroup) {
       query = {
         $and: [
           query,
           {
             $or: [
-              { fanGroups: { $regex: fanGroup.trim(), $options: 'i' } },
-              { scene: { $regex: fanGroup.trim(), $options: 'i' } },
-              { clubs: { $regex: fanGroup.trim(), $options: 'i' } },
+              { fanGroups: containsText(fanGroup) },
+              { scene: containsText(fanGroup) },
+              { clubs: containsText(fanGroup) },
             ],
           },
         ],
@@ -92,13 +138,13 @@ export async function GET(request: NextRequest) {
     const fanGroupCounts: Record<string, number> = {};
 
     for (const doc of selfieDocs) {
-      totalPeople += doc.peopleCount || 1;
-      maleCount += doc.genders?.male || 0;
-      femaleCount += doc.genders?.female || 0;
-      ageGroups.children += doc.ageGroups?.children || 0;
-      ageGroups.teens += doc.ageGroups?.teens || 0;
-      ageGroups.adults += doc.ageGroups?.adults || 0;
-      ageGroups.seniors += doc.ageGroups?.seniors || 0;
+      totalPeople += toCount(doc.peopleCount);
+      maleCount += toCount(doc.genders?.male);
+      femaleCount += toCount(doc.genders?.female);
+      ageGroups.children += toCount(doc.ageGroups?.children);
+      ageGroups.teens += toCount(doc.ageGroups?.teens);
+      ageGroups.adults += toCount(doc.ageGroups?.adults);
+      ageGroups.seniors += toCount(doc.ageGroups?.seniors);
 
       for (const em of doc.emotions || []) {
         emotionCounts[em] = (emotionCounts[em] || 0) + 1;
@@ -111,9 +157,10 @@ export async function GET(request: NextRequest) {
       }
     }
 
+    // Gender shares exist only when the model measured at least one gender
     const totalG = maleCount + femaleCount;
-    const malePct = totalG > 0 ? Math.round((maleCount / totalG) * 100) : 50;
-    const femalePct = totalG > 0 ? 100 - malePct : 50;
+    const malePct = totalG > 0 ? Math.round((maleCount / totalG) * 100) : null;
+    const femalePct = malePct !== null ? 100 - malePct : null;
 
     const topEmotions = Object.entries(emotionCounts)
       .map(([emotion, count]) => ({ emotion, count }))
@@ -133,7 +180,7 @@ export async function GET(request: NextRequest) {
       fileName: d.fileName,
       sport: d.sport,
       filePath: d.filePath,
-      peopleCount: d.peopleCount || 1,
+      peopleCount: toCount(d.peopleCount),
       emotions: d.emotions || [],
       brands: d.brands || [],
       clubs: d.clubs || [],
