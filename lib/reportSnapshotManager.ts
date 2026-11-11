@@ -18,11 +18,14 @@ export interface SnapshotResult {
 }
 
 /**
- * Snapshots written before this version hold report values that were filled in from
- * hardcoded fallbacks (photos, registrations, brand-safety rates, demographics, vision data
- * of another scope). They must never be served again, so reads only accept this version.
+ * Snapshots written before this version hold report values that must never be served again,
+ * so reads only accept this version. Bump it in the same change whenever the report output
+ * of the aggregator changes, otherwise the previous output stays live until the snapshot expires.
+ *  - 2: values that had been filled in from hardcoded fallbacks (photos, registrations,
+ *       brand-safety rates, demographics, vision data of another scope) were removed.
+ *  - 3: opt-in and approval rates are shown only when the stored counts agree.
  */
-export const SNAPSHOT_SCHEMA_VERSION = 2;
+export const SNAPSHOT_SCHEMA_VERSION = 3;
 
 // In-flight request stampede deduplication lock (INV-003)
 const inFlightSnapshots = new Map<string, Promise<SnapshotResult>>();
