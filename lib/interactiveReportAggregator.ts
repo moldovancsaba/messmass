@@ -87,7 +87,7 @@ function isSzrtVisionScope(
  * `publishApproved: true` on the szrt_progress document. Until then no AI-derived brand,
  * club, people or audience figure is shown to a viewer.
  */
-function isVisionPublishable(doc: any): boolean {
+export function isVisionPublishable(doc: any): boolean {
   return Boolean(doc) && doc.publishApproved === true;
 }
 

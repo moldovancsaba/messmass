@@ -1,0 +1,165 @@
+/* Proof samples behind a brand or club figure: the crop where its name was read, and the box on the photo. */
+
+.section {
+  display: flex;
+  flex-direction: column;
+  gap: var(--mm-space-3);
+}
+
+.title {
+  margin: 0;
+  font-size: var(--mm-font-size-base);
+  font-weight: var(--mm-font-weight-bold);
+  color: var(--mm-gray-900);
+}
+
+.summary,
+.empty,
+.status {
+  margin: 0;
+  font-size: var(--mm-font-size-sm);
+  line-height: 1.5;
+  color: var(--mm-gray-600);
+}
+
+.grid {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: var(--mm-space-3);
+}
+
+.tile {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: var(--mm-space-2);
+  padding: var(--mm-space-2);
+  border: 1px solid var(--mm-gray-200);
+  border-radius: var(--mm-radius-md);
+  background: var(--mm-gray-50);
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.tile:hover,
+.tile:focus-visible {
+  border-color: var(--mm-gray-400);
+  background: var(--mm-white);
+}
+
+.cropWrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 96px;
+  border-radius: var(--mm-radius-sm);
+  background: var(--mm-gray-100);
+  overflow: hidden;
+}
+
+.cropWrap img {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+}
+
+.caption {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.readText {
+  font-size: var(--mm-font-size-sm);
+  font-weight: var(--mm-font-weight-semibold);
+  color: var(--mm-gray-900);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.meta {
+  font-size: var(--mm-font-size-xs);
+  color: var(--mm-gray-600);
+}
+
+.lightbox {
+  max-width: 860px;
+}
+
+.photoFrame {
+  position: relative;
+  align-self: center;
+  flex-shrink: 0; /* inside the scrolling modal body: scroll instead of squeezing the photo out of shape */
+  max-width: 100%;
+  line-height: 0;
+  border-radius: var(--mm-radius-md);
+  overflow: hidden;
+  background: var(--mm-gray-100);
+}
+
+/* The frame has the photo's own proportions (set from the loaded image), so the image fills it exactly
+   and the box, placed in percent of the frame, sits on the same spot of the picture. */
+.photoFrame img {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.box {
+  position: absolute;
+  border: 3px solid var(--mm-evidence-box, #e11d48);
+  border-radius: 2px;
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.85);
+  pointer-events: none;
+}
+
+.cropLarge {
+  align-self: center;
+  flex-shrink: 0;
+  max-width: 100%;
+  padding: var(--mm-space-3);
+  border-radius: var(--mm-radius-md);
+  background: var(--mm-gray-100);
+}
+
+.cropLarge img {
+  display: block;
+  max-width: 100%;
+  max-height: 40vh;
+  object-fit: contain;
+}
+
+.facts {
+  display: grid;
+  grid-template-columns: max-content 1fr;
+  gap: var(--mm-space-1) var(--mm-space-4);
+  margin: 0;
+  font-size: var(--mm-font-size-sm);
+}
+
+.facts dt {
+  color: var(--mm-gray-600);
+}
+
+.facts dd {
+  margin: 0;
+  color: var(--mm-gray-900);
+  font-weight: var(--mm-font-weight-medium);
+}
+
+.close {
+  border: 0;
+  border-radius: var(--mm-radius-md);
+  padding: var(--mm-space-2) var(--mm-space-3);
+  background: var(--mm-gray-100);
+  color: var(--mm-gray-700);
+  font: inherit;
+  cursor: pointer;
+}

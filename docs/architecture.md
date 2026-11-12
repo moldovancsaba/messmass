@@ -112,21 +112,21 @@ it drifts. Do not edit between the markers.
 
 | Category | Count | Location |
 |----------|-------|----------|
-| **UI Components** | 127 | `components/` |
-| **Utility Modules** | 237 | `lib/` |
+| **UI Components** | 128 | `components/` |
+| **Utility Modules** | 238 | `lib/` |
 | **Hooks** | 13 | `hooks/` |
 | **Design Tokens** | 410 | `app/styles/theme.css` |
 | **Utility CSS classes** | 192 | `app/styles/utilities.css` |
 | **App routes (pages)** | 82 | `app/**/page.tsx` |
-| **API routes** | 232 | `app/api/**/route.ts` |
+| **API routes** | 234 | `app/api/**/route.ts` |
 
 The modules with the most importers — the ones whose change radius is
 largest, and the ones to read first:
 
 | Module | Importers | Lines |
 |--------|-----------|-------|
-| `lib/config.ts` | 124 | 207 |
-| `lib/mongodb.ts` | 107 | 112 |
+| `lib/config.ts` | 125 | 207 |
+| `lib/mongodb.ts` | 108 | 112 |
 | `lib/logger.ts` | 94 | 392 |
 | `lib/auth.ts` | 93 | 118 |
 | `lib/apiGuards.ts` | 85 | 390 |
@@ -134,7 +134,7 @@ largest, and the ones to read first:
 | `lib/db.ts` | 42 | 17 |
 | `lib/apiClient.ts` | 41 | 258 |
 | `components/MaterialIcon.tsx` | 34 | 119 |
-| `lib/fanmassIntegration.ts` | 31 | 485 |
+| `lib/fanmassIntegration.ts` | 32 | 485 |
 | `components/UnifiedAdminHeroWithSearch.tsx` | 27 | 192 |
 | `lib/mongoose-v3.ts` | 21 | 66 |
 | `lib/permissions.ts` | 19 | 142 |
@@ -1084,7 +1084,7 @@ shows up here on the next regeneration, which is the point.
 | `/terms` | `app/terms/page.tsx` |
 | `/test-csrf` | `app/test-csrf/page.tsx` |
 
-### API routes (232)
+### API routes (234)
 
 `auth` is the guard symbol the route actually calls. A blank cell
 means the route calls none — public by construction, or a gap.
@@ -1426,6 +1426,7 @@ means the route calls none — public by construction, or a gap.
 | `/api/integrations/fanmass/partners/[partnerId]/events` | GET | `requireFanmassIntegrationAuth` |
 | `/api/integrations/fanmass/rescan-requests` | GET | `requireFanmassIntegrationAuth` |
 | `/api/integrations/fanmass/rescan-requests/[eventId]` | DELETE | `requireFanmassIntegrationAuth` |
+| `/api/integrations/fanmass/szrt-evidence` | POST | `requireFanmassIntegrationAuth` |
 | `/api/integrations/fanmass/variables` | GET, POST | `requireFanmassIntegrationAuth` |
 | `/api/integrations/privacy/erase-camera-photo` | DELETE | — |
 
@@ -1434,6 +1435,7 @@ means the route calls none — public by construction, or a gap.
 | Route | Methods | Auth |
 |-------|---------|------|
 | `/api/interactive-report/[partnerSlug]` | GET | — |
+| `/api/interactive-report/brand-evidence` | GET | — |
 | `/api/interactive-report/partner-selfies` | GET | — |
 
 #### `/api/landing-static`

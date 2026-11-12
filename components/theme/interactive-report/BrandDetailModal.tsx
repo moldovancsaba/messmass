@@ -4,7 +4,7 @@
 
 import React, { useMemo } from 'react';
 import { getBrandCluster } from '@/lib/brandEntityClustering';
-import styles from './interactive-report.module.css';
+import BrandEvidenceGallery from './BrandEvidenceGallery';
 
 export interface BrandDetailStat {
   brand: string;
@@ -267,72 +267,8 @@ export default function BrandDetailModal({
             </div>
           )}
 
-          {/* Sampled photos with this brand */}
-          {matchingImages.length > 0 && (
-            <div>
-              <h4 style={{ margin: '0 0 10px 0', fontSize: '13px', fontWeight: 700, color: '#0f2c4a' }}>
-                📸 Fan Photos with {brand.brand} Detections ({matchingImages.length} Samples)
-              </h4>
-              <div className={styles.selfieGrid}>
-                {matchingImages.slice(0, 6).map((img, idx) => {
-                  const bNameLower = brand.brand.toLowerCase();
-
-                  return (
-                    <div key={img.fileName || idx} className={styles.selfieCard}>
-                      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                        <span style={{ fontWeight: 700, color: '#2563eb' }}>
-                          #{idx + 1} {img.sport}
-                        </span>
-                        <span style={{ color: '#64748b', fontSize: '10px' }}>
-                          👤 {img.peopleCount} {img.peopleCount === 1 ? 'person' : 'people'}
-                        </span>
-                      </div>
-
-                      {img.scene && (
-                        <div style={{ color: '#1e293b', lineHeight: 1.4, fontSize: '11px', margin: '4px 0' }}>
-                          &ldquo;{img.scene}&rdquo;
-                        </div>
-                      )}
-
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '4px', flexWrap: 'wrap', marginBottom: '6px' }}>
-                        {img.clubs?.map((c) => (
-                          <span
-                            key={c}
-                            style={{
-                              fontSize: '9px',
-                              fontWeight: 700,
-                              background: '#eff6ff',
-                              color: '#1e40af',
-                              padding: '1px 5px',
-                              borderRadius: '4px',
-                            }}
-                          >
-                            🛡️ {c}
-                          </span>
-                        ))}
-                        {img.brands?.map((b) => (
-                          <span
-                            key={b}
-                            style={{
-                              fontSize: '9px',
-                              fontWeight: b.toLowerCase() === bNameLower ? 800 : 500,
-                              background: b.toLowerCase() === bNameLower ? '#fef3c7' : '#f1f5f9',
-                              color: b.toLowerCase() === bNameLower ? '#92400e' : '#475569',
-                              padding: '1px 5px',
-                              borderRadius: '4px',
-                              border: b.toLowerCase() === bNameLower ? '1px solid #fde68a' : 'none',
-                            }}
-                          >
-                            🏷️ {b}
-                          </span>
-                        ))}
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-            </div>
-          )}
+          {/* Proof from the pictures: crops where the name was read, the box and how it was identified */}
+          <BrandEvidenceGallery kind="brand" name={brand.brand} />
         </div>
       </div>
     </div>

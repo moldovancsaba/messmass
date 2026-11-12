@@ -143,7 +143,7 @@
   {"file": "docs/guides/admin/organizations.md", "title": "Administrator Guide: Organization Management"},
   {"file": "docs/guides/guides-form-input-migration-guide.md", "title": "Form Input Migration Guide"},
   {"file": "docs/guides/guides-input-system-complete.md", "title": "Complete Input System Documentation & Validation"},
-  {"file": "docs/guides/guides-tutorial-approving-photos.md", "title": "Tutorial: Approving photos at an event (camera app)"},
+  {"file": "docs/guides/guides-tutorial-approving-photos.md", "title": "Tutorial: Reviewing photos at an event (Camera app)"},
   {"file": "docs/guides/guides-tutorial-authentication-sso.md", "title": "Tutorial: Authentication, roles & SSO"},
   {"file": "docs/guides/guides-tutorial-bitly.md", "title": "Tutorial: Bitly integration"},
   {"file": "docs/guides/guides-tutorial-camera-analytics.md", "title": "Tutorial: The Analytics view of an event (camera app)"},

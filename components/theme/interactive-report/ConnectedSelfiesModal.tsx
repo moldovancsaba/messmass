@@ -3,6 +3,7 @@
 /* eslint-disable @next/next/no-img-element */
 
 import React, { useState, useEffect, useMemo } from 'react';
+import BrandEvidenceGallery from './BrandEvidenceGallery';
 import styles from './interactive-report.module.css';
 
 export interface ClubStat {
@@ -367,6 +368,9 @@ export default function ConnectedSelfiesModal({ club, onClose }: ConnectedSelfie
                   ))}
                 </div>
               )}
+
+              {/* Proof from the pictures: where the club name or crest text was read from the image */}
+              <BrandEvidenceGallery kind="club" name={club.club} />
 
               {/* Connected Selfies List */}
               <div>
