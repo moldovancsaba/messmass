@@ -501,7 +501,10 @@ export async function getScopedInteractiveReportData(
     });
 
   // 6. Aggregate global totals across the 4 primary monthly cycles
-  const monthlyPeriods = timelinePeriods.filter((t) => t.type === 'monthly');
+  // The monthly cycles hold the SZRT campaign's own totals (registrations, opt-ins, CTA clicks, touchpoints: stored
+  // for that campaign only). The all-data scope does not take its headline from them, because that would present one
+  // campaign's figures as everything: its photo totals come from every event, and the SZRT-only measures stay n/a.
+  const monthlyPeriods = scopeType === 'global' ? [] : timelinePeriods.filter((t) => t.type === 'monthly');
   const computedTotalPhotos = monthlyPeriods.reduce((acc, cur) => acc + cur.allPhotos, 0);
   const computedHostessPhotos = monthlyPeriods.reduce((acc, cur) => acc + cur.hostessPhotos, 0);
   const computedSelfies = Math.max(0, computedTotalPhotos - computedHostessPhotos);

@@ -24,8 +24,9 @@ export interface SnapshotResult {
  *  - 2: values that had been filled in from hardcoded fallbacks (photos, registrations,
  *       brand-safety rates, demographics, vision data of another scope) were removed.
  *  - 3: opt-in and approval rates are shown only when the stored counts agree.
+ *  - 4: the all-data (global) report headlines the photos of every event, not the SZRT campaign cycles alone.
  */
-export const SNAPSHOT_SCHEMA_VERSION = 3;
+export const SNAPSHOT_SCHEMA_VERSION = 4;
 
 // In-flight request stampede deduplication lock (INV-003)
 const inFlightSnapshots = new Map<string, Promise<SnapshotResult>>();

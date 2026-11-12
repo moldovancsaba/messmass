@@ -90,6 +90,22 @@ describe('Universal Interactive Reports (INV-001, INV-002, INV-003)', () => {
     expect(data?.summary.totalPhotos).toBeGreaterThan(0);
   });
 
+  it('takes the all-data headline from every event, never from the SZRT campaign cycles alone', async () => {
+    const hashtag = await getScopedInteractiveReportData({ type: 'hashtag', identifier: 'tippmixreport2026' });
+    const global = await getScopedInteractiveReportData({ type: 'global', identifier: 'all' });
+
+    // The hashtag report headlines the campaign's monthly cycle (3000 photos, 2800 registrations)
+    expect(hashtag?.summary.totalPhotos).toBe(3000);
+    expect(hashtag?.summary.totalRegistered).toBe(2800);
+    // The all-data report adds up the events themselves, and leaves the SZRT-only measures out instead of
+    // presenting one campaign's registrations as everything
+    expect(global?.scope?.type).toBe('global');
+    expect(global?.summary.totalPhotos).toBe(500);
+    expect(global?.summary.totalPhotos).toBe(global?.matches.reduce((sum: number, m: { submitted: number }) => sum + m.submitted, 0));
+    expect(global?.summary.totalRegistered).toBe(0);
+    expect(global?.summary.totalOptIns).toBe(0);
+  });
+
   it('loads partner scope for debreceni-vsc', async () => {
     const data = await getScopedInteractiveReportData({
       type: 'partner',
