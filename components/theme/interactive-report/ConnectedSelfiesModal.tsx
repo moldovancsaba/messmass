@@ -266,6 +266,9 @@ export default function ConnectedSelfiesModal({ club, onClose }: ConnectedSelfie
                 </div>
               )}
 
+              {/* Per-selfie figures exist only when selfies were analysed and approved for this report */}
+              {Number(selfiesData.totalSelfies) > 0 && (
+              <>
               {/* Demographics & Highlights Summary Cards */}
               <div
                 style={{
@@ -298,6 +301,9 @@ export default function ConnectedSelfiesModal({ club, onClose }: ConnectedSelfie
                   </div>
                 </div>
               </div>
+
+              </>
+              )}
 
               {/* Fan Emotions Badges */}
               {selfiesData.topEmotions && selfiesData.topEmotions.length > 0 && (
@@ -372,6 +378,8 @@ export default function ConnectedSelfiesModal({ club, onClose }: ConnectedSelfie
               {/* Proof from the pictures: where the club name or crest text was read from the image */}
               <BrandEvidenceGallery kind="club" name={club.club} />
 
+              {Number(selfiesData.totalSelfies) > 0 && (
+              <>
               {/* Connected Selfies List */}
               <div>
                 <h4 style={{ margin: '0 0 10px 0', fontSize: '13px', fontWeight: 700, color: '#334155' }}>
@@ -457,6 +465,8 @@ export default function ConnectedSelfiesModal({ club, onClose }: ConnectedSelfie
                   </div>
                 )}
               </div>
+              </>
+              )}
             </>
           ) : (
             <div style={{ padding: '24px', textAlign: 'center', color: '#64748b' }}>

@@ -113,12 +113,12 @@ it drifts. Do not edit between the markers.
 | Category | Count | Location |
 |----------|-------|----------|
 | **UI Components** | 128 | `components/` |
-| **Utility Modules** | 239 | `lib/` |
+| **Utility Modules** | 240 | `lib/` |
 | **Hooks** | 13 | `hooks/` |
 | **Design Tokens** | 410 | `app/styles/theme.css` |
 | **Utility CSS classes** | 192 | `app/styles/utilities.css` |
 | **App routes (pages)** | 82 | `app/**/page.tsx` |
-| **API routes** | 235 | `app/api/**/route.ts` |
+| **API routes** | 236 | `app/api/**/route.ts` |
 
 The modules with the most importers — the ones whose change radius is
 largest, and the ones to read first:
@@ -134,7 +134,7 @@ largest, and the ones to read first:
 | `lib/db.ts` | 42 | 17 |
 | `lib/apiClient.ts` | 41 | 258 |
 | `components/MaterialIcon.tsx` | 34 | 119 |
-| `lib/fanmassIntegration.ts` | 33 | 485 |
+| `lib/fanmassIntegration.ts` | 34 | 485 |
 | `components/UnifiedAdminHeroWithSearch.tsx` | 27 | 192 |
 | `lib/mongoose-v3.ts` | 21 | 66 |
 | `lib/permissions.ts` | 19 | 142 |
@@ -1084,7 +1084,7 @@ shows up here on the next regeneration, which is the point.
 | `/terms` | `app/terms/page.tsx` |
 | `/test-csrf` | `app/test-csrf/page.tsx` |
 
-### API routes (235)
+### API routes (236)
 
 `auth` is the guard symbol the route actually calls. A blank cell
 means the route calls none — public by construction, or a gap.
@@ -1428,6 +1428,7 @@ means the route calls none — public by construction, or a gap.
 | `/api/integrations/fanmass/rescan-requests/[eventId]` | DELETE | `requireFanmassIntegrationAuth` |
 | `/api/integrations/fanmass/szrt-evidence` | POST | `requireFanmassIntegrationAuth` |
 | `/api/integrations/fanmass/szrt-progress` | POST | `requireFanmassIntegrationAuth` |
+| `/api/integrations/fanmass/szrt-publish` | POST | `requireFanmassIntegrationAuth` |
 | `/api/integrations/fanmass/variables` | GET, POST | `requireFanmassIntegrationAuth` |
 | `/api/integrations/privacy/erase-camera-photo` | DELETE | — |
 

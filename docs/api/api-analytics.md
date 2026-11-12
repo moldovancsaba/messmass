@@ -376,6 +376,18 @@ never writes `publishApproved`: a new document starts unapproved and an existing
 or club is counted only where its name was read from the picture, once per photo; there are no default values, so an
 unmeasured figure stays zero or empty.
 
+`POST /api/integrations/fanmass/szrt-publish` (`requireFanmassIntegrationAuth`) is the only writer of the publication
+switch (`publishApproved` on `szrt_progress`). Body `{ approved: boolean, approvedBy: string, note? }`; it records who
+decided and when (`publishApprovedBy`, `publishApprovedAt`, `publishApprovalNote`), drops the cached SZRT report
+snapshots so the change shows at once, and answers `409 NO_FIGURES_DELIVERED` when asked to publish before the deep
+rerun delivered figures, so the retired worker's numbers can never become visible. Withdrawing (`approved: false`) is
+always accepted.
+
+`GET /api/interactive-report/partner-selfies` serves the partner record's own details and no analysed selfie: it no
+longer reads `szrt_vision_analysis` (the retired worker's per-image brand lists and scene text). Remove that data with
+`scripts/purge-szrt-legacy-vision.ts` (dry run by default; `--apply` backs both legacy collections up to `backups/`
+before deleting).
+
 ## Common Failure Modes
 
 - `401` on admin endpoints when no valid admin session exists
