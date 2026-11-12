@@ -1,8 +1,8 @@
 # messmass API Reference
 
-Generated for the fleet audit (messmass#350); measured against `docs/_audit/endpoints.json` (235 endpoints, including brand assets management and interactive report routes). Existing Auth adjudication was re-verified against the handlers @ dd34e229 (2026-09-28); the new Camera style-context read uses `assertCameraSecret`.
+Generated for the fleet audit (messmass#350); measured against `docs/_audit/endpoints.json` (236 endpoints, including brand assets management and interactive report routes). Existing Auth adjudication was re-verified against the handlers @ dd34e229 (2026-09-28); the new Camera style-context read uses `assertCameraSecret`.
 
-Coverage: 235 of 235 routes documented, enforced by
+Coverage: 236 of 236 routes documented, enforced by
 `tests/api-reference-covers-every-route.test.ts` — five routes were missing when
 that claim was last made by hand.
 
@@ -187,6 +187,7 @@ All routes use `requireFanmassIntegrationAuth` (Bearer/`x-api-key` shared token)
 | /api/integrations/fanmass/events/[eventId]/photos/[photoId] | POST, DELETE | requireFanmassIntegrationAuth | POST one photo result; DELETE tombstone, each with partner/event/photo IDs and generation | `{success,data:{status}}` | upserts one `fanmass_camera_photo_analyses` row; rebuilds the per-photo event summary and report stats; ignores stale generations |
 | /api/integrations/fanmass/szrt-evidence | POST | requireFanmassIntegrationAuth | `{pipeline,samples[{fileKey,sport,analyzedAt,region,crop}]}`, at most 40 | `{success,data:{received,stored,skipped[{index,reason}]}}` | stores each crop in R2 under `szrt-evidence/` and upserts one `szrt_brand_evidence` row per file and region; 503 without the R2 variables |
 | /api/integrations/fanmass/szrt-progress | POST | requireFanmassIntegrationAuth | `{pipeline,totalImages,processedCount,status,currentSport,lastUpdated,aggregates}` | `{success,data:{processedCount,totalImages,status}}` | replaces the figures of the `szrt_vision_progress` document `szrt_progress`; clears old per-image text; never writes `publishApproved` |
+| /api/integrations/fanmass/szrt-publish | POST | requireFanmassIntegrationAuth | `{approved,approvedBy,note?}` | `{success,data:{publishApproved,publishApprovedBy,publishApprovedAt,processedCount,invalidatedScopes}}` | sets `publishApproved` on `szrt_progress` and records who and when; drops cached SZRT report snapshots; 409 before figures were delivered |
 | /api/integrations/fanmass/events/[eventId]/context | GET | path id | 410 `EVENT_CONTEXT_RETIRED`; Camera supplies routing IDs with each photo task | none |
 | /api/integrations/fanmass/events/[eventId]/drive-folders/status | POST | status body | `{success}` | updates `drive_folder_links` status |
 | /api/integrations/fanmass/events/[eventId]/link | GET, POST | legacy batch-link body | 410 `EVENT_BATCH_LINKS_RETIRED` | no reads or writes |
@@ -338,7 +339,7 @@ All wrapped in `withOrgContext` (getAdminUser + `x-v3-org-id` injection) except 
 | /api/brand-assets | GET, POST | requireSession | POST FormData `{name,file,…}` or JSON `{name,logoUrl,…}` | `{success,brandAssets[]\|brandAsset}` | reads/writes `brand_assets`, synchronizes with Fanmass Vision progress |
 | /api/brand-assets/[id] | DELETE | requireSession | path id or slug | `{success,deletedId}` | deletes from `brand_assets` |
 | /api/interactive-report/[partnerSlug] | GET | none (public-by-design: interactive client report) | path partnerSlug | `{partner,matches,vision}` | reads partner metadata, matches, and vision progress aggregates |
-| /api/interactive-report/partner-selfies | GET | none (public-by-design: interactive client report) | `?partnerName&limit&page&fanGroup` | `{selfies[],fanGroups}` | reads vision selfies matching partner or supporter group |
+| /api/interactive-report/partner-selfies | GET | none (public-by-design: interactive client report) | `?club\|partnerId\|partnerSlug` | `{partner,totalSelfies:0,selfies:[]}` | reads the `partners` record only; serves no analysed selfie (the retired `szrt_vision_analysis` is not read) |
 | /api/interactive-report/brand-evidence | GET | none (public-by-design: interactive client report; SZRT tenant only; nothing before `publishApproved`) | `?kind=brand\|club&name&organizationId` | `{success,published,provenPhotos,modelIdentifiedPhotos,samples[]}` | reads `szrt_brand_evidence`; at most 12 samples, one per photo, text-read proof only |
 | /api/drive-folders/[linkId] | PATCH, DELETE | getAdminUser | `?projectId`; PATCH body | `{success}` | update/delete `drive_folder_links` |
 | /api/drive-folders | GET, POST | getAdminUser | `?projectId`; POST folder body | `{success,folders[]}` | reads/inserts `drive_folder_links` |
@@ -376,10 +377,10 @@ CSRF is never counted as a guard: any anonymous caller can fetch the token from
 
 | | routes |
 |---|---:|
-| Fully guarded (every method) | **200** |
+| Fully guarded (every method) | **201** |
 | Open write method, public by design | **5** |
 | Open GET only, writes guarded or absent | **30** |
-| **Total** | **235** |
+| **Total** | **236** |
 
 The previous run of this section (2026-08) listed 40 GAP routes, 21 of them
 unauthenticated writes. Those are closed: messmass#347 and #386 took the first
