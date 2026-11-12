@@ -110,6 +110,7 @@ export interface ParsedEvidenceSample {
 export type EvidenceSkip = { index: number; reason: string };
 
 export const MAX_REPLACE_FILES = 200;
+export const UPLOAD_CONCURRENCY = 5;
 
 type Collection = {
   updateOne: (filter: unknown, update: unknown, options?: unknown) => Promise<unknown>;
@@ -300,19 +301,21 @@ export async function storeEvidenceBatch(
   }
   const skipped: EvidenceSkip[] = [];
   let stored = 0;
-  for (const sample of samples) {
+  const handle = async (sample: ParsedEvidenceSample): Promise<void> => {
     const { index } = sample;
     const { _id, ...fields } = sample.doc;
     const existing = collection.findOne ? ((await collection.findOne({ _id }, { projection: { review: 1 } })) as { review?: unknown } | null) : null;
     if (existing?.review) {
       skipped.push({ index, reason: 'human_reviewed' }); // a person decided; the delivery does not override it
-      continue;
+      return;
     }
-    const cropUrl = await upload(sample.crop, EVIDENCE_MEDIA_FOLDER);
-    const photoUrl = sample.photo ? await upload(sample.photo, EVIDENCE_MEDIA_FOLDER) : null;
+    const [cropUrl, photoUrl] = await Promise.all([
+      upload(sample.crop, EVIDENCE_MEDIA_FOLDER),
+      sample.photo ? upload(sample.photo, EVIDENCE_MEDIA_FOLDER) : Promise.resolve(null),
+    ]);
     if (!cropUrl || (sample.photo && !photoUrl)) {
       skipped.push({ index, reason: 'media_storage_failed' });
-      continue;
+      return;
     }
     await collection.updateOne(
       { _id },
@@ -320,6 +323,10 @@ export async function storeEvidenceBatch(
       { upsert: true },
     );
     stored += 1;
+  };
+  // A few at a time: each upload is a round trip to R2, and one request must finish well inside the function limit
+  for (let start = 0; start < samples.length; start += UPLOAD_CONCURRENCY) {
+    await Promise.all(samples.slice(start, start + UPLOAD_CONCURRENCY).map(handle));
   }
   return { stored, skipped, replaced };
 }

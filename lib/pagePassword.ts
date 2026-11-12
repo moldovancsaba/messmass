@@ -19,7 +19,8 @@ export type PageType =
   | 'partner-edit'
   | 'organization-edit'
   | 'filter'
-  | 'hashtag';
+  | 'hashtag'
+  | 'global-report';
 
 export interface PagePassword {
   _id?: string;
@@ -466,6 +467,14 @@ export function buildShareableUrl(pageType: PageType, canonicalPageId: string, b
       break;
     case 'filter':
       url += `/filter/${basePageId}`;
+      if (variantSlug) {
+        url += `?variant=${encodeURIComponent(variantSlug)}`;
+      }
+      break;
+    case 'global-report':
+      // WHAT: The global report at /report/global (served by /interactive-report/global): everything Messmass collects
+      // WHY: Shared the same way as every other report: a page password issued from its Reports workspace
+      url += `/report/global`;
       if (variantSlug) {
         url += `?variant=${encodeURIComponent(variantSlug)}`;
       }

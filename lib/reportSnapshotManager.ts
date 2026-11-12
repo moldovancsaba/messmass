@@ -5,7 +5,7 @@ import { InteractiveReportData } from "@/components/theme/interactive-report/typ
 import { revalidateTag } from "next/cache";
 
 export interface ReportSnapshotQuery {
-  scopeType: "hashtag" | "partner" | "event";
+  scopeType: "hashtag" | "partner" | "event" | "global";
   scopeIdentifier: string;
   sportFilter?: string;
   organizationId?: string;

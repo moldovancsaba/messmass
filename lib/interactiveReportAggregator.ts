@@ -73,12 +73,14 @@ export function isSzrtScopeIdentifier(identifier: string): boolean {
  * caller is not scoped to another tenant.
  */
 function isSzrtVisionScope(
-  scopeType: 'hashtag' | 'partner' | 'event',
+  scopeType: 'hashtag' | 'partner' | 'event' | 'global',
   scopeIdentifier: string,
   organizationId?: string
 ): boolean {
-  if (scopeType !== 'hashtag' && scopeType !== 'partner') return false;
   if (organizationId && organizationId !== SZRT_ORGANIZATION_ID) return false;
+  // The global report holds everything, so the SZRT vision analysis is part of it (still only once a person approved it)
+  if (scopeType === 'global') return true;
+  if (scopeType !== 'hashtag' && scopeType !== 'partner') return false;
   return isSzrtScopeIdentifier(scopeIdentifier);
 }
 
@@ -198,7 +200,7 @@ function buildDemographicsFromVision(vision: VisionProgressData | null): Demogra
 }
 
 export interface ReportScopeQuery {
-  type: 'hashtag' | 'partner' | 'event';
+  type: 'hashtag' | 'partner' | 'event' | 'global';
   identifier: string;
   organizationId?: string;
   sportFilter?: string;
@@ -1070,7 +1072,7 @@ export async function getInteractiveReportData(
 }
 
 
-export type ScopeType = "hashtag" | "partner" | "event";
+export type ScopeType = "hashtag" | "partner" | "event" | "global";
 
 export interface ScopeResolutionResult {
   scopeType: ScopeType;
@@ -1230,6 +1232,25 @@ export async function resolveScopeProjectIds(
       viewSlug: scopeIdentifier,
       emoji: "🏷️",
       subtitle: `Consolidated interactive analytics and audience telemetry across #${scopeIdentifier} events.`,
+      organizationId,
+    };
+  } else if (scopeType === "global") {
+    // Everything Messmass holds, every project of every organization, in the same report as the others. The report
+    // is behind a page password or an admin session (app/global-report): it spans clients, so it is never public.
+    campaignProjects = await db
+      .collection("projects")
+      .find(organizationId ? { organizationId } : {})
+      .sort({ eventDate: 1 })
+      .toArray();
+
+    scopeHeader = {
+      type: "global",
+      id: "all",
+      name: "All data",
+      viewSlug: "all",
+      emoji: "🌍",
+      subtitle:
+        "Everything Messmass collects: fan engagement, photo activation volume, opt-in conversion and Fanmass visual intelligence across all events, partners and organizations.",
       organizationId,
     };
   } else if (scopeType === "partner") {

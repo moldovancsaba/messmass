@@ -7,6 +7,8 @@ import { isMediaStorageConfigured } from '@/lib/mediaStorage';
 import { parseEvidenceBatch, storeEvidenceBatch, type EvidenceDb } from '@/lib/fanmassEvidence';
 
 export const dynamic = 'force-dynamic';
+// A batch uploads up to 40 crops to R2; give it room (the sender also keeps batches small)
+export const maxDuration = 60;
 
 export async function POST(request: NextRequest) {
   const authError = requireFanmassIntegrationAuth(request);

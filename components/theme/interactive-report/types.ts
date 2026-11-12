@@ -149,7 +149,7 @@ export interface VisionProgressData {
 }
 
 export interface ScopeHeader {
-  type: 'hashtag' | 'partner' | 'event';
+  type: 'hashtag' | 'partner' | 'event' | 'global';
   id: string;
   name: string;
   viewSlug?: string;
