@@ -8,16 +8,16 @@ jest.mock('@/lib/mongodb', () => ({ __esModule: true, default: Promise.resolve({
 jest.mock('@/lib/config', () => ({ __esModule: true, default: { dbName: 'test', fanmassIntegrationToken: 'secret-token' } }));
 
 import {
-  createHumanEvidence, deleteHumanEvidence, listEvidenceForReview, listReviewOverrides, reviewEvidence,
-} from '@/lib/szrtEvidenceReview';
-import { isProof, pickEvidence, storeEvidenceBatch, parseEvidenceBatch, toSample, type BrandEvidenceDoc } from '@/lib/szrtBrandEvidence';
+  createHumanEvidence, deleteHumanEvidence, listEvidenceForReview, listReviewOverrides, listTrainingRules, reviewEvidence, trainingTextKey,
+} from '@/lib/fanmassEvidenceReview';
+import { isProof, pickEvidence, storeEvidenceBatch, parseEvidenceBatch, toSample, type BrandEvidenceDoc } from '@/lib/fanmassEvidence';
 
 const JPEG = Buffer.from([0xff, 0xd8, 0xff, 0xe0, 0, 16, 0x4a, 0x46, 0x49, 0x46]).toString('base64');
 const now = () => '2026-11-12T13:00:00Z';
 
 function doc(over: Partial<BrandEvidenceDoc> = {}): BrandEvidenceDoc {
   return {
-    _id: 'Basketball/a.jpg#ocr_001', fileKey: 'Basketball/a.jpg', sport: 'Basketball', entityKind: 'club', name: 'Porto', nameKey: 'porto', tier: 'text_read',
+    origin: 'szrt', _id: 'Basketball/a.jpg#ocr_001', fileKey: 'Basketball/a.jpg', sport: 'Basketball', entityKind: 'club', name: 'Porto', nameKey: 'porto', tier: 'text_read',
     method: 'ocr', match: 'contains', readText: 'WWW.SPORTOLONEM', ocrConfidence: 1, confidence: 0.9, itemType: 'other', onPerson: true,
     box: { x: 0.1, y: 0.1, w: 0.2, h: 0.1 }, area: 0.02, score: 0.81, cropUrl: 'https://cdn.example/c.jpg', analyzedAt: '2026-11-12T10:00:00Z',
     pipeline: 'p', receivedAt: '2026-11-12T11:00:00Z', source: 'fanmass', ...over,
@@ -150,25 +150,26 @@ describe('a person decision wins over a later delivery', () => {
   const upload = async () => 'https://cdn.example/new.jpg';
 
   it('does not overwrite a reviewed sample and says so', async () => {
-    const { db, store } = memory([doc({ review: { status: 'rejected', by: 'owner', at: now(), note: '' } })]);
+    const { db, store } = memory([doc({ _id: 'szrt|Basketball/a.jpg#ocr_001', review: { status: 'rejected', by: 'owner', at: now(), note: '' } })]);
     const { parsed } = batch();
     const result = await storeEvidenceBatch(db, parsed, { upload, now });
     expect(result).toMatchObject({ stored: 0, skipped: [{ index: 0, reason: 'human_reviewed' }] });
-    expect(store.get('Basketball/a.jpg#ocr_001')!.readText).toBe('WWW.SPORTOLONEM');
-    expect(store.get('Basketball/a.jpg#ocr_001')!.review?.status).toBe('rejected');
+    expect(store.get('szrt|Basketball/a.jpg#ocr_001')!.readText).toBe('WWW.SPORTOLONEM');
+    expect(store.get('szrt|Basketball/a.jpg#ocr_001')!.review?.status).toBe('rejected');
   });
 
   it('replaces only unreviewed deliveries of the pictures named, never a person sample', async () => {
     const { db, store } = memory([
-      doc({ _id: 'Basketball/a.jpg#ocr_009', name: 'Old', nameKey: 'old' }),
-      doc({ _id: 'Basketball/a.jpg#ocr_010', review: { status: 'confirmed', by: 'o', at: now(), note: '' } }),
+      doc({ _id: 'szrt|Basketball/a.jpg#ocr_009', name: 'Old', nameKey: 'old' }),
+      doc({ _id: 'szrt|Basketball/a.jpg#ocr_010', review: { status: 'confirmed', by: 'o', at: now(), note: '' } }),
       doc({ _id: 'human:u1', fileKey: 'Basketball/a.jpg', source: 'human', tier: 'human' }),
-      doc({ _id: 'Football/z.jpg#ocr_001', fileKey: 'Football/z.jpg' }),
+      doc({ _id: 'szrt|Football/z.jpg#ocr_001', fileKey: 'Football/z.jpg' }),
+      doc({ _id: 'camera-e1|Basketball/a.jpg#ocr_001', origin: 'camera-e1', fileKey: 'Basketball/a.jpg' }), // same file key, another origin
     ]);
-    const { parsed, replaceFiles } = batch({ replaceFiles: ['Basketball/a.jpg'] });
-    const result = await storeEvidenceBatch(db, parsed, { upload, now, replaceFiles });
+    const { parsed, replaceFiles, origin } = batch({ replaceFiles: ['Basketball/a.jpg'] });
+    const result = await storeEvidenceBatch(db, parsed, { upload, now, replaceFiles, origin });
     expect(result.replaced).toBe(1);
-    expect([...store.keys()].sort()).toEqual(['Basketball/a.jpg#ocr_001', 'Basketball/a.jpg#ocr_010', 'Football/z.jpg#ocr_001', 'human:u1']);
+    expect([...store.keys()].sort()).toEqual(['camera-e1|Basketball/a.jpg#ocr_001', 'human:u1', 'szrt|Basketball/a.jpg#ocr_001', 'szrt|Basketball/a.jpg#ocr_010', 'szrt|Football/z.jpg#ocr_001']);
   });
 
   it('accepts a request that only withdraws pictures', () => {
@@ -181,15 +182,62 @@ describe('a person decision wins over a later delivery', () => {
 describe('overrides for Fanmass', () => {
   it('lists every decision and every sample a person added, with the region it is about', async () => {
     const { db } = memory([
-      doc({ review: { status: 'rejected', by: 'o', at: now(), note: '' } }),
-      doc({ _id: 'Football/b.jpg#ocr_002', fileKey: 'Football/b.jpg', name: 'Sportoló Nem', nameKey: 'sportolo-nem', entityKind: 'brand', review: { status: 'corrected', by: 'o', at: now(), note: '' } }),
+      doc({ _id: 'szrt|Basketball/a.jpg#ocr_001', review: { status: 'rejected', by: 'o', at: now(), note: '' } }),
+      doc({ _id: 'szrt|Football/b.jpg#ocr_002', fileKey: 'Football/b.jpg', name: 'Sportoló Nem', nameKey: 'sportolo-nem', entityKind: 'brand', review: { status: 'corrected', by: 'o', at: now(), note: '' } }),
       doc({ _id: 'human:u1', fileKey: 'human/u1', source: 'human', tier: 'human', name: 'Veolia', entityKind: 'brand', review: { status: 'confirmed', by: 'o', at: now(), note: '' } }),
       doc({ _id: 'Football/c.jpg#ocr_001', fileKey: 'Football/c.jpg' }),
     ]);
     expect(await listReviewOverrides(db)).toEqual([
-      { id: 'Basketball/a.jpg#ocr_001', fileKey: 'Basketball/a.jpg', regionId: 'ocr_001', source: 'fanmass', status: 'rejected', name: 'Porto', kind: 'club' },
-      { id: 'Football/b.jpg#ocr_002', fileKey: 'Football/b.jpg', regionId: 'ocr_002', source: 'fanmass', status: 'corrected', name: 'Sportoló Nem', kind: 'brand' },
-      { id: 'human:u1', fileKey: 'human/u1', regionId: '', source: 'human', status: 'confirmed', name: 'Veolia', kind: 'brand' },
+      { id: 'szrt|Basketball/a.jpg#ocr_001', origin: 'szrt', fileKey: 'Basketball/a.jpg', regionId: 'ocr_001', source: 'fanmass', status: 'rejected', name: 'Porto', kind: 'club' },
+      { id: 'szrt|Football/b.jpg#ocr_002', origin: 'szrt', fileKey: 'Football/b.jpg', regionId: 'ocr_002', source: 'fanmass', status: 'corrected', name: 'Sportoló Nem', kind: 'brand' },
+      { id: 'human:u1', origin: 'szrt', fileKey: 'human/u1', regionId: '', source: 'human', status: 'confirmed', name: 'Veolia', kind: 'brand' },
     ]);
+  });
+});
+
+describe('the library is global: origins', () => {
+  it('lists any origin, or one, and a person-added sample carries the origin they chose', async () => {
+    const { db } = memory([doc(), doc({ _id: 'camera-e1|x#1', origin: 'camera-e1', fileKey: 'x', name: 'Adidas', nameKey: 'adidas', entityKind: 'brand' })]);
+    expect((await listEvidenceForReview(db, { status: 'all' })).total).toBe(2);
+    expect((await listEvidenceForReview(db, { status: 'all', origin: 'camera-e1' })).rows.map((r) => r.name)).toEqual(['Adidas']);
+    const row = await createHumanEvidence(db, { name: 'Veolia', kind: 'brand', crop: JPEG, origin: 'camera-e1' }, 'owner', { upload: async () => 'https://cdn.example/h.jpg', now, id: () => 'u9' });
+    expect(row.origin).toBe('camera-e1');
+    expect((await createHumanEvidence(db, { name: 'Veolia', kind: 'brand', crop: JPEG }, 'owner', { upload: async () => 'https://cdn.example/h.jpg', now, id: () => 'u10' })).origin).toBe('manual');
+    await expect(createHumanEvidence(db, { name: 'Veolia', kind: 'brand', crop: JPEG, origin: 'Bad Origin!' }, 'owner', { upload: async () => 'x', now })).rejects.toMatchObject({ status: 400 });
+  });
+
+  it('keeps overrides per origin on request', async () => {
+    const { db } = memory([
+      doc({ review: { status: 'rejected', by: 'o', at: now(), note: '' } }),
+      doc({ _id: 'camera-e1|x#1', origin: 'camera-e1', fileKey: 'x', review: { status: 'rejected', by: 'o', at: now(), note: '' } }),
+    ]);
+    expect((await listReviewOverrides(db)).map((o) => o.origin).sort()).toEqual(['camera-e1', 'szrt']);
+    expect((await listReviewOverrides(db, { origin: 'szrt' })).map((o) => o.origin)).toEqual(['szrt']);
+  });
+});
+
+describe('training: what the decisions teach the whole system', () => {
+  it('turns rejections into deny rules, and corrections and confirmations and additions into alias rules', async () => {
+    const rejected = { status: 'rejected' as const, by: 'o', at: now(), note: '' };
+    const { db } = memory([
+      doc({ _id: 'szrt|a#1', readText: 'WWW.SPORTOLONEM', review: rejected }),                                                            // Porto is not SPORTOLONEM
+      doc({ _id: 'szrt|b#1', readText: 'LE COPER', name: 'Lee Cooper', nameKey: 'lee-cooper', entityKind: 'brand', tier: 'text_read', review: { status: 'confirmed', by: 'o', at: now(), note: '' } }),
+      doc({ _id: 'camera-e1|c#1', origin: 'camera-e1', readText: 'Atomerőmű', name: 'Atomerőmű SE', nameKey: 'atomeromu-se', review: { status: 'corrected', by: 'o', at: now(), note: '', original: { name: 'Paks', nameKey: 'paks', entityKind: 'club' } } }),
+      doc({ _id: 'human:u1', origin: 'manual', source: 'human', tier: 'human', readText: 'MVM', name: 'MVM', nameKey: 'mvm', entityKind: 'brand', review: { status: 'confirmed', by: 'o', at: now(), note: '' } }),
+      doc({ _id: 'szrt|d#1', readText: '', review: rejected }),   // no text read: nothing to teach
+      doc({ _id: 'szrt|e#1', readText: 'FC PORTO' }),            // not reviewed: nothing to teach
+    ]);
+    const { deny, alias } = await listTrainingRules(db);
+    expect(deny).toEqual([
+      { text: 'wwwsportolonem', readText: 'WWW.SPORTOLONEM', name: 'Porto', kind: 'club' },
+      { text: 'atomeromu', readText: 'Atomerőmű', name: 'Paks', kind: 'club' },
+    ]);
+    expect(alias.map((r) => `${r.text}=${r.name}/${r.kind}`).sort()).toEqual(['atomeromu=Atomerőmű SE/club', 'lecoper=Lee Cooper/brand', 'mvm=MVM/brand']);
+  });
+
+  it('folds the text the way Fanmass does: lowercase, no accents, letters and digits only', () => {
+    expect(trainingTextKey('Atomerőmű')).toBe('atomeromu');
+    expect(trainingTextKey('WWW.SPORTOLONEM')).toBe('wwwsportolonem');
+    expect(trainingTextKey('Fc-Porto  1')).toBe('fcporto1');
   });
 });

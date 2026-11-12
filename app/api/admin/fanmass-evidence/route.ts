@@ -1,9 +1,9 @@
-// Review page of the SZRT proof samples: list them (weakest first), and add a sample of your own.
+// The global evidence library for review: list the samples of any origin (weakest first), and add a sample of your own.
 import { NextRequest, NextResponse } from 'next/server';
 import { requireAdmin } from '@/lib/apiGuards';
 import { getAdminUser } from '@/lib/auth';
 import { getDb, handleRouteError } from '@/lib/fanmassIntegration';
-import { createHumanEvidence, listEvidenceForReview, type ReviewDb } from '@/lib/szrtEvidenceReview';
+import { createHumanEvidence, listEvidenceForReview, type ReviewDb } from '@/lib/fanmassEvidenceReview';
 
 export const dynamic = 'force-dynamic';
 
@@ -13,7 +13,7 @@ export async function GET(request: NextRequest) {
   try {
     const q = new URL(request.url).searchParams;
     const result = await listEvidenceForReview((await getDb()) as unknown as ReviewDb, {
-      status: q.get('status') || undefined, kind: q.get('kind') || undefined, name: q.get('name') || undefined,
+      status: q.get('status') || undefined, kind: q.get('kind') || undefined, name: q.get('name') || undefined, origin: q.get('origin') || undefined,
       limit: Number(q.get('limit')) || undefined, offset: Number(q.get('offset')) || undefined,
     });
     return NextResponse.json({ success: true, ...result });

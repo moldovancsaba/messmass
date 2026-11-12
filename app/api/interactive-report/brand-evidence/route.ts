@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import clientPromise from '@/lib/mongodb';
 import config from '@/lib/config';
 import { SZRT_ORGANIZATION_ID, isVisionPublishable } from '@/lib/interactiveReportAggregator';
-import { listBrandEvidence, type EvidenceDb, type EvidenceKind } from '@/lib/szrtBrandEvidence';
+import { listBrandEvidence, type EvidenceDb, type EvidenceKind } from '@/lib/fanmassEvidence';
 
 export const dynamic = 'force-dynamic';
 
@@ -29,7 +29,7 @@ export async function GET(request: NextRequest) {
     if (!isVisionPublishable(visionDoc)) {
       return NextResponse.json({ success: true, published: false, kind, name, provenPhotos: 0, modelIdentifiedPhotos: 0, samples: [] });
     }
-    const listing = await listBrandEvidence(db as unknown as EvidenceDb, { kind: kind as EvidenceKind, name });
+    const listing = await listBrandEvidence(db as unknown as EvidenceDb, { kind: kind as EvidenceKind, name, origin: 'szrt' });
     return NextResponse.json({ success: true, published: true, ...listing });
   } catch (err) {
     console.error('Brand evidence API error:', err);

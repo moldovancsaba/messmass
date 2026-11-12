@@ -118,7 +118,7 @@ it drifts. Do not edit between the markers.
 | **Design Tokens** | 410 | `app/styles/theme.css` |
 | **Utility CSS classes** | 192 | `app/styles/utilities.css` |
 | **App routes (pages)** | 83 | `app/**/page.tsx` |
-| **API routes** | 239 | `app/api/**/route.ts` |
+| **API routes** | 241 | `app/api/**/route.ts` |
 
 The modules with the most importers — the ones whose change radius is
 largest, and the ones to read first:
@@ -133,7 +133,7 @@ largest, and the ones to read first:
 | `components/ColoredCard.tsx` | 44 | 52 |
 | `lib/apiClient.ts` | 42 | 258 |
 | `lib/db.ts` | 42 | 17 |
-| `lib/fanmassIntegration.ts` | 37 | 485 |
+| `lib/fanmassIntegration.ts` | 39 | 485 |
 | `components/MaterialIcon.tsx` | 34 | 119 |
 | `components/UnifiedAdminHeroWithSearch.tsx` | 27 | 192 |
 | `lib/mongoose-v3.ts` | 21 | 66 |
@@ -1030,6 +1030,7 @@ shows up here on the next regeneration, which is the point.
 | `/admin/events/[id]` | `app/admin/events/[id]/page.tsx` |
 | `/admin/events/[id]/kyc-data` | `app/admin/events/[id]/kyc-data/page.tsx` |
 | `/admin/fanmass` | `app/admin/fanmass/page.tsx` |
+| `/admin/fanmass-evidence` | `app/admin/fanmass-evidence/page.tsx` |
 | `/admin/filter` | `app/admin/filter/page.tsx` |
 | `/admin/filter/[slug]/reports` | `app/admin/filter/[slug]/reports/page.tsx` |
 | `/admin/hashtags` | `app/admin/hashtags/page.tsx` |
@@ -1057,7 +1058,6 @@ shows up here on the next regeneration, which is the point.
 | `/admin/reports` | `app/admin/reports/page.tsx` |
 | `/admin/styles` | `app/admin/styles/page.tsx` |
 | `/admin/styles/[id]` | `app/admin/styles/[id]/page.tsx` |
-| `/admin/szrt-evidence` | `app/admin/szrt-evidence/page.tsx` |
 | `/admin/unauthorized` | `app/admin/unauthorized/page.tsx` |
 | `/admin/users` | `app/admin/users/page.tsx` |
 | `/admin/visualization` | `app/admin/visualization/page.tsx` |
@@ -1085,7 +1085,7 @@ shows up here on the next regeneration, which is the point.
 | `/terms` | `app/terms/page.tsx` |
 | `/test-csrf` | `app/test-csrf/page.tsx` |
 
-### API routes (239)
+### API routes (241)
 
 `auth` is the guard symbol the route actually calls. A blank cell
 means the route calls none — public by construction, or a gap.
@@ -1107,6 +1107,8 @@ means the route calls none — public by construction, or a gap.
 | `/api/admin/clear-cookies` | GET, POST | — |
 | `/api/admin/contact-inquiries` | GET | `getAdminUser` |
 | `/api/admin/email-selftest` | GET | `requireSession` |
+| `/api/admin/fanmass-evidence` | GET, POST | `getAdminUser, requireAdmin` |
+| `/api/admin/fanmass-evidence/[id]` | PATCH, DELETE | `getAdminUser, requireAdmin` |
 | `/api/admin/fanmass/commands` | POST | `getAdminUser` |
 | `/api/admin/fanmass/events` | GET | `getAdminUser` |
 | `/api/admin/fanmass/events/[eventId]` | GET, POST | `getAdminUser` |
@@ -1133,8 +1135,6 @@ means the route calls none — public by construction, or a gap.
 | `/api/admin/register` | POST | — |
 | `/api/admin/sync-events-to-camera` | GET | `getAdminUser` |
 | `/api/admin/sync-partners-to-camera` | GET | `getAdminUser` |
-| `/api/admin/szrt-evidence` | GET, POST | `getAdminUser, requireAdmin` |
-| `/api/admin/szrt-evidence/[id]` | PATCH, DELETE | `getAdminUser, requireAdmin` |
 | `/api/admin/ui-settings` | GET, PUT | `requireAdmin` |
 | `/api/admin/users/[id]/organizations` | PUT | `getAdminUser` |
 | `/api/admin/users/[id]/role` | PUT | `getAdminUser` |
@@ -1425,12 +1425,14 @@ means the route calls none — public by construction, or a gap.
 | `/api/integrations/fanmass/events/[eventId]/photos/[photoId]` | POST, DELETE | `requireFanmassIntegrationAuth` |
 | `/api/integrations/fanmass/events/[eventId]/stats` | POST | `requireFanmassIntegrationAuth` |
 | `/api/integrations/fanmass/events/[eventId]/sync` | GET, POST | `requireFanmassIntegrationAuth` |
+| `/api/integrations/fanmass/evidence` | POST | `requireFanmassIntegrationAuth` |
+| `/api/integrations/fanmass/evidence-reviews` | GET | `requireFanmassIntegrationAuth` |
+| `/api/integrations/fanmass/evidence-training` | GET | `requireFanmassIntegrationAuth` |
 | `/api/integrations/fanmass/partners` | GET, POST | `requireFanmassIntegrationAuth` |
 | `/api/integrations/fanmass/partners/[partnerId]/events` | GET | `requireFanmassIntegrationAuth` |
 | `/api/integrations/fanmass/rescan-requests` | GET | `requireFanmassIntegrationAuth` |
 | `/api/integrations/fanmass/rescan-requests/[eventId]` | DELETE | `requireFanmassIntegrationAuth` |
 | `/api/integrations/fanmass/szrt-evidence` | POST | `requireFanmassIntegrationAuth` |
-| `/api/integrations/fanmass/szrt-evidence-reviews` | GET | `requireFanmassIntegrationAuth` |
 | `/api/integrations/fanmass/szrt-progress` | POST | `requireFanmassIntegrationAuth` |
 | `/api/integrations/fanmass/szrt-publish` | POST | `requireFanmassIntegrationAuth` |
 | `/api/integrations/fanmass/variables` | GET, POST | `requireFanmassIntegrationAuth` |

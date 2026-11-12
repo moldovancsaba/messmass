@@ -4,7 +4,7 @@
 
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
-import type { BrandEvidenceListing, EvidenceKind, EvidenceSample } from '@/lib/szrtBrandEvidence';
+import type { BrandEvidenceListing, EvidenceKind, EvidenceSample } from '@/lib/fanmassEvidence';
 import report from './interactive-report.module.css';
 import styles from './brand-evidence.module.css';
 

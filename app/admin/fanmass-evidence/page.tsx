@@ -1,14 +1,15 @@
 'use client';
 /* eslint-disable @next/next/no-img-element -- crops are content-addressed R2 files of unknown size */
 
-// Review page for the proof behind SZRT brand and club figures. Using it is optional: nothing waits for a person.
-// But a person can always look at every sample, confirm or reject it, correct the name or kind it was matched to,
-// add a sample of their own, or delete one they added. A decision is stored with who and when, wins over later
-// deliveries, and reaches the report figures on the next Fanmass publish run.
+// Review page of the global evidence library: the proof behind every brand and club figure Fanmass produces, for any
+// project or event. Using it is optional: nothing waits for a person. But a person can always look at every sample,
+// confirm or reject it, correct the name or kind it was matched to, add a sample of their own, or delete one they
+// added. A decision is stored with who and when, wins over later deliveries, reaches the report figures on the next
+// Fanmass publish run, and teaches the whole system: Fanmass applies it to every later analysis.
 
 import React, { useCallback, useEffect, useState } from 'react';
 import { ensureCsrfToken } from '@/lib/apiClient';
-import type { BrandEvidenceDoc } from '@/lib/szrtBrandEvidence';
+import type { BrandEvidenceDoc } from '@/lib/fanmassEvidence';
 import styles from './page.module.css';
 
 type Row = BrandEvidenceDoc & { id: string };
@@ -49,6 +50,7 @@ export default function SzrtEvidenceReviewPage() {
   const [status, setStatus] = useState('needs_review');
   const [kind, setKind] = useState('');
   const [name, setName] = useState('');
+  const [origin, setOrigin] = useState('');
   const [offset, setOffset] = useState(0);
   const [rows, setRows] = useState<Row[]>([]);
   const [total, setTotal] = useState(0);
@@ -58,7 +60,7 @@ export default function SzrtEvidenceReviewPage() {
   const [draft, setDraft] = useState({ name: '', kind: 'brand', note: '' });
   const [notes, setNotes] = useState<Record<string, string>>({});
   const [adding, setAdding] = useState(false);
-  const [form, setForm] = useState({ name: '', kind: 'brand', sport: '', readText: '', note: '' });
+  const [form, setForm] = useState({ name: '', kind: 'brand', origin: 'szrt', sport: '', readText: '', note: '' });
   const [file, setFile] = useState<File | null>(null);
 
   const load = useCallback(async () => {
@@ -66,8 +68,9 @@ export default function SzrtEvidenceReviewPage() {
     const q = new URLSearchParams({ status, limit: String(PAGE), offset: String(offset) });
     if (kind) q.set('kind', kind);
     if (name.trim()) q.set('name', name.trim());
+    if (origin.trim()) q.set('origin', origin.trim().toLowerCase());
     try {
-      const response = await fetch(`/api/admin/szrt-evidence?${q.toString()}`, { cache: 'no-store' });
+      const response = await fetch(`/api/admin/fanmass-evidence?${q.toString()}`, { cache: 'no-store' });
       const data = await response.json();
       if (!response.ok || data?.success === false) throw new Error(data?.error?.message || data?.error || 'Could not load the samples.');
       setRows(data.rows);
@@ -78,14 +81,14 @@ export default function SzrtEvidenceReviewPage() {
     } finally {
       setLoading(false);
     }
-  }, [status, kind, name, offset]);
+  }, [status, kind, name, origin, offset]);
 
   useEffect(() => {
     void load();
   }, [load]);
 
   const act = async (row: Row, body: Record<string, unknown>) => {
-    const { ok, data } = await call(`/api/admin/szrt-evidence/${encodeURIComponent(row.id)}`, 'PATCH', { ...body, note: notes[row.id] ?? '' });
+    const { ok, data } = await call(`/api/admin/fanmass-evidence/${encodeURIComponent(row.id)}`, 'PATCH', { ...body, note: notes[row.id] ?? '' });
     setMessage(ok ? 'Saved. The report figures follow on the next publish run (within 20 minutes).' : data?.error?.message || 'Could not save.');
     setEditing(null);
     if (ok) await load();
@@ -93,7 +96,7 @@ export default function SzrtEvidenceReviewPage() {
 
   const remove = async (row: Row) => {
     if (!window.confirm('Delete this sample you added? This cannot be undone.')) return;
-    const { ok, data } = await call(`/api/admin/szrt-evidence/${encodeURIComponent(row.id)}`, 'DELETE');
+    const { ok, data } = await call(`/api/admin/fanmass-evidence/${encodeURIComponent(row.id)}`, 'DELETE');
     setMessage(ok ? 'Deleted.' : data?.error?.message || 'Could not delete.');
     if (ok) await load();
   };
@@ -102,12 +105,12 @@ export default function SzrtEvidenceReviewPage() {
     event.preventDefault();
     if (!file) return setMessage('Choose the picture that shows it.');
     if (file.size > MAX_IMAGE_BYTES) return setMessage('The picture is too large: at most about 1.4 MB.');
-    const { ok, data } = await call('/api/admin/szrt-evidence', 'POST', { ...form, crop: await readAsDataUrl(file) });
+    const { ok, data } = await call('/api/admin/fanmass-evidence', 'POST', { ...form, crop: await readAsDataUrl(file) });
     setMessage(ok ? 'Added. It counts as proof from the next publish run.' : data?.error?.message || 'Could not add it.');
     if (ok) {
       setAdding(false);
       setFile(null);
-      setForm({ name: '', kind: 'brand', sport: '', readText: '', note: '' });
+      setForm({ name: '', kind: 'brand', origin: 'szrt', sport: '', readText: '', note: '' });
       setStatus('human');
       setOffset(0);
       await load();
@@ -116,11 +119,12 @@ export default function SzrtEvidenceReviewPage() {
 
   return (
     <main className={styles.page}>
-      <h1 className={styles.title}>SZRT proof review</h1>
+      <h1 className={styles.title}>Fanmass proof review</h1>
       <p className={styles.lead}>
-        Every brand and club figure in the SZRT report rests on a sample: the crop of the picture where its name was read.
-        Reviewing is optional and nothing waits for it, but you can always correct the machine here. Your decision is stored
-        with your name and the time, a later delivery never overrides it, and the report figures follow it on the next publish run.
+        Every brand and club figure Fanmass produces, for any project or event, rests on a sample: the crop of the picture where
+        its name was read. Reviewing is optional and nothing waits for it, but you can always correct the machine here. Your
+        decision is stored with your name and the time, a later delivery never overrides it, the report figures follow it on the
+        next publish run, and it teaches the whole system: Fanmass applies it to every later analysis, whatever the project.
       </p>
 
       <div className={styles.toolbar}>
@@ -139,6 +143,9 @@ export default function SzrtEvidenceReviewPage() {
         <label className={styles.field}>Name
           <input className={styles.input} value={name} placeholder="Starts with…" onChange={(e) => { setName(e.target.value); setOffset(0); }} />
         </label>
+        <label className={styles.field}>Origin
+          <input className={styles.input} value={origin} placeholder="All (e.g. szrt)" onChange={(e) => { setOrigin(e.target.value); setOffset(0); }} />
+        </label>
         <button type="button" className={`${styles.button} ${styles.primary}`} onClick={() => setAdding((v) => !v)}>
           {adding ? 'Close' : 'Add a sample'}
         </button>
@@ -156,6 +163,9 @@ export default function SzrtEvidenceReviewPage() {
                 <option value="brand">Brand</option>
                 <option value="club">Club</option>
               </select>
+            </label>
+            <label className={styles.field}>Origin (project or event)
+              <input className={styles.input} required value={form.origin} placeholder="szrt" onChange={(e) => setForm({ ...form, origin: e.target.value.toLowerCase() })} />
             </label>
             <label className={styles.field}>Sport
               <input className={styles.input} value={form.sport} placeholder="Football, Handball…" onChange={(e) => setForm({ ...form, sport: e.target.value })} />
@@ -187,6 +197,7 @@ export default function SzrtEvidenceReviewPage() {
                 <div className={styles.cropFrame}><img src={row.cropUrl} alt={`Crop for ${row.name}`} loading="lazy" /></div>
                 <div className={styles.body}>
                   <h2 className={styles.name}>{row.name} <span className={styles.badge}>{row.entityKind}</span>{' '}
+                    <span className={styles.badge}>{row.origin}</span>{' '}
                     {review ? <span className={styles.badge}>{review.status}</span> : <span className={styles.badge}>{human ? 'added' : 'not reviewed'}</span>}</h2>
                   {row.readText && <div className={styles.readText}>“{row.readText}”</div>}
                   <div className={styles.facts}>

@@ -1,9 +1,9 @@
-// One SZRT proof sample: confirm, reject, correct or restore it (PATCH), delete one a person added (DELETE).
+// One sample of the global evidence library: confirm, reject, correct or restore it (PATCH), delete one a person added (DELETE).
 import { NextRequest, NextResponse } from 'next/server';
 import { requireAdmin } from '@/lib/apiGuards';
 import { getAdminUser } from '@/lib/auth';
 import { getDb, handleRouteError } from '@/lib/fanmassIntegration';
-import { deleteHumanEvidence, reviewEvidence, type ReviewDb } from '@/lib/szrtEvidenceReview';
+import { deleteHumanEvidence, reviewEvidence, type ReviewDb } from '@/lib/fanmassEvidenceReview';
 
 export const dynamic = 'force-dynamic';
 

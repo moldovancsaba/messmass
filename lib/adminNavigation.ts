@@ -111,10 +111,10 @@ export const adminNavSections: AdminNavSection[] = [
         accentColor: navAccent.success,
       },
       {
-        label: 'SZRT Proof Review',
-        path: '/admin/szrt-evidence',
+        label: 'Fanmass Proof Review',
+        path: '/admin/fanmass-evidence',
         icon: 'fact_check',
-        description: 'Check, confirm, reject, correct or add the proof samples behind the SZRT brand and club figures.',
+        description: 'Check, confirm, reject, correct or add the proof behind every brand and club figure Fanmass produces; the decisions train the whole system.',
         accentColor: navAccent.primary,
       },
     ],

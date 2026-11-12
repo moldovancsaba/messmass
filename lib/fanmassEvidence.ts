@@ -1,20 +1,22 @@
-// Proof behind a brand or club figure in the SZRT report: the crop of the picture where its name was read,
-// the box, and how it was identified. Fanmass reads the text in each picture (Apple Vision OCR) and sends
-// one sample per proven region; the report shows them, never a number without a sample behind it.
+// The global evidence library: the proof behind every brand or club figure Fanmass produces, for any project or
+// event ("origin": `szrt` for the SZRT campaign, later a Camera event, anything else Fanmass analyses). A sample is
+// the crop of the picture where a name was read, its box, and how it was identified. Fanmass reads the text in
+// each picture (Apple Vision OCR) and sends one sample per proven region; a report shows them, never a number
+// without a sample behind it. The people's decisions on these samples are the training data of the whole system.
 //
 // A name only a model recalled (`model_identified`) is stored and counted but never shown as proof.
 //
-// A person can review every sample (lib/szrtEvidenceReview.ts): confirm, reject, correct or add one. A reviewed
+// A person can review every sample (lib/fanmassEvidenceReview.ts): confirm, reject, correct or add one. A reviewed
 // sample is never overwritten by a later delivery, a rejected one is never shown, and a person's own sample is proof.
 
 import { createHash } from 'node:crypto';
 import { storeMedia } from './mediaStorage';
 
-export const SZRT_EVIDENCE_COLLECTION = 'szrt_brand_evidence';
+export const FANMASS_EVIDENCE_COLLECTION = 'fanmass_evidence';
 export const EVIDENCE_SAMPLE_LIMIT = 12;
 export const MAX_EVIDENCE_BATCH = 40;
 export const MAX_EVIDENCE_IMAGE_BYTES = 1_500_000;
-export const EVIDENCE_MEDIA_FOLDER = 'szrt-evidence';
+export const EVIDENCE_MEDIA_FOLDER = 'fanmass-evidence';
 
 export type EvidenceKind = 'brand' | 'club';
 export type EvidenceTier = 'text_read' | 'model_identified' | 'human';
@@ -39,6 +41,8 @@ export interface EvidenceBox {
 
 export interface BrandEvidenceDoc {
   _id: string;
+  /** Which project or event the sample belongs to (`szrt`, a Camera event, ...). Reports read their own origin. */
+  origin: string;
   fileKey: string;
   sport: string;
   entityKind: EvidenceKind;
@@ -119,6 +123,7 @@ export type EvidenceDb = { collection: (name: string) => Collection };
 export type MediaUploader = (bytes: Buffer, folder: string) => Promise<string | null>;
 
 export const PLACEHOLDERS = new Set(['', 'unknown', 'n/a', 'na', 'none', 'null', 'undefined', 'brand', 'logo', 'other', 'unsure']);
+export const ORIGIN = /^[a-z0-9][a-z0-9_-]{0,39}$/;
 const FILE_KEY = /^[A-Za-z0-9 _-]{1,40}\/[A-Za-z0-9._-]{1,120}$/;
 const SAFE_ID = /^[A-Za-z0-9_-]{1,40}$/;
 
@@ -179,7 +184,7 @@ export function evidenceScore(confidence: number, ocrConfidence: number | null, 
  * where `region` is one brand region of the Fanmass analysis and `crop` / `photo` are base64 images.
  * A broken envelope is refused; a bad sample is skipped with its reason so the rest still arrives.
  */
-export function parseEvidenceBatch(body: unknown): { parsed: ParsedEvidenceSample[]; skipped: EvidenceSkip[]; replaceFiles: string[] } {
+export function parseEvidenceBatch(body: unknown): { parsed: ParsedEvidenceSample[]; skipped: EvidenceSkip[]; replaceFiles: string[]; origin: string } {
   const envelope = record(body);
   const samples = envelope?.samples;
   // Pictures whose evidence is replaced by this request (a picture with none left sends an empty list for it)
@@ -195,6 +200,9 @@ export function parseEvidenceBatch(body: unknown): { parsed: ParsedEvidenceSampl
   }
   const pipeline = text(envelope.pipeline, 80);
   if (!pipeline) invalid(400, 'INVALID_EVIDENCE_BATCH', 'pipeline is required.');
+  // Older senders (the SZRT delivery before the library became global) name no origin: they are SZRT
+  const origin = text(envelope.origin, 40) || 'szrt';
+  if (!ORIGIN.test(origin)) invalid(400, 'INVALID_EVIDENCE_BATCH', 'origin must be a short lowercase name (letters, digits, - and _).');
 
   const parsed: ParsedEvidenceSample[] = [];
   const skipped: EvidenceSkip[] = [];
@@ -237,7 +245,8 @@ export function parseEvidenceBatch(body: unknown): { parsed: ParsedEvidenceSampl
       crop,
       photo,
       doc: {
-        _id: `${fileKey}#${regionId}`,
+        _id: `${origin}|${fileKey}#${regionId}`,
+        origin,
         fileKey,
         sport: text(sample.sport, 40) || fileKey.split('/')[0],
         entityKind,
@@ -259,7 +268,7 @@ export function parseEvidenceBatch(body: unknown): { parsed: ParsedEvidenceSampl
       },
     });
   });
-  return { parsed, skipped, replaceFiles: replaceFiles as string[] };
+  return { parsed, skipped, replaceFiles: replaceFiles as string[], origin };
 }
 
 const defaultUploader: MediaUploader = async (bytes, folder) => (await storeMedia(bytes, { folder }))?.url ?? null;
@@ -275,18 +284,18 @@ let indexed = false;
 export async function storeEvidenceBatch(
   db: EvidenceDb,
   samples: ParsedEvidenceSample[],
-  options: { upload?: MediaUploader; now?: () => string; replaceFiles?: string[] } = {},
+  options: { upload?: MediaUploader; now?: () => string; replaceFiles?: string[]; origin?: string } = {},
 ): Promise<{ stored: number; skipped: EvidenceSkip[]; replaced: number }> {
   const upload = options.upload ?? defaultUploader;
   const now = options.now ?? (() => new Date().toISOString());
-  const collection = db.collection(SZRT_EVIDENCE_COLLECTION);
+  const collection = db.collection(FANMASS_EVIDENCE_COLLECTION);
   if (!indexed && collection.createIndex) {
-    await collection.createIndex({ entityKind: 1, nameKey: 1, tier: 1, score: -1, area: -1 }, { name: 'szrt_evidence_lookup' });
+    await collection.createIndex({ origin: 1, entityKind: 1, nameKey: 1, tier: 1, score: -1, area: -1 }, { name: 'fanmass_evidence_lookup' });
     indexed = true;
   }
   let replaced = 0;
   if (options.replaceFiles?.length && collection.deleteMany) {
-    const result = (await collection.deleteMany({ fileKey: { $in: options.replaceFiles }, review: { $exists: false }, source: { $ne: 'human' } })) as { deletedCount?: number } | undefined;
+    const result = (await collection.deleteMany({ origin: options.origin ?? 'szrt', fileKey: { $in: options.replaceFiles }, review: { $exists: false }, source: { $ne: 'human' } })) as { deletedCount?: number } | undefined;
     replaced = Number(result?.deletedCount) || 0;
   }
   const skipped: EvidenceSkip[] = [];
@@ -369,13 +378,13 @@ async function distinctPhotos(collection: Collection, match: Record<string, unkn
 
 export async function listBrandEvidence(
   db: EvidenceDb,
-  input: { kind: EvidenceKind; name: string; limit?: number },
+  input: { kind: EvidenceKind; name: string; limit?: number; origin?: string },
 ): Promise<BrandEvidenceListing> {
   const nameKey = evidenceNameKey(input.name);
   const limit = Math.min(Math.max(Math.trunc(input.limit ?? EVIDENCE_SAMPLE_LIMIT), 1), EVIDENCE_SAMPLE_LIMIT);
   if (!nameKey) return { kind: input.kind, name: input.name, provenPhotos: 0, modelIdentifiedPhotos: 0, samples: [] };
-  const collection = db.collection(SZRT_EVIDENCE_COLLECTION);
-  const base = { entityKind: input.kind, nameKey };
+  const collection = db.collection(FANMASS_EVIDENCE_COLLECTION);
+  const base = { ...(input.origin ? { origin: input.origin } : {}), entityKind: input.kind, nameKey };
   const strongest = (await collection
     .find({ ...base, ...PROOF_FILTER })
     .sort({ score: -1, area: -1, _id: 1 })
