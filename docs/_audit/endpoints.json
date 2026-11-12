@@ -163,6 +163,7 @@
   {"path": "/api/integrations/fanmass/rescan-requests/[eventId]", "methods": ["DELETE"], "file": "app/api/integrations/fanmass/rescan-requests/[eventId]/route.ts", "auth_markers": ["requireFanmassIntegrationAuth"], "no_auth_marker": false},
   {"path": "/api/integrations/fanmass/rescan-requests", "methods": ["GET"], "file": "app/api/integrations/fanmass/rescan-requests/route.ts", "auth_markers": ["requireFanmassIntegrationAuth"], "no_auth_marker": false},
   {"path": "/api/integrations/fanmass/szrt-evidence", "methods": ["POST"], "file": "app/api/integrations/fanmass/szrt-evidence/route.ts", "auth_markers": ["requireFanmassIntegrationAuth"], "no_auth_marker": false},
+  {"path": "/api/integrations/fanmass/szrt-progress", "methods": ["POST"], "file": "app/api/integrations/fanmass/szrt-progress/route.ts", "auth_markers": ["requireFanmassIntegrationAuth"], "no_auth_marker": false},
   {"path": "/api/integrations/fanmass/variables", "methods": ["GET", "POST"], "file": "app/api/integrations/fanmass/variables/route.ts", "auth_markers": ["requireFanmassIntegrationAuth"], "no_auth_marker": false},
   {"path": "/api/integrations/privacy/erase-camera-photo", "methods": ["DELETE"], "file": "app/api/integrations/privacy/erase-camera-photo/route.ts", "auth_markers": [], "no_auth_marker": true},
   {"path": "/api/interactive-report/[partnerSlug]", "methods": ["GET"], "file": "app/api/interactive-report/[partnerSlug]/route.ts", "auth_markers": [], "no_auth_marker": true},

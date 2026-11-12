@@ -366,6 +366,16 @@ model suggestion. It returns nothing until a person set `publishApproved: true` 
 rest of the SZRT vision data. A sample with tier `model_identified` is counted but never returned as proof, and no
 response carries a file name or path.
 
+`POST /api/integrations/fanmass/szrt-progress` (`requireFanmassIntegrationAuth`) receives the report's audience, brand
+and club figures from the same deep rerun: `{ pipeline, totalImages, processedCount, status, currentSport,
+lastUpdated, aggregates: { totalPeople, genders, ageGroups, topBrands, topClubs, topEmotions, sportsBreakdown } }`.
+Fanmass sends the whole picture each time; Messmass validates it (whole non-negative counts, a processed count not
+above the total, sport names and list lengths bounded), derives every share from the counts, and replaces the stored
+figures in `szrt_vision_progress` (`_id: szrt_progress`). It clears the old per-image text and model-guess lists and
+never writes `publishApproved`: a new document starts unapproved and an existing approval is left as it is. A brand
+or club is counted only where its name was read from the picture, once per photo; there are no default values, so an
+unmeasured figure stays zero or empty.
+
 ## Common Failure Modes
 
 - `401` on admin endpoints when no valid admin session exists

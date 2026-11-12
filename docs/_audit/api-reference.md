@@ -1,8 +1,8 @@
 # messmass API Reference
 
-Generated for the fleet audit (messmass#350); measured against `docs/_audit/endpoints.json` (234 endpoints, including brand assets management and interactive report routes). Existing Auth adjudication was re-verified against the handlers @ dd34e229 (2026-09-28); the new Camera style-context read uses `assertCameraSecret`.
+Generated for the fleet audit (messmass#350); measured against `docs/_audit/endpoints.json` (235 endpoints, including brand assets management and interactive report routes). Existing Auth adjudication was re-verified against the handlers @ dd34e229 (2026-09-28); the new Camera style-context read uses `assertCameraSecret`.
 
-Coverage: 234 of 234 routes documented, enforced by
+Coverage: 235 of 235 routes documented, enforced by
 `tests/api-reference-covers-every-route.test.ts` — five routes were missing when
 that claim was last made by hand.
 
@@ -186,6 +186,7 @@ All routes use `requireFanmassIntegrationAuth` (Bearer/`x-api-key` shared token)
 | /api/integrations/fanmass/events/[eventId]/analysis-summary | POST | summary body | 410 `EVENT_LEVEL_EXPORT_RETIRED` | no reads or writes |
 | /api/integrations/fanmass/events/[eventId]/photos/[photoId] | POST, DELETE | requireFanmassIntegrationAuth | POST one photo result; DELETE tombstone, each with partner/event/photo IDs and generation | `{success,data:{status}}` | upserts one `fanmass_camera_photo_analyses` row; rebuilds the per-photo event summary and report stats; ignores stale generations |
 | /api/integrations/fanmass/szrt-evidence | POST | requireFanmassIntegrationAuth | `{pipeline,samples[{fileKey,sport,analyzedAt,region,crop}]}`, at most 40 | `{success,data:{received,stored,skipped[{index,reason}]}}` | stores each crop in R2 under `szrt-evidence/` and upserts one `szrt_brand_evidence` row per file and region; 503 without the R2 variables |
+| /api/integrations/fanmass/szrt-progress | POST | requireFanmassIntegrationAuth | `{pipeline,totalImages,processedCount,status,currentSport,lastUpdated,aggregates}` | `{success,data:{processedCount,totalImages,status}}` | replaces the figures of the `szrt_vision_progress` document `szrt_progress`; clears old per-image text; never writes `publishApproved` |
 | /api/integrations/fanmass/events/[eventId]/context | GET | path id | 410 `EVENT_CONTEXT_RETIRED`; Camera supplies routing IDs with each photo task | none |
 | /api/integrations/fanmass/events/[eventId]/drive-folders/status | POST | status body | `{success}` | updates `drive_folder_links` status |
 | /api/integrations/fanmass/events/[eventId]/link | GET, POST | legacy batch-link body | 410 `EVENT_BATCH_LINKS_RETIRED` | no reads or writes |
@@ -375,10 +376,10 @@ CSRF is never counted as a guard: any anonymous caller can fetch the token from
 
 | | routes |
 |---|---:|
-| Fully guarded (every method) | **199** |
+| Fully guarded (every method) | **200** |
 | Open write method, public by design | **5** |
 | Open GET only, writes guarded or absent | **30** |
-| **Total** | **234** |
+| **Total** | **235** |
 
 The previous run of this section (2026-08) listed 40 GAP routes, 21 of them
 unauthenticated writes. Those are closed: messmass#347 and #386 took the first
