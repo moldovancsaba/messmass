@@ -111,6 +111,13 @@ export const adminNavSections: AdminNavSection[] = [
         accentColor: navAccent.success,
       },
       {
+        label: 'Global Report',
+        path: '/admin/global/reports',
+        icon: 'public',
+        description: 'Everything Messmass collects, in the same interactive report as a hashtag, partner or event: variants, page password and sharing.',
+        accentColor: navAccent.primaryStrong,
+      },
+      {
         label: 'Fanmass Proof Review',
         path: '/admin/fanmass-evidence',
         icon: 'fact_check',

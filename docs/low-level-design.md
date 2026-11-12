@@ -13,6 +13,13 @@ This document captures implementation-level contracts for recently changed high-
 ### Scope
 - Organization report variants: `app/admin/organizations/[id]/reports/page.tsx`
 - Partner report variants: `app/admin/partners/[id]/reports/page.tsx`
+- Global report (everything Messmass collects; one more owner next to organization, partner, hashtag and filter):
+  workspace `app/admin/global/reports/page.tsx` (shared `ReportsWorkspace`, owner type `global`), report
+  `app/interactive-report/global/page.tsx` served at `/report/global` (the shared interactive report with the
+  `global` scope of `getScopedInteractiveReportData`). It spans every client, so it is never public: an admin session
+  opens it, anyone else needs its page password (page type `global-report`, id `all`), issued and shared from the
+  workspace like every other report; with no password issued it shows nothing. Its vision section is the SZRT analysis
+  once a person approved it; Fanmass results of Camera events are not part of it yet.
 - API routes:
   - `app/api/report-variants/route.ts`
   - `app/api/report-variants/[id]/route.ts`

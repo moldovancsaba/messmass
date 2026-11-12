@@ -114,6 +114,11 @@ const nextConfig = {
         destination: '/interactive-report/hashtag/:hashtag*',
       },
       {
+        // Everything Messmass collects, in the same report as a hashtag, partner or event (behind a page password)
+        source: '/report/global',
+        destination: '/interactive-report/global',
+      },
+      {
         source: '/report/partner/:slug*',
         destination: '/interactive-report/partner/:slug*',
       },

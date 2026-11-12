@@ -9,7 +9,7 @@ import {
 import type { ReportCustomDateRange, ReportPeriodPreset } from '@/lib/reportPeriods';
 import { ReportPeriodValidationError } from '@/lib/reportPeriodValidation';
 
-const ALLOWED_OWNER_TYPES: ReportVariantOwnerType[] = ['organization', 'partner', 'hashtag', 'filter'];
+const ALLOWED_OWNER_TYPES: ReportVariantOwnerType[] = ['organization', 'partner', 'hashtag', 'filter', 'global'];
 
 export async function GET(request: NextRequest) {
   try {

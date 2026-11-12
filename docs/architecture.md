@@ -117,7 +117,7 @@ it drifts. Do not edit between the markers.
 | **Hooks** | 13 | `hooks/` |
 | **Design Tokens** | 410 | `app/styles/theme.css` |
 | **Utility CSS classes** | 192 | `app/styles/utilities.css` |
-| **App routes (pages)** | 83 | `app/**/page.tsx` |
+| **App routes (pages)** | 85 | `app/**/page.tsx` |
 | **API routes** | 241 | `app/api/**/route.ts` |
 
 The modules with the most importers — the ones whose change radius is
@@ -127,7 +127,7 @@ largest, and the ones to read first:
 |--------|-----------|-------|
 | `lib/config.ts` | 125 | 207 |
 | `lib/mongodb.ts` | 108 | 112 |
-| `lib/auth.ts` | 95 | 118 |
+| `lib/auth.ts` | 96 | 118 |
 | `lib/logger.ts` | 94 | 392 |
 | `lib/apiGuards.ts` | 87 | 390 |
 | `components/ColoredCard.tsx` | 44 | 52 |
@@ -137,7 +137,7 @@ largest, and the ones to read first:
 | `components/MaterialIcon.tsx` | 34 | 119 |
 | `components/UnifiedAdminHeroWithSearch.tsx` | 27 | 192 |
 | `lib/mongoose-v3.ts` | 21 | 66 |
-| `lib/permissions.ts` | 19 | 143 |
+| `lib/permissions.ts` | 19 | 144 |
 | `lib/report-calculator.ts` | 19 | 935 |
 | `hooks/useAdminAuth.ts` | 18 | 65 |
 
@@ -997,7 +997,7 @@ shows up here on the next regeneration, which is the point.
 
 <!-- GENERATED:routes -->
 
-### Pages (83)
+### Pages (85)
 
 | Route | File |
 |-------|------|
@@ -1033,6 +1033,7 @@ shows up here on the next regeneration, which is the point.
 | `/admin/fanmass-evidence` | `app/admin/fanmass-evidence/page.tsx` |
 | `/admin/filter` | `app/admin/filter/page.tsx` |
 | `/admin/filter/[slug]/reports` | `app/admin/filter/[slug]/reports/page.tsx` |
+| `/admin/global/reports` | `app/admin/global/reports/page.tsx` |
 | `/admin/hashtags` | `app/admin/hashtags/page.tsx` |
 | `/admin/hashtags/[hashtag]/reports` | `app/admin/hashtags/[hashtag]/reports/page.tsx` |
 | `/admin/help` | `app/admin/help/page.tsx` |
@@ -1074,6 +1075,7 @@ shows up here on the next regeneration, which is the point.
 | `/interactive-report/[partnerSlug]/map` | `app/interactive-report/[partnerSlug]/map/page.tsx` |
 | `/interactive-report/[partnerSlug]/territory` | `app/interactive-report/[partnerSlug]/territory/page.tsx` |
 | `/interactive-report/event/[id]` | `app/interactive-report/event/[id]/page.tsx` |
+| `/interactive-report/global` | `app/interactive-report/global/page.tsx` |
 | `/interactive-report/hashtag/[hashtag]` | `app/interactive-report/hashtag/[hashtag]/page.tsx` |
 | `/interactive-report/partner/[slug]` | `app/interactive-report/partner/[slug]/page.tsx` |
 | `/organization-edit/[id]` | `app/organization-edit/[id]/page.tsx` |

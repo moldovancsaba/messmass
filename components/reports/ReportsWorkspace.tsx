@@ -2,7 +2,7 @@
 
 // components/reports/ReportsWorkspace.tsx
 // WHAT: The Reports workspace for any report-variant owner — organization,
-//     partner, hashtag or filter.
+//     partner, hashtag, filter or the global report.
 // WHY: messmass#244 Phase B needed this surface for hashtags and filters, and
 //     the organization and partner versions were already 345 and 364 lines of
 //     near-identical code with byte-identical stylesheets. Copying twice more
@@ -45,7 +45,7 @@ export type ReportVariantSummary = {
 
 export interface OwnerConfig {
   /** Matches ReportVariantOwnerType in lib/reportVariants.ts. */
-  ownerType: 'organization' | 'partner' | 'hashtag' | 'filter';
+  ownerType: 'organization' | 'partner' | 'hashtag' | 'filter' | 'global';
   /** Shown above the title, e.g. "Partner Reports". */
   eyebrow: string;
   /** Page-password type SharePopup should gate links with. */

@@ -18,7 +18,7 @@ import {
   type StatsFieldChanges,
 } from '@/lib/statsFieldChanges';
 
-export type ReportVariantOwnerType = 'organization' | 'partner' | 'hashtag' | 'filter';
+export type ReportVariantOwnerType = 'organization' | 'partner' | 'hashtag' | 'filter' | 'global';
 export type ReportVariantStatus = 'draft' | 'published' | 'archived';
 
 export interface ReportVariant {
@@ -234,6 +234,10 @@ export async function resolveReportVariantBaseSource(
       styleId: filterData?.styleId || undefined,
       statsOverrides: {},
     };
+  }
+
+  if (ownerType === 'global') {
+    return { ownerType, ownerId, ownerName: 'All data', timezone: DEFAULT_TIMEZONE, statsOverrides: {} };
   }
 
   return {

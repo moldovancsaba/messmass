@@ -35,7 +35,7 @@ export async function GET(request: NextRequest) {
     );
   }
 
-  const allowedPageTypes = ['event-report', 'partner-report', 'organization-report', 'edit', 'partner-edit', 'organization-edit', 'filter', 'hashtag'];
+  const allowedPageTypes = ['event-report', 'partner-report', 'organization-report', 'edit', 'partner-edit', 'organization-edit', 'filter', 'hashtag', 'global-report'];
   if (!allowedPageTypes.includes(pageType)) {
     return NextResponse.json(
       { success: false, error: `Invalid pageType. Must be one of: ${allowedPageTypes.join(', ')}` },
@@ -89,7 +89,7 @@ export async function POST(request: NextRequest) {
     }
 
     // WHAT: Allow all page types supported by lib/pagePassword (partner-edit, hashtag added per audit #368)
-    const allowedPageTypes = ['event-report', 'partner-report', 'organization-report', 'edit', 'partner-edit', 'organization-edit', 'filter', 'hashtag'];
+    const allowedPageTypes = ['event-report', 'partner-report', 'organization-report', 'edit', 'partner-edit', 'organization-edit', 'filter', 'hashtag', 'global-report'];
     if (!allowedPageTypes.includes(pageType)) {
       return NextResponse.json(
         { success: false, error: `Invalid pageType. Must be one of: ${allowedPageTypes.join(', ')}` },
@@ -167,7 +167,7 @@ export async function PUT(request: NextRequest) {
     }
 
     // WHAT: Allow all page types supported by lib/pagePassword (partner-edit, hashtag added per audit #368)
-    const allowedPageTypes = ['event-report', 'partner-report', 'organization-report', 'edit', 'partner-edit', 'organization-edit', 'filter', 'hashtag'];
+    const allowedPageTypes = ['event-report', 'partner-report', 'organization-report', 'edit', 'partner-edit', 'organization-edit', 'filter', 'hashtag', 'global-report'];
     if (!allowedPageTypes.includes(pageType)) {
       return NextResponse.json(
         { success: false, error: `Invalid pageType. Must be one of: ${allowedPageTypes.join(', ')}` },
@@ -262,7 +262,7 @@ export async function DELETE(request: NextRequest) {
     );
   }
 
-  const allowedPageTypes = ['event-report', 'partner-report', 'organization-report', 'edit', 'partner-edit', 'organization-edit', 'filter', 'hashtag'];
+  const allowedPageTypes = ['event-report', 'partner-report', 'organization-report', 'edit', 'partner-edit', 'organization-edit', 'filter', 'hashtag', 'global-report'];
   if (!allowedPageTypes.includes(pageType)) {
     return NextResponse.json(
       { success: false, error: `Invalid pageType. Must be one of: ${allowedPageTypes.join(', ')}` },
