@@ -110,6 +110,13 @@ export const adminNavSections: AdminNavSection[] = [
         description: 'Upload and maintain unified official brand logos and sponsor visual assets.',
         accentColor: navAccent.success,
       },
+      {
+        label: 'SZRT Proof Review',
+        path: '/admin/szrt-evidence',
+        icon: 'fact_check',
+        description: 'Check, confirm, reject, correct or add the proof samples behind the SZRT brand and club figures.',
+        accentColor: navAccent.primary,
+      },
     ],
   },
   {

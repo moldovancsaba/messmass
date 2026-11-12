@@ -25,6 +25,20 @@ function fail(status: number, code: string, message: string): never {
   throw Object.assign(new Error(message), { status, code });
 }
 
+/** Drop every cached SZRT report so the next view is built from the current figures. Returns how many were dropped. */
+export async function dropCachedSzrtReports(invalidate: Invalidate = invalidateReportSnapshot): Promise<number> {
+  let dropped = 0;
+  for (const scope of SZRT_REPORT_SCOPES) {
+    try {
+      await invalidate(scope);
+      dropped += 1;
+    } catch {
+      // A cache that could not be dropped expires on its own within the hour.
+    }
+  }
+  return dropped;
+}
+
 export async function setSzrtPublication(
   db: PublicationDb,
   input: unknown,
@@ -48,16 +62,7 @@ export async function setSzrtPublication(
     { $set: { publishApproved: body.approved, publishApprovedAt, publishApprovedBy: approvedBy, publishApprovalNote: note } },
   );
 
-  const invalidate = options.invalidate ?? invalidateReportSnapshot;
-  let invalidatedScopes = 0;
-  for (const scope of SZRT_REPORT_SCOPES) {
-    try {
-      await invalidate(scope);
-      invalidatedScopes += 1;
-    } catch {
-      // A cache that could not be dropped expires on its own within the hour; the switch itself is stored.
-    }
-  }
+  const invalidatedScopes = await dropCachedSzrtReports(options.invalidate ?? invalidateReportSnapshot);
   return {
     publishApproved: body.approved, publishApprovedBy: approvedBy, publishApprovedAt,
     processedCount: typeof doc?.processedCount === 'number' ? doc.processedCount : null, invalidatedScopes,

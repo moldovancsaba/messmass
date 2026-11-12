@@ -388,6 +388,29 @@ longer reads `szrt_vision_analysis` (the retired worker's per-image brand lists 
 `scripts/purge-szrt-legacy-vision.ts` (dry run by default; `--apply` backs both legacy collections up to `backups/`
 before deleting).
 
+### SZRT proof review (human in the loop)
+
+Using it is optional, being able to is not: a person can always correct the proof behind the SZRT figures.
+
+- `GET /api/admin/szrt-evidence?status=needs_review|confirmed|rejected|corrected|human|all&kind&name&limit&offset`
+  (admin session) lists samples; `needs_review` shows the weakest proof first. `POST /api/admin/szrt-evidence` adds a
+  sample a person made: `{ name, kind, crop (base64 JPEG or PNG, up to 1.5 MB), sport?, readText?, note?, box? }`; it is
+  stored in R2, counts as proof (`tier: human`, `source: human`) and is stored with who added it and when.
+- `PATCH /api/admin/szrt-evidence/[id]` with `{ action: confirm | reject | correct | restore, name?, kind?, note? }`.
+  Every decision stores `review: { status, by, at, note }`; a correction keeps the original name and kind and
+  `restore` puts them back. `DELETE /api/admin/szrt-evidence/[id]` deletes only a sample a person added: an automatic
+  one answers `409 AUTOMATIC_EVIDENCE_CANNOT_BE_DELETED` and must be rejected, so a delivery cannot bring it back.
+- A person's decision wins: `POST /api/integrations/fanmass/szrt-evidence` never overwrites a reviewed row (`skipped`
+  reason `human_reviewed`) and its optional `replaceFiles` (file keys, at most 200) first removes what Fanmass delivered
+  earlier for those pictures, never a reviewed row or one a person added; an empty `samples` list is accepted with
+  `replaceFiles`, to withdraw a proof that no longer holds. A rejected sample is never returned by
+  `GET /api/interactive-report/brand-evidence`; a confirmed, corrected or added one is proof and is marked as checked by a person.
+- `GET /api/integrations/fanmass/szrt-evidence-reviews` (`requireFanmassIntegrationAuth`) returns every decision and every
+  added sample (`id, fileKey, regionId, source, status, name, kind`) so Fanmass applies them when it counts the figures:
+  rejected is not counted, corrected is counted under its corrected name and kind, an added sample counts once for its picture.
+- `POST /api/integrations/fanmass/szrt-progress` drops the cached SZRT reports after storing, so the brand and club lists
+  show the new figures at once instead of within the hour.
+
 ## Common Failure Modes
 
 - `401` on admin endpoints when no valid admin session exists

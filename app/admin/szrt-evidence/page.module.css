@@ -1,0 +1,187 @@
+/* Review page for the proof behind SZRT brand and club figures. */
+
+.page {
+  display: flex;
+  flex-direction: column;
+  gap: var(--mm-space-4);
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: var(--mm-space-5);
+}
+
+.title {
+  margin: 0;
+  font-size: var(--mm-font-size-xl);
+  font-weight: var(--mm-font-weight-bold);
+  color: var(--mm-gray-900);
+}
+
+.lead,
+.hint,
+.status {
+  margin: 0;
+  font-size: var(--mm-font-size-sm);
+  line-height: 1.5;
+  color: var(--mm-gray-600);
+}
+
+.toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--mm-space-3);
+  align-items: end;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--mm-space-1);
+  font-size: var(--mm-font-size-xs);
+  color: var(--mm-gray-600);
+}
+
+.input {
+  padding: var(--mm-space-2) var(--mm-space-3);
+  border: 1px solid var(--mm-gray-300);
+  border-radius: var(--mm-radius-md);
+  background: var(--mm-white);
+  color: var(--mm-gray-900);
+  font: inherit;
+  min-width: 140px;
+}
+
+.button {
+  padding: var(--mm-space-2) var(--mm-space-3);
+  border: 1px solid var(--mm-gray-300);
+  border-radius: var(--mm-radius-md);
+  background: var(--mm-white);
+  color: var(--mm-gray-800);
+  font: inherit;
+  font-size: var(--mm-font-size-sm);
+  cursor: pointer;
+}
+
+.button:hover,
+.button:focus-visible {
+  border-color: var(--mm-gray-500);
+  background: var(--mm-gray-50);
+}
+
+.primary {
+  background: var(--mm-gray-900);
+  border-color: var(--mm-gray-900);
+  color: var(--mm-white);
+}
+
+.danger {
+  color: var(--mm-evidence-box, #b91c1c);
+}
+
+.panel {
+  display: flex;
+  flex-direction: column;
+  gap: var(--mm-space-3);
+  padding: var(--mm-space-4);
+  border: 1px solid var(--mm-gray-200);
+  border-radius: var(--mm-radius-lg);
+  background: var(--mm-gray-50);
+}
+
+.list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--mm-space-3);
+}
+
+.card {
+  display: grid;
+  grid-template-columns: 180px 1fr;
+  gap: var(--mm-space-4);
+  padding: var(--mm-space-3);
+  border: 1px solid var(--mm-gray-200);
+  border-radius: var(--mm-radius-lg);
+  background: var(--mm-white);
+}
+
+.cropFrame {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 140px;
+  border-radius: var(--mm-radius-md);
+  background: var(--mm-gray-100);
+  overflow: hidden;
+}
+
+.cropFrame img {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+}
+
+.body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--mm-space-2);
+  min-width: 0;
+}
+
+.name {
+  margin: 0;
+  font-size: var(--mm-font-size-base);
+  font-weight: var(--mm-font-weight-bold);
+  color: var(--mm-gray-900);
+}
+
+.facts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--mm-space-1) var(--mm-space-4);
+  font-size: var(--mm-font-size-xs);
+  color: var(--mm-gray-600);
+}
+
+.readText {
+  font-size: var(--mm-font-size-sm);
+  color: var(--mm-gray-900);
+  font-weight: var(--mm-font-weight-semibold);
+  overflow-wrap: anywhere;
+}
+
+.badge {
+  display: inline-block;
+  padding: 1px var(--mm-space-2);
+  border-radius: var(--mm-radius-full);
+  background: var(--mm-gray-100);
+  color: var(--mm-gray-700);
+  font-size: var(--mm-font-size-xs);
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--mm-space-2);
+  align-items: center;
+}
+
+.inline {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--mm-space-2);
+  align-items: end;
+}
+
+.pager {
+  display: flex;
+  gap: var(--mm-space-3);
+  align-items: center;
+}
+
+@media (max-width: 640px) {
+  .card {
+    grid-template-columns: 1fr;
+  }
+}

@@ -113,12 +113,12 @@ it drifts. Do not edit between the markers.
 | Category | Count | Location |
 |----------|-------|----------|
 | **UI Components** | 128 | `components/` |
-| **Utility Modules** | 240 | `lib/` |
+| **Utility Modules** | 241 | `lib/` |
 | **Hooks** | 13 | `hooks/` |
 | **Design Tokens** | 410 | `app/styles/theme.css` |
 | **Utility CSS classes** | 192 | `app/styles/utilities.css` |
-| **App routes (pages)** | 82 | `app/**/page.tsx` |
-| **API routes** | 236 | `app/api/**/route.ts` |
+| **App routes (pages)** | 83 | `app/**/page.tsx` |
+| **API routes** | 239 | `app/api/**/route.ts` |
 
 The modules with the most importers — the ones whose change radius is
 largest, and the ones to read first:
@@ -127,17 +127,17 @@ largest, and the ones to read first:
 |--------|-----------|-------|
 | `lib/config.ts` | 125 | 207 |
 | `lib/mongodb.ts` | 108 | 112 |
+| `lib/auth.ts` | 95 | 118 |
 | `lib/logger.ts` | 94 | 392 |
-| `lib/auth.ts` | 93 | 118 |
-| `lib/apiGuards.ts` | 85 | 390 |
+| `lib/apiGuards.ts` | 87 | 390 |
 | `components/ColoredCard.tsx` | 44 | 52 |
+| `lib/apiClient.ts` | 42 | 258 |
 | `lib/db.ts` | 42 | 17 |
-| `lib/apiClient.ts` | 41 | 258 |
+| `lib/fanmassIntegration.ts` | 37 | 485 |
 | `components/MaterialIcon.tsx` | 34 | 119 |
-| `lib/fanmassIntegration.ts` | 34 | 485 |
 | `components/UnifiedAdminHeroWithSearch.tsx` | 27 | 192 |
 | `lib/mongoose-v3.ts` | 21 | 66 |
-| `lib/permissions.ts` | 19 | 142 |
+| `lib/permissions.ts` | 19 | 143 |
 | `lib/report-calculator.ts` | 19 | 935 |
 | `hooks/useAdminAuth.ts` | 18 | 65 |
 
@@ -997,7 +997,7 @@ shows up here on the next regeneration, which is the point.
 
 <!-- GENERATED:routes -->
 
-### Pages (82)
+### Pages (83)
 
 | Route | File |
 |-------|------|
@@ -1057,6 +1057,7 @@ shows up here on the next regeneration, which is the point.
 | `/admin/reports` | `app/admin/reports/page.tsx` |
 | `/admin/styles` | `app/admin/styles/page.tsx` |
 | `/admin/styles/[id]` | `app/admin/styles/[id]/page.tsx` |
+| `/admin/szrt-evidence` | `app/admin/szrt-evidence/page.tsx` |
 | `/admin/unauthorized` | `app/admin/unauthorized/page.tsx` |
 | `/admin/users` | `app/admin/users/page.tsx` |
 | `/admin/visualization` | `app/admin/visualization/page.tsx` |
@@ -1084,7 +1085,7 @@ shows up here on the next regeneration, which is the point.
 | `/terms` | `app/terms/page.tsx` |
 | `/test-csrf` | `app/test-csrf/page.tsx` |
 
-### API routes (236)
+### API routes (239)
 
 `auth` is the guard symbol the route actually calls. A blank cell
 means the route calls none — public by construction, or a gap.
@@ -1132,6 +1133,8 @@ means the route calls none — public by construction, or a gap.
 | `/api/admin/register` | POST | — |
 | `/api/admin/sync-events-to-camera` | GET | `getAdminUser` |
 | `/api/admin/sync-partners-to-camera` | GET | `getAdminUser` |
+| `/api/admin/szrt-evidence` | GET, POST | `getAdminUser, requireAdmin` |
+| `/api/admin/szrt-evidence/[id]` | PATCH, DELETE | `getAdminUser, requireAdmin` |
 | `/api/admin/ui-settings` | GET, PUT | `requireAdmin` |
 | `/api/admin/users/[id]/organizations` | PUT | `getAdminUser` |
 | `/api/admin/users/[id]/role` | PUT | `getAdminUser` |
@@ -1427,6 +1430,7 @@ means the route calls none — public by construction, or a gap.
 | `/api/integrations/fanmass/rescan-requests` | GET | `requireFanmassIntegrationAuth` |
 | `/api/integrations/fanmass/rescan-requests/[eventId]` | DELETE | `requireFanmassIntegrationAuth` |
 | `/api/integrations/fanmass/szrt-evidence` | POST | `requireFanmassIntegrationAuth` |
+| `/api/integrations/fanmass/szrt-evidence-reviews` | GET | `requireFanmassIntegrationAuth` |
 | `/api/integrations/fanmass/szrt-progress` | POST | `requireFanmassIntegrationAuth` |
 | `/api/integrations/fanmass/szrt-publish` | POST | `requireFanmassIntegrationAuth` |
 | `/api/integrations/fanmass/variables` | GET, POST | `requireFanmassIntegrationAuth` |

@@ -85,6 +85,6 @@ describe('POST /api/integrations/fanmass/szrt-evidence', () => {
   it('reports every skipped sample with its reason and stores none of them', async () => {
     const response = await post({ pipeline: 'p', samples: [{ fileKey: 'bad' }] });
     expect(response.status).toBe(200);
-    expect((await response.json()).data).toEqual({ received: 1, stored: 0, skipped: [{ index: 0, reason: 'missing_region' }] });
+    expect((await response.json()).data).toEqual({ received: 1, stored: 0, replaced: 0, skipped: [{ index: 0, reason: 'missing_region' }] });
   });
 });

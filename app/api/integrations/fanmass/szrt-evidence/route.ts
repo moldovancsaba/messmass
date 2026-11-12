@@ -15,11 +15,12 @@ export async function POST(request: NextRequest) {
       throw Object.assign(new Error('Media storage is not configured.'), { status: 503, code: 'MEDIA_STORAGE_NOT_CONFIGURED' });
     }
     const body = await request.json().catch(() => null);
-    const { parsed, skipped } = parseEvidenceBatch(body);
-    const result = await storeEvidenceBatch((await getDb()) as unknown as EvidenceDb, parsed);
+    const { parsed, skipped, replaceFiles } = parseEvidenceBatch(body);
+    const result = await storeEvidenceBatch((await getDb()) as unknown as EvidenceDb, parsed, { replaceFiles });
     return jsonSuccess({
       received: parsed.length + skipped.length,
       stored: result.stored,
+      replaced: result.replaced,
       skipped: [...skipped, ...result.skipped].sort((a, b) => a.index - b.index),
     });
   } catch (err) {
