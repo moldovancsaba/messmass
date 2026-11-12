@@ -388,6 +388,37 @@ longer reads `szrt_vision_analysis` (the retired worker's per-image brand lists 
 `scripts/purge-szrt-legacy-vision.ts` (dry run by default; `--apply` backs both legacy collections up to `backups/`
 before deleting).
 
+### Global evidence library and its human review
+
+The proof behind every brand and club figure Fanmass produces lives in one global library (`fanmass_evidence`), for any
+project or event: each sample carries an `origin` (`szrt` for the SZRT campaign, later a Camera event or anything else
+Fanmass analyses). A report reads only its own origin (the SZRT report reads `szrt`).
+
+- `POST /api/integrations/fanmass/evidence` (`requireFanmassIntegrationAuth`) receives the samples (see the SZRT section
+  above for the sample shape) with an `origin`; the old `POST /api/integrations/fanmass/szrt-evidence` is the same handler
+  and a sender that names no origin is `szrt`. Its optional `replaceFiles` (file keys of that origin, at most 200) first
+  removes what Fanmass delivered earlier for those pictures, never a reviewed row or one a person added; an empty `samples`
+  list is accepted with `replaceFiles`, to withdraw a proof that no longer holds. A reviewed row is never overwritten
+  (`skipped` reason `human_reviewed`).
+- Review is optional, being able to is not: `GET /api/admin/fanmass-evidence?status=needs_review|confirmed|rejected|corrected|human|all&kind&name&origin&limit&offset`
+  (admin session, page `/admin/fanmass-evidence`) lists samples of any origin, weakest unreviewed proof first.
+  `POST /api/admin/fanmass-evidence` adds a sample a person made: `{ name, kind, crop (base64 JPEG or PNG, up to 1.5 MB),
+  origin?, sport?, readText?, note?, box? }`; it is stored in R2 and counts as proof (`tier: human`, `source: human`).
+  `PATCH /api/admin/fanmass-evidence/[id]` with `{ action: confirm | reject | correct | restore, name?, kind?, note? }`
+  stores `review: { status, by, at, note }` (a correction keeps the original name and kind; `restore` puts them back).
+  `DELETE /api/admin/fanmass-evidence/[id]` deletes only a sample a person added: an automatic one answers
+  `409 AUTOMATIC_EVIDENCE_CANNOT_BE_DELETED` and must be rejected, so a delivery cannot bring it back.
+- A rejected sample is never returned as proof; a confirmed, corrected or person-added one is proof, marked as checked by a person.
+- The decisions feed the figures: `GET /api/integrations/fanmass/evidence-reviews[?origin=]` returns every decision and every
+  added sample (`id, origin, fileKey, regionId, source, status, name, kind`); Fanmass applies them when it counts (rejected is
+  not counted, corrected is counted under its corrected name and kind, an added sample counts once).
+- And they train the system: `GET /api/integrations/fanmass/evidence-training` returns rules from every decision, for every
+  origin: `deny` (this exact text is not that name: rejected samples, the original of a corrected one) and `alias` (this
+  exact text is that name: corrected, confirmed and person-added samples). `text` is the text folded to lowercase letters and
+  digits. Fanmass applies both to every later analysis and re-judges results already made.
+- `POST /api/integrations/fanmass/szrt-progress` drops the cached SZRT reports after storing, so the brand and club lists
+  show new figures at once instead of within the hour.
+
 ## Common Failure Modes
 
 - `401` on admin endpoints when no valid admin session exists

@@ -16,9 +16,10 @@ import {
   listBrandEvidence,
   parseEvidenceBatch,
   pickEvidence,
+  PROOF_FILTER,
   storeEvidenceBatch,
   type BrandEvidenceDoc,
-} from '@/lib/szrtBrandEvidence';
+} from '@/lib/fanmassEvidence';
 
 const JPEG = Buffer.from([0xff, 0xd8, 0xff, 0xe0, 0, 16, 0x4a, 0x46, 0x49, 0x46]).toString('base64');
 
@@ -58,7 +59,7 @@ describe('parseEvidenceBatch', () => {
     expect(skipped).toEqual([]);
     expect(parsed).toHaveLength(1);
     expect(parsed[0].doc).toMatchObject({
-      _id: 'Football/abc-123.jpg#ocr_001', entityKind: 'brand', name: 'Veolia', nameKey: 'veolia', tier: 'text_read',
+      _id: 'szrt|Football/abc-123.jpg#ocr_001', origin: 'szrt', entityKind: 'brand', name: 'Veolia', nameKey: 'veolia', tier: 'text_read',
       readText: 'O VEOLIA', ocrConfidence: 1, onPerson: true, sport: 'Football',
     });
     expect(parsed[0].doc.score).toBeCloseTo(0.81, 3);
@@ -100,7 +101,7 @@ describe('parseEvidenceBatch', () => {
 
 function doc(overrides: Partial<BrandEvidenceDoc>): BrandEvidenceDoc {
   return {
-    _id: 'Football/a.jpg#ocr_001', fileKey: 'Football/a.jpg', sport: 'Football', entityKind: 'brand', name: 'Veolia', nameKey: 'veolia',
+    origin: 'szrt', _id: 'Football/a.jpg#ocr_001', fileKey: 'Football/a.jpg', sport: 'Football', entityKind: 'brand', name: 'Veolia', nameKey: 'veolia',
     tier: 'text_read', method: 'ocr', match: 'exact', readText: 'VEOLIA', ocrConfidence: 1, confidence: 0.98, itemType: 'clothing',
     onPerson: false, box: { x: 0.1, y: 0.1, w: 0.2, h: 0.1 }, area: 0.02, score: 0.98, cropUrl: 'https://cdn.example/c.jpg',
     analyzedAt: '2026-11-12T10:00:00Z', pipeline: 'p', receivedAt: '2026-11-12T11:00:00Z', ...overrides,
@@ -136,11 +137,11 @@ describe('storeEvidenceBatch', () => {
     const upload = jest.fn(async (_bytes: Buffer, _folder: string): Promise<string> => `https://cdn.example/${++uploads}.jpg`);
     const { parsed } = parseEvidenceBatch(envelope([sample({ photo: JPEG })]));
     const result = await storeEvidenceBatch(db, parsed, { upload, now });
-    expect(result).toEqual({ stored: 1, skipped: [] });
+    expect(result).toEqual({ stored: 1, skipped: [], replaced: 0 });
     expect(upload).toHaveBeenCalledTimes(2);
     const [filter, update, options] = updateOne.mock.calls[0];
-    expect(filter).toEqual({ _id: 'Football/abc-123.jpg#ocr_001' });
-    expect(update.$set).toMatchObject({ cropUrl: 'https://cdn.example/1.jpg', photoUrl: 'https://cdn.example/2.jpg', receivedAt: now(), name: 'Veolia' });
+    expect(filter).toEqual({ _id: 'szrt|Football/abc-123.jpg#ocr_001' });
+    expect(update.$set).toMatchObject({ cropUrl: 'https://cdn.example/1.jpg', photoUrl: 'https://cdn.example/2.jpg', receivedAt: now(), name: 'Veolia', source: 'fanmass' });
     expect(update.$unset).toBeUndefined();
     expect(options).toEqual({ upsert: true });
   });
@@ -159,7 +160,7 @@ describe('storeEvidenceBatch', () => {
     const db = { collection: () => ({ updateOne, find: jest.fn(), aggregate: jest.fn() }) };
     const { parsed } = parseEvidenceBatch(envelope([sample({}, { shortName: 'Unknown' }), sample()]));
     const result = await storeEvidenceBatch(db, parsed, { upload: async () => null, now });
-    expect(result).toEqual({ stored: 0, skipped: [{ index: 1, reason: 'media_storage_failed' }] });
+    expect(result).toEqual({ stored: 0, skipped: [{ index: 1, reason: 'media_storage_failed' }], replaced: 0 });
     expect(updateOne).not.toHaveBeenCalled();
   });
 });
@@ -168,15 +169,15 @@ describe('listBrandEvidence', () => {
   function fakeDb(docs: BrandEvidenceDoc[], counts: { proven: number; model: number }) {
     const find = jest.fn(() => ({ sort: () => ({ limit: () => ({ toArray: async () => docs }) }) }));
     const aggregate = jest.fn((pipeline: unknown[]) => ({
-      toArray: async () => [{ n: (pipeline[0] as { $match?: { tier?: string } }).$match?.tier === 'text_read' ? counts.proven : counts.model }],
+      toArray: async () => [{ n: (pipeline[0] as { $match?: { tier?: string } }).$match?.tier === 'model_identified' ? counts.model : counts.proven }],
     }));
     return { db: { collection: () => ({ updateOne: jest.fn(), find, aggregate }) }, find, aggregate };
   }
 
   it('returns proof samples and both counts, without file keys or paths', async () => {
     const { db, find } = fakeDb([doc({ photoUrl: 'https://cdn.example/p.jpg', onPerson: true })], { proven: 41, model: 6 });
-    const listing = await listBrandEvidence(db, { kind: 'brand', name: 'VEOLIA' });
-    expect(find).toHaveBeenCalledWith({ entityKind: 'brand', nameKey: 'veolia', tier: 'text_read' });
+    const listing = await listBrandEvidence(db, { kind: 'brand', name: 'VEOLIA', origin: 'szrt' });
+    expect(find).toHaveBeenCalledWith({ origin: 'szrt', entityKind: 'brand', nameKey: 'veolia', ...PROOF_FILTER });
     expect(listing).toMatchObject({ kind: 'brand', name: 'Veolia', provenPhotos: 41, modelIdentifiedPhotos: 6 });
     expect(listing.samples).toHaveLength(1);
     expect(listing.samples[0]).toMatchObject({ cropUrl: 'https://cdn.example/c.jpg', photoUrl: 'https://cdn.example/p.jpg', readText: 'VEOLIA', onPerson: true });

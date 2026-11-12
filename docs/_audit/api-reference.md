@@ -1,8 +1,8 @@
 # messmass API Reference
 
-Generated for the fleet audit (messmass#350); measured against `docs/_audit/endpoints.json` (236 endpoints, including brand assets management and interactive report routes). Existing Auth adjudication was re-verified against the handlers @ dd34e229 (2026-09-28); the new Camera style-context read uses `assertCameraSecret`.
+Generated for the fleet audit (messmass#350); measured against `docs/_audit/endpoints.json` (241 endpoints, including brand assets management and interactive report routes). Existing Auth adjudication was re-verified against the handlers @ dd34e229 (2026-09-28); the new Camera style-context read uses `assertCameraSecret`.
 
-Coverage: 236 of 236 routes documented, enforced by
+Coverage: 241 of 241 routes documented, enforced by
 `tests/api-reference-covers-every-route.test.ts` — five routes were missing when
 that claim was last made by hand.
 
@@ -185,7 +185,12 @@ All routes use `requireFanmassIntegrationAuth` (Bearer/`x-api-key` shared token)
 | /api/integrations/fanmass/drive-folders | GET | — | drive folder links | reads `drive_folder_links` |
 | /api/integrations/fanmass/events/[eventId]/analysis-summary | POST | summary body | 410 `EVENT_LEVEL_EXPORT_RETIRED` | no reads or writes |
 | /api/integrations/fanmass/events/[eventId]/photos/[photoId] | POST, DELETE | requireFanmassIntegrationAuth | POST one photo result; DELETE tombstone, each with partner/event/photo IDs and generation | `{success,data:{status}}` | upserts one `fanmass_camera_photo_analyses` row; rebuilds the per-photo event summary and report stats; ignores stale generations |
-| /api/integrations/fanmass/szrt-evidence | POST | requireFanmassIntegrationAuth | `{pipeline,samples[{fileKey,sport,analyzedAt,region,crop}]}`, at most 40 | `{success,data:{received,stored,skipped[{index,reason}]}}` | stores each crop in R2 under `szrt-evidence/` and upserts one `szrt_brand_evidence` row per file and region; 503 without the R2 variables |
+| /api/integrations/fanmass/szrt-evidence | POST | requireFanmassIntegrationAuth | `{pipeline,samples[{fileKey,sport,analyzedAt,region,crop}]}`, at most 40 | `{success,data:{received,stored,skipped[{index,reason}]}}` | the old path of /api/integrations/fanmass/evidence: same handler, a sender naming no origin is `szrt` |
+| /api/integrations/fanmass/evidence | POST | requireFanmassIntegrationAuth | `{pipeline,origin?,samples[{fileKey,sport,analyzedAt,region,crop}],replaceFiles?[]}`, at most 40 samples | `{success,data:{origin,received,stored,replaced,skipped[{index,reason}]}}` | global evidence library: stores each crop in R2 under `fanmass-evidence/`, upserts one `fanmass_evidence` row per origin, file and region, never overwrites a reviewed row; 503 without the R2 variables |
+| /api/integrations/fanmass/evidence-reviews | GET | requireFanmassIntegrationAuth | `?origin` | `{success,data:{overrides[{id,origin,fileKey,regionId,source,status,name,kind}]}}` | reads the human decisions in `fanmass_evidence` (at most 5,000) |
+| /api/integrations/fanmass/evidence-training | GET | requireFanmassIntegrationAuth | none | `{success,data:{deny[],alias[]}}` | derives rules (text to name) from every human decision, all origins |
+| /api/admin/fanmass-evidence | GET, POST | requireAdmin | GET `?status&kind&name&origin&limit&offset`; POST `{name,kind,crop,origin?,sport?,readText?,note?,box?}` | `{success,rows,total}` / `{success,row}` | lists `fanmass_evidence`; POST stores the picture in R2 and inserts a person-made sample |
+| /api/admin/fanmass-evidence/[id] | PATCH, DELETE | requireAdmin | PATCH `{action:confirm\\|reject\\|correct\\|restore,name?,kind?,note?}` | `{success,row}` / `{success}` | writes a human review onto one sample; DELETE removes only a sample a person added (409 otherwise) |
 | /api/integrations/fanmass/szrt-progress | POST | requireFanmassIntegrationAuth | `{pipeline,totalImages,processedCount,status,currentSport,lastUpdated,aggregates}` | `{success,data:{processedCount,totalImages,status}}` | replaces the figures of the `szrt_vision_progress` document `szrt_progress`; clears old per-image text; never writes `publishApproved` |
 | /api/integrations/fanmass/szrt-publish | POST | requireFanmassIntegrationAuth | `{approved,approvedBy,note?}` | `{success,data:{publishApproved,publishApprovedBy,publishApprovedAt,processedCount,invalidatedScopes}}` | sets `publishApproved` on `szrt_progress` and records who and when; drops cached SZRT report snapshots; 409 before figures were delivered |
 | /api/integrations/fanmass/events/[eventId]/context | GET | path id | 410 `EVENT_CONTEXT_RETIRED`; Camera supplies routing IDs with each photo task | none |
@@ -377,10 +382,10 @@ CSRF is never counted as a guard: any anonymous caller can fetch the token from
 
 | | routes |
 |---|---:|
-| Fully guarded (every method) | **201** |
+| Fully guarded (every method) | **206** |
 | Open write method, public by design | **5** |
 | Open GET only, writes guarded or absent | **30** |
-| **Total** | **236** |
+| **Total** | **241** |
 
 The previous run of this section (2026-08) listed 40 GAP routes, 21 of them
 unauthenticated writes. Those are closed: messmass#347 and #386 took the first

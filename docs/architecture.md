@@ -113,12 +113,12 @@ it drifts. Do not edit between the markers.
 | Category | Count | Location |
 |----------|-------|----------|
 | **UI Components** | 128 | `components/` |
-| **Utility Modules** | 240 | `lib/` |
+| **Utility Modules** | 241 | `lib/` |
 | **Hooks** | 13 | `hooks/` |
 | **Design Tokens** | 410 | `app/styles/theme.css` |
 | **Utility CSS classes** | 192 | `app/styles/utilities.css` |
-| **App routes (pages)** | 82 | `app/**/page.tsx` |
-| **API routes** | 236 | `app/api/**/route.ts` |
+| **App routes (pages)** | 83 | `app/**/page.tsx` |
+| **API routes** | 241 | `app/api/**/route.ts` |
 
 The modules with the most importers — the ones whose change radius is
 largest, and the ones to read first:
@@ -127,17 +127,17 @@ largest, and the ones to read first:
 |--------|-----------|-------|
 | `lib/config.ts` | 125 | 207 |
 | `lib/mongodb.ts` | 108 | 112 |
+| `lib/auth.ts` | 95 | 118 |
 | `lib/logger.ts` | 94 | 392 |
-| `lib/auth.ts` | 93 | 118 |
-| `lib/apiGuards.ts` | 85 | 390 |
+| `lib/apiGuards.ts` | 87 | 390 |
 | `components/ColoredCard.tsx` | 44 | 52 |
+| `lib/apiClient.ts` | 42 | 258 |
 | `lib/db.ts` | 42 | 17 |
-| `lib/apiClient.ts` | 41 | 258 |
+| `lib/fanmassIntegration.ts` | 39 | 485 |
 | `components/MaterialIcon.tsx` | 34 | 119 |
-| `lib/fanmassIntegration.ts` | 34 | 485 |
 | `components/UnifiedAdminHeroWithSearch.tsx` | 27 | 192 |
 | `lib/mongoose-v3.ts` | 21 | 66 |
-| `lib/permissions.ts` | 19 | 142 |
+| `lib/permissions.ts` | 19 | 143 |
 | `lib/report-calculator.ts` | 19 | 935 |
 | `hooks/useAdminAuth.ts` | 18 | 65 |
 
@@ -997,7 +997,7 @@ shows up here on the next regeneration, which is the point.
 
 <!-- GENERATED:routes -->
 
-### Pages (82)
+### Pages (83)
 
 | Route | File |
 |-------|------|
@@ -1030,6 +1030,7 @@ shows up here on the next regeneration, which is the point.
 | `/admin/events/[id]` | `app/admin/events/[id]/page.tsx` |
 | `/admin/events/[id]/kyc-data` | `app/admin/events/[id]/kyc-data/page.tsx` |
 | `/admin/fanmass` | `app/admin/fanmass/page.tsx` |
+| `/admin/fanmass-evidence` | `app/admin/fanmass-evidence/page.tsx` |
 | `/admin/filter` | `app/admin/filter/page.tsx` |
 | `/admin/filter/[slug]/reports` | `app/admin/filter/[slug]/reports/page.tsx` |
 | `/admin/hashtags` | `app/admin/hashtags/page.tsx` |
@@ -1084,7 +1085,7 @@ shows up here on the next regeneration, which is the point.
 | `/terms` | `app/terms/page.tsx` |
 | `/test-csrf` | `app/test-csrf/page.tsx` |
 
-### API routes (236)
+### API routes (241)
 
 `auth` is the guard symbol the route actually calls. A blank cell
 means the route calls none — public by construction, or a gap.
@@ -1106,6 +1107,8 @@ means the route calls none — public by construction, or a gap.
 | `/api/admin/clear-cookies` | GET, POST | — |
 | `/api/admin/contact-inquiries` | GET | `getAdminUser` |
 | `/api/admin/email-selftest` | GET | `requireSession` |
+| `/api/admin/fanmass-evidence` | GET, POST | `getAdminUser, requireAdmin` |
+| `/api/admin/fanmass-evidence/[id]` | PATCH, DELETE | `getAdminUser, requireAdmin` |
 | `/api/admin/fanmass/commands` | POST | `getAdminUser` |
 | `/api/admin/fanmass/events` | GET | `getAdminUser` |
 | `/api/admin/fanmass/events/[eventId]` | GET, POST | `getAdminUser` |
@@ -1422,6 +1425,9 @@ means the route calls none — public by construction, or a gap.
 | `/api/integrations/fanmass/events/[eventId]/photos/[photoId]` | POST, DELETE | `requireFanmassIntegrationAuth` |
 | `/api/integrations/fanmass/events/[eventId]/stats` | POST | `requireFanmassIntegrationAuth` |
 | `/api/integrations/fanmass/events/[eventId]/sync` | GET, POST | `requireFanmassIntegrationAuth` |
+| `/api/integrations/fanmass/evidence` | POST | `requireFanmassIntegrationAuth` |
+| `/api/integrations/fanmass/evidence-reviews` | GET | `requireFanmassIntegrationAuth` |
+| `/api/integrations/fanmass/evidence-training` | GET | `requireFanmassIntegrationAuth` |
 | `/api/integrations/fanmass/partners` | GET, POST | `requireFanmassIntegrationAuth` |
 | `/api/integrations/fanmass/partners/[partnerId]/events` | GET | `requireFanmassIntegrationAuth` |
 | `/api/integrations/fanmass/rescan-requests` | GET | `requireFanmassIntegrationAuth` |
