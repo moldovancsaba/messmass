@@ -1103,6 +1103,21 @@ export interface UniversalAggregateMetrics {
   generatedAt: string;
 }
 
+/** The project fields getScopedInteractiveReportData reads. The global scope fetches nothing else. */
+const GLOBAL_PROJECT_FIELDS = Object.fromEntries(
+  [
+    'eventName', 'eventDate', 'viewSlug', 'slug', 'partner1Id', 'partner2Id', 'organizationId',
+    ...[
+      'allImages', 'approvedImages', 'rejectedImages', 'remoteImages', 'hostessImages',
+      'male', 'female', 'genAlpha', 'genYZ', 'genX', 'boomer',
+      'szerencsejatekTop10', 'szerencsejatekHostessAllphotos', 'szerencsejatekAllusersAllphotos',
+      'szerencsejatekAllRegistered', 'szerencsejatekMarketingOptInNumber',
+      'szerencsejatekMarketingCTA01', 'szerencsejatekMarketingCTA02',
+      'szerencsejatekFunnelQR', 'szerencsejatekFunnelURL', 'szerencsejatekFunnelSocial',
+    ].map((key) => `stats.${key}`),
+  ].map((field) => [field, 1]),
+);
+
 export async function resolveScopeProjectIds(
   scopeType: ScopeType,
   identifier: string,
@@ -1237,11 +1252,13 @@ export async function resolveScopeProjectIds(
   } else if (scopeType === "global") {
     // Everything Messmass holds, every project of every organization, in the same report as the others. The report
     // is behind a page password or an admin session (app/global-report): it spans clients, so it is never public.
+    // Only the fields the report reads are fetched (a project's full stats document is large, and every project
+    // is loaded here), and the sort happens here too, so the database never has to sort whole documents.
     campaignProjects = await db
       .collection("projects")
-      .find(organizationId ? { organizationId } : {})
-      .sort({ eventDate: 1 })
+      .find(organizationId ? { organizationId } : {}, { projection: GLOBAL_PROJECT_FIELDS })
       .toArray();
+    campaignProjects.sort((a: any, b: any) => String(a.eventDate ?? "").localeCompare(String(b.eventDate ?? "")));
 
     scopeHeader = {
       type: "global",

@@ -8,6 +8,9 @@ import { hasPageAccess, isPageProtected } from '@/lib/pageAccess';
 import styles from '@/components/theme/interactive-report/interactive-report.module.css';
 
 export const dynamic = 'force-dynamic';
+// The first load builds the report from every project (it is cached for an hour afterwards), which needs more
+// than the default 15 seconds.
+export const maxDuration = 60;
 
 const GLOBAL_PAGE_ID = 'all';
 

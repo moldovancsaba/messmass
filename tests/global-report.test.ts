@@ -84,14 +84,16 @@ describe('sharing and variants work like the other reports', () => {
 describe('the global scope in the shared aggregator', () => {
   it('resolves to every project, with a global header', async () => {
     const projects = [{ _id: 'p1' }, { _id: 'p2' }];
-    const find = jest.fn(() => ({ sort: () => ({ toArray: async () => projects }) }));
+    const find = jest.fn(() => ({ toArray: async () => projects }));
     const db = { collection: (name: string) => (name === 'projects' ? { find } : {}) };
     const scope = await resolveScopeProjectIds('global', 'all', undefined, db);
-    expect(find).toHaveBeenCalledWith({});
+    // Every project, but only the fields the report reads (a full stats document of every project times the page out)
+    expect(find).toHaveBeenCalledWith({}, { projection: expect.objectContaining({ eventName: 1, 'stats.allImages': 1, 'stats.szerencsejatekTop10': 1 }) });
+    expect(Object.keys((find.mock.calls[0] as any)[1].projection)).not.toContain('stats');
     expect(scope.resolvedEventIds).toEqual(['p1', 'p2']);
     expect(scope.scopeHeader).toMatchObject({ type: 'global', id: 'all', name: 'All data' });
     // A tenant-scoped caller sees only its own organization's projects
     await resolveScopeProjectIds('global', 'all', 'org_x', db);
-    expect(find).toHaveBeenLastCalledWith({ organizationId: 'org_x' });
+    expect(find).toHaveBeenLastCalledWith({ organizationId: 'org_x' }, expect.anything());
   });
 });
