@@ -1,8 +1,8 @@
 # messmass API Reference
 
-Generated for the fleet audit (messmass#350); measured against `docs/_audit/endpoints.json` (232 endpoints, including brand assets management and interactive report routes). Existing Auth adjudication was re-verified against the handlers @ dd34e229 (2026-09-28); the new Camera style-context read uses `assertCameraSecret`.
+Generated for the fleet audit (messmass#350); measured against `docs/_audit/endpoints.json` (234 endpoints, including brand assets management and interactive report routes). Existing Auth adjudication was re-verified against the handlers @ dd34e229 (2026-09-28); the new Camera style-context read uses `assertCameraSecret`.
 
-Coverage: 232 of 232 routes documented, enforced by
+Coverage: 234 of 234 routes documented, enforced by
 `tests/api-reference-covers-every-route.test.ts` — five routes were missing when
 that claim was last made by hand.
 
@@ -185,6 +185,7 @@ All routes use `requireFanmassIntegrationAuth` (Bearer/`x-api-key` shared token)
 | /api/integrations/fanmass/drive-folders | GET | — | drive folder links | reads `drive_folder_links` |
 | /api/integrations/fanmass/events/[eventId]/analysis-summary | POST | summary body | 410 `EVENT_LEVEL_EXPORT_RETIRED` | no reads or writes |
 | /api/integrations/fanmass/events/[eventId]/photos/[photoId] | POST, DELETE | requireFanmassIntegrationAuth | POST one photo result; DELETE tombstone, each with partner/event/photo IDs and generation | `{success,data:{status}}` | upserts one `fanmass_camera_photo_analyses` row; rebuilds the per-photo event summary and report stats; ignores stale generations |
+| /api/integrations/fanmass/szrt-evidence | POST | requireFanmassIntegrationAuth | `{pipeline,samples[{fileKey,sport,analyzedAt,region,crop}]}`, at most 40 | `{success,data:{received,stored,skipped[{index,reason}]}}` | stores each crop in R2 under `szrt-evidence/` and upserts one `szrt_brand_evidence` row per file and region; 503 without the R2 variables |
 | /api/integrations/fanmass/events/[eventId]/context | GET | path id | 410 `EVENT_CONTEXT_RETIRED`; Camera supplies routing IDs with each photo task | none |
 | /api/integrations/fanmass/events/[eventId]/drive-folders/status | POST | status body | `{success}` | updates `drive_folder_links` status |
 | /api/integrations/fanmass/events/[eventId]/link | GET, POST | legacy batch-link body | 410 `EVENT_BATCH_LINKS_RETIRED` | no reads or writes |
@@ -337,6 +338,7 @@ All wrapped in `withOrgContext` (getAdminUser + `x-v3-org-id` injection) except 
 | /api/brand-assets/[id] | DELETE | requireSession | path id or slug | `{success,deletedId}` | deletes from `brand_assets` |
 | /api/interactive-report/[partnerSlug] | GET | none (public-by-design: interactive client report) | path partnerSlug | `{partner,matches,vision}` | reads partner metadata, matches, and vision progress aggregates |
 | /api/interactive-report/partner-selfies | GET | none (public-by-design: interactive client report) | `?partnerName&limit&page&fanGroup` | `{selfies[],fanGroups}` | reads vision selfies matching partner or supporter group |
+| /api/interactive-report/brand-evidence | GET | none (public-by-design: interactive client report; SZRT tenant only; nothing before `publishApproved`) | `?kind=brand\|club&name&organizationId` | `{success,published,provenPhotos,modelIdentifiedPhotos,samples[]}` | reads `szrt_brand_evidence`; at most 12 samples, one per photo, text-read proof only |
 | /api/drive-folders/[linkId] | PATCH, DELETE | getAdminUser | `?projectId`; PATCH body | `{success}` | update/delete `drive_folder_links` |
 | /api/drive-folders | GET, POST | getAdminUser | `?projectId`; POST folder body | `{success,folders[]}` | reads/inserts `drive_folder_links` |
 | /api/filter-slug | POST | requireSession | `{hashtags[]}` | `{success,slug}` | mints filter slug (`filter_slugs`) |
@@ -373,10 +375,10 @@ CSRF is never counted as a guard: any anonymous caller can fetch the token from
 
 | | routes |
 |---|---:|
-| Fully guarded (every method) | **198** |
+| Fully guarded (every method) | **199** |
 | Open write method, public by design | **5** |
-| Open GET only, writes guarded or absent | **29** |
-| **Total** | **232** |
+| Open GET only, writes guarded or absent | **30** |
+| **Total** | **234** |
 
 The previous run of this section (2026-08) listed 40 GAP routes, 21 of them
 unauthenticated writes. Those are closed: messmass#347 and #386 took the first
@@ -398,7 +400,7 @@ whenever an `admin-session` cookie was merely *present*.
 | `/api/client-error` | POST | Records a crash report. A logged-out visitor can crash too. |
 | `/api/contact` | POST | Public contact form, rate-limited by middleware. |
 
-### Open GET only (27)
+### Open GET only (28)
 
 Each serves an anonymously-reachable surface, or is pre-auth. Where a route
 also exposes writes, those writes are guarded — the asymmetry is deliberate:
@@ -424,6 +426,7 @@ the page-password editors read these without a session.
 | `/api/hashtag-colors` | POST, PUT, DELETE |
 | `/api/hashtags` | POST, DELETE |
 | `/api/hashtags/[hashtag]` | — (read-only route) |
+| `/api/interactive-report/brand-evidence` | — (read-only route) |
 | `/api/landing-static` | — (read-only route) |
 | `/api/organizations/report/[id]` | — (read-only route) |
 | `/api/organizations/report/[id]/activities` | — (read-only route) |

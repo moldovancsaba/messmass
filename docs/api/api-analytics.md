@@ -344,6 +344,28 @@ Event-level `/analysis-summary`, `/stats`, `/sync`, callback, and
 `fanmass.messmass.analytics-summary.v1` and dashboard-snapshot contracts are
 historical only; they must not be used for Camera photo analytics.
 
+## SZRT brand proof samples
+
+The SZRT report shows no brand or club figure without a sample behind it. This is a separate boundary from the
+Camera photo results above and applies to the SZRT campaign's own picture library only.
+
+`POST /api/integrations/fanmass/szrt-evidence` (`requireFanmassIntegrationAuth`) receives
+`{ pipeline, samples: [{ fileKey, sport, analyzedAt, region, crop }] }` with at most 40 samples. `region` is one brand
+region of the Fanmass analysis (`regionId`, `shortName`, `visibleText`, `itemType`, `confidence`, `bbox`, and
+`evidence` with `tier`, `method`, `match`, `ocrText`, `ocrConfidence`, `entityKind`, `onPerson`); `crop` is a base64
+JPEG or PNG of at most 1.5 MB. Fanmass pixelates every face before cutting the crop and sends no full photo.
+Messmass stores the crop in R2 under its SHA-256 (`szrt-evidence/`) and upserts one row per
+`(fileKey, regionId)` in `szrt_brand_evidence`. The answer lists every sample it skipped with a reason
+(`placeholder_name`, `invalid_box`, `text_read_without_text`, `invalid_crop_image`, `media_storage_failed`, ...); a
+broken envelope is `400`, more than 40 samples `413`, and a missing R2 configuration `503`
+`MEDIA_STORAGE_NOT_CONFIGURED`.
+
+`GET /api/interactive-report/brand-evidence?kind=brand|club&name=...` (public, SZRT tenant only) returns up to 12
+samples, strongest first and at most one per photo, plus how many photos prove the name and how many only had a
+model suggestion. It returns nothing until a person set `publishApproved: true` on the SZRT vision document, like the
+rest of the SZRT vision data. A sample with tier `model_identified` is counted but never returned as proof, and no
+response carries a file name or path.
+
 ## Common Failure Modes
 
 - `401` on admin endpoints when no valid admin session exists
