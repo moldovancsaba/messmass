@@ -47,7 +47,16 @@ type PhotoInput = {
   boxes: Record<string, unknown>;
   analysis: Record<string, unknown>;
   humanReview: Record<string, unknown> | null;
+  optIn: PhotoOptIn;
 };
+
+/**
+ * WHAT: The record that the participant's opt-in was received for one photo, as Fanmass read it from Camera's consent audit.
+ * WHY: A photo is analysed and shown only with an opt-in, so the opt-in is stored with every photo result instead of being
+ *   implied by the photo being here. It holds no consent text and no identity: only that it was received, on what basis,
+ *   when, and which kinds of consent (terms, privacy, marketing, ...) were accepted.
+ */
+export type PhotoOptIn = { received: true; basis: 'camera_consent_audit'; recordedAt: string; kinds: string[] };
 
 function invalid(status: number, code: string, message: string): never {
   throw Object.assign(new Error(message), { status, code });
@@ -69,6 +78,26 @@ function nonEmpty(value: unknown, field: string, max = 160): string {
 const REQUIRED_CAMERA_ANALYSIS_MODULES = [
   'scan', 'faces', 'people', 'poster', 'moderation', 'sports_merchandise', 'fashion_brands', 'brand_scan',
 ] as const;
+
+/** Reads the opt-in record of a photo result; a result without a valid one is refused (400), never stored as opt-in unknown. */
+export function parsePhotoOptIn(raw: unknown): PhotoOptIn {
+  const optIn = record(raw);
+  if (!optIn || optIn.received !== true) {
+    invalid(400, 'MISSING_OPT_IN', 'A photo result is stored only with a recorded opt-in (optIn.received must be true).');
+  }
+  if (optIn.basis !== 'camera_consent_audit') {
+    invalid(400, 'INVALID_OPT_IN', 'optIn.basis must be camera_consent_audit.');
+  }
+  const recordedAt = typeof optIn.recordedAt === 'string' ? optIn.recordedAt.trim() : '';
+  if (!recordedAt || !Number.isFinite(Date.parse(recordedAt))) {
+    invalid(400, 'INVALID_OPT_IN', 'optIn.recordedAt must be the ISO time the opt-in was given.');
+  }
+  const kinds = optIn.kinds === undefined ? [] : optIn.kinds;
+  if (!Array.isArray(kinds) || kinds.length > 8 || kinds.some((kind) => typeof kind !== 'string' || !/^[a-z_]{1,32}$/.test(kind))) {
+    invalid(400, 'INVALID_OPT_IN', 'optIn.kinds must be a short list of consent kind names.');
+  }
+  return { received: true, basis: 'camera_consent_audit', recordedAt, kinds: [...new Set(kinds as string[])].sort() };
+}
 
 function parseInput(body: Record<string, unknown>, expectedMessmassEventId: string): PhotoInput {
   if (body.contractVersion !== PHOTO_ANALYSIS_CONTRACT) {
@@ -145,6 +174,8 @@ function parseInput(body: Record<string, unknown>, expectedMessmassEventId: stri
     };
   }
 
+  const optIn = parsePhotoOptIn(body.optIn);
+
   const size = Buffer.byteLength(JSON.stringify(body), 'utf8');
   if (size > MAX_PHOTO_ANALYSIS_BYTES) {
     invalid(413, 'PHOTO_ANALYSIS_TOO_LARGE', `Photo analysis is ${size} bytes; limit is ${MAX_PHOTO_ANALYSIS_BYTES}.`);
@@ -165,6 +196,7 @@ function parseInput(body: Record<string, unknown>, expectedMessmassEventId: stri
     boxes,
     analysis,
     humanReview,
+    optIn,
   };
 }
 
@@ -385,10 +417,12 @@ export async function rebuildFanmassPhotoEventSummary(
   const db = await getDb();
   const photos = await db.collection<PhotoAnalysisRecord>(PHOTO_ANALYSIS_COLLECTION)
     .find({ eventId, tombstone: { $ne: true }, status: 'completed' }, {
-      projection: { _id: 0, summary: 1, boxes: 1, analyzedAt: 1, sourceRevision: 1, analysisGeneration: 1, humanReview: 1 },
+      projection: { _id: 0, summary: 1, boxes: 1, analyzedAt: 1, sourceRevision: 1, analysisGeneration: 1, humanReview: 1, optIn: 1 },
     })
     .toArray() as Array<Record<string, unknown>>;
   const summary = aggregatePhotos(eventId, photos);
+  // Photos whose result carries a recorded opt-in; results stored before the opt-in was recorded do not count until Fanmass resends them
+  const optInPhotos = photos.filter((photo) => record(photo.optIn)?.received === true).length;
   const project = await db.collection('projects').findOne(
     { _id: new ObjectId(eventId) },
     { projection: { stats: 1, slug: 1 } },
@@ -456,6 +490,7 @@ export async function rebuildFanmassPhotoEventSummary(
 
   const stats: Record<string, unknown> = { ...deriveCompleteFanmassReportStats(summary) };
   stats.fanmassPhotoResultsReceived = photos.length;
+  stats.fanmassOptInPhotos = optInPhotos;
   stats.fanmassHumanConfirmedPhotos = Number(summary.humanConfirmedPhotos || 0);
   stats.fanmassHumanCorrectedPhotos = Number(summary.humanCorrectedPhotos || 0);
   const currentStats = record(project?.stats) || {};
@@ -526,6 +561,7 @@ export async function storeFanmassPhotoAnalysis(
     boxes: input.boxes,
     analysis: input.analysis,
     humanReview: input.humanReview,
+    optIn: input.optIn,
   };
   const filter = {
     _id: id,

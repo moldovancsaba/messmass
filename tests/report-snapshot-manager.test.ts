@@ -57,7 +57,7 @@ describe("Materialized Snapshot Cache (RFC-003 / Issue #12)", () => {
   it("only reads current-schema snapshots and fences org-less lookups to the global partition", async () => {
     await getCachedReportSnapshot({ scopeType: "hashtag", scopeIdentifier: "romania" });
     const query = mockFindOne.mock.calls[0][0];
-    expect(query.schemaVersion).toBe(4);
+    expect(query.schemaVersion).toBe(5);
     expect(query.organizationId).toBe("global");
   });
 

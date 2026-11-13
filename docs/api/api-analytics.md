@@ -368,7 +368,8 @@ response carries a file name or path.
 
 `POST /api/integrations/fanmass/szrt-progress` (`requireFanmassIntegrationAuth`) receives the report's audience, brand
 and club figures from the same deep rerun: `{ pipeline, totalImages, processedCount, status, currentSport,
-lastUpdated, aggregates: { totalPeople, genders, ageGroups, topBrands, topClubs, topEmotions, sportsBreakdown } }`.
+lastUpdated, optIn?: { images, total, basis: 'local_drive_policy' }, aggregates: { totalPeople, genders, ageGroups, topBrands, topClubs, topEmotions, sportsBreakdown } }`.
+The optional `optIn` says how many of the images Fanmass holds have a recorded opt-in (an image reaches the local drive only with one); it is stored on the progress document and shown in the report's Fanmass section, and an older Fanmass that sends none leaves the stored value as it was.
 Fanmass sends the whole picture each time; Messmass validates it (whole non-negative counts, a processed count not
 above the total, sport names and list lengths bounded), derives every share from the counts, and replaces the stored
 figures in `szrt_vision_progress` (`_id: szrt_progress`). It clears the old per-image text and model-guess lists and

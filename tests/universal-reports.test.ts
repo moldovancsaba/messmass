@@ -36,7 +36,21 @@ const mockProjects = [
       allImages: 500,
       hostessImages: 300,
       approvedImages: 495,
+      // An opt-in of a campaign event is already inside the campaign cycles, so the all-data report must not add it again
+      marketingOptin: 999,
     },
+  },
+  {
+    _id: 'proj-3',
+    eventName: 'Handball Gala',
+    eventDate: '2026.02.01',
+    stats: { allImages: 200, userRegistration: 100, marketingOptin: 40 },
+  },
+  {
+    _id: 'proj-4',
+    eventName: 'Camera Basketball Night',
+    eventDate: '2026.02.08',
+    stats: { allImages: 100, camera_consents_accepted: 30 },
   },
 ];
 
@@ -97,13 +111,18 @@ describe('Universal Interactive Reports (INV-001, INV-002, INV-003)', () => {
     // The hashtag report headlines the campaign's monthly cycle (3000 photos, 2800 registrations)
     expect(hashtag?.summary.totalPhotos).toBe(3000);
     expect(hashtag?.summary.totalRegistered).toBe(2800);
-    // The all-data report adds up the events themselves, and leaves the SZRT-only measures out instead of
-    // presenting one campaign's registrations as everything
+    // The all-data report adds up the events themselves
     expect(global?.scope?.type).toBe('global');
-    expect(global?.summary.totalPhotos).toBe(500);
+    expect(global?.summary.totalPhotos).toBe(800);
     expect(global?.summary.totalPhotos).toBe(global?.matches.reduce((sum: number, m: { submitted: number }) => sum + m.submitted, 0));
-    expect(global?.summary.totalRegistered).toBe(0);
-    expect(global?.summary.totalOptIns).toBe(0);
+  });
+
+  it('adds the registrations and opt-ins every event stored to the campaign cycles, each counted once', async () => {
+    const global = await getScopedInteractiveReportData({ type: 'global', identifier: 'all' });
+    // Campaign cycle (2800 registered, 2000 opt-ins) + the handball event's own (100, 40) + Camera's count of photos
+    // with a received opt-in for the event without a stored one (30). The campaign event's 999 is not added again.
+    expect(global?.summary.totalRegistered).toBe(2900);
+    expect(global?.summary.totalOptIns).toBe(2070);
   });
 
   it('loads partner scope for debreceni-vsc', async () => {

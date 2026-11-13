@@ -179,6 +179,11 @@ export default function FanmassVisionSection({
           <div className={styles.visionCounterPercent}>
             {vision.percent}% of photos processed
           </div>
+          {vision.optInImages !== undefined && (
+            <div className={styles.visionCounterPercent}>
+              {vision.optInImages.toLocaleString()} of {vision.totalImages.toLocaleString()} photos with a recorded opt-in
+            </div>
+          )}
         </div>
       </div>
 
