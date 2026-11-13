@@ -25,8 +25,9 @@ export interface SnapshotResult {
  *       brand-safety rates, demographics, vision data of another scope) were removed.
  *  - 3: opt-in and approval rates are shown only when the stored counts agree.
  *  - 4: the all-data (global) report headlines the photos of every event, not the SZRT campaign cycles alone.
+ *  - 5: the all-data (global) report adds the registrations and opt-ins every other event stored (or Camera counted) to the campaign's.
  */
-export const SNAPSHOT_SCHEMA_VERSION = 4;
+export const SNAPSHOT_SCHEMA_VERSION = 5;
 
 // In-flight request stampede deduplication lock (INV-003)
 const inFlightSnapshots = new Map<string, Promise<SnapshotResult>>();

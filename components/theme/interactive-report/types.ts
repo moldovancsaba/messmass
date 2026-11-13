@@ -76,6 +76,8 @@ export interface VisionProgressData {
   currentSport: string;
   currentFile: string;
   lastUpdated: string;
+  /** Photos with a recorded opt-in, as Fanmass counted them; absent until Fanmass sends it. */
+  optInImages?: number;
   aggregates: {
     totalPeople: number;
     genders: {

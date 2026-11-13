@@ -502,14 +502,35 @@ export async function getScopedInteractiveReportData(
 
   // 6. Aggregate global totals across the 4 primary monthly cycles
   // The monthly cycles hold the SZRT campaign's own totals (registrations, opt-ins, CTA clicks, touchpoints: stored
-  // for that campaign only). The all-data scope does not take its headline from them, because that would present one
-  // campaign's figures as everything: its photo totals come from every event, and the SZRT-only measures stay n/a.
-  const monthlyPeriods = scopeType === 'global' ? [] : timelinePeriods.filter((t) => t.type === 'monthly');
+  // for that campaign only). The all-data scope does not take its photo headline from them, because that would present
+  // one campaign's figures as everything: its photos come from every event, and the CTA clicks and touchpoints, which
+  // only the campaign stores, stay n/a.
+  const cyclePeriods = timelinePeriods.filter((t) => t.type === 'monthly');
+  const monthlyPeriods = scopeType === 'global' ? [] : cyclePeriods;
+  // Registrations and opt-ins: the SZRT campaign's cycles count once, and every event outside the campaign adds the
+  // two counts it stored itself (userRegistration, marketingOptin). Campaign events are skipped there, their opt-ins are
+  // already inside the cycles, so nothing is counted twice.
+  const otherEvents =
+    scopeType === 'global'
+      ? campaignProjects.filter(
+          (p) =>
+            !campaignNames.includes(p.eventName) &&
+            !(Array.isArray(p.hashtags) && p.hashtags.includes('tippmixreport2026')) &&
+            !/tippmix/i.test(String(p.eventName ?? '')),
+        )
+      : [];
+  const sumStat = (key: string) => otherEvents.reduce((acc, p) => acc + toCount(p.stats?.[key]), 0);
+  // One source per event: the opt-ins an operator or sheet stored (marketingOptin), else the photos with a received
+  // opt-in that Camera counted for the event (camera_consents_accepted)
+  const otherEventOptIns = otherEvents.reduce(
+    (acc, p) => acc + (toCount(p.stats?.marketingOptin) || toCount(p.stats?.camera_consents_accepted)),
+    0,
+  );
   const computedTotalPhotos = monthlyPeriods.reduce((acc, cur) => acc + cur.allPhotos, 0);
   const computedHostessPhotos = monthlyPeriods.reduce((acc, cur) => acc + cur.hostessPhotos, 0);
   const computedSelfies = Math.max(0, computedTotalPhotos - computedHostessPhotos);
-  const computedTotalRegistered = monthlyPeriods.reduce((acc, cur) => acc + cur.registered, 0);
-  const computedTotalOptIns = monthlyPeriods.reduce((acc, cur) => acc + cur.optIns, 0);
+  const computedTotalRegistered = cyclePeriods.reduce((acc, cur) => acc + cur.registered, 0) + sumStat('userRegistration');
+  const computedTotalOptIns = cyclePeriods.reduce((acc, cur) => acc + cur.optIns, 0) + otherEventOptIns;
   const computedTotalCta1 = monthlyPeriods.reduce((acc, cur) => acc + cur.cta1, 0);
   const computedTotalCta2 = monthlyPeriods.reduce((acc, cur) => acc + cur.cta2, 0);
 
@@ -599,8 +620,10 @@ export async function getScopedInteractiveReportData(
         weightedOptInRate !== null
           ? `${weightedOptInRate.toFixed(1)}% Opt-In to Marketing Campaigns`
           : totalRegistered > 0
-            ? 'n/a (stored opt-ins exceed stored registrations)'
-            : 'n/a (no registrations)',
+            ? 'Opt-in rate n/a (stored opt-ins exceed stored registrations)'
+            : totalOptIns > 0
+              ? 'Opt-in rate n/a (no stored registrations to compare)'
+              : 'n/a (no opt-ins stored)',
     },
     {
       step: 'CTA Click Conversions',
@@ -933,6 +956,7 @@ export async function getScopedInteractiveReportData(
         currentSport: visionDoc.currentSport || '',
         currentFile: visionDoc.currentFile || '',
         lastUpdated: visionDoc.lastUpdated || '',
+        ...(visionDoc.optIn ? { optInImages: toCount(visionDoc.optIn.images) } : {}),
         aggregates: {
           totalPeople: toCount(visionDoc.aggregates?.totalPeople),
           genders: visionDoc.aggregates?.genders || {
@@ -1109,8 +1133,9 @@ export interface UniversalAggregateMetrics {
 /** The project fields getScopedInteractiveReportData reads. The global scope fetches nothing else. */
 const GLOBAL_PROJECT_FIELDS = Object.fromEntries(
   [
-    'eventName', 'eventDate', 'viewSlug', 'slug', 'partner1Id', 'partner2Id', 'organizationId',
+    'eventName', 'eventDate', 'viewSlug', 'slug', 'partner1Id', 'partner2Id', 'organizationId', 'hashtags',
     ...[
+      'userRegistration', 'marketingOptin', 'camera_consents_accepted',
       'allImages', 'approvedImages', 'rejectedImages', 'remoteImages', 'hostessImages',
       'male', 'female', 'genAlpha', 'genYZ', 'genX', 'boomer',
       'szerencsejatekTop10', 'szerencsejatekHostessAllphotos', 'szerencsejatekAllusersAllphotos',

@@ -35,6 +35,8 @@ export interface SzrtProgressDoc {
   status: 'running' | 'idle' | 'completed';
   currentSport: string;
   lastUpdated: string;
+  /** Images whose opt-in Fanmass recorded (owner policy: an image reaches the local drive only with the opt-in). Absent until Fanmass sends it. */
+  optIn?: { images: number; total: number; basis: 'local_drive_policy' };
   aggregates: {
     totalPeople: number;
     genders: GenderCounts;
@@ -97,6 +99,16 @@ function named<K extends string>(value: unknown, key: K, field: string): Array<{
   }).sort((a, b) => b.count - a.count);
 }
 
+function optInSummary(value: unknown): SzrtProgressDoc['optIn'] {
+  if (value === undefined || value === null) return undefined;
+  const raw = record(value) ?? invalid('optIn must be an object.');
+  if (raw.basis !== 'local_drive_policy') invalid('optIn.basis must be local_drive_policy.');
+  const images = count(raw.images, 'optIn.images');
+  const total = count(raw.total, 'optIn.total');
+  if (images > total) invalid('optIn.images cannot exceed optIn.total.');
+  return { images, total, basis: 'local_drive_policy' };
+}
+
 export function parseSzrtProgress(body: unknown): SzrtProgressDoc {
   const raw = record(body) ?? invalid('A JSON progress object is required.');
   const pipeline = typeof raw.pipeline === 'string' ? raw.pipeline.trim().slice(0, 80) : '';
@@ -136,6 +148,7 @@ export function parseSzrtProgress(body: unknown): SzrtProgressDoc {
     status: raw.status,
     currentSport: typeof raw.currentSport === 'string' ? raw.currentSport.trim().slice(0, 40) : '',
     lastUpdated,
+    ...(raw.optIn !== undefined && raw.optIn !== null ? { optIn: optInSummary(raw.optIn) } : {}),
     aggregates: {
       totalPeople: count(aggregates.totalPeople, 'aggregates.totalPeople'),
       genders: genders(aggregates.genders, 'aggregates.genders'),
@@ -161,6 +174,8 @@ export async function storeSzrtProgress(db: ProgressDb, doc: SzrtProgressDoc, no
         pipeline: doc.pipeline, totalImages: doc.totalImages, processedCount: doc.processedCount, percent: doc.percent,
         status: doc.status, currentSport: doc.currentSport, currentFile: '', lastUpdated: doc.lastUpdated,
         aggregates: { ...doc.aggregates, topVenues: [] }, recentImages: [], receivedAt: now(),
+        // Kept as it was when Fanmass sends none (an older Fanmass), never erased
+        ...(doc.optIn ? { optIn: doc.optIn } : {}),
       },
       $setOnInsert: { publishApproved: false },
     },

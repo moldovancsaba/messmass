@@ -65,6 +65,29 @@ describe('parseSzrtProgress', () => {
   });
 });
 
+describe('the opt-in summary of the local-drive images', () => {
+  const optIn = { images: 11312, total: 11312, basis: 'local_drive_policy' };
+
+  it('is stored when Fanmass sends it and absent when it does not', () => {
+    expect(parseSzrtProgress(body({ optIn })).optIn).toEqual(optIn);
+    expect(parseSzrtProgress(body()).optIn).toBeUndefined();
+  });
+
+  it('refuses more opt-ins than images and any other basis', () => {
+    expect(() => parseSzrtProgress(body({ optIn: { ...optIn, images: 11313 } }))).toThrow(/cannot exceed/);
+    expect(() => parseSzrtProgress(body({ optIn: { ...optIn, basis: 'guess' } }))).toThrow(/basis/);
+  });
+
+  it('is written with the figures, and an older Fanmass that sends none leaves the stored one alone', async () => {
+    updateOne.mockClear();
+    await storeSzrtProgress({ collection: () => ({ updateOne }) }, parseSzrtProgress(body({ optIn })));
+    expect((updateOne.mock.calls[0][1] as { $set: Record<string, unknown> }).$set.optIn).toEqual(optIn);
+    updateOne.mockClear();
+    await storeSzrtProgress({ collection: () => ({ updateOne }) }, parseSzrtProgress(body()));
+    expect('optIn' in (updateOne.mock.calls[0][1] as { $set: Record<string, unknown> }).$set).toBe(false);
+  });
+});
+
 describe('storeSzrtProgress', () => {
   it('replaces the figures, clears the old per-image text and never writes the publication switch', async () => {
     const update = jest.fn().mockResolvedValue({});

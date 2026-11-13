@@ -3903,8 +3903,10 @@ The active integration is photo-first and ID-bound:
   Fanmass does not create Messmass events or event reports.
 
 The result contract is `fanmass.messmass.photo-analysis.v2`. It is identity-free
-and includes normalized photo findings, boxes, source revision and analysis
-generation. A per-photo tombstone permanently fences the exact event/photo
+and includes normalized photo findings, boxes, source revision, analysis
+generation and the opt-in record of the photo (`optIn`: received, basis, time,
+consent kinds; no consent text). A result without a recorded opt-in is refused,
+and the event stat `fanmassOptInPhotos` counts the stored results that carry one. A per-photo tombstone permanently fences the exact event/photo
 key so no later analysis generation can recreate a deleted or newly ineligible
 photo. A successful acknowledgement is sent only after
 both the per-photo record and its derived report projection are stored.
