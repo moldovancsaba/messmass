@@ -283,7 +283,8 @@ export async function getScopedInteractiveReportData(
   }
 
   // 3. Find partner name lookup
-  const allPartners = await db.collection('partners').find({}).toArray().catch(() => []);
+  // Only the partner fields the report shows: name, badge, venue and sport come from a handful of them
+  const allPartners = await db.collection('partners').find({}, { projection: PARTNER_LOOKUP_FIELDS }).toArray().catch(() => []);
   const partnerNameMap = new Map<string, string>();
   for (const tp of allPartners) {
     partnerNameMap.set(String(tp._id), tp.name);
@@ -1130,8 +1131,15 @@ export interface UniversalAggregateMetrics {
   generatedAt: string;
 }
 
-/** The project fields getScopedInteractiveReportData reads. The global scope fetches nothing else. */
-const GLOBAL_PROJECT_FIELDS = Object.fromEntries(
+/** The partner fields the report reads when it matches a club to a partner (name, emoji, badge, venue, sport, link). */
+const PARTNER_LOOKUP_FIELDS = Object.fromEntries([
+  'name', 'emoji', 'logoUrl', 'logo', 'viewSlug',
+  'sportsDb.strSport', 'sportsDb.strTeamBadge', 'sportsDb.badge', 'sportsDb.strStadium', 'sportsDb.intStadiumCapacity',
+  'sportsDb.venueCapacity', 'sportsDb.strWebsite', 'sportsDb.website', 'categorizedHashtags.sport',
+].map((field) => [field, 1]));
+
+/** The project fields getScopedInteractiveReportData reads. Every scope fetches nothing else: a full stats document of every project of a scope times the page out. */
+const REPORT_PROJECT_FIELDS = Object.fromEntries(
   [
     'eventName', 'eventDate', 'viewSlug', 'slug', 'partner1Id', 'partner2Id', 'organizationId', 'hashtags',
     ...[
@@ -1236,7 +1244,7 @@ export async function resolveScopeProjectIds(
           { partner1: { $in: [...tippmixPartnerIds, ...tippmixPartnerIdStrings] as any } },
           { partner2: { $in: [...tippmixPartnerIds, ...tippmixPartnerIdStrings] as any } },
         ],
-      })
+      }, { projection: REPORT_PROJECT_FIELDS })
       .sort({ eventDate: 1 })
       .toArray();
 
@@ -1264,7 +1272,7 @@ export async function resolveScopeProjectIds(
 
     campaignProjects = await db
       .collection("projects")
-      .find(hashtagFilter)
+      .find(hashtagFilter, { projection: REPORT_PROJECT_FIELDS })
       .sort({ eventDate: 1 })
       .toArray();
 
@@ -1284,7 +1292,7 @@ export async function resolveScopeProjectIds(
     // is loaded here), and the sort happens here too, so the database never has to sort whole documents.
     campaignProjects = await db
       .collection("projects")
-      .find(organizationId ? { organizationId } : {}, { projection: GLOBAL_PROJECT_FIELDS })
+      .find(organizationId ? { organizationId } : {}, { projection: REPORT_PROJECT_FIELDS })
       .toArray();
     campaignProjects.sort((a: any, b: any) => String(a.eventDate ?? "").localeCompare(String(b.eventDate ?? "")));
 
@@ -1359,7 +1367,7 @@ export async function resolveScopeProjectIds(
 
     campaignProjects = await db
       .collection("projects")
-      .find(partnerProjectFilter)
+      .find(partnerProjectFilter, { projection: REPORT_PROJECT_FIELDS })
       .sort({ eventDate: 1 })
       .toArray();
 

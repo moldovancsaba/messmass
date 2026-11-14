@@ -134,17 +134,15 @@ export default function SzrtHeader({ data, activeTab, onTabChange }: SzrtHeaderP
 
           <div className={styles.kpiCard}>
             <span className={styles.kpiLabel}>Marketing Opt-In</span>
+            {/* The stored count is the figure; the rate is shown under it only when it can be derived from the stored counts */}
             <span className={styles.kpiValueHighlight}>
-              {summary.optInRate !== null ? `${summary.optInRate}%` : 'n/a'}
+              {summary.totalOptIns > 0 ? summary.totalOptIns.toLocaleString() : 'n/a'}
             </span>
             {summary.optInRate !== null ? (
-              <span className={styles.kpiSubtext}>
-                {summary.totalOptIns.toLocaleString()} opt-ins
-              </span>
+              <span className={styles.kpiSubtext}>{summary.optInRate}% of registrations</span>
             ) : summary.totalOptIns > summary.totalRegistered && summary.totalRegistered > 0 ? (
               <span className={styles.kpiSubtext}>
-                Stored opt-ins ({summary.totalOptIns.toLocaleString()}) exceed registrations (
-                {summary.totalRegistered.toLocaleString()})
+                Rate not shown: more opt-ins than registrations ({summary.totalRegistered.toLocaleString()}) are stored
               </span>
             ) : null}
           </div>

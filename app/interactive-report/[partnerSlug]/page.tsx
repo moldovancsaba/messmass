@@ -4,6 +4,9 @@ import { getInteractiveReportData } from '@/lib/interactiveReportAggregator';
 import InteractiveReportDashboard from '@/components/theme/interactive-report/InteractiveReportDashboard';
 import styles from '@/components/theme/interactive-report/interactive-report.module.css';
 
+// Built from many events on the first request; the host default of 15 seconds is too short for it
+export const maxDuration = 60;
+
 export const dynamic = 'force-dynamic';
 
 interface PageProps {

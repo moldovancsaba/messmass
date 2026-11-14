@@ -1801,7 +1801,7 @@
 
 .celebrationScoreVal {
   font-size: var(--mm-font-size-lg);
-  font-weight: var(--mm-font-weight-black);
+  font-weight: var(--mm-font-weight-bold);
   color: #1b4332;
 }
 

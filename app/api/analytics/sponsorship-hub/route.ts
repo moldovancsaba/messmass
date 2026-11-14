@@ -9,6 +9,9 @@ import {
 const ALLOWED_SCOPE_TYPES: SponsorshipHubScopeType[] = ['portfolio', 'partner', 'organization', 'project'];
 const ALLOWED_RANGE_PRESETS: SponsorshipHubRangePreset[] = ['all', '30d', '90d', '365d'];
 
+// Built from many events on the first request; the host default of 15 seconds is too short for it
+export const maxDuration = 60;
+
 export async function GET(request: NextRequest) {
   try {
     const admin = await getAdminUser();
