@@ -10,6 +10,7 @@ interface D3FunnelFlowProps {
   summary: {
     optInRate: number | null;
     totalOptIns: number;
+    totalRegistered: number;
     vettingApprovalRate: number | null;
     totalCtaClicks: number;
   };
@@ -38,7 +39,7 @@ export default function D3FunnelFlow({ funnel, summary }: D3FunnelFlowProps) {
     );
   }
 
-  const { optInRate, totalOptIns, vettingApprovalRate, totalCtaClicks } = summary;
+  const { optInRate, totalOptIns, totalRegistered, vettingApprovalRate, totalCtaClicks } = summary;
 
   return (
     <div className={styles.reportCard}>
@@ -131,11 +132,16 @@ export default function D3FunnelFlow({ funnel, summary }: D3FunnelFlowProps) {
       <div className={styles.highlightsGrid}>
         <div className={styles.highlightBoxGreen}>
           <div className={styles.highlightLabelGreen}>Marketing Opt-In</div>
-          <div className={styles.highlightValGreen}>{formatPercent(optInRate)}</div>
+          {/* The stored count is the figure; the rate is shown next to it only when it can be derived from the stored counts */}
+          <div className={styles.highlightValGreen}>{totalOptIns > 0 ? totalOptIns.toLocaleString() : 'n/a'}</div>
           <div className={styles.highlightLabelGreen}>
             {optInRate !== null
-              ? `${totalOptIns.toLocaleString()} opt-ins recorded`
-              : 'No registrations to measure against'}
+              ? `${optInRate}% of registrations`
+              : totalOptIns > 0
+                ? totalRegistered > 0
+                  ? `Rate not shown: more opt-ins (${totalOptIns.toLocaleString()}) than registrations (${totalRegistered.toLocaleString()}) are stored`
+                  : 'Rate not shown: no registrations stored'
+                : 'No opt-ins stored'}
           </div>
         </div>
         <div className={styles.highlightBoxGray}>
