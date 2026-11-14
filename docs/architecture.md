@@ -1842,6 +1842,16 @@ interface ReportTemplate {
 - Batch evaluation (20 charts): <100ms
 - Caching: Results cached per render cycle
 
+**Interactive reports (`/report/hashtag|partner|event|global`, served by `/interactive-report/...`):**
+- `lib/interactiveReportAggregator.ts` loads every project of the scope, so it fetches only the project and partner fields the
+  report reads (`REPORT_PROJECT_FIELDS`, `PARTNER_LOOKUP_FIELDS`); a full stats document of every project timed the global and
+  hashtag reports out at the host default of 15 seconds (1,101 timeouts in 7 days of production errors).
+- The interactive pages and their data routes set `maxDuration = 60`; the first load builds the report, the next hour is served
+  from the snapshot cache (`SNAPSHOT_SCHEMA_VERSION` is bumped with every output change).
+- The V3 sync (`lib/v3/syncEngine.ts`) copies V2 values to plain JSON before mongoose writes them: V2 is read by the raw driver
+  (bson 6), V3 is written by mongoose (bson 7), and a raw-driver ObjectId inside an untyped field fails the write.
+- `app/admin/analytics/error.tsx` keeps a crash in one analytics view inside the admin shell, with a retry and a server log entry.
+
 ### Error Handling
 
 **Chart Level:**

@@ -1,6 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getInteractiveReportData } from '@/lib/interactiveReportAggregator';
 
+// Built from many events on the first request; the host default of 15 seconds is too short for it
+export const maxDuration = 60;
+
 export const dynamic = 'force-dynamic';
 
 export async function GET(

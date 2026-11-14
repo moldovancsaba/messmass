@@ -7,6 +7,9 @@ import { getInteractiveReportData } from '@/lib/interactiveReportAggregator';
 import TerritoryMapCanvas from '@/components/theme/interactive-report/TerritoryMapCanvas';
 import { getReportSlug } from '@/components/theme/interactive-report/reportSlug';
 
+// Built from many events on the first request; the host default of 15 seconds is too short for it
+export const maxDuration = 60;
+
 export const dynamic = 'force-dynamic';
 
 interface MapPageProps {
