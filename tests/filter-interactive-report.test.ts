@@ -56,6 +56,20 @@ describe('Filter interactive report page access', () => {
     expect(isPageProtected).not.toHaveBeenCalled();
   });
 
+  it('gives a filter of the SZRT campaign hashtag alone the vision Fanmass published for the campaign', async () => {
+    getAdminUser.mockResolvedValue({ role: 'admin' });
+    slugTags.mockResolvedValue(['tippmixreport2026']);
+    getData.mockImplementation(async (q: { type: string }) => (q.type === 'hashtag' ? { success: true, vision: { processedCount: 2659 } } : { success: true, vision: null }));
+    const page: any = await open('szrt-filter');
+    expect(getData).toHaveBeenCalledWith({ type: 'hashtag', identifier: 'tippmixreport2026' });
+    expect(page.props.base.vision).toEqual({ processedCount: 2659 });
+    // ...not a filter that adds another hashtag
+    getData.mockClear();
+    slugTags.mockResolvedValue(['tippmixreport2026', 'happy']);
+    await open('mixed-filter');
+    expect(getData).not.toHaveBeenCalledWith({ type: 'hashtag', identifier: 'tippmixreport2026' });
+  });
+
   it('keeps the previous report at ?report=classic and for a saved variant', async () => {
     getAdminUser.mockResolvedValue({ role: 'admin' });
     expect((await open('test-slug', { report: 'classic' })).type).toBe('main');
