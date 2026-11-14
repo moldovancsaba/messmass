@@ -131,6 +131,11 @@
   color: var(--mm-gray-700);
 }
 
+.tableScroll {
+  /* A phone is narrower than the five columns: the table scrolls inside its card, the page never does */
+  overflow-x: auto;
+}
+
 .table {
   width: 100%;
   border-collapse: collapse;
