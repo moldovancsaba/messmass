@@ -29,6 +29,9 @@ export async function GET(request: NextRequest) {
           allTags: {
             $setUnion: [
               { $ifNull: ["$hashtags", []] },
+              // With photos=1 (the admin filter) the hashtags Fanmass wrote onto the event's photos count for the event too;
+              // the event editor's suggestions stay typed hashtags only
+              ...(searchParams.get('photos') === '1' ? [{ $ifNull: ["$fanmassHashtags", []] }] : []),
               {
                 $reduce: {
                   input: { $objectToArray: { $ifNull: ["$categorizedHashtags", {}] } },

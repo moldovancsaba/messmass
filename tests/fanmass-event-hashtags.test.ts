@@ -1,7 +1,7 @@
 // tests/fanmass-event-hashtags.test.ts
 // WHAT: Fanmass adds a campaign hashtag to Messmass events: additive, once, never into an event that already carries it.
 
-import { addEventHashtags, EVENT_HASHTAGS_CONTRACT, parseEventHashtagsRequest } from '@/lib/fanmassEventHashtags';
+import { addEventHashtags, EVENT_HASHTAGS_CONTRACT, parseEventHashtagsRequest, refreshFanmassHashtags } from '@/lib/fanmassEventHashtags';
 
 const A = '6af861d294eb1bfcaaca5622';
 const B = '6af861d494eb1bfcaaca5623';
@@ -49,5 +49,32 @@ describe('adding', () => {
     });
     expect(updates).toHaveLength(2);
     expect(updates[0][1]).toEqual({ $addToSet: { hashtags: { $each: ['tippmixreport2026'] } }, $set: { updatedAt: '2026-11-14T00:00:00.000Z' } });
+  });
+});
+
+describe('the Fanmass hashtags of an event', () => {
+  it('are its photos\' hashtags without its typed ones, kept apart from them, and cleared when its photos left', async () => {
+    const sets: Array<[string, any]> = [];
+    let unset: any = null;
+    const events = [
+      { _id: { toString: () => A }, hashtags: ['paks', 'football'], categorizedHashtags: { campaign: ['TippmixReport2026'] } },
+      { _id: { toString: () => B }, hashtags: ['sopron'], fanmassHashtags: ['happy'] },
+    ];
+    const db = {
+      collection: (name: string) => ({
+        aggregate: () => ({ toArray: async () => (name === 'fanmass_event_drive_photos'
+          ? [{ _id: A, tags: ['paks', 'tippmixreport2026', 'happy', 'mvm'] }, { _id: B, tags: ['happy'] }, { _id: 'not-an-event', tags: ['x'] }]
+          : [{ _id: A, tags: ['Male', 'happy'] }]) }),
+        find: () => ({ toArray: async () => events }),
+        updateOne: async (filter: any, update: any) => { sets.push([String(filter._id), update.$set.fanmassHashtags]); },
+        updateMany: async (filter: any, update: any) => { unset = { filter, update }; return { modifiedCount: 2 }; },
+      }),
+    } as any;
+    const result = await refreshFanmassHashtags(db, new Date('2026-11-14T00:00:00Z'));
+    // A: typed paks and tippmixreport2026 (in a category list, any case) stay out; drive and Camera photo tags merge
+    expect(sets).toEqual([[A, ['happy', 'male', 'mvm']]]);
+    // B: unchanged, so not written again
+    expect(result).toEqual({ events: 2, changed: 1, cleared: 2 });
+    expect(unset.update).toEqual({ $unset: { fanmassHashtags: '', fanmassHashtagsAt: '' } });
   });
 });

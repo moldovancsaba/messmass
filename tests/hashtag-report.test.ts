@@ -162,8 +162,10 @@ describe('what the builder may read', () => {
     expect(listed.test('cup, Derby ,final')).toBe(true);
     expect(listed.test('derbyshire')).toBe(false);
     // ...and in any category list, like the admin hashtag filter (lowercased on both sides)
-    expect(JSON.stringify(filter.$or[4])).toContain('categorizedHashtags');
-    expect(JSON.stringify(filter.$or[4])).toContain('"derby"');
+    // ...in the hashtags Fanmass wrote onto the event's photos (they work together with the typed ones)...
+    expect(filter.$or[4]).toEqual({ fanmassHashtags: 'derby' });
+    expect(JSON.stringify(filter.$or[5])).toContain('categorizedHashtags');
+    expect(JSON.stringify(filter.$or[5])).toContain('"derby"');
   });
 
   it('matches a category:tag query in that category only, and several hashtags all together', () => {

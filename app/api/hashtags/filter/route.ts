@@ -92,7 +92,8 @@ const db = client.db(config.dbName);
       // Check if project contains ALL specified hashtags (AND logic)
       return hashtags.every(hashtagQuery => 
         matchHashtagInProject(hashtagQuery, {
-          hashtags: project.hashtags,
+          // Typed hashtags and the ones Fanmass wrote onto the event's photos work together (owner 2026-11-14)
+          hashtags: [...(Array.isArray(project.hashtags) ? project.hashtags : []), ...(Array.isArray(project.fanmassHashtags) ? project.fanmassHashtags : [])],
           categorizedHashtags: project.categorizedHashtags
         })
       );

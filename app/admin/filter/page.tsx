@@ -10,6 +10,7 @@ import UnifiedAdminHeroWithSearch from '@/components/UnifiedAdminHeroWithSearch'
 import ColoredCard from '@/components/ColoredCard';
 import { apiPost } from '@/lib/apiClient';
 import HashtagReportView from '@/components/hashtagReport/HashtagReportView';
+import { getStoredOrDerivedTotalFans } from '@/lib/totalFans';
 import type { HashtagReport } from '@/lib/hashtagReport/types';
 
 interface ProjectStats {
@@ -337,6 +338,15 @@ function HashtagFilterPageContent() {
   };
 
 
+  // Calculate totals for display
+  const totalImages = project ? project.stats.remoteImages + project.stats.hostessImages + project.stats.selfies : 0;
+  const totalFans = project ? getStoredOrDerivedTotalFans(project.stats) : 0;
+  const totalGender = project ? project.stats.female + project.stats.male : 0;
+  const totalUnder40 = project ? project.stats.genAlpha + project.stats.genYZ : 0;
+  const totalOver40 = project ? project.stats.genX + project.stats.boomer : 0;
+  const totalAge = totalUnder40 + totalOver40;
+  const totalMerch = project ? project.stats.merched + project.stats.jersey + project.stats.scarf + project.stats.flags + project.stats.baseballCap + project.stats.other : 0;
+
   if (loading) {
     return (
       <div className="loading-centered-container">
@@ -476,9 +486,32 @@ function HashtagFilterPageContent() {
                         }
                       }}
                       className="btn btn-small btn-primary"
-                      title="Open full interactive analytics dashboard for this filter"
+                      title="Open the Fanmass report of this filter: measured by the local AI"
                     >
-                      ⚡ Interactive Dashboard
+                      🤖 Fanmass report
+                    </button>
+
+                    <button
+                      onClick={async () => {
+                        try {
+                          const data = await apiPost('/api/filter-slug', {
+                            hashtags: selectedHashtags,
+                            styleId: selectedStyleId || null
+                          });
+                          if (data.success) {
+                            window.open(`/filter/${encodeURIComponent(data.slug)}`, '_blank');
+                          } else {
+                            alert('Failed to open the clicker report: ' + data.error);
+                          }
+                        } catch (error) {
+                          console.error('Error opening the clicker report:', error);
+                          alert('Failed to open the clicker report');
+                        }
+                      }}
+                      className="btn btn-small btn-secondary"
+                      title="Open the clicker report of this filter: the counts entered by hand"
+                    >
+                      🖱️ Clicker report
                     </button>
 
                     <button 
@@ -602,8 +635,168 @@ function HashtagFilterPageContent() {
       {/* Results Section */}
       {hasAppliedFilter && project && !error && (
         <>
-          {/* The unified report: Fanmass data and Messmass calculations for the events and photos carrying every
-              selected hashtag, the same report as every hashtag, filter and the global report. */}
+          {/* Two analytics, never mixed (owner 2026-11-14): the clicker report (counts people entered by hand) and the
+              Fanmass report (measured by the local AI). The hashtags that choose the events work together. */}
+          <h2 className="text-gray-900 font-semibold text-2xl mt-8 mb-2">🖱️ Clicker report: entered by hand</h2>
+          {/* Stats Layout */}
+          <div className="stats-layout-container">
+            {/* Row 1: Images, Fans, Gender */}
+            <div className="stats-row-3">
+              <div className="stats-section-new">
+                <h2 className="stats-section-title">📸 Images ({totalImages})</h2>
+                <div className="stats-cards-row">
+                  <div className={styles.statCard}>
+                    <div className={styles.statLabel}>Remote Images</div>
+                    <div className={styles.statValue}>{project.stats.remoteImages}</div>
+                  </div>
+                  <div className={styles.statCard}>
+                    <div className={styles.statLabel}>Hostess Images</div>
+                    <div className={styles.statValue}>{project.stats.hostessImages}</div>
+                  </div>
+                  <div className={styles.statCard}>
+                    <div className={styles.statLabel}>Selfies</div>
+                    <div className={styles.statValue}>{project.stats.selfies}</div>
+                  </div>
+                </div>
+              </div>
+
+              <div className="stats-section-new">
+                <h2 className="stats-section-title">👥 Fans ({totalFans})</h2>
+                <div className="stats-cards-row">
+                  <div className={styles.statCard}>
+                    <div className={styles.statLabel}>Indoor</div>
+                    <div className={styles.statValue}>{project.stats.indoor}</div>
+                  </div>
+                  <div className={styles.statCard}>
+                    <div className={styles.statLabel}>Outdoor</div>
+                    <div className={styles.statValue}>{project.stats.outdoor}</div>
+                  </div>
+                  <div className={styles.statCard}>
+                    <div className={styles.statLabel}>Stadium</div>
+                    <div className={styles.statValue}>{project.stats.stadium}</div>
+                  </div>
+                </div>
+              </div>
+
+              <div className="stats-section-new">
+                <h2 className="stats-section-title">⚧️ Gender ({totalGender})</h2>
+                <div className="stats-cards-row">
+                  <div className={styles.statCard}>
+                    <div className={styles.statLabel}>Female</div>
+                    <div className={styles.statValue}>{project.stats.female}</div>
+                  </div>
+                  <div className={styles.statCard}>
+                    <div className={styles.statLabel}>Male</div>
+                    <div className={styles.statValue}>{project.stats.male}</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Row 2: Age Groups and Merchandise */}
+            <div className="stats-row-2-3-1">
+              <div className="stats-section-new">
+                <h2 className="stats-section-title">🎂 Age Groups ({totalAge})</h2>
+                <div className="stats-cards-row-age">
+                  <div className={styles.statCard}>
+                    <div className={styles.statLabel}>Gen Alpha</div>
+                    <div className={styles.statValue}>{project.stats.genAlpha}</div>
+                  </div>
+                  <div className={styles.statCard}>
+                    <div className={styles.statLabel}>Gen Y+Z</div>
+                    <div className={styles.statValue}>{project.stats.genYZ}</div>
+                  </div>
+                  <div className={styles.statCard}>
+                    <div className={styles.statLabel}>Total Under 40</div>
+                    <div className={styles.statValue}>{totalUnder40}</div>
+                  </div>
+                </div>
+                <div className="stats-cards-row-age">
+                  <div className={styles.statCard}>
+                    <div className={styles.statLabel}>Gen X</div>
+                    <div className={styles.statValue}>{project.stats.genX}</div>
+                  </div>
+                  <div className={styles.statCard}>
+                    <div className={styles.statLabel}>Boomer</div>
+                    <div className={styles.statValue}>{project.stats.boomer}</div>
+                  </div>
+                  <div className={styles.statCard}>
+                    <div className={styles.statLabel}>Total Over 40</div>
+                    <div className={styles.statValue}>{totalOver40}</div>
+                  </div>
+                </div>
+              </div>
+
+              <div className="stats-section-new">
+                <h2 className="stats-section-title">🛑️ Fans with Merchandise</h2>
+                <div className="stats-cards-row">
+                  <div className={styles.statCard}>
+                    <div className={styles.statLabel}>Merched Fans</div>
+                    <div className={styles.statValue}>{project.stats.merched}</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Row 3: Merchandise Types */}
+            <div className="stats-row-full">
+              <div className="stats-section-new">
+                <h2 className="stats-section-title">👕 Merchandise Types ({totalMerch})</h2>
+                <div className="merch-cards-grid">
+                  <div className={styles.statCard}>
+                    <div className={styles.statLabel}>Jersey</div>
+                    <div className={styles.statValue}>{project.stats.jersey}</div>
+                  </div>
+                  <div className={styles.statCard}>
+                    <div className={styles.statLabel}>Scarf</div>
+                    <div className={styles.statValue}>{project.stats.scarf}</div>
+                  </div>
+                  <div className={styles.statCard}>
+                    <div className={styles.statLabel}>Flags</div>
+                    <div className={styles.statValue}>{project.stats.flags}</div>
+                  </div>
+                  <div className={styles.statCard}>
+                    <div className={styles.statLabel}>Baseball Cap</div>
+                    <div className={styles.statValue}>{project.stats.baseballCap}</div>
+                  </div>
+                  <div className={styles.statCard}>
+                    <div className={styles.statLabel}>Other</div>
+                    <div className={styles.statValue}>{project.stats.other}</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Success Manager Section */}
+            {(project.stats.approvedImages || project.stats.eventAttendees || project.stats.visitWeb) && (
+              <div className={styles.section}>
+                <h2 className={styles.sectionTitle}>📈 Performance Metrics</h2>
+                <div className={styles.statsRow}>
+                  {project.stats.approvedImages !== undefined && (
+                    <div className={styles.statCard}>
+                      <div className={styles.statLabel}>Approved Images</div>
+                      <div className={styles.statValue}>{project.stats.approvedImages}</div>
+                    </div>
+                  )}
+                  {project.stats.eventAttendees !== undefined && (
+                    <div className={styles.statCard}>
+                      <div className={styles.statLabel}>Event Attendees</div>
+                      <div className={styles.statValue}>{project.stats.eventAttendees}</div>
+                    </div>
+                  )}
+                  {project.stats.visitWeb !== undefined && (
+                    <div className={styles.statCard}>
+                      <div className={styles.statLabel}>Web Visits</div>
+                      <div className={styles.statValue}>{project.stats.visitWeb}</div>
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
+          </div>
+
+
+          <h2 className="text-gray-900 font-semibold text-2xl mt-12 mb-2">🤖 Fanmass report: measured by the local AI</h2>
           {report && <HashtagReportView report={report} />}
 
           {/* Projects List Section */}

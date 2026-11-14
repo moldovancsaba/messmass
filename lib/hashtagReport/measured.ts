@@ -61,6 +61,9 @@ export function hashtagFilter(hashtag: string, organizationId?: string): Record<
           { hashtags: { $regex: exact } },
           // The classic hashtag report also reads a hashtag list stored as one comma-separated text
           { hashtags: { $regex: new RegExp(`(^|,)\\s*#?${escapeRegex(id)}\\s*(,|$)`, 'i') } },
+          // The hashtags Fanmass wrote onto the event's photos (lib/fanmassEventHashtags.ts): typed and automatic
+          // hashtags work together, the reports stay separate (owner 2026-11-14)
+          { fanmassHashtags: id.toLowerCase() },
           // Any category list (categorizedHashtags: { category: [tags] })
           { $expr: { $gt: [{ $size: { $filter: {
             // Guarded: a malformed document (no object, a value that is not a list) never fails the whole query

@@ -1,8 +1,8 @@
 # messmass API Reference
 
-Generated for the fleet audit (messmass#350); measured against `docs/_audit/endpoints.json` (246 endpoints, including the Fanmass drive photos placed in events or in the library, the unified hashtag report, brand assets management and interactive report routes). Existing Auth adjudication was re-verified against the handlers @ dd34e229 (2026-09-28); the new Camera style-context read uses `assertCameraSecret`.
+Generated for the fleet audit (messmass#350); measured against `docs/_audit/endpoints.json` (248 endpoints, including the Fanmass drive photos placed in events or in the library, the unified hashtag report, brand assets management and interactive report routes). Existing Auth adjudication was re-verified against the handlers @ dd34e229 (2026-09-28); the new Camera style-context read uses `assertCameraSecret`.
 
-Coverage: 246 of 246 routes documented, enforced by
+Coverage: 248 of 248 routes documented, enforced by
 `tests/api-reference-covers-every-route.test.ts` — five routes were missing when
 that claim was last made by hand.
 
@@ -186,6 +186,8 @@ All routes use `requireFanmassIntegrationAuth` (Bearer/`x-api-key` shared token)
 | /api/integrations/fanmass/events/[eventId]/analysis-summary | POST | summary body | 410 `EVENT_LEVEL_EXPORT_RETIRED` | no reads or writes |
 | /api/integrations/fanmass/events/[eventId]/drive-photos | POST | requireFanmassIntegrationAuth | `{contractVersion:'fanmass.messmass.event-drive-photos.v1', messmassEventId, photos:[{photoId:'<sport>/<file>', assignment:{confidence 0..1, method}, optIn:{received:true, basis:'local_drive_policy'}, analysis|null, hashtags?:[tag]}], remove?:[photoId]}`, up to 500 of each, at least one | `{success,data:{eventId,stored,removed}}` | upserts `fanmass_event_drive_photos` by photoId (a photo placed elsewhere earlier moves to this event) and deletes the listed photos still filed under this event; 404 for an unknown event |
 | /api/integrations/fanmass/drive-photos | POST | requireFanmassIntegrationAuth | the same body as the event route with `messmassEventId:null`, photos may carry `hashtags:[lowercase, no #]` | `{success,data:{eventId:null,stored,removed}}` | upserts `fanmass_event_drive_photos` by photoId with `eventId:null`: drive photos in no Messmass event, found by their hashtags |
+| /api/integrations/fanmass/event-list | GET | requireFanmassIntegrationAuth | — | `{success,data:{events:[{id,name,date}]}}` | every event's identity, no stats; Fanmass finds the event of a campaign game without a Camera link by date and clubs |
+| /api/integrations/fanmass/fanmass-hashtags | POST | requireFanmassIntegrationAuth | — | `{success,data:{events,changed,cleared}}` | recomputes every event's `fanmassHashtags` from its photos (drive and Camera), without its typed hashtags (`lib/fanmassEventHashtags.ts`) |
 | /api/integrations/fanmass/event-hashtags | POST | requireFanmassIntegrationAuth | `{contractVersion:'fanmass.messmass.event-hashtags.v1', hashtags:[1-5, lowercase a-z0-9_], eventIds:[1-500 event ids]}` | `{success,data:{added:[{eventId,hashtags}],unchanged,missing,skipped}}` | additive only (`lib/fanmassEventHashtags.ts`): adds a hashtag to an event's plain list when no list of the event carries it yet (any case); never removes; an event whose list is a comma-separated text is skipped |
 | /api/integrations/fanmass/match-events | POST | requireFanmassIntegrationAuth | `{contractVersion:'fanmass.messmass.match-event.v1', home, away, eventDate:'YYYY-MM-DD'}`; both clubs must each match exactly one partner by name (case and accents ignored) | `{success,data:{created,eventId,eventName,eventDate}}`, 201 when created, 200 when the match already exists | creates the event exactly like Quick Add's match builder (`lib/matchEvent.ts`, `lib/createEvent.ts`: slugs, hashtag counts, Partner 1 Bitly links) and its Camera mirror after the response; 409 with candidates for an unknown or ambiguous club |
 | /api/integrations/fanmass/events/[eventId]/photos/[photoId] | POST, DELETE | requireFanmassIntegrationAuth | POST one photo result; DELETE tombstone, each with partner/event/photo IDs and generation; POST may carry `hashtags:[lowercase, no #]`, stored together with the event's hashtags | `{success,data:{status}}` | upserts one `fanmass_camera_photo_analyses` row; rebuilds the per-photo event summary and report stats; ignores stale generations |
@@ -387,10 +389,10 @@ CSRF is never counted as a guard: any anonymous caller can fetch the token from
 
 | | routes |
 |---|---:|
-| Fully guarded (every method) | **211** |
+| Fully guarded (every method) | **213** |
 | Open write method, public by design | **5** |
 | Open GET only, writes guarded or absent | **30** |
-| **Total** | **246** |
+| **Total** | **248** |
 
 The previous run of this section (2026-08) listed 40 GAP routes, 21 of them
 unauthenticated writes. Those are closed: messmass#347 and #386 took the first
