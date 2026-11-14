@@ -113,7 +113,7 @@ it drifts. Do not edit between the markers.
 | Category | Count | Location |
 |----------|-------|----------|
 | **UI Components** | 129 | `components/` |
-| **Utility Modules** | 247 | `lib/` |
+| **Utility Modules** | 248 | `lib/` |
 | **Hooks** | 13 | `hooks/` |
 | **Design Tokens** | 410 | `app/styles/theme.css` |
 | **Utility CSS classes** | 192 | `app/styles/utilities.css` |
@@ -1882,6 +1882,10 @@ brand and club names read from them, apart from the Camera photo results (a diff
 Every drive photo also carries the hashtags Fanmass gave it (`hashtags`: library, sport, event, clubs, brands, emotions, people;
 lowercase, no `#`), so the drive block of `#x` holds the photos tagged `x` as well as the photos placed in the events that carry
 `x`, and lists the events those photos sit in (`measured.drive.events`).
+Camera photo results carry hashtags the same way (`fanmass_camera_photo_analyses.hashtags`): Fanmass sends the brand and club
+names proven by text read from the picture and the emotions, genders and age groups measured in it, and Messmass adds the
+hashtags of the event when it stores any photo (`lib/photoHashtags.ts`). The report counts the Camera photos tagged `x` in any
+event (`measured.photos.tagged`).
 
 Brand and club names are not in the unified report yet: a Camera photo result lists the names a model guessed ("Scarf", "Jacket"),
 not names read from the picture. They appear once Fanmass delivers the text-read proof with each photo result. The opt-in count is

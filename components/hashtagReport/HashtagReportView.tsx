@@ -64,7 +64,7 @@ export default function HashtagReportView({ report }: { report: HashtagReport })
   const { measured, calculated, coverage, scope } = report;
   const { photos, counters } = measured;
   const { drive } = measured;
-  const hasMeasuredData = coverage.eventsWithCounters > 0 || coverage.eventsWithPhotoResults > 0 || drive.photos > 0;
+  const hasMeasuredData = coverage.eventsWithCounters > 0 || coverage.eventsWithPhotoResults > 0 || drive.photos > 0 || photos.tagged > 0;
   const taken = Object.prototype.hasOwnProperty.call(counters, 'camera_images_taken') ? fmt(counters.camera_images_taken) : null;
 
   return (
@@ -78,7 +78,7 @@ export default function HashtagReportView({ report }: { report: HashtagReport })
         </p>
       </header>
 
-      {coverage.events === 0 && drive.photos === 0 ? (
+      {coverage.events === 0 && drive.photos === 0 && photos.tagged === 0 ? (
         <div className={styles.empty}>
           No event and no photo carries #{scope.id} yet. This report is built from the events and photos that carry the hashtag, so
           it fills in as soon as they are tagged with it.
@@ -96,6 +96,7 @@ export default function HashtagReportView({ report }: { report: HashtagReport })
             <Kpi label="Approval rate" value={percent(calculated.approvalRate)} text={detail(calculated.approvalRate)} />
             <Kpi label="Opt-in recorded" value={percent(calculated.optInShare)} text={detail(calculated.optInShare)} />
             <Kpi label="Consent accepted" value={percent(calculated.consentShare)} text={detail(calculated.consentShare)} />
+            {photos.tagged > 0 && <Kpi label={`Camera photos tagged #${scope.id}`} value={fmt(photos.tagged)} text="Fanmass tagged them with what it found in them, in any event" />}
           </section>
 
           <div className={styles.columns}>

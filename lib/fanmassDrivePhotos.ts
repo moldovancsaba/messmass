@@ -5,10 +5,11 @@
 //     is, that the opt-in was recorded (an image reaches the drive only with one), and, once Fanmass analysed the photo,
 //     the measured people and the brand and club names read from the picture. No consent text, no identity, no image.
 //     Every photo also carries the hashtags Fanmass gave it (library, sport, event, clubs, brands, emotions, people), so a
-//     hashtag report finds the photo by its own hashtags, not only through the hashtags of its event.
+//     hashtag report finds the photo by its own hashtags; Messmass adds the hashtags of its event (lib/photoHashtags.ts).
 
 import type { Db } from 'mongodb';
 import { ObjectId } from 'mongodb';
+import { eventHashtags, parsePhotoHashtags, withEventHashtags } from './photoHashtags';
 
 export const DRIVE_PHOTOS_CONTRACT = 'fanmass.messmass.event-drive-photos.v1';
 export const DRIVE_PHOTOS_COLLECTION = 'fanmass_event_drive_photos';
@@ -33,9 +34,6 @@ export interface DrivePhoto {
   /** Lowercase, without the leading #. */
   hashtags: string[];
 }
-
-export const MAX_PHOTO_HASHTAGS = 80;
-const HASHTAG = /^[a-z0-9_]{1,60}$/;
 
 function invalid(message: string): never {
   throw Object.assign(new Error(message), { status: 400, code: 'INVALID_DRIVE_PHOTOS' });
@@ -80,14 +78,6 @@ function analysis(value: unknown, at: string): DrivePhotoAnalysis | null {
   };
 }
 
-function hashtags(value: unknown, at: string): string[] {
-  if (value === undefined) return [];
-  if (!Array.isArray(value) || value.length > MAX_PHOTO_HASHTAGS) invalid(`${at}.hashtags must list at most ${MAX_PHOTO_HASHTAGS} hashtags.`);
-  const out = (value as unknown[]).map((v) => (typeof v === 'string' ? v.trim().replace(/^#/, '').toLowerCase() : ''));
-  if (out.some((v) => !HASHTAG.test(v))) invalid(`${at}.hashtags must be letters, digits or _ (1 to 60).`);
-  return [...new Set(out)];
-}
-
 const PHOTO_ID = /^[A-Za-z ]{1,30}\/[A-Za-z0-9._-]{1,120}$/;
 
 /**
@@ -129,7 +119,7 @@ export function parseDrivePhotos(body: unknown, eventIdFromPath: string | null):
       assignment: { confidence: Math.round((confidence as number) * 1000) / 1000, method },
       optIn: { received: true as const, basis: 'local_drive_policy' as const },
       analysis: analysis(p.analysis, at),
-      hashtags: hashtags(p.hashtags, at),
+      hashtags: parsePhotoHashtags(p.hashtags, (message) => invalid(`${at}.${message}`)),
     };
   });
   return { messmassEventId: eventIdFromPath, photos, remove: [...new Set(rawRemove as string[])] };
@@ -148,8 +138,9 @@ export async function storeDrivePhotos(
   now = new Date().toISOString(),
 ): Promise<{ stored: number; removed: number }> {
   if (eventId !== null && !ObjectId.isValid(eventId)) invalid('Invalid Messmass event id.');
-  const event = eventId === null || await db.collection('projects').findOne({ _id: new ObjectId(eventId) }, { projection: { _id: 1 } });
+  const event = eventId === null ? {} : await db.collection('projects').findOne({ _id: new ObjectId(eventId) }, { projection: { hashtags: 1, categorizedHashtags: 1 } });
   if (!event) throw Object.assign(new Error('Messmass event was not found.'), { status: 404, code: 'EVENT_NOT_FOUND' });
+  const tagsOfEvent = eventHashtags(event);
   const collection = db.collection<Record<string, unknown> & { _id: string }>(DRIVE_PHOTOS_COLLECTION);
   await collection.createIndex({ eventId: 1 }, { name: 'drive_photos_by_event' });
   await collection.createIndex({ hashtags: 1 }, { name: 'drive_photos_by_hashtag' });
@@ -159,7 +150,7 @@ export async function storeDrivePhotos(
     photos.map((photo) => ({
       updateOne: {
         filter: { _id: photo.photoId },
-        update: { $set: { eventId, sport: photo.sport, assignment: photo.assignment, optIn: photo.optIn, analysis: photo.analysis, hashtags: photo.hashtags, receivedAt: now } },
+        update: { $set: { eventId, sport: photo.sport, assignment: photo.assignment, optIn: photo.optIn, analysis: photo.analysis, hashtags: withEventHashtags(photo.hashtags, tagsOfEvent), receivedAt: now } },
         upsert: true,
       },
     })),

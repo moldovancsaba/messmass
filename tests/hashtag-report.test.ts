@@ -132,6 +132,8 @@ describe('what the builder may read', () => {
     // A photo is found by its own hashtag as well as through the events that carry the hashtag
     const driveCall = calls.find((c) => c.collection === 'fanmass_event_drive_photos');
     expect(driveCall?.filter).toEqual({ $or: [{ hashtags: 'anything' }, { eventId: { $in: ['e1', 'e2'] } }] });
+    // Camera photo results tagged with the hashtag are counted in any event
+    expect(calls.find((c) => c.collection === 'fanmass_camera_photo_analyses#count' && 'hashtags' in c.filter)?.filter).toMatchObject({ hashtags: 'anything' });
     expect(report.calculated.driveConfidentShare).toMatchObject({ value: 50, numerator: 1, denominator: 2 });
     expect(report.calculated.driveOptInShare.value).toBe(100);
   });

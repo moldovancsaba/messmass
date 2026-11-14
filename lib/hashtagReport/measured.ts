@@ -7,6 +7,7 @@
 
 import { ObjectId } from 'mongodb';
 
+import { toPhotoHashtag } from '../photoHashtags';
 import { mergePhotoSummaries } from './mergeSummaries';
 import type { HashtagEvent, MeasuredCounters, MeasuredDrivePhotos, MeasuredLayer, NamedCount } from './types';
 
@@ -82,7 +83,7 @@ export async function loadMeasuredLayer(db: ReportDb, hashtag: string, organizat
     : 0;
 
   // Drive photos Fanmass tagged with the hashtag or placed in these events (lib/fanmassDrivePhotos.ts)
-  const tag = hashtag.trim().replace(/^#/, '').toLowerCase();
+  const tag = toPhotoHashtag(hashtag.trim());
   const driveFilter: Record<string, unknown> = projects.length
     ? { $or: [{ hashtags: tag }, { eventId: { $in: projects.map((p) => String(p._id)) } }] }
     : { hashtags: tag };
@@ -133,6 +134,7 @@ export async function loadMeasuredLayer(db: ReportDb, hashtag: string, organizat
 
   const photos = mergePhotoSummaries(projects.map((p) => rollupByEvent.get(String(p._id))).filter((r): r is Record<string, unknown> => Boolean(r)));
   photos.withOptIn = withOptIn;
+  photos.tagged = await db.collection('fanmass_camera_photo_analyses').countDocuments({ hashtags: tag, tombstone: { $ne: true }, status: 'completed' });
   return { events, counters, photos, drive };
 }
 

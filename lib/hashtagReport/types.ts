@@ -13,6 +13,8 @@ export interface MeasuredPhotos {
   analysed: number;
   /** Analysed photos whose stored result carries a recorded opt-in (counted from the per-photo results). */
   withOptIn: number | null;
+  /** Camera photo results that carry the hashtag themselves (lib/photoHashtags.ts), in any event. */
+  tagged: number;
   humanConfirmed: number;
   humanCorrected: number;
   people: { measured: number; boxes: number; faceBoxes: number };
