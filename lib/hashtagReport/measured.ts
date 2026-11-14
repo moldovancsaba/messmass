@@ -49,7 +49,7 @@ const escapeRegex = (text: string) => text.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'
 /** The events of a hashtag, written with or without the leading #, in any case, in the plain hashtag list or in any
  * category list, exactly as the admin hashtag filter matches them (lib/hashtagCategoryUtils.ts matchHashtagInProject).
  * A `category:tag` query matches that category list only. */
-export function hashtagFilter(hashtag: string, organizationId?: string): Record<string, unknown> {
+export function hashtagFilter(hashtag: string, organizationId?: string, typedOnly = false): Record<string, unknown> {
   const { category, hashtag: id } = parseHashtagQuery(hashtag.trim().replace(/^#/, ''));
   // Any case, a leading #, underscores anywhere: typed and automatic spellings of one name are one hashtag
   const spellings = hashtagSpellings(id);
@@ -63,7 +63,7 @@ export function hashtagFilter(hashtag: string, organizationId?: string): Record<
           { hashtags: { $regex: new RegExp(`(^|,)\\s*${spellings.source.slice(1, -1)}\\s*(,|$)`, 'i') } },
           // The hashtags Fanmass wrote onto the event's photos (lib/fanmassEventHashtags.ts): typed and automatic
           // hashtags work together, the reports stay separate (owner 2026-11-14)
-          { fanmassHashtags: { $regex: spellings } },
+          ...(typedOnly ? [] : [{ fanmassHashtags: { $regex: spellings } }]),
           // Any category list (categorizedHashtags: { category: [tags] })
           { $expr: { $gt: [{ $size: { $filter: {
             // Guarded: a malformed document (no object, a value that is not a list) never fails the whole query
@@ -81,10 +81,10 @@ export function hashtagFilter(hashtag: string, organizationId?: string): Record<
 }
 
 /** The events carrying every one of the hashtags (the admin filter's AND), or every event when there are none. */
-export function eventsFilter(hashtags: string[] | null, organizationId?: string): Record<string, unknown> {
+export function eventsFilter(hashtags: string[] | null, organizationId?: string, typedOnly = false): Record<string, unknown> {
   const org = organizationId ? { organizationId } : {};
   if (!hashtags) return org;
-  return { $and: hashtags.map((tag) => ({ $or: (hashtagFilter(tag) as { $or: unknown[] }).$or })), ...org };
+  return { $and: hashtags.map((tag) => ({ $or: (hashtagFilter(tag, undefined, typedOnly) as { $or: unknown[] }).$or })), ...org };
 }
 
 /** Every spelling of a query's hashtag on a photo: `category:tag` becomes `tag` (lib/photoHashtags.ts). */
@@ -97,13 +97,18 @@ const reported = (value: unknown): value is number => typeof value === 'number' 
 export async function loadMeasuredLayer(db: ReportDb, hashtags: string[] | null, organizationId?: string): Promise<MeasuredLayer> {
   const tagged = await db.collection('projects').find(eventsFilter(hashtags, organizationId), { projection: MACHINE_EVENT_PROJECTION }).toArray();
   const taggedIds = tagged.map((p) => String(p._id));
+  // A typed hashtag is about the whole event: all its photos count. A hashtag Fanmass wrote (a brand, an emotion) is about
+  // the photos it was found in: only those count, also when the event carries it among its Fanmass hashtags.
+  const typedIds = hashtags === null
+    ? taggedIds
+    : (await db.collection('projects').find(eventsFilter(hashtags, organizationId, true), { projection: { _id: 1 } }).toArray()).map((p) => String(p._id));
 
   // Drive photos Fanmass tagged with the hashtag or placed in these events (lib/fanmassDrivePhotos.ts)
   const photoTags = hashtags === null ? null : hashtags.map(photoTag);
   // One hashtag is matched as a value (the index serves it), several as all of them
   const tag = photoTags === null ? null : photoTags.length === 1 ? { $regex: photoTags[0] } : { $all: photoTags };
-  const driveFilter: Record<string, unknown> = tag === null ? {} : taggedIds.length
-    ? { $or: [{ hashtags: tag }, { eventId: { $in: taggedIds } }] }
+  const driveFilter: Record<string, unknown> = tag === null ? {} : typedIds.length
+    ? { $or: [{ hashtags: tag }, { eventId: { $in: typedIds } }] }
     : { hashtags: tag };
   const drivePhotos = db.collection('fanmass_event_drive_photos');
 
@@ -118,11 +123,11 @@ export async function loadMeasuredLayer(db: ReportDb, hashtags: string[] | null,
         { projection: MACHINE_EVENT_PROJECTION },
       ).toArray()
     : [];
-  // ...with all their drive photos, the ones without the hashtag too
-  const photoMatch = joined.length ? { $or: [driveFilter, { eventId: { $in: joined.map((p) => String(p._id)) } }] } : driveFilter;
-  const [facet] = await drivePhotos.aggregate(driveSummaryPipeline(photoMatch)).toArray();
+  const [facet] = await drivePhotos.aggregate(driveSummaryPipeline(driveFilter)).toArray();
   const { drive, byEvent: driveByEvent } = readDriveSummary(facet);
-  const joinedSet = new Set(joined.map((p) => String(p._id)));
+  // In the report because its photos carry the hashtag (placed there, or among its Fanmass hashtags), not typed on it
+  const typedSet = new Set(typedIds);
+  const joinedSet = new Set([...tagged, ...joined].map((p) => String(p._id)).filter((id) => !typedSet.has(id)));
   const projects = [...tagged, ...joined];
   const eventIds = projects.map((p) => String(p._id));
 
