@@ -118,7 +118,7 @@ it drifts. Do not edit between the markers.
 | **Design Tokens** | 410 | `app/styles/theme.css` |
 | **Utility CSS classes** | 192 | `app/styles/utilities.css` |
 | **App routes (pages)** | 85 | `app/**/page.tsx` |
-| **API routes** | 241 | `app/api/**/route.ts` |
+| **API routes** | 242 | `app/api/**/route.ts` |
 
 The modules with the most importers — the ones whose change radius is
 largest, and the ones to read first:
@@ -1087,7 +1087,7 @@ shows up here on the next regeneration, which is the point.
 | `/terms` | `app/terms/page.tsx` |
 | `/test-csrf` | `app/test-csrf/page.tsx` |
 
-### API routes (241)
+### API routes (242)
 
 `auth` is the guard symbol the route actually calls. A blank cell
 means the route calls none — public by construction, or a gap.
@@ -1388,6 +1388,12 @@ means the route calls none — public by construction, or a gap.
 | Route | Methods | Auth |
 |-------|---------|------|
 | `/api/hashtag-colors` | GET, POST, PUT, DELETE | `requireAdmin` |
+
+#### `/api/hashtag-report`
+
+| Route | Methods | Auth |
+|-------|---------|------|
+| `/api/hashtag-report/[hashtag]` | GET | `requirePageAccess` |
 
 #### `/api/hashtags`
 
