@@ -67,8 +67,11 @@ export default function HashtagReportView({ report }: { report: HashtagReport })
   const hasMeasuredData = coverage.eventsWithCounters > 0 || coverage.eventsWithPhotoResults > 0 || drive.photos > 0 || photos.tagged > 0;
   // The Camera block shows only when Camera measured something for this hashtag; drive photos have their own block
   const hasCameraData = coverage.eventsWithCounters > 0 || coverage.eventsWithPhotoResults > 0 || photos.tagged > 0;
+  const byPhotos = measured.events.filter((event) => event.joinedBy === 'photos').length;
+  const byHashtag = coverage.events - byPhotos;
   const scopeText = [
-    `${fmt(coverage.events)} ${coverage.events === 1 ? 'event carries' : 'events carry'} it`,
+    `${fmt(byHashtag)} ${byHashtag === 1 ? 'event carries' : 'events carry'} it`,
+    byPhotos > 0 ? `${fmt(byPhotos)} more ${byPhotos === 1 ? 'event holds' : 'events hold'} its photos` : '',
     drive.photos > 0 ? `${fmt(drive.photos)} drive photos` : '',
     photos.tagged > 0 ? `${fmt(photos.tagged)} tagged Camera photos` : '',
   ].filter(Boolean).join(', ');
@@ -158,7 +161,10 @@ export default function HashtagReportView({ report }: { report: HashtagReport })
             <tbody>
               {measured.events.map((event) => (
                 <tr key={event.id}>
-                  <td>{event.name || 'Unnamed event'}</td>
+                  <td>
+                    {event.name || 'Unnamed event'}
+                    <div className={styles.cardNote}>{event.joinedBy === 'photos' ? 'Holds photos of the hashtag' : 'Carries the hashtag'}</div>
+                  </td>
                   <td>{event.date ?? 'No date'}</td>
                   <td><span className={event.hasCounters ? styles.badge : `${styles.badge} ${styles.badgeOff}`}>{event.hasCounters ? 'Yes' : 'No'}</span></td>
                   <td><span className={event.hasPhotoResults ? styles.badge : `${styles.badge} ${styles.badgeOff}`}>{event.hasPhotoResults ? 'Yes' : 'No'}</span></td>

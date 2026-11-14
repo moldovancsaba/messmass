@@ -161,3 +161,40 @@ describe('what the builder may read', () => {
     expect(listed.test('derbyshire')).toBe(false);
   });
 });
+
+describe('events that hold photos of the hashtag', () => {
+  // One event carries the hashtag; Fanmass placed a tagged drive photo in a second event that does not
+  const placedIn = '6af861d294eb1bfcaaca5622';
+  const db: ReportDb = {
+    collection: (name: string) => ({
+      countDocuments: async () => 0,
+      find: (filter: Record<string, any>) => ({
+        toArray: async () => {
+          if (name === 'projects') {
+            return filter._id
+              ? [{ _id: placedIn, eventName: 'Paksi FC x Nyíregyháza Spartacus FC', eventDate: '2025-12-20', stats: { camera_images_taken: 40, marketingOptin: 999 } }]
+              : [{ _id: 'e1', eventName: 'Tagged event', eventDate: '2026-01-10', stats: {} }];
+          }
+          if (name === 'fanmass_event_drive_photos') {
+            return filter.$or
+              ? [{ eventId: placedIn, assignment: { confidence: 1 }, optIn: { received: true }, analysis: null }, { eventId: null, optIn: { received: true } }]
+              : [{ eventId: placedIn, assignment: { confidence: 0.5 }, optIn: { received: true }, analysis: null }];
+          }
+          return [];
+        },
+      }),
+    }),
+  } as unknown as ReportDb;
+
+  it('joins the report by themselves, with their machine counters and all their drive photos', async () => {
+    const report = await buildHashtagReport(db, 'tippmixreport2026');
+    expect(report.measured.events.map((e) => [e.name, e.joinedBy])).toEqual([
+      ['Paksi FC x Nyíregyháza Spartacus FC', 'photos'],
+      ['Tagged event', 'hashtag'],
+    ]);
+    expect(report.measured.counters).toEqual({ camera_images_taken: 40 });
+    expect(report.measured.drive).toMatchObject({ photos: 3, placed: 2 });
+    expect(report.measured.drive.events).toEqual([{ name: 'Paksi FC x Nyíregyháza Spartacus FC', count: 2 }]);
+    expect(JSON.stringify(report)).not.toContain('999');
+  });
+});

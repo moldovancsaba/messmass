@@ -63,42 +63,55 @@ export function hashtagFilter(hashtag: string, organizationId?: string): Record<
 const reported = (value: unknown): value is number => typeof value === 'number' && Number.isFinite(value) && value >= 0;
 
 export async function loadMeasuredLayer(db: ReportDb, hashtag: string, organizationId?: string): Promise<MeasuredLayer> {
-  const projects = await db.collection('projects').find(hashtagFilter(hashtag, organizationId), { projection: MACHINE_EVENT_PROJECTION }).toArray();
+  const tagged = await db.collection('projects').find(hashtagFilter(hashtag, organizationId), { projection: MACHINE_EVENT_PROJECTION }).toArray();
+  const taggedIds = tagged.map((p) => String(p._id));
 
-  const rollups = projects.length
+  // Drive photos Fanmass tagged with the hashtag or placed in these events (lib/fanmassDrivePhotos.ts)
+  const tag = toPhotoHashtag(hashtag.trim());
+  const driveFilter: Record<string, unknown> = taggedIds.length
+    ? { $or: [{ hashtags: tag }, { eventId: { $in: taggedIds } }] }
+    : { hashtags: tag };
+  const driveProjection = { projection: { eventId: 1, assignment: 1, optIn: 1, analysis: 1 } };
+  const drivePhotos = await db.collection('fanmass_event_drive_photos').find(driveFilter, driveProjection).toArray();
+
+  // An event holding photos of the hashtag is one of its events too, whether or not anyone typed the hashtag onto it:
+  // the event list follows Fanmass's placements by itself (owner 2026-11-14: the report must be fully automatic).
+  const joinedIds = [...new Set(drivePhotos.map((photo) => String(photo.eventId ?? '')))]
+    .filter((id) => id && !taggedIds.includes(id) && ObjectId.isValid(id));
+  const joined = joinedIds.length
+    ? await db.collection('projects').find(
+        { _id: { $in: joinedIds.map((id) => new ObjectId(id)) }, ...(organizationId ? { organizationId } : {}) },
+        { projection: MACHINE_EVENT_PROJECTION },
+      ).toArray()
+    : [];
+  if (joined.length) {
+    // The rest of those events' drive photos (the ones without the hashtag) belong to the report as well
+    drivePhotos.push(...await db.collection('fanmass_event_drive_photos')
+      .find({ eventId: { $in: joined.map((p) => String(p._id)) }, hashtags: { $ne: tag } }, driveProjection).toArray());
+  }
+  const joinedSet = new Set(joined.map((p) => String(p._id)));
+  const projects = [...tagged, ...joined];
+  const eventIds = projects.map((p) => String(p._id));
+
+  const rollups = eventIds.length
     ? await db.collection('ai_analysis_summaries')
-        .find({ eventId: { $in: projects.map((p) => String(p._id)) }, sourceType: 'camera_photo_pipeline' }, { projection: { eventId: 1, summary: 1 } })
+        .find({ eventId: { $in: eventIds }, sourceType: 'camera_photo_pipeline' }, { projection: { eventId: 1, summary: 1 } })
         .toArray()
     : [];
   const rollupByEvent = new Map(rollups.map((row) => [String(row.eventId), (row.summary ?? {}) as Record<string, unknown>]));
 
   // The opt-in is counted from the stored per-photo results themselves: a result carries it or it does not
-  const withOptIn = projects.length
+  const withOptIn = eventIds.length
     ? await db.collection('fanmass_camera_photo_analyses').countDocuments({
-        eventId: { $in: projects.map((p) => String(p._id)) },
+        eventId: { $in: eventIds },
         tombstone: { $ne: true },
         status: 'completed',
         'optIn.received': true,
       })
     : 0;
 
-  // Drive photos Fanmass tagged with the hashtag or placed in these events (lib/fanmassDrivePhotos.ts)
-  const tag = toPhotoHashtag(hashtag.trim());
-  const driveFilter: Record<string, unknown> = projects.length
-    ? { $or: [{ hashtags: tag }, { eventId: { $in: projects.map((p) => String(p._id)) } }] }
-    : { hashtags: tag };
-  const drivePhotos = await db.collection('fanmass_event_drive_photos')
-    .find(driveFilter, { projection: { eventId: 1, assignment: 1, optIn: 1, analysis: 1 } })
-    .toArray();
   const drive = sumDrivePhotos(drivePhotos);
-  // The events those photos sit in, by name (a tagged photo may sit in an event that does not carry the hashtag)
-  const driveEventIds = [...new Set(drivePhotos.filter((photo) => photo.eventId).map((photo) => String(photo.eventId)))];
   const nameOf = new Map(projects.map((p) => [String(p._id), String(p.eventName ?? '')]));
-  const missing = driveEventIds.filter((id) => !nameOf.has(id) && ObjectId.isValid(id));
-  if (missing.length) {
-    const more = await db.collection('projects').find({ _id: { $in: missing.map((id) => new ObjectId(id)) } }, { projection: { eventName: 1 } }).toArray();
-    for (const p of more) nameOf.set(String(p._id), String(p.eventName ?? ''));
-  }
   const perEvent = new Map<string, number>();
   for (const photo of drivePhotos) {
     if (!photo.eventId) continue;
@@ -128,6 +141,7 @@ export async function loadMeasuredLayer(db: ReportDb, hashtag: string, organizat
         hasCounters,
         hasPhotoResults: Number(rollup?.photoResultsReceived ?? 0) > 0,
         drivePhotos: driveByEvent.get(String(project._id)) ?? 0,
+        joinedBy: joinedSet.has(String(project._id)) ? 'photos' as const : 'hashtag' as const,
       };
     })
     .sort((a, b) => String(a.date ?? '').localeCompare(String(b.date ?? '')) || a.name.localeCompare(b.name));
