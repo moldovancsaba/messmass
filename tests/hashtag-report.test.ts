@@ -4,7 +4,7 @@
 //     allowlisted machine counters, ignores every other stat even when the database hands it over, and every
 //     calculation shows its two counts or gives nothing.
 
-import { buildHashtagReport } from '@/lib/hashtagReport';
+import { buildAllEventsReport, buildHashtagReport } from '@/lib/hashtagReport';
 import { calculate, share } from '@/lib/hashtagReport/calculated';
 import { CAMERA_TOTAL_COUNTERS, MACHINE_EVENT_PROJECTION, hashtagFilter, sumDrivePhotos, type ReportDb } from '@/lib/hashtagReport/measured';
 import { mergePhotoSummaries } from '@/lib/hashtagReport/mergeSummaries';
@@ -195,6 +195,33 @@ describe('events that hold photos of the hashtag', () => {
     expect(report.measured.counters).toEqual({ camera_images_taken: 40 });
     expect(report.measured.drive).toMatchObject({ photos: 3, placed: 2 });
     expect(report.measured.drive.events).toEqual([{ name: 'Paksi FC x Nyíregyháza Spartacus FC', count: 2 }]);
+    expect(JSON.stringify(report)).not.toContain('999');
+  });
+});
+
+describe('every event together', () => {
+  it('measures every event and every drive photo, with no hashtag filter', async () => {
+    const calls: Array<{ name: string; filter: Record<string, unknown> }> = [];
+    const db = {
+      collection: (name: string) => ({
+        countDocuments: async (filter: Record<string, unknown>) => { calls.push({ name: `${name}#count`, filter }); return 0; },
+        find: (filter: Record<string, unknown>) => ({
+          toArray: async () => {
+            calls.push({ name, filter });
+            if (name === 'projects') return [{ _id: 'e1', eventName: 'A', stats: { camera_images_taken: 5, allImages: 999 } }, { _id: 'e2', eventName: 'B', stats: {} }];
+            if (name === 'fanmass_event_drive_photos') return [{ eventId: 'e2', optIn: { received: true } }, { eventId: null, optIn: { received: true } }];
+            return [];
+          },
+        }),
+      }),
+    } as unknown as ReportDb;
+    const report = await buildAllEventsReport(db);
+    expect(report.scope).toEqual({ type: 'all', id: 'all' });
+    expect(calls.find((c) => c.name === 'projects')?.filter).toEqual({});
+    expect(calls.find((c) => c.name === 'fanmass_event_drive_photos')?.filter).toEqual({});
+    expect(report.coverage.events).toBe(2);
+    expect(report.measured.counters).toEqual({ camera_images_taken: 5 });
+    expect(report.measured.drive).toMatchObject({ photos: 2, placed: 1 });
     expect(JSON.stringify(report)).not.toContain('999');
   });
 });
