@@ -1,8 +1,18 @@
 # {messmass} Release Notes
 Status: Active
-Last Updated: 2026-11-06T18:30:00.000Z
+Last Updated: 2026-11-14T20:00:00.000Z
 Canonical: No
 Owner: Operations
+
+## [v12.3.48] — 2026-11-14 — Fanmass report for every hashtag, filter and all events; typed and Fanmass hashtags together
+
+- **Added (Fanmass report, #534–#537, #541, #543–#545, #547, #549):** one report for every hashtag, filter and all events, built only from what Fanmass measured and Messmass calculates (`lib/hashtagReport`: measured layer with an allowlist projection, calculated layer with numerator and denominator). `/report/hashtag/{x}`, `/report/filter/{slug}` and `/report/global` show it; the SZRT campaign and its partner links open it, the earlier mixed report stays at `?report=classic`. Drive photo sums run in one database aggregation (the campaign report went from 36 s to under 2 s). A typed hashtag brings all photos of its events, a Fanmass hashtag only the photos it was found in.
+- **Added (photos and hashtags, #538–#540, #548):** SZRT drive photos are stored one record per photo, in their event or the library; every delivered photo carries hashtags (event, sport, clubs, brands read, emotions, people). Events keep the Fanmass hashtags of their photos in `fanmassHashtags`, apart from the typed ones. Typed and Fanmass hashtags work together in the filter; a hashtag is one name in any spelling (case, `#`, underscores).
+- **Changed (admin hashtag filter, #546, #548):** the list includes Fanmass hashtags with event and photo counts; Apply shows the Clicker report (hand-entered) and the Fanmass report in two separate sections, with a button for each; `/filter/{slug}` stays the clicker report.
+- **Added (Fanmass integration, #542, #546, #548):** Fanmass can create the event of a match it holds photos of (same as Quick Add's match builder, `lib/createEvent.ts` shared with `POST /api/projects`), add campaign hashtags to events (additive only), read the event list, and refresh events' Fanmass hashtags. `#tippmixreport2026` is on 72 events.
+- **Added (global report and evidence, #525–#533):** the global report next to organization, partner, hashtag and filter; SZRT proof behind brand and club figures; the global evidence library with human review; the opt-in stored with every Fanmass photo result.
+- **Guide:** the hashtags and filters tutorial explains the two kinds of hashtags and the two reports.
+- **Verified:** each change passed the local CI chain and GitHub Verify and was checked live on the public report pages and APIs. The admin filter page and `/report/global` were not opened live with an admin session.
 
 ## [v12.3.47] — 2026-11-06 — Editorial report system redesign, Cloudflare R2 cold-storage recovery & Camera journey editor live preview
 
