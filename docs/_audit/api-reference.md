@@ -1,8 +1,8 @@
 # messmass API Reference
 
-Generated for the fleet audit (messmass#350); measured against `docs/_audit/endpoints.json` (241 endpoints, including brand assets management and interactive report routes). Existing Auth adjudication was re-verified against the handlers @ dd34e229 (2026-09-28); the new Camera style-context read uses `assertCameraSecret`.
+Generated for the fleet audit (messmass#350); measured against `docs/_audit/endpoints.json` (242 endpoints, including the unified hashtag report, brand assets management and interactive report routes). Existing Auth adjudication was re-verified against the handlers @ dd34e229 (2026-09-28); the new Camera style-context read uses `assertCameraSecret`.
 
-Coverage: 241 of 241 routes documented, enforced by
+Coverage: 242 of 242 routes documented, enforced by
 `tests/api-reference-covers-every-route.test.ts` — five routes were missing when
 that claim was last made by hand.
 
@@ -211,12 +211,13 @@ All routes use `requireFanmassIntegrationAuth` (Bearer/`x-api-key` shared token)
 |---|---|---|---|---|---|
 | /api/integrations/privacy/erase-camera-photo | DELETE | `requireMessmassPrivacyErasureSecret` (`MESSMASS_PRIVACY_ERASURE_SECRET`) | exact SSO case id + Messmass event, Camera partner, event, and photo IDs | `{status:"deleted",received_at}` or fail-closed error | tombstones the exact photo result and rebuilds event analytics; no identity or media URL accepted |
 
-## /api/hashtags and hashtag config (7 routes)
+## /api/hashtags and hashtag config (8 routes)
 
 | Path | Methods | Auth | Request | Response | Side effects |
 |---|---|---|---|---|---|
 | /api/hashtag-categories | GET, POST, PUT, DELETE | GET none (public read for rendering); POST/PUT/DELETE requireAdmin (7d3ef3bb) | `?search&limit&offset`; bodies; DELETE `?id` | `{success,categories[]}` | insert/update/delete `hashtag_categories`; reads `projects` |
 | /api/hashtag-colors | GET, POST, PUT, DELETE | GET none (public read); POST/PUT/DELETE requireAdmin (7d3ef3bb) | POST `{name,color}`; PUT `{_id,name,color}`; DELETE `?id` | `{success,colors[]}` | insert/update/delete `hashtag_colors` |
+| /api/hashtag-report/[hashtag] | GET | requirePageAccess('hashtag', hashtag) (public unless the hashtag has a page password) | path hashtag, with or without `#` | `{scope, measured, calculated, coverage}`: the unified hashtag report, Fanmass-measured data and Messmass calculations only | reads `projects` (event identity and allowlisted `camera_*` counters only) and `ai_analysis_summaries` |
 | /api/hashtags/[hashtag] | GET | none (public-by-design per `KNOWN_UNGUARDED_READS`; note it applies no page password, unlike filter-by-slug) | `?variant` | aggregated hashtag stats | reads `projects`, `hashtag_slugs` |
 | /api/hashtags/filter | GET, POST | requireSession (both methods) | GET `?tags=`; POST `{hashtags[]}` | filtered aggregate stats | reads `projects` |
 | /api/hashtags/filter-by-slug/[slug] | GET | requirePageAccess('filter', slug) | `?variant` | filter stats | reads `projects` |
@@ -382,10 +383,10 @@ CSRF is never counted as a guard: any anonymous caller can fetch the token from
 
 | | routes |
 |---|---:|
-| Fully guarded (every method) | **206** |
+| Fully guarded (every method) | **207** |
 | Open write method, public by design | **5** |
 | Open GET only, writes guarded or absent | **30** |
-| **Total** | **241** |
+| **Total** | **242** |
 
 The previous run of this section (2026-08) listed 40 GAP routes, 21 of them
 unauthenticated writes. Those are closed: messmass#347 and #386 took the first
