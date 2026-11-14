@@ -82,6 +82,8 @@
   font-weight: 800;
   letter-spacing: -0.03em;
   color: #ffffff;
+  /* A hashtag title is one long word (#tippmixreport2026): it breaks rather than pushing the card past a phone */
+  overflow-wrap: anywhere;
 }
 
 .partnerDescription {

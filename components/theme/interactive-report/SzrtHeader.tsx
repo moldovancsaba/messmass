@@ -24,7 +24,7 @@ export default function SzrtHeader({ data, activeTab, onTabChange, fanmass }: Sz
   const isEvent = scope?.type === 'event';
   const isFilter = scope?.type === 'filter';
 
-  const badgeText = fanmass ? '🤖 Fanmass report: measured by the local AI' : isFilter
+  const badgeText = fanmass ? '🤖 Fanmass report' : isFilter
     ? 'Hashtag Filter Report'
     : isHashtag
       ? `Campaign Hashtag #${scope?.id}`
