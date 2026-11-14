@@ -7,6 +7,7 @@ import { deriveCompleteFanmassReportStats } from './aiDemographicStats';
 import { ensureFanmassAnalyticsVariables } from './fanmassAnalyticsVariables';
 import { getDb, nowIso } from './fanmassIntegration';
 import { pushEventStats } from './fanmassMapping';
+import { eventHashtags, parsePhotoHashtags, withEventHashtags } from './photoHashtags';
 
 export const PHOTO_ANALYSIS_CONTRACT = 'fanmass.messmass.photo-analysis.v2';
 export const PHOTO_ANALYSIS_COLLECTION = 'fanmass_camera_photo_analyses';
@@ -48,6 +49,8 @@ type PhotoInput = {
   analysis: Record<string, unknown>;
   humanReview: Record<string, unknown> | null;
   optIn: PhotoOptIn;
+  /** Fanmass's hashtags of the photo (lib/photoHashtags.ts); the event's are added when stored. */
+  hashtags: string[];
 };
 
 /**
@@ -175,6 +178,7 @@ function parseInput(body: Record<string, unknown>, expectedMessmassEventId: stri
   }
 
   const optIn = parsePhotoOptIn(body.optIn);
+  const hashtags = parsePhotoHashtags(body.hashtags, (message) => invalid(400, 'INVALID_HASHTAGS', message));
 
   const size = Buffer.byteLength(JSON.stringify(body), 'utf8');
   if (size > MAX_PHOTO_ANALYSIS_BYTES) {
@@ -197,6 +201,7 @@ function parseInput(body: Record<string, unknown>, expectedMessmassEventId: stri
     analysis,
     humanReview,
     optIn,
+    hashtags,
   };
 }
 
@@ -209,11 +214,11 @@ async function requireExactCameraEventLink(
   messmassEventId: string,
   cameraEventId: string,
   cameraPartnerId: string,
-): Promise<void> {
+): Promise<string[]> {
   if (!ObjectId.isValid(messmassEventId)) invalid(422, 'INVALID_EVENT_ID', 'Invalid Messmass event id.');
   const event = await db.collection('projects').findOne(
     { _id: new ObjectId(messmassEventId) },
-    { projection: { externalRefs: 1, partnerId: 1, partner1Id: 1, partner2Id: 1 } },
+    { projection: { externalRefs: 1, partnerId: 1, partner1Id: 1, partner2Id: 1, hashtags: 1, categorizedHashtags: 1 } },
   );
   if (!event) invalid(404, 'EVENT_NOT_FOUND', 'Messmass event was not found.');
 
@@ -232,6 +237,7 @@ async function requireExactCameraEventLink(
   )) {
     invalid(409, 'CAMERA_PARTNER_ID_MISMATCH', 'The Camera partner id is not linked to this Messmass event.');
   }
+  return eventHashtags(event);
 }
 
 function number(value: unknown): number {
@@ -534,10 +540,11 @@ export async function storeFanmassPhotoAnalysis(
     invalid(400, 'PHOTO_ID_MISMATCH', 'The path photo id and payload photo id must match.');
   }
   const db = await getDb();
-  await requireExactCameraEventLink(db, eventId, input.cameraEventId, input.cameraPartnerId);
+  const tagsOfEvent = await requireExactCameraEventLink(db, eventId, input.cameraEventId, input.cameraPartnerId);
   const collection = db.collection<PhotoAnalysisRecord>(PHOTO_ANALYSIS_COLLECTION);
   await collection.createIndex({ eventId: 1, cameraPhotoId: 1 }, { unique: true, name: 'fanmass_camera_photo_event_unique' });
   await collection.createIndex({ eventId: 1, tombstone: 1, status: 1 }, { name: 'fanmass_camera_photo_report_read' });
+  await collection.createIndex({ hashtags: 1 }, { name: 'fanmass_camera_photo_by_hashtag' });
 
   const receivedAt = new Date().toISOString();
   const id = stableRecordId(eventId, input.cameraPhotoId);
@@ -562,6 +569,7 @@ export async function storeFanmassPhotoAnalysis(
     analysis: input.analysis,
     humanReview: input.humanReview,
     optIn: input.optIn,
+    hashtags: withEventHashtags(input.hashtags, tagsOfEvent),
   };
   const filter = {
     _id: id,
@@ -626,6 +634,7 @@ export async function tombstoneFanmassPhotoAnalysis(
   const collection = db.collection<PhotoAnalysisRecord>(PHOTO_ANALYSIS_COLLECTION);
   await collection.createIndex({ eventId: 1, cameraPhotoId: 1 }, { unique: true, name: 'fanmass_camera_photo_event_unique' });
   await collection.createIndex({ eventId: 1, tombstone: 1, status: 1 }, { name: 'fanmass_camera_photo_report_read' });
+  await collection.createIndex({ hashtags: 1 }, { name: 'fanmass_camera_photo_by_hashtag' });
   const id = stableRecordId(eventId, cameraPhotoId);
   const existingPhoto = await collection.findOne(
     { _id: id },
@@ -731,6 +740,7 @@ export async function tombstoneFanmassPhotoAnalysisForErasure(input: {
   await requireExactCameraEventLink(db, messmassEventId, cameraEventId, cameraPartnerId);
   const collection = db.collection<PhotoAnalysisRecord>('fanmass_camera_photo_analyses');
   await collection.createIndex({ eventId: 1, tombstone: 1, status: 1 }, { name: 'fanmass_camera_photo_report_read' });
+  await collection.createIndex({ hashtags: 1 }, { name: 'fanmass_camera_photo_by_hashtag' });
   const receivedAt = (dependencies.now || nowIso)();
   const id = stableRecordId(messmassEventId, cameraPhotoId);
   await collection.updateOne(

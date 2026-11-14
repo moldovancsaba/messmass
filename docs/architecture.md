@@ -113,12 +113,12 @@ it drifts. Do not edit between the markers.
 | Category | Count | Location |
 |----------|-------|----------|
 | **UI Components** | 129 | `components/` |
-| **Utility Modules** | 247 | `lib/` |
+| **Utility Modules** | 248 | `lib/` |
 | **Hooks** | 13 | `hooks/` |
 | **Design Tokens** | 410 | `app/styles/theme.css` |
 | **Utility CSS classes** | 192 | `app/styles/utilities.css` |
 | **App routes (pages)** | 86 | `app/**/page.tsx` |
-| **API routes** | 243 | `app/api/**/route.ts` |
+| **API routes** | 244 | `app/api/**/route.ts` |
 
 The modules with the most importers — the ones whose change radius is
 largest, and the ones to read first:
@@ -133,7 +133,7 @@ largest, and the ones to read first:
 | `components/ColoredCard.tsx` | 44 | 52 |
 | `lib/apiClient.ts` | 42 | 258 |
 | `lib/db.ts` | 42 | 17 |
-| `lib/fanmassIntegration.ts` | 40 | 485 |
+| `lib/fanmassIntegration.ts` | 41 | 485 |
 | `components/MaterialIcon.tsx` | 34 | 119 |
 | `components/UnifiedAdminHeroWithSearch.tsx` | 27 | 192 |
 | `lib/mongoose-v3.ts` | 21 | 66 |
@@ -1088,7 +1088,7 @@ shows up here on the next regeneration, which is the point.
 | `/terms` | `app/terms/page.tsx` |
 | `/test-csrf` | `app/test-csrf/page.tsx` |
 
-### API routes (243)
+### API routes (244)
 
 `auth` is the guard symbol the route actually calls. A blank cell
 means the route calls none — public by construction, or a gap.
@@ -1426,6 +1426,7 @@ means the route calls none — public by construction, or a gap.
 | `/api/integrations/fanmass/dashboard-snapshot` | POST | `requireFanmassIntegrationAuth` |
 | `/api/integrations/fanmass/drive-folders` | GET | `requireFanmassIntegrationAuth` |
 | `/api/integrations/fanmass/drive-folders/pending-sync` | GET | `requireFanmassIntegrationAuth` |
+| `/api/integrations/fanmass/drive-photos` | POST | `requireFanmassIntegrationAuth` |
 | `/api/integrations/fanmass/events` | POST | `requireFanmassIntegrationAuth` |
 | `/api/integrations/fanmass/events/[eventId]/analysis-summary` | POST | `requireFanmassIntegrationAuth` |
 | `/api/integrations/fanmass/events/[eventId]/context` | GET | `requireFanmassIntegrationAuth` |
@@ -1878,6 +1879,13 @@ Drive photos that Fanmass placed in an event (`POST /api/integrations/fanmass/ev
 the SZRT drive library carries no event, so Fanmass placed every photo by the photo order, the clubs read in it and the fixture
 dates, with a confidence per photo. The report shows how many were placed with over 50% confidence, how many are analysed and the
 brand and club names read from them, apart from the Camera photo results (a different source and opt-in basis).
+Every drive photo also carries the hashtags Fanmass gave it (`hashtags`: library, sport, event, clubs, brands, emotions, people;
+lowercase, no `#`), so the drive block of `#x` holds the photos tagged `x` as well as the photos placed in the events that carry
+`x`, and lists the events those photos sit in (`measured.drive.events`).
+Camera photo results carry hashtags the same way (`fanmass_camera_photo_analyses.hashtags`): Fanmass sends the brand and club
+names proven by text read from the picture and the emotions, genders and age groups measured in it, and Messmass adds the
+hashtags of the event when it stores any photo (`lib/photoHashtags.ts`). The report counts the Camera photos tagged `x` in any
+event (`measured.photos.tagged`).
 
 Brand and club names are not in the unified report yet: a Camera photo result lists the names a model guessed ("Scarf", "Jacket"),
 not names read from the picture. They appear once Fanmass delivers the text-read proof with each photo result. The opt-in count is

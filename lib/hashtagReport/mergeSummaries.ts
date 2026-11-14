@@ -23,7 +23,7 @@ function addCounts(target: Record<string, number>, source: unknown): void {
 
 export function emptyPhotos(): MeasuredPhotos {
   return {
-    analysed: 0, withOptIn: null, humanConfirmed: 0, humanCorrected: 0,
+    analysed: 0, withOptIn: null, tagged: 0, humanConfirmed: 0, humanCorrected: 0,
     people: { measured: 0, boxes: 0, faceBoxes: 0 },
     genders: {}, ageGroups: {}, emotions: {}, accessories: {}, merchandise: {},
     smiling: 0, demographicPeople: 0, moderation: { reviewed: 0, flagged: 0 },

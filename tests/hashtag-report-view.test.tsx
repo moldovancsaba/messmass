@@ -30,7 +30,7 @@ const rollup = { photoResultsReceived: 10, optInPhotos: 10, peopleCounts: { meas
 describe('the hashtag report page', () => {
   it('says so when no event carries the hashtag', () => {
     const html = renderToStaticMarkup(<HashtagReportView report={report({ events: [], counters: {}, photos: mergePhotoSummaries([]), drive: noDrive })} />);
-    expect(html).toContain('No event carries #derby yet');
+    expect(html).toContain('No event and no photo carries #derby yet');
     expect(html).not.toContain('Photos taken');
   });
 
@@ -82,10 +82,18 @@ describe('the hashtag report page', () => {
     const html = renderToStaticMarkup(
       <HashtagReportView report={report({ events: [event({ hasCounters: false, hasPhotoResults: false, drivePhotos: 2 })], counters: {}, photos: mergePhotoSummaries([]), drive })} />,
     );
-    expect(html).toContain('Drive photos placed in these events');
+    expect(html).toContain('Drive photos tagged #derby or placed in these events');
     expect(html).toContain('1 of 2 drive photos placed in events');
-    expect(html).toContain('2 of 2 drive photos placed in events');
+    expect(html).toContain('2 of 2 drive photos');
     expect(html).toContain('Veolia');
     expect(html).toContain('DVTK');
+  });
+
+  it('shows drive photos tagged with the hashtag even when no event carries it', () => {
+    const drive = { ...sumDrivePhotos([{ eventId: 'e9', assignment: { confidence: 1 }, optIn: { received: true }, analysis: null }]), events: [{ name: 'MTK x DVSC', count: 1 }] };
+    const html = renderToStaticMarkup(<HashtagReportView report={report({ events: [], counters: {}, photos: mergePhotoSummaries([]), drive })} />);
+    expect(html).not.toContain('No event and no photo carries');
+    expect(html).toContain('Drive photos tagged #derby');
+    expect(html).toContain('MTK x DVSC');
   });
 });

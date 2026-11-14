@@ -32,10 +32,12 @@ export function calculate(layer: MeasuredLayer): CalculatedLayer {
 
   const { drive } = layer;
   const placed = drive.placed > 0 ? drive.placed : null;
+  const all = drive.photos > 0 ? drive.photos : null;
   return {
+    drivePlacedShare: share(all === null ? null : drive.placed, all, 'drive photos', 'photos placed in an event'),
     driveConfidentShare: share(placed === null ? null : drive.placedOverHalf, placed, 'drive photos placed in events', 'photos placed with over 50% confidence'),
-    driveAnalysedShare: share(placed === null ? null : drive.analysed, placed, 'drive photos placed in events', 'photos analysed'),
-    driveOptInShare: share(placed === null ? null : drive.withOptIn, placed, 'drive photos placed in events', 'photos with a recorded opt-in'),
+    driveAnalysedShare: share(all === null ? null : drive.analysed, all, 'drive photos', 'photos analysed'),
+    driveOptInShare: share(all === null ? null : drive.withOptIn, all, 'drive photos', 'photos with a recorded opt-in'),
     analysedShare: share(photos.analysed > 0 ? photos.analysed : null, taken, 'photos taken', 'photos analysed'),
     approvalRate: share(approved, decided, 'photos decided in vetting', 'photos approved'),
     optInShare: share(photos.withOptIn, photos.analysed > 0 ? photos.analysed : null, 'photos analysed', 'photos with a recorded opt-in'),

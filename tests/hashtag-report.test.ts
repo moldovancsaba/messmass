@@ -128,6 +128,12 @@ describe('what the builder may read', () => {
     const report = await buildHashtagReport(db, 'anything');
     expect(report.measured.drive).toMatchObject({ placed: 2, placedOverHalf: 1, analysed: 1, withOptIn: 2, people: 2, clubs: [{ name: 'DVTK', count: 1 }] });
     expect(report.measured.events.find((e) => e.id === 'e2')?.drivePhotos).toBe(2);
+    expect(report.measured.drive.events).toEqual([{ name: 'Cup', count: 2 }]);
+    // A photo is found by its own hashtag as well as through the events that carry the hashtag
+    const driveCall = calls.find((c) => c.collection === 'fanmass_event_drive_photos');
+    expect(driveCall?.filter).toEqual({ $or: [{ hashtags: 'anything' }, { eventId: { $in: ['e1', 'e2'] } }] });
+    // Camera photo results tagged with the hashtag are counted in any event
+    expect(calls.find((c) => c.collection === 'fanmass_camera_photo_analyses#count' && 'hashtags' in c.filter)?.filter).toMatchObject({ hashtags: 'anything' });
     expect(report.calculated.driveConfidentShare).toMatchObject({ value: 50, numerator: 1, denominator: 2 });
     expect(report.calculated.driveOptInShare.value).toBe(100);
   });

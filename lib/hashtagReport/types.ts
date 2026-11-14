@@ -13,6 +13,8 @@ export interface MeasuredPhotos {
   analysed: number;
   /** Analysed photos whose stored result carries a recorded opt-in (counted from the per-photo results). */
   withOptIn: number | null;
+  /** Camera photo results that carry the hashtag themselves (lib/photoHashtags.ts), in any event. */
+  tagged: number;
   humanConfirmed: number;
   humanCorrected: number;
   people: { measured: number; boxes: number; faceBoxes: number };
@@ -46,11 +48,14 @@ export interface HashtagEvent {
 export interface NamedCount { name: string; count: number }
 
 /**
- * Drive photos Fanmass placed in the hashtag's events (the SZRT drive library carries no event of its own; every photo was
+ * Drive photos Fanmass tagged with the hashtag or placed in the hashtag's events (the SZRT drive library carries no event of its own; every photo was
  * placed by the photo order, the clubs read in it and the fixture dates, with a confidence). Kept apart from the Camera
  * photo results: a different source with a different opt-in basis.
  */
 export interface MeasuredDrivePhotos {
+  /** Every drive photo found: tagged with the hashtag or placed in its events. */
+  photos: number;
+  /** Placed in a Messmass event. */
   placed: number;
   /** Placed with a confidence above one half. */
   placedOverHalf: number;
@@ -63,6 +68,8 @@ export interface MeasuredDrivePhotos {
   /** Names read from the pictures, counted once per photo. */
   brands: NamedCount[];
   clubs: NamedCount[];
+  /** The events the photos sit in, with their photo counts. */
+  events: NamedCount[];
 }
 
 export interface MeasuredLayer {
@@ -85,6 +92,8 @@ export interface Calculation {
 }
 
 export interface CalculatedLayer {
+  /** Drive photos placed in a Messmass event. */
+  drivePlacedShare: Calculation;
   /** Drive photos placed with a confidence above one half. */
   driveConfidentShare: Calculation;
   /** Placed drive photos Fanmass has analysed. */

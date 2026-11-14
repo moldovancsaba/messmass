@@ -5,6 +5,9 @@
 //     them one by one, so a clicker stat, a sheet import or a typed table is never even fetched. Photo figures come
 //     from the per-photo Fanmass rollups. Both are sums over events, so they add up exactly.
 
+import { ObjectId } from 'mongodb';
+
+import { toPhotoHashtag } from '../photoHashtags';
 import { mergePhotoSummaries } from './mergeSummaries';
 import type { HashtagEvent, MeasuredCounters, MeasuredDrivePhotos, MeasuredLayer, NamedCount } from './types';
 
@@ -79,13 +82,30 @@ export async function loadMeasuredLayer(db: ReportDb, hashtag: string, organizat
       })
     : 0;
 
-  // Drive photos Fanmass placed in these events (lib/fanmassDrivePhotos.ts)
-  const drivePhotos = projects.length
-    ? await db.collection('fanmass_event_drive_photos')
-        .find({ eventId: { $in: projects.map((p) => String(p._id)) } }, { projection: { eventId: 1, assignment: 1, optIn: 1, analysis: 1 } })
-        .toArray()
-    : [];
+  // Drive photos Fanmass tagged with the hashtag or placed in these events (lib/fanmassDrivePhotos.ts)
+  const tag = toPhotoHashtag(hashtag.trim());
+  const driveFilter: Record<string, unknown> = projects.length
+    ? { $or: [{ hashtags: tag }, { eventId: { $in: projects.map((p) => String(p._id)) } }] }
+    : { hashtags: tag };
+  const drivePhotos = await db.collection('fanmass_event_drive_photos')
+    .find(driveFilter, { projection: { eventId: 1, assignment: 1, optIn: 1, analysis: 1 } })
+    .toArray();
   const drive = sumDrivePhotos(drivePhotos);
+  // The events those photos sit in, by name (a tagged photo may sit in an event that does not carry the hashtag)
+  const driveEventIds = [...new Set(drivePhotos.filter((photo) => photo.eventId).map((photo) => String(photo.eventId)))];
+  const nameOf = new Map(projects.map((p) => [String(p._id), String(p.eventName ?? '')]));
+  const missing = driveEventIds.filter((id) => !nameOf.has(id) && ObjectId.isValid(id));
+  if (missing.length) {
+    const more = await db.collection('projects').find({ _id: { $in: missing.map((id) => new ObjectId(id)) } }, { projection: { eventName: 1 } }).toArray();
+    for (const p of more) nameOf.set(String(p._id), String(p.eventName ?? ''));
+  }
+  const perEvent = new Map<string, number>();
+  for (const photo of drivePhotos) {
+    if (!photo.eventId) continue;
+    const name = nameOf.get(String(photo.eventId)) || 'Unnamed event';
+    perEvent.set(name, (perEvent.get(name) ?? 0) + 1);
+  }
+  drive.events = topNames(perEvent);
   const driveByEvent = new Map<string, number>();
   for (const photo of drivePhotos) driveByEvent.set(String(photo.eventId), (driveByEvent.get(String(photo.eventId)) ?? 0) + 1);
 
@@ -114,6 +134,7 @@ export async function loadMeasuredLayer(db: ReportDb, hashtag: string, organizat
 
   const photos = mergePhotoSummaries(projects.map((p) => rollupByEvent.get(String(p._id))).filter((r): r is Record<string, unknown> => Boolean(r)));
   photos.withOptIn = withOptIn;
+  photos.tagged = await db.collection('fanmass_camera_photo_analyses').countDocuments({ hashtags: tag, tombstone: { $ne: true }, status: 'completed' });
   return { events, counters, photos, drive };
 }
 
@@ -125,7 +146,7 @@ function topNames(counts: Map<string, number>): NamedCount[] {
 
 /** Sum the placed drive photos: counts add, names are counted once per photo. */
 export function sumDrivePhotos(rows: Array<Record<string, any>>): MeasuredDrivePhotos {
-  const out: MeasuredDrivePhotos = { placed: 0, placedOverHalf: 0, analysed: 0, withOptIn: 0, people: 0, genders: {}, ageGroups: {}, emotions: {}, brands: [], clubs: [] };
+  const out: MeasuredDrivePhotos = { photos: 0, placed: 0, placedOverHalf: 0, analysed: 0, withOptIn: 0, people: 0, genders: {}, ageGroups: {}, emotions: {}, brands: [], clubs: [], events: [] };
   const brands = new Map<string, number>();
   const clubs = new Map<string, number>();
   const add = (target: Record<string, number>, source: unknown) => {
@@ -134,8 +155,11 @@ export function sumDrivePhotos(rows: Array<Record<string, any>>): MeasuredDriveP
     }
   };
   for (const row of rows) {
-    out.placed += 1;
-    if (Number(row.assignment?.confidence) > 0.5) out.placedOverHalf += 1;
+    out.photos += 1;
+    if (row.eventId) {
+      out.placed += 1;
+      if (Number(row.assignment?.confidence) > 0.5) out.placedOverHalf += 1;
+    }
     if (row.optIn?.received === true) out.withOptIn += 1;
     const a = row.analysis;
     if (!a || typeof a !== 'object') continue;
