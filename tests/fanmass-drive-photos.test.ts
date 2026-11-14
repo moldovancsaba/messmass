@@ -42,6 +42,11 @@ describe('parseDrivePhotos', () => {
     expect(sum).toMatchObject({ photos: 2, placed: 1, placedOverHalf: 1, withOptIn: 2 });
   });
 
+  it('accepts the library file names as they are: spaces, brackets and accents', () => {
+    const ids = ['Football/83d53f77-eaa4-4e6c-917a-af1a9e94f9d1 (1).jpg', 'Ice Hockey/ÁRPÁD_Ö.jpg', 'Football/A\u0301.jpg'.normalize('NFD')];
+    expect(parseDrivePhotos(body(ids.map((photoId) => photo({ photoId }))), EVENT).photos.map((p) => p.photoId)).toEqual(ids);
+  });
+
   it('accepts a photo Fanmass has not analysed yet', () => {
     expect(parseDrivePhotos(body([photo({ analysis: null })]), EVENT).photos[0].analysis).toBeNull();
   });
