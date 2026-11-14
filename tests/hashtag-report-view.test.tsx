@@ -6,7 +6,10 @@ import { renderToStaticMarkup } from 'react-dom/server';
 import HashtagReportView from '@/components/hashtagReport/HashtagReportView';
 import { calculate } from '@/lib/hashtagReport/calculated';
 import { mergePhotoSummaries } from '@/lib/hashtagReport/mergeSummaries';
-import { sumDrivePhotos } from '@/lib/hashtagReport/measured';
+import { readDriveSummary } from '@/lib/hashtagReport/measured';
+import { driveFacet } from './helpers/driveFacet';
+
+const sumDrivePhotos = (rows: Array<Record<string, any>>) => readDriveSummary(driveFacet(rows)).drive;
 import type { HashtagReport, MeasuredLayer } from '@/lib/hashtagReport/types';
 
 const report = (measured: MeasuredLayer): HashtagReport => ({

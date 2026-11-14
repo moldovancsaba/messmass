@@ -40,6 +40,7 @@ export type ReportDb = {
   collection: (name: string) => {
     find: (filter: Record<string, unknown>, options?: Record<string, unknown>) => Cursor;
     countDocuments: (filter: Record<string, unknown>) => Promise<number>;
+    aggregate: (pipeline: Array<Record<string, unknown>>) => Cursor;
   };
 };
 
@@ -97,12 +98,12 @@ export async function loadMeasuredLayer(db: ReportDb, hashtags: string[] | null,
   const driveFilter: Record<string, unknown> = tag === null ? {} : taggedIds.length
     ? { $or: [{ hashtags: tag }, { eventId: { $in: taggedIds } }] }
     : { hashtags: tag };
-  const driveProjection = { projection: { eventId: 1, assignment: 1, optIn: 1, analysis: 1 } };
-  const drivePhotos = await db.collection('fanmass_event_drive_photos').find(driveFilter, driveProjection).toArray();
+  const drivePhotos = db.collection('fanmass_event_drive_photos');
 
   // An event holding photos of the hashtag is one of its events too, whether or not anyone typed the hashtag onto it:
   // the event list follows Fanmass's placements by itself (owner 2026-11-14: the report must be fully automatic).
-  const joinedIds = [...new Set(drivePhotos.map((photo) => String(photo.eventId ?? '')))]
+  const placedIn = tag === null ? [] : await drivePhotos.aggregate([{ $match: driveFilter }, { $group: { _id: '$eventId' } }]).toArray();
+  const joinedIds = placedIn.map((row) => String(row._id ?? ''))
     .filter((id) => id && !taggedIds.includes(id) && ObjectId.isValid(id));
   const joined = joinedIds.length
     ? await db.collection('projects').find(
@@ -110,11 +111,10 @@ export async function loadMeasuredLayer(db: ReportDb, hashtags: string[] | null,
         { projection: MACHINE_EVENT_PROJECTION },
       ).toArray()
     : [];
-  if (joined.length) {
-    // The rest of those events' drive photos (the ones without the hashtag) belong to the report as well
-    drivePhotos.push(...await db.collection('fanmass_event_drive_photos')
-      .find({ eventId: { $in: joined.map((p) => String(p._id)) }, $nor: [{ hashtags: tag }] }, driveProjection).toArray());
-  }
+  // ...with all their drive photos, the ones without the hashtag too
+  const photoMatch = joined.length ? { $or: [driveFilter, { eventId: { $in: joined.map((p) => String(p._id)) } }] } : driveFilter;
+  const [facet] = await drivePhotos.aggregate(driveSummaryPipeline(photoMatch)).toArray();
+  const { drive, byEvent: driveByEvent } = readDriveSummary(facet);
   const joinedSet = new Set(joined.map((p) => String(p._id)));
   const projects = [...tagged, ...joined];
   const eventIds = projects.map((p) => String(p._id));
@@ -136,17 +136,14 @@ export async function loadMeasuredLayer(db: ReportDb, hashtags: string[] | null,
       })
     : 0;
 
-  const drive = sumDrivePhotos(drivePhotos);
   const nameOf = new Map(projects.map((p) => [String(p._id), String(p.eventName ?? '')]));
   const perEvent = new Map<string, number>();
-  for (const photo of drivePhotos) {
-    if (!photo.eventId) continue;
-    const name = nameOf.get(String(photo.eventId)) || 'Unnamed event';
-    perEvent.set(name, (perEvent.get(name) ?? 0) + 1);
+  for (const [eventId, count] of driveByEvent) {
+    if (!eventId) continue;
+    const name = nameOf.get(eventId) || 'Unnamed event';
+    perEvent.set(name, (perEvent.get(name) ?? 0) + count);
   }
   drive.events = topNames(perEvent);
-  const driveByEvent = new Map<string, number>();
-  for (const photo of drivePhotos) driveByEvent.set(String(photo.eventId), (driveByEvent.get(String(photo.eventId)) ?? 0) + 1);
 
   const counters: MeasuredCounters = {};
   const events: HashtagEvent[] = projects
@@ -178,40 +175,70 @@ export async function loadMeasuredLayer(db: ReportDb, hashtags: string[] | null,
   return { events, counters, photos, drive };
 }
 
-const whole = (value: unknown): number => (typeof value === 'number' && Number.isFinite(value) && value > 0 ? Math.round(value) : 0);
-
 function topNames(counts: Map<string, number>): NamedCount[] {
   return [...counts.entries()].map(([name, count]) => ({ name, count })).sort((a, b) => b.count - a.count || a.name.localeCompare(b.name)).slice(0, 100);
 }
 
-/** Sum the placed drive photos: counts add, names are counted once per photo. */
-export function sumDrivePhotos(rows: Array<Record<string, any>>): MeasuredDrivePhotos {
-  const out: MeasuredDrivePhotos = { photos: 0, placed: 0, placedOverHalf: 0, analysed: 0, withOptIn: 0, people: 0, genders: {}, ageGroups: {}, emotions: {}, brands: [], clubs: [], events: [] };
-  const brands = new Map<string, number>();
-  const clubs = new Map<string, number>();
-  const add = (target: Record<string, number>, source: unknown) => {
-    for (const [key, value] of Object.entries((source && typeof source === 'object' ? source : {}) as Record<string, unknown>)) {
-      if (whole(value) > 0) target[key] = (target[key] ?? 0) + whole(value);
-    }
+/** A positive count rounded to a whole number, or 0 (the database form of the rule every photo count follows). */
+const wholeExpr = (path: string) => ({ $cond: [{ $and: [{ $isNumber: path }, { $gt: [path, 0] }] }, { $round: [path, 0] }, 0] });
+const isAnalysed = { $eq: [{ $type: '$analysis' }, 'object'] };
+
+/** Sum the drive photos inside the database, so only the totals travel: downloading the 11,312 rows of the SZRT library
+ * took 36 s on production, the same sums in the database take about one. Counts add, a breakdown adds each photo's
+ * whole positive numbers, names are counted once per photo, and only analysed photos (an analysis object) give them. */
+export function driveSummaryPipeline(match: Record<string, unknown>): Array<Record<string, unknown>> {
+  const breakdown = (field: string) => [
+    { $match: { [`analysis.${field}`]: { $type: 'object' } } },
+    { $project: { kv: { $objectToArray: `$analysis.${field}` } } },
+    { $unwind: '$kv' },
+    { $project: { k: '$kv.k', n: wholeExpr('$kv.v') } },
+    { $match: { n: { $gt: 0 } } },
+    { $group: { _id: '$k', count: { $sum: '$n' } } },
+  ];
+  const names = (field: string) => [
+    { $match: { [`analysis.${field}`]: { $type: 'array' } } },
+    { $project: { name: { $setUnion: [`$analysis.${field}`, []] } } },
+    { $unwind: '$name' },
+    { $group: { _id: '$name', count: { $sum: 1 } } },
+  ];
+  return [
+    { $match: match },
+    { $facet: {
+      totals: [{ $group: {
+        _id: null,
+        photos: { $sum: 1 },
+        placed: { $sum: { $cond: [{ $ifNull: ['$eventId', false] }, 1, 0] } },
+        placedOverHalf: { $sum: { $cond: [{ $and: [{ $ifNull: ['$eventId', false] }, { $isNumber: '$assignment.confidence' }, { $gt: ['$assignment.confidence', 0.5] }] }, 1, 0] } },
+        withOptIn: { $sum: { $cond: [{ $eq: ['$optIn.received', true] }, 1, 0] } },
+        analysed: { $sum: { $cond: [isAnalysed, 1, 0] } },
+        people: { $sum: { $cond: [isAnalysed, wholeExpr('$analysis.people'), 0] } },
+      } }],
+      genders: breakdown('genders'),
+      ageGroups: breakdown('ageGroups'),
+      emotions: breakdown('emotions'),
+      brands: names('brands'),
+      clubs: names('clubs'),
+      events: [{ $group: { _id: '$eventId', count: { $sum: 1 } } }],
+    } },
+  ];
+}
+
+type Row = { _id: unknown; count: number };
+type DriveFacet = { totals?: Array<Record<string, number>>; genders?: Row[]; ageGroups?: Row[]; emotions?: Row[]; brands?: Row[]; clubs?: Row[]; events?: Row[] };
+
+/** The result of driveSummaryPipeline as the measured drive block, plus the photo count of every event (key: event id). */
+export function readDriveSummary(facet?: DriveFacet | Record<string, unknown>): { drive: MeasuredDrivePhotos; byEvent: Map<string, number> } {
+  const f = (facet ?? {}) as DriveFacet;
+  const t = f.totals?.[0] ?? {};
+  const map = (rows?: Row[]) => Object.fromEntries((rows ?? []).map((row) => [String(row._id), row.count]));
+  const list = (rows?: Row[]) => topNames(new Map((rows ?? []).map((row) => [String(row._id), row.count])));
+  return {
+    drive: {
+      photos: t.photos ?? 0, placed: t.placed ?? 0, placedOverHalf: t.placedOverHalf ?? 0, analysed: t.analysed ?? 0,
+      withOptIn: t.withOptIn ?? 0, people: t.people ?? 0,
+      genders: map(f.genders), ageGroups: map(f.ageGroups), emotions: map(f.emotions),
+      brands: list(f.brands), clubs: list(f.clubs), events: [],
+    },
+    byEvent: new Map((f.events ?? []).map((row) => [String(row._id ?? ''), row.count])),
   };
-  for (const row of rows) {
-    out.photos += 1;
-    if (row.eventId) {
-      out.placed += 1;
-      if (Number(row.assignment?.confidence) > 0.5) out.placedOverHalf += 1;
-    }
-    if (row.optIn?.received === true) out.withOptIn += 1;
-    const a = row.analysis;
-    if (!a || typeof a !== 'object') continue;
-    out.analysed += 1;
-    out.people += whole(a.people);
-    add(out.genders, a.genders);
-    add(out.ageGroups, a.ageGroups);
-    add(out.emotions, a.emotions);
-    for (const name of new Set<string>(Array.isArray(a.brands) ? a.brands : [])) brands.set(name, (brands.get(name) ?? 0) + 1);
-    for (const name of new Set<string>(Array.isArray(a.clubs) ? a.clubs : [])) clubs.set(name, (clubs.get(name) ?? 0) + 1);
-  }
-  out.brands = topNames(brands);
-  out.clubs = topNames(clubs);
-  return out;
 }

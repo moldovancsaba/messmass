@@ -2,7 +2,8 @@
 // WHAT: The drive photos Fanmass placed in an event are stored only with their placement confidence and recorded opt-in.
 
 import { DRIVE_PHOTOS_CONTRACT, parseDrivePhotos } from '@/lib/fanmassDrivePhotos';
-import { sumDrivePhotos } from '@/lib/hashtagReport/measured';
+import { readDriveSummary } from '@/lib/hashtagReport/measured';
+import { driveFacet } from './helpers/driveFacet';
 
 const EVENT = '6af1d928b09e9a526e9d50df';
 const photo = (over: Record<string, unknown> = {}) => ({
@@ -38,7 +39,7 @@ describe('parseDrivePhotos', () => {
   });
 
   it('counts a library photo as a drive photo but not as placed', () => {
-    const sum = sumDrivePhotos([{ eventId: null, assignment: { confidence: 0 }, optIn: { received: true }, analysis: null }, { eventId: 'e1', assignment: { confidence: 1 }, optIn: { received: true }, analysis: null }]);
+    const sum = readDriveSummary(driveFacet([{ eventId: null, assignment: { confidence: 0 }, optIn: { received: true }, analysis: null }, { eventId: 'e1', assignment: { confidence: 1 }, optIn: { received: true }, analysis: null }])).drive;
     expect(sum).toMatchObject({ photos: 2, placed: 1, placedOverHalf: 1, withOptIn: 2 });
   });
 
