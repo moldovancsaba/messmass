@@ -164,7 +164,11 @@ export default function FanmassVisionSection({
           </h2>
           <p className={styles.visionSubtitle}>
             Sponsor emblems, apparel brands, age demographics, and fan celebration valence detected in{' '}
-            {vision.totalImages > 0 ? `${vision.totalImages.toLocaleString()} fan photos` : 'the fan photos'}.
+            {vision.totalImages <= 0
+              ? 'the fan photos'
+              : vision.processedCount >= vision.totalImages
+                ? `all ${vision.totalImages.toLocaleString()} fan photos`
+                : `the ${vision.processedCount.toLocaleString()} of ${vision.totalImages.toLocaleString()} fan photos analysed so far`}.
           </p>
         </div>
 
