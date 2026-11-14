@@ -31,6 +31,11 @@ export const INTERACTIVE_REPORT_THEME = {
   // Alert & Badge Accents
   amberBg: '#fef3c7',
   amberText: '#92400e',
+  yellowHighlightBg: '#fef08a',
+  yellowHighlightText: '#854d0e',
+  greenText: '#15803d',
+  greenPrimary: '#16a34a',
+  greenBg: '#dcfce7',
   redBg: '#fee2e2',
   redText: '#991b1b',
   pinkBg: '#fdf2f8',
