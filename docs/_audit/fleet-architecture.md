@@ -8,7 +8,7 @@ camera/fanmass/try-on/savetheworld carry pointers to it
 (savetheworld: `docs/_audit/savetheworld-in-the-fleet.md`). Header-less by
 design (docs:audit version gate).
 
-Verified messmass `1f33bf54` (E2 and E4 only, 2026-11-09, see below) · camera
+Verified messmass `cc6f1a23` (E2 and E4 only, 2026-11-14, see below) · camera
 `ccd77d5` · fanmass `7268cf7` · try-on `1ccd284` · savetheworld `d87c776`
 (2026-09-28). Everything else on the messmass side was last read at `dd34e229`.
 
@@ -249,10 +249,20 @@ Camera deletion/ineligibility uses the matching photo tombstone. Authentication
 uses `FANMASS_INTEGRATION_TOKEN`. Messmass checks the exact Camera event ID and
 partner ID against the linked Messmass event before it stores the result.
 
-Fanmass does not create Messmass events, partners, report variables or event
-summaries. It does not send projected reach, completion, or coverage values.
-Messmass owns the event aggregate and report variables, derived from received
-photo rows only. Event-summary, event-stat, callback, dashboard-snapshot,
+Re-verified at messmass `cc6f1a23` (2026-11-14). Fanmass creates no partners,
+report variables or event summaries and sends no projected reach, completion or
+coverage values. Messmass owns the event aggregate and report variables, derived
+from received photo rows only. Since 2026-11-14 Fanmass also writes, all with the
+same token (`requireFanmassIntegrationAuth`):
+- drive photos (the SZRT library) one record per photo, into their event or the
+  library: `POST /api/integrations/fanmass/events/{id}/drive-photos`,
+  `POST /api/integrations/fanmass/drive-photos` (`lib/fanmassDrivePhotos.ts`),
+  each with its photo hashtags;
+- the event of a sports match it holds photos of, made exactly as Quick Add's
+  match builder makes it, Camera mirror included, never twice:
+  `POST /api/integrations/fanmass/match-events` (`lib/fanmassMatchEvents.ts`);
+- campaign hashtags onto existing events, additive only:
+  `POST /api/integrations/fanmass/event-hashtags` (`lib/fanmassEventHashtags.ts`). Event-summary, event-stat, callback, dashboard-snapshot,
 event-batch link, event-wide rescan, and manual batch-sync flows are retired;
 their remaining compatibility routes return `410 Gone`. The old `/admin/fanmass`
 event dashboard redirects to the canonical photo-level AI Analytics page.
@@ -323,7 +333,9 @@ the staged Camera/Fanmass source branches. The shared-secret email route is
 unrelated and remains.
 
 ### E4 · messmass ↔ camera (master data + session + email)
-Verified messmass `1f33bf54` · camera `06f3029` (both sides re-read 2026-09-16;
+Verified messmass `cc6f1a23` (2026-11-14: `lib/cameraProvision.ts`, `lib/cameraClient.ts`,
+`lib/cameraPartnerSync.ts`, `app/api/integrations/camera/*` and `app/api/auth/sso/*` unchanged since
+`1f33bf54`, so every reference below still holds) · camera `06f3029` (both sides re-read 2026-09-16;
 messmass side re-checked 2026-09-28; re-read 2026-10-11 at messmass `5cc610c2`:
 the line references below still hold, the only changes are the additions listed
 under "Added since"; camera side re-read 2026-10-11 at `c40aad85` for

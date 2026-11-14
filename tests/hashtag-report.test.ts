@@ -6,7 +6,8 @@
 
 import { buildAllEventsReport, buildFilterReport, buildHashtagReport, filterSlugHashtags } from '@/lib/hashtagReport';
 import { calculate, share } from '@/lib/hashtagReport/calculated';
-import { CAMERA_TOTAL_COUNTERS, MACHINE_EVENT_PROJECTION, eventsFilter, hashtagFilter, sumDrivePhotos, type ReportDb } from '@/lib/hashtagReport/measured';
+import { CAMERA_TOTAL_COUNTERS, MACHINE_EVENT_PROJECTION, eventsFilter, hashtagFilter, readDriveSummary, type ReportDb } from '@/lib/hashtagReport/measured';
+import { driveAggregate } from './helpers/driveFacet';
 import { mergePhotoSummaries } from '@/lib/hashtagReport/mergeSummaries';
 
 const rollup = (over: Record<string, unknown> = {}) => ({
@@ -52,7 +53,7 @@ describe('the calculations', () => {
   it('treat a counter nobody reported as unknown, not zero', () => {
     const photos = mergePhotoSummaries([rollup()]);
     photos.withOptIn = 10;
-    const calc = calculate({ events: [], counters: {}, photos, drive: sumDrivePhotos([]) });
+    const calc = calculate({ events: [], counters: {}, photos, drive: readDriveSummary().drive });
     expect(calc.analysedShare).toMatchObject({ value: null, denominator: null });
     expect(calc.optInShare).toMatchObject({ value: 100, numerator: 10, denominator: 10 });
     expect(calc.maleShare.value).toBe(60);
@@ -68,16 +69,17 @@ describe('what the builder may read', () => {
         calls.push({ collection: `${name}#count`, filter });
         return 7;
       },
+      aggregate: (pipeline) => {
+        calls.push({ collection: name, filter: pipeline[0].$match as Record<string, unknown> });
+        return driveAggregate(() => [
+          { eventId: 'e2', assignment: { confidence: 0.8 }, optIn: { received: true }, analysis: { people: 2, genders: { male: 1, female: 1 }, clubs: ['DVTK', 'DVTK'] } },
+          { eventId: 'e2', assignment: { confidence: 0.3 }, optIn: { received: true }, analysis: null },
+        ])(pipeline as any);
+      },
       find: (filter, options) => {
         calls.push({ collection: name, filter, options });
         return {
           toArray: async () => {
-            if (name === 'fanmass_event_drive_photos') {
-              return [
-                { eventId: 'e2', assignment: { confidence: 0.8 }, optIn: { received: true }, analysis: { people: 2, genders: { male: 1, female: 1 }, clubs: ['DVTK', 'DVTK'] } },
-                { eventId: 'e2', assignment: { confidence: 0.3 }, optIn: { received: true }, analysis: null },
-              ];
-            }
             if (name === 'projects') {
               return [
                 // The database hands over manual stats too (as a bug or a changed projection would): they must stay unused
@@ -181,17 +183,19 @@ describe('events that hold photos of the hashtag', () => {
   const db: ReportDb = {
     collection: (name: string) => ({
       countDocuments: async () => 0,
+      // Two tagged photos (one placed in an event without the hashtag, one in the library) and one untagged photo of
+      // that event: the summary over the event must hold all three
+      aggregate: driveAggregate((match) => {
+        const tagged = [{ eventId: placedIn, assignment: { confidence: 1 }, optIn: { received: true }, analysis: null }, { eventId: null, optIn: { received: true } }];
+        const untagged = [{ eventId: placedIn, assignment: { confidence: 0.5 }, optIn: { received: true }, analysis: null }];
+        return JSON.stringify(match).includes(placedIn) ? [...tagged, ...untagged] : tagged;
+      }),
       find: (filter: Record<string, any>) => ({
         toArray: async () => {
           if (name === 'projects') {
             return filter._id
               ? [{ _id: placedIn, eventName: 'Paksi FC x Nyíregyháza Spartacus FC', eventDate: '2025-12-20', stats: { camera_images_taken: 40, marketingOptin: 999 } }]
               : [{ _id: 'e1', eventName: 'Tagged event', eventDate: '2026-01-10', stats: {} }];
-          }
-          if (name === 'fanmass_event_drive_photos') {
-            return filter.$or
-              ? [{ eventId: placedIn, assignment: { confidence: 1 }, optIn: { received: true }, analysis: null }, { eventId: null, optIn: { received: true } }]
-              : [{ eventId: placedIn, assignment: { confidence: 0.5 }, optIn: { received: true }, analysis: null }];
           }
           return [];
         },
@@ -218,11 +222,14 @@ describe('every event together', () => {
     const db = {
       collection: (name: string) => ({
         countDocuments: async (filter: Record<string, unknown>) => { calls.push({ name: `${name}#count`, filter }); return 0; },
+        aggregate: (pipeline: Array<Record<string, any>>) => {
+          calls.push({ name, filter: pipeline[0].$match });
+          return driveAggregate(() => [{ eventId: 'e2', optIn: { received: true } }, { eventId: null, optIn: { received: true } }])(pipeline);
+        },
         find: (filter: Record<string, unknown>) => ({
           toArray: async () => {
             calls.push({ name, filter });
             if (name === 'projects') return [{ _id: 'e1', eventName: 'A', stats: { camera_images_taken: 5, allImages: 999 } }, { _id: 'e2', eventName: 'B', stats: {} }];
-            if (name === 'fanmass_event_drive_photos') return [{ eventId: 'e2', optIn: { received: true } }, { eventId: null, optIn: { received: true } }];
             return [];
           },
         }),
@@ -244,6 +251,7 @@ describe('several hashtags together (the hashtag filter)', () => {
   const db = {
     collection: (name: string) => ({
       countDocuments: async (filter: Record<string, any>) => { calls.push({ name: `${name}#count`, filter }); return 3; },
+      aggregate: (pipeline: Array<Record<string, any>>) => { calls.push({ name, filter: pipeline[0].$match }); return driveAggregate(() => [])(pipeline); },
       find: (filter: Record<string, any>) => ({
         toArray: async () => {
           calls.push({ name, filter });
