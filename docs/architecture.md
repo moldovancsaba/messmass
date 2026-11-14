@@ -1899,7 +1899,9 @@ Two kinds of hashtags, two kinds of reports (owner 2026-11-14). Hashtags are typ
 hashtags of its photos without the event's typed ones, recomputed by `POST /api/integrations/fanmass/fanmass-hashtags`
 after every Fanmass publish run). The two kinds work together: an event carries a hashtag when its plain list, any
 category list or its Fanmass hashtags hold it (`hashtagFilter`, the same match as the admin hashtag filter;
-`category:tag` matches that category only). The reports never mix: the clicker report (counts people entered by hand,
+`category:tag` matches that category only). A hashtag is one name in any spelling: case, a leading # and underscores do
+not count (`compactHashtag`, `hashtagSpellings` in `lib/photoHashtags.ts`), so the typed `otp_bank_pick_szeged` and
+Fanmass's `otpbankpickszeged` are one hashtag. The reports never mix: the clicker report (counts people entered by hand,
 `/filter/[slug]` and the Clicker section of `/admin/filter`) and the Fanmass report (`lib/hashtagReport`,
 `/report/hashtag/[x]`, `/report/filter/[slug]`, `/report/global`, the Fanmass section of `/admin/filter`).
 Several hashtags together (`buildFilterReport`) take the events carrying all of them and the photos tagged with all of

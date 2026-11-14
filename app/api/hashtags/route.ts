@@ -5,6 +5,7 @@ import config from '@/lib/config';
 import { cachedResponse, generateETag, checkIfNoneMatch, notModifiedResponse, CACHE_PRESETS } from '@/lib/api/caching';
 import { error as logError } from '@/lib/logger';
 import { requireAdmin, requireEditorAccess } from '@/lib/apiGuards';
+import { compactHashtag } from '@/lib/photoHashtags';
 
 // Use centralized Mongo client and config
 
@@ -55,23 +56,31 @@ export async function GET(request: NextRequest) {
     // event, club, people), each with its event count and photo count, so a photo-only hashtag can be filtered too.
     // The event editor's suggestions do not ask for them: photo hashtags are not typed onto events.
     if (searchParams.get('photos') === '1') {
-      const searchMatch = search ? [{ $match: { _id: { $regex: new RegExp(search, 'i') } } }] : [];
+      // Photos counted once per hashtag identity (an underscore is spelling only: lib/photoHashtags.ts compactHashtag)
+      const compactSearch = search ? [{ $match: { _id: { $regex: new RegExp(search.replace(/_/g, ''), 'i') } } }] : [];
       const photoTags = (collection: string, match: Record<string, unknown>) => db.collection(collection).aggregate([
         { $match: { ...match, 'hashtags.0': { $exists: true } } },
-        { $unwind: '$hashtags' },
-        { $group: { _id: '$hashtags', count: { $sum: 1 } } },
-        ...searchMatch,
+        { $project: { tags: { $setUnion: [{ $map: { input: '$hashtags', in: { $replaceAll: { input: { $toLower: '$$this' }, find: '_', replacement: '' } } } }, []] } } },
+        { $unwind: '$tags' },
+        { $group: { _id: '$tags', count: { $sum: 1 } } },
+        ...compactSearch,
       ]).toArray();
       const [events, drive, camera] = await Promise.all([
         db.collection('projects').aggregate(pipeline).toArray(),
         photoTags('fanmass_event_drive_photos', {}),
         photoTags('fanmass_camera_photo_analyses', { tombstone: { $ne: true }, status: 'completed' }),
       ]);
+      // One row per hashtag identity, shown in its typed spelling when people typed it
       const merged = new Map<string, { hashtag: string; count: number; photos: number }>();
-      for (const row of events) merged.set(String(row._id).toLowerCase(), { hashtag: String(row._id), count: row.count, photos: 0 });
+      for (const row of events) {
+        const key = compactHashtag(String(row._id));
+        const item = merged.get(key);
+        if (item) item.count += row.count;
+        else merged.set(key, { hashtag: String(row._id), count: row.count, photos: 0 });
+      }
       for (const row of [...drive, ...camera]) {
-        const key = String(row._id).toLowerCase();
-        const item = merged.get(key) ?? { hashtag: String(row._id), count: 0, photos: 0 };
+        const key = String(row._id);
+        const item = merged.get(key) ?? { hashtag: key, count: 0, photos: 0 };
         item.photos += row.count;
         merged.set(key, item);
       }

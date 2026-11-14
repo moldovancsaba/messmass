@@ -8,7 +8,7 @@
 import { ObjectId } from 'mongodb';
 
 import { parseHashtagQuery } from '../hashtagCategoryUtils';
-import { toPhotoHashtag } from '../photoHashtags';
+import { compactHashtag, hashtagSpellings } from '../photoHashtags';
 import { mergePhotoSummaries } from './mergeSummaries';
 import type { HashtagEvent, MeasuredCounters, MeasuredDrivePhotos, MeasuredLayer, NamedCount } from './types';
 
@@ -51,24 +51,28 @@ const escapeRegex = (text: string) => text.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'
  * A `category:tag` query matches that category list only. */
 export function hashtagFilter(hashtag: string, organizationId?: string): Record<string, unknown> {
   const { category, hashtag: id } = parseHashtagQuery(hashtag.trim().replace(/^#/, ''));
-  const exact = new RegExp(`^#?${escapeRegex(id)}$`, 'i');
+  // Any case, a leading #, underscores anywhere: typed and automatic spellings of one name are one hashtag
+  const spellings = hashtagSpellings(id);
+  const compact = compactHashtag(id);
   const filter: Record<string, unknown> = {
     $or: category
-      ? [{ [`categorizedHashtags.${category}`]: { $regex: exact } }]
+      ? [{ [`categorizedHashtags.${category}`]: { $regex: spellings } }]
       : [
-          { hashtags: id },
-          { hashtags: `#${id}` },
-          { hashtags: { $regex: exact } },
+          { hashtags: { $regex: spellings } },
           // The classic hashtag report also reads a hashtag list stored as one comma-separated text
-          { hashtags: { $regex: new RegExp(`(^|,)\\s*#?${escapeRegex(id)}\\s*(,|$)`, 'i') } },
+          { hashtags: { $regex: new RegExp(`(^|,)\\s*${spellings.source.slice(1, -1)}\\s*(,|$)`, 'i') } },
           // The hashtags Fanmass wrote onto the event's photos (lib/fanmassEventHashtags.ts): typed and automatic
           // hashtags work together, the reports stay separate (owner 2026-11-14)
-          { fanmassHashtags: id.toLowerCase() },
+          { fanmassHashtags: { $regex: spellings } },
           // Any category list (categorizedHashtags: { category: [tags] })
           { $expr: { $gt: [{ $size: { $filter: {
             // Guarded: a malformed document (no object, a value that is not a list) never fails the whole query
             input: { $cond: [{ $eq: [{ $type: '$categorizedHashtags' }, 'object'] }, { $objectToArray: '$categorizedHashtags' }, []] },
-            cond: { $in: [id.toLowerCase(), { $map: { input: { $cond: [{ $isArray: '$$this.v' }, '$$this.v', []] }, as: 'tag', in: { $toLower: '$$tag' } } }] },
+            cond: { $in: [compact, { $map: {
+              input: { $cond: [{ $isArray: '$$this.v' }, '$$this.v', []] },
+              as: 'tag',
+              in: { $replaceAll: { input: { $replaceAll: { input: { $toLower: { $toString: '$$tag' } }, find: '_', replacement: '' } }, find: '#', replacement: '' } },
+            } }] },
           } } }, 0] } },
         ],
   };
@@ -83,8 +87,8 @@ export function eventsFilter(hashtags: string[] | null, organizationId?: string)
   return { $and: hashtags.map((tag) => ({ $or: (hashtagFilter(tag) as { $or: unknown[] }).$or })), ...org };
 }
 
-/** The photo hashtag of a query: `category:tag` becomes `tag`, then the photo form (lib/photoHashtags.ts). */
-const photoTag = (query: string) => toPhotoHashtag(parseHashtagQuery(query.trim().replace(/^#/, '')).hashtag);
+/** Every spelling of a query's hashtag on a photo: `category:tag` becomes `tag` (lib/photoHashtags.ts). */
+const photoTag = (query: string) => hashtagSpellings(parseHashtagQuery(query.trim().replace(/^#/, '')).hashtag);
 
 const reported = (value: unknown): value is number => typeof value === 'number' && Number.isFinite(value) && value >= 0;
 
@@ -97,7 +101,7 @@ export async function loadMeasuredLayer(db: ReportDb, hashtags: string[] | null,
   // Drive photos Fanmass tagged with the hashtag or placed in these events (lib/fanmassDrivePhotos.ts)
   const photoTags = hashtags === null ? null : hashtags.map(photoTag);
   // One hashtag is matched as a value (the index serves it), several as all of them
-  const tag = photoTags === null ? null : photoTags.length === 1 ? photoTags[0] : { $all: photoTags };
+  const tag = photoTags === null ? null : photoTags.length === 1 ? { $regex: photoTags[0] } : { $all: photoTags };
   const driveFilter: Record<string, unknown> = tag === null ? {} : taggedIds.length
     ? { $or: [{ hashtags: tag }, { eventId: { $in: taggedIds } }] }
     : { hashtags: tag };

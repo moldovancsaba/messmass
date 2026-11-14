@@ -6,6 +6,8 @@
 
 import { ObjectId, type Db } from 'mongodb';
 
+import { compactHashtag } from './photoHashtags';
+
 export const EVENT_HASHTAGS_CONTRACT = 'fanmass.messmass.event-hashtags.v1';
 const MAX_EVENTS = 500;
 const MAX_HASHTAGS = 5;
@@ -36,10 +38,10 @@ export function parseEventHashtagsRequest(body: unknown): EventHashtagsRequest {
   return { hashtags, eventIds };
 }
 
-/** Every tag an event carries, lowercase, from its plain list and every category list. */
+/** Every hashtag an event carries, in its compact identity (lib/photoHashtags.ts), from its plain and category lists. */
 function carried(event: Record<string, unknown>): Set<string> {
   const out = new Set<string>();
-  const add = (list: unknown) => { if (Array.isArray(list)) for (const tag of list) out.add(String(tag).replace(/^#/, '').toLowerCase()); };
+  const add = (list: unknown) => { if (Array.isArray(list)) for (const tag of list) out.add(compactHashtag(String(tag))); };
   add(event.hashtags);
   const categorized = event.categorizedHashtags;
   if (categorized && typeof categorized === 'object' && !Array.isArray(categorized)) Object.values(categorized).forEach(add);
@@ -57,7 +59,7 @@ export async function addEventHashtags(db: Db, input: EventHashtagsRequest, now 
     if (!event) { result.missing.push(id); continue; }
     if (event.hashtags !== undefined && event.hashtags !== null && !Array.isArray(event.hashtags)) { result.skipped.push(id); continue; }
     const have = carried(event);
-    const missing = input.hashtags.filter((tag) => !have.has(tag));
+    const missing = input.hashtags.filter((tag) => !have.has(compactHashtag(tag)));
     if (!missing.length) { result.unchanged.push(id); continue; }
     await db.collection('projects').updateOne(
       { _id: new ObjectId(id) },
@@ -97,7 +99,7 @@ export async function refreshFanmassHashtags(db: Db, now = new Date()): Promise<
   let changed = 0;
   for (const event of events) {
     const typed = carried(event as Record<string, unknown>);
-    const tags = [...(tagsOf.get(String(event._id)) ?? [])].filter((tag) => !typed.has(tag)).sort().slice(0, 300);
+    const tags = [...(tagsOf.get(String(event._id)) ?? [])].filter((tag) => !typed.has(compactHashtag(tag))).sort().slice(0, 300);
     if (JSON.stringify(tags) === JSON.stringify(event.fanmassHashtags ?? [])) continue;
     await db.collection('projects').updateOne({ _id: event._id }, { $set: { fanmassHashtags: tags, fanmassHashtagsAt: now.toISOString() } });
     changed += 1;
