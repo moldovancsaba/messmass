@@ -6,6 +6,11 @@ import ServerPageGate from '@/components/ServerPageGate';
 import { getAdminUser } from '@/lib/auth';
 import { hasPageAccess, isPageProtected } from '@/lib/pageAccess';
 import styles from '@/components/theme/interactive-report/interactive-report.module.css';
+import config from '@/lib/config';
+import clientPromise from '@/lib/mongodb';
+import { buildAllEventsReport } from '@/lib/hashtagReport';
+import type { ReportDb } from '@/lib/hashtagReport/measured';
+import HashtagReportView from '@/components/hashtagReport/HashtagReportView';
 
 export const dynamic = 'force-dynamic';
 // The first load builds the report from every project (it is cached for an hour afterwards), which needs more
@@ -24,7 +29,11 @@ export const metadata: Metadata = {
  * everything Messmass collects. It spans every client, so it is never public: an admin session opens it, anyone else
  * needs the page password issued from its Reports workspace (/admin/global/reports), shared like every other report.
  */
-export default async function GlobalInteractiveReportPage() {
+interface PageProps {
+  searchParams: Promise<{ report?: string; variant?: string }>;
+}
+
+export default async function GlobalInteractiveReportPage({ searchParams }: PageProps) {
   const user = await getAdminUser();
   const isAdmin = Boolean(user && (user.role === 'admin' || user.role === 'superadmin'));
   if (!isAdmin) {
@@ -33,6 +42,14 @@ export default async function GlobalInteractiveReportPage() {
     if (!(await hasPageAccess('global-report', GLOBAL_PAGE_ID))) {
       return <ServerPageGate pageId={GLOBAL_PAGE_ID} pageType="global-report" />;
     }
+  }
+
+  // Every event together, from Fanmass data and Messmass calculations only (owner 2026-11-14), like the hashtag report.
+  // The previous report, partly typed in by hand, stays at `?report=classic`; a saved variant is a layout of that one.
+  const { report, variant } = await searchParams;
+  if (report !== 'classic' && !variant) {
+    const client = await clientPromise;
+    return <HashtagReportView report={await buildAllEventsReport(client.db(config.dbName) as unknown as ReportDb)} />;
   }
 
   const data = await getScopedInteractiveReportData({ type: 'global', identifier: GLOBAL_PAGE_ID });

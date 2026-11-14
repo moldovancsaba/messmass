@@ -67,10 +67,12 @@ export default function HashtagReportView({ report }: { report: HashtagReport })
   const hasMeasuredData = coverage.eventsWithCounters > 0 || coverage.eventsWithPhotoResults > 0 || drive.photos > 0 || photos.tagged > 0;
   // The Camera block shows only when Camera measured something for this hashtag; drive photos have their own block
   const hasCameraData = coverage.eventsWithCounters > 0 || coverage.eventsWithPhotoResults > 0 || photos.tagged > 0;
+  const all = scope.type === 'all';
+  const label = all ? 'All events' : `#${scope.id}`;
   const byPhotos = measured.events.filter((event) => event.joinedBy === 'photos').length;
   const byHashtag = coverage.events - byPhotos;
   const scopeText = [
-    `${fmt(byHashtag)} ${byHashtag === 1 ? 'event carries' : 'events carry'} it`,
+    all ? `${fmt(coverage.events)} events` : `${fmt(byHashtag)} ${byHashtag === 1 ? 'event carries' : 'events carry'} it`,
     byPhotos > 0 ? `${fmt(byPhotos)} more ${byPhotos === 1 ? 'event holds' : 'events hold'} its photos` : '',
     drive.photos > 0 ? `${fmt(drive.photos)} drive photos` : '',
     photos.tagged > 0 ? `${fmt(photos.tagged)} tagged Camera photos` : '',
@@ -80,10 +82,10 @@ export default function HashtagReportView({ report }: { report: HashtagReport })
   return (
     <main className={styles.page}>
       <header className={styles.hero}>
-        <span className={styles.eyebrow}>Hashtag report</span>
-        <h1 className={styles.title}>#{scope.id}</h1>
+        <span className={styles.eyebrow}>{all ? 'Every event together' : 'Hashtag report'}</span>
+        <h1 className={styles.title}>{label}</h1>
         <p className={styles.lead}>
-          What Fanmass and Camera measured for this hashtag ({scopeText}), and what Messmass calculates from it. Nothing in this
+          What Fanmass and Camera measured {all ? 'across every event' : 'for this hashtag'} ({scopeText}), and what Messmass calculates from it. Nothing in this
           report is typed in by hand.
         </p>
       </header>
@@ -95,7 +97,7 @@ export default function HashtagReportView({ report }: { report: HashtagReport })
         </div>
       ) : !hasMeasuredData ? (
         <div className={styles.empty}>
-          {fmt(coverage.events)} {coverage.events === 1 ? 'event carries' : 'events carry'} #{scope.id}, but none of them has measured
+          {all ? `There are ${fmt(coverage.events)} events` : `${fmt(coverage.events)} ${coverage.events === 1 ? 'event carries' : 'events carry'} ${label}`}, but none of them has measured
           data yet: no photo counters from Camera and no photo analysis from Fanmass.
         </div>
       ) : (
@@ -119,7 +121,7 @@ export default function HashtagReportView({ report }: { report: HashtagReport })
           {drive.photos > 0 && (
             <>
               <section className={styles.card}>
-                <h2 className={styles.cardTitle}>Drive photos tagged #{scope.id} or placed in these events</h2>
+                <h2 className={styles.cardTitle}>{all ? 'Drive photos' : `Drive photos tagged ${label} or placed in these events`}</h2>
                 <p className={styles.cardNote}>
                   These photos came from a drive library whose files carry no event. Fanmass placed each one in an event from the
                   clubs read in it, its look and the fixture dates, recorded how sure each placement is, and tagged it with what it
@@ -152,7 +154,7 @@ export default function HashtagReportView({ report }: { report: HashtagReport })
           <h2 className={styles.cardTitle}>Events in this report</h2>
           <p className={styles.cardNote}>
             {fmt(coverage.eventsWithCounters)} of {fmt(coverage.events)} have photo counters from Camera and{' '}
-            {fmt(coverage.eventsWithPhotoResults)} have photo analysis from Fanmass. An event without them adds nothing to the figures above.
+            {fmt(coverage.eventsWithPhotoResults)} have photo analysis from Fanmass. An event without them adds nothing to the figures above{all ? ', so only the events with measured data are listed' : ''}.
           </p>
           <div className={styles.tableScroll}>
           <table className={styles.table}>
@@ -160,11 +162,11 @@ export default function HashtagReportView({ report }: { report: HashtagReport })
               <tr><th>Event</th><th>Date</th><th>Camera counters</th><th>Fanmass analysis</th><th>Drive photos</th></tr>
             </thead>
             <tbody>
-              {measured.events.map((event) => (
+              {measured.events.filter((event) => !all || event.hasCounters || event.hasPhotoResults || event.drivePhotos > 0).map((event) => (
                 <tr key={event.id}>
                   <td>
                     {event.name || 'Unnamed event'}
-                    <div className={styles.cardNote}>{event.joinedBy === 'photos' ? 'Holds photos of the hashtag' : 'Carries the hashtag'}</div>
+                    {!all && <div className={styles.cardNote}>{event.joinedBy === 'photos' ? 'Holds photos of the hashtag' : 'Carries the hashtag'}</div>}
                   </td>
                   <td>{event.date ?? 'No date'}</td>
                   <td><span className={event.hasCounters ? styles.badge : `${styles.badge} ${styles.badgeOff}`}>{event.hasCounters ? 'Yes' : 'No'}</span></td>

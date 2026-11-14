@@ -125,8 +125,8 @@ largest, and the ones to read first:
 
 | Module | Importers | Lines |
 |--------|-----------|-------|
-| `lib/config.ts` | 127 | 207 |
-| `lib/mongodb.ts` | 110 | 112 |
+| `lib/config.ts` | 128 | 207 |
+| `lib/mongodb.ts` | 111 | 112 |
 | `lib/auth.ts` | 98 | 118 |
 | `lib/logger.ts` | 96 | 392 |
 | `lib/apiGuards.ts` | 87 | 390 |
@@ -1903,7 +1903,8 @@ builder ever fetches or uses a stat outside the allowlist.
 
 `/report/hashtag/[hashtag]` (served by `app/interactive-report/hashtag/[hashtag]/page.tsx`) shows this report for every hashtag
 (`components/hashtagReport/HashtagReportView.tsx`), behind the shared page gate, the SZRT campaign included (owner
-2026-11-14); the previous SZRT interactive report, partly typed in by hand, stays reachable at `?report=classic`. The
+2026-11-14); the previous SZRT interactive report, partly typed in by hand, stays reachable at `?report=classic`, and the
+SZRT partner links (`/interactive-report/szrt`, `szerencsejatek`, its partner id) redirect here. The
 hashtag's events are the events that carry it plus the events Fanmass placed photos of the hashtag in (`joinedBy`), so the
 event list follows the placements without anyone tagging events by hand.
 

@@ -62,13 +62,15 @@ export function hashtagFilter(hashtag: string, organizationId?: string): Record<
 
 const reported = (value: unknown): value is number => typeof value === 'number' && Number.isFinite(value) && value >= 0;
 
-export async function loadMeasuredLayer(db: ReportDb, hashtag: string, organizationId?: string): Promise<MeasuredLayer> {
-  const tagged = await db.collection('projects').find(hashtagFilter(hashtag, organizationId), { projection: MACHINE_EVENT_PROJECTION }).toArray();
+/** `hashtag` null measures every event and every drive photo: the all-events report (/report/global). */
+export async function loadMeasuredLayer(db: ReportDb, hashtag: string | null, organizationId?: string): Promise<MeasuredLayer> {
+  const eventFilter = hashtag === null ? (organizationId ? { organizationId } : {}) : hashtagFilter(hashtag, organizationId);
+  const tagged = await db.collection('projects').find(eventFilter, { projection: MACHINE_EVENT_PROJECTION }).toArray();
   const taggedIds = tagged.map((p) => String(p._id));
 
   // Drive photos Fanmass tagged with the hashtag or placed in these events (lib/fanmassDrivePhotos.ts)
-  const tag = toPhotoHashtag(hashtag.trim());
-  const driveFilter: Record<string, unknown> = taggedIds.length
+  const tag = hashtag === null ? null : toPhotoHashtag(hashtag.trim());
+  const driveFilter: Record<string, unknown> = tag === null ? {} : taggedIds.length
     ? { $or: [{ hashtags: tag }, { eventId: { $in: taggedIds } }] }
     : { hashtags: tag };
   const driveProjection = { projection: { eventId: 1, assignment: 1, optIn: 1, analysis: 1 } };
@@ -148,7 +150,7 @@ export async function loadMeasuredLayer(db: ReportDb, hashtag: string, organizat
 
   const photos = mergePhotoSummaries(projects.map((p) => rollupByEvent.get(String(p._id))).filter((r): r is Record<string, unknown> => Boolean(r)));
   photos.withOptIn = withOptIn;
-  photos.tagged = await db.collection('fanmass_camera_photo_analyses').countDocuments({ hashtags: tag, tombstone: { $ne: true }, status: 'completed' });
+  photos.tagged = tag === null ? 0 : await db.collection('fanmass_camera_photo_analyses').countDocuments({ hashtags: tag, tombstone: { $ne: true }, status: 'completed' });
   return { events, counters, photos, drive };
 }
 

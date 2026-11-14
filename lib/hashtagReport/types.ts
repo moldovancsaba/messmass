@@ -120,7 +120,8 @@ export interface CalculatedLayer {
 
 export interface HashtagReport {
   success: true;
-  scope: { type: 'hashtag'; id: string };
+  /** One hashtag, or every event (`all`, the global report). */
+  scope: { type: 'hashtag'; id: string } | { type: 'all'; id: 'all' };
   generatedAt: string;
   measured: MeasuredLayer;
   calculated: CalculatedLayer;

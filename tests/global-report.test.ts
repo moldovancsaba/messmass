@@ -8,6 +8,7 @@ const getAdminUser = jest.fn();
 const isPageProtected = jest.fn();
 const hasPageAccess = jest.fn();
 const getData = jest.fn();
+const buildAll = jest.fn();
 const notFound = jest.fn(() => { throw new Error('NEXT_NOT_FOUND'); });
 
 jest.mock('@/lib/mongodb', () => ({ __esModule: true, default: Promise.resolve({ db: () => ({ collection: () => ({}) }) }) }));
@@ -18,54 +19,71 @@ jest.mock('@/lib/pageAccess', () => ({ isPageProtected: (...a: unknown[]) => isP
 jest.mock('@/components/ServerPageGate', () => ({ __esModule: true, default: () => null }));
 jest.mock('@/components/theme/interactive-report/InteractiveReportDashboard', () => ({ __esModule: true, default: () => null }));
 jest.mock('@/components/theme/interactive-report/interactive-report.module.css', () => ({ __esModule: true, default: {} }), { virtual: true });
+jest.mock('@/lib/hashtagReport', () => ({ buildAllEventsReport: (...a: unknown[]) => buildAll(...a) }));
+jest.mock('@/components/hashtagReport/HashtagReportView', () => ({ __esModule: true, default: () => null }));
 jest.mock('@/lib/interactiveReportAggregator', () => ({
   ...jest.requireActual('@/lib/interactiveReportAggregator'),
   getScopedInteractiveReportData: (...a: unknown[]) => getData(...a),
 }));
 
 import ServerPageGate from '@/components/ServerPageGate';
+import HashtagReportView from '@/components/hashtagReport/HashtagReportView';
 import GlobalInteractiveReportPage from '@/app/interactive-report/global/page';
 import { resolveScopeProjectIds } from '@/lib/interactiveReportAggregator';
 import { buildShareableUrl } from '@/lib/pagePassword';
 import { resolveReportVariantBaseSource } from '@/lib/reportVariants';
 
+const open = (query: { report?: string; variant?: string } = {}): Promise<any> => GlobalInteractiveReportPage({ searchParams: Promise.resolve(query) });
+
 beforeEach(() => {
   jest.clearAllMocks();
   getData.mockResolvedValue({ success: true });
+  buildAll.mockResolvedValue({ success: true });
 });
 
 describe('who can open the global report', () => {
   it('lets an admin session in without any password', async () => {
     getAdminUser.mockResolvedValue({ role: 'admin' });
-    const page: any = await GlobalInteractiveReportPage();
-    expect(getData).toHaveBeenCalledWith({ type: 'global', identifier: 'all' });
-    expect(page.type).toBe('main');
+    const page: any = await open();
+    expect(page.type).toBe(HashtagReportView);
+    expect(buildAll).toHaveBeenCalledTimes(1);
+    expect(getData).not.toHaveBeenCalled();
     expect(isPageProtected).not.toHaveBeenCalled();
+  });
+
+  it('shows every event together from Fanmass data, and the previous report only at ?report=classic or a variant', async () => {
+    getAdminUser.mockResolvedValue({ role: 'admin' });
+    expect((await open({ report: 'classic' })).type).toBe('main');
+    expect(getData).toHaveBeenCalledWith({ type: 'global', identifier: 'all' });
+    expect((await open({ variant: 'q1' })).type).toBe('main');
+    expect(buildAll).not.toHaveBeenCalled();
   });
 
   it('shows nothing, not even a login, until it was shared (no password issued)', async () => {
     getAdminUser.mockResolvedValue(null);
     isPageProtected.mockResolvedValue(false);
-    await expect(GlobalInteractiveReportPage()).rejects.toThrow('NEXT_NOT_FOUND');
+    await expect(open()).rejects.toThrow('NEXT_NOT_FOUND');
     expect(getData).not.toHaveBeenCalled();
+    expect(buildAll).not.toHaveBeenCalled();
   });
 
   it('asks for the page password once it was shared, and loads no data before it is entered', async () => {
     getAdminUser.mockResolvedValue({ role: 'user' });
     isPageProtected.mockResolvedValue(true);
     hasPageAccess.mockResolvedValue(false);
-    const page: any = await GlobalInteractiveReportPage();
+    const page: any = await open();
     expect(page.type).toBe(ServerPageGate);
     expect(page.props).toMatchObject({ pageId: 'all', pageType: 'global-report' });
     expect(getData).not.toHaveBeenCalled();
+    expect(buildAll).not.toHaveBeenCalled();
   });
 
   it('opens for a visitor who entered the page password', async () => {
     getAdminUser.mockResolvedValue(null);
     isPageProtected.mockResolvedValue(true);
     hasPageAccess.mockResolvedValue(true);
-    expect((await GlobalInteractiveReportPage() as any).type).toBe('main');
-    expect(getData).toHaveBeenCalledTimes(1);
+    expect((await open()).type).toBe(HashtagReportView);
+    expect(buildAll).toHaveBeenCalledTimes(1);
   });
 });
 

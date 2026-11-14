@@ -16,10 +16,18 @@ export type { HashtagReport } from './types';
 
 export async function buildHashtagReport(db: ReportDb, hashtag: string, organizationId?: string): Promise<HashtagReport> {
   const id = hashtag.trim().replace(/^#/, '');
-  const measured = await loadMeasuredLayer(db, id, organizationId);
+  return build(await loadMeasuredLayer(db, id, organizationId), { type: 'hashtag', id });
+}
+
+/** The same report over every event and every drive photo: what /report/global shows. */
+export async function buildAllEventsReport(db: ReportDb): Promise<HashtagReport> {
+  return build(await loadMeasuredLayer(db, null), { type: 'all', id: 'all' });
+}
+
+function build(measured: HashtagReport['measured'], scope: HashtagReport['scope']): HashtagReport {
   return {
     success: true,
-    scope: { type: 'hashtag', id },
+    scope,
     generatedAt: new Date().toISOString(),
     measured,
     calculated: calculate(measured),
