@@ -25,14 +25,14 @@ jest.mock('@/lib/hashtagReport', () => ({
   buildFilterReport: (...a: unknown[]) => buildFilter(...a),
   filterSlugHashtags: (...a: unknown[]) => slugTags(...a),
 }));
-jest.mock('@/components/hashtagReport/HashtagReportView', () => ({ __esModule: true, default: () => null }));
+jest.mock('@/components/hashtagReport/FanmassDashboardPage', () => ({ __esModule: true, default: () => null }));
 jest.mock('@/lib/interactiveReportAggregator', () => ({
   ...jest.requireActual('@/lib/interactiveReportAggregator'),
   getScopedInteractiveReportData: (...a: unknown[]) => getData(...a),
 }));
 
 import ServerPageGate from '@/components/ServerPageGate';
-import HashtagReportView from '@/components/hashtagReport/HashtagReportView';
+import HashtagReportView from '@/components/hashtagReport/FanmassDashboardPage';
 import FilterInteractiveReportPage from '@/app/interactive-report/filter/[slug]/page';
 import { getReportSlug } from '@/components/theme/interactive-report/reportSlug';
 
@@ -52,7 +52,7 @@ describe('Filter interactive report page access', () => {
     const page: any = await open('test-slug');
     expect(page.type).toBe(HashtagReportView);
     expect(buildFilter).toHaveBeenCalledWith(expect.anything(), ['tippmixreport2026', 'happy'], 'test-slug');
-    expect(getData).not.toHaveBeenCalled();
+    expect(getData).toHaveBeenCalledWith({ type: 'filter', identifier: 'test-slug' });
     expect(isPageProtected).not.toHaveBeenCalled();
   });
 

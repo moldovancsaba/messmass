@@ -60,7 +60,8 @@ function Names({ title, list, note }: { title: string; list: NamedCount[]; note:
   return <Bars title={title} counts={Object.fromEntries(list.slice(0, 12).map((row) => [row.name, row.count]))} note={note} />;
 }
 
-export default function HashtagReportView({ report }: { report: HashtagReport }) {
+/** `embedded`: inside the interactive dashboard's Figures tab, which already shows the title and the header figures. */
+export default function HashtagReportView({ report, embedded = false }: { report: HashtagReport; embedded?: boolean }) {
   const { measured, calculated, coverage, scope } = report;
   const { photos, counters } = measured;
   const { drive } = measured;
@@ -79,16 +80,17 @@ export default function HashtagReportView({ report }: { report: HashtagReport })
   ].filter(Boolean).join(', ');
   const taken = Object.prototype.hasOwnProperty.call(counters, 'camera_images_taken') ? fmt(counters.camera_images_taken) : null;
 
+  const Wrapper = embedded ? 'section' : 'main';
   return (
-    <main className={styles.page}>
-      <header className={styles.hero}>
+    <Wrapper className={styles.page}>
+      {!embedded && <header className={styles.hero}>
         <span className={styles.eyebrow}>{all ? 'Every event together' : scope.tags.length > 1 ? 'Hashtag filter' : 'Hashtag report'}</span>
         <h1 className={styles.title}>{label}</h1>
         <p className={styles.lead}>
           What Fanmass and Camera measured {all ? 'across every event' : 'for this hashtag'} ({scopeText}), and what Messmass calculates from it. Nothing in this
           report is typed in by hand.
         </p>
-      </header>
+      </header>}
 
       {coverage.events === 0 && drive.photos === 0 && photos.tagged === 0 ? (
         <div className={styles.empty}>
@@ -179,6 +181,6 @@ export default function HashtagReportView({ report }: { report: HashtagReport })
           </div>
         </section>
       )}
-    </main>
+    </Wrapper>
   );
 }

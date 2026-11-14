@@ -7,7 +7,7 @@ import { hasPageAccess, isPageProtected } from '@/lib/pageAccess';
 import { getScopedInteractiveReportData, isSzrtScopeIdentifier } from '@/lib/interactiveReportAggregator';
 import { buildHashtagReport } from '@/lib/hashtagReport';
 import type { ReportDb } from '@/lib/hashtagReport/measured';
-import HashtagReportView from '@/components/hashtagReport/HashtagReportView';
+import FanmassDashboardPage from '@/components/hashtagReport/FanmassDashboardPage';
 import InteractiveReportDashboard from '@/components/theme/interactive-report/InteractiveReportDashboard';
 import ServerPageGate from '@/components/ServerPageGate';
 import styles from '@/components/theme/interactive-report/interactive-report.module.css';
@@ -54,6 +54,10 @@ export default async function HashtagInteractiveReportPage({ params, searchParam
   }
 
   const client = await clientPromise;
-  const report = await buildHashtagReport(client.db(config.dbName) as unknown as ReportDb, hashtag);
-  return <HashtagReportView report={report} />;
+  // The Fanmass report in the interactive dashboard: the scope's header and published vision, the measured figures
+  const [report, base] = await Promise.all([
+    buildHashtagReport(client.db(config.dbName) as unknown as ReportDb, hashtag),
+    getScopedInteractiveReportData({ type: 'hashtag', identifier: hashtag }).catch(() => null),
+  ]);
+  return <FanmassDashboardPage report={report} base={base} />;
 }

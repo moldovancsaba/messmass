@@ -116,7 +116,7 @@ function parseCellCount(cell: string | undefined): number | null {
 }
 
 /** Sport label from event/partner text. Anything that is not recognised is 'Other'. */
-function detectSport(text: string): MatchItem['sport'] {
+export function detectSport(text: string): MatchItem['sport'] {
   const combined = text.toLowerCase();
   if (
     combined.includes('jégkorong') ||
@@ -163,7 +163,7 @@ function detectSport(text: string): MatchItem['sport'] {
  * Demographics from the vision model's measured gender and age counts.
  * Returns null when no people were measured.
  */
-function buildDemographicsFromVision(vision: VisionProgressData | null): DemographicsData | null {
+export function buildDemographicsFromVision(vision: VisionProgressData | null): DemographicsData | null {
   if (!vision) return null;
   const { genders, ageGroups, totalPeople } = vision.aggregates;
 
