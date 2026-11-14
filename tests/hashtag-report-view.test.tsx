@@ -11,7 +11,7 @@ import type { HashtagReport, MeasuredLayer } from '@/lib/hashtagReport/types';
 
 const report = (measured: MeasuredLayer): HashtagReport => ({
   success: true,
-  scope: { type: 'hashtag', id: 'derby' },
+  scope: { type: 'hashtag', id: 'derby', tags: ['derby'] },
   generatedAt: '2026-11-14T00:00:00.000Z',
   measured,
   calculated: calculate(measured),

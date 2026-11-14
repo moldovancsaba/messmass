@@ -4,9 +4,9 @@
 //     allowlisted machine counters, ignores every other stat even when the database hands it over, and every
 //     calculation shows its two counts or gives nothing.
 
-import { buildAllEventsReport, buildHashtagReport } from '@/lib/hashtagReport';
+import { buildAllEventsReport, buildFilterReport, buildHashtagReport, filterSlugHashtags } from '@/lib/hashtagReport';
 import { calculate, share } from '@/lib/hashtagReport/calculated';
-import { CAMERA_TOTAL_COUNTERS, MACHINE_EVENT_PROJECTION, hashtagFilter, sumDrivePhotos, type ReportDb } from '@/lib/hashtagReport/measured';
+import { CAMERA_TOTAL_COUNTERS, MACHINE_EVENT_PROJECTION, eventsFilter, hashtagFilter, sumDrivePhotos, type ReportDb } from '@/lib/hashtagReport/measured';
 import { mergePhotoSummaries } from '@/lib/hashtagReport/mergeSummaries';
 
 const rollup = (over: Record<string, unknown> = {}) => ({
@@ -115,7 +115,7 @@ describe('what the builder may read', () => {
 
   it('builds the same report for any hashtag, and says what it covers', async () => {
     const report = await buildHashtagReport(db, '#Derby2027');
-    expect(report.scope).toEqual({ type: 'hashtag', id: 'Derby2027' });
+    expect(report.scope).toEqual({ type: 'hashtag', id: 'Derby2027', tags: ['Derby2027'] });
     expect(report.coverage).toEqual({ events: 2, eventsWithCounters: 1, eventsWithPhotoResults: 1, eventsWithDrivePhotos: 1 });
     expect(report.measured.events.map((event) => event.name)).toEqual(['Cup', 'Derby']);
     expect(report.calculated.analysedShare).toMatchObject({ value: 10, numerator: 10, denominator: 100 });
@@ -152,13 +152,26 @@ describe('what the builder may read', () => {
   it('finds the events of a hashtag written with or without #, in any case, inside one organization when asked', () => {
     const filter = hashtagFilter('#Derby', 'org_1') as { $or: Array<Record<string, unknown>>; organizationId: string };
     expect(filter.organizationId).toBe('org_1');
-    expect(filter.$or[0]).toEqual({ hashtags: 'Derby' });
-    expect(filter.$or[1]).toEqual({ hashtags: '#Derby' });
+    expect(filter.$or[0]).toEqual({ hashtags: 'derby' });
+    expect(filter.$or[1]).toEqual({ hashtags: '#derby' });
     expect((filter.$or[2].hashtags as { $regex: RegExp }).$regex.test('#derby')).toBe(true);
     // ...and as one comma-separated text, like the classic hashtag report
     const listed = (filter.$or[3].hashtags as { $regex: RegExp }).$regex;
     expect(listed.test('cup, Derby ,final')).toBe(true);
     expect(listed.test('derbyshire')).toBe(false);
+    // ...and in any category list, like the admin hashtag filter (lowercased on both sides)
+    expect(JSON.stringify(filter.$or[4])).toContain('categorizedHashtags');
+    expect(JSON.stringify(filter.$or[4])).toContain('"derby"');
+  });
+
+  it('matches a category:tag query in that category only, and several hashtags all together', () => {
+    const filter = hashtagFilter('campaign:TippmixReport2026') as { $or: Array<Record<string, { $regex: RegExp }>> };
+    expect(filter.$or).toHaveLength(1);
+    expect(filter.$or[0]['categorizedHashtags.campaign'].$regex.test('tippmixreport2026')).toBe(true);
+    const both = eventsFilter(['derby', 'cup'], 'org_1') as { $and: unknown[]; organizationId: string };
+    expect(both.$and).toHaveLength(2);
+    expect(both.organizationId).toBe('org_1');
+    expect(eventsFilter(null)).toEqual({});
   });
 });
 
@@ -216,12 +229,44 @@ describe('every event together', () => {
       }),
     } as unknown as ReportDb;
     const report = await buildAllEventsReport(db);
-    expect(report.scope).toEqual({ type: 'all', id: 'all' });
+    expect(report.scope).toEqual({ type: 'all', id: 'all', tags: [] });
     expect(calls.find((c) => c.name === 'projects')?.filter).toEqual({});
     expect(calls.find((c) => c.name === 'fanmass_event_drive_photos')?.filter).toEqual({});
     expect(report.coverage.events).toBe(2);
     expect(report.measured.counters).toEqual({ camera_images_taken: 5 });
     expect(report.measured.drive).toMatchObject({ photos: 2, placed: 1 });
     expect(JSON.stringify(report)).not.toContain('999');
+  });
+});
+
+describe('several hashtags together (the hashtag filter)', () => {
+  const calls: Array<{ name: string; filter: Record<string, any> }> = [];
+  const db = {
+    collection: (name: string) => ({
+      countDocuments: async (filter: Record<string, any>) => { calls.push({ name: `${name}#count`, filter }); return 3; },
+      find: (filter: Record<string, any>) => ({
+        toArray: async () => {
+          calls.push({ name, filter });
+          if (name === 'filter_slugs') return filter.slug === 'saved' ? [{ hashtags: ['#TippmixReport2026', 'campaign:happy'] }] : [];
+          return [];
+        },
+      }),
+    }),
+  } as unknown as ReportDb;
+
+  beforeEach(() => { calls.length = 0; });
+
+  it('takes events carrying all of them and photos tagged with all of them', async () => {
+    const report = await buildFilterReport(db, ['#TippmixReport2026', 'campaign:happy', 'happy'], 'saved');
+    expect(report.scope).toEqual({ type: 'filter', id: 'saved', tags: ['TippmixReport2026', 'campaign:happy', 'happy'] });
+    expect(calls.find((c) => c.name === 'projects')?.filter.$and).toHaveLength(3);
+    // Photo hashtags are in photo form: lowercase, a category prefix dropped
+    expect(calls.find((c) => c.name === 'fanmass_event_drive_photos')?.filter).toEqual({ hashtags: { $all: ['tippmixreport2026', 'happy', 'happy'] } });
+    expect(report.measured.photos.tagged).toBe(3);
+  });
+
+  it('reads a saved filter by its slug, or the slug itself as hashtags', async () => {
+    expect(await filterSlugHashtags(db, 'saved')).toEqual(['TippmixReport2026', 'campaign:happy']);
+    expect(await filterSlugHashtags(db, '#derby, cup')).toEqual(['derby', 'cup']);
   });
 });

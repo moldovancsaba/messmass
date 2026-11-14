@@ -113,26 +113,26 @@ it drifts. Do not edit between the markers.
 | Category | Count | Location |
 |----------|-------|----------|
 | **UI Components** | 129 | `components/` |
-| **Utility Modules** | 251 | `lib/` |
+| **Utility Modules** | 252 | `lib/` |
 | **Hooks** | 13 | `hooks/` |
 | **Design Tokens** | 410 | `app/styles/theme.css` |
 | **Utility CSS classes** | 192 | `app/styles/utilities.css` |
 | **App routes (pages)** | 86 | `app/**/page.tsx` |
-| **API routes** | 245 | `app/api/**/route.ts` |
+| **API routes** | 246 | `app/api/**/route.ts` |
 
 The modules with the most importers — the ones whose change radius is
 largest, and the ones to read first:
 
 | Module | Importers | Lines |
 |--------|-----------|-------|
-| `lib/config.ts` | 128 | 207 |
-| `lib/mongodb.ts` | 111 | 112 |
+| `lib/config.ts` | 129 | 207 |
+| `lib/mongodb.ts` | 112 | 112 |
 | `lib/auth.ts` | 98 | 118 |
 | `lib/logger.ts` | 96 | 392 |
 | `lib/apiGuards.ts` | 87 | 390 |
 | `components/ColoredCard.tsx` | 44 | 52 |
+| `lib/fanmassIntegration.ts` | 43 | 485 |
 | `lib/apiClient.ts` | 42 | 258 |
-| `lib/fanmassIntegration.ts` | 42 | 485 |
 | `lib/db.ts` | 42 | 17 |
 | `components/MaterialIcon.tsx` | 34 | 119 |
 | `components/UnifiedAdminHeroWithSearch.tsx` | 27 | 192 |
@@ -1088,7 +1088,7 @@ shows up here on the next regeneration, which is the point.
 | `/terms` | `app/terms/page.tsx` |
 | `/test-csrf` | `app/test-csrf/page.tsx` |
 
-### API routes (245)
+### API routes (246)
 
 `auth` is the guard symbol the route actually calls. A blank cell
 means the route calls none — public by construction, or a gap.
@@ -1427,6 +1427,7 @@ means the route calls none — public by construction, or a gap.
 | `/api/integrations/fanmass/drive-folders` | GET | `requireFanmassIntegrationAuth` |
 | `/api/integrations/fanmass/drive-folders/pending-sync` | GET | `requireFanmassIntegrationAuth` |
 | `/api/integrations/fanmass/drive-photos` | POST | `requireFanmassIntegrationAuth` |
+| `/api/integrations/fanmass/event-hashtags` | POST | `requireFanmassIntegrationAuth` |
 | `/api/integrations/fanmass/events` | POST | `requireFanmassIntegrationAuth` |
 | `/api/integrations/fanmass/events/[eventId]/analysis-summary` | POST | `requireFanmassIntegrationAuth` |
 | `/api/integrations/fanmass/events/[eventId]/context` | GET | `requireFanmassIntegrationAuth` |
@@ -1887,6 +1888,16 @@ Fanmass can also create the event of a sports match it holds photos of (`POST /a
 `lib/fanmassMatchEvents.ts`): the same event Quick Add's match builder makes (`lib/matchEvent.ts` for the name and hashtags,
 `lib/createEvent.ts` for everything creation does, shared with `POST /api/projects`) and its Camera mirror. Both clubs must
 already be Messmass partners, matched by name with case and accents ignored; an unknown or ambiguous club is refused.
+Fanmass adds campaign hashtags to the events of a campaign (`POST /api/integrations/fanmass/event-hashtags`,
+`lib/fanmassEventHashtags.ts`, the SZRT games get `#tippmixreport2026`): additive only, into the plain list, and only when
+no list of the event carries the hashtag yet.
+
+An event carries a hashtag when its plain list or any category list holds it (`hashtagFilter`, the same match as the admin
+hashtag filter; `category:tag` matches that category only). Several hashtags together (`buildFilterReport`) take the events
+carrying all of them and the photos tagged with all of them. The admin hashtag filter (`/admin/filter`) lists the photo
+hashtags next to the event hashtags (`GET /api/hashtags?photos=1`: events and photos per hashtag) and shows the unified
+report on Apply (`GET /api/hashtags/filter?report=1`); a filter's report (`/report/filter/[slug]`, and `/filter/[slug]`
+redirects there) is the unified one, the previous one at `?report=classic` or a saved `?variant=`.
 
 Camera photo results carry hashtags the same way (`fanmass_camera_photo_analyses.hashtags`): Fanmass sends the brand and club
 names proven by text read from the picture and the emotions, genders and age groups measured in it, and Messmass adds the
