@@ -1902,9 +1902,10 @@ gated like the other hashtag reports (public unless the hashtag has a page passw
 builder ever fetches or uses a stat outside the allowlist.
 
 `/report/hashtag/[hashtag]` (served by `app/interactive-report/hashtag/[hashtag]/page.tsx`) shows this report for every hashtag
-(`components/hashtagReport/HashtagReportView.tsx`), behind the shared page gate. The SZRT campaign identifiers keep the previous
-interactive report until its events carry the hashtag and its photos are linked to them; `?report=unified` previews the
-unified report for them.
+(`components/hashtagReport/HashtagReportView.tsx`), behind the shared page gate, the SZRT campaign included (owner
+2026-11-14); the previous SZRT interactive report, partly typed in by hand, stays reachable at `?report=classic`. The
+hashtag's events are the events that carry it plus the events Fanmass placed photos of the hashtag in (`joinedBy`), so the
+event list follows the placements without anyone tagging events by hand.
 
 ### Error Handling
 

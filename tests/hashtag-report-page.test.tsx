@@ -1,6 +1,6 @@
 // tests/hashtag-report-page.test.tsx
 // WHAT: /report/hashtag/[hashtag] shows the unified report for every hashtag, behind the shared page gate.
-// WHY: The SZRT campaign keeps its previous report only until its events carry the hashtag; `?report=unified` previews it.
+// WHY: The SZRT campaign gets the unified report too (owner 2026-11-14); its previous report stays at `?report=classic`.
 
 const getAdminUser = jest.fn();
 const isPageProtected = jest.fn();
@@ -65,11 +65,11 @@ describe('the hashtag report page', () => {
     expect((await open('derby')).type).toBe(HashtagReportView);
   });
 
-  it('keeps the SZRT campaign on its previous report until it is previewed with ?report=unified', async () => {
-    const previous: any = await open('tippmixreport2026');
+  it('shows the SZRT campaign the unified report, and its previous report only at ?report=classic', async () => {
+    expect((await open('tippmixreport2026')).type).toBe(HashtagReportView);
+    expect(getScoped).not.toHaveBeenCalled();
+    const previous: any = await open('tippmixreport2026', 'classic');
     expect(previous.type).toBe('main');
     expect(previous.props.children.type).toBe(InteractiveReportDashboard);
-    expect(buildHashtagReport).not.toHaveBeenCalled();
-    expect((await open('tippmixreport2026', 'unified')).type).toBe(HashtagReportView);
   });
 });

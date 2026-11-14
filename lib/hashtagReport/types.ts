@@ -42,6 +42,8 @@ export interface HashtagEvent {
   hasPhotoResults: boolean;
   /** Drive photos Fanmass placed in the event. */
   drivePhotos: number;
+  /** Why the event is in the report: it carries the hashtag, or Fanmass placed photos of the hashtag in it. */
+  joinedBy: 'hashtag' | 'photos';
 }
 
 /** A brand or club read from the pictures, with the number of photos it was read in. */

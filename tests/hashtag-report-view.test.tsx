@@ -23,7 +23,7 @@ const report = (measured: MeasuredLayer): HashtagReport => ({
   },
 });
 
-const event = (over = {}) => ({ id: 'e1', name: 'Derby', date: '2026-02-01', hasCounters: true, hasPhotoResults: true, drivePhotos: 0, ...over });
+const event = (over = {}) => ({ id: 'e1', name: 'Derby', date: '2026-02-01', hasCounters: true, hasPhotoResults: true, drivePhotos: 0, joinedBy: 'hashtag' as const, ...over });
 const noDrive = sumDrivePhotos([]);
 const rollup = { photoResultsReceived: 10, optInPhotos: 10, peopleCounts: { measured: 20 }, genderProjection: { male: 12, female: 8 }, ageProjection: { genZ: 15 }, emotionProjection: { happy: 14 }, smilingCount: 14, demographicPeopleMeasured: 20, brandMentions: [{ name: 'Nike', count: 4 }], clubMentions: [{ name: 'DVTK', count: 3 }] };
 

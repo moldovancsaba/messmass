@@ -34,9 +34,9 @@ export default async function HashtagInteractiveReportPage({ params, searchParam
   const hashtag = decodeURIComponent((await params).hashtag || '').trim().replace(/^#/, '');
   if (!hashtag) notFound();
 
-  // The SZRT campaign keeps its previous report until its events carry the hashtag and its photos are linked to
-  // them; `?report=unified` shows what the unified report makes of it today. Every other hashtag gets the unified report.
-  if (isSzrtScopeIdentifier(hashtag) && (await searchParams).report !== 'unified') {
+  // Every hashtag, the SZRT campaign included, gets the unified report: Fanmass data and Messmass calculations only
+  // (owner 2026-11-14). The previous SZRT report, partly typed in by hand, stays reachable at `?report=classic`.
+  if (isSzrtScopeIdentifier(hashtag) && (await searchParams).report === 'classic') {
     const data = await getScopedInteractiveReportData({ type: 'hashtag', identifier: hashtag });
     if (!data) notFound();
     return (
