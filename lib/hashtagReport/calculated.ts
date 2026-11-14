@@ -8,12 +8,12 @@ import { consistentRate } from '@/lib/consistentRate';
 import type { CalculatedLayer, Calculation, MeasuredLayer } from './types';
 
 /** The share of two counts as a percentage with one decimal; nothing when either count is unknown or they conflict. */
-export function share(numerator: number | null | undefined, denominator: number | null | undefined, basis: string): Calculation {
+export function share(numerator: number | null | undefined, denominator: number | null | undefined, basis: string, part: string): Calculation {
   if (numerator === null || numerator === undefined || denominator === null || denominator === undefined) {
-    return { value: null, numerator: numerator ?? null, denominator: denominator ?? null, basis };
+    return { value: null, numerator: numerator ?? null, denominator: denominator ?? null, basis, part };
   }
   const rate = consistentRate(numerator, denominator);
-  return { value: rate === null ? null : Math.round(rate * 10) / 10, numerator, denominator, basis };
+  return { value: rate === null ? null : Math.round(rate * 10) / 10, numerator, denominator, basis, part };
 }
 
 /** A counter that no event reported is unknown (null), not zero. */
@@ -31,12 +31,12 @@ export function calculate(layer: MeasuredLayer): CalculatedLayer {
   const female = photos.genders.female ?? 0;
 
   return {
-    analysedShare: share(photos.analysed > 0 ? photos.analysed : null, taken, 'photos taken'),
-    approvalRate: share(approved, decided, 'photos decided in vetting'),
-    optInShare: share(photos.withOptIn, photos.analysed > 0 ? photos.analysed : null, 'photos analysed'),
-    consentShare: share(counter(layer, 'camera_consents_accepted'), taken, 'photos taken'),
-    maleShare: share(male + female > 0 ? male : null, male + female > 0 ? male + female : null, 'people with a measured gender'),
-    smilingShare: share(photos.demographicPeople > 0 ? photos.smiling : null, photos.demographicPeople > 0 ? photos.demographicPeople : null, 'people with an observation'),
-    journeyCompletionRate: share(counter(layer, 'camera_journeys_completed'), counter(layer, 'camera_journey_opens'), 'journeys opened'),
+    analysedShare: share(photos.analysed > 0 ? photos.analysed : null, taken, 'photos taken', 'photos analysed'),
+    approvalRate: share(approved, decided, 'photos decided in vetting', 'photos approved'),
+    optInShare: share(photos.withOptIn, photos.analysed > 0 ? photos.analysed : null, 'photos analysed', 'photos with a recorded opt-in'),
+    consentShare: share(counter(layer, 'camera_consents_accepted'), taken, 'photos taken', 'photos with an accepted consent'),
+    maleShare: share(male + female > 0 ? male : null, male + female > 0 ? male + female : null, 'people with a measured gender', 'men'),
+    smilingShare: share(photos.demographicPeople > 0 ? photos.smiling : null, photos.demographicPeople > 0 ? photos.demographicPeople : null, 'people with an observation', 'people smiling'),
+    journeyCompletionRate: share(counter(layer, 'camera_journeys_completed'), counter(layer, 'camera_journey_opens'), 'journeys opened', 'journeys completed'),
   };
 }

@@ -32,7 +32,12 @@ export const MACHINE_EVENT_PROJECTION: Record<string, 1> = Object.fromEntries([
 ].map((field) => [field, 1]));
 
 type Cursor = { toArray: () => Promise<Array<Record<string, any>>> };
-export type ReportDb = { collection: (name: string) => { find: (filter: Record<string, unknown>, options?: Record<string, unknown>) => Cursor } };
+export type ReportDb = {
+  collection: (name: string) => {
+    find: (filter: Record<string, unknown>, options?: Record<string, unknown>) => Cursor;
+    countDocuments: (filter: Record<string, unknown>) => Promise<number>;
+  };
+};
 
 const escapeRegex = (text: string) => text.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 
@@ -64,6 +69,16 @@ export async function loadMeasuredLayer(db: ReportDb, hashtag: string, organizat
     : [];
   const rollupByEvent = new Map(rollups.map((row) => [String(row.eventId), (row.summary ?? {}) as Record<string, unknown>]));
 
+  // The opt-in is counted from the stored per-photo results themselves: a result carries it or it does not
+  const withOptIn = projects.length
+    ? await db.collection('fanmass_camera_photo_analyses').countDocuments({
+        eventId: { $in: projects.map((p) => String(p._id)) },
+        tombstone: { $ne: true },
+        status: 'completed',
+        'optIn.received': true,
+      })
+    : 0;
+
   const counters: MeasuredCounters = {};
   const events: HashtagEvent[] = projects
     .map((project) => {
@@ -86,9 +101,7 @@ export async function loadMeasuredLayer(db: ReportDb, hashtag: string, organizat
     })
     .sort((a, b) => String(a.date ?? '').localeCompare(String(b.date ?? '')) || a.name.localeCompare(b.name));
 
-  return {
-    events,
-    counters,
-    photos: mergePhotoSummaries(projects.map((p) => rollupByEvent.get(String(p._id))).filter((r): r is Record<string, unknown> => Boolean(r))),
-  };
+  const photos = mergePhotoSummaries(projects.map((p) => rollupByEvent.get(String(p._id))).filter((r): r is Record<string, unknown> => Boolean(r)));
+  photos.withOptIn = withOptIn;
+  return { events, counters, photos };
 }

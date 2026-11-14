@@ -7,14 +7,11 @@
 //     calculations over the measured layer, and nothing typed by a person (clicker stats, sheet imports, typed
 //     tables) can enter either of them.
 
-/** A named count, for brands and clubs read from the pictures. */
-export interface NamedCount { name: string; count: number }
-
 /** The sums of the per-photo Fanmass results over all events of the hashtag. Every figure is a sum over photos. */
 export interface MeasuredPhotos {
   /** Photo results stored by Messmass (one per analysed photo). */
   analysed: number;
-  /** Analysed photos whose result carries a recorded opt-in; null while some result predates the opt-in record. */
+  /** Analysed photos whose stored result carries a recorded opt-in (counted from the per-photo results). */
   withOptIn: number | null;
   humanConfirmed: number;
   humanCorrected: number;
@@ -27,8 +24,6 @@ export interface MeasuredPhotos {
   smiling: number;
   /** People with a gender, age or emotion observation: the denominator of the demographic shares. */
   demographicPeople: number;
-  brands: NamedCount[];
-  clubs: NamedCount[];
   moderation: { reviewed: number; flagged: number };
 }
 
@@ -59,6 +54,8 @@ export interface Calculation {
   denominator: number | null;
   /** What the denominator counts, in words a reader can check ("photos analysed"). */
   basis: string;
+  /** What the numerator counts ("photos with a recorded opt-in"). */
+  part: string;
 }
 
 export interface CalculatedLayer {

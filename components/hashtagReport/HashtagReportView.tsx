@@ -5,7 +5,7 @@
 //     measured reads "Not measured", never a zero or an n/a that looks like a value. The coverage block says how many
 //     of the hashtag's events the measurement reaches.
 
-import type { Calculation, HashtagReport, NamedCount } from '@/lib/hashtagReport/types';
+import type { Calculation, HashtagReport } from '@/lib/hashtagReport/types';
 import styles from './hashtag-report.module.css';
 
 const fmt = (n: number) => n.toLocaleString('en-US');
@@ -19,7 +19,9 @@ const sentence = (calc: Calculation, tail: string): string | undefined =>
 
 /** What the calculation divided by what, or why it could not be calculated. */
 function detail(calc: Calculation): string {
-  if (calc.numerator === null || calc.denominator === null) return `No count of ${calc.basis} was measured`;
+  if (calc.numerator === null && calc.denominator === null) return 'Not enough was measured to calculate this';
+  if (calc.numerator === null) return `No count of ${calc.part} was measured`;
+  if (calc.denominator === null) return `No count of ${calc.basis} was measured`;
   const counts = `${fmt(calc.numerator)} of ${fmt(calc.denominator)} ${calc.basis}`;
   return calc.value === null ? `${counts}; no share is shown because the counts do not agree` : counts;
 }
@@ -53,12 +55,6 @@ function Bars({ title, counts, note }: { title: string; counts: Record<string, n
   );
 }
 
-function Mentions({ title, list, note }: { title: string; list: NamedCount[]; note: string }) {
-  if (list.length === 0) return null;
-  const counts = Object.fromEntries(list.slice(0, 12).map((row) => [row.name, row.count]));
-  return <Bars title={title} counts={counts} note={note} />;
-}
-
 export default function HashtagReportView({ report }: { report: HashtagReport }) {
   const { measured, calculated, coverage, scope } = report;
   const { photos, counters } = measured;
@@ -71,8 +67,8 @@ export default function HashtagReportView({ report }: { report: HashtagReport })
         <span className={styles.eyebrow}>Hashtag report</span>
         <h1 className={styles.title}>#{scope.id}</h1>
         <p className={styles.lead}>
-          What Fanmass and Camera measured across the {fmt(coverage.events)} {coverage.events === 1 ? 'event' : 'events'} that carry this
-          hashtag, and what Messmass calculates from it. Nothing in this report is typed in by hand.
+          What Fanmass and Camera measured across the {fmt(coverage.events)} {coverage.events === 1 ? 'event that carries' : 'events that carry'}{' '}
+          this hashtag, and what Messmass calculates from it. Nothing in this report is typed in by hand.
         </p>
       </header>
 
@@ -100,11 +96,6 @@ export default function HashtagReportView({ report }: { report: HashtagReport })
             <Bars title="Gender" counts={photos.genders} note={sentence(calculated.maleShare, 'are men')} />
             <Bars title="Age groups" counts={photos.ageGroups} note="People with a measured age" />
             <Bars title="Emotions" counts={photos.emotions} note={sentence(calculated.smilingShare, 'are smiling')} />
-          </div>
-
-          <div className={styles.columns}>
-            <Mentions title="Brands" list={photos.brands} note="Photos in which the brand was identified" />
-            <Mentions title="Clubs" list={photos.clubs} note="Photos in which the club was identified" />
           </div>
         </>
       )}
