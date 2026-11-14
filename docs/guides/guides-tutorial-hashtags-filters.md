@@ -1,6 +1,6 @@
 # Tutorial: Hashtags, categories & filters
 Status: Active
-Last Updated: 2026-07-20T00:00:00.000Z
+Last Updated: 2026-11-14T20:00:00.000Z
 Canonical: Yes
 Owner: Documentation
 
@@ -19,9 +19,14 @@ Three admin surfaces work together:
 
 Why categories matter: a **categorized** hashtag belongs to a named group (e.g. category `city` → `budapest`, `vienna`, `prague`) and inherits that category's colour; a **general** (uncategorized) hashtag stands alone with only its own colour. Categories keep large tag sets organised and colour-coded consistently, so `budapest` and `vienna` always read as "cities" at a glance.
 
-Two report destinations flow out of this:
-- **Single-hashtag report** at `/hashtag/{hashtag}` — everything carrying one tag.
-- **Multi-hashtag filter report** at `/filter/{slug}` — everything carrying *all* of several tags, with a shareable, password-protectable slug.
+**Two kinds of hashtags, two kinds of reports.**
+- Hashtags are either **typed by people** (on events and partners) or **written by Fanmass**, the local AI, from what it finds in the photos: brands and clubs read from the picture, people (`male`, `female`, `children`, `adults`…), emotions (`happy`, `neutral`…), sport, event. Every event keeps the Fanmass hashtags of its photos next to its typed ones (they are never mixed into the typed list; Fanmass refreshes them every 20 minutes).
+- The two kinds **work together**: a filter finds an event by any mix of typed and Fanmass hashtags. A hashtag is one name in any spelling: case, `#` and underscores do not count (`otp_bank_pick_szeged` = `otpbankpickszeged`).
+- The reports **never mix**: the **Clicker report** shows only what people entered by hand (clicker, forms); the **Fanmass report** shows only what the local AI measured and what Messmass calculates from it.
+
+Report destinations:
+- **Clicker report:** `/hashtag/{hashtag}` (one tag) and `/filter/{slug}` (several tags) — the hand-entered stats, shareable and password-protectable.
+- **Fanmass report:** `/report/hashtag/{hashtag}` (one tag) and `/report/filter/{slug}` (several tags); `/report/global` holds every event together (admin or page password).
 
 ## Before you start
 - Sign in as an admin. The Hashtag Manager and these surfaces are **admin-only** — non-admins see "Access Denied".
@@ -43,16 +48,17 @@ Edit or delete a category from its row/card (delete asks for confirmation). A ca
 
 ### 3. Build a multi-hashtag filter report (`/admin/filter`)
 Open **🔍 Hashtag Filter** ("Filter projects by multiple hashtags and generate shareable URLs"):
-1. **Select tags.** Search the hashtag list and tick the hashtags you want. Use **Load 20 more** to page through. Your selection is reflected in the page URL.
-2. **Apply.** Click **🔍 Apply Filter (N tags)**. The page aggregates every project matching **all** selected tags and shows combined stats — Images, Fans, Gender, Age Groups, Merchandise, and performance metrics — plus the matched project count and date range.
+1. **Select tags.** Search the hashtag list and tick the hashtags you want. The list holds typed and Fanmass hashtags; each shows how many events carry it and, with 📷, how many photos Fanmass tagged with it. The preview says how many events and photos match. Use **Load 20 more** to page through. Your selection is reflected in the page URL.
+2. **Apply.** Click **🔍 Apply Filter (N tags)**. Two separate sections appear: **🖱️ Clicker report: entered by hand** (Images, Fans, Gender, Age Groups, Merchandise and performance metrics summed over every event matching **all** selected tags, with the matched count and date range) and **🤖 Fanmass report: measured by the local AI** (photos, analysed share, opt-in, gender, age groups, emotions, brands and clubs read from the pictures, photos per event). A typed hashtag brings all the photos of its events into the Fanmass report; a Fanmass hashtag (a brand, an emotion) only the photos it was found in.
+   - **🤖 Fanmass report** and **🖱️ Clicker report** open each one on its own page.
 3. **Choose a style.** Pick a report style from the selector (or leave "— Use Default/Global —"); the choice is saved for this tag set (a small "✓ saved" indicator confirms it).
 4. **Share.** Click **🔗 Share Filter** to generate a shareable slug. The report is served at `/filter/{slug}` and can be **password-protected**.
 5. **Export.** **📄 Export CSV** downloads the aggregated numbers as a spreadsheet.
 
 Below the stats, a **📊 Matching Projects** list links each contributing event to its own report.
 
-### 4. Open a single-hashtag report (`/hashtag/{hashtag}`)
-For a report on just one tag, use the public route `/hashtag/{hashtag}` (e.g. `/hashtag/budapest`). Like filter reports, this page is password-gated.
+### 4. Open a single-hashtag report
+For one tag: the clicker report at `/hashtag/{hashtag}` (e.g. `/hashtag/budapest`), the Fanmass report at `/report/hashtag/{hashtag}`. Both are gated by the hashtag's page password when it has one. The SZRT campaign (`#tippmixreport2026`) opens its Fanmass report; its earlier mixed report stays at `?report=classic`.
 
 ### 5. A worked example
 Say you tag events with a `city` category (`budapest`, `vienna`) and a general tag `vip`. To see how VIP activations performed across just Budapest:
@@ -67,7 +73,7 @@ Say you tag events with a `city` category (`budapest`, `vienna`) and a general t
 
 **Colour resolution.** The effective colour of a hashtag is its individual colour if set, otherwise its category colour, otherwise a default. Set category colours first for consistency, and only override individual hashtags when you need an exception.
 
-**Filter logic is AND.** Selecting three tags returns projects that carry **all three**, then sums their stats. Add tags to narrow; remove tags to broaden.
+**Filter logic is AND.** Selecting three tags returns projects that carry **all three** (typed or Fanmass), then sums their stats. Add tags to narrow; remove tags to broaden.
 
 **Styles are per-tag-set.** The style you pick on the filter page is remembered against that exact combination of tags, so re-opening the same filter restores your chosen look. Report styles themselves are covered in [Report themes](guides-tutorial-report-themes.md).
 
