@@ -3970,8 +3970,10 @@ The earlier coverage/freshness/fill-rate and event-summary design is retired.
 The current contract is photo-first: Messmass owns partners, events and report
 aggregation; Camera owns capture, identity, consent, retention and vetting; Fanmass
 reads eligible Camera Atlas photos, analyzes one photo at a time, saves photo-level
-findings and boxes, and sends one result per photo. It does not create Messmass
-events or event reports.
+findings and boxes, and sends one result per photo. It creates no event reports. The
+only Messmass events it creates are sports matches it holds SZRT drive photos of, made
+exactly like Quick Add's match builder (`POST /api/integrations/fanmass/match-events`);
+it may also add campaign hashtags to events (additive, `.../event-hashtags`).
 
 ### Photo-level image analysis and Messmass reports
 
@@ -3989,7 +3991,8 @@ The active integration is photo-first and ID-bound:
 - Messmass validates the exact Messmass event, Camera event, Camera partner and
   photo IDs; stores each result in `fanmass_camera_photo_analyses`; and rebuilds
   its event summary and report-variable projections from the active photo rows.
-  Fanmass does not create Messmass events or event reports.
+  The Camera photo lane creates no Messmass events or event reports (the SZRT drive lane
+  may create a match event, see above).
 
 The result contract is `fanmass.messmass.photo-analysis.v2`. It is identity-free
 and includes normalized photo findings, boxes, source revision, analysis
