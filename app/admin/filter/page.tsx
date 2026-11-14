@@ -9,7 +9,8 @@ import SharePopup from '@/components/SharePopup';
 import UnifiedAdminHeroWithSearch from '@/components/UnifiedAdminHeroWithSearch';
 import ColoredCard from '@/components/ColoredCard';
 import { apiPost } from '@/lib/apiClient';
-import { getStoredOrDerivedTotalFans } from '@/lib/totalFans';
+import HashtagReportView from '@/components/hashtagReport/HashtagReportView';
+import type { HashtagReport } from '@/lib/hashtagReport/types';
 
 interface ProjectStats {
   remoteImages: number;
@@ -78,6 +79,7 @@ interface HashtagItem {
   hashtag: string;
   slug: string;
   count: number;
+  photos?: number;
 }
 
 function HashtagFilterPageContent() {
@@ -94,6 +96,7 @@ function HashtagFilterPageContent() {
   const [isSearching, setIsSearching] = useState(false);
   const PAGE_SIZE = 20;
   const [project, setProject] = useState<Project | null>(null);
+  const [report, setReport] = useState<HashtagReport | null>(null);
   const [projects, setProjects] = useState<ProjectListItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [statsLoading, setStatsLoading] = useState(false);
@@ -124,16 +127,18 @@ function HashtagFilterPageContent() {
     setError(null);
     
     try {
-      const response = await fetch(`/api/hashtags/filter?tags=${encodeURIComponent(tagsParam)}`);
+      const response = await fetch(`/api/hashtags/filter?tags=${encodeURIComponent(tagsParam)}&report=1`);
       const data = await response.json();
 
       if (data.success) {
         setProject(data.project);
+        setReport(data.report ?? null);
         setProjects(data.projects || []);
         setHasAppliedFilter(true);
       } else {
         setError(data.error || 'Failed to load filtered statistics');
         setProject(null);
+        setReport(null);
         setProjects([]);
         setHasAppliedFilter(false);
       }
@@ -141,6 +146,7 @@ function HashtagFilterPageContent() {
       console.error('Failed to load filtered statistics:', error);
       setError('Failed to load filtered statistics');
       setProject(null);
+      setReport(null);
       setProjects([]);
       setHasAppliedFilter(false);
     } finally {
@@ -222,11 +228,12 @@ function HashtagFilterPageContent() {
       if (query.trim()) params.set('search', query.trim());
       params.set('offset', String(offset));
       params.set('limit', String(PAGE_SIZE));
+      params.set('photos', '1');
       const response = await fetch(`/api/hashtags?${params.toString()}`, { cache: 'no-store' });
       const data = await response.json();
       if (data.success) {
-        const items: Array<{ hashtag: string; count: number }> = data.hashtags || [];
-        const mapped: HashtagItem[] = items.map(i => ({ hashtag: i.hashtag, slug: i.hashtag, count: i.count }));
+        const items: Array<{ hashtag: string; count: number; photos?: number }> = data.hashtags || [];
+        const mapped: HashtagItem[] = items.map(i => ({ hashtag: i.hashtag, slug: i.hashtag, count: i.count, photos: i.photos }));
         setAvailableHashtags(prev => append ? [...prev, ...mapped] : mapped);
         setSearchOffset(data.pagination?.nextOffset ?? null);
         setTotalHashtags(data.pagination?.totalMatched ?? mapped.length);
@@ -257,6 +264,7 @@ function HashtagFilterPageContent() {
     // Clear previous results if selection changes
     if (hasAppliedFilter && selected.join(',') !== project?.hashtags?.join(',')) {
       setProject(null);
+      setReport(null);
       setProjects([]);
       setHasAppliedFilter(false);
     }
@@ -328,14 +336,6 @@ function HashtagFilterPageContent() {
     }
   };
 
-  // Calculate totals for display
-  const totalImages = project ? project.stats.remoteImages + project.stats.hostessImages + project.stats.selfies : 0;
-  const totalFans = project ? getStoredOrDerivedTotalFans(project.stats) : 0;
-  const totalGender = project ? project.stats.female + project.stats.male : 0;
-  const totalUnder40 = project ? project.stats.genAlpha + project.stats.genYZ : 0;
-  const totalOver40 = project ? project.stats.genX + project.stats.boomer : 0;
-  const totalAge = totalUnder40 + totalOver40;
-  const totalMerch = project ? project.stats.merched + project.stats.jersey + project.stats.scarf + project.stats.flags + project.stats.baseballCap + project.stats.other : 0;
 
   if (loading) {
     return (
@@ -602,162 +602,9 @@ function HashtagFilterPageContent() {
       {/* Results Section */}
       {hasAppliedFilter && project && !error && (
         <>
-          {/* Stats Layout */}
-          <div className="stats-layout-container">
-            {/* Row 1: Images, Fans, Gender */}
-            <div className="stats-row-3">
-              <div className="stats-section-new">
-                <h2 className="stats-section-title">📸 Images ({totalImages})</h2>
-                <div className="stats-cards-row">
-                  <div className={styles.statCard}>
-                    <div className={styles.statLabel}>Remote Images</div>
-                    <div className={styles.statValue}>{project.stats.remoteImages}</div>
-                  </div>
-                  <div className={styles.statCard}>
-                    <div className={styles.statLabel}>Hostess Images</div>
-                    <div className={styles.statValue}>{project.stats.hostessImages}</div>
-                  </div>
-                  <div className={styles.statCard}>
-                    <div className={styles.statLabel}>Selfies</div>
-                    <div className={styles.statValue}>{project.stats.selfies}</div>
-                  </div>
-                </div>
-              </div>
-
-              <div className="stats-section-new">
-                <h2 className="stats-section-title">👥 Fans ({totalFans})</h2>
-                <div className="stats-cards-row">
-                  <div className={styles.statCard}>
-                    <div className={styles.statLabel}>Indoor</div>
-                    <div className={styles.statValue}>{project.stats.indoor}</div>
-                  </div>
-                  <div className={styles.statCard}>
-                    <div className={styles.statLabel}>Outdoor</div>
-                    <div className={styles.statValue}>{project.stats.outdoor}</div>
-                  </div>
-                  <div className={styles.statCard}>
-                    <div className={styles.statLabel}>Stadium</div>
-                    <div className={styles.statValue}>{project.stats.stadium}</div>
-                  </div>
-                </div>
-              </div>
-
-              <div className="stats-section-new">
-                <h2 className="stats-section-title">⚧️ Gender ({totalGender})</h2>
-                <div className="stats-cards-row">
-                  <div className={styles.statCard}>
-                    <div className={styles.statLabel}>Female</div>
-                    <div className={styles.statValue}>{project.stats.female}</div>
-                  </div>
-                  <div className={styles.statCard}>
-                    <div className={styles.statLabel}>Male</div>
-                    <div className={styles.statValue}>{project.stats.male}</div>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* Row 2: Age Groups and Merchandise */}
-            <div className="stats-row-2-3-1">
-              <div className="stats-section-new">
-                <h2 className="stats-section-title">🎂 Age Groups ({totalAge})</h2>
-                <div className="stats-cards-row-age">
-                  <div className={styles.statCard}>
-                    <div className={styles.statLabel}>Gen Alpha</div>
-                    <div className={styles.statValue}>{project.stats.genAlpha}</div>
-                  </div>
-                  <div className={styles.statCard}>
-                    <div className={styles.statLabel}>Gen Y+Z</div>
-                    <div className={styles.statValue}>{project.stats.genYZ}</div>
-                  </div>
-                  <div className={styles.statCard}>
-                    <div className={styles.statLabel}>Total Under 40</div>
-                    <div className={styles.statValue}>{totalUnder40}</div>
-                  </div>
-                </div>
-                <div className="stats-cards-row-age">
-                  <div className={styles.statCard}>
-                    <div className={styles.statLabel}>Gen X</div>
-                    <div className={styles.statValue}>{project.stats.genX}</div>
-                  </div>
-                  <div className={styles.statCard}>
-                    <div className={styles.statLabel}>Boomer</div>
-                    <div className={styles.statValue}>{project.stats.boomer}</div>
-                  </div>
-                  <div className={styles.statCard}>
-                    <div className={styles.statLabel}>Total Over 40</div>
-                    <div className={styles.statValue}>{totalOver40}</div>
-                  </div>
-                </div>
-              </div>
-
-              <div className="stats-section-new">
-                <h2 className="stats-section-title">🛑️ Fans with Merchandise</h2>
-                <div className="stats-cards-row">
-                  <div className={styles.statCard}>
-                    <div className={styles.statLabel}>Merched Fans</div>
-                    <div className={styles.statValue}>{project.stats.merched}</div>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* Row 3: Merchandise Types */}
-            <div className="stats-row-full">
-              <div className="stats-section-new">
-                <h2 className="stats-section-title">👕 Merchandise Types ({totalMerch})</h2>
-                <div className="merch-cards-grid">
-                  <div className={styles.statCard}>
-                    <div className={styles.statLabel}>Jersey</div>
-                    <div className={styles.statValue}>{project.stats.jersey}</div>
-                  </div>
-                  <div className={styles.statCard}>
-                    <div className={styles.statLabel}>Scarf</div>
-                    <div className={styles.statValue}>{project.stats.scarf}</div>
-                  </div>
-                  <div className={styles.statCard}>
-                    <div className={styles.statLabel}>Flags</div>
-                    <div className={styles.statValue}>{project.stats.flags}</div>
-                  </div>
-                  <div className={styles.statCard}>
-                    <div className={styles.statLabel}>Baseball Cap</div>
-                    <div className={styles.statValue}>{project.stats.baseballCap}</div>
-                  </div>
-                  <div className={styles.statCard}>
-                    <div className={styles.statLabel}>Other</div>
-                    <div className={styles.statValue}>{project.stats.other}</div>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* Success Manager Section */}
-            {(project.stats.approvedImages || project.stats.eventAttendees || project.stats.visitWeb) && (
-              <div className={styles.section}>
-                <h2 className={styles.sectionTitle}>📈 Performance Metrics</h2>
-                <div className={styles.statsRow}>
-                  {project.stats.approvedImages !== undefined && (
-                    <div className={styles.statCard}>
-                      <div className={styles.statLabel}>Approved Images</div>
-                      <div className={styles.statValue}>{project.stats.approvedImages}</div>
-                    </div>
-                  )}
-                  {project.stats.eventAttendees !== undefined && (
-                    <div className={styles.statCard}>
-                      <div className={styles.statLabel}>Event Attendees</div>
-                      <div className={styles.statValue}>{project.stats.eventAttendees}</div>
-                    </div>
-                  )}
-                  {project.stats.visitWeb !== undefined && (
-                    <div className={styles.statCard}>
-                      <div className={styles.statLabel}>Web Visits</div>
-                      <div className={styles.statValue}>{project.stats.visitWeb}</div>
-                    </div>
-                  )}
-                </div>
-              </div>
-            )}
-          </div>
+          {/* The unified report: Fanmass data and Messmass calculations for the events and photos carrying every
+              selected hashtag, the same report as every hashtag, filter and the global report. */}
+          {report && <HashtagReportView report={report} />}
 
           {/* Projects List Section */}
           {projects.length > 0 && (

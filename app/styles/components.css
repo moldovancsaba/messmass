@@ -2145,69 +2145,6 @@ textarea::placeholder {
 /* Variables Admin Grid and Cards */
 .variable-ref { font-size: 0.8rem; background: rgba(107,114,128,0.1); padding: 0.125rem 0.5rem; border-radius: 4px; }
 
-/* Full width container for stats sections */
-.stats-layout-container {
-  display: flex;
-  flex-direction: column;
-  gap: 2rem;
-  width: 100%;
-  max-width: none;
-  margin: 0;
-}
-
-/* Row 1: 3 equal columns */
-.stats-row-3 {
-  display: grid;
-  grid-template-columns: 1fr 1fr 1fr;
-  gap: 2rem;
-  width: 100%;
-}
-
-/* Row 2: 2/3 left, 1/3 right */
-.stats-row-2-3-1 {
-  display: grid;
-  grid-template-columns: 2fr 1fr;
-  gap: 2rem;
-  width: 100%;
-}
-
-/* Row 3: Full width */
-.stats-row-full {
-  display: grid;
-  grid-template-columns: 1fr;
-  width: 100%;
-}
-
-/* Stats section styling for new layout - Flat Design */
-.stats-section-new {
-  /* What: Flat white section card
-     Why: Removed glass-morphism for TailAdmin V2 */
-  background: var(--mm-white);
-  border-radius: 16px;
-  padding: 1.5rem;
-  border: 1px solid var(--mm-border-color-default);
-  box-shadow: var(--mm-shadow-md);
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
-}
-
-.stats-section-new:hover {
-  transform: translateY(-2px);
-  box-shadow: var(--mm-shadow-lg);
-}
-
-/* Section titles for new layout */
-.stats-section-title {
-  font-size: 1.5rem;
-  font-weight: 700;
-  margin: 0 0 1.5rem 0;
-  color: var(--mm-gray-800);
-  border-bottom: 2px solid var(--mm-gray-200);
-  padding-bottom: 0.5rem;
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-}
-
 /* Stats cards grid within sections */
 /* WHAT: Auto-fit grid that stretches items when fewer than 6 */
 /* WHY: Buttons should fill available width, max 6 columns */
@@ -2244,32 +2181,9 @@ textarea::placeholder {
   width: 100%; /* WHAT: Ensure cards fill their grid cell completely */
 }
 
-.stats-cards-row-age {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-  gap: 1rem;
-  margin-bottom: 1rem;
-}
-
-/* Merchandise section specific layout */
-.merch-cards-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-  gap: 1rem;
-  margin-bottom: 1rem;
-}
-
 /* Responsive design for stats layout */
 @media (max-width: 1024px) {
-  .stats-row-3 {
-    grid-template-columns: 1fr;
-    gap: 1.5rem;
-  }
   
-  .stats-row-2-3-1 {
-    grid-template-columns: 1fr;
-    gap: 1.5rem;
-  }
   
   /* WHAT: Tablet - auto-fit with smaller minimum */
   /* WHY: Better fit for medium screens, items stretch to fill */
@@ -2292,17 +2206,8 @@ textarea::placeholder {
 }
 
 @media (max-width: 768px) {
-  .stats-layout-container {
-    gap: 1.5rem;
-  }
   
-  .stats-section-new {
-    padding: 1rem;
-  }
   
-  .stats-section-title {
-    font-size: 1.25rem;
-  }
   
   /* WHAT: Mobile responsive - auto-fit with mobile-friendly minimum */
   /* WHY: Items stretch to fill width, max 2-3 per row on mobile */
@@ -2323,10 +2228,6 @@ textarea::placeholder {
     grid-column: span 1; /* Side-by-side on mobile */
   }
   
-  .merch-cards-grid {
-    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-    gap: 0.75rem;
-  }
 }
 
 /* ========================================

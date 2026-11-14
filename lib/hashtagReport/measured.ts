@@ -7,6 +7,7 @@
 
 import { ObjectId } from 'mongodb';
 
+import { parseHashtagQuery } from '../hashtagCategoryUtils';
 import { toPhotoHashtag } from '../photoHashtags';
 import { mergePhotoSummaries } from './mergeSummaries';
 import type { HashtagEvent, MeasuredCounters, MeasuredDrivePhotos, MeasuredLayer, NamedCount } from './types';
@@ -44,32 +45,55 @@ export type ReportDb = {
 
 const escapeRegex = (text: string) => text.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 
-/** The events of a hashtag, written with or without the leading #, in any case. */
+/** The events of a hashtag, written with or without the leading #, in any case, in the plain hashtag list or in any
+ * category list, exactly as the admin hashtag filter matches them (lib/hashtagCategoryUtils.ts matchHashtagInProject).
+ * A `category:tag` query matches that category list only. */
 export function hashtagFilter(hashtag: string, organizationId?: string): Record<string, unknown> {
-  const id = hashtag.trim().replace(/^#/, '');
+  const { category, hashtag: id } = parseHashtagQuery(hashtag.trim().replace(/^#/, ''));
+  const exact = new RegExp(`^#?${escapeRegex(id)}$`, 'i');
   const filter: Record<string, unknown> = {
-    $or: [
-      { hashtags: id },
-      { hashtags: `#${id}` },
-      { hashtags: { $regex: new RegExp(`^#?${escapeRegex(id)}$`, 'i') } },
-      // The classic hashtag report also reads a hashtag list stored as one comma-separated text
-      { hashtags: { $regex: new RegExp(`(^|,)\\s*#?${escapeRegex(id)}\\s*(,|$)`, 'i') } },
-    ],
+    $or: category
+      ? [{ [`categorizedHashtags.${category}`]: { $regex: exact } }]
+      : [
+          { hashtags: id },
+          { hashtags: `#${id}` },
+          { hashtags: { $regex: exact } },
+          // The classic hashtag report also reads a hashtag list stored as one comma-separated text
+          { hashtags: { $regex: new RegExp(`(^|,)\\s*#?${escapeRegex(id)}\\s*(,|$)`, 'i') } },
+          // Any category list (categorizedHashtags: { category: [tags] })
+          { $expr: { $gt: [{ $size: { $filter: {
+            // Guarded: a malformed document (no object, a value that is not a list) never fails the whole query
+            input: { $cond: [{ $eq: [{ $type: '$categorizedHashtags' }, 'object'] }, { $objectToArray: '$categorizedHashtags' }, []] },
+            cond: { $in: [id.toLowerCase(), { $map: { input: { $cond: [{ $isArray: '$$this.v' }, '$$this.v', []] }, as: 'tag', in: { $toLower: '$$tag' } } }] },
+          } } }, 0] } },
+        ],
   };
   if (organizationId) filter.organizationId = organizationId;
   return filter;
 }
 
+/** The events carrying every one of the hashtags (the admin filter's AND), or every event when there are none. */
+export function eventsFilter(hashtags: string[] | null, organizationId?: string): Record<string, unknown> {
+  const org = organizationId ? { organizationId } : {};
+  if (!hashtags) return org;
+  return { $and: hashtags.map((tag) => ({ $or: (hashtagFilter(tag) as { $or: unknown[] }).$or })), ...org };
+}
+
+/** The photo hashtag of a query: `category:tag` becomes `tag`, then the photo form (lib/photoHashtags.ts). */
+const photoTag = (query: string) => toPhotoHashtag(parseHashtagQuery(query.trim().replace(/^#/, '')).hashtag);
+
 const reported = (value: unknown): value is number => typeof value === 'number' && Number.isFinite(value) && value >= 0;
 
-/** `hashtag` null measures every event and every drive photo: the all-events report (/report/global). */
-export async function loadMeasuredLayer(db: ReportDb, hashtag: string | null, organizationId?: string): Promise<MeasuredLayer> {
-  const eventFilter = hashtag === null ? (organizationId ? { organizationId } : {}) : hashtagFilter(hashtag, organizationId);
-  const tagged = await db.collection('projects').find(eventFilter, { projection: MACHINE_EVENT_PROJECTION }).toArray();
+/** The events carrying every hashtag of `hashtags`, plus the events holding photos tagged with all of them; `null`
+ * measures every event and every drive photo: the all-events report (/report/global). */
+export async function loadMeasuredLayer(db: ReportDb, hashtags: string[] | null, organizationId?: string): Promise<MeasuredLayer> {
+  const tagged = await db.collection('projects').find(eventsFilter(hashtags, organizationId), { projection: MACHINE_EVENT_PROJECTION }).toArray();
   const taggedIds = tagged.map((p) => String(p._id));
 
   // Drive photos Fanmass tagged with the hashtag or placed in these events (lib/fanmassDrivePhotos.ts)
-  const tag = hashtag === null ? null : toPhotoHashtag(hashtag.trim());
+  const photoTags = hashtags === null ? null : hashtags.map(photoTag);
+  // One hashtag is matched as a value (the index serves it), several as all of them
+  const tag = photoTags === null ? null : photoTags.length === 1 ? photoTags[0] : { $all: photoTags };
   const driveFilter: Record<string, unknown> = tag === null ? {} : taggedIds.length
     ? { $or: [{ hashtags: tag }, { eventId: { $in: taggedIds } }] }
     : { hashtags: tag };
@@ -89,7 +113,7 @@ export async function loadMeasuredLayer(db: ReportDb, hashtag: string | null, or
   if (joined.length) {
     // The rest of those events' drive photos (the ones without the hashtag) belong to the report as well
     drivePhotos.push(...await db.collection('fanmass_event_drive_photos')
-      .find({ eventId: { $in: joined.map((p) => String(p._id)) }, hashtags: { $ne: tag } }, driveProjection).toArray());
+      .find({ eventId: { $in: joined.map((p) => String(p._id)) }, $nor: [{ hashtags: tag }] }, driveProjection).toArray());
   }
   const joinedSet = new Set(joined.map((p) => String(p._id)));
   const projects = [...tagged, ...joined];
