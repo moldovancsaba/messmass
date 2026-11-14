@@ -18,14 +18,23 @@ export default function SzrtHeader({ data, activeTab, onTabChange }: SzrtHeaderP
 
   const isHashtag = scope?.type === 'hashtag';
   const isEvent = scope?.type === 'event';
+  const isFilter = scope?.type === 'filter';
 
-  const badgeText = isHashtag
-    ? `Campaign Hashtag #${scope?.id}`
-    : isEvent
-      ? 'Event Activation Report'
-      : 'Interactive Analytics Report';
+  const badgeText = isFilter
+    ? 'Hashtag Filter Report'
+    : isHashtag
+      ? `Campaign Hashtag #${scope?.id}`
+      : isEvent
+        ? 'Event Activation Report'
+        : 'Interactive Analytics Report';
 
-  const subBadgeText = scope?.type ? `${scope.type.toUpperCase()} Scope` : null;
+  const subBadgeText = isFilter
+    ? (scope?.hashtags && scope.hashtags.length > 0
+        ? scope.hashtags.map((h) => `#${h}`).join(' ')
+        : 'FILTER Scope')
+    : scope?.type
+      ? `${scope.type.toUpperCase()} Scope`
+      : null;
 
   const titleText = scope?.name || partner.name;
   const descriptionText =

@@ -151,13 +151,14 @@ export interface VisionProgressData {
 }
 
 export interface ScopeHeader {
-  type: 'hashtag' | 'partner' | 'event' | 'global';
+  type: 'hashtag' | 'partner' | 'event' | 'global' | 'filter';
   id: string;
   name: string;
   viewSlug?: string;
   emoji?: string;
   subtitle?: string;
   organizationId?: string;
+  hashtags?: string[];
 }
 
 export interface InteractiveReportData {

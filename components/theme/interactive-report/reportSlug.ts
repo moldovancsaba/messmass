@@ -13,6 +13,10 @@ export function getReportSlug(
 ): string | null {
   const scope = data.scope;
 
+  if (scope?.type === 'filter') {
+    return scope.id ? `filter-${scope.id}` : null;
+  }
+
   if (scope?.type === 'hashtag') {
     return scope.id ? `hashtag-${scope.id}` : null;
   }

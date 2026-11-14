@@ -19,6 +19,10 @@ const CONFIG: OwnerConfig = {
     variant
       ? `/filter/${encodeURIComponent(slug)}?variant=${encodeURIComponent(variant)}`
       : `/filter/${encodeURIComponent(slug)}`,
+  interactiveReportHref: (slug, variant) =>
+    variant
+      ? `/interactive-report/filter/${encodeURIComponent(slug)}?variant=${encodeURIComponent(variant)}`
+      : `/interactive-report/filter/${encodeURIComponent(slug)}`,
 };
 
 export default function FilterReportsWorkspacePage() {

@@ -58,6 +58,8 @@ export interface OwnerConfig {
   loadOwner?: (id: string) => Promise<{ name: string; publicSlug?: string }>;
   /** Public report URL. `slug` is the variant slug, absent for the default. */
   reportHref: (publicSlug: string, slug?: string) => string;
+  /** Optional interactive dashboard URL for real-time analytics. */
+  interactiveReportHref?: (publicSlug: string, slug?: string) => string;
   /** Editor URL, or undefined for owners that have no editor. */
   editorHref?: (publicSlug: string, slug?: string) => string;
 }
@@ -196,6 +198,11 @@ export default function ReportsWorkspace({ id, config }: { id: string; config: O
           </p>
         </div>
         <div className={styles.headerActions}>
+          {config.interactiveReportHref && (
+            <Link href={config.interactiveReportHref(publicSlug)} className={styles.secondaryButton} target="_blank">
+              ⚡ Interactive Dashboard
+            </Link>
+          )}
           <Link href={config.reportHref(publicSlug)} className={styles.secondaryButton} target="_blank">
             Open Default Report
           </Link>
@@ -256,6 +263,15 @@ export default function ReportsWorkspace({ id, config }: { id: string; config: O
                     <p className={styles.variantMeta}>{formatPeriodLabel(variant)}</p>
                   </div>
                   <div className={styles.variantActions}>
+                    {config.interactiveReportHref && (
+                      <Link
+                        href={config.interactiveReportHref(publicSlug, slug)}
+                        className={styles.secondaryButton}
+                        target="_blank"
+                      >
+                        ⚡ Interactive
+                      </Link>
+                    )}
                     <Link href={reportHref} className={styles.secondaryButton} target="_blank">
                       Open Report
                     </Link>

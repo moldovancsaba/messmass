@@ -269,6 +269,17 @@ export default function FilterReportPage() {
   return (
     <div className={styles.page}>
       <div className={styles.container}>
+        {/* Interactive Dashboard Direct Switch */}
+        <div className={styles.interactiveSwitchBar}>
+          <a
+            href={`/interactive-report/filter/${encodeURIComponent(filterSlug)}${variant ? `?variant=${encodeURIComponent(variant)}` : ''}`}
+            className={styles.interactiveSwitchBtn}
+            title="Open real-time interactive dashboard for this filter"
+          >
+            ⚡ Open Interactive Dashboard ➔
+          </a>
+        </div>
+
         {/* Hero Section - REUSED from event reports */}
         {/* WHAT: id="report-hero"/"report-content" match app/report/[slug]/page.tsx's
             structure exactly. WHY: app/api/export/pdf/route.ts's readiness check waits

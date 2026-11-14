@@ -458,6 +458,29 @@ function HashtagFilterPageContent() {
                       {saveStatus === 'error' && '⚠︎ failed'}
                     </span>
 
+                    <button
+                      onClick={async () => {
+                        try {
+                          const data = await apiPost('/api/filter-slug', {
+                            hashtags: selectedHashtags,
+                            styleId: selectedStyleId || null
+                          });
+                          if (data.success) {
+                            window.open(`/interactive-report/filter/${encodeURIComponent(data.slug)}`, '_blank');
+                          } else {
+                            alert('Failed to open interactive dashboard: ' + data.error);
+                          }
+                        } catch (error) {
+                          console.error('Error opening interactive dashboard:', error);
+                          alert('Failed to open interactive dashboard');
+                        }
+                      }}
+                      className="btn btn-small btn-primary"
+                      title="Open full interactive analytics dashboard for this filter"
+                    >
+                      ⚡ Interactive Dashboard
+                    </button>
+
                     <button 
                       onClick={async () => {
                         try {

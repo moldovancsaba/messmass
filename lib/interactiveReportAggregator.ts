@@ -67,19 +67,26 @@ export function isSzrtScopeIdentifier(identifier: string): boolean {
   );
 }
 
+export type ScopeType = 'hashtag' | 'partner' | 'event' | 'global' | 'filter';
+
 /**
  * The vision analysis document (szrt_vision_progress) belongs to the SZRT campaign only.
  * It may be attached to a report only when the resolved scope is that campaign and the
  * caller is not scoped to another tenant.
  */
 function isSzrtVisionScope(
-  scopeType: 'hashtag' | 'partner' | 'event' | 'global',
+  scopeType: ScopeType,
   scopeIdentifier: string,
-  organizationId?: string
+  organizationId?: string,
+  resolvedHashtags?: string[]
 ): boolean {
   if (organizationId && organizationId !== SZRT_ORGANIZATION_ID) return false;
   // The global report holds everything, so the SZRT vision analysis is part of it (still only once a person approved it)
   if (scopeType === 'global') return true;
+  if (scopeType === 'filter') {
+    if (isSzrtScopeIdentifier(scopeIdentifier)) return true;
+    if (resolvedHashtags?.some((h) => isSzrtScopeIdentifier(h))) return true;
+  }
   if (scopeType !== 'hashtag' && scopeType !== 'partner') return false;
   return isSzrtScopeIdentifier(scopeIdentifier);
 }
@@ -200,7 +207,7 @@ function buildDemographicsFromVision(vision: VisionProgressData | null): Demogra
 }
 
 export interface ReportScopeQuery {
-  type: 'hashtag' | 'partner' | 'event' | 'global';
+  type: ScopeType;
   identifier: string;
   organizationId?: string;
   sportFilter?: string;
@@ -227,7 +234,7 @@ export async function getScopedInteractiveReportData(
     });
     if (cached) {
       // The live vision overlay is only valid for the SZRT campaign scope
-      if (cached.vision && isSzrtVisionScope(scopeType, scopeIdentifier, query.organizationId)) {
+      if (cached.vision && isSzrtVisionScope(scopeType, scopeIdentifier, query.organizationId, cached.scope?.hashtags)) {
         try {
           const liveDoc = await db.collection('szrt_vision_progress').findOne({ _id: 'szrt_progress' as any });
           if (!isVisionPublishable(liveDoc)) {
@@ -637,7 +644,7 @@ export async function getScopedInteractiveReportData(
   // so every other scope gets no vision data at all.
   let vision: VisionProgressData | null = null;
   try {
-    const visionDoc = isSzrtVisionScope(scopeType, scopeIdentifier, query.organizationId)
+    const visionDoc = isSzrtVisionScope(scopeType, scopeIdentifier, query.organizationId, resolvedScope.scopeHeader.hashtags)
       ? await db.collection('szrt_vision_progress').findOne({ _id: 'szrt_progress' as any })
       : null;
 
@@ -1083,6 +1090,14 @@ export async function getInteractiveReportData(
     });
   }
 
+  // 1b. Filter scope detection
+  if (lower.startsWith('filter-')) {
+    return getScopedInteractiveReportData({
+      type: 'filter',
+      identifier: lower.replace(/^filter-/, ''),
+    });
+  }
+
   // 2. Event scope detection
   if (lower.startsWith('event-')) {
     return getScopedInteractiveReportData({
@@ -1098,9 +1113,6 @@ export async function getInteractiveReportData(
     identifier: cleanPartnerSlug,
   });
 }
-
-
-export type ScopeType = "hashtag" | "partner" | "event" | "global";
 
 export interface ScopeResolutionResult {
   scopeType: ScopeType;
@@ -1306,6 +1318,105 @@ export async function resolveScopeProjectIds(
         "Everything Messmass collects: fan engagement, photo activation volume, opt-in conversion and Fanmass visual intelligence across all events, partners and organizations.",
       organizationId,
     };
+  } else if (scopeType === "filter") {
+    // 1. Find filter definition by slug or _id in filter_slugs
+    let filterDoc: any = await db.collection("filter_slugs").findOne({ slug: scopeIdentifier });
+    if (!filterDoc && ObjectId.isValid(scopeIdentifier)) {
+      filterDoc = await db.collection("filter_slugs").findOne({ _id: new ObjectId(scopeIdentifier) });
+    }
+
+    let hashtags: string[] = filterDoc?.hashtags || [];
+    // If not found in filter_slugs, treat scopeIdentifier as comma-separated or single hashtag
+    if (hashtags.length === 0) {
+      hashtags = scopeIdentifier.split(',').map((h: string) => h.trim().replace(/^#/, '')).filter(Boolean);
+    }
+
+    const cleanTags = hashtags.map((h: string) => h.replace(/^#/, '').trim());
+
+    // Check if this filter includes the SZRT / Tippmix campaign
+    const isTippmixFilter = cleanTags.some(t => isSzrtScopeIdentifier(t)) || isSzrtScopeIdentifier(scopeIdentifier);
+
+    if (isTippmixFilter) {
+      partner = await db.collection("partners").findOne({
+        $or: [
+          { viewSlug: "ec9bb989-cb0f-4d5a-b22b-c3a1829cd3fd" },
+          { name: /szerencsejáték/i },
+          ...(ObjectId.isValid("694a96990ad78323bea10660") ? [{ _id: new ObjectId("694a96990ad78323bea10660") }] : []),
+        ],
+      });
+
+      const tippmixPartners = await db
+        .collection("partners")
+        .find({ name: /tippmix/i })
+        .toArray();
+      const tippmixPartnerIds = tippmixPartners.map((p: any) => p._id);
+      const tippmixPartnerIdStrings = tippmixPartnerIds.map((id: any) => String(id));
+
+      const filterQuery: any = {
+        $or: [
+          { hashtags: { $in: cleanTags } },
+          { hashtags: { $in: cleanTags.map(t => `#${t}`) } },
+          ...cleanTags.map(t => ({ hashtags: { $regex: new RegExp(`^#?${escapeRegex(t)}$`, "i") } })),
+          { eventName: { $in: campaignNames } },
+          { eventName: /tippmix/i },
+          { partner1Id: { $in: [...tippmixPartnerIds, ...tippmixPartnerIdStrings] as any } },
+          { partner2Id: { $in: [...tippmixPartnerIds, ...tippmixPartnerIdStrings] as any } },
+          { partner1: { $in: [...tippmixPartnerIds, ...tippmixPartnerIdStrings] as any } },
+          { partner2: { $in: [...tippmixPartnerIds, ...tippmixPartnerIdStrings] as any } },
+        ],
+      };
+      if (organizationId) filterQuery.organizationId = organizationId;
+
+      campaignProjects = await db
+        .collection("projects")
+        .find(filterQuery, { projection: REPORT_PROJECT_FIELDS })
+        .sort({ eventDate: 1 })
+        .toArray();
+
+      const displayTitle = filterDoc?.name || (cleanTags.length > 0 ? cleanTags.map(t => `#${t}`).join(' ') : (partner?.name || "Szerencsejáték Zrt."));
+
+      scopeHeader = {
+        type: "filter",
+        id: scopeIdentifier,
+        name: displayTitle,
+        viewSlug: scopeIdentifier,
+        emoji: "🎯",
+        subtitle: `Consolidated fan engagement, photo activation volume, and marketing opt-in metrics across ${displayTitle}.`,
+        organizationId: partner?.organizationId ? String(partner.organizationId) : organizationId,
+        hashtags: cleanTags,
+      };
+    } else {
+      const tagConditions = cleanTags.map(tag => ({
+        $or: [
+          { hashtags: tag },
+          { hashtags: `#${tag}` },
+          { hashtags: { $regex: new RegExp(`^#?${escapeRegex(tag)}$`, "i") } },
+          { [`categorizedHashtags.${tag}`]: { $exists: true } },
+        ]
+      }));
+
+      const filterQuery: any = tagConditions.length > 0 ? { $or: tagConditions } : {};
+      if (organizationId) filterQuery.organizationId = organizationId;
+
+      campaignProjects = await db
+        .collection("projects")
+        .find(filterQuery, { projection: REPORT_PROJECT_FIELDS })
+        .sort({ eventDate: 1 })
+        .toArray();
+
+      const displayTitle = filterDoc?.name || (cleanTags.length > 0 ? cleanTags.map(t => `#${t}`).join(' ') : `Filter: ${scopeIdentifier}`);
+
+      scopeHeader = {
+        type: "filter",
+        id: scopeIdentifier,
+        name: displayTitle,
+        viewSlug: scopeIdentifier,
+        emoji: "🔍",
+        subtitle: `Consolidated interactive analytics and audience telemetry across ${displayTitle}.`,
+        organizationId,
+        hashtags: cleanTags,
+      };
+    }
   } else if (scopeType === "partner") {
     if (organizationId) {
       partner = await db.collection("partners").findOne({

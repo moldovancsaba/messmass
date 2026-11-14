@@ -22,6 +22,10 @@ const CONFIG: OwnerConfig = {
     slug
       ? `/hashtag/${encodeURIComponent(tag)}?variant=${encodeURIComponent(slug)}`
       : `/hashtag/${encodeURIComponent(tag)}`,
+  interactiveReportHref: (tag, slug) =>
+    slug
+      ? `/interactive-report/hashtag/${encodeURIComponent(tag)}?variant=${encodeURIComponent(slug)}`
+      : `/interactive-report/hashtag/${encodeURIComponent(tag)}`,
 };
 
 export default function HashtagReportsWorkspacePage() {
