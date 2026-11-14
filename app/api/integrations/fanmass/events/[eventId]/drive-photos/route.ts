@@ -1,5 +1,6 @@
 // app/api/integrations/fanmass/events/[eventId]/drive-photos/route.ts
-// WHAT: Fanmass sends the drive photos it placed in this event (lib/fanmassDrivePhotos.ts), up to 500 per request.
+// WHAT: Fanmass sends the drive photos it placed in this event and the ids of photos that left it (lib/fanmassDrivePhotos.ts),
+//     up to 500 of each per request.
 // WHY: The SZRT drive library carries no event; Fanmass placed every photo in an event by the owner's rule, and the
 //     hashtag report counts them for that event. Only the Fanmass integration token reaches this route.
 
@@ -15,9 +16,9 @@ export async function POST(request: NextRequest, context: { params: Promise<{ ev
   if (authError) return authError;
   try {
     const { eventId } = await context.params;
-    const { photos } = parseDrivePhotos(await request.json().catch(() => null), eventId);
-    const stored = await storeDrivePhotos(await getDb(), eventId, photos);
-    return jsonSuccess({ eventId, stored });
+    const { photos, remove } = parseDrivePhotos(await request.json().catch(() => null), eventId);
+    const { stored, removed } = await storeDrivePhotos(await getDb(), eventId, photos, remove);
+    return jsonSuccess({ eventId, stored, removed });
   } catch (err) {
     return handleRouteError(err);
   }

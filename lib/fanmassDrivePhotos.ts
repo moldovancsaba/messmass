@@ -73,20 +73,30 @@ function analysis(value: unknown, at: string): DrivePhotoAnalysis | null {
   };
 }
 
-export function parseDrivePhotos(body: unknown, eventIdFromPath: string): { messmassEventId: string; photos: DrivePhoto[] } {
+const PHOTO_ID = /^[A-Za-z ]{1,30}\/[A-Za-z0-9._-]{1,120}$/;
+
+/**
+ * Read a request: `photos` to place in this event and `remove`, the ids of photos that left it (their cluster was
+ * decided again and moved them, or they wait for evidence). At least one of the two holds something.
+ */
+export function parseDrivePhotos(body: unknown, eventIdFromPath: string): { messmassEventId: string; photos: DrivePhoto[]; remove: string[] } {
   const raw = rec(body) ?? invalid('A JSON object is required.');
   if (raw.contractVersion !== DRIVE_PHOTOS_CONTRACT) {
     throw Object.assign(new Error(`Expected ${DRIVE_PHOTOS_CONTRACT}.`), { status: 409, code: 'CONTRACT_MISMATCH' });
   }
   if (raw.messmassEventId !== eventIdFromPath) invalid('messmassEventId must match the path.');
-  if (!Array.isArray(raw.photos) || raw.photos.length === 0 || raw.photos.length > MAX_DRIVE_PHOTOS_PER_REQUEST) {
-    invalid(`photos must hold 1 to ${MAX_DRIVE_PHOTOS_PER_REQUEST} photos.`);
+  const rawRemove = raw.remove === undefined ? [] : raw.remove;
+  if (!Array.isArray(rawRemove) || rawRemove.length > MAX_DRIVE_PHOTOS_PER_REQUEST || rawRemove.some((id) => typeof id !== 'string' || !PHOTO_ID.test(id))) {
+    invalid(`remove must list at most ${MAX_DRIVE_PHOTOS_PER_REQUEST} photo ids (<sport>/<file>).`);
+  }
+  if (!Array.isArray(raw.photos) || raw.photos.length > MAX_DRIVE_PHOTOS_PER_REQUEST || (raw.photos.length === 0 && rawRemove.length === 0)) {
+    invalid(`photos must hold up to ${MAX_DRIVE_PHOTOS_PER_REQUEST} photos, and a request must place or remove at least one.`);
   }
   const photos = (raw.photos as unknown[]).map((item, i) => {
     const at = `photos[${i}]`;
     const p = rec(item) ?? invalid(`${at} must be an object.`);
     const photoId = typeof p.photoId === 'string' ? p.photoId.trim() : '';
-    if (!/^[A-Za-z ]{1,30}\/[A-Za-z0-9._-]{1,120}$/.test(photoId)) invalid(`${at}.photoId must be <sport>/<file>.`);
+    if (!PHOTO_ID.test(photoId)) invalid(`${at}.photoId must be <sport>/<file>.`);
     const assignment = rec(p.assignment) ?? invalid(`${at}.assignment is required.`);
     const confidence = assignment.confidence;
     if (typeof confidence !== 'number' || !(confidence >= 0 && confidence <= 1)) invalid(`${at}.assignment.confidence must be 0 to 1.`);
@@ -104,16 +114,28 @@ export function parseDrivePhotos(body: unknown, eventIdFromPath: string): { mess
       analysis: analysis(p.analysis, at),
     };
   });
-  return { messmassEventId: eventIdFromPath, photos };
+  return { messmassEventId: eventIdFromPath, photos, remove: [...new Set(rawRemove as string[])] };
 }
 
-/** Store the photos under the event. A photo placed earlier in another event moves here (one photo, one event). */
-export async function storeDrivePhotos(db: Db, eventId: string, photos: DrivePhoto[], now = new Date().toISOString()): Promise<number> {
+/**
+ * Store the photos under the event (a photo placed earlier in another event moves here: one photo, one event) and drop
+ * the photos that left it. Only a photo still filed under this event is dropped, so a late request cannot remove a photo
+ * that has since moved on.
+ */
+export async function storeDrivePhotos(
+  db: Db,
+  eventId: string,
+  photos: DrivePhoto[],
+  remove: string[] = [],
+  now = new Date().toISOString(),
+): Promise<{ stored: number; removed: number }> {
   if (!ObjectId.isValid(eventId)) invalid('Invalid Messmass event id.');
   const event = await db.collection('projects').findOne({ _id: new ObjectId(eventId) }, { projection: { _id: 1 } });
   if (!event) throw Object.assign(new Error('Messmass event was not found.'), { status: 404, code: 'EVENT_NOT_FOUND' });
   const collection = db.collection<Record<string, unknown> & { _id: string }>(DRIVE_PHOTOS_COLLECTION);
   await collection.createIndex({ eventId: 1 }, { name: 'drive_photos_by_event' });
+  const removed = remove.length ? (await collection.deleteMany({ _id: { $in: remove }, eventId })).deletedCount ?? 0 : 0;
+  if (photos.length === 0) return { stored: 0, removed };
   await collection.bulkWrite(
     photos.map((photo) => ({
       updateOne: {
@@ -124,5 +146,5 @@ export async function storeDrivePhotos(db: Db, eventId: string, photos: DrivePho
     })),
     { ordered: false },
   );
-  return photos.length;
+  return { stored: photos.length, removed };
 }

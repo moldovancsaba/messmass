@@ -19,6 +19,12 @@ describe('parseDrivePhotos', () => {
     expect(photos[0]).toMatchObject({ sport: 'Basketball', assignment: { confidence: 0.9, method: 'between_reads' }, analysis: { people: 2, brands: ['Veolia'] } });
   });
 
+  it('accepts a request that only removes photos that left the event', () => {
+    const parsed = parseDrivePhotos({ ...body([]), remove: ['Football/a.jpg', 'Football/a.jpg'] }, EVENT);
+    expect(parsed.photos).toEqual([]);
+    expect(parsed.remove).toEqual(['Football/a.jpg']);
+  });
+
   it('accepts a photo Fanmass has not analysed yet', () => {
     expect(parseDrivePhotos(body([photo({ analysis: null })]), EVENT).photos[0].analysis).toBeNull();
   });
@@ -28,7 +34,8 @@ describe('parseDrivePhotos', () => {
     ['no opt-in', body([photo({ optIn: undefined })])],
     ['a confidence above 1', body([photo({ assignment: { confidence: 1.5, method: 'x' } })])],
     ['a path instead of <sport>/<file>', body([photo({ photoId: '../etc/passwd' })])],
-    ['no photos', body([])],
+    ['nothing to place or remove', body([])],
+    ['a removal that is not a photo id', { ...body([]), remove: ['../x'] }],
   ])('refuses %s', (_label, input) => {
     expect(() => parseDrivePhotos(input, EVENT)).toThrow();
   });
