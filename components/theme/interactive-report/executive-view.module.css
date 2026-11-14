@@ -790,7 +790,11 @@
     grid-template-columns: repeat(2, 1fr);
   }
   .podiumGrid {
-    grid-template-columns: 1fr;
+    /* minmax(0, ...): a podium card may shrink below its content's width instead of pushing the page sideways */
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .podiumCard {
+    min-width: 0;
   }
   .demographicsQuadrant {
     grid-template-columns: 1fr;
@@ -803,5 +807,31 @@
   }
   .scopeSwitcher {
     width: 100%;
+  }
+  /* Victory podiums on a phone: the card keeps inside the screen, the header wraps, a name takes the room the bar gives up */
+  .podiumCard {
+    padding: 16px;
+  }
+  .podiumHeader {
+    flex-wrap: wrap;
+  }
+  .rowName {
+    flex: 1 1 auto;
+    min-width: 0;
+    max-width: none;
+  }
+  .rowBarContainer {
+    flex: 0 1 56px;
+    min-width: 24px;
+  }
+  .rankedRow {
+    gap: 8px;
+  }
+  .rowPercent {
+    width: 38px;
+  }
+  .rowCount {
+    width: auto;
+    min-width: 28px;
   }
 }
