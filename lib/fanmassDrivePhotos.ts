@@ -4,6 +4,8 @@
 // WHY: The hashtag report counts these photos for the events they were placed in. Each record says how sure the placement
 //     is, that the opt-in was recorded (an image reaches the drive only with one), and, once Fanmass analysed the photo,
 //     the measured people and the brand and club names read from the picture. No consent text, no identity, no image.
+//     Every photo also carries the hashtags Fanmass gave it (library, sport, event, clubs, brands, emotions, people), so a
+//     hashtag report finds the photo by its own hashtags, not only through the hashtags of its event.
 
 import type { Db } from 'mongodb';
 import { ObjectId } from 'mongodb';
@@ -28,7 +30,12 @@ export interface DrivePhoto {
   assignment: { confidence: number; method: string };
   optIn: { received: true; basis: 'local_drive_policy' };
   analysis: DrivePhotoAnalysis | null;
+  /** Lowercase, without the leading #. */
+  hashtags: string[];
 }
+
+export const MAX_PHOTO_HASHTAGS = 80;
+const HASHTAG = /^[a-z0-9_]{1,60}$/;
 
 function invalid(message: string): never {
   throw Object.assign(new Error(message), { status: 400, code: 'INVALID_DRIVE_PHOTOS' });
@@ -73,18 +80,28 @@ function analysis(value: unknown, at: string): DrivePhotoAnalysis | null {
   };
 }
 
+function hashtags(value: unknown, at: string): string[] {
+  if (value === undefined) return [];
+  if (!Array.isArray(value) || value.length > MAX_PHOTO_HASHTAGS) invalid(`${at}.hashtags must list at most ${MAX_PHOTO_HASHTAGS} hashtags.`);
+  const out = (value as unknown[]).map((v) => (typeof v === 'string' ? v.trim().replace(/^#/, '').toLowerCase() : ''));
+  if (out.some((v) => !HASHTAG.test(v))) invalid(`${at}.hashtags must be letters, digits or _ (1 to 60).`);
+  return [...new Set(out)];
+}
+
 const PHOTO_ID = /^[A-Za-z ]{1,30}\/[A-Za-z0-9._-]{1,120}$/;
 
 /**
  * Read a request: `photos` to place in this event and `remove`, the ids of photos that left it (their cluster was
  * decided again and moved them, or they wait for evidence). At least one of the two holds something.
+ * With no event (null), the photos belong to the library only: not placed in an event yet, or placed in a fixture that
+ * has no Messmass event. They still carry their hashtags, so a hashtag report finds them.
  */
-export function parseDrivePhotos(body: unknown, eventIdFromPath: string): { messmassEventId: string; photos: DrivePhoto[]; remove: string[] } {
+export function parseDrivePhotos(body: unknown, eventIdFromPath: string | null): { messmassEventId: string | null; photos: DrivePhoto[]; remove: string[] } {
   const raw = rec(body) ?? invalid('A JSON object is required.');
   if (raw.contractVersion !== DRIVE_PHOTOS_CONTRACT) {
     throw Object.assign(new Error(`Expected ${DRIVE_PHOTOS_CONTRACT}.`), { status: 409, code: 'CONTRACT_MISMATCH' });
   }
-  if (raw.messmassEventId !== eventIdFromPath) invalid('messmassEventId must match the path.');
+  if ((raw.messmassEventId ?? null) !== eventIdFromPath) invalid(eventIdFromPath ? 'messmassEventId must match the path.' : 'messmassEventId must be null for library photos.');
   const rawRemove = raw.remove === undefined ? [] : raw.remove;
   if (!Array.isArray(rawRemove) || rawRemove.length > MAX_DRIVE_PHOTOS_PER_REQUEST || rawRemove.some((id) => typeof id !== 'string' || !PHOTO_ID.test(id))) {
     invalid(`remove must list at most ${MAX_DRIVE_PHOTOS_PER_REQUEST} photo ids (<sport>/<file>).`);
@@ -112,35 +129,37 @@ export function parseDrivePhotos(body: unknown, eventIdFromPath: string): { mess
       assignment: { confidence: Math.round((confidence as number) * 1000) / 1000, method },
       optIn: { received: true as const, basis: 'local_drive_policy' as const },
       analysis: analysis(p.analysis, at),
+      hashtags: hashtags(p.hashtags, at),
     };
   });
   return { messmassEventId: eventIdFromPath, photos, remove: [...new Set(rawRemove as string[])] };
 }
 
 /**
- * Store the photos under the event (a photo placed earlier in another event moves here: one photo, one event) and drop
- * the photos that left it. Only a photo still filed under this event is dropped, so a late request cannot remove a photo
- * that has since moved on.
+ * Store the photos under the event, or under no event (null) (a photo filed earlier elsewhere moves here: one photo, one
+ * place) and drop the photos that left it. Only a photo still filed here is dropped, so a late request cannot remove a
+ * photo that has since moved on.
  */
 export async function storeDrivePhotos(
   db: Db,
-  eventId: string,
+  eventId: string | null,
   photos: DrivePhoto[],
   remove: string[] = [],
   now = new Date().toISOString(),
 ): Promise<{ stored: number; removed: number }> {
-  if (!ObjectId.isValid(eventId)) invalid('Invalid Messmass event id.');
-  const event = await db.collection('projects').findOne({ _id: new ObjectId(eventId) }, { projection: { _id: 1 } });
+  if (eventId !== null && !ObjectId.isValid(eventId)) invalid('Invalid Messmass event id.');
+  const event = eventId === null || await db.collection('projects').findOne({ _id: new ObjectId(eventId) }, { projection: { _id: 1 } });
   if (!event) throw Object.assign(new Error('Messmass event was not found.'), { status: 404, code: 'EVENT_NOT_FOUND' });
   const collection = db.collection<Record<string, unknown> & { _id: string }>(DRIVE_PHOTOS_COLLECTION);
   await collection.createIndex({ eventId: 1 }, { name: 'drive_photos_by_event' });
+  await collection.createIndex({ hashtags: 1 }, { name: 'drive_photos_by_hashtag' });
   const removed = remove.length ? (await collection.deleteMany({ _id: { $in: remove }, eventId })).deletedCount ?? 0 : 0;
   if (photos.length === 0) return { stored: 0, removed };
   await collection.bulkWrite(
     photos.map((photo) => ({
       updateOne: {
         filter: { _id: photo.photoId },
-        update: { $set: { eventId, sport: photo.sport, assignment: photo.assignment, optIn: photo.optIn, analysis: photo.analysis, receivedAt: now } },
+        update: { $set: { eventId, sport: photo.sport, assignment: photo.assignment, optIn: photo.optIn, analysis: photo.analysis, hashtags: photo.hashtags, receivedAt: now } },
         upsert: true,
       },
     })),

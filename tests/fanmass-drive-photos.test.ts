@@ -2,6 +2,7 @@
 // WHAT: The drive photos Fanmass placed in an event are stored only with their placement confidence and recorded opt-in.
 
 import { DRIVE_PHOTOS_CONTRACT, parseDrivePhotos } from '@/lib/fanmassDrivePhotos';
+import { sumDrivePhotos } from '@/lib/hashtagReport/measured';
 
 const EVENT = '6af1d928b09e9a526e9d50df';
 const photo = (over: Record<string, unknown> = {}) => ({
@@ -25,6 +26,22 @@ describe('parseDrivePhotos', () => {
     expect(parsed.remove).toEqual(['Football/a.jpg']);
   });
 
+  it('keeps the photo hashtags lowercase, without # and once each', () => {
+    const { photos } = parseDrivePhotos(body([photo({ hashtags: ['#TippmixReport2026', 'happy', 'happy', 'ferencvarositc'] })]), EVENT);
+    expect(photos[0].hashtags).toEqual(['tippmixreport2026', 'happy', 'ferencvarositc']);
+    expect(parseDrivePhotos(body([photo()]), EVENT).photos[0].hashtags).toEqual([]);
+  });
+
+  it('accepts library photos that sit in no event, and refuses an event id on them', () => {
+    expect(parseDrivePhotos({ ...body([photo()]), messmassEventId: null }, null).messmassEventId).toBeNull();
+    expect(() => parseDrivePhotos(body([photo()]), null)).toThrow();
+  });
+
+  it('counts a library photo as a drive photo but not as placed', () => {
+    const sum = sumDrivePhotos([{ eventId: null, assignment: { confidence: 0 }, optIn: { received: true }, analysis: null }, { eventId: 'e1', assignment: { confidence: 1 }, optIn: { received: true }, analysis: null }]);
+    expect(sum).toMatchObject({ photos: 2, placed: 1, placedOverHalf: 1, withOptIn: 2 });
+  });
+
   it('accepts a photo Fanmass has not analysed yet', () => {
     expect(parseDrivePhotos(body([photo({ analysis: null })]), EVENT).photos[0].analysis).toBeNull();
   });
@@ -36,6 +53,7 @@ describe('parseDrivePhotos', () => {
     ['a path instead of <sport>/<file>', body([photo({ photoId: '../etc/passwd' })])],
     ['nothing to place or remove', body([])],
     ['a removal that is not a photo id', { ...body([]), remove: ['../x'] }],
+    ['a hashtag with spaces or accents', body([photo({ hashtags: ['ferencvárosi tc'] })])],
   ])('refuses %s', (_label, input) => {
     expect(() => parseDrivePhotos(input, EVENT)).toThrow();
   });

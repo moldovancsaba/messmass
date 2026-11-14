@@ -64,7 +64,7 @@ export default function HashtagReportView({ report }: { report: HashtagReport })
   const { measured, calculated, coverage, scope } = report;
   const { photos, counters } = measured;
   const { drive } = measured;
-  const hasMeasuredData = coverage.eventsWithCounters > 0 || coverage.eventsWithPhotoResults > 0 || drive.placed > 0;
+  const hasMeasuredData = coverage.eventsWithCounters > 0 || coverage.eventsWithPhotoResults > 0 || drive.photos > 0;
   const taken = Object.prototype.hasOwnProperty.call(counters, 'camera_images_taken') ? fmt(counters.camera_images_taken) : null;
 
   return (
@@ -78,10 +78,10 @@ export default function HashtagReportView({ report }: { report: HashtagReport })
         </p>
       </header>
 
-      {coverage.events === 0 ? (
+      {coverage.events === 0 && drive.photos === 0 ? (
         <div className={styles.empty}>
-          No event carries #{scope.id} yet. This report is built from the events that carry the hashtag, so it fills in as soon as
-          events are tagged with it.
+          No event and no photo carries #{scope.id} yet. This report is built from the events and photos that carry the hashtag, so
+          it fills in as soon as they are tagged with it.
         </div>
       ) : !hasMeasuredData ? (
         <div className={styles.empty}>
@@ -103,17 +103,18 @@ export default function HashtagReportView({ report }: { report: HashtagReport })
             <Bars title="Age groups" counts={photos.ageGroups} note="People with a measured age" />
             <Bars title="Emotions" counts={photos.emotions} note={sentence(calculated.smilingShare, 'are smiling')} />
           </div>
-          {drive.placed > 0 && (
+          {drive.photos > 0 && (
             <>
               <section className={styles.card}>
-                <h2 className={styles.cardTitle}>Drive photos placed in these events</h2>
+                <h2 className={styles.cardTitle}>Drive photos tagged #{scope.id} or placed in these events</h2>
                 <p className={styles.cardNote}>
                   These photos came from a drive library whose files carry no event. Fanmass placed each one in an event from the
-                  order the photos were taken in, the clubs read in them and the fixture dates, and recorded how sure each placement is.
-                  An image reaches the drive only with a recorded opt-in.
+                  clubs read in it, its look and the fixture dates, recorded how sure each placement is, and tagged it with what it
+                  found: library, sport, event, clubs, brands, emotions and people. An image reaches the drive only with a recorded opt-in.
                 </p>
                 <div className={styles.kpiGrid}>
-                  <Kpi label="Photos placed" value={fmt(drive.placed)} text={detail(calculated.driveConfidentShare)} />
+                  <Kpi label="Drive photos" value={fmt(drive.photos)} text={detail(calculated.drivePlacedShare)} />
+                  <Kpi label="Placed in an event" value={drive.placed > 0 ? fmt(drive.placed) : null} text={detail(calculated.driveConfidentShare)} />
                   <Kpi label="Analysed by Fanmass" value={percent(calculated.driveAnalysedShare)} text={detail(calculated.driveAnalysedShare)} />
                   <Kpi label="Opt-in recorded" value={percent(calculated.driveOptInShare)} text={detail(calculated.driveOptInShare)} />
                 </div>
@@ -126,6 +127,7 @@ export default function HashtagReportView({ report }: { report: HashtagReport })
               <div className={styles.columns}>
                 <Names title="Brands" list={drive.brands} note="Photos in which the brand name was read from the picture" />
                 <Names title="Clubs" list={drive.clubs} note="Photos in which the club name was read from the picture" />
+                <Names title="Events" list={drive.events} note="Drive photos per event" />
               </div>
             </>
           )}
