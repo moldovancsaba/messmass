@@ -68,7 +68,9 @@ export default function SzrtHeader({ data, activeTab, onTabChange, fanmass }: Sz
       : 'Fanmass AI Vision';
 
   const tabs: Array<{ id: typeof activeTab; label: string; icon: string }> = fanmass ? [
-    // The Fanmass report: what the local AI measured only; the clicker tabs live in the clicker report
+    // The Fanmass report: what the local AI measured only; the clicker tabs live in the clicker report. The overview
+    // carries the victory podiums and the demographics quadrant (vision data); its clicker parts hide without data.
+    ...(vision ? [{ id: 'overview' as const, label: 'Executive Overview', icon: '🏆' }] : []),
     ...(vision ? [{ id: 'vision' as const, label: visionLabel, icon: '🤖' }] : []),
     ...(hasTerritoryData ? [{ id: 'territory' as const, label: 'Territory Map', icon: '🗺️' }] : []),
     ...(data.demographics ? [{ id: 'demographics' as const, label: 'Audience Demographics', icon: '👥' }] : []),

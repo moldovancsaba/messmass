@@ -1905,8 +1905,9 @@ Fanmass's `otpbankpickszeged` are one hashtag. The Fanmass report pages (`/repor
 render the interactive dashboard in its Fanmass mode (`components/hashtagReport/FanmassDashboardPage.tsx`,
 `lib/hashtagReport/dashboard.ts`): the vision charts and image proofs Fanmass published for the scope (or the vision the
 stored photos give, `visionFromReport`), the territory map fed by the events with Fanmass photos, demographics from the
-vision, and the measured figures in a Figures tab; the header shows Fanmass figures and the clicker tabs (overview,
-match explorer, funnel, typed match table) are left out. In the Fanmass report a typed hashtag brings all the photos of its events,
+vision, and the measured figures in a Figures tab; the Executive Overview opens first with the victory podiums of brands and clubs
+and the demographics quadrant (its clicker parts hide with the clicker data left out); the header shows Fanmass figures
+and the clicker tabs (match explorer, funnel, typed match table) are left out. In the Fanmass report a typed hashtag brings all the photos of its events,
 a hashtag Fanmass wrote (a brand, an emotion) only the photos it was found in. The reports never mix: the clicker report (counts people entered by hand,
 `/filter/[slug]` and the Clicker section of `/admin/filter`) and the Fanmass report (`lib/hashtagReport`,
 `/report/hashtag/[x]`, `/report/filter/[slug]`, `/report/global`, the Fanmass section of `/admin/filter`).
