@@ -3,6 +3,7 @@
 
 import React, { useState, useMemo } from 'react';
 import BrandLogo from './BrandLogo';
+import BrandDetailModal, { type BrandDetailStat } from './BrandDetailModal';
 import {
   getBrandCluster,
   isSportFranchise,
@@ -35,6 +36,8 @@ export default function FanmassBrandsMatrix({
   const [filter, setFilter] = useState<ClusterFilter>('all');
   const [searchQuery, setSearchQuery] = useState('');
   const [isExpanded, setIsExpanded] = useState(false);
+  // The brand whose proof photos are open (the same window the overview opens: crops with the box where the name was read)
+  const [proofOf, setProofOf] = useState<BrandDetailStat | null>(null);
 
   // 1. Strict separation: Filter out sport franchises and arenas/venues completely
   const commercialBrands = useMemo(() => {
@@ -294,6 +297,9 @@ export default function FanmassBrandsMatrix({
                     }}
                   />
                 </div>
+                <button type="button" className={styles.brandProofBtn} onClick={() => setProofOf(item)}>
+                  🔍 See the photos
+                </button>
               </div>
             );
           })}
@@ -325,6 +331,8 @@ export default function FanmassBrandsMatrix({
           </button>
         </div>
       )}
+
+      <BrandDetailModal brand={proofOf} totalPhotosProcessed={totalPhotosProcessed} onClose={() => setProofOf(null)} />
     </div>
   );
 }

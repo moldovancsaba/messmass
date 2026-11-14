@@ -2345,3 +2345,19 @@
     page-break-inside: avoid;
   }
 }
+
+/* The button on a brand card that opens its proof photos (BrandDetailModal) */
+.brandProofBtn {
+  margin-top: var(--mm-space-3);
+  align-self: flex-start;
+  padding: var(--mm-space-1) var(--mm-space-3);
+  border-radius: 9999px;
+  border: 1px solid var(--mm-gray-300);
+  background: var(--mm-white);
+  color: var(--mm-gray-800);
+  font: inherit;
+  font-size: var(--mm-font-size-sm);
+  font-weight: var(--mm-font-weight-semibold);
+  cursor: pointer;
+}
+
