@@ -42,7 +42,8 @@ space and the sha, so the ledger headings ("Re-verification ledger @ ...") and t
 2026-10-11 paragraph below, which now says "checked at", are not measured.
 Results: 93 entries, 40 TRUE, 40 CHANGED, 1 NOT RE-CHECKABLE and 12 NEW (four
 still open from before, 68, 81, 82 and 83, and eight found in this round, 86 to
-93, in §11). Nothing was fixed in code by this round.
+93, in §11). Nothing was fixed in code by this round. Fixed the same day in documentation:
+86 (now FIXED) and the README badge noted under 22.
 
 **Re-verification and fixes 2026-10-11 (checked at 96dd913c, v12.3.42).**
 Every entry below was checked again on origin/main at 96dd913c, 5 commits after
@@ -113,7 +114,7 @@ line numbers of the old ledger still hold. Architecture.md lines are for
 | 19 | features-authentication.md corrected (§1b) | CHANGED | four layers `:17`, HS256 `:262`, grant facts `:247` (= `lib/pageAccess.ts:25,36,42,102,146`, unchanged); Machine API Keys moved to `:1189`; the `PageType` list `:331-332` no longer equals the code, which added `global-report` (entry 88) |
 | 20 | camera-app guide: bidirectional model (§1b) | CHANGED | `docs/guides/guides-tutorial-camera-app.md:24-57` now says five inbound endpoints (photo-stats added); the code has six (entry 87); operator-backfill note moved to `:188-201` |
 | 21 | api-reference.md: login 410, no WebSocket section (§1b) | TRUE | `docs/api/api-reference.md:30` (only the version line changed); no "websocket" in the file |
-| 22 | README.md badge, WebSocket, SSO, Fleet (§1b) | CHANGED | badge v12.3.47 (`README.md:15`), one release behind `package.json` 12.3.48 (d02408be bumped the version without it); SSO env `:86-88`, `:97`; Fleet `:147`, Fanmass `:151` (rewritten for the per-photo contract); no WebSocket text |
+| 22 | README.md badge, WebSocket, SSO, Fleet (§1b) | CHANGED | badge v12.3.47 (`README.md:15`) one release behind `package.json` 12.3.48 (d02408be bumped the version without it); badge raised to v12.3.48 the same day; SSO env `:86-88`, `:97`; Fleet `:147`, Fanmass `:151` (rewritten for the per-photo contract); no WebSocket text |
 | 23 | WebSocket stack deleted in code (§2) | TRUE | `server/` and `hooks/useWebSocket.ts` absent; no `ws`, `@types/ws` or `websocket` in `package.json`; no `new WebSocket(` in app, components, hooks, lib |
 | 24 | WebSocket claims removed from the named docs (§2) | TRUE | `docs/operations/ops-warp.md:296,1043` (one-for-one line edits only), `docs/operations/operations-roadmap.md:473,478`, `docs/guides/guides-tutorial-getting-started.md:28`, `docs/audits/system-audit-plan-2026.md:12,51` unchanged; `docs/components/components-reusable-components-inventory.md:376` (polling: `components/TopHeader.tsx:51`, unchanged); no `7654` or WebSocket text in `docs/features/features-authentication.md`; no Socket.io in `docs/DEVELOPER-CONDUCT.md` |
 | 25 | docs:audit version gate hole (§3) | TRUE | unchanged: `scripts/lib/docs-version-check.js:16`, `scripts/docs-consistency-audit.js:111-118,134` |
@@ -177,7 +178,7 @@ line numbers of the old ledger still hold. Architecture.md lines are for
 | 83 | `/admin/project-partners` still writes and reads only the legacy `partner1` / `partner2` | NEW | narrowed, still open: the page route now reads through `projectPartnerId` (`app/api/admin/project-partners/route.ts:43-44`) and writes `partner1Id` / `partner2Id` next to the legacy fields (`:124-137`); `auto-suggest/route.ts` still selects events without `partner1` (`:92-94`) and sets only `partner1` / `partner2` (`:113-118`); see §10 |
 | 84 | features-authentication.md hard-coded CORS list; middleware section said it sets the CSRF cookie | TRUE | no `allowedOrigins` list in `docs/features/features-authentication.md`; the middleware item stays correct. A third copy of the cookie claim, in the CSRF module section, was missed (entry 93) |
 | 85 | architecture.md schema rows `variablesConfig` and `aggregation_logs` | TRUE | the core table names them only in notes (`:3669`, `:3673`); `app/api/variables-config/route.ts:15`, `app/api/cron/analytics-aggregation/route.ts:84`, `lib/analytics.types.ts:302` unchanged |
-| 86 | Docs say Fanmass does not create Messmass events; `POST /api/integrations/fanmass/match-events` does | NEW | `docs/architecture.md:3973,3992`, `docs/guides/guides-tutorial-fanmass.md:15` vs `app/api/integrations/fanmass/match-events/route.ts`, `lib/fanmassMatchEvents.ts:58` (244809cf); see §11 |
+| 86 | Docs say Fanmass does not create Messmass events; `POST /api/integrations/fanmass/match-events` does | FIXED | fixed the same day: `docs/architecture.md` (the photo-first contract paragraph and the photo-level section) and `docs/guides/guides-tutorial-fanmass.md:15` now say the only events Fanmass creates are match events of SZRT drive photos (`lib/fanmassMatchEvents.ts`) |
 | 87 | Camera bridge: comment and docs name four or five inbound routes and two operator routes; the code has six and four | NEW | `lib/cameraClient.ts:12-14`; `docs/guides/guides-tutorial-camera-app.md:33,188-201,226-231`; `docs/_audit/messmass-in-the-fleet.md:10-15`; see §11 |
 | 88 | features-authentication.md `PageType` list misses `global-report` | NEW | `docs/features/features-authentication.md:331-332` vs `lib/pagePassword.ts:23` (f68b473c); see §11 |
 | 89 | architecture.md schema summary misses nine collections the app now opens | NEW | `docs/architecture.md:3658,3676` vs `.collection(...)` calls in app and lib; see §11 |
@@ -186,8 +187,8 @@ line numbers of the old ledger still hold. Architecture.md lines are for
 | 92 | HANDOVER.md still describes the `/sync` + `/callbacks` pull; its code has no caller | NEW | `HANDOVER.md:167-169`; routes answer 410 since af08b361; `lib/fanmassIntegration.ts:259,358`; see §11 |
 | 93 | architecture.md CSRF module: "HttpOnly" cookie that "middleware sets" | NEW | `docs/architecture.md:2500,2507,2512` vs `lib/csrf.ts:124` (`httpOnly: false`) and `middleware.ts:150-152`; see §11 |
 
-Counts: 93 entries: 40 TRUE, 40 CHANGED, 0 FIXED, 1 NOT RE-CHECKABLE and 12 NEW
-(still open from before: 68, 81, 82, 83; found in this round: 86 to 93).
+Counts: 93 entries: 40 TRUE, 40 CHANGED, 1 FIXED (86, the same day), 1 NOT RE-CHECKABLE and 11 NEW
+(still open from before: 68, 81, 82, 83; found in this round: 87 to 93).
 
 ## Re-verification ledger @ 96dd913c (2026-10-11; history)
 
