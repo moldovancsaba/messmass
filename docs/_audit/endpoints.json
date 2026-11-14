@@ -131,6 +131,7 @@
   {"path": "/api/grid-settings", "methods": ["GET", "PUT"], "file": "app/api/grid-settings/route.ts", "auth_markers": ["requireSession"], "no_auth_marker": false},
   {"path": "/api/hashtag-categories", "methods": ["GET", "POST", "PUT", "DELETE"], "file": "app/api/hashtag-categories/route.ts", "auth_markers": ["requireAdmin"], "no_auth_marker": false},
   {"path": "/api/hashtag-colors", "methods": ["GET", "POST", "PUT", "DELETE"], "file": "app/api/hashtag-colors/route.ts", "auth_markers": ["requireAdmin"], "no_auth_marker": false},
+  {"path": "/api/hashtag-report/[hashtag]", "methods": ["GET"], "file": "app/api/hashtag-report/[hashtag]/route.ts", "auth_markers": ["requirePageAccess"], "no_auth_marker": false},
   {"path": "/api/hashtags/[hashtag]", "methods": ["GET"], "file": "app/api/hashtags/[hashtag]/route.ts", "auth_markers": [], "no_auth_marker": true},
   {"path": "/api/hashtags/filter", "methods": ["GET", "POST"], "file": "app/api/hashtags/filter/route.ts", "auth_markers": ["requireSession"], "no_auth_marker": false},
   {"path": "/api/hashtags/filter-by-slug/[slug]", "methods": ["GET"], "file": "app/api/hashtags/filter-by-slug/[slug]/route.ts", "auth_markers": ["requirePageAccess"], "no_auth_marker": false},
