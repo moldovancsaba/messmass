@@ -16,6 +16,7 @@ import {
   isSportFranchise,
   isVenue,
   canonicalizeClub,
+  mergeBrandVariants,
   isGenericVisionDescription,
 } from '@/lib/brandEntityClustering';
 import { getReportSlug } from './reportSlug';
@@ -175,10 +176,10 @@ export default function OverviewTab({
     const rawBrands = (!isAll && activeSportBreakdown?.topBrands && activeSportBreakdown.topBrands.length > 0)
       ? activeSportBreakdown.topBrands
       : (vision?.aggregates?.topBrands || []);
-    return rawBrands.filter((b) => {
+    return mergeBrandVariants(rawBrands.filter((b) => {
       if (!b.brand || b.count <= 0) return false;
       return !isSportFranchise(b.brand) && !isVenue(b.brand);
-    });
+    }));
   }, [isAll, activeSportBreakdown?.topBrands, vision?.aggregates?.topBrands]);
 
   const filteredClubs = useMemo(() => {

@@ -96,17 +96,16 @@ export default function SzrtHeader({ data, activeTab, onTabChange }: SzrtHeaderP
             {mapHref && (
               <a
                 href={mapHref}
-                className={styles.shareBtn}
-                style={{ background: '#0f2c4a', color: '#ffffff', textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: '6px' }}
+                className={styles.mapActionBtn}
                 title="Open dedicated full-screen territory and venue analytics map"
               >
-                🗺️ Dedicated Territory Map ➔
+                🗺️ Territory Map ➔
               </a>
             )}
-            <button onClick={handleCopyLink} className={styles.shareBtn}>
-              🔗 {copied ? 'Copied to Clipboard!' : 'Share Live Report'}
+            <button onClick={handleCopyLink} className={styles.shareActionBtn}>
+              🔗 {copied ? 'Copied Link!' : 'Share Report'}
             </button>
-            <button onClick={() => window.print()} className={styles.printBtn}>
+            <button onClick={() => window.print()} className={styles.printActionBtn}>
               🖨️ Print / PDF
             </button>
           </div>

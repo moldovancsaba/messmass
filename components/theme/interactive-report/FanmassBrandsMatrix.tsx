@@ -7,6 +7,7 @@ import {
   getBrandCluster,
   isSportFranchise,
   isVenue,
+  mergeBrandVariants,
   BrandClusterId,
 } from '@/lib/brandEntityClustering';
 import styles from './interactive-report.module.css';
@@ -37,11 +38,12 @@ export default function FanmassBrandsMatrix({
 
   // 1. Strict separation: Filter out sport franchises and arenas/venues completely
   const commercialBrands = useMemo(() => {
-    return rawBrands.filter((b) => {
+    const filtered = rawBrands.filter((b) => {
       if (!b.brand || b.brand.trim().length <= 1) return false;
       if (isSportFranchise(b.brand) || isVenue(b.brand)) return false;
       return true;
     });
+    return mergeBrandVariants(filtered);
   }, [rawBrands]);
 
   const maxCount = useMemo(() => {

@@ -292,6 +292,46 @@ export const SPORT_FRANCHISES_DIRECTORY: Record<string, FranchiseInfo> = {
 /**
  * Checks whether an entity is a sport franchise / club.
  */
+/**
+ * Canonicalizes commercial brand display names so spelling/OCR variants merge
+ * into a single brand row (e.g. "TippmixPro.Hu", "Borsodi Tippmix" -> "Tippmix").
+ */
+export function canonicalizeBrandName(rawName: string): string {
+  if (!rawName) return rawName;
+  const trimmed = rawName.trim();
+  const low = trimmed.toLowerCase();
+  if (low.replace(/\s+/g, '').includes('tippmix')) return 'Tippmix';
+  if (low.includes('szerencsejáték') || low.includes('szerencsejatek') || low === 'szrt') {
+    return 'Szerencsejáték Zrt.';
+  }
+  return trimmed;
+}
+
+/**
+ * Merges a brand list by canonical name, summing counts and keeping the first logo found.
+ */
+export function mergeBrandVariants<T extends { brand: string; count: number; logoUrl?: string }>(
+  brands: T[]
+): T[] {
+  const map = new Map<string, T>();
+  for (const b of brands) {
+    if (!b?.brand) continue;
+    const name = canonicalizeBrandName(b.brand);
+    const key = name.toLowerCase();
+    const existing = map.get(key);
+    if (existing) {
+      existing.count += b.count;
+      if (!existing.logoUrl && b.logoUrl) existing.logoUrl = b.logoUrl;
+    } else {
+      map.set(key, { ...b, brand: name });
+    }
+  }
+  return Array.from(map.values()).sort((a, b) => b.count - a.count);
+}
+
+/**
+ * Checks whether an entity is a sport franchise / club.
+ */
 export function isSportFranchise(rawName: string): boolean {
   if (!rawName) return false;
   const norm = rawName.toLowerCase().trim();
