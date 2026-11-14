@@ -117,7 +117,7 @@ it drifts. Do not edit between the markers.
 | **Hooks** | 13 | `hooks/` |
 | **Design Tokens** | 410 | `app/styles/theme.css` |
 | **Utility CSS classes** | 192 | `app/styles/utilities.css` |
-| **App routes (pages)** | 85 | `app/**/page.tsx` |
+| **App routes (pages)** | 86 | `app/**/page.tsx` |
 | **API routes** | 242 | `app/api/**/route.ts` |
 
 The modules with the most importers — the ones whose change radius is
@@ -127,7 +127,7 @@ largest, and the ones to read first:
 |--------|-----------|-------|
 | `lib/config.ts` | 127 | 207 |
 | `lib/mongodb.ts` | 110 | 112 |
-| `lib/auth.ts` | 97 | 118 |
+| `lib/auth.ts` | 98 | 118 |
 | `lib/logger.ts` | 94 | 392 |
 | `lib/apiGuards.ts` | 87 | 390 |
 | `components/ColoredCard.tsx` | 44 | 52 |
@@ -997,7 +997,7 @@ shows up here on the next regeneration, which is the point.
 
 <!-- GENERATED:routes -->
 
-### Pages (85)
+### Pages (86)
 
 | Route | File |
 |-------|------|
@@ -1075,6 +1075,7 @@ shows up here on the next regeneration, which is the point.
 | `/interactive-report/[partnerSlug]/map` | `app/interactive-report/[partnerSlug]/map/page.tsx` |
 | `/interactive-report/[partnerSlug]/territory` | `app/interactive-report/[partnerSlug]/territory/page.tsx` |
 | `/interactive-report/event/[id]` | `app/interactive-report/event/[id]/page.tsx` |
+| `/interactive-report/filter/[slug]` | `app/interactive-report/filter/[slug]/page.tsx` |
 | `/interactive-report/global` | `app/interactive-report/global/page.tsx` |
 | `/interactive-report/hashtag/[hashtag]` | `app/interactive-report/hashtag/[hashtag]/page.tsx` |
 | `/interactive-report/partner/[slug]` | `app/interactive-report/partner/[slug]/page.tsx` |
