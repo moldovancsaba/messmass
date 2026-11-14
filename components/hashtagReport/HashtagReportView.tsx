@@ -65,6 +65,13 @@ export default function HashtagReportView({ report }: { report: HashtagReport })
   const { photos, counters } = measured;
   const { drive } = measured;
   const hasMeasuredData = coverage.eventsWithCounters > 0 || coverage.eventsWithPhotoResults > 0 || drive.photos > 0 || photos.tagged > 0;
+  // The Camera block shows only when Camera measured something for this hashtag; drive photos have their own block
+  const hasCameraData = coverage.eventsWithCounters > 0 || coverage.eventsWithPhotoResults > 0 || photos.tagged > 0;
+  const scopeText = [
+    `${fmt(coverage.events)} ${coverage.events === 1 ? 'event carries' : 'events carry'} it`,
+    drive.photos > 0 ? `${fmt(drive.photos)} drive photos` : '',
+    photos.tagged > 0 ? `${fmt(photos.tagged)} tagged Camera photos` : '',
+  ].filter(Boolean).join(', ');
   const taken = Object.prototype.hasOwnProperty.call(counters, 'camera_images_taken') ? fmt(counters.camera_images_taken) : null;
 
   return (
@@ -73,8 +80,8 @@ export default function HashtagReportView({ report }: { report: HashtagReport })
         <span className={styles.eyebrow}>Hashtag report</span>
         <h1 className={styles.title}>#{scope.id}</h1>
         <p className={styles.lead}>
-          What Fanmass and Camera measured across the {fmt(coverage.events)} {coverage.events === 1 ? 'event that carries' : 'events that carry'}{' '}
-          this hashtag, and what Messmass calculates from it. Nothing in this report is typed in by hand.
+          What Fanmass and Camera measured for this hashtag ({scopeText}), and what Messmass calculates from it. Nothing in this
+          report is typed in by hand.
         </p>
       </header>
 
@@ -90,6 +97,7 @@ export default function HashtagReportView({ report }: { report: HashtagReport })
         </div>
       ) : (
         <>
+          {hasCameraData && (<>
           <section className={styles.kpiGrid} aria-label="Key figures">
             <Kpi label="Photos taken" value={taken} text="Counted by Camera across the events" />
             <Kpi label="Photos analysed" value={photos.analysed > 0 ? fmt(photos.analysed) : null} text={detail(calculated.analysedShare)} />
@@ -104,6 +112,7 @@ export default function HashtagReportView({ report }: { report: HashtagReport })
             <Bars title="Age groups" counts={photos.ageGroups} note="People with a measured age" />
             <Bars title="Emotions" counts={photos.emotions} note={sentence(calculated.smilingShare, 'are smiling')} />
           </div>
+          </>)}
           {drive.photos > 0 && (
             <>
               <section className={styles.card}>
@@ -115,7 +124,7 @@ export default function HashtagReportView({ report }: { report: HashtagReport })
                 </p>
                 <div className={styles.kpiGrid}>
                   <Kpi label="Drive photos" value={fmt(drive.photos)} text={detail(calculated.drivePlacedShare)} />
-                  <Kpi label="Placed in an event" value={drive.placed > 0 ? fmt(drive.placed) : null} text={detail(calculated.driveConfidentShare)} />
+                  <Kpi label="Placed in an event" value={drive.placed > 0 ? fmt(drive.placed) : null} text={drive.placed > 0 ? `${fmt(drive.placedOverHalf)} of them with over 50% confidence` : 'None placed yet'} />
                   <Kpi label="Analysed by Fanmass" value={percent(calculated.driveAnalysedShare)} text={detail(calculated.driveAnalysedShare)} />
                   <Kpi label="Opt-in recorded" value={percent(calculated.driveOptInShare)} text={detail(calculated.driveOptInShare)} />
                 </div>

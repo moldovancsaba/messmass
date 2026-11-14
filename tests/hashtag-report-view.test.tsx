@@ -83,7 +83,10 @@ describe('the hashtag report page', () => {
       <HashtagReportView report={report({ events: [event({ hasCounters: false, hasPhotoResults: false, drivePhotos: 2 })], counters: {}, photos: mergePhotoSummaries([]), drive })} />,
     );
     expect(html).toContain('Drive photos tagged #derby or placed in these events');
-    expect(html).toContain('1 of 2 drive photos placed in events');
+    expect(html).toContain('1 of them with over 50% confidence');
+    expect(html).toContain('1 event carries it, 2 drive photos');
+    // No Camera data for this hashtag: no row of "Not measured" Camera figures
+    expect(html).not.toContain('Photos taken');
     expect(html).toContain('2 of 2 drive photos');
     expect(html).toContain('Veolia');
     expect(html).toContain('DVTK');
