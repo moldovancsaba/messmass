@@ -34,5 +34,19 @@ export function eventHashtags(event: Record<string, unknown> | null | undefined)
   return [...new Set(raw.filter((v): v is string => typeof v === 'string').map(toPhotoHashtag).filter(Boolean))];
 }
 
-/** The photo's own hashtags followed by its event's, once each. */
-export const withEventHashtags = (photo: string[], event: string[]): string[] => [...new Set([...photo, ...event])];
+/** The identity of a hashtag: its photo form without underscores. People type long names with underscores
+ * (otp_bank_pick_szeged) and short ones without (ujpestfc); Fanmass writes names without (otpbankpickszeged). The
+ * underscore is spelling only, so typed and automatic hashtags of the same name are the same hashtag. */
+export const compactHashtag = (text: string): string => toPhotoHashtag(text.trim().replace(/^#/, '')).replace(/_/g, '');
+
+/** Matches every spelling of a hashtag in the database: any case, a leading #, underscores anywhere. */
+export function hashtagSpellings(text: string): RegExp {
+  const letters = compactHashtag(text).split('');
+  return new RegExp(`^#?${letters.join('_*')}$`, 'i');
+}
+
+/** The photo's own hashtags followed by its event's, once each (one spelling per hashtag: the event's typed one wins). */
+export function withEventHashtags(photo: string[], event: string[]): string[] {
+  const typed = new Set(event.map(compactHashtag));
+  return [...new Set([...photo.filter((tag) => !typed.has(compactHashtag(tag))), ...event])];
+}

@@ -100,14 +100,6 @@ const nextConfig = {
         permanent: true, // 301 redirect for SEO preservation
       },
       {
-        // A shared filter link opens the unified report (Fanmass data, Messmass calculations); the previous filter page
-        // stays at ?report=classic, and a saved variant (?variant=) still opens it
-        source: '/filter/:slug',
-        missing: [{ type: 'query', key: 'report' }, { type: 'query', key: 'variant' }],
-        destination: '/report/filter/:slug',
-        permanent: false,
-      },
-      {
         source: '/interactive-report/szrt',
         destination: '/report/hashtag/tippmixreport2026',
         permanent: true,

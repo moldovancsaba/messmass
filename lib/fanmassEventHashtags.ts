@@ -6,6 +6,8 @@
 
 import { ObjectId, type Db } from 'mongodb';
 
+import { compactHashtag } from './photoHashtags';
+
 export const EVENT_HASHTAGS_CONTRACT = 'fanmass.messmass.event-hashtags.v1';
 const MAX_EVENTS = 500;
 const MAX_HASHTAGS = 5;
@@ -36,10 +38,10 @@ export function parseEventHashtagsRequest(body: unknown): EventHashtagsRequest {
   return { hashtags, eventIds };
 }
 
-/** Every tag an event carries, lowercase, from its plain list and every category list. */
+/** Every hashtag an event carries, in its compact identity (lib/photoHashtags.ts), from its plain and category lists. */
 function carried(event: Record<string, unknown>): Set<string> {
   const out = new Set<string>();
-  const add = (list: unknown) => { if (Array.isArray(list)) for (const tag of list) out.add(String(tag).replace(/^#/, '').toLowerCase()); };
+  const add = (list: unknown) => { if (Array.isArray(list)) for (const tag of list) out.add(compactHashtag(String(tag))); };
   add(event.hashtags);
   const categorized = event.categorizedHashtags;
   if (categorized && typeof categorized === 'object' && !Array.isArray(categorized)) Object.values(categorized).forEach(add);
@@ -57,7 +59,7 @@ export async function addEventHashtags(db: Db, input: EventHashtagsRequest, now 
     if (!event) { result.missing.push(id); continue; }
     if (event.hashtags !== undefined && event.hashtags !== null && !Array.isArray(event.hashtags)) { result.skipped.push(id); continue; }
     const have = carried(event);
-    const missing = input.hashtags.filter((tag) => !have.has(tag));
+    const missing = input.hashtags.filter((tag) => !have.has(compactHashtag(tag)));
     if (!missing.length) { result.unchanged.push(id); continue; }
     await db.collection('projects').updateOne(
       { _id: new ObjectId(id) },
@@ -66,4 +68,52 @@ export async function addEventHashtags(db: Db, input: EventHashtagsRequest, now 
     result.added.push({ eventId: id, hashtags: missing });
   }
   return result;
+}
+
+/** Fanmass hashtags of every event: the hashtags Fanmass wrote onto its photos (drive and Camera), without the event's own
+ * typed hashtags (Messmass copies those onto each photo), kept in `fanmassHashtags` apart from the typed `hashtags`.
+ * Owner 2026-11-14: typed and automatic hashtags work together in the filter, the reports stay separate. Recomputed
+ * whole on every call, so a photo that moved or was erased takes its hashtags with it. */
+export async function refreshFanmassHashtags(db: Db, now = new Date()): Promise<{ events: number; changed: number; cleared: number }> {
+  const perEvent = (collection: string, match: Record<string, unknown>) => db.collection(collection).aggregate([
+    { $match: { ...match, eventId: { $nin: [null, ''] }, 'hashtags.0': { $exists: true } } },
+    { $unwind: '$hashtags' },
+    { $group: { _id: '$eventId', tags: { $addToSet: '$hashtags' } } },
+  ]).toArray();
+  const [drive, camera] = await Promise.all([
+    perEvent('fanmass_event_drive_photos', {}),
+    perEvent('fanmass_camera_photo_analyses', { tombstone: { $ne: true }, status: 'completed' }),
+  ]);
+  const tagsOf = new Map<string, Set<string>>();
+  for (const row of [...drive, ...camera]) {
+    const id = String(row._id);
+    if (!ObjectId.isValid(id) || id.length !== 24) continue;
+    const set = tagsOf.get(id) ?? new Set<string>();
+    for (const tag of row.tags as string[]) set.add(String(tag).toLowerCase());
+    tagsOf.set(id, set);
+  }
+  const ids = [...tagsOf.keys()];
+  const events = ids.length
+    ? await db.collection('projects').find({ _id: { $in: ids.map((id) => new ObjectId(id)) } }, { projection: { hashtags: 1, categorizedHashtags: 1, fanmassHashtags: 1 } }).toArray()
+    : [];
+  let changed = 0;
+  for (const event of events) {
+    const typed = carried(event as Record<string, unknown>);
+    const tags = [...(tagsOf.get(String(event._id)) ?? [])].filter((tag) => !typed.has(compactHashtag(tag))).sort().slice(0, 300);
+    if (JSON.stringify(tags) === JSON.stringify(event.fanmassHashtags ?? [])) continue;
+    await db.collection('projects').updateOne({ _id: event._id }, { $set: { fanmassHashtags: tags, fanmassHashtagsAt: now.toISOString() } });
+    changed += 1;
+  }
+  // An event whose photos all left keeps no Fanmass hashtags
+  const stale = await db.collection('projects').updateMany(
+    { fanmassHashtags: { $exists: true }, _id: { $nin: events.map((event) => event._id) } },
+    { $unset: { fanmassHashtags: '', fanmassHashtagsAt: '' } },
+  );
+  return { events: events.length, changed, cleared: stale.modifiedCount };
+}
+
+/** Every event's identity, for Fanmass to find the Messmass event of a campaign game by its date and clubs. */
+export async function listEvents(db: Db): Promise<Array<{ id: string; name: string; date: string }>> {
+  const rows = await db.collection('projects').find({}, { projection: { eventName: 1, eventDate: 1 } }).limit(20000).toArray();
+  return rows.map((row) => ({ id: String(row._id), name: String(row.eventName ?? ''), date: String(row.eventDate ?? '') }));
 }

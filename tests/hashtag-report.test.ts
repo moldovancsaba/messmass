@@ -133,9 +133,9 @@ describe('what the builder may read', () => {
     expect(report.measured.drive.events).toEqual([{ name: 'Cup', count: 2 }]);
     // A photo is found by its own hashtag as well as through the events that carry the hashtag
     const driveCall = calls.find((c) => c.collection === 'fanmass_event_drive_photos');
-    expect(driveCall?.filter).toEqual({ $or: [{ hashtags: 'anything' }, { eventId: { $in: ['e1', 'e2'] } }] });
+    expect(driveCall?.filter).toEqual({ $or: [{ hashtags: { $regex: /^#?a_*n_*y_*t_*h_*i_*n_*g$/i } }, { eventId: { $in: ['e1', 'e2'] } }] });
     // Camera photo results tagged with the hashtag are counted in any event
-    expect(calls.find((c) => c.collection === 'fanmass_camera_photo_analyses#count' && 'hashtags' in c.filter)?.filter).toMatchObject({ hashtags: 'anything' });
+    expect(calls.find((c) => c.collection === 'fanmass_camera_photo_analyses#count' && 'hashtags' in c.filter)?.filter).toMatchObject({ hashtags: { $regex: /^#?a_*n_*y_*t_*h_*i_*n_*g$/i } });
     expect(report.calculated.driveConfidentShare).toMatchObject({ value: 50, numerator: 1, denominator: 2 });
     expect(report.calculated.driveOptInShare.value).toBe(100);
   });
@@ -151,19 +151,21 @@ describe('what the builder may read', () => {
     expect(JSON.stringify(report)).not.toContain('Nike');
   });
 
-  it('finds the events of a hashtag written with or without #, in any case, inside one organization when asked', () => {
-    const filter = hashtagFilter('#Derby', 'org_1') as { $or: Array<Record<string, unknown>>; organizationId: string };
+  it('finds the events of a hashtag in every spelling (#, case, underscores), inside one organization when asked', () => {
+    const filter = hashtagFilter('#Otp_Bank', 'org_1') as { $or: Array<Record<string, any>>; organizationId: string };
     expect(filter.organizationId).toBe('org_1');
-    expect(filter.$or[0]).toEqual({ hashtags: 'derby' });
-    expect(filter.$or[1]).toEqual({ hashtags: '#derby' });
-    expect((filter.$or[2].hashtags as { $regex: RegExp }).$regex.test('#derby')).toBe(true);
-    // ...and as one comma-separated text, like the classic hashtag report
-    const listed = (filter.$or[3].hashtags as { $regex: RegExp }).$regex;
-    expect(listed.test('cup, Derby ,final')).toBe(true);
-    expect(listed.test('derbyshire')).toBe(false);
-    // ...and in any category list, like the admin hashtag filter (lowercased on both sides)
-    expect(JSON.stringify(filter.$or[4])).toContain('categorizedHashtags');
-    expect(JSON.stringify(filter.$or[4])).toContain('"derby"');
+    const plain = filter.$or[0].hashtags.$regex as RegExp;
+    for (const spelling of ['otp_bank', 'otpbank', '#OTPBank', 'o_t_p_bank']) expect(plain.test(spelling)).toBe(true);
+    expect(plain.test('otpbankpickszeged')).toBe(false);
+    // ...as one comma-separated text, like the classic hashtag report
+    const listed = filter.$or[1].hashtags.$regex as RegExp;
+    expect(listed.test('cup, OTP_Bank ,final')).toBe(true);
+    expect(listed.test('otpbanking')).toBe(false);
+    // ...in the hashtags Fanmass wrote onto the event's photos (they work together with the typed ones)...
+    expect((filter.$or[2].fanmassHashtags.$regex as RegExp).test('otpbank')).toBe(true);
+    // ...and in any category list, compared without case, # or underscores
+    expect(JSON.stringify(filter.$or[3])).toContain('categorizedHashtags');
+    expect(JSON.stringify(filter.$or[3])).toContain('"otpbank"');
   });
 
   it('matches a category:tag query in that category only, and several hashtags all together', () => {
@@ -268,8 +270,10 @@ describe('several hashtags together (the hashtag filter)', () => {
     const report = await buildFilterReport(db, ['#TippmixReport2026', 'campaign:happy', 'happy'], 'saved');
     expect(report.scope).toEqual({ type: 'filter', id: 'saved', tags: ['TippmixReport2026', 'campaign:happy', 'happy'] });
     expect(calls.find((c) => c.name === 'projects')?.filter.$and).toHaveLength(3);
-    // Photo hashtags are in photo form: lowercase, a category prefix dropped
-    expect(calls.find((c) => c.name === 'fanmass_event_drive_photos')?.filter).toEqual({ hashtags: { $all: ['tippmixreport2026', 'happy', 'happy'] } });
+    // Photo hashtags in every spelling, a category prefix dropped
+    const all = calls.find((c) => c.name === 'fanmass_event_drive_photos')?.filter.hashtags.$all as RegExp[];
+    expect(all.map((re) => re.test('tippmix_report_2026'))).toEqual([true, false, false]);
+    expect(all.map((re) => re.test('happy'))).toEqual([false, true, true]);
     expect(report.measured.photos.tagged).toBe(3);
   });
 

@@ -8,7 +8,13 @@ import {
 import { CategorizedHashtagMap } from '@/lib/hashtagCategoryTypes';
 import config from '@/lib/config';
 import { requireSession } from '@/lib/apiGuards';
-import { toPhotoHashtag } from '@/lib/photoHashtags';
+import { compactHashtag, hashtagSpellings } from '@/lib/photoHashtags';
+
+/** A filter query in compact identity, its category prefix kept: `sport:ice_hockey` -> `sport:icehockey`. */
+function spelledAsOne(query: string): string {
+  const { category, hashtag } = parseHashtagQuery(query);
+  return category ? `${category}:${compactHashtag(hashtag)}` : compactHashtag(hashtag);
+}
 import { buildFilterReport } from '@/lib/hashtagReport';
 import type { ReportDb } from '@/lib/hashtagReport/measured';
 
@@ -91,9 +97,12 @@ const db = client.db(config.dbName);
     const projects = allProjects.filter(project => {
       // Check if project contains ALL specified hashtags (AND logic)
       return hashtags.every(hashtagQuery => 
-        matchHashtagInProject(hashtagQuery, {
-          hashtags: project.hashtags,
-          categorizedHashtags: project.categorizedHashtags
+        matchHashtagInProject(spelledAsOne(hashtagQuery), {
+          // Typed hashtags and the ones Fanmass wrote onto the event's photos work together (owner 2026-11-14), and an
+          // underscore is spelling only (otp_bank_pick_szeged = otpbankpickszeged, lib/photoHashtags.ts compactHashtag)
+          hashtags: [...(Array.isArray(project.hashtags) ? project.hashtags : []), ...(Array.isArray(project.fanmassHashtags) ? project.fanmassHashtags : [])].map((tag) => compactHashtag(String(tag))),
+          categorizedHashtags: Object.fromEntries(Object.entries(project.categorizedHashtags && typeof project.categorizedHashtags === 'object' ? project.categorizedHashtags : {})
+            .map(([category, list]) => [category, Array.isArray(list) ? list.map((tag) => compactHashtag(String(tag))) : []])),
         })
       );
     });
@@ -115,8 +124,8 @@ const db = client.db(config.dbName);
     const report = searchParams.get('report') === '1' ? await buildFilterReport(db as unknown as ReportDb, hashtags) : null;
 
     // Photos Fanmass tagged with every hashtag (photo form: lowercase, a category prefix dropped), for the preview
-    const photoTags = hashtags.map((tag) => toPhotoHashtag(parseHashtagQuery(tag).hashtag));
-    const photoMatch = { hashtags: photoTags.length === 1 ? photoTags[0] : { $all: photoTags } };
+    const photoTags = hashtags.map((tag) => hashtagSpellings(parseHashtagQuery(tag).hashtag));
+    const photoMatch = { hashtags: photoTags.length === 1 ? { $regex: photoTags[0] } : { $all: photoTags } };
     const [drivePhotos, cameraPhotos] = await Promise.all([
       db.collection('fanmass_event_drive_photos').countDocuments(photoMatch),
       db.collection('fanmass_camera_photo_analyses').countDocuments({ ...photoMatch, tombstone: { $ne: true }, status: 'completed' }),

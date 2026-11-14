@@ -118,7 +118,7 @@ it drifts. Do not edit between the markers.
 | **Design Tokens** | 410 | `app/styles/theme.css` |
 | **Utility CSS classes** | 192 | `app/styles/utilities.css` |
 | **App routes (pages)** | 86 | `app/**/page.tsx` |
-| **API routes** | 246 | `app/api/**/route.ts` |
+| **API routes** | 248 | `app/api/**/route.ts` |
 
 The modules with the most importers — the ones whose change radius is
 largest, and the ones to read first:
@@ -130,8 +130,8 @@ largest, and the ones to read first:
 | `lib/auth.ts` | 98 | 118 |
 | `lib/logger.ts` | 96 | 392 |
 | `lib/apiGuards.ts` | 87 | 390 |
+| `lib/fanmassIntegration.ts` | 45 | 485 |
 | `components/ColoredCard.tsx` | 44 | 52 |
-| `lib/fanmassIntegration.ts` | 43 | 485 |
 | `lib/apiClient.ts` | 42 | 258 |
 | `lib/db.ts` | 42 | 17 |
 | `components/MaterialIcon.tsx` | 34 | 119 |
@@ -1088,7 +1088,7 @@ shows up here on the next regeneration, which is the point.
 | `/terms` | `app/terms/page.tsx` |
 | `/test-csrf` | `app/test-csrf/page.tsx` |
 
-### API routes (246)
+### API routes (248)
 
 `auth` is the guard symbol the route actually calls. A blank cell
 means the route calls none — public by construction, or a gap.
@@ -1428,6 +1428,7 @@ means the route calls none — public by construction, or a gap.
 | `/api/integrations/fanmass/drive-folders/pending-sync` | GET | `requireFanmassIntegrationAuth` |
 | `/api/integrations/fanmass/drive-photos` | POST | `requireFanmassIntegrationAuth` |
 | `/api/integrations/fanmass/event-hashtags` | POST | `requireFanmassIntegrationAuth` |
+| `/api/integrations/fanmass/event-list` | GET | `requireFanmassIntegrationAuth` |
 | `/api/integrations/fanmass/events` | POST | `requireFanmassIntegrationAuth` |
 | `/api/integrations/fanmass/events/[eventId]/analysis-summary` | POST | `requireFanmassIntegrationAuth` |
 | `/api/integrations/fanmass/events/[eventId]/context` | GET | `requireFanmassIntegrationAuth` |
@@ -1440,6 +1441,7 @@ means the route calls none — public by construction, or a gap.
 | `/api/integrations/fanmass/evidence` | POST | `requireFanmassIntegrationAuth` |
 | `/api/integrations/fanmass/evidence-reviews` | GET | `requireFanmassIntegrationAuth` |
 | `/api/integrations/fanmass/evidence-training` | GET | `requireFanmassIntegrationAuth` |
+| `/api/integrations/fanmass/fanmass-hashtags` | POST | `requireFanmassIntegrationAuth` |
 | `/api/integrations/fanmass/match-events` | POST | `requireFanmassIntegrationAuth` |
 | `/api/integrations/fanmass/partners` | GET, POST | `requireFanmassIntegrationAuth` |
 | `/api/integrations/fanmass/partners/[partnerId]/events` | GET | `requireFanmassIntegrationAuth` |
@@ -1892,12 +1894,21 @@ Fanmass adds campaign hashtags to the events of a campaign (`POST /api/integrati
 `lib/fanmassEventHashtags.ts`, the SZRT games get `#tippmixreport2026`): additive only, into the plain list, and only when
 no list of the event carries the hashtag yet.
 
-An event carries a hashtag when its plain list or any category list holds it (`hashtagFilter`, the same match as the admin
-hashtag filter; `category:tag` matches that category only). Several hashtags together (`buildFilterReport`) take the events
-carrying all of them and the photos tagged with all of them. The admin hashtag filter (`/admin/filter`) lists the photo
-hashtags next to the event hashtags (`GET /api/hashtags?photos=1`: events and photos per hashtag) and shows the unified
-report on Apply (`GET /api/hashtags/filter?report=1`); a filter's report (`/report/filter/[slug]`, and `/filter/[slug]`
-redirects there) is the unified one, the previous one at `?report=classic` or a saved `?variant=`.
+Two kinds of hashtags, two kinds of reports (owner 2026-11-14). Hashtags are typed by people (`hashtags`,
+`categorizedHashtags`) or written by Fanmass, the local AI (on each photo, and per event in `fanmassHashtags`: the
+hashtags of its photos without the event's typed ones, recomputed by `POST /api/integrations/fanmass/fanmass-hashtags`
+after every Fanmass publish run). The two kinds work together: an event carries a hashtag when its plain list, any
+category list or its Fanmass hashtags hold it (`hashtagFilter`, the same match as the admin hashtag filter;
+`category:tag` matches that category only). A hashtag is one name in any spelling: case, a leading # and underscores do
+not count (`compactHashtag`, `hashtagSpellings` in `lib/photoHashtags.ts`), so the typed `otp_bank_pick_szeged` and
+Fanmass's `otpbankpickszeged` are one hashtag. The reports never mix: the clicker report (counts people entered by hand,
+`/filter/[slug]` and the Clicker section of `/admin/filter`) and the Fanmass report (`lib/hashtagReport`,
+`/report/hashtag/[x]`, `/report/filter/[slug]`, `/report/global`, the Fanmass section of `/admin/filter`).
+Several hashtags together (`buildFilterReport`) take the events carrying all of them and the photos tagged with all of
+them. The admin hashtag filter lists the photo hashtags next to the event hashtags (`GET /api/hashtags?photos=1`: events
+and photos per hashtag) and on Apply shows both reports, each in its own section (`GET /api/hashtags/filter?report=1`).
+Fanmass finds the Messmass event of a campaign game without a Camera link by date and clubs in
+`GET /api/integrations/fanmass/event-list` (id, name and date of every event).
 
 Camera photo results carry hashtags the same way (`fanmass_camera_photo_analyses.hashtags`): Fanmass sends the brand and club
 names proven by text read from the picture and the emotions, genders and age groups measured in it, and Messmass adds the

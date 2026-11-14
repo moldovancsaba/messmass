@@ -26,3 +26,12 @@ describe('photo hashtags', () => {
     expect(() => parsePhotoHashtags(['two words'], fail)).toThrow();
   });
 });
+
+describe('one hashtag, every spelling', () => {
+  it('treats an underscore as spelling only, and keeps the event\'s typed spelling on a photo', () => {
+    const { compactHashtag, hashtagSpellings, withEventHashtags } = require('@/lib/photoHashtags');
+    expect(compactHashtag('#OTP_Bank_Pick_Szeged')).toBe(compactHashtag('otpbankpickszeged'));
+    expect(hashtagSpellings('ujpest_fc').test('ujpestfc')).toBe(true);
+    expect(withEventHashtags(['otpbankpickszeged', 'happy'], ['otp_bank_pick_szeged'])).toEqual(['happy', 'otp_bank_pick_szeged']);
+  });
+});
