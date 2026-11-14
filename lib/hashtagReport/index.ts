@@ -27,6 +27,7 @@ export async function buildHashtagReport(db: ReportDb, hashtag: string, organiza
       events: measured.events.length,
       eventsWithCounters: measured.events.filter((event) => event.hasCounters).length,
       eventsWithPhotoResults: measured.events.filter((event) => event.hasPhotoResults).length,
+      eventsWithDrivePhotos: measured.events.filter((event) => event.drivePhotos > 0).length,
     },
   };
 }

@@ -113,7 +113,7 @@ it drifts. Do not edit between the markers.
 | Category | Count | Location |
 |----------|-------|----------|
 | **UI Components** | 129 | `components/` |
-| **Utility Modules** | 246 | `lib/` |
+| **Utility Modules** | 247 | `lib/` |
 | **Hooks** | 13 | `hooks/` |
 | **Design Tokens** | 410 | `app/styles/theme.css` |
 | **Utility CSS classes** | 192 | `app/styles/utilities.css` |
@@ -133,7 +133,7 @@ largest, and the ones to read first:
 | `components/ColoredCard.tsx` | 44 | 52 |
 | `lib/apiClient.ts` | 42 | 258 |
 | `lib/db.ts` | 42 | 17 |
-| `lib/fanmassIntegration.ts` | 39 | 485 |
+| `lib/fanmassIntegration.ts` | 40 | 485 |
 | `components/MaterialIcon.tsx` | 34 | 119 |
 | `components/UnifiedAdminHeroWithSearch.tsx` | 27 | 192 |
 | `lib/mongoose-v3.ts` | 21 | 66 |
@@ -1871,6 +1871,12 @@ Messmass calculations and nothing typed by a person, in three layers that never 
    its numerator, denominator and basis, or nothing when the counts cannot give a real share (an unreported counter is unknown,
    never zero).
 3. **Manual numbers** are not part of this report type; they stay in the classic reports.
+
+Drive photos that Fanmass placed in an event (`POST /api/integrations/fanmass/events/[eventId]/drive-photos`,
+`fanmass_event_drive_photos`, `lib/fanmassDrivePhotos.ts`) are part of the measured layer as their own block (`measured.drive`):
+the SZRT drive library carries no event, so Fanmass placed every photo by the photo order, the clubs read in it and the fixture
+dates, with a confidence per photo. The report shows how many were placed with over 50% confidence, how many are analysed and the
+brand and club names read from them, apart from the Camera photo results (a different source and opt-in basis).
 
 Brand and club names are not in the unified report yet: a Camera photo result lists the names a model guessed ("Scarf", "Jacket"),
 not names read from the picture. They appear once Fanmass delivers the text-read proof with each photo result. The opt-in count is

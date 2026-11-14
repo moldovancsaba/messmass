@@ -30,7 +30,12 @@ export function calculate(layer: MeasuredLayer): CalculatedLayer {
   const male = photos.genders.male ?? 0;
   const female = photos.genders.female ?? 0;
 
+  const { drive } = layer;
+  const placed = drive.placed > 0 ? drive.placed : null;
   return {
+    driveConfidentShare: share(placed === null ? null : drive.placedOverHalf, placed, 'drive photos placed in events', 'photos placed with over 50% confidence'),
+    driveAnalysedShare: share(placed === null ? null : drive.analysed, placed, 'drive photos placed in events', 'photos analysed'),
+    driveOptInShare: share(placed === null ? null : drive.withOptIn, placed, 'drive photos placed in events', 'photos with a recorded opt-in'),
     analysedShare: share(photos.analysed > 0 ? photos.analysed : null, taken, 'photos taken', 'photos analysed'),
     approvalRate: share(approved, decided, 'photos decided in vetting', 'photos approved'),
     optInShare: share(photos.withOptIn, photos.analysed > 0 ? photos.analysed : null, 'photos analysed', 'photos with a recorded opt-in'),

@@ -6,7 +6,7 @@
 
 import { buildHashtagReport } from '@/lib/hashtagReport';
 import { calculate, share } from '@/lib/hashtagReport/calculated';
-import { CAMERA_TOTAL_COUNTERS, MACHINE_EVENT_PROJECTION, hashtagFilter, type ReportDb } from '@/lib/hashtagReport/measured';
+import { CAMERA_TOTAL_COUNTERS, MACHINE_EVENT_PROJECTION, hashtagFilter, sumDrivePhotos, type ReportDb } from '@/lib/hashtagReport/measured';
 import { mergePhotoSummaries } from '@/lib/hashtagReport/mergeSummaries';
 
 const rollup = (over: Record<string, unknown> = {}) => ({
@@ -52,7 +52,7 @@ describe('the calculations', () => {
   it('treat a counter nobody reported as unknown, not zero', () => {
     const photos = mergePhotoSummaries([rollup()]);
     photos.withOptIn = 10;
-    const calc = calculate({ events: [], counters: {}, photos });
+    const calc = calculate({ events: [], counters: {}, photos, drive: sumDrivePhotos([]) });
     expect(calc.analysedShare).toMatchObject({ value: null, denominator: null });
     expect(calc.optInShare).toMatchObject({ value: 100, numerator: 10, denominator: 10 });
     expect(calc.maleShare.value).toBe(60);
@@ -72,6 +72,12 @@ describe('what the builder may read', () => {
         calls.push({ collection: name, filter, options });
         return {
           toArray: async () => {
+            if (name === 'fanmass_event_drive_photos') {
+              return [
+                { eventId: 'e2', assignment: { confidence: 0.8 }, optIn: { received: true }, analysis: { people: 2, genders: { male: 1, female: 1 }, clubs: ['DVTK', 'DVTK'] } },
+                { eventId: 'e2', assignment: { confidence: 0.3 }, optIn: { received: true }, analysis: null },
+              ];
+            }
             if (name === 'projects') {
               return [
                 // The database hands over manual stats too (as a bug or a changed projection would): they must stay unused
@@ -110,12 +116,20 @@ describe('what the builder may read', () => {
   it('builds the same report for any hashtag, and says what it covers', async () => {
     const report = await buildHashtagReport(db, '#Derby2027');
     expect(report.scope).toEqual({ type: 'hashtag', id: 'Derby2027' });
-    expect(report.coverage).toEqual({ events: 2, eventsWithCounters: 1, eventsWithPhotoResults: 1 });
+    expect(report.coverage).toEqual({ events: 2, eventsWithCounters: 1, eventsWithPhotoResults: 1, eventsWithDrivePhotos: 1 });
     expect(report.measured.events.map((event) => event.name)).toEqual(['Cup', 'Derby']);
     expect(report.calculated.analysedShare).toMatchObject({ value: 10, numerator: 10, denominator: 100 });
     expect(report.calculated.approvalRate).toMatchObject({ value: 94.7, numerator: 90, denominator: 95 });
     // The rollup of the second event does not exist: nothing is invented for it
     expect(report.measured.photos.analysed).toBe(10);
+  });
+
+  it('adds the drive photos placed in the events, apart from the Camera results, with names counted once per photo', async () => {
+    const report = await buildHashtagReport(db, 'anything');
+    expect(report.measured.drive).toMatchObject({ placed: 2, placedOverHalf: 1, analysed: 1, withOptIn: 2, people: 2, clubs: [{ name: 'DVTK', count: 1 }] });
+    expect(report.measured.events.find((e) => e.id === 'e2')?.drivePhotos).toBe(2);
+    expect(report.calculated.driveConfidentShare).toMatchObject({ value: 50, numerator: 1, denominator: 2 });
+    expect(report.calculated.driveOptInShare.value).toBe(100);
   });
 
   it('counts the opt-ins from the stored per-photo results of the hashtag events, not from the rollups', async () => {
