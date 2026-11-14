@@ -26,7 +26,8 @@ export type DashboardTab = 'overview' | 'vision' | 'territory' | 'bubble' | 'fun
 
 export default function InteractiveReportDashboard({ initialData, fanmass }: InteractiveReportDashboardProps) {
   const [data, setData] = useState<InteractiveReportData>(initialData);
-  const [activeTab, setActiveTab] = useState<DashboardTab>(fanmass ? (initialData.vision ? 'vision' : 'figures') : 'overview');
+  // The Fanmass report opens on the overview (victory podiums, demographics) when Fanmass has vision data
+  const [activeTab, setActiveTab] = useState<DashboardTab>(fanmass && !initialData.vision ? 'figures' : 'overview');
   const [selectedPeriodId, setSelectedPeriodId] = useState<string | null>(null);
   const [selectedMatch, setSelectedMatch] = useState<MatchItem | null>(null);
 
