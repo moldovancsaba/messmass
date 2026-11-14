@@ -1,6 +1,6 @@
 import { Metadata } from 'next';
 import { notFound } from 'next/navigation';
-import { getScopedInteractiveReportData } from '@/lib/interactiveReportAggregator';
+import { getScopedInteractiveReportData, isSzrtScopeIdentifier } from '@/lib/interactiveReportAggregator';
 import InteractiveReportDashboard from '@/components/theme/interactive-report/InteractiveReportDashboard';
 import ServerPageGate from '@/components/ServerPageGate';
 import { getAdminUser } from '@/lib/auth';
@@ -51,11 +51,17 @@ export default async function FilterInteractiveReportPage({ params, searchParams
     const db = (await clientPromise).db(config.dbName) as unknown as ReportDb;
     const tags = await filterSlugHashtags(db, decodeURIComponent(slug));
     if (!tags.length) notFound();
-    const [report, base] = await Promise.all([
+    // A filter of the SZRT campaign hashtag alone shows the vision Fanmass published for the campaign, read from the
+    // campaign scope (whose cache is dropped when the figures or the publication change); a filter that adds other
+    // hashtags keeps the vision of its own photos, since the campaign's would be the wrong scope
+    const campaignTag = tags.every((tag) => isSzrtScopeIdentifier(tag)) ? tags[0] : null;
+    const [report, base, campaign] = await Promise.all([
       buildFilterReport(db, tags, slug),
       getScopedInteractiveReportData({ type: 'filter', identifier: slug }).catch(() => null),
+      campaignTag ? getScopedInteractiveReportData({ type: 'hashtag', identifier: campaignTag }).catch(() => null) : null,
     ]);
-    return <FanmassDashboardPage report={report} base={base} />;
+    const withVision = base && campaign?.vision ? { ...base, vision: campaign.vision } : base;
+    return <FanmassDashboardPage report={report} base={withVision} />;
   }
 
   const data = await getScopedInteractiveReportData({
