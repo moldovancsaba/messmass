@@ -176,6 +176,9 @@ describe('what the builder may read', () => {
     expect(both.$and).toHaveLength(2);
     expect(both.organizationId).toBe('org_1');
     expect(eventsFilter(null)).toEqual({});
+    // Typed only (which events give ALL their photos to the report): the Fanmass hashtags are left out
+    expect(JSON.stringify(hashtagFilter('veolia', undefined, true))).not.toContain('fanmassHashtags');
+    expect(JSON.stringify(hashtagFilter('veolia'))).toContain('fanmassHashtags');
   });
 });
 
@@ -205,15 +208,16 @@ describe('events that hold photos of the hashtag', () => {
     }),
   } as unknown as ReportDb;
 
-  it('joins the report by themselves, with their machine counters and all their drive photos', async () => {
+  it('joins the report by themselves, with their machine counters and only the photos that carry the hashtag', async () => {
     const report = await buildHashtagReport(db, 'tippmixreport2026');
     expect(report.measured.events.map((e) => [e.name, e.joinedBy])).toEqual([
       ['Paksi FC x Nyíregyháza Spartacus FC', 'photos'],
       ['Tagged event', 'hashtag'],
     ]);
     expect(report.measured.counters).toEqual({ camera_images_taken: 40 });
-    expect(report.measured.drive).toMatchObject({ photos: 3, placed: 2 });
-    expect(report.measured.drive.events).toEqual([{ name: 'Paksi FC x Nyíregyháza Spartacus FC', count: 2 }]);
+    // The untagged photo of the joined event stays out: Fanmass hashtags are about the photos they were found in
+    expect(report.measured.drive).toMatchObject({ photos: 2, placed: 1 });
+    expect(report.measured.drive.events).toEqual([{ name: 'Paksi FC x Nyíregyháza Spartacus FC', count: 1 }]);
     expect(JSON.stringify(report)).not.toContain('999');
   });
 });
