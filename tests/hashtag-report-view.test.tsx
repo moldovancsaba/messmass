@@ -38,8 +38,10 @@ describe('the hashtag report page', () => {
   });
 
   it('shows each percentage with the two counts it came from, and "Not measured" for what nobody counted', () => {
+    const photos = mergePhotoSummaries([rollup]);
+    photos.withOptIn = 10;
     const html = renderToStaticMarkup(
-      <HashtagReportView report={report({ events: [event()], counters: { camera_images_taken: 100, camera_images_approved: 90, camera_images_rejected: 5 }, photos: mergePhotoSummaries([rollup]) })} />,
+      <HashtagReportView report={report({ events: [event()], counters: { camera_images_taken: 100, camera_images_approved: 90, camera_images_rejected: 5 }, photos })} />,
     );
     expect(html).toContain('94.7%');
     expect(html).toContain('90 of 95 photos decided in vetting');
@@ -48,8 +50,18 @@ describe('the hashtag report page', () => {
     // No consent counter was reported: not measured, not zero
     expect(html).toMatch(/Consent accepted<\/span><span[^>]*>Not measured/);
     expect(html).toContain('12 of 20 people with a measured gender are men');
-    expect(html).toContain('Nike');
-    expect(html).toContain('DVTK');
+    // The rollup lists model guesses as brands and clubs: they are not shown
+    expect(html).not.toContain('Nike');
+    expect(html).not.toContain('DVTK');
+    expect(html).not.toContain('Brands');
+  });
+
+  it('says which count is missing when the opt-in count was not measured, not that the photos were not counted', () => {
+    const html = renderToStaticMarkup(
+      <HashtagReportView report={report({ events: [event()], counters: {}, photos: mergePhotoSummaries([rollup]) })} />,
+    );
+    expect(html).toContain('No count of photos with a recorded opt-in was measured');
+    expect(html).not.toContain('No count of photos analysed was measured');
   });
 
   it('shows no share when the counts do not agree, but keeps the counts visible', () => {

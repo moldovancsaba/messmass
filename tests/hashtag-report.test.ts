@@ -18,34 +18,41 @@ const rollup = (over: Record<string, unknown> = {}) => ({
 });
 
 describe('adding the photo rollups of several events', () => {
-  it('sums every count and merges the named lists by name', () => {
-    const merged = mergePhotoSummaries([rollup(), rollup({ photoResultsReceived: 5, optInPhotos: 5, genderProjection: { male: 1, female: 4 }, brandMentions: [{ name: 'Nike', count: 1 }, { name: 'Adidas', count: 9 }] })]);
+  it('sums every count and count map', () => {
+    const merged = mergePhotoSummaries([rollup(), rollup({ photoResultsReceived: 5, genderProjection: { male: 1, female: 4 } })]);
     expect(merged.analysed).toBe(15);
-    expect(merged.withOptIn).toBe(15);
     expect(merged.genders).toEqual({ male: 13, female: 12 });
     expect(merged.people.measured).toBe(40);
-    expect(merged.brands).toEqual([{ name: 'Adidas', count: 9 }, { name: 'Nike', count: 5 }, { name: 'Veolia', count: 2 }]);
+    expect(merged.demographicPeople).toBe(40);
   });
 
-  it('does not know the opt-in count as soon as one rollup predates it', () => {
-    const { optInPhotos, ...old } = rollup();
-    expect(mergePhotoSummaries([rollup(), old]).withOptIn).toBeNull();
+  it('does not carry over the brand and club names a rollup lists: they are model guesses, not names read from the picture', () => {
+    const merged = mergePhotoSummaries([rollup()]) as unknown as Record<string, unknown>;
+    expect(merged.brands).toBeUndefined();
+    expect(merged.clubs).toBeUndefined();
+    expect(JSON.stringify(merged)).not.toContain('Nike');
+  });
+
+  it('leaves the opt-in count to the measured layer', () => {
+    expect(mergePhotoSummaries([rollup()]).withOptIn).toBeNull();
   });
 });
 
 describe('the calculations', () => {
   it('give the value with the two counts it came from', () => {
-    expect(share(9, 12, 'photos decided')).toEqual({ value: 75, numerator: 9, denominator: 12, basis: 'photos decided' });
+    expect(share(9, 12, 'photos decided', 'photos approved')).toEqual({ value: 75, numerator: 9, denominator: 12, basis: 'photos decided', part: 'photos approved' });
   });
 
   it('give nothing when a count is unknown, the whole is empty or the part exceeds the whole', () => {
-    expect(share(null, 12, 'x').value).toBeNull();
-    expect(share(3, 0, 'x').value).toBeNull();
-    expect(share(20130, 13572, 'x')).toMatchObject({ value: null, numerator: 20130, denominator: 13572 });
+    expect(share(null, 12, 'x', 'y').value).toBeNull();
+    expect(share(3, 0, 'x', 'y').value).toBeNull();
+    expect(share(20130, 13572, 'x', 'y')).toMatchObject({ value: null, numerator: 20130, denominator: 13572 });
   });
 
   it('treat a counter nobody reported as unknown, not zero', () => {
-    const calc = calculate({ events: [], counters: {}, photos: mergePhotoSummaries([rollup()]) });
+    const photos = mergePhotoSummaries([rollup()]);
+    photos.withOptIn = 10;
+    const calc = calculate({ events: [], counters: {}, photos });
     expect(calc.analysedShare).toMatchObject({ value: null, denominator: null });
     expect(calc.optInShare).toMatchObject({ value: 100, numerator: 10, denominator: 10 });
     expect(calc.maleShare.value).toBe(60);
@@ -57,6 +64,10 @@ describe('what the builder may read', () => {
   const calls: Array<{ collection: string; filter: Record<string, unknown>; options?: Record<string, unknown> }> = [];
   const db: ReportDb = {
     collection: (name) => ({
+      countDocuments: async (filter) => {
+        calls.push({ collection: `${name}#count`, filter });
+        return 7;
+      },
       find: (filter, options) => {
         calls.push({ collection: name, filter, options });
         return {
@@ -105,6 +116,17 @@ describe('what the builder may read', () => {
     expect(report.calculated.approvalRate).toMatchObject({ value: 94.7, numerator: 90, denominator: 95 });
     // The rollup of the second event does not exist: nothing is invented for it
     expect(report.measured.photos.analysed).toBe(10);
+  });
+
+  it('counts the opt-ins from the stored per-photo results of the hashtag events, not from the rollups', async () => {
+    const report = await buildHashtagReport(db, 'anything');
+    const count = calls.find((c) => c.collection === 'fanmass_camera_photo_analyses#count');
+    expect(count?.filter).toMatchObject({ eventId: { $in: ['e1', 'e2'] }, tombstone: { $ne: true }, 'optIn.received': true });
+    expect(report.measured.photos.withOptIn).toBe(7);
+    // 7 of the 10 analysed photos carry it, so the share is calculated from those two counts
+    expect(report.calculated.optInShare).toMatchObject({ value: 70, numerator: 7, denominator: 10, part: 'photos with a recorded opt-in' });
+    // The names a rollup lists are guesses and never reach the report
+    expect(JSON.stringify(report)).not.toContain('Nike');
   });
 
   it('finds the events of a hashtag written with or without #, in any case, inside one organization when asked', () => {

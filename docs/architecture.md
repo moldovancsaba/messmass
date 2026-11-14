@@ -1871,6 +1871,10 @@ Messmass calculations and nothing typed by a person, in three layers that never 
    never zero).
 3. **Manual numbers** are not part of this report type; they stay in the classic reports.
 
+Brand and club names are not in the unified report yet: a Camera photo result lists the names a model guessed ("Scarf", "Jacket"),
+not names read from the picture. They appear once Fanmass delivers the text-read proof with each photo result. The opt-in count is
+counted from the stored per-photo results (`fanmass_camera_photo_analyses`, `optIn.received`) of the hashtag's events.
+
 `coverage` says how many of the hashtag's events carry measured data, so a missing figure reads as "not measured". The route is
 gated like the other hashtag reports (public unless the hashtag has a page password). `tests/hashtag-report.test.ts` fails if the
 builder ever fetches or uses a stat outside the allowlist.
