@@ -118,7 +118,7 @@ it drifts. Do not edit between the markers.
 | **Design Tokens** | 410 | `app/styles/theme.css` |
 | **Utility CSS classes** | 192 | `app/styles/utilities.css` |
 | **App routes (pages)** | 86 | `app/**/page.tsx` |
-| **API routes** | 242 | `app/api/**/route.ts` |
+| **API routes** | 243 | `app/api/**/route.ts` |
 
 The modules with the most importers — the ones whose change radius is
 largest, and the ones to read first:
@@ -1088,7 +1088,7 @@ shows up here on the next regeneration, which is the point.
 | `/terms` | `app/terms/page.tsx` |
 | `/test-csrf` | `app/test-csrf/page.tsx` |
 
-### API routes (242)
+### API routes (243)
 
 `auth` is the guard symbol the route actually calls. A blank cell
 means the route calls none — public by construction, or a gap.
@@ -1430,6 +1430,7 @@ means the route calls none — public by construction, or a gap.
 | `/api/integrations/fanmass/events/[eventId]/analysis-summary` | POST | `requireFanmassIntegrationAuth` |
 | `/api/integrations/fanmass/events/[eventId]/context` | GET | `requireFanmassIntegrationAuth` |
 | `/api/integrations/fanmass/events/[eventId]/drive-folders/status` | POST | `requireFanmassIntegrationAuth` |
+| `/api/integrations/fanmass/events/[eventId]/drive-photos` | POST | `requireFanmassIntegrationAuth` |
 | `/api/integrations/fanmass/events/[eventId]/link` | GET, POST | `requireFanmassIntegrationAuth` |
 | `/api/integrations/fanmass/events/[eventId]/photos/[photoId]` | POST, DELETE | `requireFanmassIntegrationAuth` |
 | `/api/integrations/fanmass/events/[eventId]/stats` | POST | `requireFanmassIntegrationAuth` |
