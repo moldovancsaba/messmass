@@ -113,12 +113,12 @@ it drifts. Do not edit between the markers.
 | Category | Count | Location |
 |----------|-------|----------|
 | **UI Components** | 129 | `components/` |
-| **Utility Modules** | 248 | `lib/` |
+| **Utility Modules** | 251 | `lib/` |
 | **Hooks** | 13 | `hooks/` |
 | **Design Tokens** | 410 | `app/styles/theme.css` |
 | **Utility CSS classes** | 192 | `app/styles/utilities.css` |
 | **App routes (pages)** | 86 | `app/**/page.tsx` |
-| **API routes** | 244 | `app/api/**/route.ts` |
+| **API routes** | 245 | `app/api/**/route.ts` |
 
 The modules with the most importers — the ones whose change radius is
 largest, and the ones to read first:
@@ -128,12 +128,12 @@ largest, and the ones to read first:
 | `lib/config.ts` | 127 | 207 |
 | `lib/mongodb.ts` | 110 | 112 |
 | `lib/auth.ts` | 98 | 118 |
-| `lib/logger.ts` | 94 | 392 |
+| `lib/logger.ts` | 96 | 392 |
 | `lib/apiGuards.ts` | 87 | 390 |
 | `components/ColoredCard.tsx` | 44 | 52 |
 | `lib/apiClient.ts` | 42 | 258 |
+| `lib/fanmassIntegration.ts` | 42 | 485 |
 | `lib/db.ts` | 42 | 17 |
-| `lib/fanmassIntegration.ts` | 41 | 485 |
 | `components/MaterialIcon.tsx` | 34 | 119 |
 | `components/UnifiedAdminHeroWithSearch.tsx` | 27 | 192 |
 | `lib/mongoose-v3.ts` | 21 | 66 |
@@ -1088,7 +1088,7 @@ shows up here on the next regeneration, which is the point.
 | `/terms` | `app/terms/page.tsx` |
 | `/test-csrf` | `app/test-csrf/page.tsx` |
 
-### API routes (244)
+### API routes (245)
 
 `auth` is the guard symbol the route actually calls. A blank cell
 means the route calls none — public by construction, or a gap.
@@ -1439,6 +1439,7 @@ means the route calls none — public by construction, or a gap.
 | `/api/integrations/fanmass/evidence` | POST | `requireFanmassIntegrationAuth` |
 | `/api/integrations/fanmass/evidence-reviews` | GET | `requireFanmassIntegrationAuth` |
 | `/api/integrations/fanmass/evidence-training` | GET | `requireFanmassIntegrationAuth` |
+| `/api/integrations/fanmass/match-events` | POST | `requireFanmassIntegrationAuth` |
 | `/api/integrations/fanmass/partners` | GET, POST | `requireFanmassIntegrationAuth` |
 | `/api/integrations/fanmass/partners/[partnerId]/events` | GET | `requireFanmassIntegrationAuth` |
 | `/api/integrations/fanmass/rescan-requests` | GET | `requireFanmassIntegrationAuth` |
@@ -1882,6 +1883,11 @@ brand and club names read from them, apart from the Camera photo results (a diff
 Every drive photo also carries the hashtags Fanmass gave it (`hashtags`: library, sport, event, clubs, brands, emotions, people;
 lowercase, no `#`), so the drive block of `#x` holds the photos tagged `x` as well as the photos placed in the events that carry
 `x`, and lists the events those photos sit in (`measured.drive.events`).
+Fanmass can also create the event of a sports match it holds photos of (`POST /api/integrations/fanmass/match-events`,
+`lib/fanmassMatchEvents.ts`): the same event Quick Add's match builder makes (`lib/matchEvent.ts` for the name and hashtags,
+`lib/createEvent.ts` for everything creation does, shared with `POST /api/projects`) and its Camera mirror. Both clubs must
+already be Messmass partners, matched by name with case and accents ignored; an unknown or ambiguous club is refused.
+
 Camera photo results carry hashtags the same way (`fanmass_camera_photo_analyses.hashtags`): Fanmass sends the brand and club
 names proven by text read from the picture and the emotions, genders and age groups measured in it, and Messmass adds the
 hashtags of the event when it stores any photo (`lib/photoHashtags.ts`). The report counts the Camera photos tagged `x` in any

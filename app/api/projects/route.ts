@@ -26,6 +26,7 @@ import {
   eventCategorizedHashtagsProblem,
 } from '@/lib/eventSaveRules';
 import { parseEditorSequence, editorSequenceGuard } from '@/lib/statsFieldChanges';
+import { EventCreateError, insertEvent } from '@/lib/createEvent';
 
 // WHAT: Upper bound on one invocation of these handlers, in seconds.
 // WHY: The event editor gives a save 25 seconds before it treats the request
@@ -770,188 +771,21 @@ export async function POST(request: NextRequest) {
 
   try {
     const body = await request.json();
-    // Enhanced to support both traditional and categorized hashtags + styleId + partner references + reportTemplateId
-    const { eventName, eventDate, hashtags = [], categorizedHashtags = {}, stats, styleId, partner1Id, partner2Id, reportTemplateId } = body;
-
-    if (!eventName || !eventDate || !stats) {
-      return NextResponse.json(
-        { success: false, error: 'Missing required fields: eventName, eventDate, stats' },
-        { status: 400 }
-      );
-    }
-
-    // Same hashtag shape rule as PUT (lib/eventSaveRules.ts): a malformed list
-    // stored on one event breaks every page that reads all events' hashtags.
-    const hashtagProblem = eventHashtagsProblem(hashtags) ?? eventCategorizedHashtagsProblem(categorizedHashtags);
-    if (hashtagProblem) {
-      return NextResponse.json({ success: false, error: hashtagProblem }, { status: 400 });
-    }
-
-    // WHAT: Validate and enrich stats before saving
-    // WHY: Ensure data quality and add derived metrics
-    const { stats: enrichedStats, validation } = prepareStatsForAnalytics(stats);
-    
-    // WHAT: Warn if data quality is poor (but don't reject)
-    // WHY: Allow creation with incomplete data but flag for admin attention
-    if (!validation.hasMinimumData) {
-      logWarn('Creating project with insufficient data quality', { context: 'projects', dataQuality: validation.dataQuality, completeness: validation.completeness, missingRequired: validation.missingRequired });
-    }
-
-    logInfo('Creating new project', { context: 'projects', eventName });
-
-    // Generate unique slugs for the project
-    logDebug('Generating unique slugs', { context: 'projects' });
-    const { viewSlug, editSlug } = await generateProjectSlugs();
-    logDebug('Generated slugs', { context: 'projects', viewSlugPrefix: viewSlug.substring(0, 8), editSlugPrefix: editSlug.substring(0, 8) });
-
-    // WHAT: Validate styleId against page_styles_enhanced collection
-    // WHY: Migrated from old pageStyles system to new enhanced system
+    const eventName = body?.eventName;
+    // The creation rules (hashtag shape, stats, slugs, style, hashtag counts, Bitly links) live in lib/createEvent.ts,
+    // shared with the Fanmass match-event route.
     const client = await connectToDatabase();
     const db = client.db(MONGODB_DB);
-    
-    if (styleId && styleId !== null && styleId !== 'null') {
-      if (!ObjectId.isValid(styleId)) {
-        return NextResponse.json(
-          { success: false, error: 'Invalid styleId format' },
-          { status: 400 }
-        );
-      }
-      
-      // Validate that the style exists in report_styles collection (26-color system)
-      const reportStylesCollection = db.collection('report_styles');
-      const styleExists = await reportStylesCollection.findOne({ _id: new ObjectId(styleId) });
-      
-      if (!styleExists) {
-        return NextResponse.json(
-          { success: false, error: 'Referenced report style does not exist' },
-          { status: 404 }
-        );
-      }
+    let created: Awaited<ReturnType<typeof insertEvent>>;
+    try {
+      created = await insertEvent(db, body);
+    } catch (err) {
+      if (err instanceof EventCreateError) return NextResponse.json({ success: false, error: err.message }, { status: err.status });
+      throw err;
     }
-    
-    const collection = db.collection('projects');
-
-    const now = new Date().toISOString();
-    
-    // Enhanced project structure to support categorized hashtags, styleId, and partner references
-    const project: any = {
-      eventName,
-      eventDate,
-      hashtags: hashtags || [],                        // Traditional hashtags (backward compatibility)
-      categorizedHashtags: categorizedHashtags || {},  // New categorized hashtags field
-      stats: enrichedStats, // Already enriched with derived metrics
-      viewSlug,
-      editSlug,
-      createdAt: now,
-      updatedAt: now
-    };
-    
-    // WHAT: Add styleIdEnhanced field for page_styles_enhanced system integration
-    // WHY: Migrated from old styleId to new styleIdEnhanced field name
-    if (styleId && styleId !== null && styleId !== 'null') {
-      project.styleIdEnhanced = styleId;
-      logDebug('Setting styleIdEnhanced', { context: 'projects', styleId, method: 'POST' });
-    } else {
-      logDebug('No styleId provided', { context: 'projects', styleId, method: 'POST' });
-    }
-    
-    // WHAT: Add partner references for Sports Match projects
-    // WHY: Enable display of team logos in projects list
-    if (partner1Id && ObjectId.isValid(partner1Id)) {
-      project.partner1Id = new ObjectId(partner1Id);
-    }
-    if (partner2Id && ObjectId.isValid(partner2Id)) {
-      project.partner2Id = new ObjectId(partner2Id);
-    }
-    
-    // WHAT: Add reportTemplateId if provided
-    // WHY: Allow events to have custom report templates
-    if (reportTemplateId && reportTemplateId !== '' && reportTemplateId !== 'null' && ObjectId.isValid(reportTemplateId)) {
-      project.reportTemplateId = new ObjectId(reportTemplateId);
-      logDebug('Setting reportTemplateId', { context: 'projects', reportTemplateId, method: 'POST' });
-    } else {
-      logDebug('No reportTemplateId provided', { context: 'projects', reportTemplateId, method: 'POST' });
-    }
-
-    // Enhanced hashtag processing to handle both traditional and categorized hashtags
-    // Store both plain hashtags and category-prefixed versions for comprehensive filtering
-    const allHashtagRepresentations = getAllHashtagRepresentations({
-      hashtags,
-      categorizedHashtags
-    });
-    
-    if (allHashtagRepresentations.length > 0) {
-      const hashtagsCollection = db.collection('hashtags');
-      
-      // Process each hashtag representation individually to avoid conflicts
-      for (const hashtagRepresentation of allHashtagRepresentations) {
-        const normalizedHashtag = hashtagRepresentation.toLowerCase();
-        
-        // First try to increment existing hashtag
-        const updateResult = await hashtagsCollection.updateOne(
-          { hashtag: normalizedHashtag },
-          { $inc: { count: 1 } }
-        );
-        
-        // If no document was updated, create new hashtag
-        if (updateResult.matchedCount === 0) {
-          await hashtagsCollection.updateOne(
-            { hashtag: normalizedHashtag },
-            { 
-              $setOnInsert: { 
-                hashtag: normalizedHashtag, 
-                count: 1,
-                createdAt: now 
-              }
-            },
-            { upsert: true }
-          );
-        }
-      }
-      
-      logInfo('Updated hashtag counts', { context: 'projects', totalRepresentations: allHashtagRepresentations.length, traditionalCount: hashtags.length, categoryCount: Object.keys(categorizedHashtags).length });
-    }
-
-    const result = await collection.insertOne(project);
-    logInfo('Project created successfully', { context: 'projects', projectId: result.insertedId.toString(), eventName });
-
-    // WHAT: Auto-associate Partner 1's Bitly links with new project (many-to-many)
-    // WHY: Quick Add shows partner Bitly links in preview, must connect them automatically
-    // NOTE: Only Partner 1 (home team) links are associated, NOT Partner 2
-    if (partner1Id && ObjectId.isValid(partner1Id)) {
-      try {
-        const partnersCollection = db.collection('partners');
-        const partner = await partnersCollection.findOne({ _id: new ObjectId(partner1Id) });
-        
-        if (partner && partner.bitlyLinkIds && Array.isArray(partner.bitlyLinkIds)) {
-          logInfo('Auto-associating Bitly links from Partner 1', { context: 'projects', linkCount: partner.bitlyLinkIds.length, partnerName: partner.name, projectId: result.insertedId.toString() });
-          
-          // Create junction table entries for each Bitly link
-          // This will automatically calculate date ranges and populate cached metrics
-          let associatedCount = 0;
-          for (const bitlyLinkId of partner.bitlyLinkIds) {
-            try {
-              await createLinkAssociation({
-                bitlyLinkId: new ObjectId(bitlyLinkId),
-                projectId: result.insertedId,
-                autoCalculated: true
-              });
-              associatedCount++;
-            } catch (linkError) {
-              logError('Failed to associate Bitly link', { context: 'projects', bitlyLinkId: bitlyLinkId.toString(), projectId: result.insertedId.toString() }, linkError instanceof Error ? linkError : new Error(String(linkError)));
-              // Continue with other links even if one fails
-            }
-          }
-          
-          logInfo('Successfully associated Bitly links', { context: 'projects', associatedCount, totalLinks: partner.bitlyLinkIds.length, projectId: result.insertedId.toString() });
-        } else {
-          logDebug('Partner 1 has no Bitly links to associate', { context: 'projects', projectId: result.insertedId.toString() });
-        }
-      } catch (bitlyError) {
-        logError('Failed to auto-associate Bitly links', { context: 'projects', projectId: result.insertedId.toString() }, bitlyError instanceof Error ? bitlyError : new Error(String(bitlyError)));
-        // Don't fail the project creation if Bitly association fails
-      }
-    }
+    const { project, validation } = created;
+    const result = { insertedId: created.insertedId };
+    const viewSlug = project.viewSlug;
 
     // WHAT: Provision the mirror event in the camera app (messmass is the master).
     // WHY: Full circle — same partner/event everywhere; the camera event inherits
