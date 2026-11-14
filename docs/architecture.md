@@ -113,12 +113,12 @@ it drifts. Do not edit between the markers.
 | Category | Count | Location |
 |----------|-------|----------|
 | **UI Components** | 129 | `components/` |
-| **Utility Modules** | 246 | `lib/` |
+| **Utility Modules** | 247 | `lib/` |
 | **Hooks** | 13 | `hooks/` |
 | **Design Tokens** | 410 | `app/styles/theme.css` |
 | **Utility CSS classes** | 192 | `app/styles/utilities.css` |
 | **App routes (pages)** | 86 | `app/**/page.tsx` |
-| **API routes** | 242 | `app/api/**/route.ts` |
+| **API routes** | 243 | `app/api/**/route.ts` |
 
 The modules with the most importers — the ones whose change radius is
 largest, and the ones to read first:
@@ -133,7 +133,7 @@ largest, and the ones to read first:
 | `components/ColoredCard.tsx` | 44 | 52 |
 | `lib/apiClient.ts` | 42 | 258 |
 | `lib/db.ts` | 42 | 17 |
-| `lib/fanmassIntegration.ts` | 39 | 485 |
+| `lib/fanmassIntegration.ts` | 40 | 485 |
 | `components/MaterialIcon.tsx` | 34 | 119 |
 | `components/UnifiedAdminHeroWithSearch.tsx` | 27 | 192 |
 | `lib/mongoose-v3.ts` | 21 | 66 |
@@ -1088,7 +1088,7 @@ shows up here on the next regeneration, which is the point.
 | `/terms` | `app/terms/page.tsx` |
 | `/test-csrf` | `app/test-csrf/page.tsx` |
 
-### API routes (242)
+### API routes (243)
 
 `auth` is the guard symbol the route actually calls. A blank cell
 means the route calls none — public by construction, or a gap.
@@ -1430,6 +1430,7 @@ means the route calls none — public by construction, or a gap.
 | `/api/integrations/fanmass/events/[eventId]/analysis-summary` | POST | `requireFanmassIntegrationAuth` |
 | `/api/integrations/fanmass/events/[eventId]/context` | GET | `requireFanmassIntegrationAuth` |
 | `/api/integrations/fanmass/events/[eventId]/drive-folders/status` | POST | `requireFanmassIntegrationAuth` |
+| `/api/integrations/fanmass/events/[eventId]/drive-photos` | POST | `requireFanmassIntegrationAuth` |
 | `/api/integrations/fanmass/events/[eventId]/link` | GET, POST | `requireFanmassIntegrationAuth` |
 | `/api/integrations/fanmass/events/[eventId]/photos/[photoId]` | POST, DELETE | `requireFanmassIntegrationAuth` |
 | `/api/integrations/fanmass/events/[eventId]/stats` | POST | `requireFanmassIntegrationAuth` |
@@ -1871,6 +1872,12 @@ Messmass calculations and nothing typed by a person, in three layers that never 
    its numerator, denominator and basis, or nothing when the counts cannot give a real share (an unreported counter is unknown,
    never zero).
 3. **Manual numbers** are not part of this report type; they stay in the classic reports.
+
+Drive photos that Fanmass placed in an event (`POST /api/integrations/fanmass/events/[eventId]/drive-photos`,
+`fanmass_event_drive_photos`, `lib/fanmassDrivePhotos.ts`) are part of the measured layer as their own block (`measured.drive`):
+the SZRT drive library carries no event, so Fanmass placed every photo by the photo order, the clubs read in it and the fixture
+dates, with a confidence per photo. The report shows how many were placed with over 50% confidence, how many are analysed and the
+brand and club names read from them, apart from the Camera photo results (a different source and opt-in basis).
 
 Brand and club names are not in the unified report yet: a Camera photo result lists the names a model guessed ("Scarf", "Jacket"),
 not names read from the picture. They appear once Fanmass delivers the text-read proof with each photo result. The opt-in count is

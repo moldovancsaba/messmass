@@ -38,12 +38,38 @@ export interface HashtagEvent {
   hasCounters: boolean;
   /** The event has at least one stored Fanmass photo result. */
   hasPhotoResults: boolean;
+  /** Drive photos Fanmass placed in the event. */
+  drivePhotos: number;
+}
+
+/** A brand or club read from the pictures, with the number of photos it was read in. */
+export interface NamedCount { name: string; count: number }
+
+/**
+ * Drive photos Fanmass placed in the hashtag's events (the SZRT drive library carries no event of its own; every photo was
+ * placed by the photo order, the clubs read in it and the fixture dates, with a confidence). Kept apart from the Camera
+ * photo results: a different source with a different opt-in basis.
+ */
+export interface MeasuredDrivePhotos {
+  placed: number;
+  /** Placed with a confidence above one half. */
+  placedOverHalf: number;
+  analysed: number;
+  withOptIn: number;
+  people: number;
+  genders: Record<string, number>;
+  ageGroups: Record<string, number>;
+  emotions: Record<string, number>;
+  /** Names read from the pictures, counted once per photo. */
+  brands: NamedCount[];
+  clubs: NamedCount[];
 }
 
 export interface MeasuredLayer {
   events: HashtagEvent[];
   photos: MeasuredPhotos;
   counters: MeasuredCounters;
+  drive: MeasuredDrivePhotos;
 }
 
 /** One calculation: the value and the two counts it was calculated from, or nothing when it cannot be calculated. */
@@ -59,6 +85,12 @@ export interface Calculation {
 }
 
 export interface CalculatedLayer {
+  /** Drive photos placed with a confidence above one half. */
+  driveConfidentShare: Calculation;
+  /** Placed drive photos Fanmass has analysed. */
+  driveAnalysedShare: Calculation;
+  /** Placed drive photos with a recorded opt-in. */
+  driveOptInShare: Calculation;
   /** Photos analysed out of photos taken. */
   analysedShare: Calculation;
   /** Photos approved out of photos decided (approved plus rejected) in vetting. */
@@ -82,5 +114,5 @@ export interface HashtagReport {
   measured: MeasuredLayer;
   calculated: CalculatedLayer;
   /** How much of the hashtag the measurement covers, so a missing figure is read as "not measured", not as zero. */
-  coverage: { events: number; eventsWithCounters: number; eventsWithPhotoResults: number };
+  coverage: { events: number; eventsWithCounters: number; eventsWithPhotoResults: number; eventsWithDrivePhotos: number };
 }

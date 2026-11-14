@@ -5,7 +5,7 @@
 //     measured reads "Not measured", never a zero or an n/a that looks like a value. The coverage block says how many
 //     of the hashtag's events the measurement reaches.
 
-import type { Calculation, HashtagReport } from '@/lib/hashtagReport/types';
+import type { Calculation, HashtagReport, NamedCount } from '@/lib/hashtagReport/types';
 import styles from './hashtag-report.module.css';
 
 const fmt = (n: number) => n.toLocaleString('en-US');
@@ -55,10 +55,16 @@ function Bars({ title, counts, note }: { title: string; counts: Record<string, n
   );
 }
 
+function Names({ title, list, note }: { title: string; list: NamedCount[]; note: string }) {
+  if (list.length === 0) return null;
+  return <Bars title={title} counts={Object.fromEntries(list.slice(0, 12).map((row) => [row.name, row.count]))} note={note} />;
+}
+
 export default function HashtagReportView({ report }: { report: HashtagReport }) {
   const { measured, calculated, coverage, scope } = report;
   const { photos, counters } = measured;
-  const hasMeasuredData = coverage.eventsWithCounters > 0 || coverage.eventsWithPhotoResults > 0;
+  const { drive } = measured;
+  const hasMeasuredData = coverage.eventsWithCounters > 0 || coverage.eventsWithPhotoResults > 0 || drive.placed > 0;
   const taken = Object.prototype.hasOwnProperty.call(counters, 'camera_images_taken') ? fmt(counters.camera_images_taken) : null;
 
   return (
@@ -97,6 +103,32 @@ export default function HashtagReportView({ report }: { report: HashtagReport })
             <Bars title="Age groups" counts={photos.ageGroups} note="People with a measured age" />
             <Bars title="Emotions" counts={photos.emotions} note={sentence(calculated.smilingShare, 'are smiling')} />
           </div>
+          {drive.placed > 0 && (
+            <>
+              <section className={styles.card}>
+                <h2 className={styles.cardTitle}>Drive photos placed in these events</h2>
+                <p className={styles.cardNote}>
+                  These photos came from a drive library whose files carry no event. Fanmass placed each one in an event from the
+                  order the photos were taken in, the clubs read in them and the fixture dates, and recorded how sure each placement is.
+                  An image reaches the drive only with a recorded opt-in.
+                </p>
+                <div className={styles.kpiGrid}>
+                  <Kpi label="Photos placed" value={fmt(drive.placed)} text={detail(calculated.driveConfidentShare)} />
+                  <Kpi label="Analysed by Fanmass" value={percent(calculated.driveAnalysedShare)} text={detail(calculated.driveAnalysedShare)} />
+                  <Kpi label="Opt-in recorded" value={percent(calculated.driveOptInShare)} text={detail(calculated.driveOptInShare)} />
+                </div>
+              </section>
+              <div className={styles.columns}>
+                <Bars title="Gender in drive photos" counts={drive.genders} note={drive.analysed > 0 ? `${fmt(drive.people)} people in ${fmt(drive.analysed)} analysed photos` : undefined} />
+                <Bars title="Age groups in drive photos" counts={drive.ageGroups} />
+                <Bars title="Emotions in drive photos" counts={drive.emotions} />
+              </div>
+              <div className={styles.columns}>
+                <Names title="Brands" list={drive.brands} note="Photos in which the brand name was read from the picture" />
+                <Names title="Clubs" list={drive.clubs} note="Photos in which the club name was read from the picture" />
+              </div>
+            </>
+          )}
         </>
       )}
 
@@ -109,7 +141,7 @@ export default function HashtagReportView({ report }: { report: HashtagReport })
           </p>
           <table className={styles.table}>
             <thead>
-              <tr><th>Event</th><th>Date</th><th>Camera counters</th><th>Fanmass analysis</th></tr>
+              <tr><th>Event</th><th>Date</th><th>Camera counters</th><th>Fanmass analysis</th><th>Drive photos</th></tr>
             </thead>
             <tbody>
               {measured.events.map((event) => (
@@ -118,6 +150,7 @@ export default function HashtagReportView({ report }: { report: HashtagReport })
                   <td>{event.date ?? 'No date'}</td>
                   <td><span className={event.hasCounters ? styles.badge : `${styles.badge} ${styles.badgeOff}`}>{event.hasCounters ? 'Yes' : 'No'}</span></td>
                   <td><span className={event.hasPhotoResults ? styles.badge : `${styles.badge} ${styles.badgeOff}`}>{event.hasPhotoResults ? 'Yes' : 'No'}</span></td>
+                  <td>{fmt(event.drivePhotos)}</td>
                 </tr>
               ))}
             </tbody>

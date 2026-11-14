@@ -42,6 +42,7 @@
   "fanmass_camera_photo_analyses",
   "fanmass_commands",
   "fanmass_dashboard_snapshot",
+  "fanmass_event_drive_photos",
   "fanmass_event_links",
   "filter_slugs",
   "football_data_fixtures",

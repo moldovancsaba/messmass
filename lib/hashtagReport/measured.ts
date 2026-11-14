@@ -6,7 +6,7 @@
 //     from the per-photo Fanmass rollups. Both are sums over events, so they add up exactly.
 
 import { mergePhotoSummaries } from './mergeSummaries';
-import type { HashtagEvent, MeasuredCounters, MeasuredLayer } from './types';
+import type { HashtagEvent, MeasuredCounters, MeasuredDrivePhotos, MeasuredLayer, NamedCount } from './types';
 
 /** The additive counters Camera writes onto an event (lib/cameraPhotoStats.ts). Averages are not additive and are left out. */
 export const CAMERA_TOTAL_COUNTERS = [
@@ -79,6 +79,16 @@ export async function loadMeasuredLayer(db: ReportDb, hashtag: string, organizat
       })
     : 0;
 
+  // Drive photos Fanmass placed in these events (lib/fanmassDrivePhotos.ts)
+  const drivePhotos = projects.length
+    ? await db.collection('fanmass_event_drive_photos')
+        .find({ eventId: { $in: projects.map((p) => String(p._id)) } }, { projection: { eventId: 1, assignment: 1, optIn: 1, analysis: 1 } })
+        .toArray()
+    : [];
+  const drive = sumDrivePhotos(drivePhotos);
+  const driveByEvent = new Map<string, number>();
+  for (const photo of drivePhotos) driveByEvent.set(String(photo.eventId), (driveByEvent.get(String(photo.eventId)) ?? 0) + 1);
+
   const counters: MeasuredCounters = {};
   const events: HashtagEvent[] = projects
     .map((project) => {
@@ -97,11 +107,47 @@ export async function loadMeasuredLayer(db: ReportDb, hashtag: string, organizat
         date: typeof project.eventDate === 'string' && project.eventDate ? project.eventDate : null,
         hasCounters,
         hasPhotoResults: Number(rollup?.photoResultsReceived ?? 0) > 0,
+        drivePhotos: driveByEvent.get(String(project._id)) ?? 0,
       };
     })
     .sort((a, b) => String(a.date ?? '').localeCompare(String(b.date ?? '')) || a.name.localeCompare(b.name));
 
   const photos = mergePhotoSummaries(projects.map((p) => rollupByEvent.get(String(p._id))).filter((r): r is Record<string, unknown> => Boolean(r)));
   photos.withOptIn = withOptIn;
-  return { events, counters, photos };
+  return { events, counters, photos, drive };
+}
+
+const whole = (value: unknown): number => (typeof value === 'number' && Number.isFinite(value) && value > 0 ? Math.round(value) : 0);
+
+function topNames(counts: Map<string, number>): NamedCount[] {
+  return [...counts.entries()].map(([name, count]) => ({ name, count })).sort((a, b) => b.count - a.count || a.name.localeCompare(b.name)).slice(0, 100);
+}
+
+/** Sum the placed drive photos: counts add, names are counted once per photo. */
+export function sumDrivePhotos(rows: Array<Record<string, any>>): MeasuredDrivePhotos {
+  const out: MeasuredDrivePhotos = { placed: 0, placedOverHalf: 0, analysed: 0, withOptIn: 0, people: 0, genders: {}, ageGroups: {}, emotions: {}, brands: [], clubs: [] };
+  const brands = new Map<string, number>();
+  const clubs = new Map<string, number>();
+  const add = (target: Record<string, number>, source: unknown) => {
+    for (const [key, value] of Object.entries((source && typeof source === 'object' ? source : {}) as Record<string, unknown>)) {
+      if (whole(value) > 0) target[key] = (target[key] ?? 0) + whole(value);
+    }
+  };
+  for (const row of rows) {
+    out.placed += 1;
+    if (Number(row.assignment?.confidence) > 0.5) out.placedOverHalf += 1;
+    if (row.optIn?.received === true) out.withOptIn += 1;
+    const a = row.analysis;
+    if (!a || typeof a !== 'object') continue;
+    out.analysed += 1;
+    out.people += whole(a.people);
+    add(out.genders, a.genders);
+    add(out.ageGroups, a.ageGroups);
+    add(out.emotions, a.emotions);
+    for (const name of new Set<string>(Array.isArray(a.brands) ? a.brands : [])) brands.set(name, (brands.get(name) ?? 0) + 1);
+    for (const name of new Set<string>(Array.isArray(a.clubs) ? a.clubs : [])) clubs.set(name, (clubs.get(name) ?? 0) + 1);
+  }
+  out.brands = topNames(brands);
+  out.clubs = topNames(clubs);
+  return out;
 }
