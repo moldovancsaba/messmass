@@ -154,6 +154,7 @@ export default function HashtagReportView({ report }: { report: HashtagReport })
             {fmt(coverage.eventsWithCounters)} of {fmt(coverage.events)} have photo counters from Camera and{' '}
             {fmt(coverage.eventsWithPhotoResults)} have photo analysis from Fanmass. An event without them adds nothing to the figures above.
           </p>
+          <div className={styles.tableScroll}>
           <table className={styles.table}>
             <thead>
               <tr><th>Event</th><th>Date</th><th>Camera counters</th><th>Fanmass analysis</th><th>Drive photos</th></tr>
@@ -173,6 +174,7 @@ export default function HashtagReportView({ report }: { report: HashtagReport })
               ))}
             </tbody>
           </table>
+          </div>
         </section>
       )}
     </main>
