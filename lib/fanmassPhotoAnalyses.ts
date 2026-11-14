@@ -383,6 +383,8 @@ function aggregatePhotos(eventId: string, photos: Array<Record<string, unknown>>
     messmassEventId: eventId,
     lastAnalyzedAt: latestAnalysisAt || null,
     photoResultsReceived: imageCount,
+    // Photos whose result carries a recorded opt-in; a result stored before the opt-in was recorded does not count
+    optInPhotos: photos.filter((photo) => record(photo.optIn)?.received === true).length,
     personBoxes,
     faceBoxes,
     peopleCounts: { measured: measuredPeople },
@@ -421,8 +423,6 @@ export async function rebuildFanmassPhotoEventSummary(
     })
     .toArray() as Array<Record<string, unknown>>;
   const summary = aggregatePhotos(eventId, photos);
-  // Photos whose result carries a recorded opt-in; results stored before the opt-in was recorded do not count until Fanmass resends them
-  const optInPhotos = photos.filter((photo) => record(photo.optIn)?.received === true).length;
   const project = await db.collection('projects').findOne(
     { _id: new ObjectId(eventId) },
     { projection: { stats: 1, slug: 1 } },
@@ -490,7 +490,7 @@ export async function rebuildFanmassPhotoEventSummary(
 
   const stats: Record<string, unknown> = { ...deriveCompleteFanmassReportStats(summary) };
   stats.fanmassPhotoResultsReceived = photos.length;
-  stats.fanmassOptInPhotos = optInPhotos;
+  stats.fanmassOptInPhotos = Number(summary.optInPhotos || 0);
   stats.fanmassHumanConfirmedPhotos = Number(summary.humanConfirmedPhotos || 0);
   stats.fanmassHumanCorrectedPhotos = Number(summary.humanCorrectedPhotos || 0);
   const currentStats = record(project?.stats) || {};

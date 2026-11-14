@@ -113,7 +113,7 @@ it drifts. Do not edit between the markers.
 | Category | Count | Location |
 |----------|-------|----------|
 | **UI Components** | 128 | `components/` |
-| **Utility Modules** | 241 | `lib/` |
+| **Utility Modules** | 246 | `lib/` |
 | **Hooks** | 13 | `hooks/` |
 | **Design Tokens** | 410 | `app/styles/theme.css` |
 | **Utility CSS classes** | 192 | `app/styles/utilities.css` |
@@ -125,8 +125,8 @@ largest, and the ones to read first:
 
 | Module | Importers | Lines |
 |--------|-----------|-------|
-| `lib/config.ts` | 125 | 207 |
-| `lib/mongodb.ts` | 108 | 112 |
+| `lib/config.ts` | 126 | 207 |
+| `lib/mongodb.ts` | 109 | 112 |
 | `lib/auth.ts` | 96 | 118 |
 | `lib/logger.ts` | 94 | 392 |
 | `lib/apiGuards.ts` | 87 | 390 |
@@ -1851,6 +1851,23 @@ interface ReportTemplate {
 - The V3 sync (`lib/v3/syncEngine.ts`) copies V2 values to plain JSON before mongoose writes them: V2 is read by the raw driver
   (bson 6), V3 is written by mongoose (bson 7), and a raw-driver ObjectId inside an untyped field fails the write.
 - `app/admin/analytics/error.tsx` keeps a crash in one analytics view inside the admin shell, with a retry and a server log entry.
+
+### Unified hashtag report (`lib/hashtagReport/`)
+
+One builder for every hashtag (`buildHashtagReport`), served by `GET /api/hashtag-report/[hashtag]`. It contains Fanmass data and
+Messmass calculations and nothing typed by a person, in three layers that never mix:
+
+1. **Measured** (`measured.ts`): the per-photo Fanmass rollups of the hashtag's events (`ai_analysis_summaries`, summed exactly by
+   `mergeSummaries.ts`) and the counters Camera writes (`camera_*`, an explicit allowlist). The database projection names each
+   allowed stat, so a clicker stat, a sheet import or a typed table is never fetched.
+2. **Calculated** (`calculated.ts`): pure functions over the measured layer. Each calculation returns its value together with
+   its numerator, denominator and basis, or nothing when the counts cannot give a real share (an unreported counter is unknown,
+   never zero).
+3. **Manual numbers** are not part of this report type; they stay in the classic reports.
+
+`coverage` says how many of the hashtag's events carry measured data, so a missing figure reads as "not measured". The route is
+gated like the other hashtag reports (public unless the hashtag has a page password). `tests/hashtag-report.test.ts` fails if the
+builder ever fetches or uses a stat outside the allowlist.
 
 ### Error Handling
 

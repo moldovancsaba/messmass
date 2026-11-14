@@ -446,3 +446,13 @@ These APIs back the current analytics workspace model:
 - `/Users/moldovancsaba/Projects/messmass/docs/admin/admin-end-user-guide.md`
 - `/Users/moldovancsaba/Projects/messmass/docs/api/api-reference.md`
 - `/Users/moldovancsaba/Projects/messmass/docs/features/features-bitly-integration-guide.md`
+
+## Unified hashtag report
+
+`GET /api/hashtag-report/{hashtag}` returns the unified hashtag report for any hashtag (with or without the leading `#`):
+`{ success, scope: { type: 'hashtag', id }, generatedAt, measured: { events, photos, counters }, calculated, coverage }`.
+`measured` holds only what machines wrote (the per-photo Fanmass rollups of the hashtag's events and the `camera_*` counters Camera
+writes); `calculated` holds Messmass calculations over it, each with `value`, `numerator`, `denominator` and `basis` (`value` is
+null when the counts cannot give a real share); no manually entered number is read. Public unless the hashtag has a page password
+(then 401 `PAGE_PASSWORD_REQUIRED`, like the other hashtag reports). The first call for a large hashtag may take several seconds
+(`maxDuration` 60).
