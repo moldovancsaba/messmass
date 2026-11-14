@@ -78,7 +78,8 @@ function analysis(value: unknown, at: string): DrivePhotoAnalysis | null {
   };
 }
 
-const PHOTO_ID = /^[A-Za-z ]{1,30}\/[A-Za-z0-9._-]{1,120}$/;
+// The library's own file names: letters with accents, digits, spaces and brackets ("x (1).jpg"); never a / or a path
+const PHOTO_ID = /^[\p{L}\p{M} ]{1,30}\/[\p{L}\p{M}\p{N}._() -]{1,160}$/u;
 
 /**
  * Read a request: `photos` to place in this event and `remove`, the ids of photos that left it (their cluster was
