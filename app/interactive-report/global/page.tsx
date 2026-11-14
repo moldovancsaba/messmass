@@ -10,7 +10,7 @@ import config from '@/lib/config';
 import clientPromise from '@/lib/mongodb';
 import { buildAllEventsReport } from '@/lib/hashtagReport';
 import type { ReportDb } from '@/lib/hashtagReport/measured';
-import HashtagReportView from '@/components/hashtagReport/HashtagReportView';
+import FanmassDashboardPage from '@/components/hashtagReport/FanmassDashboardPage';
 
 export const dynamic = 'force-dynamic';
 // The first load builds the report from every project (it is cached for an hour afterwards), which needs more
@@ -49,7 +49,11 @@ export default async function GlobalInteractiveReportPage({ searchParams }: Page
   const { report, variant } = await searchParams;
   if (report !== 'classic' && !variant) {
     const client = await clientPromise;
-    return <HashtagReportView report={await buildAllEventsReport(client.db(config.dbName) as unknown as ReportDb)} />;
+    const [report, base] = await Promise.all([
+      buildAllEventsReport(client.db(config.dbName) as unknown as ReportDb),
+      getScopedInteractiveReportData({ type: 'global', identifier: GLOBAL_PAGE_ID }).catch(() => null),
+    ]);
+    return <FanmassDashboardPage report={report} base={base} />;
   }
 
   const data = await getScopedInteractiveReportData({ type: 'global', identifier: GLOBAL_PAGE_ID });

@@ -4,15 +4,19 @@
 import React, { useState } from 'react';
 import { InteractiveReportData } from './types';
 import { getReportSlug } from './reportSlug';
+import type { DashboardTab } from './InteractiveReportDashboard';
+import type { HashtagReport } from '@/lib/hashtagReport/types';
 import styles from './interactive-report.module.css';
 
 interface SzrtHeaderProps {
   data: InteractiveReportData;
-  activeTab: 'overview' | 'vision' | 'territory' | 'bubble' | 'funnel' | 'demographics' | 'table';
-  onTabChange: (tab: 'overview' | 'vision' | 'territory' | 'bubble' | 'funnel' | 'demographics' | 'table') => void;
+  activeTab: DashboardTab;
+  onTabChange: (tab: DashboardTab) => void;
+  /** The Fanmass report: Fanmass header figures and tabs only (InteractiveReportDashboard). */
+  fanmass?: HashtagReport;
 }
 
-export default function SzrtHeader({ data, activeTab, onTabChange }: SzrtHeaderProps) {
+export default function SzrtHeader({ data, activeTab, onTabChange, fanmass }: SzrtHeaderProps) {
   const [copied, setCopied] = useState(false);
   const { summary, partner, scope } = data;
 
@@ -20,7 +24,7 @@ export default function SzrtHeader({ data, activeTab, onTabChange }: SzrtHeaderP
   const isEvent = scope?.type === 'event';
   const isFilter = scope?.type === 'filter';
 
-  const badgeText = isFilter
+  const badgeText = fanmass ? '🤖 Fanmass report: measured by the local AI' : isFilter
     ? 'Hashtag Filter Report'
     : isHashtag
       ? `Campaign Hashtag #${scope?.id}`
@@ -44,7 +48,8 @@ export default function SzrtHeader({ data, activeTab, onTabChange }: SzrtHeaderP
       : null);
 
   const reportSlug = getReportSlug(data);
-  const mapHref = reportSlug ? `/interactive-report/${reportSlug}/map` : null;
+  // The dedicated map page reads the clicker matches; the Fanmass report keeps its map in the Territory tab
+  const mapHref = reportSlug && !fanmass ? `/interactive-report/${reportSlug}/map` : null;
   const emoji = scope?.emoji || partner.emoji;
 
   const handleCopyLink = () => {
@@ -62,7 +67,13 @@ export default function SzrtHeader({ data, activeTab, onTabChange }: SzrtHeaderP
       ? `Fanmass AI Vision (${vision.processedCount.toLocaleString()}/${vision.totalImages.toLocaleString()})`
       : 'Fanmass AI Vision';
 
-  const tabs: Array<{ id: typeof activeTab; label: string; icon: string }> = [
+  const tabs: Array<{ id: typeof activeTab; label: string; icon: string }> = fanmass ? [
+    // The Fanmass report: what the local AI measured only; the clicker tabs live in the clicker report
+    ...(vision ? [{ id: 'vision' as const, label: visionLabel, icon: '🤖' }] : []),
+    ...(hasTerritoryData ? [{ id: 'territory' as const, label: 'Territory Map', icon: '🗺️' }] : []),
+    ...(data.demographics ? [{ id: 'demographics' as const, label: 'Audience Demographics', icon: '👥' }] : []),
+    { id: 'figures', label: 'Figures and events', icon: '📋' },
+  ] : [
     { id: 'overview', label: 'Executive Overview', icon: '📊' },
     // The vision tab only exists for scopes that have vision data.
     ...(vision ? [{ id: 'vision' as const, label: visionLabel, icon: '🤖' }] : []),
@@ -121,6 +132,24 @@ export default function SzrtHeader({ data, activeTab, onTabChange }: SzrtHeaderP
         </div>
 
         {/* High-level KPI Cards Strip: every value comes from the report data, n/a when nothing is stored */}
+        {fanmass ? (
+          /* Fanmass figures only: what the local AI measured (lib/hashtagReport), n/a when nothing is measured */
+          <div className={styles.kpiGrid}>
+            {[
+              { label: 'Photos', value: fanmass.measured.drive.photos + fanmass.measured.photos.analysed, text: fanmass.measured.drive.placed > 0 ? `${fanmass.measured.drive.placed.toLocaleString()} placed in an event` : null },
+              { label: 'Analysed by Fanmass', value: fanmass.measured.drive.analysed + fanmass.measured.photos.analysed, text: null },
+              { label: 'People seen', value: fanmass.measured.drive.people + fanmass.measured.photos.people.measured, text: null },
+              { label: 'Brands read', value: fanmass.measured.drive.brands.length, text: fanmass.measured.drive.brands[0] ? `Most seen: ${fanmass.measured.drive.brands[0].name}` : null },
+              { label: 'Events', value: fanmass.coverage.events, text: null },
+            ].map((card) => (
+              <div key={card.label} className={styles.kpiCard}>
+                <span className={styles.kpiLabel}>{card.label}</span>
+                <span className={styles.kpiValue}>{card.value > 0 ? card.value.toLocaleString() : 'n/a'}</span>
+                {card.value > 0 && card.text && <span className={styles.kpiSubtext}>{card.text}</span>}
+              </div>
+            ))}
+          </div>
+        ) : (
         <div className={styles.kpiGrid}>
           <div className={styles.kpiCard}>
             <span className={styles.kpiLabel}>Total Photos Taken</span>
@@ -173,6 +202,7 @@ export default function SzrtHeader({ data, activeTab, onTabChange }: SzrtHeaderP
             </span>
           </div>
         </div>
+        )}
       </div>
 
       {/* Navigation Tab Pills */}

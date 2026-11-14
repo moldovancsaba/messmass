@@ -11,17 +11,22 @@ import D3FunnelFlow from './D3FunnelFlow';
 import D3DemographicsChart from './D3DemographicsChart';
 import MatchesTable from './MatchesTable';
 import { getReportSlug } from './reportSlug';
+import HashtagReportView from '@/components/hashtagReport/HashtagReportView';
+import type { HashtagReport } from '@/lib/hashtagReport/types';
 import styles from './interactive-report.module.css';
 
 interface InteractiveReportDashboardProps {
   initialData: InteractiveReportData;
+  /** The Fanmass report (lib/hashtagReport/dashboard.ts): only what Fanmass measured, no hand-entered figure. The
+   * dashboard then shows the Fanmass tabs only (vision, map, demographics, figures) and Fanmass header figures. */
+  fanmass?: HashtagReport;
 }
 
-export default function InteractiveReportDashboard({ initialData }: InteractiveReportDashboardProps) {
+export type DashboardTab = 'overview' | 'vision' | 'territory' | 'bubble' | 'funnel' | 'demographics' | 'table' | 'figures';
+
+export default function InteractiveReportDashboard({ initialData, fanmass }: InteractiveReportDashboardProps) {
   const [data, setData] = useState<InteractiveReportData>(initialData);
-  const [activeTab, setActiveTab] = useState<
-    'overview' | 'vision' | 'territory' | 'bubble' | 'funnel' | 'demographics' | 'table'
-  >('overview');
+  const [activeTab, setActiveTab] = useState<DashboardTab>(fanmass ? (initialData.vision ? 'vision' : 'figures') : 'overview');
   const [selectedPeriodId, setSelectedPeriodId] = useState<string | null>(null);
   const [selectedMatch, setSelectedMatch] = useState<MatchItem | null>(null);
 
@@ -83,6 +88,7 @@ export default function InteractiveReportDashboard({ initialData }: InteractiveR
       {/* Client Header & Navigation */}
       <SzrtHeader
         data={data}
+        fanmass={fanmass}
         activeTab={activeTab}
         onTabChange={(tab) => {
           setActiveTab(tab);
@@ -181,6 +187,9 @@ export default function InteractiveReportDashboard({ initialData }: InteractiveR
 
       {/* Tab 5: All Match Data Table */}
       {activeTab === 'table' && <MatchesTable matches={data.matches} />}
+
+      {/* Fanmass report: every measured figure with its counts, and the events it comes from */}
+      {activeTab === 'figures' && fanmass && <HashtagReportView report={fanmass} embedded />}
 
       {/* Footer: scope name and the date range of the events in the data */}
       <footer className={styles.reportFooter}>

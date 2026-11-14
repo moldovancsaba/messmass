@@ -20,14 +20,14 @@ jest.mock('@/components/ServerPageGate', () => ({ __esModule: true, default: () 
 jest.mock('@/components/theme/interactive-report/InteractiveReportDashboard', () => ({ __esModule: true, default: () => null }));
 jest.mock('@/components/theme/interactive-report/interactive-report.module.css', () => ({ __esModule: true, default: {} }), { virtual: true });
 jest.mock('@/lib/hashtagReport', () => ({ buildAllEventsReport: (...a: unknown[]) => buildAll(...a) }));
-jest.mock('@/components/hashtagReport/HashtagReportView', () => ({ __esModule: true, default: () => null }));
+jest.mock('@/components/hashtagReport/FanmassDashboardPage', () => ({ __esModule: true, default: () => null }));
 jest.mock('@/lib/interactiveReportAggregator', () => ({
   ...jest.requireActual('@/lib/interactiveReportAggregator'),
   getScopedInteractiveReportData: (...a: unknown[]) => getData(...a),
 }));
 
 import ServerPageGate from '@/components/ServerPageGate';
-import HashtagReportView from '@/components/hashtagReport/HashtagReportView';
+import HashtagReportView from '@/components/hashtagReport/FanmassDashboardPage';
 import GlobalInteractiveReportPage from '@/app/interactive-report/global/page';
 import { resolveScopeProjectIds } from '@/lib/interactiveReportAggregator';
 import { buildShareableUrl } from '@/lib/pagePassword';
@@ -47,7 +47,7 @@ describe('who can open the global report', () => {
     const page: any = await open();
     expect(page.type).toBe(HashtagReportView);
     expect(buildAll).toHaveBeenCalledTimes(1);
-    expect(getData).not.toHaveBeenCalled();
+    expect(getData).toHaveBeenCalledWith({ type: 'global', identifier: 'all' });
     expect(isPageProtected).not.toHaveBeenCalled();
   });
 

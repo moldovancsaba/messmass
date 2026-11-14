@@ -20,12 +20,12 @@ jest.mock('@/lib/interactiveReportAggregator', () => ({
   getScopedInteractiveReportData: (...a: unknown[]) => getScoped(...a),
 }));
 jest.mock('@/components/ServerPageGate', () => ({ __esModule: true, default: () => null }));
-jest.mock('@/components/hashtagReport/HashtagReportView', () => ({ __esModule: true, default: () => null }));
+jest.mock('@/components/hashtagReport/FanmassDashboardPage', () => ({ __esModule: true, default: () => null }));
 jest.mock('@/components/theme/interactive-report/InteractiveReportDashboard', () => ({ __esModule: true, default: () => null }));
 jest.mock('@/components/theme/interactive-report/interactive-report.module.css', () => ({ __esModule: true, default: {} }), { virtual: true });
 
 import ServerPageGate from '@/components/ServerPageGate';
-import HashtagReportView from '@/components/hashtagReport/HashtagReportView';
+import HashtagReportView from '@/components/hashtagReport/FanmassDashboardPage';
 import InteractiveReportDashboard from '@/components/theme/interactive-report/InteractiveReportDashboard';
 import Page from '@/app/interactive-report/hashtag/[hashtag]/page';
 
@@ -45,7 +45,7 @@ describe('the hashtag report page', () => {
     const page = await open('%23Derby2027');
     expect(page.type).toBe(HashtagReportView);
     expect(buildHashtagReport).toHaveBeenCalledWith(expect.anything(), 'Derby2027');
-    expect(getScoped).not.toHaveBeenCalled();
+    expect(getScoped).toHaveBeenCalledWith({ type: 'hashtag', identifier: 'Derby2027' });
   });
 
   it('asks for the page password when the hashtag has one, and builds nothing before it is entered', async () => {
@@ -67,7 +67,7 @@ describe('the hashtag report page', () => {
 
   it('shows the SZRT campaign the unified report, and its previous report only at ?report=classic', async () => {
     expect((await open('tippmixreport2026')).type).toBe(HashtagReportView);
-    expect(getScoped).not.toHaveBeenCalled();
+    expect(getScoped).toHaveBeenCalledWith({ type: 'hashtag', identifier: 'tippmixreport2026' });
     const previous: any = await open('tippmixreport2026', 'classic');
     expect(previous.type).toBe('main');
     expect(previous.props.children.type).toBe(InteractiveReportDashboard);

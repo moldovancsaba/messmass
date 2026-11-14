@@ -10,7 +10,7 @@ import config from '@/lib/config';
 import clientPromise from '@/lib/mongodb';
 import { buildFilterReport, filterSlugHashtags } from '@/lib/hashtagReport';
 import type { ReportDb } from '@/lib/hashtagReport/measured';
-import HashtagReportView from '@/components/hashtagReport/HashtagReportView';
+import FanmassDashboardPage from '@/components/hashtagReport/FanmassDashboardPage';
 
 // Built from many events on the first request; allow sufficient duration
 export const maxDuration = 60;
@@ -51,7 +51,11 @@ export default async function FilterInteractiveReportPage({ params, searchParams
     const db = (await clientPromise).db(config.dbName) as unknown as ReportDb;
     const tags = await filterSlugHashtags(db, decodeURIComponent(slug));
     if (!tags.length) notFound();
-    return <HashtagReportView report={await buildFilterReport(db, tags, slug)} />;
+    const [report, base] = await Promise.all([
+      buildFilterReport(db, tags, slug),
+      getScopedInteractiveReportData({ type: 'filter', identifier: slug }).catch(() => null),
+    ]);
+    return <FanmassDashboardPage report={report} base={base} />;
   }
 
   const data = await getScopedInteractiveReportData({

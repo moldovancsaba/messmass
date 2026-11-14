@@ -112,8 +112,8 @@ it drifts. Do not edit between the markers.
 
 | Category | Count | Location |
 |----------|-------|----------|
-| **UI Components** | 129 | `components/` |
-| **Utility Modules** | 252 | `lib/` |
+| **UI Components** | 130 | `components/` |
+| **Utility Modules** | 253 | `lib/` |
 | **Hooks** | 13 | `hooks/` |
 | **Design Tokens** | 410 | `app/styles/theme.css` |
 | **Utility CSS classes** | 192 | `app/styles/utilities.css` |
@@ -1901,7 +1901,12 @@ after every Fanmass publish run). The two kinds work together: an event carries 
 category list or its Fanmass hashtags hold it (`hashtagFilter`, the same match as the admin hashtag filter;
 `category:tag` matches that category only). A hashtag is one name in any spelling: case, a leading # and underscores do
 not count (`compactHashtag`, `hashtagSpellings` in `lib/photoHashtags.ts`), so the typed `otp_bank_pick_szeged` and
-Fanmass's `otpbankpickszeged` are one hashtag. In the Fanmass report a typed hashtag brings all the photos of its events,
+Fanmass's `otpbankpickszeged` are one hashtag. The Fanmass report pages (`/report/hashtag`, `/report/filter`, `/report/global`)
+render the interactive dashboard in its Fanmass mode (`components/hashtagReport/FanmassDashboardPage.tsx`,
+`lib/hashtagReport/dashboard.ts`): the vision charts and image proofs Fanmass published for the scope (or the vision the
+stored photos give, `visionFromReport`), the territory map fed by the events with Fanmass photos, demographics from the
+vision, and the measured figures in a Figures tab; the header shows Fanmass figures and the clicker tabs (overview,
+match explorer, funnel, typed match table) are left out. In the Fanmass report a typed hashtag brings all the photos of its events,
 a hashtag Fanmass wrote (a brand, an emotion) only the photos it was found in. The reports never mix: the clicker report (counts people entered by hand,
 `/filter/[slug]` and the Clicker section of `/admin/filter`) and the Fanmass report (`lib/hashtagReport`,
 `/report/hashtag/[x]`, `/report/filter/[slug]`, `/report/global`, the Fanmass section of `/admin/filter`).
