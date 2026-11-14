@@ -18,7 +18,7 @@ function cssFiles(dir: string): string[] {
   });
 }
 
-describe('the design tokens of the interactive report', () => {
+describe('the design tokens of the interactive and hashtag report styles', () => {
   const sources = [
     ...cssFiles(path.join(root, 'app')),
     ...cssFiles(path.join(root, 'components')),
@@ -35,7 +35,10 @@ describe('the design tokens of the interactive report', () => {
     expect(defined.has('--mm-font-weight-bold')).toBe(true);
   });
 
-  it.each(cssFiles(path.join(root, 'components/theme/interactive-report')).map((file) => [path.basename(file), file]))(
+  it.each([
+    ...cssFiles(path.join(root, 'components/theme/interactive-report')),
+    ...cssFiles(path.join(root, 'components/hashtagReport')),
+  ].map((file) => [path.basename(file), file]))(
     '%s uses only defined tokens where it has no fallback',
     (_name, file) => {
       const css = fs.readFileSync(file, 'utf8');

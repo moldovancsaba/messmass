@@ -40,7 +40,13 @@ const escapeRegex = (text: string) => text.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'
 export function hashtagFilter(hashtag: string, organizationId?: string): Record<string, unknown> {
   const id = hashtag.trim().replace(/^#/, '');
   const filter: Record<string, unknown> = {
-    $or: [{ hashtags: id }, { hashtags: `#${id}` }, { hashtags: { $regex: new RegExp(`^#?${escapeRegex(id)}$`, 'i') } }],
+    $or: [
+      { hashtags: id },
+      { hashtags: `#${id}` },
+      { hashtags: { $regex: new RegExp(`^#?${escapeRegex(id)}$`, 'i') } },
+      // The classic hashtag report also reads a hashtag list stored as one comma-separated text
+      { hashtags: { $regex: new RegExp(`(^|,)\\s*#?${escapeRegex(id)}\\s*(,|$)`, 'i') } },
+    ],
   };
   if (organizationId) filter.organizationId = organizationId;
   return filter;

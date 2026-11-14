@@ -113,5 +113,9 @@ describe('what the builder may read', () => {
     expect(filter.$or[0]).toEqual({ hashtags: 'Derby' });
     expect(filter.$or[1]).toEqual({ hashtags: '#Derby' });
     expect((filter.$or[2].hashtags as { $regex: RegExp }).$regex.test('#derby')).toBe(true);
+    // ...and as one comma-separated text, like the classic hashtag report
+    const listed = (filter.$or[3].hashtags as { $regex: RegExp }).$regex;
+    expect(listed.test('cup, Derby ,final')).toBe(true);
+    expect(listed.test('derbyshire')).toBe(false);
   });
 });

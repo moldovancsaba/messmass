@@ -112,7 +112,7 @@ it drifts. Do not edit between the markers.
 
 | Category | Count | Location |
 |----------|-------|----------|
-| **UI Components** | 128 | `components/` |
+| **UI Components** | 129 | `components/` |
 | **Utility Modules** | 246 | `lib/` |
 | **Hooks** | 13 | `hooks/` |
 | **Design Tokens** | 410 | `app/styles/theme.css` |
@@ -125,9 +125,9 @@ largest, and the ones to read first:
 
 | Module | Importers | Lines |
 |--------|-----------|-------|
-| `lib/config.ts` | 126 | 207 |
-| `lib/mongodb.ts` | 109 | 112 |
-| `lib/auth.ts` | 96 | 118 |
+| `lib/config.ts` | 127 | 207 |
+| `lib/mongodb.ts` | 110 | 112 |
+| `lib/auth.ts` | 97 | 118 |
 | `lib/logger.ts` | 94 | 392 |
 | `lib/apiGuards.ts` | 87 | 390 |
 | `components/ColoredCard.tsx` | 44 | 52 |
@@ -1874,6 +1874,11 @@ Messmass calculations and nothing typed by a person, in three layers that never 
 `coverage` says how many of the hashtag's events carry measured data, so a missing figure reads as "not measured". The route is
 gated like the other hashtag reports (public unless the hashtag has a page password). `tests/hashtag-report.test.ts` fails if the
 builder ever fetches or uses a stat outside the allowlist.
+
+`/report/hashtag/[hashtag]` (served by `app/interactive-report/hashtag/[hashtag]/page.tsx`) shows this report for every hashtag
+(`components/hashtagReport/HashtagReportView.tsx`), behind the shared page gate. The SZRT campaign identifiers keep the previous
+interactive report until its events carry the hashtag and its photos are linked to them; `?report=unified` previews the
+unified report for them.
 
 ### Error Handling
 
