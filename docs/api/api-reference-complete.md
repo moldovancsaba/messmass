@@ -296,14 +296,6 @@ Coverage-measured, per-endpoint reference for every route under `app/api/`. Each
 | POST | `/api/data-blocks` | admin-session | Create a data visualization block. | body: name (required), charts?, order?, isActive?, showTitle? | { success, blockId, block } | writes data_blocks collection (insert) |
 | PUT | `/api/data-blocks` | admin-session | Update a data visualization block by _id. | body: _id (required), name (required), charts?, order?, isActive?, showTitle?, blockAspectRatio?, mobileAspectRatio?, tableHeightMultiplier? | { success, block } or 404 | writes data_blocks collection (update) |
 
-## /debug
-
-| Method | Path | Auth | Summary | Request | Response | Side effects |
-|--------|------|------|---------|---------|----------|--------------|
-| GET | `/api/debug/categorized-hashtags` | admin-session | Debug endpoint: sample projects with categorized vs traditional hashtags plus totals. | none | { success, data: { projectsWithCategories[], projectsWithTraditional[], counts } } | read-only (projects collection) |
-| GET | `/api/debug/notifications` | admin-session | Diagnostic endpoint reporting notification-system status and recent notifications for the authenticated admin. | none | success, timestamp, checks{authentication, database.totalNotifications, userNotifications{unread/read/archived counts}, recentNotifications[], sampleStructure}, troubleshooting.message | read-only (reads notifications collection) |
-| GET | `/api/debug/overview-block` | admin-session | Debug endpoint returning the raw OVERVIEW data block document. | none | success, block (OVERVIEW doc with stringified _id), message | read-only (reads data_blocks collection) |
-
 ## /derived-variable-config
 
 | Method | Path | Auth | Summary | Request | Response | Side effects |
