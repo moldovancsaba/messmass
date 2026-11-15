@@ -5,6 +5,7 @@ import config from '@/lib/config';
 import { cachedResponse, generateETag, checkIfNoneMatch, notModifiedResponse, CACHE_PRESETS } from '@/lib/api/caching';
 import { error as logError } from '@/lib/logger';
 import { requireAdmin, requireEditorAccess } from '@/lib/apiGuards';
+import { compactHashtag } from '@/lib/photoHashtags';
 
 // Use centralized Mongo client and config
 
@@ -29,6 +30,9 @@ export async function GET(request: NextRequest) {
           allTags: {
             $setUnion: [
               { $ifNull: ["$hashtags", []] },
+              // With photos=1 (the admin filter) the hashtags Fanmass wrote onto the event's photos count for the event too;
+              // the event editor's suggestions stay typed hashtags only
+              ...(searchParams.get('photos') === '1' ? [{ $ifNull: ["$fanmassHashtags", []] }] : []),
               {
                 $reduce: {
                   input: { $objectToArray: { $ifNull: ["$categorizedHashtags", {}] } },
@@ -46,6 +50,47 @@ export async function GET(request: NextRequest) {
 
     if (search) {
       pipeline.push({ $match: { _id: { $regex: new RegExp(search, 'i') } } });
+    }
+
+    // `photos=1` (the admin hashtag filter) also lists the hashtags Fanmass wrote onto photos (emotion, brand, sport,
+    // event, club, people), each with its event count and photo count, so a photo-only hashtag can be filtered too.
+    // The event editor's suggestions do not ask for them: photo hashtags are not typed onto events.
+    if (searchParams.get('photos') === '1') {
+      // Photos counted once per hashtag identity (an underscore is spelling only: lib/photoHashtags.ts compactHashtag)
+      const compactSearch = search ? [{ $match: { _id: { $regex: new RegExp(search.replace(/_/g, ''), 'i') } } }] : [];
+      const photoTags = (collection: string, match: Record<string, unknown>) => db.collection(collection).aggregate([
+        { $match: { ...match, 'hashtags.0': { $exists: true } } },
+        { $project: { tags: { $setUnion: [{ $map: { input: '$hashtags', in: { $replaceAll: { input: { $toLower: '$$this' }, find: '_', replacement: '' } } } }, []] } } },
+        { $unwind: '$tags' },
+        { $group: { _id: '$tags', count: { $sum: 1 } } },
+        ...compactSearch,
+      ]).toArray();
+      const [events, drive, camera] = await Promise.all([
+        db.collection('projects').aggregate(pipeline).toArray(),
+        photoTags('fanmass_event_drive_photos', {}),
+        photoTags('fanmass_camera_photo_analyses', { tombstone: { $ne: true }, status: 'completed' }),
+      ]);
+      // One row per hashtag identity, shown in its typed spelling when people typed it
+      const merged = new Map<string, { hashtag: string; count: number; photos: number }>();
+      for (const row of events) {
+        const key = compactHashtag(String(row._id));
+        const item = merged.get(key);
+        if (item) item.count += row.count;
+        else merged.set(key, { hashtag: String(row._id), count: row.count, photos: 0 });
+      }
+      for (const row of [...drive, ...camera]) {
+        const key = String(row._id);
+        const item = merged.get(key) ?? { hashtag: key, count: 0, photos: 0 };
+        item.photos += row.count;
+        merged.set(key, item);
+      }
+      const all = [...merged.values()].sort((x, y) => (y.count + y.photos) - (x.count + x.photos) || x.hashtag.localeCompare(y.hashtag));
+      const page = all.slice(offset, offset + limit);
+      return NextResponse.json({
+        success: true,
+        hashtags: page,
+        pagination: { mode: 'aggregation', limit, offset, nextOffset: offset + page.length < all.length ? offset + page.length : null, totalMatched: all.length },
+      });
     }
 
     pipeline.push({ $sort: { count: -1, _id: 1 } });

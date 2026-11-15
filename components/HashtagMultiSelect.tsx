@@ -16,7 +16,10 @@ const SelectableChoiceChip = ChoiceChip as React.ComponentType<
 interface HashtagItem {
   hashtag: string;
   slug: string;
+  /** Events carrying the hashtag. */
   count: number;
+  /** Photos Fanmass tagged with it (drive and Camera photos), when the list includes photo hashtags. */
+  photos?: number;
 }
 
 /**
@@ -39,6 +42,7 @@ interface HashtagMultiSelectProps {
 
 interface MatchPreview {
   count: number;
+  photos: number;
 }
 
 export default function HashtagMultiSelect({
@@ -50,12 +54,12 @@ export default function HashtagMultiSelect({
   className = '',
   totalHashtags
 }: HashtagMultiSelectProps) {
-  const [matchPreview, setMatchPreview] = useState<MatchPreview>({ count: 0 });
+  const [matchPreview, setMatchPreview] = useState<MatchPreview>({ count: 0, photos: 0 });
 
   // Function to preview match count for selected hashtags
   const previewMatches = async (tags: string[]) => {
     if (tags.length === 0) {
-      setMatchPreview({ count: 0 });
+      setMatchPreview({ count: 0, photos: 0 });
       return;
     }
     
@@ -65,13 +69,13 @@ export default function HashtagMultiSelect({
       const data = await response.json();
       
       if (data.success) {
-        setMatchPreview({ count: data.filter.matchCount });
+        setMatchPreview({ count: data.filter.matchCount, photos: data.filter.photoCount ?? 0 });
       } else {
-        setMatchPreview({ count: 0 });
+        setMatchPreview({ count: 0, photos: 0 });
       }
     } catch (error) {
       console.error('Failed to preview matches:', error);
-      setMatchPreview({ count: 0 });
+      setMatchPreview({ count: 0, photos: 0 });
     }
   };
 
@@ -112,8 +116,9 @@ export default function HashtagMultiSelect({
 
   // Sort hashtags by usage count (descending) then alphabetically
   const sortedHashtags = [...hashtags].sort((a, b) => {
-    if (a.count !== b.count) {
-      return b.count - a.count;
+    const usage = (item: HashtagItem) => item.count + (item.photos ?? 0);
+    if (usage(a) !== usage(b)) {
+      return usage(b) - usage(a);
     }
     return a.hashtag.localeCompare(b.hashtag);
   });
@@ -123,8 +128,9 @@ export default function HashtagMultiSelect({
       {/* Preview Results - Only show if we have selections */}
       {showPreview && selectedHashtags.length > 0 && (
         <div className={styles.previewContainer}>
-          <div className={`${styles.previewBox} ${matchPreview.count > 0 ? styles.success : styles.error}`}>
-            📊 {matchPreview.count} project{matchPreview.count !== 1 ? 's' : ''} match{matchPreview.count === 1 ? 'es' : ''} your filter
+          <div className={`${styles.previewBox} ${matchPreview.count + matchPreview.photos > 0 ? styles.success : styles.error}`}>
+            📊 {matchPreview.count} event{matchPreview.count !== 1 ? 's' : ''}
+            {matchPreview.photos > 0 ? ` and ${matchPreview.photos} photo${matchPreview.photos !== 1 ? 's' : ''}` : ''} match your filter
           </div>
         </div>
       )}
@@ -210,7 +216,7 @@ export default function HashtagMultiSelect({
                 onClick={() => handleHashtagToggle(item.hashtag)}
                 disabled={disabled}
                 className={`${styles.hashtagItem} ${disabled ? styles.disabled : ''}`}
-                aria-label={`${item.hashtag}, ${item.count} project${item.count === 1 ? '' : 's'}${isSelected ? ', selected' : ''}`}
+                aria-label={`${item.hashtag}, ${item.count} event${item.count === 1 ? '' : 's'}${item.photos ? `, ${item.photos} photo${item.photos === 1 ? '' : 's'}` : ''}${isSelected ? ', selected' : ''}`}
                 label={
                   <span className={styles.hashtagContent}>
                     <ColoredHashtagBubble
@@ -221,9 +227,14 @@ export default function HashtagMultiSelect({
                         fontWeight: '500'
                       }}
                     />
-                    <span className={styles.countBadge}>
+                    <span className={styles.countBadge} title="Events">
                       {item.count}
                     </span>
+                    {item.photos ? (
+                      <span className={styles.countBadge} title="Photos tagged by Fanmass">
+                        📷 {item.photos}
+                      </span>
+                    ) : null}
                   </span>
                 }
               />

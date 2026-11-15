@@ -268,3 +268,30 @@
     font-size: var(--mm-font-size-base);
   }
 }
+
+.interactiveSwitchBar {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: var(--mm-space-3);
+}
+
+.interactiveSwitchBtn {
+  background: var(--mm-color-primary-600);
+  color: var(--mm-white);
+  padding: var(--mm-space-2) var(--mm-space-4);
+  border-radius: var(--mm-radius-full);
+  font-size: var(--mm-font-size-xs);
+  font-weight: var(--mm-font-weight-bold);
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--mm-space-2);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  transition: all 0.15s ease;
+}
+
+.interactiveSwitchBtn:hover {
+  background: var(--mm-color-primary-700);
+  transform: translateY(-1px);
+}
+

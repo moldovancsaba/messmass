@@ -1,8 +1,28 @@
 # {messmass} Release Notes
 Status: Active
-Last Updated: 2026-11-06T18:30:00.000Z
+Last Updated: 2026-11-15T19:00:00.000Z
 Canonical: No
 Owner: Operations
+
+## Unreleased — 2026-11-15 — Opt-in headline from photo records, Camera proof and months in the Fanmass report, no SZRT figure in the global report
+
+- **Changed (opt-in headline, owner answer 512):** every Fanmass report (hashtag, filter, `/report/global`) headlines **Photos with opt-in**: the drive photos and Camera photo results with a stored per-photo `optIn` record, as a share with its two counts, or **Not measured** when no photo has a record (`calculated.photoOptInShare`, `lib/hashtagReport/calculated.ts`). A marketing opt-in typed for a campaign is not part of it.
+- **Added (Camera proof, owner answer 501):** the brands and clubs Fanmass read from Camera photos (`analysis.detection.brandRegions` with a `text_read` reading and its confidence; a person's correction wins) are counted once per photo and shown next to the SZRT ones in the vision section, the podiums and the brand/club cards, with a **Proof from the Camera photos** block (text read, reading confidence, event; Messmass keeps no crop of a Camera photo) (`lib/hashtagReport/cameraProof.ts`). The Camera results of a scope are added to the vision Fanmass published for the SZRT drive library instead of being left out. The map counts each event's Camera photos too.
+- **Added (months):** the Fanmass report's Figures tab lists every month with measured photos (event date), drive and Camera photos side by side, and the events table shows each event's Camera photos.
+- **Changed (global report, owner answers 499–502):** access stays admin session or the page password from **Global Reports** (unshared: not found); the address stays `/report/global`. The earlier report behind it (`?report=classic`, saved variants) no longer shows SZRT campaign figures (cycle registrations, opt-ins, CTA, touchpoints, campaign cycles): it counts the registrations and marketing opt-ins events outside the campaign stored, no longer mixes Camera's photo consents into the marketing opt-ins, and draws its timeline month by month from every event, Camera events included. Report snapshot version 6, so cached reports are rebuilt.
+- **Checked, no change (owner answer 478):** a brand without an uploaded logo shows its name with a neutral initial badge (or the default icon); nothing generates or fetches a logo. The SZRT shared filter link (owner answer 511) already opens the Fanmass report, the clicker report stays on its existing addresses.
+
+## [v12.3.48] — 2026-11-14 — Fanmass report for every hashtag, filter and all events; typed and Fanmass hashtags together
+
+- **Documentation review (2026-11-15):** added the read-only Project 8 / issue assessment and manual owner movement journal. No board, application data, runtime or fleet version changed. Missing Status values and unverified acceptance remain explicit in the reference document.
+
+- **Added (Fanmass report, #534–#537, #541, #543–#545, #547, #549):** one report for every hashtag, filter and all events, built only from what Fanmass measured and Messmass calculates (`lib/hashtagReport`: measured layer with an allowlist projection, calculated layer with numerator and denominator). `/report/hashtag/{x}`, `/report/filter/{slug}` and `/report/global` show it; the SZRT campaign and its partner links open it, the earlier mixed report stays at `?report=classic`. Drive photo sums run in one database aggregation (the campaign report went from 36 s to under 2 s). A typed hashtag brings all photos of its events, a Fanmass hashtag only the photos it was found in.
+- **Added (photos and hashtags, #538–#540, #548):** SZRT drive photos are stored one record per photo, in their event or the library; every delivered photo carries hashtags (event, sport, clubs, brands read, emotions, people). Events keep the Fanmass hashtags of their photos in `fanmassHashtags`, apart from the typed ones. Typed and Fanmass hashtags work together in the filter; a hashtag is one name in any spelling (case, `#`, underscores).
+- **Changed (admin hashtag filter, #546, #548):** the list includes Fanmass hashtags with event and photo counts; Apply shows the Clicker report (hand-entered) and the Fanmass report in two separate sections, with a button for each; `/filter/{slug}` stays the clicker report.
+- **Added (Fanmass integration, #542, #546, #548):** Fanmass can create the event of a match it holds photos of (same as Quick Add's match builder, `lib/createEvent.ts` shared with `POST /api/projects`), add campaign hashtags to events (additive only), read the event list, and refresh events' Fanmass hashtags. `#tippmixreport2026` is on 72 events.
+- **Added (global report and evidence, #525–#533):** the global report next to organization, partner, hashtag and filter; SZRT proof behind brand and club figures; the global evidence library with human review; the opt-in stored with every Fanmass photo result.
+- **Guide:** the hashtags and filters tutorial explains the two kinds of hashtags and the two reports.
+- **Verified:** each change passed the local CI chain and GitHub Verify and was checked live on the public report pages and APIs. The admin filter page and `/report/global` were not opened live with an admin session.
 
 ## [v12.3.47] — 2026-11-06 — Editorial report system redesign, Cloudflare R2 cold-storage recovery & Camera journey editor live preview
 

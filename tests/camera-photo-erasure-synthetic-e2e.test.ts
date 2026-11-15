@@ -250,6 +250,7 @@ describe('Privacy: Messmass photo erasure synthetic cross-product E2E', () => {
         brand_scan: 'completed',
       },
       status: 'completed',
+      optIn: { received: true, basis: 'camera_consent_audit', recordedAt: '2026-11-01T10:00:00.000Z', kinds: ['privacy', 'terms'] },
       summary: {
         peopleCounts: { measured: 2 },
         genderProjection: { male: 1, female: 1 },
@@ -283,6 +284,7 @@ describe('Privacy: Messmass photo erasure synthetic cross-product E2E', () => {
     expect(preSummary?.summary.photoResultsReceived).toBe(1);
     expect(preSummary?.summary.peopleCounts.measured).toBe(2);
     expect(projectDoc.stats.fanmassPhotoResultsReceived).toBe(1);
+    expect(projectDoc.stats.fanmassOptInPhotos).toBe(1);
 
     // 2. SSO Privacy Erasure: call DELETE /api/integrations/privacy/erase-camera-photo
     const erasureRequest = new NextRequest('http://localhost/api/integrations/privacy/erase-camera-photo', {

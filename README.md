@@ -12,7 +12,7 @@ Owner: Product
 <p align="center"><strong>Enterprise event analytics, partner reporting, reporting operations, and admin workflow tooling for sports organizations, venues, and brands.</strong></p>
 
 <p align="center">
-  <img src="https://img.shields.io/badge/version-v12.3.47-2563EB?style=for-the-badge" alt="Version">
+  <img src="https://img.shields.io/badge/version-v12.3.48-2563EB?style=for-the-badge" alt="Version">
   <img src="https://img.shields.io/badge/platform-Web%20App-0F172A?style=for-the-badge" alt="Platform">
   <img src="https://img.shields.io/badge/stack-Next.js%20%7C%20MongoDB%20%7C%20Mantine-0EA5E9?style=for-the-badge" alt="Stack">
 </p>
@@ -79,8 +79,6 @@ BITLY_ORGANIZATION_GUID=your_org_guid
 BITLY_GROUP_GUID=your_group_guid
 SPORTSDB_API_KEY=your_api_key
 SPORTSDB_BASE_URL=https://www.thesportsdb.com/api/v1/json
-FANMASS_BASE_URL=http://127.0.0.1:8787
-FANMASS_API_KEY=shared-fanmass-api-key
 FANMASS_INTEGRATION_TOKEN=shared-messmass-fanmass-token
 SSO_BASE_URL=https://sso.doneisbetter.com
 SSO_CLIENT_ID=your_sso_client_id
@@ -207,6 +205,8 @@ Current Mantine migration note:
 - new UI work must extend these shared contracts instead of creating page-local foundations
 
 ## Documentation Map
+
+- [Project board review and manual movement / Scrum journal](docs/operations/project-board-movement-log.md)
 
 Canonical entrypoints:
 - [docs/index.md](docs/index.md) — curated documentation entrypoint

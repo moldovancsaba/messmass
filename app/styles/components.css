@@ -1090,14 +1090,6 @@ textarea::placeholder {
   box-shadow: 0 4px 8px rgba(var(--mm-black-rgb), 0.15);
 }
 
-/* Project hashtags container */
-.project-hashtags {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.25rem;
-  align-items: center;
-}
-
 /* ========================================
    ERROR & SUCCESS STATES
 ======================================== */
