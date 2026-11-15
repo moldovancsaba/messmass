@@ -169,8 +169,8 @@ public URL and is the caller on every channel except one: messmass's
 (blocking, 15s timeout; b109bcd9). *(Superseded, note added 2026-11-15: since
 af08b361, 2026-10-20, both routes answer 410 Gone and call nothing, so Fanmass
 is now the caller on every channel; the dashboard snapshot and rescan channels
-of this block answer 410 as well. The pull code, `syncFanmassAnalytics` in
-`lib/fanmassIntegration.ts`, is left without a caller.)* The new channel mirrors the existing
+of this block answer 410 as well. The pull code (`syncFanmassAnalytics` in
+`lib/fanmassIntegration.ts`, `FANMASS_BASE_URL`, `FANMASS_API_KEY`) was removed on 2026-11-15.)* The new channel mirrors the existing
 `ai_rescan_requests` pattern rather than inventing a new mechanism. See `docs/operations/operations-release-notes.md`'s
 `[v12.1.89]` entry for the full file list and known limitations.
 

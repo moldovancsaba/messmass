@@ -133,6 +133,8 @@ export interface ProjectDTO {
   };
   viewSlug?: string;
   editSlug?: string;
+  /** Set by lib/cameraProvision.ts when the event is mirrored into Camera. */
+  externalRefs?: { camera?: { eventId?: string } } | null;
   createdAt: string;
   updatedAt: string;
   

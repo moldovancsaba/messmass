@@ -20,9 +20,9 @@ messmass is the master of partner/event/organization data and the event-report
   integration token. messmass tells camera when a
   report style or a partner's look changed (`lib/cameraThemeNotify.ts` → camera
   `/api/internal/messmass/theme-updated`). The link from an event to camera's
-  `/admin/vetting?eventId=…` exists only in `app/admin/events/ProjectsPageClient.tsx`,
-  which nothing imports; the live events list has no such link (drift register entry
-  81). camera is also messmass's email transport. The try-on integration of camera is gone (camera issue 557); it was
+  `/admin/vetting?eventId=…` is the "Open in Camera" action of each row in the events
+  list (`lib/adapters/projectsAdapter.tsx`, disabled for an event Camera does not know;
+  drift register entry 81, fixed 2026-11-15). camera is also messmass's email transport. The try-on integration of camera is gone (camera issue 557); it was
   never a messmass edge.
 - **messmass ← fanmass**: fanmass is the caller on every channel. messmass
   exposes 31 `/api/integrations/fanmass/*` route files guarded by
@@ -30,7 +30,8 @@ messmass is the master of partner/event/organization data and the event-report
   evidence, match events, commands, variables and the SZRT routes. The old
   event-level channels (summaries, dashboard snapshots, rescan queue, the
   `/sync` + `/callbacks` pull from `FANMASS_BASE_URL`) answer 410 Gone since
-  af08b361 (2026-10-20), so no request waits on fanmass being reachable.
+  af08b361 (2026-10-20), so no request waits on fanmass being reachable; the pull
+  code and its `FANMASS_BASE_URL` / `FANMASS_API_KEY` settings were removed on 2026-11-15.
 - **messmass → SSO**: confidential OAuth client (secret, no PKCE). Local password
   login is retired (410 Gone). The same client also serves the stakeholder
   login (#231), gated by local `stakeholder_grants`.

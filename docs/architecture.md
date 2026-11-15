@@ -125,17 +125,17 @@ largest, and the ones to read first:
 
 | Module | Importers | Lines |
 |--------|-----------|-------|
-| `lib/config.ts` | 129 | 207 |
+| `lib/config.ts` | 129 | 201 |
 | `lib/mongodb.ts` | 112 | 112 |
-| `lib/auth.ts` | 98 | 118 |
+| `lib/auth.ts` | 97 | 118 |
 | `lib/logger.ts` | 96 | 392 |
 | `lib/apiGuards.ts` | 87 | 390 |
-| `lib/fanmassIntegration.ts` | 45 | 485 |
-| `components/ColoredCard.tsx` | 44 | 52 |
-| `lib/apiClient.ts` | 42 | 258 |
+| `lib/fanmassIntegration.ts` | 45 | 331 |
+| `components/ColoredCard.tsx` | 43 | 52 |
 | `lib/db.ts` | 42 | 17 |
-| `components/MaterialIcon.tsx` | 34 | 119 |
-| `components/UnifiedAdminHeroWithSearch.tsx` | 27 | 192 |
+| `lib/apiClient.ts` | 41 | 258 |
+| `components/MaterialIcon.tsx` | 33 | 119 |
+| `components/UnifiedAdminHeroWithSearch.tsx` | 26 | 192 |
 | `lib/mongoose-v3.ts` | 21 | 66 |
 | `lib/permissions.ts` | 19 | 144 |
 | `lib/report-calculator.ts` | 19 | 935 |
