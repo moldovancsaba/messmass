@@ -4,6 +4,7 @@
 
 import React, { useState, useEffect, useMemo } from 'react';
 import BrandEvidenceGallery from './BrandEvidenceGallery';
+import { findCameraProof, type CameraProofEntry } from '@/lib/hashtagReport/cameraProof';
 import styles from './interactive-report.module.css';
 
 export interface ClubStat {
@@ -22,9 +23,11 @@ export interface ClubStat {
 interface ConnectedSelfiesModalProps {
   club: ClubStat | null;
   onClose: () => void;
+  /** The names read in the report's Camera photos with their proof (vision.cameraProof). */
+  cameraProof?: CameraProofEntry[];
 }
 
-export default function ConnectedSelfiesModal({ club, onClose }: ConnectedSelfiesModalProps) {
+export default function ConnectedSelfiesModal({ club, onClose, cameraProof }: ConnectedSelfiesModalProps) {
   const [selfiesLoading, setSelfiesLoading] = useState(false);
   const [selfiesData, setSelfiesData] = useState<any>(null);
   const [selectedFanGroup, setSelectedFanGroup] = useState<string>('all');
@@ -376,7 +379,7 @@ export default function ConnectedSelfiesModal({ club, onClose }: ConnectedSelfie
               )}
 
               {/* Proof from the pictures: where the club name or crest text was read from the image */}
-              <BrandEvidenceGallery kind="club" name={club.club} />
+              <BrandEvidenceGallery kind="club" name={club.club} camera={findCameraProof(cameraProof, 'club', club.club)} />
 
               {Number(selfiesData.totalSelfies) > 0 && (
               <>

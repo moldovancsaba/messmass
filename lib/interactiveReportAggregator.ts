@@ -442,8 +442,8 @@ export async function getScopedInteractiveReportData(
 
   const matchesList = Array.from(matchesMap.values()).sort((a, b) => b.submitted - a.submitted);
 
-  // 5. Build timeline periods
-  const timelinePeriods: TimelinePeriod[] = campaignProjects
+  // 5. Build timeline periods (the SZRT campaign's cycles; the global report draws its own months below)
+  const campaignTimeline: TimelinePeriod[] = campaignProjects
     .filter((p) => campaignNames.includes(p.eventName))
     .map((p) => {
       const s = p.stats || {};
@@ -510,14 +510,13 @@ export async function getScopedInteractiveReportData(
 
   // 6. Aggregate global totals across the 4 primary monthly cycles
   // The monthly cycles hold the SZRT campaign's own totals (registrations, opt-ins, CTA clicks, touchpoints: stored
-  // for that campaign only). The all-data scope does not take its photo headline from them, because that would present
-  // one campaign's figures as everything: its photos come from every event, and the CTA clicks and touchpoints, which
-  // only the campaign stores, stay n/a.
-  const cyclePeriods = timelinePeriods.filter((t) => t.type === 'monthly');
-  const monthlyPeriods = scopeType === 'global' ? [] : cyclePeriods;
-  // Registrations and opt-ins: the SZRT campaign's cycles count once, and every event outside the campaign adds the
-  // two counts it stored itself (userRegistration, marketingOptin). Campaign events are skipped there, their opt-ins are
-  // already inside the cycles, so nothing is counted twice.
+  // for that campaign only). The all-data scope shows none of them (owner answer 502, 2026-11-15): its photos come from
+  // every event, its registrations and opt-ins are the ones the events outside the campaign stored themselves, and the
+  // CTA clicks and touchpoints, which only the campaign stores, stay n/a.
+  const cyclePeriods = scopeType === 'global' ? [] : campaignTimeline.filter((t) => t.type === 'monthly');
+  const monthlyPeriods = cyclePeriods;
+  // Registrations and opt-ins of the all-data scope: every event outside the SZRT campaign adds the two counts it stored
+  // itself (userRegistration, marketingOptin). Campaign events are skipped: their figures are the campaign's.
   const otherEvents =
     scopeType === 'global'
       ? campaignProjects.filter(
@@ -528,12 +527,9 @@ export async function getScopedInteractiveReportData(
         )
       : [];
   const sumStat = (key: string) => otherEvents.reduce((acc, p) => acc + toCount(p.stats?.[key]), 0);
-  // One source per event: the opt-ins an operator or sheet stored (marketingOptin), else the photos with a received
-  // opt-in that Camera counted for the event (camera_consents_accepted)
-  const otherEventOptIns = otherEvents.reduce(
-    (acc, p) => acc + (toCount(p.stats?.marketingOptin) || toCount(p.stats?.camera_consents_accepted)),
-    0,
-  );
+  // The marketing opt-ins an operator or sheet stored (marketingOptin). A photo's opt-in is not a marketing opt-in: the
+  // photos with a stored opt-in record are the headline of the Fanmass report (owner answer 512), never mixed in here.
+  const otherEventOptIns = sumStat('marketingOptin');
   const computedTotalPhotos = monthlyPeriods.reduce((acc, cur) => acc + cur.allPhotos, 0);
   const computedHostessPhotos = monthlyPeriods.reduce((acc, cur) => acc + cur.hostessPhotos, 0);
   const computedSelfies = Math.max(0, computedTotalPhotos - computedHostessPhotos);
@@ -569,6 +565,10 @@ export async function getScopedInteractiveReportData(
   // Opt-ins / registered, the same two counts that are printed next to it;
   // null when nobody registered or the stored opt-ins exceed the registrations
   const weightedOptInRate = consistentRate(totalOptIns, totalRegistered);
+
+  // The timeline: the campaign's cycles for a campaign scope; for the all-data scope every month that has events, from
+  // the events themselves (owner answer 501: the timeline covers the Camera months too, not only the SZRT cycles)
+  const timelinePeriods: TimelinePeriod[] = scopeType === 'global' ? eventMonths(matchesList, otherEvents) : campaignTimeline;
 
   // 7. Sports Breakdown
   // Only sports that occur in the scope are listed
@@ -1065,6 +1065,59 @@ export async function getScopedInteractiveReportData(
   }
 
   return finalResult;
+}
+
+const MONTH_NAMES = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+
+/** `YYYY-MM` of a stored date (2026-02-08, 2026.02.08, 2026/2/8), or null. */
+export function monthKey(date: unknown): string | null {
+  const found = /^(\d{4})[-./](\d{1,2})/.exec(String(date ?? '').trim());
+  if (!found || Number(found[2]) < 1 || Number(found[2]) > 12) return null;
+  return `${found[1]}-${found[2].padStart(2, '0')}`;
+}
+
+/**
+ * The all-data timeline: one period per calendar month, its photos summed from the events of that month and its
+ * registrations and opt-ins from the events outside the SZRT campaign that stored them. No campaign cycle, CTA or
+ * touchpoint figure (owner answer 502). Months without a dated event are not drawn.
+ */
+export function eventMonths(matches: MatchItem[], otherEvents: Array<{ eventDate?: unknown; stats?: Record<string, unknown> }>): TimelinePeriod[] {
+  const months = new Map<string, TimelinePeriod>();
+  const period = (key: string): TimelinePeriod => {
+    const existing = months.get(key);
+    if (existing) return existing;
+    const [year, month] = key.split('-');
+    const name = `${MONTH_NAMES[Number(month) - 1]} ${year}`;
+    const created: TimelinePeriod = {
+      id: `month-${key}`, name, shortName: `${name.slice(0, 3)} '${year.slice(2)}`, type: 'monthly', date: `${key}-01`, slug: '',
+      allPhotos: 0, hostessPhotos: 0, selfies: 0, registered: 0, optIns: 0, optInRate: null,
+      qr: 0, url: 0, social: 0, cta1: 0, cta2: 0, ctaTotal: 0,
+    };
+    months.set(key, created);
+    return created;
+  };
+  for (const match of matches) {
+    const key = monthKey(match.date);
+    if (!key) continue;
+    const row = period(key);
+    row.allPhotos += match.submitted;
+    row.hostessPhotos += match.hostess;
+    row.selfies += match.selfies;
+  }
+  for (const event of otherEvents) {
+    const key = monthKey(event.eventDate);
+    const registered = toCount(event.stats?.userRegistration);
+    const optIns = toCount(event.stats?.marketingOptin);
+    if (!key || (registered === 0 && optIns === 0)) continue;
+    const row = period(key);
+    row.registered += registered;
+    row.optIns += optIns;
+  }
+  for (const row of months.values()) {
+    const rate = consistentRate(row.optIns, row.registered);
+    row.optInRate = rate !== null ? Math.round(rate) : null;
+  }
+  return [...months.values()].sort((a, b) => a.date.localeCompare(b.date));
 }
 
 export async function getInteractiveReportData(

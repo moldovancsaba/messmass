@@ -11,6 +11,7 @@ import {
   mergeBrandVariants,
   BrandClusterId,
 } from '@/lib/brandEntityClustering';
+import type { CameraProofEntry } from '@/lib/hashtagReport/cameraProof';
 import styles from './interactive-report.module.css';
 
 interface BrandStat {
@@ -25,6 +26,8 @@ interface BrandStat {
 interface FanmassBrandsMatrixProps {
   brands: BrandStat[];
   totalPhotosProcessed: number;
+  /** The names read in the report's Camera photos with their proof (vision.cameraProof). */
+  cameraProof?: CameraProofEntry[];
 }
 
 type ClusterFilter = 'all' | BrandClusterId;
@@ -32,6 +35,7 @@ type ClusterFilter = 'all' | BrandClusterId;
 export default function FanmassBrandsMatrix({
   brands: rawBrands,
   totalPhotosProcessed,
+  cameraProof,
 }: FanmassBrandsMatrixProps) {
   const [filter, setFilter] = useState<ClusterFilter>('all');
   const [searchQuery, setSearchQuery] = useState('');
@@ -332,7 +336,7 @@ export default function FanmassBrandsMatrix({
         </div>
       )}
 
-      <BrandDetailModal brand={proofOf} totalPhotosProcessed={totalPhotosProcessed} onClose={() => setProofOf(null)} />
+      <BrandDetailModal brand={proofOf} totalPhotosProcessed={totalPhotosProcessed} onClose={() => setProofOf(null)} cameraProof={cameraProof} />
     </div>
   );
 }

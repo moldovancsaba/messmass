@@ -8,6 +8,7 @@ import {
   isVenue,
 } from '@/lib/brandEntityClustering';
 import ConnectedSelfiesModal from './ConnectedSelfiesModal';
+import type { CameraProofEntry } from '@/lib/hashtagReport/cameraProof';
 import styles from './interactive-report.module.css';
 
 interface ClubStat {
@@ -26,6 +27,8 @@ interface ClubStat {
 interface FanmassClubsMatrixProps {
   clubs: ClubStat[];
   totalPhotosProcessed: number;
+  /** The names read in the report's Camera photos with their proof (vision.cameraProof). */
+  cameraProof?: CameraProofEntry[];
 }
 
 type SportFilter = 'all' | 'Basketball' | 'Football' | 'Handball' | 'Ice Hockey' | 'International';
@@ -92,6 +95,7 @@ function resolveFranchiseSport(name: string): 'Basketball' | 'Football' | 'Handb
 export default function FanmassClubsMatrix({
   clubs,
   totalPhotosProcessed,
+  cameraProof,
 }: FanmassClubsMatrixProps) {
   const [filter, setFilter] = useState<SportFilter>('all');
   const [searchQuery, setSearchQuery] = useState('');
@@ -433,6 +437,7 @@ export default function FanmassClubsMatrix({
       <ConnectedSelfiesModal
         club={selectedClubForModal}
         onClose={() => setSelectedClubForModal(null)}
+        cameraProof={cameraProof}
       />
     </div>
   );

@@ -10,6 +10,9 @@ import styles from './hashtag-report.module.css';
 
 const fmt = (n: number) => n.toLocaleString('en-US');
 
+/** `2026-02` as "February 2026". */
+const monthName = (month: string) => new Date(`${month}-01T00:00:00Z`).toLocaleString('en-US', { month: 'long', year: 'numeric', timeZone: 'UTC' });
+
 /** The headline of a calculation: its value, or nothing when it cannot be calculated. */
 const percent = (calc: Calculation): string | null => (calc.value === null ? null : `${calc.value}%`);
 
@@ -104,6 +107,10 @@ export default function HashtagReportView({ report, embedded = false }: { report
         </div>
       ) : (
         <>
+          {/* The opt-in headline (owner answer 512): every photo of the report with a stored opt-in record */}
+          <section className={styles.kpiGrid} aria-label="Opt-in">
+            <Kpi label="Photos with opt-in" value={percent(calculated.photoOptInShare)} text={calculated.photoOptInShare.numerator === null && calculated.photoOptInShare.denominator !== null ? `None of the ${fmt(calculated.photoOptInShare.denominator)} photos has an opt-in record` : detail(calculated.photoOptInShare)} />
+          </section>
           {hasCameraData && (<>
           <section className={styles.kpiGrid} aria-label="Key figures">
             <Kpi label="Photos taken" value={taken} text="Counted by Camera across the events" />
@@ -118,6 +125,10 @@ export default function HashtagReportView({ report, embedded = false }: { report
             <Bars title="Gender" counts={photos.genders} note={sentence(calculated.maleShare, 'are men')} />
             <Bars title="Age groups" counts={photos.ageGroups} note="People with a measured age" />
             <Bars title="Emotions" counts={photos.emotions} note={sentence(calculated.smilingShare, 'are smiling')} />
+          </div>
+          <div className={styles.columns}>
+            <Names title="Brands in Camera photos" list={photos.brands} note="Camera photos in which the brand name was read from the picture" />
+            <Names title="Clubs in Camera photos" list={photos.clubs} note="Camera photos in which the club name was read from the picture" />
           </div>
           </>)}
           {drive.photos > 0 && (
@@ -151,6 +162,33 @@ export default function HashtagReportView({ report, embedded = false }: { report
         </>
       )}
 
+      {measured.months.length > 0 && (
+        <section className={styles.card}>
+          <h2 className={styles.cardTitle}>By month</h2>
+          <p className={styles.cardNote}>
+            The photos Fanmass measured in the events of each month (by event date), drive photos and Camera photo results side by
+            side. Events without a date are not in it.
+          </p>
+          <div className={styles.tableScroll}>
+          <table className={styles.table}>
+            <thead>
+              <tr><th>Month</th><th>Events</th><th>Drive photos</th><th>Camera photos</th></tr>
+            </thead>
+            <tbody>
+              {measured.months.map((row) => (
+                <tr key={row.month}>
+                  <td>{monthName(row.month)}</td>
+                  <td>{fmt(row.events)}</td>
+                  <td>{fmt(row.drivePhotos)}</td>
+                  <td>{fmt(row.cameraPhotos)}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+          </div>
+        </section>
+      )}
+
       {coverage.events > 0 && (
         <section className={styles.card}>
           <h2 className={styles.cardTitle}>Events in this report</h2>
@@ -161,7 +199,7 @@ export default function HashtagReportView({ report, embedded = false }: { report
           <div className={styles.tableScroll}>
           <table className={styles.table}>
             <thead>
-              <tr><th>Event</th><th>Date</th><th>Camera counters</th><th>Fanmass analysis</th><th>Drive photos</th></tr>
+              <tr><th>Event</th><th>Date</th><th>Camera counters</th><th>Fanmass analysis</th><th>Drive photos</th><th>Camera photos</th></tr>
             </thead>
             <tbody>
               {measured.events.filter((event) => !all || event.hasCounters || event.hasPhotoResults || event.drivePhotos > 0).map((event) => (
@@ -174,6 +212,7 @@ export default function HashtagReportView({ report, embedded = false }: { report
                   <td><span className={event.hasCounters ? styles.badge : `${styles.badge} ${styles.badgeOff}`}>{event.hasCounters ? 'Yes' : 'No'}</span></td>
                   <td><span className={event.hasPhotoResults ? styles.badge : `${styles.badge} ${styles.badgeOff}`}>{event.hasPhotoResults ? 'Yes' : 'No'}</span></td>
                   <td>{fmt(event.drivePhotos)}</td>
+                  <td>{fmt(event.cameraPhotos)}</td>
                 </tr>
               ))}
             </tbody>

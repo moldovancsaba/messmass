@@ -26,8 +26,10 @@ export interface SnapshotResult {
  *  - 3: opt-in and approval rates are shown only when the stored counts agree.
  *  - 4: the all-data (global) report headlines the photos of every event, not the SZRT campaign cycles alone.
  *  - 5: the all-data (global) report adds the registrations and opt-ins every other event stored (or Camera counted) to the campaign's.
+ *  - 6: the all-data (global) report shows no SZRT campaign figure (registrations, opt-ins, cycles), counts only the
+ *       marketing opt-ins events stored, and draws its timeline month by month from every event (owner answers 501, 502, 512).
  */
-export const SNAPSHOT_SCHEMA_VERSION = 5;
+export const SNAPSHOT_SCHEMA_VERSION = 6;
 
 // In-flight request stampede deduplication lock (INV-003)
 const inFlightSnapshots = new Map<string, Promise<SnapshotResult>>();

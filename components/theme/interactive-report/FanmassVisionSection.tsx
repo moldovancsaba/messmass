@@ -365,6 +365,7 @@ export default function FanmassVisionSection({
           <FanmassBrandsMatrix
             brands={aggregates.topBrands}
             totalPhotosProcessed={vision.processedCount}
+            cameraProof={vision.cameraProof}
           />
 
           {/* 2. Cross-Sport Demographics & Age Comparison (with Side-by-Side Unified View) */}
@@ -377,6 +378,7 @@ export default function FanmassVisionSection({
           <FanmassClubsMatrix
             clubs={aggregates.topClubs || []}
             totalPhotosProcessed={vision.processedCount}
+            cameraProof={vision.cameraProof}
           />
 
           {/* 4. Fan Sentiment & Stadium Atmosphere Index */}

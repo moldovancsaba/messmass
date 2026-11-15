@@ -23,7 +23,7 @@ function addCounts(target: Record<string, number>, source: unknown): void {
 
 export function emptyPhotos(): MeasuredPhotos {
   return {
-    analysed: 0, withOptIn: null, tagged: 0, humanConfirmed: 0, humanCorrected: 0,
+    analysed: 0, withOptIn: null, tagged: 0, brands: [], clubs: [], humanConfirmed: 0, humanCorrected: 0,
     people: { measured: 0, boxes: 0, faceBoxes: 0 },
     genders: {}, ageGroups: {}, emotions: {}, accessories: {}, merchandise: {},
     smiling: 0, demographicPeople: 0, moderation: { reviewed: 0, flagged: 0 },
@@ -32,8 +32,9 @@ export function emptyPhotos(): MeasuredPhotos {
 
 /**
  * Sum the rollups of several events. Brands and clubs are not carried over: a rollup lists the names a model guessed
- * ("Scarf", "Jacket"), and a name counts in this report only when it was read from the picture. `withOptIn` is counted
- * from the per-photo results by the measured layer, not from the rollups.
+ * ("Scarf", "Jacket"), and a name counts in this report only when it was read from the picture: the measured layer fills
+ * `brands` and `clubs` from the text-read proof of the per-photo results. `withOptIn` is counted from the per-photo
+ * results by the measured layer, not from the rollups.
  */
 export function mergePhotoSummaries(rollups: Rollup[]): MeasuredPhotos {
   const out = emptyPhotos();

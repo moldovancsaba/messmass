@@ -117,12 +117,27 @@ describe('Universal Interactive Reports (INV-001, INV-002, INV-003)', () => {
     expect(global?.summary.totalPhotos).toBe(global?.matches.reduce((sum: number, m: { submitted: number }) => sum + m.submitted, 0));
   });
 
-  it('adds the registrations and opt-ins every event stored to the campaign cycles, each counted once', async () => {
+  it('shows no SZRT campaign figure: only the registrations and marketing opt-ins the other events stored', async () => {
     const global = await getScopedInteractiveReportData({ type: 'global', identifier: 'all' });
-    // Campaign cycle (2800 registered, 2000 opt-ins) + the handball event's own (100, 40) + Camera's count of photos
-    // with a received opt-in for the event without a stored one (30). The campaign event's 999 is not added again.
-    expect(global?.summary.totalRegistered).toBe(2900);
-    expect(global?.summary.totalOptIns).toBe(2070);
+    // Owner answer 502: the campaign cycle (2800 registered, 2000 opt-ins) and the campaign event's 999 stay out.
+    // Owner answer 512: Camera's photo opt-ins (30) are not marketing opt-ins; the Fanmass report headlines them.
+    expect(global?.summary.totalRegistered).toBe(100);
+    expect(global?.summary.totalOptIns).toBe(40);
+    expect(global?.summary.totalCtaClicks).toBe(0);
+    expect(global?.summary.touchpoints).toEqual({ qr: 0, url: 0, social: 0 });
+    expect(JSON.stringify(global)).not.toContain('2800');
+  });
+
+  it('draws the all-data timeline month by month from every event, Camera months included, no campaign cycle', async () => {
+    const global = await getScopedInteractiveReportData({ type: 'global', identifier: 'all' });
+    expect(global?.timeline.map((t) => [t.shortName, t.allPhotos, t.registered, t.optIns])).toEqual([
+      ["Jan '26", 500, 0, 0],
+      ["Feb '26", 300, 100, 40],
+    ]);
+    expect(global?.timeline.every((t) => t.type === 'monthly' && t.ctaTotal === 0 && t.qr === 0)).toBe(true);
+    // The campaign report keeps its own cycles
+    const hashtag = await getScopedInteractiveReportData({ type: 'hashtag', identifier: 'tippmixreport2026' });
+    expect(hashtag?.timeline.map((t) => t.name)).toContain('NOVEMBER Statisztika');
   });
 
   it('loads partner scope for debreceni-vsc', async () => {
