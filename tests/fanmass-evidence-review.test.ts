@@ -174,6 +174,7 @@ describe('a person decision wins over a later delivery', () => {
 
   it('accepts a request that only withdraws pictures', () => {
     expect(parseEvidenceBatch({ pipeline: 'p', samples: [], replaceFiles: ['Basketball/a.jpg'] }).replaceFiles).toEqual(['Basketball/a.jpg']);
+    expect(parseEvidenceBatch({ pipeline: 'p', samples: [], replaceFiles: ['Ice Hockey/89466461-c274 (1).jpg'] }).replaceFiles).toEqual(['Ice Hockey/89466461-c274 (1).jpg']);
     expect(() => parseEvidenceBatch({ pipeline: 'p', samples: [], replaceFiles: ['../x'] })).toThrow(expect.objectContaining({ code: 'INVALID_EVIDENCE_BATCH' }));
     expect(() => parseEvidenceBatch({ pipeline: 'p', samples: [] })).toThrow(expect.objectContaining({ code: 'INVALID_EVIDENCE_BATCH' }));
   });
