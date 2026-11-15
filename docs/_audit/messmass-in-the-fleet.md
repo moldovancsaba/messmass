@@ -20,9 +20,9 @@ messmass is the master of partner/event/organization data and the event-report
   integration token. messmass tells camera when a
   report style or a partner's look changed (`lib/cameraThemeNotify.ts` → camera
   `/api/internal/messmass/theme-updated`). The link from an event to camera's
-  `/admin/vetting?eventId=…` exists only in `app/admin/events/ProjectsPageClient.tsx`,
-  which nothing imports; the live events list has no such link (drift register entry
-  81). camera is also messmass's email transport. The try-on integration of camera is gone (camera issue 557); it was
+  `/admin/vetting?eventId=…` is the "Open in Camera" action of each row in the events
+  list (`lib/adapters/projectsAdapter.tsx`, disabled for an event Camera does not know;
+  drift register entry 81, fixed 2026-11-15). camera is also messmass's email transport. The try-on integration of camera is gone (camera issue 557); it was
   never a messmass edge.
 - **messmass ← fanmass**: fanmass is the caller on every channel. messmass
   exposes 31 `/api/integrations/fanmass/*` route files guarded by
