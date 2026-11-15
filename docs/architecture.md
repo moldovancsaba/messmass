@@ -112,12 +112,12 @@ it drifts. Do not edit between the markers.
 
 | Category | Count | Location |
 |----------|-------|----------|
-| **UI Components** | 130 | `components/` |
+| **UI Components** | 129 | `components/` |
 | **Utility Modules** | 253 | `lib/` |
 | **Hooks** | 13 | `hooks/` |
 | **Design Tokens** | 410 | `app/styles/theme.css` |
 | **Utility CSS classes** | 192 | `app/styles/utilities.css` |
-| **App routes (pages)** | 86 | `app/**/page.tsx` |
+| **App routes (pages)** | 85 | `app/**/page.tsx` |
 | **API routes** | 248 | `app/api/**/route.ts` |
 
 The modules with the most importers — the ones whose change radius is
@@ -997,7 +997,7 @@ shows up here on the next regeneration, which is the point.
 
 <!-- GENERATED:routes -->
 
-### Pages (86)
+### Pages (85)
 
 | Route | File |
 |-------|------|
@@ -1065,7 +1065,6 @@ shows up here on the next regeneration, which is the point.
 | `/dashboard/filter/[filterSlug]` | `app/dashboard/filter/[filterSlug]/page.tsx` |
 | `/dashboard/hashtag/[hashtag]` | `app/dashboard/hashtag/[hashtag]/page.tsx` |
 | `/dashboard/partner/[partnerId]` | `app/dashboard/partner/[partnerId]/page.tsx` |
-| `/debug/hashtag-categories` | `app/debug/hashtag-categories/page.tsx` |
 | `/edit/[slug]` | `app/edit/[slug]/page.tsx` |
 | `/examples/password-gate-demo` | `app/examples/password-gate-demo/page.tsx` |
 | `/filter/[slug]` | `app/filter/[slug]/page.tsx` |
@@ -2035,11 +2034,10 @@ interface Notification {
   - Adds current user ID to appropriate array
   - Requires authentication
 
-**Diagnostic Endpoint**
-- `GET /api/debug/notifications` - Production troubleshooting
-  - Shows authentication status
-  - Displays notification counts and recent notifications
-  - Provides troubleshooting guidance
+**Diagnostic Endpoint (removed)**
+- `GET /api/debug/notifications` was deleted with the other `app/api/debug/*` routes in
+  bb3eaac6 (2026-11-08). For troubleshooting, use `GET /api/notifications` signed in as the
+  affected user (see Troubleshooting below).
 
 #### 3. UI Components
 
@@ -2130,7 +2128,7 @@ await fetch(`/api/notifications/mark-read?notificationId=${id}&action=archive`, 
 ### Troubleshooting
 
 For production issues:
-1. Use diagnostic endpoint: `/api/debug/notifications`
+1. Call `GET /api/notifications` signed in as the affected user: a 401 means the session is the problem; otherwise it returns that user's unread count and notifications (the former diagnostic route `/api/debug/notifications` is gone, bb3eaac6)
 2. Check authentication status
 3. Verify MongoDB connection
 4. Review notification counts and recent entries
@@ -2503,22 +2501,21 @@ export const RATE_LIMITS = {
 ```
 
 #### 2. CSRF Protection Module (`lib/csrf.ts`)
-- **Pattern**: Double-submit cookie (secure, HttpOnly, SameSite=Lax)
-- **Token Generation**: Cryptographically secure random tokens (32 bytes, hex-encoded)
-- **Validation**: Compares cookie token with request header token
-- **Protected Methods**: POST, PUT, DELETE, PATCH
-- **Excluded Paths**: GET, HEAD, OPTIONS, and public endpoints
+- **Pattern**: Double-submit cookie `csrf-token` (Secure in production, SameSite=Lax, 24 hours). It is deliberately **not** HttpOnly (`setCsrfTokenCookie`, `httpOnly: false`): the double-submit pattern needs JavaScript to read the cookie and send it back in the `X-CSRF-Token` header
+- **Token Generation**: Cryptographically secure random tokens (32 bytes, hex-encoded, Web Crypto)
+- **Validation**: The `X-CSRF-Token` header must equal the cookie (`validateCsrfToken`); a missing or different token is answered `403` with `CSRF_TOKEN_INVALID`
+- **Protected Methods**: every non-GET/HEAD/OPTIONS request to `/api/*`
+- **Excluded Paths**: `/api/admin/login`, `/api/page-passwords` and everything under `/api/integrations/*` (token-authed server-to-server calls); `ENABLE_CSRF_PROTECTION=false` turns the check off
 
 **Integration Points**:
-- Middleware sets CSRF cookie on first request
-- `/api/csrf-token` endpoint for AJAX token retrieval
+- Middleware runs the check (`csrfProtectionMiddleware`) but does not set the cookie (the note in `middleware.ts` above its `logRequestEnd` call)
+- `GET /api/csrf-token` issues a new token and sets the cookie; the client calls it on first use (`ensureCsrfToken` in `lib/apiClient.ts`)
 - `apiClient` wrapper automatically includes token in headers
 
 **Security Features**:
-- HttpOnly cookies prevent XSS token theft
-- SameSite=Lax prevents CSRF attacks
+- SameSite=Lax plus the header match stop cross-site requests; the token is a cross-site hurdle, not authentication (anyone can fetch one)
 - Constant-time comparison prevents timing attacks
-- Token rotation on validation failure
+- The cookie is readable by JavaScript by design, so it gives no protection against XSS; that is inherent to the double-submit pattern
 
 #### 3. Centralized Logging System (`lib/logger.ts`)
 - **Output**: Structured JSON (production) or human-readable (development)
@@ -3661,7 +3658,7 @@ const editable = await findProjectByEditSlug(editSlug);
 
 ### Database Schema Summary
 
-The core collections, with the indexes `scripts/createMissingIndexes.ts` creates. This table is not the whole schema: the code opens 46 more collections, listed in the second table. The complete, CI-checked list of every collection name the repo opens (scripts included) is `docs/_audit/collections.json` (`npm run inventory:check`).
+The core collections, with the indexes `scripts/createMissingIndexes.ts` creates. This table is not the whole schema: the code opens 54 more collections, listed in the second table. The complete, CI-checked list of every collection name the repo opens (scripts included) is `docs/_audit/collections.json` (`npm run inventory:check`).
 
 | Collection | Purpose | Indexes |
 |------------|---------|----------|
@@ -3691,6 +3688,8 @@ The core collections, with the indexes `scripts/createMissingIndexes.ts` creates
 | `audit_logs` | `app/api/admin/permissions/route.ts` |
 | `available_fonts` | `lib/cameraFrameContext.ts` |
 | `bitly_sync_logs` | `app/api/bitly/sync/route.ts` |
+| `brand_assets` | `app/api/brand-assets/route.ts` |
+| `brand_canonical_mappings` | `app/api/brand-assets/route.ts` |
 | `categories` | `lib/api/caching.ts` |
 | `chart_configurations` | `app/api/chart-config/route.ts` |
 | `chart_formatting_defaults` | `app/api/chart-formatting-defaults/route.ts` |
@@ -3704,8 +3703,10 @@ The core collections, with the indexes `scripts/createMissingIndexes.ts` creates
 | `fan_identities` | `lib/fanIdentity.ts` |
 | `fan_identity_links` | `lib/fanIdentity.ts` |
 | `fan_identity_merge_candidates` | `lib/fanIdentity.ts` |
+| `fanmass_camera_photo_analyses` | `lib/fanmassPhotoAnalyses.ts` |
 | `fanmass_commands` | `lib/fanmassCommands.ts` |
 | `fanmass_dashboard_snapshot` | `lib/fanmassDashboardSnapshot.ts` |
+| `fanmass_event_drive_photos` | `lib/hashtagReport/measured.ts` (the name is `DRIVE_PHOTOS_COLLECTION` in `lib/fanmassDrivePhotos.ts`) |
 | `fanmass_event_links` | `lib/fanmassIntegration.ts` |
 | `filter_slugs` | `lib/slugUtils.ts` |
 | `football_data_fixtures` | `lib/fixtureImporter.ts` |
@@ -3719,6 +3720,9 @@ The core collections, with the indexes `scripts/createMissingIndexes.ts` creates
 | `paid_campaigns` | `lib/paidCampaigns.ts` |
 | `partner_analytics` | `lib/analytics-aggregator.ts` |
 | `project_permissions` | `app/api/admin/permissions/route.ts` |
+| `reclassified_clubs` | `app/api/brand-assets/route.ts` |
+| `reportStyles` | `lib/interactiveReportAggregator.ts` (a fallback read after `report_styles`) |
+| `report_snapshots` | `lib/reportSnapshotManager.ts` |
 | `report_styles` | `app/api/projects/route.ts` |
 | `report_templates` | `lib/reportRuntime.ts` |
 | `report_variants` | `lib/reportVariants.ts` |
@@ -3726,6 +3730,8 @@ The core collections, with the indexes `scripts/createMissingIndexes.ts` creates
 | `settings` | `lib/gridSettings.ts` |
 | `sportsdb_fixtures` | `lib/sportsdbFixtureImporter.ts` |
 | `stakeholder_grants` | `lib/stakeholderGrants.ts` |
+| `szrt_vision_analysis` | `app/api/brand-assets/route.ts` |
+| `szrt_vision_progress` | `lib/interactiveReportAggregator.ts` |
 | `user_preferences` | `app/api/user-preferences/route.ts` |
 | `variables_groups` | `lib/variableMerge.ts` |
 
