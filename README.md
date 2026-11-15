@@ -208,6 +208,8 @@ Current Mantine migration note:
 
 ## Documentation Map
 
+- [Project board review and manual movement / Scrum journal](docs/operations/project-board-movement-log.md)
+
 Canonical entrypoints:
 - [docs/index.md](docs/index.md) — curated documentation entrypoint
 - [docs/PROJECT_MANAGEMENT.md](docs/PROJECT_MANAGEMENT.md) — SSOT and GitHub Project workflow
