@@ -87,10 +87,14 @@ export async function POST() {
     // Get all partners
     const partners = await partnersCollection.find({}).toArray();
 
-    // Get all projects without partner1 (either undefined or null)
+    // Events with no home partner in either field: the current partner1Id (what the hero, the editor and the reports
+    // read) or the legacy partner1. An event that already has partner1Id is never touched (messmass#430).
     const projects = await projectsCollection
       .find({
-        $or: [{ partner1: null }, { partner1: { $exists: false } }],
+        $and: [
+          { $or: [{ partner1Id: null }, { partner1Id: { $exists: false } }] },
+          { $or: [{ partner1: null }, { partner1: { $exists: false } }] },
+        ],
       })
       .toArray();
 
@@ -110,12 +114,15 @@ export async function POST() {
 
       // Only apply high-confidence matches (score >= 70)
       if (homeMatch.score >= 70) {
+        // The same fields the page's own PUT writes: the current id fields and the legacy ones next to them
         const update: any = {
-          partner1: homeMatch.partner._id
+          partner1: homeMatch.partner._id,
+          partner1Id: homeMatch.partner._id,
         };
 
         if (awayMatch && awayMatch.score >= 70) {
           update.partner2 = awayMatch.partner._id;
+          update.partner2Id = awayMatch.partner._id;
         }
 
         updates.push({
