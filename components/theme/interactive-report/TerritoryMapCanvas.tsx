@@ -2,7 +2,7 @@
 /* eslint-disable react/forbid-dom-props */
 
 import React, { useEffect, useRef, useState, useMemo } from 'react';
-import type { Map as MapLibreMap } from 'maplibre-gl';
+import type { GeoJSONSource, Map as MapLibreMap } from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';
 import { MatchItem, ScopeHeader, VisionProgressData } from './types';
 import ConnectedSelfiesModal, { ClubStat } from './ConnectedSelfiesModal';
@@ -215,8 +215,11 @@ export default function TerritoryMapCanvas({
     let resizeHandler: (() => void) | null = null;
 
     // Dynamically import MapLibre GL
-    import('maplibre-gl').then(({ Map }) => {
+    import('maplibre-gl').then(({ Map, setWorkerUrl }) => {
       if (!isMounted || !mapContainerRef.current) return;
+      // MapLibre GL 6 cannot find its worker inside a bundle: it is served from public/maplibre/dist, copied there before
+      // every dev and build run (scripts/copy-maplibre-worker.mjs)
+      setWorkerUrl('/maplibre/dist/maplibre-gl-worker.mjs');
 
       const map = new Map({
         container: mapContainerRef.current,
@@ -317,7 +320,7 @@ export default function TerritoryMapCanvas({
           source: 'venues-source',
           filter: ['has', 'point_count'],
           layout: {
-            'text-field': '{point_count_abbreviated}',
+            'text-field': ['get', 'point_count_abbreviated'],
             'text-size': 12,
             'text-font': ['Open Sans Regular', 'Arial Unicode MS Regular'],
           },
@@ -380,7 +383,7 @@ export default function TerritoryMapCanvas({
           source: 'venues-source',
           filter: ['!', ['has', 'point_count']],
           layout: {
-            'text-field': '{city}',
+            'text-field': ['get', 'city'],
             'text-size': 11,
             'text-anchor': 'top',
             'text-offset': [0, 1.2],
@@ -406,15 +409,16 @@ export default function TerritoryMapCanvas({
           const features = map.queryRenderedFeatures(e.point, { layers: ['venues-cluster'] });
           const clusterId = features[0]?.properties?.cluster_id;
           if (clusterId != null) {
-            const src: any = map.getSource('venues-source');
-            src.getClusterExpansionZoom(clusterId, (err: any, zoom: number) => {
-              if (!err && features[0].geometry.type === 'Point') {
+            const src = map.getSource<GeoJSONSource>('venues-source');
+            // A promise since MapLibre GL 4 (the callback form it replaced did nothing)
+            src?.getClusterExpansionZoom(clusterId).then((zoom) => {
+              if (features[0].geometry.type === 'Point') {
                 map.easeTo({
                   center: features[0].geometry.coordinates as [number, number],
                   zoom: zoom + 0.5,
                 });
               }
-            });
+            }).catch(() => undefined);
           }
         });
 
