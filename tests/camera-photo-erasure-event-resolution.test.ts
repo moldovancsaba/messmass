@@ -28,7 +28,7 @@ describe('Camera photo erasure event resolution', () => {
     }, { getDb: jest.fn().mockResolvedValue(fake.db) as never })).resolves.toBe(eventId);
     expect(fake.projectsCollection.find).toHaveBeenCalledWith(
       { 'externalRefs.camera.eventId': 'camera-event-1' },
-      { projection: { _id: 1, partnerId: 1, partner1Id: 1, partner2Id: 1 } },
+      { projection: { _id: 1, externalRefs: 1, partnerId: 1, partner1Id: 1, partner2Id: 1 } },
     );
     expect(fake.projectCursor.limit).toHaveBeenCalledWith(2);
     expect(fake.partnersCollection.countDocuments).toHaveBeenCalledWith({
@@ -48,6 +48,14 @@ describe('Camera photo erasure event resolution', () => {
     await expect(resolveMessmassEventForCameraPhotoErasure({ cameraPartnerId: 'p', cameraEventId: 'e' }, {
       getDb: jest.fn().mockResolvedValue(fake.db) as never,
     })).rejects.toMatchObject({ status: 409, code: 'CAMERA_EVENT_LINK_AMBIGUOUS' });
+  });
+
+  it('resolves through the event\'s own Camera link without looking at its partners', async () => {
+    const fake = fakeDb([{ _id: new ObjectId(eventId), partner1Id: partnerId, externalRefs: { camera: { eventId: 'camera-event-1' } } }], 0);
+    await expect(resolveMessmassEventForCameraPhotoErasure({ cameraPartnerId: 'euroleague-women', cameraEventId: 'camera-event-1' }, {
+      getDb: jest.fn().mockResolvedValue(fake.db) as never,
+    })).resolves.toBe(eventId);
+    expect(fake.partnersCollection.countDocuments).not.toHaveBeenCalled();
   });
 
   it('fails closed when the event is not linked to the supplied Camera partner', async () => {
