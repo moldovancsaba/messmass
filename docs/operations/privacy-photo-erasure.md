@@ -28,7 +28,9 @@ Messmass accepts authenticated, idempotent erasure requests for exact `(event, p
            ▼
 [ Messmass Privacy Route ]
            │
-           ├─► 1. Resolve Messmass Event from exact Camera Partner & Event link
+           ├─► 1. Resolve Messmass Event from its exact Camera event link (externalRefs.camera.eventId);
+           │      the link is the proof, a Camera partner of the event is checked only without it
+           │      (lib/cameraEventLink.ts, owner answer 514)
            ├─► 2. Upsert durable tombstone in fanmass_camera_photo_analyses
            │      (status: 'deleted', tombstone: true, privacyErasure: { requestId, receivedAt })
            │      (Unset: summary, boxes, analysis, humanReview, sourceRevision, analysisGeneration)

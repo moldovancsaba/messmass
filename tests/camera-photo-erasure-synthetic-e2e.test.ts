@@ -441,7 +441,9 @@ describe('Privacy: Messmass photo erasure synthetic cross-product E2E', () => {
     expect(body).toEqual({ error: 'CAMERA_EVENT_LINK_NOT_FOUND' });
   });
 
-  it('fails closed when Camera partner ID mismatches the event (409)', async () => {
+  // Owner answer 514: the event's own Camera link is the proof; its partners may differ from the Camera event's partner
+  // (a EuroLeague Women match whose event partners are the two clubs), and that must not block an erasure
+  it('erases through the event link even when the Camera partner is not one of the event partners', async () => {
     const { DELETE } = await import('@/app/api/integrations/privacy/erase-camera-photo/route');
     const req = new NextRequest('http://localhost/api/integrations/privacy/erase-camera-photo', {
       method: 'DELETE',
@@ -455,8 +457,8 @@ describe('Privacy: Messmass photo erasure synthetic cross-product E2E', () => {
     });
 
     const res = await DELETE(req);
-    expect(res.status).toBe(409);
+    expect(res.status).toBe(200);
     const body = await res.json();
-    expect(body).toEqual({ error: 'CAMERA_PARTNER_ID_MISMATCH' });
+    expect(body).not.toEqual({ error: 'CAMERA_PARTNER_ID_MISMATCH' });
   });
 });

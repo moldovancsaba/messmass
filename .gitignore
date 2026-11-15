@@ -126,3 +126,6 @@ coverage/
 !packages/gds-core/dist/
 !packages/gds-admin/dist/
 .env*
+
+# MapLibre GL worker files, copied from node_modules before dev and build (scripts/copy-maplibre-worker.mjs)
+/public/maplibre/
