@@ -1,6 +1,6 @@
 # Tutorial: Building reports
 Status: Active
-Last Updated: 2026-07-20T00:00:00.000Z
+Last Updated: 2026-11-06T18:30:00.000Z
 Canonical: Yes
 Owner: Documentation
 
@@ -60,42 +60,36 @@ Below that, **alignment settings** keep blocks tidy across a row: **Align Titles
 
 A template renders on three widths, each with its own column budget:
 
-- **Mobile** — 2 units per row
+- **Mobile** — 2-up compact grid for KPI rows (`.metricRow`), 1 unit per row for charts and narratives
 - **Tablet** — 3 units per row
-- **Desktop** — up to 6 units per row (block-configurable)
+- **Desktop** — 6 units per row (`desktopUnits: 6`)
 
-Think in **units**, not pixels. A unit is one column of horizontal space. A chart set to unit size 2 spans two columns.
+Think in **units**, not pixels. A unit is one column of horizontal space on the 6-unit desktop grid.
 
 ### 5. Add data blocks
 
 In the **"Data Visualization Blocks"** section, the current block count shows as *Current Blocks (N)*. Click **"➕ New Block"** to open **"➕ Create New Data Block"**:
 
-- **Block Name** — e.g. *Main Dashboard* or *Performance Metrics*.
+- **Block Name** — e.g. *Overview* or *Fan Demographics and General Data*.
 - **Order** — where the block sits vertically in the template (0 is first).
 
-Save it, and the block is created **and** attached to the current template in one step.
+Save it, and the block is created **and** attached to the current template in one step. When consecutive blocks share the same title (or a continuation block has `showTitle` off), the report renderer automatically coalesces them under a single section header.
 
 ### 6. Add charts to a block and size them
 
-Expand a block with its **"⚙️ Show Settings"** toggle (it flips to **"⚙️ Hide Settings"**). Inside, you assign charts from the available list and give each one a layout:
+Expand a block with its **"⚙️ Show Settings"** toggle (it flips to **"⚙️ Hide Settings"**). Inside, you assign charts from the available list and give each one a layout on the **6-unit desktop grid**:
 
-- **Unit size** — `1` or `2` columns of horizontal space.
-- **Aspect ratio** — the content shape: `1:1`, `2:1`, `16:9`, or `9:16`.
+| Chart type | Canonical unit size (6-unit grid) | Aspect ratio | Layout behavior |
+|------------|-----------------------------------|--------------|-----------------|
+| KPI        | 1                                 | 1:1          | Up to 6 per row on desktop (4 KPIs share a row evenly); 2-up grid on mobile |
+| Value Chain| 1                                 | 1:1          | Compact 1-unit card |
+| Image      | 2 (or 1 for portrait/square)      | 1:1, 16:9, or 9:16 | 3-up image gallery row (`2+2+2 = 6`) |
+| Pie (Donut)| 3                                 | 1:1 or 2:1   | 2-up side-by-side (`3+3 = 6`) |
+| Bar        | 3                                 | 1:1 or 2:1   | 2-up side-by-side (`3+3 = 6`) |
+| Text       | 6 (or 3 when paired)              | 1:1 or 2:1   | Full-width editorial narrative (`6/6`) |
+| Table      | 6                                 | 1:1 or 2:1   | Full-width markdown table (`6/6`) |
 
-Allowed combinations depend on the chart type:
-
-| Chart type | Unit size | Aspect ratio |
-|------------|-----------|--------------|
-| KPI        | 1         | 1:1 |
-| Pie        | 1         | 1:1 |
-| Bar        | 1 or 2    | 1:1 or 2:1 |
-| Text       | 1 or 2    | 1:1 or 2:1 |
-| Table      | 1 or 2    | 1:1 or 2:1 |
-| Image      | 1 or 2    | 1:1, 16:9, or 9:16 |
-
-The editor only offers valid options, and it keeps unit size and aspect ratio consistent — for example, an image at 16:9 becomes 2 units wide, and a bar at 2:1 becomes 2 units wide.
-
-**Block capacity:** the unit sizes of all charts in a block must total **4 or less**. If the sum exceeds 4, the save is blocked and the editor tells you the current total. Split the charts across two blocks if you hit the limit.
+**Row capacity:** each horizontal row holds up to **6 units** (`MAX_BLOCK_UNITS = 6`). If a block contains more than 6 units (for example, six 2-unit images = 12 units), the layout engine automatically packs them left-to-right into clean 6-unit rows within the same section.
 
 ### 7. Preview as you go
 

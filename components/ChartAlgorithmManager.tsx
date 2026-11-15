@@ -469,6 +469,7 @@ export default function ChartAlgorithmManager({ user }: ChartAlgorithmManagerPro
         totalLabel: config.totalLabel,
         aspectRatio: config.aspectRatio, // v9.3.0: Image aspect ratio
         showTitle: config.showTitle, // WHAT: Chart-level title visibility control
+        showPercentages: config.showPercentages, // WHAT: Pie chart percentage visibility (v11.38.0)
         preset: config.preset // WHAT: Markdown rendering preset (v12.2.0, Issue #48)
       });
     } else {
@@ -1533,7 +1534,7 @@ function ChartConfigurationEditor({ config, availableVariables, onSave, onUpdate
               {(formData.type === 'pie' || formData.type === 'bar') && (
                 <button
                   type="button"
-                  className="button button-sm button-secondary"
+                  className="btn btn-small btn-secondary"
                   onClick={addElement}
                   disabled={formData.type === 'pie' ? formData.elements.length >= 6 : formData.elements.length >= 7}
                 >
@@ -1567,7 +1568,7 @@ function ChartConfigurationEditor({ config, availableVariables, onSave, onUpdate
                       {canRemove && (
                         <button
                           type="button"
-                          className={`button button-sm button-danger ${styles.removeElementButton}`}
+                          className={`btn btn-small btn-danger ${styles.removeElementButton}`}
                           onClick={() => removeElement(index)}
                         >
                           Remove

@@ -118,7 +118,7 @@ export default function KycVariablesPage() {
       <UnifiedAdminHeroWithSearch
         title="🔐 KYC Variables"
         subtitle="Catalog of all variables (manual, system, derived) powering analytics and clicker"
-        backLink="/admin/reports"
+        backLink="/admin"
         showSearch
         searchValue={search}
         onSearchChange={setSearch}

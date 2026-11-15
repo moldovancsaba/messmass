@@ -18,7 +18,10 @@ import {
   calculateLayoutV2BlockHeight, 
   validateLayoutV2BlockCapacity,
   calculateLayoutV2GridColumns,
-  calculateLayoutV2BlockDimensions
+  calculateLayoutV2BlockDimensions,
+  coalesceReportBlocks,
+  type CoalescedReportBlock,
+  type LayoutV2BlockRow
 } from '@/lib/layoutV2BlockCalculator';
 
 /**
@@ -35,7 +38,12 @@ function hasValidChartData(result: ChartResult | undefined): boolean {
       return typeof result.kpiValue === 'string' && result.kpiValue.length > 0 && result.kpiValue !== 'NA';
     
     case 'image':
-      return typeof result.kpiValue === 'string' && result.kpiValue.length > 0 && result.kpiValue !== 'NA';
+      return (
+        typeof result.kpiValue === 'string' &&
+        result.kpiValue.length > 0 &&
+        result.kpiValue !== 'NA' &&
+        !result.kpiValue.includes('/placeholders/image-missing.svg')
+      );
     
     case 'table':
       return typeof result.kpiValue === 'string' && result.kpiValue.length > 0 && result.kpiValue !== 'NA';
@@ -46,8 +54,12 @@ function hasValidChartData(result: ChartResult | undefined): boolean {
     case 'pie':
     case 'bar':
     case 'value':
-      // Valid if it has elements defined, preserving grid stability even when values sum to 0
-      return Array.isArray(result.elements) && result.elements.length > 0;
+      // Valid if it has elements defined and at least one non-zero value
+      return (
+        Array.isArray(result.elements) &&
+        result.elements.length > 0 &&
+        result.elements.some((el) => typeof el.value === 'number' && el.value > 0)
+      );
     
     case 'valuechain':
       // Show valuechain whenever it has the required structure (2 elements); content can be empty
@@ -118,6 +130,21 @@ export default function ReportContent({
     } : null
   });
   
+  // WHAT: Pre-filter invalid/empty charts BEFORE coalescing blocks into structured multi-row sections
+  // WHY: Prevents post-pack filtering from leaving 1-card orphans and eliminates disjointed vertical gaps
+  const coalescedBlocks = useMemo(() => {
+    const filteredBlocks = blocks
+      .map((block) => ({
+        ...block,
+        charts: (block.charts || []).filter((chart) => {
+          const result = chartResults.get(String(chart.chartId));
+          return allowNA ? !!(result && !result.chartError) : hasValidChartData(result);
+        }),
+      }))
+      .filter((block) => block.charts.length > 0);
+    return coalesceReportBlocks(filteredBlocks, 6);
+  }, [blocks, chartResults, allowNA]);
+
   if (blocks.length === 0) {
     return (
       <div className={styles.emptyState}>
@@ -132,7 +159,7 @@ export default function ReportContent({
 
   return (
     <div className={`${styles.content} report-content ${className || ''}`} data-report-section="content">
-      {blocks.map((block) => (
+      {coalescedBlocks.map((block) => (
         <ReportBlock 
           key={block.id}
           block={block}
@@ -150,7 +177,7 @@ export default function ReportContent({
  * Single Report Block with charts (row-based layout)
  */
 interface ReportBlockProps {
-  block: ReportBlock;
+  block: CoalescedReportBlock;
   chartResults: Map<string, ChartResult>;
   charts?: Map<string, Chart> | null; // A-R-13: Chart configs for validation
   allowNA?: boolean;
@@ -270,14 +297,23 @@ function ResponsiveRow({ rowCharts, chartResults, charts, rowIndex, unifiedTextF
         
         if (!dimensions.valid) {
           console.error(`[LayoutV2 ResponsiveRow ${rowIndex}] ${dimensions.error}`);
-          // WHAT: Still use calculated height for fallback rendering
-          // WHY: Don't break rendering, but log error for Admin to fix
-          setRowHeight(dimensions.blockHeight);
+          const isFallbackCompact =
+            !blockAspectRatio &&
+            !tableHeightMultiplier &&
+            chartsWithTypes.length > 0 &&
+            chartsWithTypes.every((c) => c.type === 'kpi' || c.type === 'valuechain');
+          setRowHeight(isFallbackCompact ? Math.min(dimensions.blockHeight, 136) : dimensions.blockHeight);
           return;
         }
         
-        const height = dimensions.blockHeight;
-        const aspectRatioUsed = blockAspectRatio || '4:1';
+        const isCompactMetricRow =
+          !blockAspectRatio &&
+          !tableHeightMultiplier &&
+          chartsWithTypes.length > 0 &&
+          chartsWithTypes.every((c) => c.type === 'kpi' || c.type === 'valuechain');
+
+        const height = isCompactMetricRow ? Math.min(dimensions.blockHeight, 136) : dimensions.blockHeight;
+        const aspectRatioUsed = blockAspectRatio || (isCompactMetricRow ? 'compact-kpi' : '4:1');
         console.log(`[LayoutV2 ResponsiveRow ${rowIndex}] Height calculated:`, height, 'from width:', width, 'aspect ratio:', aspectRatioUsed);
         
         setRowHeight(height);
@@ -337,11 +373,26 @@ function ResponsiveRow({ rowCharts, chartResults, charts, rowIndex, unifiedTextF
   // HOW: Convert chart widths to fr units (e.g., [2,1,1] → "2fr 1fr 1fr")
   const gridColumns = calculateLayoutV2GridColumns(rowCharts);
   
+  const isMetricGridRow = rowCharts.length >= 1 && rowCharts.every(chart => {
+    const t = chartResults.get(String(chart.chartId))?.type;
+    return t === 'kpi' || t === 'valuechain';
+  });
+
+  const isImageOnlyRow = rowCharts.length >= 1 && rowCharts.every(chart => {
+    return chartResults.get(String(chart.chartId))?.type === 'image';
+  });
+
+  const isTextOnlyRow = rowCharts.length >= 1 && rowCharts.every(chart => {
+    return chartResults.get(String(chart.chartId))?.type === 'text';
+  });
+
+  const isAutoHeightRow = !blockAspectRatio && !tableHeightMultiplier && (isMetricGridRow || isImageOnlyRow || isTextOnlyRow);
+
   return (
     <div 
       ref={rowRef}
       key={`row-${rowIndex}`}
-      className={`${styles.row} report-content`}
+      className={`${styles.row} ${isMetricGridRow ? styles.metricRow : ''} ${isAutoHeightRow ? styles.autoHeightRow : ''} report-content`}
       data-report-section="content"
       // WHAT: Set CSS custom properties for dynamic values (centrally managed)
       // WHY: CSS variables are meant to be set dynamically, eliminates direct property inline styles
@@ -373,14 +424,11 @@ function ResponsiveRow({ rowCharts, chartResults, charts, rowIndex, unifiedTextF
           return null;
         }
         
-        // WHAT: Force remount when dimensions change significantly
-        // WHY: Container queries cache container size, need remount for single full-width charts
-        const dimensionKey = `${chart.chartId}-${Math.round(rowWidth / 100)}-${Math.round(rowHeight / 100)}`;
         if (!result) return null;
 
         return (
           <div 
-            key={dimensionKey}
+            key={chart.chartId}
             className={styles.rowItem}
           >
             <ReportChart 
@@ -393,6 +441,8 @@ function ResponsiveRow({ rowCharts, chartResults, charts, rowIndex, unifiedTextF
               // WHY: CSS now uses --block-base-font-size and --block-subtitle-font-size directly (Phase 2)
               unifiedTextFontSize={unifiedTextFontSize}
               allowNA={allowNA}
+              isImageOnlyRow={isImageOnlyRow}
+              isMixedRow={!isAutoHeightRow}
             />
           </div>
         );
@@ -408,8 +458,9 @@ function ReportBlock({ block, chartResults, charts, allowNA = false, showBlockTi
   // IMPORTANT: Hooks must be called before any early returns (React Rules of Hooks)
   const blockRef = useRef<HTMLDivElement>(null!);
   
-  // Sort charts by order
-  const sortedCharts = [...block.charts].sort((a, b) => a.order - b.order);
+  // Flatten charts across all rows in the block and sort by order
+  const allCharts = block.rows.flatMap(r => r.charts);
+  const sortedCharts = [...allCharts].sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
   
   // WHAT: Filter out charts with no data (v11.48.0); when allowNA (static landing), show any result without error
   // WHY: Hide empty cells in live reports; on static landing show structure even if values are NA
@@ -460,6 +511,7 @@ function ReportBlock({ block, chartResults, charts, allowNA = false, showBlockTi
   const MAX_SUBTITLE_FONT_PX = 13;
   const [blockBaseFontSize, setBlockBaseFontSize] = useState<number | null>(allowNA ? MAX_BLOCK_FONT_PX : null);
   const [blockSubtitleFontSize, setBlockSubtitleFontSize] = useState<number | null>(allowNA ? MAX_SUBTITLE_FONT_PX : null);
+  const [blockBarFontSize, setBlockBarFontSize] = useState<number | null>(null);
   
   // WHAT: Calculate block-level typography when block width is known
   // WHY: Font size calculation needs block width (not row width)
@@ -557,22 +609,19 @@ function ReportBlock({ block, chartResults, charts, allowNA = false, showBlockTi
         );
       }
       
-      // WHAT: Use minimum of title font size and BAR chart font size
-      // WHY: Block-level typography must work for all elements (titles and BAR labels)
-      // HOW: Take minimum to ensure all content fits
-      let finalFontSize = barChartFontSize !== null
-        ? Math.min(syncedFonts.titlePx, barChartFontSize)
-        : syncedFonts.titlePx;
+      setBlockBarFontSize(allowNA ? barChartFontSize : 13);
+      let finalFontSize = syncedFonts.titlePx;
       // WHAT: When allowNA (static landing), force title to 32px so wrapper's large title isn't overridden by calculation
       // WHY: Block sets --block-base-font-size; a smaller calculated value would override the wrapper's 32px
       if (allowNA) {
         finalFontSize = MAX_BLOCK_FONT_PX;
-      } else if (finalFontSize > MAX_BLOCK_FONT_PX) {
-        finalFontSize = MAX_BLOCK_FONT_PX;
+      } else {
+        // Editorial standard: locked 15px card titles across the entire report
+        finalFontSize = 15;
       }
       const subtitlePx = allowNA
         ? Math.min(syncedFonts.subtitlePx, MAX_SUBTITLE_FONT_PX)
-        : syncedFonts.subtitlePx;
+        : 12;
       
       console.log(`[ReportBlock] Block-level typography calculated:`, {
         blockTitle: block.title || 'Untitled',
@@ -636,17 +685,29 @@ function ReportBlock({ block, chartResults, charts, allowNA = false, showBlockTi
     return null; // Skip empty blocks
   }
 
-  // Group charts into rows based on desktop column count
-  const rows = groupChartsIntoRows(validCharts);
+  // Pre-filter rows to ensure each has valid displayable charts
+  const activeRows = block.rows
+    .map((row) => ({
+      ...row,
+      charts: row.charts.filter(c => {
+        const result = chartResults.get(String(c.chartId));
+        return allowNA ? !!(result && !result.chartError) : (result && hasValidChartData(result));
+      })
+    }))
+    .filter(row => row.charts.length > 0);
+
+  if (activeRows.length === 0) {
+    return null;
+  }
   
   // DEBUG: Log rendering for specific blocks
   if (block.title && (block.title.includes('OVERVIEW') || block.title.includes('Overview'))) {
     console.log(`🔍 [ReportBlock] Rendering "${block.title}":`, {
       validCharts: validCharts.length,
       chartIds: validCharts.map(c => c.chartId),
-      rows: rows.length,
-      rowSizes: rows.map(r => r.length),
-      gridColumns: rows.map(r => calculateGridColumns(r))
+      rows: activeRows.length,
+      rowSizes: activeRows.map(r => r.charts.length),
+      gridColumns: activeRows.map(r => calculateGridColumns(r.charts))
     });
   }
 
@@ -662,27 +723,26 @@ function ReportBlock({ block, chartResults, charts, allowNA = false, showBlockTi
       style={{
         ...(unifiedTextFontSize ? { '--unified-text-font-size': `${unifiedTextFontSize}rem` } : {}),
         ...(blockBaseFontSize ? { '--block-base-font-size': `${blockBaseFontSize}px` } : {}),
-        ...(blockSubtitleFontSize ? { '--block-subtitle-font-size': `${blockSubtitleFontSize}px` } : {})
+        ...(blockSubtitleFontSize ? { '--block-subtitle-font-size': `${blockSubtitleFontSize}px` } : {}),
+        ...(blockBarFontSize ? { '--bar-label-font-size': `${blockBarFontSize}px` } : {})
       } as React.CSSProperties}
     >
       {showBlockTitles && block.showTitle && block.title && (
         <h2 className={styles.blockTitle}>{block.title}</h2>
       )}
       
-      {/* Render each row with responsive height calculation */}
-      {/* WHAT: P1 1.5 Phase 3 - Removed blockTitleFontSize and blockSubtitleFontSize props */}
-      {/* WHY: CSS now uses --block-base-font-size and --block-subtitle-font-size directly (Phase 2) */}
-      {rows.map((rowCharts, rowIndex) => (
+      {/* Render each active row with responsive height calculation */}
+      {activeRows.map((row, rowIndex) => (
         <ResponsiveRow
           key={`row-${rowIndex}`}
-          rowCharts={rowCharts}
+          rowCharts={row.charts}
           chartResults={chartResults}
           charts={charts} // A-R-13: Pass chart configs for validation
           rowIndex={rowIndex}
           unifiedTextFontSize={unifiedTextFontSize}
-          blockAspectRatio={block.blockAspectRatio} // R-LAYOUT-02.1: Optional block aspect ratio override
-          mobileAspectRatio={block.mobileAspectRatio} // #358: Optional mobile-only aspect ratio override
-          tableHeightMultiplier={block.tableHeightMultiplier} // Table height control: height = blockWidth × multiplier
+          blockAspectRatio={row.blockAspectRatio || block.blockAspectRatio}
+          mobileAspectRatio={row.mobileAspectRatio || block.mobileAspectRatio}
+          tableHeightMultiplier={row.tableHeightMultiplier || block.tableHeightMultiplier}
           allowNA={allowNA}
         />
       ))}

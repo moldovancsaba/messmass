@@ -153,3 +153,78 @@ describe('LayoutV2 Block Dimensions (Integration)', () => {
     expect(result1.itemWidths).toEqual(result2.itemWidths);
   });
 });
+
+describe('LayoutV2 Block Coalescing & Wrapping', () => {
+  const { coalesceReportBlocks } = require('@/lib/layoutV2BlockCalculator');
+
+  test('coalesces untitled block following titled block into multi-row section', () => {
+    const rawBlocks = [
+      {
+        id: 'block-1',
+        title: 'Fan Demographics',
+        showTitle: true,
+        charts: [
+          { chartId: 'c1', width: 1 },
+          { chartId: 'c2', width: 1 },
+          { chartId: 'c3', width: 1 }
+        ]
+      },
+      {
+        id: 'block-2',
+        title: 'Fan Demographics Row 2',
+        showTitle: false,
+        charts: [
+          { chartId: 'c4', width: 1 },
+          { chartId: 'c5', width: 1 },
+          { chartId: 'c6', width: 1 }
+        ]
+      }
+    ];
+
+    const coalesced = coalesceReportBlocks(rawBlocks);
+    expect(coalesced).toHaveLength(1);
+    expect(coalesced[0].title).toBe('Fan Demographics');
+    expect(coalesced[0].showTitle).toBe(true);
+    expect(coalesced[0].rows).toHaveLength(2);
+    expect(coalesced[0].rows[0].charts).toHaveLength(3);
+    expect(coalesced[0].rows[1].charts).toHaveLength(3);
+  });
+
+  test('auto-wraps single block exceeding 6 units into multiple rows', () => {
+    const rawBlocks = [
+      {
+        id: 'block-oversized',
+        title: 'All Metrics',
+        showTitle: true,
+        charts: [
+          { chartId: 'c1', width: 2 },
+          { chartId: 'c2', width: 2 },
+          { chartId: 'c3', width: 2 },
+          { chartId: 'c4', width: 2 }
+        ] // Total: 8 units -> wraps at 6
+      }
+    ];
+
+    const coalesced = coalesceReportBlocks(rawBlocks, 6);
+    expect(coalesced).toHaveLength(1);
+    expect(coalesced[0].rows).toHaveLength(2);
+    expect(coalesced[0].rows[0].charts).toHaveLength(3); // 2 + 2 + 2 = 6
+    expect(coalesced[0].rows[1].charts).toHaveLength(1); // 2
+  });
+
+  test('preserves untitled first block as its own block', () => {
+    const rawBlocks = [
+      {
+        id: 'block-hero-companion',
+        title: 'Overview',
+        showTitle: false,
+        charts: [{ chartId: 'c1', width: 2 }]
+      }
+    ];
+
+    const coalesced = coalesceReportBlocks(rawBlocks);
+    expect(coalesced).toHaveLength(1);
+    expect(coalesced[0].showTitle).toBe(false);
+    expect(coalesced[0].rows).toHaveLength(1);
+  });
+});

@@ -7,6 +7,7 @@
 import { getFontFamilyCSS } from './fontUtils';
 import { HEX8_OPAQUE_BLACK, rgbaString } from './theme/color';
 import { DEFAULT_CARD_SHADOW, DEFAULT_REPORT_STYLE_COLORS } from './theme/reportStylePalette';
+import { guardReportStyle } from './theme/styleGuardian';
 
 /**
  * Report Style - Complete color configuration for report and landing pages
@@ -49,12 +50,13 @@ export interface ReportStyle {
   // KPI Charts (1 property)
   kpiIconColor: string;                 // Icon color
   
-  // Bar Charts (5 properties)
+  // Bar Charts
   barColor1: string;                    // First bar
   barColor2: string;                    // Second bar
   barColor3: string;                    // Third bar
   barColor4: string;                    // Fourth bar
   barColor5: string;                    // Fifth bar
+  chartBarTrackBackground?: string;    // Bar track background (neutral)
   
   // Pie Charts (3 properties)
   pieColor1: string;                    // First slice
@@ -149,6 +151,7 @@ export const COLOR_FIELDS: ColorFieldDefinition[] = [
   { key: 'barColor3', label: 'Bar Color 3', category: 'Bar Charts', description: 'Third bar color' },
   { key: 'barColor4', label: 'Bar Color 4', category: 'Bar Charts', description: 'Fourth bar color' },
   { key: 'barColor5', label: 'Bar Color 5', category: 'Bar Charts', description: 'Fifth bar color' },
+  { key: 'chartBarTrackBackground', label: 'Bar Track Background', category: 'Bar Charts', description: 'Subtle background track behind bars. Falls back to neutral gray.' },
   
   // Pie Charts
   { key: 'pieColor1', label: 'Pie Color 1', category: 'Pie Charts', description: 'First pie slice fill' },
@@ -254,11 +257,12 @@ export const DEFAULT_STYLE: Omit<ReportStyle, '_id' | 'createdAt' | 'updatedAt'>
  */
 export function withEffectiveStyleDefaults<T extends Partial<ReportStyle>>(
   style: T
-): T & Pick<ReportStyle, 'pageBackground' | 'blockTitleColor'> {
+): T & Pick<ReportStyle, 'pageBackground' | 'blockTitleColor' | 'chartBarTrackBackground'> {
   return {
     ...style,
     pageBackground: style.pageBackground || style.heroBackground,
     blockTitleColor: style.blockTitleColor || style.headingColor,
+    chartBarTrackBackground: style.chartBarTrackBackground || DEFAULT_REPORT_STYLE_COLORS.chartBarTrackBackground,
   };
 }
 
@@ -349,8 +353,9 @@ export function validateStyle(style: Partial<ReportStyle>): { valid: boolean; er
  * WHAT: Apply style to document root
  * WHY: Make colors available to all report components
  */
-export function injectStyleAsCSS(style: ReportStyle): void {
+export function injectStyleAsCSS(rawStyle: ReportStyle): void {
   const root = document.documentElement;
+  const style = guardReportStyle(rawStyle);
   
   // WHAT: Inject font family if specified, converting name to CSS font-family value
   // WHY: Report styles store font name (e.g., "Aquatic"), but CSS needs full value (e.g., '"Aquatic", sans-serif')
@@ -367,7 +372,11 @@ export function injectStyleAsCSS(style: ReportStyle): void {
   for (const field of COLOR_FIELDS) {
     const value = style[field.key];
     if (value) {
-      root.style.setProperty(`--${field.key}`, normalizeHexColor(value));
+      // If already a CSS functional expression (e.g. rgba(...)), pass through directly; otherwise normalize hex
+      const cssVal = typeof value === 'string' && !value.startsWith('#')
+        ? value
+        : normalizeHexColor(value);
+      root.style.setProperty(`--${field.key}`, cssVal);
     }
   }
 

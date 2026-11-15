@@ -70,7 +70,8 @@ export default function ReportPage() {
   // HOW: useReportStyle fetches style and injects CSS variables
   const { loading: styleLoading, error: styleError } = useReportStyle({ 
     styleId: report?.styleId ? String(report.styleId) : null,
-    enabled: !!report // Only fetch style after report is loaded
+    enabled: !!report,
+    fallbackToGlobal: true
   });
 
 

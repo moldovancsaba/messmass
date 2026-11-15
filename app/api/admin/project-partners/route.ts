@@ -9,6 +9,7 @@ import { getDb } from '@/lib/db';
 import { syncProjectToV3Activity, syncPartnerToV3Entity } from '@/lib/v3/syncEngine';
 import { error as logError, info as logInfo } from '@/lib/logger';
 import { getAdminUser } from '@/lib/auth';
+import { projectPartnerId } from '@/lib/projectPartnerRef';
 
 /**
  * GET /api/admin/project-partners
@@ -30,7 +31,7 @@ export async function GET() {
     const projects = await projectsCollection
       .find({})
       .sort({ createdAt: -1 })
-      .limit(100)
+      .limit(500)
       .toArray();
 
     return NextResponse.json({
@@ -39,8 +40,8 @@ export async function GET() {
         _id: p._id.toString(),
         eventName: p.eventName,
         editSlug: p.editSlug,
-        partner1: p.partner1 ? (typeof p.partner1 === 'object' ? p.partner1._id?.toString() : p.partner1.toString()) : null,
-        partner2: p.partner2 ? (typeof p.partner2 === 'object' ? p.partner2._id?.toString() : p.partner2.toString()) : null,
+        partner1: projectPartnerId(p, 'home')?.toString() || null,
+        partner2: projectPartnerId(p, 'visitor')?.toString() || null,
         createdAt: p.createdAt
       }))
     });
@@ -122,14 +123,18 @@ export async function PUT(request: NextRequest) {
 
     if (partner1Id) {
       setFields.partner1 = new ObjectId(partner1Id);
+      setFields.partner1Id = new ObjectId(partner1Id);
     } else {
       unsetFields.partner1 = '';
+      unsetFields.partner1Id = '';
     }
 
     if (partner2Id) {
       setFields.partner2 = new ObjectId(partner2Id);
+      setFields.partner2Id = new ObjectId(partner2Id);
     } else {
       unsetFields.partner2 = '';
+      unsetFields.partner2Id = '';
     }
 
     const updateOperation: any = {};

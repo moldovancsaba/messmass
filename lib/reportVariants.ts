@@ -18,7 +18,7 @@ import {
   type StatsFieldChanges,
 } from '@/lib/statsFieldChanges';
 
-export type ReportVariantOwnerType = 'organization' | 'partner' | 'hashtag' | 'filter';
+export type ReportVariantOwnerType = 'organization' | 'partner' | 'hashtag' | 'filter' | 'global';
 export type ReportVariantStatus = 'draft' | 'published' | 'archived';
 
 export interface ReportVariant {
@@ -163,8 +163,9 @@ export async function resolveReportVariantBaseSource(
   if (ownerType === 'organization') {
     const organizations = db.collection<OrganizationRecord>('organizations');
     const organization = ObjectId.isValid(ownerId)
-      ? await organizations.findOne({ _id: new ObjectId(ownerId) })
-      : null;
+      ? (await organizations.findOne({ _id: new ObjectId(ownerId) })) ||
+        (await organizations.findOne({ slug: ownerId }))
+      : await organizations.findOne({ slug: ownerId });
 
     if (!organization) {
       throw new Error('Organization not found');
@@ -233,6 +234,10 @@ export async function resolveReportVariantBaseSource(
       styleId: filterData?.styleId || undefined,
       statsOverrides: {},
     };
+  }
+
+  if (ownerType === 'global') {
+    return { ownerType, ownerId, ownerName: 'All data', timezone: DEFAULT_TIMEZONE, statsOverrides: {} };
   }
 
   return {

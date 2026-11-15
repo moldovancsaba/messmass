@@ -8,10 +8,12 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import styles from './page.module.css';
 import { apiGet, apiPost, apiPut } from '@/lib/apiClient';
+import PartnerSelector from '@/components/PartnerSelector';
 
 interface Partner {
   _id: string;
   name: string;
+  emoji?: string;
   reportTemplateId?: string;
 }
 
@@ -205,42 +207,24 @@ export default function ProjectPartnersPage() {
                         </span>
                       )}
                     </label>
-                    <select
-                      className={styles.select}
-                      value={partner1Id || ''}
-                      onChange={(e) => {
-                        const newId = e.target.value || null;
-                        updateProjectPartners(project._id, newId, partner2Id);
-                      }}
+                    <PartnerSelector
+                      selectedPartnerId={partner1Id}
+                      partners={partners as any}
+                      onChange={(newId) => updateProjectPartners(project._id, newId, partner2Id)}
+                      placeholder="Search Home Team (e.g. Beretta, MTK, Újpest)..."
                       disabled={isSaving}
-                    >
-                      <option value="">No Partner</option>
-                      {partners.map(partner => (
-                        <option key={partner._id} value={partner._id}>
-                          {partner.name}
-                        </option>
-                      ))}
-                    </select>
+                    />
                   </div>
 
                   <div className={styles.selectorGroup}>
                     <label className={styles.label}>Partner 2 (Away Team)</label>
-                    <select
-                      className={styles.select}
-                      value={partner2Id || ''}
-                      onChange={(e) => {
-                        const newId = e.target.value || null;
-                        updateProjectPartners(project._id, partner1Id, newId);
-                      }}
+                    <PartnerSelector
+                      selectedPartnerId={partner2Id}
+                      partners={partners as any}
+                      onChange={(newId) => updateProjectPartners(project._id, partner1Id, newId)}
+                      placeholder="Search Away Team (e.g. Galatasaray, Paksi FC)..."
                       disabled={isSaving}
-                    >
-                      <option value="">No Partner</option>
-                      {partners.map(partner => (
-                        <option key={partner._id} value={partner._id}>
-                          {partner.name}
-                        </option>
-                      ))}
-                    </select>
+                    />
                   </div>
                 </div>
 

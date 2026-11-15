@@ -1,5 +1,6 @@
 'use client';
 
+import { buildMatchEvent, EMPTY_MATCH_STATS } from '@/lib/matchEvent';
 import React, { useEffect, useState, useMemo } from 'react';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
@@ -328,55 +329,9 @@ export default function QuickAddPage() {
       return;
     }
     
-    // WHAT: Build event name without emoji
-    // WHY: Emoji is now displayed separately in UI, no need in name string
-    const eventName = `${partner1.name} x ${partner2.name}`;
-    
-    // WHAT: Collect hashtags - Partner 1 ALL, Partner 2 without location category
-    // WHY: Location should come from home team (Partner 1) only
-    const allHashtags: string[] = [];
-    const categorizedHashtags: { [key: string]: string[] } = {};
-    
-    // Add Partner 1 hashtags (ALL)
-    if (partner1.hashtags) {
-      allHashtags.push(...partner1.hashtags);
-    }
-    if (partner1.categorizedHashtags) {
-      Object.entries(partner1.categorizedHashtags).forEach(([category, tags]) => {
-        if (!categorizedHashtags[category]) {
-          categorizedHashtags[category] = [];
-        }
-        categorizedHashtags[category].push(...tags);
-      });
-    }
-    
-    // Add Partner 2 hashtags (EXCEPT location category)
-    if (partner2.hashtags) {
-      allHashtags.push(...partner2.hashtags);
-    }
-    if (partner2.categorizedHashtags) {
-      Object.entries(partner2.categorizedHashtags).forEach(([category, tags]) => {
-        if (category.toLowerCase() === 'location') {
-          // WHAT: Skip location hashtags from Partner 2
-          // WHY: Event location comes from home team (Partner 1)
-          return;
-        }
-        if (!categorizedHashtags[category]) {
-          categorizedHashtags[category] = [];
-        }
-        categorizedHashtags[category].push(...tags);
-      });
-    }
-    
-    // WHAT: Deduplicate hashtags
-    // WHY: Both partners may have same hashtags (e.g., "football")
-    const uniqueHashtags = Array.from(new Set(allHashtags));
-    
-    // Deduplicate categorized hashtags
-    Object.keys(categorizedHashtags).forEach(category => {
-      categorizedHashtags[category] = Array.from(new Set(categorizedHashtags[category]));
-    });
-    
+    // WHAT: Name (without emoji) and hashtags by the shared match rule (lib/matchEvent.ts), the same as the Fanmass match-event route
+    const { eventName, hashtags: uniqueHashtags, categorizedHashtags } = buildMatchEvent(partner1, partner2);
+
     // WHAT: Collect Bitly links from Partner 1 only
     // WHY: Home team's tracking links are used for the event
     const bitlyLinks = partner1.bitlyLinks || [];
@@ -410,27 +365,7 @@ export default function QuickAddPage() {
         categorizedHashtags: matchPreview.categorizedHashtags,
         partner1Id: matchPreview.partner1._id,  // WHAT: Home team reference
         partner2Id: matchPreview.partner2._id,  // WHAT: Away team reference
-        stats: {
-          // Initialize with zeros
-          remoteImages: 0,
-          hostessImages: 0,
-          selfies: 0,
-          female: 0,
-          male: 0,
-          genAlpha: 0,
-          genYZ: 0,
-          genX: 0,
-          boomer: 0,
-          indoor: 0,
-          outdoor: 0,
-          stadium: 0,
-          merched: 0,
-          jersey: 0,
-          scarf: 0,
-          flags: 0,
-          baseballCap: 0,
-          other: 0,
-        },
+        stats: EMPTY_MATCH_STATS,
       });
 
       if (!data.success) {

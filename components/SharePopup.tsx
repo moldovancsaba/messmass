@@ -190,6 +190,8 @@ export default function SharePopup({ isOpen, onClose, pageId, pageType, customTi
         return 'Organization Edit';
       case 'filter':
         return 'Filter Page';
+      case 'global-report':
+        return 'Global Report';
       default:
         return 'Page';
     }

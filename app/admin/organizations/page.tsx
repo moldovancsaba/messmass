@@ -15,6 +15,7 @@ import { apiDelete, apiPost, apiPut } from '@/lib/apiClient';
 import { useAdminAuth } from '@/hooks/useAdminAuth';
 import { organizationsAdapter, organizationsEntityConfig } from '@/lib/adapters';
 import { withAdminEntityActions } from '@/lib/adminEntitySystem';
+import { hasMinimumRole } from '@/lib/permissions';
 
 type Organization = {
   _id: string;
@@ -231,7 +232,7 @@ export default function OrganizationsAdminPage() {
 
   if (!user) return null;
 
-  const canCreateOrganization = user.role === 'superadmin';
+  const canCreateOrganization = hasMinimumRole(user.role as any, 'superadmin');
 
   return (
     <>

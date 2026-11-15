@@ -4,7 +4,7 @@ Last Updated: 2026-10-20T16:53:00.000Z
 Canonical: Yes
 Owner: Backend
 
-**Version:** 12.3.44
+**Version:** 12.3.48
 
 ## Purpose
 
@@ -344,6 +344,82 @@ Event-level `/analysis-summary`, `/stats`, `/sync`, callback, and
 `fanmass.messmass.analytics-summary.v1` and dashboard-snapshot contracts are
 historical only; they must not be used for Camera photo analytics.
 
+## SZRT brand proof samples
+
+The SZRT report shows no brand or club figure without a sample behind it. This is a separate boundary from the
+Camera photo results above and applies to the SZRT campaign's own picture library only.
+
+`POST /api/integrations/fanmass/szrt-evidence` (`requireFanmassIntegrationAuth`) receives
+`{ pipeline, samples: [{ fileKey, sport, analyzedAt, region, crop }] }` with at most 40 samples. `region` is one brand
+region of the Fanmass analysis (`regionId`, `shortName`, `visibleText`, `itemType`, `confidence`, `bbox`, and
+`evidence` with `tier`, `method`, `match`, `ocrText`, `ocrConfidence`, `entityKind`, `onPerson`); `crop` is a base64
+JPEG or PNG of at most 1.5 MB. Fanmass pixelates every face before cutting the crop and sends no full photo.
+Messmass stores the crop in R2 under its SHA-256 (`szrt-evidence/`) and upserts one row per
+`(fileKey, regionId)` in `szrt_brand_evidence`. The answer lists every sample it skipped with a reason
+(`placeholder_name`, `invalid_box`, `text_read_without_text`, `invalid_crop_image`, `media_storage_failed`, ...); a
+broken envelope is `400`, more than 40 samples `413`, and a missing R2 configuration `503`
+`MEDIA_STORAGE_NOT_CONFIGURED`.
+
+`GET /api/interactive-report/brand-evidence?kind=brand|club&name=...` (public, SZRT tenant only) returns up to 12
+samples, strongest first and at most one per photo, plus how many photos prove the name and how many only had a
+model suggestion. It returns nothing until a person set `publishApproved: true` on the SZRT vision document, like the
+rest of the SZRT vision data. A sample with tier `model_identified` is counted but never returned as proof, and no
+response carries a file name or path.
+
+`POST /api/integrations/fanmass/szrt-progress` (`requireFanmassIntegrationAuth`) receives the report's audience, brand
+and club figures from the same deep rerun: `{ pipeline, totalImages, processedCount, status, currentSport,
+lastUpdated, optIn?: { images, total, basis: 'local_drive_policy' }, aggregates: { totalPeople, genders, ageGroups, topBrands, topClubs, topEmotions, sportsBreakdown } }`.
+The optional `optIn` says how many of the images Fanmass holds have a recorded opt-in (an image reaches the local drive only with one); it is stored on the progress document and shown in the report's Fanmass section, and an older Fanmass that sends none leaves the stored value as it was.
+Fanmass sends the whole picture each time; Messmass validates it (whole non-negative counts, a processed count not
+above the total, sport names and list lengths bounded), derives every share from the counts, and replaces the stored
+figures in `szrt_vision_progress` (`_id: szrt_progress`). It clears the old per-image text and model-guess lists and
+never writes `publishApproved`: a new document starts unapproved and an existing approval is left as it is. A brand
+or club is counted only where its name was read from the picture, once per photo; there are no default values, so an
+unmeasured figure stays zero or empty.
+
+`POST /api/integrations/fanmass/szrt-publish` (`requireFanmassIntegrationAuth`) is the only writer of the publication
+switch (`publishApproved` on `szrt_progress`). Body `{ approved: boolean, approvedBy: string, note? }`; it records who
+decided and when (`publishApprovedBy`, `publishApprovedAt`, `publishApprovalNote`), drops the cached SZRT report
+snapshots so the change shows at once, and answers `409 NO_FIGURES_DELIVERED` when asked to publish before the deep
+rerun delivered figures, so the retired worker's numbers can never become visible. Withdrawing (`approved: false`) is
+always accepted.
+
+`GET /api/interactive-report/partner-selfies` serves the partner record's own details and no analysed selfie: it no
+longer reads `szrt_vision_analysis` (the retired worker's per-image brand lists and scene text). Remove that data with
+`scripts/purge-szrt-legacy-vision.ts` (dry run by default; `--apply` backs both legacy collections up to `backups/`
+before deleting).
+
+### Global evidence library and its human review
+
+The proof behind every brand and club figure Fanmass produces lives in one global library (`fanmass_evidence`), for any
+project or event: each sample carries an `origin` (`szrt` for the SZRT campaign, later a Camera event or anything else
+Fanmass analyses). A report reads only its own origin (the SZRT report reads `szrt`).
+
+- `POST /api/integrations/fanmass/evidence` (`requireFanmassIntegrationAuth`) receives the samples (see the SZRT section
+  above for the sample shape) with an `origin`; the old `POST /api/integrations/fanmass/szrt-evidence` is the same handler
+  and a sender that names no origin is `szrt`. Its optional `replaceFiles` (file keys of that origin, at most 200) first
+  removes what Fanmass delivered earlier for those pictures, never a reviewed row or one a person added; an empty `samples`
+  list is accepted with `replaceFiles`, to withdraw a proof that no longer holds. A reviewed row is never overwritten
+  (`skipped` reason `human_reviewed`).
+- Review is optional, being able to is not: `GET /api/admin/fanmass-evidence?status=needs_review|confirmed|rejected|corrected|human|all&kind&name&origin&limit&offset`
+  (admin session, page `/admin/fanmass-evidence`) lists samples of any origin, weakest unreviewed proof first.
+  `POST /api/admin/fanmass-evidence` adds a sample a person made: `{ name, kind, crop (base64 JPEG or PNG, up to 1.5 MB),
+  origin?, sport?, readText?, note?, box? }`; it is stored in R2 and counts as proof (`tier: human`, `source: human`).
+  `PATCH /api/admin/fanmass-evidence/[id]` with `{ action: confirm | reject | correct | restore, name?, kind?, note? }`
+  stores `review: { status, by, at, note }` (a correction keeps the original name and kind; `restore` puts them back).
+  `DELETE /api/admin/fanmass-evidence/[id]` deletes only a sample a person added: an automatic one answers
+  `409 AUTOMATIC_EVIDENCE_CANNOT_BE_DELETED` and must be rejected, so a delivery cannot bring it back.
+- A rejected sample is never returned as proof; a confirmed, corrected or person-added one is proof, marked as checked by a person.
+- The decisions feed the figures: `GET /api/integrations/fanmass/evidence-reviews[?origin=]` returns every decision and every
+  added sample (`id, origin, fileKey, regionId, source, status, name, kind`); Fanmass applies them when it counts (rejected is
+  not counted, corrected is counted under its corrected name and kind, an added sample counts once).
+- And they train the system: `GET /api/integrations/fanmass/evidence-training` returns rules from every decision, for every
+  origin: `deny` (this exact text is not that name: rejected samples, the original of a corrected one) and `alias` (this
+  exact text is that name: corrected, confirmed and person-added samples). `text` is the text folded to lowercase letters and
+  digits. Fanmass applies both to every later analysis and re-judges results already made.
+- `POST /api/integrations/fanmass/szrt-progress` drops the cached SZRT reports after storing, so the brand and club lists
+  show new figures at once instead of within the hour.
+
 ## Common Failure Modes
 
 - `401` on admin endpoints when no valid admin session exists
@@ -370,3 +446,13 @@ These APIs back the current analytics workspace model:
 - `/Users/moldovancsaba/Projects/messmass/docs/admin/admin-end-user-guide.md`
 - `/Users/moldovancsaba/Projects/messmass/docs/api/api-reference.md`
 - `/Users/moldovancsaba/Projects/messmass/docs/features/features-bitly-integration-guide.md`
+
+## Unified hashtag report
+
+`GET /api/hashtag-report/{hashtag}` returns the unified hashtag report for any hashtag (with or without the leading `#`):
+`{ success, scope: { type: 'hashtag', id }, generatedAt, measured: { events, photos, counters }, calculated, coverage }`.
+`measured` holds only what machines wrote (the per-photo Fanmass rollups of the hashtag's events and the `camera_*` counters Camera
+writes; brand and club names are left out until Fanmass delivers text-read proof with each photo result); `calculated` holds Messmass calculations over it, each with `value`, `numerator`, `denominator`, `basis` (what the denominator counts) and `part` (what the numerator counts) (`value` is
+null when the counts cannot give a real share); no manually entered number is read. Public unless the hashtag has a page password
+(then 401 `PAGE_PASSWORD_REQUIRED`, like the other hashtag reports). The first call for a large hashtag may take several seconds
+(`maxDuration` 60).

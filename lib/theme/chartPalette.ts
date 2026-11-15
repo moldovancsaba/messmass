@@ -26,6 +26,7 @@ export const CHART_COLOR = {
   grayMuted: '#6b7280',
   /** Placeholder for chart elements that carry no colour of their own. */
   neutral: '#cccccc',
+  black: '#000000',
   // Series colours the original stats charts shipped with; seeded charts still store them.
   femalePink: '#ff6b9d',
   maleBlue: '#4a90e2',
@@ -67,6 +68,9 @@ export const CHART_THEME_COLORS = {
   axisText: '#6b7280',
   axisBorder: '#e5e7eb',
   gridLine: 'rgba(229, 231, 235, 0.5)',
+  zeroSeriesBackgroundA: '#E2E8F0',
+  zeroSeriesBackgroundB: '#CBD5E1',
+  zeroSeriesBorder: '#94A3B8',
 } as const;
 
 /** Fallbacks used when a report style does not define --pieColor1 / --pieColor2. */

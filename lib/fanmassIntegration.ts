@@ -8,7 +8,6 @@ import { ensureFanmassAnalyticsVariables } from './fanmassAnalyticsVariables';
 
 const DB_NAME = config.dbName;
 export const EVENT_CONTEXT_CONTRACT = 'messmass.fanmass.event-context.v1';
-export const FANMASS_SUMMARY_CONTRACT = 'fanmass.messmass.analytics-summary.v1';
 
 export type FanmassLinkStatus =
   | 'linked'
@@ -247,39 +246,6 @@ export async function upsertFanmassLink(
   return link;
 }
 
-export async function loadFanmassLink(eventId: string): Promise<FanmassEventLink | null> {
-  if (!ObjectId.isValid(eventId)) {
-    throw Object.assign(new Error('Invalid event id.'), { status: 422, code: 'INVALID_EVENT_ID' });
-  }
-  const db = await getDb();
-  await ensureFanmassIndexes(db);
-  return db.collection<FanmassEventLink>('fanmass_event_links').findOne({ eventId }, { projection: { _id: 0 } });
-}
-
-async function fanmassFetch(path: string, init?: RequestInit): Promise<Response> {
-  if (!config.fanmassBaseUrl) {
-    throw Object.assign(new Error('FANMASS_BASE_URL is not configured.'), {
-      status: 503,
-      code: 'FANMASS_NOT_CONFIGURED',
-    });
-  }
-  const controller = new AbortController();
-  const timeout = setTimeout(() => controller.abort(), 15000);
-  try {
-    return await fetch(`${config.fanmassBaseUrl.replace(/\/$/, '')}${path}`, {
-      ...init,
-      signal: controller.signal,
-      headers: {
-        'content-type': 'application/json',
-        ...(config.fanmassApiKey ? { 'x-api-key': config.fanmassApiKey } : {}),
-        ...(init?.headers || {}),
-      },
-    });
-  } finally {
-    clearTimeout(timeout);
-  }
-}
-
 function asNumber(value: unknown): number {
   const num = Number(value);
   return Number.isFinite(num) ? num : 0;
@@ -353,126 +319,6 @@ export function mapFanmassStatsToFlatStats(fanmassStats: ReturnType<typeof mapFa
     fanmassSourceRunCount: fanmassStats.sourceRunIds.length,
     fanmassLastSyncedAt: fanmassStats.lastSyncedAt,
   };
-}
-
-export async function syncFanmassAnalytics(eventId: string, correlationId: string, options?: { dryRun?: boolean; force?: boolean }) {
-  const ownershipDb = await getDb();
-  const photoPipelineOwnsEvent = await ownershipDb.collection('fanmass_camera_photo_analyses').findOne(
-    { eventId },
-    { projection: { _id: 1 } },
-  ) || await ownershipDb.collection('ai_analysis_summaries').findOne(
-    { eventId, sourceType: 'camera_photo_pipeline' },
-    { projection: { _id: 1 } },
-  );
-  if (photoPipelineOwnsEvent) {
-    throw Object.assign(new Error('This event is reported from per-photo Camera results; aggregate Fanmass sync is disabled.'), {
-      status: 409,
-      code: 'CAMERA_PHOTO_PIPELINE_OWNS_ANALYTICS',
-    });
-  }
-  const link = await loadFanmassLink(eventId);
-  if (!link) {
-    throw Object.assign(new Error('Fanmass link was not found for event.'), { status: 404, code: 'FANMASS_LINK_NOT_FOUND' });
-  }
-
-  const response = await fanmassFetch(`/api/integrations/messmass/batches/${encodeURIComponent(link.fanmassBatchId)}/analytics-summary`, {
-    method: 'GET',
-    headers: { 'x-correlation-id': correlationId },
-  });
-  const payload = await response.json().catch(() => ({}));
-  if (!response.ok && response.status !== 202) {
-    await recordFanmassSyncFailure(eventId, link.fanmassBatchId, response.status, payload?.detail || payload?.error, correlationId);
-    throw Object.assign(new Error('Fanmass analytics summary request failed.'), {
-      status: response.status,
-      code: 'FANMASS_EXPORT_FAILED',
-      details: payload,
-    });
-  }
-
-  const summary = payload.data || payload;
-  if (summary.contractVersion !== FANMASS_SUMMARY_CONTRACT) {
-    throw Object.assign(new Error('Unsupported Fanmass analytics contract.'), {
-      status: 409,
-      code: 'UNSUPPORTED_FANMASS_CONTRACT',
-      details: { received: summary.contractVersion },
-    });
-  }
-  const fanmassStats = mapFanmassSummaryToStats(summary);
-  const fanmassFlatStats = {
-    ...mapFanmassStatsToFlatStats(fanmassStats),
-    ...deriveCompleteFanmassReportStats(summary),
-  };
-  if (options?.dryRun) {
-    return { dryRun: true, link, fanmassStats, fanmassFlatStats, summary };
-  }
-
-  const db = await getDb();
-  try {
-    await ensureFanmassAnalyticsVariables(db, Object.keys(fanmassFlatStats));
-  } catch {
-    // Metric values still sync; the next sync retries catalog registration.
-    warn('fanmass_variable_catalog_sync_failed', { eventId, correlationId });
-  }
-  const existing = await db.collection('projects').findOne({ _id: new ObjectId(eventId) }, { projection: { stats: 1 } });
-  const previousFanmass = (existing?.stats as any)?.fanmass;
-  const timestamp = nowIso();
-  await db.collection('projects').updateOne(
-    { _id: new ObjectId(eventId) },
-    {
-      $set: {
-        'stats.fanmass': fanmassStats,
-        ...Object.fromEntries(
-          Object.entries(fanmassFlatStats).map(([key, value]) => [`stats.${key}`, value])
-        ),
-        updatedAt: timestamp,
-      },
-    }
-  );
-  await db.collection<FanmassEventLink>('fanmass_event_links').updateOne(
-    { eventId },
-    {
-      $set: {
-        status: summary.status === 'ready' ? 'ready' : 'partial',
-        lastRequestedAt: timestamp,
-        lastCompletedAt: timestamp,
-        lastSyncSnapshot: { previousFanmass, nextFanmass: fanmassStats },
-        updatedAt: timestamp,
-      },
-      $unset: {
-        lastErrorCode: '',
-        lastErrorMessage: '',
-      },
-      $push: { audit: { action: 'analytics_synced', at: timestamp, correlationId, status: summary.status } },
-    }
-  );
-
-  info('fanmass_analytics_synced', { eventId, batchId: link.fanmassBatchId, correlationId, status: summary.status });
-  return { dryRun: false, fanmassStats, fanmassFlatStats, summary };
-}
-
-async function recordFanmassSyncFailure(
-  eventId: string,
-  batchId: string,
-  status: number,
-  errorMessage: unknown,
-  correlationId: string
-) {
-  const db = await getDb();
-  const timestamp = nowIso();
-  await db.collection<FanmassEventLink>('fanmass_event_links').updateOne(
-    { eventId },
-    {
-      $set: {
-        status: status === 401 || status === 403 ? 'unauthorized' : 'failed',
-        lastErrorCode: `fanmass_http_${status}`,
-        lastErrorMessage: typeof errorMessage === 'string' ? errorMessage : JSON.stringify(errorMessage || {}),
-        updatedAt: timestamp,
-      },
-      $inc: { retryCount: 1 },
-      $push: { audit: { action: 'analytics_sync_failed', at: timestamp, correlationId, batchId, status } },
-    }
-  );
-  warn('fanmass_analytics_sync_failed', { eventId, batchId, status, correlationId });
 }
 
 export async function handleRouteError(err: unknown): Promise<NextResponse> {

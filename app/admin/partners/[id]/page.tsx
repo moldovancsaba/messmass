@@ -273,7 +273,7 @@ export default function PartnerDetailPage({
               href={`/admin/partners`}
               className="block text-info text-sm"
             >
-              🤝 Back to Partners →
+              ← Back to Partners
             </a>
           </div>
         </div>

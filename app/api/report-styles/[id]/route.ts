@@ -6,6 +6,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import clientPromise from '@/lib/mongodb';
 import { ObjectId } from 'mongodb';
 import { ReportStyle } from '@/lib/reportStyleTypes';
+import { guardReportStyle } from '@/lib/theme/styleGuardian';
 import { error as logError } from '@/lib/logger';
 
 const DB_NAME = process.env.MONGODB_DB || 'messmass';
@@ -45,9 +46,10 @@ export async function GET(
       );
     }
     
+    const guarded = guardReportStyle({ ...style, _id: style._id?.toString() });
     return NextResponse.json({
       success: true,
-      style: { ...style, _id: style._id?.toString() }
+      style: guarded
     });
   } catch (error) {
     logError('Failed to fetch report style', { context: 'report-styles', styleId: id || 'unknown' }, error instanceof Error ? error : new Error(String(error)));
