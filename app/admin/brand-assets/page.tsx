@@ -8,6 +8,8 @@
 
 import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { ensureCsrfToken } from '@/lib/apiClient';
+import { INTERACTIVE_REPORT_THEME } from '@/lib/theme/interactiveReportPalette';
+import { SPORT_FRANCHISES_DIRECTORY } from '@/lib/brandEntityClustering';
 import styles from './page.module.css';
 
 interface BrandAsset {
@@ -21,6 +23,24 @@ interface BrandAsset {
   accentColor?: string;
   updatedAt?: string;
   isDiscovered?: boolean;
+}
+
+function HighlightMatch({ text, query }: { text: string; query: string }) {
+  if (!query.trim()) return <span>{text}</span>;
+  const idx = text.toLowerCase().indexOf(query.toLowerCase());
+  if (idx === -1) return <span>{text}</span>;
+  const before = text.slice(0, idx);
+  const match = text.slice(idx, idx + query.length);
+  const after = text.slice(idx + query.length);
+  return (
+    <span>
+      {before}
+      <mark style={{ background: INTERACTIVE_REPORT_THEME.yellowHighlightBg, color: INTERACTIVE_REPORT_THEME.yellowHighlightText, padding: '1px 2px', borderRadius: '2px', fontWeight: 700 }}>
+        {match}
+      </mark>
+      {after}
+    </span>
+  );
 }
 
 export default function BrandAssetsAdminPage() {
@@ -82,6 +102,71 @@ export default function BrandAssetsAdminPage() {
     return list.sort((a, b) => a.localeCompare(b));
   }, [assets, unconfigured]);
 
+  // Candidate brands for merge (excluding source brands currently selected)
+  const candidateMergeBrands = useMemo(() => {
+    return allAvailableBrands.filter((b) => !mergeSources.includes(b));
+  }, [allAvailableBrands, mergeSources]);
+
+  // Predictive filtered list of target brands based on real-time input
+  const filteredTargetBrands = useMemo(() => {
+    const q = targetBrandName.trim().toLowerCase();
+    if (!q) {
+      return candidateMergeBrands.slice(0, 50);
+    }
+    return candidateMergeBrands
+      .filter((b) => b.toLowerCase().includes(q))
+      .sort((a, b) => {
+        const aLow = a.toLowerCase();
+        const bLow = b.toLowerCase();
+        const aExact = aLow === q;
+        const bExact = bLow === q;
+        if (aExact && !bExact) return -1;
+        if (!aExact && bExact) return 1;
+        const aStarts = aLow.startsWith(q);
+        const bStarts = bLow.startsWith(q);
+        if (aStarts && !bStarts) return -1;
+        if (!aStarts && bStarts) return 1;
+        return a.localeCompare(b);
+      });
+  }, [candidateMergeBrands, targetBrandName]);
+
+  const isExactTargetMatch = useMemo(() => {
+    const q = targetBrandName.trim().toLowerCase();
+    if (!q) return false;
+    return candidateMergeBrands.some((b) => b.toLowerCase() === q);
+  }, [candidateMergeBrands, targetBrandName]);
+
+  // Known sports clubs for predictive move-to-club autocomplete
+  const allKnownClubs = useMemo(() => {
+    const set = new Set<string>();
+    for (const info of Object.values(SPORT_FRANCHISES_DIRECTORY)) {
+      if (info.name) set.add(info.name);
+    }
+    return Array.from(set).sort((a, b) => a.localeCompare(b));
+  }, []);
+
+  const filteredTargetClubs = useMemo(() => {
+    const q = targetClubName.trim().toLowerCase();
+    if (!q) return allKnownClubs.slice(0, 40);
+    return allKnownClubs
+      .filter((c) => c.toLowerCase().includes(q))
+      .sort((a, b) => {
+        const aLow = a.toLowerCase();
+        const bLow = b.toLowerCase();
+        if (aLow === q && bLow !== q) return -1;
+        if (bLow === q && aLow !== q) return 1;
+        if (aLow.startsWith(q) && !bLow.startsWith(q)) return -1;
+        if (bLow.startsWith(q) && !aLow.startsWith(q)) return 1;
+        return a.localeCompare(b);
+      });
+  }, [allKnownClubs, targetClubName]);
+
+  const isExactClubMatch = useMemo(() => {
+    const q = targetClubName.trim().toLowerCase();
+    if (!q) return false;
+    return allKnownClubs.some((c) => c.toLowerCase() === q);
+  }, [allKnownClubs, targetClubName]);
+
   const filteredAssets = useMemo(() => {
     if (!searchQuery.trim()) return assets;
     const q = searchQuery.toLowerCase().trim();
@@ -112,7 +197,7 @@ export default function BrandAssetsAdminPage() {
       aliases: brand.aliases || [],
       logoUrl: brand.logoUrl || '',
       darkLogoUrl: brand.darkLogoUrl || '',
-      accentColor: brand.accentColor || '#1e3a8a',
+      accentColor: brand.accentColor || INTERACTIVE_REPORT_THEME.blueDark,
     });
     setUploadFile(null);
     setFilePreview(brand.logoUrl || '');
@@ -352,7 +437,7 @@ export default function BrandAssetsAdminPage() {
               onChange={(e) => setSearchQuery(e.target.value)}
               className={styles.searchBar}
             />
-            <span style={{ position: 'absolute', left: '10px', top: '8px', fontSize: '13px', color: '#94a3b8' }}>
+            <span style={{ position: 'absolute', left: '10px', top: '8px', fontSize: '13px', color: INTERACTIVE_REPORT_THEME.slateLight }}>
               🔍
             </span>
             {searchQuery && (
@@ -365,7 +450,7 @@ export default function BrandAssetsAdminPage() {
                   border: 'none',
                   background: 'none',
                   cursor: 'pointer',
-                  color: '#94a3b8',
+                  color: INTERACTIVE_REPORT_THEME.slateLight,
                 }}
               >
                 ✕
@@ -396,7 +481,7 @@ export default function BrandAssetsAdminPage() {
       {loading ? (
         <div className={styles.subtitle}>Loading official brand registry from MongoDB Atlas...</div>
       ) : filteredAssets.length === 0 ? (
-        <div className={styles.alertBanner} style={{ background: '#f8fafc', borderColor: '#e2e8f0', color: '#64748b' }}>
+        <div className={styles.alertBanner} style={{ background: INTERACTIVE_REPORT_THEME.slateSubtleBg, borderColor: INTERACTIVE_REPORT_THEME.slateLightBorder, color: INTERACTIVE_REPORT_THEME.slateMuted }}>
           {searchQuery
             ? `No official brand logos match "${searchQuery}".`
             : 'No official brand logos uploaded yet. Click on any discovered brand below or "Register New Brand" to upload the authentic logo file!'}
@@ -410,8 +495,8 @@ export default function BrandAssetsAdminPage() {
                 key={asset.canonicalSlug}
                 className={styles.card}
                 style={{
-                  borderColor: isChecked ? '#3b82f6' : undefined,
-                  boxShadow: isChecked ? '0 0 0 2px #3b82f6' : undefined,
+                  borderColor: isChecked ? INTERACTIVE_REPORT_THEME.blueAccent : undefined,
+                  boxShadow: isChecked ? `0 0 0 2px ${INTERACTIVE_REPORT_THEME.blueAccent}` : undefined,
                 }}
               >
                 <div className={styles.cardTop}>
@@ -435,7 +520,7 @@ export default function BrandAssetsAdminPage() {
 
                 {/* Aliases Pill Strip */}
                 {asset.aliases && asset.aliases.length > 1 && (
-                  <div style={{ fontSize: '11px', color: '#64748b', margin: '4px 0 8px 0', lineHeight: 1.3 }}>
+                  <div style={{ fontSize: '11px', color: INTERACTIVE_REPORT_THEME.slateMuted, margin: '4px 0 8px 0', lineHeight: 1.3 }}>
                     <span style={{ fontWeight: 600 }}>Trained Aliases:</span>{' '}
                     {asset.aliases.filter((al) => al.toLowerCase() !== asset.name.toLowerCase()).join(', ')}
                   </div>
@@ -501,7 +586,7 @@ export default function BrandAssetsAdminPage() {
         <>
           <div className={styles.sectionTitle} style={{ marginTop: '48px' }}>
             <span>Brands Discovered in Event Photos ({filteredUnconfigured.length})</span>
-            <span className={styles.sectionBadge} style={{ background: '#fef3c7', color: '#92400e' }}>
+            <span className={styles.sectionBadge} style={{ background: INTERACTIVE_REPORT_THEME.amberBg, color: INTERACTIVE_REPORT_THEME.amberText }}>
               Pending Official Logo or Merge
             </span>
           </div>
@@ -518,9 +603,9 @@ export default function BrandAssetsAdminPage() {
                   key={item.canonicalSlug}
                   className={styles.card}
                   style={{
-                    background: '#fafafa',
-                    borderColor: isChecked ? '#3b82f6' : undefined,
-                    boxShadow: isChecked ? '0 0 0 2px #3b82f6' : undefined,
+                    background: INTERACTIVE_REPORT_THEME.grayBg,
+                    borderColor: isChecked ? INTERACTIVE_REPORT_THEME.blueAccent : undefined,
+                    boxShadow: isChecked ? `0 0 0 2px ${INTERACTIVE_REPORT_THEME.blueAccent}` : undefined,
                   }}
                 >
                   <div className={styles.cardTop}>
@@ -542,7 +627,7 @@ export default function BrandAssetsAdminPage() {
                     </span>
                   </div>
 
-                  <div className={styles.logoPreviewArea} style={{ background: '#ffffff' }}>
+                  <div className={styles.logoPreviewArea} style={{ background: INTERACTIVE_REPORT_THEME.white }}>
                     <div className={styles.noLogoPlaceholder}>
                       <span style={{ fontSize: '20px' }}>📁</span>
                       <strong>Original Logo Needed</strong>
@@ -679,7 +764,7 @@ export default function BrandAssetsAdminPage() {
                   type="text"
                   value={editingBrand.accentColor || ''}
                   onChange={(e) => setEditingBrand({ ...editingBrand, accentColor: e.target.value })}
-                  placeholder="#1e3a8a"
+                  placeholder="e.g. 1e3a8a"
                   className={styles.input}
                 />
               </div>
@@ -734,8 +819,8 @@ export default function BrandAssetsAdminPage() {
             </div>
 
             <form onSubmit={handleExecuteMerge} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-              <div style={{ background: '#f8fafc', padding: '12px 16px', borderRadius: '8px', border: '1px solid #e2e8f0', fontSize: '13px', lineHeight: 1.5, color: '#334155' }}>
-                <div style={{ fontWeight: 700, color: '#0f172a', marginBottom: '4px' }}>
+              <div style={{ background: INTERACTIVE_REPORT_THEME.slateSubtleBg, padding: '12px 16px', borderRadius: '8px', border: `1px solid ${INTERACTIVE_REPORT_THEME.slateLightBorder}`, fontSize: '13px', lineHeight: 1.5, color: INTERACTIVE_REPORT_THEME.slateMedium }}>
+                <div style={{ fontWeight: 700, color: INTERACTIVE_REPORT_THEME.slateDark, marginBottom: '4px' }}>
                   🧠 AI Retraining &amp; Data Unification
                 </div>
                 Merging unifies all past selfie sightings, exposure rates, and photo presence under the primary target brand. The source name(s) will be permanently saved as aliases, automatically retraining the vision pipeline to map future detections to the target.
@@ -744,13 +829,13 @@ export default function BrandAssetsAdminPage() {
               {/* Source Brands Being Merged */}
               <div className={styles.formGroup}>
                 <label className={styles.label}>Source Brand(s) to be Merged ({mergeSources.length})</label>
-                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px', background: '#ffffff', padding: '8px', borderRadius: '8px', border: '1px solid #cbd5e1' }}>
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px', background: INTERACTIVE_REPORT_THEME.white, padding: '8px', borderRadius: '8px', border: `1px solid ${INTERACTIVE_REPORT_THEME.slateBorder}` }}>
                   {mergeSources.map((src) => (
                     <span
                       key={src}
                       style={{
-                        background: '#fee2e2',
-                        color: '#991b1b',
+                        background: INTERACTIVE_REPORT_THEME.redBg,
+                        color: INTERACTIVE_REPORT_THEME.redText,
                         padding: '4px 8px',
                         borderRadius: '6px',
                         fontSize: '12px',
@@ -763,43 +848,108 @@ export default function BrandAssetsAdminPage() {
                 </div>
               </div>
 
-              {/* Target Brand Input / Selector */}
+              {/* Target Brand Input / Predictive Combobox */}
               <div className={styles.formGroup}>
-                <label className={styles.label}>Primary Target Brand to Keep *</label>
-                <input
-                  type="text"
-                  required
-                  placeholder="Type target brand name or select below (e.g. Szerencsejáték Zrt.)..."
-                  value={targetBrandName}
-                  onChange={(e) => setTargetBrandName(e.target.value)}
-                  className={styles.input}
-                  style={{ marginBottom: '8px', fontWeight: 600 }}
-                />
-
-                {/* Quick Selection List */}
-                <div style={{ fontSize: '11px', color: '#64748b', fontWeight: 600, marginBottom: '4px' }}>
-                  Or select an existing canonical brand:
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <label className={styles.label}>Primary Target Brand to Keep *</label>
+                  {isExactTargetMatch ? (
+                    <span style={{ fontSize: '11px', color: INTERACTIVE_REPORT_THEME.greenText, fontWeight: 700, display: 'inline-flex', alignItems: 'center', gap: '3px' }}>
+                      ✓ Existing Canonical Brand
+                    </span>
+                  ) : targetBrandName.trim() ? (
+                    <span style={{ fontSize: '11px', color: INTERACTIVE_REPORT_THEME.bluePrimaryStrong, fontWeight: 600 }}>
+                      ✨ Will create new canonical brand
+                    </span>
+                  ) : null}
                 </div>
-                <div style={{ maxHeight: '140px', overflowY: 'auto', border: '1px solid #e2e8f0', borderRadius: '8px', background: '#ffffff' }}>
-                  {allAvailableBrands
-                    .filter((b) => !mergeSources.includes(b))
-                    .map((b) => (
-                      <div
-                        key={b}
-                        onClick={() => setTargetBrandName(b)}
-                        style={{
-                          padding: '6px 12px',
-                          fontSize: '12px',
-                          cursor: 'pointer',
-                          background: targetBrandName === b ? '#eff6ff' : 'transparent',
-                          color: targetBrandName === b ? '#1d4ed8' : '#1e293b',
-                          fontWeight: targetBrandName === b ? 700 : 500,
-                          borderBottom: '1px solid #f1f5f9',
-                        }}
-                      >
-                        {targetBrandName === b ? '✓ ' : ''}{b}
+
+                <div style={{ position: 'relative' }}>
+                  <input
+                    type="text"
+                    required
+                    placeholder="Type to search and filter canonical brands (e.g. Tippmix, Nike)..."
+                    value={targetBrandName}
+                    onChange={(e) => setTargetBrandName(e.target.value)}
+                    className={styles.input}
+                    style={{ width: '100%', fontWeight: 600, paddingRight: targetBrandName ? '30px' : '12px' }}
+                    autoFocus
+                  />
+                  {targetBrandName && (
+                    <button
+                      type="button"
+                      onClick={() => setTargetBrandName('')}
+                      style={{
+                        position: 'absolute',
+                        right: '8px',
+                        top: '50%',
+                        transform: 'translateY(-50%)',
+                        background: 'transparent',
+                        border: 'none',
+                        color: INTERACTIVE_REPORT_THEME.slateLight,
+                        cursor: 'pointer',
+                        fontSize: '14px',
+                        padding: '2px',
+                      }}
+                      title="Clear input"
+                    >
+                      ✕
+                    </button>
+                  )}
+                </div>
+
+                {/* Predictive Filtered List */}
+                <div style={{ marginTop: '6px' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '11px', color: INTERACTIVE_REPORT_THEME.slateMuted, fontWeight: 600, marginBottom: '4px' }}>
+                    <span>
+                      {targetBrandName.trim()
+                        ? `Filtered Matching Brands (${filteredTargetBrands.length})`
+                        : `Available Canonical Brands (${candidateMergeBrands.length})`}
+                    </span>
+                    <span>Click brand to select</span>
+                  </div>
+
+                  <div style={{ maxHeight: '160px', overflowY: 'auto', border: `1px solid ${INTERACTIVE_REPORT_THEME.slateLightBorder}`, borderRadius: '8px', background: INTERACTIVE_REPORT_THEME.white }}>
+                    {filteredTargetBrands.length > 0 ? (
+                      filteredTargetBrands.map((b) => {
+                        const isSelected = targetBrandName.trim().toLowerCase() === b.toLowerCase();
+                        const hasConfiguredLogo = assets.some((a) => a.name.toLowerCase() === b.toLowerCase() && a.logoUrl);
+                        return (
+                          <div
+                            key={b}
+                            onClick={() => setTargetBrandName(b)}
+                            style={{
+                              padding: '8px 12px',
+                              fontSize: '12px',
+                              cursor: 'pointer',
+                              display: 'flex',
+                              alignItems: 'center',
+                              justifyContent: 'space-between',
+                              background: isSelected ? INTERACTIVE_REPORT_THEME.blueLight : 'transparent',
+                              color: isSelected ? INTERACTIVE_REPORT_THEME.bluePrimaryStrong : INTERACTIVE_REPORT_THEME.slateText,
+                              fontWeight: isSelected ? 700 : 500,
+                              borderBottom: `1px solid ${INTERACTIVE_REPORT_THEME.grayBorder}`,
+                              transition: 'background 0.1s ease',
+                            }}
+                          >
+                            <span style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                              {isSelected ? '✓ ' : '• '}
+                              <HighlightMatch text={b} query={targetBrandName.trim()} />
+                            </span>
+                            <span style={{ fontSize: '10px', color: hasConfiguredLogo ? INTERACTIVE_REPORT_THEME.greenPrimary : INTERACTIVE_REPORT_THEME.slateLight, fontWeight: 600 }}>
+                              {hasConfiguredLogo ? '🖼️ Verified Logo' : 'Pending Logo'}
+                            </span>
+                          </div>
+                        );
+                      })
+                    ) : (
+                      <div style={{ padding: '14px', textAlign: 'center', fontSize: '12px', color: INTERACTIVE_REPORT_THEME.slateMuted }}>
+                        <div>No existing brand matches &quot;<strong>{targetBrandName}</strong>&quot;</div>
+                        <div style={{ fontSize: '11px', color: INTERACTIVE_REPORT_THEME.slateLight, marginTop: '3px' }}>
+                          Merging will establish &quot;{targetBrandName}&quot; as a new canonical brand and map source aliases to it.
+                        </div>
                       </div>
-                    ))}
+                    )}
+                  </div>
                 </div>
               </div>
 
@@ -815,7 +965,7 @@ export default function BrandAssetsAdminPage() {
                   type="submit"
                   disabled={saving || !targetBrandName.trim()}
                   className={styles.saveBtn}
-                  style={{ background: '#2563eb' }}
+                  style={{ background: INTERACTIVE_REPORT_THEME.bluePrimary }}
                 >
                   {saving ? 'Merging & Retraining...' : `Confirm Merge into "${targetBrandName || 'Target'}"`}
                 </button>
@@ -837,24 +987,111 @@ export default function BrandAssetsAdminPage() {
             </div>
 
             <form onSubmit={handleExecuteMoveToClub} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-              <div style={{ background: '#fdf2f8', padding: '12px 16px', borderRadius: '8px', border: '1px solid #fbcfe8', fontSize: '13px', lineHeight: 1.5, color: '#831843' }}>
-                <div style={{ fontWeight: 700, color: '#9d174d', marginBottom: '4px' }}>
+              <div style={{ background: INTERACTIVE_REPORT_THEME.pinkBg, padding: '12px 16px', borderRadius: '8px', border: `1px solid ${INTERACTIVE_REPORT_THEME.pinkBorder}`, fontSize: '13px', lineHeight: 1.5, color: INTERACTIVE_REPORT_THEME.pinkText }}>
+                <div style={{ fontWeight: 700, color: INTERACTIVE_REPORT_THEME.pinkDark, marginBottom: '4px' }}>
                   🏟️ Entity Reclassification (Brand ➔ Sports Club)
                 </div>
                 If &quot;<strong>{movingBrand}</strong>&quot; is actually a sports club, team, or jersey crest (rather than a corporate sponsor), moving it here will transfer all sightings into the <strong>Club Allegiance &amp; Jersey Detection Matrix</strong> and instruct the AI vision worker to classify it as a sports club in all future photos.
               </div>
 
               <div className={styles.formGroup}>
-                <label className={styles.label}>Official Sports Club Name *</label>
-                <input
-                  type="text"
-                  required
-                  value={targetClubName}
-                  onChange={(e) => setTargetClubName(e.target.value)}
-                  placeholder="e.g. Hydro Fehérvár AV19, Soproni KC, DVTK"
-                  className={styles.input}
-                  style={{ fontWeight: 600 }}
-                />
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <label className={styles.label}>Official Sports Club Name *</label>
+                  {isExactClubMatch ? (
+                    <span style={{ fontSize: '11px', color: INTERACTIVE_REPORT_THEME.greenText, fontWeight: 700 }}>
+                      ✓ Verified Hungarian Sports Club
+                    </span>
+                  ) : targetClubName.trim() ? (
+                    <span style={{ fontSize: '11px', color: INTERACTIVE_REPORT_THEME.pinkDeep, fontWeight: 600 }}>
+                      🏟️ Custom Club Name
+                    </span>
+                  ) : null}
+                </div>
+
+                <div style={{ position: 'relative' }}>
+                  <input
+                    type="text"
+                    required
+                    value={targetClubName}
+                    onChange={(e) => setTargetClubName(e.target.value)}
+                    placeholder="Type to filter clubs (e.g. Fehérvár, DVTK, Soproni KC)..."
+                    className={styles.input}
+                    style={{ width: '100%', fontWeight: 600, paddingRight: targetClubName ? '30px' : '12px' }}
+                    autoFocus
+                  />
+                  {targetClubName && (
+                    <button
+                      type="button"
+                      onClick={() => setTargetClubName('')}
+                      style={{
+                        position: 'absolute',
+                        right: '8px',
+                        top: '50%',
+                        transform: 'translateY(-50%)',
+                        background: 'transparent',
+                        border: 'none',
+                        color: INTERACTIVE_REPORT_THEME.slateLight,
+                        cursor: 'pointer',
+                        fontSize: '14px',
+                        padding: '2px',
+                      }}
+                      title="Clear input"
+                    >
+                      ✕
+                    </button>
+                  )}
+                </div>
+
+                {/* Predictive Filtered List of Clubs */}
+                <div style={{ marginTop: '6px' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '11px', color: INTERACTIVE_REPORT_THEME.slateMuted, fontWeight: 600, marginBottom: '4px' }}>
+                    <span>
+                      {targetClubName.trim()
+                        ? `Filtered Matching Clubs (${filteredTargetClubs.length})`
+                        : `Known Sports Clubs (${allKnownClubs.length})`}
+                    </span>
+                    <span>Click club to select</span>
+                  </div>
+
+                  <div style={{ maxHeight: '160px', overflowY: 'auto', border: `1px solid ${INTERACTIVE_REPORT_THEME.slateLightBorder}`, borderRadius: '8px', background: INTERACTIVE_REPORT_THEME.white }}>
+                    {filteredTargetClubs.length > 0 ? (
+                      filteredTargetClubs.map((club) => {
+                        const isSelected = targetClubName.trim().toLowerCase() === club.toLowerCase();
+                        return (
+                          <div
+                            key={club}
+                            onClick={() => setTargetClubName(club)}
+                            style={{
+                              padding: '8px 12px',
+                              fontSize: '12px',
+                              cursor: 'pointer',
+                              display: 'flex',
+                              alignItems: 'center',
+                              justifyContent: 'space-between',
+                              background: isSelected ? INTERACTIVE_REPORT_THEME.pinkBg : 'transparent',
+                              color: isSelected ? INTERACTIVE_REPORT_THEME.pinkDeep : INTERACTIVE_REPORT_THEME.slateText,
+                              fontWeight: isSelected ? 700 : 500,
+                              borderBottom: `1px solid ${INTERACTIVE_REPORT_THEME.grayBorder}`,
+                              transition: 'background 0.1s ease',
+                            }}
+                          >
+                            <span style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                              {isSelected ? '✓ ' : '🏟️ '}
+                              <HighlightMatch text={club} query={targetClubName.trim()} />
+                            </span>
+                          </div>
+                        );
+                      })
+                    ) : (
+                      <div style={{ padding: '14px', textAlign: 'center', fontSize: '12px', color: INTERACTIVE_REPORT_THEME.slateMuted }}>
+                        <div>No known sports club matches &quot;<strong>{targetClubName}</strong>&quot;</div>
+                        <div style={{ fontSize: '11px', color: INTERACTIVE_REPORT_THEME.slateLight, marginTop: '2px' }}>
+                          Moving will register &quot;{targetClubName}&quot; as a new custom club in the allegiance matrix.
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </div>
               </div>
 
               <div className={styles.modalFooter}>
@@ -869,7 +1106,7 @@ export default function BrandAssetsAdminPage() {
                   type="submit"
                   disabled={saving || !targetClubName.trim()}
                   className={styles.saveBtn}
-                  style={{ background: '#be185d' }}
+                  style={{ background: INTERACTIVE_REPORT_THEME.pinkDeep }}
                 >
                   {saving ? 'Reclassifying...' : `Move to Sports Clubs ➔`}
                 </button>

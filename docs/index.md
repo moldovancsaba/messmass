@@ -23,6 +23,8 @@ Task-oriented, end-user tutorials for creating and managing the core objects and
 - Integrations: [Camera app](guides/guides-tutorial-camera-app.md) · [Fanmass & AI Analytics](guides/guides-tutorial-fanmass.md) · [Bitly](guides/guides-tutorial-bitly.md) · [Sport databases](guides/guides-tutorial-sport-databases.md) · [Google Sheets](guides/guides-tutorial-google-sheets.md) · [Authentication & SSO](guides/guides-tutorial-authentication-sso.md)
 
 ## Operations & Delivery
+
+- [Project board review and manual movement / Scrum journal](operations/project-board-movement-log.md) — read-only observations, unresolved metadata and owner-action notes.
 - [operations-action-plan.md](operations/operations-action-plan.md) — Tactical queue for ops, sprint goals, and blockers.
 - [operations-delivery-focus.md](operations/operations-delivery-focus.md) — Top 5 value/priority board issues and recommended next delivery step.
 - [operations-release-notes.md](operations/operations-release-notes.md) — Shipped version history and release summaries.

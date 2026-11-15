@@ -99,6 +99,37 @@ const nextConfig = {
         destination: '/filter/:hashtag',
         permanent: true, // 301 redirect for SEO preservation
       },
+      {
+        source: '/interactive-report/szrt',
+        destination: '/report/hashtag/tippmixreport2026',
+        permanent: true,
+      },
+    ];
+  },
+  // Universal Interactive Report Aliases (Day 4 Deliverable)
+  async rewrites() {
+    return [
+      {
+        source: '/report/hashtag/:hashtag*',
+        destination: '/interactive-report/hashtag/:hashtag*',
+      },
+      {
+        source: '/report/filter/:slug*',
+        destination: '/interactive-report/filter/:slug*',
+      },
+      {
+        // Everything Messmass collects, in the same report as a hashtag, partner or event (behind a page password)
+        source: '/report/global',
+        destination: '/interactive-report/global',
+      },
+      {
+        source: '/report/partner/:slug*',
+        destination: '/interactive-report/partner/:slug*',
+      },
+      {
+        source: '/report/event/:id*',
+        destination: '/interactive-report/event/:id*',
+      },
     ];
   },
   // WHAT: Aggressive cache-busting headers for HTML and assets

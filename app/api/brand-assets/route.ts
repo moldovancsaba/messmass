@@ -7,6 +7,9 @@ import { NextRequest, NextResponse } from 'next/server';
 import clientPromise from '@/lib/mongodb';
 import config from '@/lib/config';
 import { ObjectId } from 'mongodb';
+import { requireSession } from '@/lib/apiGuards';
+import { CHART_COLOR } from '@/lib/theme/chartPalette';
+import { isSportFranchise, canonicalizeClub, isVenue } from '@/lib/brandEntityClustering';
 
 export const dynamic = 'force-dynamic';
 
@@ -23,16 +26,29 @@ function slugify(name: string): string {
  * Returns all registered brand assets, augmented with any brands discovered by Fanmass Vision.
  */
 export async function GET() {
+  const authError = await requireSession();
+  if (authError) return authError;
+
   try {
     const client = await clientPromise;
     const db = client.db(config.dbName);
 
-    // 1. Fetch all registered brand assets
-    const registeredAssets = await db
-      .collection('brand_assets')
-      .find({})
-      .sort({ name: 1 })
-      .toArray();
+    // 1. Fetch all registered brand assets and mappings
+    const [registeredAssets, canonicalMappings, reclassifiedClubs] = await Promise.all([
+      db.collection('brand_assets').find({}).sort({ name: 1 }).toArray(),
+      db.collection('brand_canonical_mappings').find({}).toArray(),
+      db.collection('reclassified_clubs').find({}).toArray(),
+    ]);
+
+    const mappedAliases = new Set<string>();
+    for (const m of canonicalMappings) {
+      if (m.alias) mappedAliases.add(m.alias.toLowerCase().trim());
+    }
+
+    const reclassifiedSet = new Set<string>();
+    for (const r of reclassifiedClubs) {
+      if (r.name) reclassifiedSet.add(r.name.toLowerCase().trim());
+    }
 
     // 2. Discover brands from Vision progress (to show newly detected brands needing logos)
     const visionDoc =
@@ -48,31 +64,45 @@ export async function GET() {
       }
     }
 
-    // Map registered by slug
+    // Map registered by slug and alias
     const registeredSlugMap = new Map<string, any>();
     for (const asset of registeredAssets) {
       registeredSlugMap.set(asset.canonicalSlug, asset);
+      registeredSlugMap.set(slugify(asset.name), asset);
+      registeredSlugMap.set(asset.name.toLowerCase().trim(), asset);
       if (asset.aliases && Array.isArray(asset.aliases)) {
         for (const alias of asset.aliases) {
           registeredSlugMap.set(slugify(alias), asset);
+          registeredSlugMap.set(alias.toLowerCase().trim(), asset);
         }
       }
     }
 
-    // Merge discovered brands that don't have an asset yet
+    // Merge discovered brands that don't have an asset yet (and aren't clubs/venues/noise)
     const unconfigured: any[] = [];
     for (const brand of discoveredBrands) {
       const slug = slugify(brand);
-      if (!registeredSlugMap.has(slug)) {
-        unconfigured.push({
-          name: brand,
-          canonicalSlug: slug,
-          aliases: [brand.toLowerCase()],
-          logoUrl: '',
-          darkLogoUrl: '',
-          isDiscovered: true,
-        });
+      const bLow = brand.toLowerCase().trim();
+      if (
+        registeredSlugMap.has(slug) ||
+        registeredSlugMap.has(bLow) ||
+        mappedAliases.has(bLow) ||
+        reclassifiedSet.has(bLow) ||
+        isSportFranchise(brand) ||
+        isVenue(brand) ||
+        canonicalizeClub(brand)
+      ) {
+        continue;
       }
+
+      unconfigured.push({
+        name: brand,
+        canonicalSlug: slug,
+        aliases: [bLow],
+        logoUrl: '',
+        darkLogoUrl: '',
+        isDiscovered: true,
+      });
     }
 
     return NextResponse.json({
@@ -93,6 +123,9 @@ export async function GET() {
  * Create or update a brand asset with its official logo URL.
  */
 export async function POST(request: NextRequest) {
+  const authError = await requireSession();
+  if (authError) return authError;
+
   try {
     const client = await clientPromise;
     const db = client.db(config.dbName);
@@ -223,7 +256,7 @@ export async function POST(request: NextRequest) {
               logoUrl: targetAsset?.logoUrl || '',
               darkLogoUrl: targetAsset?.darkLogoUrl || '',
               category: 'sponsor',
-              accentColor: '#1e3a8a',
+              accentColor: CHART_COLOR.blueDark,
             },
           },
           { upsert: true }
@@ -244,7 +277,7 @@ export async function POST(request: NextRequest) {
           );
           await db.collection('szrt_vision_analysis').updateMany(
             { brands: src },
-            { $pull: { brands: src } }
+            { $pull: { brands: src } as any }
           );
         }
 
