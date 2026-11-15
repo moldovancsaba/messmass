@@ -11,13 +11,14 @@ import { useRouter } from 'next/navigation'
 import { AuthShell } from '@sovereignsquad/gds-core/client'
 import { Button, Stack, Text } from '@mantine/core'
 
+// WHAT: One entry per code that app/api/auth/sso/callback/route.ts, app/api/auth/sso/login/route.ts and middleware.ts
+//     (reason=sso_required) send here. sso_oauth_error (the SSO provider itself answered with an error) has no entry, so it
+//     shows the generic "Sign-in failed" text below.
 const ERROR_MESSAGES = new Map<string, string>([
   ['sso_required', 'Please sign in with DoneIsBetter to access the dashboard.'],
   ['no_access', 'Your account does not have access to {messmass} yet. Contact an admin to request access.'],
-  ['invalid_sso', 'Sign-in session expired or invalid. Please try again.'],
   ['session_expired', 'Sign-in session expired or invalid. Please try again.'],
   ['auth_failed', 'Sign-in session expired or invalid. Please try again.'],
-  ['missing_token', 'SSO did not return a token. Please try again.'],
   ['missing_code', 'SSO did not return a token. Please try again.'],
   ['sso_not_configured', 'SSO is not configured. Contact an administrator.'],
   ['permission_check_failed', 'Could not verify your access with SSO. Please try again.'],

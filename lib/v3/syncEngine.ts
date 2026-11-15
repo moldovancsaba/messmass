@@ -14,6 +14,16 @@ import mongoose from 'mongoose';
 const MASTER_ORG_ID = '69b322e0cb8e841f95de9aa1';
 
 /**
+ * WHAT: A copy of a value from the V2 collections that holds only plain JSON types (ids and dates become text).
+ * WHY: V2 documents are read by the raw MongoDB driver (bson 6) and written here by mongoose (bson 7). Mongoose casts the
+ *   typed fields (_id, organizationId) itself, but an ObjectId inside an untyped field (metadata) keeps its bson 6 type
+ *   and the write fails with "Unsupported BSON version" (49 failed project syncs and 4 failed partner syncs in a week).
+ */
+export function plain<T>(value: T): T {
+  return value === undefined ? value : JSON.parse(JSON.stringify(value));
+}
+
+/**
  * Syncs a V2 Partner to a V3 Entity
  */
 export async function syncPartnerToV3Entity(v2Partner: any) {
@@ -24,7 +34,7 @@ export async function syncPartnerToV3Entity(v2Partner: any) {
     
     // WHAT: Check for existing entity to prevent overwriting manual org assignments
     // WHY: Superadmins might have moved this partner to a specific V3 Organization
-    const existing = await V3Entity.findById(v2Partner._id).lean();
+    const existing = await V3Entity.findById(partnerId).lean();
     let orgIdToSet = new mongoose.Types.ObjectId(MASTER_ORG_ID);
     
     if (existing && existing.organizationId && existing.organizationId.toString() !== MASTER_ORG_ID) {
@@ -32,7 +42,7 @@ export async function syncPartnerToV3Entity(v2Partner: any) {
     }
 
     await V3Entity.findOneAndUpdate(
-      { _id: v2Partner._id },
+      { _id: new mongoose.Types.ObjectId(partnerId) },
       {
         $set: {
           organizationId: orgIdToSet,
@@ -41,10 +51,10 @@ export async function syncPartnerToV3Entity(v2Partner: any) {
             originalId: partnerId,
             emoji: v2Partner.emoji || '🎯',
             description: v2Partner.description || '',
-            tags: v2Partner.tags || [],
+            tags: plain(v2Partner.tags) || [],
             logoUrl: v2Partner.logoUrl,
-            sportsDb: v2Partner.sportsDb,
-            footballData: v2Partner.footballData,
+            sportsDb: plain(v2Partner.sportsDb),
+            footballData: plain(v2Partner.footballData),
             viewSlug: v2Partner.viewSlug,
             styleId: v2Partner.styleId?.toString(),
             reportTemplateId: v2Partner.reportTemplateId?.toString(),
@@ -79,7 +89,7 @@ export async function syncProjectToV3Activity(v2Project: any) {
     // WHAT: Inherit organization from primary partner
     // WHY: Activities belong to the organization of their owner entity
     if (v2Project.partner1Id) {
-      const ownerEntity = await V3Entity.findById(v2Project.partner1Id).lean();
+      const ownerEntity = await V3Entity.findById(String(v2Project.partner1Id)).lean();
       if (ownerEntity && ownerEntity.organizationId) {
         orgIdToSet = ownerEntity.organizationId;
       }
@@ -95,12 +105,12 @@ export async function syncProjectToV3Activity(v2Project: any) {
           startDate: v2Project.eventDate ? new Date(v2Project.eventDate) : new Date(),
           metadata: {
             originalId: projectId,
-            hashtags: v2Project.hashtags || [],
-            categorizedHashtags: v2Project.categorizedHashtags || {},
+            hashtags: plain(v2Project.hashtags) || [],
+            categorizedHashtags: plain(v2Project.categorizedHashtags) || {},
             reportTemplateId: v2Project.reportTemplateId?.toString(),
             styleIdEnhanced: v2Project.styleIdEnhanced?.toString(),
             viewSlug: v2Project.viewSlug,
-            stats: v2Project.stats,
+            stats: plain(v2Project.stats),
             originalData: JSON.parse(JSON.stringify(v2Project))
           }
         },

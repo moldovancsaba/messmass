@@ -22,17 +22,17 @@ Cloudflare R2 is the fleet CDN standard across `camera` and `messmass`:
 ## Upload Flow (Future Report Editing)
 
 1. **Browser Uploads:**
-   - User selects an image in [`components/ImageUploader.tsx`](file:///Users/Shared/Projects/messmass/components/ImageUploader.tsx), [`components/ImageUploadField.tsx`](file:///Users/Shared/Projects/messmass/components/ImageUploadField.tsx), or [`components/ReportContentManager.tsx`](file:///Users/Shared/Projects/messmass/components/ReportContentManager.tsx).
-   - Component calls [`lib/imgbbClientUpload.ts`](file:///Users/Shared/Projects/messmass/lib/imgbbClientUpload.ts) (`uploadImageToImgbb`).
+   - User selects an image in [`components/ImageUploader.tsx`](../../components/ImageUploader.tsx), [`components/ImageUploadField.tsx`](../../components/ImageUploadField.tsx), or [`components/ReportContentManager.tsx`](../../components/ReportContentManager.tsx).
+   - Component calls [`lib/imgbbClientUpload.ts`](../../lib/imgbbClientUpload.ts) (`uploadImageToImgbb`).
    - The file is sent via `POST /api/media/upload` with CSRF protection.
    - The route handler validates the session, processes the image with `sharp`, content-hashes (SHA-256), and writes to R2 bucket `messmass-logos` via the Cloudflare R2 REST API.
    - If `IMGBB_API_KEY` is present, a background mirror is triggered concurrently with a 5-second timeout; failures in ImgBB never block or fail the R2 response.
    - The public R2 URL (`https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/...`) is returned and saved into the database.
 
 2. **Server-Side URL Ingestion & Partner Logos:**
-   - [`lib/mediaStorage.ts`](file:///Users/Shared/Projects/messmass/lib/mediaStorage.ts) (`storeMedia`, `rehostMedia`) and [`lib/imgbbApi.ts`](file:///Users/Shared/Projects/messmass/lib/imgbbApi.ts) (`uploadImageFromUrl`, `uploadPartnerBadge`) rehost external images directly into R2.
-   - [`app/admin/partners/page.tsx`](file:///Users/Shared/Projects/messmass/app/admin/partners/page.tsx) checks `isR2HostedUrl(url)` (`https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev`) so any external logo URL (including `ibb.co`) is rehosted to R2 on save.
-   - [`app/report/[slug]/ReportContent.tsx`](file:///Users/Shared/Projects/messmass/app/report/[slug]/ReportContent.tsx) and [`app/report/[slug]/ReportChart.tsx`](file:///Users/Shared/Projects/messmass/app/report/[slug]/ReportChart.tsx) treat empty or `/assets/placeholders/image-missing.svg` values as absent so unpopulated image slots are cleanly omitted instead of rendering placeholder icons.
+   - [`lib/mediaStorage.ts`](../../lib/mediaStorage.ts) (`storeMedia`, `rehostMedia`) and [`lib/imgbbApi.ts`](../../lib/imgbbApi.ts) (`uploadImageFromUrl`, `uploadPartnerBadge`) rehost external images directly into R2.
+   - [`app/admin/partners/page.tsx`](../../app/admin/partners/page.tsx) checks `isR2HostedUrl(url)` (`https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev`) so any external logo URL (including `ibb.co`) is rehosted to R2 on save.
+   - [`app/report/[slug]/ReportContent.tsx`](../../app/report/[slug]/ReportContent.tsx) and [`app/report/[slug]/ReportChart.tsx`](../../app/report/[slug]/ReportChart.tsx) treat empty or `/assets/placeholders/image-missing.svg` values as absent so unpopulated image slots are cleanly omitted instead of rendering placeholder icons.
 
 ## Historical Migration, Cold-Storage Recovery & Rollback
 

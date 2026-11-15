@@ -48,6 +48,17 @@ export default function MatchesTable({ matches }: MatchesTableProps) {
       });
   }, [matches, search, selectedSport, sortBy, sortDesc]);
 
+  // Sport filter pills come from the sports present in the data.
+  const sportOptions = useMemo(() => {
+    const counts = new Map<string, number>();
+    for (const m of matches) {
+      if (m.sport) counts.set(m.sport, (counts.get(m.sport) || 0) + 1);
+    }
+    return Array.from(counts.entries())
+      .sort((a, b) => b[1] - a[1])
+      .map(([sport]) => sport);
+  }, [matches]);
+
   const totalPages = Math.ceil(filteredMatches.length / pageSize) || 1;
   const pagedMatches = filteredMatches.slice((page - 1) * pageSize, page * pageSize);
 
@@ -66,10 +77,10 @@ export default function MatchesTable({ matches }: MatchesTableProps) {
       <div className={styles.tableHeaderWrap}>
         <div>
           <h3 className={styles.cardTitle}>
-            📋 All Activated Matches & Events ({filteredMatches.length})
+            📋 All Events ({filteredMatches.length})
           </h3>
           <p className={styles.cardSubtitle}>
-            Comprehensive breakdown of every Szerencsejáték Zrt. sponsored sports activation.
+            Breakdown of every event in this report.
           </p>
         </div>
 
@@ -86,21 +97,23 @@ export default function MatchesTable({ matches }: MatchesTableProps) {
             className={styles.searchInput}
           />
 
-          {/* Sport Pills */}
-          <div className={styles.actionsGroup}>
-            {['All', 'Football', 'Ice Hockey', 'Basketball', 'Handball'].map((sport) => (
-              <button
-                key={sport}
-                onClick={() => {
-                  setSelectedSport(sport);
-                  setPage(1);
-                }}
-                className={`${styles.tabBtn} ${selectedSport === sport ? styles.tabBtnActive : ''}`}
-              >
-                {sport}
-              </button>
-            ))}
-          </div>
+          {/* Sport Pills: only offered when the data holds more than one sport */}
+          {sportOptions.length > 1 && (
+            <div className={styles.actionsGroup}>
+              {['All', ...sportOptions].map((sport) => (
+                <button
+                  key={sport}
+                  onClick={() => {
+                    setSelectedSport(sport);
+                    setPage(1);
+                  }}
+                  className={`${styles.tabBtn} ${selectedSport === sport ? styles.tabBtnActive : ''}`}
+                >
+                  {sport}
+                </button>
+              ))}
+            </div>
+          )}
         </div>
       </div>
 
@@ -136,7 +149,7 @@ export default function MatchesTable({ matches }: MatchesTableProps) {
               >
                 Hostess {sortBy === 'hostess' ? (sortDesc ? '↓' : '↑') : ''}
               </th>
-              <th className={styles.thCell}>Brand Pass</th>
+              <th className={styles.thCell}>Approval</th>
             </tr>
           </thead>
           <tbody>
@@ -164,7 +177,7 @@ export default function MatchesTable({ matches }: MatchesTableProps) {
                 </td>
                 <td className={styles.thCell}>
                   <div>{m.partnerName || '—'}</div>
-                  <div className={styles.cardSubtitle}>{m.venue}</div>
+                  {m.venue && <div className={styles.cardSubtitle}>{m.venue}</div>}
                 </td>
                 <td className={`${styles.thCell} ${styles.matchTitle}`}>
                   {m.submitted}
@@ -173,12 +186,19 @@ export default function MatchesTable({ matches }: MatchesTableProps) {
                   {m.approved}
                 </td>
                 <td className={styles.thCell}>
-                  {m.hostess} <span className={styles.cardSubtitle}>({m.submitted > 0 ? Math.round((m.hostess / m.submitted) * 100) : 0}%)</span>
+                  {m.hostess}{' '}
+                  <span className={styles.cardSubtitle}>
+                    ({m.submitted > 0 ? `${Math.round((m.hostess / m.submitted) * 100)}%` : 'n/a'})
+                  </span>
                 </td>
                 <td className={styles.thCell}>
-                  <span className={m.approvalRate >= 95 ? styles.brandPassHigh : styles.brandPassMed}>
-                    {m.approvalRate}%
-                  </span>
+                  {m.submitted > 0 ? (
+                    <span className={m.approvalRate >= 95 ? styles.brandPassHigh : styles.brandPassMed}>
+                      {m.approvalRate}%
+                    </span>
+                  ) : (
+                    <span className={styles.cardSubtitle}>n/a</span>
+                  )}
                 </td>
               </tr>
             ))}
@@ -189,7 +209,9 @@ export default function MatchesTable({ matches }: MatchesTableProps) {
       {/* Pagination Controls */}
       <div className={styles.paginationBar}>
         <div>
-          Showing {(page - 1) * pageSize + 1} to {Math.min(page * pageSize, filteredMatches.length)} of {filteredMatches.length} activations
+          {filteredMatches.length > 0
+            ? `Showing ${(page - 1) * pageSize + 1} to ${Math.min(page * pageSize, filteredMatches.length)} of ${filteredMatches.length} events`
+            : 'No events to show'}
         </div>
         <div className={styles.actionsGroup}>
           <button

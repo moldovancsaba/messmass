@@ -1,3 +1,5 @@
+import type { CameraProofEntry } from '@/lib/hashtagReport/cameraProof';
+
 export interface MatchItem {
   id: string;
   matchName: string;
@@ -34,7 +36,7 @@ export interface TimelinePeriod {
   selfies: number;
   registered: number;
   optIns: number;
-  optInRate: number;
+  optInRate: number | null;
   qr: number;
   url: number;
   social: number;
@@ -64,9 +66,8 @@ export interface DemographicsData {
   totalAudience: number;
   maleRatio: number;
   femaleRatio: number;
+  /** Age groups as measured by the vision analysis (children/teens/adults/seniors). Empty when nothing was measured. */
   generations: Array<{ label: string; percent: number; count: number }>;
-  merchAdoption: number;
-  stadiumAtmosphere: number;
 }
 
 export interface VisionProgressData {
@@ -77,6 +78,8 @@ export interface VisionProgressData {
   currentSport: string;
   currentFile: string;
   lastUpdated: string;
+  /** Photos with a recorded opt-in, as Fanmass counted them; absent until Fanmass sends it. */
+  optInImages?: number;
   aggregates: {
     totalPeople: number;
     genders: {
@@ -113,6 +116,7 @@ export interface VisionProgressData {
     }>;
     topVenues?: Array<{ venue: string; count: number }>;
     topEmotions: Array<{ emotion: string; count: number }>;
+    merchandise?: Array<{ item: string; count: number; percentage: number }>;
     sportsBreakdown: Record<
       string,
       {
@@ -130,9 +134,15 @@ export interface VisionProgressData {
           adults: number;
           seniors: number;
         };
+        topBrands?: Array<{ brand: string; count: number; logoUrl?: string }>;
+        distinctBrandsCount?: number;
+        topEmotions?: Array<{ emotion: string; count: number }>;
+        valence?: number;
       }
     >;
   };
+  /** Brands and clubs Fanmass read from Camera photos, with the text that proves each one (lib/hashtagReport/cameraProof.ts). */
+  cameraProof?: CameraProofEntry[];
   recentImages: Array<{
     fileName: string;
     sport: string;
@@ -144,8 +154,20 @@ export interface VisionProgressData {
   }>;
 }
 
+export interface ScopeHeader {
+  type: 'hashtag' | 'partner' | 'event' | 'global' | 'filter';
+  id: string;
+  name: string;
+  viewSlug?: string;
+  emoji?: string;
+  subtitle?: string;
+  organizationId?: string;
+  hashtags?: string[];
+}
+
 export interface InteractiveReportData {
   success: boolean;
+  scope?: ScopeHeader;
   partner: {
     id: string;
     name: string;
@@ -166,8 +188,10 @@ export interface InteractiveReportData {
     selfieShare: number;
     totalRegistered: number;
     totalOptIns: number;
-    optInRate: number;
-    brandProtectionRate: number;
+    /** Opt-ins / registered, null when there are no registrations to divide by. */
+    optInRate: number | null;
+    /** Approved / submitted in photo vetting, null when nothing was submitted. Not a brand-safety measure. */
+    vettingApprovalRate: number | null;
     totalCtaClicks: number;
     totalMatches: number;
     touchpoints: {
@@ -180,6 +204,6 @@ export interface InteractiveReportData {
   matches: MatchItem[];
   sports: SportBreakdown[];
   funnel: FunnelStep[];
-  demographics: DemographicsData;
+  demographics: DemographicsData | null;
   vision?: VisionProgressData | null;
 }

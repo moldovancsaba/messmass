@@ -119,6 +119,7 @@ const KNOWN_UNGUARDED_READS = new Set<string>([
   'app/api/organizations/report/[id]/activities/route.ts',
   'app/api/organizations/report/[id]/route.ts',
   'app/api/interactive-report/[partnerSlug]/route.ts',
+  'app/api/interactive-report/brand-evidence/route.ts',
   'app/api/interactive-report/partner-selfies/route.ts',
   'app/api/partners/report/[slug]/route.ts',
   'app/api/report-config/[identifier]/route.ts',

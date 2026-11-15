@@ -3,12 +3,15 @@
 
 import React, { useState, useMemo } from 'react';
 import BrandLogo from './BrandLogo';
+import BrandDetailModal, { type BrandDetailStat } from './BrandDetailModal';
 import {
   getBrandCluster,
   isSportFranchise,
   isVenue,
+  mergeBrandVariants,
   BrandClusterId,
 } from '@/lib/brandEntityClustering';
+import type { CameraProofEntry } from '@/lib/hashtagReport/cameraProof';
 import styles from './interactive-report.module.css';
 
 interface BrandStat {
@@ -23,7 +26,8 @@ interface BrandStat {
 interface FanmassBrandsMatrixProps {
   brands: BrandStat[];
   totalPhotosProcessed: number;
-  totalImages?: number;
+  /** The names read in the report's Camera photos with their proof (vision.cameraProof). */
+  cameraProof?: CameraProofEntry[];
 }
 
 type ClusterFilter = 'all' | BrandClusterId;
@@ -31,19 +35,22 @@ type ClusterFilter = 'all' | BrandClusterId;
 export default function FanmassBrandsMatrix({
   brands: rawBrands,
   totalPhotosProcessed,
-  totalImages = 11312,
+  cameraProof,
 }: FanmassBrandsMatrixProps) {
   const [filter, setFilter] = useState<ClusterFilter>('all');
   const [searchQuery, setSearchQuery] = useState('');
   const [isExpanded, setIsExpanded] = useState(false);
+  // The brand whose proof photos are open (the same window the overview opens: crops with the box where the name was read)
+  const [proofOf, setProofOf] = useState<BrandDetailStat | null>(null);
 
   // 1. Strict separation: Filter out sport franchises and arenas/venues completely
   const commercialBrands = useMemo(() => {
-    return rawBrands.filter((b) => {
+    const filtered = rawBrands.filter((b) => {
       if (!b.brand || b.brand.trim().length <= 1) return false;
       if (isSportFranchise(b.brand) || isVenue(b.brand)) return false;
       return true;
     });
+    return mergeBrandVariants(filtered);
   }, [rawBrands]);
 
   const maxCount = useMemo(() => {
@@ -102,9 +109,6 @@ export default function FanmassBrandsMatrix({
     return filteredBrands.slice(0, 24);
   }, [filteredBrands, isExpanded, searchQuery, filter]);
 
-  const isProgressing = totalPhotosProcessed > 0 && totalPhotosProcessed < totalImages;
-  const multiplier = isProgressing ? totalImages / totalPhotosProcessed : 1;
-
   return (
     <div className={styles.reportCard}>
       <div className={styles.cardHeader}>
@@ -129,7 +133,7 @@ export default function FanmassBrandsMatrix({
             🏷️ Commercial Brands &amp; Corporate Sponsor Clusters
           </h3>
           <p className={styles.cardSubtitle}>
-            Exhaustive empirical identification of corporate sponsors, title partners, kit apparel, beverage FMCG, and automotive partners. Sport franchises and match arenas (such as Novomatic Aréna Sopron) are classified separately in the Sport Franchises section below.
+            Corporate sponsors, title partners, kit apparel, beverage FMCG, and automotive brands identified in the analysed photos. Sport franchises and match arenas are classified separately in the Sport Franchises section.
           </p>
         </div>
 
@@ -153,7 +157,7 @@ export default function FanmassBrandsMatrix({
               onClick={() => setFilter('apparel')}
               className={`${styles.granularityBtn} ${filter === 'apparel' ? styles.granularityBtnActive : ''}`}
             >
-              👕 Kit &amp; Apparel ({clusterCounts.apparel})
+              🏷️ Unclassified ({clusterCounts.apparel})
             </button>
             <button
               onClick={() => setFilter('corporate')}
@@ -238,8 +242,8 @@ export default function FanmassBrandsMatrix({
             const cluster = getBrandCluster(item.brand);
             const shareOfPhotos =
               totalPhotosProcessed > 0
-                ? ((item.count / totalPhotosProcessed) * 100).toFixed(1)
-                : '0';
+                ? `${((item.count / totalPhotosProcessed) * 100).toFixed(1)}%`
+                : 'n/a';
             const barWidth = Math.max(8, Math.round((item.count / maxCount) * 100));
 
             return (
@@ -279,18 +283,11 @@ export default function FanmassBrandsMatrix({
                 <div className={styles.brandMetricsRow}>
                   <div className={styles.brandMetricItem}>
                     <span className={styles.brandMetricLabel}>Sightings</span>
-                    <span className={styles.brandMetricVal}>
-                      {item.count.toLocaleString()}
-                      {isProgressing && (
-                        <span className={styles.estPill}>
-                          {' '}(est. {Math.round(item.count * multiplier).toLocaleString()})
-                        </span>
-                      )}
-                    </span>
+                    <span className={styles.brandMetricVal}>{item.count.toLocaleString()}</span>
                   </div>
                   <div className={styles.brandMetricItem} style={{ textAlign: 'right' }}>
                     <span className={styles.brandMetricLabel}>Photo Exposure</span>
-                    <span className={styles.brandMetricVal}>{shareOfPhotos}%</span>
+                    <span className={styles.brandMetricVal}>{shareOfPhotos}</span>
                   </div>
                 </div>
 
@@ -304,6 +301,9 @@ export default function FanmassBrandsMatrix({
                     }}
                   />
                 </div>
+                <button type="button" className={styles.brandProofBtn} onClick={() => setProofOf(item)}>
+                  🔍 See the photos
+                </button>
               </div>
             );
           })}
@@ -335,6 +335,8 @@ export default function FanmassBrandsMatrix({
           </button>
         </div>
       )}
+
+      <BrandDetailModal brand={proofOf} totalPhotosProcessed={totalPhotosProcessed} onClose={() => setProofOf(null)} cameraProof={cameraProof} />
     </div>
   );
 }

@@ -110,6 +110,20 @@ export const adminNavSections: AdminNavSection[] = [
         description: 'Upload and maintain unified official brand logos and sponsor visual assets.',
         accentColor: navAccent.success,
       },
+      {
+        label: 'Global Report',
+        path: '/admin/global/reports',
+        icon: 'public',
+        description: 'Everything Messmass collects, in the same interactive report as a hashtag, partner or event: variants, page password and sharing.',
+        accentColor: navAccent.primaryStrong,
+      },
+      {
+        label: 'Fanmass Proof Review',
+        path: '/admin/fanmass-evidence',
+        icon: 'fact_check',
+        description: 'Check, confirm, reject, correct or add the proof behind every brand and club figure Fanmass produces; the decisions train the whole system.',
+        accentColor: navAccent.primary,
+      },
     ],
   },
   {

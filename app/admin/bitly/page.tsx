@@ -191,7 +191,7 @@ export default function BitlyAdminPage() {
 
   // WHAT: Load links during search/sort operations (no full loading screen)
   // WHY: Prevents white flash reload effect during search - updates results inline
-  // PATTERN: Matches app/admin/events/ProjectsPageClient.tsx search behavior
+  // PATTERN: Same search behaviour as the events list (lib/adapters/projectsAdapter.tsx)
   const loadSearch = useCallback(async () => {
     try {
       setIsSearching(true);
@@ -885,7 +885,7 @@ export default function BitlyAdminPage() {
       <div className="projects-table-container">
         <div className="table-overflow-hidden">
           {links.length === 0 ? (
-            /* WHAT: Empty state matching ProjectsPageClient pattern
+            /* WHAT: Empty state matching the events list pattern
              * WHY: Consistent UX across admin pages */
             <div className="admin-empty-state">
               <div className="admin-empty-icon">🔗</div>

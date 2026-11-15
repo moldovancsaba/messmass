@@ -10,43 +10,75 @@ import D3BubbleExplorer from './D3BubbleExplorer';
 import D3FunnelFlow from './D3FunnelFlow';
 import D3DemographicsChart from './D3DemographicsChart';
 import MatchesTable from './MatchesTable';
+import { getReportSlug } from './reportSlug';
+import HashtagReportView from '@/components/hashtagReport/HashtagReportView';
+import type { HashtagReport } from '@/lib/hashtagReport/types';
 import styles from './interactive-report.module.css';
 
 interface InteractiveReportDashboardProps {
   initialData: InteractiveReportData;
+  /** The Fanmass report (lib/hashtagReport/dashboard.ts): only what Fanmass measured, no hand-entered figure. The
+   * dashboard then shows the Fanmass tabs only (vision, map, demographics, figures) and Fanmass header figures. */
+  fanmass?: HashtagReport;
 }
 
-export default function InteractiveReportDashboard({ initialData }: InteractiveReportDashboardProps) {
+export type DashboardTab = 'overview' | 'vision' | 'territory' | 'bubble' | 'funnel' | 'demographics' | 'table' | 'figures';
+
+export default function InteractiveReportDashboard({ initialData, fanmass }: InteractiveReportDashboardProps) {
   const [data, setData] = useState<InteractiveReportData>(initialData);
-  const [activeTab, setActiveTab] = useState<
-    'overview' | 'vision' | 'territory' | 'bubble' | 'funnel' | 'demographics' | 'table'
-  >('overview');
+  // The Fanmass report opens on the overview (victory podiums, demographics) when Fanmass has vision data
+  const [activeTab, setActiveTab] = useState<DashboardTab>(fanmass && !initialData.vision ? 'figures' : 'overview');
   const [selectedPeriodId, setSelectedPeriodId] = useState<string | null>(null);
   const [selectedMatch, setSelectedMatch] = useState<MatchItem | null>(null);
 
+  // Slug the report routes understand (hashtag-<name>, event-<slug>, partner slug)
+  const reportSlug = getReportSlug(data);
+  const scopeName = data.scope?.name || data.partner.name;
+
   // Poll for live vision progress updates while running
   React.useEffect(() => {
-    if (!data.vision || data.vision.status !== 'running') return;
+    if (!reportSlug || !data.vision || data.vision.status !== 'running') return;
 
     const interval = setInterval(async () => {
       try {
-        const slug = data.partner.viewSlug || 'szrt';
-        const res = await fetch(`/api/interactive-report/${slug}`);
+        const res = await fetch(`/api/interactive-report/${reportSlug}`);
         if (res.ok) {
           const json = await res.json();
           const liveVision = json.vision || json.data?.vision;
           if (liveVision) {
-            setData((prev) => ({ ...prev, vision: liveVision }));
+            setData((prev) => ({
+              ...prev,
+              vision: {
+                ...(prev.vision || {}),
+                ...liveVision,
+                aggregates: {
+                  ...(prev.vision?.aggregates || {}),
+                  ...(liveVision.aggregates || {}),
+                },
+              },
+            }));
           }
         }
       } catch {
         // Silently continue on network jitter
       }
-    }, 4000);
+    }, 3000);
 
     return () => clearInterval(interval);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [data.vision?.status, data.partner.viewSlug]);
+  }, [data.vision?.status, reportSlug]);
+
+  // Date range of the events in the data; only ISO-style dates are used, otherwise nothing is shown.
+  const datasetRange = React.useMemo(() => {
+    const dates = (data.matches || [])
+      .map((m) => (m.date || '').replace(/\./g, '-').replace(/-$/, '').trim())
+      .filter((d) => /^\d{4}-\d{2}-\d{2}$/.test(d))
+      .sort();
+    if (dates.length === 0) return null;
+    const first = dates[0];
+    const last = dates[dates.length - 1];
+    return first === last ? `Events on ${first}` : `Events ${first} to ${last}`;
+  }, [data.matches]);
 
   const handleSelectMatch = (match: MatchItem) => {
     setSelectedMatch(match);
@@ -57,6 +89,7 @@ export default function InteractiveReportDashboard({ initialData }: InteractiveR
       {/* Client Header & Navigation */}
       <SzrtHeader
         data={data}
+        fanmass={fanmass}
         activeTab={activeTab}
         onTabChange={(tab) => {
           setActiveTab(tab);
@@ -66,32 +99,21 @@ export default function InteractiveReportDashboard({ initialData }: InteractiveR
 
       {/* Tab 1: Executive Overview */}
       {activeTab === 'overview' && (
-        <>
-          {data.vision && (
-            <FanmassVisionSection
-              vision={data.vision}
-              partnerSlug={data.partner.viewSlug || 'szrt'}
-              compact={true}
-              matches={data.matches}
-              onExploreDashboard={() => setActiveTab('vision')}
-              onViewTerritoryMap={() => setActiveTab('territory')}
-            />
-          )}
-          <OverviewTab
-            data={data}
-            selectedPeriodId={selectedPeriodId}
-            onSelectPeriod={setSelectedPeriodId}
-            onViewBubble={() => setActiveTab('bubble')}
-            onViewFunnel={() => setActiveTab('funnel')}
-          />
-        </>
+        <OverviewTab
+          data={data}
+          selectedPeriodId={selectedPeriodId}
+          onSelectPeriod={setSelectedPeriodId}
+          onViewBubble={() => setActiveTab('bubble')}
+          onViewFunnel={() => setActiveTab('funnel')}
+          onViewTerritoryMap={() => setActiveTab('territory')}
+        />
       )}
 
       {/* Tab: Dedicated Fanmass Vision AI */}
       {activeTab === 'vision' && data.vision && (
         <FanmassVisionSection
           vision={data.vision}
-          partnerSlug={data.partner.viewSlug || 'szrt'}
+          partnerSlug={reportSlug ?? undefined}
           matches={data.matches}
           onViewTerritoryMap={() => setActiveTab('territory')}
         />
@@ -102,8 +124,8 @@ export default function InteractiveReportDashboard({ initialData }: InteractiveR
         <TerritoryMapCanvas
           matches={data.matches || []}
           vision={data.vision}
-          partnerSlug={data.partner.viewSlug || 'szrt'}
-          partnerName={data.partner.name}
+          partnerSlug={reportSlug ?? undefined}
+          partnerName={scopeName}
           embedded={true}
         />
       )}
@@ -167,10 +189,15 @@ export default function InteractiveReportDashboard({ initialData }: InteractiveR
       {/* Tab 5: All Match Data Table */}
       {activeTab === 'table' && <MatchesTable matches={data.matches} />}
 
-      {/* Footer / Attribution-free compliance stamp */}
+      {/* Fanmass report: every measured figure with its counts, and the events it comes from */}
+      {activeTab === 'figures' && fanmass && <HashtagReportView report={fanmass} embedded />}
+
+      {/* Footer: scope name and the date range of the events in the data */}
       <footer className={styles.reportFooter}>
         <div>
-          Szerencsejáték Zrt. Interactive Analytics Engine • Verified Dataset Dec 2025 – Mar 2026
+          {[scopeName ? `${scopeName} Interactive Analytics` : 'Interactive Analytics', datasetRange]
+            .filter(Boolean)
+            .join(' • ')}
         </div>
         <div>
           Powered by Messmass Interactive Reporting

@@ -9,7 +9,9 @@ import SharePopup from '@/components/SharePopup';
 import UnifiedAdminHeroWithSearch from '@/components/UnifiedAdminHeroWithSearch';
 import ColoredCard from '@/components/ColoredCard';
 import { apiPost } from '@/lib/apiClient';
+import HashtagReportView from '@/components/hashtagReport/HashtagReportView';
 import { getStoredOrDerivedTotalFans } from '@/lib/totalFans';
+import type { HashtagReport } from '@/lib/hashtagReport/types';
 
 interface ProjectStats {
   remoteImages: number;
@@ -78,6 +80,7 @@ interface HashtagItem {
   hashtag: string;
   slug: string;
   count: number;
+  photos?: number;
 }
 
 function HashtagFilterPageContent() {
@@ -94,6 +97,7 @@ function HashtagFilterPageContent() {
   const [isSearching, setIsSearching] = useState(false);
   const PAGE_SIZE = 20;
   const [project, setProject] = useState<Project | null>(null);
+  const [report, setReport] = useState<HashtagReport | null>(null);
   const [projects, setProjects] = useState<ProjectListItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [statsLoading, setStatsLoading] = useState(false);
@@ -124,16 +128,18 @@ function HashtagFilterPageContent() {
     setError(null);
     
     try {
-      const response = await fetch(`/api/hashtags/filter?tags=${encodeURIComponent(tagsParam)}`);
+      const response = await fetch(`/api/hashtags/filter?tags=${encodeURIComponent(tagsParam)}&report=1`);
       const data = await response.json();
 
       if (data.success) {
         setProject(data.project);
+        setReport(data.report ?? null);
         setProjects(data.projects || []);
         setHasAppliedFilter(true);
       } else {
         setError(data.error || 'Failed to load filtered statistics');
         setProject(null);
+        setReport(null);
         setProjects([]);
         setHasAppliedFilter(false);
       }
@@ -141,6 +147,7 @@ function HashtagFilterPageContent() {
       console.error('Failed to load filtered statistics:', error);
       setError('Failed to load filtered statistics');
       setProject(null);
+      setReport(null);
       setProjects([]);
       setHasAppliedFilter(false);
     } finally {
@@ -222,11 +229,12 @@ function HashtagFilterPageContent() {
       if (query.trim()) params.set('search', query.trim());
       params.set('offset', String(offset));
       params.set('limit', String(PAGE_SIZE));
+      params.set('photos', '1');
       const response = await fetch(`/api/hashtags?${params.toString()}`, { cache: 'no-store' });
       const data = await response.json();
       if (data.success) {
-        const items: Array<{ hashtag: string; count: number }> = data.hashtags || [];
-        const mapped: HashtagItem[] = items.map(i => ({ hashtag: i.hashtag, slug: i.hashtag, count: i.count }));
+        const items: Array<{ hashtag: string; count: number; photos?: number }> = data.hashtags || [];
+        const mapped: HashtagItem[] = items.map(i => ({ hashtag: i.hashtag, slug: i.hashtag, count: i.count, photos: i.photos }));
         setAvailableHashtags(prev => append ? [...prev, ...mapped] : mapped);
         setSearchOffset(data.pagination?.nextOffset ?? null);
         setTotalHashtags(data.pagination?.totalMatched ?? mapped.length);
@@ -257,6 +265,7 @@ function HashtagFilterPageContent() {
     // Clear previous results if selection changes
     if (hasAppliedFilter && selected.join(',') !== project?.hashtags?.join(',')) {
       setProject(null);
+      setReport(null);
       setProjects([]);
       setHasAppliedFilter(false);
     }
@@ -327,6 +336,7 @@ function HashtagFilterPageContent() {
       document.body.removeChild(link);
     }
   };
+
 
   // Calculate totals for display
   const totalImages = project ? project.stats.remoteImages + project.stats.hostessImages + project.stats.selfies : 0;
@@ -458,6 +468,52 @@ function HashtagFilterPageContent() {
                       {saveStatus === 'error' && '⚠︎ failed'}
                     </span>
 
+                    <button
+                      onClick={async () => {
+                        try {
+                          const data = await apiPost('/api/filter-slug', {
+                            hashtags: selectedHashtags,
+                            styleId: selectedStyleId || null
+                          });
+                          if (data.success) {
+                            window.open(`/interactive-report/filter/${encodeURIComponent(data.slug)}`, '_blank');
+                          } else {
+                            alert('Failed to open interactive dashboard: ' + data.error);
+                          }
+                        } catch (error) {
+                          console.error('Error opening interactive dashboard:', error);
+                          alert('Failed to open interactive dashboard');
+                        }
+                      }}
+                      className="btn btn-small btn-primary"
+                      title="Open the Fanmass report of this filter: measured by the local AI"
+                    >
+                      🤖 Fanmass report
+                    </button>
+
+                    <button
+                      onClick={async () => {
+                        try {
+                          const data = await apiPost('/api/filter-slug', {
+                            hashtags: selectedHashtags,
+                            styleId: selectedStyleId || null
+                          });
+                          if (data.success) {
+                            window.open(`/filter/${encodeURIComponent(data.slug)}`, '_blank');
+                          } else {
+                            alert('Failed to open the clicker report: ' + data.error);
+                          }
+                        } catch (error) {
+                          console.error('Error opening the clicker report:', error);
+                          alert('Failed to open the clicker report');
+                        }
+                      }}
+                      className="btn btn-small btn-secondary"
+                      title="Open the clicker report of this filter: the counts entered by hand"
+                    >
+                      🖱️ Clicker report
+                    </button>
+
                     <button 
                       onClick={async () => {
                         try {
@@ -579,6 +635,9 @@ function HashtagFilterPageContent() {
       {/* Results Section */}
       {hasAppliedFilter && project && !error && (
         <>
+          {/* Two analytics, never mixed (owner 2026-11-14): the clicker report (counts people entered by hand) and the
+              Fanmass report (measured by the local AI). The hashtags that choose the events work together. */}
+          <h2 className="text-gray-900 font-semibold text-2xl mt-8 mb-2">🖱️ Clicker report: entered by hand</h2>
           {/* Stats Layout */}
           <div className="stats-layout-container">
             {/* Row 1: Images, Fans, Gender */}
@@ -735,6 +794,10 @@ function HashtagFilterPageContent() {
               </div>
             )}
           </div>
+
+
+          <h2 className="text-gray-900 font-semibold text-2xl mt-12 mb-2">🤖 Fanmass report: measured by the local AI</h2>
+          {report && <HashtagReportView report={report} />}
 
           {/* Projects List Section */}
           {projects.length > 0 && (

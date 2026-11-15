@@ -1,7 +1,7 @@
 'use client';
 /* eslint-disable react/forbid-dom-props */
 
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import styles from './interactive-report.module.css';
 
 interface SportBreakdownItem {
@@ -24,28 +24,82 @@ interface SportBreakdownItem {
 interface FanmassSportsDemographicsProps {
   sportsBreakdown: Record<string, SportBreakdownItem>;
   totalPeople: number;
-  totalPhotosProcessed?: number;
-  totalImages?: number;
 }
 
-const SPORT_META: Record<string, { icon: string; color: string; label: string }> = {
-  Basketball: { icon: '🏀', color: '#b45309', label: 'Basketball (Tippmix Férfi/Női NB1)' },
-  Football: { icon: '⚽', color: '#059669', label: 'Football (OTP Bank Liga NB1 / NB2)' },
-  Handball: { icon: '🤾', color: '#e11d48', label: 'Handball (K&H Liga Férfi/Női)' },
-  'Ice Hockey': { icon: '🏒', color: '#0284c7', label: 'Ice Hockey (Erste Liga)' },
-};
+function sportIcon(sport: string): string {
+  const low = sport.toLowerCase();
+  if (low.includes('foot')) return '⚽';
+  if (low.includes('basket')) return '🏀';
+  if (low.includes('hockey')) return '🏒';
+  if (low.includes('hand')) return '🤾';
+  return '🏅';
+}
+
+/** Gender split from the measured counts. Null when no gender was measured; a true 0% stays 0%. */
+function genderStats(data: SportBreakdownItem) {
+  const male = data.genders?.male ?? 0;
+  const female = data.genders?.female ?? 0;
+  const total = male + female;
+  if (total <= 0) return null;
+  return {
+    male,
+    female,
+    malePct: Number(((male / total) * 100).toFixed(1)),
+    femalePct: Number(((female / total) * 100).toFixed(1)),
+  };
+}
+
+/** Age-bracket split from the measured counts. Null when no age was measured. */
+function ageStats(data: SportBreakdownItem) {
+  const ag = data.ageGroups;
+  if (!ag) return null;
+  const total = ag.children + ag.teens + ag.adults + ag.seniors;
+  if (total <= 0) return null;
+  const adultsPct = Math.round((ag.adults / total) * 100);
+  const teensPct = Math.round((ag.teens / total) * 100);
+  const childrenPct = Math.round((ag.children / total) * 100);
+  const seniorsPct = Math.max(0, 100 - (adultsPct + teensPct + childrenPct));
+  return { ag, total, adultsPct, teensPct, childrenPct, seniorsPct };
+}
 
 export default function FanmassSportsDemographics({
   sportsBreakdown,
   totalPeople,
-  totalPhotosProcessed = 0,
-  totalImages = 11312,
 }: FanmassSportsDemographicsProps) {
   const [activeTab, setActiveTab] = useState<'comparison' | 'gender' | 'age'>('comparison');
-  const isProgressing = totalPhotosProcessed > 0 && totalPhotosProcessed < totalImages;
-  const multiplier = isProgressing ? totalImages / totalPhotosProcessed : 1;
 
-  const sportsList = ['Basketball', 'Football', 'Handball', 'Ice Hockey'];
+  // Only sports that actually have data are listed, largest first.
+  const sportsList = useMemo(
+    () =>
+      Object.entries(sportsBreakdown || {})
+        .filter(([, d]) => d && (d.people > 0 || d.images > 0))
+        .sort((a, b) => b[1].people - a[1].people)
+        .map(([sport]) => sport),
+    [sportsBreakdown]
+  );
+
+  // Findings are computed from the measured splits and only shown when at least two sports can be compared.
+  const genderFinding = useMemo(() => {
+    const rows = sportsList
+      .map((sport) => ({ sport, g: genderStats(sportsBreakdown[sport]) }))
+      .filter((r): r is { sport: string; g: NonNullable<ReturnType<typeof genderStats>> } => r.g !== null);
+    if (rows.length < 2) return null;
+    const topFemale = rows.reduce((a, b) => (b.g.femalePct > a.g.femalePct ? b : a));
+    const topMale = rows.reduce((a, b) => (b.g.malePct > a.g.malePct ? b : a));
+    if (topFemale.sport === topMale.sport) return null;
+    return { topFemale, topMale };
+  }, [sportsList, sportsBreakdown]);
+
+  const youthFinding = useMemo(() => {
+    const rows = sportsList
+      .map((sport) => {
+        const a = ageStats(sportsBreakdown[sport]);
+        return a ? { sport, youthPct: a.childrenPct + a.teensPct } : null;
+      })
+      .filter((r): r is { sport: string; youthPct: number } => r !== null);
+    if (rows.length < 2) return null;
+    return rows.reduce((a, b) => (b.youthPct > a.youthPct ? b : a));
+  }, [sportsList, sportsBreakdown]);
 
   return (
     <div className={styles.reportCard}>
@@ -56,15 +110,14 @@ export default function FanmassSportsDemographics({
               🔬 Visual Demographics Engine • Facial & Feature Recognition
             </span>
             <span className={styles.cardCountPill}>
-              {totalPeople.toLocaleString()} Spectators Analyzed
-              {isProgressing && ` (est. ${Math.round(totalPeople * multiplier).toLocaleString()})`}
+              {totalPeople.toLocaleString()} People Analyzed
             </span>
           </div>
           <h3 className={styles.cardTitle}>
             🏆 Cross-Sport Demographics & Age Comparison
           </h3>
           <p className={styles.cardSubtitle}>
-            Empirical comparison of gender ratios and generational age brackets identified across the 4 sponsored sports leagues.
+            Comparison of gender ratios and age brackets measured in the analysed photos, by sport.
           </p>
         </div>
 
@@ -107,35 +160,27 @@ export default function FanmassSportsDemographics({
               <div className={styles.compLegendRow}>
                 <span className={styles.compLegendItem}>
                   <span className={styles.compLegendDot} style={{ background: '#0284c7' }} />
-                  Male Spectators
+                  Male
                 </span>
                 <span className={styles.compLegendItem}>
                   <span className={styles.compLegendDot} style={{ background: '#ec4899' }} />
-                  Female Spectators
+                  Female
                 </span>
               </div>
             </div>
 
             <div className={styles.compRowsStack}>
+              {sportsList.length === 0 && (
+                <div style={{ padding: '16px', color: '#64748b', fontSize: '13px' }}>n/a</div>
+              )}
               {sportsList.map((sport) => {
-                const meta = SPORT_META[sport] || { icon: '🏅', label: sport };
-                const data = sportsBreakdown[sport] || {
-                  images: 0,
-                  people: 0,
-                  genders: { male: 0, female: 0 },
-                };
-                const maleCount = data.genders?.male || 0;
-                const femaleCount = data.genders?.female || 0;
-                const totGender = maleCount + femaleCount;
-                const malePct =
-                  totGender > 0 ? Number(((maleCount / totGender) * 100).toFixed(1)) : 50.0;
-                const femalePct =
-                  totGender > 0 ? Number(((femaleCount / totGender) * 100).toFixed(1)) : 50.0;
+                const data = sportsBreakdown[sport];
+                const g = genderStats(data);
 
                 return (
                   <div key={sport} className={styles.compRowItem}>
                     <div className={styles.compSportLabelWrap}>
-                      <span className={styles.compSportIcon}>{meta.icon}</span>
+                      <span className={styles.compSportIcon}>{sportIcon(sport)}</span>
                       <div>
                         <div className={styles.compSportName}>{sport}</div>
                         <div className={styles.compSportPhotos}>{data.people.toLocaleString()} fans</div>
@@ -144,59 +189,73 @@ export default function FanmassSportsDemographics({
 
                     <div className={styles.compBarWrapper}>
                       <div className={styles.compSplitBar}>
-                        <div
-                          style={{
-                            width: `${malePct}%`,
-                            background: '#0284c7',
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'flex-start',
-                            paddingLeft: '8px',
-                            color: '#ffffff',
-                            fontSize: '11px',
-                            fontWeight: 700,
-                            overflow: 'hidden',
-                            whiteSpace: 'nowrap',
-                          }}
-                        >
-                          {malePct > 15 ? `${malePct}%` : ''}
-                        </div>
-                        <div
-                          style={{
-                            width: `${femalePct}%`,
-                            background: '#ec4899',
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'flex-end',
-                            paddingRight: '8px',
-                            color: '#ffffff',
-                            fontSize: '11px',
-                            fontWeight: 700,
-                            overflow: 'hidden',
-                            whiteSpace: 'nowrap',
-                          }}
-                        >
-                          {femalePct > 15 ? `${femalePct}%` : ''}
-                        </div>
+                        {g && (
+                          <>
+                            <div
+                              style={{
+                                width: `${g.malePct}%`,
+                                background: '#0284c7',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'flex-start',
+                                paddingLeft: '8px',
+                                color: '#ffffff',
+                                fontSize: '11px',
+                                fontWeight: 700,
+                                overflow: 'hidden',
+                                whiteSpace: 'nowrap',
+                              }}
+                            >
+                              {g.malePct > 15 ? `${g.malePct}%` : ''}
+                            </div>
+                            <div
+                              style={{
+                                width: `${g.femalePct}%`,
+                                background: '#ec4899',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'flex-end',
+                                paddingRight: '8px',
+                                color: '#ffffff',
+                                fontSize: '11px',
+                                fontWeight: 700,
+                                overflow: 'hidden',
+                                whiteSpace: 'nowrap',
+                              }}
+                            >
+                              {g.femalePct > 15 ? `${g.femalePct}%` : ''}
+                            </div>
+                          </>
+                        )}
                       </div>
                       <div className={styles.compParityMarkerLine} title="50% Gender Parity" />
                     </div>
 
                     <div style={{ fontSize: '11px', textAlign: 'right', whiteSpace: 'nowrap' }}>
-                      <strong style={{ color: '#0284c7' }}>{malePct}%</strong> M •{' '}
-                      <strong style={{ color: '#ec4899' }}>{femalePct}%</strong> F
+                      {g ? (
+                        <>
+                          <strong style={{ color: '#0284c7' }}>{g.malePct}%</strong> M •{' '}
+                          <strong style={{ color: '#ec4899' }}>{g.femalePct}%</strong> F
+                        </>
+                      ) : (
+                        'n/a'
+                      )}
                     </div>
                   </div>
                 );
               })}
             </div>
 
-            <div className={styles.compCallout}>
-              <span>💡</span>
-              <div>
-                <strong>Demographic Finding:</strong> Handball (K&amp;H Liga) exhibits the highest female audience participation at live matches, while Football maintains the strongest male concentration.
+            {genderFinding && (
+              <div className={styles.compCallout}>
+                <span>💡</span>
+                <div>
+                  <strong>Demographic Finding:</strong> {genderFinding.topFemale.sport} has the highest female share (
+                  {genderFinding.topFemale.g.femalePct}%) and {genderFinding.topMale.sport} the highest male share (
+                  {genderFinding.topMale.g.malePct}%) among the measured fans.
+                </div>
               </div>
-            </div>
+            )}
           </div>
 
           {/* Chart 2: Generational Age Bracket Stacked Distribution */}
@@ -224,263 +283,200 @@ export default function FanmassSportsDemographics({
             </div>
 
             <div className={styles.compRowsStack}>
+              {sportsList.length === 0 && (
+                <div style={{ padding: '16px', color: '#64748b', fontSize: '13px' }}>n/a</div>
+              )}
               {sportsList.map((sport) => {
-                const meta = SPORT_META[sport] || { icon: '🏅', label: sport };
-                const data = sportsBreakdown[sport] || {
-                  images: 0,
-                  people: 0,
-                  ageGroups: { children: 0, teens: 0, adults: 0, seniors: 0 },
-                };
-                const ag = data.ageGroups || { children: 0, teens: 0, adults: 0, seniors: 0 };
-                const totAge = ag.children + ag.teens + ag.adults + ag.seniors;
-                const adultsPct = totAge > 0 ? Math.round((ag.adults / totAge) * 100) : 0;
-                const teensPct = totAge > 0 ? Math.round((ag.teens / totAge) * 100) : 0;
-                const childrenPct = totAge > 0 ? Math.round((ag.children / totAge) * 100) : 0;
-                const seniorsPct =
-                  totAge > 0 ? Math.max(0, 100 - (adultsPct + teensPct + childrenPct)) : 0;
+                const data = sportsBreakdown[sport];
+                const a = ageStats(data);
 
                 return (
                   <div key={sport} className={styles.compRowItem}>
                     <div className={styles.compSportLabelWrap}>
-                      <span className={styles.compSportIcon}>{meta.icon}</span>
+                      <span className={styles.compSportIcon}>{sportIcon(sport)}</span>
                       <div>
                         <div className={styles.compSportName}>{sport}</div>
                         <div className={styles.compSportPhotos}>
-                          {data.people.toLocaleString()} spectators
+                          {data.people.toLocaleString()} people
                         </div>
                       </div>
                     </div>
 
                     <div className={styles.compBarWrapper}>
                       <div className={styles.compSplitBar}>
-                        <div
-                          title={`Children: ${childrenPct}%`}
-                          style={{
-                            width: `${childrenPct}%`,
-                            background: '#f59e0b',
-                          }}
-                        />
-                        <div
-                          title={`Teens: ${teensPct}%`}
-                          style={{
-                            width: `${teensPct}%`,
-                            background: '#0284c7',
-                          }}
-                        />
-                        <div
-                          title={`Adults: ${adultsPct}%`}
-                          style={{
-                            width: `${adultsPct}%`,
-                            background: '#059669',
-                          }}
-                        />
-                        <div
-                          title={`Seniors: ${seniorsPct}%`}
-                          style={{
-                            width: `${seniorsPct}%`,
-                            background: '#8b5cf6',
-                          }}
-                        />
+                        {a && (
+                          <>
+                            <div
+                              title={`Children: ${a.childrenPct}%`}
+                              style={{
+                                width: `${a.childrenPct}%`,
+                                background: '#f59e0b',
+                              }}
+                            />
+                            <div
+                              title={`Teens: ${a.teensPct}%`}
+                              style={{
+                                width: `${a.teensPct}%`,
+                                background: '#0284c7',
+                              }}
+                            />
+                            <div
+                              title={`Adults: ${a.adultsPct}%`}
+                              style={{
+                                width: `${a.adultsPct}%`,
+                                background: '#059669',
+                              }}
+                            />
+                            <div
+                              title={`Seniors: ${a.seniorsPct}%`}
+                              style={{
+                                width: `${a.seniorsPct}%`,
+                                background: '#8b5cf6',
+                              }}
+                            />
+                          </>
+                        )}
                       </div>
                     </div>
 
                     <div style={{ fontSize: '11px', textAlign: 'right', whiteSpace: 'nowrap' }}>
-                      <span style={{ color: '#f59e0b' }}>{childrenPct}% Ch</span> •{' '}
-                      <span style={{ color: '#0284c7' }}>{teensPct}% Te</span> •{' '}
-                      <span style={{ color: '#059669' }}>{adultsPct}% Ad</span>
+                      {a ? (
+                        <>
+                          <span style={{ color: '#f59e0b' }}>{a.childrenPct}% Ch</span> •{' '}
+                          <span style={{ color: '#0284c7' }}>{a.teensPct}% Te</span> •{' '}
+                          <span style={{ color: '#059669' }}>{a.adultsPct}% Ad</span>
+                        </>
+                      ) : (
+                        'n/a'
+                      )}
                     </div>
                   </div>
                 );
               })}
             </div>
 
-            <div className={styles.compCallout} style={{ background: '#eff6ff', borderColor: '#bfdbfe', color: '#1e40af' }}>
-              <span>💡</span>
-              <div>
-                <strong>Youth &amp; Family Insight:</strong> Ice Hockey and Basketball attract the highest proportion of young spectators (children and teenagers account for ~20-22% of attendees), creating strong multi-generational family engagement.
+            {youthFinding && (
+              <div className={styles.compCallout} style={{ background: '#eff6ff', borderColor: '#bfdbfe', color: '#1e40af' }}>
+                <span>💡</span>
+                <div>
+                  <strong>Youth Insight:</strong> {youthFinding.sport} has the highest share of children and teenagers (
+                  {youthFinding.youthPct}% of the people with a measured age).
+                </div>
               </div>
-            </div>
+            )}
           </div>
         </div>
       ) : (
-        /* Detailed Grid of 4 Sports Cards */
+        /* Detailed Grid of Sports Cards */
         <div className={styles.sportsDemoGrid}>
+        {sportsList.length === 0 && (
+          <div style={{ padding: '16px', color: '#64748b', fontSize: '13px' }}>n/a</div>
+        )}
         {sportsList.map((sport) => {
-          const meta = SPORT_META[sport] || { icon: '🏅', color: '#64748b', label: sport };
-          const data = sportsBreakdown[sport] || {
-            images: 0,
-            people: 0,
-            genders: { male: 0, female: 0, malePct: 50, femalePct: 50 },
-            ageGroups: { children: 0, teens: 0, adults: 0, seniors: 0 },
-          };
+          const data = sportsBreakdown[sport];
+          const g = genderStats(data);
+          const a = ageStats(data);
 
-          const maleCount = data.genders?.male || 0;
-          const femaleCount = data.genders?.female || 0;
-          const totGender = maleCount + femaleCount;
-          const malePct =
-            totGender > 0 ? Number(((maleCount / totGender) * 100).toFixed(1)) : 50.0;
-          const femalePct =
-            totGender > 0 ? Number(((femaleCount / totGender) * 100).toFixed(1)) : 50.0;
-
-          const ag = data.ageGroups || { children: 0, teens: 0, adults: 0, seniors: 0 };
-          const totAge = ag.children + ag.teens + ag.adults + ag.seniors;
-          const adultsPct = totAge > 0 ? Math.round((ag.adults / totAge) * 100) : 0;
-          const teensPct = totAge > 0 ? Math.round((ag.teens / totAge) * 100) : 0;
-          const childrenPct = totAge > 0 ? Math.round((ag.children / totAge) * 100) : 0;
-          const seniorsPct = totAge > 0 ? Math.round((ag.seniors / totAge) * 100) : 0;
+          const ageRows: Array<{ label: string; count: number; pct: number; fillClass: string }> = a
+            ? [
+                {
+                  label: 'Adults (19-55)',
+                  count: a.ag.adults,
+                  pct: Math.round((a.ag.adults / a.total) * 100),
+                  fillClass: styles.ageBarFillAdults,
+                },
+                {
+                  label: 'Teens (14-18)',
+                  count: a.ag.teens,
+                  pct: Math.round((a.ag.teens / a.total) * 100),
+                  fillClass: styles.ageBarFillTeens,
+                },
+                {
+                  label: 'Children (<13)',
+                  count: a.ag.children,
+                  pct: Math.round((a.ag.children / a.total) * 100),
+                  fillClass: styles.ageBarFillChildren,
+                },
+                {
+                  label: 'Seniors (55+)',
+                  count: a.ag.seniors,
+                  pct: Math.round((a.ag.seniors / a.total) * 100),
+                  fillClass: styles.ageBarFillSeniors,
+                },
+              ]
+            : [];
 
           return (
             <div key={sport} className={styles.sportDemoCard}>
               {/* Card Header */}
               <div className={styles.sportCardHeader}>
                 <div className={styles.sportCardTitleWrap}>
-                  <span className={styles.sportCardIcon}>{meta.icon}</span>
+                  <span className={styles.sportCardIcon}>{sportIcon(sport)}</span>
                   <div>
                     <h4 className={styles.sportCardName}>{sport}</h4>
-                    <span className={styles.sportCardLeague}>{meta.label}</span>
                   </div>
                 </div>
                 <div className={styles.sportVolumeBadge}>
-                  <strong>{data.people.toLocaleString()}</strong>
-                  {isProgressing && <span className={styles.estPill}> (est. {Math.round(data.people * multiplier).toLocaleString()})</span>} fans / {data.images.toLocaleString()}
-                  {isProgressing && <span className={styles.estPill}> (est. {Math.round(data.images * multiplier).toLocaleString()})</span>} photos
+                  <strong>{data.people.toLocaleString()}</strong> fans / {data.images.toLocaleString()} photos
                 </div>
               </div>
 
               {activeTab === 'gender' ? (
                 /* Gender Comparison View */
-                <div className={styles.sportGenderView}>
-                  <div className={styles.genderSplitBar}>
-                    <div
-                      className={styles.genderSplitMale}
-                      style={{ width: `${malePct}%` }}
-                      title={`Male: ${malePct}%`}
-                    />
-                    <div
-                      className={styles.genderSplitFemale}
-                      style={{ width: `${femalePct}%` }}
-                      title={`Female: ${femalePct}%`}
-                    />
-                  </div>
+                g ? (
+                  <div className={styles.sportGenderView}>
+                    <div className={styles.genderSplitBar}>
+                      <div
+                        className={styles.genderSplitMale}
+                        style={{ width: `${g.malePct}%` }}
+                        title={`Male: ${g.malePct}%`}
+                      />
+                      <div
+                        className={styles.genderSplitFemale}
+                        style={{ width: `${g.femalePct}%` }}
+                        title={`Female: ${g.femalePct}%`}
+                      />
+                    </div>
 
-                  <div className={styles.genderStatsRow}>
-                    <div className={styles.genderStatItem}>
-                      <span className={styles.genderDotMale} />
-                      <span className={styles.genderLabel}>Male</span>
-                      <strong className={styles.genderVal}>{malePct}%</strong>
-                      <span className={styles.genderCount}>
-                        ({maleCount.toLocaleString()}
-                        {isProgressing && (
-                          <span className={styles.estPill}>
-                            {' '}est. {Math.round(maleCount * multiplier).toLocaleString()}
-                          </span>
-                        )})
-                      </span>
-                    </div>
-                    <div className={styles.genderStatItem}>
-                      <span className={styles.genderDotFemale} />
-                      <span className={styles.genderLabel}>Female</span>
-                      <strong className={styles.genderVal}>{femalePct}%</strong>
-                      <span className={styles.genderCount}>
-                        ({femaleCount.toLocaleString()}
-                        {isProgressing && (
-                          <span className={styles.estPill}>
-                            {' '}est. {Math.round(femaleCount * multiplier).toLocaleString()}
-                          </span>
-                        )})
-                      </span>
+                    <div className={styles.genderStatsRow}>
+                      <div className={styles.genderStatItem}>
+                        <span className={styles.genderDotMale} />
+                        <span className={styles.genderLabel}>Male</span>
+                        <strong className={styles.genderVal}>{g.malePct}%</strong>
+                        <span className={styles.genderCount}>({g.male.toLocaleString()})</span>
+                      </div>
+                      <div className={styles.genderStatItem}>
+                        <span className={styles.genderDotFemale} />
+                        <span className={styles.genderLabel}>Female</span>
+                        <strong className={styles.genderVal}>{g.femalePct}%</strong>
+                        <span className={styles.genderCount}>({g.female.toLocaleString()})</span>
+                      </div>
                     </div>
                   </div>
-                </div>
-              ) : (
+                ) : (
+                  <div className={styles.sportGenderView}>n/a</div>
+                )
+              ) : a ? (
                 /* Age Bracket Distribution View */
                 <div className={styles.sportAgeView}>
                   <div className={styles.ageBarsStack}>
-                    {/* Adults */}
-                    <div className={styles.ageBarRow}>
-                      <div className={styles.ageBarLabelGroup}>
-                        <span>Adults (19-55)</span>
-                        <strong>
-                          {adultsPct}% ({ag.adults.toLocaleString()}
-                          {isProgressing && (
-                            <span className={styles.estPill}>
-                              {' '}est. {Math.round(ag.adults * multiplier).toLocaleString()}
-                            </span>
-                          )})
-                        </strong>
+                    {ageRows.map((row) => (
+                      <div key={row.label} className={styles.ageBarRow}>
+                        <div className={styles.ageBarLabelGroup}>
+                          <span>{row.label}</span>
+                          <strong>
+                            {row.pct}% ({row.count.toLocaleString()})
+                          </strong>
+                        </div>
+                        <div className={styles.ageBarTrack}>
+                          <div className={row.fillClass} style={{ width: `${row.pct}%` }} />
+                        </div>
                       </div>
-                      <div className={styles.ageBarTrack}>
-                        <div
-                          className={styles.ageBarFillAdults}
-                          style={{ width: `${adultsPct}%` }}
-                        />
-                      </div>
-                    </div>
-
-                    {/* Teens */}
-                    <div className={styles.ageBarRow}>
-                      <div className={styles.ageBarLabelGroup}>
-                        <span>Teens (14-18)</span>
-                        <strong>
-                          {teensPct}% ({ag.teens.toLocaleString()}
-                          {isProgressing && (
-                            <span className={styles.estPill}>
-                              {' '}est. {Math.round(ag.teens * multiplier).toLocaleString()}
-                            </span>
-                          )})
-                        </strong>
-                      </div>
-                      <div className={styles.ageBarTrack}>
-                        <div
-                          className={styles.ageBarFillTeens}
-                          style={{ width: `${teensPct}%` }}
-                        />
-                      </div>
-                    </div>
-
-                    {/* Children */}
-                    <div className={styles.ageBarRow}>
-                      <div className={styles.ageBarLabelGroup}>
-                        <span>Children (&lt;13)</span>
-                        <strong>
-                          {childrenPct}% ({ag.children.toLocaleString()}
-                          {isProgressing && (
-                            <span className={styles.estPill}>
-                              {' '}est. {Math.round(ag.children * multiplier).toLocaleString()}
-                            </span>
-                          )})
-                        </strong>
-                      </div>
-                      <div className={styles.ageBarTrack}>
-                        <div
-                          className={styles.ageBarFillChildren}
-                          style={{ width: `${childrenPct}%` }}
-                        />
-                      </div>
-                    </div>
-
-                    {/* Seniors */}
-                    <div className={styles.ageBarRow}>
-                      <div className={styles.ageBarLabelGroup}>
-                        <span>Seniors (55+)</span>
-                        <strong>
-                          {seniorsPct}% ({ag.seniors.toLocaleString()}
-                          {isProgressing && (
-                            <span className={styles.estPill}>
-                              {' '}est. {Math.round(ag.seniors * multiplier).toLocaleString()}
-                            </span>
-                          )})
-                        </strong>
-                      </div>
-                      <div className={styles.ageBarTrack}>
-                        <div
-                          className={styles.ageBarFillSeniors}
-                          style={{ width: `${seniorsPct}%` }}
-                        />
-                      </div>
-                    </div>
+                    ))}
                   </div>
                 </div>
+              ) : (
+                <div className={styles.sportAgeView}>n/a</div>
               )}
             </div>
           );

@@ -4,7 +4,7 @@ Last Updated: 2026-06-25T00:00:00.000Z
 Canonical: No
 Owner: Architecture
 
-Version: 12.3.47
+Version: 12.3.48
 
 This document captures implementation-level contracts for recently changed high-risk flows. It complements `docs/architecture.md`; it does not replace feature specs or API references.
 
@@ -13,6 +13,14 @@ This document captures implementation-level contracts for recently changed high-
 ### Scope
 - Organization report variants: `app/admin/organizations/[id]/reports/page.tsx`
 - Partner report variants: `app/admin/partners/[id]/reports/page.tsx`
+- Global report (everything Messmass collects; one more owner next to organization, partner, hashtag and filter):
+  workspace `app/admin/global/reports/page.tsx` (shared `ReportsWorkspace`, owner type `global`), report
+  `app/interactive-report/global/page.tsx` served at `/report/global`. Since 2026-11-14 it shows every event together
+  in the unified report (`buildAllEventsReport` in `lib/hashtagReport`, Fanmass data and Messmass calculations only);
+  the previous report (the `global` scope of `getScopedInteractiveReportData`, partly typed in by hand) stays at
+  `?report=classic`, and a saved variant (`?variant=`) still opens that one. It spans every client, so it is never
+  public: an admin session opens it, anyone else needs its page password (page type `global-report`, id `all`), issued
+  and shared from the workspace like every other report; with no password issued it shows nothing.
 - API routes:
   - `app/api/report-variants/route.ts`
   - `app/api/report-variants/[id]/route.ts`

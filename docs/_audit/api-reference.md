@@ -1,8 +1,8 @@
 # messmass API Reference
 
-Generated for the fleet audit (messmass#350); measured against `docs/_audit/endpoints.json` (232 endpoints, including brand assets management and interactive report routes). Existing Auth adjudication was re-verified against the handlers @ dd34e229 (2026-09-28); the new Camera style-context read uses `assertCameraSecret`.
+Generated for the fleet audit (messmass#350); measured against `docs/_audit/endpoints.json` (248 endpoints, including the Fanmass drive photos placed in events or in the library, the unified hashtag report, brand assets management and interactive report routes). Existing Auth adjudication was re-verified against the handlers @ dd34e229 (2026-09-28); the new Camera style-context read uses `assertCameraSecret`.
 
-Coverage: 232 of 232 routes documented, enforced by
+Coverage: 248 of 248 routes documented, enforced by
 `tests/api-reference-covers-every-route.test.ts` — five routes were missing when
 that claim was last made by hand.
 
@@ -184,7 +184,21 @@ All routes use `requireFanmassIntegrationAuth` (Bearer/`x-api-key` shared token)
 | /api/integrations/fanmass/drive-folders/pending-sync | GET | — | folders pending sync | reads `drive_folder_links` |
 | /api/integrations/fanmass/drive-folders | GET | — | drive folder links | reads `drive_folder_links` |
 | /api/integrations/fanmass/events/[eventId]/analysis-summary | POST | summary body | 410 `EVENT_LEVEL_EXPORT_RETIRED` | no reads or writes |
-| /api/integrations/fanmass/events/[eventId]/photos/[photoId] | POST, DELETE | requireFanmassIntegrationAuth | POST one photo result; DELETE tombstone, each with partner/event/photo IDs and generation | `{success,data:{status}}` | upserts one `fanmass_camera_photo_analyses` row; rebuilds the per-photo event summary and report stats; ignores stale generations |
+| /api/integrations/fanmass/events/[eventId]/drive-photos | POST | requireFanmassIntegrationAuth | `{contractVersion:'fanmass.messmass.event-drive-photos.v1', messmassEventId, photos:[{photoId:'<sport>/<file>', assignment:{confidence 0..1, method}, optIn:{received:true, basis:'local_drive_policy'}, analysis|null, hashtags?:[tag]}], remove?:[photoId]}`, up to 500 of each, at least one | `{success,data:{eventId,stored,removed}}` | upserts `fanmass_event_drive_photos` by photoId (a photo placed elsewhere earlier moves to this event) and deletes the listed photos still filed under this event; 404 for an unknown event |
+| /api/integrations/fanmass/drive-photos | POST | requireFanmassIntegrationAuth | the same body as the event route with `messmassEventId:null`, photos may carry `hashtags:[lowercase, no #]` | `{success,data:{eventId:null,stored,removed}}` | upserts `fanmass_event_drive_photos` by photoId with `eventId:null`: drive photos in no Messmass event, found by their hashtags |
+| /api/integrations/fanmass/event-list | GET | requireFanmassIntegrationAuth | — | `{success,data:{events:[{id,name,date}]}}` | every event's identity, no stats; Fanmass finds the event of a campaign game without a Camera link by date and clubs |
+| /api/integrations/fanmass/fanmass-hashtags | POST | requireFanmassIntegrationAuth | — | `{success,data:{events,changed,cleared}}` | recomputes every event's `fanmassHashtags` from its photos (drive and Camera), without its typed hashtags (`lib/fanmassEventHashtags.ts`) |
+| /api/integrations/fanmass/event-hashtags | POST | requireFanmassIntegrationAuth | `{contractVersion:'fanmass.messmass.event-hashtags.v1', hashtags:[1-5, lowercase a-z0-9_], eventIds:[1-500 event ids]}` | `{success,data:{added:[{eventId,hashtags}],unchanged,missing,skipped}}` | additive only (`lib/fanmassEventHashtags.ts`): adds a hashtag to an event's plain list when no list of the event carries it yet (any case); never removes; an event whose list is a comma-separated text is skipped |
+| /api/integrations/fanmass/match-events | POST | requireFanmassIntegrationAuth | `{contractVersion:'fanmass.messmass.match-event.v1', home, away, eventDate:'YYYY-MM-DD'}`; both clubs must each match exactly one partner by name (case and accents ignored) | `{success,data:{created,eventId,eventName,eventDate}}`, 201 when created, 200 when the match already exists | creates the event exactly like Quick Add's match builder (`lib/matchEvent.ts`, `lib/createEvent.ts`: slugs, hashtag counts, Partner 1 Bitly links) and its Camera mirror after the response; 409 with candidates for an unknown or ambiguous club |
+| /api/integrations/fanmass/events/[eventId]/photos/[photoId] | POST, DELETE | requireFanmassIntegrationAuth | POST one photo result; DELETE tombstone, each with partner/event/photo IDs and generation; POST may carry `hashtags:[lowercase, no #]`, stored together with the event's hashtags | `{success,data:{status}}` | upserts one `fanmass_camera_photo_analyses` row; rebuilds the per-photo event summary and report stats; ignores stale generations |
+| /api/integrations/fanmass/szrt-evidence | POST | requireFanmassIntegrationAuth | `{pipeline,samples[{fileKey,sport,analyzedAt,region,crop}]}`, at most 40 | `{success,data:{received,stored,skipped[{index,reason}]}}` | the old path of /api/integrations/fanmass/evidence: same handler, a sender naming no origin is `szrt` |
+| /api/integrations/fanmass/evidence | POST | requireFanmassIntegrationAuth | `{pipeline,origin?,samples[{fileKey,sport,analyzedAt,region,crop}],replaceFiles?[]}`, at most 40 samples | `{success,data:{origin,received,stored,replaced,skipped[{index,reason}]}}` | global evidence library: stores each crop in R2 under `fanmass-evidence/`, upserts one `fanmass_evidence` row per origin, file and region, never overwrites a reviewed row; 503 without the R2 variables |
+| /api/integrations/fanmass/evidence-reviews | GET | requireFanmassIntegrationAuth | `?origin` | `{success,data:{overrides[{id,origin,fileKey,regionId,source,status,name,kind}]}}` | reads the human decisions in `fanmass_evidence` (at most 5,000) |
+| /api/integrations/fanmass/evidence-training | GET | requireFanmassIntegrationAuth | none | `{success,data:{deny[],alias[]}}` | derives rules (text to name) from every human decision, all origins |
+| /api/admin/fanmass-evidence | GET, POST | requireAdmin | GET `?status&kind&name&origin&limit&offset`; POST `{name,kind,crop,origin?,sport?,readText?,note?,box?}` | `{success,rows,total}` / `{success,row}` | lists `fanmass_evidence`; POST stores the picture in R2 and inserts a person-made sample |
+| /api/admin/fanmass-evidence/[id] | PATCH, DELETE | requireAdmin | PATCH `{action:confirm\\|reject\\|correct\\|restore,name?,kind?,note?}` | `{success,row}` / `{success}` | writes a human review onto one sample; DELETE removes only a sample a person added (409 otherwise) |
+| /api/integrations/fanmass/szrt-progress | POST | requireFanmassIntegrationAuth | `{pipeline,totalImages,processedCount,status,currentSport,lastUpdated,aggregates}` | `{success,data:{processedCount,totalImages,status}}` | replaces the figures of the `szrt_vision_progress` document `szrt_progress`; clears old per-image text; never writes `publishApproved` |
+| /api/integrations/fanmass/szrt-publish | POST | requireFanmassIntegrationAuth | `{approved,approvedBy,note?}` | `{success,data:{publishApproved,publishApprovedBy,publishApprovedAt,processedCount,invalidatedScopes}}` | sets `publishApproved` on `szrt_progress` and records who and when; drops cached SZRT report snapshots; 409 before figures were delivered |
 | /api/integrations/fanmass/events/[eventId]/context | GET | path id | 410 `EVENT_CONTEXT_RETIRED`; Camera supplies routing IDs with each photo task | none |
 | /api/integrations/fanmass/events/[eventId]/drive-folders/status | POST | status body | `{success}` | updates `drive_folder_links` status |
 | /api/integrations/fanmass/events/[eventId]/link | GET, POST | legacy batch-link body | 410 `EVENT_BATCH_LINKS_RETIRED` | no reads or writes |
@@ -203,12 +217,13 @@ All routes use `requireFanmassIntegrationAuth` (Bearer/`x-api-key` shared token)
 |---|---|---|---|---|---|
 | /api/integrations/privacy/erase-camera-photo | DELETE | `requireMessmassPrivacyErasureSecret` (`MESSMASS_PRIVACY_ERASURE_SECRET`) | exact SSO case id + Messmass event, Camera partner, event, and photo IDs | `{status:"deleted",received_at}` or fail-closed error | tombstones the exact photo result and rebuilds event analytics; no identity or media URL accepted |
 
-## /api/hashtags and hashtag config (7 routes)
+## /api/hashtags and hashtag config (8 routes)
 
 | Path | Methods | Auth | Request | Response | Side effects |
 |---|---|---|---|---|---|
 | /api/hashtag-categories | GET, POST, PUT, DELETE | GET none (public read for rendering); POST/PUT/DELETE requireAdmin (7d3ef3bb) | `?search&limit&offset`; bodies; DELETE `?id` | `{success,categories[]}` | insert/update/delete `hashtag_categories`; reads `projects` |
 | /api/hashtag-colors | GET, POST, PUT, DELETE | GET none (public read); POST/PUT/DELETE requireAdmin (7d3ef3bb) | POST `{name,color}`; PUT `{_id,name,color}`; DELETE `?id` | `{success,colors[]}` | insert/update/delete `hashtag_colors` |
+| /api/hashtag-report/[hashtag] | GET | requirePageAccess('hashtag', hashtag) (public unless the hashtag has a page password) | path hashtag, with or without `#` | `{scope, measured, calculated, coverage}`: the unified hashtag report, Fanmass-measured data and Messmass calculations only | reads `projects` (event identity and allowlisted `camera_*` counters only) and `ai_analysis_summaries` |
 | /api/hashtags/[hashtag] | GET | none (public-by-design per `KNOWN_UNGUARDED_READS`; note it applies no page password, unlike filter-by-slug) | `?variant` | aggregated hashtag stats | reads `projects`, `hashtag_slugs` |
 | /api/hashtags/filter | GET, POST | requireSession (both methods) | GET `?tags=`; POST `{hashtags[]}` | filtered aggregate stats | reads `projects` |
 | /api/hashtags/filter-by-slug/[slug] | GET | requirePageAccess('filter', slug) | `?variant` | filter stats | reads `projects` |
@@ -336,7 +351,8 @@ All wrapped in `withOrgContext` (getAdminUser + `x-v3-org-id` injection) except 
 | /api/brand-assets | GET, POST | requireSession | POST FormData `{name,file,…}` or JSON `{name,logoUrl,…}` | `{success,brandAssets[]\|brandAsset}` | reads/writes `brand_assets`, synchronizes with Fanmass Vision progress |
 | /api/brand-assets/[id] | DELETE | requireSession | path id or slug | `{success,deletedId}` | deletes from `brand_assets` |
 | /api/interactive-report/[partnerSlug] | GET | none (public-by-design: interactive client report) | path partnerSlug | `{partner,matches,vision}` | reads partner metadata, matches, and vision progress aggregates |
-| /api/interactive-report/partner-selfies | GET | none (public-by-design: interactive client report) | `?partnerName&limit&page&fanGroup` | `{selfies[],fanGroups}` | reads vision selfies matching partner or supporter group |
+| /api/interactive-report/partner-selfies | GET | none (public-by-design: interactive client report) | `?club\|partnerId\|partnerSlug` | `{partner,totalSelfies:0,selfies:[]}` | reads the `partners` record only; serves no analysed selfie (the retired `szrt_vision_analysis` is not read) |
+| /api/interactive-report/brand-evidence | GET | none (public-by-design: interactive client report; SZRT tenant only; nothing before `publishApproved`) | `?kind=brand\|club&name&organizationId` | `{success,published,provenPhotos,modelIdentifiedPhotos,samples[]}` | reads `szrt_brand_evidence`; at most 12 samples, one per photo, text-read proof only |
 | /api/drive-folders/[linkId] | PATCH, DELETE | getAdminUser | `?projectId`; PATCH body | `{success}` | update/delete `drive_folder_links` |
 | /api/drive-folders | GET, POST | getAdminUser | `?projectId`; POST folder body | `{success,folders[]}` | reads/inserts `drive_folder_links` |
 | /api/filter-slug | POST | requireSession | `{hashtags[]}` | `{success,slug}` | mints filter slug (`filter_slugs`) |
@@ -373,10 +389,10 @@ CSRF is never counted as a guard: any anonymous caller can fetch the token from
 
 | | routes |
 |---|---:|
-| Fully guarded (every method) | **198** |
+| Fully guarded (every method) | **213** |
 | Open write method, public by design | **5** |
-| Open GET only, writes guarded or absent | **29** |
-| **Total** | **232** |
+| Open GET only, writes guarded or absent | **30** |
+| **Total** | **248** |
 
 The previous run of this section (2026-08) listed 40 GAP routes, 21 of them
 unauthenticated writes. Those are closed: messmass#347 and #386 took the first
@@ -398,7 +414,7 @@ whenever an `admin-session` cookie was merely *present*.
 | `/api/client-error` | POST | Records a crash report. A logged-out visitor can crash too. |
 | `/api/contact` | POST | Public contact form, rate-limited by middleware. |
 
-### Open GET only (27)
+### Open GET only (28)
 
 Each serves an anonymously-reachable surface, or is pre-auth. Where a route
 also exposes writes, those writes are guarded — the asymmetry is deliberate:
@@ -424,6 +440,7 @@ the page-password editors read these without a session.
 | `/api/hashtag-colors` | POST, PUT, DELETE |
 | `/api/hashtags` | POST, DELETE |
 | `/api/hashtags/[hashtag]` | — (read-only route) |
+| `/api/interactive-report/brand-evidence` | — (read-only route) |
 | `/api/landing-static` | — (read-only route) |
 | `/api/organizations/report/[id]` | — (read-only route) |
 | `/api/organizations/report/[id]/activities` | — (read-only route) |

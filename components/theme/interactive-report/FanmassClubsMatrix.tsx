@@ -2,11 +2,13 @@
 /* eslint-disable react/forbid-dom-props */
 /* eslint-disable @next/next/no-img-element */
 
-import React, { useState, useMemo, useEffect } from 'react';
+import React, { useState, useMemo } from 'react';
 import {
   getFranchiseInfo,
   isVenue,
 } from '@/lib/brandEntityClustering';
+import ConnectedSelfiesModal from './ConnectedSelfiesModal';
+import type { CameraProofEntry } from '@/lib/hashtagReport/cameraProof';
 import styles from './interactive-report.module.css';
 
 interface ClubStat {
@@ -25,7 +27,8 @@ interface ClubStat {
 interface FanmassClubsMatrixProps {
   clubs: ClubStat[];
   totalPhotosProcessed: number;
-  totalImages?: number;
+  /** The names read in the report's Camera photos with their proof (vision.cameraProof). */
+  cameraProof?: CameraProofEntry[];
 }
 
 type SportFilter = 'all' | 'Basketball' | 'Football' | 'Handball' | 'Ice Hockey' | 'International';
@@ -92,63 +95,13 @@ function resolveFranchiseSport(name: string): 'Basketball' | 'Football' | 'Handb
 export default function FanmassClubsMatrix({
   clubs,
   totalPhotosProcessed,
-  totalImages = 11312,
+  cameraProof,
 }: FanmassClubsMatrixProps) {
   const [filter, setFilter] = useState<SportFilter>('all');
   const [searchQuery, setSearchQuery] = useState('');
 
   // Connected Selfies Modal state
   const [selectedClubForModal, setSelectedClubForModal] = useState<ClubStat | null>(null);
-  const [selfiesLoading, setSelfiesLoading] = useState(false);
-  const [selfiesData, setSelfiesData] = useState<any>(null);
-  const [selectedFanGroup, setSelectedFanGroup] = useState<string>('all');
-
-  // Fetch connected selfies when a club is selected for inspection
-  useEffect(() => {
-    if (!selectedClubForModal) {
-      setSelfiesData(null);
-      setSelectedFanGroup('all');
-      return;
-    }
-
-    let isMounted = true;
-    setSelfiesLoading(true);
-    setSelectedFanGroup('all');
-
-    const q = new URLSearchParams({
-      club: selectedClubForModal.club,
-      partnerId: selectedClubForModal.partnerId || '',
-      partnerSlug: selectedClubForModal.partnerSlug || '',
-    });
-
-    fetch(`/api/interactive-report/partner-selfies?${q.toString()}`)
-      .then((r) => r.json())
-      .then((data) => {
-        if (isMounted) {
-          setSelfiesData(data);
-          setSelfiesLoading(false);
-        }
-      })
-      .catch(() => {
-        if (isMounted) {
-          setSelfiesLoading(false);
-        }
-      });
-
-    return () => {
-      isMounted = false;
-    };
-  }, [selectedClubForModal]);
-
-  const displaySelfies = useMemo(() => {
-    if (!selfiesData?.selfies) return [];
-    if (selectedFanGroup === 'all') return selfiesData.selfies;
-    return selfiesData.selfies.filter(
-      (s: any) =>
-        s.fanGroups?.some((fg: string) => fg.toLowerCase().includes(selectedFanGroup.toLowerCase())) ||
-        s.scene?.toLowerCase().includes(selectedFanGroup.toLowerCase())
-    );
-  }, [selfiesData, selectedFanGroup]);
 
   // 1. Strict filter: Exclude non-club junk and commercial sponsor hallucinations
   const validClubs = useMemo(() => {
@@ -160,7 +113,7 @@ export default function FanmassClubsMatrix({
         return false;
       }
       // If someone passed in a standalone venue, omit from franchise list
-      if (isVenue(c.club) && !low.includes('sopron kc')) return false;
+      if (isVenue(c.club)) return false;
       return true;
     });
   }, [clubs]);
@@ -172,9 +125,6 @@ export default function FanmassClubsMatrix({
   const totalSightings = useMemo(() => {
     return validClubs.reduce((acc, c) => acc + c.count, 0);
   }, [validClubs]);
-
-  const isProgressing = totalPhotosProcessed > 0 && totalPhotosProcessed < totalImages;
-  const multiplier = isProgressing ? totalImages / totalPhotosProcessed : 1;
 
   // Counts per sport
   const sportCounts = useMemo(() => {
@@ -222,8 +172,8 @@ export default function FanmassClubsMatrix({
 
   const merchAdoptionRate =
     totalPhotosProcessed > 0
-      ? ((totalSightings / totalPhotosProcessed) * 100).toFixed(1)
-      : '32.4';
+      ? `${((totalSightings / totalPhotosProcessed) * 100).toFixed(1)}%`
+      : 'n/a';
 
   return (
     <div className={styles.reportCard}>
@@ -231,22 +181,20 @@ export default function FanmassClubsMatrix({
         <div>
           <div className={styles.cardHeaderBadgeRow}>
             <span className={styles.cardSourceTag}>
-              🏟️ Fan Allegiance • Empirical Jersey &amp; Merchandise Recognition
+              🏟️ Fan Allegiance • Jersey &amp; Merchandise Recognition
             </span>
             <span className={styles.cardCountPill}>
-              {validClubs.length} Franchises &amp; Clubs Identified • {totalSightings.toLocaleString()}
-              {isProgressing && ` (est. ${Math.round(totalSightings * multiplier).toLocaleString()})`}{' '}
-              Jerseys
+              {validClubs.length} Franchises &amp; Clubs Identified • {totalSightings.toLocaleString()} Jerseys
             </span>
             <span className={styles.cardCountPill} style={{ background: '#f0fdf4', color: '#166534' }}>
-              👕 {merchAdoptionRate}% Merchandise Presence
+              👕 {merchAdoptionRate} Merchandise Presence
             </span>
           </div>
           <h3 className={styles.cardTitle}>
-            🏆 Sport Franchises &amp; Authoritative Partner Matrix
+            🏆 Sport Franchises &amp; Partner Matrix
           </h3>
           <p className={styles.cardSubtitle}>
-            Connected directly to our central partner registry. High-resolution crests, home stadiums, and detected fan selfies are linked to eliminate data duplication and expose real-time partner loyalty.
+            Clubs and franchises identified on fan jerseys and merchandise. Where a club is linked to a partner record, its crest and detected fan selfies are shown.
           </p>
         </div>
 
@@ -295,7 +243,7 @@ export default function FanmassClubsMatrix({
           <div style={{ position: 'relative', width: '280px' }}>
             <input
               type="text"
-              placeholder="Search club or partner (e.g. Sopron, DVTK, Pick)..."
+              placeholder="Search club or partner..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               style={{
@@ -344,14 +292,10 @@ export default function FanmassClubsMatrix({
             const sport = item.sport || resolveFranchiseSport(item.club);
             const barWidth = Math.max(8, Math.round((item.count / maxCount) * 100));
             const shareOfJerseys =
-              totalSightings > 0 ? ((item.count / totalSightings) * 100).toFixed(1) : '0';
+              totalSightings > 0 ? `${((item.count / totalSightings) * 100).toFixed(1)}%` : 'n/a';
 
-            // Special handling for Sopron KC venue
-            const isSopron = item.club.toLowerCase().includes('sopron');
-            const venueName =
-              item.homeVenue || franchiseInfo?.homeVenue || (isSopron ? 'Novomatic Aréna Sopron' : undefined);
-            const venueWebsite =
-              franchiseInfo?.venueWebsite || (isSopron ? 'https://www.novomaticarenasopron.hu' : undefined);
+            const venueName = item.homeVenue || franchiseInfo?.homeVenue || undefined;
+            const venueWebsite = franchiseInfo?.venueWebsite || undefined;
 
             const sportIcon =
               sport === 'Basketball' ? '🏀' :
@@ -383,7 +327,7 @@ export default function FanmassClubsMatrix({
                     </span>
                   </div>
                   <span style={{ fontSize: '11px', color: '#64748b' }}>
-                    {shareOfJerseys}% of merch
+                    {shareOfJerseys} of merch
                   </span>
                 </div>
 
@@ -410,7 +354,7 @@ export default function FanmassClubsMatrix({
                       {item.partnerName || item.club}
                     </h4>
 
-                    {/* Authoritative Partner DB Verified Pill */}
+                    {/* Partner link pill */}
                     {hasPartnerLink && (
                       <div style={{ marginTop: '3px' }}>
                         {item.partnerSlug ? (
@@ -419,14 +363,14 @@ export default function FanmassClubsMatrix({
                             target="_blank"
                             rel="noopener noreferrer"
                             className={styles.partnerVerifiedBadge}
-                            title="Authoritative partner verified in messmass partners collection. Click to view partner report."
+                            title="Linked partner record. Click to view the partner report."
                           >
                             🛡️ Partner Connected ↗
                           </a>
                         ) : (
                           <span
                             className={styles.partnerVerifiedBadge}
-                            title="Authoritative partner connected in database"
+                            title="Linked partner record"
                           >
                             🛡️ Partner Connected
                           </span>
@@ -457,56 +401,12 @@ export default function FanmassClubsMatrix({
                         )}
                       </div>
                     )}
-
-                    {/* Supporter Groups Sub-Indicator */}
-                    {item.club.toLowerCase().includes('ferencváros') && (
-                      <div style={{ marginTop: '3px', fontSize: '10px', color: '#64748b' }}>
-                        👥 Supporter Groups: Green Monsters, B-Közép
-                      </div>
-                    )}
-                    {item.club.toLowerCase().includes('újpest') && (
-                      <div style={{ marginTop: '3px', fontSize: '10px', color: '#64748b' }}>
-                        👥 Supporter Groups: Ultra Viola Bulldogs, UVB
-                      </div>
-                    )}
-                    {item.club.toLowerCase().includes('sopron') && (
-                      <div style={{ marginTop: '3px', fontSize: '10px', color: '#64748b' }}>
-                        👥 Supporter Groups: Soproni Tigrisek, B-Közép
-                      </div>
-                    )}
-                    {item.club.toLowerCase().includes('fehérvár') && (
-                      <div style={{ marginTop: '3px', fontSize: '10px', color: '#64748b' }}>
-                        👥 Supporter Groups: Red-Blue Devils, RBD
-                      </div>
-                    )}
-                    {item.club.toLowerCase().includes('dvtk') && (
-                      <div style={{ marginTop: '3px', fontSize: '10px', color: '#64748b' }}>
-                        👥 Supporter Groups: Ultras Diósgyőr, Commandos
-                      </div>
-                    )}
-                    {item.club.toLowerCase().includes('szeged') && (
-                      <div style={{ marginTop: '3px', fontSize: '10px', color: '#64748b' }}>
-                        👥 Supporter Groups: Szögedi Csibészek
-                      </div>
-                    )}
-                    {item.club.toLowerCase().includes('veszprém') && (
-                      <div style={{ marginTop: '3px', fontSize: '10px', color: '#64748b' }}>
-                        👥 Supporter Groups: Építők Fan Club
-                      </div>
-                    )}
                   </div>
                 </div>
 
                 <div className={styles.clubMetricsRow}>
                   <span className={styles.clubSightingsLabel}>Jerseys &amp; Scarves</span>
-                  <span className={styles.clubSightingsVal}>
-                    {item.count.toLocaleString()}
-                    {isProgressing && (
-                      <span className={styles.estPill}>
-                        {' '}(est. {Math.round(item.count * multiplier).toLocaleString()})
-                      </span>
-                    )}
-                  </span>
+                  <span className={styles.clubSightingsVal}>{item.count.toLocaleString()}</span>
                 </div>
 
                 <div className={styles.clubBarTrack}>
@@ -534,276 +434,11 @@ export default function FanmassClubsMatrix({
       )}
 
       {/* Connected Selfies Detail Modal */}
-      {selectedClubForModal && (
-        <div
-          className={styles.partnerModalOverlay}
-          onClick={() => setSelectedClubForModal(null)}
-          role="dialog"
-          aria-modal="true"
-        >
-          <div
-            className={styles.partnerModalContent}
-            onClick={(e) => e.stopPropagation()}
-          >
-            {/* Modal Header */}
-            <div className={styles.partnerModalHeader}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                <div className={styles.clubLogoBox} style={{ width: '48px', height: '48px' }}>
-                  {selectedClubForModal.logoUrl ? (
-                    <img
-                      src={selectedClubForModal.logoUrl}
-                      alt={selectedClubForModal.partnerName || selectedClubForModal.club}
-                      className={styles.clubLogoImg}
-                    />
-                  ) : (
-                    <span style={{ fontSize: '24px' }}>🏆</span>
-                  )}
-                </div>
-                <div>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                    <h3 style={{ margin: 0, fontSize: '16px', fontWeight: 700, color: '#0f172a' }}>
-                      {selectedClubForModal.partnerName || selectedClubForModal.club}
-                    </h3>
-                    <span className={styles.partnerVerifiedBadge}>🛡️ Partner Verified</span>
-                  </div>
-                  <p style={{ margin: '2px 0 0 0', fontSize: '12px', color: '#64748b' }}>
-                    Empirical selfie detections connected to partner database
-                  </p>
-                </div>
-              </div>
-
-              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                {selectedClubForModal.partnerSlug && (
-                  <a
-                    href={`/partner-report/${selectedClubForModal.partnerSlug}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className={styles.granularityBtn}
-                    style={{ textDecoration: 'none', background: '#3b82f6', color: '#ffffff', border: 'none' }}
-                  >
-                    Open Partner Report ↗
-                  </a>
-                )}
-                <button
-                  type="button"
-                  onClick={() => setSelectedClubForModal(null)}
-                  style={{
-                    background: 'none',
-                    border: 'none',
-                    fontSize: '18px',
-                    color: '#64748b',
-                    cursor: 'pointer',
-                    padding: '4px 8px',
-                  }}
-                  aria-label="Close"
-                >
-                  ✕
-                </button>
-              </div>
-            </div>
-
-            {/* Modal Body */}
-            <div className={styles.partnerModalBody}>
-              {selfiesLoading ? (
-                <div style={{ padding: '40px', textAlign: 'center', color: '#64748b' }}>
-                  <div style={{ fontSize: '24px', marginBottom: '8px' }}>🔄</div>
-                  <div>Querying connected selfies from MongoDB database...</div>
-                </div>
-              ) : selfiesData ? (
-                <>
-                  {/* Demographics & Highlights Summary */}
-                  <div
-                    style={{
-                      display: 'grid',
-                      gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))',
-                      gap: '12px',
-                    }}
-                  >
-                    <div style={{ background: '#f8fafc', padding: '10px 14px', borderRadius: '8px', border: '1px solid #e2e8f0' }}>
-                      <div style={{ fontSize: '11px', color: '#64748b' }}>Connected Selfies</div>
-                      <div style={{ fontSize: '18px', fontWeight: 700, color: '#0f172a', marginTop: '2px' }}>
-                        {selfiesData.totalSelfies || selectedClubForModal.count}
-                      </div>
-                    </div>
-
-                    <div style={{ background: '#f8fafc', padding: '10px 14px', borderRadius: '8px', border: '1px solid #e2e8f0' }}>
-                      <div style={{ fontSize: '11px', color: '#64748b' }}>Gender Split</div>
-                      <div style={{ fontSize: '14px', fontWeight: 600, color: '#0f172a', marginTop: '4px' }}>
-                        ♂ {selfiesData.demographics?.malePct || 50}% • ♀ {selfiesData.demographics?.femalePct || 50}%
-                      </div>
-                    </div>
-
-                    <div style={{ background: '#f8fafc', padding: '10px 14px', borderRadius: '8px', border: '1px solid #e2e8f0' }}>
-                      <div style={{ fontSize: '11px', color: '#64748b' }}>Home Arena</div>
-                      <div style={{ fontSize: '12px', fontWeight: 600, color: '#0f172a', marginTop: '4px' }}>
-                        {selectedClubForModal.homeVenue || (selectedClubForModal.club.toLowerCase().includes('sopron') ? 'Novomatic Aréna Sopron' : 'Regional Stadium')}
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Top Emotions & Co-occurring Brands */}
-                  {selfiesData.topEmotions && selfiesData.topEmotions.length > 0 && (
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flexWrap: 'wrap' }}>
-                      <span style={{ fontSize: '11px', fontWeight: 600, color: '#475569' }}>
-                        Dominant Fan Expressions:
-                      </span>
-                      {selfiesData.topEmotions.map((em: any) => (
-                        <span
-                          key={em.emotion}
-                          style={{
-                            fontSize: '11px',
-                            background: '#f1f5f9',
-                            color: '#334155',
-                            padding: '2px 8px',
-                            borderRadius: '9999px',
-                            border: '1px solid #e2e8f0',
-                          }}
-                        >
-                          😊 {em.emotion} ({em.count})
-                        </span>
-                      ))}
-                    </div>
-                  )}
-
-                  {/* Supporter Groups Filter Chips */}
-                  {selfiesData.fanGroups && selfiesData.fanGroups.length > 0 && (
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flexWrap: 'wrap' }}>
-                      <span style={{ fontSize: '11px', fontWeight: 700, color: '#334155' }}>
-                        🏴 Supporter Groups:
-                      </span>
-                      <button
-                        type="button"
-                        onClick={() => setSelectedFanGroup('all')}
-                        style={{
-                          padding: '3px 10px',
-                          fontSize: '11px',
-                          fontWeight: 600,
-                          borderRadius: '9999px',
-                          border: '1px solid',
-                          borderColor: selectedFanGroup === 'all' ? '#1d4ed8' : '#cbd5e1',
-                          background: selectedFanGroup === 'all' ? '#dbeafe' : '#ffffff',
-                          color: selectedFanGroup === 'all' ? '#1e40af' : '#475569',
-                          cursor: 'pointer',
-                        }}
-                      >
-                        All Allegiance ({selfiesData.totalSelfies || selectedClubForModal.count})
-                      </button>
-                      {selfiesData.fanGroups.map((fg: any) => (
-                        <button
-                          key={fg.group}
-                          type="button"
-                          onClick={() => setSelectedFanGroup(fg.group)}
-                          style={{
-                            padding: '3px 10px',
-                            fontSize: '11px',
-                            fontWeight: 600,
-                            borderRadius: '9999px',
-                            border: '1px solid',
-                            borderColor: selectedFanGroup === fg.group ? '#1d4ed8' : '#cbd5e1',
-                            background: selectedFanGroup === fg.group ? '#dbeafe' : '#ffffff',
-                            color: selectedFanGroup === fg.group ? '#1e40af' : '#475569',
-                            cursor: 'pointer',
-                          }}
-                        >
-                          🏴‍☠️ {fg.group} ({fg.count})
-                        </button>
-                      ))}
-                    </div>
-                  )}
-
-                  {/* Connected Selfies List */}
-                  <div>
-                    <h4 style={{ margin: '0 0 10px 0', fontSize: '13px', fontWeight: 700, color: '#334155' }}>
-                      📸 Captured Fan Selfies with {selectedClubForModal.partnerName || selectedClubForModal.club} Allegiance
-                      {selectedFanGroup !== 'all' && (
-                        <span style={{ marginLeft: '6px', fontSize: '11px', color: '#1e40af', fontWeight: 600 }}>
-                          • Filtered to {selectedFanGroup} ({displaySelfies.length})
-                        </span>
-                      )}
-                    </h4>
-
-                    {displaySelfies.length > 0 ? (
-                      <div className={styles.selfieGrid}>
-                        {displaySelfies.map((s: any, idx: number) => (
-                          <div key={s.fileName || idx} className={styles.selfieCard}>
-                            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                              <span style={{ fontWeight: 700, color: '#2563eb' }}>
-                                #{idx + 1} {s.sport}
-                              </span>
-                              <span style={{ color: '#64748b', fontSize: '10px' }}>
-                                👤 {s.peopleCount} {s.peopleCount === 1 ? 'spectator' : 'spectators'}
-                              </span>
-                            </div>
-
-                            <div style={{ color: '#1e293b', lineHeight: 1.4, fontSize: '11px' }}>
-                              &ldquo;{s.scene || 'Fan selfie captured at live sporting match.'}&rdquo;
-                            </div>
-
-                            <div style={{ display: 'flex', alignItems: 'center', gap: '4px', flexWrap: 'wrap', marginTop: '2px' }}>
-                              {s.fanGroups?.map((fg: string) => (
-                                <span
-                                  key={fg}
-                                  style={{
-                                    fontSize: '9px',
-                                    fontWeight: 700,
-                                    background: '#fef3c7',
-                                    color: '#92400e',
-                                    padding: '1px 6px',
-                                    borderRadius: '4px',
-                                    border: '1px solid #fde68a',
-                                  }}
-                                >
-                                  🏴 {fg}
-                                </span>
-                              ))}
-                              {s.emotions?.map((e: string) => (
-                                <span
-                                  key={e}
-                                  style={{
-                                    fontSize: '9px',
-                                    background: '#ecfdf5',
-                                    color: '#065f46',
-                                    padding: '1px 5px',
-                                    borderRadius: '4px',
-                                  }}
-                                >
-                                  {e}
-                                </span>
-                              ))}
-                              {s.brands?.map((b: string) => (
-                                <span
-                                  key={b}
-                                  style={{
-                                    fontSize: '9px',
-                                    background: '#eff6ff',
-                                    color: '#1e40af',
-                                    padding: '1px 5px',
-                                    borderRadius: '4px',
-                                  }}
-                                >
-                                  🏷️ {b}
-                                </span>
-                              ))}
-                            </div>
-                          </div>
-                        ))}
-                      </div>
-                    ) : (
-                      <div style={{ padding: '24px', textAlign: 'center', color: '#64748b', fontSize: '12px' }}>
-                        No selfies found matching this specific supporter group filter.
-                      </div>
-                    )}
-                  </div>
-                </>
-              ) : (
-                <div style={{ padding: '24px', textAlign: 'center', color: '#64748b' }}>
-                  Unable to load connected selfies. Please retry.
-                </div>
-              )}
-            </div>
-          </div>
-        </div>
-      )}
+      <ConnectedSelfiesModal
+        club={selectedClubForModal}
+        onClose={() => setSelectedClubForModal(null)}
+        cameraProof={cameraProof}
+      />
     </div>
   );
 }

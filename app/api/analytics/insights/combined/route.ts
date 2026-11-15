@@ -22,6 +22,9 @@ import { generateInsights } from '@/lib/analytics-insights';
 import { fromExecutiveInsight, fromAnalyticsInsight, combinedInsightRank, type CombinedInsight } from '@/lib/combinedInsight';
 import type { AnalyticsAggregate } from '@/lib/analytics.types';
 
+// Built from many events on the first request; the host default of 15 seconds is too short for it
+export const maxDuration = 60;
+
 export async function GET(request: NextRequest) {
   const denied = await requireSession();
   if (denied) return denied;

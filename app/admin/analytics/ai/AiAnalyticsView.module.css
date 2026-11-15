@@ -137,3 +137,64 @@
 .filterCheckbox {
   accent-color: var(--mm-color-primary-600);
 }
+
+.cardHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: var(--mm-space-2);
+}
+
+.badgeGroup {
+  display: flex;
+  gap: var(--mm-space-1);
+  flex-shrink: 0;
+}
+
+.filterPills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--mm-space-2);
+  margin-bottom: var(--mm-space-4);
+}
+
+.filterPill {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--mm-space-2);
+  padding: var(--mm-space-2) var(--mm-space-3);
+  border-radius: var(--mm-radius-full);
+  font-size: var(--mm-font-size-xs);
+  font-weight: 600;
+  border: var(--mm-border-width-sm) var(--mm-border-style-solid) var(--mm-gray-300);
+  background: var(--mm-white);
+  color: var(--mm-gray-700);
+  cursor: pointer;
+  transition: all 0.15s ease-in-out;
+}
+
+.filterPillActive {
+  border-color: var(--mm-color-primary-600);
+  background: var(--mm-color-primary-50);
+  color: var(--mm-color-primary-700);
+}
+
+.sourceBadge {
+  display: inline-block;
+  padding: 0.15rem var(--mm-space-2);
+  font-size: var(--mm-font-size-xs);
+  font-weight: 600;
+  border-radius: var(--mm-radius-full);
+  background: var(--mm-gray-100);
+  color: var(--mm-gray-700);
+}
+
+.sourceBadgeCamera {
+  background: var(--mm-color-primary-50);
+  color: var(--mm-color-primary-700);
+}
+
+.sourceBadgeStorage {
+  background: var(--mm-gray-200);
+  color: var(--mm-gray-800);
+}

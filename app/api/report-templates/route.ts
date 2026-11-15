@@ -62,7 +62,7 @@ async function getTemplates(request: Request) {
           organizationId: orgId,
           $or: [
             { "metadata.reportTemplateId": template._id.toString() },
-            { "metadata.originalData.reportTemplateId": template._id }
+            { "metadata.originalData.reportTemplateId": template._id.toString() }
           ]
         }, { name: 1, startDate: 1 }).lean();
 
@@ -70,7 +70,7 @@ async function getTemplates(request: Request) {
           organizationId: orgId,
           $or: [
             { "metadata.reportTemplateId": template._id.toString() },
-            { "metadata.originalData.reportTemplateId": template._id }
+            { "metadata.originalData.reportTemplateId": template._id.toString() }
           ]
         }, { name: 1, metadata: 1 }).lean();
 

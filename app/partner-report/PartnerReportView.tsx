@@ -112,7 +112,7 @@ export function PartnerReportView({ slug, variant }: PartnerReportViewProps) {
                   Interactive Multi-View Analytics Dashboard Available
                 </strong>
                 <p className={styles.interactiveReportBannerText}>
-                  Explore 69 activations, D3 timeline scrubber, bubble explorer, and Tippmix conversion funnel.
+                  Explore the timeline scrubber, bubble explorer, and conversion funnel for this partner.
                 </p>
               </div>
             </div>

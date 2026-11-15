@@ -126,6 +126,23 @@ export const projectsEntityConfig: AdminEntityConfig<ProjectDTO> = {
       },
     },
     {
+      // The event's own Camera vetting queue; disabled for an event Camera does not know (no externalRefs.camera)
+      id: 'project-open-camera',
+      label: 'Open in Camera',
+      mobileLabel: 'Camera',
+      icon: 'photo_camera',
+      variant: 'secondary',
+      priority: 'overflow',
+      requiredPermissions: ['admin'],
+      disabled: (project) => !project.externalRefs?.camera?.eventId,
+      execution: {
+        kind: 'route',
+        getHref: (project) =>
+          `${(process.env.NEXT_PUBLIC_CAMERA_BASE_URL || 'https://camera.messmass.com').replace(/\/$/, '')}/admin/vetting?eventId=${encodeURIComponent(project.externalRefs?.camera?.eventId ?? '')}`,
+        target: '_blank',
+      },
+    },
+    {
       id: 'project-delete',
       label: 'Delete',
       icon: 'delete',

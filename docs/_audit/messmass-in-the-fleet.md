@@ -12,19 +12,26 @@ messmass is the master of partner/event/organization data and the event-report
   event's default frame, and posts the scans it counts on an event's tracked links
   (`/api/integrations/camera/events/[id]/link-stats`), and, once the owner switches it on,
   the photo, people and journey counters of an event as `camera_`-prefixed stats
-  (`/api/integrations/camera/events/[id]/photo-stats`). messmass tells camera when a
+  (`/api/integrations/camera/events/[id]/photo-stats`), and reads a partner's current
+  style for its partner workspace (`/api/integrations/camera/partners/[id]/style-context`).
+  Those six inbound routes take the shared camera secret (`assertCameraSecret`); four
+  operator routes under the same path (`link-partners`, `provision-missing`,
+  `link-existing`, `sync-linked`) drive the outbound provisioning and take the fanmass
+  integration token. messmass tells camera when a
   report style or a partner's look changed (`lib/cameraThemeNotify.ts` → camera
-  `/api/internal/messmass/theme-updated`). The events list links an event that has
-  a camera id to camera's `/admin/vetting?eventId=…`. camera is also messmass's email
-  transport. The try-on integration of camera is gone (camera issue 557); it was
+  `/api/internal/messmass/theme-updated`). The link from an event to camera's
+  `/admin/vetting?eventId=…` is the "Open in Camera" action of each row in the events
+  list (`lib/adapters/projectsAdapter.tsx`, disabled for an event Camera does not know;
+  drift register entry 81, fixed 2026-11-15). camera is also messmass's email transport. The try-on integration of camera is gone (camera issue 557); it was
   never a messmass edge.
-- **messmass ← fanmass**: fanmass is the caller on every channel except the
-  analytics-summary pull (below). messmass exposes
-  18 `/api/integrations/fanmass/*` routes (dashboard snapshots, command queue,
-  rescan queue, summaries, drive-folder status) guarded by
-  `FANMASS_INTEGRATION_TOKEN`. messmass also PULLS analytics-summary from
-  `FANMASS_BASE_URL` in the `/sync` + `/callbacks` routes (its one runtime
-  dependency on fanmass reachability).
+- **messmass ← fanmass**: fanmass is the caller on every channel. messmass
+  exposes 31 `/api/integrations/fanmass/*` route files guarded by
+  `FANMASS_INTEGRATION_TOKEN`: the per-photo analysis contract, drive photos,
+  evidence, match events, commands, variables and the SZRT routes. The old
+  event-level channels (summaries, dashboard snapshots, rescan queue, the
+  `/sync` + `/callbacks` pull from `FANMASS_BASE_URL`) answer 410 Gone since
+  af08b361 (2026-10-20), so no request waits on fanmass being reachable; the pull
+  code and its `FANMASS_BASE_URL` / `FANMASS_API_KEY` settings were removed on 2026-11-15.
 - **messmass → SSO**: confidential OAuth client (secret, no PKCE). Local password
   login is retired (410 Gone). The same client also serves the stakeholder
   login (#231), gated by local `stakeholder_grants`.
@@ -33,5 +40,5 @@ messmass is the master of partner/event/organization data and the event-report
   stakeholder sessions (#231).
 
 Canonical cross-app map: `docs/_audit/fleet-architecture.md`.
-API surface: `docs/_audit/api-reference.md` (223 route files under `app/api`,
+API surface: `docs/_audit/api-reference.md` (248 route files under `app/api`,
 measured against `endpoints.json`; its header carries the verification stamp).

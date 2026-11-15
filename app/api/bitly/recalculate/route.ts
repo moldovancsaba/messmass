@@ -199,9 +199,19 @@ export async function GET(request: NextRequest) {
     // recalculateLinkRanges removes orphans for the links it touches, but an
     // untouched link keeps its dead rows, so an operator needs to see the
     // backlog without having to run a recalculation to discover it.
-    const referencedProjectIds = await db
-      .collection('bitly_project_links')
-      .distinct('projectId');
+    // WHY $group and not distinct(): the client runs the strict Stable API v1
+    // (lib/mongodb.ts), which has no distinct command and fails it with
+    // APIStrictError; the $match keeps distinct()'s rule of skipping rows that
+    // have no projectId at all.
+    const referencedProjectIds = (
+      await db
+        .collection('bitly_project_links')
+        .aggregate<{ _id: ObjectId }>([
+          { $match: { projectId: { $exists: true } } },
+          { $group: { _id: '$projectId' } },
+        ])
+        .toArray()
+    ).map((row) => row._id);
     const livingCount = referencedProjectIds.length
       ? await db.collection('projects').countDocuments({ _id: { $in: referencedProjectIds } })
       : 0;
