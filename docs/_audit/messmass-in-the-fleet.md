@@ -30,7 +30,8 @@ messmass is the master of partner/event/organization data and the event-report
   evidence, match events, commands, variables and the SZRT routes. The old
   event-level channels (summaries, dashboard snapshots, rescan queue, the
   `/sync` + `/callbacks` pull from `FANMASS_BASE_URL`) answer 410 Gone since
-  af08b361 (2026-10-20), so no request waits on fanmass being reachable.
+  af08b361 (2026-10-20), so no request waits on fanmass being reachable; the pull
+  code and its `FANMASS_BASE_URL` / `FANMASS_API_KEY` settings were removed on 2026-11-15.
 - **messmass → SSO**: confidential OAuth client (secret, no PKCE). Local password
   login is retired (410 Gone). The same client also serves the stakeholder
   login (#231), gated by local `stakeholder_grants`.
