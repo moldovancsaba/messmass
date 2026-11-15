@@ -125,7 +125,8 @@ export type MediaUploader = (bytes: Buffer, folder: string) => Promise<string | 
 
 export const PLACEHOLDERS = new Set(['', 'unknown', 'n/a', 'na', 'none', 'null', 'undefined', 'brand', 'logo', 'other', 'unsure']);
 export const ORIGIN = /^[a-z0-9][a-z0-9_-]{0,39}$/;
-const FILE_KEY = /^[A-Za-z0-9 _-]{1,40}\/[A-Za-z0-9._-]{1,120}$/;
+// Drive copies are named like "<uuid> (1).jpg": spaces and brackets are allowed in the file name, never a path step
+const FILE_KEY = /^[A-Za-z0-9 _-]{1,40}\/[A-Za-z0-9 ()._-]{1,120}$/;
 const SAFE_ID = /^[A-Za-z0-9_-]{1,40}$/;
 
 export function invalid(status: number, code: string, message: string): never {
