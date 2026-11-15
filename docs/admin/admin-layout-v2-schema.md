@@ -1,8 +1,8 @@
 # Admin LayoutV2 Schema (Layout Configuration)
 Status: Active
-Spec Version: 1.0.0
+Spec Version: 2.0.0
 Created: 2026-01-15T12:24:23.000Z
-Last Updated: 2026-01-15T14:46:42.000Z
+Last Updated: 2026-11-06T18:30:00.000Z
 Canonical: Yes
 Owner: Admin (Katja)
 
@@ -15,9 +15,9 @@ Owner: Admin (Katja)
 
 2.1 Types
 ```ts
-type LayoutUnit = 1 | 2;
+type LayoutUnit = 1 | 2 | 3 | 4 | 6;
 type AspectRatio = '1:1' | '2:1' | '16:9' | '9:16';
-type LayoutItemType = 'kpi' | 'pie' | 'bar' | 'text' | 'table' | 'image';
+type LayoutItemType = 'kpi' | 'pie' | 'bar' | 'text' | 'table' | 'image' | 'valuechain';
 type LayoutBindingType = 'chart' | 'contentAsset' | 'statsField';
 
 interface LayoutV2 {
@@ -38,7 +38,7 @@ interface LayoutItem {
   id: string;
   order: number;           // horizontal order within block
   type: LayoutItemType;
-  unitSize: LayoutUnit;    // 1 or 2 units
+  unitSize: LayoutUnit;    // 1 to 6 units on the 6-unit desktop grid
   aspectRatio: AspectRatio;
   binding: LayoutBinding;
 }
@@ -51,31 +51,34 @@ interface LayoutBinding {
 }
 ```
 
-2.2 Block Capacity
-- Each block must total at most 4 units.
-- `sum(item.unitSize) <= 4`
+2.2 Row Capacity & Multi-Row Packing
+- Each horizontal row on the desktop grid holds up to **6 units** (`MAX_BLOCK_UNITS = 6` in `lib/layoutV2BlockCalculator.ts`).
+- When a block's items exceed 6 units, `packItemsIntoRows` packs them greedily left-to-right into sequential 6-unit rows within the same section.
+- Consecutive blocks sharing the same title are coalesced by `coalesceReportBlocks` (`app/report/[slug]/ReportContent.tsx`) so section headings never repeat.
 
 3 Allowed Aspect Ratios per Item Type
 
 | Item Type | Allowed Aspect Ratios |
 | --- | --- |
 | kpi | 1:1 |
-| pie | 1:1 |
+| valuechain | 1:1 |
+| pie | 1:1, 2:1 |
 | bar | 1:1, 2:1 |
 | text | 1:1, 2:1 |
 | table | 1:1, 2:1 |
 | image | 1:1, 16:9, 9:16 |
 
-4 Allowed Unit Sizes per Item Type
+4 Canonical Unit Sizes per Item Type (6-Unit Grid)
 
-| Item Type | Allowed Unit Sizes |
-| --- | --- |
-| kpi | 1 |
-| pie | 1 |
-| bar | 1, 2 |
-| text | 1, 2 |
-| table | 1, 2 |
-| image | 1, 2 |
+| Item Type | Canonical Unit Size | Allowed Unit Sizes |
+| --- | --- | --- |
+| kpi | 1 | 1, 2 |
+| valuechain | 1 | 1, 2 |
+| image | 2 | 1, 2, 3 |
+| pie | 3 | 1, 2, 3 |
+| bar | 3 | 1, 2, 3, 6 |
+| text | 6 | 1, 2, 3, 6 |
+| table | 6 | 1, 2, 3, 6 |
 
 5 Bindings (What Each Item References)
 

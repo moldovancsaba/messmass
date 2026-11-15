@@ -23,35 +23,34 @@ export async function GET(
     const { id } = await params;
     const { searchParams } = new URL(request.url);
     const variantSlug = searchParams.get('variant');
-    if (!ObjectId.isValid(id)) {
-      return NextResponse.json({ success: false, error: 'Invalid organization id' }, { status: 400 });
-    }
 
     const db = await getDb();
-    const organizationId = new ObjectId(id);
-    const organization = await db.collection<OrganizationRecord>('organizations').findOne({ _id: organizationId });
+    const organization = ObjectId.isValid(id)
+      ? (await db.collection<OrganizationRecord>('organizations').findOne({ _id: new ObjectId(id) })) ||
+        (await db.collection<OrganizationRecord>('organizations').findOne({ slug: id } as any))
+      : await db.collection<OrganizationRecord>('organizations').findOne({ slug: id } as any);
 
     if (organization) {
+      const organizationId = organization._id;
       const partners = await db
         .collection('partners')
         .find({ organizationId }, { projection: { _id: 1 } })
         .toArray();
 
       const partnerIds = partners.map((partner) => partner._id);
-      if (partnerIds.length === 0) {
-        return NextResponse.json({ success: true, activities: [] });
+      const matchConditions: any[] = [{ organizationId }];
+      if (partnerIds.length > 0) {
+        matchConditions.push(
+          { partner1: { $in: partnerIds } },
+          { partner2: { $in: partnerIds } },
+          { partner1Id: { $in: partnerIds } },
+          { partner2Id: { $in: partnerIds } }
+        );
       }
 
       const projects = await db
         .collection('projects')
-        .find({
-          $or: [
-            { partner1: { $in: partnerIds } },
-            { partner2: { $in: partnerIds } },
-            { partner1Id: { $in: partnerIds } },
-            { partner2Id: { $in: partnerIds } },
-          ],
-        })
+        .find({ $or: matchConditions })
         .sort({ eventDate: -1 })
         .project({
           _id: 1,
@@ -63,7 +62,7 @@ export async function GET(
         })
         .toArray();
 
-      const resolvedVariant = await resolveReportVariant(db, 'organization', id, variantSlug);
+      const resolvedVariant = await resolveReportVariant(db, 'organization', organizationId.toString(), variantSlug);
       const filteredProjects = projects.filter((project) =>
         isEventDateInPeriod(project.eventDate, resolvedVariant.period)
       );

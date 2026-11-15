@@ -5,7 +5,7 @@ Canonical: Yes
 Owner: Security
 Auth flow verified against code @ dd34e229 (messmass#349; re-verified 2026-09-28)
 
-**Version:** 12.3.43
+**Version:** 12.3.48
 **Last Updated:** 2026-09-28T12:00:00.000Z (UTC)
 **Status:** Production
 **Maintainer:** Security
@@ -238,6 +238,7 @@ export default function PasswordGate({
 | `organization-report` | `/organization-report/[id]` | none | none (1 password configured; not traced) |
 | `filter` | `/filter/[slug]` | client `PagePasswordLogin` | `requirePageAccess('filter', slug)` |
 | `hashtag` | `/hashtag/[hashtag]` | client `PagePasswordLogin` | none |
+| `global-report` | `/report/global` (`app/interactive-report/global/page.tsx`, pageId `all`) | server component → `ServerPageGate`; with no password issued the page is a 404 for everyone but an admin | server component reads the DB only after the check |
 | `edit` | `/edit/[slug]` | client `PagePasswordLogin` | `GET /api/projects/edit/[slug]` via `requirePageAccessDecision('edit', [slug, editSlug, _id])`; `PUT /api/projects` via `requireProjectWriteAccess` |
 | `partner-edit` / `organization-edit` | `/partner-edit/[slug]`, `/organization-edit/[id]` | client `PagePasswordLogin` | `GET`/`PUT /api/partners/edit/[slug]` (route-local gate + write check) and `PUT /api/partners` via `requirePartnerWriteAccess` / `requireOrgEditPageAccess` (`app/api/organizations/edit/[id]/route.ts:21`, called by GET :151 and PUT :238; admin session or this page's grant, base + variant keys) |
 
@@ -271,7 +272,7 @@ All prompts submit to `PUT /api/page-passwords`, which mints the `page-access` g
 - `requireStakeholderRole` (`lib/apiGuards.ts`) is the guard for it; as of dd34e229 no route consumes it yet. The `stakeholder-callback` redirect_uri must be registered on SSO before the flow is reachable.
 
 **Page-Specific Passwords:**
-- Each page (`event-report`, `partner-report`, `organization-report`, `edit`, `partner-edit`, `organization-edit`, `filter`, `hashtag`) can have a unique MD5-style token (32 hex chars)
+- Each page (`event-report`, `partner-report`, `organization-report`, `edit`, `partner-edit`, `organization-edit`, `filter`, `hashtag`, `global-report`) can have a unique MD5-style token (32 hex chars)
 - Generated via `randomBytes(16).toString('hex')` (Node crypto)
 - Stored in MongoDB `page_passwords` collection with usage tracking
 - Optional expiration date (`expiresAt`) for temporary access
@@ -329,7 +330,8 @@ All prompts submit to `PUT /api/page-passwords`, which mints the `page-access` g
   _id: ObjectId,                     // MongoDB auto-generated ID
   pageId: string,                     // Project slug, edit slug, or filter hash
   pageType: 'event-report' | 'partner-report' | 'organization-report' | 'edit'
-          | 'partner-edit' | 'organization-edit' | 'filter' | 'hashtag',  // lib/pagePassword.ts PageType
+          | 'partner-edit' | 'organization-edit' | 'filter' | 'hashtag'
+          | 'global-report',  // lib/pagePassword.ts PageType; global-report uses pageId 'all'
   password: string,                   // MD5-style random token (32 hex chars)
   createdAt: string,                  // ISO 8601 with milliseconds (UTC)
   expiresAt?: string,                 // Optional expiration (null = never expires)
@@ -547,7 +549,7 @@ export async function DELETE() {
 **Parameters:**
 - `pageId`: Unique identifier (slug) for the page
 - `pageType`: One of `event-report`, `partner-report`, `organization-report`, `edit`,
-  `partner-edit`, `organization-edit`, `filter`, `hashtag`
+  `partner-edit`, `organization-edit`, `filter`, `hashtag`, `global-report`
 - `regenerate`: If `true`, creates new password (invalidates old one)
 
 **Security:**
@@ -640,7 +642,7 @@ GET /api/page-passwords?pageId=championship-final-2025&pageType=event-report
 **Parameters:**
 - `pageId`: Unique identifier (slug) for the page
 - `pageType`: One of `event-report`, `partner-report`, `organization-report`, `edit`,
-  `partner-edit`, `organization-edit`, `filter`, `hashtag`
+  `partner-edit`, `organization-edit`, `filter`, `hashtag`, `global-report`
 
 **Security:**
 - ✅ Requires a signed-in session (`requireSession()`) -- returns 401 `UNAUTHENTICATED` otherwise

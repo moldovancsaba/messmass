@@ -53,13 +53,9 @@ export type AppConfig = {
   // WHAT: API key for API-Football (API-Sports) multi-sport data
   // WHY: Required for enriching partners and events with official sports data
   apiFootballKey?: string;
-  fanmassBaseUrl?: string;
-  fanmassApiKey?: string;
   fanmassIntegrationToken?: string;
   // WHAT: fanmass's human-facing web UI origin (its own React SPA), e.g.
-  //     http://localhost:8787. Distinct from fanmassBaseUrl, which is the
-  //     server-to-server API base for the existing integration and may not
-  //     be the same origin as the browser-facing app.
+  //     http://localhost:8787.
   // WHY: Backs the messmass admin "Fanmass" nav item, which links out to
   //     fanmass's own dashboards/entity-curation UI rather than embedding
   //     or re-implementing them.
@@ -140,8 +136,6 @@ function initializeConfig(): AppConfig {
     imgbbApiKey: getEnv('IMGBB_API_KEY'),
     // API-Football integration (server-only)
     apiFootballKey: getEnv('API_FOOTBALL_KEY'),
-    fanmassBaseUrl: getEnv('FANMASS_BASE_URL'),
-    fanmassApiKey: getEnv('FANMASS_API_KEY'),
     fanmassIntegrationToken: getEnv('FANMASS_INTEGRATION_TOKEN') || getEnv('MESSMASS_FANMASS_TOKEN'),
     fanmassAppUrl: getEnv('FANMASS_APP_URL'),
     cameraBaseUrl: getEnv('CAMERA_BASE_URL'),

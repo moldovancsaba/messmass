@@ -1,6 +1,6 @@
 # Tutorial: Report themes & styles
 Status: Active
-Last Updated: 2026-07-20T00:00:00.000Z
+Last Updated: 2026-11-06T18:30:00.000Z
 Canonical: Yes
 Owner: Documentation
 
@@ -115,6 +115,7 @@ Suppose a partner uses a dark navy hero with a lime accent.
 ## Gotchas & good practice
 
 - **Colours are 8-character hex.** `#RRGGBBAA`. A 6-character value is accepted and normalised to fully opaque (`ff` alpha). If a colour looks washed out, check its alpha byte.
+- **Runtime Theme Guardian (`StyleGuardian`).** At render time, `lib/theme/styleGuardian.ts` automatically enforces a 3-tier neutral editorial ink hierarchy (`#0f172a` for titles/values, `#475569` for labels, `#64748b` for subtitles), neutral hairline borders (`#e2e8f0`) on light cards, WCAG contrast checks, and a 5-step monochromatic brand tint ramp (`deriveBrandRamp`) when bar colours clash. Brand colour accents shine in the Hero banner, KPI icon badges, bar fills, and donut segments without compromising text legibility.
 - **A theme is skin only.** It never changes which charts or blocks appear — that is the template's job ([guides-tutorial-reports.md](guides-tutorial-reports.md)). If a chart is missing, fix the template, not the theme.
 - **Font must exist first.** The dropdown lists only registered fonts. Typing a font name elsewhere will not add it.
 - **Assign, don't just save.** A saved but unassigned theme is invisible. Confirm the event/partner/template actually references it.

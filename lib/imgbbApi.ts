@@ -8,6 +8,7 @@
 import { put } from '@vercel/blob';
 import sharp from 'sharp';
 import { isLogoStorageConfigured, rehostLogo, isStoredLogoUrl } from '@/lib/logoStorage';
+import { isMediaStorageConfigured, storeMedia } from '@/lib/mediaStorage';
 
 const IMGBB_API_URL = 'https://api.imgbb.com/1/upload';
 
@@ -151,6 +152,33 @@ export async function uploadImageFromUrl(
 
     const imageBuffer = Buffer.from(await imageResponse.arrayBuffer());
 
+    if (isMediaStorageConfigured()) {
+      const stored = await storeMedia(imageBuffer, { folder: 'reports' });
+      if (stored) {
+        const mirror = await uploadToImgbbMirror(imageBuffer, name);
+        console.log(`✅ Image uploaded to R2 successfully: ${stored.url}`);
+        return {
+          success: true,
+          data: {
+            id: stored.url,
+            title: name ?? 'upload',
+            url: stored.url,
+            display_url: stored.url,
+            width: 0,
+            height: 0,
+            size: imageBuffer.byteLength,
+            time: Math.floor(Date.now() / 1000),
+            expiration: 0,
+            image: { filename: `${name ?? 'upload'}.${stored.extension}`, name: name ?? 'upload', mime: `image/${stored.extension}`, extension: stored.extension, url: stored.url },
+            thumb: { filename: `${name ?? 'upload'}.${stored.extension}`, name: name ?? 'upload', mime: `image/${stored.extension}`, extension: stored.extension, url: stored.url },
+            delete_url: mirror?.deleteUrl ?? '',
+            provider: 'blob',
+            mirrorUrl: mirror?.url,
+          },
+        };
+      }
+    }
+
     console.log(`📤 Uploading to Vercel Blob...`);
     const [blob, mirror] = await Promise.all([
       uploadToBlobPrimary(imageBuffer, name),
@@ -229,6 +257,7 @@ export async function uploadPartnerBadge(
  * WHY: Check before attempting uploads; imgbb is optional (best-effort mirror only)
  */
 export function isImageStorageConfigured(): boolean {
+  if (isMediaStorageConfigured() || isLogoStorageConfigured()) return true;
   const token = getBlobReadWriteToken();
   return !!token && token.length > 0;
 }

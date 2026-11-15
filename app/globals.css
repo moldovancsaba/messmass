@@ -5,6 +5,9 @@
    IMPORT MODULAR CSS SYSTEM
 ======================================== */
 
+/* Self-host fonts so production builds do not fetch Google Fonts at build time. */
+@import './styles/local-google-fonts.css';
+
 /* 1. Theme & Design Tokens (must be first) */
 @import './styles/theme.css';
 

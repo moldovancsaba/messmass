@@ -1,10 +1,10 @@
 # Report Layout V2 Renderer Contract
 Status: Active
-Last Updated: 2026-01-16T16:45:00.000Z
+Last Updated: 2026-11-06T18:30:00.000Z
 Canonical: Yes
 Owner: Architecture
 
-Spec Version: 1.2.0
+Spec Version: 2.0.0
 Created: 2026-01-15T12:45:00.000Z
 Audience: Engineering (Reporting + Admin)
 
@@ -20,63 +20,46 @@ This document defines the **contract** between Admin (template configuration) an
 
 ## Block Structure
 
-### Block Aspect Ratio
-- **Default:** 4:1 (width:height) - `blockHeight = blockWidth / 4`
+### Block Height & Aspect Ratio
+- **Content-Driven Editorial Heights (`lib/layoutV2BlockCalculator.ts`):**
+  - **KPI / Metric-Only Row:** Compact height of `124px` on desktop (`min-height: 112px` card) and a 2-column `.metricRow` grid on mobile (`<=768px`), preventing square KPI dead space.
+  - **Bar / Pie (Donut) Row:** `340px` (`Math.max(300, Math.min(360, Math.round(blockWidth * 0.28)))`).
+  - **Image Gallery Row:** `380px` (`Math.max(280, Math.min(420, Math.round(blockWidth * 0.32)))`).
+  - **Text / Table Row:** Content-driven (`height: auto`), or controlled by optional `blockAspectRatio` / `tableHeightMultiplier`.
 - **Variable Override (R-LAYOUT-02.1):** Optional aspect ratio override for TEXT-AREA/TABLE blocks
   - **Supported Range:** 4:1 to 4:10 (e.g., 4:6, 4:10)
   - **Override Allowed Only For:** Blocks containing TEXT or TABLE chart types exclusively
-  - **Validation:** Rejects mixed types (e.g., TEXT + KPI) with fallback to default 4:1
   - **Formula:** `blockHeight = blockWidth × (aspectHeight / aspectWidth)`
 - **Table Height Multiplier:** Optional height multiplier for TABLE-only blocks
   - **Supported Range:** 0.1 to 5.0 (e.g., 0.5, 1.5, 2.0)
-  - **Override Allowed Only For:** Blocks containing TABLE chart types exclusively
-  - **Validation:** Rejects mixed types, cannot use with `blockAspectRatio` simultaneously
   - **Formula:** `blockHeight = blockWidth × multiplier`
   - **Priority:** Takes precedence over `blockAspectRatio` if both are specified
-  - **Example:** If block width is 1200px, multiplier 1.5 = 1800px height
-- **Example:** If block width is 1200px, default height is 300px (4:1), or 1800px with 4:6 override or 1.5 multiplier
 
-### Block Capacity
-- **Fixed:** 4 units maximum per block
-- **Rule:** Sum of all item units in a block must be ≤ 4
-- **Validation:** Admin must reject configurations where `sum(itemUnits) > 4`
+### Block Capacity & Row Coalescing
+- **Desktop Grid Capacity:** **6 units** maximum per row (`MAX_BLOCK_UNITS = 6` in `lib/layoutV2BlockCalculator.ts`, `desktopUnits: 6` on templates).
+- **Row Packing:** Items inside a block are packed greedily left-to-right into rows of up to 6 units.
+- **Section Coalescing (`coalesceReportBlocks` in `app/report/[slug]/ReportContent.tsx`):** Consecutive blocks that share the same title (or legacy split blocks whose continuation has `showTitle === false`) are coalesced into a single visual section so the section title renders once above the multi-row group.
 
 ### Block Dimensions
-- **Width:** Determined by viewport (desktop: 1200px, tablet: 768px, mobile: 375px)
-- **Height:** Calculated from aspect ratio: `height = width / 4`
-- **All cells in a block share the same height** (Layout Grammar requirement)
+- **Width:** Determined by viewport (desktop: up to 1200px, tablet: 768px, mobile: 375px)
+- **Height:** Determined by the row's content class (KPI row, Bar/Pie row, Image row, or Text/Table row)
+- **All cells in the same horizontal row share uniform alignment**
 
 ---
 
 ## Item Unit Rules
 
-### Image Items
+### Canonical Unit Allocation by Chart Type
 
-| Aspect Ratio | Units | Description |
-|--------------|-------|-------------|
-| 16:9 (landscape) | 2 units | Wide landscape images |
-| 1:1 (square) | 1 unit | Square images |
-| 9:16 (portrait) | 1 unit | Tall portrait images |
-
-**Rules:**
-- Image aspect ratio is determined by actual image dimensions (`naturalWidth`/`naturalHeight`) detected on load
-- Fallback to configured aspect ratio if image not loaded yet
-- Image must fit within allocated unit slot without overflow
-
-### Text/Chart Items
-
-| Aspect Ratio | Units | Description |
-|--------------|-------|-------------|
-| 1:1 (square) | 1 unit | Compact/square charts and text |
-| 2:1 (landscape) | 2 units | Wide/landscape charts and text |
-
-**Chart Types:**
-- **KPI:** Always 1 unit (1:1)
-- **PIE:** Always 1 unit (1:1)
-- **BAR:** 1 unit (1:1) or 2 units (2:1) - configurable
-- **TEXT:** 1 unit (1:1) or 2 units (2:1) - configurable
-- **TABLE:** 1 unit (1:1) or 2 units (2:1) - configurable
-- **IMAGE:** 1 unit (1:1 or 9:16) or 2 units (16:9) - based on aspect ratio
+| Chart Type | Canonical Unit Size (6-Unit Grid) | Layout Behavior |
+|------------|-----------------------------------|-----------------|
+| **KPI** | `1` unit | Up to 6 per row on desktop (4 KPIs share row as `1fr 1fr 1fr 1fr`); 2-up `.metricRow` grid on mobile |
+| **VALUECHAIN** | `1` unit | Compact 1-unit card |
+| **IMAGE** | `2` units (`1` unit for portrait/square when configured) | 3-up gallery row (`2+2+2 = 6`) or 2-up (`3+3 = 6`) |
+| **PIE (Donut)** | `3` units | 2-up side-by-side (`3+3 = 6`) |
+| **BAR** | `3` units | 2-up side-by-side (`3+3 = 6`) |
+| **TEXT** | `6` units (or `3` units when paired) | Full-width editorial narrative block (`6/6`) |
+| **TABLE** | `6` units | Full-width markdown table (`6/6`) |
 
 **Rules:**
 - Text/charts must never overflow inside their allocated unit slot

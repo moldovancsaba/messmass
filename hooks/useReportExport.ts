@@ -6,6 +6,7 @@
 
 import { useCallback } from 'react';
 import { exportReportToCSV } from '@/lib/export/csv';
+import { exportReportToPDF } from '@/lib/export/pdf';
 import type { ProjectStats } from '@/lib/report-calculator';
 
 /**
@@ -151,13 +152,8 @@ export function useReportExport(options: UseReportExportOptions): UseReportExpor
 
   // WHAT: PDF export handler
   // WHY: Generate an A4 PDF with no chart/image split across a page break
-  // HOW: Hand off to app/api/export/pdf/route.ts, which drives a real headless browser
-  // to this same page and calls its native print pipeline. A GET to a URL that responds
-  // with Content-Disposition: attachment is the download, no client-side rendering or
-  // blob handling involved — this is deliberate: that's what makes it reliable on
-  // mobile browsers, where generating and downloading a client-built PDF blob is a
-  // known-flaky pattern. See app/api/export/pdf/route.ts's top-of-file comment for the
-  // full reasoning.
+  // HOW: Hands off to app/api/export/pdf/route.ts via fetch so errors do not navigate away
+  // to raw JSON. Downloads file blob if successful, falls back to native window.print() if server fails.
   const handlePDFExport = useCallback(async () => {
     console.log(`🗔️ PDF Export clicked (${reportType})`);
     console.log('   Entity:', entity ? '✅' : '❌');
@@ -174,9 +170,13 @@ export function useReportExport(options: UseReportExportOptions): UseReportExpor
       ? `${filenamePrefix}_${entityName.replace(/[^a-zA-Z0-9]/g, '_')}`
       : entityName.replace(/[^a-zA-Z0-9]/g, '_');
 
-    const exportUrl = `/api/export/pdf?path=${encodeURIComponent(window.location.pathname + window.location.search)}&filename=${encodeURIComponent(filename)}`;
-    console.log('📝 Requesting PDF export:', exportUrl);
-    window.location.href = exportUrl;
+    const pathAndQuery = window.location.pathname + window.location.search;
+    console.log('📝 Requesting PDF export for path:', pathAndQuery);
+
+    await exportReportToPDF({
+      pathAndQuery,
+      filename,
+    });
   }, [entity, filenamePrefix, reportType]);
 
   return {
