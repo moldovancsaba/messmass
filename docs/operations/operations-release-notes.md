@@ -1,8 +1,16 @@
 # {messmass} Release Notes
 Status: Active
-Last Updated: 2026-11-14T20:00:00.000Z
+Last Updated: 2026-11-15T19:00:00.000Z
 Canonical: No
 Owner: Operations
+
+## Unreleased — 2026-11-15 — Opt-in headline from photo records, Camera proof and months in the Fanmass report, no SZRT figure in the global report
+
+- **Changed (opt-in headline, owner answer 512):** every Fanmass report (hashtag, filter, `/report/global`) headlines **Photos with opt-in**: the drive photos and Camera photo results with a stored per-photo `optIn` record, as a share with its two counts, or **Not measured** when no photo has a record (`calculated.photoOptInShare`, `lib/hashtagReport/calculated.ts`). A marketing opt-in typed for a campaign is not part of it.
+- **Added (Camera proof, owner answer 501):** the brands and clubs Fanmass read from Camera photos (`analysis.detection.brandRegions` with a `text_read` reading and its confidence; a person's correction wins) are counted once per photo and shown next to the SZRT ones in the vision section, the podiums and the brand/club cards, with a **Proof from the Camera photos** block (text read, reading confidence, event; Messmass keeps no crop of a Camera photo) (`lib/hashtagReport/cameraProof.ts`). The Camera results of a scope are added to the vision Fanmass published for the SZRT drive library instead of being left out. The map counts each event's Camera photos too.
+- **Added (months):** the Fanmass report's Figures tab lists every month with measured photos (event date), drive and Camera photos side by side, and the events table shows each event's Camera photos.
+- **Changed (global report, owner answers 499–502):** access stays admin session or the page password from **Global Reports** (unshared: not found); the address stays `/report/global`. The earlier report behind it (`?report=classic`, saved variants) no longer shows SZRT campaign figures (cycle registrations, opt-ins, CTA, touchpoints, campaign cycles): it counts the registrations and marketing opt-ins events outside the campaign stored, no longer mixes Camera's photo consents into the marketing opt-ins, and draws its timeline month by month from every event, Camera events included. Report snapshot version 6, so cached reports are rebuilt.
+- **Checked, no change (owner answer 478):** a brand without an uploaded logo shows its name with a neutral initial badge (or the default icon); nothing generates or fetches a logo. The SZRT shared filter link (owner answer 511) already opens the Fanmass report, the clicker report stays on its existing addresses.
 
 ## [v12.3.48] — 2026-11-14 — Fanmass report for every hashtag, filter and all events; typed and Fanmass hashtags together
 

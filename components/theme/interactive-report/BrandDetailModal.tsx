@@ -5,6 +5,7 @@
 import React, { useMemo } from 'react';
 import { getBrandCluster } from '@/lib/brandEntityClustering';
 import BrandEvidenceGallery from './BrandEvidenceGallery';
+import { findCameraProof, type CameraProofEntry } from '@/lib/hashtagReport/cameraProof';
 
 export interface BrandDetailStat {
   brand: string;
@@ -28,6 +29,8 @@ interface BrandDetailModalProps {
     scene: string;
   }>;
   onClose: () => void;
+  /** The names read in the report's Camera photos with their proof (vision.cameraProof). */
+  cameraProof?: CameraProofEntry[];
 }
 
 export default function BrandDetailModal({
@@ -35,6 +38,7 @@ export default function BrandDetailModal({
   totalPhotosProcessed,
   recentImages = [],
   onClose,
+  cameraProof,
 }: BrandDetailModalProps) {
   const cluster = useMemo(() => {
     if (!brand) return null;
@@ -268,7 +272,7 @@ export default function BrandDetailModal({
           )}
 
           {/* Proof from the pictures: crops where the name was read, the box and how it was identified */}
-          <BrandEvidenceGallery kind="brand" name={brand.brand} />
+          <BrandEvidenceGallery kind="brand" name={brand.brand} camera={findCameraProof(cameraProof, 'brand', brand.brand)} />
         </div>
       </div>
     </div>

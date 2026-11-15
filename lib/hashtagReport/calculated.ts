@@ -21,6 +21,18 @@ function counter(layer: MeasuredLayer, name: string): number | null {
   return Object.prototype.hasOwnProperty.call(layer.counters, name) ? layer.counters[name] : null;
 }
 
+/**
+ * The opt-in headline (owner answer 512): every photo of the report, the drive photos and the Camera photo results, with
+ * a stored per-photo opt-in record (lib/fanmassPhotoAnalyses.ts parsePhotoOptIn, lib/fanmassDrivePhotos.ts). No marketing
+ * opt-in typed for a campaign is part of it. Not measured when no photo of the report has an opt-in record.
+ */
+export function photoOptIn(layer: MeasuredLayer): Calculation {
+  const { drive, photos } = layer;
+  const withOptIn = drive.withOptIn + (photos.withOptIn ?? 0);
+  const all = drive.photos + photos.analysed;
+  return share(withOptIn > 0 ? withOptIn : null, all > 0 ? all : null, 'photos', 'photos with a recorded opt-in');
+}
+
 export function calculate(layer: MeasuredLayer): CalculatedLayer {
   const { photos } = layer;
   const taken = counter(layer, 'camera_images_taken');
@@ -41,6 +53,7 @@ export function calculate(layer: MeasuredLayer): CalculatedLayer {
     analysedShare: share(photos.analysed > 0 ? photos.analysed : null, taken, 'photos taken', 'photos analysed'),
     approvalRate: share(approved, decided, 'photos decided in vetting', 'photos approved'),
     optInShare: share(photos.withOptIn, photos.analysed > 0 ? photos.analysed : null, 'photos analysed', 'photos with a recorded opt-in'),
+    photoOptInShare: photoOptIn(layer),
     consentShare: share(counter(layer, 'camera_consents_accepted'), taken, 'photos taken', 'photos with an accepted consent'),
     maleShare: share(male + female > 0 ? male : null, male + female > 0 ? male + female : null, 'people with a measured gender', 'men'),
     smilingShare: share(photos.demographicPeople > 0 ? photos.smiling : null, photos.demographicPeople > 0 ? photos.demographicPeople : null, 'people with an observation', 'people smiling'),

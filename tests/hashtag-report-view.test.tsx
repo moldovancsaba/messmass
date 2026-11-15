@@ -12,7 +12,9 @@ import { driveFacet } from './helpers/driveFacet';
 const sumDrivePhotos = (rows: Array<Record<string, any>>) => readDriveSummary(driveFacet(rows)).drive;
 import type { HashtagReport, MeasuredLayer } from '@/lib/hashtagReport/types';
 
-const report = (measured: MeasuredLayer): HashtagReport => ({
+const report = (layer: Omit<MeasuredLayer, 'cameraProof' | 'months'> & Partial<MeasuredLayer>): HashtagReport => {
+  const measured: MeasuredLayer = { cameraProof: [], months: [], ...layer };
+  return {
   success: true,
   scope: { type: 'hashtag', id: 'derby', tags: ['derby'] },
   generatedAt: '2026-11-14T00:00:00.000Z',
@@ -24,9 +26,10 @@ const report = (measured: MeasuredLayer): HashtagReport => ({
     eventsWithPhotoResults: measured.events.filter((e) => e.hasPhotoResults).length,
     eventsWithDrivePhotos: measured.events.filter((e) => e.drivePhotos > 0).length,
   },
-});
+  };
+};
 
-const event = (over = {}) => ({ id: 'e1', name: 'Derby', date: '2026-02-01', hasCounters: true, hasPhotoResults: true, drivePhotos: 0, joinedBy: 'hashtag' as const, ...over });
+const event = (over = {}) => ({ id: 'e1', name: 'Derby', date: '2026-02-01', hasCounters: true, hasPhotoResults: true, drivePhotos: 0, cameraPhotos: 0, joinedBy: 'hashtag' as const, ...over });
 const noDrive = sumDrivePhotos([]);
 const rollup = { photoResultsReceived: 10, optInPhotos: 10, peopleCounts: { measured: 20 }, genderProjection: { male: 12, female: 8 }, ageProjection: { genZ: 15 }, emotionProjection: { happy: 14 }, smilingCount: 14, demographicPeopleMeasured: 20, brandMentions: [{ name: 'Nike', count: 4 }], clubMentions: [{ name: 'DVTK', count: 3 }] };
 
@@ -101,5 +104,28 @@ describe('the hashtag report page', () => {
     expect(html).not.toContain('No event and no photo carries');
     expect(html).toContain('Drive photos tagged #derby');
     expect(html).toContain('MTK x DVSC');
+  });
+
+  it('headlines the photos with a stored opt-in record, or Not measured when none has one', () => {
+    const photos = { ...mergePhotoSummaries([rollup]), withOptIn: 0 };
+    const none = renderToStaticMarkup(<HashtagReportView report={report({ events: [event()], counters: {}, photos, drive: noDrive })} />);
+    expect(none).toMatch(/Photos with opt-in<\/span><span[^>]*>Not measured/);
+    expect(none).toContain('None of the 10 photos has an opt-in record');
+    const some = renderToStaticMarkup(<HashtagReportView report={report({ events: [event()], counters: {}, photos: { ...photos, withOptIn: 8 }, drive: noDrive })} />);
+    expect(some).toContain('80%');
+    expect(some).toContain('8 of 10 photos');
+  });
+
+  it('lists the months with drive and Camera photos, and the names proven in Camera photos', () => {
+    const photos = { ...mergePhotoSummaries([rollup]), withOptIn: 10, brands: [{ name: 'Veolia', count: 2 }] };
+    const html = renderToStaticMarkup(<HashtagReportView report={report({
+      events: [event({ cameraPhotos: 10 })], counters: {}, photos, drive: noDrive,
+      months: [{ month: '2025-11', events: 3, drivePhotos: 120, cameraPhotos: 0 }, { month: '2026-02', events: 1, drivePhotos: 0, cameraPhotos: 10 }],
+    })} />);
+    expect(html).toContain('By month');
+    expect(html).toContain('November 2025');
+    expect(html).toContain('February 2026');
+    expect(html).toContain('Brands in Camera photos');
+    expect(html).toContain('Veolia');
   });
 });

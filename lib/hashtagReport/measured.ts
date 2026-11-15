@@ -9,8 +9,9 @@ import { ObjectId } from 'mongodb';
 
 import { parseHashtagQuery } from '../hashtagCategoryUtils';
 import { compactHashtag, hashtagSpellings } from '../photoHashtags';
+import { cameraProofPipeline, readCameraProof } from './cameraProof';
 import { mergePhotoSummaries } from './mergeSummaries';
-import type { HashtagEvent, MeasuredCounters, MeasuredDrivePhotos, MeasuredLayer, NamedCount } from './types';
+import type { HashtagEvent, MeasuredCounters, MeasuredDrivePhotos, MeasuredLayer, MeasuredMonth, NamedCount } from './types';
 
 /** The additive counters Camera writes onto an event (lib/cameraPhotoStats.ts). Averages are not additive and are left out. */
 export const CAMERA_TOTAL_COUNTERS = [
@@ -139,16 +140,17 @@ export async function loadMeasuredLayer(db: ReportDb, hashtags: string[] | null,
   const rollupByEvent = new Map(rollups.map((row) => [String(row.eventId), (row.summary ?? {}) as Record<string, unknown>]));
 
   // The opt-in is counted from the stored per-photo results themselves: a result carries it or it does not
-  const withOptIn = eventIds.length
-    ? await db.collection('fanmass_camera_photo_analyses').countDocuments({
-        eventId: { $in: eventIds },
-        tombstone: { $ne: true },
-        status: 'completed',
-        'optIn.received': true,
-      })
-    : 0;
+  const cameraResults = { eventId: { $in: eventIds }, tombstone: { $ne: true }, status: 'completed' };
+  const [withOptIn, proofRows] = eventIds.length
+    ? await Promise.all([
+        db.collection('fanmass_camera_photo_analyses').countDocuments({ ...cameraResults, 'optIn.received': true }),
+        // The brands and clubs Fanmass read from these Camera photos, each with the text that proves it (lib/hashtagReport/cameraProof.ts)
+        db.collection('fanmass_camera_photo_analyses').aggregate(cameraProofPipeline(cameraResults)).toArray(),
+      ])
+    : [0, []];
 
   const nameOf = new Map(projects.map((p) => [String(p._id), String(p.eventName ?? '')]));
+  const cameraProof = readCameraProof(proofRows, (eventId) => nameOf.get(eventId) ?? '');
   const perEvent = new Map<string, number>();
   for (const [eventId, count] of driveByEvent) {
     if (!eventId) continue;
@@ -176,6 +178,7 @@ export async function loadMeasuredLayer(db: ReportDb, hashtags: string[] | null,
         hasCounters,
         hasPhotoResults: Number(rollup?.photoResultsReceived ?? 0) > 0,
         drivePhotos: driveByEvent.get(String(project._id)) ?? 0,
+        cameraPhotos: Math.max(0, Math.round(Number(rollup?.photoResultsReceived ?? 0)) || 0),
         joinedBy: joinedSet.has(String(project._id)) ? 'photos' as const : 'hashtag' as const,
       };
     })
@@ -184,7 +187,27 @@ export async function loadMeasuredLayer(db: ReportDb, hashtags: string[] | null,
   const photos = mergePhotoSummaries(projects.map((p) => rollupByEvent.get(String(p._id))).filter((r): r is Record<string, unknown> => Boolean(r)));
   photos.withOptIn = withOptIn;
   photos.tagged = tag === null ? 0 : await db.collection('fanmass_camera_photo_analyses').countDocuments({ hashtags: tag, tombstone: { $ne: true }, status: 'completed' });
-  return { events, counters, photos, drive };
+  // Only names read from the picture count (the rollups' names are model guesses, lib/hashtagReport/mergeSummaries.ts)
+  photos.brands = cameraProof.filter((entry) => entry.kind === 'brand').map((entry) => ({ name: entry.name, count: entry.photos }));
+  photos.clubs = cameraProof.filter((entry) => entry.kind === 'club').map((entry) => ({ name: entry.name, count: entry.photos }));
+  return { events, counters, photos, drive, cameraProof, months: monthsOf(events) };
+}
+
+/** The events with measured photos, month by month (event date), drive and Camera photos side by side. */
+export function monthsOf(events: HashtagEvent[]): MeasuredMonth[] {
+  const months = new Map<string, MeasuredMonth>();
+  for (const event of events) {
+    if (event.drivePhotos <= 0 && event.cameraPhotos <= 0) continue;
+    const found = /^(\d{4})[-./](\d{1,2})/.exec(String(event.date ?? '').trim());
+    if (!found) continue;
+    const month = `${found[1]}-${found[2].padStart(2, '0')}`;
+    const row = months.get(month) ?? { month, events: 0, drivePhotos: 0, cameraPhotos: 0 };
+    row.events += 1;
+    row.drivePhotos += event.drivePhotos;
+    row.cameraPhotos += event.cameraPhotos;
+    months.set(month, row);
+  }
+  return [...months.values()].sort((a, b) => a.month.localeCompare(b.month));
 }
 
 function topNames(counts: Map<string, number>): NamedCount[] {

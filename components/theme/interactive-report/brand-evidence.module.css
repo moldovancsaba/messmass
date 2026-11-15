@@ -52,6 +52,18 @@
   background: var(--mm-white);
 }
 
+/* A Camera proof: the text read from the picture, no crop (Messmass keeps none of a Camera photo) */
+.textTile {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+  padding: var(--mm-space-2);
+  border: 1px solid var(--mm-gray-200);
+  border-radius: var(--mm-radius-md);
+  background: var(--mm-gray-50);
+}
+
 .cropWrap {
   display: flex;
   align-items: center;

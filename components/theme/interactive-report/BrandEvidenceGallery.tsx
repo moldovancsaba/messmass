@@ -5,6 +5,7 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import type { BrandEvidenceListing, EvidenceKind, EvidenceSample } from '@/lib/fanmassEvidence';
+import type { CameraProofEntry } from '@/lib/hashtagReport/cameraProof';
 import report from './interactive-report.module.css';
 import styles from './brand-evidence.module.css';
 
@@ -13,6 +14,32 @@ interface BrandEvidenceGalleryProps {
   name: string;
   /** Tenant of the report; the API refuses any other than the SZRT one. */
   organizationId?: string;
+  /** The proof of the same name in the report's Camera photos (the report data carries it; see lib/hashtagReport/cameraProof.ts). */
+  camera?: CameraProofEntry | null;
+}
+
+/** The Camera proof of a name: the text read from the picture in each photo. Messmass keeps no crop of a Camera photo. */
+function CameraProof({ camera }: { camera: CameraProofEntry }) {
+  return (
+    <section className={styles.section} aria-label={`Camera proof for ${camera.name}`}>
+      <h4 className={styles.title}>Proof from the Camera photos</h4>
+      <p className={styles.summary}>
+        The name was read from the picture in <strong>{plural(camera.photos, 'Camera photo', 'Camera photos')}</strong>.
+        {camera.samples.length > 0 && ' The text read in the strongest ones is shown; Messmass keeps no crop of a Camera photo.'}
+      </p>
+      {camera.samples.length > 0 && (
+        <ul className={styles.grid}>
+          {camera.samples.map((sample, index) => (
+            <li key={`${sample.readText}-${index}`} className={styles.textTile}>
+              <span className={styles.readText}>“{sample.readText}”</span>
+              <span className={styles.meta}>{sample.event}</span>
+              <span className={styles.meta}>Text reading confidence {percent(sample.ocrConfidence)} · {matchLabel(sample.match)}</span>
+            </li>
+          ))}
+        </ul>
+      )}
+    </section>
+  );
 }
 
 type Listing = BrandEvidenceListing & { published: boolean };
@@ -35,7 +62,7 @@ function methodLabel(sample: EvidenceSample): string {
  * and on click the box on the photo with how it was identified. A name only the model suggested is counted
  * but never shown here as proof.
  */
-export default function BrandEvidenceGallery({ kind, name, organizationId }: BrandEvidenceGalleryProps) {
+export default function BrandEvidenceGallery({ kind, name, organizationId, camera }: BrandEvidenceGalleryProps) {
   const [listing, setListing] = useState<Listing | null>(null);
   const [state, setState] = useState<'loading' | 'ready' | 'error'>('loading');
   const [open, setOpen] = useState<EvidenceSample | null>(null);
@@ -83,12 +110,14 @@ export default function BrandEvidenceGallery({ kind, name, organizationId }: Bra
     return () => document.removeEventListener('keydown', onKey, true);
   }, [open, close]);
 
-  if (state === 'loading') return <p className={styles.status} aria-live="polite">Loading proof from the pictures…</p>;
-  if (state === 'error') return <p className={styles.status}>The proof samples could not be loaded.</p>;
+  const cameraProof = camera ? <CameraProof camera={camera} /> : null;
+  if (state === 'loading') return <><p className={styles.status} aria-live="polite">Loading proof from the pictures…</p>{cameraProof}</>;
+  if (state === 'error') return <><p className={styles.status}>The proof samples could not be loaded.</p>{cameraProof}</>;
   // Before a person approved the analysis for publication nothing about it is shown.
-  if (!listing || !listing.published) return null;
+  if (!listing || !listing.published) return cameraProof;
 
   return (
+    <>
     <section className={styles.section} aria-label={`Proof for ${listing.name}`}>
       <h4 className={styles.title}>Proof from the pictures</h4>
       <p className={styles.summary}>
@@ -161,5 +190,7 @@ export default function BrandEvidenceGallery({ kind, name, organizationId }: Bra
         document.body,
       )}
     </section>
+    {cameraProof}
+    </>
   );
 }

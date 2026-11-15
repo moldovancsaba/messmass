@@ -344,6 +344,7 @@ export default function OverviewTab({
       <ConnectedSelfiesModal
         club={selectedClubForModal}
         onClose={() => setSelectedClubForModal(null)}
+        cameraProof={vision?.cameraProof}
       />
 
       {/* Brand Detail Modal (Launched when any brand is clicked) */}
@@ -352,6 +353,7 @@ export default function OverviewTab({
         totalPhotosProcessed={analyzedImages ?? 0}
         recentImages={vision?.recentImages || []}
         onClose={() => setSelectedBrandForModal(null)}
+        cameraProof={vision?.cameraProof}
       />
 
       {/* All Brands Directory Modal */}

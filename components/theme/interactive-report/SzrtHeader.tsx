@@ -6,6 +6,7 @@ import { InteractiveReportData } from './types';
 import { getReportSlug } from './reportSlug';
 import type { DashboardTab } from './InteractiveReportDashboard';
 import type { HashtagReport } from '@/lib/hashtagReport/types';
+import { proofNameKey } from '@/lib/hashtagReport/cameraProof';
 import styles from './interactive-report.module.css';
 
 interface SzrtHeaderProps {
@@ -59,6 +60,19 @@ export default function SzrtHeader({ data, activeTab, onTabChange, fanmass }: Sz
       setTimeout(() => setCopied(false), 2000);
     }
   };
+
+  // Names read in the drive photos and in the Camera photos, each name once
+  const brandsRead = fanmass
+    ? [...fanmass.measured.drive.brands, ...fanmass.measured.photos.brands]
+        .reduce<Array<{ name: string; count: number }>>((list, row) => {
+          const found = list.find((item) => proofNameKey(item.name) === proofNameKey(row.name));
+          if (found) found.count += row.count;
+          else list.push({ ...row });
+          return list;
+        }, [])
+        .sort((a, b) => b.count - a.count)
+    : [];
+  const optIn = fanmass ? fanmass.calculated.photoOptInShare : null;
 
   const vision = data.vision;
   const hasTerritoryData = (data.matches?.length ?? 0) > 0 || !!vision;
@@ -141,7 +155,7 @@ export default function SzrtHeader({ data, activeTab, onTabChange, fanmass }: Sz
               { label: 'Photos', value: fanmass.measured.drive.photos + fanmass.measured.photos.analysed, text: fanmass.measured.drive.placed > 0 ? `${fanmass.measured.drive.placed.toLocaleString()} placed in an event` : null },
               { label: 'Analysed by Fanmass', value: fanmass.measured.drive.analysed + fanmass.measured.photos.analysed, text: null },
               { label: 'People seen', value: fanmass.measured.drive.people + fanmass.measured.photos.people.measured, text: null },
-              { label: 'Brands read', value: fanmass.measured.drive.brands.length, text: fanmass.measured.drive.brands[0] ? `Most seen: ${fanmass.measured.drive.brands[0].name}` : null },
+              { label: 'Brands read', value: brandsRead.length, text: brandsRead[0] ? `Most seen: ${brandsRead[0].name}` : null },
               { label: 'Events', value: fanmass.coverage.events, text: null },
             ].map((card) => (
               <div key={card.label} className={styles.kpiCard}>
@@ -150,6 +164,17 @@ export default function SzrtHeader({ data, activeTab, onTabChange, fanmass }: Sz
                 {card.value > 0 && card.text && <span className={styles.kpiSubtext}>{card.text}</span>}
               </div>
             ))}
+            {/* The opt-in headline (owner answer 512): photos with a stored opt-in record, drive and Camera, never a
+                marketing opt-in typed for a campaign; the share with its two counts, or Not measured */}
+            {optIn && (
+              <div className={styles.kpiCard}>
+                <span className={styles.kpiLabel}>Photos with opt-in</span>
+                <span className={styles.kpiValueHighlight}>{optIn.value !== null ? `${optIn.value}%` : 'Not measured'}</span>
+                {optIn.numerator !== null && optIn.denominator !== null && (
+                  <span className={styles.kpiSubtext}>{optIn.numerator.toLocaleString()} of {optIn.denominator.toLocaleString()} {optIn.basis}</span>
+                )}
+              </div>
+            )}
           </div>
         ) : (
         <div className={styles.kpiGrid}>

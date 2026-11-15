@@ -18,12 +18,14 @@ const report: HashtagReport = {
   generatedAt: '2026-11-14T00:00:00.000Z',
   measured: {
     events: [
-      { id: 'e1', name: 'DVTK#ÚJPEST FC', date: '2025-11-02', hasCounters: false, hasPhotoResults: false, drivePhotos: 2, joinedBy: 'hashtag' },
-      { id: 'e2', name: 'NOVEMBER Statisztika', date: null, hasCounters: false, hasPhotoResults: false, drivePhotos: 0, joinedBy: 'hashtag' },
+      { id: 'e1', name: 'DVTK#ÚJPEST FC', date: '2025-11-02', hasCounters: false, hasPhotoResults: false, drivePhotos: 2, cameraPhotos: 0, joinedBy: 'hashtag' },
+      { id: 'e2', name: 'NOVEMBER Statisztika', date: null, hasCounters: false, hasPhotoResults: false, drivePhotos: 0, cameraPhotos: 0, joinedBy: 'hashtag' },
     ],
     counters: {},
     photos: mergePhotoSummaries([]),
     drive,
+    cameraProof: [],
+    months: [],
   },
   calculated: {} as HashtagReport['calculated'],
   coverage: { events: 2, eventsWithCounters: 0, eventsWithPhotoResults: 0, eventsWithDrivePhotos: 1 },

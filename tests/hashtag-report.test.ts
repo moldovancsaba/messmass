@@ -29,8 +29,8 @@ describe('adding the photo rollups of several events', () => {
 
   it('does not carry over the brand and club names a rollup lists: they are model guesses, not names read from the picture', () => {
     const merged = mergePhotoSummaries([rollup()]) as unknown as Record<string, unknown>;
-    expect(merged.brands).toBeUndefined();
-    expect(merged.clubs).toBeUndefined();
+    expect(merged.brands).toEqual([]);
+    expect(merged.clubs).toEqual([]);
     expect(JSON.stringify(merged)).not.toContain('Nike');
   });
 
@@ -53,7 +53,7 @@ describe('the calculations', () => {
   it('treat a counter nobody reported as unknown, not zero', () => {
     const photos = mergePhotoSummaries([rollup()]);
     photos.withOptIn = 10;
-    const calc = calculate({ events: [], counters: {}, photos, drive: readDriveSummary().drive });
+    const calc = calculate({ events: [], counters: {}, photos, drive: readDriveSummary().drive, cameraProof: [], months: [] });
     expect(calc.analysedShare).toMatchObject({ value: null, denominator: null });
     expect(calc.optInShare).toMatchObject({ value: 100, numerator: 10, denominator: 10 });
     expect(calc.maleShare.value).toBe(60);

@@ -1,6 +1,6 @@
 # Tutorial: Hashtags, categories & filters
 Status: Active
-Last Updated: 2026-11-14T20:00:00.000Z
+Last Updated: 2026-11-15T19:00:00.000Z
 Canonical: Yes
 Owner: Documentation
 
@@ -59,6 +59,13 @@ Below the stats, a **📊 Matching Projects** list links each contributing event
 
 ### 4. Open a single-hashtag report
 For one tag: the clicker report at `/hashtag/{hashtag}` (e.g. `/hashtag/budapest`), the Fanmass report at `/report/hashtag/{hashtag}`. Both are gated by the hashtag's page password when it has one. The SZRT campaign (`#tippmixreport2026`) opens its Fanmass report; its earlier mixed report stays at `?report=classic`.
+
+**What every Fanmass report shows** (hashtag, filter and `/report/global`):
+- **Photos with opt-in** in the header: the share of the report's photos (drive photos and Camera photo results) that carry a stored opt-in record, with the two counts under it ("5 of 6 photos"). It reads **Not measured** when no photo of the report has an opt-in record. A marketing opt-in typed for a campaign is never part of it.
+- **Brands and clubs from Camera photos next to the SZRT ones:** a Camera photo adds a name only when Fanmass read it from the picture. Open a brand or club card: under the SZRT proof (crops with the box) the **Proof from the Camera photos** block lists the text read in the strongest Camera photos, how sure the reading was and the event. Messmass keeps no crop of a Camera photo, so no picture is shown for them.
+- **By month** (Figures and events tab): every month with measured photos, drive photos and Camera photos side by side, by event date.
+
+**The global report** (`/report/global`) opens for an admin session, and for anyone else only with the page password issued from **Global Reports** (`/admin/global/reports`); before a password is issued it answers "not found". It shows no figure of the SZRT campaign alone (registrations, opt-ins, CTA clicks, touchpoints, campaign cycles). Its earlier report (`?report=classic`, and its saved variants) counts only the registrations and marketing opt-ins that events outside the campaign stored, and draws its timeline month by month from every event, Camera events included.
 
 ### 5. A worked example
 Say you tag events with a `city` category (`budapest`, `vienna`) and a general tag `vip`. To see how VIP activations performed across just Budapest:

@@ -7,6 +7,8 @@
 //     calculations over the measured layer, and nothing typed by a person (clicker stats, sheet imports, typed
 //     tables) can enter either of them.
 
+import type { CameraProofEntry } from './cameraProof';
+
 /** The sums of the per-photo Fanmass results over all events of the hashtag. Every figure is a sum over photos. */
 export interface MeasuredPhotos {
   /** Photo results stored by Messmass (one per analysed photo). */
@@ -15,6 +17,9 @@ export interface MeasuredPhotos {
   withOptIn: number | null;
   /** Camera photo results that carry the hashtag themselves (lib/photoHashtags.ts), in any event. */
   tagged: number;
+  /** Names Fanmass read from the Camera photos (text-read proof only), counted once per photo. */
+  brands: NamedCount[];
+  clubs: NamedCount[];
   humanConfirmed: number;
   humanCorrected: number;
   people: { measured: number; boxes: number; faceBoxes: number };
@@ -42,6 +47,8 @@ export interface HashtagEvent {
   hasPhotoResults: boolean;
   /** Drive photos Fanmass placed in the event. */
   drivePhotos: number;
+  /** Camera photo results Fanmass stored for the event (its photo rollup). */
+  cameraPhotos: number;
   /** Why the event is in the report: it carries the hashtag, or Fanmass placed photos of the hashtag in it. */
   joinedBy: 'hashtag' | 'photos';
 }
@@ -74,11 +81,25 @@ export interface MeasuredDrivePhotos {
   events: NamedCount[];
 }
 
+/** One calendar month of the report's events (by event date): the photos Fanmass measured in them, from each source. */
+export interface MeasuredMonth {
+  /** `YYYY-MM`. */
+  month: string;
+  events: number;
+  drivePhotos: number;
+  cameraPhotos: number;
+}
+
 export interface MeasuredLayer {
   events: HashtagEvent[];
   photos: MeasuredPhotos;
   counters: MeasuredCounters;
   drive: MeasuredDrivePhotos;
+  /** Brands and clubs Fanmass read from Camera photos (text-read proof only), with their proof. */
+  cameraProof: CameraProofEntry[];
+  /** The months of the events with measured photos, drive and Camera together, oldest first. Events without a date
+   * are not in it. */
+  months: MeasuredMonth[];
 }
 
 /** One calculation: the value and the two counts it was calculated from, or nothing when it cannot be calculated. */
@@ -108,6 +129,8 @@ export interface CalculatedLayer {
   approvalRate: Calculation;
   /** Analysed photos with a recorded opt-in. */
   optInShare: Calculation;
+  /** Every photo of the report (drive photos and Camera photo results) with a stored opt-in record: the headline. */
+  photoOptInShare: Calculation;
   /** Photos taken whose participant accepted at least one consent. */
   consentShare: Calculation;
   /** Men among the people with a measured gender. */

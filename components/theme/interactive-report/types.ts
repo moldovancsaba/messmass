@@ -1,3 +1,5 @@
+import type { CameraProofEntry } from '@/lib/hashtagReport/cameraProof';
+
 export interface MatchItem {
   id: string;
   matchName: string;
@@ -139,6 +141,8 @@ export interface VisionProgressData {
       }
     >;
   };
+  /** Brands and clubs Fanmass read from Camera photos, with the text that proves each one (lib/hashtagReport/cameraProof.ts). */
+  cameraProof?: CameraProofEntry[];
   recentImages: Array<{
     fileName: string;
     sport: string;
