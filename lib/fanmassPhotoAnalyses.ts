@@ -8,6 +8,7 @@ import { ensureFanmassAnalyticsVariables } from './fanmassAnalyticsVariables';
 import { getDb, nowIso } from './fanmassIntegration';
 import { pushEventStats } from './fanmassMapping';
 import { eventHashtags, parsePhotoHashtags, withEventHashtags } from './photoHashtags';
+import { proveCameraEventLink } from './cameraEventLink';
 
 export const PHOTO_ANALYSIS_CONTRACT = 'fanmass.messmass.photo-analysis.v2';
 export const PHOTO_ANALYSIS_COLLECTION = 'fanmass_camera_photo_analyses';
@@ -224,17 +225,15 @@ async function requireExactCameraEventLink(
 
   const externalRefs = record(event.externalRefs) || {};
   const cameraLink = record(externalRefs.camera) || {};
+  // A result is stored only in the event whose own Camera link names the photo's Camera event
   if (cameraLink.eventId !== cameraEventId) {
     invalid(409, 'CAMERA_EVENT_ID_MISMATCH', 'The Camera event id is not linked to this Messmass event.');
   }
 
-  const partnerObjectIds = [event.partner1Id, event.partner2Id, event.partnerId]
-    .map((value) => value instanceof ObjectId ? value : (typeof value === 'string' && ObjectId.isValid(value) ? new ObjectId(value) : null))
-    .filter((value): value is ObjectId => value !== null);
-  if (!partnerObjectIds.length || !await db.collection('partners').findOne(
-    { _id: { $in: partnerObjectIds }, cameraPartnerId },
-    { projection: { _id: 1 } },
-  )) {
+  // The event link is the proof (lib/cameraEventLink.ts, owner answer 514): the event's partners may differ from the
+  // Camera event's partner (two clubs of a EuroLeague Women match), and that no longer refuses the result
+  const proof = await proveCameraEventLink(db, event, { cameraEventId, cameraPartnerId });
+  if (!proof.proven) {
     invalid(409, 'CAMERA_PARTNER_ID_MISMATCH', 'The Camera partner id is not linked to this Messmass event.');
   }
   return eventHashtags(event);
