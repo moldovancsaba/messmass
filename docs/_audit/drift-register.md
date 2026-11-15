@@ -45,6 +45,20 @@ still open from before, 68, 81, 82 and 83, and eight found in this round, 86 to
 93, in §11). Nothing was fixed in code by this round. Fixed the same day in documentation:
 86 (now FIXED) and the README badge noted under 22.
 
+**Fixes 2026-11-15 (the eleven NEW entries, read at a90337e9, v12.3.48).**
+Not a re-verification: only the eleven entries still NEW (68, 81, 82, 83, 87 to 93)
+were read again, on origin/main at a90337e9, 16 commits after 71a2b79f, and fixed
+where the fix is documentation, a comment or a small code change nobody sees. The
+other 82 entries were not re-read, so the stamps on this page stay at 71a2b79f, and
+this paragraph names its commit without the word the stamp check looks for. Fixed:
+68 (154441c1), 82 (73bc1e02), 89, 90, 91 and 93 (ff6f78e9; 90 also c92611bb), 87 and
+88 (c92611bb). Still open, each with what it needs in its ledger row and its entry:
+81 and 83 (the owner's decision: a visible change to the events list, a change to
+what a page writes to events) and 92, narrowed (the handover text is fixed; the pull
+code left without a caller is a removal across code, environment variables and
+deployment settings). Line numbers in the 2026-11-15 notes are for the tree of the
+pull request that made these fixes.
+
 **Re-verification and fixes 2026-10-11 (checked at 96dd913c, v12.3.42).**
 Every entry below was checked again on origin/main at 96dd913c, 5 commits after
 the previous stamp (184d1e32, the earlier round of the same day). Those 5 commits
@@ -160,7 +174,7 @@ line numbers of the old ledger still hold. Architecture.md lines are for
 | 65 | Dead code figures: 1,610 lines, 70 selectors, 86 classes (§9) | NOT RE-CHECKABLE | historical counts of a finished sweep; nothing named to measure again |
 | 66 | F-011, F-004, F-007 closed (§9) | TRUE | 6f31990d, e0f0643f, e098deaa exist; `lib/apiAuth.ts:65-72`, `lib/middleware/v3/orgContext.ts` unchanged; the data effect of e098deaa not re-read (no production database reads) |
 | 67 | Header: CI enforces `inventory:check` (header) | CHANGED | `.github/workflows/ci.yml:45` `npm run inventory:check`; the script line moved to `package.json:86` |
-| 68 | `GET /api/bitly/recalculate` calls `distinct()` under the strict Stable API | NEW | still open: `app/api/bitly/recalculate/route.ts:202-204` unchanged, still the only `.distinct(` in app, lib, components, hooks; the architecture.md rule is now `:4024-4025`, the release-notes record `:3488`; see §10 |
+| 68 | `GET /api/bitly/recalculate` calls `distinct()` under the strict Stable API | FIXED | fixed 2026-11-15 (154441c1): the route counts the referenced projects with a `$match` + `$group` aggregation (`app/api/bitly/recalculate/route.ts:206-214`, the reason in the comment `:202-205`); no `.distinct(` is left in app, lib, components or hooks; `tests/bitly-recalculate-status.test.ts` (its fake client throws on `distinct()` the way the strict client does). messmass#469 had been closed "for now" by the owner on 2026-10-11 ("reopen if it shows in the logs"); the fix is one commit, so it can be dropped on its own |
 | 69 | `lib/cameraClient.ts:12-14` names 2 of 4 camera inbound endpoints | CHANGED | it names 4; there are 6 now (photo-stats da7403e5, style-context 519889a0); see entry 87 |
 | 70 | `lib/rateLimit.ts:4` header contradicts the code; architecture.md lists 6 of 7 classes | CHANGED | still fixed: `lib/rateLimit.ts` unchanged since messmass#470 (`:4-10`, `:162-165`); architecture.md lines now `:2464-2475` and `:3765` |
 | 71 | public rate-limit class keyed on the deleted `/stats/` route | CHANGED | still fixed: `lib/rateLimit.ts:285-293,318` and `:85` unchanged; `next.config.js:98-99` still redirects `/hashtag/*` to `/filter/*`; architecture.md `:2464-2475`; `tests/rate-limit-classes.test.ts` unchanged |
@@ -173,22 +187,24 @@ line numbers of the old ledger still hold. Architecture.md lines are for
 | 78 | `app/api/debug/notifications` has no caller and is not queued | CHANGED | the route is gone (bb3eaac6, 2026-11-08), so the owner's decision is made; the doc places that name it were not updated (entry 90) |
 | 79 | `fleet-architecture.md:279` cites architecture.md lines that moved | CHANGED | the sentence is gone: E2 was rewritten for the per-photo contract (`fleet-architecture.md:244`) and architecture.md has no "The one blocking call" section any more |
 | 80 | `middleware.ts:134` CSP still allows `wss://*.pusher.com` | CHANGED | still allowed and still the Vercel toolbar's; the comment at `middleware.ts:134` was shortened (it names "the Vercel toolbar's Pusher WebSocket", without the Vercel docs reference); `https://vercel.live` stays in `script-src` `:130`, `font-src` `:133`, `frame-src` `:137` |
-| 81 | `app/admin/events/ProjectsPageClient.tsx` has no importer and tells the user "Stats Link: /stats/<slug>" | NEW | still open: no importer (only the two comments in `app/admin/bitly/page.tsx:194,888`); the alert is still `:365`; the one changed line is the camera vetting link; see §10 |
-| 82 | `app/admin/login/page.tsx` maps two more codes nothing emits and misses one that is emitted | NEW | still open: `invalid_sso` `:17` and `missing_token` `:20` are mapped; `sso_oauth_error` (`app/api/auth/sso/callback/route.ts:46`) is not; see §10 |
-| 83 | `/admin/project-partners` still writes and reads only the legacy `partner1` / `partner2` | NEW | narrowed, still open: the page route now reads through `projectPartnerId` (`app/api/admin/project-partners/route.ts:43-44`) and writes `partner1Id` / `partner2Id` next to the legacy fields (`:124-137`); `auto-suggest/route.ts` still selects events without `partner1` (`:92-94`) and sets only `partner1` / `partner2` (`:113-118`); see §10 |
+| 81 | `app/admin/events/ProjectsPageClient.tsx` has no importer and tells the user "Stats Link: /stats/<slug>" | NEW | still open at a90337e9 (file unchanged since 71a2b79f): no importer, the alert is still `:365`. New: the "Open in Camera" link to Camera vetting (`:897-904`; release notes `:1110` say it is "on each project row") exists only in this unused file; the live list (`app/admin/events/page.tsx`, `lib/adapters/projectsAdapter.tsx`) has no such link, and `messmass-in-the-fleet.md` now says so. Needs the owner's decision: move the Camera link into the live list (a visible change), then delete the file; see §10 |
+| 82 | `app/admin/login/page.tsx` maps two more codes nothing emits and misses one that is emitted | FIXED | fixed 2026-11-15 (73bc1e02): `invalid_sso` and `missing_token` removed (map `app/admin/login/page.tsx:17-25`, now only the codes `app/api/auth/sso/callback/route.ts`, `app/api/auth/sso/login/route.ts` and `middleware.ts` send); `sso_oauth_error` keeps the generic "Sign-in failed" text, stated in the comment `:14-16`. A dedicated message for it would be new copy, the owner's call |
+| 83 | `/admin/project-partners` still writes and reads only the legacy `partner1` / `partner2` | NEW | still open at a90337e9 (both routes unchanged since 71a2b79f): `auto-suggest/route.ts` still selects events with no `partner1` (`:92-94`) and sets only `partner1` / `partner2` (`:113-118`). Needs the owner's decision: making it write `partner1Id` / `partner2Id` changes what the page writes to production events (messmass#430, open); see §10 |
 | 84 | features-authentication.md hard-coded CORS list; middleware section said it sets the CSRF cookie | TRUE | no `allowedOrigins` list in `docs/features/features-authentication.md`; the middleware item stays correct. A third copy of the cookie claim, in the CSRF module section, was missed (entry 93) |
 | 85 | architecture.md schema rows `variablesConfig` and `aggregation_logs` | TRUE | the core table names them only in notes (`:3669`, `:3673`); `app/api/variables-config/route.ts:15`, `app/api/cron/analytics-aggregation/route.ts:84`, `lib/analytics.types.ts:302` unchanged |
 | 86 | Docs say Fanmass does not create Messmass events; `POST /api/integrations/fanmass/match-events` does | FIXED | fixed the same day: `docs/architecture.md` (the photo-first contract paragraph and the photo-level section) and `docs/guides/guides-tutorial-fanmass.md:15` now say the only events Fanmass creates are match events of SZRT drive photos (`lib/fanmassMatchEvents.ts`) |
-| 87 | Camera bridge: comment and docs name four or five inbound routes and two operator routes; the code has six and four | NEW | `lib/cameraClient.ts:12-14`; `docs/guides/guides-tutorial-camera-app.md:33,188-201,226-231`; `docs/_audit/messmass-in-the-fleet.md:10-15`; see §11 |
-| 88 | features-authentication.md `PageType` list misses `global-report` | NEW | `docs/features/features-authentication.md:331-332` vs `lib/pagePassword.ts:23` (f68b473c); see §11 |
-| 89 | architecture.md schema summary misses nine collections the app now opens | NEW | `docs/architecture.md:3658,3676` vs `.collection(...)` calls in app and lib; see §11 |
-| 90 | Deleted debug routes are still documented | NEW | `docs/architecture.md:2033,2127`, `docs/api/api-reference-complete.md:303-305`; routes deleted in bb3eaac6; see §11 |
-| 91 | `app/debug/hashtag-categories/page.tsx` fetches a deleted route | NEW | `:42` fetches `/api/debug/categorized-hashtags` (deleted in bb3eaac6); see §11 |
-| 92 | HANDOVER.md still describes the `/sync` + `/callbacks` pull; its code has no caller | NEW | `HANDOVER.md:167-169`; routes answer 410 since af08b361; `lib/fanmassIntegration.ts:259,358`; see §11 |
-| 93 | architecture.md CSRF module: "HttpOnly" cookie that "middleware sets" | NEW | `docs/architecture.md:2500,2507,2512` vs `lib/csrf.ts:124` (`httpOnly: false`) and `middleware.ts:150-152`; see §11 |
+| 87 | Camera bridge: comment and docs name four or five inbound routes and two operator routes; the code has six and four | FIXED | fixed 2026-11-15 (c92611bb): `lib/cameraClient.ts:10-17` names the six `assertCameraSecret` routes and the four operator routes; `docs/guides/guides-tutorial-camera-app.md:33-55` (six inbound, style-context added), `:190-210` (link-existing, sync-linked), `:212-228` and `:253-259` (four operator routes); `docs/_audit/messmass-in-the-fleet.md:6-26` |
+| 88 | features-authentication.md `PageType` list misses `global-report` | FIXED | fixed 2026-11-15 (c92611bb): `docs/features/features-authentication.md:333-334` and the three other lists (`:275`, `:552`, `:645`) name `global-report`, and the prompt table has its row (`:241`, `/report/global`, pageId `all`) = `lib/pagePassword.ts:23`, `app/interactive-report/global/page.tsx:20,41-43` |
+| 89 | architecture.md schema summary misses nine collections the app now opens | FIXED | fixed 2026-11-15 (ff6f78e9): the nine rows added to the second table; `docs/architecture.md:3661` now says 54 more collections (it said 46 for a 45-row table); the scan of `.collection('<name>')` in app, lib, components and hooks (67 names) equals the two tables, no name missing and none extra |
+| 90 | Deleted debug routes are still documented | FIXED | fixed 2026-11-15 (ff6f78e9, c92611bb): `docs/architecture.md:2037-2040` says the route was deleted and `:2131` points at `GET /api/notifications`; the `/debug` section of `docs/api/api-reference-complete.md` removed. That file's coverage figures (341 methods in 228 route files, 2026-10-20) predate the 248 route files now and were not re-measured |
+| 91 | `app/debug/hashtag-categories/page.tsx` fetches a deleted route | FIXED | fixed 2026-11-15 (ff6f78e9): the page (development only, production answered 404) removed with `components/HashtagCategoryDebug.tsx` and its CSS module, its only user; the generated inventory now lists 85 pages (`docs/architecture.md:1000`) |
+| 92 | HANDOVER.md still describes the `/sync` + `/callbacks` pull; its code has no caller | NEW | narrowed 2026-11-15: the text is fixed (c92611bb), a dated note in `HANDOVER.md:169-173` and `docs/_audit/messmass-in-the-fleet.md:27-33`. Still open: the code. `syncFanmassAnalytics` (`lib/fanmassIntegration.ts:358`) has no caller, and with it `fanmassFetch` (`:259`), `recordFanmassSyncFailure` (`:453`), `loadFanmassLink` (`:250`) and `FANMASS_SUMMARY_CONTRACT` (`:11`) go (`mapFanmassSummaryToStats`, `:288`, stays as long as `mapFanmassStatsToFlatStats` names its return type), then `config.fanmassBaseUrl` (`lib/config.ts:143`), `config.fanmassApiKey` (`:144`), `FANMASS_BASE_URL` and `FANMASS_API_KEY` in `.env.example:98-102` and the Vercel settings: a removal larger than this pass; see §11 |
+| 93 | architecture.md CSRF module: "HttpOnly" cookie that "middleware sets" | FIXED | fixed 2026-11-15 (ff6f78e9): `docs/architecture.md:2503-2518` now says the cookie is not HttpOnly (`lib/csrf.ts:124`), middleware checks but does not set it (`middleware.ts:150-152`), `GET /api/csrf-token` issues it, and drops "token rotation on validation failure" (`refreshCsrfToken`, `lib/csrf.ts:136`, has no caller) |
 
 Counts: 93 entries: 40 TRUE, 40 CHANGED, 1 FIXED (86, the same day), 1 NOT RE-CHECKABLE and 11 NEW
 (still open from before: 68, 81, 82, 83; found in this round: 87 to 93).
+After the fixes of 2026-11-15: 40 TRUE, 40 CHANGED, 9 FIXED (86, 68, 82, 87 to 91, 93),
+1 NOT RE-CHECKABLE and 3 NEW (81 and 83, the owner's decision; 92, narrowed to its code).
 
 ## Re-verification ledger @ 96dd913c (2026-10-11; history)
 
@@ -646,7 +662,8 @@ freshness, never factual accuracy.
   78)~~: bb3eaac6 (2026-11-08) deleted all four `app/api/debug/*` routes (those
   three and `vision-check`). The debug page stayed and still fetches the deleted
   route (`app/debug/hashtag-categories/page.tsx:42`, §11, ledger 91), and the docs
-  that named the routes were not updated (§11, ledger 90).
+  that named the routes were not updated (§11, ledger 90). Both fixed 2026-11-15
+  (ff6f78e9: the page removed; the docs corrected).
 - Dead components (zero importers): ~~BlockEditor, LandingReportRoot,
   LandingValueChainSection + /api/landing-report~~ FIXED 2026-08-20 (c56e70af,
   v12.2.0); ~~HashtagInput~~ FIXED 2026-09-08 (messmass#351 leftovers, this
@@ -782,7 +799,7 @@ FIXED were fixed by messmass#470 (the documentation and comment items, one rate
 limit change, two removals); NEW is still open. Line numbers in the entries are
 as found on 2026-10-11; each entry ends with what the 2026-11-14 re-read found.
 
-68. **NEW (open): a route uses `distinct()` on a strict Stable API connection.**
+68. **FIXED (2026-11-15): a route used `distinct()` on a strict Stable API connection.**
    `GET /api/bitly/recalculate` calls `.distinct('projectId')`
    (`app/api/bitly/recalculate/route.ts:202-204`, added in 423894e2,
    2026-09-16, messmass#283). The client is `serverApi: { version: '1', strict:
@@ -801,7 +818,12 @@ as found on 2026-10-11; each entry ends with what the 2026-11-14 re-read found.
    open; the route and `lib/mongodb.ts` are unchanged, it is still the only
    `.distinct(` call, the architecture.md rule moved to the end of the rewritten
    Fanmass chapter (`docs/architecture.md:4024-4025`) and the release-notes record
-   to `:3488`.
+   to `:3488`. Fixed 2026-11-15 (154441c1): `$match` on `projectId` existing (the
+   rows `distinct()` would read) and `$group` on it
+   (`app/api/bitly/recalculate/route.ts:206-214`), so the status answer keeps its
+   numbers; `tests/bitly-recalculate-status.test.ts` fails if `distinct()` comes back.
+   The owner had closed messmass#469 "for now" on 2026-10-11; the change is one
+   commit and can be dropped on its own.
 69. **FIXED: `lib/cameraClient.ts:12-14` named 2 of 4 camera inbound endpoints.**
    The comment said `assertCameraSecret` is "reused by every camera -> messmass
    inbound endpoint" and listed `partners` and `sso-session`; `frame-context`
@@ -912,15 +934,22 @@ as found on 2026-10-11; each entry ends with what the 2026-11-14 re-read found.
    hosts were added (1d741434) and now says only "the Vercel toolbar's Pusher
    WebSocket"; `https://vercel.live` is still in `script-src` (`:130`), `font-src`
    (`:133`) and `frame-src` (`:137`).
-81. **NEW (open): a component with no importer tells the user a dead link.**
+81. **NEW (open, owner's decision): a component with no importer tells the user a dead link.**
    `app/admin/events/ProjectsPageClient.tsx` is imported by nothing (only two
    comments in `app/admin/bitly/page.tsx:194,888` name it) and its create-event
    alert says "Stats Link: /stats/<viewSlug>" (`:365`), the deleted route. A
    candidate for the obsoletion queue (§7), not on it yet and not touched here.
    Re-read 2026-11-14: still open; still no importer, the alert is still `:365`
-   (the file's one change is the camera vetting link).
-82. **NEW (open): the login page maps two more codes nothing emits and misses one
-   that is emitted.** `app/admin/login/page.tsx` maps `invalid_sso` and
+   (the file's one change is the camera vetting link). Re-read 2026-11-15 at
+   a90337e9: unchanged. That camera link is the reason it is not simply deleted:
+   the "Open in Camera" button (`:897-904`, release notes `:1110`, "on each project
+   row") exists only in this file, so the live events list (`app/admin/events/page.tsx`
+   through `lib/adapters/projectsAdapter.tsx`) never showed it, and
+   `messmass-in-the-fleet.md` claimed it did (corrected in c92611bb). The decision for
+   the owner: add the Camera link to the live list (a visible change), then delete
+   this file; deleting it first would drop the only copy of that link.
+82. **FIXED (2026-11-15): the login page mapped two more codes nothing emits and
+   missed one that is emitted.** `app/admin/login/page.tsx` maps `invalid_sso` and
    `missing_token`; the codes `app/api/auth/sso/callback/route.ts` and
    `.../login/route.ts` redirect with are `sso_not_configured`, `sso_oauth_error`,
    `missing_code`, `session_expired`, `permission_check_failed`, `no_access` and
@@ -928,8 +957,12 @@ as found on 2026-10-11; each entry ends with what the 2026-11-14 re-read found.
    has no entry and shows the generic "Sign-in failed" message. Re-read
    2026-11-14: still open; both files unchanged (`invalid_sso` `:17`,
    `missing_token` `:20`; `sso_oauth_error` emitted at
-   `app/api/auth/sso/callback/route.ts:46`).
-83. **NEW (open, messmass#430): `/admin/project-partners` still writes and reads only
+   `app/api/auth/sso/callback/route.ts:46`). Fixed 2026-11-15 (73bc1e02): the two
+   unsent codes are removed (no one sees a change: nothing sends them), and the
+   comment above the map (`app/admin/login/page.tsx:14-16`) says which files send the
+   codes and that `sso_oauth_error` shows the generic "Sign-in failed" text. A
+   message of its own for it would be new copy, the owner's call.
+83. **NEW (open, owner's decision, messmass#430): `/admin/project-partners` still writes and reads only
    the legacy fields.** `app/api/admin/project-partners/route.ts` (PUT sets or
    unsets `partner1` / `partner2`; GET lists only those) and
    `.../auto-suggest/route.ts` (selects events without `partner1`, which includes
@@ -945,7 +978,10 @@ as found on 2026-10-11; each entry ends with what the 2026-11-14 re-read found.
    writes `partner1Id` / `partner2Id` next to the legacy fields (`:124-137`).
    `auto-suggest/route.ts` still selects events with no `partner1` (`:92-94`,
    which includes events that have `partner1Id`) and sets only `partner1` /
-   `partner2` (`:113-118`).
+   `partner2` (`:113-118`). Re-read 2026-11-15 at a90337e9: unchanged. Not fixed
+   here: making auto-suggest select on `partner1Id` and write `partner1Id` /
+   `partner2Id` changes what an admin action writes to production events, which is
+   the owner's decision (messmass#430 is open).
 84. **FIXED: two more wrong statements next to the CORS and middleware gaps.**
    `docs/features/features-authentication.md` showed a hard-coded `allowedOrigins`
    array (`https://messmass.com`, `https://admin.messmass.com`, ...) that is not in
@@ -965,11 +1001,12 @@ as found on 2026-10-11; each entry ends with what the 2026-11-14 re-read found.
    `docs/architecture.md:3669,3673`, and the cited code is unchanged.
 
 ## 11. New drift found 2026-11-14 (re-verified @ 71a2b79f; ledger 86-93)
-Found while re-reading the entries above. Each has its proof; all are open. None
-is fixed here: this round changes only this page.
+Found while re-reading the entries above. Each has its proof. None was fixed by
+that round, which changed only this page; 86 was fixed the same day (e4e50bf2), and
+87 to 91 and 93 on 2026-11-15 (each entry says how); 92 is narrowed to its code.
 
-86. **NEW (open): the docs say Fanmass does not create Messmass events; it does
-   now.** `POST /api/integrations/fanmass/match-events` (244809cf, 2026-11-14,
+86. **FIXED (2026-11-14, e4e50bf2): the docs said Fanmass does not create Messmass
+   events; it does now.** `POST /api/integrations/fanmass/match-events` (244809cf, 2026-11-14,
    owner answer 509) creates the event of a match from the home club, away club
    and date, through the same `insertEvent` as `POST /api/projects`
    (`app/api/integrations/fanmass/match-events/route.ts`, `lib/fanmassMatchEvents.ts:58`;
@@ -981,7 +1018,7 @@ is fixed here: this round changes only this page.
    workflow those sentences describe still does not create events, so the fix is
    to scope them to that workflow and name the match-event route; the fleet map's
    E2 was re-verified at cc6f1a23 and is not part of this entry.
-87. **NEW (open): the camera bridge is counted short in a comment and two docs.**
+87. **FIXED (2026-11-15): the camera bridge was counted short in a comment and two docs.**
    In code: 10 route files under `app/api/integrations/camera`; six call
    `assertCameraSecret` (`partners`, `sso-session`,
    `events/[messmassEventId]/frame-context`, `events/[messmassEventId]/link-stats`,
@@ -995,14 +1032,23 @@ is fixed here: this round changes only this page.
    and gotcha (`:226-231`) still say two inbound endpoints (`partners`,
    `sso-session`) and two operator endpoints; `docs/_audit/messmass-in-the-fleet.md:10-15`
    names neither style-context nor the two new operator routes. The same kind of
-   drift as entry 69, which `comments:check` cannot see.
-88. **NEW (open): the documented `PageType` list misses `global-report`.**
+   drift as entry 69, which `comments:check` cannot see. Fixed 2026-11-15 (c92611bb):
+   the comment (`lib/cameraClient.ts:10-17`) names the six inbound and the four
+   operator routes; the guide says six inbound endpoints and describes style-context
+   (`:33-55`), documents `link-existing` and `sync-linked` (`:190-210`) and says four
+   operator endpoints in the auth note and the gotcha (`:212-228`, `:253-259`); the
+   one-pager names style-context and the operator routes (`:6-26`).
+88. **FIXED (2026-11-15): the documented `PageType` list missed `global-report`.**
    `docs/features/features-authentication.md:331-332` lists eight page types and
    marks them as `lib/pagePassword.ts PageType`; the type has a ninth,
    `global-report` (`lib/pagePassword.ts:23`, f68b473c, 2026-11-12), with its
    shareable URL `/report/global` (`:474-481`). `docs/low-level-design.md:16-23`
-   already describes it.
-89. **NEW (open): architecture.md's schema summary misses nine collections the
+   already describes it. Fixed 2026-11-15 (c92611bb): the schema block
+   (`docs/features/features-authentication.md:333-334`) and the three prose lists
+   (`:275`, `:552`, `:645`) name it, and the prompt table has its row (`:241`: pageId
+   `all`, `app/interactive-report/global/page.tsx:20`; with no password issued the page
+   is a 404 for everyone but an admin, `:41`).
+89. **FIXED (2026-11-15): architecture.md's schema summary missed nine collections the
    app opens.** `docs/architecture.md:3658` says "the code opens 46 more
    collections, listed in the second table" (`:3676`), as the result of a scan of
    `.collection('<name>')` in app/, lib/, components/ and hooks/. Since then the app
@@ -1016,21 +1062,36 @@ is fixed here: this round changes only this page.
    `szrt_vision_progress` (`lib/interactiveReportAggregator.ts`); none is in either
    table. `collections.json` has all of them (81 names; the tenth new name,
    `szrt_vision_dlq`, is opened by scripts only), so `inventory:check` stays green
-   while the prose drifts.
-90. **NEW (open): deleted debug routes are still documented.** bb3eaac6
+   while the prose drifts. Fixed 2026-11-15 (ff6f78e9): the nine rows are in the second
+   table and the sentence says 54 (`docs/architecture.md:3661`; it said 46, but the
+   table had 45 rows). The same scan, run again, finds 67 names, and they are exactly
+   the names of the two tables. `fanmass_event_drive_photos` is opened through a
+   constant in `lib/fanmassDrivePhotos.ts:15` and by name in
+   `lib/hashtagReport/measured.ts`; `reportStyles` is a fallback read after
+   `report_styles` (`lib/interactiveReportAggregator.ts:288-289`).
+90. **FIXED (2026-11-15): deleted debug routes were still documented.** bb3eaac6
    (2026-11-08) deleted `app/api/debug/{categorized-hashtags,notifications,overview-block,vision-check}`
    and regenerated `docs/_audit/api-reference.md`, but `docs/architecture.md:2033`
    ("Diagnostic Endpoint: `GET /api/debug/notifications` - Production
    troubleshooting") and `:2127` ("Use diagnostic endpoint") and
    `docs/api/api-reference-complete.md:303-305` (three rows) still describe them.
    The audit snapshots under `docs/audits/lld/` name them too; those are dated
-   records, not current documentation, and are not counted here.
-91. **NEW (open): a debug page fetches a deleted route.**
+   records, not current documentation, and are not counted here. Fixed 2026-11-15
+   (ff6f78e9, c92611bb): architecture.md says the route was deleted (`:2037-2040`) and
+   its troubleshooting list starts from `GET /api/notifications` (`:2131`); the
+   `/debug` section of `api-reference-complete.md` is gone. Seen while doing it, not
+   fixed: that file's coverage figures (341 methods in 228 route files, 2026-10-20)
+   are older than the 248 route files now.
+91. **FIXED (2026-11-15): a debug page fetched a deleted route.**
    `app/debug/hashtag-categories/page.tsx:42` fetches `/api/debug/categorized-hashtags`,
    deleted in bb3eaac6; the page renders only outside production (`notFound()`
    at `:31-33`), so a developer who opens it gets the error state. §7 had said
-   the route "goes with that page"; the route went and the page stayed.
-92. **NEW (open): HANDOVER.md still describes the retired `/sync` + `/callbacks`
+   the route "goes with that page"; the route went and the page stayed. Fixed
+   2026-11-15 (ff6f78e9): the page is removed with `components/HashtagCategoryDebug.tsx`
+   and `components/HashtagCategoryDebug.module.css`, which only it used; the generated
+   route inventory and module catalogue were regenerated (85 pages,
+   `docs/architecture.md:1000`). Production showed a 404 before and after.
+92. **NEW (narrowed 2026-11-15, code still open): HANDOVER.md still described the retired `/sync` + `/callbacks`
    pull, and its code is left without a caller.** `HANDOVER.md:167-169` says
    Fanmass "is the caller on every channel except one: messmass's `/sync` and
    `/callbacks` pull the analytics summary from `FANMASS_BASE_URL` (blocking, 15s
@@ -1040,8 +1101,17 @@ is fixed here: this round changes only this page.
    a dated session block (v12.1.89), so a dated note may be the right fix rather
    than a rewrite. In code, `syncFanmassAnalytics` (`lib/fanmassIntegration.ts:358`)
    and `fanmassFetch` (`:259`) are no longer called from anywhere in app/ or lib/:
-   a candidate for the obsoletion queue (§7).
-93. **NEW (open): architecture.md's CSRF module section contradicts the code.**
+   a candidate for the obsoletion queue (§7). Text fixed 2026-11-15 (c92611bb): a dated
+   note in the session block (`HANDOVER.md:169-173`), and the fleet one-pager's Fanmass
+   bullet no longer describes the pull (`docs/_audit/messmass-in-the-fleet.md:27-33`).
+   Still open, the code: removing `syncFanmassAnalytics` takes `fanmassFetch`,
+   `recordFanmassSyncFailure` (`:453`), `loadFanmassLink` (`:250`) and
+   `FANMASS_SUMMARY_CONTRACT` (`:11`) with it,
+   then `config.fanmassBaseUrl` and `config.fanmassApiKey` (`lib/config.ts:143-144`)
+   and `FANMASS_BASE_URL` and `FANMASS_API_KEY` in `.env.example:98-102` and the
+   Vercel settings: one removal across code, the example environment file and the
+   deployment settings, for its own change.
+93. **FIXED (2026-11-15): architecture.md's CSRF module section contradicted the code.**
    "#### 2. CSRF Protection Module" says the double-submit cookie is "secure,
    HttpOnly, SameSite=Lax" (`docs/architecture.md:2500`), that "Middleware sets
    CSRF cookie on first request" (`:2507`) and that "HttpOnly cookies prevent XSS
@@ -1050,4 +1120,9 @@ is fixed here: this round changes only this page.
    (`lib/csrf.ts:124`), and middleware does not set it: `middleware.ts:150-152`
    says cookie setting was removed and the token comes from `/api/csrf-token`
    (`lib/apiClient.ts:31`, `ensureCsrfToken`). Entry 84 fixed the same claim in
-   the middleware section; this copy dates from 2025-10-18 and was missed.
+   the middleware section; this copy dates from 2025-10-18 and was missed. Fixed
+   2026-11-15 (ff6f78e9): the section (`docs/architecture.md:2503-2518`) says the cookie
+   is not HttpOnly and why, that middleware checks it but does not set it, that
+   `GET /api/csrf-token` issues it, and which paths are exempt (`lib/csrf.ts:159-190`);
+   "token rotation on validation failure" is gone, because nothing calls
+   `refreshCsrfToken` (`lib/csrf.ts:136`).
