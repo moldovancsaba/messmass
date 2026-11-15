@@ -418,3 +418,5 @@ Read the issue and actual board before each future proposal. Retain previous obs
 ## Documentation verification
 
 `npm run version:verify` passed. The staged-document `npm run docs:audit` passed for 166 current documents and regenerated its two metadata reports. Its freshness check was explicitly skipped because this checkout is shallow; source-age freshness is not claimed. Diff hygiene passed. The full required Verify/build/runtime chain has not been run locally, and the PR is not a merged release. No production or cross-app acceptance is claimed.
+
+The first PR Verify run failed because the generated documentation inventory omitted this new reference file. The canonical inventory generator was then run and inventory:check passed locally. Its endpoint output differed only by row order; semantic identity was asserted and that unrelated reorder was excluded. The documentation inventory update is included with this review. A new PR Verify result is still required before merge.
