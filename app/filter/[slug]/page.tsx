@@ -10,6 +10,7 @@ import ReportHero from '@/app/report/[slug]/ReportHero';
 import ReportContent from '@/app/report/[slug]/ReportContent';
 import UnifiedProjectsSection from '@/components/UnifiedProjectsSection';
 import { ReportCalculator } from '@/lib/report-calculator';
+import { exportReportToPDF } from '@/lib/export/pdf';
 import { useReportStyle } from '@/hooks/useReportStyle';
 import PagePasswordLogin, { clearAuthentication } from '@/components/PagePasswordLogin';
 import styles from '@/app/styles/report-page.module.css';
@@ -259,13 +260,26 @@ export default function FilterReportPage() {
   // navigation; this file is where the fix actually needed to land).
   const handlePDFExport = () => {
     const filename = (reportData?.project?.eventName || filterSlug || 'report').replace(/[^a-zA-Z0-9]/g, '_');
-    const exportUrl = `/api/export/pdf?path=${encodeURIComponent(window.location.pathname + window.location.search)}&filename=${encodeURIComponent(filename)}`;
-    window.location.href = exportUrl;
+    void exportReportToPDF({
+      pathAndQuery: window.location.pathname + window.location.search,
+      filename,
+    });
   };
 
   return (
     <div className={styles.page}>
       <div className={styles.container}>
+        {/* Interactive Dashboard Direct Switch */}
+        <div className={styles.interactiveSwitchBar}>
+          <a
+            href={`/interactive-report/filter/${encodeURIComponent(filterSlug)}${variant ? `?variant=${encodeURIComponent(variant)}` : ''}`}
+            className={styles.interactiveSwitchBtn}
+            title="Open real-time interactive dashboard for this filter"
+          >
+            ⚡ Open Interactive Dashboard ➔
+          </a>
+        </div>
+
         {/* Hero Section - REUSED from event reports */}
         {/* WHAT: id="report-hero"/"report-content" match app/report/[slug]/page.tsx's
             structure exactly. WHY: app/api/export/pdf/route.ts's readiness check waits

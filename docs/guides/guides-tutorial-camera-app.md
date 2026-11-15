@@ -30,7 +30,7 @@ things, so there is still no "who wins?" conflict:
   (`lib/cameraClient.ts`, `lib/cameraProvision.ts`) and stamps the returned Camera IDs
   onto the messmass records. The Camera app never creates organisations or events back
   in messmass.
-- **Camera → messmass (partners, sessions and numbers).** Five inbound endpoints, all
+- **Camera → messmass (partners, sessions, looks and numbers).** Six inbound endpoints, all
   authenticated by the shared `CAMERA_MESSMASS_INTERNAL_SECRET`.
   `POST /api/integrations/camera/partners` upserts a partner that
   was created directly in the Camera app so it also appears in messmass
@@ -38,12 +38,15 @@ things, so there is still no "who wins?" conflict:
   `POST /api/integrations/camera/sso-session` mints a real messmass session (creating
   or updating the user record) for someone who signed in on the Camera side
   (`app/api/integrations/camera/sso-session/route.ts` → `lib/auth/mintSession.ts`).
-  The other three carry no records: `POST /api/integrations/camera/events/{id}/link-stats`
+  The other four carry no records: `POST /api/integrations/camera/events/{id}/link-stats`
   adds the scans the Camera app counts on an event's tracked links (QR codes, short
   addresses) to the event's visit statistics (`lib/cameraLinkStats.ts`),
   `GET /api/integrations/camera/events/{id}/frame-context` lets the Camera app read the
   event's resolved look (teams with logos, partner, report template and style, font) to
-  build the event's default frame (`lib/cameraFrameContext.ts`), and
+  build the event's default frame (`lib/cameraFrameContext.ts`),
+  `GET /api/integrations/camera/partners/{id}/style-context` lets the Camera app read a
+  partner's current messmass style for its partner workspace, without copying it
+  (`buildCameraPartnerStyleContext` in `lib/cameraFrameContext.ts`), and
   `POST /api/integrations/camera/events/{id}/photo-stats` stores the photo, people and
   journey counters of an event under names that start with `camera_` (`lib/cameraPhotoStats.ts`;
   the names and what they correspond to are in
@@ -157,7 +160,8 @@ If any are missing, use the backfill endpoints below.
 Because provisioning never blocks event creation, an event can be created during a Camera
 app outage (or before the env vars were configured) and end up **without** a Camera link.
 messmass records the failure in the logs and moves on. Two operator endpoints exist to
-repair the gap. Both are `POST` and both require the integration token in the request
+repair the gap, and two more link or refresh single mirrors (below). All four are `POST`
+and all four require the integration token in the request
 (see [Authentication](#authentication-for-the-ops-endpoints)).
 
 **Link existing partners to Camera partners (no creation).**
@@ -183,22 +187,45 @@ the full provisioning chain for each. `limit` defaults to `100` and is capped at
 call, so large backlogs are cleared in batches. Response reports how many events were
 `provisioned` and how many were `scanned`. One event failing does not stop the rest.
 
+**Attach an existing Camera event to its messmass event.**
+
+```
+POST /api/integrations/camera/link-existing
+```
+
+Body: `messmassEventId` and `cameraEventId` (and optionally `replaceMessmassEventId`, the
+id of a messmass event that was deleted and whose Camera event this one takes over). It
+links a Camera event that already exists, keeping the Camera event and its submissions,
+instead of provisioning a new one. It refuses with `409` when the messmass event is already
+linked to a different Camera event, or when the event to replace still exists.
+
+**Refresh linked mirrors.**
+
+```
+POST /api/integrations/camera/sync-linked?limit=20&offset=0
+```
+
+Re-runs provisioning for events that already have a Camera link, so their Camera copy
+follows messmass's current event and partner fields. At most `20` events per call; page
+with `offset`. Response reports how many were `synced` and `scanned`, and the failures.
+
 ### Authentication for the ops endpoints
 
-> Note: The two operator **backfill** endpoints (`link-partners`, `provision-missing`)
-> are protected by the **Fanmass integration token** (`FANMASS_INTEGRATION_TOKEN`), *not*
+> Note: The four operator endpoints (`link-partners`, `provision-missing`, `link-existing`,
+> `sync-linked`) are protected by the **Fanmass integration token** (`FANMASS_INTEGRATION_TOKEN`), *not*
 > by `CAMERA_MESSMASS_INTERNAL_SECRET`. Despite living under the `/api/integrations/camera/`
 > path they are operator-triggered *drivers of the outbound* messmass → Camera provisioning,
 > so they use the operator token. Send it as `Authorization: Bearer <token>` or
 > `x-api-key: <token>`. If the token is not configured the endpoints return `503`; a wrong
 > token returns `401`. See [Fanmass](guides-tutorial-fanmass.md) for how that token is set.
 >
-> The genuinely inbound Camera → messmass endpoints under the same path
-> (`partners`, `sso-session`) are a *different* auth: they use the shared
+> The six genuinely inbound Camera → messmass endpoints under the same path
+> (`partners`, `sso-session`, `partners/{id}/style-context`, and the event `frame-context`,
+> `link-stats` and `photo-stats`) are a *different* auth: they use the shared
 > `CAMERA_MESSMASS_INTERNAL_SECRET`, the same secret that authenticates messmass's own
 > outbound calls to the Camera app. So that one shared secret guards traffic in **both**
-> directions between the two apps; the Fanmass integration token guards only the two
-> operator backfill endpoints.
+> directions between the two apps; the Fanmass integration token guards only the four
+> operator endpoints.
 
 ### Day-to-day
 
@@ -225,10 +252,11 @@ in place.
   as a manual reconciliation if the Camera app needs them.
 - **Two tokens, but not one-per-direction.** Keep them straight: the shared Camera secret
   (`CAMERA_MESSMASS_INTERNAL_SECRET`) authenticates traffic **both** ways — messmass's
-  outbound provisioning *and* the two genuine Camera → messmass inbound endpoints
-  (`partners`, `sso-session`). The Fanmass integration token guards only the two operator
-  backfill endpoints (`link-partners`, `provision-missing`), which despite their path
-  drive the outbound direction.
+  outbound provisioning *and* the six genuine Camera → messmass inbound endpoints
+  (listed under [Authentication](#authentication-for-the-ops-endpoints)). The Fanmass
+  integration token guards only the four operator endpoints (`link-partners`,
+  `provision-missing`, `link-existing`, `sync-linked`), which despite their path drive the
+  outbound direction.
 - **Don't confuse products.** "Camera" here is seyu's selfie-capture app. It is not the
   messmass Clicker, not KYC variables, and not the content library — those never leave
   messmass.

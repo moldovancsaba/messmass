@@ -244,7 +244,7 @@ export interface FormulaValidationResult {
   isValid: boolean;
   error?: string;
   usedVariables: string[]; // List of variables used in the formula
-  evaluatedResult?: number | 'NA'; // Test evaluation result
+  evaluatedResult?: number | string | 'NA'; // Test evaluation result
 }
 
 /**

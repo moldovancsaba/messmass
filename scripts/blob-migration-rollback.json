@@ -1,0 +1,993 @@
+{
+  "migratedAt": "2026-11-05T07:00:54.608Z",
+  "totalUpdates": 141,
+  "rollback": [
+    {
+      "collection": "partners",
+      "docId": "6ab503c3cb96a4527437a066",
+      "fieldPath": "stats.reportImage1",
+      "oldUrl": "https://bidx0njghn1voknt.public.blob.vercel-storage.com/1790366586274_cube-JmJmmGHmHgYMrV8VyUojnRXxsoearl.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/104d85d270bf581587743193173f1bbc5b7050a8a5d6c7b655b0651990390868.jpg"
+    },
+    {
+      "collection": "partners",
+      "docId": "6ab503c3cb96a4527437a066",
+      "fieldPath": "stats.reportImage2",
+      "oldUrl": "https://bidx0njghn1voknt.public.blob.vercel-storage.com/Polska-vs-Romania-5TTSEfXLdCgHOObyTkN0hZjaoWGuN3.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/64f6a2670cbd2ed3a1ce1b02d4e846dcc4a54de777e53f7fccee598fb6418627.png"
+    },
+    {
+      "collection": "partners",
+      "docId": "6ab503c3cb96a4527437a066",
+      "fieldPath": "stats.reportImage3",
+      "oldUrl": "https://bidx0njghn1voknt.public.blob.vercel-storage.com/1790972555379_cube-ueL3BZPizkfxebtQc08OfJoIKdpy4y.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/03ea8d77cfafcc97bd87eab826a83a937ab95c3713c810126a850cd6a9af5059.jpg"
+    },
+    {
+      "collection": "partners",
+      "docId": "6ab503c3cb96a4527437a066",
+      "fieldPath": "stats.reportImage4",
+      "oldUrl": "https://bidx0njghn1voknt.public.blob.vercel-storage.com/Seyu_PZPN_Frame_Pop-Up-1--RhZI699p0OyMGRnXMlZ8lWc1bGdDpF.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/17a790dc36be1375f5f6a80cec0edb8814421cf072136568ddfb5f7f874a8fc4.png"
+    },
+    {
+      "collection": "partners",
+      "docId": "6ab503c3cb96a4527437a066",
+      "fieldPath": "stats.reportImage5",
+      "oldUrl": "https://bidx0njghn1voknt.public.blob.vercel-storage.com/1790967646123_cube-JnQHFqmCcKIbROu8mgxNfq75GpWJ2G.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/6aa5da321010c3474359630c8d4c491109fde953df9944831927ffd8e25780d6.jpg"
+    },
+    {
+      "collection": "partners",
+      "docId": "6ab503c3cb96a4527437a066",
+      "fieldPath": "stats.reportImage6",
+      "oldUrl": "https://bidx0njghn1voknt.public.blob.vercel-storage.com/1790368115794_cube-lIqM0YMRb3X5L5zbiqaAXCAuzSGPrU.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/8df1e62021768a594f91de11e86c06c14d4906c586ce46e6edd41fc0cf888b71.jpg"
+    },
+    {
+      "collection": "partners",
+      "docId": "6ac3973a6a46ecfccd53e04e",
+      "fieldPath": "stats.reportImage1",
+      "oldUrl": "https://bidx0njghn1voknt.public.blob.vercel-storage.com/1792000767946_cube-6n2EYYoiitrS1HKFaeVe6IsKgGTy3A.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/1247b7b04d58664becc2faef3e566819acdac5a21a421b08e6c8db088bf69b06.jpg"
+    },
+    {
+      "collection": "partners",
+      "docId": "6ac3973a6a46ecfccd53e04e",
+      "fieldPath": "stats.reportImage2",
+      "oldUrl": "https://bidx0njghn1voknt.public.blob.vercel-storage.com/1791997160084_cube-r5JrpoeCmT76P8VP58TDmf4stScoQO.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/6ec714ed8b5601aca0a869a8c2694f3b2f7a6607c500d9cdc9c2868a28279e32.jpg"
+    },
+    {
+      "collection": "partners",
+      "docId": "6ac3973a6a46ecfccd53e04e",
+      "fieldPath": "stats.reportImage3",
+      "oldUrl": "https://bidx0njghn1voknt.public.blob.vercel-storage.com/wahmtfs88rcyfijinpl3-hDMKgkirQoMw4VMISF8eIvUH8kWnhV.webp",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/326c1d9f24333385c7bb82ca29f2e4465ccfe0cd8e4323a20df669540a3f0c22.webp"
+    },
+    {
+      "collection": "partners",
+      "docId": "6ac3973a6a46ecfccd53e04e",
+      "fieldPath": "stats.reportImage4",
+      "oldUrl": "https://bidx0njghn1voknt.public.blob.vercel-storage.com/No-i-Euroliga-me-rko-ze-s-elo-tti-are-na-3AHMlgRByWkD5pjHmFSjqBnnIhsMmm.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/230f223ee0dc343f0f5eec2f0af0bd01ba142e8256343ed5cce008afbf147f47.png"
+    },
+    {
+      "collection": "partners",
+      "docId": "6ac3973a6a46ecfccd53e04e",
+      "fieldPath": "stats.reportImage5",
+      "oldUrl": "https://bidx0njghn1voknt.public.blob.vercel-storage.com/1792053279519_cube-C8srLliVRVXclYoj4eCow7ojMxM00v.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/102199c36ad639148f7d6bb9b0d6478eceee93484c04e93929d200dc85c1b609.jpg"
+    },
+    {
+      "collection": "partners",
+      "docId": "6ac3973a6a46ecfccd53e04e",
+      "fieldPath": "stats.reportImage6",
+      "oldUrl": "https://bidx0njghn1voknt.public.blob.vercel-storage.com/1791988156712_cube-DIx6KfnoHMu2PFH7JeWEE5riPmUDk5.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/723b76289c30f7b1c3f0c7542eec7a46a2c5b1f228693fd7e136b764613cff3b.jpg"
+    },
+    {
+      "collection": "partners",
+      "docId": "6ac3973a6a46ecfccd53e04e",
+      "fieldPath": "stats.reportImage7",
+      "oldUrl": "https://bidx0njghn1voknt.public.blob.vercel-storage.com/Casademont-WXcUoyrseNVLYU7XIdgQnMAXrVb9eW.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/a9b83d42696cbb63e7ea831bc11ccba3680c01c8d31e4fea99e170258b753722.png"
+    },
+    {
+      "collection": "partners",
+      "docId": "6ac3973a6a46ecfccd53e04e",
+      "fieldPath": "stats.reportImage8",
+      "oldUrl": "https://bidx0njghn1voknt.public.blob.vercel-storage.com/basket-landes-QRdnGlF8IFfxjELke3x217vGUeIcGO.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/901fe4e89aaff43943b5e25b27f875614066ed7de357fb86bbe5b7d6b367fe1b.png"
+    },
+    {
+      "collection": "partners",
+      "docId": "6ac3973a6a46ecfccd53e04e",
+      "fieldPath": "stats.reportImage9",
+      "oldUrl": "https://bidx0njghn1voknt.public.blob.vercel-storage.com/valencia-OZCWDkCRttEvcuWPktL57yXFh0CgUm.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/addd0c65e3b31f7e44e16e61544e688e8000a79a152f39bb5c775cfdd4404746.png"
+    },
+    {
+      "collection": "partners",
+      "docId": "6ac3973a6a46ecfccd53e04e",
+      "fieldPath": "stats.reportImage10",
+      "oldUrl": "https://bidx0njghn1voknt.public.blob.vercel-storage.com/fener-vEuHl1w3zQ2NmWpd7sLzLLXCl2a2QP.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/b454bfc1b213d5702aefee42d3f3a7a7f8298cbc7dac9cbad652b216377539bb.png"
+    },
+    {
+      "collection": "report_variants",
+      "docId": "6aaa106cc3b2ee4847b01d72",
+      "fieldPath": "statsOverrides.reportImage1",
+      "oldUrl": "https://bidx0njghn1voknt.public.blob.vercel-storage.com/1791308840109_cube-3A1E6lRUHEjZsB58MinoNOYIPk9Wu9.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/ba5c35fe303392164756a94c80b97dec2e5008b388ed47b6723f5f77cc1b63ba.jpg"
+    },
+    {
+      "collection": "report_variants",
+      "docId": "6aaa106cc3b2ee4847b01d72",
+      "fieldPath": "statsOverrides.reportImage2",
+      "oldUrl": "https://bidx0njghn1voknt.public.blob.vercel-storage.com/1788705303462_cube-NMwWEcNiZaNzLcjOCNmcw6nOIbmzT3.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/c12f970809ff3356b267029454d3d029e0532d6fcfdbc3b2534c857077dcaee8.jpg"
+    },
+    {
+      "collection": "report_variants",
+      "docId": "6aaa106cc3b2ee4847b01d72",
+      "fieldPath": "statsOverrides.reportImage3",
+      "oldUrl": "https://bidx0njghn1voknt.public.blob.vercel-storage.com/1791399819502_cube-iDFKPnlNLTnLcIg3sFL0FeKIxMq2N4.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/1108cd8812a4cb9c4ce7e2c91d1edb5e9e24c3b3e82b83cd56d64c8633a544c5.jpg"
+    },
+    {
+      "collection": "report_variants",
+      "docId": "6aaa106cc3b2ee4847b01d72",
+      "fieldPath": "statsOverrides.reportImage4",
+      "oldUrl": "https://bidx0njghn1voknt.public.blob.vercel-storage.com/Seyu_CHL_General-Social-Poster_4-5-mowmk3iISnapJ1e0O5lN2XtUVBrgk8.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/62e5475767e96167828d1ed328aceddc46406fc0d8d82a23333968b9893f4edf.png"
+    },
+    {
+      "collection": "report_variants",
+      "docId": "6aaa106cc3b2ee4847b01d72",
+      "fieldPath": "statsOverrides.reportImage5",
+      "oldUrl": "https://bidx0njghn1voknt.public.blob.vercel-storage.com/chl-ko-lner-haie-1txFeH4OnwZbzhR7QKSAEi1q5ePLEe.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/022a256bf23bf9a213a71651348f50c522582334178188aedc6c32f7a65e9cb6.png"
+    },
+    {
+      "collection": "report_variants",
+      "docId": "6aaa106cc3b2ee4847b01d72",
+      "fieldPath": "statsOverrides.reportImage6",
+      "oldUrl": "https://bidx0njghn1voknt.public.blob.vercel-storage.com/Seyu_CHL_POP-UP-2--sjGh0Jy2YRtmXrOY721Quif5Z6nF5B.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/012a173f7c23f8d675434686cf3fe42ac466501db821de9c6ae10aeb5da1e1aa.png"
+    },
+    {
+      "collection": "report_variants",
+      "docId": "6aaa106cc3b2ee4847b01d72",
+      "fieldPath": "statsOverrides.reportImage7",
+      "oldUrl": "https://bidx0njghn1voknt.public.blob.vercel-storage.com/1789146937887_cube-6rIN38KFdJOGACrFD4Z8TV8pgrxL4I.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/59b45b4306bcfe7867211c3c94aae10b4ba6d210d76bb027f761632866560e79.jpg"
+    },
+    {
+      "collection": "report_variants",
+      "docId": "6aaa106cc3b2ee4847b01d72",
+      "fieldPath": "statsOverrides.reportImage8",
+      "oldUrl": "https://bidx0njghn1voknt.public.blob.vercel-storage.com/1789311534642_cube-VlhIVYTIi9RkaEPWStKcvYjntGzJ14.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/e5918b65ffc275414ebac57c6f6682fe31e247b5dd04f3a09b8d8e5b3f457d63.jpg"
+    },
+    {
+      "collection": "report_variants",
+      "docId": "6ac4ba5900f430108a272e36",
+      "fieldPath": "statsOverrides.reportImage1",
+      "oldUrl": "https://bidx0njghn1voknt.public.blob.vercel-storage.com/1781028279927_cube-DSkADm96koKRYLoRuNBgPbPw47tUOk.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/d0dcf15c69546784a804d1abf02216cce0a53deb73604091a8dc8f8cdf7a9c81.jpg"
+    },
+    {
+      "collection": "report_variants",
+      "docId": "6ac4ba5900f430108a272e36",
+      "fieldPath": "statsOverrides.reportImage2",
+      "oldUrl": "https://bidx0njghn1voknt.public.blob.vercel-storage.com/1774722581172_cube-YwKwy9RrJA9rcPt2f32M0eCwYo7h3k.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/9dbefdb6a905793e76e5afdaae6b6768e762916a5220d550754df75657a6662b.jpg"
+    },
+    {
+      "collection": "report_variants",
+      "docId": "6ac4ba5900f430108a272e36",
+      "fieldPath": "statsOverrides.reportImage3",
+      "oldUrl": "https://bidx0njghn1voknt.public.blob.vercel-storage.com/1774980380093_cube-qD7zDAwdatz9UkERtf2y1UlGhEFNAv.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/a10fefa223dfd61f1a45818e2f0aaf8ff1228ee69b671ed986640c5ee0e3d544.jpg"
+    },
+    {
+      "collection": "report_variants",
+      "docId": "6ac4ba5900f430108a272e36",
+      "fieldPath": "statsOverrides.reportImage4",
+      "oldUrl": "https://bidx0njghn1voknt.public.blob.vercel-storage.com/mlszshop-creative-1-Large-x8kF8uS88BCqQWEU2erEGkQr12Nj8j.jpeg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/48595c2e7bdb932d6064750039b92c5eeb1e80251ac4de5239356224d46416e0.jpg"
+    },
+    {
+      "collection": "report_variants",
+      "docId": "6ac4ba5900f430108a272e36",
+      "fieldPath": "statsOverrides.reportImage5",
+      "oldUrl": "https://bidx0njghn1voknt.public.blob.vercel-storage.com/1790970309874_cube-i5r0Kho67lfavkPfekvV2MaVvqzuty.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/6ae9c8e65d7fc5e4a1b0d2c94dea9d789706d9937092149498c2a01f6f444aec.jpg"
+    },
+    {
+      "collection": "report_variants",
+      "docId": "6ac4ba5900f430108a272e36",
+      "fieldPath": "statsOverrides.reportImage6",
+      "oldUrl": "https://bidx0njghn1voknt.public.blob.vercel-storage.com/1790352455859_cube-hRTDs4TOKgHEa5yQmQvjVfOS0aOAiZ.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/52e01c8117bb93ec608b6282895a630b982ec51c335ab32d1c2427959ae77be5.jpg"
+    },
+    {
+      "collection": "report_variants",
+      "docId": "6ac4ba5900f430108a272e36",
+      "fieldPath": "statsOverrides.reportImage7",
+      "oldUrl": "https://bidx0njghn1voknt.public.blob.vercel-storage.com/1774964482506_cube-dnkugd7L5kmI3So6Kc50bLi9rTF1nN.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/6313c804264ff0d9d8831bfb11569f1e130c86c21097063d7f851842f6ccda0d.jpg"
+    },
+    {
+      "collection": "report_variants",
+      "docId": "6ac4ba5900f430108a272e36",
+      "fieldPath": "statsOverrides.reportImage8",
+      "oldUrl": "https://bidx0njghn1voknt.public.blob.vercel-storage.com/MLSZFANXP_HUN_UKR_QR_16-9-AsPmTBRzlnDIxCDpdThHjVWzhPTVe6.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/73dc2247c78aae93ee3f7ee139c5b247c9a4669819911601aa52ccefc3f34dca.png"
+    },
+    {
+      "collection": "projects",
+      "docId": "69b7f402304f58529e61a525",
+      "fieldPath": "stats.reportImage1",
+      "oldUrl": "https://bidx0njghn1voknt.public.blob.vercel-storage.com/724e8060660e-oaKBYazOlSN8XsXUYHyqUMEwKl1DeX.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/7a36af40b33234ef92a084c5c8c9b7301ffb5b762bd5a3d15fcf798f35b7f592.jpg"
+    },
+    {
+      "collection": "projects",
+      "docId": "69b7f402304f58529e61a525",
+      "fieldPath": "stats.reportImage2",
+      "oldUrl": "https://bidx0njghn1voknt.public.blob.vercel-storage.com/4424d35caf87-bT9OSp8Bi2NKIB71gt6Cw1yWiNLeTq.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/ba0b4cc3ddb987ba9368052287091e503622ca7ecb8ba2ea73401fc4030f87e3.jpg"
+    },
+    {
+      "collection": "projects",
+      "docId": "69b7f402304f58529e61a525",
+      "fieldPath": "stats.reportImage5",
+      "oldUrl": "https://bidx0njghn1voknt.public.blob.vercel-storage.com/f51355cdc68b-Il6MFYzMrCU3oO85UOz4QSaW2s5yIe.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/b9f7a55897610ef95ad493d1622a078d068bdabbd4c46d8e81e1954e1e9310c4.jpg"
+    },
+    {
+      "collection": "projects",
+      "docId": "69b7f402304f58529e61a525",
+      "fieldPath": "stats.reportImage6",
+      "oldUrl": "https://bidx0njghn1voknt.public.blob.vercel-storage.com/1774114255601_cube-r51grrpMHN0RWCpiC4KxBFXKlNkQdJ.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/8230262ee8a58e0f0831654e7526eee1dcbe65b9e6ed9c0b71136c1815889f38.jpg"
+    },
+    {
+      "collection": "projects",
+      "docId": "69b7f402304f58529e61a525",
+      "fieldPath": "stats.reportImage7",
+      "oldUrl": "https://bidx0njghn1voknt.public.blob.vercel-storage.com/1774114467770_cube-p5ML3TKSOMPbdbj6VyLFsMp6VbFGLt.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/d1316fbdc5f0dfd0ba00e6af9e97d3ec3afe94425ada5b2202c43f4912cd412d.jpg"
+    },
+    {
+      "collection": "projects",
+      "docId": "69b7f402304f58529e61a525",
+      "fieldPath": "stats.reportImage8",
+      "oldUrl": "https://bidx0njghn1voknt.public.blob.vercel-storage.com/f13767b6350c-6IuhOHGLDURpyX4Vsuk6Lza7Wa296M.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/df855fef553c12cd8596cbf18f372f1993f0aa11c2c0e199babd204b6e6292db.jpg"
+    },
+    {
+      "collection": "projects",
+      "docId": "69b7f402304f58529e61a525",
+      "fieldPath": "stats.reportImage9",
+      "oldUrl": "https://bidx0njghn1voknt.public.blob.vercel-storage.com/280fefdc80f2-uKLHSErtGRyebbISidYqFZE9VyGKpS.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/4b924cc211a89543b82b2239ecec6f910b56f253e88cac020d6cafea8d45eebd.jpg"
+    },
+    {
+      "collection": "projects",
+      "docId": "6a155a575eec356c8f24f186",
+      "fieldPath": "stats.reportImage1",
+      "oldUrl": "https://bidx0njghn1voknt.public.blob.vercel-storage.com/1778346642088_cube-DHvBBSPxQP7bbnVEsigTO7yOIdEfgP.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/b0eadbb01a55a1fe86e434b7af7b848bbbce791a6228767f5fa84cf3cbb3f15b.jpg"
+    },
+    {
+      "collection": "projects",
+      "docId": "6a155a575eec356c8f24f186",
+      "fieldPath": "stats.reportImage2",
+      "oldUrl": "https://bidx0njghn1voknt.public.blob.vercel-storage.com/1778346429308_cube-oroTM6ifQVXaOAhomKIdH8ILi2pUGl.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/8d701ecafa796b761cbcc9317ecc26cbc584b311e0304dae44501cb23f8fb1d4.jpg"
+    },
+    {
+      "collection": "projects",
+      "docId": "6a155a575eec356c8f24f186",
+      "fieldPath": "stats.reportImage3",
+      "oldUrl": "https://bidx0njghn1voknt.public.blob.vercel-storage.com/IMG_4249-2-xUQQxCpjkzN7mUo1nJ6sQtZWgxnt4O.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/8e99025337e355a9ad32be6cc3a9876eaece4c28ca81bf645989a432e6ee9f99.jpg"
+    },
+    {
+      "collection": "projects",
+      "docId": "6a8d6a8a05c9bbc873585c94",
+      "fieldPath": "stats.reportImage1",
+      "oldUrl": "https://bidx0njghn1voknt.public.blob.vercel-storage.com/Hungarian-Darts-Trophy-screen-J7nCp7u6TUj9InL4X129mb1Ka1IC6e.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/92033f068f7ca786cdbd962497e51ea93cc1ed6b737881c7be47f5966b63fbbb.png"
+    },
+    {
+      "collection": "projects",
+      "docId": "6a8d6a8a05c9bbc873585c94",
+      "fieldPath": "stats.reportImage2",
+      "oldUrl": "https://bidx0njghn1voknt.public.blob.vercel-storage.com/darts_BOS-lqGMew99rHKDHX1wJETHI3sOabX03G.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/19bc6197e7504876e8ed1d3f8651bbc9df999b89e33d5de6a27666edac898c7c.jpg"
+    },
+    {
+      "collection": "projects",
+      "docId": "6a8d6a8a05c9bbc873585c94",
+      "fieldPath": "stats.reportImage3",
+      "oldUrl": "https://bidx0njghn1voknt.public.blob.vercel-storage.com/1788089809259_cube-pSoOLxqfqrcRecP683nMy24BgeLPv8.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/6384cffba1f5ee793811eb9f8dfa561120be00628739d9d44d55d400caa17b5a.jpg"
+    },
+    {
+      "collection": "projects",
+      "docId": "6a8d6a8a05c9bbc873585c94",
+      "fieldPath": "stats.reportImage4",
+      "oldUrl": "https://bidx0njghn1voknt.public.blob.vercel-storage.com/Seyu-MOL-SelfieCam-Ajandek-1920x1080-px-F0el2bSoUgTem39Osg8Olro60Je45n.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/e0a8062552a7ab241a1ad09adb83427e4469aed8be38b07ecb116bb012475fec.png"
+    },
+    {
+      "collection": "projects",
+      "docId": "6a8d6a8a05c9bbc873585c94",
+      "fieldPath": "stats.reportImage5",
+      "oldUrl": "https://bidx0njghn1voknt.public.blob.vercel-storage.com/1788117527162_cube-1mFF9PETehLLDDJI7FtccCnDzjqdTD.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/eda61236f98a26490ee37b2d0f2591fae9d19034b306e4e027775912696baf0c.jpg"
+    },
+    {
+      "collection": "projects",
+      "docId": "6a8d6a8a05c9bbc873585c94",
+      "fieldPath": "stats.reportImage6",
+      "oldUrl": "https://bidx0njghn1voknt.public.blob.vercel-storage.com/1788021220813_cube-vlRchBby0bOYQiOvWtOCV4RnpAL6wt.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/1e905636a6b97d81b6605f1d77d78d1e72000d9b38fa115a2d1cd8a69c1ae2bd.jpg"
+    },
+    {
+      "collection": "projects",
+      "docId": "6a8d6a8a05c9bbc873585c94",
+      "fieldPath": "stats.reportImage8",
+      "oldUrl": "https://bidx0njghn1voknt.public.blob.vercel-storage.com/hdtr-program-booklet2-CIUIN7WE2OMEJfPWZqKklclNZkeTJy.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/0477280f8bcd10711dea22374d4e904609907c9979d675be545c578e3e7e567d.png"
+    },
+    {
+      "collection": "projects",
+      "docId": "6a8d6a8a05c9bbc873585c94",
+      "fieldPath": "stats.reportImage9",
+      "oldUrl": "https://bidx0njghn1voknt.public.blob.vercel-storage.com/hdt-hospitality-area-aaEapqkjzJWAtTtoJT0bKDSOP0dvMH.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/0ffd5c053770ed56dadc5a466ce1951c32c21637def47bef8d5806861d7ff991.png"
+    },
+    {
+      "collection": "projects",
+      "docId": "6a8d6a8a05c9bbc873585c94",
+      "fieldPath": "stats.reportImage10",
+      "oldUrl": "https://bidx0njghn1voknt.public.blob.vercel-storage.com/1787926112400_cube-pWrgOnwROW5hKFZDdDL70kWKQfNZBk.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/07cd3dbb4ad1642bec30a8cf496e6c0883b5da830aee2a17318fe496f9e08818.jpg"
+    },
+    {
+      "collection": "projects",
+      "docId": "6a8d6a8a05c9bbc873585c94",
+      "fieldPath": "stats.reportImage7",
+      "oldUrl": "https://bidx0njghn1voknt.public.blob.vercel-storage.com/WhatsApp-Image-2026-08-29-at-16.06.11-j47TFbSA9Hzv2IbPXbYcZ1if65Lt0A.jpeg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/5353baac40e744832c103aee8ffcdbadd6eb4d30de475d637612273d3c7d86b1.jpg"
+    },
+    {
+      "collection": "projects",
+      "docId": "6a8d6b48dbb9609a250b1a9e",
+      "fieldPath": "stats.reportImage1",
+      "oldUrl": "https://bidx0njghn1voknt.public.blob.vercel-storage.com/1787857874335_cube-XDlHxCX5eGZdZJIjDfpipRWarNRGg9.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/c8baca1df71b5890c0a942b5030fc92df0de7e5db90b22a6f6cc6a167ca51898.jpg"
+    },
+    {
+      "collection": "projects",
+      "docId": "6a8d6b48dbb9609a250b1a9e",
+      "fieldPath": "stats.reportImage2",
+      "oldUrl": "https://bidx0njghn1voknt.public.blob.vercel-storage.com/1787857452547_cube-gQPMMEJyWkn9HESRyDwpTp6K42KsAg.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/e14cdd58fcd6ec27cdf663c5762ad10562eda50b6673e96638dad645f59be0b6.jpg"
+    },
+    {
+      "collection": "projects",
+      "docId": "6a8d6b48dbb9609a250b1a9e",
+      "fieldPath": "stats.reportImage3",
+      "oldUrl": "https://bidx0njghn1voknt.public.blob.vercel-storage.com/1787857019192_cube-MSwub1BVtKrIaE4Z8qEuZYIASf4ZNy.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/fcc53b16bcb175e86167fc5a6dda6fdce7c8ee6cbe091872639ba670f932b90a.jpg"
+    },
+    {
+      "collection": "projects",
+      "docId": "6a8d6b48dbb9609a250b1a9e",
+      "fieldPath": "stats.reportImage4",
+      "oldUrl": "https://bidx0njghn1voknt.public.blob.vercel-storage.com/1787853517875_cube-xxnduGFhihFbXpWJCDiJqvsxKZeqvY.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/d713266a48c8ab5dc7b51869617b8e530645e77b2b8f63e19714c359bd3e762d.jpg"
+    },
+    {
+      "collection": "projects",
+      "docId": "6a940f5b6c09f156f8cf44db",
+      "fieldPath": "stats.reportImage1",
+      "oldUrl": "https://bidx0njghn1voknt.public.blob.vercel-storage.com/1788099767918_cube-WAL9vGJEAwf2IF4t86oeOjMcN4p3PD.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/58de6d1e096b3a2cd1790406d47c83af651b0a43e764857589872e7e90f82bf9.jpg"
+    },
+    {
+      "collection": "projects",
+      "docId": "6a940f5b6c09f156f8cf44db",
+      "fieldPath": "stats.reportImage2",
+      "oldUrl": "https://bidx0njghn1voknt.public.blob.vercel-storage.com/1788094115471_cube-pHpLlYIIMN07uwk5dYmXceFNDHenGn.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/e174946f36187866738e7664d1060e4ed1d6eecb308511dd9976a999dab8bc92.jpg"
+    },
+    {
+      "collection": "projects",
+      "docId": "6a940f5b6c09f156f8cf44db",
+      "fieldPath": "stats.reportImage6",
+      "oldUrl": "https://bidx0njghn1voknt.public.blob.vercel-storage.com/1788107591312_cube-evmu412WX0h3N7R7bv9JCOziLftLA4.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/b408fd690e537a679a0fe6a6f973ba09c3c1d2ffd4c8917c08137740818692bb.jpg"
+    },
+    {
+      "collection": "projects",
+      "docId": "6a940f5b6c09f156f8cf44db",
+      "fieldPath": "stats.reportImage5",
+      "oldUrl": "https://bidx0njghn1voknt.public.blob.vercel-storage.com/1788102425054_cube-r7AbHkyyuyxUvNmjOm6SyLxnIcafku.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/a28de5ffd52ef1b6616963ec0a747e7e14c957b681112846cc3e499a966cd6ca.jpg"
+    },
+    {
+      "collection": "projects",
+      "docId": "6a958c894a513c4fa1289beb",
+      "fieldPath": "stats.reportImage1",
+      "oldUrl": "https://bidx0njghn1voknt.public.blob.vercel-storage.com/1788625988156_cube-SsS8dQ0AQOKPmO7LtsU0aa4ACUlA5A.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/77bf1d4aed2b41a66cadbeabdf65fb8bba668052911d0bfe036107d230806402.jpg"
+    },
+    {
+      "collection": "projects",
+      "docId": "6a958c894a513c4fa1289beb",
+      "fieldPath": "stats.reportImage2",
+      "oldUrl": "https://bidx0njghn1voknt.public.blob.vercel-storage.com/1788620635803_cube-rF6XelrUEXYKcuN5aggiGocdeJGDYi.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/805ec50f0a08bd62e7ae8812100faac993ccb9525d29fa999dd6cf8b0eadfad2.jpg"
+    },
+    {
+      "collection": "projects",
+      "docId": "6a958c894a513c4fa1289beb",
+      "fieldPath": "stats.reportImage3",
+      "oldUrl": "https://bidx0njghn1voknt.public.blob.vercel-storage.com/1788625955519_cube-uX4dzZqf5Mkd5IozTzdQgbPuYG5VwR.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/330fa251a785c4bd73dd1307c72ad5a01e4393ef3b1a3f5caffe3528f52d429d.jpg"
+    },
+    {
+      "collection": "projects",
+      "docId": "6a958c894a513c4fa1289beb",
+      "fieldPath": "stats.reportImage4",
+      "oldUrl": "https://bidx0njghn1voknt.public.blob.vercel-storage.com/1788621284302_cube-3QBnen4gjJx7zcBxRHke2TWikBfC20.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/575786f3b8aabfc2cb6939a488c8a9d1954663bb8e2f0a066708c0ccf12342d7.jpg"
+    },
+    {
+      "collection": "projects",
+      "docId": "6a958c894a513c4fa1289beb",
+      "fieldPath": "stats.reportImage5",
+      "oldUrl": "https://bidx0njghn1voknt.public.blob.vercel-storage.com/ChatGPT-Image-2026.-szept.-7.-16_33_47-Re9zkXEBbO7fB1f9sDmSFfRubK4SRz.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/aad13e2be3455608679f39219d867c548d1fb02185a6b7c0af08f3cb6c80a808.png"
+    },
+    {
+      "collection": "projects",
+      "docId": "6a9fbdf5336b26042c126c14",
+      "fieldPath": "stats.reportImage1",
+      "oldUrl": "https://bidx0njghn1voknt.public.blob.vercel-storage.com/1789068171085_cube-YJ7OiwzbqqG7DTaNBRmVfhqvHWPrfy.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/7175df99b0d60f68015028b99f9ebd028ab01cbea0d6137b88134ffa1b6a4d47.jpg"
+    },
+    {
+      "collection": "projects",
+      "docId": "6a9fbdf5336b26042c126c14",
+      "fieldPath": "stats.reportImage2",
+      "oldUrl": "https://bidx0njghn1voknt.public.blob.vercel-storage.com/WhatsApp-Image-2026-09-10-at-20.27.46-5Q3lGErw2mzfVNU1q91kBNIw3JnMLv.jpeg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/debf89a67b617084614e63ef6ff4162c9b8e3d59a3633a34d137577522c44a7c.jpg"
+    },
+    {
+      "collection": "projects",
+      "docId": "6a9fbdf5336b26042c126c14",
+      "fieldPath": "stats.reportImage3",
+      "oldUrl": "https://bidx0njghn1voknt.public.blob.vercel-storage.com/1789067865327_cube-2WFg47ViLngklcOMarDFw9HVJ4XM4t.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/c027ead73dcbd77c8c54d6ece7c9945119eb468b6c1168eaed0c13024d48ff66.jpg"
+    },
+    {
+      "collection": "projects",
+      "docId": "6a9fbdf5336b26042c126c14",
+      "fieldPath": "stats.reportImage5",
+      "oldUrl": "https://bidx0njghn1voknt.public.blob.vercel-storage.com/WhatsApp-Image-2026-09-10-at-20.27.45-ex9JaVXVtCle29Yj9qzSWinJgU2wbI.jpeg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/1c2ef33311f671157c7e15d3ca68df1a8b6e641e717ab0ff111cae0f4ce64414.jpg"
+    },
+    {
+      "collection": "projects",
+      "docId": "6aa119f5f7cb6a1c76350a81",
+      "fieldPath": "stats.reportImage1",
+      "oldUrl": "https://bidx0njghn1voknt.public.blob.vercel-storage.com/Fu-lo-p-Weigler-Bettina-Anna-bettinacska-citromail.hu--vddoHqiY3PNNfKDRPc8hVHt39XjmFR.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/8d3ee18d08bafffb8244256e44f42de73ee7451b7d5178fad1009d48dc622842.jpg"
+    },
+    {
+      "collection": "projects",
+      "docId": "6aa119f5f7cb6a1c76350a81",
+      "fieldPath": "stats.reportImage2",
+      "oldUrl": "https://bidx0njghn1voknt.public.blob.vercel-storage.com/Hajnal-Fanni-hajnalfanni22-gmail.com--4yknEPKXbUJ8buHewKzbHUmZSz6Xau.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/359917dd37f124985c2af559fc81ff4f49972c95896b72f5d1e68b899d5a4db9.jpg"
+    },
+    {
+      "collection": "projects",
+      "docId": "6aa119f5f7cb6a1c76350a81",
+      "fieldPath": "stats.reportImage3",
+      "oldUrl": "https://bidx0njghn1voknt.public.blob.vercel-storage.com/IMG_5076-2-G9RW6pe9NOl5VkFPAZI5EzrBzjJdQT.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/f42b3759643b30e92e7aa10d47b797d347bcc2313aad9baae7f2918364250ae5.png"
+    },
+    {
+      "collection": "projects",
+      "docId": "6aa119f5f7cb6a1c76350a81",
+      "fieldPath": "stats.reportImage4",
+      "oldUrl": "https://bidx0njghn1voknt.public.blob.vercel-storage.com/1789221571003_cube-PjAQ8iXY0wpvdDM7Sond1fUDdWZj1L.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/15c5b110c64794c80994d163b3a1ec1c2318d0b23ff75f7dbb3e803fc66fded7.jpg"
+    },
+    {
+      "collection": "projects",
+      "docId": "6aa119f5f7cb6a1c76350a81",
+      "fieldPath": "stats.reportImage5",
+      "oldUrl": "https://bidx0njghn1voknt.public.blob.vercel-storage.com/teamtraelcube-VH47gB3fD5iKZrtrn1XqbXz0hVAAwT.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/f3e38ef92e5adbd51466c486b70b8adbb49f8a4c2ff2d31b386e77936c11a0e9.jpg"
+    },
+    {
+      "collection": "projects",
+      "docId": "6aa119f5f7cb6a1c76350a81",
+      "fieldPath": "stats.reportImage6",
+      "oldUrl": "https://bidx0njghn1voknt.public.blob.vercel-storage.com/Seyu_TEAM_TRAVEL_event-card_tenger-sDkBv1m3XcnAUVXsVLlBRMWMjpSjmK.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/f4699e80c86496467e5a9c00c952e0884d8993ff75582dbd2097662ea4ccc1de.png"
+    },
+    {
+      "collection": "projects",
+      "docId": "6aa119f5f7cb6a1c76350a81",
+      "fieldPath": "stats.reportImage7",
+      "oldUrl": "https://bidx0njghn1voknt.public.blob.vercel-storage.com/Seyu_TEAM_TRAVEL_event-card_tura-40s5sfSpqOkM821ETayvTix9dBNXxu.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/6dde98940b98f7b58485dd0f418b3f10886c64e12efc17623014d116f4a99d8f.png"
+    },
+    {
+      "collection": "projects",
+      "docId": "6aa119f5f7cb6a1c76350a81",
+      "fieldPath": "stats.reportImage8",
+      "oldUrl": "https://bidx0njghn1voknt.public.blob.vercel-storage.com/Seyu_TEAM_TRAVEL_event-card_london-vbqBq2cu3mt7KXu4KCHmbLQvZZk4CG.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/27f0f7e29aa409b539b5d1b6b1e5b697ceff76c7b33f1ebe7114d101bfc04afe.png"
+    },
+    {
+      "collection": "projects",
+      "docId": "6aa119f5f7cb6a1c76350a81",
+      "fieldPath": "stats.reportImage9",
+      "oldUrl": "https://bidx0njghn1voknt.public.blob.vercel-storage.com/Seyu_TEAM_TRAVEL_event-card_sieles-cNYEbBh20IQ8hkwFjFDTMWcymF7nzj.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/98f28fbac75d39bfc4d1c1bff4f1b3b3916e396b55fcd88f831a02400d0b9e93.png"
+    },
+    {
+      "collection": "projects",
+      "docId": "6aa119f5f7cb6a1c76350a81",
+      "fieldPath": "stats.reportImage10",
+      "oldUrl": "https://bidx0njghn1voknt.public.blob.vercel-storage.com/Ga-bor-Tama-s-gabortamas1992-gmail.com--RgOVV3gTsLu9iOk0aCHujqFYgcqUtF.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/ee1b2fc91670e2d5f4f255811337c7fc966d6c1b9b302546a0feac897d34aeb8.jpg"
+    },
+    {
+      "collection": "projects",
+      "docId": "6aa119f5f7cb6a1c76350a81",
+      "fieldPath": "stats.reportImage11",
+      "oldUrl": "https://bidx0njghn1voknt.public.blob.vercel-storage.com/Hubai-Krisztia-n-hubaikrisztian.hkn-gmail--jldr5LSThiHlM9AVtuU0llRzR9SnVc.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/b050a41901f255782378dc5687dce4abfc7be1c525ee15080a994f935022a8f1.jpg"
+    },
+    {
+      "collection": "projects",
+      "docId": "6aa7e98c021e5d315eaea07d",
+      "fieldPath": "stats.reportImage1",
+      "oldUrl": "https://bidx0njghn1voknt.public.blob.vercel-storage.com/ChatGPT-Image-2026.-szept.-14.-16_55_39-TxZSBJYTqGkYgOYvQVhHubpOTe1fs6.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/fdb09e8d5d15da8ea672488932f6f2c7b9b9426906e45ab5a1f24836ef89e64a.png"
+    },
+    {
+      "collection": "projects",
+      "docId": "6aa7e98c021e5d315eaea07d",
+      "fieldPath": "stats.reportImage2",
+      "oldUrl": "https://bidx0njghn1voknt.public.blob.vercel-storage.com/ChatGPT-Image-2026.-szept.-14.-17_00_38-01QSZhKihApw2pGYI3nnKN7JHq3qEa.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/ab9096a91c667ff025ab8043a3381cdfe092b9f4305c212c6fde2b06536eb7af.png"
+    },
+    {
+      "collection": "projects",
+      "docId": "6aa7e98c021e5d315eaea07d",
+      "fieldPath": "stats.reportImage3",
+      "oldUrl": "https://bidx0njghn1voknt.public.blob.vercel-storage.com/ChatGPT-Image-2026.-szept.-14.-16_23_33-NQQwWebZsg9YMubDURuNM3fNejLoII.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/9bc95725886145f4783f4cfd4636892e2cb4d75c3f91fd6e4a7996363a53b9fe.png"
+    },
+    {
+      "collection": "projects",
+      "docId": "6aa7e98c021e5d315eaea07d",
+      "fieldPath": "stats.reportImage4",
+      "oldUrl": "https://bidx0njghn1voknt.public.blob.vercel-storage.com/ChatGPT-Image-2026.-szept.-14.-16_52_34-EEiM7YbVJKzXb8vkiAITgLUamehyts.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/9969cb5f1de1ca74822f7b6d9a219351768e9600a5e750db54d7b5e3f8372803.png"
+    },
+    {
+      "collection": "projects",
+      "docId": "6aa7e98c021e5d315eaea07d",
+      "fieldPath": "stats.reportImage5",
+      "oldUrl": "https://bidx0njghn1voknt.public.blob.vercel-storage.com/ChatGPT-Image-Sep-14-2026-at-04_46_49-PM-6rAhbPgb3mz7hZgGSHQX4fM6FCRZfd.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/dc7393a9b681eecd340cff3a8f1b72c08d655784e6e10ba0b3c19c4fef8c4d7c.png"
+    },
+    {
+      "collection": "projects",
+      "docId": "6aaa79f07ece72ab7b49a108",
+      "fieldPath": "stats.reportImage2",
+      "oldUrl": "https://bidx0njghn1voknt.public.blob.vercel-storage.com/1789911640845_cube-PQ6JoW9OFt9WuAmdFOFM7zbSRGx5yU.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/d4a2680bd9b0958ba4c2070877f15970adafec16f63549b698127156ef418f17.jpg"
+    },
+    {
+      "collection": "projects",
+      "docId": "6aaa79f07ece72ab7b49a108",
+      "fieldPath": "stats.reportImage1",
+      "oldUrl": "https://bidx0njghn1voknt.public.blob.vercel-storage.com/1789906730977_cube-RNFKyLOv6azM21S7mV4G0n2wPAEOem.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/dcaa62dc598d02edaa7621ce72535d16eb86864c9ef0ee67c6ff4d4313f920ac.jpg"
+    },
+    {
+      "collection": "projects",
+      "docId": "6aaa79f07ece72ab7b49a108",
+      "fieldPath": "stats.reportImage4",
+      "oldUrl": "https://bidx0njghn1voknt.public.blob.vercel-storage.com/1789911469991_cube-fikc3SPbVCwVP4CIm6qWPzyK5RPPxd.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/eb5d1808f80c221633b3e6c6fa98d17f3714e1ff65d127db0bbab7c38c260141.jpg"
+    },
+    {
+      "collection": "projects",
+      "docId": "6aaa79f07ece72ab7b49a108",
+      "fieldPath": "stats.reportImage5",
+      "oldUrl": "https://bidx0njghn1voknt.public.blob.vercel-storage.com/ChatGPT-Image-2026.-szept.-21.-09_33_11-vFnbydEVuF8siRBUsn9dDRInVGFvg7.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/c14054ab9487140e360aa85c69326828add6e18d5b950fb702ae7196f473aac6.png"
+    },
+    {
+      "collection": "projects",
+      "docId": "6aaa79f07ece72ab7b49a108",
+      "fieldPath": "stats.reportImage3",
+      "oldUrl": "https://bidx0njghn1voknt.public.blob.vercel-storage.com/1789906714409_cube-cJwVWIRRDk1JpeEwVX4MH3Q2qZSg5A.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/79d27243c7e510c0229b3795a721b1bb6774900eba9373f42fa0b22c14b370ed.jpg"
+    },
+    {
+      "collection": "projects",
+      "docId": "6ab5043fcb96a4527437a067",
+      "fieldPath": "stats.reportImage1",
+      "oldUrl": "https://bidx0njghn1voknt.public.blob.vercel-storage.com/1790366945322_cube-D6etrH3yfb9SwO1XQDTNgdK4GFhlqV.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/2bb44202ee72dd5bffaa56bbba27a0a7bcbb5e52b5b7139a1893e1987b7a0c02.jpg"
+    },
+    {
+      "collection": "projects",
+      "docId": "6ab5043fcb96a4527437a067",
+      "fieldPath": "stats.reportImage3",
+      "oldUrl": "https://bidx0njghn1voknt.public.blob.vercel-storage.com/Seyu_PZPN_JUST-MARRIED-FBPGbT59DngdcTzMM71tXyc5ftMDq0.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/4b798131d19a2aeb3fba9cadb10274dc962dfbdc3ceae805362fcc2b2dcd53b6.jpg"
+    },
+    {
+      "collection": "projects",
+      "docId": "6ab5043fcb96a4527437a067",
+      "fieldPath": "stats.reportImage2",
+      "oldUrl": "https://bidx0njghn1voknt.public.blob.vercel-storage.com/pzpn-selfies-on-screen_-mSENtDBoTWRYI95VjmHej6J9S4ouj8.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/69f00a8fb353e043e82388e349c1ad579429e6673b971c95e62486615818764e.png"
+    },
+    {
+      "collection": "projects",
+      "docId": "6ab5043fcb96a4527437a067",
+      "fieldPath": "stats.reportImage4",
+      "oldUrl": "https://bidx0njghn1voknt.public.blob.vercel-storage.com/Seyu_PZPN_Frame_Pop-Up-1--MHR9pHUV15jRvrRTeoLunvw5OQAWIK.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/17a790dc36be1375f5f6a80cec0edb8814421cf072136568ddfb5f7f874a8fc4.png"
+    },
+    {
+      "collection": "projects",
+      "docId": "6ab5043fcb96a4527437a067",
+      "fieldPath": "stats.reportImage5",
+      "oldUrl": "https://bidx0njghn1voknt.public.blob.vercel-storage.com/1790367790676_cube-vVHwTRmLsrPw4EY7PzJfUjOLD3qFeV.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/9639aae3fd697bfc002baf5834ae42051a2323fc9a16f610908055eb840bcfd1.jpg"
+    },
+    {
+      "collection": "projects",
+      "docId": "6ab5043fcb96a4527437a067",
+      "fieldPath": "stats.reportImage6",
+      "oldUrl": "https://bidx0njghn1voknt.public.blob.vercel-storage.com/1790367193006_cube-PwUmfZ0Wu7ZvOX2QkOSaQoR67uUayi.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/111753adcbf6f899edbc542726f35598392545f2452a34c7055ca78551ca86d9.jpg"
+    },
+    {
+      "collection": "projects",
+      "docId": "6ab5043fcb96a4527437a067",
+      "fieldPath": "stats.reportImage7",
+      "oldUrl": "https://bidx0njghn1voknt.public.blob.vercel-storage.com/pzpn-qr-poster-on-screen-fysnCziQY3iNuwhFBOLVX2nxkk9B50.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/bdad1ad8295a27ec86d4ac2595863bead765eaf75f118cebc40673439148c190.png"
+    },
+    {
+      "collection": "projects",
+      "docId": "6abb89fccedcb3e4d380d1a3",
+      "fieldPath": "stats.reportImage2",
+      "oldUrl": "https://bidx0njghn1voknt.public.blob.vercel-storage.com/1774117446647_cube-dv1UBhps0LKlOcZWZRrL5Ohu6qkHvD.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/1e548c07a82baaabc03297e1a9f42c3cef74ff57fcf38d3dd0c1b71fddb9efa9.jpg"
+    },
+    {
+      "collection": "projects",
+      "docId": "6abb89fccedcb3e4d380d1a3",
+      "fieldPath": "stats.reportImage6",
+      "oldUrl": "https://bidx0njghn1voknt.public.blob.vercel-storage.com/1774102436967_cube-zLuZOvo6gjC9KaRYlwAMMhdHjeGnC1.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/8573f3601b3a90ffdfdb897f9f8a6f56e41ad00584066fa5394f922c1423fd8f.jpg"
+    },
+    {
+      "collection": "projects",
+      "docId": "6abb89fccedcb3e4d380d1a3",
+      "fieldPath": "stats.reportImage7",
+      "oldUrl": "https://bidx0njghn1voknt.public.blob.vercel-storage.com/1774108914619_cube-atdJXl6lVVkS0i3uGwSQPizcKThysN.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/206f8e64670f9117a4653b767e2987a31dd62668f29d4773707a05ad724e7a25.jpg"
+    },
+    {
+      "collection": "projects",
+      "docId": "6abb89fccedcb3e4d380d1a3",
+      "fieldPath": "stats.reportImage1",
+      "oldUrl": "https://bidx0njghn1voknt.public.blob.vercel-storage.com/1774114414345_cube-dJUBpxDFRcMZuqCkPBJNUo3Jd8lpm3.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/c81218c8f936ea0fdca0a406090293fcce7ecc9623dc83c9a733849c700be8d4.jpg"
+    },
+    {
+      "collection": "projects",
+      "docId": "6abb89fccedcb3e4d380d1a3",
+      "fieldPath": "stats.reportImage3",
+      "oldUrl": "https://bidx0njghn1voknt.public.blob.vercel-storage.com/WhatsApp-Image-2026-09-29-at-12.11.13-caojinEbjmVY4VGTZLvdh66EAhRJHk.jpeg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/d0dbc33b51b5fd9a9797e2ccc266a9eebf8a44ce0e6f25c3bb4e4bac4190aae8.jpg"
+    },
+    {
+      "collection": "projects",
+      "docId": "6abb8f6cf147c6909694d5be",
+      "fieldPath": "stats.reportImage1",
+      "oldUrl": "https://bidx0njghn1voknt.public.blob.vercel-storage.com/1769791105440_cube-41rFsGf8ry0JMDKMAo0VhFuhjX6KJq.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/ebda40c3e6976d5ba61c946df99995e476f44b3925acfef25a01d4aa4ff0b452.jpg"
+    },
+    {
+      "collection": "projects",
+      "docId": "6abb8f6cf147c6909694d5be",
+      "fieldPath": "stats.reportImage8",
+      "oldUrl": "https://bidx0njghn1voknt.public.blob.vercel-storage.com/hostess1-GIMapFo7H2friOV7EMCWX1POVq79PF.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/df855fef553c12cd8596cbf18f372f1993f0aa11c2c0e199babd204b6e6292db.jpg"
+    },
+    {
+      "collection": "projects",
+      "docId": "6abb8f6cf147c6909694d5be",
+      "fieldPath": "stats.reportImage9",
+      "oldUrl": "https://bidx0njghn1voknt.public.blob.vercel-storage.com/hostess-bGusN4utu8VVfUj1jVQt1lDsUeiIta.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/4b924cc211a89543b82b2239ecec6f910b56f253e88cac020d6cafea8d45eebd.jpg"
+    },
+    {
+      "collection": "projects",
+      "docId": "6abb8f6cf147c6909694d5be",
+      "fieldPath": "stats.reportImage3",
+      "oldUrl": "https://bidx0njghn1voknt.public.blob.vercel-storage.com/WhatsApp-Image-2026-09-29-at-12.21.48-5sP8aSER0aD2ZX1oxG8VL5dw60AZve.jpeg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/d7b86f1976dacdbe52001b59325be68d346f101fbf96b6ea8d06e29dc1a3736f.jpg"
+    },
+    {
+      "collection": "projects",
+      "docId": "6abb8f6cf147c6909694d5be",
+      "fieldPath": "stats.reportImage2",
+      "oldUrl": "https://bidx0njghn1voknt.public.blob.vercel-storage.com/1769888282351_cube-nIRXg0xGac1R9WRZzrLcmez7USL4vO.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/9e5a32b2feaf2b5d8a6529b2ba3dc8e0976ed7518ce379ba8649d614e522855b.jpg"
+    },
+    {
+      "collection": "projects",
+      "docId": "6abb8f6cf147c6909694d5be",
+      "fieldPath": "stats.reportImage5",
+      "oldUrl": "https://bidx0njghn1voknt.public.blob.vercel-storage.com/cube-98JfYrzibqaKP2X0AczfU1N1S3ImLQ.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/b9f7a55897610ef95ad493d1622a078d068bdabbd4c46d8e81e1954e1e9310c4.jpg"
+    },
+    {
+      "collection": "projects",
+      "docId": "6abb8f6cf147c6909694d5be",
+      "fieldPath": "stats.reportImage6",
+      "oldUrl": "https://bidx0njghn1voknt.public.blob.vercel-storage.com/1769806205939_cube-cMjaZtShypggih21M0MNIZoPZh1JHk.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/fdb673278d3e502fd68d46d3ac2cd3df3e5ebf2a7f6a4e629811ca0ac6c55ce8.jpg"
+    },
+    {
+      "collection": "projects",
+      "docId": "6abb8f6cf147c6909694d5be",
+      "fieldPath": "stats.reportImage7",
+      "oldUrl": "https://bidx0njghn1voknt.public.blob.vercel-storage.com/1769888337010_cube-Ky8CArz22CbXuBjn1xdZjDWk4scyfv.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/0a37fcfd1b219d517ac197b8a2a4e3c07a922de09c600f3121bbb9df0ec69c37.jpg"
+    },
+    {
+      "collection": "projects",
+      "docId": "6abfa111a558ca7ba0f01abf",
+      "fieldPath": "stats.reportImage1",
+      "oldUrl": "https://bidx0njghn1voknt.public.blob.vercel-storage.com/1790964245998_cube-luvhCVMT1KUFa8TS3AfVJ41Ou4eNdX.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/f782ddf25b4ae42fd411355ed8450eb6843f3a4a0bd7d46a1eb2623eee15506c.jpg"
+    },
+    {
+      "collection": "projects",
+      "docId": "6abfa111a558ca7ba0f01abf",
+      "fieldPath": "stats.reportImage3",
+      "oldUrl": "https://bidx0njghn1voknt.public.blob.vercel-storage.com/1790971443021_cube-m7yX4Uwdxd9tk4rOYs9JRwtOyXSvEQ.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/25d4e0c35997b507e150a4c3efd96f19062567a58863f06837896485f6efc239.jpg"
+    },
+    {
+      "collection": "projects",
+      "docId": "6abfa111a558ca7ba0f01abf",
+      "fieldPath": "stats.reportImage2",
+      "oldUrl": "https://bidx0njghn1voknt.public.blob.vercel-storage.com/Polska-vs-Romania-2GoDlhCEmDTFxMtTXYrWhrRSvz5btI.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/64f6a2670cbd2ed3a1ce1b02d4e846dcc4a54de777e53f7fccee598fb6418627.png"
+    },
+    {
+      "collection": "projects",
+      "docId": "6abfa111a558ca7ba0f01abf",
+      "fieldPath": "stats.reportImage8",
+      "oldUrl": "https://bidx0njghn1voknt.public.blob.vercel-storage.com/PZPN-Social-media-promotion-SRFyalAeOzAOlGYSR3wUAmKXusqQ3T.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/005fff11a959538ec1682f1c8828116d3796a57bf3ac11efd4ae4330e7c24289.png"
+    },
+    {
+      "collection": "projects",
+      "docId": "6abfa111a558ca7ba0f01abf",
+      "fieldPath": "stats.reportImage9",
+      "oldUrl": "https://bidx0njghn1voknt.public.blob.vercel-storage.com/1790968325568_cube-wCDV5BPz5TzmTrBKMJL7m7sC652e3v.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/682e71426bbf5c605aa53539c5151303859d41c19704c1f11f6491db88793b31.jpg"
+    },
+    {
+      "collection": "projects",
+      "docId": "6abfa111a558ca7ba0f01abf",
+      "fieldPath": "stats.reportImage10",
+      "oldUrl": "https://bidx0njghn1voknt.public.blob.vercel-storage.com/1790967105393_cube-lwzKFJJGKoL1vBKNAikVGmRvIx3Rul.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/2fc48ef628ff866672518220bd220710c1dbc50b8321a06617dbe66e0748e427.jpg"
+    },
+    {
+      "collection": "projects",
+      "docId": "6abfa111a558ca7ba0f01abf",
+      "fieldPath": "stats.reportImage7",
+      "oldUrl": "https://bidx0njghn1voknt.public.blob.vercel-storage.com/Seyu_PZPN_POL-ROU_QR-Poster_2-vvTyFWE74FCpPbCobmxBeDGOukG35O.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/b1e71400e8b00daa33198b6963a45e17051aa7cb46ce4f6d9ad7675dcb5fb49e.png"
+    },
+    {
+      "collection": "projects",
+      "docId": "6abfa111a558ca7ba0f01abf",
+      "fieldPath": "stats.reportImage4",
+      "oldUrl": "https://bidx0njghn1voknt.public.blob.vercel-storage.com/Seyu_PZPN_Frame_Pop-Up-1--aUmHPVgmegiaZu7bHsSvbtH4mH13Fn.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/17a790dc36be1375f5f6a80cec0edb8814421cf072136568ddfb5f7f874a8fc4.png"
+    },
+    {
+      "collection": "projects",
+      "docId": "6abfa111a558ca7ba0f01abf",
+      "fieldPath": "stats.reportImage5",
+      "oldUrl": "https://bidx0njghn1voknt.public.blob.vercel-storage.com/1790966273365_cube-uAey73NEcpArG0vgMfYV28X8cv9LLp.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/7c915c0c465097cfe118956819e937036c752d0b42ee3ddc58f1aeb82caefadb.jpg"
+    },
+    {
+      "collection": "projects",
+      "docId": "6abfa111a558ca7ba0f01abf",
+      "fieldPath": "stats.reportImage6",
+      "oldUrl": "https://bidx0njghn1voknt.public.blob.vercel-storage.com/1790971278684_cube-T0sol0xBQ6oD9Aw9bK9lPavn46IeWZ.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/383b1909e2af1d882a268faabbc06a5b16835a716780b5b129ee11df9bc81e3d.jpg"
+    },
+    {
+      "collection": "projects",
+      "docId": "6ac39b2c57a3c9dc37dd5c83",
+      "fieldPath": "stats.reportImage9",
+      "oldUrl": "https://bidx0njghn1voknt.public.blob.vercel-storage.com/valencia-XNcpA0HRW6g80QZBqRaV5SDfvS9va4.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/addd0c65e3b31f7e44e16e61544e688e8000a79a152f39bb5c775cfdd4404746.png"
+    },
+    {
+      "collection": "projects",
+      "docId": "6ac39b2c57a3c9dc37dd5c83",
+      "fieldPath": "stats.reportImage10",
+      "oldUrl": "https://bidx0njghn1voknt.public.blob.vercel-storage.com/fener-Vp3yR5Rw9K8AYfY4VOAqBapCpBnzDJ.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/b454bfc1b213d5702aefee42d3f3a7a7f8298cbc7dac9cbad652b216377539bb.png"
+    },
+    {
+      "collection": "projects",
+      "docId": "6ac39b2c57a3c9dc37dd5c83",
+      "fieldPath": "stats.reportImage3",
+      "oldUrl": "https://bidx0njghn1voknt.public.blob.vercel-storage.com/No-i-Euroliga-me-rko-ze-s-elo-tti-are-na-sHvk7q2EwlpnyB2mDFEeogrVnKpFdY.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/230f223ee0dc343f0f5eec2f0af0bd01ba142e8256343ed5cce008afbf147f47.png"
+    },
+    {
+      "collection": "projects",
+      "docId": "6ac39b2c57a3c9dc37dd5c83",
+      "fieldPath": "stats.reportImage1",
+      "oldUrl": "https://bidx0njghn1voknt.public.blob.vercel-storage.com/1792053278221_cube-PrIcWzBJJVmVFhR0CqQ8XM5d2qKPkx.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/0c1e6db54f7a3f8164cc313f47b91956605acbcd90eca865fa658a6d727a8afe.jpg"
+    },
+    {
+      "collection": "projects",
+      "docId": "6ac39b2c57a3c9dc37dd5c83",
+      "fieldPath": "stats.reportImage2",
+      "oldUrl": "https://bidx0njghn1voknt.public.blob.vercel-storage.com/1792053271737_cube-mVXK7QVplyhCqdttJjPKDqYsAE5mkJ.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/c46a1f96c2e43b07f63311dc66031eae1e1625813eb48d5c99c89b9d2a7afdfe.jpg"
+    },
+    {
+      "collection": "projects",
+      "docId": "6ac39b2c57a3c9dc37dd5c83",
+      "fieldPath": "stats.reportImage5",
+      "oldUrl": "https://bidx0njghn1voknt.public.blob.vercel-storage.com/1791989480911_cube-euPmnybuWxa66yc9zhvX3TMELw1lfw.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/47ca9bd94cc01d16ac99a4d8bf20ff8b5a19265ef48e1a6b527c60cab56e0c39.jpg"
+    },
+    {
+      "collection": "projects",
+      "docId": "6ac39b2c57a3c9dc37dd5c83",
+      "fieldPath": "stats.reportImage6",
+      "oldUrl": "https://bidx0njghn1voknt.public.blob.vercel-storage.com/1791988180450_cube-yBGO7oRzhNJOTkgxLDEE7Yog8mYN2W.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/0dc1f81b3347b78d56e1f7c304556dfe5f8dda63fc508f5ad26106d43dcd8e5b.jpg"
+    },
+    {
+      "collection": "projects",
+      "docId": "6ac39b5557a3c9dc37dd5c84",
+      "fieldPath": "stats.reportImage9",
+      "oldUrl": "https://bidx0njghn1voknt.public.blob.vercel-storage.com/Casademont-2N8XOb0VHuJEz40bIjP3PEJIYXf91j.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/7d0a331b73b044ac7a4dab4bddd6b7bda233f5c10f99b3f3526937fdcd037c9f.jpg"
+    },
+    {
+      "collection": "projects",
+      "docId": "6ac39b5557a3c9dc37dd5c84",
+      "fieldPath": "stats.reportImage10",
+      "oldUrl": "https://bidx0njghn1voknt.public.blob.vercel-storage.com/basket-landes-HlE0IpN2ofXe4p6agI4aUCUqLekUEo.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/901fe4e89aaff43943b5e25b27f875614066ed7de357fb86bbe5b7d6b367fe1b.png"
+    },
+    {
+      "collection": "projects",
+      "docId": "6ac39b5557a3c9dc37dd5c84",
+      "fieldPath": "stats.reportImage3",
+      "oldUrl": "https://bidx0njghn1voknt.public.blob.vercel-storage.com/wahmtfs88rcyfijinpl3-MfIG3ahoaO51vZZrjuqPdkLau4W7I9.webp",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/326c1d9f24333385c7bb82ca29f2e4465ccfe0cd8e4323a20df669540a3f0c22.webp"
+    },
+    {
+      "collection": "projects",
+      "docId": "6ac39b5557a3c9dc37dd5c84",
+      "fieldPath": "stats.reportImage1",
+      "oldUrl": "https://bidx0njghn1voknt.public.blob.vercel-storage.com/1792000767946_cube-ZLrgb2os7Npz9UiWEQx6h3fNHnQCK2.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/1247b7b04d58664becc2faef3e566819acdac5a21a421b08e6c8db088bf69b06.jpg"
+    },
+    {
+      "collection": "projects",
+      "docId": "6ac39b5557a3c9dc37dd5c84",
+      "fieldPath": "stats.reportImage2",
+      "oldUrl": "https://bidx0njghn1voknt.public.blob.vercel-storage.com/1792001437227_cube-S2kBQhlzCnrtSLoN8sbEE1bneQq0US.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/db682501d16661ddd023d204dc5cfa8de46db70dcad9314e5a56573e9d60ab51.jpg"
+    },
+    {
+      "collection": "projects",
+      "docId": "6ac39b5557a3c9dc37dd5c84",
+      "fieldPath": "stats.reportImage5",
+      "oldUrl": "https://bidx0njghn1voknt.public.blob.vercel-storage.com/1792000588646_cube-LhfvFvozA1OpQ7t1lcByJwfgUJ6Fgo.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/4817ef047694da73304062606f831d31cb2f08efd1e1749a7d321553eb38b844.jpg"
+    },
+    {
+      "collection": "projects",
+      "docId": "6ac39b5557a3c9dc37dd5c84",
+      "fieldPath": "stats.reportImage6",
+      "oldUrl": "https://bidx0njghn1voknt.public.blob.vercel-storage.com/1791988123678_cube-ipDFLthlhTwzTRJH77Sb0sak5zWkTp.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/df33cea1feb99a84726de1d21d52fca6722eb0c4c89d67172dc424863ef917ba.jpg"
+    },
+    {
+      "collection": "projects",
+      "docId": "6ac8c4cba77ea1cfb302f4eb",
+      "fieldPath": "stats.reportImage1",
+      "oldUrl": "https://bidx0njghn1voknt.public.blob.vercel-storage.com/1791644369411_cube-GKHHDigX7HtCeXyI1pBCPfN9m9gCAI.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/a5cebd70c732fbac36491b4989f30743cc623d67c75a28a8e237319040dc1eee.jpg"
+    },
+    {
+      "collection": "projects",
+      "docId": "6ac8c4cba77ea1cfb302f4eb",
+      "fieldPath": "stats.reportImage3",
+      "oldUrl": "https://bidx0njghn1voknt.public.blob.vercel-storage.com/1791643597273_cube-34hpUUrxLXkRDDQqIxu3hODKHfGpr9.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/f31d1e7a62fcf831aa14c41d494f1356ac1825f1c6004091af088f07e80402f5.jpg"
+    },
+    {
+      "collection": "projects",
+      "docId": "6ac8c4cba77ea1cfb302f4eb",
+      "fieldPath": "stats.reportImage9",
+      "oldUrl": "https://bidx0njghn1voknt.public.blob.vercel-storage.com/1791208234132_cube-SIgo96XCPnuokby3fjx2nYRvqLbNSK.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/67b74d0c4c58f612629398006222751a1839df5ea5e6b79190ca6563260e42f1.jpg"
+    },
+    {
+      "collection": "projects",
+      "docId": "6ac8c4cba77ea1cfb302f4eb",
+      "fieldPath": "stats.reportImage10",
+      "oldUrl": "https://bidx0njghn1voknt.public.blob.vercel-storage.com/1791638254406_cube-kd6ONU9kZaYILNFeeIzY8yealBWy60.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/edce5284a9c526f9a642d0f6ff2963acd7783fb542876e48244e9230dc57f91e.jpg"
+    },
+    {
+      "collection": "projects",
+      "docId": "6ac8c4cba77ea1cfb302f4eb",
+      "fieldPath": "stats.reportImage5",
+      "oldUrl": "https://bidx0njghn1voknt.public.blob.vercel-storage.com/1791643376710_cube-q6aN6r7U6281FwdguabRg0flARounJ.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/7f3c86f63d75d11d188d550b2e0f126ce86aafccfc40f6a48f4c17ee8b614bab.jpg"
+    },
+    {
+      "collection": "projects",
+      "docId": "6ac8c4cba77ea1cfb302f4eb",
+      "fieldPath": "stats.reportImage6",
+      "oldUrl": "https://bidx0njghn1voknt.public.blob.vercel-storage.com/1791642396767_cube-CWGLUHl6sVPa8pdLnjiU3SHy60ohjf.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/f7bd91a8525ededbf2efa115621a75c8cd6982e90ac4e5331a9971130c8b6694.jpg"
+    },
+    {
+      "collection": "projects",
+      "docId": "6ac8c4cba77ea1cfb302f4eb",
+      "fieldPath": "stats.reportImage7",
+      "oldUrl": "https://bidx0njghn1voknt.public.blob.vercel-storage.com/Seyu_FTC_QR-poster-1--chwGKYNJ5d4zs8kqpTzuEC77vBpGPC.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/724b7b4ae07b0d816c8f3cb3ef8804318a616993c91fc5b9b92044d7e210e2e9.png"
+    }
+  ]
+}

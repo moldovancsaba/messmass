@@ -10,6 +10,7 @@ function add(name: string, label: string, type: MetricType, description: string,
 }
 
 add('fanmassPhotoResultsReceived', 'Photo analysis results received', 'count', 'Completed one-photo analyses stored by Messmass. This is a received-result count, not the event photo total.');
+add('fanmassOptInPhotos', 'Photos with a recorded opt-in', 'count', 'Received photo analyses whose result carries the participant opt-in recorded from Camera. Photos are analysed only with an opt-in, so this equals the received-result count once every result has been resent with its opt-in.');
 add('fanmassPeopleDetections', 'People detections', 'count', 'Person detections summed across the received photo analyses. Detections are not unique attendees.');
 add('fanmassPersonBoxes', 'Person boxes', 'count', 'Person bounding boxes returned across the received photo analyses.');
 add('fanmassFaceBoxes', 'Face boxes', 'count', 'Face bounding boxes returned across the received photo analyses.');

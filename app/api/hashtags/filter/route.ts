@@ -8,6 +8,15 @@ import {
 import { CategorizedHashtagMap } from '@/lib/hashtagCategoryTypes';
 import config from '@/lib/config';
 import { requireSession } from '@/lib/apiGuards';
+import { compactHashtag, hashtagSpellings } from '@/lib/photoHashtags';
+
+/** A filter query in compact identity, its category prefix kept: `sport:ice_hockey` -> `sport:icehockey`. */
+function spelledAsOne(query: string): string {
+  const { category, hashtag } = parseHashtagQuery(query);
+  return category ? `${category}:${compactHashtag(hashtag)}` : compactHashtag(hashtag);
+}
+import { buildFilterReport } from '@/lib/hashtagReport';
+import type { ReportDb } from '@/lib/hashtagReport/measured';
 
 export async function GET(request: NextRequest) {
   // SECURITY (messmass#386): require an authenticated admin session.
@@ -88,9 +97,12 @@ const db = client.db(config.dbName);
     const projects = allProjects.filter(project => {
       // Check if project contains ALL specified hashtags (AND logic)
       return hashtags.every(hashtagQuery => 
-        matchHashtagInProject(hashtagQuery, {
-          hashtags: project.hashtags,
-          categorizedHashtags: project.categorizedHashtags
+        matchHashtagInProject(spelledAsOne(hashtagQuery), {
+          // Typed hashtags and the ones Fanmass wrote onto the event's photos work together (owner 2026-11-14), and an
+          // underscore is spelling only (otp_bank_pick_szeged = otpbankpickszeged, lib/photoHashtags.ts compactHashtag)
+          hashtags: [...(Array.isArray(project.hashtags) ? project.hashtags : []), ...(Array.isArray(project.fanmassHashtags) ? project.fanmassHashtags : [])].map((tag) => compactHashtag(String(tag))),
+          categorizedHashtags: Object.fromEntries(Object.entries(project.categorizedHashtags && typeof project.categorizedHashtags === 'object' ? project.categorizedHashtags : {})
+            .map(([category, list]) => [category, Array.isArray(list) ? list.map((tag) => compactHashtag(String(tag))) : []])),
         })
       );
     });
@@ -107,7 +119,20 @@ const db = client.db(config.dbName);
       updatedAt: project.updatedAt
     })).sort((a, b) => new Date(b.eventDate).getTime() - new Date(a.eventDate).getTime());
 
-    if (projects.length === 0) {
+    // `report=1` (the filter page's Apply) adds the unified report: Fanmass data and Messmass calculations for the events
+    // and photos carrying every hashtag. A hashtag only photos carry (#happy, a brand) has a report without any event.
+    const report = searchParams.get('report') === '1' ? await buildFilterReport(db as unknown as ReportDb, hashtags) : null;
+
+    // Photos Fanmass tagged with every hashtag (photo form: lowercase, a category prefix dropped), for the preview
+    const photoTags = hashtags.map((tag) => hashtagSpellings(parseHashtagQuery(tag).hashtag));
+    const photoMatch = { hashtags: photoTags.length === 1 ? { $regex: photoTags[0] } : { $all: photoTags } };
+    const [drivePhotos, cameraPhotos] = await Promise.all([
+      db.collection('fanmass_event_drive_photos').countDocuments(photoMatch),
+      db.collection('fanmass_camera_photo_analyses').countDocuments({ ...photoMatch, tombstone: { $ne: true }, status: 'completed' }),
+    ]);
+    const photoCount = drivePhotos + cameraPhotos;
+
+    if (projects.length === 0 && photoCount === 0) {
       return NextResponse.json({
         success: false,
         error: `No projects found with all hashtags: ${hashtags.join(', ')}`
@@ -156,8 +181,8 @@ const db = client.db(config.dbName);
     };
 
     // Find date range - initialize with first project date
-    let oldestDate = new Date(projects[0].eventDate);
-    let newestDate = new Date(projects[0].eventDate);
+    let oldestDate = new Date(projects[0]?.eventDate ?? Date.now());
+    let newestDate = new Date(projects[0]?.eventDate ?? Date.now());
 
     // Aggregate all stats from matching projects
     projects.forEach(project => {
@@ -184,7 +209,7 @@ const db = client.db(config.dbName);
       dateRange: {
         oldest: oldestDate.toISOString(),
         newest: newestDate.toISOString(),
-        formatted: oldestDate.getTime() !== newestDate.getTime() 
+        formatted: projects.length === 0 ? 'No event carries it' : oldestDate.getTime() !== newestDate.getTime() 
           ? `${oldestDate.toLocaleDateString()} - ${newestDate.toLocaleDateString()}`
           : oldestDate.toLocaleDateString()
       },
@@ -199,10 +224,12 @@ const db = client.db(config.dbName);
       success: true,
       project: aggregatedProject,
       projects: projectList,
+      report,
       filter: {
         hashtags: hashtags,
         logic: 'AND', // Explicitly indicate this is AND logic
-        matchCount: projects.length
+        matchCount: projects.length,
+        photoCount,
       },
       debug: {
         projectsFound: projects.length,

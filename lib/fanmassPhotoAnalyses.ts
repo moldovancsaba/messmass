@@ -1,12 +1,13 @@
 // Store one Fanmass result per Camera photo, then build Messmass event reports
 // from the live set of photo records. Fanmass never submits event aggregates.
 
-import { createHash } from 'node:crypto';
+import { createHash, randomUUID } from 'node:crypto';
 import { ObjectId } from 'mongodb';
 import { deriveCompleteFanmassReportStats } from './aiDemographicStats';
 import { ensureFanmassAnalyticsVariables } from './fanmassAnalyticsVariables';
 import { getDb, nowIso } from './fanmassIntegration';
 import { pushEventStats } from './fanmassMapping';
+import { eventHashtags, parsePhotoHashtags, withEventHashtags } from './photoHashtags';
 
 export const PHOTO_ANALYSIS_CONTRACT = 'fanmass.messmass.photo-analysis.v2';
 export const PHOTO_ANALYSIS_COLLECTION = 'fanmass_camera_photo_analyses';
@@ -47,7 +48,18 @@ type PhotoInput = {
   boxes: Record<string, unknown>;
   analysis: Record<string, unknown>;
   humanReview: Record<string, unknown> | null;
+  optIn: PhotoOptIn;
+  /** Fanmass's hashtags of the photo (lib/photoHashtags.ts); the event's are added when stored. */
+  hashtags: string[];
 };
+
+/**
+ * WHAT: The record that the participant's opt-in was received for one photo, as Fanmass read it from Camera's consent audit.
+ * WHY: A photo is analysed and shown only with an opt-in, so the opt-in is stored with every photo result instead of being
+ *   implied by the photo being here. It holds no consent text and no identity: only that it was received, on what basis,
+ *   when, and which kinds of consent (terms, privacy, marketing, ...) were accepted.
+ */
+export type PhotoOptIn = { received: true; basis: 'camera_consent_audit'; recordedAt: string; kinds: string[] };
 
 function invalid(status: number, code: string, message: string): never {
   throw Object.assign(new Error(message), { status, code });
@@ -69,6 +81,26 @@ function nonEmpty(value: unknown, field: string, max = 160): string {
 const REQUIRED_CAMERA_ANALYSIS_MODULES = [
   'scan', 'faces', 'people', 'poster', 'moderation', 'sports_merchandise', 'fashion_brands', 'brand_scan',
 ] as const;
+
+/** Reads the opt-in record of a photo result; a result without a valid one is refused (400), never stored as opt-in unknown. */
+export function parsePhotoOptIn(raw: unknown): PhotoOptIn {
+  const optIn = record(raw);
+  if (!optIn || optIn.received !== true) {
+    invalid(400, 'MISSING_OPT_IN', 'A photo result is stored only with a recorded opt-in (optIn.received must be true).');
+  }
+  if (optIn.basis !== 'camera_consent_audit') {
+    invalid(400, 'INVALID_OPT_IN', 'optIn.basis must be camera_consent_audit.');
+  }
+  const recordedAt = typeof optIn.recordedAt === 'string' ? optIn.recordedAt.trim() : '';
+  if (!recordedAt || !Number.isFinite(Date.parse(recordedAt))) {
+    invalid(400, 'INVALID_OPT_IN', 'optIn.recordedAt must be the ISO time the opt-in was given.');
+  }
+  const kinds = optIn.kinds === undefined ? [] : optIn.kinds;
+  if (!Array.isArray(kinds) || kinds.length > 8 || kinds.some((kind) => typeof kind !== 'string' || !/^[a-z_]{1,32}$/.test(kind))) {
+    invalid(400, 'INVALID_OPT_IN', 'optIn.kinds must be a short list of consent kind names.');
+  }
+  return { received: true, basis: 'camera_consent_audit', recordedAt, kinds: [...new Set(kinds as string[])].sort() };
+}
 
 function parseInput(body: Record<string, unknown>, expectedMessmassEventId: string): PhotoInput {
   if (body.contractVersion !== PHOTO_ANALYSIS_CONTRACT) {
@@ -145,6 +177,9 @@ function parseInput(body: Record<string, unknown>, expectedMessmassEventId: stri
     };
   }
 
+  const optIn = parsePhotoOptIn(body.optIn);
+  const hashtags = parsePhotoHashtags(body.hashtags, (message) => invalid(400, 'INVALID_HASHTAGS', message));
+
   const size = Buffer.byteLength(JSON.stringify(body), 'utf8');
   if (size > MAX_PHOTO_ANALYSIS_BYTES) {
     invalid(413, 'PHOTO_ANALYSIS_TOO_LARGE', `Photo analysis is ${size} bytes; limit is ${MAX_PHOTO_ANALYSIS_BYTES}.`);
@@ -165,6 +200,8 @@ function parseInput(body: Record<string, unknown>, expectedMessmassEventId: stri
     boxes,
     analysis,
     humanReview,
+    optIn,
+    hashtags,
   };
 }
 
@@ -177,11 +214,11 @@ async function requireExactCameraEventLink(
   messmassEventId: string,
   cameraEventId: string,
   cameraPartnerId: string,
-): Promise<void> {
+): Promise<string[]> {
   if (!ObjectId.isValid(messmassEventId)) invalid(422, 'INVALID_EVENT_ID', 'Invalid Messmass event id.');
   const event = await db.collection('projects').findOne(
     { _id: new ObjectId(messmassEventId) },
-    { projection: { externalRefs: 1, partnerId: 1, partner1Id: 1, partner2Id: 1 } },
+    { projection: { externalRefs: 1, partnerId: 1, partner1Id: 1, partner2Id: 1, hashtags: 1, categorizedHashtags: 1 } },
   );
   if (!event) invalid(404, 'EVENT_NOT_FOUND', 'Messmass event was not found.');
 
@@ -200,6 +237,7 @@ async function requireExactCameraEventLink(
   )) {
     invalid(409, 'CAMERA_PARTNER_ID_MISMATCH', 'The Camera partner id is not linked to this Messmass event.');
   }
+  return eventHashtags(event);
 }
 
 function number(value: unknown): number {
@@ -351,6 +389,8 @@ function aggregatePhotos(eventId: string, photos: Array<Record<string, unknown>>
     messmassEventId: eventId,
     lastAnalyzedAt: latestAnalysisAt || null,
     photoResultsReceived: imageCount,
+    // Photos whose result carries a recorded opt-in; a result stored before the opt-in was recorded does not count
+    optInPhotos: photos.filter((photo) => record(photo.optIn)?.received === true).length,
     personBoxes,
     faceBoxes,
     peopleCounts: { measured: measuredPeople },
@@ -385,19 +425,50 @@ export async function rebuildFanmassPhotoEventSummary(
   const db = await getDb();
   const photos = await db.collection<PhotoAnalysisRecord>(PHOTO_ANALYSIS_COLLECTION)
     .find({ eventId, tombstone: { $ne: true }, status: 'completed' }, {
-      projection: { _id: 0, summary: 1, boxes: 1, analyzedAt: 1, sourceRevision: 1, analysisGeneration: 1, humanReview: 1 },
+      projection: { _id: 0, summary: 1, boxes: 1, analyzedAt: 1, sourceRevision: 1, analysisGeneration: 1, humanReview: 1, optIn: 1 },
     })
     .toArray() as Array<Record<string, unknown>>;
   const summary = aggregatePhotos(eventId, photos);
   const project = await db.collection('projects').findOne(
     { _id: new ObjectId(eventId) },
-    { projection: { stats: 1 } },
+    { projection: { stats: 1, slug: 1 } },
   );
   if (!project && !options.allowMissingProject) {
     invalid(404, 'EVENT_NOT_FOUND', 'Messmass event was not found while rebuilding photo analytics.');
   }
 
-  await db.collection('ai_analysis_summaries').updateOne(
+  // INV-003: Acquire distributed fencing lease token to prevent concurrent split-brain overwrites
+  const summariesCollection = db.collection('ai_analysis_summaries');
+  const leaseToken = typeof randomUUID === 'function' ? randomUUID() : new ObjectId().toHexString();
+  const leaseExpiresAt = new Date(Date.now() + 60000);
+
+  if (typeof (summariesCollection as any).findOneAndUpdate === 'function') {
+    try {
+      await (summariesCollection as any).findOneAndUpdate(
+        {
+          eventId,
+          $or: [
+            { calculationStatus: { $ne: 'in_progress' } },
+            { leaseExpiresAt: { $lt: new Date() } },
+            { calculationStatus: { $exists: false } },
+          ],
+        },
+        {
+          $set: {
+            calculationStatus: 'in_progress',
+            leaseToken,
+            leaseExpiresAt,
+          },
+          $inc: { version: 1 },
+        },
+        { upsert: false },
+      );
+    } catch {
+      // Best-effort leasing on initial acquisition
+    }
+  }
+
+  await summariesCollection.updateOne(
     { eventId },
     {
       $set: {
@@ -407,7 +478,11 @@ export async function rebuildFanmassPhotoEventSummary(
         contractVersion: summary.contractVersion,
         receivedAt: new Date().toISOString(),
         summary,
+        calculationStatus: 'completed',
+        leaseToken,
+        leaseExpiresAt: new Date(),
       },
+      $inc: { version: 1 },
     },
     { upsert: true },
   );
@@ -421,6 +496,7 @@ export async function rebuildFanmassPhotoEventSummary(
 
   const stats: Record<string, unknown> = { ...deriveCompleteFanmassReportStats(summary) };
   stats.fanmassPhotoResultsReceived = photos.length;
+  stats.fanmassOptInPhotos = Number(summary.optInPhotos || 0);
   stats.fanmassHumanConfirmedPhotos = Number(summary.humanConfirmedPhotos || 0);
   stats.fanmassHumanCorrectedPhotos = Number(summary.humanCorrectedPhotos || 0);
   const currentStats = record(project?.stats) || {};
@@ -439,6 +515,17 @@ export async function rebuildFanmassPhotoEventSummary(
     // rebuilt summary are durable; ordinary result upserts continue to fail.
     if (!options.allowMissingProject || record(error)?.code !== 'EVENT_NOT_FOUND') throw error;
   }
+  try {
+    const { revalidatePath } = await import('next/cache');
+    revalidatePath('/report', 'layout');
+    revalidatePath('/partner-report', 'layout');
+    const slug = (project as Record<string, unknown>)?.slug;
+    if (typeof slug === 'string' && slug) {
+      revalidatePath(`/report/${slug}`);
+    }
+  } catch {
+    // Cache revalidation is best-effort when running outside a Next.js request context
+  }
   return { eventId, imageCount: photos.length, receivedAt: new Date().toISOString() };
 }
 
@@ -453,10 +540,11 @@ export async function storeFanmassPhotoAnalysis(
     invalid(400, 'PHOTO_ID_MISMATCH', 'The path photo id and payload photo id must match.');
   }
   const db = await getDb();
-  await requireExactCameraEventLink(db, eventId, input.cameraEventId, input.cameraPartnerId);
+  const tagsOfEvent = await requireExactCameraEventLink(db, eventId, input.cameraEventId, input.cameraPartnerId);
   const collection = db.collection<PhotoAnalysisRecord>(PHOTO_ANALYSIS_COLLECTION);
   await collection.createIndex({ eventId: 1, cameraPhotoId: 1 }, { unique: true, name: 'fanmass_camera_photo_event_unique' });
   await collection.createIndex({ eventId: 1, tombstone: 1, status: 1 }, { name: 'fanmass_camera_photo_report_read' });
+  await collection.createIndex({ hashtags: 1 }, { name: 'fanmass_camera_photo_by_hashtag' });
 
   const receivedAt = new Date().toISOString();
   const id = stableRecordId(eventId, input.cameraPhotoId);
@@ -480,6 +568,8 @@ export async function storeFanmassPhotoAnalysis(
     boxes: input.boxes,
     analysis: input.analysis,
     humanReview: input.humanReview,
+    optIn: input.optIn,
+    hashtags: withEventHashtags(input.hashtags, tagsOfEvent),
   };
   const filter = {
     _id: id,
@@ -500,13 +590,19 @@ export async function storeFanmassPhotoAnalysis(
     const existing = await collection.findOne({ _id: id }, { projection: { analysisGeneration: 1, sourceRevision: 1, tombstone: 1 } });
     const stale = isPhotoAnalysisWriteStale(existing as Record<string, unknown> | null, input);
     if (!stale) invalid(409, 'PHOTO_RESULT_CONFLICT', 'The photo result could not be safely upserted.');
+    return {
+      eventId,
+      cameraPhotoId: input.cameraPhotoId,
+      status: 'ignored_stale',
+      receivedAt: new Date().toISOString(),
+    };
   }
 
   const aggregate = await rebuildFanmassPhotoEventSummary(eventId);
   return {
     eventId,
     cameraPhotoId: input.cameraPhotoId,
-    status: stored ? 'stored' : 'ignored_stale',
+    status: 'stored',
     receivedAt: aggregate.receivedAt,
   };
 }
@@ -538,6 +634,7 @@ export async function tombstoneFanmassPhotoAnalysis(
   const collection = db.collection<PhotoAnalysisRecord>(PHOTO_ANALYSIS_COLLECTION);
   await collection.createIndex({ eventId: 1, cameraPhotoId: 1 }, { unique: true, name: 'fanmass_camera_photo_event_unique' });
   await collection.createIndex({ eventId: 1, tombstone: 1, status: 1 }, { name: 'fanmass_camera_photo_report_read' });
+  await collection.createIndex({ hashtags: 1 }, { name: 'fanmass_camera_photo_by_hashtag' });
   const id = stableRecordId(eventId, cameraPhotoId);
   const existingPhoto = await collection.findOne(
     { _id: id },
@@ -643,6 +740,7 @@ export async function tombstoneFanmassPhotoAnalysisForErasure(input: {
   await requireExactCameraEventLink(db, messmassEventId, cameraEventId, cameraPartnerId);
   const collection = db.collection<PhotoAnalysisRecord>('fanmass_camera_photo_analyses');
   await collection.createIndex({ eventId: 1, tombstone: 1, status: 1 }, { name: 'fanmass_camera_photo_report_read' });
+  await collection.createIndex({ hashtags: 1 }, { name: 'fanmass_camera_photo_by_hashtag' });
   const receivedAt = (dependencies.now || nowIso)();
   const id = stableRecordId(messmassEventId, cameraPhotoId);
   await collection.updateOne(

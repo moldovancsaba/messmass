@@ -188,6 +188,26 @@ const DEFAULT_CHARTS = [
         description: 'Show how actively fans created content. Help venues and rights holders benchmark activation performance. Derived from your counts - a simple, comparable index across events. Target audience: Event ops, sponsorship sales, client success.' 
       }
     ]
+  },
+
+  // 10. Brand Earned Media Value (EMV) KPI Chart
+  {
+    chartId: 'brand-earned-media-value',
+    title: 'Brand Earned Media Value (EMV)',
+    type: 'kpi',
+    order: 10,
+    isActive: true,
+    emoji: '💰',
+    elements: [
+      {
+        id: 'emv-value',
+        label: 'Earned Media Value (€22 CPM)',
+        formula: '([fanmassBrandAppearances] * 4.6 * 22) / 1000',
+        color: CHART_COLOR.green,
+        description: 'Empirical calculation of in-stadium authentic brand exposure value: Brand Appearances × 4.6 in-stadium peer impressions × €22 CPM / 1000. Target audience: Brand sponsors, media buyers, rights holders.',
+        formatting: { rounded: true, prefix: '€', suffix: '' }
+      }
+    ]
   }
 ];
 

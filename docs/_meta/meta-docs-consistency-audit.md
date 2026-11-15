@@ -1,18 +1,15 @@
 # Docs Consistency Audit
 Status: Active
-Last Updated: 2026-10-23T14:36:01.437Z
+Last Updated: 2026-11-15T17:59:03.714Z
 Canonical: Yes
 Owner: Documentation
 
-Package version: 12.3.43
-Current docs scanned: 161
+Package version: 12.3.48
+Current docs scanned: 166
 Failures: 0
-Warnings: 1
+Warnings: 0
 
 ## Result
 
 No current documentation consistency failures found.
 
-## Warnings (non-blocking)
-
-- docs/_audit/fleet-architecture.md: "Verified messmass `5cc610c2`" is 58 commits behind HEAD (over the 30-commit freshness threshold) -- worth re-verifying this edge is still accurate.

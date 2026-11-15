@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import { notFound } from "next/navigation";
 import ColoredCard from "@/components/ColoredCard";
 import PasswordGate from "@/components/PasswordGate";
 
@@ -14,6 +15,10 @@ import PasswordGate from "@/components/PasswordGate";
  * - Uses existing /api/page-passwords endpoints to generate and validate.
  */
 export default function PasswordGateDemoPage() {
+  if (process.env.NODE_ENV === "production") {
+    notFound();
+  }
+
   const [generated, setGenerated] = useState<null | { url: string; password: string }>(null);
   const [generating, setGenerating] = useState(false);
   const pageId = "demo-event";

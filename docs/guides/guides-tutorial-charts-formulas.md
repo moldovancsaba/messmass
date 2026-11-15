@@ -1,6 +1,6 @@
 # Tutorial: Charts & formulas
 Status: Active
-Last Updated: 2026-07-20T00:00:00.000Z
+Last Updated: 2026-11-06T18:30:00.000Z
 Canonical: Yes
 Owner: Documentation
 
@@ -44,11 +44,13 @@ Click **New Chart** (➕). In the editor:
 
 ### 3. Write element formulas
 For each element set a **label**, a **color**, and a **formula**. Formulas reference values with bracket tokens:
-- `[VAR]` — a KYC variable, e.g. `[female]`, `[remoteImages] + [selfies]`.
-- `[MEDIA:slug]` / `[TEXT:slug]` — an image or text asset from the [Content Library](guides-tutorial-content-library.md).
+- `[VAR]` — a KYC variable, e.g. `[female]`, `[remoteImages] + [selfies]`. Derived headline metrics (`[allImages]`, `[totalImages]`, `[remoteFans]`, `[stadium]`, `[totalFans]`, `[totalUnder40]`, `[totalOver40]`, `[socialVisit]`) are also computed automatically at runtime by `evaluateFormula()` (`lib/formulaEngine.ts`) whenever their component fields exist on `stats`.
+- `[MEDIA:slug]` / `[TEXT:slug]` — an image or text asset from the [Content Library](guides-tutorial-content-library.md). Legacy numbered slot tokens `[TEXT_1]`..`[TEXT_20]` and `[IMAGE_1]`..`[IMAGE_20]` automatically resolve to `reportText1`..`20` and `reportImage1`..`20` via `lib/contentSlots.ts`.
 - `[PARAM:key]` — a per-element parameter (a tunable multiplier or constant defined on the element, so you don't hardcode magic numbers in the formula).
 - `[MANUAL:key]` — a manually supplied aggregated value.
 - `[fanmass.x]` — a Fanmass analytics variable (nested tokens are permitted), e.g. `[fanmass.peopleCount]`, provided that variable exists in KYC.
+
+> **Zero-total & missing-image suppression:** Pie (Donut) and Bar charts whose evaluated elements sum to `0` (or `NaN`) are automatically suppressed by `lib/report-calculator.ts` so empty charts never render on public reports. Similarly, image charts whose resolved URL is empty or `/assets/placeholders/image-missing.svg` are cleanly omitted.
 
 As you type, each formula is validated live against the KYC catalog and test-evaluated with sample data, so you get an immediate result or an "Unknown variables: …" error.
 

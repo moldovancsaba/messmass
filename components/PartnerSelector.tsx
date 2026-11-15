@@ -14,7 +14,7 @@ import styles from './PartnerSelector.module.css';
 interface Partner {
   _id: string;
   name: string;
-  emoji: string;
+  emoji?: string;
   showEmoji?: boolean;
 }
 

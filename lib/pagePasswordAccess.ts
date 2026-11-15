@@ -93,6 +93,7 @@ export async function resolveOwnerScope(pageId: string, pageType: PageType): Pro
 
     case 'filter':
     case 'hashtag':
+    case 'global-report': // everything Messmass holds: no single owner, so only a superadmin manages its password
     default:
       return { kind: 'unresolved' };
   }

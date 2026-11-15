@@ -30,13 +30,7 @@ export default function EventKYCDataPage() {
   const id = params.id;
   const router = useRouter();
   const { user, loading: authLoading } = useAdminAuth();
-  
-  // WHAT: Log URL parameters on mount
-  // WHY: Debug if all events are opening with same ID
-  React.useEffect(() => {
-    console.log('🌍 [KYC Event] Page mounted with params:', { id, allParams: params });
-  }, [id, params]);
-  
+
   const [project, setProject] = useState<ProjectData | null>(null);
   const [variables, setVariables] = useState<VariableMetadata[]>([]);
   const [loading, setLoading] = useState(true);
@@ -48,31 +42,19 @@ export default function EventKYCDataPage() {
     try {
       setLoading(true);
       
-      // WHAT: Fetch project data with cache-busting
-      // WHY: Ensure fresh data on every load
-      console.log('🔍 [KYC Event] Starting load for project ID:', id);
-      
       const projectRes = await fetch(`/api/projects?projectId=${id}&_t=${Date.now()}`, {
         cache: 'no-store'
       });
       const projectData = await projectRes.json();
       
-      console.log('🔍 [KYC Event] API Response:', projectData);
-      
       // WHAT: API now returns { project: {...} } for single project queries
       // WHY: Updated in v11.20.10 to support projectId query parameter
       if (!projectData.success || !projectData.project) {
-        console.error('❌ [KYC Event] Event not found for ID:', id);
         setError('Event not found');
         return;
       }
       
       const loadedProject = projectData.project;
-      console.log('✅ [KYC Event] Setting project state:', {
-        _id: loadedProject._id,
-        eventName: loadedProject.eventName
-      });
-      
       setProject(loadedProject);
       
       // Fetch variable metadata

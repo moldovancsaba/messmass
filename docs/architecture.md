@@ -4,7 +4,7 @@ Last Updated: 2026-09-09
 Canonical: No
 Owner: Architecture
 
-Version: 12.3.43
+Version: 12.3.48
 
 > **Scope.** This file describes how messmass works *now*: the modules that exist,
 > the routes that are served, the contracts between them. It is not a changelog,
@@ -112,34 +112,34 @@ it drifts. Do not edit between the markers.
 
 | Category | Count | Location |
 |----------|-------|----------|
-| **UI Components** | 104 | `components/` |
-| **Utility Modules** | 227 | `lib/` |
+| **UI Components** | 129 | `components/` |
+| **Utility Modules** | 254 | `lib/` |
 | **Hooks** | 13 | `hooks/` |
-| **Design Tokens** | 408 | `app/styles/theme.css` |
+| **Design Tokens** | 410 | `app/styles/theme.css` |
 | **Utility CSS classes** | 192 | `app/styles/utilities.css` |
-| **App routes (pages)** | 73 | `app/**/page.tsx` |
-| **API routes** | 230 | `app/api/**/route.ts` |
+| **App routes (pages)** | 85 | `app/**/page.tsx` |
+| **API routes** | 248 | `app/api/**/route.ts` |
 
 The modules with the most importers — the ones whose change radius is
 largest, and the ones to read first:
 
 | Module | Importers | Lines |
 |--------|-----------|-------|
-| `lib/config.ts` | 122 | 207 |
-| `lib/mongodb.ts` | 104 | 112 |
-| `lib/logger.ts` | 94 | 392 |
-| `lib/auth.ts` | 93 | 118 |
-| `lib/apiGuards.ts` | 85 | 390 |
-| `components/ColoredCard.tsx` | 44 | 52 |
+| `lib/config.ts` | 129 | 201 |
+| `lib/mongodb.ts` | 112 | 112 |
+| `lib/auth.ts` | 97 | 118 |
+| `lib/logger.ts` | 96 | 392 |
+| `lib/apiGuards.ts` | 87 | 390 |
+| `lib/fanmassIntegration.ts` | 45 | 331 |
+| `components/ColoredCard.tsx` | 43 | 52 |
 | `lib/db.ts` | 42 | 17 |
-| `lib/apiClient.ts` | 40 | 258 |
+| `lib/apiClient.ts` | 41 | 258 |
 | `components/MaterialIcon.tsx` | 33 | 119 |
-| `lib/fanmassIntegration.ts` | 31 | 485 |
-| `components/UnifiedAdminHeroWithSearch.tsx` | 27 | 192 |
+| `components/UnifiedAdminHeroWithSearch.tsx` | 26 | 192 |
 | `lib/mongoose-v3.ts` | 21 | 66 |
-| `lib/permissions.ts` | 18 | 141 |
-| `hooks/useAdminAuth.ts` | 17 | 65 |
-| `lib/users.ts` | 17 | 430 |
+| `lib/permissions.ts` | 19 | 144 |
+| `lib/report-calculator.ts` | 19 | 935 |
+| `hooks/useAdminAuth.ts` | 18 | 65 |
 
 Importers are counted by resolved import specifier, not by symbol name, so
 a re-export through a barrel file counts for the barrel. A module missing
@@ -997,7 +997,7 @@ shows up here on the next regeneration, which is the point.
 
 <!-- GENERATED:routes -->
 
-### Pages (73)
+### Pages (85)
 
 | Route | File |
 |-------|------|
@@ -1016,6 +1016,7 @@ shows up here on the next regeneration, which is the point.
 | `/admin/analytics/sponsorship/activation/recap/[partnerId]` | `app/admin/analytics/sponsorship/activation/recap/[partnerId]/page.tsx` |
 | `/admin/api-football-enrich` | `app/admin/api-football-enrich/page.tsx` |
 | `/admin/bitly` | `app/admin/bitly/page.tsx` |
+| `/admin/brand-assets` | `app/admin/brand-assets/page.tsx` |
 | `/admin/cache` | `app/admin/cache/page.tsx` |
 | `/admin/categories` | `app/admin/categories/page.tsx` |
 | `/admin/charts` | `app/admin/charts/page.tsx` |
@@ -1026,10 +1027,13 @@ shows up here on the next regeneration, which is the point.
 | `/admin/dashboard` | `app/admin/dashboard/page.tsx` |
 | `/admin/design` | `app/admin/design/page.tsx` |
 | `/admin/events` | `app/admin/events/page.tsx` |
+| `/admin/events/[id]` | `app/admin/events/[id]/page.tsx` |
 | `/admin/events/[id]/kyc-data` | `app/admin/events/[id]/kyc-data/page.tsx` |
 | `/admin/fanmass` | `app/admin/fanmass/page.tsx` |
+| `/admin/fanmass-evidence` | `app/admin/fanmass-evidence/page.tsx` |
 | `/admin/filter` | `app/admin/filter/page.tsx` |
 | `/admin/filter/[slug]/reports` | `app/admin/filter/[slug]/reports/page.tsx` |
+| `/admin/global/reports` | `app/admin/global/reports/page.tsx` |
 | `/admin/hashtags` | `app/admin/hashtags/page.tsx` |
 | `/admin/hashtags/[hashtag]/reports` | `app/admin/hashtags/[hashtag]/reports/page.tsx` |
 | `/admin/help` | `app/admin/help/page.tsx` |
@@ -1061,11 +1065,19 @@ shows up here on the next regeneration, which is the point.
 | `/dashboard/filter/[filterSlug]` | `app/dashboard/filter/[filterSlug]/page.tsx` |
 | `/dashboard/hashtag/[hashtag]` | `app/dashboard/hashtag/[hashtag]/page.tsx` |
 | `/dashboard/partner/[partnerId]` | `app/dashboard/partner/[partnerId]/page.tsx` |
-| `/debug/hashtag-categories` | `app/debug/hashtag-categories/page.tsx` |
 | `/edit/[slug]` | `app/edit/[slug]/page.tsx` |
 | `/examples/password-gate-demo` | `app/examples/password-gate-demo/page.tsx` |
 | `/filter/[slug]` | `app/filter/[slug]/page.tsx` |
 | `/hashtag/[hashtag]` | `app/hashtag/[hashtag]/page.tsx` |
+| `/interactive-report` | `app/interactive-report/page.tsx` |
+| `/interactive-report/[partnerSlug]` | `app/interactive-report/[partnerSlug]/page.tsx` |
+| `/interactive-report/[partnerSlug]/map` | `app/interactive-report/[partnerSlug]/map/page.tsx` |
+| `/interactive-report/[partnerSlug]/territory` | `app/interactive-report/[partnerSlug]/territory/page.tsx` |
+| `/interactive-report/event/[id]` | `app/interactive-report/event/[id]/page.tsx` |
+| `/interactive-report/filter/[slug]` | `app/interactive-report/filter/[slug]/page.tsx` |
+| `/interactive-report/global` | `app/interactive-report/global/page.tsx` |
+| `/interactive-report/hashtag/[hashtag]` | `app/interactive-report/hashtag/[hashtag]/page.tsx` |
+| `/interactive-report/partner/[slug]` | `app/interactive-report/partner/[slug]/page.tsx` |
 | `/organization-edit/[id]` | `app/organization-edit/[id]/page.tsx` |
 | `/organization-report/[id]` | `app/organization-report/[id]/page.tsx` |
 | `/partner-edit/[slug]` | `app/partner-edit/[slug]/page.tsx` |
@@ -1075,7 +1087,7 @@ shows up here on the next regeneration, which is the point.
 | `/terms` | `app/terms/page.tsx` |
 | `/test-csrf` | `app/test-csrf/page.tsx` |
 
-### API routes (230)
+### API routes (248)
 
 `auth` is the guard symbol the route actually calls. A blank cell
 means the route calls none — public by construction, or a gap.
@@ -1097,6 +1109,8 @@ means the route calls none — public by construction, or a gap.
 | `/api/admin/clear-cookies` | GET, POST | — |
 | `/api/admin/contact-inquiries` | GET | `getAdminUser` |
 | `/api/admin/email-selftest` | GET | `requireSession` |
+| `/api/admin/fanmass-evidence` | GET, POST | `getAdminUser, requireAdmin` |
+| `/api/admin/fanmass-evidence/[id]` | PATCH, DELETE | `getAdminUser, requireAdmin` |
 | `/api/admin/fanmass/commands` | POST | `getAdminUser` |
 | `/api/admin/fanmass/events` | GET | `getAdminUser` |
 | `/api/admin/fanmass/events/[eventId]` | GET, POST | `getAdminUser` |
@@ -1156,7 +1170,7 @@ means the route calls none — public by construction, or a gap.
 | `/api/analytics/insights/organizations/[orgId]` | GET | `getAdminUser` |
 | `/api/analytics/insights/partners/[partnerId]` | GET | `getAdminUser` |
 | `/api/analytics/insights/summary` | GET | `getAdminUser` |
-| `/api/analytics/partner/[partnerId]` | GET | `requireSession` |
+| `/api/analytics/partner/[partnerId]` | GET | `getAdminUser` |
 | `/api/analytics/sponsorship-hub` | GET | `getAdminUser` |
 | `/api/analytics/trends` | GET | `requireSession` |
 
@@ -1215,6 +1229,13 @@ means the route calls none — public by construction, or a gap.
 | Route | Methods | Auth |
 |-------|---------|------|
 | `/api/blob-upload-token` | POST | `requireSession` |
+
+#### `/api/brand-assets`
+
+| Route | Methods | Auth |
+|-------|---------|------|
+| `/api/brand-assets` | GET, POST | `requireSession` |
+| `/api/brand-assets/[id]` | DELETE | `requireSession` |
 
 #### `/api/chart-config`
 
@@ -1300,14 +1321,6 @@ means the route calls none — public by construction, or a gap.
 | `/api/data-blocks` | GET, POST, PUT, DELETE | `requireAdmin` |
 | `/api/data-blocks/duplicate` | POST | `requireAdmin` |
 
-#### `/api/debug`
-
-| Route | Methods | Auth |
-|-------|---------|------|
-| `/api/debug/categorized-hashtags` | GET | `requireSession` |
-| `/api/debug/notifications` | GET | `getAdminUser` |
-| `/api/debug/overview-block` | GET | `requireSession` |
-
 #### `/api/derived-variable-config`
 
 | Route | Methods | Auth |
@@ -1376,6 +1389,12 @@ means the route calls none — public by construction, or a gap.
 |-------|---------|------|
 | `/api/hashtag-colors` | GET, POST, PUT, DELETE | `requireAdmin` |
 
+#### `/api/hashtag-report`
+
+| Route | Methods | Auth |
+|-------|---------|------|
+| `/api/hashtag-report/[hashtag]` | GET | `requirePageAccess` |
+
 #### `/api/hashtags`
 
 | Route | Methods | Auth |
@@ -1406,20 +1425,40 @@ means the route calls none — public by construction, or a gap.
 | `/api/integrations/fanmass/dashboard-snapshot` | POST | `requireFanmassIntegrationAuth` |
 | `/api/integrations/fanmass/drive-folders` | GET | `requireFanmassIntegrationAuth` |
 | `/api/integrations/fanmass/drive-folders/pending-sync` | GET | `requireFanmassIntegrationAuth` |
+| `/api/integrations/fanmass/drive-photos` | POST | `requireFanmassIntegrationAuth` |
+| `/api/integrations/fanmass/event-hashtags` | POST | `requireFanmassIntegrationAuth` |
+| `/api/integrations/fanmass/event-list` | GET | `requireFanmassIntegrationAuth` |
 | `/api/integrations/fanmass/events` | POST | `requireFanmassIntegrationAuth` |
 | `/api/integrations/fanmass/events/[eventId]/analysis-summary` | POST | `requireFanmassIntegrationAuth` |
 | `/api/integrations/fanmass/events/[eventId]/context` | GET | `requireFanmassIntegrationAuth` |
 | `/api/integrations/fanmass/events/[eventId]/drive-folders/status` | POST | `requireFanmassIntegrationAuth` |
+| `/api/integrations/fanmass/events/[eventId]/drive-photos` | POST | `requireFanmassIntegrationAuth` |
 | `/api/integrations/fanmass/events/[eventId]/link` | GET, POST | `requireFanmassIntegrationAuth` |
 | `/api/integrations/fanmass/events/[eventId]/photos/[photoId]` | POST, DELETE | `requireFanmassIntegrationAuth` |
 | `/api/integrations/fanmass/events/[eventId]/stats` | POST | `requireFanmassIntegrationAuth` |
 | `/api/integrations/fanmass/events/[eventId]/sync` | GET, POST | `requireFanmassIntegrationAuth` |
+| `/api/integrations/fanmass/evidence` | POST | `requireFanmassIntegrationAuth` |
+| `/api/integrations/fanmass/evidence-reviews` | GET | `requireFanmassIntegrationAuth` |
+| `/api/integrations/fanmass/evidence-training` | GET | `requireFanmassIntegrationAuth` |
+| `/api/integrations/fanmass/fanmass-hashtags` | POST | `requireFanmassIntegrationAuth` |
+| `/api/integrations/fanmass/match-events` | POST | `requireFanmassIntegrationAuth` |
 | `/api/integrations/fanmass/partners` | GET, POST | `requireFanmassIntegrationAuth` |
 | `/api/integrations/fanmass/partners/[partnerId]/events` | GET | `requireFanmassIntegrationAuth` |
 | `/api/integrations/fanmass/rescan-requests` | GET | `requireFanmassIntegrationAuth` |
 | `/api/integrations/fanmass/rescan-requests/[eventId]` | DELETE | `requireFanmassIntegrationAuth` |
+| `/api/integrations/fanmass/szrt-evidence` | POST | `requireFanmassIntegrationAuth` |
+| `/api/integrations/fanmass/szrt-progress` | POST | `requireFanmassIntegrationAuth` |
+| `/api/integrations/fanmass/szrt-publish` | POST | `requireFanmassIntegrationAuth` |
 | `/api/integrations/fanmass/variables` | GET, POST | `requireFanmassIntegrationAuth` |
 | `/api/integrations/privacy/erase-camera-photo` | DELETE | — |
+
+#### `/api/interactive-report`
+
+| Route | Methods | Auth |
+|-------|---------|------|
+| `/api/interactive-report/[partnerSlug]` | GET | — |
+| `/api/interactive-report/brand-evidence` | GET | — |
+| `/api/interactive-report/partner-selfies` | GET | — |
 
 #### `/api/landing-static`
 
@@ -1434,6 +1473,12 @@ means the route calls none — public by construction, or a gap.
 | `/api/loyalty-missions` | GET, POST | `getAdminUser, requireAdmin` |
 | `/api/loyalty-missions/[id]` | GET | `requireAdmin` |
 | `/api/loyalty-missions/[id]/completions` | GET, POST | `requireAdmin` |
+
+#### `/api/media`
+
+| Route | Methods | Auth |
+|-------|---------|------|
+| `/api/media/upload` | POST | `requireSession` |
 
 #### `/api/notifications`
 
@@ -1809,6 +1854,88 @@ interface ReportTemplate {
 - Batch evaluation (20 charts): <100ms
 - Caching: Results cached per render cycle
 
+**Interactive reports (`/report/hashtag|partner|event|global`, served by `/interactive-report/...`):**
+- `lib/interactiveReportAggregator.ts` loads every project of the scope, so it fetches only the project and partner fields the
+  report reads (`REPORT_PROJECT_FIELDS`, `PARTNER_LOOKUP_FIELDS`); a full stats document of every project timed the global and
+  hashtag reports out at the host default of 15 seconds (1,101 timeouts in 7 days of production errors).
+- The interactive pages and their data routes set `maxDuration = 60`; the first load builds the report, the next hour is served
+  from the snapshot cache (`SNAPSHOT_SCHEMA_VERSION` is bumped with every output change).
+- The V3 sync (`lib/v3/syncEngine.ts`) copies V2 values to plain JSON before mongoose writes them: V2 is read by the raw driver
+  (bson 6), V3 is written by mongoose (bson 7), and a raw-driver ObjectId inside an untyped field fails the write.
+- `app/admin/analytics/error.tsx` keeps a crash in one analytics view inside the admin shell, with a retry and a server log entry.
+
+### Unified hashtag report (`lib/hashtagReport/`)
+
+One builder for every hashtag (`buildHashtagReport`), served by `GET /api/hashtag-report/[hashtag]`. It contains Fanmass data and
+Messmass calculations and nothing typed by a person, in three layers that never mix:
+
+1. **Measured** (`measured.ts`): the per-photo Fanmass rollups of the hashtag's events (`ai_analysis_summaries`, summed exactly by
+   `mergeSummaries.ts`) and the counters Camera writes (`camera_*`, an explicit allowlist). The database projection names each
+   allowed stat, so a clicker stat, a sheet import or a typed table is never fetched.
+2. **Calculated** (`calculated.ts`): pure functions over the measured layer. Each calculation returns its value together with
+   its numerator, denominator and basis, or nothing when the counts cannot give a real share (an unreported counter is unknown,
+   never zero).
+3. **Manual numbers** are not part of this report type; they stay in the classic reports.
+
+Drive photos that Fanmass placed in an event (`POST /api/integrations/fanmass/events/[eventId]/drive-photos`,
+`fanmass_event_drive_photos`, `lib/fanmassDrivePhotos.ts`) are part of the measured layer as their own block (`measured.drive`):
+the SZRT drive library carries no event, so Fanmass placed every photo by the photo order, the clubs read in it and the fixture
+dates, with a confidence per photo. The report shows how many were placed with over 50% confidence, how many are analysed and the
+brand and club names read from them, apart from the Camera photo results (a different source and opt-in basis).
+Every drive photo also carries the hashtags Fanmass gave it (`hashtags`: library, sport, event, clubs, brands, emotions, people;
+lowercase, no `#`), so the drive block of `#x` holds the photos tagged `x` as well as the photos placed in the events that carry
+`x`, and lists the events those photos sit in (`measured.drive.events`).
+Fanmass can also create the event of a sports match it holds photos of (`POST /api/integrations/fanmass/match-events`,
+`lib/fanmassMatchEvents.ts`): the same event Quick Add's match builder makes (`lib/matchEvent.ts` for the name and hashtags,
+`lib/createEvent.ts` for everything creation does, shared with `POST /api/projects`) and its Camera mirror. Both clubs must
+already be Messmass partners, matched by name with case and accents ignored; an unknown or ambiguous club is refused.
+Fanmass adds campaign hashtags to the events of a campaign (`POST /api/integrations/fanmass/event-hashtags`,
+`lib/fanmassEventHashtags.ts`, the SZRT games get `#tippmixreport2026`): additive only, into the plain list, and only when
+no list of the event carries the hashtag yet.
+
+Two kinds of hashtags, two kinds of reports (owner 2026-11-14). Hashtags are typed by people (`hashtags`,
+`categorizedHashtags`) or written by Fanmass, the local AI (on each photo, and per event in `fanmassHashtags`: the
+hashtags of its photos without the event's typed ones, recomputed by `POST /api/integrations/fanmass/fanmass-hashtags`
+after every Fanmass publish run). The two kinds work together: an event carries a hashtag when its plain list, any
+category list or its Fanmass hashtags hold it (`hashtagFilter`, the same match as the admin hashtag filter;
+`category:tag` matches that category only). A hashtag is one name in any spelling: case, a leading # and underscores do
+not count (`compactHashtag`, `hashtagSpellings` in `lib/photoHashtags.ts`), so the typed `otp_bank_pick_szeged` and
+Fanmass's `otpbankpickszeged` are one hashtag. The Fanmass report pages (`/report/hashtag`, `/report/filter`, `/report/global`)
+render the interactive dashboard in its Fanmass mode (`components/hashtagReport/FanmassDashboardPage.tsx`,
+`lib/hashtagReport/dashboard.ts`): the vision charts and image proofs Fanmass published for the scope (or the vision the
+stored photos give, `visionFromReport`), the territory map fed by the events with Fanmass photos, demographics from the
+vision, and the measured figures in a Figures tab; the Executive Overview opens first with the victory podiums of brands and clubs
+and the demographics quadrant (its clicker parts hide with the clicker data left out); the header shows Fanmass figures
+and the clicker tabs (match explorer, funnel, typed match table) are left out. In the Fanmass report a typed hashtag brings all the photos of its events,
+a hashtag Fanmass wrote (a brand, an emotion) only the photos it was found in. The reports never mix: the clicker report (counts people entered by hand,
+`/filter/[slug]` and the Clicker section of `/admin/filter`) and the Fanmass report (`lib/hashtagReport`,
+`/report/hashtag/[x]`, `/report/filter/[slug]`, `/report/global`, the Fanmass section of `/admin/filter`).
+Several hashtags together (`buildFilterReport`) take the events carrying all of them and the photos tagged with all of
+them. The admin hashtag filter lists the photo hashtags next to the event hashtags (`GET /api/hashtags?photos=1`: events
+and photos per hashtag) and on Apply shows both reports, each in its own section (`GET /api/hashtags/filter?report=1`).
+Fanmass finds the Messmass event of a campaign game without a Camera link by date and clubs in
+`GET /api/integrations/fanmass/event-list` (id, name and date of every event).
+
+Camera photo results carry hashtags the same way (`fanmass_camera_photo_analyses.hashtags`): Fanmass sends the brand and club
+names proven by text read from the picture and the emotions, genders and age groups measured in it, and Messmass adds the
+hashtags of the event when it stores any photo (`lib/photoHashtags.ts`). The report counts the Camera photos tagged `x` in any
+event (`measured.photos.tagged`).
+
+Brand and club names are not in the unified report yet: a Camera photo result lists the names a model guessed ("Scarf", "Jacket"),
+not names read from the picture. They appear once Fanmass delivers the text-read proof with each photo result. The opt-in count is
+counted from the stored per-photo results (`fanmass_camera_photo_analyses`, `optIn.received`) of the hashtag's events.
+
+`coverage` says how many of the hashtag's events carry measured data, so a missing figure reads as "not measured". The route is
+gated like the other hashtag reports (public unless the hashtag has a page password). `tests/hashtag-report.test.ts` fails if the
+builder ever fetches or uses a stat outside the allowlist.
+
+`/report/hashtag/[hashtag]` (served by `app/interactive-report/hashtag/[hashtag]/page.tsx`) shows this report for every hashtag
+(`components/hashtagReport/HashtagReportView.tsx`), behind the shared page gate, the SZRT campaign included (owner
+2026-11-14); the previous SZRT interactive report, partly typed in by hand, stays reachable at `?report=classic`, and the
+SZRT partner links (`/interactive-report/szrt`, `szerencsejatek`, its partner id) redirect here. The
+hashtag's events are the events that carry it plus the events Fanmass placed photos of the hashtag in (`joinedBy`), so the
+event list follows the placements without anyone tagging events by hand.
+
 ### Error Handling
 
 **Chart Level:**
@@ -1907,11 +2034,10 @@ interface Notification {
   - Adds current user ID to appropriate array
   - Requires authentication
 
-**Diagnostic Endpoint**
-- `GET /api/debug/notifications` - Production troubleshooting
-  - Shows authentication status
-  - Displays notification counts and recent notifications
-  - Provides troubleshooting guidance
+**Diagnostic Endpoint (removed)**
+- `GET /api/debug/notifications` was deleted with the other `app/api/debug/*` routes in
+  bb3eaac6 (2026-11-08). For troubleshooting, use `GET /api/notifications` signed in as the
+  affected user (see Troubleshooting below).
 
 #### 3. UI Components
 
@@ -2002,7 +2128,7 @@ await fetch(`/api/notifications/mark-read?notificationId=${id}&action=archive`, 
 ### Troubleshooting
 
 For production issues:
-1. Use diagnostic endpoint: `/api/debug/notifications`
+1. Call `GET /api/notifications` signed in as the affected user: a 401 means the session is the problem; otherwise it returns that user's unread count and notifications (the former diagnostic route `/api/debug/notifications` is gone, bb3eaac6)
 2. Check authentication status
 3. Verify MongoDB connection
 4. Review notification counts and recent entries
@@ -2375,22 +2501,21 @@ export const RATE_LIMITS = {
 ```
 
 #### 2. CSRF Protection Module (`lib/csrf.ts`)
-- **Pattern**: Double-submit cookie (secure, HttpOnly, SameSite=Lax)
-- **Token Generation**: Cryptographically secure random tokens (32 bytes, hex-encoded)
-- **Validation**: Compares cookie token with request header token
-- **Protected Methods**: POST, PUT, DELETE, PATCH
-- **Excluded Paths**: GET, HEAD, OPTIONS, and public endpoints
+- **Pattern**: Double-submit cookie `csrf-token` (Secure in production, SameSite=Lax, 24 hours). It is deliberately **not** HttpOnly (`setCsrfTokenCookie`, `httpOnly: false`): the double-submit pattern needs JavaScript to read the cookie and send it back in the `X-CSRF-Token` header
+- **Token Generation**: Cryptographically secure random tokens (32 bytes, hex-encoded, Web Crypto)
+- **Validation**: The `X-CSRF-Token` header must equal the cookie (`validateCsrfToken`); a missing or different token is answered `403` with `CSRF_TOKEN_INVALID`
+- **Protected Methods**: every non-GET/HEAD/OPTIONS request to `/api/*`
+- **Excluded Paths**: `/api/admin/login`, `/api/page-passwords` and everything under `/api/integrations/*` (token-authed server-to-server calls); `ENABLE_CSRF_PROTECTION=false` turns the check off
 
 **Integration Points**:
-- Middleware sets CSRF cookie on first request
-- `/api/csrf-token` endpoint for AJAX token retrieval
+- Middleware runs the check (`csrfProtectionMiddleware`) but does not set the cookie (the note in `middleware.ts` above its `logRequestEnd` call)
+- `GET /api/csrf-token` issues a new token and sets the cookie; the client calls it on first use (`ensureCsrfToken` in `lib/apiClient.ts`)
 - `apiClient` wrapper automatically includes token in headers
 
 **Security Features**:
-- HttpOnly cookies prevent XSS token theft
-- SameSite=Lax prevents CSRF attacks
+- SameSite=Lax plus the header match stop cross-site requests; the token is a cross-site hurdle, not authentication (anyone can fetch one)
 - Constant-time comparison prevents timing attacks
-- Token rotation on validation failure
+- The cookie is readable by JavaScript by design, so it gives no protection against XSS; that is inherent to the double-submit pattern
 
 #### 3. Centralized Logging System (`lib/logger.ts`)
 - **Output**: Structured JSON (production) or human-readable (development)
@@ -3533,7 +3658,7 @@ const editable = await findProjectByEditSlug(editSlug);
 
 ### Database Schema Summary
 
-The core collections, with the indexes `scripts/createMissingIndexes.ts` creates. This table is not the whole schema: the code opens 46 more collections, listed in the second table. The complete, CI-checked list of every collection name the repo opens (scripts included) is `docs/_audit/collections.json` (`npm run inventory:check`).
+The core collections, with the indexes `scripts/createMissingIndexes.ts` creates. This table is not the whole schema: the code opens 54 more collections, listed in the second table. The complete, CI-checked list of every collection name the repo opens (scripts included) is `docs/_audit/collections.json` (`npm run inventory:check`).
 
 | Collection | Purpose | Indexes |
 |------------|---------|----------|
@@ -3563,6 +3688,8 @@ The core collections, with the indexes `scripts/createMissingIndexes.ts` creates
 | `audit_logs` | `app/api/admin/permissions/route.ts` |
 | `available_fonts` | `lib/cameraFrameContext.ts` |
 | `bitly_sync_logs` | `app/api/bitly/sync/route.ts` |
+| `brand_assets` | `app/api/brand-assets/route.ts` |
+| `brand_canonical_mappings` | `app/api/brand-assets/route.ts` |
 | `categories` | `lib/api/caching.ts` |
 | `chart_configurations` | `app/api/chart-config/route.ts` |
 | `chart_formatting_defaults` | `app/api/chart-formatting-defaults/route.ts` |
@@ -3576,8 +3703,10 @@ The core collections, with the indexes `scripts/createMissingIndexes.ts` creates
 | `fan_identities` | `lib/fanIdentity.ts` |
 | `fan_identity_links` | `lib/fanIdentity.ts` |
 | `fan_identity_merge_candidates` | `lib/fanIdentity.ts` |
+| `fanmass_camera_photo_analyses` | `lib/fanmassPhotoAnalyses.ts` |
 | `fanmass_commands` | `lib/fanmassCommands.ts` |
 | `fanmass_dashboard_snapshot` | `lib/fanmassDashboardSnapshot.ts` |
+| `fanmass_event_drive_photos` | `lib/hashtagReport/measured.ts` (the name is `DRIVE_PHOTOS_COLLECTION` in `lib/fanmassDrivePhotos.ts`) |
 | `fanmass_event_links` | `lib/fanmassIntegration.ts` |
 | `filter_slugs` | `lib/slugUtils.ts` |
 | `football_data_fixtures` | `lib/fixtureImporter.ts` |
@@ -3591,6 +3720,9 @@ The core collections, with the indexes `scripts/createMissingIndexes.ts` creates
 | `paid_campaigns` | `lib/paidCampaigns.ts` |
 | `partner_analytics` | `lib/analytics-aggregator.ts` |
 | `project_permissions` | `app/api/admin/permissions/route.ts` |
+| `reclassified_clubs` | `app/api/brand-assets/route.ts` |
+| `reportStyles` | `lib/interactiveReportAggregator.ts` (a fallback read after `report_styles`) |
+| `report_snapshots` | `lib/reportSnapshotManager.ts` |
 | `report_styles` | `app/api/projects/route.ts` |
 | `report_templates` | `lib/reportRuntime.ts` |
 | `report_variants` | `lib/reportVariants.ts` |
@@ -3598,6 +3730,8 @@ The core collections, with the indexes `scripts/createMissingIndexes.ts` creates
 | `settings` | `lib/gridSettings.ts` |
 | `sportsdb_fixtures` | `lib/sportsdbFixtureImporter.ts` |
 | `stakeholder_grants` | `lib/stakeholderGrants.ts` |
+| `szrt_vision_analysis` | `app/api/brand-assets/route.ts` |
+| `szrt_vision_progress` | `lib/interactiveReportAggregator.ts` |
 | `user_preferences` | `app/api/user-preferences/route.ts` |
 | `variables_groups` | `lib/variableMerge.ts` |
 
@@ -3848,8 +3982,10 @@ The earlier coverage/freshness/fill-rate and event-summary design is retired.
 The current contract is photo-first: Messmass owns partners, events and report
 aggregation; Camera owns capture, identity, consent, retention and vetting; Fanmass
 reads eligible Camera Atlas photos, analyzes one photo at a time, saves photo-level
-findings and boxes, and sends one result per photo. It does not create Messmass
-events or event reports.
+findings and boxes, and sends one result per photo. It creates no event reports. The
+only Messmass events it creates are sports matches it holds SZRT drive photos of, made
+exactly like Quick Add's match builder (`POST /api/integrations/fanmass/match-events`);
+it may also add campaign hashtags to events (additive, `.../event-hashtags`).
 
 ### Photo-level image analysis and Messmass reports
 
@@ -3867,11 +4003,14 @@ The active integration is photo-first and ID-bound:
 - Messmass validates the exact Messmass event, Camera event, Camera partner and
   photo IDs; stores each result in `fanmass_camera_photo_analyses`; and rebuilds
   its event summary and report-variable projections from the active photo rows.
-  Fanmass does not create Messmass events or event reports.
+  The Camera photo lane creates no Messmass events or event reports (the SZRT drive lane
+  may create a match event, see above).
 
 The result contract is `fanmass.messmass.photo-analysis.v2`. It is identity-free
-and includes normalized photo findings, boxes, source revision and analysis
-generation. A per-photo tombstone permanently fences the exact event/photo
+and includes normalized photo findings, boxes, source revision, analysis
+generation and the opt-in record of the photo (`optIn`: received, basis, time,
+consent kinds; no consent text). A result without a recorded opt-in is refused,
+and the event stat `fanmassOptInPhotos` counts the stored results that carry one. A per-photo tombstone permanently fences the exact event/photo
 key so no later analysis generation can recreate a deleted or newly ineligible
 photo. A successful acknowledgement is sent only after
 both the per-photo record and its derived report projection are stored.
@@ -3925,5 +4064,5 @@ When working with the hashtag categories system:
 ---
 
 *Last Updated: 2026-09-09*
-*Version: 12.3.43*
+*Version: 12.3.48*
 *Status: Production-Ready — Enterprise Event Analytics Platform with Advanced Analytics Infrastructure*

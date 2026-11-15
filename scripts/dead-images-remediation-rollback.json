@@ -1,0 +1,3584 @@
+{
+  "remediatedAt": "2026-11-04T19:51:32.130Z",
+  "totalUpdates": 511,
+  "placeholderUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg",
+  "rollback": [
+    {
+      "collection": "partners",
+      "docId": "68ef5f846a32609c5247510b",
+      "fieldPath": "sportsDb.badge",
+      "oldUrl": "https://i.ibb.co/bT9zcLg/medium-3.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "partners",
+      "docId": "68ef60e4012e9f51ae782141",
+      "fieldPath": "sportsDb.badge",
+      "oldUrl": "https://i.ibb.co/C52n6GZb/medium-2.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "partners",
+      "docId": "68ef837870382b9e35f567e9",
+      "fieldPath": "sportsDb.badge",
+      "oldUrl": "https://i.ibb.co/Z1kwvSBn/medium.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "partners",
+      "docId": "68f6258c6d0f41c3f6a4c84d",
+      "fieldPath": "sportsDb.badge",
+      "oldUrl": "https://i.ibb.co/MyN3WqTS/03caseweb-ea-after.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "partners",
+      "docId": "68f6258c6d0f41c3f6a4c84d",
+      "fieldPath": "stats.reportImage2",
+      "oldUrl": "https://i.ibb.co/fV1Hpd51/136b559f857c.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "partners",
+      "docId": "68f6258c6d0f41c3f6a4c84d",
+      "fieldPath": "stats.reportImage4",
+      "oldUrl": "https://i.ibb.co/PJDf1GT/3ac9f385cac5.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "partners",
+      "docId": "68f626b4eaea906244f28925",
+      "fieldPath": "stats.reportImage1",
+      "oldUrl": "https://i.ibb.co/ffZJxrV/56b69a9275d0.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "partners",
+      "docId": "68f626b4eaea906244f28925",
+      "fieldPath": "stats.reportImage5",
+      "oldUrl": "https://i.ibb.co/1Y9BzQRF/fc92ae4fd535.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "partners",
+      "docId": "68f626b4eaea906244f28925",
+      "fieldPath": "stats.reportImage6",
+      "oldUrl": "https://i.ibb.co/mrpVSDHc/5f7953413639.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "partners",
+      "docId": "68f626b4eaea906244f28925",
+      "fieldPath": "stats.reportImage7",
+      "oldUrl": "https://i.ibb.co/cKDHbCPP/551eee1647d2.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "partners",
+      "docId": "68f626b4eaea906244f28925",
+      "fieldPath": "stats.reportImage8",
+      "oldUrl": "https://i.ibb.co/Ps27jLtB/292fbe0837a3.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "partners",
+      "docId": "68f626b4eaea906244f28925",
+      "fieldPath": "stats.reportImage9",
+      "oldUrl": "https://i.ibb.co/2Yv3HM5x/36a29846ce99.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "partners",
+      "docId": "68f626b4eaea906244f28925",
+      "fieldPath": "stats.reportImage12",
+      "oldUrl": "https://i.ibb.co/Df4t1hBK/427232f82744.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "partners",
+      "docId": "68f626b4eaea906244f28925",
+      "fieldPath": "stats.reportImage14",
+      "oldUrl": "https://i.ibb.co/278RM52w/38b908fad27f.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "partners",
+      "docId": "68f626b7eaea906244f28926",
+      "fieldPath": "sportsDb.badge",
+      "oldUrl": "https://i.ibb.co/20XtP8QF/medium-4.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "partners",
+      "docId": "68f6295736dae2424f1d13cc",
+      "fieldPath": "stats.reportImage3",
+      "oldUrl": "https://i.ibb.co/m515sK8D/315ca96957cb.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "partners",
+      "docId": "68f6297236dae2424f1d13cd",
+      "fieldPath": "sportsDb.badge",
+      "oldUrl": "https://i.ibb.co/SpSSgQn/small-v-Px-KN5-QOctw-B1-S7-YSk-MRIja-Fh1695197085.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "partners",
+      "docId": "68f62a2f36dae2424f1d13d4",
+      "fieldPath": "sportsDb.badge",
+      "oldUrl": "https://i.ibb.co/r2xNs3Bq/VBW-CEKK-Cegl-d.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "partners",
+      "docId": "68f77b589d48f546efb9de9a",
+      "fieldPath": "sportsDb.badge",
+      "oldUrl": "https://i.ibb.co/tp9BFxZw/DKKA-Duna-jv-rosi-Koh-sz-K-zilabda-Akad-mia.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "partners",
+      "docId": "68f77ce09d48f546efb9de9e",
+      "fieldPath": "sportsDb.badge",
+      "oldUrl": "https://i.ibb.co/xSMP2JRB/partner-deac.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "partners",
+      "docId": "68f7809a9d7e63a072225c13",
+      "fieldPath": "stats.reportImage1",
+      "oldUrl": "https://i.ibb.co/FbZRz2bZ/25fd0eddf441.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "partners",
+      "docId": "68f7809a9d7e63a072225c13",
+      "fieldPath": "stats.reportImage5",
+      "oldUrl": "https://i.ibb.co/qYX4tk6J/f3e1f5ff18b3.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "partners",
+      "docId": "68f7809a9d7e63a072225c13",
+      "fieldPath": "stats.reportImage6",
+      "oldUrl": "https://i.ibb.co/pvqLdQGS/e94ddd8319c1.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "partners",
+      "docId": "68f78d013ced8e1a321f4650",
+      "fieldPath": "sportsDb.badge",
+      "oldUrl": "https://i.ibb.co/pvdDv31D/K-zilabda-ALBA-LOGO-3.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "partners",
+      "docId": "68f78d5b3ced8e1a321f4651",
+      "fieldPath": "sportsDb.badge",
+      "oldUrl": "https://i.ibb.co/GrMqN0R/Debreceni-VSC-women-s-handball-svg.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "partners",
+      "docId": "68f78e473ced8e1a321f4654",
+      "fieldPath": "sportsDb.badge",
+      "oldUrl": "https://i.ibb.co/nsc1Rk1j/Kisv-rda-Master-Good-SE.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "partners",
+      "docId": "68f78e823ced8e1a321f4655",
+      "fieldPath": "sportsDb.badge",
+      "oldUrl": "https://i.ibb.co/7dWhRv22/partner-kozarmisleny-kezilabda.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "partners",
+      "docId": "68f78f843ced8e1a321f4659",
+      "fieldPath": "sportsDb.badge",
+      "oldUrl": "https://i.ibb.co/kLKPmK3/Szombathelyi-K-zilabda-Klub-s-Akad-mia.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "partners",
+      "docId": "68f78fc23ced8e1a321f465a",
+      "fieldPath": "sportsDb.badge",
+      "oldUrl": "https://i.ibb.co/ynk2dcwD/2297387-V-ci-NKSE-logo.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "partners",
+      "docId": "68f790df3ced8e1a321f465e",
+      "fieldPath": "sportsDb.badge",
+      "oldUrl": "https://i.ibb.co/xqRTqcJN/csurgoi-kk.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "partners",
+      "docId": "68ff45b75473ed0e88defa53",
+      "fieldPath": "stats.reportImage2",
+      "oldUrl": "https://i.ibb.co/wZNYWYCZ/05ad85ed99d2.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "partners",
+      "docId": "68ff6ed6a2b0252e38f37d02",
+      "fieldPath": "sportsDb.badge",
+      "oldUrl": "https://i.ibb.co/nMxp73qv/partner-corona-brasov.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "partners",
+      "docId": "690b2fc4a9ae1682cbc211ce",
+      "fieldPath": "sportsDb.badge",
+      "oldUrl": "https://i.ibb.co/pjCWTKcr/tatab-nya-kc.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "partners",
+      "docId": "694a96990ad78323bea10660",
+      "fieldPath": "stats.reportImage3",
+      "oldUrl": "https://i.ibb.co/ycRrPYKy/d541d341138e.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "partners",
+      "docId": "694a96990ad78323bea10660",
+      "fieldPath": "stats.reportImage4",
+      "oldUrl": "https://i.ibb.co/99YWDKdX/c7ca62ef1164.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "partners",
+      "docId": "69a54b6de24f1f9ca024a321",
+      "fieldPath": "stats.reportImage4",
+      "oldUrl": "https://i.ibb.co/zHT1zSJk/53534cff0289.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "partners",
+      "docId": "6a01974c9d781d4900629d4d",
+      "fieldPath": "stats.reportImage1",
+      "oldUrl": "https://i.ibb.co/ycdmhqjL/1776448402103-cube.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "partners",
+      "docId": "6a01974c9d781d4900629d4d",
+      "fieldPath": "stats.reportImage3",
+      "oldUrl": "https://i.ibb.co/0yYL8dpH/1775326895045-cube.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "partners",
+      "docId": "6a01974c9d781d4900629d4d",
+      "fieldPath": "stats.reportImage4",
+      "oldUrl": "https://i.ibb.co/7tMK3ZVh/1777815628740-cube.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "partners",
+      "docId": "6a019d78362a6fc382e5a6fc",
+      "fieldPath": "stats.reportImage1",
+      "oldUrl": "https://i.ibb.co/d4cCBfP3/6f43a37239b3.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "partners",
+      "docId": "6a019d78362a6fc382e5a6fc",
+      "fieldPath": "stats.reportImage2",
+      "oldUrl": "https://i.ibb.co/9kxx5vnH/1afaaf0577e3.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "partners",
+      "docId": "6a019d78362a6fc382e5a6fc",
+      "fieldPath": "stats.reportImage4",
+      "oldUrl": "https://i.ibb.co/8gzCM1zg/b26650ada052.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "partners",
+      "docId": "6a048012fe440d910605e906",
+      "fieldPath": "stats.reportImage1",
+      "oldUrl": "https://i.ibb.co/wN8RfGbN/f6f606f9ff01.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "partners",
+      "docId": "6a048012fe440d910605e906",
+      "fieldPath": "stats.reportImage3",
+      "oldUrl": "https://i.ibb.co/G33PFC0P/e886633e6c2a.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "partners",
+      "docId": "6a05b394767174e927c63141",
+      "fieldPath": "stats.reportImage1",
+      "oldUrl": "https://i.ibb.co/QvWjDMbf/f51a93b96059.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "partners",
+      "docId": "6a3e27377e717981c9da0978",
+      "fieldPath": "stats.reportImage3",
+      "oldUrl": "https://i.ibb.co/N65mK4HL/93a88cf905ca.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "partners",
+      "docId": "6a3e27377e717981c9da0978",
+      "fieldPath": "stats.reportImage4",
+      "oldUrl": "https://i.ibb.co/WvXjKXNf/322b8b944cc6.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "partners",
+      "docId": "6a3e27377e717981c9da0978",
+      "fieldPath": "stats.reportImage5",
+      "oldUrl": "https://i.ibb.co/wrb6k3X8/70e7c94006a2.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "v3_activities",
+      "docId": "69b3bbbe986239b6475dea0b",
+      "fieldPath": "metadata.stats.reportImage3",
+      "oldUrl": "https://i.ibb.co/pjB3WqF9/1fd9e6d1b247.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "v3_activities",
+      "docId": "69b3bbbe986239b6475dea0b",
+      "fieldPath": "metadata.originalData.stats.reportImage3",
+      "oldUrl": "https://i.ibb.co/pjB3WqF9/1fd9e6d1b247.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "v3_activities",
+      "docId": "69b3bbbf986239b6475dea3b",
+      "fieldPath": "metadata.stats.reportImage1",
+      "oldUrl": "https://i.ibb.co/twzVwy5x/23b19384accf.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "v3_activities",
+      "docId": "69b3bbbf986239b6475dea3b",
+      "fieldPath": "metadata.stats.reportImage2",
+      "oldUrl": "https://i.ibb.co/zCGV7P7/cd41b7c8a20f.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "v3_activities",
+      "docId": "69b3bbbf986239b6475dea3b",
+      "fieldPath": "metadata.stats.reportImage3",
+      "oldUrl": "https://i.ibb.co/kVHYyQ4X/8f0f5ea2e07b.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "v3_activities",
+      "docId": "69b3bbbf986239b6475dea3b",
+      "fieldPath": "metadata.stats.reportImage6",
+      "oldUrl": "https://i.ibb.co/LdDCKyNp/cefdcbb4a20c.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "v3_activities",
+      "docId": "69b3bbbf986239b6475dea3b",
+      "fieldPath": "metadata.stats.reportImage7",
+      "oldUrl": "https://i.ibb.co/4gMbdwB2/048e546d238e.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "v3_activities",
+      "docId": "69b3bbbf986239b6475dea3b",
+      "fieldPath": "metadata.stats.reportImage9",
+      "oldUrl": "https://i.ibb.co/GQmSNwK6/33eab1735081.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "v3_activities",
+      "docId": "69b3bbbf986239b6475dea3b",
+      "fieldPath": "metadata.stats.reportImage10",
+      "oldUrl": "https://i.ibb.co/d4vgy6tm/0a43cd4292bb.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "v3_activities",
+      "docId": "69b3bbbf986239b6475dea3b",
+      "fieldPath": "metadata.stats.fanSelfiePortrait1",
+      "oldUrl": "https://i.ibb.co/xpvmf1P/1e6f6379bd4d.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "v3_activities",
+      "docId": "69b3bbbf986239b6475dea3b",
+      "fieldPath": "metadata.stats.fanSelfiePortrait3",
+      "oldUrl": "https://i.ibb.co/G40r8nNH/64771bcd15b4.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "v3_activities",
+      "docId": "69b3bbbf986239b6475dea3b",
+      "fieldPath": "metadata.stats.fanSelfiePortrait6",
+      "oldUrl": "https://i.ibb.co/SXwBtgHg/fe9197b30057.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "v3_activities",
+      "docId": "69b3bbbf986239b6475dea3b",
+      "fieldPath": "metadata.stats.fanSelfiePortrait7",
+      "oldUrl": "https://i.ibb.co/qYHkWgmz/94182d6cf1fb.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "v3_activities",
+      "docId": "69b3bbbf986239b6475dea3b",
+      "fieldPath": "metadata.stats.fanSelfieLandscape1",
+      "oldUrl": "https://i.ibb.co/q3PWhNLy/a7751d90c745.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "v3_activities",
+      "docId": "69b3bbbf986239b6475dea3b",
+      "fieldPath": "metadata.stats.fanSelfieSquare1",
+      "oldUrl": "https://i.ibb.co/DPNCgBQS/68c1f849b818.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "v3_activities",
+      "docId": "69b3bbbf986239b6475dea3b",
+      "fieldPath": "metadata.originalData.stats.reportImage1",
+      "oldUrl": "https://i.ibb.co/twzVwy5x/23b19384accf.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "v3_activities",
+      "docId": "69b3bbbf986239b6475dea3b",
+      "fieldPath": "metadata.originalData.stats.reportImage2",
+      "oldUrl": "https://i.ibb.co/zCGV7P7/cd41b7c8a20f.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "v3_activities",
+      "docId": "69b3bbbf986239b6475dea3b",
+      "fieldPath": "metadata.originalData.stats.reportImage3",
+      "oldUrl": "https://i.ibb.co/kVHYyQ4X/8f0f5ea2e07b.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "v3_activities",
+      "docId": "69b3bbbf986239b6475dea3b",
+      "fieldPath": "metadata.originalData.stats.reportImage6",
+      "oldUrl": "https://i.ibb.co/LdDCKyNp/cefdcbb4a20c.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "v3_activities",
+      "docId": "69b3bbbf986239b6475dea3b",
+      "fieldPath": "metadata.originalData.stats.reportImage7",
+      "oldUrl": "https://i.ibb.co/4gMbdwB2/048e546d238e.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "v3_activities",
+      "docId": "69b3bbbf986239b6475dea3b",
+      "fieldPath": "metadata.originalData.stats.reportImage9",
+      "oldUrl": "https://i.ibb.co/GQmSNwK6/33eab1735081.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "v3_activities",
+      "docId": "69b3bbbf986239b6475dea3b",
+      "fieldPath": "metadata.originalData.stats.reportImage10",
+      "oldUrl": "https://i.ibb.co/d4vgy6tm/0a43cd4292bb.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "v3_activities",
+      "docId": "69b3bbbf986239b6475dea3b",
+      "fieldPath": "metadata.originalData.stats.fanSelfiePortrait1",
+      "oldUrl": "https://i.ibb.co/xpvmf1P/1e6f6379bd4d.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "v3_activities",
+      "docId": "69b3bbbf986239b6475dea3b",
+      "fieldPath": "metadata.originalData.stats.fanSelfiePortrait3",
+      "oldUrl": "https://i.ibb.co/G40r8nNH/64771bcd15b4.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "v3_activities",
+      "docId": "69b3bbbf986239b6475dea3b",
+      "fieldPath": "metadata.originalData.stats.fanSelfiePortrait6",
+      "oldUrl": "https://i.ibb.co/SXwBtgHg/fe9197b30057.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "v3_activities",
+      "docId": "69b3bbbf986239b6475dea3b",
+      "fieldPath": "metadata.originalData.stats.fanSelfiePortrait7",
+      "oldUrl": "https://i.ibb.co/qYHkWgmz/94182d6cf1fb.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "v3_activities",
+      "docId": "69b3bbbf986239b6475dea3b",
+      "fieldPath": "metadata.originalData.stats.fanSelfieLandscape1",
+      "oldUrl": "https://i.ibb.co/q3PWhNLy/a7751d90c745.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "v3_activities",
+      "docId": "69b3bbbf986239b6475dea3b",
+      "fieldPath": "metadata.originalData.stats.fanSelfieSquare1",
+      "oldUrl": "https://i.ibb.co/DPNCgBQS/68c1f849b818.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "v3_activities",
+      "docId": "69b3bbbf986239b6475dea4b",
+      "fieldPath": "metadata.stats.reportImage1",
+      "oldUrl": "https://i.ibb.co/bRMDrRVj/52fbddc358c6.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "v3_activities",
+      "docId": "69b3bbbf986239b6475dea4b",
+      "fieldPath": "metadata.stats.reportImage3",
+      "oldUrl": "https://i.ibb.co/NdZQZbWT/0b2bceb6085f.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "v3_activities",
+      "docId": "69b3bbbf986239b6475dea4b",
+      "fieldPath": "metadata.stats.reportImage6",
+      "oldUrl": "https://i.ibb.co/Q30B2Dyd/5fb960b9dea6.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "v3_activities",
+      "docId": "69b3bbbf986239b6475dea4b",
+      "fieldPath": "metadata.stats.reportImage7",
+      "oldUrl": "https://i.ibb.co/k2zb12XC/06f14a278b4d.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "v3_activities",
+      "docId": "69b3bbbf986239b6475dea4b",
+      "fieldPath": "metadata.stats.reportImage8",
+      "oldUrl": "https://i.ibb.co/QFscKyhv/60caf17e7926.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "v3_activities",
+      "docId": "69b3bbbf986239b6475dea4b",
+      "fieldPath": "metadata.stats.reportImage9",
+      "oldUrl": "https://i.ibb.co/gbCDYHJY/4a4bd354ba80.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "v3_activities",
+      "docId": "69b3bbbf986239b6475dea4b",
+      "fieldPath": "metadata.stats.reportImage10",
+      "oldUrl": "https://i.ibb.co/RGJBGkv5/95cdb3176e65.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "v3_activities",
+      "docId": "69b3bbbf986239b6475dea4b",
+      "fieldPath": "metadata.originalData.stats.reportImage1",
+      "oldUrl": "https://i.ibb.co/bRMDrRVj/52fbddc358c6.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "v3_activities",
+      "docId": "69b3bbbf986239b6475dea4b",
+      "fieldPath": "metadata.originalData.stats.reportImage3",
+      "oldUrl": "https://i.ibb.co/NdZQZbWT/0b2bceb6085f.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "v3_activities",
+      "docId": "69b3bbbf986239b6475dea4b",
+      "fieldPath": "metadata.originalData.stats.reportImage6",
+      "oldUrl": "https://i.ibb.co/Q30B2Dyd/5fb960b9dea6.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "v3_activities",
+      "docId": "69b3bbbf986239b6475dea4b",
+      "fieldPath": "metadata.originalData.stats.reportImage7",
+      "oldUrl": "https://i.ibb.co/k2zb12XC/06f14a278b4d.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "v3_activities",
+      "docId": "69b3bbbf986239b6475dea4b",
+      "fieldPath": "metadata.originalData.stats.reportImage8",
+      "oldUrl": "https://i.ibb.co/QFscKyhv/60caf17e7926.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "v3_activities",
+      "docId": "69b3bbbf986239b6475dea4b",
+      "fieldPath": "metadata.originalData.stats.reportImage9",
+      "oldUrl": "https://i.ibb.co/gbCDYHJY/4a4bd354ba80.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "v3_activities",
+      "docId": "69b3bbbf986239b6475dea4b",
+      "fieldPath": "metadata.originalData.stats.reportImage10",
+      "oldUrl": "https://i.ibb.co/RGJBGkv5/95cdb3176e65.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "v3_activities",
+      "docId": "69b3bbc2986239b6475dead3",
+      "fieldPath": "metadata.stats.fanSelfiePortrait1",
+      "oldUrl": "https://i.ibb.co/zTW6NZtk/8d03b3cab88d.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "v3_activities",
+      "docId": "69b3bbc2986239b6475dead3",
+      "fieldPath": "metadata.stats.fanSelfiePortrait2",
+      "oldUrl": "https://i.ibb.co/BHKQQLRn/22890fc0e562.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "v3_activities",
+      "docId": "69b3bbc2986239b6475dead3",
+      "fieldPath": "metadata.stats.fanSelfieLandscape3",
+      "oldUrl": "https://i.ibb.co/5g4WXRft/74e03ec83b45.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "v3_activities",
+      "docId": "69b3bbc2986239b6475dead3",
+      "fieldPath": "metadata.stats.fanSelfiePortrait3",
+      "oldUrl": "https://i.ibb.co/NdR17p0N/c034716ef370.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "v3_activities",
+      "docId": "69b3bbc2986239b6475dead3",
+      "fieldPath": "metadata.stats.fanSelfieSquare1",
+      "oldUrl": "https://i.ibb.co/Y7tG4jx8/2b12a78b2189.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "v3_activities",
+      "docId": "69b3bbc2986239b6475dead3",
+      "fieldPath": "metadata.stats.reportImage1",
+      "oldUrl": "https://i.ibb.co/SDFcK3zP/1b2f42961ce2.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "v3_activities",
+      "docId": "69b3bbc2986239b6475dead3",
+      "fieldPath": "metadata.stats.reportImage2",
+      "oldUrl": "https://i.ibb.co/S7yN6Mhr/28dd6742d5ab.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "v3_activities",
+      "docId": "69b3bbc2986239b6475dead3",
+      "fieldPath": "metadata.stats.reportImage7",
+      "oldUrl": "https://i.ibb.co/Qv4L85X6/0f4eb03ad17b.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "v3_activities",
+      "docId": "69b3bbc2986239b6475dead3",
+      "fieldPath": "metadata.stats.fanSelfieSquare2",
+      "oldUrl": "https://i.ibb.co/dwhDhpvT/4016108b8ba4.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "v3_activities",
+      "docId": "69b3bbc2986239b6475dead3",
+      "fieldPath": "metadata.stats.reportImage12",
+      "oldUrl": "https://i.ibb.co/1J6MXx7t/e595f5e195f1.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "v3_activities",
+      "docId": "69b3bbc2986239b6475dead3",
+      "fieldPath": "metadata.stats.reportImage13",
+      "oldUrl": "https://i.ibb.co/Y44XkR8J/3c92c69e3506.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "v3_activities",
+      "docId": "69b3bbc2986239b6475dead3",
+      "fieldPath": "metadata.stats.reportImage14",
+      "oldUrl": "https://i.ibb.co/M5n7Q5cL/b8f6fe6f9193.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "v3_activities",
+      "docId": "69b3bbc2986239b6475dead3",
+      "fieldPath": "metadata.stats.reportImage17",
+      "oldUrl": "https://i.ibb.co/DDVRG8tt/0a14a5e4494f.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "v3_activities",
+      "docId": "69b3bbc2986239b6475dead3",
+      "fieldPath": "metadata.stats.reportImage18",
+      "oldUrl": "https://i.ibb.co/jPZCwtJ1/18a5aef5ad6e.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "v3_activities",
+      "docId": "69b3bbc2986239b6475dead3",
+      "fieldPath": "metadata.stats.reportImage19",
+      "oldUrl": "https://i.ibb.co/Wpxgvk71/76f8a66c182b.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "v3_activities",
+      "docId": "69b3bbc2986239b6475dead3",
+      "fieldPath": "metadata.originalData.stats.fanSelfiePortrait1",
+      "oldUrl": "https://i.ibb.co/zTW6NZtk/8d03b3cab88d.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "v3_activities",
+      "docId": "69b3bbc2986239b6475dead3",
+      "fieldPath": "metadata.originalData.stats.fanSelfiePortrait2",
+      "oldUrl": "https://i.ibb.co/BHKQQLRn/22890fc0e562.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "v3_activities",
+      "docId": "69b3bbc2986239b6475dead3",
+      "fieldPath": "metadata.originalData.stats.fanSelfieLandscape3",
+      "oldUrl": "https://i.ibb.co/5g4WXRft/74e03ec83b45.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "v3_activities",
+      "docId": "69b3bbc2986239b6475dead3",
+      "fieldPath": "metadata.originalData.stats.fanSelfiePortrait3",
+      "oldUrl": "https://i.ibb.co/NdR17p0N/c034716ef370.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "v3_activities",
+      "docId": "69b3bbc2986239b6475dead3",
+      "fieldPath": "metadata.originalData.stats.fanSelfieSquare1",
+      "oldUrl": "https://i.ibb.co/Y7tG4jx8/2b12a78b2189.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "v3_activities",
+      "docId": "69b3bbc2986239b6475dead3",
+      "fieldPath": "metadata.originalData.stats.reportImage1",
+      "oldUrl": "https://i.ibb.co/SDFcK3zP/1b2f42961ce2.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "v3_activities",
+      "docId": "69b3bbc2986239b6475dead3",
+      "fieldPath": "metadata.originalData.stats.reportImage2",
+      "oldUrl": "https://i.ibb.co/S7yN6Mhr/28dd6742d5ab.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "v3_activities",
+      "docId": "69b3bbc2986239b6475dead3",
+      "fieldPath": "metadata.originalData.stats.reportImage7",
+      "oldUrl": "https://i.ibb.co/Qv4L85X6/0f4eb03ad17b.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "v3_activities",
+      "docId": "69b3bbc2986239b6475dead3",
+      "fieldPath": "metadata.originalData.stats.fanSelfieSquare2",
+      "oldUrl": "https://i.ibb.co/dwhDhpvT/4016108b8ba4.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "v3_activities",
+      "docId": "69b3bbc2986239b6475dead3",
+      "fieldPath": "metadata.originalData.stats.reportImage12",
+      "oldUrl": "https://i.ibb.co/1J6MXx7t/e595f5e195f1.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "v3_activities",
+      "docId": "69b3bbc2986239b6475dead3",
+      "fieldPath": "metadata.originalData.stats.reportImage13",
+      "oldUrl": "https://i.ibb.co/Y44XkR8J/3c92c69e3506.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "v3_activities",
+      "docId": "69b3bbc2986239b6475dead3",
+      "fieldPath": "metadata.originalData.stats.reportImage14",
+      "oldUrl": "https://i.ibb.co/M5n7Q5cL/b8f6fe6f9193.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "v3_activities",
+      "docId": "69b3bbc2986239b6475dead3",
+      "fieldPath": "metadata.originalData.stats.reportImage17",
+      "oldUrl": "https://i.ibb.co/DDVRG8tt/0a14a5e4494f.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "v3_activities",
+      "docId": "69b3bbc2986239b6475dead3",
+      "fieldPath": "metadata.originalData.stats.reportImage18",
+      "oldUrl": "https://i.ibb.co/jPZCwtJ1/18a5aef5ad6e.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "v3_activities",
+      "docId": "69b3bbc2986239b6475dead3",
+      "fieldPath": "metadata.originalData.stats.reportImage19",
+      "oldUrl": "https://i.ibb.co/Wpxgvk71/76f8a66c182b.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "v3_activities",
+      "docId": "69b3bbc3986239b6475deb08",
+      "fieldPath": "metadata.stats.reportImage1",
+      "oldUrl": "https://i.ibb.co/B29SXGwF/ae117f4fcef1.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "v3_activities",
+      "docId": "69b3bbc3986239b6475deb08",
+      "fieldPath": "metadata.stats.reportImage2",
+      "oldUrl": "https://i.ibb.co/0VvQZMBD/d8fee2c72848.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "v3_activities",
+      "docId": "69b3bbc3986239b6475deb08",
+      "fieldPath": "metadata.stats.reportImage5",
+      "oldUrl": "https://i.ibb.co/twPh37Fq/969fae4054cc.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "v3_activities",
+      "docId": "69b3bbc3986239b6475deb08",
+      "fieldPath": "metadata.originalData.stats.reportImage1",
+      "oldUrl": "https://i.ibb.co/B29SXGwF/ae117f4fcef1.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "v3_activities",
+      "docId": "69b3bbc3986239b6475deb08",
+      "fieldPath": "metadata.originalData.stats.reportImage2",
+      "oldUrl": "https://i.ibb.co/0VvQZMBD/d8fee2c72848.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "v3_activities",
+      "docId": "69b3bbc3986239b6475deb08",
+      "fieldPath": "metadata.originalData.stats.reportImage5",
+      "oldUrl": "https://i.ibb.co/twPh37Fq/969fae4054cc.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "v3_activities",
+      "docId": "69b3bbc4986239b6475deb1a",
+      "fieldPath": "metadata.stats.reportImage2",
+      "oldUrl": "https://i.ibb.co/4Rx2tRSJ/7eee74aa864f.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "v3_activities",
+      "docId": "69b3bbc4986239b6475deb1a",
+      "fieldPath": "metadata.originalData.stats.reportImage2",
+      "oldUrl": "https://i.ibb.co/4Rx2tRSJ/7eee74aa864f.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "v3_activities",
+      "docId": "69b3bbc4986239b6475deb20",
+      "fieldPath": "metadata.stats.reportImage1",
+      "oldUrl": "https://i.ibb.co/tpfb2rZm/d99b973ec0c7.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "v3_activities",
+      "docId": "69b3bbc4986239b6475deb20",
+      "fieldPath": "metadata.originalData.stats.reportImage1",
+      "oldUrl": "https://i.ibb.co/tpfb2rZm/d99b973ec0c7.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "v3_activities",
+      "docId": "69b3bbc4986239b6475deb23",
+      "fieldPath": "metadata.stats.reportImage1",
+      "oldUrl": "https://i.ibb.co/pjgt6zc3/b5d6750e79f2.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "v3_activities",
+      "docId": "69b3bbc4986239b6475deb23",
+      "fieldPath": "metadata.originalData.stats.reportImage1",
+      "oldUrl": "https://i.ibb.co/pjgt6zc3/b5d6750e79f2.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "v3_activities",
+      "docId": "69b3bbc4986239b6475deb26",
+      "fieldPath": "metadata.stats.reportImage1",
+      "oldUrl": "https://i.ibb.co/gbG8rqpB/11670ed5e206.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "v3_activities",
+      "docId": "69b3bbc4986239b6475deb26",
+      "fieldPath": "metadata.stats.reportImage3",
+      "oldUrl": "https://i.ibb.co/4nXnzg4G/ef3dc323805d.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "v3_activities",
+      "docId": "69b3bbc4986239b6475deb26",
+      "fieldPath": "metadata.stats.reportImage4",
+      "oldUrl": "https://i.ibb.co/0pDJpm3G/e0b751cf98a0.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "v3_activities",
+      "docId": "69b3bbc4986239b6475deb26",
+      "fieldPath": "metadata.stats.reportImage5",
+      "oldUrl": "https://i.ibb.co/rKj8K7qN/706bda75e3e0.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "v3_activities",
+      "docId": "69b3bbc4986239b6475deb26",
+      "fieldPath": "metadata.originalData.stats.reportImage1",
+      "oldUrl": "https://i.ibb.co/gbG8rqpB/11670ed5e206.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "v3_activities",
+      "docId": "69b3bbc4986239b6475deb26",
+      "fieldPath": "metadata.originalData.stats.reportImage3",
+      "oldUrl": "https://i.ibb.co/4nXnzg4G/ef3dc323805d.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "v3_activities",
+      "docId": "69b3bbc4986239b6475deb26",
+      "fieldPath": "metadata.originalData.stats.reportImage4",
+      "oldUrl": "https://i.ibb.co/0pDJpm3G/e0b751cf98a0.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "v3_activities",
+      "docId": "69b3bbc4986239b6475deb26",
+      "fieldPath": "metadata.originalData.stats.reportImage5",
+      "oldUrl": "https://i.ibb.co/rKj8K7qN/706bda75e3e0.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "v3_activities",
+      "docId": "69b3bbc4986239b6475deb29",
+      "fieldPath": "metadata.stats.reportImage1",
+      "oldUrl": "https://i.ibb.co/jZvmQq2d/8db42b33ca12.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "v3_activities",
+      "docId": "69b3bbc4986239b6475deb29",
+      "fieldPath": "metadata.stats.reportImage2",
+      "oldUrl": "https://i.ibb.co/qYx4xB9j/e827c031d3be.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "v3_activities",
+      "docId": "69b3bbc4986239b6475deb29",
+      "fieldPath": "metadata.stats.reportImage3",
+      "oldUrl": "https://i.ibb.co/k6w4XG7S/4c67a82ca1ec.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "v3_activities",
+      "docId": "69b3bbc4986239b6475deb29",
+      "fieldPath": "metadata.originalData.stats.reportImage1",
+      "oldUrl": "https://i.ibb.co/jZvmQq2d/8db42b33ca12.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "v3_activities",
+      "docId": "69b3bbc4986239b6475deb29",
+      "fieldPath": "metadata.originalData.stats.reportImage2",
+      "oldUrl": "https://i.ibb.co/qYx4xB9j/e827c031d3be.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "v3_activities",
+      "docId": "69b3bbc4986239b6475deb29",
+      "fieldPath": "metadata.originalData.stats.reportImage3",
+      "oldUrl": "https://i.ibb.co/k6w4XG7S/4c67a82ca1ec.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "v3_activities",
+      "docId": "69b3bbc4986239b6475deb2f",
+      "fieldPath": "metadata.stats.reportImage1",
+      "oldUrl": "https://i.ibb.co/BKL6Bn4J/05acfa7314c0.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "v3_activities",
+      "docId": "69b3bbc4986239b6475deb2f",
+      "fieldPath": "metadata.stats.reportImage2",
+      "oldUrl": "https://i.ibb.co/84jVrGbW/3bd0eaa7df58.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "v3_activities",
+      "docId": "69b3bbc4986239b6475deb2f",
+      "fieldPath": "metadata.stats.reportImage3",
+      "oldUrl": "https://i.ibb.co/jjqmDL5/62c2a8103e70.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "v3_activities",
+      "docId": "69b3bbc4986239b6475deb2f",
+      "fieldPath": "metadata.stats.reportImage4",
+      "oldUrl": "https://i.ibb.co/gLwbCBHh/d7e70ba89373.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "v3_activities",
+      "docId": "69b3bbc4986239b6475deb2f",
+      "fieldPath": "metadata.stats.reportImage7",
+      "oldUrl": "https://i.ibb.co/CpjSfzb5/b1e7f3286a28.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "v3_activities",
+      "docId": "69b3bbc4986239b6475deb2f",
+      "fieldPath": "metadata.originalData.stats.reportImage1",
+      "oldUrl": "https://i.ibb.co/BKL6Bn4J/05acfa7314c0.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "v3_activities",
+      "docId": "69b3bbc4986239b6475deb2f",
+      "fieldPath": "metadata.originalData.stats.reportImage2",
+      "oldUrl": "https://i.ibb.co/84jVrGbW/3bd0eaa7df58.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "v3_activities",
+      "docId": "69b3bbc4986239b6475deb2f",
+      "fieldPath": "metadata.originalData.stats.reportImage3",
+      "oldUrl": "https://i.ibb.co/jjqmDL5/62c2a8103e70.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "v3_activities",
+      "docId": "69b3bbc4986239b6475deb2f",
+      "fieldPath": "metadata.originalData.stats.reportImage4",
+      "oldUrl": "https://i.ibb.co/gLwbCBHh/d7e70ba89373.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "v3_activities",
+      "docId": "69b3bbc4986239b6475deb2f",
+      "fieldPath": "metadata.originalData.stats.reportImage7",
+      "oldUrl": "https://i.ibb.co/CpjSfzb5/b1e7f3286a28.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "v3_activities",
+      "docId": "69b3bbc4986239b6475deb32",
+      "fieldPath": "metadata.stats.reportImage2",
+      "oldUrl": "https://i.ibb.co/ZzbvSxgy/1e30f69d4e4c.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "v3_activities",
+      "docId": "69b3bbc4986239b6475deb32",
+      "fieldPath": "metadata.stats.reportImage7",
+      "oldUrl": "https://i.ibb.co/N6Wd93R2/8825af63c195.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "v3_activities",
+      "docId": "69b3bbc4986239b6475deb32",
+      "fieldPath": "metadata.originalData.stats.reportImage2",
+      "oldUrl": "https://i.ibb.co/ZzbvSxgy/1e30f69d4e4c.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "v3_activities",
+      "docId": "69b3bbc4986239b6475deb32",
+      "fieldPath": "metadata.originalData.stats.reportImage7",
+      "oldUrl": "https://i.ibb.co/N6Wd93R2/8825af63c195.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "v3_activities",
+      "docId": "69b3bbc7986239b6475debdd",
+      "fieldPath": "metadata.stats.reportImage1",
+      "oldUrl": "https://i.ibb.co/21t4bZqB/77dde767d3bd.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "v3_activities",
+      "docId": "69b3bbc7986239b6475debdd",
+      "fieldPath": "metadata.stats.reportImage9",
+      "oldUrl": "https://i.ibb.co/zV8dpRqT/e6f51d6a8a58.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "v3_activities",
+      "docId": "69b3bbc7986239b6475debdd",
+      "fieldPath": "metadata.originalData.stats.reportImage1",
+      "oldUrl": "https://i.ibb.co/21t4bZqB/77dde767d3bd.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "v3_activities",
+      "docId": "69b3bbc7986239b6475debdd",
+      "fieldPath": "metadata.originalData.stats.reportImage9",
+      "oldUrl": "https://i.ibb.co/zV8dpRqT/e6f51d6a8a58.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "v3_activities",
+      "docId": "69b3bbc8986239b6475debe6",
+      "fieldPath": "metadata.stats.reportImage1",
+      "oldUrl": "https://i.ibb.co/Hmhw5xh/643ae5223fcd.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "v3_activities",
+      "docId": "69b3bbc8986239b6475debe6",
+      "fieldPath": "metadata.stats.reportImage2",
+      "oldUrl": "https://i.ibb.co/PzvNFrTq/be8d156ee5a5.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "v3_activities",
+      "docId": "69b3bbc8986239b6475debe6",
+      "fieldPath": "metadata.stats.reportImage3",
+      "oldUrl": "https://i.ibb.co/PGTXDvNC/865f5fd18a2c.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "v3_activities",
+      "docId": "69b3bbc8986239b6475debe6",
+      "fieldPath": "metadata.originalData.stats.reportImage1",
+      "oldUrl": "https://i.ibb.co/Hmhw5xh/643ae5223fcd.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "v3_activities",
+      "docId": "69b3bbc8986239b6475debe6",
+      "fieldPath": "metadata.originalData.stats.reportImage2",
+      "oldUrl": "https://i.ibb.co/PzvNFrTq/be8d156ee5a5.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "v3_activities",
+      "docId": "69b3bbc8986239b6475debe6",
+      "fieldPath": "metadata.originalData.stats.reportImage3",
+      "oldUrl": "https://i.ibb.co/PGTXDvNC/865f5fd18a2c.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "v3_activities",
+      "docId": "69b3bbc8986239b6475debe9",
+      "fieldPath": "metadata.stats.reportImage1",
+      "oldUrl": "https://i.ibb.co/hJCvMJXQ/16211e3fd68e.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "v3_activities",
+      "docId": "69b3bbc8986239b6475debe9",
+      "fieldPath": "metadata.stats.reportImage2",
+      "oldUrl": "https://i.ibb.co/xv1qRZ6/885b9a03e076.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "v3_activities",
+      "docId": "69b3bbc8986239b6475debe9",
+      "fieldPath": "metadata.stats.reportImage5",
+      "oldUrl": "https://i.ibb.co/fYR6S8Vm/412ed9d79a68.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "v3_activities",
+      "docId": "69b3bbc8986239b6475debe9",
+      "fieldPath": "metadata.stats.reportImage8",
+      "oldUrl": "https://i.ibb.co/N24674zC/ea97b233dea6.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "v3_activities",
+      "docId": "69b3bbc8986239b6475debe9",
+      "fieldPath": "metadata.originalData.stats.reportImage1",
+      "oldUrl": "https://i.ibb.co/hJCvMJXQ/16211e3fd68e.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "v3_activities",
+      "docId": "69b3bbc8986239b6475debe9",
+      "fieldPath": "metadata.originalData.stats.reportImage2",
+      "oldUrl": "https://i.ibb.co/xv1qRZ6/885b9a03e076.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "v3_activities",
+      "docId": "69b3bbc8986239b6475debe9",
+      "fieldPath": "metadata.originalData.stats.reportImage5",
+      "oldUrl": "https://i.ibb.co/fYR6S8Vm/412ed9d79a68.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "v3_activities",
+      "docId": "69b3bbc8986239b6475debe9",
+      "fieldPath": "metadata.originalData.stats.reportImage8",
+      "oldUrl": "https://i.ibb.co/N24674zC/ea97b233dea6.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "v3_activities",
+      "docId": "69b3bbc8986239b6475debec",
+      "fieldPath": "metadata.stats.reportImage2",
+      "oldUrl": "https://i.ibb.co/vCRSscTj/fb6aff569448.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "v3_activities",
+      "docId": "69b3bbc8986239b6475debec",
+      "fieldPath": "metadata.originalData.stats.reportImage2",
+      "oldUrl": "https://i.ibb.co/vCRSscTj/fb6aff569448.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "v3_activities",
+      "docId": "69b3bbc8986239b6475debef",
+      "fieldPath": "metadata.stats.reportImage1",
+      "oldUrl": "https://i.ibb.co/5xJtKqpW/f0506e94229e.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "v3_activities",
+      "docId": "69b3bbc8986239b6475debef",
+      "fieldPath": "metadata.stats.reportImage3",
+      "oldUrl": "https://i.ibb.co/whsF38Qt/c86de3dd7bc5.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "v3_activities",
+      "docId": "69b3bbc8986239b6475debef",
+      "fieldPath": "metadata.stats.reportImage4",
+      "oldUrl": "https://i.ibb.co/WWBPrxqy/c3efabd93388.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "v3_activities",
+      "docId": "69b3bbc8986239b6475debef",
+      "fieldPath": "metadata.originalData.stats.reportImage1",
+      "oldUrl": "https://i.ibb.co/5xJtKqpW/f0506e94229e.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "v3_activities",
+      "docId": "69b3bbc8986239b6475debef",
+      "fieldPath": "metadata.originalData.stats.reportImage3",
+      "oldUrl": "https://i.ibb.co/whsF38Qt/c86de3dd7bc5.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "v3_activities",
+      "docId": "69b3bbc8986239b6475debef",
+      "fieldPath": "metadata.originalData.stats.reportImage4",
+      "oldUrl": "https://i.ibb.co/WWBPrxqy/c3efabd93388.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "v3_activities",
+      "docId": "69b3bbc8986239b6475debf2",
+      "fieldPath": "metadata.stats.reportImage1",
+      "oldUrl": "https://i.ibb.co/T9mPF31/120f054c612e.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "v3_activities",
+      "docId": "69b3bbc8986239b6475debf2",
+      "fieldPath": "metadata.stats.reportImage4",
+      "oldUrl": "https://i.ibb.co/pvGBBGh9/9969719a255a.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "v3_activities",
+      "docId": "69b3bbc8986239b6475debf2",
+      "fieldPath": "metadata.originalData.stats.reportImage1",
+      "oldUrl": "https://i.ibb.co/T9mPF31/120f054c612e.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "v3_activities",
+      "docId": "69b3bbc8986239b6475debf2",
+      "fieldPath": "metadata.originalData.stats.reportImage4",
+      "oldUrl": "https://i.ibb.co/pvGBBGh9/9969719a255a.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "v3_activities",
+      "docId": "69b3bbc8986239b6475debf8",
+      "fieldPath": "metadata.stats.reportImage1",
+      "oldUrl": "https://i.ibb.co/JjMq41q3/40ce3041c028.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "v3_activities",
+      "docId": "69b3bbc8986239b6475debf8",
+      "fieldPath": "metadata.stats.reportImage2",
+      "oldUrl": "https://i.ibb.co/PvCsVCgz/afb1995e0afa.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "v3_activities",
+      "docId": "69b3bbc8986239b6475debf8",
+      "fieldPath": "metadata.stats.reportImage4",
+      "oldUrl": "https://i.ibb.co/nNTxb4sj/139396a0afde.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "v3_activities",
+      "docId": "69b3bbc8986239b6475debf8",
+      "fieldPath": "metadata.originalData.stats.reportImage1",
+      "oldUrl": "https://i.ibb.co/JjMq41q3/40ce3041c028.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "v3_activities",
+      "docId": "69b3bbc8986239b6475debf8",
+      "fieldPath": "metadata.originalData.stats.reportImage2",
+      "oldUrl": "https://i.ibb.co/PvCsVCgz/afb1995e0afa.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "v3_activities",
+      "docId": "69b3bbc8986239b6475debf8",
+      "fieldPath": "metadata.originalData.stats.reportImage4",
+      "oldUrl": "https://i.ibb.co/nNTxb4sj/139396a0afde.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "v3_activities",
+      "docId": "69b3bbc8986239b6475debfe",
+      "fieldPath": "metadata.stats.reportImage1",
+      "oldUrl": "https://i.ibb.co/PZ34fGrt/778f2d980508.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "v3_activities",
+      "docId": "69b3bbc8986239b6475debfe",
+      "fieldPath": "metadata.stats.reportImage4",
+      "oldUrl": "https://i.ibb.co/T3XR7Q7/56c4d7d4c2e3.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "v3_activities",
+      "docId": "69b3bbc8986239b6475debfe",
+      "fieldPath": "metadata.originalData.stats.reportImage1",
+      "oldUrl": "https://i.ibb.co/PZ34fGrt/778f2d980508.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "v3_activities",
+      "docId": "69b3bbc8986239b6475debfe",
+      "fieldPath": "metadata.originalData.stats.reportImage4",
+      "oldUrl": "https://i.ibb.co/T3XR7Q7/56c4d7d4c2e3.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "v3_activities",
+      "docId": "69b3bbc8986239b6475dec04",
+      "fieldPath": "metadata.stats.reportImage3",
+      "oldUrl": "https://i.ibb.co/xS2mTSgG/ab7ff2286243.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "v3_activities",
+      "docId": "69b3bbc8986239b6475dec04",
+      "fieldPath": "metadata.originalData.stats.reportImage3",
+      "oldUrl": "https://i.ibb.co/xS2mTSgG/ab7ff2286243.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "v3_activities",
+      "docId": "69b3bbc8986239b6475dec16",
+      "fieldPath": "metadata.stats.reportImage2",
+      "oldUrl": "https://i.ibb.co/Y714qKxN/abc8c6463945.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "v3_activities",
+      "docId": "69b3bbc8986239b6475dec16",
+      "fieldPath": "metadata.stats.reportImage3",
+      "oldUrl": "https://i.ibb.co/FL3vsV5k/dff62640bc98.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "v3_activities",
+      "docId": "69b3bbc8986239b6475dec16",
+      "fieldPath": "metadata.originalData.stats.reportImage2",
+      "oldUrl": "https://i.ibb.co/Y714qKxN/abc8c6463945.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "v3_activities",
+      "docId": "69b3bbc8986239b6475dec16",
+      "fieldPath": "metadata.originalData.stats.reportImage3",
+      "oldUrl": "https://i.ibb.co/FL3vsV5k/dff62640bc98.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "v3_activities",
+      "docId": "69b3bbc9986239b6475dec1c",
+      "fieldPath": "metadata.stats.reportImage1",
+      "oldUrl": "https://i.ibb.co/5t1176b/a0e791dd11f8.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "v3_activities",
+      "docId": "69b3bbc9986239b6475dec1c",
+      "fieldPath": "metadata.stats.reportImage2",
+      "oldUrl": "https://i.ibb.co/CKFH3WXn/351a10548153.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "v3_activities",
+      "docId": "69b3bbc9986239b6475dec1c",
+      "fieldPath": "metadata.stats.reportImage3",
+      "oldUrl": "https://i.ibb.co/1YSNFctk/2b449d164ca4.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "v3_activities",
+      "docId": "69b3bbc9986239b6475dec1c",
+      "fieldPath": "metadata.stats.reportImage4",
+      "oldUrl": "https://i.ibb.co/wNw97xYJ/9fb32faeb147.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "v3_activities",
+      "docId": "69b3bbc9986239b6475dec1c",
+      "fieldPath": "metadata.stats.reportImage5",
+      "oldUrl": "https://i.ibb.co/1GFsfGSX/2a4a2eeb6c99.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "v3_activities",
+      "docId": "69b3bbc9986239b6475dec1c",
+      "fieldPath": "metadata.originalData.stats.reportImage1",
+      "oldUrl": "https://i.ibb.co/5t1176b/a0e791dd11f8.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "v3_activities",
+      "docId": "69b3bbc9986239b6475dec1c",
+      "fieldPath": "metadata.originalData.stats.reportImage2",
+      "oldUrl": "https://i.ibb.co/CKFH3WXn/351a10548153.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "v3_activities",
+      "docId": "69b3bbc9986239b6475dec1c",
+      "fieldPath": "metadata.originalData.stats.reportImage3",
+      "oldUrl": "https://i.ibb.co/1YSNFctk/2b449d164ca4.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "v3_activities",
+      "docId": "69b3bbc9986239b6475dec1c",
+      "fieldPath": "metadata.originalData.stats.reportImage4",
+      "oldUrl": "https://i.ibb.co/wNw97xYJ/9fb32faeb147.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "v3_activities",
+      "docId": "69b3bbc9986239b6475dec1c",
+      "fieldPath": "metadata.originalData.stats.reportImage5",
+      "oldUrl": "https://i.ibb.co/1GFsfGSX/2a4a2eeb6c99.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "v3_activities",
+      "docId": "69b3bbc9986239b6475dec2b",
+      "fieldPath": "metadata.stats.reportImage1",
+      "oldUrl": "https://i.ibb.co/FkQfhCy1/837caf218fd1.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "v3_activities",
+      "docId": "69b3bbc9986239b6475dec2b",
+      "fieldPath": "metadata.stats.reportImage2",
+      "oldUrl": "https://i.ibb.co/GQsjTj5L/d46e73794266.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "v3_activities",
+      "docId": "69b3bbc9986239b6475dec2b",
+      "fieldPath": "metadata.originalData.stats.reportImage1",
+      "oldUrl": "https://i.ibb.co/FkQfhCy1/837caf218fd1.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "v3_activities",
+      "docId": "69b3bbc9986239b6475dec2b",
+      "fieldPath": "metadata.originalData.stats.reportImage2",
+      "oldUrl": "https://i.ibb.co/GQsjTj5L/d46e73794266.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "v3_activities",
+      "docId": "69b3bbc9986239b6475dec2e",
+      "fieldPath": "metadata.stats.reportImage1",
+      "oldUrl": "https://i.ibb.co/Jw7XHB5y/9977ebe3bcf6.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "v3_activities",
+      "docId": "69b3bbc9986239b6475dec2e",
+      "fieldPath": "metadata.stats.reportImage3",
+      "oldUrl": "https://i.ibb.co/JRMRC4pc/0d0782ccdd7d.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "v3_activities",
+      "docId": "69b3bbc9986239b6475dec2e",
+      "fieldPath": "metadata.stats.reportImage4",
+      "oldUrl": "https://i.ibb.co/9HvNvrtr/77e24872e8ed.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "v3_activities",
+      "docId": "69b3bbc9986239b6475dec2e",
+      "fieldPath": "metadata.originalData.stats.reportImage1",
+      "oldUrl": "https://i.ibb.co/Jw7XHB5y/9977ebe3bcf6.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "v3_activities",
+      "docId": "69b3bbc9986239b6475dec2e",
+      "fieldPath": "metadata.originalData.stats.reportImage3",
+      "oldUrl": "https://i.ibb.co/JRMRC4pc/0d0782ccdd7d.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "v3_activities",
+      "docId": "69b3bbc9986239b6475dec2e",
+      "fieldPath": "metadata.originalData.stats.reportImage4",
+      "oldUrl": "https://i.ibb.co/9HvNvrtr/77e24872e8ed.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "v3_activities",
+      "docId": "69b3bbc9986239b6475dec31",
+      "fieldPath": "metadata.stats.reportImage3",
+      "oldUrl": "https://i.ibb.co/YBNsN9Tz/cc8f15450ce2.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "v3_activities",
+      "docId": "69b3bbc9986239b6475dec31",
+      "fieldPath": "metadata.stats.reportImage4",
+      "oldUrl": "https://i.ibb.co/6Jr7GYnQ/19869a892c96.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "v3_activities",
+      "docId": "69b3bbc9986239b6475dec31",
+      "fieldPath": "metadata.stats.reportImage5",
+      "oldUrl": "https://i.ibb.co/7xq8ftPg/fe9a8e282b8e.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "v3_activities",
+      "docId": "69b3bbc9986239b6475dec31",
+      "fieldPath": "metadata.stats.reportImage6",
+      "oldUrl": "https://i.ibb.co/WWCGV2rd/9b0485477ccd.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "v3_activities",
+      "docId": "69b3bbc9986239b6475dec31",
+      "fieldPath": "metadata.originalData.stats.reportImage3",
+      "oldUrl": "https://i.ibb.co/YBNsN9Tz/cc8f15450ce2.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "v3_activities",
+      "docId": "69b3bbc9986239b6475dec31",
+      "fieldPath": "metadata.originalData.stats.reportImage4",
+      "oldUrl": "https://i.ibb.co/6Jr7GYnQ/19869a892c96.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "v3_activities",
+      "docId": "69b3bbc9986239b6475dec31",
+      "fieldPath": "metadata.originalData.stats.reportImage5",
+      "oldUrl": "https://i.ibb.co/7xq8ftPg/fe9a8e282b8e.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "v3_activities",
+      "docId": "69b3bbc9986239b6475dec31",
+      "fieldPath": "metadata.originalData.stats.reportImage6",
+      "oldUrl": "https://i.ibb.co/WWCGV2rd/9b0485477ccd.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "v3_activities",
+      "docId": "69b3bbc9986239b6475dec52",
+      "fieldPath": "metadata.stats.reportImage1",
+      "oldUrl": "https://i.ibb.co/zh4ZjnL8/4337787994d8.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "v3_activities",
+      "docId": "69b3bbc9986239b6475dec52",
+      "fieldPath": "metadata.stats.reportImage2",
+      "oldUrl": "https://i.ibb.co/zWcf4rTc/299e613205cd.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "v3_activities",
+      "docId": "69b3bbc9986239b6475dec52",
+      "fieldPath": "metadata.stats.reportImage3",
+      "oldUrl": "https://i.ibb.co/Q36tvLW1/a542675ad374.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "v3_activities",
+      "docId": "69b3bbc9986239b6475dec52",
+      "fieldPath": "metadata.stats.reportImage4",
+      "oldUrl": "https://i.ibb.co/63vrRcY/c1dd730299d4.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "v3_activities",
+      "docId": "69b3bbc9986239b6475dec52",
+      "fieldPath": "metadata.originalData.stats.reportImage1",
+      "oldUrl": "https://i.ibb.co/zh4ZjnL8/4337787994d8.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "v3_activities",
+      "docId": "69b3bbc9986239b6475dec52",
+      "fieldPath": "metadata.originalData.stats.reportImage2",
+      "oldUrl": "https://i.ibb.co/zWcf4rTc/299e613205cd.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "v3_activities",
+      "docId": "69b3bbc9986239b6475dec52",
+      "fieldPath": "metadata.originalData.stats.reportImage3",
+      "oldUrl": "https://i.ibb.co/Q36tvLW1/a542675ad374.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "v3_activities",
+      "docId": "69b3bbc9986239b6475dec52",
+      "fieldPath": "metadata.originalData.stats.reportImage4",
+      "oldUrl": "https://i.ibb.co/63vrRcY/c1dd730299d4.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "report_variants",
+      "docId": "6a105467e9240c6395b17698",
+      "fieldPath": "statsOverrides.reportImage6",
+      "oldUrl": "https://i.ibb.co/Wv3pcbhZ/3fff159e2d09.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "report_variants",
+      "docId": "6a3cf189f628da17f4f88fda",
+      "fieldPath": "statsOverrides.reportImage1",
+      "oldUrl": "https://i.ibb.co/HfGwfFrV/cf7956ed7e95.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "report_variants",
+      "docId": "6a3cf189f628da17f4f88fda",
+      "fieldPath": "statsOverrides.reportImage3",
+      "oldUrl": "https://i.ibb.co/fdBPHswV/8c9d7a5208bc.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "report_variants",
+      "docId": "6a3cf189f628da17f4f88fda",
+      "fieldPath": "statsOverrides.reportImage4",
+      "oldUrl": "https://i.ibb.co/F4FyFznx/9647a5431e20.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "report_variants",
+      "docId": "6a3cf189f628da17f4f88fda",
+      "fieldPath": "statsOverrides.reportImage5",
+      "oldUrl": "https://i.ibb.co/8gchDbDv/cde0c929ef9f.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "report_variants",
+      "docId": "6a3cf189f628da17f4f88fda",
+      "fieldPath": "statsOverrides.reportImage6",
+      "oldUrl": "https://i.ibb.co/MDnrwSM9/86a45668c6d3.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "report_variants",
+      "docId": "6a3cf189f628da17f4f88fda",
+      "fieldPath": "statsOverrides.reportImage8",
+      "oldUrl": "https://i.ibb.co/hRc9nHW4/480fa5cbbbbb.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "69b32309914476820959ad27",
+      "fieldPath": "metadata.originalData.sportsDb.badge",
+      "oldUrl": "https://i.ibb.co/bT9zcLg/medium-3.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "69b32309914476820959ad31",
+      "fieldPath": "metadata.originalData.logoUrl",
+      "oldUrl": "https://i.ibb.co/pjbDMtxs/partner-otp-bank-pick-szeged.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "69b32309914476820959ad36",
+      "fieldPath": "metadata.originalData.sportsDb.badge",
+      "oldUrl": "https://i.ibb.co/C52n6GZb/medium-2.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "69b3230a914476820959ad4f",
+      "fieldPath": "metadata.originalData.sportsDb.badge",
+      "oldUrl": "https://i.ibb.co/Z1kwvSBn/medium.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "69b3230d914476820959adb8",
+      "fieldPath": "metadata.originalData.sportsDb.badge",
+      "oldUrl": "https://i.ibb.co/MyN3WqTS/03caseweb-ea-after.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "69b3230d914476820959adb8",
+      "fieldPath": "metadata.originalData.stats.reportImage2",
+      "oldUrl": "https://i.ibb.co/fV1Hpd51/136b559f857c.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "69b3230d914476820959adb8",
+      "fieldPath": "metadata.originalData.stats.reportImage4",
+      "oldUrl": "https://i.ibb.co/PJDf1GT/3ac9f385cac5.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "69b3230e914476820959ade5",
+      "fieldPath": "metadata.originalData.stats.reportImage2",
+      "oldUrl": "https://i.ibb.co/ynn6SPWD/aa7df58da76c.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "69b3230f914476820959adef",
+      "fieldPath": "metadata.originalData.sportsDb.badge",
+      "oldUrl": "https://i.ibb.co/rRmQFn1T/unnamed.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "69b3230f914476820959adef",
+      "fieldPath": "metadata.originalData.stats.reportImage1",
+      "oldUrl": "https://i.ibb.co/ffZJxrV/56b69a9275d0.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "69b3230f914476820959adef",
+      "fieldPath": "metadata.originalData.stats.reportImage5",
+      "oldUrl": "https://i.ibb.co/1Y9BzQRF/fc92ae4fd535.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "69b3230f914476820959adef",
+      "fieldPath": "metadata.originalData.stats.reportImage6",
+      "oldUrl": "https://i.ibb.co/mrpVSDHc/5f7953413639.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "69b3230f914476820959adef",
+      "fieldPath": "metadata.originalData.stats.reportImage7",
+      "oldUrl": "https://i.ibb.co/cKDHbCPP/551eee1647d2.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "69b3230f914476820959adef",
+      "fieldPath": "metadata.originalData.stats.reportImage8",
+      "oldUrl": "https://i.ibb.co/Ps27jLtB/292fbe0837a3.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "69b3230f914476820959adef",
+      "fieldPath": "metadata.originalData.stats.reportImage9",
+      "oldUrl": "https://i.ibb.co/2Yv3HM5x/36a29846ce99.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "69b3230f914476820959adef",
+      "fieldPath": "metadata.originalData.stats.reportImage12",
+      "oldUrl": "https://i.ibb.co/Df4t1hBK/427232f82744.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "69b3230f914476820959adef",
+      "fieldPath": "metadata.originalData.stats.reportImage14",
+      "oldUrl": "https://i.ibb.co/278RM52w/38b908fad27f.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "69b3230f914476820959adf4",
+      "fieldPath": "metadata.originalData.sportsDb.badge",
+      "oldUrl": "https://i.ibb.co/20XtP8QF/medium-4.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "69b32310914476820959ae12",
+      "fieldPath": "metadata.originalData.sportsDb.badge",
+      "oldUrl": "https://i.ibb.co/SpSSgQn/small-v-Px-KN5-QOctw-B1-S7-YSk-MRIja-Fh1695197085.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "69b32311914476820959ae35",
+      "fieldPath": "metadata.originalData.sportsDb.badge",
+      "oldUrl": "https://i.ibb.co/r2xNs3Bq/VBW-CEKK-Cegl-d.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "69b32311914476820959ae44",
+      "fieldPath": "metadata.originalData.sportsDb.badge",
+      "oldUrl": "https://i.ibb.co/tp9BFxZw/DKKA-Duna-jv-rosi-Koh-sz-K-zilabda-Akad-mia.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "69b32312914476820959ae58",
+      "fieldPath": "metadata.originalData.sportsDb.badge",
+      "oldUrl": "https://i.ibb.co/xSMP2JRB/partner-deac.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "69b32314914476820959aeb7",
+      "fieldPath": "metadata.originalData.sportsDb.badge",
+      "oldUrl": "https://i.ibb.co/pvdDv31D/K-zilabda-ALBA-LOGO-3.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "69b32314914476820959aebc",
+      "fieldPath": "metadata.originalData.sportsDb.badge",
+      "oldUrl": "https://i.ibb.co/GrMqN0R/Debreceni-VSC-women-s-handball-svg.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "69b32315914476820959aecb",
+      "fieldPath": "metadata.originalData.sportsDb.badge",
+      "oldUrl": "https://i.ibb.co/nsc1Rk1j/Kisv-rda-Master-Good-SE.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "69b32315914476820959aed0",
+      "fieldPath": "metadata.originalData.sportsDb.badge",
+      "oldUrl": "https://i.ibb.co/7dWhRv22/partner-kozarmisleny-kezilabda.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "69b32316914476820959aedf",
+      "fieldPath": "metadata.originalData.sportsDb.badge",
+      "oldUrl": "https://i.ibb.co/kLKPmK3/Szombathelyi-K-zilabda-Klub-s-Akad-mia.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "69b32316914476820959aee4",
+      "fieldPath": "metadata.originalData.sportsDb.badge",
+      "oldUrl": "https://i.ibb.co/ynk2dcwD/2297387-V-ci-NKSE-logo.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "69b32316914476820959aef8",
+      "fieldPath": "metadata.originalData.sportsDb.badge",
+      "oldUrl": "https://i.ibb.co/xqRTqcJN/csurgoi-kk.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "69b32317914476820959af16",
+      "fieldPath": "metadata.originalData.sportsDb.badge",
+      "oldUrl": "https://i.ibb.co/nMxp73qv/partner-corona-brasov.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "69b32319914476820959af4d",
+      "fieldPath": "metadata.originalData.sportsDb.badge",
+      "oldUrl": "https://i.ibb.co/pjCWTKcr/tatab-nya-kc.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "69b3231a914476820959af6b",
+      "fieldPath": "metadata.originalData.logoUrl",
+      "oldUrl": "https://i.ibb.co/rfbgf8k7/partner-erc-ingolstadt.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "69b3231b914476820959afac",
+      "fieldPath": "metadata.originalData.stats.reportImage3",
+      "oldUrl": "https://i.ibb.co/ycRrPYKy/d541d341138e.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "69b3231b914476820959afac",
+      "fieldPath": "metadata.originalData.stats.reportImage4",
+      "oldUrl": "https://i.ibb.co/99YWDKdX/c7ca62ef1164.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "69b3231d914476820959afed",
+      "fieldPath": "metadata.originalData.stats.reportImage4",
+      "oldUrl": "https://i.ibb.co/zHT1zSJk/53534cff0289.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "68ef5f846a32609c5247510b",
+      "fieldPath": "metadata.sportsDb.badge",
+      "oldUrl": "https://i.ibb.co/bT9zcLg/medium-3.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "68ef5f846a32609c5247510b",
+      "fieldPath": "metadata.originalData.sportsDb.badge",
+      "oldUrl": "https://i.ibb.co/bT9zcLg/medium-3.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "68ef601c012e9f51ae782137",
+      "fieldPath": "metadata.logoUrl",
+      "oldUrl": "https://i.ibb.co/pjbDMtxs/partner-otp-bank-pick-szeged.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "68ef601c012e9f51ae782137",
+      "fieldPath": "metadata.originalData.logoUrl",
+      "oldUrl": "https://i.ibb.co/pjbDMtxs/partner-otp-bank-pick-szeged.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "68ef60e4012e9f51ae782141",
+      "fieldPath": "metadata.sportsDb.badge",
+      "oldUrl": "https://i.ibb.co/C52n6GZb/medium-2.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "68ef60e4012e9f51ae782141",
+      "fieldPath": "metadata.originalData.sportsDb.badge",
+      "oldUrl": "https://i.ibb.co/C52n6GZb/medium-2.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "68ef837870382b9e35f567e9",
+      "fieldPath": "metadata.sportsDb.badge",
+      "oldUrl": "https://i.ibb.co/Z1kwvSBn/medium.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "68ef837870382b9e35f567e9",
+      "fieldPath": "metadata.originalData.sportsDb.badge",
+      "oldUrl": "https://i.ibb.co/Z1kwvSBn/medium.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "68f6258c6d0f41c3f6a4c84d",
+      "fieldPath": "metadata.sportsDb.badge",
+      "oldUrl": "https://i.ibb.co/MyN3WqTS/03caseweb-ea-after.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "68f6258c6d0f41c3f6a4c84d",
+      "fieldPath": "metadata.originalData.sportsDb.badge",
+      "oldUrl": "https://i.ibb.co/MyN3WqTS/03caseweb-ea-after.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "68f6258c6d0f41c3f6a4c84d",
+      "fieldPath": "metadata.originalData.stats.reportImage2",
+      "oldUrl": "https://i.ibb.co/fV1Hpd51/136b559f857c.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "68f6258c6d0f41c3f6a4c84d",
+      "fieldPath": "metadata.originalData.stats.reportImage4",
+      "oldUrl": "https://i.ibb.co/PJDf1GT/3ac9f385cac5.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "68f6268feaea906244f28923",
+      "fieldPath": "metadata.originalData.stats.reportImage2",
+      "oldUrl": "https://i.ibb.co/ynn6SPWD/aa7df58da76c.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "68f626b4eaea906244f28925",
+      "fieldPath": "metadata.originalData.sportsDb.badge",
+      "oldUrl": "https://i.ibb.co/rRmQFn1T/unnamed.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "68f626b4eaea906244f28925",
+      "fieldPath": "metadata.originalData.stats.reportImage1",
+      "oldUrl": "https://i.ibb.co/ffZJxrV/56b69a9275d0.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "68f626b4eaea906244f28925",
+      "fieldPath": "metadata.originalData.stats.reportImage5",
+      "oldUrl": "https://i.ibb.co/1Y9BzQRF/fc92ae4fd535.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "68f626b4eaea906244f28925",
+      "fieldPath": "metadata.originalData.stats.reportImage6",
+      "oldUrl": "https://i.ibb.co/mrpVSDHc/5f7953413639.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "68f626b4eaea906244f28925",
+      "fieldPath": "metadata.originalData.stats.reportImage7",
+      "oldUrl": "https://i.ibb.co/cKDHbCPP/551eee1647d2.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "68f626b4eaea906244f28925",
+      "fieldPath": "metadata.originalData.stats.reportImage8",
+      "oldUrl": "https://i.ibb.co/Ps27jLtB/292fbe0837a3.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "68f626b4eaea906244f28925",
+      "fieldPath": "metadata.originalData.stats.reportImage9",
+      "oldUrl": "https://i.ibb.co/2Yv3HM5x/36a29846ce99.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "68f626b4eaea906244f28925",
+      "fieldPath": "metadata.originalData.stats.reportImage12",
+      "oldUrl": "https://i.ibb.co/Df4t1hBK/427232f82744.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "68f626b4eaea906244f28925",
+      "fieldPath": "metadata.originalData.stats.reportImage14",
+      "oldUrl": "https://i.ibb.co/278RM52w/38b908fad27f.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "68f626b7eaea906244f28926",
+      "fieldPath": "metadata.sportsDb.badge",
+      "oldUrl": "https://i.ibb.co/20XtP8QF/medium-4.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "68f626b7eaea906244f28926",
+      "fieldPath": "metadata.originalData.sportsDb.badge",
+      "oldUrl": "https://i.ibb.co/20XtP8QF/medium-4.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "68f6297236dae2424f1d13cd",
+      "fieldPath": "metadata.sportsDb.badge",
+      "oldUrl": "https://i.ibb.co/SpSSgQn/small-v-Px-KN5-QOctw-B1-S7-YSk-MRIja-Fh1695197085.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "68f6297236dae2424f1d13cd",
+      "fieldPath": "metadata.originalData.sportsDb.badge",
+      "oldUrl": "https://i.ibb.co/SpSSgQn/small-v-Px-KN5-QOctw-B1-S7-YSk-MRIja-Fh1695197085.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "68f62a2f36dae2424f1d13d4",
+      "fieldPath": "metadata.sportsDb.badge",
+      "oldUrl": "https://i.ibb.co/r2xNs3Bq/VBW-CEKK-Cegl-d.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "68f62a2f36dae2424f1d13d4",
+      "fieldPath": "metadata.originalData.sportsDb.badge",
+      "oldUrl": "https://i.ibb.co/r2xNs3Bq/VBW-CEKK-Cegl-d.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "68f77b589d48f546efb9de9a",
+      "fieldPath": "metadata.sportsDb.badge",
+      "oldUrl": "https://i.ibb.co/tp9BFxZw/DKKA-Duna-jv-rosi-Koh-sz-K-zilabda-Akad-mia.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "68f77b589d48f546efb9de9a",
+      "fieldPath": "metadata.originalData.sportsDb.badge",
+      "oldUrl": "https://i.ibb.co/tp9BFxZw/DKKA-Duna-jv-rosi-Koh-sz-K-zilabda-Akad-mia.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "68f77ce09d48f546efb9de9e",
+      "fieldPath": "metadata.sportsDb.badge",
+      "oldUrl": "https://i.ibb.co/xSMP2JRB/partner-deac.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "68f77ce09d48f546efb9de9e",
+      "fieldPath": "metadata.originalData.sportsDb.badge",
+      "oldUrl": "https://i.ibb.co/xSMP2JRB/partner-deac.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "68f78d013ced8e1a321f4650",
+      "fieldPath": "metadata.sportsDb.badge",
+      "oldUrl": "https://i.ibb.co/pvdDv31D/K-zilabda-ALBA-LOGO-3.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "68f78d013ced8e1a321f4650",
+      "fieldPath": "metadata.originalData.sportsDb.badge",
+      "oldUrl": "https://i.ibb.co/pvdDv31D/K-zilabda-ALBA-LOGO-3.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "68f78d5b3ced8e1a321f4651",
+      "fieldPath": "metadata.sportsDb.badge",
+      "oldUrl": "https://i.ibb.co/GrMqN0R/Debreceni-VSC-women-s-handball-svg.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "68f78d5b3ced8e1a321f4651",
+      "fieldPath": "metadata.originalData.sportsDb.badge",
+      "oldUrl": "https://i.ibb.co/GrMqN0R/Debreceni-VSC-women-s-handball-svg.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "68f78e473ced8e1a321f4654",
+      "fieldPath": "metadata.sportsDb.badge",
+      "oldUrl": "https://i.ibb.co/nsc1Rk1j/Kisv-rda-Master-Good-SE.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "68f78e473ced8e1a321f4654",
+      "fieldPath": "metadata.originalData.sportsDb.badge",
+      "oldUrl": "https://i.ibb.co/nsc1Rk1j/Kisv-rda-Master-Good-SE.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "68f78e823ced8e1a321f4655",
+      "fieldPath": "metadata.sportsDb.badge",
+      "oldUrl": "https://i.ibb.co/7dWhRv22/partner-kozarmisleny-kezilabda.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "68f78e823ced8e1a321f4655",
+      "fieldPath": "metadata.originalData.sportsDb.badge",
+      "oldUrl": "https://i.ibb.co/7dWhRv22/partner-kozarmisleny-kezilabda.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "68f78f843ced8e1a321f4659",
+      "fieldPath": "metadata.sportsDb.badge",
+      "oldUrl": "https://i.ibb.co/kLKPmK3/Szombathelyi-K-zilabda-Klub-s-Akad-mia.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "68f78f843ced8e1a321f4659",
+      "fieldPath": "metadata.originalData.sportsDb.badge",
+      "oldUrl": "https://i.ibb.co/kLKPmK3/Szombathelyi-K-zilabda-Klub-s-Akad-mia.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "68f78fc23ced8e1a321f465a",
+      "fieldPath": "metadata.sportsDb.badge",
+      "oldUrl": "https://i.ibb.co/ynk2dcwD/2297387-V-ci-NKSE-logo.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "68f78fc23ced8e1a321f465a",
+      "fieldPath": "metadata.originalData.sportsDb.badge",
+      "oldUrl": "https://i.ibb.co/ynk2dcwD/2297387-V-ci-NKSE-logo.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "68f790df3ced8e1a321f465e",
+      "fieldPath": "metadata.sportsDb.badge",
+      "oldUrl": "https://i.ibb.co/xqRTqcJN/csurgoi-kk.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "68f790df3ced8e1a321f465e",
+      "fieldPath": "metadata.originalData.sportsDb.badge",
+      "oldUrl": "https://i.ibb.co/xqRTqcJN/csurgoi-kk.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "68ff6ed6a2b0252e38f37d02",
+      "fieldPath": "metadata.sportsDb.badge",
+      "oldUrl": "https://i.ibb.co/nMxp73qv/partner-corona-brasov.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "68ff6ed6a2b0252e38f37d02",
+      "fieldPath": "metadata.originalData.sportsDb.badge",
+      "oldUrl": "https://i.ibb.co/nMxp73qv/partner-corona-brasov.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "690b2fc4a9ae1682cbc211ce",
+      "fieldPath": "metadata.sportsDb.badge",
+      "oldUrl": "https://i.ibb.co/pjCWTKcr/tatab-nya-kc.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "690b2fc4a9ae1682cbc211ce",
+      "fieldPath": "metadata.originalData.sportsDb.badge",
+      "oldUrl": "https://i.ibb.co/pjCWTKcr/tatab-nya-kc.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "6912f3155f70cd35acc56bc8",
+      "fieldPath": "metadata.logoUrl",
+      "oldUrl": "https://i.ibb.co/rfbgf8k7/partner-erc-ingolstadt.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "6912f3155f70cd35acc56bc8",
+      "fieldPath": "metadata.originalData.logoUrl",
+      "oldUrl": "https://i.ibb.co/rfbgf8k7/partner-erc-ingolstadt.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "694a96990ad78323bea10660",
+      "fieldPath": "metadata.originalData.stats.reportImage3",
+      "oldUrl": "https://i.ibb.co/ycRrPYKy/d541d341138e.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "694a96990ad78323bea10660",
+      "fieldPath": "metadata.originalData.stats.reportImage4",
+      "oldUrl": "https://i.ibb.co/99YWDKdX/c7ca62ef1164.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "v3_entities",
+      "docId": "69a54b6de24f1f9ca024a321",
+      "fieldPath": "metadata.originalData.stats.reportImage4",
+      "oldUrl": "https://i.ibb.co/zHT1zSJk/53534cff0289.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "projects",
+      "docId": "68e38a7b68f7cf79a92d7ccc",
+      "fieldPath": "stats.reportImage3",
+      "oldUrl": "https://i.ibb.co/pjB3WqF9/1fd9e6d1b247.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "projects",
+      "docId": "68f75aca59e5555d8ad05c17",
+      "fieldPath": "stats.reportImage1",
+      "oldUrl": "https://i.ibb.co/twzVwy5x/23b19384accf.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "projects",
+      "docId": "68f75aca59e5555d8ad05c17",
+      "fieldPath": "stats.reportImage2",
+      "oldUrl": "https://i.ibb.co/zCGV7P7/cd41b7c8a20f.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "projects",
+      "docId": "68f75aca59e5555d8ad05c17",
+      "fieldPath": "stats.reportImage3",
+      "oldUrl": "https://i.ibb.co/kVHYyQ4X/8f0f5ea2e07b.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "projects",
+      "docId": "68f75aca59e5555d8ad05c17",
+      "fieldPath": "stats.reportImage6",
+      "oldUrl": "https://i.ibb.co/LdDCKyNp/cefdcbb4a20c.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "projects",
+      "docId": "68f75aca59e5555d8ad05c17",
+      "fieldPath": "stats.reportImage7",
+      "oldUrl": "https://i.ibb.co/4gMbdwB2/048e546d238e.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "projects",
+      "docId": "68f75aca59e5555d8ad05c17",
+      "fieldPath": "stats.reportImage9",
+      "oldUrl": "https://i.ibb.co/GQmSNwK6/33eab1735081.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "projects",
+      "docId": "68f75aca59e5555d8ad05c17",
+      "fieldPath": "stats.reportImage10",
+      "oldUrl": "https://i.ibb.co/d4vgy6tm/0a43cd4292bb.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "projects",
+      "docId": "68f75aca59e5555d8ad05c17",
+      "fieldPath": "stats.fanSelfiePortrait1",
+      "oldUrl": "https://i.ibb.co/xpvmf1P/1e6f6379bd4d.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "projects",
+      "docId": "68f75aca59e5555d8ad05c17",
+      "fieldPath": "stats.fanSelfiePortrait3",
+      "oldUrl": "https://i.ibb.co/G40r8nNH/64771bcd15b4.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "projects",
+      "docId": "68f75aca59e5555d8ad05c17",
+      "fieldPath": "stats.fanSelfiePortrait6",
+      "oldUrl": "https://i.ibb.co/SXwBtgHg/fe9197b30057.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "projects",
+      "docId": "68f75aca59e5555d8ad05c17",
+      "fieldPath": "stats.fanSelfiePortrait7",
+      "oldUrl": "https://i.ibb.co/qYHkWgmz/94182d6cf1fb.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "projects",
+      "docId": "68f75aca59e5555d8ad05c17",
+      "fieldPath": "stats.fanSelfieLandscape1",
+      "oldUrl": "https://i.ibb.co/q3PWhNLy/a7751d90c745.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "projects",
+      "docId": "68f75aca59e5555d8ad05c17",
+      "fieldPath": "stats.fanSelfieSquare1",
+      "oldUrl": "https://i.ibb.co/DPNCgBQS/68c1f849b818.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "projects",
+      "docId": "68f8b821ea10e29ce9651ecb",
+      "fieldPath": "stats.reportImage1",
+      "oldUrl": "https://i.ibb.co/bRMDrRVj/52fbddc358c6.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "projects",
+      "docId": "68f8b821ea10e29ce9651ecb",
+      "fieldPath": "stats.reportImage3",
+      "oldUrl": "https://i.ibb.co/NdZQZbWT/0b2bceb6085f.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "projects",
+      "docId": "68f8b821ea10e29ce9651ecb",
+      "fieldPath": "stats.reportImage6",
+      "oldUrl": "https://i.ibb.co/Q30B2Dyd/5fb960b9dea6.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "projects",
+      "docId": "68f8b821ea10e29ce9651ecb",
+      "fieldPath": "stats.reportImage7",
+      "oldUrl": "https://i.ibb.co/k2zb12XC/06f14a278b4d.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "projects",
+      "docId": "68f8b821ea10e29ce9651ecb",
+      "fieldPath": "stats.reportImage8",
+      "oldUrl": "https://i.ibb.co/QFscKyhv/60caf17e7926.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "projects",
+      "docId": "68f8b821ea10e29ce9651ecb",
+      "fieldPath": "stats.reportImage9",
+      "oldUrl": "https://i.ibb.co/gbCDYHJY/4a4bd354ba80.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "projects",
+      "docId": "68f8b821ea10e29ce9651ecb",
+      "fieldPath": "stats.reportImage10",
+      "oldUrl": "https://i.ibb.co/RGJBGkv5/95cdb3176e65.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "projects",
+      "docId": "69119f99e3f88d34a9ff8aad",
+      "fieldPath": "stats.fanSelfiePortrait1",
+      "oldUrl": "https://i.ibb.co/zTW6NZtk/8d03b3cab88d.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "projects",
+      "docId": "69119f99e3f88d34a9ff8aad",
+      "fieldPath": "stats.fanSelfiePortrait2",
+      "oldUrl": "https://i.ibb.co/BHKQQLRn/22890fc0e562.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "projects",
+      "docId": "69119f99e3f88d34a9ff8aad",
+      "fieldPath": "stats.fanSelfieLandscape3",
+      "oldUrl": "https://i.ibb.co/5g4WXRft/74e03ec83b45.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "projects",
+      "docId": "69119f99e3f88d34a9ff8aad",
+      "fieldPath": "stats.fanSelfiePortrait3",
+      "oldUrl": "https://i.ibb.co/NdR17p0N/c034716ef370.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "projects",
+      "docId": "69119f99e3f88d34a9ff8aad",
+      "fieldPath": "stats.fanSelfieSquare1",
+      "oldUrl": "https://i.ibb.co/Y7tG4jx8/2b12a78b2189.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "projects",
+      "docId": "69119f99e3f88d34a9ff8aad",
+      "fieldPath": "stats.reportImage1",
+      "oldUrl": "https://i.ibb.co/SDFcK3zP/1b2f42961ce2.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "projects",
+      "docId": "69119f99e3f88d34a9ff8aad",
+      "fieldPath": "stats.reportImage2",
+      "oldUrl": "https://i.ibb.co/S7yN6Mhr/28dd6742d5ab.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "projects",
+      "docId": "69119f99e3f88d34a9ff8aad",
+      "fieldPath": "stats.reportImage7",
+      "oldUrl": "https://i.ibb.co/Qv4L85X6/0f4eb03ad17b.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "projects",
+      "docId": "69119f99e3f88d34a9ff8aad",
+      "fieldPath": "stats.fanSelfieSquare2",
+      "oldUrl": "https://i.ibb.co/dwhDhpvT/4016108b8ba4.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "projects",
+      "docId": "69119f99e3f88d34a9ff8aad",
+      "fieldPath": "stats.reportImage12",
+      "oldUrl": "https://i.ibb.co/1J6MXx7t/e595f5e195f1.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "projects",
+      "docId": "69119f99e3f88d34a9ff8aad",
+      "fieldPath": "stats.reportImage13",
+      "oldUrl": "https://i.ibb.co/Y44XkR8J/3c92c69e3506.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "projects",
+      "docId": "69119f99e3f88d34a9ff8aad",
+      "fieldPath": "stats.reportImage14",
+      "oldUrl": "https://i.ibb.co/M5n7Q5cL/b8f6fe6f9193.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "projects",
+      "docId": "69119f99e3f88d34a9ff8aad",
+      "fieldPath": "stats.reportImage17",
+      "oldUrl": "https://i.ibb.co/DDVRG8tt/0a14a5e4494f.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "projects",
+      "docId": "69119f99e3f88d34a9ff8aad",
+      "fieldPath": "stats.reportImage18",
+      "oldUrl": "https://i.ibb.co/jPZCwtJ1/18a5aef5ad6e.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "projects",
+      "docId": "69119f99e3f88d34a9ff8aad",
+      "fieldPath": "stats.reportImage19",
+      "oldUrl": "https://i.ibb.co/Wpxgvk71/76f8a66c182b.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "projects",
+      "docId": "692d8003612542c0e2f2d34e",
+      "fieldPath": "stats.reportImage1",
+      "oldUrl": "https://i.ibb.co/B29SXGwF/ae117f4fcef1.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "projects",
+      "docId": "692d8003612542c0e2f2d34e",
+      "fieldPath": "stats.reportImage2",
+      "oldUrl": "https://i.ibb.co/0VvQZMBD/d8fee2c72848.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "projects",
+      "docId": "692d8003612542c0e2f2d34e",
+      "fieldPath": "stats.reportImage5",
+      "oldUrl": "https://i.ibb.co/twPh37Fq/969fae4054cc.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "projects",
+      "docId": "69384c228fe983e11a6c1b79",
+      "fieldPath": "stats.reportImage2",
+      "oldUrl": "https://i.ibb.co/4Rx2tRSJ/7eee74aa864f.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "projects",
+      "docId": "693fe0ba37db12beeb821773",
+      "fieldPath": "stats.reportImage1",
+      "oldUrl": "https://i.ibb.co/tpfb2rZm/d99b973ec0c7.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "projects",
+      "docId": "693fe29a3ebe5a51f9bca90e",
+      "fieldPath": "stats.reportImage1",
+      "oldUrl": "https://i.ibb.co/pjgt6zc3/b5d6750e79f2.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "projects",
+      "docId": "6941403069bdb50ba05286ee",
+      "fieldPath": "stats.reportImage1",
+      "oldUrl": "https://i.ibb.co/gbG8rqpB/11670ed5e206.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "projects",
+      "docId": "6941403069bdb50ba05286ee",
+      "fieldPath": "stats.reportImage3",
+      "oldUrl": "https://i.ibb.co/4nXnzg4G/ef3dc323805d.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "projects",
+      "docId": "6941403069bdb50ba05286ee",
+      "fieldPath": "stats.reportImage4",
+      "oldUrl": "https://i.ibb.co/0pDJpm3G/e0b751cf98a0.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "projects",
+      "docId": "6941403069bdb50ba05286ee",
+      "fieldPath": "stats.reportImage5",
+      "oldUrl": "https://i.ibb.co/rKj8K7qN/706bda75e3e0.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "projects",
+      "docId": "694559906eea413abfcad396",
+      "fieldPath": "stats.reportImage1",
+      "oldUrl": "https://i.ibb.co/jZvmQq2d/8db42b33ca12.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "projects",
+      "docId": "694559906eea413abfcad396",
+      "fieldPath": "stats.reportImage2",
+      "oldUrl": "https://i.ibb.co/qYx4xB9j/e827c031d3be.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "projects",
+      "docId": "694559906eea413abfcad396",
+      "fieldPath": "stats.reportImage3",
+      "oldUrl": "https://i.ibb.co/k6w4XG7S/4c67a82ca1ec.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "projects",
+      "docId": "694f392928a66078b045ef97",
+      "fieldPath": "stats.reportImage1",
+      "oldUrl": "https://i.ibb.co/BKL6Bn4J/05acfa7314c0.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "projects",
+      "docId": "694f392928a66078b045ef97",
+      "fieldPath": "stats.reportImage2",
+      "oldUrl": "https://i.ibb.co/84jVrGbW/3bd0eaa7df58.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "projects",
+      "docId": "694f392928a66078b045ef97",
+      "fieldPath": "stats.reportImage3",
+      "oldUrl": "https://i.ibb.co/jjqmDL5/62c2a8103e70.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "projects",
+      "docId": "694f392928a66078b045ef97",
+      "fieldPath": "stats.reportImage4",
+      "oldUrl": "https://i.ibb.co/gLwbCBHh/d7e70ba89373.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "projects",
+      "docId": "694f392928a66078b045ef97",
+      "fieldPath": "stats.reportImage7",
+      "oldUrl": "https://i.ibb.co/CpjSfzb5/b1e7f3286a28.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "projects",
+      "docId": "694f394105f8bd56f2dd2e51",
+      "fieldPath": "stats.reportImage2",
+      "oldUrl": "https://i.ibb.co/ZzbvSxgy/1e30f69d4e4c.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "projects",
+      "docId": "694f394105f8bd56f2dd2e51",
+      "fieldPath": "stats.reportImage7",
+      "oldUrl": "https://i.ibb.co/N6Wd93R2/8825af63c195.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "projects",
+      "docId": "6950137f9f2fc19ad869a8fd",
+      "fieldPath": "stats.reportImage2",
+      "oldUrl": "https://i.ibb.co/dwTXHRBP/954abacc1487.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "projects",
+      "docId": "696a3d55e725541b15a7dd16",
+      "fieldPath": "stats.reportImage1",
+      "oldUrl": "https://i.ibb.co/21t4bZqB/77dde767d3bd.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "projects",
+      "docId": "696a3d55e725541b15a7dd16",
+      "fieldPath": "stats.reportImage9",
+      "oldUrl": "https://i.ibb.co/zV8dpRqT/e6f51d6a8a58.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "projects",
+      "docId": "697092861e4dd13e1f7f0b60",
+      "fieldPath": "stats.reportImage1",
+      "oldUrl": "https://i.ibb.co/Hmhw5xh/643ae5223fcd.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "projects",
+      "docId": "697092861e4dd13e1f7f0b60",
+      "fieldPath": "stats.reportImage2",
+      "oldUrl": "https://i.ibb.co/PzvNFrTq/be8d156ee5a5.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "projects",
+      "docId": "697092861e4dd13e1f7f0b60",
+      "fieldPath": "stats.reportImage3",
+      "oldUrl": "https://i.ibb.co/PGTXDvNC/865f5fd18a2c.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "projects",
+      "docId": "6970fcda0f5f923229e3d0c6",
+      "fieldPath": "stats.reportImage1",
+      "oldUrl": "https://i.ibb.co/hJCvMJXQ/16211e3fd68e.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "projects",
+      "docId": "6970fcda0f5f923229e3d0c6",
+      "fieldPath": "stats.reportImage2",
+      "oldUrl": "https://i.ibb.co/xv1qRZ6/885b9a03e076.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "projects",
+      "docId": "6970fcda0f5f923229e3d0c6",
+      "fieldPath": "stats.reportImage5",
+      "oldUrl": "https://i.ibb.co/fYR6S8Vm/412ed9d79a68.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "projects",
+      "docId": "6970fcda0f5f923229e3d0c6",
+      "fieldPath": "stats.reportImage8",
+      "oldUrl": "https://i.ibb.co/N24674zC/ea97b233dea6.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "projects",
+      "docId": "6971f396b00d4ce257642684",
+      "fieldPath": "stats.reportImage2",
+      "oldUrl": "https://i.ibb.co/vCRSscTj/fb6aff569448.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "projects",
+      "docId": "6971f42dcd3e911dac1c3658",
+      "fieldPath": "stats.reportImage1",
+      "oldUrl": "https://i.ibb.co/5xJtKqpW/f0506e94229e.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "projects",
+      "docId": "6971f42dcd3e911dac1c3658",
+      "fieldPath": "stats.reportImage3",
+      "oldUrl": "https://i.ibb.co/whsF38Qt/c86de3dd7bc5.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "projects",
+      "docId": "6971f42dcd3e911dac1c3658",
+      "fieldPath": "stats.reportImage4",
+      "oldUrl": "https://i.ibb.co/WWBPrxqy/c3efabd93388.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "projects",
+      "docId": "6978793f1d802b0e2c726456",
+      "fieldPath": "stats.reportImage1",
+      "oldUrl": "https://i.ibb.co/T9mPF31/120f054c612e.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "projects",
+      "docId": "6978793f1d802b0e2c726456",
+      "fieldPath": "stats.reportImage4",
+      "oldUrl": "https://i.ibb.co/pvGBBGh9/9969719a255a.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "projects",
+      "docId": "69830d7197514027ec2aa415",
+      "fieldPath": "stats.reportImage1",
+      "oldUrl": "https://i.ibb.co/JjMq41q3/40ce3041c028.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "projects",
+      "docId": "69830d7197514027ec2aa415",
+      "fieldPath": "stats.reportImage2",
+      "oldUrl": "https://i.ibb.co/PvCsVCgz/afb1995e0afa.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "projects",
+      "docId": "69830d7197514027ec2aa415",
+      "fieldPath": "stats.reportImage4",
+      "oldUrl": "https://i.ibb.co/nNTxb4sj/139396a0afde.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "projects",
+      "docId": "698c5bd79217bb18e9ace94f",
+      "fieldPath": "stats.reportImage1",
+      "oldUrl": "https://i.ibb.co/PZ34fGrt/778f2d980508.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "projects",
+      "docId": "698c5bd79217bb18e9ace94f",
+      "fieldPath": "stats.reportImage4",
+      "oldUrl": "https://i.ibb.co/T3XR7Q7/56c4d7d4c2e3.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "projects",
+      "docId": "6992f6f312c5a42f8d31763c",
+      "fieldPath": "stats.reportImage3",
+      "oldUrl": "https://i.ibb.co/xS2mTSgG/ab7ff2286243.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "projects",
+      "docId": "69942e2589c4b754f5313ed5",
+      "fieldPath": "stats.reportImage1",
+      "oldUrl": "https://i.ibb.co/rKFhFG71/8cd6eee9e100.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "projects",
+      "docId": "699593259ba01f78490f5979",
+      "fieldPath": "stats.reportImage2",
+      "oldUrl": "https://i.ibb.co/Y714qKxN/abc8c6463945.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "projects",
+      "docId": "699593259ba01f78490f5979",
+      "fieldPath": "stats.reportImage3",
+      "oldUrl": "https://i.ibb.co/FL3vsV5k/dff62640bc98.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "projects",
+      "docId": "699c420a2a9b7df08ad66521",
+      "fieldPath": "stats.reportImage1",
+      "oldUrl": "https://i.ibb.co/5t1176b/a0e791dd11f8.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "projects",
+      "docId": "699c420a2a9b7df08ad66521",
+      "fieldPath": "stats.reportImage2",
+      "oldUrl": "https://i.ibb.co/CKFH3WXn/351a10548153.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "projects",
+      "docId": "699c420a2a9b7df08ad66521",
+      "fieldPath": "stats.reportImage3",
+      "oldUrl": "https://i.ibb.co/1YSNFctk/2b449d164ca4.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "projects",
+      "docId": "699c420a2a9b7df08ad66521",
+      "fieldPath": "stats.reportImage4",
+      "oldUrl": "https://i.ibb.co/wNw97xYJ/9fb32faeb147.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "projects",
+      "docId": "699c420a2a9b7df08ad66521",
+      "fieldPath": "stats.reportImage5",
+      "oldUrl": "https://i.ibb.co/1GFsfGSX/2a4a2eeb6c99.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "projects",
+      "docId": "69a54bf9b2fcaa397b64eec1",
+      "fieldPath": "stats.reportImage1",
+      "oldUrl": "https://i.ibb.co/FkQfhCy1/837caf218fd1.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "projects",
+      "docId": "69a54bf9b2fcaa397b64eec1",
+      "fieldPath": "stats.reportImage2",
+      "oldUrl": "https://i.ibb.co/GQsjTj5L/d46e73794266.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "projects",
+      "docId": "69a54ce6b2fcaa397b64eec3",
+      "fieldPath": "stats.reportImage1",
+      "oldUrl": "https://i.ibb.co/Jw7XHB5y/9977ebe3bcf6.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "projects",
+      "docId": "69a54ce6b2fcaa397b64eec3",
+      "fieldPath": "stats.reportImage3",
+      "oldUrl": "https://i.ibb.co/JRMRC4pc/0d0782ccdd7d.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "projects",
+      "docId": "69a54ce6b2fcaa397b64eec3",
+      "fieldPath": "stats.reportImage4",
+      "oldUrl": "https://i.ibb.co/9HvNvrtr/77e24872e8ed.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "projects",
+      "docId": "69a54f8e6ae852c9f8b4eed4",
+      "fieldPath": "stats.reportImage3",
+      "oldUrl": "https://i.ibb.co/YBNsN9Tz/cc8f15450ce2.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "projects",
+      "docId": "69a54f8e6ae852c9f8b4eed4",
+      "fieldPath": "stats.reportImage4",
+      "oldUrl": "https://i.ibb.co/6Jr7GYnQ/19869a892c96.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "projects",
+      "docId": "69a54f8e6ae852c9f8b4eed4",
+      "fieldPath": "stats.reportImage5",
+      "oldUrl": "https://i.ibb.co/7xq8ftPg/fe9a8e282b8e.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "projects",
+      "docId": "69a54f8e6ae852c9f8b4eed4",
+      "fieldPath": "stats.reportImage6",
+      "oldUrl": "https://i.ibb.co/WWCGV2rd/9b0485477ccd.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "projects",
+      "docId": "69ac7b108877753e5c401e14",
+      "fieldPath": "stats.reportImage2",
+      "oldUrl": "https://i.ibb.co/gsvgx2F/4c2bfe063575.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "projects",
+      "docId": "69afe0fb6741d3b90754608f",
+      "fieldPath": "stats.reportImage1",
+      "oldUrl": "https://i.ibb.co/zh4ZjnL8/4337787994d8.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "projects",
+      "docId": "69afe0fb6741d3b90754608f",
+      "fieldPath": "stats.reportImage2",
+      "oldUrl": "https://i.ibb.co/zWcf4rTc/299e613205cd.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "projects",
+      "docId": "69afe0fb6741d3b90754608f",
+      "fieldPath": "stats.reportImage3",
+      "oldUrl": "https://i.ibb.co/Q36tvLW1/a542675ad374.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "projects",
+      "docId": "69afe0fb6741d3b90754608f",
+      "fieldPath": "stats.reportImage4",
+      "oldUrl": "https://i.ibb.co/63vrRcY/c1dd730299d4.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "projects",
+      "docId": "69b13897d37fa3a420245f94",
+      "fieldPath": "stats.reportImage1",
+      "oldUrl": "https://i.ibb.co/fVY2fbWp/918f1500b3c2.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "projects",
+      "docId": "69b142146e2ca50c1c74b11f",
+      "fieldPath": "stats.reportImage1",
+      "oldUrl": "https://i.ibb.co/v66s4Kg2/fdcc810c9b7f.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "projects",
+      "docId": "69b142146e2ca50c1c74b11f",
+      "fieldPath": "stats.reportImage2",
+      "oldUrl": "https://i.ibb.co/C5Njzzdk/07376ae1d804.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "projects",
+      "docId": "69b142146e2ca50c1c74b11f",
+      "fieldPath": "stats.reportImage3",
+      "oldUrl": "https://i.ibb.co/S4KPcWyM/c582582e12cd.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "projects",
+      "docId": "69b142146e2ca50c1c74b11f",
+      "fieldPath": "stats.reportImage4",
+      "oldUrl": "https://i.ibb.co/8LhJ3gsY/0a81c9d2c1aa.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "projects",
+      "docId": "69b142146e2ca50c1c74b11f",
+      "fieldPath": "stats.reportImage6",
+      "oldUrl": "https://i.ibb.co/QFx0Bvcp/d5300d4ebded.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "projects",
+      "docId": "69b142146e2ca50c1c74b11f",
+      "fieldPath": "stats.reportImage7",
+      "oldUrl": "https://i.ibb.co/rRbrNf5v/ed8ebdd7f235.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "projects",
+      "docId": "69b142146e2ca50c1c74b11f",
+      "fieldPath": "stats.reportImage8",
+      "oldUrl": "https://i.ibb.co/5Xxv8rnC/ced5d9a9a8f2.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "projects",
+      "docId": "69b142146e2ca50c1c74b11f",
+      "fieldPath": "stats.reportImage9",
+      "oldUrl": "https://i.ibb.co/PvwnzzDk/5eb8e31bab05.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "projects",
+      "docId": "69b7f402304f58529e61a525",
+      "fieldPath": "stats.reportImage3",
+      "oldUrl": "https://i.ibb.co/JwPXRhB0/0fd1861d1cfb.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "projects",
+      "docId": "69b92d631fdd92cf95cd38d0",
+      "fieldPath": "stats.reportImage1",
+      "oldUrl": "https://i.ibb.co/dsjxSwrP/b5cccb313bf8.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "projects",
+      "docId": "69b92d631fdd92cf95cd38d0",
+      "fieldPath": "stats.reportImage2",
+      "oldUrl": "https://i.ibb.co/gZfwhtPr/aadaae04ba0e.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "projects",
+      "docId": "69b92d631fdd92cf95cd38d0",
+      "fieldPath": "stats.reportImage3",
+      "oldUrl": "https://i.ibb.co/Psg2K0KZ/07e3634e5e0b.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "projects",
+      "docId": "69b92d631fdd92cf95cd38d0",
+      "fieldPath": "stats.reportImage5",
+      "oldUrl": "https://i.ibb.co/3ms2FbPC/a5de85f1152a.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "projects",
+      "docId": "69b92d631fdd92cf95cd38d0",
+      "fieldPath": "stats.reportImage6",
+      "oldUrl": "https://i.ibb.co/TM56hLr6/7849c4ef7db0.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "projects",
+      "docId": "69b92d631fdd92cf95cd38d0",
+      "fieldPath": "stats.reportImage9",
+      "oldUrl": "https://i.ibb.co/wr4rPTjg/264e392ddb06.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "projects",
+      "docId": "69c3b00a0df28ddd16ac4f5b",
+      "fieldPath": "stats.reportImage2",
+      "oldUrl": "https://i.ibb.co/HLcJsRGY/82aa82d80e4f.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "projects",
+      "docId": "69ce6a4dd602e482cc6791e0",
+      "fieldPath": "stats.reportImage1",
+      "oldUrl": "https://i.ibb.co/TDnbNz8L/1c0e1e915872.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "projects",
+      "docId": "69dcee5713c600da95afa326",
+      "fieldPath": "stats.reportImage2",
+      "oldUrl": "https://i.ibb.co/398K9S5v/b4db0db786d5.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "projects",
+      "docId": "69e74bf0ffa85be54ed87885",
+      "fieldPath": "stats.reportImage2",
+      "oldUrl": "https://i.ibb.co/BKqzscTY/ef8e47b8c0a7.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "projects",
+      "docId": "69e74bf0ffa85be54ed87885",
+      "fieldPath": "stats.reportImage4",
+      "oldUrl": "https://i.ibb.co/MytnJyc1/be930b41f949.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "projects",
+      "docId": "69e74bf0ffa85be54ed87885",
+      "fieldPath": "stats.reportImage7",
+      "oldUrl": "https://i.ibb.co/Q3h145Vt/98f79a8ac351.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "projects",
+      "docId": "69ea1de60d9c1da03831cb13",
+      "fieldPath": "stats.reportImage4",
+      "oldUrl": "https://i.ibb.co/pvxRkN4k/ffd5064f4f97.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "projects",
+      "docId": "69ea1de60d9c1da03831cb13",
+      "fieldPath": "stats.reportImage5",
+      "oldUrl": "https://i.ibb.co/N2btQrDw/046f192690c0.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "projects",
+      "docId": "69f3485c992da3094596f71d",
+      "fieldPath": "stats.reportImage1",
+      "oldUrl": "https://i.ibb.co/9HCHhNfc/12a0755b1feb.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "projects",
+      "docId": "69f348e9a3850ec5a195e21c",
+      "fieldPath": "stats.reportImage2",
+      "oldUrl": "https://i.ibb.co/JW1z1ZCJ/9dff292fd1cd.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "projects",
+      "docId": "69f9e2e4b839417a26f6a80a",
+      "fieldPath": "stats.reportImage1",
+      "oldUrl": "https://i.ibb.co/BKrk6k2t/85368fbb078e.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "projects",
+      "docId": "69f9e2e4b839417a26f6a80a",
+      "fieldPath": "stats.reportImage2",
+      "oldUrl": "https://i.ibb.co/TBNXLySb/c3806f15d52f.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "projects",
+      "docId": "69f9e400b839417a26f6a80c",
+      "fieldPath": "stats.reportImage2",
+      "oldUrl": "https://i.ibb.co/35HSz0h6/cffd26e8399a.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "projects",
+      "docId": "69f9e400b839417a26f6a80c",
+      "fieldPath": "stats.reportImage3",
+      "oldUrl": "https://i.ibb.co/7JcMj7cC/185d7e070cd9.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "projects",
+      "docId": "69f9e51579264c4da700b26f",
+      "fieldPath": "stats.reportImage1",
+      "oldUrl": "https://i.ibb.co/My0TnFvQ/0848d50d81e5.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "projects",
+      "docId": "69f9e625b839417a26f6a80e",
+      "fieldPath": "stats.reportImage1",
+      "oldUrl": "https://i.ibb.co/MyQNQPYR/f89e7326105c.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "projects",
+      "docId": "69fc87a240ef991305cf0199",
+      "fieldPath": "stats.reportImage2",
+      "oldUrl": "https://i.ibb.co/VYFR6k7L/98cff91271c0.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "projects",
+      "docId": "69fc87a240ef991305cf0199",
+      "fieldPath": "stats.reportImage6",
+      "oldUrl": "https://i.ibb.co/ycx3bkcz/782bb879816c.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "projects",
+      "docId": "69fc87a240ef991305cf0199",
+      "fieldPath": "stats.reportImage7",
+      "oldUrl": "https://i.ibb.co/S75WyMjg/c80a8e4eeaf7.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "projects",
+      "docId": "6a00552309b14bdfc3d3c9d7",
+      "fieldPath": "stats.reportImage1",
+      "oldUrl": "https://i.ibb.co/Y4mT2vZp/c5a9baa4f276.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "projects",
+      "docId": "6a00552309b14bdfc3d3c9d7",
+      "fieldPath": "stats.reportImage2",
+      "oldUrl": "https://i.ibb.co/b5Ch27wg/c90a3a24aa9d.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "projects",
+      "docId": "6a00552309b14bdfc3d3c9d7",
+      "fieldPath": "stats.reportImage5",
+      "oldUrl": "https://i.ibb.co/yc12m8pD/6f81474b9bdc.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "projects",
+      "docId": "6a00552309b14bdfc3d3c9d7",
+      "fieldPath": "stats.reportImage7",
+      "oldUrl": "https://i.ibb.co/fdBvkXgb/7eb3754be83f.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "projects",
+      "docId": "6a019e7a37373dbf385610d9",
+      "fieldPath": "stats.reportImage2",
+      "oldUrl": "https://i.ibb.co/rfRGnbSw/d42ccc325beb.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "projects",
+      "docId": "6a01a05bdb5460c1624d8b47",
+      "fieldPath": "stats.reportImage2",
+      "oldUrl": "https://i.ibb.co/SLkY1r8/e79d34510d7f.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "projects",
+      "docId": "6a059115a949c67fb71adb28",
+      "fieldPath": "stats.reportImage2",
+      "oldUrl": "https://i.ibb.co/nH7rNgM/b6c91c84a7a8.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "projects",
+      "docId": "6a0593eec67ee8fe13505de3",
+      "fieldPath": "stats.reportImage1",
+      "oldUrl": "https://i.ibb.co/s9sPjHQ1/50dc22c29519.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "projects",
+      "docId": "6a0593eec67ee8fe13505de3",
+      "fieldPath": "stats.reportImage2",
+      "oldUrl": "https://i.ibb.co/pv0Xk9dD/8f4451625848.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "projects",
+      "docId": "6a099e6ee605da8fec0dfe0f",
+      "fieldPath": "stats.reportImage1",
+      "oldUrl": "https://i.ibb.co/5gxn6XLS/8baa0a38f258.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "projects",
+      "docId": "6a099e6ee605da8fec0dfe0f",
+      "fieldPath": "stats.reportImage7",
+      "oldUrl": "https://i.ibb.co/prv4Lr02/b2c15bf1fdc9.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "projects",
+      "docId": "6a099e6ee605da8fec0dfe0f",
+      "fieldPath": "stats.reportImage8",
+      "oldUrl": "https://i.ibb.co/MD96jxhY/fbbc0cfb2c81.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "projects",
+      "docId": "6a099e6ee605da8fec0dfe0f",
+      "fieldPath": "stats.reportImage9",
+      "oldUrl": "https://i.ibb.co/zHD8Dqf0/f762b8cbc858.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "projects",
+      "docId": "6a0c119b2e90f89f221dde2e",
+      "fieldPath": "stats.reportImage1",
+      "oldUrl": "https://i.ibb.co/YB8DyyTY/b8845c9c84d0.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "projects",
+      "docId": "6a214813ab2496e096bf189e",
+      "fieldPath": "stats.reportImage4",
+      "oldUrl": "https://i.ibb.co/vxbtCLMK/4140d9fee075.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "projects",
+      "docId": "6a214813ab2496e096bf189e",
+      "fieldPath": "stats.reportImage5",
+      "oldUrl": "https://i.ibb.co/Wj8MG4m/ed932687b1a9.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "projects",
+      "docId": "6a30ffce76e772178de65916",
+      "fieldPath": "stats.reportImage8",
+      "oldUrl": "https://i.ibb.co/WWWzP090/58b456ba18e5.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "projects",
+      "docId": "6a3100f42d20402ca2a52c27",
+      "fieldPath": "stats.reportImage3",
+      "oldUrl": "https://i.ibb.co/JFgchyXH/1ba693e4ad6a.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "projects",
+      "docId": "6a3100f42d20402ca2a52c27",
+      "fieldPath": "stats.reportImage9",
+      "oldUrl": "https://i.ibb.co/4RfST9NX/857e79b30197.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "projects",
+      "docId": "6a3e27f560f15d6a2dbc197c",
+      "fieldPath": "stats.reportImage2",
+      "oldUrl": "https://i.ibb.co/HfJzn79B/013e11ba8432.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "projects",
+      "docId": "6a3e27f560f15d6a2dbc197c",
+      "fieldPath": "stats.reportImage3",
+      "oldUrl": "https://i.ibb.co/BV5XYh0w/32dbcfa2ce6c.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "projects",
+      "docId": "6a4b7032566991f78f4ab940",
+      "fieldPath": "stats.reportImage1",
+      "oldUrl": "https://i.ibb.co/NnyZvgrk/1783359651664-cube.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "projects",
+      "docId": "6a562c43c98af6f75c87e39a",
+      "fieldPath": "stats.reportImage1",
+      "oldUrl": "https://i.ibb.co/nNsXBzsr/1783714014910-cube.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "projects",
+      "docId": "6a562c43c98af6f75c87e39a",
+      "fieldPath": "stats.reportImage4",
+      "oldUrl": "https://i.ibb.co/PsKRZqj3/1783708774350-cube.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "projects",
+      "docId": "6a5e06a9c35a1a3a02f2e74a",
+      "fieldPath": "stats.reportImage1",
+      "oldUrl": "https://i.ibb.co/dwYySX9k/1785172347507-cube.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "projects",
+      "docId": "6a5e06a9c35a1a3a02f2e74a",
+      "fieldPath": "stats.reportImage4",
+      "oldUrl": "https://i.ibb.co/FbCr8njF/1785172311213-cube.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "projects",
+      "docId": "6a6c98a45aaf3f98e5aa9b49",
+      "fieldPath": "stats.reportImage2",
+      "oldUrl": "https://i.ibb.co/zhHrm3B9/1786819927218-cube.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "projects",
+      "docId": "6a6c98a45aaf3f98e5aa9b49",
+      "fieldPath": "stats.reportImage5",
+      "oldUrl": "https://i.ibb.co/PvBD63TY/EA-PARIS-SCREEN.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "projects",
+      "docId": "6a6c98a45aaf3f98e5aa9b49",
+      "fieldPath": "stats.reportImage6",
+      "oldUrl": "https://i.ibb.co/VYVx75Hr/Seyu-EA-Championship-Paris-popup-2026.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "projects",
+      "docId": "6a7204bb1c4b8a4dc0e7fb0f",
+      "fieldPath": "stats.reportImage1",
+      "oldUrl": "https://i.ibb.co/HL0fnqHZ/1786532760869-cube.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "projects",
+      "docId": "6a7f1d5d4b74a0452eed8fce",
+      "fieldPath": "stats.reportImage1",
+      "oldUrl": "https://i.ibb.co/6cRkm9nr/1787415897231-cube.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "projects",
+      "docId": "6a7f1d5d4b74a0452eed8fce",
+      "fieldPath": "stats.reportImage9",
+      "oldUrl": "https://i.ibb.co/cKzm4N7Z/1787415949002-cube.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "projects",
+      "docId": "6a82b5135e950290eb241185",
+      "fieldPath": "stats.reportImage1",
+      "oldUrl": "https://i.ibb.co/wN5Y0Xc0/20251211-800-euro-2028-logo.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "projects",
+      "docId": "6a82b5135e950290eb241185",
+      "fieldPath": "stats.reportImage6",
+      "oldUrl": "https://i.ibb.co/m5Qvzyrt/Chat-GPT-Image-2026-aug-6-12-37-53.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "projects",
+      "docId": "6a8c078e2a55c5ba28f8a5b3",
+      "fieldPath": "stats.reportImage1",
+      "oldUrl": "https://i.ibb.co/rKJksb2P/Seyu-Women-s-Euro-hockey-SCREEN-MOCKUP-1.png",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "projects",
+      "docId": "6a8c078e2a55c5ba28f8a5b3",
+      "fieldPath": "stats.reportImage6",
+      "oldUrl": "https://i.ibb.co/RpkFgFL9/1787340896166-cube.jpg",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    },
+    {
+      "collection": "bitly_links",
+      "docId": "68faf70c3cbb3b2ffa89204a",
+      "fieldPath": "long_url",
+      "oldUrl": "https://ibb.co/84f3rcqW",
+      "newUrl": "https://pub-b52ac4e9cc2b4199acd3a3b997ffdb0f.r2.dev/reports/placeholders/image-missing.svg"
+    }
+  ]
+}

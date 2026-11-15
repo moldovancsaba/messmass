@@ -1,0 +1,314 @@
+{
+  "scannedAt": "2026-11-06T16:57:11.705Z",
+  "totalFindings": 3540,
+  "imgbbCount": 0,
+  "uniqueImgbbUrlsCount": 0,
+  "uniqueImgbbUrls": [],
+  "imgbbByCollectionAndField": {},
+  "imgbbFindings": [],
+  "r2Count": 1730,
+  "blobCount": 0,
+  "otherCount": 1810,
+  "otherFindings": [
+    {
+      "collection": "organizations",
+      "docId": "6a155ba15eec356c8f24f189",
+      "fieldPath": "metadata.logoUrl",
+      "url": "https://www.eurohandball.com/media/s2tb3qrr/ehf-primary_blue.png?format=webp&quality=80&v=1d64ade42c043e0"
+    },
+    {
+      "collection": "partners",
+      "docId": "68eea86df5fff60e66413ab9",
+      "fieldPath": "sportsDb.strTeamBadge",
+      "url": "https://r2.thesportsdb.com/images/media/team/badge/03bmx91688115233.png"
+    },
+    {
+      "collection": "partners",
+      "docId": "68eea86df5fff60e66413ab9",
+      "fieldPath": "sportsDb.badge",
+      "url": "https://r2.thesportsdb.com/images/media/team/badge/03bmx91688115233.png"
+    },
+    {
+      "collection": "partners",
+      "docId": "68eea86df5fff60e66413ab9",
+      "fieldPath": "enrichedData.apiFootball.logo",
+      "url": "https://media.api-sports.io/football/teams/2255.png"
+    },
+    {
+      "collection": "partners",
+      "docId": "68eea86df5fff60e66413ab9",
+      "fieldPath": "enrichedData.apiFootball.venueImage",
+      "url": "https://media.api-sports.io/football/venues/814.png"
+    },
+    {
+      "collection": "partners",
+      "docId": "68eea8f3f5fff60e66413aba",
+      "fieldPath": "sportsDb.strTeamBadge",
+      "url": "https://r2.thesportsdb.com/images/media/team/badge/wk17od1688115265.png"
+    },
+    {
+      "collection": "partners",
+      "docId": "68eea8f3f5fff60e66413aba",
+      "fieldPath": "sportsDb.badge",
+      "url": "https://r2.thesportsdb.com/images/media/team/badge/wk17od1688115265.png"
+    },
+    {
+      "collection": "partners",
+      "docId": "68eea8f3f5fff60e66413aba",
+      "fieldPath": "enrichedData.apiFootball.logo",
+      "url": "https://media.api-sports.io/football/teams/651.png"
+    },
+    {
+      "collection": "partners",
+      "docId": "68eea8f3f5fff60e66413aba",
+      "fieldPath": "enrichedData.apiFootball.venueImage",
+      "url": "https://media.api-sports.io/football/venues/799.png"
+    },
+    {
+      "collection": "partners",
+      "docId": "68eea956482bab8ad7af9428",
+      "fieldPath": "sportsDb.strTeamBadge",
+      "url": "https://r2.thesportsdb.com/images/media/team/badge/ihaoit1717365719.png"
+    },
+    {
+      "collection": "partners",
+      "docId": "68eea956482bab8ad7af9428",
+      "fieldPath": "sportsDb.badge",
+      "url": "https://r2.thesportsdb.com/images/media/team/badge/ihaoit1717365719.png"
+    },
+    {
+      "collection": "partners",
+      "docId": "68eea956482bab8ad7af9428",
+      "fieldPath": "enrichedData.apiFootball.logo",
+      "url": "https://media.api-sports.io/football/teams/576.png"
+    },
+    {
+      "collection": "partners",
+      "docId": "68eea956482bab8ad7af9428",
+      "fieldPath": "enrichedData.apiFootball.venueImage",
+      "url": "https://media.api-sports.io/football/venues/11902.png"
+    },
+    {
+      "collection": "partners",
+      "docId": "68eea983482bab8ad7af9429",
+      "fieldPath": "sportsDb.strTeamBadge",
+      "url": "https://r2.thesportsdb.com/images/media/team/badge/54nyim1606674658.png"
+    },
+    {
+      "collection": "partners",
+      "docId": "68eea983482bab8ad7af9429",
+      "fieldPath": "sportsDb.badge",
+      "url": "https://r2.thesportsdb.com/images/media/team/badge/54nyim1606674658.png"
+    },
+    {
+      "collection": "partners",
+      "docId": "68eea983482bab8ad7af9429",
+      "fieldPath": "enrichedData.apiFootball.logo",
+      "url": "https://media.api-sports.io/football/teams/576.png"
+    },
+    {
+      "collection": "partners",
+      "docId": "68eea983482bab8ad7af9429",
+      "fieldPath": "enrichedData.apiFootball.venueImage",
+      "url": "https://media.api-sports.io/football/venues/11902.png"
+    },
+    {
+      "collection": "partners",
+      "docId": "68eeac2d482bab8ad7af942a",
+      "fieldPath": "sportsDb.badge",
+      "url": "https://r2.thesportsdb.com/images/media/team/badge/brw5tj1688115226.png"
+    },
+    {
+      "collection": "partners",
+      "docId": "68eeac2d482bab8ad7af942a",
+      "fieldPath": "enrichedData.apiFootball.logo",
+      "url": "https://media.api-sports.io/football/teams/2396.png"
+    },
+    {
+      "collection": "partners",
+      "docId": "68eeac2d482bab8ad7af942a",
+      "fieldPath": "enrichedData.apiFootball.venueImage",
+      "url": "https://media.api-sports.io/football/venues/802.png"
+    },
+    {
+      "collection": "partners",
+      "docId": "68ef5a0110eddb9737ecda59",
+      "fieldPath": "sportsDb.strTeamBadge",
+      "url": "https://r2.thesportsdb.com/images/media/team/badge/yxpfv41575042196.png"
+    },
+    {
+      "collection": "partners",
+      "docId": "68ef5a0110eddb9737ecda59",
+      "fieldPath": "sportsDb.badge",
+      "url": "https://r2.thesportsdb.com/images/media/team/badge/yxpfv41575042196.png"
+    },
+    {
+      "collection": "partners",
+      "docId": "68ef5a0110eddb9737ecda59",
+      "fieldPath": "enrichedData.apiFootball.logo",
+      "url": "https://media.api-sports.io/football/teams/577.png"
+    },
+    {
+      "collection": "partners",
+      "docId": "68ef5a0110eddb9737ecda59",
+      "fieldPath": "enrichedData.apiFootball.venueImage",
+      "url": "https://media.api-sports.io/football/venues/19194.png"
+    },
+    {
+      "collection": "partners",
+      "docId": "68ef5a71da117b7f18de2c61",
+      "fieldPath": "sportsDb.strTeamBadge",
+      "url": "https://r2.thesportsdb.com/images/media/team/badge/kd71p51575042454.png"
+    },
+    {
+      "collection": "partners",
+      "docId": "68ef5a71da117b7f18de2c61",
+      "fieldPath": "sportsDb.badge",
+      "url": "https://r2.thesportsdb.com/images/media/team/badge/kd71p51575042454.png"
+    },
+    {
+      "collection": "partners",
+      "docId": "68ef5abbfd0f22362e4b768f",
+      "fieldPath": "sportsDb.strTeamBadge",
+      "url": "https://r2.thesportsdb.com/images/media/team/badge/9brjgx1575294263.png"
+    },
+    {
+      "collection": "partners",
+      "docId": "68ef5abbfd0f22362e4b768f",
+      "fieldPath": "sportsDb.badge",
+      "url": "https://r2.thesportsdb.com/images/media/team/badge/9brjgx1575294263.png"
+    },
+    {
+      "collection": "partners",
+      "docId": "68ef5abbfd0f22362e4b768f",
+      "fieldPath": "enrichedData.apiFootball.logo",
+      "url": "https://media.api-sports.io/football/teams/5073.png"
+    },
+    {
+      "collection": "partners",
+      "docId": "68ef5abbfd0f22362e4b768f",
+      "fieldPath": "enrichedData.apiFootball.venueImage",
+      "url": "https://media.api-sports.io/football/venues/3837.png"
+    },
+    {
+      "collection": "partners",
+      "docId": "68ef5e1a6a32609c5247510a",
+      "fieldPath": "enrichedData.apiFootball.logo",
+      "url": "https://media.api-sports.io/football/teams/5484.png"
+    },
+    {
+      "collection": "partners",
+      "docId": "68ef5e1a6a32609c5247510a",
+      "fieldPath": "enrichedData.apiFootball.venueImage",
+      "url": "https://media.api-sports.io/football/venues/4122.png"
+    },
+    {
+      "collection": "partners",
+      "docId": "68ef5fec012e9f51ae782133",
+      "fieldPath": "sportsDb.badge",
+      "url": "https://r2.thesportsdb.com/images/media/team/badge/v1mmzo1575292678.png"
+    },
+    {
+      "collection": "partners",
+      "docId": "68ef601c012e9f51ae782137",
+      "fieldPath": "sportsDb.strBadge",
+      "url": "https://r2.thesportsdb.com/images/media/team/badge/t8cmkq1575292156.png"
+    },
+    {
+      "collection": "partners",
+      "docId": "68ef60fc012e9f51ae782145",
+      "fieldPath": "sportsDb.badge",
+      "url": "https://r2.thesportsdb.com/images/media/team/badge/gbi5ie1651171680.png"
+    },
+    {
+      "collection": "partners",
+      "docId": "68ef612a012e9f51ae782148",
+      "fieldPath": "sportsDb.strTeamBadge",
+      "url": "https://r2.thesportsdb.com/images/media/team/badge/h7053l1626321340.png"
+    },
+    {
+      "collection": "partners",
+      "docId": "68ef612a012e9f51ae782148",
+      "fieldPath": "sportsDb.badge",
+      "url": "https://r2.thesportsdb.com/images/media/team/badge/h7053l1626321340.png"
+    },
+    {
+      "collection": "partners",
+      "docId": "68ef6150012e9f51ae78214c",
+      "fieldPath": "sportsDb.strTeamBadge",
+      "url": "https://r2.thesportsdb.com/images/media/team/badge/a1dkjy1623955827.png"
+    },
+    {
+      "collection": "partners",
+      "docId": "68ef6150012e9f51ae78214c",
+      "fieldPath": "sportsDb.badge",
+      "url": "https://r2.thesportsdb.com/images/media/team/badge/a1dkjy1623955827.png"
+    },
+    {
+      "collection": "partners",
+      "docId": "68ef7c344f5ff9d34f6c7357",
+      "fieldPath": "sportsDb.strTeamBadge",
+      "url": "https://r2.thesportsdb.com/images/media/team/badge/8gcur81705941637.png"
+    },
+    {
+      "collection": "partners",
+      "docId": "68ef7c344f5ff9d34f6c7357",
+      "fieldPath": "sportsDb.badge",
+      "url": "https://r2.thesportsdb.com/images/media/team/badge/8gcur81705941637.png"
+    },
+    {
+      "collection": "partners",
+      "docId": "68ef839470382b9e35f567ea",
+      "fieldPath": "sportsDb.strTeamBadge",
+      "url": "https://r2.thesportsdb.com/images/media/team/badge/7fk4f61643120710.png"
+    },
+    {
+      "collection": "partners",
+      "docId": "68ef839470382b9e35f567ea",
+      "fieldPath": "sportsDb.badge",
+      "url": "https://r2.thesportsdb.com/images/media/team/badge/7fk4f61643120710.png"
+    },
+    {
+      "collection": "partners",
+      "docId": "68ef83aa70382b9e35f567eb",
+      "fieldPath": "sportsDb.strTeamBadge",
+      "url": "https://r2.thesportsdb.com/images/media/team/badge/6l4ruw1560677096.png"
+    },
+    {
+      "collection": "partners",
+      "docId": "68ef83aa70382b9e35f567eb",
+      "fieldPath": "sportsDb.badge",
+      "url": "https://r2.thesportsdb.com/images/media/team/badge/6l4ruw1560677096.png"
+    },
+    {
+      "collection": "partners",
+      "docId": "68ef8b2f642b6684a3c80561",
+      "fieldPath": "sportsDb.strTeamBadge",
+      "url": "https://r2.thesportsdb.com/images/media/team/badge/e5mgdo1626394656.png"
+    },
+    {
+      "collection": "partners",
+      "docId": "68ef8b2f642b6684a3c80561",
+      "fieldPath": "sportsDb.badge",
+      "url": "https://r2.thesportsdb.com/images/media/team/badge/e5mgdo1626394656.png"
+    },
+    {
+      "collection": "partners",
+      "docId": "68ef8b50642b6684a3c80562",
+      "fieldPath": "sportsDb.badge",
+      "url": "https://r2.thesportsdb.com/images/media/team/badge/z4r7fu1626394490.png"
+    },
+    {
+      "collection": "partners",
+      "docId": "68ef8b612d764adf38d5a27d",
+      "fieldPath": "sportsDb.badge",
+      "url": "https://r2.thesportsdb.com/images/media/team/badge/kz5cc71567091572.png"
+    },
+    {
+      "collection": "partners",
+      "docId": "68ef8b742d764adf38d5a27e",
+      "fieldPath": "sportsDb.badge",
+      "url": "https://r2.thesportsdb.com/images/media/team/badge/gwfhmo1658697923.png"
+    }
+  ]
+}

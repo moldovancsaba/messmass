@@ -233,3 +233,21 @@
   color: var(--mm-gray-400, var(--mm-gray-400));
   font-size: 1.5rem;
 }
+
+.elementsHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.elementsLabel {
+  margin-bottom: 0;
+}
+
+.removeElementButton {
+  margin-left: 8px;
+  padding: 2px 8px;
+  font-size: 11px;
+}
+

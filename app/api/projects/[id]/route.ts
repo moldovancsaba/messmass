@@ -26,19 +26,38 @@ export async function GET(
     const db = client.db(config.dbName)
     const collection = db.collection('projects')
     
-    const project = await collection.findOne({ _id: new ObjectId(id) })
+    const query = ObjectId.isValid(id)
+      ? { _id: new ObjectId(id) }
+      : { $or: [{ slug: id }, { viewSlug: id }, { editSlug: id }] };
+    
+    const project = await collection.findOne(query);
     
     if (!project) {
       return NextResponse.json(
         { success: false, error: 'Project not found' },
         { status: 404 }
-      )
+      );
+    }
+
+    // Populate partner details if present as IDs
+    const partnersCol = db.collection('partners');
+    if (project.partner1Id && !project.partner1 && ObjectId.isValid(String(project.partner1Id))) {
+      project.partner1 = await partnersCol.findOne(
+        { _id: new ObjectId(String(project.partner1Id)) },
+        { projection: { name: 1, emoji: 1, logoUrl: 1 } }
+      );
+    }
+    if (project.partner2Id && !project.partner2 && ObjectId.isValid(String(project.partner2Id))) {
+      project.partner2 = await partnersCol.findOne(
+        { _id: new ObjectId(String(project.partner2Id)) },
+        { projection: { name: 1, emoji: 1, logoUrl: 1 } }
+      );
     }
     
     return NextResponse.json({
       success: true,
       project
-    })
+    });
   } catch (error) {
     logError('Error fetching project', { context: 'projects/[id]' }, error instanceof Error ? error : new Error(String(error)))
     return NextResponse.json(

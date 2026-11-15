@@ -37,7 +37,7 @@ interface UseReportStyleReturn {
 export function useReportStyle({ 
   styleId, 
   enabled = true,
-  fallbackToGlobal = false
+  fallbackToGlobal = true
 }: UseReportStyleOptions = {}): UseReportStyleReturn {
   const [style, setStyle] = useState<ReportStyle | null>(null);
   const [loading, setLoading] = useState(false);

@@ -302,6 +302,15 @@ export async function findProjectByEditSlug(editSlug: string): Promise<Project |
     let project;
     if (isMongoObjectId) {
       project = await collection.findOne({ _id: new ObjectId(editSlug) });
+      if (project && !project.editSlug) {
+        const generated = await generateProjectSlugs();
+        await collection.updateOne(
+          { _id: project._id },
+          { $set: { editSlug: generated.editSlug, ...(project.viewSlug ? {} : { viewSlug: generated.viewSlug }) } }
+        );
+        project.editSlug = generated.editSlug;
+        if (!project.viewSlug) project.viewSlug = generated.viewSlug;
+      }
     } else {
       // UUID v4 format - lookup by editSlug (secure)
       project = await collection.findOne({ editSlug });

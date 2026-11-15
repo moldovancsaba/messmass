@@ -38,12 +38,6 @@ export default function PartnerKYCDataPage() {
   const router = useRouter();
   const { user, loading: authLoading } = useAdminAuth();
   
-  // WHAT: Log URL parameters on mount
-  // WHY: Debug if all partners are opening with same ID
-  React.useEffect(() => {
-    console.log('🌍 [KYC Partner] Page mounted with params:', { id, allParams: params });
-  }, [id, params]);
-  
   const [partner, setPartner] = useState<PartnerData | null>(null);
   const [events, setEvents] = useState<EventSummary[]>([]);
   const [aggregatedStats, setAggregatedStats] = useState<Record<string, number>>({});
@@ -57,50 +51,30 @@ export default function PartnerKYCDataPage() {
     try {
       setLoading(true);
       
-      console.log('🔍 [KYC Partner] Starting load for partner ID:', id);
-      
       // Fetch partner data with cache-busting
       const partnerUrl = `/api/partners?partnerId=${id}&_t=${Date.now()}`;
-      console.log('🔍 [KYC Partner] Fetching partner from:', partnerUrl);
       
       const partnerRes = await fetch(partnerUrl, {
         cache: 'no-store'
       });
       const partnerData = await partnerRes.json();
       
-      console.log('🔍 [KYC Partner] Partner API Response:', partnerData);
-      
       // WHAT: API now returns { firstPartner: {...}, partnersCount: 1 } for single partner queries
       // WHY: Updated in v11.20.9 to support partnerId query parameter
       if (!partnerData.success || !partnerData.firstPartner) {
-        console.error('❌ [KYC Partner] Partner not found for ID:', id);
         setError('Partner not found');
         return;
       }
       
       const loadedPartner = partnerData.firstPartner;
-      console.log('✅ [KYC Partner] Setting partner state:', {
-        _id: loadedPartner._id,
-        name: loadedPartner.name
-      });
       
       setPartner(loadedPartner);
       
       // Fetch partner events
       const eventsUrl = `/api/partners/${id}/events`;
-      console.log('🔍 [KYC Partner] Fetching events from:', eventsUrl);
       
       const eventsRes = await fetch(eventsUrl);
       const eventsData = await eventsRes.json();
-      
-      console.log('🔍 [KYC Partner] Events API Response:', {
-        success: eventsData.success,
-        eventsCount: eventsData.events?.length,
-        partnerFromResponse: eventsData.partner ? {
-          _id: eventsData.partner._id,
-          name: eventsData.partner.name
-        } : null
-      });
       
       if (eventsData.success && eventsData.events) {
         setEvents(eventsData.events);
