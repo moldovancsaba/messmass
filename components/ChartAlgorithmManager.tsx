@@ -1656,7 +1656,7 @@ function ChartConfigurationEditor({ config, availableVariables, onSave, onUpdate
                   </div>
 
                   {element.parameters && Object.keys(element.parameters).length > 0 && (
-                    <div className="formatting-section" style={{ marginTop: '0.75rem' }}>
+                    <div className="formatting-section">
                       <h5 className="formatting-group-title">⚙️ Tunable Parameters ([PARAM:...])</h5>
                       <div className="element-fields">
                         {Object.entries(element.parameters).map(([paramKey, paramDef]) => (

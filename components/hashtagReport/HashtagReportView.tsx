@@ -64,7 +64,7 @@ function Names({ title, list, note }: { title: string; list: NamedCount[]; note:
   const top = Math.max(...rows.map((r) => r.count), 1);
   return (
     <section className={styles.card}>
-      <h3 className={styles.cardTitle}>{title}</h3>
+      <h2 className={styles.cardTitle}>{title}</h2>
       {note && <p className={styles.cardNote}>{note}</p>}
       {rows.map((row) => (
         <div
@@ -76,14 +76,12 @@ function Names({ title, list, note }: { title: string; list: NamedCount[]; note:
               : undefined
           }
         >
-          <div className={styles.barHead}>
-            <span>{row.name}</span>
-            <strong>
-              {fmt(row.count)}
-              {row.weightedCount !== undefined && row.coOccurrencePhotos ? ` (${row.weightedCount}w)` : ''}
-            </strong>
-          </div>
-          <div className={styles.track}><div className={styles.fill} style={{ width: `${Math.round((row.count / top) * 100)}%` }} /></div>
+          <span>{row.name}</span>
+          <progress className={styles.bar} value={row.count} max={top} aria-label={`${row.name}: ${fmt(row.count)}`} />
+          <span className={styles.barCount}>
+            {fmt(row.count)}
+            {row.weightedCount !== undefined && row.coOccurrencePhotos ? ` (${row.weightedCount}w)` : ''}
+          </span>
         </div>
       ))}
     </section>
